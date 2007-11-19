@@ -19,6 +19,7 @@ s = feval(op, s);
 
 % operation on Error
 e = get(b,'Error');
+m = get(b,'Monitor');
 switch op
 case 'acos'
 	e = -e./sqrt(1-s*s);
@@ -38,6 +39,7 @@ case 'sin'
 	e = e.*cos(s);
 case 'sqrt'
 	e = e/(2*sqrt(s));
+  m = m.^2;
 case 'tan'
 	c = cos(s);
 	e = e./(c.*c);

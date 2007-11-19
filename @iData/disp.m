@@ -43,7 +43,7 @@ else
     if strcmp(s_in.Alias.Names{index}, 'Signal') & length(s_in.Alias.Axis) == 0
       x      = get(s_in, 'Signal');
       m      = get(s_in, 'Monitor');
-      if all(m==1) | all(m==0) | ~s_in.PerMonitor
+      if all(m==1) | all(m==0)
         fprintf(1,' [%g:%g]\n', min(x(:)), max(x(:)));
       else
         fprintf(1,' [%g:%g] (per monitor)\n', min(x(:)./m(:)), max(x(:)./m(:)));
@@ -58,7 +58,7 @@ else
       [v, l] = getaxis(s_in, num2str(index));
       x      = getaxis(s_in, index);
       m      = get(s_in, 'Monitor');
-      if index==0 & not(all(m==1) | all(m==0)) & s_in.PerMonitor
+      if index==0 & not(all(m==1) | all(m==0))
         m      = get(s_in, 'Monitor');
         fprintf(1,'%6i %15s  %s [%g:%g] (per monitor)\n', index, v, l, min(x(:)./m(:)), max(x(:)./m(:)));
       else

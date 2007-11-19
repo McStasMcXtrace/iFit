@@ -40,7 +40,7 @@ case 1  % vector type data (1 axis + signal) -> plot
   [y, ylab] = getaxis(a,0);
   e         = get(a,'Error');
   m         = get(a,'Monitor');
-  if not(all(m == 1) | all(m == 0)) & a.PerMonitor, 
+  if not(all(m == 1) | all(m == 0)),
     y = y./m; e=e./m; ylab = [ylab ' per monitor' ];
   end
   h = errorbar(x,y,e);
@@ -49,7 +49,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   [y, ylab] = getaxis(a,2);
   [z, zlab] = getaxis(a,0);
   m         = get(a,'Monitor');
-  if not(all(m == 1) | all(m == 0)) & a.PerMonitor, 
+  if not(all(m == 1) | all(m == 0)),
     z = z./m; zlab = [zlab ' per monitor' ];
   end
   if isvector(a) == 2 % plot3
@@ -90,7 +90,7 @@ case 3
   [z, zlab] = getaxis(a,3);
   [c, clab] = getaxis(a,0);
   m         = get(a,'Monitor');
-  if not(all(m == 1) | all(m == 0)) & a.PerMonitor, c = c./m; clab = [clab ' per monitor' ]; end
+  if not(all(m == 1) | all(m == 0)), c = c./m; clab = [clab ' per monitor' ]; end
   if isvector(a) == 3 % plot3-like
     h=fscatter3(x,y,z,c);
   else
