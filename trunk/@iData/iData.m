@@ -57,7 +57,6 @@ if nargin == 0
   
   a=iData_private_newtag(a);     
   a.ModificationDate  = a.Date; % modification Date
-  a.PerMonitor   =1;
 
   % create the object
   a = class(a, 'iData');
