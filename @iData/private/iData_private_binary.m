@@ -13,7 +13,7 @@ if isa(a, 'iData') & length(a(:)) > 1
     end
   
   elseif isa(b, 'iData') & length(b(:)) ~= length(a(:)) & length(b(:)) ~= 1
-    iData_private_error('binary',
+    iData_private_error('binary',...
   [ 'Dimension of objects do not match: 1st is ' num2str(length(a(:))) ' and 2nd is ' num2str(length(b(:))) ]);
   else
     for index=1:length(a(:))
