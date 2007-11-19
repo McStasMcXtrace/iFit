@@ -396,7 +396,7 @@ fig = findobj('Tag', 'UIGetFiles');
 
 if length(fig)  % yes: exists -> raise
   figure(fig);
-  set(fig, 'Visible','on');
+  set(fig, 'Visible','on','HandleVisibility','off');
   UD = get(fig, 'UserData');
 else
   % build main figure
