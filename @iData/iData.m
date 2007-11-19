@@ -143,6 +143,9 @@ function b=iData_struct2iData(a)
   f  =fieldnames(a);
   b  = iData; 
   fb = fieldnames(b);
+  if isfield(a, 'Data')   % start by storing the raw Data
+    b.Data = a.Data;
+  end
   for index=1:length(f)
     if ~isempty(strmatch(f{index},fb,'exact'))
       b = set(b,f{index}, getfield(a,f{index}));
