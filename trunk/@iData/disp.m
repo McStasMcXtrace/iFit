@@ -60,9 +60,9 @@ else
       m      = get(s_in, 'Monitor');
       if index==0 & not(all(m==1) | all(m==0)) & s_in.PerMonitor
         m      = get(s_in, 'Monitor');
-        fprintf(1,'%6i %15s  %s [%g:%g] (per monitor)', index, v, l, min(x(:)./m(:)), max(x(:)./m(:)));
+        fprintf(1,'%6i %15s  %s [%g:%g] (per monitor)\n', index, v, l, min(x(:)./m(:)), max(x(:)./m(:)));
       else
-        fprintf(1,'%6i %15s  %s [%g:%g]', index, v, l, min(x(:)), max(x(:)));
+        fprintf(1,'%6i %15s  %s [%g:%g]\n', index, v, l, min(x(:)), max(x(:)));
       end
     end
   end
