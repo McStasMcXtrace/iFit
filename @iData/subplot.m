@@ -1,4 +1,4 @@
-function h=subplot(s, varargin)
+function h=subplot(a, varargin)
 % subplot(s) : plot iData array as subplots
 %
 %   @iData/subplot plot each iData element in a subplot
