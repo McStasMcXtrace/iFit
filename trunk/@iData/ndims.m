@@ -1,0 +1,34 @@
+function v=ndims(s)
+% d=ndims(s) : get the dimensionality of iData object
+%
+%   @iData/ndims function to get the number of dimensions of the iData signal.
+%
+% input:  s: object or array (iData)
+% output: dimensionality of Signal in the object (double array)
+% ex :    ndims(iData)
+%
+% See also  iData/size
+
+% EF 11/07/00 creation
+% EF 23/09/07 iData implementation
+
+if length(s(:)) > 1
+  v = zeros(size(s)); 
+  for index=1:length(s(:))
+    v(index) =ndims(s(index));
+  end
+  return
+end
+
+n = size(s);
+if     all(n == 0), v=0;
+elseif all(n == 1), v=1;
+else
+  index=find(n > 1);
+  v = length(index);
+  if v == 1 & length(getaxis(s)) > 1
+    v = length(getaxis(s)); % this is for [x,y,z,... vector data (plot3 style)]
+  end
+end
+
+
