@@ -1,0 +1,3440 @@
+/*****************************************************************************
+*
+*                     Program looktxt.c
+*
+* looktxt version Looktxt 1.0.0 (2 Sept 2006) by Farhi E. [farhi@ill.fr]
+*
+* Usage: looktxt [options] file1 file2 ...
+* Action: Search and export numerics in a text/ascii file.
+*   This program analyses files looking for numeric parts
+*   Each identified numeric field is named and exported
+*   into an output filename, usually as a structure with fields
+*     ROOT.SECTION.FIELD = VALUE
+*   In order to sort your data, you may specify as many --section
+*   and --metadata options as necessary
+* Example: looktxt -f Matlab -c -s PARAM -s DATA filename
+* Main Options are:
+* --binary   or -b    Stores numerical matrices into an additional binary
+*                     float file, which makes further import much faster.
+* --catenate or -c    Catenates similar numerical fields
+* --force    or -F    Overwrites existing files
+* --format=FORMAT     Sets the output format for generated files. See below
+*       -f FORMAT
+* --fortran --wrapped Catenates single Fortran-style output lines with
+*                     previous matrices
+* --headers  or -H    Extracts headers for each numerical field
+* --help     or -h    Show this help
+* --section=SEC       Classifies fields into section matching word SEC
+*       -s SEC
+* --metadata=META     Extracts lines containing word META as user meta data
+*         -m META
+*
+* Other Options are:
+* --append            Append to existing files. This also sets --force
+* --fast              Uses a faster reading method, requiring numerics
+*                     to be separated by \n\t\r\f\v and spaces only
+* --makerows=NAME     All fields matching NAME are transformed into row vectors
+* --names_lower       Converts all names into lower characters
+* --names_upper       Converts all names into upper characters
+* --names_length=LEN  Sets the maximum length to use for names (32)
+* --names_root=ROOT   Sets the base name for structures to ROOT
+*                     Default is to use the output file name
+*                     Use --names_root=NULL or 0 not to use root level.
+* --nelements_min=MIN Only extracts numericals with at least MIN elements
+* --nelements_max=MAX Only extracts numericals with at most MAX elements
+* --outfile=FILE      Sets output file name. Extension, if missing, is added
+*        -o FILE      depending on the FORMAT. FILE may be stdout or stderr
+* --struct=CHAR       Will use CHAR as struct builder. Default is '.'
+*                     Use --struct=NULL or 0 not to use structures.
+*                     Alternatively you may use '_'.
+* --verbose  or -v    Displays analysis information
+* --silent            Silent mode. Only displays errors/warnings
+* --comment=COM       Sets comment characters (ignore line if at start)
+* --eol=EOL           Sets end-of-line characters
+* --point=PNT         Sets numerical point characters
+* --separator=SEP     Sets word seperators (handled as spaces)
+*
+* Available output formats are (default is Matlab):
+*   "Matlab" "Scilab" "IDL" "XML" "HTML" "Octave" "Raw"
+*   Adding 'binary' to the FORMAT name will do the same as --binary.
+*   The LOOKTXT_FORMAT environment variable may set the default FORMAT to use.
+*
+* content: C language
+* compile with : gcc -O2 looktxt.c -o looktxt
+*
+* History:
+* 0.86  (04/11/97) not effective
+* 0.87  (26/03/99) works quite fine. Some bugs.
+* 0.88  (09/04/99) improvements and 'table' output
+* 0.89  (02/07/99) corrected grouping error for isolated numerics
+* 0.89a (27/03/00) multi plateform handling
+* 0.90  (03/07/00) debug mode ok, no more lktmp00 file
+* 0.91  (26/07/00) new options -S (struct) -H (num header)
+* 0.93  (21/08/01) -T, filename in file
+* 1.00  (23/08/04) New VERSION with more output formats
+*
+*****************************************************************************/
+
+/* Identification ********************************************************* */
+
+#define AUTHOR  "Farhi E. [farhi@ill.fr]"
+#define DATE    "20 Aug 2007"
+#ifndef VERSION
+#define VERSION "Looktxt 1.0.1"
+#endif
+
+#ifdef __dest_os
+#if (__dest_os == __mac_os)
+#define MAC
+#endif
+#endif
+
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE -1
+#endif
+
+#ifndef EXIT_SUCCESS
+#define EXIT_SUCCESS 0
+#endif
+
+#ifndef SEEK_SET
+#define SEEK_SET 0
+#endif
+
+#ifdef WIN32
+#define LK_PATHSEP_C '\\'
+#define LK_PATHSEP_S "\\"
+#else  /* !WIN32 */
+#ifdef MAC
+#define LK_PATHSEP_C ':'
+#define LK_PATHSEP_S ":"
+#else  /* !MAC */
+#define LK_PATHSEP_C '/'
+#define LK_PATHSEP_S "/"
+#endif /* !MAC */
+#endif /* !WIN32 */
+
+/* remove comments if your compiler does not auto include some libraries */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <stdarg.h>
+/* #include <unistd.h> */
+
+/* Declarations *********************************************************** */
+
+#define Cnumber    "0123456789"
+#define CalphaPure "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+#define Calpha     " !\"#$&'()*+,-./:;<=>?@[\\]^_`{|}~" CalphaPure Cnumber
+#define Cexp       "eE"
+#define Csign      "+-"
+
+#define Cpoint     "."
+#define Ceol       "\n\f"
+#define Ccomment   "#%"
+#define Cseparator "\t\v\r,; $()[]{}=|<>&\"/\\"
+
+#define Bnumber      1
+#define Balpha       2
+#define Bpoint       4
+#define Beol         8
+#define Bexp        16
+#define Bsign       32
+#define Bcomment    64
+#define Bseparator 128
+
+#define MAX_LENGTH 1024
+#define MAX_TXT4BIN 100
+
+#ifdef WIN32
+#define mode_t unsigned short
+#define size_t long
+#define time_t long
+#endif
+
+
+/* Functions declaration ************************************************** */
+/*
+static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...);
+void *mem(size_t size);
+char *memfree(void *p);
+char *str_dup(char *string);
+char *str_dup_n(char *string, int n);
+char *str_cat(char *first, ...);
+char *str_free(char *string);
+char *str_rep(char *string, char *from, char *to);
+char *str_valid(char *string, int n);
+char *str_valid_struct(char *string, char struct_char);
+char *str_reverse(char *string);
+char *str_extractline(char *header, char *field, int *offset);
+int   ischr(char c, char *category);
+char *str_lastword(char *string);
+
+struct fileparts_struct fileparts_init(void);
+struct fileparts_struct fileparts(char *name);
+void                    fileparts_free(struct fileparts_struct parts);
+
+char *try_open_target(struct fileparts_struct parts, char force);
+struct file_struct file_init(void);
+struct file_struct file_open(char *name, struct option_struct options);
+void               file_close(struct file_struct file);
+
+struct format_struct format_init(struct format_struct formats[], char *request);
+
+struct strlist_struct strlist_init(void);
+void                  strlist_free(struct strlist_struct list);
+struct strlist_struct strlist_add(struct strlist_struct *list, char *element);
+int                   strlist_search(struct strlist_struct list, char *element);
+
+struct option_struct options_init(void);
+void                 options_free(struct option_struct options);
+struct option_struct options_parse(struct option_struct options, int argc, char *argv[]);
+
+struct data_struct data_init(void);
+void               data_free(struct data_struct field);
+char              *data_get_char(struct file_struct file, long start, long end);
+double            *data_get_float(struct file_struct file, struct data_struct field);
+
+struct table_struct table_init(void);
+void                table_add(struct table_struct *table, struct data_struct data);
+void                table_free(struct table_struct table);
+
+struct table_struct file_scan(struct file_struct file, struct option_struct options);
+int file_write_headfoot(struct file_struct file, struct option_struct options, char *format);
+int file_write_section(struct file_struct file, struct option_struct options,
+                       char *section, char *format);
+int file_write_field_data(struct file_struct file, struct data_struct field, char *format);
+int file_write_field_array(struct file_struct file, struct data_struct field,
+                          struct option_struct options, char *format);
+struct write_struct file_write_getsections(struct file_struct file,
+                       struct option_struct options,
+                       struct table_struct *ptable);
+int file_write_target(struct file_struct file, struct table_struct table,
+                      struct option_struct options);
+
+void print_usage(char *pgmname, struct option_struct options);
+int  parse_files(struct option_struct options, int argc, char *argv[]);
+int  main(int argc, char *argv[]);
+*/
+
+#ifdef TEXMEX
+char *TexMex_Target_Array[MAX_LENGTH];
+char *TexMex_Target_Funcs[MAX_LENGTH];
+#endif
+
+int print_stderr(char *format, ...) {
+  va_list ap;
+  int ret=0;
+
+  va_start(ap, format);
+#ifndef TEXMEX
+  ret=fprintf(stderr, format, ap);
+#else
+  ret=mexPrintf(format, ap); /* only in Matlab/MeX mode */
+#endif
+  va_end(ap);
+  return(ret);
+}
+
+/* Structure definitions ************************************************** */
+
+struct fileparts_struct {
+  char *FullName;
+  char *Path;
+  char *Name;
+  char *Extension;
+};
+
+struct file_struct {
+  char  *Source    ;  /* original source file full name */
+  char  *TargetTxt ;  /* target text file with path and extension */
+  char  *TargetBin ;  /* optional target binary file */
+  FILE  *SourceHandle;  /* original source file handle */
+  FILE  *TxtHandle ;  /* target text handle */
+  FILE  *BinHandle ;  /* optional target binary handle */
+  char  *Path      ;  /* the Path to the source file name */
+  char  *SourceName;  /* the source name without the path nor the extension */
+  char  *TargetName;  /* the target root name (source_ext) */
+  char  *Extension ;  /* the source file extension */
+  char  *RootName  ;  /* ROOT Name to use for structure fields */
+  mode_t Mode;        /* source file mode */
+  size_t Size;        /* source File size in bytes */
+  time_t Time;        /* source Creation date */
+};
+
+struct format_struct {
+  char *Name;
+  char *Extension;
+  char *Header;
+  char *Footer;
+  char *BeginSection;
+  char *EndSection;
+  char *AssignTag;
+  char *BeginData;
+  char *EndData;
+  char *BinReference;
+};
+
+struct strlist_struct {
+  long   nalloc;  /* total allocated entries */
+  long   length;  /* current table length (filled elements) */
+  char   Name[32];
+  char **List;    /* an array of (pointers to char) */
+};
+
+struct option_struct {
+  long  sources_nb; /* total number of files to process */
+  int   files_to_convert_Array[MAX_LENGTH];/* index of argv[] for files to be processes */
+  long  file_index; /* index of processed file (in case of a pack of files) */
+  char  use_struct; /* will build struct field names */
+  char  use_binary; /* will use binary external file to hold matrices/vectors 1:float */
+  char  catenate  ; /* will catenate similar fields (name+size)   */
+  char  force     ; /* force (over write) output files */
+  char  out_table ; /* will output table field */
+  char  out_headers;/* will output char header for each numeric field */
+  char  verbose   ; /* 0:silent, 1: normal, 2: verbose, 3: debug */
+  char  fortran   ; /* catenate fortran vectors */
+  char  names_lowup; /* field names are lower/upper case */
+  int   names_length; /* length of field names */
+  char *separator ; /* separators to use */
+  char *comment   ; /* comments start char (to end of line) */
+  char *eol       ; /* end of line char */
+  char *point     ; /* point character (e.g. , or . ) */
+  char *number    ;
+  char *alpha     ;
+  char *exp       ;
+  char *sign      ;
+  char *openmode  ;
+  char *option_list;
+  char *names_root;
+  char *pgname    ;
+  char  fast      ; /* 0: general method, 1: fast method using fscanf (isspace as separator) */
+  struct format_struct    format;   /* the output file format to use */
+  struct fileparts_struct outfile;  /* user specified output file name */
+  struct strlist_struct   sections; /* sections to search for */
+  struct strlist_struct   metadata; /* metadata to search for */
+  struct strlist_struct   makerows; /* field to transform into row */
+  long  nelements_min;  /* extracts only fields with n_elements >= min */
+  long  nelements_max;  /* extracts only fields with n_elements <= max */
+};
+
+/* lists stuctures ******************************************************** */
+
+struct data_struct {
+  char *Name;       /* name of the numeric field (extracted from Header) */
+  char *Name_valid; /* valid name (with only alpha) */
+  char *Header;     /* char header of the field */
+  char *Section;    /* name of the section the field is in (extracted from Header) */
+  long  index;      /* index of this data block */
+  long  rows, columns;  /* field numeric dimensions */
+  long  n_start, n_end; /* indexes of numeric part in original file */
+  long  c_start, c_end; /* indexes of char part in original file */
+};
+
+struct table_struct {
+  long   nalloc;              /* total allocated entries (field) */
+  long   length;              /* current length in table (filled elements) */
+  char  *Name;                /* Name of the table */
+  struct data_struct *List;   /* an array of data_struct */
+};
+
+/* Format definitions ***************************************************** */
+
+#define NUMFORMATS 7
+#define LOOKTXT_FORMAT "Matlab"  /* default format */
+#define ROOT_SECTION   "looktxt_root"
+
+/* Name, Extension,
+   Header, Footer, BeginSection, EndSection, AssignTag, BeginData, EndData;
+ */
+struct format_struct Global_Formats[NUMFORMATS] = {
+  { "Matlab", "m",
+    "function %NAM=%NAM()\n"
+      "%% %TXT %FMT file generated by " VERSION " from %SRC (size %SIZ)\n"
+      "%% To import, use 'matlab> s=%NAM'\n",
+    "%% End of file %TXT generated from %SRC\n"
+      "%% in-line function to read binary blocks\n"
+      "function d=bin_ref(f,b,m,n)\n"
+      "  f=fopen(f,'r'); fseek(f,b,-1);\n"
+      "  d=fread(f,m*n,'single'); fclose(f); d=reshape(d,n,m);\n"
+      "  d=d'; return\n",
+    "%% Begin Section %BAS%SEC '%NAM'\n",
+    "%% End   Section %BAS%SEC '%NAM'\n",
+    "%BAS%SEC%NAM = '%VAL';\n",
+    "%BAS%SEC%NAM = [\n",
+    "]; %% %NAM\n",
+    " bin_ref('%FIL',%BEG,%ROW,%COL); \n"
+  },
+  { "Scilab", "sci",
+    "function %NAM = %NAM()\n"
+      "// %TXT %FMT function generated by " VERSION " from %SRC (size %SIZ)\n"
+      "// To import, use scilab> exec('%NAM.sci',-1); s=%NAM\n"
+      "mode(-1); //silent execution\n",
+    "// End of file %TXT generated from %SRC\n"
+      "// in-line function to read binary blocks\n"
+      "function d=bin_ref(f,b,m,n)\n"
+      "  f=mopen(f,'rb'); mseek(f,b);\n"
+      "  d=mget(m*n,'f',f); mclose(f); d=matrix(d,[n m]);\n"
+      "  d=d'; return\n",
+    "// Begin Section %BAS%SEC '%NAM'\n",
+    "// End   Section %BAS%SEC '%NAM'\n",
+    "%BAS%SEC%NAM = '%VAL';\n",
+    "%BAS%SEC%NAM = [\n",
+    "];\n",
+    " bin_ref('%FIL',%BEG,%ROW,%COL); \n"
+  },
+  { "IDL", "pro",
+    "; %TXT %FMT function generated by " VERSION " from %SRC (size %SIZ)\n"
+      "; To import, use idl> s=%NAM()\n\n"
+      "function bin_ref,f,b,m,n\n"
+      "; in-line function to read binary blocks\n"
+      "  d=read_binary(f, data_type=4, data_dims=[m,n], data_start=b)\n"
+      "  d=reform(d,[m,n])\n"
+      "  return,transpose(d)\n"
+      "end ; FUN bin_ref\n\n"
+      "pro stv,S,T,V\n"
+      "; procedure set-tag-value that does S.T=V\n"
+      "sv=size(V)\n"
+      "T=strupcase(T)\n"
+      "TL=strupcase(tag_names(S))\n"
+      "id=where(TL eq T)\n"
+      "sz=[0,0,0]\n"
+      "vd=n_elements(sv)-2\n"
+      "type=sv[vd]\n"
+      "if id(0) ge 0 then d=execute('sz=SIZE(S.'+T+')')\n"
+      "if (sz(sz(0)+1) ne sv(sv(0)+1)) or (sz(0) ne sv(0)) $\n"
+      "  or (sz(sz(0)+2) ne sv(sv(0)+2)) $\n"
+      "  or type eq 8 then begin\n"
+      " ES = ''\n"
+      " for k=0,n_elements(TL)-1 do begin\n"
+      "  case TL(k) of\n"
+      "   T:\n"
+      "   else: ES=ES+','+TL(k)+':S.'+TL(k)\n"
+      "  endcase\n"
+      " endfor\n"
+      " d=execute('S={'+T+':V'+ES+'}')\n"
+      "endif else d=execute('S.'+T+'=V')\n"
+      "end ; PRO stv\n\n"
+      "function %NAM\n" ROOT_SECTION " ={Target:'%TXT'}\n",
+    "return,%BAS\nend ; FUN %BAS\n; End of file %TXT generated from %SRC\n",
+    "; Begin Section %BAS %SEC '%NAM'\n",
+    "; End   Section %BAS %SEC '%NAM'\n",
+    "stv,%SEC,'%NAM','%VAL'\n",
+    "%NAM= ","%NAM=transpose(reform(%NAM,%COL,%ROW,/over))\n"
+    "stv,%SEC,'%NAM',%NAM & %NAM=0\n",
+    " bin_ref('%FIL',%BEG,%ROW,%COL) "
+  },
+  { "XML", "xml",
+    "<?xml version=\"1.0\" ?>\n<!--\n"
+    "%TXT %FMT file generated by " VERSION " from %SRC (size %SIZ)\n-->\n",
+    "<!-- End of file %TXT generated from %SRC ->\n",
+    "<%SEC name=\"%NAM\">\n", "</%SEC>\n",
+    "<%NAM>%VAL</%NAM>\n",
+    "<%NAM> \n","</%NAM>\n"," float(file='%FIL',offset=%BEG,m=%ROW,n=%COL) "
+  },
+  { "HTML", "html",
+    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD %DAT//EN\"\n"
+      "\"http://www.w3.org/TR/html4/strict.dtd\">\n"
+      "<HTML><HEAD><TITLE>%TXT from %SRC</TITLE></HEAD>\n"
+      "<BODY><H1>%TXT %FMT file generated by " VERSION " from %SRC (size %SIZ)</H1><br>\n",
+    "End of file %TXT generated from %SRC<br></BODY></HTML>\n",
+    "<h3><a name=\"%SEC\">Section %BAS %SEC</a></h3><br>\n",
+    "[end of <a href=\"#%SEC\">%BAS %SEC</a>]<br>\n",
+    "<b>%BAS%SEC%NAM= </b>'%VAL'<br>\n","<b>%BAS%SEC%NAM = [ \n</b><pre>","]\n</pre><br>"," float(file='%FIL',offset=%BEG,m=%ROW,n=%COL) "
+  },
+  { "Octave", "m",
+    "function %NAM=%NAM()\n"
+      "%% %TXT %FMT file generated by " VERSION " from %SRC (size %SIZ)\n"
+      "%% To import, use 'octave> %NAM'\n",
+    "endfunction\n%% End of file %TXT generated from %SRC\n"
+      "%% in-line function to read binary blocks\n"
+      "function d=bin_ref(f,b,m,n)\n"
+      "  f=fopen(f,'r'); fseek(f,b,-1);\n"
+      "  d=fread(f,m*n,'float'); fclose(f); d=reshape(d,n,m);\n"
+      "  d=d'; return\n"
+      "endfunction\n",
+    "%% Begin Section %BAS%SEC '%NAM'\n",
+    "%% End   Section %BAS%SEC '%NAM'\n",
+    "%BAS%SEC%NAM = '%VAL';\n",
+    "%BAS%SEC%NAM = [\n",
+    "];\n",
+    " bin_ref('%FIL',%BEG,%ROW,%COL); \n"
+  },
+  { "Raw", "txt",
+    "# %TXT %FMT file generated by " VERSION " from %SRC (size %SIZ)\n",
+    "# End of file %TXT generated from %SRC\n",
+    "# Begin Section %BAS%SEC '%NAM'\n",
+    "# End   Section %BAS%SEC '%NAM'\n",
+    "# %BAS%SEC%NAM = '%VAL'\n",
+    "# %BAS%SEC%NAM\n","",
+    " float(file='%FIL',offset=%BEG,m=%ROW,n=%COL) \n"
+  }
+};
+
+/* memory/string functions (from McStas/memory.c) ************************* */
+
+/*****************************************************************************
+* mem: Allocate memory. This function never returns NULL; instead, the
+* program is aborted if insufficient memory is available.
+*****************************************************************************/
+void *mem(size_t size)
+{
+  void *p;
+  if (!size) return(NULL);
+  p = (void *)calloc(1, size);  /* Allocate and clear memory. */
+  if(p == NULL) {
+    print_stderr( "Fatal: memory exhausted during allocation of size %ld [looktxt:mem].", (long)size);
+    exit(EXIT_FAILURE);
+  }
+  return p;
+}
+
+/*****************************************************************************
+* memfree: Free memory allocated with mem().
+*****************************************************************************/
+char *memfree(void *p)
+{
+  if (p) free(p);
+  return (NULL);
+}
+
+/*****************************************************************************
+* str_dup: Allocate a new copy of a string.
+*****************************************************************************/
+char *str_dup(char *string)
+{
+  char *s;
+
+  if (!string) return(NULL);
+  s = mem(strlen(string) + 1);
+  strcpy(s, string);
+  return s;
+}
+
+/*****************************************************************************
+* str_dup_n: Allocate a new copy of initial N chars in a string.
+*****************************************************************************/
+char *str_dup_n(char *string, int n)
+{
+  char *s;
+
+  if (!string) return(NULL);
+  if (!n || n > strlen(string)) n = strlen(string);
+  s = mem(n + 1);
+  strncpy(s, string, n);
+  s[n] = '\0';
+  return s;
+}
+
+/*****************************************************************************
+* str_cat: Allocate a new string to hold the concatenation of given strings.
+* Arguments are the strings to concatenate, terminated by NULL.
+*****************************************************************************/
+char *str_cat(char *first, ...)
+{
+  char *s;
+  va_list ap;
+  int size;
+  char *arg;
+
+  if (!first) return (NULL);
+  size = 1;     /* Count final '\0'. */
+  va_start(ap, first);
+  for(arg = first; arg != NULL; arg = va_arg(ap, char *))
+    size += strlen(arg);  /* Calculate string size. */
+  va_end(ap);
+  s = mem(size);
+  size = 0;
+  va_start(ap, first);
+  for(arg = first; arg != NULL; arg = va_arg(ap, char *)) {
+    strcpy(&(s[size]), arg);
+    size += strlen(arg);
+  }
+  va_end(ap);
+  return s;
+}
+
+/*****************************************************************************
+* str_free: Free memory for a string. (alias to mem )
+*****************************************************************************/
+char *str_free(char *string)
+{
+  memfree(string);
+  return(NULL);
+}
+
+/*****************************************************************************
+* str_rep: Replaces a token by an other (of SAME length) in a string
+* This function modifies 'string'
+*****************************************************************************/
+char *str_rep(char *string, char *from, char *to)
+{
+  char *p;
+
+  if (!string || !strlen(string)) return(string);
+  if (strlen(from) != strlen(to)) return(string);
+
+  p   = string;
+
+  while (( p = strstr(p, from) ) != NULL) {
+    long index;
+    for (index=0; index<strlen(to); index++) p[index]=to[index];
+  }
+  return(string);
+}
+
+/*****************************************************************************
+* str_quote: Allocate a new string holding the result of quoting the input string.
+* The result is suitable for inclusion in C source code.
+*****************************************************************************/
+char *str_quote(char *string)
+{
+  char *badchars = "\\\"\r\n\t\a\b\f\v";
+  char *quotechars = "\\\"rntabfv";
+  char *q=NULL, *res=NULL, *ptr;
+  int len=0, pass;
+  int c;
+  char new[5];
+
+  /* Loop over the string twice, first counting chars and afterwards copying
+     them into an allocated buffer. */
+  for(pass = 0; pass < 2; pass++)
+  {
+    char *p = string;
+
+    if(pass == 0)
+      len = 0;    /* Prepare to compute length */
+    else
+      q = res = mem(len + 1); /* Allocate buffer */
+    /* Notice the cast to unsigned char; without it, the isprint(c) below will
+       fail for characters with negative plain char values. */
+    while((c = (unsigned char)(*p++)))
+    {
+      ptr = strchr(badchars, c);
+      if(ptr != NULL)
+        sprintf(new, "\\%c", quotechars[ptr - badchars]);
+      else if(isprint(c))
+        sprintf(new, "%c", c);
+      else
+        sprintf(new, "\\%03o", c);
+      if(pass == 0)
+        len += strlen(new); /* Count in length */
+      else
+        for(ptr = new; (*q = *ptr) != 0; ptr++)
+          q++;  /* Copy over chars */
+    }
+  }
+  return res;
+}
+
+/*****************************************************************************
+* str_valid: Allocate a copy of string made only with valid chars
+* copy 'string' into 'valid', replacing invalid characters by '_'
+*****************************************************************************/
+char *str_valid(char *string, int n)
+{
+  long i;
+  char *valid;
+  char *tmp1;
+  char *tmp2;
+  const char name_char[] = CalphaPure "_" Cnumber;
+
+  if (!string || !strlen(string)) return(NULL);
+  if (!n || n > strlen(string)) n=strlen(string);
+  tmp2 = tmp1 = str_dup_n(string, n);
+
+/* find first alpha char */
+  while (tmp2[0] && !strchr(CalphaPure, tmp2[0])) tmp2++;
+
+  if (!tmp2[0] || tmp2 >= tmp1+strlen(tmp1)) {
+    str_free(tmp1);
+    tmp2 = tmp1 = str_cat("lk_", string, NULL);
+  }
+
+/* convert non valid following chars in name into _ */
+  for (i=0; i < strlen(tmp2); i++) {
+    if ( !strchr(name_char, tmp2[i]) ) tmp2[i] = '_';
+  }
+  valid = str_dup((tmp2 && tmp2[0]) ? tmp2 : "Name");
+  str_free(tmp1);
+  return(valid);
+} /* str_valid */
+
+/*****************************************************************************
+* str_valid_struct: Allocate a copy of string made only with valid chars
+* and appending a 'struct' char at the end
+* copy 'string' into 'valid', replacing invalid characters by '_'
+*****************************************************************************/
+char *str_valid_struct(char *string, char char_struct)
+{
+  char *ret=NULL;
+  long i;
+  char *valid;
+  char *tmp1;
+  char *tmp2;
+  char name_char[256];
+  char str_struct[] = ".";
+
+  if (!string || !strlen(string)) return(str_dup(""));
+
+  strcpy(name_char, CalphaPure "_" Cnumber);
+  if (char_struct > ' ') {
+    str_struct[0] = char_struct;
+    strcat(name_char, str_struct);
+  }
+  tmp2 = tmp1 = str_dup(string);
+
+/* find first alpha char */
+  while (tmp2[0] && !strchr(CalphaPure, tmp2[0])) tmp2++;
+
+/* convert non valid following chars in name into _ */
+  for (i=0; i < strlen(tmp2); i++) {
+    if ( !strchr(name_char, tmp2[i]) ) tmp2[i] = '_';
+  }
+
+  valid = str_dup((tmp2 && tmp2[0]) ? tmp2 : "Name");
+  str_free(tmp1);
+  if (char_struct > ' ') {
+    ret = str_cat(valid, str_struct, NULL);
+    str_free(valid);
+  } else ret=valid;
+  return(ret);
+
+} /* str_valid_struct */
+
+/*****************************************************************************
+* str_reverse: Allocate a copy of 'string' in reverse order
+*****************************************************************************/
+char *str_reverse(char *string)
+{
+  char *reverted;
+  int   index;
+  int   index_reverted;
+
+  if (!string) return(NULL);
+  reverted = str_dup(string);
+  index_reverted = strlen(reverted)-1;
+  for (index=0; index < strlen(string); index++) {
+    reverted[index_reverted--] = string[index];
+  }
+
+  return(reverted);
+} /* str_reverse */
+
+/*****************************************************************************
+* str_extractline:  look for field in header, starting at offset
+*   return allocated end of line containing field
+*  or NULL in case of failure (error, not found)
+*  offset (if non NULL) is set to new position after call
+*****************************************************************************/
+char *str_extractline(char *header, char *field, int *offset)
+{
+  char *header_offset;
+  char *value    =NULL;
+  char *start_pos=NULL;
+  char *end_pos  =NULL;
+
+  if (!header || !field || !strlen(field) || !strlen(header)) return (NULL);
+
+  if (offset && *offset > 0) header_offset = header+ (*offset);
+  else header_offset = header;
+
+  start_pos = strstr(header_offset, field);
+  if (start_pos) { /* get end of line '\n \r \f EOF' */
+    start_pos += strlen(field);
+    end_pos = strchr(start_pos, '\n');
+    if (!end_pos) end_pos = strchr(start_pos, '\r');
+    if (!end_pos) end_pos = strchr(start_pos, '\f');
+    if (!end_pos) end_pos = strchr(start_pos, EOF);
+    if (!end_pos) end_pos = strchr(start_pos, '\0');
+  } else return (NULL);
+
+  if (!end_pos || end_pos <= start_pos) return(NULL);
+
+  value = (char *)mem(end_pos - start_pos);
+  strncpy(value, start_pos, end_pos - start_pos);
+  if (offset && *offset >= 0) *offset = end_pos - header;
+  return(value);
+} /* str_extractline */
+
+/*****************************************************************************
+* ischr: Returns TRUE when character 'c' belongs to 'category'
+*****************************************************************************/
+int ischr(char c, char *category)
+{
+  return (strchr( category   ,c) != NULL);
+}
+
+/*****************************************************************************
+* str_lowup: returns the string into lower/upper chars. type=0, 'u' or 'l'
+*****************************************************************************/
+char *str_lowup(char *name, char type)
+{
+  int i;
+  if (!type) return(name);
+  for (i=0; i<strlen(name); i++)
+    if (type == 'l') name[i] = tolower(name[i]);
+    else             name[i] = toupper(name[i]);
+  return (name);
+}
+
+/*****************************************************************************
+* str_lastword: Allocate a new string containing its last word
+* A word starts with a letter followed by letters/digits/underscores
+*****************************************************************************/
+char *str_lastword(char *string)
+{
+  char *reverted;
+  char *p_end, *p_start;
+  char  name_char[] = CalphaPure "_" Cnumber;
+  char *word;
+  char *tmp0, *tmp1;
+
+  if (!string || !strlen(string)) return(NULL);
+  reverted = str_reverse(string);
+  /* find the first alpha/digit/underscore character */
+  p_end = strpbrk(reverted, name_char);
+  if (!p_end) { str_free(reverted); return(NULL); }
+  p_start = p_end;
+  for (p_start = p_end;
+       (p_start < reverted+strlen(reverted)) && ischr(*p_start, name_char);
+       p_start++);
+
+  tmp0 = str_dup_n(p_end, p_start - p_end);
+  tmp1 = str_reverse(tmp0);
+  /* now check that name does not start with  "_" Cnumber */
+  for (p_start=tmp1; ischr(*p_start, "_" Cnumber) && p_start<tmp1+strlen(tmp1); p_start++);
+  word = str_dup(p_start);
+
+  str_free(reverted); str_free(tmp0); str_free(tmp1);
+  return(word);
+} /* str_lastword */
+
+/* wrapper to vfprintf function with more flexibility */
+#if defined(NL_ARGMAX) || defined(WIN32)
+static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...)
+{
+/* this function
+1- look for the maximum %d$ field in fmt
+2- looks for all %d$ fields up to max in fmt and set their type (next alpha)
+3- retrieve va_arg up to max, and save pointer to arg in local arg array
+4- use strchr to split around '%' chars, until all pieces are written
+
+usage: just as fprintf, but with (char *)fmt_args being the list of arg type
+ */
+  #define MyNL_ARGMAX 50
+  char  *fmt_pos;
+
+  char *arg_char[MyNL_ARGMAX];
+  int   arg_int[MyNL_ARGMAX];
+  long  arg_long[MyNL_ARGMAX];
+  double arg_double[MyNL_ARGMAX];
+
+  char *arg_posB[MyNL_ARGMAX];  /* position of '%' */
+  char *arg_posE[MyNL_ARGMAX];  /* position of '$' */
+  char *arg_posT[MyNL_ARGMAX];  /* position of type */
+
+  int   arg_num[MyNL_ARGMAX];   /* number of argument (between % and $) */
+  int   this_arg=0;
+  int   arg_max=0;
+  va_list ap;
+
+  if (!f || !fmt_args || !fmt) return(-1);
+  for (this_arg=0; this_arg<MyNL_ARGMAX;  arg_num[this_arg++] =0); this_arg = 0;
+  fmt_pos = fmt;
+  while(1)  /* analyse the format string 'fmt' */
+  {
+    char *tmp;
+
+    arg_posB[this_arg] = (char *)strchr(fmt_pos, '%');
+    tmp = arg_posB[this_arg];
+    if (tmp)
+    {
+      arg_posE[this_arg] = (char *)strchr(tmp, '$');
+      if (arg_posE[this_arg] && tmp[1] != '%')
+      {
+        char  this_arg_chr[10];
+        char  printf_formats[]="dliouxXeEfgGcs\0";
+
+        /* extract positional argument index %*$ in fmt */
+        strncpy(this_arg_chr, arg_posB[this_arg]+1, arg_posE[this_arg]-arg_posB[this_arg]-1);
+        this_arg_chr[arg_posE[this_arg]-arg_posB[this_arg]-1] = '\0';
+        arg_num[this_arg] = atoi(this_arg_chr);
+        if (arg_num[this_arg] <=0 || arg_num[this_arg] >= MyNL_ARGMAX)
+          return(-print_stderr("pfprintf: invalid positional argument number (<=0 or >=%i) %s.\n", MyNL_ARGMAX, arg_posB[this_arg]));
+        /* get type of positional argument: follows '%' -> arg_posE[this_arg]+1 */
+        fmt_pos = arg_posE[this_arg]+1;
+        if (!strchr(printf_formats, fmt_pos[0]))
+          return(-print_stderr("pfprintf: invalid positional argument type (%c != expected %c).\n", fmt_pos[0], fmt_args[arg_num[this_arg]-1]));
+        if (fmt_pos[0] == 'l' && fmt_pos[1] == 'i') fmt_pos++;
+        arg_posT[this_arg] = fmt_pos;
+        /* get next argument... */
+        this_arg++;
+      }
+      else
+      {
+        if  (tmp[1] != '%')
+          return(-print_stderr("pfprintf: must use only positional arguments (%s).\n", arg_posB[this_arg]));
+        else fmt_pos = arg_posB[this_arg]+2;  /* found %% */
+      }
+    } else
+      break;  /* no more % argument */
+  }
+  arg_max = this_arg;
+  /* get arguments from va_arg list, according to their type */
+  va_start(ap, fmt_args);
+  for (this_arg=0; this_arg<strlen(fmt_args); this_arg++)
+  {
+
+    switch(fmt_args[this_arg])
+    {
+      case 's':                       /* string */
+              arg_char[this_arg] = va_arg(ap, char *);
+              break;
+      case 'd':
+      case 'i':
+      case 'c':                     /* int */
+              arg_int[this_arg] = va_arg(ap, int);
+              break;
+      case 'l':                       /* int */
+              arg_long[this_arg] = va_arg(ap, long int);
+              break;
+      case 'f':
+      case 'g':
+      case 'G':                      /* double */
+              arg_double[this_arg] = va_arg(ap, double);
+              break;
+      default: print_stderr("pfprintf: argument type is not implemented (arg %%%i$ type %c).\n", this_arg+1, fmt_args[this_arg]);
+    }
+  }
+  va_end(ap);
+  /* split fmt string into bits containing only 1 argument */
+  fmt_pos = fmt;
+  for (this_arg=0; this_arg<arg_max; this_arg++)
+  {
+    char *fmt_bit=NULL;
+    int   arg_n;
+
+    if (arg_posB[this_arg]-fmt_pos>0)
+    {
+      fmt_bit = (char*)mem(arg_posB[this_arg]-fmt_pos+10);
+      if (!fmt_bit) return(-print_stderr("pfprintf: not enough memory.\n"));
+      strncpy(fmt_bit, fmt_pos, arg_posB[this_arg]-fmt_pos);
+      fmt_bit[arg_posB[this_arg]-fmt_pos] = '\0';
+      fprintf(f, fmt_bit); /* fmt part without argument */
+    } else
+    {
+      fmt_bit = (char*)mem(10);
+      if (!fmt_bit) return(-print_stderr("pfprintf: not enough memory.\n"));
+    }
+    arg_n = arg_num[this_arg]-1; /* must be >= 0 */
+    strcpy(fmt_bit, "%");
+    strncat(fmt_bit, arg_posE[this_arg]+1, arg_posT[this_arg]-arg_posE[this_arg]);
+    fmt_bit[arg_posT[this_arg]-arg_posE[this_arg]+1] = '\0';
+
+    switch(fmt_args[arg_n])
+    {
+      case 's': fprintf(f, fmt_bit, arg_char[arg_n]);
+                break;
+      case 'd':
+      case 'i':
+      case 'c':                      /* int */
+              fprintf(f, fmt_bit, arg_int[arg_n]);
+              break;
+      case 'l':                       /* long */
+              fprintf(f, fmt_bit, arg_long[arg_n]);
+              break;
+      case 'f':
+      case 'g':
+      case 'G':                       /* double */
+              fprintf(f, fmt_bit, arg_double[arg_n]);
+              break;
+    }
+    fmt_pos = arg_posT[this_arg]+1;
+    if (this_arg == arg_max-1)
+    { /* add eventual leading characters for last parameter */
+      if (fmt_pos < fmt+strlen(fmt))
+        fprintf(f, "%s", fmt_pos);
+    }
+    str_free(fmt_bit);
+
+  }
+  return(this_arg);
+}
+#else
+static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...)
+{ /* wrapper to standard fprintf */
+  va_list ap;
+  int tmp=0;
+
+  va_start(ap, fmt_args);
+  tmp=vfprintf(f, fmt, ap);
+  if (tmp <= 0) print_stderr("pfprintf: output error.\n");
+  va_end(ap);
+  return(tmp);
+}
+#endif
+
+
+/*****************************************************************************
+* fileparts_init: Initialize a zero fileparts structure
+*****************************************************************************/
+struct fileparts_struct fileparts_init(void)
+{
+  struct fileparts_struct parts;
+
+  parts.FullName  = NULL;
+  parts.Path      = NULL;
+  parts.Name      = NULL;
+  parts.Extension = NULL;
+
+  return(parts);
+} /* fileparts_init */
+
+/*****************************************************************************
+* fileparts: Split a fully qualified file name/path into pieces
+* Returns a zero structure if called with NULL argument.
+* Returns: fields are non NULL if they exist
+*    Path is NULL if no Path
+*    Name is NULL if just a Path
+*    Extension is "" if just a dot
+*****************************************************************************/
+struct fileparts_struct fileparts(char *name)
+{
+  struct fileparts_struct parts;
+
+  parts = fileparts_init();
+
+  if (name) {
+    char *dot_pos    = NULL;
+    char *path_pos   = NULL;
+    char *end_pos    = NULL;
+    char *name_pos   = NULL;
+    long  dot_length = 0;
+    long  path_length= 0;
+    long  name_length= 0;
+
+    parts.FullName  = str_dup(name);
+    /* extract path+filename+extension from full filename */
+
+    if (strlen(name) == 0) return(parts);
+
+    end_pos = name+strlen(name);  /* end of file name */
+
+    /* extract path: searches for last file separator */
+    path_pos= strrchr(name, LK_PATHSEP_C);  /* last PATHSEP */
+
+    if (!path_pos) {
+      path_pos   =name;
+      path_length=0;
+      name_pos   =name;
+      parts.Path = str_dup("");
+    } else {
+      name_pos    = path_pos+1;
+      path_length = name_pos - name;  /* from start to path+sep */
+      if (path_length) {
+        parts.Path = str_cat(name, LK_PATHSEP_S, NULL);
+        strncpy(parts.Path, name, path_length);
+        parts.Path[path_length]='\0';
+      } else parts.Path = str_dup("");
+    }
+
+    /* extract ext: now looks for the 'dot' */
+    dot_pos = strrchr(name_pos, '.');           /* last dot */
+    if (dot_pos > name_pos) {
+      dot_length = end_pos - dot_pos;
+      if (dot_length > 0) {
+        parts.Extension = str_dup(name);
+        strncpy(parts.Extension, dot_pos+1, dot_length);  /* skip the dot */
+        parts.Extension[dot_length]='\0';
+      }
+    } else dot_pos = end_pos;
+
+    /* extract Name (without extension) */
+    name_length = dot_pos - name_pos; /* from path to dot */
+    if (name_length) {
+      parts.Name = str_dup(name);
+      strncpy(parts.Name, name_pos, name_length);
+      parts.Name[name_length]='\0';
+    }
+  } /* if (name) */
+  return (parts);
+} /* fileparts */
+
+/*****************************************************************************
+* fileparts_free: Free a fileparts_struct fields
+*****************************************************************************/
+void fileparts_free(struct fileparts_struct parts)
+{
+  str_free(parts.FullName);
+  str_free(parts.Path);
+  str_free(parts.Name);
+  str_free(parts.Extension);
+}
+
+/*****************************************************************************
+* try_open_target: Try to open a target file for writing and close it.
+* First test at the original location, then with getcwd current dir
+* For each possibility, first tries a stat for existence
+* Returns fully qualified target file name or NULL (error)
+*****************************************************************************/
+char *try_open_target(struct fileparts_struct parts, char force)
+{
+  char  *FullName=NULL;
+  struct stat stfile;
+  char   cwd[1024];
+  FILE  *fid;
+
+  /* starts with specified Path */
+  if (!parts.Extension)
+    FullName = str_cat(parts.Path, LK_PATHSEP_S, parts.Name, NULL);
+  else
+    FullName = str_cat(parts.Path, LK_PATHSEP_S, parts.Name, ".", parts.Extension, NULL);
+
+  if (!FullName || !strlen(FullName)) return(NULL);
+
+  if (!force) {
+    if (stat(FullName, &stfile) == 0) {
+      print_stderr(
+        "Warning: target file '%s' already exists. \n"
+        "         Use --force or --append option to override [looktxt:try_open_target:path].\n",
+        FullName);
+      str_free(FullName);
+      return(NULL);
+    }
+  }
+
+  fid = fopen(FullName, "w");
+  if (fid) {
+    fclose(fid);
+    return(FullName);/* OK, return */
+  }
+  /* now tries with local Path=getcwd() */
+  str_free(FullName);
+  getcwd(cwd, 1024);
+  /* str_free(parts.Path); */
+  parts.Path = strlen(cwd) ? str_dup(cwd) : ".";
+  if (!parts.Extension)
+    FullName = str_cat(parts.Path, LK_PATHSEP_S, parts.Name, NULL);
+  else
+    FullName = str_cat(parts.Path, LK_PATHSEP_S, parts.Name, ".", parts.Extension, NULL);
+
+  if (!FullName || !strlen(FullName)) return(NULL);
+
+  if (!force) {
+    if (stat(FullName, &stfile) == 0) {
+      print_stderr(
+        "Warning: target file '%s' already exists. \n"
+        "         Use --force or --append option to override [looktxt:try_open_target:local].\n",
+        FullName);
+      str_free(FullName);
+      return(NULL);
+    }
+  }
+
+  fid = fopen(FullName, "w");
+  if (fid) {
+    fclose(fid);
+    return(FullName);
+  }
+  str_free(FullName);
+  return(NULL);
+} /* try_open_target */
+
+/* structure initializers ************************************************* */
+
+/*****************************************************************************
+* file_init: init a zero file_struct
+*****************************************************************************/
+struct file_struct file_init(void)
+{
+  struct file_struct file;  /* will be the return value */
+
+  file.Source    = NULL;    /* zero structure */
+  file.TargetTxt = NULL;
+  file.TargetBin = NULL;
+  file.SourceHandle= NULL;
+  file.TxtHandle = NULL;
+  file.BinHandle = NULL;
+  file.Path      = NULL;
+  file.SourceName= NULL;
+  file.TargetName= NULL;
+  file.Extension = NULL;
+  file.RootName  = NULL;
+  file.Mode = 0;
+  file.Size = 0;
+  file.Time = 0;
+
+  return(file);
+} /* file_init */
+
+/*****************************************************************************
+* file_open: Open a source file structure
+* determine file parts, set target names and test for existence
+* returns: a source file structure
+*     Source       is NULL in case of open error
+*     TargetTxt    is NULL in case of target text creation error (exists)
+*     TargetBin    is NULL in case of target binary creation error (exists)
+*****************************************************************************/
+struct file_struct file_open(char *name, struct option_struct options)
+{
+  struct file_struct file;  /* will be the return value */
+  char  *root=NULL;
+
+  file = file_init();
+
+  if (name && strlen(name))
+  {
+    struct fileparts_struct parts;
+    struct stat stfile;
+
+    /* extracts source file parts */
+    parts = fileparts(name);
+    if (parts.Path)       file.Path      = strlen(parts.Path) ? str_dup(parts.Path) : ".";
+    if (parts.Name)       file.SourceName= str_dup(parts.Name);
+    if (parts.Extension)  file.Extension = str_dup(parts.Extension);
+    file.Source= str_dup(name);
+    fileparts_free(parts);
+
+    /* get info about source file */
+    if (stat(file.Source, &stfile) == 0) {
+      file.Mode = stfile.st_mode;
+      file.Size = stfile.st_size;
+      file.Time = stfile.st_mtime;
+    } else {
+      print_stderr( "Error: source file '%s' can not be accessed [looktxt:file_open].\n", file.Source);
+      str_free(file.Source); file.Source = NULL;
+      return(file);
+    }
+
+    /* opens source file (for reading) */
+    file.SourceHandle = fopen(file.Source, "r");
+    if (!file.SourceHandle) {
+      print_stderr( "Error: source file '%s' can not be opened for reading [looktxt:file_open].\n", file.Source);
+      str_free(file.Source); file.Source = NULL;
+      return(file);
+    }
+    /* sets default output name */
+    parts.FullName  = NULL;
+    if (file.Extension && strlen(file.Extension))
+      parts.Name      = str_cat(file.SourceName, "_", file.Extension, NULL);
+    else
+      parts.Name      = str_dup(file.SourceName);
+    parts.Path      = str_dup(file.Path);
+    parts.Extension = str_dup(options.format.Extension);
+
+    /* handle user target name option or set to default */
+   if (options.outfile.FullName) {
+      if (options.outfile.Name) {
+        if (strcmp(options.outfile.Name,"*")) { /* not '*.ext' */
+          if (options.file_index > 1) { /* catenate file index */
+            char chr_index[10];
+            snprintf(chr_index, 10, "_%ld", options.file_index);
+            parts.Name      = str_cat(options.outfile.Name, chr_index, NULL);
+          } else parts.Name = str_dup(options.outfile.Name);
+        }
+      }
+      if (options.outfile.Path)
+        parts.Path      = str_dup(options.outfile.Path);
+      if (options.outfile.Extension && strlen(options.outfile.Extension))
+        parts.Extension = str_dup(options.outfile.Extension);
+    }
+
+    if (options.outfile.FullName
+    && (!strcmp(options.outfile.FullName, "stdout")
+        || !strcmp(options.outfile.FullName, "-"))) {
+      file.TargetTxt = str_dup("stdout");
+      if (options.use_binary && options.verbose >= 1) printf("Warning: file '%s': can not use binary target file with stdout output\n", file.Source);
+      options.use_binary = 0;
+    } else if (options.outfile.FullName
+    && !strcmp(options.outfile.FullName, "stderr")) {
+      file.TargetTxt = str_dup("stderr");
+      if (options.use_binary && options.verbose >= 1) printf("Warning: file '%s': can not use binary target file with stderr output\n", file.Source);
+      options.use_binary = 0;
+    } else
+      file.TargetTxt = try_open_target(parts, options.force);
+
+    if (options.verbose >= 2) printf("VERBOSE[file_open]:         file '%s': target TXT %s", file.Source, file.TargetTxt);
+
+    if (options.use_binary) { /* only change extension */
+      str_free(parts.Extension);
+      parts.Extension = str_dup("bin");
+      file.TargetBin = try_open_target(parts, options.force);
+      if (options.verbose >= 2) printf(" BIN %s", file.TargetBin);
+    }
+    if (options.verbose >= 2) printf("\n");
+
+   /* init ROOT Name based on file name and names_root */
+    if (!options.names_root) {
+      root = str_valid(parts.Name, options.names_length);
+    } else if (!strcmp(options.names_root, "NULL"))
+      root = NULL;                           /* no ROOT */
+    else root = str_valid(options.names_root, options.names_length); /* user ROOT */
+
+    fileparts_free(parts);
+
+    file.RootName = ( root ? str_valid(root, 0) : str_dup("") );
+    if (!strncmp(file.RootName, "lk_", 3) && options.verbose >= 1)
+      print_stderr( "Warning: Data root level renamed as %s (started with number).\n"
+                      "         Output file names are unchanged\n",
+        file.RootName);
+    str_free(root);
+
+  } /* if (name is non NULL) */
+  return(file);
+} /* file_open */
+
+/*****************************************************************************
+* file_close: Close a source file and clear allocated memory
+*****************************************************************************/
+void file_close(struct file_struct file)
+{
+  if (file.SourceHandle) fclose(file.SourceHandle);
+  if (file.BinHandle)    fclose(file.BinHandle);
+  if (file.TxtHandle &&  strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) fclose(file.TxtHandle);
+
+  str_free(file.Source);
+  str_free(file.TargetTxt);
+  str_free(file.TargetBin);
+  /* str_free(file.Path); */
+  str_free(file.SourceName);
+  str_free(file.TargetName);
+  str_free(file.Extension);
+  str_free(file.RootName);
+}
+
+/*****************************************************************************
+* format_rep_section: Replaces aliases names in format (data part)
+*****************************************************************************/
+char *format_rep_data(char *format_const)
+{ /* BeginData EndData */
+  char *format=NULL;
+
+  if (!format_const) return(NULL);
+  format = (char *)mem(strlen(format_const)+1);
+  if (!format) exit(print_stderr( "Error: insufficient memory (format_rep_data)\n"));
+  strcpy(format, format_const);
+  if (strlen(format_const)) {
+    str_rep(format, "%SEC", "%1$s");
+    str_rep(format, "%PAR", "%1$s");
+    str_rep(format, "%TIT", "%2$s");
+    str_rep(format, "%NAM", "%3$s");
+    str_rep(format, "%ROW", "%4$d");
+    str_rep(format, "%COL", "%5$d");
+    str_rep(format, "%BAS", "%6$s");
+    str_rep(format, "%ROT", "%6$s");
+  }
+
+  return(format);
+} /* format_rep_data */
+
+/*****************************************************************************
+* format_rep_section: Replaces aliases names in format (section part)
+*****************************************************************************/
+char *format_rep_section(char *format_const)
+{ /* BeginSection EndSection */
+  char *format=NULL;
+
+  if (!format_const) return(NULL);
+  format = (char *)mem(strlen(format_const)+1);
+  if (!format) exit(print_stderr( "Error: insufficient memory (format_rep_section)\n"));
+  strcpy(format, format_const);
+  if (strlen(format_const)) {
+    str_rep(format, "%BAS", "%1$s");
+    str_rep(format, "%PAR", "%1$s");
+    str_rep(format, "%ROT", "%1$s");
+    str_rep(format, "%SEC", "%2$s");
+    str_rep(format, "%NAM", "%3$s");
+    str_rep(format, "%TIT", "%3$s");
+  }
+  return(format);
+} /* format_rep_section */
+
+/*****************************************************************************
+* format_rep_tag: Replaces aliases names in format (tag part)
+*****************************************************************************/
+char *format_rep_tag(char *format_const)
+{ /* AssignTag */
+  char *format=NULL;
+
+  if (!format_const) return(NULL);
+  format = (char *)mem(strlen(format_const)+1);
+  if (!format) exit(print_stderr( "Error: insufficient memory (format_rep_tag)\n"));
+  strcpy(format, format_const);
+  if (strlen(format_const)) {
+    str_rep(format, "%BAS", "%1$s");
+    str_rep(format, "%PAR", "%1$s");
+    str_rep(format, "%ROT", "%1$s");
+    str_rep(format, "%SEC", "%2$s");
+    str_rep(format, "%NAM", "%3$s");
+    str_rep(format, "%VAL", "%4$s");
+  }
+  return(format);
+} /* format_rep_tag */
+
+/*****************************************************************************
+* format_rep_header: Replaces aliases names in format (header/footer part)
+*****************************************************************************/
+char *format_rep_header(char *format_const)
+{ /* Header Footer */
+  char *format=NULL;
+
+  if (!format_const) return(NULL);
+  format = (char *)mem(strlen(format_const)+1);
+  if (!format) exit(print_stderr( "Error: insufficient memory (format_rep_header)\n"));
+  strcpy(format, format_const);
+  if (strlen(format_const)) {
+    str_rep(format, "%FMT", "%1$s");
+    str_rep(format, "%USR", "%2$s");
+    str_rep(format, "%CMD", "%3$s");
+    str_rep(format, "%SRC", "%4$s");
+    str_rep(format, "%TIT", "%4$s");
+    str_rep(format, "%FIL", "%4$s");
+    str_rep(format, "%SIZ", "%5$d");
+    str_rep(format, "%TIM", "%6$s");
+    str_rep(format, "%TXT", "%7$s");
+    str_rep(format, "%BIN", "%8$s");
+    str_rep(format, "%BAS", "%9$s");
+    str_rep(format, "%PAR", "%9$s");
+    str_rep(format, "%NAM", "%9$s");
+    str_rep(format, "%ROT", "%9$s");
+    str_rep(format, "%DATE", "%10$s");
+    str_rep(format, "%DATL", "%11$d");
+  }
+
+  return(format);
+} /* format_rep_header */
+
+/*****************************************************************************
+* format_rep_binref: Replaces aliases names in format (bin ref part)
+*****************************************************************************/
+char *format_rep_binref(char *format_const)
+{ /* BinReference */
+  char *format=NULL;
+
+  if (!format_const) return(NULL);
+  format = (char *)mem(strlen(format_const)+1);
+  if (!format) exit(print_stderr( "Error: insufficient memory (format_rep_binref)\n"));
+  strcpy(format, format_const);
+  if (strlen(format_const)) {
+    str_rep(format, "%FIL", "%1$s");
+    str_rep(format, "%BEG", "%2$d");
+    str_rep(format, "%END", "%3$d");
+    str_rep(format, "%LEN", "%4$d");
+    str_rep(format, "%ROW", "%5$d");
+    str_rep(format, "%COL", "%6$d");
+  }
+  return(format);
+} /* format_rep_binref */
+
+/*****************************************************************************
+* format_init: Sets an output format matching request
+*****************************************************************************/
+struct format_struct format_init(struct format_struct formats[], char *request)
+{
+  int   i;
+  int   i_format=-1;
+  char *tmp;
+  struct format_struct format;  /* return value */
+
+  /* get the format to lower case */
+  if (!request) i_format=0;
+  else {
+    char *request_lower=NULL;
+    char tmp[256];
+
+    request_lower = str_lowup(str_dup(request), 'l');
+
+    /* look for a specific format in formats.Name table */
+    for (i=0; i < NUMFORMATS; i++)
+    {
+      strncpy(tmp, formats[i].Name, 256);
+      str_lowup(tmp, 'l');
+      if (strstr(request_lower, tmp) || !strcmp(request_lower, formats[i].Extension)) i_format = i;
+    }
+    str_free(request_lower);
+  }
+  if (i_format < 0)
+  {
+    i_format = 0; /* default format is #0 */
+    print_stderr( "Warning: unknown output format '%s'. Using %s [looktxt:format_init].\n", request, formats[i_format].Name);
+  }
+  format = formats[i_format];
+  if (strstr(request,"binary"))
+    tmp = str_cat(format.Name, " binary float data", NULL);
+  else tmp = str_dup(format.Name);
+  /* change pointer location for new name */
+  format.Name = tmp;
+
+  /* Replaces vfprintf parameter name aliases */
+  /* Header Footer */
+  format.Header       = format_rep_header(format.Header);
+  format.Footer       = format_rep_header(format.Footer);
+  /* AssignTag */
+  format.AssignTag    = format_rep_tag(format.AssignTag);
+  /* BeginSection EndSection */
+  format.BeginSection = format_rep_section(format.BeginSection);
+  format.EndSection   = format_rep_section(format.EndSection);
+  /*  BeginData  EndData  */
+  format.BeginData    = format_rep_data(format.BeginData  );
+  format.EndData      = format_rep_data(format.EndData    );
+  format.BinReference = format_rep_binref(format.BinReference);
+
+  return(format);
+} /* format_init */
+
+/*****************************************************************************
+* format_free: free format structure
+*****************************************************************************/
+
+void format_free(struct format_struct format)
+{
+/* free format specification strings */
+  str_free(format.Name        );
+  str_free(format.Header      );
+  str_free(format.Footer      );
+  str_free(format.AssignTag   );
+  str_free(format.BeginSection);
+  str_free(format.EndSection  );
+  str_free(format.BeginData   );
+  str_free(format.EndData     );
+  str_free(format.BinReference);
+} /* format_free */
+
+/*****************************************************************************
+* strlist_init: init a zero strlist structure with 100 slots
+*****************************************************************************/
+struct strlist_struct strlist_init(char *name)
+{
+  struct strlist_struct list;
+  int i;
+
+  list.length = 0;
+  list.nalloc= 100;
+  list.List  = (char  **)mem(list.nalloc*sizeof(char *));
+  if(list.List == NULL) {
+      print_stderr( "Fatal: memory exhausted during allocation of size %ld for '%s' [looktxt:strlist_init].", (list.nalloc)*sizeof(char*), name);
+      exit(EXIT_FAILURE);
+    }
+  if (name && strlen(name)) strncpy(list.Name, name, 32);
+  else strcpy(list.Name, "");
+  for (i=0; i<list.nalloc; list.List[i++]=NULL);
+  return(list);
+}  /* strlist_init */
+
+/*****************************************************************************
+* strlist_free: Free all list elements
+*****************************************************************************/
+void strlist_free(struct strlist_struct list)
+{
+  if (list.List && list.nalloc) {
+    long index;
+    for (index=0; index < list.nalloc; index++) {
+      str_free(list.List[index]);
+    }
+  }
+  memfree(list.List);
+} /* strlist_free */
+
+/*****************************************************************************
+* options_init: Set default options values
+*****************************************************************************/
+struct option_struct options_init(char *pgname)
+{
+  struct option_struct options;
+
+  options.pgname = str_dup(pgname ? pgname : "looktxt");
+
+  options.sources_nb = 0;
+  options.use_struct = 0;
+  options.use_binary = 0;
+  options.catenate   = 0;
+  options.force      = 0;
+  options.out_table  = 0;
+  options.out_headers= 0;
+  options.verbose    = 1;
+  options.file_index = 0;
+  options.fortran    = 0;
+  options.nelements_min=0;
+  options.nelements_max=0;
+  options.names_length =32;
+  options.names_lowup= 0;
+  options.names_root = NULL;
+  options.fast       = 0;
+  options.outfile    = fileparts_init();
+  options.sections   = strlist_init("sections");
+  options.metadata   = strlist_init("metadata");
+  options.makerows   = strlist_init("makerows");
+  options.openmode   = str_dup("w");
+  options.separator  = str_dup(Cseparator);
+  options.comment    = str_dup(Ccomment);
+  options.eol        = str_dup(Ceol);
+  options.point      = str_dup(Cpoint);
+  options.number     = str_dup(Cnumber);
+  options.alpha      = str_dup(Calpha);
+  options.exp        = str_dup(Cexp);
+  options.sign       = str_dup(Csign);
+  options.option_list= NULL;
+  options.format     = format_init(Global_Formats,
+    getenv("LOOKTXT_FORMAT") ? getenv("LOOKTXT_FORMAT") : LOOKTXT_FORMAT);
+  return(options);
+} /* options_init*/
+
+/*****************************************************************************
+* options_free: Free options values
+*****************************************************************************/
+void options_free(struct option_struct options)
+{
+  fileparts_free(options.outfile);
+  strlist_free(options.sections);
+  strlist_free(options.metadata);
+  format_free(options.format);
+
+  str_free(options.separator);
+  str_free(options.comment);
+  str_free(options.eol);
+  str_free(options.point);
+  str_free(options.option_list);
+  str_free(options.pgname);
+  str_free(options.openmode);
+  str_free(options.number);
+  str_free(options.exp);
+  str_free(options.sign);
+  str_free(options.alpha);
+} /* options_free*/
+
+/* lists functions ******************************************************** */
+
+/*****************************************************************************
+* strlist_print: Prints the content of the strlist. Returns length.
+*****************************************************************************/
+long strlist_print(struct strlist_struct list)
+{
+
+  printf("List '%s' contains %ld elements\n", list.Name, list.length);
+  if (!list.length  | !list.nalloc) {
+    printf("  Empty list\n");
+  } else {
+    long index;
+    for (index=0; index < list.length; index++)
+    printf("  List[%ld]='%s'\n", index, list.List[index]);
+  }
+
+  return(list.length);
+} /* strlist_print */
+
+
+/*****************************************************************************
+* strlist_add: Add a copy of a char* element to a strlist_struct
+* reallocates if the list is not long enough
+*****************************************************************************/
+struct strlist_struct strlist_add(struct strlist_struct *list, char *element)
+{
+
+  if (!element) return(*list);
+
+  if (list->length  >= list->nalloc) {
+    /* increase list size by 100 new element slots */
+    char **p;
+    int    i;
+    list->nalloc = list->length+100;
+    p = (char **)realloc(list->List, list->nalloc*sizeof(char*));
+    if(p == NULL) {
+      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld for '%s' [looktxt:strlist_add].", (list->length+100)*sizeof(char*), list->Name);
+      exit(EXIT_FAILURE);
+    }
+    list->List   = (char **)p;
+    for (i=list->length; i<list->nalloc; list->List[i++]=NULL);
+  }
+
+  /* store element location when it exists */
+  list->List[list->length] = str_dup(element);
+  list->length++;
+
+  return(*list);
+} /* strlist_add */
+
+struct strlist_struct strlist_add_void(struct strlist_struct *list, void *element)
+{
+
+  if (!element) return(*list);
+
+  if (list->length  >= list->nalloc) {
+    /* increase list size by 100 new element slots */
+    char **p;
+    int    i;
+    list->nalloc = list->length+100;
+    p = (char **)realloc(list->List, list->nalloc*sizeof(char*));
+    if(p == NULL) {
+      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld for '%s' [looktxt:strlist_add].", (list->length+100)*sizeof(char*), list->Name);
+      exit(EXIT_FAILURE);
+    }
+    list->List   = (char **)p;
+    for (i=list->length; i<list->nalloc; list->List[i++]=NULL);
+  }
+
+  /* store element location when it exists */
+  list->List[list->length] = element;
+  list->length++;
+
+  return(*list);
+} /* strlist_add_void */
+
+/*****************************************************************************
+* strlist_search: Search for an element in a str list
+* returns first matched element index, or -1
+*****************************************************************************/
+int strlist_search(struct strlist_struct list, char *element)
+{
+  long  index;
+  if (!list.List || !list.nalloc || !list.length) return(-1);
+  for (index=0; index < list.length; index++) {
+    if (strstr(list.List[index], element) != NULL) return(index);
+  }
+  return(-1);
+} /* strlist_search */
+
+/******************************************************************************
+* data_init: Set a zero data_struct
+*****************************************************************************/
+struct data_struct data_init(void)
+{
+  struct data_struct field;
+
+  field.index   = 0;
+  field.Name    = NULL;
+  field.Name_valid    = NULL;
+  field.Header  = NULL;
+  field.Section = NULL;
+  field.rows    = 0;
+  field.columns = 0;
+  field.n_start = 0;
+  field.n_end   = 0;
+  field.c_start = 0;
+  field.c_end   = 0;
+
+  return(field);
+} /* data_init */
+
+/*****************************************************************************
+* data_free: Free a data_struct
+*****************************************************************************/
+void data_free(struct data_struct field)
+{
+  str_free(field.Name);
+  str_free(field.Name_valid);
+  str_free(field.Header);
+  str_free(field.Section);
+} /* data_free */
+
+/*****************************************************************************
+* data_get_char: Read in file, allocate and read the char part
+*****************************************************************************/
+char *data_get_char(struct file_struct file, long start, long end)
+{
+  char *string;
+
+  if (start >= end)       return (NULL);
+  if (!file.SourceHandle) return (NULL);
+  string = mem(end - start + 2);
+  fseek(file.SourceHandle, start, SEEK_SET);
+  fread(string, 1, end-start+1, file.SourceHandle);
+  string[end-start+1] = '\0';
+
+  return(string);
+} /* data_get_char */
+
+/*****************************************************************************
+* data_get_line: Read in file, allocate and read the full char line part
+*****************************************************************************/
+char *data_get_line(struct file_struct file, long *start)
+{
+  char string[64*1024]; /* hard coded max line length */
+
+  if (!start || *start < 0)       return (NULL);
+  if (!file.SourceHandle) return (NULL);
+
+  fseek(file.SourceHandle, *start, SEEK_SET);
+  fgets(string, 64*1024, file.SourceHandle);
+  *start = ftell(file.SourceHandle);
+
+  return(str_dup_n(string, 64*1024));
+} /* data_get_line */
+
+/*****************************************************************************
+* data_get_float: Read in file, allocate and read 'double' part
+*****************************************************************************/
+float *data_get_float(struct file_struct file, struct data_struct field, struct option_struct options)
+{
+  float  *dataf=NULL;
+  float  value;
+  int    fail = 0;
+  int    index;
+  FILE *fid;
+/* two hard coded methods for reading numerical values */
+/* 0: fast but requires isspace for numerical speparators (sscanf) */
+/* 1: slightly slower, but can handle separator                    */
+  int    method=options.fast;
+
+  if (!field.rows || !field.columns || !file.Source) return (NULL);
+  if (field.n_start >= field.n_end) return (NULL);
+  if (!file.SourceHandle)           return (NULL);
+
+  dataf = (float*)mem(field.rows*field.columns*sizeof(float));
+
+  if (!dataf) {
+    print_stderr( "Fatal: memory exhausted during allocation of float[%ld x %ld] [looktxt:data_get_float].",
+      field.rows, field.columns);
+    exit(EXIT_FAILURE);
+  }
+  if (method == 1) {
+    /* fast method: fscanf */
+    fseek(file.SourceHandle, field.n_start-1 > 0 ? field.n_start-1 : 0, SEEK_SET);
+    for (index =0; index < field.rows*field.columns; index ++) {
+      long pos=ftell(file.SourceHandle);
+      if (fail) value = 0;
+      else if (!fscanf(file.SourceHandle, "%f", &value)) {
+        fail  = 1;
+        value = 0;
+        if (options.verbose > 1) {
+          char *string=data_get_char(file, pos, pos+12);
+          print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%ld.\n",
+            index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos);
+          print_stderr( "         '%s ...'\n", string);
+          fseek(file.SourceHandle, pos, SEEK_SET);
+          fscanf(file.SourceHandle, "%f", &value); value=0;
+          str_free(string);
+        }
+      }
+      dataf[index] = (float)value;
+    }
+  } else {
+    /* slow method: fread+sscanf */
+    char *string=data_get_char(file, field.n_start-1, field.n_end);
+    /* replace separator chars by spaces */
+    char *p=string;
+    char *separator;
+    p=separator=str_dup(options.separator);
+    while((p = strchr(separator,' ')) != NULL) *p=',';
+    p=string;
+    while ((p = strpbrk(p, separator)) != NULL) *p = ' ';
+    fid=tmpfile(); /* write temporary file to be read with fscanf */
+    fwrite(string, sizeof(char), strlen(string), fid);
+    str_free(string);
+    fseek(fid, 0, SEEK_SET);
+    for (index =0; index < field.rows*field.columns; index ++) {
+      long pos=ftell(fid);
+      if (fail) value = 0;
+      else if (!fscanf(fid, "%f", &value)) {
+        fail  = 1;
+        value = 0;
+        if (options.verbose > 1) {
+          char *string=data_get_char(file, pos, pos+12);
+          print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%li.\n",
+            index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos);
+          print_stderr( "         '%s ...'\n", string);
+          fseek(fid, pos, SEEK_SET);
+          fscanf(fid, "%f", &value); value=0;
+          str_free(string);
+        }
+      }
+      dataf[index] = (float)value;
+    }
+    fclose(fid);
+  }
+  return(dataf);
+} /* data_get_float */
+
+/*****************************************************************************
+* table_init: Sets a zero table_struct
+*****************************************************************************/
+struct table_struct table_init(char *name)
+{
+  struct table_struct table;
+  int i;
+
+  table.length= 0;
+  table.Name  = name ? str_dup(name) : NULL;
+  table.List  = (struct data_struct *)mem(100*sizeof(struct data_struct));
+  table.nalloc= 100;
+  for (i=0; i<table.nalloc; table.List[i++] = data_init());
+
+  return(table);
+} /* table_init */
+
+/*****************************************************************************
+* table_add: Add a data_struct element to a table_struct
+* reallocates if the list is not long enough
+*****************************************************************************/
+void table_add(struct table_struct *table, struct data_struct data)
+{
+
+  if (!table->List) {
+    print_stderr( "Warning: table List pointer is NULL (index=%ld nalloc = %ld) [looktxt:table_add]\n", table->length, table->nalloc);
+    return;
+  }
+
+  if (!data.rows) return;
+  if (table->length  >= table->nalloc) {
+    /* increase list size by 100 new element slots */
+    void *p;
+    int   i;
+    p = (void *)realloc(table->List, (table->length+100)*sizeof(struct data_struct));
+    if(p == NULL) {
+      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld [looktxt:table_add].", (table->length+100)*sizeof(struct data_struct));
+      exit(EXIT_FAILURE);
+    }
+    table->nalloc = table->length+100;
+    table->List   = (struct data_struct *)p;
+    for (i=table->length; i<table->nalloc; table->List[i++] = data_init());
+  }
+
+  if (table->length >= 0) {
+    table->List[table->length] = data;
+    table->length++;
+  }
+} /* table_add */
+
+/*****************************************************************************
+* table_print: Print all table_struct elements
+*****************************************************************************/
+void table_print(struct table_struct table)
+{
+  if (table.List && table.length) {
+    long i;
+    for (i=0; i < table.length; i++)
+      printf("Table[%ld] %s.%s.%s = [%ld x %ld]\n",
+        (long)table.List[i].index, table.Name, table.List[i].Section, table.List[i].Name,
+        table.List[i].rows, table.List[i].columns);
+  }
+} /* table_print */
+
+
+/*****************************************************************************
+* table_free: Free all table_struct elements
+*****************************************************************************/
+void table_free(struct table_struct table)
+{
+  if (table.List && table.nalloc) {
+    long index;
+    for (index=0; index < table.nalloc; index++)
+      data_free(table.List[index]);
+  }
+  str_free(table.Name);
+  memfree(table.List);
+} /* table_free */
+
+/* looktxt functions ****************************************************** */
+void print_version(char *pgmname, struct option_struct options)
+{ /* Show program help. pgmname = argv[0] */
+  printf(VERSION " (" DATE ") by " AUTHOR "\n");
+  exit(EXIT_SUCCESS);
+} /* print_version */
+
+void print_usage(char *pgmname, struct option_struct options)
+{ /* Show program help. pgmname = argv[0] */
+  int i;
+  printf( VERSION " (" DATE ") by " AUTHOR "\n");
+  printf( "Usage: %s [options] file1 file2 ...\n", pgmname);
+  printf( "Action: Search and export numerics in a text/ascii file.\n"
+  "   This program analyses files looking for numeric parts\n"
+  "   Each identified numeric field is named and exported\n"
+  "   into an output filename, usually as a structure with fields\n"
+  "     ROOT.SECTION.FIELD = VALUE\n"
+  "   In order to sort your data, you may specify as many --section\n"
+  "   and --metadata options as necessary\n"
+  "Example: %s -f Matlab -c -s PARAM -s DATA filename\n", pgmname);
+  printf(
+"Main Options are:\n"
+"--binary   or -b    Stores numerical matrices into an additional binary\n"
+"                    float file, which makes further import much faster.\n"
+"--catenate or -c    Catenates similar numerical fields\n"
+"--force    or -F    Overwrites existing files\n"
+"--format=FORMAT     Sets the output format for generated files. See below\n"
+"      -f FORMAT     \n"
+"--fortran --wrapped Catenates single Fortran-style output lines with\n"
+"                    previous matrices\n"
+"--headers  or -H    Extracts headers for each numerical field\n"
+"--help     or -h    Show this help\n"
+"--section=SEC       Classifies fields into section matching word SEC\n"
+"       -s SEC\n"
+"--metadata=META     Extracts lines containing word META as user meta data\n"
+"        -m META\n"
+"\n"
+"Other Options are:\n"
+"--append            Append to existing files. This also sets --force\n"
+"--fast              Uses a faster reading method, requiring numerics\n"
+"                    to be separated by \\n\\t\\r\\f\\v and spaces only\n"
+"--makerows=NAME     All fields matching NAME are transformed into row vectors\n"
+"--names_lower       Converts all names into lower characters\n"
+"--names_upper       Converts all names into upper characters\n"
+"--names_length=LEN  Sets the maximum length to use for names (32)\n"
+"--names_root=ROOT   Sets the base name for structures to ROOT\n"
+"                    Default is to use the output file name\n"
+"                    Use --names_root=NULL or 0 not to use root level.\n"
+"--nelements_min=MIN Only extracts numericals with at least MIN elements\n"
+"--nelements_max=MAX Only extracts numericals with at most MAX elements\n"
+"--outfile=FILE      Sets output file name. Extension, if missing, is added\n"
+"       -o FILE      depending on the FORMAT. FILE may be stdout or stderr\n"
+"--struct=CHAR       Will use CHAR as struct builder. Default is '.'\n"
+"                    Use --struct=NULL or 0 not to use structures.\n"
+"                    Alternatively you may use '_'.\n"
+"--verbose  or -v    Displays analysis information\n"
+"--silent            Silent mode. Only displays errors/warnings\n"
+"--comment=COM       Sets comment characters (ignore line if at start)\n"
+"--eol=EOL           Sets end-of-line characters\n"
+"--point=PNT         Sets numerical point characters\n"
+"--separator=SEP     Sets word seperators (handled as spaces)\n"
+
+"\n"
+);
+  printf( "Available output formats are (default is %s):\n  ", options.format.Name);
+  for (i=0; i < NUMFORMATS; printf("\"%s\" " , Global_Formats[i++].Name) );
+  printf( "\n  Adding 'binary' to the FORMAT name will do the same as --binary.\n");
+  printf( "  The LOOKTXT_FORMAT environment variable may set the default FORMAT to use.\n");
+  exit(EXIT_SUCCESS);
+} /* print_usage */
+
+/*****************************************************************************
+* file_scan: Parse input parameters starting with '-' sign (OPTIONS)
+* returns the table structure for the processed source file,
+* containing a List of data_struct
+*****************************************************************************/
+struct table_struct file_scan(struct file_struct file, struct option_struct options)
+{
+  struct table_struct table;
+  table = table_init(file.RootName);
+
+  if (file.Source && file.TargetTxt
+        && (!options.use_binary || file.TargetBin)) {
+    /* source file scanning process */
+
+    int  last_is     = 0; /* type of preceeding char */
+    int  is          = Beol; /* current char type */
+    int  need        = 0; /* what is to be expected for next char */
+    int  found       = 0; /* is that char expected ? */
+    int  fieldend    = 0; /* flag is TRUE for end of field */
+    char possiblecmt = 0; /* flag is TRUE when in a comment */
+    char possiblenum = 0; /* flag is TRUE when we migth be in a number ... */
+    char inpoint     = 0; /* if we are after a point */
+    char inexp       = 0; /* if we are after an exp */
+
+    long pos         = 0; /* current pos */
+    long startcmtpos = -1;/* comment field starting pos */
+    long endcmtpos   = -1;/* comment field end pos */
+    long startcharpos= 0; /* char field start pos */
+    long endcharpos  = 0; /* char field end pos */
+    long startnumpos = 0; /* num field start pos */
+    long endnumpos   = 0; /* num field end pos */
+    long last_eolpos = 0; /* last EOL position */
+    long last_seppos = 0; /* Separator */
+
+    long rows        = 0; /* number of rows in matrix */
+    long columns     = 0; /* number of columns in matrix */
+    long last_columns= 0; /* to test if number of columns has changed since last line */
+
+    long fieldindex  = 0; /* the current field index */
+
+    /* events for num search                 {n,a,p,l,e,s,c,s} */
+    const long needforstartnum =  Bnumber + Bpoint + Bsign;
+    const long needafternumber =  Bnumber + Bpoint + Bexp + Beol + Bseparator;
+    const long needaftersign   =  Bnumber + Bpoint;
+    const long needafterexp    =  Bnumber + Bsign;
+    const long needafterpoint  =  Bnumber + Bexp   + Beol + Bseparator;
+        /* but Bnumber only, if num started with point ! */
+    const long needaftereol    =  Bnumber + Bpoint + Bsign + Beol + Bseparator;
+    const long needaftersep    =  Bnumber + Bpoint + Bsign + Beol + Bseparator;
+
+    char c;
+
+    startcmtpos = file.Size;
+
+    do {
+      c = getc(file.SourceHandle);
+      last_is = is;
+      if (c == EOF) { /* end of file reached : exit */
+        last_eolpos = file.Size;
+        last_seppos = file.Size;
+        last_is     = Beol;
+        possiblecmt = 0;
+        need        = 0; /* generates end of field : end of line */
+      }
+      is =   Bnumber    * ischr(c, options.number   )
+        + Balpha     * ischr(c, options.alpha    )
+        + Bpoint     * ischr(c, options.point    )
+        + Beol       * ischr(c, options.eol      )
+        + Bexp       *(ischr(c, options.exp      ) && possiblenum)
+        /* must be in a number field */
+        + Bsign      *(ischr(c, options.sign     ) && (last_is & (Bexp | Bseparator | Beol)))
+        /* must be after exponent or not in
+        number because starting number */
+        + Bcomment   * (ischr(c, options.comment  ) && strlen(options.comment))
+        /* comment starts if we are waiting for it */
+        + Bseparator * ischr(c, options.separator);
+
+      if (is & Bseparator) c=' ';
+      if (!(possiblecmt) && (is & Bcomment)) { /* activate new comment field */
+        possiblecmt = 1;
+        startcmtpos = pos;
+      }
+      if (possiblecmt) {  /* we are in a comment */
+        if (is & Beol) {  /* end comment on eol */
+          endcmtpos   = pos;
+          fieldend   |= Bcomment;
+          possiblecmt = 0;
+        } else is = last_is;  /* keeps last non-comment char state */
+      } /* if (possiblecmt) */
+      if ( (!possiblecmt) && (!possiblenum) && (is & needforstartnum)
+        && (last_is & (Bseparator | Beol))) { /* activate num search */
+        possiblenum = 1;
+        startnumpos = pos;
+        need        = needforstartnum;
+        inpoint     = 0;
+        inexp       = 0;
+      } /* if ( (!possiblecmt) ... */
+
+      if (possiblenum && !(possiblecmt)) { /* in num field */
+        found = is & need;
+
+/* last column : update when found and (EOL and not groupnum)
+*                or (EOL and groupnum and columns (not empty previous num line))
+* OK : columns = 0 when EOL
+* OK : newline : when found after EOL (can be really before -> if columns == 1)
+* end of num field : found && columns != last_columns
+*/
+        if ((last_is & (Bnumber | Bpoint)) && (is & (Beol | Bseparator))) {
+          columns++; /* detects num end : one more column */
+          if (found && (columns == 1)) rows++;  /* this is a new line starting */
+        }
+        if (is & Beol) {  /* reached end of line */
+          if (!options.catenate) {
+            if ((columns != last_columns) && (startnumpos < last_eolpos)) {
+              /* change in columns -> end of preceeding num field */
+              endnumpos = last_eolpos - 1;
+              pos       = last_eolpos;
+              is        = Beol;
+              need      = needforstartnum;
+              fieldend |= Bnumber;
+              endcharpos= startnumpos - 1;
+              columns   = last_columns;
+              if (startcharpos <= endcharpos) fieldend |= Balpha;
+            } else {  /* still in numeric field with same num of columns: NewLine */
+              last_columns = columns;
+              columns = 0;
+            }
+          } else { /* when (catenate) */
+            if (columns || !last_columns) {
+              if (columns && !last_columns) {
+                last_columns = columns;  /* first line on matrix */
+                columns = 0;
+              } else {
+                if (last_columns && (columns != last_columns)  && (startnumpos < last_eolpos)) {
+                  /* change in columns -> end of preceeding num field */
+                  if (found) rows--;
+                  endnumpos = last_eolpos - 1;
+                  pos       = last_eolpos;
+                  is        = Beol;
+                  need      = needforstartnum;
+                  fieldend |= Bnumber;
+                  endcharpos= startnumpos - 1;
+                  columns   = last_columns;
+                  if (startcharpos <= endcharpos) fieldend |= Balpha;
+                }
+                else columns = 0;
+              } /* else */
+            } /* if (columns ... else pass on : continue in same field */
+          } /* if (!catenate) */
+        } /* if (is & Beol) */
+
+        if (!found) {
+          if (last_is & (Beol | Bseparator) && (need != Bnumber)) {
+            /* end of num field ok, except when the num started by a
+               single point, not follwed by a 0-9 number */
+            endnumpos  = pos - 2;
+            endcharpos = startnumpos - 1;
+            fieldend  |= Bnumber;
+            if (last_columns == 0)       last_columns = columns;
+            if (startcharpos <= endcharpos) fieldend |= Balpha;
+          } else { /* anomalous end of num */
+            if (startnumpos >= last_seppos) {
+              /* first possible number is not a number */
+              columns     = last_columns;
+              possiblenum = 0; /* abort and pass */
+              if (fieldend & Bnumber) fieldend -= Bnumber;
+            } else {
+              if ((columns > 0) && (startnumpos >= last_eolpos)) { /* only a line */
+                endnumpos = last_seppos - 1;
+                pos       = last_seppos;
+                is        = Bseparator;
+                need      = needforstartnum;
+                fieldend |= Bnumber;
+                endcharpos = startnumpos - 1;
+                if (fseek(file.SourceHandle, pos, SEEK_SET)) {/* reposition after SEP */
+                  print_stderr(
+                  "Error: repositiong error at position %ld in file '%s'\n"
+                  "       Ignoring (may generate wrong results) [looktxt:file_scan:sep].\n", pos, file.Source);
+                  perror("");
+                }
+                if (startcharpos <= endcharpos) fieldend |= Balpha;
+              } else { /* already passed more than one line */
+                endnumpos = last_eolpos - 1;
+                pos       = last_eolpos;
+                is        = Beol;
+                need      = needforstartnum;
+                fieldend |= Bnumber;
+                endcharpos= startnumpos - 1;
+                columns   = last_columns;
+                if (fseek(file.SourceHandle, pos, SEEK_SET)) { /* reposition after EOL */
+                  print_stderr(
+                  "Error: repositiong error at position %ld in file '%s'\n"
+                  "       Ignoring (may generate wrong results) [looktxt:file_scan:eol].\n", pos, file.Source);
+                  perror("");
+                }
+                if (startcharpos <= endcharpos) fieldend |= Balpha;
+              } /* else */
+            } /* else from if (startnumpos ... */
+          } /* else from if (last_is ... */
+        } else { /* found: still in num */
+          if (is & Bpoint) {
+            if (inpoint || inexp) need = 0;
+            else {
+              if (last_is & (Bseparator | Beol)) need = Bnumber;
+              else need = needafterpoint;
+              inpoint = 1;
+            } /* else from if (inpoint ... */
+          } else if (is & Bsign)      need = needaftersign;
+          else if (is & Bexp)       { need = needafterexp; inpoint = 0; inexp = 1; }
+          else if (is & Bseparator) { need = needaftersep; inpoint = 0; inexp = 0; }
+          else if (is & Bnumber)      need = needafternumber;
+          else if (is & Beol)       { need = needaftereol; inpoint = 0; inexp = 0; }
+          else need = needafternumber;
+        } /* else from if (!found) */
+      } /* if (possiblenum ... */
+
+      /* fill in table when a field has been found */
+      if (fieldend) {
+        struct data_struct field;
+
+        field         = data_init();
+        field.index   = fieldindex;
+        /* define char header associated field */
+        if (fieldend & Balpha) {
+          field.c_start = startcharpos;
+          field.c_end   = endcharpos-1;
+
+          /* startcharpos  = pos; */
+          fieldend     -= Balpha;
+        } /* Balpha */
+        /* define numeric field */
+        if (fieldend & Bnumber) {
+          columns = last_columns;
+          if (columns && (startnumpos <= endnumpos))
+          {
+            if (rows <= 0) rows = 1;
+            field.n_start = startnumpos;
+            field.n_end   = endnumpos;
+            field.rows    = rows;
+            field.columns = columns;
+
+            table_add(&table, field);  /* STORING field */
+            pos   = endnumpos+1;
+            startcharpos = pos;
+            if (fseek(file.SourceHandle, pos, SEEK_SET)) { /* reposition after Numeric*/
+              print_stderr(
+              "Error: repositiong error at position %ld in file '%s'\n"
+              "       Ignoring (may generate wrong results) [looktxt:file_scan:Bnumber].\n", pos, file.Source);
+              perror("");
+            }
+            fieldindex++;
+          } /* if (columns ... */
+          possiblenum  = 0;
+          last_eolpos  = endnumpos;
+          /* startcharpos = endnumpos+1; */
+          fieldend    -= Bnumber;
+          columns      = 0;
+          rows         = 0;
+          last_columns = 0;
+          inpoint      = 0;
+        } /* Bnumber */
+        /* ignore comment blocks */
+        if (fieldend & Bcomment) {
+          possiblecmt  = 0;
+          fieldend    -= Bcomment;
+          /* startcharpos = pos+1; */
+        } /* Bcomment */
+
+      } /* if (fieldend) */
+
+      if ((is & Beol)) {
+        last_eolpos = pos;
+        last_seppos = pos;
+      }
+
+      if (is & Bseparator) last_seppos = pos;
+      pos++;
+
+    } while (c != EOF); /* end do */
+  } /* if (file.Source */
+  return(table);
+} /* file_scan */
+
+/*****************************************************************************
+* file_write_tag: Write output file Section Begin/End using selected format
+*****************************************************************************/
+int file_write_tag(struct file_struct file, struct option_struct options,
+                       char *section, char *name, char *value, char *format)
+{
+  int   ret;
+  char str_struct[]=".";
+  char *struct_section=NULL;
+  char *struct_name=NULL;
+
+  if (!format || !name || !value) return(0);
+
+  if (options.use_struct> ' ') str_struct[0] = options.use_struct;
+  if (section && strlen(section)) {
+    if (options.use_struct > ' ' && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
+      struct_section = str_cat(str_struct, section, NULL);
+    else struct_section = str_dup(section);
+  } else struct_section = str_dup(strstr(options.format.Name,"IDL") ? ROOT_SECTION : "");
+  if (name && strlen(name)) {
+    if (options.use_struct > ' ') struct_name = str_cat(str_struct, name, NULL);
+    else struct_name = str_dup(name);
+  } else struct_name = str_dup("");
+
+  if (strstr(options.format.Name,"IDL") || strstr(options.format.Name,"Scilab")
+   || strstr(options.format.Name,"Matlab") || strstr(options.format.Name,"Octave"))
+   str_rep(value, "'","\"");
+
+  ret = pfprintf(file.TxtHandle, format, "ssss",
+    file.RootName ? file.RootName : "", /* 1  BAS=PAR=ROT  */
+    struct_section,/* 2  SEC  */
+    struct_name,   /* 3  NAM  */
+    value);        /* 4  VAL  */
+
+  str_free(struct_section); str_free(struct_name);
+
+  return(ret);
+
+} /* file_write_tag */
+
+/*****************************************************************************
+* file_write_headfoot: Write output file Header and Footer using selected format
+*****************************************************************************/
+int file_write_headfoot(struct file_struct file, struct option_struct options, char *format)
+{
+  char  *user;
+  char   date[64];
+  long   date_l; /* date as a long number */
+  int    ret;
+  time_t t;
+
+  if (!file.TargetTxt || !file.TxtHandle || !format | !strlen(format)) return(0);
+
+  if (options.verbose >= 3)
+    printf("\nDEBUG[file_write_headfoot]: Writing %s header/footer\n", file.TargetTxt);
+  time(&t);
+  date_l = (long)t;
+  t = (time_t)date_l;
+
+  user = str_cat(
+    getenv("USER") ? getenv("USER") : "looktxt",
+    " on ",
+    getenv("HOST") ? getenv("HOST") : "localhost", NULL);
+
+  strncpy(date, ctime(&t), 64);
+  if (strlen(date)) date[strlen(date)-1] = '\0';
+
+  ret = pfprintf(file.TxtHandle, format, "sssslsssssl",
+    options.format.Name,                  /* 1   FMT */
+    user,                                 /* 2   USR */
+    options.option_list,                  /* 3   CMD */
+    file.Source,                          /* 4   SRC=TIT=FIL */
+    file.Size,                            /* 5   SIZ */
+    ctime(&file.Time),                    /* 6   TIM */
+    file.TargetTxt,                       /* 7   TXT */
+    file.TargetBin ? file.TargetBin : "", /* 8   BIN */
+    file.RootName ? file.RootName : "",   /* 9   BAS=PAR=NAM=ROT */
+    date,                                 /* 10  DATE */
+    date_l);                              /* 11  DATL */
+
+  if (format == options.format.Header) {
+    char tmp[256];
+    strcpy(tmp, "Creator");
+    file_write_tag(file, options, "",
+      str_lowup(tmp, options.names_lowup),
+      VERSION " " DATE " " AUTHOR,
+      options.format.AssignTag);
+    strcpy(tmp, "User");
+    file_write_tag(file, options, "",
+      str_lowup(tmp, options.names_lowup),
+      user,
+      options.format.AssignTag);
+    strcpy(tmp, "Source");
+    file_write_tag(file, options, "",
+      str_lowup(tmp, options.names_lowup),
+      file.Source,
+      options.format.AssignTag);
+    strcpy(tmp, "Date");
+    file_write_tag(file, options, "",
+      str_lowup(tmp, options.names_lowup),
+      date,
+      options.format.AssignTag);
+    strcpy(tmp, "Format");
+    file_write_tag(file, options, "",
+      str_lowup(tmp, options.names_lowup),
+      options.format.Name,
+      options.format.AssignTag);
+    strcpy(tmp, "Command");
+    file_write_tag(file, options, "",
+      str_lowup(tmp, options.names_lowup),
+      options.option_list,
+      options.format.AssignTag);
+    strcpy(tmp, "Filename");
+    file_write_tag(file, options, "",
+      str_lowup(tmp, options.names_lowup),
+      file.TargetTxt,
+      options.format.AssignTag);
+    strcpy(tmp, "Variable");
+    file_write_tag(file, options, "",
+      str_lowup(tmp, options.names_lowup),
+      file.RootName ? file.RootName : "",
+      options.format.AssignTag);
+  }
+
+  fflush(file.TxtHandle);
+  str_free(user);
+  return(ret);
+
+} /* file_write_headfoot */
+
+/*****************************************************************************
+* file_write_section: Write output file Section Begin/End using selected format
+*****************************************************************************/
+int file_write_section(struct file_struct file, struct option_struct options,
+                       char *section, char *format)
+{
+  int   ret=0;
+
+  char str_struct[]=".";
+  char *struct_section=NULL;
+
+  /* ROOT section should be ignored */
+  if (!format          || !section || !strlen(section)
+   || (!strstr(options.format.Name,"IDL") && !strcmp(section, ROOT_SECTION))) return(0);
+
+  if (options.use_struct> ' ') str_struct[0] = options.use_struct;
+  if (section && strlen(section)) {
+    if (options.use_struct > ' ' && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
+      struct_section = str_cat(str_struct, section, NULL);
+    else struct_section = str_dup(section);
+  } else struct_section = str_dup(strstr(options.format.Name,"IDL") ? ROOT_SECTION : "");
+
+  if (options.verbose >= 2)
+    printf("VERBOSE[file_write_section]: file '%s': Writing %s begin/end section\n", file.TargetTxt, section);
+
+  pfprintf(file.TxtHandle, format, "sss",
+    file.RootName ? file.RootName : "",     /* 1  BAS=PAR  */
+    struct_section,                         /* 2  SEC  */
+    section ? section : "");                /* 3  NAM=TIT */
+
+  str_free(struct_section);
+
+  return (ret);
+
+} /* file_write_section */
+
+/*****************************************************************************
+* file_write_field_data: Write output file Data Begin/End using selected format
+*****************************************************************************/
+int file_write_field_data(struct file_struct file,
+                          struct option_struct options,
+                          struct data_struct field, char *format)
+{
+  char str_struct[]=".";
+  char *struct_section=NULL;
+  char *struct_name=NULL;
+  char *name    =field.Name_valid;
+  char *section=field.Section;
+
+  if (!format || !field.Name || !strlen(field.Name)) return(0);
+  if (!field.rows) return(0);
+  if (options.verbose >= 3)
+    printf("\nDEBUG[file_write_field_data]: file '%s': Writing Part Data %s begin/end \n", file.TargetTxt, field.Name);
+
+  if (options.use_struct> ' ') str_struct[0] = options.use_struct;
+
+  if (section && strlen(section)) {
+    if (options.use_struct > ' ' && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
+      struct_section = str_cat(str_struct, section, NULL);
+    else struct_section = str_dup(section);
+  } else struct_section = str_dup(strstr(options.format.Name,"IDL") ? ROOT_SECTION : "");
+
+  if (name && strlen(name)) {
+    if (options.use_struct > ' ' && !strstr(options.format.Name,"IDL")) struct_name = str_cat(str_struct, name, NULL);
+    else struct_name = str_dup(name);
+  } else struct_name = str_dup("Name");
+
+/* default BAS.Data.Section.Name */
+  pfprintf(file.TxtHandle, format, "ssslls",
+    struct_section,  /* 1 SEC */
+    field.Name,      /* 2 TIT */
+    struct_name,     /* 3 NAM */
+    field.rows,      /* 4 ROW */
+    field.columns,   /* 5 COL */
+    file.RootName ? file.RootName : "");    /* 6 BAS  */
+
+  str_free(struct_name); str_free(struct_section);
+
+  return(1);
+
+} /* file_write_field_data */
+
+/*****************************************************************************
+* file_write_field_array: Write output file Data array using selected format
+*****************************************************************************/
+int file_write_field_array(struct file_struct file,
+                          struct option_struct options,
+                          struct data_struct field, char *format)
+{
+  char flag_written=0;
+  float *data;
+  long count=0;
+  long length;
+  if (options.verbose >= 3)
+    printf("\nDEBUG[file_write_field_array]: file '%s': Writing Data %s values (%ld x %ld) \n", file.TargetTxt, field.Name, field.rows, field.columns);
+  /* handle text for nelements <= MAX_TXT4BIN */
+  /*        binary for big */
+  data = data_get_float(file, field, options);
+  if (!data) {
+    if (options.verbose >= 1)
+    printf("Warning: file '%s': Data %s is empty (%ld:%ld)\n",
+      file.TargetTxt, field.Name, field.n_start, field.n_end);
+    return(0);
+  }
+
+  if (field.rows*field.columns > MAX_TXT4BIN && options.use_binary && file.BinHandle)   {
+    /* write bin array in BinHandle */
+    long start, end;
+    start=ftell(file.BinHandle); /* file opened previously */
+    /* position at end of Bin, store that pos */
+    count = fwrite(data, sizeof(float),
+      field.rows*field.columns, file.BinHandle);
+    if (count != field.rows*field.columns) {
+       print_stderr( "Warning: Could not write properly field %s in BIN file '%s'.\n"
+         "(permissions, disk full, broken link ?). Using TXT output.",
+         field.Name, file.TargetBin);
+    } else {
+      /* get eof Bin, store pos */
+      end = ftell(file.BinHandle)-1;
+      /* write reference (TargetBin, start,end, length) in TxtHandle */
+
+      length=end-start+1;
+      pfprintf(file.TxtHandle, format, "slllll",
+        file.TargetBin, /* 1 FIL */
+        start,          /* 2 BEG */
+        end,            /* 3 END */
+        length,         /* 4 LEN */
+        field.rows,     /* 5 ROW */
+        field.columns); /* 6 COL */
+      flag_written=1;
+    }
+  }
+  if (!flag_written) {
+    /* write in TxtHandle */
+    int i,j;
+    float value;
+    for (i=0; i<field.rows; i++) {
+      for (j=0; j<field.columns; j++) {
+        int this_count=0;
+        value = data[i*field.columns+j];
+        this_count = fprintf(file.TxtHandle, "%g%c", value,
+          strstr(options.format.Name,"IDL") && i*field.columns+j < field.columns*field.rows-1 ? ',' : ' ');
+        if (!this_count) {
+          print_stderr( "Warning: Could not write properly field %s in TXT file '%s'.\n"
+            "(permissions, disk full, broken link ?)",
+            field.Name, file.TargetBin);
+          count = 0;
+          break;
+        } else count += this_count;
+      }
+      if (!count) break;
+      else fprintf(file.TxtHandle, strstr(options.format.Name,"IDL") ? "$\n" : "\n");
+    }
+  }
+  memfree(data);
+  return (count > 0);
+} /* file_write_field_array */
+
+struct write_struct {
+  struct strlist_struct section_names;  /* name of found sections */
+  struct strlist_struct section_fields; /* fields registered for each found section (in the same order as section_names */
+};
+
+/*****************************************************************************
+* file_write_getsections: Prepare output file using selected format
+* returns found sections structure
+*****************************************************************************/
+struct write_struct file_write_getsections(struct file_struct file,
+                       struct option_struct options,
+                       struct table_struct *ptable)
+{
+  int     index;  /* index of current field from table */
+  int     length;
+  char   *section_current      =NULL;  /* current section full name */
+  char   *last_valid_name=NULL;
+  struct strlist_struct section_names;  /* name of found sections */
+  struct strlist_struct section_fields; /* fields registered for each found section (in the same order as section_names */
+  struct write_struct found_sections;
+
+  /* create section field names arrays */
+  section_current= str_dup(ROOT_SECTION);  /* Init default section (root) */
+
+  section_names  = strlist_init("section_names");
+  section_fields = strlist_init("section_fields");
+  strlist_add(&section_names,  section_current); /* ROOT is 0. Already set in parse ags */
+  strlist_add(&section_fields, " "); /* no filed stored yet */
+
+  if (options.verbose >= 2)
+      printf("VERBOSE[file_write_getsections]:  First pass [0-%ld] ...\n", ptable->length-1);
+
+  length = ptable->length;
+
+  /* FIRST PASS: read header, search sections and set raw name for all fields */
+  for (index=0; index < length; index++)
+  {
+    struct  data_struct *field;  /* current field from file */
+    char   *header=NULL;
+    long    index_sec;
+
+    field  = &(ptable->List[index]);
+    header = data_get_char(file, field->c_start, field->c_end);
+
+    /* if output does not support \n in chars, make header valid */
+    if (header && strlen(header) && options.out_headers)
+    if (strstr(options.format.Name, "Matlab")
+    ||  strstr(options.format.Name, "Scilab")
+    ||  strstr(options.format.Name, "Octave")
+    ||  strstr(options.format.Name, "IDL")) {
+      char *p=header;
+      while ((p = strpbrk(p, "\n\r\f\t\v")) != NULL) *p = ' ';
+      p=header;
+      while ((p = strpbrk(p, "'")) != NULL) *p = '"';
+    }
+    field->Header  = str_dup(header);
+    field->Name    = str_lastword(header); /* was NULL before */
+
+    if (field->Name && strlen(field->Name)) {
+      str_free(last_valid_name); last_valid_name = str_dup(field->Name);
+    }
+
+    /* fortran case: single row, no name */
+    if (options.fortran && index > 0 && field->rows == 1 && (!field->Name || !strlen(field->Name))) {
+      struct  data_struct *previous = &(ptable->List[index-1]);
+      if (field->columns < previous->columns) {
+      /* compute total length, and add it to previous */
+        long columns=field->columns + previous->columns*previous->rows;
+        previous->rows    = 1;            /* make it single row */
+        previous->columns = columns;
+        previous->n_end   = field->n_end; /* shift end of num */
+        field->rows=0; /* unactivate */
+      }
+    }
+    if (options.makerows.length && last_valid_name) {
+      for (index_sec=0; index_sec < options.makerows.length; index_sec++) {
+        if (strstr(last_valid_name, options.makerows.List[index_sec])) {
+          long columns=field->columns*field->rows;
+          field->rows=1; field->columns=columns;
+          field->Name=str_dup(last_valid_name);
+        }
+      }
+    }
+
+    /* look for custom fields */
+    /* if found, add a new entry in table with table_add(&table, field); */
+    /* search metadata names in header if any. Extract them into new table entries */
+    for (index_sec=0; index_sec < options.metadata.length; index_sec++)
+    { /* scan all registered sections */
+      char *this_metadata=NULL;
+      long  section_index=-1;
+
+      section_index = strlist_search(section_names, "MetaData");
+      this_metadata = options.metadata.List[index_sec];
+      /* if metadata is found in the header */
+      if (this_metadata && header && strstr(header, this_metadata)) {
+        long  offset;
+        char *metadata_line;
+
+        offset = field->c_start;
+
+        do {
+          metadata_line = data_get_line(file, &offset); /* TODO: skip metadata word */
+
+          if (metadata_line && strlen(metadata_line) && strstr(metadata_line, this_metadata)) { /* create an entry */
+            struct data_struct data;
+
+            data = data_init();
+            data.Name   = str_dup(this_metadata);
+            if (metadata_line && strlen(metadata_line)) /* remove unsupported chars from header */
+              if (strstr(options.format.Name, "Matlab")
+              ||  strstr(options.format.Name, "Scilab")
+              ||  strstr(options.format.Name, "Octave")
+              ||  strstr(options.format.Name, "IDL")) {
+                char *p=metadata_line;
+                while ((p = strpbrk(p, "\n\r\f\t\v")) != NULL) *p = ' ';
+                p=metadata_line;
+                while ((p = strpbrk(p, "'")) != NULL) *p = '"';
+              }
+            data.Header = metadata_line;       /* line following the metadata */
+            data.Section= str_dup("MetaData"); /* Section name */
+            data.index  = index;      /* index of this data block */
+            data.rows   = field->rows;
+            data.columns= field->columns;
+            data.n_start= field->n_start;
+            data.n_end  = field->n_end;
+            data.c_start= field->c_start;
+            data.c_end  = field->c_end;
+            table_add(ptable, data);
+
+            /* add the MetaData section */
+            if (section_index<0) {
+                strlist_add(&section_names,  "MetaData");
+                strlist_add(&section_fields, " ");
+                section_index = strlist_search(section_names, "MetaData");
+                if (section_index<0 && options.verbose >= 3)
+                  printf("\nDEBUG[file_write_target]: Could not create MetaData list to register item %s\n", this_metadata);
+            }
+          }
+        } while (metadata_line && offset < field->c_end);
+      } /* if strstr */
+    } /* for (index_sec metadata */
+
+    str_free(header); header=NULL;
+
+    /* look for section names in header if any. skip ROOT */
+    for (index_sec=0; index_sec < options.sections.length; index_sec++)
+    { /* scan all registered sections */
+      char *this_section;
+      this_section = options.sections.List[index_sec];
+      /* if a new section ID is found in the header */
+      if (strcmp(section_current, this_section)) {
+        /* this is not the present section */
+        if (field->Header && strstr(field->Header, this_section)) {
+          /* the header contains a new registered section ID */
+
+          str_free(section_current);
+          section_current = str_dup(this_section);
+
+          if (field->Name && strstr(section_current, field->Name)) {
+            /* if name is in the section str,
+               then set section_name to <section_value> */
+            char   value[256];
+            double data0=0;      /* first numerical value */
+            char  *tmp;
+            fseek (file.SourceHandle, field->n_start, SEEK_SET);
+            fscanf(file.SourceHandle, "%lf", &data0);
+            sprintf(value, "%ld", (long)data0);
+            tmp = str_cat(section_current, "_", value, NULL);
+            str_free(section_current); section_current = tmp; tmp=NULL;
+          }
+
+          /* register: init the new section in the list of found sections in the file */
+          if (strlist_search(section_names, section_current) < 0) {
+            strlist_add(&section_names,  section_current);
+            strlist_add(&section_fields, " ");
+          }
+        } /* if strstr(header ... */
+      } /* if (strcmp(section_current, */
+    } /* for (index_sec */
+
+    /* set field section to current section */
+    field->Section = str_dup(section_current); /* was NULL before */
+  } /* for index 1st PASS */
+
+  /* From here we have:
+   * - a ptable->List of data_struct containing Name/Section fields,
+   * - section_names Lists for each registered sections
+   * - empty section_fields Lists corresponding to section_names
+   */
+
+  found_sections.section_names = section_names;
+  found_sections.section_fields= section_fields;
+
+  return(found_sections);
+} /* file_write_getsections */
+
+/*****************************************************************************
+* file_write_target: Write output file using selected format
+* returns the number of succesfully written fields
+*****************************************************************************/
+long file_write_target(struct file_struct file,
+                       struct option_struct options,
+                       struct table_struct *ptable,
+                       struct strlist_struct section_names,
+                       struct strlist_struct section_fields)
+{
+  int     index=0;  /* index of current field from table */
+  char   *section_current      =NULL;  /* current section full name */
+  char   *section_current_valid=NULL;  /* current section+struct full name */
+  int     section_index=0;             /* start with root section */
+  long    ret=0;                       /* return value=number of written fields */
+  char   *last_valid_name=NULL;
+  struct strlist_struct to_catenate;
+  long redundant;
+
+  if (!ptable || !ptable->length || !ptable->nalloc) return(0);
+
+    /* open output files */
+  if (file.TargetTxt) {
+    if (!strcmp(file.TargetTxt, "stdout") || !strcmp(file.TargetTxt, "-"))
+      file.TxtHandle=stdout;
+    else if (!strcmp(file.TargetTxt, "stderr"))
+      file.TxtHandle=stderr;
+    else file.TxtHandle = fopen(file.TargetTxt, options.openmode);
+  }
+  if (file.TargetBin && options.use_binary) {
+    if (!strcmp(file.TargetBin, "stdout") || !strcmp(file.TargetBin, "-"))
+      file.BinHandle=stdout;
+    else if (!strcmp(file.TargetBin, "stderr"))
+      file.BinHandle=stderr;
+    else file.BinHandle = fopen(file.TargetBin, options.openmode);
+  }
+
+  if (!file.TxtHandle) exit(print_stderr( "Error: can not open text target file '%s' in mode %s. Exiting.\n", file.TargetTxt, options.openmode));
+  if (!file.BinHandle && options.use_binary) {
+    print_stderr( "Warning: can not open binary target file '%s' in mode %s. Using text.\n", file.TargetBin, options.openmode);
+    options.use_binary = 0;
+  }
+
+  section_current       = str_dup(ROOT_SECTION);
+  section_current_valid = str_valid_struct(section_current, options.use_struct);
+
+  if (options.verbose >= 2)
+      printf("\nVERBOSE[file_write_target]: Second pass [0-%ld]\n", ptable->length-1);
+
+  /* SECOND PASS: read all table elements */
+
+  /* write output header. begin root section+MetaData */
+  file_write_headfoot(file, options, options.format.Header);
+
+  if (strstr(options.format.Name, "IDL")) {
+    /* initiate section structures */
+    for (index=0; index < section_names.length; index++) {
+      if (options.out_headers) {
+        fprintf(file.TxtHandle, "Headers%s = { Name:'Headers for Section %s' }\n",
+          section_names.List[index], section_names.List[index]);
+        fprintf(file.TxtHandle, "Data%s = { Name:'Data for Section %s' }\n",
+          section_names.List[index], section_names.List[index]);
+      } else
+        fprintf(file.TxtHandle, "%s = { Name:'Section %s' }\n",
+          section_names.List[index], section_names.List[index]);
+    }
+  }
+
+  file_write_section(file, options, section_current, options.format.BeginSection);
+
+  for (index=0; index < ptable->length; index++) {
+    int     consecutive_index = 0;
+    long    rows       =0;
+    long    columns    =0;
+
+    if (!ptable->List[index].rows) continue;
+
+    rows   = ptable->List[index].rows;
+    columns= ptable->List[index].columns;
+
+    if (ptable->List[index].Name && strlen(ptable->List[index].Name)) {
+      str_free(last_valid_name); last_valid_name = str_dup(ptable->List[index].Name);
+    }
+
+    /* get current field and search similar ones */
+    to_catenate = strlist_init("fields_to_catenate");
+    if (options.catenate) {
+      for (consecutive_index=index+1; consecutive_index<ptable->length; consecutive_index++) {
+        if (!ptable->List[consecutive_index].rows
+          || ptable->List[consecutive_index].columns != columns) continue; /* must have same #columns */
+        if (ptable->List[consecutive_index].Section && ptable->List[index].Section
+         && strcmp(ptable->List[consecutive_index].Section, ptable->List[index].Section)) continue; /* same section */
+        if (!ptable->List[consecutive_index].Name
+        || (ptable->List[index].Name && !strcmp(ptable->List[consecutive_index].Name, ptable->List[index].Name))) {
+          /* same name: add pointer to consecutive_index field */
+          struct  data_struct *field=&(ptable->List[consecutive_index]);
+          strlist_add_void(&to_catenate, (void*)field); /* trick to force storage of pointer */
+        }
+      }
+    }
+
+    /* from there we know the 'base' field and how many similar follow */
+
+    /* detects section change, end previous, init new */
+    if (strcmp(ptable->List[index].Section, section_current)) { /* field section is not current */
+      file_write_section(file, options,
+        section_current, options.format.EndSection);
+      /* shift to field section from List */
+      section_index = strlist_search(section_names, ptable->List[index].Section);
+      if (section_index < 0 || section_index >= section_names.length)
+        section_index=0; /* not found -> root */
+      str_free(section_current);
+      str_free(section_current_valid);
+      section_current       = str_dup(section_names.List[section_index]);
+      section_current_valid = str_valid_struct(section_current, options.use_struct);
+      file_write_section(file, options, section_current,
+        options.format.BeginSection);
+    }
+
+    /* setup the 'base' field name */
+    if (!ptable->List[index].Name || !strlen(ptable->List[index].Name)) {  /* default name */
+      char tmp[256];
+      sprintf(tmp, "%s_%ld",
+        last_valid_name ? last_valid_name : "Data", ptable->List[index].index);
+      str_free(ptable->List[index].Name);
+      ptable->List[index].Name = str_dup(tmp);
+    } else {
+      /* make field name valid */
+      char *tmp;
+      tmp = str_valid(ptable->List[index].Name, options.names_length);
+      str_free(ptable->List[index].Name);
+      ptable->List[index].Name = tmp;
+    }
+
+    /* make it lower/upper if option set */
+    str_lowup(ptable->List[index].Name, options.names_lowup);
+    str_lowup(ptable->List[index].Section, options.names_lowup);
+
+    if (!ptable->List[index].Section || !strlen(ptable->List[index].Section)
+      || (!strstr(options.format.Name,"IDL") && !strcmp(ptable->List[index].Section, ROOT_SECTION))) {
+      str_free(ptable->List[index].Section);
+      ptable->List[index].Section = str_dup("");
+    }
+
+    /* look if name matches one already registered in the section */
+    /* we try with: name, name_(field.index), and name_(1-length) */
+    redundant  = -1;
+    do {
+      char *name=NULL;
+      char *to_register;
+      char value[256];
+      char *new_section_fields;
+      if (redundant < 0)     name = str_cat(ptable->List[index].Name, NULL);
+      else if (redundant == 0) {
+        sprintf(value,"_%ld", ptable->List[index].index);
+        name = str_cat(ptable->List[index].Name, value, NULL);
+      } else {
+        sprintf(value,"_%ld", redundant);
+        name = str_cat(ptable->List[index].Name, value, NULL);
+      }
+
+      to_register = str_cat(" ", name, " ", NULL);
+      if (!strstr(section_fields.List[section_index], to_register)) {
+        /* exit loop: name not registered yet */
+        if (strlen(ptable->List[index].Name)<=options.names_length && strlen(name) > options.names_length) {
+          int diff=strlen(name)-strlen(ptable->List[index].Name);
+          char *name_shorter = str_dup_n(ptable->List[index].Name, strlen(ptable->List[index].Name)-diff);
+          str_free(name);  name=str_cat(name_shorter, value, NULL);
+          str_free(name_shorter);
+        }
+        str_free(ptable->List[index].Name); ptable->List[index].Name = name;
+        new_section_fields= str_cat(section_fields.List[section_index], to_register, NULL);
+        str_free(section_fields.List[section_index]);
+        section_fields.List[section_index] = new_section_fields;
+        str_free(to_register);
+        break;
+      } else {
+        redundant++;
+        str_free(name); str_free(to_register);
+      }
+    } while(redundant < ptable->length); /* exit with break */
+
+    /* From there we have a base name, and we know if there are consecutive_index */
+
+    if ((options.nelements_min <  0 || rows*columns >= options.nelements_min)
+     && (options.nelements_max <= 0 || rows*columns <= options.nelements_max) && ptable->List[index].rows) {
+      int index_field = 0;
+      char *section=NULL;
+      char str_struct[]=".";
+
+      if (options.use_struct > ' ') str_struct[0] = options.use_struct;
+      ptable->List[index].rows    = rows;
+      ptable->List[index].columns = columns;
+      ptable->List[index].Name_valid =
+        str_valid(ptable->List[index].Name, options.names_length);
+      /* Optional BAS.Headers.Section.Name */
+      if (options.out_headers) {
+        /* add Headers to Section for next header output */
+        section=str_cat("Headers",
+          options.use_struct && ptable->List[index].Section && strlen(ptable->List[index].Section) ?
+            str_struct : "",
+          ptable->List[index].Section, NULL);
+        str_lowup(section, options.names_lowup);
+
+        file_write_tag(file, options, section,
+                       ptable->List[index].Name_valid, ptable->List[index].Header,
+                       options.format.AssignTag);
+        str_free(section); section=NULL;
+
+      }
+      /* add Data to Section for next data output */
+      section=str_cat("Data",
+        options.use_struct && ptable->List[index].Section && strlen(ptable->List[index].Section) ?
+          str_struct : "",
+        ptable->List[index].Section, NULL);
+      str_lowup(section, options.names_lowup);
+      str_free(ptable->List[index].Section);
+      ptable->List[index].Section = section;
+
+      /* special case for IDL */
+      if (strstr(options.format.Name,"IDL")
+          && (!ptable->List[index].rows || !ptable->List[index].columns
+          || ptable->List[index].n_start >= ptable->List[index].n_end))
+          fprintf(file.TxtHandle, "; %s %s is empty\n",
+            ptable->List[index].Section, ptable->List[index].Name);
+      else {
+        /* init base field: rows x columns as BAS.Data.Section.Name */
+        file_write_field_data(file, options, ptable->List[index], options.format.BeginData);
+        /* special case for IDL */
+        if (strstr(options.format.Name,"IDL")) fprintf(file.TxtHandle, "[ ");
+
+
+        /* writing base field */
+        ret += file_write_field_array(file, options, ptable->List[index],
+            options.format.BinReference);
+
+        /* write catenated fields (same # columns) */
+        if (options.catenate && to_catenate.length) {
+          for (index_field=0; index_field < to_catenate.length; index_field++) {
+            /* write catenated field data: rows x columns */
+            struct  data_struct *field=(struct  data_struct *)(to_catenate.List[index_field]);
+            if (strstr(options.format.Name,"IDL")) fprintf(file.TxtHandle, ", $\n");
+            file_write_field_array(file, options, *field,
+              options.format.BinReference);
+            ptable->List[index].rows += field->rows;
+            field->rows=0; /* unactivate */
+          }
+          memfree(to_catenate.List);
+        }
+        /* end Data.Section part */
+
+        /* special case for IDL */
+        if (strstr(options.format.Name,"IDL")) fprintf(file.TxtHandle, " ]\n");
+        file_write_field_data(file, options, ptable->List[index], options.format.EndData);
+      } /* if IDL empty else ... */
+    } /* if rows columns within output range */
+
+  } /* end for (index < ptable->index) */
+
+  /* close current section (if any) */
+  if (section_current && (strstr(options.format.Name,"IDL") || strcmp(section_current, ROOT_SECTION))) /* write section_end (if any) */
+    file_write_section(file, options,
+      section_current, options.format.EndSection);
+
+  if (strstr(options.format.Name, "IDL")) {
+    /* transfert section names into returned structure */
+    fprintf(file.TxtHandle, "%s = { %s:%s", file.RootName, section_names.List[0], section_names.List[0]);
+    for (index=options.out_headers ? 0 : 1; index < section_names.length; index++) {
+      if (options.out_headers) {
+        fprintf(file.TxtHandle, ", Headers%s:Headers%s",
+          section_names.List[index], section_names.List[index]);
+        fprintf(file.TxtHandle, ", Data%s:Data%s",
+          section_names.List[index], section_names.List[index]);
+      } else
+          fprintf(file.TxtHandle, ", %s:%s",
+            section_names.List[index], section_names.List[index]);
+    }
+    fprintf(file.TxtHandle, "}\n");
+  }
+
+  /* write output footer */
+  file_write_headfoot(file, options, options.format.Footer);
+
+  /* close output files: done at end of function parse_files */
+
+  if (options.verbose >= 2) {
+    printf("VERBOSE[file_write_target]: file '%s': classify %ld section%s:\n", file.Source, section_names.length, section_names.length > 1 ? "s" : "");
+    for (index=0; index < section_names.length; index++) {
+      printf(" %s: {%s}\n",  section_names.List[index], section_fields.List[index]);
+    }
+  }
+
+  return(ret);
+} /* file_write_target */
+
+/*****************************************************************************
+* parse_files: Parse input parameters looking for FILE names (non '-' options)
+* returns the number of processed files (with scan_file)
+*****************************************************************************/
+int parse_files(struct option_struct options, int argc, char *argv[])
+{
+  int j;
+
+  for(j = 0; j < options.sources_nb; j++) {
+    struct file_struct  file;
+    struct table_struct table;
+    char  *filename;
+    int    i;
+
+    i = options.files_to_convert_Array[j]; /* does the job for each file */
+
+    filename = str_dup(argv[i]); /* get file name from arguments */
+
+    /* open source file, and test for targets */
+    file = file_open(filename, options);
+
+    /* if Source file and Targets are available: scan source file */
+    if (file.Source && file.TargetTxt
+      && (!options.use_binary || file.TargetBin)) {
+      table = file_scan(file, options);   /* scan: returns nb of extracted fields */
+      if (options.verbose >= 2) printf("VERBOSE[parse_files]:       file '%s': found %ld numerical field%s\n", file.Source, table.length, table.length > 1 ? "s" : "");
+      if (table.nalloc && table.length) { /* if some data structures where extracted */
+        struct write_struct found_sections = file_write_getsections(file, options, &table);
+        /* table_print(table); */
+        long ret=file_write_target(file, options, &table, found_sections.section_names, found_sections.section_fields);
+        /* Free section structures */
+        strlist_free(found_sections.section_names);
+        strlist_free(found_sections.section_fields);
+        if (options.verbose >= 1) printf("Looktxt: file '%s': wrote %ld numerical field%s into %s\n", file.Source, ret, ret > 1 ? "s" : "", file.TargetTxt);
+#ifdef TEXMEX
+        TexMex_Target_Array[options.file_index] = str_dup(file.TargetTxt);
+        TexMex_Target_Funcs[options.file_index] = str_dup(file.RootName);
+#endif
+      } else {
+#ifdef TEXMEX
+        TexMex_Target_Array[options.file_index] = str_dup("");
+        TexMex_Target_Funcs[options.file_index] = str_dup("");
+#endif
+      }
+      options.file_index++;
+      table_free(table);
+      file_close(file);
+    }
+    str_free(filename);
+  } /* for i */
+
+  return(options.file_index);
+} /* parse_files */
+
+/*****************************************************************************
+* options_parse: Parse input parameters starting with '-' sign (OPTIONS)
+* returns the option structure
+*****************************************************************************/
+struct option_struct options_parse(struct option_struct options, int argc, char *argv[])
+{
+  #define BUFFER_SIZE 32*1024
+  int  i;
+  char  tmp0[256];
+  char  tmp1[256];
+  char  tmp2[256];
+  char  tmp3[BUFFER_SIZE];
+  char  tmp4[BUFFER_SIZE];
+  char *tmp5;
+  char *tmp6;
+  char  tmp7[256];
+  char  tmp8[BUFFER_SIZE];
+
+  /* init section */
+  for (i=0; i<MAX_LENGTH; i++) {
+    options.files_to_convert_Array[i] = 0;
+#ifdef TEXMEX
+    TexMex_Target_Array[i]= NULL;
+    TexMex_Target_Funcs[i]= NULL;
+#endif
+  }
+
+  for(i = 1; i < argc; i++)
+  {
+    if(!strcmp("-h", argv[i]))
+      print_usage(argv[0], options);
+    else if(!strcmp("--help",      argv[i]))
+      print_usage(argv[0], options);
+    else if(!strcmp("--version",      argv[i]))
+      print_version(argv[0], options);
+    else if(!strcmp("--append",      argv[i]))
+    { options.openmode[0]= 'a'; options.force = 1; }
+    else if(!strncmp("--struct=", argv[i], 9)) {
+      char *struct_char=NULL;
+      if (strlen(argv[i]) > 9)
+        if (strcmp(&argv[i][9], "NULL") && strcmp(&argv[i][9], "0"))
+          struct_char = str_dup(&argv[i][9]);
+      if (!struct_char) options.use_struct = '\0';
+      else {
+        options.use_struct = struct_char[0];
+        str_free(struct_char);
+      }
+    } else if(!strcmp("--struct",    argv[i]))
+      options.use_struct = '.';
+    else if(!strcmp("--binary",    argv[i]) || !strcmp("-b",    argv[i]))
+      options.use_binary = 1;
+    else if(!strcmp("--headers",    argv[i]) || !strcmp("-H",     argv[i]))
+      options.out_headers= 1;
+    else if(!strcmp("--force",     argv[i]) || !strcmp("-F",     argv[i]))
+      options.force      = 1;
+    else if(!strcmp("--fast",      argv[i]))
+      options.fast       = 1;
+    else if(!strcmp("--table",     argv[i])) {
+      options.out_table  = 1;
+      print_stderr( "Warning: Table export is not functional yet.\n");
+    } else if(!strcmp("--verbose",   argv[i]) || !strcmp("-v",   argv[i]))
+      options.verbose    = 2;
+    else if(!strcmp("--debug",     argv[i]))
+      options.verbose    = 3;
+    else if(!strcmp("--silent",    argv[i]))
+      options.verbose    = 0;
+    else if(!strcmp("--catenate",  argv[i]) || !strcmp("-c",  argv[i]))
+      options.catenate   = 1;
+    else if(!strcmp("--fortran",   argv[i]) || !strcmp("--wrapped",   argv[i]))
+      options.fortran    = 1;
+    else if(!strncmp("--section=", argv[i], 10))
+      strlist_add(&(options.sections), &argv[i][10]);
+    else if(!strncmp("--makerows=", argv[i], 11))
+      strlist_add(&(options.makerows), &argv[i][11]);
+    else if((!strcmp("--section",   argv[i]) || !strcmp("-s",   argv[i])) && (i + 1) < argc)
+      strlist_add(&(options.sections), argv[++i]);
+    else if(!strcmp("--makerows",   argv[i]) && (i + 1) < argc)
+      strlist_add(&(options.makerows), argv[++i]);
+    else if(!strncmp("--metadata=", argv[i], 11))
+      strlist_add(&(options.metadata), &argv[i][11]);
+    else if((!strcmp("--metadata",   argv[i]) || !strcmp("-m",   argv[i])) && (i + 1) < argc)
+      strlist_add(&(options.metadata), argv[++i]);
+
+    else if(!strncmp("--comment=", argv[i], 10)) {
+      str_free(options.comment);
+      options.comment = str_dup(&argv[i][10]);
+    } else if(!strcmp("--comment", argv[i]) && (i + 1) < argc) {
+      str_free(options.comment);
+      options.comment = str_dup(argv[++i]);
+    } else if(!strncmp("--eol=",   argv[i], 6)) {
+      str_free(options.eol);
+      options.eol = str_dup(&argv[i][6]);
+    } else if(!strcmp("--eol",     argv[i]) && (i + 1) < argc) {
+      str_free(options.eol);
+      options.eol = str_dup(argv[++i]);
+    } else if(!strncmp("--point=", argv[i], 8)) {
+      str_free(options.point);
+      options.point = str_dup(&argv[i][8]);
+    } else if(!strcmp("--point",   argv[i]) && (i + 1) < argc) {
+      str_free(options.point);
+      options.point = str_dup(argv[++i]);
+    } else if(!strncmp("--separator=", argv[i], 12)) {
+      str_free(options.separator);
+      options.separator = str_dup(&argv[i][12]);
+    } else if(!strcmp("--separator",   argv[i]) && (i + 1) < argc) {
+      str_free(options.separator);
+      options.separator = str_dup(argv[++i]);
+
+    } else if(!strncmp("--outfile=", argv[i], 10))
+      options.outfile = fileparts(&argv[i][10]);
+    else if((!strcmp("--outfile",   argv[i]) || !strcmp("-o",   argv[i])) && (i + 1) < argc)
+      options.outfile = fileparts(argv[++i]);
+    else if(!strncmp("--format=",  argv[i], 9)) {
+      format_free(options.format);
+      options.format = format_init(Global_Formats, &argv[i][9]);
+    } else if((!strcmp("--format",  argv[i]) || !strcmp("-f",  argv[i])) && (i + 1) < argc) {
+      format_free(options.format);
+      options.format = format_init(Global_Formats, argv[++i]);
+    } else if(!strncmp("--nelements_min=",  argv[i], 16)) {
+      options.nelements_min = atoi(&argv[i][16]);
+    } else if(!strcmp("--nelements_min",  argv[i]) && (i + 1) < argc) {
+      options.nelements_min = atoi(argv[++i]);
+    } else if(!strncmp("--nelements_max=",  argv[i], 16)) {
+      options.nelements_max = atoi(&argv[i][16]);
+    } else if(!strcmp("--nelements_max",  argv[i]) && (i + 1) < argc) {
+      options.nelements_max = atoi(argv[++i]);
+
+    } else if(!strncmp("--names_length=",  argv[i], 15)) {
+      options.names_length = atoi(&argv[i][16]);
+    } else if(!strcmp("--names_length",  argv[i]) && (i + 1) < argc) {
+      options.names_length = atoi(argv[++i]);
+    } else if(!strcmp("--names_lower", argv[i]))
+      options.names_lowup= 'l';
+    else if(!strcmp("--names_upper", argv[i]))
+      options.names_lowup= 'u';
+    else if(!strncmp("--names_root=", argv[i], 13)) {
+      char *root_char=NULL;
+      if (strlen(argv[i]) > 13)
+        if (strcmp(&argv[i][13], "NULL") && strcmp(&argv[i][13], "0")) {
+          char *tmp1;
+          char *tmp2;
+          tmp1 = str_reverse(&argv[i][13]);
+          tmp2 = str_valid(tmp1, options.names_length);
+          root_char = str_reverse(tmp2);        /* default */
+          str_free(tmp1); str_free(tmp2);
+        }
+      options.names_root = root_char ? root_char : str_dup("NULL");
+    } else if(argv[i][0] == '-') {
+      print_stderr( "Warning: Invalid %d-th option %s. Ignoring [looktxt:options_parse].\n", i, argv[i]);
+    } else if(argv[i][0] != '-') {
+      /* convert argv[i]: store index of argument */
+      if (options.sources_nb < MAX_LENGTH)
+        options.files_to_convert_Array[options.sources_nb++] = i;
+      else print_stderr( "Warning: Exceeding maximum number of files to process (%d) for file '%s'. Ignoring [looktxt:options_parse].\n", MAX_LENGTH, argv[i]);
+    } else
+      print_usage(argv[0], options);
+  } /* for i */
+
+  /* check again for binary */
+  if (!options.use_binary)
+    options.use_binary = strstr(options.format.Name, "binary") ? 1 : 0;
+
+  /* format dependent options */
+  /* Matlab, Octave and Scilab require --struct=. */
+  if (strstr(options.format.Name, "Matlab")
+    ||  strstr(options.format.Name, "Scilab")
+    ||  strstr(options.format.Name, "Octave"))
+    if (options.use_struct != '.') {
+      if (options.verbose >= 2)
+      print_stderr( "Warning: Format %s requires structures. Now setting --struct='.' [looktxt:options_parse].\n", options.format.Name);
+      options.use_struct = '.';
+    }
+  /* IDL does not support structures fully. If used, replace by _ */
+  if (strstr(options.format.Name, "IDL") && options.use_struct > ' ') {
+    if (options.verbose >= 2)
+    print_stderr( "Warning: Format %s does not support fully structures. Now unsetting --struct [looktxt:options_parse].\n", options.format.Name);
+     options.use_struct = 0;
+  }
+
+  if (options.names_root && !strcmp(options.names_root,"NULL") && (strstr(options.format.Name, "Matlab")
+    ||  strstr(options.format.Name, "Scilab")
+    ||  strstr(options.format.Name, "Octave")
+    ||  strstr(options.format.Name, "IDL")))
+    if (options.verbose >= 1)
+    print_stderr( "Warning: NULL root name is NOT recommanded with format %s [looktxt:options_parse].\n", options.format.Name);
+
+  /* build the option list string */
+
+  sprintf(tmp0, " --nelements_min=%ld --nelements_max=%ld --names_length=%d",
+    options.nelements_min, options.nelements_max, options.names_length);
+
+  if (options.use_struct)
+    sprintf(tmp1, " --struct=%c",options.use_struct);
+  else sprintf(tmp1, " --struct=NULL");
+
+  if (options.outfile.FullName)
+    sprintf(tmp2, " --outfile=\"%s\"",options.outfile.FullName);
+  else strcpy(tmp2, "");
+
+  strcpy(tmp3, ""); /* build list of sections */
+  for (i=0; i < options.sections.length; i++)
+  { /* scan all registered sections */
+    char this_section[256];
+    if (options.sections.List[i]) {
+      sprintf(this_section, " --section=\"%s\"", options.sections.List[i]);
+    if (strlen(tmp3)+strlen(options.sections.List[i]) < BUFFER_SIZE)
+      strcat(tmp3, this_section);
+    else if (options.verbose >= 2)
+      print_stderr( "Warning: Exceeding maximum section buffer size (%d) for section %s. Ignoring. [looktxt:options_parse].\n", BUFFER_SIZE, this_section);
+    }
+  }
+
+  strcpy(tmp4, ""); /* build list of metadata */
+  for (i=0; i < options.metadata.length; i++)
+  { /* scan all registered sections */
+    char this_section[256];
+    if (options.metadata.List[i]) {
+      sprintf(this_section, " --metadata=\"%s\"", options.metadata.List[i]);
+      if (strlen(tmp4)+strlen(options.metadata.List[i]) < BUFFER_SIZE)
+        strcat(tmp4, this_section);
+      else if (options.verbose >= 2)
+        print_stderr( "Warning: Exceeding maximum metadata buffer size (%d) for metadata %s. Ignoring [looktxt:options_parse].\n", BUFFER_SIZE, this_section);
+    }
+  }
+
+  strcpy(tmp8, ""); /* build list of metadata */
+  for (i=0; i < options.makerows.length; i++)
+  { /* scan all registered sections */
+    char this_section[256];
+    if (options.makerows.List[i]) {
+      sprintf(this_section, " --makerows=\"%s\"", options.makerows.List[i]);
+      if (strlen(tmp8)+strlen(options.makerows.List[i]) < BUFFER_SIZE)
+        strcat(tmp8, this_section);
+      else if (options.verbose >= 2)
+        print_stderr( "Warning: Exceeding maximum makerows buffer size (%d) for metadata %s. Ignoring [looktxt:options_parse].\n", BUFFER_SIZE, this_section);
+    }
+  }
+  #undef BUFFER_SIZE
+
+  tmp5 = str_quote(options.eol);
+  tmp6 = str_quote(options.separator);
+
+  if (options.names_root)
+    sprintf(tmp7, "--names_root=%s", options.names_root);
+  else strcpy(tmp7, "");
+
+  options.option_list = str_cat(
+    options.pgname,
+    options.out_headers ?  " --headers"    : "",
+    options.out_table ?    " --table"      : "",
+    options.force ?        " --force"      : "",
+    options.verbose == 0 ? " --silent"     : "",
+    options.verbose == 2 ? " --verbose"    : "",
+    options.verbose == 3 ? " --debug"      : "",
+    options.catenate ?     " --catenate"   : "",
+    options.fortran ?      " --fortran"    : "",
+    options.use_binary ?   " --binary"     : "",
+    options.fast ?         " --fast"       : "",
+    options.openmode[0]=='a' ? " --append" : "",
+    options.names_lowup == 'l' ?  " --names_lower": "",
+    options.names_lowup == 'u' ?  " --names_upper": "",
+    tmp7,
+    " --comment=\"",     options.comment,
+    "\" --eol=\"",       tmp5,
+    "\" --point=\"",     options.point,
+    "\" --separator=\"", tmp6,
+    "\" --format=\"",    options.format.Name, "\"",
+    tmp0, /* nelements */
+    tmp1, /* struct */
+    tmp2, /* outfile */
+    tmp3, /* sections */
+    tmp4, /* metadata */
+    tmp8, /* makerows */
+    NULL);
+  if (options.verbose >= 3)
+      printf("\nDEBUG[options_parse]: Command line options=%s\n", options.option_list);
+  str_free(tmp5); str_free(tmp6);
+
+  return(options);
+} /* options_parse */
+
+/*****************************************************************************
+* main: Entry point
+* returns the number of processed file
+  if (options.verbose >= 3)
+    printf("DEBUG[main                ]: Starting %s\n", argv[0]);
+s (with scan_file)
+*****************************************************************************/
+int main(int argc, char *argv[])
+{
+  struct option_struct options;
+  long   ret=0;
+
+#ifdef MAC
+  argc = ccommand(&argv);
+#endif
+
+  /* init default struct option_struct */
+  options = options_init(argv[0]);
+
+  /* parse options and store them */
+  options = options_parse(options, argc, argv);
+
+  if (options.verbose >= 3)
+    printf("DEBUG[main:options_init  ]: Starting %s with %d options\n", argv[0], argc);
+
+  if (!options.sources_nb) {
+    print_stderr( "Warning: No file to process [looktxt:main].\n");
+    print_stderr( "         Type 'looktxt --help' for help.\n");
+    exit(EXIT_SUCCESS);
+  }
+
+  /* re-read program arguments and calls 'scan_file' for each file name */
+  ret = parse_files(options, argc, argv);
+
+  /* Free options */
+  options_free(options);
+
+  /* returns number of processed files */
+  return((int)ret);
+
+} /* main */
