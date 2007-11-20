@@ -8,6 +8,10 @@ function out = load(a, varargin)
 %
 % input:  s: object or array (iData)
 %         file: file name to import (char)
+%         loader: optional loader method specification (char/struct)
+%             a function name to use as import routine, OR a structure with:
+%               loader.method = 'function name'
+%               loader.options= string of options
 % output: d: single object or array (iData)
 % ex:     load(iData,'file') or load(iData)
 %

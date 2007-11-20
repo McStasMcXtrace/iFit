@@ -6,7 +6,7 @@ function outarray = iData(varargin)
 %     and Axes as aliases refering to e.g. parts of the Data.
 %   The input argument 'a', when present, is converted into an iData object. It may be:
 %     a scalar/vector/matrix
-%     a string giving a file name to load
+%     a string giving a file name to load. Use alternatively iData/load.
 %     a structure
 %     a cell array which elements are imported separately
 %     a iData object (updated if no output argument is specified).
@@ -19,7 +19,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% See also: iData, methods
+% See also: iData, iData/load, methods
 
 % object definition and converter
 % EF 23/09/07 iData implementation
