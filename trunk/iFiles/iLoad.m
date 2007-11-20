@@ -226,7 +226,7 @@ function loaders = iLoad_loader_auto(file)
   if fid == -1
     error([ 'Could not open file ' file ' for reading' ]);
   end
-  file_start = fread(fid, 10000, 'uint8=>char')';
+  file_start = fread(fid, 100000, 'uint8=>char')';
   fclose(fid);
   % loop to test each format
   for index=1:length(formats)
@@ -242,7 +242,7 @@ function loaders = iLoad_loader_auto(file)
       if isempty(loader.patterns)  % no pattern to search, just try loader
         patterns_found  = 1;
       else  % check patterns
-        for index_pat=1:length(loader.patterns)
+        for index_pat=1:length(loader.patterns(:))
           if isempty(strfind(file_start, loader.patterns{index_pat}))
             patterns_found=0;
             break;

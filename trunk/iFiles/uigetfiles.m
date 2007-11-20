@@ -35,7 +35,7 @@ if nargin > 2
 end
 
 if isstruct(filterspec) % callback use
-  object  = findobj('Tag','UIGetFiles');
+  object  = findall(0, 'Tag','UIGetFiles');
   UD      = get(object,'UserData');
   NL       = sprintf('\n');
   switch filterspec.action
@@ -392,7 +392,7 @@ if ischar(smode)
 end
 
 % Does the Dialog exist already ?
-fig = findobj('Tag', 'UIGetFiles');
+fig = findall(0, 'Tag', 'UIGetFiles');
 
 if length(fig)  % yes: exists -> raise
   figure(fig);
@@ -418,7 +418,7 @@ else
                 'ForegroundColor','blue','ToolTipString', ...
                   ['You may enter here any path or file name' NL ...
                    'possibly with wildcards (*,?).'], ...
-                'callback','uigetfiles(struct(''action'',''update'',''object'',gco));');
+                'callback','uigetfiles(struct(''action'',''update'',''object'',gcbo));');
   UD.Handle.Path = h;
   h = uicontrol('Style','pushbutton','Tag','UIGetFiles.Previous', ...
                 'Position',[275 375 20 20],'String','>', 'FontWeight','bold', ...
@@ -450,7 +450,7 @@ else
                   ['Click here to select the filter' NL ...
                    'to apply to items, if not specified' NL...
                    'in the Path definition.'], ...
-                'callback','uigetfiles(struct(''action'',''update'',''object'',gco));');
+                'callback','uigetfiles(struct(''action'',''update'',''object'',gcbo));');
   UD.Handle.Filter = h;
   % New directory, go up, select all, deselect all
   h = uicontrol('Style','popupmenu', 'Tag','UIGetFiles.Action',...
@@ -463,7 +463,7 @@ else
                     '* Delete selected files/directories' NL ...
                     '' NL ...
                     'iFiles/uigetfiles, July 22nd, 2003' NL  '(c) ILL. E. Farhi <farhi@ill.fr>' ], ...
-                'callback','uigetfiles(struct(''action'',''action'',''object'',gco));');
+                'callback','uigetfiles(struct(''action'',''action'',''object'',gcbo));');
   UD.Handle.Action = h;
   h = uicontrol('Style','pushbutton', 'Tag','UIGetFiles.Up',...
                 'Position',[80 325 65 20],'String','Go Up',...
@@ -549,7 +549,7 @@ function UD = UIGetFilesMain(object)
 % UD.Handle.Sort
 % UD.Handle.List
 
-fig = findobj('Tag','UIGetFiles');
+fig = findall(0, 'Tag','UIGetFiles');
 if isempty(fig), return;
 else
   if length(fig) > 1

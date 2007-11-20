@@ -49,5 +49,9 @@ if isempty(alias_num)
 else
   link = s.Alias.Values{alias_num};
   label= s.Alias.Labels{alias_num};
+  if isempty(link)
+    if alias_num==2, link = 'sqrt(this.Signal)';
+    elseif alias_num==3, link = 1; end
+  end
 end
 
