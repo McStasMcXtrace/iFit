@@ -75,7 +75,22 @@ if exist([ file '.m' ],'file')
     end
   catch
   end
-else
-  warning('iLoad:looktxt','looktxt: can not find executable. Re-install/compile looktxt');
+elseif (s ~= 0)
+  warning('looktxt: can not find executable. Attempting to re-install/compile looktxt');
+  cc     = getenv('CC');     if isempty(cc),     cc = 'gcc'; end
+  cflags = getenv('CFLAGS'); if isempty(cflags), cflags = '-O2'; end
+  looktxtc=which('looktxt.c');
+  if isempty(looktxtc), error('Can not install looktxt as source code is unavailable'); end
+  path = fileparts(looktxtc);
+  if ispc, looktxt_exe = 'looktxt.exe';
+  else     looktxt_exe = 'looktxt';
+  end
+  disp([ cc ' ' cflags ' -o ' path filesep looktxt_exe ' ' looktxtc ]);
+  [s,w] = system([ cc ' ' cflags ' -o ' path filesep looktxt_exe ' ' looktxtc ]);
+  w
+  [s,w] = system([ path filesep looktxt_exe ]);
+  w
+  disp(  'If installation was succesfull, try again to import with:');
+  disp([ '  looktxt(''' args ''')' ]);
 end
 cd(p);

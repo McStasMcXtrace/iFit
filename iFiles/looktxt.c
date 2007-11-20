@@ -232,7 +232,7 @@ int print_stderr(char *format, ...) {
 
   va_start(ap, format);
 #ifndef TEXMEX
-  ret=fprintf(stderr, format, ap);
+  ret=vfprintf(stderr, format, ap);
 #else
   ret=mexPrintf(format, ap); /* only in Matlab/MeX mode */
 #endif
@@ -2735,10 +2735,11 @@ struct write_struct file_write_getsections(struct file_struct file,
             char   value[256];
             double data0=0;      /* first numerical value */
             char  *tmp;
-            fseek (file.SourceHandle, field->n_start, SEEK_SET);
+            char buff[20];
+            fseek (file.SourceHandle, field->n_start-1, SEEK_SET);
             fscanf(file.SourceHandle, "%lf", &data0);
-            sprintf(value, "%ld", (long)data0);
-            tmp = str_cat(section_current, "_", value, NULL);
+            sprintf(value, "_%ld", (long)data0);
+            tmp = str_cat(section_current, value, NULL);
             str_free(section_current); section_current = tmp; tmp=NULL;
           }
 
