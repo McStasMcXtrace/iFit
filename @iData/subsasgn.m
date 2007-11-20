@@ -6,6 +6,7 @@ function b = subsasgn(a,S,val)
 %   The special syntax a{0} assigns the signal, and a{n} assigns the axis of rank n.
 %     When the assigned value is a char, the axis definition is set (as in setaxis).
 %     When the assigned value is numeric, the axis value is set (as in set).
+%   The special syntax a{'alias'} is a quick way to define an alias.
 %
 % See also iData, iData/subsref
 
@@ -114,6 +115,8 @@ else
           end
           if ischar(val), b = setaxis(b, ax, val);
           else b = set(b, ax, val); end
+        elseif ischar(s.subs{:}) & isnumeric(str2num(s.subs{:}))
+          b=setaxis(b, s.subs{:}, val);
         elseif ischar(s.subs{:})
           b=setalias(b, s.subs{:}, val);
         else
