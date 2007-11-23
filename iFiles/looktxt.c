@@ -2,7 +2,7 @@
 *
 *                     Program looktxt.c
 *
-* looktxt version Looktxt 1.0.0 (2 Sept 2006) by Farhi E. [farhi@ill.fr]
+* looktxt version Looktxt 1.0.3 (21 Nov 2007) by Farhi E. [farhi@ill.fr]
 *
 * Usage: looktxt [options] file1 file2 ...
 * Action: Search and export numerics in a text/ascii file.
@@ -72,15 +72,16 @@
 * 0.91  (26/07/00) new options -S (struct) -H (num header)
 * 0.93  (21/08/01) -T, filename in file
 * 1.00  (23/08/04) New VERSION with more output formats
+* 1.03  (21/11/07) Fixed redundant numbered Sections (e.g. SPEC files)
 *
 *****************************************************************************/
 
 /* Identification ********************************************************* */
 
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
-#define DATE    "20 Aug 2007"
+#define DATE    "21 Nov 2007"
 #ifndef VERSION
-#define VERSION "Looktxt 1.0.1"
+#define VERSION "Looktxt 1.0.3"
 #endif
 
 #ifdef __dest_os
