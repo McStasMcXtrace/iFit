@@ -20,6 +20,12 @@ function formats = iLoad_ini
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. June, 2007.
 
+%a.method
+%a.name
+%a.patterns
+%a.options
+%a.postprocess
+
 formats= { ...
 { 'looktxt', {'RRRR','AAAA','FFFF','SSSS','IIII'}, 'ILL Data (normal integers)','--headers --fortran --catenate --fast --binary --makerows=IIII --makerows=FFFF'}, ...
 { 'looktxt', {'RRRR','AAAA','FFFF','SSSS','JJJJ'}, 'ILL Data (large integers)', '--headers --fortran --catenate --fast --binary --makerows=JJJJ --makerows=FFFF'}, ...
