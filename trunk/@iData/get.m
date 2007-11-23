@@ -118,8 +118,9 @@ if ~isempty(link)
     val = get(this, link);               % link may refer to other Aliases
   catch
     try
-      val = eval(['[ ' link ' ]' ]);
+      val = eval([ '[ ' link ' ]' ]);
     catch
+      lasterr
       iData_private_error(mfilename,[ 'can not evaluate Alias ' name ' as ''' link ''' in iData object.' this.Tag ]);
     end
   end

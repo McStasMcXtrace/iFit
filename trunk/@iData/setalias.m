@@ -43,6 +43,11 @@ if nargin == 1
   end
   return
 elseif nargin == 2
+  names = cellstr(names);
+  if length(names) == 1 & strmatch(names{1}, 'Signal','exact')
+    a_in = iData(a_in);
+    return
+  end
   links = ''; labels=''; % removes aliases
 elseif nargin == 3
   labels='';
