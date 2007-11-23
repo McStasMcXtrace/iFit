@@ -19,6 +19,6 @@ for index=1:length(s)
   T = t.Title;  if iscell(T), T = T{1}; end
   cmd = t.Command{end};
   if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
-  c = strvcat(c, [ 'iData ' t.Tag '=' cmd ' [' num2str(size(t)) '] "' deblank(T) '" <' t.Source '>' ]); 
+  c = strvcat(c, [ 'iData ' cmd ' [' num2str(size(t)) '] "' deblank(T) '" <' t.Source '>' ]); 
 end
 
