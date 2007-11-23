@@ -17,9 +17,11 @@ function h=plot(a, method)
 % ex:     plot(iData(rand(10), 'surfc interp transparent');
 %
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
-% Uses fscatter3 from Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
+% Contributed code (Matlab Central): 
+%   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
+%   vol3d:     Joe Conti, 2004
 
-% private function:
+% private functions:
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 if nargin == 1, method=''; end
@@ -32,7 +34,7 @@ if length(a) > 1
   return
 end
 
-switch ndims(a)
+switch ndims(a) % handle different plotting methods depending on the iData dimensionality
 case 0
   h=[];
 case 1  % vector type data (1 axis + signal) -> plot
@@ -52,13 +54,13 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   if not(all(m == 1) | all(m == 0)),
     z = z./m; zlab = [zlab ' per monitor' ];
   end
-  if isvector(a) == 2 % plot3
+  if isvector(a) == 2 % plot3/fscatter3
     if (strfind(method,'plot3'))
       h = plot3(x,y,z);
     else
       h=fscatter3(x,y,z,z);
     end
-  else                % surf
+  else                % surf and similar stuff
     C = [];
     if isvector(x) & isvector(y), z=z'; end
     if (strfind(method,'contour3'))
@@ -84,17 +86,17 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     end
   end
   zlabel(zlab);
-case 3
+case 3  % #d data sets: volumes
   [x, xlab] = getaxis(a,1);
   [y, ylab] = getaxis(a,2);
   [z, zlab] = getaxis(a,3);
   [c, clab] = getaxis(a,0);
   m         = get(a,'Monitor');
   if not(all(m == 1) | all(m == 0)), c = c./m; clab = [clab ' per monitor' ]; end
-  if isvector(a) == 3 % plot3-like
-    h=fscatter3(x,y,z,c);
+  if isvector(a) == 3 | ~isempty(strfind(method, 'plot3')) % plot3-like
+    h=fscatter3(x(:),y(:),z(:),c(:));
   else
-    if strfind(method, 'surf')
+    if ~isempty(strfind(method, 'surf')) | ~isempty(strfind(method, 'vol3d'))
       h = vol3d('cdata',c,'texture','3D','xdata',x,'ydata',y,'zdata',z);
       alphamap('vdown');
       vol3d(h);
@@ -149,7 +151,7 @@ if ndims(a) >= 2
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
   uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
 end
-% attach menu to plot
+% attach contexual menu to plot
 set(h, 'UIContextMenu', uicm);
 set(h, 'Tag', char(a));
 set(gcf, 'Name', char(a));
