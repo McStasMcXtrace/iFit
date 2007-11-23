@@ -1,0 +1,42 @@
+
+
+min, max
+colon (morphing !) colon=interp a*i+b*(1-i)
+linspace
+sort
+diff
+trapz, quad
+sum
+cumsum (integral)
+prod
+cat = combine (avec iData ou numeric)
+mean, std, median, var, cov, corrcoef
+fft
+conv (conv2, convn)
+filter, filter2
+deconv
+del2
+norm
+quiver, quiver2 with gradient
+exp
+
+Problems:
+  setalias(a,'x','y(1:10)') i.e. having a subsref expression within an alias does not work
+  put iLoad into private and evaluate postprocess in iData/load
+
+Doc
+  iData structure, aliases, axes
+  loading data files
+  plots
+  unary operators
+  binary operators
+  other methods (find...)
+  interpolation
+  fitting
+  examples/tipical usage
+
+Contributed code (Matlab Central): 
+  fscatter3:  Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
+  vol3d:      Joe Conti, 2004
+  genop:      Douglas M. Schwarz, 13 March 2006
+  
