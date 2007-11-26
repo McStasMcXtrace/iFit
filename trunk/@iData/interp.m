@@ -48,9 +48,10 @@ if ndims(a) == 0
   iData_private_warning(mfilename,['Object ' inputname(1) ' ' a.Tag ' is empty. Nothing to interpolate.']);
   return
 end
+% removes warnings during interp
 try
-warn.set = warning('off','iData:setaxis');
-warn.get = warning('off','iData:getaxis');
+  warn.set = warning('off','iData:setaxis');
+  warn.get = warning('off','iData:getaxis');
 catch
 end
 % default axes/parameters
@@ -66,12 +67,12 @@ i_axes = a_axes;
 axis_arg_index=0;
 requires_meshgrid=0;
 
-% parse varargin to overload defaults
+% parse varargin to overload defaults and set manually the axes
 for index=1:length(varargin)
   c = varargin{index};
   if ischar(c) & ~isempty(strfind(c,'grid')) 
     requires_meshgrid=1;
-  elseif ischar(c)  % method (char)
+  elseif ischar(c)                      % method (char)
     method = c;
   elseif isnumeric(c) & length(c) > 1   % vector/matrix
     axis_arg_index = axis_arg_index+1;
@@ -96,6 +97,7 @@ for index=1:length(varargin)
   end
 end
 
+% check for method to be valid
 if isempty(strmatch(method, {'linear','cubic','spline','nearest'}))
   iData_private_error(mfilename,['Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest.']);
 end
@@ -214,9 +216,10 @@ b = iData_private_history(b, mfilename, a, varargin{:});
 % final check
 b = iData(b);
 
+% reset warnings during interp
 try
-warning(warn.set,'iData:setaxis');
-warning(warn.get,'iData:getaxis');
+  warning(warn.set,'iData:setaxis');
+  warning(warn.get,'iData:getaxis');
 catch
 end
 
