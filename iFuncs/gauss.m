@@ -20,6 +20,7 @@ else
   
   switch action
   case 'identify'
+    y.Type           = 'iFit fitting function';
     y.Name           = 'Gaussian (1D)';
     y.Parameters     = {'Amplitude','Centre','HalfWidth','Background'};
     y.Dimension      = 1;         % dimensionality of input space (axes)

@@ -402,7 +402,7 @@ else
   % build main figure
   %
   NL= sprintf('\n');
-  fig = figure('HitTest','off','MenuBar','none', 'HandleVisibility','off', ...
+  fig = figure('HitTest','off','MenuBar','none', ...
                'CloseRequestFcn','uigetfiles(struct(''action'',''cancel''));', ...
                'Resize','off','Tag','UIGetFiles','Name','Select File(s) to open', ...
                'NumberTitle','off','Unit','pixels', ...
@@ -519,7 +519,7 @@ else
 
   set(UD.Handle.List, 'Max', smode, 'Min', 0);
 
-  set(fig, 'UserData', UD);
+  set(fig, 'UserData', UD, 'HandleVisibility','off');
 end
 if smode > 0
   if smode ~= get(UD.Handle.List, 'Max')
