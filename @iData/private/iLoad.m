@@ -97,11 +97,11 @@ if ischar(filename) & length(filename) > 0
     data = iLoad_import(filename, loader);
   end
 elseif isempty(filename)
-  if exist('uigetfiles')
+  %if exist('uigetfiles')
     [filename, pathname] = uigetfiles;
-  else
-    [filename, pathname] = uigetfile;
-  end
+  %else
+  %  [filename, pathname] = uigetfile;
+  %end
   if isempty(filename), return; end
   filename = strcat(pathname, filesep, filename);
   [data, loader] = iLoad(filename, loader);

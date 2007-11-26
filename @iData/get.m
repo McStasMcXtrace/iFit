@@ -131,6 +131,7 @@ if strcmp(name, 'Error')  % Error is sqrt(Signal) if not defined
   if isempty(val) & isnumeric(get(this,'Signal'))
     val = sqrt(get(this,'Signal'));
   end
+  if all(val == 0), val = 1; end  % avoids 0 error
   if length(val) ~= 1 & ~all(size(val) == size(this))
     iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) '] has not the same size as the Signal [' num2str(size(this)) '] in iData object ' this.Tag '.\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
   end
