@@ -1,31 +1,44 @@
 function out = load(a, varargin)
-% d=load(s, file, ...): iData file loader
+% d=load(s, file, loader): iData file loader
 %
 %   @iData/load: imports any data into Matlab/iData object(s)
-%   The input arguments 'file' should be a file name, or a cell of file names, 
-%   or any Matlab variable, or empty (then popup a file selector).
+%   The input argument 'file' should be a file name, or a cell of file names, 
+%     or any Matlab variable, or empty (then popup a file selector).
+%   The choice of the data file importer is set by default to automatic, so
+%     that most common data importers are tested until one works. User may configure
+%     a list of prefered loader definitions in a file called iData_load_ini.
+%   The optional 3rd argument can be force to use a specific loader list (see below)
 %   The input iData object is updated if no output argument is specified.
 %
 % input:  s: object or array (iData)
-%         file: file name to import (char)
-%         loader: optional loader method specification (char/struct)
-%             a function name to use as import routine, OR a structure with:
-%               loader.method = 'function name'
-%               loader.options= string of options
-% output: d: single object or array (iData)
-% ex:     load(iData,'file') or load(iData)
+%         file: file name(s) to import (char/cellstr)
+%         loader: optional loader method specification (char/struct/cellstr/array of struct)
+%               loader = 'auto' (default) test all known data readers until one works
+%               loader = 'gui'  manually ask user for the loader(s) to use
+%             OR a function name to use as import routine, OR a struct/cell of struct with:
+%               loader.method     = function to read data file (char/function_handle)
+%               loader.options    = options (char/cell which is then expanded)
+%               loader.postprocess= function to act on freshly imported iData (char/function_handle)
 %
-% See also: iLoad, save, iData/saveas
+% The loading process calls first
+%   data =loader.method(filename, options...)
+% then build the iData object, and optionally calls
+%   iData=loader.postprocess(iData)
+%
+% output: d: single object or array (iData)
+% ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
+%
+% See also: iLoad, save, iData/saveas, iData_load_ini
 
-% calls iFiles/iLoad
+% calls private/iLoad
 % iLoad returns nearly an iData structure.
 % EF 23/09/07 iData implementation
 
-if isempty(varargin), files = iLoad; 
-else files = iLoad(varargin); end
+if isempty(varargin), [files, loaders] = iLoad; 
+else [files, loaders] = iLoad(varargin); end
 
-files = files{1};
-if isstruct(files), files = { files }; end
+if isstruct(files),   files = { files }; end
+if isstruct(loaders), loaders = { loaders }; end
 out = [];
 for i=1:length(files)
   out = [ out iData(files{i}) ];
@@ -40,6 +53,10 @@ for i=1:length(files)
   if isfield(files{i},'Headers')
     out(i).Data.Headers = files{i}.Headers;
     out(i)=setalias(out(i), 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
+  end
+  
+  if ~isempty(loaders{i}.postprocess)
+    out(i) = feval(loaders{i}.postprocess, out(i));
   end
   
   out(i) = iData_private_history(out(i), mfilename, a, files{i}.Source);
