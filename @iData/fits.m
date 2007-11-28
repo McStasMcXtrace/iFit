@@ -81,6 +81,16 @@ function [pars,criteria,message,output] = fits(a, model, pars, constrains, optio
 %  Minimum change in variables for finite differencing.
  
 % handle default parameters, if missing
+% handle input options: depends on chosen method
+if nargin < 3
+  pars = [];
+end
+if nargin < 4
+  constrains = [];
+end
+if nargin < 5
+  options = optimset('fzero');
+end
 
 % handle input iData arrays
 if length(a) > 1
@@ -93,43 +103,48 @@ if length(a) > 1
   return
 end
 
-% handle input options: depends on chosen method
-if nargin < 3
-  pars = [];
-end
-if nargin < 4
-  constrains = [];
-end
-if nargin < 5
-  options = optimset('fzero');
-end
 if ~isfield(options, 'algorithm')
   options.algorithm = @fminsearch;
 end
 if ~isfield(options, 'criteria')
   options.criteria = @least_square;
 end
+if isempty(pars)
+  [dummy, pars] = feval(a, model);
+end
 
-% extract signal, error and axes from iData
-Signal = get(a,'Signal');
-Error  = get(a,'Error');
-Axes   = cell(1,ndims(a));
-for index=1:ndims(a)
-  Axes{index} = getaxis(a, index);  % loads object axes, or 1:end if not defined 
+% removes warnings
+try
+  warn.set = warning('off','iData:setaxis');
+  warn.get = warning('off','iData:getaxis');
+catch
+  warn = warning('off');
 end
 
 % call minimizer
 [pars_out,criteria,message,output] = feval(options.algorithm, ...
-    @(pars) eval_criteria(pars, model, options.criteria, Signal, Error, Axes), pars, options);
+    @(pars) eval_criteria(pars, model, options.criteria, a), pars, options);
 
 pars = pars_out;
-output.modelValue = eval_model(pars, model, Axes);
+output.modelValue = feval(a, model, pars);
+
+% reset warnings
+try
+  warning(warn.set,'iData:setaxis');
+  warning(warn.get,'iData:getaxis');
+catch
+  warning(warn);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRIVATE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-function c = eval_criteria(pars, model, criteria, Signal, Error, a)
+function c = eval_criteria(pars, model, criteria, a)
 % criteria to minimize
-  Model = feval(a, model, pars);
+
+  Signal = get(a,'Signal');
+  Error  = get(a,'Error');
+  Model  = feval(a, model, pars);
+  Model  = get(Model, 'Signal');
+  
   % return criteria
   c = feval(criteria, Signal(:), Error(:), Model(:));
 
@@ -142,5 +157,4 @@ else
   index = find(Error);
   c=sum((Signal(index)-Model(index)).^2./(Error(index).^2));
 end
-
 
