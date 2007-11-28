@@ -1,4 +1,4 @@
-function b = feval(a, model, pars, varargin)
+function [b, out_pars] = feval(a, model, pars, varargin)
 % b = feval(a, model, varargin) evaluate a function on the axes of an object
 %
 %   @iData/feval applies the function 'model' using the axes of the object 'a'
@@ -24,10 +24,25 @@ function b = feval(a, model, pars, varargin)
 % private functions: 
 %   genop: Douglas M. Schwarz, 13 March 2006
 
-if nargin < 3
+if nargin < 2
   iData_private_error(mfilename, 'Function evaluation requires at least 3 parameters');
 end
+if nargin < 3
+  pars = [];
+end
+if nargin < 4
+  varargin = {};
+end
 
+if length(a) > 1
+  b = a;
+  for index=1:length(a(:))
+    b(index) = feval(a(index), model, pars, varargin);
+  end
+  b = reshape(b, size(a));
+  return
+end
+out_pars=[];
 Axes   = cell(1,ndims(a));
 for index=1:ndims(a)
   Axes{index} = getaxis(a, index);  % loads object axes, or 1:end if not defined 
@@ -35,7 +50,16 @@ end
 
 % evaluate model signal
 if ischar(model) | isa(model, 'function_handle')
-  Model = feval(model, pars, Axes{:}, varargin{:});
+  if isempty(pars)
+    model_info = feval(model,'identify');  % get identification info
+    pars       = model_info.Guess;
+  end
+  if ~isempty(varargin)
+    Model = feval(model, pars, Axes{:}, varargin{:});
+  else
+    Model = feval(model, pars, Axes{:});
+  end
+  out_pars = pars;
 elseif iscell(model)
   % identify the model dimensionality
   axis_index=1;
@@ -45,21 +69,31 @@ elseif iscell(model)
   for index=1:length(model(:))
     model_info = feval(model{index},'identify');  % get identification info
     % check dimensions: are enough axes and parameters available ?
-    if length(a_axes(:)) < axis_index+model_info.Dimension-1
+    if length(Axes(:)) < axis_index+model_info.Dimension-1
       iData_private_error([ mfilename '/' model{index} ], ...
-        [ 'Axis length is ' num2str(length(a_axes(:))) ' but the axis ' ...
+        [ 'Axis length is ' num2str(length(Axes(:))) ' but the axis ' ...
           num2str(axis_index+model_info.Dimension-1) ' is requested in ' ...
           num2str(index) '-th model function ' char(model{index}) ' when fitting object ' a.Tag ]);
-    elseif length(pars) < pars_index+length(model_info.Parameters)-1
+    end
+    if ~isempty(pars) & length(pars) < pars_index+length(model_info.Parameters)-1
       iData_private_error([ mfilename '/' model{index} ], ...
         [ 'Parameters length is ' num2str(length(pars)) ' but the parameter ' ...
           num2str(pars_index+length(model_info.Parameters)-1) ' is requested in ' ...
           num2str(index) '-th model function ' char(model{index}) ' when fitting object ' a.Tag ]);
     end
+    if isempty(pars)
+      this_pars = model_info.Guess;
+    else
+      this_pars = pars(pars_index:(pars_index+length(model_info.Parameters)-1));
+    end
+    this_axes = Axes{axis_index:(axis_index+model_info.Dimension-1)};
+    out_pars = [ out_pars this_pars ];
     % evaluate sub-model
-    model_value  = feval(model{index}, ...
-      pars(pars_index:(pars_index+length(model_info.Parameters)-1)), ...
-      a_axes{axis_index:(axis_index+model_info.Dimension-1)}, varargin{:} );
+    if ~isempty(varargin)
+      model_value  = feval(model{index}, this_pars, this_axes, varargin{:} );
+    else
+      model_value  = feval(model{index}, this_pars, this_axes);
+    end
     model_value  = squeeze(model_value);
     model_values = { model_values{:} ;  model_value }; % append to model values
     

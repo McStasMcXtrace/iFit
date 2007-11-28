@@ -53,6 +53,7 @@ try
   warn.set = warning('off','iData:setaxis');
   warn.get = warning('off','iData:getaxis');
 catch
+  warn = warning('off');
 end
 % default axes/parameters
 a_axes = cell(1,ndims(a)); a_labels=a_axes;
@@ -221,6 +222,7 @@ try
   warning(warn.set,'iData:setaxis');
   warning(warn.get,'iData:getaxis');
 catch
+  warning(warn);
 end
 
 
