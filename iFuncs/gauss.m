@@ -23,7 +23,7 @@ else
     y.Type           = 'iFit fitting function';
     y.Name           = 'Gaussian (1D)';
     y.Parameters     = {'Amplitude','Centre','HalfWidth','Background'};
-    y.Dimension      = 1;         % dimensionality of input space (axes)
+    y.Dimension      = 1;         % dimensionality of input space (axes) and result
     y.Guess          = [1 0 1 1]; % default parameters
   end
 end

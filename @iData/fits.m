@@ -127,69 +127,20 @@ output.modelValue = eval_model(pars, model, Axes);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRIVATE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function Model = eval_model(pars, model, Axes)
-% evaluate the model(pars) with given axes
-
-% evaluate model signal
-if ~iscellstr(model)
-  Model = feval(model, pars, Axes{:});
-elseif iscell(model)
-  % identify the model dimensionality
-  axis_index=1;
-  pars_index=1;
-  model_values={};
-  model_ndims ={};
-  for index=1:length(model(:))
-    model_info = feval(model{index},'identify');  % get identification info
-    % check dmensions: are enought axes and parameters available ?
-    if length(a_axes(:)) < axis_index+model_info.Dimension-1
-      iData_private_error([ mfilename '/' fun{index} ], ...
-        [ 'Axis length is ' num2str(length(a_axes(:))) ' but the axis ' ...
-          num2str(axis_index+model_info.Dimension-1) ' is requested in ' ...
-          num2str(index) '-th model function ' char(fun{index}) ' when fitting object ' a.Tag ]);
-    elseif length(pars) < pars_index+length(model_info.Parameters)-1
-      iData_private_error([ mfilename '/' fun{index} ], ...
-        [ 'Parameters length is ' num2str(length(pars)) ' but the parameter ' ...
-          num2str(pars_index+length(model_info.Parameters)-1) ' is requested in ' ...
-          num2str(index) '-th model function ' char(fun{index}) ' when fitting object ' a.Tag ]);
-    end
-    % evaluate sub-model
-    model_value= feval(model{index}, ...
-      pars(pars_index:(pars_index+length(model_info.Parameters)-1)), ...
-      a_axes{axis_index:(axis_index+model_info.Dimension-1)} );
-    model_value=squeeze(model_value);
-    model_values = { model_values{:} ;  model_value }; % append to model values
-    
-    % get the dimensionality of sub-model
-    n = size(model_value);
-    if     all(n == 0), n=0;
-    else n = n(find(n > 1)); end
-  
-    % assign individual model dimensions
-    model_ndim=ones(1,ndims(a));
-    model_ndim(axis_index:(axis_index+model_info.Dimension-1)) = n;
-    model_ndims ={ model_ndims{:} ; model_ndim };
-    axis_index=axis_index+model_info.Dimension;
-    pars_index=pars_index+length(model_info.Parameters);
-  end % for sub-models
-  % now make up the product of sub-space models
-  Model = model_values{1};
-  for index=2:length(model_values)
-    Model = genop(@times, Model, model_values{index});
-  end
-end
-
-function c = eval_criteria(pars, model, criteria, Signal, Error, Axes)
-%
-  Model = eval_model(pars, model, Axes);
+function c = eval_criteria(pars, model, criteria, Signal, Error, a)
+% criteria to minimize
+  Model = feval(a, model, pars);
   % return criteria
   c = feval(criteria, Signal(:), Error(:), Model(:));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function c=least_square(Signal, Error, Model)
 % weighted least square criteria, which is also the Chi square
-index = find(Error);
-c=sum((Signal(index)-Model(index)).^2./(Error(index).^2));
+if all(Error == 0)
+  c = sum((Signal-Model).^2);
+else
+  index = find(Error);
+  c=sum((Signal(index)-Model(index)).^2./(Error(index).^2));
+end
 
 

@@ -45,7 +45,12 @@ case 1  % vector type data (1 axis + signal) -> plot
   if not(all(m == 1) | all(m == 0)),
     y = y./m; e=e./m; ylab = [ylab ' per monitor' ];
   end
-  h = errorbar(x,y,e);
+  if isempty(method), method='b-'; end
+  if all(e == 0)
+    h = plot(x,y, method);
+  else
+    h = errorbar(x,y,e);
+  end
 case 2  % surface type data (2 axes+signal) -> surf or plot3
   [x, xlab] = getaxis(a,1);
   [y, ylab] = getaxis(a,2);

@@ -139,7 +139,7 @@ return
 % iData_struct2iData: converts a structure into an iData
 function b=iData_struct2iData(a)
 
-  f  =fieldnames(a);
+  f  = fieldnames(a);
   b  = iData; 
   fb = fieldnames(b);
   if isfield(a, 'Data')   % start by storing the raw Data
