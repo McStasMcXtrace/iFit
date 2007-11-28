@@ -44,7 +44,7 @@ elseif iscell(model)
   model_ndims ={};
   for index=1:length(model(:))
     model_info = feval(model{index},'identify');  % get identification info
-    % check dimensions: are enought axes and parameters available ?
+    % check dimensions: are enough axes and parameters available ?
     if length(a_axes(:)) < axis_index+model_info.Dimension-1
       iData_private_error([ mfilename '/' model{index} ], ...
         [ 'Axis length is ' num2str(length(a_axes(:))) ' but the axis ' ...
@@ -65,7 +65,7 @@ elseif iscell(model)
     
     % get the dimensionality of sub-model
     n = size(model_value);
-    if     all(n == 0), n=0;
+    if     all(n == 0), n=0; continue;
     else n = n(find(n > 1)); end
   
     % assign individual model dimensions
@@ -87,6 +87,7 @@ end
 % build the output iData object
 b = copyobj(a);
 setalias(b,'Signal', Model);
+setalias(b, 'Error', 0);
 b = iData_private_history(b, mfilename, a, model, pars, varargin{:});  
 % final check
 b = iData(b);
