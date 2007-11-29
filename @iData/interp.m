@@ -219,8 +219,8 @@ b = iData(b);
 
 % reset warnings during interp
 try
-  warning(warn.set,'iData:setaxis');
-  warning(warn.get,'iData:getaxis');
+  warning(warn.set);
+  warning(warn.get);
 catch
   warning(warn);
 end
