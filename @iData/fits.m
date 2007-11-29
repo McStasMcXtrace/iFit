@@ -17,18 +17,16 @@ function [pars,criteria,message,output] = fits(a, model, pars, constrains, optio
 %             the syntax for calling the optimizer is e.g. fminsearch(criteria,pars,options)
 %           options.criteria: minimization criteria. Default is 'least_square' (char/function handle)
 %             the syntax fo evaluating the criteria is least_square(Signal, Error, Model)
-% output: pars: best parameter estimates (double array)
-%         criteria: minimal criteria value achieved (double)
-%         message: return message/exitcode from the optimizer (char)
-%         output:  information about the optimization (structure)
-%           algorithm         Algorithm used
-%           funcCount         Number of function evaluations
-%           iterations        Number of iterations
-%           message           Exit message (exitflag)
-%           parameterHistory  Parameter set history during optimization 
-%           criteriaHistory   Criteria history during optimization  
-%           criteria          Last criteria history
-%           modelValue        Last model evaluation
+% output: information about the optimization (structure)
+%         pars:              best parameter estimates (double array)
+%         criteria:          minimal criteria value achieved (double)
+%         message:           return message/exitcode from the optimizer (char)
+%         algorithm:         Algorithm used (char)
+%         funcCount:         Number of function evaluations (double)
+%         iterations:        Number of iterations (double)
+%         parameterHistory:  Parameter set history during optimization (double array)
+%         criteriaHistory:   Criteria history during optimization (double array)
+%         modelValue:        Last model evaluation (iData)
 % ex:     p=fits(a,'gauss',[1 2 3 4]);
 %
 % See also iData, fminsearch, optimset, optimget
@@ -125,13 +123,18 @@ end
 [pars_out,criteria,message,output] = feval(options.algorithm, ...
     @(pars) eval_criteria(pars, model, options.criteria, a), pars, options);
 
+% set output/results
 pars = pars_out;
 output.modelValue = feval(a, model, pars);
+output.criteria   = criteria;
+outout.pars       = pars;
+output.message    = message;
+output.algorithm  = options.algorithm;
 
 % reset warnings
 try
-  warning(warn.set,'iData:setaxis');
-  warning(warn.get,'iData:getaxis');
+  warning(warn.set);
+  warning(warn.get);
 catch
   warning(warn);
 end
@@ -155,6 +158,8 @@ if all(Error == 0)
   c = sum((Signal-Model).^2);
 else
   index = find(Error);
-  c=sum((Signal(index)-Model(index)).^2./(Error(index).^2));
+  c=(Signal(index)-Model(index))./Error(index);
+  c=abs(c);
+  c=sum(c.*c);
 end
 
