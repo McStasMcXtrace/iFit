@@ -24,25 +24,33 @@ for i = 1:length(S)     % can handle multiple index levels
     if length(b(:)) > 1   % iData array
       b = b(s.subs{:});
     else                  % single iData
+      try % disable some warnings
+        warn.seta = warning('off','iData:setaxis');
+        warn.geta = warning('off','iData:getaxis');
+        warn.get  = warning('off','iData:get');
+      catch
+        warn = warning('off');
+      end
       % this is where specific class structure is taken into account
-      if ischar(s.subs{:}), b=get(b, s.subs{:}); return; end
+      if ischar(s.subs{1}), b=get(b, s.subs{:}); return; end
       d=get(b,'Signal'); d=d(s.subs{:});  b=set(b,'Signal', d);
 
-      d=get(b,'Error');  d=d(s.subs{:}); b=set(b,'Error', d);
+      d=get(b,'Error');  if numel(d) > 1, d=d(s.subs{:}); b=set(b,'Error', d); end
 
-      d=get(b,'Monitor'); d=d(s.subs{:}); b=set(b,'Monitor', d);
+      d=get(b,'Monitor'); if numel(d) > 1, d=d(s.subs{:}); b=set(b,'Monitor', d); end
 
       % must also affect axis
       for index=1:ndims(b)
         if index <= length(b.Alias.Axis)
           x = getaxis(b,index);
+          ax= b.Alias.Axis{index};   % definition of Axis
           if all(size(x) == size(b)) % meshgrid type axes
-            b = setaxis(b, index, x(s.subs{:}));
+            b = setaxis(b, index, ax, x(s.subs{:}));
           else  % vector type axes
-            b = setaxis(b, index, x(s.subs{index}));
+            b = setaxis(b, index, ax, x(s.subs{index}));
           end
         end
-      end
+      end 
       
       b = copyobj(b);
       
@@ -65,6 +73,15 @@ for i = 1:length(S)     % can handle multiple index levels
       b = iData_private_history(b, toadd);
       % final check
       b = iData(b);
+      % reset warnings
+      try
+        warning(warn.seta);
+        warning(warn.geta);
+        warning(warn.get);
+      catch
+        warning(warn);
+      end
+
     end               % if single iData
   case '{}'
     if length(b(:)) > 1   % iData array
