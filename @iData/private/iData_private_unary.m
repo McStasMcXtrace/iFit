@@ -80,5 +80,4 @@ b = iData_private_history(b, op, b);
 
 % other methods to treat specifically
 % diff, min, max, sum, prod, sort, trapz
-% pack (compress what can be compressed (Command, Data, try sparse/full...)
 
