@@ -14,7 +14,7 @@ function [ai,bi] = intersect(a, b)
 % See also iData, iData/setaxis, iData/getaxis, iData/interp, iData/union
 
 if nargin == 2
-  bi = interp([a b]);
+  bi = intersect([a b]);
   ai = bi(1);
   bi = bi(2);
   return

@@ -56,8 +56,16 @@ if nargin <= 3
   values=[];
 end
 
-if isnumeric(names) & nargin >2, names=mat2str(names(:)); end
-if ~isempty(names), names = cellstr(names); else names = { [] }; end
+%if isnumeric(names) & nargin >2, names=mat2str(names(:)); end
+if ~isempty(names), 
+  if ~isnumeric(names)
+    names = cellstr(names); 
+  else
+    values = names;
+  end
+else 
+  names = { [] }; 
+end
 if ~iscell(indexes), 
   if isnumeric(indexes), indexes=num2cell(indexes);
   else indexes = { indexes }; end
@@ -67,6 +75,13 @@ if ~iscell(values), values = { values }; end
 s_out = a_in(:);
 for i1 = 1:length(s_out)
   a = s_out(i1); % current object in array/single element
+  if isnumeric(names) & length(indexes) == 1
+    S=struct('type','{}','subs',{indexes});
+    a = subsasgn(a, S, names);
+    a = iData_private_history(a, mfilename, a, indexes, names);
+    s_out(i1) = iData(a); % final check
+    continue;
+  end
 
   for j1=1:length(names) % loop on axis names
     name = names{j1};

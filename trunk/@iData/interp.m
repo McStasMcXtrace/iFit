@@ -240,6 +240,10 @@ switch length(a_axes)
 case 1
   i_signal = interp1(a_axes{1},   a_signal, i_axes{1},   method);
 otherwise
+  if length(a_signal) == 1
+    i_signal = a_signal;
+    return
+  end
   if length(a_signal) == numel(a_signal)
     i_signal = griddata(a_axes{:}, a_signal, i_axes{:}, method);
   else

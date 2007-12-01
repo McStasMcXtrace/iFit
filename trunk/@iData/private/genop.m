@@ -40,8 +40,9 @@ function z = genop(op,x,y)
 if ~(nargin == 1 || nargin == 3)
 	error('genop:zeroInputs','1 or 3 arguments required.')
 end
-if ~isa(op,'function_handle')
-	error('genop:incorrectOperator','Operator must be a function handle.')
+if ~isa(op,'function_handle') & ischar(op)
+  op = str2func(op);
+	%error('genop:incorrectOperator','Operator must be a function handle.')
 end
 if nargin == 1
 	z = @(x,y) genop(op,x,y);
@@ -67,6 +68,7 @@ end
 
 % Check for dimensional compatibility of inputs, compute size and class of
 % output array and allocate it.
+
 if ~(all(sx(dz) == 1 | sy(dz) == 1))
 	error('genop:argSizeError','Argument dimensions are not compatible.')
 end
