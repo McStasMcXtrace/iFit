@@ -108,7 +108,7 @@ if ~isfield(options, 'criteria')
   options.criteria = @least_square;
 end
 if isempty(pars)
-  [dummy, pars] = feval(a, model);
+  [dummy, pars] = ieval(a, model);
 end
 
 % removes warnings
@@ -125,7 +125,7 @@ end
 
 % set output/results
 pars = pars_out;
-output.modelValue = feval(a, model, pars);
+output.modelValue = ieval(a, model, pars);
 output.criteria   = criteria;
 outout.pars       = pars;
 output.message    = message;
@@ -145,7 +145,7 @@ function c = eval_criteria(pars, model, criteria, a)
 
   Signal = get(a,'Signal');
   Error  = get(a,'Error');
-  Model  = feval(a, model, pars);
+  Model  = ieval(a, model, pars);
   Model  = get(Model, 'Signal');
   
   % return criteria
