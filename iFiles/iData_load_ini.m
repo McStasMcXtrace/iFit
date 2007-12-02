@@ -61,8 +61,30 @@ function loaders = iData_load_ini
     format7.options    ='--headers --metadata="#S " --comment= ';
     format7.method     ='looktxt';
     format7.postprocess='';
- 
-    loaders= { format1, format2, format3, format4, format5, format6, format7 };
+    
+    format8.name       ='McStas Scan output';
+    format8.patterns   ={'# Numpoints:','# variables:','# title: Scan of'};
+    format8.options    = '--headers --comment= --metadata=variables';
+    format8.method     ='looktxt';
+    format8.postprocess='mcscanload';
+    
+    format9.name       ='McStas 2D monitor';
+    format9.patterns   ={'# variables:','# xlabel:','# ylabel:','# zlabel:','# xylimits:','# Errors','# Events'};
+    format9.options    = ['--headers --comment= --metadata=variables ' ...
+		    '--metadata=Errors --metadata=Events --metadata=xlabel ' ...
+		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits'];
+    format9.method     ='looktxt';
+    format9.postprocess='mc2dload';
+    
+    format10.name       ='McStas 1D monitor';
+    format10.patterns   ={'# variables:','# xlabel:','# ylabel:'};
+    format10.options    = '--headers --comment= --metadata=variables --metadata=xlabel --metadata=ylabel';
+    format10.method     ='looktxt';
+    format10.postprocess='mc1dload';
+    
+    
+    loaders= { format1, format2, format3, format4, format5, format6, ...
+	       format7, format8, format9, format10};
     
 
 
