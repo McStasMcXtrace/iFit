@@ -41,26 +41,26 @@ if isstruct(files),   files = { files }; end
 if isstruct(loaders), loaders = { loaders }; end
 out = [];
 for i=1:length(files)
-  out = [ out iData(files{i}) ];
+  this_iData =  iData(files{i});
   % specific adjustments for looktxt (default import method)
   [pathname,filename,ext] = fileparts(files{i}.Source);
   try % create MetaData alias if present in structure
-    c = out(i).Data.MetaData; clear c;
-    out(i)=setalias(out(i), 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
+    c = this_iData.Data.MetaData; clear c;
+    this_iData=setalias(this_iData, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
   catch
   end
 
   if isfield(files{i},'Headers')
-    out(i).Data.Headers = files{i}.Headers;
-    out(i)=setalias(out(i), 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
+    this_iData.Data.Headers = files{i}.Headers;
+    this_iData=setalias(out(i), 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
   end
   
   if ~isempty(loaders{i}.postprocess)
-    out(i) = feval(loaders{i}.postprocess, out(i));
+    this_iData = feval(loaders{i}.postprocess, this_iData);
   end
   
-  out(i) = iData_private_history(out(i), mfilename, a, files{i}.Source);
-  
+  this_iData = iData_private_history(this_iData, mfilename, a, files{i}.Source);
+  out = [ out this_iData ];  
 end
 
 if nargout == 0 & length(inputname(1))
