@@ -69,7 +69,7 @@ function loaders = iData_load_ini
     format8.postprocess='mcscanload';
     
     format9.name       ='McStas 2D monitor';
-    format9.patterns   ={'# variables:','# xlabel:','# ylabel:','# zlabel:','# xylimits:','# Errors','# Events'};
+    format9.patterns   ={'Format: McStas with text headers file.','# type: array_2d'};
     format9.options    = ['--headers --comment= --metadata=variables ' ...
 		    '--metadata=Errors --metadata=Events --metadata=xlabel ' ...
 		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits'];
@@ -77,14 +77,20 @@ function loaders = iData_load_ini
     format9.postprocess='mc2dload';
     
     format10.name       ='McStas 1D monitor';
-    format10.patterns   ={'# variables:','# xlabel:','# ylabel:'};
+    format10.patterns   ={'Format: McStas with text headers file.','# type: array_1d'};
     format10.options    = '--headers --comment= --metadata=variables --metadata=xlabel --metadata=ylabel';
     format10.method     ='looktxt';
     format10.postprocess='mc1dload';
     
+    format11.name       ='McStas sim file';
+    format11.patterns   ={'Format: McStas with text headers file.'};
+    format11.options    = '--headers --comment=';
+    format11.method     ='looktxt';
+    format11.postprocess='mcsimload';
+    
     
     loaders= { format1, format2, format3, format4, format5, format6, ...
-	       format7, format8, format9, format10};
+	       format7, format8, format9, format10, format11};
     
 
 
