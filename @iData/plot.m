@@ -49,7 +49,7 @@ case 1  % vector type data (1 axis + signal) -> plot
   if all(e == 0)
     h = plot(x,y, method);
   else
-    h = errorbar(x,y,e);
+    h = errorbar(x,y,e,method);
   end
 case 2  % surface type data (2 axes+signal) -> surf or plot3
   [x, xlab] = getaxis(a,1);
