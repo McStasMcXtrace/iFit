@@ -1,7 +1,7 @@
-function [b, out_pars] = feval(a, model, pars, varargin)
-% b = feval(a, model, varargin) evaluate a function on the axes of an object
+function [b, out_pars] = ieval(a, model, pars, varargin)
+% b = ieval(a, model, varargin) evaluate a function on the axes of an object
 %
-%   @iData/feval applies the function 'model' using the axes of the object 'a'
+%   @iData/ieval applies the function 'model' using the axes of the object 'a'
 %     and function parameters 'pars' with additional parameters.
 %     The model function must follow the syntax:
 %       y = model(pars, axis1, axis2, ...)
@@ -15,7 +15,7 @@ function [b, out_pars] = feval(a, model, pars, varargin)
 %         pars: model parameters (double array)
 %         additional parameters may be passed.
 % output: b: result of evaluation (iData)
-% ex:     b=feval(a,'gauss',[1 2 3 4]); or feval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
+% ex:     b=ieval(a,'gauss',[1 2 3 4]); or ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
 %
 % See also iData, feval
 % Contributed code (Matlab Central): 
@@ -37,7 +37,7 @@ end
 if length(a) > 1
   b = a;
   for index=1:length(a(:))
-    b(index) = feval(a(index), model, pars, varargin);
+    b(index) = ieval(a(index), model, pars, varargin);
   end
   b = reshape(b, size(a));
   return
