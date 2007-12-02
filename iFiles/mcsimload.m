@@ -7,14 +7,20 @@ function a=mcsimload(a0)
 % Find filename fields in sim struct:
 filenames = findstr(a0,'filename');
 dirname = fileparts(a0.Source);
-
 a=[];
-
-for j=1:length(filenames(:))
-  filename = filenames{j};
-  filename(1:length('filename: '))='';
-  filename(findstr(' ',filename):length(filename))='';
+if length(filenames(:)) > 0
+  % This is a McStas 'overview' plot
+  for j=1:length(filenames(:))
+    filename = filenames{j};
+    filename(1:length('filename: '))='';
+    filename(findstr(' ',filename):length(filename))='';
+    filename = fullfile(dirname,filename);
+    b = iData(filename);
+    a = [a b];
+  end
+else
+  % This is a .sim from a scan
+  filename = 'mcstas.dat';
   filename = fullfile(dirname,filename);
-  b = iData(filename);
-  a = [a b];
+  a = iData(filename);
 end

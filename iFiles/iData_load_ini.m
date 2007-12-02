@@ -83,7 +83,7 @@ function loaders = iData_load_ini
     format10.postprocess='mc1dload';
     
     format11.name       ='McStas sim file';
-    format11.patterns   ={'Format: McStas with text headers file.'};
+    format11.patterns   ={'begin simulation','  Format: McStas'};
     format11.options    = '--headers --comment=';
     format11.method     ='looktxt';
     format11.postprocess='mcsimload';
