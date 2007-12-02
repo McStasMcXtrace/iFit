@@ -52,7 +52,7 @@ for i=1:length(files)
 
   if isfield(files{i},'Headers')
     this_iData.Data.Headers = files{i}.Headers;
-    this_iData=setalias(out(i), 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
+    this_iData=setalias(this_iData, 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
   end
   
   if ~isempty(loaders{i}.postprocess)

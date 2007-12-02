@@ -162,12 +162,12 @@ set(h, 'Tag', char(a));
 set(gcf, 'Name', char(a));
 
 % labels
-xlabel(xlab);
-ylabel(ylab);
+xlabel(xlab,'interpreter','none');
+ylabel(ylab,'interpreter','none');
 if ndims(a) == 3
-  title({ clab ,titl });
+  title({ clab ,titl },'interpreter','none');
 else
-  title(titl);
+  title(titl,'interpreter','none');
 end
 
 % ============================================================================
