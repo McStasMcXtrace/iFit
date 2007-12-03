@@ -14,7 +14,7 @@ function [ai,bi] = union(a, b)
 % See also iData, iData/setaxis, iData/getaxis, iData/intersect
 
 if nargin == 2
-  bi = interp([a b]);
+  bi = union([a b]);
   ai = bi(1);
   bi = bi(2);
   return
@@ -48,7 +48,7 @@ end
 for j_ax = 1:ndims(a(index))  % for each dimension
   c_len{j_ax} = c_len{j_ax}/length(a);                  % mean axis length from original data
   len         = (c_max{j_ax}-c_min{j_ax})/c_step{j_ax}; % theoretical axis length
-  c_len{j_ax} = min(len, 10*c_len{j_ax});               % can not extend axes more than 10 times
+  c_len{j_ax} = min(len+1, 10*c_len{j_ax});             % can not extend axes more than 10 times
   c_axis{j_ax} = linspace(c_min{j_ax}, c_max{j_ax}, c_len{j_ax});
 end
 

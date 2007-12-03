@@ -1,11 +1,12 @@
 function m = max(a,b)
-% m = max(s) : computes the maximum value of iData object(s)
+% m = max(a,b) : computes the maximum value of iData object(s)
 %
 %   @iData/max function to compute the maximum value of data sets.
 %     max(iData) returns a single value as the maximum value of the iData signal
 %     max(a,b)   returns an object which signal is the lowest of a and b.
 %
-% input:  s: object or array (iData)
+% input:  a: object or array (iData)
+%         b: object or array (iData/double)
 % output: m: maximum value (double/iData)
 % ex:     b=max(a);
 %

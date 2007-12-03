@@ -2,9 +2,9 @@ function s_out = setalias(a_in,names,links,labels)
 % [s,...] = setalias(s, AliasName, AliasLink, AliasLabel) : set iData aliases
 %
 %   @iData/setalias function to set iData aliases.
-%   the function works also when AliasName, AliasLink, AliasLabel
-%   are given as cell strings. The AliasLink may be of any class, but char is
-%   interpreted as a link to search in the object.
+%   The function works also when AliasName, AliasLink, AliasLabel
+%     are given as cell strings. The AliasLink may be of any class, but char is
+%     interpreted as a link to search in the object.
 %   The special name 'this' may be used in Aliases to refer the object itself.
 %   When the link is empty, the alias is removed, so that
 %     setalias(s, getalias(s)) deletes all alias definitions.
