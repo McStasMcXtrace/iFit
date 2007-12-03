@@ -123,7 +123,14 @@ otherwise
 end
 
 % update object
-c = set(c, 'Signal', s3, 'Error', abs(e3), 'Monitor', m3);
+if strcmp(op, 'combine')  % dimension of result might change from original object. 
+                          % Can not store, thus redefine aliases as numerical values
+  c = setalias(c, 'Signal', s3);
+  c = setalias(c, 'Error', abs(e3));
+  c = setalias(c, 'Monitor', m3);
+else
+  c = set(c, 'Signal', s3, 'Error', abs(e3), 'Monitor', m3);
+end
 c = iData_private_history(c, op, a,b);
 
 % reset warnings

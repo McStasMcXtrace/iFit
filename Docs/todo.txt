@@ -6,13 +6,12 @@ sum
 cumsum (integral)
 prod
 cat = combine sur union (avec iData ou numeric)
-mean, std, median, var, cov, corrcoef
+norm, std, median, var, cov, corrcoef
 fft
 conv (conv2, convn)
 filter, filter2
 deconv
 del2
-norm
 quiver, quiver2 with gradient
 
 Problems:
