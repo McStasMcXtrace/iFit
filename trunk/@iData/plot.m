@@ -67,7 +67,11 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     end
   else                % surf and similar stuff
     C = [];
-    if isvector(x) & isvector(y), z=z'; end
+    if isvector(x) & isvector(y),
+      tmp = y;
+      y = x;
+      x = tmp;
+    end
     if (strfind(method,'contour3'))
       [C,h] =contour3(x,y,z);
     elseif (strfind(method,'contourf'))
