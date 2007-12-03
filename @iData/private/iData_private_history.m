@@ -17,12 +17,12 @@ if nargin >= 3 | length(varargin)
     b = varargin{i1};
     if ischar(b)
       toadd = [ toadd ', ''' b '''' ];
+    elseif isa(b, 'iData')
+      toadd = [ toadd ', <' class(b) ' ' b.Tag ' ' b.Source '>'  ];
     elseif isnumeric(b) | islogical(b) 
       if ndims(b) > 2, b=b(:); end
       if numel(b) > 100, b=b(1:100); end 
       toadd = [ toadd ', ' mat2str(double(b)) ];
-    elseif isa(b, 'iData')
-      toadd = [ toadd ', <' class(b) ' ' b.Tag ' ' b.Source '>'  ];
     else
       toadd = [ toadd ', <' class(b) '>'  ];
     end
