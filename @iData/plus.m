@@ -8,7 +8,7 @@ function c = plus(a,b)
 % output: c: object or array (iData)
 % ex:     c=a+1;
 %
-% See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
+% See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/combine
 
 c = iData_private_binary(a, b, 'plus');
 
