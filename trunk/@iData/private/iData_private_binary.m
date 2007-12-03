@@ -56,7 +56,11 @@ end
 
 % get Signal, Error and Monitor for 'a' and 'b'
 if isa(a, 'iData') & isa(b, 'iData') 
-  [a,b] = intersect(a,b); % perform operation on intersection
+  if strcmp(op, 'combine')
+    [a,b] = union(a,b); % perform combine on union
+  else
+    [a,b] = intersect(a,b); % perform operation on intersection
+  end
 end
 if ~isa(a, 'iData') 
   s1= a; e1=0; m1=0; p1=0;

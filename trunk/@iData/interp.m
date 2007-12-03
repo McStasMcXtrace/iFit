@@ -14,6 +14,7 @@ function b = interp(a, varargin)
 %     b=interp(s, 'method') uses specified method for interpolation as one of
 %                    linear, spline, cubic, or nearest
 %     b=interp(s, 'grid') uses meshgrid/ndgrid to determine new axes as arrays
+%   Extrapolated data is set to 0 for the Signal, Error and Monitor.
 %
 % input:  s: object or array (iData)
 %         d: single object from which interpolation axes are extracted (iData)
@@ -237,17 +238,25 @@ if length(a_signal) == numel(a_signal)
   end
 end
 switch length(a_axes)
-case 1
-  i_signal = interp1(a_axes{1},   a_signal, i_axes{1},   method);
-otherwise
-  if length(a_signal) == 1
+case 1    % 1D
+  i_signal = interp1(a_axes{1},   a_signal, i_axes{1},   method, 0);
+otherwise % nD, n>1
+  if length(a_signal) == 1  % single value ?
     i_signal = a_signal;
     return
   end
-  if length(a_signal) == numel(a_signal)
-    i_signal = griddata(a_axes{:}, a_signal, i_axes{:}, method);
+  if length(a_signal) == numel(a_signal)  % long vector nD Data set
+    if length(a_axes) == 2
+      i_signal = griddata(a_axes{:}, a_signal, i_axes{:}, method);
+    elseif length(a_axes) == 3
+      i_signal = griddata3(a_axes{:}, a_signal, i_axes{:}, method);
+    else
+      X = cell2mat(a_axes);
+      xi= cell2mat(i_axes);
+      i_signal = griddatan(X, a_signal, method);
+    end
   else
-    i_signal = interpn(a_axes{:}, a_signal, i_axes{:}, method);
+    i_signal = interpn(a_axes{:}, a_signal, i_axes{:}, method, 0);
   end
 end
 

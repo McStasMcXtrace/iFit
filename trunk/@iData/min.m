@@ -1,13 +1,14 @@
 function m = min(a,b)
-% m = min(s) : computes the minimum value of iData object(s)
+% m = min(a,b) : computes the minimum value of iData object(s)
 %
 %   @iData/min function to compute the minimum value of data sets.
 %     min(iData) returns a single value as the minimum value of the iData signal
 %     min(a,b)   returns an object which signal is the lowest of a and b.
 %
-% input:  s: object or array (iData)
+% input:  a: object or array (iData)
+%         b: object or array (iData/double)
 % output: m: minimum value (double/iData)
-% ex:     b=min(a);
+% ex:     b=min(a); or min(a,1)
 %
 % See also iData, iData/min, iData/max
 

@@ -2,7 +2,7 @@ function s_out = setaxis(a_in,indexes,names,values)
 % [s,...] = setaxis(s, AxisIndex, AxisName, AxisValues) : set iData axes
 %
 %   @iData/setaxis function to set iData axes.
-%   the function works also when AxisName and AxisIndex are given as cells.
+%   The function works also when AxisName and AxisIndex are given as cells.
 %   The AxisName name must exist in the object.
 %   When the AxisIndex is empty, the axis is removed, so that
 %     setaxis(iData, [], getaxis(iData)) deletes all axis definitions
