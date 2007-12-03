@@ -11,6 +11,7 @@ function a = mean(a)
 
 if length(a) > 1
   a = combine(a);
+  return
 end
 
 b = mean(a.Signal);
