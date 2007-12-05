@@ -20,11 +20,15 @@ columns = columns((end-c+1):end);
 
 % compute the normalize variance of each column
 index_hkle=[]; % index of QH QK QL EN columns
+index_m12 =[]; % index of M1 M2 monitors
 Variance = zeros(1,length(columns));
 for j=1:length(columns)
   setalias(a,columns{j},a.Signal(:,j));
   if strmatch(columns{j}, {'QH','QK','QL','EN'},'exact')
     index_hkle = [ index_hkle j ];
+  end
+  if strmatch(columns{j}, {'M1','M2'},'exact')
+    index_m12 = [ index_m12 j ];
   end
   if isempty(strmatch(columns{j},{'PNT','CNTS','TI'}, 'exact'))
     if (mean(a.Signal(:,j)))
@@ -34,6 +38,13 @@ for j=1:length(columns)
 end
 % Signal is in CNTS field, 1st axis is probably field with
 % remaining greatest variance
+
+% get the monitor
+if ~isempty(index_m12)
+  [dummy, index]=max(sum(a.Signal(:,index_m12)));
+  index_m12 = index_m12(index);
+  setalias(a,'Monitor',columns{index_m12},[ 'Monitor ' columns{index_m12} ]);
+end
 % try with usual scanned variables 'QH','QK','QL','EN'
 index = [];
 if ~isempty(index_hkle)
@@ -45,6 +56,7 @@ end
 if isempty(index)
   [dummy, index]=max(Variance);
 end
+
 
 % retrieve specific information
 LOCAL = a.Headers.MetaData.LOCAL; LOCAL=deblank(LOCAL(7:end));
@@ -60,9 +72,6 @@ a.Title= [ a.Title ' ' EXPNO '@' INSTR ];
 % make up Signal label
 
 % set Signal and default axis
-setalias(a,'Signal','CNTS');
+setalias(a,'Signal','CNTS',[ 'Data CNTS' ]);
 setaxis(a,1,columns{index});
-
-
-
 
