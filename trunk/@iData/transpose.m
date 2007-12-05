@@ -10,5 +10,9 @@ function a = transpose(a)
 %
 % See also iData, iData/transpose, iData/ctranspose, iData/setaxis, iData/getaxis
 
-a = iData_private_unary(a, 'transpose');
+if length(a) > 1
+  a = builtin('transpose', a);
+else
+  a = iData_private_unary(a, 'transpose');
+end
 
