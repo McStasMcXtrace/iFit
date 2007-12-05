@@ -12,14 +12,14 @@ function h=subplot(a, varargin)
 % EF 23/11/07 iData implementation
 
 if length(a(:)) == 1
-  h=plot(a, varargin);
+  h=plot(a, varargin{:});
   return
 end
 
 a = squeeze(a); % remove singleton dimensions
 
-if length(size(a)) == 2 & all(size(a) > 1)
-  n = size(a,1); m = size(a,2);
+if length(size(a)) == 2 & any(size(a) > 1)
+  m = size(a,1); n = size(a,2);
 else
   p = length(a(:));
   n = floor(sqrt(p));
@@ -29,5 +29,5 @@ end
 h=[];
 for index=1:length(a(:))
   subplot(m,n,index);
-  h = [ h plot(a(index)) ];
+  h = [ h plot(a(index), varargin{:}) ];
 end

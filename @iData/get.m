@@ -38,7 +38,7 @@ for index = 1:length(a_in(:)) % works with object arrays
       if ischar(varargin{i})
         fieldname = varargin{i}; % get PropertyName
       else
-        iData_private_error(mfilename, [ 'PropertyNames should be char strings in object ' iputname(1) ' ' s.Tag ' and not ' class(varargin{i}) ]);
+        iData_private_error(mfilename, [ 'PropertyNames should be char strings in object ' inputname(1) ' ' s.Tag ' and not ' class(varargin{i}) ]);
       end
       % test private/protected fields
       if strcmp(lower(fieldname), 'alias') | strncmp(lower(fieldname), 'alias.', 6)

@@ -153,6 +153,7 @@ if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
 titl =[ titl ' <' T '> (' a.Tag ':' cmd ')' ];
 uimenu(uicm, 'Label', [ 'Source: <' T '>' ]);
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
+uimenu(uicm, 'Label', [ 'User: ' a.User ]);
 uimenu(uicm, 'Separator','on','Label','Reset View', 'Callback','view(0,90);lighting none;alpha(1);shading faceted;axis auto');
 uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
 if ndims(a) >= 2
