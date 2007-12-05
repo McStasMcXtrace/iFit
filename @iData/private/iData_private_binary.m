@@ -62,6 +62,7 @@ if isa(a, 'iData') & isa(b, 'iData')
     [a,b] = intersect(a,b); % perform operation on intersection
   end
 end
+if strcmp(op, 'combine'), p1 = 0; else p1 = 1; end
 if ~isa(a, 'iData') 
   s1= a; e1=0; m1=0; p1=0;
   c = copyobj(b);
@@ -72,14 +73,13 @@ else
   c  = copyobj(a);
 end
 if ~isa(b, 'iData') 
-  s2= b; e2=0; m2=0; p2=0;
+  s2= b; e2=0; m2=0; p1=0;
 else
   s2 = get(b, 'Signal');
   e2 = get(b, 'Error');
   m2 = get(b, 'Monitor');
 end
 if (all(m1==0) | all(m1==1)) & (all(m2==0) | all(m2==1)) m1=0; m2=0; end
-if strcmp(op, 'combine'), p1 = 0; else p1 = 1; end
 
 % do test on dimensionality for a vector/matrix input
 % use vector duplication to fill iData dimensionality (repmat/kron)
@@ -99,13 +99,13 @@ case {'plus','minus','combine'}
   m3 = genop(@plus, m1, m2);
   e3 = sqrt(genop(@plus, d1.^2,d2.^2));
   if p1 & ~all(m3 == 0), s3 = s3.*m3; e3=e3.*m3; end
-case {'times','rdivide', 'ldivide'}
-  s3 = genop(op, y1, y2); 
-  m3 = genop(@times, m1, m2);
+case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'}
+  s3 = genop(op, y1, y2);
+  if p1, m3 = genop(@times, m1, m2); else m3=get(c,'Monitor'); end
   if p1 & ~all(m3 == 0), s3 = s3.*m3; end
   e3 = sqrt(genop(@plus, (e1./s1).^2, (e2./s2).^2)).*s3;
 case {'power'}
-  m3 = genop(op, m1, m2); 
+  if p1, m3 = genop(op, m1, m2); else m3=get(c,'Monitor'); end
   s3 = genop(op, y1, y2);
   if p1 & ~all(m3 == 0), s3 = s3.*m3; end
   e2logs1 = genop(@times, e2, log(s1));
