@@ -88,9 +88,15 @@ function loaders = iData_load_ini
     format11.method     ='looktxt';
     format11.postprocess='mcsimload';
     
+    format12.name       ='IN22 PyMad dat file';
+    format12.patterns   ={'PNT','CNTS','IFVf','IFHf'};
+    format12.options    = '--headers --comment= --metadata=IFHf';
+    format12.method     ='looktxt';
+    format12.postprocess='in22load';
+    
     
     loaders= { format1, format2, format3, format4, format5, format6, ...
-	       format7, format8, format9, format10, format11};
+	       format7, format8, format9, format10, format11, format12};
     
 
 
