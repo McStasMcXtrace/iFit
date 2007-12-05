@@ -78,7 +78,8 @@ for index = 1:length(s_out)
             | isnumeric(prop_name)
             setalias(a, name, prop_value);
           else
-            eval([ 'a.' prop_name '= prop_value;' ]);
+            setalias(a, prop_name, prop_value);
+            %eval([ 'a.' prop_name '= prop_value;' ]);
           end
         catch
           lasterr

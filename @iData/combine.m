@@ -2,6 +2,7 @@ function c = combine(a,b)
 % c = combine(a,b) : combines iData objects
 %
 %   @iData/combine function to combine data sets
+%     A fast notation for combine(a,b) is a\b
 %
 % input:  a: object or array (iData or numeric)
 %         b: object or array (iData or numeric)
