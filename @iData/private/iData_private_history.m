@@ -1,4 +1,4 @@
-function a = iData_private_history(a, meth, obj, varargin)
+function a = iData_private_history(a, meth, varargin)
 % iData_private_history: iData command catenation
 %   appends the commands 'meth' to the history of 'a' (iData or cell/array of iData)
 %   meth may be given as a method name plus additional arguments which
@@ -14,20 +14,21 @@ end
 if nargin >= 3 | length(varargin)
   toadd = '';
   for i1=1:length(varargin)
+    if i1 > 1, c = ','; else c=''; end
     b = varargin{i1};
     if ischar(b)
-      toadd = [ toadd ', ''' b '''' ];
+      toadd = [ toadd c ' ''' b '''' ];
     elseif isa(b, 'iData')
-      toadd = [ toadd ', <' class(b) ' ' b.Tag ' ' b.Source '>'  ];
+      toadd = [ toadd c ' <' class(b) ' ' b.Tag ' ' b.Source '>'  ];
     elseif isnumeric(b) | islogical(b) 
-      if ndims(b) > 2, b=b(:); end
+      if ndims(b) > 2,   b=b(:); end
       if numel(b) > 100, b=b(1:100); end 
-      toadd = [ toadd ', ' mat2str(double(b)) ];
+      toadd = [ toadd c ' ' mat2str(double(b)) ];
     else
-      toadd = [ toadd ', <' class(b) '>'  ];
+      toadd = [ toadd c ' <' class(b) '>'  ];
     end
   end
-  meth = [ a.Tag '=' meth '(' obj.Tag toadd ');' ];
+  meth = [ a.Tag '=' meth '(' toadd ');' ];
 end
 
 meth = cellstr(meth);
