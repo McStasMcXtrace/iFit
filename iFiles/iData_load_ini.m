@@ -45,16 +45,16 @@ function loaders = iData_load_ini
     format4.postprocess='';
     
     format5.name       ='ILL TAS Data (polarized)';
-    format5.patterns   ={'ILL TAS data','RRRR','AAAA','VVVV','POLAN'};
-    format5.options    ='--headers --section=PARAM --section=VARIA --section=ZEROS --section=POLAN --metadata=DATA';
+    format5.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:','PAL'};
+    format5.options    ='--headers --section=PARAM --section=VARIA --section=ZEROS --section=DATA -section=POLAN --metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=INSTR';
     format5.method     ='looktxt';
-    format5.postprocess='';
+    format5.postprocess='load_ill_tas'; % load_ill_tas
     
     format6.name       ='ILL TAS Data';
-    format6.patterns   ={'ILL TAS data','RRRR','AAAA','VVVV'};
-    format6.options    = '--headers --section=PARAM --section=VARIA --section=ZEROS --metadata=DATA';
+    format6.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
+    format6.options    ='--headers --section=PARAM --section=VARIA --section=ZEROS --section=DATA --metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=INSTR';
     format6.method     ='looktxt';
-    format6.postprocess='';
+    format6.postprocess='load_ill_tas'; % load_ill_tas
     
     format7.name       ='SPEC';
     format7.patterns   ={'#F','#D','#S'};
@@ -66,7 +66,7 @@ function loaders = iData_load_ini
     format8.patterns   ={'# Numpoints:','# variables:','# title: Scan of'};
     format8.options    = '--headers --comment= --metadata=variables';
     format8.method     ='looktxt';
-    format8.postprocess='mcscanload';
+    format8.postprocess='load_mcstas_scan';
     
     format9.name       ='McStas 2D monitor';
     format9.patterns   ={'Format: McStas with text headers file.','# type: array_2d'};
@@ -74,31 +74,26 @@ function loaders = iData_load_ini
 		    '--metadata=Errors --metadata=Events --metadata=xlabel ' ...
 		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits'];
     format9.method     ='looktxt';
-    format9.postprocess='mc2dload';
+    format9.postprocess='load_mcstas_2d';
     
     format10.name       ='McStas 1D monitor';
     format10.patterns   ={'Format: McStas with text headers file.','# type: array_1d'};
-    format10.options    = '--headers --comment= --metadata=variables --metadata=xlabel --metadata=ylabel';
+    format10.options    ='--headers --comment= --metadata=variables --metadata=xlabel --metadata=ylabel';
     format10.method     ='looktxt';
-    format10.postprocess='mc1dload';
+    format10.postprocess='load_mcstas_1d';
     
     format11.name       ='McStas sim file';
     format11.patterns   ={'begin simulation','  Format: McStas'};
-    format11.options    = '--headers --comment=';
+    format11.options    ='--headers --comment=';
     format11.method     ='looktxt';
-    format11.postprocess='mcsimload';
+    format11.postprocess='load_mcstas_sim';
     
-    format12.name       ='IN22 PyMad dat file';
-    format12.patterns   ={'PNT','CNTS','IFVf','IFHf'};
-    format12.options    = '--headers --comment= --metadata=IFHf';
+    format12.name       ='ILL TAS Data (light)';
+    format12.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
+    format12.options    ='--headers --section=PARAM --section=DATA --metadata=DATA';
     format12.method     ='looktxt';
-    format12.postprocess='in22load';
-    
+    format12.postprocess='';
     
     loaders= { format1, format2, format3, format4, format5, format6, ...
-	       format7, format8, format9, format10, format11, format12};
+	       format7, format8, format9, format10, format11};
     
-
-
-
-
