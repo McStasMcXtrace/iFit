@@ -44,7 +44,7 @@ if isstruct(filterspec) % callback use
   case 'update'
 %     o = get(filterspec.object, 'Value')
     UIGetFilesMain(filterspec.object);
-  case 'action' % {'Options','Help','Edit files','New Dir'}
+  case 'action' % {'Options','Help','Edit files','New Dir','Hidden Files'}
     switch (get(filterspec.object, 'Value'))
     case 2  % Help
       uigetfiles(struct('action','help'));
@@ -54,6 +54,8 @@ if isstruct(filterspec) % callback use
       uigetfiles(struct('action','new folder'));
     case 5
       uigetfiles(struct('action','delete files'));
+    case 6
+      uigetfiles(struct('action','toggle hidden files'));
     end
     set(filterspec.object, 'Value',1)
   case 'new folder'
@@ -215,6 +217,10 @@ if isstruct(filterspec) % callback use
     set(UD.Handle.OK, 'UserData', 'cancel');
     uiresume(object); % exit uigetfiles
     set(object,'Visible','off');
+  case 'toggle hidden files'
+    if UD.ShowHidden == 1, UD.ShowHidden=0; else UD.ShowHidden=1; end
+    set(object,'UserData', UD);
+    UIGetFilesMain(0);
   otherwise
     disp(['Unsupported action: ' filterspec.action ]);
   end
@@ -455,14 +461,15 @@ else
   % New directory, go up, select all, deselect all
   h = uicontrol('Style','popupmenu', 'Tag','UIGetFiles.Action',...
                 'Position',[10 325 65 20],...
-                'String',{'Options','Help','Edit files','New Dir','Delete files'},'ToolTipString',...
+                'String',{'Options','Help','Edit files','New Dir','Delete files','Show/hide hidden files'},'ToolTipString',...
                   [ 'Click here to:' NL ...
                     '* Access HTML help about iFiles/uigetfiles' NL ...
                     '* Edit selected files' NL ...
                     '* Create a new folder' NL ...
                     '* Delete selected files/directories' NL ...
+                    '* Show/hide hidden files' NL ...
                     '' NL ...
-                    'iFiles/uigetfiles, July 22nd, 2003' NL  '(c) ILL. E. Farhi <farhi@ill.fr>' ], ...
+                    'iFiles/uigetfiles, Dec 6th, 2007' NL  '(c) ILL. E. Farhi <farhi@ill.fr>' ], ...
                 'callback','uigetfiles(struct(''action'',''action'',''object'',gcbo));');
   UD.Handle.Action = h;
   h = uicontrol('Style','pushbutton', 'Tag','UIGetFiles.Up',...
@@ -516,6 +523,7 @@ else
   UD.ShowDates = 0;
   UD.ShowSizes = 0;
   UD.MultiSelect=1;
+  UD.ShowHidden =0;
 
   set(UD.Handle.List, 'Max', smode, 'Min', 0);
 
@@ -695,6 +703,13 @@ if ~isempty(UD.Dir_orig)
   otherwise % Unsorted
 
   end
+  % remove hidden files if required
+  if ~UD.ShowHidden
+      index_h= strmatch('.',dir_name(index)); % these are hidden files. deselect them
+      hidden = zeros(1,length(index));
+      hidden(index_h) = 1;
+      index  = index(find(~hidden));
+  end
 
   % reorder
   UD.List.String = UD.Dir_items(index);
@@ -706,7 +721,7 @@ if ~isempty(UD.Dir_orig)
   value = get(UD.Handle.List, 'Value');
   string= get(UD.Handle.List, 'String');
 
-  % if the unsorted dir_items are the same, then
+  % if the existing list has changed, update content (re-order)
   if iscell(string) & iscell(UD.Dir_items)
   if strcmp(cat(2, string{:}), cat(2, UD.Dir_items{:}))
     % update uicontrol/list selection
@@ -720,7 +735,7 @@ if ~isempty(UD.Dir_orig)
       value = strmatch(UD.File, string, 'exact');
     end
   end
-end
+  end
   % update uicontrol/list content
   UD.Sort       = index;
   UD.List.Value = value;
@@ -761,7 +776,6 @@ end
   by = num2str(by);
 
   % update tooltip
-
   if ~isempty(UD.List.String)
     set(UD.Handle.Path, 'ForegroundColor','blue');
     set(UD.Handle.List, 'ToolTipString', ...
