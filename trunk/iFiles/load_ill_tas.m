@@ -9,6 +9,10 @@ DataBlock        = a.Signal;
 
 % get the main data block header
 columns_header   = findstr(a, 'DATA_:','case');
+if isempty(columns_header), 
+  iData_private_warning(mfilename, [ 'The loaded data set ' a.Tag ' is not an ILL TAS data format' ]);
+  return; 
+end
 columns_header   = columns_header{1};
 
 % Find spaces and determine proper aliases for the columns
@@ -59,15 +63,42 @@ end
 
 
 % retrieve specific information
-LOCAL = a.Headers.MetaData.LOCAL; LOCAL=deblank(LOCAL(7:end));
-USER  = a.Headers.MetaData.USER;  USER =deblank(USER(7:end));
-EXPNO = a.Headers.MetaData.EXPNO; EXPNO=deblank(EXPNO(7:end));
-INSTR = a.Headers.MetaData.INSTR; INSTR=deblank(INSTR(7:end));
-DATE  = a.Headers.MetaData.DATE;  DATE =deblank(DATE(7:end));
-COMND = a.Headers.MetaData.COMND; COMND=deblank(COMND(7:end));
+try
+  LOCAL = a.Headers.MetaData.LOCAL; LOCAL=deblank(LOCAL(7:end));
+catch
+  LOCAL='';
+end
+try
+  USER  = a.Headers.MetaData.USER;  USER =deblank(USER(7:end));
+catch
+  USER='';
+end
+try
+  EXPNO = a.Headers.MetaData.EXPNO; EXPNO=deblank(EXPNO(7:end));
+catch
+  EXPNO='';
+end
+try
+  INSTR = a.Headers.MetaData.INSTR; INSTR=deblank(INSTR(7:end));
+catch
+  INSTR='';
+end
+try
+  DATE  = a.Headers.MetaData.DATE;  DATE =deblank(DATE(7:end));
+catch
+  DATE='';
+end
+try
+  COMND = a.Headers.MetaData.COMND; COMND=deblank(COMND(7:end));
+catch
+  COMND='';
+end
+setalias(a, 'COMND', 'this.Data.Headers.MetaData.COMND', 'TAS command');
+setalias(a, 'INSTR', 'this.Data.Headers.MetaData.INSTR', 'Instrument used');
+setalias(a, 'EXPNO', 'this.Data.Headers.MetaData.EXPNO', 'Experiment number');
 % update object
-a.Date = DATE;
-a.User = [ EXPNO '=' USER '/' LOCAL '@' INSTR ];
+if ~isempty(DATE), a.Date = DATE; end
+a.User = [ EXPNO ' ' USER '/' LOCAL '@' INSTR ];
 a.Title= [ COMND ' ' a.Title ' ' EXPNO '@' INSTR ];
 
 % make up Signal label
