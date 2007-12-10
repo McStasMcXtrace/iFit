@@ -151,7 +151,11 @@ function [data, loader] = iLoad_import(filename, loader)
   if iscell(loader.options)
     data = feval(loader.method, filename, loader.options{:})
   elseif ischar(loader.options)
+    try
     data = feval(loader.method, [ filename ' '  loader.options ]);
+    catch
+    data = feval(loader.method, filename,loader.options);
+    end
   end
   data = iLoad_loader_check(filename, data, loader);
   return
@@ -258,18 +262,24 @@ function loaders = iLoad_loader_auto(file)
   % read start of file
   fid = fopen(file, 'r');
   if fid == -1
-    error([ 'Could not open file ' file ' for reading' ]);
+    error([ 'Could not open file ' file ' for reading. Check existence/permissions.' ]);
   end
   file_start = fread(fid, 100000, 'uint8=>char')';
   fclose(fid);
   % loop to test each format for patterns
   formats = loaders;
+  loaders={};
   loaders_count=0;
   for index=1:length(formats)
     loader = formats{index};
     if ~isstruct(loader), break; end
 
     if exist(loader.method)
+      if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9 ... 
+        & strcmp(loader.method, 'looktxt') 
+        patterns_found  = 0;
+        continue;  % does not use looktxt for binary data files
+      end
       patterns_found  = 1;
       if isempty(loader.patterns)  % no pattern to search, just try loader
         patterns_found  = 1;
@@ -277,7 +287,7 @@ function loaders = iLoad_loader_auto(file)
         for index_pat=1:length(loader.patterns(:))
           if isempty(strfind(file_start, loader.patterns{index_pat}))
             patterns_found=0;
-            break;
+            continue;
           end
         end % for patterns
       end % if patterns
