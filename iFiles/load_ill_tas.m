@@ -32,7 +32,7 @@ for j=1:length(columns)
   end
   if isempty(strmatch(columns{j},{'PNT','CNTS','TI'}, 'exact'))
     if (mean(a.Signal(:,j)))
-      Variance(j) = sqrt(sum(a.Signal(:,j).^2)/length(a.Signal(:,j)))/mean(a.Signal(:,j));
+      Variance(j) = sqrt(sum(a.Signal(:,j).^2)/length(a.Signal(:,j)))/abs(mean(a.Signal(:,j)));
     end
   end
 end
@@ -64,10 +64,11 @@ USER  = a.Headers.MetaData.USER;  USER =deblank(USER(7:end));
 EXPNO = a.Headers.MetaData.EXPNO; EXPNO=deblank(EXPNO(7:end));
 INSTR = a.Headers.MetaData.INSTR; INSTR=deblank(INSTR(7:end));
 DATE  = a.Headers.MetaData.DATE;  DATE =deblank(DATE(7:end));
+COMND = a.Headers.MetaData.COMND; COMND=deblank(COMND(7:end));
 % update object
 a.Date = DATE;
 a.User = [ EXPNO '=' USER '/' LOCAL '@' INSTR ];
-a.Title= [ a.Title ' ' EXPNO '@' INSTR ];
+a.Title= [ COMND ' ' a.Title ' ' EXPNO '@' INSTR ];
 
 % make up Signal label
 
