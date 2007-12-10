@@ -46,13 +46,13 @@ function loaders = iData_load_ini
     
     format5.name       ='ILL TAS Data (polarized)';
     format5.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:','PAL'};
-    format5.options    ='--headers --section=PARAM --section=VARIA --section=ZEROS --section=DATA -section=POLAN --metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=INSTR';
+    format5.options    ='--headers --section=PARAM --section=VARIA --section=ZEROS --section=DATA -section=POLAN --metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=INSTR --metadata=COMND';
     format5.method     ='looktxt';
     format5.postprocess='load_ill_tas'; % load_ill_tas
     
     format6.name       ='ILL TAS Data';
     format6.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
-    format6.options    ='--headers --section=PARAM --section=VARIA --section=ZEROS --section=DATA --metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=INSTR';
+    format6.options    ='--headers --section=PARAM --section=VARIA --section=ZEROS --section=DATA --metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=INSTR --metadata=COMND';
     format6.method     ='looktxt';
     format6.postprocess='load_ill_tas'; % load_ill_tas
     
