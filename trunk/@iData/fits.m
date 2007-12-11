@@ -3,83 +3,63 @@ function [pars,criteria,message,output] = fits(a, model, pars, constraints, opti
 %
 %   @iData/fits find best parameters estimates in order to minimize the 
 %     fitting criteria using function 'fun' as model, by mean of an optimization method.
+%     Additional constraints may be set by fxing some parameters, or define
+%     more advanced constraints (min, max, steps). The last argument controls the fitting
+%     options with the optimset mechanism.
+%
+% options.TolX
+%   The termination tolerance for x. Its default value is 1.e-4.
+% options.TolFun
+%   The termination tolerance for the function value. The default value is 1.e-4. 
+%   This parameter is used by fminsearch, but not fminbnd.
+% options.MaxIter
+%   Maximum number of iterations allowed.
+% options.MaxFunEvals
+%   The maximum number of function evaluations allowed. 
+%   The default value is 500 and 200*length(x0) for fminsearch
+% options.algorithm
+%   Optimization method. Default is 'fminsearch' (char/function handle)
+%   the syntax for calling the optimizer is e.g. algorithm(criteria,pars,options)
+% options.criteria
+%   Minimization criteria. Default is 'least_square' (char/function handle)
+%   the syntax fo evaluating the criteria is criteria(Signal, Error, Model)
+% options.OutputFcn
+%   Function called at each iteration as outfun(pars, optimValues, state)
+% options.PlotFcns
+%   Similar to OutputFcn, but dedicated to plotting. 
+%   The 'fits_plot' function may be used.
+% options.Display
+%   Display additional information during fit 'iter','off','final'
 %
 % input:  a: object or array (iData)
 %         model: model function (char/cellstr)
 %         pars: initial model parameters (double array)
-%         constraints: fixed parameter array. Use 1 for fixed parameters, 0 otherwise (double array or structure)
-%           constraints.min: minimum parameter values (double array)
-%           constraints.max: maximum parameter values (double array)
-%           constraints.step:maximum parameter step allowed. Use 0 for fixed parameters (double array)
-%           constraints.fixed:fixed parameter flag. Use 1 for fixed parameters, 0 otherwise (double array)
+%         constraints: fixed parameter array. Use 1 for fixed parameters, 0 otherwise (double array)
+%           OR use a structure with some of the following fields:
+%           constraints.min:   minimum parameter values (double array)
+%           constraints.max:   maximum parameter values (double array)
+%           constraints.step:  maximum parameter step/change allowed.
+%           constraints.fixed: fixed parameter flag. Use 1 for fixed parameters, 0 otherwise (double array)
 %         options: structure as defined by optimset/optimget (char/struct)
-%           options.algorithm: optimization method. Default is 'fminsearch' (char/function handle)
-%             the syntax for calling the optimizer is e.g. fminsearch(criteria,pars,options)
-%           options.criteria: minimization criteria. Default is 'least_square' (char/function handle)
-%             the syntax fo evaluating the criteria is least_square(Signal, Error, Model)
-% output: information about the optimization (structure)
+% output: 
 %         pars:              best parameter estimates (double array)
 %         criteria:          minimal criteria value achieved (double)
 %         message:           return message/exitcode from the optimizer (char)
-%         algorithm:         Algorithm used (char)
-%         funcCount:         Number of function evaluations (double)
-%         iterations:        Number of iterations (double)
-%         parameterHistory:  Parameter set history during optimization (double array)
-%         criteriaHistory:   Criteria history during optimization (double array)
-%         modelValue:        Last model evaluation (iData)
+%         output:            additional information about the optimization (structure)
+%           algorithm:         Algorithm used (char)
+%           funcCount:         Number of function evaluations (double)
+%           iterations:        Number of iterations (double)
+%           parsHistory:       Parameter set history during optimization (double array)
+%           criteriaHistory:   Criteria history during optimization (double array)
+%           modelValue:        Last model evaluation (iData)
+%
 % ex:     p=fits(a,'gauss',[1 2 3 4]);
+%         o=optimset('fminsearch'); o.PlotFcns='fits_plot'; 
+%         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],[],o);
 %
 % See also iData, fminsearch, optimset, optimget
-
-% exitflag returns a string that describes the exit condition of optimizer
-%     OK: Optimizer converged to a solution.
-%     OK: Algorithm was terminated by the output function.
-%     OK: Change in x was smaller than the specified tolerance.
-%     OK: Change in the objective function value was less than the specified tolerance.
-%     OK: Magnitude of gradient smaller than the specified tolerance.
-%     WARNING: Line search cannot find an acceptable point along the current search direction.
-%     WARNING: Maximum number of function evaluations or iterations was reached.
-%     WARNING: Number of iterations exceeded options.MaxIter
-%     WARNING: Number of function evaluations exceeded options.FunEvals.
-%     ERROR: Bounds are inconsistent (x1 > x2).
-%
-%options.Display
-%  A flag that determines if intermediate steps in the minimization appear on the screen. 
-%  If set to 'iter', intermediate steps are displayed; if set to 'off', no intermediate 
-%  solutions are displayed, if set to final, displays just the final output.
-%options.TolX
-%  The termination tolerance for x. Its default value is 1.e-4.
-%options.TolFun
-%  The termination tolerance for the function value. The default value is 1.e-4. 
-%  This parameter is used by fminsearch, but not fminbnd.
-%options.MaxIter
-%  Maximum number of iterations allowed.
-%options.MaxFunEvals
-%  The maximum number of function evaluations allowed. The default value is 500 for 
-%  fminbnd and 200*length(x0) for fminsearch
-%options.OutputFcn
-%  Specify a user-defined function that the optimization function calls at each iteration.
-%options.FunValCheck
-%  Check whether objective function values are valid. 'on' displays a warning when 
-%  the objective function returns a value that is complex, Inf or NaN. 'off' (the default) displays no warning.
-%options.PlotFcns         
-%  Plots various measures of progress while the algorithm
-%  executes, select from predefined plots or write your
-%  own. Specifying @optimplotx plots the current point;
-%  @optimplotfunccount plots the function count;
-%  @optimplotfval plots the function value;
-%  @optimplotstepsize plots the step size;
-%  @optimplotfirstorderopt plots the first-order of
-%  optimality.
-%options.Diagnostics
-%  Display diagnostic information about the function to be minimized.
-%options.DiffMaxChange
-%  Maximum change in variables for finite differencing.
-%options.DiffMinChange
-%  Minimum change in variables for finite differencing.
  
 % handle default parameters, if missing
-% handle input options: depends on chosen method
 if nargin < 3
   pars = [];
 end
@@ -101,6 +81,7 @@ if length(a) > 1
   return
 end
 
+% handle options
 if ~isfield(options, 'algorithm')
   options.algorithm = @fminsearch;
 end
@@ -108,8 +89,20 @@ if ~isfield(options, 'criteria')
   options.criteria = @least_square;
 end
 if isempty(pars)
-  [dummy, pars] = ieval(a, model);
+  [dummy, pars, parsName] = ieval(a, model);  % get default starting parameters
+else
+  [dummy, dummy, parsName] = ieval(a, model);  % get parameter names
 end
+if isnumeric(constraints) | islogical(constraints)
+  tmp.fixed = double(constraints);
+  constraints=[];
+  constraints.fixed=[];
+end
+if ~isstruct(constraints)
+  iData_private_warning(mfilename,[ 'The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
+end
+ 
+constraints.parsStart=pars;
 
 % removes warnings
 try
@@ -118,17 +111,32 @@ try
 catch
   warn = warning('off');
 end
+% remove output function calls so that we use own own, and overload with the user's choice
+options.UserOutputFcn = options.OutputFcn;
+options.OutputFcn     = @outfun_wrapper;
+if isfield(options, 'PlotFcns')
+  options.UserPlotFcns= options.PlotFcns;
+  options.PlotFcns    = [];
+end
+pars = reshape(pars, [ 1 numel(pars)]); % a single row
+constraints.parsHistory    = pars;
+constraints.criteriaHistory= NaN;
+constraints.parsNames      = parsName;
 
 % call minimizer
 [pars_out,criteria,message,output] = feval(options.algorithm, ...
     @(pars) eval_criteria(pars, model, options.criteria, a), pars, options);
 
+% apply constraints, if any
+pars = fits_constraints(pars_out, constraints);
+
 % set output/results
-pars = pars_out;
+output.criteriaHistory=constraints.criteriaHistory;
+output.parsHistory= constraints.parsHistory;
 output.modelValue = ieval(a, model, pars);
 output.criteria   = criteria;
 outout.pars       = pars;
-output.message    = message;
+output.message    = [ '(' num2str(message) ') ' output.message ];
 output.algorithm  = options.algorithm;
 
 % reset warnings
@@ -139,27 +147,143 @@ catch
   warning(warn);
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRIVATE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
-function c = eval_criteria(pars, model, criteria, a)
-% criteria to minimize
+% Use a nested function as the OutputFcn wrapper, to access 'constraints'
+  function stop = outfun_wrapper(pars, optimValues, state);
+    % we need to transform pars first
+    pars = fits_constraints(pars, constraints);
+    stop = false;
+    
+    % then call the user supplied OutputFcn
+    if ~isempty(options.UserOutputFcn)
+      stop1 = feval(options.UserOutputFcn, pars, optimValues, state);
+      stop = stop | stop1;
+    end
+    
+    % call the optional Plotting function
+    if ~isempty(options.UserPlotFcns)
+      optimValues.parsHistory    = constraints.parsHistory;
+      optimValues.criteriaHistory= constraints.criteriaHistory;
+      optimValues.parsNames      = constraints.parsNames;
+      try
+        stop2 = feval(options.UserPlotFcns, pars, optimValues, state);
+      catch
+        lasterr
+        stop2=true;
+      end
+      stop = stop | stop2;
+    end
+    
+  end
 
-  Signal = get(a,'Signal');
-  Error  = get(a,'Error');
-  Model  = ieval(a, model, pars);
-  Model  = get(Model, 'Signal');
+% Use a nested function as the criteria wrapper, to access 'constraints'
+  function c = eval_criteria(pars, model, criteria, a)
+  % criteria to minimize
   
-  % return criteria
-  c = feval(criteria, Signal(:), Error(:), Model(:));
+    % apply constraints on pars first
+    pars = fits_constraints(pars,constraints);
+    
+    % then get data
+    Signal = get(a,'Signal');
+    Error  = get(a,'Error');
+    Model  = ieval(a, model, pars);
+    Model  = get(Model, 'Signal');
+    
+    % compute criteria
+    c = feval(criteria, Signal(:), Error(:), Model(:));
+    
+    % save current optimization state
+    constraints.criteriaHistory = [ constraints.criteriaHistory ; c ];
+    constraints.parsPrevious    = pars;
+    constraints.parsHistory     = [ constraints.parsHistory ; pars ]; 
+    
+  end
+  
+end % fits end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRIVATE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function c=least_square(Signal, Error, Model)
 % weighted least square criteria, which is also the Chi square
 if all(Error == 0)
-  c = sum((Signal-Model).^2);
+  c = sum((Signal-Model).^2); % raw least square
 else
   index = find(Error);
   c=(Signal(index)-Model(index))./Error(index);
   c=abs(c);
-  c=sum(c.*c);
+  c=sum(c.*c);                % Chi square
+end
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function stop = fits_plot(pars, optimValues, state)
+% default plotting function showing the criteria evolution 
+% as well as main parameters and status
+
+% fields in optimValues: funcount, fval, iteration, procedure, parsHistory, criteriaHistory
+% state values: 'init','interrupt','iter','done'
+  stop = false;
+  h = findall(0, 'Tag', 'iData_fits_plot');
+  if length(h) > 1, delete(h(2:end)); h=h(1); end
+  if isempty(h) & optimValues.iteration <=1
+    h = figure('Tag','iData_fits_plot', 'Unit','pixels');
+    tmp = get(h, 'Position'); tmp(3:4) = [500 400];
+    set(h, 'Position', tmp);
+  elseif isempty(h)
+    stop = true;  % figure was closed: abort optimization by user
+  end
+  figure(h);
+  set(h, 'Name', [ 'iData/fits: iteration' num2str(optimValues.iteration) ]);
+  subplot(1,2,1); % this subplot shows the criteria
+  plot(optimValues.criteriaHistory);
+  xlabel('iteration'); ylabel('criteria'); title('Close figure to abort'); axis tight
+  
+  subplot(1,2,2); % this subplot shows some parameters
+  pars_hist= optimValues.parsHistory;
+  pars_std = std(pars_hist)./mean(pars_hist);
+  [dummy, sort_std] = sort(pars_std);
+  pars_hist = pars_hist(:, sort_std);
+  switch length(pars_std)
+  case 1
+    plot(pars_hist, optimValues.criteriaHistory);
+    xlabel([ constraints.parsNames{1} ]);
+    ylabel('criteria');
+  case 2
+    fscatter3(pars_hist(:,1), pars_hist(:,2), optimValues.criteriaHistory);
+    xlabel([ num2str(sort_std(1)) ': ' optimValues.parsNames{sort_std(1)} ]);
+    ylabel([ num2str(sort_std(2)) ': ' optimValues.parsNames{sort_std(2)} ]);
+    zlabel('criteria'); view(3);
+  otherwise
+    fscatter3(pars_hist(:,1), pars_hist(:,2), pars_hist(:,3), optimValues.criteriaHistory);
+    xlabel([ num2str(sort_std(1)) ': ' optimValues.parsNames{sort_std(1)} ]);
+    ylabel([ num2str(sort_std(2)) ': ' optimValues.parsNames{sort_std(2)} ]);
+    zlabel([ num2str(sort_std(3)) ': ' optimValues.parsNames{sort_std(3)} ]);
+    view(3); c = colorbar;
+  end 
+  axis tight
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function pars = fits_constraints(pars, constraints)
+% take into account constraints on fit parameters
+
+if isfield(constraints, 'fixed')  % fix some parameters
+  index = find(constraints.fixed);
+  pars(index) = constraints.parsStart(index);
+else
+  if isfield(constraints, 'min')  % lower bound for parameters
+    index = find(pars < constraints.min);
+    pars(index) = constraints.min(index);
+  end
+  if isfield(constraints, 'max')  % upper bound for parameters
+    index = find(pars > constraints.max);
+    pars(index) = constraints.max(index);
+  end
+  if isfield(constraints, 'step') % restrict parameter change
+    parsStep = pars - constraints.parsPrevious;
+    index = find( abs(parsStep) > abs(constraints.steps) );
+    parsStep(index) = sign(parsStep).*abs(constraints.steps);
+    pars(index) = constraints.parsPrevious(index) + parsStep(index);
+  end
+end
+end

@@ -1,11 +1,14 @@
-colon (morphing !) colon=interp a*i+b*(1-i)
+* Hight Priority:
+fits: constraints and so on...
+cat = combine sur union (avec iData ou numeric)
+
+* Low Priority:
 sort
 diff
 trapz, quad
 sum
 cumsum (integral)
 prod
-cat = combine sur union (avec iData ou numeric)
 norm, std, median, var, cov, corrcoef
 fft
 conv (conv2, convn)
@@ -14,10 +17,11 @@ deconv
 del2
 quiver, quiver2 with gradient
 
-Problems:
+* Problems:
   setalias(a,'x','y(1:10)') i.e. having a subsref expression within an alias does not work
+  define aliases first as simple as possible, then link axes to aliases
 
-Doc
+* Doc
   iData structure, aliases, axes
   loading data files, user configuration (iData_load_ini)
   plots
@@ -28,7 +32,7 @@ Doc
   fitting
   examples/typical usage
 
-Contributed code (Matlab Central): 
+* Contributed code (Matlab Central): 
   fscatter3:  Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
   vol3d:      Joe Conti, 2004
   genop:      Douglas M. Schwarz, 13 March 2006

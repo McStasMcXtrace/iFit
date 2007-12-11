@@ -1,4 +1,4 @@
-function [b, out_pars] = ieval(a, model, pars, varargin)
+function [b, out_pars, name_pars] = ieval(a, model, pars, varargin)
 % b = ieval(a, model, varargin) evaluate a function on the axes of an object
 %
 %   @iData/ieval applies the function 'model' using the axes of the object 'a'
@@ -42,7 +42,7 @@ if length(a) > 1
   b = reshape(b, size(a));
   return
 end
-out_pars=[];
+out_pars=[]; name_pars={};
 Axes   = cell(1,ndims(a));
 for index=1:ndims(a)
   Axes{index} = getaxis(a, index);  % loads object axes, or 1:end if not defined 
@@ -53,6 +53,7 @@ if ischar(model) | isa(model, 'function_handle')
   if isempty(pars)
     model_info = feval(model,'identify');  % get identification info
     pars       = model_info.Guess;
+    name_pars  = model_info.Parameters;
   end
   if ~isempty(varargin)
     Model = feval(model, pars, Axes{:}, varargin{:});
@@ -108,6 +109,7 @@ elseif iscell(model)
     model_ndims ={ model_ndims{:} ; model_ndim };
     axis_index  =axis_index+model_info.Dimension;
     pars_index  =pars_index+length(model_info.Parameters);
+    name_pars  = { name_pars{:} ; model_info.Parameters };
   end % for sub-models
   % now make up the product of sub-space models
   Model = model_values{1};
