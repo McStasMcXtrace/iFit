@@ -120,11 +120,27 @@ end
 
 % private function to import single data with given method(s)
 function [data, loader] = iLoad_import(filename, loader)
-  data = []; 
+  data = [];
 
   if isempty(loader), loader='auto'; end
-  if strcmp(loader, 'auto') | strcmp(loader, 'gui')
+  if strcmp(loader, 'auto')
     loader = iLoad_loader_auto(filename);
+  elseif strcmp(loader, 'gui')
+    [dummy, filename_short, ext] = fileparts(filename);
+    filename_short = [ filename_short ext];
+    loader = iLoad_loader_auto(filename);
+    loader_names=[loader{:}];
+    tmp         = cell(size(loader_names)); tmp(:)={' - '};
+    loader_names= strcat({loader_names.name}, tmp,{loader_names.method});
+    loader_index=listdlg(...
+      'PromptString',...
+        {'Select suitable import methods',['to import file ' filename_short ]}, ...
+      'SelectionMode','Multiple',...
+      'ListString', loader_names, ...
+      'ListSize', [300 160], ...
+      'Name', ['Loader for ' filename_short ]);
+    if isempty(loader_index), loader=[]; return; end
+    loader=loader(loader_index);
   end
 
   % handle multiple loaders (cell or struct array)
@@ -142,6 +158,9 @@ function [data, loader] = iLoad_import(filename, loader)
     loader = 'Failed to load file (all known methods failed)';
     return; % all methods tried, none effective
   end % if iscell
+  if iscell(loader) & length(loader) == 1
+    loader = loader{1};
+  end
 
   % handle single char loaders
   if ischar(loader)

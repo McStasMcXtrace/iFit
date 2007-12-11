@@ -1,5 +1,5 @@
-function [pars,criteria,message,output] = fits(a, model, pars, constrains, options)
-% [pars,criteria,message,output] = fits(a, model, pars, constrains, options) : fit data set on a model
+function [pars,criteria,message,output] = fits(a, model, pars, constraints, options)
+% [pars,criteria,message,output] = fits(a, model, pars, constraints, options) : fit data set on a model
 %
 %   @iData/fits find best parameters estimates in order to minimize the 
 %     fitting criteria using function 'fun' as model, by mean of an optimization method.
@@ -7,12 +7,12 @@ function [pars,criteria,message,output] = fits(a, model, pars, constrains, optio
 % input:  a: object or array (iData)
 %         model: model function (char/cellstr)
 %         pars: initial model parameters (double array)
-%         constrains: fixed parameter array. Use 1 for fixed parameters, 0 otherwise (double array or structure)
-%           constrains.min: minimum parameter values (double array)
-%           constrains.max: maximum parameter values (double array)
-%           constrains.step:maximum parameter step allowed. Use 0 for fixed parameters (double array)
-%           constrains.fixed:fixed parameter flag. Use 1 for fixed parameters, 0 otherwise (double array)
-%         options: structure as defined by optimset/optimget
+%         constraints: fixed parameter array. Use 1 for fixed parameters, 0 otherwise (double array or structure)
+%           constraints.min: minimum parameter values (double array)
+%           constraints.max: maximum parameter values (double array)
+%           constraints.step:maximum parameter step allowed. Use 0 for fixed parameters (double array)
+%           constraints.fixed:fixed parameter flag. Use 1 for fixed parameters, 0 otherwise (double array)
+%         options: structure as defined by optimset/optimget (char/struct)
 %           options.algorithm: optimization method. Default is 'fminsearch' (char/function handle)
 %             the syntax for calling the optimizer is e.g. fminsearch(criteria,pars,options)
 %           options.criteria: minimization criteria. Default is 'least_square' (char/function handle)
@@ -84,7 +84,7 @@ if nargin < 3
   pars = [];
 end
 if nargin < 4
-  constrains = [];
+  constraints = [];
 end
 if nargin < 5
   options = optimset('fzero');
@@ -95,7 +95,7 @@ if length(a) > 1
  pars_out={}; criteria=[]; message={}; output={};
   for index=1:length(a(:))
     [pars_out{index}, criteria(index), message{index}, output{index}] = ...
-      fits(a(index), model, pars, constrains, options);
+      fits(a(index), model, pars, constraints, options);
   end
   pars = pars_out;
   return

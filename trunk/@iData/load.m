@@ -35,7 +35,7 @@ function out = load(a, varargin)
 % EF 23/09/07 iData implementation
 
 if isempty(varargin), [files, loaders] = iLoad; 
-else [files, loaders] = iLoad(varargin); end
+else [files, loaders] = iLoad(varargin{:}); end
 
 if isstruct(files),   files = { files }; end
 if isstruct(loaders), loaders = { loaders }; end

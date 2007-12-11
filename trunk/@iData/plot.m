@@ -96,28 +96,34 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   end
   zlabel(zlab);
 case 3  % #d data sets: volumes
-  [x, xlab] = getaxis(a,1);
-  [y, ylab] = getaxis(a,2);
-  [z, zlab] = getaxis(a,3);
-  [c, clab] = getaxis(a,0);
-  m         = get(a,'Monitor');
-  if not(all(m == 1) | all(m == 0)), c = c./m; clab = [clab ' per monitor' ]; end
-  if isvector(a) == 3 | ~isempty(strfind(method, 'plot3')) % plot3-like
-    h=fscatter3(x(:),y(:),z(:),c(:));
+  % first test if this is an image
+  if isfield(a.Data,'cdata')
+    h=image(a.Data.cdata);
+    xlab=''; ylab=''; clab='';
   else
-    if ~isempty(strfind(method, 'surf')) | ~isempty(strfind(method, 'vol3d'))
-      h = vol3d('cdata',c,'texture','3D','xdata',x,'ydata',y,'zdata',z);
-      alphamap('vdown');
-      vol3d(h);
-      h = h.handles;
+    [x, xlab] = getaxis(a,1);
+    [y, ylab] = getaxis(a,2);
+    [z, zlab] = getaxis(a,3);
+    [c, clab] = getaxis(a,0);
+    m         = get(a,'Monitor');
+    if not(all(m == 1) | all(m == 0)), c = c./m; clab = [clab ' per monitor' ]; end
+    if isvector(a) == 3 | ~isempty(strfind(method, 'plot3')) % plot3-like
+      h=fscatter3(x(:),y(:),z(:),c(:));
     else
-      a = interp(a,'grid');
-      isosurface(x,y,z,c,median(c(:)));
-      h = findobj(gca,'type','patch');
-      hold off
-    end
-  end;
-  zlabel(zlab);
+      if ~isempty(strfind(method, 'surf')) | ~isempty(strfind(method, 'vol3d'))
+        h = vol3d('cdata',c,'texture','3D','xdata',x,'ydata',y,'zdata',z);
+        alphamap('vdown');
+        vol3d(h);
+        h = h.handles;
+      else
+        a = interp(a,'grid');
+        isosurface(x,y,z,c,median(c(:)));
+        h = findobj(gca,'type','patch');
+        hold off
+      end
+    end;
+    zlabel(zlab);
+  end
 otherwise
   iData_private_warning(mfilename, [ 'plotting of ' num2str(ndims(a)) '-th dimensional data is not implemented from ' a.Tag ]);
 end
@@ -167,9 +173,9 @@ set(h, 'Tag', char(a));
 set(gcf, 'Name', char(a));
 
 % labels
-xlabel(xlab,'interpreter','none');
-ylabel(ylab,'interpreter','none');
-if ndims(a) == 3
+if ~isempty(xlab), xlabel(xlab,'interpreter','none'); end
+if ~isempty(ylab), ylabel(ylab,'interpreter','none'); end
+if ndims(a) == 3 & ~isempty(clab)
   title({ clab ,titl },'interpreter','none');
 else
   title(titl,'interpreter','none');
