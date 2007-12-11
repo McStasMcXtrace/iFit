@@ -113,7 +113,7 @@ else
             end
             ax=s.subs{:}; 
           end
-          if ischar(val), b = setaxis(b, ax, val);
+          if ischar(val), b = setaxis(b, s.subs{:}, val);
           else b = set(b, ax, val); end
         elseif ischar(s.subs{:}) & isnumeric(str2num(s.subs{:}))
           b=setaxis(b, s.subs{:}, val);
