@@ -2,8 +2,12 @@ function h=subplot(a, varargin)
 % subplot(s) : plot iData array as subplots
 %
 %   @iData/subplot plot each iData element in a subplot
+%     subplot(a, [])    uses the best subplot fit
+%     subplot(a, [m n]) uses an m x n subplot grid
 %
 % input:  s: object or array (iData)
+%         [m n]: optional subplot grid dimensions
+%         additional arguments are passed to the plot method 9e.g. color, plot type, ...)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
@@ -17,14 +21,35 @@ if length(a(:)) == 1
 end
 
 a = squeeze(a); % remove singleton dimensions
-
-if length(size(a)) == 2 & any(size(a) > 1)
-  m = size(a,1); n = size(a,2);
+m=[];
+n=[];
+if length(varargin) >=1
+  if isnumeric(varargin{1})
+    dim = varargin{1};
+    if isempty(dim)
+      % will use best fit
+    elseif length(dim) == 1 & dim(1) > 0
+      m = dim; 
+    else m=dim(1); n=dim(2); end
+    if length(varargin) >= 2  
+      varargin = varargin(2:end);
+    else varargin = {}; end
+  end
 else
+  if length(size(a)) == 2 & any(size(a) > 1)
+    m = size(a,1); n = size(a,2);
+  end
+end
+
+if isempty(m)
   p = length(a(:));
   n = floor(sqrt(p));
   m = ceil(p/n);
+elseif isempty(n)
+  n = ceil(length(a(:))/m);
 end
+
+
 
 h=[];
 for index=1:length(a(:))
