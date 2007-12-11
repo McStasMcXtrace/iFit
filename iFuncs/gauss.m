@@ -13,10 +13,7 @@ function y=gauss(p, x)
 if nargin==2
     y=p(4)+p(1)*exp(-0.5*((x-p(2))/p(3)).^2);
 else
-  if nargin==0, action='identify'; end
-  if ischar(p),     action=p; 
-  elseif ischar(x), action=x; 
-  elseif isstruct(p) & isfield(p,'action'), action = p.action; end
+  action='identify';
   
   switch action
   case 'identify'
