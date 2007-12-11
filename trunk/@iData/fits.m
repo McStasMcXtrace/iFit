@@ -86,20 +86,20 @@ if ~isfield(options, 'algorithm')
   options.algorithm = @fminsearch;
 end
 if ~isfield(options, 'criteria')
-  options.criteria = @least_square;
+  options.criteria  = @least_square;
 end
+
+[dummy, info] = ieval(iData, model); % model info 
 if isempty(pars)
-  [dummy, pars, parsName] = ieval(a, model);  % get default starting parameters
-else
-  [dummy, dummy, parsName] = ieval(a, model);  % get parameter names
+  pars=info.Guess;               % get default starting parameters
 end
 if isnumeric(constraints) | islogical(constraints)
-  tmp.fixed = double(constraints);
-  constraints=[];
-  constraints.fixed=[];
+  tmp              = double(constraints);
+  constraints      =[];
+  constraints.fixed=tmp;
 end
 if ~isstruct(constraints)
-  iData_private_warning(mfilename,[ 'The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
+  iData_private_error(mfilename,[ 'The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
 end
  
 constraints.parsStart=pars;
@@ -119,9 +119,11 @@ if isfield(options, 'PlotFcns')
   options.PlotFcns    = [];
 end
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
-constraints.parsHistory    = pars;
-constraints.criteriaHistory= NaN;
-constraints.parsNames      = parsName;
+constraints.parsHistory    = [];
+constraints.criteriaHistory= [];
+constraints.parsNames      = info.Parameters;
+constraints.modelName      = info.Name;
+constraints.algorithm      = options.algorithm;
 
 % call minimizer
 [pars_out,criteria,message,output] = feval(options.algorithm, ...
@@ -164,6 +166,8 @@ end
       optimValues.parsHistory    = constraints.parsHistory;
       optimValues.criteriaHistory= constraints.criteriaHistory;
       optimValues.parsNames      = constraints.parsNames;
+      optimValues.algorithm      = constraints.algorithm;
+      optimValues.modelName      = constraints.modelName;
       try
         stop2 = feval(options.UserPlotFcns, pars, optimValues, state);
       catch
@@ -233,10 +237,13 @@ function stop = fits_plot(pars, optimValues, state)
     stop = true;  % figure was closed: abort optimization by user
   end
   figure(h);
-  set(h, 'Name', [ 'iData/fits: iteration' num2str(optimValues.iteration) ]);
+  set(h, 'Name', [ 'iData/fits: ' func2str(optimValues.algorithm) ' iteration ' num2str(optimValues.iteration) ]);
   subplot(1,2,1); % this subplot shows the criteria
   plot(optimValues.criteriaHistory);
-  xlabel('iteration'); ylabel('criteria'); title('Close figure to abort'); axis tight
+  xlabel('iteration'); ylabel('criteria'); axis tight
+  if strcmp(state, 'done'), title('Done'); 
+  elseif strcmp(state, 'init'), title('Init'); 
+  else title('Close figure to abort');  end
   
   subplot(1,2,2); % this subplot shows some parameters
   pars_hist= optimValues.parsHistory;
@@ -246,7 +253,7 @@ function stop = fits_plot(pars, optimValues, state)
   switch length(pars_std)
   case 1
     plot(pars_hist, optimValues.criteriaHistory);
-    xlabel([ constraints.parsNames{1} ]);
+    xlabel([ optimValues.parsNames{1} ]);
     ylabel('criteria');
   case 2
     fscatter3(pars_hist(:,1), pars_hist(:,2), optimValues.criteriaHistory);
@@ -259,7 +266,8 @@ function stop = fits_plot(pars, optimValues, state)
     ylabel([ num2str(sort_std(2)) ': ' optimValues.parsNames{sort_std(2)} ]);
     zlabel([ num2str(sort_std(3)) ': ' optimValues.parsNames{sort_std(3)} ]);
     view(3); c = colorbar;
-  end 
+  end
+  title({[ func2str(optimValues.algorithm) ' iteration ' num2str(optimValues.iteration) ],optimValues.modelName});
   axis tight
 end
 
