@@ -33,8 +33,13 @@ quiver, quiver2 with gradient
   examples/typical usage
 
 * Contributed code (Matlab Central): 
-  fscatter3:  Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
-  vol3d:      Joe Conti, 2004
-  genop:      Douglas M. Schwarz, 13 March 2006
-  buscarnd:   Argimiro R. Secchi, 2001
+  fscatter3:  Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich (in iData/plot)
+  vol3d:      Joe Conti, 2004 (in iData/plot)
+  genop:      Douglas M. Schwarz, 13 March 2006 (in iData/binary operations)
+  buscarnd:   Argimiro R. Secchi, 2001 (in iOptim/fminrand)
+  gaevolve:   G. Lombardi, Jul 2006 (in iOptim/fmingaevolve)
+  gaconstrain:Javad Ivakpour, 2006 (in iOptim/fminga)
+  anneal:     Joachim Vandekerckhove, 2006 (in iOptim/fminanneal)
+  ossrs:      Sheela V. Belur, 1998 (in iOptim/fmingradrand)
+  
   
