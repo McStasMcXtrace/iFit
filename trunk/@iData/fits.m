@@ -41,6 +41,8 @@ function [pars,criteria,message,output] = fits(a, model, pars, constraints, opti
 %           constraints.step:  maximum parameter step/change allowed.
 %           constraints.fixed: fixed parameter flag. Use 1 for fixed parameters, 0 otherwise (double array)
 %         options: structure as defined by optimset/optimget (char/struct)
+%           if given as a char, it defines the algorithm to use and its default options
+%
 % output: 
 %         pars:              best parameter estimates (double array)
 %         criteria:          minimal criteria value achieved (double)
@@ -66,8 +68,14 @@ end
 if nargin < 4
   constraints = [];
 end
-if nargin < 5
-  options = optimset('fzero');
+if nargin < 5, options=[]; end
+if isempty(options)
+  options = 'fminsearch';
+end
+if ischar(options) | isa(options, 'function_handle')
+  algo = options;
+  options           = optimset(algo);
+  options.algorithm = algo;
 end
 
 % handle input iData arrays
@@ -124,6 +132,9 @@ constraints.criteriaHistory= [];
 constraints.parsNames      = info.Parameters;
 constraints.modelName      = info.Name;
 constraints.algorithm      = options.algorithm;
+constraints.funcCounts     = 0;
+
+t0 = clock;
 
 % call minimizer
 [pars_out,criteria,message,output] = feval(options.algorithm, ...
@@ -138,8 +149,16 @@ output.parsHistory= constraints.parsHistory;
 output.modelValue = ieval(a, model, pars);
 output.criteria   = criteria;
 outout.pars       = pars;
-output.message    = [ '(' num2str(message) ') ' output.message ];
+if ischar(message) | ~isfield(output, 'message')
+  output.message = message;
+else
+    output.message    = [ '(' num2str(message) ') ' output.message ];
+end
 output.algorithm  = options.algorithm;
+output.funcCounts = constraints.funcCounts;
+output.modelName  = constraints.modelName;
+output.parsNames  = constraints.parsNames;
+output.duration   = etime(clock, t0);
 
 % reset warnings
 try
@@ -149,7 +168,7 @@ catch
   warning(warn);
 end
 
-% Use a nested function as the OutputFcn wrapper, to access 'constraints'
+% Use a nested function as the OutputFcn wrapper, to access 'constraints', 'options' and 'output'
   function stop = outfun_wrapper(pars, optimValues, state);
     % we need to transform pars first
     pars = fits_constraints(pars, constraints);
@@ -161,6 +180,7 @@ end
       stop = stop | stop1;
     end
     
+    % enrich optimValues with some fields from constraints
     % call the optional Plotting function
     if ~isempty(options.UserPlotFcns)
       optimValues.parsHistory    = constraints.parsHistory;
@@ -175,6 +195,10 @@ end
         stop2=true;
       end
       stop = stop | stop2;
+    end
+    
+    if constraints.funcCounts >= options.MaxFunEvals
+      stop=true;
     end
     
   end
@@ -199,7 +223,7 @@ end
     constraints.criteriaHistory = [ constraints.criteriaHistory ; c ];
     constraints.parsPrevious    = pars;
     constraints.parsHistory     = [ constraints.parsHistory ; pars ]; 
-    
+    constraints.funcCounts      = constraints.funcCounts+1; 
   end
   
 end % fits end
