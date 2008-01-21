@@ -3,19 +3,19 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
 
   istop=0; message='';
 
-  if options.TolFun & fval < options.TolFun
+  if options.TolFun & fval <= options.TolFun
     istop=-1;
     message = [ 'Termination function tolerance criteria reached (options.TolFun=' ...
               num2str(options.TolFun) ')' ];
   end
 
-  if options.MaxIter & iterations > options.MaxIter
+  if options.MaxIter & iterations >= options.MaxIter
     istop=-2;
     message = [ 'Maximum number of iterations reached (options.MaxIter=' ...
               num2str(options.MaxIter) ')' ];
   end
 
-  if options.MaxFunEvals & funccount > options.MaxFunEvals
+  if options.MaxFunEvals & funccount >= options.MaxFunEvals
     istop=-3;
     message = [ 'Maximum number of function evaluations reached (options.MaxFunEvals=' ...
               num2str(options.MaxFunEvals) ')' ];
