@@ -10,7 +10,7 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
-%   [x,fval] = fmingradrand(banana,[-1.2, 1])
+%   [x,fval] = fminrand(banana,[-1.2, 1])
 %
 % Input:
 %  FUN is the function to minimize (handle or string).
@@ -68,7 +68,7 @@ function [xo,Ot,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.2 $  $Date: 2008-01-21 09:04:07 $
+%   $Revision: 1.3 $  $Date: 2008-01-21 10:49:37 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C
