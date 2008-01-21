@@ -31,9 +31,13 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%      o=optimset('fminswarmhybrid'); o.Hybrid=@fminsearch;
-%   The options.Hybrid specifies the algorithm to use for local hybrid optimizations.
-%   It may be set to any optimization method using the fminsearch syntax.
+%      o=fminswarmhybrid('defaults');
+%   options.Hybrid specifies the algorithm to use for local hybrid optimizations.
+%      It may be set to any optimization method using the @fminsearch syntax.
+%   option.SwarmSize sets the number of particules in the swarm (20-40).
+%   option.SwarmC1 sets the local attractors strength (1-3)
+%   option.SwarmC2 sets the global attractor strength (1-3).
+%   option.SwarmW  sets inertia weight (0-1).
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min= vector of minimal values for parameters
@@ -56,6 +60,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 %
 % Contrib:
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
+% and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
 % See also: fminsearch, optimset
 
@@ -68,6 +73,10 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxIter=400;
   options.MaxFunEvals=400*50;
   options.Hybrid = @fminsearch;
+  options.SwarmC1=2;
+  options.SwarmC2=2;
+  options.SwarmW =0;
+  options.SwarmSize=20;
   pars = options;
   return
 end
@@ -80,6 +89,10 @@ if isempty(options)
 end
 if ~isfield(options,'Hybrid'), options.Hybrid=''; end
 if isempty(options.Hybrid),    options.Hybrid=@fminsearch; end
+if ~isfield(options,'SwarmC1'),options.SwarmC1=2; end
+if ~isfield(options,'SwarmC2'),options.SwarmC2=2; end
+if ~isfield(options,'SwarmW'), options.SwarmW =0; end
+if ~isfield(options,'SwarmSize'), options.SwarmSize=20; end
 % handle constraints
 if nargin <=3
   constraints=[];
@@ -112,8 +125,7 @@ if isfield(constraints, 'fixed') % fix some of the parameters if requested
   constraints.min(index) = pars(index); 
   constraints.max(index) = pars(index); % fix some parameters
 end
-
-hoptions=hPSOoptions;
+options
 % transfer optimset options and constraints
 hoptions.space     = [ constraints.min(:) constraints.max(:) ];
 hoptions.MaxIter   = options.MaxIter;
@@ -123,13 +135,20 @@ hoptions.Display   = options.Display;
 hoptions.MaxFunEvals=options.MaxFunEvals;
 hoptions.FunValCheck=options.FunValCheck;
 hoptions.OutputFcn  =options.OutputFcn;
+hoptions.c1         =options.SwarmC1;
+hoptions.c2         =options.SwarmC2;
+hoptions.w          =options.SwarmW;
+hoptions.bees       =options.SwarmSize;
+if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
+  hoptions.StallFliLimit = 50;
+else
+  hoptions.StallFliLimit = Inf;
+end
 if isfield(constraints,'step')
   hoptions.maxv = constraints.step;
 else
   hoptions.maxv = abs(constraints.max(:)-constraints.min(:))/2;
 end
-hoptions.StallTimeLimit = Inf;
-hoptions.TimeLimit = Inf;
 
 % call the optimizer
 [pars,fval,exitflag,output] = hPSO(fun, pars, hoptions);
@@ -193,8 +212,6 @@ maxv  = options.maxv;
 space = options.space;
 popul = options.bees;
 flights = options.MaxIter;
-HybridIter = options.HybridIter;
-Show  = options.Show;
 Goal  = options.TolFun;
 
 funcount=0; istop=0;
@@ -205,7 +222,7 @@ pop=ones(popul,1)*space(:,1)'+ru.*(ones(popul,1)*(space(:,2)-space(:,1))');
 %pop(1,:)=pars(:); % force first particule to be the starting parameters
 
 % Hill climb of each solution (bee)
-if exist(options.Hybrid) == 2
+if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
   for i=1:popul
       [pop(i,:),fxi(i,1),dummy,out]=feval(options.Hybrid,fitnessfun,pop(i,:));
       funcount = funcount+out.funcCount;
@@ -258,7 +275,7 @@ for i=2:flights
     % Hill climb search for the new population
     pnew=p;
     fxipnew=fxip;
-    if exist(options.Hybrid) == 2
+    if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
       for j=1:popul
           [pop(j,:),fxi(j,1),dummy,out]     =feval(options.Hybrid,fitnessfun,pop(j,:));
           funcount = funcount+out.funcCount;
@@ -311,7 +328,7 @@ for i=2:flights
     if gfx(i,1)==gfx(i-1,1)
         StallFli = StallFli+1;
     end    
-    if 0 & StallFli==options.StallFliLimit
+    if StallFli >= options.StallFliLimit
         message = 'Optimization terminated: Stall Flights Limit reached.';
         istop=-8;
         break;
@@ -321,7 +338,7 @@ if istop==0, message='Algorithm terminated normally'; end
 output.iterations= i;
 output.message   = message;
 output.funcCount = funcount;
-if exist(options.Hybrid) == 2
+if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
 output.algorithm = [ 'hybrid Particule Swarm Optimizer [' mfilename '/' localChar(options.Hybrid) ']' ];
 else
 output.algorithm = [ 'Particule Swarm Optimizer [fminswarm]' ];
@@ -333,58 +350,4 @@ if (istop & strcmp(options.Display,'notify')) | ...
     output.funcCount, fitnessfun, pars, fval);
 end
 
-% PRIVATE function **********************************************************
-function options=hPSOoptions(varargin)
-%Syntax: options=hPSOoptions(varargin)
-%_____________________________________
-%
-% Options definition for PSO.
-%
-% options is the options struct:
-%             'c1': the strength parameter for the local attractors
-%             'c2': the strength parapeter for the global attractor
-%              'w': the velocity decline parameter
-%           'maxv': the maximum possible velocity for each dimension
-%          'space': the 2-column matrix with the boundaries of each
-%                   particle
-%           'bees': the number of the population particles
-%        'flights': the number of flights
-%     'HybridIter': the maximum number of iterations allowed for the
-%                   @fminsearch
-%           'Show': displays the progress (or part of it) on the screen
-%  'StallFliLimit': the number of flights after the last improvement before
-%                   the optimization stops
-% 'StallTimeLimit': time in seconds after the last improvement before the
-%                   optimization stops
-%      'TimeLimit': time in seconds before the optimization stops
-%           'Goal': a value to be reached
-%
-%
-% Alexandros Leontitsis
-% Department of Education
-% University of Ioannina
-% 45110- Dourouti
-% Ioannina
-% Greece
-% 
-% University e-mail: me00743@cc.uoi.gr
-% Lifetime e-mail: leoaleq@yahoo.com
-% Homepage: http://www.geocities.com/CapeCanaveral/Lab/1421
-% 
-% 17 Nov, 2004.
-
-
-options.c1 = 2;
-options.c2 = 2;
-options.w = 0;
-options.maxv = inf;
-options.space = [0 1];
-options.bees = 20;
-options.flights = 50;
-options.HybridIter = 0;
-options.Show = 'Final';
-options.StallFliLimit = 50;
-options.StallTimeLimit = 20;
-options.TimeLimit = 30;
-options.Goal = -inf;
 
