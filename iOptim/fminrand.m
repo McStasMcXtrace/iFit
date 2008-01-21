@@ -68,7 +68,7 @@ function [xo,Ot,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.3 $  $Date: 2008-01-21 10:49:37 $
+%   $Revision: 1.4 $  $Date: 2008-01-21 14:31:26 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C
@@ -420,11 +420,8 @@ if opt >= 1,
   xo=xo(:,i(1));
 end
 
-Ot=yo*problem;
-xo = xo(:)';
-
-pars=xo;
-fval=Ot;
+pars=xo(:)';
+fval=yo*problem;
 
 % output results --------------------------------------------------------------
 if istop==0, message='Algorithm terminated normally'; end
