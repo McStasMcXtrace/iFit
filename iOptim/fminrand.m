@@ -28,12 +28,11 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 %          FVAL is the value of the FUN function evaluated at MINIMUM.
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
-%
-% Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
-% Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
-%   A.R. Secchi and C.A. Perlingeiro, "Busca Aleatoria Adaptativa",
+% Reference: A.R. Secchi and C.A. Perlingeiro, "Busca Aleatoria Adaptativa",
 %   in Proc. of XII Congresso Nacional de Matematica Aplicada e
 %   Computacional, Sao Jose do Rio Preto, SP, pp. 49-52 (1989).
+% Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
+% Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
 % See also: fminsearch, optimset
 
@@ -68,7 +67,7 @@ function [xo,Ot,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.4 $  $Date: 2008-01-21 14:31:26 $
+%   $Revision: 1.5 $  $Date: 2008-01-21 15:38:38 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C

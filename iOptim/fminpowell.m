@@ -1,7 +1,8 @@
 function [pars,fval,exitflag,output] = fminpowell(fun, pars, options)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminpowell(FUN,PARS,[OPTIONS]) Unconstrained Powell minimization
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINPOWELL(FUN,PARS,[OPTIONS]) Unconstrained Powell minimization
 %
-% This minimization method uses the Powell method.
+% This minimization method uses the Powell method, with either the Coggins or the 
+% Golden section search method at each iteration.
 % 
 % Calling:
 %   fminpowell(fun, pars) asks to minimize the 'fun' objective function with starting
@@ -31,6 +32,7 @@ function [pars,fval,exitflag,output] = fminpowell(fun, pars, options)
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
+% Reference: Brent, Algorithms for minimization without derivatives, Prentice-Hall (1973)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 %
 % See also: fminsearch, optimset
@@ -79,7 +81,7 @@ function [pars,fval,istop,output]=powell(S,x0,options)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.1 $  $Date: 2008-01-21 14:31:26 $
+%   $Revision: 1.2 $  $Date: 2008-01-21 15:38:38 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
 mxit=options.MaxIter;
@@ -217,7 +219,7 @@ end
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.1 $  $Date: 2008-01-21 14:31:26 $
+%   $Revision: 1.2 $  $Date: 2008-01-21 15:38:38 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,
@@ -305,7 +307,7 @@ function [stepsize,xo,Ot,nS]=coggins(S,x0,d,problem,tol,mxit,stp)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.1 $  $Date: 2008-01-21 14:31:26 $
+%   $Revision: 1.2 $  $Date: 2008-01-21 15:38:38 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
  
  if nargin < 3,
@@ -404,7 +406,7 @@ function [x1,x2,nS]=bracket(S,x0,d,problem,stepsize)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.1 $  $Date: 2008-01-21 14:31:26 $
+%   $Revision: 1.2 $  $Date: 2008-01-21 15:38:38 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,
