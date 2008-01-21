@@ -1,7 +1,16 @@
-function [pars,criteria,message,output] = fminrand(fun, pars, options)
-% [MINIMUM,FVAL,MESSAGE,OUTPUT] = FMINRAND(FUN,PARS,[OPTIONS]) adaptive random search optimizer
+function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINRAND(FUN,PARS,[OPTIONS]) adaptive random search optimizer
 %
-% This optimization method uses a random search.
+% This minimization method uses an adaptive random search.
+% 
+% Calling:
+%   fminrand(fun, pars) asks to minimize the 'fun' objective function with starting
+%     parameters 'pars' (vector)
+%   fminrand(fun, pars, options) same as above, with customized options (optimset)
+%
+% Example:
+%   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
+%   [x,fval] = fmingradrand(banana,[-1.2, 1])
 %
 % Input:
 %  FUN is the function to minimize (handle or string).
@@ -11,25 +20,20 @@ function [pars,criteria,message,output] = fminrand(fun, pars, options)
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fmingradrand')
+%   optimset('fminrand')
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
 %            value when input into FUN.
 %          FVAL is the value of the FUN function evaluated at MINIMUM.
-%          MESSAGE return state of the optimizer
+%          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
-% Contrib:
-%   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
-%   Based on the algorithm of the same author written in C
-%   for constrained global optimization in 1989/09/29 and published as:
+% Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
+% Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %   A.R. Secchi and C.A. Perlingeiro, "Busca Aleatoria Adaptativa",
 %   in Proc. of XII Congresso Nacional de Matematica Aplicada e
 %   Computacional, Sao Jose do Rio Preto, SP, pp. 49-52 (1989).
-%
-% Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
 % See also: fminsearch, optimset
 
@@ -53,18 +57,18 @@ if isempty(options)
 end
 
 % call the optimizer
-[pars,criteria,message,output] = buscarnd(fun, pars, options);
+[pars,fval,exitflag,output] = buscarnd(fun, pars, options);
 
 % private function ------------------------------------------------------------
 
-function [xo,Ot,message,output]=buscarnd(S,x0,options)
+function [xo,Ot,istop,output]=buscarnd(S,x0,options)
 %   Unconstrained global optimization using adaptive random search.
 %
 %   [xo,Ot,nS]=buscarnd(S,x0,options.Display,nOt,samples,Lb,Ub,problem,options.TolX,options.MaxIter,R,red,mem)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.1 $  $Date: 2008-01-16 15:54:00 $
+%   $Revision: 1.2 $  $Date: 2008-01-21 09:04:07 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C
@@ -98,7 +102,7 @@ rand('state',sum(100*clock));   %rand('state',sum(100*clock)) resets it to
 
 nOt=1;
 samples=3*size(x0(:),1);
-problem=-1;
+problem=-1; istop=0;
 R=max(0.1*abs(x0+~x0),1);
 
 red=0.2;
@@ -124,7 +128,6 @@ a3=10*options.TolX;
 n3=1;
 holdm=floor(1/red+0.5)*n;
 nhold=0;            % counter to keep distribution constant during holdm times
-message='';
 top=0;
 if mem > 0,
   n4=10*mem;
@@ -154,10 +157,10 @@ xOt=[];
 Ot=[];
 xo=x0;
 yo=feval(S,x0)*problem;
-if ~strcmp(options.Display ,'off')
-  disp(['Starting random search to minimize function ' func2str(S) ])
-  disp([ 0 yo xo(:)' ]);
+if strcmp(options.Display,'iter')
+  fmin_private_disp_start(mfilename, S, xo, yo*problem);
 end
+
 nS=1;
 it=0;
 opt=0;
@@ -283,9 +286,6 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
       opt=opt+1;
       Ot=[Ot,yo];
       xOt=[xOt,xo];
-      if ~strcmp(options.Display ,'off')
-        disp([ it yo xo(:)' ])
-      end
     end
 
         % rescue another point from memory
@@ -338,10 +338,6 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
     end
     
     l3=1;
-
-    if ~strcmp(options.Display ,'off') & opt < nOt,
-      disp([ it yo xo(:)' ])
-    end
   elseif opt & (~l1 | (l1 & ~l4))
     n1=0;
     for i=1:opt,
@@ -372,9 +368,6 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
       end
 
       l3=1;
-      if ~strcmp(options.Display ,'off') & opt < nOt,
-        disp([ it yo xo(:)' ]);
-      end
     end
   end % if a1
                  % adjust search direction and criterion
@@ -405,6 +398,9 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
   
   % std stopping conditions
   [istop, message] = fmin_private_std_check(xo, yo*problem, it, nS, options);
+  if strcmp(options.Display, 'iter')
+    fmin_private_disp_iter(it, nS, S, x, yo*problem);
+  end
   
   if istop
     opt = nOt;
@@ -424,21 +420,24 @@ if opt >= 1,
   xo=xo(:,i(1));
 end
 
-
- 
 Ot=yo*problem;
 xo = xo(:)';
 
-if ~strcmp(options.Display ,'off')
-  disp('End of optimization')
-  disp([ it Ot xo(:)' ]);
-end
+pars=xo;
+fval=Ot;
 
 % output results --------------------------------------------------------------
+if istop==0, message='Algorithm terminated normally'; end
 output.iterations = it;
-output.algorithm  = mfilename;
+output.algorithm  = [ 'Adaptive Random Search [' mfilename ']' ];
 output.message    = message;
 output.funcCount  = nS;
+
+if (istop & strcmp(options.Display,'notify')) | ...
+   strcmp(options.Display,'final') | strcmp(options.Display,'iter')
+  fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
+    output.funcCount, fun, pars, fval);
+end
 
 function n=norm2(x)
 x = x(:);

@@ -1,8 +1,17 @@
-function [pars,fval,message,output] = fminanneal(fun, pars, options)
-% [MINIMUM,FVAL,MESSAGE,OUTPUT] = FMINANNEAL(FUN,PARS,[OPTIONS]) simulated annealing optimizer
+function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINANNEAL(FUN,PARS,[OPTIONS]) simulated annealing optimizer
 %
-%  Simulated annealing optimizer. Prameters are guessed randomly with a decreasing
+%  Simulated annealing minimization. Parameters are scanned randomly with a decreasing
 %  noise.
+% 
+% Calling:
+%   fminanneal(fun, pars) asks to minimize the 'fun' objective function with starting
+%     parameters 'pars' (vector)
+%   fminanneal(fun, pars, options) same as above, with customized options (optimset)
+%
+% Example:
+%   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
+%   [x,fval] = fminanneal(banana,[-1.2, 1])
 %
 % Input:
 %  FUN is a function handle (anonymous function or inline) with a loss
@@ -20,7 +29,7 @@ function [pars,fval,message,output] = fminanneal(fun, pars, options)
 %          MINIMUM is the solution which generated the smallest encountered
 %            value when input into FUN.
 %          FVAL is the value of the FUN function evaluated at MINIMUM.
-%          MESSAGE return state of the optimizer
+%          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
 %  Contrib:
@@ -50,11 +59,11 @@ if isempty(options)
 end
 
 % call the optimizer
-[pars,fval,message,output] = anneal(fun, pars, options);
+[pars,fval,exitflag,output] = anneal(fun, pars, options);
 
 % private function ------------------------------------------------------------
 
-function [parent,fval,message,output] = anneal(loss, parent, options)
+function [parent,fval,istop,output] = anneal(loss, parent, options)
 
 % main settings
 %newsol      =@(x) (x+(randperm(length(x))==length(x))*randn/100);      % neighborhood space function
@@ -65,26 +74,22 @@ minF        = options.TolFun;
 max_consec_rejections = options.MaxFunEvals;
 max_try     = options.MaxIter;
 max_success = 20;
-switch options.Display
-case 'final'
-  report=1;
-case 'iter'
-  report=2;
-otherwise
-  report=0;
-end
 k = 1;                           % boltzmann constant
 
 % counters etc
 iterations     = 0;
-success  = 0;
+success  = 0;
+
 consec   = 0;
 T        = Tinit;
 initenergy = feval(loss, parent);
 fval     = initenergy;
 funcount    = 0;
-if report==2, fprintf(1,'\n  T = %7.5f, %s = %10.5f\n',T,func2str(loss),fval); end
-message  = '';
+istop    =0;
+
+if strcmp(options.Display,'iter')
+  fmin_private_disp_start(mfilename, loss, parent, fval);
+end
 
 while 1
   current = parent; 
@@ -93,20 +98,23 @@ while 1
   if iterations >= max_try || success >= max_success;
       if consec >= max_consec_rejections
           message = 'Maximum consecutive rejections exceeded (options.MaxFunEvals)';
+          istop=-6;
           break;
       elseif T < minT
           message = 'Minimum temperature reached';
+          istop=-7;
           break;
       else
           T = cool(T);  % decrease T according to cooling schedule
-          if report==2, % output
-              fprintf(1,'Iter=%5i  T = %7.5f, %s = %10.5f\n',iterations,T,func2str(loss),fval);
-          end
           iterations = iterations+1; % just an iteration counter
           success = 1;
+          if strcmp(options.Display, 'iter')
+            fmin_private_disp_iter(iterations, funcount, loss, newparam, newfval);
+          end
       end
   end
-%this inline is much more faster than original anneal.m version
+
+%this inline is much more faster than original anneal.m version
 % newparam = newsol(current);
   newparam = current;
   rand_ind = ceil(rand*length(current));
@@ -141,16 +149,17 @@ while 1
 
 end % while
 
-if report;
-    fprintf(1, '\n  Initial temperature:     \t%g\n', Tinit);
-    fprintf(1, '  Final temperature:       \t%g\n', T);
-    fprintf(1, '  Consecutive rejections:  \t%i\n', consec);
-    fprintf(1, '  Number of function calls:\t%i\n', funcount);
-    fprintf(1, '  Minimal final %s:        \t%g\n', func2str(loss), fval);
-end
-
+% output results --------------------------------------------------------------
+if istop==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
-output.algorithm  = mfilename;
+output.algorithm  = [ 'Simulated Annealing [' mfilename ']' ];
 output.message    = message;
 output.funcCount  = funcount;
+
+if (istop & strcmp(options.Display,'notify')) | ...
+   strcmp(options.Display,'final') | strcmp(options.Display,'iter')
+  fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
+    output.funcCount, loss, parent, fval);
+end
+
 
