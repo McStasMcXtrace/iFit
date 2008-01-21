@@ -31,7 +31,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%      optimset('fminswarmhybrid')
+%      o=optimset('fminswarmhybrid'); o.Hybrid=@fminsearch;
 %   The options.Hybrid specifies the algorithm to use for local hybrid optimizations.
 %   It may be set to any optimization method using the fminsearch syntax.
 %
@@ -66,7 +66,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.TolFun =1e-3;
   options.TolX   =1e-5;
   options.MaxIter=400;
-  options.MaxFunEvals=400*20;
+  options.MaxFunEvals=400*50;
   options.Hybrid = @fminsearch;
   pars = options;
   return
@@ -205,13 +205,18 @@ pop=ones(popul,1)*space(:,1)'+ru.*(ones(popul,1)*(space(:,2)-space(:,1))');
 %pop(1,:)=pars(:); % force first particule to be the starting parameters
 
 % Hill climb of each solution (bee)
-for i=1:popul
-    [pop(i,:),fxi(i,1),dummy,out]=feval(options.Hybrid,fitnessfun,pop(i,:));
-    funcount = funcount+out.funcCount;
+if exist(options.Hybrid) == 2
+  for i=1:popul
+      [pop(i,:),fxi(i,1),dummy,out]=feval(options.Hybrid,fitnessfun,pop(i,:));
+      funcount = funcount+out.funcCount;
+  end
 end
+% constrains within search domain
 pop=min(pop,ones(popul,1)*space(:,2)');
 pop=max(pop,ones(popul,1)*space(:,1)');
-fxi=feval(fitnessfun,pop,varargin{:});
+for i=1:popul
+  fxi(i,1)=feval(fitnessfun,pop(i,:));
+end
 funcount = funcount+1;
 
 if strcmp(options.Display,'iter')
@@ -234,7 +239,7 @@ StallFli = 0;
 message = 'Optimization terminated: maximum number of flights reached.';
 
 % For each flight
-for i=1:flights
+for i=2:flights
     
     % Estimate the velocities
     r1=rand(popul,size(space,1));
@@ -253,19 +258,25 @@ for i=1:flights
     % Hill climb search for the new population
     pnew=p;
     fxipnew=fxip;
-    for j=1:popul
-        [pop(j,:),fxi(j,1),dummy,out]=feval(options.Hybrid,fitnessfun,pop(j,:));
-        funcount = funcount+out.funcCount;
-        [pnew(j,:),fxipnew(j,1),dummy,out]=feval(options.Hybrid,fitnessfun,p(j,:));
-        funcount = funcount+out.funcCount;
+    if exist(options.Hybrid) == 2
+      for j=1:popul
+          [pop(j,:),fxi(j,1),dummy,out]     =feval(options.Hybrid,fitnessfun,pop(j,:));
+          funcount = funcount+out.funcCount;
+          [pnew(j,:),fxipnew(j,1),dummy,out]=feval(options.Hybrid,fitnessfun,p(j,:));
+          funcount = funcount+out.funcCount;
+      end
+    else
+      pnew=p;
     end
     pop=min(pop,ones(popul,1)*space(:,2)');
     pop=max(pop,ones(popul,1)*space(:,1)');
     pnew=min(pnew,ones(popul,1)*space(:,2)');
     pnew=max(pnew,ones(popul,1)*space(:,1)');
-    fxi=feval(fitnessfun,pop,varargin{:});
-    fxipnew=feval(fitnessfun,pnew,varargin{:});
-    funcount = funcount+2;
+    for j=1:popul
+      fxi(j,:)    =feval(fitnessfun,pop(j,:));
+      fxipnew(j,:)=feval(fitnessfun,p(j,:));
+    end
+    funcount = funcount+2*popul;
     
     % Min(fxi,fxip)
     s=find(fxi<fxip);
@@ -300,18 +311,21 @@ for i=1:flights
     if gfx(i,1)==gfx(i-1,1)
         StallFli = StallFli+1;
     end    
-    if StallFli==options.StallFliLimit
+    if 0 & StallFli==options.StallFliLimit
         message = 'Optimization terminated: Stall Flights Limit reached.';
         istop=-8;
         break;
     end
 end
-
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations= i;
 output.message   = message;
 output.funcCount = funcount;
+if exist(options.Hybrid) == 2
 output.algorithm = [ 'hybrid Particule Swarm Optimizer [' mfilename '/' localChar(options.Hybrid) ']' ];
+else
+output.algorithm = [ 'Particule Swarm Optimizer [fminswarm]' ];
+end
 
 if (istop & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')
