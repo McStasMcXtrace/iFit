@@ -1,10 +1,19 @@
-function [pars,criteria,message,output] = fmingradrand(fun, pars, options)
-% [MINIMUM,FVAL,MESSAGE,OUTPUT] = FMINGRADRAND(FUN,PARS,[OPTIONS]) random gradient optimizer
+function [pars,fval,exitflag,output] = fmingradrand(fun, pars, options)
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINGRADRAND(FUN,PARS,[OPTIONS]) random gradient optimizer
 %
-% This optimization method uses a gradient method with random directions.
+% This minimization method uses a gradient method with random directions.
 % Namely, it first determine a random direction in the optimization space
 % and then uses a Newton method. This is repeated iteratively until success.
 % This method is both fast and less sensitive to local minima traps.
+% 
+% Calling:
+%   fmingradrand(fun, pars) asks to minimize the 'fun' objective function with starting
+%     parameters 'pars' (vector)
+%   fmingradrand(fun, pars, options) same as above, with customized options (optimset)
+%
+% Example:
+%   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
+%   [x,fval] = fmingradrand(banana,[-1.2, 1])
 %
 % Input:
 %  FUN is the function to minimize (handle or string).
@@ -20,10 +29,10 @@ function [pars,criteria,message,output] = fmingradrand(fun, pars, options)
 %          MINIMUM is the solution which generated the smallest encountered
 %            value when input into FUN.
 %          FVAL is the value of the FUN function evaluated at MINIMUM.
-%          MESSAGE return state of the optimizer
+%          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Contrib: Sheela V. Belur(sbelur@csc.com)
+% Contrib: Sheela V. Belur(sbelur@csc.com) 1998
 % Reference: computer Methods in Applied Mechanics & Engg, Vol  19, 99-106 , 1979
 %
 % See also: fminsearch, optimset
@@ -48,13 +57,11 @@ if isempty(options)
 end
 
 % call the optimizer
-[pars,criteria,message,output] = ossrs(fun, pars, options);
+[pars,fval,exitflag,output] = ossrs(fun, pars, options);
 
 % private function ------------------------------------------------------------
 
-
-
-function [x,fmn,message,output]=ossrs(fun, x, options)
+function [x,fmn,istop,output]=ossrs(fun, x, options)
 %OSSRS: Optimized Step Size Random Search
 % Author of method and code: Sheela V. Belur(sbelur@csc.com)
 % Reference: computer Methods in Applied Mechanics & Engg, Vol  19, 99-106 , 1979
@@ -67,13 +74,11 @@ function [x,fmn,message,output]=ossrs(fun, x, options)
 n=length(x);
 f(1)=feval(fun,x);
 fmn=f(1);
-if ~strcmp(options.Display,'off')
-  disp('Initial Function Value and Decision Variables')
-  fmn
-  x
+if strcmp(options.Display,'iter')
+  fmin_private_disp_start(mfilename, fun, x, fmn);
 end
 
-message='';
+istop=0;
 stdx=0.05;
 nor=0;fmn0=fmn;
 iterations=0; funcount=0;
@@ -106,12 +111,12 @@ while(nor<options.MaxIter)
   else 
     nor=0;fmn0=fmn;
   end
-  if ~strcmp(options.Display,'off')
-    nor,fmn,x
-  end
   
   % std stopping conditions
   [istop, message] = fmin_private_std_check(x, fmn, iterations, funcount, options);
+  if strcmp(options.Display, 'iter')
+    fmin_private_disp_iter(iterations, funcount, fun, x, fmn);
+  end
   
   if istop
     break
@@ -119,10 +124,16 @@ while(nor<options.MaxIter)
   
 end
 
+% output results --------------------------------------------------------------
+if istop==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
-output.algorithm  = mfilename;
+output.algorithm  = [ 'Random Gradient [' mfilename ']' ];
 output.message    = message;
 output.funcCount  = funcount;
 
+if (istop & strcmp(options.Display,'notify')) | ...
+   strcmp(options.Display,'final') | strcmp(options.Display,'iter')
+  fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
+    output.funcCount, fun, x, fmn);
+end
 
-  
