@@ -54,9 +54,9 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 %
 % Reference:
 % Kennedy J., Eberhart R.C. (1995): Particle swarm optimization. In: Proc.
-% IEEE Conf. on Neural Networks, IV, Piscataway, NJ, pp. 1942-1948
+%   IEEE Conf. on Neural Networks, IV, Piscataway, NJ, pp. 1942-1948
 % Shi, Y. and Eberhart, R. C. A modified particle swarm optimizer. Proc. 
-% IEEE Int Conf. on Evol Comput pp. 69-73. IEEE Press, Piscataway, NJ, 1998
+%   IEEE Int Conf. on Evol Comput pp. 69-73. IEEE Press, Piscataway, NJ, 1998
 %
 % Contrib:
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004

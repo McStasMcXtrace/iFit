@@ -32,8 +32,8 @@ function [pars,fval,exitflag,output] = fmingradrand(fun, pars, options)
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
+% Reference: Computer Methods in Applied Mechanics & Engg, Vol  19, (1979) 99
 % Contrib: Sheela V. Belur(sbelur@csc.com) 1998
-% Reference: computer Methods in Applied Mechanics & Engg, Vol  19, 99-106 , 1979
 %
 % See also: fminsearch, optimset
 
