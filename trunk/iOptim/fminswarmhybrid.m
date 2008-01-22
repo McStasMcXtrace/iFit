@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 %      o=fminswarmhybrid('defaults');
 %   options.Hybrid specifies the algorithm to use for local hybrid optimizations.
 %      It may be set to any optimization method using the @fminsearch syntax.
-%   option.SwarmSize sets the number of particules in the swarm (20-40).
+%   option.PopulationSize sets the number of particules in the swarm (20-40).
 %   option.SwarmC1 sets the local attractors strength (1-3)
 %   option.SwarmC2 sets the global attractor strength (1-3).
 %   option.SwarmW  sets inertia weight (0-1).
@@ -62,6 +62,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -76,7 +77,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.SwarmC1=2;
   options.SwarmC2=2;
   options.SwarmW =0;
-  options.SwarmSize=20;
+  options.PopulationSize=20;
   pars = options;
   return
 end
@@ -92,7 +93,7 @@ if isempty(options.Hybrid),    options.Hybrid=@fminsearch; end
 if ~isfield(options,'SwarmC1'),options.SwarmC1=2; end
 if ~isfield(options,'SwarmC2'),options.SwarmC2=2; end
 if ~isfield(options,'SwarmW'), options.SwarmW =0; end
-if ~isfield(options,'SwarmSize'), options.SwarmSize=20; end
+if ~isfield(options,'PopulationSize'), options.PopulationSize=20; end
 % handle constraints
 if nargin <=3
   constraints=[];
@@ -106,26 +107,35 @@ elseif nargin >= 4 & isnumeric(constraints)
     constraints.max = ub;
   end
 end
+
 if isfield(constraints, 'min')  % test if min values are valid
   index=find(isnan(constraints.min) | isinf(constraints.min));
   constraints.min(index) = -2*abs(pars(index));
+  index=find(pars == 0);
+  constraints.min(index) = -1;
 end
 if isfield(constraints, 'max')  % test if max values are valid
   index=find(isnan(constraints.max) | isinf(constraints.min));
   constraints.max(index) = 2*abs(pars(index));
+  index=find(pars == 0);
+  constraints.min(index) = 1;
 end
 if ~isfield(constraints, 'min')
   constraints.min = -2*abs(pars); % default min values
+  index=find(pars == 0);
+  constraints.min(index) = -1;
 end
 if ~isfield(constraints, 'max')
   constraints.max =  2*abs(pars); % default max values
+  index=find(pars == 0);
+  constraints.min(index) = 1;
 end
 if isfield(constraints, 'fixed') % fix some of the parameters if requested
   index = find(fixed);
   constraints.min(index) = pars(index); 
   constraints.max(index) = pars(index); % fix some parameters
 end
-options
+
 % transfer optimset options and constraints
 hoptions.space     = [ constraints.min(:) constraints.max(:) ];
 hoptions.MaxIter   = options.MaxIter;
@@ -138,7 +148,7 @@ hoptions.OutputFcn  =options.OutputFcn;
 hoptions.c1         =options.SwarmC1;
 hoptions.c2         =options.SwarmC2;
 hoptions.w          =options.SwarmW;
-hoptions.bees       =options.SwarmSize;
+hoptions.bees       =options.PopulationSize;
 if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
   hoptions.StallFliLimit = 50;
 else

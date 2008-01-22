@@ -32,6 +32,7 @@ function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options)
 % Contrib: F. Sigworth, 15 March 2003, S. H. Heinemann, 1987
 %          M. Caceci and W. Cacheris, Byte, p. 340, May 1984.
 %
+% Version: $Revision: 1.2 $
 % See also: fminsearch, optimset
 
 % default options for optimset
