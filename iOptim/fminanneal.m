@@ -32,11 +32,13 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-%  Contrib:
+% Reference:
 %    Kirkpatrick, S., Gelatt, C.D., & Vecchi, M.P. (1983). Optimization by
 %    Simulated Annealing. _Science, 220_, 671-680.
+% Contrib:
 %   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
 %
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % default options for optimset
