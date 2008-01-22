@@ -29,7 +29,7 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
 %      o=fminswarm('defaults');
-%   option.SwarmSize sets the number of particules in the swarm (20-40).
+%   option.PopulationSize sets the number of particules in the swarm (20-40).
 %   option.SwarmC1 sets the local attractors strength (1-3)
 %   option.SwarmC2 sets the global attractor strength (1-3).
 %   option.SwarmW  sets inertia weight (0-1).
@@ -56,6 +56,7 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 % Contrib:
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 %
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % this is a wrapper to fminswarmhybrid, without hybrid optimizer
