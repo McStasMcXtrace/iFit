@@ -1,5 +1,5 @@
 function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINSIMPLEX(FUN,PARS,[OPTIONS]) adaptive random search optimizer
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINSIMPLEX(FUN,PARS,[OPTIONS]) Nelder-Mead Simplex
 %
 % This minimization method uses an adaptive random search.
 % 
@@ -32,15 +32,15 @@ function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options)
 % Contrib: F. Sigworth, 15 March 2003, S. H. Heinemann, 1987
 %          M. Caceci and W. Cacheris, Byte, p. 340, May 1984.
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
-  options.TolFun =1e-6;
-  options.TolX   =1e-5;
+  options.TolFun =1e-4;
+  options.TolX   =1e-6;
   options.MaxIter=500;
   options.MaxFunEvals=501;
   pars = options;
@@ -61,12 +61,13 @@ end
 [p,t]=Simplex('init',pars);
 iters=0; funcount=0;
 while 1
+  p_prev=p;
   y=feval(fun, p);
   funcount=funcount+1;
   iters=iters+1;
   [p,t]=Simplex(y);
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(p, y, iters, funcount, options);
+  [istop, message] = fmin_private_std_check(p, y, iters, funcount, options, p_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(iters, funcount, fun, p, y);
   end

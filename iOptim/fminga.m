@@ -45,15 +45,15 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
-  options.TolFun =1e-3;
-  options.TolX   =1e-5;
+  options.TolFun =1e-4;
+  options.TolX   =0;
   options.MaxIter=1000;
   options.MaxFunEvals=1000*100;
   pars = options;
@@ -109,7 +109,7 @@ if isfield(constraints, 'fixed') % fix some of the parameters if requested
 end
 
 % call the optimizer
-[pars,fval,exitflag,output] = GA(fun, pars, options, constraints);
+[pars,fval,exitflag,output] = GA(fun, pars(:)', options, constraints);
 
 % private function ------------------------------------------------------------
 
@@ -250,10 +250,11 @@ while 1
     
     % std stopping conditions
     fval = -fvalsorted(1);
+    pars_prev=pars(:)';
     pars =  max1(1,:); pars = pars(:)';
     iterations = iterations+1;
     funcount = n*iterations;
-    [istop, message] = fmin_private_std_check(pars, fval, iterations, funcount, options);
+    [istop, message] = fmin_private_std_check(pars, fval, iterations, funcount, options, pars_prev);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(iterations, funcount, fun, pars, fval);
     end

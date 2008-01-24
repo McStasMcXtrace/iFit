@@ -38,7 +38,7 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 % Contrib:
 %   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -46,7 +46,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
   options.TolFun =1e-4;
-  options.TolX   =1e-5;
+  options.TolX   =0;
   options.MaxIter=500;
   options.MaxFunEvals=10000;
   pars = options;
@@ -100,11 +100,11 @@ while 1
   if iterations >= max_try || success >= max_success;
       if consec >= max_consec_rejections
           message = 'Maximum consecutive rejections exceeded (options.MaxFunEvals)';
-          istop=-6;
+          istop=-7;
           break;
       elseif T < minT
           message = 'Minimum temperature reached';
-          istop=-7;
+          istop=-8;
           break;
       else
           T = cool(T);  % decrease T according to cooling schedule
@@ -126,7 +126,7 @@ while 1
   newfval = feval(loss,newparam);
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(newparam, newfval, iterations, funcount, options);
+  [istop, message] = fmin_private_std_check(newparam, newfval, iterations, funcount, options, parent);
   
   if istop
     parent = newparam; 
