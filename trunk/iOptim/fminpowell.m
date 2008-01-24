@@ -35,15 +35,15 @@ function [pars,fval,exitflag,output] = fminpowell(fun, pars, options)
 % Reference: Brent, Algorithms for minimization without derivatives, Prentice-Hall (1973)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
-  options.TolFun =1e-6;
-  options.TolX   =1e-5;
+  options.TolFun =1e-4;
+  options.TolX   =1e-6;
   options.MaxIter=300;
   options.MaxFunEvals=5000;
   options.Hybrid = 'Coggins';
@@ -82,7 +82,7 @@ function [pars,fval,istop,output]=powell(S,x0,options)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.3 $  $Date: 2008-01-22 14:27:35 $
+%   $Revision: 1.4 $  $Date: 2008-01-24 15:42:31 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
 mxit=options.MaxIter;
@@ -110,7 +110,9 @@ end
 
 while it < mxit,
                    % exploration
+  xo_prev=xo;
   delta=0;
+  k=1;
   for i=1:n,
     if method,           % to see the linesearch plot, remove the two 0* below
      [stepsize,x,Ot,nS1]=aurea(S,xo,D(:,i),problem,tol,mxit);
@@ -151,15 +153,21 @@ while it < mxit,
     end
     D(:,n)=(x-x0)/norm2(x-x0);
     if method,           % to see the linesearch plot, remove the two 0* below
-      [stepsize,xo,yo,nS1]=aurea(S,x,D(:,n),problem,tol,mxit);
+      [stepsize,xo,yo,nS1,it1]=aurea(S,x,D(:,n),problem,tol,mxit);
       yo=yo*problem;
     else
-      [stepsize,xo,yo,nS1]=coggins(S,x,D(:,n),problem,tol,mxit);
+      [stepsize,xo,yo,nS1,it1]=coggins(S,x,D(:,n),problem,tol,mxit);
       yo=yo*problem;
     end
+   if it1 == mxit & (strcmp(options.Display,'iter') | strcmp(options.Display,'notify'))
+     disp([ 'Warning Powell/Line search: reached maximum number of iterations (' num2str(mxit) ')' ]);
+   end
      
     nS=nS+nS1;
   end
+  
+  pars=x0(:)';
+  fval=yo*problem;
 
   if norm2(xo-x0) < tol*(0.1+norm2(x0)) & abs(yo-y0) < tol*(0.1+abs(y0)),
     break;
@@ -168,11 +176,8 @@ while it < mxit,
   y0=yo;
   x0=xo;
   
-  pars=x0(:)';
-  fval=yo*problem;
-  
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(x0, fval, it, nS, options);
+  [istop, message] = fmin_private_std_check(x0, fval, it, nS, options, xo_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(it, nS, S, x0, fval);
   end
@@ -200,7 +205,7 @@ if (istop & strcmp(options.Display,'notify')) | ...
 end
  
  % PRIVATE functions ----------------------------------------------------------
- function [stepsize,xo,Ot,nS]=aurea(S,x0,d,problem,tol,mxit,stp)
+ function [stepsize,xo,Ot,nS,it]=aurea(S,x0,d,problem,tol,mxit,stp)
 %   Performs line search procedure for unconstrained optimization
 %   using golden section.
 %
@@ -220,7 +225,7 @@ end
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.3 $  $Date: 2008-01-22 14:27:35 $
+%   $Revision: 1.4 $  $Date: 2008-01-24 15:42:31 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,
@@ -282,13 +287,9 @@ end
 
  stepsize=p(k);
  xo=x; 
- Ot=y(k)*problem;  
-
- if it == mxit
-  disp([ 'Warning Powell/Aurea: reached maximum number of iterations (' num2str(mxit) ')' ]);
- end
+ Ot=y(k)*problem;  
 % -----------------------------------------------------------------------------
-function [stepsize,xo,Ot,nS]=coggins(S,x0,d,problem,tol,mxit,stp)
+function [stepsize,xo,Ot,nS,it]=coggins(S,x0,d,problem,tol,mxit,stp)
 %   Performs line search procedure for unconstrained optimization
 %   using quadratic interpolation.
 %
@@ -308,7 +309,7 @@ function [stepsize,xo,Ot,nS]=coggins(S,x0,d,problem,tol,mxit,stp)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.3 $  $Date: 2008-01-22 14:27:35 $
+%   $Revision: 1.4 $  $Date: 2008-01-24 15:42:31 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
  
  if nargin < 3,
@@ -385,10 +386,6 @@ function [stepsize,xo,Ot,nS]=coggins(S,x0,d,problem,tol,mxit,stp)
    it=it+1;
  end
 
- if it == mxit
-  disp([ 'Warning Powell/Coggins: reached maximum number of iterations (' num2str(mxit) ')' ]);
- end
-
  stepsize=zo;
  xo=x;
  Ot=ym*problem;% -----------------------------------------------------------------------------
@@ -407,7 +404,7 @@ function [x1,x2,nS]=bracket(S,x0,d,problem,stepsize)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.3 $  $Date: 2008-01-22 14:27:35 $
+%   $Revision: 1.4 $  $Date: 2008-01-24 15:42:31 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,

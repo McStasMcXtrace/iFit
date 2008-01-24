@@ -42,7 +42,7 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -50,7 +50,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
   options.TolFun =1e-4;
-  options.TolX   =1e-5;
+  options.TolX   =1e-8;
   options.MaxIter=5000;
   options.MaxFunEvals=50000;
   pars = options;
@@ -154,6 +154,7 @@ if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, h, x, e);
 end
 while 1
+    x_prev=x;
     [x,P,nf]=ukf(f,x,P,h,z,Q,R);               %the unscented Kalman filter
     e=feval(h,x);
     funcount=funcount+1+nf;
@@ -162,7 +163,7 @@ while 1
       fmin_private_disp_iter(k, funcount, h, x, e);
     end
     % std stopping conditions
-    [istop, message] = fmin_private_std_check(x, e, k, funcount, options);
+    [istop, message] = fmin_private_std_check(x, e, k, funcount, options, x_prev);
     if istop
       break
     end

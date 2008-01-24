@@ -62,15 +62,15 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
-  options.TolFun =1e-3;
-  options.TolX   =1e-5;
+  options.TolFun =1e-4;
+  options.TolX   =1e-6;
   options.MaxIter=400;
   options.MaxFunEvals=400*50;
   options.Hybrid = @fminsearch;
@@ -141,6 +141,7 @@ hoptions.space     = [ constraints.min(:) constraints.max(:) ];
 hoptions.MaxIter   = options.MaxIter;
 hoptions.Hybrid    = options.Hybrid;
 hoptions.TolFun    = options.TolFun;
+hoptions.TolX      = options.TolX;
 hoptions.Display   = options.Display;
 hoptions.MaxFunEvals=options.MaxFunEvals;
 hoptions.FunValCheck=options.FunValCheck;
@@ -224,7 +225,7 @@ popul = options.bees;
 flights = options.MaxIter;
 Goal  = options.TolFun;
 
-funcount=0; istop=0;
+funcount=0; istop=0; x=pars;
 
 % Initial population (random start)
 ru=rand(popul,size(space,1));
@@ -233,8 +234,10 @@ pop=ones(popul,1)*space(:,1)'+ru.*(ones(popul,1)*(space(:,2)-space(:,1))');
 
 % Hill climb of each solution (bee)
 if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
+  options_hybrid = feval(options.Hybrid,'defaults');
+  options_hybrid.Display='off';
   for i=1:popul
-      [pop(i,:),fxi(i,1),dummy,out]=feval(options.Hybrid,fitnessfun,pop(i,:));
+      [pop(i,:),fxi(i,1),dummy,out]=feval(options.Hybrid,fitnessfun,pop(i,:),options_hybrid);
       funcount = funcount+out.funcCount;
   end
 end
@@ -267,7 +270,7 @@ message = 'Optimization terminated: maximum number of flights reached.';
 
 % For each flight
 for i=2:flights
-    
+    x_prev=x;
     % Estimate the velocities
     r1=rand(popul,size(space,1));
     r2=rand(popul,size(space,1));
@@ -287,9 +290,9 @@ for i=2:flights
     fxipnew=fxip;
     if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
       for j=1:popul
-          [pop(j,:),fxi(j,1),dummy,out]     =feval(options.Hybrid,fitnessfun,pop(j,:));
+          [pop(j,:),fxi(j,1),dummy,out]     =feval(options.Hybrid,fitnessfun,pop(j,:),options_hybrid);
           funcount = funcount+out.funcCount;
-          [pnew(j,:),fxipnew(j,1),dummy,out]=feval(options.Hybrid,fitnessfun,p(j,:));
+          [pnew(j,:),fxipnew(j,1),dummy,out]=feval(options.Hybrid,fitnessfun,p(j,:),options_hybrid);
           funcount = funcount+out.funcCount;
       end
     else
@@ -325,7 +328,7 @@ for i=2:flights
     x=gfx(end,2:end);
     % Get the minimum of the function
     fval=gfx(end,1);
-    [istop, message] = fmin_private_std_check(x, fval, i, funcount, options);
+    [istop, message] = fmin_private_std_check(x, fval, i, funcount, options, x_prev);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(i, funcount, fitnessfun, x, fval);
     end
@@ -340,7 +343,7 @@ for i=2:flights
     end    
     if StallFli >= options.StallFliLimit
         message = 'Optimization terminated: Stall Flights Limit reached.';
-        istop=-8;
+        istop=-10;
         break;
     end
 end
