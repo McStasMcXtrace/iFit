@@ -34,15 +34,15 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
-  options.TolFun =1e-6;
-  options.TolX   =1e-5;
+  options.TolFun =1e-4;
+  options.TolX   =1e-4;
   options.MaxIter=500;
   options.MaxFunEvals=5000;
   pars = options;
@@ -61,14 +61,14 @@ end
 
 % private function ------------------------------------------------------------
 
-function [xo,Ot,istop,output]=buscarnd(S,x0,options)
+function [pars,fval,istop,output]=buscarnd(S,x0,options)
 %   Unconstrained global optimization using adaptive random search.
 %
 %   [xo,Ot,nS]=buscarnd(S,x0,options.Display,nOt,samples,Lb,Ub,problem,options.TolX,options.MaxIter,R,red,mem)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.6 $  $Date: 2008-01-22 14:27:35 $
+%   $Revision: 1.7 $  $Date: 2008-01-24 15:42:31 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C
@@ -168,6 +168,7 @@ x=zeros(n,samples);
 y=zeros(1,samples);
  
 while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
+  xo_prev=xo;
   l3=0;
   it=it+1;
   for j=1:samples,   % sampling
@@ -397,7 +398,7 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
   end
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(xo, yo*problem, it, nS, options);
+  [istop, message] = fmin_private_std_check(xo, min(yo*problem), it, nS, options);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(it, nS, S, x, yo*problem);
   end
@@ -408,7 +409,7 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
   end
 end % while
  
-if opt == nOt,
+if opt == nOt & length(Ot),
   yo=Ot;
   xo=xOt;
 end

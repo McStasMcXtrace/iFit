@@ -1,5 +1,5 @@
 function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminralg(FUN,PARS,[OPTIONS]) Shor's r-algorithm minimization
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINRALG(FUN,PARS,[OPTIONS]) Shor's r-algorithm minimization
 %
 % This minimization method uses the Shor's r-algorithm method.
 % 
@@ -20,9 +20,7 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%      o=fminpowell('defaults')
-%   options.Hybrid specifies the algorithm to use for line search optimizations
-%      valid choices are 'Coggins' (default) and 'Golden rule'
+%      o=optimset('fminralg')
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -32,20 +30,20 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 %          OUTPUT additional information returned as a structure.
 %
 % Reference: Shor N.Z., Minimization Methods for Non-Differentiable Functions,
-%   Springer Series in Computational Mathematics, Vol. 3, Springer-Verlag (1985)%
+%   Springer Series in Computational Mathematics, Vol. 3, Springer-Verlag (1985)
 %
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
-  options.TolFun =1e-6;
-  options.TolX   =1e-5;
+  options.TolFun =1e-4;
+  options.TolX   =1e-6;
   options.MaxIter=300;
   options.MaxFunEvals=5000;
   pars = options;
@@ -73,9 +71,11 @@ else opt(5)=0; end
 opt(6) = 1e-8; opt(7)=2.5; opt(8)=1e-11;
 
 % call the optimizer
-[pars,fval,out,k, message] = solvopt(pars, fun, [], opt);
+[pars,fval,out,k, message] = solvopt(pars, fun, [], opt,[],[], ...
+                                options.OutputFcn, options.MaxFunEvals, options.FunValCheck);
 iterations=k;
-exitflag = out(9); 
+if out(9) < 0, exitflag = out(9); 
+else exitflag=0; end
 funcount = out(10);
 
 % output results --------------------------------------------------------------
@@ -91,7 +91,7 @@ if (exitflag < 0 & strcmp(options.Display,'notify')) | ...
     output.funcCount, fun, pars, fval);
 end
 
-function [x,f,options,k,message]=solvopt(x,fun,grad,options,func,gradc)
+function [x,f,options,k,message]=solvopt(x,fun,grad,options,func,gradc,OutputFcn, MaxFunEvals, FunValCheck)
 % Usage:
 % [x,f,options]=solvopt(x,fun,grad,options,func,gradc)
 % The function SOLVOPT performs a modified version of Shor's r-algorithm in
@@ -189,7 +189,7 @@ k=0;
 
 % ARGUMENTS PASSED ----{
 if nargin<2           % Function and/or starting point are not specified
-  options(9)=-1; disp(errmes);  disp(error1);   message=error1; return
+  options(9)=-11; disp(errmes);  disp(error1);   message=error1; return
 end
 if nargin<3,   app=1;             % No user-supplied gradients
 elseif isempty(grad),  app=1; 
@@ -228,11 +228,11 @@ end
 
 % STARTING POINT ----{
  if max(size(x))<=1,      disp(errmes);  disp(error2); 
-                          options(9)=-2; message=error2; return
+                          options(9)=-12; message=error2; return
  elseif size(x,2)==1,     n=size(x,1);  x=x'; trx=1;
  elseif size(x,1)==1,     n=size(x,2);        trx=0;
  else,                    disp(errmes);  disp(error2);
-                          options(9)=-2; message=error2; return
+                          options(9)=-12; message=error2; return
  end
 % ----}
 
@@ -304,11 +304,11 @@ stopf=0;
    else,    f=feval(fun,x);  end
    options(10)=options(10)+1; 
    if isempty(f),      if dispwarn,disp(errmes);disp(error30);end
-                       options(9)=-3; if trx, x=x';end, message=error30; return
+                       options(9)=-13; if trx, x=x';end, message=error30; return
    elseif isnan(f),    if dispwarn,disp(errmes);disp(error31);disp(error6);end
-                       options(9)=-3; if trx, x=x';end, message=error31; return
+                       options(9)=-13; if trx, x=x';end, message=error31; return
    elseif abs(f)==Inf, if dispwarn,disp(errmes);disp(error32);disp(error6);end
-                       options(9)=-3; if trx, x=x';end, message=error32; return
+                       options(9)=-4; if trx, x=x';end, message=error32; return
    end
    xrec=x; frec=f;     % record point and function value
 % Constrained problem   
@@ -317,13 +317,13 @@ stopf=0;
       else,    fc=feval(func,x);  end
       if isempty(fc),  
              if dispwarn,disp(errmes);disp(error50);end
-             options(9)=-5; if trx, x=x';end, message=error50; return
+             options(9)=-15; if trx, x=x';end, message=error50; return
       elseif isnan(fc),
              if dispwarn,disp(errmes);disp(error51);disp(error6);end
-             options(9)=-5; if trx, x=x';end, message=error51; return
+             options(9)=-4; if trx, x=x';end, message=error51; return
       elseif abs(fc)==Inf, 
              if dispwarn,disp(errmes);disp(error52);disp(error6);end
-             options(9)=-5; if trx, x=x';end, message=error52; return
+             options(9)=-4; if trx, x=x';end, message=error52; return
       end
       options(12)=options(12)+1; 
       PenCoef=1;                              % first rough approximation
@@ -346,13 +346,13 @@ stopf=0;
    end
    if size(g,2)==1, g=g'; end, ng=norm(g);  
    if size(g,2)~=n,    if dispwarn,disp(errmes);disp(error40);end
-                       options(9)=-4; if trx, x=x';end, message=error40; return
+                       options(9)=-14; if trx, x=x';end, message=error40; return
    elseif isnan(ng),   if dispwarn,disp(errmes);disp(error41);disp(error6);end
-                       options(9)=-4; if trx, x=x';end, message=error41; return
+                       options(9)=-14; if trx, x=x';end, message=error41; return
    elseif ng==Inf,     if dispwarn,disp(errmes);disp(error42);disp(error6);end
-                       options(9)=-4; if trx, x=x';end, message=error42; return
+                       options(9)=-14; if trx, x=x';end, message=error42; return
    elseif ng<ZeroGrad, if dispwarn,disp(errmes);disp(error43);disp(error6);end
-                       options(9)=-4; if trx, x=x';end, message=error43; return
+                       options(9)=-14; if trx, x=x';end, message=error43; return
    end
    if constr, if ~FP
       if appconstr, 
@@ -368,16 +368,16 @@ stopf=0;
       if size(gc,2)==1, gc=gc'; end, ngc=norm(gc);
       if size(gc,2)~=n,
              if dispwarn,disp(errmes);disp(error60);end
-             options(9)=-6; if trx, x=x';end, message=error60; return
+             options(9)=-16; if trx, x=x';end, message=error60; return
       elseif isnan(ngc),
              if dispwarn,disp(errmes);disp(error61);disp(error6);end
-             options(9)=-6; if trx, x=x';end, message=error61; return
+             options(9)=-16; if trx, x=x';end, message=error61; return
       elseif ngc==Inf, 
              if dispwarn,disp(errmes);disp(error62);disp(error6);end
-             options(9)=-6; if trx, x=x';end, message=error62; return
+             options(9)=-16; if trx, x=x';end, message=error62; return
       elseif ngc<ZeroGrad, 
              if dispwarn,disp(errmes);disp(error63);end
-             options(9)=-6; if trx, x=x';end, message=error63; return
+             options(9)=-16; if trx, x=x';end, message=error63; return
       end
       g=g+PenCoef*gc; ng=norm(g);
    end, end
@@ -393,6 +393,7 @@ stopf=0;
 
 % RESETTING LOOP ----{
 while 1,
+   x_prev=x;
    kcheck=0;                        % Set checkpoint counter.
    kg=0;                            % stepsizes stored
    kj=0;                            % ravine jump counter
@@ -464,7 +465,7 @@ end
          options(10)=options(10)+1;  
          if h1*f==Inf
             if dispwarn, disp(errmes); disp(error5); end
-            options(9)=-7; if trx, x=x';end, message=error5; return
+            options(9)=-17; if trx, x=x';end, message=error5; return
          end
          if constr, fp=f;
            if trx,fc=feval(func,x');
@@ -472,10 +473,10 @@ end
            options(12)=options(12)+1; 
            if  isnan(fc),
                   if dispwarn,disp(errmes);disp(error51);disp(error6);end
-                  options(9)=-5; if trx, x=x';end, message=error51; return
+                  options(9)=-4; if trx, x=x';end, message=error51; return
            elseif abs(fc)==Inf, 
                   if dispwarn,disp(errmes);disp(error52);disp(error6);end
-                  options(9)=-5; if trx, x=x';end, message=error52; return
+                  options(9)=-4; if trx, x=x';end, message=error52; return
            end
            if fc<=cnteps,   FP=1; fc=0; 
            else,            FP=0;       
@@ -495,7 +496,7 @@ end
              if dispwarn, disp(wrnmes);  
              if isnan(f), disp(error31); message=error31; else, disp(error32); message=error32; end 
              end
-             if ksm | kc>=mxtc, options(9)=-3; if trx, x=x';end, return
+             if ksm | kc>=mxtc, options(9)=-4; if trx, x=x';end, return
              else, k2=k2+1;k1=0; hp=hp/dq; x=x1;f=f1; knan=1; 
                    if constr, FP=FP1; fp=fp1; end
              end
@@ -556,10 +557,10 @@ stepvanish=stepvanish+ksm;
       if size(g,2)==1, g=g'; end,    ng=norm(g);
       if isnan(ng), 
        if dispwarn, disp(errmes); disp(error41); end
-       options(9)=-4; if trx, x=x'; end, message=error41; return
+       options(9)=-14; if trx, x=x'; end, message=error41; return
       elseif ng==Inf,     
        if dispwarn,disp(errmes);disp(error42);end
-       options(9)=-4; if trx, x=x';end, message=error42; return
+       options(9)=-14; if trx, x=x';end, message=error42; return
       elseif ng<ZeroGrad, 
            if dispwarn,disp(wrnmes);disp(warn1);end
            message=warn1;
@@ -585,13 +586,13 @@ stepvanish=stepvanish+ksm;
          if size(gc,2)==1, gc=gc'; end, ngc=norm(gc);
          if     isnan(ngc),
                 if dispwarn,disp(errmes);disp(error61);end
-                options(9)=-6; if trx, x=x';end, message=error61; return
+                options(9)=-16; if trx, x=x';end, message=error61; return
          elseif ngc==Inf, 
                 if dispwarn,disp(errmes);disp(error62);end
-                options(9)=-6; if trx, x=x';end, message=error62; return
+                options(9)=-16; if trx, x=x';end, message=error62; return
          elseif ngc<ZeroGrad & ~appconstr, 
                 if dispwarn,disp(errmes);disp(error63);end
-                options(9)=-6; if trx, x=x';end, message=error63; return
+                options(9)=-16; if trx, x=x';end, message=error63; return
          end
          g=g+PenCoef*gc; ng=norm(g); 
          if Reset, if dispwarn,  disp(wrnmes);  disp(warn21); end
@@ -675,7 +676,7 @@ if kc>=mxtc, termflag=0; end
  end 
 % ITERATIONS LIMIT
       if(k==options(4))
-          options(9)=-9; if trx, x=x'; end,
+          options(9)=-2; if trx, x=x'; end,
           if dispwarn, disp(wrnmes);  disp(warn4); end
           message=warn4; 
           return
@@ -685,12 +686,12 @@ if kc>=mxtc, termflag=0; end
     if constr 
       if ng<=ZeroGrad,
           if dispwarn,  disp(termwarn1);  disp(warn1); end
-          options(9)=-8; if trx,x=x';end, message=warn1; return
+          options(9)=-18; if trx,x=x';end, message=warn1; return
       end
     else  
       if ng<=ZeroGrad,        nzero=nzero+1; 
        if dispwarn, disp(wrnmes);  disp(warn1);  end
-       if nzero>=3,  options(9)=-8; if trx,x=x';end, message=warn1; return, end
+       if nzero>=3,  options(9)=-18; if trx,x=x';end, message=warn1; return, end
        g0=-h*g0/2;
        for i=1:10,
           x=x+g0;               
@@ -699,10 +700,10 @@ if kc>=mxtc, termflag=0; end
           options(10)=options(10)+1;
           if abs(f)==Inf 
            if dispwarn, disp(errmes);  disp(error32);  end
-           options(9)=-3;if trx,x=x';end, message=error32; return
+           options(9)=-4;if trx,x=x';end, message=error32; return
           elseif isnan(f),
            if dispwarn, disp(errmes);  disp(error32);  end
-           options(9)=-3;if trx,x=x';end, message=error32; return
+           options(9)=-4;if trx,x=x';end, message=error32; return
           end
           if app, 
              deltax=sign(g0); idx=find(deltax==0); 
@@ -718,16 +719,16 @@ if kc>=mxtc, termflag=0; end
           if size(g,2)==1, g=g'; end,       ng=norm(g);
           if ng==Inf
               if dispwarn, disp(errmes);  disp(error42); end
-              options(9)=-4; if trx, x=x'; end, message=error42; return
+              options(9)=-14; if trx, x=x'; end, message=error42; return
           elseif isnan(ng) 
               if dispwarn, disp(errmes);  disp(error41); end
-              options(9)=-4; if trx, x=x'; end, message=error41; return
+              options(9)=-14; if trx, x=x'; end, message=error41; return
           end
           if ng>ZeroGrad, break, end
        end
        if ng<=ZeroGrad,
           if dispwarn,  disp(termwarn1);  disp(warn1); end
-          options(9)=-8; if trx,x=x';end, message=warn1; return
+          options(9)=-18; if trx,x=x';end, message=warn1; return
        end
        h=h1*dx; break
       end
@@ -776,6 +777,42 @@ if kc>=mxtc, termflag=0; end
        end
      end
     end
+    
+    % handle MaxFunEvals and FunValCheck
+    if options(10) >= MaxFunEvals
+      options(9)=-3; 
+      message = [ 'Maximum number of function evaluations reached (options.MaxFunEvals=' ...
+          num2str(MaxFunEvals) ')' ];
+      return
+    end
+    if strcmp(FunValCheck,'on') & any(isnan(f) | isinf(f))
+      options(9)=-4;
+      message = 'Function value is Inf or Nan (options.FunValCheck)';
+      return
+    end
+    
+    % handle OutputFcn
+    if ~isempty(OutputFcn)
+      if     opt(5)==-1, optimValues.Display='off';
+      elseif opt(5)== 1, optimValues.Display='iter';
+      else               optimValues.Display='notify';
+      if (options(10) <= 1) optimValues.state='init';
+      else  optimValues.state='iter'; end
+      optimValues.TolFun =options(3);
+      optimValues.TolX   =options(2);
+      optimValues.MaxIter=options(4);
+      optimValues.MaxFunEvals=MaxFunEvals;
+      optimValues.iterations = k;
+      optimValues.funccount  = options(10);
+      optimValues.fval       = f;
+      istop = feval(OutputFcn, x, optimValues, optimValues.state);
+      if istop, 
+        options(9)=-6;
+        message = 'Algorithm was terminated by the output function (options.OutputFcn)';
+        return
+      end
+    end
+  end
 % ----}
 end % iterations
 end % restart

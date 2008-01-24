@@ -33,6 +33,11 @@ anneal by joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
 ukfopt by Yi Cao at Cranfield University, 08 January 2008
   used in fminkalman
   modified to use standard Matlab optimization fminsearch syntax and options
+solvopt by Alexei Kuntsevich and Franz Kappel , Graz (Austria) 1997
+  used in fminralg
+  modified to use standard Matlab optimization fminsearch syntax and options
+fminsearchOS by Olivier Salvado, Case Western Reserve University, June04 and Mathworks
   
   
-Version: $Revision: 1.1 $  
+  
+Version: $Revision: 1.2 $  

@@ -56,7 +56,7 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 % Contrib:
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % this is a wrapper to fminswarmhybrid, without hybrid optimizer
@@ -64,6 +64,7 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 if nargin == 1 & strcmp(fun,'defaults')
   options=fminswarmhybrid('defaults');
   options.Hybrid='none';
+  options.TolX   =0;
   pars=options;
   return
 end
@@ -71,7 +72,7 @@ if nargin <= 2
 	options=[];
 end
 if isempty(options)
-  options=feval(mfilename, 'defaults')
+  options=feval(mfilename, 'defaults');
 end
 options.Hybrid='none';
 
