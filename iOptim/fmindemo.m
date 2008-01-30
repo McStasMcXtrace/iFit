@@ -1,12 +1,12 @@
-function fmindemo(dim, verbose)
+function abstract=fmindemo(dim, verbose)
 % fmindemo(dimensionality=vector, verbose=0|1)
 %
 % ex: fmindemo([2 10]);
 
 if nargin == 0
-  fmindemo(2);
-  fmindemo(10);
-  fmindemo(100);
+  abstract{1} = fmindemo(2);
+  abstract{2} = fmindemo(10);
+  abstract{3} = fmindemo(100);
   return
 end
 
@@ -21,59 +21,69 @@ if isnumeric(dim) & length(dim) > 1
   return
 end
 
-optimizers={...
-  'fminanneal', 'fminrand', ...
-  'fmincmaes','fminga', ...
-  'fmingradrand','fminpowell','fminralg', ...
-  'fminkalman',...
-  'fminsimplex','fminsearchOS',...
-  'fminswarm','fminswarmhybrid'};
+optimizers={ ...
+    'fminanneal', ...
+    'fminbfgs','fminnewton', 'fminimfil', ...
+    'fmincmaes','fminga', ...
+    'fmingradrand','fminpowell','fminralg', ...
+    'fminkalman',...
+    'fminsimplex','fminsearchOS', 'fminhooke', ...
+    'fminswarm','fminswarmhybrid'};
+
+if dim <=10
+  optimizers{end+1} = 'fminrand';  % this one is too slow
+  optimizers{end+1} = 'fminmulti'; % this one is not accurate
+end
 
 problems={...       % Unimodal functions
-  'fsphere', ...
-  'fsphereoneax', ...
-  'frandsphere', ...
-  'fspherehull', ...
-  'fneumaier3', ...
-  'flogsphere', ...
-  'fexpsphere', ...
-  'fbaluja', ...
-  'fschwefel', ...
-  'fplane', ...
-  'ftwoaxes', ...
-  'fparabR', ...
-  'fsharpR', ...
-  'frosen', ...
-  'fschwefelrosen1', ...
-  'fschwefelrosen2', ...
-  'fackley', ...    % Multimodal functions
-  'fconcentric', ...
-  'fgriewank', ...
-  'fschaffer', ...
-  'fschwefelmult', ...
-  'ftwomaxtwo'};
+  'fsphere',      1, ...
+  'fsphereoneax', 1, ...
+  'frandsphere',  1, ...
+  'fspherehull',  500, ...
+  'fneumaier3',   5, ...
+  'flogsphere',   1, ...
+  'fexpsphere',   1, ...
+  'fbaluja',      0.16, ...
+  'fschwefel',    1, ...
+  'fplane',       1, ...
+  'ftwoaxes',     1, ...
+  'fparabR',      1, ...
+  'fsharpR',      1, ...
+  'frosen',       1, ...
+  'fschwefelrosen1', 10, ...
+  'fschwefelrosen2', 10, ...
+  'fackley', 32000, ...    % Multimodal functions
+  'fconcentric', 600, ...
+  'fgriewank', 600, ...
+  'fschaffer', 100, ...
+  'fschwefelmult', 500, ...
+  'ftwomaxtwo', 10};
 
 dimensionality=randn(1,dim);
 
 w=warning;
 warning off
 
+t1 = clock;
 
-startpars = dimensionality;
-for index_problem=1:length(problems)
+for index_problem=1:2:length(problems)
   fprintf(1, 'Problem: %15s [%i parameters] ', ...
     problems{index_problem}, length(dimensionality) );
   %    disp(startpars)
+  startpars = dimensionality*problems{index_problem+1};
   fun=str2func(problems{index_problem});
   for index=1:length(optimizers)
-    fprintf(1,'%i', index);
+    if ~verbose, fprintf(1,'%i', index); end
     t0 = clock;
     options=feval(optimizers{index},'defaults');
-    options.Display='off';
-    maxit = options.MaxIter; if ischar(maxit), maxit=str2num(maxit); end
-    options.MaxIter=max(500, maxit);
-    maxfn = options.MaxFunEvals; if ischar(maxfn), maxfn=str2num(maxfn); end
-    options.MaxFunEvals=max(5000, maxfn);
+    if verbose, options.Display='iter'; end
+    maxit = options.MaxIter; if ischar(maxit), maxit=eval(maxit,'0'); end
+    if isinf(maxit), maxit=0; end
+    options.MaxIter=min(2000, max(250*dim, maxit));
+    maxfn = options.MaxFunEvals; if ischar(maxfn), maxfn=eval(maxfn,'0'); end
+    if isinf(maxfn), maxfn=0; end
+    options.MaxFunEvals=min(20000, max(2500*dim, maxfn));
+    options.TolX=0;
     try
       [pars, fval, flag, out] = feval(optimizers{index}, fun, startpars(:), options);
     catch
@@ -84,8 +94,8 @@ for index_problem=1:length(problems)
     duration(index)=etime(clock,t0);
     funcount(index)=out.funcCount;
     iterate(index) =out.iterations;
-    if iterate(index)>=options.MaxIter, f='nITR';
-    elseif funcount(index)>=options.MaxFunEvals, f='nFUN';
+    if ~isinf(fval) & iterate(index)>=options.MaxIter, f='nITR';
+    elseif ~isinf(fval) & funcount(index)>=options.MaxFunEvals, f='nFUN';
     elseif fval <= options.TolFun, f='CFUN';
     else
       switch flag
@@ -95,6 +105,7 @@ for index_problem=1:length(problems)
       case -3,f='nFUN';
       case -4,f='*INF';
       case -5,f='CX  ';
+      case {-12, -9, -8}, f='.';
       otherwise
         if flag<0, f='n'; else f='C'; end
       end
@@ -103,7 +114,7 @@ for index_problem=1:length(problems)
     flags{index}   =f;
     algo{index}    =out.algorithm;
     abstract{index_problem, index} = f(1);
-    fprintf(1,'%s ', f(1));
+    if ~verbose, fprintf(1,'%s ', f(1)); end
   end
   disp(' ');
   % sort results
@@ -116,6 +127,7 @@ for index_problem=1:length(problems)
     if f(1) == 'C',   
       if duration(index) > mtime, f='-'; 
       else f='+'; end
+    elseif f(1)=='.', f='.';
     elseif f(1)=='n', f=' '; 
     else f='*'; end
     abstract{index_problem, index} = f(1);
@@ -134,14 +146,15 @@ end
 
 % display for given dimensionality an abstract of tests
 % matrix: rows=tests columns=optimizers, values=sorting index
-fprintf(1, '               ');
+disp('Test results: +=fast; -=slower; .=local minimum; *=error; " "=does not converge');
+fprintf(1, 't=%10.2g s ', etime(clock,t1));
 for j=1:length(optimizers)
   opt=optimizers{j};
   opt=opt(5:end);
   fprintf(1, '%3s ', opt(1:min(3, length(opt)))); 
 end
 fprintf(1, '\n');
-for i=1:length(problems)
+for i=1:2:length(problems)
   fprintf(1, '%15s ', problems{i});
   for j=1:length(optimizers)
     fprintf(1, '%s   ', abstract{i, j});
@@ -170,14 +183,6 @@ function f=frandsphere(x)
   f=sum(x(idx).^2);
   f=abs(f);
 
-function f=fspherelb0(x, M) % lbound at zero for 1:M needed
-  if nargin < 2 M = 0; end
-  N = size(x,1);
-  % M active bounds, f_i = 1 for x = 0
-  f = -M + sum((x(1:M) + 1).^2);
-  f = f + sum(x(M+1:N).^2);
-  f=abs(f);
-
 function f=fspherehull(x)
   % Patton, Dexter, Goodman, Punch
   % in -500..500
@@ -185,58 +190,8 @@ function f=fspherehull(x)
   % worst case start point seems x = 2*100*sqrt(N)
   % and small step size
   N = size(x,1);
-  f = norm(x) + (norm(x-100*sqrt(N)) - 100*N)^2;
+  f = norm2(x) + (norm2(x-100*sqrt(N)) - 100*N)^2;
   f=abs(f);
-
-function f=fellilb0(x, idxM, scal) % lbound at zero for 1:M needed
-  N = size(x,1);
-  if nargin < 3 || isempty(scal)
-    scal = 100;
-  end
-  scale=scal.^((0:N-1)/(N-1));
-  if nargin < 2 || isempty(idxM)
-    idxM = 1:N;
-  end
-  %scale(N) = 1e0;
-  % M active bounds
-  xopt = 0.1;
-  x(idxM) = x(idxM) + xopt;
-  f = scale.^2*x.^2;
-  f = f - sum((xopt*scale(idxM)).^2);
-%  f = exp(f) - 1;
-%  f = log10(f+1e-19) + 19;
-
-  f = f + 1e-19;
-  f=abs(f);
-
-function f=fsectorsphere(x, scal)
-%
-% This is deceptive for cumulative sigma control in large dimension:
-% The strategy (initially) diverges for N=50 and popsize = 150.  (Even
-% for cs==1 this can be observed for larger settings of N and
-% popsize.) The reason is obvious from the function topology.
-% Divergence can be avoided by setting boundaries or adding a
-% penalty for large ||x||. Then, convergence can be observed again.
-% Conclusion: for popsize>N cumulative sigma control is not completely
-% reasonable, but I do not know better alternatives.
-%
-  if nargin < 2 || isempty (scal)
-    scal = 1e3;
-  end
-  f=sum(x.^2);
-  idx = find(x<0);
-  f = f + (scal-1)^2 * sum(x(idx).^2);
-  f=abs(f);
-
-function f=fstepsphere(x, scal)
-  if nargin < 2 || isempty (scal)
-    scal = 1e0;
-  end
-  N = size(x,1);
-  f=1e-11+sum(scal.^((0:N-1)/(N-1))*floor(x+0.5).^2);
-  f=1e-11+sum(floor(scal.^((0:N-1)/(N-1))'.*x+0.5).^2);
-  f=abs(f);
-%  f=1e-11+sum(floor(x+0.5).^2);
 
 function f=fstep(x)
   % in -5.12..5.12 (bounded)
@@ -276,36 +231,6 @@ function f=fschwefel(x)
   end
   f=abs(f);
 
-function f=fcigar(x, ar)
-  if nargin < 2 || isempty(ar)
-    ar = 1e3;
-  end
-  f = x(1)^2 + ar^2*sum(x(2:end).^2);
-  f=abs(f);
-
-function f=felli(x, lgscal, expon, expon2)
-  % lgscal: log10(axis ratio)
-  % expon: x_i^expon, sphere==2
-  N = size(x,1); if N < 2 error('dimension must be greater one'); end
-  if nargin < 2 || isempty(lgscal), lgscal = 3; end
-  if nargin < 3 || isempty(expon), expon = 2; end
-  if nargin < 4 || isempty(expon2), expon2 = 1; end
-
-  f=((10^(lgscal*expon)).^((0:N-1)/(N-1)) * abs(x).^expon).^(1/expon2);
-%  if rand(1,1) > 0.015
-%    f = NaN;
-%  end
-f=abs(f);
-
-
-function f=fellii(x, scal)
-  N = size(x,1); if N < 2 error('dimension must be greater one'); end
-  if nargin < 2
-    scal = 1;
-  end
-  f= (scal*(1:N)).^2 * (x).^2;
-  f=abs(f);
-
 function f=fplane(x)
   f=x(1);
   f=abs(f);
@@ -319,7 +244,7 @@ function f=fparabR(x)
   f=abs(f);
 
 function f=fsharpR(x)
-  f = abs(-x(1)) + 30*norm(x(2:end));
+  f = abs(-x(1)) + 30*norm2(x(2:end));
   f=abs(f);
 
 function f=frosen(x)
@@ -378,37 +303,6 @@ function f=fgriewank(x)
   % end
   f=abs(f);
 
-function f=frastrigin(x, scal, skewfac, skewstart, amplitude)
-% by default multi-modal about between -30 and 30
-  if nargin < 5 || isempty(amplitude)
-    amplitude = 10;
-  end
-  if nargin < 4 || isempty(skewstart)
-    skewstart = 0;
-  end
-  if nargin < 3 || isempty(skewfac)
-    skewfac = 1;
-  end
-  if nargin < 2 || isempty(scal)
-    scal = 1;
-  end
-  N = size(x,1);
-  scale = 1;
-  if N > 1
-    scale=scal.^((0:N-1)'/(N-1));
-  end
-  % simple version:
-  % f = amplitude*(N - sum(cos(2*pi*(scale.*x)))) + sum((scale.*x).^2);
-
-  % skew version:
-  y = scale.*x;
-  idx = find(x > skewstart);
-  if ~isempty(idx)
-    y(idx) =  skewfac*x(idx);
-  end
-  f = amplitude * (N-sum(cos(2*pi*y))) + sum(y.^2);
-  f=abs(f);
-
 function f = fschaffer(x)
  % -100..100
   N = size(x,1);
@@ -425,12 +319,6 @@ function f=fschwefelmult(x)
   f = f + sum(x(abs(x)>500).^2);
   f=abs(f);
 
-function f=ftwomax(x)
-  % Boundaries at +/-5
-  N = size(x,1);
-  f = -abs(sum(x)) + 5*N;
-  f=abs(f);
-
 function f=ftwomaxtwo(x)
   % Boundaries at +/-10
   N = size(x,1);
@@ -440,4 +328,9 @@ function f=ftwomaxtwo(x)
   end
   f = -f;
   f=abs(f);
+  
+function n=norm2(x)
+x = x(:);
+n=sqrt(sum(abs(x).*abs(x)));
+
 

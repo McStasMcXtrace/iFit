@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminpowell(fun, pars, options)
 % Reference: Brent, Algorithms for minimization without derivatives, Prentice-Hall (1973)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -60,6 +60,13 @@ end
 if ~isfield(options,'Hybrid'), options.Hybrid=''; end
 if isempty(options.Hybrid),    options.Hybrid='Coggins'; end
 
+if strcmp(lower(options.Hybrid), 'coggins') t  = 'Coggins';
+else t = 'Golden rule';
+end
+options.algorithm  = [ 'Powell Search (by Secchi) [' mfilename '/' t ']' ];
+
+options=fmin_private_std_check(options);
+
 % call the optimizer
 [pars,fval,exitflag,output] = powell(fun, pars, options);
 
@@ -82,7 +89,7 @@ function [pars,fval,istop,output]=powell(S,x0,options)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.4 $  $Date: 2008-01-24 15:42:31 $
+%   $Revision: 1.5 $  $Date: 2008-01-30 15:51:59 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
 mxit=options.MaxIter;
@@ -111,6 +118,7 @@ end
 while it < mxit,
                    % exploration
   xo_prev=xo;
+  yo_prev=yo*problem;
   delta=0;
   k=1;
   for i=1:n,
@@ -177,7 +185,7 @@ while it < mxit,
   x0=xo;
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(x0, fval, it, nS, options, xo_prev);
+  [istop, message] = fmin_private_std_check(x0, fval, it, nS, options, xo_prev, yo_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(it, nS, S, x0, fval);
   end
@@ -190,11 +198,7 @@ end % while
 % output results --------------------------------------------------------------
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = it;
-if method == 0
-  output.algorithm  = [ 'Powell Search [' mfilename '/Coggins]' ];
-else
-    output.algorithm  = [ 'Powell Search [' mfilename '/Golden rule]' ];
-end
+output.algorithm  = options.algorithm;
 output.message    = message;
 output.funcCount  = nS;
 
@@ -225,7 +229,7 @@ end
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.4 $  $Date: 2008-01-24 15:42:31 $
+%   $Revision: 1.5 $  $Date: 2008-01-30 15:51:59 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,
@@ -309,7 +313,7 @@ function [stepsize,xo,Ot,nS,it]=coggins(S,x0,d,problem,tol,mxit,stp)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.4 $  $Date: 2008-01-24 15:42:31 $
+%   $Revision: 1.5 $  $Date: 2008-01-30 15:51:59 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
  
  if nargin < 3,
@@ -404,7 +408,7 @@ function [x1,x2,nS]=bracket(S,x0,d,problem,stepsize)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.4 $  $Date: 2008-01-24 15:42:31 $
+%   $Revision: 1.5 $  $Date: 2008-01-30 15:51:59 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,

@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -55,6 +55,9 @@ end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
+options.algorithm  = [ 'Adaptive Random Search (by Secchi) [' mfilename ']' ];
+
+options=fmin_private_std_check(options);
 
 % call the optimizer
 [pars,fval,exitflag,output] = buscarnd(fun, pars, options);
@@ -68,7 +71,7 @@ function [pars,fval,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.7 $  $Date: 2008-01-24 15:42:31 $
+%   $Revision: 1.8 $  $Date: 2008-01-30 15:51:59 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C
@@ -169,6 +172,7 @@ y=zeros(1,samples);
  
 while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
   xo_prev=xo;
+  yo_prev=yo;
   l3=0;
   it=it+1;
   for j=1:samples,   % sampling
@@ -398,7 +402,7 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
   end
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(xo, min(yo*problem), it, nS, options);
+  [istop, message] = fmin_private_std_check(xo, min(yo*problem), it, nS, options, xo_prev, yo_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(it, nS, S, x, yo*problem);
   end
@@ -427,7 +431,7 @@ fval=yo*problem;
 % output results --------------------------------------------------------------
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = it;
-output.algorithm  = [ 'Adaptive Random Search [' mfilename ']' ];
+output.algorithm  = options.algorithm;
 output.message    = message;
 output.funcCount  = nS;
 

@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fmingradrand(fun, pars, options)
 % Reference: Computer Methods in Applied Mechanics & Engg, Vol  19, (1979) 99
 % Contrib: Sheela V. Belur(sbelur@csc.com) 1998
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -56,6 +56,9 @@ end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
+options.algorithm  = [ 'Random Gradient (by Belur) [' mfilename ']' ];
+
+options=fmin_private_std_check(options);
 
 % call the optimizer
 [pars,fval,exitflag,output] = ossrs(fun, pars, options);
@@ -85,6 +88,7 @@ nor=0;fmn0=fmn;
 iterations=0; funcount=0;
 while(nor<options.MaxIter)
   x_prev=x;
+  f_prev=fmn;
   iterations=iterations+1;
   r=randn(size(x))*stdx;
   an2=x-r;
@@ -115,7 +119,7 @@ while(nor<options.MaxIter)
   end
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(x, fmn, iterations, funcount, options, x_prev);
+  [istop, message] = fmin_private_std_check(x, fmn, iterations, funcount, options, x_prev, f_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(iterations, funcount, fun, x, fmn);
   end
@@ -129,7 +133,7 @@ end
 % output results --------------------------------------------------------------
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
-output.algorithm  = [ 'Random Gradient [' mfilename ']' ];
+output.algorithm  = options.algorithm;
 output.message    = message;
 output.funcCount  = funcount;
 
