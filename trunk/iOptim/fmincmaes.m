@@ -62,7 +62,7 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -128,6 +128,8 @@ if isfield(constraints, 'fixed') % fix some of the parameters if requested
   constraints.max(index) = pars(index); % fix some parameters
 end
 
+options=fmin_private_std_check(options);
+
 % transfer optimset options and constraints
 hoptions.MaxIter    = options.MaxIter;
 hoptions.TolFun     = options.TolFun;
@@ -158,6 +160,8 @@ hoptions.Plotting='off';
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
 end
+
+hoptions.algorithm = [ 'Evolution Strategy with Covariance Matrix Adaptation (CMA-ES by Hansen) [' mfilename ']' ];
 
 % call the optimizer
 [pars, fval, counteval, stopflag, out] = cmaes(fun, pars(:), sigma, hoptions);
@@ -193,7 +197,7 @@ if istop==0, message='Algorithm terminated normally'; end
 output.iterations= length(out.hist.iterations);
 output.message   = message;
 output.funcCount = counteval;
-output.algorithm = [ 'Evolution Strategy with Covariance Matrix Adaptation (CMA-ES) [' mfilename ']' ];
+output.algorithm = hoptions.algorithm;
 
 if (istop & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')
@@ -1022,7 +1026,7 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
     
     % Cumulation: update evolution paths
     ps = (1-cs)*ps + (sqrt(cs*(2-cs)*mueff)) * (B*zmean);          % Eq. (4)
-    hsig = norm(ps)/sqrt(1-(1-cs)^(2*countiter))/chiN < 1.4 + 2/(N+1);
+    hsig = norm2(ps)/sqrt(1-(1-cs)^(2*countiter))/chiN < 1.4 + 2/(N+1);
   %  hsig = norm(ps)/sqrt(1-(1-cs)^(2*countiter))/chiN < 1.5 + 1/(N-0.5);
   %  hsig = norm(ps) < 1.5 * sqrt(N);
   %  hsig = 1;
@@ -1056,7 +1060,7 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
     end
 
     % Adapt sigma
-    sigma = sigma * exp((norm(ps)/chiN - 1)*cs/damps);             % Eq. (5)
+    sigma = sigma * exp((norm2(ps)/chiN - 1)*cs/damps);             % Eq. (5)
 
     % Update B and D from C
     if ccov > 0 && mod(countiter, 1/ccov/N/10) < 1
@@ -1078,25 +1082,25 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
 
       % limit condition of C to 1e14 + 1
       if min(diag(D)) <= 0
-	  if stopOnWarnings
-	    stopflag(end+1) = {'warnconditioncov'};
-	  else
-	    warning(['Iteration ' num2str(countiter) ...
-		     ': Eigenvalue (smaller) zero']);
-	    D(D<0) = 0;
-	    tmp = max(diag(D))/1e14;
-	    C = C + tmp*eye(N,N); D = D + tmp*eye(N,N); 
-	  end
+	      if stopOnWarnings
+	        stopflag(end+1) = {'warnconditioncov'};
+	      else
+	        warning(['Iteration ' num2str(countiter) ...
+		         ': Eigenvalue (smaller) zero']);
+	        D(D<0) = 0;
+	        tmp = max(diag(D))/1e14;
+	        C = C + tmp*eye(N,N); D = D + tmp*eye(N,N); 
+	      end
       end
       if max(diag(D)) > 1e14*min(diag(D)) 
-	  if stopOnWarnings
-	    stopflag(end+1) = {'warnconditioncov'};
-	  else
-	    warning(['Iteration ' num2str(countiter) ': condition of C ' ...
-		     'at upper limit' ]);
-	    tmp = max(diag(D))/1e14 - min(diag(D));
-	    C = C + tmp*eye(N,N); D = D + tmp*eye(N,N); 
-	  end
+	      if stopOnWarnings
+	        stopflag(end+1) = {'warnconditioncov'};
+	      else
+	        warning(['Iteration ' num2str(countiter) ': condition of C ' ...
+		         'at upper limit' ]);
+	        tmp = max(diag(D))/1e14 - min(diag(D));
+	        C = C + tmp*eye(N,N); D = D + tmp*eye(N,N); 
+	      end
       end
 
       % Align order of magnitude of scales of sigma and C for nicer output
@@ -1133,13 +1137,13 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
     % Adjust too low coordinate axis deviations
     if any(xmean == xmean + 0.2*sigma*sqrt(diag(C))) 
       if stopOnWarnings
-	  stopflag(end+1) = {'warnnoeffectcoord'};
+	      stopflag(end+1) = {'warnnoeffectcoord'};
       else
         warning(['Iteration ' num2str(countiter) ': coordinate axis std ' ...
 	         'deviation too low' ]);
-	  C = C + ccov * diag(diag(C) .* ...
+	      C = C + ccov * diag(diag(C) .* ...
 			      (xmean == xmean + 0.2*sigma*sqrt(diag(C))));
-	  sigma = sigma * exp(0.05+cs/damps); 
+	      sigma = sigma * exp(0.05+cs/damps); 
       end
     end
     % Adjust step size in case of (numerical) precision problem 
@@ -1147,24 +1151,24 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
 	      + 0.1*sigma*BD(:,1+floor(mod(countiter,N))))
       i = 1+floor(mod(countiter,N));
       if stopOnWarnings
-	  stopflag(end+1) = {'warnnoeffectaxis'};
+	      stopflag(end+1) = {'warnnoeffectaxis'};
       else
         warning(['Iteration ' num2str(countiter) ...
 	         ': main axis standard deviation ' ...
 	         num2str(sigma*D(i,i)) ' has no effect' ]);
-	  sigma = sigma * exp(0.2+cs/damps); 
+	      sigma = sigma * exp(0.2+cs/damps); 
       end
     end
     % Adjust step size in case of equal function values (flat fitness)
     if fitness.sel(1) == fitness.sel(1+ceil(0.1+lambda/4))
       if flgWarnOnEqualFunctionValues && stopOnWarnings
-	  stopflag(end+1) = {'warnequalfunvals'};
+	      stopflag(end+1) = {'warnequalfunvals'};
       else
         if flgWarnOnEqualFunctionValues
-	  warning(['Iteration ' num2str(countiter) ...
-		   ': equal function values f=' num2str(fitness.sel(1)) ...
-		   ' at maximal main axis sigma ' ...
-		   num2str(sigma*max(diag(D)))]);
+	        warning(['Iteration ' num2str(countiter) ...
+		         ': equal function values f=' num2str(fitness.sel(1)) ...
+		         ' at maximal main axis sigma ' ...
+		         num2str(sigma*max(diag(D)))]);
         end
         sigma = sigma * exp(0.2+cs/damps); 
       end
@@ -1172,12 +1176,12 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
     % Adjust step size in case of equal function values
     if countiter > 2 && myrange([fitness.hist fitness.sel(1)]) == 0  
       if stopOnWarnings
-	  stopflag(end+1) = {'warnequalfunvalhist'};
+	      stopflag(end+1) = {'warnequalfunvalhist'};
       else
         warning(['Iteration ' num2str(countiter) ...
 	         ': equal function values in history at maximal main ' ...
 	         'axis sigma ' num2str(sigma*max(diag(D)))]);
-	  sigma = sigma * exp(0.2+cs/damps); 
+	      sigma = sigma * exp(0.2+cs/damps); 
       end
     end
       
@@ -1245,7 +1249,7 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
       if strcmp(str, ['skip' opts.SaveFileName 'run'])
         i = strfind(strline, 'run');
         if irun == sscanf(strline(i+3:end), ' %d ', 1) && irun <= myeval(opts.Restarts)
-	  stopflag(end+1) = {'skipped'};
+	        stopflag(end+1) = {'skipped'};
         end	
       end
     end % while, break 
@@ -1350,11 +1354,11 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
       
       if flgplotting && countiter > 1
         if ~isempty(stopflag) || ...
-	    time.plotting < 0.2 * time.nonoutput
-	  outplot(out); % outplot defined below
-	  if countiter > 3
-	    time.plotting = time.plotting + time.c * max(0,etime(clock, time.t2)); 
-	  end
+	      time.plotting < 0.2 * time.nonoutput
+	        outplot(out); % outplot defined below
+	        if countiter > 3
+	          time.plotting = time.plotting + time.c * max(0,etime(clock, time.t2)); 
+	        end
         end
       end
       if countiter > 100 && ...
@@ -1374,9 +1378,9 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
         clear idx; % prevents error under octave
         % -v6 : non-compressed non-unicode for version 6 and earlier
         if ~isempty(strsaving) && ~isoctave
-	  save('-mat', strsaving, opts.SaveFileName); % for inspection and possible restart	
+	        save('-mat', strsaving, opts.SaveFileName); % for inspection and possible restart	
         else 
-	  save('-mat', opts.SaveFileName); % for inspection and possible restart
+	        save('-mat', opts.SaveFileName); % for inspection and possible restart
         end
         time.saving = time.saving + time.c * max(0,etime(clock, time.t3)); 
       end
@@ -1392,10 +1396,10 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
       elseif k<=1, state='init';
       else state='iter'; end
       optimValues = opts;
-      optimValues.iterations = k;
-      optimValues.funccount  = counteval;
+      optimValues.iteration  = k;
+      optimValues.funcount   = counteval;
       optimValues.fval       = fitness.raw(1);
-      optimValues.state      = state;
+      optimValues.procedure  = [ mfilename ': ' stopflag ];
       istop = feval(opts.OutputFcn, arxvalid(:, fitness.idx(1)), optimValues, state);
       if istop, 
         stopflag(end+1) = {'outputfcn'};
@@ -1891,6 +1895,11 @@ if flgtranspose
   res = res';
 end
 
+function n=norm2(x)
+x = x(:);
+n=sqrt(sum(abs(x).*abs(x)));
+
+
 
 % ---------------------------------------------------------------  
 % --------------- OBJECTIVE TEST FUNCTIONS ----------------------  
@@ -1939,7 +1948,7 @@ function f=fspherehull(x)
   % worst case start point seems x = 2*100*sqrt(N)
   % and small step size
   N = size(x,1);
-  f = norm(x) + (norm(x-100*sqrt(N)) - 100*N)^2;
+  f = norm2(x) + (norm2(x-100*sqrt(N)) - 100*N)^2;
   
 function f=fellilb0(x, idxM, scal) % lbound at zero for 1:M needed
   N = size(x,1);

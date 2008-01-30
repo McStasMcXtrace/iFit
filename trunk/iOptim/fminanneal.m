@@ -38,7 +38,7 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 % Contrib:
 %   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -59,6 +59,10 @@ end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
+
+options=fmin_private_std_check(options);
+
+options.algorithm  = [ 'Simulated Annealing (be Vandekerckhove) [' mfilename ']' ];
 
 % call the optimizer
 [pars,fval,exitflag,output] = anneal(fun, pars, options);
@@ -126,7 +130,7 @@ while 1
   newfval = feval(loss,newparam);
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(newparam, newfval, iterations, funcount, options, parent);
+  [istop, message] = fmin_private_std_check(newparam, newfval, iterations, funcount, options, parent, fval);
   
   if istop
     parent = newparam; 
@@ -154,7 +158,7 @@ end % while
 % output results --------------------------------------------------------------
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
-output.algorithm  = [ 'Simulated Annealing [' mfilename ']' ];
+output.algorithm  = options.algorithm;
 output.message    = message;
 output.funcCount  = funcount;
 

@@ -37,7 +37,9 @@ solvopt by Alexei Kuntsevich and Franz Kappel , Graz (Austria) 1997
   used in fminralg
   modified to use standard Matlab optimization fminsearch syntax and options
 fminsearchOS by Olivier Salvado, Case Western Reserve University, June04 and Mathworks
+  based on fminsearch, improved for noisy signal
+
   
   
   
-Version: $Revision: 1.2 $  
+Version: $Revision: 1.3 $  
