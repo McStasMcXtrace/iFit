@@ -1,7 +1,7 @@
-function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINSIMPLEX(FUN,PARS,[OPTIONS]) Nelder-Mead Simplex
+function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options, constraints)
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminsimplex(FUN,PARS,[OPTIONS],[CONSTRAINTS]) Nelder-Mead Simplex
 %
-% This minimization method uses an adaptive random search.
+% This minimization method uses the Nelder-Mead Simplex
 % 
 % Calling:
 %   fminsimplex(fun, pars) asks to minimize the 'fun' objective function with starting
@@ -22,6 +22,11 @@ function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options)
 %  compliant with optimset. Default options may be obtained with
 %   optimset('fminsimplex')
 %
+%  CONSTRAINTS may be specified as a structure
+%   constraints.min= vector of minimal values for parameters
+%   constraints.max= vector of maximal values for parameters
+%   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
+%
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
 %            value when input into FUN.
@@ -29,10 +34,9 @@ function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options)
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
-% Contrib: F. Sigworth, 15 March 2003, S. H. Heinemann, 1987
-%          M. Caceci and W. Cacheris, Byte, p. 340, May 1984.
+% Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -41,8 +45,8 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Display='off';
   options.TolFun =1e-4;
   options.TolX   =1e-6;
-  options.MaxIter=500;
-  options.MaxFunEvals=501;
+  options.MaxIter=50;
+  options.MaxFunEvals=500;
   pars = options;
   return
 end
@@ -54,220 +58,310 @@ if isempty(options)
   options=feval(mfilename, 'defaults');
 end
 
+options.algorithm  = [ 'Nelder-Mead Simplex (by Kelley) [' mfilename ']' ];
+
+options=fmin_private_std_check(options);
+
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
 end
 
-[p,t]=Simplex('init',pars);
-iters=0; funcount=0;
-while 1
-  p_prev=p;
-  y=feval(fun, p);
-  funcount=funcount+1;
-  iters=iters+1;
-  [p,t]=Simplex(y);
-  % std stopping conditions
-  [istop, message] = fmin_private_std_check(p, y, iters, funcount, options, p_prev);
-  if strcmp(options.Display, 'iter')
-    fmin_private_disp_iter(iters, funcount, fun, p, y);
+% handle constraints
+if nargin <=3
+  constraints=[];
+elseif nargin >= 4 & isnumeric(constraints) 
+  if nargin == 4,               % given as fixed index vector
+    fixed = constraints; constraints=[];
+    constraints.fixed = fixed;  % avoid warning for variable redefinition.
+  else                          % given as lb,ub parameters (nargin==5)
+    lb = constraints;
+    constraints.min = lb;
+    constraints.max = ub;
   end
-  if Simplex('converged',options.TolFun)
-    istop=-9;
-    message = [ 'Global Simplex convergence reached (options.TolFun=' ...
-              num2str(options.TolFun) ')' ];
-  end
-  if istop
-    break
-  end
-end   % while
+end
 
-pars=Simplex('centroid'); % obtain the final value (average).
-fval=feval(fun, pars);
-funcount=funcount+1;
-exitflag=istop;
+if isfield(constraints, 'min')  % test if min values are valid
+  index=find(isnan(constraints.min) | isinf(constraints.min));
+  constraints.min(index) = -2*abs(pars(index));
+  index=find(pars == 0);
+  constraints.min(index) = -1;
+end
+if isfield(constraints, 'max')  % test if max values are valid
+  index=find(isnan(constraints.max) | isinf(constraints.min));
+  constraints.max(index) = 2*abs(pars(index));
+  index=find(pars == 0);
+  constraints.min(index) = 1;
+end
+if ~isfield(constraints, 'min')
+  constraints.min = -2*abs(pars); % default min values
+  index=find(pars == 0);
+  constraints.min(index) = -1;
+end
+if ~isfield(constraints, 'max')
+  constraints.max =  2*abs(pars); % default max values
+  index=find(pars == 0);
+  constraints.min(index) = 1;
+end
+if isfield(constraints, 'fixed') % fix some of the parameters if requested
+  index = find(fixed);
+  constraints.min(index) = pars(index); 
+  constraints.max(index) = pars(index); % fix some parameters
+end
+
+% Initial population (random start): x) must be n x n+1
+n=prod(size(pars));
+prow=reshape(pars,1,n);
+
+% Handle defaults for the step size.
+Steps = constraints.max-constraints.min;
+if prod(size(Steps))<n  % Only a scalar given.
+    zerostep = 1e-3;
+    Steps=Steps(1)*prow+zerostep*(prow==0);
+end;
+
+% The simplex is (n+1) row vectors.
+x0=repmat(prow,n+1,1);
+for i=1:n
+    x0(i+1,i)=x0(i+1,i)+Steps(i);
+end
+
+% call the optimizer
+[pars,fval,exitflag,output] = nelder(x0', fun, options);
+
+% private function ------------------------------------------------------------
+
+
+function [pars, fval, istop, output]=nelder(x0,f,options)
+%
+% Nelder-Mead optimizer, No tie-breaking rule other than MATLAB's sort
+%
+% C. T. Kelley, December 12, 1996
+%
+%
+% This code comes with no guarantee or warranty of any kind.
+%
+% function [x,lhist,histout,simpdata] = nelder(x0,f,tol,maxit,budget)
+%
+% inputs:
+%	vertices of initial simplex = x0 (n x n+1 matrix)
+%          The code will order the vertices for you and no benefit is
+%          accrued if you do it yourself.
+%
+%       objective function = f
+%
+%       termination tolerance = tol
+%       maximum number of iterations = maxit (default = 100)
+%           As of today, dist = | best value - worst value | < tol
+%           or when maxit iterations have been taken
+%       budget = max f evals (default=50*number of variables)
+%                 The iteration will terminate after the iteration that
+%                 exhausts the budget
+%
+%
+% outputs:
+%	final simplex = x (n x n+1) matrix
+%
+%       number of iterations before termination = itout (optional)
+%       iteration histor = histout itout x 5
+%         histout = iteration history, updated after each nonlinear iteration
+%                 = lhist x 5 array, the rows are
+%                   [fcount, fval, norm(grad), dist, diam]
+%                   fcount = cumulative function evals
+%                   fval = current best function value
+%                   norm(grad) = current simplex grad norm
+%                   dist = difference between worst and best values
+%                   diam = max oriented length
+%       simpdata = data for simplex gradient restart 
+%              = [norm(grad), cond(v), bar f]
+%
+% initialize counters
+%
+lhist=0; fcount=0;
+
+tol   = options.TolFun;
+maxit = options.MaxIter;
+budget= options.MaxFunEvals;
+%
+% set debug=1 to print out iteration stats
+%
+debug=0;
+%
+% Set the N-M parameters
+%
+rho=1; chi=2; gamma=.5; sigma=.5;
+dsize=size(x0); n=dsize(1);
+if nargin < 4 maxit=100; end
+if nargin < 5 budget=100*n; end
+%
+% set the paramters for stagnation detection/fixup
+% setting oshrink=0 gives vanilla Nelder-Mead
+%
+oshrink=1; restartmax=3; restarts=0;
+%
+%
+% Order the vertices for the first time
+%
+x=x0; [n,m]=size(x); histout=zeros(maxit*3,5); simpdata=zeros(maxit,3);
+itout=0; orth=0;
+xtmp=zeros(n,n+1); z=zeros(n,n); delf=zeros(n,1);
+for j=1:n+1; fv(j)=feval(f,x(:,j)); end; fcount=fcount+n+1;
+
+[fs,is]=sort(fv); xtmp=x(:,is); x=xtmp; fv=fs;
+itc=0; dist=fv(n+1)-fv(1);
+diam=zeros(n,1);
+for j=2:n+1
+   v(:,j-1)=-x(:,1)+x(:,j);
+   delf(j-1)=fv(j)-fv(1);
+   diam(j-1)=norm2(v(:,j-1));
+end
+sgrad=v'\delf; alpha=1.d-4*max(diam)/norm2(sgrad);
+lhist=lhist+1;
+histout(lhist,:)=[fcount, fv(1), norm(sgrad,inf), 0, max(diam)];
+%
+% main N-M loop
+%
+istop=0;
+pars=mean(x');
+fval=mean(fv);
+while(itc < maxit & dist > tol & restarts < restartmax & fcount <= budget & ~istop)
+    fbc=sum(fv)/(n+1);
+    xbc=sum(x')'/(n+1);
+    sgrad=v'\delf;
+    simpdata(itc+1,1)=norm2(sgrad);
+    simpdata(itc+1,2)=cond(v);
+    simpdata(itc+1,3)=fbc;
+    if(det(v) == 0)
+        istop=-11;
+        message='simplex collapse';
+        break
+    end
+    happy=0; itc=itc+1; itout=itc; how='';
+%
+% reflect
+%
+    y=x(:,1:n);
+    xbart = sum(y')/n;  % centriod of better vertices
+    xbar=xbart';
+    xr=(1 + rho)*xbar - rho*x(:,n+1);
+    fr=feval(f,xr); fcount=fcount+1;
+    if(fr >= fv(1) & fr < fv(n)) happy = 1; xn=xr; fn=fr; end;
+    if(happy==1) how='reflect'; end
+%
+% expand
+%
+    if(happy == 0 & fr < fv(1))
+        xe = (1 + rho*chi)*xbar - rho*chi*x(:,n+1);
+        fe=feval(f,xe); fcount=fcount+1;
+        if(fe < fr) xn=xe;  fn=fe; happy=1; end
+        if(fe >=fr) xn=xr;  fn=fr; happy=1; end
+        if(happy==1) how='expand'; end
+    end
+%
+% contract
+%
+   if(happy == 0 & fr >= fv(n) & fr < fv(n+1))
+%
+% outside contraction
+%
+       xc=(1 + rho*gamma)*xbar - rho*gamma*x(:,n+1);
+       fc=feval(f,xc); fcount=fcount+1;
+       if(fc <= fr) xn=xc; fn=fc; happy=1; end;
+       if(happy==1) how='outside'; end;
+   end
+%
+% inside contraction
+%
+   if(happy == 0 & fr >= fv(n+1))
+       xc=(1 - gamma)*xbar+gamma*x(:,n+1);
+       fc=feval(f,xc); fcount=fcount+1;
+       if(fc < fv(n+1)) happy=1; xn=xc; fn=fc; end;
+       if(happy==1) how='inside'; end;
+   end
+%
+%  test for sufficient decrease, 
+%  do an oriented shrink if necessary
+%
+   if(happy==1 & oshrink==1)
+       xt=x; xt(:,n+1)=xn; ft=fv; ft(n+1)=fn;
+%       xt=x; xt(:,n+1)=xn; ft=fv; ft(n+1)=feval(f,xn); fcount=fcount+1;
+       fbt=sum(ft)/(n+1); delfb=fbt-fbc; armtst=alpha*norm2(sgrad)^2;
+       if(delfb > -armtst/n) 
+           restarts=restarts+1;
+           orth=1; diams=min(diam);
+           sx=.5+sign(sgrad); sx=sign(sx);
+if debug==1
+           [itc, delfb, armtst]
+end
+           happy=0;
+           for j=2:n+1; x(:,j)=x(:,1); 
+           x(j-1,j)=x(j-1,j)-diams*sx(j-1); end;
+           how='shrink';
+       end
+   end
+%
+%  if you have accepted a new point, nuke the old point and
+%  resort
+%
+   if(happy==1)
+       x(:,n+1)=xn; fv(n+1)=fn;
+%       x(:,n+1)=xn; fv(n+1)=feval(f,xn); fcount=fcount+1;
+       [fs,is]=sort(fv); xtmp=x(:,is); x=xtmp; fv=fs;
+   end
+%
+% You're in trouble now! Shrink or restart.
+%
+   if(restarts >= restartmax) message='stagnation in Nelder-Mead'; istop=-11; break; end
+   if(happy == 0 & restarts < restartmax)
+       if(orth ~=1) how='shrink'; end;
+       if(orth ==1) 
+       if debug == 1 disp(' restart '); end
+       orth=0; end;
+       for j=2:n+1;
+           x(:,j)=x(:,1)+sigma*(x(:,j)-x(:,1));
+           fv(j)=feval(f,x(:,j));
+       end
+       fcount=fcount+n;
+       [fs,is]=sort(fv); xtmp=x(:,is); x=xtmp; fv=fs;
+   end
+%
+%  compute the diameter of the new simplex and the iteration data
+%
+   for j=2:n+1
+       v(:,j-1)=-x(:,1)+x(:,j);
+       delf(j-1)=fv(j)-fv(1);
+       diam(j-1)=norm2(v(:,j-1));
+   end
+   dist=fv(n+1)-fv(1);
+   lhist=lhist+1;
+   sgrad=v'\delf;
+   histout(lhist,:)=[fcount, fv(1), norm(sgrad,inf), dist, max(diam)];
+   pars_prev=pars;
+   fval_prev=fval;
+   pars=mean(x');
+   fval=mean(fv);
+   options.procedure=[ mfilename ': ' how ];
+   % std stopping conditions
+   [istop, message] = fmin_private_std_check(pars, fval, itc, fcount, ...
+    options, pars_prev, fval_prev);
+   if strcmp(options.Display, 'iter')
+     fmin_private_disp_iter(itc, fcount, f, pars, fval);
+   end
+end
 
 % output results --------------------------------------------------------------
 if istop==0, message='Algorithm terminated normally'; end
-output.iterations = iters;
-output.algorithm  = [ 'Nelder-Mead Simplex minimization [' mfilename ']' ];
+output.iterations = itc;
+output.algorithm  = options.algorithm;
 output.message    = message;
-output.funcCount  = funcount;
+output.funcCount  = fcount;
 
 if (istop & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')
   fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
-    output.funcCount, fun, pars, fval);
+    output.funcCount, f, pars, fval);
 end
 
-function [Pars, t]=Simplex(y, StartPars, Steps);
-% Nelder-Mead Simplex minimization, implemented as a state machine.
-% Usage:
-% [Pars, t]=Simplex('init', StartPars, Steps);  % Initialization
-% [NewPars, t]=Simplex(y);                      % Iteration
-% ok=Simplex('converged', epsilon);             % Test for convergence
-% FinalPars=Simplex('centroid');                % Obtain final value
-%
-% StartPars is the vector of starting parameter values.
-% Steps is a vector of initial step sizes (or a scalar which multiplies
-% StartPars).
-% Pars is the returned array of parameters to try next.
-% t is a structure containing the internal state.
-% 
-% F. Sigworth, 15 March 2003
-% Based on a Modula-2 implementation by S. H. Heinemann, 1987 which
-% in turn was based on M. Caceci and W. Cacheris, Byte, p. 340, May 1984.
-% 
-% % Example of use:  minimize (p-q).^6
-% p=[2 2 1.5 2]';  % inital guess
-% q=[1 1 1 1]';       % true values
-% [p,t]=Simplex('init',p);
-% iters=0;
-% for i=1:200
-%     y=sum((p-q).^6);
-%     [p,t]=Simplex(y);
-%     if ~mod(i, 10)  % every 10 iterations print out the fitted value
-%         p'
-%     end;
-% end;
-% p=Simplex('centroid'); % obtain the final value.
-
-persistent PState;
-% We make a temporary copy of our state variables for local use.
-% This will allow the function to be interrupted without corrupting the
-% state variables.
-t=PState;   
-% The structure elements are the following:
-%   t.n  number of elements in the parameter vector
-%   t.prow row vector of parameters presently being tested
-%   t.simp the simplex matrix, (n+1) row vectors
-%   t.vals the (n+1) element column vector of function values
-%   t.high index of the highest t.vals element
-%   t.low index of the lowest t.vals element
-%   t.centr centroid row vector of the best n vertices
-%   t.index counter for loops
-%   t.state the state variable of the machine
-
-% Interpret the first argument.
-if ischar(y)  % an option?
-    switch lower(y)
-        
-        case 'init'  % Initialize the machine, with StartPars being the anchor vertex.
-            t.n=prod(size(StartPars));
-            t.prow=reshape(StartPars,1,t.n);
-            
-            % Handle defaults for the step size.
-            if nargin <3  % No step size given
-                Steps = 0.1;
-            end;
-            if prod(size(Steps))<t.n  % Only a scalar given.
-                zerostep = 1e-3;
-                Steps=Steps(1)*t.prow+zerostep*(t.prow==0);
-            end;
-
-            % The simplex is (n+1) row vectors.
-            t.simp=repmat(t.prow,t.n+1,1);
-            for i=1:t.n
-                t.simp(i+1,i)=t.simp(i+1,i)+Steps(i);
-            end;
-
-            % vals is a column vector of function values
-            t.vals=zeros(t.n+1,1);
-            
-            % Initialize the other variables
-            t.index=1;
-            t.state=1;
-            t.high=0;
-            t.low=0;
-            t.centr=t.prow;
-            Pars=t.prow';
-            PState=t;
-            
-        case 'centroid'  % Return the centroid of the present simplex
-            Pars=(sum(t.simp)/(t.n+1))';
-
-        case 'converged'  % Do a convergence test on the vals array.
-            err=max(t.vals)-min(t.vals);
-            Pars=(t.state==3)&&(err < StartPars);
-            
-        otherwise
-            error('Simplex: unrecognized option');
-    end; % switch
-    
-    
-else  % y has a numeric value: this is running mode
-    switch t.state
-        
-        case 1 % Start-up
-            t.vals(t.index)=y;  % pick up the function value from last time.
-            t.index=t.index+1;
-            if t.index <= t.n+1  % continue to fill up the simplex
-                t.prow=t.simp(t.index,:);
-            else  % Simplex is full, make the first move
-                t.state=3;
-            end;
-            
-        case 3  % Test a new vertex
-            i=t.high;
-            if y < t.vals(i)  % The new vertex is better than some.
-                t.simp(i,:)=t.prow;  % replace the worst one.
-                t.vals(i)=y;
-                if y < t.vals(t.low)  % The new vertex is better than the best,
-                   t.prow=t.simp(i,:)+1.1*(t.simp(i,:)-t.centr); % so, expand in the new direction.
-                   t.prevy=y;
-                   t.state=4;
-                else
-                    t.state=3;
-                end;
-            else  % the new vertex is worse than the worst: contract.
-                t.prow=0.5*(t.simp(t.high,:)+t.centr);
-                t.state=5;
-            end;
-            
-        case 4 % Test an expansion
-            if y < t.prevy %t.vals(t.low)  % Accept the expansion
-                t.simp(t.high,:)=t.prow;
-                t.vals(t.high)=y;
-            end;
-            t.state=3;
-            
-        case 5 % Test a contraction
-            if y<t.vals(t.high) % Accept the contraction
-                t.simp(t.high,:)=t.prow;
-                t.vals(t.high)=y;
-                t.state=3;
-            else %  contract the whole simplex toward the best vertex.
-                t.index=1;
-                t.simp(1,:)=0.5*(t.simp(1,:)+t.simp(t.low,:));
-                prow=t.simp(1,:);
-                t.state=6;
-            end;
-            
-        case 6
-            t.vals(t.index)=y;  % pick up the function value.
-            t.index=t.index+1;
-            i=t.index;
-            if i <= t.n+1
-                t.simp(i,:)=0.5*(t.simp(i,:)+t.simp(t.low,:));
-                t.prow=t.simp(i,:);
-                t.state=6;  % continue evaluating the vertices
-            else
-                t.state=3;  % 
-            end;
-    end; % switch
-        
-    if t.state==3  % Normal exit mode: sort the vertices and try a reflection.
-        % assign min and max
-        [x,ind]=sort(t.vals);
-        t.low=ind(1);
-        t.high=ind(t.n+1);
-        % find the excluded centroid
-        t.centr=(sum(t.simp)-t.simp(t.high,:))/(t.n);
-        % reflect about the centroid from the highest vertex
-        t.prow=2*t.centr-t.simp(t.high,:);
-    end;
-    
-    % Copy the output and persistent variables.
-    Pars=t.prow';
-    PState=t;
-end;
+function n=norm2(x)
+x = x(:);
+n=sqrt(sum(abs(x).*abs(x)));
 

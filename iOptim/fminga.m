@@ -45,7 +45,7 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -107,6 +107,9 @@ if isfield(constraints, 'fixed') % fix some of the parameters if requested
   constraints.min(index) = pars(index); 
   constraints.max(index) = pars(index); % fix some parameters
 end
+options.algorithm  = [ 'Genetic Algorithm (real coding by Ivakpour) [' mfilename ']' ];
+
+options=fmin_private_std_check(options);
 
 % call the optimizer
 [pars,fval,exitflag,output] = GA(fun, pars(:)', options, constraints);
@@ -136,6 +139,7 @@ nelit=2;                        %number of elitism children
 valuemin=constraints.min(:);       % min possible value of variables
 valuemax=constraints.max(:);       % max possible value of variables
 pars=pars(:);
+fval=feval(fun, pars);
 %-------------------------------------------------------------------------
 nmutation= nmutationG+nmutationR;
 max1     = zeros(nelit,var);
@@ -249,12 +253,13 @@ while 1
     end
     
     % std stopping conditions
+    fval_prev = fval;
     fval = -fvalsorted(1);
     pars_prev=pars(:)';
     pars =  max1(1,:); pars = pars(:)';
     iterations = iterations+1;
     funcount = n*iterations;
-    [istop, message] = fmin_private_std_check(pars, fval, iterations, funcount, options, pars_prev);
+    [istop, message] = fmin_private_std_check(pars, fval, iterations, funcount, options, pars_prev, fval_prev);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(iterations, funcount, fun, pars, fval);
     end
@@ -267,7 +272,7 @@ end
 % output results --------------------------------------------------------------
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
-output.algorithm  = [ 'Genetic Algorithm (real coding) [' mfilename ']' ];
+output.algorithm  = options.algorithm;
 output.message    = message;
 output.funcCount  = funcount;
 

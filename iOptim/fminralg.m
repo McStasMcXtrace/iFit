@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -56,6 +56,8 @@ end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
+
+options=fmin_private_std_check(options);
 
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
@@ -81,7 +83,7 @@ funcount = out(10);
 % output results --------------------------------------------------------------
 if exitflag==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
-output.algorithm  = [ 'Shor r-algorithm [' mfilename ']' ];
+output.algorithm  = [ 'Shor r-algorithm (by Kuntsevich) [' mfilename ']' ];
 output.message    = message;
 output.funcCount  = funcount;
 
@@ -289,7 +291,7 @@ lowxbound=max([options(2),1e-3]);
 lowfbound=options(3)^2;            
 krerun=0;                          % Re-run events counter
 detfr=options(3)*100;              % relative error for f/f_{record}
-detxr=options(2)*10;               % relative error for norm(x)/norm(x_{record})
+detxr=options(2)*10;               % relative error for norm2(x)/norm2(x_{record})
 
 warnno=0;                          % the number of warn.mess. to end with
 
@@ -344,7 +346,7 @@ stopf=0;
              else,    g=feval(grad,x);   end
              options(11)=options(11)+1;
    end
-   if size(g,2)==1, g=g'; end, ng=norm(g);  
+   if size(g,2)==1, g=g'; end, ng=norm2(g);  
    if size(g,2)~=n,    if dispwarn,disp(errmes);disp(error40);end
                        options(9)=-14; if trx, x=x';end, message=error40; return
    elseif isnan(ng),   if dispwarn,disp(errmes);disp(error41);disp(error6);end
@@ -365,7 +367,7 @@ stopf=0;
                 else,    gc=feval(gradc,x); end
                 options(13)=options(13)+1; 
       end
-      if size(gc,2)==1, gc=gc'; end, ngc=norm(gc);
+      if size(gc,2)==1, gc=gc'; end, ngc=norm2(gc);
       if size(gc,2)~=n,
              if dispwarn,disp(errmes);disp(error60);end
              options(9)=-16; if trx, x=x';end, message=error60; return
@@ -379,7 +381,7 @@ stopf=0;
              if dispwarn,disp(errmes);disp(error63);end
              options(9)=-16; if trx, x=x';end, message=error63; return
       end
-      g=g+PenCoef*gc; ng=norm(g);
+      g=g+PenCoef*gc; ng=norm2(g);
    end, end
    grec=g; nng=ng;   
 % ----}
@@ -413,7 +415,7 @@ while 1,
 % --}      
       gt=g*B;   w=wdef;       
 % JUMPING OVER A RAVINE ----{      
-      if (gt/norm(gt))*(g1'/norm(g1))<low_bound
+      if (gt/norm2(gt))*(g1'/norm2(g1))<low_bound
         if kj==2, xx=x;  end,  if kj==0, kd=4;  end,      
         kj=kj+1;  w=-.9; h=h*2;             % use large coef. of space dilation
         if kj>2*kd,     kd=kd+1;  warnno=1;  
@@ -427,14 +429,14 @@ while 1,
 % ----}
 % DILATION ----{      
       z=gt-g1;
-      nrmz=norm(z);
-      if(nrmz>epsnorm*norm(gt))             
+      nrmz=norm2(z);
+      if(nrmz>epsnorm*norm2(gt))             
          z=z/nrmz;               
          g1=gt+w*(z*gt')*z;  B=B+w*(B*z')*z;    
       else
          z=zeros(1,n); nrmz=0; g1=gt;
       end
-      d1=norm(g1);  g0=(g1/d1)*B';
+      d1=norm2(g1);  g0=(g1/d1)*B';
 % ----}
 % RESETTING ----{
 if kcheck>1
@@ -483,7 +485,7 @@ end
             fp_rate=(fp-fp1); 
             if fp_rate<-epsnorm
              if ~FP1 
-              PenCoefNew=-15*fp_rate/norm(x-x1);
+              PenCoefNew=-15*fp_rate/norm2(x-x1);
               if PenCoefNew>1.2*PenCoef, 
                  PenCoef=PenCoefNew; Reset=1; kless=0; f=f+PenCoef*fc; break
               end
@@ -528,10 +530,10 @@ end
       end
 % ----}  End of 1-D search
 % ADJUST THE TRIAL STEP SIZE ----{
-      dx=norm(xopt-x);
+      dx=norm2(xopt-x);
       if kg<kstore,  kg=kg+1;  end
       if kg>=2,  nsteps(2:kg)=nsteps(1:kg-1); end
-      nsteps(1)=dx/(abs(h)*norm(g0));
+      nsteps(1)=dx/(abs(h)*norm2(g0));
       kk=sum(nsteps(1:kg).*[kg:-1:1])/sum([kg:-1:1]);
         if     kk>des, if kg==1,  h=h*(kk-des+1); 
                        else,   h=h*sqrt(kk-des+1); end
@@ -554,7 +556,7 @@ stepvanish=stepvanish+ksm;
           else,    g=feval(grad,x ); end
           options(11)=options(11)+1;
       end
-      if size(g,2)==1, g=g'; end,    ng=norm(g);
+      if size(g,2)==1, g=g'; end,    ng=norm2(g);
       if isnan(ng), 
        if dispwarn, disp(errmes); disp(error41); end
        options(9)=-14; if trx, x=x'; end, message=error41; return
@@ -583,7 +585,7 @@ stepvanish=stepvanish+ksm;
                else,    gc=feval(gradc,x ); end
                options(13)=options(13)+1; 
          end
-         if size(gc,2)==1, gc=gc'; end, ngc=norm(gc);
+         if size(gc,2)==1, gc=gc'; end, ngc=norm2(gc);
          if     isnan(ngc),
                 if dispwarn,disp(errmes);disp(error61);end
                 options(9)=-16; if trx, x=x';end, message=error61; return
@@ -594,7 +596,7 @@ stepvanish=stepvanish+ksm;
                 if dispwarn,disp(errmes);disp(error63);end
                 options(9)=-16; if trx, x=x';end, message=error63; return
          end
-         g=g+PenCoef*gc; ng=norm(g); 
+         g=g+PenCoef*gc; ng=norm2(g); 
          if Reset, if dispwarn,  disp(wrnmes);  disp(warn21); end
             h=h1*dx/3; k=k-1; nng=ng; message=warn21; break
          end
@@ -634,13 +636,13 @@ if kc>=mxtc, termflag=0; end
              if any(abs(xrec(idx)-x(idx))> detxr * abs(x(idx)))
                  if dispwarn,disp(wrnmes);disp(warn09);end
                  message=warn09;
-                 x=xrec; f=frec; g=grec; ng=norm(g); krerun=krerun+1;
-                 h=h1*max([dx,detxr*norm(x)])/krerun;
+                 x=xrec; f=frec; g=grec; ng=norm2(g); krerun=krerun+1;
+                 h=h1*max([dx,detxr*norm2(x)])/krerun;
                  warnno=2; break
              else, h=h*10;
              end       
           elseif  abs(f-frec)> options(3)*abs(f)    & ...
-                  norm(x-xrec)<options(2)*norm(x) & constr 
+                  norm2(x-xrec)<options(2)*norm2(x) & constr 
                   
           elseif  abs(f-fopt)<=options(3)*abs(f)  | ...
                   abs(f)<=lowfbound               | ...
@@ -663,7 +665,7 @@ if kc>=mxtc, termflag=0; end
                    end
                   else, stopf=1; 
                   end  
-          elseif dx<1.e-12*max(norm(x),1) & termx>=limxterm 
+          elseif dx<1.e-12*max(norm2(x),1) & termx>=limxterm 
                     options(9)=-14;
                     if dispwarn, disp(termwarn1); disp(endwarn(4,:));
                                     if app, disp(appwarn); end
@@ -716,7 +718,7 @@ if kc>=mxtc, termflag=0; end
              else,    g=feval(grad,x );   end
              options(11)=options(11)+1;
           end
-          if size(g,2)==1, g=g'; end,       ng=norm(g);
+          if size(g,2)==1, g=g'; end,       ng=norm2(g);
           if ng==Inf
               if dispwarn, disp(errmes);  disp(error42); end
               options(9)=-14; if trx, x=x'; end, message=error42; return
@@ -767,7 +769,7 @@ if kc>=mxtc, termflag=0; end
           else,    gt=feval(grad,x1 ); end
           options(11)=options(11)+1;
         end
-        if size(gt,2)==1, gt=gt'; end,       ngt=norm(gt);
+        if size(gt,2)==1, gt=gt'; end,       ngt=norm2(gt);
         if ~isnan(ngt) & ngt>epsnorm2,  
           if dispwarn,  disp(warn32); end
           message=warn32;
@@ -796,16 +798,13 @@ if kc>=mxtc, termflag=0; end
       if     opt(5)==-1, optimValues.Display='off';
       elseif opt(5)== 1, optimValues.Display='iter';
       else               optimValues.Display='notify';
-      if (options(10) <= 1) optimValues.state='init';
-      else  optimValues.state='iter'; end
-      optimValues.TolFun =options(3);
-      optimValues.TolX   =options(2);
-      optimValues.MaxIter=options(4);
-      optimValues.MaxFunEvals=MaxFunEvals;
-      optimValues.iterations = k;
-      optimValues.funccount  = options(10);
+      if (options(10) <= 1) state='init';
+      else  state='iter'; end
+      optimValues.iteration  = k;
+      optimValues.funcount   = options(10);
       optimValues.fval       = f;
-      istop = feval(OutputFcn, x, optimValues, optimValues.state);
+      optimValues.procedure  = [ mfilename ': R-alg' ];
+      istop = feval(OutputFcn, x, optimValues, state);
       if istop, 
         options(9)=-6;
         message = 'Algorithm was terminated by the output function (options.OutputFcn)';
@@ -853,3 +852,7 @@ function g = apprgrdn(x,f,fun,deltax,obj)
           end, end            
           y(i)=x(i);
         end
+function n=norm2(x)
+x = x(:);
+n=sqrt(sum(abs(x).*abs(x)));
+

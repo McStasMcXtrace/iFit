@@ -42,7 +42,7 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -63,6 +63,9 @@ end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
+options.algorithm  = [ 'unscented Kalman filter optimizer (by Cao) [' mfilename ']' ];
+
+options=fmin_private_std_check(options);
 
 % calls the optimizer
 [pars, fval, exitflag, output]=ukfopt(fun,pars(:),options);
@@ -145,7 +148,7 @@ m=numel(e);     %number of equations to be solved
 tol=options.TolFun; P=eye(n);Q=1e-6*eye(n);R=1e-6*eye(m);
 k=1;            %number of iterations
 z=zeros(m,1);   %target vector
-ne=norm(e);
+ne=norm2(e);
 
 funcount = 0;
 istop    =0;
@@ -155,15 +158,21 @@ if strcmp(options.Display,'iter')
 end
 while 1
     x_prev=x;
+    e_prev=e;
     [x,P,nf]=ukf(f,x,P,h,z,Q,R);               %the unscented Kalman filter
+    if isempty(x), 
+      x=x_prev; istop=-4; 
+      message='Kalman filter failed';
+      break;
+    end
     e=feval(h,x);
     funcount=funcount+1+nf;
-    ne=norm(e);                                 %residual
+    ne=norm2(e);                                 %residual
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(k, funcount, h, x, e);
     end
     % std stopping conditions
-    [istop, message] = fmin_private_std_check(x, e, k, funcount, options, x_prev);
+    [istop, message] = fmin_private_std_check(x, e, k, funcount, options, x_prev, e_prev);
     if istop
       break
     end
@@ -172,7 +181,7 @@ end
 % output results --------------------------------------------------------------
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = k;
-output.algorithm  = [ 'unscented Kalman filter optimizer [' mfilename ']' ];
+output.algorithm  = options.algorithm;
 output.message    = message;
 output.funcCount  = funcount;
 
@@ -242,6 +251,7 @@ Wc=Wm;
 Wc(1)=Wc(1)+(1-alpha^2+beta);               %weights for covariance
 c=sqrt(c);
 X=sigmas(x,P,c);                            %sigma points around x
+if isempty(X), x=[]; funcount=0; return; end
 [x1,X1,P1,X2]=ut(fstate,X,Wm,Wc,L);         %unscented transformation of process
 [z1,Z1,P2,Z2]=ut(hmeas,X1,Wm,Wc,numel(z));  %unscented transformation of measurments
 funcount=size(X,2)+size(X1,2);
@@ -283,6 +293,14 @@ function X=sigmas(x,P,c)
 %Output:
 %       X: Sigma points
 
-A = c*chol(P)';
+try
+  A = c*chol(P)';
+catch
+  X=[]; return;
+end
 Y = x(:,ones(1,numel(x)));
 X = [x Y+A Y-A]; 
+function n=norm2(x)
+x = x(:);
+n=sqrt(sum(abs(x).*abs(x)));
+

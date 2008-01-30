@@ -62,7 +62,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -136,16 +136,25 @@ if isfield(constraints, 'fixed') % fix some of the parameters if requested
   constraints.max(index) = pars(index); % fix some parameters
 end
 
+if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
+  hoptions.algorithm = [ 'hybrid Particule Swarm Optimizer (by Leontitsis) [' mfilename '/' localChar(options.Hybrid) ']' ];
+else
+  hoptions.algorithm = [ 'Particule Swarm Optimizer (by Leontitsis) [fminswarm]' ];
+end
+
+options=fmin_private_std_check(options);
+
 % transfer optimset options and constraints
 hoptions.space     = [ constraints.min(:) constraints.max(:) ];
 hoptions.MaxIter   = options.MaxIter;
-hoptions.Hybrid    = options.Hybrid;
 hoptions.TolFun    = options.TolFun;
 hoptions.TolX      = options.TolX;
 hoptions.Display   = options.Display;
 hoptions.MaxFunEvals=options.MaxFunEvals;
 hoptions.FunValCheck=options.FunValCheck;
 hoptions.OutputFcn  =options.OutputFcn;
+
+hoptions.Hybrid    = options.Hybrid;
 hoptions.c1         =options.SwarmC1;
 hoptions.c2         =options.SwarmC2;
 hoptions.w          =options.SwarmW;
@@ -264,6 +273,7 @@ v=zeros(popul,size(space,1));
 [Y,I]=min(fxi);
 gfx(1,:)=[Y pop(I,:)];
 P=ones(popul,1)*pop(I,:);
+fval=feval(fitnessfun, pars);
 
 StallFli = 0;
 message = 'Optimization terminated: maximum number of flights reached.';
@@ -271,6 +281,7 @@ message = 'Optimization terminated: maximum number of flights reached.';
 % For each flight
 for i=2:flights
     x_prev=x;
+    f_prev=fval;
     % Estimate the velocities
     r1=rand(popul,size(space,1));
     r2=rand(popul,size(space,1));
@@ -328,7 +339,7 @@ for i=2:flights
     x=gfx(end,2:end);
     % Get the minimum of the function
     fval=gfx(end,1);
-    [istop, message] = fmin_private_std_check(x, fval, i, funcount, options, x_prev);
+    [istop, message] = fmin_private_std_check(x, fval, i, funcount, options, x_prev, f_prev);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(i, funcount, fitnessfun, x, fval);
     end
@@ -351,11 +362,7 @@ if istop==0, message='Algorithm terminated normally'; end
 output.iterations= i;
 output.message   = message;
 output.funcCount = funcount;
-if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
-output.algorithm = [ 'hybrid Particule Swarm Optimizer [' mfilename '/' localChar(options.Hybrid) ']' ];
-else
-output.algorithm = [ 'Particule Swarm Optimizer [fminswarm]' ];
-end
+output.algorithm = options.algorithm;
 
 if (istop & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')

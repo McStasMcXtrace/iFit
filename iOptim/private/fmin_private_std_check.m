@@ -1,11 +1,36 @@
-function [istop, message] = fmin_private_std_check(pars, fval, iterations, funccount, options, pars_prev)
+function [istop, message] = fmin_private_std_check(pars, fval, iterations, funccount, options, pars_prev, fval_prev)
+% standard checks
+% fmin_private_std_check(pars, fval, iterations, funccount, options
+% or
+% fmin_private_std_check(pars, fval, iterations, funccount, options, pars_prev, fval_prev)
+% or
+% options=fmin_private_std_check(options);
+
 
   istop=0; message='';
+  
+  if nargin==1
+    options=pars;
+    checks={'TolFun','TolX','Display','MaxIter','MaxFunEvals','FunValCheck','OutputFcn'};
+    for index=1:length(checks)
+      if ~isfield(options, checks{index}), options=setfield(options,checks{index},[]); end
+    end
+    istop=options;
+    return
+  end
 
   if options.TolFun & fval <= options.TolFun
     istop=-1;
     message = [ 'Termination function tolerance criteria reached (options.TolFun=' ...
               num2str(options.TolFun) ')' ];
+  end
+  if nargin >= 7
+    if (iterations > options.MaxIter-1 | funccount > options.MaxFunEvals-1) & ...
+	  options.TolFun & abs(fval-fval_prev) <= options.TolFun
+      istop=-12;
+      message = [ 'Termination function change tolerance criteria reached (options.TolFun=' ...
+                num2str(options.TolFun) ', local minima)' ];
+    end
   end
 
   if options.MaxIter & iterations >= options.MaxIter
@@ -26,7 +51,7 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
   end
   
   if nargin >= 6
-    if all(abs(pars(:)-pars_prev(:)) < abs(options.TolX*pars(:)))
+    if options.TolX & all(abs(pars(:)-pars_prev(:)) < abs(options.TolX*pars(:)))
       istop=-5;
       message = [ 'Termination parameter tolerance criteria reached (options.TolX=' ...
             num2str(options.TolX) ')' ];
@@ -40,9 +65,12 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
       elseif iterations <= 1, optimValues.state='init';
       else                    optimValues.state='iter'; end
     end
-    optimValues.iterations = iterations;
-    optimValues.funccount  = funccount;
+    optimValues.iteration  = iterations;
+    optimValues.funcount   = funccount;
     optimValues.fval       = fval;
+    if isfield(options,'procedure'),        optimValues.procedure=options.procedure;
+    elseif isfield(options, 'algorithm'),   optimValues.procedure=options.algorithm;
+    else optimValues.procedure  = 'iteration'; end
     istop = feval(options.OutputFcn, pars, optimValues, optimValues.state);
     if istop, 
       istop=-6;
@@ -63,5 +91,6 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
 % -9                Global Simplex convergence reached (simplex)
 % -10               Optimization terminated: Stall Flights Limit reached (swarm)
 % -11               Other termination status (cmaes)
+% -12               Termination function change tolerance criteria reached
 
 
