@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminimfil(fun, pars, options)
 %   Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -43,10 +43,11 @@ if nargin == 1 & strcmp(fun,'defaults')
   % add Matlab std options.
   options.Display='off';
   options.TolFun =1e-6;
-  options.TolX   =0;
+  options.TolX   =1e-12;
   options.MaxIter=100;
   options.MaxFunEvals=1000;
   options.Hybrid = 'BFGS';
+  options.algorithm  = [ 'Unconstrained Implicit filtering (by Kelley) [' mfilename ']' ];
   pars = options;
   return
 end
@@ -60,13 +61,11 @@ end
 if ~isfield(options,'Hybrid'), options.Hybrid=''; end
 if isempty(options.Hybrid),    options.Hybrid='BFGS'; end
 
-options.algorithm  = [ 'Unconstrained Implicit filtering (by Kelley) [' mfilename ']' ];
-
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
 end
 
-options=fmin_private_std_check(options);
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % call the optimizer
 [pars,fval,exitflag,output] = imfil(pars(:), fun, options);
@@ -273,7 +272,7 @@ while (ns < nscal & fcount <= flim & iquitc < iquit)
   pars=x;
   % std stopping conditions
   [istop, message] = fmin_private_std_check(pars, fval, iterations, fcount, ...
-    options);
+    options, pars_prev,fval_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(iterations, fcount, f, pars, fval);
   end

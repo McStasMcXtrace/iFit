@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminbfgs(fun, pars, options)
 %   Shanno, D. F.,Mathematics of Computation 1970, 24, 647-656
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -43,9 +43,10 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
   options.TolFun =1e-4;
-  options.TolX   =1e-6;
+  options.TolX   =1e-12;
   options.MaxIter=20;
   options.MaxFunEvals=1000;
+  options.algorithm  = [ 'Broyden-Fletcher-Goldfarb-Shanno (by Kelley) [' mfilename ']' ];
   pars = options;
   return
 end
@@ -57,13 +58,11 @@ if isempty(options)
   options=feval(mfilename, 'defaults');
 end
 
-options.algorithm  = [ 'Broyden-Fletcher-Goldfarb-Shanno (by Kelley) [' mfilename ']' ];
-
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
 end
 
-options=fmin_private_std_check(options);
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % call the optimizer
 [pars,fval,exitflag,output] = bfgswopt(pars(:), fun, options);
@@ -112,7 +111,7 @@ budget= options.MaxFunEvals;
 %
 blow=.1; bhigh=.5;
 numf=0; numg=0; numh=0;
-itc=1; xc=x0;
+itc=0; xc=x0;
 maxarm=10; nsmax=50; debug=0;
 istop=0; message='';
 %

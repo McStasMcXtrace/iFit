@@ -5,15 +5,30 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
 % fmin_private_std_check(pars, fval, iterations, funccount, options, pars_prev, fval_prev)
 % or
 % options=fmin_private_std_check(options);
+% or
+% options=fmin_private_std_check(options, default_options);
 
 
   istop=0; message='';
   
-  if nargin==1
+  if nargin<=2
     options=pars;
-    checks={'TolFun','TolX','Display','MaxIter','MaxFunEvals','FunValCheck','OutputFcn'};
+    if nargin ==2, 
+      default=fval; 
+      checks=fieldnames(default);
+    else 
+      fval=[]; 
+      checks={'TolFun','TolX','Display','MaxIter','MaxFunEvals','FunValCheck','OutputFcn','algorithm'};
+    end
+    
     for index=1:length(checks)
-      if ~isfield(options, checks{index}), options=setfield(options,checks{index},[]); end
+      if ~isfield(options, checks{index}), 
+        if isfield(default, checks{index}), 
+          options=setfield(options,checks{index},getfield(default, checks{index}));
+        else
+          options=setfield(options,checks{index},[]); 
+        end
+      end
     end
     istop=options;
     return
@@ -71,8 +86,8 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
     if isfield(options,'procedure'),        optimValues.procedure=options.procedure;
     elseif isfield(options, 'algorithm'),   optimValues.procedure=options.algorithm;
     else optimValues.procedure  = 'iteration'; end
-    istop = feval(options.OutputFcn, pars, optimValues, optimValues.state);
-    if istop, 
+    istop2 = feval(options.OutputFcn, pars, optimValues, optimValues.state);
+    if istop2, 
       istop=-6;
       message = 'Algorithm was terminated by the output function (options.OutputFcn)';
     end

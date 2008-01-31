@@ -52,7 +52,7 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   p.112-147, 1998.
 
 %   Copyright 1984-2002 The MathWorks, Inc.
-%   $Revision: 1.2 $  $Date: 2008-01-30 15:51:59 $
+%   $Revision: 1.3 $  $Date: 2008-01-31 12:53:38 $
 %
 % Olivier Salvado, Case Western Reserve University, June04
 %   Modified to work on Cost function smooth on a high scale but rough on a
@@ -66,7 +66,7 @@ defaultopt = struct('Display','off','MaxIter','200*numberOfVariables',...
    'MaxFunEvals','200*numberOfVariables','TolX',1e-4,'TolFun',1e-4,'DiffMinChange',1e-6,...
    'usual_delta',0.05,...             % 5 percent deltas for non-zero terms
    'zero_term_delta',0.00025,...      % Even smaller delta for zero elements of x
-   'FunValCheck','off','OutputFcn',[]);
+   'FunValCheck','off','OutputFcn',[],'algorithm', [ 'Nelder-Mead simplex (by Salvado/Matlab) [' mfilename ']' ]);
 
 % If just 'defaults' passed in, return the default options in X
 if nargin==1 & nargout <= 1 & isequal(funfcn,'defaults')

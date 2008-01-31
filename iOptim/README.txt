@@ -1,4 +1,26 @@
-Credits: all obtained on Matlab Central except CMA-ES
+Version: $Revision: 1.4 $  
+
+All functions here are meant to minimize an objective scalar function (usually 
+down to zero). The general syntax is the same as the one of fminsearch, 
+including standard Matlab optimizer options.
+
+  fmin<method> (objFun, pars, options)
+  
+A usual 'options' structure is 
+        Display: 'iter'
+    MaxFunEvals: 2000
+        MaxIter: 400
+         TolFun: 1.0000e-06
+           TolX: 1.0000e-06
+    FunValCheck: []
+      OutputFcn: 'fminplot'
+       PlotFcns: []
+
+The 'fminplot' show the optimization procedure criterai and first 1-3 parameter
+values during the optimization.
+
+
+Credits: all obtained on Matlab Central except CMA-ES and solvopt
 -------
 OpenOpt by Dmitrey Kroshko, National Science Academy of Ukraine, Institute of 
     cybernetics, 2006
@@ -38,8 +60,22 @@ solvopt by Alexei Kuntsevich and Franz Kappel , Graz (Austria) 1997
   modified to use standard Matlab optimization fminsearch syntax and options
 fminsearchOS by Olivier Salvado, Case Western Reserve University, June04 and Mathworks
   based on fminsearch, improved for noisy signal
-
-  
-  
-  
-Version: $Revision: 1.3 $  
+nelder by Kelley, 1998, Iterative Methods for Optimization
+  used in fminsimplex
+  modified to use standard Matlab optimization fminsearch syntax and options
+bfgswopt by Kelley, 1998, Iterative Methods for Optimization
+  used in fminbfgs
+  modified to use standard Matlab optimization fminsearch syntax and options
+ntrust by Kelley, 1998, Iterative Methods for Optimization
+  used in fminnewton
+  modified to use standard Matlab optimization fminsearch syntax and options
+hooke by Kelley, 1998, Iterative Methods for Optimization
+  used in fminhooke
+  modified to use standard Matlab optimization fminsearch syntax and options
+imfil by Kelley, 1998, Iterative Methods for Optimization
+  used in fminimfil
+  modified to use standard Matlab optimization fminsearch syntax and options
+mds by Kelley, 1998, Iterative Methods for Optimization
+  used in fminmulti
+  modified to use standard Matlab optimization fminsearch syntax and options
+ 

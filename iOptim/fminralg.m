@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -43,9 +43,10 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
   options.TolFun =1e-4;
-  options.TolX   =1e-6;
+  options.TolX   =1e-12;
   options.MaxIter=300;
   options.MaxFunEvals=5000;
+  options.algorithm  = [ 'Shor r-algorithm (by Kuntsevich) [' mfilename ']' ];
   pars = options;
   return
 end
@@ -57,7 +58,7 @@ if isempty(options)
   options=feval(mfilename, 'defaults');
 end
 
-options=fmin_private_std_check(options);
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
@@ -83,7 +84,7 @@ funcount = out(10);
 % output results --------------------------------------------------------------
 if exitflag==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
-output.algorithm  = [ 'Shor r-algorithm (by Kuntsevich) [' mfilename ']' ];
+output.algorithm  = options.algorithm;
 output.message    = message;
 output.funcCount  = funcount;
 
@@ -795,9 +796,9 @@ if kc>=mxtc, termflag=0; end
     
     % handle OutputFcn
     if ~isempty(OutputFcn)
-      if     opt(5)==-1, optimValues.Display='off';
-      elseif opt(5)== 1, optimValues.Display='iter';
-      else               optimValues.Display='notify';
+      if     options(5)==-1, optimValues.Display='off';
+      elseif options(5)== 1, optimValues.Display='iter';
+      else                   optimValues.Display='notify'; end
       if (options(10) <= 1) state='init';
       else  state='iter'; end
       optimValues.iteration  = k;
@@ -811,7 +812,6 @@ if kc>=mxtc, termflag=0; end
         return
       end
     end
-  end
 % ----}
 end % iterations
 end % restart

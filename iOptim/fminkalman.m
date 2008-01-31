@@ -42,7 +42,7 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -50,9 +50,10 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
   options.TolFun =1e-4;
-  options.TolX   =1e-8;
+  options.TolX   =1e-12;
   options.MaxIter=5000;
   options.MaxFunEvals=50000;
+  options.algorithm  = [ 'unscented Kalman filter optimizer (by Cao) [' mfilename ']' ];
   pars = options;
   return
 end
@@ -63,9 +64,8 @@ end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
-options.algorithm  = [ 'unscented Kalman filter optimizer (by Cao) [' mfilename ']' ];
 
-options=fmin_private_std_check(options);
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % calls the optimizer
 [pars, fval, exitflag, output]=ukfopt(fun,pars(:),options);

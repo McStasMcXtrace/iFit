@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminpowell(fun, pars, options)
 % Reference: Brent, Algorithms for minimization without derivatives, Prentice-Hall (1973)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -43,10 +43,11 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
   options.TolFun =1e-4;
-  options.TolX   =1e-6;
+  options.TolX   =1e-12;
   options.MaxIter=300;
   options.MaxFunEvals=5000;
   options.Hybrid = 'Coggins';
+  options.algorithm  = [ 'Powell Search (by Secchi) [' mfilename ']' ];
   pars = options;
   return
 end
@@ -65,7 +66,7 @@ else t = 'Golden rule';
 end
 options.algorithm  = [ 'Powell Search (by Secchi) [' mfilename '/' t ']' ];
 
-options=fmin_private_std_check(options);
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % call the optimizer
 [pars,fval,exitflag,output] = powell(fun, pars, options);
@@ -89,7 +90,7 @@ function [pars,fval,istop,output]=powell(S,x0,options)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.5 $  $Date: 2008-01-30 15:51:59 $
+%   $Revision: 1.6 $  $Date: 2008-01-31 12:53:38 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
 mxit=options.MaxIter;
@@ -229,7 +230,7 @@ end
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.5 $  $Date: 2008-01-30 15:51:59 $
+%   $Revision: 1.6 $  $Date: 2008-01-31 12:53:38 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,
@@ -313,7 +314,7 @@ function [stepsize,xo,Ot,nS,it]=coggins(S,x0,d,problem,tol,mxit,stp)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.5 $  $Date: 2008-01-30 15:51:59 $
+%   $Revision: 1.6 $  $Date: 2008-01-31 12:53:38 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
  
  if nargin < 3,
@@ -408,7 +409,7 @@ function [x1,x2,nS]=bracket(S,x0,d,problem,stepsize)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.5 $  $Date: 2008-01-30 15:51:59 $
+%   $Revision: 1.6 $  $Date: 2008-01-31 12:53:38 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,

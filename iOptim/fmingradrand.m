@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fmingradrand(fun, pars, options)
 % Reference: Computer Methods in Applied Mechanics & Engg, Vol  19, (1979) 99
 % Contrib: Sheela V. Belur(sbelur@csc.com) 1998
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -43,9 +43,10 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
   options.TolFun =1e-4;
-  options.TolX   =0;
+  options.TolX   =1e-12;
   options.MaxIter=300;
   options.MaxFunEvals=1000;
+  options.algorithm  = [ 'Random Gradient (by Belur) [' mfilename ']' ];
   pars = options;
   return
 end
@@ -56,9 +57,8 @@ end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
-options.algorithm  = [ 'Random Gradient (by Belur) [' mfilename ']' ];
 
-options=fmin_private_std_check(options);
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % call the optimizer
 [pars,fval,exitflag,output] = ossrs(fun, pars, options);
