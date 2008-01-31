@@ -38,7 +38,7 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 % Contrib:
 %   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -49,6 +49,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.TolX   =0;
   options.MaxIter=500;
   options.MaxFunEvals=10000;
+  options.algorithm  = [ 'Simulated Annealing (be Vandekerckhove) [' mfilename ']' ];
   pars = options;
   return
 end
@@ -60,9 +61,7 @@ if isempty(options)
   options=feval(mfilename, 'defaults');
 end
 
-options=fmin_private_std_check(options);
-
-options.algorithm  = [ 'Simulated Annealing (be Vandekerckhove) [' mfilename ']' ];
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % call the optimizer
 [pars,fval,exitflag,output] = anneal(fun, pars, options);

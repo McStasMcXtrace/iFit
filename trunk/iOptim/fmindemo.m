@@ -64,6 +64,22 @@ dimensionality=randn(1,dim);
 w=warning;
 warning off
 
+disp([ 'Starting optimization demo with ' num2str(dim) ' parameters to find.' ]);
+for index=1:length(optimizers)
+  options=feval(optimizers{index},'defaults');
+  opt=optimizers{index};
+  if isfield(options, 'algorithm')
+    alg=options.algorithm;
+  else
+    alg=opt;
+  end
+  if length(opt) > 5
+    opt=opt(5:end);
+    opt=opt(1:min(3, length(opt)));
+  end
+  fprintf(1, '%5s %s\n', opt, alg);
+end
+
 t1 = clock;
 
 for index_problem=1:2:length(problems)
@@ -76,7 +92,7 @@ for index_problem=1:2:length(problems)
     if ~verbose, fprintf(1,'%i', index); end
     t0 = clock;
     options=feval(optimizers{index},'defaults');
-    if verbose, options.Display='iter'; end
+    %if verbose, options.Display='iter'; end
     maxit = options.MaxIter; if ischar(maxit), maxit=eval(maxit,'0'); end
     if isinf(maxit), maxit=0; end
     options.MaxIter=min(2000, max(250*dim, maxit));
@@ -113,6 +129,7 @@ for index_problem=1:2:length(problems)
     fvals(index)   =fval;
     flags{index}   =f;
     algo{index}    =out.algorithm;
+    params{index}=pars;
     abstract{index_problem, index} = f(1);
     if ~verbose, fprintf(1,'%s ', f(1)); end
   end
@@ -135,11 +152,17 @@ for index_problem=1:2:length(problems)
 
   if verbose
     % display results
-    fprintf(1, 'Index    Time FuncEval Iter.      Fval Status Algo\n');
+    fprintf(1, 'Index    Time FuncEval Iter.      Fval Status Pars      Algo\n');
     for j=1:length(optimizers)
       index=sorti(j);
-      fprintf(1, '%5i %7.3g %7i %5i %10.2g %4s   %s\n', ...
-        index, duration(index), funcount(index), iterate(index), fvals(index), flags{index}, algo{index});
+      pars=params{index};
+      if length(pars) > 5, pars=pars(1:5); end
+      spars=mat2str(pars(:)');  % as a row
+      if length(spars) > 50, spars=[ spars(1:47) ' ...' ]; end
+      opt=optimizers{index};
+      opt=opt(5:end);
+      fprintf(1, '%5s %7.3g %7i %5i %10.2g %4s   %50s %s\n', ...
+        opt(1:min(3, length(opt))), duration(index), funcount(index), iterate(index), fvals(index), flags{index}, spars, algo{index});
     end
   end
 end
