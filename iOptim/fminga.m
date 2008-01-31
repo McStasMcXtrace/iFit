@@ -45,7 +45,7 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -53,9 +53,10 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
   options.TolFun =1e-4;
-  options.TolX   =0;
+  options.TolX   =1e-12;
   options.MaxIter=1000;
   options.MaxFunEvals=1000*100;
+  options.algorithm  = [ 'Genetic Algorithm (real coding by Ivakpour) [' mfilename ']' ];
   pars = options;
   return
 end
@@ -107,9 +108,8 @@ if isfield(constraints, 'fixed') % fix some of the parameters if requested
   constraints.min(index) = pars(index); 
   constraints.max(index) = pars(index); % fix some parameters
 end
-options.algorithm  = [ 'Genetic Algorithm (real coding by Ivakpour) [' mfilename ']' ];
 
-options=fmin_private_std_check(options);
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % call the optimizer
 [pars,fval,exitflag,output] = GA(fun, pars(:)', options, constraints);

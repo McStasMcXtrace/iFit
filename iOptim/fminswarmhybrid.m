@@ -62,7 +62,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -70,7 +70,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
   options.TolFun =1e-4;
-  options.TolX   =1e-6;
+  options.TolX   =1e-12;
   options.MaxIter=400;
   options.MaxFunEvals=400*50;
   options.Hybrid = @fminsearch;
@@ -78,6 +78,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.SwarmC2=2;
   options.SwarmW =0;
   options.PopulationSize=20;
+  options.algorithm = [ 'Hybrid Particule Swarm Optimizer (by Leontitsis) [fminswarmhybrid]' ];
   pars = options;
   return
 end
@@ -142,7 +143,7 @@ else
   hoptions.algorithm = [ 'Particule Swarm Optimizer (by Leontitsis) [fminswarm]' ];
 end
 
-options=fmin_private_std_check(options);
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % transfer optimset options and constraints
 hoptions.space     = [ constraints.min(:) constraints.max(:) ];

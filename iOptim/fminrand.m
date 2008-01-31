@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -42,9 +42,10 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='off';
   options.TolFun =1e-4;
-  options.TolX   =1e-4;
+  options.TolX   =0;
   options.MaxIter=500;
   options.MaxFunEvals=5000;
+  options.algorithm  = [ 'Adaptive Random Search (by Secchi) [' mfilename ']' ];
   pars = options;
   return
 end
@@ -55,9 +56,8 @@ end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
-options.algorithm  = [ 'Adaptive Random Search (by Secchi) [' mfilename ']' ];
 
-options=fmin_private_std_check(options);
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % call the optimizer
 [pars,fval,exitflag,output] = buscarnd(fun, pars, options);
@@ -71,7 +71,7 @@ function [pars,fval,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.8 $  $Date: 2008-01-30 15:51:59 $
+%   $Revision: 1.9 $  $Date: 2008-01-31 12:53:38 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C

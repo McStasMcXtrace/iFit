@@ -62,7 +62,7 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -75,6 +75,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.TolX   =opt.TolX;
   options.MaxFunEvals   =opt.MaxFunEvals;
   options.PopulationSize=opt.PopSize;
+  options.algorithm = [ 'Evolution Strategy with Covariance Matrix Adaptation (CMA-ES by Hansen) [' mfilename ']' ];
   pars = options;
   return
 end
@@ -128,7 +129,7 @@ if isfield(constraints, 'fixed') % fix some of the parameters if requested
   constraints.max(index) = pars(index); % fix some parameters
 end
 
-options=fmin_private_std_check(options);
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % transfer optimset options and constraints
 hoptions.MaxIter    = options.MaxIter;
@@ -137,6 +138,7 @@ hoptions.MaxFunEvals= options.MaxFunEvals;
 hoptions.FunValCheck= options.FunValCheck;
 hoptions.OutputFcn  = options.OutputFcn;
 hoptions.PopSize    = options.PopulationSize;
+hoptions.algorithm  = options.algorithm;
 if ~strcmp(options.Display,'iter'), hoptions.Display    = 'off'; hoptions.VerboseModulo=0; end
 if isfield(constraints,'step')
   hoptions.DiffMaxChange = constraints.step(:);
@@ -161,7 +163,7 @@ if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
 end
 
-hoptions.algorithm = [ 'Evolution Strategy with Covariance Matrix Adaptation (CMA-ES by Hansen) [' mfilename ']' ];
+
 
 % call the optimizer
 [pars, fval, counteval, stopflag, out] = cmaes(fun, pars(:), sigma, hoptions);
@@ -1396,10 +1398,10 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
       elseif k<=1, state='init';
       else state='iter'; end
       optimValues = opts;
-      optimValues.iteration  = k;
+      optimValues.iteration  = countiter;
       optimValues.funcount   = counteval;
       optimValues.fval       = fitness.raw(1);
-      optimValues.procedure  = [ mfilename ': ' stopflag ];
+      optimValues.procedure  = [ mfilename ];
       istop = feval(opts.OutputFcn, arxvalid(:, fitness.idx(1)), optimValues, state);
       if istop, 
         stopflag(end+1) = {'outputfcn'};
