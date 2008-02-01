@@ -42,7 +42,7 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -172,7 +172,7 @@ while 1
       fmin_private_disp_iter(k, funcount, h, x, e);
     end
     % std stopping conditions
-    [istop, message] = fmin_private_std_check(x, e, k, funcount, options, x_prev, e_prev);
+    [istop, message] = fmin_private_std_check(x, e, k, funcount, options, x_prev);
     if istop
       break
     end

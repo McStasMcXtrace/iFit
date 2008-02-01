@@ -38,7 +38,7 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 % Contrib:
 %   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -129,7 +129,7 @@ while 1
   newfval = feval(loss,newparam);
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(newparam, newfval, iterations, funcount, options, parent, fval);
+  [istop, message] = fmin_private_std_check(newparam, newfval, iterations, funcount, options, parent);
   
   if istop
     parent = newparam; 

@@ -33,7 +33,7 @@ function [pars,fval,exitflag,output] = fminmulti(fun, pars, options, constraints
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -267,7 +267,7 @@ while(itc < maxit & fval > tol & fcount <= budget & ~istop)
   options.procedure=[ mfilename ': ' how ];
   % std stopping conditions
   [istop, message] = fmin_private_std_check(pars, fval, itc, fcount, ...
-    options, pars_prev, fval_prev);
+    options, pars_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(itc, fcount, f, pars, fval);
   end

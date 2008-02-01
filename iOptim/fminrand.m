@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -71,7 +71,7 @@ function [pars,fval,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.9 $  $Date: 2008-01-31 12:53:38 $
+%   $Revision: 1.10 $  $Date: 2008-02-01 11:16:32 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C
@@ -402,7 +402,7 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
   end
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(xo, min(yo*problem), it, nS, options, xo_prev, yo_prev);
+  [istop, message] = fmin_private_std_check(xo, min(yo*problem), it, nS, options, xo_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(it, nS, S, x, yo*problem);
   end

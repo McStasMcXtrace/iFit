@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fmingradrand(fun, pars, options)
 % Reference: Computer Methods in Applied Mechanics & Engg, Vol  19, (1979) 99
 % Contrib: Sheela V. Belur(sbelur@csc.com) 1998
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -119,7 +119,7 @@ while(nor<options.MaxIter)
   end
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(x, fmn, iterations, funcount, options, x_prev, f_prev);
+  [istop, message] = fmin_private_std_check(x, fmn, iterations, funcount, options, x_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(iterations, funcount, fun, x, fmn);
   end

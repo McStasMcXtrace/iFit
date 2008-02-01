@@ -52,7 +52,7 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   p.112-147, 1998.
 
 %   Copyright 1984-2002 The MathWorks, Inc.
-%   $Revision: 1.3 $  $Date: 2008-01-31 12:53:38 $
+%   $Revision: 1.4 $  $Date: 2008-02-01 11:16:32 $
 %
 % Olivier Salvado, Case Western Reserve University, June04
 %   Modified to work on Cost function smooth on a high scale but rough on a
@@ -192,10 +192,6 @@ exitflag = 0;
 %   AND the function values differ from the min by less than tolf,
 %   or the max function evaluations are exceeded. (Cannot use OR instead of AND.)
 while func_evals < maxfun & itercount < maxiter & exitflag==0
-   if max(max(abs(v(:,two2np1)-v(:,onesn)))) <= tolx & ...
-         max(abs(fv(1)-fv(two2np1))) <= tolf
-      break
-   end
    how = '';
 
    % Compute the reflection point
@@ -282,28 +278,13 @@ while func_evals < maxfun & itercount < maxiter & exitflag==0
       fv
       func_evals
    end
-   if strcmp(options.FunValCheck,'on') & any(isnan(fv) | isinf(fv))
-      exitflag=-4;
-    end
-    
-    if ~isempty(options.OutputFcn)
-      if exitflag, state='done'; 
-      elseif itercount<=1, state='init';
-      else state='iter'; end
-      optimValues = options;
-      optimValues.iteration  = itercount;
-      optimValues.funcount   = func_evals;
-      optimValues.fval       = min(fv);
-      optimValues.procedure  = [ mfilename ': ' how ];
-      istop = feval(options.OutputFcn, v(:,1), optimValues, state);
-      if istop, 
-        exitflag=-6;
-      end
-    end
+   options.procedure  = [ mfilename ': ' how ];
+   [exitflag, message] = fmin_private_std_check(v(:,1), min(fv), itercount, func_evals, options, v(:,end));
 end   % while
 
-
 x(:) = v(:,1);
+fval = min(fv);
+
 if prnt == 4,
    % reset format
    set(0,{'format','formatspacing'},formatsave);
@@ -311,49 +292,11 @@ end
 output.iterations = itercount;
 output.funcCount = func_evals;
 output.algorithm = [ 'Nelder-Mead simplex (by Salvado/Matlab) [' mfilename ']' ];
-
-fval = min(fv);
-if func_evals >= maxfun
-   message='Maximum number of function evaluations has been exceeded';
-   if prnt > 0
-      disp(' ')
-      disp([ 'Exiting: fminsearchOS: ' message ])
-      disp('         - increase MaxFunEvals option.')
-      msg = sprintf('         Current function value: %f \n', fval);
-      disp(msg)
-   end
-   exitflag = -3;
-elseif itercount >= maxiter
-   message='Maximum number of iterations has been exceeded';
-   if prnt > 0
-      disp(' ')
-      disp([ 'Exiting: fminsearchOS: ' message ])
-      disp('         - increase MaxIter option.')
-      msg = sprintf('         Current function value: %f \n', fval);
-      disp(msg)
-   end
-   exitflag = -2;
-elseif exitflag==-4
-  message= 'Function value is Inf or Nan';
-  if prnt > 0
-    disp([ 'Exiting: fminsearchOS: ' message ]);
-  end
-elseif exitflag==-6
-  message= 'Algorithm was terminated by the output function';
-  if prnt > 0
-    disp([ 'Exiting: fminsearchOS: ' message ]);
-  end
-else
-   message='Termination tolerance criteria reached';
-   if prnt > 1
-      convmsg1 = sprintf([ ...
-         '\nOptimization terminated successfully:\n',...
-         ' the current x satisfies the termination criteria using OPTIONS.TolX of %e \n',...
-         ' and F(X) satisfies the convergence criteria using OPTIONS.TolFun of %e \n'
-          ],tolx, tolf);
-      disp(convmsg1)
-   end
-   exitflag = -1;
-end
 output.message=message;
+
+if (exitflag & strcmp(options.Display,'notify')) | ...
+   strcmp(options.Display,'final') | strcmp(options.Display,'iter')
+  fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
+    output.funcCount, funfcn, x, fval);
+end
 
