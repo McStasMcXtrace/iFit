@@ -62,7 +62,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -340,7 +340,7 @@ for i=2:flights
     x=gfx(end,2:end);
     % Get the minimum of the function
     fval=gfx(end,1);
-    [istop, message] = fmin_private_std_check(x, fval, i, funcount, options, x_prev, f_prev);
+    [istop, message] = fmin_private_std_check(x, fval, i, funcount, options, x_prev);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(i, funcount, fitnessfun, x, fval);
     end

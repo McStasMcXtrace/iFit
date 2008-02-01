@@ -45,7 +45,7 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -259,7 +259,7 @@ while 1
     pars =  max1(1,:); pars = pars(:)';
     iterations = iterations+1;
     funcount = n*iterations;
-    [istop, message] = fmin_private_std_check(pars, fval, iterations, funcount, options, pars_prev, fval_prev);
+    [istop, message] = fmin_private_std_check(pars, fval, iterations, funcount, options, pars_prev);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(iterations, funcount, fun, pars, fval);
     end

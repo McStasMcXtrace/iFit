@@ -36,7 +36,7 @@ function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options, constrain
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -341,7 +341,7 @@ end
    options.procedure=[ mfilename ': ' how ];
    % std stopping conditions
    [istop, message] = fmin_private_std_check(pars, fval, itc, fcount, ...
-    options, pars_prev, fval_prev);
+    options, pars_prev);
    if strcmp(options.Display, 'iter')
      fmin_private_disp_iter(itc, fcount, f, pars, fval);
    end
