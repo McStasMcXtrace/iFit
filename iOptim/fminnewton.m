@@ -31,7 +31,7 @@ function [pars,fval,exitflag,output] = fminnewton(fun, pars, options)
 % Reference: W. Press, Numerical Recipes, Cambridge (1988)
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -143,7 +143,7 @@ while(norm(gc) > tol & itc <= maxit) & ~istop
   pars=xc; fval=fc;
 	% std stopping conditions
   [istop, message] = fmin_private_std_check(pars, fval, itc, numf, ...
-      options, pars_prev, fval_prev);
+      options, pars_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(itc, numf, f, pars, fval);
   end

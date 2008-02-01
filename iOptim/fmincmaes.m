@@ -62,7 +62,7 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -168,11 +168,11 @@ end
 % call the optimizer
 [pars, fval, counteval, stopflag, out] = cmaes(fun, pars(:), sigma, hoptions);
 istop=0;
-if     strmatch(stopflag, 'tolx')
+if     strmatch(stopflag, 'tolx') & fval< options.TolFun
   istop=-5;
   message = [ 'Termination parameter tolerance criteria reached (options.TolX=' ...
             num2str(options.TolX) ')' ];
-elseif strmatch(stopflag, 'tolfun')
+elseif strmatch(stopflag, 'tolfun') & fval< options.TolFun
   istop=-1;
   message = [ 'Termination function tolerance criteria reached (options.TolFun=' ...
             num2str(options.TolFun) ')' ];

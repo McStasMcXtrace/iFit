@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminpowell(fun, pars, options)
 % Reference: Brent, Algorithms for minimization without derivatives, Prentice-Hall (1973)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -90,7 +90,7 @@ function [pars,fval,istop,output]=powell(S,x0,options)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.6 $  $Date: 2008-01-31 12:53:38 $
+%   $Revision: 1.7 $  $Date: 2008-02-01 11:16:32 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
 mxit=options.MaxIter;
@@ -186,7 +186,7 @@ while it < mxit,
   x0=xo;
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(x0, fval, it, nS, options, xo_prev, yo_prev);
+  [istop, message] = fmin_private_std_check(x0, fval, it, nS, options, xo_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(it, nS, S, x0, fval);
   end
@@ -230,7 +230,7 @@ end
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.6 $  $Date: 2008-01-31 12:53:38 $
+%   $Revision: 1.7 $  $Date: 2008-02-01 11:16:32 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,
@@ -314,7 +314,7 @@ function [stepsize,xo,Ot,nS,it]=coggins(S,x0,d,problem,tol,mxit,stp)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.6 $  $Date: 2008-01-31 12:53:38 $
+%   $Revision: 1.7 $  $Date: 2008-02-01 11:16:32 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
  
  if nargin < 3,
@@ -409,7 +409,7 @@ function [x1,x2,nS]=bracket(S,x0,d,problem,stepsize)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.6 $  $Date: 2008-01-31 12:53:38 $
+%   $Revision: 1.7 $  $Date: 2008-02-01 11:16:32 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,

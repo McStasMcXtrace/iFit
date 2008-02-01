@@ -20,14 +20,14 @@ if isnumeric(dim) & length(dim) > 1
   end
   return
 end
-
+% ann bfg new imf cma  ga gra pow ral kal sim sea hoo swa swa ran mul 
 optimizers={ ...
-    'fminanneal', ...
-    'fminbfgs','fminnewton', 'fminimfil', ...
-    'fmincmaes','fminga', ...
-    'fmingradrand','fminpowell','fminralg', ...
+    'fminpowell','fminralg','fmincmaes','fminsimplex','fminnewton',...
+    'fmingradrand', 'fminimfil', 'fminbfgs', ...
+    'fminhooke', 'fminanneal', ...
+    'fminga', ...
     'fminkalman',...
-    'fminsimplex','fminsearchOS', 'fminhooke', ...
+    'fminsearchOS', ...
     'fminswarm','fminswarmhybrid'};
 
 if dim <=10
@@ -110,20 +110,21 @@ for index_problem=1:2:length(problems)
     duration(index)=etime(clock,t0);
     funcount(index)=out.funcCount;
     iterate(index) =out.iterations;
+    if isnan(fval) | isinf(fval), fval=Inf; flag=-4; end
     if ~isinf(fval) & iterate(index)>=options.MaxIter, f='nITR';
     elseif ~isinf(fval) & funcount(index)>=options.MaxFunEvals, f='nFUN';
-    elseif fval <= options.TolFun, f='CFUN';
+    elseif fval <= options.TolFun, flag=-1; f='CFUN';
     else
       switch flag
-      case 0, f='COK ';
-      case -1,f='CFUN';
-      case -2,f='nITR';
+      case -1,f='Cfun';
+      case -2,f='nitr';
       case -3,f='nFUN';
       case -4,f='*INF';
-      case -5,f='CX  ';
+      case -5,f='Cx  ';
       case {-12, -9, -8}, f='.';
       otherwise
-        if flag<0, f='n'; else f='C'; end
+        if fval < options.TolFun, f='C';
+        else f='n'; end
       end
     end
     fvals(index)   =fval;
@@ -135,7 +136,10 @@ for index_problem=1:2:length(problems)
   end
   disp(' ');
   % sort results
-  [dummy, sorti] = sort(duration.*fvals.*fvals);
+  criteria=duration.*fvals.*fvals;
+  index=strmatch('C', flags);
+  criteria(index) = criteria(index)*100; % put converged methods first
+  [dummy, sorti] = sort(criteria);
   
   % compute median duration
   mtime = mean(duration)+std(duration);
