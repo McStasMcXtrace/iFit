@@ -53,14 +53,14 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
   
   % abnormal terminations
   % last check before returning a failed state
+  if (iterations >= floor(options.MaxIter*0.95)  | funccount >= floor(options.MaxFunEvals*.95) ) & ...
+  options.TolFun & fval <= options.TolFun*2 & ~istop
+    istop=-1;
+    message = [ 'Termination function tolerance criteria nearly reached (options.TolFun=' ...
+              num2str(options.TolFun*2) ];
+  end
+  
   if ~istop
-    if (iterations >= floor(options.MaxIter*0.95)  | funccount >= floor(options.MaxFunEvals*.95) ) & ...
-    options.TolFun & fval <= options.TolFun*2
-      istop=-1;
-      message = [ 'Termination function tolerance criteria nearly reached (options.TolFun=' ...
-                num2str(options.TolFun*2) ];
-    end
-
     if options.MaxIter & iterations >= options.MaxIter
       istop=-2;
       message = [ 'Maximum number of iterations reached (options.MaxIter=' ...

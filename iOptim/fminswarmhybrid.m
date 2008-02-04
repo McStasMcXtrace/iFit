@@ -62,7 +62,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -257,7 +257,7 @@ pop=max(pop,ones(popul,1)*space(:,1)');
 for i=1:popul
   fxi(i,1)=feval(fitnessfun,pop(i,:));
 end
-funcount = funcount+1;
+funcount = funcount+popul+1;
 
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fitnessfun, pars);
