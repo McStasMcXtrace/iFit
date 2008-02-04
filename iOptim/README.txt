@@ -1,4 +1,4 @@
-Version: $Revision: 1.4 $  
+Version: $Revision: 1.5 $  
 
 All functions here are meant to minimize an objective scalar function (usually 
 down to zero). The general syntax is the same as the one of fminsearch, 
@@ -78,4 +78,8 @@ imfil by Kelley, 1998, Iterative Methods for Optimization
 mds by Kelley, 1998, Iterative Methods for Optimization
   used in fminmulti
   modified to use standard Matlab optimization fminsearch syntax and options
- 
+PSO by Brecht Donckels, BIOMATH, brecht.donckels@ugent.be 2006 
+  used in fminpso
+  modified to use standard Matlab optimization fminsearch syntax and options
+  
+  
