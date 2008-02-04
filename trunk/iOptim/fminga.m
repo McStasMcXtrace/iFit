@@ -45,7 +45,7 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -56,6 +56,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.TolX   =1e-12;
   options.MaxIter=1000;
   options.MaxFunEvals=1000*100;
+  options.PopulationSize=50;
   options.algorithm  = [ 'Genetic Algorithm (real coding by Ivakpour) [' mfilename ']' ];
   pars = options;
   return
@@ -131,7 +132,7 @@ function [pars, fval, istop, output] = GA(fun, pars, options, constraints)
 % file in current directory and then set the parameters
 var=length(pars);            % Number of variables (this item must be equal to the
                   %   number of variables that is used in the function
-n=50;            % Number of population
+n=options.PopulationSize;            % Number of population
 
 nmutationG=20;                  %number of mutation children(Gaussian)
 nmutationR=20;                  %number of mutation children(random)
