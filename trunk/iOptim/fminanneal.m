@@ -23,7 +23,9 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 %
 %  OPTIONS is a structure with settings for the simulated annealing, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fminanneal')
+%   fminanneal('defaults')
+%  options.TEMP_START sets the starting temperature
+%  options.TEMP_END   sets the end temperature
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -38,7 +40,7 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 % Contrib:
 %   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -50,6 +52,8 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxIter=500;
   options.MaxFunEvals=10000;
   options.algorithm  = [ 'Simulated Annealing (be Vandekerckhove) [' mfilename ']' ];
+  options.TEMP_START=1;  
+  options.TEMP_END=1e-8;     
   pars = options;
   return
 end
@@ -65,6 +69,7 @@ options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % call the optimizer
 [pars,fval,exitflag,output] = anneal(fun, pars, options);
+output.options=options;
 
 % private function ------------------------------------------------------------
 

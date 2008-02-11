@@ -129,6 +129,7 @@ end
 
 % calls the optimizer
 [pars,fval,exitflag,output] = SIMPSA(fun,pars(:),constraints.min(:),constraints.max(:),options);
+output.options=options; output.constraints=constraints;
 
 if (exitflag & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')

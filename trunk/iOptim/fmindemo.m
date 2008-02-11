@@ -1,7 +1,20 @@
-function abstract=fmindemo(dim, verbose)
-% fmindemo(dimensionality=vector, verbose=0|1)
+function abstract=fmindemo(dim, verbose, repeat_num)
+% FMINDEMO optimization cross-comparison
+% 
+% A systematic test of all optimization methods is performed using a set of test
+% problems. Starting configurations are chosen randomly.
+% The verbose flag when set displays individual detailed optimization results.
+% The test can be repeated iteratively so that a Monte Carlo sampling of starting
+% parameters give a better stastistical estimate of each method efficiency.
 %
-% ex: fmindemo([2 10]);
+% Calling:
+%   fmindemo(dimensionality=vector, verbose=0|1, repetitions)
+% Example:
+%   fmindemo([ 2 10 50],1)  % detailed test whth 2,5 and 10 parameters
+%   fmindemo(2,[], 10)      % 2 parameters optimization repeated 10 times
+%
+% Contrib:
+% Test functions from Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 
 if nargin == 0
   abstract{1} = fmindemo(2);
@@ -11,8 +24,13 @@ if nargin == 0
 end
 
 if nargin == 1
-  verbose=0;
+  verbose=[];
 end
+if isempty(verbose), verbose=0; end
+if nargin <= 2
+  repeat_num=[];
+end
+if isempty(repeat_num), repeat_num=1; end
 
 if isnumeric(dim) & length(dim) > 1
   for i=1:length(dim)
@@ -81,100 +99,110 @@ for index=1:length(optimizers)
 end
 
 t1 = clock;
+abstract=cell(length(problems)/2, length(optimizers));
 
-for index_problem=1:2:length(problems)
-  fprintf(1, 'Problem: %15s [%i parameters] ', ...
-    problems{index_problem}, length(dimensionality) );
-  %    disp(startpars)
-  startpars = dimensionality*problems{index_problem+1};
-  fun=str2func(problems{index_problem});
-  for index=1:length(optimizers)
-    if ~verbose, fprintf(1,'%i', index); end
-    t0 = clock;
-    options=feval(optimizers{index},'defaults');
-    %if verbose, options.Display='iter'; end
-    maxit = options.MaxIter; if ischar(maxit), maxit=eval(maxit,'0'); end
-    if isinf(maxit), maxit=0; end
-    options.MaxIter=min(2000, max(250*dim, maxit));
-    maxfn = options.MaxFunEvals; if ischar(maxfn), maxfn=eval(maxfn,'0'); end
-    if isinf(maxfn), maxfn=0; end
-    options.MaxFunEvals=min(20000, max(2500*dim, maxfn));
-    options.TolX=0;
-    try
-      [pars, fval, flag, out] = feval(optimizers{index}, fun, startpars(:), options);
-    catch
-      pars=[]; fval=Inf; out.funCount=Inf; flag=-4;
-      out.iterations=Inf; out.algorithm=[ 'ERROR: ' optimizers{index} ];
-      lasterr
+for index_repeat=1:repeat_num
+
+  if repeat_num>1, disp([ 'Repetition ' num2str(index_repeat) '/' num2str(repeat_num) ]); end
+
+  for index_problem=1:2:length(problems)
+    fprintf(1, 'Problem: %15s [%i parameters] ', ...
+      problems{index_problem}, length(dimensionality) );
+    %    disp(startpars)
+    startpars = dimensionality*problems{index_problem+1};
+    fun=str2func(problems{index_problem});
+    for index=1:length(optimizers)
+      if ~verbose, fprintf(1,'%i', index); end
+      t0 = clock;
+      options=feval(optimizers{index},'defaults');
+      %if verbose, options.Display='iter'; end
+      maxit = options.MaxIter; if ischar(maxit), maxit=eval(maxit,'0'); end
+      if isinf(maxit), maxit=0; end
+      options.MaxIter=min(2000, max(250*dim, maxit));
+      maxfn = options.MaxFunEvals; if ischar(maxfn), maxfn=eval(maxfn,'0'); end
+      if isinf(maxfn), maxfn=0; end
+      options.MaxFunEvals=min(20000, max(2500*dim, maxfn));
+      options.TolX=0;
+      try
+        [pars, fval, flag, out] = feval(optimizers{index}, fun, startpars(:), options);
+      catch
+        pars=[]; fval=Inf; out.funCount=Inf; flag=-4;
+        out.iterations=Inf; out.algorithm=[ 'ERROR: ' optimizers{index} ];
+        lasterr
+      end
+      duration(index)=etime(clock,t0);
+      funcount(index)=out.funcCount;
+      iterate(index) =out.iterations;
+      if isnan(fval) | isinf(fval), fval=Inf; flag=-4; end
+      if fval <= options.TolFun, flag=-1; f='CFUN';
+      elseif ~isinf(fval) & iterate(index)>=options.MaxIter, f='nITR';
+      elseif ~isinf(fval) & funcount(index)>=options.MaxFunEvals, f='nFUN';
+      else
+        switch flag
+        case -1,f='Cfun';
+        case -2,f='nitr';
+        case -3,f='nFUN';
+        case -4,f='*INF';
+        case -5,f='Cx  ';
+        case {-12, -9, -8}, f='.';
+        otherwise
+          if fval < options.TolFun, f='C';
+          else f='n'; end
+        end
+      end
+      fvals(index)   =fval;
+      flags{index}   =f;
+      algo{index}    =out.algorithm;
+      params{index}=pars;
+      if isempty(abstract{(index_problem+1)/2, index}), abstract{(index_problem+1)/2, index} = 0; end
+      if ~verbose, fprintf(1,'%s ', f(1)); end
     end
-    duration(index)=etime(clock,t0);
-    funcount(index)=out.funcCount;
-    iterate(index) =out.iterations;
-    if isnan(fval) | isinf(fval), fval=Inf; flag=-4; end
-    if fval <= options.TolFun, flag=-1; f='CFUN';
-    elseif ~isinf(fval) & iterate(index)>=options.MaxIter, f='nITR';
-    elseif ~isinf(fval) & funcount(index)>=options.MaxFunEvals, f='nFUN';
-    else
-      switch flag
-      case -1,f='Cfun';
-      case -2,f='nitr';
-      case -3,f='nFUN';
-      case -4,f='*INF';
-      case -5,f='Cx  ';
-      case {-12, -9, -8}, f='.';
-      otherwise
-        if fval < options.TolFun, f='C';
-        else f='n'; end
+    disp(' ');
+    % sort results
+    criteria=duration.*fvals.*fvals;
+    index=strmatch('C', flags);
+    criteria(index) = criteria(index)*100; % put converged methods first
+    [dummy, sorti] = sort(criteria);
+    
+    % compute median duration
+    mtime = mean(duration)+std(duration);
+    for index=1:length(optimizers)
+      f = flags{index};
+      if f(1) == 'C',   
+        if duration(index) > mtime, f='-'; 
+        else f='+'; end
+      elseif f(1)=='.', f=' ';
+      elseif f(1)=='n', f=' '; 
+      else f='*'; end
+      % store results into array
+      if f=='+' | f=='-', score=1;
+      else score=0; end
+      abstract{(index_problem+1)/2, index}=abstract{(index_problem+1)/2, index}+score;
+    end
+
+    if verbose
+      % display results
+      fprintf(1, 'Repetitions=%i dimensionality=%i', repeat_num, length(dimensionality));
+      fprintf(1, 'Index    Time FuncEval Iter.      Fval Status Pars      Algo\n');
+      for j=1:length(optimizers)
+        index=sorti(j);
+        pars=params{index};
+        if length(pars) > 5, pars=pars(1:5); end
+        spars=mat2str(pars(:)');  % as a row
+        if length(spars) > 50, spars=[ spars(1:47) ' ...' ]; end
+        opt=optimizers{index};
+        opt=opt(5:end);
+        fprintf(1, '%5s %7.3g %7i %5i %10.2g %4s   %50s %s\n', ...
+          opt(1:min(3, length(opt))), duration(index), funcount(index), iterate(index), fvals(index), flags{index}, spars, algo{index});
       end
     end
-    fvals(index)   =fval;
-    flags{index}   =f;
-    algo{index}    =out.algorithm;
-    params{index}=pars;
-    abstract{index_problem, index} = f(1);
-    if ~verbose, fprintf(1,'%s ', f(1)); end
-  end
-  disp(' ');
-  % sort results
-  criteria=duration.*fvals.*fvals;
-  index=strmatch('C', flags);
-  criteria(index) = criteria(index)*100; % put converged methods first
-  [dummy, sorti] = sort(criteria);
-  
-  % compute median duration
-  mtime = mean(duration)+std(duration);
-  for index=1:length(optimizers)
-    f = abstract{index_problem, index};
-    if f(1) == 'C',   
-      if duration(index) > mtime, f='-'; 
-      else f='+'; end
-    elseif f(1)=='.', f='.';
-    elseif f(1)=='n', f=' '; 
-    else f='*'; end
-    abstract{index_problem, index} = f(1);
-  end
-
-  if verbose
-    % display results
-    fprintf(1, 'Index    Time FuncEval Iter.      Fval Status Pars      Algo\n');
-    for j=1:length(optimizers)
-      index=sorti(j);
-      pars=params{index};
-      if length(pars) > 5, pars=pars(1:5); end
-      spars=mat2str(pars(:)');  % as a row
-      if length(spars) > 50, spars=[ spars(1:47) ' ...' ]; end
-      opt=optimizers{index};
-      opt=opt(5:end);
-      fprintf(1, '%5s %7.3g %7i %5i %10.2g %4s   %50s %s\n', ...
-        opt(1:min(3, length(opt))), duration(index), funcount(index), iterate(index), fvals(index), flags{index}, spars, algo{index});
-    end
-  end
+  end % repeat
 end
 
 % display for given dimensionality an abstract of tests
 % matrix: rows=tests columns=optimizers, values=sorting index
-disp('Test results: +=fast; -=slower; .=local minimum; *=error; " "=does not converge');
-fprintf(1, 't=%10.2g s ', etime(clock,t1));
+disp(['Test results: " "=does not converge, or number of succesful repetitions (out of ' num2str(repeat_num) ')']);
+fprintf(1, 't=%10.2g s ', etime(clock,t1)/repeat_num);
 for j=1:length(optimizers)
   opt=optimizers{j};
   opt=opt(5:end);
@@ -184,7 +212,9 @@ fprintf(1, '\n');
 for i=1:2:length(problems)
   fprintf(1, '%15s ', problems{i});
   for j=1:length(optimizers)
-    fprintf(1, '%s   ', abstract{i, j});
+    f=abstract{(i+1)/2, j};
+    if f > repeat_num/2, f=num2str(f); else f=' '; end
+    fprintf(1, '%2s  ', f);
   end
   fprintf(1, '\n');
 end

@@ -52,7 +52,7 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   p.112-147, 1998.
 
 %   Copyright 1984-2002 The MathWorks, Inc.
-%   $Revision: 1.4 $  $Date: 2008-02-01 11:16:32 $
+%   $Revision: 1.5 $  $Date: 2008-02-11 18:53:14 $
 %
 % Olivier Salvado, Case Western Reserve University, June04
 %   Modified to work on Cost function smooth on a high scale but rough on a
@@ -293,6 +293,7 @@ output.iterations = itercount;
 output.funcCount = func_evals;
 output.algorithm = [ 'Nelder-Mead simplex (by Salvado/Matlab) [' mfilename ']' ];
 output.message=message;
+output.options=options;
 
 if (exitflag & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')

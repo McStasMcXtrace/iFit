@@ -32,7 +32,7 @@ function [pars,fval,exitflag,output] = fminhooke(fun, pars, options)
 % R. Hooke and T. A. Jeeves, Journal of the ACM, Vol. 8, April 1961, pp. 212.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -63,6 +63,7 @@ end
 
 % call the optimizer
 [pars,fval,exitflag,output] = hooke(pars(:), fun, options);
+output.options=options;
 
 % private function ------------------------------------------------------------
 
@@ -114,7 +115,6 @@ debug=0;
 %
 %
 n=length(x0); fcount=0; dir=eye(n);
-targ=-1.d8;
 
 tolf  = options.TolFun;
 maxit = options.MaxIter;
