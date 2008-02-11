@@ -1,7 +1,7 @@
 function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminkalman(FUN,PARS,[OPTIONS]) unscented Kalman filter optimizer
 %
-%  Unconstrained optimization using the unscented Kalman filter.
+% Unconstrained optimization using the unscented Kalman filter.
 % The Kalman filter is actually a feedback approach to minimize the estimation 
 % error in terms of sum of square. This approach can be generalized to general 
 % nonlinear optimization. This function shows a way using the extended Kalman 
@@ -42,7 +42,7 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -69,6 +69,7 @@ options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % calls the optimizer
 [pars, fval, exitflag, output]=ukfopt(fun,pars(:),options);
+output.options=options;
 
 function [x,e, istop, output]=ukfopt(h,x,options)
 %UKFOPT     Unconstrained optimization using the unscented Kalman filter

@@ -21,7 +21,9 @@ function [pars,fval,exitflag,output] = fminimfil(fun, pars, options)
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fminimfil')
+%   fminimfil('defaults')
+%  options.Hybrid specifies the algorithm to use for local hybrid optimizations.
+%   This is a string with possible values 'sr1','bfgs','none'.
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -34,7 +36,7 @@ function [pars,fval,exitflag,output] = fminimfil(fun, pars, options)
 %   Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -66,9 +68,11 @@ if strcmp(options.Display,'iter')
 end
 
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));
+options.algorithm  = [ 'Unconstrained Implicit filtering (by Kelley) [' mfilename '/' options.Hybrid ']' ];
 
 % call the optimizer
 [pars,fval,exitflag,output] = imfil(pars(:), fun, options);
+output.options=options;
 
 % PRIVATE original code -------------------------------------------------------
 function [pars,fval,istop,output] = imfil(x0,f,options)

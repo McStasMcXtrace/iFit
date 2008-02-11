@@ -31,7 +31,7 @@ function [pars,fval,exitflag,output] = fminnewton(fun, pars, options)
 % Reference: W. Press, Numerical Recipes, Cambridge (1988)
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -62,6 +62,7 @@ end
 
 % call the optimizer
 [pars,fval,exitflag,output] = ntrust(pars(:), fun, options);
+output.options=options;
 
 function [pars,fval,istop,output] = ntrust(x0,f,options)
 %

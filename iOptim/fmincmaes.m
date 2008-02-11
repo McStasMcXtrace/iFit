@@ -1,11 +1,16 @@
 function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints, ub)
 % [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINCMAES(FUN,PARS,[OPTIONS],[CONSTRAINTS]) Evolution Strategy with Covariance Matrix Adaption
 %
-% This minimization method uses a hybrid Particle Swarm Optimization algorithm for 
-% finding the minimum of the function 'FUN' in the real space. At each iteration 
-% step, a local optimization is performed.
-% Default local optimizer is the Nelder-Mead simplex (fminsearch). You may change
-% it by defining the options.Hybrid function to any minimizer.
+% CMAES implements an Evolution Strategy with Covariance Matrix
+% Adaptation (CMA-ES) for nonlinear function minimization.
+% The CMA-ES (Evolution Strategy with Covariance
+% Matrix Adaptation) is a robust search method which should be
+% applied, if derivative based methods, e.g. quasi-Newton BFGS or
+% conjucate gradient, (supposably) fail due to a rugged search
+% landscape (e.g. noise, local optima, outlier, etc.). On smooth
+% landscapes CMA-ES is roughly ten times slower than BFGS. For up to
+% N=10 variables even the simplex direct search method (Nelder & Mead)
+% is often faster, but far less robust than CMA-ES.
 %
 % Calling:
 %   fmincmaes(fun, pars) asks to minimize the 'fun' objective function with starting
@@ -32,8 +37,6 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
 %      o=fmincmaes('defaults');
-%   options.Hybrid specifies the algorithm to use for local hybrid optimizations.
-%      It may be set to any optimization method using the @fminsearch syntax.
 %   option.PopulationSize sets the population size (20-40).
 %
 %  CONSTRAINTS may be specified as a structure
@@ -62,7 +65,7 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -163,8 +166,6 @@ if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
 end
 
-
-
 % call the optimizer
 [pars, fval, counteval, stopflag, out] = cmaes(fun, pars(:), sigma, hoptions);
 istop=0;
@@ -200,6 +201,8 @@ output.iterations= length(out.hist.iterations);
 output.message   = message;
 output.funcCount = counteval;
 output.algorithm = hoptions.algorithm;
+
+output.options=options; output.constraints=constraints;
 
 if (istop & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')
@@ -378,7 +381,7 @@ defopts.EvalInitialX = 'yes  % evaluation of initial solution';
 defopts.Restarts     = '0    % number of restarts ';
 defopts.IncPopSize   = '2    % multiplier for population size before each restart';
 
-defopts.PopSize      = '(4 + floor(3*log(N)))  % population size, lambda'; 
+defopts.PopSize      = 'max(30, 4 + floor(3*log(N)))  % population size, lambda'; 
 defopts.ParentNumber = 'floor(popsize/2)     % popsize equals lambda';
 defopts.RecombinationWeights = 'superlinear decrease % or linear, or equal';
 defopts.Display  = 'on   % display messages like initial and final message';

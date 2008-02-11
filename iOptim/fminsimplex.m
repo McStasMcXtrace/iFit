@@ -36,7 +36,7 @@ function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options, constrain
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -126,6 +126,7 @@ end
 
 % call the optimizer
 [pars,fval,exitflag,output] = nelder(x0', fun, options);
+output.options=options; output.constraints=constraints;
 
 % private function ------------------------------------------------------------
 

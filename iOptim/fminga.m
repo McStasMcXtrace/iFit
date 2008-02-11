@@ -45,7 +45,7 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -114,6 +114,7 @@ options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % call the optimizer
 [pars,fval,exitflag,output] = GA(fun, pars(:)', options, constraints);
+output.options=options; output.constraints=constraints;
 
 % private function ------------------------------------------------------------
 

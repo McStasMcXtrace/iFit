@@ -33,7 +33,7 @@ function [pars,fval,exitflag,output] = fminmulti(fun, pars, options, constraints
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -123,6 +123,7 @@ end
 
 % call the optimizer
 [pars,fval,exitflag,output] = mds(x0', fun, options);
+output.options=options; output.constraints=constraints;
 
 % private function ------------------------------------------------------------
 function [pars,fval,istop,output]=mds(x0,f,options)
