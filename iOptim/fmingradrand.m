@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fmingradrand(fun, pars, options)
 % Reference: Computer Methods in Applied Mechanics & Engg, Vol  19, (1979) 99
 % Contrib: Sheela V. Belur(sbelur@csc.com) 1998
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -62,6 +62,7 @@ options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % call the optimizer
 [pars,fval,exitflag,output] = ossrs(fun, pars, options);
+output.options=options;
 
 % private function ------------------------------------------------------------
 
@@ -83,7 +84,7 @@ if strcmp(options.Display,'iter')
 end
 
 istop=0;
-stdx=0.05;
+stdx=sqrt(options.TolFun);
 nor=0;fmn0=fmn;
 iterations=0; funcount=0;
 while(nor<options.MaxIter)

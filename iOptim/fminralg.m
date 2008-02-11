@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -87,6 +87,7 @@ output.iterations = iterations;
 output.algorithm  = options.algorithm;
 output.message    = message;
 output.funcCount  = funcount;
+output.options=options;
 
 if (exitflag < 0 & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')

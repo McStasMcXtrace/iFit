@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -58,6 +58,7 @@ if isempty(options)
 end
 
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));
+output.options=options;
 
 % call the optimizer
 [pars,fval,exitflag,output] = buscarnd(fun, pars, options);
@@ -71,7 +72,7 @@ function [pars,fval,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.10 $  $Date: 2008-02-01 11:16:32 $
+%   $Revision: 1.11 $  $Date: 2008-02-11 18:53:14 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C
