@@ -1,4 +1,4 @@
-Version: $Revision: 1.5 $  
+Version: $Revision: 1.6 $  
 
 All functions here are meant to minimize an objective scalar function (usually 
 down to zero). The general syntax is the same as the one of fminsearch, 
@@ -16,7 +16,7 @@ A usual 'options' structure is
       OutputFcn: 'fminplot'
        PlotFcns: []
 
-The 'fminplot' show the optimization procedure criterai and first 1-3 parameter
+The 'fminplot' show the optimization procedure criteria and first 1-3 parameter
 values during the optimization.
 
 
@@ -81,5 +81,10 @@ mds by Kelley, 1998, Iterative Methods for Optimization
 PSO by Brecht Donckels, BIOMATH, brecht.donckels@ugent.be 2006 
   used in fminpso
   modified to use standard Matlab optimization fminsearch syntax and options
-  
+psa by Brecht Donckels, BIOMATH, brecht.donckels@ugent.be 2006
+  used in fminpsa
+  modified to use standard Matlab optimization fminsearch syntax and options
+sce by Brecht Donckels, BIOMATH, brecht.donckels@ugent.be 2006
+  used in fminsce
+  modified to use standard Matlab optimization fminsearch syntax and options
   

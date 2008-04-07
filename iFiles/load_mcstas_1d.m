@@ -6,17 +6,28 @@ function a=load_mcstas_1d(a)
 
 % Find proper labels for Signal and Axis
 
-xlabel = a.Data.Headers.MetaData.xlabel;
-ylabel = a.Data.Headers.MetaData.ylabel;
-xlabel(1:length('# xlabel: '))='';
-ylabel(1:length('# ylabel: '))='';
-
+if ~isempty(findfield(a, 'xlabel')) 
+  xlabel = a.Data.Headers.MetaData.xlabel;
+  xlabel(1:length('# xlabel: '))='';
+else xlabel=''; end
+if ~isempty(findfield(a, 'ylabel')) 
+  ylabel = a.Data.Headers.MetaData.ylabel;
+  ylabel(1:length('# ylabel: '))='';
+else ylabel=''; end
 
 Datablock = ['this.' getalias(a,'Signal')];
 
 % First column is the scan parm, we denote that 'x'
 setalias(a,'x',[Datablock '(:,1)'],xlabel);
 setalias(a,'Signal',[Datablock '(:,2)'],ylabel);
-setalias(a,'Error',[Datablock '(:,3)']);
-setalias(a,'N',[Datablock '(:,3)'],'# Events');
+if ~isempty(findfield(a, 'Error')) 
+  setalias(a,'Error',[Datablock '(:,3)']);
+else
+  setalias(a,'Error',0);
+end
+setalias(a,'E','Error');
+if ~isempty(findfield(a, 'Error')) 
+  setalias(a,'N',[Datablock '(:,3)'],'# Events');
+end
 setaxis(a,1,'x');
+
