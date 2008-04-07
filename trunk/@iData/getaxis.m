@@ -8,7 +8,8 @@ function [val, lab] = getaxis(s,ax)
 %     the value of the axis is returned.
 %   when the axis input parameter is given as a string/name (e.g. '1' or 'x') 
 %     the corresponding axis definition is returned.
-%   The Signal corresponds to axis 0. Axis 1 is often labelled as 'x', 2 as 'y', etc...
+%   The Signal corresponds to axis 0. 
+%   Axis 1 is often labeled as 'x' (on columns), 2 as 'y' (on rows), etc...
 %
 % input:  s: object or array (iData)
 %         AxisIndex: axis index to inquire in object, or [] (integer).

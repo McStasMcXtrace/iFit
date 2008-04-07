@@ -18,7 +18,9 @@ a = [];
 for j=1:siz
   b = a0;
   setalias(b,'Signal',['this.' getalias(a0,'Signal') '(:,' num2str(2*j) ')']);
-  setalias(b,'Error',['this.' getalias(a0,'Signal') '(:,' num2str(1+2*j) ')']);
+  if ~isempty(findfield(a, 'Error')) 
+    setalias(b,'Error',['this.' getalias(a0,'Signal') '(:,' num2str(1+2*j) ')']);
+  end
   a = [a b];
 end
 

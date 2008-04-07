@@ -11,6 +11,8 @@ function s_out = setaxis(a_in,indexes,names,values)
 %     corresponding Alias is created, and its value is set, so that
 %     setaxis(a,1,'x',1:10) creates the 1-st rank axis as the alias 'x'
 %     which value is set to 1:10.
+%   The Signal corresponds to axis 0. 
+%   Axis 1 is often labeled as 'x' (on columns), 2 as 'y' (on rows), etc...
 %
 % input:  s: object or array (iData)
 %         AxisIndex: rank of the axis, 

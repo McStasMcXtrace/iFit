@@ -2,7 +2,7 @@ function [pars,fval,exitflag,output] = fminmulti(fun, pars, options, constraints
 % [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminmulti(FUN,PARS,[OPTIONS]) Multi directional search
 %
 % This minimization method uses the Multi directional search, which is not very
-% accurate but may be used prior to other time coonsuming techniques, to guess
+% accurate but may be used prior to other time consuming techniques, to guess
 % starting parameters.
 % 
 % Calling:
@@ -33,7 +33,7 @@ function [pars,fval,exitflag,output] = fminmulti(fun, pars, options, constraints
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % default options for optimset
