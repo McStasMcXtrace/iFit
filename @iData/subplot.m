@@ -7,7 +7,7 @@ function h=subplot(a, varargin)
 %
 % input:  s: object or array (iData)
 %         [m n]: optional subplot grid dimensions
-%         additional arguments are passed to the plot method 9e.g. color, plot type, ...)
+%         additional arguments are passed to the plot method (e.g. color, plot type, ...)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %

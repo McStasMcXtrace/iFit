@@ -1,9 +1,10 @@
 * Hight Priority:
 fits: constraints and so on...
-cat = combine sur union (avec iData ou numeric)
+cat(dim,a,b,c) if 1st arg is int
+	or cat (a,b,c,...) avec iData ou numeric
 
 * Low Priority:
-sort
+sort(a,dim,mode)
 diff
 trapz, quad
 sum

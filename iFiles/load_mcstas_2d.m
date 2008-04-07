@@ -6,12 +6,18 @@ function a=load_mcstas_2d(a)
 
 % Find proper labels for Signal and Axis
 
-xlabel = a.Data.Headers.MetaData.xlabel;
-ylabel = a.Data.Headers.MetaData.ylabel;
-zlabel = a.Data.Headers.MetaData.zlabel;
-xlabel(1:length('# xlabel: '))='';
-ylabel(1:length('# ylabel: '))='';
-zlabel(1:length('# zlabel: '))='';
+if ~isempty(findfield(a, 'xlabel')) 
+  xlabel = a.Data.Headers.MetaData.xlabel; 
+  xlabel(1:length('# xlabel: '))='';
+else xlabel=''; end
+if ~isempty(findfield(a, 'ylabel')) 
+  ylabel = a.Data.Headers.MetaData.ylabel;
+  ylabel(1:length('# ylabel: '))='';
+else ylabel=''; end
+if ~isempty(findfield(a, 'zlabel')) 
+  zlabel = a.Data.Headers.MetaData.zlabel;
+  zlabel(1:length('# zlabel: '))='';
+else zlabel=''; end
 
 % Get sizes of x- and y- axes:
 siz = size(a.Data.MetaData.variables);
@@ -24,8 +30,14 @@ setalias(a,'x',xax,xlabel);
 setalias(a,'y',yax,ylabel);
 setalias(a,'Signal',a.Data.MetaData.variables,zlabel);
 setalias(a,'I','Signal');
-setalias(a,'Error',a.Data.MetaData.Errors);
+if ~isempty(findfield(a, 'Error')) 
+  setalias(a,'Error',a.Data.MetaData.Errors);
+else setalias(a,'Error',0);
+end
 setalias(a,'E','Error');
-setalias(a,'N',a.Data.MetaData.Events);
+if ~isempty(findfield(a, 'Error')) 
+  setalias(a,'N',a.Data.MetaData.Events);
+end
 setaxis(a,1,'x');
 setaxis(a,2,'y');
+
