@@ -22,13 +22,13 @@ else zlabel=''; end
 % Get sizes of x- and y- axes:
 siz = size(a.Data.MetaData.variables');
 lims = a.Data.MetaData.xylimits;
-xax = linspace(lims(1),lims(2),siz(1));
-yax = linspace(lims(3),lims(4),siz(2));
+yax = linspace(lims(1),lims(2),siz(1));
+xax = linspace(lims(3),lims(4),siz(2));
 
 % First column is the scan parm, we denote that 'x'
 setalias(a,'x',xax,xlabel);
 setalias(a,'y',yax,ylabel);
-setalias(a,'Signal',a.Data.MetaData.variables',zlabel);
+setalias(a,'Signal',a.Data.MetaData.variables,zlabel);
 setalias(a,'I','Signal');
 if ~isempty(findfield(a, 'Error')) 
   setalias(a,'Error',a.Data.MetaData.Errors);
