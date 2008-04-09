@@ -68,9 +68,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   else                % surf and similar stuff
     C = [];
     if isvector(x) & isvector(y),
-      tmp = y;
-      y = x;
-      x = tmp;
+      z = z';
     end
     if (strfind(method,'contour3'))
       [C,h] =contour3(x,y,z);
@@ -145,8 +143,7 @@ end
 % add a UIcontextMenu so that right-click gives info about the iData plot
 % also make up title string
 uicm = uicontextmenu;
-uimenu(uicm, 'Label', [ 'Data ' a.Tag ]);
-uimenu(uicm, 'Label', [ num2str(ndims(a)) 'D object ' mat2str(size(a)) ]);
+uimenu(uicm, 'Label', [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ]);
 T=a.Title; if iscell(T), T=T{1}; end
 T=deblank(T);
 if length(T) > 23, T=[ T(1:20) '...' ]; end
@@ -166,6 +163,9 @@ if ndims(a) >= 2
   uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
   uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
+  uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
+else
+  uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
 end
 % attach contexual menu to plot
 set(h, 'UIContextMenu', uicm);
