@@ -3,7 +3,7 @@ function b = iData_private_unary(a, op)
 
 % handle input iData arrays
 if length(a) > 1
-  b = [];
+  b = a;
   for index=1:length(a(:))
     b(index) = iData_private_unary(a(index), op);
   end
