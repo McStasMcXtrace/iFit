@@ -1,10 +1,12 @@
 function [link, label, names] = getalias(s,alias)
 % [link, label] = getalias(s, 'AliasName') : get iData alias
 %
-%   @iData/getalias function to get iData alias.
+%   @iData/getalias function to get iData alias definition.
 %   [link, label]          = getalias(s, alias) returns the alias link and its label/description.
 %   [names, links, labels] = getalias(s)        returns all defined aliases.
 %   The Signal, Error and Monitor aliases are always defined.
+%   The value of the alias is obtained with the syntax: 's.alias'.
+%   To search for aliases/fields in the object you may use findfield.
 %
 % input:  s: object or array (iData)
 %         alias: alias name to inquire in object, or '' (char).

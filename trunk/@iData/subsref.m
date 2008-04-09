@@ -87,8 +87,10 @@ for i = 1:length(S)     % can handle multiple index levels
     if length(b(:)) > 1   % iData array
       b = b(s.subs{:});
     else
-      if (isnumeric(s.subs{:}) & length(s.subs{:}) == 1) | (ischar(s.subs{:}) & length(str2num(s.subs{:}))) == 1
+      if (isnumeric(s.subs{:}) & length(s.subs{:}) == 1)
         b=getaxis(b, s.subs{:});
+      elseif (ischar(s.subs{:}) & length(str2num(s.subs{:}))) == 1
+        b=get(b, s.subs{:}); % same as b.'alias'
       else
         iData_private_error(mfilename, [ 'do not know how to extract cell index in ' inputname(1)  ' ' b.Tag '.' ]);
       end
