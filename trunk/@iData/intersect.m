@@ -22,6 +22,20 @@ end
 
 if length(a) == 1, ai=a; bi=a; return; end
 
+% first check if all objects have same axes
+all_identical_axes=1;
+for index=1:ndims(a(1)) % loop on axes
+  x = getaxis(a(1), index);
+  for obj=2:length(a)
+    if ~isequal(getaxis(a(obj), index), x)
+      all_identical_axes=0; break;
+    end
+  end
+  if ~all_identical_axes, break; end
+end
+% return if using identical axes: no need to interpolate. retain axes and data.
+if all_identical_axes, ai=a; bi=[]; return; end
+
 % initiate new axes
 for index=1:ndims(a(1))
   c_step{index} =  Inf;
