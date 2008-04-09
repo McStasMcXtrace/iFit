@@ -104,6 +104,7 @@ if isempty(strmatch(method, {'linear','cubic','spline','nearest'}))
   iData_private_error(mfilename,['Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest.']);
 end
 
+a_nonmonotonic=0;
 if nargin == 1, ntimes=1; end
 if ntimes ~= 0
   % rebin iData object using the smallest axes steps for new axes
@@ -177,6 +178,31 @@ if ~isempty(getalias(a, 'Error')),   a_error  =get(a,'Error');   else a_error=[]
 if ~isempty(getalias(a, 'Monitor')), a_monitor=get(a,'Monitor'); else a_monitor=[]; end
 a_error    = double(a_error);
 a_monitor  = double(a_monitor);
+
+% make sure input axes are monotonic. output axes should be OK.
+for index=1:ndims(a)
+  if any(diff(a_axes{index}) <= 0)
+    a_nonmonotonic=1; break;
+  end
+end
+if a_nonmonotonic
+  for index=1:ndims(a)
+    a_idx{index}=1:size(a, index);
+    [a_axes{index}, a_idx{index}] = unique(a_axes{index});
+    if length(a_idx{index}) ~= size(a,index)
+      toeval='';
+      for j=1:ndims(a), 
+        if j ~= index, str_idx{j}=':';
+        else str_idx{j}='a_idx{index}'; end
+        if j>1, toeval=[ toeval ',' str_idx{j} ];
+        else toeval=[ str_idx{j} ]; end
+      end
+      a_signal =eval([ 'a_signal('  toeval ')' ]);
+      a_error  =eval([ 'a_error('   toeval ')' ]);
+      a_monitor=eval([ 'a_monitor(' toeval ')' ]);
+    end
+  end
+end
 
 i_signal = iData_interp(a_axes, a_signal, i_axes, method);
 i_error  = iData_interp(a_axes, a_error,  i_axes, method);
