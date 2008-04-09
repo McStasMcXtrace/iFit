@@ -10,6 +10,7 @@ function s_out = setalias(a_in,names,links,labels)
 %     setalias(s, getalias(s)) deletes all alias definitions.
 %   The command setalias(iData,'Signal') sets the Signal to the biggest numerical field.
 %   The input iData object is updated if no output argument is specified.
+%   An new field/alias may be defined with the quick syntax 's.alias = value'.
 %
 % input:  s: object or array (iData)
 %         AliasName: Name of existing or new alias (char/cellstr)

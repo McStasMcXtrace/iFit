@@ -10,6 +10,7 @@ function [val, lab] = getaxis(s,ax)
 %     the corresponding axis definition is returned.
 %   The Signal corresponds to axis 0. 
 %   Axis 1 is often labeled as 'x' (on columns), 2 as 'y' (on rows), etc...
+%   The special syntax s{0} gets the signal, and s{n} gets the axis of rank n.
 %
 % input:  s: object or array (iData)
 %         AxisIndex: axis index to inquire in object, or [] (integer).

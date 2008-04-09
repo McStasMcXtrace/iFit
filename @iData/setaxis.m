@@ -13,6 +13,9 @@ function s_out = setaxis(a_in,indexes,names,values)
 %     which value is set to 1:10.
 %   The Signal corresponds to axis 0. 
 %   Axis 1 is often labeled as 'x' (on columns), 2 as 'y' (on rows), etc...
+%   The special syntax s{0} assigns the signal, and s{n} assigns the axis of rank n.
+%     When the assigned value is a char, the axis definition is set.
+%     When the assigned value is numeric, the axis value is set (as in set).
 %
 % input:  s: object or array (iData)
 %         AxisIndex: rank of the axis, 
