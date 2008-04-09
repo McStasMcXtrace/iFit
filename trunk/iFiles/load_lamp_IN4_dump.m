@@ -8,13 +8,13 @@ function a=load_lamp_IN4_dump(a)
 
 % Find proper labels for Signal and Axis
 
-
-setalias(a,'RAW',get(a,'Signal'));
+axes_fields=findfield(a,'Axes_');
+setalias(a,'RAW',axes_fields{1});
 siz=size(a.RAW);
-setalias(a,'TOF',a.Data.Axes_2(:,1)); % TOF
-setalias(a,'theta',a.Data.Axes(1,:)); % angle
-setalias(a,'Signal',a.RAW(:,2:siz(2)));
-setaxis(a,1,'TOF/chan','TOF');
-setaxis(a,2,'theta/deg','theta');
+setalias(a,'TOF',a.RAW(:,1),'TOF [channel]');         % TOF channels
+setalias(a,'theta',a.Data.Axes(1,:),'Angle [deg]'); % angle
+setalias(a,'Signal',[ axes_fields{1} '(:,2:end)' ]);  % link to RAW
+setaxis(a,1,'TOF');
+setaxis(a,2,'theta');
 
 
