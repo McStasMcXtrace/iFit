@@ -157,15 +157,15 @@ titl =[ titl ' <' T '> (' a.Tag ':' cmd ')' ];
 uimenu(uicm, 'Label', [ 'Source: <' T '>' ]);
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
 uimenu(uicm, 'Label', [ 'User: ' a.User ]);
-uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+uimenu(uicm, 'Separator','on','Label','Toggle grid', 'Callback','grid');
 if ndims(a) >= 2
-  uimenu(uicm, 'Separator','on','Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading faceted;axis tight;set(gco,''Edgecolor'',''none'');');
+  uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading faceted;axis tight;set(gco,''Edgecolor'',''none'');');
   uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
   uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
   uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
 else
-  uimenu(uicm, 'Separator','on','Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading faceted;axis tight');
+  uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading faceted;axis tight');
   uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
 end
 % attach contexual menu to plot
