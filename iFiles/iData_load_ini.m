@@ -64,7 +64,8 @@ function loaders = iData_load_ini
     
     format8.name       ='McStas Scan output';
     format8.patterns   ={'# Numpoints:','# variables:','# title: Scan of'};
-    format8.options    = '--headers --comment= --metadata=variables';
+    format8.options    =['--headers --comment= --metadata=variables ' ...
+                         '--metadata=xlabel --metadata=ylabel'];
     format8.method     ='looktxt';
     format8.postprocess='load_mcstas_scan';
     
