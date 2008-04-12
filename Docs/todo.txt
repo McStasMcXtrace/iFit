@@ -7,9 +7,6 @@ cat(dim,a,b,c) if 1st arg is int
 sort(a,dim,mode)
 diff
 trapz, quad
-sum
-cumsum (integral)
-prod
 norm, std, median, var, cov, corrcoef
 fft
 conv (conv2, convn)
@@ -23,6 +20,7 @@ quiver, quiver2 with gradient
   define aliases first as simple as possible, then link axes to aliases
 
 * Doc
+requirements: Matlab >= 6.5
   iData structure, aliases, axes
   loading data files, user configuration (iData_load_ini)
   plots

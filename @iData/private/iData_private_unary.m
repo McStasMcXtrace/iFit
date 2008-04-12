@@ -2,7 +2,7 @@ function b = iData_private_unary(a, op)
 % iData_private_unary: handles unary operations
 
 % handle input iData arrays
-if length(a) > 1
+if length(a(:)) > 1
   b = a;
   for index=1:length(a(:))
     b(index) = iData_private_unary(a(index), op);
@@ -13,6 +13,7 @@ end
 
 b = copyobj(a);
 s = get(b,'Signal');
+[dummy, sl] = getaxis(b, '0');
 
 % operation on signal
 s = feval(op, s);
@@ -76,6 +77,7 @@ end
 
 % update object
 b = set(b, 'Signal', s, 'Error', abs(e));
+b = setalias(b, 'Signal', s, [  op '(' sl ')' ]);
 b = iData_private_history(b, op, b);  
 
 % other methods to treat specifically
