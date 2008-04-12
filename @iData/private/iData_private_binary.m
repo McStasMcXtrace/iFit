@@ -131,6 +131,15 @@ if strcmp(op, 'combine')  % dimension of result might change from original objec
 else
   c = set(c, 'Signal', s3, 'Error', abs(e3), 'Monitor', m3);
 end
+if isa(a, 'iData'), [dummy, al] = getaxis(a,'0'); 
+else 
+  al=num2str(a); if length(al) > 10, al=[ al(1:min(length(al),10)) '...' ]; end 
+end
+if isa(b, 'iData'), [dummy, bl] = getaxis(b,'0'); 
+else 
+  bl=num2str(b); if length(bl) > 10, bl=[ bl(1:min(length(bl),10)) '...' ]; end 
+end
+setalias(c, 'Signal', s3, [ op '(' al ',' bl ')' ]);
 c = iData_private_history(c, op, a,b);
 
 % reset warnings
