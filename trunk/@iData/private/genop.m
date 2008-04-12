@@ -37,17 +37,14 @@ function z = genop(op,x,y)
 % Duane Hanselman.
 
 % Check inputs.
-if ~(nargin == 1 || nargin == 3)
+if ~(nargin == 1 | nargin == 3)
 	error('genop:zeroInputs','1 or 3 arguments required.')
 end
 if ~isa(op,'function_handle') & ischar(op)
   op = str2func(op);
 	%error('genop:incorrectOperator','Operator must be a function handle.')
 end
-if nargin == 1
-	z = @(x,y) genop(op,x,y);
-	return
-end
+
 
 % Compute sizes of x and y, possibly extended with ones so they match
 % in length.
@@ -61,8 +58,8 @@ dims = find(dz);
 num_dims = length(dims);
 
 % Eliminate some simple cases.
-if num_dims == 0 || numel(x) == 1 || numel(y) == 1
-	z = op(x,y);
+if num_dims == 0 | numel(x) == 1 | numel(y) == 1
+	z = feval(op,x,y);
 	return
 end
 
@@ -73,7 +70,7 @@ if ~(all(sx(dz) == 1 | sy(dz) == 1))
 	error('genop:argSizeError','Argument dimensions are not compatible.')
 end
 sz = max([sx;sy]);
-z1 = op(x(1),y(1));
+z1 = feval(op,x(1),y(1));
 if islogical(z1)
 	z = repmat(logical(0),sz);
 else
