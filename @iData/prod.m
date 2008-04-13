@@ -6,19 +6,19 @@ function s = prod(a,dim)
 %
 % input:  a: object or array (iData or numeric)
 %         dim: dimension to operate (int)
-% output: s: prod of elements (double)
+% output: s: prod of elements (double/cell)
 % ex:     c=prod(a);
 %
 % See also iData, iData/plus, iData/sum, iData/cumprod
 
 % handle input iData arrays
 if isa(a, 'iData') & length(a(:)) > 1
-  b = zeros(length(a(:)));
+  b = {};
   for index=1:length(a(:))
     if nargin == 1
-      b(index) = prod(a);
+      b{index} = prod(a);
     else
-      b(index) = prod(a, dim);
+      b{index} = prod(a, dim);
     end
   end
   b = reshape(b, size(a));
