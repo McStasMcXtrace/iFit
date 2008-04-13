@@ -4,7 +4,7 @@ function s = cumprod(a,dim)
 %   @iData/cumprod function to compute the cumulative product of the elements of the data set
 %     cumprod(a,dim) operates along axis of rank dim.
 %
-% input:  a: object or array (iData or numeric)
+% input:  a: object or array (iData)
 %         dim: dimension to accumulate (int)
 % output: s: accumulated product of elements (iData)
 % ex:     c=cumprod(a);

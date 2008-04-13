@@ -14,4 +14,4 @@ function a = isinf(a)
 %          iData/isvector, iData/issparse
 
 a = iData_private_unary(a, 'isinf');
-
+a = double(a);

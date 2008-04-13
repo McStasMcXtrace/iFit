@@ -36,7 +36,7 @@ end
 
 switch ndims(a) % handle different plotting methods depending on the iData dimensionality
 case 0
-  h=[];
+  h=[]; return;
 case 1  % vector type data (1 axis + signal) -> plot
   [x, xlab] = getaxis(a,1);
   [y, ylab] = getaxis(a,0);
