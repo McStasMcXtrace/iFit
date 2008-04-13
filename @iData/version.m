@@ -6,8 +6,8 @@ function b = version(a)
 
 % EF 23/09/07 iData impementation
 
-vers = '1.0';
-date = 'Sept 23rd, 2007';
+vers = '$Revision: 1.2 $';
+date = '13 Apr 2008';
 auth = 'E.Farhi and Y.Debab, (c) ILL/DS/CS <farhi@ill.eu>';
 b = [ 'Matlab/iData version ' vers ' (' date ') by ' auth ];
 

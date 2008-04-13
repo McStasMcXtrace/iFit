@@ -54,11 +54,17 @@ if ischar(model) | isa(model, 'function_handle')
   if nargout > 1 | isempty(pars)
     info = feval(model,'identify');  % get identification info
   end
-  if isempty(pars), pars=info.Guess; end
+  if isstruct(info) & isempty(pars), pars=info.Guess; end
   if ~isempty(varargin)
     Model = feval(model, pars, Axes{:}, varargin{:});
-  else
+  elseif ~isempty(pars)
     Model = feval(model, pars, Axes{:});
+  else
+    try
+    Model = feval(model, Axes{:});
+    catch
+    Model = feval(model, double(a));
+    end
   end 
 elseif iscell(model)
   % identify the model dimensionality

@@ -4,7 +4,7 @@ function s = cumsum(a,dim)
 %   @iData/cumsum function to compute the cumulative sum of the elements of the data set
 %     cumsum(a,dim) accumulates along axis of rank dim.
 %
-% input:  a: object or array (iData or numeric)
+% input:  a: object or array (iData)
 %         dim: dimension to accumulate (int)
 % output: s: accumulated sum of elements (iData)
 % ex:     c=cumsum(a);

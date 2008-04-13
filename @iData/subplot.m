@@ -49,10 +49,11 @@ elseif isempty(n)
   n = ceil(length(a(:))/m);
 end
 
-
-
 h=[];
 for index=1:length(a(:))
-  subplot(m,n,index);
-  h = [ h plot(a(index), varargin{:}) ];
+  if ~isempty(a(index))
+    subplot(m,n,index);
+    h = [ h plot(a(index), varargin{:}) ];
+  else h = [ h nan ];
+  end
 end
