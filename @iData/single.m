@@ -16,7 +16,7 @@ function a=single(a)
 if length(a) > 1
   b = {};
   for index=1:length(a(:))
-    a{index} = iData_private_unary(a(index), op);
+    b{index} = iData_private_unary(a(index), op);
   end
   a = reshape(b, size(a));
   return
