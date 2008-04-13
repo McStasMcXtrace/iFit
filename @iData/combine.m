@@ -4,9 +4,9 @@ function c = combine(a,b)
 %   @iData/combine function to combine data sets
 %     A fast notation for combine(a,b) is a\b
 %
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: object or array (iData)
+% input:  a: object or numerical array (iData or numeric)
+%         b: object or numerical array (iData or numeric)
+% output: c: object (iData)
 % ex:     c=combine(a,b); or combine([ a b ])
 %
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide

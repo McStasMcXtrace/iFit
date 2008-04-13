@@ -5,7 +5,7 @@ function a = isfinite(a)
 %   of 's', i.e. that are not NaN, Inf or -Inf.
 %
 % input:  s: object or array (iData)
-% output: b: object or array (iData)
+% output: b: array (int)
 % ex:     b=isfinite(a);
 %
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
@@ -14,4 +14,5 @@ function a = isfinite(a)
 %          iData/isvector, iData/issparse
 
 a = iData_private_unary(a, 'isfinite');
+a=uint8(a);
 

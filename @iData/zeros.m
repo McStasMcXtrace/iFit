@@ -27,4 +27,3 @@ end
 
 s = reshape(long_s, size(s));
 
-

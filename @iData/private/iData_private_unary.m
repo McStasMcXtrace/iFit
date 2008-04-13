@@ -61,11 +61,10 @@ case {'sparse','full'}
 case {'floor','ceil','round'}	
 	% apply same operator on error
 	e = feval(op, e);
-case {'sign','isreal','isfinite','isnan','isinf','isfloat','isinterger', ...
-      'isnumeric'}
+case {'sign','isfinite','isnan','isinf'}
 	% error should become zero (logical)
 	e = zeros(size(s));
-case {'isscalar','isvector','issparse','islogical','double','single','logical','find'}
+case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical','double','single','logical','find'}
 	% result is a single value
 	b = s;
 	return

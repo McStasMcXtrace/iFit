@@ -5,7 +5,7 @@ function a = isreal(a)
 %   of 's', i.e. that are not complex.
 %
 % input:  s: object or array (iData)
-% output: b: object or array (iData)
+% output: b: array (int)
 % ex:     b=isreal(a);
 %
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,

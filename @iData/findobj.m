@@ -46,6 +46,11 @@ end
 % extract iData objects from base MATLAB
 % this evalin call and following block is to be removed for stand-alone application making
 if ~exist('isdeployed'), isdeployed=0; end  % set to 1 when using Matlab compiler (mcc)
+try
+if ~isdeployed, end
+catch
+  isdeployed=0;
+end
 if ~isdeployed
   vars = evalin('base','whos');
   vars_name  = {vars.name};
