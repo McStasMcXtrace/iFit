@@ -1,9 +1,9 @@
 function s = sort(a,dim,mode)
-% s = sort(a,dim) : Sort iData objects elements in ascending or descending order
+% s = sort(a,dim) : Sort iData objects axes in ascending or descending order
 %
-%   @iData/sort function to compute the cumulative sum of the elements of the data set
-%     sort(a,dim) sorts along axis of rank dim. If dim=0, sorting is done
-%       on all axes.
+%   @iData/sort function to sort the data set on its axes
+%     sort(a,dim) sorts along axis of rank dim. 
+%       If dim=0, sorting is done on all axes.
 %     sort(a,dim,mode) where mode='ascend' or 'descend' select sorting order
 %
 % input:  a: object or array (iData)
@@ -34,23 +34,38 @@ s = copyobj(a);
 
 [sn, sl] = getaxis(a, '0');   % label
 sd = get(s,'Signal');         % data
+se = get(s,'Error');
+sm = get(s,'Monitor');
 
 if dim > 0
-  [sd, sorti] = sort(sd, dim, mode);
-  if ~isempty(getaxis(s,num2str(dim)))
-    x = getaxis(s, dim);
-    setaxis(s, dim, x(sorti));
-  end
+  tosort=dim;
 else
-  for index=1:ndims(a)
-    [sd, sorti] = sort(sd, index, mode);
-    if ~isempty(getaxis(s,num2str(index)))
-      x = getaxis(s, index);
-      setaxis(s, index, x(sorti));
+  tosort=1:ndims(a)
+end
+was_sorted=0;
+
+for index=tosort
+  x = getaxis(a, index);
+  [x, sorti] = sort(x, index, mode);
+  if ~isequal(sorti, 1:size(a, index))
+    toeval='';
+    for j=1:ndims(a), 
+      if j ~= index, str_idx{j}=':';
+      else str_idx{j}='sorti'; end
+      if j>1, toeval=[ toeval ',' str_idx{j} ];
+      else toeval=[ str_idx{j} ]; end
     end
+    sd =eval([ 'sd(' toeval ')' ]);
+    se =eval([ 'se(' toeval ')' ]);
+    sm =eval([ 'sm(' toeval ')' ]);
+    setaxis(s, index, x);
+    was_sorted=1;
   end
 end
-
-s = setalias(s, 'Signal', sd, [ 'sort(' sl ')' ]);
-s = iData_private_history(s, mfilename, a, dim, mode); 
+if was_sorted
+  s = setalias(s, 'Signal', sd, [ 'sort(' sl ')' ]);
+  s = setalias(s, 'Error',  se);
+  s = setalias(s, 'Monitor',sm);
+  s = iData_private_history(s, mfilename, a, dim, mode);
+end
 
