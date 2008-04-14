@@ -186,7 +186,7 @@ for index=1:ndims(a)
   end
 end
 if a_nonmonotonic
-  for index=1:ndims(a)
+  for index=1:ndims(a)  % apply unique on axes
     a_idx{index}=1:size(a, index);
     [a_axes{index}, a_idx{index}] = unique(a_axes{index});
     if length(a_idx{index}) ~= size(a,index)
