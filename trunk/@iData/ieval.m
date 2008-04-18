@@ -18,9 +18,10 @@ function [b, info] = ieval(a, model, pars, varargin)
 %         info: structure giving information about the model
 % ex:     b=ieval(a,'gauss',[1 2 3 4]); or ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
 %
-% See also iData, feval
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
+%
+% See also iData, feval
 
 % private functions: 
 %   genop: Douglas M. Schwarz, 13 March 2006
