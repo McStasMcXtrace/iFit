@@ -12,14 +12,16 @@ function h=plot(a, method)
 %         method: optional type of plot to render for 2D and 3D views, within
 %                 surf, mesh, contour, contour3, surfc, surfl, contourf, stem3
 %                 flat, interp, faceted, transparent, light, clabel
-%                 plot3, scatter3
+%                 plot3, scatter3, view2, view3, axis tight, axis auto
+%                 For 1D plots, method is a string to specify color/symbol.
 % output: h: graphics object handles (cell)
-% ex:     plot(iData(rand(10), 'surfc interp transparent');
+% ex:     plot(iData(rand(10), 'surfc interp transparent'); plot(iData(1:10), 'r-');
 %
-% See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 % Contributed code (Matlab Central): 
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
+%
+% See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % private functions:
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
@@ -29,6 +31,7 @@ if length(a) > 1
   h = cell(size(a));
   for index=1:length(a(:))
     h{index} = plot(a(index), method);
+    hold on
   end
   h = reshape(h, size(a));
   return
@@ -40,11 +43,12 @@ case 0
 case 1  % vector type data (1 axis + signal) -> plot
   [x, xlab] = getaxis(a,1);
   [y, ylab] = getaxis(a,0);
-  e         = get(a,'Error');
-  m         = get(a,'Monitor');
+  e         = get(a,'Error');   e=real(e);
+  m         = get(a,'Monitor'); m=real(m);
   if not(all(m == 1) | all(m == 0)),
     y = y./m; e=e./m; ylab = [ylab ' per monitor' ];
   end
+  y=real(y);
   if isempty(method), method='b-'; end
   if all(e == 0)
     h = plot(x,y, method);
@@ -59,6 +63,9 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   if not(all(m == 1) | all(m == 0)),
     z = z./m; zlab = [zlab ' per monitor' ];
   end
+  x=real(x);
+  y=real(y);
+  z=real(z);
   if isvector(a) == 2 % plot3/fscatter3
     if (strfind(method,'plot3'))
       h = plot3(x,y,z);
@@ -93,6 +100,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     end
   end
   zlabel(zlab);
+  set(h,'Edgecolor','none');
 case 3  % #d data sets: volumes
   % first test if this is an image
   if isfield(a.Data,'cdata')
@@ -139,28 +147,44 @@ end
 if (strfind(method,'light'))
   light;
 end
+if (strfind(method,'view2'))
+  view(2);
+end
+if (strfind(method,'view3'))
+  view(3);
+end
+if (strfind(method,'tight'))
+  axis tight
+end
 
 % add a UIcontextMenu so that right-click gives info about the iData plot
-% also make up title string
-uicm = uicontextmenu;
-uimenu(uicm, 'Label', [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ]);
+% also make up title string and Properties dialog content
 T=a.Title; if iscell(T), T=T{1}; end
 T=deblank(T);
+cmd = char(a.Command{end});
+properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
+             [ 'Title: "' T '"' ], ...
+             [ 'Source: ' a.Source ], ...
+             [ 'Last command: ' cmd ]};
 if length(T) > 23, T=[ T(1:20) '...' ]; end
-titl=T;
-uimenu(uicm, 'Label', [ 'Title: "' T '"' ]);
-T=a.Source;
-if length(T) > 23, T=[ '...' T(end-20:end) ]; end
-cmd = a.Command{end};
+S=a.Source;
+if length(S) > 23, S=[ '...' S(end-20:end) ]; end
 if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
-titl =[ titl ' <' T '> (' a.Tag ':' cmd ')' ];
-uimenu(uicm, 'Label', [ 'Source: <' T '>' ]);
+titl =[ T ' <' S '> (' a.Tag ':' cmd ')' ];
+
+uicm = uicontextmenu; 
+set(uicm,'UserData', properties); 
+uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
+  'Callback', [ 'msgbox(get(get(gco,''UIContextMenu''),''UserData''), ''Properties: Figure ' num2str(gcf) ' ' T ' <' S '>'',''help'');' ] );
+
+uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '"' ]);
+uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
 uimenu(uicm, 'Label', [ 'User: ' a.User ]);
 uimenu(uicm, 'Separator','on','Label','Toggle grid', 'Callback','grid');
 if ndims(a) >= 2
-  uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading faceted;axis tight;set(gco,''Edgecolor'',''none'');');
-  uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
+  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback','[a,e]=view; if (a==0 & e==90) view(3); else view(2); end; lighting none;alpha(1);shading faceted;set(gco,''Edgecolor'',''none'');');
+  uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;set(gco,''Edgecolor'',''none'');');
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
   uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
   uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
@@ -177,7 +201,7 @@ set(gcf, 'Name', char(a));
 if ~isempty(xlab), xlabel(xlab,'interpreter','none'); end
 if ~isempty(ylab), ylabel(ylab,'interpreter','none'); end
 if ndims(a) == 3 & ~isempty(clab)
-  title({ clab ,titl },'interpreter','none');
+  title({ clab, titl },'interpreter','none');
 else
   title(titl,'interpreter','none');
 end
