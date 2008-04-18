@@ -24,7 +24,7 @@ a = squeeze(a); % remove singleton dimensions
 m=[];
 n=[];
 if length(varargin) >=1
-  if isnumeric(varargin{1})
+  if isnumeric(varargin{1}) | isempty(varargin{1})
     dim = varargin{1};
     if isempty(dim)
       % will use best fit
@@ -34,13 +34,11 @@ if length(varargin) >=1
     if length(varargin) >= 2  
       varargin = varargin(2:end);
     else varargin = {}; end
-  end
-else
-  if length(size(a)) == 2 & any(size(a) > 1)
+  elseif length(size(a)) == 2 & any(size(a) > 1)
     m = size(a,1); n = size(a,2);
   end
 end
-
+if any(m==0), m=[]; end
 if isempty(m)
   p = length(a(:));
   n = floor(sqrt(p));
