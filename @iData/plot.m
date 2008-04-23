@@ -166,6 +166,20 @@ properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a))
              [ 'Title: "' T '"' ], ...
              [ 'Source: ' a.Source ], ...
              [ 'Last command: ' cmd ]};
+if length(a.Alias.Axis)
+  properties{end+1} = '[Rank]         [Value] [Description]';
+  for index=0:length(a.Alias.Axis)
+    [v, l] = getaxis(a, num2str(index));
+    x      = getaxis(a, index);
+    m      = get(a, 'Monitor');
+    if index==0 & not(all(m==1) | all(m==0))
+      m      = get(a, 'Monitor');
+      properties{end+1} = sprintf('%6i %15s  %s [%g:%g] (per monitor)', index, v, l, min(x(:)./m(:)), max(x(:)./m(:)));
+    else
+      properties{end+1} = sprintf('%6i %15s  %s [%g:%g]', index, v, l, min(x(:)), max(x(:)));
+    end
+  end
+end
 if length(T) > 23, T=[ T(1:20) '...' ]; end
 S=a.Source;
 if length(S) > 23, S=[ '...' S(end-20:end) ]; end
@@ -174,9 +188,9 @@ titl =[ T ' <' S '> (' a.Tag ':' cmd ')' ];
 
 uicm = uicontextmenu; 
 set(uicm,'UserData', properties); 
-uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
-  'Callback', [ 'msgbox(get(get(gco,''UIContextMenu''),''UserData''), ''Properties: Figure ' num2str(gcf) ' ' T ' <' S '>'',''help'');' ] );
-uimenu(uicm, 'Label',[ 'Duplicate' T ], 'Callback','g=gca; f=figure; c=copyobj(g,f); set(c,''position'',[ 0.15 0.15 0.7 0.7]);');
+uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
+  'Callback', [ 'msgbox(get(get(gco,''UIContextMenu''),''UserData''), ''About: Figure ' num2str(gcf) ' ' T ' <' S '>'',''help'');' ] );
+uimenu(uicm, 'Label',[ 'Duplicate ' T ' ...' ], 'Callback','g=gca; f=figure; c=copyobj(g,f); set(c,''position'',[ 0.15 0.15 0.7 0.7]); set(f,''Name'',''Copy of ' char(a) ''');');
 uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '"' ]);
 uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
