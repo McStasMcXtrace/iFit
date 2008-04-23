@@ -1,19 +1,19 @@
-function b = mean(a, dim)
-% b = mean(s, dim) : mean value of iData object
+function b = median(a, dim)
+% b = median(s, dim) : median value of iData object
 %
-%   @iData/mean function to compute the mean value of objects
-%     mean(a,dim) averages along axis of rank dim. If dim=0, mean is done
+%   @iData/median function to compute the median value of objects
+%     median(a,dim) computes median along axis of rank dim. If dim=0, median is done
 %       on all axes and the total is returned as a scalar value. 
-%       mean(a,1) accumulates on first dimension (columns)
-%     mean(a,-dim) averages on all axes except the dimension specified, i.e.
-%       the result is the mean projection of a along dimension dim.
+%       median(a,1) operates on first dimension (columns)
+%     median(a,-dim) computes median on all axes except the dimension specified, i.e.
+%       the result is the median projection of a along dimension dim.
 %
 % input:  a: object or array (iData/array of)
-%         dim: dimension to average (int)
-% output: s: mean of elements (iData/scalar)
-% ex:     c=mean(a);
+%         dim: dimension to operate on (int)
+% output: s: median of elements (iData/scalar)
+% ex:     c=median(a);
 %
-% See also iData, iData/floor, iData/ceil, iData/round, iData/combine, iData/mean
+% See also iData, iData/floor, iData/ceil, iData/round, iData/combine, iData/median
 
 if nargin < 2, dim=1; end
 if length(a) > 1
@@ -26,7 +26,7 @@ s=get(a,'Signal');
 b=a;
 setaxis(b, [], getaxis(b)); % delete all axes
 if dim > 0
-  s = mean(s, dim);
+  s = median(s, dim);
   ax_index=1;
   for index=1:ndims(a)
     if index ~= dim
@@ -37,16 +37,16 @@ if dim > 0
   setalias(b,'Signal', s, [mfilename ' of ' label ]);     % Store Signal
 elseif dim == 0
   for index=1:ndims(a)
-    s = mean(s, index);
+    s = median(s, index);
   end
   return  % scalar
 else  % dim < 0
   % accumulates on all axes except the rank specified
   for index=1:ndims(a)
-    if index~=-dim, s = mean(s,index); end
+    if index~=-dim, s = median(s,index); end
   end
   setaxis(b, 1, getaxis(a, num2str(-dim)));
-  setalias(b,'Signal', s, [ 'mean projection of ' label ]);     % Store Signal
+  setalias(b,'Signal', s, [ 'median projection of ' label ]);     % Store Signal
 end
 
 b = iData_private_history(b, mfilename, b, dim);
