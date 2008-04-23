@@ -101,6 +101,9 @@ for i1 = 1:length(s_out)
       
       % does this name already exist as an axis ?
       axis_names = a.Alias.Axis; % this is a cellstr of Axis names
+      j2=cellfun('isempty',axis_names);
+      if any(j2), axis_names{find(j2)} = ''; end
+      
       axis_num   = strmatch(lower(name), lower(axis_names), 'exact');
       
       if length(index)
