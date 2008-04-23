@@ -190,7 +190,7 @@ uicm = uicontextmenu;
 set(uicm,'UserData', properties); 
 uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
   'Callback', [ 'msgbox(get(get(gco,''UIContextMenu''),''UserData''), ''About: Figure ' num2str(gcf) ' ' T ' <' S '>'',''help'');' ] );
-uimenu(uicm, 'Label',[ 'Duplicate ' T ' ...' ], 'Callback','g=gca; f=figure; c=copyobj(g,f); set(c,''position'',[ 0.15 0.15 0.7 0.7]); set(f,''Name'',''Copy of ' char(a) ''');');
+uimenu(uicm, 'Label',[ 'Duplicate ' T ' ...' ], 'Callback',[ 'g=gca; f=figure; c=copyobj(g,f); set(c,''position'',[ 0.15 0.15 0.7 0.7]); set(f,''Name'',''Copy of ' char(a) ''');' ]);
 uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '"' ]);
 uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
