@@ -2,11 +2,12 @@ function b = median(a, dim)
 % b = median(s, dim) : median value of iData object
 %
 %   @iData/median function to compute the median value of objects
-%     median(a,dim) computes median along axis of rank dim. If dim=0, median is done
-%       on all axes and the total is returned as a scalar value. 
+%     median(a,dim) computes median along axis of rank dim. The axis is then removed.
+%       If dim=0, median is done on all axes and the total is returned as a scalar value. 
 %       median(a,1) operates on first dimension (columns)
 %     median(a,-dim) computes median on all axes except the dimension specified, i.e.
 %       the result is the median projection of a along dimension dim.
+%       All other axes are removed.
 %
 % input:  a: object or array (iData/array of)
 %         dim: dimension to operate on (int)
@@ -23,7 +24,7 @@ end
 
 s=get(a,'Signal');
 [link, label]          = getalias(a, 'Signal');
-b=a;
+b=copyobj(a);
 setaxis(b, [], getaxis(b)); % delete all axes
 if dim > 0
   s = median(s, dim);
