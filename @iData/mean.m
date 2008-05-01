@@ -2,11 +2,12 @@ function b = mean(a, dim)
 % b = mean(s, dim) : mean value of iData object
 %
 %   @iData/mean function to compute the mean value of objects
-%     mean(a,dim) averages along axis of rank dim. If dim=0, mean is done
-%       on all axes and the total is returned as a scalar value. 
+%     mean(a,dim) averages along axis of rank dim. The axis is then removed.
+%       If dim=0, mean is done on all axes and the total is returned as a scalar value. 
 %       mean(a,1) accumulates on first dimension (columns)
 %     mean(a,-dim) averages on all axes except the dimension specified, i.e.
 %       the result is the mean projection of a along dimension dim.
+%       All other axes are removed.
 %
 % input:  a: object or array (iData/array of)
 %         dim: dimension to average (int)
@@ -23,7 +24,7 @@ end
 
 s=get(a,'Signal');
 [link, label]          = getalias(a, 'Signal');
-b=a;
+b=copyobj(a);
 setaxis(b, [], getaxis(b)); % delete all axes
 if dim > 0
   s = mean(s, dim);
