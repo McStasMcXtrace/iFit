@@ -8,9 +8,12 @@ function filename = saveas(a, varargin)
 %         filename: name of file to save to. Extension, if missing, is appended (char)
 %                   If the filename already exists, the file is overwritten.
 %         format: data format to use (char)
-%                 'm' saves as a flat Matlab .m file (a function which returns an iData object or structure)
-%                 'mat' saves as a '.mat' binary file (save as 'save')
-%                 'hdf' saves as an HDF5 data set
+%           'm' saves as a flat Matlab .m file (a function which returns an iData object or structure)
+%           'mat' saves as a '.mat' binary file (same as 'save')
+%           'hdf' saves as an HDF5 data set
+%           'gif','bmp' save as an image (no axes, only for 2D data sets)
+%           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
+%           'xls' save as an Excel sheet
 %
 % output: f: filename used to save file(s) (char)
 % ex:     b=saveas(a, 'file', 'm');
@@ -47,6 +50,15 @@ else format='m'; filename = [ filename '.m' ];
 end
 
 switch format
+case 'jpg'
+  format='jpeg';
+case 'eps'
+  format='epsc';
+case 'ps'
+  format='psc';
+end
+
+switch format
 case 'm'
   str = [ 'function this=' name sprintf('\n') ...
           '% Original data: ' class(a) ' ' inputname(1) ' ' a.Tag sprintf('\n') ...
@@ -65,6 +77,26 @@ case 'm'
   fclose(fid);
 case 'mat'
   save(filename, a);
+case 'hdf'
+  hdf5write(filename, [ filesep 'iData' filesep filename ], struct(a) );
+case 'xls'
+  xlswrite(filename, cell(a), a.Title);
+case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd'}
+  if ndims(a) == 2
+    a=double(a);
+    b=(a-min(a(:)))/(max(a(:))-min(a(:)))*64;
+    imwrite(b, jet(64), filename, format);
+  end
+case 'epsc'
+  f=figure('visible','off');
+  plot(a);
+  print(f, [ '-depsc -tiff' ], filename);
+  close(f);
+case {'png','tiff','jpeg','psc','pdf','ill'}
+  f=figure('visible','off');
+  plot(a);
+  print(f, [ '-d' format ], filename);
+  close(f);
 end
 
 % ============================================================================
