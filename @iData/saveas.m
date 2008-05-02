@@ -1,5 +1,5 @@
 function filename = saveas(a, varargin)
-% f = saveas(s, ...) : save iData object into various data formats
+% f = saveas(s, filename, format) : save iData object into various data formats
 %
 %   @iData/saveas function to save data sets
 %   This function save the content of iData objects. 
@@ -7,13 +7,14 @@ function filename = saveas(a, varargin)
 % input:  s: object or array (iData)
 %         filename: name of file to save to. Extension, if missing, is appended (char)
 %                   If the filename already exists, the file is overwritten.
-%         format: data format to use (char)
-%           'm' saves as a flat Matlab .m file (a function which returns an iData object or structure)
-%           'mat' saves as a '.mat' binary file (same as 'save')
-%           'hdf' saves as an HDF5 data set
+%         format: data format to use (char), or determined from file name extension
+%           'm'   save as a flat Matlab .m file (a function which returns an iData object or structure)
+%           'mat' save as a '.mat' binary file (same as 'save')
+%           'hdf' save as an HDF5 data set
+%           'cdf' save as NetCDF 
 %           'gif','bmp' save as an image (no axes, only for 2D data sets)
 %           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
-%           'xls' save as an Excel sheet
+%           'xls' save as an Excel sheet (requires Excel to be installed)
 %
 % output: f: filename used to save file(s) (char)
 % ex:     b=saveas(a, 'file', 'm');
@@ -46,7 +47,8 @@ if isempty(ext) & ~isempty(format),
   filename = [ filename ext ];
 elseif isempty(format) & ~isempty(ext)
   format = ext(2:end);
-else format='m'; filename = [ filename '.m' ];
+elseif isempty(format) & isempty(ext) 
+  format='m'; filename = [ filename '.m' ];
 end
 
 switch format
@@ -56,6 +58,8 @@ case 'eps'
   format='epsc';
 case 'ps'
   format='psc';
+case 'nc'
+  format='cdf';
 end
 
 switch format
@@ -77,24 +81,57 @@ case 'm'
   fclose(fid);
 case 'mat'
   save(filename, a);
-case 'hdf'
-  hdf5write(filename, [ filesep 'iData' filesep filename ], struct(a) );
+case {'hdf','cdf'}
+  [fields, types, dims] = findfield(a);
+  towrite={};
+  for index=1:length(fields(:)) % get all field names
+    val=get(a, fields{index});
+    if iscellstr(val), 
+      val=val(:);
+      val(:, 2)={ ';' }; 
+      val=val'; 
+      val=[ val{1:(end-1)} ];
+    end
+    if ~isnumeric(val) & ~ischar(val), continue; end
+    if strcmp(format,'cdf')
+      if isempty(towrite)
+        towrite={ fields{index}, val };
+      else
+        towrite={ towrite{1:end}, fields{index}, val };
+      end
+    else
+      if isempty(towrite)
+        hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val);
+      else
+        hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val, 'WriteMode', 'append');
+      end
+      towrite=1;
+    end
+  end
+  if strcmp(format,'cdf')
+    cdfwrite(filename, towrite);
+  end
 case 'xls'
-  xlswrite(filename, cell(a), a.Title);
+  xlswrite(filename, double(a), a.Title);
+case 'csv'
+  csvwrite(filename, double(a));
 case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd'}
   if ndims(a) == 2
     a=double(a);
     b=(a-min(a(:)))/(max(a(:))-min(a(:)))*64;
     imwrite(b, jet(64), filename, format);
+  else
+    iData_private_warning(mfilename,[ 'Can not save object ' a.Tag ' (non 2D) into image format ' format ]);
+    filename='';
   end
 case 'epsc'
   f=figure('visible','off');
-  plot(a);
+  plot(a,'view2 axis tight');
   print(f, [ '-depsc -tiff' ], filename);
   close(f);
 case {'png','tiff','jpeg','psc','pdf','ill'}
   f=figure('visible','off');
-  plot(a);
+  plot(a,'view2 axis tight');
   print(f, [ '-d' format ], filename);
   close(f);
 end
@@ -107,9 +144,17 @@ function str=iData_saveas_single(this, data)
 NL = sprintf('\n');
 if ischar(data)
   str = [ this ' = ''' iData_saveas_validstr(data) ''';' NL ];
-elseif isnumeric(data) | islogical(v)
-  str = [ '% ' this ' numeric (' class(data) ') size ' mat2str(size(data)) NL ...
-          this ' = ' mat2str(data(:)) ';' NL this ' = reshape(' this ', ' mat2str(size(data)) ');' NL ];
+elseif isa(data, 'iData')
+  str = [ '% ' this ' (' class(data) ') size ' num2str(size(data)) NL ];
+  str = [ str iData_saveas_single(this, struct(data)) ];
+  str = [ str 'if ~exist(''iData''), return; end' NL ];
+  str = [ str this '_s=' this '; ' this ' = rmfield(' this ',' this '.Alias); ' this ' = iData(' this ');' NL ...
+         'setalias(' this ', ' this '_s.Alias.Names, ' this '_s.Alias.Values, ' this '_s.Alias.Labels);' NL ... 
+         'setaxis('  this ', mat2str(1:length(' this '_s.Alias.Axis)), ' this '_s.Alias.Axis);' NL ...
+         '% end of iData ' this NL ];
+elseif isnumeric(data) | islogical(data)
+  str = [ '% ' this ' numeric (' class(data) ') size ' num2str(size(data)) NL ...
+          this ' = ' mat2str(data(:)) ';' NL this ' = reshape(' this ', ' num2str(size(data)) ');' NL ];
 elseif isstruct(data)
   f = fieldnames(data);
   str = [ '% ' this ' (' class(data) ') length ' num2str(length(f)) NL ];
@@ -134,14 +179,6 @@ elseif iscell(data)
     str = [ str iData_saveas_single([ this '{' num2str(index) '}' ], data{index}) NL ];
   end
   str = [ str this ' = reshape(' this ',' mat2str(size(data)) ');' NL '% end of cell ' this NL ];
-elseif isa(data, 'iData')
-  str = [ '% ' this ' (' class(data) ') size ' num2str(size(data)) NL ];
-  str = [ str iData_saveas_single(this, struct(data)) ];
-  str = [ str 'if ~exist(''iData''), return; end' NL ];
-  str = [ str this '_s=' this '; ' this ' = rmfield(' this ',' this '.Alias); ' this ' = iData(' this ');' NL ...
-         'setalias(' this ', ' this '_s.Alias.Names, ' this '_s.Alias.Values, ' this '_s.Alias.Labels);' NL ... 
-         'setaxis('  this ', mat2str(1:length(' this '_s.Alias.Axis)), ' this '_s.Alias.Axis);' NL ...
-         '% end of iData ' this NL ];
 elseif isa(data, 'function_handle')
   iData_private_warning(mfilename,  'can not save function handles. Skipping.');
 else
