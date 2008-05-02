@@ -84,15 +84,15 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     elseif (strfind(method,'contour'))
       [C,h]=contour(x,y,z);
     elseif (strfind(method,'surfc'))
-      h=surfc(x,y,z);
+      h=surfc(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'surfl'))
-      h=surfl(x,y,z);
+      h=surfl(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'mesh'))
-      h=mesh(x,y,z);
+      h=mesh(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'stem3'))
       h=stem3(x,y,z);
     else
-      h=surf(x,y,z);
+      h=surf(x,y,z); set(h,'Edgecolor','none');
     end
 
     if ~isempty(C) & strfind(method,'clabel')
@@ -100,8 +100,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     end
   end
   zlabel(zlab);
-  set(h,'Edgecolor','none');
-case 3  % #d data sets: volumes
+case 3  % 3d data sets: volumes
   % first test if this is an image
   if isfield(a.Data,'cdata')
     h=image(a.Data.cdata);
@@ -180,11 +179,11 @@ if length(a.Alias.Axis)
     end
   end
 end
-if length(T) > 23, T=[ T(1:20) '...' ]; end
 S=a.Source;
+titl ={ T ; [ a.Tag ' <' S '>' ]};
+if length(T) > 23, T=[ T(1:20) '...' ]; end
 if length(S) > 23, S=[ '...' S(end-20:end) ]; end
 if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
-titl =[ T ' <' S '> (' a.Tag ':' cmd ')' ];
 
 uicm = uicontextmenu; 
 set(uicm,'UserData', properties); 
@@ -197,8 +196,8 @@ uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
 uimenu(uicm, 'Label', [ 'User: ' a.User ]);
 uimenu(uicm, 'Separator','on','Label','Toggle grid', 'Callback','grid');
 if ndims(a) >= 2
-  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback','[a,e]=view; if (a==0 & e==90) view(3); else view(2); end; lighting none;alpha(1);shading faceted;set(gco,''Edgecolor'',''none'');');
-  uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;set(gco,''Edgecolor'',''none'');');
+  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback','[a,e]=view; if (a==0 & e==90) view(3); else view(2); end; lighting none;alpha(1);shading faceted;');
+  uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
   uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
   uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
@@ -215,10 +214,9 @@ set(gcf, 'Name', char(a));
 if ~isempty(xlab), xlabel(xlab,'interpreter','none'); end
 if ~isempty(ylab), ylabel(ylab,'interpreter','none'); end
 if ndims(a) == 3 & ~isempty(clab)
-  title({ clab, titl },'interpreter','none');
-else
-  title(titl,'interpreter','none');
+  titl = { clab ; titl{:} };
 end
+title(titl,'interpreter','none');
 
 % ============================================================================
 

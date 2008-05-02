@@ -26,11 +26,11 @@ n=[];
 if length(varargin) >=1
   if isnumeric(varargin{1}) | isempty(varargin{1})
     dim = varargin{1};
-    if isempty(dim)
-      % will use best fit
-    elseif length(dim) == 1 & dim(1) > 0
+    if length(dim) == 1 & dim(1) > 0
       m = dim; 
-    else m=dim(1); n=dim(2); end
+    elseif length(dim) == 2, m=dim(1); n=dim(2); 
+    else m=[]; end
+    % else use best fit
     if length(varargin) >= 2  
       varargin = varargin(2:end);
     else varargin = {}; end
