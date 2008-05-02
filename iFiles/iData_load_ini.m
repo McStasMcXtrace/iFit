@@ -5,6 +5,7 @@ function loaders = iData_load_ini
 %
 % Each format is specified as a structure with the following fields
 %   method:   function name to use, called as method(filename, options...)
+%   extension:a single or a cellstr of extensions associated with the method
 %   patterns: list of strings to search in data file. If all found, then method
 %             is qualified
 %   name:     name of the method/format
@@ -88,6 +89,7 @@ function loaders = iData_load_ini
     format10.postprocess='load_mcstas_1d';
     
     format11.name       ='McStas sim file';
+    format11.extension  ='sim';
     format11.patterns   ={'begin simulation','  Format: McStas'};
     format11.options    ='--fast --binary --headers --comment=';
     format11.method     ='looktxt';
