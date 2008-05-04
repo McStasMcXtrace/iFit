@@ -149,7 +149,12 @@ function [data, loader] = iLoad_import(filename, loader)
     for index=1:length(loader)
       if iscell(loader), this_loader = loader{index};
       else this_loader = loader(index); end
+      try
       data = iLoad_import(filename, this_loader);
+      catch
+      fprintf(1, 'Failed to import file %s with method %s. Ignoring.\n', filename, this_loader.name);
+      data = [];
+      end
       if ~isempty(data)
         loader = this_loader;
         return;
@@ -295,13 +300,14 @@ function loaders = iLoad_loader_auto(file)
   loaders={};
   loaders_count=0;
   % identify by extensions
+  [duummy, dummy, fext] = fileparts(file);
   for index=1:length(formats)
     loader = formats{index};
     if ~isfield(loader,'extension'), ext=''; else
     ext=loader.extension; end
     if ischar(ext), ext=cellstr(ext); end
     for index_ext=1:length(ext(:))
-      if ~isempty(strfind(file, ext{index_ext}))
+      if ~isempty(strfind(fext, ext{index_ext}))
         loaders_count = loaders_count+1;
         loaders{loaders_count} = loader;
         break;
