@@ -141,6 +141,19 @@ function [data, loader] = iLoad_import(filename, loader)
       'Name', ['Loader for ' filename_short ]);
     if isempty(loader_index), loader=[]; return; end
     loader=loader(loader_index);
+  elseif ischar(loader)
+    % test if loader is the user name of a funcion
+    formats = iLoad_loader_auto(filename);
+    loaders={};
+    loaders_count=0;
+    for index=1:length(formats)
+      this_loader = formats{index};
+      if ~isempty(strfind(this_loader.name, loader)) | ~isempty(strfind(this_loader.method, loader))
+        loaders_count = loaders_count+1;
+        loaders{loaders_count} = this_loader;
+      end
+    end
+    if ~isempty(loaders) loader = loaders; end
   end
 
   % handle multiple loaders (cell or struct array)
@@ -170,7 +183,7 @@ function [data, loader] = iLoad_import(filename, loader)
   % handle single char loaders
   if ischar(loader)
     tmp=loader; clear loader;
-    loader.method = tmp; loader.options='';
+    loader.method = tmp; loader.name=tmp; loader.options='';
   end
   if isempty(loader.method), return; end
   if isempty(loader.options)
@@ -268,7 +281,7 @@ function loaders = iLoad_loader_auto(file)
     { 'netcdf',  {'nc','cdf'}, 'NetCDF 1.0',''}, ...
     { 'fitsread','fits','FITS',''}, ...
     { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet)',''}, ...
-    { 'imread',  {'bmp','jpg','jpeg','tiff','png','ico'}, 'Image',''}, ...
+    { 'imread',  {'bmp','jpg','jpeg','tiff','png','ico'}, 'Image/Picture',''}, ...
     { 'hdfread', 'h4',  'HDF4',''}, ...
     { 'hdf5read',{'hdf','h5'}, 'HDF5',''}, ...
     { 'load',    'mat', 'Matlab workspace',''}, ...
@@ -293,7 +306,7 @@ function loaders = iLoad_loader_auto(file)
   if fid == -1
     error([ 'Could not open file ' file ' for reading. Check existence/permissions.' ]);
   end
-  file_start = fread(fid, 100000, 'uint8=>char')';
+  file_start = fread(fid, 10000, 'uint8=>char')';
   fclose(fid);
   % loop to test each format for patterns
   formats = loaders;
@@ -306,12 +319,9 @@ function loaders = iLoad_loader_auto(file)
     if ~isfield(loader,'extension'), ext=''; else
     ext=loader.extension; end
     if ischar(ext), ext=cellstr(ext); end
-    for index_ext=1:length(ext(:))
-      if ~isempty(strfind(fext, ext{index_ext}))
-        loaders_count = loaders_count+1;
-        loaders{loaders_count} = loader;
-        break;
-      end
+    if ~isempty(strmatch(fext, ext, 'exact'))
+      loaders_count = loaders_count+1;
+      loaders{loaders_count} = loader;
     end
   end
   % identify by patterns
