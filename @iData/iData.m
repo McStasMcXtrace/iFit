@@ -1,5 +1,5 @@
 function outarray = iData(varargin)
-% d=iData(a, ...) : iData class object constructor
+% d = iData(a, ...) : iData class object constructor
 %
 % Creates an iData object which contains data along with additional information.
 %   An iData object may store any Data, and define its Signal, Error, Monitor, 
@@ -65,7 +65,7 @@ if nargin == 0
   outarray = [ outarray a ];
   return
 else
-  if length(varargin) > 1
+  if isnumeric(varargin{1}) & length(varargin) > 1
     index=1;
     while index <= length(varargin)
       if isnumeric(varargin{index})
@@ -90,6 +90,8 @@ else
       index = index+1;
     end
     return
+  elseif ischar(varargin{1}) & length(varargin) > 1
+    out = load(iData, varargin{:});        % load file(s) with additional arguments
   elseif isa(varargin{1}, 'iData') & length(varargin{1}) > 1
     in = varargin{1};
     for index=1:length(in)

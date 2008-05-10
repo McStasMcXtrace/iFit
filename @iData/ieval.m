@@ -1,5 +1,5 @@
-function [b, info] = ieval(a, model, pars, varargin)
-% [b, info] = ieval(a, model, varargin) evaluate a function on the axes of an object
+function [b, Info] = ieval(a, model, pars, varargin)
+% [b, Info] = ieval(a, model, varargin) evaluate a function on the axes of an object
 %
 %   @iData/ieval applies the function 'model' using the axes of the object 'a'
 %     and function parameters 'pars' with additional parameters.
@@ -15,7 +15,7 @@ function [b, info] = ieval(a, model, pars, varargin)
 %         pars: model parameters (double array)
 %         additional parameters may be passed.
 % output: b: result of evaluation (iData)
-%         info: structure giving information about the model
+%         Info: structure giving information about the model
 % ex:     b=ieval(a,'gauss',[1 2 3 4]); or ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
 %
 % Contributed code (Matlab Central): 
@@ -53,9 +53,27 @@ end
 % evaluate model signal
 if ischar(model) | isa(model, 'function_handle')
   if nargout > 1 | isempty(pars)
-    info = feval(model,'identify');  % get identification info
+    Info = feval(model,'identify');  % get identification Info
+  else Info=[];
   end
-  if isstruct(info) & isempty(pars), pars=info.Guess; end
+  % check dimensionality
+  if isfield(Info, 'Dimension')
+    if Info.Dimension ~= ndims(a)
+      if rem(ndims(a), Info.Dimension) == 0
+        list={};
+        for index=1:(ndims(a)/Info.Dimension)
+          list = { list{:} ; model };
+        end
+        [b, Info] = ieval(a, list, pars);
+      else
+        iData_private_error([ mfilename '/' model ], ...
+          [ 'Can not build ' num2str(ndims(a)) ' dimensionality model from ' ...
+            'model function ' char(model) ' of dimension ' num2str(Info.Dimension) ' when fitting object ' a.Tag ]);
+      end
+      return
+    end
+  end
+  if isfield(Info, 'Guess') & isempty(pars), pars=Info.Guess; end
   if ~isempty(varargin)
     Model = feval(model, pars, Axes{:}, varargin{:});
   elseif ~isempty(pars)
@@ -75,26 +93,26 @@ elseif iscell(model)
   model_ndims ={};
   model_pars=[]; model_namepars={}; model_name='';
   for index=1:length(model(:))
-    model_info = feval(model{index},'identify');  % get identification info
+    model_Info = feval(model{index},'identify');  % get identification Info
     % check dimensions: are enough axes and parameters available ?
-    if length(Axes(:)) < axis_index+model_info.Dimension-1
+    if length(Axes(:)) < axis_index+model_Info.Dimension-1
       iData_private_error([ mfilename '/' model{index} ], ...
         [ 'Axis length is ' num2str(length(Axes(:))) ' but the axis ' ...
-          num2str(axis_index+model_info.Dimension-1) ' is requested in ' ...
+          num2str(axis_index+model_Info.Dimension-1) ' is requested in ' ...
           num2str(index) '-th model function ' char(model{index}) ' when fitting object ' a.Tag ]);
     end
-    if ~isempty(pars) & length(pars) < pars_index+length(model_info.Parameters)-1
+    if ~isempty(pars) & length(pars) < pars_index+length(model_Info.Parameters)-1
       iData_private_error([ mfilename '/' model{index} ], ...
         [ 'Parameters length is ' num2str(length(pars)) ' but the parameter ' ...
-          num2str(pars_index+length(model_info.Parameters)-1) ' is requested in ' ...
+          num2str(pars_index+length(model_Info.Parameters)-1) ' is requested in ' ...
           num2str(index) '-th model function ' char(model{index}) ' when fitting object ' a.Tag ]);
     end
-    if isempty(pars)
-      this_pars = model_info.Guess;
+    if isempty(pars) | strcmp(pars,'identify')
+      this_pars = model_Info.Guess;
     else
-      this_pars = pars(pars_index:(pars_index+length(model_info.Parameters)-1));
+      this_pars = pars(pars_index:(pars_index+length(model_Info.Parameters)-1));
     end
-    this_axes = Axes{axis_index:(axis_index+model_info.Dimension-1)};
+    this_axes = Axes{axis_index:(axis_index+model_Info.Dimension-1)};
     model_pars = [ model_pars this_pars ];
     % evaluate sub-model
     if ~isempty(varargin)
@@ -104,7 +122,7 @@ elseif iscell(model)
     end
     model_value  = squeeze(model_value);
     model_values = { model_values{:} ;  model_value }; % append to model values
-    model_name   = [ model_name '*' func2str(model{index}) ];
+    model_name   = [ model_name '*' char(model{index}) ];
     
     % get the dimensionality of sub-model
     n = size(model_value);
@@ -113,23 +131,26 @@ elseif iscell(model)
   
     % assign individual model dimensions
     model_ndim  =ones(1,ndims(a));
-    model_ndim(axis_index:(axis_index+model_info.Dimension-1)) = n;
+    model_ndim(axis_index:(axis_index+model_Info.Dimension-1)) = n;
     model_ndims ={ model_ndims{:} ; model_ndim };
-    axis_index  =axis_index+model_info.Dimension;
-    pars_index  =pars_index+length(model_info.Parameters);
-    model_namepars  = { model_namepars{:} ; model_info.Parameters };
+    axis_index  =axis_index+model_Info.Dimension;
+    pars_index  =pars_index+length(model_Info.Parameters);
+    model_namepars  = { model_namepars{:} ; model_Info.Parameters };
   end % for sub-models
   % now make up the product of sub-space models
-  Model = model_values{1};
-  for index=2:length(model_values)
-    Model = genop(@times, Model, model_values{index});
+  if ~isempty(model_values)
+    Model = model_values{1};
+    for index=2:length(model_values)
+      Model = genop(@times, Model, model_values{index});
+    end
+  else Model=[]; model_pars=Info.Guess;
   end
   
-  info.Type      = 'iFit fitting function';
-  info.Name      = model_name;
-  info.Parameters= model_namepars;
-  info.Dimension = sum(cell2mat(model_ndims));
-  info.Guess     = model_pars;
+  Info.Type      = 'iFit fitting function';
+  Info.Name      = model_name;
+  Info.Parameters= model_namepars;
+  Info.Dimension = sum(cell2mat(model_ndims));
+  Info.Guess     = model_pars;
 else
   iData_private_error(mfilename, ['2nd argument "model" must be specified as a char, a cellstr or function handles. Currently of type ' class(model) ]);
 end
@@ -143,7 +164,4 @@ end
 b = iData_private_history(b, mfilename, a, model, pars, varargin{:});  
 % final check
 b = iData(b);
-
-
-
 

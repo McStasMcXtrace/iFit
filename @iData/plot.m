@@ -22,6 +22,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
+%          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
 % private functions:
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
@@ -196,13 +197,13 @@ uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
 uimenu(uicm, 'Label', [ 'User: ' a.User ]);
 uimenu(uicm, 'Separator','on','Label','Toggle grid', 'Callback','grid');
 if ndims(a) >= 2
-  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback','[a,e]=view; if (a==0 & e==90) view(3); else view(2); end; lighting none;alpha(1);shading faceted;');
+  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback','[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end; clear tmp_a, tmp_e; lighting none;alpha(1);shading flat;');
   uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
   uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
   uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
 else
-  uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading faceted;axis tight');
+  uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight');
   uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
 end
 % attach contexual menu to plot

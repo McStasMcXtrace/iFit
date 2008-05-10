@@ -1,11 +1,11 @@
-function [pars,criteria,message,output] = fits(a, model, pars, constraints, options)
-% [pars,criteria,message,output] = fits(a, model, pars, constraints, options) : fit data set on a model
+function [pars,criteria,message,output] = fits(a, model, pars, options, constraints,ub)
+% [pars,criteria,message,output] = fits(a, model, pars, options, constraints) : fit data set on a model
 %
 %   @iData/fits find best parameters estimates in order to minimize the 
 %     fitting criteria using function 'fun' as model, by mean of an optimization method.
 %     Additional constraints may be set by fxing some parameters, or define
-%     more advanced constraints (min, max, steps). The last argument controls the fitting
-%     options with the optimset mechanism.
+%     more advanced constraints (min, max, steps). The last arguments controls the fitting
+%     options with the optimset mechanism, and the constraints to apply during optimization.
 %
 % options.TolX
 %   The termination tolerance for x. Its default value is 1.e-4.
@@ -16,32 +16,31 @@ function [pars,criteria,message,output] = fits(a, model, pars, constraints, opti
 %   Maximum number of iterations allowed.
 % options.MaxFunEvals
 %   The maximum number of function evaluations allowed. 
-%   The default value is 500 and 200*length(x0) for fminsearch
 % options.algorithm
 %   Optimization method. Default is 'fminsearch' (char/function handle)
-%   the syntax for calling the optimizer is e.g. algorithm(criteria,pars,options)
+%   the syntax for calling the optimizer is e.g. algorithm(criteria,pars,options,constraints)
 % options.criteria
 %   Minimization criteria. Default is 'least_square' (char/function handle)
-%   the syntax fo evaluating the criteria is criteria(Signal, Error, Model)
+%   the syntax for evaluating the criteria is criteria(Signal, Error, Model)
 % options.OutputFcn
 %   Function called at each iteration as outfun(pars, optimValues, state)
 % options.PlotFcns
 %   Similar to OutputFcn, but dedicated to plotting. 
-%   The 'fits_plot' function may be used.
+%   The 'fits_plot' and 'fminplot' function may be used.
 % options.Display
 %   Display additional information during fit 'iter','off','final'
 %
 % input:  a: object or array (iData)
 %         model: model function (char/cellstr)
 %         pars: initial model parameters (double array)
+%         options: structure as defined by optimset/optimget (char/struct)
+%           if given as a char, it defines the algorithm to use and its default options
 %         constraints: fixed parameter array. Use 1 for fixed parameters, 0 otherwise (double array)
 %           OR use a structure with some of the following fields:
 %           constraints.min:   minimum parameter values (double array)
 %           constraints.max:   maximum parameter values (double array)
 %           constraints.step:  maximum parameter step/change allowed.
 %           constraints.fixed: fixed parameter flag. Use 1 for fixed parameters, 0 otherwise (double array)
-%         options: structure as defined by optimset/optimget (char/struct)
-%           if given as a char, it defines the algorithm to use and its default options
 %
 % output: 
 %         pars:              best parameter estimates (double array)
@@ -57,7 +56,7 @@ function [pars,criteria,message,output] = fits(a, model, pars, constraints, opti
 %
 % ex:     p=fits(a,'gauss',[1 2 3 4]);
 %         o=optimset('fminsearch'); o.PlotFcns='fits_plot'; 
-%         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],[],o);
+%         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o);
 %
 % See also iData, fminsearch, optimset, optimget
  
@@ -65,10 +64,10 @@ function [pars,criteria,message,output] = fits(a, model, pars, constraints, opti
 if nargin < 3
   pars = [];
 end
-if nargin < 4
+if nargin < 5
   constraints = [];
 end
-if nargin < 5, options=[]; end
+if nargin < 4, options=[]; end
 if isempty(options)
   options = 'fminsearch';
 end
@@ -97,14 +96,20 @@ if ~isfield(options, 'criteria')
   options.criteria  = @least_square;
 end
 
-[dummy, info] = ieval(iData, model); % model info 
+[dummy, info] = ieval(a, model,'identify'); % model info 
 if isempty(pars)
   pars=info.Guess;               % get default starting parameters
 end
 if isnumeric(constraints) | islogical(constraints)
-  tmp              = double(constraints);
-  constraints      =[];
-  constraints.fixed=tmp;
+  if nargin<6
+    fixed            = constraints;
+    constraints      =[];
+    constraints.fixed=fixed;
+  else
+    lb = constraints;
+    constraints.min = lb;
+    constraints.max = ub;
+  end
 end
 if ~isstruct(constraints)
   iData_private_error(mfilename,[ 'The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
@@ -119,7 +124,7 @@ try
 catch
   warn = warning('off');
 end
-% remove output function calls so that we use own own, and overload with the user's choice
+% remove output function calls so that we use our own, and overload with the user's choice
 options.UserOutputFcn = options.OutputFcn;
 options.OutputFcn     = @outfun_wrapper;
 if isfield(options, 'PlotFcns')
@@ -137,10 +142,15 @@ constraints.funcCounts     = 0;
 t0 = clock;
 
 % call minimizer
+try
+[pars_out,criteria,message,output] = feval(options.algorithm, ...
+    @(pars) eval_criteria(pars, model, options.criteria, a), pars, options, constraints);
+catch
 [pars_out,criteria,message,output] = feval(options.algorithm, ...
     @(pars) eval_criteria(pars, model, options.criteria, a), pars, options);
+end
 
-% apply constraints, if any
+% apply constraints on final results, if any
 pars = fits_constraints(pars_out, constraints);
 
 % set output/results
@@ -159,6 +169,8 @@ output.funcCounts = constraints.funcCounts;
 output.modelName  = constraints.modelName;
 output.parsNames  = constraints.parsNames;
 output.duration   = etime(clock, t0);
+output.options    = options;
+output.constraints= constraints;
 
 % reset warnings
 try
@@ -261,7 +273,7 @@ function stop = fits_plot(pars, optimValues, state)
     stop = true;  % figure was closed: abort optimization by user
   end
   figure(h);
-  set(h, 'Name', [ 'iData/fits: ' func2str(optimValues.algorithm) ' iteration ' num2str(optimValues.iteration) ]);
+  set(h, 'Name', [ 'iData/fits: ' char(optimValues.algorithm) ' iteration ' num2str(optimValues.iteration) ]);
   subplot(1,2,1); % this subplot shows the criteria
   plot(optimValues.criteriaHistory);
   xlabel('iteration'); ylabel('criteria'); axis tight
@@ -291,7 +303,7 @@ function stop = fits_plot(pars, optimValues, state)
     zlabel([ num2str(sort_std(3)) ': ' optimValues.parsNames{sort_std(3)} ]);
     view(3); c = colorbar;
   end
-  title({[ func2str(optimValues.algorithm) ' iteration ' num2str(optimValues.iteration) ],optimValues.modelName});
+  title({[ char(optimValues.algorithm) ' iteration ' num2str(optimValues.iteration) ],optimValues.modelName});
   axis tight
 end
 

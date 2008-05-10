@@ -1,5 +1,5 @@
 function h=subplot(a, varargin)
-% subplot(s) : plot iData array as subplots
+% h = subplot(s) : plot iData array as subplots
 %
 %   @iData/subplot plot each iData element in a subplot
 %     subplot(a, [])    uses the best subplot fit
