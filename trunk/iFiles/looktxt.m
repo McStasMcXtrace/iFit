@@ -51,8 +51,24 @@ disp(exec);
 [s,w] = system(exec);
 % check if result has been generated, else try again with local executable
 if ~exist([ file '.m' ],'file')
-  looktxt_exe = [ fileparts(which('looktxt')) filesep looktxt_exe ];
-  exec = [ looktxt_exe ' --outfile=' file ' ' args ];
+  exec = [ fileparts(which('looktxt')) filesep looktxt_exe ' --outfile=' file ' ' args ];
+  [s,w] = system(exec);
+end
+if ~exist([ file '.m' ],'file') & s ~= 0  % executable not found
+  warning('looktxt: can not find executable. Attempting to re-install/compile looktxt');
+  cc     = getenv('CC');     if isempty(cc),     cc = 'cc'; end
+  cflags = getenv('CFLAGS'); if isempty(cflags), cflags = '-O2'; end
+  looktxtc=which('looktxt.c');  % where C code is
+  if isempty(looktxtc), error('Can not install looktxt as source code is unavailable'); end
+  path = fileparts(looktxtc);
+  disp([ cc ' ' cflags ' -o ' path filesep looktxt_exe ' ' looktxtc ]);
+  [s,w] = system([ cc ' ' cflags ' -o ' path filesep looktxt_exe ' ' looktxtc ]);
+  disp('Testing the validity of executable')
+  [s,w] = system([ path filesep looktxt_exe ]);
+  if s ~= 0
+    error('looktxt: Failed to install/compile looktxt. Please install it manually.');
+  end
+  % now re-try with executable
   [s,w] = system(exec);
 end
 disp(w);
@@ -76,21 +92,6 @@ if exist([ file '.m' ],'file')
   catch
   end
 elseif (s ~= 0)
-  warning('looktxt: can not find executable. Attempting to re-install/compile looktxt');
-  cc     = getenv('CC');     if isempty(cc),     cc = 'gcc'; end
-  cflags = getenv('CFLAGS'); if isempty(cflags), cflags = '-O2'; end
-  looktxtc=which('looktxt.c');
-  if isempty(looktxtc), error('Can not install looktxt as source code is unavailable'); end
-  path = fileparts(looktxtc);
-  if ispc, looktxt_exe = 'looktxt.exe';
-  else     looktxt_exe = 'looktxt';
-  end
-  disp([ cc ' ' cflags ' -o ' path filesep looktxt_exe ' ' looktxtc ]);
-  [s,w] = system([ cc ' ' cflags ' -o ' path filesep looktxt_exe ' ' looktxtc ]);
-  w
-  [s,w] = system([ path filesep looktxt_exe ]);
-  w
-  disp(  'If installation was succesfull, try again to import with:');
-  disp([ '  looktxt(''' args ''')' ]);
+    error([ 'looktxt: Failed to import ' args ]);
 end
 cd(p);
