@@ -1,5 +1,5 @@
 function a=double(a)
-% d=double(s) : convert iData into doubles
+% d = double(s) : convert iData into doubles
 %
 %   @iData/double function to convert iData object into doubles
 %

@@ -35,9 +35,9 @@ for i = 1:length(S)     % can handle multiple index levels
       if ischar(s.subs{1}), b=get(b, s.subs{:}); return; end
       d=get(b,'Signal'); d=d(s.subs{:});  b=set(b,'Signal', d);
 
-      d=get(b,'Error');  if numel(d) > 1, d=d(s.subs{:}); b=set(b,'Error', d); end
+      d=get(b,'Error');  if numel(d) > 1 & numel(d) == numel(get(a,'Error')), d=d(s.subs{:}); b=set(b,'Error', d); end
 
-      d=get(b,'Monitor'); if numel(d) > 1, d=d(s.subs{:}); b=set(b,'Monitor', d); end
+      d=get(b,'Monitor'); if numel(d) > 1 & numel(d) == numel(get(a,'Monitor')), d=d(s.subs{:}); b=set(b,'Monitor', d); end
 
       % must also affect axis
       for index=1:ndims(b)

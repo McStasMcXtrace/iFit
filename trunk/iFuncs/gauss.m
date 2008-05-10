@@ -11,9 +11,15 @@ function y=gauss(p, x)
 % ex:     y=gauss([1 0 1 1], -10:10); or y=gauss('identify')
 
 if nargin==2
+    if isempty(p) 
+      id=feval(mfilename, 'identify');
+      p=id.Guess;
+    end
     y=p(4)+p(1)*exp(-0.5*((x-p(2))/p(3)).^2);
 else
-  action='identify';
+  action='';
+  if nargin == 1 & ischar(p), action=p; end
+  if isempty(action), action='identify'; end
   
   switch action
   case 'identify'
