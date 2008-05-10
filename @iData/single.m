@@ -1,5 +1,5 @@
 function a=single(a)
-% d=single(s) : convert iData into single floats
+% d = single(s) : convert iData into single floats
 %
 %   @iData/double function to convert iData object into single floats
 %

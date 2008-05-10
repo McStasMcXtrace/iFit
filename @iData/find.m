@@ -1,5 +1,5 @@
 function a=find(a)
-% d=find(s) : find iData signal non zeros values
+% d = find(s) : find iData signal non zeros values
 %
 %   @iData/find function to find iData non zeros values
 %

@@ -1,5 +1,5 @@
 function a=logical(a)
-% d=logical(s) : convert iData into logical array
+% d = logical(s) : convert iData into logical array
 %
 %   @iData/logical function to convert iData object into single floats
 %

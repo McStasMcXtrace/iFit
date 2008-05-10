@@ -1,5 +1,5 @@
 function v=ndims(s)
-% d=ndims(s) : get the dimensionality of iData object
+% d = ndims(s) : get the dimensionality of iData object
 %
 %   @iData/ndims function to get the number of dimensions of the iData signal.
 %

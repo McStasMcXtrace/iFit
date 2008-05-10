@@ -1,9 +1,9 @@
 function s_out = setaxis(a_in,indexes,names,values)
-% [s,...] = setaxis(s, AxisIndex, AxisName, AxisValues) : set iData axes
+% s = setaxis(s, AxisIndex, AxisName, AxisValues) : set iData axes
 %
 %   @iData/setaxis function to set iData axes.
 %   The function works also when AxisName and AxisIndex are given as cells.
-%   The AxisName name must exist in the object.
+%   The AxisName name must exist in the object (e.g. as alias).
 %   When the AxisIndex is empty, the axis is removed, so that
 %     setaxis(iData, [], getaxis(iData)) deletes all axis definitions
 %   The input iData object is updated if no output argument is specified.
@@ -21,7 +21,7 @@ function s_out = setaxis(a_in,indexes,names,values)
 %         AxisIndex: rank of the axis, 
 %                    or [] to remove the axis 
 %                    or 0 to add a new axis (integer/cell)
-%         AxisName: Name of an existing axis (char/cellstr)
+%         AxisName: Name of an existing alias/field (char/cellstr)
 %         AxisValues: values of the axis (char/alias/numeric)
 % output: s: array (iData)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'x' axis (rank 1)

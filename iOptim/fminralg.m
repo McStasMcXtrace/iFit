@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -189,7 +189,7 @@ endwarn=[...
 % ----}
 
 message='';
-k=0;    
+k=0; f=[]; 
 
 % ARGUMENTS PASSED ----{
 if nargin<2           % Function and/or starting point are not specified
@@ -231,7 +231,7 @@ end
 % ----}
 
 % STARTING POINT ----{
- if max(size(x))<=1,      disp(errmes);  disp(error2); 
+ if max(size(x))<=1,      disp(errmes);  disp(error2); x
                           options(9)=-12; message=error2; return
  elseif size(x,2)==1,     n=size(x,1);  x=x'; trx=1;
  elseif size(x,1)==1,     n=size(x,2);        trx=0;

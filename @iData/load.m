@@ -1,5 +1,5 @@
 function out = load(a, varargin)
-% d=load(s, file, loader): iData file loader
+% d = load(s, file, loader): iData file loader
 %
 %   @iData/load: imports any data into Matlab/iData object(s)
 %   The input argument 'file' should be a file name, or a cell of file names, 
@@ -54,7 +54,9 @@ for i=1:length(files)
     this_iData.Data.Headers = files{i}.Headers;
     this_iData=setalias(this_iData, 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
   end
-  
+  if ~isfield(loaders{i}, 'postprocess')
+    loaders{i}.postprocess='';
+  end
   if ~isempty(loaders{i}.postprocess)
     this_iData = feval(loaders{i}.postprocess, this_iData);
   end

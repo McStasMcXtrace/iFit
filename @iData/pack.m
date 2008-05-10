@@ -54,4 +54,7 @@ for index=1:length(largemat)
 end
 b.Command = h;
 
+if nargout == 0 & length(inputname(1))
+  assignin('caller',inputname(1),b);
+end
 

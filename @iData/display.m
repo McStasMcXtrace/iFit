@@ -1,10 +1,12 @@
 function d = display(s_in)
-% display(s) : display iData object (from command line)
+% d = display(s) : display iData object (from command line)
 %
-%   @iData/display function to display iData object.
+% @iData/display function to display iData object.
 %   Used when no ';' sign folows a iData object in matlab.
+% The return value may be catched as a string to display.  
 %
 % input:  s: object or array (iData) 
+% output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
 % See also iData, iData/disp, iData/get
