@@ -11,7 +11,7 @@ function filename = saveas(a, varargin)
 %           'm'   save as a flat Matlab .m file (a function which returns an iData object or structure)
 %           'mat' save as a '.mat' binary file (same as 'save')
 %           'hdf' save as an HDF5 data set
-%           'cdf' save as NetCDF 
+%           'nc'  save as NetCDF 
 %           'gif','bmp' save as an image (no axes, only for 2D data sets)
 %           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
 %           'xls' save as an Excel sheet (requires Excel to be installed)
@@ -40,6 +40,20 @@ if nargin < 2, filename = ''; else filename = varargin{1}; end
 if isempty(filename), filename = a.Tag; end
 if nargin < 3, format=''; else format = varargin{2}; end
 
+if strcmp(format, 'gui')
+  liststring= {'M - Matlab script/function','MAT - Matlab binary file', ...
+    'PDF - Portable Document Format','EPS - Encapsulated PostScrip (color)', ...
+    'PS - PostScrip (color)','NC - NetCDF','HDF5 - Hierarchical Data Format (compressed)', ...
+    'XLS - Excel format (requires Excel to be installed)', ...
+    'CSV - Comma Separated Values (suitable for Excel)', ...
+    'PNG - Portable Network Graphics image','JPG - JPEG image','TIFF - TIFF image'};
+  format_index=listdlg('ListString',liststring,'Name',[ 'Select format to save ' filename ], ...
+    'PromptString', {'Select format ',['to save file ' filename ]}, ...
+    'ListSize', [300 200]);
+  if isempty(format_index), return; end
+  format = lower(strtok(liststring{format_index}));
+end
+
 % handle extensions
 [path, name, ext] = fileparts(filename);
 if isempty(ext) & ~isempty(format), 
@@ -58,8 +72,8 @@ case 'eps'
   format='epsc';
 case 'ps'
   format='psc';
-case 'nc'
-  format='cdf';
+case 'netcdf'
+  format='nc';
 end
 
 switch format
@@ -81,7 +95,7 @@ case 'm'
   fclose(fid);
 case 'mat'
   save(filename, a);
-case {'hdf','cdf'}
+case {'hdf','hdf5', 'nc'}
   [fields, types, dims] = findfield(a);
   towrite={};
   for index=1:length(fields(:)) % get all field names
@@ -93,7 +107,7 @@ case {'hdf','cdf'}
       val=[ val{1:(end-1)} ];
     end
     if ~isnumeric(val) & ~ischar(val), continue; end
-    if strcmp(format,'cdf')
+    if strcmp(format,'nc')
       if isempty(towrite)
         towrite={ fields{index}, val };
       else
@@ -108,7 +122,7 @@ case {'hdf','cdf'}
       towrite=1;
     end
   end
-  if strcmp(format,'cdf')
+  if strcmp(format,'nc')
     cdfwrite(filename, towrite);
   end
 case 'xls'
@@ -133,6 +147,11 @@ case {'png','tiff','jpeg','psc','pdf','ill'}
   f=figure('visible','off');
   plot(a,'view2 axis tight');
   print(f, [ '-d' format ], filename);
+  close(f);
+case 'fig'
+  f=figure('visible','off');
+  plot(a,'view2 axis tight');
+  saveas(f, filename, 'fig');
   close(f);
 end
 
