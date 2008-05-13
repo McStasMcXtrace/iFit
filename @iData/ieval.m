@@ -52,10 +52,7 @@ end
 
 % evaluate model signal
 if ischar(model) | isa(model, 'function_handle')
-  if nargout > 1 | isempty(pars)
-    Info = feval(model,'identify');  % get identification Info
-  else Info=[];
-  end
+  Info = feval(model,'identify');  % get identification Info
   % check dimensionality
   if isfield(Info, 'Dimension')
     if Info.Dimension ~= ndims(a)
