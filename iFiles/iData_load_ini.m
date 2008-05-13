@@ -97,10 +97,16 @@ function loaders = iData_load_ini
     
     format12.name       ='ILL TAS Data (light)';
     format12.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
-    format12.options    ='--fast --binary--headers --section=PARAM --section=DATA --metadata=DATA';
+    format12.options    ='--fast --binary --headers --section=PARAM --section=DATA --metadata=DATA';
     format12.method     ='looktxt';
     format12.postprocess='';
     
+    format13.name       ='McStas Sqw table';
+    format13.patterns   ={'Sqw data file for Isotropic_Sqw'};
+    format13.options    ='--fast --binary --headers';
+    format13.method     ='looktxt';
+    format13.postprocess='load_mcstas_sqw';
+    
     loaders= { format1, format2, format3, format4, format5, format6, ...
-	       format7, format8, format9, format10, format11};
+	       format7, format8, format9, format10, format11, format12, format13};
     
