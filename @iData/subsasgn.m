@@ -107,14 +107,29 @@ else
           end
           if s.subs{:} <= length(b.Alias.Axis)
             ax= b.Alias.Axis{s.subs{:}}; % definition of Axis
-          else 
-            if ~ischar(val)
-            iData_private_error(mfilename, [ num2str(s.subs{:}) '-th rank Axis  has not been defined yet, and can not be assigned in object ' inputname(1) ' ' b.Tag ]);
+            if isempty(ax) & isnumeric(val)
+              ax=[ 'Axis_' num2str(num2str(s.subs{:})) ];
+              % need to create this axis
+              setalias(b, ax, val);
+              setaxis(b, s.subs{:}, ax);
+            else
+              if ischar(val), b = setaxis(b, s.subs{:}, val);
+              else b = set(b, ax, val); end
             end
-            ax=s.subs{:}; 
+          else 
+            if isnumeric(val)
+              iData_private_warning(mfilename, [ num2str(s.subs{:}) '-th rank Axis  has not been defined yet. Defining "Axis_' num2str(num2str(s.subs{:})) '" in object ' inputname(1) ' ' b.Tag ]);
+              ax=[ 'Axis_' num2str(num2str(s.subs{:})) ];
+              setalias(b, ax, val);
+              setaxis(b, s.subs{:}, ax);
+            elseif ischar(val)
+              ax=s.subs{:}; 
+            else
+              iData_private_error(mfilename, [ num2str(s.subs{:}) '-th rank Axis can not be assigned in object ' inputname(1) ' ' b.Tag ]);
+            end
+            if ischar(val), b = setaxis(b, s.subs{:}, val);
+            else b = set(b, ax, val); end
           end
-          if ischar(val), b = setaxis(b, s.subs{:}, val);
-          else b = set(b, ax, val); end
         elseif ischar(s.subs{:}) & isnumeric(str2num(s.subs{:}))
           b=setaxis(b, s.subs{:}, val);
         elseif ischar(s.subs{:})
@@ -155,4 +170,8 @@ else
     end   % switch s.type
   end % while s index level
   
+end
+
+if nargout == 0 & length(inputname(1))
+  assignin('caller',inputname(1),b);
 end
