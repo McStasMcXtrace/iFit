@@ -35,13 +35,13 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
-  options.Display='off';
+  options.Display='';
   options.TolFun =1e-4;
   options.TolX   =1e-12;
   options.MaxIter=300;
@@ -68,7 +68,7 @@ opt(1) = -1;
 opt(2) = options.TolX;
 opt(3) = options.TolFun;
 opt(4) = options.MaxIter;
-if     strcmp(options.Display,'off'),  opt(5) = -1;
+if     strcmp(options.Display,'off') | isempty(options.Display),  opt(5) = -1;
 elseif strcmp(options.Display,'iter'), opt(5) =  1;
 else opt(5)=0; end
 opt(6) = 1e-8; opt(7)=2.5; opt(8)=1e-11;

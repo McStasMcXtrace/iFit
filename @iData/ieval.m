@@ -67,6 +67,14 @@ if ischar(model) | isa(model, 'function_handle')
           [ 'Can not build ' num2str(ndims(a)) ' dimensionality model from ' ...
             'model function ' char(model) ' of dimension ' num2str(Info.Dimension) ' when fitting object ' a.Tag ]);
       end
+      % check Info fields
+      if ~isfield(Info,'Type') Info.Type = 'iFit fitting function'; end
+      if ~isfield(Info,'Name') Info.Name = char(model); end
+      if ~isfield(Info,'Parameters') & length(pars)
+        Info.Parameters = {};
+        for index=1:length(pars), Info.Parameters{index} =['Parameter_' num2str(index)]; end
+      end
+      if ~isfield(Info,'Guess') Info.Guess= rand(1,length(pars)); end % default parameters
       return
     end
   end
@@ -91,6 +99,10 @@ elseif iscell(model)
   model_pars=[]; model_namepars={}; model_name='';
   for index=1:length(model(:))
     model_Info = feval(model{index},'identify');  % get identification Info
+    % check Info fields
+    if ~isfield(model_Info,'Type') model_Info.Type = 'iFit fitting function'; end
+    if ~isfield(model_Info,'Name') model_Info.Name = char(model); end
+    if ~isfield(model_Info,'Guess') model_Info.Guess= rand(1,length(model_Info.Parameters)); end 
     % check dimensions: are enough axes and parameters available ?
     if length(Axes(:)) < axis_index+model_Info.Dimension-1
       iData_private_error([ mfilename '/' model{index} ], ...
@@ -98,7 +110,7 @@ elseif iscell(model)
           num2str(axis_index+model_Info.Dimension-1) ' is requested in ' ...
           num2str(index) '-th model function ' char(model{index}) ' when fitting object ' a.Tag ]);
     end
-    if ~isempty(pars) & length(pars) < pars_index+length(model_Info.Parameters)-1
+    if isnumeric(pars) & ~isempty(pars) & length(pars) < pars_index+length(model_Info.Parameters)-1
       iData_private_error([ mfilename '/' model{index} ], ...
         [ 'Parameters length is ' num2str(length(pars)) ' but the parameter ' ...
           num2str(pars_index+length(model_Info.Parameters)-1) ' is requested in ' ...
@@ -119,7 +131,12 @@ elseif iscell(model)
     end
     model_value  = squeeze(model_value);
     model_values = { model_values{:} ;  model_value }; % append to model values
-    model_name   = [ model_name '*' char(model{index}) ];
+    fname = [ char(model{index}) '_f' num2str(index) ];
+    if isempty(model_name)
+      model_name   = fname;
+    else
+      model_name   = [ model_name '*' fname ];
+    end
     
     % get the dimensionality of sub-model
     n = size(model_value);
@@ -132,7 +149,10 @@ elseif iscell(model)
     model_ndims ={ model_ndims{:} ; model_ndim };
     axis_index  =axis_index+model_Info.Dimension;
     pars_index  =pars_index+length(model_Info.Parameters);
-    model_namepars  = { model_namepars{:} ; model_Info.Parameters };
+    pnames = model_Info.Parameters;
+    pnames(2,:) = { ['_f' num2str(index) ] };
+    pnames      = strcat(pnames(1,:), pnames(2,:));  
+    model_namepars  = { model_namepars{:} ; pnames{:} };
   end % for sub-models
   % now make up the product of sub-space models
   if ~isempty(model_values)

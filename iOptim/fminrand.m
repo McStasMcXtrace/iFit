@@ -34,13 +34,13 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
-  options.Display='off';
+  options.Display='';
   options.TolFun =1e-4;
   options.TolX   =0;
   options.MaxIter=500;
@@ -72,7 +72,7 @@ function [pars,fval,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.11 $  $Date: 2008-02-11 18:53:14 $
+%   $Revision: 1.12 $  $Date: 2008-05-15 14:50:07 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C

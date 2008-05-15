@@ -36,14 +36,14 @@ function [pars,fval,exitflag,output] = fminimfil(fun, pars, options)
 %   Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset;
   % add Matlab std options.
-  options.Display='off';
+  options.Display='';
   options.TolFun =1e-6;
   options.TolX   =1e-12;
   options.MaxIter=100;

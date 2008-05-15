@@ -53,7 +53,7 @@ function [pars,fval,exitflag,output] = fminsimpsa(fun, pars, options, constraint
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
-  options.Display='off';
+  options.Display='';
   options.TolFun =1e-4;
   options.TolX   =1e-12;
   options.MaxIter=2500;
