@@ -35,13 +35,13 @@ function [pars,fval,exitflag,output] = fminpowell(fun, pars, options)
 % Reference: Brent, Algorithms for minimization without derivatives, Prentice-Hall (1973)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
-  options.Display='off';
+  options.Display='';
   options.TolFun =1e-4;
   options.TolX   =1e-12;
   options.MaxIter=300;
@@ -91,7 +91,7 @@ function [pars,fval,istop,output]=powell(S,x0,options)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.8 $  $Date: 2008-02-11 18:53:14 $
+%   $Revision: 1.9 $  $Date: 2008-05-15 14:50:07 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
 mxit=options.MaxIter;
@@ -207,7 +207,7 @@ output.funcCount  = nS;
 if (istop & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')
   fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
-    output.funcCount, fun, pars, fval);
+    output.funcCount, S, pars, fval);
 end
  
  % PRIVATE functions ----------------------------------------------------------
@@ -231,7 +231,7 @@ end
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.8 $  $Date: 2008-02-11 18:53:14 $
+%   $Revision: 1.9 $  $Date: 2008-05-15 14:50:07 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,
@@ -315,7 +315,7 @@ function [stepsize,xo,Ot,nS,it]=coggins(S,x0,d,problem,tol,mxit,stp)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.8 $  $Date: 2008-02-11 18:53:14 $
+%   $Revision: 1.9 $  $Date: 2008-05-15 14:50:07 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
  
  if nargin < 3,
@@ -410,7 +410,7 @@ function [x1,x2,nS]=bracket(S,x0,d,problem,stepsize)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.8 $  $Date: 2008-02-11 18:53:14 $
+%   $Revision: 1.9 $  $Date: 2008-05-15 14:50:07 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,

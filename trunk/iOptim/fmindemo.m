@@ -213,7 +213,8 @@ for i=1:2:length(problems)
   fprintf(1, '%15s ', problems{i});
   for j=1:length(optimizers)
     f=abstract{(i+1)/2, j};
-    if f > repeat_num/2, f=num2str(f); else f=' '; end
+    % if f > repeat_num/2, f=num2str(f); else f=' '; end
+    f=num2str(f);
     fprintf(1, '%2s  ', f);
   end
   fprintf(1, '\n');

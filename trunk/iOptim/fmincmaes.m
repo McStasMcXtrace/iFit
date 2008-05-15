@@ -65,7 +65,7 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -74,7 +74,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % default structure
   options.TolFun =1e-6; % will also set StopFitness
   options.MaxIter=opt.MaxIter;
-  options.Display='off';
+  options.Display='';
   options.TolX   =opt.TolX;
   options.MaxFunEvals   =opt.MaxFunEvals;
   options.PopulationSize=opt.PopSize;

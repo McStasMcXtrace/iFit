@@ -52,7 +52,7 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   p.112-147, 1998.
 
 %   Copyright 1984-2002 The MathWorks, Inc.
-%   $Revision: 1.5 $  $Date: 2008-02-11 18:53:14 $
+%   $Revision: 1.6 $  $Date: 2008-05-15 14:50:07 $
 %
 % Olivier Salvado, Case Western Reserve University, June04
 %   Modified to work on Cost function smooth on a high scale but rough on a
@@ -62,7 +62,7 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   (3) there is a possibility to display patches for the cases with 3 trials
 
 
-defaultopt = struct('Display','off','MaxIter','200*numberOfVariables',...
+defaultopt = struct('Display','','MaxIter','200*numberOfVariables',...
    'MaxFunEvals','200*numberOfVariables','TolX',1e-4,'TolFun',1e-4,'DiffMinChange',1e-6,...
    'usual_delta',0.05,...             % 5 percent deltas for non-zero terms
    'zero_term_delta',0.00025,...      % Even smaller delta for zero elements of x
