@@ -62,7 +62,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -71,7 +71,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Display='';
   options.TolFun =1e-4;
   options.TolX   =1e-12;
-  options.MaxIter=400;
+  options.MaxIter=100;
   options.MaxFunEvals=400*50;
   options.Hybrid = @fminsearch;
   options.SwarmC1=2;
@@ -119,7 +119,7 @@ if isfield(constraints, 'max')  % test if max values are valid
   index=find(isnan(constraints.max) | isinf(constraints.min));
   constraints.max(index) = 2*abs(pars(index));
   index=find(pars == 0);
-  constraints.min(index) = 1;
+  constraints.max(index) = 1;
 end
 if ~isfield(constraints, 'min')
   constraints.min = -2*abs(pars); % default min values
@@ -129,7 +129,7 @@ end
 if ~isfield(constraints, 'max')
   constraints.max =  2*abs(pars); % default max values
   index=find(pars == 0);
-  constraints.min(index) = 1;
+  constraints.max(index) = 1;
 end
 if isfield(constraints, 'fixed') % fix some of the parameters if requested
   index = find(fixed);
