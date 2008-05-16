@@ -64,6 +64,9 @@ function [pars,criteria,message,output] = fits(a, model, pars, options, constrai
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o);
 %
 % See also iData, fminsearch, optimset, optimget
+
+% nested  functions: outfun_wrapper, eval_criteria
+% private functions: least_square, fits_constraints
  
 % handle default parameters, if missing
 if nargin < 3
@@ -133,7 +136,7 @@ else options.UserOutputFcn=''; end
 options.OutputFcn     = @outfun_wrapper;
 
 if ~isfield(options,'Display') options.Display=''; end
-if isempty(options.Display)    options.Display='iter'; end
+if isempty(options.Display)    options.Display='notify'; end
 
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
 constraints.parsStart      = pars;
@@ -145,7 +148,6 @@ constraints.algorithm      = options.algorithm;
 constraints.funcCounts     = 0;
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
-options.Display
   disp([ '** Starting fit of ' a.Tag ' using model ' info.Name ]);
   disp(  '** Minimization performed on parameters:');
   disp(info.Parameters(:)');
@@ -174,7 +176,7 @@ outout.pars       = pars;
 if ischar(message) | ~isfield(output, 'message')
   output.message = message;
 else
-    output.message    = [ '(' num2str(message) ') ' output.message ];
+  output.message = [ '(' num2str(message) ') ' output.message ];
 end
 output.algorithm  = options.algorithm;
 output.funcCounts = constraints.funcCounts;
@@ -183,6 +185,7 @@ output.parsNames  = constraints.parsNames;
 output.duration   = etime(clock, t0);
 output.options    = options;
 output.constraints= constraints;
+output.modelInfo  = info;
 
 % reset warnings
 try

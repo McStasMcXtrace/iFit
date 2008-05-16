@@ -152,7 +152,7 @@ elseif iscell(model)
     pnames = model_Info.Parameters;
     pnames(2,:) = { ['_f' num2str(index) ] };
     pnames      = strcat(pnames(1,:), pnames(2,:));  
-    model_namepars  = { model_namepars{:} ; pnames{:} };
+    model_namepars  = { model_namepars{:} , pnames{:} };
   end % for sub-models
   % now make up the product of sub-space models
   if ~isempty(model_values)

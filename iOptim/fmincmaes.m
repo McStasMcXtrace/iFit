@@ -65,18 +65,18 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   opt=cmaes('defaults'); 
   options=optimset; % default structure
-  options.TolFun =1e-6; % will also set StopFitness
-  options.MaxIter=opt.MaxIter;
+  options.TolFun =1e-4; % will also set StopFitness
+  options.MaxIter=200;
   options.Display='';
-  options.TolX   =opt.TolX;
-  options.MaxFunEvals   =opt.MaxFunEvals;
+  options.TolX   =1e-12;
+  options.MaxFunEvals   =Inf;
   options.PopulationSize=opt.PopSize;
   options.algorithm = [ 'Evolution Strategy with Covariance Matrix Adaptation (CMA-ES by Hansen) [' mfilename ']' ];
   pars = options;
@@ -114,7 +114,7 @@ if isfield(constraints, 'max')  % test if max values are valid
   index=find(isnan(constraints.max) | isinf(constraints.min));
   constraints.max(index) = 2*abs(pars(index));
   index=find(pars == 0);
-  constraints.min(index) = 1;
+  constraints.max(index) = 1;
 end
 if ~isfield(constraints, 'min')
   constraints.min = -2*abs(pars); % default min values
@@ -124,14 +124,13 @@ end
 if ~isfield(constraints, 'max')
   constraints.max =  2*abs(pars); % default max values
   index=find(pars == 0);
-  constraints.min(index) = 1;
+  constraints.max(index) = 1;
 end
 if isfield(constraints, 'fixed') % fix some of the parameters if requested
   index = find(fixed);
   constraints.min(index) = pars(index); 
   constraints.max(index) = pars(index); % fix some parameters
 end
-
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % transfer optimset options and constraints
@@ -598,6 +597,7 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
     if isempty(insigma) % last chance to set insigma
       if all(lbounds > -Inf) && all(ubounds < Inf)
         if any(lbounds>=ubounds)
+        [ lbounds(:)'; ubounds(:)' ]
 	  error('upper bound must be greater than lower bound');
         end
         insigma = 0.3*(ubounds-lbounds);
@@ -692,6 +692,7 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
     bnd.isactive = any(lbounds > -Inf) || any(ubounds < Inf); 
     if bnd.isactive
       if any(lbounds>ubounds)
+      [ lbounds(:)'; ubounds(:)' ]
         error('lower bound found to be greater than upper bound');
       end
       [xmean ti] = xintobounds(xmean, lbounds, ubounds); % just in case

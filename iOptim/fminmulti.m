@@ -33,7 +33,7 @@ function [pars,fval,exitflag,output] = fminmulti(fun, pars, options, constraints
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -86,7 +86,7 @@ if isfield(constraints, 'max')  % test if max values are valid
   index=find(isnan(constraints.max) | isinf(constraints.min));
   constraints.max(index) = 2*abs(pars(index));
   index=find(pars == 0);
-  constraints.min(index) = 1;
+  constraints.max(index) = 1;
 end
 if ~isfield(constraints, 'min')
   constraints.min = -2*abs(pars); % default min values
@@ -96,7 +96,7 @@ end
 if ~isfield(constraints, 'max')
   constraints.max =  2*abs(pars); % default max values
   index=find(pars == 0);
-  constraints.min(index) = 1;
+  constraints.max(index) = 1;
 end
 if isfield(constraints, 'fixed') % fix some of the parameters if requested
   index = find(fixed);
