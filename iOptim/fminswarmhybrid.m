@@ -62,7 +62,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -73,7 +73,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.TolX   =1e-12;
   options.MaxIter=100;
   options.MaxFunEvals=400*50;
-  options.Hybrid = @fminsearch;
+  options.Hybrid = @fminsearchOS;
   options.SwarmC1=2;
   options.SwarmC2=2;
   options.SwarmW =0;

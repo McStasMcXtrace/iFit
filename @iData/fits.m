@@ -60,7 +60,7 @@ function [pars,criteria,message,output] = fits(a, model, pars, options, constrai
 %           modelValue:        Last model evaluation (iData)
 %
 % ex:     p=fits(a,'gauss',[1 2 3 4]);
-%         o=optimset('fminsearch'); o.OutputFcn='fits_plot'; 
+%         o=optimset('fminsearch'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o);
 %
 % See also iData, fminsearch, optimset, optimget
@@ -98,7 +98,7 @@ end
 
 % handle options
 if ~isfield(options, 'algorithm')
-  options.algorithm = @fminsearch;
+  options.algorithm = @fminsearchOS;
 end
 if ~isfield(options, 'criteria')
   options.criteria  = @least_square;
@@ -149,6 +149,7 @@ constraints.funcCounts     = 0;
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
   disp([ '** Starting fit of ' a.Tag ' using model ' info.Name ]);
+  disp(char(a))
   disp(  '** Minimization performed on parameters:');
   disp(info.Parameters(:)');
 end
@@ -168,11 +169,6 @@ end
 pars = fits_constraints(pars_out, constraints);
 
 % set output/results
-output.criteriaHistory=constraints.criteriaHistory;
-output.parsHistory= constraints.parsHistory;
-output.modelValue = ieval(a, model, pars);
-output.criteria   = criteria;
-outout.pars       = pars;
 if ischar(message) | ~isfield(output, 'message')
   output.message = message;
 else
@@ -181,11 +177,17 @@ end
 output.algorithm  = options.algorithm;
 output.funcCounts = constraints.funcCounts;
 output.modelName  = constraints.modelName;
+output.modelInfo  = info;
+output.modelValue = ieval(a, model, pars);
+outout.pars       = pars;
 output.parsNames  = constraints.parsNames;
+output.parsHistory= constraints.parsHistory;
+output.criteriaHistory=constraints.criteriaHistory;
+output.criteria   = criteria;
 output.duration   = etime(clock, t0);
 output.options    = options;
 output.constraints= constraints;
-output.modelInfo  = info;
+
 
 % reset warnings
 try
