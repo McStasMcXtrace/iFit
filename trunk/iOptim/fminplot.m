@@ -57,7 +57,7 @@ function stop = fminplot(pars, optimValues, state)
   xlabel('iteration'); ylabel('criteria'); axis tight
   if strcmp(state, 'done'),     title('Done'); 
   elseif strcmp(state, 'init'), title('Init'); 
-  else                          title('Close to abort');  end
+  else                          title('Close figure to abort');  end
   
    % handle second subplot: parameters. The last set is highlighted
   subplot(1,2,2); % this subplot shows some parameters
