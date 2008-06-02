@@ -222,8 +222,10 @@ endif ~ischar(in.User)
   iData_private_warning(mfilename,'User must be a char');
   in.User = 'Matlab User';
 end
+if isempty(in.Data)
+  in = setalias(in, getalias(in));
 % if signal is invalid, set signal to biggest field link
-if isempty(getalias(in, 'Signal'))
+elseif isempty(getalias(in, 'Signal'))
   [fields, types, dims] = findfield(in);
   index=strmatch('double', types, 'exact');
   if isempty(index), index=strmatch('single', types, 'exact'); end
