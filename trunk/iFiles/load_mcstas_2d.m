@@ -3,7 +3,7 @@ function a=load_mcstas_2d(a)
 %
 % Returns an iData style dataset from a McStas 2d monitor file
 %
-
+a=iData(a);
 % Find proper labels for Signal and Axis
 
 if ~isempty(findfield(a, 'xlabel')) 

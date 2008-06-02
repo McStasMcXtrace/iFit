@@ -3,7 +3,7 @@ function a=load_mcstas_scan(a0)
 %
 % Returns iData style datasets from a McStas scan output file
 %
-
+a=iData(a);
 % Define alias for the 'raw' datablock
 setalias(a0,'Datablock',['this.' getalias(a0,'Signal')]);
 

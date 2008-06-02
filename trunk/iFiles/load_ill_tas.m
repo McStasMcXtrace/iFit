@@ -4,6 +4,7 @@ function a=load_ill_tas(a)
 % Simple postprocessing for ILL/TAS files
 %
 
+a=iData(a);
 % get the main data block name
 DataBlock        = a.Signal;
 
