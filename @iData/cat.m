@@ -11,6 +11,10 @@ function s = cat(dim,a,varargin)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
+if nargin == 1 & isa(dim, 'iData') & length(dim) > 1
+  s = cat(1, dim);
+  return
+end
 
 if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is cat(dim, iData, ...)']);

@@ -23,11 +23,15 @@ end
 % first handle object array for first index
 if length(b(:)) > 1 & (strcmp(S(1).type,'()') | strcmp(S(1).type,'{}'))
   c = b(S(1).subs{:});
-  d = c(:);
-  for j = 1:length(d)
-    d(j) = subsasgn(d(j),S(2:end),val);
+  d = c(:)
+  if length(d) == 1
+    d = val;
+  else
+    for j = 1:length(d)
+      d(j) = subsasgn(d(j),S(2:end),val);
+    end
   end
-  if prod(size(c)) ~= 0 & prod(size(c)) == prod(size(d))
+  if prod(size(c)) ~= 0 & prod(size(c)) == prod(size(d)) & length(c) > 1
     c = reshape(d, size(c));
   else
     c = d;

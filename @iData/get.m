@@ -67,7 +67,11 @@ for index = 1:length(a_in(:)) % works with object arrays
             name = alias_names{alias_num(1)};
             link = alias_values{alias_num(1)};
             field_not_found=0;
-            val = iData_getalias(s, link, name); % eval link value
+            if ~isempty(s.Data)
+              val = iData_getalias(s, link, name); % eval link value
+            else
+              val = [];
+            end
           end
         end
       end
@@ -85,7 +89,8 @@ for index = 1:length(a_in(:)) % works with object arrays
         end
       end
       if field_not_found
-        iData_private_error(mfilename, sprintf('can not find Property %s in object %s.', fieldname, [ inputname(1) ' ' s.Tag ] ));
+        iData_private_warning(mfilename, sprintf('can not find Property %s in object %s.', fieldname, [ inputname(1) ' ' s.Tag ] ));
+        val=[];
       end
       varout{argout,index} = val;
       argout = argout + 1;
