@@ -5,6 +5,7 @@ function a=load_mcstas_1d(a)
 %
 
 % Find proper labels for Signal and Axis
+a=iData(a);
 
 if ~isempty(findfield(a, 'xlabel')) 
   xlabel = a.Data.Headers.MetaData.xlabel;

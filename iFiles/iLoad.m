@@ -121,7 +121,6 @@ end
 % private function to import single data with given method(s)
 function [data, loader] = iLoad_import(filename, loader)
   data = [];
-
   if isempty(loader), loader='auto'; end
   if strcmp(loader, 'auto')
     loader = iLoad_loader_auto(filename);
@@ -143,7 +142,7 @@ function [data, loader] = iLoad_import(filename, loader)
     loader=loader(loader_index);
   elseif ischar(loader)
     % test if loader is the user name of a funcion
-    formats = iLoad_loader_auto(filename);
+    formats = iLoad_loader_auto(filename, 'allformats');
     loaders={};
     loaders_count=0;
     for index=1:length(formats)
@@ -198,6 +197,8 @@ function [data, loader] = iLoad_import(filename, loader)
     end
   end
   data = iLoad_loader_check(filename, data, loader);
+  if isfield(loader, 'name') data.Format = loader.name; 
+  else data.Format=[ loader.method ' import' ]; end
   return
   
 % -----------------------------------------------------------
@@ -231,7 +232,10 @@ function data = iLoad_loader_check(file, data, loader)
     if ~strcmp(loader, 'variable'), data.Title  = [ 'File ' filename ext ' ' name  ];
     else data.Title  = [ 'File ' filename ext ]; end
   end
-  if ~isfield(data, 'Date'),    data.Date   = datestr(now); end
+  
+  if strcmp(loader, 'variable') data.Date   = datestr(now); 
+  else d=dir(file); data.Date=d.date; end
+
   if ~isfield(data, 'Format'),
     if ~strcmp(loader, 'variable'), data.Format  = [ name ' import with Matlab ' method ];  
     else data.Format  = [ 'Matlab ' method ]; end
@@ -257,7 +261,8 @@ function data = iLoad_loader_check(file, data, loader)
 % -----------------------------------------------------------
 
 % private function to determine which parser to use to analyze content
-function loaders = iLoad_loader_auto(file)
+% if allformats == 1, no pattern search is done
+function loaders = iLoad_loader_auto(file, allformats)
   loaders      = {};
   % read user list of loaders which are put 
   if exist('iData_load_ini')
@@ -300,6 +305,10 @@ function loaders = iLoad_loader_auto(file)
     loader.postprocess= '';
     loaders = { loaders{:} , loader };
   end
+  
+  if nargin == 2
+    return
+  end
     
   % read start of file
   fid = fopen(file, 'r');
@@ -336,6 +345,7 @@ function loaders = iLoad_loader_auto(file)
         continue;  % does not use looktxt for binary data files
       end
       patterns_found  = 1;
+      if ~isfield(loader,'patterns') loader.patterns=''; end
       if isempty(loader.patterns)  % no pattern to search, just try loader
         patterns_found  = 1;
       else  % check patterns
