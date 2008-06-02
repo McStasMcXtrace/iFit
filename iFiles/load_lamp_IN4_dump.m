@@ -8,7 +8,7 @@ function a=load_lamp_IN4_dump(a,t)
 %
 % (Quick'n'Dirty writup for IN4 data, 20080408 PW)
 %
-
+a=iData(a);
 % Find proper labels for Signal and Axis
 
 axes_fields=findfield(a,'Axes_');

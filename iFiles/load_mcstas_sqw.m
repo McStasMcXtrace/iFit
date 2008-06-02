@@ -3,7 +3,7 @@ function a=load_mcstas_sqw(a)
 %
 % Returns an iData style dataset from a McStas Sqw Table (Isotropic Sqw)
 %
-
+a=iData(a);
 % Find proper axes and Signal
 
 [fields, types, dims] = findfield(a);
