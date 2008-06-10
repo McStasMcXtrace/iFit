@@ -80,18 +80,21 @@ if length(varargin)>1
             model.texture = varargin{n+1};
         case 'xdata'
             model.xdata = varargin{n+1};
+            model.xdata=model.xdata(:);
             if length(model.xdata) > 2
-              model.xdata = [ model.xdata(1) model.xdata(end) ];
+              model.xdata = [ min(model.xdata) max(model.xdata) ];
             end
         case 'ydata'
             model.ydata = varargin{n+1};
+            model.ydata = model.ydata(:);
             if length(model.ydata) > 2
-              model.ydata = [ model.ydata(1) model.ydata(end) ];
+              model.ydata = [ min(model.ydata) max(model.ydata) ];
             end
         case 'zdata'
             model.zdata = varargin{n+1};
+            model.zdata = model.zdata(:);
             if length(model.zdata) > 2
-              model.zdata = [ model.zdata(1) model.zdata(end) ];
+              model.zdata = [ min(model.zdata) max(model.zdata) ];
             end
     end
     
@@ -204,6 +207,10 @@ if (ind==2 | is3DTexture)
    handle_ind = handle_ind + 1;
   end
 end
+
+xlim(model.xdata)
+ylim(model.ydata)
+zlim(model.zdata)
 
 model.handles = h;
 
