@@ -1,7 +1,7 @@
-function loaders = iData_load_ini
-% formats = iData_load_ini
+function loaders = iLoad_ini
+% formats = iLoad_ini
 %
-% User definitions of specific import formats to be used by iData/load
+% User definitions of specific import formats to be used by iLoad
 %
 % Each format is specified as a structure with the following fields
 %   method:   function name to use, called as method(filename, options...)
@@ -12,7 +12,7 @@ function loaders = iData_load_ini
 %   options:  additional options to pass to the method.
 %             If given as a string they are catenated with file name
 %             If given as a cell, they are given to the method as additional arguments
-%   postprocess: function to call after file import, to assign aliases, ...
+%   postprocess: function called from iData/load after file import, to assign aliases, ...
 %             called as iData=postprocess(iData)
 %
 % formats should be sorted from the most specific to the most general.
@@ -44,7 +44,7 @@ function loaders = iData_load_ini
     format5.name       ='ILL TAS Data (polarized)';
     format5.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:','PAL'};
     format5.options    =['--fast --binary --headers ' ...
-                        '--section=PARAM --section=VARIA --section=ZEROS --section=DATA -section=POLAN ' ...
+                        '--section=PARAM --section=VARIA --section=ZEROS --section=DATA --section=POLAN ' ...
                         '--metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=INSTR --metadata=COMND'];
     format5.method     ='looktxt';
     format5.postprocess='load_ill_tas'; % load_ill_tas
