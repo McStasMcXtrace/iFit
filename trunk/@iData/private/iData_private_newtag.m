@@ -5,6 +5,7 @@ b = a;
 b.Date = datestr(now);  % new object
 tag = tempname;
 [dummy, tag] = fileparts(tag);
+if length(tag) > 9, tag=tag(1:9); end
 b.Tag      = tag;
       
 if nargout == 0 & length(inputname(1))
