@@ -215,7 +215,7 @@ set(gcf, 'Name', char(a));
 if ~isempty(xlab), xlabel(xlab,'interpreter','none'); end
 if ~isempty(ylab), ylabel(ylab,'interpreter','none'); end
 if ndims(a) == 3 & ~isempty(clab)
-  titl = { clab ; titl{:} };
+  titl = { clab , titl{:} };
 end
 title(titl,'interpreter','none');
 
