@@ -103,9 +103,14 @@ if ischar(filename) & length(filename) > 0
   end
 elseif isempty(filename)
   if exist('uigetfiles')
-    [filename, pathname] = uigetfiles;
+    [filename, pathname] = uigetfiles('Select file(s) to load');
   else
-    [filename, pathname] = uigetfile;
+    if usejava('swing')
+      setappdata(0,'UseNativeSystemDialogs',false);
+      [filename, pathname] = uigetfile('Select file(s) to load','MultiSelect', 'on');
+    else
+      [filename, pathname] = uigetfile('Select a file to load');
+    end
   end
   if isempty(filename), return; end
   filename = strcat(pathname, filesep, filename);
@@ -265,8 +270,8 @@ function data = iLoad_loader_check(file, data, loader)
 function loaders = iLoad_loader_auto(file, allformats)
   loaders      = {};
   % read user list of loaders which are put 
-  if exist('iData_load_ini')
-    user_loaders = iData_load_ini;
+  if exist('iLoad_ini')
+    user_loaders = iLoad_ini;
     loaders = { user_loaders{:} , loaders{:} }; % returns a cell of format specifications (structures)
   end
   
