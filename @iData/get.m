@@ -89,7 +89,7 @@ for index = 1:length(a_in(:)) % works with object arrays
         end
       end
       if field_not_found
-        iData_private_warning(mfilename, sprintf('can not find Property %s in object %s.', fieldname, [ inputname(1) ' ' s.Tag ] ));
+        iData_private_error(mfilename, sprintf('can not find Property %s in object %s.', fieldname, [ inputname(1) ' ' s.Tag ] ));
         val=[];
       end
       varout{argout,index} = val;
