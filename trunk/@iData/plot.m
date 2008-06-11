@@ -21,7 +21,7 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
+% See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
 % private functions:
@@ -205,6 +205,14 @@ if ndims(a) >= 2
 else
   uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight');
   uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
+end
+% add rotate/pan/zoom tools in case java machine is not started
+if ~usejava('jvm')
+  uimenu(uicm, 'Separator','on','Label','Zoom on/off', 'Callback','zoom');
+  uimenu(uicm, 'Label','Pan (move)', 'Callback','pan');
+  if ndims(a) >= 2
+    uimenu(uicm, 'Label', 'Rotate', 'Callback','rotate3d');
+  end
 end
 % attach contexual menu to plot
 set(h, 'UIContextMenu', uicm);
