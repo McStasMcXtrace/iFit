@@ -328,6 +328,7 @@ function loaders = iLoad_loader_auto(file, allformats)
   loaders_count=0;
   % identify by extensions
   [duummy, dummy, fext] = fileparts(file);
+  fext=strrep(fext,'.','');
   for index=1:length(formats)
     loader = formats{index};
     if ~isfield(loader,'extension'), ext=''; else
