@@ -27,7 +27,15 @@ else
   index=find(n > 1);
   v = length(index);
   if v == 1 & length(getaxis(s)) > 1
-    v = length(getaxis(s)); % this is for [x,y,z,... vector data (plot3 style)]
+    n=n(index);
+    % this is for [x,y,z,... vector data (plot3 style)]
+    % must count that axes have the length of the signal
+    v=0;
+    for i_axis=1:length(getaxis(s))
+      if length(get(s, s.Alias.Axis{i_axis})) == n
+        v = v+1;
+      end
+    end
   end
 end
 
