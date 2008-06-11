@@ -41,7 +41,7 @@ if nargin == 1
         link = a.Alias.Axis{j1};
         val  = get(a, link);
         if length(find(size(a) > 1)) == 1
-          if length(val(:)) ~= size(a, find(size(a) > 1))
+          if length(val(:)) ~= size(a, find(size(a) > 1)) & length(val(:)) > 1
             iData_private_warning(mfilename,[ 'the Axis ' a.Alias.Axis{j1} ' ' num2str(j1) '-th rank length ' num2str(length(val(:))) ' does not match the Signal dimension [' num2str(size(a)) '] in object ' inputname(1) ' ' a.Tag '.' ]);
           end
         elseif size(val,j1) ~= size(a, j1) & length(val(:)) ~= size(a, j1)
