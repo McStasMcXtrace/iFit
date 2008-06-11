@@ -41,12 +41,20 @@ else
     end
     fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, v, s_in.Alias.Labels{index});
     if strcmp(s_in.Alias.Names{index}, 'Signal') & length(s_in.Alias.Axis) == 0
-      x      = get(s_in, 'Signal');
-      m      = get(s_in, 'Monitor');
-      if all(m==1) | all(m==0)
-        fprintf(1,' [%g:%g]\n', min(x(:)), max(x(:)));
+      x      = get(s_in, 'Signal');  x=x(:);
+      m      = get(s_in, 'Monitor'); m=m(:);
+      if ~(all(m==1) | all(m==0))
+        x=x./m;
+      end
+      if length(x) == 1
+        fprintf(1,' [%g]', x);
       else
-        fprintf(1,' [%g:%g] (per monitor)\n', min(x(:)./m(:)), max(x(:)./m(:)));
+        fprintf(1,' [%g:%g]', min(x), max(x));
+      end
+      if ~(all(m==1) | all(m==0))
+        fprintf(1,' (per monitor)\n');
+      else
+        fprintf(1,'\n');
       end
     end
     fprintf(1, '\n');
@@ -56,13 +64,20 @@ else
     disp('[Rank]         [Value] [Description]');
     for index=0:length(s_in.Alias.Axis)
       [v, l] = getaxis(s_in, num2str(index));
-      x      = getaxis(s_in, index);
-      m      = get(s_in, 'Monitor');
-      if index==0 & not(all(m==1) | all(m==0))
-        m      = get(s_in, 'Monitor');
-        fprintf(1,'%6i %15s  %s [%g:%g] (per monitor)\n', index, v, l, min(x(:)./m(:)), max(x(:)./m(:)));
+      x      = getaxis(s_in, index); x=x(:);
+      m      = get(s_in, 'Monitor'); m=m(:);
+      if ~(all(m==1) | all(m==0)) & index==0
+        x=x./m;
+      end
+      if length(x) == 1
+        fprintf(1,'%6i %15s  %s [%g]', index, v, l, x);
       else
-        fprintf(1,'%6i %15s  %s [%g:%g]\n', index, v, l, min(x(:)), max(x(:)));
+        fprintf(1,'%6i %15s  %s [%g:%g]', index, v, l, min(x), max(x));
+      end
+      if index==0 & not(all(m==1) | all(m==0))
+        fprintf(1,' (per monitor)\n');
+      else
+        fprintf(1,'\n');
       end
     end
   end
