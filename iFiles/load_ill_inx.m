@@ -3,7 +3,7 @@ function b=load_ill_inx(a)
 %
 % Returns an iData style dataset from an ILL INX file
 %
-disp(mfilename)
+
 % the INX data set is loaded in catenate mode. 
 % As there is not header, the first block is Data_0
 % its number of rows is the block number
@@ -41,6 +41,7 @@ for index=1:nblocks
   setalias(c,'Temperature', 'Data.temperature','Sample Temperature [K]');
   setalias(c,'Wavelength', 'Data.wavelength','Incident wavelength [Angs]');
   setaxis(c, 1, 'Energy');
+  setaxis(c, 2, 'Angle');
   
   blockstart = blockstart+1+blocklength;
   b = [ b c ];
