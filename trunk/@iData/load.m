@@ -58,7 +58,22 @@ for i=1:length(files)
     loaders{i}.postprocess='';
   end
   if ~isempty(loaders{i}.postprocess)
+    % removes warnings during interp
+    try
+      warn.set = warning('off','iData:setaxis');
+      warn.get = warning('off','iData:getaxis');
+      warn.get = warning('off','iData:get');
+    catch
+      warn = warning('off');
+    end
     this_iData = feval(loaders{i}.postprocess, this_iData);
+    % reset warnings during interp
+    try
+      warning(warn.set);
+      warning(warn.get);
+    catch
+      warning(warn);
+    end
   end
   
   this_iData = iData_private_history(this_iData, mfilename, a, files{i}.Source);
