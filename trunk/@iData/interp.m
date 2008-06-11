@@ -61,6 +61,9 @@ a_axes = cell(1,ndims(a)); a_labels=a_axes;
 for index=1:ndims(a)
   [a_axes{index}, a_labels{index}] = getaxis(a, index);  % loads object axes, or 1:end if not defined 
 end
+for index=ndims(a):length(a.Alias.Axis)
+  [dummy, a_labels{index}] = getaxis(a, index);  % additional inactive axes labels (used to create new axes)
+end
 method='linear';
 ntimes=0;
 
