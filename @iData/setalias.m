@@ -7,6 +7,7 @@ function s_out = setalias(a_in,names,links,labels)
 %     interpreted as a link to search in the object.
 %   The special name 'this' may be used in Aliases to refer the object itself.
 %   When the link is empty, the alias is removed, so that
+%     setalias(s, alias)       deletes an alias
 %     setalias(s, getalias(s)) deletes all alias definitions.
 %   The command setalias(iData,'Signal') sets the Signal to the biggest numerical field.
 %   The input iData object is updated if no output argument is specified.
@@ -17,7 +18,7 @@ function s_out = setalias(a_in,names,links,labels)
 %         AliasLink: definition of the alias, or '' to remove the alias (cell of char/double/...)
 %         AliasLabel: optional description/label of the alias (char/cellstr)
 % output: s: array (iData)
-% ex:     setalias(iData,'Temperature','Data.Temperature')
+% ex:     setalias(iData,'Temperature','Data.Temperature','This is the temperature')
 %         setalias(iData,'Temperature','this.Data.Temperature')
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
