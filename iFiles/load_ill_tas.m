@@ -59,7 +59,7 @@ if ~isempty(index_hkle)
   end
 end
 if isempty(index)
-  [dummy, index]=max(Variance);
+  [dummy, index]=max(Variance); % then set axis as the one that varies the most
 end
 
 
