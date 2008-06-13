@@ -4,6 +4,7 @@ function b = end(s,k,n)
 %   @iData/end function defines end value for iData
 %   returns the length of rank 'index' among total dimensions 'n' in object 's'.
 %
+% Version: $Revision: 1.2 $
 % See also iData
 
 % EF 27/07/00 creation

@@ -7,6 +7,7 @@ function v=ndims(s)
 % output: dimensionality of Signal in the object (double array)
 % ex :    ndims(iData)
 %
+% Version: $Revision: 1.4 $
 % See also  iData/size
 
 % EF 11/07/00 creation

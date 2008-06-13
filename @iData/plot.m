@@ -21,6 +21,7 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
+% Version: $Revision: 1.24 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
@@ -214,6 +215,7 @@ if ~usejava('jvm')
     uimenu(uicm, 'Label', 'Rotate', 'Callback','rotate3d');
   end
 end
+uimenu(uicm, 'Label', 'About iData', 'Callback','msgbox(version(iData))');
 % attach contexual menu to plot
 set(h, 'UIContextMenu', uicm);
 set(h, 'Tag', char(a));

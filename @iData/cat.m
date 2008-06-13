@@ -10,6 +10,7 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
+% Version: $Revision: 1.3 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 if nargin == 1 & isa(dim, 'iData') & length(dim) > 1
   s = cat(1, dim);

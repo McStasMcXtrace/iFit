@@ -8,6 +8,7 @@ function a = full(a)
 % output: b: object or array (iData)
 % ex:     b=full(a);
 %
+% Version: $Revision: 1.3 $
 % See also iData, iData/full, iData/sparse
 
 a = iData_private_unary(a, 'full');

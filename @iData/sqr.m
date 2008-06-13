@@ -7,6 +7,7 @@ function c = sqr(a)
 % output: c: object or array (iData)
 % ex:     c=sqr(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/times, iData/power
 
 c = iData_private_binary(a, 2, 'power');

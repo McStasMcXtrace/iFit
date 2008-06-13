@@ -8,6 +8,7 @@ function a = not(a)
 % output: b: object or array (iData)
 % ex:     b=not(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/or, iData/and
 
 a = iData_private_unary(a, 'not');

@@ -8,6 +8,7 @@ function a = isreal(a)
 % output: b: array (int)
 % ex:     b=isreal(a);
 %
+% Version: $Revision: 1.3 $
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
 %          iData/isnumeric, iData/islogical, iData/isscalar, 

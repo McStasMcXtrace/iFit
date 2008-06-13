@@ -10,6 +10,7 @@ function a = title(a, label)
 % output: b: object or array (iData)
 % ex:     b=title(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 [axisdef, lab] = getaxis(a, '0');

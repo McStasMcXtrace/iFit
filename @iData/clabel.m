@@ -10,6 +10,7 @@ function a = clabel(a, label)
 % output: b: object or array (iData)
 % ex:     b=clabel(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 [axisdef, lab] = getaxis(a, '4');

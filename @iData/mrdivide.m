@@ -8,6 +8,7 @@ function c = mrdivide(a,b)
 % output: c: object or array (iData)
 % ex:     c=a/2;
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/power
 
 if isscalar(a) | isscalar(b)

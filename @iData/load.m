@@ -28,6 +28,7 @@ function out = load(a, varargin)
 % output: d: single object or array (iData)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %
+% Version: $Revision: 1.9 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad

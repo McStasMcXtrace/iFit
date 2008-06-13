@@ -26,6 +26,7 @@ function s_out = setaxis(a_in,indexes,names,values)
 % output: s: array (iData)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'x' axis (rank 1)
 %
+% Version: $Revision: 1.10 $
 % See also iData, iData/getaxis, iData/get, iData/set
 
 % EF 27/07/00 creation

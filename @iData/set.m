@@ -13,6 +13,7 @@ function s_out = set(a_in,varargin)
 %
 % ex      : set(iData,'Title','A nice Title')
 %
+% Version: $Revision: 1.3 $
 % See also iData, iData/get, iData/setalias, iData/setaxis
 
 % EF 27/07/00 creation
