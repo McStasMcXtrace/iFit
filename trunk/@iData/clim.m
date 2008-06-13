@@ -9,6 +9,7 @@ function a = clim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=clim(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot, iData/ylabel
 
 axisvalues = getaxis(a, 4);

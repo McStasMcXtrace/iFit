@@ -10,6 +10,7 @@ function c = times(a,b)
 % output: c: object or array (iData)
 % ex:     c=a.*2;
 %
+% Version: $Revision: 1.4 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/power
 
 c = iData_private_binary(a, b, 'times');

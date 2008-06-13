@@ -10,6 +10,7 @@ function m = max(a,b)
 % output: m: maximum value (double/iData)
 % ex:     b=max(a);
 %
+% Version: $Revision: 1.3 $
 % See also iData, iData/max, iData/min
 
 if nargin == 1

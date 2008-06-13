@@ -8,6 +8,7 @@ function c = rdivide(a,b)
 % output: c: object or array (iData)
 % ex:     c=a./2; c=a./b;
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
 
 c = iData_private_binary(a, b, 'rdivide');

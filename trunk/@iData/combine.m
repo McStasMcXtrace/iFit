@@ -9,6 +9,7 @@ function c = combine(a,b)
 % output: c: object (iData)
 % ex:     c=combine(a,b); or combine([ a b ])
 %
+% Version: $Revision: 1.4 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
 if nargin >= 1
   if ~isa(a, 'iData')

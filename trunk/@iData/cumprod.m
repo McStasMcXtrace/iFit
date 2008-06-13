@@ -9,6 +9,7 @@ function s = cumprod(a,dim)
 % output: s: accumulated product of elements (iData)
 % ex:     c=cumprod(a);
 %
+% Version: $Revision: 1.3 $
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumsum
 
 % handle input iData arrays

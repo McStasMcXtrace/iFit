@@ -6,7 +6,8 @@ function a=find(a)
 % input:  s: object or array (iData)
 % output: v: value of the iData Signal (logical)
 % ex:     'find(iData(rand(10)))'
-%  
+%
+% Version: $Revision: 1.3 $
 % See also  iData/find, iData
 
 % EF 11/07/00 creation

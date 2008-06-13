@@ -9,6 +9,7 @@ function a = xlim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=xlim(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot, iData/xlabel
 
 axisvalues = getaxis(a, 1);

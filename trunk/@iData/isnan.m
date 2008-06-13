@@ -8,6 +8,7 @@ function a = isnan(a)
 % output: b: object or array (iData)
 % ex:     b=isnan(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
 %          iData/isnumeric, iData/islogical, iData/isscalar, 

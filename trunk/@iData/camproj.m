@@ -11,6 +11,7 @@ function s = camproj(a,dim)
 % output: s: projection of elements (iData/scalar)
 % ex:     c=camproj(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/sum
 
 if ~isa(a, 'iData')

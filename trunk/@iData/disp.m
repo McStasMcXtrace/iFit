@@ -6,6 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
+% Version: $Revision: 1.5 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation

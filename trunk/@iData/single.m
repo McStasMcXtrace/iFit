@@ -6,7 +6,8 @@ function a=single(a)
 % input:  s: object or array (iData)
 % output: v: value of the iData Signal (single)
 % ex:     'single(iData(rand(10)))'
-%  
+%
+% Version: $Revision: 1.4 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 

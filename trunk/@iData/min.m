@@ -10,6 +10,7 @@ function m = min(a,b)
 % output: m: minimum value (double/iData)
 % ex:     b=min(a); or min(a,1)
 %
+% Version: $Revision: 1.3 $
 % See also iData, iData/min, iData/max
 
 if nargin == 1

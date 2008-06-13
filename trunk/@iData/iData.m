@@ -19,6 +19,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
+% Version: $Revision: 1.8 $
 % See also: iData, iData/load, methods
 
 % object definition and converter

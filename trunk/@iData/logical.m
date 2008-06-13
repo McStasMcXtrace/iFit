@@ -6,7 +6,8 @@ function a=logical(a)
 % input:  s: object or array (iData)
 % output: v: value of the iData Signal (logical)
 % ex:     'logical(iData(rand(10)))'
-%  
+%
+% Version: $Revision: 1.3 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 

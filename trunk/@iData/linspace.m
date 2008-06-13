@@ -10,6 +10,7 @@ function v = linspace(a,b,n)
 % output: v: vector (iData array)
 % ex:     b=linspace(a,b);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/max, iData/min, iData/colon
 
 if ~isa(a, 'iData') | ~isa(b,'iData')
