@@ -5,6 +5,7 @@ function b = subsref(a,S)
 %   such as a(1:2) or a.field.
 %   The special syntax a{0} where a is a single iData returns the signal, and a{n} returns the axis of rank n.
 %
+% Version: $Revision: 1.6 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines

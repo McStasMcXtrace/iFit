@@ -8,6 +8,7 @@ function a = transpose(a)
 % output: b: object or array (iData)
 % ex:     b=transpose(a);
 %
+% Version: $Revision: 1.3 $
 % See also iData, iData/transpose, iData/ctranspose, iData/setaxis, iData/getaxis
 
 if length(a) > 1

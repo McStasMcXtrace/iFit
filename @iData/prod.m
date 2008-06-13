@@ -14,6 +14,7 @@ function s = prod(a,dim)
 % output: s: product of elements (iData/scalar)
 % ex:     c=prod(a);
 %
+% Version: $Revision: 1.5 $
 % See also iData, iData/plus, iData/sum, iData/cumprod, iData/mean
 
 if ~isa(a, 'iData')

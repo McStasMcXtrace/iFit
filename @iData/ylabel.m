@@ -10,6 +10,7 @@ function a = ylabel(a, label)
 % output: b: object or array (iData)
 % ex:     b=ylabel(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 [axisdef, lab] = getaxis(a, '2');

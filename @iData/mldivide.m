@@ -11,6 +11,7 @@ function c = mldivide(a,b)
 % output: c: object or array (iData)
 % ex:     c=a\b;
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/combine
 
 c = combine(a,b);

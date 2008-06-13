@@ -10,6 +10,7 @@ function a = zlabel(a, label)
 % output: b: object or array (iData)
 % ex:     b=zlabel(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 [axisdef, lab] = getaxis(a, '3');

@@ -8,6 +8,7 @@ function a = floor(a)
 % output: b: object or array (iData)
 % ex:     b=floor(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/floor, iData/ceil, iData/round
 
 a = iData_private_unary(a, 'floor');

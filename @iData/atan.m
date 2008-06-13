@@ -7,6 +7,7 @@ function a = atan(a)
 % output: b: object or array (iData)
 % ex:     b=atan(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
 a = iData_private_unary(a, 'atan');

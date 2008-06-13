@@ -23,6 +23,7 @@ function s_out = setalias(a_in,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
+% Version: $Revision: 1.6 $
 % See also iData, iData/getalias, iData/get, iData/set
 
 % EF 27/07/00 creation

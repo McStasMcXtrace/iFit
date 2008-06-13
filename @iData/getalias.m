@@ -15,6 +15,7 @@ function [link, label, names] = getalias(s,alias)
 %         names: all defined alias names (cellstr)
 % ex:     getalias(iData) or getalias(iData,'Signal')
 %
+% Version: $Revision: 1.4 $
 % See also iData, iData/set, iData/get, iData/setalias
 
 % EF 23/09/07 iData implementation

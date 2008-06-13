@@ -12,7 +12,8 @@
  href="../uigetfiles.m">iFiles/uigetfiles function</a></font></i></b></div>
 <hr width="100%">
 <center>[ <a href="#Overview">Overview</a> ][ <a href="#Syntax">Syntax</a>
-][ <a href="#Details">Details</a> ][ <a href="#Technical">Technical
+][ <a href="#Details">Details</a> ][ <a href="#Examples">Examples</a>
+][ <a href="#Technical">Technical
 notes</a>
 ][ <a href="#License">License</a> ]<br>
 <hr width="100%"></center>
@@ -23,7 +24,9 @@ notes</a>
 <p>The <a href="../uigetfiles.m">iFiles/uigetfiles</a> function is a <i>multiple</i>
 file selector which is compatible in usage with the Matlab <i>uigetfile</i>
 function.
-<br>
+It's main advantages is that is does not depend on the Java libraries,
+and always behaves the same with multiple-selection, independently of
+platforms and Matlab versions.<br>
 You may:
 </p>
 <ul>
@@ -74,7 +77,9 @@ filterspec = [ '*.m','*.mat']; <br>
 filterspec = {'*.m','Matlab files';'*.mat','Matlab data'};</blockquote>
 You may <i>not</i> use multiple filters as one filter entry, such as
 in
-'*.m;*.mat'. This is a difference with the uigetfile syntax.
+'*.m;*.mat', it must be specified as a <span
+ style="font-style: italic;">cellstr</span>. This is a difference with
+the <span style="font-style: italic;">uigetfile</span> syntax.
 <br>
 The filter specification (first argument), when given as a single
 character
@@ -89,7 +94,11 @@ the 'All files' extension is appended as the last extension choice.
 A title, and the window position may be additionally specified.
 <p>Default starting location is the current directory, or the last
 accessed
-directory stored in the UIGetFiles Dialog.
+directory stored in the UIGetFiles Dialog.<br>
+</p>
+<p><b><font size="+1"><a name="Examples"></a>Examples</font></b>
+<br>
+[filename, pathname] = uigetfiles('*.m', 'Pick one or more M-file(s)');<br>
 </p>
 <p><a name="Details"></a><b><font size="+1">Details</font></b>
 <br>
@@ -287,7 +296,7 @@ for usage and distribution terms (GPL).
 </p>
 <p></p>
 <hr width="100%"><br>
-iFit/iFiles/uigetfiles, Nov 22nd, E. Farhi &lt;<a
- href="mailto:farhi@ill.fr">farhi@ill.fr</a>&gt;
+iFit/iFiles/uigetfiles, June 2008, E. Farhi &lt;<a
+ href="mailto:farhi@ill.fr">farhi@ill.fr</a>&gt;, $Revision: 1.4 $
 </body>
 </html>

@@ -8,6 +8,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
+% Version: $Revision: 1.6 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines

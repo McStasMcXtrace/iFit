@@ -36,6 +36,7 @@ requirements: Matlab >= 6.5
   vol3d:      Joe Conti, 2004 (in iData/plot)
   genop:      Douglas M. Schwarz, 13 March 2006 (in iData/binary operations)
   netcdf:     Paul Spencer, 2007 (in iFiles)
+  plot2svg:   Juerg Schwizer, 22-Jan-2006 (in iData/saveas)
   
 iOptim functions: all obtained on Matlab Central except CMA-ES and solvopt
   

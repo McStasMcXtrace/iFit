@@ -21,6 +21,7 @@ function [b, Info] = ieval(a, model, pars, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
+% Version: $Revision: 1.10 $
 % See also iData, feval
 
 % private functions: 

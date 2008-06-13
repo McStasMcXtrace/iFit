@@ -7,6 +7,7 @@ function c = colon(a,d,b)
 % output: b: object or array (iData)
 % ex:     b=mean(a);
 %
+% Version: $Revision: 1.2 $
 % See also iData, iData/floor, iData/ceil, iData/round, iData/combine
 
 if nargin == 2
