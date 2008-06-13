@@ -15,10 +15,19 @@ function filename = saveas(a, varargin)
 %           'gif','bmp' save as an image (no axes, only for 2D data sets)
 %           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
 %           'xls' save as an Excel sheet (requires Excel to be installed)
+%           'svg' save as Scalable Vector Graphics (SVG) format
+%           'vrml' save as Virtual Reality VRML 2.0 file
+%         options: specific format options, which are usually plot options
+%           default is 'view2 axis tight'
 %
 % output: f: filename used to save file(s) (char)
 % ex:     b=saveas(a, 'file', 'm');
+%         b=saveas(a, 'file', 'svg', 'axis tight');
 %
+% Contributed code (Matlab Central): 
+%   plot2svg:   Juerg Schwizer, 22-Jan-2006 
+%
+% Version: $Revision: 1.5 $
 % See also iData, iData/load, save
 
 if length(a) > 1
@@ -39,6 +48,8 @@ end
 if nargin < 2, filename = ''; else filename = varargin{1}; end
 if isempty(filename), filename = a.Tag; end
 if nargin < 3, format=''; else format = varargin{2}; end
+if nargin < 4, options=''; else options=varargin{3}; end
+if isempty(options), options='view2 axis tight'; end
 
 if strcmp(format, 'gui')
   liststring= {'M - Matlab script/function','MAT - Matlab binary file', ...
@@ -46,7 +57,9 @@ if strcmp(format, 'gui')
     'PS - PostScrip (color)','NC - NetCDF','HDF5 - Hierarchical Data Format (compressed)', ...
     'XLS - Excel format (requires Excel to be installed)', ...
     'CSV - Comma Separated Values (suitable for Excel)', ...
-    'PNG - Portable Network Graphics image','JPG - JPEG image','TIFF - TIFF image'};
+    'PNG - Portable Network Graphics image','JPG - JPEG image','TIFF - TIFF image', ...
+    'SVG - Scalable Vector Graphics', ...
+    'VRML - Virtual Reality file'};
   format_index=listdlg('ListString',liststring,'Name',[ 'Select format to save ' filename ], ...
     'PromptString', {'Select format ',['to save file ' filename ]}, ...
     'ListSize', [300 200]);
@@ -140,18 +153,28 @@ case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd'}
   end
 case 'epsc'
   f=figure('visible','off');
-  plot(a,'view2 axis tight');
+  plot(a,options);
   print(f, [ '-depsc -tiff' ], filename);
   close(f);
 case {'png','tiff','jpeg','psc','pdf','ill'}
   f=figure('visible','off');
-  plot(a,'view2 axis tight');
+  plot(a,options);
   print(f, [ '-d' format ], filename);
   close(f);
 case 'fig'
   f=figure('visible','off');
-  plot(a,'view2 axis tight');
+  plot(a,options);
   saveas(f, filename, 'fig');
+  close(f);
+case 'svg'
+  f=figure('visible','off');
+  plot(a,options);
+  plot2svg(filename, f);
+  close(f);
+case 'vrml'
+  f=figure('visible','off');
+  plot(a,options);
+  vrml(f,filename);
   close(f);
 end
 
