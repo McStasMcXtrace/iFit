@@ -40,7 +40,7 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 % Contrib:
 %   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -63,6 +63,15 @@ if nargin <= 2
 end
 if isempty(options)
   options=feval(mfilename, 'defaults');
+end
+n = prod(size(pars));
+numberOfVariables = n;
+if ischar(options.MaxFunEvals), 
+  options.MaxFunEvals = eval(options.MaxFunEvals); 
+end
+
+if ischar(options.MaxIter), 
+  options.MaxIter = eval(options.MaxIter); 
 end
 
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));

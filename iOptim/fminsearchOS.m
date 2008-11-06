@@ -52,7 +52,7 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   p.112-147, 1998.
 
 %   Copyright 1984-2002 The MathWorks, Inc.
-%   $Revision: 1.6 $  $Date: 2008-05-15 14:50:07 $
+%   $Revision: 1.7 $  $Date: 2008-11-06 10:10:55 $
 %
 % Olivier Salvado, Case Western Reserve University, June04
 %   Modified to work on Cost function smooth on a high scale but rough on a
@@ -92,20 +92,9 @@ usual_delta = optimget(options,'usual_delta',defaultopt,'fast');
 zero_term_delta = optimget(options,'zero_term_delta',defaultopt,'fast');
 
 % In case the defaults were gathered from calling: optimset('fminsearch'):
-if ischar(maxfun)
-   if isequal(lower(maxfun),'200*numberofvariables')
-      maxfun = 200*numberOfVariables;
-   else
-      error('Option ''MaxFunEvals'' must be an integer value if not the default.')
-   end
-end
-if ischar(maxiter)
-   if isequal(lower(maxiter),'200*numberofvariables')
-      maxiter = 200*numberOfVariables;
-   else
-      error('Option ''MaxIter'' must be an integer value if not the default.')
-   end
-end
+if ischar(maxfun), maxfun = eval(maxfun); end
+
+if ischar(maxiter), maxiter = eval(maxiter); end
 
 switch printtype
 case 'notify'

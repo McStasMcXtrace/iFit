@@ -65,7 +65,7 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -88,6 +88,15 @@ if nargin <= 2
 end
 if isempty(options)
   options=feval(mfilename, 'defaults');
+end
+n = prod(size(pars));
+numberOfVariables = n;
+if ischar(options.MaxFunEvals), 
+  options.MaxFunEvals = eval(options.MaxFunEvals); 
+end
+
+if ischar(options.MaxIter), 
+  options.MaxIter = eval(options.MaxIter); 
 end
 if ~isfield(options,'PopulationSize'), options.PopulationSize=20; end
 % handle constraints
