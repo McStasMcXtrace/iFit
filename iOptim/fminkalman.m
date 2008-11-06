@@ -42,7 +42,7 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -64,7 +64,15 @@ end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
+n = prod(size(pars));
+numberOfVariables = n;
+if ischar(options.MaxFunEvals), 
+  options.MaxFunEvals = eval(options.MaxFunEvals); 
+end
 
+if ischar(options.MaxIter), 
+  options.MaxIter = eval(options.MaxIter); 
+end
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 
 % calls the optimizer

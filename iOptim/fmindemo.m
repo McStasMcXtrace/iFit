@@ -17,9 +17,15 @@ function abstract=fmindemo(dim, verbose, repeat_num)
 % Test functions from Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 
 if nargin == 0
-  abstract{1} = fmindemo(2);
-  abstract{2} = fmindemo(10);
-  abstract{3} = fmindemo(100);
+  abstract{1} = fmindemo(1, '',50); 
+  abstract{1} = fmindemo(2, '',50); 
+  abstract{1} = fmindemo(4, '',50); 
+  abstract{1} = fmindemo(8, '',40); 
+  abstract{1} = fmindemo(12,'',35);
+  abstract{1} = fmindemo(16,'',30); 
+  abstract{1} = fmindemo(32,'',20); 
+  abstract{1} = fmindemo(48,'',10); 
+  abstract{1} = fmindemo(64,'',10); 
   return
 end
 
@@ -45,7 +51,7 @@ optimizers={ ...
     'fminhooke', 'fminanneal', 'fminsimpsa','fminsce','fminpso',...
     'fminga', ...
     'fminkalman',...
-    'fminsearchOS', ...
+    'fminsearchOS', 'fminsearch', ...
     'fminswarm','fminswarmhybrid'};
 
 if dim <=10
@@ -77,12 +83,36 @@ problems={...       % Unimodal functions
   'fschwefelmult', 500, ...
   'ftwomaxtwo', 10};
 
+if dim == 2
+  % plot parameter space for each function
+  n=floor(sqrt(length(problems)));
+  m=ceil(length(problems)/n);
+  for index_problem=1:2:length(problems)  % loop on functions
+    psize=problems{index_problem+1};
+    y=zeros(100,100);
+    for i1=1:100
+      p1=-psize+(i1/100)*2*psize;
+      for i2=1:100
+        p2=-psize+(i2/100)*2*psize;
+        y(i1,i2) = feval(str2func(problems{index_problem}), [ p1 p2 ]);
+      end
+    end
+    fprintf(1, '%s min=%g max=%g\n', problems{index_problem}, min(min(y)), max(max(y)));
+    %subplot(m,n,index_problem);
+    figure(index_problem);
+    surf(y); title(problems{index_problem});
+    print('-depsc', problems{index_problem});
+    close(index_problem)
+  end
+end
+
 dimensionality=randn(1,dim);
 
 w=warning;
 warning off
-
+fprintf(1,'\n');
 disp([ 'Starting optimization demo with ' num2str(dim) ' parameters to find.' ]);
+disp(  'id name MaxFun MaxIter TolFun Description');
 for index=1:length(optimizers)
   options=feval(optimizers{index},'defaults');
   opt=optimizers{index};
@@ -91,27 +121,34 @@ for index=1:length(optimizers)
   else
     alg=opt;
   end
+  options=feval(optimizers{index},'defaults');
   if length(opt) > 5
     opt=opt(5:end);
-    opt=opt(1:min(3, length(opt)));
+    opt=opt(1:min(5, length(opt)));
   end
-  fprintf(1, '%5s %s\n', opt, alg);
+  numberOfVariables = dim; n=dim;
+  if ischar(options.MaxFunEvals), options.MaxFunEvals=eval(options.MaxFunEvals); end
+  if ischar(options.MaxIter), options.MaxIter=eval(options.MaxIter); end
+  fprintf(1, '%2i %5s %6i %6i %6.2g %s\n', index, opt, options.MaxFunEvals, options.MaxIter, options.TolFun, alg);
 end
+fprintf(1,'\n');
 
 t1 = clock;
-abstract=cell(length(problems)/2, length(optimizers));
+abstract.score    = zeros(1,length(optimizers));
+abstract.duration = zeros(1,length(optimizers));
+abstract.success  = 0;
 
 for index_repeat=1:repeat_num
 
   if repeat_num>1, disp([ 'Repetition ' num2str(index_repeat) '/' num2str(repeat_num) ]); end
 
-  for index_problem=1:2:length(problems)
+  for index_problem=1:2:length(problems)  % loop on functions
     fprintf(1, 'Problem: %15s [%i parameters] ', ...
       problems{index_problem}, length(dimensionality) );
     %    disp(startpars)
     startpars = dimensionality*problems{index_problem+1};
     fun=str2func(problems{index_problem});
-    for index=1:length(optimizers)
+    for index=1:length(optimizers)  % loop on optimizers
       if ~verbose, fprintf(1,'%i', index); end
       t0 = clock;
       options=feval(optimizers{index},'defaults');
@@ -154,9 +191,8 @@ for index_repeat=1:repeat_num
       flags{index}   =f;
       algo{index}    =out.algorithm;
       params{index}=pars;
-      if isempty(abstract{(index_problem+1)/2, index}), abstract{(index_problem+1)/2, index} = 0; end
       if ~verbose, fprintf(1,'%s ', f(1)); end
-    end
+    end % for optimizers
     disp(' ');
     % sort results
     criteria=duration.*fvals.*fvals;
@@ -166,6 +202,7 @@ for index_repeat=1:repeat_num
     
     % compute median duration
     mtime = mean(duration)+std(duration);
+    score=1:length(optimizers);
     for index=1:length(optimizers)
       f = flags{index};
       if f(1) == 'C',   
@@ -175,48 +212,28 @@ for index_repeat=1:repeat_num
       elseif f(1)=='n', f=' '; 
       else f='*'; end
       % store results into array
-      if f=='+' | f=='-', score=1;
-      else score=0; end
-      abstract{(index_problem+1)/2, index}=abstract{(index_problem+1)/2, index}+score;
+      if f=='+' | f=='-', score(index)=1;
+      else score(index)=0; end
     end
+    abstract.score    = abstract.score   +score;
+    abstract.duration = abstract.duration+duration.*score;
 
-    if verbose
-      % display results
-      fprintf(1, 'Repetitions=%i dimensionality=%i', repeat_num, length(dimensionality));
-      fprintf(1, 'Index    Time FuncEval Iter.      Fval Status Pars      Algo\n');
-      for j=1:length(optimizers)
-        index=sorti(j);
-        pars=params{index};
-        if length(pars) > 5, pars=pars(1:5); end
-        spars=mat2str(pars(:)');  % as a row
-        if length(spars) > 50, spars=[ spars(1:47) ' ...' ]; end
-        opt=optimizers{index};
-        opt=opt(5:end);
-        fprintf(1, '%5s %7.3g %7i %5i %10.2g %4s   %50s %s\n', ...
-          opt(1:min(3, length(opt))), duration(index), funcount(index), iterate(index), fvals(index), flags{index}, spars, algo{index});
-      end
-    end
-  end % repeat
-end
+  end % end problems
+  abstract.repeat_num = repeat_num;
+  abstract.dim        = dim;
+  abstract.optimizers = optimizers;
+end % repeat
 
 % display for given dimensionality an abstract of tests
 % matrix: rows=tests columns=optimizers, values=sorting index
-disp(['Test results: " "=does not converge, or number of succesful repetitions (out of ' num2str(repeat_num) ')']);
-fprintf(1, 't=%10.2g s ', etime(clock,t1)/repeat_num);
+disp(['Test results: success probability and solving time']);
+fprintf(1, 't=%10.2g s \n', etime(clock,t1)/repeat_num);
 for j=1:length(optimizers)
   opt=optimizers{j};
   opt=opt(5:end);
-  fprintf(1, '%3s ', opt(1:min(3, length(opt)))); 
-end
-fprintf(1, '\n');
-for i=1:2:length(problems)
-  fprintf(1, '%15s ', problems{i});
-  for j=1:length(optimizers)
-    f=abstract{(i+1)/2, j};
-    % if f > repeat_num/2, f=num2str(f); else f=' '; end
-    f=num2str(f);
-    fprintf(1, '%2s  ', f);
-  end
+  fprintf(1, '%10s ', opt(1:min(10, length(opt)))); 
+  fprintf(1, '%6.2g ',  abstract.score(j).*100./repeat_num/length(problems)*2);
+  fprintf(1, '%6.2g ',  abstract.duration(j)/abstract.score(j));
   fprintf(1, '\n');
 end
 

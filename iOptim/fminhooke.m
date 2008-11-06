@@ -32,7 +32,7 @@ function [pars,fval,exitflag,output] = fminhooke(fun, pars, options)
 % R. Hooke and T. A. Jeeves, Journal of the ACM, Vol. 8, April 1961, pp. 212.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -41,7 +41,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Display='';
   options.TolFun =1e-4;
   options.TolX   =1e-12;
-  options.MaxIter=10;
+  options.MaxIter='10*numberOfVariables';
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'Hooke-Jeeves direct search (by Kelley) [' mfilename ']' ];
   pars = options;
@@ -53,6 +53,15 @@ if nargin <= 2
 end
 if isempty(options)
   options=feval(mfilename, 'defaults');
+end
+n = prod(size(pars));
+numberOfVariables = n;
+if ischar(options.MaxFunEvals), 
+  options.MaxFunEvals = eval(options.MaxFunEvals); 
+end
+
+if ischar(options.MaxIter), 
+  options.MaxIter = eval(options.MaxIter); 
 end
 
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));

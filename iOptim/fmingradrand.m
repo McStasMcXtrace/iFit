@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fmingradrand(fun, pars, options)
 % Reference: Computer Methods in Applied Mechanics & Engg, Vol  19, (1979) 99
 % Contrib: Sheela V. Belur(sbelur@csc.com) 1998
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -56,6 +56,15 @@ if nargin <= 2
 end
 if isempty(options)
   options=feval(mfilename, 'defaults');
+end
+n = prod(size(pars));
+numberOfVariables = n;
+if ischar(options.MaxFunEvals), 
+  options.MaxFunEvals = eval(options.MaxFunEvals); 
+end
+
+if ischar(options.MaxIter), 
+  options.MaxIter = eval(options.MaxIter); 
 end
 
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));

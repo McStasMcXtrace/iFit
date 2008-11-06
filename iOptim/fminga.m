@@ -45,7 +45,7 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -67,6 +67,15 @@ if nargin <= 2
 end
 if isempty(options)
   options=feval(mfilename, 'defaults');
+end
+n = prod(size(pars));
+numberOfVariables = n;
+if ischar(options.MaxFunEvals), 
+  options.MaxFunEvals = eval(options.MaxFunEvals); 
+end
+
+if ischar(options.MaxIter), 
+  options.MaxIter = eval(options.MaxIter); 
 end
 % handle constraints
 if nargin <=3
