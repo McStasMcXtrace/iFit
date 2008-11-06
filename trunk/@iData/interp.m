@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -161,7 +161,12 @@ end
 % test if interpolation axes have changed w.r.t input object
 has_changed = 0;
 for index=1:ndims(a)  
-  if ~isequal(a_axes{index}, i_axes{index}), has_changed=1; end
+  if ~isequal(a_axes{index}, i_axes{index})
+    % length changed ?
+    if length(a_axes{index}) ~= length(i_axes{index}), has_changed=1; 
+    % or axis variation smaller than 0.01 percent anywhere
+    elseif all(abs(a_axes{index} - i_axes{index}) < 1e-4*abs(a_axes{index} + i_axes{index})/2), has_changed=1; end
+  end
 end
 if ~has_changed & (~requires_meshgrid | is_grid), return; end
 if requires_meshgrid
