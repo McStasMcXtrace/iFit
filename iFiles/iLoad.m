@@ -334,7 +334,7 @@ function loaders = iLoad_loader_auto(file, allformats)
     if ~isfield(loader,'extension'), ext=''; else
     ext=loader.extension; end
     if ischar(ext), ext=cellstr(ext); end
-    if ~isempty(strmatch(fext, ext, 'exact'))
+    if length(ext) && length(fext) && ~isempty(strmatch(fext, ext, 'exact'))
       loaders_count = loaders_count+1;
       loaders{loaders_count} = loader;
     end
@@ -363,6 +363,7 @@ function loaders = iLoad_loader_auto(file, allformats)
           end
         end % for patterns
       end % if patterns
+      
       if patterns_found
         loaders_count = loaders_count+1;
         loaders{loaders_count} = loader;
