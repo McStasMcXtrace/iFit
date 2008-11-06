@@ -20,7 +20,7 @@ function [val, lab] = getaxis(s,ax)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'x')
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
@@ -61,7 +61,7 @@ if isnumeric(ax) % given as a number, return a number
       % get the axis value. This means the axis link is correctly defined.
       if ~isempty(link), val = get(s, link); end
     end
-  end
+  end;
 else % given as a char, return a char
   axis_str = str2num(ax);
   if isempty(axis_str) % not a number char
@@ -100,9 +100,9 @@ if ~ischar(val)
     if length(find(size(s) > 1)) ~= 1
       v = ones(1, length(n));
       v(ax) = max(n);
-      val   = reshape(val, v);
+      if prod(size(val)) == prod(v), val   = reshape(val, v); end
     else
-      val = reshape(val, size(s));
+      if prod(size(val)) == prod(size(s)), val = reshape(val, size(s)); end
     end
   end
 end
