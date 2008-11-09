@@ -27,8 +27,8 @@ function filename = saveas(a, varargin)
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 
 %
-% Version: $Revision: 1.5 $
-% See also iData, iData/load, save
+% Version: $Revision: 1.6 $
+% See also iData, iData/load, iData/getframe, save
 
 if length(a) > 1
   if length(varargin) >= 1, filename_base = varargin{1}; 
@@ -49,7 +49,7 @@ if nargin < 2, filename = ''; else filename = varargin{1}; end
 if isempty(filename), filename = a.Tag; end
 if nargin < 3, format=''; else format = varargin{2}; end
 if nargin < 4, options=''; else options=varargin{3}; end
-if isempty(options), options='view2 axis tight'; end
+if isempty(options) && ndims(a) >= 2, options='view2 axis tight'; end
 
 if strcmp(format, 'gui')
   liststring= {'M - Matlab script/function','MAT - Matlab binary file', ...
@@ -148,8 +148,8 @@ case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd'}
     b=(a-min(a(:)))/(max(a(:))-min(a(:)))*64;
     imwrite(b, jet(64), filename, format);
   else
-    iData_private_warning(mfilename,[ 'Can not save object ' a.Tag ' (non 2D) into image format ' format ]);
-    filename='';
+    f=getframe(a);
+    imwrite(f.cdata, jet(64), filename, format);
   end
 case 'epsc'
   f=figure('visible','off');
