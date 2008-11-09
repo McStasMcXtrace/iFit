@@ -21,7 +21,7 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
@@ -55,9 +55,11 @@ case 1  % vector type data (1 axis + signal) -> plot
   y=real(y);
   if isempty(method), method='b-'; end
   if all(e == 0)
-    h = plot(x,y, method);
+    if length(method), h = plot(x,y, method);
+    else h = plot(x,y); end
   else
-    h = errorbar(x,y,e,method);
+    if length(method), h = errorbar(x,y,e,method);
+    else h = errorbar(x,y,e); end
   end
 case 2  % surface type data (2 axes+signal) -> surf or plot3
   [x, xlab] = getaxis(a,1);
