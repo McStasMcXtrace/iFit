@@ -8,6 +8,12 @@ a=iData(a);
 % get the main data block name
 DataBlock        = a.Signal;
 
+try
+  STEPS = a.Data.MetaData.STEPS;
+catch
+  STEPS=[];
+end
+
 % get the main data block header
 columns_header   = findstr(a, 'DATA_:','case');
 if isempty(columns_header), 
@@ -23,21 +29,34 @@ columns = strread(columns_header,'%s','delimiter',' ');
 c       = size(a, 2);
 columns = columns((end-c+1):end);
 
+% check if a scan step exists
+if ~isempty(STEPS)
+  [steps_val, steps_lab]=struct2cell(STEPS);
+  STEPS=[];
+  % get the first non zero step
+  for index=1:length(steps_val)
+    if steps_val{index} && isemty(STEPS)
+      STEPS = steps_lab{index};
+    end
+  end
+end
+
 % compute the normalize variance of each column
 index_hkle=[]; % index of QH QK QL EN columns
 index_m12 =[]; % index of M1 M2 monitors
 Variance = zeros(1,length(columns));
 for j=1:length(columns)
   setalias(a,columns{j},a.Signal(:,j));
-  if strmatch(columns{j}, {'QH','QK','QL','EN'},'exact')
+  if strmatch(columns{j}, {'QH','QK','QL','EN'},'exact') | ...
+    (~isempty(STEPS) & strmatch(columns{j}, STEPS, 'exact'))
     index_hkle = [ index_hkle j ];
   end
   if strmatch(columns{j}, {'M1','M2'},'exact')
     index_m12 = [ index_m12 j ];
   end
   if isempty(strmatch(columns{j},{'PNT','CNTS','TI'}, 'exact'))
-    if (mean(a.Signal(:,j)))
-      Variance(j) = sqrt(sum(a.Signal(:,j).^2)/length(a.Signal(:,j)))/abs(mean(a.Signal(:,j)));
+    if length(a.Signal(:,j))
+      Variance(j) = sum( abs(a.Signal(:,j)-mean(a.Signal(:,j)) )) /length(a.Signal(:,j));
     end
   end
 end
@@ -70,6 +89,11 @@ catch
   LOCAL='';
 end
 try
+  TITLE = a.Headers.MetaData.TITLE; TITLE=deblank(TITLE(7:end));
+catch
+  TITLE='';
+end
+try
   USER  = a.Headers.MetaData.USER;  USER =deblank(USER(7:end));
 catch
   USER='';
@@ -97,10 +121,12 @@ end
 setalias(a, 'COMND', 'this.Data.Headers.MetaData.COMND', 'TAS command');
 setalias(a, 'INSTR', 'this.Data.Headers.MetaData.INSTR', 'Instrument used');
 setalias(a, 'EXPNO', 'this.Data.Headers.MetaData.EXPNO', 'Experiment number');
+setalias(a, 'TITL', 'this.Data.Headers.MetaData.TITLE', 'Dataset title');
 % update object
 if ~isempty(DATE), a.Date = DATE; end
 a.User = [ EXPNO ' ' USER '/' LOCAL '@' INSTR ];
-a.Title= [ COMND ' ' a.Title ' ' EXPNO '@' INSTR ];
+a.Title= [ TITLE ';' COMND ';' a.Title ];
+for index=1:2, a.Title=strrep(a.Title, '  ',' '); end
 
 % make up Signal label
 
