@@ -44,8 +44,10 @@ function loaders = iLoad_ini
     format5.name       ='ILL TAS Data (polarized)';
     format5.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:','PAL'};
     format5.options    =['--fast --binary --headers ' ...
-                        '--section=PARAM --section=VARIA --section=ZEROS --section=DATA --section=POLAN ' ...
-                        '--metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=INSTR --metadata=COMND'];
+                        '--section=PARAM --section=VARIA --section=ZEROS --section=DATA ' ...
+                        '--section=POLAN --section=STEPS ' ...
+                        '--metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE ' ...
+                        '--metadata=INSTR --metadata=COMND --metadata=TITLE'];
     format5.method     ='looktxt';
     format5.postprocess='load_ill_tas'; % load_ill_tas
     format5.extension  ='scn';
@@ -54,7 +56,9 @@ function loaders = iLoad_ini
     format6.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
     format6.options    =['--fast --binary --headers ' ...
                         '--section=PARAM --section=VARIA --section=ZEROS --section=DATA ' ...
-                        '--metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=INSTR --metadata=COMND'];
+                        '--section=STEPS ' ...
+                        '--metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE ' ...
+                        '--metadata=INSTR --metadata=COMND --metadata=TITLE'];
     format6.method     ='looktxt';
     format6.postprocess='load_ill_tas'; % load_ill_tas
     format6.extension  ='scn';
@@ -93,12 +97,6 @@ function loaders = iLoad_ini
     format11.method     ='looktxt';
     format11.postprocess='load_mcstas_sim';
     
-    format12.name       ='ILL TAS Data (light)';
-    format12.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
-    format12.options    ='--fast --binary --headers --section=PARAM --section=DATA --metadata=DATA';
-    format12.method     ='looktxt';
-    format12.extension  ='scn';
-    
     format13.name       ='McStas Sqw table';
     format13.patterns   ={'Sqw data file for Isotropic_Sqw'};
     format13.options    ='--fast --binary --headers';
@@ -114,5 +112,5 @@ function loaders = iLoad_ini
     format14.extension  ='inx';
     
     loaders= { format1, format2, format3, format4, format5, format6, ...
-	       format7, format8, format9, format10, format11, format12, format13, format14 };
+	       format7, format8, format9, format10, format11, format13, format14 };
     
