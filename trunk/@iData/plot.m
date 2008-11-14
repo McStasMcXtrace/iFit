@@ -21,7 +21,7 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
@@ -57,9 +57,11 @@ case 1  % vector type data (1 axis + signal) -> plot
   if all(e == 0)
     if length(method), h = plot(x,y, method);
     else h = plot(x,y); end
+    set(h, 'Tag', a.Tag);
   else
     if length(method), h = errorbar(x,y,e,method);
     else h = errorbar(x,y,e); end
+    set(h, 'Tag', a.Tag);
   end
 case 2  % surface type data (2 axes+signal) -> surf or plot3
   [x, xlab] = getaxis(a,1);
@@ -100,6 +102,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     else
       h=surf(x,y,z); set(h,'Edgecolor','none');
     end
+    set(h, 'Tag', a.Tag);
 
     if ~isempty(C) & strfind(method,'clabel')
       clabel(C,h);
@@ -133,6 +136,7 @@ case 3  % 3d data sets: volumes
         hold off
       end
     end;
+    set(h, 'Tag', a.Tag);
     zlabel(zlab);
   end
 otherwise
@@ -186,7 +190,8 @@ if length(a.Alias.Axis)
   end
 end
 S=a.Source;
-titl ={ T ; [ a.Tag ' <' S '>' ]};
+[dummy, fS] = fileparts(S);
+titl ={ T ; [ a.Tag ' <' fS '>' ]};
 if length(T) > 23, T=[ T(1:20) '...' ]; end
 if length(S) > 23, S=[ '...' S(end-20:end) ]; end
 if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
