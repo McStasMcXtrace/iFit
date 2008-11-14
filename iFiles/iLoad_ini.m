@@ -22,23 +22,23 @@ function loaders = iLoad_ini
 % See also: iLoad, save, iData/saveas
 
     format1.name       ='ILL Data (normal integers)';
-    format1.patterns   ={'RRRR','AAAA','FFFF','SSSS','IIII'};
-    format1.options    ='--headers --fortran --catenate --fast --binary --makerows=IIII --makerows=FFFF';
+    format1.patterns   ={'RRRR','AAAA','FFFF','IIII'};
+    format1.options    ='--headers --fortran --catenate --fast --binary --makerows=IIII --makerows=FFFF --silent';
     format1.method     ='looktxt';
     
     format2.name       ='ILL Data (large integers)';
-    format2.patterns   ={'RRRR','AAAA','FFFF','SSSS','JJJJ'};
-    format2.options    ='--headers --fortran --catenate --fast --binary --makerows=JJJJ --makerows=FFFF';
+    format2.patterns   ={'RRRR','AAAA','FFFF','JJJJ'};
+    format2.options    ='--headers --fortran --catenate --fast --binary --makerows=JJJJ --makerows=FFFF --silent';
     format2.method     ='looktxt';
     
     format3.name       ='ILL Data (floats only)';
-    format3.patterns   ={'RRRR','AAAA','FFFF','SSSS'};
-    format3.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF';
+    format3.patterns   ={'RRRR','AAAA','FFFF'};
+    format3.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF --silent';
     format3.method     ='looktxt';
     
     format4.name       ='ILL Data (general)';
     format4.patterns   ={'SSSS'};
-    format4.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF --makerows=JJJJ --makerows=IIII';
+    format4.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF --makerows=JJJJ --makerows=IIII --silent';
     format4.method     ='looktxt';
     
     format5.name       ='ILL TAS Data (polarized)';
