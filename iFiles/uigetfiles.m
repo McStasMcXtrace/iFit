@@ -221,6 +221,32 @@ if isstruct(filterspec) % callback use
     if UD.ShowHidden == 1, UD.ShowHidden=0; else UD.ShowHidden=1; end
     set(object,'UserData', UD);
     UIGetFilesMain(0);
+  case 'resize'
+    % resize dialog
+    if ~isempty(UD)
+      fig_pos = get(UD.Handle.Figure, 'Position');
+      w = fig_pos(3); h = fig_pos(4);
+      bw4 = floor((fig_pos(3)-20)/4/5)*5; % button height for 4 per row
+      bw2 = floor((fig_pos(3)-10)/3/5)*5; % button height for 2 per row
+      bh = 20;  % button height
+      set(UD.Handle.Path, 'Position',     [5           h-bh-5    w-bh-5 bh]);
+      set(UD.Handle.Previous, 'Position', [w-bh-5      h-bh-5    bh bh]);
+      
+      set(UD.Handle.txtSortAs, 'Position',[5           h-2*bh-10 bw4/2 bh]);
+      set(UD.Handle.Sort, 'Position',     [bw4/2+5     h-2*bh-10 bw2 bh]);
+      set(UD.Handle.txtFilter, 'Position',[bw4/2+bw2+10 h-2*bh-10 bw4/2 bh]);
+      set(UD.Handle.Filter, 'Position',   [bw4+bw2+15  h-2*bh-10 bw2 bh]);
+      
+      set(UD.Handle.Action, 'Position',   [10          h-3*bh-15 bw4 bh]);
+      set(UD.Handle.Up, 'Position',       [15+bw4      h-3*bh-15 bw4 bh]);
+      set(UD.Handle.Select, 'Position',   [2*bw4+20    h-3*bh-15 bw4 bh]);
+      set(UD.Handle.DeSelect, 'Position', [3*bw4+25    h-3*bh-15 bw4 bh]);
+      
+      set(UD.Handle.List, 'Position',     [5           bh+10     w-10 h-4*bh-30]);
+      
+      set(UD.Handle.OK, 'Position',       [bw2/2 5 bw2 bh]);
+      set(UD.Handle.Cancel, 'Position',   [bw2/2+bw2+10 5 bw2 bh]);
+    end
   otherwise
     disp(['Unsupported action: ' filterspec.action ]);
   end
@@ -416,9 +442,10 @@ else
   NL= sprintf('\n');
   fig = figure('HitTest','off','MenuBar','none', ...
                'CloseRequestFcn','uigetfiles(struct(''action'',''cancel''));', ...
-               'Resize','off','Tag','UIGetFiles','Name','Select File(s) to open', ...
+               'Tag','UIGetFiles','Name','Select File(s) to open', ...
                'NumberTitle','off','Unit','pixels', ...
-               'KeyPressFcn','uigetfiles(struct(''action'',''keypressed''));');
+               'KeyPressFcn','uigetfiles(struct(''action'',''keypressed''));',...
+               'ResizeFcn','uigetfiles(struct(''action'',''resize''));');
   tmp = get(fig, 'Position'); tmp(3:4) = [300 400];
   set(fig, 'Position', tmp);
   UD.Handle.Figure = fig;
@@ -443,6 +470,7 @@ else
   % Sort as ...   Filter
   h = uicontrol('Style','text','FontWeight','bold',  ...
                 'Position',[5 350 55 20],'String','Sort as');
+  UD.Handle.txtSortAs = h;
   h = uicontrol('Style','popupmenu', 'Tag','UIGetFiles.Sort',...
                 'FontWeight','bold','Position',[60 350 90 20],...
                 'HorizontalAlignment','left', 'String',...
@@ -454,6 +482,7 @@ else
   UD.Handle.Sort = h;
   h = uicontrol('Style','text', 'FontWeight','bold', ...
                 'Position',[155 350 35 20],'String','Filter');
+  UD.Handle.txtFilter = h;
   h = uicontrol('Style','popupmenu', 'Tag','UIGetFiles.Filter',...
                 'FontWeight','bold', 'Position',[190 350 100 20],...
                 'HorizontalAlignment','left', ...
@@ -467,7 +496,7 @@ else
   % New directory, go up, select all, deselect all
   h = uicontrol('Style','popupmenu', 'Tag','UIGetFiles.Action',...
                 'Position',[10 325 65 20],...
-                'String',{'Options','Help','Edit files','New Dir','Delete files','Show/hide hidden files'},'ToolTipString',...
+                'String',{'Options','Help','Edit files','New Dir','Delete files','Hidden files'},'ToolTipString',...
                   [ 'Click here to:' NL ...
                     '* Access HTML help about iFiles/uigetfiles' NL ...
                     '* Edit selected files' NL ...
