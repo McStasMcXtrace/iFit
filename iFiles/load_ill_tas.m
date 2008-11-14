@@ -9,7 +9,7 @@ a=iData(a);
 DataBlock        = a.Signal;
 
 try
-  STEPS = a.Data.MetaData.STEPS;
+  STEPS = a.Data.STEPS;
 catch
   STEPS=[];
 end
@@ -31,11 +31,12 @@ columns = columns((end-c+1):end);
 
 % check if a scan step exists
 if ~isempty(STEPS)
-  [steps_val, steps_lab]=struct2cell(STEPS);
+  steps_val=struct2cell(STEPS);
+  steps_lab=fieldnames(STEPS);
   STEPS=[];
   % get the first non zero step
   for index=1:length(steps_val)
-    if steps_val{index} && isemty(STEPS)
+    if steps_val{index} > 1e-4 && isempty(STEPS)
       STEPS = steps_lab{index};
     end
   end
@@ -44,15 +45,19 @@ end
 % compute the normalize variance of each column
 index_hkle=[]; % index of QH QK QL EN columns
 index_m12 =[]; % index of M1 M2 monitors
+index_temp=[]; % index for temperatures
 Variance = zeros(1,length(columns));
 for j=1:length(columns)
   setalias(a,columns{j},a.Signal(:,j));
-  if strmatch(columns{j}, {'QH','QK','QL','EN'},'exact') | ...
-    (~isempty(STEPS) & strmatch(columns{j}, STEPS, 'exact'))
+  if (isempty(STEPS) & ~isempty(strmatch(columns{j}, {'QH','QK','QL','EN'},'exact'))) | ...
+    (~isempty(STEPS) & ~isempty(strmatch(columns{j}, STEPS, 'exact')))
     index_hkle = [ index_hkle j ];
   end
   if strmatch(columns{j}, {'M1','M2'},'exact')
     index_m12 = [ index_m12 j ];
+  end
+  if strmatch(columns{j}, {'TT','TRT'},'exact')
+    index_temp= [ index_temp j ];
   end
   if isempty(strmatch(columns{j},{'PNT','CNTS','TI'}, 'exact'))
     if length(a.Signal(:,j))
@@ -62,6 +67,19 @@ for j=1:length(columns)
 end
 % Signal is in CNTS field, 1st axis is probably field with
 % remaining greatest variance
+TT = [];
+if ~isempty(index_temp)
+  TT = mean(a.Signal(:,index_temp(1)));
+else
+  index_temp=findfield(a, {'TT','TRT'}, 'case');
+  TT = getfield(a, index_temp);
+end
+
+FX = []; KFIX = [];
+index_fx  =findfield(a, 'FX', 'case');
+if ~isempty(index_fx), FX = getfield(a, index_fx); end
+index_kfix=findfield(a, 'KFIX', 'case');
+if ~isempty(index_fx), KFIX = getfield(a, index_kfix); end
 
 % get the monitor
 if ~isempty(index_m12)
@@ -125,12 +143,23 @@ setalias(a, 'TITL', 'this.Data.Headers.MetaData.TITLE', 'Dataset title');
 % update object
 if ~isempty(DATE), a.Date = DATE; end
 a.User = [ EXPNO ' ' USER '/' LOCAL '@' INSTR ];
-a.Title= [ TITLE ';' COMND ';' a.Title ];
-for index=1:2, a.Title=strrep(a.Title, '  ',' '); end
+if isempty(TITLE), a.Title= [ COMND ';' a.Title ];
+else a.Title= [ TITLE ';' a.Title ]; end
+for i=1:2, a.Title=strrep(a.Title, '  ',' '); end
 
 % make up Signal label
 
 % set Signal and default axis
 setalias(a,'Signal','CNTS',[ 'Data CNTS' ]);
 setaxis(a,1,columns{index});
+xl = xlabel(a);
+if ~isempty(TT) & isnumeric(TT), xl = sprintf('%s T=%.2f K',xl,TT); end
+if ~isempty(FX) & isnumeric(FX), 
+  if ~isempty(KFIX) & isnumeric(KFIX)
+    if FX == 1, xl = sprintf('%s Ki=%.2f',xl,KFIX);
+    else        xl = sprintf('%s Kf=%.2f',xl,KFIX);
+    end
+  end
+end
+xlabel(a, xl);
 
