@@ -4,8 +4,8 @@ function [data, format] = iLoad(filename, loader)
 % imports any data into Matlab
 %
 % input arguments:
-%   file:   file name, or cell of file names, or any Matlab variable, or empty
-%             (then popup a file selector)
+%   file:   file name, or cell of file names, or any Matlab variable, or a URL
+%             or an empty string (then pops'up a file selector)
 %   loader: a function name to use as import routine, OR a structure with:
 %             loader = 'auto' (default) 
 %             loader = 'gui' (asks for the format to use)
@@ -66,13 +66,23 @@ if ischar(filename) & length(filename) > 0
   end
 
   [pathstr, name, ext] = fileparts(filename);
-  if     strcmp(ext, 'zip'), cmd = 'unzip';
-  elseif strcmp(ext, 'tar'), cmd = 'untar';
-  elseif strcmp(ext, 'gz'),  cmd = 'gunzip';
+  if     strcmp(ext, '.zip'), cmd = 'unzip';
+  elseif strcmp(ext, '.tar'), cmd = 'untar';
+  elseif strcmp(ext, '.gz'),  cmd = 'gunzip';
+  elseif strcmp(ext, '.Z'),   cmd = 'uncompress';
   else                       cmd=''; end
   if ~isempty(cmd)
     % this is a compressed file/url. Extract to temporary dir.
-    if exist(cmd)
+    if strcmp(cmd, 'uncompress')
+      copyfile(filename, tempdir, 'f');
+      try
+        system(['uncompress ' tempdir filesep name ext ]);
+        [data, format] = iLoad([ tempdir filesep name ], loader); % is now local in tempdir
+      catch
+      end
+      delete([ tempdir filesep name ]);
+      return
+    elseif exist(cmd)
       % extract to temporary dir
       filenames = feval(cmd, filename, tempdir);
       [data, format] = iLoad(filenames, loader); % is now local
