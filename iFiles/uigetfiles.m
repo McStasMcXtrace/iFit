@@ -271,6 +271,7 @@ filterdefault = {...
     '*.sce','Scilab script'; ...
     '*.zip','ZIP compressed file'; ...
     '*.gz','GZip compressed file'; ...
+    '*.Z','LZW Compress file'; ...
     '*.pro','IDL procedure/script'; ...
     '*.h5' ,'HDF5 hierarchical data formaf'; ...
     '*.nc' ,'NetCDF binary file'; ...
@@ -533,6 +534,18 @@ else
                 'String',{'.','..','directory list'}, ...
                 'callback','uigetfiles(struct(''action'',''handle list''));');
   UD.Handle.List = h;
+  % List contectual Popup menu
+  % New directory, go up, select all, deselect all
+  cmenu = uicontextmenu;
+  set(UD.Handle.List, 'UIContextMenu', cmenu);
+  uimenu(cmenu, 'Label', 'Select all', 'callback','uigetfiles(struct(''action'',''select all''));');
+  uimenu(cmenu, 'Label', 'Deselect all', 'callback','uigetfiles(struct(''action'',''deselect all''));');
+  uimenu(cmenu, 'Label', 'Upper directory', 'callback','uigetfiles(struct(''action'',''go up''));');
+  uimenu(cmenu, 'Separator','on','Label', 'Help', 'callback','uigetfiles(struct(''action'',''help''));');
+  uimenu(cmenu, 'Label', 'Edit files', 'callback','uigetfiles(struct(''action'',''edit''));');
+  uimenu(cmenu, 'Label', 'Create new folder', 'callback','uigetfiles(struct(''action'',''new folder''));');
+  uimenu(cmenu, 'Label', 'Delete files/directories', 'callback','uigetfiles(struct(''action'',''delete files''));');
+  uimenu(cmenu, 'Label', 'Show/hide hidden files', 'callback','uigetfiles(struct(''action'',''toggle hidden files''));');
   % Ok cancel
   h = uicontrol('Style','pushbutton', 'Tag','UIGetFiles.OK',...
                 'Position',[40 5 100 20],'String','OK',...
@@ -821,9 +834,18 @@ if ~isempty(UD.Dir_orig)
      num2str(length(UD.List.Value)) ' selected (' ...
      by ' bytes)']);
      %num2str(sum(UD.List.Bytes(UD.List.Value))) ' bytes)']);
+  elseif strncmp(UD.Path, 'http://', length('http://')) | strncmp(UD.Path, 'ftp://', length('ftp://'))
+    set(UD.Handle.Path, 'ForegroundColor','green');
+    set(UD.Handle.List, 'String', [ 'Path ' UD.Path UD.File UD.Filter ' is an internet link']);
+    set(UD.Handle.List, 'ToolTipString', [ 'Path: ' UD.Path UD.File UD.Filter NL ...
+    'is an internet link' ]);
+    set(UD.Handle.OK, 'UserData', 'ok');
+    set(UD.Handle.List, 'Value', 1);
+    UD.List.Names = {[ UD.Path UD.File UD.Filter ]};
+    
   else
     set(UD.Handle.Path, 'ForegroundColor','red');
-    set(UD.Handle.List, 'String', [ '[Path ' UD.Path UD.File UD.Filter ' is empty/not valid']);
+    set(UD.Handle.List, 'String', [ 'Path ' UD.Path UD.File UD.Filter ' is empty/not valid']);
     set(UD.Handle.List, 'ToolTipString', [ 'Path: ' UD.Path UD.File UD.Filter NL ...
     'is not a valid path (does not exist or is empty)' ]);
     set(UD.Handle.List, 'Value', []);
@@ -833,7 +855,7 @@ else
   set(UD.Handle.List, 'ToolTipString', [ 'Path: ' UD.Path UD.File UD.Filter NL ...
     'Can not view content' NL ...
     '(empty, invalid permissions ?)' ]);
-  set(UD.Handle.List, 'String', [ '[Can not access ' UD.Path UD.File UD.Filter ]);
+  set(UD.Handle.List, 'String', [ '[Can not access ' UD.Path UD.File UD.Filter ']']);
   set(UD.Handle.List, 'Value', []);
 end
 
