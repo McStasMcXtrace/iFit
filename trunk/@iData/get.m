@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -127,7 +127,7 @@ if ~isempty(link)
       val = eval([ '[ ' link ' ]' ]);
     catch
       lasterr
-      iData_private_error(mfilename,[ 'can not evaluate Alias ' name ' as ''' link ''' in iData object.' this.Tag ]);
+      iData_private_error(mfilename,[ 'can not evaluate Alias ' name ' as ''' link ''' in iData object ' this.Tag ]);
     end
   end
 end
