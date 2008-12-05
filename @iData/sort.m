@@ -12,7 +12,7 @@ function s = sort(a,dim,mode)
 % output: s: sorted data (iData)
 % ex:     c=sort(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plus, iData/sort, iData/unique
 if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is sort(iData, dim, mode)']);
@@ -56,9 +56,20 @@ for index=tosort
       if j>1, toeval=[ toeval ',' str_idx{j} ];
       else toeval=[ str_idx{j} ]; end
     end
-    sd =eval([ 'sd(' toeval ')' ]);
-    se =eval([ 'se(' toeval ')' ]);
-    sm =eval([ 'sm(' toeval ')' ]);
+    try
+      sd =eval([ 'sd(' toeval ')' ]);
+    catch
+    end
+    try
+      se =eval([ 'se(' toeval ')' ]);
+    catch
+      sd=[];
+    end
+    try
+      sm =eval([ 'sm(' toeval ')' ]);
+    catch
+      sm=[];
+    end
     setaxis(s, index, x);
     was_sorted=1;
   end
