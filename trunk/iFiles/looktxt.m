@@ -56,20 +56,27 @@ if ~exist([ file '.m' ],'file')
 end
 if ~exist([ file '.m' ],'file') & s ~= 0  % executable not found
   warning('looktxt: can not find executable. Attempting to re-install/compile looktxt');
-  cc     = getenv('CC');     if isempty(cc),     cc = 'cc'; end
+  cc     = getenv('CC');     
+  if isempty(cc),
+    [s,w] = system('gcc'); 
+    if s == 0, cc = 'gcc';
+    else cc='cc'; end
+  end
   cflags = getenv('CFLAGS'); if isempty(cflags), cflags = '-O2'; end
   looktxtc=which('looktxt.c');  % where C code is
   if isempty(looktxtc), error('Can not install looktxt as source code is unavailable'); end
   path = fileparts(looktxtc);
   disp([ cc ' ' cflags ' -o ' path filesep looktxt_exe ' ' looktxtc ]);
   [s,w] = system([ cc ' ' cflags ' -o ' path filesep looktxt_exe ' ' looktxtc ]);
-  disp('Testing the validity of executable')
+  disp('looktxt: Testing the validity of executable')
   [s,w] = system([ path filesep looktxt_exe ]);
   if s ~= 0
     error('looktxt: Failed to install/compile looktxt. Please install it manually.');
+  else
+    disp('looktxt: OK, executable is functional');
+    % now re-try with executable
+    [s,w] = system(exec);
   end
-  % now re-try with executable
-  [s,w] = system(exec);
 end
 disp(w);
 % now import structure
