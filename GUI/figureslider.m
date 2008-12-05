@@ -205,9 +205,13 @@ function extension=callback_getchildrenextension(hObject, eventdata, handles)
   for index=1:length(hfig.children)
     this.handle = hfig.children(index);
     this.pos    = get(hfig.children(index), 'Position');
-    this.units  = get(hfig.children(index), 'Units');
+    try
+        this.units  = get(hfig.children(index), 'Units');
+    catch
+        this.units  = [];
+    end
     % skip sliders
-    if this.handle == hfig.slider_h | this.handle == hfig.slider_v | this.handle == hfig.center
+    if isempty(this.units) | this.handle == hfig.slider_h | this.handle == hfig.slider_v | this.handle == hfig.center
       continue; 
     end
     if strcmp(this.units, 'normalized'), continue;
