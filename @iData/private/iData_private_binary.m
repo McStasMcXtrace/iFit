@@ -96,25 +96,51 @@ case {'plus','minus','combine'}
   if strcmp(op, 'combine'), 
        s3 = genop( @plus,  s1, s2); % @plus without Monitor nomalization
   else s3 = genop( op,  y1, y2); end
+  try
   m3 = genop(@plus, m1, m2);
+  catch
+      m3=[];
+end
+try
   e3 = sqrt(genop(@plus, d1.^2,d2.^2));
+catch
+    e2=[];
+end
   if p1 & ~all(m3 == 0), s3 = s3.*m3; e3=e3.*m3; end
 case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'}
   s3 = genop(op, y1, y2);
-  if p1, m3 = genop(@times, m1, m2); else m3=get(c,'Monitor'); end
+  if p1, 
+    try
+        m3 = genop(@times, m1, m2); 
+    catch
+        m3=[];
+    end
+  else m3=get(c,'Monitor'); end
   if p1 & ~all(m3 == 0), s3 = s3.*m3; end
-  e3 = sqrt(genop(@plus, (e1./s1).^2, (e2./s2).^2)).*s3;
+  try
+    e3 = sqrt(genop(@plus, (e1./s1).^2, (e2./s2).^2)).*s3;
+  catch
+    e3=[];
+  end
 case {'power'}
   if p1, m3 = genop(op, m1, m2); else m3=get(c,'Monitor'); end
   s3 = genop(op, y1, y2);
   if p1 & ~all(m3 == 0), s3 = s3.*m3; end
-  e2logs1 = genop(@times, e2, log(s1));
-  s2e1_s1 = genop(@times, s2, e1./s1);
-  e3 = s3.*genop(@plus, s2e1_s1, e2logs1);
+  try
+    e2logs1 = genop(@times, e2, log(s1));
+    s2e1_s1 = genop(@times, s2, e1./s1);
+    e3 = s3.*genop(@plus, s2e1_s1, e2logs1);
+  catch
+    e3=[];
+  end
 case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'}
   s3 = genop(op, y1, y2);
+  try
   e3 = sqrt(genop( op, d1.^2, d2.^2));
   e3 = 2*e3./genop(@plus, y1, y2); % normalize error to mean signal
+  catch
+      e3=[];
+  end
   m3 = 1;
 otherwise
   if isa(a,'iData'), a=a.Tag; else a=num2str(a); end
