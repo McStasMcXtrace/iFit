@@ -49,6 +49,8 @@ end
 
 % handle single file name
 if ischar(filename) & length(filename) > 0
+  if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
+  
   % handle single file name (possibibly with wildcard)
   if ~isempty(find(filename == '*')) | ~isempty(find(filename == '?'))  % wildchar !!#
     [filepath,name,ext,versn]=fileparts(filename);  % 'file' to search
@@ -59,7 +61,7 @@ if ischar(filename) & length(filename) > 0
     this_dir = char(this_dir.name);
     this_dir = (this_dir(index,:));
     rdir = cellstr(this_dir); % original directory listing as cell
-    rdir = strcat([ filepath filesep ], char(rdir{index}));
+    rdir = strcat([ filepath filesep ], char(rdir));
     filename = cellstr(rdir);
     [data, format] = iLoad(filename, loader);
     return
@@ -109,6 +111,7 @@ if ischar(filename) & length(filename) > 0
       filename = filename(8:end); % remove 'file://' from name
     end
     % The import takes place HERE
+    if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
     [data, format] = iLoad_import(filename, loader);
   end
 elseif isempty(filename)
@@ -124,6 +127,7 @@ elseif isempty(filename)
   end
   if isempty(filename), return; end
   filename = strcat(pathname, filesep, filename);
+  if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
   [data, format] = iLoad(filename, loader);
 else
   % data not empty, but not a file name
