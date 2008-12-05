@@ -24,7 +24,7 @@ end
 % get the main data block header
 [columns_header, data]   = findstr(a, 'DATA_:','case');
 if isempty(columns_header), 
-  iData_private_warning(mfilename, [ 'The loaded data set ' a.Tag ' is not an ILL TAS data format' ]);
+  warning(mfilename, [ 'The loaded data set ' a.Tag ' is not an ILL TAS data format' ]);
   return; 
 end
 columns_header   = columns_header{1};
@@ -66,7 +66,8 @@ Variance = zeros(1,length(columns));
 for j=1:length(columns)
   setalias(a,columns{j},a.Signal(:,j)); % create an alias for each column
   if (isempty(STEPS) & ~isempty(strmatch(columns{j}, {'QH','QK','QL','EN'},'exact'))) | ...
-    (~isempty(STEPS) & ~isempty(strmatch(columns{j}, STEPS, 'exact')))
+    (~isempty(STEPS) & ~isempty(strmatch(columns{j}, STEPS, 'exact'))) | ...
+    (~isempty(STEPS) & ~isempty(strmatch([ 'D' columns{j} ], STEPS, 'exact')))
     index_hkle = [ index_hkle j ];
   end
   if strmatch(columns{j}, {'M1','M2'},'exact')
@@ -91,7 +92,7 @@ if ~isempty(index_temp)
   TT = mean(a.Signal(:,index_temp(1)));
 else
   index_temp=findfield(a, {'TT','TRT'}, 'case');
-  TT = getfield(a, index_temp);
+  if ~isempty(index_temp), TT = getfield(a, index_temp); end
 end
 
 FX = []; KFIX = [];
@@ -174,7 +175,6 @@ else
   setaxis(a,2,'Channel');
   setalias(a,'Monitor', get(a, columns{index_m12}) * 1:size(MULTI,2));
 end
-
 % make up Signal label
 xl = xlabel(a);
 if ~isempty(TT) & isnumeric(TT), xl = sprintf('%s T=%.2f K',xl,TT); end
