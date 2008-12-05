@@ -79,9 +79,9 @@
 /* Identification ********************************************************* */
 
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
-#define DATE    "21 Nov 2007"
+#define DATE    "5 Nov 2008"
 #ifndef VERSION
-#define VERSION "Looktxt 1.0.3"
+#define VERSION "Looktxt 1.0.4"
 #endif
 
 #ifdef __dest_os
@@ -139,7 +139,7 @@
 #define Ccomment   "#%"
 #define Cseparator "\t\v\r,; $()[]{}=|<>&\"/\\"
 
-#define Bnumber      1
+#define Bnumber      1  /* flags */
 #define Balpha       2
 #define Bpoint       4
 #define Beol         8
@@ -148,8 +148,8 @@
 #define Bcomment    64
 #define Bseparator 128
 
-#define MAX_LENGTH 1024
-#define MAX_TXT4BIN 100
+#define MAX_LENGTH 1024 /* length of buffer */
+#define MAX_TXT4BIN 100 /* size beyond which binary storage is prefered (-b option)
 
 #ifdef WIN32
 #define mode_t unsigned short
@@ -189,6 +189,7 @@ struct format_struct format_init(struct format_struct formats[], char *request);
 struct strlist_struct strlist_init(void);
 void                  strlist_free(struct strlist_struct list);
 struct strlist_struct strlist_add(struct strlist_struct *list, char *element);
+struct strlist_struct strlist_add_void(struct strlist_struct *list, void *element);
 int                   strlist_search(struct strlist_struct list, char *element);
 
 struct option_struct options_init(void);
@@ -196,6 +197,7 @@ void                 options_free(struct option_struct options);
 struct option_struct options_parse(struct option_struct options, int argc, char *argv[]);
 
 struct data_struct data_init(void);
+void               data_print(struct data_struct field)
 void               data_free(struct data_struct field);
 char              *data_get_char(struct file_struct file, long start, long end);
 double            *data_get_float(struct file_struct file, struct data_struct field);
@@ -576,7 +578,7 @@ char *str_rep(char *string, char *from, char *to)
 {
   char *p;
 
-  if (!string || !strlen(string)) return(string);
+  if (!string || !strlen(string) || !from || !to) return(string);
   if (strlen(from) != strlen(to)) return(string);
 
   p   = string;
@@ -1092,9 +1094,9 @@ char *try_open_target(struct fileparts_struct parts, char force)
 
   /* starts with specified Path */
   if (!parts.Extension)
-    FullName = str_cat(parts.Path, LK_PATHSEP_S, parts.Name, NULL);
+    FullName = str_cat(parts.Path, strlen(parts.Path) ? LK_PATHSEP_S : "", parts.Name, NULL);
   else
-    FullName = str_cat(parts.Path, LK_PATHSEP_S, parts.Name, ".", parts.Extension, NULL);
+    FullName = str_cat(parts.Path, strlen(parts.Path) ? LK_PATHSEP_S : "", parts.Name, ".", parts.Extension, NULL);
 
   if (!FullName || !strlen(FullName)) return(NULL);
 
@@ -1281,7 +1283,7 @@ struct file_struct file_open(char *name, struct option_struct options)
     file.RootName = ( root ? str_valid(root, 0) : str_dup("") );
     if (!strncmp(file.RootName, "lk_", 3) && options.verbose >= 1)
       print_stderr( "Warning: Data root level renamed as %s (started with number).\n"
-                      "         Output file names are unchanged\n",
+                    "         Output file names are unchanged\n",
         file.RootName);
     str_free(root);
 
@@ -1296,7 +1298,7 @@ void file_close(struct file_struct file)
 {
   if (file.SourceHandle) fclose(file.SourceHandle);
   if (file.BinHandle)    fclose(file.BinHandle);
-  if (file.TxtHandle &&  strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) fclose(file.TxtHandle);
+  if (file.TxtHandle && file.TargetTxt && strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) fclose(file.TxtHandle);
 
   str_free(file.Source);
   str_free(file.TargetTxt);
@@ -1317,7 +1319,7 @@ char *format_rep_data(char *format_const)
 
   if (!format_const) return(NULL);
   format = (char *)mem(strlen(format_const)+1);
-  if (!format) exit(print_stderr( "Error: insufficient memory (format_rep_data)\n"));
+  if (!format) exit(print_stderr( "Error: insufficient memory [looktxt:format_rep_data]\n"));
   strcpy(format, format_const);
   if (strlen(format_const)) {
     str_rep(format, "%SEC", "%1$s");
@@ -1342,7 +1344,7 @@ char *format_rep_section(char *format_const)
 
   if (!format_const) return(NULL);
   format = (char *)mem(strlen(format_const)+1);
-  if (!format) exit(print_stderr( "Error: insufficient memory (format_rep_section)\n"));
+  if (!format) exit(print_stderr( "Error: insufficient memory [looktxt:format_rep_section]\n"));
   strcpy(format, format_const);
   if (strlen(format_const)) {
     str_rep(format, "%BAS", "%1$s");
@@ -1364,7 +1366,7 @@ char *format_rep_tag(char *format_const)
 
   if (!format_const) return(NULL);
   format = (char *)mem(strlen(format_const)+1);
-  if (!format) exit(print_stderr( "Error: insufficient memory (format_rep_tag)\n"));
+  if (!format) exit(print_stderr( "Error: insufficient memory [looktxt:format_rep_tag]\n"));
   strcpy(format, format_const);
   if (strlen(format_const)) {
     str_rep(format, "%BAS", "%1$s");
@@ -1386,7 +1388,7 @@ char *format_rep_header(char *format_const)
 
   if (!format_const) return(NULL);
   format = (char *)mem(strlen(format_const)+1);
-  if (!format) exit(print_stderr( "Error: insufficient memory (format_rep_header)\n"));
+  if (!format) exit(print_stderr( "Error: insufficient memory [looktxt:format_rep_header]\n"));
   strcpy(format, format_const);
   if (strlen(format_const)) {
     str_rep(format, "%FMT", "%1$s");
@@ -1419,7 +1421,7 @@ char *format_rep_binref(char *format_const)
 
   if (!format_const) return(NULL);
   format = (char *)mem(strlen(format_const)+1);
-  if (!format) exit(print_stderr( "Error: insufficient memory (format_rep_binref)\n"));
+  if (!format) exit(print_stderr( "Error: insufficient memory [looktxt:format_rep_binref]\n"));
   strcpy(format, format_const);
   if (strlen(format_const)) {
     str_rep(format, "%FIL", "%1$s");
@@ -1443,7 +1445,7 @@ struct format_struct format_init(struct format_struct formats[], char *request)
   struct format_struct format;  /* return value */
 
   /* get the format to lower case */
-  if (!request) i_format=0;
+  if (!request || !strlen(request)) i_format=0;
   else {
     char *request_lower=NULL;
     char tmp[256];
@@ -1465,7 +1467,7 @@ struct format_struct format_init(struct format_struct formats[], char *request)
     print_stderr( "Warning: unknown output format '%s'. Using %s [looktxt:format_init].\n", request, formats[i_format].Name);
   }
   format = formats[i_format];
-  if (strstr(request,"binary"))
+  if (request && strstr(request,"binary"))
     tmp = str_cat(format.Name, " binary float data", NULL);
   else tmp = str_dup(format.Name);
   /* change pointer location for new name */
@@ -1659,6 +1661,9 @@ struct strlist_struct strlist_add(struct strlist_struct *list, char *element)
   return(*list);
 } /* strlist_add */
 
+/*****************************************************************************
+* strlist_add_void: same as strlist_add but with any type of element
+*****************************************************************************/
 struct strlist_struct strlist_add_void(struct strlist_struct *list, void *element)
 {
 
@@ -1692,9 +1697,9 @@ struct strlist_struct strlist_add_void(struct strlist_struct *list, void *elemen
 int strlist_search(struct strlist_struct list, char *element)
 {
   long  index;
-  if (!list.List || !list.nalloc || !list.length) return(-1);
+  if (!list.List || !list.nalloc || !list.length || !element) return(-1);
   for (index=0; index < list.length; index++) {
-    if (strstr(list.List[index], element) != NULL) return(index);
+    if (list.List[index] && strstr(list.List[index], element) != NULL) return(index);
   }
   return(-1);
 } /* strlist_search */
@@ -1721,6 +1726,19 @@ struct data_struct data_init(void)
   return(field);
 } /* data_init */
 
+/******************************************************************************
+* data_print: Prints a data_struct
+*****************************************************************************/
+void data_print(struct data_struct field)
+{
+  printf("Data field %i '%s.%s' (%s)\n", 
+    field.index, field.Section, field.Name, field.Name_valid );
+  printf("  size=[%i x %i]\n", field.rows, field.columns);
+  printf("  numeric=[%i:%i]\n", field.n_start, field.n_end);
+  printf("  comment=[%i:%i]\n", field.c_start, field.c_end);
+  printf("  header='%s'\n", field.Header);
+} /* data_print */
+
 /*****************************************************************************
 * data_free: Free a data_struct
 *****************************************************************************/
@@ -1742,8 +1760,12 @@ char *data_get_char(struct file_struct file, long start, long end)
   if (start >= end)       return (NULL);
   if (!file.SourceHandle) return (NULL);
   string = mem(end - start + 2);
-  fseek(file.SourceHandle, start, SEEK_SET);
-  fread(string, 1, end-start+1, file.SourceHandle);
+  if(fseek(file.SourceHandle, start, SEEK_SET))
+    print_stderr( "Warning: error in fseek(%s,%i) [looktxt:data_get_char].\n",
+      file.Source, start);
+  if (fread(string, 1, end-start+1, file.SourceHandle) < end-start+1)
+    print_stderr( "Warning: error in fread(%s,%i) [looktxt:data_get_char].\n",
+      file.Source, end-start+1);
   string[end-start+1] = '\0';
 
   return(string);
@@ -1754,16 +1776,20 @@ char *data_get_char(struct file_struct file, long start, long end)
 *****************************************************************************/
 char *data_get_line(struct file_struct file, long *start)
 {
-  char string[64*1024]; /* hard coded max line length */
+  char string[64*MAX_LENGTH];
 
   if (!start || *start < 0)       return (NULL);
   if (!file.SourceHandle) return (NULL);
 
-  fseek(file.SourceHandle, *start, SEEK_SET);
-  fgets(string, 64*1024, file.SourceHandle);
+  if (fseek(file.SourceHandle, *start, SEEK_SET))
+    print_stderr( "Warning: error in fseek(%s,%i) [looktxt:data_get_line].\n",
+      file.Source, *start);
+    if (!fgets(string, 64*MAX_LENGTH, file.SourceHandle))
+      print_stderr( "Warning: error in fgets(%s,%i) [looktxt:data_get_line].\n",
+      file.Source, 64*MAX_LENGTH);
   *start = ftell(file.SourceHandle);
 
-  return(str_dup_n(string, 64*1024));
+  return(str_dup_n(string, 64*MAX_LENGTH));
 } /* data_get_line */
 
 /*****************************************************************************
@@ -1794,7 +1820,9 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
   }
   if (method == 1) {
     /* fast method: fscanf */
-    fseek(file.SourceHandle, field.n_start-1 > 0 ? field.n_start-1 : 0, SEEK_SET);
+    if (fseek(file.SourceHandle, field.n_start-1 > 0 ? field.n_start-1 : 0, SEEK_SET))
+      print_stderr( "Warning: error in fseek(%s,%i) [looktxt:data_get_float].\n",
+      file.Source, field.n_start-1);
     for (index =0; index < field.rows*field.columns; index ++) {
       long pos=ftell(file.SourceHandle);
       if (fail) value = 0;
@@ -1824,7 +1852,9 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
     p=string;
     while ((p = strpbrk(p, separator)) != NULL) *p = ' ';
     fid=tmpfile(); /* write temporary file to be read with fscanf */
-    fwrite(string, sizeof(char), strlen(string), fid);
+    if (fwrite(string, sizeof(char), strlen(string), fid) < strlen(string))
+      print_stderr( "Warning: error in fwrite(%s,%i) [looktxt:data_get_float].\n",
+      "tmpfile", strlen(string));
     str_free(string);
     fseek(fid, 0, SEEK_SET);
     for (index =0; index < field.rows*field.columns; index ++) {
@@ -1895,6 +1925,7 @@ void table_add(struct table_struct *table, struct data_struct data)
   }
 
   if (table->length >= 0) {
+    data_free(table->List[table->length]);
     table->List[table->length] = data;
     table->length++;
   }
@@ -1985,6 +2016,7 @@ void print_usage(char *pgmname, struct option_struct options)
 "                    Use --struct=NULL or 0 not to use structures.\n"
 "                    Alternatively you may use '_'.\n"
 "--verbose  or -v    Displays analysis information\n"
+"--version           Display looktxt version\n"
 "--silent            Silent mode. Only displays errors/warnings\n"
 "--comment=COM       Sets comment characters (ignore line if at start)\n"
 "--eol=EOL           Sets end-of-line characters\n"
@@ -2460,12 +2492,13 @@ int file_write_field_data(struct file_struct file,
   char *struct_section=NULL;
   char *struct_name=NULL;
   char *name    =field.Name_valid;
-  char *section=field.Section;
+  char *section =field.Section;
 
   if (!format || !field.Name || !strlen(field.Name)) return(0);
   if (!field.rows) return(0);
-  if (options.verbose >= 3)
+  if (options.verbose >= 3) {
     printf("\nDEBUG[file_write_field_data]: file '%s': Writing Part Data %s begin/end \n", file.TargetTxt, field.Name);
+  }
 
   if (options.use_struct> ' ') str_struct[0] = options.use_struct;
 
@@ -2513,6 +2546,7 @@ int file_write_field_array(struct file_struct file,
   data = data_get_float(file, field, options);
   if (!data) {
     if (options.verbose >= 1)
+    if (options.verbose >= 2 || field.n_start < field.n_end)
     printf("Warning: file '%s': Data %s is empty (%ld:%ld)\n",
       file.TargetTxt, field.Name, field.n_start, field.n_end);
     return(0);
@@ -2677,7 +2711,7 @@ struct write_struct file_write_getsections(struct file_struct file,
 
           if (metadata_line && strlen(metadata_line) && strstr(metadata_line, this_metadata)) { /* create an entry */
             struct data_struct data;
-
+            
             data = data_init();
             data.Name   = str_dup(this_metadata);
             if (metadata_line && strlen(metadata_line)) /* remove unsupported chars from header */
@@ -2722,7 +2756,7 @@ struct write_struct file_write_getsections(struct file_struct file,
       char *this_section;
       this_section = options.sections.List[index_sec];
       /* if a new section ID is found in the header */
-      if (strcmp(section_current, this_section)) {
+      if (!this_section || !section_current || strcmp(section_current, this_section)) {
         /* this is not the present section */
         if (field->Header && strstr(field->Header, this_section)) {
           /* the header contains a new registered section ID */
@@ -2845,7 +2879,7 @@ long file_write_target(struct file_struct file,
     long    columns    =0;
 
     if (!ptable->List[index].rows) continue;
-
+    
     rows   = ptable->List[index].rows;
     columns= ptable->List[index].columns;
 
@@ -2873,7 +2907,7 @@ long file_write_target(struct file_struct file,
     /* from there we know the 'base' field and how many similar follow */
 
     /* detects section change, end previous, init new */
-    if (strcmp(ptable->List[index].Section, section_current)) { /* field section is not current */
+    if (!ptable->List[index].Section || strcmp(ptable->List[index].Section, section_current)) { /* field section is not current */
       file_write_section(file, options,
         section_current, options.format.EndSection);
       /* shift to field section from List */
@@ -2931,7 +2965,7 @@ long file_write_target(struct file_struct file,
       }
 
       to_register = str_cat(" ", name, " ", NULL);
-      if (!strstr(section_fields.List[section_index], to_register)) {
+      if (!section_fields.List[section_index] || !strstr(section_fields.List[section_index], to_register)) {
         /* exit loop: name not registered yet */
         if (strlen(ptable->List[index].Name)<=options.names_length && strlen(name) > options.names_length) {
           int diff=strlen(name)-strlen(ptable->List[index].Name);
@@ -3192,62 +3226,62 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       strlist_add(&(options.sections), &argv[i][10]);
     else if(!strncmp("--makerows=", argv[i], 11))
       strlist_add(&(options.makerows), &argv[i][11]);
-    else if((!strcmp("--section",   argv[i]) || !strcmp("-s",   argv[i])) && (i + 1) < argc)
+    else if((!strcmp("--section",   argv[i]) || !strcmp("-s",   argv[i])) && (i + 1) <= argc)
       strlist_add(&(options.sections), argv[++i]);
-    else if(!strcmp("--makerows",   argv[i]) && (i + 1) < argc)
+    else if(!strcmp("--makerows",   argv[i]) && (i + 1) <= argc)
       strlist_add(&(options.makerows), argv[++i]);
     else if(!strncmp("--metadata=", argv[i], 11))
       strlist_add(&(options.metadata), &argv[i][11]);
-    else if((!strcmp("--metadata",   argv[i]) || !strcmp("-m",   argv[i])) && (i + 1) < argc)
+    else if((!strcmp("--metadata",   argv[i]) || !strcmp("-m",   argv[i])) && (i + 1) <= argc)
       strlist_add(&(options.metadata), argv[++i]);
 
     else if(!strncmp("--comment=", argv[i], 10)) {
       str_free(options.comment);
       options.comment = str_dup(&argv[i][10]);
-    } else if(!strcmp("--comment", argv[i]) && (i + 1) < argc) {
+    } else if(!strcmp("--comment", argv[i]) && (i + 1) <= argc) {
       str_free(options.comment);
       options.comment = str_dup(argv[++i]);
     } else if(!strncmp("--eol=",   argv[i], 6)) {
       str_free(options.eol);
       options.eol = str_dup(&argv[i][6]);
-    } else if(!strcmp("--eol",     argv[i]) && (i + 1) < argc) {
+    } else if(!strcmp("--eol",     argv[i]) && (i + 1) <= argc) {
       str_free(options.eol);
       options.eol = str_dup(argv[++i]);
     } else if(!strncmp("--point=", argv[i], 8)) {
       str_free(options.point);
       options.point = str_dup(&argv[i][8]);
-    } else if(!strcmp("--point",   argv[i]) && (i + 1) < argc) {
+    } else if(!strcmp("--point",   argv[i]) && (i + 1) <= argc) {
       str_free(options.point);
       options.point = str_dup(argv[++i]);
     } else if(!strncmp("--separator=", argv[i], 12)) {
       str_free(options.separator);
       options.separator = str_dup(&argv[i][12]);
-    } else if(!strcmp("--separator",   argv[i]) && (i + 1) < argc) {
+    } else if(!strcmp("--separator",   argv[i]) && (i + 1) <= argc) {
       str_free(options.separator);
       options.separator = str_dup(argv[++i]);
 
     } else if(!strncmp("--outfile=", argv[i], 10))
       options.outfile = fileparts(&argv[i][10]);
-    else if((!strcmp("--outfile",   argv[i]) || !strcmp("-o",   argv[i])) && (i + 1) < argc)
+    else if((!strcmp("--outfile",   argv[i]) || !strcmp("-o",   argv[i])) && (i + 1) <= argc)
       options.outfile = fileparts(argv[++i]);
     else if(!strncmp("--format=",  argv[i], 9)) {
       format_free(options.format);
       options.format = format_init(Global_Formats, &argv[i][9]);
-    } else if((!strcmp("--format",  argv[i]) || !strcmp("-f",  argv[i])) && (i + 1) < argc) {
+    } else if((!strcmp("--format",  argv[i]) || !strcmp("-f",  argv[i])) && (i + 1) <= argc) {
       format_free(options.format);
       options.format = format_init(Global_Formats, argv[++i]);
     } else if(!strncmp("--nelements_min=",  argv[i], 16)) {
       options.nelements_min = atoi(&argv[i][16]);
-    } else if(!strcmp("--nelements_min",  argv[i]) && (i + 1) < argc) {
+    } else if(!strcmp("--nelements_min",  argv[i]) && (i + 1) <= argc) {
       options.nelements_min = atoi(argv[++i]);
     } else if(!strncmp("--nelements_max=",  argv[i], 16)) {
       options.nelements_max = atoi(&argv[i][16]);
-    } else if(!strcmp("--nelements_max",  argv[i]) && (i + 1) < argc) {
+    } else if(!strcmp("--nelements_max",  argv[i]) && (i + 1) <= argc) {
       options.nelements_max = atoi(argv[++i]);
 
     } else if(!strncmp("--names_length=",  argv[i], 15)) {
       options.names_length = atoi(&argv[i][16]);
-    } else if(!strcmp("--names_length",  argv[i]) && (i + 1) < argc) {
+    } else if(!strcmp("--names_length",  argv[i]) && (i + 1) <= argc) {
       options.names_length = atoi(argv[++i]);
     } else if(!strcmp("--names_lower", argv[i]))
       options.names_lowup= 'l';
