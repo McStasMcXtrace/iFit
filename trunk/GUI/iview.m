@@ -32,11 +32,22 @@ end
 % create or raise interface
 instance=iView_private_create(instance);
 
-% nargin=1 and arg=anything: make action='import' and import data using iData
-% nargin>1: 
-% arg1='import' and arg2-n=files to import or structures or iData
-% arg1='
-
+switch action
+case 'new'
+  instance=figure;
+  instance=iView_private_create(instance);
+  return
+case 'load'
+  if isempty(object), object= iData(''); end
+  iView_private_icon(instance, 'load', object)
+case 'resize'
+  iView_private_icon(instance, 'resize', []);
+  return
+otherwise
+  if ~isempty(action)
+    disp([' Unknown action ' action ' in ' mfilename ]);
+  end
+end
 % iview actions:
 %   build         build empty interface
 %   load_config   read INI file
@@ -55,30 +66,5 @@ instance=iView_private_create(instance);
 %   edit          edit iView configuration or data sets (if selection is active)
 
 % INTERFACE
-
-% main window: single figure slider with menu
-
-% uicontext menu on background:
-%   new
-%   load
-%   save 
-%   select all
-%   deselect all
-%   properties
-%   paste
-%   align
-
-% uicontext menu on icons
-%   select
-%   deselect
-%   open
-%   save
-%   rename
-%   cut
-%   copy
-%   paste (merge)
-%   delete (close)
-%   properties
-%   edit
 
 
