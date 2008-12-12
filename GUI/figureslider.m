@@ -16,8 +16,18 @@ function f=figureslider(varargin)
   % create figure if none specified
   if isempty(varargin)
     hfig.handle=figure;
-  else 
-    hfig.handle=figure(varargin{:}); 
+  else
+    if nargin == 2 && strcmp(varargin{2}, 'resize')
+      callback_resize(varargin{1}, [], []);
+      return;
+    else
+      if isnumeric(varargin{1})
+        hfig.handle=figure(varargin{1});
+        set(hfig.handle,varargin{2:end});
+      else
+        hfig.handle=figure(varargin{:}); 
+      end
+    end
   end
 
   % check if there are already sliders and get their handles
@@ -66,7 +76,14 @@ function f=figureslider(varargin)
 
   % set resize callback so that sliders may be hidden/shown 
   % depending on size of inner objects to show
-  set(hfig.handle, 'ResizeFcn', @callback_resize);
+  resizeFcn = get(hfig.handle, 'ResizeFcn');
+  if ~isempty(resizeFcn)
+    if isempty(findstr(char(resizeFcn), 'figureslider(gcf, ''resize'');'))
+      set(hfig.handle, 'ResizeFcn', [  'figureslider(gcf, ''resize''); ; ' char(resizeFcn) ';' ]);
+    end
+  else
+    set(hfig.handle, 'ResizeFcn', 'figureslider(gcf, ''resize'');');
+  end
 
   callback_resize(hfig.handle);  % setup sliders
 
@@ -100,9 +117,13 @@ function callback_slider_h(hObject, eventdata, handles)
   for index=1:length(hfig.children)
     this.handle = hfig.children(index);
     this.pos    = get(hfig.children(index), 'Position');
-    this.units  = get(hfig.children(index), 'Units');
+    try
+        this.units  = get(hfig.children(index), 'Units');
+    catch
+        this.units  = [];
+    end
     % skip sliders
-    if this.handle == hfig.slider_h | this.handle == hfig.slider_v | this.handle == hfig.center
+    if isempty(this.units) | this.handle == hfig.slider_h | this.handle == hfig.slider_v | this.handle == hfig.center
       continue; 
     end
     if strcmp(this.units,'normalized'), continue; 
@@ -130,9 +151,13 @@ function callback_slider_v(hObject, eventdata, handles)
   for index=1:length(hfig.children)
     this.handle = hfig.children(index);
     this.pos    = get(hfig.children(index), 'Position');
-    this.units  = get(hfig.children(index), 'Units');
+    try
+        this.units  = get(hfig.children(index), 'Units');
+    catch
+        this.units  = [];
+    end
     % skip sliders
-    if this.handle == hfig.slider_h | this.handle == hfig.slider_v | this.handle == hfig.center
+    if isempty(this.units) | this.handle == hfig.slider_h | this.handle == hfig.slider_v | this.handle == hfig.center
       continue; 
     end
     if strcmp(this.units,'normalized'), continue; 
