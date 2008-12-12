@@ -28,7 +28,7 @@
 % --makerows=NAME     All fields matching NAME are transformed into row vectors
 % List of all options can be obtained using: looktxt --help
 %
-% looktxt  version 1.0.0 (2 Sept 2006) by Farhi E. [farhi@ill.fr]
+% looktxt  version 1.0.4 (5 Nov 2008) by Farhi E. [farhi@ill.fr]
 
 function data = looktxt(args)
 data = [];

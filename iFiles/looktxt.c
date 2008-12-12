@@ -2,7 +2,7 @@
 *
 *                     Program looktxt.c
 *
-* looktxt version Looktxt 1.0.3 (21 Nov 2007) by Farhi E. [farhi@ill.fr]
+* looktxt version Looktxt 1.0.5 (12 Dec 2008) by Farhi E. [farhi@ill.fr]
 *
 * Usage: looktxt [options] file1 file2 ...
 * Action: Search and export numerics in a text/ascii file.
@@ -73,15 +73,16 @@
 * 0.93  (21/08/01) -T, filename in file
 * 1.00  (23/08/04) New VERSION with more output formats
 * 1.03  (21/11/07) Fixed redundant numbered Sections (e.g. SPEC files)
+* 1.05  (12/12/08) Solved memleaks with valgrind
 *
 *****************************************************************************/
 
 /* Identification ********************************************************* */
 
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
-#define DATE    "5 Nov 2008"
+#define DATE    "12 Dec 2008"
 #ifndef VERSION
-#define VERSION "Looktxt 1.0.4"
+#define VERSION "Looktxt 1.0.5"
 #endif
 
 #ifdef __dest_os
@@ -147,6 +148,7 @@
 #define Bsign       32
 #define Bcomment    64
 #define Bseparator 128
+#define ALLOC_BLOCK 10000 /* size of blocks to pre-allocate in Lists */
 
 #define MAX_LENGTH 1024 /* length of buffer */
 #define MAX_TXT4BIN 100 /* size beyond which binary storage is prefered (-b option)
@@ -663,7 +665,7 @@ char *str_valid(char *string, int n)
     if ( !strchr(name_char, tmp2[i]) ) tmp2[i] = '_';
   }
   valid = str_dup((tmp2 && tmp2[0]) ? tmp2 : "Name");
-  str_free(tmp1);
+  tmp1=str_free(tmp1);
   return(valid);
 } /* str_valid */
 
@@ -700,10 +702,10 @@ char *str_valid_struct(char *string, char char_struct)
   }
 
   valid = str_dup((tmp2 && tmp2[0]) ? tmp2 : "Name");
-  str_free(tmp1);
+  tmp1=str_free(tmp1);
   if (char_struct > ' ') {
     ret = str_cat(valid, str_struct, NULL);
-    str_free(valid);
+    valid=str_free(valid);
   } else ret=valid;
   return(ret);
 
@@ -813,7 +815,7 @@ char *str_lastword(char *string)
   for (p_start=tmp1; ischr(*p_start, "_" Cnumber) && p_start<tmp1+strlen(tmp1); p_start++);
   word = str_dup(p_start);
 
-  str_free(reverted); str_free(tmp0); str_free(tmp1);
+  reverted=str_free(reverted); tmp0=str_free(tmp0); tmp1=str_free(tmp1);
   return(word);
 } /* str_lastword */
 
@@ -963,7 +965,7 @@ usage: just as fprintf, but with (char *)fmt_args being the list of arg type
       if (fmt_pos < fmt+strlen(fmt))
         fprintf(f, "%s", fmt_pos);
     }
-    str_free(fmt_bit);
+    fmt_bit=str_free(fmt_bit);
 
   }
   return(this_arg);
@@ -1030,20 +1032,22 @@ struct fileparts_struct fileparts(char *name)
 
     /* extract path: searches for last file separator */
     path_pos= strrchr(name, LK_PATHSEP_C);  /* last PATHSEP */
+    
+    parts.Path = str_dup("");
 
     if (!path_pos) {
       path_pos   =name;
       path_length=0;
       name_pos   =name;
-      parts.Path = str_dup("");
     } else {
       name_pos    = path_pos+1;
       path_length = name_pos - name;  /* from start to path+sep */
       if (path_length) {
+        parts.Path=str_free(parts.Path);
         parts.Path = str_cat(name, LK_PATHSEP_S, NULL);
         strncpy(parts.Path, name, path_length);
         parts.Path[path_length]='\0';
-      } else parts.Path = str_dup("");
+      }
     }
 
     /* extract ext: now looks for the 'dot' */
@@ -1071,12 +1075,14 @@ struct fileparts_struct fileparts(char *name)
 /*****************************************************************************
 * fileparts_free: Free a fileparts_struct fields
 *****************************************************************************/
-void fileparts_free(struct fileparts_struct parts)
+struct fileparts_struct fileparts_free(struct fileparts_struct parts)
 {
   str_free(parts.FullName);
   str_free(parts.Path);
   str_free(parts.Name);
   str_free(parts.Extension);
+  
+  return(parts);
 }
 
 /*****************************************************************************
@@ -1106,21 +1112,21 @@ char *try_open_target(struct fileparts_struct parts, char force)
         "Warning: target file '%s' already exists. \n"
         "         Use --force or --append option to override [looktxt:try_open_target:path].\n",
         FullName);
-      str_free(FullName);
+      FullName=str_free(FullName);
       return(NULL);
     }
   }
 
   fid = fopen(FullName, "w");
   if (fid) {
-    fclose(fid);
+    fclose(fid); fid=NULL;
     return(FullName);/* OK, return */
   }
   /* now tries with local Path=getcwd() */
-  str_free(FullName);
+  FullName=str_free(FullName);
   getcwd(cwd, 1024);
-  /* str_free(parts.Path); */
-  parts.Path = strlen(cwd) ? str_dup(cwd) : ".";
+  parts.Path=str_free(parts.Path); 
+  parts.Path = str_dup(strlen(cwd) ? cwd : ".");
   if (!parts.Extension)
     FullName = str_cat(parts.Path, LK_PATHSEP_S, parts.Name, NULL);
   else
@@ -1134,17 +1140,17 @@ char *try_open_target(struct fileparts_struct parts, char force)
         "Warning: target file '%s' already exists. \n"
         "         Use --force or --append option to override [looktxt:try_open_target:local].\n",
         FullName);
-      str_free(FullName);
+      FullName=str_free(FullName);
       return(NULL);
     }
   }
 
   fid = fopen(FullName, "w");
   if (fid) {
-    fclose(fid);
+    fclose(fid); fid=NULL;
     return(FullName);
   }
-  str_free(FullName);
+  FullName=str_free(FullName);
   return(NULL);
 } /* try_open_target */
 
@@ -1197,11 +1203,11 @@ struct file_struct file_open(char *name, struct option_struct options)
 
     /* extracts source file parts */
     parts = fileparts(name);
-    if (parts.Path)       file.Path      = strlen(parts.Path) ? str_dup(parts.Path) : ".";
+    if (parts.Path)       file.Path      = str_dup(strlen(parts.Path) ? parts.Path: ".");
     if (parts.Name)       file.SourceName= str_dup(parts.Name);
     if (parts.Extension)  file.Extension = str_dup(parts.Extension);
     file.Source= str_dup(name);
-    fileparts_free(parts);
+    parts=fileparts_free(parts);
 
     /* get info about source file */
     if (stat(file.Source, &stfile) == 0) {
@@ -1210,7 +1216,7 @@ struct file_struct file_open(char *name, struct option_struct options)
       file.Time = stfile.st_mtime;
     } else {
       print_stderr( "Error: source file '%s' can not be accessed [looktxt:file_open].\n", file.Source);
-      str_free(file.Source); file.Source = NULL;
+      file.Source = str_free(file.Source); 
       return(file);
     }
 
@@ -1218,7 +1224,7 @@ struct file_struct file_open(char *name, struct option_struct options)
     file.SourceHandle = fopen(file.Source, "r");
     if (!file.SourceHandle) {
       print_stderr( "Error: source file '%s' can not be opened for reading [looktxt:file_open].\n", file.Source);
-      str_free(file.Source); file.Source = NULL;
+      file.Source = str_free(file.Source);
       return(file);
     }
     /* sets default output name */
@@ -1234,6 +1240,7 @@ struct file_struct file_open(char *name, struct option_struct options)
    if (options.outfile.FullName) {
       if (options.outfile.Name) {
         if (strcmp(options.outfile.Name,"*")) { /* not '*.ext' */
+          str_free(parts.Name); parts.Name=NULL;
           if (options.file_index > 1) { /* catenate file index */
             char chr_index[10];
             snprintf(chr_index, 10, "_%ld", options.file_index);
@@ -1241,10 +1248,14 @@ struct file_struct file_open(char *name, struct option_struct options)
           } else parts.Name = str_dup(options.outfile.Name);
         }
       }
-      if (options.outfile.Path)
-        parts.Path      = str_dup(options.outfile.Path);
-      if (options.outfile.Extension && strlen(options.outfile.Extension))
-        parts.Extension = str_dup(options.outfile.Extension);
+      if (options.outfile.Path) {
+        parts.Path=str_free(parts.Path); 
+        parts.Path=str_dup(options.outfile.Path);
+      }
+      if (options.outfile.Extension && strlen(options.outfile.Extension)) {
+        parts.Extension=str_free(parts.Extension);
+        parts.Extension=str_dup(options.outfile.Extension);
+      }
     }
 
     if (options.outfile.FullName
@@ -1264,7 +1275,7 @@ struct file_struct file_open(char *name, struct option_struct options)
     if (options.verbose >= 2) printf("VERBOSE[file_open]:         file '%s': target TXT %s", file.Source, file.TargetTxt);
 
     if (options.use_binary) { /* only change extension */
-      str_free(parts.Extension);
+      str_free(parts.Extension); parts.Extension=NULL;
       parts.Extension = str_dup("bin");
       file.TargetBin = try_open_target(parts, options.force);
       if (options.verbose >= 2) printf(" BIN %s", file.TargetBin);
@@ -1278,14 +1289,14 @@ struct file_struct file_open(char *name, struct option_struct options)
       root = NULL;                           /* no ROOT */
     else root = str_valid(options.names_root, options.names_length); /* user ROOT */
 
-    fileparts_free(parts);
+    parts=fileparts_free(parts);
 
     file.RootName = ( root ? str_valid(root, 0) : str_dup("") );
     if (!strncmp(file.RootName, "lk_", 3) && options.verbose >= 1)
       print_stderr( "Warning: Data root level renamed as %s (started with number).\n"
                     "         Output file names are unchanged\n",
         file.RootName);
-    str_free(root);
+    root=str_free(root);
 
   } /* if (name is non NULL) */
   return(file);
@@ -1294,20 +1305,36 @@ struct file_struct file_open(char *name, struct option_struct options)
 /*****************************************************************************
 * file_close: Close a source file and clear allocated memory
 *****************************************************************************/
-void file_close(struct file_struct file)
+struct file_struct file_close(struct file_struct file)
 {
-  if (file.SourceHandle) fclose(file.SourceHandle);
-  if (file.BinHandle)    fclose(file.BinHandle);
-  if (file.TxtHandle && file.TargetTxt && strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) fclose(file.TxtHandle);
+  if (file.SourceHandle) { 
+    if(fclose(file.SourceHandle)) 
+      print_stderr( "Warning: Could not close input Source file %s\n",
+        file.Source); 
+    file.SourceHandle=NULL; 
+  }
+  if (file.BinHandle)    { 
+    if(fclose(file.BinHandle)) 
+      print_stderr( "Warning: Could not close output Binary file %s\n",
+        file.TargetBin);
+    file.BinHandle=NULL; 
+  }
+  if (file.TxtHandle && file.TargetTxt 
+   && strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) { 
+    if(fclose(file.TxtHandle)) 
+      print_stderr( "Warning: Could not close output Text file %s\n",
+        file.TargetTxt);
+    file.TxtHandle=NULL; 
+  }
 
-  str_free(file.Source);
-  str_free(file.TargetTxt);
-  str_free(file.TargetBin);
-  /* str_free(file.Path); */
-  str_free(file.SourceName);
-  str_free(file.TargetName);
-  str_free(file.Extension);
-  str_free(file.RootName);
+  file.Source    =str_free(file.Source);
+  file.TargetTxt =str_free(file.TargetTxt);
+  file.TargetBin =str_free(file.TargetBin);
+  file.Path      =str_free(file.Path);
+  file.SourceName=str_free(file.SourceName);
+  file.TargetName=str_free(file.TargetName);
+  file.Extension =str_free(file.Extension);
+  file.RootName  =str_free(file.RootName);
 }
 
 /*****************************************************************************
@@ -1365,9 +1392,7 @@ char *format_rep_tag(char *format_const)
   char *format=NULL;
 
   if (!format_const) return(NULL);
-  format = (char *)mem(strlen(format_const)+1);
-  if (!format) exit(print_stderr( "Error: insufficient memory [looktxt:format_rep_tag]\n"));
-  strcpy(format, format_const);
+  format = str_dup(format_const);
   if (strlen(format_const)) {
     str_rep(format, "%BAS", "%1$s");
     str_rep(format, "%PAR", "%1$s");
@@ -1387,9 +1412,7 @@ char *format_rep_header(char *format_const)
   char *format=NULL;
 
   if (!format_const) return(NULL);
-  format = (char *)mem(strlen(format_const)+1);
-  if (!format) exit(print_stderr( "Error: insufficient memory [looktxt:format_rep_header]\n"));
-  strcpy(format, format_const);
+  format = str_dup(format_const);
   if (strlen(format_const)) {
     str_rep(format, "%FMT", "%1$s");
     str_rep(format, "%USR", "%2$s");
@@ -1420,9 +1443,7 @@ char *format_rep_binref(char *format_const)
   char *format=NULL;
 
   if (!format_const) return(NULL);
-  format = (char *)mem(strlen(format_const)+1);
-  if (!format) exit(print_stderr( "Error: insufficient memory [looktxt:format_rep_binref]\n"));
-  strcpy(format, format_const);
+  format = str_dup(format_const);
   if (strlen(format_const)) {
     str_rep(format, "%FIL", "%1$s");
     str_rep(format, "%BEG", "%2$d");
@@ -1459,7 +1480,7 @@ struct format_struct format_init(struct format_struct formats[], char *request)
       str_lowup(tmp, 'l');
       if (strstr(request_lower, tmp) || !strcmp(request_lower, formats[i].Extension)) i_format = i;
     }
-    str_free(request_lower);
+    request_lower=str_free(request_lower);
   }
   if (i_format < 0)
   {
@@ -1494,22 +1515,23 @@ struct format_struct format_init(struct format_struct formats[], char *request)
 * format_free: free format structure
 *****************************************************************************/
 
-void format_free(struct format_struct format)
+struct format_struct format_free(struct format_struct format)
 {
 /* free format specification strings */
-  str_free(format.Name        );
-  str_free(format.Header      );
-  str_free(format.Footer      );
-  str_free(format.AssignTag   );
-  str_free(format.BeginSection);
-  str_free(format.EndSection  );
-  str_free(format.BeginData   );
-  str_free(format.EndData     );
-  str_free(format.BinReference);
+  format.Name        =str_free(format.Name        );
+  format.Header      =str_free(format.Header      );
+  format.Footer      =str_free(format.Footer      );
+  format.AssignTag   =str_free(format.AssignTag   );
+  format.BeginSection=str_free(format.BeginSection);
+  format.EndSection  =str_free(format.EndSection  );
+  format.BeginData   =str_free(format.BeginData   );
+  format.EndData     =str_free(format.EndData     );
+  format.BinReference=str_free(format.BinReference);
+  return(format);
 } /* format_free */
 
 /*****************************************************************************
-* strlist_init: init a zero strlist structure with 100 slots
+* strlist_init: init a zero strlist structure with new slots
 *****************************************************************************/
 struct strlist_struct strlist_init(char *name)
 {
@@ -1517,14 +1539,14 @@ struct strlist_struct strlist_init(char *name)
   int i;
 
   list.length = 0;
-  list.nalloc= 100;
+  list.nalloc= ALLOC_BLOCK;
   list.List  = (char  **)mem(list.nalloc*sizeof(char *));
   if(list.List == NULL) {
-      print_stderr( "Fatal: memory exhausted during allocation of size %ld for '%s' [looktxt:strlist_init].", (list.nalloc)*sizeof(char*), name);
+      print_stderr( "Fatal: memory exhausted during allocation of size %ld for '%s' [looktxt:strlist_init].", 
+        (list.nalloc)*sizeof(char*), name);
       exit(EXIT_FAILURE);
     }
-  if (name && strlen(name)) strncpy(list.Name, name, 32);
-  else strcpy(list.Name, "");
+  strncpy(list.Name, name && strlen(name) ? name : "", 32);
   for (i=0; i<list.nalloc; list.List[i++]=NULL);
   return(list);
 }  /* strlist_init */
@@ -1532,7 +1554,7 @@ struct strlist_struct strlist_init(char *name)
 /*****************************************************************************
 * strlist_free: Free all list elements
 *****************************************************************************/
-void strlist_free(struct strlist_struct list)
+struct strlist_struct strlist_free(struct strlist_struct list)
 {
   if (list.List && list.nalloc) {
     long index;
@@ -1540,7 +1562,9 @@ void strlist_free(struct strlist_struct list)
       str_free(list.List[index]);
     }
   }
-  memfree(list.List);
+  list.length=list.nalloc=0;
+  list.List=(char**)memfree(list.List);
+  return(list);
 } /* strlist_free */
 
 /*****************************************************************************
@@ -1590,24 +1614,26 @@ struct option_struct options_init(char *pgname)
 /*****************************************************************************
 * options_free: Free options values
 *****************************************************************************/
-void options_free(struct option_struct options)
+struct option_struct options_free(struct option_struct options)
 {
-  fileparts_free(options.outfile);
-  strlist_free(options.sections);
-  strlist_free(options.metadata);
-  format_free(options.format);
+  options.outfile =fileparts_free(options.outfile);
+  options.sections=strlist_free(options.sections);
+  options.metadata=strlist_free(options.metadata);
+  options.makerows=strlist_free(options.makerows);
+  options.format  =format_free(options.format);
 
-  str_free(options.separator);
-  str_free(options.comment);
-  str_free(options.eol);
-  str_free(options.point);
-  str_free(options.option_list);
-  str_free(options.pgname);
-  str_free(options.openmode);
-  str_free(options.number);
-  str_free(options.exp);
-  str_free(options.sign);
-  str_free(options.alpha);
+  options.separator  =str_free(options.separator);
+  options.comment    =str_free(options.comment);
+  options.eol        =str_free(options.eol);
+  options.point      =str_free(options.point);
+  options.option_list=str_free(options.option_list);
+  options.pgname     =str_free(options.pgname);
+  options.openmode   =str_free(options.openmode);
+  options.number     =str_free(options.number);
+  options.exp        =str_free(options.exp);
+  options.sign       =str_free(options.sign);
+  options.alpha      =str_free(options.alpha);
+  return(options);
 } /* options_free*/
 
 /* lists functions ******************************************************** */
@@ -1641,13 +1667,13 @@ struct strlist_struct strlist_add(struct strlist_struct *list, char *element)
   if (!element) return(*list);
 
   if (list->length  >= list->nalloc) {
-    /* increase list size by 100 new element slots */
+    /* increase list size by new element slots */
     char **p;
     int    i;
-    list->nalloc = list->length+100;
+    list->nalloc = list->length+ALLOC_BLOCK;
     p = (char **)realloc(list->List, list->nalloc*sizeof(char*));
     if(p == NULL) {
-      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld for '%s' [looktxt:strlist_add].", (list->length+100)*sizeof(char*), list->Name);
+      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld for '%s' [looktxt:strlist_add].", (list->nalloc)*sizeof(char*), list->Name);
       exit(EXIT_FAILURE);
     }
     list->List   = (char **)p;
@@ -1670,13 +1696,13 @@ struct strlist_struct strlist_add_void(struct strlist_struct *list, void *elemen
   if (!element) return(*list);
 
   if (list->length  >= list->nalloc) {
-    /* increase list size by 100 new element slots */
+    /* increase list size by new element slots */
     char **p;
     int    i;
-    list->nalloc = list->length+100;
+    list->nalloc = list->length+ALLOC_BLOCK;
     p = (char **)realloc(list->List, list->nalloc*sizeof(char*));
     if(p == NULL) {
-      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld for '%s' [looktxt:strlist_add].", (list->length+100)*sizeof(char*), list->Name);
+      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld for '%s' [looktxt:strlist_add].", (list->nalloc)*sizeof(char*), list->Name);
       exit(EXIT_FAILURE);
     }
     list->List   = (char **)p;
@@ -1742,12 +1768,14 @@ void data_print(struct data_struct field)
 /*****************************************************************************
 * data_free: Free a data_struct
 *****************************************************************************/
-void data_free(struct data_struct field)
+struct data_struct data_free(struct data_struct field)
 {
-  str_free(field.Name);
-  str_free(field.Name_valid);
-  str_free(field.Header);
-  str_free(field.Section);
+  field.Name      =str_free(field.Name);
+  field.Name_valid=str_free(field.Name_valid);
+  field.Header    =str_free(field.Header);
+  field.Section   =str_free(field.Section);
+  field.rows=0;
+  return(field);
 } /* data_free */
 
 /*****************************************************************************
@@ -1836,7 +1864,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
           print_stderr( "         '%s ...'\n", string);
           fseek(file.SourceHandle, pos, SEEK_SET);
           fscanf(file.SourceHandle, "%f", &value); value=0;
-          str_free(string);
+          string=str_free(string);
         }
       }
       dataf[index] = (float)value;
@@ -1855,7 +1883,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
     if (fwrite(string, sizeof(char), strlen(string), fid) < strlen(string))
       print_stderr( "Warning: error in fwrite(%s,%i) [looktxt:data_get_float].\n",
       "tmpfile", strlen(string));
-    str_free(string);
+    string=str_free(string); separator=str_free(separator);
     fseek(fid, 0, SEEK_SET);
     for (index =0; index < field.rows*field.columns; index ++) {
       long pos=ftell(fid);
@@ -1870,12 +1898,12 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
           print_stderr( "         '%s ...'\n", string);
           fseek(fid, pos, SEEK_SET);
           fscanf(fid, "%f", &value); value=0;
-          str_free(string);
+          string=str_free(string);
         }
       }
       dataf[index] = (float)value;
     }
-    fclose(fid);
+    fclose(fid); fid=NULL;
   }
   return(dataf);
 } /* data_get_float */
@@ -1889,9 +1917,9 @@ struct table_struct table_init(char *name)
   int i;
 
   table.length= 0;
+  table.nalloc= ALLOC_BLOCK;
   table.Name  = name ? str_dup(name) : NULL;
-  table.List  = (struct data_struct *)mem(100*sizeof(struct data_struct));
-  table.nalloc= 100;
+  table.List  = (struct data_struct *)mem(table.nalloc*sizeof(struct data_struct));
   for (i=0; i<table.nalloc; table.List[i++] = data_init());
 
   return(table);
@@ -1904,29 +1932,31 @@ struct table_struct table_init(char *name)
 void table_add(struct table_struct *table, struct data_struct data)
 {
 
+  if (!table) return;
   if (!table->List) {
-    print_stderr( "Warning: table List pointer is NULL (index=%ld nalloc = %ld) [looktxt:table_add]\n", table->length, table->nalloc);
+    print_stderr( "Warning: table List pointer is NULL (index=%ld nalloc = %ld) [looktxt:table_add]\n", 
+      table->length, table->nalloc);
     return;
   }
 
   if (!data.rows) return;
   if (table->length  >= table->nalloc) {
-    /* increase list size by 100 new element slots */
+    /* increase list size by new element slots */
     void *p;
     int   i;
-    p = (void *)realloc(table->List, (table->length+100)*sizeof(struct data_struct));
+    table->nalloc = table->length+ALLOC_BLOCK;
+    p = (void *)realloc(table->List, (table->nalloc)*sizeof(struct data_struct));
     if(p == NULL) {
-      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld [looktxt:table_add].", (table->length+100)*sizeof(struct data_struct));
+      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld [looktxt:table_add].", (table->nalloc)*sizeof(struct data_struct));
       exit(EXIT_FAILURE);
     }
-    table->nalloc = table->length+100;
     table->List   = (struct data_struct *)p;
     for (i=table->length; i<table->nalloc; table->List[i++] = data_init());
   }
 
   if (table->length >= 0) {
-    data_free(table->List[table->length]);
-    table->List[table->length] = data;
+    table->List[table->length]=data_free(table->List[table->length]);
+    table->List[table->length]=data;
     table->length++;
   }
 } /* table_add */
@@ -1949,15 +1979,17 @@ void table_print(struct table_struct table)
 /*****************************************************************************
 * table_free: Free all table_struct elements
 *****************************************************************************/
-void table_free(struct table_struct table)
+struct table_struct table_free(struct table_struct table)
 {
   if (table.List && table.nalloc) {
     long index;
     for (index=0; index < table.nalloc; index++)
       data_free(table.List[index]);
   }
-  str_free(table.Name);
-  memfree(table.List);
+  table.Name=str_free(table.Name);
+  table.length=table.nalloc=0;
+  table.List=(struct data_struct *)memfree(table.List);
+  return(table);
 } /* table_free */
 
 /* looktxt functions ****************************************************** */
@@ -2273,7 +2305,7 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
             field.rows    = rows;
             field.columns = columns;
 
-            table_add(&table, field);  /* STORING field */
+            table_add(&table, field);  /* STORING field, Name=Section=NULL */
             pos   = endnumpos+1;
             startcharpos = pos;
             if (fseek(file.SourceHandle, pos, SEEK_SET)) { /* reposition after Numeric*/
@@ -2349,7 +2381,7 @@ int file_write_tag(struct file_struct file, struct option_struct options,
     struct_name,   /* 3  NAM  */
     value);        /* 4  VAL  */
 
-  str_free(struct_section); str_free(struct_name);
+  struct_section=str_free(struct_section); struct_name=str_free(struct_name);
 
   return(ret);
 
@@ -2440,7 +2472,7 @@ int file_write_headfoot(struct file_struct file, struct option_struct options, c
   }
 
   fflush(file.TxtHandle);
-  str_free(user);
+  user=str_free(user);
   return(ret);
 
 } /* file_write_headfoot */
@@ -2475,7 +2507,7 @@ int file_write_section(struct file_struct file, struct option_struct options,
     struct_section,                         /* 2  SEC  */
     section ? section : "");                /* 3  NAM=TIT */
 
-  str_free(struct_section);
+  struct_section=str_free(struct_section);
 
   return (ret);
 
@@ -2522,7 +2554,7 @@ int file_write_field_data(struct file_struct file,
     field.columns,   /* 5 COL */
     file.RootName ? file.RootName : "");    /* 6 BAS  */
 
-  str_free(struct_name); str_free(struct_section);
+  struct_name=str_free(struct_name); struct_section=str_free(struct_section);
 
   return(1);
 
@@ -2620,7 +2652,7 @@ struct write_struct file_write_getsections(struct file_struct file,
 {
   int     index;  /* index of current field from table */
   int     length;
-  char   *section_current      =NULL;  /* current section full name */
+  char   *section_current=NULL;  /* current section full name */
   char   *last_valid_name=NULL;
   struct strlist_struct section_names;  /* name of found sections */
   struct strlist_struct section_fields; /* fields registered for each found section (in the same order as section_names */
@@ -2645,7 +2677,7 @@ struct write_struct file_write_getsections(struct file_struct file,
     struct  data_struct *field;  /* current field from file */
     char   *header=NULL;
     long    index_sec;
-
+    
     field  = &(ptable->List[index]);
     header = data_get_char(file, field->c_start, field->c_end);
 
@@ -2664,7 +2696,7 @@ struct write_struct file_write_getsections(struct file_struct file,
     field->Name    = str_lastword(header); /* was NULL before */
 
     if (field->Name && strlen(field->Name)) {
-      str_free(last_valid_name); last_valid_name = str_dup(field->Name);
+      last_valid_name=str_free(last_valid_name); last_valid_name = str_dup(field->Name);
     }
 
     /* fortran case: single row, no name */
@@ -2679,17 +2711,18 @@ struct write_struct file_write_getsections(struct file_struct file,
         field->rows=0; /* unactivate */
       }
     }
-    if (options.makerows.length && last_valid_name) {
+    if (options.makerows.length && last_valid_name && strlen(last_valid_name)) {
       for (index_sec=0; index_sec < options.makerows.length; index_sec++) {
         if (strstr(last_valid_name, options.makerows.List[index_sec])) {
           long columns=field->columns*field->rows;
           field->rows=1; field->columns=columns;
+          str_free(field->Name);
           field->Name=str_dup(last_valid_name);
         }
       }
     }
 
-    /* look for custom fields */
+    /* look for custom MetaData fields */
     /* if found, add a new entry in table with table_add(&table, field); */
     /* search metadata names in header if any. Extract them into new table entries */
     for (index_sec=0; index_sec < options.metadata.length; index_sec++)
@@ -2700,55 +2733,63 @@ struct write_struct file_write_getsections(struct file_struct file,
       section_index = strlist_search(section_names, "MetaData");
       this_metadata = options.metadata.List[index_sec];
       /* if metadata is found in the header */
-      if (this_metadata && header && strstr(header, this_metadata)) {
-        long  offset;
-        char *metadata_line;
+      if (this_metadata && strlen(this_metadata) && header && strstr(header, this_metadata)) {
+        long  offset=0;
+        char *metadata_line=NULL;
 
         offset = field->c_start;
 
         do {
-          metadata_line = data_get_line(file, &offset); /* TODO: skip metadata word */
+          metadata_line = data_get_line(file, &offset); /* get line and move forward in lines */
 
-          if (metadata_line && strlen(metadata_line) && strstr(metadata_line, this_metadata)) { /* create an entry */
-            struct data_struct data;
-            
-            data = data_init();
-            data.Name   = str_dup(this_metadata);
-            if (metadata_line && strlen(metadata_line)) /* remove unsupported chars from header */
+          if (metadata_line && strlen(metadata_line) > 1) {
+            if (strstr(metadata_line, this_metadata)) {
+              /* create an entry */
+              struct data_struct data;
+              
+              data = data_init();
+              data.Name   = str_dup(this_metadata);
+              /* remove unsupported chars from header */
               if (strstr(options.format.Name, "Matlab")
-              ||  strstr(options.format.Name, "Scilab")
-              ||  strstr(options.format.Name, "Octave")
-              ||  strstr(options.format.Name, "IDL")) {
+                ||  strstr(options.format.Name, "Scilab")
+                ||  strstr(options.format.Name, "Octave")
+                ||  strstr(options.format.Name, "IDL")) {
                 char *p=metadata_line;
                 while ((p = strpbrk(p, "\n\r\f\t\v")) != NULL) *p = ' ';
                 p=metadata_line;
                 while ((p = strpbrk(p, "'")) != NULL) *p = '"';
               }
-            data.Header = metadata_line;       /* line following the metadata */
-            data.Section= str_dup("MetaData"); /* Section name */
-            data.index  = index;      /* index of this data block */
-            data.rows   = field->rows;
-            data.columns= field->columns;
-            data.n_start= field->n_start;
-            data.n_end  = field->n_end;
-            data.c_start= field->c_start;
-            data.c_end  = field->c_end;
-            table_add(ptable, data);
+              data.Header = str_dup(metadata_line);       /* line following the metadata */
+              data.Section= str_dup("MetaData"); /* Section name */
+              data.index  = index;      /* index of this data block */
+              data.rows   = field->rows;
+              data.columns= field->columns;
+              data.n_start= field->n_start;
+              data.n_end  = field->n_end;
+              data.c_start= field->c_start;
+              data.c_end  = field->c_end;
+              if (options.verbose >= 3) {
+                data_print(data);
+              }
+              table_add(ptable, data); /* duplicated field */
 
-            /* add the MetaData section */
-            if (section_index<0) {
-                strlist_add(&section_names,  "MetaData");
-                strlist_add(&section_fields, " ");
-                section_index = strlist_search(section_names, "MetaData");
-                if (section_index<0 && options.verbose >= 3)
-                  printf("\nDEBUG[file_write_target]: Could not create MetaData list to register item %s\n", this_metadata);
+              /* add the MetaData section */
+              if (section_index<0) {
+                  strlist_add(&section_names,  "MetaData");
+                  strlist_add(&section_fields, " ");
+                  section_index = strlist_search(section_names, "MetaData");
+                  if (section_index<0 && options.verbose >= 3)
+                    printf("\nDEBUG[file_write_target]: Could not create MetaData list to register item %s\n", this_metadata);
+              }
+
             }
-          }
-        } while (metadata_line && offset < field->c_end);
+          } else { offset = field->c_end; }
+          metadata_line=str_free(metadata_line);
+        } while (offset < field->c_end);
       } /* if strstr */
     } /* for (index_sec metadata */
 
-    str_free(header); header=NULL;
+    header=str_free(header);
 
     /* look for section names in header if any. skip ROOT */
     for (index_sec=0; index_sec < options.sections.length; index_sec++)
@@ -2756,7 +2797,7 @@ struct write_struct file_write_getsections(struct file_struct file,
       char *this_section;
       this_section = options.sections.List[index_sec];
       /* if a new section ID is found in the header */
-      if (!this_section || !section_current || strcmp(section_current, this_section)) {
+      if (this_section && section_current && strcmp(section_current, this_section)) {
         /* this is not the present section */
         if (field->Header && strstr(field->Header, this_section)) {
           /* the header contains a new registered section ID */
@@ -2790,6 +2831,9 @@ struct write_struct file_write_getsections(struct file_struct file,
     /* set field section to current section */
     field->Section = str_dup(section_current); /* was NULL before */
   } /* for index 1st PASS */
+  
+  section_current=str_free(section_current);
+  last_valid_name=str_free(last_valid_name);
 
   /* From here we have:
    * - a ptable->List of data_struct containing Name/Section fields,
@@ -2840,7 +2884,8 @@ long file_write_target(struct file_struct file,
     else file.BinHandle = fopen(file.TargetBin, options.openmode);
   }
 
-  if (!file.TxtHandle) exit(print_stderr( "Error: can not open text target file '%s' in mode %s. Exiting.\n", file.TargetTxt, options.openmode));
+  if (!file.TxtHandle) 
+    exit(print_stderr( "Error: can not open text target file '%s' in mode %s. Exiting.\n", file.TargetTxt, options.openmode));
   if (!file.BinHandle && options.use_binary) {
     print_stderr( "Warning: can not open binary target file '%s' in mode %s. Using text.\n", file.TargetBin, options.openmode);
     options.use_binary = 0;
@@ -2952,9 +2997,8 @@ long file_write_target(struct file_struct file,
     redundant  = -1;
     do {
       char *name=NULL;
-      char *to_register;
+      char *to_register=NULL;
       char value[256];
-      char *new_section_fields;
       if (redundant < 0)     name = str_cat(ptable->List[index].Name, NULL);
       else if (redundant == 0) {
         sprintf(value,"_%ld", ptable->List[index].index);
@@ -2967,11 +3011,12 @@ long file_write_target(struct file_struct file,
       to_register = str_cat(" ", name, " ", NULL);
       if (!section_fields.List[section_index] || !strstr(section_fields.List[section_index], to_register)) {
         /* exit loop: name not registered yet */
+        char *new_section_fields=NULL;
         if (strlen(ptable->List[index].Name)<=options.names_length && strlen(name) > options.names_length) {
           int diff=strlen(name)-strlen(ptable->List[index].Name);
           char *name_shorter = str_dup_n(ptable->List[index].Name, strlen(ptable->List[index].Name)-diff);
           str_free(name);  name=str_cat(name_shorter, value, NULL);
-          str_free(name_shorter);
+          name_shorter=str_free(name_shorter);
         }
         str_free(ptable->List[index].Name); ptable->List[index].Name = name;
         new_section_fields= str_cat(section_fields.List[section_index], to_register, NULL);
@@ -2981,7 +3026,7 @@ long file_write_target(struct file_struct file,
         break;
       } else {
         redundant++;
-        str_free(name); str_free(to_register);
+        name=str_free(name); to_register=str_free(to_register);
       }
     } while(redundant < ptable->length); /* exit with break */
 
@@ -3010,7 +3055,7 @@ long file_write_target(struct file_struct file,
         file_write_tag(file, options, section,
                        ptable->List[index].Name_valid, ptable->List[index].Header,
                        options.format.AssignTag);
-        str_free(section); section=NULL;
+        section=str_free(section); 
 
       }
       /* add Data to Section for next data output */
@@ -3050,7 +3095,6 @@ long file_write_target(struct file_struct file,
             ptable->List[index].rows += field->rows;
             field->rows=0; /* unactivate */
           }
-          memfree(to_catenate.List);
         }
         /* end Data.Section part */
 
@@ -3059,9 +3103,12 @@ long file_write_target(struct file_struct file,
         file_write_field_data(file, options, ptable->List[index], options.format.EndData);
       } /* if IDL empty else ... */
     } /* if rows columns within output range */
-
+    /* free to_ctenate, but not its elements (which are pointers to keep) */
+    to_catenate.List=(char**)memfree(to_catenate.List); to_catenate.nalloc=to_catenate.length=0;
   } /* end for (index < ptable->index) */
-
+  
+  last_valid_name=str_free(last_valid_name);
+  
   /* close current section (if any) */
   if (section_current && (strstr(options.format.Name,"IDL") || strcmp(section_current, ROOT_SECTION))) /* write section_end (if any) */
     file_write_section(file, options,
@@ -3082,6 +3129,8 @@ long file_write_target(struct file_struct file,
     }
     fprintf(file.TxtHandle, "}\n");
   }
+  section_current       = str_free(section_current);
+  section_current_valid = str_free(section_current_valid);
 
   /* write output footer */
   file_write_headfoot(file, options, options.format.Footer);
@@ -3129,8 +3178,8 @@ int parse_files(struct option_struct options, int argc, char *argv[])
         /* table_print(table); */
         long ret=file_write_target(file, options, &table, found_sections.section_names, found_sections.section_fields);
         /* Free section structures */
-        strlist_free(found_sections.section_names);
-        strlist_free(found_sections.section_fields);
+        found_sections.section_names =strlist_free(found_sections.section_names);
+        found_sections.section_fields=strlist_free(found_sections.section_fields);
         if (options.verbose >= 1) printf("Looktxt: file '%s': wrote %ld numerical field%s into %s\n", file.Source, ret, ret > 1 ? "s" : "", file.TargetTxt);
 #ifdef TEXMEX
         TexMex_Target_Array[options.file_index] = str_dup(file.TargetTxt);
@@ -3143,10 +3192,11 @@ int parse_files(struct option_struct options, int argc, char *argv[])
 #endif
       }
       options.file_index++;
-      table_free(table);
-      file_close(file);
+      table=table_free(table);
     }
-    str_free(filename);
+    fflush(NULL); /* flush all */
+    file=file_close(file);
+    filename=str_free(filename);
   } /* for i */
 
   return(options.file_index);
@@ -3197,7 +3247,7 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       if (!struct_char) options.use_struct = '\0';
       else {
         options.use_struct = struct_char[0];
-        str_free(struct_char);
+        struct_char=str_free(struct_char);
       }
     } else if(!strcmp("--struct",    argv[i]))
       options.use_struct = '.';
@@ -3468,7 +3518,7 @@ int main(int argc, char *argv[])
   ret = parse_files(options, argc, argv);
 
   /* Free options */
-  options_free(options);
+  options=options_free(options);
 
   /* returns number of processed files */
   return((int)ret);
