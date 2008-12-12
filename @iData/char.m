@@ -7,7 +7,7 @@ function c = char(s)
 % input:  s: object or array (iData) 
 % output: c: iData identification (char)
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 %
@@ -15,7 +15,7 @@ function c = char(s)
 % EF 23/09/07 iData implementation
 
 c=[];
-for index=1:length(s)
+for index=1:length(s(:))
   t = s(index);
   T = t.Title;  if iscell(T), T = T{1}; end
   cmd = t.Command{end};

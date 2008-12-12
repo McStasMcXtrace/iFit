@@ -17,7 +17,7 @@ function [match, types, dims] = findfield(s, field, option)
 %         nelements: total number of elements in iData fields (double)
 % ex:     findfield(iData) or findfield(iData,'Title') or findfield(s,'Title','exact case')
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/set, iData/get, iData/findobj, iData/findstr
 
 % EF 23/09/07 iData implementation
@@ -32,7 +32,7 @@ if nargin <= 2
 end
 
 if length(s(:)) > 1
-  match = cell(1, length(s)); types=match; dims=match;
+  match = cell(1, length(s(:))); types=match; dims=match;
   for index=1:length(s)
     [m,t,n] = findfield(s(index), field, option);
     match{index}=m;
