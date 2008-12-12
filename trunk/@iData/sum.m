@@ -11,7 +11,7 @@ function s = sum(a,dim)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj
 
 if ~isa(a, 'iData')
@@ -21,7 +21,7 @@ end
 if nargin < 2, dim=1; end
 % handle input iData arrays
 if length(a(:)) > 1
-  s = {};
+  s = cell(size(a));
   for index=1:length(a(:))
     s{index} = sum(a(index), dim);
   end

@@ -7,7 +7,7 @@ function a=logical(a)
 % output: v: value of the iData Signal (logical)
 % ex:     'logical(iData(rand(10)))'
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 
@@ -15,9 +15,9 @@ function a=logical(a)
 % EF 23/09/07 iData implementation
 
 if length(a) > 1
-  b = {};
+  b = cell(size(a));
   for index=1:length(a(:))
-    a{index} = iData_private_unary(a(index), op);
+    b{index} = iData_private_unary(a(index), op);
   end
   a = reshape(b, size(a));
   return
