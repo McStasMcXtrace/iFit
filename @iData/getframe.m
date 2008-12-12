@@ -12,7 +12,7 @@ function frame = getframe(a, dim)
 % output: frame: frame/thumbnail
 % ex:     f=getframe(a); image(f.cdata);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot, getframe, image, imwrite
 
 if nargin < 2, dim=0; end
@@ -24,7 +24,10 @@ if length(a) > 1
   return
 end
 
-f=figure;
+f=figure('menubar','none','toolbar','none');
+% put window out of sight
+p=get(f,'Position'); p(1:2) = [-1000 -1000];
+set(f,'Position',p);
 if dim
   % resample a with a coarse grid if needed
   need_resample=0;
@@ -50,7 +53,7 @@ end
 plot(a); view(2);
 if dim
   legend off;
-  xlabel(''); ylabel('')
+  xlabel(''); ylabel(''); title('');
   set(gcf,'Position',[50,50,dim,dim]);
   set(gca,'xtick',[]);
   set(gca,'ytick',[]) ;
