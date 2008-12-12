@@ -127,7 +127,11 @@ elseif isempty(filename)
   end
   if isempty(filename), return; end
   filename = strcat(pathname, filesep, filename);
-  if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
+  if ~iscellstr(filename)
+    if isdir(filename)
+      filename = [ filename filesep '*']; 
+    end % all elements in case of directory
+  end
   [data, format] = iLoad(filename, loader);
 else
   % data not empty, but not a file name
