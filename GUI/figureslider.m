@@ -1,5 +1,5 @@
 function f=figureslider(varargin)
-% FIGURESLIDER cretes by itself a new figure with horizontal and vertical sliders
+% FIGURESLIDER creates by itself a new figure with horizontal and vertical sliders
 % and returns its handle. Sliders are hidden if all objects are shown in the figure.
 % When the figure gets smaller than the enclosed object set, sliders may be used to 
 % shift the figure view.
@@ -12,6 +12,8 @@ function f=figureslider(varargin)
 % Example: figureslider('Name','Figure with sliders', 'ToolBar','figure')
 %
 % See also: figure
+
+% Author: E. Farhi <farhi@ill.fr>. Version $Revision 1.1$. Dec 15, 2008
 
   % create figure if none specified
   if isempty(varargin)
@@ -98,13 +100,17 @@ function callback_center(hObject, eventdata, handles)
   hfig.handle   = gcf;
   hfig.slider_h = findobj(hfig.handle,'Tag','Slider_h');
   hfig.slider_v = findobj(hfig.handle,'Tag','Slider_v');
-  set(hfig.slider_h, 'Value',50);
-  callback_slider_h(hfig.slider_h);
-  set(hfig.slider_v, 'Value',50);
-  callback_slider_v(hfig.slider_v);
-
-function callback_slider_h(hObject, eventdata, handles)
-% move enclosing objects if not in units=nomalized 
+  if ~isempty(hfig.slider_h), 
+    set(hfig.slider_h, 'Value',50); 
+    callback_slider_h(hfig.slider_h);
+  end
+  if ~isempty(hfig.slider_v), 
+    set(hfig.slider_v, 'Value',50);
+    callback_slider_v(hfig.slider_v);
+  end
+  
+function callback_slider(hObject, eventdata, handles, type)
+  % move enclosing objects if not in units=nomalized 
   hfig.handle   = gcf;
   hfig.children = get(hfig.handle, 'Children');
   hfig.units    = get(hfig.handle, 'Units');
@@ -116,60 +122,43 @@ function callback_slider_h(hObject, eventdata, handles)
   
   for index=1:length(hfig.children)
     this.handle = hfig.children(index);
-    this.pos    = get(hfig.children(index), 'Position');
     try
-        this.units  = get(hfig.children(index), 'Units');
+      this.pos    = get(hfig.children(index), 'Position');
     catch
-        this.units  = [];
+      continue; % object has no Position
+    end
+    try
+      this.units  = get(hfig.children(index), 'Units');
+    catch
+      continue;
     end
     % skip sliders
-    if isempty(this.units) | this.handle == hfig.slider_h | this.handle == hfig.slider_v | this.handle == hfig.center
+    if isempty(this.units) | length(this.pos) < 4 | this.handle == hfig.slider_h | this.handle == hfig.slider_v | this.handle == hfig.center
       continue; 
     end
-    if strcmp(this.units,'normalized'), continue; 
+    if strcmp(this.units,'normalized') | strcmp(get(this.handle, 'Tag'), 'Slider_h') | strcmp(get(this.handle, 'Tag'), 'Slider_v') | strcmp(get(this.handle, 'Tag'), 'Center') 
+      continue; 
     else set(hfig.children(index), 'Units', 'pixels');
     end
-    step = [ extension(3)*(get(hObject,'Value')-get(hObject,'UserData'))/100 0 0 0 ];
+    if type == 'h'
+      step = [ extension(3)*(get(hObject,'Value')-get(hObject,'UserData'))/100 0 0 0 ];
+    elseif type == 'v'
+      step = [ 0 extension(4)*(get(hObject,'Value')-get(hObject,'UserData'))/100 0 0 ];
+    end
     set(hfig.children(index), 'Position', this.pos-step);
     set(hfig.children(index), 'Units', this.units);
-  end
+  end % for
   set(hObject,'UserData', get(hObject,'Value'));
   
   set(hfig.handle, 'Units', hfig.units);
 
-function callback_slider_v(hObject, eventdata, handles)
-% move enclosing objects if not in units=nomalized 
-  hfig.handle   = gcf;
-  hfig.children = get(hfig.handle, 'Children');
-  hfig.units    = get(hfig.handle, 'Units');
-  hfig.slider_h = findobj(hfig.handle,'Tag','Slider_h');
-  hfig.slider_v = findobj(hfig.handle,'Tag','Slider_v');
-  hfig.center   = findobj(hfig.handle,'Tag','Center');
-  set(hfig.handle, 'Units','pixels');
-  extension = callback_getchildrenextension(hfig.handle);
-  
-  for index=1:length(hfig.children)
-    this.handle = hfig.children(index);
-    this.pos    = get(hfig.children(index), 'Position');
-    try
-        this.units  = get(hfig.children(index), 'Units');
-    catch
-        this.units  = [];
-    end
-    % skip sliders
-    if isempty(this.units) | this.handle == hfig.slider_h | this.handle == hfig.slider_v | this.handle == hfig.center
-      continue; 
-    end
-    if strcmp(this.units,'normalized'), continue; 
-    else set(hfig.children(index), 'Units', 'pixels');
-    end
-    step = [ 0 extension(4)*(get(hObject,'Value')-get(hObject,'UserData'))/100 0 0 ];
-    set(hfig.children(index), 'Position', this.pos-step);
-    set(hfig.children(index), 'Units', this.units);
-  end
-  set(hObject,'UserData', get(hObject,'Value'));
-  
-  set(hfig.handle, 'Units', hfig.units);
+function callback_slider_h(varargin)
+  varargin{4} = 'h';
+  callback_slider(varargin{:});
+
+function callback_slider_v(varargin)
+  varargin{4} = 'v';
+  callback_slider(varargin{:});
 
 function callback_resize(hObject, eventdata, handles)
   hfig.handle   = hObject;
@@ -183,12 +172,16 @@ function callback_resize(hObject, eventdata, handles)
   hfig.sliderwidth=20;
 
   % move sliders at figure edges
-  set(hfig.slider_h, 'Position', ...
-    [1 1 ...
-     hfig.position(3)-hfig.sliderwidth hfig.sliderwidth]);
-  set(hfig.slider_v, 'Position', ... 
-    [hfig.position(3)-hfig.sliderwidth hfig.sliderwidth ...
-     hfig.sliderwidth hfig.position(4)-hfig.sliderwidth]);
+  if ~isempty(hfig.slider_h), 
+    set(hfig.slider_h, 'Position', ...
+      [1 1 ...
+       hfig.position(3)-hfig.sliderwidth hfig.sliderwidth]);
+  end
+  if ~isempty(hfig.slider_v), 
+    set(hfig.slider_v, 'Position', ... 
+      [hfig.position(3)-hfig.sliderwidth hfig.sliderwidth ...
+       hfig.sliderwidth hfig.position(4)-hfig.sliderwidth]);
+  end
   set(hfig.center, 'Position', ... 
     [hfig.position(3)-hfig.sliderwidth 1 ...
      hfig.sliderwidth hfig.sliderwidth]);
@@ -196,16 +189,20 @@ function callback_resize(hObject, eventdata, handles)
   % hide or show sliders, depending on size of uipanel vs. figure
   extension = callback_getchildrenextension(hfig.handle);
 
-  if extension(3) <= hfig.position(3)
-    set(hfig.slider_h, 'Visible','off');
-  else
-    set(hfig.slider_h, 'Visible','on');
+  if ~isempty(hfig.slider_h), 
+    if extension(3) <= hfig.position(3)
+      set(hfig.slider_h, 'Visible','off');
+    else
+      set(hfig.slider_h, 'Visible','on');
+    end
   end
 
-  if extension(4) <= hfig.position(4)
-    set(hfig.slider_v, 'Visible','off');
-  else
-    set(hfig.slider_v, 'Visible','on');
+  if ~isempty(hfig.slider_v), 
+    if extension(4) <= hfig.position(4)
+      set(hfig.slider_v, 'Visible','off');
+    else
+      set(hfig.slider_v, 'Visible','on');
+    end
   end
   
   if extension(3) <= hfig.position(3) & extension(4) <= hfig.position(4)
@@ -229,7 +226,11 @@ function extension=callback_getchildrenextension(hObject, eventdata, handles)
   min_x=Inf; d_x=-Inf; min_y=Inf; d_y=-Inf;
   for index=1:length(hfig.children)
     this.handle = hfig.children(index);
-    this.pos    = get(hfig.children(index), 'Position');
+    try
+      this.pos    = get(hfig.children(index), 'Position');
+    catch
+      continue; % object has no Position
+    end
     try
         this.units  = get(hfig.children(index), 'Units');
     catch
