@@ -27,7 +27,7 @@ function filename = saveas(a, varargin)
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/load, iData/getframe, save
 
 if length(a) > 1
@@ -51,20 +51,43 @@ if nargin < 3, format=''; else format = varargin{2}; end
 if nargin < 4, options=''; else options=varargin{3}; end
 if isempty(options) && ndims(a) >= 2, options='view2 axis tight'; end
 
+filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
+          '*.mat', 'Matlab binary file (*.mat)'; ...
+          '*.pdf', 'Portable Document Format (*.pdf)'; ...
+          '*.eps', 'Encapsulated PostScrip (color, *.eps)'; ...
+      '*.ps', 'PostScrip (color, *.ps)'; ...
+      '*.nc', 'NetCDF (*.mc)'; ...
+      '*.hdf', 'Hierarchical Data Format (compressed, *.hdf, *.nx)'; ...
+      '*.xls', 'Excel format (requires Excel to be installed, *.xls)'; ...
+      '*.csv', 'Comma Separated Values (suitable for Excel, *.csv)'; ...
+      '*.png', 'Portable Network Graphics image (*.png)'; ...
+      '*.jpg', 'JPEG image (*.jpg)'; ...
+      '*.tiff;*.tif', 'TIFF image (*.tif)'; ...
+      '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
+      '*.wrl', 'Virtual Reality file (*.wrl)'};
+
+if strcmp(filename, 'gui')
+  [filename, pathname, filterindex] = uiputfile( ...
+       filterspec, ...
+        ['Save ' a.Title ' as...'], a.Tag);
+  if ~isempty(filename) & filename ~= 0
+    ext = filterspec{filterindex,1};
+    % check if extension was given
+    [f,p,e] = fileparts(filename);
+    if isempty(e), filename=[ filename ext(2:end) ]; end
+  else
+    filename=[];
+  end
+end
+
 if strcmp(format, 'gui')
-  liststring= {'M - Matlab script/function','MAT - Matlab binary file', ...
-    'PDF - Portable Document Format','EPS - Encapsulated PostScrip (color)', ...
-    'PS - PostScrip (color)','NC - NetCDF','HDF5 - Hierarchical Data Format (compressed)', ...
-    'XLS - Excel format (requires Excel to be installed)', ...
-    'CSV - Comma Separated Values (suitable for Excel)', ...
-    'PNG - Portable Network Graphics image','JPG - JPEG image','TIFF - TIFF image', ...
-    'SVG - Scalable Vector Graphics', ...
-    'VRML - Virtual Reality file'};
+  liststring= filterspec{:,2};
   format_index=listdlg('ListString',liststring,'Name',[ 'Select format to save ' filename ], ...
     'PromptString', {'Select format ',['to save file ' filename ]}, ...
     'ListSize', [300 200]);
   if isempty(format_index), return; end
-  format = lower(strtok(liststring{format_index}));
+  format = liststring{format_index};
+  format = format(3:end);
 end
 
 % handle extensions
@@ -98,7 +121,7 @@ case 'm'
           '% To use import data, type ''' name ''' at the matlab prompt.' sprintf('\n') ...
           '% You will obtain an iData object (if you have iData installed) or a structure.' sprintf('\n') ...
           '%' sprintf('\n') ...
-          iData_saveas_single('this', a) ];
+          class2str('this', a) ];
   [fid, message]=fopen(filename,'w+');
   if fid == -1
     iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag ]);
@@ -177,58 +200,4 @@ case 'vrml'
   vrml(f,filename);
   close(f);
 end
-
-% ============================================================================
-% private function
-function str=iData_saveas_single(this, data)
-% create a string [ 'this = data;' ]
-
-NL = sprintf('\n');
-if ischar(data)
-  str = [ this ' = ''' iData_saveas_validstr(data) ''';' NL ];
-elseif isa(data, 'iData')
-  str = [ '% ' this ' (' class(data) ') size ' num2str(size(data)) NL ];
-  str = [ str iData_saveas_single(this, struct(data)) ];
-  str = [ str 'if ~exist(''iData''), return; end' NL ];
-  str = [ str this '_s=' this '; ' this ' = rmfield(' this ',' this '.Alias); ' this ' = iData(' this ');' NL ...
-         'setalias(' this ', ' this '_s.Alias.Names, ' this '_s.Alias.Values, ' this '_s.Alias.Labels);' NL ... 
-         'setaxis('  this ', mat2str(1:length(' this '_s.Alias.Axis)), ' this '_s.Alias.Axis);' NL ...
-         '% end of iData ' this NL ];
-elseif isnumeric(data) | islogical(data)
-  str = [ '% ' this ' numeric (' class(data) ') size ' num2str(size(data)) NL ...
-          this ' = ' mat2str(data(:)) ';' NL this ' = reshape(' this ', ' num2str(size(data)) ');' NL ];
-elseif isstruct(data)
-  f = fieldnames(data);
-  str = [ '% ' this ' (' class(data) ') length ' num2str(length(f)) NL ];
-  for index=1:length(f)
-    str = [ str iData_saveas_single([ this '.' f{index} ], getfield(data, f{index})) ];
-  end
-  str = [ str '% end of struct ' this NL ];
-elseif iscellstr(data)
-  str = [ '% ' this ' (' class(data) 'str) size ' mat2str(size(data)) NL ...
-          this ' = { ...' NL ];
-  for index=1:length(data(:))
-    str = [ str '  ''' iData_saveas_validstr(data{index}) '''' ];
-    if index < length(data(:)), str = [ str ', ' ]; end
-    str = [ str ' ...' NL ];
-  end
-  str = [ str '}; ' NL ];
-  str = [ str this ' = reshape(' this ',' mat2str(size(data)) ');' NL '% end of cellstr ' this NL ];
-elseif iscell(data)
-  str = [ '% ' this class(data) ' size ' mat2str(size(data)) NL ...
-          this ' = cell(' mat2str(size(data)) ');' NL ];
-  for index=1:length(data(:))
-    str = [ str iData_saveas_single([ this '{' num2str(index) '}' ], data{index}) NL ];
-  end
-  str = [ str this ' = reshape(' this ',' mat2str(size(data)) ');' NL '% end of cell ' this NL ];
-elseif isa(data, 'function_handle')
-  iData_private_warning(mfilename,  'can not save function handles. Skipping.');
-else
-  iData_private_warning(mfilename,[ 'can not save ' class(data) '. Skipping.' ]);
-  % other object
-end
-
-function str=iData_saveas_validstr(str)
-index = find(str < 32 | str > 127);
-str(index) = ' ';
 
