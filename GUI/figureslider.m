@@ -11,9 +11,12 @@ function f=figureslider(varargin)
 %
 % Example: figureslider('Name','Figure with sliders', 'ToolBar','figure')
 %
+% This function adds some 'Slider_h', 'Slider_v' and 'Center' tagged objects. 
+% It uses the ResizeFcn figure property, but any previous setting is also executed.
+%
 % See also: figure
 
-% Author: E. Farhi <farhi@ill.fr>. Version $Revision 1.1$. Dec 15, 2008
+% Author: E. Farhi <farhi@ill.fr>. Version $Revision: 1.5 $. Dec 15, 2008
 
   % create figure if none specified
   if isempty(varargin)
@@ -80,11 +83,11 @@ function f=figureslider(varargin)
   % depending on size of inner objects to show
   resizeFcn = get(hfig.handle, 'ResizeFcn');
   if ~isempty(resizeFcn)
-    if isempty(findstr(char(resizeFcn), 'figureslider(gcf, ''resize'');'))
-      set(hfig.handle, 'ResizeFcn', [  'figureslider(gcf, ''resize''); ; ' char(resizeFcn) ';' ]);
+    if isempty(findstr(char(resizeFcn), 'figureslider(gcbo, ''resize'');'))
+      set(hfig.handle, 'ResizeFcn', [  'figureslider(gcbo, ''resize''); ' char(resizeFcn) ';' ]);
     end
   else
-    set(hfig.handle, 'ResizeFcn', 'figureslider(gcf, ''resize'');');
+    set(hfig.handle, 'ResizeFcn', 'figureslider(gcbo, ''resize'');');
   end
 
   callback_resize(hfig.handle);  % setup sliders
@@ -161,7 +164,7 @@ function callback_slider_v(varargin)
   callback_slider(varargin{:});
 
 function callback_resize(hObject, eventdata, handles)
-  hfig.handle   = hObject;
+  hfig.handle   = gcf;
   hfig.units    = get(hfig.handle, 'Units');
   set(hfig.handle, 'Units','pixels');
   hfig.position = get(hfig.handle,'Position');
@@ -174,7 +177,7 @@ function callback_resize(hObject, eventdata, handles)
   % move sliders at figure edges
   if ~isempty(hfig.slider_h), 
     set(hfig.slider_h, 'Position', ...
-      [1 1 ...
+      [0 0 ...
        hfig.position(3)-hfig.sliderwidth hfig.sliderwidth]);
   end
   if ~isempty(hfig.slider_v), 
@@ -182,9 +185,11 @@ function callback_resize(hObject, eventdata, handles)
       [hfig.position(3)-hfig.sliderwidth hfig.sliderwidth ...
        hfig.sliderwidth hfig.position(4)-hfig.sliderwidth]);
   end
-  set(hfig.center, 'Position', ... 
-    [hfig.position(3)-hfig.sliderwidth 1 ...
-     hfig.sliderwidth hfig.sliderwidth]);
+  if ~isempty(hfig.center), 
+    set(hfig.center, 'Position', ... 
+      [hfig.position(3)-hfig.sliderwidth 0 ...
+       hfig.sliderwidth hfig.sliderwidth]);
+  end
 
   % hide or show sliders, depending on size of uipanel vs. figure
   extension = callback_getchildrenextension(hfig.handle);
@@ -205,17 +210,19 @@ function callback_resize(hObject, eventdata, handles)
     end
   end
   
-  if extension(3) <= hfig.position(3) & extension(4) <= hfig.position(4)
-    set(hfig.center, 'Visible','off');
-  else
-    set(hfig.center, 'Visible','on');
+  if ~isempty(hfig.center)
+    if extension(3) <= hfig.position(3) & extension(4) <= hfig.position(4)
+      set(hfig.center, 'Visible','off');
+    else
+      set(hfig.center, 'Visible','on');
+    end
   end
 
   set(hfig.handle, 'Units', hfig.units);
 
 function extension=callback_getchildrenextension(hObject, eventdata, handles)
 % compute the total extension on enclosed objects
-  hfig.handle   = hObject;
+  hfig.handle   = gcf;
   hfig.units    = get(hfig.handle, 'Units');
   set(hfig.handle, 'Units','pixels');
   hfig.children = get(hfig.handle, 'Children');
