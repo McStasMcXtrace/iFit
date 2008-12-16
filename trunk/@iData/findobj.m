@@ -19,7 +19,7 @@ function [varargout] = findobj(s_in, varargin)
 %         base:  objects found in base/MATLAB workspace (iData array)
 % ex :    findobj(iData) or findobj(iData,'Title','MyTitle')
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/set, iData/get, iData/findstr, iData/findfield
 
 % EF 23/09/07 iData implementation
@@ -30,13 +30,13 @@ s_base = {};
 caller_data = {};
 res_caller  = {};
 base_data   = {};
-res_base    = {};
 
 vars = evalin('caller','whos');
 vars_name  = {vars.name};
 vars_class = {vars.class};
 iData_i = find(strcmp(vars_class,'iData'));
 caller_data = vars_name(iData_i);
+% handle cells of iData objects in caller
 for i = find(strcmp(vars_class,'cell'))
   rc = evalin('caller',vars_name{i});
   for j = find(cellfun('isclass',rc,'iData'))
@@ -48,7 +48,7 @@ end
 % this evalin call and following block is to be removed for stand-alone application making
 if ~exist('isdeployed'), isdeployed=0; end  % set to 1 when using Matlab compiler (mcc)
 try
-if ~isdeployed, end
+  if ~isdeployed, end
 catch
   isdeployed=0;
 end
@@ -58,6 +58,7 @@ if ~isdeployed
   vars_class = {vars.class};
   iData_i = find(strcmp(vars_class,'iData'));
   base_data = vars_name(iData_i);
+  % handle cells of iData objects in Matlab base workspace
   for i = find(strcmp(vars_class,'cell'))
     rb = evalin('base',vars_name{i});
     for j = find(cellfun('isclass',rb,'iData'))
@@ -66,7 +67,7 @@ if ~isdeployed
   end
 end
 
-if length(s_in) == 1     % look into all iData or cell{iData} objects
+if length(s_in) == 1     % only one iData passed: we use caller/base objects
   for j=1:length(caller_data)
     s_caller{j} = evalin('caller',caller_data{j});
   end
@@ -77,87 +78,81 @@ if length(s_in) == 1     % look into all iData or cell{iData} objects
   end
 else    % work with s_in
   s_caller = s_in;
-  res_base = {};
 end
 
 if nargin == 1  % and this is a iData
   varargout{1} = s_caller;
   varargout{2} = s_base;
-  varargout{3} = caller_data;
-  varargout{4} = base_data;
   return
 end
 
+
 % now look for Properties in s
+i1 = ones(size(s_caller));
+i2 = ones(size(s_base));
 for i = 1:2:length(varargin)
   propname = varargin{i};
   if ~ischar(propname)
     iData_private_error(mfilename, ['Property names must be of type char (currently ' class(propname) ').' ]);
   end
-  res_caller = {};
-  for j = 1:length(s_caller)
-    if iscell(s_caller)
-      res_caller{j} = get(s_caller{j},propname);
-    else
-      res_caller{j} = get(s_caller(j),propname);
-    end
-  end  
-  for j = 1:length(s_base)
-    if iscell(s_base)
-      res_base{j} = get(s_base{j},propname);
-    else
-      res_base{j} = get(s_base(j),propname);
-    end
-  end
-  if length(varargin) == 1
-    varargout{1} = res_caller;
-    varargout{2} = res_base;
-    varargout{3} = caller_data;
-    varargout{4} = base_data;
-  else
+  try
     propvalue = varargin{i+1};
-    rc_i = zeros(size(caller_data));
-    for j = 1:length(s_caller)
-      rc = res_caller{j};
-      if iscell(rc)
-        rc = rc(:);
-        for k = 1:length(rc)
-          rck = rc{k};
-          if ischar(propvalue)
-            rc_i(j) = ~isempty(findstr(propvalue, rck));
-          else
-            lrck = min(length(rck), length(propvalue));
-            rc_i(j) = all(rck(1:lrck) == propvalue(1:lrck));
-          end
-        end
-      else
-        if ischar(propvalue)
-          rc_i(j) = ~isempty(findstr(propvalue, rc));
-        else
-          lrck = min(length(rc), length(propvalue));
-          rc_i(j) = all(rc(1:lrck) == propvalue(1:lrck));
-        end
-      end
-      rc_i = find(rc_i);
-    end  
-    rb_i = zeros(size(base_data));
-    for j = 1:length(s_base)
-      rb = res_base{j};
-      rb = rb(:);
-      if iscell(rb)
-        for k = 1:length(rb)
-          rb_i(j) = eval('strcmp(rb{k},propvalue) | (rb{k} == propvalue)','0');
-        end
-      else
-        rb_i(j) = eval('strcmp(rb,propvalue) | (rb == propvalue)','0');
-      end
-      rb_i = find(rb_i);
-    end
-    varargout{1} = s_caller(rc_i);
-    varargout{2} = s_base(rb_i);
-    varargout{3} = caller_data(rc_i);
-    varargout{4} = base_data(rb_i);
+  catch
+    propvalue = [];
   end
-  
+  [index1, prop1] = findprop(s_caller, propname, propvalue);
+  [index2, prop2] = findprop(s_base, propname, propvalue);
+  % do an AND operation on the indexes
+  i1 = i1 & index1;
+  i2 = i2 & index2;
 end
+i1 = find(i1);
+i2 = find(i2);
+
+if ~isempty(s_caller), s_caller = s_caller(i1); end
+if ~isempty(s_base), s_base = s_base(i2); end
+
+varargout{1} = s_caller;
+varargout{2} = s_base;
+
+
+
+% ==============================================================================
+% inline function
+
+function [index, propvalues]=findprop(array, propname, propvalue)
+% find a property in an array and return both logical index in array and values
+  propvalues = {};
+  index      = [];
+  if isempty(array), return; end
+  for j = 1:length(array)
+    if iscell(array)
+      propvalues{j} = get(array{j},propname);
+    else
+      propvalues{j} = get(array(j),propname);
+    end
+  end
+  if isempty(propvalue), return; end
+  for j = 1:length(array)
+    prop = propvalues{j}; % property value for iData 'j' in caller workspace
+    if iscell(prop)
+      prop = prop(:);
+      for k = 1:length(prop)
+        propk = prop{k};
+        if ischar(propvalue)
+          index(j) = ~isempty(findstr(propvalue, propk));
+        else
+          lpropk = min(length(propk), length(propvalue));
+          index(j) = all(rck(1:lpropk) == propvalue(1:lpropk)); % compares numeric arrays
+        end
+      end
+    else
+      if ischar(propvalue)
+        index(j) = ~isempty(findstr(propvalue, prop));
+      else
+        lpropk = min(length(prop), length(propvalue));
+        index(j) = all(rc(1:lpropk) == propvalue(1:lpropk));
+      end
+    end
+  end
 
