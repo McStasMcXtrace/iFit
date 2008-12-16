@@ -26,6 +26,10 @@ if create_new_instance
   [instance, config]=iView_private_create_interface(instance, config);
   % create storage areas
   iView_private_create_storage(instance, config);
+  if ~length(instance_list)
+    disp([ '% ' datestr(now) ' Starting iView' ]);
+    iView_private_config(0, 'save', config);
+  end
   instance_list = [ instance_list instance ];
 end
 
@@ -67,54 +71,71 @@ function [instance, config]=iView_private_create_interface(instance, config)
   set(instance, 'HandleVisibility', 'callback');
   set(instance, 'NextPlot','new', 'NumberTitle','on', 'BackingStore','on');
   
+  % install event handler for mouse
+  %set(instance, 'WindowButtonDownFcn',...
+	%					'iview(gcf, ''mouse_down'', gco);');
+  
+  % remove horizontal slider
+  slider_h = findobj(instance,'Tag','Slider_h');
+  delete(slider_h);
+  
   % customize interface from config
   if isfield(config,'Color')
     set(instance, 'Color',            config.Color);
+  else
+    config.Color = get(instance, 'Color');
   end
   if isfield(config,'FileName')
     set(instance, 'FileName',         config.FileName);
+  else
+    config.FileName = get(instance, 'FileName');
   end
   if isfield(config,'PaperUnits')
     set(instance, 'PaperUnits',       config.PaperUnits);
+  else
+    config.PaperUnits = get(instance, 'PaperUnits');
   end
   if isfield(config,'PaperOrientation')
     set(instance, 'PaperOrientation', config.PaperOrientation);
+  else
+    config.PaperOrientation = get(instance, 'PaperOrientation');
   end
   if isfield(config,'PaperPosition')
-    set(instance, 'PaperPosition',config.PaperPosition);
+    set(instance, 'PaperPosition', config.PaperPosition);
+  else
+    config.PaperPosition = get(instance, 'PaperPosition');
   end
   
-  if isfield(config,'Position')
-    set(instance, 'Position', config.Position); 
-  end
   if isfield(config,'Size')
-    pos = get(instance, 'Position');
+    pos      = get(instance, 'Position');
     pos(3:4) = config.Size;
     set(instance, 'Position', pos);
+  end
+  if isfield(config,'Position')
+    set(instance, 'Position', config.Position);
+  else
+    config.Position = get(instance, 'Position');
   end
 
   % create static menus (based on default Figure menus)
   file = uimenu(instance, 'Label', 'File');
   uimenu(file, 'Label', 'New window','Callback','iview(''new'');');
   uimenu(file, 'Label', 'Open...','Callback','iview(gcf, ''load'');');
-  uimenu(file, 'Label', 'Save');
-  uimenu(file, 'Label', 'Save as...');
+  uimenu(file, 'Label', 'Save configuration', 'Callback', 'iview(gcf, ''save_config'');');
   uimenu(file, 'Label', 'Page setup...', 'Callback', 'pagesetupdlg(gcf);', 'Separator','on');
   uimenu(file, 'Label', 'Print...',      'Callback', 'printdlg(gcf);');
-  uimenu(file, 'Label', 'Preferences...');
-  uimenu(file, 'Label', 'Close', 'Callback', 'iview(gcf, ''close'');', 'Separator','on');
-  uimenu(file, 'Label', 'Exit');
+  uimenu(file, 'Label', 'Properties...','Enable','off');
+  uimenu(file, 'Label', 'Close window', 'Callback', 'iview(gcf, ''close'');', 'Separator','on');
+  uimenu(file, 'Label', 'Exit', 'Callback', 'iview(gcf, ''exit'');'); % quit application
   
   edit = uimenu(instance, 'Label', 'Edit');
-  uimenu(edit, 'Label', 'Cut');
-  uimenu(edit, 'Label', 'Copy');
-  uimenu(edit, 'Label', 'Paste');
-  uimenu(edit, 'Label', 'Find...', 'Separator','on'); % dialog to find match, and optionally select result
-  uimenu(edit, 'Label', 'Select all');
-  uimenu(edit, 'Label', 'Deselect all');
-  uimenu(edit, 'Label', 'Properties...');
+  uimenu(edit, 'Label', 'Cut', 'Enable','off');
+  uimenu(edit, 'Label', 'Copy', 'Enable','off');
+  uimenu(edit, 'Label', 'Paste', 'Enable','off');
+  uimenu(edit, 'Label', 'Find...', 'Enable','off', 'Separator','on'); % dialog to find match, and optionally select result
+  uimenu(edit, 'Label', 'Preferences...', 'Enable','off');
   
-  view = uimenu(instance, 'Label', 'View');
+  view = uimenu(instance, 'Label', 'View', 'Enable','off'); % TODO : in the preferences ?
   %uimenu(view, 'Label', 'Menu'); % only in uicontext menu
   uimenu(view, 'Label', 'Refresh');
   uimenu(view, 'Label', 'Toolbar', 'Separator','on');
@@ -125,31 +146,32 @@ function [instance, config]=iView_private_create_interface(instance, config)
 
   % create static contextual menu
   % uicontext menu on background:
-%   new window
-%   load
-%   save 
-%   select all
-%   deselect all
-%   properties
-%   paste
-%   align
-
-
+  %   new window
+  %   load
+  %   save 
+  %   select all
+  %   deselect all
+  %   properties
+  %   paste
+  %   align
 
   % create dynamic contextual menu (from config)
   
   % menus that must be at the right side
   documents=uimenu(instance, 'Label', 'Documents','Tag','Documents');
-  uimenu(documents, 'Label', 'Save all as...');
-  uimenu(documents, 'Label', 'Clear all...');
-  uimenu(documents, 'Label', 'Move to new window');
-  uimenu(documents, 'Separator','on');
+  uimenu(documents, 'Label', 'Edit data...', 'Tag','Static', 'Enable','off');
+  uimenu(documents, 'Label', 'Edit properties...', 'Tag','Static', 'Enable','off');
+  uimenu(documents, 'Label', 'Select all', 'Enable','off');
+  uimenu(documents, 'Label', 'Deselect all', 'Enable','off');
+  uimenu(documents, 'Label', 'Save as...', 'Tag','Static', 'Enable','off');
+  uimenu(documents, 'Label', 'Clear all...', 'Tag','Static', 'Enable','off');
+  uimenu(documents, 'Label', 'Move to new window', 'Tag','Static', 'Enable','off');
+  %uimenu(documents, 'Separator','on');
   
   help=uimenu(instance, 'Label', 'Help');
-  uimenu(help, 'Label', 'Contents');
-  uimenu(help, 'Label', 'Contacts');
-  uimenu(help, 'Separator','on');
-  uimenu(help, 'Label', 'About iView');
+  uimenu(help, 'Label', 'Contents', 'Enable','off');
+  uimenu(help, 'Label', 'Contacts', 'Enable','off');
+  uimenu(help, 'Label', 'About iView', 'Callback', 'iview(gcf, ''about'');', 'Separator','on');
   
   movegui(instance); % make sure the window is visible on screen
   
@@ -157,7 +179,6 @@ function [instance, config]=iView_private_create_interface(instance, config)
 
 function config=iView_private_create_storage(instance, config)
 % Create storage area (AppData) for iData and Config
-  setappdata(instance, 'Config', config);
   setappdata(instance, 'Data', []);
   
   
