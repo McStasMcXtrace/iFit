@@ -19,7 +19,7 @@ function [varargout] = findobj(s_in, varargin)
 %         base:  objects found in base/MATLAB workspace (iData array)
 % ex :    findobj(iData) or findobj(iData,'Title','MyTitle')
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/set, iData/get, iData/findstr, iData/findfield
 
 % EF 23/09/07 iData implementation
@@ -102,7 +102,7 @@ for i = 1:2:length(varargin)
   end
   [index1, prop1] = findprop(s_caller, propname, propvalue);
   [index2, prop2] = findprop(s_base, propname, propvalue);
-  % do an AND operation on the indexes
+  % do an AND operation on the properties
   i1 = i1 & index1;
   i2 = i2 & index2;
 end
@@ -123,7 +123,7 @@ varargout{2} = s_base;
 function [index, propvalues]=findprop(array, propname, propvalue)
 % find a property in an array and return both logical index in array and values
   propvalues = {};
-  index      = [];
+  index      = zeros(size(array));
   if isempty(array), return; end
   for j = 1:length(array)
     if iscell(array)
@@ -133,6 +133,7 @@ function [index, propvalues]=findprop(array, propname, propvalue)
     end
   end
   if isempty(propvalue), return; end
+  if ~iscell(propvalue), propvalue={ propvalue }; end
   for j = 1:length(array)
     prop = propvalues{j}; % property value for iData 'j' in caller workspace
     if iscell(prop)
@@ -142,16 +143,26 @@ function [index, propvalues]=findprop(array, propname, propvalue)
         if ischar(propvalue)
           index(j) = ~isempty(findstr(propvalue, propk));
         else
-          lpropk = min(length(propk), length(propvalue));
-          index(j) = all(rck(1:lpropk) == propvalue(1:lpropk)); % compares numeric arrays
+          for l=1:length(propvalue)
+            this_prop=propvalue{l};
+            lpropk = min(length(propk), length(this_prop));
+            if ~index(j)
+              index(j) = all(propk(1:lpropk) == this_prop(1:lpropk)); % compares numeric arrays
+            end
+          end
         end
       end
     else
       if ischar(propvalue)
         index(j) = ~isempty(findstr(propvalue, prop));
       else
-        lpropk = min(length(prop), length(propvalue));
-        index(j) = all(rc(1:lpropk) == propvalue(1:lpropk));
+        for l=1:length(propvalue)
+          this_prop=propvalue{l};
+          lpropk = min(length(prop), length(this_prop));
+          if ~index(j)
+            index(j) = all(prop(1:lpropk) == this_prop(1:lpropk)); % compares numeric arrays
+          end
+        end
       end
     end
   end
