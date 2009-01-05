@@ -1,4 +1,4 @@
-function instance=iView_private_create(instance, config);
+function [instance,config]=iView_private_create(instance, config);
 % iView_private_create Create or raise an iView instance
 
 if nargin == 0, instance=[]; end
@@ -118,24 +118,27 @@ function [instance, config]=iView_private_create_interface(instance, config)
   end
 
   % create static menus (based on default Figure menus)
-  file = uimenu(instance, 'Label', 'File');
-  uimenu(file, 'Label', 'New window','Callback','iview(''new'');');
-  uimenu(file, 'Label', 'Open...','Callback','iview(gcf, ''load'');');
-  uimenu(file, 'Label', 'Save configuration', 'Callback', 'iview(gcf, ''save_config'');');
+  file = uimenu(instance, 'Label', '&File');
+  uimenu(file, 'Label', '&New window','Callback','iview(''new'');','Accelerator','n');
+  uimenu(file, 'Label', 'New data set', 'Callback','iview(''new_data'');');
+  uimenu(file, 'Label', '&Open...','Callback','iview(gcf, ''load'');','Accelerator','o');
+  uimenu(file, 'Label', '&Save configuration', 'Callback', 'iview(gcf, ''save_config'');','Accelerator','s');
   uimenu(file, 'Label', 'Page setup...', 'Callback', 'pagesetupdlg(gcf);', 'Separator','on');
-  uimenu(file, 'Label', 'Print...',      'Callback', 'printdlg(gcf);');
-  uimenu(file, 'Label', 'Properties...','Enable','off');
-  uimenu(file, 'Label', 'Close window', 'Callback', 'iview(gcf, ''close'');', 'Separator','on');
-  uimenu(file, 'Label', 'Exit', 'Callback', 'iview(gcf, ''exit'');'); % quit application
+  uimenu(file, 'Label', '&Print...',      'Callback', 'printdlg(gcf);','Accelerator','p');
+  uimenu(file, 'Label', 'Preferences...', 'Enable','off','Accelerator','i');
+  uimenu(file, 'Label', 'Close &window', 'Callback', 'iview(gcf, ''close'');', 'Separator','on','Accelerator','w');
+  uimenu(file, 'Label', '&Exit', 'Callback', 'iview(gcf, ''exit'');','Accelerator','q'); % quit application
   
-  edit = uimenu(instance, 'Label', 'Edit');
-  uimenu(edit, 'Label', 'Cut', 'Enable','off');
-  uimenu(edit, 'Label', 'Copy', 'Enable','off');
-  uimenu(edit, 'Label', 'Paste', 'Enable','off');
-  uimenu(edit, 'Label', 'Find...', 'Enable','off', 'Separator','on'); % dialog to find match, and optionally select result
-  uimenu(edit, 'Label', 'Preferences...', 'Enable','off');
+  edit = uimenu(instance, 'Label', '&Edit');
+  uimenu(edit, 'Label', 'Cut', 'Enable','off','Accelerator','x');
+  uimenu(edit, 'Label', 'Copy', 'Enable','off','Accelerator','c');
+  uimenu(edit, 'Label', 'Paste', 'Enable','off','Accelerator','v');
+  uimenu(edit, 'Label', 'Select &all', 'Callback', 'iview(gcf, ''select_all'');', 'Separator','on','Accelerator','a');
+  uimenu(edit, 'Label', '&Deselect all', 'Callback', 'iview(gcf, ''deselect_all'');','Accelerator','d');
+  uimenu(edit, 'Label', '&Find...', 'Enable','off', 'Separator','on','Accelerator','f'); % dialog to find match, and optionally select result
+  sort = uimenu(edit, 'Label', '&Sort as...'); % Date, Size, Name, Label
   
-  view = uimenu(instance, 'Label', 'View', 'Enable','off'); % TODO : in the preferences ?
+  view = uimenu(instance, 'Label', '&View', 'Enable','off'); 
   %uimenu(view, 'Label', 'Menu'); % only in uicontext menu
   uimenu(view, 'Label', 'Refresh');
   uimenu(view, 'Label', 'Toolbar', 'Separator','on');
@@ -145,6 +148,10 @@ function [instance, config]=iView_private_create_interface(instance, config)
   % create dynamic menu (from config)
 
   % create static contextual menu
+  cmenu = uicontextmenu('Parent',instance);
+  set(instance, 'UIContextMenu', cmenu);
+  uimenu(cmenu, 'Label', 'New data set', 'Callback','iview(''new_data'');');
+  uimenu(cmenu, 'Label', 'Open...', 'Callback','iview(gcf, ''load'');');
   % uicontext menu on background:
   %   new window
   %   load
@@ -161,8 +168,6 @@ function [instance, config]=iView_private_create_interface(instance, config)
   documents=uimenu(instance, 'Label', 'Documents','Tag','Documents');
   uimenu(documents, 'Label', 'Edit data...', 'Tag','Static', 'Enable','off');
   uimenu(documents, 'Label', 'Edit properties...', 'Tag','Static', 'Enable','off');
-  uimenu(documents, 'Label', 'Select all', 'Enable','off');
-  uimenu(documents, 'Label', 'Deselect all', 'Enable','off');
   uimenu(documents, 'Label', 'Save as...', 'Tag','Static', 'Enable','off');
   uimenu(documents, 'Label', 'Clear all...', 'Tag','Static', 'Enable','off');
   uimenu(documents, 'Label', 'Move to new window', 'Tag','Static', 'Enable','off');
@@ -172,6 +177,9 @@ function [instance, config]=iView_private_create_interface(instance, config)
   uimenu(help, 'Label', 'Contents', 'Enable','off');
   uimenu(help, 'Label', 'Contacts', 'Enable','off');
   uimenu(help, 'Label', 'About iView', 'Callback', 'iview(gcf, ''about'');', 'Separator','on');
+  
+  % install mouse event handler
+  set(instance, 'ButtonDownFcn', 'iview(gcf, ''mouse_down'', gcf);');
   
   movegui(instance); % make sure the window is visible on screen
   
