@@ -1,19 +1,20 @@
 * Hight Priority:
-fits: constraints and so on...
-cat(dim,a,b,c) if 1st arg is int
-	or cat (a,b,c,...) avec iData ou numeric
+  fits: constraints and so on...
+  cat(dim,a,b,c) if 1st arg is int
+	  or cat (a,b,c,...) with iData or numeric
+	'labels' in iData structure
 
 * Low Priority:
-sort(a,dim,mode)
-diff
-trapz, quad
-norm, std, median, var, cov, corrcoef
-fft
-conv (conv2, convn)
-filter, filter2
-deconv
-del2
-quiver, quiver2 with gradient
+  sort(a,dim,mode)
+  diff
+  trapz, quad
+  norm, std, median, var, cov, corrcoef
+  fft
+  conv (conv2, convn)
+  filter, filter2
+  deconv
+  del2
+  quiver, quiver2 with gradient
 
 * Problems:
   setalias(a,'x','y(1:10)') i.e. having a subsref expression within an alias does not work

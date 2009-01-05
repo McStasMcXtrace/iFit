@@ -27,7 +27,7 @@ function filename = saveas(a, varargin)
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/load, iData/getframe, save
 
 if length(a) > 1
@@ -76,7 +76,7 @@ if strcmp(filename, 'gui')
     [f,p,e] = fileparts(filename);
     if isempty(e), filename=[ filename ext(2:end) ]; end
   else
-    filename=[];
+    filename=[]; return
   end
 end
 

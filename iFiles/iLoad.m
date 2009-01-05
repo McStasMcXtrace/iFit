@@ -181,13 +181,13 @@ if ischar(filename) & length(filename) > 0
   end
 elseif isempty(filename)
   if exist('uigetfiles')
-    [filename, pathname] = uigetfiles('Select file(s) to load');
+      [filename, pathname] = uigetfiles('Select file(s) to load');
   else
     if usejava('swing')
       setappdata(0,'UseNativeSystemDialogs',false);
-      [filename, pathname] = uigetfile('Select file(s) to load','MultiSelect', 'on');
+      [filename, pathname] = uigetfile('*.*', 'Select file(s) to load', 'MultiSelect', 'on');
     else
-      [filename, pathname] = uigetfile('Select a file to load');
+      [filename, pathname] = uigetfile('*.*', 'Select a file to load');
     end
   end
   if isempty(filename), return; end

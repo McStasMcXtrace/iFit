@@ -16,7 +16,7 @@ function f=figureslider(varargin)
 %
 % See also: figure
 
-% Author: E. Farhi <farhi@ill.fr>. Version $Revision: 1.5 $. Dec 15, 2008
+% Author: E. Farhi <farhi@ill.fr>. Version $Revision: 1.6 $. Dec 15, 2008
 
   % create figure if none specified
   if isempty(varargin)
@@ -164,7 +164,7 @@ function callback_slider_v(varargin)
   callback_slider(varargin{:});
 
 function callback_resize(hObject, eventdata, handles)
-  hfig.handle   = gcf;
+  hfig.handle   = gcbf;
   hfig.units    = get(hfig.handle, 'Units');
   set(hfig.handle, 'Units','pixels');
   hfig.position = get(hfig.handle,'Position');
