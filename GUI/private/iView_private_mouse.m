@@ -4,129 +4,210 @@ function hIcon=iView_private_mouse(instance, action, object)
 
 if isempty(action), return; end
 
+config = iView_private_config(instance, 'load');
+
+obj.handle= gco;
 obj.type  =get(gco,'type');  
 if strcmp(obj.type, 'uicontrol')
   obj.type =get(gco,'style');  
 end
 
-obj.tag   =get(gco,'tag');
-press.type=get(gcf,'SelectionType'); % normal, extend(+shift), alternate(+ctrl), open(double click)
+obj.Tag   =get(gco,'tag');
+% event: normal, extend(+shift), alternate(+ctrl), open(double click)
+obj.event=get(gcf,'SelectionType'); 
 
-if isempty(obj.type) | isempty(obj.tag), return; end
+if isempty(obj.type) | isempty(obj.Tag), return; end
 
 % only acts on buttons (but not the 'center' one from the sliders)
-if ~isempty(strmatch(obj.tag, {'Slider_v','Slider_h','Center'},'exact'))
+if ~isempty(strmatch(obj.Tag, {'Slider_v','Slider_h','Center'},'exact'))
   return;
 end
-if strcmp(action, 'down')
-  obj
-press
-action
+
+switch action
+case 'down'
+  set(gcf,'WindowButtonMotionFcn','');
+  set(gcf,'WindowButtonUpFcn','');
+  set(gcf,'Pointer','arrow');
+  set(obj.handle,'Selected','off');
   switch obj.type
-  case {'togglebutton','checkbox'}
+  case {'togglebutton','checkbox','frame','pushbutton','text'}
     % action on an icon (open, drag'n drop)
-    if strcmp(press.type, 'open')
-      iview(gcf,'open',obj.tag);
-    elseif strcmp(press.type, 'normal') | strcmp(press.type, 'alt')
+    set(obj.handle, 'Enable', 'inactive');
+    index=iView_private_icon_index(gcf, get(gcf, 'CurrentPoint'));
+    if strcmp(obj.event, 'open') | strcmp(obj.event, 'normal')
+      % an open is issued after a down+up
+      % counter balance initial Down
+      v = get(obj.handle, 'Value');
+      if v==0, v=1; else v=0; end
+      set(obj.handle, 'Value', v);
+      % open ?
+      if strcmp(obj.event, 'open')
+        iview(gcf,'open_data',obj.Tag);
+        % open the other selected objects
+      end
+    end
+    if strcmp(obj.event, 'normal') | strcmp(obj.event, 'alt')
       % handle movement of icon
-      set(gcf,'Pointer','Fleur');                                  % Cursor to fleur
-      %set(gcf,'WindowButtonMotionFcn',[ 'iview(' num2str(gcf) ',''mouse_drag'',''' obj.tag ''');' ]); % Drag when moved
-      set(gcf,'WindowButtonUpFcn',[ 'iview(' num2str(gcf) ',''mouse_up'',''' obj.tag ''');' ]);  % end of movement
-      setappdata(gcf,'dragplot',gco);
+      set(gcf,'WindowButtonUpFcn',[ 'iview(' num2str(gcbf) ',''mouse_up'',''' obj.Tag ''');' ]);  % end of movement
+      set(gcf,'WindowButtonMotionFcn',[ 'iview(' num2str(gcbf) ',''mouse_drag'',''' obj.Tag ''');' ]);
+      obj.pointer = get(gcf, 'CurrentPoint');
+      obj.dragged = 0;
+      setappdata(gcf, 'iView_motion_obj',obj);
     end
   case 'figure'
-    % action on the figure background (select rectangle)
-    % sets WindowButtonMotionFcn and WindowButtonUpFcn
-  end
-elseif strcmp(action, 'drag')
-  % do nothing yet. We just wait for end of movement. Could display here a message as 'Dragging object(s) so and so'
-    obj
-press
-action
-elseif strcmp(action, 'up')
-  obj
-press
-action
-  f = get(0,'pointerwindow');           % determine which figure window it's over (target). gcf=original
-  h = getappdata(gcf,'dragplot');       % Retrieve the handle to the dragged object.
-  o = gcf;
-  
-  if f > 0 & strcmp(get(f, 'Tag'),'iView_instance') % If it's a valid iView figure window,
-    Data0  = getappdata(gcf, 'Data');     % data in original window
-    Data1  = getappdata(f, 'Data');       % data in target window
-    object = findobj(Data0, 'Tag', get(h,'Tag'));          % find iData which has same Tag as pushbutton
-    p = get(f,'currentpoint');          % then determine the current position (target),
-    t = get(gcf,'selectiontype');     % determine whether the CTRL key was pressed too.
-    if iscell(object), object = object{1}; end
-    index = iView_private_icon_index(gcf, p); % index of target position in the iData array
-    index0= strmatch(object.Tag, get(Data0,'Tag'),'exact');
-    if strcmp(t,'alt') & f~=gcf               % If CTRL was pressed (or right button),
-      % make a copy of object (drag+ctrl)
-      object = copyobj(object);
-      iView_private_icon(f, 'load', object);  % add object at the end of all items (in target)
-      % copy object to the target position
-      if index > 1,              p1 = Data1(1:(index-1)); 
-      else 
-        if length(Data1) == 1, p1=Data1; 
-        else p1= [] ; end
-      end
-      if index <= length(Data1) & length(Data1)>1, p2 = Data1(index:end);   else p2 = []; end
-      Data1 = [ p1 object p2];
-      setappdata(f, 'Data', Data1);
-      % re-order icons
-      iView_private_icon(f, 'resize', []);
-    else
-      if f==gcf 
-        % move in same figure
-        % index of original object
-        if length(Data0)>1 & index ~= index0
-          index0= strmatch(object.Tag, get(Data0,'Tag'),'exact');
-          Data0(index0) = [];  % remove original position
-          if index > 1,              p1 = Data0(1:(index-1)); 
-          else 
-            if length(Data0) == 1, p1=Data0; 
-            else p1= [] ; end
+    if strcmp(obj.event, 'normal')
+      % action on the figure background (select rectangle)
+      finalbox = rbbox;
+      % find objects within area and toggle their Value
+      objects = get(gcf,'Children');
+      for index=1:length(objects)
+        this=objects(index);
+        if strcmp(get(this,'type'),'uicontrol')
+          if ~isempty(strmatch(get(this,'Style'), {'togglebutton','checkbox','pushbutton'}))
+            pos = get(this,'Position');
+            if all(pos(1:2) > finalbox(1:2)) & all(pos(1:2)+pos(3:4) < finalbox(1:2)+finalbox(3:4))
+              v = get(this, 'Value');
+              if v==0, v=1; else v=0; end
+              set(this, 'Value', v);
+            end
           end
-          if index <= length(Data0) & length(Data0)>1, p2 = Data0(index:end);   else p2 = []; end
-          Data0 = [ p1 object p2];
-          setappdata(f, 'Data', Data0);
-          % re-order icons
-          iView_private_icon(f, 'resize', []);
         end
-      else
-        % get object, copy it to target window, remove original
-        % make a copy of object (drag+ctrl)
-        iView_private_icon(f, action, object);  % add object at the end of all items (in target)
-        % copy object to the target position
-        if index > 1,              p1 = Data1(1:(index-1)); 
-        else 
-          if length(Data1) == 1, p1=Data1; 
-          else p1= [] ; end
-        end
-        if index <= length(Data1) & length(Data1)>1, p2 = Data1(index:end);   else p2 = []; end
-        Data1 = [ p1 object p2];
-        setappdata(f, 'Data', Data1);
-        % re-order icons
-        iView_private_icon(f, 'resize', []);  % target window is updated
-        if length(Data0) > 1,
-          Data0(index0) = [];  % remove original position
-        else
-          Data0=[];
-        end
-        setappdata(gcf, 'Data', Data0);
-        iView_private_icon(f, 'resize', []);  % target window is updated
-        iView_private_icon(f, 'check', []);   % target window is updated
       end
     end
   end
   
-  set(gcf,'WindowButtonMotionFcn','');
-  set(gcf,'Pointer','arrow');
-  set(gcf,'WindowButtonUpFcn','');
-end
+case 'drag'
+  % We just wait for end of movement. Could display here a message as 'Dragging object(s) so and so'
+  if ~isempty(strmatch(obj.type, {'togglebutton','checkbox','frame','pushbutton','text'}))
+    % check if we have moved enought from intial position
+    obj0=getappdata(gcf,'iView_motion_obj');
+    if any(abs(get(gcf,'CurrentPoint') - obj0.pointer) >= 5)
+      % unactivate UIContextMenu for movement
+      cmenu = get(obj.handle, 'UIContextMenu');
+      set(cmenu, 'Visible', 'off');
+      % set up pointer for movement
+      set(gcf,'WindowButtonMotionFcn',''); % once we know we move, unactivate event
+      if strcmp(get(gcf,'Pointer'),'arrow')
+        if strcmp(obj.event, 'normal'), set(gcf,'Pointer','Fleur'); % Cursor to fleur for moving
+        else set(gcf,'Pointer','crosshair'); end  % Cross pointer when copying
+      end
+      obj0.dragged=1;
+      % highlight moved item
+      set(obj.handle,'Selected','on', 'Value', 1);
+    end
+    setappdata(gcf, 'iView_motion_obj',obj0);
+  end
+  
+case 'up'
+  fig_f = get(0,'pointerwindow');           % determine which figure window it's over (target).
+  fig_i = gcf;                              % gcf=original figure
+  % obj contains object which is dragged
+  set(fig_i,'WindowButtonMotionFcn','');
+  set(fig_i,'WindowButtonUpFcn','');
+  set(fig_i,'Pointer','arrow');
+  set(obj.handle,'Selected','off', 'Enable', 'inactive');
+  
+  obj0=getappdata(gcf,'iView_motion_obj'); % information on original event
+  
+  % check if object was dragged
+  if obj0.dragged
+    % unactivate UIContextMenu for movement
+    cmenu = get(obj.handle, 'UIContextMenu');
+    set(cmenu, 'Visible', 'off');
+  end
 
+  if obj0.dragged && strcmp(get(fig_f,'Tag'), 'iView_instance') ...
+    && ~isempty(strmatch(obj.type, {'togglebutton','checkbox','frame','pushbutton','text'}))
+    % deposit object in Figure fig_f
+    % position of target
+    finalpos = get(fig_f, 'CurrentPoint');
+    targetIndex=iView_private_icon_index(fig_f, finalpos);
+    % check if we drop on background or on an object
+    obj0.onbackground=1; hIcon=[];
+    
+    % get iData(targetIndex).Tag, Position (in target window)
+    Data_i = getappdata(fig_i, 'Data');
+    Data_f = getappdata(fig_f, 'Data');
+    if targetIndex>0 & targetIndex<=length(Data_f)
+      object = iView_private_icon_idata(Data_f, targetIndex);
+      % object is the Data item below cursor
+      if isa(object, 'iData')
+        hIcon = findobj(gcf, 'Tag', object.Tag);
+        pos   = get(hIcon, 'Position');
+        % cursor on indexed object in target ?
+        if all(pos(1:2) < finalpos(1:2)) & all(pos(1:2)+pos(3:4) > finalpos(1:2))
+          obj0.onbackground=0;
+        end
+      end
+    end
+
+    % get initial selection (all Value=1 objects). selected=handle of icons
+    selected    = findobj(fig_i,'Type','uicontrol','Style', config.IconStyle, 'Value',1);
+    DataTags    = get(Data_i, 'Tag');     % all Data tags in initial window
+    selectedIndex=zeros(size(selected));
+    % get index of these selected icons in Data_i (initial window)
+    for index=1:length(selected)
+      i = strmatch(get(selected(index), 'Tag'), DataTags, 'exact');
+      if length(i) > 1
+        warning([ 'Duplicated icon ' get(selected(index), 'Tag') ' in figure ' num2str(fig_i) ])
+      end
+      if ~isempty(i), 
+        selectedIndex(index)=i(end);
+      end
+    end
+    selectedIndex = selectedIndex(find(selectedIndex));
+    
+    selection           = iView_private_icon_idata(Data_i, selectedIndex);              % selected iData objects (initial)
+    
+    % in the case of a move, we must remove selected items
+    if obj0.onbackground && strcmp(obj.event, 'normal')
+      % move: remove data sets from original window
+      tokeep=1:length(Data_i);
+      tokeep(selectedIndex) = []; % remove index of selected icons
+      Data_i = iView_private_icon_idata(Data_i, tokeep);
+      setappdata(fig_i, 'Data', Data_i);
+      iView_private_icon(fig_i, 'documents', []);
+      iView_private_icon(fig_i, 'check', []);
+      delete(selected);
+      if fig_i == fig_f
+        Data_f = Data_i;
+      end
+    end
+    target_before_index = iView_private_icon_idata(Data_f, 1:(targetIndex-1));          % iData before target position
+    target_after_index  = iView_private_icon_idata(Data_f, targetIndex:length(Data_f)); % iData after target position
+    
+    if ~obj0.onbackground
+      % to object: merge/combine (normal) or custom (alt) (cat, overlay plot, minus, plus, ...)
+      % get target iData from targetIndex
+      % do operation
+      % create resulting iData and position next to target
+    else
+      % to background: move or copy ?
+      if strcmp(obj.event, 'alt')
+        % copy
+        selection = copyobj(selection);
+      end
+      % move/copy
+      Data_f = [ target_before_index selection target_after_index ];
+      setappdata(fig_f, 'Data', Data_f);
+      iView_private_icon(fig_f, 'documents', []);
+      iView_private_icon(fig_f, 'check_load', Data_f);
+    end
+  end % if obj0.dragged
+  
+end % switch action
+
+% =============================================================================
+%                    INLINE functions
+% =============================================================================
+% iView_private_icon_index
+% iView_private_icon_reorder
+% iView_private_icon_selected
 
 function index = iView_private_icon_index(instance, position)
+% iView_private_icon_index Determine index of object below cursor position
+% returned index is within 0:length(array)+1
+
   config = iView_private_config(instance, 'load');
 
   % size of Icon is [ 2*config.IconSize config.IconSize ]
@@ -134,15 +215,29 @@ function index = iView_private_icon_index(instance, position)
   % number of elements per row
   instancePosition = get(instance, 'Position');
   instanceWidth    = instancePosition(3);
+  % reverse Height
+  position(2) = instancePosition(4) - position(2);
   nbElementsPerRow = max(1,floor(instanceWidth/(2.25*config.IconSize)));
   
   % determine col/row indexes from position of pointer
   iColumn = position(1) - config.IconSize/4;
-  iColumn = max(1,floor(iColumn / (2.25*config.IconSize)));
-  iRow    = position(2) - config.IconSize/4;
-  iRow    = max(1,floor(iRow/ (1.25*config.IconSize)));
+  iColumn = floor(iColumn / (2.25*config.IconSize));
+  iRow    = position(2) + config.IconSize/4;
+  iRow    = floor(iRow/ (1.25*config.IconSize));
   
-  index   = ((iRow-1)*nbElementsPerRow+(iColumn-1))+1;
-  index   = min(length(getappdata(instance, 'Data')), index);
+  index   = iRow*nbElementsPerRow+iColumn+1;
+  index   = min(length(getappdata(instance, 'Data'))+1, index);
+
+function data = iView_private_icon_idata(data, indexes)
+% iView_private_icon_idata handles indexes in an iData array
+  if ~length(indexes), data=[]; return; end
+  valid = find(indexes > 0 & indexes <= length(data));
+  indexes = indexes(valid);
+  if length(data) > 1, 
+    data=data(indexes);
+  else
+    if length(data) == 0, data=[]; 
+    end
+  end
 
 
