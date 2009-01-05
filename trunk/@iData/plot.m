@@ -21,7 +21,7 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
@@ -180,9 +180,12 @@ properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a))
              [ 'Title: "' T '"' ], ...
              [ 'Source: ' a.Source ], ...
              [ 'Last command: ' cmd ]};
-if length(a.Alias.Axis)
+if ~isempty(a.Label)
+  properties{end+1} = [ 'Label: ' a.Label ];
+end
+if length(getaxis(a))
   properties{end+1} = '[Rank]         [Value] [Description]';
-  for index=0:length(a.Alias.Axis)
+  for index=0:length(getaxis(a))
     [v, l] = getaxis(a, num2str(index));
     x      = getaxis(a, index);
     m      = get(a, 'Monitor');
