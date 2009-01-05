@@ -8,8 +8,18 @@ function a = copyobj(a)
 % output: b: object or array (iData)
 % ex:     b=copyobj(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/uplus, iData/findobj
+
+% handle input iData arrays
+if length(a(:)) > 1
+  b = a;
+  for index=1:length(a(:))
+    b(index) = copyobj(a(index));
+  end
+  a = reshape(b, size(a));
+  return
+end
 
 a = iData_private_history(iData_private_newtag(a), mfilename, a);
 
