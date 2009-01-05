@@ -9,7 +9,7 @@ function d = display(s_in)
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation
@@ -25,7 +25,7 @@ s_in = s_in(:);
 if length(s_in) > 1
   d = [ d sprintf('Index ') ];
 end
-d = [ d sprintf('    [Tag]     [Dimension]                           [Title] [Last command]\n') ];
+d = [ d sprintf('    [Tag]     [Dimension]                           [Title] [Last command]          [Label]\n') ];
 
 % now build the output string
 for index=1:length(s_in)
@@ -45,6 +45,10 @@ for index=1:length(s_in)
   h = cellstr(s.Command); h=deblank(h{end});
   if length(h) > 23, h = [ h(1:20) '...' ]; end             % last command
   d = [ d sprintf('%s ', h) ];
+  h = cellstr(s.Label); h=deblank(h{end});
+  if length(h) > 13, h = [ h(1:10) '...' ]; end             % Label
+  d = [ d sprintf('%s ', h) ];
+  
   d = [ d sprintf('\n') ];
 end
 
