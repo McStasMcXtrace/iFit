@@ -31,12 +31,13 @@ function config=iView_private_config_load(instance)
     config = iView_ini;
   elseif exist(fullfile(prefdir, 'iView.ini'), 'file')
     % there is an iLoad_ini in the Matlab preferences directory: read it
-    config = fullfile(prefdir, 'iView.ini');
-    fid = fopen(config, 'r');
+    file = fullfile(prefdir, 'iView.ini');
+    fid = fopen(file, 'r');
     content = fread(fid, Inf, 'uint8=>char');
     fclose(fid);
     % evaluate content of file
     config=[]; eval(content(:)'); % this make a 'config' variable
+    config.FileName = file;
   end
 
   if isempty(config)
@@ -64,6 +65,8 @@ function config=iView_private_config_load(instance)
   if ~isfield(config,'IconSize'),         config.IconSize         = 64; end
   if ~isfield(config,'Menu'),             config.Menu             = {}; end
   if ~isfield(config,'ExitConfirm'),      config.ExitConfirm      = 1; end
+  if ~isfield(config,'Version'),          config.Version          = '1.0'; end
+  if ~isfield(config,'IconStyle'),        config.IconStyle        = 'togglebutton'; end % or checkbox togglebutton
 
 function config=iView_private_config_save(config)
   % check config file name to use
