@@ -42,7 +42,7 @@ case 'down'
       set(obj.handle, 'Value', v);
       % open ?
       if strcmp(obj.event, 'open')
-        iview(gcf,'open_data',obj.Tag);
+        iview(gcf,'open_data','selection');
         % open the other selected objects
       end
     end
@@ -141,34 +141,13 @@ case 'up'
       end
     end
 
-    % get initial selection (all Value=1 objects). selected=handle of icons
-    selected    = findobj(fig_i,'Type','uicontrol','Style', config.IconStyle, 'Value',1);
-    DataTags    = get(Data_i, 'Tag');     % all Data tags in initial window
-    selectedIndex=zeros(size(selected));
-    % get index of these selected icons in Data_i (initial window)
-    for index=1:length(selected)
-      i = strmatch(get(selected(index), 'Tag'), DataTags, 'exact');
-      if length(i) > 1
-        warning([ 'Duplicated icon ' get(selected(index), 'Tag') ' in figure ' num2str(fig_i) ])
-      end
-      if ~isempty(i), 
-        selectedIndex(index)=i(end);
-      end
-    end
-    selectedIndex = selectedIndex(find(selectedIndex));
-    
-    selection           = iView_private_icon_idata(Data_i, selectedIndex);              % selected iData objects (initial)
+    % get initial selection (all Value=1 objects).
+    [selection,selectedIndex,selected]= iView_private_selection(fig_i);              % selected iData objects (initial)
     
     % in the case of a move, we must remove selected items
     if obj0.onbackground && strcmp(obj.event, 'normal')
-      % move: remove data sets from original window
-      tokeep=1:length(Data_i);
-      tokeep(selectedIndex) = []; % remove index of selected icons
-      Data_i = iView_private_icon_idata(Data_i, tokeep);
-      setappdata(fig_i, 'Data', Data_i);
-      iView_private_icon(fig_i, 'documents', []);
-      iView_private_icon(fig_i, 'check', []);
-      delete(selected);
+      iView_private_icon(fig_i, 'delete');
+      Data_i = getappdata(fig_i, 'Data');
       if fig_i == fig_f
         Data_f = Data_i;
       end

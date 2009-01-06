@@ -1,4 +1,4 @@
-function iview(varargin)
+function varargout=iview(varargin)
 % IVIEW is a data browser, which allows to import any number of data sets, 
 % create groups of data files, display/plot the data, apply mathematical 
 % operations on single or multiple data sets, fit a model function to the data
@@ -14,6 +14,8 @@ function iview(varargin)
 % ARGUMENTS and ACTIONS
 % new, load, save_data, resize open_data, close, exit, about, mouse_down, mouse_up, mouse_drag
 % properties
+
+varargout={};
 
 % handling of arguments
 if nargin==0, instance=[]; else instance=varargin{1}; end
@@ -46,25 +48,33 @@ switch action
     set(instance, 'Pointer', 'watch');
     if isempty(object), object= iData(''); else object=iData(object); end
     iView_private_icon(instance, 'load', object);
-    iView_private_icon(instance, 'documents', []);
+    iView_private_icon(instance, 'documents');
     set(instance, 'Pointer', 'arrow');
-  case 'save_data'
+  case 'saveas_data'
     % open file selector to save data sets
     if ~isempty(object)
       set(instance, 'Pointer', 'watch');
       iView_private_icon(instance, 'saveas', object);
       set(instance, 'Pointer', 'arrow');
     end
+  case 'save_data'
+    % open file selector to save data sets
+    if ~isempty(object)
+      set(instance, 'Pointer', 'watch');
+      iView_private_icon(instance, 'save', object);
+      set(instance, 'Pointer', 'arrow');
+    end
   case 'save_config'
+    rmappdata(0,'iView_Config');
     iView_private_config(instance, 'save');
   case 'resize'
     % resize instance
-    iView_private_icon(instance, 'resize', []);
+    iView_private_icon(instance, 'resize',[]);
   case 'open_data'
     % open data set (plot it)
     iView_private_icon(instance, 'open', object);
   case 'close_data'
-    % close (delete) data se
+    % close (delete) data sets
     iView_private_icon(instance, 'delete', object);
   case 'close'
     % close this instance
@@ -107,6 +117,18 @@ switch action
     iView_private_icon(instance, 'deselect_all', 0);
   case 'properties'
     iView_private_icon(instance, 'properties', object);
+  case 'cut'
+    % copy
+    % remove selected elements
+  case 'copy'
+    % copy selected data sets to internal clipboard buffer
+    % set normal clipboard (for users to copy in other apps)
+  case 'paste'
+    % if external clipboard is different from the internal one, load files from clipboard('paste')
+    % else load internal clipboard buffer into instance (if exists)
+  case 'selection'
+    varargout{end+1} = iView_private_selection(instance);
+  case 'new_data'
   otherwise
     if ~isempty(action)
       disp([' Unknown action ' action ' in ' mfilename ]);
