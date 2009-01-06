@@ -122,10 +122,12 @@ function [instance, config]=iView_private_create_interface(instance, config)
   uimenu(file, 'Label', '&New window','Callback','iview(''new'');','Accelerator','n');
   uimenu(file, 'Label', 'New data set', 'Callback','iview(''new_data'');');
   uimenu(file, 'Label', '&Open...','Callback','iview(gcf, ''load'');','Accelerator','o');
-  uimenu(file, 'Label', '&Save configuration', 'Callback', 'iview(gcf, ''save_config'');','Accelerator','s');
+  uimenu(file, 'Label', '&Save', 'Callback', 'iview(gcf, ''save_data'');','Accelerator','s', 'Separator','on');
+  uimenu(file, 'Label', 'Save as...', 'Callback', 'iview(gcf, ''saveas_data'');','Accelerator','s');
+  uimenu(file, 'Label', 'Save configuration', 'Callback', 'iview(gcf, ''save_config'');');
   uimenu(file, 'Label', 'Page setup...', 'Callback', 'pagesetupdlg(gcf);', 'Separator','on');
   uimenu(file, 'Label', '&Print...',      'Callback', 'printdlg(gcf);','Accelerator','p');
-  uimenu(file, 'Label', 'Preferences...', 'Enable','off','Accelerator','i');
+  uimenu(file, 'Label', 'Preferences...', 'Enable','off');
   uimenu(file, 'Label', 'Close &window', 'Callback', 'iview(gcf, ''close'');', 'Separator','on','Accelerator','w');
   uimenu(file, 'Label', '&Exit', 'Callback', 'iview(gcf, ''exit'');','Accelerator','q'); % quit application
   
@@ -166,10 +168,9 @@ function [instance, config]=iView_private_create_interface(instance, config)
   
   % menus that must be at the right side
   documents=uimenu(instance, 'Label', 'Documents','Tag','Documents');
-  uimenu(documents, 'Label', 'Edit data...', 'Tag','Static', 'Enable','off');
-  uimenu(documents, 'Label', 'Edit properties...', 'Tag','Static', 'Enable','off');
-  uimenu(documents, 'Label', 'Save as...', 'Tag','Static', 'Enable','off');
-  uimenu(documents, 'Label', 'Clear all...', 'Tag','Static', 'Enable','off');
+  uimenu(documents, 'Label', '&Edit data...', 'Tag','Static', 'Enable','off');
+  uimenu(documents, 'Label', '&Properties', 'Tag','Static', 'Callback', 'iview(gcf, ''properties'', ''selection'');','Accelerator','i');
+  uimenu(documents, 'Label', 'Delete', 'Tag','Static', 'Callback', 'iview(gcf, ''close_data'', ''selection'');');
   uimenu(documents, 'Label', 'Move to new window', 'Tag','Static', 'Enable','off');
   %uimenu(documents, 'Separator','on');
   
@@ -178,8 +179,9 @@ function [instance, config]=iView_private_create_interface(instance, config)
   uimenu(help, 'Label', 'Contacts', 'Enable','off');
   uimenu(help, 'Label', 'About iView', 'Callback', 'iview(gcf, ''about'');', 'Separator','on');
   
-  % install mouse event handler
+  % install mouse/keyboard event handler
   set(instance, 'ButtonDownFcn', 'iview(gcf, ''mouse_down'', gcf);');
+  % keyboard is handled throught menu accelerators
   
   movegui(instance); % make sure the window is visible on screen
   
@@ -188,5 +190,4 @@ function [instance, config]=iView_private_create_interface(instance, config)
 function config=iView_private_create_storage(instance, config)
 % Create storage area (AppData) for iData and Config
   setappdata(instance, 'Data', []);
-  
   

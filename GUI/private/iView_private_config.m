@@ -9,8 +9,10 @@ case 'save'
   if nargin<3, config=[]; end
   if isempty(config), config=iView_private_config_load(0); end
   config=iView_private_config_save(config);
+  if ~isappdata(0, 'iView_Config')  % first time we save the config ? (e.g. starting iView)
+    disp([ '% Saved iView configuration into ' config.FileName ]);
+  end
   setappdata(0, 'iView_Config', config);
-  disp([ '% Saved iView configuration into ' config.FileName ]);
 otherwise
   disp([' Unknown action ' action ' in ' mfilename ]);
 end
@@ -66,7 +68,9 @@ function config=iView_private_config_load(instance)
   if ~isfield(config,'Menu'),             config.Menu             = {}; end
   if ~isfield(config,'ExitConfirm'),      config.ExitConfirm      = 1; end
   if ~isfield(config,'Version'),          config.Version          = '1.0'; end
-  if ~isfield(config,'IconStyle'),        config.IconStyle        = 'togglebutton'; end % or checkbox togglebutton
+  if ~isfield(config,'IconStyle'),        config.IconStyle        = 'togglebutton'; end % choice: checkbox togglebutton
+  if ~isfield(config,'OutputFormat'),     config.OutputFormat     = 'pdf'; end
+  if ~isfield(config,'Labels'),           config.Labels           = {'Default','Background'}; end
 
 function config=iView_private_config_save(config)
   % check config file name to use
