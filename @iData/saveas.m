@@ -1,4 +1,4 @@
-function filename = saveas(a, varargin)
+function [filename,format] = saveas(a, varargin)
 % f = saveas(s, filename, format) : save iData object into various data formats
 %
 %   @iData/saveas function to save data sets
@@ -27,15 +27,16 @@ function filename = saveas(a, varargin)
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/load, iData/getframe, save
 
 if length(a) > 1
   if length(varargin) >= 1, filename_base = varargin{1}; 
   else filename_base = ''; end
+  if strcmp(filename_base, 'gui'), filename_base=''; end
   filename = cell(size(a));
   for index=1:length(a(:))
-    filename{index} = saveas(a(index), varargin{:});
+    [filename{index}, format] = saveas(a(index), varargin{:});
     if isempty(filename_base), filename_base = filename{index}; end
     if length(a(:)) > 1
       [path, name, ext] = fileparts(filename_base);
@@ -75,6 +76,7 @@ if strcmp(filename, 'gui')
     % check if extension was given
     [f,p,e] = fileparts(filename);
     if isempty(e), filename=[ filename ext(2:end) ]; end
+    format=ext(2:end);
   else
     filename=[]; return
   end

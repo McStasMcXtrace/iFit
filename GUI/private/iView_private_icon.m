@@ -1,4 +1,4 @@
-function hIcon=iView_private_icon(instance, action, object, object_index)
+function [hIcon,config]=iView_private_icon(instance, action, object, object_index)
 % iView_private_icon_new Add a new data set inside the iView instance
 % The object may be an iData, or any other type, which is then sent to iData
 % before importation.
@@ -7,7 +7,6 @@ function hIcon=iView_private_icon(instance, action, object, object_index)
 % check_load
 
 hIcon=[];
-if nargin < 3, return; end
 
 if isempty(action), action='check'; end
 
@@ -33,7 +32,17 @@ switch action
     return
 end % switch action
 
+if nargin < 3, return; end
+
 if isempty(object), return; end
+if ischar(object) % special data selections
+  switch object
+  case 'selection'
+    object = iView_private_selection(instance);
+  case 'all'
+    object = Data;
+  end
+end
 
 Data = getappdata(instance, 'Data');
 % make sure we have an iData
@@ -60,6 +69,52 @@ if ~isa(object, 'iData')
   object=iData(object); % will also popup FileSelector from iLoad/uigetfiles if object=''
 end
 
+% actions which handle iData array
+switch action
+case 'open'
+  hIcon=subplot(object);
+  return
+case 'save'
+  if ~isempty(object)
+    format=config.OutputFormat;
+    [hIcon,format]=saveas(object, format);    
+    if ~isempty(hIcon)
+      disp('Objects')
+      disp(object)
+      disp('into')
+      disp(hIcon);
+    end
+  end
+  return
+case 'saveas'
+  if ~isempty(object)
+    [hIcon,format]=saveas(object, 'gui');
+    config.OutputFormat = format;
+    config = iView_private_config(instance, 'save');
+    
+    if ~isempty(hIcon)
+      disp('Objects')
+      disp(object)
+      disp('into')
+      disp(hIcon);
+    end
+  end
+  return
+case 'delete'
+  % get initial selection (all Value=1 objects).
+  [selection,selectedIndex,selected]= iView_private_selection(instance);
+
+  % remove data sets from original window
+  tokeep=1:length(Data);
+  tokeep(selectedIndex) = []; % remove index of selected icons
+  Data = iView_private_icon_idata(Data, tokeep);
+  setappdata(instance, 'Data', Data);
+  iView_private_icon(instance, 'documents', []);
+  iView_private_icon(instance, 'check', []);
+  delete(selected); % remove selected icons
+  return
+end
+
 % handle iData arrays
 if length(object) > 1
   for index=1:length(object(:))
@@ -69,8 +124,12 @@ if length(object) > 1
   return
 end
 
+% actions which handle single iData 
+if isempty(object), return; end
+
 config = iView_private_config(instance, 'load');
 index  = strmatch(object.Tag, get(Data, 'Tag'), 'exact');
+hIcon  = findobj(instance, 'Tag', object.Tag);
 
 switch action
 case {'check','check_load'}
@@ -85,27 +144,6 @@ case {'check','check_load'}
   end
   
   if nargin > 3 && isempty(index), index=object_index; end
-case 'open'
-  hIcon=subplot(object);
-  return
-case 'delete'
-  if ~isempty(index)
-    % remove iData and corresponding uicontrol
-    if length(Data) > 1, 
-      Data(index) = [];
-      Data=Data(find(~isempty(Data)));
-    else Data=[]; end
-    setappdata(instance, 'Data', Data);
-    iView_private_icon(instance, 'check', Data);
-  end
-case 'saveas'
-  if ~isempty(object)
-    hIcon=saveas(object, 'gui');
-    if ~isempty(hIcon)
-      fprintf(1, 'Object %s\n  saved into file %s\n', char(object), hIcon);
-    end
-  end
-  return
 case 'load'
   % check if the element already exists, add it if no
   if ~isempty(index) % already exists 
@@ -148,8 +186,12 @@ case 'properties'
   if length(S) > 23, S=[ '...' S(end-20:end) ]; end
   if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
 
-  cdata = get(gco, 'cdata');
-  msgbox(properties, ['iView: Properties of ' T ' <' S '>'],'custom', cdata);
+  cdata = get(hIcon, 'cdata');
+  if ~isempty(cdata)
+    msgbox(properties, ['iView: Properties of ' T ' <' S '>'],'custom', cdata);
+  else
+    msgbox(properties, ['iView: Properties of ' T ' <' S '>']);
+  end
   return
 otherwise
 end
@@ -193,16 +235,12 @@ else
 end
 if isempty(hIcon), return; end
 
-try
 % icon Tag must be the one from the iData object
 set(hIcon, ... 
   'String',object.Title,...
   'Position',[iColumn iRow 2*config.IconSize config.IconSize], ...
   'ToolTipString', tooltip, ...
   'Tag', object.Tag);
-catch
-  save
-end
 
 % install mouse event handling callbacks (on icons only !!!)
 %   move icon (re-order)
@@ -225,10 +263,11 @@ end
 figure(instance);
 cmenu = uicontextmenu('Parent',instance);
 set(hIcon, 'UIContextMenu', cmenu);
-uimenu(cmenu, 'Label', object.Title, 'Callback', [ 'iview(gcf, ''properties'', ''' object.Tag ''');' ]);
-uimenu(cmenu, 'Label', 'Open', 'Separator','on', 'Callback', [ 'iview(gcf, ''open_data'', ''' object.Tag ''');' ]);
-uimenu(cmenu, 'Label', 'Save as...', 'Callback', [ 'iview(gcf, ''save_data'', ''' object.Tag ''');' ]);
-uimenu(cmenu, 'Label', 'Close', 'Callback', [ 'iview(gcf, ''close_data'', ''' object.Tag ''');' ]);
+uimenu(cmenu, 'Label', object.Title, 'Callback', [ 'iview(gcf, ''properties'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Open', 'Separator','on', 'Callback', [ 'iview(gcf, ''open_data'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Save', 'Callback', [ 'iview(gcf, ''save_data'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Save as...', 'Callback', [ 'iview(gcf, ''saveas_data'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Close', 'Callback', [ 'iview(gcf, ''close_data'', ''selection'');' ]);
 
 % =============================================================================
 %                    INLINE functions

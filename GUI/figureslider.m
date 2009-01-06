@@ -16,7 +16,7 @@ function f=figureslider(varargin)
 %
 % See also: figure
 
-% Author: E. Farhi <farhi@ill.fr>. Version $Revision: 1.6 $. Dec 15, 2008
+% Author: E. Farhi <farhi@ill.fr>. Version $Revision: 1.7 $. Dec 15, 2008
 
   % create figure if none specified
   if isempty(varargin)
@@ -89,6 +89,10 @@ function f=figureslider(varargin)
   else
     set(hfig.handle, 'ResizeFcn', 'figureslider(gcbo, ''resize'');');
   end
+  try
+    set(hfig.handle,'WindowScrollWheelFcn',@callback_scrollwheel); % only Matlab >= 7.4 (2007a)
+  catch
+  end
 
   callback_resize(hfig.handle);  % setup sliders
 
@@ -98,6 +102,20 @@ function f=figureslider(varargin)
   f=hfig.handle;
 
 % ========== private functions ================================================
+function callback_scrollwheel(hObject, event)
+% add scroll wheel capability to vertical slider
+  hfig.handle   = gcf;
+  hfig.slider_v = findobj(hfig.handle,'Tag','Slider_v');
+  slider_v_pos = get(hfig.slider_v,'UserData');
+  if (evnt.VerticalScrollCount>0), 
+    slider_v_pos = slider_v_pos - 20;
+  else 
+    slider_v_pos = slider_v_pos + 20;
+  end
+  slider_v_pos=min(0, slider_v_pos);
+  slider_v_pos=max(100,slider_v_pos);
+  set(hfig.slider_v,'Value', slider_v_pos);
+  
 function callback_center(hObject, eventdata, handles)
 % center figure on enclosing objects
   hfig.handle   = gcf;
