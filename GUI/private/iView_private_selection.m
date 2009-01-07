@@ -21,6 +21,6 @@ function [selection, selectedIndex, selected] = iView_private_selection(instance
   end
   selectedIndex = selectedIndex(find(selectedIndex));
   
-  selection     = iView_private_icon_idata(Data, selectedIndex);              % selected iData objects (initial)
+  selection     = ind2sub(Data, selectedIndex);              % selected iData objects (initial)
     
 

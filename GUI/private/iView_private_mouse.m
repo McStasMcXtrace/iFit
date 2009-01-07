@@ -129,7 +129,7 @@ case 'up'
     Data_i = getappdata(fig_i, 'Data');
     Data_f = getappdata(fig_f, 'Data');
     if targetIndex>0 & targetIndex<=length(Data_f)
-      object = iView_private_icon_idata(Data_f, targetIndex);
+      object = ind2sub(Data_f, targetIndex);
       % object is the Data item below cursor
       if isa(object, 'iData')
         hIcon = findobj(gcf, 'Tag', object.Tag);
@@ -146,14 +146,14 @@ case 'up'
     
     % in the case of a move, we must remove selected items
     if obj0.onbackground && strcmp(obj.event, 'normal')
-      iView_private_icon(fig_i, 'delete');
+      iView_private_icon(fig_i, 'delete', selection);
       Data_i = getappdata(fig_i, 'Data');
       if fig_i == fig_f
         Data_f = Data_i;
       end
     end
-    target_before_index = iView_private_icon_idata(Data_f, 1:(targetIndex-1));          % iData before target position
-    target_after_index  = iView_private_icon_idata(Data_f, targetIndex:length(Data_f)); % iData after target position
+    target_before_index = ind2sub(Data_f, 1:(targetIndex-1));          % iData before target position
+    target_after_index  = ind2sub(Data_f, targetIndex:length(Data_f)); % iData after target position
     
     if ~obj0.onbackground
       % to object: merge/combine (normal) or custom (alt) (cat, overlay plot, minus, plus, ...)
@@ -189,34 +189,22 @@ function index = iView_private_icon_index(instance, position)
 
   config = iView_private_config(instance, 'load');
 
-  % size of Icon is [ 2*config.IconSize config.IconSize ]
+  % size of Icon is [ config.IconWidth*config.IconSize config.IconSize ]
 
   % number of elements per row
   instancePosition = get(instance, 'Position');
   instanceWidth    = instancePosition(3);
   % reverse Height
   position(2) = instancePosition(4) - position(2);
-  nbElementsPerRow = max(1,floor(instanceWidth/(2.25*config.IconSize)));
+  nbElementsPerRow = max(1,floor(instanceWidth/((config.IconWidth+.25)*config.IconSize)));
   
   % determine col/row indexes from position of pointer
   iColumn = position(1) - config.IconSize/4;
-  iColumn = floor(iColumn / (2.25*config.IconSize));
+  iColumn = floor(iColumn / ((config.IconWidth+.25)*config.IconSize));
   iRow    = position(2) + config.IconSize/4;
   iRow    = floor(iRow/ (1.25*config.IconSize));
   
   index   = iRow*nbElementsPerRow+iColumn+1;
   index   = min(length(getappdata(instance, 'Data'))+1, index);
-
-function data = iView_private_icon_idata(data, indexes)
-% iView_private_icon_idata handles indexes in an iData array
-  if ~length(indexes), data=[]; return; end
-  valid = find(indexes > 0 & indexes <= length(data));
-  indexes = indexes(valid);
-  if length(data) > 1, 
-    data=data(indexes);
-  else
-    if length(data) == 0, data=[]; 
-    end
-  end
 
 
