@@ -122,32 +122,32 @@ end
 
 % retrieve specific information
 try
-  LOCAL = a.Headers.MetaData.LOCAL; LOCAL=deblank(LOCAL(7:end));
+  LOCAL = a.Headers.MetaData.LOCAL; LOCAL=strtrim(LOCAL(7:end));
 catch
   LOCAL='';
 end
 try
-  TITLE = a.Headers.MetaData.TITLE; TITLE=deblank(TITLE(7:end));
+  TITLE = a.Headers.MetaData.TITLE; TITLE=strtrim(TITLE(7:end));
 catch
   TITLE='';
 end
 try
-  USER  = a.Headers.MetaData.USER;  USER =deblank(USER(7:end));
+  USER  = a.Headers.MetaData.USER;  USER =strtrim(USER(7:end));
 catch
   USER='';
 end
 try
-  EXPNO = a.Headers.MetaData.EXPNO; EXPNO=deblank(EXPNO(7:end));
+  EXPNO = a.Headers.MetaData.EXPNO; EXPNO=strtrim(EXPNO(7:end));
 catch
   EXPNO='';
 end
 try
-  INSTR = a.Headers.MetaData.INSTR; INSTR=deblank(INSTR(7:end));
+  INSTR = a.Headers.MetaData.INSTR; INSTR=strtrim(INSTR(7:end));
 catch
   INSTR='';
 end
 try
-  DATE  = a.Headers.MetaData.DATE;  DATE =deblank(DATE(7:end));
+  DATE  = a.Headers.MetaData.DATE;  DATE =strtrim(DATE(7:end));
 catch
   DATE='';
 end

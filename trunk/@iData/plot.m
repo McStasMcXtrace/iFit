@@ -21,7 +21,7 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.29 $
+% Version: $Revision: 1.30 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
@@ -174,7 +174,7 @@ end
 % add a UIcontextMenu so that right-click gives info about the iData plot
 % also make up title string and Properties dialog content
 T=a.Title; if iscell(T), T=T{1}; end
-T=deblank(T);
+T=strtrim(T);
 cmd = char(a.Command{end});
 properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
              [ 'Title: "' T '"' ], ...
