@@ -80,6 +80,10 @@ switch action
     % close this instance
     close(instance);
   case 'exit'
+    if strcmp(config.ExitConfirm, 'yes') | config.ExitConfirm
+      button = questdlg({'Do you really want to quit iView',' and close all windows ?'},'iView: Exit ?','Yes','No','Yes');
+      if ~strcmp(button, 'Yes'), return; end
+    end
     % close all instances
     % save configuration first
     iview(gcf, 'save_config');
@@ -117,6 +121,36 @@ switch action
     iView_private_icon(instance, 'deselect_all', 0);
   case 'properties'
     iView_private_icon(instance, 'properties', object);
+  case 'sort'
+    items = {'Title (Name)','Size','Date','Label','Tag (unique ID)'};
+    selection = listdlg('PromptString', {'Select sorting method to arrange data sets',[ 'in the iView window ' num2str(instance) ]}, ...
+      'Name', 'iView: Sort data sets by...', ...
+      'SelectionMode','single',...
+      'OKString','Sort', 'ListSize', [160 150], ...
+      'ListString', items);
+    if isempty(selection), return; end
+    Data = getappdata(gcf, 'Data');
+    selection = items{selection};
+    switch selection
+    case 'Size'
+      list = zeros(1,length(Data));
+      for index=1:length(Data)
+        list(index) = prod(size(Data(index)));
+      end
+    case 'Date'
+      listd = get(Data,strtok(selection));
+      for index=1:length(Data)
+        list(index) = datenum(listd(index));
+      end
+    otherwise
+      list = get(Data,strtok(selection));
+    end
+    [dummy, index] = sortrows(list(:));
+    Data = ind2sub(Data, index);
+    setappdata(instance, 'Data', Data);
+    iView_private_icon(instance, 'check', Data);
+    iView_private_icon(instance, 'documents', []);
+    
   case 'cut'
     % copy
     % remove selected elements

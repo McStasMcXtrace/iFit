@@ -1,4 +1,4 @@
-function [hIcon,config]=iView_private_icon(instance, action, object, object_index)
+function [hIcon,config,object]=iView_private_icon(instance, action, object, object_index)
 % iView_private_icon_new Add a new data set inside the iView instance
 % The object may be an iData, or any other type, which is then sent to iData
 % before importation.
@@ -34,6 +34,7 @@ end % switch action
 
 if nargin < 3, return; end
 
+Data = getappdata(instance, 'Data');
 if isempty(object), return; end
 if ischar(object) % special data selections
   switch object
@@ -44,7 +45,7 @@ if ischar(object) % special data selections
   end
 end
 
-Data = getappdata(instance, 'Data');
+config = iView_private_config(instance, 'load');
 % make sure we have an iData
 if ~isempty(object) & ischar(object)
   object=cellstr(object);
@@ -101,24 +102,27 @@ case 'saveas'
   end
   return
 case 'delete'
-  % get initial selection (all Value=1 objects).
-  [selection,selectedIndex,selected]= iView_private_selection(instance);
-
-  % remove data sets from original window
-  tokeep=1:length(Data);
-  tokeep(selectedIndex) = []; % remove index of selected icons
-  Data = iView_private_icon_idata(Data, tokeep);
+  tokeep = 1:length(Data);
+  DataTags = get(Data, 'Tag');
+  for index=1:length(object)
+    this = ind2sub(object, index);
+    this_delete = strmatch(this.Tag, DataTags, 'exact');
+    hIcon = findobj(instance,'Type','uicontrol','Style', config.IconStyle, 'Tag', this.Tag);
+    delete(hIcon);
+    tokeep(this_delete) = 0;
+  end
+  Data = ind2sub(Data, tokeep(find(tokeep)));
   setappdata(instance, 'Data', Data);
   iView_private_icon(instance, 'documents', []);
   iView_private_icon(instance, 'check', []);
-  delete(selected); % remove selected icons
   return
 end
 
 % handle iData arrays
 if length(object) > 1
   for index=1:length(object(:))
-    i= iView_private_icon(instance, action, object(index), index);
+    [i,c,d]= iView_private_icon(instance, action, object(index), index);
+    object{index}=d;
     hIcon= [hIcon i ];
   end
   return
@@ -127,7 +131,6 @@ end
 % actions which handle single iData 
 if isempty(object), return; end
 
-config = iView_private_config(instance, 'load');
 index  = strmatch(object.Tag, get(Data, 'Tag'), 'exact');
 hIcon  = findobj(instance, 'Tag', object.Tag);
 
@@ -142,7 +145,6 @@ case {'check','check_load'}
   if length(hIcon) ~= length(index)
     delete(hIcon); hIcon=[];
   end
-  
   if nargin > 3 && isempty(index), index=object_index; end
 case 'load'
   % check if the element already exists, add it if no
@@ -156,11 +158,12 @@ case 'load'
 case 'properties'
   a = object;
   T=a.Title; if iscell(T), T=T{1}; end
-  T=deblank(T);
+  T=strtrim(T);
   cmd = char(a.Command{end});
   properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
                [ 'Title: "' T '"' ], ...
                [ 'Source: ' a.Source ], ...
+               [ 'Date: ' a.Date ], ...
                [ 'Last command: ' cmd ]};
   if ~isempty(a.Label)
     properties{end+1} = [ 'Label: ' a.Label ];
@@ -206,7 +209,7 @@ NL = sprintf('\n');
 tooltip = [ object.Title NL object.Source NL 'Tag ' object.Tag '; Data size [' num2str(size(object)) ']' NL ];
 for ax_index = 0:ndims(object)
   [axisdef, lab] = getaxis(object, num2str(ax_index));
-  lab=deblank(lab);
+  lab=strtrim(lab);
   if ax_index==0, 
     if isempty(lab), tooltip = [ tooltip 'Signal' ]; else tooltip = [ tooltip lab ]; end
   elseif ~isempty(lab)
@@ -221,14 +224,21 @@ if strcmp(action, 'load') | strcmp(action, 'check_load')
     % for this we set the Enable to inactive. This unactivates Callback, but we can manage
     % all events, e.g. ButtonDownFcn
     % The Enable=inactive removes the Tooltip
-    frame = getframe(object, config.IconSize);
+    if ~isfield(object.UserData, 'cdata')
+      frame = getframe(object, config.IconSize);
+      cdata = frame.cdata;
+      object.UserData.cdata=cdata;
+    else
+      cdata = object.UserData.cdata;
+    end
     hIcon = uicontrol(instance,'Style', config.IconStyle,...
                     'Tag', object.Tag, ...
                     'Value',0, ...
-                    'Enable', 'inactive',...
-                    'ButtonDownFcn', 'iview(gcf, ''mouse_down'', gco);', ...
-                    'CData', frame.cdata);
-                    %'CallBack', 'iview(gcf, ''mouse_down'', gco);', ...
+                    'Enable', 'on',...
+                    'CData', cdata);
+    if ~strcmp(config.DragDropNoTooltips,'no') & config.DragDropNoTooltips
+      set(hIcon, 'Enable','inactive', 'ButtonDownFcn', 'iview(gcf, ''mouse_down'', gco);');
+    end
   end
 else
   hIcon = findobj(instance, 'Tag', object.Tag);
@@ -241,11 +251,6 @@ set(hIcon, ...
   'Position',[iColumn iRow 2*config.IconSize config.IconSize], ...
   'ToolTipString', tooltip, ...
   'Tag', object.Tag);
-
-% install mouse event handling callbacks (on icons only !!!)
-%   move icon (re-order)
-%   drag-drop
-%   double click
 
 % uicontext menu on icons
 %   select
@@ -263,11 +268,12 @@ set(hIcon, ...
 figure(instance);
 cmenu = uicontextmenu('Parent',instance);
 set(hIcon, 'UIContextMenu', cmenu);
-uimenu(cmenu, 'Label', object.Title, 'Callback', [ 'iview(gcf, ''properties'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Open', 'Separator','on', 'Callback', [ 'iview(gcf, ''open_data'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Save', 'Callback', [ 'iview(gcf, ''save_data'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Save as...', 'Callback', [ 'iview(gcf, ''saveas_data'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Close', 'Callback', [ 'iview(gcf, ''close_data'', ''selection'');' ]);
+uimenu(cmenu, 'Label', object.Title);
+uimenu(cmenu, 'Label', 'Open', 'Separator','on', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''open_data'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Save', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''save_data'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Save as...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''saveas_data'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Close', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''close_data'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Properties', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''properties'', ''selection'');' ], 'Separator','on');
 
 % =============================================================================
 %                    INLINE functions
@@ -283,15 +289,15 @@ function [iRow,iColumn]  = iView_private_icon_position(instance, index)
 
   config = iView_private_config(instance, 'load');
 
-  % size of Icon is [ 2*config.IconSize config.IconSize ]
+  % size of Icon is [ config.IconWidth*config.IconSize config.IconSize ]
 
   % number of elements per row
   instancePosition = get(instance, 'Position');
   instanceWidth    = instancePosition(3);
-  nbElementsPerRow = max(1,floor(instanceWidth/(2.25*config.IconSize)));
+  nbElementsPerRow = max(1,floor(instanceWidth/((config.IconWidth+.25)*config.IconSize)));
 
-  if instanceWidth < 2.25*config.IconSize
-    instancePosition(3) = 2.25*config.IconSize;
+  if instanceWidth < (config.IconWidth+.25)*config.IconSize
+    instancePosition(3) = (config.IconWidth+.25)*config.IconSize;
     set(instance, 'Position', instancePosition);
     instanceWidth    = instancePosition(3);
     figureslider(instance, 'resize');
@@ -302,7 +308,7 @@ function [iRow,iColumn]  = iView_private_icon_position(instance, index)
   iRow    = floor((index-1)/nbElementsPerRow);
   % make it pixels in the window (with a gap of 1/4 between elements, and 1/2 shift)
   iRow    = iRow    *(1.25*config.IconSize) + config.IconSize/4;
-  iColumn = iColumn *(2.25*config.IconSize) + config.IconSize/4;
+  iColumn = iColumn *((config.IconWidth+.25)*config.IconSize) + config.IconSize/4;
   % fill in from the top (revert iRow)
   iRow = instancePosition(4) - iRow - config.IconSize;
 

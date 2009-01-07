@@ -137,15 +137,7 @@ function [instance, config]=iView_private_create_interface(instance, config)
   uimenu(edit, 'Label', 'Paste', 'Enable','off','Accelerator','v');
   uimenu(edit, 'Label', 'Select &all', 'Callback', 'iview(gcf, ''select_all'');', 'Separator','on','Accelerator','a');
   uimenu(edit, 'Label', '&Deselect all', 'Callback', 'iview(gcf, ''deselect_all'');','Accelerator','d');
-  uimenu(edit, 'Label', '&Find...', 'Enable','off', 'Separator','on','Accelerator','f'); % dialog to find match, and optionally select result
-  sort = uimenu(edit, 'Label', '&Sort as...'); % Date, Size, Name, Label
-  
-  view = uimenu(instance, 'Label', '&View', 'Enable','off'); 
-  %uimenu(view, 'Label', 'Menu'); % only in uicontext menu
-  uimenu(view, 'Label', 'Refresh');
-  uimenu(view, 'Label', 'Toolbar', 'Separator','on');
-  uimenu(view, 'Label', 'Icons'); % toggle Icon view
-  uimenu(view, 'Label', 'Icon size...');
+  uimenu(edit, 'Label', '&Find...', 'Enable','off', 'Separator','on','Accelerator','f'); % dialog to find match, and select result
 
   % create dynamic menu (from config)
 
@@ -168,11 +160,11 @@ function [instance, config]=iView_private_create_interface(instance, config)
   
   % menus that must be at the right side
   documents=uimenu(instance, 'Label', 'Documents','Tag','Documents');
-  uimenu(documents, 'Label', '&Edit data...', 'Tag','Static', 'Enable','off');
-  uimenu(documents, 'Label', '&Properties', 'Tag','Static', 'Callback', 'iview(gcf, ''properties'', ''selection'');','Accelerator','i');
-  uimenu(documents, 'Label', 'Delete', 'Tag','Static', 'Callback', 'iview(gcf, ''close_data'', ''selection'');');
-  uimenu(documents, 'Label', 'Move to new window', 'Tag','Static', 'Enable','off');
-  %uimenu(documents, 'Separator','on');
+  uimenu(documents, 'Label', '&Open data', 'Tag','Static', 'Callback', 'iview(gcf, ''open_data'', ''selection'');');
+  uimenu(documents, 'Label', '&Edit data...', 'Tag','Static', 'Enable','off');  % edit content/properties/axes/signal/alias...
+  uimenu(documents, 'Label', '&Properties...', 'Tag','Static', 'Callback', 'iview(gcf, ''properties'', ''selection'');','Accelerator','i');
+  uimenu(documents, 'Label', '&Sort by...', 'Tag','Static', 'Callback','iview(gcf, ''sort'');'); % Date, Size, Name, Label
+  uimenu(documents, 'Separator','on', 'Label', 'Delete selection', 'Tag','Static', 'Callback', 'iview(gcf, ''close_data'', ''selection'');');
   
   help=uimenu(instance, 'Label', 'Help');
   uimenu(help, 'Label', 'Contents', 'Enable','off');
@@ -181,7 +173,7 @@ function [instance, config]=iView_private_create_interface(instance, config)
   
   % install mouse/keyboard event handler
   set(instance, 'ButtonDownFcn', 'iview(gcf, ''mouse_down'', gcf);');
-  % keyboard is handled throught menu accelerators
+  % keyboard is handled through menu accelerators
   
   movegui(instance); % make sure the window is visible on screen
   

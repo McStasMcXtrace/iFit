@@ -64,13 +64,16 @@ function config=iView_private_config_load(instance)
   if ~isfield(config,'PaperOrientation'), config.PaperOrientation = 'landscape'; end
   if ~isfield(config,'PaperPosition'),    config.PaperPosition    = [5 5 20 15]; end
   if ~isfield(config,'Color'),            config.Color            = [1 1 1];  end
-  if ~isfield(config,'IconSize'),         config.IconSize         = 64; end
-  if ~isfield(config,'Menu'),             config.Menu             = {}; end
-  if ~isfield(config,'ExitConfirm'),      config.ExitConfirm      = 1; end
+  if ~isfield(config,'IconSize'),         config.IconSize         = 64; end % in pixels. Recommended: 64
+  if ~isfield(config,'IconWidth'),        config.IconWidth        = 2; end  % real icon width = IconWidth*IconSize. Recommended: 2
+  if ~isfield(config,'Menu'),             config.Menu             = {}; end % custom menu
+  if ~isfield(config,'ExitConfirm'),      config.ExitConfirm      = 1; end  % Ask for confirmation before exiting iView if 'yes' or 1
   if ~isfield(config,'Version'),          config.Version          = '1.0'; end
-  if ~isfield(config,'IconStyle'),        config.IconStyle        = 'togglebutton'; end % choice: checkbox togglebutton
-  if ~isfield(config,'OutputFormat'),     config.OutputFormat     = 'pdf'; end
-  if ~isfield(config,'Labels'),           config.Labels           = {'Default','Background'}; end
+  if ~isfield(config,'IconStyle'),        config.IconStyle        = 'togglebutton'; end % style of Icons: checkbox togglebutton. Recommended: togglebutton
+  if ~isfield(config,'OutputFormat'),     config.OutputFormat     = 'pdf'; end  % prefered export format
+  if ~isfield(config,'Labels'),           config.Labels           = {'Default','Background'}; end % predefined labels for data sets
+  if ~isfield(config,'DragDropNoTooltips'),config.DragDropNoTooltips='yes'; end % 'yes' unactivates Tooltips, but activates DnD
+  
 
 function config=iView_private_config_save(config)
   % check config file name to use
