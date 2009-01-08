@@ -28,7 +28,10 @@ if create_new_instance
   iView_private_create_storage(instance, config);
   if ~length(instance_list)
     disp([ '% ' datestr(now) ' Starting iView' ]);
-    iView_private_config(0, 'save', config);
+    iView_private_config(0, 'save', config);  % first instance: we save the configuration
+    iLoad_config=iLoad('', 'load config');
+    iLoad_config.UseSystemDialogs = config.UseSystemDialogs;
+    iLoad(iLoad_config, 'save config');
   end
   instance_list = [ instance_list instance ];
 end
@@ -89,6 +92,11 @@ function [instance, config]=iView_private_create_interface(instance, config)
     set(instance, 'FileName',         config.FileName);
   else
     config.FileName = get(instance, 'FileName');
+  end
+  if isfield(config,'PaperType')
+    set(instance, 'PaperType',       config.PaperType);
+  else
+    config.PaperType = get(instance, 'PaperUnits');
   end
   if isfield(config,'PaperUnits')
     set(instance, 'PaperUnits',       config.PaperUnits);

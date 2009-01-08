@@ -1,5 +1,5 @@
-function loaders = iLoad_ini
-% formats = iLoad_ini
+function config = iLoad_ini
+% config = iLoad_ini
 %
 % User definitions of specific import formats to be used by iLoad
 %
@@ -21,6 +21,7 @@ function loaders = iLoad_ini
 %
 % See also: iLoad, save, iData/saveas
 
+% definition of formats
     format1.name       ='ILL Data (normal integers)';
     format1.patterns   ={'RRRR','AAAA','FFFF','IIII'};
     format1.options    ='--headers --fortran --catenate --fast --binary --makerows=IIII --makerows=FFFF';
@@ -110,7 +111,11 @@ function loaders = iLoad_ini
     format14.postprocess='load_ill_inx';
     format14.patterns   ={'INX'};
     format14.extension  ='inx';
-    
-    loaders= { format1, format2, format3, format4, format5, format6, ...
+
+% definition of configuration
+    config.loaders =  { format1, format2, format3, format4, format5, format6, ...
 	       format7, format8, format9, format10, format11, format13, format14 };
+	       
+	  config.UseSystemDialogs = 'no'; % no: use uigetfiles, else defaults to 'uigetfile'
+	  config.FileName         = 'default configuration';
     
