@@ -3,9 +3,9 @@ function [data, format] = iLoad(filename, loader)
 %
 % imports any data into Matlab. 
 % The definition of specific formats can be set in the iLoad_ini.m file.
-% These formats can be obtained using config=iLoad('','load config').
+% These formats can be obtained using [config, configfile]=iLoad('','load config').
 % the iLoad_ini configuration file can be saved in the Preference directory
-% using iLoad(config,'save config').
+% using [config, configfile] = iLoad(config,'save config').
 %
 % input arguments:
 %   file:   file name, or cell of file names, or any Matlab variable, or a URL
@@ -31,70 +31,21 @@ function [data, format] = iLoad(filename, loader)
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
-% private:  iLoad_loader_auto
+% private:  iLoad_loader_auto, iLoad_config_load, iLoad_config_save, iLoad_import, iLoad_loader_check
 
 data = []; format = [];
 if nargin == 0, filename=''; end
 if nargin < 2,  loader = ''; end
 if strcmp(loader, 'load config')
-  data = iLoad_loader_auto('', 'allformats');
+  data  = iLoad_config_load;
   return
 elseif strcmp(loader, 'save config')
   if isempty(filename)
-    data = iLoad_loader_auto('', 'allformats');
+    config  = iLoad_config_load;
   else
-    data = filename;
+    config = filename;
   end
-  format_names  ={};
-  format_methods={};
-  format_unique =ones(1,length(data));
-  % remove duplicated format definitions
-  for index=1:length(data)
-    if ~isempty(data{index}.name) & ~isempty(strmatch(data{index}.name, format_names), 'exact') & ~isempty(strmatch(data{index}.method, format_methods), 'exact')
-      format_unique(index) = 0; % already exists. Skip it.
-      format_names{index}  = '';
-      format_methods{index}= '';
-    else
-      format_names{index} = data{index}.name;
-      format_methods{index} = data{index}.method;
-    end
-  end
-  data = data(find(format_unique));
-  % save iLoad.ini configuration file
-  % make header for iLoad.ini
-  filename=fullfile(prefdir, 'iLoad.ini'); % store preferences in PrefDir (Matlab)
-  str = [ '% iLoad configuration script file ' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          '% Matlab ' version ' m-file ' filename ' saved on ' datestr(now) ' with iLoad('''',''save config'');' sprintf('\n') ...
-          '% User definitions of specific import formats to be used by iLoad' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          '% Each format is specified as a structure with the following fields' sprintf('\n') ...
-          '%   method:   function name to use, called as method(filename, options...)' sprintf('\n') ...
-          '%   extension:a single or a cellstr of extensions associated with the method' sprintf('\n') ...
-          '%   patterns: list of strings to search in data file. If all found, then method' sprintf('\n') ...
-          '%             is qualified' sprintf('\n') ...
-          '%   name:     name of the method/format' sprintf('\n') ...
-          '%   options:  additional options to pass to the method.' sprintf('\n') ...
-          '%             If given as a string they are catenated with file name' sprintf('\n') ...
-          '%             If given as a cell, they are given to the method as additional arguments' sprintf('\n') ...
-          '%   postprocess: function called from iData/load after file import, to assign aliases, ...' sprintf('\n') ...
-          '%             called as iData=postprocess(iData)' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          '% formats should be sorted from the most specific to the most general.' sprintf('\n') ...
-          '% Formats will be tried one after the other, in the given order.' sprintf('\n') ...
-          '% System wide loaders are tested after user definitions.' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          '% NOTE: The resulting cell must be named "config"' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          class2str('config', data) ];
-  [fid, message]=fopen(filename,'w+');
-  if fid == -1
-    warning(['Error opening file ' filename ' to save iLoad configuration.' ]);
-  else
-    fprintf(fid, '%s', str);
-    fclose(fid);
-    disp([ '% Saved iLoad configuration into ' filename ]);
-  end
+  data = iLoad_config_save(config);
   return
 end
 
@@ -131,7 +82,8 @@ if ischar(filename) & length(filename) > 0
     [data, format] = iLoad(filename, loader);
     return
   end
-
+  
+  % handle compressed files
   [pathstr, name, ext] = fileparts(filename);
   if     strcmp(ext, '.zip'), cmd = 'unzip';
   elseif strcmp(ext, '.tar'), cmd = 'untar';
@@ -159,6 +111,8 @@ if ischar(filename) & length(filename) > 0
       return
     end
   end
+  
+  % handle files on the internet
   if strncmp(filename, 'http://', length('http://')) | strncmp(filename, 'ftp://', length('ftp://'))
     % access the net. Proxy settings must be set (if any).
     data = urlread(filename);
@@ -180,7 +134,8 @@ if ischar(filename) & length(filename) > 0
     [data, format] = iLoad_import(filename, loader);
   end
 elseif isempty(filename)
-  if exist('uigetfiles')
+  config = iLoad_config_load;
+  if exist('uigetfiles') & strcmp(config.UseSystemDialogs, 'no')
       [filename, pathname] = uigetfiles('Select file(s) to load');
   else
     if usejava('swing')
@@ -205,7 +160,6 @@ else
 end
 
 % -----------------------------------------------------------
-
 % private function to import single data with given method(s)
 function [data, loader] = iLoad_import(filename, loader)
   data = [];
@@ -230,7 +184,8 @@ function [data, loader] = iLoad_import(filename, loader)
     loader=loader(loader_index);
   elseif ischar(loader)
     % test if loader is the user name of a function
-    formats = iLoad_loader_auto(filename, 'allformats');
+    config = iLoad_config_load;
+    formats = config.loaders;
     loaders={};
     loaders_count=0;
     for index=1:length(formats)
@@ -252,7 +207,7 @@ function [data, loader] = iLoad_import(filename, loader)
       try
       data = iLoad_import(filename, this_loader);
       catch
-      fprintf(1, 'Failed to import file %s with method %s. Ignoring.\n', filename, this_loader.name);
+      fprintf(1, 'Failed to import file %s with method %s (%s). Ignoring.\n', filename, this_loader.name, this_loader.method);
       data = [];
       end
       if ~isempty(data)
@@ -290,7 +245,6 @@ function [data, loader] = iLoad_import(filename, loader)
   return
   
 % -----------------------------------------------------------
-
 % private function to make the data pretty looking
 function data = iLoad_loader_check(file, data, loader)
   name='';
@@ -347,76 +301,11 @@ function data = iLoad_loader_check(file, data, loader)
   return
 
 % -----------------------------------------------------------
-
 % private function to determine which parser to use to analyze content
 % if allformats == 1, no pattern search is done
-function loaders = iLoad_loader_auto(file, allformats)
-  loaders      = {};
-  % read user list of loaders which is a cell of format descriptions
-  if exist(fullfile(prefdir, 'iLoad.ini'), 'file')
-    % there is an iLoad_ini in the Matlab preferences directory: read it
-    content = fullfile(prefdir, 'iLoad.ini');
-    fid = fopen(content, 'r');
-    content = fread(fid, Inf, 'uint8=>char');
-    fclose(fid);
-    % evaluate content of file
-    config=[]; eval(content(:)'); % this makes a 'config' variable
-    loaders=config; % returns a cell of format specifications (structures)
-  elseif exist('iLoad_ini')
-    user_loaders = iLoad_ini;
-    loaders = { user_loaders{:} , loaders{:} }; % returns a cell of format specifications (structures)
-  end
-  
-  % read default loaders: method, ext, name, options
-  % default importers, when no user specification is given. 
-  % These do not have any pattern recognition or postprocess
-  formats = {...
-    { 'looktxt', '',    'Data (text format with fastest import method)',    '--headers --binary --fast --comment= '}, ...
-    { 'looktxt', '',    'Data (text format with fast import method)',       '--headers --binary --comment= '}, ...
-    { 'looktxt', '',    'Data (text format)',                               '--headers --comment= '}, ...
-    { 'importdata','',  'Matlab importer',''}, ...
-    { 'wk1read', 'wk1', 'Lotus1-2-3 (first spreadsheet)',''}, ...
-    { 'auread',  'au',  'NeXT/SUN (.au) sound',''}, ...
-    { 'wavread', 'wav'  'Microsoft WAVE (.wav) sound',''}, ...
-    { 'aviread', 'avi', 'Audio/Video Interleaved (AVI) ',''}, ...
-    { 'cdfread', {'nc','cdf'}, 'NetCDF',''}, ...
-    { 'netcdf',  {'nc','cdf'}, 'NetCDF 1.0',''}, ...
-    { 'fitsread','fits','FITS',''}, ...
-    { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet)',''}, ...
-    { 'imread',  {'bmp','jpg','jpeg','tiff','png','ico'}, 'Image/Picture',''}, ...
-    { 'hdfread', 'h4',  'HDF4',''}, ...
-    { 'hdf5read',{'hdf','h5'}, 'HDF5',''}, ...
-    { 'load',    'mat', 'Matlab workspace',''}, ...
-    { 'csvread', 'csv', 'Comma Separated Values',''}, ...
-    { 'dlmread', 'dlm', 'Numerical single block',''}, ...
-    { 'xmlread', 'xml', 'XML',''}, ...
-  };
-  for index=1:length(formats) % the default loaders are addded after the INI file
-    format = formats{index};
-    if isempty(format), break; end
-    % check if format already exists in list
-    skip_format=0;
-    for j=1:length(loaders)
-      this=loaders{j};
-      if strcmp(format{1}, this.name)
-        skip_format=1;
-        break;
-      end
-    end
-    if ~skip_format
-      loader.method     = format{1};
-      loader.extension  = format{2};
-      loader.name       = format{3};
-      loader.options    = format{4};
-      loader.patterns   = '';
-      loader.postprocess= '';
-      loaders = { loaders{:} , loader };
-    end
-  end
-  
-  if nargin == 2
-    return
-  end
+function loaders = iLoad_loader_auto(file)
+  config  = iLoad_config_load;
+  loaders = config.loaders;
     
   % read start of file
   fid = fopen(file, 'r');
@@ -475,4 +364,147 @@ function loaders = iLoad_loader_auto(file, allformats)
   end % for index
   
   return;
+
+% -----------------------------------------------------------
+% private function to save the configuration and format customization
+function config = iLoad_config_save(config)
+  data = config.loaders;
+  format_names  ={};
+  format_methods={};
+  format_unique =ones(1,length(data));
+  % remove duplicated format definitions
+  for index=1:length(data)
+    if ~isempty(data{index}.name) & ~isempty(strmatch(data{index}.name, format_names, 'exact')) & ~isempty(strmatch(data{index}.method, format_methods, 'exact'))
+      format_unique(index) = 0; % already exists. Skip it.
+      format_names{index}  = '';
+      format_methods{index}= '';
+    else
+      format_names{index} = data{index}.name;
+      format_methods{index} = data{index}.method;
+    end
+  end
+  data = data(find(format_unique));
+  config.loaders = data;
+  % save iLoad.ini configuration file
+  % make header for iLoad.ini
+  config.FileName=fullfile(prefdir, 'iLoad.ini'); % store preferences in PrefDir (Matlab)
+  str = [ '% iLoad configuration script file ' sprintf('\n') ...
+          '%' sprintf('\n') ...
+          '% Matlab ' version ' m-file ' config.FileName ' saved on ' datestr(now) ' with iLoad('''',''save config'');' sprintf('\n') ...
+          '%' sprintf('\n') ...
+          '% The configuration may be specified as:' sprintf('\n') ...
+          '%     config = { format1 .. formatN }; (a single cell of format definitions, see below).' sprintf('\n') ...
+          '%   OR a structure' sprintf('\n') ...
+          '%     config.loaders = { format1 .. formatN }; (see below)' sprintf('\n') ...
+          '%     config.UseSystemDialogs=''yes'' to use built-in Matlab file selector (uigetfile)' sprintf('\n') ...
+          '%                             ''no''  to use iLoad file selector           (uigetfiles)' sprintf('\n') ...
+          '%' sprintf('\n') ...
+          '% User definitions of specific import formats to be used by iLoad' sprintf('\n') ...
+          '% Each format is specified as a structure with the following fields' sprintf('\n') ...
+          '%   method:   function name to use, called as method(filename, options...)' sprintf('\n') ...
+          '%   extension:a single or a cellstr of extensions associated with the method' sprintf('\n') ...
+          '%   patterns: list of strings to search in data file. If all found, then method' sprintf('\n') ...
+          '%             is qualified' sprintf('\n') ...
+          '%   name:     name of the method/format' sprintf('\n') ...
+          '%   options:  additional options to pass to the method.' sprintf('\n') ...
+          '%             If given as a string they are catenated with file name' sprintf('\n') ...
+          '%             If given as a cell, they are given to the method as additional arguments' sprintf('\n') ...
+          '%   postprocess: function called from iData/load after file import, to assign aliases, ...' sprintf('\n') ...
+          '%             called as iData=postprocess(iData)' sprintf('\n') ...
+          '%' sprintf('\n') ...
+          '% all formats must be arranged in a cell, sorted from the most specific to the most general.' sprintf('\n') ...
+          '% Formats will be tried one after the other, in the given order.' sprintf('\n') ...
+          '% System wide loaders are tested after user definitions.' sprintf('\n') ...
+          '%' sprintf('\n') ...
+          '% NOTE: The resulting configuration must be named "config"' sprintf('\n') ...
+          '%' sprintf('\n') ...
+          class2str('config', config) ];
+  [fid, message]=fopen(config.FileName,'w+');
+  if fid == -1
+    warning(['Error opening file ' config.FileName ' to save iLoad configuration.' ]);
+    config.FileName = [];
+  else
+    fprintf(fid, '%s', str);
+    fclose(fid);
+    disp([ '% Saved iLoad configuration into ' config.FileName ]);
+  end
+  
+% -----------------------------------------------------------
+% private function to load the configuration and format customization
+function config = iLoad_config_load
+  loaders      = {};
+  % read user list of loaders which is a cell of format descriptions
+  if exist(fullfile(prefdir, 'iLoad.ini'), 'file')
+    % there is an iLoad_ini in the Matlab preferences directory: read it
+    configfile = fullfile(prefdir, 'iLoad.ini');
+    fid = fopen(configfile, 'r');
+    content = fread(fid, Inf, 'uint8=>char');
+    fclose(fid);
+    % evaluate content of file
+    config=[]; eval(content(:)'); % this makes a 'config' variable
+    if iscell(config)
+      loaders = config; config=[];
+      config.loaders = loaders;
+      config.FileName= configfile;
+    end
+  elseif exist('iLoad_ini')
+    config = iLoad_ini;
+  end
+  
+  % check if other configuration fields are present, else defaults
+  if ~isfield(config, 'UseSystemDialogs'), config.UseSystemDialogs = 'no'; end
+  if ~isfield(config, 'FileName'),         config.FileName = ''; end
+  
+  loaders = config.loaders;
+  
+  % ADD default loaders: method, ext, name, options
+  % default importers, when no user specification is given. 
+  % These do not have any pattern recognition or postprocess
+  formats = {...
+    { 'looktxt', '',    'Data (text format with fastest import method)',    '--headers --binary --fast --comment= '}, ...
+    { 'looktxt', '',    'Data (text format with fast import method)',       '--headers --binary --comment= '}, ...
+    { 'looktxt', '',    'Data (text format)',                               '--headers --comment= '}, ...
+    { 'importdata','',  'Matlab importer',''}, ...
+    { 'wk1read', 'wk1', 'Lotus1-2-3 (first spreadsheet)',''}, ...
+    { 'auread',  'au',  'NeXT/SUN (.au) sound',''}, ...
+    { 'wavread', 'wav'  'Microsoft WAVE (.wav) sound',''}, ...
+    { 'aviread', 'avi', 'Audio/Video Interleaved (AVI) ',''}, ...
+    { 'cdfread', {'nc','cdf'}, 'NetCDF',''}, ...
+    { 'netcdf',  {'nc','cdf'}, 'NetCDF 1.0',''}, ...
+    { 'fitsread','fits','FITS',''}, ...
+    { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet)',''}, ...
+    { 'imread',  {'bmp','jpg','jpeg','tiff','png','ico'}, 'Image/Picture',''}, ...
+    { 'hdfread', 'h4',  'HDF4',''}, ...
+    { 'hdf5read',{'hdf','h5'}, 'HDF5',''}, ...
+    { 'load',    'mat', 'Matlab workspace',''}, ...
+    { 'csvread', 'csv', 'Comma Separated Values',''}, ...
+    { 'dlmread', 'dlm', 'Numerical single block',''}, ...
+    { 'xmlread', 'xml', 'XML',''}, ...
+  };
+  for index=1:length(formats) % the default loaders are addded after the INI file
+    format = formats{index};
+    if isempty(format), break; end
+    % check if format already exists in list
+    skip_format=0;
+    for j=1:length(loaders)
+      this=loaders{j};
+      if strcmp(format{1}, this.name)
+        skip_format=1;
+        break;
+      end
+    end
+    if ~skip_format
+      loader.method     = format{1};
+      loader.extension  = format{2};
+      loader.name       = format{3};
+      loader.options    = format{4};
+      loader.patterns   = '';
+      loader.postprocess= '';
+      loaders = { loaders{:} , loader };
+    end
+    
+  end
+  
+  config.loaders = loaders; % updated list of loaders
+
   
