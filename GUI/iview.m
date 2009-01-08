@@ -87,8 +87,8 @@ switch action
     % close all instances
     % save configuration first
     iview(gcf, 'save_config');
-    % find all existing iView instances
     iLoad('','save config');
+    % find all existing iView instances
     instance_list=findall(0,'Tag','iView_instance');
     close(instance_list);
     disp([ '% ' datestr(now) ' Exiting iView' ]);
