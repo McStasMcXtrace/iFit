@@ -69,7 +69,7 @@ function config=iView_private_config_load(instance)
   if ~isfield(config,'IconWidth'),        config.IconWidth        = 2; end  % real icon width = IconWidth*IconSize. Recommended: 2
   if ~isfield(config,'Menu'),             config.Menu             = {}; end % custom menu
   if ~isfield(config,'ExitConfirm'),      config.ExitConfirm      = 1; end  % Ask for confirmation before exiting iView if 'yes' or 1
-  if ~isfield(config,'Version'),          config.Version          = '1.0'; end
+  if ~isfield(config,'Version'),          config.Version          = '1.0 (Jan 2009)'; end
   if ~isfield(config,'IconStyle'),        config.IconStyle        = 'togglebutton'; end % style of Icons: checkbox togglebutton. Recommended: togglebutton
   if ~isfield(config,'OutputFormat'),     config.OutputFormat     = 'pdf'; end  % prefered export format
   if ~isfield(config,'Labels'),           config.Labels           = {'Default','Background'}; end % predefined labels for data sets
