@@ -146,6 +146,7 @@ function [instance, config]=iView_private_create_interface(instance, config)
   uimenu(edit, 'Label', 'Select &all', 'Callback', 'iview(gcf, ''select_all'');', 'Separator','on','Accelerator','a');
   uimenu(edit, 'Label', '&Deselect all', 'Callback', 'iview(gcf, ''deselect_all'');','Accelerator','d');
   uimenu(edit, 'Label', '&Find...', 'Enable','off', 'Separator','on','Accelerator','f'); % dialog to find match, and select result
+  uimenu(edit, 'Label', '&Rename window...', 'Callback', 'iview(gcf, ''rename_instance'');');
 
   % create dynamic menu (from config)
 
@@ -176,7 +177,7 @@ function [instance, config]=iView_private_create_interface(instance, config)
   
   help=uimenu(instance, 'Label', 'Help');
   uimenu(help, 'Label', 'Contents', 'Enable','off');
-  uimenu(help, 'Label', 'Contacts', 'Enable','off');
+  uimenu(help, 'Label', 'Contacts', 'Callback', 'iview(gcf, ''contacts'');');
   uimenu(help, 'Label', 'About iView', 'Callback', 'iview(gcf, ''about'');', 'Separator','on');
   
   % install mouse/keyboard event handler
