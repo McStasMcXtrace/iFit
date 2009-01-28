@@ -142,7 +142,7 @@ case 'up'
     end
 
     % get initial selection (all Value=1 objects).
-    [selection,selectedIndex,selected]= iView_private_selection(fig_i);              % selected iData objects (initial)
+    [selection,selectedIndex,selected]= iView_private_selection(fig_i); % selected iData objects (initial)
     
     % in the case of a move, we must remove selected items
     if obj0.onbackground && strcmp(obj.event, 'normal')
@@ -170,7 +170,7 @@ case 'up'
       Data_f = [ target_before_index selection target_after_index ];
       setappdata(fig_f, 'Data', Data_f);
       iView_private_icon(fig_f, 'documents', []);
-      iView_private_icon(fig_f, 'check_load', Data_f);
+      [hIcon,config,Data_f]=iView_private_icon(fig_f, 'check_load', Data_f);
     end
   end % if obj0.dragged
   
