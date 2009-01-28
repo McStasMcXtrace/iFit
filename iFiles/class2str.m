@@ -16,9 +16,15 @@ function str=class2str(this, data)
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. June, 2007.
 
+if nargin == 1
+  data = this;
+  if isempty(inputname(1)), this = [ class(data) '_str' ];
+  else this = inputname(1); end
+end
+
 NL = sprintf('\n');
 if ischar(data)
-  str = [ this ' = ''' calss2str_validstr(data) ''';' NL ];
+  str = [ this ' = ''' class2str_validstr(data) ''';' NL ];
 elseif isa(data, 'iData')
   str = [ '% ' this ' (' class(data) ') size ' num2str(size(data)) NL ];
   str = [ str class2str(this, struct(data)) ];
@@ -44,7 +50,7 @@ elseif iscellstr(data)
   str = [ '% ' this ' (' class(data) 'str) size ' mat2str(size(data)) NL ...
           this ' = { ...' NL ];
   for index=1:length(data(:))
-    str = [ str '  ''' calss2str_validstr(data{index}) '''' ];
+    str = [ str '  ''' class2str_validstr(data{index}) '''' ];
     if index < length(data(:)), str = [ str ', ' ]; end
     str = [ str ' ...' NL ];
   end
@@ -66,11 +72,17 @@ elseif iscell(data)
 elseif isa(data, 'function_handle')
   iData_private_warning(mfilename,  'can not save function handles. Skipping.');
 else
-  iData_private_warning(mfilename,[ 'can not save ' class(data) '. Skipping.' ]);
-  % other object
+  try
+    % other class
+    str = [ '% ' this ' (' class(data) ') size ' num2str(size(data)) NL ];
+    str = [ str class2str(this, struct(data)) ];
+    str = [ str '% end of object ' this NL ];
+  catch
+    iData_private_warning(mfilename,[ 'can not save ' class(data) '. Skipping.' ]);
+  end
 end
 
-function str=calss2str_validstr(str)
+function str=class2str_validstr(str)
 index = find(str < 32 | str > 127);
 str(index) = ' ';
 str=strrep(str, '''', '''''');
