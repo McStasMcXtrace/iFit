@@ -7,6 +7,7 @@ function [hIcon,config,object]=iView_private_icon(instance, action, object, obje
 % check_load
 
 hIcon=[];
+config = iView_private_config(instance, 'load');
 
 if isempty(action), action='check'; end
 
@@ -14,7 +15,7 @@ if isempty(action), action='check'; end
 switch action
   case 'resize'     % re-arrange icons in instance window
     if isempty(object), object = getappdata(instance, 'Data'); end
-    iView_private_icon(instance, 'check', object);
+    [hIcon,config,object]=iView_private_icon(instance, 'check', object);
     return
   case 'documents'  % populate the Documents menu
     iView_private_icon_documents(instance);
@@ -32,7 +33,7 @@ switch action
     return
 end % switch action
 
-if nargin < 3, return; end
+if nargin < 3, object=[]; return; end
 
 Data = getappdata(instance, 'Data');
 if isempty(object), return; end
@@ -45,7 +46,6 @@ if ischar(object) % special data selections
   end
 end
 
-config = iView_private_config(instance, 'load');
 % make sure we have an iData
 if ~isempty(object) & ischar(object)
   object=cellstr(object);
@@ -152,6 +152,17 @@ case 'load'
     % make a copy of the object
     object = copyobj(object);
   end
+  % add icon cdata
+  if ~isfield(object.UserData, 'cdata')
+  	cdata = [];
+  else
+  	cdata = object.UserData.cdata;
+  end
+  if isempty(cdata)
+    frame = getframe(object, config.IconSize);
+    cdata = frame.cdata;
+    object.UserData.cdata=cdata; % store cdata for future re-use
+  end
   Data = [ Data object ]; % store new object
   setappdata(instance, 'Data', Data);
   index= length(Data);
@@ -206,7 +217,7 @@ if isempty(index), return; end
 [iRow,iColumn]  = iView_private_icon_position(instance, index);
 
 NL = sprintf('\n');
-tooltip = [ object.Title NL object.Source NL 'Tag ' object.Tag '; Data size [' num2str(size(object)) ']' NL ];
+tooltip = [ object.Title ' (' object.Label ')' NL object.Source NL 'Tag ' object.Tag '; Data size [' num2str(size(object)) ']' NL ];
 for ax_index = 0:ndims(object)
   [axisdef, lab] = getaxis(object, num2str(ax_index));
   lab=strtrim(lab);
@@ -225,11 +236,14 @@ if strcmp(action, 'load') | strcmp(action, 'check_load')
     % all events, e.g. ButtonDownFcn
     % The Enable=inactive removes the Tooltip
     if ~isfield(object.UserData, 'cdata')
+    	cdata = [];
+    else
+    	cdata = object.UserData.cdata;
+    end
+    if isempty(cdata)
       frame = getframe(object, config.IconSize);
       cdata = frame.cdata;
-      object.UserData.cdata=cdata;
-    else
-      cdata = object.UserData.cdata;
+      object.UserData.cdata=cdata; % store cdata for future re-use
     end
     hIcon = uicontrol(instance,'Style', config.IconStyle,...
                     'Tag', object.Tag, ...
@@ -244,6 +258,31 @@ else
   hIcon = findobj(instance, 'Tag', object.Tag);
 end
 if isempty(hIcon), return; end
+
+if ~isempty(object.Label)
+	label_index = strmatch(object.Label, config.Labels);
+	if label_index
+	
+		% a list of not too violent colors to be used as labels
+		% from http://www.endprod.com/colors/ Web color definitions
+		colors{1} = [150	205	205]/256; % pale turquoise 3
+		colors{2} = [238	213	183]/256; % bisque 2
+		colors{3} = [152	245	255]/256; % cadet blue 2
+  	colors{4} = [202	255	112]/256; % dark olive green 1
+  	colors{5} = [193	255	193]/256; % dark sea green 2
+  	colors{6} = [220	220	220]/256; % gainsboro
+		colors{7} = [240	230	140]/256; % khaki
+		colors{8} = [205	193	197]/256; % lavender blush 3
+		colors{9} = [205	201	165]/256; % lemon chiffon 3
+		colors{10} = [173	216	230]/256; % light blue
+		colors{11} = [240	128	128]/256; % light coral
+		label_index = mod(label_index, length(colors));
+		label_index = colors{label_index};
+		set(hIcon, 'BackgroundColor', label_index);
+	end
+else
+	set(hIcon,'BackgroundColor',[0.7 0.7 0.7]);
+end
 
 % icon Tag must be the one from the iData object
 set(hIcon, ... 
@@ -268,12 +307,17 @@ set(hIcon, ...
 figure(instance);
 cmenu = uicontextmenu('Parent',instance);
 set(hIcon, 'UIContextMenu', cmenu);
-uimenu(cmenu, 'Label', object.Title);
+t=uimenu(cmenu, 'Label', [ object.Tag ':' object.Title ], 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''properties'', ''selection'');' ]);
 uimenu(cmenu, 'Label', 'Open', 'Separator','on', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''open_data'', ''selection'');' ]);
 uimenu(cmenu, 'Label', 'Save', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''save_data'', ''selection'');' ]);
 uimenu(cmenu, 'Label', 'Save as...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''saveas_data'', ''selection'');' ]);
 uimenu(cmenu, 'Label', 'Close', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''close_data'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Properties', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''properties'', ''selection'');' ], 'Separator','on');
+uimenu(cmenu, 'Label', 'Properties...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''properties'', ''selection'');' ], 'Separator','on');
+uimenu(cmenu, 'Label', 'Set label...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''label_data'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Rename...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''rename_data'', ''selection'');' ]);
+ud = get(hIcon,'UserData');
+ud.uimenu_label = t;
+set(hIcon,'UserData', ud);
 
 % =============================================================================
 %                    INLINE functions
