@@ -125,7 +125,7 @@ if isstruct(filterspec) % callback use
     string = get(UD.Handle.List, 'String');
     value  = get(UD.Handle.List, 'Value');
     for index=1:length(value)
-      tmp = [ UD.Path filesep strtok(string{value(index)}) ];
+      tmp = [ UD.Path filesep UIstrstrip(string{value(index)}) ];
       if ~isempty(dir(tmp))
         edit(tmp);
       end
@@ -147,7 +147,7 @@ if isstruct(filterspec) % callback use
         w = warning;
         warning off;
         for index=1:length(value)
-          tmp_file = strtok(string{value(index)});
+          tmp_file = UIstrstrip(string{value(index)});
           tmp_path = [ UD.Path filesep ];
           tmp      = [ tmp_path tmp_file ];
           if ~strcmp(tmp_file, '.') & ~strcmp(tmp_file, '..')
@@ -167,7 +167,7 @@ if isstruct(filterspec) % callback use
     if isempty(string), return; end
     if ~iscell(string), return; end
     if strcmp(get(object, 'SelectionType'), 'open') & ~isempty(value)
-      string = [ UD.Path filesep strtok(string{value(1)}) ];
+      string = [ UD.Path filesep UIstrstrip(string{value(1)}) ];
 
       if isdir(string);
         UD.Path = string;
@@ -702,10 +702,11 @@ if ~isempty(UD.Dir_orig)
   else
     sort_choice     = 'Unsorted';
   end
+  sort_choice = deblank(sort_choice);
 
   if strcmp(sort_choice, 'Date') UD.ShowDates = 1; else UD.ShowDates = 0; end
   if strcmp(sort_choice, 'Size') UD.ShowSizes = 1; else UD.ShowSizes = 0; end
-
+  
   % extract informations from dir items
   dir_name = {dir_list.name};
   if (UD.ShowDates)  dir_date = datenum({dir_list.date}); % this is time consuming
@@ -861,4 +862,14 @@ end
 
 set(fig, 'UserData', UD);
 set(fig, 'Pointer','arrow');
+
+% function that strips additional [Directory] and (date) from List.String
+function string = UIstrstrip(string)
+
+	bracketpos = min(findstr(string, ' ['));
+	parentpos  = min(findstr(string, ' ('));
+	strippos = min([ length(string) bracketpos parentpos ]);
+
+	string = deblank(string(1:strippos));
+
 
