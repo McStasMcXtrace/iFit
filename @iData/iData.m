@@ -19,7 +19,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: iData, iData/load, methods
 
 % object definition and converter
@@ -67,7 +67,17 @@ if nargin == 0
   outarray = [ outarray a ];
   return
 else
-  if isnumeric(varargin{1}) & length(varargin) > 1
+  if isa(varargin{1}, 'iData') & length(varargin{1}) > 1
+    in = varargin{1};
+    for index=1:length(in)
+      out(index) = iData(in(index));        % check all elements
+    end
+    outarray = [ outarray out ];
+    if nargout == 0 & length(inputname(1))
+      assignin('caller',inputname(1),outarray)
+    end
+    return
+  elseif isnumeric(varargin{1}) & length(varargin) > 1
     index=1;
     while index <= length(varargin)
       if isnumeric(varargin{index})
@@ -94,16 +104,7 @@ else
     return
   elseif ischar(varargin{1}) & length(varargin) > 1
     out = load(iData, varargin{:});        % load file(s) with additional arguments
-  elseif isa(varargin{1}, 'iData') & length(varargin{1}) > 1
-    in = varargin{1};
-    for index=1:length(in)
-      out(index) = iData(in(index));        % check all elements
-    end
-    outarray = [ outarray out ];
-    if nargout == 0 & length(inputname(1))
-      assignin('caller',inputname(1),outarray)
-    end
-    return
+  
   else
     in = varargin{1};
     if ischar(in)

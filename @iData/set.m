@@ -13,7 +13,7 @@ function s_out = set(a_in,varargin)
 %
 % ex      : set(iData,'Title','A nice Title')
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/get, iData/setalias, iData/setaxis
 
 % EF 27/07/00 creation
@@ -27,6 +27,7 @@ if nargin == 1
   disp('Command: (cellstr)  history of commands applied to object');
   disp('Date:    (string)   Data set creation date');
   disp('UserData:(any type) user data storage area');
+  disp('Label:   (string)   user label');
   disp('Creator: (string)   application that created this data set');
   disp('User:    (string)   user of this Data set');
   disp('Data:    (any type) Data storage area');
