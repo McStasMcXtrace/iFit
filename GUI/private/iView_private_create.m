@@ -28,10 +28,7 @@ if create_new_instance
   iView_private_create_storage(instance, config);
   if ~length(instance_list)
     disp([ '% ' datestr(now) ' Starting iView' ]);
-    iView_private_config(0, 'save', config);  % first instance: we save the configuration
-    iLoad_config=iLoad('', 'load config');
-    iLoad_config.UseSystemDialogs = config.UseSystemDialogs;
-    iLoad(iLoad_config, 'save config');
+    iview(instance, 'config_save');  % first instance: we save the configuration
   end
   instance_list = [ instance_list instance ];
 end
@@ -64,9 +61,11 @@ function [instance, config]=iView_private_create_interface(instance, config)
 
   % create main windows with sliders
   if isempty(instance)
-    instance = figureslider('ResizeFcn', 'iview(gcf, ''resize'');');  % new figure with sliders
+    instance = figureslider('ResizeFcn', 'iview(gcf, ''instance_resize'');', ...
+    'CloseRequestFcn','iview(gcf, ''instance_close'');');  % new figure with sliders
   else
-    instance = figureslider(instance,'ResizeFcn', 'iview(gcf, ''resize'');');
+    instance = figureslider(instance,'ResizeFcn', 'iview(gcf, ''instance_resize'');', ...
+    'CloseRequestFcn','iview(gcf, ''instance_close'');');
   end
   set(instance, 'MenuBar','none', 'ToolBar','none');
   set(instance, 'Tag','iView_instance');
@@ -127,34 +126,34 @@ function [instance, config]=iView_private_create_interface(instance, config)
 
   % create static menus (based on default Figure menus)
   file = uimenu(instance, 'Label', '&File');
-  uimenu(file, 'Label', '&New window','Callback','iview(''new'');','Accelerator','n');
-  uimenu(file, 'Label', 'New data set', 'Callback','iview(''new_data'');');
-  uimenu(file, 'Label', '&Open...','Callback','iview(gcf, ''load'');','Accelerator','o');
-  uimenu(file, 'Label', '&Save', 'Callback', 'iview(gcf, ''save_data'');','Accelerator','s', 'Separator','on');
-  uimenu(file, 'Label', 'Save as...', 'Callback', 'iview(gcf, ''saveas_data'');','Accelerator','s');
-  uimenu(file, 'Label', 'Save configuration', 'Callback', 'iview(gcf, ''save_config'');');
+  uimenu(file, 'Label', '&New window','Callback','iview(''instance_new'');','Accelerator','n');
+  uimenu(file, 'Label', 'New data set', 'Callback','iview(''data_new'');');
+  uimenu(file, 'Label', '&Open...','Callback','iview(gcf, ''data_load'');','Accelerator','o');
+  uimenu(file, 'Label', '&Save', 'Callback', 'iview(gcf, ''data_save'',''selection'');','Accelerator','s', 'Separator','on');
+  uimenu(file, 'Label', 'Save as...', 'Callback', 'iview(gcf, ''data_saveas'',''selection'');','Accelerator','s');
+  uimenu(file, 'Label', 'Save configuration', 'Callback', 'iview(gcf, ''config_save'');');
   uimenu(file, 'Label', 'Page setup...', 'Callback', 'pagesetupdlg(gcf);', 'Separator','on');
   uimenu(file, 'Label', '&Print...',      'Callback', 'printdlg(gcf);','Accelerator','p');
   uimenu(file, 'Label', 'Preferences...', 'Enable','off');
-  uimenu(file, 'Label', 'Close &window', 'Callback', 'iview(gcf, ''close'');', 'Separator','on','Accelerator','w');
+  uimenu(file, 'Label', 'Close &window', 'Callback', 'iview(gcf, ''instance_close'');', 'Separator','on','Accelerator','w');
   uimenu(file, 'Label', '&Exit', 'Callback', 'iview(gcf, ''exit'');','Accelerator','q'); % quit application
   
   edit = uimenu(instance, 'Label', '&Edit');
   uimenu(edit, 'Label', 'Cut', 'Enable','off','Accelerator','x');
   uimenu(edit, 'Label', 'Copy', 'Enable','off','Accelerator','c');
   uimenu(edit, 'Label', 'Paste', 'Enable','off','Accelerator','v');
-  uimenu(edit, 'Label', 'Select &all', 'Callback', 'iview(gcf, ''select_all'');', 'Separator','on','Accelerator','a');
-  uimenu(edit, 'Label', '&Deselect all', 'Callback', 'iview(gcf, ''deselect_all'');','Accelerator','d');
+  uimenu(edit, 'Label', 'Select &all', 'Callback', 'iview(gcf, ''data_select_all'');', 'Separator','on','Accelerator','a');
+  uimenu(edit, 'Label', '&Deselect all', 'Callback', 'iview(gcf, ''data_deselect_all'');','Accelerator','d');
   uimenu(edit, 'Label', '&Find...', 'Enable','off', 'Separator','on','Accelerator','f'); % dialog to find match, and select result
-  uimenu(edit, 'Label', '&Rename window...', 'Callback', 'iview(gcf, ''rename_instance'');');
+  uimenu(edit, 'Label', '&Rename window...', 'Callback', 'iview(gcf, ''instance_rename'');');
 
   % create dynamic menu (from config)
 
   % create static contextual menu
   cmenu = uicontextmenu('Parent',instance);
   set(instance, 'UIContextMenu', cmenu);
-  uimenu(cmenu, 'Label', 'New data set', 'Callback','iview(''new_data'');');
-  uimenu(cmenu, 'Label', 'Open...', 'Callback','iview(gcf, ''load'');');
+  uimenu(cmenu, 'Label', 'New data set', 'Callback','iview(''data_new'');');
+  uimenu(cmenu, 'Label', 'Open...', 'Callback','iview(gcf, ''data_load'');');
   % uicontext menu on background:
   %   new window
   %   load
@@ -169,11 +168,19 @@ function [instance, config]=iView_private_create_interface(instance, config)
   
   % menus that must be at the right side
   documents=uimenu(instance, 'Label', 'Documents','Tag','Documents');
-  uimenu(documents, 'Label', '&Open data', 'Tag','Static', 'Callback', 'iview(gcf, ''open_data'', ''selection'');');
+  uimenu(documents, 'Label', '&Open data (plot)', 'Tag','Static', 'Callback', 'iview(gcf, ''data_open'', ''selection'');');
   uimenu(documents, 'Label', '&Edit data...', 'Tag','Static', 'Enable','off');  % edit content/properties/axes/signal/alias...
-  uimenu(documents, 'Label', '&Properties...', 'Tag','Static', 'Callback', 'iview(gcf, ''properties'', ''selection'');','Accelerator','i');
-  uimenu(documents, 'Label', '&Sort by...', 'Tag','Static', 'Callback','iview(gcf, ''sort'');'); % Date, Size, Name, Label
-  uimenu(documents, 'Separator','on', 'Label', 'Delete selection', 'Tag','Static', 'Callback', 'iview(gcf, ''close_data'', ''selection'');');
+  uimenu(documents, 'Label', '&Properties...', 'Tag','Static', 'Callback', 'iview(gcf, ''data_properties'', ''selection'');','Accelerator','i');
+  sortby = uimenu(documents, 'Label', 'Sort by', 'Tag','Static'); % Size, Date, Title, Label, Tag
+  	uimenu(sortby, 'Label', 'Title', 'Tag','Static', 'Callback','iview(gcf, ''instance_sort'',''Title'');'); 
+  	uimenu(sortby, 'Label', 'Date', 'Tag','Static', 'Callback','iview(gcf, ''instance_sort'',''Date'');'); 
+  	uimenu(sortby, 'Label', 'Size', 'Tag','Static', 'Callback','iview(gcf, ''instance_sort'',''Size'');'); 
+  	uimenu(sortby, 'Label', 'Label', 'Tag','Static', 'Callback','iview(gcf, ''instance_sort'',''Label'');'); 
+  	uimenu(sortby, 'Label', 'Tag (unique ID)', 'Tag','Static', 'Callback','iview(gcf, ''instance_sort'',''Tag'');');
+  uimenu(documents, 'Label', 'Set Label as', 'Tag','Static', 'Separator','on');
+  uimenu(documents, 'Label', 'Define new label...', 'Tag','Static', 'Callback','iview(gcf, ''data_label'', ''add'');');
+  uimenu(documents, 'Label', 'Remove label...', 'Tag','Static', 'Callback', 'iview(gcf, ''data_label'', ''remove'');');
+  uimenu(documents, 'Separator','on', 'Label', 'Delete selection', 'Tag','Static', 'Callback', 'iview(gcf, ''data_close'', ''selection'');');
   
   help=uimenu(instance, 'Label', 'Help');
   uimenu(help, 'Label', 'Contents', 'Enable','off');
@@ -185,6 +192,9 @@ function [instance, config]=iView_private_create_interface(instance, config)
   % keyboard is handled through menu accelerators
   
   movegui(instance); % make sure the window is visible on screen
+  
+  % create Label items and update Documents menu
+  iView_private_documents(instance);
   
   config.Position = get(instance, 'Position');
 
