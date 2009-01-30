@@ -8,7 +8,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -23,14 +23,25 @@ end
 
 % first handle object array for first index
 if length(b(:)) > 1 & (strcmp(S(1).type,'()') | strcmp(S(1).type,'{}'))
-  c = b(S(1).subs{:});
+  c = b(S(1).subs{:}); % get elements in the array
   d = c(:);
   if length(d) == 1
-    d = val;
+    d = iData(val);
   else
-    for j = 1:length(d)
-      d(j) = subsasgn(d(j),S(2:end),val);
-    end
+    if ~isempty( S(2:end) ) % array([1 2 3]).something = something
+		  for j = 1:length(d)
+		    d(j) = subsasgn(d(j),S(2:end),val);
+		  end
+		else	% single level array assigment as array([1 2 3]) = something
+			for j = 1:length(d)
+				if length(val) == 1, d(j) = iData(val);
+				elseif length(val) == length(d)
+					d = iData(val);
+				else
+					iData_private_error(mfilename, [ 'can not assign ' num2str(length(d)) ' iData array to ' num2str(length(val)) ' ' class(val) ' array for object ' inputname(1) ' ' b(1).Tag ]);
+				end
+			end
+		end
   end
   if prod(size(c)) ~= 0 & prod(size(c)) == prod(size(d)) & length(c) > 1
     c = reshape(d, size(c));
