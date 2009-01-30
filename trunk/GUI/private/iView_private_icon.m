@@ -4,7 +4,7 @@ function [hIcon,config,object]=iView_private_icon(instance, action, object, obje
 % before importation.
 % action: 
 % load, check, resize, documents, open, select_all, deselect_all, delete, saveas
-% check_load
+% check_load, save
 
 hIcon=[];
 config = iView_private_config(instance, 'load');
@@ -18,7 +18,7 @@ switch action
     [hIcon,config,object]=iView_private_icon(instance, 'check', object);
     return
   case 'documents'  % populate the Documents menu
-    iView_private_icon_documents(instance);
+    iView_private_documents(instance);
     return
   case {'select_all','deselect_all'}
     objects = get(gcf,'Children');
@@ -47,6 +47,9 @@ if ischar(object) % special data selections
 end
 
 % make sure we have an iData
+if ~isempty(object) & ishandle(object)
+	object = get(object, 'Tag');
+end
 if ~isempty(object) & ischar(object)
   object=cellstr(object);
 end
@@ -113,7 +116,7 @@ case 'delete'
   end
   Data = ind2sub(Data, tokeep(find(tokeep)));
   setappdata(instance, 'Data', Data);
-  iView_private_icon(instance, 'documents', []);
+  iView_private_documents(instance);
   iView_private_icon(instance, 'check', []);
   return
 end
@@ -216,17 +219,7 @@ if isempty(index), return; end
 % position is set from iData index (end of array), icon size and window width
 [iRow,iColumn]  = iView_private_icon_position(instance, index);
 
-NL = sprintf('\n');
-tooltip = [ object.Title ' (' object.Label ')' NL object.Source NL 'Tag ' object.Tag '; Data size [' num2str(size(object)) ']' NL ];
-for ax_index = 0:ndims(object)
-  [axisdef, lab] = getaxis(object, num2str(ax_index));
-  lab=strtrim(lab);
-  if ax_index==0, 
-    if isempty(lab), tooltip = [ tooltip 'Signal' ]; else tooltip = [ tooltip lab ]; end
-  elseif ~isempty(lab)
-    tooltip = [ tooltip ' vs ' lab ]; 
-  end
-end
+tooltip = iView_private_data_tooltip(object);
 
 if strcmp(action, 'load') | strcmp(action, 'check_load')
   if isempty(hIcon)
@@ -259,23 +252,10 @@ else
 end
 if isempty(hIcon), return; end
 
-if ~isempty(object.Label)
+if ~isempty(object.Label) & ~strcmp(object.Label,'Default')
 	label_index = strmatch(object.Label, config.Labels);
 	if label_index
-	
-		% a list of not too violent colors to be used as labels
-		% from http://www.endprod.com/colors/ Web color definitions
-		colors{1} = [150	205	205]/256; % pale turquoise 3
-		colors{2} = [238	213	183]/256; % bisque 2
-		colors{3} = [152	245	255]/256; % cadet blue 2
-  	colors{4} = [202	255	112]/256; % dark olive green 1
-  	colors{5} = [193	255	193]/256; % dark sea green 2
-  	colors{6} = [220	220	220]/256; % gainsboro
-		colors{7} = [240	230	140]/256; % khaki
-		colors{8} = [205	193	197]/256; % lavender blush 3
-		colors{9} = [205	201	165]/256; % lemon chiffon 3
-		colors{10} = [173	216	230]/256; % light blue
-		colors{11} = [240	128	128]/256; % light coral
+		colors = iView_private_data_label(instance, 'colors');
 		label_index = mod(label_index, length(colors));
 		label_index = colors{label_index};
 		set(hIcon, 'BackgroundColor', label_index);
@@ -307,14 +287,13 @@ set(hIcon, ...
 figure(instance);
 cmenu = uicontextmenu('Parent',instance);
 set(hIcon, 'UIContextMenu', cmenu);
-t=uimenu(cmenu, 'Label', [ object.Tag ':' object.Title ], 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''properties'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Open', 'Separator','on', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''open_data'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Save', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''save_data'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Save as...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''saveas_data'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Close', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''close_data'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Properties...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''properties'', ''selection'');' ], 'Separator','on');
-uimenu(cmenu, 'Label', 'Set label...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''label_data'', ''selection'');' ]);
-uimenu(cmenu, 'Label', 'Rename...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''rename_data'', ''selection'');' ]);
+t=uimenu(cmenu, 'Label', [ object.Tag ':' object.Title ], 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''data_properties'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Open', 'Separator','on', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''data_open'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Save', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''data_save'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Save as...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''data_saveas'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Close', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''data_close'', gco);' ]);
+uimenu(cmenu, 'Label', 'Properties...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''data_properties'', ''selection'');' ], 'Separator','on');
+uimenu(cmenu, 'Label', 'Rename...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''data_rename'', ''selection'');' ]);
 ud = get(hIcon,'UserData');
 ud.uimenu_label = t;
 set(hIcon,'UserData', ud);
@@ -323,7 +302,6 @@ set(hIcon,'UserData', ud);
 %                    INLINE functions
 % =============================================================================
 % iView_private_icon_position
-% iView_private_icon_documents
 
 function [iRow,iColumn]  = iView_private_icon_position(instance, index)
 % iView_private_icon_position determine position of the indexed element in an 
@@ -358,28 +336,5 @@ function [iRow,iColumn]  = iView_private_icon_position(instance, index)
 
 
 
-function iView_private_icon_documents(instance)
-% iView_private_icon_documents Update Documents menu with list of loaded iData objects
 
-  documents = findobj(instance, 'Tag', 'Documents');
-  items     = get(documents, 'Children');
-  
-  % clear Static handles from the list (not from menu)
-  index     = strmatch('Static', get(items, 'Tag'), 'exact');
-  items(index)=[];
-  % delete other entries (as we shall rebuild menu items)
-  delete(items);
-  
-  % populate Documents
-  Data = getappdata(instance, 'Data');
-  
-  for index=1:length(Data)
-    if length(Data) == 1, this=Data; else this=Data(index); end
-    h = uimenu(documents, 'Label', Data(index).Title, ...
-        'Callback', [ 'iview(gcf, ''open_data'', ''' this.Tag ''');' ], ...
-        'Tag',[ 'Doc_'  this.Tag ]);
-    if index==1
-      set(h, 'Separator', 'on');
-    end
-  end
   

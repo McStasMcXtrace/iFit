@@ -169,7 +169,7 @@ case 'up'
       % move/copy
       Data_f = [ target_before_index selection target_after_index ];
       setappdata(fig_f, 'Data', Data_f);
-      iView_private_icon(fig_f, 'documents', []);
+      iView_private_documents(fig_f);
       [hIcon,config,Data_f]=iView_private_icon(fig_f, 'check_load', Data_f);
     end
   end % if obj0.dragged

@@ -136,7 +136,7 @@ if ischar(filename) & length(filename) > 0
 elseif isempty(filename)
   config = iLoad_config_load;
   if exist('uigetfiles') & strcmp(config.UseSystemDialogs, 'no')
-      [filename, pathname] = uigetfiles('Select file(s) to load');
+      [filename, pathname] = uigetfiles('.*','Select file(s) to load');
   else
     if usejava('swing')
       setappdata(0,'UseNativeSystemDialogs',false);
