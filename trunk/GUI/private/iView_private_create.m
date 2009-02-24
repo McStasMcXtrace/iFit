@@ -70,7 +70,7 @@ function [instance, config]=iView_private_create_interface(instance, config)
   set(instance, 'MenuBar','none', 'ToolBar','none');
   set(instance, 'Tag','iView_instance');
   set(instance, 'Name',[ 'iView #' num2str(instance) ]);
-  set(instance, 'HandleVisibility', 'callback');
+  set(instance, 'HandleVisibility', 'callback','Interruptible','off');
   set(instance, 'NextPlot','new', 'NumberTitle','on', 'BackingStore','on');
   
   % install event handler for mouse
@@ -177,6 +177,7 @@ function [instance, config]=iView_private_create_interface(instance, config)
   	uimenu(sortby, 'Label', 'Size', 'Tag','Static', 'Callback','iview(gcf, ''instance_sort'',''Size'');'); 
   	uimenu(sortby, 'Label', 'Label', 'Tag','Static', 'Callback','iview(gcf, ''instance_sort'',''Label'');'); 
   	uimenu(sortby, 'Label', 'Tag (unique ID)', 'Tag','Static', 'Callback','iview(gcf, ''instance_sort'',''Tag'');');
+  uimenu(documents, 'Label', 'Rename...', 'Tag','Static', 'callback',	'iview(gcf, ''data_rename'', ''selection'');');
   uimenu(documents, 'Label', 'Set Label as', 'Tag','Static', 'Separator','on');
   uimenu(documents, 'Label', 'Define new label...', 'Tag','Static', 'Callback','iview(gcf, ''data_label'', ''add'');');
   uimenu(documents, 'Label', 'Remove label...', 'Tag','Static', 'Callback', 'iview(gcf, ''data_label'', ''remove'');');

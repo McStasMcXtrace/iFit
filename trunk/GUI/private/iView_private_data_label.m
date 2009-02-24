@@ -1,6 +1,6 @@
 function colors = iView_private_data_label(instance, action, label)
 % iView_private_data_label label selected data sets in an iView instance
-% action may be: add, remove, selection, colors, or Tags to iData/uicontrol
+% action may be: add, remove, selection, or Tags to iData/uicontrol
 % if action=set, label indicates which label to set
 
 % a list of not too violent colors to be used as labels
@@ -18,6 +18,8 @@ colors{10} = [173  216  230]/256; % light blue
 colors{11} = [240  128  128]/256; % light coral
 
 config=iView_private_config(instance, 'load');
+
+if nargin < 3, label=''; end
 
 if ischar(action)
 
@@ -74,8 +76,19 @@ if ischar(action)
 		  end
 	case 'selection'
 		[selection, selectedIndex, selectedUI] = iView_private_selection(instance);
+		if isempty(label)
+			labels = config.Labels;
+			labels = { 'Default' ; labels{:} };
+			select = listdlg('PromptString', {'Select the Label(s)','to apply to selection:'}, ...
+		    'OKstring', 'Set', ...
+		    'ListSize', [ 160 160 ], ...
+		    'ListString', labels, ...
+		    'Name', 'iView: Label a selection');
+		  ;
+		  if isempty(select), return; end
+		  label=labels{select};
+		end
 		iView_private_data_label(instance, selection, label);
-	case 'colors'
   end
   return
 else
@@ -84,6 +97,7 @@ else
     tags = get(action,'Tag');
   elseif iscellstr(action)
   	tags = selection;
+  else return;
   end
   [selection, selectedIndex, selected] = iView_private_selection(instance, tags);
   if isempty(selection), return; end
