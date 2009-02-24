@@ -11,6 +11,10 @@ function c = iData_private_binary(a, b, op)
 %     iData argument, in which case operator applies on pairs of both arguments.
 %     operator(a(index), b(index))
 %
+% operator may be: 'plus','minus','combine'
+%                  'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'
+%                  'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'
+%
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 
@@ -24,19 +28,28 @@ function c = iData_private_binary(a, b, op)
 if isa(a, 'iData') & length(a(:)) > 1
   c = [];
   if isa(b, 'iData') & length(b(:)) == length(a(:))
+  	% add element to element
     for index=1:length(a(:))
       c = [ c iData_private_binary(a(index), b(index), op) ];
     end
-  
+  elseif isempty(b)
+  	% process all elements from vector
+  	c = a(1);
+  	for index=2:length(a(:))
+      c = iData_private_binary(c, a(index), op);
+    end
   elseif isa(b, 'iData') & length(b(:)) ~= length(a(:)) & length(b(:)) ~= 1
     iData_private_error('binary',...
   [ 'Dimension of objects do not match: 1st is ' num2str(length(a(:))) ' and 2nd is ' num2str(length(b(:))) ]);
   else
+    % add single element to vector
     for index=1:length(a(:))
       c = [ c iData_private_binary(a(index), b, op) ];
     end
   end
-  c = reshape(c, size(a));
+  if ~isempty(b)
+  	c = reshape(c, size(a));
+  end
   return
 elseif isa(b, 'iData') & length(b(:)) > 1
   c = [];
@@ -100,12 +113,12 @@ case {'plus','minus','combine'}
   m3 = genop(@plus, m1, m2);
   catch
       m3=[];
-end
-try
-  e3 = sqrt(genop(@plus, d1.^2,d2.^2));
-catch
-    e2=[];
-end
+	end
+	try
+		e3 = sqrt(genop(@plus, d1.^2,d2.^2));
+	catch
+		  e2=[];
+	end
   if p1 & ~all(m3 == 0), s3 = s3.*m3; e3=e3.*m3; end
 case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'}
   s3 = genop(op, y1, y2);
