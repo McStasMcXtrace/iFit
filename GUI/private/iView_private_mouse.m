@@ -42,7 +42,7 @@ case 'down'
       set(obj.handle, 'Value', v);
       % open ?
       if strcmp(obj.event, 'open')
-        iview(gcf,'open_data','selection');
+        iview(gcf,'data_open','selection');
         % open the other selected objects
       end
     end
@@ -132,7 +132,7 @@ case 'up'
       object = ind2sub(Data_f, targetIndex);
       % object is the Data item below cursor
       if isa(object, 'iData')
-        hIcon = findobj(gcf, 'Tag', object.Tag);
+        hIcon = findobj(fig_f, 'Tag', object.Tag);
         pos   = get(hIcon, 'Position');
         % cursor on indexed object in target ?
         if all(pos(1:2) < finalpos(1:2)) & all(pos(1:2)+pos(3:4) > finalpos(1:2))
@@ -143,6 +143,8 @@ case 'up'
 
     % get initial selection (all Value=1 objects).
     [selection,selectedIndex,selected]= iView_private_selection(fig_i); % selected iData objects (initial)
+    
+    if isempty(selection) return; end
     
     % in the case of a move, we must remove selected items
     if obj0.onbackground && strcmp(obj.event, 'normal')

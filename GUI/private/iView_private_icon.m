@@ -294,6 +294,7 @@ uimenu(cmenu, 'Label', 'Save as...', 'Callback', [ 'set(gco,''Value'',1); iview(
 uimenu(cmenu, 'Label', 'Close', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''data_close'', gco);' ]);
 uimenu(cmenu, 'Label', 'Properties...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''data_properties'', ''selection'');' ], 'Separator','on');
 uimenu(cmenu, 'Label', 'Rename...', 'Callback', [ 'set(gco,''Value'',1); iview(gcf, ''data_rename'', ''selection'');' ]);
+uimenu(cmenu, 'Label', 'Set label...', 'Callback',[ 'set(gco,''Value'',1); iview(gcf, ''data_label'', ''selection'');' ]);
 ud = get(hIcon,'UserData');
 ud.uimenu_label = t;
 set(hIcon,'UserData', ud);
