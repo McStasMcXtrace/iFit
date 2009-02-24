@@ -1,7 +1,7 @@
 function c = combine(a,b)
 % c = combine(a,b) : combines iData objects
 %
-%   @iData/combine function to combine data sets
+%   @iData/combine (\) function to combine data sets
 %     A fast notation for combine(a,b) is a\b
 %
 % input:  a: object or numerical array (iData or numeric)
@@ -9,7 +9,7 @@ function c = combine(a,b)
 % output: c: object (iData)
 % ex:     c=combine(a,b); or combine([ a b ])
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
 if nargin >= 1
   if ~isa(a, 'iData')
