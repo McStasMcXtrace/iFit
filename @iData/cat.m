@@ -10,7 +10,7 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 if nargin == 1 & isa(dim, 'iData') & length(dim) > 1
   s = cat(1, dim);
@@ -24,8 +24,9 @@ end
 if length(varargin) >= 1  % syntax: cat(dim,a,b,c,...)
   s=a(:);
   for index=1:length(varargin)
-    s = cat(dim, [ s ; varargin{index} ]);
+    s = [ s ; varargin{index} ];
   end
+  s = cat(dim, s);
   return
 end
 % syntax is now: cat(dim,[a(:)])
@@ -45,9 +46,11 @@ end
 c_axis = iData_private_caxis(a);
 
 % use common axes on all axes except dim
-for index=1:length(a)
-  c_axis{dim} = getaxis(a(index), dim);
-  a(index) = interp(a(index), c_axis);
+if dim <= length(c_axis)	% else catenate as a new axis: make it an axis of indexes
+	for index=1:length(a)
+		c_axis{dim} = getaxis(a(index), dim); % restore initial 'dim' axis from object. Others are the common axes.
+		a(index) = interp(a(index), c_axis);
+	end
 end
 
 % now catenate Signal, Error and Monitor 
@@ -68,6 +71,7 @@ sm = cat(dim, s{:});
 % and extend axis 'dim'
 for index=1:length(a)
   s{index}=getaxis(a(index),dim);
+  if isempty(s{index}), s{index}=index; end
 end
 sx = cat(dim, s{:});
 
