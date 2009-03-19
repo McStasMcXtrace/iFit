@@ -1,11 +1,15 @@
 * Hight Priority:
-  fits: constraints and so on...
-  cat(dim,a,b,c) if 1st arg is int
-	  or cat (a,b,c,...) with iData or numeric
-	'labels' in iData structure
+  iData/fits: constraints and so on...
+  iData/subsasgn/subsref: make a(1) return a
+  iData/history: must only record higher level commands (i.e. unactivate history when calling sub-functions/methods).
+  iFit/iview: check base workspace for ID that match instance objects, and get newest ModificationDate. Then update objects.
+  iFit/iview: rename Title, Variable (ID)
+  iFit/iview: export variable to base workspace (may be done automatically when not in RunTime mode)
+  iFit/iview: search, and optionally select
+  iFit/iview: sort by slected state (showing all selected objects).
+  iFit/iview: cut/copy/paste
 
 * Low Priority:
-  sort(a,dim,mode)
   diff
   trapz, quad
   norm, std, median, var, cov, corrcoef
