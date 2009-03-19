@@ -20,7 +20,7 @@ function [val, lab] = getaxis(s,ax)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'x')
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
@@ -48,7 +48,7 @@ if isempty(ax)
 end
 if isnumeric(ax) % given as a number, return a number
   ax = ax(1);
-  if ax > ndims(s)
+  if ax > ndims(s) && ax > length(s.Alias.Axis)
     return
     % iData_private_error(mfilename, [ 'The ' num2str(ax) '-th rank axis request is higher than the iData Signal dimension ' num2str(ndims(s)) ]);
   end
