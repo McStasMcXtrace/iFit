@@ -21,7 +21,7 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
@@ -59,15 +59,30 @@ case 1  % vector type data (1 axis + signal) -> plot
   end
   y=real(y);
   if isempty(method), method='b-'; end
-  if all(e == 0)
-    if length(method), h = plot(x,y, method);
-    else h = plot(x,y); end
-    set(h, 'Tag', a.Tag);
-  else
-    if length(method), h = errorbar(x,y,e,method);
-    else h = errorbar(x,y,e); end
-    set(h, 'Tag', a.Tag);
+  if (strfind(method, 'plot3') | strfind(method,'stem3'))
+  	if isempty(getaxis(a,2))
+  		ax = 0;
+    else
+    	ax = getaxis(a, 2);
+    end
+    if length(ax) == 1
+    	ax = ax(1)*ones(size(a));
+    end
+    % need to create this axis
+    setalias(a, 'Axis_2', ax);
+    setaxis(a, 2, 'Axis_2');
+    h = plot(a, method);
+    return
+  else 
+    if all(e == 0)
+      if length(method), h = plot(x,y, method);
+      else h = plot(x,y); end
+    else
+      if length(method), h = errorbar(x,y,e,method);
+      else h = errorbar(x,y,e); end
+    end
   end
+  set(h, 'Tag', a.Tag);
 case 2  % surface type data (2 axes+signal) -> surf or plot3
   [x, xlab] = getaxis(a,1);
   [y, ylab] = getaxis(a,2);
@@ -81,7 +96,10 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   z=real(z);
   if isvector(a) == 2 % plot3/fscatter3
     if (strfind(method,'plot3'))
-      h = plot3(x,y,z);
+    	method = strrep(method,'plot3','');
+    	method = strrep(method,' ','');
+      if length(method), h = plot3(x,y,z, method);
+      else h = plot3(x,y,z); end
     else
       h=fscatter3(x,y,z,z);
     end
@@ -103,7 +121,10 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     elseif (strfind(method,'mesh'))
       h=mesh(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'stem3'))
-      h=stem3(x,y,z);
+    	method = strrep(method,'stem3','');
+    	method = strrep(method,' ','');
+      if length(method), h = stem3(x,y,z, method);
+      else h = stem3(x,y,z); end
     else
       h=surf(x,y,z); set(h,'Edgecolor','none');
     end
