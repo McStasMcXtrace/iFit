@@ -5,7 +5,7 @@ function b = subsref(a,S)
 %   such as a(1:2) or a.field.
 %   The special syntax a{0} where a is a single iData returns the signal, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -34,6 +34,7 @@ for i = 1:length(S)     % can handle multiple index levels
       end
       % this is where specific class structure is taken into account
       if ischar(s.subs{1}), b=get(b, s.subs{:}); return; end
+      if length(s.subs{:}) == 1 && s.subs{:} == 1, return; end
       d=get(b,'Signal'); d=d(s.subs{:});  b=set(b,'Signal', d);
 
       d=get(b,'Error');  if numel(d) > 1 & numel(d) == numel(get(a,'Error')), d=d(s.subs{:}); b=set(b,'Error', d); end
