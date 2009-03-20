@@ -21,7 +21,7 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.32 $
+% Version: $Revision: 1.33 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
@@ -115,7 +115,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     elseif (strfind(method,'contour'))
       [C,h]=contour(x,y,z);
     elseif (strfind(method,'surfc'))
-      h=surfc(x,y,z); set(h,'Edgecolor','none');
+      h=surfc(x,y,z); % set(h,'Edgecolor','none');
     elseif (strfind(method,'surfl'))
       h=surfl(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'mesh'))
