@@ -8,6 +8,7 @@
   iFit/iview: search, and optionally select
   iFit/iview: sort by slected state (showing all selected objects).
   iFit/iview: cut/copy/paste
+  iFit/iview: drag icon to figure overlays.
 
 * Low Priority:
   diff

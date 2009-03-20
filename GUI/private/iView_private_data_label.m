@@ -105,7 +105,7 @@ else
   selection = set(selection, 'Label', label);
   % update uicontrols
   for index=1:length(selection)
-    this_data = ind2sub(selection, index);
+    this_data = selection(index);
     tooltip = iView_private_data_tooltip(this_data);
     icon = findobj(instance, 'Tag', this_data.Tag);
     set(icon, 'ToolTipString', tooltip);
