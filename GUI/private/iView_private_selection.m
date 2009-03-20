@@ -32,6 +32,6 @@ for index=1:length(tags)
 end
 selectedIndex = selectedIndex(find(selectedIndex));
 
-selection     = ind2sub(Data, selectedIndex);              % selected iData objects (initial)
+selection     = Data(selectedIndex);              % selected iData objects (initial)
   
 
