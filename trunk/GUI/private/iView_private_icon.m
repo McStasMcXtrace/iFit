@@ -81,7 +81,7 @@ case 'open'
 case 'save'
   if ~isempty(object)
     format=config.OutputFormat;
-    [hIcon,format]=saveas(object, format);    
+    [hIcon,format]=saveas(object, '', format);    
     if ~isempty(hIcon)
       disp('Objects')
       disp(object)
@@ -108,13 +108,13 @@ case 'delete'
   tokeep = 1:length(Data);
   DataTags = get(Data, 'Tag');
   for index=1:length(object)
-    this = ind2sub(object, index);
+    this = object(index);
     this_delete = strmatch(this.Tag, DataTags, 'exact');
     hIcon = findobj(instance,'Type','uicontrol','Style', config.IconStyle, 'Tag', this.Tag);
     delete(hIcon);
     tokeep(this_delete) = 0;
   end
-  Data = ind2sub(Data, tokeep(find(tokeep)));
+  Data = Data(tokeep(find(tokeep)));
   setappdata(instance, 'Data', Data);
   iView_private_documents(instance);
   iView_private_icon(instance, 'check', []);

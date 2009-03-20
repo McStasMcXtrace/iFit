@@ -129,7 +129,7 @@ case 'up'
     Data_i = getappdata(fig_i, 'Data');
     Data_f = getappdata(fig_f, 'Data');
     if targetIndex>0 & targetIndex<=length(Data_f)
-      object = ind2sub(Data_f, targetIndex);
+      object = Data_f(targetIndex);
       % object is the Data item below cursor
       if isa(object, 'iData')
         hIcon = findobj(fig_f, 'Tag', object.Tag);
@@ -154,8 +154,8 @@ case 'up'
         Data_f = Data_i;
       end
     end
-    target_before_index = ind2sub(Data_f, 1:(targetIndex-1));          % iData before target position
-    target_after_index  = ind2sub(Data_f, targetIndex:length(Data_f)); % iData after target position
+    target_before_index = Data_f(1:(targetIndex-1));          % iData before target position
+    target_after_index  = Data_f(targetIndex:length(Data_f)); % iData after target position
     
     if ~obj0.onbackground
       % to object: merge/combine (normal) or custom (alt) (cat, overlay plot, minus, plus, ...)

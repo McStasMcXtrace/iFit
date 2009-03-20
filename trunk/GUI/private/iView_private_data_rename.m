@@ -22,7 +22,7 @@ function iView_private_data_rename(instance)
   	if ~isempty(newname)
   		% update icon text, tooltip, uicontectmenu and data sets
   		for index=1:length(selectedUI)
-  			this_data = ind2sub(selection, index);
+  			this_data = selection(index);
   			this_data.Title = newname{index};
   			if length(selection) > 1, selection(index) = this_data;
   			else selection = this_data; end

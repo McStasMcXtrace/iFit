@@ -31,7 +31,7 @@ function iView_private_sort(instance, selection)
     list = get(Data,strtok(selection));
   end
   [dummy, index] = sortrows(list(:));
-  Data = ind2sub(Data, index);
+  Data = Data(index);
   setappdata(instance, 'Data', Data);
   [hIcon,config,Data]=iView_private_icon(instance, 'check', Data);
   iView_private_documents(instance);
