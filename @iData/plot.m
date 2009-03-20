@@ -21,7 +21,7 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.33 $
+% Version: $Revision: 1.34 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
@@ -37,7 +37,7 @@ if length(a) > 1
     if ndims(a(index)) == 1
       % change color of line
       colors = 'bgrcm';
-      set(h{index}, 'color', colors(mod(index, length(colors))));
+      set(h{index}, 'color', colors(1+mod(index, length(colors))));
     end
     hold on
   end
