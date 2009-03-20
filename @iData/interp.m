@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -212,10 +212,9 @@ if a_nonmonotonic
     end
   end
 end
-
 i_signal = iData_interp(a_axes, a_signal, i_axes, method);
-i_error  = iData_interp(a_axes, a_error,  i_axes, method);
-i_monitor= iData_interp(a_axes, a_monitor,i_axes, method);
+if length(a_error) > 1, i_error  = iData_interp(a_axes, a_error,  i_axes, method); else i_error = a_error; end
+if length(a_monitor) > 1, i_monitor= iData_interp(a_axes, a_monitor,i_axes, method); else i_monitor = a_monitor; end
 
 % get back to original Signal class
 if ~strcmp(a_class, 'double')
