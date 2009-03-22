@@ -30,7 +30,7 @@ if create_new_instance
     disp([ '% ' datestr(now) ' Starting iView' ]);
     iview(instance, 'config_save');  % first instance: we save the configuration
   end
-  instance_list = [ instance_list instance ];
+  instance_list = [ instance_list(:) ; instance ];
 end
 
 % instance is valid. Raise it, update figure Names and return.
@@ -68,6 +68,7 @@ function [instance, config]=iView_private_create_interface(instance, config)
     'CloseRequestFcn','iview(gcf, ''instance_close'');');
   end
   set(instance, 'MenuBar','none', 'ToolBar','none');
+  set(instance, 'PaperPositionMode','auto');
   set(instance, 'Tag','iView_instance');
   set(instance, 'Name',[ 'iView #' num2str(instance) ]);
   set(instance, 'HandleVisibility', 'callback','Interruptible','off');
@@ -152,6 +153,7 @@ function [instance, config]=iView_private_create_interface(instance, config)
   % create static contextual menu
   cmenu = uicontextmenu('Parent',instance);
   set(instance, 'UIContextMenu', cmenu);
+  uimenu(cmenu, 'Label', 'New window','Callback','iview(''instance_new'');');
   uimenu(cmenu, 'Label', 'New data set', 'Callback','iview(''data_new'');');
   uimenu(cmenu, 'Label', 'Open...', 'Callback','iview(gcf, ''data_load'');');
   % uicontext menu on background:
