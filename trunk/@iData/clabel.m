@@ -10,17 +10,15 @@ function a = clabel(a, label)
 % output: b: object or array (iData)
 % ex:     b=clabel(a);
 %
-% Version: $Revision: 1.2 $
-% See also iData, iData/plot
+% Version: $Revision: 1.3 $
+% See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel
 
-[axisdef, lab] = getaxis(a, '4');
-if isempty(axisdef), return; end
-if nargin == 1
-  a=lab; 
-  return
+if nargin ==1
+	a = label(a, 4);
+	return
+else
+	a = label(a, 4, lab);
 end
-
-setalias(a, axisdef, getalias(a, axisdef), label);
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);
