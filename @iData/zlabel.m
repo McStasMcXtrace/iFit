@@ -10,19 +10,18 @@ function a = zlabel(a, label)
 % output: b: object or array (iData)
 % ex:     b=zlabel(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot
 
-[axisdef, lab] = getaxis(a, '3');
-if isempty(axisdef), return; end
-if nargin == 1
-  a=lab; 
-  return
+if nargin ==1
+	a = label(a, 3);
+	return
+else
+	a = label(a, 3, lab);
 end
-
-setalias(a, axisdef, getalias(a, axisdef), label);
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);
 end
+
 
