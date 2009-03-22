@@ -1,4 +1,4 @@
-function a = xlabel(a, label)
+function a = xlabel(a, lab)
 % b = xlabel(s,label) : Change iData X axis label
 %
 %   @iData/xlabel function to change the X axis (rank 1, columns) label
@@ -10,17 +10,15 @@ function a = xlabel(a, label)
 % output: b: object or array (iData)
 % ex:     b=xlabel(a);
 %
-% Version: $Revision: 1.2 $
-% See also iData, iData/plot
+% Version: $Revision: 1.3 $
+% See also iData, iData/plot, iData/ylabel, iData/zlabel, iData/clabel
 
-[axisdef, lab] = getaxis(a, '1');
-if isempty(axisdef), return; end
-if nargin == 1
-  a=lab; 
-  return
+if nargin ==1
+	a = label(a, 1);
+	return
+else
+	a = label(a, 1, lab);
 end
-
-setalias(a, axisdef, getalias(a, axisdef), label);
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);
