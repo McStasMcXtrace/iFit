@@ -1,4 +1,4 @@
-function a = clabel(a, label)
+function a = clabel(a, lab)
 % b = clabel(s,label) : Change iData C axis label
 %
 %   @iData/clabel function to change the C axis (rank 4) label
@@ -10,7 +10,7 @@ function a = clabel(a, label)
 % output: b: object or array (iData)
 % ex:     b=clabel(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel
 
 if nargin ==1

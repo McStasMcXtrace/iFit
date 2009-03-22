@@ -11,7 +11,7 @@ function a = label(a, alias, lab)
 % output: b: object or array (iData)
 % ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel
 
 if nargin < 2, alias=[]; end
@@ -26,8 +26,10 @@ if nargin == 2
   a=lab0; 
   return
 end
-
+cmd=a.Command;
 setalias(a, link, getalias(a, link), lab);
+a.Command=cmd;
+a = iData_private_history(a, mfilename, a, alias, lab);
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);

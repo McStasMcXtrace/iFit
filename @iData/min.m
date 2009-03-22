@@ -10,7 +10,7 @@ function m = min(a,b)
 % output: m: minimum value (double/iData)
 % ex:     b=min(a); or min(a,1)
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/min, iData/max
 
 if nargin == 1
@@ -39,6 +39,7 @@ if isempty(b)
 end
 
 % find intersection between iData objects
+cmd=a.Command;
 if isa(b, 'iData')
   [a,b] = intersect(a,b);
   m = copyobj(a);
@@ -49,5 +50,6 @@ else
   m = copyobj(a);
   set(m, 'Signal', min(get(a,'Signal'), b));
 end
-
+m.Command=cmd;
+m = iData_private_history(m, mfilename, a, b);
 

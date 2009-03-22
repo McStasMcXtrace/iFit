@@ -9,7 +9,7 @@ function a = clim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=clim(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot, iData/ylabel
 
 axisvalues = getaxis(a, 4);
@@ -22,6 +22,9 @@ end
 index=find(lims(1) <= axisvalues & axisvalues <= lims(2));
 s.type='()';
 s.subs={ ':', ':', index };
+cmd=a.Command;
 a = subsref(a,s);
+a.Command=cmd;
+a=iData_private_history(a, mfilename, a, lims);
 
 

@@ -10,7 +10,7 @@ function c = mtimes(a,b)
 % output: c: object or array (iData)
 % ex:     c=a*2;
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/power
 
 if isscalar(a) | isscalar(b)
@@ -19,6 +19,7 @@ elseif ndims(a) == 2 & ndims(b) == 2
   if size(a,2) ~= size(b,1)
     iData_private_error(mfilename,[ 'the number of columns of a (' num2str(size(a,2)) ') must equal the number of rows of b (' num2str(size(b,1)) ').' ]);
   end
+  cmd=a.Command;
   c = copyobj(a);
   c1 = dot(getaxis(a,2) , getaxis(b,1));
   c2 = dot(getaxis(a,1) , getaxis(b,2));
@@ -36,6 +37,7 @@ elseif ndims(a) == 2 & ndims(b) == 2
   setalias(c, 'Signal', c0, [ a0l '*' b0l ]);
   setalias(c, 'Error',   ae * be);
   setalias(c, 'Monitor', am * bm);
+  c.Command=cmd;
   c = iData_private_history(c, mfilename, a,b);
 else
   iData_private_error(mfilename,[ 'Matrix iData multiplication not supported for iData object of dimensions ' num2str(ndims(a)) ' and ' num2str(ndims(b)) ]);

@@ -21,7 +21,7 @@ function [b, Info] = ieval(a, model, pars, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, feval
 
 % private functions: 
@@ -174,11 +174,13 @@ else
 end
 
 % build the output iData object
+cmd=a.Command;
 b = copyobj(a);
 if isnumeric(Model)
   setalias(b,'Signal', Model);
   setalias(b,'Error', 0);
 end
+b.Command=cmd;
 b = iData_private_history(b, mfilename, a, model, pars, varargin{:});  
 % final check
 b = iData(b);

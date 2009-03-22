@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -43,6 +43,7 @@ if length(a) > 1
 end
 
 % build new iData object to hold the result
+cmd=a.Command;
 b = copyobj(a);
 
 % object check
@@ -247,7 +248,7 @@ for index=1:length(i_axes)
   b=setalias(b,[ 'axis' num2str(index) ], [ 'Data.axis' num2str(index) ], a_labels{index});
   b=setaxis (b, index, [ 'axis' num2str(index) ]);
 end
-
+b.Command=cmd;
 b = iData_private_history(b, mfilename, a, varargin{:});  
 % final check
 b = iData(b);

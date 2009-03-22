@@ -8,7 +8,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -64,6 +64,7 @@ else
         b = reshape(c, size(b));
       elseif ~isa(val, 'iData') % single object
         % this is where specific class structure is taken into account
+        cmd=b.Command;
         d = get(b, 'Signal');
         d(s.subs{:}) = val;
         b = set(b, 'Signal', d);
@@ -105,6 +106,7 @@ else
         else
           toadd = [ a.Tag toadd ';' ];
         end
+        b.Command=cmd;
         b = iData_private_history(b, toadd);
         % final check
         b = iData(b);

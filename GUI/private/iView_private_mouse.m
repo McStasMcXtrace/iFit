@@ -174,6 +174,28 @@ case 'up'
       iView_private_documents(fig_f);
       [hIcon,config,Data_f]=iView_private_icon(fig_f, 'check_load', Data_f);
     end
+  elseif obj0.dragged && fig_f == 0
+  	% dragging to root window (command)
+  	
+  elseif obj0.dragged ...
+    && ~strcmp(get(fig_f, 'MenuBar'),'none') ...
+    && ~strcmp(get(fig_f, 'ToolBar'),'none');% drag to another figure: overlay plots
+    
+    % get initial selection (all Value=1 objects).
+    [selection,selectedIndex,selected]= iView_private_selection(fig_i); % selected iData objects (initial)
+  	figure(fig_f);
+  	hold on
+  	[az,el] = view; 
+  	sel1d = selection(find(ndims(selection) == 1));
+  	selNd = selection(find(ndims(selection) > 1));
+  	hold on
+  	if az==0 && el==90	% this is a view(2) figure
+  		if ~isempty(sel1d), plot(sel1d); end
+  		if ~isempty(selNd), plot(camproj(selNd,1)); end
+  	else	% this is a 3D figure
+  		if ~isempty(sel1d), plot(sel1d, 'plot3'); end
+  		if ~isempty(selNd), plot(selNd); end
+  	end
   end % if obj0.dragged
   
 end % switch action

@@ -14,7 +14,7 @@ function s = prod(a,dim)
 % output: s: product of elements (iData/scalar)
 % ex:     c=prod(a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plus, iData/sum, iData/cumprod, iData/mean
 
 if ~isa(a, 'iData')
@@ -34,6 +34,7 @@ end
 
 s=get(a,'Signal');
 [link, label]          = getalias(a, 'Signal');
+cmd=a.Command;
 b=copyobj(a);
 setaxis(b, [], getaxis(b)); % delete all axes
 if all(dim > 0)
@@ -61,7 +62,7 @@ else  % dim < 0
   setaxis(b, 1, getaxis(a, num2str(-dim)));
   setalias(b,'Signal', s, [ 'product projection of ' label ]);     % Store Signal
 end
-
+b.Command=cmd;
 b = iData_private_history(b, mfilename, b, dim);
 s = b;
 

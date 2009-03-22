@@ -10,7 +10,7 @@ function s = unique(a,dim,mode)
 % output: s: data set with unique axes (iData)
 % ex:     c=unique(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plus, iData/unique, iData/sort
 if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is unique(iData, dim)']);
@@ -27,7 +27,7 @@ if length(a(:)) > 1
   s = reshape(s, size(a));
   return
 end
-
+cmd=a.Command;
 s = copyobj(a);
 
 [sn, sl] = getaxis(a, '0');   % label
@@ -64,6 +64,7 @@ if was_uniqueed
   s = setalias(s, 'Signal', sd, [ 'unique(' sl ')' ]);
   s = setalias(s, 'Error',  se);
   s = setalias(s, 'Monitor',sm);
+  s.Command=cmd;
   s = iData_private_history(s, mfilename, a, dim);
 end
 

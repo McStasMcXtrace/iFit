@@ -1,7 +1,7 @@
 function v = linspace(a,b,n)
 % v = linspace(a,b,n) : creates a linearly spaced vector of objects
 %
-%   @iData/linsoace function to create a linearly spaced vector of iData objects
+%   @iData/linspace function to create a linearly spaced vector of iData objects
 %   This corresponds to a 'morphing' from a to b in n steps.
 %
 % input:  a: object  (iData)
@@ -10,7 +10,7 @@ function v = linspace(a,b,n)
 % output: v: vector (iData array)
 % ex:     b=linspace(a,b);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/max, iData/min, iData/colon
 
 if ~isa(a, 'iData') | ~isa(b,'iData')
