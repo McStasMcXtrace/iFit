@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -34,13 +34,22 @@ else
       if strcmp(s_in.Alias.Names{index}, 'Error'), v='sqrt(Signal)';
       elseif strcmp(s_in.Alias.Names{index}, 'Monitor'), v='1'; end
     end 
+    label = s_in.Alias.Labels{index};
     if isnumeric(v) | islogical(v), 
       if length(size(v)) > 2, v=v(:); end
       if numel(v) > 10, v=v(1:10); end
       v = mat2str(v); 
       if length(v) > 15, v = [v(1:12) '...' ]; end 
+    elseif ischar(v)
+      this = s_in;
+      try
+        vv = eval(v);
+        if length(vv) > 20, vv = [vv(1:18) '...' ]; end 
+        label = [ label ' ''' vv '''' ];
+      catch
+      end
     end
-    fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, v, s_in.Alias.Labels{index});
+    fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, v, label);
     if strcmp(s_in.Alias.Names{index}, 'Signal') & length(s_in.Alias.Axis) == 0
       x      = get(s_in, 'Signal');  x=x(:);
       m      = get(s_in, 'Monitor'); m=m(:);
