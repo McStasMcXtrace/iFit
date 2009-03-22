@@ -4,14 +4,15 @@ function s = sum(a,dim)
 %   @iData/sum function to compute the sum of the elements of the data set
 %     sum(a,dim) accumulates along axis of rank dim. The axis is then removed.
 %       If dim=0, sum is done on all axes and the total is returned as a scalar value. 
-%       sum(a,1) accumulates on first dimension (columns)
+%       sum(a,1) accumulates on first dimension (columns). 
+%       camproj accumulates on all other axes.
 %
 % input:  a: object or array (iData/array of)
 %         dim: dimension to accumulate (int)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj
 
 if ~isa(a, 'iData')
@@ -31,6 +32,7 @@ end
 
 s=get(a,'Signal');
 [link, label]          = getalias(a, 'Signal');
+cmd=a.Command;
 b=copyobj(a);
 setaxis(b, [], getaxis(b)); % delete all axes
 if all(dim > 0)
@@ -51,7 +53,7 @@ elseif dim == 0
   end
   return  % scalar
 end
-
+b.Command=cmd;
 b = iData_private_history(b, mfilename, b, dim);
 s = b;
 

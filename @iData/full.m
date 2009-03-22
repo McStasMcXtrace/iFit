@@ -8,11 +8,10 @@ function a = full(a)
 % output: b: object or array (iData)
 % ex:     b=full(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/full, iData/sparse
 
 a = iData_private_unary(a, 'full');
-
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);

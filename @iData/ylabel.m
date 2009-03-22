@@ -1,4 +1,4 @@
-function a = ylabel(a, label)
+function a = ylabel(a, lab)
 % b = ylabel(s,label) : Change iData Y axis label
 %
 %   @iData/ylabel function to change the Y axis (rank 2, rows) label
@@ -10,7 +10,7 @@ function a = ylabel(a, label)
 % output: b: object or array (iData)
 % ex:     b=ylabel(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plot, iData/xlabel, iData/zlabel, iData/clabel
 
 if nargin ==1

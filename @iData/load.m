@@ -28,7 +28,7 @@ function out = load(a, varargin)
 % output: d: single object or array (iData)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -42,7 +42,7 @@ if isstruct(files),   files = { files }; end
 if isstruct(loaders), loaders = { loaders }; end
 out = [];
 for i=1:length(files)
-  this_iData =  iData(files{i});
+  this_iData =  iData(files{i});	% convert structure from iLoad into iData
   % specific adjustments for looktxt (default import method)
   [pathname,filename,ext] = fileparts(files{i}.Source);
   try % create MetaData alias if present in structure
@@ -76,8 +76,8 @@ for i=1:length(files)
       warning(warn);
     end
   end
-  
-  this_iData = iData_private_history(this_iData, mfilename, a, files{i}.Source);
+  this_iData.Command=[ this_iData.Tag '=load(iData,''' files{i}.Source ''');' ];
+  %this_iData = iData_private_history(this_iData, mfilename, a, files{i}.Source);
   out = [ out this_iData ];  
 end
 

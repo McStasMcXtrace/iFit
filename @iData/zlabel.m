@@ -1,4 +1,4 @@
-function a = zlabel(a, label)
+function a = zlabel(a, lab)
 % b = zlabel(s,label) : Change iData Z axis label
 %
 %   @iData/zlabel function to change the Z axis (rank 3) label
@@ -10,7 +10,7 @@ function a = zlabel(a, label)
 % output: b: object or array (iData)
 % ex:     b=zlabel(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plot
 
 if nargin ==1

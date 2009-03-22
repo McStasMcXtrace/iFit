@@ -10,7 +10,7 @@ function m = max(a,b)
 % output: m: maximum value (double/iData)
 % ex:     b=max(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/max, iData/min
 
 if nargin == 1
@@ -39,15 +39,18 @@ if isempty(b)
 end
 
 % find intersection between iData objects
+cmd=a.Command;
 if isa(b, 'iData')
   [a,b] = intersect(a,b);
   m = copyobj(a);
   set(m, 'Signal', max(get(a,'Signal'), get(b,'Signal')));
   return
 else
-% handle iData and scalar/vector/matrix max/max
+% handle iData and scalar/vector/matrix min/max
   m = copyobj(a);
   set(m, 'Signal', max(get(a,'Signal'), b));
 end
+m.Command=cmd;
+m = iData_private_history(m, mfilename, a, b);
 
 

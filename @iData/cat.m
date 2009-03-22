@@ -10,7 +10,7 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 if nargin == 1 & isa(dim, 'iData') & length(dim) > 1
   s = cat(1, dim);
@@ -76,6 +76,7 @@ end
 sx = cat(dim, s{:});
 
 % now build final result
+cmd = get(a(1),'Command');
 s = copyobj(a(1));  % with extended (union) axes
 setalias(s,'Signal', ss, [ 'catenated ' label ]);     % Store Signal
 setalias(s,'Error',se);
@@ -85,7 +86,7 @@ if isempty(dx)
   dx=[ 'Axis_' num2str(dim) ];
 end
 setaxis(s, dim, dx, sx);
-
+s.Command=cmd;
 s = iData_private_history(s, mfilename, dim, a(1), a(2));
 
 % reset warnings during interp

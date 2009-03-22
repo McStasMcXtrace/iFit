@@ -23,7 +23,7 @@ function s_out = setalias(a_in,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/getalias, iData/get, iData/set
 
 % EF 27/07/00 creation
@@ -104,7 +104,6 @@ for index = 1:length(s_out)
       end
     end
   end % for alias names
-  
   a = iData_private_history(a, mfilename, a, name, link, label);
   
   s_out(index) = a;

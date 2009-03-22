@@ -14,7 +14,7 @@ function b = median(a, dim)
 % output: s: median of elements (iData/scalar)
 % ex:     c=median(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/floor, iData/ceil, iData/round, iData/combine, iData/median
 
 if nargin < 2, dim=1; end
@@ -25,6 +25,7 @@ end
 
 s=get(a,'Signal');
 [link, label]          = getalias(a, 'Signal');
+cmd=a.Command;
 b=copyobj(a);
 setaxis(b, [], getaxis(b)); % delete all axes
 if dim > 0
@@ -50,7 +51,7 @@ else  % dim < 0
   setaxis(b, 1, getaxis(a, num2str(-dim)));
   setalias(b,'Signal', s, [ 'median projection of ' label ]);     % Store Signal
 end
-
+b.Command=cmd;
 b = iData_private_history(b, mfilename, b, dim);
 s = b;
 

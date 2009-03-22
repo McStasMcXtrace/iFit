@@ -1,4 +1,4 @@
-function a = title(a, label)
+function a = title(a, lab)
 % b = title(s,label) : Change iData Signal label
 %
 %   @iData/title function to change the Signal label
@@ -10,19 +10,18 @@ function a = title(a, label)
 % output: b: object or array (iData)
 % ex:     b=title(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot
 
-[axisdef, lab] = getaxis(a, '0');
-if isempty(axisdef), return; end
-if nargin == 1
-  a=lab; 
-  return
+if nargin ==1
+	a = label(a, 0);
+	return
+else
+	a = label(a, 0, lab);
 end
-
-setalias(a, axisdef, getalias(a, axisdef), label);
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);
 end
+
 
