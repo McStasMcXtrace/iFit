@@ -151,6 +151,11 @@ try
 catch
   DATE='';
 end
+try
+  COMND  = a.Headers.MetaData.COMND;  COMND =strtrim(COMND(7:end));
+catch
+  COMND='';
+end
 
 setalias(a, 'COMND', 'this.Data.Headers.MetaData.COMND', 'TAS command');
 setalias(a, 'INSTR', 'this.Data.Headers.MetaData.INSTR', 'Instrument used');
