@@ -13,7 +13,7 @@ function s_out = set(a_in,varargin)
 %
 % ex      : set(iData,'Title','A nice Title')
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/get, iData/setalias, iData/setaxis
 
 % EF 27/07/00 creation
@@ -44,6 +44,7 @@ end
 s_out = a_in(:);
 for index = 1:length(s_out)
   a = s_out(index); % current object in array/single element
+  cmd=a.Command;
   
   i1 = 1; % index in input parameters varargin
   
@@ -107,7 +108,7 @@ for index = 1:length(s_out)
       end
     end % for properties cell
   end % while
-  
+  a.Command=cmd;
   a = iData_private_history(a, mfilename, a, varargin{:});  
   
   s_out(index) = iData(a); % final check

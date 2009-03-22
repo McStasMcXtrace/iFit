@@ -31,12 +31,15 @@ if nargin >= 3 | length(varargin)
   meth = [ a.Tag '=' meth '(' toadd ');' ];
 end
 
-meth = cellstr(meth);
 for index=1:length(a)
   d=a(index);
-  if isempty(d.Command), d.Command = ''; end
-  if ~iscellstr(d.Command), d.Command = cellstr(d.Command); end
-  d.Command = vertcat(d.Command(:), meth(:));
+  if isempty(d.Command), 
+  	d.Command = { meth }; 
+  else
+  	if ~iscellstr(d.Command), d.Command = cellstr(d.Command); end
+  	d.Command{end+1} = meth;
+  end
+  d.Command=d.Command{:};
   a(index) = d;
 end
 

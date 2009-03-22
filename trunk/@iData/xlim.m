@@ -9,7 +9,7 @@ function a = xlim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=xlim(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot, iData/xlabel
 
 axisvalues = getaxis(a, 1);
@@ -26,5 +26,7 @@ if ndims(a) > 1
 else
   s.subs={ index };
 end
+cmd=a.Command;
 a = subsref(a,s);
-
+a.Command=cmd;
+a=iData_private_history(a, mfilename, a, lims);

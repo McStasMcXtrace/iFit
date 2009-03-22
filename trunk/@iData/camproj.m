@@ -12,7 +12,7 @@ function s = camproj(a,dim)
 % output: s: projection of elements (iData/scalar)
 % ex:     c=camproj(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/sum
 
 if ~isa(a, 'iData')
@@ -32,6 +32,7 @@ end
 
 s=get(a,'Signal');
 [link, label]          = getalias(a, 'Signal');
+cmd = a.Command;
 b=copyobj(a);
 setaxis(b, [], getaxis(b)); % delete all axes
 if dim == 0
@@ -53,6 +54,7 @@ if dim == 1,
 	if s(1) == 1, b=transpose(b); end
 end
 
+b.Command=cmd;
 b = iData_private_history(b, mfilename, b, dim);
 s = b;
 

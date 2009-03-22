@@ -12,7 +12,7 @@ function s = sort(a,dim,mode)
 % output: s: sorted data (iData)
 % ex:     c=sort(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/plus, iData/sort, iData/unique
 if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is sort(iData, dim, mode)']);
@@ -30,7 +30,7 @@ if length(a(:)) > 1
   s = reshape(s, size(a));
   return
 end
-
+cmd=a.Command;
 s = copyobj(a);
 
 [sn, sl] = getaxis(a, '0');   % label
@@ -78,6 +78,7 @@ if was_sorted
   s = setalias(s, 'Signal', sd, [ 'sort(' sl ')' ]);
   s = setalias(s, 'Error',  se);
   s = setalias(s, 'Monitor',sm);
+  s.Command=cmd;
   s = iData_private_history(s, mfilename, a, dim, mode);
 end
 
