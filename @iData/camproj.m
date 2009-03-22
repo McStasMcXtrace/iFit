@@ -1,17 +1,18 @@
 function s = camproj(a,dim)
 % s = camproj(a,dim) : computes the projection of iData objects elements
 %
-%   @iData/sum function to compute the projection of the elements of the data set
-%     sum(a,dim) projects along axis of rank dim. All other axes are removed.
+%   @iData/camproj function to compute the projection of the elements of the data set
+%     camproj(a,dim) projects along axis of rank dim. All other axes are removed.
 %       If dim=0, projection is done on all axes and the total is returned as a scalar value. 
-%       camproj(a,1) projects on first dimension (columns)
+%       camproj(a,1) projects on first dimension (columns).
+%       camproj is the complementary to sum.
 %
 % input:  a: object or array (iData/array of)
 %         dim: dimension to project (int)
 % output: s: projection of elements (iData/scalar)
 % ex:     c=camproj(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/sum
 
 if ~isa(a, 'iData')
@@ -45,6 +46,11 @@ else
   end
   setaxis(b, 1, getaxis(a, num2str(dim)));
   setalias(b,'Signal', s, [ 'projection of ' label ]);     % Store Signal
+end
+
+if dim == 1, 
+	s=size(b);
+	if s(1) == 1, b=transpose(b); end
 end
 
 b = iData_private_history(b, mfilename, b, dim);
