@@ -39,7 +39,7 @@ for index=1:length(a)
   	if ~iscellstr(d.Command), d.Command = cellstr(d.Command); end
   	d.Command{end+1} = meth;
   end
-  d.Command=d.Command{:};
+  d.Command=d.Command(:);
   a(index) = d;
 end
 
