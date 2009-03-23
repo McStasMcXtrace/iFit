@@ -66,7 +66,7 @@ try % disable some warnings
 catch
   warn = warning('off');
 end
-
+cmd=a.Command;
 % get Signal, Error and Monitor for 'a' and 'b'
 if isa(a, 'iData') & isa(b, 'iData') 
   if strcmp(op, 'combine')
@@ -179,6 +179,7 @@ else
   bl=num2str(b); if length(bl) > 10, bl=[ bl(1:min(length(bl),10)) '...' ]; end 
 end
 setalias(c, 'Signal', s3, [ op '(' al ',' bl ')' ]);
+c.Command=cmd;
 c = iData_private_history(c, op, a,b);
 
 % reset warnings
