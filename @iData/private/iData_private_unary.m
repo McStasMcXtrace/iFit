@@ -10,7 +10,7 @@ if length(a(:)) > 1
   b = reshape(b, size(a));
   return
 end
-
+cmd=a.Command;
 b = copyobj(a);
 s = get(b,'Signal');
 [dummy, sl] = getaxis(b, '0');
@@ -77,6 +77,7 @@ end
 % update object
 b = set(b, 'Signal', s, 'Error', abs(e));
 b = setalias(b, 'Signal', s, [  op '(' sl ')' ]);
+b.Command=cmd;
 b = iData_private_history(b, op, b);  
 
 % other methods to treat specifically
