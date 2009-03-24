@@ -1,29 +1,24 @@
-function c = combine(a,b)
+function c = combine(a,varargin)
 % c = combine(a,b) : combines iData objects
 %
 %   @iData/combine (\) function to combine data sets
 %     A fast notation for combine(a,b) is a\b
+%     To combine a set of iData objects use combine([ a b c ...])
 %
 % input:  a: object or numerical array (iData or numeric)
 %         b: object or numerical array (iData or numeric)
 % output: c: object (iData)
 % ex:     c=combine(a,b); or combine([ a b ])
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
-if nargin >= 1
-  if ~isa(a, 'iData')
-    iData_private_error(mfilename,['1st argument must be an iData object. Currently ' class(a) ]);
-  elseif length(a) > 1, a=a(:); end
-end
-if nargin == 2
-  if ~isa(a, 'iData')
-    iData_private_error(mfilename,['2nd argument must be an iData object. Currently ' class(b) ]);
-  elseif length(b) > 1, b=b(:); end
-end
-if nargin == 2
-  c = combine([ a ; b ]); 
-  return 
+if length(varargin) > 1  % syntax: combine(a,b,...)
+  s=a(:);
+  for index=1:length(varargin)
+    s = [ s ; varargin{index} ];
+  end
+  c = combine(s);
+  return
 end
 
 % now we should only handle a single argument
