@@ -1,13 +1,13 @@
 * Hight Priority:
   iData/fits: constraints and so on...
-  iData/history: must only record higher level commands (i.e. unactivate history when calling sub-functions/methods).
   iFit/iview: check base workspace for ID that match instance objects, and get newest ModificationDate. Then update objects.
   iFit/iview: rename Title, Variable (ID)
-  iFit/iview: export variable to base workspace (may be done automatically when not in RunTime mode)
+  iFit/iview: export variable to base workspace 
+              (may be done automatically when not in RunTime mode)
+              or drag'n drop on root window
   iFit/iview: search, and optionally select
   iFit/iview: sort by selected state (showing all selected objects).
   iFit/iview: cut/copy/paste
-  iFit/iview: drag icon to figure overlays.
 
 * Low Priority:
   diff
