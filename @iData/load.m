@@ -28,7 +28,7 @@ function out = load(a, varargin)
 % output: d: single object or array (iData)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -76,7 +76,7 @@ for i=1:length(files)
       warning(warn);
     end
   end
-  this_iData.Command=[ this_iData.Tag '=load(iData,''' files{i}.Source ''');' ];
+  this_iData.Command={[ this_iData.Tag '=load(iData,''' files{i}.Source ''');' ]};
   %this_iData = iData_private_history(this_iData, mfilename, a, files{i}.Source);
   out = [ out this_iData ];  
 end
