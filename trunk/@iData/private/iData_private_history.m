@@ -12,14 +12,16 @@ if ~ischar(meth)
 end
 
 if nargin >= 3 | length(varargin)
-  toadd = '';
+  toadd = ''; tocat = '';
   for i1=1:length(varargin)
     if i1 > 1, c = ','; else c=''; end
     b = varargin{i1};
     if ischar(b)
       toadd = [ toadd c ' ''' b '''' ];
     elseif isa(b, 'iData')
-      toadd = [ toadd c ' <' class(b) ' ' b.Tag ' ' b.Source '>'  ];
+      toadd = [ toadd c b.Tag ];
+      if isempty(tocat), tocat = ' %'; end
+      tocat = [ tocat ' <' class(b) ' ' b.Tag ' ' b.Source '> ' ];
     elseif isnumeric(b) | islogical(b) 
       if ndims(b) > 2,   b=b(:); end
       if numel(b) > 100, b=b(1:100); end 
@@ -28,7 +30,8 @@ if nargin >= 3 | length(varargin)
       toadd = [ toadd c ' <' class(b) '>'  ];
     end
   end
-  meth = [ a.Tag '=' meth '(' toadd ');' ];
+  meth = [ a.Tag '=' meth '(' toadd ');' tocat ];
+  
 end
 
 for index=1:length(a)
