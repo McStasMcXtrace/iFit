@@ -56,7 +56,6 @@ if ~isempty(STEPS)
     end
   end
 end
-
 % compute the normalize variance of each column
 index_hkle=[]; % index of QH QK QL EN columns
 index_m12 =[]; % index of M1 M2 monitors
@@ -65,10 +64,10 @@ index_pal =[]; % index for polarization analysis
 Variance = zeros(1,length(columns));
 for j=1:length(columns)
   setalias(a,columns{j},a.Signal(:,j)); % create an alias for each column
-  if (isempty(STEPS) & ~isempty(strmatch(columns{j}, {'QH','QK','QL','EN'},'exact'))) | ...
+  if (~isempty(strmatch(columns{j}, {'QH','QK','QL','EN'},'exact'))) | ...
     (~isempty(STEPS) & ~isempty(strmatch(columns{j}, STEPS, 'exact'))) | ...
     (~isempty(STEPS) & ~isempty(strmatch([ 'D' columns{j} ], STEPS, 'exact')))
-    index_hkle = [ index_hkle j ];
+    if isempty(find(index_hkle == j)), index_hkle = [ index_hkle j ]; end
   end
   if strmatch(columns{j}, {'M1','M2'},'exact')
     index_m12 = [ index_m12 j ];
@@ -85,6 +84,7 @@ for j=1:length(columns)
     end
   end
 end
+
 % Signal is in CNTS field, 1st axis is probably field with
 % remaining greatest variance
 TT = [];
