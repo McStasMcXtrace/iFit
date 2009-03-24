@@ -19,7 +19,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: iData, iData/load, methods
 
 % object definition and converter
@@ -123,7 +123,7 @@ else
     end
     if length(inputname(1)), inmame=inputname(1); else inmame=''; end
     for index=1:length(out)
-      if length(out) == 1 || ~isempty(out(index))
+      if length(out) == 1 | ~isempty(out(index))
         if isempty(out(index).Source), out(index).Source = inmame; end
         if isempty(out(index).Title),  out(index).Title  = [ inmame ' ' class(in) ' import into iData ' ]; end
         
