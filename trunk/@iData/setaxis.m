@@ -26,7 +26,7 @@ function s_out = setaxis(a_in,indexes,names,values)
 % output: s: array (iData)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'x' axis (rank 1)
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/getaxis, iData/get, iData/set
 
 % EF 27/07/00 creation
@@ -117,11 +117,11 @@ for i1 = 1:length(s_out)
       axis_num   = strmatch(lower(name), lower(axis_names), 'exact');
       
       if length(index)
-      if index == 0, index=length(axis_names)+1; end
+      if index < 0, index=length(axis_names)+1; end
       end
     else axis_num =[]; end
 
-    % can it be evaluated ?a.Alias.Axis{j1}
+    % can it be evaluated ?
     try
       val  = get(a, name);
       isvalid=1;
@@ -153,17 +153,26 @@ for i1 = 1:length(s_out)
       else
         todisp = [ todisp 'existing ' num2str(axis_num) '-th rank' ];
       end
+      
+      a = setalias(a, [ 'Axis_' num2str(index) ], name);
+      a = setaxis(a, index,  [ 'Axis_' num2str(index) ]);
       if length(name) > 20, name = [ name(1:17) '...' ];  end
-      iData_private_warning(mfilename,[ todisp ' Axis ' name ' is not defined/valid in object ' inputname(1) ' '  a.Tag '.\n\tDefine it with setalias first, then use setaxis.' ]);
+      iData_private_warning(mfilename,[ todisp ' Axis ' name ' is not defined/valid in object ' inputname(1) ' '  a.Tag '.\n\tDefining it as Axis_' num2str(index) ]);
       continue;
-    end
+    else
     
-    if index <= length(a.Alias.Axis)
-      if ~isempty(a.Alias.Axis{index})
-        iData_private_warning(mfilename,[ 'redefining Axis ' a.Alias.Axis{index} ' ' num2str(index) '-th rank in object ' inputname(1) ' '  a.Tag ]);
+      if index == 0
+        % redefine Signal
+        a = setalias(a, 'Signal', name);
+      else
+        if index <= length(a.Alias.Axis)
+          if ~isempty(a.Alias.Axis{index})
+            iData_private_warning(mfilename,[ 'redefining Axis ' a.Alias.Axis{index} ' ' num2str(index) '-th rank in object ' inputname(1) ' '  a.Tag ]);
+          end
+        end
+        a.Alias.Axis{index} = name;
       end
     end
-    a.Alias.Axis{index} = name;
     a.Command=cmd;
     a = iData_private_history(a, mfilename, a, index, name);
 

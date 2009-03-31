@@ -8,7 +8,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -124,32 +124,34 @@ else
       else
         if isnumeric(s.subs{:}) & length(s.subs{:}) == 1
           if s.subs{:} == 0 & ischar(val)
-            iData_private_error(mfilename, [ 'Can not redefine Axis 0-th Signal in object ' inputname(1) ' ' b.Tag ]);
-          end
-          if s.subs{:} <= length(b.Alias.Axis)
-            ax= b.Alias.Axis{s.subs{:}}; % definition of Axis
-            if isempty(ax) & isnumeric(val)
-              ax=[ 'Axis_' num2str(num2str(s.subs{:})) ];
-              % need to create this axis
-              setalias(b, ax, val);
-              setaxis(b, s.subs{:}, ax);
-            else
+            b = setalias(b, 'Signal', val);
+            iData_private_warning(mfilename, [ 'Redefine Axis 0-th Signal in object ' inputname(1) ' ' b.Tag ]);
+          else 
+            if s.subs{:} <= length(b.Alias.Axis)
+              ax= b.Alias.Axis{s.subs{:}}; % definition of Axis
+              if isempty(ax) & isnumeric(val)
+                ax=[ 'Axis_' num2str(num2str(s.subs{:})) ];
+                % need to create this axis
+                setalias(b, ax, val);
+                setaxis(b, s.subs{:}, ax);
+              else
+                if ischar(val), b = setaxis(b, s.subs{:}, val);
+                else b = set(b, ax, val); end
+              end
+            else 
+              if isnumeric(val)
+                iData_private_warning(mfilename, [ num2str(s.subs{:}) '-th rank Axis  has not been defined yet. Defining "Axis_' num2str(num2str(s.subs{:})) '" in object ' inputname(1) ' ' b.Tag ]);
+                ax=[ 'Axis_' num2str(num2str(s.subs{:})) ];
+                setalias(b, ax, val);
+                setaxis(b, s.subs{:}, ax);
+              elseif ischar(val)
+                ax=s.subs{:}; 
+              else
+                iData_private_error(mfilename, [ num2str(s.subs{:}) '-th rank Axis can not be assigned in object ' inputname(1) ' ' b.Tag ]);
+              end
               if ischar(val), b = setaxis(b, s.subs{:}, val);
               else b = set(b, ax, val); end
             end
-          else 
-            if isnumeric(val)
-              iData_private_warning(mfilename, [ num2str(s.subs{:}) '-th rank Axis  has not been defined yet. Defining "Axis_' num2str(num2str(s.subs{:})) '" in object ' inputname(1) ' ' b.Tag ]);
-              ax=[ 'Axis_' num2str(num2str(s.subs{:})) ];
-              setalias(b, ax, val);
-              setaxis(b, s.subs{:}, ax);
-            elseif ischar(val)
-              ax=s.subs{:}; 
-            else
-              iData_private_error(mfilename, [ num2str(s.subs{:}) '-th rank Axis can not be assigned in object ' inputname(1) ' ' b.Tag ]);
-            end
-            if ischar(val), b = setaxis(b, s.subs{:}, val);
-            else b = set(b, ax, val); end
           end
         elseif ischar(s.subs{:}) & isnumeric(str2num(s.subs{:}))
           b=setaxis(b, s.subs{:}, val);
