@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -43,7 +43,7 @@ else
     elseif ischar(v)
       this = s_in;
       try
-        vv = eval(v);
+        vv = mat2str(eval(v));
         if length(vv) > 20, vv = [vv(1:18) '...' ]; end 
         label = [ label ' ''' vv '''' ];
       catch
