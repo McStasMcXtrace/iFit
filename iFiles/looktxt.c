@@ -2,7 +2,7 @@
 *
 *                     Program looktxt.c
 *
-* looktxt version Looktxt 1.0.5 (12 Dec 2008) by Farhi E. [farhi@ill.fr]
+* looktxt version Looktxt 1.0.6 (29 May 2009) by Farhi E. [farhi@ill.fr]
 *
 * Usage: looktxt [options] file1 file2 ...
 * Action: Search and export numerics in a text/ascii file.
@@ -60,7 +60,7 @@
 *   The LOOKTXT_FORMAT environment variable may set the default FORMAT to use.
 *
 * content: C language
-* compile with : gcc -O2 looktxt.c -o looktxt
+* compile with : cc -O2 looktxt.c -o looktxt
 *
 * History:
 * 0.86  (04/11/97) not effective
@@ -74,15 +74,16 @@
 * 1.00  (23/08/04) New VERSION with more output formats
 * 1.03  (21/11/07) Fixed redundant numbered Sections (e.g. SPEC files)
 * 1.05  (12/12/08) Solved memleaks with valgrind
+* 1.06  (29/05/09) GCC-4 support (libc/vfprintf is not suited for us)
 *
 *****************************************************************************/
 
 /* Identification ********************************************************* */
 
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
-#define DATE    "12 Dec 2008"
+#define DATE    "29 May 2009"
 #ifndef VERSION
-#define VERSION "Looktxt 1.0.5"
+#define VERSION "Looktxt 1.0.6"
 #endif
 
 #ifdef __dest_os
@@ -492,7 +493,7 @@ void *mem(size_t size)
   if (!size) return(NULL);
   p = (void *)calloc(1, size);  /* Allocate and clear memory. */
   if(p == NULL) {
-    print_stderr( "Fatal: memory exhausted during allocation of size %ld [looktxt:mem].", (long)size);
+    print_stderr( "Error: Memory exhausted during allocation of size %ld [looktxt:mem:%d].", (long)size, __LINE__);
     exit(EXIT_FAILURE);
   }
   return p;
@@ -819,18 +820,20 @@ char *str_lastword(char *string)
   return(word);
 } /* str_lastword */
 
-/* wrapper to vfprintf function with more flexibility */
-#if defined(NL_ARGMAX) || defined(WIN32)
+/*******************************************************************************
+* pfprintf: just as fprintf with positional arguments %N$t, 
+*   but with (char *)fmt_args being the list of arg type 't'.
+*   Needed as the vfprintf is not correctly handled on some platforms.
+*   1- look for the maximum %d$ field in fmt
+*   2- look for all %d$ fields up to max in fmt and set their type (next alpha)
+*   3- retrieve va_arg up to max, and save pointer to arg in local arg array
+*   4- use strchr to split around '%' chars, until all pieces are written
+*   returns number of arguments written.
+* Warning: this function is restricted to only handles types t=s,g,i,li
+*          without additional field formating, e.g. %N$t
+*******************************************************************************/
 static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...)
 {
-/* this function
-1- look for the maximum %d$ field in fmt
-2- looks for all %d$ fields up to max in fmt and set their type (next alpha)
-3- retrieve va_arg up to max, and save pointer to arg in local arg array
-4- use strchr to split around '%' chars, until all pieces are written
-
-usage: just as fprintf, but with (char *)fmt_args being the list of arg type
- */
   #define MyNL_ARGMAX 50
   char  *fmt_pos;
 
@@ -870,12 +873,15 @@ usage: just as fprintf, but with (char *)fmt_args being the list of arg type
         this_arg_chr[arg_posE[this_arg]-arg_posB[this_arg]-1] = '\0';
         arg_num[this_arg] = atoi(this_arg_chr);
         if (arg_num[this_arg] <=0 || arg_num[this_arg] >= MyNL_ARGMAX)
-          return(-print_stderr("pfprintf: invalid positional argument number (<=0 or >=%i) %s.\n", MyNL_ARGMAX, arg_posB[this_arg]));
+          return(-print_stderr("pfprintf: Invalid positional argument number (<=0 or >=%i) %s [looktxt:pfprintf:%d]\n", 
+            MyNL_ARGMAX, arg_posB[this_arg],__LINE__));
         /* get type of positional argument: follows '%' -> arg_posE[this_arg]+1 */
         fmt_pos = arg_posE[this_arg]+1;
+        fmt_pos[0] = tolower(fmt_pos[0]);
         if (!strchr(printf_formats, fmt_pos[0]))
-          return(-print_stderr("pfprintf: invalid positional argument type (%c != expected %c).\n", fmt_pos[0], fmt_args[arg_num[this_arg]-1]));
-        if (fmt_pos[0] == 'l' && fmt_pos[1] == 'i') fmt_pos++;
+          return(-print_stderr("pfprintf: Invalid positional argument type (%c != expected %c) [looktxt:pfprintf:%d]\n", 
+            fmt_pos[0], fmt_args[arg_num[this_arg]-1],__LINE__));
+        if (fmt_pos[0] == 'l' && (fmt_pos[1] == 'i' || fmt_pos[1] == 'd')) fmt_pos++;
         arg_posT[this_arg] = fmt_pos;
         /* get next argument... */
         this_arg++;
@@ -883,7 +889,8 @@ usage: just as fprintf, but with (char *)fmt_args being the list of arg type
       else
       {
         if  (tmp[1] != '%')
-          return(-print_stderr("pfprintf: must use only positional arguments (%s).\n", arg_posB[this_arg]));
+          return(-print_stderr("pfprintf: Must use only positional arguments (%s) [looktxt:pfprintf:%d]\n", 
+            arg_posB[this_arg],__LINE__));
         else fmt_pos = arg_posB[this_arg]+2;  /* found %% */
       }
     } else
@@ -895,25 +902,26 @@ usage: just as fprintf, but with (char *)fmt_args being the list of arg type
   for (this_arg=0; this_arg<strlen(fmt_args); this_arg++)
   {
 
-    switch(fmt_args[this_arg])
+    switch(tolower(fmt_args[this_arg]))
     {
       case 's':                       /* string */
               arg_char[this_arg] = va_arg(ap, char *);
               break;
       case 'd':
       case 'i':
-      case 'c':                     /* int */
+      case 'c':                      /* int */
               arg_int[this_arg] = va_arg(ap, int);
               break;
-      case 'l':                       /* int */
+      case 'l':                       /* long int */
               arg_long[this_arg] = va_arg(ap, long int);
               break;
       case 'f':
       case 'g':
-      case 'G':                      /* double */
+      case 'e':                      /* double */
               arg_double[this_arg] = va_arg(ap, double);
               break;
-      default: print_stderr("pfprintf: argument type is not implemented (arg %%%i$ type %c).\n", this_arg+1, fmt_args[this_arg]);
+      default: print_stderr("pfprintf: Argument type is not implemented (arg %%%i$ type %c) [looktxt:pfprintf:%d]\n", 
+        this_arg+1, fmt_args[this_arg],__LINE__);
     }
   }
   va_end(ap);
@@ -921,27 +929,27 @@ usage: just as fprintf, but with (char *)fmt_args being the list of arg type
   fmt_pos = fmt;
   for (this_arg=0; this_arg<arg_max; this_arg++)
   {
-    char *fmt_bit=NULL;
+    char *fmt_bit;
     int   arg_n;
 
     if (arg_posB[this_arg]-fmt_pos>0)
     {
-      fmt_bit = (char*)mem(arg_posB[this_arg]-fmt_pos+10);
-      if (!fmt_bit) return(-print_stderr("pfprintf: not enough memory.\n"));
+      fmt_bit = (char*)malloc(arg_posB[this_arg]-fmt_pos+10);
+      if (!fmt_bit) return(-print_stderr("pfprintf: Not enough memory [looktxt:pfprintf:%d]\n",__LINE__));
       strncpy(fmt_bit, fmt_pos, arg_posB[this_arg]-fmt_pos);
       fmt_bit[arg_posB[this_arg]-fmt_pos] = '\0';
-      fprintf(f, fmt_bit); /* fmt part without argument */
+      fprintf(f, "%s", fmt_bit); /* fmt part without argument */
     } else
     {
-      fmt_bit = (char*)mem(10);
-      if (!fmt_bit) return(-print_stderr("pfprintf: not enough memory.\n"));
+      fmt_bit = (char*)malloc(10);
+      if (!fmt_bit) return(-print_stderr("pfprintf: Not enough memory [looktxt:pfprintf:%d]\n",__LINE__));
     }
     arg_n = arg_num[this_arg]-1; /* must be >= 0 */
     strcpy(fmt_bit, "%");
     strncat(fmt_bit, arg_posE[this_arg]+1, arg_posT[this_arg]-arg_posE[this_arg]);
     fmt_bit[arg_posT[this_arg]-arg_posE[this_arg]+1] = '\0';
 
-    switch(fmt_args[arg_n])
+    switch(tolower(fmt_args[arg_n]))
     {
       case 's': fprintf(f, fmt_bit, arg_char[arg_n]);
                 break;
@@ -955,7 +963,7 @@ usage: just as fprintf, but with (char *)fmt_args being the list of arg type
               break;
       case 'f':
       case 'g':
-      case 'G':                       /* double */
+      case 'e':                       /* double */
               fprintf(f, fmt_bit, arg_double[arg_n]);
               break;
     }
@@ -965,25 +973,11 @@ usage: just as fprintf, but with (char *)fmt_args being the list of arg type
       if (fmt_pos < fmt+strlen(fmt))
         fprintf(f, "%s", fmt_pos);
     }
-    fmt_bit=str_free(fmt_bit);
+    if (fmt_bit) free(fmt_bit);
 
   }
   return(this_arg);
-}
-#else
-static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...)
-{ /* wrapper to standard fprintf */
-  va_list ap;
-  int tmp=0;
-
-  va_start(ap, fmt_args);
-  tmp=vfprintf(f, fmt, ap);
-  if (tmp <= 0) print_stderr("pfprintf: output error.\n");
-  va_end(ap);
-  return(tmp);
-}
-#endif
-
+} /* pfprintf */
 
 /*****************************************************************************
 * fileparts_init: Initialize a zero fileparts structure
@@ -1109,9 +1103,9 @@ char *try_open_target(struct fileparts_struct parts, char force)
   if (!force) {
     if (stat(FullName, &stfile) == 0) {
       print_stderr(
-        "Warning: target file '%s' already exists. \n"
-        "         Use --force or --append option to override [looktxt:try_open_target:path].\n",
-        FullName);
+        "Warning: Target file '%s' already exists.\n"
+        "         Use --force or --append option to override [looktxt:try_open_target:path:%d]\n",
+        FullName,__LINE__);
       FullName=str_free(FullName);
       return(NULL);
     }
@@ -1137,9 +1131,9 @@ char *try_open_target(struct fileparts_struct parts, char force)
   if (!force) {
     if (stat(FullName, &stfile) == 0) {
       print_stderr(
-        "Warning: target file '%s' already exists. \n"
-        "         Use --force or --append option to override [looktxt:try_open_target:local].\n",
-        FullName);
+        "Warning: Target file '%s' already exists.\n"
+        "         Use --force or --append option to override [looktxt:try_open_target:local:%d]\n",
+        FullName,__LINE__);
       FullName=str_free(FullName);
       return(NULL);
     }
@@ -1215,7 +1209,8 @@ struct file_struct file_open(char *name, struct option_struct options)
       file.Size = stfile.st_size;
       file.Time = stfile.st_mtime;
     } else {
-      print_stderr( "Error: source file '%s' can not be accessed [looktxt:file_open].\n", file.Source);
+      print_stderr( "Error: Source file '%s' can not be accessed [looktxt:file_open:%d]\n", 
+        file.Source,__LINE__);
       file.Source = str_free(file.Source); 
       return(file);
     }
@@ -1223,7 +1218,8 @@ struct file_struct file_open(char *name, struct option_struct options)
     /* opens source file (for reading) */
     file.SourceHandle = fopen(file.Source, "r");
     if (!file.SourceHandle) {
-      print_stderr( "Error: source file '%s' can not be opened for reading [looktxt:file_open].\n", file.Source);
+      print_stderr( "Error: Source file '%s' can not be opened for reading [looktxt:file_open:%d]\n", 
+        file.Source,__LINE__);
       file.Source = str_free(file.Source);
       return(file);
     }
@@ -1262,17 +1258,25 @@ struct file_struct file_open(char *name, struct option_struct options)
     && (!strcmp(options.outfile.FullName, "stdout")
         || !strcmp(options.outfile.FullName, "-"))) {
       file.TargetTxt = str_dup("stdout");
-      if (options.use_binary && options.verbose >= 1) printf("Warning: file '%s': can not use binary target file with stdout output\n", file.Source);
+      if (options.use_binary && options.verbose >= 1) 
+        print_stderr("Warning: File '%s': Can not use binary target file with stdout output [looktxt:file_open:%d]\n"
+                      "         Using TXT output.\n", 
+          file.Source,__LINE__);
       options.use_binary = 0;
     } else if (options.outfile.FullName
     && !strcmp(options.outfile.FullName, "stderr")) {
       file.TargetTxt = str_dup("stderr");
-      if (options.use_binary && options.verbose >= 1) printf("Warning: file '%s': can not use binary target file with stderr output\n", file.Source);
+      if (options.use_binary && options.verbose >= 1) 
+        print_stderr("Warning: File '%s': Can not use binary target file with stderr output [looktxt:file_open:%d]\n"
+               "         Using TXT output.\n", 
+          file.Source,__LINE__);
       options.use_binary = 0;
     } else
       file.TargetTxt = try_open_target(parts, options.force);
 
-    if (options.verbose >= 2) printf("VERBOSE[file_open]:         file '%s': target TXT %s", file.Source, file.TargetTxt);
+    if (options.verbose >= 2) 
+      printf("VERBOSE[file_open]:         file '%s': target TXT %s", 
+        file.Source, file.TargetTxt);
 
     if (options.use_binary) { /* only change extension */
       str_free(parts.Extension); parts.Extension=NULL;
@@ -1294,8 +1298,8 @@ struct file_struct file_open(char *name, struct option_struct options)
     file.RootName = ( root ? str_valid(root, 0) : str_dup("") );
     if (!strncmp(file.RootName, "lk_", 3) && options.verbose >= 1)
       print_stderr( "Warning: Data root level renamed as %s (started with number).\n"
-                    "         Output file names are unchanged\n",
-        file.RootName);
+                    "         Output file names are unchanged [looktxt:file_open:%d]\n",
+        file.RootName,__LINE__);
     root=str_free(root);
 
   } /* if (name is non NULL) */
@@ -1309,21 +1313,21 @@ struct file_struct file_close(struct file_struct file)
 {
   if (file.SourceHandle) { 
     if(fclose(file.SourceHandle)) 
-      print_stderr( "Warning: Could not close input Source file %s\n",
-        file.Source); 
+      print_stderr( "Warning: Could not close input Source file %s [looktxt:file_close:%d]\n",
+        file.Source,__LINE__); 
     file.SourceHandle=NULL; 
   }
   if (file.BinHandle)    { 
     if(fclose(file.BinHandle)) 
-      print_stderr( "Warning: Could not close output Binary file %s\n",
-        file.TargetBin);
+      print_stderr( "Warning: Could not close output Binary file %s [looktxt:file_close:%d]\n",
+        file.TargetBin,__LINE__);
     file.BinHandle=NULL; 
   }
   if (file.TxtHandle && file.TargetTxt 
    && strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) { 
     if(fclose(file.TxtHandle)) 
-      print_stderr( "Warning: Could not close output Text file %s\n",
-        file.TargetTxt);
+      print_stderr( "Warning: Could not close output Text file %s [looktxt:file_close:%d]\n",
+        file.TargetTxt,__LINE__);
     file.TxtHandle=NULL; 
   }
 
@@ -1346,7 +1350,7 @@ char *format_rep_data(char *format_const)
 
   if (!format_const) return(NULL);
   format = (char *)mem(strlen(format_const)+1);
-  if (!format) exit(print_stderr( "Error: insufficient memory [looktxt:format_rep_data]\n"));
+  if (!format) exit(print_stderr( "Error: Insufficient memory [looktxt:format_rep_data:%d]\n",__LINE__));
   strcpy(format, format_const);
   if (strlen(format_const)) {
     str_rep(format, "%SEC", "%1$s");
@@ -1371,7 +1375,7 @@ char *format_rep_section(char *format_const)
 
   if (!format_const) return(NULL);
   format = (char *)mem(strlen(format_const)+1);
-  if (!format) exit(print_stderr( "Error: insufficient memory [looktxt:format_rep_section]\n"));
+  if (!format) exit(print_stderr( "Error: Insufficient memory [looktxt:format_rep_section:%d]\n",__LINE__));
   strcpy(format, format_const);
   if (strlen(format_const)) {
     str_rep(format, "%BAS", "%1$s");
@@ -1485,7 +1489,8 @@ struct format_struct format_init(struct format_struct formats[], char *request)
   if (i_format < 0)
   {
     i_format = 0; /* default format is #0 */
-    print_stderr( "Warning: unknown output format '%s'. Using %s [looktxt:format_init].\n", request, formats[i_format].Name);
+    print_stderr( "Warning: Unknown output format '%s'. Using %s [looktxt:format_init:%d]\n", 
+      request, formats[i_format].Name,__LINE__);
   }
   format = formats[i_format];
   if (request && strstr(request,"binary"))
@@ -1542,8 +1547,8 @@ struct strlist_struct strlist_init(char *name)
   list.nalloc= ALLOC_BLOCK;
   list.List  = (char  **)mem(list.nalloc*sizeof(char *));
   if(list.List == NULL) {
-      print_stderr( "Fatal: memory exhausted during allocation of size %ld for '%s' [looktxt:strlist_init].", 
-        (list.nalloc)*sizeof(char*), name);
+      print_stderr( "Error: Memory exhausted during allocation of size %ld for '%s' [looktxt:strlist_init:%d].", 
+        (list.nalloc)*sizeof(char*), name,__LINE__);
       exit(EXIT_FAILURE);
     }
   strncpy(list.Name, name && strlen(name) ? name : "", 32);
@@ -1644,13 +1649,13 @@ struct option_struct options_free(struct option_struct options)
 long strlist_print(struct strlist_struct list)
 {
 
-  printf("List '%s' contains %ld elements\n", list.Name, list.length);
+  print_stderr("List '%s' contains %ld elements\n", list.Name, list.length);
   if (!list.length  | !list.nalloc) {
-    printf("  Empty list\n");
+    print_stderr("  Empty list\n");
   } else {
     long index;
     for (index=0; index < list.length; index++)
-    printf("  List[%ld]='%s'\n", index, list.List[index]);
+    print_stderr("  List[%ld]='%s'\n", index, list.List[index]);
   }
 
   return(list.length);
@@ -1673,7 +1678,8 @@ struct strlist_struct strlist_add(struct strlist_struct *list, char *element)
     list->nalloc = list->length+ALLOC_BLOCK;
     p = (char **)realloc(list->List, list->nalloc*sizeof(char*));
     if(p == NULL) {
-      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld for '%s' [looktxt:strlist_add].", (list->nalloc)*sizeof(char*), list->Name);
+      print_stderr( "Error: Memory exhausted during re-allocation of size %ld for '%s' [looktxt:strlist_add:%d].", 
+        (list->nalloc)*sizeof(char*), list->Name,__LINE__);
       exit(EXIT_FAILURE);
     }
     list->List   = (char **)p;
@@ -1702,7 +1708,8 @@ struct strlist_struct strlist_add_void(struct strlist_struct *list, void *elemen
     list->nalloc = list->length+ALLOC_BLOCK;
     p = (char **)realloc(list->List, list->nalloc*sizeof(char*));
     if(p == NULL) {
-      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld for '%s' [looktxt:strlist_add].", (list->nalloc)*sizeof(char*), list->Name);
+      print_stderr( "Error: Memory exhausted during re-allocation of size %ld for '%s' [looktxt:strlist_add:%d].", 
+        (list->nalloc)*sizeof(char*), list->Name,__LINE__);
       exit(EXIT_FAILURE);
     }
     list->List   = (char **)p;
@@ -1757,12 +1764,12 @@ struct data_struct data_init(void)
 *****************************************************************************/
 void data_print(struct data_struct field)
 {
-  printf("Data field %i '%s.%s' (%s)\n", 
+  print_stderr("Data field %li '%s.%s' (%s)\n", 
     field.index, field.Section, field.Name, field.Name_valid );
-  printf("  size=[%i x %i]\n", field.rows, field.columns);
-  printf("  numeric=[%i:%i]\n", field.n_start, field.n_end);
-  printf("  comment=[%i:%i]\n", field.c_start, field.c_end);
-  printf("  header='%s'\n", field.Header);
+  print_stderr("  size=[%li x %li]\n", field.rows, field.columns);
+  print_stderr("  numeric=[%li:%li]\n", field.n_start, field.n_end);
+  print_stderr("  comment=[%li:%li]\n", field.c_start, field.c_end);
+  print_stderr("  header='%s'\n", field.Header);
 } /* data_print */
 
 /*****************************************************************************
@@ -1786,14 +1793,16 @@ char *data_get_char(struct file_struct file, long start, long end)
   char *string;
 
   if (start >= end)       return (NULL);
+  if (start < 0) start=0;
+  if (end >= file.Size) end=file.Size;
   if (!file.SourceHandle) return (NULL);
   string = mem(end - start + 2);
   if(fseek(file.SourceHandle, start, SEEK_SET))
-    print_stderr( "Warning: error in fseek(%s,%i) [looktxt:data_get_char].\n",
-      file.Source, start);
+    print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_char:%d]\n",
+      file.Source, start,__LINE__);
   if (fread(string, 1, end-start+1, file.SourceHandle) < end-start+1)
-    print_stderr( "Warning: error in fread(%s,%i) [looktxt:data_get_char].\n",
-      file.Source, end-start+1);
+    print_stderr( "Warning: Error in fread(%s,%i) [looktxt:data_get_char:%d]\n",
+      file.Source, end-start+1,__LINE__);
   string[end-start+1] = '\0';
 
   return(string);
@@ -1806,15 +1815,17 @@ char *data_get_line(struct file_struct file, long *start)
 {
   char string[64*MAX_LENGTH];
 
-  if (!start || *start < 0)       return (NULL);
+  if (!start)             return (NULL);
   if (!file.SourceHandle) return (NULL);
+  if (*start < 0) *start=0;
+  if (*start >= file.Size)return(NULL);
 
   if (fseek(file.SourceHandle, *start, SEEK_SET))
-    print_stderr( "Warning: error in fseek(%s,%i) [looktxt:data_get_line].\n",
-      file.Source, *start);
+    print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_line:%d]\n",
+      file.Source, *start,__LINE__);
     if (!fgets(string, 64*MAX_LENGTH, file.SourceHandle))
-      print_stderr( "Warning: error in fgets(%s,%i) [looktxt:data_get_line].\n",
-      file.Source, 64*MAX_LENGTH);
+      print_stderr( "Warning: Error in fgets(%s,%i) [looktxt:data_get_line:%d]\n",
+      file.Source, 64*MAX_LENGTH,__LINE__);
   *start = ftell(file.SourceHandle);
 
   return(str_dup_n(string, 64*MAX_LENGTH));
@@ -1842,15 +1853,15 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
   dataf = (float*)mem(field.rows*field.columns*sizeof(float));
 
   if (!dataf) {
-    print_stderr( "Fatal: memory exhausted during allocation of float[%ld x %ld] [looktxt:data_get_float].",
-      field.rows, field.columns);
+    print_stderr( "Error: Memory exhausted during allocation of float[%ld x %ld] [looktxt:data_get_float:%d]\n",
+      field.rows, field.columns,__LINE__);
     exit(EXIT_FAILURE);
   }
   if (method == 1) {
     /* fast method: fscanf */
     if (fseek(file.SourceHandle, field.n_start-1 > 0 ? field.n_start-1 : 0, SEEK_SET))
-      print_stderr( "Warning: error in fseek(%s,%i) [looktxt:data_get_float].\n",
-      file.Source, field.n_start-1);
+      print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
+        file.Source, field.n_start-1,__LINE__);
     for (index =0; index < field.rows*field.columns; index ++) {
       long pos=ftell(file.SourceHandle);
       if (fail) value = 0;
@@ -1859,11 +1870,15 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
         value = 0;
         if (options.verbose > 1) {
           char *string=data_get_char(file, pos, pos+12);
-          print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%ld.\n",
-            index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos);
+          print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%ld [looktxt:data_get_float:%d]\n",
+            index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos,__LINE__);
           print_stderr( "         '%s ...'\n", string);
-          fseek(file.SourceHandle, pos, SEEK_SET);
-          fscanf(file.SourceHandle, "%f", &value); value=0;
+          if (fseek(file.SourceHandle, pos, SEEK_SET))
+            print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
+              file.Source, pos,__LINE__);
+          if (!fscanf(file.SourceHandle, "%f", &value))
+            print_stderr( "Warning: Format error when reading float [looktxt:data_get_float:%d]\n",__LINE__);
+          value=0;
           string=str_free(string);
         }
       }
@@ -1881,10 +1896,12 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
     while ((p = strpbrk(p, separator)) != NULL) *p = ' ';
     fid=tmpfile(); /* write temporary file to be read with fscanf */
     if (fwrite(string, sizeof(char), strlen(string), fid) < strlen(string))
-      print_stderr( "Warning: error in fwrite(%s,%i) [looktxt:data_get_float].\n",
-      "tmpfile", strlen(string));
+      print_stderr( "Warning: Error in fwrite(%s,%i) [looktxt:data_get_float:%d]\n",
+        "tmpfile", strlen(string),__LINE__);
     string=str_free(string); separator=str_free(separator);
-    fseek(fid, 0, SEEK_SET);
+    if (fseek(fid, 0, SEEK_SET))
+      print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
+        file.Source, 0,__LINE__);
     for (index =0; index < field.rows*field.columns; index ++) {
       long pos=ftell(fid);
       if (fail) value = 0;
@@ -1893,11 +1910,15 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
         value = 0;
         if (options.verbose > 1) {
           char *string=data_get_char(file, pos, pos+12);
-          print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%li.\n",
-            index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos);
+          print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%li [looktxt:data_get_float:%d]\n",
+            index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos,__LINE__);
           print_stderr( "         '%s ...'\n", string);
-          fseek(fid, pos, SEEK_SET);
-          fscanf(fid, "%f", &value); value=0;
+          if (fseek(fid, pos, SEEK_SET))
+            print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
+              file.Source, pos,__LINE__);
+          if (!fscanf(fid, "%f", &value))
+            print_stderr( "Warning: Format error when reading float [looktxt:data_get_float:%d]\n",__LINE__);
+          value=0;
           string=str_free(string);
         }
       }
@@ -1934,8 +1955,8 @@ void table_add(struct table_struct *table, struct data_struct data)
 
   if (!table) return;
   if (!table->List) {
-    print_stderr( "Warning: table List pointer is NULL (index=%ld nalloc = %ld) [looktxt:table_add]\n", 
-      table->length, table->nalloc);
+    print_stderr( "Warning: Table List pointer is NULL (index=%ld nalloc = %ld) [looktxt:table_add:%d]\n", 
+      table->length, table->nalloc,__LINE__);
     return;
   }
 
@@ -1947,7 +1968,8 @@ void table_add(struct table_struct *table, struct data_struct data)
     table->nalloc = table->length+ALLOC_BLOCK;
     p = (void *)realloc(table->List, (table->nalloc)*sizeof(struct data_struct));
     if(p == NULL) {
-      print_stderr( "Fatal: memory exhausted during re-allocation of size %ld [looktxt:table_add].", (table->nalloc)*sizeof(struct data_struct));
+      print_stderr( "Error: Memory exhausted during re-allocation of size %ld [looktxt:table_add:%d]\n", 
+        (table->nalloc)*sizeof(struct data_struct),__LINE__);
       exit(EXIT_FAILURE);
     }
     table->List   = (struct data_struct *)p;
@@ -1969,7 +1991,7 @@ void table_print(struct table_struct table)
   if (table.List && table.length) {
     long i;
     for (i=0; i < table.length; i++)
-      printf("Table[%ld] %s.%s.%s = [%ld x %ld]\n",
+      print_stderr("Table[%ld] %s.%s.%s = [%ld x %ld]\n",
         (long)table.List[i].index, table.Name, table.List[i].Section, table.List[i].Name,
         table.List[i].rows, table.List[i].columns);
   }
@@ -2240,8 +2262,8 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
                 endcharpos = startnumpos - 1;
                 if (fseek(file.SourceHandle, pos, SEEK_SET)) {/* reposition after SEP */
                   print_stderr(
-                  "Error: repositiong error at position %ld in file '%s'\n"
-                  "       Ignoring (may generate wrong results) [looktxt:file_scan:sep].\n", pos, file.Source);
+                  "Error: Repositiong error at position %ld in file '%s'\n"
+                  "       Ignoring (may generate wrong results) [looktxt:file_scan:sep:%d]\n", pos, file.Source,__LINE__);
                   perror("");
                 }
                 if (startcharpos <= endcharpos) fieldend |= Balpha;
@@ -2255,8 +2277,8 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
                 columns   = last_columns;
                 if (fseek(file.SourceHandle, pos, SEEK_SET)) { /* reposition after EOL */
                   print_stderr(
-                  "Error: repositiong error at position %ld in file '%s'\n"
-                  "       Ignoring (may generate wrong results) [looktxt:file_scan:eol].\n", pos, file.Source);
+                  "Error: Repositiong error at position %ld in file '%s'\n"
+                  "       Ignoring (may generate wrong results) [looktxt:file_scan:eol:%d]\n", pos, file.Source,__LINE__);
                   perror("");
                 }
                 if (startcharpos <= endcharpos) fieldend |= Balpha;
@@ -2310,8 +2332,8 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
             startcharpos = pos;
             if (fseek(file.SourceHandle, pos, SEEK_SET)) { /* reposition after Numeric*/
               print_stderr(
-              "Error: repositiong error at position %ld in file '%s'\n"
-              "       Ignoring (may generate wrong results) [looktxt:file_scan:Bnumber].\n", pos, file.Source);
+              "Error: Repositiong error at position %ld in file '%s'\n"
+              "       Ignoring (may generate wrong results) [looktxt:file_scan:Bnumber:%d]\n", pos, file.Source,__LINE__);
               perror("");
             }
             fieldindex++;
@@ -2529,7 +2551,7 @@ int file_write_field_data(struct file_struct file,
   if (!format || !field.Name || !strlen(field.Name)) return(0);
   if (!field.rows) return(0);
   if (options.verbose >= 3) {
-    printf("\nDEBUG[file_write_field_data]: file '%s': Writing Part Data %s begin/end \n", file.TargetTxt, field.Name);
+    printf("\nDEBUG[file_write_field_data]: file '%s': Writing Part Data %s begin/end\n", file.TargetTxt, field.Name);
   }
 
   if (options.use_struct> ' ') str_struct[0] = options.use_struct;
@@ -2579,7 +2601,7 @@ int file_write_field_array(struct file_struct file,
   if (!data) {
     if (options.verbose >= 1)
     if (options.verbose >= 2 || field.n_start < field.n_end)
-    printf("Warning: file '%s': Data %s is empty (%ld:%ld)\n",
+    print_stderr("Warning: File '%s': Data %s is empty (%ld:%ld)\n",
       file.TargetTxt, field.Name, field.n_start, field.n_end);
     return(0);
   }
@@ -2593,8 +2615,8 @@ int file_write_field_array(struct file_struct file,
       field.rows*field.columns, file.BinHandle);
     if (count != field.rows*field.columns) {
        print_stderr( "Warning: Could not write properly field %s in BIN file '%s'.\n"
-         "(permissions, disk full, broken link ?). Using TXT output.",
-         field.Name, file.TargetBin);
+         "(permissions, disk full, broken link ?). Using TXT output [looktxt:file_write_field_array:%d]\n",
+         field.Name, file.TargetBin,__LINE__);
     } else {
       /* get eof Bin, store pos */
       end = ftell(file.BinHandle)-1;
@@ -2623,8 +2645,8 @@ int file_write_field_array(struct file_struct file,
           strstr(options.format.Name,"IDL") && i*field.columns+j < field.columns*field.rows-1 ? ',' : ' ');
         if (!this_count) {
           print_stderr( "Warning: Could not write properly field %s in TXT file '%s'.\n"
-            "(permissions, disk full, broken link ?)",
-            field.Name, file.TargetBin);
+            "(permissions, disk full, broken link ?) [looktxt:file_write_field_array:%d]\n",
+            field.Name, file.TargetBin,__LINE__);
           count = 0;
           break;
         } else count += this_count;
@@ -2812,8 +2834,12 @@ struct write_struct file_write_getsections(struct file_struct file,
             double data0=0;      /* first numerical value */
             char  *tmp;
             char buff[20];
-            fseek (file.SourceHandle, field->n_start-1, SEEK_SET);
-            fscanf(file.SourceHandle, "%lf", &data0);
+            if (fseek (file.SourceHandle, field->n_start-1, SEEK_SET))
+              print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:file_write_getsections:%d]\n",
+                file.Source, field->n_start-1,__LINE__);
+            if (!fscanf(file.SourceHandle, "%lf", &data0))
+              print_stderr( "Warning: Error in reading float fscanf(%s) [looktxt:file_write_getsections:%d]\n",
+                file.Source, __LINE__);
             sprintf(value, "_%ld", (long)data0);
             tmp = str_cat(section_current, value, NULL);
             str_free(section_current); section_current = tmp; tmp=NULL;
@@ -2885,9 +2911,11 @@ long file_write_target(struct file_struct file,
   }
 
   if (!file.TxtHandle) 
-    exit(print_stderr( "Error: can not open text target file '%s' in mode %s. Exiting.\n", file.TargetTxt, options.openmode));
+    exit(print_stderr( "Error: Can not open text target file '%s' in mode %s. Exiting  [looktxt:file_write_target:%d]\n", 
+      file.TargetTxt, options.openmode,__LINE__));
   if (!file.BinHandle && options.use_binary) {
-    print_stderr( "Warning: can not open binary target file '%s' in mode %s. Using text.\n", file.TargetBin, options.openmode);
+    print_stderr( "Warning: Can not open binary target file '%s' in mode %s. Using text [looktxt:file_write_target:%d]\n", 
+      file.TargetBin, options.openmode,__LINE__);
     options.use_binary = 0;
   }
 
@@ -3180,7 +3208,8 @@ int parse_files(struct option_struct options, int argc, char *argv[])
         /* Free section structures */
         found_sections.section_names =strlist_free(found_sections.section_names);
         found_sections.section_fields=strlist_free(found_sections.section_fields);
-        if (options.verbose >= 1) printf("Looktxt: file '%s': wrote %ld numerical field%s into %s\n", file.Source, ret, ret > 1 ? "s" : "", file.TargetTxt);
+        if (options.verbose >= 1) print_stderr("Looktxt: file '%s': wrote %ld numerical field%s into %s\n", 
+          file.Source, ret, ret > 1 ? "s" : "", file.TargetTxt);
 #ifdef TEXMEX
         TexMex_Target_Array[options.file_index] = str_dup(file.TargetTxt);
         TexMex_Target_Funcs[options.file_index] = str_dup(file.RootName);
@@ -3287,29 +3316,52 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
 
     else if(!strncmp("--comment=", argv[i], 10)) {
       str_free(options.comment);
-      options.comment = str_dup(&argv[i][10]);
+      if (strcmp(&argv[i][10],"NULL"))
+        options.comment = str_dup(&argv[i][10]);
+      else
+        options.comment = str_dup("");
     } else if(!strcmp("--comment", argv[i]) && (i + 1) <= argc) {
       str_free(options.comment);
-      options.comment = str_dup(argv[++i]);
+      if (strcmp(argv[++i],"NULL"))
+        options.comment = str_dup(argv[++i]);
+      else
+        options.comment = str_dup("");
     } else if(!strncmp("--eol=",   argv[i], 6)) {
       str_free(options.eol);
-      options.eol = str_dup(&argv[i][6]);
+      if (strcmp(&argv[i][6],"NULL"))
+        options.eol = str_dup(&argv[i][6]);
+      else
+        options.eol = str_dup("");
     } else if(!strcmp("--eol",     argv[i]) && (i + 1) <= argc) {
       str_free(options.eol);
-      options.eol = str_dup(argv[++i]);
+      if (strcmp(&argv[i][6],"NULL"))
+        options.eol = str_dup(argv[++i]);
+      else
+        options.eol = str_dup("\n");
     } else if(!strncmp("--point=", argv[i], 8)) {
       str_free(options.point);
-      options.point = str_dup(&argv[i][8]);
+      if (strcmp(&argv[i][8],"NULL"))
+        options.point = str_dup(&argv[i][8]);
+      else
+        options.point = str_dup("");
     } else if(!strcmp("--point",   argv[i]) && (i + 1) <= argc) {
       str_free(options.point);
-      options.point = str_dup(argv[++i]);
+      if (strcmp(argv[++i],"NULL"))
+        options.point = str_dup(argv[++i]);
+      else
+        options.point = str_dup(".");
     } else if(!strncmp("--separator=", argv[i], 12)) {
       str_free(options.separator);
-      options.separator = str_dup(&argv[i][12]);
+      if (strcmp(&argv[i][12],"NULL"))
+        options.separator = str_dup(&argv[i][12]);
+      else
+        options.separator = str_dup("");
     } else if(!strcmp("--separator",   argv[i]) && (i + 1) <= argc) {
       str_free(options.separator);
-      options.separator = str_dup(argv[++i]);
-
+      if (strcmp(argv[++i],"NULL"))
+        options.separator = str_dup(argv[++i]);
+      else
+        options.separator = str_dup("");
     } else if(!strncmp("--outfile=", argv[i], 10))
       options.outfile = fileparts(&argv[i][10]);
     else if((!strcmp("--outfile",   argv[i]) || !strcmp("-o",   argv[i])) && (i + 1) <= argc)
@@ -3350,12 +3402,14 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
         }
       options.names_root = root_char ? root_char : str_dup("NULL");
     } else if(argv[i][0] == '-') {
-      print_stderr( "Warning: Invalid %d-th option %s. Ignoring [looktxt:options_parse].\n", i, argv[i]);
+      print_stderr( "Warning: Invalid %d-th option %s. Ignoring [looktxt:options_parse:%d]\n", 
+        i, argv[i],__LINE__);
     } else if(argv[i][0] != '-') {
       /* convert argv[i]: store index of argument */
       if (options.sources_nb < MAX_LENGTH)
         options.files_to_convert_Array[options.sources_nb++] = i;
-      else print_stderr( "Warning: Exceeding maximum number of files to process (%d) for file '%s'. Ignoring [looktxt:options_parse].\n", MAX_LENGTH, argv[i]);
+      else print_stderr( "Warning: Exceeding maximum number of files to process (%d) for file '%s'. Ignoring [looktxt:options_parse:%d]\n", 
+        MAX_LENGTH, argv[i],__LINE__);
     } else
       print_usage(argv[0], options);
   } /* for i */
@@ -3371,13 +3425,15 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     ||  strstr(options.format.Name, "Octave"))
     if (options.use_struct != '.') {
       if (options.verbose >= 2)
-      print_stderr( "Warning: Format %s requires structures. Now setting --struct='.' [looktxt:options_parse].\n", options.format.Name);
+      print_stderr( "Warning: Format %s requires structures. Now setting --struct='.' [looktxt:options_parse:%d]\n", 
+        options.format.Name,__LINE__);
       options.use_struct = '.';
     }
   /* IDL does not support structures fully. If used, replace by _ */
   if (strstr(options.format.Name, "IDL") && options.use_struct > ' ') {
     if (options.verbose >= 2)
-    print_stderr( "Warning: Format %s does not support fully structures. Now unsetting --struct [looktxt:options_parse].\n", options.format.Name);
+    print_stderr( "Warning: Format %s does not support fully structures. Now unsetting --struct [looktxt:options_parse:%d]\n", 
+      options.format.Name,__LINE__);
      options.use_struct = 0;
   }
 
@@ -3386,7 +3442,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     ||  strstr(options.format.Name, "Octave")
     ||  strstr(options.format.Name, "IDL")))
     if (options.verbose >= 1)
-    print_stderr( "Warning: NULL root name is NOT recommanded with format %s [looktxt:options_parse].\n", options.format.Name);
+    print_stderr( "Warning: NULL root name is NOT recommanded with format %s [looktxt:options_parse:%d]\n", 
+      options.format.Name,__LINE__);
 
   /* build the option list string */
 
@@ -3410,7 +3467,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     if (strlen(tmp3)+strlen(options.sections.List[i]) < BUFFER_SIZE)
       strcat(tmp3, this_section);
     else if (options.verbose >= 2)
-      print_stderr( "Warning: Exceeding maximum section buffer size (%d) for section %s. Ignoring. [looktxt:options_parse].\n", BUFFER_SIZE, this_section);
+      print_stderr( "Warning: Exceeding maximum section buffer size (%d) for section %s. Ignoring. [looktxt:options_parse:%d]\n", 
+        BUFFER_SIZE, this_section,__LINE__);
     }
   }
 
@@ -3423,7 +3481,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       if (strlen(tmp4)+strlen(options.metadata.List[i]) < BUFFER_SIZE)
         strcat(tmp4, this_section);
       else if (options.verbose >= 2)
-        print_stderr( "Warning: Exceeding maximum metadata buffer size (%d) for metadata %s. Ignoring [looktxt:options_parse].\n", BUFFER_SIZE, this_section);
+        print_stderr( "Warning: Exceeding maximum metadata buffer size (%d) for metadata %s. Ignoring [looktxt:options_parse:%d]\n", 
+          BUFFER_SIZE, this_section,__LINE__);
     }
   }
 
@@ -3436,7 +3495,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       if (strlen(tmp8)+strlen(options.makerows.List[i]) < BUFFER_SIZE)
         strcat(tmp8, this_section);
       else if (options.verbose >= 2)
-        print_stderr( "Warning: Exceeding maximum makerows buffer size (%d) for metadata %s. Ignoring [looktxt:options_parse].\n", BUFFER_SIZE, this_section);
+        print_stderr( "Warning: Exceeding maximum makerows buffer size (%d) for metadata %s. Ignoring [looktxt:options_parse:%d]\n", 
+          BUFFER_SIZE, this_section,__LINE__);
     }
   }
   #undef BUFFER_SIZE
@@ -3464,10 +3524,10 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     options.names_lowup == 'l' ?  " --names_lower": "",
     options.names_lowup == 'u' ?  " --names_upper": "",
     tmp7,
-    " --comment=\"",     options.comment,
-    "\" --eol=\"",       tmp5,
-    "\" --point=\"",     options.point,
-    "\" --separator=\"", tmp6,
+    " --comment=\"",     strlen(options.comment) ? options.comment : "NULL",
+    "\" --eol=\"",       strlen(tmp5) ? tmp5 : "NULL",
+    "\" --point=\"",     strlen(options.point) ? options.point : "NULL",
+    "\" --separator=\"", strlen(tmp6) ? tmp6 : "NULL",
     "\" --format=\"",    options.format.Name, "\"",
     tmp0, /* nelements */
     tmp1, /* struct */
@@ -3509,7 +3569,7 @@ int main(int argc, char *argv[])
     printf("DEBUG[main:options_init  ]: Starting %s with %d options\n", argv[0], argc);
 
   if (!options.sources_nb) {
-    print_stderr( "Warning: No file to process [looktxt:main].\n");
+    print_stderr( "Warning: No file to process\n");
     print_stderr( "         Type 'looktxt --help' for help.\n");
     exit(EXIT_SUCCESS);
   }
