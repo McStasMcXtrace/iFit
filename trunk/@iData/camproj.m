@@ -12,7 +12,7 @@ function s = camproj(a,dim)
 % output: s: projection of elements (iData/scalar)
 % ex:     c=camproj(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/sum
 
 if ~isa(a, 'iData')
@@ -22,9 +22,9 @@ end
 if nargin < 2, dim=1; end
 % handle input iData arrays
 if length(a(:)) > 1
-  s = {};
+  s = a;
   for index=1:length(a(:))
-    s{index} = camproj(a(index), dim);
+    s(index) = camproj(a(index), dim);
   end
   s = reshape(s, size(a));
   return
