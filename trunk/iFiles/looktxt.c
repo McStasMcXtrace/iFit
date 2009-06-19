@@ -1847,7 +1847,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
   int    method=options.fast;
 
   if (!field.rows || !field.columns || !file.Source) return (NULL);
-  if (field.n_start >= field.n_end) return (NULL);
+  if (field.n_start > field.n_end) return (NULL);
   if (!file.SourceHandle)           return (NULL);
 
   dataf = (float*)mem(field.rows*field.columns*sizeof(float));
