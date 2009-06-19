@@ -1,5 +1,5 @@
 function c = ldivide(a,b)
-% c = ldivide(a,b) : computes the left division ratio of iData objects
+% c = ldivide(a,b) : fast notation for combine iData objects
 %
 %   @iData/ldivide (.\) is fast notation for combine(a,b)
 %     the 'left division' notation is used to ease
@@ -11,7 +11,7 @@ function c = ldivide(a,b)
 % output: c: object or array (iData)
 % ex:     c=a.\2; c=a.\b;
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/mldivide
 if nargin ==1
 	b=[];
