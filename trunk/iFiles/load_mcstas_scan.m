@@ -23,6 +23,7 @@ xlabel=cnames(1);
 
 % First column is always the scan parm, we denote that 'x'
 setalias(a0,'x',['this.' getalias(a0,'Signal') '(:,1)'],xlabel);
+setalias(a0,xlabel,['this.' getalias(a0,'Signal') '(:,1)'],xlabel);
 setaxis(a0,1,'x');
 
 siz = size(a0.Signal);
@@ -36,7 +37,8 @@ for j=1:siz
   if ~isempty(findfield(a0, '_ERR')) 
     setalias(b,'Error',['this.' getalias(a0,'Signal') '(:,' num2str(1+2*j) ')']);
   end
-  b.Title=[ char(ylabel) ': ' char(b.Title) ];
+  b.Title = [ char(ylabel) ': ' char(b.Title) ];
+  b.Label = char(ylabel);
   a = [a b];
 end
 
