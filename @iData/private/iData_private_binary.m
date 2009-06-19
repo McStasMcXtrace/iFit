@@ -39,8 +39,10 @@ if isa(a, 'iData') & length(a(:)) > 1
       c = iData_private_binary(c, a(index), op);
     end
   elseif isa(b, 'iData') & length(b(:)) ~= length(a(:)) & length(b(:)) ~= 1
+    iData_private_warning('binary', ...
+    [ 'If you wish to force this operation, use ' op '(a,b{0}) to divide by the object Signal, not the object (which has axes).' ]);
     iData_private_error('binary',...
-  [ 'Dimension of objects do not match: 1st is ' num2str(length(a(:))) ' and 2nd is ' num2str(length(b(:))) ]);
+    [ 'Dimension of objects do not match for operator ' op ': 1st is ' num2str(length(a(:))) ' and 2nd is ' num2str(length(b(:))) ]);
   else
     % add single element to vector
     for index=1:length(a(:))
