@@ -19,7 +19,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: iData, iData/load, methods
 
 % object definition and converter
@@ -40,7 +40,8 @@ if nargin == 0
   a.Source       = pwd;         % origin of data (filename/path)
   a.Command      = cellstr('iData');          % Matlab commands/history of the object
   a.UserData     = '';          % user data storage area
-  a.Label        = '';          % user label
+  a.Label        = '';          % user label (color)
+  a.DisplayName  = '';          % user name for handling data set as a variable
   a.Creator      = [];          % Creator (program) name
   user = getenv('USER');
   if isempty(user), user = getenv('HOME'); end
