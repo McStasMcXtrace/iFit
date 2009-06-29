@@ -40,7 +40,7 @@ case 'sin'
 	e = e.*cos(s);
 case 'sqrt'
 	e = e/(2*sqrt(s));
-  m = m.^2;
+    m = m.^2;
 case 'tan'
 	c = cos(s);
 	e = e./(c.*c);
