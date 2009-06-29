@@ -129,6 +129,13 @@ for index=1:length(optimizers)
   numberOfVariables = dim; n=dim;
   if ischar(options.MaxFunEvals), options.MaxFunEvals=eval(options.MaxFunEvals); end
   if ischar(options.MaxIter), options.MaxIter=eval(options.MaxIter); end
+  maxit = options.MaxIter; if ischar(maxit), maxit=eval(maxit,'0'); end
+  if isinf(maxit), maxit=0; end
+  options.MaxIter=min(2000, max(250*dim, maxit));
+  maxfn = options.MaxFunEvals; if ischar(maxfn), maxfn=eval(maxfn,'0'); end
+  if isinf(maxfn), maxfn=0; end
+  options.MaxFunEvals=min(20000, max(2500*dim, maxfn));
+  options.TolX=0;
   fprintf(1, '%2i %5s %6i %6i %6.2g %s\n', index, opt, options.MaxFunEvals, options.MaxIter, options.TolFun, alg);
 end
 fprintf(1,'\n');

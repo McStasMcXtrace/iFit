@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -122,7 +122,7 @@ if ntimes ~= 0
     a_max  = max(x);
     a_len  = (a_max - a_min)/a_step;
     if ntimes > 1
-      a_step = a_step/ntimes;
+      a_len = a_len/ntimes;
     else
       a_len  = min(a_len+1, length(x)*10); % can not reduce or expand more 
                                            % than 10 times each axis
@@ -208,8 +208,14 @@ if a_nonmonotonic
         else toeval=[ str_idx{j} ]; end
       end
       a_signal =eval([ 'a_signal('  toeval ')' ]);
-      a_error  =eval([ 'a_error('   toeval ')' ]);
-      a_monitor=eval([ 'a_monitor(' toeval ')' ]);
+      if length(a_error) > 1, 
+          try a_error  =eval([ 'a_error('   toeval ')' ]); 
+          catch a_error=[]; end
+      else a_error=[]; end
+      if length(a_monitor) > 1, 
+          try a_monitor=eval([ 'a_monitor(' toeval ')' ]); 
+          catch a_monitor=[]; end
+      else a_monitor=[]; end
     end
   end
 end
