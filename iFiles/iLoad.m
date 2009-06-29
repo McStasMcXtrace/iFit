@@ -312,7 +312,7 @@ function loaders = iLoad_loader_auto(file)
   if fid == -1
     error([ 'Could not open file ' file ' for reading. Check existence/permissions.' ]);
   end
-  file_start = fread(fid, 10000, 'uint8=>char')';
+  file_start = fread(fid, 1000, 'uint8=>char')';
   fclose(fid);
   % loop to test each format for patterns
   formats = loaders;
@@ -328,8 +328,8 @@ function loaders = iLoad_loader_auto(file)
     if ~isstruct(loader), break; end
 
     if exist(loader.method)
-      if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9 ... 
-        & strcmp(loader.method, 'looktxt') 
+      if strcmp(loader.method, 'looktxt') && ...
+              length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9
         patterns_found  = 0;
         continue;  % does not use looktxt for binary data files
       end
