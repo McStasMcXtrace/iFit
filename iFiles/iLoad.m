@@ -190,9 +190,10 @@ function [data, loader] = iLoad_import(filename, loader)
     loaders_count=0;
     for index=1:length(formats)
       this_loader = formats{index};
-      if ~isempty(strfind(this_loader.name, loader)) | ~isempty(strfind(this_loader.method, loader))
+      if ~isempty(strfind(this_loader.name, loader)) || ~isempty(strfind(this_loader.method, loader))
         loaders_count = loaders_count+1;
         loaders{loaders_count} = this_loader;
+        this_loader.name
       end
     end
     if ~isempty(loaders) loader = loaders; end
@@ -207,7 +208,7 @@ function [data, loader] = iLoad_import(filename, loader)
       try
       data = iLoad_import(filename, this_loader);
       catch
-      fprintf(1, 'Failed to import file %s with method %s (%s). Ignoring.\n', filename, this_loader.name, this_loader.method);
+      fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', filename, this_loader.name, this_loader.method);
       data = [];
       end
       if ~isempty(data)
@@ -222,12 +223,13 @@ function [data, loader] = iLoad_import(filename, loader)
     loader = loader{1};
   end
 
-  % handle single char loaders
+  % handle single char loaders (IMPORT takes place HERE)
   if ischar(loader)
     tmp=loader; clear loader;
     loader.method = tmp; loader.name=tmp; loader.options='';
   end
   if isempty(loader.method), return; end
+  fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
   if isempty(loader.options)
     data = feval(loader.method, filename);
   elseif iscell(loader.options)

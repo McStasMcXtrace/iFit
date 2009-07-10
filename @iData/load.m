@@ -28,7 +28,7 @@ function out = load(a, varargin)
 % output: d: single object or array (iData)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -58,8 +58,8 @@ for i=1:length(files)
   if ~isfield(loaders{i}, 'postprocess')
     loaders{i}.postprocess='';
   end
-  if ~isempty(loaders{i}.postprocess)
-    % removes warnings during interp
+  if exist(loaders{i}.postprocess)
+    % removes warnings
     try
       warn.set = warning('off','iData:setaxis');
       warn.get = warning('off','iData:getaxis');
@@ -69,13 +69,15 @@ for i=1:length(files)
     end
     % apply post-load routine: this may generate more data sets
     this_iData = feval(loaders{i}.postprocess, this_iData);
-    % reset warnings during interp
+    % reset warnings
     try
       warning(warn.set);
       warning(warn.get);
     catch
       warning(warn);
     end
+  elseif ~isempty(loaders{i}.postprocess)
+    iData_private_warning(mfilename,['Can not find post-process function ' loaders{i}.postprocess ' for data format ' loaders{i}.name ]);
   end
   out = [ out this_iData ];
 end %for i=1:length(files)

@@ -9,7 +9,8 @@
 %    and --metadata options as necessary
 % Return: a single structure or a cell of structures
 %    If the structure can not be evaluated, the raw Matlab script is returned.
-% Example: looktxt -c -s PARAM -s DATA filename
+% Example:   looktxt -c -s PARAM -s DATA filename
+% Usual options are: --fast --fortran --binary --force --catenate --comment=NULL
 %
 % Useful options when used from Matlab:
 % --binary   or -b    Stores numerical matrices into an additional binary
@@ -28,7 +29,7 @@
 % --makerows=NAME     All fields matching NAME are transformed into row vectors
 % List of all options can be obtained using: looktxt --help
 %
-% looktxt  version 1.0.4 (5 Nov 2008) by Farhi E. [farhi@ill.fr]
+% looktxt  version 1.0.7 (10 July 2009) by Farhi E. [farhi@ill.fr]
 
 function data = looktxt(args)
 data = [];
@@ -49,12 +50,17 @@ end
 exec = [ looktxt_exe ' --outfile=' file ' ' args ];
 disp(exec);
 [s,w] = system(exec);
+  
 % check if result has been generated, else try again with local executable
 if ~exist([ file '.m' ],'file')
   exec = [ fileparts(which('looktxt')) filesep looktxt_exe ' --outfile=' file ' ' args ];
   [s,w] = system(exec);
 end
 if ~exist([ file '.m' ],'file') & s ~= 0  % executable not found
+  if isempty(args) || strfind(args, '--help') || strfind(args, '--version') 
+    help looktxt
+    return
+  end
   warning('looktxt: can not find executable. Attempting to re-install/compile looktxt');
   cc     = getenv('CC');     
   if isempty(cc),
