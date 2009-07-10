@@ -2,7 +2,7 @@
 *
 *                     Program looktxt.c
 *
-* looktxt version Looktxt 1.0.6 (29 May 2009) by Farhi E. [farhi@ill.fr]
+* looktxt version Looktxt 1.0.7 (10 July 2009) by Farhi E. [farhi@ill.fr]
 *
 * Usage: looktxt [options] file1 file2 ...
 * Action: Search and export numerics in a text/ascii file.
@@ -13,6 +13,8 @@
 *   In order to sort your data, you may specify as many --section
 *   and --metadata options as necessary
 * Example: looktxt -f Matlab -c -s PARAM -s DATA filename
+* Usual options are: --fast --fortran --binary --force --catenate --comment=NULL
+*
 * Main Options are:
 * --binary   or -b    Stores numerical matrices into an additional binary
 *                     float file, which makes further import much faster.
@@ -51,7 +53,6 @@
 * --silent            Silent mode. Only displays errors/warnings
 * --comment=COM       Sets comment characters (ignore line if at start)
 * --eol=EOL           Sets end-of-line characters
-* --point=PNT         Sets numerical point characters
 * --separator=SEP     Sets word seperators (handled as spaces)
 *
 * Available output formats are (default is Matlab):
@@ -75,15 +76,16 @@
 * 1.03  (21/11/07) Fixed redundant numbered Sections (e.g. SPEC files)
 * 1.05  (12/12/08) Solved memleaks with valgrind
 * 1.06  (29/05/09) GCC-4 support (libc/vfprintf is not suited for us)
+* 1.0.7 (09/07/09) fixed metadata export, speed-up by factor 2.
 *
 *****************************************************************************/
 
 /* Identification ********************************************************* */
 
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
-#define DATE    "29 May 2009"
+#define DATE    "9 July 2009"
 #ifndef VERSION
-#define VERSION "Looktxt 1.0.6"
+#define VERSION "Looktxt 1.0.7"
 #endif
 
 #ifdef __dest_os
@@ -130,13 +132,6 @@
 
 /* Declarations *********************************************************** */
 
-#define Cnumber    "0123456789"
-#define CalphaPure "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-#define Calpha     " !\"#$&'()*+,-./:;<=>?@[\\]^_`{|}~" CalphaPure Cnumber
-#define Cexp       "eE"
-#define Csign      "+-"
-
-#define Cpoint     "."
 #define Ceol       "\n\f"
 #define Ccomment   "#%"
 #define Cseparator "\t\v\r,; $()[]{}=|<>&\"/\\"
@@ -309,11 +304,6 @@ struct option_struct {
   char *separator ; /* separators to use */
   char *comment   ; /* comments start char (to end of line) */
   char *eol       ; /* end of line char */
-  char *point     ; /* point character (e.g. , or . ) */
-  char *number    ;
-  char *alpha     ;
-  char *exp       ;
-  char *sign      ;
   char *openmode  ;
   char *option_list;
   char *names_root;
@@ -647,14 +637,13 @@ char *str_valid(char *string, int n)
   char *valid;
   char *tmp1;
   char *tmp2;
-  const char name_char[] = CalphaPure "_" Cnumber;
 
   if (!string || !strlen(string)) return(NULL);
   if (!n || n > strlen(string)) n=strlen(string);
   tmp2 = tmp1 = str_dup_n(string, n);
 
 /* find first alpha char */
-  while (tmp2[0] && !strchr(CalphaPure, tmp2[0])) tmp2++;
+  while (tmp2[0] && !isalpha(tmp2[0])) tmp2++;
 
   if (!tmp2[0] || tmp2 >= tmp1+strlen(tmp1)) {
     str_free(tmp1);
@@ -663,7 +652,7 @@ char *str_valid(char *string, int n)
 
 /* convert non valid following chars in name into _ */
   for (i=0; i < strlen(tmp2); i++) {
-    if ( !strchr(name_char, tmp2[i]) ) tmp2[i] = '_';
+    if (!isalnum(tmp2[i]) && tmp2[i] != '_') tmp2[i] = '_';
   }
   valid = str_dup((tmp2 && tmp2[0]) ? tmp2 : "Name");
   tmp1=str_free(tmp1);
@@ -682,29 +671,24 @@ char *str_valid_struct(char *string, char char_struct)
   char *valid;
   char *tmp1;
   char *tmp2;
-  char name_char[256];
-  char str_struct[] = ".";
-
   if (!string || !strlen(string)) return(str_dup(""));
 
-  strcpy(name_char, CalphaPure "_" Cnumber);
-  if (char_struct > ' ') {
-    str_struct[0] = char_struct;
-    strcat(name_char, str_struct);
-  }
   tmp2 = tmp1 = str_dup(string);
 
 /* find first alpha char */
-  while (tmp2[0] && !strchr(CalphaPure, tmp2[0])) tmp2++;
+  while (tmp2[0] && !isalpha(tmp2[0])) tmp2++;
 
 /* convert non valid following chars in name into _ */
   for (i=0; i < strlen(tmp2); i++) {
-    if ( !strchr(name_char, tmp2[i]) ) tmp2[i] = '_';
+    if (!isalnum(tmp2[i]) && tmp2[i] != '_') tmp2[i] = '_';
+    else if (char_struct && tmp2[i] == char_struct) tmp2[i] = '_';
   }
 
   valid = str_dup((tmp2 && tmp2[0]) ? tmp2 : "Name");
   tmp1=str_free(tmp1);
-  if (char_struct > ' ') {
+  if (char_struct) {
+    char str_struct[]=".";
+    str_struct[0] = char_struct;
     ret = str_cat(valid, str_struct, NULL);
     valid=str_free(valid);
   } else ret=valid;
@@ -796,24 +780,23 @@ char *str_lastword(char *string)
 {
   char *reverted;
   char *p_end, *p_start;
-  char  name_char[] = CalphaPure "_" Cnumber;
   char *word;
   char *tmp0, *tmp1;
 
   if (!string || !strlen(string)) return(NULL);
   reverted = str_reverse(string);
   /* find the first alpha/digit/underscore character */
-  p_end = strpbrk(reverted, name_char);
+  p_end = strpbrk(reverted, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_");
   if (!p_end) { str_free(reverted); return(NULL); }
   p_start = p_end;
   for (p_start = p_end;
-       (p_start < reverted+strlen(reverted)) && ischr(*p_start, name_char);
+       (p_start < reverted+strlen(reverted)) && (isalnum(*p_start) || *p_start=='_');
        p_start++);
 
   tmp0 = str_dup_n(p_end, p_start - p_end);
   tmp1 = str_reverse(tmp0);
   /* now check that name does not start with  "_" Cnumber */
-  for (p_start=tmp1; ischr(*p_start, "_" Cnumber) && p_start<tmp1+strlen(tmp1); p_start++);
+  for (p_start=tmp1; (isdigit(*p_start) || *p_start=='_') && p_start<tmp1+strlen(tmp1); p_start++);
   word = str_dup(p_start);
 
   reverted=str_free(reverted); tmp0=str_free(tmp0); tmp1=str_free(tmp1);
@@ -1605,11 +1588,6 @@ struct option_struct options_init(char *pgname)
   options.separator  = str_dup(Cseparator);
   options.comment    = str_dup(Ccomment);
   options.eol        = str_dup(Ceol);
-  options.point      = str_dup(Cpoint);
-  options.number     = str_dup(Cnumber);
-  options.alpha      = str_dup(Calpha);
-  options.exp        = str_dup(Cexp);
-  options.sign       = str_dup(Csign);
   options.option_list= NULL;
   options.format     = format_init(Global_Formats,
     getenv("LOOKTXT_FORMAT") ? getenv("LOOKTXT_FORMAT") : LOOKTXT_FORMAT);
@@ -1630,14 +1608,9 @@ struct option_struct options_free(struct option_struct options)
   options.separator  =str_free(options.separator);
   options.comment    =str_free(options.comment);
   options.eol        =str_free(options.eol);
-  options.point      =str_free(options.point);
   options.option_list=str_free(options.option_list);
   options.pgname     =str_free(options.pgname);
   options.openmode   =str_free(options.openmode);
-  options.number     =str_free(options.number);
-  options.exp        =str_free(options.exp);
-  options.sign       =str_free(options.sign);
-  options.alpha      =str_free(options.alpha);
   return(options);
 } /* options_free*/
 
@@ -1968,8 +1941,8 @@ void table_add(struct table_struct *table, struct data_struct data)
     table->nalloc = table->length+ALLOC_BLOCK;
     p = (void *)realloc(table->List, (table->nalloc)*sizeof(struct data_struct));
     if(p == NULL) {
-      print_stderr( "Error: Memory exhausted during re-allocation of size %ld [looktxt:table_add:%d]\n", 
-        (table->nalloc)*sizeof(struct data_struct),__LINE__);
+      print_stderr( "Error: Memory exhausted during re-allocation of table %s size %ld [looktxt:table_add:%d]\n", 
+        table->Name, (table->nalloc)*sizeof(struct data_struct),__LINE__);
       exit(EXIT_FAILURE);
     }
     table->List   = (struct data_struct *)p;
@@ -1991,9 +1964,9 @@ void table_print(struct table_struct table)
   if (table.List && table.length) {
     long i;
     for (i=0; i < table.length; i++)
-      print_stderr("Table[%ld] %s.%s.%s = [%ld x %ld]\n",
+      print_stderr("Table[%ld] %s.%s.%s = [%ld x %ld] '%s'\n",
         (long)table.List[i].index, table.Name, table.List[i].Section, table.List[i].Name,
-        table.List[i].rows, table.List[i].columns);
+        table.List[i].rows, table.List[i].columns, table.List[i].Header);
   }
 } /* table_print */
 
@@ -2033,7 +2006,8 @@ void print_usage(char *pgmname, struct option_struct options)
   "     ROOT.SECTION.FIELD = VALUE\n"
   "   In order to sort your data, you may specify as many --section\n"
   "   and --metadata options as necessary\n"
-  "Example: %s -f Matlab -c -s PARAM -s DATA filename\n", pgmname);
+  "Example: %s -f Matlab -c -s PARAM -s DATA filename\n"
+  "Usual options are: --fast --fortran --binary --force --catenate --comment=NULL\n\n", pgmname);
   printf(
 "Main Options are:\n"
 "--binary   or -b    Stores numerical matrices into an additional binary\n"
@@ -2074,7 +2048,6 @@ void print_usage(char *pgmname, struct option_struct options)
 "--silent            Silent mode. Only displays errors/warnings\n"
 "--comment=COM       Sets comment characters (ignore line if at start)\n"
 "--eol=EOL           Sets end-of-line characters\n"
-"--point=PNT         Sets numerical point characters\n"
 "--separator=SEP     Sets word seperators (handled as spaces)\n"
 
 "\n"
@@ -2139,6 +2112,9 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
     char c;
 
     startcmtpos = file.Size;
+    
+    if (options.verbose >= 2)
+      printf("VERBOSE[file_scan]: Scanning file %s [0-%ld] ...\n", file.Source, file.Size);
 
     do {
       c = getc(file.SourceHandle);
@@ -2150,18 +2126,25 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
         possiblecmt = 0;
         need        = 0; /* generates end of field : end of line */
       }
-      is =   Bnumber    * ischr(c, options.number   )
-        + Balpha     * ischr(c, options.alpha    )
-        + Bpoint     * ischr(c, options.point    )
-        + Beol       * ischr(c, options.eol      )
-        + Bexp       *(ischr(c, options.exp      ) && possiblenum)
+      is =   Bnumber    * (isdigit(c) != 0)
+        + Balpha     * (isprint(c) != 0)
+        + Bpoint     * (c == '.')
+        + Beol       * (c == '\n' || c == '\f')
+        + Bexp       * (tolower(c) == 'e' && possiblenum)
         /* must be in a number field */
-        + Bsign      *(ischr(c, options.sign     ) && (last_is & (Bexp | Bseparator | Beol)))
+        + Bsign      *((c == '-' || c == '+') && (last_is & (Bexp | Bseparator | Beol)))
         /* must be after exponent or not in
         number because starting number */
         + Bcomment   * (ischr(c, options.comment  ) && strlen(options.comment))
         /* comment starts if we are waiting for it */
         + Bseparator * ischr(c, options.separator);
+
+      /* special case to handle files written by fortran routines */
+      if (options.fortran && (c == '-' || c == '+') && (last_is & (Bnumber | Bpoint))) {
+        last_is |= Bseparator;  /* [NUM|NUM.] [+|-] NUM -> 2 fortran numbers are touching each other */
+        print_stderr("Warning: File '%s' c='%c' [num pos=%li] two fortran numbers are touching each other\n",
+          file.Source, c, startnumpos);
+      }
 
       if (is & Bseparator) c=' ';
       if (!(possiblecmt) && (is & Bcomment)) { /* activate new comment field */
@@ -2361,7 +2344,7 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
         last_seppos = pos;
       }
 
-      if (is & Bseparator) last_seppos = pos;
+      if (is & Bseparator) { last_seppos = pos; }
       pos++;
 
     } while (c != EOF); /* end do */
@@ -2382,14 +2365,14 @@ int file_write_tag(struct file_struct file, struct option_struct options,
 
   if (!format || !name || !value) return(0);
 
-  if (options.use_struct> ' ') str_struct[0] = options.use_struct;
+  if (options.use_struct) str_struct[0] = options.use_struct;
   if (section && strlen(section)) {
-    if (options.use_struct > ' ' && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
+    if (options.use_struct && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
       struct_section = str_cat(str_struct, section, NULL);
     else struct_section = str_dup(section);
   } else struct_section = str_dup(strstr(options.format.Name,"IDL") ? ROOT_SECTION : "");
   if (name && strlen(name)) {
-    if (options.use_struct > ' ') struct_name = str_cat(str_struct, name, NULL);
+    if (options.use_struct) struct_name = str_cat(str_struct, name, NULL);
     else struct_name = str_dup(name);
   } else struct_name = str_dup("");
 
@@ -2514,9 +2497,9 @@ int file_write_section(struct file_struct file, struct option_struct options,
   if (!format          || !section || !strlen(section)
    || (!strstr(options.format.Name,"IDL") && !strcmp(section, ROOT_SECTION))) return(0);
 
-  if (options.use_struct> ' ') str_struct[0] = options.use_struct;
+  if (options.use_struct) str_struct[0] = options.use_struct;
   if (section && strlen(section)) {
-    if (options.use_struct > ' ' && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
+    if (options.use_struct && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
       struct_section = str_cat(str_struct, section, NULL);
     else struct_section = str_dup(section);
   } else struct_section = str_dup(strstr(options.format.Name,"IDL") ? ROOT_SECTION : "");
@@ -2554,16 +2537,16 @@ int file_write_field_data(struct file_struct file,
     printf("\nDEBUG[file_write_field_data]: file '%s': Writing Part Data %s begin/end\n", file.TargetTxt, field.Name);
   }
 
-  if (options.use_struct> ' ') str_struct[0] = options.use_struct;
+  if (options.use_struct) str_struct[0] = options.use_struct;
 
   if (section && strlen(section)) {
-    if (options.use_struct > ' ' && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
+    if (options.use_struct && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
       struct_section = str_cat(str_struct, section, NULL);
     else struct_section = str_dup(section);
   } else struct_section = str_dup(strstr(options.format.Name,"IDL") ? ROOT_SECTION : "");
 
   if (name && strlen(name)) {
-    if (options.use_struct > ' ' && !strstr(options.format.Name,"IDL")) struct_name = str_cat(str_struct, name, NULL);
+    if (options.use_struct && !strstr(options.format.Name,"IDL")) struct_name = str_cat(str_struct, name, NULL);
     else struct_name = str_dup(name);
   } else struct_name = str_dup("Name");
 
@@ -2618,18 +2601,20 @@ int file_write_field_array(struct file_struct file,
          "(permissions, disk full, broken link ?). Using TXT output [looktxt:file_write_field_array:%d]\n",
          field.Name, file.TargetBin,__LINE__);
     } else {
-      /* get eof Bin, store pos */
-      end = ftell(file.BinHandle)-1;
-      /* write reference (TargetBin, start,end, length) in TxtHandle */
+      if (format) {
+        /* get eof Bin, store pos */
+        end = ftell(file.BinHandle)-1;
+        /* write reference (TargetBin, start,end, length) in TxtHandle */
 
-      length=end-start+1;
-      pfprintf(file.TxtHandle, format, "slllll",
-        file.TargetBin, /* 1 FIL */
-        start,          /* 2 BEG */
-        end,            /* 3 END */
-        length,         /* 4 LEN */
-        field.rows,     /* 5 ROW */
-        field.columns); /* 6 COL */
+        length=end-start+1;
+        pfprintf(file.TxtHandle, format, "slllll",
+          file.TargetBin, /* 1 FIL */
+          start,          /* 2 BEG */
+          end,            /* 3 END */
+          length,         /* 4 LEN */
+          field.rows,     /* 5 ROW */
+          field.columns); /* 6 COL */
+      }
       flag_written=1;
     }
   }
@@ -2672,13 +2657,18 @@ struct write_struct file_write_getsections(struct file_struct file,
                        struct option_struct options,
                        struct table_struct *ptable)
 {
-  int     index;  /* index of current field from table */
-  int     length;
+  long    index;  /* index of current field from table */
+  long    length;
   char   *section_current=NULL;  /* current section full name */
   char   *last_valid_name=NULL;
   struct strlist_struct section_names;  /* name of found sections */
   struct strlist_struct section_fields; /* fields registered for each found section (in the same order as section_names */
   struct write_struct found_sections;
+  
+  struct table_struct metatable;  /* table for metadata */
+  section_current = str_cat("MetaData_",file.RootName, NULL);
+  metatable       = table_init(section_current);
+  section_current = str_free(section_current);
 
   /* create section field names arrays */
   section_current= str_dup(ROOT_SECTION);  /* Init default section (root) */
@@ -2689,7 +2679,7 @@ struct write_struct file_write_getsections(struct file_struct file,
   strlist_add(&section_fields, " "); /* no filed stored yet */
 
   if (options.verbose >= 2)
-      printf("VERBOSE[file_write_getsections]:  First pass [0-%ld] ...\n", ptable->length-1);
+      printf("VERBOSE[file_write_getsections]:  Analyze header, sections and metadata [0-%ld] ...\n", ptable->length-1);
 
   length = ptable->length;
 
@@ -2747,6 +2737,7 @@ struct write_struct file_write_getsections(struct file_struct file,
     /* look for custom MetaData fields */
     /* if found, add a new entry in table with table_add(&table, field); */
     /* search metadata names in header if any. Extract them into new table entries */
+      
     for (index_sec=0; index_sec < options.metadata.length; index_sec++)
     { /* scan all registered sections */
       char *this_metadata=NULL;
@@ -2793,7 +2784,8 @@ struct write_struct file_write_getsections(struct file_struct file,
               if (options.verbose >= 3) {
                 data_print(data);
               }
-              table_add(ptable, data); /* duplicated field */
+              /* this table append may cause seg fault */
+              table_add(&metatable, data); /* duplicated field */
 
               /* add the MetaData section */
               if (section_index<0) {
@@ -2803,7 +2795,6 @@ struct write_struct file_write_getsections(struct file_struct file,
                   if (section_index<0 && options.verbose >= 3)
                     printf("\nDEBUG[file_write_target]: Could not create MetaData list to register item %s\n", this_metadata);
               }
-
             }
           } else { offset = field->c_end; }
           metadata_line=str_free(metadata_line);
@@ -2869,6 +2860,15 @@ struct write_struct file_write_getsections(struct file_struct file,
 
   found_sections.section_names = section_names;
   found_sections.section_fields= section_fields;
+  
+  /* now catenate any metadata fields to the current ptable and free it */
+  for (index=0; index < metatable.length; index++) {
+    table_add(ptable, metatable.List[index]);
+  }
+  for (index=metatable.length; index<metatable.nalloc; data_free(metatable.List[index++]));
+  metatable.Name=str_free(metatable.Name);
+  metatable.length=metatable.nalloc=0;
+  metatable.List=(struct data_struct *)memfree(metatable.List);
 
   return(found_sections);
 } /* file_write_getsections */
@@ -2923,7 +2923,7 @@ long file_write_target(struct file_struct file,
   section_current_valid = str_valid_struct(section_current, options.use_struct);
 
   if (options.verbose >= 2)
-      printf("\nVERBOSE[file_write_target]: Second pass [0-%ld]\n", ptable->length-1);
+      printf("\nVERBOSE[file_write_target]: Write target file(s) [0-%ld]\n", ptable->length-1);
 
   /* SECOND PASS: read all table elements */
 
@@ -3066,7 +3066,7 @@ long file_write_target(struct file_struct file,
       char *section=NULL;
       char str_struct[]=".";
 
-      if (options.use_struct > ' ') str_struct[0] = options.use_struct;
+      if (options.use_struct) str_struct[0] = options.use_struct;
       ptable->List[index].rows    = rows;
       ptable->List[index].columns = columns;
       ptable->List[index].Name_valid =
@@ -3107,23 +3107,39 @@ long file_write_target(struct file_struct file,
         /* special case for IDL */
         if (strstr(options.format.Name,"IDL")) fprintf(file.TxtHandle, "[ ");
 
-
         /* writing base field */
-        ret += file_write_field_array(file, options, ptable->List[index],
-            options.format.BinReference);
-
-        /* write catenated fields (same # columns) */
-        if (options.catenate && to_catenate.length) {
+        if (!options.catenate || !to_catenate.length)
+          ret += file_write_field_array(file, options, ptable->List[index],
+              options.format.BinReference);
+        else { /* write catenated fields (same # columns) */
+          struct data_struct bin_field = ptable->List[index];
+          long start=ftell(file.BinHandle); /* file opened previously */
+        
+          ret += file_write_field_array(file, options, ptable->List[index],
+              NULL); /* do not write bin reference */
+          
           for (index_field=0; index_field < to_catenate.length; index_field++) {
-            /* write catenated field data: rows x columns */
+            /* write catenated field data: rows x columns (but do not write bin reference yet) */
             struct  data_struct *field=(struct  data_struct *)(to_catenate.List[index_field]);
             if (strstr(options.format.Name,"IDL")) fprintf(file.TxtHandle, ", $\n");
             file_write_field_array(file, options, *field,
-              options.format.BinReference);
+              NULL);  /* do not write the bin part */
             ptable->List[index].rows += field->rows;
+            bin_field.rows           += field->rows;
             field->rows=0; /* unactivate */
           }
-        }
+          /* now write the bin reference catenated part (only once) */
+          long end = ftell(file.BinHandle)-1;
+          /* write reference (TargetBin, start,end, length) in TxtHandle */
+          long length=end-start+1;
+          pfprintf(file.TxtHandle, options.format.BinReference, "slllll",
+            file.TargetBin, /* 1 FIL */
+            start,          /* 2 BEG */
+            end,            /* 3 END */
+            length,         /* 4 LEN */
+            bin_field.rows,     /* 5 ROW */
+            bin_field.columns); /* 6 COL */
+        } /* end catenated fields */
         /* end Data.Section part */
 
         /* special case for IDL */
@@ -3203,7 +3219,7 @@ int parse_files(struct option_struct options, int argc, char *argv[])
       if (options.verbose >= 2) printf("VERBOSE[parse_files]:       file '%s': found %ld numerical field%s\n", file.Source, table.length, table.length > 1 ? "s" : "");
       if (table.nalloc && table.length) { /* if some data structures where extracted */
         struct write_struct found_sections = file_write_getsections(file, options, &table);
-        /* table_print(table); */
+        /* if (options.verbose >= 3) table_print(table); */
         long ret=file_write_target(file, options, &table, found_sections.section_names, found_sections.section_fields);
         /* Free section structures */
         found_sections.section_names =strlist_free(found_sections.section_names);
@@ -3288,10 +3304,7 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       options.force      = 1;
     else if(!strcmp("--fast",      argv[i]))
       options.fast       = 1;
-    else if(!strcmp("--table",     argv[i])) {
-      options.out_table  = 1;
-      print_stderr( "Warning: Table export is not functional yet.\n");
-    } else if(!strcmp("--verbose",   argv[i]) || !strcmp("-v",   argv[i]))
+    else if(!strcmp("--verbose",   argv[i]) || !strcmp("-v",   argv[i]))
       options.verbose    = 2;
     else if(!strcmp("--debug",     argv[i]))
       options.verbose    = 3;
@@ -3338,18 +3351,6 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
         options.eol = str_dup(argv[++i]);
       else
         options.eol = str_dup("\n");
-    } else if(!strncmp("--point=", argv[i], 8)) {
-      str_free(options.point);
-      if (strcmp(&argv[i][8],"NULL"))
-        options.point = str_dup(&argv[i][8]);
-      else
-        options.point = str_dup("");
-    } else if(!strcmp("--point",   argv[i]) && (i + 1) <= argc) {
-      str_free(options.point);
-      if (strcmp(argv[++i],"NULL"))
-        options.point = str_dup(argv[++i]);
-      else
-        options.point = str_dup(".");
     } else if(!strncmp("--separator=", argv[i], 12)) {
       str_free(options.separator);
       if (strcmp(&argv[i][12],"NULL"))
@@ -3430,7 +3431,7 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       options.use_struct = '.';
     }
   /* IDL does not support structures fully. If used, replace by _ */
-  if (strstr(options.format.Name, "IDL") && options.use_struct > ' ') {
+  if (strstr(options.format.Name, "IDL") && options.use_struct) {
     if (options.verbose >= 2)
     print_stderr( "Warning: Format %s does not support fully structures. Now unsetting --struct [looktxt:options_parse:%d]\n", 
       options.format.Name,__LINE__);
@@ -3526,7 +3527,6 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     tmp7,
     " --comment=\"",     strlen(options.comment) ? options.comment : "NULL",
     "\" --eol=\"",       strlen(tmp5) ? tmp5 : "NULL",
-    "\" --point=\"",     strlen(options.point) ? options.point : "NULL",
     "\" --separator=\"", strlen(tmp6) ? tmp6 : "NULL",
     "\" --format=\"",    options.format.Name, "\"",
     tmp0, /* nelements */

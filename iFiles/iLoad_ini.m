@@ -66,20 +66,20 @@ function config = iLoad_ini
     
     format7.name       ='SPEC';
     format7.patterns   ={'#F','#D','#S'};
-    format7.options    ='--fast --binary --headers --metadata="#S " --comment= ';
+    format7.options    ='--fast --binary --headers --metadata="#S " --comment=NULL';
     format7.method     ='looktxt';
     format7.extension  ='spc';
     
     format8.name       ='McStas Scan output';
     format8.patterns   ={'# Numpoints:','# variables:','# title: Scan of'};
-    format8.options    =['--fast --binary --headers --comment= --metadata=variables  ' ...
+    format8.options    =['--fast --binary --headers --comment=NULL --metadata=variables  ' ...
                          '--metadata=xlabel --metadata=ylabel'];
     format8.method     ='looktxt';
     format8.postprocess='load_mcstas_scan';
     
     format9.name       ='McStas 2D monitor';
     format9.patterns   ={'Format: McStas with text headers file.','# type: array_2d'};
-    format9.options    = ['--fast --binary --headers --comment= --metadata=variables  ' ...
+    format9.options    = ['--fast --binary --headers --comment=NULL --metadata=variables  ' ...
 		    '--metadata=Errors --metadata=Events --metadata=xlabel ' ...
 		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits'];
     format9.method     ='looktxt';
@@ -87,34 +87,41 @@ function config = iLoad_ini
     
     format10.name       ='McStas 1D monitor';
     format10.patterns   ={'Format: McStas with text headers file.','# type: array_1d'};
-    format10.options    ='--fast --binary --headers --comment= --metadata=variables --metadata=xlabel --metadata=ylabel ';
+    format10.options    ='--fast --binary --headers --comment=NULL --metadata=variables --metadata=xlabel --metadata=ylabel ';
     format10.method     ='looktxt';
     format10.postprocess='load_mcstas_1d';
     
     format11.name       ='McStas sim file';
     format11.extension  ='sim';
     format11.patterns   ={'begin simulation','  Format: McStas'};
-    format11.options    ='--fast --binary --headers  --comment=';
+    format11.options    ='--fast --binary --headers  --comment=NULL';
     format11.method     ='looktxt';
     format11.postprocess='load_mcstas_sim';
     
-    format13.name       ='McStas Sqw table';
-    format13.patterns   ={'Sqw data file for Isotropic_Sqw'};
-    format13.options    ='--fast --binary  --headers';
+    format12.name       ='McStas Sqw table';
+    format12.patterns   ={'Sqw data file for Isotropic_Sqw'};
+    format12.options    ='--fast --binary  --headers --comment=NULL';
+    format12.method     ='looktxt';
+    format12.postprocess='load_mcstas_sqw';
+    format12.extension  ='sqw';
+    
+    format13.name       ='ISIS/SPE tof data';
+    format13.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL';
     format13.method     ='looktxt';
-    format13.postprocess='load_mcstas_sqw';
-    format13.extension  ='sqw';
+    format13.postprocess='load_ill_spe';
+    format13.patterns   ={'Phi Grid'};
+    format13.extension  ='spe';
     
     format14.name       ='INX tof data';
-    format14.options    ='--headers --fortran  --catenate --fast --binary';
+    format14.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL';
     format14.method     ='looktxt';
     format14.postprocess='load_ill_inx';
     format14.patterns   ={'INX'};
     format14.extension  ='inx';
-
+    
 % definition of configuration
     config.loaders =  { format1, format2, format3, format4, format5, format6, ...
-	       format7, format8, format9, format10, format11, format13, format14 };
+	       format7, format8, format9, format10, format11, format12, format13, format14 };
 	       
 	  config.UseSystemDialogs = 'no'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = 'default configuration';
