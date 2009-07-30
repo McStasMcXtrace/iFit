@@ -198,7 +198,7 @@ function [data, loader] = iLoad_import(filename, loader)
     end
     if ~isempty(loaders) loader = loaders; end
   end
-
+  
   % handle multiple loaders (cell or struct array)
   if (iscell(loader) | isstruct(loader)) & length(loader) > 1
     loader=loader(:);
@@ -314,7 +314,7 @@ function loaders = iLoad_loader_auto(file)
   if fid == -1
     error([ 'Could not open file ' file ' for reading. Check existence/permissions.' ]);
   end
-  file_start = fread(fid, 1000, 'uint8=>char')';
+  file_start = fread(fid, 10000, 'uint8=>char')';
   fclose(fid);
   % loop to test each format for patterns
   formats = loaders;
@@ -332,6 +332,7 @@ function loaders = iLoad_loader_auto(file)
     if exist(loader.method)
       if strcmp(loader.method, 'looktxt') && ...
               length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9
+        % fprintf(1,'iLoad: skip method %s as file %s is probably binary\n', loader.method, file);
         patterns_found  = 0;
         continue;  % does not use looktxt for binary data files
       end
@@ -344,6 +345,7 @@ function loaders = iLoad_loader_auto(file)
         if length(ext) && length(fext) 
           if isempty(strmatch(fext, ext, 'exact'))
             patterns_found  = 0;  % extension does not match
+            % fprintf(1,'iLoad: method %s file %s: extension does not match (%s) \n', loader.name, file, fext);
           end
         else
           patterns_found  = 1;    % no extension, no patterns: try loader anyway
@@ -353,6 +355,7 @@ function loaders = iLoad_loader_auto(file)
         for index_pat=1:length(loader.patterns(:))
           if isempty(strfind(file_start, loader.patterns{index_pat}))
             patterns_found=0;     % at least one pattern does not match
+            % fprintf(1,'iLoad: method %s file %s: at least one pattern does not match\n', loader.name, file);
             continue;
           end
         end % for patterns
