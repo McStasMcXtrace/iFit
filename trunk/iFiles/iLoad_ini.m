@@ -124,5 +124,5 @@ function config = iLoad_ini
 	       format7, format8, format9, format10, format11, format12, format13, format14 };
 	       
 	  config.UseSystemDialogs = 'no'; % no: use uigetfiles, else defaults to 'uigetfile'
-	  config.FileName         = 'default configuration';
+	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
     
