@@ -26,7 +26,7 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 %
 %  OPTIONS is a structure with settings for the simulated annealing, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fminkalman')
+%     o=fminkalman('defaults')
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -42,7 +42,7 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -54,6 +54,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxIter=5000;
   options.MaxFunEvals=50000;
   options.algorithm  = [ 'unscented Kalman filter optimizer (by Cao) [' mfilename ']' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end
@@ -78,6 +79,8 @@ options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 % calls the optimizer
 [pars, fval, exitflag, output]=ukfopt(fun,pars(:),options);
 output.options=options;
+
+% private function ------------------------------------------------------------
 
 function [x,e, istop, output]=ukfopt(h,x,options)
 %UKFOPT     Unconstrained optimization using the unscented Kalman filter

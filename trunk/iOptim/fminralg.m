@@ -20,7 +20,7 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%      o=optimset('fminralg')
+%      o=fminralg('defaults')
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -47,6 +47,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxIter=300;
   options.MaxFunEvals=5000;
   options.algorithm  = [ 'Shor r-algorithm (by Kuntsevich) [' mfilename ']' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end
@@ -94,6 +95,8 @@ if (exitflag < 0 & strcmp(options.Display,'notify')) | ...
   fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
     output.funcCount, fun, pars, fval);
 end
+
+% private function ------------------------------------------------------------
 
 function [x,f,options,k,message]=solvopt(x,fun,grad,options,func,gradc,OutputFcn, MaxFunEvals, FunValCheck)
 % Usage:

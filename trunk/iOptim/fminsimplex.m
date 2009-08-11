@@ -20,7 +20,7 @@ function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options, constrain
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fminsimplex')
+%     o=fminsimplex('defaults')
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min= vector of minimal values for parameters
@@ -36,7 +36,7 @@ function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options, constrain
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -48,6 +48,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxIter='200*numberOfVariables';
   options.MaxFunEvals='200*numberOfVariables';
   options.algorithm  = [ 'Nelder-Mead Simplex (by Kelley) [' mfilename ']' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end
