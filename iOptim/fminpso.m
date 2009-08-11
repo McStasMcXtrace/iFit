@@ -33,7 +33,7 @@ function [pars,fval,exitflag,output] = fminpso(fun, pars, options, constraints, 
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%     optimset('fminpso')
+%     o=fminpso('defaults')
 %   option.PopulationSize sets the number of particules in the swarm (20-40).
 %   option.SwarmC1 sets the local attractors strength (1-3)
 %   option.SwarmC2 sets the global attractor strength (1-3).
@@ -67,6 +67,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.SwarmC2=1.3;
   options.PopulationSize=25;
   options.algorithm  = [ 'Particle Swarm Optimization (by Donckels) [' mfilename ']' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end
@@ -134,6 +135,8 @@ if (exitflag & strcmp(options.Display,'notify')) | ...
   fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
     output.funcCount, fun, pars, fval);
 end
+
+% private function ------------------------------------------------------------
 
 function [X,FVAL,EXITFLAG,OUTPUT] = PSO(FUN,X0,LB,UB,OPTIONS,varargin)
 %PSO finds a minimum of a function of several variables using the particle swarm 

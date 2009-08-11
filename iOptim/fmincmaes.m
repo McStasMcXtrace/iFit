@@ -65,7 +65,7 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -79,6 +79,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxFunEvals   =Inf;
   options.PopulationSize=opt.PopSize;
   options.algorithm = [ 'Evolution Strategy with Covariance Matrix Adaptation (CMA-ES by Hansen) [' mfilename ']' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end
@@ -218,7 +219,7 @@ if (istop & strcmp(options.Display,'notify')) | ...
     output.funcCount, fun, pars, fval);
 end
 
-%------------------------------------------------------------------------------
+% private function ------------------------------------------------------------
 
 function [xmin, ...      % minimum search point of last iteration
 	  fmin, ...      % function value of xmin

@@ -31,7 +31,7 @@ function stop = fminplot(pars, optimValues, state)
   % handle figure
   h = findall(0, 'Tag', 'fminplot');
   if length(h) > 1, delete(h(2:end)); h=h(1); end
-  if isempty(h) & optimValues.iteration <=1
+  if isempty(h) & optimValues.iteration <=2
     h = figure('Tag','fminplot', 'Unit','pixels');
     tmp = get(h, 'Position'); tmp(3:4) = [500 400];
     set(h, 'Position', tmp);

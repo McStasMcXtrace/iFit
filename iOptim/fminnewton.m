@@ -20,7 +20,7 @@ function [pars,fval,exitflag,output] = fminnewton(fun, pars, options)
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fminnewton')
+%     o=fminnewton('defaults')
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -31,7 +31,7 @@ function [pars,fval,exitflag,output] = fminnewton(fun, pars, options)
 % Reference: W. Press, Numerical Recipes, Cambridge (1988)
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -43,6 +43,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxIter='20*numberOfVariables';
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'Steihaug Newton-CG-Trust (by Kelley) [' mfilename ']' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end

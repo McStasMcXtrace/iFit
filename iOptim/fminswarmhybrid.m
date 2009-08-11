@@ -62,7 +62,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -79,6 +79,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.SwarmW =0;
   options.PopulationSize=20;
   options.algorithm = [ 'Hybrid Particule Swarm Optimizer (by Leontitsis) [fminswarmhybrid]' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end
@@ -174,6 +175,8 @@ end
 % call the optimizer
 [pars,fval,exitflag,output] = hPSO(fun, pars, hoptions);
 output.options=options; output.constraints=constraints;
+
+% private function ------------------------------------------------------------
 
 function [x,fval,istop,output]=hPSO(fitnessfun,pars,options,varargin)
 %Syntax: [x,fval,exitflag,output]=hPSO(fitnessfun,nvars,options,varargin)

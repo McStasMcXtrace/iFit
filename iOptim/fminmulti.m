@@ -22,7 +22,7 @@ function [pars,fval,exitflag,output] = fminmulti(fun, pars, options, constraints
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fminmulti')
+%     o=fminmulti('defaults')
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -33,7 +33,7 @@ function [pars,fval,exitflag,output] = fminmulti(fun, pars, options, constraints
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -45,6 +45,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxIter=400;
   options.MaxFunEvals=2000;
   options.algorithm  = [ 'Multidirectional search (by Kelley) [' mfilename ']' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end
@@ -134,6 +135,7 @@ end
 output.options=options; output.constraints=constraints;
 
 % private function ------------------------------------------------------------
+
 function [pars,fval,istop,output]=mds(x0,f,options)
 %
 % Multidirectional search
