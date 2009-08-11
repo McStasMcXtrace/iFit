@@ -1,4 +1,4 @@
-Version: $Revision: 1.6 $  
+Version: $Revision: 1.7 $  
 
 All functions here are meant to minimize an objective scalar function (usually 
 down to zero). The general syntax is the same as the one of fminsearch, 
@@ -87,4 +87,6 @@ psa by Brecht Donckels, BIOMATH, brecht.donckels@ugent.be 2006
 sce by Brecht Donckels, BIOMATH, brecht.donckels@ugent.be 2006
   used in fminsce
   modified to use standard Matlab optimization fminsearch syntax and options
+LMFsolve by Miroslav Balda, balda AT cdm DOT cas DOT cz 2009
+  used in fminlm
   
