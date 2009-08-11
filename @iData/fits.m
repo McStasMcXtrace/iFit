@@ -23,9 +23,9 @@ function [pars,criteria,message,output] = fits(a, model, pars, options, constrai
 %   Maximum number of iterations allowed.
 % options.MaxFunEvals
 %   The maximum number of function evaluations allowed. 
-% options.algorithm
+% options.optimizer
 %   Optimization method. Default is 'fminsearch' (char/function handle)
-%   the syntax for calling the optimizer is e.g. algorithm(criteria,pars,options,constraints)
+%   the syntax for calling the optimizer is e.g. optimizer(criteria,pars,options,constraints)
 % options.criteria
 %   Minimization criteria. Default is 'least_square' (char/function handle)
 %   the syntax for evaluating the criteria is criteria(Signal, Error, Model)
@@ -63,7 +63,7 @@ function [pars,criteria,message,output] = fits(a, model, pars, options, constrai
 %         o=optimset('fminsearch'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o);
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, fminsearch, optimset, optimget
 
 % nested  functions: outfun_wrapper, eval_criteria
@@ -82,8 +82,8 @@ if isempty(options)
 end
 if ischar(options) | isa(options, 'function_handle')
   algo = options;
-  options           = optimset(algo);
-  options.algorithm = algo;
+  options           = feval(algo,'defaults');
+  options.optimizer = algo;
 end
 
 % handle input iData arrays
@@ -98,8 +98,8 @@ if length(a) > 1
 end
 
 % handle options
-if ~isfield(options, 'algorithm')
-  options.algorithm = @fminsearchOS;
+if ~isfield(options, 'optimizer')
+  options.optimizer = 'fminsearch';
 end
 if ~isfield(options, 'criteria')
   options.criteria  = @least_square;
@@ -137,6 +137,7 @@ else options.UserOutputFcn=''; end
 options.OutputFcn     = @outfun_wrapper;
 
 if ~isfield(options,'Display') options.Display=''; end
+if ~isfield(options,'algorithm') options.algorithm=options.optimizer; end
 if isempty(options.Display)    options.Display='notify'; end
 
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
@@ -146,10 +147,11 @@ constraints.parsNames      = info.Parameters;
 constraints.criteriaHistory= [];
 constraints.modelName      = info.Name;
 constraints.algorithm      = options.algorithm;
+constraints.optimizer      = options.optimizer;
 constraints.funcCounts     = 0;
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
-  disp([ '** Starting fit of ' a.Tag ' using model ' info.Name ]);
+  disp([ '** Starting fit of ' a.Tag ' using model ' info.Name ' with optimizer ' options.algorithm ]);
   disp(char(a))
   disp(  '** Minimization performed on parameters:');
   disp(info.Parameters(:)');
@@ -159,10 +161,10 @@ t0 = clock;
 
 % call minimizer
 try
-[pars_out,criteria,message,output] = feval(options.algorithm, ...
+[pars_out,criteria,message,output] = feval(options.optimizer, ...
     @(pars) eval_criteria(pars, model, options.criteria, a), pars, options, constraints);
 catch
-[pars_out,criteria,message,output] = feval(options.algorithm, ...
+[pars_out,criteria,message,output] = feval(options.optimizer, ...
     @(pars) eval_criteria(pars, model, options.criteria, a), pars, options);
 end
 
@@ -175,12 +177,12 @@ if ischar(message) | ~isfield(output, 'message')
 else
   output.message = [ '(' num2str(message) ') ' output.message ];
 end
-output.algorithm  = options.algorithm;
+output.optimizer  = options.optimizer;
 output.funcCounts = constraints.funcCounts;
 output.modelName  = constraints.modelName;
 output.modelInfo  = info;
 output.modelValue = ieval(a, model, pars);
-outout.pars       = pars;
+output.pars       = pars;
 output.parsNames  = constraints.parsNames;
 output.parsHistory= constraints.parsHistory;
 output.criteriaHistory=constraints.criteriaHistory;
@@ -230,6 +232,10 @@ end
     Error  = get(a,'Error');
     Model  = ieval(a, model, pars);
     Model  = get(Model, 'Signal');
+    m      = get(a,'Monitor'); m=real(m);
+    if not(all(m == 1) | all(m == 0)),
+      Signal = Signal./m; Error=Error./m; % per monitor
+    end
     
     % compute criteria
     c = feval(criteria, Signal(:), Error(:), Model(:));
@@ -248,14 +254,14 @@ end % fits end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function c=least_square(Signal, Error, Model)
 % weighted least square criteria, which is also the Chi square
-if all(Error == 0)
-  c = sum(abs(Signal-Model).^2); % raw least square
-else
-  index = find(Error);
-  c=(Signal(index)-Model(index))./Error(index);
-  c=abs(c);
-  c=sum(c.*c);                % Chi square
-end
+  if all(Error == 0)
+    c = sum(abs(Signal-Model).^2); % raw least square
+  else
+    index = find(Error);
+    c=(Signal(index)-Model(index))./Error(index);
+    c=abs(c);
+    c=sum(c.*c);                % Chi square
+  end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
