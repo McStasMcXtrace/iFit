@@ -31,7 +31,7 @@ function [pars,fval,exitflag,output] = fminsimpsa(fun, pars, options, constraint
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fminpso')
+%     o=fminsimpsa('defaults')
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min= vector of minimal values for parameters
@@ -61,6 +61,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.PopulationSize=5;
   options.nITER_INNER_LOOP=30;
   options.algorithm  = [ 'simplex/simulated annealing (by Donckels) [' mfilename ']' ];
+  options.optimizer = mfilename;
   options.TEMP_START=[];  % starting temperature (if none provided, an optimal one will be estimated)
   options.TEMP_END=1;     % end temperature
   options.COOL_RATE=10;   % small values (<1) means slow convergence,large values (>1) means fast convergence
@@ -136,6 +137,8 @@ if (exitflag & strcmp(options.Display,'notify')) | ...
   fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
     output.funcCount, fun, pars, fval);
 end
+
+% private function ------------------------------------------------------------
 
 function [X,FVAL,EXITFLAG,OUTPUT] = SIMPSA(FUN,X0,LB,UB,OPTIONS,varargin)
 %SIMPSA finds a minimum of a function of several variables using an algorithm 

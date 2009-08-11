@@ -56,7 +56,7 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 % Contrib:
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % this is a wrapper to fminswarmhybrid, without hybrid optimizer
@@ -66,6 +66,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Hybrid='none';
   options.TolX   =1e-12;
   options.algorithm = [ 'Particule Swarm Optimizer (by Leontitsis) [fminswarm]' ];
+  options.optimizer = mfilename;
   pars=options;
   return
 end

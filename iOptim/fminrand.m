@@ -20,7 +20,7 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fminrand')
+%     o=fminrand('defaults')
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -46,6 +46,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxIter=500;
   options.MaxFunEvals=5000;
   options.algorithm  = [ 'Adaptive Random Search (by Secchi) [' mfilename ']' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end
@@ -72,7 +73,7 @@ function [pars,fval,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.12 $  $Date: 2008-05-15 14:50:07 $
+%   $Revision: 1.13 $  $Date: 2009-08-11 15:24:26 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C

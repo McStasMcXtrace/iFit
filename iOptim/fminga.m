@@ -28,7 +28,7 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fminga')
+%     o=fminga('defaults')
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min= vector of minimal values for parameters
@@ -45,7 +45,7 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -58,6 +58,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxFunEvals=1000*100;
   options.PopulationSize=50;
   options.algorithm  = [ 'Genetic Algorithm (real coding by Ivakpour) [' mfilename ']' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end

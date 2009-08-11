@@ -50,6 +50,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Hybrid='none';
   options.TolX   =1e-12;
   options.algorithm = [ 'Particule Swarm Optimizer (by Leontitsis) [fminswarm]' ];
+  options.optimizer = mfilename;
   pars=options;
   return
 end

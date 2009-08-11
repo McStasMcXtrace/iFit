@@ -23,7 +23,7 @@ function [pars,fval,exitflag,output] = fmingradrand(fun, pars, options)
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
-%   optimset('fmingradrand')
+%     o=fmingradrand('defaults')
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fmingradrand(fun, pars, options)
 % Reference: Computer Methods in Applied Mechanics & Engg, Vol  19, (1979) 99
 % Contrib: Sheela V. Belur(sbelur@csc.com) 1998
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -47,6 +47,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.MaxIter=300;
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'Random Gradient (by Belur) [' mfilename ']' ];
+  options.optimizer = mfilename;
   pars = options;
   return
 end
