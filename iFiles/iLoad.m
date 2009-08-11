@@ -310,9 +310,9 @@ function loaders = iLoad_loader_auto(file)
   loaders = config.loaders;
     
   % read start of file
-  fid = fopen(file, 'r');
+  [fid,message] = fopen(file, 'r');
   if fid == -1
-    error([ 'Could not open file ' file ' for reading. Check existence/permissions.' ]);
+    error([ 'Could not open file ' file ' for reading. ' message '. Check existence/permissions.' ]);
   end
   file_start = fread(fid, 10000, 'uint8=>char')';
   fclose(fid);
