@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminlm(fun, pars, options)
 % Fletcher, R., Computer Journal 1970, 13, 317-322
 % Contrib: Miroslav Balda, balda AT cdm DOT cas DOT cz 2009
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -164,8 +164,7 @@ xf=0; rd=0; istop=0; cntfun=0;
     %%%%%%%%%%%%%%%%%%%%%%%%
 
 x  = xc(:);
-lx = length(x);
-FUN
+lx = length(x);
 r  = feval(FUN,x);             % Residuals at starting point
 cntfun=cntfun+1;
 %~~~~~~~~~~~~~~~~~

@@ -62,7 +62,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options,constr
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -224,7 +224,7 @@ elseif size(options.space,1)~=nvars
 end
 
 if size(options.maxv,1)==1
-    options.maxv=maxv*ones(nvars,1);
+    options.maxv=options.maxv*ones(nvars,1);
 elseif size(options.maxv,1)~=nvars
     error('The rows of options.maxv are not equal to nvars.');
 end
