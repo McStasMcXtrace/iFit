@@ -1,7 +1,8 @@
 function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 % [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINRALG(FUN,PARS,[OPTIONS]) Shor's r-algorithm minimization
 %
-% This minimization method uses the Shor's r-algorithm method.
+% This minimization method uses the Shor's r-algorithm method, and only works with
+% more than one parameter to optimize.
 % 
 % Calling:
 %   fminralg(fun, pars) asks to minimize the 'fun' objective function with starting
@@ -16,7 +17,7 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 %  FUN is the function to minimize (handle or string).
 %
 %  PARS is a vector with initial guess parameters. You must input an
-%  initial guess.
+%  initial guess. Dimensionality must be greater than 1.
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
@@ -35,7 +36,7 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -78,6 +79,7 @@ opt(6) = 1e-8; opt(7)=2.5; opt(8)=1e-11;
 [pars,fval,out,k, message] = solvopt(pars, fun, [], opt,[],[], ...
                                 options.OutputFcn, options.MaxFunEvals, options.FunValCheck);
 iterations=k;
+
 if out(9) < 0, exitflag = out(9); 
 else exitflag=0; end
 funcount = out(10);
@@ -192,7 +194,7 @@ endwarn=[...
 % ----}
 
 message='';
-k=0; f=[]; 
+k=0; f=nan; 
 
 % ARGUMENTS PASSED ----{
 if nargin<2           % Function and/or starting point are not specified
@@ -220,6 +222,7 @@ end
   options(6)=max(options(6),1e-12);
   options(7)=max([options(7),1.5]);
   options(8)=max(options(8),1e-11);
+  
 % ----}
 
 if nargin<5,   constr=0;          % Unconstrained problem
@@ -232,6 +235,11 @@ else,  constr=1;                  % Constrained problem
    end
 end
 % ----}
+options(9) =-11;
+options(10)=0; options(11)=0;      % function and gradient calculations
+if constr
+options(12)=0; options(13)=0;      % same for constraints
+end
 
 % STARTING POINT ----{
  if max(size(x))<=1,      disp(errmes);  disp(error2); x
@@ -243,12 +251,7 @@ end
  end
 % ----}
 
-% WORKING CONSTANTS AND COUNTERS ----{
-
-options(10)=0; options(11)=0;      % function and gradient calculations
-if constr
-options(12)=0; options(13)=0;      % same for constraints
-end
+% WORKING CONSTANTS AND COUNTERS ----{
 epsnorm=1.e-15;epsnorm2=1.e-30;    % epsilon & epsilon^2
 
 if constr, h1=-1;                  % NLP: restricted to minimization
