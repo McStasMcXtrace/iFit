@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminlm(fun, pars, options)
 % Fletcher, R., Computer Journal 1970, 13, 317-322
 % Contrib: Miroslav Balda, balda AT cdm DOT cas DOT cz 2009
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -207,7 +207,12 @@ istop=0;
 while cnt<maxit && ...          %   MAIN ITERATION CYCLE
     any(abs(d) >= epsx) && ...      %%%%%%%%%%%%%%%%%%%%
     any(abs(r) >= epsf)
+    warning off
     d  = (A+l*D)\v;             %   negative solution increment
+    warning on
+    if any(isnan(d))
+      d  = pinv(A+l*D)*v;
+    end
     x_prev=x;
     xd = x-d;
     rd = feval(FUN,xd);
@@ -229,7 +234,7 @@ while cnt<maxit && ...          %   MAIN ITERATION CYCLE
             nu = 10;
         end
         if l==0
-            lc = 1/max(abs(diag(inv(A))));
+            lc = 1/(max(abs(diag(pinv(A)))));
             l  = lc;
             nu = nu/2;
         end
@@ -243,7 +248,7 @@ while cnt<maxit && ...          %   MAIN ITERATION CYCLE
     % std stopping conditions
     [istop, message] = fmin_private_std_check(xd, rd, cnt, cntfun, options, x_prev);
     if strcmp(options.Display, 'iter')
-      fmin_private_disp_iter(iterations, funcount, fun, x, fmn);
+      fmin_private_disp_iter(cnt, cntfun, FUN, xd, rd);
     end
     
     if istop
@@ -281,7 +286,7 @@ output.funcCount  = cntfun;
 if (istop & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')
   fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
-    output.funcCount, fun, x, fmn);
+    output.funcCount, FUN, xf, rd);
 end
 
 
