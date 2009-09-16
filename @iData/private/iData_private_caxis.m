@@ -1,6 +1,9 @@
 function c_axis=iData_private_caxis(a)
 % compute common axis for union
 
+c_axis=[];
+if isempty(a), return; end
+
 % initiate new axes
 for index=1:ndims(a(1))
   c_step{index} =  Inf;
@@ -16,7 +19,8 @@ for index=1:length(a)
   end
   for j_ax = 1:ndims(a(index))  % for each dimension
     x = getaxis(a(index), j_ax); x=unique(x(:));    % extract axis, and remove duplicates. diff > 0
-    c_step{j_ax} = min(min(diff(x)), c_step{j_ax}); % smallest step
+    y = min(min(diff(x)), c_step{j_ax}); % smallest step
+    if ~isempty(y), c_step{j_ax}=y; end    
     c_min{j_ax}  = min(min(x), c_min{j_ax});        % lowest min
     c_max{j_ax}  = max(max(x), c_max{j_ax});        % highest max
     c_len{j_ax}  = c_len{j_ax} + length(x);         % cumulated axes length
