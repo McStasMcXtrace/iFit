@@ -2,7 +2,7 @@
 *
 *                     Program looktxt.c
 *
-* looktxt version Looktxt 1.0.7 (10 July 2009) by Farhi E. [farhi@ill.fr]
+* looktxt version Looktxt 1.0.8 (16 Sept 2009) by Farhi E. [farhi@ill.fr]
 *
 * Usage: looktxt [options] file1 file2 ...
 * Action: Search and export numerics in a text/ascii file.
@@ -77,15 +77,16 @@
 * 1.05  (12/12/08) Solved memleaks with valgrind
 * 1.06  (29/05/09) GCC-4 support (libc/vfprintf is not suited for us)
 * 1.0.7 (09/07/09) fixed metadata export, speed-up by factor 2.
+* 1.0.8 (16/09/09)    upgrade MeX support. Build with 'make mex'
 *
 *****************************************************************************/
 
 /* Identification ********************************************************* */
 
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
-#define DATE    "9 July 2009"
+#define DATE    "16 Sept 2009"
 #ifndef VERSION
-#define VERSION "Looktxt 1.0.7"
+#define VERSION "Looktxt 1.0.8"
 #endif
 
 #ifdef __dest_os
@@ -222,24 +223,19 @@ int  parse_files(struct option_struct options, int argc, char *argv[]);
 int  main(int argc, char *argv[]);
 */
 
-#ifdef TEXMEX
-char *TexMex_Target_Array[MAX_LENGTH];
-char *TexMex_Target_Funcs[MAX_LENGTH];
-#endif
-
+#ifndef TEXMEX
 int print_stderr(char *format, ...) {
   va_list ap;
   int ret=0;
 
   va_start(ap, format);
-#ifndef TEXMEX
   ret=vfprintf(stderr, format, ap);
-#else
   ret=mexPrintf(format, ap); /* only in Matlab/MeX mode */
-#endif
+
   va_end(ap);
   return(ret);
 }
+#endif
 
 /* Structure definitions ************************************************** */
 
@@ -337,6 +333,11 @@ struct table_struct {
   char  *Name;                /* Name of the table */
   struct data_struct *List;   /* an array of data_struct */
 };
+
+
+#ifdef TEXMEX
+struct file_struct TexMex_Target_Array[MAX_LENGTH];
+#endif
 
 /* Format definitions ***************************************************** */
 
@@ -2110,6 +2111,11 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
     const long needaftersep    =  Bnumber + Bpoint + Bsign + Beol + Bseparator;
 
     char c;
+    
+    time_t StartTime       =0;
+    time_t EndTime         =0;
+    
+    time(&StartTime); /* compute starting time */
 
     startcmtpos = file.Size;
     
@@ -2348,6 +2354,9 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
       pos++;
 
     } while (c != EOF); /* end do */
+    time(&EndTime);
+    if (options.verbose >= 2)
+      printf("VERBOSE[file_scan]: %g [s]\n", difftime(EndTime,StartTime));
   } /* if (file.Source */
   return(table);
 } /* file_scan */
@@ -2661,6 +2670,7 @@ struct write_struct file_write_getsections(struct file_struct file,
   long    length;
   char   *section_current=NULL;  /* current section full name */
   char   *last_valid_name=NULL;
+    
   struct strlist_struct section_names;  /* name of found sections */
   struct strlist_struct section_fields; /* fields registered for each found section (in the same order as section_names */
   struct write_struct found_sections;
@@ -2687,12 +2697,56 @@ struct write_struct file_write_getsections(struct file_struct file,
   for (index=0; index < length; index++)
   {
     struct  data_struct *field;  /* current field from file */
-    char   *header=NULL;
     long    index_sec;
+    char    metadata_flag=0;
+    char   *header=NULL;
     
     field  = &(ptable->List[index]);
     header = data_get_char(file, field->c_start, field->c_end);
+    
+    for (index_sec=0; index_sec < options.metadata.length; index_sec++)
+    { /* scan all registered sections */
+      char *this_metadata=NULL;
+      long  section_index=-1;
 
+      section_index = strlist_search(section_names, "MetaData");
+      this_metadata = options.metadata.List[index_sec];
+
+      /* if metadata is found in the header */
+      if (this_metadata && strlen(this_metadata) && header && strstr(header, this_metadata)) {
+        long  offset=0;
+        char *metadata_line=NULL;
+
+        offset = field->c_start;
+
+        do {
+          metadata_line = data_get_line(file, &offset); /* get line and move forward in lines */
+
+          if (metadata_line && strlen(metadata_line) > 1) {
+            if (strstr(metadata_line, this_metadata)) {
+              field->Name   = str_dup(this_metadata);
+              field->Section= str_dup("MetaData"); /* Section name */
+
+              /* add the MetaData section */
+              if (section_index<0) {
+                  strlist_add(&section_names,  "MetaData");
+                  strlist_add(&section_fields, " ");
+                  section_index = strlist_search(section_names, "MetaData");
+                  if (section_index<0 && options.verbose >= 3)
+                    printf("\nDEBUG[file_write_target]: Could not create MetaData list to register item %s\n", this_metadata);
+              }
+              metadata_flag = 1;
+            }
+          }
+          if (metadata_flag) {
+            header = str_free(header);
+            header = metadata_line;
+          }
+        } while (offset < field->c_end && !metadata_flag);
+      } /* if strstr */
+    } /* for (index_sec metadata */
+    
+      
     /* if output does not support \n in chars, make header valid */
     if (header && strlen(header) && options.out_headers)
     if (strstr(options.format.Name, "Matlab")
@@ -2700,12 +2754,16 @@ struct write_struct file_write_getsections(struct file_struct file,
     ||  strstr(options.format.Name, "Octave")
     ||  strstr(options.format.Name, "IDL")) {
       char *p=header;
-      while ((p = strpbrk(p, "\n\r\f\t\v")) != NULL) *p = ' ';
+      while ((p = strpbrk(p, "\n\r\f\t\v")) != NULL) *p = ';';
       p=header;
       while ((p = strpbrk(p, "'")) != NULL) *p = '"';
     }
+    
+    if (!metadata_flag) /* if no metadata, use default naming convention=last word in header */
+      field->Name    = str_lastword(header); /* was NULL before */
+    
     field->Header  = str_dup(header);
-    field->Name    = str_lastword(header); /* was NULL before */
+    header=str_free(header);
 
     if (field->Name && strlen(field->Name)) {
       last_valid_name=str_free(last_valid_name); last_valid_name = str_dup(field->Name);
@@ -2721,6 +2779,7 @@ struct write_struct file_write_getsections(struct file_struct file,
         previous->columns = columns;
         previous->n_end   = field->n_end; /* shift end of num */
         field->rows=0; /* unactivate */
+        continue;
       }
     }
     if (options.makerows.length && last_valid_name && strlen(last_valid_name)) {
@@ -2733,76 +2792,6 @@ struct write_struct file_write_getsections(struct file_struct file,
         }
       }
     }
-
-    /* look for custom MetaData fields */
-    /* if found, add a new entry in table with table_add(&table, field); */
-    /* search metadata names in header if any. Extract them into new table entries */
-      
-    for (index_sec=0; index_sec < options.metadata.length; index_sec++)
-    { /* scan all registered sections */
-      char *this_metadata=NULL;
-      long  section_index=-1;
-
-      section_index = strlist_search(section_names, "MetaData");
-      this_metadata = options.metadata.List[index_sec];
-      /* if metadata is found in the header */
-      if (this_metadata && strlen(this_metadata) && header && strstr(header, this_metadata)) {
-        long  offset=0;
-        char *metadata_line=NULL;
-
-        offset = field->c_start;
-
-        do {
-          metadata_line = data_get_line(file, &offset); /* get line and move forward in lines */
-
-          if (metadata_line && strlen(metadata_line) > 1) {
-            if (strstr(metadata_line, this_metadata)) {
-              /* create an entry */
-              struct data_struct data;
-              
-              data = data_init();
-              data.Name   = str_dup(this_metadata);
-              /* remove unsupported chars from header */
-              if (strstr(options.format.Name, "Matlab")
-                ||  strstr(options.format.Name, "Scilab")
-                ||  strstr(options.format.Name, "Octave")
-                ||  strstr(options.format.Name, "IDL")) {
-                char *p=metadata_line;
-                while ((p = strpbrk(p, "\n\r\f\t\v")) != NULL) *p = ' ';
-                p=metadata_line;
-                while ((p = strpbrk(p, "'")) != NULL) *p = '"';
-              }
-              data.Header = str_dup(metadata_line);       /* line following the metadata */
-              data.Section= str_dup("MetaData"); /* Section name */
-              data.index  = index;      /* index of this data block */
-              data.rows   = field->rows;
-              data.columns= field->columns;
-              data.n_start= field->n_start;
-              data.n_end  = field->n_end;
-              data.c_start= field->c_start;
-              data.c_end  = field->c_end;
-              if (options.verbose >= 3) {
-                data_print(data);
-              }
-              /* this table append may cause seg fault */
-              table_add(&metatable, data); /* duplicated field */
-
-              /* add the MetaData section */
-              if (section_index<0) {
-                  strlist_add(&section_names,  "MetaData");
-                  strlist_add(&section_fields, " ");
-                  section_index = strlist_search(section_names, "MetaData");
-                  if (section_index<0 && options.verbose >= 3)
-                    printf("\nDEBUG[file_write_target]: Could not create MetaData list to register item %s\n", this_metadata);
-              }
-            }
-          } else { offset = field->c_end; }
-          metadata_line=str_free(metadata_line);
-        } while (offset < field->c_end);
-      } /* if strstr */
-    } /* for (index_sec metadata */
-
-    header=str_free(header);
 
     /* look for section names in header if any. skip ROOT */
     for (index_sec=0; index_sec < options.sections.length; index_sec++)
@@ -2846,7 +2835,8 @@ struct write_struct file_write_getsections(struct file_struct file,
     } /* for (index_sec */
 
     /* set field section to current section */
-    field->Section = str_dup(section_current); /* was NULL before */
+    if (!field->Section)
+      field->Section = str_dup(section_current); /* was NULL before except from MetaData */
   } /* for index 1st PASS */
   
   section_current=str_free(section_current);
@@ -2889,10 +2879,15 @@ long file_write_target(struct file_struct file,
   int     section_index=0;             /* start with root section */
   long    ret=0;                       /* return value=number of written fields */
   char   *last_valid_name=NULL;
-  struct strlist_struct to_catenate;
-  long redundant;
+  struct  strlist_struct to_catenate;
+  long    redundant;
+  
+  time_t StartTime       =0;
+  time_t EndTime         =0;
 
   if (!ptable || !ptable->length || !ptable->nalloc) return(0);
+  
+  time(&StartTime); /* compute starting time */
 
     /* open output files */
   if (file.TargetTxt) {
@@ -3178,6 +3173,10 @@ long file_write_target(struct file_struct file,
 
   /* write output footer */
   file_write_headfoot(file, options, options.format.Footer);
+  
+  time(&EndTime);
+  if (options.verbose >= 2)
+    printf("VERBOSE[file_write_target]: %g [s]\n", difftime(EndTime,StartTime));
 
   /* close output files: done at end of function parse_files */
 
@@ -3227,13 +3226,11 @@ int parse_files(struct option_struct options, int argc, char *argv[])
         if (options.verbose >= 1) print_stderr("Looktxt: file '%s': wrote %ld numerical field%s into %s\n", 
           file.Source, ret, ret > 1 ? "s" : "", file.TargetTxt);
 #ifdef TEXMEX
-        TexMex_Target_Array[options.file_index] = str_dup(file.TargetTxt);
-        TexMex_Target_Funcs[options.file_index] = str_dup(file.RootName);
+        TexMex_Target_Array[options.file_index] = file; /* to host mfile=file.Source and func=file.RootName */
 #endif
       } else {
 #ifdef TEXMEX
-        TexMex_Target_Array[options.file_index] = str_dup("");
-        TexMex_Target_Funcs[options.file_index] = str_dup("");
+        TexMex_Target_Array[options.file_index] = file_init();
 #endif
       }
       options.file_index++;
@@ -3269,8 +3266,7 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
   for (i=0; i<MAX_LENGTH; i++) {
     options.files_to_convert_Array[i] = 0;
 #ifdef TEXMEX
-    TexMex_Target_Array[i]= NULL;
-    TexMex_Target_Funcs[i]= NULL;
+    TexMex_Target_Array[i]= file_init();
 #endif
   }
 
