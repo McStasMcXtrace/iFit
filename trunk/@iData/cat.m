@@ -10,9 +10,9 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
-if nargin == 1 & isa(dim, 'iData') & length(dim) > 1
+if nargin == 1 & isa(dim, 'iData') & length(dim) >= 1 % syntax: cat([a])
   s = cat(1, dim);
   return
 end
@@ -31,7 +31,7 @@ if length(varargin) >= 1  % syntax: cat(dim,a,b,c,...)
 end
 % syntax is now: cat(dim,[a(:)])
 a=a(:);
-if length(a) == 1, return; end
+if length(a) <= 1, s=a; return; end
 
 % removes warnings during interp
 try
