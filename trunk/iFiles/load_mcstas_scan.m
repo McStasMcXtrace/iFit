@@ -7,24 +7,35 @@ a=iData(a0);
 % Define alias for the 'raw' datablock
 setalias(a0,'Datablock',['this.' getalias(a0,'Signal')]);
 
-if ~isempty(findfield(a0, 'xlabel')) 
-  xlabel = a0.Data.Headers.MetaData.xlabel;
-  xlabel(1:length('# xlabel: '))='';
-else xlabel=''; end
-if ~isempty(findfield(a0, 'ylabel')) 
-  ylabel = a0.Data.Headers.MetaData.ylabel;
-  ylabel(1:length('# ylabel: '))='';
-else ylabel=''; end
-
 % get the column labels
 cnames=strread(a0.Data.Headers.MetaData.variables,'%s','delimiter',' ');
 cnames=cnames(3:end);
-xlabel=cnames(1);
 
-% First column is always the scan parm, we denote that 'x'
-setalias(a0,'x',['this.' getalias(a0,'Signal') '(:,1)'],xlabel);
-setalias(a0,xlabel,['this.' getalias(a0,'Signal') '(:,1)'],xlabel);
-setaxis(a0,1,'x');
+if ~isempty(findfield(a0, 'xlabel')) 
+  xlabel = deblank(a0.Data.Headers.MetaData.xlabel);
+  xlabel(1:length('# xlabel: '))='';
+else xlabel=''; end
+if ~isempty(findfield(a0, 'ylabel')) 
+  ylabel = deblank(a0.Data.Headers.MetaData.ylabel);
+  ylabel(1:length('# ylabel: '))='';
+else ylabel=''; end
+if ~isempty(findfield(a0, 'xvars')) 
+  xvars = deblank(a0.Data.Headers.MetaData.xvars);
+  xvars(1:length('# xvars: '))='';
+else xvars=''; end
+
+if ~isempty(xvars)
+  xvars_i = find(cellfun('isempty', strfind(cnames,xvars)) == 0);
+  if ~isempty(xvars_i)
+    setalias(a0,'x',['this.' getalias(a0,'Signal') '(:,' num2str(xvars_i) ')' ],xvars); % create an alias for xvars
+    setalias(a0,xvars,['this.' getalias(a0,'Signal') '(:,' num2str(xvars_i) ')' ],xvars); % create an alias for xvars
+    % locate xvars label and column
+    xlabel=xvars;
+  end
+
+  % Define scanning variable
+  setaxis(a0,1,'x');
+end
 
 siz = size(a0.Signal);
 siz = (siz(2)-1)/2;
