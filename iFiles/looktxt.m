@@ -32,6 +32,94 @@
 %
 % looktxt  version 1.0.8 (16 Sept 2009) by Farhi E. [farhi@ill.fr]
 
-% if we come here it means looktxt was not made a MeX file
-mex -O -output looktxt texmex.c
+% if we come there, that's because the mex file is not compiled.
+% we first try to install it, and if it fails, we go for the CC version
 
+function data = looktxt(args)
+data = [];
+if nargin == 0, args=''; end
+
+if exist('mex') && exist('texmex.c')
+  looktxtmex = which('texmex.c');
+  looktxtpath = fileparts(looktxtmex);
+  disp([ 'mex -O -output' looktxtpath filesep 'looktxt ' looktxtmex ])
+  mex('-O', '-output', [looktxtpath filesep 'looktxt'],looktxtmex);
+  rehash
+  if nargin > 0, data = looktxt(args); end
+  return
+end
+
+% if we come here, mex fails, and we try the CC version
+if iscellstr(args)
+  data = cell(length(args), 1);
+  for index=1:length(args)
+    data{index} = looktxt(args{index});
+  end
+  return
+end
+
+% handle single file name
+file = tempname;  % results will go there
+if ispc, looktxt_exe = 'looktxt.exe';
+else     looktxt_exe = 'looktxt';
+end
+
+% execute command
+exec = [ looktxt_exe ' --outfile=' file ' ' args ];
+disp(exec);
+[s,w] = system(exec);
+% check if result has been generated, else try again with local executable
+if ~exist([ file '.m' ],'file')
+  exec = [ fileparts(which('looktxt')) filesep looktxt_exe ' --outfile=' file ' ' args ];
+  [s,w] = system(exec);
+end
+
+% automatic compilation of looktxt using CC
+if ~exist([ file '.m' ],'file') & s ~= 0  % executable not found
+  warning('looktxt: can not find executable. Attempting to re-install/compile looktxt');
+  cc     = getenv('CC');     
+  if isempty(cc),
+    [s,w] = system('gcc'); 
+    if s == 0, cc = 'gcc';
+    else cc='cc'; end
+  end
+  cflags = getenv('CFLAGS'); if isempty(cflags), cflags = '-O2'; end
+  looktxtc=which('looktxt.c');  % where C code is
+  if isempty(looktxtc), error('Can not install looktxt as source code is unavailable'); end
+  pathstr = fileparts(looktxtc);
+  disp([ cc ' ' cflags ' -o ' pathstr filesep looktxt_exe ' ' looktxtc ]);
+  [s,w] = system([ cc ' ' cflags ' -o ' pathstr filesep looktxt_exe ' ' looktxtc ]);
+  disp('looktxt: Testing the validity of executable')
+  [s,w] = system([ pathstr filesep looktxt_exe ]);
+  if s ~= 0
+    error('looktxt: Failed to install/compile looktxt. Please install it manually.');
+  else
+    disp('looktxt: OK, executable is functional');
+    % now re-try with executable
+    [s,w] = system(exec);
+  end
+end
+disp(w);
+% now import structure
+p=pwd;
+if exist([ file '.m' ],'file')
+  cd(tempdir);
+  try
+    [pathstr, name, ext] = fileparts(file);
+    data = feval(name);
+  catch
+    disp('looktxt: error evaluating result');
+    lasterr
+  end
+  try
+    % remove tmp filename
+    delete([ file '.m' ]);
+    if ~isempty(strfind(args, '--binary')) | ~isempty(strfind(args, '-b'))
+      delete([ file '.bin' ]);
+    end
+  catch
+  end
+elseif (s ~= 0)
+    error([ 'looktxt: Failed to import ' args ]);
+end
+cd(p);

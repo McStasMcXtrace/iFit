@@ -17,7 +17,7 @@
 #define malloc  mxMalloc
 #define realloc mxRealloc
 #define calloc  mxCalloc
-#define version "1.0.8 (MeX)"
+#define VERSION "Looktxt 1.0.8 (MeX)"
 /* #define free mxFree  */
 #define free NoOp
 
@@ -140,7 +140,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     mexCallMATLAB(1, CellElement, 0, NULL, "tempname");
     tempname=mxArrayToString(CellElement[0]);
     varg[carg] = (char*)mxMalloc(strlen(tempname)+64);
-    sprintf(varg[carg], "--outfile=%s", tempname);
+    snprintf(varg[carg], 40, "--outfile=%s\0", tempname);
     mxDestroyArray(CellElement[0]);
     carg++;
   }
@@ -202,8 +202,14 @@ void mexFunction(int nlhs, mxArray *plhs[],
           mxSetCell(plhs[0], i, FileString);
           free(filestr);
         }
-      } /* if output_file */
-    }
+      } /* else (if mexCall) */
+      /* clean up temporary files if necessary */
+      if (!has_output_file) {
+      	remove(output_file.TargetTxt);
+      	if (output_file.TargetBin && strlen(output_file.TargetBin))
+      		remove(output_file.TargetBin);
+      }
+    } /* if output_file */
   } /* for i */
   
   if(NumFiles == 1) {
@@ -211,8 +217,6 @@ void mexFunction(int nlhs, mxArray *plhs[],
     ptr= mxGetCell(plhs[0], 0);
     plhs[0] = mxDuplicateArray(ptr);
   }
-  
-  if (tempname) remove(tempname);
 
   for (i=0; i < carg; free(varg[i++]));
 }
