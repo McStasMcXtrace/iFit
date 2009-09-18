@@ -230,7 +230,6 @@ int print_stderr(char *format, ...) {
 
   va_start(ap, format);
   ret=vfprintf(stderr, format, ap);
-  ret=mexPrintf(format, ap); /* only in Matlab/MeX mode */
 
   va_end(ap);
   return(ret);

@@ -355,7 +355,7 @@ function loaders = iLoad_loader_auto(file)
         for index_pat=1:length(loader.patterns(:))
           if isempty(strfind(file_start, loader.patterns{index_pat}))
             patterns_found=0;     % at least one pattern does not match
-            % fprintf(1,'iLoad: method %s file %s: at least one pattern does not match\n', loader.name, file);
+            % fprintf(1,'iLoad: method %s file %s: at least one pattern does not match (%s)\n', loader.name, file, loader.patterns{index_pat});
             continue;
           end
         end % for patterns
