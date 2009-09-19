@@ -201,9 +201,9 @@ void               data_free(struct data_struct field);
 char              *data_get_char(struct file_struct file, long start, long end);
 double            *data_get_float(struct file_struct file, struct data_struct field);
 
-struct table_struct table_init(void);
+struct table_struct *table_init(void);
 void                table_add(struct table_struct *table, struct data_struct data);
-void                table_free(struct table_struct table);
+void                table_free(struct table_struct *table);
 
 struct table_struct file_scan(struct file_struct file, struct option_struct options);
 int file_write_headfoot(struct file_struct file, struct option_struct options, char *format);
@@ -695,6 +695,27 @@ char *str_valid_struct(char *string, char char_struct)
   return(ret);
 
 } /* str_valid_struct */
+
+/*****************************************************************************
+* str_valid_eol: Update 'string' without EOL nor quotes (does not allocate a copy)
+*****************************************************************************/
+
+char *str_valid_eol(char *header, struct option_struct options)
+{
+  if (!header || !strlen(header)) return(header);
+  /* if output does not support \n in chars, make header valid */
+  if (header && strlen(header) && options.out_headers)
+  if (strstr(options.format.Name, "Matlab")
+  ||  strstr(options.format.Name, "Scilab")
+  ||  strstr(options.format.Name, "Octave")
+  ||  strstr(options.format.Name, "IDL")) {
+    char *p=header;
+    while ((p = strpbrk(p, "\n\r\f\t\v")) != NULL) *p = ';';
+    p=header;
+    while ((p = strpbrk(p, "'")) != NULL) *p = '"';
+  }
+  return(header);
+} /* str_valid_eol */
 
 /*****************************************************************************
 * str_reverse: Allocate a copy of 'string' in reverse order
@@ -1905,16 +1926,16 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
 /*****************************************************************************
 * table_init: Sets a zero table_struct
 *****************************************************************************/
-struct table_struct table_init(char *name)
+struct table_struct *table_init(char *name)
 {
-  struct table_struct table;
+  struct table_struct *table=malloc(sizeof(struct table_struct));
   int i;
 
-  table.length= 0;
-  table.nalloc= ALLOC_BLOCK;
-  table.Name  = name ? str_dup(name) : NULL;
-  table.List  = (struct data_struct *)mem(table.nalloc*sizeof(struct data_struct));
-  for (i=0; i<table.nalloc; table.List[i++] = data_init());
+  table->length= 0;
+  table->nalloc= ALLOC_BLOCK;
+  table->Name  = name ? str_dup(name) : NULL;
+  table->List  = (struct data_struct *)mem(table->nalloc*sizeof(struct data_struct));
+  for (i=0; i<table->nalloc; table->List[i++] = data_init());
 
   return(table);
 } /* table_init */
@@ -1974,16 +1995,16 @@ void table_print(struct table_struct table)
 /*****************************************************************************
 * table_free: Free all table_struct elements
 *****************************************************************************/
-struct table_struct table_free(struct table_struct table)
+struct table_struct *table_free(struct table_struct *table)
 {
-  if (table.List && table.nalloc) {
+  if (table->List && table->nalloc) {
     long index;
-    for (index=0; index < table.nalloc; index++)
-      data_free(table.List[index]);
+    for (index=0; index < table->nalloc; index++)
+      data_free(table->List[index]);
   }
-  table.Name=str_free(table.Name);
-  table.length=table.nalloc=0;
-  table.List=(struct data_struct *)memfree(table.List);
+  table->Name=str_free(table->Name);
+  table->length=table->nalloc=0;
+  table->List=(struct data_struct *)memfree(table->List);
   return(table);
 } /* table_free */
 
@@ -2064,9 +2085,9 @@ void print_usage(char *pgmname, struct option_struct options)
 * returns the table structure for the processed source file,
 * containing a List of data_struct
 *****************************************************************************/
-struct table_struct file_scan(struct file_struct file, struct option_struct options)
+struct table_struct *file_scan(struct file_struct file, struct option_struct options)
 {
-  struct table_struct table;
+  struct table_struct *table;
   table = table_init(file.RootName);
 
   if (file.Source && file.TargetTxt
@@ -2119,7 +2140,7 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
     startcmtpos = file.Size;
     
     if (options.verbose >= 2)
-      printf("VERBOSE[file_scan]: Scanning file %s [0-%ld] ...\n", file.Source, file.Size);
+      printf("VERBOSE[file_scan]: Scanning file %s [0-%ld] ...\n", file.Source, (long)file.Size);
 
     do {
       c = getc(file.SourceHandle);
@@ -2315,7 +2336,7 @@ struct table_struct file_scan(struct file_struct file, struct option_struct opti
             field.rows    = rows;
             field.columns = columns;
 
-            table_add(&table, field);  /* STORING field, Name=Section=NULL */
+            table_add(table, field);  /* STORING field, Name=Section=NULL */
             pos   = endnumpos+1;
             startcharpos = pos;
             if (fseek(file.SourceHandle, pos, SEEK_SET)) { /* reposition after Numeric*/
@@ -2674,7 +2695,7 @@ struct write_struct file_write_getsections(struct file_struct file,
   struct strlist_struct section_fields; /* fields registered for each found section (in the same order as section_names */
   struct write_struct found_sections;
   
-  struct table_struct metatable;  /* table for metadata */
+  struct table_struct *metatable;  /* table for metadata */
   section_current = str_cat("MetaData_",file.RootName, NULL);
   metatable       = table_init(section_current);
   section_current = str_free(section_current);
@@ -2696,20 +2717,19 @@ struct write_struct file_write_getsections(struct file_struct file,
   for (index=0; index < length; index++)
   {
     struct  data_struct *field;  /* current field from file */
-    long    index_sec;
-    char    metadata_flag=0;
+    long    index_meta, index_sec;
     char   *header=NULL;
     
     field  = &(ptable->List[index]);
     header = data_get_char(file, field->c_start, field->c_end);
     
-    for (index_sec=0; index_sec < options.metadata.length; index_sec++)
-    { /* scan all registered sections */
+    for (index_meta=0; index_meta < options.metadata.length; index_meta++)
+    { /* scan all MetaData registered entries */
       char *this_metadata=NULL;
       long  section_index=-1;
 
       section_index = strlist_search(section_names, "MetaData");
-      this_metadata = options.metadata.List[index_sec];
+      this_metadata = options.metadata.List[index_meta];
 
       /* if metadata is found in the header */
       if (this_metadata && strlen(this_metadata) && header && strstr(header, this_metadata)) {
@@ -2719,47 +2739,43 @@ struct write_struct file_write_getsections(struct file_struct file,
         offset = field->c_start;
 
         do {
-          metadata_line = data_get_line(file, &offset); /* get line and move forward in lines */
+          metadata_line = data_get_line(file, &offset); /* get line and move forward in lines. Includes EOL */
 
-          if (metadata_line && strlen(metadata_line) > 1) {
-            if (strstr(metadata_line, this_metadata)) {
-              field->Name   = str_dup(this_metadata);
-              field->Section= str_dup("MetaData"); /* Section name */
-
-              /* add the MetaData section */
-              if (section_index<0) {
-                  strlist_add(&section_names,  "MetaData");
-                  strlist_add(&section_fields, " ");
-                  section_index = strlist_search(section_names, "MetaData");
-                  if (section_index<0 && options.verbose >= 3)
-                    printf("\nDEBUG[file_write_target]: Could not create MetaData list to register item %s\n", this_metadata);
-              }
-              metadata_flag = 1;
+          if (metadata_line && strlen(metadata_line) > 1 && strstr(metadata_line, this_metadata)) {
+            /* add the MetaData section */
+            if (section_index<0) {
+                strlist_add(&section_names,  "MetaData");
+                strlist_add(&section_fields, " ");
+                section_index = strlist_search(section_names, "MetaData");
+                if (section_index<0 && options.verbose >= 3)
+                  printf("\nDEBUG[file_write_target]: Could not create MetaData list to register item %s\n", this_metadata);
             }
-          }
-          if (metadata_flag) {
-            header = str_free(header);
-            header = metadata_line;
-          }
-        } while (offset < field->c_end && !metadata_flag);
-      } /* if strstr */
-    } /* for (index_sec metadata */
-    
+            str_valid_eol(metadata_line, options);
+
+            /* that same field belongs to more than one MetaData: we duplicate it */
+            struct data_struct data;
+            data = data_init();
+            data.Name   = str_dup(this_metadata);
+            data.Header = str_dup(metadata_line);       /* line following the metadata */
+            data.Section= str_dup("MetaData"); /* Section name */
+            data.index  = index;      /* index of this data block */
+            data.rows   = field->rows;
+            data.columns= field->columns;
+            data.n_start= field->n_start;
+            data.n_end  = field->n_end;
+            data.c_start= field->c_start;
+            data.c_end  = field->c_end;
+            table_add(metatable, data); /* duplicated field */
+          } /* if metadata_line */
+        } while (offset < field->c_end);
+      } /* if strstr header */
+    } /* for index_meta */
       
     /* if output does not support \n in chars, make header valid */
-    if (header && strlen(header) && options.out_headers)
-    if (strstr(options.format.Name, "Matlab")
-    ||  strstr(options.format.Name, "Scilab")
-    ||  strstr(options.format.Name, "Octave")
-    ||  strstr(options.format.Name, "IDL")) {
-      char *p=header;
-      while ((p = strpbrk(p, "\n\r\f\t\v")) != NULL) *p = ';';
-      p=header;
-      while ((p = strpbrk(p, "'")) != NULL) *p = '"';
-    }
+    str_valid_eol(header, options);
     
-    if (!metadata_flag) /* if no metadata, use default naming convention=last word in header */
-      field->Name    = str_lastword(header); /* was NULL before */
+    /* use default naming convention=last word in header */
+    field->Name    = str_lastword(header); /* was NULL before */
     
     field->Header  = str_dup(header);
     header=str_free(header);
@@ -2836,6 +2852,7 @@ struct write_struct file_write_getsections(struct file_struct file,
     /* set field section to current section */
     if (!field->Section)
       field->Section = str_dup(section_current); /* was NULL before except from MetaData */
+      
   } /* for index 1st PASS */
   
   section_current=str_free(section_current);
@@ -2851,13 +2868,13 @@ struct write_struct file_write_getsections(struct file_struct file,
   found_sections.section_fields= section_fields;
   
   /* now catenate any metadata fields to the current ptable and free it */
-  for (index=0; index < metatable.length; index++) {
-    table_add(ptable, metatable.List[index]);
+  for (index=0; index < metatable->length; index++) {
+    table_add(ptable, metatable->List[index]);
   }
-  for (index=metatable.length; index<metatable.nalloc; data_free(metatable.List[index++]));
-  metatable.Name=str_free(metatable.Name);
-  metatable.length=metatable.nalloc=0;
-  metatable.List=(struct data_struct *)memfree(metatable.List);
+  for (index=metatable->length; index<metatable->nalloc; data_free(metatable->List[index++]));
+  metatable->Name=str_free(metatable->Name);
+  metatable->length=metatable->nalloc=0;
+  metatable->List=(struct data_struct *)memfree(metatable->List);
 
   return(found_sections);
 } /* file_write_getsections */
@@ -3199,7 +3216,7 @@ int parse_files(struct option_struct options, int argc, char *argv[])
 
   for(j = 0; j < options.sources_nb; j++) {
     struct file_struct  file;
-    struct table_struct table;
+    struct table_struct *table;
     char  *filename;
     int    i;
 
@@ -3214,11 +3231,11 @@ int parse_files(struct option_struct options, int argc, char *argv[])
     if (file.Source && file.TargetTxt
       && (!options.use_binary || file.TargetBin)) {
       table = file_scan(file, options);   /* scan: returns nb of extracted fields */
-      if (options.verbose >= 2) printf("VERBOSE[parse_files]:       file '%s': found %ld numerical field%s\n", file.Source, table.length, table.length > 1 ? "s" : "");
-      if (table.nalloc && table.length) { /* if some data structures where extracted */
-        struct write_struct found_sections = file_write_getsections(file, options, &table);
+      if (options.verbose >= 2) printf("VERBOSE[parse_files]:       file '%s': found %ld numerical field%s\n", file.Source, table->length, table->length > 1 ? "s" : "");
+      if (table->nalloc && table->length) { /* if some data structures where extracted */
+        struct write_struct found_sections = file_write_getsections(file, options, table);
         /* if (options.verbose >= 3) table_print(table); */
-        long ret=file_write_target(file, options, &table, found_sections.section_names, found_sections.section_fields);
+        long ret=file_write_target(file, options, table, found_sections.section_names, found_sections.section_fields);
         /* Free section structures */
         found_sections.section_names =strlist_free(found_sections.section_names);
         found_sections.section_fields=strlist_free(found_sections.section_fields);
