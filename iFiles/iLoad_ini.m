@@ -70,7 +70,7 @@ function config = iLoad_ini
     format7.method     ='looktxt';
     format7.extension  ='spc';
     
-    format8.name       ='McStas Scan output';
+    format8.name       ='McStas Scan DAT output';
     format8.patterns   ={'# type: multiarray_1d','# variables:','# title: Scan of'};
     format8.options    =['--fast --binary --headers --comment=NULL --metadata=variables  ' ...
                          '--metadata=xlabel --metadata=ylabel --metadata=xvars'];
