@@ -1,3 +1,22 @@
+ /*
+    Looktxt: Search and export numerics in a text/ascii file
+    Copyright (C) 2009  E. Farhi <farhi at ill.eu>, Institut Laue Langevin
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
 /*-----------------------------program texmex.c-----------------------------*/
 
 /*
@@ -7,9 +26,14 @@
 /*
  * compile with : mex -O -output looktxt texmex.c
  *           or : mex -v -argcheck -output looktxt texmex.c
+ *           or : eval(['mex -v -output looktxt texmex.c -L"' fullfile(matlabroot,'sys','lcc','lib') '" -lcrtdll' ])
  * content: C language, MEX library functions
  * tab = 2 chars
+ *
+ * The LCC compiler does not handle is* functions correctly. These are then 
+   redefined in looktxt.c
  */
+
 
 #include <mex.h>	/* include MEX library for Matlab */
 
@@ -28,12 +52,13 @@
 #define exit(ret) { char msg[1024]; sprintf(msg, "Looktxt/mex exited with code %i", ret); if (ret) mexErrMsgTxt(msg); }
 #define TEXMEX
 
-#include "looktxt.c" 		/* makes all the job */
 
 int NoOp(char *pointer)
 {
   return 0;
 }
+
+#include "looktxt.c" 		/* makes all the job */
 
 void mexFunction(int nlhs, mxArray *plhs[],
                         int nrhs, const mxArray *prhs[])
@@ -44,6 +69,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   long NumFiles; /* number of files processes */
   FILE *fout;
   char has_output_file=0;
+  char *tempname=NULL;
 
   varg[0] = (char*)mxMalloc(MAX_LENGTH);
   strcpy(varg[0],"looktxt");
@@ -57,7 +83,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
   for (i = 0; i < nrhs; i++)
   {
-    int   buflen;        /* number of arguments for call */
+    long  buflen;        /* number of arguments for call */
     char *InputString;   /* input string which is then split into arguments */
     int   status;        /* flag for getting input string */
     char  EndFlag = 0;   /* flag to exit while loop */
@@ -122,7 +148,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
       {
         varg[carg] = (char*)mxMalloc(strlen(lexeme)+64);
         strcpy(varg[carg], lexeme);
-        if (!strcmp(lexeme,"-o") || !strcmp(lexeme,"--outfile"))
+        if (!strncmp(lexeme,"-o",2) || !strncmp(lexeme,"--outfile", 9))
           has_output_file=1;
         carg++;
       }
@@ -134,16 +160,30 @@ void mexFunction(int nlhs, mxArray *plhs[],
   
   mexSetTrapFlag(1);
   
-  char *tempname=NULL;
   if (!has_output_file) {
     mxArray *CellElement[1];
-    mexCallMATLAB(1, CellElement, 0, NULL, "tempname");
-    tempname=mxArrayToString(CellElement[0]);
-    varg[carg] = (char*)mxMalloc(strlen(tempname)+64);
-    snprintf(varg[carg], 40, "--outfile=%s\0", tempname);
-    mxDestroyArray(CellElement[0]);
+    char filename[256];
+    char *ret=NULL;
+    time_t t;
+    long long_t = (long)time(&t);
+    long long_r;
+#ifndef P_tmpdir
+#ifdef _P_tmpdir
+#define P_tmpdir _P_tmpdir
+#else
+#define P_tmpdir "."
+#endif   /* def _P_tmpdir */
+#endif   /* ndef P_tmpdir */
+    /* create a unique temporary file of length < 32 */
+    srand(long_t);
+    long_r = rand();
+    sprintf(filename, "%s%clk_%li_XXXXXX", P_tmpdir, LK_PATHSEP_C, long_r);
+    mktemp(filename);
+    varg[carg] = (char*)mxMalloc(strlen(filename)+64);
+    sprintf(varg[carg], "--outfile=%s", filename);
     carg++;
   }
+  /* display command line */
   for (i=0; i<carg; i++)
   	printf("%s ", varg[i]);
   printf("\n");
@@ -160,7 +200,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
   for (i=0; i< NumFiles; i++) {
     /* get output file name */
     /* mfile=file.Source and func=file.RootName */
-    struct file_struct output_file=TexMex_Target_Array[i];
+    struct file_struct output_file=TexMex_Target_Array[i];
+
     if (output_file.TargetTxt && strlen(output_file.TargetTxt)) {
       /* first method: evaluate function */
       mxArray *CellElement[1];
