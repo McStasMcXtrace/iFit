@@ -2,7 +2,7 @@
 *
 *                     Program looktxt.c
 *
-* looktxt version Looktxt 1.0.8 (16 Sept 2009) by Farhi E. [farhi@ill.fr]
+* looktxt version Looktxt 1.0.8 (24 Sept 2009) by Farhi E. [farhi@ill.fr]
 *
 * Usage: looktxt [options] file1 file2 ...
 * Action: Search and export numerics in a text/ascii file.
@@ -77,16 +77,35 @@
 * 1.05  (12/12/08) Solved memleaks with valgrind
 * 1.06  (29/05/09) GCC-4 support (libc/vfprintf is not suited for us)
 * 1.0.7 (09/07/09) fixed metadata export, speed-up by factor 2.
-* 1.0.8 (16/09/09)    upgrade MeX support. Build with 'make mex'
+* 1.0.8 (24/09/09) upgrade MeX support. Build with 'make mex'
 *
 *****************************************************************************/
+
+/*
+    Looktxt: Search and export numerics in a text/ascii file
+    Copyright (C) 2009  E. Farhi <farhi at ill.eu>, Institut Laue Langevin
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
 
 /* Identification ********************************************************* */
 
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
-#define DATE    "16 Sept 2009"
+#define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "Looktxt 1.0.8"
+#define VERSION "1.0.8"
 #endif
 
 #ifdef __dest_os
@@ -129,7 +148,32 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <stdarg.h>
-/* #include <unistd.h> */
+
+#if !defined(WIN32) && !defined(_WIN32)
+#include <unistd.h>
+
+#else /* WIN32 */
+#include <direct.h>
+#include <io.h>
+#endif /* WIN32 */
+
+#ifdef __LCC__
+/* redefine is* functions, which are broken in LCC */
+char lk_toupper(char c) { if (c>='a' && c<='z') return(c+'A'-'a'); else return(c); }
+char lk_tolower(char c) { if (c>='A' && c<='Z') return(c-'A'+'a'); else return(c); }
+int  lk_isalpha(char c) { return( (c>='a' && c<='z') || (c>='A' && c<='Z') ); }
+int  lk_isdigit(char c) { return( c>='0'&& c<='9' ); }
+int  lk_isalnum(char c) { return( lk_isdigit(c) || lk_isalpha(c) ); }
+int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
+#else
+#define lk_toupper toupper
+#define lk_tolower tolower
+#define lk_isalpha isalpha
+#define lk_isdigit isdigit
+#define lk_isalnum isalnum
+#define lk_isprint isprint
+
+#endif
 
 /* Declarations *********************************************************** */
 
@@ -147,15 +191,14 @@
 #define Bseparator 128
 #define ALLOC_BLOCK 10000 /* size of blocks to pre-allocate in Lists */
 
-#define MAX_LENGTH 1024 /* length of buffer */
-#define MAX_TXT4BIN 100 /* size beyond which binary storage is prefered (-b option)
-
+#define MAX_LENGTH 1024   /* length of buffer */
+#define MAX_TXT4BIN 100   /* size beyond which binary storage is prefered (-b option) */
+/*
 #ifdef WIN32
-#define mode_t unsigned short
 #define size_t long
 #define time_t long
 #endif
-
+*/
 
 /* Functions declaration ************************************************** */
 /*
@@ -257,7 +300,6 @@ struct file_struct {
   char  *TargetName;  /* the target root name (source_ext) */
   char  *Extension ;  /* the source file extension */
   char  *RootName  ;  /* ROOT Name to use for structure fields */
-  mode_t Mode;        /* source file mode */
   size_t Size;        /* source File size in bytes */
   time_t Time;        /* source Creation date */
 };
@@ -304,6 +346,7 @@ struct option_struct {
   char *names_root;
   char *pgname    ;
   char  fast      ; /* 0: general method, 1: fast method using fscanf (isspace as separator) */
+  char  test      ; /* 1: test mode, does not write anything to disk */
   struct format_struct    format;   /* the output file format to use */
   struct fileparts_struct outfile;  /* user specified output file name */
   struct strlist_struct   sections; /* sections to search for */
@@ -355,8 +398,12 @@ struct format_struct Global_Formats[NUMFORMATS] = {
     "%% End of file %TXT generated from %SRC\n"
       "%% in-line function to read binary blocks\n"
       "function d=bin_ref(f,b,m,n)\n"
-      "  f=fopen(f,'r'); fseek(f,b,-1);\n"
-      "  d=fread(f,m*n,'single'); fclose(f); d=reshape(d,n,m);\n"
+      "  [fid,mess]=fopen(f,'r');\n"
+      "  if fid == -1, disp([ 'Error opening bin file ' f ': ' mess ]); end\n"
+      "  fseek(fid,b,-1);\n"
+      "  d=fread(fid,m*n,'single'); fclose(fid);\n"
+      "  if m*n ~= numel(d), disp([ 'File ' f ': read ' num2str(numel(d)) ' elements but expected ' mat2str([ m n ]) ]); f=dir(f); disp(f); end\n"
+      "  d=reshape(d,n,m);\n"
       "  d=d'; return\n",
     "%% Begin Section %BAS%SEC '%NAM'\n",
     "%% End   Section %BAS%SEC '%NAM'\n",
@@ -471,11 +518,20 @@ struct format_struct Global_Formats[NUMFORMATS] = {
   }
 };
 
-/* memory/string functions (from McStas/memory.c) ************************* */
+/* memory/string functions (from McStas/memory.c) ****************************
+* contains functions for:
+*   memory        (mem)
+*   strings       (str_)
+*   formats       (format_)
+*   string lists  (strlist_)
+*   files         (fileparts_)
+*   data items    (data_)
+*   data tables   (table_)
+*****************************************************************************/
 
 /*****************************************************************************
 * mem: Allocate memory. This function never returns NULL; instead, the
-* program is aborted if insufficient memory is available.
+*     program is aborted if insufficient memory is available.
 *****************************************************************************/
 void *mem(size_t size)
 {
@@ -514,7 +570,7 @@ char *str_dup(char *string)
 /*****************************************************************************
 * str_dup_n: Allocate a new copy of initial N chars in a string.
 *****************************************************************************/
-char *str_dup_n(char *string, int n)
+char *str_dup_n(char *string, long n)
 {
   char *s;
 
@@ -528,13 +584,13 @@ char *str_dup_n(char *string, int n)
 
 /*****************************************************************************
 * str_cat: Allocate a new string to hold the concatenation of given strings.
-* Arguments are the strings to concatenate, terminated by NULL.
+*     Arguments are the strings to concatenate, terminated by NULL.
 *****************************************************************************/
 char *str_cat(char *first, ...)
 {
   char *s;
   va_list ap;
-  int size;
+  long size;
   char *arg;
 
   if (!first) return (NULL);
@@ -565,7 +621,7 @@ char *str_free(char *string)
 
 /*****************************************************************************
 * str_rep: Replaces a token by an other (of SAME length) in a string
-* This function modifies 'string'
+*     This function modifies 'string'
 *****************************************************************************/
 char *str_rep(char *string, char *from, char *to)
 {
@@ -585,14 +641,14 @@ char *str_rep(char *string, char *from, char *to)
 
 /*****************************************************************************
 * str_quote: Allocate a new string holding the result of quoting the input string.
-* The result is suitable for inclusion in C source code.
+*     The result is suitable for inclusion in C source code.
 *****************************************************************************/
 char *str_quote(char *string)
 {
   char *badchars = "\\\"\r\n\t\a\b\f\v";
   char *quotechars = "\\\"rntabfv";
   char *q=NULL, *res=NULL, *ptr;
-  int len=0, pass;
+  long len=0, pass;
   int c;
   char new[5];
 
@@ -613,7 +669,7 @@ char *str_quote(char *string)
       ptr = strchr(badchars, c);
       if(ptr != NULL)
         sprintf(new, "\\%c", quotechars[ptr - badchars]);
-      else if(isprint(c))
+      else if(lk_isprint(c))
         sprintf(new, "%c", c);
       else
         sprintf(new, "\\%03o", c);
@@ -629,9 +685,9 @@ char *str_quote(char *string)
 
 /*****************************************************************************
 * str_valid: Allocate a copy of string made only with valid chars
-* copy 'string' into 'valid', replacing invalid characters by '_'
+*     copy 'string' into 'valid', replacing invalid characters by '_'
 *****************************************************************************/
-char *str_valid(char *string, int n)
+char *str_valid(char *string, long n)
 {
   long i;
   char *valid;
@@ -643,7 +699,7 @@ char *str_valid(char *string, int n)
   tmp2 = tmp1 = str_dup_n(string, n);
 
 /* find first alpha char */
-  while (tmp2[0] && !isalpha(tmp2[0])) tmp2++;
+  while (tmp2[0] && !lk_isalpha(tmp2[0])) tmp2++;
 
   if (!tmp2[0] || tmp2 >= tmp1+strlen(tmp1)) {
     str_free(tmp1);
@@ -652,7 +708,7 @@ char *str_valid(char *string, int n)
 
 /* convert non valid following chars in name into _ */
   for (i=0; i < strlen(tmp2); i++) {
-    if (!isalnum(tmp2[i]) && tmp2[i] != '_') tmp2[i] = '_';
+    if (!lk_isalnum(tmp2[i]) && tmp2[i] != '_') tmp2[i] = '_';
   }
   valid = str_dup((tmp2 && tmp2[0]) ? tmp2 : "Name");
   tmp1=str_free(tmp1);
@@ -661,8 +717,8 @@ char *str_valid(char *string, int n)
 
 /*****************************************************************************
 * str_valid_struct: Allocate a copy of string made only with valid chars
-* and appending a 'struct' char at the end
-* copy 'string' into 'valid', replacing invalid characters by '_'
+*     and appending a 'struct' char at the end
+*     copy 'string' into 'valid', replacing invalid characters by '_'
 *****************************************************************************/
 char *str_valid_struct(char *string, char char_struct)
 {
@@ -676,11 +732,11 @@ char *str_valid_struct(char *string, char char_struct)
   tmp2 = tmp1 = str_dup(string);
 
 /* find first alpha char */
-  while (tmp2[0] && !isalpha(tmp2[0])) tmp2++;
+  while (tmp2[0] && !lk_isalpha(tmp2[0])) tmp2++;
 
 /* convert non valid following chars in name into _ */
   for (i=0; i < strlen(tmp2); i++) {
-    if (!isalnum(tmp2[i]) && tmp2[i] != '_') tmp2[i] = '_';
+    if (!lk_isalnum(tmp2[i]) && tmp2[i] != '_') tmp2[i] = '_';
     else if (char_struct && tmp2[i] == char_struct) tmp2[i] = '_';
   }
 
@@ -724,7 +780,7 @@ char *str_reverse(char *string)
 {
   char *reverted;
   int   index;
-  int   index_reverted;
+  long  index_reverted;
 
   if (!string) return(NULL);
   reverted = str_dup(string);
@@ -738,11 +794,11 @@ char *str_reverse(char *string)
 
 /*****************************************************************************
 * str_extractline:  look for field in header, starting at offset
-*   return allocated end of line containing field
-*  or NULL in case of failure (error, not found)
-*  offset (if non NULL) is set to new position after call
+*     return allocated end of line containing field
+*     or NULL in case of failure (error, not found)
+*     offset (if non NULL) is set to new position after call
 *****************************************************************************/
-char *str_extractline(char *header, char *field, int *offset)
+char *str_extractline(char *header, char *field, long *offset)
 {
   char *header_offset;
   char *value    =NULL;
@@ -788,14 +844,14 @@ char *str_lowup(char *name, char type)
   int i;
   if (!type) return(name);
   for (i=0; i<strlen(name); i++)
-    if (type == 'l') name[i] = tolower(name[i]);
-    else             name[i] = toupper(name[i]);
+    if (type == 'l') name[i] = lk_tolower(name[i]);
+    else             name[i] = lk_toupper(name[i]);
   return (name);
 }
 
 /*****************************************************************************
 * str_lastword: Allocate a new string containing its last word
-* A word starts with a letter followed by letters/digits/underscores
+*     A word starts with a letter followed by letters/digits/underscores
 *****************************************************************************/
 char *str_lastword(char *string)
 {
@@ -811,13 +867,13 @@ char *str_lastword(char *string)
   if (!p_end) { str_free(reverted); return(NULL); }
   p_start = p_end;
   for (p_start = p_end;
-       (p_start < reverted+strlen(reverted)) && (isalnum(*p_start) || *p_start=='_');
+       (p_start < reverted+strlen(reverted)) && (lk_isalnum(*p_start) || *p_start=='_');
        p_start++);
 
   tmp0 = str_dup_n(p_end, p_start - p_end);
   tmp1 = str_reverse(tmp0);
   /* now check that name does not start with  "_" Cnumber */
-  for (p_start=tmp1; (isdigit(*p_start) || *p_start=='_') && p_start<tmp1+strlen(tmp1); p_start++);
+  for (p_start=tmp1; (lk_isdigit(*p_start) || *p_start=='_') && p_start<tmp1+strlen(tmp1); p_start++);
   word = str_dup(p_start);
 
   reverted=str_free(reverted); tmp0=str_free(tmp0); tmp1=str_free(tmp1);
@@ -881,7 +937,7 @@ static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...)
             MyNL_ARGMAX, arg_posB[this_arg],__LINE__));
         /* get type of positional argument: follows '%' -> arg_posE[this_arg]+1 */
         fmt_pos = arg_posE[this_arg]+1;
-        fmt_pos[0] = tolower(fmt_pos[0]);
+        fmt_pos[0] = lk_tolower(fmt_pos[0]);
         if (!strchr(printf_formats, fmt_pos[0]))
           return(-print_stderr("pfprintf: Invalid positional argument type (%c != expected %c) [looktxt:pfprintf:%d]\n", 
             fmt_pos[0], fmt_args[arg_num[this_arg]-1],__LINE__));
@@ -906,7 +962,7 @@ static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...)
   for (this_arg=0; this_arg<strlen(fmt_args); this_arg++)
   {
 
-    switch(tolower(fmt_args[this_arg]))
+    switch(lk_tolower(fmt_args[this_arg]))
     {
       case 's':                       /* string */
               arg_char[this_arg] = va_arg(ap, char *);
@@ -953,7 +1009,7 @@ static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...)
     strncat(fmt_bit, arg_posE[this_arg]+1, arg_posT[this_arg]-arg_posE[this_arg]);
     fmt_bit[arg_posT[this_arg]-arg_posE[this_arg]+1] = '\0';
 
-    switch(tolower(fmt_args[arg_n]))
+    switch(lk_tolower(fmt_args[arg_n]))
     {
       case 's': fprintf(f, fmt_bit, arg_char[arg_n]);
                 break;
@@ -1000,11 +1056,11 @@ struct fileparts_struct fileparts_init(void)
 
 /*****************************************************************************
 * fileparts: Split a fully qualified file name/path into pieces
-* Returns a zero structure if called with NULL argument.
-* Returns: fields are non NULL if they exist
-*    Path is NULL if no Path
-*    Name is NULL if just a Path
-*    Extension is "" if just a dot
+*     Returns a zero structure if called with NULL argument.
+*     Returns: fields are non NULL if they exist
+*       Path is NULL if no Path
+*       Name is NULL if just a Path
+*       Extension is "" if just a dot
 *****************************************************************************/
 struct fileparts_struct fileparts(char *name)
 {
@@ -1084,10 +1140,23 @@ struct fileparts_struct fileparts_free(struct fileparts_struct parts)
 }
 
 /*****************************************************************************
+* fileparts_fullname: builds a valid file name=Path+File+Ext from file parts
+*****************************************************************************/
+char* fileparts_fullname(struct fileparts_struct parts)
+{
+  char  *FullName=NULL;
+  if (!parts.Extension)
+    FullName = str_cat(parts.Path, strlen(parts.Path) ? LK_PATHSEP_S : "", parts.Name, NULL);
+  else
+    FullName = str_cat(parts.Path, strlen(parts.Path) ? LK_PATHSEP_S : "", parts.Name, ".", parts.Extension, NULL);
+  return(FullName);
+}
+
+/*****************************************************************************
 * try_open_target: Try to open a target file for writing and close it.
-* First test at the original location, then with getcwd current dir
-* For each possibility, first tries a stat for existence
-* Returns fully qualified target file name or NULL (error)
+*     First test at the original location, then with getcwd current dir
+*     For each possibility, first tries a stat for existence
+*     Returns fully qualified target file name or NULL (error)
 *****************************************************************************/
 char *try_open_target(struct fileparts_struct parts, char force)
 {
@@ -1097,10 +1166,7 @@ char *try_open_target(struct fileparts_struct parts, char force)
   FILE  *fid;
 
   /* starts with specified Path */
-  if (!parts.Extension)
-    FullName = str_cat(parts.Path, strlen(parts.Path) ? LK_PATHSEP_S : "", parts.Name, NULL);
-  else
-    FullName = str_cat(parts.Path, strlen(parts.Path) ? LK_PATHSEP_S : "", parts.Name, ".", parts.Extension, NULL);
+  FullName = fileparts_fullname(parts);
 
   if (!FullName || !strlen(FullName)) return(NULL);
 
@@ -1125,10 +1191,7 @@ char *try_open_target(struct fileparts_struct parts, char force)
   getcwd(cwd, 1024);
   parts.Path=str_free(parts.Path); 
   parts.Path = str_dup(strlen(cwd) ? cwd : ".");
-  if (!parts.Extension)
-    FullName = str_cat(parts.Path, LK_PATHSEP_S, parts.Name, NULL);
-  else
-    FullName = str_cat(parts.Path, LK_PATHSEP_S, parts.Name, ".", parts.Extension, NULL);
+  FullName = fileparts_fullname(parts);
 
   if (!FullName || !strlen(FullName)) return(NULL);
 
@@ -1172,7 +1235,6 @@ struct file_struct file_init(void)
   file.TargetName= NULL;
   file.Extension = NULL;
   file.RootName  = NULL;
-  file.Mode = 0;
   file.Size = 0;
   file.Time = 0;
 
@@ -1181,11 +1243,11 @@ struct file_struct file_init(void)
 
 /*****************************************************************************
 * file_open: Open a source file structure
-* determine file parts, set target names and test for existence
-* returns: a source file structure
-*     Source       is NULL in case of open error
-*     TargetTxt    is NULL in case of target text creation error (exists)
-*     TargetBin    is NULL in case of target binary creation error (exists)
+*     determine file parts, set target names and test for existence
+*     returns: a source file structure
+*       Source       is NULL in case of open error
+*       TargetTxt    is NULL in case of target text creation error (exists)
+*       TargetBin    is NULL in case of target binary creation error (exists)
 *****************************************************************************/
 struct file_struct file_open(char *name, struct option_struct options)
 {
@@ -1209,7 +1271,6 @@ struct file_struct file_open(char *name, struct option_struct options)
 
     /* get info about source file */
     if (stat(file.Source, &stfile) == 0) {
-      file.Mode = stfile.st_mode;
       file.Size = stfile.st_size;
       file.Time = stfile.st_mtime;
     } else {
@@ -1237,13 +1298,13 @@ struct file_struct file_open(char *name, struct option_struct options)
     parts.Extension = str_dup(options.format.Extension);
 
     /* handle user target name option or set to default */
-   if (options.outfile.FullName) {
+    if (options.outfile.FullName) {
       if (options.outfile.Name) {
         if (strcmp(options.outfile.Name,"*")) { /* not '*.ext' */
           str_free(parts.Name); parts.Name=NULL;
           if (options.file_index > 1) { /* catenate file index */
-            char chr_index[10];
-            snprintf(chr_index, 10, "_%ld", options.file_index);
+            char chr_index[256];
+            sprintf(chr_index, "_%ld\0", options.file_index);
             parts.Name      = str_cat(options.outfile.Name, chr_index, NULL);
           } else parts.Name = str_dup(options.outfile.Name);
         }
@@ -1257,7 +1318,8 @@ struct file_struct file_open(char *name, struct option_struct options)
         parts.Extension=str_dup(options.outfile.Extension);
       }
     }
-
+    
+    /* check stdout/stderr output */
     if (options.outfile.FullName
     && (!strcmp(options.outfile.FullName, "stdout")
         || !strcmp(options.outfile.FullName, "-"))) {
@@ -1276,16 +1338,19 @@ struct file_struct file_open(char *name, struct option_struct options)
           file.Source,__LINE__);
       options.use_binary = 0;
     } else
-      file.TargetTxt = try_open_target(parts, options.force);
+      file.TargetTxt = options.test ? 
+        fileparts_fullname(parts) : try_open_target(parts, options.force);
 
     if (options.verbose >= 2) 
       printf("VERBOSE[file_open]:         file '%s': target TXT %s", 
         file.Source, file.TargetTxt);
 
+    /* handle binary output file */
     if (options.use_binary) { /* only change extension */
       str_free(parts.Extension); parts.Extension=NULL;
       parts.Extension = str_dup("bin");
-      file.TargetBin = try_open_target(parts, options.force);
+      file.TargetBin = options.test ? 
+        fileparts_fullname(parts) : try_open_target(parts, options.force);
       if (options.verbose >= 2) printf(" BIN %s", file.TargetBin);
     }
     if (options.verbose >= 2) printf("\n");
@@ -1343,6 +1408,7 @@ struct file_struct file_close(struct file_struct file)
   file.TargetName=str_free(file.TargetName);
   file.Extension =str_free(file.Extension);
   file.RootName  =str_free(file.RootName);
+  return(file);
 }
 
 /*****************************************************************************
@@ -1593,6 +1659,7 @@ struct option_struct options_init(char *pgname)
   options.out_table  = 0;
   options.out_headers= 0;
   options.verbose    = 1;
+  options.test       = 0;
   options.file_index = 0;
   options.fortran    = 0;
   options.nelements_min=0;
@@ -1658,7 +1725,7 @@ long strlist_print(struct strlist_struct list)
 
 /*****************************************************************************
 * strlist_add: Add a copy of a char* element to a strlist_struct
-* reallocates if the list is not long enough
+*     reallocates if the list is not long enough
 *****************************************************************************/
 struct strlist_struct strlist_add(struct strlist_struct *list, char *element)
 {
@@ -1719,7 +1786,7 @@ struct strlist_struct strlist_add_void(struct strlist_struct *list, void *elemen
 
 /*****************************************************************************
 * strlist_search: Search for an element in a str list
-* returns first matched element index, or -1
+*     returns first matched element index, or -1
 *****************************************************************************/
 int strlist_search(struct strlist_struct list, char *element)
 {
@@ -1842,7 +1909,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
 
   if (!field.rows || !field.columns || !file.Source) return (NULL);
   if (field.n_start > field.n_end) return (NULL);
-  if (!file.SourceHandle)           return (NULL);
+  if (!file.SourceHandle)          return (NULL);
 
   dataf = (float*)mem(field.rows*field.columns*sizeof(float));
 
@@ -1942,7 +2009,7 @@ struct table_struct *table_init(char *name)
 
 /*****************************************************************************
 * table_add: Add a data_struct element to a table_struct
-* reallocates if the list is not long enough
+*     reallocates if the list is not long enough
 *****************************************************************************/
 void table_add(struct table_struct *table, struct data_struct data)
 {
@@ -2008,17 +2075,21 @@ struct table_struct *table_free(struct table_struct *table)
   return(table);
 } /* table_free */
 
-/* looktxt functions ****************************************************** */
-void print_version(char *pgmname, struct option_struct options)
+/* ****************************************************************************
+* looktxt functions                                                          
+***************************************************************************** */ 
+void print_version(char *pgmname)
 { /* Show program help. pgmname = argv[0] */
-  printf(VERSION " (" DATE ") by " AUTHOR "\n");
-  exit(EXIT_SUCCESS);
+  printf("%s " VERSION " (" DATE ") by " AUTHOR "\n", pgmname);
+  printf("Copyright (C) 2009 Institut laue Langevin"
+         "This is free software; see the source for copying conditions.  There is NO\n"
+         "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
 } /* print_version */
 
 void print_usage(char *pgmname, struct option_struct options)
 { /* Show program help. pgmname = argv[0] */
   int i;
-  printf( VERSION " (" DATE ") by " AUTHOR "\n");
+  print_version(pgmname);
   printf( "Usage: %s [options] file1 file2 ...\n", pgmname);
   printf( "Action: Search and export numerics in a text/ascii file.\n"
   "   This program analyses files looking for numeric parts\n"
@@ -2067,6 +2138,7 @@ void print_usage(char *pgmname, struct option_struct options)
 "--verbose  or -v    Displays analysis information\n"
 "--version           Display looktxt version\n"
 "--silent            Silent mode. Only displays errors/warnings\n"
+"--test              Test mode, analyze files, but do not write any output file\n"
 "--comment=COM       Sets comment characters (ignore line if at start)\n"
 "--eol=EOL           Sets end-of-line characters\n"
 "--separator=SEP     Sets word seperators (handled as spaces)\n"
@@ -2082,15 +2154,16 @@ void print_usage(char *pgmname, struct option_struct options)
 
 /*****************************************************************************
 * file_scan: Parse input parameters starting with '-' sign (OPTIONS)
-* returns the table structure for the processed source file,
-* containing a List of data_struct
+*     returns the table structure for the processed source file,
+*     containing a List of data_struct
+* Used by: parse_files
 *****************************************************************************/
 struct table_struct *file_scan(struct file_struct file, struct option_struct options)
 {
   struct table_struct *table;
   table = table_init(file.RootName);
 
-  if (file.Source && file.TargetTxt
+  if (file.Source && file.SourceHandle && file.TargetTxt
         && (!options.use_binary || file.TargetBin)) {
     /* source file scanning process */
 
@@ -2152,11 +2225,11 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         possiblecmt = 0;
         need        = 0; /* generates end of field : end of line */
       }
-      is =   Bnumber    * (isdigit(c) != 0)
-        + Balpha     * (isprint(c) != 0)
+      is =   Bnumber    * (lk_isdigit(c) != 0)
+        + Balpha     * (lk_isprint(c) != 0)
         + Bpoint     * (c == '.')
         + Beol       * (c == '\n' || c == '\f')
-        + Bexp       * (tolower(c) == 'e' && possiblenum)
+        + Bexp       * (lk_tolower(c) == 'e' && possiblenum)
         /* must be in a number field */
         + Bsign      *((c == '-' || c == '+') && (last_is & (Bexp | Bseparator | Beol)))
         /* must be after exponent or not in
@@ -2376,7 +2449,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
     } while (c != EOF); /* end do */
     time(&EndTime);
     if (options.verbose >= 2)
-      printf("VERBOSE[file_scan]: %g [s]\n", difftime(EndTime,StartTime));
+      printf("VERBOSE[file_scan]: time elapsed %g [s]\n", difftime(EndTime,StartTime));
   } /* if (file.Source */
   return(table);
 } /* file_scan */
@@ -2387,7 +2460,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
 int file_write_tag(struct file_struct file, struct option_struct options,
                        char *section, char *name, char *value, char *format)
 {
-  int   ret;
+  int   ret=1;
   char str_struct[]=".";
   char *struct_section=NULL;
   char *struct_name=NULL;
@@ -2409,7 +2482,7 @@ int file_write_tag(struct file_struct file, struct option_struct options,
    || strstr(options.format.Name,"Matlab") || strstr(options.format.Name,"Octave"))
    str_rep(value, "'","\"");
 
-  ret = pfprintf(file.TxtHandle, format, "ssss",
+  if (file.TxtHandle) ret = pfprintf(file.TxtHandle, format, "ssss",
     file.RootName ? file.RootName : "", /* 1  BAS=PAR=ROT  */
     struct_section,/* 2  SEC  */
     struct_name,   /* 3  NAM  */
@@ -2423,16 +2496,17 @@ int file_write_tag(struct file_struct file, struct option_struct options,
 
 /*****************************************************************************
 * file_write_headfoot: Write output file Header and Footer using selected format
+* Used by: file_write_target
 *****************************************************************************/
 int file_write_headfoot(struct file_struct file, struct option_struct options, char *format)
 {
   char  *user;
   char   date[64];
   long   date_l; /* date as a long number */
-  int    ret;
+  int    ret=1;
   time_t t;
 
-  if (!file.TargetTxt || !file.TxtHandle || !format | !strlen(format)) return(0);
+  if (!file.TargetTxt || !format | !strlen(format)) return(0);
 
   if (options.verbose >= 3)
     printf("\nDEBUG[file_write_headfoot]: Writing %s header/footer\n", file.TargetTxt);
@@ -2448,7 +2522,7 @@ int file_write_headfoot(struct file_struct file, struct option_struct options, c
   strncpy(date, ctime(&t), 64);
   if (strlen(date)) date[strlen(date)-1] = '\0';
 
-  ret = pfprintf(file.TxtHandle, format, "sssslsssssl",
+  if (file.TxtHandle) ret = pfprintf(file.TxtHandle, format, "sssslsssssl",
     options.format.Name,                  /* 1   FMT */
     user,                                 /* 2   USR */
     options.option_list,                  /* 3   CMD */
@@ -2505,7 +2579,7 @@ int file_write_headfoot(struct file_struct file, struct option_struct options, c
       options.format.AssignTag);
   }
 
-  fflush(file.TxtHandle);
+  if (file.TxtHandle) fflush(file.TxtHandle);
   user=str_free(user);
   return(ret);
 
@@ -2513,6 +2587,7 @@ int file_write_headfoot(struct file_struct file, struct option_struct options, c
 
 /*****************************************************************************
 * file_write_section: Write output file Section Begin/End using selected format
+* Used by: file_write_section
 *****************************************************************************/
 int file_write_section(struct file_struct file, struct option_struct options,
                        char *section, char *format)
@@ -2536,7 +2611,7 @@ int file_write_section(struct file_struct file, struct option_struct options,
   if (options.verbose >= 2)
     printf("VERBOSE[file_write_section]: file '%s': Writing %s begin/end section\n", file.TargetTxt, section);
 
-  pfprintf(file.TxtHandle, format, "sss",
+  if (file.TxtHandle) pfprintf(file.TxtHandle, format, "sss",
     file.RootName ? file.RootName : "",     /* 1  BAS=PAR  */
     struct_section,                         /* 2  SEC  */
     section ? section : "");                /* 3  NAM=TIT */
@@ -2548,7 +2623,9 @@ int file_write_section(struct file_struct file, struct option_struct options,
 } /* file_write_section */
 
 /*****************************************************************************
-* file_write_field_data: Write output file Data Begin/End using selected format
+* file_write_field_data: Write output file Data Begin/End strings using selected format
+*     Actual Data array is written by file_write_field_array
+* Used by: file_write_target
 *****************************************************************************/
 int file_write_field_data(struct file_struct file,
                           struct option_struct options,
@@ -2580,7 +2657,7 @@ int file_write_field_data(struct file_struct file,
   } else struct_name = str_dup("Name");
 
 /* default BAS.Data.Section.Name */
-  pfprintf(file.TxtHandle, format, "ssslls",
+  if (file.TxtHandle) pfprintf(file.TxtHandle, format, "ssslls",
     struct_section,  /* 1 SEC */
     field.Name,      /* 2 TIT */
     struct_name,     /* 3 NAM */
@@ -2596,6 +2673,7 @@ int file_write_field_data(struct file_struct file,
 
 /*****************************************************************************
 * file_write_field_array: Write output file Data array using selected format
+* Used by: file_write_target
 *****************************************************************************/
 int file_write_field_array(struct file_struct file,
                           struct option_struct options,
@@ -2605,8 +2683,7 @@ int file_write_field_array(struct file_struct file,
   float *data;
   long count=0;
   long length;
-  if (options.verbose >= 3)
-    printf("\nDEBUG[file_write_field_array]: file '%s': Writing Data %s values (%ld x %ld) \n", file.TargetTxt, field.Name, field.rows, field.columns);
+  
   /* handle text for nelements <= MAX_TXT4BIN */
   /*        binary for big */
   data = data_get_float(file, field, options);
@@ -2618,7 +2695,7 @@ int file_write_field_array(struct file_struct file,
     return(0);
   }
 
-  if (field.rows*field.columns > MAX_TXT4BIN && options.use_binary && file.BinHandle)   {
+  if (((field.rows*field.columns > MAX_TXT4BIN && options.use_binary==1) || options.use_binary==2) && file.BinHandle) {
     /* write bin array in BinHandle */
     long start, end;
     start=ftell(file.BinHandle); /* file opened previously */
@@ -2630,13 +2707,16 @@ int file_write_field_array(struct file_struct file,
          "(permissions, disk full, broken link ?). Using TXT output [looktxt:file_write_field_array:%d]\n",
          field.Name, file.TargetBin,__LINE__);
     } else {
+      if (options.verbose >= 3)
+        printf("\nDEBUG[file_write_field_array]: file '%s': Writing Data %s values (%ld x %ld) \n", 
+        file.TargetBin, field.Name, field.rows, field.columns);
       if (format) {
         /* get eof Bin, store pos */
         end = ftell(file.BinHandle)-1;
         /* write reference (TargetBin, start,end, length) in TxtHandle */
 
         length=end-start+1;
-        pfprintf(file.TxtHandle, format, "slllll",
+        if (file.TxtHandle) pfprintf(file.TxtHandle, format, "slllll",
           file.TargetBin, /* 1 FIL */
           start,          /* 2 BEG */
           end,            /* 3 END */
@@ -2648,15 +2728,19 @@ int file_write_field_array(struct file_struct file,
     }
   }
   if (!flag_written) {
-    /* write in TxtHandle */
     int i,j;
     float value;
+    /* write in TxtHandle */
+    if (options.verbose >= 3)
+      printf("\nDEBUG[file_write_field_array]: file '%s': Writing Data %s values (%ld x %ld) \n", 
+        file.TargetTxt, field.Name, field.rows, field.columns);
     for (i=0; i<field.rows; i++) {
       for (j=0; j<field.columns; j++) {
         int this_count=0;
         value = data[i*field.columns+j];
-        this_count = fprintf(file.TxtHandle, "%g%c", value,
-          strstr(options.format.Name,"IDL") && i*field.columns+j < field.columns*field.rows-1 ? ',' : ' ');
+        this_count = file.TxtHandle ? 
+          fprintf(file.TxtHandle, "%g%c", value,
+            strstr(options.format.Name,"IDL") && i*field.columns+j < field.columns*field.rows-1 ? ',' : ' ') : 1;
         if (!this_count) {
           print_stderr( "Warning: Could not write properly field %s in TXT file '%s'.\n"
             "(permissions, disk full, broken link ?) [looktxt:file_write_field_array:%d]\n",
@@ -2666,12 +2750,14 @@ int file_write_field_array(struct file_struct file,
         } else count += this_count;
       }
       if (!count) break;
-      else fprintf(file.TxtHandle, strstr(options.format.Name,"IDL") ? "$\n" : "\n");
+      else if (file.TxtHandle) fprintf(file.TxtHandle, strstr(options.format.Name,"IDL") ? "$\n" : "\n");
     }
   }
-  memfree(data);
+  data = (float*)memfree(data);
   return (count > 0);
 } /* file_write_field_array */
+
+/* definition of a write structure, which gathers section information */
 
 struct write_struct {
   struct strlist_struct section_names;  /* name of found sections */
@@ -2680,7 +2766,9 @@ struct write_struct {
 
 /*****************************************************************************
 * file_write_getsections: Prepare output file using selected format
-* returns found sections structure
+*     handle metadata, fortran style, makerow, set field name
+*     returns found sections structure
+* Used by: parse_files
 *****************************************************************************/
 struct write_struct file_write_getsections(struct file_struct file,
                        struct option_struct options,
@@ -2739,6 +2827,7 @@ struct write_struct file_write_getsections(struct file_struct file,
         offset = field->c_start;
 
         do {
+          struct data_struct data;
           metadata_line = data_get_line(file, &offset); /* get line and move forward in lines. Includes EOL */
 
           if (metadata_line && strlen(metadata_line) > 1 && strstr(metadata_line, this_metadata)) {
@@ -2753,7 +2842,6 @@ struct write_struct file_write_getsections(struct file_struct file,
             str_valid_eol(metadata_line, options);
 
             /* that same field belongs to more than one MetaData: we duplicate it */
-            struct data_struct data;
             data = data_init();
             data.Name   = str_dup(this_metadata);
             data.Header = str_dup(metadata_line);       /* line following the metadata */
@@ -2828,7 +2916,6 @@ struct write_struct file_write_getsections(struct file_struct file,
             char   value[256];
             double data0=0;      /* first numerical value */
             char  *tmp;
-            char buff[20];
             if (fseek (file.SourceHandle, field->n_start-1, SEEK_SET))
               print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:file_write_getsections:%d]\n",
                 file.Source, field->n_start-1,__LINE__);
@@ -2881,7 +2968,8 @@ struct write_struct file_write_getsections(struct file_struct file,
 
 /*****************************************************************************
 * file_write_target: Write output file using selected format
-* returns the number of succesfully written fields
+*     returns the number of succesfully written fields
+* Used by: parse_files
 *****************************************************************************/
 long file_write_target(struct file_struct file,
                        struct option_struct options,
@@ -2905,29 +2993,31 @@ long file_write_target(struct file_struct file,
   
   time(&StartTime); /* compute starting time */
 
-    /* open output files */
-  if (file.TargetTxt) {
-    if (!strcmp(file.TargetTxt, "stdout") || !strcmp(file.TargetTxt, "-"))
-      file.TxtHandle=stdout;
-    else if (!strcmp(file.TargetTxt, "stderr"))
-      file.TxtHandle=stderr;
-    else file.TxtHandle = fopen(file.TargetTxt, options.openmode);
-  }
-  if (file.TargetBin && options.use_binary) {
-    if (!strcmp(file.TargetBin, "stdout") || !strcmp(file.TargetBin, "-"))
-      file.BinHandle=stdout;
-    else if (!strcmp(file.TargetBin, "stderr"))
-      file.BinHandle=stderr;
-    else file.BinHandle = fopen(file.TargetBin, options.openmode);
-  }
+  /* open output files txt/bin */
+  if (!options.test) {
+    if (file.TargetTxt) {
+      if (!strcmp(file.TargetTxt, "stdout") || !strcmp(file.TargetTxt, "-"))
+        file.TxtHandle=stdout;
+      else if (!strcmp(file.TargetTxt, "stderr"))
+        file.TxtHandle=stderr;
+      else file.TxtHandle = fopen(file.TargetTxt, options.openmode);
+    }
+    if (file.TargetBin && options.use_binary) {
+      if (!strcmp(file.TargetBin, "stdout") || !strcmp(file.TargetBin, "-"))
+        file.BinHandle=stdout;
+      else if (!strcmp(file.TargetBin, "stderr"))
+        file.BinHandle=stderr;
+      else file.BinHandle = fopen(file.TargetBin, options.openmode);
+    }
 
-  if (!file.TxtHandle) 
-    exit(print_stderr( "Error: Can not open text target file '%s' in mode %s. Exiting  [looktxt:file_write_target:%d]\n", 
-      file.TargetTxt, options.openmode,__LINE__));
-  if (!file.BinHandle && options.use_binary) {
-    print_stderr( "Warning: Can not open binary target file '%s' in mode %s. Using text [looktxt:file_write_target:%d]\n", 
-      file.TargetBin, options.openmode,__LINE__);
-    options.use_binary = 0;
+    if (!file.TxtHandle) 
+      exit(print_stderr( "Error: Can not open text target file '%s' in mode %s. Exiting  [looktxt:file_write_target:%d]\n", 
+        file.TargetTxt, options.openmode,__LINE__));
+    if (!file.BinHandle && options.use_binary) {
+      print_stderr( "Warning: Can not open binary target file '%s' in mode %s. Using text [looktxt:file_write_target:%d]\n", 
+        file.TargetBin, options.openmode,__LINE__);
+      options.use_binary = 0;
+    }
   }
 
   section_current       = str_dup(ROOT_SECTION);
@@ -2941,7 +3031,7 @@ long file_write_target(struct file_struct file,
   /* write output header. begin root section+MetaData */
   file_write_headfoot(file, options, options.format.Header);
 
-  if (strstr(options.format.Name, "IDL")) {
+  if (strstr(options.format.Name, "IDL") && file.TxtHandle) {
     /* initiate section structures */
     for (index=0; index < section_names.length; index++) {
       if (options.out_headers) {
@@ -3052,7 +3142,7 @@ long file_write_target(struct file_struct file,
         /* exit loop: name not registered yet */
         char *new_section_fields=NULL;
         if (strlen(ptable->List[index].Name)<=options.names_length && strlen(name) > options.names_length) {
-          int diff=strlen(name)-strlen(ptable->List[index].Name);
+          long diff=strlen(name)-strlen(ptable->List[index].Name);
           char *name_shorter = str_dup_n(ptable->List[index].Name, strlen(ptable->List[index].Name)-diff);
           str_free(name);  name=str_cat(name_shorter, value, NULL);
           name_shorter=str_free(name_shorter);
@@ -3108,6 +3198,7 @@ long file_write_target(struct file_struct file,
 
       /* special case for IDL */
       if (strstr(options.format.Name,"IDL")
+          && file.TxtHandle
           && (!ptable->List[index].rows || !ptable->List[index].columns
           || ptable->List[index].n_start >= ptable->List[index].n_end))
           fprintf(file.TxtHandle, "; %s %s is empty\n",
@@ -3116,50 +3207,61 @@ long file_write_target(struct file_struct file,
         /* init base field: rows x columns as BAS.Data.Section.Name */
         file_write_field_data(file, options, ptable->List[index], options.format.BeginData);
         /* special case for IDL */
-        if (strstr(options.format.Name,"IDL")) fprintf(file.TxtHandle, "[ ");
+        if (strstr(options.format.Name,"IDL") && file.TxtHandle) fprintf(file.TxtHandle, "[ ");
 
         /* writing base field */
-        if (!options.catenate || !to_catenate.length)
+        if (!options.catenate || !to_catenate.length) /* text output */
           ret += file_write_field_array(file, options, ptable->List[index],
               options.format.BinReference);
         else { /* write catenated fields (same # columns) */
+          long start, end, length;
           struct data_struct bin_field = ptable->List[index];
-          long start=ftell(file.BinHandle); /* file opened previously */
-        
+
+          start=options.use_binary && file.BinHandle ? 
+                  ftell(file.BinHandle) : 0; /* file opened previously in binary mode */
+          
+          /* force binary blocks to be written whatever be their size */
+          if (options.use_binary) options.use_binary=2; 
+          
+          /* write first block of catenate data */
           ret += file_write_field_array(file, options, ptable->List[index],
-              NULL); /* do not write bin reference */
+              NULL); /* and possibly write bin part */
           
           for (index_field=0; index_field < to_catenate.length; index_field++) {
             /* write catenated field data: rows x columns (but do not write bin reference yet) */
             struct  data_struct *field=(struct  data_struct *)(to_catenate.List[index_field]);
-            if (strstr(options.format.Name,"IDL")) fprintf(file.TxtHandle, ", $\n");
+            if (strstr(options.format.Name,"IDL") && file.TxtHandle) fprintf(file.TxtHandle, ", $\n");
+            /* write data set (text or binary) */
             file_write_field_array(file, options, *field,
-              NULL);  /* do not write the bin part */
+              NULL);  /* and write the bin part if required, but not its reference */
             ptable->List[index].rows += field->rows;
             bin_field.rows           += field->rows;
             field->rows=0; /* unactivate */
           }
-          /* now write the bin reference catenated part (only once) */
-          long end = ftell(file.BinHandle)-1;
+          /* now write the bin reference catenated part (only once) if required */
+          end = options.use_binary && file.BinHandle ? 
+                  ftell(file.BinHandle)-1 : 0;
           /* write reference (TargetBin, start,end, length) in TxtHandle */
-          long length=end-start+1;
-          pfprintf(file.TxtHandle, options.format.BinReference, "slllll",
+          length=end-start+1;
+          if (file.BinHandle && file.TxtHandle) pfprintf(file.TxtHandle, options.format.BinReference, "slllll",
             file.TargetBin, /* 1 FIL */
             start,          /* 2 BEG */
             end,            /* 3 END */
             length,         /* 4 LEN */
             bin_field.rows,     /* 5 ROW */
             bin_field.columns); /* 6 COL */
-        } /* end catenated fields */
+          if (options.use_binary) options.use_binary=1; /* back to default binary mode */
+        } /* end catenated fields (else) */
         /* end Data.Section part */
 
         /* special case for IDL */
-        if (strstr(options.format.Name,"IDL")) fprintf(file.TxtHandle, " ]\n");
+        if (strstr(options.format.Name,"IDL") && file.TxtHandle) fprintf(file.TxtHandle, " ]\n");
         file_write_field_data(file, options, ptable->List[index], options.format.EndData);
       } /* if IDL empty else ... */
     } /* if rows columns within output range */
-    /* free to_ctenate, but not its elements (which are pointers to keep) */
-    to_catenate.List=(char**)memfree(to_catenate.List); to_catenate.nalloc=to_catenate.length=0;
+    /* free to_catenate, but not its elements (which are pointers to keep) */
+    to_catenate.List=(char**)memfree(to_catenate.List);
+    to_catenate.nalloc=to_catenate.length=0;
   } /* end for (index < ptable->index) */
   
   last_valid_name=str_free(last_valid_name);
@@ -3169,7 +3271,7 @@ long file_write_target(struct file_struct file,
     file_write_section(file, options,
       section_current, options.format.EndSection);
 
-  if (strstr(options.format.Name, "IDL")) {
+  if (strstr(options.format.Name, "IDL") && file.TxtHandle) {
     /* transfert section names into returned structure */
     fprintf(file.TxtHandle, "%s = { %s:%s", file.RootName, section_names.List[0], section_names.List[0]);
     for (index=options.out_headers ? 0 : 1; index < section_names.length; index++) {
@@ -3192,7 +3294,7 @@ long file_write_target(struct file_struct file,
   
   time(&EndTime);
   if (options.verbose >= 2)
-    printf("VERBOSE[file_write_target]: %g [s]\n", difftime(EndTime,StartTime));
+    printf("VERBOSE[file_write_target]: time elapsed %g [s]\n", difftime(EndTime,StartTime));
 
   /* close output files: done at end of function parse_files */
 
@@ -3293,7 +3395,7 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     else if(!strcmp("--help",      argv[i]))
       print_usage(argv[0], options);
     else if(!strcmp("--version",      argv[i]))
-      print_version(argv[0], options);
+    { print_version(argv[0]); exit(EXIT_SUCCESS); }
     else if(!strcmp("--append",      argv[i]))
     { options.openmode[0]= 'a'; options.force = 1; }
     else if(!strncmp("--struct=", argv[i], 9)) {
@@ -3322,6 +3424,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       options.verbose    = 3;
     else if(!strcmp("--silent",    argv[i]))
       options.verbose    = 0;
+    else if(!strcmp("--test",    argv[i]))
+      options.test       = 1;
     else if(!strcmp("--catenate",  argv[i]) || !strcmp("-c",  argv[i]))
       options.catenate   = 1;
     else if(!strcmp("--fortran",   argv[i]) || !strcmp("--wrapped",   argv[i]))
@@ -3529,6 +3633,7 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     options.verbose == 0 ? " --silent"     : "",
     options.verbose == 2 ? " --verbose"    : "",
     options.verbose == 3 ? " --debug"      : "",
+    options.test == 1 ?    " --test"       : "",
     options.catenate ?     " --catenate"   : "",
     options.fortran ?      " --fortran"    : "",
     options.use_binary ?   " --binary"     : "",

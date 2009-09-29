@@ -30,10 +30,29 @@
 % Usual options are: --fast --fortran --binary --force --catenate --comment=NULL
 % List of all options can be obtained using: looktxt --help
 %
-% looktxt  version 1.0.8 (16 Sept 2009) by Farhi E. [farhi@ill.fr]
+% looktxt  version 1.0.8 (24 Sept 2009) by Farhi E. [farhi@ill.fr]
 
 % if we come there, that's because the mex file is not compiled.
 % we first try to install it, and if it fails, we go for the CC version
+
+% Looktxt: Search and export numerics in a text/ascii file
+% Copyright (C) 2009  E. Farhi, Institut Laue Langevin
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+%
+
 
 function data = looktxt(args)
 data = [];
@@ -42,8 +61,20 @@ if nargin == 0, args=''; end
 if exist('mex') && exist('texmex.c')
   looktxtmex = which('texmex.c');
   looktxtpath = fileparts(looktxtmex);
-  disp([ 'mex -O -output' looktxtpath filesep 'looktxt ' looktxtmex ])
-  mex('-O', '-output', [looktxtpath filesep 'looktxt'],looktxtmex);
+  exec = [ 'mex -O -output ' looktxtpath filesep 'looktxt ' looktxtmex ];
+  disp(exec);
+  try
+    eval(exec);
+  catch
+    if ispc
+      % assume we use LCC
+      exec=['mex -v -output ' looktxtpath filesep 'looktxt ' looktxtmex ' -L"' fullfile(matlabroot,'sys','lcc','lib') '" -lcrtdll' ];
+      disp(exec);
+      eval(exec);
+    else
+      error('Installation failed. Check your C compiler installation');
+    end
+  end
   rehash
   if nargin > 0, data = looktxt(args); end
   return
@@ -75,8 +106,31 @@ if ~exist([ file '.m' ],'file')
 end
 
 % automatic compilation of looktxt using CC
-if ~exist([ file '.m' ],'file') & s ~= 0  % executable not found
-  warning('looktxt: can not find executable. Attempting to re-install/compile looktxt');
+if ~exist([ file '.m' ],'file') & s ~= 0  % executable not found ?
+    
+  % first check if system wide looktxt exists
+  ok=0;
+  [s,w1] = system([ looktxt_exe ]);
+  if (s==0) ok=1; end  % looktxt is installed.
+  
+  % then check if local looktxt exists
+  if ~ok
+    looktxtc=which('looktxt.c');  % where C code is
+    pathstr = fileparts(looktxtc);
+    [s,w2] = system(fullfile(pathstr, looktxt_exe));
+    if (s==0) ok=1; end  % looktxt is installed (local)
+  end
+  
+  if ok
+    disp(w)
+    return
+  end
+  
+  
+  % then tries to install looktxt
+  if isempty(looktxtc), error('Can not install looktxt as source code is unavailable'); end
+  
+  % identify C compiler
   cc     = getenv('CC');     
   if isempty(cc),
     [s,w] = system('gcc'); 
@@ -84,14 +138,20 @@ if ~exist([ file '.m' ],'file') & s ~= 0  % executable not found
     else cc='cc'; end
   end
   cflags = getenv('CFLAGS'); if isempty(cflags), cflags = '-O2'; end
-  looktxtc=which('looktxt.c');  % where C code is
-  if isempty(looktxtc), error('Can not install looktxt as source code is unavailable'); end
-  pathstr = fileparts(looktxtc);
+  
+  % build executable
+  warning('looktxt: can not find executable. Attempting to re-install/compile looktxt');
   disp([ cc ' ' cflags ' -o ' pathstr filesep looktxt_exe ' ' looktxtc ]);
   [s,w] = system([ cc ' ' cflags ' -o ' pathstr filesep looktxt_exe ' ' looktxtc ]);
-  disp('looktxt: Testing the validity of executable')
-  [s,w] = system([ pathstr filesep looktxt_exe ]);
   if s ~= 0
+    disp(w);
+    return
+  end
+  
+  disp('looktxt: Testing the validity of executable')
+  [s,w] = system(fullfile(pathstr, looktxt_exe));
+  if s ~= 0
+    disp(w);
     error('looktxt: Failed to install/compile looktxt. Please install it manually.');
   else
     disp('looktxt: OK, executable is functional');
