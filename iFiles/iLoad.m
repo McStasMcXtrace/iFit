@@ -193,7 +193,6 @@ function [data, loader] = iLoad_import(filename, loader)
       if ~isempty(strfind(this_loader.name, loader)) || ~isempty(strfind(this_loader.method, loader))
         loaders_count = loaders_count+1;
         loaders{loaders_count} = this_loader;
-        this_loader.name
       end
     end
     if ~isempty(loaders) loader = loaders; end
