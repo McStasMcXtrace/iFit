@@ -105,7 +105,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.0.8"
+#define VERSION "1.1"
 #endif
 
 #ifdef __dest_os
@@ -770,6 +770,7 @@ char *str_valid_eol(char *header, struct option_struct options)
     p=header;
     while ((p = strpbrk(p, "'")) != NULL) *p = '"';
   }
+  if (header[strlen(header)-1] == ';') header[strlen(header)-1]=' ';
   return(header);
 } /* str_valid_eol */
 
@@ -1344,6 +1345,11 @@ struct file_struct file_open(char *name, struct option_struct options)
     if (options.verbose >= 2) 
       printf("VERBOSE[file_open]:         file '%s': target TXT %s", 
         file.Source, file.TargetTxt);
+    if (!file.TargetTxt) {
+      exit(print_stderr("Invalid Target: outfile=%s parts=%s - %s - %s\n", 
+        options.outfile.FullName,
+        parts.Path, parts.Name, parts.Extension));
+    }
 
     /* handle binary output file */
     if (options.use_binary) { /* only change extension */
@@ -1385,19 +1391,6 @@ struct file_struct file_close(struct file_struct file)
       print_stderr( "Warning: Could not close input Source file %s [looktxt:file_close:%d]\n",
         file.Source,__LINE__); 
     file.SourceHandle=NULL; 
-  }
-  if (file.BinHandle)    { 
-    if(fclose(file.BinHandle)) 
-      print_stderr( "Warning: Could not close output Binary file %s [looktxt:file_close:%d]\n",
-        file.TargetBin,__LINE__);
-    file.BinHandle=NULL; 
-  }
-  if (file.TxtHandle && file.TargetTxt 
-   && strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) { 
-    if(fclose(file.TxtHandle)) 
-      print_stderr( "Warning: Could not close output Text file %s [looktxt:file_close:%d]\n",
-        file.TargetTxt,__LINE__);
-    file.TxtHandle=NULL; 
   }
 
   file.Source    =str_free(file.Source);
@@ -1956,6 +1949,9 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
     p=string;
     while ((p = strpbrk(p, separator)) != NULL) *p = ' ';
     fid=tmpfile(); /* write temporary file to be read with fscanf */
+    if (!fid)
+      print_stderr( "Warning: Error in tmpfile: can not create temporary file [looktxt:data_get_float:%d]\n",
+        __LINE__);
     if (fwrite(string, sizeof(char), strlen(string), fid) < strlen(string))
       print_stderr( "Warning: Error in fwrite(%s,%i) [looktxt:data_get_float:%d]\n",
         "tmpfile", strlen(string),__LINE__);
@@ -3304,6 +3300,21 @@ long file_write_target(struct file_struct file,
       printf(" %s: {%s}\n",  section_names.List[index], section_fields.List[index]);
     }
   }
+  
+  /* we now must close Target TxT and Bin handles */
+  if (file.BinHandle)    { 
+    if(fclose(file.BinHandle)) 
+      print_stderr( "Warning: Could not close output Binary file %s [looktxt:file_write_target:%d]\n",
+        file.TargetBin,__LINE__);
+    file.BinHandle=NULL; 
+  }
+  if (file.TxtHandle && file.TargetTxt 
+   && strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) { 
+    if(fclose(file.TxtHandle)) 
+      print_stderr( "Warning: Could not close output Text file %s [looktxt:file_write_target:%d]\n",
+        file.TargetTxt,__LINE__);
+    file.TxtHandle=NULL; 
+  }
 
   return(ret);
 } /* file_write_target */
@@ -3698,6 +3709,7 @@ int main(int argc, char *argv[])
   options=options_free(options);
 
   /* returns number of processed files */
+  if (options.test) ret=0;
   return((int)ret);
 
 } /* main */
