@@ -52,7 +52,7 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   p.112-147, 1998.
 
 %   Copyright 1984-2002 The MathWorks, Inc.
-%   $Revision: 1.8 $  $Date: 2009-08-11 15:24:26 $
+%   $Revision: 1.9 $  $Date: 2009-12-18 15:05:49 $
 %
 % Olivier Salvado, Case Western Reserve University, June04
 %   Modified to work on Cost function smooth on a high scale but rough on a
@@ -61,17 +61,28 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   (2) two new options are added to initialize the starting trials (usual_delta,zero_term_delta).
 %   (3) there is a possibility to display patches for the cases with 3 trials
 
+% default options for optimset
+if nargin == 1 & strcmp(funfcn,'defaults')
+  options=optimset; % empty structure
+  options.Display='';
+  options.TolFun =1e-4;
+  options.TolX   =1e-4;
+  options.DiffMinChange=1e-6;
+  options.MaxIter='200*numberOfVariables';
+  options.MaxFunEvals='200*numberOfVariables';
+  options.usual_delta=0.05;         % 5 percent deltas for non-zero terms
+  options.zero_term_delta=0.00025;  % Even smaller delta for zero elements of x
+  options.algorithm  = [ 'Nelder-Mead simplex (by Salvado/Matlab) [' mfilename ']' ];
+  options.optimizer = mfilename;
+  x = options;
+  return
+end
 
-defaultopt = struct('Display','','MaxIter','200*numberOfVariables',...
-   'MaxFunEvals','200*numberOfVariables','TolX',1e-4,'TolFun',1e-4,'DiffMinChange',1e-6,...
-   'usual_delta',0.05,...             % 5 percent deltas for non-zero terms
-   'zero_term_delta',0.00025,...      % Even smaller delta for zero elements of x
-   'FunValCheck','off','OutputFcn',[],'algorithm', [ 'Nelder-Mead simplex (by Salvado/Matlab) [' mfilename ']' ],'optimizer',mfilename);
-
-% If just 'defaults' passed in, return the default options in X
-if nargin==1 & nargout <= 1 & isequal(funfcn,'defaults')
-   x = defaultopt;
-   return
+if nargin <= 2
+	options=[];
+end
+if isempty(options)
+  options=feval(mfilename, 'defaults');
 end
 
 if nargin < 2,
@@ -82,14 +93,16 @@ if nargin<3, options = []; end
 n = prod(size(x));
 numberOfVariables = n;
 
-printtype = optimget(options,'Display',defaultopt,'fast');
-tolx = optimget(options,'TolX',defaultopt,'fast');
-tolf = optimget(options,'TolFun',defaultopt,'fast');
-maxfun = optimget(options,'MaxFunEvals',defaultopt,'fast');
-maxiter = optimget(options,'MaxIter',defaultopt,'fast');
-xmin = optimget(options,'DiffMinChange',defaultopt,'fast');
-usual_delta = optimget(options,'usual_delta',defaultopt,'fast');
-zero_term_delta = optimget(options,'zero_term_delta',defaultopt,'fast');
+options=fmin_private_std_check(options, feval(mfilename,'defaults'));
+
+printtype   = options.Display;
+tolx        = options.TolX;
+tolf        = options.TolFun;
+maxfun      = options.MaxFunEvals;
+maxiter     = options.MaxIter;
+xmin        = options.DiffMinChange;
+usual_delta = options.usual_delta;
+zero_term_delta = options.zero_term_delta;
 
 % In case the defaults were gathered from calling: optimset('fminsearch'):
 if ischar(maxfun), maxfun = eval(maxfun); end
