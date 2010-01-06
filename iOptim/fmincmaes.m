@@ -65,7 +65,7 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -73,7 +73,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   opt=cmaes('defaults'); 
   options=optimset; % default structure
   options.TolFun =1e-4; % will also set StopFitness
-  options.MaxIter=200;
+  options.MaxIter=1000;
   options.Display='';
   options.TolX   =1e-12;
   options.MaxFunEvals   =Inf;
@@ -175,7 +175,7 @@ else
 end
 hoptions.SaveVariables  ='off';
 hoptions.LogModulo      =0;
-hoptions.Plotting='off';
+hoptions.LogPlot='off';
 
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
@@ -184,11 +184,11 @@ end
 % call the optimizer
 [pars, fval, counteval, stopflag, out] = cmaes(fun, pars(:), sigma, hoptions);
 istop=0;
-if     strmatch(stopflag, 'tolx') & fval< options.TolFun
+if     strmatch(stopflag, 'tolx')
   istop=-5;
   message = [ 'Termination parameter tolerance criteria reached (options.TolX=' ...
             num2str(options.TolX) ')' ];
-elseif strmatch(stopflag, 'tolfun') & fval< options.TolFun
+elseif strmatch(stopflag, 'tolfun')
   istop=-1;
   message = [ 'Termination function tolerance criteria reached (options.TolFun=' ...
             num2str(options.TolFun) ')' ];
@@ -404,6 +404,8 @@ defopts.TolUpX       = '1e3*max(insigma) % stop if x-changes larger TolUpX';
 defopts.TolFun       = '1e-12 % stop if fun-changes smaller TolFun';
 defopts.TolHistFun   = '1e-13 % stop if back fun-changes smaller TolHistFun';
 defopts.StopOnWarnings = 'yes  % ''no''==''off''==0, ''on''==''yes''==1 ';
+defopts.FunValCheck  = 'off';
+defopts.OutputFcn    = '';
 
 % Options defaults: Other
 defopts.DiffMaxChange = 'Inf  % maximal variable change(s), can be Nx1-vector';
@@ -447,6 +449,7 @@ defopts.LogModulo = '1    % [0:Inf] if >1 record data less frequently after gen=
 defopts.LogTime   = '25   % [0:100] max. percentage of time for recording data';
 defopts.LogFilenamePrefix = 'outcmaes  % files for output data'; 
 defopts.LogPlot = 'on   % plot while running using saved data files';
+defopts.algorithm=[ 'Evolution Strategy with Covariance Matrix Adaptation (CMA-ES by Hansen) [' mfilename ']' ];
 
 %qqqkkk 
 %defopts.varopt1 = ''; % 'for temporary and hacking purposes'; 
@@ -1484,7 +1487,7 @@ while isempty(stopflag)
   if fitness.raw(1) <= stopFitness, stopflag(end+1) = {'fitness'}; end
   if counteval >= stopMaxFunEvals, stopflag(end+1) = {'maxfunevals'}; end
   if countiter >= stopMaxIter, stopflag(end+1) = {'maxiter'}; end
-  if all(sigma*(max(abs(pc), sqrt(diagC))) < stopTolX) 
+  if stopTolX>0 && all(sigma*(max(abs(pc), sqrt(diagC))) < stopTolX) 
     stopflag(end+1) = {'tolx'};
   end
   if any(sigma*sqrt(diagC) > stopTolUpX) 
@@ -1493,7 +1496,7 @@ while isempty(stopflag)
   if sigma*max(diagD) == 0  % should never happen
     stopflag(end+1) = {'bug'};
   end
-  if countiter > 2 && myrange([fitness.sel fitness.hist]) <= stopTolFun 
+  if countiter > 2 && stopTolFun>0 && myrange([fitness.sel fitness.hist]) <= stopTolFun 
     stopflag(end+1) = {'tolfun'};
   end
   if countiter >= length(fitness.hist) && myrange(fitness.hist) <= stopTolHistFun 

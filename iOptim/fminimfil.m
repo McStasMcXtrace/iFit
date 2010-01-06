@@ -36,7 +36,7 @@ function [pars,fval,exitflag,output] = fminimfil(fun, pars, options)
 %   Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -46,7 +46,7 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Display='';
   options.TolFun =1e-6;
   options.TolX   =1e-12;
-  options.MaxIter=100;
+  options.MaxIter=1000;
   options.MaxFunEvals=1000;
   options.Hybrid = 'BFGS';
   options.algorithm  = [ 'Unconstrained Implicit filtering (by Kelley) [' mfilename ']' ];
@@ -261,7 +261,7 @@ while (ns < nscal & fcount <= flim & iquitc < iquit)
 %     new direction and line search
 %
         if quasi > 0
-          sdir=hess\dgrad;
+          sdir=hess\dgrad; % WARN: hess\dgrad can be singular
         else
           sdir=dgrad;
         end
@@ -287,7 +287,7 @@ while (ns < nscal & fcount <= flim & iquitc < iquit)
   pars=x;
   % std stopping conditions
   [istop, message] = fmin_private_std_check(pars, fval, iterations, fcount, ...
-    options, pars_prev);
+    options, pars_prev, fval_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(iterations, fcount, f, pars, fval);
   end

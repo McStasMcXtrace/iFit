@@ -1,8 +1,10 @@
-function [istop, message] = fmin_private_std_check(pars, fval, iterations, funccount, options, pars_prev)
+function [istop, message] = fmin_private_std_check(pars, fval, iterations, funccount, options, pars_prev, fval_prev)
 % standard checks
 % fmin_private_std_check(pars, fval, iterations, funccount, options
 % or
 % fmin_private_std_check(pars, fval, iterations, funccount, options, pars_prev)
+% or
+% fmin_private_std_check(pars, fval, iterations, funccount, options, pars_prev, fval_prev)
 % or
 % options=fmin_private_std_check(options);
 % or
@@ -34,32 +36,35 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
     return
   end
 
-  % normal terminations: tolerance reached
-  if options.TolFun > 0 & fval <= options.TolFun
-    if nargin >= 6
-      if options.TolX > 0 & all(abs(pars(:)-pars_prev(:)) < abs(options.TolX*pars(:)))
-        istop=-5;
-        message = [ 'Termination parameter tolerance criteria reached (options.TolX=' ...
-              num2str(options.TolX) ', options.TolFun=' ...
-              num2str(options.TolFun) ')' ];
-      end
-    end
-    if ~istop
+  % normal terminations: function tolerance reached
+  if options.TolFun
+    if fval <= options.TolFun & nargin < 7 % stop on lower threshold
       istop=-1;
       message = [ 'Termination function tolerance criteria reached (options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
     end
+    if ~istop & nargin >= 7
+      if abs(fval-fval_prev) < options.TolFun ...
+       & abs(fval-fval_prev) > 0
+        istop=-12;
+        message = [ 'Termination function change tolerance criteria reached (options.TolFun=' ...
+                num2str(options.TolFun) ')' ];
+      end
+    end
+  end
+  
+  % normal terminations: parameter variation tolerance reached, when function termination is also true
+  if (istop==-1 || istop==-12) & nargin >= 6
+    if options.TolX > 0 & all(abs(pars(:)-pars_prev(:)) < abs(options.TolX*pars(:))) ...
+                        & any(abs(pars(:)-pars_prev(:)) > 0)
+      istop=-5;
+      message = [ 'Termination parameter tolerance criteria reached (options.TolX=' ...
+            num2str(options.TolX) ', options.TolFun=' ...
+            num2str(options.TolFun) ')' ];
+    end
   end
   
   % abnormal terminations
-  % last check before returning a failed state
-  if (iterations >= floor(options.MaxIter*0.95)  | funccount >= floor(options.MaxFunEvals*.95) ) & ...
-  options.TolFun > 0 & fval <= options.TolFun*2 & ~istop
-    istop=-1;
-    message = [ 'Termination function tolerance criteria nearly reached (options.TolFun=' ...
-              num2str(options.TolFun*2) ];
-  end
-  
   if ~istop
     if options.MaxIter > 0 & iterations >= options.MaxIter
       istop=-2;

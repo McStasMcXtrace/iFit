@@ -34,17 +34,17 @@ function [pars,fval,exitflag,output] = fminlm(fun, pars, options)
 % Fletcher, R., Computer Journal 1970, 13, 317-322
 % Contrib: Miroslav Balda, balda AT cdm DOT cas DOT cz 2009
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display  = [];        %   no print of iterations
-  options.MaxIter  = 100;       %   maximum number of iterations allowed
+  options.MaxIter  = 1000;       %   maximum number of iterations allowed
   options.ScaleD   = [];        %   automatic scaling by D = diag(diag(J'*J))
-  options.TolFun   = 1e-7;      %   tolerace for final function value
-  options.TolX     = 1e-4;      %   tolerance on difference of x-solutions
+  options.TolFun   = 1e-4;      %   tolerace for final function value
+  options.TolX     = 1e-12;      %   tolerance on difference of x-solutions
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'Levenberg-Maquardt (by Balda) [' mfilename ']' ];
   options.optimizer = mfilename;
@@ -73,6 +73,8 @@ if strcmp(options.Display,'iter')
 end
 
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));
+
+if options.TolX <= 0, options.TolX=1e-12; end
 
 % call the optimizer
 [pars, fval, exitflag, output] = LMFsolve(fun, pars(:), options);
@@ -214,6 +216,7 @@ while cnt<maxit && ...          %   MAIN ITERATION CYCLE
       d  = pinv(A+l*D)*v;
     end
     x_prev=x;
+    rd_prev=rd;
     xd = x-d;
     rd = feval(FUN,xd);
     cntfun=cntfun+1;
@@ -222,7 +225,12 @@ while cnt<maxit && ...          %   MAIN ITERATION CYCLE
     Sd = rd.'*rd;
     dS = d.'*(2*v-A*d);         %   predicted reduction
 
-    R  = (S-Sd)/dS;
+    if any(dS == 0)
+      R = Rhi+1;
+    else
+      R  = (S-Sd)/dS;
+    end
+    
     if R>Rhi                    %   halve lambda if R too high
         l = l/2;
         if l<lc, l=0; end
@@ -246,7 +254,7 @@ while cnt<maxit && ...          %   MAIN ITERATION CYCLE
     %    printit(ipr,cnt,nfJ,S,x,d,l,lc)
     %end
     % std stopping conditions
-    [istop, message] = fmin_private_std_check(xd, rd, cnt, cntfun, options, x_prev);
+    [istop, message] = fmin_private_std_check(xd, rd, cnt, cntfun, options, x_prev, rd_prev);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(cnt, cntfun, FUN, xd, rd);
     end

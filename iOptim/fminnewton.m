@@ -31,7 +31,7 @@ function [pars,fval,exitflag,output] = fminnewton(fun, pars, options)
 % Reference: W. Press, Numerical Recipes, Cambridge (1988)
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -64,6 +64,7 @@ if ischar(options.MaxIter),
   options.MaxIter = eval(options.MaxIter); 
 end
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));
+if options.TolX <= 0, options.TolX=1e-12; end
 
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
@@ -153,7 +154,7 @@ while(norm(gc) > tol & itc <= maxit) & ~istop
   pars=xc; fval=fc;
 	% std stopping conditions
   [istop, message] = fmin_private_std_check(pars, fval, itc, numf, ...
-      options, pars_prev);
+      options, pars_prev, fval_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(itc, numf, f, pars, fval);
   end
@@ -223,7 +224,7 @@ mu=gc'*hc*gc;
 mu1=gc'*gc;
 dsd=-gc; 
 if ijob == 1
-   dnewt=hc\dsd;
+   dnewt=hc\dsd; % WARN: hc\dsd can be singular
 else
    dnewt=jdata;
 end
@@ -254,7 +255,7 @@ else
 %     If we get to this point, CP is in the interior and the steepest
 %     descent direction is a direction of positive curvature.
 %
-   dsd=-gc; dnewt=hc\dsd;
+   dsd=-gc; dnewt=hc\dsd; % WARN: hc\dsd can be singular
    xn=xc+dnewt;
    mu2=dsd'*dnewt;
 %
@@ -283,15 +284,17 @@ end
 %     Now adjust the TR radius using the trial point
 %
 st=xt-xc; ft=feval(f,xt); ared=ft-fc; nf=nf+1;
-pred=gc'*st + .5* (st'*hc*st);
-if ared/pred < .25
-   xt=xc;
-   trrad=norm(st)*.5;
-   idid=2;
-   if ijob == 3 idid = 4; end
-elseif ared/pred > .75 & bflag==1
-   trrad=trrad*2;
-   idid=3;
+pred=gc'*st + .5* (st'*hc*st); % WARN: pred can be 0
+if all(pred)
+  if ared/pred < .25
+     xt=xc;
+     trrad=norm(st)*.5;
+     idid=2;
+     if ijob == 3 idid = 4; end
+  elseif ared/pred > .75 & bflag==1
+     trrad=trrad*2;
+     idid=3;
+  end
 end
 newrad=trrad;
 xp=xt;

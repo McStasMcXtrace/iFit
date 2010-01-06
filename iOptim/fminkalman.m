@@ -42,7 +42,7 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -51,8 +51,8 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Display='';
   options.TolFun =1e-4;
   options.TolX   =1e-12;
-  options.MaxIter=5000;
-  options.MaxFunEvals=50000;
+  options.MaxIter=1000;
+  options.MaxFunEvals=1000;
   options.algorithm  = [ 'unscented Kalman filter optimizer (by Cao) [' mfilename ']' ];
   options.optimizer = mfilename;
   pars = options;
@@ -184,7 +184,10 @@ while 1
       fmin_private_disp_iter(k, funcount, h, x, e);
     end
     % std stopping conditions
-    [istop, message] = fmin_private_std_check(x, e, k, funcount, options, x_prev);
+    [istop, message] = fmin_private_std_check(x, e, k, funcount, options, x_prev, e_prev);
+    if strcmp(options.Display, 'iter')
+      fmin_private_disp_iter(k, funcount, h, x, e);
+    end
     if istop
       break
     end

@@ -61,8 +61,8 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Display='';
   options.TolFun =1e-4;
   options.TolX   =1e-12;
-  options.MaxIter=2500;
-  options.MaxFunEvals=2500;
+  options.MaxIter=1000;
+  options.MaxFunEvals=5000;
   options.SwarmC1=2.8;
   options.SwarmC2=1.3;
   options.PopulationSize=25;
@@ -413,9 +413,15 @@ for i = 1:OPTIONS.MaxIter,
     
     [EXITFLAG, message] = fmin_private_std_check(GBEST(i,:), GBEST_FITNESS(i), nITERATIONS, nFUN_EVALS, OPTIONS);
     
-    if EXITFLAG==-1 & max(max(abs(diff(SWARM(:,:,i),1,1)))) < OPTIONS.TolX,
+    if OPTIONS.TolX >0 & max(max(abs(diff(SWARM(:,:,i),1,1)))) < OPTIONS.TolX,
         message='Change in X less than the specified tolerance (TolX).';
         EXITFLAG = -5;
+    end
+    if OPTIONS.TolFun & abs(min(FITNESS(:,i))-GBEST_FITNESS(i)) < abs(OPTIONS.TolFun) ...
+       & abs(min(FITNESS(:,i))-GBEST_FITNESS(i)) > 0
+      EXITFLAG=-12;
+      message = [ 'Termination function change tolerance criteria reached (options.TolFun=' ...
+                num2str(OPTIONS.TolFun) ')' ];
     end
 
     if ~isempty(OPTIONS.OutputFcn)

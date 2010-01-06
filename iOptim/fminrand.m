@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -42,8 +42,8 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-4;
-  options.TolX   =0;
-  options.MaxIter=500;
+  options.TolX   =1e-12;
+  options.MaxIter=1000;
   options.MaxFunEvals=5000;
   options.algorithm  = [ 'Adaptive Random Search (by Secchi) [' mfilename ']' ];
   options.optimizer = mfilename;
@@ -57,6 +57,8 @@ end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
+
+if options.TolX < 0, options.TolX=1e-12; end
 
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 output.options=options;
@@ -73,7 +75,7 @@ function [pars,fval,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.13 $  $Date: 2009-08-11 15:24:26 $
+%   $Revision: 1.14 $  $Date: 2010-01-06 15:38:37 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C
@@ -404,7 +406,7 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
   end
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(xo, min(yo*problem), it, nS, options, xo_prev);
+  [istop, message] = fmin_private_std_check(xo, min(yo*problem), it, nS, options, xo_prev, yo_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(it, nS, S, x, yo*problem);
   end

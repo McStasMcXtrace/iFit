@@ -33,7 +33,11 @@ else
     a=[lamc^2, lamc^3; lamm^2, lamm^3];
     b=[qc; qm]-[q0 + qp0*lamc; q0 + qp0*lamm];
     c=a\b;
-    lplus=(-c(1)+sqrt(c(1)*c(1) - 3 *c(2) *qp0))/(3*c(2));
+    if c(2)
+      lplus=(-c(1)+sqrt(c(1)*c(1) - 3 *c(2) *qp0))/(3*c(2));
+    else
+      lplus=Inf;
+    end
     if lplus < lleft lplus = lleft; end
     if lplus > lright lplus = lright; end
 end
