@@ -33,7 +33,7 @@ function [pars,fval,exitflag,output] = fminmulti(fun, pars, options, constraints
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -42,8 +42,8 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Display='';
   options.TolFun =1e-6;
   options.TolX   =1e-12;
-  options.MaxIter=400;
-  options.MaxFunEvals=2000;
+  options.MaxIter=1000;
+  options.MaxFunEvals=1000;
   options.algorithm  = [ 'Multidirectional search (by Kelley) [' mfilename ']' ];
   options.optimizer = mfilename;
   pars = options;
@@ -278,7 +278,7 @@ while(itc < maxit & fval > tol & fcount <= budget & ~istop)
   options.procedure=[ mfilename ': ' how ];
   % std stopping conditions
   [istop, message] = fmin_private_std_check(pars, fval, itc, fcount, ...
-    options, pars_prev);
+    options, pars_prev, fval_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(itc, fcount, f, pars, fval);
   end

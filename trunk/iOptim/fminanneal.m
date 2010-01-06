@@ -40,7 +40,7 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 % Contrib:
 %   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -48,9 +48,9 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-4;
-  options.TolX   =0;
-  options.MaxIter=500;
-  options.MaxFunEvals=10000;
+  options.TolX   =1e-12;
+  options.MaxIter=1000;
+  options.MaxFunEvals=5000;
   options.algorithm  = [ 'Simulated Annealing (by Vandekerckhove) [' mfilename ']' ];
   options.TEMP_START=1;  
   options.TEMP_END=1e-8;     
@@ -89,7 +89,7 @@ function [parent,fval,istop,output] = anneal(loss, parent, options)
 %newsol      =@(x) (x+(randperm(length(x))==length(x))*randn/100);      % neighborhood space function
 Tinit       = 1;        % initial temp
 minT        = 1e-8;         % stopping temp
-cool        = @(T) (.8*T);        % annealing schedule
+cool        = @(T) (.95*T);        % annealing schedule
 minF        = options.TolFun;
 max_consec_rejections = options.MaxFunEvals;
 max_try     = options.MaxIter;
@@ -144,7 +144,10 @@ while 1
   newfval = feval(loss,newparam);
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(newparam, newfval, iterations, funcount, options, parent);
+  [istop, message] = fmin_private_std_check(newparam, newfval, iterations, funcount, options, parent, fval);
+  if strcmp(options.Display, 'iter')
+      fmin_private_disp_iter(iterations, funcount, FUN, newparam, newfval);
+    end
   
   if istop
     parent = newparam; 

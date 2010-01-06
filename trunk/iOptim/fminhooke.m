@@ -32,7 +32,7 @@ function [pars,fval,exitflag,output] = fminhooke(fun, pars, options)
 % R. Hooke and T. A. Jeeves, Journal of the ACM, Vol. 8, April 1961, pp. 212.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -157,7 +157,7 @@ while (ns < nscal & fcount <= bud & ~istop)
     fval=fv;
     % std stopping conditions
     [istop, message] = fmin_private_std_check(pars, fval, ns, fcount, ...
-      options, pars_prev);
+      options, pars_prev, fval_prev);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(ns, fcount, f, pars, fval);
     end
