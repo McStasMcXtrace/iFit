@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminbfgs(fun, pars, options)
 %   Shanno, D. F.,Mathematics of Computation 1970, 24, 647-656
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -73,6 +73,8 @@ if strcmp(options.Display,'iter')
 end
 
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));
+
+if options.TolX <=0, options.TolX=1e-12; end
 
 % call the optimizer
 [pars,fval,exitflag,output] = bfgswopt(pars(:), fun, options);
@@ -201,6 +203,11 @@ while(norm(gc) > tol & itc <= maxit & ~istop)
    	q0=fc; qp0=gc'*dsd; lamc=lambda; qc=ft;
     while(ft > fc + lambda*goalval )
 	    iarm=iarm+1;
+	    if lamc==0
+	    disp('bfgs: lamc==0');
+	    lamc
+	    lambda
+	    end
       if iarm==1
          lambda=polymod(q0, qp0, lamc, qc, blow, bhigh);
       else
@@ -239,7 +246,7 @@ while(norm(gc) > tol & itc <= maxit & ~istop)
 	% std stopping conditions
 	options.procedure=message;
   [istop, message] = fmin_private_std_check(pars, fval, itc, numf, ...
-      options, pars_prev);
+      options, pars_prev, fval_prev);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(itc, numf, f, pars, fval);
   end

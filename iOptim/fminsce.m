@@ -51,8 +51,8 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Display='';
   options.TolFun =1e-4;
   options.TolX   =1e-12;
-  options.MaxIter=2500;
-  options.MaxFunEvals=2500;
+  options.MaxIter=1000;
+  options.MaxFunEvals=5000;
   options.PopulationSize=5;
   options.nITER_INNER_LOOP=30;
   options.algorithm  = [ 'Shuffled Complex Evolution (by Donckels) [' mfilename ']' ];
@@ -436,11 +436,18 @@ for i = 2:OPTIONS.MaxIter,
     %% 3. no convergence,but maximum number of iterations has been reached
     %% 4. no convergence,but maximum time has been reached
     
-    [EXITFLAG, message] = fmin_private_std_check(POPULATION(1,:,i), POPULATION_FITNESS(1,i), nITERATIONS, nFUN_EVALS, OPTIONS, min(POPULATION_FITNESS(:,i)));
+    [EXITFLAG, message] = fmin_private_std_check(POPULATION(1,:,i), POPULATION_FITNESS(1,i), nITERATIONS, nFUN_EVALS, OPTIONS);
     
-    if EXITFLAG==-1 & max(max(abs(diff(POPULATION(:,:,i),1,1)))) < OPTIONS.TolX,
+    if max(max(abs(diff(POPULATION(:,:,i),1,1)))) < OPTIONS.TolX,
         message='Change in X less than the specified tolerance (TolX).';
         EXITFLAG = -5;
+    end
+    
+    if OPTIONS.TolFun & abs(min(POPULATION_FITNESS(:,i))-min(min(POPULATION_FITNESS))) < abs(OPTIONS.TolFun) ...
+       & abs(min(POPULATION_FITNESS(:,i))-min(min(POPULATION_FITNESS))) > 0
+      EXITFLAG=-12;
+      message = [ 'Termination function change tolerance criteria reached (options.TolFun=' ...
+                num2str(OPTIONS.TolFun) ')' ];
     end
 
     if ~isempty(OPTIONS.OutputFcn)
