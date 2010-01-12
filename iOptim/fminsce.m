@@ -49,8 +49,8 @@ function [pars,fval,exitflag,output] = fminsce(fun, pars, options, constraints, 
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter=1000;
   options.MaxFunEvals=5000;
   options.PopulationSize=5;

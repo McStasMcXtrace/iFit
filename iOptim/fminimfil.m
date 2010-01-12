@@ -36,7 +36,7 @@ function [pars,fval,exitflag,output] = fminimfil(fun, pars, options)
 %   Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -44,8 +44,8 @@ if nargin == 1 & strcmp(fun,'defaults')
   options=optimset;
   % add Matlab std options.
   options.Display='';
-  options.TolFun =1e-6;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter=1000;
   options.MaxFunEvals=1000;
   options.Hybrid = 'BFGS';
@@ -204,10 +204,15 @@ n=length(x0);
 %
 x=x0; xold=x0; n=length(x0); v=eye(n); xc=x0; hess=eye(n); ns=0; iquitc=0;
 iterations=0;
+
 % for ns=1:nscal
 while (ns < nscal & fcount <= flim & iquitc < iquit)
   ns=ns+1;
   itc=0; h=dscal(ns); z0=x; fval=feval(f,x); fcount=fcount+1;
+  if ns == 1
+    best_pars = x;
+    best_fval = fval;
+  end
   pars_prev=x;
   fval_prev=fval;
   stol=min_gscal*h; iarm=0; lok=1;
@@ -261,7 +266,9 @@ while (ns < nscal & fcount <= flim & iquitc < iquit)
 %     new direction and line search
 %
         if quasi > 0
-          sdir=hess\dgrad; % WARN: hess\dgrad can be singular
+          if cond(hess) < 1e8, sdir=hess\dgrad; % WARN: hess\dgrad can be singular
+          else sdir = pinv(hess)*dgrad;
+          end
         else
           sdir=dgrad;
         end
@@ -285,9 +292,13 @@ while (ns < nscal & fcount <= flim & iquitc < iquit)
 %
   end % end of sweep through the scale
   pars=x;
+  if (fval < best_fval)
+    best_fval = fval;
+    best_pars = pars;
+  end
   % std stopping conditions
   [istop, message] = fmin_private_std_check(pars, fval, iterations, fcount, ...
-    options, pars_prev, fval_prev);
+    options, pars_prev, best_fval);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(iterations, fcount, f, pars, fval);
   end
@@ -301,6 +312,9 @@ if iquitc >= iquit
 end
 
 % output results --------------------------------------------------------------
+pars = best_pars;
+fval = best_fval;
+
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
 output.algorithm  = options.algorithm;

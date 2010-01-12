@@ -52,7 +52,7 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   p.112-147, 1998.
 
 %   Copyright 1984-2002 The MathWorks, Inc.
-%   $Revision: 1.10 $  $Date: 2010-01-06 15:38:37 $
+%   $Revision: 1.11 $  $Date: 2010-01-12 16:10:02 $
 %
 % Olivier Salvado, Case Western Reserve University, June04
 %   Modified to work on Cost function smooth on a high scale but rough on a
@@ -65,8 +65,8 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 if nargin == 1 & strcmp(funfcn,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.DiffMinChange=1e-6;
   options.MaxIter='200*numberOfVariables';
   options.MaxFunEvals='200*numberOfVariables';
@@ -281,7 +281,7 @@ while func_evals < maxfun & itercount < maxiter & exitflag==0
       func_evals
    end
    options.procedure  = [ mfilename ': ' how ];
-   [exitflag, message] = fmin_private_std_check(v(:,1), min(fv), itercount, func_evals, options, v(:,end), fv(:,end));
+   [exitflag, message] = fmin_private_std_check(v(:,1), fv(:,1), itercount, func_evals, options, v(:,end), fv(:,end));
    if strcmp(options.Display, 'iter')
      fmin_private_disp_iter(itercount, func_evals, funfcn, v(:,1), min(fv));
    end

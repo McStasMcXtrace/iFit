@@ -42,15 +42,15 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter=1000;
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'unscented Kalman filter optimizer (by Cao) [' mfilename ']' ];
@@ -165,6 +165,9 @@ ne=norm2(e);
 funcount = 0;
 istop    =0;
 
+best_pars = x;
+best_fval = e;
+
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, h, x, e);
 end
@@ -184,9 +187,13 @@ while 1
       fmin_private_disp_iter(k, funcount, h, x, e);
     end
     % std stopping conditions
-    [istop, message] = fmin_private_std_check(x, e, k, funcount, options, x_prev, e_prev);
+    [istop, message] = fmin_private_std_check(x, e, k, funcount, options, x_prev, best_fval);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(k, funcount, h, x, e);
+    end
+    if (e < best_fval)
+      best_fval = e;
+      best_pars = x;
     end
     if istop
       break
@@ -194,6 +201,9 @@ while 1
     k=k+1;                                  %iteration count
 end
 % output results --------------------------------------------------------------
+x = best_pars;
+e = best_fval;
+
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = k;
 output.algorithm  = options.algorithm;
