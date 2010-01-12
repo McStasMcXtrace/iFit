@@ -36,15 +36,15 @@ function [pars,fval,exitflag,output] = fminsimplex(fun, pars, options, constrain
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter='200*numberOfVariables';
   options.MaxFunEvals='200*numberOfVariables';
   options.algorithm  = [ 'Nelder-Mead Simplex (by Kelley) [' mfilename ']' ];
@@ -224,6 +224,8 @@ histout(lhist,:)=[fcount, fv(1), norm(sgrad,inf), 0, max(diam)];
 istop=0;
 pars=mean(x');
 fval=mean(fv);
+best_pars = pars;
+best_fval = fval;
 while(itc < maxit & dist > tol & restarts < restartmax & fcount <= budget & ~istop)
     fbc=sum(fv)/(n+1);
     xbc=sum(x')'/(n+1);
@@ -340,16 +342,23 @@ end
    fval_prev=fval;
    pars=mean(x');
    fval=mean(fv);
+   if (fval < best_fval)
+    best_fval = fval;
+    best_pars = pars;
+  end
    options.procedure=[ mfilename ': ' how ];
    % std stopping conditions
    [istop, message] = fmin_private_std_check(pars, fval, itc, fcount, ...
-    options, pars_prev, fval_prev);
+    options, pars_prev, best_fval);
    if strcmp(options.Display, 'iter')
      fmin_private_disp_iter(itc, fcount, f, pars, fval);
    end
 end
 
 % output results --------------------------------------------------------------
+pars = best_pars;
+fval = best_fval;
+
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = itc;
 output.algorithm  = options.algorithm;

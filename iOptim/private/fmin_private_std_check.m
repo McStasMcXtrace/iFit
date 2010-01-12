@@ -37,17 +37,17 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
   end
 
   % normal terminations: function tolerance reached
-  if options.TolFun
-    if fval <= options.TolFun & nargin < 7 % stop on lower threshold
+  if ~isempty(options.TolFun) && options.TolFun
+    if (fval <= options.TolFun) & nargin < 7 % stop on lower threshold
       istop=-1;
-      message = [ 'Termination function tolerance criteria reached (options.TolFun=' ...
+      message = [ 'Termination function tolerance criteria reached (fval <= options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
     end
     if ~istop & nargin >= 7
       if abs(fval-fval_prev) < options.TolFun ...
        & abs(fval-fval_prev) > 0
         istop=-12;
-        message = [ 'Termination function change tolerance criteria reached (options.TolFun=' ...
+        message = [ 'Termination function change tolerance criteria reached (delta(fval)/fval < options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
       end
     end
@@ -55,12 +55,12 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
   
   % normal terminations: parameter variation tolerance reached, when function termination is also true
   if (istop==-1 || istop==-12) & nargin >= 6
-    if options.TolX > 0 & all(abs(pars(:)-pars_prev(:)) < abs(options.TolX*pars(:))) ...
-                        & any(abs(pars(:)-pars_prev(:)) > 0)
+    if ~isempty(options.TolFun) & options.TolX > 0 ...
+      & all(abs(pars(:)-pars_prev(:)) < abs(options.TolX*pars(:))) ...
+      & any(abs(pars(:)-pars_prev(:)) > 0)
       istop=-5;
-      message = [ 'Termination parameter tolerance criteria reached (options.TolX=' ...
-            num2str(options.TolX) ', options.TolFun=' ...
-            num2str(options.TolFun) ')' ];
+      message = [ 'Termination parameter tolerance criteria reached (delta(parameters)/parameters <= options.TolX=' ...
+            num2str(options.TolX) ')' ];
     end
   end
   

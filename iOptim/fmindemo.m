@@ -258,7 +258,7 @@ for index_repeat=1:repeat_num
         case -3,f='nFUN';
         case -4,f='*INF';
         case -5,f='Cx  ';
-        case {-12, -9, -8}, f='.';
+        case {-12, -9, -8}, f='c';
         otherwise
           if fval < options.TolFun, f='C';
           else f='n'; end
@@ -275,6 +275,8 @@ for index_repeat=1:repeat_num
     criteria=duration.*fvals.*fvals;
     index=strmatch('C', flags);
     criteria(index) = criteria(index)*100; % put converged methods first
+    index=strmatch('c', flags);
+    criteria(index) = criteria(index)*100; % put converged methods first
     [dummy, sorti] = sort(criteria);
     
     % compute median duration
@@ -282,10 +284,9 @@ for index_repeat=1:repeat_num
     score=1:length(optimizers);
     for index=1:length(optimizers)
       f = flags{index};
-      if f(1) == 'C',   
+      if f(1) == 'C' || f(1)=='c',   
         if duration(index) > mtime, f='-'; 
         else f='+'; end
-      elseif f(1)=='.', f=' ';
       elseif f(1)=='n', f=' '; 
       else f='*'; end
       % store results into array

@@ -45,15 +45,15 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter=1000;
   options.MaxFunEvals=10000;
   options.PopulationSize=50;
@@ -86,7 +86,7 @@ elseif nargin >= 4 & isnumeric(constraints)
     fixed = constraints; constraints=[];
     constraints.fixed = fixed;  % avoid warning for variable redefinition.
   else                          % given as lb,ub parameters (nargin==5)
-    lb = constraints;
+    lb = constraints; clear constraints;
     constraints.min = lb;
     constraints.max = ub;
   end
@@ -170,6 +170,9 @@ istop=0;
 iterations=0;
 funcount  =0;
 istop     =0;
+
+best_pars = pars;
+best_fval = fval;
 
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, fun, pars);
@@ -271,9 +274,14 @@ while 1
     pars =  max1(1,:); pars = pars(:)';
     iterations = iterations+1;
     funcount = n*iterations;
-    [istop, message] = fmin_private_std_check(pars, fval, iterations, funcount, options, pars_prev, fval_prev);
+    [istop, message] = fmin_private_std_check(pars, fval, iterations, funcount, options, pars_prev, best_fval);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(iterations, funcount, fun, pars, fval);
+    end
+    
+    if (fval < best_fval)
+      best_fval = fval;
+      best_pars = pars;
     end
   
     if istop
@@ -282,6 +290,9 @@ while 1
 end
 
 % output results --------------------------------------------------------------
+pars = best_pars;
+fval = best_fval;
+
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
 output.algorithm  = options.algorithm;

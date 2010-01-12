@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminlm(fun, pars, options)
 % Fletcher, R., Computer Journal 1970, 13, 317-322
 % Contrib: Miroslav Balda, balda AT cdm DOT cas DOT cz 2009
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -43,8 +43,8 @@ if nargin == 1 & strcmp(fun,'defaults')
   options.Display  = [];        %   no print of iterations
   options.MaxIter  = 1000;       %   maximum number of iterations allowed
   options.ScaleD   = [];        %   automatic scaling by D = diag(diag(J'*J))
-  options.TolFun   = 1e-4;      %   tolerace for final function value
-  options.TolX     = 1e-12;      %   tolerance on difference of x-solutions
+  options.TolFun   = 1e-3;      %   tolerace for final function value
+  options.TolX     = 1e-8;      %   tolerance on difference of x-solutions
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'Levenberg-Maquardt (by Balda) [' mfilename ']' ];
   options.optimizer = mfilename;
@@ -205,6 +205,8 @@ d = options.TolX;               %   vector for the first cycle
 maxit = options.MaxIter;        %   maximum permitted number of iterations
 
 istop=0;
+best_pars = x;
+best_fval = r;
 
 while cnt<maxit && ...          %   MAIN ITERATION CYCLE
     any(abs(d) >= epsx) && ...      %%%%%%%%%%%%%%%%%%%%
@@ -219,6 +221,10 @@ while cnt<maxit && ...          %   MAIN ITERATION CYCLE
     rd_prev=rd;
     xd = x-d;
     rd = feval(FUN,xd);
+    if (rd < best_fval)
+      best_fval = rd;
+      best_pars = xd;
+    end
     cntfun=cntfun+1;
 %   ~~~~~~~~~~~~~~~~~~~
     nfJ = nfJ+1;
@@ -254,7 +260,7 @@ while cnt<maxit && ...          %   MAIN ITERATION CYCLE
     %    printit(ipr,cnt,nfJ,S,x,d,l,lc)
     %end
     % std stopping conditions
-    [istop, message] = fmin_private_std_check(xd, rd, cnt, cntfun, options, x_prev, rd_prev);
+    [istop, message] = fmin_private_std_check(xd, rd, cnt, cntfun, options, x_prev, best_fval);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(cnt, cntfun, FUN, xd, rd);
     end
@@ -276,9 +282,8 @@ while cnt<maxit && ...          %   MAIN ITERATION CYCLE
     end
 end %   while
 
-xf = x;                         %   final solution
-rd = feval(FUN,xf);
-cntfun=cntfun+1;
+xf = best_pars;                         %   final solution
+rd = best_fval;
 nfJ = nfJ+1;
 Sd = rd.'*rd;
 if ipr, disp(' '), end

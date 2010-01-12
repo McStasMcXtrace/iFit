@@ -65,17 +65,17 @@ function [pars, fval, istop, output] = fmincmaes(fun, pars, options, constraints
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   opt=cmaes('defaults'); 
   options=optimset; % default structure
-  options.TolFun =1e-4; % will also set StopFitness
+  options.TolFun =1e-3; % will also set StopFitness
   options.MaxIter=1000;
   options.Display='';
-  options.TolX   =1e-12;
+  options.TolX   =1e-8;
   options.MaxFunEvals   =Inf;
   options.PopulationSize=opt.PopSize;
   options.algorithm = [ 'Evolution Strategy with Covariance Matrix Adaptation (CMA-ES by Hansen) [' mfilename ']' ];
@@ -108,7 +108,7 @@ elseif nargin >= 4 & isnumeric(constraints)
     fixed = constraints; constraints=[];
     constraints.fixed = fixed;  % avoid warning for variable redefinition.
   else                          % given as lb,ub parameters (nargin==5)
-    lb = constraints;
+    lb = constraints; clear constraints;
     constraints.min = lb;
     constraints.max = ub;
   end
