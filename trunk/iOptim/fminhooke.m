@@ -32,15 +32,15 @@ function [pars,fval,exitflag,output] = fminhooke(fun, pars, options)
 % R. Hooke and T. A. Jeeves, Journal of the ACM, Vol. 8, April 1961, pp. 212.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter='10*numberOfVariables';
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'Hooke-Jeeves direct search (by Kelley) [' mfilename ']' ];
@@ -146,6 +146,8 @@ histout=[fcount,fv,h];
 x=x0; nscal=length(scal); ns=0; 
 pars=x;
 fval=fv;
+best_pars = pars;
+best_fval = fval;
 istop=0;
 while (ns < nscal & fcount <= bud & ~istop)
     ns=ns+1; 
@@ -155,9 +157,13 @@ while (ns < nscal & fcount <= bud & ~istop)
     fval_prev=fval;
     pars=x;
     fval=fv;
+    if (fval < best_fval)
+      best_fval = fval;
+      best_pars = pars;
+    end
     % std stopping conditions
     [istop, message] = fmin_private_std_check(pars, fval, ns, fcount, ...
-      options, pars_prev, fval_prev);
+      options, pars_prev, best_fval);
     if strcmp(options.Display, 'iter')
       fmin_private_disp_iter(ns, fcount, f, pars, fval);
     end
@@ -168,6 +174,9 @@ end
 
 
 % output results --------------------------------------------------------------
+pars = best_pars;
+fval = best_fval;
+
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = ns;
 output.algorithm  = options.algorithm;

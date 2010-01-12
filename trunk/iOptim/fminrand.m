@@ -34,15 +34,15 @@ function [pars,fval,exitflag,output] = fminrand(fun, pars, options)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter=1000;
   options.MaxFunEvals=5000;
   options.algorithm  = [ 'Adaptive Random Search (by Secchi) [' mfilename ']' ];
@@ -58,7 +58,7 @@ if isempty(options)
   options=feval(mfilename, 'defaults');
 end
 
-if options.TolX < 0, options.TolX=1e-12; end
+if options.TolX <= 0, options.TolX=1e-12; end
 
 options=fmin_private_std_check(options, feval(mfilename,'defaults'));
 output.options=options;
@@ -75,7 +75,7 @@ function [pars,fval,istop,output]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.14 $  $Date: 2010-01-06 15:38:37 $
+%   $Revision: 1.15 $  $Date: 2010-01-12 16:10:02 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C
@@ -162,8 +162,10 @@ lim_distrib=floor(0.5*(1+log10(metric/options.TolX)/log10(2.0)));
 
 xOt=[];
 Ot=[];
-xo=x0;
-yo=feval(S,x0)*problem;
+xo=x0; pars=x0; fval=feval(S,x0);
+yo=fval*problem;
+best_pars = pars;
+best_fval = fval;
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, S, xo, yo*problem);
 end
@@ -182,7 +184,13 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
   for j=1:samples,   % sampling
     a=min(max(rand(n,1),0.05),0.95);
     x(:,j)=xo+(R.*asym1.*(asym2.*a-1).^distrib)/distrib;
-    y(j)=feval(S,x(:,j))*problem;
+    pars = x(:,j);
+    fval = feval(S,x(:,j));
+    y(j)=fval*problem;
+    if (fval < best_fval)
+      best_fval = fval;
+      best_pars = pars;
+    end
     nS=nS+1;
   end
 
@@ -406,7 +414,7 @@ while 1 % opt < nOt %  it < options.MaxIter & opt < nOt,
   end
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(xo, min(yo*problem), it, nS, options, xo_prev, yo_prev);
+  [istop, message] = fmin_private_std_check(xo, min(yo*problem), it, nS, options, xo_prev, best_fval);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(it, nS, S, x, yo*problem);
   end
@@ -429,8 +437,8 @@ if opt >= 1,
   xo=xo(:,i(1));
 end
 
-pars=xo(:)';
-fval=yo*problem;
+pars=best_pars;
+fval=best_fval;
 
 % output results --------------------------------------------------------------
 if istop==0, message='Algorithm terminated normally'; end

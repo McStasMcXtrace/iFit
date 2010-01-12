@@ -35,15 +35,15 @@ function [pars,fval,exitflag,output] = fminbfgs(fun, pars, options)
 %   Shanno, D. F.,Mathematics of Computation 1970, 24, 647-656
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter='20*numberOfVariables';
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'Broyden-Fletcher-Goldfarb-Shanno (by Kelley) [' mfilename ']' ];
@@ -127,7 +127,7 @@ budget= options.MaxFunEvals;
 blow=.1; bhigh=.5;
 numf=0; numg=0; numh=0;
 itc=0; xc=x0;
-maxarm=10; nsmax=50; debug=0;
+maxarm=50; nsmax=50; debug=0;
 istop=0; message='';
 %
 n=length(x0);
@@ -139,6 +139,9 @@ numf=numf+1; numg=numg+1;
 go=zeros(n,1); 
 alpha=zeros(nsmax,1); beta=alpha;
 sstore=zeros(n,nsmax); ns=0;
+
+best_pars = pars;
+best_fval = fval;
 %
 %	dsdp = - H_c^{-1} grad_+ if ns > 0
 %
@@ -242,17 +245,27 @@ while(norm(gc) > tol & itc <= maxit & ~istop)
 			beta(ns-1)=b0/(b*lambda);
 		end
 	end
+	
+	if (fc < best_fval)
+    best_fval = fc;
+    best_pars = xc;
+  end
+  
 	pars=xc; fval=fc;
+	
 	% std stopping conditions
 	options.procedure=message;
   [istop, message] = fmin_private_std_check(pars, fval, itc, numf, ...
-      options, pars_prev, fval_prev);
+      options, pars_prev, best_fval);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(itc, numf, f, pars, fval);
   end
 end
 
 % output results --------------------------------------------------------------
+pars = best_pars;
+fval = best_fval;
+
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = itc;
 output.algorithm  = options.algorithm;

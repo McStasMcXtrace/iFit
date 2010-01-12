@@ -31,15 +31,15 @@ function [pars,fval,exitflag,output] = fminnewton(fun, pars, options)
 % Reference: W. Press, Numerical Recipes, Cambridge (1988)
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter='20*numberOfVariables';
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'Steihaug Newton-CG-Trust (by Kelley) [' mfilename ']' ];
@@ -118,6 +118,8 @@ fc = feval(f,xc);
 gc = gradest(f, xc); gc=reshape(gc, size(xc));
 pars=xc;
 fval=fc;
+best_pars = pars;
+best_fval = fval;
 numf=1; numg=1; numh=0; istop=0; message='';
 % Iniitalize the TR radius, not a profound choice.
 
@@ -152,15 +154,22 @@ while(norm(gc) > tol & itc <= maxit) & ~istop
     numf=numf+1; numg=numg+1;
   end
   pars=xc; fval=fc;
+  if (fval < best_fval)
+    best_fval = fval;
+    best_pars = pars;
+  end
 	% std stopping conditions
   [istop, message] = fmin_private_std_check(pars, fval, itc, numf, ...
-      options, pars_prev, fval_prev);
+      options, pars_prev, best_fval);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(itc, numf, f, pars, fval);
   end
 end
 
 % output results --------------------------------------------------------------
+pars = best_pars;
+fval = best_fval;
+
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = itc;
 output.algorithm  = options.algorithm;
@@ -224,7 +233,10 @@ mu=gc'*hc*gc;
 mu1=gc'*gc;
 dsd=-gc; 
 if ijob == 1
-   dnewt=hc\dsd; % WARN: hc\dsd can be singular
+    if cond(hc) > 1e8, dnewt=pinv(hc)*dsd; 
+    else
+        dnewt=hc\dsd; % WARN: hc\dsd can be singular
+    end
 else
    dnewt=jdata;
 end
@@ -255,7 +267,11 @@ else
 %     If we get to this point, CP is in the interior and the steepest
 %     descent direction is a direction of positive curvature.
 %
-   dsd=-gc; dnewt=hc\dsd; % WARN: hc\dsd can be singular
+   dsd=-gc; 
+   if cond(hc) > 1e8, dnewt=pinv(hc)*dsd; 
+    else
+        dnewt=hc\dsd; % WARN: hc\dsd can be singular
+    end
    xn=xc+dnewt;
    mu2=dsd'*dnewt;
 %

@@ -35,15 +35,15 @@ function [pars,fval,exitflag,output] = fmingradrand(fun, pars, options)
 % Reference: Computer Methods in Applied Mechanics & Engg, Vol  19, (1979) 99
 % Contrib: Sheela V. Belur(sbelur@csc.com) 1998
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter=1000;
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'Random Gradient (by Belur) [' mfilename ']' ];
@@ -97,6 +97,10 @@ istop=0;
 stdx=sqrt(options.TolFun);
 nor=0;fmn0=fmn;
 iterations=0; funcount=0;
+
+best_pars = x;
+best_fval = f(1);
+
 while(nor<options.MaxIter)
   x_prev=x;
   f_prev=fmn;
@@ -129,8 +133,13 @@ while(nor<options.MaxIter)
     nor=0;fmn0=fmn;
   end
   
+  if (fmn < best_fval)
+    best_fval = fmn;
+    best_pars = x;
+  end
+  
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(x, fmn, iterations, funcount, options, x_prev, f_prev);
+  [istop, message] = fmin_private_std_check(x, fmn, iterations, funcount, options, x_prev, best_fval);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(iterations, funcount, fun, x, fmn);
   end
@@ -142,6 +151,9 @@ while(nor<options.MaxIter)
 end
 
 % output results --------------------------------------------------------------
+x   = best_pars;
+fmn = best_fval;
+
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
 output.algorithm  = options.algorithm;

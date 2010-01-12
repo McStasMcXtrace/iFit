@@ -35,15 +35,15 @@ function [pars,fval,exitflag,output] = fminpowell(fun, pars, options)
 % Reference: Brent, Algorithms for minimization without derivatives, Prentice-Hall (1973)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % default options for optimset
 if nargin == 1 & strcmp(fun,'defaults')
   options=optimset; % empty structure
   options.Display='';
-  options.TolFun =1e-4;
-  options.TolX   =1e-12;
+  options.TolFun =1e-3;
+  options.TolX   =1e-8;
   options.MaxIter=1000;
   options.MaxFunEvals=5000;
   options.Hybrid = 'Coggins';
@@ -93,7 +93,7 @@ function [pars,fval,istop,output]=powell(S,x0,options)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.11 $  $Date: 2010-01-06 15:38:37 $
+%   $Revision: 1.12 $  $Date: 2010-01-12 16:10:02 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
 mxit=options.MaxIter;
@@ -105,8 +105,8 @@ else method=0; end
 istop=0;
 
 % original code
-x0=x0(:);
-y0=feval(S,x0)*problem;
+x0=x0(:); pars=x0; fval = feval(S,x0);
+y0=fval*problem;
 n=size(x0,1);
 D=eye(n);
 
@@ -115,14 +115,17 @@ yo=y0;
 it=0;
 nS=1;
 
+best_pars = pars;
+best_fval = fval;
+
 if strcmp(options.Display,'iter')
   fmin_private_disp_start(mfilename, S, xo, yo*problem);
 end
 
 while it < mxit,
                    % exploration
-  xo_prev=xo;
-  yo_prev=yo*problem;
+  xo_prev=pars;
+  yo_prev=fval;
   delta=0;
   k=1;
   for i=1:n,
@@ -146,8 +149,8 @@ while it < mxit,
   end
                 % progression
   it=it+1;
-  xo=2*x-x0;
-  Ot=feval(S,xo)*problem;
+  xo=2*x-x0; fval=feval(S,xo); pars=xo;
+  Ot=fval*problem;
   nS=nS+1;
   di=y0-Ot;
 
@@ -178,18 +181,19 @@ while it < mxit,
     nS=nS+nS1;
   end
   
-  pars=x0(:)';
-  fval=yo*problem;
-
-  if norm2(xo-x0) < tol*(0.1+norm2(x0)) & abs(yo-y0) < tol*(0.1+abs(y0)),
-    break;
+  if (fval < best_fval)
+    best_fval = fval;
+    best_pars = pars;
   end
 
-  y0=yo;
-  x0=xo;
+  if norm2(xo-x0) < tol*(0.1+norm2(x0)) & abs(yo-y0) < tol*(0.1+abs(y0)),
+    istop=-1;
+    message='Termination function tolerance criteria reached';
+    break;
+  end
   
   % std stopping conditions
-  [istop, message] = fmin_private_std_check(x0, fval, it, nS, options, xo_prev, yo_prev);
+  [istop, message] = fmin_private_std_check(x0, fval, it, nS, options, xo_prev, best_fval);
   if strcmp(options.Display, 'iter')
     fmin_private_disp_iter(it, nS, S, x0, fval);
   end
@@ -197,9 +201,15 @@ while it < mxit,
   if istop
     break
   end
+  
+  y0=yo;
+  x0=xo;
 end % while
 
 % output results --------------------------------------------------------------
+pars = best_pars;
+fval = best_fval;
+
 if istop==0, message='Algorithm terminated normally'; end
 output.iterations = it;
 output.algorithm  = options.algorithm;
@@ -233,7 +243,7 @@ end
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.11 $  $Date: 2010-01-06 15:38:37 $
+%   $Revision: 1.12 $  $Date: 2010-01-12 16:10:02 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,
@@ -317,7 +327,7 @@ function [stepsize,xo,Ot,nS,it]=coggins(S,x0,d,problem,tol,mxit,stp)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.11 $  $Date: 2010-01-06 15:38:37 $
+%   $Revision: 1.12 $  $Date: 2010-01-12 16:10:02 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
  
  if nargin < 3,
@@ -412,7 +422,7 @@ function [x1,x2,nS]=bracket(S,x0,d,problem,stepsize)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.11 $  $Date: 2010-01-06 15:38:37 $
+%   $Revision: 1.12 $  $Date: 2010-01-12 16:10:02 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,
