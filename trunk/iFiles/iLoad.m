@@ -72,7 +72,7 @@ if ischar(filename) & length(filename) > 0
     [filepath,name,ext,versn]=fileparts(filename);  % 'file' to search
     if isempty(filepath), filepath = pwd; end
     this_dir = dir(filename);
-    if isempty(this_dir), this_dir = dir(filepath); end
+    if isempty(this_dir), return; this_dir = dir(filepath); end
     index = find(real([this_dir.isdir]) == 0);
     this_dir = char(this_dir.name);
     this_dir = (this_dir(index,:));
