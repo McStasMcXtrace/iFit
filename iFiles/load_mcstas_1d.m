@@ -21,9 +21,9 @@ Datablock = ['this.' getalias(a,'Signal')];
 % First column is the scan parm, we denote that 'x'
 setalias(a,'x',[Datablock '(:,1)'],xlabel);
 setalias(a,'Signal',[Datablock '(:,2)'],ylabel);
-if ~isempty(findfield(a, 'Error')) 
+try
   setalias(a,'Error',[Datablock '(:,3)']);
-else
+catch
   setalias(a,'Error',0);
 end
 setalias(a,'E','Error');
