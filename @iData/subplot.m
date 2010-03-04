@@ -4,6 +4,7 @@ function h=subplot(a, varargin)
 %   @iData/subplot plot each iData element in a subplot
 %     subplot(a, [])    uses the best subplot fit
 %     subplot(a, [m n]) uses an m x n subplot grid
+%     subplot(a, [m n], options) sends options to the plot
 %
 % input:  s: object or array (iData)
 %         [m n]: optional subplot grid dimensions
@@ -11,7 +12,7 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/plot
 
 % EF 23/11/07 iData implementation

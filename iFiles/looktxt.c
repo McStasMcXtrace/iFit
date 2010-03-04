@@ -105,7 +105,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.1"
+#define VERSION "1.1 $Revision: 1.14 $"
 #endif
 
 #ifdef __dest_os
