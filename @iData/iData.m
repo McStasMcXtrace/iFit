@@ -19,7 +19,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also: iData, iData/load, methods
 
 % object definition and converter
@@ -33,7 +33,7 @@ function outarray = iData(varargin)
 
 outarray = [];
 
-if nargin == 0
+if nargin == 0  % create empty object
   % create a new iData object
   a.Title        = '';          % Data title
   
@@ -67,7 +67,7 @@ if nargin == 0
   a.Creator      =  version(a);     % Creator (program) name
   outarray = [ outarray a ];
   return
-else
+else  % convert input argument into object
   if isa(varargin{1}, 'iData') & length(varargin{1}) > 1
     in = varargin{1};
     for index=1:length(in)
@@ -78,7 +78,7 @@ else
       assignin('caller',inputname(1),outarray)
     end
     return
-  elseif isnumeric(varargin{1}) & length(varargin) > 1
+  elseif isnumeric(varargin{1}) & length(varargin) > 1  % array -> iData
     index=1;
     while index <= length(varargin)
       if isnumeric(varargin{index})
@@ -89,7 +89,6 @@ else
           end
         end
         % numerics are from i to j1
-        disp([index j1])
         d = iData(varargin{j1});
         for k1=1:(j1-index)
           d = set(d, [ 'Data.axis' num2str(k1) ], varargin{index+k1-1});
@@ -101,9 +100,9 @@ else
         outarray = [ outarray iData(varargin{i}) ];
       end
       index = index+1;
-    end
+    end % while
     return
-  elseif ischar(varargin{1}) & length(varargin) > 1
+  elseif ischar(varargin{1}) & length(varargin) > 1 % filename -> iData
     out = load(iData, varargin{:});        % load file(s) with additional arguments
 
   else
@@ -114,6 +113,59 @@ else
       out = in;                     % just makes a check
     elseif isstruct(in)
       out = iData_struct2iData(in); % convert struct to iData
+    elseif ishandle(in)             % convert Handle Graphics Object
+      if strcmp(get(in,'type'),'hggroup')
+        t = get(in,'DisplayName');
+        if isempty(t), t=get(in,'Tag'); end
+        h = get(in,'Children');
+        out = iData(h(1)); % fisrt item
+        out = set(out,'Title', t);
+        out = set(out, 'DisplayName', t);
+      elseif strcmp(get(in,'type'),'line')
+        x = get(in,'xdata'); x = x(find(~isnan(x)));
+        y = get(in,'ydata'); y = y(find(~isnan(y)));
+        t = get(in,'DisplayName');
+        if isempty(t), t=get(in,'Tag'); end
+        c = get(in,'color');
+        m = get(in,'marker');
+        l = get(in,'linestyle');
+        out=iData(x,y);
+        out.Title = t;
+        out.DisplayName = t;
+        out.Label=[ 'line ' l ' marker ' m ' color ' num2str(c) ];
+      elseif strcmp(get(in,'type'),'surface')
+        x = get(in,'xdata'); x = x(find(~isnan(x)));
+        y = get(in,'ydata'); y = y(find(~isnan(y)));
+        z = get(in,'zdata'); z = z(find(~isnan(z)));
+        c = get(in,'cdata'); c = c(find(~isnan(c)));
+        l = get(in,'linestyle');
+        t = get(in,'DisplayName');
+        if isempty(t), t=get(in,'Tag'); end
+        if all(z == c)
+          out=iData(x,y,z);
+        else
+          out=iData(x,y,z,c);
+        end
+        out.Title = t;
+        out.DisplayName = t;
+        out.Label=[ 'surface ' t ' line ' l ];
+      else
+        h = [ findobj(in, 'type','line') findobj(in, 'type','surface') ];
+        try t = get(in,'DisplayName'); catch t=[]; end
+        if isempty(t)
+          try t = get(in,'Tag'); catch t=[]; end
+        end
+        out = [];
+        for index=1:length(h)
+          this_out = iData(h(index));
+          if isempty(this_out.Title) && ~isempty(t)
+            this_out.Title = t;
+            this_out.DisplayName = t;
+          end
+          if ~isempty(t), this_out.Source = t; end
+          out = [ out this_out ];
+        end
+      end
     elseif isnumeric(in)
       out = iData_num2iData(in);    % convert scalar/vector/matrix to iData
     elseif iscell(in)
