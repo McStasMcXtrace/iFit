@@ -11,11 +11,11 @@ function a = label(a, alias, lab)
 % output: b: object or array (iData)
 % ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel
 
 if nargin < 2, alias=[]; end
-if isempty(alias), return; end
+if isempty(alias), a=a.Label; return; end
 if isnumeric(alias)
 	[link, lab0] = getaxis(a, num2str(alias));
 else
