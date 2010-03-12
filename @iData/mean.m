@@ -14,8 +14,8 @@ function b = mean(a, dim)
 % output: s: mean of elements (iData/scalar)
 % ex:     c=mean(a);
 %
-% Version: $Revision: 1.8 $
-% See also iData, iData/floor, iData/ceil, iData/round, iData/combine, iData/mean
+% Version: $Revision: 1.9 $
+% See also iData, iData/std, iData/combine, iData/mean
 
 if nargin < 2, dim=1; end
 if length(a) > 1
@@ -45,11 +45,7 @@ elseif dim == 0
   return  % scalar
 else  % dim < 0
   % accumulates on all axes except the rank specified
-  for index=1:ndims(a)
-    if index~=-dim, s = mean(s,index); end
-  end
-  setaxis(b, 1, getaxis(a, num2str(-dim)));
-  setalias(b,'Signal', s, [ 'mean projection of ' label ]);     % Store Signal
+  b = camproj(a, -dim);
 end
 b.Command=cmd;
 b = iData_private_history(b, mfilename, b, dim);

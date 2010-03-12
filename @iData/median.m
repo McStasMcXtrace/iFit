@@ -14,8 +14,8 @@ function b = median(a, dim)
 % output: s: median of elements (iData/scalar)
 % ex:     c=median(a);
 %
-% Version: $Revision: 1.4 $
-% See also iData, iData/floor, iData/ceil, iData/round, iData/combine, iData/median
+% Version: $Revision: 1.5 $
+% See also iData, iData/std, iData/combine, iData/median
 
 if nargin < 2, dim=1; end
 if length(a) > 1
