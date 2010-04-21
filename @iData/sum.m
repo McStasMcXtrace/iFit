@@ -12,8 +12,8 @@ function s = sum(a,dim)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision: 1.10 $
-% See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj
+% Version: $Revision: 1.11 $
+% See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is sum(iData, dim)']);
@@ -37,7 +37,7 @@ b=copyobj(a);
 setaxis(b, [], getaxis(b)); % delete all axes
 if all(dim > 0)
   for index=1:length(dim(:))
-    s = sum(s, dim(index));
+    s = trapz(s, dim(index));
   end
   ax_index=1;
   for index=1:ndims(a)
@@ -49,7 +49,7 @@ if all(dim > 0)
   setalias(b,'Signal', s, [mfilename ' of ' label ]);     % Store Signal
 elseif dim == 0
   for index=1:ndims(a)
-    s = sum(s, index);
+    s = trapz(s, index);
   end
   return  % scalar
 end
