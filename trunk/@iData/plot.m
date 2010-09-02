@@ -9,19 +9,20 @@ function h=plot(a, method)
 %     dimensionalities are not handled.
 %
 % input:  s: object or array (iData)
-%         method: optional type of plot to render for 2D and 3D views, within
+%         method: optional type of plot to render for 2D and 3D views, within:
 %                 surf, mesh, contour, contour3, surfc, surfl, contourf, stem3
 %                 flat, interp, faceted, transparent, light, clabel
 %                 plot3, scatter3, view2, view3, axis tight, axis auto
 %                 For 1D plots, method is a string to specify color/symbol.
 % output: h: graphics object handles (cell)
-% ex:     plot(iData(rand(10), 'surfc interp transparent'); plot(iData(1:10), 'r-');
+% ex:     plot(iData(rand(10)), 'surfc interp transparent'); plot(iData(1:10), 'r-');
+%         [x,y,z,v]=flow; c=iData(x,y,z,v); plot(c,'surf');
 %
 % Contributed code (Matlab Central): 
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.36 $
+% Version: $Revision: 1.37 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 
@@ -74,7 +75,7 @@ case 1  % vector type data (1 axis + signal) -> plot
     h = plot(a, method);
     return
   else 
-    if all(e == 0)
+    if all(e == 0) | length(x) ~= length(e)
       if length(method), h = plot(x,y, method);
       else h = plot(x,y); end
     else
@@ -162,7 +163,12 @@ case 3  % 3d data sets: volumes
         hold off
       end
     end;
-    set(h, 'Tag', a.Tag);
+    try
+      set(h, 'Tag', a.Tag);
+    catch
+      h = findobj(gca,'type','patch');
+      set(h, 'Tag', a.Tag);
+    end
     zlabel(zlab);
   end
 otherwise
