@@ -7,7 +7,7 @@ function a=find(a)
 % output: v: value of the iData Signal (logical)
 % ex:     'find(iData(rand(10)))'
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also  iData/find, iData
 
 % EF 11/07/00 creation
@@ -16,7 +16,7 @@ function a=find(a)
 if length(a) > 1
   b = {};
   for index=1:length(a(:))
-    a{index} = iData_private_unary(a(index), op);
+    b{index} = iData_private_unary(a(index), mfilename);
   end
   a = reshape(b, size(a));
   return
