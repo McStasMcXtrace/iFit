@@ -7,7 +7,7 @@ function a=single(a)
 % output: v: value of the iData Signal (single)
 % ex:     'single(iData(rand(10)))'
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 
@@ -17,7 +17,7 @@ function a=single(a)
 if length(a) > 1
   b = cell(size(a));
   for index=1:length(a(:))
-    b{index} = iData_private_unary(a(index), op);
+    b{index} = iData_private_unary(a(index), mfilename);
   end
   a = reshape(b, size(a));
   return
