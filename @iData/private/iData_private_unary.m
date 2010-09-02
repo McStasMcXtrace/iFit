@@ -3,7 +3,12 @@ function b = iData_private_unary(a, op)
 
 % handle input iData arrays
 if length(a(:)) > 1
-  b = a;
+  switch op
+  case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical'}
+    b = ones(size(a));
+  otherwise
+    b =a;
+  end
   for index=1:length(a(:))
     b(index) = iData_private_unary(a(index), op);
   end
@@ -16,7 +21,7 @@ s = get(b,'Signal');
 [dummy, sl] = getaxis(b, '0');
 
 % operation on signal
-s = feval(op, s);
+new_s = feval(op, s);
 
 % operation on Error
 e = get(b,'Error');
@@ -40,7 +45,7 @@ case 'sin'
 	e = e.*cos(s);
 case 'sqrt'
 	e = e/(2*sqrt(s));
-    m = m.^2;
+  m = m.^2;
 case 'tan'
 	c = cos(s);
 	e = e./(c.*c);
@@ -55,7 +60,7 @@ case { 'transpose', 'ctranspose'}; % .' and ' respectively
   	if ~isempty(x1), b= setaxis(b, 2, x1, transpose(v1)); end
   end
 case {'sparse','full'}
-  % apply same operator on error
+  % apply same operator on error and Monitor
 	e = feval(op, e);
 	b = set(b, 'Monitor', feval(op, get(b,'Monitor')));
 case {'floor','ceil','round'}	
@@ -66,7 +71,7 @@ case {'sign','isfinite','isnan','isinf'}
 	e = zeros(size(s));
 case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical','double','single','logical','find'}
 	% result is a single value
-	b = s;
+	b = new_s;
 	return
 case {'uminus','abs','real','imag','uplus','not'}
 	% retain error, do nothing
@@ -75,8 +80,8 @@ otherwise
 end
 
 % update object
-b = set(b, 'Signal', s, 'Error', abs(e));
-b = setalias(b, 'Signal', s, [  op '(' sl ')' ]);
+b = set(b, 'Signal', new_s, 'Error', abs(e));
+b = setalias(b, 'Signal', new_s, [  op '(' sl ')' ]);
 b.Command=cmd;
 b = iData_private_history(b, op, b);  
 
