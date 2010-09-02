@@ -7,7 +7,7 @@ function a=logical(a)
 % output: v: value of the iData Signal (logical)
 % ex:     'logical(iData(rand(10)))'
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 
@@ -17,7 +17,7 @@ function a=logical(a)
 if length(a) > 1
   b = cell(size(a));
   for index=1:length(a(:))
-    b{index} = iData_private_unary(a(index), op);
+    b{index} = iData_private_unary(a(index), mfilename);
   end
   a = reshape(b, size(a));
   return
