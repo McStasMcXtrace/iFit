@@ -7,6 +7,7 @@ function [filename,format] = saveas(a, varargin)
 % input:  s: object or array (iData)
 %         filename: name of file to save to. Extension, if missing, is appended (char)
 %                   If the filename already exists, the file is overwritten.
+%                   If given as filename='gui', a file selector pops-up
 %         format: data format to use (char), or determined from file name extension
 %           'm'   save as a flat Matlab .m file (a function which returns an iData object or structure)
 %           'mat' save as a '.mat' binary file (same as 'save')
@@ -17,6 +18,7 @@ function [filename,format] = saveas(a, varargin)
 %           'xls' save as an Excel sheet (requires Excel to be installed)
 %           'svg' save as Scalable Vector Graphics (SVG) format
 %           'vrml' save as Virtual Reality VRML 2.0 file
+%           If given as format='gui' and filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
 %
@@ -27,9 +29,10 @@ function [filename,format] = saveas(a, varargin)
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/load, iData/getframe, save
 
+% handle array of objects to save iteratively
 if length(a) > 1
   if length(varargin) >= 1, filename_base = varargin{1}; 
   else filename_base = ''; end
@@ -46,16 +49,18 @@ if length(a) > 1
   return
 end
 
+% default options checks
 if nargin < 2, filename = ''; else filename = varargin{1}; end
 if isempty(filename), filename = a.Tag; end
 if nargin < 3, format=''; else format = varargin{2}; end
 if nargin < 4, options=''; else options=varargin{3}; end
 if isempty(options) && ndims(a) >= 2, options='view2 axis tight'; end
 
+% supported format list
 filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
-          '*.mat', 'Matlab binary file (*.mat)'; ...
-          '*.pdf', 'Portable Document Format (*.pdf)'; ...
-          '*.eps', 'Encapsulated PostScrip (color, *.eps)'; ...
+      '*.mat', 'Matlab binary file (*.mat)'; ...
+      '*.pdf', 'Portable Document Format (*.pdf)'; ...
+      '*.eps', 'Encapsulated PostScrip (color, *.eps)'; ...
       '*.ps', 'PostScrip (color, *.ps)'; ...
       '*.nc', 'NetCDF (*.nc)'; ...
       '*.hdf', 'Hierarchical Data Format (compressed, *.hdf, *.nx)'; ...
@@ -67,7 +72,8 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
       '*.wrl', 'Virtual Reality file (*.wrl)'};
 
-if strcmp(filename, 'gui')
+% filenape='gui' pops-up a file selector
+if strcmp(filename, 'gui')  
   [filename, pathname, filterindex] = uiputfile( ...
        filterspec, ...
         ['Save ' a.Title ' as...'], a.Tag);
@@ -82,6 +88,7 @@ if strcmp(filename, 'gui')
   end
 end
 
+% format='gui' pops-up a list of available file formats, if not given from file extension
 if strcmp(format, 'gui')
   liststring= filterspec{:,2};
   format_index=listdlg('ListString',liststring,'Name',[ 'Select format to save ' filename ], ...
@@ -103,6 +110,7 @@ elseif isempty(format) & isempty(ext)
   format='m'; filename = [ filename '.m' ];
 end
 
+% handle some format aliases
 switch format
 case 'jpg'
   format='jpeg';
@@ -114,8 +122,10 @@ case 'netcdf'
   format='nc';
 end
 
+% ==============================================================================
+% handle specific format actions
 switch format
-case 'm'
+case 'm'  % single m-file Matlab output (text), with the full object description
   str = [ 'function this=' name sprintf('\n') ...
           '% Original data: ' class(a) ' ' inputname(1) ' ' a.Tag sprintf('\n') ...
           '%' sprintf('\n') ...
@@ -131,9 +141,9 @@ case 'm'
   end
   fprintf(fid, '%s', str);
   fclose(fid);
-case 'mat'
+case 'mat'  % single mat-file Matlab output (binary), with the full object description
   save(filename, a);
-case {'hdf','hdf5', 'nc'}
+case {'hdf','hdf5', 'nc'} % HDF4, HDF5, NetCDF formats: converts fields to double and chars
   [fields, types, dims] = findfield(a);
   towrite={};
   for index=1:length(fields(:)) % get all field names
@@ -146,28 +156,36 @@ case {'hdf','hdf5', 'nc'}
     end
     if ~isnumeric(val) & ~ischar(val), continue; end
     if strcmp(format,'nc')
-      if isempty(towrite)
-        towrite={ fields{index}, val };
-      else
-        towrite={ towrite{1:end}, fields{index}, val };
-      end
+      fields{index} = strrep(fields{index}, '.', '_');
     else
+      fields{index} = strrep(fields{index}, '.', filesep);
       if isempty(towrite)
-        hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val);
+        % initial write wipes out the file
+        delete(filename);
+        hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val, 'WriteMode', 'overwrite');
       else
-        hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val, 'WriteMode', 'append');
+        % consecutive calls are appended
+        try
+          hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val, 'WriteMode', 'append');
+        catch
+          % object already exists: we skip consecutive write
+        end
       end
-      towrite=1;
+    end
+    if isempty(towrite)
+      towrite={ fields{index}, val };
+    else
+      towrite={ towrite{1:end}, fields{index}, val };
     end
   end
   if strcmp(format,'nc')
     cdfwrite(filename, towrite);
   end
-case 'xls'
+case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
-case 'csv'
+case 'csv'  % Spreadsheet comma separated values file format
   csvwrite(filename, double(a));
-case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd'}
+case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd'}  % bitmap images
   if ndims(a) == 2
     a=double(a);
     b=(a-min(a(:)))/(max(a(:))-min(a(:)))*64;
@@ -176,30 +194,31 @@ case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd'}
     f=getframe(a);
     imwrite(f.cdata, jet(64), filename, format);
   end
-case 'epsc'
+case 'epsc' % color encapsulated postscript file format, with TIFF preview
   f=figure('visible','off');
   plot(a,options);
   print(f, [ '-depsc -tiff' ], filename);
   close(f);
-case {'png','tiff','jpeg','psc','pdf','ill'}
+case {'png','tiff','jpeg','psc','pdf','ill'}  % other bitmap and vector graphics formats (PDF, ...)
   f=figure('visible','off');
   plot(a,options);
   print(f, [ '-d' format ], filename);
   close(f);
-case 'fig'
+case 'fig'  % Matlab figure format
   f=figure('visible','off');
   plot(a,options);
   saveas(f, filename, 'fig');
   close(f);
-case 'svg'
+case 'svg'  % scalable vector graphics format (private function)
   f=figure('visible','off');
   plot(a,options);
   plot2svg(filename, f);
   close(f);
-case 'vrml'
+case 'vrml' % VRML format
   f=figure('visible','off');
   plot(a,options);
   vrml(f,filename);
   close(f);
 end
 
+% end of iData/saveas
