@@ -19,7 +19,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also: iData, iData/load, methods
 
 % object definition and converter
@@ -122,22 +122,29 @@ else  % convert input argument into object
         out = set(out,'Title', t);
         out = set(out, 'DisplayName', t);
       elseif strcmp(get(in,'type'),'line')
-        x = get(in,'xdata'); x = x(find(~isnan(x)));
-        y = get(in,'ydata'); y = y(find(~isnan(y)));
+        x = get(in,'xdata'); 
+        y = get(in,'ydata'); 
+        index = find(~isnan(x) & ~isnan(y));
+        if length(index)~=prod(size(x)), x = x(index); y=y(index); end
         t = get(in,'DisplayName');
         if isempty(t), t=get(in,'Tag'); end
         c = get(in,'color');
         m = get(in,'marker');
         l = get(in,'linestyle');
         out=iData(x,y);
-        out.Title = t;
+        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch xl='x'; end; xlabel(out, xl);
+        try yl = get(get(in,'parent'),'YLabel'); yl=[ get(yl,'String') ' ' ]; catch yl=''; end;
+        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end; 
+        out.Title = [ tl yl t ];
         out.DisplayName = t;
         out.Label=[ 'line ' l ' marker ' m ' color ' num2str(c) ];
       elseif strcmp(get(in,'type'),'surface')
-        x = get(in,'xdata'); x = x(find(~isnan(x)));
-        y = get(in,'ydata'); y = y(find(~isnan(y)));
-        z = get(in,'zdata'); z = z(find(~isnan(z)));
-        c = get(in,'cdata'); c = c(find(~isnan(c)));
+        x = get(in,'xdata'); 
+        y = get(in,'ydata'); 
+        z = get(in,'zdata'); 
+        c = get(in,'cdata'); 
+        index=find(~isnan(x) & ~isnan(y) & ~isnan(z) & ~isnan(c)); 
+        if length(index)~=prod(size(x)), x = x(index); y=y(index); z=z(index); c=c(index); end
         l = get(in,'linestyle');
         t = get(in,'DisplayName');
         if isempty(t), t=get(in,'Tag'); end
@@ -145,6 +152,17 @@ else  % convert input argument into object
           out=iData(x,y,z);
         else
           out=iData(x,y,z,c);
+        end
+        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch xl='x'; end; xlabel(out, xl);
+        try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch yl='y'; end; ylabel(out, yl);
+        try zl = get(get(in,'parent'),'ZLabel'); zl=[ get(zl,'String') ' ' ]; catch zl=''; end; 
+        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end; 
+        if all(z == c)
+          t = [ tl zl t ];
+        else
+          if isempty(zl), zl='z'; end
+          zlabel(out, zl);
+          t = [ tl t ];
         end
         out.Title = t;
         out.DisplayName = t;
@@ -269,14 +287,16 @@ end
 if ~ischar(in.Command) & ~iscellstr(in.Command)
   iData_private_warning(mfilename,'Command must be a char or cellstr');
   in.Command = cellstr('');
-endif ~ischar(in.Date)
+end
+if ~ischar(in.Date)
   iData_private_warning(mfilename,'Date must be a char');
   in.Date = datestr(now);
 end
 if ~ischar(in.Creator)
   iData_private_warning(mfilename,'Creator must be a char');
   in.Creator = version(in);
-endif ~ischar(in.User)
+end
+if ~ischar(in.User)
   iData_private_warning(mfilename,'User must be a char');
   in.User = 'Matlab User';
 end

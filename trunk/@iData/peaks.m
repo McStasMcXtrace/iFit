@@ -1,27 +1,31 @@
-function [sigma, position, amplitude, baseline] = peaks(a, dim)
-% [half_width, center, amplitude, baseline] = peaks(s, dim) : peak position and width of iData
+function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
+% [half_width, center, amplitude, baseline] = peaks(s, dim, m) : peak position and width of iData
 %
 %   @iData/peaks function to compute an estimate of peak position and width along
 %     dimension 'dim'
 %
 % input:  a: object or array (iData/array of)
-%         dim: dimension to use. (int)
+%         dim: dimension to use. Default is 1 (int)
+%         m: typical peak width or 0 for automatic guess (int)
 % output: half_width: width of peaks (scalar/array)
 %         center:     center of peaks (scalar/array)
 %         amplitude:  amplitude of peaks (scalar/array)
 %         baseline:   baseline (background) (iData)
 % ex:     c=peaks(a);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/median, iData/mean, iData/std
 
   if nargin < 2, dim=1; end
+  if nargin < 3, m=0; end
   if length(a) > 1
     sigma = cell(1,length(a)); position = sigma; amplitude = sigma; baseline = sigma;
     for index=1:length(a)
-      [si, fi, ai, bi] = std(a(index), dim);
-      sigma{index} = si;
-      position{index} = fi;
+      [si, fi, ai, bi] = std(a(index), dim, m);
+      sigma{index}     = si;
+      position{index}  = fi;
+      amplitude{index} = ai;
+      baseline{index}  = bi;
     end
     return
   end
@@ -41,9 +45,9 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim)
   new_x      = min(x):min(diff(x)):max(x);
   signal = interp1(x, signal, new_x);
   signal = signal(:);
-  baseline = BaseLine(signal);
+  baseline = BaseLine(signal, m);
 
-  sigma = PeakWidth(signal-baseline)*min(diff(new_x));
+  sigma = PeakWidth(signal-baseline, m)*min(diff(new_x));
 
   % now find max position and amplitude for each peak
   % shift one step aside
@@ -70,7 +74,7 @@ function baseline = BaseLine(y, m)
 
   baseline = [];
   if nargin == 1, m=0; end
-  if (m<=0) m=ceil(max(5, length(y)/100)); end % automatic largest width estimate
+  if (m<=0) m=ceil(max(5, length(y)/50)); end % automatic largest width estimate
   if (length(y)<=m) return; end
   
   % improved from 'Algorithm C' from M. Morhac, NIM A 600 (2009) 478
@@ -96,7 +100,7 @@ function sigma = PeakWidth(signal, m)
   signal = signal(:);
   if nargin == 1, m=0; end
   
-  if (m<1) m=ceil(max(5, length(signal)/100)); end
+  if (m<1) m=ceil(max(5, length(signal)/50)); end
   if (length(signal)<=m) return; end
   
   % Gaussian product function as of Slavic, NIM 112 (1973) 253 

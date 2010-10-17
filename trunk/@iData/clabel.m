@@ -10,8 +10,8 @@ function a = clabel(a, lab)
 % output: b: object or array (iData)
 % ex:     b=clabel(a);
 %
-% Version: $Revision: 1.4 $
-% See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel
+% Version: $Revision: 1.5 $
+% See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iData/label
 
 if nargin ==1
 	a = label(a, 4);

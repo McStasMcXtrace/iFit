@@ -8,7 +8,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -55,14 +55,19 @@ else
     i = i+1;
     s = S(i);
     switch s.type
-    case '()'               % set Data using indexes (val must be num)
-      if length(b(:)) > 1   % class array -> deal on all elements
-        c = b(:);
+    case '()'       
+      if length(b(:)) > 1   % array() -> deal on all elements
+      % SYNTAX: array(index) = val: set Data using indexes
+        c = b(:);           
         for j = 1:length(s.subs{:})
           c(j) = subsasgn(c(j),s,val);
         end
         b = reshape(c, size(b));
-      elseif ~isa(val, 'iData') % single object
+      elseif ~isa(val, 'iData') % single object() = Signal (val must be num)
+      % SYNTAX: object(index) = numeric: set Signal, index can be a subset
+        if ~isnumeric(val)
+          iData_private_error(mfilename, [ 'object(' num2str(s.subs{:}) ') = ' class(val) ' but expects a numerical value to assign Signal in object ' inputname(1) ' ' b.Tag ]);
+        end
         % this is where specific class structure is taken into account
         cmd=b.Command;
         d = get(b, 'Signal');
@@ -111,40 +116,52 @@ else
         % final check
         b = iData(b);
       elseif length(s.subs{:}) == 1 && s.subs{:} == 1
+      % SYNTAX: object(1) = iData: just assign objects
       	b = val;
       	return
       end                 % if single object
     case '{}'
       if length(b(:)) > 1   % object array -> deal on all elements
+      % SYNTAX: array{ref}=val
         c = b(:);
         for j = 1:length(c)
           c(j) = subsasgn(c(j),s,val);
         end
         b = reshape(c, size(b));
       else
+      % object{ref}
         if isnumeric(s.subs{:}) & length(s.subs{:}) == 1
+        % object{axis_rank}
           if s.subs{:} == 0 & ischar(val)
+          % SYNTAX: object{0} = numeric|char_link
             b = setalias(b, 'Signal', val);
             iData_private_warning(mfilename, [ 'Redefine Axis 0-th Signal in object ' inputname(1) ' ' b.Tag ]);
           else 
+          % SYNTAX: object{axis_rank} = numeric|char
             if s.subs{:} <= length(b.Alias.Axis)
-              ax= b.Alias.Axis{s.subs{:}}; % definition of Axis
-              if isempty(ax) & isnumeric(val)
+              ax= b.Alias.Axis{s.subs{:}}; % re-definition of Axis
+              if isempty(ax) & isnumeric(val) % change numerical value of axis
+              % SYNTAX: object{axis_rank} = numeric
                 ax=[ 'Axis_' num2str(num2str(s.subs{:})) ];
                 % need to create this axis
                 setalias(b, ax, val);
                 setaxis(b, s.subs{:}, ax);
-              else
+              else  % change axis definition
+              % SYNTAX: object{axis_rank} = char: redefine axis link
+              % SYNTAX: object{axis_rank} = other: redefine alias
                 if ischar(val), b = setaxis(b, s.subs{:}, val);
                 else b = set(b, ax, val); end
               end
             else 
+            % create new axis as axis rank exceeds dim(object)
               if isnumeric(val)
+              % SYNTAX: object{axis_rank > dim} = numeric
                 iData_private_warning(mfilename, [ num2str(s.subs{:}) '-th rank Axis  has not been defined yet. Defining "Axis_' num2str(num2str(s.subs{:})) '" in object ' inputname(1) ' ' b.Tag ]);
                 ax=[ 'Axis_' num2str(num2str(s.subs{:})) ];
                 setalias(b, ax, val);
                 setaxis(b, s.subs{:}, ax);
               elseif ischar(val)
+              % SYNTAX: object{axis_rank > dim} = char
                 ax=s.subs{:}; 
               else
                 iData_private_error(mfilename, [ num2str(s.subs{:}) '-th rank Axis can not be assigned in object ' inputname(1) ' ' b.Tag ]);
@@ -153,15 +170,19 @@ else
               else b = set(b, ax, val); end
             end
           end
-        elseif ischar(s.subs{:}) & isnumeric(str2num(s.subs{:}))
-          b=setaxis(b, s.subs{:}, val);
+        elseif ischar(s.subs{:}) & length(str2num(s.subs{:}))
+        % SYNTAX: object{'axis_rank'} = val -> object{axis_rank} = val
+          b=setaxis(b, str2num(s.subs{:}), val);
         elseif ischar(s.subs{:})
+        % SYNTAX: object{'field'} = val
           b=setalias(b, s.subs{:}, val);
         else
+        % SYNTAX: object{index} = other: will probably fail...
           b{s.subs{:}} = val;       
         end
       end
     case '.'
+    % SYNTAX: object.field = val
       if length(b(:)) > 1   % object array -> deal on all elements
         c = b(:);
         for j = 1:length(c)
@@ -169,6 +190,7 @@ else
         end
         b = reshape(c, size(b));
       else
+      % ensure recursive assignment (see Matlab doc)
         if i < length(S)
           next_s = S(i+1);
           if strcmp(next_s.type, '()') | strcmp(next_s.type, '{}')

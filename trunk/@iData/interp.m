@@ -9,11 +9,11 @@ function b = interp(a, varargin)
 %     b=interp(s, d) where 'd' is an iData object computes 's' on the 'd' axes.
 %     b=interp(s, X1,X2, ... Xn) where 'X1...Xn' are vectors or matrices as obtained from ndgrid
 %                    computes 's' on these axes.
-%     b=interp(s, ntimes) where 'ntimes' is an integer computes new axes for interpolation
-%                    by sub-dividing the original axes ntimes.
-%     b=interp(s, 'method') uses specified method for interpolation as one of
+%     b=interp(s, ..., ntimes) where 'ntimes' is an integer computes new axes for 
+%                    interpolation by sub-dividing the original axes ntimes.
+%     b=interp(s, ..., 'method') uses specified method for interpolation as one of
 %                    linear, spline, cubic, or nearest
-%     b=interp(s, 'grid') uses meshgrid/ndgrid to determine new axes as arrays
+%     b=interp(s, ..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays
 %   Extrapolated data is set to 0 for the Signal, Error and Monitor.
 %
 % input:  s: object or array (iData)
@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
