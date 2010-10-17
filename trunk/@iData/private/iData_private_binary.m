@@ -40,7 +40,7 @@ if isa(a, 'iData') & length(a(:)) > 1
     end
   elseif isa(b, 'iData') & length(b(:)) ~= length(a(:)) & length(b(:)) ~= 1
     iData_private_warning('binary', ...
-    [ 'If you wish to force this operation, use ' op '(a,b{0}) to divide by the object Signal, not the object (which has axes).' ]);
+    [ 'If you wish to force this operation, use ' op '(a,b{0}) to operate with the object Signal, not the object itself (which has axes).' ]);
     iData_private_error('binary',...
     [ 'Dimension of objects do not match for operator ' op ': 1st is ' num2str(length(a(:))) ' and 2nd is ' num2str(length(b(:))) ]);
   else
@@ -77,6 +77,7 @@ if isa(a, 'iData') & isa(b, 'iData')
     [a,b] = intersect(a,b); % perform operation on intersection
   end
 end
+% the p1 flag is true when a monitor normalization is required
 if strcmp(op, 'combine'), p1 = 0; else p1 = 1; end
 if ~isa(a, 'iData') 
   s1= a; e1=0; m1=0; p1=0;
@@ -112,9 +113,9 @@ case {'plus','minus','combine'}
        s3 = genop( @plus,  s1, s2); % @plus without Monitor nomalization
   else s3 = genop( op,  y1, y2); end
   try
-  m3 = genop(@plus, m1, m2);
+    m3 = genop(@plus, m1, m2);
   catch
-      m3=[];
+    m3=[];
 	end
 	try
 		e3 = sqrt(genop(@plus, d1.^2,d2.^2));
@@ -126,9 +127,9 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'}
   s3 = genop(op, y1, y2);
   if p1, 
     try
-        m3 = genop(@times, m1, m2); 
+      m3 = genop(@times, m1, m2); 
     catch
-        m3=[];
+      m3=[];
     end
   else m3=get(c,'Monitor'); end
   if p1 & ~all(m3 == 0), s3 = s3.*m3; end
@@ -151,10 +152,10 @@ case {'power'}
 case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'}
   s3 = genop(op, y1, y2);
   try
-  e3 = sqrt(genop( op, d1.^2, d2.^2));
-  e3 = 2*e3./genop(@plus, y1, y2); % normalize error to mean signal
+    e3 = sqrt(genop( op, d1.^2, d2.^2));
+    e3 = 2*e3./genop(@plus, y1, y2); % normalize error to mean signal
   catch
-      e3=[];
+    e3=[];
   end
   m3 = 1;
 otherwise
