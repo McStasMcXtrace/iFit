@@ -20,7 +20,7 @@ function [val, lab] = getaxis(s,ax)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'x')
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
@@ -60,7 +60,13 @@ if isnumeric(ax) % given as a number, return a number
     if ax <= length(s.Alias.Axis)
       link = s.Alias.Axis{ax};
       % get the axis value. This means the axis link is correctly defined.
-      if ~isempty(link), val = get(s, link); end
+      if ~isempty(link)
+        try
+          val = get(s, link); 
+        catch
+          val = [];
+        end
+      end
     end
   end;
 else % given as a char, return a char

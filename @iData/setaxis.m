@@ -25,9 +25,10 @@ function s_out = setaxis(a_in,indexes,names,values)
 %         AxisValues: values of the axis (char/alias/numeric)
 % output: s: array (iData)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'x' axis (rank 1)
+%         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.12 $
-% See also iData, iData/getaxis, iData/get, iData/set
+% Version: $Revision: 1.13 $
+% See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
@@ -88,7 +89,7 @@ s_out = a_in(:);
 for i1 = 1:length(s_out)
   a = s_out(i1); % current object in array/single element
   if isnumeric(names) & length(indexes) == 1
-    S=struct('type','{}','subs',{indexes});
+    S=struct('type','{}','subs',{indexes}); % change axis as object{rank}=names
     cmd=a.Command;
     a = subsasgn(a, S, names);
     a.Command=cmd;
