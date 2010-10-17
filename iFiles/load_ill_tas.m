@@ -36,9 +36,8 @@ try
 catch
   MULTI=[];
 end
-
 % Find spaces and determine proper aliases for the columns
-columns = strread(columns_header,'%s','delimiter',' ');
+columns = strread(columns_header,'%s','delimiter',' ;');
 
 % restrict to the number of columns in DataBlock
 c       = size(a, 2);
