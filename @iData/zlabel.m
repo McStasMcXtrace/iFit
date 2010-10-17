@@ -10,8 +10,8 @@ function a = zlabel(a, lab)
 % output: b: object or array (iData)
 % ex:     b=zlabel(a);
 %
-% Version: $Revision: 1.4 $
-% See also iData, iData/plot
+% Version: $Revision: 1.5 $
+% See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/label, iData/clabel
 
 if nargin ==1
 	a = label(a, 3);

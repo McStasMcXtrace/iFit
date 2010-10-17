@@ -13,13 +13,14 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
 % ============================================================================
-% private function: iData_private_getalias
+% private function: iData_private_getalias
+
 for index = 1:length(a_in(:)) % works with object arrays
   argout = 1;
   s = a_in(index);
@@ -52,7 +53,8 @@ for index = 1:length(a_in(:)) % works with object arrays
         argout = argout + 1;
         % warning('iData/get: the Axis field name is protected. Use setaxis/getaxis to handle Axis.');
         continue;
-      end
+      end
+
       % get property from real fields (not Alias/Axis)
       field_not_found=1;
       if isempty(fieldname), val=s; field_not_found=0; end
@@ -89,7 +91,7 @@ for index = 1:length(a_in(:)) % works with object arrays
         end
       end
       if field_not_found
-        iData_private_error(mfilename, sprintf('can not find Property %s in object %s.', fieldname, [ inputname(1) ' ' s.Tag ] ));
+        iData_private_error(mfilename, sprintf('can not find Property "%s" in object %s.', fieldname, [ inputname(1) ' ' s.Tag ] ));
         val=[];
       end
       varout{argout,index} = val;
@@ -130,7 +132,7 @@ if ~isempty(link)
       val = eval([ '[ ' link ' ]' ]);
     catch
       lasterr
-      iData_private_error(mfilename,[ 'can not evaluate Alias ' name ' as ''' link ''' in iData object ' this.Tag ]);
+      iData_private_error(mfilename,[ 'can not evaluate Alias "' name '" as ''' link ''' in iData object ' this.Tag ]);
     end
   end
 end

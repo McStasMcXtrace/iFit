@@ -3,7 +3,7 @@ function [match, field] = findstr(s, str, option)
 %
 %   @iData/findstr function to look for strings stored in iData
 %
-%   [match,field] = findfield(iData, field) returns the string containg 'str' 
+%   [match,field] = findfstr(iData, field) returns the string containg 'str' 
 %     and the field name it appears in. If 'str' is set to '', the content of all
 %     character fields is returned.
 %   The 'option' may contain 'exact' to search for the exact occurence, and 'case'
@@ -16,7 +16,7 @@ function [match, field] = findstr(s, str, option)
 %         field: name of iData fields that contain 'str' (cellstr)
 % ex:     findstr(iData,'ILL') or findstr(s,'TITLE','exact case')
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/set, iData/get, iData/findobj, iData/findfield
 
 % EF 23/09/07 iData implementation
