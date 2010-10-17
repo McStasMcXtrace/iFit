@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>iFit: importing data (iData/load)</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+<body>
+<h1 style="text-align: center;"><a class="mozTocH1"
+ name="mozTocId647835"></a>iFit:iData importing data into objects<br>
+</h1>
+<br>
+<ol id="mozToc">
+<!--mozToc h3 1 h3 2 h3 3 h4 4 h5 5 h6 6-->
+  <li><a href="#mozTocId5377">Importing data from a
+file (iData, load) </a></li>
+  <li><a href="#mozTocId59221">Supported data formats</a></li>
+  <li><a href="#mozTocId141862">Importing directly
+from
+Matlab variables</a></li>
+  <li><a href="#mozTocId672193">How it works (looktxt, iLoad, iFiles) </a></li>
+</ol>
+<br>
+<hr style="width: 100%; height: 2px;">
+<div style="text-align: center;">Commands we use in this page: <span
+ style="font-style: italic;">iData, load </span><br>
+<div style="text-align: left;"><br>
+In this document we present how to import data as <a href="iData.html">iData</a>
+objetcs.<br>
+</div>
+</div>
+<h3><a class="mozTocH3" name="mozTocId5377"></a>Importing data from a
+file (<span style="font-style: italic;"><a href="iData.html">iData</a>,
+load</span>)<br>
+</h3>
+This is done by converting a file path to an <a href="iData.html">iData</a>
+object, or directly
+with the<br>
+<span style="font-style: italic;">iData/<span style="font-weight: bold;">load</span></span>
+method.<br>
+<div style="margin-left: 40px;">
+<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>('iFit/Data/ILL_IN6.dat');</pre>
+<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/ILL_IN6.dat');</pre>
+</div>
+These commands result in the following output, which produce an iData
+object:<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <pre><span style="font-family: monospace;">iLoad: Importing file iFit/Data/ILL_IN6.dat with method ILL Data (normal integers) (looktxt)<br>looktxt iFit/Data/ILL_IN6.dat --headers --fortran --catenate --fast --binary --makerows=IIII --makerows=FFFF --outfile=/tmp/lk_915264556_CZi4aN <br>Warning: Data root level renamed as lk_915264556_CZi4aN (started with number).<br>         Output file names are unchanged [looktxt:file_open:1377]<br>Warning: File 'iFit/Data/ILL_IN6.dat' c='-' [num pos=250] two fortran numbers are touching each other<br>Warning: File 'iFit/Data/ILL_IN6.dat' c='-' [num pos=2086] two fortran numbers are touching each other<br>Warning: File 'iFit/Data/ILL_IN6.dat' c='-' [num pos=2086] two fortran numbers are touching each other<br>Warning: File 'iFit/Data/ILL_IN6.dat' c='-' [num pos=2107] two fortran numbers are touching each other<br>Warning: File 'iFit/Data/ILL_IN6.dat' c='-' [num pos=2127] two fortran numbers are touching each other<br>Looktxt: file 'iFit/Data/ILL_IN6.dat': wrote 9 numerical fields into /tmp//lk_915264556_CZi4aN.m<br>iData: Setting the Signal of tp481575 to the biggest numerical field Data.IIIIIIIIIIIIIIIIIIIIIIIIIIIII_13 with length 131584.<br><br>a =  iData object:<br><br>    [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br> tp481575      [257  512] 'File ILL_IN6.dat ILL Data (n...' tp481575=load(iData,...  </span></pre>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+Wildcards (*,?) are supported, URLs such as http:// and ftp:// and
+access to compressed files (.zip, .gz).<img
+ style="width: 308px; height: 428px;"
+ alt="File selector to inport files into iData"
+ title="File selector to inport files into iData"
+ src="../iFiles/doc/uigetfiles.gif" align="right"><br>
+Directory may be imported (and thus all files within), as well as lists
+of files
+<div style="margin-left: 40px;">
+<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>('iFit/Data');</pre>
+<pre>&gt;&gt; a = i<span style="color: rgb(51, 102, 255);">Data</span>({'iFit/Data/*.dat' ,...</pre>
+<pre>&nbsp; 'iFit/Data/sv1850.scn',...</pre>
+<pre>&nbsp; 'iFit/Data/sv1884.scn',...</pre>
+<pre>&nbsp; 'iFit/Data/sv4700.scn'});</pre>
+</div>
+which returns an array of iData objects.<br>
+A <a href="../iFiles/doc/uigetfiles.html">file selector</a>,
+which supports multiple file selection, may be used by
+issuing<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>('')</pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">load</span>(iData,'')</pre>
+By default, an analysis of the data file will be done, and the best
+importer <br>
+method will be used. It is possible to select a prefered method with
+e.g.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'file', 'HDF5')</pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'file', 'gui');&nbsp; % a method selector pops-up.</pre>
+A list of the supported formats is shown below.<br>
+<br>
+<div style="text-align: right;"><span style="font-weight: bold;">To get
+more help</span>: <a href="matlab:help%20iData">help iData</a>, <a
+ href="matlab:help%20iData/load">help iData/load</a><br>
+</div>
+<h3><a class="mozTocH3" name="mozTocId59221"></a>Supported data formats</h3>
+In principle, any text based file is loaded transparently (see <a
+ href="#mozTocId141862">below</a>). Binary files require a dedicated
+wrapper, but many formats are supported. In some case, additional axis
+definition specific to the format will be applied.<br>
+<br>
+The list of available methods is stored in the <span
+ style="font-style: italic;">iFit/iFiles/iLoad_ini.m</span>
+file, <br>
+and can be obtained from the <span
+ style="font-weight: bold; font-style: italic;">iLoad</span> function<br>
+<pre style="margin-left: 40px;">&gt;&gt; config = <span
+ style="color: rgb(51, 102, 255);">iLoad</span>('','load config');</pre>
+a local <span style="font-style: italic;">iLoad.ini</span>
+configuration file is stored in the Matlab
+<span style="font-style: italic;">Preferences</span> directory.<br>
+The current method list is:<img style="width: 340px; height: 338px;"
+ alt="iData load import method selector"
+ title="iData load import method selector"
+ src="images/iData_load_method_selector.png" align="right"><br>
+<ul>
+  <li>&nbsp; ILL Data (normal integers)</li>
+  <li>&nbsp; ILL Data (large integers)</li>
+  <li>&nbsp; ILL Data (floats only)</li>
+  <li>&nbsp; ILL Data (general)</li>
+  <li>&nbsp; ILL TAS Data (polarized)</li>
+  <li>&nbsp; ILL TAS Data</li>
+  <li>&nbsp; SPEC</li>
+  <li>&nbsp; McStas Scan DAT output</li>
+  <li>&nbsp; McStas 2D monitor</li>
+  <li>&nbsp; McStas 1D monitor</li>
+  <li>&nbsp; McStas sim file</li>
+  <li>&nbsp; McStas Sqw table</li>
+  <li>&nbsp; ISIS/SPE tof data</li>
+  <li>&nbsp; INX tof data</li>
+  <li>&nbsp; Data (text format with fastest import method)</li>
+  <li>&nbsp; Data (text format with fast import method)</li>
+  <li>&nbsp; Data (text format)</li>
+  <li>&nbsp; Matlab importer</li>
+  <li>&nbsp; Lotus1-2-3 (first spreadsheet)</li>
+  <li>&nbsp; NeXT/SUN (.au) sound</li>
+  <li>&nbsp; Microsoft WAVE (.wav) sound</li>
+  <li>&nbsp; Audio/Video Interleaved (AVI) </li>
+  <li>&nbsp; NetCDF</li>
+  <li>&nbsp; NetCDF 1.0</li>
+  <li>&nbsp; FITS</li>
+  <li>&nbsp; Microsoft Excel (first spreadsheet)</li>
+  <li>&nbsp; Image/Picture</li>
+  <li>&nbsp; HDF4</li>
+  <li>&nbsp; HDF5</li>
+  <li>&nbsp; Matlab workspace</li>
+  <li>&nbsp; Comma Separated Values</li>
+  <li>&nbsp; Numerical single block</li>
+  <li>&nbsp; XML</li>
+</ul>
+Additional data formats can be added easily, as explained in the <a
+ href="iFiles.html">iFiles</a> help pages.<br>
+<h3><a class="mozTocH3" name="mozTocId141862"></a>Importing directly
+from
+Matlab variables</h3>
+A direct import of a Matlab variable is performed with<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(variable)</pre>
+such as<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(rand(10))</pre>
+or<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(struct('a',1,'b','string'))</pre>
+This works for basically any imput object.<br>
+<br>
+A special syntax is available to import Signal and Axis definitions
+with e.g.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(x,y,...c);</pre>
+imports <span style="font-style: italic;">Signal</span> as 'c' and <span
+ style="font-style: italic;">axes</span> x,y, ... which should then all
+be numerical values. <br>
+<h3>Importing from Matlab Figures<img
+ style="width: 334px; height: 315px;"
+ alt="The Peaks figure imported as an iData"
+ title="The Peaks figure imported as an iData" src="images/Peaks.png"
+ align="right"></h3>
+The direct import method also works fromMatlab figures, when simply
+giving a valid Handle Graphics Object to iData:<br>
+<pre style="margin-left: 40px;">&gt;&gt; f=figure; peaks;<br>&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(f);</pre>
+The handle can be a figure, a surface, an axis, a line, ...<br>
+<h3><a class="mozTocH3" name="mozTocId672193"></a>How it works
+(looktxt, iLoad, <a href="iFiles.html">iFiles</a>)<br>
+</h3>
+The file names to import are sent to the <a href="iFiles.html">iFiles</a>/iLoad
+routine,
+which
+scans
+the file and searches for the file extension and
+patterns in the file contents (in the case of text files) in order to
+identify the proper importation method to use.<br>
+<br>
+The text files are processed with the <a
+ href="../iFiles/doc/looktxt.html">looktxt</a> parser (refer to <a
+ href="http://looktxt.sourceforge.net">http://looktxt.sourceforge.net</a>)
+and
+translated
+into
+a
+Matlab
+script
+which is then read into the
+workspace. The resulting Matlab variable is a structure, which holds a <span
+ style="font-style: italic;">Data</span> field with all numerical
+blocks from the initial file, and a <span style="font-style: italic;">Header</span>
+field which holds any preceeding comment strings for each field. Data
+fields are automatically named from keywords found just before the
+numerical blocks. These steps are performed throught the<span
+ style="font-style: italic;"> iFiles/iLoad</span> wrapper.<br>
+<br>
+The structures are then converted into <a href="iData.html">iData</a>
+objects, and optionally some data format specific post-processing
+scripts are applied, as described in <span style="font-style: italic;">iFiles/iLoad_ini.m</span><br>
+<br>
+<div style="text-align: right;"><span style="font-weight: bold;">To get
+more help: </span><a href="iFiles.html">iFiles</a>, <a
+ href="../iFiles/doc/looktxt.html">looktxt</a><br>
+</div>
+<br>
+<hr style="width: 100%; height: 2px;">
+<div style="text-align: center;"><span style="font-style: italic;">E.
+Farhi - iFit/iData loading data - Oct 2010</span><br>
+</div>
+</body>
+</html>

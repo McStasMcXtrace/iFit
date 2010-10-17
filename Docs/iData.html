@@ -1,0 +1,729 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>iFit: iData object definition</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+<body>
+<h1 style="text-align: center;">iFit: iData objects description</h1>
+<ul id="mozToc">
+<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
+  <li><a href="#mozTocId466436">Introduction to the iData objects</a></li>
+  <li><a href="#mozTocId443357">Inquiring the iData
+object (get, disp, display)</a></li>
+  <li><a href="#mozTocId964118">Modifying the iData
+object (set)
+    </a></li>
+  <li><a href="#mozTocId510414">Definition of
+Aliases: links and values (setalias, getalias, set, get)</a>
+    <ul>
+      <li><a href="#mozTocId653680">defining a new field as a value</a></li>
+      <li><a href="#mozTocId85628">getting the value of a new field</a></li>
+      <li><a href="#mozTocId124075">defining a new field as a link
+(reference)</a></li>
+      <li><a href="#mozTocId718185">getting the definition of a new
+field (reference)</a></li>
+      <li><a href="#mozTocId826628">assigning the value of a linked
+field</a></li>
+      <li><a href="#mozTocId600912">getting the value of a linked field
+using get</a></li>
+      <li><a href="#mozTocId8406">removing a field from the object</a></li>
+      <li><a href="#mozTocId483786">A warning is in place here</a></li>
+    </ul>
+  </li>
+  <li><a href="#mozTocId134021">Definition of the Signal,
+Error bar and Monitor</a>
+    <ul>
+      <li><a href="#mozTocId157576">Types of Signals that can be handled</a></li>
+      <li><a href="#mozTocId696835">Error bars definition</a></li>
+      <li><a href="#mozTocId243435">Monitor definition</a></li>
+    </ul>
+  </li>
+  <li><a href="#mozTocId765887">Definition of Axes
+    </a>
+    <ul>
+      <li><a href="#mozTocId205926">getting an axis</a></li>
+      <li><a href="#mozTocId747924">setting an axis</a></li>
+    </ul>
+  </li>
+  <li><a href="#mozTocId993635">Handling iData object
+arrays</a></li>
+  <li><a href="#mozTocId393725">Going further - some other useful
+methods</a></li>
+</ul>
+<br>
+<hr style="width: 100%; height: 2px;">
+<div style="text-align: center;">Commands we use in this page: <span
+ style="font-style: italic;">iData, get, set, setalias, getalias,
+setaxis, getaxis, labels</span><br>
+</div>
+<br>
+The <span style="font-style: italic;">iData</span> object is a
+structure which holds some imported data
+(numerical blocks), as well as additional metadata and axes
+definitions, <span style="font-style: italic;">Signal, Error bars,
+Monitors</span>, and user defined fields (aliases).<br>
+<h3><a class="mozTocH3" name="mozTocId466436"></a>Introduction to the
+iData objects</h3>
+An iData object is obtained by transforming a file name into an iData
+object <span style="font-style: italic; font-weight: bold;">a</span>
+with<br>
+<div style="margin-left: 40px;">
+<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>('iFit/Data/ILL_IN6.dat')	% imports a file into an object<br>a =  iData object:<br><br>    [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br> tp460929      [257  512] 'File ILL_IN6.dat ILL Data (n...' tp460929=load(iData,...  <br></pre>
+</div>
+which results in an <span style="font-style: italic;">iData</span>
+object. An other way to instantiate an object is to import directly
+Matlab variables:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(rand(10))<br>&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(x,y,signal)<br></pre>
+These objects, which internal structure can be obtained with the <span
+ style="font-style: italic;">struct(a)</span> method, hold a number of
+important items:<br>
+<ul>
+  <li>Some general information regarding the Source of the Data, Dates,
+Command History, User name and Creator</li>
+  <li>A unique ID, which can be complemented by an object Label (for
+instance the name of an experiment) and a Title (for instance the name
+of the sample)</li>
+  <li>A Data field where all actual scientific data is stored, usually
+as a structure</li>
+  <li>Aliases, which may hold themselves data, or be defined as links
+to other parts of the object</li>
+  <li>A Signal, an Error bar and a Monitor</li>
+  <li>A series of Axes, which are usually defined as links to Aliases
+or other Data parts</li>
+</ul>
+In principle, the objects should <span style="font-weight: bold;">not</span>
+be accessed or modified as structures. Indeed, some dedicated methods,
+which match the usual Matlab
+commands, have been designed to maintain the object integrity along
+operations. This includes methods for <br>
+<ul>
+  <li>loading data (see the <a href="Load.html">Load</a> page)</li>
+  <li>inquiring and manipulate the object contents (see below) </li>
+  <li>plotting (see the <a href="Plot.html">Plot</a> page)</li>
+  <li>performing computations (see the <a href="Math.html">Math</a>
+page)</li>
+  <li>fitting and adjusting model/function parameters to match the
+object data (see the <a href="Fit.html">Fit</a> page)</li>
+  <li>saving/exporting the object into various formats and data types
+(see the <a href="Save.html">Save</a> page)</li>
+</ul>
+In the following, we shall present how to manipulate iData objects,
+enrich them with additional information, define relations between the
+object parts as Aliases, define the object Signal and its associated
+Axes.<br>
+<br>
+<div style="text-align: right;"><span style="font-weight: bold;">To get
+more help</span>: list of most iData <a href="Methods.html">methods</a>
+with comments<span style="font-weight: bold;"></span><br>
+<span style="font-weight: bold;"></span></div>
+<h3><a class="mozTocH3" name="mozTocId443357"></a>Inquiring the iData
+object (get, disp, display)</h3>
+The main idea here is that iData object can be handled about the same
+way as structures and <span style="font-style: italic;">Matlab
+Graphics Objects</span> using <span
+ style="font-style: italic; font-weight: bold;">get</span> and <span
+ style="font-style: italic; font-weight: bold;">set</span> methods.<br>
+<br>
+A quick overview of an iData object <span
+ style="font-style: italic; font-weight: bold;">a</span> is displayed
+when issuing the command<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>('iFit/Data/ILL_IN6.dat');<br>&gt;&gt; a<br>ans =  iData object:<br><br>    [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br> tp481575      [257  512] 'File ILL_IN6.dat ILL Data (n...' tp481575=load(iData,...<br></pre>
+showing the object unique ID, its dimensions, title and the last
+command which produced the object. The same output
+is given by the <span style="font-style: italic;"><span
+ style="color: rgb(51, 102, 255);">display</span>(a)</span>
+command.<br>
+<br>
+But a more useful formatting of the same information is obtained using
+<span style="font-style: italic; font-weight: bold;">get</span> or <span
+ style="font-style: italic; font-weight: bold;">disp</span><br>
+<div style="margin-left: 40px;">
+<pre>&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(a)<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">disp</span>(a)<br></pre>
+</div>
+which both result in the following output<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <pre>s = iData 2D object of size [257&nbsp; 512]:<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Title: 'File ILL_IN6.dat ILL Data (normal integers)'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Source: 'iFit/Data/ILL_IN6.dat'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Command: {'tp481575=load(iData,'iFit/Data/ILL_IN6.dat');'}<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UserData: ''<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Label: ''<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DisplayName: ''<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Creator: [1x119 char]<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; User: 'farhi on localhost'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Data: [1x1 struct]<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: '20-nov.-2007 23:11:26'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tag: 'tp481575'<br>      &nbsp;&nbsp;&nbsp; ModificationDate: '12-Oct-2010 17:48:16'<br>      <br>Object aliases:<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Value] [Description]<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Signal&nbsp; Data.IIIIIIIIIIIIIIIIIIIIIIIIIIIII_13&nbsp;&nbsp; Data Signal [0:27172]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      &nbsp; Error&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sqrt(Signal)&nbsp;&nbsp; Error on Signal<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Monitor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; Monitor (weight) '1'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Headers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Data.Headers&nbsp;&nbsp; Headers from ILL_IN6.dat</pre>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+This latter display indicates the definition of the <span
+ style="font-style: italic;">Signal, Aliases</span> and
+<span style="font-style: italic;">Axes</span> (if any - see <a
+ href="#mozTocId510414">below</a>).<br>
+<br>
+A single field can be accessed in an object or an array of objects, by
+means of the <span style="font-style: italic; font-weight: bold;">get</span>
+function (just like for the <span style="font-style: italic;">Matlab
+graphics</span> objects):<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/*.scn')	% returns an <span
+ style="color: rgb(255, 0, 0);">array</span> of iData objects<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">get</span>(a,'Title')			% returns the Title of all objects in the array<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">get</span>(a(<span
+ style="color: rgb(255, 0, 0);">1</span>),'Title')			% returns the Title from the <span
+ style="color: rgb(255, 0, 0);">first</span> object</pre>
+where this latter is equivalent to accessing<br>
+<pre style="margin-left: 40px;">&gt;&gt; a(<span
+ style="color: rgb(255, 0, 0);">1</span>).Title<br>&gt;&gt; b=a(1)<br>&gt;&gt; b.Title<br></pre>
+Field names are case insensitive, that is <span
+ style="font-style: italic;">b.title </span>will also work.<br>
+Any field may be accessed, including subfields, just as a normal
+structure<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">get</span>(a,'Data.VARIA.A1')	% returns all A1 values from the array of objects<br>&gt;&gt; a(2).Data.VARIA.A1		% same but only for the second array element<br>&gt;&gt; a(3).Data			% returns the complete Data structure from the 3rd object in the array<br></pre>
+Accessing subfields requires a case sensitive name match, that is a<span
+ style="font-style: italic;"> a(3).data</span> works (single field
+accessed), but <span style="font-style: italic;">a(3).data.varia.a1 </span>does
+not (requires fully qualified path to the data).<br>
+<br>
+The <span style="font-style: italic; font-weight: bold;">get</span>
+function can also
+apply with iData arrays, as shown, and then returns cell arrays.<br>
+<h3><a class="mozTocH3" name="mozTocId964118"></a>Modifying the iData
+object (set)<br>
+</h3>
+The content of the objects can be modified
+using the <span style="font-weight: bold; font-style: italic;">set</span>
+function:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/*.scn')	% returns an array of iData objects<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">set</span>(a,'Data.VARIA.A1',40);		% modify the whole array Data content<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">set</span>(a(1),'Data.VARIA.A1',40); 	% modify a single Data content<br></pre>
+The new assignments apply on the object itself when the method call
+has no output argument, but can additionally
+be copied to an other variable:<br>
+<pre style="margin-left: 40px;">&gt;&gt; b = <span
+ style="color: rgb(51, 102, 255);">set</span>(a(1),'Data.VARIA.A1',40);	% modify the Data content and send back the modified object </pre>
+The <span style="font-style: italic;">set</span> assignment may also
+be used with arrays of iData objects.<br>
+<br>
+This syntax can be simplified by adopting the <span
+ style="font-style: italic;">structure-type</span> one:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; a.Data.VARIA.A1<br>ans =<br><br>    40<br>&gt;&gt; a.Data.VARIA.A1 = 41			% returns the modified object<br></pre>
+We shall see below that there is a way to extend an iData object, that
+is add some new information. This also enables to create <span
+ style="font-style: italic;">links</span> within the object.<br>
+<h3><a class="mozTocH3" name="mozTocId510414"></a>Definition of
+Aliases: links and values (setalias, getalias, set, get)</h3>
+An <span style="font-style: italic;">Alias</span> in iData objects
+correspond to user fields, dynamically created and evaluated. The
+previously seen <span style="font-style: italic;">UserData</span>
+field of the iData structure is static. One can indeed store something
+there, but there is only one such slot. We shall see that not only we
+can create new field to hold some information, but also that these <span
+ style="font-style: italic;">Aliases</span> can point onto other
+aliases or parts of the iData object.<br>
+<br>
+The main methods used to assign and extract Alias <span
+ style="font-style: italic;">definitions</span> are <span
+ style="font-style: italic; font-weight: bold;">setalias</span> and <span
+ style="font-style: italic; font-weight: bold;">getalias</span>
+respectively. We shall see below that the <span
+ style="font-weight: bold; font-style: italic;">set</span> and <span
+ style="font-style: italic; font-weight: bold;">get</span> methods can
+also be used, but only apply on the Alias <span
+ style="font-style: italic;">values</span> (which is usually a
+numerical one).<br>
+<h4><a class="mozTocH4" name="mozTocId653680"></a>defining a new field
+as a value</h4>
+The method used to define (or re-define) an Alias is<span
+ style="font-weight: bold; font-style: italic;"> setalias</span>:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField',42)</pre>
+In this case, that is when Aliases are defined as <span
+ style="font-style: italic;">numerics</span> (scalar, vector, matrix),
+this is strictly equivalent to<br>
+<pre style="margin-left: 40px;">&gt;&gt; a.NewField = 42<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">set</span>(a,'NewField',42)</pre>
+<span style="font-style: italic;">Alias</span> names are case
+insensitive, that is <span style="font-style: italic;">a.newfield</span>
+will also work.<br>
+In addition, each <span style="font-style: italic;">Alias</span> can
+be associated with a label when creating it:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField',42,'Does god exist ?')</pre>
+or with the <span style="font-style: italic; font-weight: bold;">label</span>
+method:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">label</span>(a,'NewField','Does god exist ?')<br></pre>
+The current label of an <span style="font-style: italic;">Alias</span>
+is inquired similarly with the label method<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">label</span>(a,'NewField')<br>ans =<br><br>Does god exist ?<br></pre>
+<h4><a class="mozTocH4" name="mozTocId85628"></a>getting the value of a
+new field</h4>
+The method used to extract the definition of an Alias is <span
+ style="font-weight: bold; font-style: italic;">getalias</span>:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">getalias</span>(a,'NewField')<br>ans =<br><br>     3<br></pre>
+In this case, that is when Aliases are defined as <span
+ style="font-style: italic;">numerics</span> (scalar, vector, matrix),
+this is strictly equivalent to<br>
+<pre style="margin-left: 40px;">&gt;&gt; a.NewField<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">get</span>(a,'NewField')</pre>
+<h4><a class="mozTocH4" name="mozTocId124075"></a>defining a new field
+as a link (reference)</h4>
+The same <span style="font-style: italic;">setalias</span> method can
+be used to assign an Alias as an expression. In the following example,
+a <span style="font-style: italic;">QH</span> alias has been
+automatically defined as a numeric vector when importing the file, :<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; a.QH<br>ans =<br><br>    0.9791<br>    ...<br>    1.0214<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField','QH')</pre>
+which makes it so that <span style="font-style: italic;">NewField</span>
+is de-facto <span style="font-style: italic;">QH</span>.<br>
+<br>
+More complex links may be defined to other
+parts of the object or to an other <span style="font-style: italic;">Alias</span>,<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField','Data.ZEROS')		% a link to the whole ZEROS subfield structure<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField','Data.ZEROS.A1')	% a link to the A1 value in the ZEROS subfield<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'AnotherNewField', 'NewField');	% creates a link to a link to a Data part (follow me !)<br>&gt;&gt; a.AnotherNewField<br>ans =<br><br> -115.7500<br></pre>
+The <span style="font-style: italic;">AnotherNewField</span> points to
+<span style="font-style: italic;">NewField, </span>which was defined as<span
+ style="font-style: italic;"> Data.ZEROS.A1</span>.<br>
+<br>
+More advanced <span style="font-style: italic;">Alias</span>
+definition may be defined by means of the<span
+ style="font-style: italic; font-weight: bold;"> 'this' </span>self-referring
+symbol which
+can be used within full expressions:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField', '[ this.Data.ZEROS.A1 this.Data.VARIA.A1 ]') 	% an expression which is built from two links<br>&gt;&gt; a.NewField<br><br>ans =<br><br> -115.7500   40.0000<br>&gt;&gt; a.AnotherNewField<br><br>ans =<br><br> -115.7500   39.2600<br></pre>
+In this last example, we have changed the <span
+ style="font-style: italic;">NewField</span> definition, which
+immediately affects <span style="font-style: italic;">AnotherNewField.</span><br>
+The links are evaluated <span style="font-weight: bold;">dynamically, </span>so
+that
+their
+value
+follow the target one.<br>
+Links which can not be evaluated are returned as is, that is as
+character strings.<br>
+<h4><a class="mozTocH4" name="mozTocId718185"></a><span
+ style="font-weight: bold;">getting the definition of a new field
+(reference)</span></h4>
+In the previous examples, the <span style="font-style: italic;">QH</span>
+Alias has been defined from the import routine, and it is assigned a
+static array (you can see that by looking at the <span
+ style="font-style: italic;">get(a)</span> output). <br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField','QH')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">get</span>(a,'NewField')		% is the same as a.NewField: return the value<br>ans =<br><br>    0.9791<br>    ...<br>    1.0214<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">getalias</span>(a,'NewField')	% return the definition<br>ans =<br><br>QH<br></pre>
+We see here that the <span
+ style="font-style: italic; font-weight: bold;">get</span> method
+follows definitions recursively until a numeric value is found. <br>
+The <span style="font-weight: bold; font-style: italic;">getalias</span>
+returns the current Alias definition, but does not propagate to other
+potential links.<br>
+<h4><a class="mozTocH4" name="mozTocId826628"></a><span
+ style="font-weight: bold;">assigning</span><span
+ style="font-weight: bold;"> the value of a linked field</span></h4>
+When assigning a value to an Alias with the equal sign and the <span
+ style="font-weight: bold; font-style: italic;">set</span> method, the
+value is propagated until the fully qualified path is found. This means
+that when an Alias is a linked field, setting its value will affect the
+target, but not the Alias itself:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField',3)			% a static scalar<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'AnotherNewField', 'NewField');<br>&gt;&gt; a.NewField<br>ans =<br><br>     3<br>&gt;&gt; a.AnotherNewField = 4			% this stores 4 in the NewField alias<br></pre>
+The direct structure-like assignment and <span
+ style="font-weight: bold; font-style: italic;">set</span> method
+propagate the assignment value to the fully qualified link.<span
+ style="font-style: italic;"><span style="font-weight: bold;"><br>
+</span></span>
+<h4><a class="mozTocH4" name="mozTocId600912"></a><span
+ style="font-weight: bold;">getting the value of a linked field</span></h4>
+The direct structure-like reference and get method propagate the fully
+qualified link in order to actually find its value.<span
+ style="font-style: italic;"><span style="font-weight: bold;"><br>
+</span></span>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField',3)			% a static scalar<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'AnotherNewField', 'NewField');<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">get</span>(a,'AnotherNewField')			% evaluated as NewField, then as 3<br>ans =<br><br>     3<br>&gt;&gt; a.AnotherNewField				% returns the same as get<br></pre>
+<h4><a class="mozTocH4" name="mozTocId8406"></a><span
+ style="font-weight: bold;">removing a field from the object</span></h4>
+Added <span style="font-style: italic;">Alias</span> fields can be
+removed/deleted by setting their value to empty or using the <span
+ style="font-weight: bold; font-style: italic;">rmalias</span> method<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField','PNT')			% point to PNT, which is a vector here<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField','')			% removes NewField alias<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">rmalias</span>(a,'NewField')<br></pre>
+whereas the similar <span
+ style="font-weight: bold; font-style: italic;">set</span> command
+removes the final target PNT but
+leaves the <span style="font-style: italic;">NewField Alias</span>
+pointing to nothing.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField','PNT')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">set</span>(a,'NewField','')				% removes PNT, leaves NewField in error state (undefined)<br></pre>
+Re-defining <span style="font-style: italic;">PNT</span> will, at the
+same time, re-enable <span style="font-style: italic;">NewField.</span><br>
+<h4><a class="mozTocH4" name="mozTocId483786"></a><span
+ style="color: rgb(255, 0, 0);">A warning is in place here</span></h4>
+As the <span style="font-weight: bold;">set</span> and <span
+ style="font-weight: bold;">get</span> methods follow the <span
+ style="font-style: italic;">Aliases</span> definitions until the final
+value is obtained, this also applies to re-definitions of <span
+ style="font-style: italic;">Aliases.</span> In the previous example,
+if we now use the <span style="font-weight: bold; font-style: italic;">set</span>
+method, we shall modify the <span style="font-style: italic;">final</span>
+definition of the <span style="font-style: italic;">Alias, </span>that
+is
+the one obtained by following all definitions:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField','QH')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">set</span>(a,'NewField',1)	% <span
+ style="color: rgb(255, 0, 0);">will set QH to 1</span><br></pre>
+That's why we strongly recommend to use <span
+ style="font-weight: bold; font-style: italic;">setalias</span> when
+you wish to control an <span style="font-style: italic;">Alias</span>
+immediate definition, and <span
+ style="font-weight: bold; font-style: italic;">set</span> when you
+want to control its final value. The <span
+ style="font-weight: bold; font-style: italic;">setalias</span> can
+also define the <span style="font-style: italic;">Alias</span> as a
+static numerical value, as seen previously, without risking to affect
+deeper object parts. Similarly, a call to getalias will reveal the
+nature of the Alias, as link or numerical value.<br>
+<br>
+An other example would be to define <span style="font-style: italic;">QH</span>
+as a column of a matrix. Changing its value, or the one of any further <span
+ style="font-style: italic;">Alias</span> pointing on it will
+effectively modify the column in the matrix itself.<br>
+<br>
+In a few words, the set/get functions work just as the linking
+mechanism in Linux/Unix systems with the <span
+ style="font-style: italic;">ln</span> command.<br>
+<ul>
+  <li>The <span style="font-weight: bold;">get</span> function always
+return the value of a field, and <span style="font-style: italic;">a.field</span>
+returns the same result as <span style="font-style: italic;">get(a,
+field) </span></li>
+  <li>The <span style="font-weight: bold;">set</span> function always
+defines
+the final value of a field, and we shall see that it may sometimes
+follow a series of definitions in the case of <span
+ style="font-style: italic;">Aliases.</span> The <span
+ style="font-style: italic;">a.field=value</span> syntax is equivalent
+to <span style="font-style: italic;">set(a,field,value)</span>.</li>
+  <li>The <span style="font-weight: bold;">getalias</span> function
+always return the current Alias definition</li>
+  <li>The <span style="font-weight: bold;">setalias</span> function
+always set the current Alias defintion</li>
+</ul>
+<h3><a class="mozTocH3" name="mozTocId134021"></a>Definition of the
+Signal,
+Error bar and Monitor</h3>
+The <span style="font-style: italic;">Signal</span> is a special <span
+ style="font-style: italic;">Alias</span> that points to a numerical
+block which is the relevant data to handle for plotting or computing
+(see <a href="Math.html">mathematical</a> operations).<br>
+<br>
+As an alias, its value and definition can be accessed with all
+the following methods (refer to the <a href="#mozTocId510414">Alias</a>
+section above):<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')	% returns an iData object<br>&gt;&gt; a.Signal					% return the Signal value as an Alias<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">get</span>(a,'Signal')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">getalias</span>(a,'Signal')				% return the Signal definition, which here points to the CNTS Alias<br></pre>
+In the iData terminology, the Signal is the rank 0 axis (see the <a
+ href="#mozTocId765887">Axis</a> section below)<br>
+<pre style="margin-left: 40px;">&gt;&gt; getaxis(a, 0 )	% request Signal value as an axis<br>&gt;&gt; a{0}</pre>
+The Signal label can be inquired or set with the usual <span
+ style="font-weight: bold; font-style: italic;">setalias</span> and <span
+ style="font-weight: bold; font-style: italic;">label</span> methods
+seen in the <a href="iData.html#mozTocId510414">Alias</a> section.<br>
+<pre style="margin-left: 40px;">&gt;&gt; label(a,'Signal')			% returns the current Signal label<br>&gt;&gt; label(a,'Signal', 'Make it so ?')<br>&gt;&gt; label(a, 0,     , 'Make it so ?')<br></pre>
+It is also possible to extract a portion of the signal from an iData
+object, similarly as for a normal array:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; a([ 2 4 6 8 9])<br></pre>
+creates a new iData object with a subscript Signal (an relevant <a
+ href="#mozTocId765887">axes</a> definitions - see below).<br>
+<h4><a class="mozTocH4" name="mozTocId157576"></a>Types of Signals that
+can be handled</h4>
+The <span style="font-style: italic;">dimensionality</span> of the
+iData object is the one from its Signal. It is obtained from the <span
+ style="font-weight: bold; font-style: italic;">ndims</span> method and
+the length of each dimension is obtained with the <span
+ style="font-weight: bold; font-style: italic;">size</span> method.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; ndims(a)<br>ans =<br><br>     1<br>&gt;&gt; size(a)<br>ans =<br><br>    15     1<br></pre>
+In principle, there is no limitation concerning the size of the Data
+and Signal, and the dimensionality (except memory restrictions). The
+following table indicates the different types of <span
+ style="font-style: italic;">Signal</span> that the iData can handle,
+and the associated requirements regarding <span
+ style="font-style: italic;">Axes.</span><br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">empty ndims=0<br>
+      </td>
+      <td style="vertical-align: top;">Signal is empty<br>
+      </td>
+      <td style="vertical-align: top;">no axis<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">0D scalar ndims=1<br>
+      </td>
+      <td style="vertical-align: top;">Signal is a single number<br>
+      </td>
+      <td style="vertical-align: top;">in principle, no axis is needed
+here.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">1D vector ndims=1<br>
+      </td>
+      <td style="vertical-align: top;">Signal is a vector<br>
+      </td>
+      <td style="vertical-align: top;">One Axis required, as scalar or
+vector<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">2D matrix ndims=2<br>
+      </td>
+      <td style="vertical-align: top;">Signal is a matrix<br>
+      </td>
+      <td style="vertical-align: top;">Two axes required, as scalar,
+vector or matrix matching Signal<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">3D volume ndims=3<br>
+      </td>
+      <td style="vertical-align: top;">Signal is a volume<br>
+      </td>
+      <td style="vertical-align: top;">Three Axes are required, as
+scalar, vector, matrix or volume matching Signal</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-style: italic;">n</span>D
+grid space ndims=<span style="font-style: italic;">n</span><br>
+      </td>
+      <td style="vertical-align: top;">Signal is <span
+ style="font-style: italic;">n</span>D<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">n</span>
+Axes are required, each may have a dimensionality from 1 to <span
+ style="font-style: italic;">n</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">nD event - column based ndims=<span
+ style="font-style: italic;">n</span><br>
+      </td>
+      <td style="vertical-align: top;">Signal is a long vector (1D)<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">n</span>
+Axes are required, each being a scalar or vector<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<h4><a class="mozTocH4" name="mozTocId696835"></a>Error bars definition</h4>
+The <span style="font-style: italic;">Signal</span> is attached to an <span
+ style="font-style: italic;">Error bar</span>, which represents an
+uncertainty on a Signal value. The <span style="font-style: italic;">Error</span>
+bar is considered to be symmetric w.r.t. each <span
+ style="font-style: italic;">Signal</span> value. This Error propagates
+along most <a href="Math.html">mathematical</a> operators and is also
+used for proper weighting of <a href="iOptim.html">optimization</a>
+methods when performing model <a href="Fit.html">fit</a>
+using e.g. a least-square criteria. No error bar mechanism is currently
+implemented for axes and aliases.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; a.Signal<br>&gt;&gt; a.Error<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">getalias</span>(a,'Signal')<br>ans =<br><br>CNTS<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">getalias</span>(a,'Error')<br>ans =<br><br>sqrt(this.Signal)<br><br></pre>
+The Error defaults to <span style="font-style: italic;">sqrt(Signal)</span>
+when not set (that is <span style="font-style: italic;">a.Error=[]</span>).
+A constant <span style="font-style: italic;">Error</span> can be set,
+an expression (including using <span style="font-style: italic;">Data</span>
+or <span style="font-style: italic;">this</span>) or any numerical
+value that matches the <span style="font-style: italic;">Signal</span>
+size. <br>
+<h4><a class="mozTocH4" name="mozTocId243435"></a>Monitor definition<br>
+</h4>
+Similarly, a <span style="font-style: italic;">Monitor</span> is
+attached to the <span style="font-style: italic;">Signal. </span>It
+represents e.g. a counting time or any statistical weight that is to be
+taken into account when performing <a href="Math.html">mathematical</a>
+operations such as combine and most binary operators (+-/*) involving
+normalization between signals. In these cases, the <span
+ style="font-style: italic;">Signal</span> and <span
+ style="font-style: italic;">Error</span> are divided by the <span
+ style="font-style: italic;">Monitor</span> prior to performing the
+operation, and multiplied back after operation.<br>
+<br>
+The <span style="font-style: italic;">Monitor</span> defaults to 1
+when not set (that is <span style="font-style: italic;">a.Monitor=[]</span>).
+A constant Monitor can be set, an expression (including using <span
+ style="font-style: italic;">Data</span> or <span
+ style="font-style: italic;">this</span>) or any numerical value that
+matches the <span style="font-style: italic;">Signal</span> size.<br>
+<br>
+The Signal, Error and Monitor fields of an iData object are protected <span
+ style="font-style: italic;">Aliases: </span>they can not be deleted.<br>
+<h3><a class="mozTocH3" name="mozTocId765887"></a>Definition of Axes<br>
+</h3>
+<span style="font-style: italic;">Axes</span> are defined just as
+<span style="font-style: italic;">Aliases. </span>They are used for <a
+ href="Math.html">Math operations</a> and
+<a href="Plot.html">plotting</a>.<br>
+<br>
+<span style="font-style: italic;">Axes</span> are indexed from 1 up to
+the Signal dimensionality, that is a
+vector <span style="font-style: italic;">Signal</span> has one axis, a
+matrix has 2 axes, a volumetric signal has 3.<br>
+<h4><a class="mozTocH4" name="mozTocId205926"></a><span
+ style="font-weight: bold;">getting an axis</span><span
+ style="font-weight: bold;"></span></h4>
+&nbsp;
+As they are basically <span style="font-style: italic;">Aliases, Axes</span>
+are accessed in two ways, either through their definition,
+that is their link, or through their value. This is done through the <span
+ style="font-style: italic; font-weight: bold;">getaxis</span> function:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')	% returns an iData object<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">getaxis</span>(a, 1 )	% request axis 1 values, that is 'X'<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">getaxis</span>(a,'1')	% request axis 1 definition<br></pre>
+where the first command returns the 1st axis values, and the second
+commands returns its definition, which may be a link to a Data part.<br>
+<br>
+The axis value can also be obtained with the quick reference notation <span
+ style="color: rgb(255, 0, 0);">{n}</span> (which works up to rank
+n=9) :<br>
+<pre style="margin-left: 40px;">&gt;&gt; a{1}		% returns the 1st axis values = getaxis(a,1)<br>&gt;&gt; a{'1'}	% returns axis definition     = getaxis(a,'1')<br>ans =<br><br>QH<br></pre>
+In principle, the axis rank should be within 1 and the <br>
+Upon request, any undefined axis is automatically created when it
+matches the <span style="font-style: italic;">Signal</span>
+dimensionality.<br>
+The label of an axis is the one from its associated <span
+ style="font-style: italic;">Alias</span>, but can be accessed with the
+fast syntax:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">label</span>(a,1)		% returns the 1st axis label, which is QH here<br>ans =<br><br>QH axis Ki=1.48<br></pre>
+<h4 style="font-weight: bold;"><a class="mozTocH4" name="mozTocId747924"></a>setting
+an axis</h4>
+The common way to define an axis is by means of the <span
+ style="font-weight: bold; font-style: italic;">setaxis</span><br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')	% returns an iData object<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setaxis</span>(a, 1, 23) 		% directly fixes the value of the axis to a constant 23<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setaxis</span>(a, '1', 'QH')	% defines axis 1 as 'QH', which is an alias of the object<br></pre>
+The fast notation <span style="color: rgb(255, 0, 0);">a{n}</span> can
+also be used for direct assignments<br>
+<pre style="margin-left: 40px;">&gt;&gt; a{1} = 23 		% directly fixes the value of the axis to a constant 23<br>&gt;&gt; a{'1'} ='QH'		% re-defines axis 1 as 'QH', which s an alias of the object<br></pre>
+<span style="color: rgb(255, 0, 0);"><span style="color: rgb(0, 0, 0);">In
+case a new <span style="font-style: italic;">Axis</span> is defined
+with a numerical value (scalar, vector, matrix, ...), an <span
+ style="font-style: italic;">Alias</span> is automatically created, and
+the <span style="font-style: italic;">Axis</span> then points to it.<br>
+<br>
+The axes labels can be defined the same way as <span
+ style="font-style: italic;">Aliases, </span>but given their rank:<br>
+</span></span>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">label</span>(a, 1, 'change label of QH')</pre>
+and there is a fast notation for axes of rank 1 to 4, similar to the <span
+ style="font-style: italic;">Matlab Graphics Object</span> syntax:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">xlabel</span>(a, '1st X axis label')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">ylabel</span>(a, '2st Y axis label')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">zlabel</span>(a, '3st Z axis label')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">clabel</span>(a, '4st C axis label')<br></pre>
+<span style="color: rgb(255, 0, 0);"><span style="color: rgb(0, 0, 0);"></span>WARNING:
+</span>when assigning an axis, in the case it has been previously
+defined as a link, the target of the link is assigned (refer to the <a
+ href="#mozTocId483786">relevant Alias section</a> for more
+information).<br>
+<h3><a class="mozTocH3" name="mozTocId993635"></a>Handling iData object
+arrays</h3>
+Most iData methods apply on both single objects and arrays of objects.
+In many cases, with input arrays, the result is given back as cell
+arrays.<br>
+<h3><a class="mozTocH3" name="mozTocId393725"></a>Going further - some
+other useful methods<br>
+</h3>
+A comprehensive list of most methods is shown in the <a
+ href="Methods.html">Methods</a> page. In total there are about 120 of
+these available, which can be listed with<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">methods</span> iData</pre>
+We shall present in particular a few additional methods of general use
+that may be useful.<br>
+<ul>
+  <li><span style="font-weight: bold;">commandhistory(a)</span>:
+returns the list of all operations required to obtain an object, from
+initial import.<br>
+  </li>
+  <li><span style="font-weight: bold;">b=copyobj(a)</span>: creates a
+copy of an object, with a new unique ID<br>
+  </li>
+  <li><span style="font-weight: bold;">disp(a)</span>: display the
+object details structure, with Aliases and Axes<br>
+  </li>
+  <li><span style="font-weight: bold;">display(a</span>): display the
+object in short<br>
+  </li>
+  <li><span style="font-weight: bold;">findfield(a,'field')</span>:
+searches for field names in the object matching a pattern<br>
+  </li>
+  <li><span style="font-weight: bold;">findobj(iData)</span>: searches
+inside the whole Matlab workspace and local functions for iData objects;
+    <br>
+  </li>
+  <li><span style="font-weight: bold;">findstr(a, 'pattern')</span>:
+find for character strings in the field contents, including comments
+found in the initial files<br>
+  </li>
+  <li><span style="font-weight: bold;">full(a)</span>: convert the
+iData to full matrix storage<br>
+  </li>
+  <li><span style="font-weight: bold;">sparse(a)</span>: convert the
+iData to sparse matrix storage<br>
+  </li>
+  <li><span style="font-weight: bold;">pack(a)</span>: test whether a
+full or sparse storage is best for all fields that compose the object,
+in order to reduce the memory usage<br>
+  </li>
+  <li><span style="font-weight: bold;">zeros(iData, dims)</span>:
+initialize an array of empty iData objects<br>
+  </li>
+</ul>
+<span style="font-weight: bold;"></span><br>
+<br>
+<hr style="width: 100%; height: 2px;">
+<div style="text-align: center;"><span style="font-style: italic;">E.
+Farhi - iFit/iData loading data - Oct 2010</span><br>
+</div>
+</body>
+</html>
