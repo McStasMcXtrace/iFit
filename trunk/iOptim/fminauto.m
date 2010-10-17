@@ -41,7 +41,8 @@ function [pars,fval,exitflag,output] = fminauto(fun, pars, options, varargin)
 %            value when input into FUN.
 %          FVAL is the value of the FUN function evaluated at MINIMUM.
 %          EXITFLAG return state of the optimizer
-%          OUTPUT additional information returned as a structure.%
+%          OUTPUT additional information returned as a structure.
+%
 % See also: fminsearch, optimset
 
 
@@ -63,5 +64,11 @@ end
 options.Hybrid='none';
 
 [pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options, varargin{:});
+
+% best optimizers:
+% fminimfil
+% n<=3 fminsimpsa
+% n<=5 fminpso
+
 
 
