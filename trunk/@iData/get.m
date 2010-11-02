@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -141,7 +141,7 @@ end
 if strcmp(name, 'Error')  % Error is sqrt(Signal) if not defined
   if isempty(val) & isnumeric(get(this,'Signal'))
     try
-    val = sqrt(get(this,'Signal'));
+    val = sqrt(abs(get(this,'Signal')));
     catch
     val=0;
     end
