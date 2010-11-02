@@ -68,7 +68,11 @@ try % disable some warnings
 catch
   warn = warning('off');
 end
-cmd=a.Command;
+if isa(a, 'iData')
+  cmd=a.Command;
+elseif isa(b, 'iData')
+  cmd=b.Command;
+end
 % get Signal, Error and Monitor for 'a' and 'b'
 if isa(a, 'iData') & isa(b, 'iData') 
   if strcmp(op, 'combine')
@@ -127,14 +131,18 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'}
   s3 = genop(op, y1, y2);
   if p1, 
     try
-      m3 = genop(@times, m1, m2); 
+      if     all(m1==0), m3 = m2; 
+      elseif all(m2==0), m3 = m1; 
+      else m3 = genop(@times, m1, m2); end
     catch
       m3=[];
     end
   else m3=get(c,'Monitor'); end
   if p1 & ~all(m3 == 0), s3 = s3.*m3; end
   try
-    e3 = sqrt(genop(@plus, (e1./s1).^2, (e2./s2).^2)).*s3;
+    e1s1 = (e1./s1).^2; e1s1(find(s1 == 0)) = 0;
+    e2s2 = (e2./s2).^2; e2s2(find(s2 == 0)) = 0;
+    e3 = sqrt(genop(@plus, e1s1, e2s2)).*s3;
   catch
     e3=[];
   end
@@ -143,8 +151,8 @@ case {'power'}
   s3 = genop(op, y1, y2);
   if p1 & ~all(m3 == 0), s3 = s3.*m3; end
   try
-    e2logs1 = genop(@times, e2, log(s1));
-    s2e1_s1 = genop(@times, s2, e1./s1);
+    e2logs1 = genop(@times, e2, log(s1)); e2logs1(find(s1<=0))   = 0;
+    s2e1_s1 = genop(@times, s2, e1./s1);  s2e1_s1(find(s1 == 0)) = 0;
     e3 = s3.*genop(@plus, s2e1_s1, e2logs1);
   catch
     e3=[];
