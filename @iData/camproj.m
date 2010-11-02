@@ -12,11 +12,11 @@ function s = camproj(a,dim)
 % output: s: projection of elements (iData/scalar)
 % ex:     c=camproj(a);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/sum, iData/trapz
 
 if ~isa(a, 'iData')
-  iData_private_error(mfilename,['syntax is camproj(iData, dim)']);
+  iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
 end
 
 if nargin < 2, dim=1; end
@@ -24,17 +24,29 @@ if nargin < 2, dim=1; end
 if length(a(:)) > 1
   s = a;
   for index=1:length(a(:))
-    s(index) = camproj(a(index), dim);
+    s(index) = feval(mfilename, a(index), dim);
   end
   s = reshape(s, size(a));
   return
 end
 
-s=get(a,'Signal');
-[link, label]          = getalias(a, 'Signal');
+% in all cases, resample the data set on a grid
+a = interp(a,'grid');
+% make axes single vectors for sum/trapz/... to work
+for index=1:ndims(a)
+  x = getaxis(a, index);
+  setaxis(a, index, unique(x));
+end
+
+s = get(a,'Signal');
+e = get(a,'Error');
+m = get(a,'Monitor');
+
+[link, label] = getalias(a, 'Signal');
 cmd = a.Command;
-b=copyobj(a);
+b   = copyobj(a);
 setaxis(b, [], getaxis(b)); % delete all axes
+
 if dim == 0
   for index=1:ndims(a)
     s = sum(s, index);
@@ -43,10 +55,16 @@ if dim == 0
 else
   % accumulates on all axes except the rank specified
   for index=1:ndims(a)
-    if index~=dim, s = sum(s,index); end
+    if index~=dim, 
+      s = sum(s, index); 
+      if numel(e) > 1, e = sum(e, index); e = sqrt(e.*e); end
+      if numel(m) > 1, m = sum(m, index); end
+    end
   end
-  setaxis(b, 1, getaxis(a, num2str(dim)));
+  x = getaxis(a, dim);
+  setaxis(b, 1, x);
   setalias(b,'Signal', s, [ 'projection of ' label ]);     % Store Signal
+  b = set(b, 'Error', abs(e), 'Monitor', m);
 end
 
 if dim == 1, 

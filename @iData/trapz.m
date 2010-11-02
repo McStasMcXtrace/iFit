@@ -3,7 +3,8 @@ function s = trapz(a,dim)
 %
 %   @iData/trapz function to compute the integral of the data set along a given dimension
 %     trapz(a,dim) integrates along axis of rank dim. The axis is then removed.
-%       default is to use dim=1
+%       default is to use dim=1. If dim=0, integration is done on all axes and 
+%       the total is returned as a scalar value. 
 %       trapz is complementary to sum and camproj, but takes into account axis.
 %
 % input:  a: object or array (iData/array of)
@@ -11,11 +12,11 @@ function s = trapz(a,dim)
 % output: s: integral of elements (iData/scalar)
 % ex:     c=trapz(a);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/cumsum, iData/camproj, iData/sum
 
 if ~isa(a, 'iData')
-  iData_private_error(mfilename,['syntax is trapz(iData, dim)']);
+  iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
 end
 
 if nargin < 2, dim=1; end
@@ -23,43 +24,64 @@ if nargin < 2, dim=1; end
 if length(a(:)) > 1
   s = a;
   for index=1:length(a(:))
-    s(index) = trapz(a(index), dim);
+    s(index) = feval(mfilename, a(index), dim);
   end
   s = reshape(s, size(a));
   return
 end
 
-% we have a single object
-s=get(a,'Signal');
-[link, label]          = getalias(a, 'Signal');
-[x, xlab]=getaxis(a,dim);
-cmd=a.Command;
-b=copyobj(a);
-setaxis(b, [], getaxis(b)); % delete all axes
+% in all cases, resample the data set on a grid
+a = interp(a,'grid');
+% make axes single vectors for sum/trapz/... to work
+for index=1:ndims(a)
+  x = getaxis(a, index);
+  setaxis(a, index, unique(x));
+end
+
+s = get(a,'Signal');
+e = get(a,'Error');
+m = get(a,'Monitor');
+
+[link, label] = getalias(a, 'Signal');
+cmd= a.Command;
+b  = copyobj(a);
+setaxis(b, [], getaxis(b)); % delete all axes, but keep any predefined alias
 
 if all(dim > 0)
   for index=1:length(dim(:))
+    [x, xlab]     = getaxis(a,dim(index));
     if dim(index) ~= 1  % we put the dimension to integrate on as first
       perm=1:ndims(a);
       perm(dim(index))=1; perm(1)=dim(index);
-      s = permute(s,perm);
+      s = permute(s, perm);
+      e = permute(e, perm); 
+      m = permute(m, perm);
     end
+    % make the integration
     s = trapz(x, s);
+    if numel(e) > 1, e = trapz(x, e); e = sqrt(e.*e); end
+    if numel(m) > 1, m = trapz(x, m); end
     if dim(index) ~= 1  % restore initial axes
       s = permute(s,perm);
+      e = permute(e,perm);
+      m = permute(m,perm);
     end
   end
+  % reconstruct all required axes, except the one removed
   ax_index=1;
   for index=1:ndims(a)
-    if all(index ~= dim)
-      setaxis(b, ax_index, getaxis(a, num2str(index)));
+    if all(index ~= dim)  % copy all axes except those which are summed
+      x = getaxis(a, index);
+      setaxis(b, ax_index, x);
       ax_index = ax_index+1;
     end
   end
-  setalias(b,'Signal', s, [mfilename ' of ' label ' along ' xlab ]);     % Store Signal
+  % Store Signal
+  setalias(b,'Signal', s, [mfilename ' of ' label ' along ' xlab ]);     
+  b = set(b, 'Error', abs(e), 'Monitor', m);
 elseif dim == 0
   for index=1:ndims(a)
-    a = trapz(a, index);
+    s = feval(mfilename, a, index);
   end
   return  % scalar
 end
