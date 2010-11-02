@@ -65,6 +65,10 @@ end
 
 % handle single file name
 if ischar(filename) & length(filename) > 0
+  % local file (general case)
+  if strncmp(filename, 'file://', length('file://'))
+    filename = filename(8:end); % remove 'file://' from name
+  end
   if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
   
   % handle single file name (possibibly with wildcard)
