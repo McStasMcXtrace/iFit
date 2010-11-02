@@ -14,12 +14,12 @@ function b = mean(a, dim)
 % output: s: mean of elements (iData/scalar)
 % ex:     c=mean(a);
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/std, iData/combine, iData/mean
 
 if nargin < 2, dim=1; end
 if length(a) > 1
-  a = combine(a);
+  b = combine(a);
   return
 end
 

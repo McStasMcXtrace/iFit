@@ -15,7 +15,7 @@ function [link, label, names] = getalias(s,alias)
 %         names: all defined alias names (cellstr)
 % ex:     getalias(iData) or getalias(iData,'Signal')
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/set, iData/get, iData/setalias, iData/rmalias
 
 % EF 23/09/07 iData implementation
@@ -52,7 +52,7 @@ if isempty(alias_num)
 else
   link = s.Alias.Values{alias_num};
   label= s.Alias.Labels{alias_num};
-  if isempty(link)
+  if isempty(link) % default Error and Monitor definitions
     if alias_num==2, link = 'sqrt(this.Signal)';
     elseif alias_num==3, link = 1; end
   end

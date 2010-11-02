@@ -10,7 +10,7 @@ function c = mtimes(a,b)
 % output: c: object or array (iData)
 % ex:     c=a*2;
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/power
 
 if isscalar(a) | isscalar(b)
@@ -40,7 +40,7 @@ elseif ndims(a) == 2 & ndims(b) == 2
   c.Command=cmd;
   c = iData_private_history(c, mfilename, a,b);
 else
-  iData_private_error(mfilename,[ 'Matrix iData multiplication not supported for iData object of dimensions ' num2str(ndims(a)) ' and ' num2str(ndims(b)) ]);
+  iData_private_error(mfilename,[ 'Matrix iData multiplication only supported for matrix iData object (ndims=2), and not current ndims(a)=' num2str(ndims(a)) ' and ndims(b)=' num2str(ndims(b)) '.' ]);
 end
 
 
