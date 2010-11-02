@@ -27,7 +27,7 @@ function s_out = setaxis(a_in,indexes,names,values)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'x' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -113,7 +113,7 @@ for i1 = 1:length(s_out)
       % does this name already exist as an axis ?
       axis_names = a.Alias.Axis; % this is a cellstr of Axis names
       j2=cellfun('isempty',axis_names);
-      if any(j2), axis_names{find(j2)} = ''; end
+      if any(j2), axis_names(find(j2)) = ''; end
       
       axis_num   = strmatch(lower(name), lower(axis_names), 'exact');
       
