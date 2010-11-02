@@ -107,7 +107,7 @@ end
 
 % choose default 3-D view
 ax = model.parent;
-axis(ax,'vis3d');
+% axis(ax,'vis3d'); % removed as it forced aspect ratio to be exact, thus assumes similar axes values
 axis(ax,'tight');
 
 [model] = local_draw(model);
