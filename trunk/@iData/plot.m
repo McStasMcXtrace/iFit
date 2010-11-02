@@ -8,23 +8,41 @@ function h=plot(a, method)
 %     coordinate points are plotted using a plot3-type rendering. Further
 %     dimensionalities are not handled.
 %
+%   The scatter3 rendering option is similar to plot3, but colors points 
+%   according to the signal intensity. The 'plot3' option for 3D (volume) objects
+%   uses a semi-transparent volume rendering, whereas the default plot uses
+%   an iso-surface on the median signal.
+%
 % input:  s: object or array (iData)
-%         method: optional type of plot to render for 2D and 3D views, within:
-%                 surf, mesh, contour, contour3, surfc, surfl, contourf, stem3
-%                 flat, interp, faceted, transparent, light, clabel
-%                 plot3, scatter3, view2, view3, axis tight, axis auto
-%                 For 1D plots, method is a string to specify color/symbol.
+%         method: optional type of plot to render
+%
+%               For 1D plots y=f(x), method is a string to specify color/symbol.
+%               For 2D plots z=f(x,y), method is a string which may contain:
+%                 surf, mesh, contour, contour3, surfc, surfl, contourf
+%                 plot3, scatter3 (colored points), stem3
+%               For 3D plots c=f(x,y,z), method is a string which may contain:
+%                 plot3 (volume), scatter3 (colored points)
+%                 surf (median isosurface), surf mean, surf half
+%
+%               Global options for 2D and 3D plots: 
+%                 flat, interp, faceted (for shading)
+%                 transparent, light, clabel
+%                 axis tight, axis auto, view2, view3
+%                 painters (bitmap drawing), zbuffer (vectorial drawing)
+%                 
 % output: h: graphics object handles (cell)
 % ex:     plot(iData(rand(10)), 'surfc interp transparent'); plot(iData(1:10), 'r-');
+%         plot(iData(peaks));
 %         [x,y,z,v]=flow; c=iData(x,y,z,v); plot(c,'surf');
 %
 % Contributed code (Matlab Central): 
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.37 $
+% Version: $Revision: 1.38 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
+%          shading, lighting, surf
 
 % private functions:
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
@@ -51,16 +69,22 @@ switch ndims(a) % handle different plotting methods depending on the iData dimen
 case 0
   h=[]; return;
 case 1  % vector type data (1 axis + signal) -> plot
-  [x, xlab] = getaxis(a,1);
-  [y, ylab] = getaxis(a,0);
-  e         = get(a,'Error');   e=real(e);
-  m         = get(a,'Monitor'); m=real(m);
+  if size(a,1) ==1 && size(a,2) > 1
+    a = transpose(a);
+  end
+  [x, xlab] = getaxis(a,1); x=x(:);
+  [y, ylab] = getaxis(a,0); y=y(:);
+  e         = get(a,'Error');   e=real(e); e=e(:);
+  m         = get(a,'Monitor'); m=real(m); m=m(:);
   if not(all(m == 1) | all(m == 0)),
     y = y./m; e=e./m; ylab = [ylab ' per monitor' ];
   end
   y=real(y);
+  
   if isempty(method), method='b-'; end
-  if (strfind(method, 'plot3') | strfind(method,'stem3') | strfind(method,'scatter3'))
+  % handle side-by-side 1D plots
+  if ~isempty(strfind(method, 'plot3')) | ~isempty(strfind(method,'stem3')) ...
+   | ~isempty(strfind(method,'scatter3')) | ~isempty(strfind(method, 'mesh')) | ~isempty(strfind(method,'surf') )
   	if isempty(getaxis(a,2))
   		ax = 0;
     else
@@ -85,6 +109,10 @@ case 1  % vector type data (1 axis + signal) -> plot
   end
   set(h, 'Tag', a.Tag);
 case 2  % surface type data (2 axes+signal) -> surf or plot3
+  % check if a re-grid is needed
+  if isvector(a) || (~isvector(a) && (~isempty(strfind(method,'plot3')) || ~isempty(strfind(method,'scatter3')) ))
+    a = interp(a,'grid');
+  end
   [x, xlab] = getaxis(a,1);
   [y, ylab] = getaxis(a,2);
   [z, zlab] = getaxis(a,0);
@@ -95,14 +123,14 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   x=real(x);
   y=real(y);
   z=real(z);
-  if isvector(a) == 2 % plot3/fscatter3
+  if isvector(a) % plot3/fscatter3
     if (strfind(method,'plot3'))
     	method = strrep(method,'plot3','');
     	method = strrep(method,' ','');
       if length(method), h = plot3(x,y,z, method);
       else h = plot3(x,y,z); end
     else
-      h=fscatter3(x,y,z,z);
+      h=fscatter3(x,y,z,z); view(3);
     end
   else                % surf and similar stuff
     C = [];
@@ -120,12 +148,20 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     elseif (strfind(method,'surfl'))
       h=surfl(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'mesh'))
-      h=mesh(x,y,z); set(h,'Edgecolor','none');
+      h=mesh(x,y,z);
     elseif (strfind(method,'stem3'))
     	method = strrep(method,'stem3','');
     	method = strrep(method,' ','');
       if length(method), h = stem3(x,y,z, method);
       else h = stem3(x,y,z); end
+    elseif (strfind(method,'plot3'))
+      a = interp(a,'grid');
+    	method = strrep(method,'plot3','');
+    	method = strrep(method,' ','');
+      if length(method), h = plot3(x(:),y(:),z(:), method);
+      else h = plot3(x,y,z); end
+    elseif (strfind(method,'scatter3'))
+      h=fscatter3(x(:),y(:),z(:),z(:));
     else
       h=surf(x,y,z); set(h,'Edgecolor','none');
     end
@@ -142,38 +178,46 @@ case 3  % 3d data sets: volumes
     h=image(a.Data.cdata);
     xlab=''; ylab=''; clab='';
   else
+    % check if a rebining on a grid is required
+    if ~isvector(a) && isempty(strfind(method, 'plot3'))
+      a = interp(a,'grid'); % make sure we get a grid
+    end
     [x, xlab] = getaxis(a,1);
     [y, ylab] = getaxis(a,2);
     [z, zlab] = getaxis(a,3);
     [c, clab] = getaxis(a,0);
     m         = get(a,'Monitor');
     if not(all(m == 1) | all(m == 0)), c = c./m; clab = [clab ' per monitor' ]; end
-    if isvector(a) == 3 | ~isempty(strfind(method, 'plot3')) % plot3-like
-      h=fscatter3(x(:),y(:),z(:),c(:));
+    if isvector(a) == 3 || ~isempty(strfind(method, 'scatter3')) % plot3-like
+      h=fscatter3(x(:),y(:),z(:),c(:));     % scatter3: require meshgrid
+      view(3);
     else
-      if ~isempty(strfind(method, 'surf')) | ~isempty(strfind(method, 'vol3d'))
+      if ~isempty(strfind(method, 'plot3')) % vol3d: does not require meshgrid
         h = vol3d('cdata',c,'texture','3D','xdata',x,'ydata',y,'zdata',z);
-        alphamap('vdown');
-        vol3d(h);
-        h = h.handles;
+        alphamap('vdown'); % make object transparent on borders and solid in center
+        h = vol3d(h);
+        h = h.handles
       else
-        a = interp(a,'grid');
-        isosurface(x,y,z,c,median(c(:)));
+        c = getaxis(a,0);                   % isosurface: require meshgrid
+        if ~isempty(strfind(method, 'mean'))
+          iso = mean(c(:));
+        elseif ~isempty(strfind(method, 'half'))
+          iso = (min(c(:))+max(c(:)))/2;
+        else
+          iso = median(c(:));
+        end
+        isosurface(getaxis(a,1),getaxis(a,2),getaxis(a,3),c, iso);
         h = findobj(gca,'type','patch');
-        hold off
       end
-    end;
+    end
     try
-      set(h, 'Tag', a.Tag);
-    catch
-      h = findobj(gca,'type','patch');
       set(h, 'Tag', a.Tag);
     end
     zlabel(zlab);
   end
 otherwise
-  iData_private_warning(mfilename, [ 'plotting of ' num2str(ndims(a)) '-th dimensional data is not implemented from ' a.Tag ]);
-end
+  iData_private_warning(mfilename, [ 'plotting of ' num2str(ndims(a)) '-th dimensional data is not implemented from ' a.Tag '.\n\tUse sum or camproj to reduce dimensionality for plotting.' ]);
+end % switch
 
 if (strfind(method,'flat'))
   shading flat
@@ -233,6 +277,10 @@ S=a.Source;
 [dummy, fS] = fileparts(S);
 titl ={ T ; [ a.Tag ' <' fS '>' ]};
 if length(T) > 23, T=[ T(1:20) '...' ]; end
+try
+set(h, 'DisplayName', [ T a.Tag ' <' fS '>' ]);
+catch
+end
 if length(S) > 23, S=[ '...' S(end-20:end) ]; end
 if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
 
@@ -255,6 +303,7 @@ if ndims(a) >= 2
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
   uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
   uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
+  uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
 else
   uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight;rotate3d off;');
   uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
@@ -270,8 +319,9 @@ if ~usejava('jvm')
 end
 uimenu(uicm, 'Label', 'About iData', 'Callback','msgbox(version(iData))');
 % attach contexual menu to plot
-set(h, 'UIContextMenu', uicm);
-set(h, 'Tag', char(a));
+set(h,   'UIContextMenu', uicm); 
+set(gca, 'UIContextMenu', uicm);
+set(h,   'Tag',  char(a));
 set(gcf, 'Name', char(a));
 
 % labels
