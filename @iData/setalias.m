@@ -23,7 +23,7 @@ function s_out = setalias(a_in,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -78,7 +78,7 @@ for index = 1:length(s_out)
     if ~isempty(strmatch(lower(name), lower(f), 'exact'))
       iData_private_error(mfilename,[ 'the Alias ' name ' is a protected name in object ' inputname(1) ' ' a.Tag '.' ]);
     end
-    if ~isvarname(lower(name))
+    if ~isvarname(lower(name)) & isempty(findfield(a, name))
       iData_private_warning(mfilename,[ 'the Alias "' name '" is not a valid Alias name in object ' inputname(1) ' ' a.Tag '.' ]);
       continue
     end
