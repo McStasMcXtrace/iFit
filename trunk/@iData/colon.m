@@ -1,5 +1,5 @@
 function c = colon(a,d,b)
-% b = mean(s) : mean value of iData object
+% b = colon(s) : vector of arrays
 %
 %   @iData/mean function to compute the mean value of objects
 %
@@ -7,7 +7,7 @@ function c = colon(a,d,b)
 % output: b: object or array (iData)
 % ex:     b=mean(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/floor, iData/ceil, iData/round, iData/combine
 
 if nargin == 2
@@ -15,8 +15,11 @@ if nargin == 2
   d = 0;
 end
 
-as = round(mean(a));
-bs = round(mean(b));
+if isa(a, 'iData'), as = getaxis(a(1),0); as = as(:); else as = a; end
+if isa(b, 'iData'), bs = getaxis(b(1),0); bs = bs(:); else bs = b; end
+
+as = round(mean(as));
+bs = round(mean(bs));
 if d > 0, n = abs(bs-as)/d;
 else      n = abs(bs-as); end
 
