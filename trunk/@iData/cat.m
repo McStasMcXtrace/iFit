@@ -10,7 +10,7 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 if nargin == 1 & isa(dim, 'iData') & length(dim) >= 1 % syntax: cat([a])
   s = cat(1, dim);
@@ -59,14 +59,49 @@ for index=1:length(a)
   s{index}=get(a(index),'Signal');
 end
 ss = cat(dim, s{:});
+
+% Error handling
+% first test if all Errors are sqrt(this.Signal) (that is default=[])
+% first test if all Monitors are 1 (that is default=[])
+se = 1; sm = 1;
 for index=1:length(a)
-  s{index}=get(a(index),'Error');
+  if ~strcmp(getalias(a(index),'Error'), 'sqrt(this.Signal)')
+    se = 0;
+  end
+  if ~isnumeric(getalias(a(index), 'Monitor')) || length(getalias(a(index), 'Monitor')) > 1
+    sm = 0;
+  end
 end
-se = cat(dim, s{:});
-for index=1:length(a)
-  s{index}=get(a(index),'Monitor');
+
+% then decide what to catenate for Error
+if se == 1  % all Errors are default, just copy the default
+  se = [];
+else
+  % some Errors are not default: we catenate all of them as values
+  for index=1:length(a)
+    se = getalias(a(index),'Error');
+    if ~isnumeric(se) || ~isscalar(se)
+      se = get(a(index),'Error');
+    end
+    s{index} = ones(size(get(a(index),'Signal'))).*se;
+  end
+  se = cat(dim, s{:});
 end
-sm = cat(dim, s{:});
+
+% then decide what to catenate for Monitors
+if sm == 1  % all Monitors are default, just copy the default
+  sm = [];
+else
+  % some Monitors are not default: we catenate all of them as values
+  for index=1:length(a)
+    sm = getalias(a(index),'Monitor');
+    if ~isnumeric(sm) || ~isscalar(sm)
+      sm = get(a(index),'Monitor');
+    end
+    s{index} = ones(size(get(a(index),'Signal'))).*sm;
+  end
+  sm = cat(dim, s{:});
+end
 
 % and extend axis 'dim'
 for index=1:length(a)
@@ -79,8 +114,9 @@ sx = cat(dim, s{:});
 cmd = get(a(1),'Command');
 s = copyobj(a(1));  % with extended (union) axes
 setalias(s,'Signal', ss, [ 'catenated ' label ]);     % Store Signal
-setalias(s,'Error',se);
+setalias(s,'Error',  se);
 setalias(s,'Monitor',sm);
+% create or modify catenated dimension axis
 dx=getaxis(a(1),num2str(dim));
 if isempty(dx)
   dx=[ 'Axis_' num2str(dim) ];
