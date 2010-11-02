@@ -41,7 +41,7 @@
 #define malloc  mxMalloc
 #define realloc mxRealloc
 #define calloc  mxCalloc
-#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.4 $"
+#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.5 $"
 /* #define free mxFree  */
 #define free NoOp
 
@@ -170,7 +170,6 @@ void mexFunction(int nlhs, mxArray *plhs[],
   
   /* set temporary output file (will be removed at end of MeX) */
   if (!has_output_file) {
-    mxArray *CellElement[1];
     char filename[256];
     char *ret=NULL;
     time_t t;
@@ -224,12 +223,14 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
     /* evaluate file content when it is defined */
     if (output_file.TargetTxt && strlen(output_file.TargetTxt)) {
+      mxArray *CellElement[1];
+      struct fileparts_struct parts;
+      char addpath[MAX_LENGTH];
       /* first method: evaluate function and store its result as a celle element in argout[file_index] */
       if (has_debug_mode)
         mexPrintf("looktxt: init matrix[%i] to store '%s'...\n", i, output_file.TargetTxt);
-      mxArray *CellElement[1];
-      struct fileparts_struct parts = fileparts(output_file.TargetTxt);
-      char addpath[MAX_LENGTH];
+      
+      parts = fileparts(output_file.TargetTxt);
       /* make sure that new function craeted by looktxt can be accessed by Matlab */
       sprintf(addpath, "addpath('%s')", parts.Path);
       mexEvalString(addpath);
@@ -243,12 +244,14 @@ void mexFunction(int nlhs, mxArray *plhs[],
            we read the function script (.m) and store it as a string into nargout[file_index] */
         long filesize=0;
         char *filestr=NULL;
+        struct stat stfile;
+        int status;
 
         /* read content */
         if (has_debug_mode)
           mexPrintf("looktxt: Method 2: checking existence for matrix[%i] file '%s'...\n", i, output_file.TargetTxt);
-        struct stat stfile;
-        int status = stat(output_file.TargetTxt, &stfile);
+        
+        status = stat(output_file.TargetTxt, &stfile);
         if (status) {
           mexPrintf("looktxt/mex: Warning : unable to access file '%s'\n", output_file.TargetTxt);
         } else { /* file exists */
@@ -302,9 +305,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
   } /* for i */
   
   if(NumFiles == 1) {
+    mxArray *ptr;
     if (has_debug_mode)
       mexPrintf("looktxt: only a single matrix[%i].\n", NumFiles);
-    mxArray *ptr;
+    
     ptr= mxGetCell(plhs[0], 0);
     plhs[0] = mxDuplicateArray(ptr);
     if (has_debug_mode)
