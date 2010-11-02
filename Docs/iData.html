@@ -13,8 +13,7 @@
   <li><a href="#mozTocId443357">Inquiring the iData
 object (get, disp, display)</a></li>
   <li><a href="#mozTocId964118">Modifying the iData
-object (set)
-    </a></li>
+object (set) </a></li>
   <li><a href="#mozTocId510414">Definition of
 Aliases: links and values (setalias, getalias, set, get)</a>
     <ul>
@@ -40,8 +39,7 @@ Error bar and Monitor</a>
       <li><a href="#mozTocId243435">Monitor definition</a></li>
     </ul>
   </li>
-  <li><a href="#mozTocId765887">Definition of Axes
-    </a>
+  <li><a href="#mozTocId765887">Definition of Axes </a>
     <ul>
       <li><a href="#mozTocId205926">getting an axis</a></li>
       <li><a href="#mozTocId747924">setting an axis</a></li>
@@ -186,7 +184,9 @@ structure<br>
 Accessing subfields requires a case sensitive name match, that is a<span
  style="font-style: italic;"> a(3).data</span> works (single field
 accessed), but <span style="font-style: italic;">a(3).data.varia.a1 </span>does
-not (requires fully qualified path to the data).<br>
+not
+(requires
+fully qualified path to the data).<br>
 <br>
 The <span style="font-style: italic; font-weight: bold;">get</span>
 function can also
@@ -300,8 +300,10 @@ The <span style="font-style: italic;">AnotherNewField</span> points to
 More advanced <span style="font-style: italic;">Alias</span>
 definition may be defined by means of the<span
  style="font-style: italic; font-weight: bold;"> 'this' </span>self-referring
-symbol which
-can be used within full expressions:<br>
+symbol
+which
+can
+be used within full expressions:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField', '[ this.Data.ZEROS.A1 this.Data.VARIA.A1 ]') 	% an expression which is built from two links<br>&gt;&gt; a.NewField<br><br>ans =<br><br> -115.7500   40.0000<br>&gt;&gt; a.AnotherNewField<br><br>ans =<br><br> -115.7500   39.2600<br></pre>
 In this last example, we have changed the <span
@@ -311,7 +313,9 @@ The links are evaluated <span style="font-weight: bold;">dynamically, </span>so
 that
 their
 value
-follow the target one.<br>
+follow
+the
+target one.<br>
 Links which can not be evaluated are returned as is, that is as
 character strings.<br>
 <h4><a class="mozTocH4" name="mozTocId718185"></a><span
@@ -391,7 +395,9 @@ if we now use the <span style="font-weight: bold; font-style: italic;">set</span
 method, we shall modify the <span style="font-style: italic;">final</span>
 definition of the <span style="font-style: italic;">Alias, </span>that
 is
-the one obtained by following all definitions:<br>
+the
+one
+obtained by following all definitions:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField','QH')<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">set</span>(a,'NewField',1)	% <span
@@ -525,7 +531,9 @@ scalar, vector, matrix or volume matching Signal</td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-style: italic;">n</span>D
-grid space ndims=<span style="font-style: italic;">n</span><br>
+grid
+space
+ndims=<span style="font-style: italic;">n</span><br>
       </td>
       <td style="vertical-align: top;">Signal is <span
  style="font-style: italic;">n</span>D<br>
@@ -565,7 +573,9 @@ implemented for axes and aliases.<br>
  style="color: rgb(51, 102, 255);">getalias</span>(a,'Error')<br>ans =<br><br>sqrt(this.Signal)<br><br></pre>
 The Error defaults to <span style="font-style: italic;">sqrt(Signal)</span>
 when not set (that is <span style="font-style: italic;">a.Error=[]</span>).
-A constant <span style="font-style: italic;">Error</span> can be set,
+A
+constant
+<span style="font-style: italic;">Error</span> can be set,
 an expression (including using <span style="font-style: italic;">Data</span>
 or <span style="font-style: italic;">this</span>) or any numerical
 value that matches the <span style="font-style: italic;">Signal</span>
@@ -585,7 +595,9 @@ operation, and multiplied back after operation.<br>
 <br>
 The <span style="font-style: italic;">Monitor</span> defaults to 1
 when not set (that is <span style="font-style: italic;">a.Monitor=[]</span>).
-A constant Monitor can be set, an expression (including using <span
+A
+constant
+Monitor can be set, an expression (including using <span
  style="font-style: italic;">Data</span> or <span
  style="font-style: italic;">this</span>) or any numerical value that
 matches the <span style="font-style: italic;">Signal</span> size.<br>
@@ -632,7 +644,8 @@ fast syntax:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">label</span>(a,1)		% returns the 1st axis label, which is QH here<br>ans =<br><br>QH axis Ki=1.48<br></pre>
 <h4 style="font-weight: bold;"><a class="mozTocH4" name="mozTocId747924"></a>setting
-an axis</h4>
+an
+axis</h4>
 The common way to define an axis is by means of the <span
  style="font-weight: bold; font-style: italic;">setaxis</span><br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
@@ -643,7 +656,9 @@ The fast notation <span style="color: rgb(255, 0, 0);">a{n}</span> can
 also be used for direct assignments<br>
 <pre style="margin-left: 40px;">&gt;&gt; a{1} = 23 		% directly fixes the value of the axis to a constant 23<br>&gt;&gt; a{'1'} ='QH'		% re-defines axis 1 as 'QH', which s an alias of the object<br></pre>
 <span style="color: rgb(255, 0, 0);"><span style="color: rgb(0, 0, 0);">In
-case a new <span style="font-style: italic;">Axis</span> is defined
+case
+a
+new <span style="font-style: italic;">Axis</span> is defined
 with a numerical value (scalar, vector, matrix, ...), an <span
  style="font-style: italic;">Alias</span> is automatically created, and
 the <span style="font-style: italic;">Axis</span> then points to it.<br>
@@ -682,24 +697,26 @@ We shall present in particular a few additional methods of general use
 that may be useful.<br>
 <ul>
   <li><span style="font-weight: bold;">commandhistory(a)</span>:
-returns the list of all operations required to obtain an object, from
+return the list of all operations required to obtain an object, from
 initial import.<br>
   </li>
-  <li><span style="font-weight: bold;">b=copyobj(a)</span>: creates a
+  <li><span style="font-weight: bold;">b=copyobj(a)</span>: create a
 copy of an object, with a new unique ID<br>
   </li>
   <li><span style="font-weight: bold;">disp(a)</span>: display the
 object details structure, with Aliases and Axes<br>
   </li>
   <li><span style="font-weight: bold;">display(a</span>): display the
-object in short<br>
+object in short</li>
+  <li><span style="font-weight: bold;">doc(iData)</span>: open the
+documentation web pages<br>
   </li>
   <li><span style="font-weight: bold;">findfield(a,'field')</span>:
-searches for field names in the object matching a pattern<br>
+search for field names in the object matching a pattern<br>
   </li>
-  <li><span style="font-weight: bold;">findobj(iData)</span>: searches
-inside the whole Matlab workspace and local functions for iData objects;
-    <br>
+  <li><span style="font-weight: bold;">findobj(iData)</span>: search
+inside the whole Matlab workspace and local functions for iData
+objects; <br>
   </li>
   <li><span style="font-weight: bold;">findstr(a, 'pattern')</span>:
 find for character strings in the field contents, including comments
@@ -713,7 +730,9 @@ iData to sparse matrix storage<br>
   </li>
   <li><span style="font-weight: bold;">pack(a)</span>: test whether a
 full or sparse storage is best for all fields that compose the object,
-in order to reduce the memory usage<br>
+in order to reduce the memory usage</li>
+  <li><span style="font-weight: bold;">version(iData)</span>: return
+the iFit/iData version number and release date<br>
   </li>
   <li><span style="font-weight: bold;">zeros(iData, dims)</span>:
 initialize an array of empty iData objects<br>
@@ -723,7 +742,8 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData loading data - Oct 2010</span><br>
+Farhi - iFit/iData loading data - Oct 2010</span> - back to <a
+ href="index.html">Main iFit Page</a>
 </div>
 </body>
 </html>
