@@ -62,7 +62,7 @@ case { 'transpose', 'ctranspose'}; % .' and ' respectively
 case {'sparse','full'}
   % apply same operator on error and Monitor
 	e = feval(op, e);
-	b = set(b, 'Monitor', feval(op, get(b,'Monitor')));
+	m = feval(op, m);
 case {'floor','ceil','round'}	
 	% apply same operator on error
 	e = feval(op, e);
@@ -80,7 +80,7 @@ otherwise
 end
 
 % update object
-b = set(b, 'Signal', new_s, 'Error', abs(e));
+b = set(b, 'Signal', new_s, 'Error', abs(e), 'Monitor', m);
 b = setalias(b, 'Signal', new_s, [  op '(' sl ')' ]);
 b.Command=cmd;
 b = iData_private_history(b, op, b);  
