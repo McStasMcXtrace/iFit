@@ -12,7 +12,7 @@ function s = sum(a,dim)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 if ~isa(a, 'iData')
@@ -30,26 +30,44 @@ if length(a(:)) > 1
   return
 end
 
-s=get(a,'Signal');
-[link, label]          = getalias(a, 'Signal');
-cmd=a.Command;
-b=copyobj(a);
-setaxis(b, [], getaxis(b)); % delete all axes
+% in all cases, resample the data set on a grid
+a = interp(a,'grid');
+% make axes single vectors for sum/trapz/... to work
+for index=1:ndims(a)
+  x = getaxis(a, index);
+  setaxis(a, index, unique(x));
+end
+
+s = get(a,'Signal');
+e = get(a,'Error');
+m = get(a,'Monitor');
+
+[link, label] = getalias(a, 'Signal');
+cmd= a.Command;
+b  = copyobj(a);
+setaxis(b, [], getaxis(b)); % delete all axes, but keep any predefined alias
 if all(dim > 0)
+  % sum on all dimensions requested
   for index=1:length(dim(:))
-    s = trapz(s, dim(index));
+    s = sum(s, dim(index)); 
+    if numel(e) > 1, e = sum(e, dim(index)); e = sqrt(e.*e); end
+    if numel(m) > 1, m = sum(m, dim(index)); end
   end
+  % reconstruct all required axes, except the one removed
   ax_index=1;
   for index=1:ndims(a)
-    if all(index ~= dim)
-      setaxis(b, ax_index, getaxis(a, num2str(index)));
+    if all(index ~= dim)  % copy all axes except those which are summed
+      x = getaxis(a, index);
+      setaxis(b, ax_index, x);
       ax_index = ax_index+1;
     end
   end
-  setalias(b,'Signal', s, [mfilename ' of ' label ]);     % Store Signal
+  % Store Signal
+  setalias(b,'Signal', s, [mfilename ' of ' label ]);
+  b = set(b, 'Error', abs(e), 'Monitor', m);
 elseif dim == 0
   for index=1:ndims(a)
-    s = trapz(s, index);
+    s = feval(mfilename, a, index);
   end
   return  % scalar
 end
