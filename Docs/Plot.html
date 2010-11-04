@@ -62,7 +62,8 @@ objects
 may
 be
 visualized
-by means of
+by
+means of
 projections and slices, as seen below.<br>
 <h4><a class="mozTocH4" name="mozTocId650151"></a>Plots for 1D objects</h4>
 Let us import a simple 1D (vector <span style="font-style: italic;">Signal=f(x)
@@ -115,7 +116,8 @@ double-click
 the
 labels,
 title,
-the axes and the curve in
+the
+axes and the curve in
 order to change e.g. the fonts, the text to show, the colors. <br>
 The zoom tool&nbsp;<img style="width: 53px; height: 24px;"
  alt="Figure_zoom tool" title="Figure_zoom tool"
@@ -421,7 +423,8 @@ array in a set of panes (subplot)</h3>
 case
 one
 wish
-to display a number of objects into tiled independent
+to
+display a number of objects into tiled independent
 coordinate frames, all gathered into the same window, the <span
  style="font-weight: bold; font-style: italic;">subplot</span> function
 can be used the same way as with the <a href="#mozTocId574560">overlay</a>
@@ -485,13 +488,61 @@ corresponding indices.<br>
  style="color: rgb(51, 102, 255);">plot</span>(a(:,622));                   % extract the object made from channel 622 on second axis, with all columns<br></pre>
 <h3><a class="mozTocH3" name="mozTocId633772"></a>Setting plot options:
 title, axes labels, axes limits</h3>
-<br>
+Even though it is possible to set the labels on a Matlab figure with
+the <span style="font-style: italic;">title xlabel ylabel zlabel</span>
+functions, it is possible to store that information into the object, so
+that further plots show it. It is also possible to extract portions of
+an object by specifying the axes limits.<br>
 <h4><a class="mozTocH4" name="mozTocId10534"></a>Setting labels, title</h4>
-<br>
+To set the Signal label, use<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">title</span>(a, <span
+ style="color: rgb(204, 51, 204);">'a new Signal label'</span>)</pre>
+which is different from the object title <span
+ style="font-style: italic;">a.Title</span> which holds the name of the
+whole data set, independently of the assigned Signal in the Data. Also,
+the object may be assigned a global label <span
+ style="font-style: italic;">a.Label</span> which may be used e.g. to
+store object categories (background, calibration, with sample, ...). <br>
+The Signal label can be obtained with<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">title</span>(a)</pre>
+Similarly, the axes can be assigned labels with<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">xlabel</span>(a, <span
+ style="color: rgb(204, 51, 204);">'a new X axis label'</span>);              % first axis<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">ylabel</span>(a, <span
+ style="color: rgb(204, 51, 204);">'a new Y axis label'</span>);              % second axis<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">zlabel</span>(a, <span
+ style="color: rgb(204, 51, 204);">'a new Z axis label'</span>);              % third axis<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">clabel</span>(a, <span
+ style="color: rgb(204, 51, 204);">'a new C axis label'</span>);              % fourth axis<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">label</span>(a, rank, <span
+ style="color: rgb(204, 51, 204);">'a new axis label for rank'</span>);  % any axis of given rank=1, 2, 3, ..., 0 for signal<br></pre>
+All of these will be shown upon call to <span
+ style="font-style: italic;">plot(a)</span>. The values can be obtained
+with e.g<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">xlabel</span>(a)<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">label</span>(a, rank)<br>&gt;&gt; ...<br></pre>
 <h4><a class="mozTocH4" name="mozTocId556359"></a>Setting axes limits</h4>
+It is possible to select a subregion of an object by specifying limits
+among the axes. The resulting object does not hold the outer limits
+data anymore.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">xlim</span>(a,[xmin xmax])</pre>
+and similar functions <span style="font-style: italic;">ylim, zlim,
+clim</span>.<br>
 <h3><a class="mozTocH3" name="mozTocId553050"></a><span
  style="font-weight: bold;">Exporting plots as figures and
 images</span></h3>
+The figures can be exported from their <span
+ style="font-style: italic;">File/Save as</span> menu item. Hother
+wever, it is possible to automate the export process by directly call <br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">saveas</span>(a,filename, format)</pre>
+where format may be jpg, png, pdf, ... All formats are detailed in the <a
+ href="Save.html">Save</a> page.<br>
 <h3><a class="mozTocH3" name="mozTocId46720"></a>Importing plots as
 iData objects</h3>
 As seen in the <a href="Load.html">Load</a> documentation page, the
