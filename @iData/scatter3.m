@@ -3,6 +3,7 @@ function a = scatter3(a, option)
 %
 %   @iData/scatter3 function to plot a 2D or 3D object
 %     2D and 3D objects are shown as separate colored points
+%     The slice(a) method opens the interactive sliceomatic 3D viewer.
 %
 % input:  s: object or array (iData)
 %         option: global option for 2D and 3D plots: 
@@ -13,7 +14,7 @@ function a = scatter3(a, option)
 % output: h: graphics object handles (cell)
 % ex:     scatter3(iData(peaks)); scatter3(iData(flow));
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 if nargin ==1
