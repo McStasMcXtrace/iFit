@@ -12,7 +12,7 @@ function s = camproj(a,dim)
 % output: s: projection of elements (iData/scalar)
 % ex:     c=camproj(a);
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/sum, iData/trapz
 
 if ~isa(a, 'iData')
@@ -34,8 +34,8 @@ end
 a = interp(a,'grid');
 % make axes single vectors for sum/trapz/... to work
 for index=1:ndims(a)
-  x = getaxis(a, index);
-  setaxis(a, index, unique(x));
+  [x, xlab] = getaxis(a, index);
+  setaxis(a, index, unique(x), xlab);
 end
 
 s = get(a,'Signal');
@@ -45,7 +45,6 @@ m = get(a,'Monitor');
 [link, label] = getalias(a, 'Signal');
 cmd = a.Command;
 b   = copyobj(a);
-setaxis(b, [], getaxis(b)); % delete all axes
 
 if dim == 0
   for index=1:ndims(a)
@@ -59,10 +58,9 @@ else
       s = sum(s, index); 
       if numel(e) > 1, e = sum(e, index); e = sqrt(e.*e); end
       if numel(m) > 1, m = sum(m, index); end
+      rmaxis(b, index);
     end
   end
-  x = getaxis(a, dim);
-  setaxis(b, 1, x);
   setalias(b,'Signal', s, [ 'projection of ' label ]);     % Store Signal
   b = set(b, 'Error', abs(e), 'Monitor', m);
 end

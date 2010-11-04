@@ -12,7 +12,7 @@ function s = trapz(a,dim)
 % output: s: integral of elements (iData/scalar)
 % ex:     c=trapz(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/cumsum, iData/camproj, iData/sum
 
 if ~isa(a, 'iData')
@@ -34,8 +34,8 @@ end
 a = interp(a,'grid');
 % make axes single vectors for sum/trapz/... to work
 for index=1:ndims(a)
-  x = getaxis(a, index);
-  setaxis(a, index, unique(x));
+  [x, lab] = getaxis(a, index);
+  setaxis(a, index, unique(x),lab);
 end
 
 s = get(a,'Signal');
@@ -45,7 +45,7 @@ m = get(a,'Monitor');
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;
 b  = copyobj(a);
-setaxis(b, [], getaxis(b)); % delete all axes, but keep any predefined alias
+rmaxis(b, dim); % delete all axes to integrate, but keep any predefined alias
 
 if all(dim > 0)
   for index=1:length(dim(:))
@@ -65,15 +65,6 @@ if all(dim > 0)
       s = permute(s,perm);
       e = permute(e,perm);
       m = permute(m,perm);
-    end
-  end
-  % reconstruct all required axes, except the one removed
-  ax_index=1;
-  for index=1:ndims(a)
-    if all(index ~= dim)  % copy all axes except those which are summed
-      x = getaxis(a, index);
-      setaxis(b, ax_index, x);
-      ax_index = ax_index+1;
     end
   end
   % Store Signal

@@ -22,7 +22,7 @@ function h=plot(a, method)
 %                 plot3, scatter3 (colored points), stem3
 %               For 3D plots c=f(x,y,z), method is a string which may contain:
 %                 plot3 (volume), scatter3 (colored points)
-%                 surf (median isosurface), surf mean, surf half
+%                 surf, surf median, surf mean, surf half
 %
 %               Global options for 2D and 3D plots: 
 %                 flat, interp, faceted (for shading)
@@ -39,7 +39,7 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.38 $
+% Version: $Revision: 1.39 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf
@@ -99,12 +99,25 @@ case 1  % vector type data (1 axis + signal) -> plot
     h = plot(a, method);
     return
   else 
+    this_method=method;
     if all(e == 0) | length(x) ~= length(e)
-      if length(method), h = plot(x,y, method);
-      else h = plot(x,y); end
+      if length(this_method)
+        try
+          h = plot(x,y, method);
+        catch
+          this_method=[];
+        end
+      end
+      if ~length(this_method) h = plot(x,y); end
     else
-      if length(method), h = errorbar(x,y,e,method);
-      else h = errorbar(x,y,e); end
+      if length(method), 
+        try
+          h = errorbar(x,y,e,method);
+        catch
+          this_method=[];
+        end
+      end
+      if ~length(this_method) h = errorbar(x,y,e); end
     end
   end
   set(h, 'Tag', a.Tag);
@@ -203,10 +216,16 @@ case 3  % 3d data sets: volumes
           iso = mean(c(:));
         elseif ~isempty(strfind(method, 'half'))
           iso = (min(c(:))+max(c(:)))/2;
-        else
+        elseif ~isempty(strfind(method, 'median'))
           iso = median(c(:));
+        else
+          iso = [];
         end
-        isosurface(getaxis(a,1),getaxis(a,2),getaxis(a,3),c, iso);
+        if ~isempty(iso), 
+          isosurface(getaxis(a,1),getaxis(a,2),getaxis(a,3), c, iso);
+        else 
+          isosurface(getaxis(a,1),getaxis(a,2),getaxis(a,3), c); 
+        end
         h = findobj(gca,'type','patch');
       end
     end
@@ -250,7 +269,7 @@ end
 % add a UIcontextMenu so that right-click gives info about the iData plot
 % also make up title string and Properties dialog content
 T=a.Title; if iscell(T), T=T{1}; end
-T=strtrim(T);
+T=regexprep(T,'\s+',' '); % remove duplicated spaces
 cmd = char(a.Command{end});
 properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
              [ 'Title: "' T '"' ], ...
