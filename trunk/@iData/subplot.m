@@ -12,7 +12,7 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/plot
 
 % EF 23/11/07 iData implementation
@@ -36,7 +36,7 @@ if length(varargin) >=1
     if length(varargin) >= 2  
       varargin = varargin(2:end);
     else varargin = {}; end
-  elseif length(size(a)) == 2 & any(size(a) > 1)
+  elseif length(size(a)) == 2 & all(size(a) > 1)
     m = size(a,1); n = size(a,2);
   end
 end

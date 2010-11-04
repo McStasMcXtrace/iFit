@@ -12,7 +12,7 @@ function s = sum(a,dim)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 if ~isa(a, 'iData')
@@ -34,8 +34,8 @@ end
 a = interp(a,'grid');
 % make axes single vectors for sum/trapz/... to work
 for index=1:ndims(a)
-  x = getaxis(a, index);
-  setaxis(a, index, unique(x));
+  [x, xlab] = getaxis(a, index);
+  setaxis(a, index, unique(x), xlab);
 end
 
 s = get(a,'Signal');
@@ -45,22 +45,13 @@ m = get(a,'Monitor');
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;
 b  = copyobj(a);
-setaxis(b, [], getaxis(b)); % delete all axes, but keep any predefined alias
+rmaxis(b, dim); % delete all axes to integrate, but keep any predefined alias
 if all(dim > 0)
   % sum on all dimensions requested
   for index=1:length(dim(:))
     s = sum(s, dim(index)); 
     if numel(e) > 1, e = sum(e, dim(index)); e = sqrt(e.*e); end
     if numel(m) > 1, m = sum(m, dim(index)); end
-  end
-  % reconstruct all required axes, except the one removed
-  ax_index=1;
-  for index=1:ndims(a)
-    if all(index ~= dim)  % copy all axes except those which are summed
-      x = getaxis(a, index);
-      setaxis(b, ax_index, x);
-      ax_index = ax_index+1;
-    end
   end
   % Store Signal
   setalias(b,'Signal', s, [mfilename ' of ' label ]);
