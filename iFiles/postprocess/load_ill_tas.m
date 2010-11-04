@@ -50,12 +50,12 @@ if ~isempty(STEPS)
   STEPS=[];
   % get the first non zero step
   for index=1:length(steps_val)
-    if steps_val{index} > 1e-4 && isempty(STEPS)
+    if abs(steps_val{index}) > 1e-4 && isempty(STEPS)
       STEPS = steps_lab{index};
     end
   end
 end
-% compute the normalize variance of each column
+% compute the normalized variance of each column
 index_hkle=[]; % index of QH QK QL EN columns
 index_m12 =[]; % index of M1 M2 monitors
 index_temp=[]; % index for temperatures
@@ -63,11 +63,13 @@ index_pal =[]; % index for polarization analysis
 Variance = zeros(1,length(columns));
 for j=1:length(columns)
   setalias(a,columns{j},a.Signal(:,j)); % create an alias for each column
+  % use STEPS
   if (~isempty(strmatch(columns{j}, {'QH','QK','QL','EN'},'exact'))) | ...
     (~isempty(STEPS) & ~isempty(strmatch(columns{j}, STEPS, 'exact'))) | ...
     (~isempty(STEPS) & ~isempty(strmatch([ 'D' columns{j} ], STEPS, 'exact')))
     if isempty(find(index_hkle == j)), index_hkle = [ index_hkle j ]; end
   end
+  % and other usual columns
   if strmatch(columns{j}, {'M1','M2'},'exact')
     index_m12 = [ index_m12 j ];
   end
@@ -165,7 +167,7 @@ if ~isempty(DATE), a.Date = DATE; end
 a.User = [ EXPNO ' ' USER '/' LOCAL '@' INSTR ];
 if isempty(TITLE), a.Title= [ COMND ';' a.Title ];
 else a.Title= [ TITLE ';' a.Title ]; end
-for i=1:2, a.Title=strrep(a.Title, '  ',' '); end
+a.Title=regexprep(a.Title,'\s+',' ');
 
 
 % set Signal and default axis
