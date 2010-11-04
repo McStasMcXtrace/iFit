@@ -60,14 +60,17 @@ Further
 dimensionality
 objects
 may
-be visualized by means of
+be
+visualized
+by means of
 projections and slices, as seen below.<br>
 <h4><a class="mozTocH4" name="mozTocId650151"></a>Plots for 1D objects</h4>
 Let us import a simple 1D (vector <span style="font-style: italic;">Signal=f(x)
 </span>) data set into an iData object, and
 plot it:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
- style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/sv1850.scn')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">load</span>(iData, <span
+ style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(a);<br></pre>
 <div style="text-align: center;"><img
  style="width: 400px; height: 354px;" alt="iData plot 1D with menu"
@@ -110,7 +113,9 @@ allows
 to
 double-click
 the
-labels, title, the axes and the curve in
+labels,
+title,
+the axes and the curve in
 order to change e.g. the fonts, the text to show, the colors. <br>
 The zoom tool&nbsp;<img style="width: 53px; height: 24px;"
  alt="Figure_zoom tool" title="Figure_zoom tool"
@@ -123,7 +128,8 @@ and
 Plotting
 Tools/Figures,
 Plots,
-and Graphs</span> provides a full
+and
+Graphs</span> provides a full
 description of all the tools available in Matlab plot windows. Most of
 the functionality can also be accessed from the Figure menus. We
 encourage you to read all this, especially late at night in winter.<br>
@@ -143,7 +149,8 @@ for 1D objects, plots can be generated for 2D objects <span
  style="font-style: italic;">Signal=f(x,y)</span>, and show them up as
 surfaces:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
- style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/ILL_D10.dat')<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">load</span>(iData, <span
+ style="color: rgb(204, 51, 204);">'iFit/Data/ILL_D10.dat'</span>)<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(a);<br></pre>
 which results in a surface plot as shown aside. <br>
 <br>
@@ -161,10 +168,14 @@ Alternate rendering can be obtained with the plot options:<br>
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(51, 102, 255);">peaks)</span>;<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(a);           % a surface<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,'mesh');    % a wired mesh<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,'contour'); % contour plot<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,'contourf');% contour plot with filled regions<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,'surfc');   % a surface with contour plot below<br></pre>
+ style="color: rgb(51, 102, 255);">plot</span>(a,<span
+ style="color: rgb(204, 51, 204);">'mesh'</span>);    % a wired mesh<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(a,<span
+ style="color: rgb(204, 51, 204);">'contour'</span>); % contour plot<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(a,<span
+ style="color: rgb(204, 51, 204);">'contourf'</span>);% contour plot with filled regions<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(a,<span
+ style="color: rgb(204, 51, 204);">'surfc'</span>);   % a surface with contour plot below<br></pre>
 <div style="text-align: center;"><a href="images/iData_plot_2d_surf.png"><img
  alt="iData_plot_2d_surf: plot(a,'surf')"
  title="iData_plot_2d_surf: plot(a,'surf')"
@@ -242,11 +253,16 @@ as in the following example:<br>
 The default plotting method used is an isosurface using the median
 signal value. Other rendering can be plotted with e.g.:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,'surf median');    % plots the c=median(signal) isosurface, same as plot(d) [default]<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,'surf mean');      % plots the c=mean(signal) isosurface<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,'surf half');      % plots the c=(max-min)/2 isosurface<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,'plot3');          % plots a volume rendering with semi-transparent style<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,'scatter3');       % a set of colored points in space<br></pre>
+ style="color: rgb(51, 102, 255);">plot</span>(c,<span
+ style="color: rgb(204, 51, 204);">'surf median'</span>);    % plots the c=median(signal) isosurface, same as plot(d) [default]<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(c,<span
+ style="color: rgb(204, 51, 204);">'surf mean'</span>);      % plots the c=mean(signal) isosurface<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(c,<span
+ style="color: rgb(204, 51, 204);">'surf half'</span>);      % plots the c=(max-min)/2 isosurface<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(c,<span
+ style="color: rgb(204, 51, 204);">'plot3'</span>);          % plots a volume rendering with semi-transparent style<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(c,<span
+ style="color: rgb(204, 51, 204);">'scatter3'</span>);       % a set of colored points in space<br></pre>
 <br>
 <div style="text-align: center;"><a href="images/iData_plot_3d_surf.png"><img
  alt="iData_plot_3d_surf: plot(d)" title="iData_plot_3d_surf: plot(d)"
@@ -363,15 +379,20 @@ The objects we have defined are 1D objects. In order to have them
 appear in a 2D coordinate frame, one way is to simply assign a new axis
 to each object, and then display them as a surface:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a{2}=1; b{2}=1.5; c{2}=3; d{2}=5;  % assign a new 2D axis single value to each 1D objects<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>([a b c d],'surf');            % plot all as a set of lines side by side<br></pre>
-Any 2D plotting method among<span style="font-style: italic;"> 'surf',
-'mesh', 'plot3', 'stem3', 'scatter3'</span> can be requested.<br>
+ style="color: rgb(51, 102, 255);">plot</span>([a b c d],<span
+ style="color: rgb(204, 51, 204);">'surf'</span>);            % plot all as a set of lines side by side<br></pre>
+The surf method<span style="font-style: italic;"> 'surf' </span>and<span
+ style="font-style: italic;"> 'scatter3'</span> methods are here
+equivalen<span style="font-style: italic;">t (colored lines)</span>,
+whereas <span style="font-style: italic;">'plot3' </span>draws simple
+lines can be requested.<br>
 <br>
 An other way to achieve a similar result is to assemble the 1D objects
 into a 2D object, and then define the new axis values:<br>
 <pre style="margin-left: 40px;">&gt;&gt; e=<span
  style="color: rgb(51, 102, 255);">cat</span>(2, [a b c d]);               % catenate 1D objects into a 2D object along 2nd axis <br>&gt;&gt; e{2} = [ 1 1.5 3 5 ];              % asign 2nd axis values in one go<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(e,'mesh');                    % plot<br><span
+ style="color: rgb(51, 102, 255);">plot</span>(e,<span
+ style="color: rgb(204, 51, 204);">'mesh'</span>);                    % plot<br><span
  style="color: rgb(51, 102, 255);"></span></pre>
 which has the advantage that the new axis is directly assigned to a
 vector, instead of independent single values.<br>
@@ -387,8 +408,8 @@ vector, instead of independent single values.<br>
  title="iData_plot_sidebyside_cat: plot(cat(2,[array]), 'mesh')"
  src="images/iData_plot_sidebyside_cat.png"
  style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
-<span style="font-style: italic;">Plots side by side: left=single
-assigned plot, right=catenated objects</span><br>
+<span style="font-style: italic;">Plots side by side: left=separated
+plots, right=catenated objects</span><br>
 </div>
 </div>
 </div>
@@ -398,7 +419,9 @@ array in a set of panes (subplot)</h3>
  title="iData subplot([ array ])" src="images/iData_subplot.png"
  style="border: 0px solid ; width: 150px; height: 220px;" align="right"></a>In
 case
-one wish to display a number of objects into tiled independent
+one
+wish
+to display a number of objects into tiled independent
 coordinate frames, all gathered into the same window, the <span
  style="font-weight: bold; font-style: italic;">subplot</span> function
 can be used the same way as with the <a href="#mozTocId574560">overlay</a>
@@ -408,8 +431,10 @@ method shown above.<br>
  style="color: rgb(51, 102, 255);">sin</span>(a); c=<span
  style="color: rgb(51, 102, 255);">cos</span>(a); d=<span
  style="color: rgb(51, 102, 255);">exp</span>(-a.*a);       % create new objects by applying operator on the initial linear one<br>&gt;&gt; e=<span
- style="color: rgb(51, 102, 255);">iData</span>(flow); f=<span
- style="color: rgb(51, 102, 255);">iData</span>(peaks);          % create 2D and 3D objects<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(51, 102, 255);">flow</span>); f=<span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(51, 102, 255);">peaks</span>);          % create 2D and 3D objects<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">subplot(</span>[a b c d e f]);                 % plot all into a set of separate frames<br></pre>
 The number of panes is automatically set to a sensible arrangement but
 can be set by hand by giving an additional<span
@@ -430,11 +455,34 @@ Finally, the <span style="font-style: italic;">camproj</span> does the
 same as sum, but on all other axes than the one specified. In this
 respect, <span style="font-style: italic;">camproj</span> always
 produces a 1D vector which is the projection of the object on the
-selected dimension.<br>
+selected dimension.<a href="images/iData_plot_projection.png"><img
+ alt="iData_plot_projection: plot(trapz sum camproj)"
+ title="iData_plot_projection: plot(trapz sum camproj)"
+ src="images/iData_plot_projection.png"
+ style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>
+On a 2D object <span style="font-style: italic;">sum(a,1)</span> is
+the same as <span style="font-style: italic;">camproj(a,2)</span> and <span
+ style="font-style: italic;">sum(a,2)</span> is <span
+ style="font-style: italic;">camproj(a,1)</span>.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>);                               % import data<br>&gt;&gt; x=a.Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF_7; x=x(32:371); a{1}=x; % define the angular axis<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">xlabel</span>(a,<span
+ style="color: rgb(204, 51, 204);">'Angle [deg]'</span>);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot<span
+ style="color: rgb(0, 0, 0);">([ <span style="color: rgb(51, 102, 255);">log</span>(a) <span
+ style="color: rgb(51, 102, 255);">sum</span>(a) <span
+ style="color: rgb(51, 102, 255);">trapz</span>(a) <span
+ style="color: rgb(51, 102, 255);">camproj</span>(a) ],<span
+ style="color: rgb(204, 51, 204);">'axis tight'</span>)</span></span><br></pre>
 <h4><a class="mozTocH4" name="mozTocId633428"></a>Plotting simple slices</h4>
-Data slices can be obtained by selecting subspaces from their
+Data slices and subsets can be obtained by selecting subspaces from
+their
 corresponding indices.<br>
-<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>); <br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(a(:,622));                   % extract the object made from channel 622 on second axis, with all columns<br></pre>
 <h3><a class="mozTocH3" name="mozTocId633772"></a>Setting plot options:
 title, axes labels, axes limits</h3>
 <br>
@@ -444,9 +492,11 @@ title, axes labels, axes limits</h3>
 <h3><a class="mozTocH3" name="mozTocId553050"></a><span
  style="font-weight: bold;">Exporting plots as figures and
 images</span></h3>
-<h3><a class="mozTocH3" name="mozTocId46720"></a>Importing Plots as
+<h3><a class="mozTocH3" name="mozTocId46720"></a>Importing plots as
 iData objects</h3>
-<br>
+As seen in the <a href="Load.html">Load</a> documentation page, the
+iData method can be used with graphical object including figure and
+axis handle arguments.<br>
 <br>
 <br>
 <hr style="width: 100%; height: 2px;">

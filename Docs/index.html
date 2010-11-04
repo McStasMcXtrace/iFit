@@ -17,19 +17,25 @@
   <li><a href="#mozTocId127491">Purpose</a></li>
   <li><a href="#mozTocId969915">What's in the box...</a>
     <ul>
-      <li><a href="#mozTocId751903">The iData objects (iFit/@iData)</a></li>
-      <li><a href="#mozTocId858815">The optimization library
-(iFit/iOptim)</a></li>
-      <li><a href="#mozTocId526330">The fit functions/models
-(iFit/iFuncs)</a></li>
-      <li><a href="#mozTocId897464">The lower level import routines
-(iFit/iFiles)</a></li>
-      <li><a href="#mozTocId300912">The documentation (iFit/Docs)</a></li>
-      <li><a href="#mozTocId338083">Example data files (iFit/Data)</a></li>
+      <li><a href="#mozTocId751903">The
+iData
+objects (iFit/@iData) </a></li>
+      <li><a href="#mozTocId858815">The
+optimization
+library (iFit/iOptim)</a></li>
+      <li><a href="#mozTocId526330">The fit
+functions/models (iFit/iFuncs)</a></li>
+      <li><a href="#mozTocId897464">The
+lower
+level import routines (iFit/iFiles) </a></li>
+      <li><a href="#mozTocId300912">The documentation
+(iFit/Docs)</a></li>
+      <li><a href="#mozTocId338083">Example data files
+(iFit/Data)</a></li>
       <li><a href="#mozTocId755938">Ok, let's start ! </a></li>
     </ul>
   </li>
-  <li><a href="#mozTocId93435">Credits</a></li>
+  <li><a href="#mozTocId93435">Credits and Disclaimer</a></li>
   <li><a href="#mozTocId639966">For beginners</a></li>
   <li><a href="#mozTocId66420">Help me !</a></li>
 </ul>
@@ -38,16 +44,30 @@
 <span style="font-style: italic; font-weight: bold;">Welcome to the
 iFit Data Analysis library !</span><br>
 <br>
+<span style="font-style: italic;">"Simple
+methods
+to
+be
+used
+for complex data analysis"</span><br>
+<br>
 <div style="text-align: left;">
 <h3><a class="mozTocH3" name="mozTocId127491"></a>Purpose</h3>
-This library is a simple set of methods to load, analyze, plot, fit and
-optimize models, and export results.<br>
+The <span style="font-style: italic; font-weight: bold;">iFit</span>
+library is a set of methods to load, analyze, plot, fit and
+optimize models, and export results. <span style="font-style: italic;">iFit</span>
+is based on <a href="http://www.mathworks.com">Matlab</a>.<a
+ href="http://www.mathworks.com"><img alt="Matlab" title="Matlab"
+ src="images/ml_icon.gif"
+ style="border: 0px solid ; width: 45px; height: 38px;" align="right"></a>
 It does not currently include advanced graphical user interfaces (GUI),
 and rather focuses on <span style="font-style: italic;">doing the math
-right</span>.<br>
-Any text file can be imported straight away, and a set of binary files
+right</span>. Any text file can be imported straight away, and a set of
+binary files
 are supported.<br>
-<h3><a class="mozTocH3" name="mozTocId969915"></a>What's in the box...</h3>
+<h3><a class="mozTocH3" name="mozTocId969915"></a>What's in the box...<img
+ style="width: 128px; height: 100px;" alt="iFit package"
+ title="iFit package" src="images/box.jpeg" align="right"></h3>
 <h4 style="margin-left: 40px;"><a class="mozTocH4" name="mozTocId751903"></a>The
 iData
 objects
@@ -95,7 +115,9 @@ sets which describe it.<br>
 <h4 style="margin-left: 40px;"><a class="mozTocH4" name="mozTocId897464"></a>The
 lower
 level
-import routines (iFit/iFiles)<br>
+import
+routines
+(iFit/iFiles)<br>
 </h4>
 <div style="margin-left: 40px;">The file import method used by iData is
 performed on a lower level by the <a href="iFiles.html">iFiles</a>
@@ -122,40 +144,27 @@ along the documentation web pages and in the QuickStart.<br>
 <br>
 </h4>
 To install the package, refer to the <a href="Install.html">Install</a>
-page.<br>
+page, you just need Matlab.<br>
 If you want a quick example, refer to the <a href="QuickStart.html">Quick
 Start</a> page. Otherwise, the typical usage would be:</div>
-<pre style="margin-left: 80px;">a=<span
+<pre style="margin-left: 80px;"><span style="color: rgb(51, 102, 255);"><span
+ style="color: rgb(0, 0, 0);">&gt;&gt; </span>addpath</span>(<span
+ style="color: rgb(51, 102, 255);">genpath</span>(<span
+ style="color: rgb(204, 51, 204);">'/some/path/to/iFit'</span>))<br><span
+ style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>a=<span
  style="color: rgb(51, 102, 255);">iData</span>(file)<br><span
- style="color: rgb(51, 102, 255);">plot</span>(a)<br>b=2*a+log(a);<br>parameters=<span
- style="color: rgb(51, 102, 255);">fits</span>(a,'gauss')<br><span
- style="color: rgb(51, 102, 255);">saveas</span>(a,'filename','pdf')<br></pre>
-<h3><a class="mozTocH3" name="mozTocId93435"></a>Credits</h3>
-<span style="font-style: italic;">iFit</span> was invented by <a
- href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanuel-farhi/">E.
-Farhi</a> and took many years to come to you. <br>
-Substantial contributions from Y. Debab and P. Willendrup.<br>
-If you produce scientific output using iFit, I'd appreciate if you cite
-the following reference:<br>
-<ul>
-  <li>E. Farhi, <span style="font-style: italic;">The iFit data
-analysis library</span>, ILL Computing for Science (2010) .</li>
-</ul>
-iFit is a product from the <a href="http://www.ill.fr/computing">Computing
-for
-Science</a> group at the <a href="http://www.ill.fr/">Institut
-Laue-Langevin</a>, Grenoble, France.<br>
-<br>
+ style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span
+ style="color: rgb(51, 102, 255);">plot</span>(a)<br><span
+ style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>b=2*a+<span
+ style="color: rgb(51, 102, 255);">log</span>(a)<br><span
+ style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>parameters=<span
+ style="color: rgb(51, 102, 255);">fits</span>(a,<span
+ style="color: rgb(204, 51, 204);">'gauss'</span>)<br><span
+ style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span
+ style="color: rgb(51, 102, 255);">saveas</span>(a,<span
+ style="color: rgb(204, 51, 204);">'filename'</span>,<span
+ style="color: rgb(204, 51, 204);">'pdf'</span>)<br></pre>
 <h3><a class="mozTocH3" name="mozTocId639966"></a>For beginners</h3>
-<div style="text-align: center;"><span style="font-style: italic;">"Simple
-methods
-to
-be
-used
-for
-complex data analysis"</span><br>
-</div>
-<br>
 <span style="font-weight: bold; font-style: italic;">If you do not know
 Matlab</span> already, you will discover that using the iFit library
 does not require advanced IT knowledge. The general syntax are rather
@@ -171,7 +180,8 @@ the user interface.<br>
 <span style="font-weight: bold; font-style: italic;">If you have used
 the <a
  href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/">Spec1d</a>
-object</span>, you will quickly find that the iFit follows exactly the
+object</span>, you will quickly find that the <span
+ style="font-style: italic;">iFit</span> follows exactly the
 same syntax.<br>
 <br>
 <span style="font-weight: bold; font-style: italic;">If you come from
@@ -183,14 +193,19 @@ using the Scientific Python (see <a
  href="http://www.pythonxy.com/">Python(x,y)</a>, Pyhton Scientific
 Matplotlib Numeric Numpy...).
 <pre style="margin-left: 80px;"><br></pre>
-<h3><a class="mozTocH3" name="mozTocId66420"></a>Help me !</h3>
+<h3><a class="mozTocH3" name="mozTocId66420"></a>Help me !<img
+ style="width: 107px; height: 128px;" alt="HELP" title="HELP"
+ src="images/help.jpeg" align="right"></h3>
 An extensive documentation is provided as web pages (such as this
 one) which you access from Matlab with<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">doc</span>(iData)<br></pre>
 and help pages for each function/method, which you can access with<br>
-<pre style="margin-left: 40px;">&gt;&gt; help iData<br>&gt;&gt; help iData/load<br></pre>
-If you find bugs please send them to me &lt;farhi (at) ill.fr&gt; with:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">help</span> iData<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">help</span> iData/load<br></pre>
+If you find bugs please send them to me <span
+ style="font-weight: bold;">[farhi (at) ill.fr]</span> with:<br>
 <ol>
   <li>your Matlab version</li>
   <li>the iFit version which you can get from the Matlab command <span
@@ -198,9 +213,31 @@ If you find bugs please send them to me &lt;farhi (at) ill.fr&gt; with:<br>
   </li>
   <li>the script that reproduces the error, together with any required
 external data file</li>
-  <li>a smile ;-)<br>
-  </li>
+  <li>a smile ;-)</li>
 </ol>
+<h3><a class="mozTocH3" name="mozTocId93435"></a>Credits and Disclaimer<br>
+</h3>
+<span style="font-style: italic;">iFit</span> was invented by <a
+ href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanuel-farhi/">E.
+Farhi</a> and took many years to come to you. <br>
+Substantial contributions from Y. Debab and P. Willendrup.<br>
+If you produce scientific output using iFit, I'd appreciate if you cite
+the following reference:<br>
+<ul>
+  <li>E. Farhi, <span style="font-style: italic;">The iFit data
+analysis library</span>, ILL Computing for Science (2010) .</li>
+</ul>
+iFit is a product from the <a href="http://www.ill.fr/computing">Computing
+for
+Science</a> group at the <a href="http://www.ill.fr/">Institut
+Laue-Langevin</a>, Grenoble, France.<br>
+<br>
+<span style="color: rgb(255, 0, 0); font-weight: bold;">Disclaimer:</span><br>
+This software is experimental, and should not be considered
+bullet-proof. In particular, expect many bugs - which should be
+reported to me <span style="font-weight: bold;">[farhi (at) ill.fr]</span>
+if you want them to be fixed quickly. Also, this prototype is known to
+be slow. This will be improved gradually...<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.

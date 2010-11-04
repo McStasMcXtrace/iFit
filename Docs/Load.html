@@ -13,12 +13,17 @@
 <ol id="mozToc">
 <!--mozToc h3 1 h3 2 h3 3 h4 4 h5 5 h6 6-->
   <li><a href="#mozTocId5377">Importing data from a
-file (iData, load) </a></li>
+file (iData,
+load)
+    </a></li>
   <li><a href="#mozTocId59221">Supported data formats</a></li>
   <li><a href="#mozTocId141862">Importing directly
 from
 Matlab variables</a></li>
-  <li><a href="#mozTocId672193">How it works (looktxt, iLoad, iFiles) </a></li>
+  <li><a href="#mozTocId755882">Importing from Matlab Figures</a></li>
+  <li><a href="#mozTocId672193">How it works
+(looktxt, iLoad, iFiles)
+    </a></li>
 </ol>
 <br>
 <hr style="width: 100%; height: 2px;">
@@ -26,7 +31,7 @@ Matlab variables</a></li>
  style="font-style: italic;">iData, load </span><br>
 <div style="text-align: left;"><br>
 In this document we present how to import data as <a href="iData.html">iData</a>
-objetcs.<br>
+objetcs from files, variables and figures.<br>
 </div>
 </div>
 <h3><a class="mozTocH3" name="mozTocId5377"></a>Importing data from a
@@ -39,8 +44,10 @@ with the<br>
 <span style="font-style: italic;">iData/<span style="font-weight: bold;">load</span></span>
 method.<br>
 <div style="margin-left: 40px;">
-<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>('iFit/Data/ILL_IN6.dat');</pre>
-<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, 'iFit/Data/ILL_IN6.dat');</pre>
+<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>);</pre>
+<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span
+ style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>);</pre>
 </div>
 These commands result in the following output, which produce an iData
 object:<br>
@@ -64,28 +71,36 @@ access to compressed files (.zip, .gz).<img
 Directory may be imported (and thus all files within), as well as lists
 of files
 <div style="margin-left: 40px;">
-<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>('iFit/Data');</pre>
-<pre>&gt;&gt; a = i<span style="color: rgb(51, 102, 255);">Data</span>({'iFit/Data/*.dat' ,...</pre>
-<pre>&nbsp; 'iFit/Data/sv1850.scn',...</pre>
-<pre>&nbsp; 'iFit/Data/sv1884.scn',...</pre>
-<pre>&nbsp; 'iFit/Data/sv4700.scn'});</pre>
+<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">'iFit/Data'</span>);</pre>
+<pre>&gt;&gt; a = i<span style="color: rgb(51, 102, 255);">Data</span>({<span
+ style="color: rgb(204, 51, 204);">'iFit/Data/*.dat'</span> ,...<br><span
+ style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>,...<br><span
+ style="color: rgb(204, 51, 204);">'iFit/Data/sv1884.scn'</span>,...<br><span
+ style="color: rgb(204, 51, 204);">'iFit/Data/sv4700.scn'</span>});<br></pre>
 </div>
 which returns an array of iData objects.<br>
 A <a href="../iFiles/doc/uigetfiles.html">file selector</a>,
 which supports multiple file selection, may be used by
 issuing<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
- style="color: rgb(51, 102, 255);">iData</span>('')</pre>
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">''</span>)</pre>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
- style="color: rgb(51, 102, 255);">load</span>(iData,'')</pre>
+ style="color: rgb(51, 102, 255);">load</span>(iData,<span
+ style="color: rgb(204, 51, 204);">''</span>)</pre>
 By default, an analysis of the data file will be done, and the best
 importer <br>
 method will be used. It is possible to select a prefered method with
 e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
- style="color: rgb(51, 102, 255);">load</span>(iData, 'file', 'HDF5')</pre>
+ style="color: rgb(51, 102, 255);">load</span>(iData, <span
+ style="color: rgb(204, 51, 204);">'file'</span>, <span
+ style="color: rgb(204, 51, 204);">'HDF5'</span>)</pre>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
- style="color: rgb(51, 102, 255);">load</span>(iData, 'file', 'gui');&nbsp; % a method selector pops-up.</pre>
+ style="color: rgb(51, 102, 255);">load</span>(iData, <span
+ style="color: rgb(204, 51, 204);">'file'</span>, <span
+ style="color: rgb(204, 51, 204);">'gui'</span>);&nbsp; % a method selector pops-up.</pre>
 A list of the supported formats is shown below.<br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">To get
@@ -99,15 +114,18 @@ wrapper, but many formats are supported. In some case, additional axis
 definition specific to the format will be applied.<br>
 <br>
 The list of available methods is stored in the <span
- style="font-style: italic;">iFit/iFiles/iLoad_ini.m</span>
+ style="font-style: italic; color: rgb(204, 51, 204);">iFit/iFiles/iLoad_ini.m</span>
 file, <br>
 and can be obtained from the <span
  style="font-weight: bold; font-style: italic;">iLoad</span> function<br>
 <pre style="margin-left: 40px;">&gt;&gt; config = <span
- style="color: rgb(51, 102, 255);">iLoad</span>('','load config');</pre>
+ style="color: rgb(51, 102, 255);">iLoad</span>(<span
+ style="color: rgb(204, 51, 204);">''</span>,<span
+ style="color: rgb(204, 51, 204);">'load config'</span>);</pre>
 a local <span style="font-style: italic;">iLoad.ini</span>
 configuration file is stored in the Matlab
-<span style="font-style: italic;">Preferences</span> directory.<br>
+<span style="font-style: italic;">Preferences</span> directory, and
+then overrides the system default.<br>
 The current method list is:<img style="width: 340px; height: 338px;"
  alt="iData load import method selector"
  title="iData load import method selector"
@@ -157,10 +175,15 @@ A direct import of a Matlab variable is performed with<br>
  style="color: rgb(51, 102, 255);">iData</span>(variable)</pre>
 such as<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
- style="color: rgb(51, 102, 255);">iData</span>(rand(10))</pre>
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(51, 102, 255);">rand</span>(10))</pre>
 or<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
- style="color: rgb(51, 102, 255);">iData</span>(struct('a',1,'b','string'))</pre>
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(51, 102, 255);">struct</span>(<span
+ style="color: rgb(204, 51, 204);">'a'</span>,1,<span
+ style="color: rgb(204, 51, 204);">'b'</span>,<span
+ style="color: rgb(204, 51, 204);">'a string'</span>))</pre>
 This works for basically any imput object.<br>
 <br>
 A special syntax is available to import Signal and Axis definitions
@@ -170,14 +193,16 @@ with e.g.<br>
 imports <span style="font-style: italic;">Signal</span> as 'c' and <span
  style="font-style: italic;">axes</span> x,y, ... which should then all
 be numerical values. <br>
-<h3>Importing from Matlab Figures<img
- style="width: 334px; height: 315px;"
+<h3><a class="mozTocH3" name="mozTocId755882"></a>Importing from Matlab
+Figures<img style="width: 334px; height: 315px;"
  alt="The Peaks figure imported as an iData"
  title="The Peaks figure imported as an iData" src="images/Peaks.png"
  align="right"></h3>
 The direct import method also works fromMatlab figures, when simply
 giving a valid Handle Graphics Object to iData:<br>
-<pre style="margin-left: 40px;">&gt;&gt; f=figure; peaks;<br>&gt;&gt; a = <span
+<pre style="margin-left: 40px;">&gt;&gt; f=<span
+ style="color: rgb(51, 102, 255);">figure</span>; <span
+ style="color: rgb(51, 102, 255);">peaks</span>;<br>&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(f);</pre>
 The handle can be a figure, a surface, an axis, a line, ...<br>
 <h3><a class="mozTocH3" name="mozTocId672193"></a>How it works
@@ -188,7 +213,8 @@ routine,
 which
 scans
 the
-file and searches for the file extension and
+file
+and searches for the file extension and
 patterns in the file contents (in the case of text files) in order to
 identify the proper importation method to use.<br>
 <br>
@@ -202,7 +228,8 @@ a
 Matlab
 script
 which
-is then read into the
+is
+then read into the
 workspace. The resulting Matlab variable is a structure, which holds a <span
  style="font-style: italic;">Data</span> field with all numerical
 blocks from the initial file, and a <span style="font-style: italic;">Header</span>
@@ -224,7 +251,8 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - Oct 2010</span><span
  style="font-style: italic;"> </span>- back to <a href="index.html">Main
-iFit Page</a>
+iFit
+Page</a>
 </div>
 </body>
 </html>
