@@ -23,7 +23,7 @@ function s_out = setalias(a_in,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -99,7 +99,7 @@ for index = 1:length(s_out)
       if isempty(alias_num) % add
         a.Alias.Names{end+1} = name;
         a.Alias.Values{end+1}= link;
-        a.Alias.Labels{end+1}= label;
+        a.Alias.Labels{end+1}= regexprep(label,'\s+',' ');
       else
         a.Alias.Names{alias_num} = name;
         if ~isempty(link) | isempty(label), a.Alias.Values{alias_num}= link; end
