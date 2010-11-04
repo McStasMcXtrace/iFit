@@ -33,8 +33,10 @@ or
 
 ** Quick start
 
-A number of pages are available in the iFit/Docs directory:
-Loading data files:               <iFit/Docs/Loading.htmh>
-Description of the iData object   <iFit/Docs/iData.html>
+type in:
+>> addpath(genpath('/path/to/iFit'))
+>> doc(iData)
+
+
 
 

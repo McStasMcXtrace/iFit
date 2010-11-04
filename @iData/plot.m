@@ -23,6 +23,7 @@ function h=plot(a, method)
 %               For 3D plots c=f(x,y,z), method is a string which may contain:
 %                 plot3 (volume), scatter3 (colored points)
 %                 surf, surf median, surf mean, surf half
+%               The slice(a) method opens the interactive sliceomatic 3D viewer.
 %
 %               Global options for 2D and 3D plots: 
 %                 flat, interp, faceted (for shading)
@@ -39,10 +40,10 @@ function h=plot(a, method)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 %
-% Version: $Revision: 1.39 $
+% Version: $Revision: 1.40 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
-%          shading, lighting, surf
+%          shading, lighting, surf, iData/slice
 
 % private functions:
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
@@ -222,9 +223,9 @@ case 3  % 3d data sets: volumes
           iso = [];
         end
         if ~isempty(iso), 
-          isosurface(getaxis(a,1),getaxis(a,2),getaxis(a,3), c, iso);
+          isosurface(y,x,z, c, iso);
         else 
-          isosurface(getaxis(a,1),getaxis(a,2),getaxis(a,3), c); 
+          isosurface(y,x,z, c); 
         end
         h = findobj(gca,'type','patch');
       end
