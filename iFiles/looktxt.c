@@ -105,7 +105,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.1 $Revision: 1.14 $"
+#define VERSION "1.1 $Revision: 1.15 $"
 #endif
 
 #ifdef __dest_os
@@ -398,7 +398,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
     "%% End of file %TXT generated from %SRC\n"
       "%% in-line function to read binary blocks\n"
       "function d=bin_ref(f,b,m,n)\n"
-      "  [fid,mess]=fopen(f,'r');\n"
+      "  [fid,mess]=fopen(f,'rb');\n"
       "  if fid == -1, disp([ 'Error opening bin file ' f ': ' mess ]); end\n"
       "  fseek(fid,b,-1);\n"
       "  d=fread(fid,m*n,'single'); fclose(fid);\n"
@@ -496,7 +496,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
     "endfunction\n%% End of file %TXT generated from %SRC\n"
       "%% in-line function to read binary blocks\n"
       "function d=bin_ref(f,b,m,n)\n"
-      "  f=fopen(f,'r'); fseek(f,b,-1);\n"
+      "  f=fopen(f,'rb'); fseek(f,b,-1);\n"
       "  d=fread(f,m*n,'float'); fclose(f); d=reshape(d,n,m);\n"
       "  d=d'; return\n"
       "endfunction\n",
@@ -1182,7 +1182,7 @@ char *try_open_target(struct fileparts_struct parts, char force)
     }
   }
 
-  fid = fopen(FullName, "w");
+  fid = fopen(FullName, "wb");
   if (fid) {
     fclose(fid); fid=NULL;
     return(FullName);/* OK, return */
@@ -1207,7 +1207,7 @@ char *try_open_target(struct fileparts_struct parts, char force)
     }
   }
 
-  fid = fopen(FullName, "w");
+  fid = fopen(FullName, "wb");
   if (fid) {
     fclose(fid); fid=NULL;
     return(FullName);
@@ -1282,7 +1282,7 @@ struct file_struct file_open(char *name, struct option_struct options)
     }
 
     /* opens source file (for reading) */
-    file.SourceHandle = fopen(file.Source, "r");
+    file.SourceHandle = fopen(file.Source, "rb");
     if (!file.SourceHandle) {
       print_stderr( "Error: Source file '%s' can not be opened for reading [looktxt:file_open:%d]\n", 
         file.Source,__LINE__);
@@ -1665,7 +1665,7 @@ struct option_struct options_init(char *pgname)
   options.sections   = strlist_init("sections");
   options.metadata   = strlist_init("metadata");
   options.makerows   = strlist_init("makerows");
-  options.openmode   = str_dup("w");
+  options.openmode   = str_dup("wb");
   options.separator  = str_dup(Cseparator);
   options.comment    = str_dup(Ccomment);
   options.eol        = str_dup(Ceol);
