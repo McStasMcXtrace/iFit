@@ -63,7 +63,7 @@ function [pars,criteria,message,output] = fits(a, model, pars, options, constrai
 %         o=optimset('fminsearch'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o);
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also iData, fminsearch, optimset, optimget
 
 % nested  functions: outfun_wrapper, eval_criteria
@@ -257,7 +257,7 @@ function c=least_square(Signal, Error, Model)
   if all(Error == 0)
     c = sum(abs(Signal-Model).^2); % raw least square
   else
-    index = find(Error);
+    index = find(Error & ~isnan(Error) & ~isinf(Error));
     c=(Signal(index)-Model(index))./Error(index);
     c=abs(c);
     c=sum(c.*c);                % Chi square
