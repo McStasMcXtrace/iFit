@@ -12,7 +12,7 @@ function s_out = setaxis(a_in,indexes,names,values)
 %     setaxis(a,1,'x',1:10) creates the 1-st rank axis as the alias 'x'
 %     which value is set to 1:10.
 %   The Signal corresponds to axis 0. 
-%   Axis 1 is often labeled as 'x' (on columns), 2 as 'y' (on rows), etc...
+%   Axis 1 is often labeled as 'x' (along rows), 2 as 'y' (along columns), etc...
 %   The special syntax s{0} assigns the signal, and s{n} assigns the axis of rank n.
 %     When the assigned value is a char, the axis definition is set.
 %     When the assigned value is numeric, the axis value is set (as in set).
@@ -27,7 +27,7 @@ function s_out = setaxis(a_in,indexes,names,values)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'x' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation

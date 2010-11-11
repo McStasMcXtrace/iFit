@@ -9,7 +9,7 @@ function [val, lab] = getaxis(s,ax)
 %   when the axis input parameter is given as a string/name (e.g. '1' or 'x') 
 %     the corresponding axis definition is returned.
 %   The Signal corresponds to axis 0. 
-%   Axis 1 is often labeled as 'x' (on columns), 2 as 'y' (on rows), etc...
+%   Axis 1 is often labeled as 'x' (along rows), 2 as 'y' (along columns), etc...
 %   The special syntax s{0} gets the signal, and s{n} gets the axis of rank n.
 %
 % input:  s: object or array (iData)
@@ -20,7 +20,7 @@ function [val, lab] = getaxis(s,ax)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'x')
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
@@ -88,7 +88,13 @@ else % given as a char, return a char
 end
 
 [dummy, lab]  = getalias(s, link);
-if isempty(lab), lab=[ link ' axis' ]; end
+if isempty(lab), 
+  lab=[ link ' axis' ]; 
+    if     ax == 1, lab = [ lab ' (y)' ];
+    elseif ax == 2, lab = [ lab ' (x)' ]; 
+    elseif ax == 3, lab = [ lab ' (z)' ]; 
+    elseif ax == 4, lab = [ lab ' (t)' ];end
+end
 
 if isempty(val) & ax
   if length(find(size(s) > 1)) == 1

@@ -15,13 +15,15 @@ function s_out = rmaxis(a_in,indexes)
 % output: s: array (iData)
 % ex:     rmaxis(iData, 1) removes the 'x' axis (rank 1)
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/setaxis
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
 
-if isnumeric(indexes)
+if isempty(indexes)
+  s_out=setaxis(a_in, [], getaxis(a_in));
+elseif isnumeric(indexes)
   s_out=setaxis(a_in, indexes, []);
 else
   s_out=setaxis(a_in, [], indexes);
