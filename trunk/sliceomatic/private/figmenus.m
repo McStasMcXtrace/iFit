@@ -10,7 +10,7 @@ function outd = figmenus(d)
   
   % File menu
   d.filemenu = uimenu(gcf,'label','File');
-  d.fcopy = uimenu(d.filemenu, 'label', 'Copy figure','callback', 'sliceomatic copy');
+  d.fcopy = uimenu(d.filemenu, 'label', 'Duplicate figure','callback', 'sliceomatic copy');
   d.fprint  = uimenu(d.filemenu,'label','Print...','callback','sliceomatic print');
 
   %%% start patch 1of3 RAB 2/18/05 %%%

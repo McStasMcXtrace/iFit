@@ -65,7 +65,7 @@ error(nargchk(1,4,nargin))
   %activelabel('title', 'Data');
   daspect([1 1 1]);
   view(3);
-  axis tight vis3d;
+  axis tight; % vis3d;
   hold on;
   grid on;
   % compute projections
