@@ -21,7 +21,7 @@ function [b, Info] = ieval(a, model, pars, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, feval
 
 % private functions: 
@@ -177,7 +177,12 @@ end
 cmd=a.Command;
 b = copyobj(a);
 if isnumeric(Model)
-  setalias(b,'Signal', Model);
+  m = get(b,'Monitor'); m=real(m); m=m(:);
+  if not(all(m == 1) | all(m == 0)),
+    Model = Model.*m;
+  end
+  setalias(b,'Signal', Model, model);
+  b.Title = [ model '(' b.Title ')' ];
   setalias(b,'Error', 0);
 end
 b.Command=cmd;
