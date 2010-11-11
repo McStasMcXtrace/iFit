@@ -12,8 +12,6 @@
 <ol id="mozToc">
 <!--mozToc h3 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
   <li><a href="#mozTocId752752">Credits</a></li>
-  <li><br>
-  </li>
   <li><a href="#mozTocId536185">Contributions</a></li>
 </ol>
 <br>
@@ -21,7 +19,7 @@
 </span>
 <h3><a class="mozTocH3" name="mozTocId752752"></a><span
  style="font-weight: bold;">Credits</span></h3>
-<span style="font-weight: bold;"><br>
+<span style="font-weight: bold;">
 </span><span style="font-style: italic;">iFit</span> was invented by <a
  href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanuel-farhi/">E.
 Farhi</a> and took many years to come to you. <br>
@@ -42,135 +40,185 @@ This software is experimental, and should not be considered
 bullet-proof. In particular, expect many bugs - which should be
 reported to me <span style="font-weight: bold;">[farhi (at) ill.fr]</span>
 if you want them to be fixed quickly. Also, this prototype is known to
-be slow. This will be improved gradually...<br>
-<span style="font-weight: bold;"><br>
+be slow. This will be improved gradually...<span
+ style="font-weight: bold;"><br>
 </span>
 <h3><a class="mozTocH3" name="mozTocId536185"></a><span
  style="font-weight: bold;">Contributions</span></h3>
+Most of contributions where extracted from <a
+ href="http://www.mathworks.com/matlabcentral/fileexchange/">Matlab
+Central</a>, and are thus BSD licensed. Optimization routines have been
+adapted to match the Matlab fminsearch syntax.<br>
 <span style="font-weight: bold;"><br>
 Sliceomatic by Eric Ludlam &lt;eludlam@mathworks.com&gt; </span><span
  style="font-weight: bold;"> (Matlab Central) </span><br>
-is used as a plotter for 3D volume data<span style="font-weight: bold;"><br>
-<br>
-OpenOpt by Dmitrey Kroshko</span>, National Science Academy of Ukraine,
-Institute of <br>
-&nbsp;&nbsp;&nbsp; cybernetics, 2006<br>
-&nbsp; used to port anneal, hPSO, GAconstrain and buscarnd (few tricks
+<div style="margin-left: 40px;">is used as a plotter for 3D volume data<span
+ style="font-weight: bold;"></span><br>
+<a href="http://www.mathworks.com/matlabcentral/fileexchange/764">&lt;http://www.mathworks.com/matlabcentral/fileexchange/764&gt;</a><br>
+<span style="font-weight: bold;"></span></div>
+<span style="font-weight: bold;">fscatter3 by Felix Morsdorf, Jan 2003,
+Remote Sensing Laboratory Zuerich<br>
+</span>
+<div style="margin-left: 40px;">used in plot<br>
+</div>
+<span style="font-weight: bold;">vol3d by Joe Conti, 2004</span><br>
+<div style="margin-left: 40px;">used in plot<br>
+</div>
+<span style="font-weight: bold;">genopt by Douglas M. Schwarz 2006</span><br>
+<div style="margin-left: 40px;">used in iData binary operators<br>
+</div>
+<span style="font-weight: bold;">derivest, gradest, hessdiag, hessian,
+jacobianest by John D'Errico 2006</span><br>
+<div style="margin-left: 40px;">used in iOptim</div>
+<span style="font-weight: bold;">diffhess, dirdero, polymod, simpgrad
+by C. T. Kelley, 1998</span><br>
+<div style="margin-left: 40px;">used in iOptim</div>
+<span style="font-weight: bold;">OpenOpt by Dmitrey Kroshko</span>,
+National Science Academy of Ukraine,
+Institute of cybernetics, 2006<br>
+<div style="margin-left: 40px;">used to port anneal, hPSO, GAconstrain
+and buscarnd (few tricks
 by D. Kroshko)<br>
+</div>
 <span style="font-weight: bold;">hPSO by Alexandros Leontitsis</span>
 leoaleq@yahoo.com Ioannina, Greece 2004 <br>
-&nbsp; used in fminswarmhybrid and fminswarm<br>
-&nbsp; modified to handle a no-hybrid optimization (pure swarm in
+<div style="margin-left: 40px;">used in fminswarmhybrid and fminswarm<br>
+modified to handle a no-hybrid optimization (pure swarm in
 fminswarm)<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">Simplex by F. Sigworth</span>, 15
-March 2003, S. H. Heinemann, 1987 and M. Caceci <br>
-&nbsp;&nbsp;&nbsp; and W. Cacheris, Byte, p. 340, May 1984.<br>
-&nbsp; used in fminsimplex<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+March 2003, S. H. Heinemann, 1987 and M. Caceci and W. Cacheris, Byte,
+p. 340, May 1984.<br>
+<div style="margin-left: 40px;">used in fminsimplex<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">buscarnd by Argimiro R. Secchi</span>
-(arge@enq.ufrgs.br) 2001 <br>
-&nbsp;&nbsp;&nbsp; and Giovani Tonel(giovani.tonel@ufrgs.br) 2006&nbsp;
+(arge@enq.ufrgs.br) 2001&nbsp; and Giovani
+Tonel(giovani.tonel@ufrgs.br) 2006&nbsp;
 <br>
-&nbsp; used in fminrand<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminrand<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">powell by Argimiro R. Secchi </span>(arge@enq.ufrgs.br)
 2001<br>
-&nbsp; used in fminpowell<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminpowell<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">ossrs by Sheela V. Belur</span>(sbelur@csc.com)
 1998<br>
-&nbsp; used in fmingradrand<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fmingradrand<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">ga/gaconstrain by Javad Ivakpour</span>
 javad7@gmail.com, May 2006<br>
-&nbsp; used in fminga<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminga<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">cmaes by Nikolaus Hansen</span>,
 2001-2007. e-mail: hansen@bionik.tu-berlin.de<br>
-&nbsp; used in fmicmaes (CMA-ES)<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fmicmaes (CMA-ES)<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">anneal by joachim.vandekerckhove</span>@psy.kuleuven.be
 2006/04/26
 12:54:04<br>
-&nbsp; used in fminanneal<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminanneal<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">ukfopt by Yi Cao</span> at Cranfield
 University, 08 January 2008<br>
-&nbsp; used in fminkalman<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminkalman<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">solvopt by Alexei Kuntsevich and Franz
 Kappel</span> , Graz (Austria) 1997<br>
-&nbsp; used in fminralg<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminralg<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">fminsearchOS by Olivier Salvado</span>,
 Case
-Western Reserve University, June04 and Mathworks<br>
-&nbsp; based on fminsearch, improved for noisy signal<br>
+Western
+Reserve University, June04 and Mathworks<br>
+<div style="margin-left: 40px;">based on fminsearch, improved for noisy
+signal<br>
+</div>
 <span style="font-weight: bold;">nelder by Kelley</span>, 1998,
 Iterative Methods for Optimization<br>
-&nbsp; used in fminsimplex<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminsimplex<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">bfgswopt by Kelley</span>, 1998,
 Iterative Methods for Optimization<br>
-&nbsp; used in fminbfgs<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminbfgs<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">ntrust by Kelley</span>, 1998,
 Iterative Methods for Optimization<br>
-&nbsp; used in fminnewton<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminnewton<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">hooke by Kelley</span>, 1998,
 Iterative Methods for Optimization<br>
-&nbsp; used in fminhooke<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminhooke<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">imfil by Kelley</span>, 1998,
 Iterative Methods for Optimization<br>
-&nbsp; used in fminimfil<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminimfil<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">mds by Kelley</span>, 1998, Iterative
 Methods for Optimization<br>
-&nbsp; used in fminmulti<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminmulti<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">PSO by Brecht Donckels</span>,
 BIOMATH, brecht.donckels@ugent.be 2006 <br>
-&nbsp; used in fminpso<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminpso<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">psa by Brecht Donckels</span>,
 BIOMATH, brecht.donckels@ugent.be 2006<br>
-&nbsp; used in fminpsa<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminpsa<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">sce by Brecht Donckels</span>,
 BIOMATH, brecht.donckels@ugent.be 2006<br>
-&nbsp; used in fminsce<br>
-&nbsp; modified to use standard Matlab optimization fminsearch syntax
+<div style="margin-left: 40px;">used in fminsce<br>
+modified to use standard Matlab optimization fminsearch syntax
 and options<br>
+</div>
 <span style="font-weight: bold;">LMFsolve by Miroslav Balda</span>,
 balda AT cdm DOT cas DOT cz 2009<br>
-&nbsp; used in fminlm<span style="font-weight: bold;"><br>
-&nbsp; <br>
+<div style="margin-left: 40px;">used in fminlm<span
+ style="font-weight: bold;"></span><br>
+<span style="font-weight: bold;"></span></div>
+<span style="font-weight: bold;">&nbsp; <br>
 </span><br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData loading data - Oct 2010</span><span
+Farhi - iFit/iData loading data - </span><span
+ style="font-style: italic;">$Date: 2010-11-11 13:39:38 $ $Revision: 1.2 $</span><span
  style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page</a>

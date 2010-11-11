@@ -63,8 +63,11 @@ may
 be
 visualized
 by
-means of
-projections and slices, as seen below.<br>
+means
+of
+projections
+and
+slices, as seen below.<br>
 <h4><a class="mozTocH4" name="mozTocId650151"></a>Plots for 1D objects</h4>
 Let us import a simple 1D (vector <span style="font-style: italic;">Signal=f(x)
 </span>) data set into an iData object, and
@@ -106,7 +109,6 @@ try to directly plot the log of the object with (see <a
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>( <span
  style="color: rgb(51, 102, 255);">log10</span>(a) );</pre>
-<br>
 As for any Matlab window, it may be edited using the arrow tool&nbsp;<img
  style="width: 24px; height: 26px;" alt="Figure_arrow tool"
  title="Figure_arrow tool" src="images/Figure_arrow.png" align="middle">which
@@ -117,7 +119,10 @@ the
 labels,
 title,
 the
-axes and the curve in
+axes
+and
+the
+curve in
 order to change e.g. the fonts, the text to show, the colors. <br>
 The zoom tool&nbsp;<img style="width: 53px; height: 24px;"
  alt="Figure_zoom tool" title="Figure_zoom tool"
@@ -177,7 +182,11 @@ Alternate rendering can be obtained with the plot options:<br>
  style="color: rgb(51, 102, 255);">plot</span>(a,<span
  style="color: rgb(204, 51, 204);">'contourf'</span>);% contour plot with filled regions<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(a,<span
- style="color: rgb(204, 51, 204);">'surfc'</span>);   % a surface with contour plot below<br></pre>
+ style="color: rgb(204, 51, 204);">'surfc'</span>);   % a surface with contour plot below<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(a,<span
+ style="color: rgb(204, 51, 204);">'plot3'</span>);   % a surface made of lines side by side<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(a,<span
+ style="color: rgb(204, 51, 204);">'scatter3'</span>);% a surface made of colored points<br></pre>
 <div style="text-align: center;"><a href="images/iData_plot_2d_surf.png"><img
  alt="iData_plot_2d_surf: plot(a,'surf')"
  title="iData_plot_2d_surf: plot(a,'surf')"
@@ -211,6 +220,15 @@ Alternate rendering can be obtained with the plot options:<br>
  style="font-style: italic;"></span> <span style="font-style: italic;">right</span>=plot(a,'scatter3')<br>
 </div>
 <br>
+<br>
+Other plot types can be requested with keywords in the second argument
+to plot: <br>
+<ul style="color: rgb(204, 51, 204);">
+  <li>contour3</li>
+  <li>surfl</li>
+  <li>pcolor</li>
+  <li>stem3</li>
+</ul>
 It is possible, by
 right-clicking on the surface or the axis lines, to pop-up a contextual
 menu which
@@ -243,6 +261,10 @@ a rotate view tool <img style="width: 26px; height: 24px;"
  src="images/Figure_rotate.png" align="middle">enables to change the
 view-point.<br>
 <br>
+<span style="font-weight: bold; font-style: italic;">NOTE: </span>as
+explained in the <a href="iData.html#mozTocId765887">iData axis
+definition</a>, the axis of rank 1 is usually assigned to the 'Y'
+label, and the axis of rank 2 to 'X'.<br>
 <h4><a class="mozTocH4" name="mozTocId734523"></a>Plots for 3D objects</h4>
 Objects that contain volumetric data <span style="font-style: italic;">Signal=f(x,y,z)</span>
 can also be displayed as iso-surfaces or semi-transparent volumes, such
@@ -252,7 +274,7 @@ as in the following example:<br>
  style="color: rgb(51, 102, 255);">iData</span>(x,y,z,v); <span
  style="color: rgb(51, 102, 255);"></span>;<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(c);<br></pre>
-The default plotting method used is an isosurface using the median
+The default plotting method used is an isosurface using an optimal
 signal value. Other rendering can be plotted with e.g.:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(c,<span
@@ -325,6 +347,53 @@ a rotate view tool <img style="width: 26px; height: 24px;"
  alt="Figure rotate tool" title="Figure rotate tool"
  src="images/Figure_rotate.png" align="middle">enables to change the
 view-point.<br>
+<br>
+Last but not least the <span
+ style="font-weight: bold; font-style: italic;">Slice-o-matic</span>
+viewer for 3D volumetric data set is requested upon command:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">slice</span>(c)    % with ndims(c)=3</pre>
+Slices and isosurfaces can be viewer with an interactive tool.<br>
+<br>
+<span style="font-weight: bold; font-style: italic;">NOTE: </span>as
+explained in the <a href="iData.html#mozTocId765887">iData axis
+definition</a>, the axis of rank 1 is usually assigned to the 'Y'
+label, and the axis of rank 2 to 'X'.<br>
+<br>
+<h4>Options for 2D and 3D objects</h4>
+The 2D ans 3D rendering may be customized by mean of keywords added to
+the second argument to the plot function call, as follows:<br>
+<ul>
+  <li><span style="color: rgb(204, 51, 204);">flat, interp, faceted</span>:
+affects
+the type of shading used (see <span style="font-style: italic;">help
+shading</span>).<br>
+  </li>
+  <li><span style="color: rgb(204, 51, 204);">transparent, light</span>:
+add
+transparency (see <span style="font-style: italic;">help alpha</span>),
+and
+add some light(see <span style="font-style: italic;">help light</span>).<br>
+  </li>
+  <li><span style="color: rgb(204, 51, 204);">clabel</span>: requests a
+labeling of contours, by value (see <span style="font-style: italic;">help
+clabel</span>)<br>
+  </li>
+  <li><span style="color: rgb(204, 51, 204);">axis tight, axis auto</span>:
+sets
+plot axis limits tight around the object, or automatically
+optimized (see <span style="font-style: italic;">help axis</span>) </li>
+  <li><span style="color: rgb(204, 51, 204);">view2, view3</span>:
+display 2D/3D views from top or oblique view<br>
+  </li>
+  <li><span style="color: rgb(204, 51, 204);">painters</span> (bitmap
+drawing), <span style="color: rgb(204, 51, 204);">zbuffer</span>
+(vectorial drawing): select the Matlab painters for rendering.</li>
+</ul>
+A usage examples is <br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(a,<span
+ style="color: rgb(204, 51, 204);">'surf interp view2 axis tight transparent'</span>)</pre>
 <h3><a class="mozTocH3" name="mozTocId574560"></a>Plotting object array
 in a single plot (overlay)<br>
 </h3>
@@ -360,7 +429,8 @@ angle.<br>
  src="images/iData_plot_overlay_2D.png"
  style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a></pre>
 <div style="text-align: left;">
-<div style="text-align: center;">Plot overlay: plot([ array ]):
+<div style="text-align: center;"><span style="font-style: italic;">Plot
+overlay</span>: plot([ array ]):
 left=1D, right=2D<br>
 </div>
 <br>
@@ -424,7 +494,10 @@ case
 one
 wish
 to
-display a number of objects into tiled independent
+display
+a
+number
+of objects into tiled independent
 coordinate frames, all gathered into the same window, the <span
  style="font-weight: bold; font-style: italic;">subplot</span> function
 can be used the same way as with the <a href="#mozTocId574560">overlay</a>
@@ -469,8 +542,8 @@ the same as <span style="font-style: italic;">camproj(a,2)</span> and <span
  style="font-style: italic;">camproj(a,1)</span>.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>);                               % import data<br>&gt;&gt; x=a.Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF_7; x=x(32:371); a{1}=x; % define the angular axis<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">xlabel</span>(a,<span
+ style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>);                               % import data<br>&gt;&gt; y=a.Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF_7; y=y(32:371); a{1}=y; % define the angular axis<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">ylabel</span>(a,<span
  style="color: rgb(204, 51, 204);">'Angle [deg]'</span>);<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">subplot<span
  style="color: rgb(0, 0, 0);">([ <span style="color: rgb(51, 102, 255);">log</span>(a) <span
@@ -486,6 +559,11 @@ corresponding indices.<br>
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>); <br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(a(:,622));                   % extract the object made from channel 622 on second axis, with all columns<br></pre>
+The <span style="font-weight: bold;">sliceomatic</span> viewer is
+displayed for 3D objects with<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">iData</span>(flow);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">slice</span>(a)</pre>
 <h3><a class="mozTocH3" name="mozTocId633772"></a>Setting plot options:
 title, axes labels, axes limits</h3>
 Even though it is possible to set the labels on a Matlab figure with
@@ -510,9 +588,9 @@ The Signal label can be obtained with<br>
 Similarly, the axes can be assigned labels with<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">xlabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'a new X axis label'</span>);              % first axis<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'a new X axis label'</span>);              % second axis<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">ylabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'a new Y axis label'</span>);              % second axis<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'a new Y axis label'</span>);              % first axis<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">zlabel</span>(a, <span
  style="color: rgb(204, 51, 204);">'a new Z axis label'</span>);              % third axis<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">clabel</span>(a, <span
@@ -532,7 +610,12 @@ data anymore.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">xlim</span>(a,[xmin xmax])</pre>
 and similar functions <span style="font-style: italic;">ylim, zlim,
-clim</span>.<br>
+clim</span>. Keep in mind that 'X' is along the second axis rank, and
+'Y' is along the first.<br>
+In order to only affect the view, we rather recommend to use the
+standard Matlab commands xlim([xmin xmax]) and similar <span
+ style="font-style: italic;">ylim, zlim</span> and <span
+ style="font-style: italic;">clim</span>.<br>
 <h3><a class="mozTocH3" name="mozTocId553050"></a><span
  style="font-weight: bold;">Exporting plots as figures and
 images</span></h3>
@@ -541,8 +624,9 @@ The figures can be exported from their <span
 wever, it is possible to automate the export process by directly call <br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">saveas</span>(a,filename, format)</pre>
-where format may be jpg, png, pdf, ... All formats are detailed in the <a
- href="Save.html">Save</a> page.<br>
+where format may be <span style="font-style: italic;">jpg, png, pdf</span>,
+...
+All formats are detailed in the <a href="Save.html">Save</a> page.<br>
 <h3><a class="mozTocH3" name="mozTocId46720"></a>Importing plots as
 iData objects</h3>
 As seen in the <a href="Load.html">Load</a> documentation page, the
@@ -552,7 +636,8 @@ axis handle arguments.<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData loading data - Oct 2010</span><span
+Farhi - iFit/iData loading data - </span><span
+ style="font-style: italic;">$Date: 2010-11-11 13:39:38 $ $Revision: 1.5 $</span><span
  style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page</a>

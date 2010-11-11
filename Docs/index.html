@@ -84,18 +84,20 @@ operations seamlessly:<br>
   <li><a href="Load.html">Load</a> any text formated file, and a large
 set of binary format files</li>
   <li>Display object information, including metadata from the original
-file (see below)<br>
+file<br>
   </li>
   <li><a href="Plot.html">Plot</a> the object Signal in a simple view
 for 1D, 2D and 3D objects</li>
   <li>Perform <a href="Math.html">mathematical</a> operations using
 objects (=-/* trigonometric projections integration re-binning...</li>
   <li><a href="Fit.html">Fit</a> a parametrized model to the object
-Signal</li>
+Signal, which makes use of the <a href="iOptim.html">iOptim</a> and <a
+ href="iFunce.html">iFuncs</a> libraries.<br>
+  </li>
   <li><a href="Save.html">Save</a> the object into a set of output
 formats</li>
 </ul>
-<div style="margin-left: 40px;">A list of most iData methods is
+<div style="margin-left: 40px;">An extended list of iData methods is
 available in the <a href="Methods.html">Methods</a> page.<br>
 </div>
 <h4 style="margin-left: 40px;"><a class="mozTocH4" name="mozTocId858815"></a>The
@@ -105,12 +107,15 @@ library
 <div style="margin-left: 40px;">A set of optimization routines has been
 gathered in the <a href="iOptim.html">iOptim</a> part of iFit. It
 enables to choose and compare how different optimization methods can
-solve a problem.<br>
+solve a problem. This library is used transparently by the iData <a
+ href="Fit.html">fit</a> method.<br>
 <h4><a class="mozTocH4" name="mozTocId526330"></a>The fit
 functions/models (iFit/iFuncs)</h4>
 A set of parametrized models is given in the <a href="iFuncs.html">iFuncs</a>
 part of iFit in order to fit some imported data and find best parameter
-sets which describe it.<br>
+sets which describe it. These functions may be used by the iData <a
+ href="Fit.html">fit</a> method, and the lower level <a
+ href="iOptim.html">iOptim</a> library.<br>
 </div>
 <h4 style="margin-left: 40px;"><a class="mozTocH4" name="mozTocId897464"></a>The
 lower
@@ -244,7 +249,7 @@ be slow. This will be improved gradually...<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData loading data - Oct 2010</span> - back to <a
+Farhi - iFit/iData loading data - $Date: 2010-11-11 13:39:38 $ $Revision: 1.5 $</span> - back to <a
  href="index.html">Main iFit Page</a><br>
 </div>
 </body>
