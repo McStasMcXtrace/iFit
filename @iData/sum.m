@@ -12,7 +12,7 @@ function s = sum(a,dim)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 if ~isa(a, 'iData')
@@ -30,6 +30,14 @@ if length(a(:)) > 1
   return
 end
 
+% removes warnings
+try
+  warn.set = warning('off','iData:setaxis');
+  warn.get = warning('off','iData:getaxis');
+catch
+  warn = warning('off');
+end
+
 % in all cases, resample the data set on a grid
 a = interp(a,'grid');
 % make axes single vectors for sum/trapz/... to work
@@ -45,7 +53,7 @@ m = get(a,'Monitor');
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;
 b  = copyobj(a);
-rmaxis(b, dim); % delete all axes to integrate, but keep any predefined alias
+
 if all(dim > 0)
   % sum on all dimensions requested
   for index=1:length(dim(:))
@@ -54,8 +62,18 @@ if all(dim > 0)
     if numel(m) > 1, m = sum(m, dim(index)); end
   end
   % Store Signal
+  s=squeeze(s); e=squeeze(e); m=squeeze(m);
   setalias(b,'Signal', s, [mfilename ' of ' label ]);
   b = set(b, 'Error', abs(e), 'Monitor', m);
+  % put back initial axes, except those integrated
+  ax_index=1;
+  for index=1:ndims(a)
+    if all(dim ~= index)
+      [x, xlab] = getaxis(a, index);
+      setaxis(b, ax_index, x, xlab);
+      ax_index = ax_index+1;
+    end
+  end
 elseif dim == 0
   for index=1:ndims(a)
     s = feval(mfilename, a, index);
@@ -65,4 +83,12 @@ end
 b.Command=cmd;
 b = iData_private_history(b, mfilename, b, dim);
 s = b;
+
+% reset warnings
+try
+  warning(warn.set);
+  warning(warn.get);
+catch
+  warning(warn);
+end
 
