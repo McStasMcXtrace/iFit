@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -133,7 +133,8 @@ if ntimes ~= 0
     x = a_axes{index}; x=unique(x); % also makes it a vector
     a_step = diff(x);
     a_step = a_step(find(a_step));
-    a_step = min([mean(abs(a_step)) median(abs(a_step)) ])/2;  % smallest non-zero axis step
+    a_step = min([mean(abs(a_step)) median(abs(a_step)) ]);  % smallest non-zero axis step
+    if (a_step < 0), a_step = (a_max - a_min)/length(x); end
     a_min  = min(x);
     a_max  = max(x);
     a_len  = (a_max - a_min)/a_step;
@@ -220,15 +221,8 @@ if requires_meshgrid
   switch ndims(a)
   case 1
     % nothing to do as we have only one axis, no grid
-  case 2
-    x=i_axes{1}; y=i_axes{2}; x=unique(x(:)); y=unique(y(:));
-    [i_axes{2}, i_axes{1}] = meshgrid(y,x);
-  case 3
-    x=i_axes{1}; y=i_axes{2}; z=i_axes{3}; 
-    x=unique(x(:)); y=unique(y(:)); z=unique(z(:));
-    [i_axes{2}, i_axes{1}, i_axes{3}] = meshgrid(y,x,z);
   otherwise
-    % now calls ndgrid
+    % calls ndgrid
     % can not use deal as ndgrid uses nargout to set arrays
     toeval='[ ';
     for index=1:ndims(a) 
@@ -242,29 +236,30 @@ end
 % make sure input axes are monotonic. output axes should be OK.
 a_nonmonotonic=0;
 for index=1:ndims(a)
-  if any(diff(a_axes{index}) <= 0)
+  if any(diff(a_axes{index},1,index) < 0)
     a_nonmonotonic=1; break;
   end
 end
+
 if a_nonmonotonic
-  for index=1:ndims(a)  % apply unique on axes
+  for index=1:ndims(a)  % apply unique on axes and reorder signal
     a_idx{index}=1:size(a, index);
     [a_axes{index}, a_idx{index}] = unique(a_axes{index});
     if length(a_idx{index}) ~= size(a,index)
       toeval='';
       for j=1:ndims(a), 
         if j ~= index, str_idx{j}=':';
-        else str_idx{j}='a_idx{index}'; end
+        else           str_idx{j}='a_idx{index}'; end
         if j>1, toeval=[ toeval ',' str_idx{j} ];
-        else toeval=[ str_idx{j} ]; end
+        else    toeval=[ str_idx{j} ]; end
       end
       a_signal =eval([ 'a_signal('  toeval ')' ]);
       if isnumeric(a_error) && length(a_error) > 1, 
-          try a_error  =eval([ 'a_error('   toeval ')' ]); 
+          try   a_error  =eval([ 'a_error('   toeval ')' ]); 
           catch a_error=[]; end
       end
       if isnumeric(a_error) && length(a_monitor) > 1, 
-          try a_monitor=eval([ 'a_monitor(' toeval ')' ]); 
+          try   a_monitor=eval([ 'a_monitor(' toeval ')' ]); 
           catch a_monitor=[]; end
       end
     end
@@ -338,7 +333,7 @@ switch length(a_axes)
 case 1    % 1D
   i_signal = interp1(a_axes{1},   a_signal, i_axes{1},   method, 0);
 otherwise % nD, n>1
-  if length(a_signal) == 1  % single value ?
+  if length(a_signal) <= 1  % single value ?
     i_signal = a_signal;
     return
   end
