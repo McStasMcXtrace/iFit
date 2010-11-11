@@ -12,7 +12,7 @@ function s = camproj(a,dim)
 % output: s: projection of elements (iData/scalar)
 % ex:     c=camproj(a);
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/sum, iData/trapz
 
 if ~isa(a, 'iData')
@@ -30,6 +30,14 @@ if length(a(:)) > 1
   return
 end
 
+% removes warnings
+try
+  warn.set = warning('off','iData:setaxis');
+  warn.get = warning('off','iData:getaxis');
+catch
+  warn = warning('off');
+end
+
 % in all cases, resample the data set on a grid
 a = interp(a,'grid');
 % make axes single vectors for sum/trapz/... to work
@@ -45,6 +53,7 @@ m = get(a,'Monitor');
 [link, label] = getalias(a, 'Signal');
 cmd = a.Command;
 b   = copyobj(a);
+rmaxis(b, []); % removes all axes
 
 if dim == 0
   for index=1:ndims(a)
@@ -58,11 +67,13 @@ else
       s = sum(s, index); 
       if numel(e) > 1, e = sum(e, index); e = sqrt(e.*e); end
       if numel(m) > 1, m = sum(m, index); end
-      rmaxis(b, index);
     end
   end
   setalias(b,'Signal', s, [ 'projection of ' label ]);     % Store Signal
   b = set(b, 'Error', abs(e), 'Monitor', m);
+  % set projection axis
+  [x, xlab] = getaxis(a, dim);
+  setaxis(b, 1, x, xlab);
 end
 
 if dim == 1, 
@@ -73,4 +84,12 @@ end
 b.Command=cmd;
 b = iData_private_history(b, mfilename, b, dim);
 s = b;
+
+% reset warnings
+try
+  warning(warn.set);
+  warning(warn.get);
+catch
+  warning(warn);
+end
 
