@@ -13,6 +13,10 @@ function h=plot(a, method)
 %   uses a semi-transparent volume rendering, whereas the default plot uses
 %   an iso-surface on the median signal.
 %
+%   As mentioned in the iData axis definition (see iData/setaxis), the 'X' axis
+%     refers to the 2nd dimension (along columns), whereas the 'Y' axis refers to
+%     the first dimension (along rows).
+%
 % input:  s: object or array (iData)
 %         method: optional type of plot to render
 %
@@ -39,8 +43,9 @@ function h=plot(a, method)
 % Contributed code (Matlab Central): 
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
+%   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.40 $
+% Version: $Revision: 1.41 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -127,8 +132,8 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   if isvector(a) || (~isvector(a) && (~isempty(strfind(method,'plot3')) || ~isempty(strfind(method,'scatter3')) ))
     a = interp(a,'grid');
   end
-  [x, xlab] = getaxis(a,1);
-  [y, ylab] = getaxis(a,2);
+  [x, xlab] = getaxis(a,2);
+  [y, ylab] = getaxis(a,1);
   [z, zlab] = getaxis(a,0);
   m         = get(a,'Monitor');
   if not(all(m == 1) | all(m == 0)),
@@ -152,17 +157,19 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
       z = z';
     end
     if (strfind(method,'contour3'))
-      [C,h] =contour3(x,y,z);
+      [C,h]=contour3(x,y,z);
     elseif (strfind(method,'contourf'))
       [C,h]=contourf(x,y,z);
     elseif (strfind(method,'contour'))
       [C,h]=contour(x,y,z);
     elseif (strfind(method,'surfc'))
-      h=surfc(x,y,z); % set(h,'Edgecolor','none');
+      h    =surfc(x,y,z); % set(h,'Edgecolor','none');
     elseif (strfind(method,'surfl'))
-      h=surfl(x,y,z); set(h,'Edgecolor','none');
+      h    =surfl(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'mesh'))
-      h=mesh(x,y,z);
+      h    =mesh(x,y,z);
+    elseif (strfind(method,'pcolor'))
+      h    =pcolor(x,y,z);
     elseif (strfind(method,'stem3'))
     	method = strrep(method,'stem3','');
     	method = strrep(method,' ','');
@@ -196,8 +203,8 @@ case 3  % 3d data sets: volumes
     if ~isvector(a) && isempty(strfind(method, 'plot3'))
       a = interp(a,'grid'); % make sure we get a grid
     end
-    [x, xlab] = getaxis(a,1);
-    [y, ylab] = getaxis(a,2);
+    [x, xlab] = getaxis(a,2);
+    [y, ylab] = getaxis(a,1);
     [z, zlab] = getaxis(a,3);
     [c, clab] = getaxis(a,0);
     m         = get(a,'Monitor');
@@ -223,9 +230,9 @@ case 3  % 3d data sets: volumes
           iso = [];
         end
         if ~isempty(iso), 
-          isosurface(y,x,z, c, iso);
+          isosurface(x,y,z, c, iso);
         else 
-          isosurface(y,x,z, c); 
+          isosurface(x,y,z, c); 
         end
         h = findobj(gca,'type','patch');
       end
@@ -237,6 +244,8 @@ case 3  % 3d data sets: volumes
   end
 otherwise
   iData_private_warning(mfilename, [ 'plotting of ' num2str(ndims(a)) '-th dimensional data is not implemented from ' a.Tag '.\n\tUse sum or camproj to reduce dimensionality for plotting.' ]);
+  h=[];
+  return
 end % switch
 
 if (strfind(method,'flat'))
@@ -260,6 +269,9 @@ if (strfind(method,'view3'))
 end
 if (strfind(method,'tight'))
   axis tight
+end
+if (strfind(method,'auto'))
+  axis auto
 end
 if findstr(method,'painters')
 	set(gcf,'Renderer','painters')
@@ -308,7 +320,7 @@ uicm = uicontextmenu;
 set(uicm,'UserData', properties); 
 uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
   'Callback', [ 'msgbox(get(get(gco,''UIContextMenu''),''UserData''), ''About: Figure ' num2str(gcf) ' ' T ' <' S '>'',''help'');' ] );
-uimenu(uicm, 'Label',[ 'Duplicate ' T ' ...' ], 'Callback',[ 'g=gca; f=figure; c=copyobj(g,f); set(c,''position'',[ 0.15 0.15 0.7 0.7]); set(f,''Name'',''Copy of ' char(a) ''');' ]);
+uimenu(uicm, 'Label',[ 'Duplicate ' T ' ...' ], 'Callback',[ 'f=figure; c=copyobj(gca,f); set(c,''position'',[ 0.1 0.1 0.9 0.8]); set(f,''Name'',''Copy of ' char(a) ''');' ]);
 uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '"' ]);
 uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
