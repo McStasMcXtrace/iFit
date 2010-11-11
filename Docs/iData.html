@@ -62,7 +62,8 @@ structure which holds some imported data
 (numerical blocks), as well as additional metadata and axes
 definitions, <span style="font-style: italic;">Signal, Error bars,
 Monitors</span>, and user defined fields (aliases).<br>
-<h3><a class="mozTocH3" name="mozTocId466436"></a>Introduction to the
+<h3 style="text-align: center;"><a class="mozTocH3"
+ name="mozTocId466436"></a>Introduction to the
 iData objects</h3>
 An iData object is obtained by transforming a file name into an iData
 object <span style="font-style: italic; font-weight: bold;">a</span>
@@ -120,7 +121,8 @@ Axes.<br>
 more help</span>: list of most iData <a href="Methods.html">methods</a>
 with comments<span style="font-weight: bold;"></span><br>
 <span style="font-weight: bold;"></span></div>
-<h3><a class="mozTocH3" name="mozTocId443357"></a>Inquiring the iData
+<h3 style="text-align: center;"><a class="mozTocH3"
+ name="mozTocId443357"></a>Inquiring the iData
 object (get, disp, display)</h3>
 The main idea here is that iData object can be handled about the same
 way as structures and <span style="font-style: italic;">Matlab
@@ -194,12 +196,15 @@ accessed), but <span style="font-style: italic;">a(3).data.varia.a1 </span>does
 not
 (requires
 fully
-qualified path to the data).<br>
+qualified
+path
+to the data).<br>
 <br>
 The <span style="font-style: italic; font-weight: bold;">get</span>
 function can also
 apply with iData arrays, as shown, and then returns cell arrays.<br>
-<h3><a class="mozTocH3" name="mozTocId964118"></a>Modifying the iData
+<h3 style="text-align: center;"><a class="mozTocH3"
+ name="mozTocId964118"></a>Modifying the iData
 object (set)<br>
 </h3>
 The content of the objects can be modified
@@ -229,7 +234,8 @@ This syntax can be simplified by adopting the <span
 We shall see below that there is a way to extend an iData object, that
 is add some new information. This also enables to create <span
  style="font-style: italic;">links</span> within the object.<br>
-<h3><a class="mozTocH3" name="mozTocId510414"></a>Definition of
+<h3 style="text-align: center;"><a class="mozTocH3"
+ name="mozTocId510414"></a>Definition of
 Aliases: links and values (setalias, getalias, set, get)</h3>
 An <span style="font-style: italic;">Alias</span> in iData objects
 correspond to user fields, dynamically created and evaluated. The
@@ -335,7 +341,9 @@ symbol
 which
 can
 be
-used within full expressions:<br>
+used
+within
+full expressions:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">setalias</span>(a,<span
  style="color: rgb(204, 51, 204);">'NewField'</span>, <span
@@ -458,7 +466,9 @@ is
 the
 one
 obtained
-by following all definitions:<br>
+by
+following
+all definitions:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">setalias</span>(a,<span
  style="color: rgb(204, 51, 204);">'NewField'</span>,<span
@@ -503,7 +513,8 @@ always return the current Alias definition</li>
   <li>The <span style="font-weight: bold;">setalias</span> function
 always set the current Alias defintion</li>
 </ul>
-<h3><a class="mozTocH3" name="mozTocId134021"></a>Definition of the
+<h3 style="text-align: center;"><a class="mozTocH3"
+ name="mozTocId134021"></a>Definition of the
 Signal,
 Error bar and Monitor</h3>
 The <span style="font-style: italic;">Signal</span> is a special <span
@@ -541,7 +552,8 @@ This label is shown on plots along the Signal axis (e.g. Y on 1D plots
 and Z on 2D plots). We point out that the object can be assigned a
 global Title and Label as well. The title is shown as the plot title
 and the object text display (see <a href="iData.html#mozTocId443357">Inquiring
-the iData
+the
+iData
 object</a>). <br>
 It is also possible to extract a portion of the signal from an iData
 object, similarly as for a normal array:<br>
@@ -550,7 +562,8 @@ object, similarly as for a normal array:<br>
  style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; a([ 2 4 6 8 9])<br></pre>
 creates a new iData object with a subscript Signal (and relevant <a
  href="#mozTocId765887">axes</a> definitions - see below).<br>
-<h4><a class="mozTocH4" name="mozTocId157576"></a>Types of Signals that
+<h4><a class="mozTocH4" name="mozTocId157576"></a>Dimensionality and
+Types of Signals that
 can be handled</h4>
 The <span style="font-style: italic;">dimensionality</span> of the
 iData object is the one from its Signal. It is obtained from the <span
@@ -568,15 +581,29 @@ following table indicates the different types of <span
  style="font-style: italic;">Signal</span> that the iData can handle,
 and the associated requirements regarding <span
  style="font-style: italic;">Axes.</span><br>
+<br>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2"
  cellspacing="2">
   <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic;">Dimensionality<br>
+      </td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic;">Signal
+size<br>
+      </td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic;">Related
+axes<br>
+      </td>
+    </tr>
     <tr>
       <td style="vertical-align: top;">empty ndims=0<br>
       </td>
       <td style="vertical-align: top;">Signal is empty<br>
       </td>
-      <td style="vertical-align: top;">no axis<br>
+      <td style="vertical-align: top;">No axis<br>
       </td>
     </tr>
     <tr>
@@ -584,7 +611,7 @@ and the associated requirements regarding <span
       </td>
       <td style="vertical-align: top;">Signal is a single number<br>
       </td>
-      <td style="vertical-align: top;">in principle, no axis is needed
+      <td style="vertical-align: top;">In principle, no axis is needed
 here.<br>
       </td>
     </tr>
@@ -625,7 +652,7 @@ ndims=<span style="font-style: italic;">n</span><br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">n</span>
 Axes are required, each may have a dimensionality from 1 to <span
- style="font-style: italic;">n</span><br>
+ style="font-style: italic;">n</span>, with preference for vectors.<br>
       </td>
     </tr>
     <tr>
@@ -642,6 +669,8 @@ Signal<br>
   </tbody>
 </table>
 <br>
+The first dimension refers to rows, the second to columns, the third to
+depth and so on.<br>
 <h4><a class="mozTocH4" name="mozTocId696835"></a>Error bars definition</h4>
 The <span style="font-style: italic;">Signal</span> is attached to an <span
  style="font-style: italic;">Error bar</span>, which represents an
@@ -687,14 +716,17 @@ when not set (that is <span style="font-style: italic;">a.Monitor=[]</span>).
 A
 constant
 Monitor
-can be set, an expression (including using <span
- style="font-style: italic;">Data</span> or <span
- style="font-style: italic;">this</span>) or any numerical value that
+can
+be
+set, an expression (including using <span style="font-style: italic;">Data</span>
+or <span style="font-style: italic;">this</span>) or any numerical
+value that
 matches the <span style="font-style: italic;">Signal</span> size.<br>
 <br>
 The Signal, Error and Monitor fields of an iData object are protected <span
  style="font-style: italic;">Aliases: </span>they can not be deleted.<br>
-<h3><a class="mozTocH3" name="mozTocId765887"></a>Definition of Axes<br>
+<h3 style="text-align: center;"><a class="mozTocH3"
+ name="mozTocId765887"></a>Definition of Axes<br>
 </h3>
 <span style="font-style: italic;">Axes</span> are defined just as
 <span style="font-style: italic;">Aliases. </span>They are used for <a
@@ -704,7 +736,27 @@ The Signal, Error and Monitor fields of an iData object are protected <span
 <span style="font-style: italic;">Axes</span> are indexed from 1 up to
 the Signal dimensionality, that is a
 vector <span style="font-style: italic;">Signal</span> has one axis, a
-matrix has 2 axes, a volumetric signal has 3.<br>
+matrix has 2 axes, a volumetric signal has 3. <br>
+<br>
+The 1st axis relates to the number of rows, the 2nd axis to
+the number
+of columns, the 3rd axis to the depth, and so on. The axis index then
+is associated to the mathematical definition of indices in a
+matrix/tensor.<br>
+<br>
+However, the 'X', 'Y' convention is<span style="font-style: italic;"></span>
+the one
+used in standard Matlab 2D/3D plots such as <span
+ style="font-style: italic;">surf</span> and <span
+ style="font-style: italic;">mesh</span>. This corresponds to the
+logical axes when looking at a matrix from above with horizontal axis
+referring to columns and vertical to rows, starting from the lower left
+corner.<br>
+<br>
+<span style="font-weight: bold;">NOTE: </span>As a result, the axis of
+rank 1 is usually labeled as 'Y' (on rows, that is vertical for a
+matrix seen from above), and the axis of rank 2 is labeled as 'X' (on
+columns, that is horizontal).<br>
 <h4><a class="mozTocH4" name="mozTocId205926"></a><span
  style="font-weight: bold;">getting an axis</span><span
  style="font-weight: bold;"></span></h4>
@@ -716,7 +768,7 @@ that is their link, or through their value. This is done through the <span
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
  style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)	% returns an iData object<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">getaxis</span>(a, 1 )	% request axis 1 values, that is 'X'<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">getaxis</span>(a, 1 )	% request axis 1 values, that is 'Y' along Signal rows<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">getaxis</span>(a,'1')	% request axis 1 definition<br></pre>
 where the first command returns the 1st axis values, and the second
 commands returns its definition, which may be a link to a Data part.<br>
@@ -751,7 +803,7 @@ The fast notation <span style="color: rgb(255, 0, 0);">a{n}</span> can
 also be used for direct assignments<br>
 <pre style="margin-left: 40px;">&gt;&gt; a{1} = 23 		% directly fixes the value of the axis to a constant 23<br>&gt;&gt; a{<span
  style="color: rgb(204, 51, 204);">'1'</span>} =<span
- style="color: rgb(204, 51, 204);">'QH'</span>		% re-defines axis 1 as 'QH', which s an alias of the object<br></pre>
+ style="color: rgb(204, 51, 204);">'QH'</span>		% re-defines axis 1 as 'QH', which is an alias of the object<br></pre>
 <span style="color: rgb(255, 0, 0);"><span style="color: rgb(0, 0, 0);">In
 case
 a
@@ -768,12 +820,13 @@ The axes labels can be defined the same way as <span
  style="color: rgb(51, 102, 255);">label</span>(a, 1, <span
  style="color: rgb(204, 51, 204);">'change label of QH'</span>)</pre>
 and there is a fast notation for axes of rank 1 to 4, similar to the <span
- style="font-style: italic;">Matlab Graphics Object</span> syntax:<br>
+ style="font-style: italic;">Matlab Graphics Object</span> syntax,
+where the 'X' and 'Y' are swapped for ranks 1 and 2 (see note above):<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">xlabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'1st X axis label'</span>)<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'2st axis label'</span>)<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">ylabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'2st Y axis label'</span>)<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'1st axis label'</span>)<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">zlabel</span>(a, <span
  style="color: rgb(204, 51, 204);">'3st Z axis label'</span>)<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">clabel</span>(a,<span
@@ -783,12 +836,15 @@ and there is a fast notation for axes of rank 1 to 4, similar to the <span
 defined as a link, the target of the link is assigned (refer to the <a
  href="#mozTocId483786">relevant Alias section</a> for more
 information).<br>
-<h3><a class="mozTocH3" name="mozTocId993635"></a>Handling iData object
+<h3 style="text-align: center;"><a class="mozTocH3"
+ name="mozTocId993635"></a>Handling iData object
 arrays</h3>
 Most iData methods apply on both single objects and arrays of objects.
 In many cases, with input arrays, the result is given back as cell
-arrays.<br>
-<h3><a class="mozTocH3" name="mozTocId393725"></a>Going further - some
+arrays or iData arrays. This vectorization is suited to the iterative
+handling of large amounts of data sets.<br>
+<h3 style="text-align: center;"><a class="mozTocH3"
+ name="mozTocId393725"></a>Going further - some
 other useful methods<br>
 </h3>
 A comprehensive list of most methods is shown in the <a
@@ -866,7 +922,7 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData loading data - Oct 2010</span> - back to <a
+Farhi - iFit/iData loading data - $Revision: 1.4 $ $Date: 2010-11-11 13:39:38 $</span> - back to <a
  href="index.html">Main iFit Page</a>
 </div>
 </body>
