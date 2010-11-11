@@ -9,7 +9,7 @@ function b = pack(a)
 % output: f: compressed object or array (iData)
 % ex:     b=pack(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/sparse, iData/full, iData/saveas
 
 if length(a) > 1
@@ -47,7 +47,7 @@ end
 % now reduce the size of the Command history
 h = b.Command;
 largemat = cellfun('length', h);
-largemat = find(nelements > 1000);
+largemat = find(largemat > 1000);
 for index=1:length(largemat)
   d = h{index};
   d = [ d(1:800) ' ... ' d(end-100:end) ];
