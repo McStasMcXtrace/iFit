@@ -4,14 +4,15 @@ function outarray = iData(varargin)
 % Creates an iData object which contains data along with additional information.
 %   An iData object may store any Data, and define its Signal, Error, Monitor, 
 %     and Axes as aliases refering to e.g. parts of the Data.
-%   The input argument 'a', when present, is converted into an iData object. It may be:
+%   The input argument 'a', is converted into an iData object. It may be:
 %     a scalar/vector/matrix
 %     a string giving a file name to load. Use alternatively iData/load.
 %     a structure
 %     a cell array which elements are imported separately
 %     a iData object (updated if no output argument is specified).
 %   The special syntax iData(x,y, .., c) creates an iData with
-%     signal c and axes x,y, ... where these are all numerics
+%     signal c and axes x,y, ... where these are all numerics with 'x'
+%     for the columns (2nd axis rank), 'y' for the rows (1st axis rank), ...
 %   The output argument is a single object or array of iData.
 %   Input arguments may be more than one, or given as cells.
 %
@@ -19,8 +20,8 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.15 $
-% See also: iData, iData/load, methods
+% Version: $Revision: 1.16 $
+% See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
 % EF 23/09/07 iData implementation
@@ -69,6 +70,7 @@ if nargin == 0  % create empty object
   return
 else  % convert input argument into object
   if isa(varargin{1}, 'iData') & length(varargin{1}) > 1
+  % iData(iData)
     in = varargin{1};
     for index=1:length(in)
       out(index) = iData(in(index));        % check all elements
@@ -79,41 +81,37 @@ else  % convert input argument into object
     end
     return
   elseif isnumeric(varargin{1}) & length(varargin) > 1  % array -> iData
-    index=1;
-    while index <= length(varargin)
-      if isnumeric(varargin{index})
-        for j1=index:length(varargin)
-          if ~isnumeric(varargin{j1})
-            j1 = max(index, j1-1); 
-            break; 
-          end
-        end
-        % numerics are from i to j1
-        d = iData(varargin{j1});
-        for k1=1:(j1-index)
-          d = set(d, [ 'Data.axis' num2str(k1) ], varargin{index+k1-1});
-          d = setaxis(d, k1, [ 'axis' num2str(k1) ], [ 'Data.axis' num2str(k1) ]);
-        end
-        index = j1;
-        outarray = [ outarray d ];
-      else
-        outarray = [ outarray iData(varargin{i}) ];
+    % iData(x,y,..., signal)
+    index = length(varargin);
+    d = iData(varargin{index});  % last argument is the Signal
+    % handle axes
+      for k1=1:(index-1)
+        % in plotting convention, X=2nd, Y=1st axis
+        if     k1 <= 2 & ndims(d) >= 2, k2 = 3-k1; 
+        else   k2 = k1; end
+        set(d,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
+        setaxis(d, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
       end
-      index = index+1;
-    end % while
+      
+    outarray = [ outarray d ];
     return
   elseif ischar(varargin{1}) & length(varargin) > 1 % filename -> iData
+  % iData('filename', ...)
     out = load(iData, varargin{:});        % load file(s) with additional arguments
 
   else
     in = varargin{1};
     if ischar(in)
+      % iData('filename')
       out = load(iData, in);        % load file(s)
     elseif isa(in, 'iData')
+      % iData(iData)
       out = in;                     % just makes a check
     elseif isstruct(in)
+      % iData(struct)
       out = iData_struct2iData(in); % convert struct to iData
     elseif ishandle(in)             % convert Handle Graphics Object
+      % iData(figure handle)
       if strcmp(get(in,'type'),'hggroup')
         t = get(in,'DisplayName');
         if isempty(t), t=get(in,'Tag'); end
@@ -134,7 +132,8 @@ else  % convert input argument into object
         out=iData(x,y);
         try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch xl='x'; end; xlabel(out, xl);
         try yl = get(get(in,'parent'),'YLabel'); yl=[ get(yl,'String') ' ' ]; catch yl=''; end;
-        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end; 
+        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end;
+        label(out,0,yl);
         out.Title = [ tl yl t ];
         out.DisplayName = t;
         out.Label=[ 'line ' l ' marker ' m ' color ' num2str(c) ];
@@ -153,10 +152,11 @@ else  % convert input argument into object
         else
           out=iData(x,y,z,c);
         end
-        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch xl='x'; end; xlabel(out, xl);
-        try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch yl='y'; end; ylabel(out, yl);
-        try zl = get(get(in,'parent'),'ZLabel'); zl=[ get(zl,'String') ' ' ]; catch zl=''; end; 
-        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end; 
+        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch xl='x'; end
+        try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch yl='y'; end
+        try zl = get(get(in,'parent'),'ZLabel'); zl=[ get(zl,'String') ' ' ]; catch zl=''; end 
+        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end
+        xlabel(out, xl); ylabel(out, yl); label(out, tl);
         if all(z == c)
           t = [ tl zl t ];
         else
@@ -185,8 +185,10 @@ else  % convert input argument into object
         end
       end
     elseif isnumeric(in)
+      % iData(x)
       out = iData_num2iData(in);    % convert scalar/vector/matrix to iData
     elseif iscell(in)
+      % iData(cell)
       out = iData_cell2iData(in);   % convert cell/cellstr to cell(iData)
     else
       iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(in) ' is not supported. Ignore.' ]);
