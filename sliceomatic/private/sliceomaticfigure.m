@@ -40,8 +40,8 @@ error(nargchk(1,4,nargin))
           zmesh=flipdim(zmesh,2);
           zdir='reverse';
       end
+
       % Update data structure
-      
       d.axmain = axes('units','normal','pos',[.2  .2 .6 .6],'box','on',...
           'ylim',[ymesh(1) ymesh(end)],...
           'xlim',[xmesh(1) xmesh(end)],...
@@ -66,6 +66,7 @@ error(nargchk(1,4,nargin))
   daspect([1 1 1]);
   view(3);
   axis tight; % vis3d;
+  set(gca,'DataAspectRatioMode','auto')
   hold on;
   grid on;
   % compute projections

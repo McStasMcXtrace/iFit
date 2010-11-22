@@ -189,6 +189,10 @@ function sliceomatic(p1,p2,xmesh,ymesh,zmesh)
 % $$$       d.Xv=1:size(p1,2);
 % $$$       d.Zv=1:size(p1,3);
 % $$$     end
+
+    index_0      = find( isnan(p1) |  isinf(p1));
+    index_1      = find(~isnan(p1) & ~isinf(p1));
+    p1(index_0)    = min(p1(index_1))/10;
     
     d.data=p1;
     
@@ -199,12 +203,19 @@ function sliceomatic(p1,p2,xmesh,ymesh,zmesh)
         ymesh=xmesh;
         xmesh=p2;
       end
+      % check if zmesh is empty (surface)
+      if isempty(zmesh)
+        zmesh=1:size(d.data,3);
+      end
       
       d = sliceomaticfigure(d,xmesh,ymesh,zmesh);
       d = sliceomaticsetdata(d,xmesh,ymesh,zmesh);
     else
-      d = sliceomaticfigure(d);
-      d = sliceomaticsetdata(d);
+      xmesh=1:size(d.data,2);
+      ymesh=1:size(d.data,1);
+      zmesh=1:size(d.data,3);
+      d = sliceomaticfigure(d,xmesh,ymesh,zmesh);
+      d = sliceomaticsetdata(d,xmesh,ymesh,zmesh);
     end
     
     setappdata(gcf,'sliceomatic',d);
