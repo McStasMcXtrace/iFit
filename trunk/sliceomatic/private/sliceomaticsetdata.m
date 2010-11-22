@@ -80,9 +80,15 @@ function appdata = sliceomaticsetdata(d,xmesh,ymesh,zmesh)
     end
     
     d.reducelims={ ly lx lz };
-    disp('Generating reduction volume...');
-    d.reduce= reducevolume(d.data,d.reducenumbers);
-    d.reducesmooth=smooth3(d.reduce,'box',5);
+    if ndims(d.data) == 3
+        disp('Generating reduction volume...');
+        d.reduce= reducevolume(d.data,d.reducenumbers);
+        d.reducesmooth=smooth3(d.reduce,'box',5);
+    else
+        d.reduce=d.data;
+        d.reducesmooth=[];
+    end
+    
     % Set axis
     %d.xlim = [xmesh(1) xmesh(end)];
     %d.ylim = [ymesh(1) ymesh(end)];
