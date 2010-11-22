@@ -13,7 +13,7 @@ function s_out = set(a_in,varargin)
 %
 % ex      : set(iData,'Title','A nice Title')
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/get, iData/setalias, iData/setaxis
 
 % EF 27/07/00 creation
@@ -85,7 +85,6 @@ for index = 1:length(s_out)
             %eval([ 'a.' prop_name '= prop_value;' ]);
           end
         catch
-          lasterr
           if isnumeric(prop_name), 
             prop_name = mat2str(prop_name(1:10)); 
             if length(prop_name) > 15, prop_name = [prop_name(1:12) '...' ]; end 

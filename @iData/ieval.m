@@ -4,25 +4,28 @@ function [b, Info] = ieval(a, model, pars, varargin)
 %   @iData/ieval applies the function 'model' using the axes of the object 'a'
 %     and function parameters 'pars' with additional parameters.
 %     The model function must follow the syntax:
-%       y = model(pars, axis1, axis2, ...)
+%         y = model(pars, axis1, axis2, ...)
 %     If the model function is specified as a cellstr containing references to
-%     lower dimensionality functions as the iData object, the model is build
-%     as the product of these functions. This enables to describe a N-D data set
-%     as series of e.g. 1D functions.
+%       lower dimensionality functions as the iData object, the model is built
+%       as the product of these functions. This enables to describe a N-D data set
+%       as series of e.g. 1D functions.
+%     The special call to ieval(a,model,'guess') and ieval(a,model,'identify') will 
+%       request a model parameter guess and identification resp.
 %
 % input:  a: object or array (iData)
 %         model: model function (char/function handle/cellstr)
-%         pars: model parameters (double array)
+%         pars: model parameters or 'guess' or 'identify' (double array/string)
 %         additional parameters may be passed.
 % output: b: result of evaluation (iData)
 %         Info: structure giving information about the model
-% ex:     b=ieval(a,'gauss',[1 2 3 4]); or ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
+% ex:     b=ieval(a,'gauss',[1 2 3 4]); ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
+%           ieval(a,'gauss','guess')
 %
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.12 $
-% See also iData, feval
+% Version: $Revision: 1.13 $
+% See also iData, feval, iData/fits
 
 % private functions: 
 %   genop: Douglas M. Schwarz, 13 March 2006
@@ -35,6 +38,16 @@ if nargin < 3
 end
 if nargin < 4
   varargin = {};
+  if ischar(pars)
+  if strmatch(pars,{'guess','identify'})
+    Model = get(a,'Signal');
+    m = get(a,'Monitor'); m=real(m); m=m(:);
+    if not(all(m == 1) | all(m == 0)),
+      Model = Model./m;
+    end
+    varargin = { Model };
+  end
+  end
 end
 
 if length(a) > 1
@@ -53,7 +66,12 @@ end
 
 % evaluate model signal
 if ischar(model) | isa(model, 'function_handle')
-  Info = feval(model,'identify');  % get identification Info
+  if isempty(pars)
+    [dummy, Info] = ieval(a, model, 'guess');
+    pars = Info.Guess;
+  else
+    Info = feval(model,'identify');  % get identification Info
+  end
   % check dimensionality
   if isfield(Info, 'Dimension')
     if Info.Dimension ~= ndims(a)
@@ -62,7 +80,7 @@ if ischar(model) | isa(model, 'function_handle')
         for index=1:(ndims(a)/Info.Dimension)
           list = { list{:} ; model };
         end
-        [b, Info] = ieval(a, list, pars);
+        [b, Info] = ieval(a, list, pars); % evaluate as a cell of function to be multiplied
       else
         iData_private_error([ mfilename '/' model ], ...
           [ 'Can not build ' num2str(ndims(a)) ' dimensionality model from ' ...
@@ -80,15 +98,24 @@ if ischar(model) | isa(model, 'function_handle')
     end
   end
   if isfield(Info, 'Guess') & isempty(pars), pars=Info.Guess; end
+
   if ~isempty(varargin)
+    try
     Model = feval(model, pars, Axes{:}, varargin{:});
+    catch
+    Model = feval(model, Axes{:}, pars, varargin{:}); % MFit old syntax
+    end
   elseif ~isempty(pars)
+    try
     Model = feval(model, pars, Axes{:});
-  else
+    catch
+    Model = feval(model, Axes{:}, pars); % MFit old syntax
+    end
+  else % pars is empty
     try
     Model = feval(model, Axes{:});
     catch
-    Model = feval(model, double(a));
+    Model = [];
     end
   end 
 elseif iscell(model)
@@ -173,20 +200,31 @@ else
   iData_private_error(mfilename, ['2nd argument "model" must be specified as a char, a cellstr or function handles. Currently of type ' class(model) ]);
 end
 
-% build the output iData object
-cmd=a.Command;
-b = copyobj(a);
-if isnumeric(Model)
-  m = get(b,'Monitor'); m=real(m); m=m(:);
-  if not(all(m == 1) | all(m == 0)),
-    Model = Model.*m;
+if ischar(pars) && strmatch(pars,{'guess','identify'})
+  b = Model;
+  Info.Guess=b;
+else
+
+  % build the output iData object
+  cmd=a.Command;
+  b = copyobj(a);
+  if isnumeric(Model)
+    m = get(b,'Monitor'); m=real(m); m=m(:);
+    if not(all(m == 1) | all(m == 0)),
+      Model = Model.*m;
+    end
+    setalias(b,'Signal', Model, model);
+    b.Title = [ model '(' b.Title ')' ];
+    b.Label = b.Title;
+    setalias(b,'Error', 0);
+    setalias(b,'Parameters', pars, [ model ' model parameters for ' char(a) ]);
+    Info.Guess = pars;
+    b.Data.Model = Info;
+    setalias(b,'Model','Data.Model',[ model ' model description for ' char(a) ]);
   end
-  setalias(b,'Signal', Model, model);
-  b.Title = [ model '(' b.Title ')' ];
-  setalias(b,'Error', 0);
+  b.Command=cmd;
+  b = iData_private_history(b, mfilename, a, model, pars, varargin{:});  
+  % final check
+  b = iData(b);
 end
-b.Command=cmd;
-b = iData_private_history(b, mfilename, a, model, pars, varargin{:});  
-% final check
-b = iData(b);
 

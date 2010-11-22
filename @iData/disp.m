@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -35,6 +35,7 @@ else
       elseif strcmp(s_in.Alias.Names{index}, 'Monitor'), v='1'; end
     end 
     label = s_in.Alias.Labels{index};
+    if length(label) > 30, label = [label(1:28) '...' ]; end 
     if isnumeric(v) | islogical(v), 
       if length(size(v)) > 2, v=v(:); end
       if numel(v) > 10, v=v(1:10); end
@@ -74,6 +75,7 @@ else
     disp('[Rank]         [Value] [Description]');
     for index=0:length(s_in.Alias.Axis)
       [v, l] = getaxis(s_in, num2str(index));
+      if length(l) > 20, l = [l(1:18) '...' ]; end 
       x      = getaxis(s_in, index); x=x(:);
       m      = get(s_in, 'Monitor'); m=m(:);
       if ~(all(m==1) | all(m==0)) & index==0

@@ -13,8 +13,10 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
 %         baseline:   baseline (background) (iData)
 % ex:     c=peaks(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/median, iData/mean, iData/std
+
+% inline functions: BaseLine, PeakWidth
 
   if nargin < 2, dim=1; end
   if nargin < 3, m=0; end
@@ -65,7 +67,7 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
 end
 
 % ==============================================================================
-% inline functions
+% inline functions: BaseLine, PeakWidth
 % ==============================================================================
 function baseline = BaseLine(y, m)
 % BaseLine: compute signal baseline from: M. Morhac, NIM A 600 (2009) 478

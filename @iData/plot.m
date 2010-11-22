@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.41 $
+% Version: $Revision: 1.42 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -154,7 +154,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   else                % surf and similar stuff
     C = [];
     if isvector(x) & isvector(y),
-      z = z';
+      z = z;
     end
     if (strfind(method,'contour3'))
       [C,h]=contour3(x,y,z);
@@ -218,6 +218,8 @@ case 3  % 3d data sets: volumes
         alphamap('vdown'); % make object transparent on borders and solid in center
         h = vol3d(h);
         h = h.handles
+      elseif ~isempty(strfind(method, 'slice')) % sliceomatic
+        slice(a); h=[];
       else
         c = getaxis(a,0);                   % isosurface: require meshgrid
         if ~isempty(strfind(method, 'mean'))

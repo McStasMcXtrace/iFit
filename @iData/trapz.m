@@ -12,7 +12,7 @@ function s = trapz(a,dim)
 % output: s: integral of elements (iData/scalar)
 % ex:     c=trapz(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/cumsum, iData/camproj, iData/sum
 
 if ~isa(a, 'iData')
@@ -53,6 +53,7 @@ m = get(a,'Monitor');
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;
 b  = copyobj(a);
+rmaxis(b);
 
 if all(dim > 0)
   for index=1:length(dim(:))

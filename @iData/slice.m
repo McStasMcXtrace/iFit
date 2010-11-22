@@ -7,11 +7,11 @@ function slice(a)
 % input:  s: object or array (iData)
 % ex:     slice(iData(flow));
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot, sliceomatic
 
-if ndims(a) ~= 3 || isvector(a)
-  iData_private_error(mfilename, [ 'Slice is only available for 3D objects, but ' a.Tag ' is ' num2str(ndims(a)) '-th dimensions.' ]);
+if ndims(a) < 3 || isvector(a)
+  iData_private_error(mfilename, [ 'Slice-o-matic is only available for 3D objects, but ' a.Tag ' is ' num2str(ndims(a)) '-th dimensions.' ]);
 end
 
 
