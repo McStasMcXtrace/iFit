@@ -88,13 +88,18 @@ Command History, User name and Creator</li>
   <li>A unique ID, which can be complemented by an object Label (for
 instance the name of an experiment) and a Title (for instance the name
 of the sample)</li>
-  <li>A Data field where all actual scientific data is stored, usually
+  <li>A <span style="font-style: italic;">Data</span> field where all
+actual scientific data is stored, usually
 as a structure</li>
-  <li>Aliases, which may hold themselves data, or be defined as links
+  <li><span style="font-style: italic;">Aliases, </span>which may hold
+themselves data, or be defined as links
 to other parts of the object</li>
-  <li>A Signal, an Error bar and a Monitor</li>
-  <li>A series of Axes, which are usually defined as links to Aliases
-or other Data parts</li>
+  <li>A <span style="font-style: italic;">Signal, </span>an <span
+ style="font-style: italic;">Error</span> bar and a <span
+ style="font-style: italic;">Monitor</span></li>
+  <li>A series of <span style="font-style: italic;">Axes, </span>which
+are usually defined as links to <span style="font-style: italic;">Aliases</span>
+or other <span style="font-style: italic;">Data</span> parts</li>
 </ul>
 In principle, the objects should <span style="font-weight: bold;">not</span>
 be accessed or modified as structures. Indeed, some dedicated methods,
@@ -198,7 +203,9 @@ not
 fully
 qualified
 path
-to the data).<br>
+to
+the
+data).<br>
 <br>
 The <span style="font-style: italic; font-weight: bold;">get</span>
 function can also
@@ -232,7 +239,7 @@ This syntax can be simplified by adopting the <span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
  style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; a.Data.VARIA.A1<br>ans =<br><br>    40<br>&gt;&gt; a.Data.VARIA.A1 = 41			% returns the modified object<br></pre>
 We shall see below that there is a way to extend an iData object, that
-is add some new information. This also enables to create <span
+is add some new information, and to create <span
  style="font-style: italic;">links</span> within the object.<br>
 <h3 style="text-align: center;"><a class="mozTocH3"
  name="mozTocId510414"></a>Definition of
@@ -263,16 +270,24 @@ The method used to define (or re-define) an Alias is<span
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
  style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">setalias</span>(a,'NewField',42)</pre>
-In this case, that is when Aliases are defined as <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,<span
+ style="color: rgb(204, 51, 204);">'NewField'</span>,42)</pre>
+In this latter case, that is when Aliases are defined as <span
  style="font-style: italic;">numerics</span> (scalar, vector, matrix),
 this is strictly equivalent to<br>
 <pre style="margin-left: 40px;">&gt;&gt; a.NewField = 42<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">set</span>(a,<span
  style="color: rgb(204, 51, 204);">'NewField'</span>,42)</pre>
+The mechanism seen here works for numerical fields, but will fail if
+you decide to store structures and cell arrays into an Alias. Then, we
+recommend to define a new member in the <span
+ style="font-style: italic;">Data</span> part of the object, and then
+point to it as a link, as explained <a href="#mozTocId124075">below</a>.<br>
+<br>
 <span style="font-style: italic;">Alias</span> names are case
 insensitive, that is <span style="font-style: italic;">a.newfield</span>
 will also work.<br>
+<br>
 In addition, each <span style="font-style: italic;">Alias</span> can
 be associated with a label when creating it:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
@@ -334,8 +349,20 @@ The <span style="font-style: italic;">AnotherNewField</span> points to
 <span style="font-style: italic;">NewField, </span>which was defined as<span
  style="font-style: italic;"> Data.ZEROS.A1</span>.<br>
 <br>
-More advanced <span style="font-style: italic;">Alias</span>
-definition may be defined by means of the<span
+This brings the ability to enrich the Data area of the object with new
+content, and then define an Alias which links to it:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(0, 0, 0);">a.Data.NewContent1 = <span
+ style="color: rgb(51, 102, 255);">rand</span>(10);<br>&gt;&gt; a.Data.NewContent2 = <span
+ style="color: rgb(51, 102, 255);">struct</span>(<span
+ style="color: rgb(204, 51, 204);">'a'</span>,1,<span
+ style="color: rgb(204, 51, 204);">'b'</span>, <span
+ style="color: rgb(51, 102, 255);">rand</span>(10));<br>&gt;&gt; </span><span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,<span
+ style="color: rgb(204, 51, 204);">'HowAreYouToday'</span>, <span
+ style="color: rgb(204, 51, 204);">'Data.NewContent2'</span>);</pre>
+Advanced <span style="font-style: italic;">Alias</span>
+definition may be set by means of the<span
  style="font-style: italic; font-weight: bold;"> 'this' </span>self-referring
 symbol
 which
@@ -343,11 +370,14 @@ can
 be
 used
 within
-full expressions:<br>
+full
+expressions.
+<span style="font-weight: bold; font-style: italic;">'this'</span> then
+refers to the object itself.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">setalias</span>(a,<span
  style="color: rgb(204, 51, 204);">'NewField'</span>, <span
- style="color: rgb(204, 51, 204);">'[ this.Data.ZEROS.A1 this.Data.VARIA.A1 ]'</span>) 	% an expression which is built from two links<br>&gt;&gt; a.NewField<br><br>ans =<br><br> -115.7500   40.0000<br>&gt;&gt; a.AnotherNewField<br><br>ans =<br><br> -115.7500   39.2600<br></pre>
+ style="color: rgb(204, 51, 204);">'[ this.Data.ZEROS.A1 this.Data.VARIA.A1 ]'</span>) 	% an expression which is built from two links<br>&gt;&gt; a.NewField<br><br>ans =<br><br> -115.7500   39.2600<br>&gt;&gt; a.AnotherNewField<br><br>ans =<br><br> -115.7500   39.2600<br></pre>
 In this last example, we have changed the <span
  style="font-style: italic;">NewField</span> definition, which
 immediately affects <span style="font-style: italic;">AnotherNewField.</span><br>
@@ -468,7 +498,8 @@ one
 obtained
 by
 following
-all definitions:<br>
+all
+definitions:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">setalias</span>(a,<span
  style="color: rgb(204, 51, 204);">'NewField'</span>,<span
@@ -718,7 +749,9 @@ constant
 Monitor
 can
 be
-set, an expression (including using <span style="font-style: italic;">Data</span>
+set,
+an
+expression (including using <span style="font-style: italic;">Data</span>
 or <span style="font-style: italic;">this</span>) or any numerical
 value that
 matches the <span style="font-style: italic;">Signal</span> size.<br>
@@ -922,8 +955,8 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData loading data - $Revision: 1.4 $ $Date: 2010-11-11 13:39:38 $</span> - back to <a
- href="index.html">Main iFit Page</a>
+Farhi - iFit/iData objects - $Revision: 1.5 $ $Date: 2010-11-11
+13:39:38 $</span> - back to <a href="index.html">Main iFit Page</a>
 </div>
 </body>
 </html>
