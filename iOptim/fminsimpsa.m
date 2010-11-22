@@ -51,7 +51,7 @@ function [pars,fval,exitflag,output] = fminsimpsa(fun, pars, options, constraint
 % Systems Biology Toolbox for MATLAB, 2005 Henning Schmidt, FCC, henning@fcc.chalmers.se
 
 % default options for optimset
-if nargin == 1 & strcmp(fun,'defaults')
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-3;

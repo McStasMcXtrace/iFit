@@ -13,6 +13,7 @@ function [istop, message] = fmin_private_std_check(pars, fval, iterations, funcc
 
   istop=0; message='';
   
+  % check of option members
   if nargin<=2
     options=pars;
     if nargin ==2, 

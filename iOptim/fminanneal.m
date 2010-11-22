@@ -40,11 +40,11 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 % Contrib:
 %   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also: fminsearch, optimset
 
 % default options for optimset
-if nargin == 1 & strcmp(fun,'defaults')
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-3;
@@ -131,9 +131,7 @@ while 1
           T = cool(T);  % decrease T according to cooling schedule
           iterations = iterations+1; % just an iteration counter
           success = 1;
-          if strcmp(options.Display, 'iter')
-            fmin_private_disp_iter(iterations, funcount, loss, newparam, newfval);
-          end
+          fmin_private_disp_iter(options, iterations, funcount, loss, newparam, newfval);
       end
   end
 
@@ -153,10 +151,9 @@ while 1
   
   % std stopping conditions
   [istop, message] = fmin_private_std_check(newparam, newfval, iterations, funcount, options, parent, best_fval);
-  if strcmp(options.Display, 'iter')
-      fmin_private_disp_iter(iterations, funcount, FUN, newparam, newfval);
-    end
   
+  fmin_private_disp_iter(options, iterations, funcount, FUN, newparam, newfval);
+
   if istop
     parent = newparam; 
     fval = newfval;

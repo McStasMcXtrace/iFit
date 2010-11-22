@@ -52,7 +52,7 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   p.112-147, 1998.
 
 %   Copyright 1984-2002 The MathWorks, Inc.
-%   $Revision: 1.11 $  $Date: 2010-01-12 16:10:02 $
+%   $Revision: 1.12 $  $Date: 2010-11-22 14:13:31 $
 %
 % Olivier Salvado, Case Western Reserve University, June04
 %   Modified to work on Cost function smooth on a high scale but rough on a
@@ -62,7 +62,7 @@ function [x,fval,exitflag,output] = fminsearchOS(funfcn,x,options,varargin)
 %   (3) there is a possibility to display patches for the cases with 3 trials
 
 % default options for optimset
-if nargin == 1 & strcmp(funfcn,'defaults')
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-3;
@@ -282,9 +282,7 @@ while func_evals < maxfun & itercount < maxiter & exitflag==0
    end
    options.procedure  = [ mfilename ': ' how ];
    [exitflag, message] = fmin_private_std_check(v(:,1), fv(:,1), itercount, func_evals, options, v(:,end), fv(:,end));
-   if strcmp(options.Display, 'iter')
-     fmin_private_disp_iter(itercount, func_evals, funfcn, v(:,1), min(fv));
-   end
+   fmin_private_disp_iter(options, itercount, func_evals, funfcn, v(:,1), min(fv));
 end   % while
 
 x(:) = v(:,1);

@@ -46,12 +46,8 @@ function [pars,fval,exitflag,output] = fminauto(fun, pars, options, varargin)
 % See also: fminsearch, optimset
 
 
-if nargin == 1 & strcmp(fun,'defaults')
-  options=fminswarmhybrid('defaults');
-  options.Hybrid='none';
-  options.TolX   =1e-12;
-  options.algorithm = [ 'Particule Swarm Optimizer (by Leontitsis) [fminswarm]' ];
-  options.optimizer = mfilename;
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
+  options=fminimfil('defaults');
   pars=options;
   return
 end
@@ -63,7 +59,7 @@ if isempty(options)
 end
 options.Hybrid='none';
 
-[pars,fval,exitflag,output] = fminswarmhybrid(fun, pars, options, varargin{:});
+[pars,fval,exitflag,output] = fminimfil(fun, pars, options, varargin{:});
 
 % best optimizers:
 % fminimfil
