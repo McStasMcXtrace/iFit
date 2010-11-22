@@ -50,6 +50,15 @@ images</a></li>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span
  style="font-style: italic;">plot, subplot, xlabel, xlim, title, saveas</span><br>
+<div style="text-align: left;"><br>
+The <a href="iData.html">iData</a> objects can be plotted. They then
+show the <span style="font-style: italic;">Signal, </span>usually
+divided by the <span style="font-style: italic;">Monitor, </span>as a
+function of the defined <span style="font-style: italic;">Axes</span>
+(or default ones when not defined). A way to plot the raw <span
+ style="font-style: italic;">Signal</span> is to set the <span
+ style="font-style: italic;">Monitor</span> to 1.<br>
+</div>
 </div>
 <h3><a class="mozTocH3" name="mozTocId726945"></a>Plotting objects in a
 single pane (plot)</h3>
@@ -67,7 +76,9 @@ means
 of
 projections
 and
-slices, as seen below.<br>
+slices,
+as
+seen below.<br>
 <h4><a class="mozTocH4" name="mozTocId650151"></a>Plots for 1D objects</h4>
 Let us import a simple 1D (vector <span style="font-style: italic;">Signal=f(x)
 </span>) data set into an iData object, and
@@ -122,8 +133,10 @@ the
 axes
 and
 the
-curve in
-order to change e.g. the fonts, the text to show, the colors. <br>
+curve
+in
+order
+to change e.g. the fonts, the text to show, the colors. <br>
 The zoom tool&nbsp;<img style="width: 53px; height: 24px;"
  alt="Figure_zoom tool" title="Figure_zoom tool"
  src="images/Figure_zoom.png" align="middle">is also pretty useful (hey
@@ -366,12 +379,16 @@ the second argument to the plot function call, as follows:<br>
 <ul>
   <li><span style="color: rgb(204, 51, 204);">flat, interp, faceted</span>:
 affects
-the type of shading used (see <span style="font-style: italic;">help
+the
+type
+of shading used (see <span style="font-style: italic;">help
 shading</span>).<br>
   </li>
   <li><span style="color: rgb(204, 51, 204);">transparent, light</span>:
 add
-transparency (see <span style="font-style: italic;">help alpha</span>),
+transparency
+(see
+    <span style="font-style: italic;">help alpha</span>),
 and
 add some light(see <span style="font-style: italic;">help light</span>).<br>
   </li>
@@ -381,7 +398,9 @@ clabel</span>)<br>
   </li>
   <li><span style="color: rgb(204, 51, 204);">axis tight, axis auto</span>:
 sets
-plot axis limits tight around the object, or automatically
+plot
+axis
+limits tight around the object, or automatically
 optimized (see <span style="font-style: italic;">help axis</span>) </li>
   <li><span style="color: rgb(204, 51, 204);">view2, view3</span>:
 display 2D/3D views from top or oblique view<br>
@@ -497,7 +516,9 @@ to
 display
 a
 number
-of objects into tiled independent
+of
+objects
+into tiled independent
 coordinate frames, all gathered into the same window, the <span
  style="font-weight: bold; font-style: italic;">subplot</span> function
 can be used the same way as with the <a href="#mozTocId574560">overlay</a>
@@ -560,7 +581,10 @@ corresponding indices.<br>
  style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>); <br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(a(:,622));                   % extract the object made from channel 622 on second axis, with all columns<br></pre>
 The <span style="font-weight: bold;">sliceomatic</span> viewer is
-displayed for 3D objects with<br>
+displayed for 3D objects with<a href="images/Sliceomatic.png"><img
+ alt="Sliceomatic: slice(a)" title="Sliceomatic: slice(a)"
+ src="images/Sliceomatic.png"
+ style="border: 0px solid ; width: 200px; height: 188px;" align="right"></a><br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">iData</span>(flow);<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">slice</span>(a)</pre>
@@ -626,7 +650,9 @@ wever, it is possible to automate the export process by directly call <br>
  style="color: rgb(51, 102, 255);">saveas</span>(a,filename, format)</pre>
 where format may be <span style="font-style: italic;">jpg, png, pdf</span>,
 ...
-All formats are detailed in the <a href="Save.html">Save</a> page.<br>
+All
+formats
+are detailed in the <a href="Save.html">Save</a> page.<br>
 <h3><a class="mozTocH3" name="mozTocId46720"></a>Importing plots as
 iData objects</h3>
 As seen in the <a href="Load.html">Load</a> documentation page, the
@@ -636,9 +662,10 @@ axis handle arguments.<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData loading data - </span><span
- style="font-style: italic;">$Date: 2010-11-11 13:39:38 $ $Revision: 1.5 $</span><span
- style="font-style: italic;"> </span>- back to <a href="index.html">Main
+Farhi - iFit/iData plotting - </span><span style="font-style: italic;">$Date:
+2010-11-11
+13:39:38 $ $Revision: 1.6 $</span><span style="font-style: italic;"> </span>-
+back to <a href="index.html">Main
 iFit
 Page</a>
 </div>
