@@ -3,22 +3,30 @@
                                   Oct 12th, 2010
 
 ** Purpose:
-This small library aims at providing basic functionality to achieve some of the general tasks needed for scienfic data analysis:
+This small library aims at providing basic functionality to achieve some of the 
+general tasks needed for scienfic data analysis:
     Load, Plot, Save, Fit, Math operations
 
-** License:
+** License: GPL 2
 Basically this is open-source. Use it if you find it usefull, and enrich it.
 If you do produce new methods, please send them back to me so that they are 
 added in the software and thus benefit to the community.
-I prevent any commercial use of this library.
 
-Disclaimer:
+Any commercial use of this library, that is re-use of the code for commercial 
+purposes, is prevented (this is GPL 2). Any inclusion into an other software must 
+properly include source code, and cite authors.
+
+A number of additions, included in the software, where obtained from the Matlab 
+Central contributions, and are BSD licensed.
+
+** Disclaimer:
 This is not a professional tool, and there is no Dev team to actively take care
 of it. Expect occasional failures and bugs. However, I try my best to make the 
-software efficient and reliable.
+software efficient and reliable. This software is known to be far from ideal,
+especially in terms of speed.
 
 ** Requirements:
-Matlab (any version from 6.x)
+Matlab (any version from 6.x), possibly a C compiler for the looktxt MeX.
 
 ** Installation:
 Copy the library directories where-ever you want or in MALTAB/toolbox/local:
@@ -27,15 +35,16 @@ or
   /usr/local/matlab/toolbox/local/iFit
   
 Then start Matlab and type in, e.g.:
->> addpath(genpath('/home/joe/Matlab/iFit'))
+  >> addpath(genpath('/home/joe/Matlab/iFit'))
 or
->> addpath(genpath('/usr/local/matlab/toolbox/local/iFit'))
+  >> addpath(genpath('/usr/local/matlab/toolbox/local/iFit'))
 
-** Quick start
-
+** Quick start:
 type in:
->> addpath(genpath('/path/to/iFit'))
->> doc(iData)
+  >> addpath(genpath('/path/to/iFit'))
+  >> doc(iData)
+
+Then refer to the Quick Start tutorial (in iFit/Docs/QuickStart.html).
 
 
 
