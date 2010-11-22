@@ -36,11 +36,11 @@ function [pars,fval,exitflag,output] = fminimfil(fun, pars, options)
 %   Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, optimset
 
 % default options for optimset
-if nargin == 1 & strcmp(fun,'defaults')
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options=optimset;
   % add Matlab std options.
   options.Display='';
@@ -292,19 +292,15 @@ while (ns < nscal & fcount <= flim & iquitc < iquit)
 %
   end % end of sweep through the scale
   pars=x;
+  % std stopping conditions
+  [istop, message] = fmin_private_std_check(pars, fval, iterations, fcount, ...
+    options, pars_prev, best_fval);
   if (fval < best_fval)
     best_fval = fval;
     best_pars = pars;
   end
-  % std stopping conditions
-  [istop, message] = fmin_private_std_check(pars, fval, iterations, fcount, ...
-    options, pars_prev, best_fval);
-  if strcmp(options.Display, 'iter')
-    fmin_private_disp_iter(iterations, fcount, f, pars, fval);
-  end
-  if istop
-    break
-  end
+  if istop, break; end
+  fmin_private_disp_iter(options, iterations, fcount, f, pars, fval);
 end % end of while loop over the scales
 
 if iquitc >= iquit

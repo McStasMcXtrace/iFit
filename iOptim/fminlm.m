@@ -34,18 +34,18 @@ function [pars,fval,exitflag,output] = fminlm(fun, pars, options)
 % Fletcher, R., Computer Journal 1970, 13, 317-322
 % Contrib: Miroslav Balda, balda AT cdm DOT cas DOT cz 2009
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % default options for optimset
-if nargin == 1 & strcmp(fun,'defaults')
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options=optimset; % empty structure
   options.Display  = [];        %   no print of iterations
-  options.MaxIter  = 1000;       %   maximum number of iterations allowed
+  options.MaxIter  = 5000;       %   maximum number of iterations allowed
   options.ScaleD   = [];        %   automatic scaling by D = diag(diag(J'*J))
   options.TolFun   = 1e-3;      %   tolerace for final function value
   options.TolX     = 1e-8;      %   tolerance on difference of x-solutions
-  options.MaxFunEvals=1000;
+  options.MaxFunEvals=10000;
   options.algorithm  = [ 'Levenberg-Maquardt (by Balda) [' mfilename ']' ];
   options.optimizer = mfilename;
   pars = options;
@@ -160,13 +160,16 @@ function [xf, rd, istop, output] = LMFsolve(FUN, xc, options)
 %   OPTIONS
     %%%%%%%
     
-xf=0; rd=0; istop=0; cntfun=0;
+xf=0; rd=0; istop=0; cntfun=0;
+
+
 
 %   LMFSOLVE(FUN,Xo,Options)
     %%%%%%%%%%%%%%%%%%%%%%%%
 
 x  = xc(:);
-lx = length(x);
+lx = length(x);
+
 r  = feval(FUN,x);             % Residuals at starting point
 cntfun=cntfun+1;
 %~~~~~~~~~~~~~~~~~
@@ -261,9 +264,7 @@ while cnt<maxit && ...          %   MAIN ITERATION CYCLE
     %end
     % std stopping conditions
     [istop, message] = fmin_private_std_check(xd, rd, cnt, cntfun, options, x_prev, best_fval);
-    if strcmp(options.Display, 'iter')
-      fmin_private_disp_iter(cnt, cntfun, FUN, xd, rd);
-    end
+    fmin_private_disp_iter(options, cnt, cntfun, FUN, xd, rd);
     
     if istop
       break

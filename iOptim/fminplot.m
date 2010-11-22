@@ -17,14 +17,14 @@ function stop = fminplot(pars, optimValues, state)
     iterHistory = optimValues.iteration;
   else  
     parsHistory = [ parsHistory ; pars(:)' ];
-    fvalHistory = [ fvalHistory ; optimValues.fval];
-    iterHistory = [ iterHistory ; optimValues.iteration]; 
+    fvalHistory = [ fvalHistory ; optimValues.fval ];
+    iterHistory = [ iterHistory ; optimValues.iteration ]; 
   end
   
-  if length(fvalHistory) > 5
-    if length(fvalHistory) > 500 & mod(length(fvalHistory),1000) return;
-    elseif length(fvalHistory) > 50 & mod(length(fvalHistory),100) return;
-    elseif mod(length(fvalHistory),10) return; end
+  if length(fvalHistory) > 9
+    if length(fvalHistory) > 999 & mod(length(fvalHistory),1000) return;
+    elseif length(fvalHistory) > 99 & mod(length(fvalHistory),100) return;
+    elseif mod(length(fvalHistory),5) return; end
   end
 
     
@@ -37,10 +37,11 @@ function stop = fminplot(pars, optimValues, state)
     set(h, 'Position', tmp);
   elseif isempty(h)
     stop = true;  % figure was closed: abort optimization by user
+    return
   end
   
   figure(h);
-  name = [ localChar(optimValues.procedure) ' #' num2str(optimValues.iteration) ];
+  name = [ localChar(optimValues.procedure) ' ' state ' #' num2str(optimValues.iteration) ];
   try
     set(h, 'Name', name);
   catch
@@ -54,7 +55,7 @@ function stop = fminplot(pars, optimValues, state)
     iterHistory(1), fvalHistory(1),'ro', ...
     iterHistory(end), fvalHistory(end), 'rs');
   set(g(end),'MarkerFaceColor','r');
-  xlabel('iteration'); ylabel('criteria'); axis tight
+  xlabel('iteration'); ylabel('criteria'); axis auto
   if strcmp(state, 'done'),     title('Done'); 
   elseif strcmp(state, 'init'), title('Init'); 
   else                          title('Close figure to abort');  end
@@ -64,17 +65,17 @@ function stop = fminplot(pars, optimValues, state)
   switch length(pars)
   case 1
     g=plot(fvalHistory, parsHistory,'bo',fvalHistory(end), parsHistory(end),'rs');
-    xlabel('FunVal'); ylabel('Par1'); axis tight
+    xlabel('FunVal'); ylabel('Par1'); 
   case 2
     g=plot(parsHistory(:,1), parsHistory(:,2),'bo',parsHistory(end,1), parsHistory(end,2),'rs');
-    xlabel('Par1'); ylabel('Par2'); axis tight
+    xlabel('Par1'); ylabel('Par2'); 
   otherwise
     g=plot3(parsHistory(:,1), parsHistory(:,2), parsHistory(:,3), 'bo', ...
           parsHistory(end,1), parsHistory(end,2), parsHistory(end,3), 'rs');
-    xlabel('Par1'); ylabel('Par2'); ylabel('Par3'); axis tight
+    xlabel('Par1'); ylabel('Par2'); ylabel('Par3'); 
   end
   
   set(g(end),'MarkerFaceColor','r');
-  title([ optimValues.procedure ' #' num2str(optimValues.iteration) ]);
-  axis tight
+  title(name);
+  axis auto
 end

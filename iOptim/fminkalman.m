@@ -42,11 +42,11 @@ function [pars,fval,exitflag,output] = fminkalman(fun, pars, options)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % default options for optimset
-if nargin == 1 & strcmp(fun,'defaults')
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-3;
@@ -157,7 +157,11 @@ f=@(x)x;        %virtual state equation to update the decision parameter
 e=h(x);         %initial residual
 m=numel(e);     %number of equations to be solved
 
-tol=options.TolFun; P=eye(n);Q=1e-6*eye(n);R=1e-6*eye(m);
+tol=options.TolFun; 
+P=eye(n);
+Q=1e-6*eye(n);
+R=1e-6*eye(m);
+
 k=1;            %number of iterations
 z=zeros(m,1);   %target vector
 ne=norm2(e);
@@ -183,14 +187,9 @@ while 1
     e=feval(h,x);
     funcount=funcount+1+nf;
     ne=norm2(e);                                 %residual
-    if strcmp(options.Display, 'iter')
-      fmin_private_disp_iter(k, funcount, h, x, e);
-    end
     % std stopping conditions
     [istop, message] = fmin_private_std_check(x, e, k, funcount, options, x_prev, best_fval);
-    if strcmp(options.Display, 'iter')
-      fmin_private_disp_iter(k, funcount, h, x, e);
-    end
+    fmin_private_disp_iter(options, k, funcount, h, x, e);
     if (e < best_fval)
       best_fval = e;
       best_pars = x;

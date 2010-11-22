@@ -197,7 +197,7 @@ for index=1:length(optimizers)
     alg=opt;
   end
   options=feval(optimizers{index},'defaults');
-  if length(opt) > 5  % shorten function mane for display
+  if length(opt) > 5  % shorten function name for display
     opt=opt(5:end);
     opt=opt(1:min(5, length(opt)));
   end

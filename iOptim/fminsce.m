@@ -46,7 +46,7 @@ function [pars,fval,exitflag,output] = fminsce(fun, pars, options, constraints, 
 % Contrib:   2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be
 
 % default options for optimset
-if nargin == 1 & strcmp(fun,'defaults')
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-3;
@@ -436,36 +436,21 @@ for i = 2:OPTIONS.MaxIter,
     %% 3. no convergence,but maximum number of iterations has been reached
     %% 4. no convergence,but maximum time has been reached
     
-    [EXITFLAG, message] = fmin_private_std_check(POPULATION(1,:,i), POPULATION_FITNESS(1,i), nITERATIONS, nFUN_EVALS, OPTIONS);
+    [EXITFLAG, message] = fmin_private_std_check(POPULATION(1,:,i), POPULATION_FITNESS(1,i), nITERATIONS, nFUN_EVALS, OPTIONS, POPULATION(end,:,i), POPULATION_FITNESS(end,i));
     
-    if max(max(abs(diff(POPULATION(:,:,i),1,1)))) < OPTIONS.TolX,
-        message='Change in X less than the specified tolerance (TolX).';
-        EXITFLAG = -5;
-    end
-    
-    if OPTIONS.TolFun & abs(min(POPULATION_FITNESS(:,i))-min(min(POPULATION_FITNESS))) < abs(OPTIONS.TolFun) ...
-       & abs(min(POPULATION_FITNESS(:,i))-min(min(POPULATION_FITNESS))) > 0
-      EXITFLAG=-12;
-      message = [ 'Termination function change tolerance criteria reached (options.TolFun=' ...
-                num2str(OPTIONS.TolFun) ')' ];
-    end
+    if ~EXITFLAG
+      if max(max(abs( POPULATION(1,:,i) - POPULATION(2,:,i) ))) < OPTIONS.TolX,
+          message=[ 'Change in X less than the specified tolerance (TolX=' num2str(OPTIONS.TolX) ')' ];
+          EXITFLAG = -5;
+      end
+      
+      if OPTIONS.TolFun & abs(min(POPULATION_FITNESS(:,i))-min(min(POPULATION_FITNESS))) < abs(OPTIONS.TolFun) ...
+         & abs(min(POPULATION_FITNESS(:,i))-min(min(POPULATION_FITNESS))) > 0
+        EXITFLAG=-12;
+        message = [ 'Termination function change tolerance criteria reached (options.TolFun=' ...
+                  num2str(OPTIONS.TolFun) ')' ];
+      end
 
-    if ~isempty(OPTIONS.OutputFcn)
-      optimValues = OPTIONS;
-      if ~isfield(optimValues,'state')
-        if EXITFLAG,            optimValues.state='done';
-        elseif nITERATIONS<= 1, optimValues.state='init';
-        else                    optimValues.state='iter'; end
-      end
-      optimValues.iteration  = nITERATIONS;
-      optimValues.funcount   = nFUN_EVALS;
-      optimValues.fval       = POPULATION_FITNESS(1,i);
-      optimValues.procedure   =[ mfilename ': ' ALGOSTEP ];;
-      istop2 = feval(OPTIONS.OutputFcn, POPULATION(1,:,i), optimValues, optimValues.state);
-      if istop2, 
-        EXITFLAG=-6;
-        message = 'Algorithm was terminated by the output function (options.OutputFcn)';
-      end
     end
     
     if EXITFLAG
@@ -474,9 +459,9 @@ for i = 2:OPTIONS.MaxIter,
     
 end
 
-% return solution
+% return best solution
 
-X = POPULATION(1,:,i);
+X    = POPULATION(1,:,i);
 FVAL = POPULATION_FITNESS(1,i);
 
 % store number of function evaluations

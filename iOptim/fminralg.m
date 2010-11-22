@@ -36,11 +36,11 @@ function [pars,fval,exitflag,output] = fminralg(fun, pars, options)
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % default options for optimset
-if nargin == 1 & strcmp(fun,'defaults')
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-3;
@@ -251,13 +251,15 @@ end
  end
 % ----}
 
-% WORKING CONSTANTS AND COUNTERS ----{
+% WORKING CONSTANTS AND COUNTERS ----{
+
 epsnorm=1.e-15;epsnorm2=1.e-30;    % epsilon & epsilon^2
 
 if constr, h1=-1;                  % NLP: restricted to minimization
  cnteps=options(6);                % Max. admissible residual
 else, h1=sign(options(1));         % Minimize resp. maximize a function
-end                           % Iteration counter
+end
+                           % Iteration counter
 
 wdef=1/options(7)-1;               % Default space transf. coeff.
 
