@@ -3,7 +3,7 @@ function fmin_private_disp_final(algorithm, message, iteration, funccount, fun, 
 
 disp([ '** Finishing minimization of ' localChar(fun) ' using algorithm ' localChar(algorithm) ]);
 %display last iteration
-disp(' Iteration   Func-count     min f(x)         Parameters');
-fmin_private_disp_iter(-iteration, funccount, fun, pars, fval)
-disp( [ '  Status: ' message ]);
+disp(' Iteration   Func_count     min[f(x)]        Parameters');
+fmin_private_disp_iter(struct('Display','iter'), -iteration, funccount, fun, pars, fval)
+disp( [ ' Status: ' message ]);
 

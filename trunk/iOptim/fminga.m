@@ -45,11 +45,11 @@ function [pars,fval,exitflag,output] = fminga(fun, pars, options, constraints, u
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also: fminsearch, optimset
 
 % default options for optimset
-if nargin == 1 & strcmp(fun,'defaults')
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-3;
@@ -136,7 +136,8 @@ function [pars, fval, istop, output] = GA(fun, pars, options, constraints)
 % May 2006
 % Goal: find maximum of function that introduced in fun00.m file in current
 % directory and can be plotted in plot00
-% this file is also include the random search for comparision
+% this file is also include the random search for comparision
+
 
 %------------------------        parameters        ------------------------
 % befor using this function you must specified your function in fun00.m
@@ -193,7 +194,8 @@ while 1
     %-------------   ****    function evaluation   ****-------------
     for i=1:n
         y(i)=-feval(fun,p(i,:));  % search maximum of -function
-    end
+    end
+
     maxy=max(y);
     miny=min(y);
     
@@ -275,9 +277,7 @@ while 1
     iterations = iterations+1;
     funcount = n*iterations;
     [istop, message] = fmin_private_std_check(pars, fval, iterations, funcount, options, pars_prev, best_fval);
-    if strcmp(options.Display, 'iter')
-      fmin_private_disp_iter(iterations, funcount, fun, pars, fval);
-    end
+    fmin_private_disp_iter(options, iterations, funcount, fun, pars, fval);
     
     if (fval < best_fval)
       best_fval = fval;

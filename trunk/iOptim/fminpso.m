@@ -56,7 +56,7 @@ function [pars,fval,exitflag,output] = fminpso(fun, pars, options, constraints, 
 % Contrib: 2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be
 
 % default options for optimset
-if nargin == 1 & strcmp(fun,'defaults')
+if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-3;
