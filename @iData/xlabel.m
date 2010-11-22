@@ -1,7 +1,7 @@
 function a = xlabel(a, lab)
 % b = xlabel(s,label) : Change iData X axis label
 %
-%   @iData/xlabel function to change the X axis (rank 1, columns) label
+%   @iData/xlabel function to change the X axis (rank 2, columns) label
 %     xlabel(s) returns the current X axis label
 %   The input iData object is updated if no output argument is specified.
 %
@@ -10,14 +10,14 @@ function a = xlabel(a, lab)
 % output: b: object or array (iData)
 % ex:     b=xlabel(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/plot, iData/label, iData/ylabel, iData/zlabel, iData/clabel
 
 if nargin ==1
-	a = label(a, 1);
+	a = label(a, 2);
 	return
 else
-	a = label(a, 1, lab);
+	a = label(a, 2, lab);
 end
 
 if nargout == 0 & length(inputname(1))

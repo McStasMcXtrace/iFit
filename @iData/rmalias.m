@@ -11,11 +11,14 @@ function s_out = rmalias(a_in,names)
 % output: s: array (iData)
 % ex:     rmalias(iData,'Temperature')
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/setalias
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
+if nargin == 1
+  names=[];
+end
 
 s_out = setalias(a_in, names);
 
