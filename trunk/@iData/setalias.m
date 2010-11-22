@@ -23,7 +23,7 @@ function s_out = setalias(a_in,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -39,8 +39,13 @@ if nargin == 1
         b=get(a, a.Alias.Names{j1});
       catch
         v = a.Alias.Values{j1};
-        v = mat2str(v(1:min(20,length(v))));
-        iData_private_warning(mfilename,[ 'the Alias ' a.Alias.Names{j1} '=' v ' is not valid in object ' inputname(1) ' ' a.Tag '.' ]);
+        if isnumeric(v)
+          v = mat2str(v(1:min(20,length(v))));
+          iData_private_warning(mfilename,[ 'the Alias ' a.Alias.Names{j1} '=' v ' is not valid in object ' inputname(1) ' ' a.Tag '.' ]);
+        else
+          v = class(v);
+        end
+        
       end
     end
   end

@@ -7,6 +7,7 @@ function [pars,criteria,message,output] = fits(a, model, pars, options, constrai
 %     Additional constraints may be set by fxing some parameters, or define
 %     more advanced constraints (min, max, steps). The last arguments controls the fitting
 %     options with the optimset mechanism, and the constraints to apply during optimization.
+%     The fit can be applied sequentially and independently onto iData object arrays.
 %  [pars,...] = fits(a, model, pars, options, lb, ub)
 %     uses lower and upper bounds as parameter constraints (double arrays)
 %  [pars,...] = fits(a, model, pars, options, fixed)
@@ -14,32 +15,31 @@ function [pars,criteria,message,output] = fits(a, model, pars, options, constrai
 %  [pars,...] = fits(a, model, pars, 'optimizer', ...)
 %     uses a specific optimizer and its default options.
 %
-% options.TolX
-%   The termination tolerance for x. Its default value is 1.e-4.
-% options.TolFun
-%   The termination tolerance for the function value. The default value is 1.e-4. 
-%   This parameter is used by fminsearch, but not fminbnd.
-% options.MaxIter
-%   Maximum number of iterations allowed.
-% options.MaxFunEvals
-%   The maximum number of function evaluations allowed. 
-% options.optimizer
-%   Optimization method. Default is 'fminsearch' (char/function handle)
-%   the syntax for calling the optimizer is e.g. optimizer(criteria,pars,options,constraints)
-% options.criteria
-%   Minimization criteria. Default is 'least_square' (char/function handle)
-%   the syntax for evaluating the criteria is criteria(Signal, Error, Model)
-% options.OutputFcn
-%   Function called at each iteration as outfun(pars, optimValues, state)
-%   The 'fminplot' function may be used.
-% options.Display
-%   Display additional information during fit: 'iter','off','final'. Default is 'iter'.
-%
 % input:  a: object or array (iData)
 %         model: model function (char/cellstr)
 %         pars: initial model parameters (double array)
 %         options: structure as defined by optimset/optimget (char/struct)
 %           if given as a char, it defines the algorithm to use and its default options
+%           options.TolX
+%             The termination tolerance for x. Its default value is 1.e-4.
+%           options.TolFun
+%             The termination tolerance for the function value. The default value is 1.e-4. 
+%             This parameter is used by fminsearch, but not fminbnd.
+%           options.MaxIter
+%             Maximum number of iterations allowed.
+%           options.MaxFunEvals
+%             The maximum number of function evaluations allowed. 
+%           options.optimizer
+%             Optimization method. Default is 'fminsearch' (char/function handle)
+%             the syntax for calling the optimizer is e.g. optimizer(criteria,pars,options,constraints)
+%           options.criteria
+%             Minimization criteria. Default is 'least_square' (char/function handle)
+%             the syntax for evaluating the criteria is criteria(Signal, Error, Model)
+%           options.OutputFcn
+%             Function called at each iteration as outfun(pars, optimValues, state)
+%             The 'fminplot' function may be used.
+%           options.Display
+%             Display additional information during fit: 'iter','off','final'. Default is 'iter'.
 %         constraints: fixed parameter array. Use 1 for fixed parameters, 0 otherwise (double array)
 %           OR use a structure with some of the following fields:
 %           constraints.min:   minimum parameter values (double array)
@@ -50,7 +50,7 @@ function [pars,criteria,message,output] = fits(a, model, pars, options, constrai
 % output: 
 %         pars:              best parameter estimates (double array)
 %         criteria:          minimal criteria value achieved (double)
-%         message:           return message/exitcode from the optimizer (char)
+%         message:           return message/exitcode from the optimizer (char/integer)
 %         output:            additional information about the optimization (structure)
 %           algorithm:         Algorithm used (char)
 %           funcCount:         Number of function evaluations (double)
@@ -60,16 +60,19 @@ function [pars,criteria,message,output] = fits(a, model, pars, options, constrai
 %           modelValue:        Last model evaluation (iData)
 %
 % ex:     p=fits(a,'gauss',[1 2 3 4]);
-%         o=optimset('fminsearch'); o.OutputFcn='fminplot'; 
-%         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o);
+%         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
+%         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, fminsearch, optimset, optimget
 
 % nested  functions: outfun_wrapper, eval_criteria
 % private functions: least_square, fits_constraints
  
 % handle default parameters, if missing
+if nargin < 2
+  model = 'gauss';
+end
 if nargin < 3
   pars = [];
 end
@@ -88,7 +91,7 @@ end
 
 % handle input iData arrays
 if length(a) > 1
- pars_out={}; criteria=[]; message={}; output={};
+  pars_out={}; criteria=[]; message={}; output={};
   for index=1:length(a(:))
     [pars_out{index}, criteria(index), message{index}, output{index}] = ...
       fits(a(index), model, pars, constraints, options);
@@ -104,8 +107,11 @@ end
 if ~isfield(options, 'criteria')
   options.criteria  = @least_square;
 end
-
-[dummy, info] = ieval(a, model,'identify'); % model info 
+try
+  [dummy, info] = ieval(a, model,'guess');    % model info with guessed parameters
+catch
+  [dummy, info] = ieval(a, model,'identify'); % model info 
+end
 if isempty(pars)
   pars=info.Guess;               % get default starting parameters
 end
@@ -155,6 +161,7 @@ if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(o
   disp(char(a))
   disp(  '** Minimization performed on parameters:');
   disp(info.Parameters(:)');
+  disp(pars(:)');
 end
 
 t0 = clock;
@@ -168,28 +175,40 @@ catch
     @(pars) eval_criteria(pars, model, options.criteria, a), pars, options);
 end
 
+if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
+  disp('** Applying final constraints on parameters, and evaluating model value.')
+end
+
 % apply constraints on final results, if any
 pars = fits_constraints(pars_out, constraints);
 
-% set output/results
-if ischar(message) | ~isfield(output, 'message')
-  output.message = message;
-else
-  output.message = [ '(' num2str(message) ') ' output.message ];
+if nargout > 3
+  % set output/results
+  if ischar(message) | ~isfield(output, 'message')
+    output.message = message;
+  else
+    output.message = [ '(' num2str(message) ') ' output.message ];
+  end
+  output.optimizer  = options.optimizer;
+  output.funcCounts = constraints.funcCounts;
+  output.modelName  = constraints.modelName;
+  output.modelInfo  = info;
+  output.modelValue = ieval(a, model, pars); % evaluate model iData
+  output.pars       = pars;
+  output.parsNames  = constraints.parsNames;
+  output.parsHistory= constraints.parsHistory;
+  output.criteriaHistory=constraints.criteriaHistory;
+  output.criteria   = criteria;
+  output.duration   = etime(clock, t0);
+  output.options    = options;
+  output.constraints= constraints;
 end
-output.optimizer  = options.optimizer;
-output.funcCounts = constraints.funcCounts;
-output.modelName  = constraints.modelName;
-output.modelInfo  = info;
-output.modelValue = ieval(a, model, pars);
-output.pars       = pars;
-output.parsNames  = constraints.parsNames;
-output.parsHistory= constraints.parsHistory;
-output.criteriaHistory=constraints.criteriaHistory;
-output.criteria   = criteria;
-output.duration   = etime(clock, t0);
-output.options    = options;
-output.constraints= constraints;
+
+if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
+  disp([ '** Ending fit of ' a.Tag ' using model ' info.Name ' with optimizer ' options.algorithm ]);
+  disp(info.Parameters(:)');
+  disp(pars(:)');
+end
 
 
 % reset warnings
@@ -200,6 +219,7 @@ catch
   warning(warn);
 end
 
+% ==============================================================================
 % Use a nested function as the OutputFcn wrapper, to access 'constraints', 'options' and 'output'
   function stop = outfun_wrapper(pars, optimValues, state);
     % we need to transform pars first
@@ -220,6 +240,7 @@ end
     
   end
 
+% ==============================================================================
 % Use a nested function as the criteria wrapper, to access 'constraints'
   function c = eval_criteria(pars, model, criteria, a)
   % criteria to minimize
@@ -230,10 +251,11 @@ end
     % then get data
     Signal = get(a,'Signal');
     Error  = get(a,'Error');
-    Model  = ieval(a, model, pars);
+    Model  = ieval(a, model, pars); % return signal=model values*monitor and monitor
     Model  = get(Model, 'Signal');
     m      = get(a,'Monitor'); m=real(m);
     if not(all(m == 1) | all(m == 0)),
+      Model  = Model./m;            % fit(signal/monitor) 
       Signal = Signal./m; Error=Error./m; % per monitor
     end
     
@@ -273,17 +295,17 @@ if isfield(constraints, 'fixed')  % fix some parameters
   pars(index) = constraints.parsStart(index);
 else
   if isfield(constraints, 'min')  % lower bound for parameters
-    index = find(pars < constraints.min);
+    index = find(pars(:) < constraints.min(:));
     pars(index) = constraints.min(index);
   end
   if isfield(constraints, 'max')  % upper bound for parameters
-    index = find(pars > constraints.max);
+    index = find(pars(:) > constraints.max(:));
     pars(index) = constraints.max(index);
   end
   if isfield(constraints, 'step') % restrict parameter change
-    parsStep = pars - constraints.parsPrevious;
-    index = find( abs(parsStep) > abs(constraints.steps) );
-    parsStep(index) = sign(parsStep).*abs(constraints.steps);
+    parsStep    = pars(:) - constraints.parsPrevious(:);
+    index       = find(constraints.steps(:) & abs(parsStep) > abs(constraints.steps(:)) );
+    parsStep    = sign(parsStep).*abs(constraints.steps(:));
     pars(index) = constraints.parsPrevious(index) + parsStep(index);
   end
 end

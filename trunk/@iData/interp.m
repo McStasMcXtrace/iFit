@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -204,7 +204,7 @@ a_monitor = getalias(a, 'Monitor');
 if ~isempty(a_monitor),   
   % check if Monitor is 1 or a constant
   if isnumeric(a_monitor) && isscalar(a_monitor) == 1
-    % keep that as  a constant  value
+    % keep that as a constant  value
   else
     % else get the value
     a_monitor  =get(a,'Monitor');
@@ -222,7 +222,7 @@ if requires_meshgrid
   case 1
     % nothing to do as we have only one axis, no grid
   otherwise
-    % calls ndgrid
+    % call ndgrid
     % can not use deal as ndgrid uses nargout to set arrays
     toeval='[ ';
     for index=1:ndims(a) 
@@ -236,7 +236,7 @@ end
 % make sure input axes are monotonic. output axes should be OK.
 a_nonmonotonic=0;
 for index=1:ndims(a)
-  if any(diff(a_axes{index},1,index) < 0)
+  if any(diff(a_axes{index},1,index) <= 0)
     a_nonmonotonic=1; break;
   end
 end
@@ -348,7 +348,7 @@ otherwise % nD, n>1
       i_signal = griddatan(X, a_signal, method);
     end
   else
-    % i_axes must be an ndgrid result
+    % i_axes must be an ndgrid result, and monotonic
     i_signal = interpn(a_axes{:}, a_signal, i_axes{:}, method, 0);
   end
 end

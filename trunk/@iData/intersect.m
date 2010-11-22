@@ -8,10 +8,11 @@ function [ai,bi] = intersect(a, b)
 %
 % input:  a: object or array (iData)
 %         b: object (iData)
-% output: b: object or array (iData)
+% output: ai: object or array (iData)
+%         bi: object or array (iData)
 % ex:     b=intersect(a, a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/setaxis, iData/getaxis, iData/interp, iData/union
 
 if nargin == 2

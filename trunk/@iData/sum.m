@@ -12,7 +12,7 @@ function s = sum(a,dim)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 if ~isa(a, 'iData')
@@ -53,6 +53,7 @@ m = get(a,'Monitor');
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;
 b  = copyobj(a);
+rmaxis(b);
 
 if all(dim > 0)
   % sum on all dimensions requested
