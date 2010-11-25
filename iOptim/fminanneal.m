@@ -1,5 +1,5 @@
-function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINANNEAL(FUN,PARS,[OPTIONS]) simulated annealing optimizer
+function [pars,fval,exitflag,output] = fminanneal(varargin)
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINANNEAL(FUN,PARS,[OPTIONS],[CONSTRAINTS]) simulated annealing optimizer
 %
 %  Simulated annealing minimization. Parameters are scanned randomly with a decreasing
 %  noise.
@@ -8,6 +8,13 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 %   fminanneal(fun, pars) asks to minimize the 'fun' objective function with starting
 %     parameters 'pars' (vector)
 %   fminanneal(fun, pars, options) same as above, with customized options (optimset)
+%   fminanneal(fun, pars, options, fixed) 
+%     is used to fix some of the parameters. The 'fixed' vector is then 0 for
+%     free parameters, and 1 otherwise.
+%   fminanneal(fun, pars, options, lb, ub) 
+%     is used to set the minimal and maximal parameter bounds, as vectors.
+%   fminanneal(fun, pars, options, constraints) 
+%     where constraints is a structure (see below).
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -27,6 +34,12 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 %  options.TEMP_START sets the starting temperature
 %  options.TEMP_END   sets the end temperature
 %
+%  CONSTRAINTS may be specified as a structure
+%   constraints.min=   vector of minimal values for parameters
+%   constraints.max=   vector of maximal values for parameters
+%   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
+%   constraints.step=  vector of maximal parameter changes per iteration
+%
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
 %            value when input into FUN.
@@ -38,159 +51,30 @@ function [pars,fval,exitflag,output] = fminanneal(fun, pars, options)
 %    Kirkpatrick, S., Gelatt, C.D., & Vecchi, M.P. (1983). Optimization by
 %    Simulated Annealing. _Science, 220_, 671-680.
 % Contrib:
-%   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
+%   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04 [anneal]
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also: fminsearch, optimset
 
+% STANDARD part ================================================================
+
+% nargin stuff (number of parameters)
 % default options for optimset
-if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
+if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-3;
   options.TolX   =1e-8;
   options.MaxIter=1000;
-  options.MaxFunEvals=5000;
+  options.MaxFunEvals= 5000;
   options.algorithm  = [ 'Simulated Annealing (by Vandekerckhove) [' mfilename ']' ];
-  options.TEMP_START=1;  
-  options.TEMP_END=1e-8;     
-  options.optimizer = mfilename;
+  options.TEMP_START = 1;  
+  options.TEMP_END   = 1e-8;     
+  options.optimizer  = mfilename;
+  options.efficiency = 'low';
   pars = options;
   return
 end
 
-if nargin <= 2
-	options=[];
-end
-if isempty(options)
-  options=feval(mfilename, 'defaults');
-end
-n = prod(size(pars));
-numberOfVariables = n;
-if ischar(options.MaxFunEvals), 
-  options.MaxFunEvals = eval(options.MaxFunEvals); 
-end
-
-if ischar(options.MaxIter), 
-  options.MaxIter = eval(options.MaxIter); 
-end
-
-options=fmin_private_std_check(options, feval(mfilename,'defaults'));
-
-% call the optimizer
-[pars,fval,exitflag,output] = anneal(fun, pars, options);
-output.options=options;
-
-% private function ------------------------------------------------------------
-
-function [parent,fval,istop,output] = anneal(loss, parent, options)
-
-% main settings
-%newsol      =@(x) (x+(randperm(length(x))==length(x))*randn/100);      % neighborhood space function
-Tinit       = 1;        % initial temp
-minT        = 1e-8;         % stopping temp
-cool        = @(T) (.95*T);        % annealing schedule
-minF        = options.TolFun;
-max_consec_rejections = options.MaxFunEvals;
-max_try     = options.MaxIter;
-max_success = 20;
-k = 1;                           % boltzmann constant
-
-% counters etc
-iterations     = 0;
-success  = 0;
-
-consec   = 0;
-T        = Tinit;
-initenergy = feval(loss, parent);
-fval     = initenergy;
-funcount    = 0;
-istop    =0;
-
-if strcmp(options.Display,'iter')
-  fmin_private_disp_start(mfilename, loss, parent, fval);
-end
-
-best_parent=parent;
-best_fval  =fval;
-
-while 1
-  current = parent; 
-
-  % % Stop / decrement T criteria
-  if iterations >= max_try || success >= max_success;
-      if consec >= max_consec_rejections
-          message = 'Maximum consecutive rejections exceeded (options.MaxFunEvals)';
-          istop=-7;
-          break;
-      elseif T < minT
-          message = 'Minimum temperature reached';
-          istop=-8;
-          break;
-      else
-          T = cool(T);  % decrease T according to cooling schedule
-          iterations = iterations+1; % just an iteration counter
-          success = 1;
-          fmin_private_disp_iter(options, iterations, funcount, loss, newparam, newfval);
-      end
-  end
-
-%this inline is much more faster than original anneal.m version
-% newparam = newsol(current);
-  newparam = current;
-  rand_ind = ceil(rand*length(current));
-  stdx=max(0.05,0.5*T);
-  newparam(rand_ind) = newparam(rand_ind)+randn*stdx;
-  funcount = funcount + 1;
-  newfval = feval(loss,newparam);
-  
-  if (newfval < best_fval)
-    best_fval = newfval;
-    best_parent = newparam;
-  end
-  
-  % std stopping conditions
-  [istop, message] = fmin_private_std_check(newparam, newfval, iterations, funcount, options, parent, best_fval);
-  
-  fmin_private_disp_iter(options, iterations, funcount, FUN, newparam, newfval);
-
-  if istop
-    parent = newparam; 
-    fval = newfval;
-    break
-  end
-
-  if (fval-newfval > min(options.TolFun/2, 1e-6))
-      parent = newparam;
-      fval = newfval;
-      success = success+1;
-      consec = 0;
-  else
-      if (rand < exp( (fval-newfval)/(k*T) ));
-          parent = newparam;
-          fval = newfval;
-          success = success+1;
-      else
-          consec = consec+1;
-      end
-  end
-
-end % while
-
-% output results --------------------------------------------------------------
-parent = best_parent;
-fval   = best_fval;
-
-if istop==0, message='Algorithm terminated normally'; end
-output.iterations = iterations;
-output.algorithm  = options.algorithm;
-output.message    = message;
-output.funcCount  = funcount;
-
-if (istop & strcmp(options.Display,'notify')) | ...
-   strcmp(options.Display,'final') | strcmp(options.Display,'iter')
-  fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
-    output.funcCount, loss, parent, fval);
-end
-
+[pars,fval,exitflag,output] = fmin_private_wrapper(mfilename, varargin{:});
 
