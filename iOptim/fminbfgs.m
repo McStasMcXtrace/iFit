@@ -1,5 +1,5 @@
-function [pars,fval,exitflag,output] = fminbfgs(fun, pars, options)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminbfgs(FUN,PARS,[OPTIONS]) BFGS search
+function [pars,fval,exitflag,output] = fminbfgs(varargin)
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminbfgs(FUN,PARS,[OPTIONS],[CONSTRAINTS]) BFGS search
 %
 % This minimization method uses the steepest descent/
 % Broyden-Fletcher-Goldfarb-Shanno method with polynomial line search
@@ -8,6 +8,13 @@ function [pars,fval,exitflag,output] = fminbfgs(fun, pars, options)
 %   fminbfgs(fun, pars) asks to minimize the 'fun' objective function with starting
 %     parameters 'pars' (vector)
 %   fminbfgs(fun, pars, options) same as above, with customized options (optimset)
+%   fminbfgs(fun, pars, options, fixed) 
+%     is used to fix some of the parameters. The 'fixed' vector is then 0 for
+%     free parameters, and 1 otherwise.
+%   fminbfgs(fun, pars, options, lb, ub) 
+%     is used to set the minimal and maximal parameter bounds, as vectors.
+%   fminbfgs(fun, pars, options, constraints) 
+%     where constraints is a structure (see below).
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -23,6 +30,12 @@ function [pars,fval,exitflag,output] = fminbfgs(fun, pars, options)
 %  compliant with optimset. Default options may be obtained with
 %     o=fminbfgs('defaults')
 %
+%  CONSTRAINTS may be specified as a structure
+%   constraints.min=   vector of minimal values for parameters
+%   constraints.max=   vector of maximal values for parameters
+%   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
+%   constraints.step=  vector of maximal parameter changes per iteration
+%
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
 %            value when input into FUN.
@@ -33,13 +46,13 @@ function [pars,fval,exitflag,output] = fminbfgs(fun, pars, options)
 %   Fletcher, R., Computer Journal 1970, 13, 317-322
 %   Goldfarb, D., Mathematics of Computation 1970, 24, 23-26
 %   Shanno, D. F.,Mathematics of Computation 1970, 24, 647-656
-% Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization
+% Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [bfgswopt]
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also: fminsearch, optimset
 
 % default options for optimset
-if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
+if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options=optimset; % empty structure
   options.Display='';
   options.TolFun =1e-3;
@@ -48,257 +61,10 @@ if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
   options.MaxFunEvals=1000;
   options.algorithm  = [ 'Broyden-Fletcher-Goldfarb-Shanno (by Kelley) [' mfilename ']' ];
   options.optimizer = mfilename;
+  options.efficiency = 'unknown';
   pars = options;
   return
 end
 
-if nargin <= 2
-  options=[];
-end
-if isempty(options)
-  options=feval(mfilename, 'defaults');
-end
-n = prod(size(pars));
-numberOfVariables = n;
-if ischar(options.MaxFunEvals), 
-  options.MaxFunEvals = eval(options.MaxFunEvals); 
-end
+[pars,fval,exitflag,output] = fmin_private_wrapper(mfilename, varargin{:});
 
-if ischar(options.MaxIter), 
-  options.MaxIter = eval(options.MaxIter); 
-end
-
-if strcmp(options.Display,'iter')
-  fmin_private_disp_start(mfilename, fun, pars);
-end
-
-options=fmin_private_std_check(options, feval(mfilename,'defaults'));
-
-if options.TolX <=0, options.TolX=1e-12; end
-
-% call the optimizer
-[pars,fval,exitflag,output] = bfgswopt(pars(:), fun, options);
-output.options=options;
-
-% private function ------------------------------------------------------------
-
-function [pars,fval,istop,output] = bfgswopt(x0,f,options) % tol,maxit,hess0)
-%
-% C. T. Kelley, July 17, 1997
-%
-% This code comes with no guarantee or warranty of any kind.
-%
-% function [x,histout] = bfgswopt(x0,f,tol,maxit,hess0)
-%
-% steepest descent/bfgs with polynomial line search
-% Steve Wright storage of H^-1
-%
-% if the BFGS update succeeds 
-% backtrack on that with a polynomial line search, otherwise we use SD
-%
-% Input: x0 = initial iterate
-%        f = objective function,
-%            the calling sequence for f should be
-%            [fout,gout]=f(x) where fout=f(x) is a scalar
-%              and gout = grad f(x) is a COLUMN vector
-%        tol = termination criterion norm(grad) < tol
-%              optional, default = 1.d-6
-%        maxit = maximum iterations (optional) default = 20
-%         hess0 = (optional)
-%            function that computes the action of the
-%            initial inverse Hessian on a vector. This is optional. The
-%            default is H_0 = I (ie no action). The format of hess0 is
-%            h0v = hess0(v) is the action of H_0^{-1} on a vector v
-%
-% Output: x = solution
-%         histout = iteration history   
-%             Each row of histout is
-%       [norm(grad), f, num step reductions, iteration count]
-%         costdata = [num f, num grad, num hess] 
-%                 (num hess=0 always, in here for compatibility with steep.m)
-%
-% At this stage all iteration parameters are hardwired in the code.
-
-tol   = options.TolFun;
-maxit = options.MaxIter;
-budget= options.MaxFunEvals;
-
-%
-blow=.1; bhigh=.5;
-numf=0; numg=0; numh=0;
-itc=0; xc=x0;
-maxarm=50; nsmax=50; debug=0;
-istop=0; message='';
-%
-n=length(x0);
-fc = feval(f,xc);
-gc = gradest(f, xc); gc=reshape(gc, size(xc));
-pars=xc;
-fval=fc;
-numf=numf+1; numg=numg+1;
-go=zeros(n,1); 
-alpha=zeros(nsmax,1); beta=alpha;
-sstore=zeros(n,nsmax); ns=0;
-
-best_pars = pars;
-best_fval = fval;
-%
-%	dsdp = - H_c^{-1} grad_+ if ns > 0
-%
-while(norm(gc) > tol & itc <= maxit & ~istop)
-  pars_prev=pars;
-  fval_prev=fval;
-	dsd=-gc;
-	dsdp=-gc;
-	if (ns>1)
-    dsdp=bfgsw(sstore,alpha,beta,ns,dsd);
-	end
-%
-%
-% compute the direction
-%
-	if (ns==0) 
-		dsd=-gc;
-  else
-	  xi=-dsdp;
-	  b0=-1/(y'*s);
-	  zeta=(1-1/lambda)*s+xi;
-	  a1=b0*b0*(zeta'*y);
-	  a1=-b0*(1 - 1/lambda)+b0*b0*y'*xi;
-	  a=-(a1*s+b0*xi)'*gc;
-%
-%		We save go=s'*g_old just so we can use it here
-%		and avoid some cancellation error
-%
-	  alphatmp=a1+2*a/go;
-	  b=-b0*go;
-%
-%
-	  dsd=a*s+b*xi;
-  end
-%
-%
-%
-  if (dsd'*gc > -1.d-6*norm(dsd)*norm(gc))
-    how='loss of descent';
-	  dsd=-gc;
-	  ns=0;
-  end
-  lambda=1; 
-%
-%       fixup against insanely long steps see (3.50) in the book
-%
-  lambda=min(1,100/(1 + norm(gc)));
-  xt=xc+lambda*dsd; ft=feval(f,xt); numf=numf+1;
-  itc=itc+1; 
-  old=1;
-  if old==0 
-      goal=fc+1.d-4*(gc'*dsd); iarm=0;
-      if ft > goal
-               [xt,iarm,lambda]=polyline(xc,fc,gc,dsd,ft,f,maxarm);
-               if iarm==-1 pars=xc; fval=fc;
-                 message='line search failure'; istop=-11; break
-               end
-      end
-  end
-  if old==1
-   	iarm=0; goalval=.0001*(dsd'*gc);
-   	q0=fc; qp0=gc'*dsd; lamc=lambda; qc=ft;
-    while(ft > fc + lambda*goalval )
-	    iarm=iarm+1;
-	    if lamc==0
-	    disp('bfgs: lamc==0');
-	    lamc
-	    lambda
-	    end
-      if iarm==1
-         lambda=polymod(q0, qp0, lamc, qc, blow, bhigh);
-      else
-         lambda=polymod(q0, qp0, lamc, qc, blow, bhigh, lamm, qm);
-      end
-      qm=qc; lamm=lamc; lamc=lambda;
-	    xt=xc+lambda*dsd;
-	    ft=feval(f,xt); qc=ft; numf=numf+1;
-	    if(iarm > maxarm) 
-        pars=xc; fval=fc;
-	      message='too many backtracks in BFGS line search'; 
-	      istop=-11; break; end
-    end
-  end
-  if istop, break; end
-	s=xt-xc; y=gc; go=s'*gc;
-%        lambda=norm(s)/norm(dsd);
-	xc=xt; 
-  fc = feval(f,xc);
-  gc = gradest(f, xc); gc=reshape(gc, size(xc));
-  y = gc-y; numf=numf+1; numg=numg+1;
-%
-%   restart if y'*s is not positive or we're out of room
-%
-	if (y'*s <= 0) | (ns==nsmax) 
-    message='loss of positivity or storage'; 
-		ns=0;
-	else
-		ns=ns+1; sstore(:,ns)=s;
-		if(ns>1)
-			alpha(ns-1)=alphatmp;
-			beta(ns-1)=b0/(b*lambda);
-		end
-	end
-	
-	if (fc < best_fval)
-    best_fval = fc;
-    best_pars = xc;
-  end
-  
-	pars=xc; fval=fc;
-	
-	% std stopping conditions
-	options.procedure=message;
-  [istop, message] = fmin_private_std_check(pars, fval, itc, numf, ...
-      options, pars_prev, best_fval);
-  fmin_private_disp_iter(options, itc, numf, f, pars, fval);
-end
-
-% output results --------------------------------------------------------------
-pars = best_pars;
-fval = best_fval;
-
-if istop==0, message='Algorithm terminated normally'; end
-output.iterations = itc;
-output.algorithm  = options.algorithm;
-output.message    = message;
-output.funcCount  = numf;
-
-if (istop & strcmp(options.Display,'notify')) | ...
-   strcmp(options.Display,'final') | strcmp(options.Display,'iter')
-  fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
-    output.funcCount, f, pars, fval);
-end
-
-%
-% bfgsw
-%
-% C. T. Kelley, Dec 20, 1996
-%
-% This code comes with no guarantee or warranty of any kind.
-%
-% This code is used in bfgswopt.m 
-% 
-% There is no reason to ever call this directly.
-%
-% form the product of the bfgs approximate inverse Hessian
-% with a vector using the Steve Wright method
-%
-function dnewt=bfgsw(sstore,alpha,beta,ns,dsd,hess0)
-dnewt=dsd; 
-if (ns<=1) return; end;
-dnewt=dsd; n=length(dsd);
-sigma=sstore(:,1:ns-1)'*dsd; gamma1=alpha(1:ns-1).*sigma;
-gamma2=beta(1:ns-1).*sigma;
-gamma3=gamma1+beta(1:ns-1).*(sstore(:,2:ns)'*dsd);
-delta=gamma2(1:ns-2)+gamma3(2:ns-1);
-dnewt=dnewt+gamma3(1)*sstore(:,1)+gamma2(ns-1)*sstore(:,ns);
-if(ns <=2) return; end
-dnewt=dnewt+sstore(1:n,2:ns-1)*delta(1:ns-2);
-%

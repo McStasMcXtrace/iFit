@@ -62,20 +62,19 @@ if isnumeric(dim) & length(dim) > 1
   return
 end
 
-optimizers={ ...
-    'fminpowell','fminralg','fmincmaes','fminsimplex','fminnewton',...
-    'fmingradrand', 'fminimfil', 'fminbfgs', 'fminlm', ...
-    'fminhooke', 'fminanneal', 'fminsimpsa','fminsce','fminpso',...
-    'fminga', ...
-    'fminkalman',...
-    'fminsearchOS', 'fminsearch', ...
-    'fminswarm','fminswarmhybrid'};
-
-if dim <=10
-  optimizers{end+1} = 'fminrand';  % this one is too slow
-  optimizers{end+1} = 'fminmulti'; % this one is not accurate
+% get optimizers list by testing call with 'defaults'
+optimizers = {};
+d = dir(fileparts(which(mfilename)));
+for index=1:length(d)
+  this = d(index);
+  try
+    [dummy, method] = fileparts(this.name);
+    if isstruct(feval(method,'defaults'))
+      optimizers{end+1} = method;
+    end
+  end
 end
-
+  
 problems={...       % Unimodal functions
   'fjens1',       1, ...
   'fsphere',      1, ...

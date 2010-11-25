@@ -1,4 +1,4 @@
-Version: $Revision: 1.7 $  
+Version: $Revision: 1.8 $  
 
 All functions here are meant to minimize an objective scalar function (usually 
 down to zero). The general syntax is the same as the one of fminsearch, 
@@ -33,10 +33,6 @@ Simplex by F. Sigworth, 15 March 2003, S. H. Heinemann, 1987 and M. Caceci
     and W. Cacheris, Byte, p. 340, May 1984.
   used in fminsimplex
   modified to use standard Matlab optimization fminsearch syntax and options
-buscarnd by Argimiro R. Secchi (arge@enq.ufrgs.br) 2001 
-    and Giovani Tonel(giovani.tonel@ufrgs.br) 2006  
-  used in fminrand
-  modified to use standard Matlab optimization fminsearch syntax and options
 powell by Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
   used in fminpowell
   modified to use standard Matlab optimization fminsearch syntax and options
@@ -58,11 +54,6 @@ ukfopt by Yi Cao at Cranfield University, 08 January 2008
 solvopt by Alexei Kuntsevich and Franz Kappel , Graz (Austria) 1997
   used in fminralg
   modified to use standard Matlab optimization fminsearch syntax and options
-fminsearchOS by Olivier Salvado, Case Western Reserve University, June04 and Mathworks
-  based on fminsearch, improved for noisy signal
-nelder by Kelley, 1998, Iterative Methods for Optimization
-  used in fminsimplex
-  modified to use standard Matlab optimization fminsearch syntax and options
 bfgswopt by Kelley, 1998, Iterative Methods for Optimization
   used in fminbfgs
   modified to use standard Matlab optimization fminsearch syntax and options
@@ -74,9 +65,6 @@ hooke by Kelley, 1998, Iterative Methods for Optimization
   modified to use standard Matlab optimization fminsearch syntax and options
 imfil by Kelley, 1998, Iterative Methods for Optimization
   used in fminimfil
-  modified to use standard Matlab optimization fminsearch syntax and options
-mds by Kelley, 1998, Iterative Methods for Optimization
-  used in fminmulti
   modified to use standard Matlab optimization fminsearch syntax and options
 PSO by Brecht Donckels, BIOMATH, brecht.donckels@ugent.be 2006 
   used in fminpso
