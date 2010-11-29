@@ -196,3 +196,106 @@ dnewt=dnewt+gamma3(1)*sstore(:,1)+gamma2(ns-1)*sstore(:,ns);
 if(ns <=2) return; end
 dnewt=dnewt+sstore(1:n,2:ns-1)*delta(1:ns-2);
 %
+
+function [xp, idid, lambda]=polyline(xc, fc, gc, d, ft, f, maxarm)
+%
+% C. T. Kelley, Dec 29, 1997
+%
+% This code comes with no guarantee or warranty of any kind.
+%
+% function [xp, idid]=polyline(xc, fc, gc, d, ft, fobj, maxarm)
+%
+% polynomial line search, call after first point is rejected
+%
+% Input: xc = current point
+%        fc = current function value
+%        gc = current gradient value
+%         d = direction
+%        ft = trial function (rejected value)
+%         f = objective function
+%             the calling sequence for f should be
+%             [fout,gout]=f(x) where fout=f(x) is a scalar
+%             and gout = grad f(x) is a COLUMN vector
+%    maxarm = maximum number of step length reductions   
+%
+% Output: xp = successful new point (if it exists)
+%       idid = number of calls to f (if line search succeeds) or
+%              -1 if line search fails.
+%
+% Requires: polymod.m
+%
+% line search parameters that everyone uses
+%
+alp=1.d-4; blow=.1; bhigh=.5;
+%
+% Set up the search
+%
+q0=fc; qp0=gc'*d; qc=ft; lamc=1; iarm=0; numf=0;
+fgoal=fc+alp*lamc*qp0;
+while ft > fgoal
+    iarm=iarm+1;
+    if iarm==1  % quadratic
+       lambda=polymod(q0, qp0, lamc, qc, blow, bhigh);
+    else
+       lambda=polymod(q0, qp0, lamc, qc, blow, bhigh, lamm, qm);
+    end
+    qm=qc; lamm=lamc; lamc=lambda;
+    xt=xc+lambda*d;
+    ft=feval(f,xt); numf = numf+1; qc=ft;
+    if(iarm > maxarm)
+         disp(' line search failure'); idid=-1; xp=xc;
+    return; end
+    fgoal=fc+alp*lamc*qp0;
+end
+xp=xt; idid=numf;
+
+% ==============================================================================
+
+function [lplus]=polymod(q0, qp0, lamc, qc, blow, bhigh, lamm, qm)
+%
+% C. T. Kelley, Dec 29, 1997
+%
+% This code comes with no guarantee or warranty of any kind.
+%
+% function [lambda]=polymod(q0, qp0, qc, blow, bhigh, qm)
+%
+% Cubic/quadratic polynomial linesearch
+%
+% Finds minimizer lambda of the cubic polynomial q on the interval
+% [blow * lamc, bhigh * lamc] such that
+%
+% q(0) = q0, q'(0) = qp0, q(lamc) = qc, q(lamm) = qm
+% 
+% if data for a cubic is not available (first stepsize reduction) then
+% q is the quadratic such that
+% 
+% q(0) = q0, q'(0) = qp0, q(lamc) = qc
+%
+lleft=lamc*blow; lright=lamc*bhigh; 
+if nargin == 6
+%
+% quadratic model (temp hedge in case lamc is not 1)
+%
+    lplus = - qp0/(2 * lamc*(qc - q0 - qp0) );
+    if lplus < lleft lplus = lleft; end
+    if lplus > lright lplus = lright; end
+else
+%
+% cubic model
+%
+    a=[lamc^2, lamc^3; lamm^2, lamm^3];
+    b=[qc; qm]-[q0 + qp0*lamc; q0 + qp0*lamm];
+    if cond(a) > 1e14
+            lplus = lright; 
+            return
+    end
+    c=a\b;
+    if c(2)
+      lplus=(-c(1)+sqrt(c(1)*c(1) - 3 *c(2) *qp0))/(3*c(2));
+    else
+      lplus=Inf;
+    end
+    if lplus < lleft lplus = lleft; end
+    if lplus > lright lplus = lright; end
+end
+

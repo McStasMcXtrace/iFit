@@ -1,4 +1,5 @@
 function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars, options, constraints, ub)
+% NOT GOOD: newton, anneal, lm, simpsa
 % [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmin_private_wrapper(OPTIMIZER, FUN,PARS,[OPTIONS],[CONSTRAINTS]) wrapper to optimizers
 %
 %  Checks for input arguments and options. Then calls the optimizer with a wrapped 
@@ -50,13 +51,13 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
 % each user call function only defined the options...
 %
-% private: 'objective', 'apply_constraints', 'constraints_minmax'
+% private: 'objective', 'apply_constraints', 'constraints_minmax', 'localChar', 'fmin_private_disp'
 
 % parameter handling ===========================================================
 
@@ -119,6 +120,9 @@ constraints.criteriaStart   = [];
 constraints.criteriaPrevious= Inf;
 constraints.criteriaBest    = Inf;
 constraints.funcCounts      = 0;
+constraints.message         = '';
+
+options.optimizer = optimizer;
 
 options=fmin_private_std_check(options, feval(options.optimizer,'defaults'));
 t0=clock;
@@ -134,10 +138,15 @@ if ischar(options.MaxIter),
 end
 
 if strcmp(options.Display,'iter')
-  fmin_private_disp_start(mfilename, fun, pars);
+  disp([ '** Starting minimization of ' localChar(fun) ' using algorithm ' localChar(options.algorithm) ]);
+  spars=pars(1:min(20,length(pars)));
+  spars=mat2str(spars(:)');  % as a row
+  if length(spars) > 160, spars=[ spars(1:156) ' ...' ]; end
+  disp(sprintf('         initial parameters: %s', spars));
+  disp('Func_count  min[f(x)]    Parameters');
 end
 
-message    = 'Algorithm terminated normally';
+message    = constraints.message;
 exitflag   = 0;
 iterations = 0;
 fval=Inf;
@@ -146,6 +155,7 @@ output=[];
 % Optimizer call ===============================================================
 
 try
+
 % calls the optimizer with a wrapped 'objective' function
 %    which applies constraints and makes stop condition checks.
 % the main optimizer call is within a try/catch block which exits when an early 
@@ -156,30 +166,23 @@ case {'fminanneal','anneal'}
 % simulated annealing ----------------------------------------------------------
   options.MaxTries   = options.MaxIter;
   options.StopVal    = options.TolFun;
-  switch options.Display
-  case 'iter',  options.Verbosity=2;
-  case 'final', options.Verbosity=1;
-  otherwise,    options.Verbosity=0;
-  end
+  options.Verbosity=0;
   [pars,fval,iterations] = anneal(@(pars) objective(fun, pars), pars, options);
 case {'fminbfgs','bfgs'}      
 % Broyden-Fletcher-Goldfarb-Shanno ---------------------------------------------
   [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
-  fval = constraints.criteriaBest;
   iterations = size(histout,1);
 case {'cmaes','fmincmaes'}    
 % Evolution Strategy with Covariance Matrix Adaption ---------------------------
   hoptions.MaxIter    = options.MaxIter;
   hoptions.TolFun     = options.TolFun;
   hoptions.MaxFunEvals= options.MaxFunEvals;
-  %hoptions.FunValCheck= options.FunValCheck;
-  %hoptions.OutputFcn  = options.OutputFcn;
   hoptions.PopSize    = options.PopulationSize;
-  %hoptions.algorithm  = options.algorithm;
-  if strcmp(options.Display,'final'), hoptions.DispFinal = 'on';
-  else                                hoptions.DispFinal = 'off'; end
-  if strcmp(options.Display,'iter'),  hoptions.DispModulo=1; 
-  else hoptions.DispModulo=0; end
+  hoptions.DispFinal  = 'off';
+  hoptions.DispModulo = 0;
+  hoptions.SaveVariables  = 'off';
+  hoptions.LogModulo      = 0;
+  hoptions.LogPlot        = 'off';
   if isfield(constraints,'step'), hoptions.DiffMaxChange = constraints.step(:); end
   if isfield(constraints,'min'),  hoptions.LBounds=constraints.min(:); end
   if isfield(constraints,'max'),  hoptions.UBounds=constraints.max(:); end
@@ -190,13 +193,10 @@ case {'cmaes','fmincmaes'}
   else
     sigma = 0.3;
   end
-  hoptions.SaveVariables  = 'off';
-  hoptions.LogModulo      = 0;
-  hoptions.LogPlot        = 'off';
-  
-  [pars, fval, iterations, exitflag, output] = cmaes(@(pars) objective(fun, pars), pars(:), sigma, hoptions);
-  
-  exitflag=0;
+
+  [pars, fval, iterations, exitflag, output] = cmaes(@(pars) objective(fun, pars), pars(:), ...
+    sigma, hoptions);
+
   if     strmatch(exitflag, 'tolx')
     exitflag=-5;
     message = [ 'Termination parameter tolerance criteria reached (options.TolX=' ...
@@ -226,7 +226,7 @@ case {'cmaes','fmincmaes'}
 case {'ga','fminga','GA'}          
 % genetic algorithm ------------------------------------------------------------
   constraints = constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = GA(@(pars) objective(fun, pars), pars(:),options,constraints);
+  [pars,fval,iretations,output] = GA(@(pars) objective(fun, pars), pars(:),options,constraints);
 case {'gradrand','ossrs','fmingradrand'}
 % random gradient --------------------------------------------------------------
   [pars,fval,iterations] = ossrs(pars, @(pars) objective(fun, pars), options);
@@ -234,40 +234,30 @@ case {'hooke','fminhooke'}
 % Hooke-Jeeves direct search ---------------------------------------------------
   [pars,histout] = hooke(pars(:), @(pars) objective(fun, pars), ...
                        options.MaxFunEvals, 2.^(-(0:options.MaxIter)), options.TolFun);
-  fval = constraints.criteriaBest;
   iterations      = size(histout,1);
-case {'imfil','imfil1','fminimfil'}
+case {'imfil','fminimfil'}
 % Unconstrained Implicit filtering (version 1998) ------------------------------
-  [pars,fval,exitflag,output] = imfil1(pars(:), @(pars) objective(fun, pars), options); 
+  [pars,fval,iterations,output] = imfil(pars(:), @(pars) objective(fun, pars), options); 
 case {'fminkalman','kalmann','ukfopt'}
 % unscented Kalman filter ------------------------------------------------------
-  pars = ukfopt(@(pars) objective(fun, pars(:)), pars(:), ...
+  [pars,iterations] = ukfopt(@(pars) objective(fun, pars(:)), pars(:), ...
               options.TolFun, norm(pars)*eye(length(pars)), 1e-6*eye(length(pars)), 1e-6);
-  fval = constraints.criteriaBest;
 case {'fminlm','LMFsolve'}
 % Levenberg-Maquardt steepest descent ------------------------------------------
-  if strcmp(options.Display,'iter'), Display = 1;
-  else Display = 0; end
   % LMFsolve minimizes the sum of the squares of the objective: sum(objective.^2)
-  [pars, fval, iterations, fcount] = LMFsolve(@(pars) objective(fun, pars), pars(:), ...
-           'Display',Display, 'FunTol', options.TolFun, 'XTol', options.TolX, ...
+  [pars, fval, iterations, exitflag] = LMFsolve(@(pars) objective_lm(fun, pars), pars(:), ...
+           'Display',0, 'FunTol', options.TolFun, 'XTol', options.TolX, ...
            'MaxIter', options.MaxIter, 'Evals',options.MaxFunEvals);
-  if iterations < 0
-    exitflag=-2;
-    iterations = -iterations;
-    message='Maximum number of iterations reached';
-  elseif fcount < 0
-    exitflag=-3;
-    message='Maximum number of function evaluations reached'
-  else
-    exitflag=0;
-    message='Algorithm terminated normally'
+  switch exitflag
+  case -1, message='Termination function tolerance criteria reached';
+  case -2, message='Maximum number of iterations reached';
+  case -3, message='Maximum number of function evaluations reached';
+  case -5, message='Termination parameter tolerance criteria reached';
   end
 case {'ntrust','fminnewton'}
 % Dogleg trust region, Newton model --------------------------------------------
   [pars,histout,costdata] = ntrust(pars(:),@(pars) objective(fun, pars), ...
        options.TolFun,options.MaxIter);
-  fval = constraints.criteriaBest;
   iterations      = size(histout,1);
 case {'powell','fminpowell'}
 % Powell minimization ----------------------------------------------------------
@@ -292,10 +282,10 @@ case {'ralg','fminralg','solvopt'}
   opt(2) = options.TolX;
   opt(3) = options.TolFun;
   opt(4) = options.MaxIter;
-  if     strcmp(options.Display,'off') | isempty(options.Display),  opt(5) = -1;
-  elseif strcmp(options.Display,'iter'), opt(5) =  1;
-  else opt(5)=0; end
-  opt(6) = 1e-8; opt(7)=2.5; opt(8)=1e-11;
+  opt(5) = -1;
+  opt(6) = 1e-8; 
+  opt(7) = 2.5; 
+  opt(8) = 1e-11;
 
   % call the optimizer
   [pars,fval,out,iterations, message] = ralg(pars, @(pars) objective(fun, pars), ...
@@ -312,6 +302,7 @@ case {'simpsa','fminsimpsa','SIMPSA'}
     constraints.min(:),constraints.max(:),options);
 case {'SCE','fminsce'}
 % shuffled complex evolution ---------------------------------------------------
+  constraints = constraints_minmax(pars, constraints);
   [pars,fval,exitflag,output] = SCE(@(pars) objective(fun, pars), pars(:), ...
     constraints.min(:),constraints.max(:),options);
 case {'hPSO','fminswarmhybrid'}
@@ -347,29 +338,60 @@ case {'hPSO','fminswarmhybrid'}
   else
     hoptions.maxv = abs(constraints.max(:)-constraints.min(:))/2;
   end
-  [pars,fval,exitflag,output] = hPSO(@(pars) objective(fun, pars), pars, hoptions);
+  [pars,fval,iterations,output] = hPSO(@(pars) objective(fun, pars), pars, hoptions);
+case {'Simplex','fminSimplex'}
+% Nelder-Mead simplex state machine --------------------------------------------
+  constraints = constraints_minmax(pars, constraints);
+  [pars, out]=Simplex('init', pars, abs(constraints.max(:)-constraints.min(:))/10);  % Initialization
+  for iterations=1:options.MaxIter
+    fval = feval(@(pars) objective(fun, pars), pars);
+    [pars,out]=Simplex( fval );
+    if Simplex('converged', options.TolFun)             % Test for convergence
+      exitflag=-1;
+      message= [ 'Termination function tolerance criteria reached (options.TolFun=' ...
+                num2str(options.TolFun) ')' ];
+      break
+    end
+    if iterations == options.MaxIter
+      exitflag=-1;
+      message = [ 'Maximum number of iterations reached (options.MaxIter=' ...
+                num2str(options.MaxIter) ')' ];;
+      break
+    end
+  end
+  pars=Simplex('centroid'); % obtain the final value.
+case {'cgtrust','fmincgtrust'}
+% Steihaug Newton-CG-Trust region algoirithm -----------------------------------
+  [pars,histout] = cgtrust(pars(:), @(pars) objective(fun, pars), ...
+    [ options.TolFun .1 options.MaxIter options.MaxIter], options.TolFun*options.TolFun);
+% [pars,histout] = levmar(pars(:), @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
+  iterations      = size(histout,1)
 otherwise
-  options = feval(mfilename, 'defaults');
+  options = feval(optimizer, 'defaults');
   [pars,fval,exitflag,output] = fmin_private_wrapper(options.optimizer, fun, pars, ...
     options, constraints, ub);
   return
-end
+end % switch
 
-catch
-  fval = constraints.criteriaBest;
-  pars = constraints.parsBest;
-  message = constraints.message;
-end
+end % try
+
 
 % post optimization checks =====================================================
 
-%pars = apply_constraints(pars, constraints);
+fval = constraints.criteriaBest;
+pars = constraints.parsBest;
+
+if exitflag==0;
+  message='Algorithm terminated normally'
+end
+
 if iterations, 
   output.iterations    = iterations;
 elseif ~isfield(output,'iterations')
   output.iterations    = constraints.funcCounts;
 end
 if ~isfield(output,'message')
+  if isempty(message), message = constraints.message; end
   output.message         = message;
 end
 output.funcCount       = constraints.funcCounts;
@@ -385,8 +407,10 @@ output.duration        = etime(clock, t0);
 
 if (exitflag & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')
-  fmin_private_disp_final(output.algorithm, output.message, output.iterations, ...
-    output.funcCount, fun, pars, fval);
+  disp([ '** Finishing minimization of ' localChar(fun) ' using algorithm ' localChar(options.algorithm) ]);
+  disp(' Func_count     min[f(x)]        Parameters');
+  fmin_private_disp(struct('Display','iter'), constraints.funcCounts, fun, pars, fval)
+  disp( [ ' Status: ' message ]);
 end
 
 return  % actual end of optimization
@@ -409,10 +433,9 @@ return  % actual end of optimization
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
     [exitflag, message] = fmin_private_std_check(pars, c, ...
-       constraints.funcCounts, constraints.funcCounts, options, ...
-       constraints.parsPrevious, constraints.criteriaPrevious);
+       constraints.funcCounts, options, constraints.parsPrevious);
+    constraints.message = message;
     if exitflag
-      constraints.message = message;
       error(message); % will end optimization in try/catch
     end
     
@@ -426,6 +449,11 @@ return  % actual end of optimization
     constraints.parsPrevious    = pars;
     constraints.parsHistory     = [ constraints.parsHistory ; pars ]; 
     constraints.funcCounts      = constraints.funcCounts+1; 
+  end
+  
+  function c = objective_lm(fun, pars)
+    c = objective(fun, pars);
+    c = c*ones(10,1)/10;
   end
 
 end % optimizer core end
@@ -473,3 +501,167 @@ function [pars,exitflag,message] = apply_constraints(pars, constraints,options)
   pars=pars(:)';
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function strfcn = localChar(fcn)
+% Convert the fcn to a string for printing
+
+  if ischar(fcn)
+      strfcn = fcn;
+  elseif isa(fcn,'inline')
+      strfcn = char(fcn);
+  elseif isa(fcn,'function_handle')
+      strfcn = func2str(fcn);
+  else
+      try
+          strfcn = char(fcn);
+      catch
+          strfcn = '(name not printable)';
+      end
+  end
+
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function fmin_private_disp(options, funccount, fun, pars, fval)
+% function called during minimization procedure
+%
+% Displays iteration information every 5 steps, then 10 steps, then 100 steps
+% or at every step if iteration is negative
+
+
+  if funccount > 5
+    if     funccount > 500 & mod(funccount,1000) return;
+    elseif funccount > 50  & mod(funccount,100) return;
+    elseif mod(funccount,10) return; end
+  end
+
+  if isfield(options,'Display')
+    if strcmp(options.Display, 'iter')
+      spars=pars(1:min(20,length(pars)));
+      spars=mat2str(spars(:)', 4);  % as a row
+      if length(spars) > 50, spars=[ spars(1:47) ' ...' ]; end
+      disp(sprintf(' %5.0f    %12.6g   %s', funccount, fval, spars));
+    end
+  end
+  
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [istop, message] = fmin_private_std_check(pars, fval, funccount, options, pars_prev, fval_prev)
+% standard checks
+% fmin_private_std_check(pars, fval, funccount, options
+% or
+% fmin_private_std_check(pars, fval, funccount, options, pars_prev)
+% or
+% fmin_private_std_check(pars, fval, funccount, options, pars_prev, fval_prev)
+% or
+% options=fmin_private_std_check(options);
+% or
+% options=fmin_private_std_check(options, default_options);
+
+
+  istop=0; message='';
+  
+  % check of option members
+  if nargin<=2
+    options=pars;
+    if nargin ==2, 
+      default=fval; 
+      checks=fieldnames(default);
+    else 
+      fval=[]; 
+      checks={'TolFun','TolX','Display','MaxIter','MaxFunEvals','FunValCheck','OutputFcn','algorithm'};
+    end
+    
+    for index=1:length(checks)
+      if ~isfield(options, checks{index}), 
+        if isfield(default, checks{index}), 
+          options=setfield(options,checks{index},getfield(default, checks{index}));
+        else
+          options=setfield(options,checks{index},[]); 
+        end
+      end
+    end
+    istop=options;
+    return
+  end
+
+  % normal terminations: function tolerance reached
+  if ~isempty(options.TolFun) && options.TolFun
+    if (all(0 < fval) && all(fval <= options.TolFun)) && nargin < 7 % stop on lower threshold
+      istop=-1;
+      message = [ 'Termination function tolerance criteria reached (fval <= options.TolFun=' ...
+                num2str(options.TolFun) ')' ];
+    end
+    if ~istop & nargin >= 7
+      if  all(abs(fval-fval_prev) < options.TolFun*abs(fval)/10) ...
+       && all(abs(fval-fval_prev) > 0)
+        istop=-12;
+        message = [ 'Termination function change tolerance criteria reached (delta(fval) < options.TolFun=' ...
+                num2str(options.TolFun) ')' ];
+      end
+    end
+  end
+  
+  % normal terminations: parameter variation tolerance reached, when function termination is also true
+  if (istop==-1 || istop==-12) & nargin >= 6
+    if ~isempty(options.TolFun) & options.TolX > 0 ...
+      & all(abs(pars(:)-pars_prev(:)) < abs(options.TolX*pars(:))) ...
+      & any(abs(pars(:)-pars_prev(:)) > 0)
+      istop=-5;
+      message = [ 'Termination parameter tolerance criteria reached (delta(parameters)/parameters <= options.TolX=' ...
+            num2str(options.TolX) ')' ];
+    end
+  end
+  
+  % abnormal terminations
+  if ~istop
+
+    if options.MaxFunEvals > 0 & funccount >= options.MaxFunEvals
+      istop=-3;
+      message = [ 'Maximum number of function evaluations reached (options.MaxFunEvals=' ...
+                num2str(options.MaxFunEvals) ')' ];
+    end
+    
+    if strcmp(options.FunValCheck,'on') & any(isnan(fval) | isinf(fval))
+      istop=-4;
+      message = 'Function value is Inf or Nan (options.FunValCheck)';
+    end
+
+    if ~isempty(options.OutputFcn)
+      optimValues = options;
+      if ~isfield(optimValues,'state')
+        if istop,               optimValues.state='done';
+        elseif funccount  <= 5, optimValues.state='init';
+        else                    optimValues.state='iter'; end
+      end
+      optimValues.iteration  = iterations;
+      optimValues.funcount   = funccount;
+      optimValues.fval       = sum(fval(:));
+      if isfield(options,'procedure'),        optimValues.procedure=options.procedure;
+      elseif isfield(options, 'algorithm'),   optimValues.procedure=options.algorithm;
+      else optimValues.procedure  = 'iteration'; end
+      istop2 = feval(options.OutputFcn, pars, optimValues, optimValues.state);
+      if istop2, 
+        istop=-6;
+        message = 'Algorithm was terminated by the output function (options.OutputFcn)';
+      end
+    end
+  end
+  
+% return code     message
+%  0                Algorithm terminated normally
+% -1                Termination function tolerance criteria reached
+% -2                Maximum number of iterations reached
+% -3                Maximum number of function evaluations reached
+% -4                Function value is Inf or Nan
+% -5                Termination parameter tolerance criteria reached
+% -6                Algorithm was terminated by the output function
+% -7                Maximum consecutive rejections exceeded (anneal)
+% -8                Minimum temperature reached (anneal)
+% -9                Global Simplex convergence reached (simplex)
+% -10               Optimization terminated: Stall Flights Limit reached (swarm)
+% -11               Other termination status (cmaes)
+% -12               Termination function change tolerance criteria reached
+
+end

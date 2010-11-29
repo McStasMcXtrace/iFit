@@ -1,4 +1,4 @@
-function [pars, fval, istop, output] = fmincmaes(varargin)
+function [pars, fval, exitflag, output] = fmincmaes(varargin)
 % [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINCMAES(FUN,PARS,[OPTIONS],[CONSTRAINTS]) Evolution Strategy with Covariance Matrix Adaption
 %
 % CMAES implements an Evolution Strategy with Covariance Matrix
@@ -66,7 +66,7 @@ function [pars, fval, istop, output] = fmincmaes(varargin)
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de [cmaes]
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also: fminsearch, optimset
 
 % STANDARD part ================================================================
