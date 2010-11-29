@@ -51,7 +51,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -154,7 +154,7 @@ output=[];
 
 % Optimizer call ===============================================================
 
-try
+% try
 
 % calls the optimizer with a wrapped 'objective' function
 %    which applies constraints and makes stop condition checks.
@@ -339,7 +339,7 @@ case {'hPSO','fminswarmhybrid'}
     hoptions.maxv = abs(constraints.max(:)-constraints.min(:))/2;
   end
   [pars,fval,iterations,output] = hPSO(@(pars) objective(fun, pars), pars, hoptions);
-case {'Simplex','fminSimplex'}
+case {'Simplex','fminsimplex'}
 % Nelder-Mead simplex state machine --------------------------------------------
   constraints = constraints_minmax(pars, constraints);
   [pars, out]=Simplex('init', pars, abs(constraints.max(:)-constraints.min(:))/10);  % Initialization
@@ -373,7 +373,7 @@ otherwise
   return
 end % switch
 
-end % try
+% end % try
 
 
 % post optimization checks =====================================================
