@@ -1,4 +1,4 @@
-function [x,e]=ukfopt(h,x,tol,P,Q,R)
+function [x,e, itc]=ukfopt(h,x,tol,P,Q,R,maxit)
 %UKFOPT     Unconstrained optimization using the unscented Kalman filter
 %
 %       [x,e]=ukfopt(f,x,tol,P,Q,R) minimizes e=norm(f(x)) until e<tol. P, Q
@@ -84,10 +84,14 @@ end
 if nargin<6
     R=1e-6*eye(m);
 end
+if nargin<7
+    maxit=100;
+end
 k=1;            %number of iterations
 z=zeros(m,1);   %target vector
 ne=norm(e);
-while ne>tol
+itc=1;
+while ne>tol && itc < maxit
     [x,P]=ukf(f,x,P,h,z,Q,R);               %the unscented Kalman filter
     e=h(x);
     ne=norm(e);                                 %residual

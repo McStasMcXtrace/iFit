@@ -1,4 +1,4 @@
-function [pars,fval,istop,output] = imfil1(x0,f,options)
+function [pars,fval,itc,output] = imfil1(x0,f,options)
 %
 %
 % C. T. Kelley, January 9, 1998
@@ -209,19 +209,12 @@ while (ns < nscal & fcount <= flim & iquitc < iquit)
     best_fval = fval;
     best_pars = pars;
   end
-  if istop, break; end
-  fmin_private_disp_iter(options, iterations, fcount, f, pars, fval);
 end % end of while loop over the scales
-
-if iquitc >= iquit
-  istop=-11; message='line search failures';
-end
 
 % output results --------------------------------------------------------------
 pars = best_pars;
 fval = best_fval;
 
-if istop==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
 output.algorithm  = options.algorithm;
 output.message    = message;
@@ -230,6 +223,7 @@ output.funcCount  = fcount;
 end
 % end main imfil
 
+% ==============================================================================
 %
 %   BFGS update of Hessian; nothing fancy
 %
@@ -251,6 +245,9 @@ if z'*s ~=0
 end
 
 end
+
+% ==============================================================================
+
 %
 %    Line search for implicit filtering
 %
@@ -279,3 +276,44 @@ if iarm == maxitarm & aflag == 1
 end
 
 end
+
+% ==============================================================================
+
+function [sgr,fb,xb,sflag]=simpgrad(x,f,v,fc,fdiff)
+%
+% simplex gradient for use with implicit filtering
+% also tests for best point in stencil
+%
+% set fdiff = 1 to get forward differencing, useful in Nelder-Mead
+%               simplex condition/gradient computaiton
+%
+% omit fdiff or set to 0 in typical implicit filtering mode
+%
+%   compute the simplex gradient
+%
+%   Output: sgr = simplex gradient
+%           fb  = best value in stencil
+%           xb  = best point in stencil
+%           sflag = 0 if (1) you're using central diffs and 
+%                        (2) center of stencil is best point
+%           sflag is used to detect stencil failure
+%         
+%
+n=length(x); delp=zeros(n,1); delm=zeros(n,1);
+xb=x; fb=fc; sflag=0;
+for j=1:n;
+   xp=x+v(:,j); xm=x-v(:,j); fp=feval(f,xp); delp(j)=fp-fc;
+   if fp < fb fb=fp; xb=xp; sflag=1; end
+   if fdiff==0 fm=feval(f,xm); delm(j)=fc-fm; 
+      if fm < fb fb=fm; xb=xm; sflag=1; end
+   end;
+end
+if fdiff==1 
+   sgr=v'\delp; 
+else
+   sgr=.5*((v'\delp)+(v'\delm));
+end
+if fdiff==1
+    xb=x; fb=fc; sflag=1;
+end
+ end

@@ -3,7 +3,8 @@ function [pars,fval,exitflag,output] = fminlm(varargin)
 %
 % This minimization method uses the Levenberg-Maquardt steepest descent 
 % in Least-Squares Sense. It finds parameters in order to bring the objective
-% to zero (and not to its lowest value).
+% to zero (and not to its lowest value). This implementation is not as efficient
+% as when used directly with residuals.
 % 
 % Calling:
 %   fminlm(fun, pars) asks to minimize the 'fun' objective function with starting
@@ -48,7 +49,7 @@ function [pars,fval,exitflag,output] = fminlm(varargin)
 % Fletcher, R., Computer Journal 1970, 13, 317-322
 % Contrib: Miroslav Balda, balda AT cdm DOT cas DOT cz 2009 [LMFsolve]
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % default options for optimset

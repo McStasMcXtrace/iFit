@@ -46,7 +46,7 @@ function [pars,fval,exitflag,output] = fminsearchbnd(varargin)
 %   Method in Low Dimensions", SIAM Journal of Optimization, 9(1):
 %   p.112-147, 1998.
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -54,6 +54,7 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options=optimset('fminsearch');
   options.algorithm  = [ 'Nelder-Mead simplex, with constraints [' mfilename ']' ];
   options.optimizer = mfilename;
+  options.Display='';
   pars = options;
   return
 end

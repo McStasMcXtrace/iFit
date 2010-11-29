@@ -1,4 +1,4 @@
-function [pars, fval, istop, output] = GA(fun, pars, options, constraints)
+function [pars, fval, iterations, output] = GA(fun, pars, options, constraints)
 % Genetic Algorithm(real coding)
 % By: Javad Ivakpour
 % E-mail: javad7@gmail.com
@@ -36,10 +36,8 @@ for l=1:var
 end
 p(1,:)=pars;  % the starting configuration is the first guess
 g=0;
-istop=0;
 iterations=0;
 funcount  =0;
-istop     =0;
 
 best_pars = pars;
 best_fval = fval;
@@ -141,26 +139,20 @@ while 1
     pars =  max1(1,:); pars = pars(:)';
     iterations = iterations+1;
     funcount = n*iterations;
-    fmin_private_disp_iter(options, iterations, funcount, fun, pars, fval);
     
     if (fval < best_fval)
       best_fval = fval;
       best_pars = pars;
     end
   
-    if istop
-      break
-    end
 end
 
 % output results --------------------------------------------------------------
 pars = best_pars;
 fval = best_fval;
 
-if istop==0, message='Algorithm terminated normally'; end
 output.iterations = iterations;
 output.algorithm  = options.algorithm;
-output.message    = message;
 output.funcCount  = funcount;
 
 

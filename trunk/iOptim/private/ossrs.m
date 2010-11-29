@@ -10,7 +10,6 @@ function [x,fmn,nor]=ossrs(x, fun, options)
 % fmn is the optimal function value 
 n=length(x);;
 nx=3;f(1)=feval(fun,x);
-disp('Initial Function Value and Decision Variables')
 fmn=f(1);
 eps=options.TolFun;nor=0;std=0.05;
 nor=0;fmn0=fmn;
