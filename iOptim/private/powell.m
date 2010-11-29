@@ -16,7 +16,7 @@ function [pars,fval,istop,output]=powell(S,x0,options)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.1 $  $Date: 2010-11-25 22:52:04 $
+%   $Revision: 1.2 $  $Date: 2010-11-29 12:28:49 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
 mxit=options.MaxIter;
@@ -105,8 +105,6 @@ while it < mxit,
     message='Termination function tolerance criteria reached';
     break;
   end
-
-  fmin_private_disp_iter(options, it, nS, S, pars, fval);
     
   if (fval < best_fval)
     best_fval = fval;
@@ -153,7 +151,7 @@ output.funcCount  = nS;
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.1 $  $Date: 2010-11-25 22:52:04 $
+%   $Revision: 1.2 $  $Date: 2010-11-29 12:28:49 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,
@@ -239,7 +237,7 @@ function [stepsize,xo,Ot,nS,it]=coggins(S,x0,d,problem,tol,mxit,stp)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.1 $  $Date: 2010-11-25 22:52:04 $
+%   $Revision: 1.2 $  $Date: 2010-11-29 12:28:49 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
  
  if nargin < 3,
@@ -337,7 +335,7 @@ function [x1,x2,nS]=bracket(S,x0,d,problem,stepsize)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.1 $  $Date: 2010-11-25 22:52:04 $
+%   $Revision: 1.2 $  $Date: 2010-11-29 12:28:49 $
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
  if nargin < 3,

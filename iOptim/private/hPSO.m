@@ -1,4 +1,4 @@
-function [x,fval,istop,output]=hPSO(fitnessfun,pars,options,varargin)
+function [x,fval,i,output]=hPSO(fitnessfun,pars,options,varargin)
 %Syntax: [x,fval,exitflag,output]=hPSO(fitnessfun,nvars,options,varargin)
 %___________________________________________________________________
 %
@@ -159,11 +159,6 @@ for i=2:flights
     x=gfx(end,2:end);
     % Get the minimum of the function
     fval=gfx(end,1);
-    fmin_private_disp_iter(options, i, funcount, fitnessfun, x, fval);
-  
-    if istop
-      break
-    end
     
     % Termination conditions
     if gfx(i,1)==gfx(i-1,1)
@@ -172,7 +167,10 @@ for i=2:flights
     if StallFli >= options.StallFliLimit
         message = 'Optimization terminated: Stall Flights Limit reached.';
         istop=-10;
-        break;
+    end
+      
+    if istop
+      break
     end
 end
 if istop==0, message='Algorithm terminated normally'; end

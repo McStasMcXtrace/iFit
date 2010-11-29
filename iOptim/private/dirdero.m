@@ -20,7 +20,8 @@ function z = dirdero(x,w,f,gc,epsnew)
 % 
 % Output:   directional derivative  
 %
-% 
+% used in : ntrust, cgtrust
+% uses:     dirdero
 if nargin == 4
 epsnew=1.d-6;
 end
