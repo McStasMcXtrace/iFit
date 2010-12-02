@@ -1,10 +1,10 @@
-function [xf, S, cnt, exitflag] = LMFsolve(varargin)
+function [xf, S, nfJ,exitflag] = LMFsolve(varargin)
 % Solve a Set of Overdetermined Nonlinear Equations in Least-Squares Sense.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % A solution is obtained by a Fletcher version of the Levenberg-Maquardt 
 % algoritm for minimization of a sum of squares of equation residuals. 
 %
-% [Xf, Ssq, CNT] = LMFsolve(FUN,Xo,Options)
+% [Xf, Ssq, Cnt, exitflag] = LMFsolve(FUN,Xo,Options)
 % FUN     is a function handle or a function M-file name that evaluates
 %         m-vector of equation residuals,
 % Xo      is n-vector of initial guesses of solution,
@@ -34,8 +34,8 @@ function [xf, S, cnt, exitflag] = LMFsolve(varargin)
 % Output Arguments:
 % Xf        final solution approximation
 % Ssq       sum of squares of residuals
-% Cnt       >0          count of iterations
-%           -MaxIter,   did not converge in MaxIter iterations
+% Cnt       count of function calls
+% exitflag  indicates final status of optimization
 
 % Example:
 % The general Rosenbrock's function has the form
@@ -98,7 +98,7 @@ if nargin==1 && strcmpi('default',varargin(1))
    xf.Jacobian = @finjac;   %   finite difference Jacobian approximation
    xf.MaxIter  = 100;       %   maximum number of iterations allowed
    xf.ScaleD   = [];        %   automatic scaling by D = diag(diag(J'*J))
-   xf.FunTol   = 1e-7;      %   tolerace for final function value
+   xf.FunTol   = 1e-6;      %   tolerace for final function value
    xf.XTol     = 1e-4;      %   tolerance on difference of x-solutions
    xf.Evals    = 1000;
    return
@@ -169,10 +169,11 @@ x=xc(:);
 lx=length(x);
 
 r=feval(FUN,x);             % Residuals at starting point
+if length(r) == 1, r=r*ones(5,1)/5; 
+else r=r(:); end
 %~~~~~~~~~~~~~~
 S=r'*r;
-epsx=options.XTol(:);
-epsf=options.FunTol(:);
+epsx=options.XTol(:); if all(epsx == 0), epsx=1e-4; end
 if length(epsx)<lx, epsx=epsx*ones(lx,1); end
 J=options.Jacobian(FUN,r,x,epsx);
 nfJ = lx+1;
@@ -197,18 +198,17 @@ end
 Rlo=0.25; Rhi=0.75;
 l=1;      lc=.75;     is=0;
 cnt=0;
-ipr=options.Display;
-printit(-1);                %   Table header
 d=options.XTol;             %   vector for the first cycle
-maxit = options.MaxIter;    %   maximum permitted number of iterations
 
 exitflag=0;
 
 while exitflag==0      %   MAIN ITERATION CYCLE
-
-    d=(A+l*D)\v;            % negative solution increment
+    % d=(A+l*D)\v;            % negative solution increment
+    d=pinv(A+l*D)*v;
     xd=x-d;
-    rd=feval(FUN,xd);
+    rd=feval(FUN,xd); 
+    if length(rd) == 1, rd=rd*ones(5,1)/5; 
+    else rd=rd(:); end
     nfJ = nfJ+1;
 %   ~~~~~~~~~~~~~~~~~    
     Sd=rd.'*rd;
@@ -226,89 +226,52 @@ while exitflag==0      %   MAIN ITERATION CYCLE
             nu=10;
         end
         if l==0
-            lc=1/max(abs(diag(inv(A))));
+            lc=1/max(abs(diag(pinv(A))));
             l=lc;
             nu=nu/2;
         end
         l=nu*l;
     end
     cnt=cnt+1;
-    if ipr>0 && (rem(cnt,ipr)==0 || cnt==1)
-        printit(cnt,[S,l,R,x(:).'])
-        printit(0,[lc,d(:).'])
-    end
-    if Sd>S && is==0
-        is=1;
-        St=S; xt=x; rt=r; Jt=J; At=A; vt=v;
-    end
-    if Sd<S || is>0
-        S=Sd; x=xd; r=rd;
-        J=options.Jacobian(FUN,r,x,epsx);
-        nfJ = nfJ+lx;
+
+    S=Sd; x=xd; r=rd;
+    J=options.Jacobian(FUN,r,x,epsx);
+    nfJ = nfJ+lx;
 %       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        A=J.'*J;   v=J.'*r;
-    elseif is>0
-        S=St; x=xt; r=rt; J=Jt; A=At; v=vt;
-    end
-    if Sd<S, is=0; end
+    A=J.'*J;   v=J.'*r;
+
     
-    if      cnt>=maxit       exitflag=-2;
-    elseif  all(abs(d)<epsx) exitflag=-1;
-    elseif  all(abs(r)<epsf) exitflag=-5;
-    elseif  nfJ > options.Evals, exitflag=-3;
+    if      cnt>=options.MaxIter       exitflag=-2; % max iteration reached
+%    elseif  all(abs(d)<options.XTol)   exitflag=-1; % parameter change increment reached
+    elseif  all(abs(r)<options.FunTol) exitflag=-5; % function change increment reached
+    elseif  nfJ > options.Evals,       exitflag=-3; % max nb function evaluations reached
     end
-    
 end
-xf = x;                         %   finat solution
+xf = x;                         %   final solution
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%   PRINTIT     Printing of intermediate results
-%   %%%%%%%
-function printit(cnt,mx)
-%        ~~~~~~~~~~~~~~~
-%  cnt	=  -1  print out the header
-%           0  print out second row of results
-%          >0  print out first row of results
-
-if ipr>0
-   if cnt<0                 %   table header
-      disp('')
-      disp(char('*'*ones(1,100)))
-      disp(['  cnt   SUM(r^2)        l            R' blanks(21) 'x(i) ...'])
-      disp([blanks(24) 'lc' blanks(32) 'dx(i) ...'])
-      disp(char('*'*ones(1,100)))
-      disp('')
-   else                     %   iteration output
-      if cnt>0 || rem(cnt,ipr)==0
-          f='%12.4e ';
-          form=[f f f f '\n' blanks(49)];
-          if cnt>0
-              fprintf(['%4.0f ' f f f ' x = '],[cnt,mx(1:3)])
-              fprintf(form,mx(4:length(mx)))
-          else
-              fprintf([blanks(18) f blanks(13) 'dx = '], mx(1))
-              fprintf(form,mx(2:length(mx)))
-          end
-          fprintf('\n')
-      end
-   end
-end
 end
 
 %   FINJAC       numerical approximation to Jacobi matrix
 %   %%%%%%
 function J = finjac(FUN,r,x,epsx)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-lx=length(x);
-J=zeros(length(r),lx);
-for k=1:lx
-    dx=.25*epsx(k);
-    xd=x;
-    xd(k)=xd(k)+dx;
-    rd=feval(FUN,xd);
-%   ~~~~~~~~~~~~~~~~    
-    J(:,k)=((rd-r)/dx);
-end
-end
-end
+% pars=column, function=row vector or scalar
+  lx=length(x);
+  J=zeros(length(r), lx);
+  x=x(:)';
+  r=r(:);
+  if length(epsx)<lx, epsx=epsx*ones(1,lx); end
+  epsx=epsx(:)';
+  for k=1:lx
+      dx=.25*epsx(k);
+      xd=x;
+      xd(k)=xd(k)+dx;
+      rd=feval(FUN,xd); 
+      if length(rd) == 1, rd=rd*ones(5,1)/5; 
+      else rd=rd(:); end
+  %   ~~~~~~~~~~~~~~~~    
+      if dx, J(:,k)=((rd-r)/dx); end
+  end
+
+end % finjac
+

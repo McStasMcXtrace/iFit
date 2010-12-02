@@ -49,7 +49,7 @@ function [pars,fval,exitflag,output] = fminlm(varargin)
 % Fletcher, R., Computer Journal 1970, 13, 317-322
 % Contrib: Miroslav Balda, balda AT cdm DOT cas DOT cz 2009 [LMFsolve]
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -58,7 +58,7 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options.Display  = [];        %   no print of iterations
   options.MaxIter  = 5000;       %   maximum number of iterations allowed
   options.ScaleD   = [];        %   automatic scaling by D = diag(diag(J'*J))
-  options.TolFun   = 1e-7;      %   tolerace for final function value
+  options.TolFun   = 1e-5;      %   tolerace for final function value
   options.TolX     = 1e-4;      %   tolerance on difference of x-solutions
   options.MaxFunEvals=10000;
   options.algorithm  = [ 'Levenberg-Maquardt (by Balda) [' mfilename ']' ];

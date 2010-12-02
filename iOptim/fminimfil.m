@@ -30,7 +30,7 @@ function [pars,fval,exitflag,output] = fminimfil(varargin)
 %  compliant with optimset. Default options may be obtained with
 %     o=fminimfil('defaults')
 %  options.Hybrid specifies the algorithm to use for local hybrid optimizations.
-%   This is a string with possible values 'sr1','bfgs','none'.
+%   This is a string with possible values 'sr1','bfgs' (default),'none'.
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min=   vector of minimal values for parameters
@@ -49,7 +49,7 @@ function [pars,fval,exitflag,output] = fminimfil(varargin)
 %   Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [imfil, 1998 version]
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: fminsearch, optimset
 
 % default options for optimset

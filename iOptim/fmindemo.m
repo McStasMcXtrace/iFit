@@ -10,7 +10,7 @@ function abstract=fmindemo(dim, verbose, repeat_num)
 % Calling:
 %   fmindemo(dimensionality=vector, verbose=0|1, repetitions)
 % Example:
-%   fmindemo([ 2 10 50],1)  % detailed test whth 2,5 and 10 parameters
+%   fmindemo([ 2 10 50],1)  % detailed test with 2,5 and 10 parameters
 %   fmindemo(2,[], 10)      % 2 parameters optimization repeated 10 times
 %
 % Contrib:
@@ -74,6 +74,9 @@ for index=1:length(d)
     end
   end
 end
+
+% fminimfil.Hybrid = 'sr1','bfgs' (default),'none'.
+% fminpowell.Hybrid= 'Coggins' (default),'Golden rule'
   
 problems={...       % Unimodal functions
   'fjens1',       1, ...
@@ -129,7 +132,7 @@ problems={...       % Unimodal functions
   'ftwomaxtwo',   10, ...
   'frand',        1};
 
-if dim == 1
+if dim == -1
   fig=figure;
   % plot 1D parameter space for each function
   n=floor(sqrt(length(problems)));
@@ -152,7 +155,7 @@ if dim == 1
     print('-depsc', [ problems{index_problem} '_' num2str(dim) ]);
   end
   close(fig)
-elseif dim == 2
+elseif dim == -2
   % plot 2D parameter space for each function
   fig=figure;
   n=floor(sqrt(length(problems)));
@@ -243,26 +246,14 @@ for index_repeat=1:repeat_num
         out.iterations=Inf; out.algorithm=[ 'ERROR: ' optimizers{index} ];
         lasterr
       end
+      fval = sum(fval(:));
       duration(index)=etime(clock,t0);
       funcount(index)=out.funcCount;
       iterate(index) =out.iterations;
-      if isnan(fval) | isinf(fval), fval=Inf; flag=-4; end
-      if fval <= options.TolFun, flag=-1; f='CFUN';
-      elseif ~isinf(fval) & iterate(index)>=options.MaxIter, f='nITR';
-      elseif ~isinf(fval) & funcount(index)>=options.MaxFunEvals, f='nFUN';
-      else
-        switch flag
-        case -1,f='Cfun';
-        case -2,f='nitr';
-        case -3,f='nFUN';
-        case -4,f='*INF';
-        case -5,f='Cx  ';
-        case {-12, -9, -8}, f='c';
-        otherwise
-          if fval < options.TolFun, f='C';
-          else f='n'; end
-        end
-      end
+
+      if fval < options.TolFun, f='C';
+      else f='n'; end
+
       fvals(index)   =fval;
       flags{index}   =f;
       algo{index}    =out.algorithm;
