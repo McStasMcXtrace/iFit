@@ -12,7 +12,7 @@ function s = sum(a,dim)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 if ~isa(a, 'iData')
@@ -70,8 +70,8 @@ if all(dim > 0)
   ax_index=1;
   for index=1:ndims(a)
     if all(dim ~= index)
-      [x, xlab] = getaxis(a, index);
-      setaxis(b, ax_index, x, xlab);
+      [x, xlab] = getaxis(a, num2str(index)); % get axis definition and label
+      setaxis(b, ax_index, x);
       ax_index = ax_index+1;
     end
   end

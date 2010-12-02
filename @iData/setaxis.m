@@ -24,10 +24,10 @@ function s_out = setaxis(a_in,indexes,names,values)
 %         AxisName: Name of an existing alias/field (char/cellstr)
 %         AxisValues: values of the axis (char/alias/numeric)
 % output: s: array (iData)
-% ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'x' axis (rank 1)
+% ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
