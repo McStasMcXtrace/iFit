@@ -12,7 +12,7 @@ function s = trapz(a,dim)
 % output: s: integral of elements (iData/scalar)
 % ex:     c=trapz(a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/cumsum, iData/camproj, iData/sum
 
 if ~isa(a, 'iData')
@@ -82,8 +82,8 @@ if all(dim > 0)
   ax_index=1;
   for index=1:ndims(a)
     if all(dim ~= index)
-      [x, xlab] = getaxis(a, index);
-      setaxis(b, ax_index, x, xlab);
+      [x, xlab] = getaxis(a, num2str(index)); % get axis definition and label
+      setaxis(b, ax_index, x);
       ax_index = ax_index+1;
     end
   end
