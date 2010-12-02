@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.42 $
+% Version: $Revision: 1.43 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -322,7 +322,7 @@ uicm = uicontextmenu;
 set(uicm,'UserData', properties); 
 uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
   'Callback', [ 'msgbox(get(get(gco,''UIContextMenu''),''UserData''), ''About: Figure ' num2str(gcf) ' ' T ' <' S '>'',''help'');' ] );
-uimenu(uicm, 'Label',[ 'Duplicate ' T ' ...' ], 'Callback',[ 'f=figure; c=copyobj(gca,f); set(c,''position'',[ 0.1 0.1 0.9 0.8]); set(f,''Name'',''Copy of ' char(a) ''');' ]);
+uimenu(uicm, 'Label',[ 'Duplicate ' T ' ...' ], 'Callback',[ 'g=gca; f=figure; c=copyobj(g,f); set(c,''position'',[ 0.1 0.1 0.9 0.8]); set(f,''Name'',''Copy of ' char(a) ''');' ]);
 uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '"' ]);
 uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
