@@ -59,7 +59,7 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin,'defaults'))
   options.TolX   =1e-8;
   options.MaxIter=1000;
   options.MaxFunEvals=5000;
-  options.PopulationSize=5;
+  options.PopulationSize=50;
   options.nITER_INNER_LOOP=30;
   options.algorithm  = [ 'simplex/simulated annealing (by Donckels) [' mfilename ']' ];
   options.optimizer = mfilename;

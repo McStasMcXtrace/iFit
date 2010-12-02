@@ -52,7 +52,10 @@ end
 numf=0; numg=0;
 hdiff=sqrt(resolution);
 t=100; itc=0; xc=x0; n=length(x0);
-[fc,gc]=feval(f,xc); numf=1; numg=1; 
+fc = feval(f,xc); 
+gc = finjac(f, fc, xc, hdiff);
+
+numf=1; numg=1; 
 trrad=norm(x0);
 ithist=zeros(maxit,4); ithist(itc+1,:)=[norm(gc), fc, trrad, 0];
 %
@@ -65,7 +68,10 @@ while(norm(gc) > tol & itc <=maxit) & trcount < 30
     w= dirdero(xc, s, f, gc); numg=numg+1;
     pred=gc'*s + .5*(w'*s); rat=ared/pred;
     if rat > mu0
-       xc=xc+s; [fc,gc]=feval(f,xc); numf=numf+1;
+       xc=xc+s; 
+       fc = feval(f,xc); 
+       gc = finjac(f, fc, xc, hdiff);
+       numf=numf+1;
        if rat > muhigh & norm(s) > trrad-1.d-8 trrad=omegaup*trrad; end
        if rat < mulow trrad=omegadown*trrad; end
     else
@@ -87,11 +93,14 @@ while(norm(gc) > tol & itc <=maxit) & trcount < 30
          if trcount > 30 
 %           ithist(itc+1,:)=[norm(gc), fc, trrad, itsl];
 %           histout=ithist(1:itc+1,:); costdata=[numf,numg];
-           disp([ mfilename ': stagnation in CGTR' ])
+           % disp([ mfilename ': stagnation in CGTR' ])
          end
        end
        if trcount < 30
-       xc=xt; [fc,gc]=feval(f,xc); numf=numf+1; numg=numg+1;
+       xc=xt; 
+       fc = feval(f,xc); 
+       gc = finjac(f, fc, xc, hdiff);
+       numf=numf+1; numg=numg+1;
        end
     end
     ithist(itc+1,:)=[norm(gc), fc, trrad, itsl];
@@ -197,7 +206,7 @@ ineg=0;
 if(alpha <= 0)
      ac=p'*p; bc=2*(x'*p); cc=x'*x - delta*delta;
      alpha=(-bc + sqrt(bc*bc - 4*ac*cc))/(2*ac);
-     disp([ mfilename ': negative curvature' ])
+     % disp([ mfilename ': negative curvature' ])
 else
      alpha=rho/alpha;
      if norm(x+alpha*p) > delta
@@ -264,9 +273,32 @@ epsnew = epsnew/norm(w);
 % is more important than clarity
 %
 del=x+epsnew*w;
-f1=feval(f,del);
-g1 = gradest(f, del); g1=reshape(g1, size(x));
+f1 = feval(f,del);
+g1 = finjac(f, f1, del, epsnew*w);  % faster than: g1 = gradest(f, del);
+g1 = reshape(g1, size(x)); % column
 z = (g1 - gc)/epsnew;
 
 end
+
+%   FINJAC       numerical approximation to Jacobi matrix
+%   %%%%%%
+function J = finjac(FUN,r,x,epsx)
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% pars=column, function=row vector or scalar
+  lx=length(x);
+  J=zeros(lx,length(r));
+  if size(x,2) > 1, x=x'; end % column
+  if size(r,1) > 1, r=r'; end % row
+  if length(epsx)<lx, epsx=epsx*ones(lx,1); end
+  for k=1:lx
+      dx=.25*epsx(k);
+      xd=x;
+      xd(k)=xd(k)+dx;
+      rd=feval(FUN,xd);
+      if size(rd,1) > 1, rd=rd'; end % row
+  %   ~~~~~~~~~~~~~~~~    
+      if dx, J(k,:)=((rd-r)/dx); end
+  end
+end
+
 

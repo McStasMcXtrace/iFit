@@ -1,4 +1,4 @@
-Version: $Revision: 1.8 $  
+Version: $Revision: 1.9 $  
 
 All functions here are meant to minimize an objective scalar function (usually 
 down to zero). The general syntax is the same as the one of fminsearch, 
@@ -22,9 +22,6 @@ values during the optimization.
 
 Credits: all obtained on Matlab Central except CMA-ES and solvopt
 -------
-OpenOpt by Dmitrey Kroshko, National Science Academy of Ukraine, Institute of 
-    cybernetics, 2006
-  used to port anneal, hPSO, GAconstrain and buscarnd (few tricks by D. Kroshko)
 hPSO by Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004 
   used in fminswarmhybrid and fminswarm
   modified to handle a no-hybrid optimization (pure swarm in fminswarm)
@@ -48,17 +45,11 @@ cmaes by Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 anneal by joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04
   used in fminanneal
   modified to use standard Matlab optimization fminsearch syntax and options
-ukfopt by Yi Cao at Cranfield University, 08 January 2008
-  used in fminkalman
-  modified to use standard Matlab optimization fminsearch syntax and options
 solvopt by Alexei Kuntsevich and Franz Kappel , Graz (Austria) 1997
   used in fminralg
   modified to use standard Matlab optimization fminsearch syntax and options
 bfgswopt by Kelley, 1998, Iterative Methods for Optimization
   used in fminbfgs
-  modified to use standard Matlab optimization fminsearch syntax and options
-ntrust by Kelley, 1998, Iterative Methods for Optimization
-  used in fminnewton
   modified to use standard Matlab optimization fminsearch syntax and options
 hooke by Kelley, 1998, Iterative Methods for Optimization
   used in fminhooke

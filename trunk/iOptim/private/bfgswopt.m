@@ -1,4 +1,4 @@
-function [x,histout,costdata,itc] = bfgswopt(x0,f,tol,maxit,hess0)
+function [x,histout,costdata,itc] = bfgswopt(x0,f,tol,maxit,hess0, hdiff)
 %
 % C. T. Kelley, July 17, 1997
 %
@@ -48,10 +48,18 @@ maxarm=10; nsmax=50; debug=0;
 %
 n=length(x0);
 userhess=0; 
-if nargin == 5
-userhess=1;
+if nargin < 5
+  hess0 = [];
 end
-[fc,gc]=feval(f,xc); numf=numf+1; numg=numg+1;
+if nargin < 6
+  hdiff = 1e-4;
+end
+if ~isempty(hess0),
+  userhess=1;
+end
+fc = feval(f,xc); 
+gc = finjac(f, fc, xc, hdiff);
+numf=numf+1; numg=numg+1;
 ithist=zeros(maxit,3);
 ithist(1,1)=norm(gc); ithist(1,2) = fc; ithist(1,4)=itc-1;
 ithist(1,3)=0; 
@@ -103,8 +111,8 @@ while(norm(gc) > tol & itc <= maxit)
 %
 %
 	if (dsd'*gc > -1.d-6*norm(dsd)*norm(gc))
-                disp(' loss of descent')
-                [itc, dsd'*gc]
+                % disp(' loss of descent')
+                % [itc, dsd'*gc]
 		dsd=-gc;
 		ns=0;
 	end
@@ -121,7 +129,8 @@ if old==0
         if ft > goal
                  [xt,iarm,lambda]=polyline(xc,fc,gc,dsd,ft,f,maxarm);
                  if iarm==-1 x=xc; histout=ithist(1:itc,:);
-                 disp('line search failure'); return; end
+                   % disp('line search failure'); 
+                 return; end
         end
 end
 if old==1
@@ -139,19 +148,22 @@ if old==1
 		ft=feval(f,xt); qc=ft; numf=numf+1;
 		if(iarm > maxarm) 
                 x=xc; histout=ithist(1:itc,:);
-		disp(' too many backtracks in BFGS line search');
+		% disp(' too many backtracks in BFGS line search');
 		return; end
 	end
 end
 	s=xt-xc; y=gc; go=s'*gc;
 %        lambda=norm(s)/norm(dsd);
-	xc=xt; [fc,gc]=feval(f,xc); y = gc-y; numf=numf+1; numg=numg+1;
+	xc=xt; 
+	fc = feval(f,xc); 
+  gc = finjac(f, fc, xc, hdiff);
+	y = gc-y; numf=numf+1; numg=numg+1;
 %
 %   restart if y'*s is not positive or we're out of room
 %
 	if (y'*s <= 0) | (ns==nsmax) 
-                disp(' loss of positivity or storage'); 
-                [ns, y'*s]
+                % disp(' loss of positivity or storage'); 
+                % [ns, y'*s]
 		ns=0;
 	else
 		ns=ns+1; sstore(:,ns)=s;
@@ -167,6 +179,8 @@ end
 	end
 end
 x=xc; histout=ithist(1:itc,:); costdata=[numf, numg, numh];
+
+end
 %
 % bfgsw
 %
@@ -196,6 +210,7 @@ dnewt=dnewt+gamma3(1)*sstore(:,1)+gamma2(ns-1)*sstore(:,ns);
 if(ns <=2) return; end
 dnewt=dnewt+sstore(1:n,2:ns-1)*delta(1:ns-2);
 %
+end
 
 function [xp, idid, lambda]=polyline(xc, fc, gc, d, ft, f, maxarm)
 %
@@ -249,6 +264,8 @@ while ft > fgoal
 end
 xp=xt; idid=numf;
 
+end
+
 % ==============================================================================
 
 function [lplus]=polymod(q0, qp0, lamc, qc, blow, bhigh, lamm, qm)
@@ -299,3 +316,26 @@ else
     if lplus > lright lplus = lright; end
 end
 
+end 
+
+
+%   FINJAC       numerical approximation to Jacobi matrix
+%   %%%%%%
+function J = finjac(FUN,r,x,epsx)
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% pars=column, function=row vector or scalar
+  lx=length(x);
+  J=zeros(lx,length(r));
+  if size(x,2) > 1, x=x'; end % column
+  if size(r,1) > 1, r=r'; end % row
+  if length(epsx)<lx, epsx=epsx*ones(lx,1); end
+  for k=1:lx
+      dx=.25*epsx(k);
+      xd=x;
+      xd(k)=xd(k)+dx;
+      rd=feval(FUN,xd);
+      if size(rd,1) > 1, rd=rd'; end % row
+  %   ~~~~~~~~~~~~~~~~    
+      if dx, J(k,:)=((rd-r)/dx); end
+  end
+end
