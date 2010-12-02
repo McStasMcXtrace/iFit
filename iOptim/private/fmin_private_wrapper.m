@@ -1,5 +1,5 @@
 function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars, options, constraints, ub)
-% NOT GOOD: newton, anneal, lm, simpsa
+% NOT GOOD: anneal, lm, simpsa
 % [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmin_private_wrapper(OPTIMIZER, FUN,PARS,[OPTIONS],[CONSTRAINTS]) wrapper to optimizers
 %
 %  Checks for input arguments and options. Then calls the optimizer with a wrapped 
@@ -51,11 +51,12 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
-% each user call function only defined the options...
+% each user call function only defines the options... The optimozer by itself is
+% in the 'private'.
 %
 % private: 'objective', 'apply_constraints', 'constraints_minmax', 'localChar', 'fmin_private_disp'
 
@@ -124,7 +125,7 @@ constraints.message         = '';
 
 options.optimizer = optimizer;
 
-options=fmin_private_std_check(options, feval(options.optimizer,'defaults'));
+options=fmin_private_check(options, feval(options.optimizer,'defaults'));
 t0=clock;
 
 n = prod(size(pars));
@@ -140,7 +141,7 @@ end
 if strcmp(options.Display,'iter')
   disp([ '** Starting minimization of ' localChar(fun) ' using algorithm ' localChar(options.algorithm) ]);
   spars=pars(1:min(20,length(pars)));
-  spars=mat2str(spars(:)');  % as a row
+  spars=mat2str(spars');  % as a row
   if length(spars) > 160, spars=[ spars(1:156) ' ...' ]; end
   disp(sprintf('         initial parameters: %s', spars));
   disp('Func_count  min[f(x)]    Parameters');
@@ -149,12 +150,12 @@ end
 message    = constraints.message;
 exitflag   = 0;
 iterations = 0;
-fval=Inf;
-output=[];
-
+fval       = Inf;       % in case this is a vector, it should be a row
+pars       = pars(:);   % should be a column
+output     = [];  
 % Optimizer call ===============================================================
 
-% try
+try
 
 % calls the optimizer with a wrapped 'objective' function
 %    which applies constraints and makes stop condition checks.
@@ -162,15 +163,9 @@ output=[];
 %  stop is met. See private 'objective' and 'apply_constraints' below.
 
 switch options.optimizer
-case {'fminanneal','anneal'}  
-% simulated annealing ----------------------------------------------------------
-  options.MaxTries   = options.MaxIter;
-  options.StopVal    = options.TolFun;
-  options.Verbosity=0;
-  [pars,fval,iterations] = anneal(@(pars) objective(fun, pars), pars, options);
 case {'fminbfgs','bfgs'}      
 % Broyden-Fletcher-Goldfarb-Shanno ---------------------------------------------
-  [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
+  [pars, histout, costdata,iterations] = bfgswopt(pars, @(pars) objective(fun, pars), options.TolFun, options.MaxIter, [], options.TolX);
   iterations = size(histout,1);
 case {'cmaes','fmincmaes'}    
 % Evolution Strategy with Covariance Matrix Adaption ---------------------------
@@ -194,7 +189,7 @@ case {'cmaes','fmincmaes'}
     sigma = 0.3;
   end
 
-  [pars, fval, iterations, exitflag, output] = cmaes(@(pars) objective(fun, pars), pars(:), ...
+  [pars, fval, iterations, exitflag, output] = cmaes(@(pars) objective(fun, pars), pars, ...
     sigma, hoptions);
 
   if     strmatch(exitflag, 'tolx')
@@ -226,40 +221,31 @@ case {'cmaes','fmincmaes'}
 case {'ga','fminga','GA'}          
 % genetic algorithm ------------------------------------------------------------
   constraints = constraints_minmax(pars, constraints);
-  [pars,fval,iretations,output] = GA(@(pars) objective(fun, pars), pars(:),options,constraints);
+  [pars,fval,iretations,output] = GA(@(pars) objective(fun, pars), pars, options,constraints);
 case {'gradrand','ossrs','fmingradrand'}
 % random gradient --------------------------------------------------------------
   [pars,fval,iterations] = ossrs(pars, @(pars) objective(fun, pars), options);
 case {'hooke','fminhooke'}
 % Hooke-Jeeves direct search ---------------------------------------------------
-  [pars,histout] = hooke(pars(:), @(pars) objective(fun, pars), ...
+  [pars,histout] = hooke(pars, @(pars) objective(fun, pars), ...
                        options.MaxFunEvals, 2.^(-(0:options.MaxIter)), options.TolFun);
   iterations      = size(histout,1);
-case {'imfil','fminimfil'}
+case {'imfil','fminimfil','fminimfil2','fminimfil3'}
 % Unconstrained Implicit filtering (version 1998) ------------------------------
-  [pars,fval,iterations,output] = imfil(pars(:), @(pars) objective(fun, pars), options); 
-case {'fminkalman','kalmann','ukfopt'}
-% unscented Kalman filter ------------------------------------------------------
-  [pars,iterations] = ukfopt(@(pars) objective(fun, pars(:)), pars(:), ...
-              options.TolFun, norm(pars)*eye(length(pars)), 1e-6*eye(length(pars)), 1e-6);
+  [pars,fval,iterations,output] = imfil(pars, @(pars) objective(fun, pars), options); 
 case {'fminlm','LMFsolve'}
 % Levenberg-Maquardt steepest descent ------------------------------------------
   % LMFsolve minimizes the sum of the squares of the objective: sum(objective.^2)
-  [pars, fval, iterations, exitflag] = LMFsolve(@(pars) objective_lm(fun, pars), pars(:), ...
+  [pars, fval, iterations, exitflag] = LMFsolve(@(pars) objective_lm(fun, pars), pars, ...
            'Display',0, 'FunTol', options.TolFun, 'XTol', options.TolX, ...
            'MaxIter', options.MaxIter, 'Evals',options.MaxFunEvals);
   switch exitflag
-  case -1, message='Termination function tolerance criteria reached';
+  case -5, message='Termination function tolerance criteria reached';
   case -2, message='Maximum number of iterations reached';
   case -3, message='Maximum number of function evaluations reached';
-  case -5, message='Termination parameter tolerance criteria reached';
+  case -1, message='Termination parameter tolerance criteria reached';
   end
-case {'ntrust','fminnewton'}
-% Dogleg trust region, Newton model --------------------------------------------
-  [pars,histout,costdata] = ntrust(pars(:),@(pars) objective(fun, pars), ...
-       options.TolFun,options.MaxIter);
-  iterations      = size(histout,1);
-case {'powell','fminpowell'}
+case {'powell','fminpowell','fminpowell2'}
 % Powell minimization ----------------------------------------------------------
   if isempty(options.Hybrid), options.Hybrid='Coggins'; end
   if strcmp(lower(options.Hybrid), 'coggins') 
@@ -273,7 +259,7 @@ case {'powell','fminpowell'}
 case {'pso','fminpso'}
 % particle swarm ---------------------------------------------------------------
   constraints = constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = PSO(@(pars) objective(fun, pars),pars(:), ...
+  [pars,fval,exitflag,output] = PSO(@(pars) objective(fun, pars),pars, ...
      constraints.min(:),constraints.max(:),options);
   message = output.message;
 case {'ralg','fminralg','solvopt'}
@@ -298,12 +284,12 @@ case {'fminsearch','fminsearchbnd'}
 case {'simpsa','fminsimpsa','SIMPSA'}
 % simplex/simulated annealing --------------------------------------------------
   constraints = constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = SIMPSA(@(pars) objective(fun, pars), pars(:), ...
+  [pars,fval,exitflag,output] = SIMPSA(@(pars) objective(fun, pars), pars, ...
     constraints.min(:),constraints.max(:),options);
 case {'SCE','fminsce'}
 % shuffled complex evolution ---------------------------------------------------
   constraints = constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = SCE(@(pars) objective(fun, pars), pars(:), ...
+  [pars,fval,exitflag,output] = SCE(@(pars) objective(fun, pars), pars, ...
     constraints.min(:),constraints.max(:),options);
 case {'hPSO','fminswarmhybrid'}
   constraints = constraints_minmax(pars, constraints);
@@ -362,10 +348,10 @@ case {'Simplex','fminsimplex'}
   pars=Simplex('centroid'); % obtain the final value.
 case {'cgtrust','fmincgtrust'}
 % Steihaug Newton-CG-Trust region algoirithm -----------------------------------
-  [pars,histout] = cgtrust(pars(:), @(pars) objective(fun, pars), ...
-    [ options.TolFun .1 options.MaxIter options.MaxIter], options.TolFun*options.TolFun);
-% [pars,histout] = levmar(pars(:), @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
-  iterations      = size(histout,1)
+  [pars,histout] = cgtrust(pars, @(pars) objective(fun, pars), ...
+    [ options.TolFun .1 options.MaxIter options.MaxIter], options.TolX*options.TolX);
+% [pars,histout] = levmar(pars, @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
+  iterations      = size(histout,1);
 otherwise
   options = feval(optimizer, 'defaults');
   [pars,fval,exitflag,output] = fmin_private_wrapper(options.optimizer, fun, pars, ...
@@ -373,7 +359,7 @@ otherwise
   return
 end % switch
 
-% end % try
+end % try
 
 
 % post optimization checks =====================================================
@@ -382,7 +368,7 @@ fval = constraints.criteriaBest;
 pars = constraints.parsBest;
 
 if exitflag==0;
-  message='Algorithm terminated normally'
+  message='Algorithm terminated normally';
 end
 
 if iterations, 
@@ -418,21 +404,20 @@ return  % actual end of optimization
 % ==============================================================================
 % Use nested functions as the criteria wrapper, to access 'constraints' and 'options'
   
-  function [c, gc] = objective(fun, pars)
-  % criteria to minimize, with gradient support (approx)
+  function c = objective(fun, pars)
+  % criteria to minimize, fun returns a scalar, or vector which is summed
   
     % apply constraints on pars first
     pars                = apply_constraints(pars,constraints,options); % private function
     
     % compute criteria
-    c = feval(fun, pars);
-    if nargout > 1
-      gc = gradest(fun, pars(:));
-      gc = gc(:);
-    end
+    c = feval(fun, pars);         % function=row vector, pars=column
+    if size(c,1) > 1, c=c'; end
+    c  = sum(c(:));
+    
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
-    [exitflag, message] = fmin_private_std_check(pars, c, ...
+    [exitflag, message] = fmin_private_check(pars, c, ...
        constraints.funcCounts, options, constraints.parsPrevious);
     constraints.message = message;
     if exitflag
@@ -440,23 +425,83 @@ return  % actual end of optimization
     end
     
     % save current optimization state
-    if c < constraints.criteriaBest, 
-      constraints.criteriaBest=c;
+    if c < sum(constraints.criteriaBest(:)), 
+      constraints.criteriaBest=c(:)';
       constraints.parsBest    =pars;
     end
     constraints.criteriaPrevious= c;
-    constraints.criteriaHistory = [ constraints.criteriaHistory ; c ];
+    constraints.criteriaHistory = [ constraints.criteriaHistory ; constraints.criteriaPrevious ];
     constraints.parsPrevious    = pars;
-    constraints.parsHistory     = [ constraints.parsHistory ; pars ]; 
+    constraints.parsHistory     = [ constraints.parsHistory ; pars(:)' ]; 
     constraints.funcCounts      = constraints.funcCounts+1; 
+    
+    if exitflag
+      error(message); % will end optimization in try/catch
+    end
   end
   
+  % LMFsolve supports criteria as a vector of residuals, which sum is the criteria
+  % but gradient is used to guide the optimizer
   function c = objective_lm(fun, pars)
-    c = objective(fun, pars);
-    c = c*ones(10,1)/10;
+  % criteria to minimize, with gradient support (approx)
+  
+    % apply constraints on pars first
+    pars                = apply_constraints(pars,constraints,options); % private function
+    
+    pars=pars;
+    % compute criteria
+    c = feval(fun, pars);
+    if length(c) == 1,
+      c = c*ones(1,10)/10;
+    end
+    if size(c,1) > 1, c=c'; end
+    
+    % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
+    [exitflag, message] = fmin_private_check(pars, sum(abs(c)), ...
+       constraints.funcCounts, options, constraints.parsPrevious);
+    constraints.message = message;
+    if exitflag
+      error(message); % will end optimization in try/catch
+    end
+    
+    % save current optimization state
+    if sum(c(:)) < sum(constraints.criteriaBest(:)), 
+      constraints.criteriaBest=c(:)';
+      constraints.parsBest    =pars;
+    end
+    constraints.criteriaPrevious= c(:)';
+    constraints.criteriaHistory = [ constraints.criteriaHistory ; constraints.criteriaPrevious ];
+    constraints.parsPrevious    = pars;
+    constraints.parsHistory     = [ constraints.parsHistory ; pars(:)' ]; 
+    constraints.funcCounts      = constraints.funcCounts+1; 
+    
+    if exitflag
+      error(message); % will end optimization in try/catch
+    end
   end
 
 end % optimizer core end
+
+%   FINJAC       numerical approximation to Jacobi matrix
+%   %%%%%%
+function J = finjac(FUN,r,x,epsx)
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% pars=column, function=row vector or scalar
+  lx=length(x);
+  J=zeros(lx,length(r));
+  if size(x,2) > 1, x=x'; end % column
+  if size(r,1) > 1, r=r'; end % row
+  if length(epsx)<lx, epsx=epsx*ones(lx,1); end
+  for k=1:lx
+      dx=.25*epsx(k);
+      xd=x;
+      xd(k)=xd(k)+dx;
+      rd=feval(FUN,xd);
+      if size(rd,1) > 1, rd=rd'; end % row
+  %   ~~~~~~~~~~~~~~~~    
+      if dx, J(k,:)=((rd-r)/dx); end
+  end
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function constraints = constraints_minmax(pars, constraints)
@@ -498,7 +543,7 @@ function [pars,exitflag,message] = apply_constraints(pars, constraints,options)
       pars(index) = constraints.parsPrevious(index) + parsStep(index);
     end
   end
-  pars=pars(:)';
+  pars=pars';
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -538,7 +583,7 @@ function fmin_private_disp(options, funccount, fun, pars, fval)
   if isfield(options,'Display')
     if strcmp(options.Display, 'iter')
       spars=pars(1:min(20,length(pars)));
-      spars=mat2str(spars(:)', 4);  % as a row
+      spars=mat2str(spars', 4);  % as a row
       if length(spars) > 50, spars=[ spars(1:47) ' ...' ]; end
       disp(sprintf(' %5.0f    %12.6g   %s', funccount, fval, spars));
     end
@@ -547,17 +592,17 @@ function fmin_private_disp(options, funccount, fun, pars, fval)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [istop, message] = fmin_private_std_check(pars, fval, funccount, options, pars_prev, fval_prev)
+function [istop, message] = fmin_private_check(pars, fval, funccount, options, pars_prev, fval_prev)
 % standard checks
-% fmin_private_std_check(pars, fval, funccount, options
+% fmin_private_check(pars, fval, funccount, options
 % or
-% fmin_private_std_check(pars, fval, funccount, options, pars_prev)
+% fmin_private_check(pars, fval, funccount, options, pars_prev)
 % or
-% fmin_private_std_check(pars, fval, funccount, options, pars_prev, fval_prev)
+% fmin_private_check(pars, fval, funccount, options, pars_prev, fval_prev)
 % or
-% options=fmin_private_std_check(options);
+% options=fmin_private_check(options);
 % or
-% options=fmin_private_std_check(options, default_options);
+% options=fmin_private_check(options, default_options);
 
 
   istop=0; message='';
@@ -606,8 +651,8 @@ function [istop, message] = fmin_private_std_check(pars, fval, funccount, option
   % normal terminations: parameter variation tolerance reached, when function termination is also true
   if (istop==-1 || istop==-12) & nargin >= 6
     if ~isempty(options.TolFun) & options.TolX > 0 ...
-      & all(abs(pars(:)-pars_prev(:)) < abs(options.TolX*pars(:))) ...
-      & any(abs(pars(:)-pars_prev(:)) > 0)
+      & all(abs(pars-pars_prev(:)) < abs(options.TolX*pars)) ...
+      & any(abs(pars-pars_prev(:)) > 0)
       istop=-5;
       message = [ 'Termination parameter tolerance criteria reached (delta(parameters)/parameters <= options.TolX=' ...
             num2str(options.TolX) ')' ];
