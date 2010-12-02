@@ -20,7 +20,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -246,7 +246,9 @@ function b=iData_cell2iData(a)
   for k=1:length(a(:))
     b = [ b iData(a{k}) ];
   end
-  b = reshape(b,size(a));
+  try
+      b = reshape(b,size(a));
+  end
 
 % ============================================================================
 % iData_num2iData: converts a numeric into an iData
