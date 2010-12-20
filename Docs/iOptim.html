@@ -63,7 +63,8 @@ arguments are:<br>
   <li><span style="font-style: italic;">objective: </span>the name of
 the function to minimize, <span style="font-style: italic;">objective(p)</span>.
 This
-can be a string or a function handle.<span style="font-style: italic;"><br>
+can
+be a string or a function handle.<span style="font-style: italic;"><br>
     </span></li>
   <li><span style="font-style: italic;">guess: </span>the starting
 parameter set that objective depend on (this is a vector of numerical
@@ -107,8 +108,7 @@ provided in <span style="font-style: italic;">iOptim.</span><br>
  style="font-style: italic;">FunValCheck: </span>Check for invalid
 values, such as NaN or complex</li>
 </ul>
-The <span style="font-weight: bold; font-style: italic;">output</span>
-arguments from the minimizer are as follow:<br>
+The results from the minimizer are as follow:<br>
 <ol>
   <li><span style="font-style: italic;">parameters: </span>is the
 parameter set which minimizes the objective function<br>
@@ -120,7 +120,10 @@ optimization routine state</li>
   <li><span style="font-style: italic; color: rgb(0, 0, 0);">output: </span>is
 a
 structure
-that holds some information gathered during the minimization procedure</li>
+that
+holds some information gathered during the minimization procedure (see
+below)<br>
+  </li>
 </ol>
 The last <span style="color: rgb(255, 0, 0);">output</span> argument
 has at least the following fields:<br>
@@ -141,9 +144,11 @@ iterations performed during the minimization (double)</li>
 In all cases, the optimizer can handle <span
  style="font-style: italic; font-weight: bold;">constraints, </span>specified
 as
-a 4th input argument. These are often lower and upper bounds. Refer
+a
+4th input argument. These are often lower and upper bounds. Refer
 to the documentation of each minimizer for more information, and the
-documentation about <a href="Fit.html">fitting</a> models onto data
+documentation about <a href="Fit.html#mozTocId919221">fitting</a>
+models onto data
 sets.<br>
 <br>
 <h3><a class="mozTocH4" name="mozTocId839813"></a>Recommended optimizers</h3>
@@ -167,12 +172,14 @@ indicate the typical success ratio, and solving time.<span
       <td
  style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Mean
 Success
-rate (%)<br>
+rate
+(%)<br>
       </td>
       <td
  style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Mean
 execution
-time (s)<br>
+time
+(s)<br>
       </td>
       <td style="vertical-align: top;">Constraints support<br>
       </td>
@@ -271,7 +278,8 @@ annealing</td>
 </table>
 <div style="text-align: center;"><span style="font-style: italic;">Table
 1:
-A selection among the most efficient and fast optimization methods</span><span
+A
+selection among the most efficient and fast optimization methods</span><span
  style="font-style: italic; font-weight: bold;"></span><span
  style="font-style: italic;">. The methods that handle constraints on
 parameter are indicated in the last column.</span><br>
@@ -355,6 +363,7 @@ annealing</font></p>
       <p align="CENTER">good for d&lt;10, <font color="#ff0000">slow</font>.
 
 
+
       <font color="#3366ff">Supports parameter constraints</font>. </p>
       </td>
     </tr>
@@ -428,7 +437,8 @@ filtering coupled with BFGS</b></font></p>
       <p align="CENTER">very fast, success &gt; 75 % for <i>d &lt;= 24</i>,
 
 success
-&gt; 50% for <i>d&lt;= 64</i></p>
+&gt;
+50% for <i>d&lt;= 64</i></p>
       </td>
     </tr>
     <tr>
@@ -665,7 +675,8 @@ but gets very <font color="#ff0000">slow</font> for large <i>d</i></p>
       <td width="230">
       <p align="CENTER">very fast, success &gt;60 % for <i>d&gt;=8, </i>success
 &gt;45%
-for <i>d&lt;=64</i></p>
+for
+      <i>d&lt;=64</i></p>
       </td>
     </tr>
     <tr>
@@ -755,7 +766,8 @@ The swarm methods (<span style="font-style: italic;">aka </span>particle
 swarm
 optimizer)
 provide
-a very good success ratio up to typically 5-10
+a
+very good success ratio up to typically 5-10
 model parameters. Among these, the <span
  style="font-style: italic; font-weight: bold;">fminpso</span> and <span
  style="font-weight: bold; font-style: italic;">fmincmaes</span> can
@@ -767,7 +779,8 @@ type implementations that we provide is the <span
 can
 deal
 with
-up to 8 model parameters with more than 50 % success. The <span
+up
+to 8 model parameters with more than 50 % success. The <span
  style="font-style: italic;">fminswarmhybrid</span> was tested with the
 <span style="font-style: italic;">options.Hybrid</span>=<span
  style="color: rgb(204, 51, 204);">'fminsearch'</span> which may
@@ -861,7 +874,7 @@ parameters increases.<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span
- style="font-style: italic;">$Date: 2010-12-02 14:59:32 $ $Revision:
+ style="font-style: italic;">$Date: 2010-12-20 08:35:17 $ $Revision:
 1.2 $</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main iFit Page</a>
 </div>

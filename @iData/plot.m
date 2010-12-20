@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.43 $
+% Version: $Revision: 1.44 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -312,7 +312,11 @@ S=a.Source;
 titl ={ T ; [ a.Tag ' <' fS '>' ]};
 if length(T) > 23, T=[ T(1:20) '...' ]; end
 try
-set(h, 'DisplayName', [ T a.Tag ' <' fS '>' ]);
+  if ~isempty(a.DisplayName)
+    set(h, 'DisplayName', [ a.DisplayName ' ' T ]);
+  else
+    set(h, 'DisplayName', [ T a.Tag ' <' fS '>' ]);
+  end
 catch
 end
 if length(S) > 23, S=[ '...' S(end-20:end) ]; end

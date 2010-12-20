@@ -57,7 +57,9 @@ object Signal with axes.<br>
 <br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId73031"></a>Fitting
 a
-model to the Data</h3>
+model
+to
+the Data</h3>
 The <span style="font-style: italic; font-weight: bold;">fits</span>
 function for <a href="iData.html">iData</a> objects provides a simple
 mean to find the best model parameters which fit a data set. <br>
@@ -68,7 +70,9 @@ mean to find the best model parameters which fit a data set. <br>
  style="color: rgb(204, 51, 204);"></span>);<br>'Amplitude'    'Centre'    'HalfWidth'    'Background'<br> 0.6786         1.0008      0.0035         0.0002<br></pre>
 will fit the data <span style="font-style: italic;">Signal/Monitor</span>
 to a default 1D Gaussian function <span style="font-style: italic;">'gauss'</span>,
-starting from automatically guessed
+starting
+from
+automatically guessed
 initial model parameters. Of course, it is possible to chose explicitly
 the model function, and the starting parameter set with e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; p=<span
@@ -82,14 +86,17 @@ A number of model functions is available from the <a href="iFuncs.html">iFuncs</
 sub-library. Refer
 to the section <a href="#mozTocId855522">below</a> in order to learn
 how to define new fit models. You can get information about a model by
-inquiring its name :<br>
-<pre style="margin-left: 40px;">&gt;&gt; gauss<br><br>ans = <br><br>          Type: 'iFit fitting function'<br>          Name: 'Gaussian (1D)'<br>    Parameters: {<span
+inquiring its name. When an object is specified, starting parameters
+are guessed :<br>
+<pre style="margin-left: 40px;">&gt;&gt; gauss<br>&gt;&gt; gauss(a)<br><br>ans = <br><br>          Type: 'iFit fitting function'<br>          Name: 'Gaussian (1D)'<br>    Parameters: {<span
  style="color: rgb(255, 0, 0);">'Amplitude'</span>  'Centre'  'HalfWidth'  'Background'}<br>     Dimension: 1<br>         Guess: [1 6.2172e-17 0.5861 0.1000]<br>        Values: [1x100 double]<br>          Axis: {[1x100 double]}</pre>
 <br>
 <a href="images/iData_fits_gauss.png"><img alt="fits(iData)"
  title="fits(iData)" src="images/iData_fits_gauss.png"
  style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>In
-order to estimate the values of the model for the fit parameters
+order
+to
+estimate the values of the model for the fit parameters
 onto the data set axes, one can use the <span
  style="font-style: italic; font-weight: bold;">ieval</span> method,
 which is the same as Matlab <span
@@ -216,11 +223,15 @@ documentation.<br>
       </td>
       <td
  style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Mean
-Success rate (%)<br>
+Success
+rate
+(%)<br>
       </td>
       <td
  style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Mean
-execution time (s)<br>
+execution
+time
+(s)<br>
       </td>
     </tr>
     <tr>
@@ -382,7 +393,8 @@ performance of the optimization method and the fit process</h4>
 In order to follow the optimization process, you may define a call to a
 user function at each optimization iteration. A default plotting
 facility has been implemented as the <span
- style="font-style: italic; font-weight: bold;">fminplot</span> function:<br>
+ style="font-style: italic; font-weight: bold;">fminplot</span>
+function:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
  style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; options=<span
@@ -410,7 +422,9 @@ facility has been implemented as the <span
  style="border: 0px solid ; width: 330px; height: 292px;"></a></span><br>
 <span style="font-style: italic; font-weight: bold;">Left: </span>The <span
  style="font-style: italic;">options.OutputFcn='fminplot' </span>window
-on the right, showing the criteria evolution with the optimization
+on
+the
+right, showing the criteria evolution with the optimization
 iteration and the 3 first fit parameters. The <span
  style="color: rgb(255, 0, 0);">red</span> dot indicates the
 current/final parameter set and criteria. <span
@@ -553,8 +567,8 @@ important, but a +100% extent is probably realistic in most cases.<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData loading data - </span><span
- style="font-style: italic;">$Date: 2010-11-22 14:15:30 $ $Revision:
+Farhi - iFit/iData fitting - </span><span style="font-style: italic;">$Date:
+2010-11-22 14:15:30 $ $Revision:
 1.2 $</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main iFit Page</a>
 </div>
