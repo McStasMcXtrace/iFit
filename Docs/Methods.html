@@ -28,81 +28,240 @@ interpolation/projections/integration/sum/combination</a></li>
 <br>
 <h3><a class="mozTocH3" name="mozTocId323642"></a><span
  style="font-weight: bold;">data structure, aliases, signal and axes</span></h3>
-iData<br>
-set<br>
-get<br>
-setalias<br>
-getalias<br>
-label<br>
-xlabel<br>
-ylabel<br>
-zlabel<br>
-clabel<br>
-rmalias<br>
-rmaxis<br>
-getaxis a{n}<br>
-setaxis<br>
-ndims<br>
-size<br>
+A dedicated documentation about the <a href="iData.html">iData object</a>
+is available.<span style="font-style: italic;"><br>
+<br>
+</span>
+<ul>
+  <li><span style="font-style: italic;"><span style="font-weight: bold;">iData:
+
+    </span></span>defines a new iData object from variables, arrays,
+files, figure and more.</li>
+  <li><span style="font-style: italic; font-weight: bold;">set: </span>sets
+an
+iData property or alias value</li>
+  <li><span style="font-style: italic; font-weight: bold;">get: </span>gets
+an
+iData property or alias value, or the whole object description</li>
+  <li><span style="font-style: italic; font-weight: bold;">setalias: </span>defines
+an
+alias, that is a new member or link within the object</li>
+  <li><span style="font-style: italic; font-weight: bold;">getalias: </span>gets
+an
+alias definition</li>
+  <li><span style="font-style: italic; font-weight: bold;">label: </span>defines
+the
+object label, signal and axes labels</li>
+  <li><span style="font-style: italic; font-weight: bold;">xlabel: </span>sets
+or
+get 2nd rank axis label (along columns)</li>
+  <li><span style="font-style: italic; font-weight: bold;">ylabel: </span>sets
+or
+get 1st rank axis label (along rows)</li>
+  <li><span style="font-style: italic; font-weight: bold;">zlabel: </span>sets
+or
+get the 3rd rank axis label (vertical)</li>
+  <li><span style="font-style: italic; font-weight: bold;">clabel: </span>sets
+or
+get the 4th rank axis label</li>
+  <li><span style="font-style: italic; font-weight: bold;">rmalias: </span>removes
+an
+alias definition</li>
+  <li><span style="font-style: italic; font-weight: bold;">rmaxis: </span>removes
+an
+axis definition, falling back to default axes</li>
+  <li><span style="font-style: italic; font-weight: bold;">setaxis: </span>defines
+an
+axis as a link to an alias or object member</li>
+  <li><span style="font-style: italic; font-weight: bold;">getaxis</span>
+and <span style="font-style: italic; font-weight: bold;">a{n}</span>:
+gets the axis value and definition</li>
+  <li><span style="font-style: italic; font-weight: bold;">ndims: </span>returns
+the
+dimentionality of the object (number of axes, rank of signal)</li>
+  <li><span style="font-style: italic; font-weight: bold;">size: </span>returns
+the
+size of the object (length of each object dimension)</li>
+</ul>
 <br>
 <h3><a class="mozTocH3" name="mozTocId145324"></a><span
  style="font-weight: bold;">general</span></h3>
-commandhistory<br>
-copyobj<br>
-disp<br>
-display<br>
-doc<br>
-findfield<br>
-findobj<br>
-findstr<br>
-full<br>
-sparse<br>
-ind2sub<br>
-pack<br>
-version<br>
+<ul>
+  <li><span style="font-weight: bold; font-style: italic;">commandhistory:
+
+    </span>returns the list of past commands performed in order to get
+the current object</li>
+  <li><span style="font-weight: bold; font-style: italic;">copyobj: </span>copies
+an
+object into a new one with unique ID (Tag)<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">disp: </span>displays
+the
+object description, aliases and axes<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">display: </span>displays
+a
+short description of the object<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">doc: </span>opens
+the
+iData documentation as web pages<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">findfield: </span>searches
+in
+objects for a field/alias that matches a pattern<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">findobj: </span>searches
+for
+objects in the workspace/memory<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">findstr: </span>searches
+in
+objects for strings, and return the corresponding content and members<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">full: </span>switches
+the
+object to a full array storage<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">sparse: </span>switches
+the
+object to a sparse array storage (which uses less memory when data
+has many zeros)<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">ind2sub: </span>get
+indexed
+element in an object array<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">pack: </span>selects
+automatically
+the full or sparse storage in order to lower the memory
+usage<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">version: </span>displays
+the
+iData library version<br>
+  </li>
+</ul>
 <br>
 <h3><a class="mozTocH3" name="mozTocId263963"></a><span
  style="font-weight: bold;">import/export/type casting</span></h3>
-load<br>
-saveas<br>
-getframe<br>
-data types<br>
-cell<br>
-char<br>
-double<br>
-findobj<br>
-logical<br>
-real<br>
-saveas<br>
-single<br>
-zeros<br>
+Dedicated documentations about the <a href="Load.html">Loading</a> and
+<a href="Save.html">Saving</a> objects can are available.<span
+ style="font-style: italic;"><br>
+</span><br>
+<ul>
+  <li><span style="font-weight: bold; font-style: italic;">load: </span>loads
+file(s) and convert it into an iData object<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">saveas: </span>exports
+objects into many formats (pdf, jpg, eps, ...)<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">getframe: </span>creates
+a snapshopt image from an object (thumbnail)<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">cell: </span>converts
+an object into a cell<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">char: </span>converts
+an object into a char, and returns a long title/identification string<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">double: </span>converts
+an object into a double array, and returns the object Signal<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">findobj: </span>finds
+iData objects in memory<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">logical: </span>converts
+an object into a logical array (true/false)</li>
+  <li><span style="font-weight: bold; font-style: italic;">real: </span>extracts
+the real part of an object</li>
+  <li><span style="font-weight: bold; font-style: italic;">imag: </span>extracts
+the imaginary part of an object </li>
+  <li><span style="font-weight: bold; font-style: italic;">single: </span>converts
+an object into a single float array</li>
+  <li><span style="font-weight: bold; font-style: italic;">zeros: </span>initialize
+an array of objects<br>
+  </li>
+</ul>
 <br>
 <h3><a class="mozTocH3" name="mozTocId616062"></a><span
  style="font-weight: bold;">testing/comparing</span></h3>
-find<br>
-isempty<br>
-gt &gt;<br>
-lt &lt;<br>
-ge &gt;=<br>
-le &lt;=<br>
-eq ==<br>
-ne ~=<br>
-isfinite<br>
-isfloat<br>
-isinf<br>
-isinteger<br>
-islogical<br>
-isnan<br>
-isnumeric<br>
-isreal<br>
-isscalar<br>
-issparse<br>
-isvector<br>
-not<br>
-sign<br>
+A dedicated documentation about the <a href="Math.html">iData
+comparison operators</a> is available.<span style="font-style: italic;"><br>
+</span><br>
+<ul>
+  <li><span style="font-weight: bold; font-style: italic;">find: </span>finds
+non zeros elements in objects Signal<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">isempty: </span>tests
+objects for emptyness (dimension=0)<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">gt</span>
+and <span style="font-weight: bold;">&gt;</span>: greater than
+comparison<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">lt</span>
+and <span style="font-weight: bold; font-style: italic;">&lt;</span>:
+lower than comparison</li>
+  <li><span style="font-weight: bold; font-style: italic;">ge</span>
+and <span style="font-weight: bold; font-style: italic;">&gt;=</span>:
+greater or equal than comparison</li>
+  <li><span style="font-weight: bold; font-style: italic;">le</span>
+and <span style="font-weight: bold; font-style: italic;">&lt;=</span>:
+greater or equal than comparison</li>
+  <li><span style="font-weight: bold; font-style: italic;">eq</span>
+and <span style="font-weight: bold; font-style: italic;">==</span>:
+equal comparison<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">ne</span>
+and <span style="font-weight: bold; font-style: italic;">~=</span>:
+not equal comparison<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">isfinite: </span>returns
+index of elements which are non NaN or Inf<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">isfloat: </span>tests
+if object Signal stores single or double floats<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">isinf: </span>tests
+if object Signal contains infinite values<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">isinteger: </span>tests
+if object Signal stores integers</li>
+  <li><span style="font-weight: bold; font-style: italic;">islogical: </span>tests
+if object Signal stores logicals (true/false)<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">isnan: </span>tests
+if object Signal contains NaN values</li>
+  <li><span style="font-weight: bold; font-style: italic;">isnumeric: </span>tests
+if object Signal stores integers, single or double floats<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">isreal</span>:
+    <span style="font-weight: bold; font-style: italic;"></span>tests
+if object Signal stores real values (that is no imaginary part)<br>
+  </li>
+  <li> <span style="font-weight: bold; font-style: italic;">isscalar: </span>tests
+if object is a single value (dim=length=1)<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">issparse: </span>tests
+if object Signal is stored as a sparse array<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">isvector: </span>tests
+if object is a vector (dim=1)</li>
+  <li><span style="font-weight: bold; font-style: italic;">not: </span>not
+equal comparison<br>
+  </li>
+  <li><span style="font-weight: bold; font-style: italic;">sign: </span>returns
+the sign of Signal elements<br>
+  </li>
+</ul>
 <br>
 <h3><a class="mozTocH3" name="mozTocId222761"></a><span
  style="font-weight: bold;">math</span>: operators</h3>
+A dedicated documentation about the <a href="Math.html">iData
+mathematical operators</a> is available.<span
+ style="font-style: italic;"><br>
+</span><br>
 abs<br>
 acos<br>
 asin<br>
@@ -133,6 +292,10 @@ times<br>
 <h3><a class="mozTocH3" name="mozTocId179983"></a><span
  style="font-weight: bold;">math: statistics, fitting and peak
 searching</span></h3>
+Dedicated documentation about the <a href="Math.html">iData analysis
+operators</a> and <a href="Fit.html">fitting</a> are available.<span
+ style="font-style: italic;"><br>
+</span><br>
 ieval<br>
 fits<br>
 min<br>
@@ -145,6 +308,9 @@ std<br>
 <h3><a class="mozTocH3" name="mozTocId434222"></a><span
  style="font-weight: bold;">math:
 interpolation/projections/integration/sum/combination</span></h3>
+A dedicated documentation about the <a href="Math.html">iData these
+operators</a> is available.<span style="font-style: italic;"><br>
+</span><br>
 camproj<br>
 combine<br>
 cat<br>
@@ -163,6 +329,9 @@ trapz<br>
 <br>
 <h3><a class="mozTocH3" name="mozTocId341680"></a><span
  style="font-weight: bold;">plotting</span></h3>
+A dedicated documentation about the <a href="Plot.html">plotting</a>
+is available.<span style="font-style: italic;"><br>
+</span><br>
 plot<br>
 clabel<br>
 clim<br>
@@ -186,8 +355,10 @@ title<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData methods - </span><span style="font-style: italic;">$Date:
-2010-11-11 13:39:38 $ $Revision: 1.4 $</span><span
- style="font-style: italic;"> </span>- back to <a href="index.html">Main
+2010-11-11
+13:39:38
+$ $Revision: 1.5 $</span><span style="font-style: italic;"> </span>-
+back to <a href="index.html">Main
 iFit
 Page</a>
 </div>
