@@ -51,7 +51,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -358,7 +358,7 @@ otherwise
     options, constraints, ub);
   return
 end % switch
-
+  output.lasterror = lasterror;
 end % try
 
 
