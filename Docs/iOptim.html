@@ -64,7 +64,8 @@ arguments are:<br>
 the function to minimize, <span style="font-style: italic;">objective(p)</span>.
 This
 can
-be a string or a function handle.<span style="font-style: italic;"><br>
+be
+a string or a function handle.<span style="font-style: italic;"><br>
     </span></li>
   <li><span style="font-style: italic;">guess: </span>the starting
 parameter set that objective depend on (this is a vector of numerical
@@ -121,7 +122,8 @@ optimization routine state</li>
 a
 structure
 that
-holds some information gathered during the minimization procedure (see
+holds
+some information gathered during the minimization procedure (see
 below)<br>
   </li>
 </ol>
@@ -141,8 +143,9 @@ function evaluations performed during the minimization (double)</li>
  style="font-style: italic;">iterations: </span>Number of
 iterations performed during the minimization (double)</li>
 </ul>
-In all cases, the optimizer can handle <span
- style="font-style: italic; font-weight: bold;">constraints, </span>specified
+In <span style="font-style: italic;">all</span> cases, the optimizer
+can handle <span style="font-style: italic; font-weight: bold;">constraints,
+</span>specified
 as
 a
 4th input argument. These are often lower and upper bounds. Refer
@@ -181,8 +184,6 @@ execution
 time
 (s)<br>
       </td>
-      <td style="vertical-align: top;">Constraints support<br>
-      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span
@@ -191,8 +192,6 @@ time
 coupled with BFGS</td>
       <td style="vertical-align: top;">73.5</td>
       <td style="vertical-align: top;">0.09</td>
-      <td style="vertical-align: top;"><br>
-      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span
@@ -200,8 +199,6 @@ coupled with BFGS</td>
       <td style="vertical-align: top;">Shor r-algorithm</td>
       <td style="vertical-align: top;">61.1</td>
       <td style="vertical-align: top;">0.17</td>
-      <td style="vertical-align: top;"><br>
-      </td>
     </tr>
     <tr>
       <td
@@ -209,8 +206,6 @@ coupled with BFGS</td>
       <td style="vertical-align: top;">Powell Search</td>
       <td style="vertical-align: top;">56.5</td>
       <td style="vertical-align: top;">0.06</td>
-      <td style="vertical-align: top;"><br>
-      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span
@@ -218,8 +213,6 @@ coupled with BFGS</td>
       <td style="vertical-align: top;">Particle Swarm Optimization</td>
       <td style="vertical-align: top;">58.5</td>
       <td style="vertical-align: top;">0.85</td>
-      <td style="vertical-align: top;">yes<br>
-      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span
@@ -227,8 +220,6 @@ coupled with BFGS</td>
       <td style="vertical-align: top;">Hooke-Jeeves direct search</td>
       <td style="vertical-align: top;">73.2</td>
       <td style="vertical-align: top; color: rgb(255, 0, 0);">1.87</td>
-      <td style="vertical-align: top;"><br>
-      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span
@@ -238,8 +229,6 @@ Swarm Optimizer (alt. implementation)<br>
       </td>
       <td style="vertical-align: top;">40.0</td>
       <td style="vertical-align: top;">0.18</td>
-      <td style="vertical-align: top;">yes<br>
-      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span
@@ -249,8 +238,6 @@ Covariance Matrix Adaptation</td>
       <td style="vertical-align: top;">48.6</td>
       <td style="vertical-align: top;"><span
  style="color: rgb(255, 0, 0);">2.54</span></td>
-      <td style="vertical-align: top;">yes<br>
-      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-style: italic;">fminsimpsa</span></td>
@@ -258,8 +245,6 @@ Covariance Matrix Adaptation</td>
 annealing</td>
       <td style="vertical-align: top;">36.9</td>
       <td style="vertical-align: top;">0.34</td>
-      <td style="vertical-align: top;">yes<br>
-      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;">fminswarmhybrid<br>
@@ -271,15 +256,14 @@ annealing</td>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
-      <td style="vertical-align: top;"><br>
-      </td>
     </tr>
   </tbody>
 </table>
 <div style="text-align: center;"><span style="font-style: italic;">Table
 1:
 A
-selection among the most efficient and fast optimization methods</span><span
+selection
+among the most efficient and fast optimization methods</span><span
  style="font-style: italic; font-weight: bold;"></span><span
  style="font-style: italic;">. The methods that handle constraints on
 parameter are indicated in the last column.</span><br>
@@ -364,6 +348,7 @@ annealing</font></p>
 
 
 
+
       <font color="#3366ff">Supports parameter constraints</font>. </p>
       </td>
     </tr>
@@ -438,7 +423,8 @@ filtering coupled with BFGS</b></font></p>
 
 success
 &gt;
-50% for <i>d&lt;= 64</i></p>
+50%
+for <i>d&lt;= 64</i></p>
       </td>
     </tr>
     <tr>
@@ -676,6 +662,7 @@ but gets very <font color="#ff0000">slow</font> for large <i>d</i></p>
       <p align="CENTER">very fast, success &gt;60 % for <i>d&gt;=8, </i>success
 &gt;45%
 for
+
       <i>d&lt;=64</i></p>
       </td>
     </tr>
@@ -767,7 +754,8 @@ swarm
 optimizer)
 provide
 a
-very good success ratio up to typically 5-10
+very
+good success ratio up to typically 5-10
 model parameters. Among these, the <span
  style="font-style: italic; font-weight: bold;">fminpso</span> and <span
  style="font-weight: bold; font-style: italic;">fmincmaes</span> can
@@ -780,7 +768,8 @@ can
 deal
 with
 up
-to 8 model parameters with more than 50 % success. The <span
+to
+8 model parameters with more than 50 % success. The <span
  style="font-style: italic;">fminswarmhybrid</span> was tested with the
 <span style="font-style: italic;">options.Hybrid</span>=<span
  style="color: rgb(204, 51, 204);">'fminsearch'</span> which may
@@ -874,7 +863,7 @@ parameters increases.<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span
- style="font-style: italic;">$Date: 2010-12-20 08:35:17 $ $Revision:
+ style="font-style: italic;">$Date: 2010-12-21 15:33:00 $ $Revision:
 1.2 $</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main iFit Page</a>
 </div>

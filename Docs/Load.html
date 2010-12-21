@@ -7,7 +7,7 @@
 </head>
 <body>
 <h1 style="text-align: center;"><a class="mozTocH1"
- name="mozTocId647835"></a>iFit:iData importing data into objects<br>
+ name="mozTocId647835"></a>iFit: importing data into objects<br>
 </h1>
 <br>
 <ol id="mozToc">
@@ -40,12 +40,13 @@ This is done by converting a file path to an <a href="iData.html">iData</a>
 object, or directly
 with the<br>
 <span style="font-style: italic;">iData/<span style="font-weight: bold;">load</span></span>
-method.<br>
+method. The <span style="font-weight: bold; font-style: italic;">ifitpath</span>
+points to the iFit library location:<br>
 <div style="margin-left: 40px;">
 <pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>);</pre>
+ style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>);	% is you are working from one level up from iFit library </pre>
 <pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>);</pre>
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);</pre>
 </div>
 These commands result in the following output, which produce an iData
 object:<br>
@@ -93,11 +94,11 @@ method will be used. It is possible to select a prefered method with
 e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'file'</span>, <span
+ style="color: rgb(204, 51, 204);">'filename'</span>, <span
  style="color: rgb(204, 51, 204);">'HDF5'</span>)</pre>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'file'</span>, <span
+ style="color: rgb(204, 51, 204);">'filename'</span>, <span
  style="color: rgb(204, 51, 204);">'gui'</span>);&nbsp; % a method selector pops-up.</pre>
 A list of the supported formats is shown below.<br>
 <br>
@@ -193,6 +194,14 @@ imports <span style="font-style: italic;">Signal</span> as 'c' and <span
 be numerical values with 'x' for the columns, 'y' for the rows, 'z' for
 the depth, ... that is the plotting Matlab convention used e.g. in <span
  style="font-style: italic;">surf(x,y,z)</span>.<br>
+<br>
+The <span style="font-weight: bold; font-style: italic;">findobj</span>
+method can be used to inquire for all iData objects available in the
+workspace:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">findobj</span>(iData);<span
+ style="color: rgb(51, 102, 255);"></span></pre>
+<br>
 <h3><a class="mozTocH3" name="mozTocId755882"></a>Importing from Matlab
 Figures<img style="width: 334px; height: 315px;"
  alt="The Peaks figure imported as an iData"
@@ -217,7 +226,8 @@ file
 and
 searches
 for
-the file extension and
+the
+file extension and
 patterns in the file contents (in the case of text files) in order to
 identify the proper importation method to use.<br>
 <br>
@@ -236,7 +246,8 @@ then
 read
 into
 the
-workspace. Binary files are read with dedicated read routines, as it is
+workspace.
+Binary files are read with dedicated read routines, as it is
 usually not possible to interpret correctly the file structure <span
  style="font-style: italic;">ab-initio</span>. <br>
 <br>
@@ -252,6 +263,9 @@ The structures are then converted into <a href="iData.html">iData</a>
 objects, and optionally some data format specific post-processing
 scripts are applied, as described in <span style="font-style: italic;">iFiles/iLoad_ini.m</span><br>
 <br>
+Refer to the <a href="iFiles.html">iFiles</a> documentation to learn
+how to customize load methods and import filters.<br>
+<br>
 <div style="text-align: right;"><span style="font-weight: bold;">To get
 more help: </span><a href="iFiles.html">iFiles</a>, <a
  href="../iFiles/doc/looktxt.html">looktxt</a><br>
@@ -260,7 +274,7 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span
- style="font-style: italic;">$Date: 2010-12-20 08:35:17 $ $Revision:
+ style="font-style: italic;">$Date: 2010-12-21 15:33:00 $ $Revision:
 1.4 $</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main
 iFit
