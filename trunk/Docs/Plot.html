@@ -78,7 +78,8 @@ projections
 and
 slices,
 as
-seen below.<br>
+seen
+below.<br>
 <h4><a class="mozTocH4" name="mozTocId650151"></a>Plots for 1D objects</h4>
 Let us import a simple 1D (vector <span style="font-style: italic;">Signal=f(x)
 </span>) data set into an iData object, and
@@ -136,7 +137,9 @@ the
 curve
 in
 order
-to change e.g. the fonts, the text to show, the colors. <br>
+to
+change
+e.g. the fonts, the text to show, the colors. <br>
 The zoom tool&nbsp;<img style="width: 53px; height: 24px;"
  alt="Figure_zoom tool" title="Figure_zoom tool"
  src="images/Figure_zoom.png" align="middle">is also pretty useful (hey
@@ -170,7 +173,7 @@ for 1D objects, plots can be generated for 2D objects <span
 surfaces:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'iFit/Data/ILL_D10.dat'</span>)<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_D10.dat'</span> ])<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(a);<br></pre>
 which results in a surface plot as shown aside. <br>
 <br>
@@ -381,13 +384,17 @@ the second argument to the plot function call, as follows:<br>
 affects
 the
 type
-of shading used (see <span style="font-style: italic;">help
+of
+shading
+used (see <span style="font-style: italic;">help
 shading</span>).<br>
   </li>
   <li><span style="color: rgb(204, 51, 204);">transparent, light</span>:
 add
 transparency
 (see
+
+
     <span style="font-style: italic;">help alpha</span>),
 and
 add some light(see <span style="font-style: italic;">help light</span>).<br>
@@ -400,7 +407,9 @@ clabel</span>)<br>
 sets
 plot
 axis
-limits tight around the object, or automatically
+limits
+tight
+around the object, or automatically
 optimized (see <span style="font-style: italic;">help axis</span>) </li>
   <li><span style="color: rgb(204, 51, 204);">view2, view3</span>:
 display 2D/3D views from top or oblique view<br>
@@ -518,7 +527,9 @@ a
 number
 of
 objects
-into tiled independent
+into
+tiled
+independent
 coordinate frames, all gathered into the same window, the <span
  style="font-weight: bold; font-style: italic;">subplot</span> function
 can be used the same way as with the <a href="#mozTocId574560">overlay</a>
@@ -572,7 +583,7 @@ the same as <span style="font-style: italic;">camproj(a,2)</span> and <span
  style="color: rgb(51, 102, 255);">trapz</span>(a) <span
  style="color: rgb(51, 102, 255);">camproj</span>(a) ],<span
  style="color: rgb(204, 51, 204);">'axis tight'</span>)</span></span><br></pre>
-<h4><a class="mozTocH4" name="mozTocId633428"></a>Plotting simple slices</h4>
+<h4><a class="mozTocH4" name="mozTocId633428"></a>Plotting slices</h4>
 Data slices and subsets can be obtained by selecting subspaces from
 their
 corresponding indices.<br>
@@ -580,7 +591,8 @@ corresponding indices.<br>
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>); <br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(a(:,622));                   % extract the object made from channel 622 on second axis, with all columns<br></pre>
-The <span style="font-weight: bold;">sliceomatic</span> viewer is
+The <a href="http://www.mathworks.com/matlabcentral/fileexchange/764"><span
+ style="font-weight: bold;">sliceomatic</span></a> viewer is
 displayed for 3D objects with<a href="images/Sliceomatic.png"><img
  alt="Sliceomatic: slice(a)" title="Sliceomatic: slice(a)"
  src="images/Sliceomatic.png"
@@ -608,13 +620,16 @@ the object may be assigned a global label <span
 store object categories (background, calibration, with sample, ...). <br>
 The Signal label can be obtained with<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">title</span>(a)</pre>
+ style="color: rgb(51, 102, 255);">title</span>(a)<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">label</span>(a,0)<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">label</span>(a,<span
+ style="color: rgb(204, 51, 204);">'Signal'</span>)<br></pre>
 Similarly, the axes can be assigned labels with<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">xlabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'a new X axis label'</span>);              % second axis<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'a new X axis label'</span>);              % second axis (columns)<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">ylabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'a new Y axis label'</span>);              % first axis<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'a new Y axis label'</span>);              % first axis (rows)<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">zlabel</span>(a, <span
  style="color: rgb(204, 51, 204);">'a new Z axis label'</span>);              % third axis<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">clabel</span>(a, <span
@@ -652,7 +667,9 @@ where format may be <span style="font-style: italic;">jpg, png, pdf</span>,
 ...
 All
 formats
-are detailed in the <a href="Save.html">Save</a> page.<br>
+are
+detailed
+in the <a href="Save.html">Save</a> page.<br>
 <h3><a class="mozTocH3" name="mozTocId46720"></a>Importing plots as
 iData objects</h3>
 As seen in the <a href="Load.html">Load</a> documentation page, the
@@ -664,7 +681,9 @@ axis handle arguments.<br>
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData plotting - </span><span style="font-style: italic;">$Date:
 2010-11-11
-13:39:38 $ $Revision: 1.6 $</span><span style="font-style: italic;"> </span>-
+13:39:38
+$
+$Revision: 1.7 $</span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
 Page</a>
