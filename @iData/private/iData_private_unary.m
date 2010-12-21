@@ -45,12 +45,13 @@ case 'sin'
 	e = e.*cos(s);
 case 'sqrt'
 	e = e/(2*sqrt(s));
-  m = m.^2;
+  m = m.^0.5;
 case 'tan'
 	c = cos(s);
 	e = e./(c.*c);
 case { 'transpose', 'ctranspose'}; % .' and ' respectively
 	e = e';
+	m = m';
 	if ndims(b) > 1
   	x1 = getaxis(b, '1'); % axis names
   	x2 = getaxis(b, '2');
