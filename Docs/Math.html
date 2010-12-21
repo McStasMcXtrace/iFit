@@ -7,13 +7,514 @@
 </head>
 <body>
 <h1 style="text-align: center;"><a class="mozTocH1"
- name="mozTocId294096"></a>iFit: Mathematical operators<br>
-</h1>
+ name="mozTocId294096"></a>iFit: Mathematical operators</h1>
+<br>
+<ol id="mozToc">
+<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
+  <li><a href="#mozTocId725083">A reminder on axes, monitors and signal
+errors</a></li>
+  <li><a href="#mozTocId810783">Unary operators</a></li>
+  <li><a href="#mozTocId714232">Binary operators</a></li>
+  <li><a href="#mozTocId463816">statistics, fitting and peak
+searching</a></li>
+  <li><a href="#mozTocId981870">interpolation/projections/integration/sum/combination</a></li>
+</ol>
+<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span
  style="font-style: italic;">iData</span>, maths<br>
 </div>
 <br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId725083"></a>A reminder on axes,
+monitors and signal errors</h3>
+The iData objets have been designed keeping in mind that any
+measurement <span style="font-style: italic;">Signal</span> is
+recorded as a function of <span style="font-style: italic;">Axes</span>
+(e.g. time, energy, ...) and corresponds to a measurement quantity
+(e.g. flux, integrated time for the measurement, ...), which we label
+as a <span style="font-style: italic;">Monitor</span>. In addition,
+the Signal is attached to an uncertainty <span
+ style="font-style: italic;">Error, </span>which provides a
+measurement of the accuracy of the Signal. You may get more details
+about these definitions in the <a href="iData.html">iData</a> object
+description page.<br>
+<br>
+The way all of these are used is listed below:<br>
+<ul>
+  <li>All mathematical methods propagate the <span
+ style="font-style: italic;">Error</span> together with the <span
+ style="font-style: italic;">Signal, </span>assuming Error
+distributions are Gaussian. The sections below detail the way Errors
+are propagated.</li>
+  <li>Binary operators use the <span style="font-style: italic;">Monitor</span>
+value to weight the respective ratio when performing the operation. The
+    <span style="font-style: italic;">Monitor</span> value is also
+affected by Matematical operations that renormalize the <span
+ style="font-style: italic;">Signal. </span>The <span
+ style="font-style: italic;">Monitor</span> is usually a value larger
+than 1.<span style="font-style: italic;"><br>
+    </span></li>
+  <li>The <span style="font-style: italic;">Axes</span> are used in
+binary operators to determine intersection of <span
+ style="font-style: italic;">Signal</span> ranges. A rebinning of
+objects is automatically performed when the <span
+ style="font-style: italic;">Axes</span> sampling do not match.</li>
+</ul>
+<h3><a class="mozTocH3" name="mozTocId810783"></a>Unary operators</h3>
+<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Operator</td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Signal<br>
+      </td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Error<br>
+      </td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Monitor<br>
+      </td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Comments<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">abs<br>
+      </td>
+      <td style="vertical-align: top;">| Signal |<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Absolute value<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">acos<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">cos</span><sup>-1</sup>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">-Error/(&#8730;(1-Signal&sup2;))<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Arc cosine. Signal should be
+[-1:1]<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">asin<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">sin</span><sup>-1</sup>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">Error/(&#8730;(1-Signal&sup2;))</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Arc sine. Signal should be [-1:1]</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">atan<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">tan</span><sup>-1</sup>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">Error/(1+Signal&sup2;)</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Arc tangent.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">cos<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">cos</span>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">-Error*<span
+ style="font-style: italic;">sin</span>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Cosine. Signal is in [rad]<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">sin<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">sin</span>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">Error*<span
+ style="font-style: italic;">cos</span>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Sine. Signal is in [rad]</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">tan<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">tan</span>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">Error/<span
+ style="font-style: italic;">cos</span>&sup2;(Signal)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Tangent. Signal is in [rad]</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">exp<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">e</span><sup>Signal</sup><br>
+      </td>
+      <td style="vertical-align: top;">Error*<span
+ style="font-style: italic;">e</span><sup>Signal</sup></td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Exponential<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">log<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">ln</span>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">Error/Signal<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Logarithm (Neperian, base 2)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">log10<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">log</span><sub>10</sub>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">Error/(<span
+ style="font-style: italic;">ln</span>(10)*Signal)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Logarithm (base 10)</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">sqrt<br>
+      </td>
+      <td style="vertical-align: top;">&#8730;Signal</td>
+      <td style="vertical-align: top;">Error/(2&#8730;Signal)</td>
+      <td style="vertical-align: top;">&#8730;Monitor</td>
+      <td style="vertical-align: top;">Square root<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">ctranspose <span
+ style="font-style: italic; font-weight: normal;">and</span> ' <br>
+      </td>
+      <td style="vertical-align: top;">Signal'<br>
+      </td>
+      <td style="vertical-align: top;">Error'<br>
+      </td>
+      <td style="vertical-align: top;">Monitor'</td>
+      <td style="vertical-align: top;">Complex conjugate transpose<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">transpose <span
+ style="font-style: italic; font-weight: normal;">and</span> .'<br>
+      </td>
+      <td style="vertical-align: top;">Signal.'<br>
+      </td>
+      <td style="vertical-align: top;">Error'<br>
+      </td>
+      <td style="vertical-align: top;">Monitor'<br>
+      </td>
+      <td style="vertical-align: top;">Non conjugate transpose<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">floor<br>
+      </td>
+      <td style="vertical-align: top;">floor(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">floor(Error)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Round towards -&#8734; Make it integer.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">ceil</td>
+      <td style="vertical-align: top;">ceil(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">ceil(Error)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Round towards +&#8734; Make it integer.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">round<br>
+      </td>
+      <td style="vertical-align: top;">round(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">round(Error)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Round towards nearest integer.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">sign<br>
+      </td>
+      <td style="vertical-align: top;">sign(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">0<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Sign of Signal elements.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">uminus <span
+ style="font-style: italic; font-weight: normal;">and</span> -<br>
+      </td>
+      <td style="vertical-align: top;">-Signal<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Opposite<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">imag<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">Im</span>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Imaginary part<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">real<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">Re</span>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Real part<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+Here is an example using unary operators:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; b = [ log(a) floor(a) sqrt(a) ]<br>b =  array [1  3] iData object:<br><br>Index     [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br>    1  tp362134     [340  1024] 'File ILL_IN6.dat ILL Data (n...' tp362134=log(tp36213...  <br>    2  tp362140     [340  1024] 'File ILL_IN6.dat ILL Data (n...' tp362140=floor(tp362...  <br>    3  tp362145     [340  1024] 'File ILL_IN6.dat ILL Data (n...' tp362145=sqrt(tp3621...  <br></pre>
+The <span style="font-weight: bold;">1/Signal </span>is obtained with
+the binary operator <span style="font-weight: bold;">division.</span>
+The <span style="font-weight: bold;">sqr</span> operator is a short
+cut for <span style="font-weight: bold;">power</span> 2.<br>
+<h3><a class="mozTocH3" name="mozTocId714232"></a>Binary operators</h3>
+The binary operators take two objects, and perform a relational
+operator. In the following we use the notations:<br>
+<ul>
+  <li>s1, e1 and m1 are the <span style="font-style: italic;">Signal,
+Error</span> and <span style="font-style: italic;">Monitor</span> of
+the 1st object, resp.</li>
+  <li>s2, e2 and m2 are the <span style="font-style: italic;">Signal,
+Error</span> and <span style="font-style: italic;">Monitor</span> of
+the 2nd object, resp.</li>
+  <li>s3, e3 and m3 are the <span style="font-style: italic;">Signal,
+Error</span> and <span style="font-style: italic;">Monitor</span> of
+theresulting object, resp.<br>
+  </li>
+</ul>
+When not defined the <span style="font-style: italic;">Monitor</span>
+is set to 1, and the <span style="font-style: italic;">Error</span> is
+set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
+<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Operator<br>
+      </td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Signal
+(s3)<br>
+      </td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Error
+(e3)<br>
+      </td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Monitor
+(m3)<br>
+      </td>
+      <td
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Description<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">plus <span
+ style="font-style: italic; font-weight: normal;">and</span> +<br>
+      </td>
+      <td style="vertical-align: top;">m3*(s1/m1+s2/m2)<br>
+      </td>
+      <td style="vertical-align: top;">&#8730;[(e1/m1)<span
+ style="font-style: italic;"></span>&sup2;+(e2/m2)<span
+ style="font-style: italic;"></span>&sup2;]<br>
+      </td>
+      <td style="vertical-align: top;">m1+m2<br>
+      </td>
+      <td style="vertical-align: top;">addition<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">minus <span
+ style="font-style: italic; font-weight: normal;">and</span> -<br>
+      </td>
+      <td style="vertical-align: top;">m3*(s1/m1 - s2/m2)</td>
+      <td style="vertical-align: top;">&#8730;[(e1/m1)<span
+ style="font-style: italic;"></span>&sup2;+(e2/m2)<span
+ style="font-style: italic;"></span>&sup2;]</td>
+      <td style="vertical-align: top;">m1+m2</td>
+      <td style="vertical-align: top;">subtraction<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">times <span
+ style="font-style: italic; font-weight: normal;">and</span> *<br>
+      </td>
+      <td style="vertical-align: top;">s1 * s2</td>
+      <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
+      <td style="vertical-align: top;">m1*m2<br>
+      </td>
+      <td style="vertical-align: top;">multiplication<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">divide <span
+ style="font-style: italic; font-weight: normal;">and</span> /<br>
+      </td>
+      <td style="vertical-align: top;">m2&sup2;*(s1/s2)</td>
+      <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
+      <td style="vertical-align: top;">m1*m2</td>
+      <td style="vertical-align: top;">division<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">combine <span
+ style="font-style: italic; font-weight: normal;">and</span> \<br>
+      </td>
+      <td style="vertical-align: top;">s1+s2<br>
+      </td>
+      <td style="vertical-align: top;">&#8730;[e1<span
+ style="font-style: italic;"></span>&sup2;+e2<span
+ style="font-style: italic;"></span>&sup2;]</td>
+      <td style="vertical-align: top;">m1+m2<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">Monitor</span>
+weighted addition<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">power <span
+ style="font-weight: normal;">and</span> ^<br>
+      </td>
+      <td style="vertical-align: top;">m3*(s1/m1)<sup>(s2/m2)</sup><br>
+      </td>
+      <td style="vertical-align: top;">s3*[s2*e1/s1+e2*<span
+ style="font-style: italic;">ln</span>(s1)]<br>
+      </td>
+      <td style="vertical-align: top;">m1<sup>m2</sup><br>
+      </td>
+      <td style="vertical-align: top;">exponentiation<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+All these operations find intersection between objects (when axes are <span
+ style="font-style: italic;">e.g</span>. partly overlapping), rebin
+objects when axes have a different sampling, and then perform the
+mathematical operation. <br>
+<br>
+The combine operation performs a weighted sum, using the <span
+ style="font-style: italic;">Monitor</span> as the weight. This is of
+great use when merging results from similar experiments, possibly
+performed in slightly different configurations (<span
+ style="font-style: italic;">e.g.</span> counting time, statistics,
+...). This means that combining two data sets is usually more complex
+than
+just adding the two Signals, when axes are not exactly the same and
+Monitors are not equivalent.<br>
+<pre style="margin-left: 40px;"><a href="images/iData_plus_combine.png"><img
+ alt="iData: Math: Plus and Combine compared"
+ title="iData: Math: Plus and Combine compared"
+ src="images/iData_plus_combine.png"
+ style="border: 0px solid ; width: 300px; height: 255px;" align="right"></a></pre>
+<br>
+The following example compares the <span
+ style="font-weight: bold; font-style: italic;">combine</span>
+operation wit
+h the sum. The two initial data sets have a Monitor=1, so that the
+result is indeed the same. We plot both results onto the same figure,
+with transparency, and log-scale, shifting the 2nd plot above the first
+one.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6*.dat' ]</span>);<br>&gt;&gt; b=<span
+ style="color: rgb(51, 102, 255);">combine</span>(a)<br>&gt;&gt; c=(a(1)+a(2))/2;<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>([ <span
+ style="color: rgb(51, 102, 255);">log</span>(b) <span
+ style="color: rgb(51, 102, 255);">log</span>(c)+5 ]); <span
+ style="color: rgb(51, 102, 255);">alpha</span>(0.15);<br></pre>
+Changing the Monitor of one of the two objects will affect the relative
+weight used for the summation during the <span
+ style="font-style: italic;">combine</span> operation. The '\' operator
+is used as a shortcut for <span style="font-style: italic;">combine, </span>so
+that <span style="font-style: italic;">combine(a,b)</span> is the same
+as <span style="font-style: italic;">a\b</span>.<br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId463816"></a><span
+ style="font-weight: bold;">statistics, fitting and peak
+searching</span></h3>
+A few methods have been written to analyze the Signal from objects.
+This includes peak searching, first and second moment distributions,
+and model fitting.<br>
+<br>
+<span style="font-weight: bold; font-style: italic;">Statistics</span><br>
+<br>
+The usual <span style="font-weight: bold;">min, max, mean</span>, and <span
+ style="font-weight: bold;">median</span> methods can be applied onto
+iData objects, and return the corresponding statistics for the Signal,
+usually selecting one analysis for the dimension.<br>
+The <span style="font-weight: bold;">std</span> method provides an
+easy way to determine Gaussian widths of Signal distributions along axes<br>
+<br>
+<span style="font-weight: bold; font-style: italic;">Peak searching and
+model fitting</span><br>
+<br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId981870"></a><span
+ style="font-weight: bold;">interpolation/projections/integration/sum/combination</span></h3>
 <br>
 <br>
 <hr style="width: 100%; height: 2px;">
@@ -21,7 +522,8 @@
 Farhi - iFit/Math operators -&nbsp;</span><span
  style="font-style: italic;"> </span><span style="font-style: italic;">$Date:
 2010-11-22
-14:15:30 $ $Revision:
+14:15:30
+$ $Revision:
 1.2 $</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main iFit Page</a>
 </div>
