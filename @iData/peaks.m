@@ -13,7 +13,7 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
 %         baseline:   baseline (background) (iData)
 % ex:     c=peaks(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/median, iData/mean, iData/std
 
 % inline functions: BaseLine, PeakWidth
@@ -23,7 +23,7 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
   if length(a) > 1
     sigma = cell(1,length(a)); position = sigma; amplitude = sigma; baseline = sigma;
     for index=1:length(a)
-      [si, fi, ai, bi] = std(a(index), dim, m);
+      [si, fi, ai, bi] = peaks(a(index), dim, m);
       sigma{index}     = si;
       position{index}  = fi;
       amplitude{index} = ai;
