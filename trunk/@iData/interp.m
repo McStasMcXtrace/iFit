@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -81,6 +81,18 @@ for index=1:length(varargin)
     requires_meshgrid=1;
   elseif ischar(c)                      % method (char)
     method = c;
+  elseif isa(varargin{index}, 'iData')  % set interpolation axes: get axis from other iData object
+    if length(c) > 1
+      iData_private_warning(mfilename,['Can not interpolate onto all axes of input argument ' num2str(index) ' which is an array of ' num2str(numel(c)) ' elements. Using first element only.']);
+      c = c(1);
+    end
+    for j1 = 1:ndims(c)
+      axis_arg_index = axis_arg_index+1;
+      [i_axes{axis_arg_index}, lab] = getaxis(c, j1);
+      if ~isempty(lab) && axis_arg_index < length(a_labels) && isempty(a_labels{axis_arg_index})
+        a_labels{axis_arg_index} = lab;
+      end
+    end
   elseif isnumeric(c) & length(c) > 1   % set interpolation axes: vector/matrix
     axis_arg_index = axis_arg_index+1;
     i_axes{axis_arg_index} = c;
@@ -90,14 +102,6 @@ for index=1:length(varargin)
     for j1 = 1:length(c(:))
       axis_arg_index = axis_arg_index+1;
       i_axes{axis_arg_index} = c{j1};
-    end
-  elseif isa(varargin{index}, 'iData')  % set interpolation axes: get axis from other iData object
-    for j1 = 1:ndims(c)
-      axis_arg_index = axis_arg_index+1;
-      [i_axes{axis_arg_index}, lab] = getaxis(c, j1);
-      if ~isempty(lab) & isempty(a_labels{axis_arg_index})
-        a_labels{axis_arg_index} = lab;
-      end
     end
   else 
     iData_private_warning(mfilename,['Input argument ' num2str(index) ' of class ' class(c) ' size [' num2str(size(c)) '] is not supported. Ignoring.']);
@@ -157,7 +161,7 @@ if ~is_grid | (requires_meshgrid & is_grid ~= ndims(a))
     n = ones(1, ndims(a)); if ndims(a) == 1, n = [n 1 ]; end
     if length(find(size(a) > 1)) == 1, n(index) = max(size(a)); % plot3 like
     else n(index) = s(index); end
-    v = a_axes{index}; 
+    v = i_axes{index}; 
     v = unique(v(:));
     i_axes{index} = v;  % vector
   end
@@ -166,14 +170,16 @@ end
 % test if interpolation axes have changed w.r.t input object
 has_changed = 0;
 for index=1:ndims(a)  
-  if ~isequal(a_axes{index}, i_axes{index})
+  this_a = a_axes{index}; if isvector(this_a), this_a=this_a(:); end
+  this_i = i_axes{index}; if isvector(this_i), this_i=this_i(:); end
+  if ~isequal(this_a, this_i)
     % length changed ?
-    if length(a_axes{index}) ~= length(i_axes{index})
+    if length(this_a) ~= length(this_i)
       % not same length
       has_changed=1; 
-    elseif prod(size(a_axes{index})) ~= prod(i_axes{index}) % nb of elements has changed, including matrix axes ?
+    elseif prod(size(this_a)) ~= prod(this_i) % nb of elements has changed, including matrix axes ?
       has_changed=1; 
-    elseif all(abs(a_axes{index} - i_axes{index}) > 1e-4*abs(a_axes{index} + i_axes{index})/2)
+    elseif all(abs(this_a - this_i) > 1e-4*abs(this_a + this_i)/2)
       % or axis variation bigger than 0.01 percent anywhere
       has_changed=1;
     end
@@ -302,8 +308,10 @@ setalias(b,'Monitor','Data.Monitor');
 % clear axes
 setaxis (b, [], getaxis(b));
 for index=1:length(i_axes)
-  b=setalias(b,[ 'axis' num2str(index) ], [ 'Data.axis' num2str(index) ], a_labels{index});
-  b=setaxis (b, index, [ 'axis' num2str(index) ]);
+  if length(i_axes) == length(a_labels)
+    b=setalias(b,[ 'axis' num2str(index) ], [ 'Data.axis' num2str(index) ], a_labels{index});
+    b=setaxis (b, index, [ 'axis' num2str(index) ]);
+  end
 end
 b.Command=cmd;
 b = iData_private_history(b, mfilename, a, varargin{:});  
