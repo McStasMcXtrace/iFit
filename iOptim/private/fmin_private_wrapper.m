@@ -51,7 +51,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -163,10 +163,6 @@ try
 %  stop is met. See private 'objective' and 'apply_constraints' below.
 
 switch options.optimizer
-case {'fminbfgs','bfgs'}      
-% Broyden-Fletcher-Goldfarb-Shanno ---------------------------------------------
-  [pars, histout, costdata,iterations] = bfgswopt(pars, @(pars) objective(fun, pars), options.TolFun, options.MaxIter, [], options.TolX);
-  iterations = size(histout,1);
 case {'cmaes','fmincmaes'}    
 % Evolution Strategy with Covariance Matrix Adaption ---------------------------
   hoptions.MaxIter    = options.MaxIter;
