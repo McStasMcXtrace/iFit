@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.44 $
+% Version: $Revision: 1.45 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -355,7 +355,7 @@ if ~usejava('jvm')
     uimenu(uicm, 'Label', 'Rotate', 'Callback','rotate3d on');
   end
 end
-uimenu(uicm, 'Label', 'About iData', 'Callback','msgbox(version(iData))');
+uimenu(uicm, 'Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData) ''')' ]);
 % attach contexual menu to plot
 set(h,   'UIContextMenu', uicm); 
 set(gca, 'UIContextMenu', uicm);
