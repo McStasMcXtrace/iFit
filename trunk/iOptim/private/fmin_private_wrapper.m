@@ -1,5 +1,4 @@
 function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars, options, constraints, ub)
-% NOT GOOD: anneal, lm, simpsa
 % [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmin_private_wrapper(OPTIMIZER, FUN,PARS,[OPTIONS],[CONSTRAINTS]) wrapper to optimizers
 %
 %  Checks for input arguments and options. Then calls the optimizer with a wrapped 
@@ -51,14 +50,16 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
-% each user call function only defines the options... The optimozer by itself is
+% each user call function only defines the options... The optimizer by itself is
 % in the 'private'.
 %
 % private: 'objective', 'apply_constraints', 'constraints_minmax', 'localChar', 'fmin_private_disp'
+
+% NOT GOOD: anneal, bfgs
 
 % parameter handling ===========================================================
 
@@ -290,9 +291,9 @@ case {'SCE','fminsce'}
 case {'hPSO','fminswarmhybrid'}
   constraints = constraints_minmax(pars, constraints);
   if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
-    hoptions.algorithm = [ 'hybrid Particule Swarm Optimizer (by Leontitsis) [' mfilename '/' localChar(options.Hybrid) ']' ];
+    hoptions.algorithm = [ 'hybrid Particle Swarm Optimizer (by Leontitsis) [' mfilename '/' localChar(options.Hybrid) ']' ];
   else
-    hoptions.algorithm = [ 'Particule Swarm Optimizer (by Leontitsis) [fminswarm]' ];
+    hoptions.algorithm = [ 'Particle Swarm Optimizer (by Leontitsis) [fminswarm]' ];
   end
 
   % transfer optimset options and constraints
