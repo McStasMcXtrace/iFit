@@ -62,6 +62,7 @@ objects is automatically performed when the <span
  style="font-style: italic;">Axes</span> sampling do not match.</li>
 </ul>
 <h3><a class="mozTocH3" name="mozTocId810783"></a>Unary operators</h3>
+All unary operators apply on a single object, element-by-element.<br>
 <br>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2"
  cellspacing="2">
@@ -331,7 +332,7 @@ The <span style="font-weight: bold;">sqr</span> operator is a short
 cut for <span style="font-weight: bold;">power</span> 2.<br>
 <h3><a class="mozTocH3" name="mozTocId714232"></a>Binary operators</h3>
 The binary operators take two objects, and perform a relational
-operator. In the following we use the notations:<br>
+operator, element-by-element. In the following we use the notations:<br>
 <ul>
   <li>s1, e1 and m1 are the <span style="font-style: italic;">Signal,
 Error</span> and <span style="font-style: italic;">Monitor</span> of
@@ -490,7 +491,8 @@ Changing the Monitor of one of the two objects will affect the relative
 weight used for the summation during the <span
  style="font-style: italic;">combine</span> operation. The '\' operator
 is used as a shortcut for <span style="font-style: italic;">combine, </span>so
-that <span style="font-style: italic;">combine(a,b)</span> is the same
+that
+<span style="font-style: italic;">combine(a,b)</span> is the same
 as <span style="font-style: italic;">a\b</span>.<br>
 <br>
 <h3><a class="mozTocH3" name="mozTocId463816"></a><span
@@ -523,7 +525,8 @@ Farhi - iFit/Math operators -&nbsp;</span><span
  style="font-style: italic;"> </span><span style="font-style: italic;">$Date:
 2010-11-22
 14:15:30
-$ $Revision:
+$
+$Revision:
 1.2 $</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main iFit Page</a>
 </div>
