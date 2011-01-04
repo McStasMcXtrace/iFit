@@ -79,14 +79,27 @@ and
 slices,
 as
 seen
-below.<br>
+below.
+The quantity which appears onto plots is the <span
+ style="font-style: italic;">Signal/Monitor</span>. In order to
+vizualize the raw <span style="font-style: italic;">Signal, </span>set
+<span style="font-style: italic;">Monitor</span> to 1 with e.g. <br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">load</span>(iData, <span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn'</span> ])<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(a)<br>&gt;&gt; old_mon=<span
+ style="color: rgb(51, 102, 255);">getalias</span>(a,<span
+ style="color: rgb(204, 51, 204);">'Monitor'</span>);  % save the current Monitor alias if you wish to restore it afterwards<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,<span
+ style="color: rgb(204, 51, 204);">'Monitor'</span>,1);<br>&gt;&gt; figure; <span
+ style="color: rgb(51, 102, 255);">plot</span>(a)<br></pre>
 <h4><a class="mozTocH4" name="mozTocId650151"></a>Plots for 1D objects</h4>
 Let us import a simple 1D (vector <span style="font-style: italic;">Signal=f(x)
 </span>) data set into an iData object, and
 plot it:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn'</span> ])<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(a);<br></pre>
 <div style="text-align: center;"><img
  style="width: 400px; height: 354px;" alt="iData plot 1D with menu"
@@ -139,7 +152,8 @@ in
 order
 to
 change
-e.g. the fonts, the text to show, the colors. <br>
+e.g.
+the fonts, the text to show, the colors. <br>
 The zoom tool&nbsp;<img style="width: 53px; height: 24px;"
  alt="Figure_zoom tool" title="Figure_zoom tool"
  src="images/Figure_zoom.png" align="middle">is also pretty useful (hey
@@ -386,13 +400,15 @@ the
 type
 of
 shading
-used (see <span style="font-style: italic;">help
+used
+(see <span style="font-style: italic;">help
 shading</span>).<br>
   </li>
   <li><span style="color: rgb(204, 51, 204);">transparent, light</span>:
-add
+adds
 transparency
 (see
+
 
 
     <span style="font-style: italic;">help alpha</span>),
@@ -409,14 +425,15 @@ plot
 axis
 limits
 tight
-around the object, or automatically
+around
+the object, or automatically
 optimized (see <span style="font-style: italic;">help axis</span>) </li>
   <li><span style="color: rgb(204, 51, 204);">view2, view3</span>:
-display 2D/3D views from top or oblique view<br>
+displays 2D/3D views from top or oblique view<br>
   </li>
   <li><span style="color: rgb(204, 51, 204);">painters</span> (bitmap
 drawing), <span style="color: rgb(204, 51, 204);">zbuffer</span>
-(vectorial drawing): select the Matlab painters for rendering.</li>
+(vectorial drawing): selects the Matlab painters for rendering.</li>
 </ul>
 A usage examples is <br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
@@ -440,7 +457,7 @@ usually produces a crowded plot.<br>
 <pre style="margin-left: 40px;">&gt;&gt; [x,y,z]=<span
  style="color: rgb(51, 102, 255);">peaks</span>; a=<span
  style="color: rgb(51, 102, 255);">iData</span>(x,y*10,z); <br>&gt;&gt; c=<span
- style="color: rgb(51, 102, 255);">linspace</span>(a,-a+50,10);            % continuously go from 'a' to a '-a' in 10 steps<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">linspace</span>(a,-a+50,10);            % continuously go from 'a' to a '-a+50' in 10 steps<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(c);                           % plot all on the same figure<br></pre>
 which overlays a set of objects, as shown below with a chosen view
 angle.<br>
@@ -530,7 +547,8 @@ objects
 into
 tiled
 independent
-coordinate frames, all gathered into the same window, the <span
+coordinate
+frames, all gathered into the same window, the <span
  style="font-weight: bold; font-style: italic;">subplot</span> function
 can be used the same way as with the <a href="#mozTocId574560">overlay</a>
 method shown above.<br>
@@ -574,7 +592,7 @@ the same as <span style="font-style: italic;">camproj(a,2)</span> and <span
  style="font-style: italic;">camproj(a,1)</span>.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>);                               % import data<br>&gt;&gt; y=a.Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF_7; y=y(32:371); a{1}=y; % define the angular axis<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat'</span> ]);                               % import data<br>&gt;&gt; y=a.Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF_7; y=y(32:371); a{1}=y; % define the angular axis<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">ylabel</span>(a,<span
  style="color: rgb(204, 51, 204);">'Angle [deg]'</span>);<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">subplot<span
@@ -589,7 +607,7 @@ their
 corresponding indices.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>); <br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat'</span> ]); <br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>(a(:,622));                   % extract the object made from channel 622 on second axis, with all columns<br></pre>
 The <a href="http://www.mathworks.com/matlabcentral/fileexchange/764"><span
  style="font-weight: bold;">sliceomatic</span></a> viewer is
@@ -659,17 +677,18 @@ standard Matlab commands xlim([xmin xmax]) and similar <span
  style="font-weight: bold;">Exporting plots as figures and
 images</span></h3>
 The figures can be exported from their <span
- style="font-style: italic;">File/Save as</span> menu item. Hother
-wever, it is possible to automate the export process by directly call <br>
+ style="font-style: italic;">File/Save as</span> menu item. However, it
+is possible to automate the export process by directly calling <br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">saveas</span>(a,filename, format)</pre>
+ style="color: rgb(51, 102, 255);">saveas</span>(a, filename, format)</pre>
 where format may be <span style="font-style: italic;">jpg, png, pdf</span>,
 ...
 All
 formats
 are
 detailed
-in the <a href="Save.html">Save</a> page.<br>
+in
+the <a href="Save.html">Save</a> page.<br>
 <h3><a class="mozTocH3" name="mozTocId46720"></a>Importing plots as
 iData objects</h3>
 As seen in the <a href="Load.html">Load</a> documentation page, the
@@ -683,7 +702,8 @@ Farhi - iFit/iData plotting - </span><span style="font-style: italic;">$Date:
 2010-11-11
 13:39:38
 $
-$Revision: 1.7 $</span><span style="font-style: italic;"> </span>-
+$Revision:
+1.7 $</span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
 Page</a>

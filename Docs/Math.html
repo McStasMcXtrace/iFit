@@ -38,7 +38,9 @@ the Signal is attached to an uncertainty <span
  style="font-style: italic;">Error, </span>which provides a
 measurement of the accuracy of the Signal. You may get more details
 about these definitions in the <a href="iData.html">iData</a> object
-description page.<br>
+description page. Remember that axis of rank 1 is usually associated to
+Y (vertical, along rows), whereas axis of rank 2 is associated to X
+(horizontal, along columns).<br>
 <br>
 The way all of these are used is listed below:<br>
 <ul>
@@ -71,13 +73,16 @@ All unary operators apply on a single object, element-by-element.<br>
       <td
  style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Operator</td>
       <td
- style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Signal<br>
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">new
+Signal<br>
       </td>
       <td
- style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Error<br>
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">new
+Error<br>
       </td>
       <td
- style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Monitor<br>
+ style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">new
+Monitor<br>
       </td>
       <td
  style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Comments<br>
@@ -298,7 +303,7 @@ All unary operators apply on a single object, element-by-element.<br>
     <tr>
       <td style="vertical-align: top; font-weight: bold;">imag<br>
       </td>
-      <td style="vertical-align: top;"><span style="font-style: italic;">Im</span>(Signal)<br>
+      <td style="vertical-align: top;">&#8465;(Signal)<br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
@@ -310,7 +315,7 @@ All unary operators apply on a single object, element-by-element.<br>
     <tr>
       <td style="vertical-align: top; font-weight: bold;">real<br>
       </td>
-      <td style="vertical-align: top;"><span style="font-style: italic;">Re</span>(Signal)<br>
+      <td style="vertical-align: top;">&#8476;(Signal)<br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
@@ -342,7 +347,7 @@ Error</span> and <span style="font-style: italic;">Monitor</span> of
 the 2nd object, resp.</li>
   <li>s3, e3 and m3 are the <span style="font-style: italic;">Signal,
 Error</span> and <span style="font-style: italic;">Monitor</span> of
-theresulting object, resp.<br>
+the resulting object, resp.<br>
   </li>
 </ul>
 When not defined the <span style="font-style: italic;">Monitor</span>
@@ -474,15 +479,15 @@ Monitors are not equivalent.<br>
 <br>
 The following example compares the <span
  style="font-weight: bold; font-style: italic;">combine</span>
-operation wit
-h the sum. The two initial data sets have a Monitor=1, so that the
+operation with the sum. The two initial data sets have a Monitor=1, so
+that the
 result is indeed the same. We plot both results onto the same figure,
 with transparency, and log-scale, shifting the 2nd plot above the first
 one.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6*.dat' ]</span>);<br>&gt;&gt; b=<span
- style="color: rgb(51, 102, 255);">combine</span>(a)<br>&gt;&gt; c=(a(1)+a(2))/2;<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">combine</span>(a)             % a is a vector<br>&gt;&gt; c=(a(1)+a(2))/2;<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>([ <span
  style="color: rgb(51, 102, 255);">log</span>(b) <span
  style="color: rgb(51, 102, 255);">log</span>(c)+5 ]); <span
@@ -506,15 +511,94 @@ and model fitting.<br>
 <br>
 The usual <span style="font-weight: bold;">min, max, mean</span>, and <span
  style="font-weight: bold;">median</span> methods can be applied onto
-iData objects, and return the corresponding statistics for the Signal,
-usually selecting one analysis for the dimension.<br>
+iData objects, and return the corresponding statistics for the Signal.
+The operation is performed for one given axis/dimension, e.g. along y,
+x, z ...<br>
+<pre style="margin-left: 40px;"><a href="images/iData_plot_1d.png"><img
+ alt="iData plot1d: std, min, max..."
+ title="iData plot1d: std, min, max..." src="images/iData_plot_1d.png"
+ style="border: 0px solid ; width: 300px; height: 266px;" align="right"></a></pre>
 The <span style="font-weight: bold;">std</span> method provides an
-easy way to determine Gaussian widths of Signal distributions along axes<br>
+easy way to determine Gaussian widths of Signal distributions along
+axes. It returns the half width and center of the Signal distribution.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>);<br>&gt;&gt; [w,x]=<span
+ style="color: rgb(51, 102, 255);">std</span>(a)<br>w =<br>    0.0036<br>x =<br>    1.0007<br>&gt;&gt; [ min(a) max(a) median(a) mean(a) ]<br>ans =<br><br>            0         7387          119       1630.7<br></pre>
+indicates that the <span style="font-style: italic;">Signal</span> is
+distributed in 1.0007 &plusmn; 0.0036, and gives min, max, ... As a
+comparison, the fit to a Gaussian function returns<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">fits</span>(a)<br>   'Amplitude'    <span
+ style="color: rgb(255, 0, 0);">'Centre'    'HalfWidth'</span>    'Background'<br>      0.67857      <span
+ style="color: rgb(255, 0, 0);"> 1.0008    0.0034641 </span>  0.00024067<br></pre>
+which is about the same as the 1st and 2nd moment estimates. Here, the <span
+ style="font-style: italic;">Amplitude</span> fit parameter is the one
+for <span style="font-style: italic;">Signal/Monitor</span>, which is
+indeed different from the value returned by <span
+ style="font-weight: bold;">max</span> when <span
+ style="font-style: italic;">Monitor</span> is not 1. Use <span
+ style="font-style: italic;">setalias(object, 'Monitor',1)</span> to
+get similar values from <span style="font-weight: bold;">fits</span>
+and <span style="font-weight: bold;">max</span> in this example.<br>
+<br>
+These operators apply iteratively on object arrays. The <span
+ style="font-style: italic;">mean</span> and <span
+ style="font-style: italic;">median</span> then point to the <span
+ style="font-style: italic;">combine</span> operator, the <span
+ style="font-style: italic;">min</span> and <span
+ style="font-style: italic;">max</span> return the minimum and maximum
+along all objects.<br>
 <br>
 <span style="font-weight: bold; font-style: italic;">Peak searching and
 model fitting</span><br>
 <br>
+The <span style="font-weight: bold;">peaks</span> method makes an
+automatic analysis of a vectorial Signal (that is projected along one
+given dimension) of an object, and determines the underlying baseline
+(background), apparent peak position and width, based on a shifting
+Gaussian estimate [see Slavic, <span style="font-style: italic;">Nucl.
+Inst. Meth.</span> <span style="font-weight: bold;">112</span> (1973)
+253 ; M. Morhac, <span style="font-style: italic;">Nucl. Inst. Meth.</span>
+<span style="font-weight: bold;">A</span> <span
+ style="font-weight: bold;">600</span> (2009) 478].&nbsp; <br>
 <br>
+<a href="images/iData_peaks.png"><img alt="iData_peaks"
+ title="iData_peaks" src="images/iData_peaks.png"
+ style="border: 0px solid ; width: 300px; height: 266px;" align="right"></a>This
+method works remarkably for signals with sharp peaks. <br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/MCA.dat' ]</span>);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">setalias</span>(a,<span
+ style="color: rgb(204, 51, 204);">'Signal'</span>,<span
+ style="color: rgb(204, 51, 204);">'Data.Counts(:,2)'</span>);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">[half_width, center, amplitude, baseline]=</span>peaks</span>(a);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(a); hold on; <br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">plot</span>(center,amplitude,<span
+ style="color: rgb(204, 51, 204);">'ro'</span>); set(gca, <span
+ style="color: rgb(204, 51, 204);">'yscale'</span>, <span
+ style="color: rgb(204, 51, 204);">'log'</span>)<br></pre>
+The first dimension (projection along rows, rank 1) is selected by
+default for the analysis, but it may be specified as the second
+argument. For broader peaks, a 3rd argument can be used to specify the
+length <span style="font-style: italic;">m</span> of the moving window
+used for the analysis, which should typically be about the number of
+point forming a peak (default is 5).<br>
+<br>
+As opposed to the <span style="font-weight: bold;">std</span> method
+shown above, which only provides one Gaussian estimate, the <span
+ style="font-weight: bold;">peaks</span> method can handle as many
+peaks as necessary, and is very fast. It also works with iData object
+arrays. This method is also used as a basis to determine some starting
+parameters for most fit functions (see the <a href="Fit.html">Fitting</a>
+and the <a href="iOptim.html">iOptim</a> pages).<br>
+<br>
+In the case where a finer peak estimate is required, or any other
+advanced model parameter determination, the <a href="Fit.html"><span
+ style="font-weight: bold;">fits</span></a> method can be used. This
+latter makes use of the <span style="font-weight: bold;">ieval</span>
+method, which evaluates a model function onto the object axes.<br>
 <h3><a class="mozTocH3" name="mozTocId981870"></a><span
  style="font-weight: bold;">interpolation/projections/integration/sum/combination</span></h3>
 <br>
@@ -527,7 +611,8 @@ Farhi - iFit/Math operators -&nbsp;</span><span
 14:15:30
 $
 $Revision:
-1.2 $</span><span style="font-style: italic;"> </span>- back to <a
+1.2
+$</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main iFit Page</a>
 </div>
 </body>
