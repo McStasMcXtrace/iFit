@@ -14,7 +14,7 @@ function b = mean(a, dim)
 % output: s: mean of elements (iData/scalar)
 % ex:     c=mean(a);
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/std, iData/combine, iData/mean
 
 if nargin < 2, dim=1; end
@@ -28,7 +28,10 @@ s=get(a,'Signal');
 cmd=a.Command;
 b=copyobj(a);
 setaxis(b, [], getaxis(b)); % delete all axes
-if dim > 0
+if dim==1 & ndims(a)==1
+  b = mean(s, dim);
+  return
+elseif dim > 0
   s = mean(s, dim);
   ax_index=1;
   for index=1:ndims(a)
@@ -42,6 +45,7 @@ elseif dim == 0
   for index=1:ndims(a)
     s = mean(s, index);
   end
+  b = s;
   return  % scalar
 else  % dim < 0
   % accumulates on all axes except the rank specified
