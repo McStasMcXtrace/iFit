@@ -11,14 +11,14 @@ function stop = fminplot(pars, optimValues, state)
   stop = false;
   
   % store data history as rows
-  if isempty(fvalHistory) | optimValues.iteration <= 1
+  if isempty(fvalHistory) | optimValues.funcount <= 1
     parsHistory = pars(:)'; 
     fvalHistory = optimValues.fval;
-    iterHistory = optimValues.iteration;
+    iterHistory = optimValues.funcount;
   else  
     parsHistory = [ parsHistory ; pars(:)' ];
     fvalHistory = [ fvalHistory ; optimValues.fval ];
-    iterHistory = [ iterHistory ; optimValues.iteration ]; 
+    iterHistory = [ iterHistory ; optimValues.funcount ]; 
   end
   
   if length(fvalHistory) > 9
@@ -31,7 +31,7 @@ function stop = fminplot(pars, optimValues, state)
   % handle figure
   h = findall(0, 'Tag', 'fminplot');
   if length(h) > 1, delete(h(2:end)); h=h(1); end
-  if isempty(h) & optimValues.iteration <=2
+  if isempty(h) & optimValues.funcount <=2
     h = figure('Tag','fminplot', 'Unit','pixels');
     tmp = get(h, 'Position'); tmp(3:4) = [500 400];
     set(h, 'Position', tmp);
@@ -41,7 +41,7 @@ function stop = fminplot(pars, optimValues, state)
   end
   
   figure(h);
-  name = [ localChar(optimValues.procedure) ' ' state ' #' num2str(optimValues.iteration) ];
+  name = [ optimValues.procedure ' ' state ' #' num2str(optimValues.funcount) ];
   try
     set(h, 'Name', name);
   catch
@@ -55,7 +55,8 @@ function stop = fminplot(pars, optimValues, state)
     iterHistory(1), fvalHistory(1),'ro', ...
     iterHistory(end), fvalHistory(end), 'rs');
   set(g(end),'MarkerFaceColor','r');
-  xlabel('iteration'); ylabel('criteria'); axis auto
+  if all(fvalHistory > 0) set(gca, 'yscale', 'log'); end
+  xlabel('Nb of Function Evaluations'); ylabel('Criteria'); axis auto
   if strcmp(state, 'done'),     title('Done'); 
   elseif strcmp(state, 'init'), title('Init'); 
   else                          title('Close figure to abort');  end

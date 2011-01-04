@@ -50,7 +50,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -75,7 +75,7 @@ if strcmp(fun,'defaults')
   pars = feval(optimizer, 'defaults');
   return
 elseif nargin < 2
-  error([ 'syntax is: ' mfilename '(optimizer, objective, parameters, ...)' ] );
+  error([ 'syntax is: ' optimizer '(optimizer, objective, parameters, ...)' ] );
 elseif nargin < 3
   error([ 'syntax is: ' localChar(optimizer) '(objective, parameters, ...)' ] );
 end
@@ -141,11 +141,8 @@ end
 
 if strcmp(options.Display,'iter')
   disp([ '** Starting minimization of ' localChar(fun) ' using algorithm ' localChar(options.algorithm) ]);
-  spars=pars(1:min(20,length(pars)));
-  spars=mat2str(spars');  % as a row
-  if length(spars) > 160, spars=[ spars(1:156) ' ...' ]; end
-  disp(sprintf('         initial parameters: %s', spars));
   disp('Func_count  min[f(x)]    Parameters');
+  fmin_private_disp(options, constraints.funcCounts, fun, pars, NaN)
 end
 
 message    = constraints.message;
@@ -227,7 +224,7 @@ case {'hooke','fminhooke'}
   [pars,histout] = hooke(pars, @(pars) objective(fun, pars), ...
                        options.MaxFunEvals, 2.^(-(0:options.MaxIter)), options.TolFun);
   iterations      = size(histout,1);
-case {'imfil','fminimfil','fminimfil2','fminimfil3'}
+case {'imfil','fminimfil'}
 % Unconstrained Implicit filtering (version 1998) ------------------------------
   [pars,fval,iterations,output] = imfil(pars, @(pars) objective(fun, pars), options); 
 case {'fminlm','LMFsolve'}
@@ -242,7 +239,7 @@ case {'fminlm','LMFsolve'}
   case -3, message='Maximum number of function evaluations reached';
   case -1, message='Termination parameter tolerance criteria reached';
   end
-case {'powell','fminpowell','fminpowell2'}
+case {'powell','fminpowell'}
 % Powell minimization ----------------------------------------------------------
   if isempty(options.Hybrid), options.Hybrid='Coggins'; end
   if strcmp(lower(options.Hybrid), 'coggins') 
@@ -250,7 +247,7 @@ case {'powell','fminpowell','fminpowell2'}
   else 
     t = 'Golden rule'; method=1;
   end
-  options.algorithm  = [ 'Powell Search (by Secchi) [' mfilename '/' t ']' ];
+  options.algorithm  = [ 'Powell Search (by Secchi) [' options.optimizer '/' t ']' ];
   constraints = constraints_minmax(pars, constraints);
   [pars,fval,exitflag,output] = powell(@(pars) objective(fun, pars), pars, options);
 case {'pso','fminpso'}
@@ -291,7 +288,7 @@ case {'SCE','fminsce'}
 case {'hPSO','fminswarmhybrid'}
   constraints = constraints_minmax(pars, constraints);
   if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
-    hoptions.algorithm = [ 'hybrid Particle Swarm Optimizer (by Leontitsis) [' mfilename '/' localChar(options.Hybrid) ']' ];
+    hoptions.algorithm = [ 'hybrid Particle Swarm Optimizer (by Leontitsis) [' options.optimizer '/' localChar(options.Hybrid) ']' ];
   else
     hoptions.algorithm = [ 'Particle Swarm Optimizer (by Leontitsis) [fminswarm]' ];
   end
@@ -415,11 +412,9 @@ return  % actual end of optimization
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
     [exitflag, message] = fmin_private_check(pars, c, ...
-       constraints.funcCounts, options, constraints.parsPrevious);
+       constraints.funcCounts, options, ...
+       constraints.parsPrevious, constraints.criteriaPrevious);
     constraints.message = message;
-    if exitflag
-      error(message); % will end optimization in try/catch
-    end
     
     % save current optimization state
     if c < sum(constraints.criteriaBest(:)), 
@@ -457,9 +452,6 @@ return  % actual end of optimization
     [exitflag, message] = fmin_private_check(pars, sum(abs(c)), ...
        constraints.funcCounts, options, constraints.parsPrevious);
     constraints.message = message;
-    if exitflag
-      error(message); % will end optimization in try/catch
-    end
     
     % save current optimization state
     if sum(c(:)) < sum(constraints.criteriaBest(:)), 
@@ -630,13 +622,13 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
 
   % normal terminations: function tolerance reached
   if ~isempty(options.TolFun) && options.TolFun
-    if (all(0 < fval) && all(fval <= options.TolFun)) && nargin < 7 % stop on lower threshold
+    if (all(0 < fval) && all(fval <= options.TolFun)) % stop on lower threshold
       istop=-1;
       message = [ 'Termination function tolerance criteria reached (fval <= options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
     end
-    if ~istop & nargin >= 7
-      if  all(abs(fval-fval_prev) < options.TolFun*abs(fval)/10) ...
+    if ~istop
+      if  all(abs(fval-fval_prev) < options.TolFun) ...
        && all(abs(fval-fval_prev) > 0)
         istop=-12;
         message = [ 'Termination function change tolerance criteria reached (delta(fval) < options.TolFun=' ...
@@ -647,9 +639,9 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
   
   % normal terminations: parameter variation tolerance reached, when function termination is also true
   if (istop==-1 || istop==-12) & nargin >= 6
-    if ~isempty(options.TolFun) & options.TolX > 0 ...
-      & all(abs(pars-pars_prev(:)) < abs(options.TolX*pars)) ...
-      & any(abs(pars-pars_prev(:)) > 0)
+    if ~isempty(options.TolFun) && options.TolX > 0 ...
+      && all(abs(pars(:)-pars_prev(:)) < abs(options.TolX*pars(:))) ...
+      && any(abs(pars(:)-pars_prev(:)) > 0)
       istop=-5;
       message = [ 'Termination parameter tolerance criteria reached (delta(parameters)/parameters <= options.TolX=' ...
             num2str(options.TolX) ')' ];
@@ -677,7 +669,6 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
         elseif funccount  <= 5, optimValues.state='init';
         else                    optimValues.state='iter'; end
       end
-      optimValues.iteration  = iterations;
       optimValues.funcount   = funccount;
       optimValues.fval       = sum(fval(:));
       if isfield(options,'procedure'),        optimValues.procedure=options.procedure;
@@ -689,6 +680,8 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
         message = 'Algorithm was terminated by the output function (options.OutputFcn)';
       end
     end
+    
+    fmin_private_disp(options, funccount, options.optimizer, pars, fval)
   end
   
 % return code     message
