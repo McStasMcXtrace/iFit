@@ -59,20 +59,22 @@ object Signal with axes.<br>
 a
 model
 to
-the Data</h3>
+the
+Data</h3>
 The <span style="font-style: italic; font-weight: bold;">fits</span>
 function for <a href="iData.html">iData</a> objects provides a simple
 mean to find the best model parameters which fit a data set. <br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; p=<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; p=<span
  style="color: rgb(51, 102, 255);">fits</span>(a<span
  style="color: rgb(204, 51, 204);"></span>);<br>'Amplitude'    'Centre'    'HalfWidth'    'Background'<br> 0.6786         1.0008      0.0035         0.0002<br></pre>
 will fit the data <span style="font-style: italic;">Signal/Monitor</span>
 to a default 1D Gaussian function <span style="font-style: italic;">'gauss'</span>,
 starting
 from
-automatically guessed
+automatically
+guessed
 initial model parameters. Of course, it is possible to chose explicitly
 the model function, and the starting parameter set with e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; p=<span
@@ -96,7 +98,8 @@ are guessed :<br>
  style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>In
 order
 to
-estimate the values of the model for the fit parameters
+estimate
+the values of the model for the fit parameters
 onto the data set axes, one can use the <span
  style="font-style: italic; font-weight: bold;">ieval</span> method,
 which is the same as Matlab <span
@@ -339,7 +342,7 @@ a structure which members enable to tune the behavior of the
 optimization process. Each of the fields can be changed, e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; <span
  style="color: rgb(255, 0, 0);">options</span>=<span
  style="color: rgb(51, 102, 255);"></span><span
  style="color: rgb(51, 102, 255);"></span><span
@@ -397,7 +400,7 @@ facility has been implemented as the <span
 function:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; options=<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; options=<span
  style="color: rgb(51, 102, 255);"></span><span
  style="color: rgb(51, 102, 255);">fminimfil</span>(<span
  style="color: rgb(204, 51, 204);">'defaults'</span>)<br>&gt;&gt; options.<span
@@ -424,7 +427,8 @@ function:<br>
  style="font-style: italic;">options.OutputFcn='fminplot' </span>window
 on
 the
-right, showing the criteria evolution with the optimization
+right,
+showing the criteria evolution with the optimization
 iteration and the 3 first fit parameters. The <span
  style="color: rgb(255, 0, 0);">red</span> dot indicates the
 current/final parameter set and criteria. <span
@@ -463,7 +467,7 @@ need to define <span style="font-style: italic;">constraints</span> as
 a vector with 0 for free parameters, and 1 for fixed parameters, e.g. :<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; p=<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; p=<span
  style="color: rgb(51, 102, 255);">fits</span>(a, <span
  style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span
  style="color: rgb(204, 51, 204);">'fminimfil'</span>, [ <span
@@ -491,7 +495,7 @@ This can be done by setting the 5th fits argument to the lower bounds<span
  style="font-style: italic;">ub</span>, e.g. :<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>)<br>&gt;&gt; p=<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; p=<span
  style="color: rgb(51, 102, 255);">fits</span>(a, <span
  style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span
  style="color: rgb(204, 51, 204);">'fminimfil'</span>, <span
@@ -545,7 +549,7 @@ and compute the corresponding standard deviation of the parameter
 distributions :<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>);<br>&gt;&gt; [p,criteria,message,output]= <span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; [p,criteria,message,output]= <span
  style="color: rgb(51, 102, 255);">fits</span>(a, <span
  style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span
  style="color: rgb(204, 51, 204);">'fminimfil'</span>);<br>&gt;&gt; index=<span
@@ -568,7 +572,8 @@ important, but a +100% extent is probably realistic in most cases.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData fitting - </span><span style="font-style: italic;">$Date:
-2010-11-22 14:15:30 $ $Revision:
+2010-11-22
+14:15:30 $ $Revision:
 1.2 $</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main iFit Page</a>
 </div>
