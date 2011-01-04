@@ -13,7 +13,9 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
 %         baseline:   baseline (background) (iData)
 % ex:     c=peaks(a);
 %
-% Version: $Revision: 1.4 $
+% References: Slavic, NIM 112 (1973) 253 ; M. Morhac, NIM A 600 (2009) 478 
+%
+% Version: $Revision: 1.5 $
 % See also iData, iData/median, iData/mean, iData/std
 
 % inline functions: BaseLine, PeakWidth
@@ -40,12 +42,12 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
   b = camproj(a, abs(dim));
 
   % then we compute sum(axis{dim}.*Signal)/sum(Signal)
-  signal = get(b,'Signal'); 
+  
   % first we make sure the axis is regularly sampled
-  signal = signal(:);
   x = getaxis(b,1);
   new_x      = min(x):min(diff(x)):max(x);
-  signal = interp1(x, signal, new_x);
+  b = interp(b, new_x);
+  signal = get(b,'Signal'); 
   signal = signal(:);
   baseline = BaseLine(signal, m);
 
