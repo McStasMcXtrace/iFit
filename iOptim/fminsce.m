@@ -43,7 +43,7 @@ function [pars,fval,exitflag,output] = fminsce(varargin)
 %          OUTPUT additional information returned as a structure.
 %
 % Reference: Q. Y. Duan et al, J. of Opt. Th. and Appl. 76 (1993) 501.
-% Contrib:   2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be
+% Contrib:   2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be [SCE]
 
 % default options for optimset
 if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
