@@ -45,9 +45,9 @@ function [pars,fval,exitflag,output] = fmincgtrust(varargin)
 %   Fletcher, R., Computer Journal 1970, 13, 317-322
 %   Goldfarb, D., Mathematics of Computation 1970, 24, 23-26
 %   Shanno, D. F.,Mathematics of Computation 1970, 24, 647-656
-% Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [bfgswopt]
+% Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [cgtrust]
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: fminsearch, optimset
 
 % default options for optimset

@@ -54,9 +54,9 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 % IEEE Int Conf. on Evol Comput pp. 69-73. IEEE Press, Piscataway, NJ, 1998
 %
 % Contrib:
-% Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004
+% Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004 [hPSO]
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, optimset
 
 % this is a wrapper to fminswarmhybrid, without hybrid optimizer

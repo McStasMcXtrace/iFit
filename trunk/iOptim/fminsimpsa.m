@@ -46,10 +46,11 @@ function [pars,fval,exitflag,output] = fminsimpsa(varargin)
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Reference: Section 10.4 and 10.9 in "Numerical Recipes in C",
-% ISBN 0-521-43108-5, and the paper of Cardoso et al, 1996.
+% Reference: Section 10.4 and 10.9 in "Numerical Recipes in C", ISBN 0-521-43108-5
+%   Cardoso, Salcedo, Feyo de Azevedo and Bardosa, Comp. Chem Engng, 21 (1997) 1349
+%   Kirkpatrick, J. Stat. Phys. 34 (1984) 975.
 % Contrib:   2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be
-% Systems Biology Toolbox for MATLAB, 2005 Henning Schmidt, FCC, henning@fcc.chalmers.se
+% Systems Biology Toolbox for MATLAB, 2005 Henning Schmidt, FCC, henning@fcc.chalmers.se [SIMPSA]
 
 % default options for optimset
 if nargin == 0 || (nargin == 1 && strcmp(varargin,'defaults'))
