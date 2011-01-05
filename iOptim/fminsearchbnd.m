@@ -41,12 +41,12 @@ function [pars,fval,exitflag,output] = fminsearchbnd(varargin)
 %          FVAL is the value of the FUN function evaluated at MINIMUM.
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
-% Reference: Reference: Jeffrey C. Lagarias, James A. Reeds, Margaret H. Wright,
+% Reference: Jeffrey C. Lagarias, James A. Reeds, Margaret H. Wright,
 %   Paul E. Wright, "Convergence Properties of the Nelder-Mead Simplex
 %   Method in Low Dimensions", SIAM Journal of Optimization, 9(1):
 %   p.112-147, 1998.
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: fminsearch, optimset
 
 % default options for optimset
