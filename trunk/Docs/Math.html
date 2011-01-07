@@ -460,10 +460,14 @@ weighted addition<br>
 All these operations find intersection between objects (when axes are <span
  style="font-style: italic;">e.g</span>. partly overlapping), rebin
 objects when axes have a different sampling, and then perform the
-mathematical operation. <br>
+mathematical operation. The objects need not as well be of the same
+dimensionalities. In case some objects have a lower dimensionilites,
+they are extended along missing dimensions (by mere duplication) so
+that the operation can be performed.<br>
 <br>
-The combine operation performs a weighted sum, using the <span
- style="font-style: italic;">Monitor</span> as the weight. This is of
+The <span style="font-weight: bold;">combine</span> operation performs
+a weighted sum, using the <span style="font-style: italic;">Monitor</span>
+as the weight. This is of
 great use when merging results from similar experiments, possibly
 performed in slightly different configurations (<span
  style="font-style: italic;">e.g.</span> counting time, statistics,
@@ -566,7 +570,9 @@ Inst. Meth.</span> <span style="font-weight: bold;">112</span> (1973)
 <a href="images/iData_peaks.png"><img alt="iData_peaks"
  title="iData_peaks" src="images/iData_peaks.png"
  style="border: 0px solid ; width: 300px; height: 266px;" align="right"></a>This
-method works remarkably for signals with sharp peaks. <br>
+method
+works remarkably for signals with sharp peaks. The following example
+displays the automatically found peaks on top of the object view:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(204, 51, 204);">[ ifitpath 'Data/MCA.dat' ]</span>);<br>&gt;&gt; <span
@@ -584,7 +590,7 @@ default for the analysis, but it may be specified as the second
 argument. For broader peaks, a 3rd argument can be used to specify the
 length <span style="font-style: italic;">m</span> of the moving window
 used for the analysis, which should typically be about the number of
-point forming a peak (default is 5).<br>
+point forming a peak (default is about 5).<br>
 <br>
 As opposed to the <span style="font-weight: bold;">std</span> method
 shown above, which only provides one Gaussian estimate, the <span
@@ -601,6 +607,24 @@ latter makes use of the <span style="font-weight: bold;">ieval</span>
 method, which evaluates a model function onto the object axes.<br>
 <h3><a class="mozTocH3" name="mozTocId981870"></a><span
  style="font-weight: bold;">interpolation/projections/integration/sum/combination</span></h3>
+There are a number of methods used to extract projected and summed
+objects. Technically, the projection on one axis is the sum along all
+other axis. <br>
+In the following example, the imported object is assigned two axes, and
+we then <br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">xlabel</span>(a, <span
+ style="color: rgb(204, 51, 204);">'Time channel'</span>);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">ylabel</span>(a, <span
+ style="color: rgb(204, 51, 204);">'Angle channel'</span>);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>([ <span
+ style="color: rgb(51, 102, 255);">log</span>(a) <span
+ style="color: rgb(51, 102, 255);">log</span>(<span
+ style="color: rgb(51, 102, 255);">camproj</span>(a)) <span
+ style="color: rgb(51, 102, 255);">log</span>(<span
+ style="color: rgb(51, 102, 255);">sum</span>(a)) ]);<br></pre>
 <br>
 <br>
 <hr style="width: 100%; height: 2px;">
