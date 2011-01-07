@@ -11,13 +11,19 @@ function a = label(a, alias, lab)
 % output: b: object or array (iData)
 % ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
 
 if nargin < 2, alias=[]; end
 if isempty(alias), a=a.Label; return; end
 if isnumeric(alias)
 	[link, lab0] = getaxis(a, num2str(alias));
+	if isempty(link) && isnumeric(alias)
+    % this axis does not exist yet, need to create it
+    val = getaxis(a, alias); % get the value
+    a   = setaxis(a, alias, val);
+    [link, lab0] = getaxis(a, num2str(alias));
+  end
 else
 	[link, lab0] = getalias(a, alias);
 end
@@ -26,6 +32,7 @@ if nargin == 2
   a=lab0; 
   return
 end
+
 lab = regexprep(lab,'\s+',' '); % remove duplicated spaces
 cmd=a.Command;
 if isnumeric(alias)
