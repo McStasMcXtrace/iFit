@@ -28,7 +28,7 @@ searching</a></li>
 <br>
 <h3><a class="mozTocH3" name="mozTocId725083"></a>A reminder on axes,
 monitors and signal errors</h3>
-The iData objets have been designed keeping in mind that any
+The iData objects have been designed keeping in mind that any
 measurement <span style="font-style: italic;">Signal</span> is
 recorded as a function of <span style="font-style: italic;">Axes</span>
 (e.g. time, energy, ...) and corresponds to a measurement quantity
@@ -457,13 +457,42 @@ weighted addition<br>
   </tbody>
 </table>
 <br>
-All these operations find intersection between objects (when axes are <span
- style="font-style: italic;">e.g</span>. partly overlapping), rebin
+All these operations find intersection &#8745; between objects (when axes are
+<span style="font-style: italic;">e.g</span>. partly overlapping),
+rebin
 objects when axes have a different sampling, and then perform the
 mathematical operation. The objects need not as well be of the same
-dimensionalities. In case some objects have a lower dimensionilites,
+dimensionalities, in which case they are extended to match the highest
+dimensionality object. In case some objects have a lower
+dimensionalites,
 they are extended along missing dimensions (by mere duplication) so
-that the operation can be performed.<br>
+that the operation can be performed. <br>
+<br>
+<a href="images/iData_plus_extend_dims.png"><img
+ alt="iData plus 1D and 2D: intserction, extend and monitor"
+ title="iData plus 1D and 2D: intserction, extend and monitor"
+ src="images/iData_plus_extend_dims.png"
+ style="border: 0px solid ; width: 200px; height: 362px;" align="right"></a>The
+following example adds a 2D data set with a 1D data set, which is
+extended. The intersection selects only the positive axis values from
+the 1D object. As the 2D object has no default Monitor (set to 1), this
+latter is set to 1/10 of the corresponding mean value in the 1D object
+(if not done so the IN6 data is under weighted compared with the IN20
+data for which Monitor is high). The red and green arrow indicate how
+the data is added, and the 1D data set extended.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; b = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN20.dat' ]</span>); <span
+ style="color: rgb(51, 102, 255);"><br><span
+ style="color: rgb(0, 0, 0);">&gt;&gt; </span>set</span>(a,<span
+ style="color: rgb(204, 51, 204);">'Monitor'</span>, <span
+ style="color: rgb(51, 102, 255);">mean</span>(b.Monitor)/10);<br>&gt;&gt; c = a+b;<br></pre>
+<span style="color: rgb(255, 0, 0); font-weight: bold;">Warning: </span>It
+is important to check that the axes and Monitors values are consistent
+when performing binary operations, otherwise the intersection may be
+empty, or the corresponding Signal weighting may be wrong.<br>
 <br>
 The <span style="font-weight: bold;">combine</span> operation performs
 a weighted sum, using the <span style="font-style: italic;">Monitor</span>
@@ -571,7 +600,8 @@ Inst. Meth.</span> <span style="font-weight: bold;">112</span> (1973)
  title="iData_peaks" src="images/iData_peaks.png"
  style="border: 0px solid ; width: 300px; height: 266px;" align="right"></a>This
 method
-works remarkably for signals with sharp peaks. The following example
+works
+remarkably for signals with sharp peaks. The following example
 displays the automatically found peaks on top of the object view:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(<span
@@ -600,31 +630,94 @@ arrays. This method is also used as a basis to determine some starting
 parameters for most fit functions (see the <a href="Fit.html">Fitting</a>
 and the <a href="iOptim.html">iOptim</a> pages).<br>
 <br>
-In the case where a finer peak estimate is required, or any other
+In the case where a better peak estimate is required, or any other
 advanced model parameter determination, the <a href="Fit.html"><span
  style="font-weight: bold;">fits</span></a> method can be used. This
 latter makes use of the <span style="font-weight: bold;">ieval</span>
 method, which evaluates a model function onto the object axes.<br>
 <h3><a class="mozTocH3" name="mozTocId981870"></a><span
  style="font-weight: bold;">interpolation/projections/integration/sum/combination</span></h3>
-There are a number of methods used to extract projected and summed
+<a href="images/iData_sum_camproj.png"><img
+ alt="iData: sum and projection" title="iData: sum and projection"
+ src="images/iData_sum_camproj.png"
+ style="border: 0px solid ; width: 200px; height: 408px;" align="right"></a>There
+are a number of methods used to extract projected and summed
 objects. Technically, the projection on one axis is the sum along all
 other axis. <br>
+<br>
+<div style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">sum</span>(a,
+rank) = &#8721; <span style="font-style: italic;">Signal</span>(rank axis
+index)<br>
+<br>
+<span style="color: rgb(51, 102, 255);">camproj</span>(a, rank) = &#8721; <span
+ style="font-style: italic;">Signal</span>(all axes except rank)<br>
+</div>
+<br>
 In the following example, the imported object is assigned two axes, and
-we then <br>
+we then display the difference between the <span
+ style="font-weight: bold;">sum</span> and the projection with <span
+ style="font-weight: bold;">camproj, </span>onto the 1st axis (y). Of
+course this can be changed by specifying explicitelly the desired axis
+rank used for operation as the second argument.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">xlabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'Time channel'</span>);<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'Time channel'</span>); % 2nd axis<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">ylabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'Angle channel'</span>);<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'Angle channel'</span>);% 1st axis<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">subplot</span>([ <span
  style="color: rgb(51, 102, 255);">log</span>(a) <span
  style="color: rgb(51, 102, 255);">log</span>(<span
  style="color: rgb(51, 102, 255);">camproj</span>(a)) <span
  style="color: rgb(51, 102, 255);">log</span>(<span
- style="color: rgb(51, 102, 255);">sum</span>(a)) ]);<br></pre>
+ style="color: rgb(51, 102, 255);">sum</span>(a)) ],<span
+ style="color: rgb(204, 51, 204);">'tight'</span>);<br></pre>
+The <span style="font-weight: bold;">camproj</span> method always
+retunrs a 1D result (or a single value). The <span
+ style="font-weight: bold;">sum</span> reduces the dimensionality of
+the object by the number of axes summed. Similarly, the prod method
+compute the multplication along a given axis:<br>
+<br>
+<div style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">prod</span>(a,
+rank) = &#8719; <span style="font-style: italic;">Signal</span>(rank axis
+index)<br>
+</div>
+<br>
+The summation with the <span style="font-weight: bold;">sum</span>
+method does not take into account the axes values. In the case a proper
+integration is needed, the <span style="font-weight: bold;">trapz</span>
+method can be used for integration using the trapezoidal approximation
+on the axis values and step <span style="font-style: italic;">dx</span><br>
+<br>
+<div style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">trapz</span>(a)
+= &#8747; <span style="font-style: italic;">Signal</span>(rank axis) <span
+ style="font-style: italic;">dx</span><br>
+</div>
+<br>
+<a href="images/iData_cumsum.png"><img alt="iData: cumulated sum"
+ title="iData: cumulated sum" src="images/iData_cumsum.png"
+ style="border: 0px solid ; width: 200px; height: 272px;" align="right"></a>which
+will reduce the dimensionality, and be roughtly equivalent to <span
+ style="font-weight: bold;">sum</span> when <span
+ style="font-style: italic;">dx</span>=1.<br>
+<br>
+Last, the <span style="font-style: italic;">cumulated</span> versions
+of sum and prod, <span style="font-weight: bold;"> cumsum</span> and <span
+ style="font-weight: bold;">cumprod, </span>return objects of same
+dimensionality for which the operation is performed gradually along the
+chosen axis. The last slice along the axis contains the sum and prod
+results.<br>
+<br>
+In the following example, the sum along the first dimension (y=Angle
+channel) reveals that the monitor peak only exists in first angular
+channel, resulting in a constant line (right side of the sum), whereas
+the elastic line, is gradually summed over all angle channels, showing
+inelastic constribution on its shoulders.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>([ (a) <span
+ style="color: rgb(51, 102, 255);">cumsum</span>(a) ] ,<span
+ style="color: rgb(204, 51, 204);">'tight'</span>)</pre>
 <br>
 <br>
 <hr style="width: 100%; height: 2px;">

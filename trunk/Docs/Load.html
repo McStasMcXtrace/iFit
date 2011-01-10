@@ -16,10 +16,12 @@
 file (iData,
 load) </a></li>
   <li><a href="#mozTocId59221">Supported data formats</a></li>
+  <li><a href="#mozTocId782211">Exemple data files</a></li>
   <li><a href="#mozTocId141862">Importing directly
 from
 Matlab variables</a></li>
-  <li><a href="#mozTocId755882">Importing from Matlab Figures</a></li>
+  <li><a href="#mozTocId755882">Importing from Matlab
+Figures</a></li>
   <li><a href="#mozTocId672193">How it works
 (looktxt, iLoad, iFiles) </a></li>
 </ol>
@@ -70,13 +72,22 @@ access to compressed files (.zip, .gz).<img
 Directory may be imported (and thus all files within), as well as lists
 of files
 <div style="margin-left: 40px;">
-<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(204, 51, 204);">'iFit/Data'</span>);</pre>
-<pre>&gt;&gt; a = i<span style="color: rgb(51, 102, 255);">Data</span>({<span
- style="color: rgb(204, 51, 204);">'iFit/Data/*.dat'</span> ,...<br><span
- style="color: rgb(204, 51, 204);">'iFit/Data/sv1850.scn'</span>,...<br><span
- style="color: rgb(204, 51, 204);">'iFit/Data/sv1884.scn'</span>,...<br><span
- style="color: rgb(204, 51, 204);">'iFit/Data/sv4700.scn'</span>});<br></pre>
+<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>( <span
+ style="color: rgb(204, 51, 204);">[ ifitpath '</span><span
+ style="color: rgb(204, 51, 204);">Data' ]</span>);</pre>
+<pre>&gt;&gt; a = i<span style="color: rgb(51, 102, 255);">Data</span>({ <span
+ style="color: rgb(204, 51, 204);">[ ifitpath </span><span
+ style="color: rgb(204, 51, 204);">'Data/*.dat' ]</span> ,...<br><span
+ style="color: rgb(204, 51, 204);"></span><span
+ style="color: rgb(204, 51, 204);">[ ifitpath </span><span
+ style="color: rgb(204, 51, 204);">'</span><span
+ style="color: rgb(204, 51, 204);">Data/sv1850.scn' ]</span>,...<br><span
+ style="color: rgb(204, 51, 204);">[ ifitpath </span><span
+ style="color: rgb(204, 51, 204);">'</span><span
+ style="color: rgb(204, 51, 204);">Data/sv1884.scn'</span> ],...<br><span
+ style="color: rgb(204, 51, 204);">[ ifitpath </span><span
+ style="color: rgb(204, 51, 204);">'</span><span
+ style="color: rgb(204, 51, 204);">Data/sv4700.scn'</span> ]});<br></pre>
 </div>
 which returns an array of iData objects.<br>
 A <a href="../iFiles/doc/uigetfiles.html">file selector</a>,
@@ -166,6 +177,55 @@ The current method list is:<img style="width: 340px; height: 338px;"
 </ul>
 Additional data formats can be added easily, as explained in the <a
  href="iFiles.html">iFiles</a> help pages.<br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId782211"></a>Example data files</h3>
+<a href="images/iFit_Data.png"><img alt="iFit: example Data"
+ title="iFit: example Data" src="images/iFit_Data.png"
+ style="border: 0px solid ; width: 300px; height: 266px;" align="right"></a>The
+iFit
+package
+provides a set of example data files used to demonstrate
+the functionalities of the package.<br>
+<ul>
+  <li><span style="font-weight: bold;">ILL_D10.dat</span>: some D10
+neutron diffractometer measurement at the ILL<br>
+  </li>
+  <li><span style="font-weight: bold;">ILL_IN20.dat</span>: some IN20
+neutron triple-axis diffractometer at the ILL<br>
+  </li>
+  <li><span style="font-weight: bold;">ILL_IN6.dat</span>: some IN6
+neutron time of flight spectrometer at the ILL</li>
+  <li><span style="font-weight: bold;">ILL_IN6_2.dat</span>: some IN6
+neutron time of flight spectrometer at the ILL</li>
+  <li><span style="font-weight: bold;">MCA.dat</span>: some Canberra
+multichannel anamyzer data (from a Brillouin light scattering
+spectrometer)<br>
+  </li>
+  <li><span style="font-weight: bold;">SPEC.dat</span>: some ESRF data<br>
+  </li>
+  <li><span style="font-weight: bold;">sv1850.scn</span>: some IN12
+neutron triple-axis diffractometer at the ILL</li>
+  <li><span style="font-weight: bold;">sv1884.scn</span>: some IN12
+neutron triple-axis diffractometer at the ILL</li>
+  <li><span style="font-weight: bold;">sv4700.scn</span>: some IN12
+neutron triple-axis diffractometer at the ILL</li>
+</ul>
+All of these can be directly accessed with e.g.<br>
+<pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span
+ style="color: rgb(0, 0, 0);">&gt;&gt; b = </span>iData</span>(<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data' filesep <span
+ style="color: rgb(0, 0, 0);">filename</span> ]</span>);<br>&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data'<span
+ style="color: rgb(0, 0, 0);"></span> ]</span>);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>(a, <span
+ style="color: rgb(204, 51, 204);">'tight'</span>)<br></pre>
+The empty iData object &#8709; can be obtained from:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">iData</span><br>&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">zeros</span>(<span
+ style="color: rgb(51, 102, 255);">iData</span>, size)<br></pre>
+<br>
 <h3><a class="mozTocH3" name="mozTocId141862"></a>Importing directly
 from
 Matlab variables</h3>
@@ -227,8 +287,11 @@ and
 searches
 for
 the
-file extension and
-patterns in the file contents (in the case of text files) in order to
+file
+extension
+and
+patterns
+in the file contents (in the case of text files) in order to
 identify the proper importation method to use.<br>
 <br>
 The text files are processed with the <a
@@ -247,7 +310,10 @@ read
 into
 the
 workspace.
-Binary files are read with dedicated read routines, as it is
+Binary
+files
+are
+read with dedicated read routines, as it is
 usually not possible to interpret correctly the file structure <span
  style="font-style: italic;">ab-initio</span>. <br>
 <br>
@@ -274,7 +340,7 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span
- style="font-style: italic;">$Date: 2010-12-21 15:33:00 $ $Revision:
+ style="font-style: italic;">$Date: 2011-01-10 22:55:30 $ $Revision:
 1.4 $</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main
 iFit
