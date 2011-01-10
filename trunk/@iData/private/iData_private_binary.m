@@ -126,7 +126,7 @@ case {'plus','minus','combine'}
 	catch
 		  e2=[];
 	end
-  if p1 & ~all(m3 == 0), s3 = s3.*m3; e3=e3.*m3; end
+  if p1 & ~all(m3 == 0), s3 = genop( @times, s3, m3); e3=genop(@times, e3, m3); end
 case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'}
   s3 = genop(op, y1, y2);
   if p1, 
@@ -138,18 +138,18 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'}
       m3=[];
     end
   else m3=get(c,'Monitor'); end
-  if p1 & ~all(m3 == 0), s3 = s3.*m3; end
+  if p1 & ~all(m3 == 0), s3 = genop( @times, s3, m3); end
   try
     e1s1 = (e1./s1).^2; e1s1(find(s1 == 0)) = 0;
     e2s2 = (e2./s2).^2; e2s2(find(s2 == 0)) = 0;
-    e3 = sqrt(genop(@plus, e1s1, e2s2)).*s3;
+    e3 = genop(@times, sqrt(genop(@plus, e1s1, e2s2)), s3);
   catch
     e3=[];
   end
 case {'power'}
   if p1, m3 = genop(op, m1, m2); else m3=get(c,'Monitor'); end
   s3 = genop(op, y1, y2);
-  if p1 & ~all(m3 == 0), s3 = s3.*m3; end
+  if p1 & ~all(m3 == 0), s3 = genop( @times, s3, m3);; end
   try
     e2logs1 = genop(@times, e2, log(s1)); e2logs1(find(s1<=0))   = 0;
     s2e1_s1 = genop(@times, s2, e1./s1);  s2e1_s1(find(s1 == 0)) = 0;
@@ -161,7 +161,7 @@ case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'}
   s3 = genop(op, y1, y2);
   try
     e3 = sqrt(genop( op, d1.^2, d2.^2));
-    e3 = 2*e3./genop(@plus, y1, y2); % normalize error to mean signal
+    e3 = 2*genop(@divide, e3, genop(@plus, y1, y2)); % normalize error to mean signal
   catch
     e3=[];
   end
@@ -172,7 +172,15 @@ otherwise
   iData_private_error('binary',['Can not apply operation ' op ' on objects ' a ' and ' b '.' ]);
 end
 
-% update object
+% ensure that Monitor and Error have the right dimensions
+if numel(e3) ~= 1 && numel(e3) ~= numel(s3)
+  e3 = genop(@times, e3, ones(size(s3)));
+end
+if numel(m3) ~= 1 && numel(m3) ~= numel(s3)
+  m3 = genop(@times, m3, ones(size(s3)));
+end
+
+% update object (store result)
 if strcmp(op, 'combine')  % dimension of result might change from original object. 
                           % Can not store, thus redefine aliases as numerical values
   c = setalias(c, 'Signal', s3);
