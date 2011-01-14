@@ -69,6 +69,12 @@ if ischar(filename) & length(filename) > 0
   if strncmp(filename, 'file://', length('file://'))
     filename = filename(8:end); % remove 'file://' from name
   end
+  
+  % handle / to \ substitution for Windows systems, not in URLs
+  if ispc && ~(strncmp(filename, 'http://', length('http://')) | strncmp(filename, 'ftp://', length('ftp://')))
+    filename = strrep(filename, '/', filesep);
+  end
+  
   if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
   
   % handle single file name (possibibly with wildcard)
