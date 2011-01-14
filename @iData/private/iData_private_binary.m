@@ -73,6 +73,17 @@ if isa(a, 'iData')
 elseif isa(b, 'iData')
   cmd=b.Command;
 end
+
+% handle special case of operation with transposed 1D data set and an other one
+if (isvector(a) && size(a,1)==1 && ~isscalar(b) && ~isvector(b)) || ...
+   (isvector(b) && size(b,1)==1 && ~isscalar(a) && ~isvector(a))
+  transpose_ab = 1;
+  a = transpose(a);
+  b = transpose(b);
+else
+  transpose_ab = 0;
+end
+
 % get Signal, Error and Monitor for 'a' and 'b'
 if isa(a, 'iData') & isa(b, 'iData') 
   if strcmp(op, 'combine')
@@ -81,6 +92,7 @@ if isa(a, 'iData') & isa(b, 'iData')
     [a,b] = intersect(a,b); % perform operation on intersection
   end
 end
+
 % the p1 flag is true when a monitor normalization is required
 if strcmp(op, 'combine'), p1 = 0; else p1 = 1; end
 if ~isa(a, 'iData') 
@@ -167,9 +179,9 @@ case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'}
   end
   m3 = 1;
 otherwise
-  if isa(a,'iData'), a=a.Tag; else a=num2str(a); end
-  if isa(b,'iData'), b=b.Tag; else b=num2str(b); end
-  iData_private_error('binary',['Can not apply operation ' op ' on objects ' a ' and ' b '.' ]);
+  if isa(a,'iData'), al=a.Tag; else al=num2str(a); end
+  if isa(b,'iData'), bl=b.Tag; else bl=num2str(b); end
+  iData_private_error('binary',['Can not apply operation ' op ' on objects ' al ' and ' bl '.' ]);
 end
 
 % ensure that Monitor and Error have the right dimensions
@@ -180,15 +192,14 @@ if numel(m3) ~= 1 && numel(m3) ~= numel(s3)
   m3 = genop(@times, m3, ones(size(s3)));
 end
 
-% update object (store result)
-if strcmp(op, 'combine')  % dimension of result might change from original object. 
-                          % Can not store, thus redefine aliases as numerical values
-  c = setalias(c, 'Signal', s3);
-  c = setalias(c, 'Error', abs(e3));
-  c = setalias(c, 'Monitor', m3);
-else
-  c = set(c, 'Signal', s3, 'Error', abs(e3), 'Monitor', m3);
+% handle special case of operation with transposed 1D data set and an other one
+if transpose_ab==1
+  s3 = transpose(s3);
+  e3 = transpose(e3);
+  m3 = transpose(m3);
 end
+
+% set Signal label
 if isa(a, 'iData'), [dummy, al] = getaxis(a,'0'); 
 else 
   al=num2str(a); if length(al) > 10, al=[ al(1:min(length(al),10)) '...' ]; end 
@@ -197,7 +208,18 @@ if isa(b, 'iData'), [dummy, bl] = getaxis(b,'0');
 else 
   bl=num2str(b); if length(bl) > 10, bl=[ bl(1:min(length(bl),10)) '...' ]; end 
 end
-setalias(c, 'Signal', s3, [ op '(' al ',' bl ')' ]);
+
+% update object (store result)
+if strcmp(op, 'combine')  % dimension of result might change from original object. 
+                          % Can not store, thus redefine aliases as numerical values
+  c = setalias(c, 'Signal', s3, [ op '(' al ',' bl ')' ]);
+  c = setalias(c, 'Error', abs(e3));
+  c = setalias(c, 'Monitor', m3);
+else
+  c = set(c, 'Signal', s3, 'Error', abs(e3), 'Monitor', m3);
+  setalias(c, 'Signal', s3, [ op '(' al ',' bl ')' ]);
+end
+
 c.Command=cmd;
 c = iData_private_history(c, op, a,b);
 
