@@ -11,7 +11,7 @@ function [ai,bi] = union(a, b)
 % output: b: object or array (iData)
 % ex:     b=union(a, a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/setaxis, iData/getaxis, iData/intersect
 
 if nargin == 2
@@ -38,7 +38,7 @@ end
 if all_identical_axes, ai=a; bi=[]; return; end
 
 % compute common axes
-c_axis = iData_private_caxis(a);
+c_axis = iData_private_caxis(a,'union');
 
 % loop on all iData to interpolate
 ai = a; bi=[];

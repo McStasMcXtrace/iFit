@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -287,12 +287,10 @@ if ~strcmp(a_class, 'double')
   i_monitor= feval(a_class, i_monitor);
 end
 
-if isvector(a_signal)
-  if size(a_signal,1)==1
+if isvector(a_signal) && size(a_signal,1)==1
     i_signal = transpose(i_signal);
     i_error  = transpose(i_error);
     i_monitor= transpose(i_monitor);
-  end
 end
 
 % transfer Data and Axes
