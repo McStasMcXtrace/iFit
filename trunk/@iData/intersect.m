@@ -12,7 +12,7 @@ function [ai,bi] = intersect(a, b)
 %         bi: object or array (iData)
 % ex:     b=intersect(a, a);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/setaxis, iData/getaxis, iData/interp, iData/union
 
 if nargin == 2
@@ -38,40 +38,8 @@ end
 % return if using identical axes: no need to interpolate. retain axes and data.
 if all_identical_axes, ai=a; bi=[]; return; end
 
-% determine largest dimensionality
-max_ndims=max(ndims(a));
-
-% initiate new axes
-for index=1:max_ndims
-  c_step{index} =  Inf;
-  c_min{index}  = -Inf;
-  c_max{index}  =  Inf;
-  c_len{index}  =  0;
-end
-
-% loop on all iData to find intersection area
-for index=1:length(a)
-  if ndims(a(index)) ~= ndims(a(1))
-    iData_private_warning(mfilename, [ 'Object intersection requires same dimensionality.\n\tobject ' inputname(1) ' ' a(1).Tag ' is ' num2str(ndims(a(1))) ' but object ' a(index).Tag ' is ' num2str(ndims(a(index))) '. Extending object.' ]);
-  end
-  for j_ax = 1:max_ndims  % for each dimension
-    if j_ax <= ndims(a(index))
-      x = getaxis(a(index), j_ax); x=unique(x(:));    % extract axis, and remove duplicates. diff > 0
-      c_step{j_ax} = min(min(diff(x)), c_step{j_ax}); % smallest step
-      c_min{j_ax}  = max(min(x), c_min{j_ax});        % highest min
-      c_max{j_ax}  = min(max(x), c_max{j_ax});        % lowest max
-      c_len{j_ax}  = c_len{j_ax} + length(x);         % cumulated axes length
-    end
-  end
-end
-
-% build new axes
-for j_ax = 1:max_ndims % for each dimension
-  c_len{j_ax} = c_len{j_ax}/length(a);                  % mean axis length from original data
-  len         = (c_max{j_ax}-c_min{j_ax})/c_step{j_ax}; % theoretical axis length
-  c_len{j_ax} = min(len, 10*c_len{j_ax});               % can not extend axes more than 10 times
-  c_axis{j_ax} = linspace(c_min{j_ax}, c_max{j_ax}, c_len{j_ax});
-end
+% compute common axes
+c_axis = iData_private_caxis(a,'intersection');
 
 % loop on all iData to interpolate
 ai = a; bi=[];

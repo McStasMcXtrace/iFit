@@ -9,7 +9,7 @@ function v = isvector(s)
 % output: b: object or array (iData)
 % ex:     b=isvector(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
 %          iData/isnumeric, iData/islogical, iData/isscalar, 
@@ -18,7 +18,7 @@ function v = isvector(s)
 if length(s(:)) > 1
   v = zeros(size(s)); 
   for index=1:length(s(:))
-    v(index) =ndims(s(index));
+    v(index) =isvector(s(index));
   end
   return
 end
