@@ -11,13 +11,16 @@
 <br>
 <ol id="mozToc">
 <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
-  <li><a href="#mozTocId725083">A reminder on axes, monitors and signal
-errors</a></li>
+  <li><a href="#mozTocId725083">A reminder on axes,
+monitors and signal errors</a></li>
   <li><a href="#mozTocId810783">Unary operators</a></li>
   <li><a href="#mozTocId714232">Binary operators</a></li>
-  <li><a href="#mozTocId463816">statistics, fitting and peak
+  <li><a href="#mozTocId463816">Statistics, fitting and peak
 searching</a></li>
-  <li><a href="#mozTocId981870">interpolation/projections/integration/sum/combination</a></li>
+  <li><a href="#mozTocId981870">Projection, integration and sum</a></li>
+  <li><a href="#mozTocId97186">Merging and combining
+data sets</a></li>
+  <li><a href="#mozTocId622257">Appending and slicing data sets</a></li>
 </ol>
 <br>
 <hr style="width: 100%; height: 2px;">
@@ -436,8 +439,8 @@ set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
  style="font-style: italic;"></span>&sup2;]</td>
       <td style="vertical-align: top;">m1+m2<br>
       </td>
-      <td style="vertical-align: top;"><span style="font-style: italic;">Monitor</span>
-weighted addition<br>
+      <td style="vertical-align: top;">add Signals and Monitors
+independently<br>
       </td>
     </tr>
     <tr>
@@ -473,13 +476,23 @@ that the operation can be performed. <br>
  title="iData plus 1D and 2D: intserction, extend and monitor"
  src="images/iData_plus_extend_dims.png"
  style="border: 0px solid ; width: 200px; height: 362px;" align="right"></a>The
-following example adds a 2D data set with a 1D data set, which is
+following
+example
+adds
+a
+2D
+data
+set with a 1D data set, which is
 extended. The intersection selects only the positive axis values from
-the 1D object. As the 2D object has no default Monitor (set to 1), this
-latter is set to 1/10 of the corresponding mean value in the 1D object
+the 1D object, here in [0 5]. As the 2D object has no default Monitor
+(set to 1), we set it to 1/10 of the corresponding mean value in the 1D
+object
 (if not done so the IN6 data is under weighted compared with the IN20
-data for which Monitor is high). The red and green arrow indicate how
-the data is added, and the 1D data set extended.<br>
+data for which Monitor is high). The magenta and blue arrows indicate
+how
+the data is added, and the 1D data set extended along
+the <span style="font-style: italic;">Axis 2</span>. as shown with the
+double arrow.
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; b = <span
@@ -488,53 +501,30 @@ the data is added, and the 1D data set extended.<br>
  style="color: rgb(51, 102, 255);"><br><span
  style="color: rgb(0, 0, 0);">&gt;&gt; </span>set</span>(a,<span
  style="color: rgb(204, 51, 204);">'Monitor'</span>, <span
- style="color: rgb(51, 102, 255);">mean</span>(b.Monitor)/10);<br>&gt;&gt; c = a+b;<br></pre>
+ style="color: rgb(51, 102, 255);">mean</span>(b.Monitor)/10);<br>&gt;&gt; c = a+b;<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>([ <span
+ style="color: rgb(51, 102, 255);">log</span>(a) b <span
+ style="color: rgb(51, 102, 255);">log</span>(c) ] ,<span
+ style="color: rgb(204, 51, 204);">'tight'</span>)<br></pre>
 <span style="color: rgb(255, 0, 0); font-weight: bold;">Warning: </span>It
-is important to check that the axes and Monitors values are consistent
-when performing binary operations, otherwise the intersection may be
-empty, or the corresponding Signal weighting may be wrong.<br>
-<br>
-The <span style="font-weight: bold;">combine</span> operation performs
-a weighted sum, using the <span style="font-style: italic;">Monitor</span>
-as the weight. This is of
-great use when merging results from similar experiments, possibly
-performed in slightly different configurations (<span
- style="font-style: italic;">e.g.</span> counting time, statistics,
-...). This means that combining two data sets is usually more complex
-than
-just adding the two Signals, when axes are not exactly the same and
-Monitors are not equivalent.<br>
-<pre style="margin-left: 40px;"><a href="images/iData_plus_combine.png"><img
- alt="iData: Math: Plus and Combine compared"
- title="iData: Math: Plus and Combine compared"
- src="images/iData_plus_combine.png"
- style="border: 0px solid ; width: 300px; height: 255px;" align="right"></a></pre>
-<br>
-The following example compares the <span
- style="font-weight: bold; font-style: italic;">combine</span>
-operation with the sum. The two initial data sets have a Monitor=1, so
-that the
-result is indeed the same. We plot both results onto the same figure,
-with transparency, and log-scale, shifting the 2nd plot above the first
-one.<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span
- style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6*.dat' ]</span>);<br>&gt;&gt; b=<span
- style="color: rgb(51, 102, 255);">combine</span>(a)             % a is a vector<br>&gt;&gt; c=(a(1)+a(2))/2;<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>([ <span
- style="color: rgb(51, 102, 255);">log</span>(b) <span
- style="color: rgb(51, 102, 255);">log</span>(c)+5 ]); <span
- style="color: rgb(51, 102, 255);">alpha</span>(0.15);<br></pre>
-Changing the Monitor of one of the two objects will affect the relative
-weight used for the summation during the <span
- style="font-style: italic;">combine</span> operation. The '\' operator
-is used as a shortcut for <span style="font-style: italic;">combine, </span>so
+is
+important
+to
+check
 that
-<span style="font-style: italic;">combine(a,b)</span> is the same
-as <span style="font-style: italic;">a\b</span>.<br>
+the
+axes and Monitor values are consistent
+when performing binary operations, otherwise the intersection may be
+empty, or the corresponding <span style="font-style: italic;">Signal</span>
+weighting may be wrong.<br>
+<br>
+The <span style="font-weight: bold;">combine</span> operation will be
+detailed in the section '<a href="#mozTocId97186">Merging and combining
+data sets</a>' below. In particular, the difference between the
+summation and the combination will be detailed there.<br>
 <br>
 <h3><a class="mozTocH3" name="mozTocId463816"></a><span
- style="font-weight: bold;">statistics, fitting and peak
+ style="font-weight: bold;">Statistics, fitting and peak
 searching</span></h3>
 A few methods have been written to analyze the Signal from objects.
 This includes peak searching, first and second moment distributions,
@@ -601,7 +591,13 @@ Inst. Meth.</span> <span style="font-weight: bold;">112</span> (1973)
  style="border: 0px solid ; width: 300px; height: 266px;" align="right"></a>This
 method
 works
-remarkably for signals with sharp peaks. The following example
+remarkably
+for
+signals
+with
+sharp
+peaks.
+The following example
 displays the automatically found peaks on top of the object view:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(<span
@@ -636,17 +632,26 @@ advanced model parameter determination, the <a href="Fit.html"><span
 latter makes use of the <span style="font-weight: bold;">ieval</span>
 method, which evaluates a model function onto the object axes.<br>
 <h3><a class="mozTocH3" name="mozTocId981870"></a><span
- style="font-weight: bold;">interpolation/projections/integration/sum/combination</span></h3>
+ style="font-weight: bold;">Projection, integration and sum</span></h3>
 <a href="images/iData_sum_camproj.png"><img
  alt="iData: sum and projection" title="iData: sum and projection"
  src="images/iData_sum_camproj.png"
  style="border: 0px solid ; width: 200px; height: 408px;" align="right"></a>There
-are a number of methods used to extract projected and summed
+are
+a
+number
+of
+methods
+used
+to extract projected and summed
 objects. Technically, the projection on one axis is the sum along all
 other axis. <br>
 <br>
 <div style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">sum</span>(a,
-rank) = &#8721; <span style="font-style: italic;">Signal</span>(rank axis
+rank)
+=
+&#8721;
+<span style="font-style: italic;">Signal</span>(rank axis
 index)<br>
 <br>
 <span style="color: rgb(51, 102, 255);">camproj</span>(a, rank) = &#8721; <span
@@ -680,7 +685,10 @@ the object by the number of axes summed. Similarly, the prod method
 compute the multplication along a given axis:<br>
 <br>
 <div style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">prod</span>(a,
-rank) = &#8719; <span style="font-style: italic;">Signal</span>(rank axis
+rank)
+=
+&#8719;
+<span style="font-style: italic;">Signal</span>(rank axis
 index)<br>
 </div>
 <br>
@@ -691,16 +699,23 @@ method can be used for integration using the trapezoidal approximation
 on the axis values and step <span style="font-style: italic;">dx</span><br>
 <br>
 <div style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">trapz</span>(a)
-= &#8747; <span style="font-style: italic;">Signal</span>(rank axis) <span
+=
+&#8747;
+<span style="font-style: italic;">Signal</span>(rank axis) <span
  style="font-style: italic;">dx</span><br>
 </div>
 <br>
 <a href="images/iData_cumsum.png"><img alt="iData: cumulated sum"
  title="iData: cumulated sum" src="images/iData_cumsum.png"
  style="border: 0px solid ; width: 200px; height: 272px;" align="right"></a>which
-will reduce the dimensionality, and be roughtly equivalent to <span
- style="font-weight: bold;">sum</span> when <span
- style="font-style: italic;">dx</span>=1.<br>
+will
+reduce
+the
+dimensionality,
+and
+be
+roughtly equivalent to <span style="font-weight: bold;">sum</span>
+when <span style="font-style: italic;">dx</span>=1.<br>
 <br>
 Last, the <span style="font-style: italic;">cumulated</span> versions
 of sum and prod, <span style="font-weight: bold;"> cumsum</span> and <span
@@ -710,7 +725,7 @@ chosen axis. The last slice along the axis contains the sum and prod
 results.<br>
 <br>
 In the following example, the sum along the first dimension (y=Angle
-channel) reveals that the monitor peak only exists in first angular
+channel) reveals that an intense peak exists in first angle
 channel, resulting in a constant line (right side of the sum), whereas
 the elastic line, is gradually summed over all angle channels, showing
 inelastic constribution on its shoulders.<br>
@@ -718,6 +733,143 @@ inelastic constribution on its shoulders.<br>
  style="color: rgb(51, 102, 255);">subplot</span>([ (a) <span
  style="color: rgb(51, 102, 255);">cumsum</span>(a) ] ,<span
  style="color: rgb(204, 51, 204);">'tight'</span>)</pre>
+The <span style="font-weight: bold;">cumprod</span> is the <span
+ style="font-style: italic;">primitive</span> of the <span
+ style="font-style: italic;">Signal, </span>when the axis step is <span
+ style="font-style: italic;">dx</span>=1.<br>
+<h3><a class="mozTocH3" name="mozTocId97186"></a>Merging and combining
+data sets</h3>
+The <span style="font-weight: bold;">combine</span> operation performs
+an addition of the <span style="font-style: italic;">Signal</span> and
+the <span style="font-style: italic;">Monitor</span>. This is of
+great use when merging results from similar experiments, possibly
+performed in slightly different configurations (<span
+ style="font-style: italic;">e.g.</span> counting time, statistics,
+...). This means that combining two data sets is usually more complex
+than
+just adding the two <span style="font-style: italic;">Signals, </span>especially
+when
+axes
+are
+not
+exactly the same and
+<span style="font-style: italic;">Monitors</span> are not equivalent.<br>
+<pre style="margin-left: 40px;"><a href="images/iData_plus_combine.png"><img
+ style="border: 0px solid ; width: 300px; height: 255px;"
+ src="images/iData_plus_combine.png"
+ title="iData: Math: Plus and Combine compared"
+ alt="iData: Math: Plus and Combine compared" align="right"></a></pre>
+<span style="font-weight: bold;">The difference between addition
+and
+combination</span><br>
+<br>
+Suppose we perform a measurement providing a
+<span style="font-style: italic;">Signal S</span>1 for a given
+acquisition time <span style="font-style: italic;">M1</span> (<span
+ style="font-style: italic;">Monitor</span>). The data to be
+used in mathematical operations is <span style="font-style: italic;">S1/M1</span>.
+Then
+we repeat that same
+measurement, providing <span style="font-style: italic;">Signal S2</span>
+and <span style="font-style: italic;">Monitor M2</span>. If, for this
+example, <span style="font-style: italic;">S2</span> and <span
+ style="font-style: italic;">M2</span> are similar to <span
+ style="font-style: italic;">S1</span> and <span
+ style="font-style: italic;">M1</span>, then the combination of the two
+data sets should produce a similar signal as any of the two
+measurements, but with better statisctics. But the addition should
+produce about twice any of the measurements. In short the rules for the
+operations are:<br>
+<ul>
+  <li>combination: (S1+S2) over monitor (M1+M2)</li>
+  <li>addition (sum): (M1+M2)*(S1/M1+S2/M2) over monitor(M1+M2)</li>
+</ul>
+as listed in the <a href="#mozTocId714232">binary operators</a> Table.
+The <span style="font-weight: bold;">addition</span> performs the
+operation <span style="font-style: italic;">per Monitor</span> value
+(weighted),
+whereas the <span style="font-weight: bold;">combine</span> operation
+adds raw <span style="font-style: italic;">Signals</span> and <span
+ style="font-style: italic;">Monitors</span> (unweighted). Changing the
+<span style="font-style: italic;">Monitor</span> of the objects affects
+the relative
+weight used for the summation during the addition operation, but not
+the combine operation.<br>
+<br>
+Suppose the first object is the result of a measurement during 1
+minute (liquid, M1=1), whereas the second lasted 10 minutes. This means
+that <span style="font-style: italic;">per Monitor</span> value, the
+second
+signal (Vanadium,, M2=10) is much lower than the first one (see upper
+right signal in <span style="font-style: italic;">subplot</span>
+aside, compared with upper left) but has a stronger statistical weight.
+<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6*.dat' ]</span>);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">a(1)=</span>setalias</span>(a(1),<span
+ style="color: rgb(204, 51, 204);">'Monitor'</span>, 1);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">a(2)=</span>setalias</span>(a(2),<span
+ style="color: rgb(204, 51, 204);">'Monitor'</span>, 10);<br>&gt;&gt; b=<span
+ style="color: rgb(51, 102, 255);">combine</span>(a)             % combine/merge<br>&gt;&gt; c=a(1)+a(2);             % addition<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>([ <span
+ style="color: rgb(51, 102, 255);">log<span style="color: rgb(0, 0, 0);">(a)</span> log</span>(b) <span
+ style="color: rgb(51, 102, 255);">log</span>(c) ], <span
+ style="color: rgb(204, 51, 204);">'tight'</span>);<span
+ style="color: rgb(51, 102, 255);"></span><br></pre>
+The combined <span style="font-style: italic;">Monitor</span> is M=11,
+which means that the first data set will appear much lower than
+initially (the initial Monitor was M1=1) in the combined data set.
+However, for the add operation, it appears much higher, as each <span
+ style="font-style: italic;">Signal/Monitor</span> is added separately.<br>
+<br>
+The '<span style="font-weight: bold;">\</span>' operator
+is used as a shortcut for <span style="font-style: italic;">combine, </span>so
+that
+<span style="font-style: italic;">combine(a,b)</span> is the same
+as <span style="font-style: italic;">a\b</span>.<br>
+<h3><a class="mozTocH3" name="mozTocId622257"></a>Appending and slicing
+data sets</h3>
+An other way to make use of a set of data from a series of acquisitions
+is to append them one after the other. This operation, also referred as
+<span style="font-style: italic;">catenation</span>, may be performed
+along an existing dimension (one after the other), or along a new
+dimension (side by side), which then increases the object
+dimensionality. The operator used here is <span
+ style="font-weight: bold; font-style: italic;">cat</span>. <br>
+<br>
+<a href="images/iData_cat.png"><img alt="iData cat (append)"
+ title="iData cat (append)" src="images/iData_cat.png"
+ style="border: 0px solid ; width: 164px; height: 300px;" align="right"></a>In
+the following example, the object <span style="font-style: italic;">d</span>
+is the catenation of 4 objects<span style="font-style: italic;"> [a b c
+d]</span>, sequentially. The catenation of the 4 axes in '<span
+ style="font-style: italic;">d</span>' is the repetition of the initial
+axis. We then create an '<span style="font-style: italic;">f</span>'
+object for which the axis is reset to the default, showing indeed the
+catenation of objects. Last, we assemble the same data set side by side
+onto a new dimension, creating a surface '<span
+ style="font-style: italic;">g</span>'.<br>
+<pre style="margin-left: 40px;">&gt;&gt; x=-pi:0.01:pi; a=<span
+ style="color: rgb(51, 102, 255);">iData</span>(x,x); <br>&gt;&gt; a.Error=0;                         % replace default Error=sqrt(Signal) by no-error.<br>&gt;&gt; b=<span
+ style="color: rgb(51, 102, 255);">sin</span>(a); c=<span
+ style="color: rgb(51, 102, 255);">cos</span>(a); d=<span
+ style="color: rgb(51, 102, 255);">exp</span>(-a.*a);  % create new objects by applying operator on the initial linear one<br>&gt;&gt; e=<span
+ style="color: rgb(51, 102, 255);">cat</span>(1, [a b c d ]);              % catenate along all X axes, result is a single vector<br>&gt;&gt; f=<span
+ style="color: rgb(51, 102, 255);">copyobj</span>(e);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">rmaxis</span>(f,1);                       % reset object axis to the default<br>&gt;&gt; g=<span
+ style="color: rgb(51, 102, 255);">cat</span>(2, [a b c d]);               % append objects side-by-side onto new dimension<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>([e f g],<span
+ style="color: rgb(204, 51, 204);">'tight'</span>)           % plot all<br>&gt;&gt; h=<span
+ style="color: rgb(51, 102, 255);">dog</span>(2, g);                       % back to [a b c d]<br></pre>
+Similarly to the cat, the <span
+ style="font-weight: bold; font-style: italic;">dog</span> operator
+splits an object into slices along a given dimension, returning an
+array with as many elements as the length of this dimension. This is
+the opposite to the <span style="font-style: italic;">cat</span> (of
+course !).<br>
+<br>
+<h3>Creating arrays of objects</h3>
 <br>
 <br>
 <hr style="width: 100%; height: 2px;">
