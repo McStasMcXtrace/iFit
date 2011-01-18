@@ -184,7 +184,9 @@ Additional data formats can be added easily, as explained in the <a
  style="border: 0px solid ; width: 300px; height: 266px;" align="right"></a>The
 iFit
 package
-provides a set of example data files used to demonstrate
+provides
+a
+set of example data files used to demonstrate
 the functionalities of the package.<br>
 <ul>
   <li><span style="font-weight: bold;">ILL_D10.dat</span>: some D10
@@ -194,9 +196,11 @@ neutron diffractometer measurement at the ILL<br>
 neutron triple-axis diffractometer at the ILL<br>
   </li>
   <li><span style="font-weight: bold;">ILL_IN6.dat</span>: some IN6
-neutron time of flight spectrometer at the ILL</li>
+neutron time of flight spectrometer at the ILL (liquid)<br>
+  </li>
   <li><span style="font-weight: bold;">ILL_IN6_2.dat</span>: some IN6
-neutron time of flight spectrometer at the ILL</li>
+neutron time of flight spectrometer at the ILL (Vanadium)<br>
+  </li>
   <li><span style="font-weight: bold;">MCA.dat</span>: some Canberra
 multichannel anamyzer data (from a Brillouin light scattering
 spectrometer)<br>
@@ -225,7 +229,6 @@ The empty iData object &#8709; can be obtained from:<br>
  style="color: rgb(51, 102, 255);">iData</span><br>&gt;&gt; a=<span
  style="color: rgb(51, 102, 255);">zeros</span>(<span
  style="color: rgb(51, 102, 255);">iData</span>, size)<br></pre>
-<br>
 <h3><a class="mozTocH3" name="mozTocId141862"></a>Importing directly
 from
 Matlab variables</h3>
@@ -261,7 +264,13 @@ workspace:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">findobj</span>(iData);<span
  style="color: rgb(51, 102, 255);"></span></pre>
-<br>
+The <span style="font-weight: bold;">zeros</span> method initializes
+an empty (or constant) array of objects:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">zeros</span>(<span
+ style="color: rgb(51, 102, 255);">iData</span>, size)  % create a [size] array of empty objects<br>&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">zeros</span>(<span
+ style="color: rgb(51, 102, 255);"></span>object, size) % duplicates 'object' as a [size] array<br></pre>
 <h3><a class="mozTocH3" name="mozTocId755882"></a>Importing from Matlab
 Figures<img style="width: 334px; height: 315px;"
  alt="The Peaks figure imported as an iData"
@@ -291,7 +300,9 @@ file
 extension
 and
 patterns
-in the file contents (in the case of text files) in order to
+in
+the
+file contents (in the case of text files) in order to
 identify the proper importation method to use.<br>
 <br>
 The text files are processed with the <a
@@ -313,7 +324,9 @@ workspace.
 Binary
 files
 are
-read with dedicated read routines, as it is
+read
+with
+dedicated read routines, as it is
 usually not possible to interpret correctly the file structure <span
  style="font-style: italic;">ab-initio</span>. <br>
 <br>
@@ -340,7 +353,7 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span
- style="font-style: italic;">$Date: 2011-01-10 22:55:30 $ $Revision:
+ style="font-style: italic;">$Date: 2011-01-18 15:14:26 $ $Revision:
 1.4 $</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main
 iFit
