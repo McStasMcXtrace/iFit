@@ -17,7 +17,7 @@ function [match, types, dims] = findfield(s, field, option)
 %         nelements: total number of elements in iData fields (double)
 % ex:     findfield(iData) or findfield(iData,'Title') or findfield(s,'Title','exact case')
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/set, iData/get, iData/findobj, iData/findstr
 
 % EF 23/09/07 iData implementation
@@ -77,8 +77,22 @@ if ~isempty(field)
 end
 
 % ============================================================================
-% private function iData_getfields
+% private function iData_getfields, returns field, class, numel 
 function [f, t, n] = iData_getfields(structure, parent)
+
+f=[]; t=[]; n=[];
+if ~isstruct(structure), return; end
+if numel(structure) > 1
+  structure=structure(:);
+  for index=1:length(structure)
+    [sf, st, sn] = iData_getfields(structure(index), [ parent '(' num2str(index) ')' ]);
+    % sf = strcat(sf, [ '(' num2str(index) ')' ])
+    f = [f(:) ; sf(:)];
+    t = [t(:) ; st(:)];
+    n = [n(:) ; sn(:)];
+  end
+  return
+end
 
 c = struct2cell(structure);
 f = fieldnames(structure);
@@ -104,9 +118,12 @@ if ~isempty(parent), f = strcat([ parent '.' ], f); end
 
 % find sub-structures and make a recursive call for each of them
 for index=transpose(find(cellfun('isclass', c, 'struct')))
+  try
   [sf, st, sn] = iData_getfields(c{index}, f{index});
   f = [f(:) ; sf(:)];
   t = [t(:) ; st(:)];
   n = [n(:) ; sn(:)];
+  end
 end
+
 
