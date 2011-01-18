@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -76,15 +76,17 @@ else
     for index=0:length(s_in.Alias.Axis)
       [v, l] = getaxis(s_in, num2str(index));
       if length(l) > 20, l = [l(1:18) '...' ]; end 
-      x      = getaxis(s_in, index); x=x(:);
+      X      = getaxis(s_in, index); x=X(:);
       m      = get(s_in, 'Monitor'); m=m(:);
       if ~(all(m==1) | all(m==0)) & index==0
         x=x./m;
       end
       if length(x) == 1
         fprintf(1,'%6i %15s  %s [%g]', index, v, l, x);
+      elseif isvector(X)
+        fprintf(1,'%6i %15s  %s [%g:%g] length [%i]', index, v, l, min(x), max(x),length(X));
       else
-        fprintf(1,'%6i %15s  %s [%g:%g]', index, v, l, min(x), max(x));
+        fprintf(1,'%6i %15s  %s [%g:%g] size [%s]', index, v, l, min(x), max(x),num2str(size(X)));
       end
       if index==0 & not(all(m==1) | all(m==0))
         fprintf(1,' (per monitor)\n');

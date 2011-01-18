@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -122,7 +122,14 @@ function val = iData_getalias(this,link,name)
 % EF 23/09/07 iData impementation
 
 val = [];
-if (isnumeric(link) | islogical(link)) & ~isempty(link), val = link; return; end
+if (isnumeric(link) | islogical(link)) & ~isempty(link), 
+  if strcmp(name, 'Monitor') && all(val == 0)
+    val = 1;
+  else
+    val = link; 
+  end
+  return; 
+end
 if strcmp(link, name), return; end       % avoids endless iteration.
 if ~isempty(link)
   try
@@ -150,7 +157,7 @@ if strcmp(name, 'Error')  % Error is sqrt(Signal) if not defined
     iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) '] has not the same size as the Signal [' num2str(size(this)) '] in iData object ' this.Tag '.\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
   end
 elseif strcmp(name, 'Monitor')  % monitor is 1 by default
-  if isempty(val)
+  if isempty(val) || all(val == 0)
     val = ones(size(this));
   end
   if length(val) ~= 1 & ~all(size(val) == size(this))

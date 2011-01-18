@@ -10,9 +10,9 @@ function c = combine(a,varargin)
 % output: c: object (iData)
 % ex:     c=combine(a,b); or combine([ a b ])
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
-if length(varargin) > 1  % syntax: combine(a,b,...)
+if length(varargin) >= 1  % syntax: combine(a,b,...)
   s=a(:);
   for index=1:length(varargin)
     s = [ s ; varargin{index} ];

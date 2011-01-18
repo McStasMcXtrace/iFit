@@ -10,7 +10,7 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 if nargin == 1 & isa(dim, 'iData') & length(dim) >= 1 % syntax: cat([a])
   s = cat(1, dim);
@@ -21,7 +21,7 @@ if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is cat(dim, iData, ...)']);
 end
 
-if length(varargin) >= 1  % syntax: cat(dim,a,b,c,...)
+if length(varargin) > 1  % syntax: cat(dim,a,b,c,...)
   s=a(:);
   for index=1:length(varargin)
     s = [ s ; varargin{index} ];
@@ -57,6 +57,7 @@ end
 [link, label]          = getalias(a(1), 'Signal');
 for index=1:length(a)
   s{index}=get(a(index),'Signal');
+  if isvector(s{index}), ss=s{index}; ss=ss(:); s{index}=ss; end
 end
 ss = cat(dim, s{:});
 
@@ -84,6 +85,7 @@ else
       se = get(a(index),'Error');
     end
     s{index} = ones(size(get(a(index),'Signal'))).*se;
+    if isvector(s{index}), se=s{index}; se=se(:); s{index}=se; end
   end
   se = cat(dim, s{:});
 end
@@ -99,16 +101,22 @@ else
       sm = get(a(index),'Monitor');
     end
     s{index} = ones(size(get(a(index),'Signal'))).*sm;
+    if isvector(s{index}), sm=s{index}; sm=sm(:); s{index}=sm; end
   end
   sm = cat(dim, s{:});
 end
 
 % and extend axis 'dim'
 for index=1:length(a)
-  s{index}=getaxis(a(index),dim);
+  s{index}=getaxis(a(index),dim); 
   if isempty(s{index}), s{index}=index; end
+  if isvector(s{index}), sx=s{index}; sx=sx(:); s{index}=sx; end
 end
-sx = cat(dim, s{:});
+if isvector(s{1})
+  sx = cat(1, s{:});
+else
+  sx = cat(dim, s{:});
+end
 
 % now build final result
 cmd = get(a(1),'Command');
