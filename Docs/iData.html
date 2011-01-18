@@ -102,7 +102,8 @@ to other parts of the object</li>
   <li>A series of <span style="font-style: italic;">Axes, </span>which
 are
 usually
-defined as links to <span style="font-style: italic;">Aliases</span>
+defined
+as links to <span style="font-style: italic;">Aliases</span>
 or other <span style="font-style: italic;">Data</span> parts</li>
 </ul>
 In principle, the objects should <span style="font-weight: bold;">not</span>
@@ -827,7 +828,8 @@ set,
 an
 expression
 (including
-using <span style="font-style: italic;">Data</span>
+using
+<span style="font-style: italic;">Data</span>
 or <span style="font-style: italic;">this</span>) or any numerical
 value that
 matches the <span style="font-style: italic;">Signal</span> size.<br>
@@ -953,7 +955,14 @@ arrays</h3>
 Most iData methods apply on both single objects and arrays of objects.
 In many cases, with input arrays, the result is given back as cell
 arrays or iData arrays. This vectorization is suited to the iterative
-handling of large amounts of data sets.<br>
+handling of large amounts of data sets. The <span
+ style="font-weight: bold;">zeros</span> method initializes an empty
+(or constant) array of objects.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">zeros</span>(<span
+ style="color: rgb(51, 102, 255);">iData</span>, size)  % create a [size] array of empty objects<br>&gt;&gt; a=<span
+ style="color: rgb(51, 102, 255);">zeros</span>(<span
+ style="color: rgb(51, 102, 255);"></span>object, size) % duplicates 'object' as a [size] array</pre>
 <h3 style="text-align: center;"><a class="mozTocH3"
  name="mozTocId393725"></a>Going further - some
 other useful methods<br>
@@ -1033,7 +1042,7 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData objects - $Revision: 1.6 $ $Date: 2010-11-11
+Farhi - iFit/iData objects - $Revision: 1.7 $ $Date: 2010-11-11
 13:39:38 $</span> - back to <a href="index.html">Main iFit Page</a>
 </div>
 </body>
