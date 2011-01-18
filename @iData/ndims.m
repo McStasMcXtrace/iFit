@@ -7,7 +7,7 @@ function v=ndims(s)
 % output: dimensionality of Signal in the object (double array)
 % ex :    ndims(iData)
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also  iData/size
 
 % EF 11/07/00 creation
@@ -36,6 +36,9 @@ else
       if length(get(s, s.Alias.Axis{i_axis})) == n
         v = v+1;
       end
+    end
+    if v == 0 && n
+      v=1;
     end
   end
 end
