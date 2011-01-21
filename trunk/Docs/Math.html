@@ -20,7 +20,10 @@ searching</a></li>
   <li><a href="#mozTocId981870">Projection, integration and sum</a></li>
   <li><a href="#mozTocId97186">Merging and combining
 data sets</a></li>
-  <li><a href="#mozTocId622257">Appending and slicing data sets</a></li>
+  <li><a href="#mozTocId622257">Appending and slicing
+data sets</a></li>
+  <li><a href="#mozTocId6742">Creating arrays of objects</a></li>
+  <li><a href="#mozTocId991507">Interpolation, intersection and union</a></li>
 </ol>
 <br>
 <hr style="width: 100%; height: 2px;">
@@ -482,7 +485,9 @@ adds
 a
 2D
 data
-set with a 1D data set, which is
+set
+with
+a 1D data set, which is
 extended. The intersection selects only the positive axis values from
 the 1D object, here in [0 5]. As the 2D object has no default Monitor
 (set to 1), we set it to 1/10 of the corresponding mean value in the 1D
@@ -513,7 +518,9 @@ to
 check
 that
 the
-axes and Monitor values are consistent
+axes
+and
+Monitor values are consistent
 when performing binary operations, otherwise the intersection may be
 empty, or the corresponding <span style="font-style: italic;">Signal</span>
 weighting may be wrong.<br>
@@ -597,7 +604,9 @@ signals
 with
 sharp
 peaks.
-The following example
+The
+following
+example
 displays the automatically found peaks on top of the object view:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(<span
@@ -643,7 +652,9 @@ number
 of
 methods
 used
-to extract projected and summed
+to
+extract
+projected and summed
 objects. Technically, the projection on one axis is the sum along all
 other axis. <br>
 <br>
@@ -714,7 +725,9 @@ the
 dimensionality,
 and
 be
-roughtly equivalent to <span style="font-weight: bold;">sum</span>
+roughtly
+equivalent
+to <span style="font-weight: bold;">sum</span>
 when <span style="font-style: italic;">dx</span>=1.<br>
 <br>
 Last, the <span style="font-style: italic;">cumulated</span> versions
@@ -728,7 +741,7 @@ In the following example, the sum along the first dimension (y=Angle
 channel) reveals that an intense peak exists in first angle
 channel, resulting in a constant line (right side of the sum), whereas
 the elastic line, is gradually summed over all angle channels, showing
-inelastic constribution on its shoulders.<br>
+inelastic contribution on its shoulders.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">subplot</span>([ (a) <span
  style="color: rgb(51, 102, 255);">cumsum</span>(a) ] ,<span
@@ -752,7 +765,9 @@ when
 axes
 are
 not
-exactly the same and
+exactly
+the
+same and
 <span style="font-style: italic;">Monitors</span> are not equivalent.<br>
 <pre style="margin-left: 40px;"><a href="images/iData_plus_combine.png"><img
  style="border: 0px solid ; width: 300px; height: 255px;"
@@ -769,7 +784,9 @@ acquisition time <span style="font-style: italic;">M1</span> (<span
  style="font-style: italic;">Monitor</span>). The data to be
 used in mathematical operations is <span style="font-style: italic;">S1/M1</span>.
 Then
-we repeat that same
+we
+repeat
+that same
 measurement, providing <span style="font-style: italic;">Signal S2</span>
 and <span style="font-style: italic;">Monitor M2</span>. If, for this
 example, <span style="font-style: italic;">S2</span> and <span
@@ -841,7 +858,9 @@ dimensionality. The operator used here is <span
 <a href="images/iData_cat.png"><img alt="iData cat (append)"
  title="iData cat (append)" src="images/iData_cat.png"
  style="border: 0px solid ; width: 164px; height: 300px;" align="right"></a>In
-the following example, the object <span style="font-style: italic;">d</span>
+the
+following
+example, the object <span style="font-style: italic;">d</span>
 is the catenation of 4 objects<span style="font-style: italic;"> [a b c
 d]</span>, sequentially. The catenation of the 4 axes in '<span
  style="font-style: italic;">d</span>' is the repetition of the initial
@@ -861,16 +880,113 @@ onto a new dimension, creating a surface '<span
  style="color: rgb(51, 102, 255);">cat</span>(2, [a b c d]);               % append objects side-by-side onto new dimension<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">subplot</span>([e f g],<span
  style="color: rgb(204, 51, 204);">'tight'</span>)           % plot all<br>&gt;&gt; h=<span
- style="color: rgb(51, 102, 255);">dog</span>(2, g);                       % back to [a b c d]<br></pre>
-Similarly to the cat, the <span
- style="font-weight: bold; font-style: italic;">dog</span> operator
+ style="color: rgb(51, 102, 255);">dog</span>(2, g);                       % back to [a b c d] with 'dog'<br></pre>
+<a href="images/Baby-Pluto.jpg"><img alt="iData: cat and dog"
+ title="iData: cat and dog" src="images/Baby-Pluto.jpg"
+ style="border: 0px solid ; width: 100px; height: 75px;" align="left"></a>Similarly
+to
+the cat, the <span style="font-weight: bold; font-style: italic;">dog</span>
+operator
 splits an object into slices along a given dimension, returning an
 array with as many elements as the length of this dimension. This is
 the opposite to the <span style="font-style: italic;">cat</span> (of
 course !).<br>
 <br>
-<h3>Creating arrays of objects</h3>
+<h3><a class="mozTocH3" name="mozTocId6742"></a>Creating arrays of
+objects</h3>
+The iData methods include a set of operators that generate arrays of
+objects. The result is either a array of empty objects, an array of
+constant objects, a linearly spaced array of objects, and a
+logarithmically spaced array of objects.<br>
 <br>
+The <span style="font-weight: bold;">zeros</span> unary operator takes
+an iData object and a dimension as arguments. The result is an array
+made by duplicating the object.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">zeros</span>(<span
+ style="color: rgb(51, 102, 255);">iData</span>, [5 3]);    % creates a 5x3 empty iData array<br>&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = <span
+ style="color: rgb(51, 102, 255);">zeros</span>(a, 5, 3);         % creates a 5x3 constant array of 'peaks' (2D surface)<br></pre>
+The <span style="font-weight: bold;">linspace</span> and <span
+ style="font-weight: bold;">logspace</span> binary operators create a
+linearly and logarithmically spaced array of objects, by gradually
+moving from one object to the other. This way, it may be considered as a<span
+ style="font-style: italic;"> 'morphing' </span>operator.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = <span
+ style="color: rgb(51, 102, 255);">linspace</span>(a, <span
+ style="color: rgb(51, 102, 255);">cos</span>(a), 5);<br>&gt;&gt; c = <span
+ style="color: rgb(51, 102, 255);">logspace</span>(a, <span
+ style="color: rgb(51, 102, 255);">sin</span>(a), 5);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>([b c],[2 5])<br></pre>
+<div style="text-align: center;"><a href="images/iData_linlogspace.png"><img
+ alt="iData linspace logspace" title="iData linspace logspace"
+ src="images/iData_linlogspace.png"
+ style="border: 0px solid ; width: 522px; height: 200px;" align="middle"></a><br>
+Linspace (first row) and logspace (2nd row)<br>
+</div>
+<br>
+The <span style="font-weight: bold;">colon</span> operator <span
+ style="font-weight: bold;">a:b</span> is the same as linspace with a
+number of steps which is the integer difference between the objects
+mean value.<br>
+<h3><a class="mozTocH3" name="mozTocId991507"></a>Interpolation,
+intersection and union</h3>
+Most binary operators require to interpolate the objects onto common
+axes prior to applying the mathematical operation. The common axes may
+be obtained from intersection or union of object axes.<br>
+<br>
+The <span style="font-weight: bold;">intersect</span> and <span
+ style="font-weight: bold;">union</span> binary operators determine the
+minimum and maximum axes bounds, as well as a axes binning. The <span
+ style="font-style: italic;">inner</span> and <span
+ style="font-style: italic;">outer</span> values are returned by the
+intersect and union methods resp. Resulting objects are interpolated,
+using the <span style="font-weight: bold;">interp</span>
+operator,&nbsp; onto this new axis system, so that binary operators are
+easy to apply afterwards.<br>
+In the following example, we shift an object along axes, and signal
+value, and then show the intersection and union. Extrapolated values,
+for union, are set to 0.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = <span
+ style="color: rgb(51, 102, 255);">copyobj</span>(a);<br>&gt;&gt; a{1} = a{1}+10; a{2} = a{2}+10;  % shift along X and Y<br>&gt;&gt; a.Signal=a.Signal+5;             % shift along Z<br>&gt;&gt; [ai,bi]=<span
+ style="color: rgb(51, 102, 255);">intersect</span>(a,b);<br>&gt;&gt; [au,bu]=<span
+ style="color: rgb(51, 102, 255);">union</span>(a,b);<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>(1,3,1); <span
+ style="color: rgb(51, 102, 255);">plot</span>([a  b ],<span
+ style="color: rgb(204, 51, 204);">'transparent tight'</span>)<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>(1,3,2); <span
+ style="color: rgb(51, 102, 255);">plot</span>([ai bi],<span
+ style="color: rgb(204, 51, 204);">'transparent tight'</span>)<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>(1,3,3); <span
+ style="color: rgb(51, 102, 255);">plot</span>([au bu],<span
+ style="color: rgb(204, 51, 204);">'transparent tight'</span>)<br></pre>
+<div style="text-align: center;"><a href="images/iData_interp_union.png"><img
+ alt="iData intersect union" title="iData intersect union"
+ src="images/iData_interp_union.png"
+ style="border: 0px solid ; width: 396px; height: 200px;" align="middle"></a><br>
+</div>
+<br>
+The <span style="font-weight: bold;">interp</span> operator can be
+used to interpolate one object onto an other axis coordinate frame,
+which can be given as an other object, a binning scaling factor, or a
+set of axes.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>(<span
+ style="color: rgb(51, 102, 255);">peaks<span
+ style="color: rgb(0, 0, 0);">(10)</span></span>)+2<br>&gt;&gt; b = <span
+ style="color: rgb(51, 102, 255);">interp</span>(a,2)<br>&gt;&gt; c = <span
+ style="color: rgb(51, 102, 255);">interp</span>(a,1:.25:15,3:.25:12)<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">subplot</span>([a b c],[1 3],<span
+ style="color: rgb(204, 51, 204);">'mesh tight'</span>)<br></pre>
+<div style="text-align: center;"><a href="images/iData_interp.png"><img
+ alt="iData interp" title="iData interp" src="images/iData_interp.png"
+ style="border: 0px solid ; width: 444px; height: 200px;" align="middle"></a><br>
+</div>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
