@@ -75,8 +75,8 @@ elseif isa(b, 'iData')
 end
 
 % handle special case of operation with transposed 1D data set and an other one
-if (isvector(a) && size(a,1)==1 && ~isscalar(b) && ~isvector(b)) || ...
-   (isvector(b) && size(b,1)==1 && ~isscalar(a) && ~isvector(a))
+if (~isscalar(a) && isvector(a) && size(a,1)==1 && ~isscalar(b) && ~isvector(b)) || ...
+   (~isscalar(b) && isvector(b) && size(b,1)==1 && ~isscalar(a) && ~isvector(a))
   transpose_ab = 1;
   a = transpose(a);
   b = transpose(b);

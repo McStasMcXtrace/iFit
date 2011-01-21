@@ -8,7 +8,7 @@ function c = colon(a,d,b)
 % output: b: object or array (iData)
 % ex:     b=mean(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/floor, iData/ceil, iData/round, iData/combine
 
 if nargin == 2
@@ -21,7 +21,7 @@ if isa(b, 'iData'), bs = getaxis(b(1),0); bs = bs(:); else bs = b; end
 
 as = round(mean(as));
 bs = round(mean(bs));
-if d > 0, n = abs(bs-as)/d;
+if d    , n = abs((bs-as)/d);
 else      n = abs(bs-as); end
 
 if n == 1, c = a; return; end
