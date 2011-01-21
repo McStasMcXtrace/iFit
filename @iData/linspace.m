@@ -10,7 +10,7 @@ function v = linspace(a,b,n)
 % output: v: vector (iData array)
 % ex:     b=linspace(a,b);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/max, iData/min, iData/colon, iData/logspace
 
 if ~isa(a, 'iData') | ~isa(b,'iData')
@@ -22,6 +22,18 @@ if nargin == 2
 end
 if isempty(n) | n <=0
   n=10;
+end
+
+if     isempty(a), a=0; 
+elseif isempty(b), b=0; 
+elseif isscalar(a) & isa(a, 'iData'), a=get(a,'Signal');
+elseif isscalar(b) & isa(b, 'iData'), b=get(b,'Signal');
+end
+
+if ~isa(a, 'iData') & isscalar(a) & ~isempty(b)
+  s=a*ones(size(get(b,'Signal'))); a=copyobj(b); set(a,'Signal', s);
+elseif ~isa(b, 'iData') & isscalar(b) & ~isempty(a)
+  s=b*ones(size(get(a,'Signal'))); b=copyobj(a); set(b,'Signal', s);
 end
 
 [a,b] = intersect(a,b);

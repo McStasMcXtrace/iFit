@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -157,7 +157,7 @@ if strcmp(name, 'Error')  % Error is sqrt(Signal) if not defined
     iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) '] has not the same size as the Signal [' num2str(size(this)) '] in iData object ' this.Tag '.\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
   end
 elseif strcmp(name, 'Monitor')  % monitor is 1 by default
-  if isempty(val) || all(val == 0)
+  if isempty(val) | all(val == 0)
     val = ones(size(this));
   end
   if length(val) ~= 1 & ~all(size(val) == size(this))

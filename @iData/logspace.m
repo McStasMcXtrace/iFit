@@ -10,7 +10,7 @@ function v = logspace(a,b,n)
 % output: v: vector (iData array)
 % ex:     b=logspace(a,b);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/max, iData/min, iData/colon, iData/linspace
 
 if ~isa(a, 'iData') | ~isa(b,'iData')
@@ -24,13 +24,27 @@ if isempty(n) | n <=0
   n=10;
 end
 
+if     isempty(a), a=0; 
+elseif isempty(b), b=0; 
+elseif isscalar(a) & isa(a, 'iData'), a=get(a,'Signal');
+elseif isscalar(b) & isa(b, 'iData'), b=get(b,'Signal');
+end
+
+if ~isa(a, 'iData') & isscalar(a) & ~isempty(b)
+  s=a*ones(size(get(b,'Signal'))); a=copyobj(b); set(a,'Signal', s);
+elseif ~isa(b, 'iData') & isscalar(b) & ~isempty(a)
+  s=b*ones(size(get(a,'Signal'))); b=copyobj(a); set(b,'Signal', s);
+end
+
+
 [a,b] = intersect(a,b);
 
 xa = logspace(1,0,n);
+xa = (xa-1); xa=xa/max(xa);
 
 v = [];
 for index=1:n
-  c = a.*(xa(index)/10) + b.*((10-xa(index))/10);
+  c = a.*xa(index) + b.*(1-xa(index));
   v = [ v c ];
 end
 
