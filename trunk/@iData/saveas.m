@@ -11,25 +11,28 @@ function [filename,format] = saveas(a, varargin)
 %         format: data format to use (char), or determined from file name extension
 %           'm'   save as a flat Matlab .m file (a function which returns an iData object or structure)
 %           'mat' save as a '.mat' binary file (same as 'save')
-%           'hdf' save as an HDF5 data set
+%           'hdf5' save as an HDF5 data set
 %           'nc'  save as NetCDF 
+%         as well as other lossy formats
+%           'hdf' save as an HDF4 immage
 %           'gif','bmp' save as an image (no axes, only for 2D data sets)
 %           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
 %           'xls' save as an Excel sheet (requires Excel to be installed)
+%           'csv' save as a comma separated value file
 %           'svg' save as Scalable Vector Graphics (SVG) format
 %           'vrml' save as Virtual Reality VRML 2.0 file
 %           If given as format='gui' and filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
 %
-% output: f: filename used to save file(s) (char)
+% output: f: filename(s) used to save data (char)
 % ex:     b=saveas(a, 'file', 'm');
 %         b=saveas(a, 'file', 'svg', 'axis tight');
 %
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/load, iData/getframe, save
 
 % handle array of objects to save iteratively
@@ -119,20 +122,26 @@ case 'eps'
 case 'ps'
   format='psc';
 case 'netcdf'
-  format='nc';
+  format='cdf';
 end
 
 % ==============================================================================
 % handle specific format actions
 switch format
 case 'm'  % single m-file Matlab output (text), with the full object description
-  str = [ 'function this=' name sprintf('\n') ...
-          '% Original data: ' class(a) ' ' inputname(1) ' ' a.Tag sprintf('\n') ...
-          '%' sprintf('\n') ...
-          '% Matlab ' version ' m-file ' filename ' saved on ' datestr(now) ' with iData/saveas' sprintf('\n') ...
-          '% To use import data, type ''' name ''' at the matlab prompt.' sprintf('\n') ...
-          '% You will obtain an iData object (if you have iData installed) or a structure.' sprintf('\n') ...
-          '%' sprintf('\n') ...
+  NL = sprintf('\n');
+  str = [ 'function this=' name NL ...
+          '% Original data: ' NL ...
+          '%   class:    ' class(a) NL ...
+          '%   variable: ' inputname(1) NL ...
+          '%   tag:      ' a.Tag NL ...
+          '%   label:    ' a.Label NL ...
+          '%   source:   ' a.Source NL ... 
+          '%' NL ...
+          '% Matlab ' version ' m-file ' filename ' saved on ' datestr(now) ' with iData/saveas' NL ...
+          '% To use/import data, type ''' name ''' at the matlab prompt.' NL ...
+          '% You will obtain an iData object (if you have iData installed) or a structure.' NL ...
+          '%' NL ...
           class2str('this', a) ];
   [fid, message]=fopen(filename,'w+');
   if fid == -1
@@ -142,8 +151,8 @@ case 'm'  % single m-file Matlab output (text), with the full object description
   fprintf(fid, '%s', str);
   fclose(fid);
 case 'mat'  % single mat-file Matlab output (binary), with the full object description
-  save(filename, a);
-case {'hdf','hdf5', 'nc'} % HDF4, HDF5, NetCDF formats: converts fields to double and chars
+  save(filename, 'a');
+case {'hdf5', 'nc',' cdf'} % HDF4, HDF5, NetCDF formats: converts fields to double and chars
   [fields, types, dims] = findfield(a);
   towrite={};
   for index=1:length(fields(:)) % get all field names
@@ -155,7 +164,11 @@ case {'hdf','hdf5', 'nc'} % HDF4, HDF5, NetCDF formats: converts fields to doubl
       val=[ val{1:(end-1)} ];
     end
     if ~isnumeric(val) & ~ischar(val), continue; end
-    if strcmp(format,'nc')
+    % make sure field name is valid
+    n = fields{index};
+    n = n(sort([find(isstrprop(n,'alphanum')) find(n == '_') find(n == '.')]));
+    fields{index} = n;
+    if strcmp(format,'nc') | strcmp(format,'cdf')
       fields{index} = strrep(fields{index}, '.', '_');
     else
       fields{index} = strrep(fields{index}, '.', filesep);
@@ -178,21 +191,32 @@ case {'hdf','hdf5', 'nc'} % HDF4, HDF5, NetCDF formats: converts fields to doubl
       towrite={ towrite{1:end}, fields{index}, val };
     end
   end
-  if strcmp(format,'nc')
-    cdfwrite(filename, towrite);
+  if strcmp(format,'nc') | strcmp(format,'cdf')
+    cdfwrite(name, towrite);
+    filename = [ name '.cdf' ];
   end
 case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
 case 'csv'  % Spreadsheet comma separated values file format
   csvwrite(filename, double(a));
-case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd'}  % bitmap images
-  if ndims(a) == 2
-    a=double(a);
-    b=(a-min(a(:)))/(max(a(:))-min(a(:)))*64;
-    imwrite(b, jet(64), filename, format);
+case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf'}  % bitmap images
+  if ndims(a) == 2 
+    b=double(a);
+    if abs(log10(size(b,1)) - log10(size(b,2))) > 1
+      x = round(linspace(1, size(b,1), max(size(b,1), 1024)));
+      y = round(linspace(1, size(b,2), max(size(b,2), 1024)));
+      b = b(x,y);
+    end
+    b=(b-min(b(:)))/(max(b(:))-min(b(:)))*64;
   else
     f=getframe(a);
-    imwrite(f.cdata, jet(64), filename, format);
+    b = f.cdata;
+  end
+  switch format
+  case 'gif'
+    imwrite(b, jet(64), filename, format, 'Comment',char(a));
+  otherwise
+    imwrite(b, jet(64), filename, format);
   end
 case 'epsc' % color encapsulated postscript file format, with TIFF preview
   f=figure('visible','off');
@@ -214,11 +238,14 @@ case 'svg'  % scalable vector graphics format (private function)
   plot(a,options);
   plot2svg(filename, f);
   close(f);
-case 'vrml' % VRML format
+case {'vrml','wrl'} % VRML format
   f=figure('visible','off');
-  plot(a,options);
-  vrml(f,filename);
+  h = plot(a,options);
+  vrml(h,filename);
   close(f);
+otherwise
+  iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
+  filename = [];
 end
 
 % end of iData/saveas
