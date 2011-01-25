@@ -215,10 +215,12 @@ function [data, loader] = iLoad_import(filename, loader)
       if iscell(loader), this_loader = loader{index};
       else this_loader = loader(index); end
       try
-      data = iLoad_import(filename, this_loader);
+        data = iLoad_import(filename, this_loader);
       catch
-      fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', filename, this_loader.name, this_loader.method);
-      data = [];
+        disp(lasterr)
+        [dummy, name_short, ext] = fileparts(filename);
+        fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, this_loader.method);
+        data = [];
       end
       if ~isempty(data)
         loader = this_loader;
@@ -484,13 +486,13 @@ function config = iLoad_config_load
     { 'auread',  'au',  'NeXT/SUN (.au) sound',''}, ...
     { 'wavread', 'wav'  'Microsoft WAVE (.wav) sound',''}, ...
     { 'aviread', 'avi', 'Audio/Video Interleaved (AVI) ',''}, ...
-    { 'cdfread', {'nc','cdf'}, 'NetCDF 2',''}, ...
-    { 'netcdf',  {'nc','cdf'}, 'NetCDF 1.0',''}, ...
+    { 'mcdfread', {'nc','cdf'}, 'NetCDF 2',''}, ...
+    { 'netcdf',  {'nc','cdf'}, 'NetCDF 1.0','','','load_netcdf1'}, ...
     { 'fitsread','fits','FITS',''}, ...
     { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet)',''}, ...
     { 'imread',  {'bmp','jpg','jpeg','tiff','png','ico'}, 'Image/Picture',''}, ...
     { 'hdfread', 'h4',  'HDF4',''}, ...
-    { 'hdf5read',{'hdf','h5'}, 'HDF5',''}, ...
+    { 'hdf5extract',{'hdf','h5'}, 'HDF5',''}, ...
     { 'load',    'mat', 'Matlab workspace',''}, ...
     { 'csvread', 'csv', 'Comma Separated Values',''}, ...
     { 'dlmread', 'dlm', 'Numerical single block',''}, ...
@@ -500,6 +502,9 @@ function config = iLoad_config_load
   for index=1:length(formats) % the default loaders are addded after the INI file
     format = formats{index};
     if isempty(format), break; end
+    if length(format) < 4, continue; end
+    if length(format) < 5, format{5}=''; end
+    if length(format) < 6, format{6}=''; end
     % check if format already exists in list
     skip_format=0;
     for j=1:length(loaders)
@@ -514,8 +519,8 @@ function config = iLoad_config_load
       loader.extension  = format{2};
       loader.name       = format{3};
       loader.options    = format{4};
-      loader.patterns   = '';
-      loader.postprocess= '';
+      loader.patterns   = format{5};
+      loader.postprocess= format{6};
       loaders = { loaders{:} , loader };
     end
     
