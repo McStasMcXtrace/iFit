@@ -1,7 +1,7 @@
 function c = lt(a,b)
 % c = lt(a,b) : lower-than comparison of iData objects
 %
-%   @iData/lt (<) comarison operator
+%   @iData/lt (<) comparison operator
 %     when comparing two iData objects, the monitor weighting is applied.
 %
 % input:  a: object or array (iData or numeric)
@@ -9,7 +9,7 @@ function c = lt(a,b)
 % output: c: object or array which Signal is the comparison result (iData)
 % ex:     c= a<1; d=find(a<b);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/find, iData/gt, iData/lt, iData/ge, iData/le, iData/ne, iData/eq
 
 if nargin ==1

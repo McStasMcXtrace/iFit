@@ -20,7 +20,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -310,9 +310,9 @@ if isempty(in.Data)
 elseif isempty(getalias(in, 'Signal'))
   [fields, types, dims] = findfield(in);
   index=strmatch('double', types, 'exact');
-  if isempty(index), index=strmatch('single', types, 'exact'); end
-  if isempty(index), index=strmatch('logical', types, 'exact'); end
-  if isempty(index), index=strmatch('uint', types); end
+  index=[ index ; strmatch('single',  types, 'exact') ];
+  index=[ index ; strmatch('logical', types, 'exact') ];
+  index=[ index ; strmatch('uint', types) ];
   if isempty(index), 
     iData_private_warning(mfilename,['The iData object ' in.Tag ' contains no data at all ! (double/single/logical)']);
   else

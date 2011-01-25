@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -53,6 +53,9 @@ for index = 1:length(a_in(:)) % works with object arrays
         argout = argout + 1;
         % warning('iData/get: the Axis field name is protected. Use setaxis/getaxis to handle Axis.');
         continue;
+      end
+      if strcmp(lower(fieldname), 'filename')
+        fieldname = 'Source';
       end
 
       % get property from real fields (not Alias/Axis)
