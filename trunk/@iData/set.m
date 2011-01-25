@@ -13,7 +13,7 @@ function s_out = set(a_in,varargin)
 %
 % ex      : set(iData,'Title','A nice Title')
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/get, iData/setalias, iData/setaxis
 
 % EF 27/07/00 creation
@@ -92,6 +92,9 @@ for index = 1:length(s_out)
           iData_private_warning(mfilename, sprintf('can not set Property Alias %s=%s in object %s.', name, prop_name, [ inputname(1) ' '  a.Tag ]))
         end
       else
+        if strncmp(lower(prop_name), 'filename', 8)
+          prop_name = 'Source';
+        end
         if strncmp(lower(prop_name), 'alias', 5)
           iData_private_warning(mfilename, 'to set Aliases, use the setalias function');
         elseif strncmp(lower(prop_name), 'axis', 4)
