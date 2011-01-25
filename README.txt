@@ -19,6 +19,8 @@ properly include source code, and cite authors.
 A number of additions, included in the software, where obtained from the Matlab 
 Central contributions, and are BSD licensed.
 
+Contributions are listed in the iFit/Docs/Credits.html page.
+
 ** Disclaimer:
 This is not a professional tool, and there is no Dev team to actively take care
 of it. Expect occasional failures and bugs. However, I try my best to make the 
