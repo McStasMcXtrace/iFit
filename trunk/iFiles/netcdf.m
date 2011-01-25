@@ -15,6 +15,10 @@ function S = netcdf(File,varargin)
 %
 % SEE ALSO
 % ---------------------------------------------------------------------------
+
+% by Paul Spencer
+% 02 Jun 2007 (Updated 05 Jun 2007) 
+
 S = [];
 
 try
