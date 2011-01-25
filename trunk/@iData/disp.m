@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -48,6 +48,18 @@ else
         if length(vv) > 20, vv = [vv(1:18) '...' ]; end 
         label = [ label ' ''' vv '''' ];
       catch
+        try
+          vv = get(s_in, v);
+          if isnumeric(vv), 
+            if length(size(vv)) > 2, vv=vv(:); end
+            if numel(vv) > 10, vv=vv(1:10); end
+            vv = mat2str(vv); 
+          elseif ischar(vv)
+            vv = vv(:)';
+          end
+          if length(vv) > 20, vv = [vv(1:18) '...' ]; end
+          label = [ label ' ''' vv '''' ];
+        end
       end
     end
     fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, v, label);
