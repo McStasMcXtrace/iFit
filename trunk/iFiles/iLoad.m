@@ -7,6 +7,14 @@ function [data, format] = iLoad(filename, loader)
 % the iLoad_ini configuration file can be saved in the Preference directory
 % using [config, configfile] = iLoad(config,'save config').
 %
+%   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
+%     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
+%     HDF4, HDF5, MAT workspace, XML
+%   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX.
+%   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
+%   Distant files are supported through e.g. URLs such as 
+%     file://, ftp:// and http://
+%
 % input arguments:
 %   file:   file name, or cell of file names, or any Matlab variable, or a URL
 %             or an empty string (then pops'up a file selector)
@@ -27,7 +35,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. June, 2007.
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.30 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -71,8 +79,12 @@ if ischar(filename) & length(filename) > 0
   end
   
   % handle / to \ substitution for Windows systems, not in URLs
-  if ispc && ~(strncmp(filename, 'http://', length('http://')) | strncmp(filename, 'ftp://', length('ftp://')))
-    filename = strrep(filename, '/', filesep);
+  if ~(strncmp(filename, 'http://', length('http://')) | ...
+       strncmp(filename, 'ftp://', length('ftp://'))   | ...
+       strncmp(filename, 'file://', length('file://')) )
+    if    ~ispc, filename = strrep(filename, '\', filesep);
+    elseif ispc, filename = strrep(filename, '/', filesep);
+    end
   end
   
   if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
