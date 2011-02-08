@@ -12,7 +12,7 @@ function [sigma, position, amplitude, baseline] = iFuncs_private_findpeaks(signa
 %         amplitude:  amplitude of peaks (scalar/array)
 %         baseline:   baseline (background) (iData)
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 
 % inline functions: BaseLine, PeakWidth
 
@@ -31,7 +31,6 @@ function [sigma, position, amplitude, baseline] = iFuncs_private_findpeaks(signa
   end
 
   % then we compute sum(axis{dim}.*Signal)/sum(Signal)
-  signal   = signal(:);
   signal   = signal(:);
   baseline = BaseLine(signal, m);
   sigma    = PeakWidth(signal-baseline, m);
@@ -96,7 +95,7 @@ function sigma = PeakWidth(signal, m)
   Gpm = circshift(signal,  m); Gpm(1:m) = 0; 
   
   sigma = ones(sz)*max(signal);
-  index = find(Gmm < signal & Gpm < signal & Gmm & Gpm);
+  index = find(Gmm < signal & Gpm < signal & Gmm~=0 & Gpm~=0);
   sigma(index) = signal(index).*signal(index)./Gmm(index)./Gpm(index);
   index= find(sigma>1);
   sigma(index) = m./sqrt(log(sigma(index)));
