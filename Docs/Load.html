@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title>iFit: importing data (iData/load)</title>
+  <title>iFit: Importing data (iData/load)</title>
   <meta http-equiv="content-type"
  content="text/html; charset=ISO-8859-1">
 </head>
@@ -11,12 +11,17 @@
 </h1>
 <br>
 <ol id="mozToc">
-<!--mozToc h3 1 h3 2 h3 3 h4 4 h5 5 h6 6-->
+<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
   <li><a href="#mozTocId5377">Importing data from a
 file (iData,
-load) </a></li>
+load) </a>
+    <ol>
+      <li><a href="#mozTocId52427">Distant files</a></li>
+      <li><a href="#mozTocId250466">Compressed files</a></li>
+    </ol>
+  </li>
   <li><a href="#mozTocId59221">Supported data formats</a></li>
-  <li><a href="#mozTocId782211">Exemple data files</a></li>
+  <li><a href="#mozTocId782211">Example data files</a></li>
   <li><a href="#mozTocId141862">Importing directly
 from
 Matlab variables</a></li>
@@ -28,7 +33,7 @@ Figures</a></li>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span
- style="font-style: italic;">iData, load </span><br>
+ style="font-style: italic;">iData, load, </span><a href="Methods.html">methods</a>
 <div style="text-align: left;"><br>
 In this document we present how to import data as <a href="iData.html">iData</a>
 objetcs from files, variables and figures.<br>
@@ -45,8 +50,9 @@ with the<br>
 method. The <span style="font-weight: bold; font-style: italic;">ifitpath</span>
 points to the iFit library location:<br>
 <div style="margin-left: 40px;">
-<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(204, 51, 204);">'iFit/Data/ILL_IN6.dat'</span>);	% is you are working from one level up from iFit library </pre>
+<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>([ <span
+ style="color: rgb(51, 102, 255);">ifitpath</span> <span
+ style="color: rgb(204, 51, 204);">'Data/ILL_IN6.dat'</span> ]);</pre>
 <pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span
  style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);</pre>
 </div>
@@ -63,19 +69,20 @@ object:<br>
   </tbody>
 </table>
 <br>
-Wildcards (*,?) are supported, URLs such as http:// and ftp:// and
-access to compressed files (.zip, .gz).<img
- style="width: 308px; height: 428px;"
+Wildcards (*,?) are supported. The file separator symbol ('/' for
+Linux/Unix/MacOSX and '\' for Windows) is automatically adapted to the
+system used.<img style="width: 308px; height: 428px;"
  alt="File selector to inport files into iData"
  title="File selector to inport files into iData"
  src="../iFiles/doc/uigetfiles.gif" align="right"><br>
-Directory may be imported (and thus all files within), as well as lists
-of files
+Directory may be imported (and thus all files therein) as well as lists
+of files (given as a cell of strings {...})<br>
 <div style="margin-left: 40px;">
 <pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>( <span
  style="color: rgb(204, 51, 204);">[ ifitpath '</span><span
  style="color: rgb(204, 51, 204);">Data' ]</span>);</pre>
-<pre>&gt;&gt; a = i<span style="color: rgb(51, 102, 255);">Data</span>({ <span
+<pre>&gt;&gt; a = i<span style="color: rgb(51, 102, 255);">Data</span>(<span
+ style="font-weight: bold;">{</span> <span
  style="color: rgb(204, 51, 204);">[ ifitpath </span><span
  style="color: rgb(204, 51, 204);">'Data/*.dat' ]</span> ,...<br><span
  style="color: rgb(204, 51, 204);"></span><span
@@ -87,9 +94,11 @@ of files
  style="color: rgb(204, 51, 204);">Data/sv1884.scn'</span> ],...<br><span
  style="color: rgb(204, 51, 204);">[ ifitpath </span><span
  style="color: rgb(204, 51, 204);">'</span><span
- style="color: rgb(204, 51, 204);">Data/sv4700.scn'</span> ]});<br></pre>
+ style="color: rgb(204, 51, 204);">Data/sv4700.scn'</span> ] <span
+ style="font-weight: bold;">}</span>);<br></pre>
 </div>
-which returns an array of iData objects.<br>
+which return an array of iData objects.<br>
+<br>
 A <a href="../iFiles/doc/uigetfiles.html">file selector</a>,
 which supports multiple file selection, may be used by
 issuing<br>
@@ -112,6 +121,24 @@ e.g.<br>
  style="color: rgb(204, 51, 204);">'filename'</span>, <span
  style="color: rgb(204, 51, 204);">'gui'</span>);&nbsp; % a method selector pops-up.</pre>
 A list of the supported formats is shown below.<br>
+<h4><a class="mozTocH4" name="mozTocId52427"></a>Distant files</h4>
+The specified file names may include URL tags such as<br>
+<ul>
+  <li><span style="font-weight: bold;">file://</span><span
+ style="font-style: italic;">filename</span></li>
+  <li><span style="font-weight: bold;">ftp://</span><span
+ style="font-style: italic;">filename</span></li>
+  <li><span style="font-weight: bold;">http://</span><span
+ style="font-style: italic;">filename</span></li>
+</ul>
+were the two latter cases first get a copy of the distant file
+(requires write permission), and then import it. A valid Internet
+connection is then required, with proper Proxy settings if needed.<br>
+<h4><a class="mozTocH4" name="mozTocId250466"></a>Compressed files</h4>
+Compressed files (ZIP, TAR, GZIP, Z) can also be imported directly, in
+which case they are first extracted locally (requires write
+permission), and then imported. This extraction mechanism also appl for
+distant file.<br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">To get
 more help</span>: <a href="matlab:help%20iData">help iData</a>, <a
@@ -141,42 +168,45 @@ The current method list is:<img style="width: 340px; height: 338px;"
  title="iData load import method selector"
  src="images/iData_load_method_selector.png" align="right"><br>
 <ul>
-  <li>&nbsp; ILL Data (normal integers)</li>
-  <li>&nbsp; ILL Data (large integers)</li>
-  <li>&nbsp; ILL Data (floats only)</li>
-  <li>&nbsp; ILL Data (general)</li>
-  <li>&nbsp; ILL TAS Data (polarized)</li>
-  <li>&nbsp; ILL TAS Data</li>
-  <li>&nbsp; SPEC</li>
-  <li>&nbsp; McStas Scan DAT output</li>
-  <li>&nbsp; McStas 2D monitor</li>
-  <li>&nbsp; McStas 1D monitor</li>
-  <li>&nbsp; McStas sim file</li>
-  <li>&nbsp; McStas Sqw table</li>
-  <li>&nbsp; ISIS/SPE tof data</li>
-  <li>&nbsp; INX tof data</li>
-  <li>&nbsp; Data (text format with fastest import method)</li>
-  <li>&nbsp; Data (text format with fast import method)</li>
-  <li>&nbsp; Data (text format)</li>
-  <li>&nbsp; Matlab importer</li>
-  <li>&nbsp; Lotus1-2-3 (first spreadsheet)</li>
-  <li>&nbsp; NeXT/SUN (.au) sound</li>
-  <li>&nbsp; Microsoft WAVE (.wav) sound</li>
-  <li>&nbsp; Audio/Video Interleaved (AVI) </li>
-  <li>&nbsp; NetCDF</li>
-  <li>&nbsp; NetCDF 1.0</li>
-  <li>&nbsp; FITS</li>
-  <li>&nbsp; Microsoft Excel (first spreadsheet)</li>
-  <li>&nbsp; Image/Picture</li>
-  <li>&nbsp; HDF4</li>
-  <li>&nbsp; HDF5</li>
-  <li>&nbsp; Matlab workspace</li>
-  <li>&nbsp; Comma Separated Values</li>
-  <li>&nbsp; Numerical single block</li>
-  <li>&nbsp; XML</li>
+  <li>any Data in text format<br>
+  </li>
+  <li>ILL Data (most instruments at the <a
+ href="http://www.ill.fr/YellowBook/">ILL</a>)<br>
+  </li>
+  <li>ILL TAS Data (polarized or not)</li>
+  <li>SPEC</li>
+  <li>McStas (Scan DAT output 1D, 2D monitor, sim file, Sqw table)</li>
+  <li>ISIS/SPE tof data</li>
+  <li>INX tof data</li>
+  <li>Lotus1-2-3 (first spreadsheet) (*.wk1)<br>
+  </li>
+  <li>NeXT/SUN (.au) sound</li>
+  <li>Microsoft WAVE (.wav) sound</li>
+  <li>Audio/Video Interleaved (*.avi) </li>
+  <li>NetCDF (*.cdf)<br>
+  </li>
+  <li>NetCDF 1.0 (*.nc)<br>
+  </li>
+  <li>FITS (*.fits)<br>
+  </li>
+  <li>Microsoft Excel (*.xls)</li>
+  <li>Image/Picture (*.gif, *.bmp, *.tif, *.jpg, *.png)<br>
+  </li>
+  <li>HDF4 (*.hdf4)<br>
+  </li>
+  <li>HDF5 (*.hdf5)<br>
+  </li>
+  <li>Matlab workspace (*.mat)<br>
+  </li>
+  <li>Comma Separated Values (*.csv)<br>
+  </li>
+  <li>Numerical single block</li>
+  <li>XML (*.xml)<br>
+  </li>
 </ul>
 Additional data formats can be added easily, as explained in the <a
- href="iFiles.html">iFiles</a> help pages.<br>
+ href="iFiles.html">iFiles</a> help pages. Some of these formats are
+also available for <a href="Save.html">Saving</a> iData objects.<br>
 <br>
 <h3><a class="mozTocH3" name="mozTocId782211"></a>Example data files</h3>
 <a href="images/iFit_Data.png"><img alt="iFit: example Data"
@@ -186,31 +216,40 @@ iFit
 package
 provides
 a
-set of example data files used to demonstrate
+set
+of
+<a href="../Data/">example
+data
+files</a>
+used
+to
+demonstrate
 the functionalities of the package.<br>
 <ul>
   <li><span style="font-weight: bold;">ILL_D10.dat</span>: some D10
 neutron diffractometer measurement at the ILL<br>
   </li>
   <li><span style="font-weight: bold;">ILL_IN20.dat</span>: some IN20
-neutron triple-axis diffractometer at the ILL<br>
+neutron triple-axis diffractometer at the ILL (GL goniometer scan)<br>
   </li>
   <li><span style="font-weight: bold;">ILL_IN6.dat</span>: some IN6
-neutron time of flight spectrometer at the ILL (liquid)<br>
+neutron time of flight spectrometer at the ILL (liquid water)<br>
   </li>
   <li><span style="font-weight: bold;">ILL_IN6_2.dat</span>: some IN6
-neutron time of flight spectrometer at the ILL (Vanadium)<br>
+neutron time of flight spectrometer at the ILL (liquid 3He)<br>
   </li>
   <li><span style="font-weight: bold;">MCA.dat</span>: some Canberra
-multichannel anamyzer data (from a Brillouin light scattering
+multichannel analyzer data (from a Brillouin light scattering
 spectrometer)<br>
   </li>
   <li><span style="font-weight: bold;">SPEC.dat</span>: some ESRF data<br>
   </li>
   <li><span style="font-weight: bold;">sv1850.scn</span>: some IN12
-neutron triple-axis diffractometer at the ILL</li>
+neutron triple-axis diffractometer at the ILL (QH scan)<br>
+  </li>
   <li><span style="font-weight: bold;">sv1884.scn</span>: some IN12
-neutron triple-axis diffractometer at the ILL</li>
+neutron triple-axis diffractometer at the ILL (sample rotation scan)<br>
+  </li>
   <li><span style="font-weight: bold;">sv4700.scn</span>: some IN12
 neutron triple-axis diffractometer at the ILL</li>
 </ul>
@@ -246,7 +285,8 @@ or<br>
  style="color: rgb(204, 51, 204);">'a'</span>,1,<span
  style="color: rgb(204, 51, 204);">'b'</span>,<span
  style="color: rgb(204, 51, 204);">'a string'</span>))</pre>
-This works for basically any imput object.<br>
+This works for basically any imput object (structure, numeric array,
+cell, ...).<br>
 <br>
 A special syntax is available to import Signal and Axis definitions
 with e.g.<br>
@@ -260,7 +300,7 @@ the depth, ... that is the plotting Matlab convention used e.g. in <span
 <br>
 The <span style="font-weight: bold; font-style: italic;">findobj</span>
 method can be used to inquire for all iData objects available in the
-workspace:<br>
+workspace/memory:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">findobj</span>(iData);<span
  style="color: rgb(51, 102, 255);"></span></pre>
@@ -302,7 +342,16 @@ and
 patterns
 in
 the
-file contents (in the case of text files) in order to
+file
+contents
+(in
+the
+case
+of
+text
+files)
+in
+order to
 identify the proper importation method to use.<br>
 <br>
 The text files are processed with the <a
@@ -326,16 +375,25 @@ files
 are
 read
 with
-dedicated read routines, as it is
-usually not possible to interpret correctly the file structure <span
+dedicated
+read
+routines,
+as
+it
+is
+usually
+not
+possible
+to
+interpret correctly the file structure <span
  style="font-style: italic;">ab-initio</span>. <br>
 <br>
 The resulting Matlab variable is a structure, which holds a <span
  style="font-style: italic;">Data</span> field with all numerical
 blocks from the initial file, and a <span style="font-style: italic;">Header</span>
-field which holds any preceeding comment strings for each field. Data
+field which holds any preceding comment strings for each field. Data
 fields are automatically named from keywords found just before the
-numerical blocks. These steps are performed throught the<span
+numerical blocks. These steps are performed through the<span
  style="font-style: italic;"> iFiles/iLoad</span> wrapper.<br>
 <br>
 The structures are then converted into <a href="iData.html">iData</a>
@@ -353,11 +411,15 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span
- style="font-style: italic;">$Date: 2011-01-18 15:14:26 $ $Revision:
-1.4 $</span><span style="font-style: italic;"> </span>- back to <a
+ style="font-style: italic;">
+$Date: 2011-02-08 16:06:31 $ $Revision: 1.9 $
+</span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main
 iFit
-Page</a>
+Page </a><a href="http://www.ill.eu/"><img
+ title="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+ src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+ style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body>
 </html>

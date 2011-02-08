@@ -77,13 +77,21 @@ automatically
 guessed
 initial
 model
-parameters. Of course, it is possible to chose explicitly
+parameters.
+Of
+course,
+it
+is
+possible
+to chose explicitly
 the model function, and the starting parameter set with e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; p=<span
  style="color: rgb(51, 102, 255);">fits</span>(a, <span
- style="color: rgb(204, 51, 204);">'gauss'</span>);                     % specify model function to use: gauss, and use guessed parameters<br>&gt;&gt; p=<span
+ style="color: rgb(204, 51, 204);">'gauss'</span>);                     <span
+ style="font-style: italic;">% specify model function to use: gauss, and use guessed parameters</span><br>&gt;&gt; p=<span
  style="color: rgb(51, 102, 255);">fits</span>(a, <span
- style="color: rgb(204, 51, 204);">'gauss'</span>, [ 0.5 1 0.01 0 ]);   % specify the starting parameters for the model function<br></pre>
+ style="color: rgb(204, 51, 204);">'gauss'</span>, [ 0.5 1 0.01 0 ]);   <span
+ style="font-style: italic;">% specify the starting parameters for the model function</span><br></pre>
 The result of the <span style="font-style: italic;">fits</span> method
 is the model parameter set that matches best the data.<br>
 A number of model functions is available from the <a href="iFuncs.html">iFuncs</a>
@@ -103,7 +111,13 @@ to
 estimate
 the
 values
-of the model for the fit parameters
+of
+the
+model
+for
+the
+fit
+parameters
 onto the data set axes, one can use the <span
  style="font-style: italic; font-weight: bold;">ieval</span> method,
 which is the same as Matlab <span
@@ -111,7 +125,8 @@ which is the same as Matlab <span
  style="font-style: italic;">iData</span> objects:
 <pre style="margin-left: 40px;">&gt;&gt; b= <span
  style="color: rgb(51, 102, 255);">ieval</span>(a, <span
- style="color: rgb(204, 51, 204);">'gauss'</span>, p) % evaluate the 'gauss' model with parameters 'p' onto the 'a' data set axes<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'gauss'</span>, p) <span
+ style="font-style: italic;">% evaluate the 'gauss' model with parameters 'p' onto the 'a' data set axes</span><br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">plot</span>([ a b ])<br></pre>
 The evaluated model contains <span style="font-style: italic;">Parameter</span>
 and <span style="font-style: italic;">Model</span> aliases that hold
@@ -208,17 +223,16 @@ number of iterations, the stop conditions, ...) with an <span
  style="color: rgb(255, 0, 0);">options</span>)</pre>
 <h4><a class="mozTocH4" name="mozTocId842297"></a>Choosing an
 optimization method</h4>
-The <a href="iOptim.html">iOptim</a> sub-library provides 21 different
+The <a href="iOptim.html">iOptim</a> sub-library provides 17 different
 optimization techniques. No doubt that choosing one at first sight is
 difficult. We provide below a set of preferred optimizer, based on a
 careful comparison explained in the <a href="iOptim.html">iOptim</a>
 documentation.<br>
-<br>
-<table style="width: 100%; height: 261px;" border="1" cellpadding="1"
- cellspacing="1">
+<span style="font-style: italic; font-weight: bold;"><br>
+</span>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
   <tbody>
-    <tr>
-    </tr>
     <tr>
       <td
  style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Optimizer<br>
@@ -241,73 +255,82 @@ time
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span
+      <td style="vertical-align: top; color: rgb(0, 0, 0);"><span
  style="font-style: italic; font-weight: bold;">fminimfil</span></td>
-      <td style="vertical-align: top;">Unconstrained Implicit filtering
-coupled with BFGS</td>
-      <td style="vertical-align: top;">73.5</td>
-      <td style="vertical-align: top;">0.09</td>
+      <td style="vertical-align: top;">Unconstrained Implicit filtering<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">77.5</td>
+      <td style="vertical-align: top;">8.2</td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span
+      <td style="vertical-align: top; color: rgb(0, 0, 0);"><span
  style="font-style: italic; font-weight: bold;">fminralg</span></td>
-      <td style="vertical-align: top;">Shor r-algorithm</td>
+      <td style="vertical-align: top;">Shor R-algorithm</td>
       <td style="vertical-align: top;">61.1</td>
-      <td style="vertical-align: top;">0.17</td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">5.5</td>
     </tr>
     <tr>
-      <td
- style="vertical-align: top; font-weight: bold; font-style: italic;">fminpowell</td>
-      <td style="vertical-align: top;">Powell Search</td>
-      <td style="vertical-align: top;">56.5</td>
-      <td style="vertical-align: top;">0.06</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><span
- style="font-style: italic; font-weight: bold;">fminpso</span></td>
-      <td style="vertical-align: top;">Particle Swarm Optimization</td>
-      <td style="vertical-align: top;">58.5</td>
-      <td style="vertical-align: top;">0.85</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><span
+      <td style="vertical-align: top; color: rgb(0, 0, 0);"><span
  style="font-style: italic; font-weight: bold;">fminhooke</span></td>
       <td style="vertical-align: top;">Hooke-Jeeves direct search</td>
-      <td style="vertical-align: top;">73.2</td>
-      <td style="vertical-align: top; color: rgb(255, 0, 0);">1.87</td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">75.5</td>
+      <td style="vertical-align: top; color: rgb(0, 0, 0);">6.7</td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span
- style="font-weight: bold; font-style: italic;">fminswarm</span></td>
-      <td style="vertical-align: top;"> Particule
-Swarm Optimizer (alt. implementation)<br>
-      </td>
-      <td style="vertical-align: top;">40.0</td>
-      <td style="vertical-align: top;">0.18</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><span
+      <td style="vertical-align: top; color: rgb(0, 0, 0);"><span
  style="font-weight: bold; font-style: italic;">fmincmaes</span></td>
       <td style="vertical-align: top;">Evolution Strategy with
 Covariance Matrix Adaptation</td>
-      <td style="vertical-align: top;">48.6</td>
-      <td style="vertical-align: top;"><span
- style="color: rgb(255, 0, 0);">2.54</span></td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">71.8<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(0, 0, 0);">12.9</td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span style="font-style: italic;">fminsimpsa</span></td>
+      <td style="vertical-align: top; color: rgb(0, 0, 0);"><span
+ style="font-style: italic;">fminsimpsa</span></td>
       <td style="vertical-align: top;">simplex/simulated
 annealing</td>
-      <td style="vertical-align: top;">36.9</td>
-      <td style="vertical-align: top;">0.34</td>
+      <td style="vertical-align: top;">64.7<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(255, 0, 0);">30.7</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(0, 0, 0);">fminsce </td>
+      <td style="vertical-align: top;">shuffled complex evolution<br>
+      </td>
+      <td style="vertical-align: top;">57.1<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(255, 0, 0);">35.2<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(0, 0, 0);">fminpowell </td>
+      <td style="vertical-align: top;">Powell with Coggins line search<br>
+      </td>
+      <td style="vertical-align: top;">59.4<br>
+      </td>
+      <td style="vertical-align: top;"><span
+ style="color: rgb(51, 204, 0);">0.7</span><br>
+      </td>
     </tr>
   </tbody>
 </table>
-<span style="font-style: italic;">Table 1: A selection of the most
-efficient and fast optimization methods</span><span
- style="font-style: italic; font-weight: bold;"></span><span
- style="font-style: italic;"> provided by the iFit/iOptim sub-library.</span><span
- style="font-style: italic;"><br>
+<div style="text-align: center;"><span style="font-style: italic;">Table
+1:
+A
+selection
+among
+the
+most
+efficient
+and
+fast
+optimization
+methods</span><span style="font-style: italic; font-weight: bold;"></span><span
+ style="font-style: italic;">.</span><br>
+<span style="font-style: italic; font-weight: bold;"></span></div>
+<span style="font-weight: bold;"></span><span
+ style="font-style: italic;">
 </span><br>
 The choice of the optimizer is done through a 4th input<span
  style="font-style: italic;"></span> argument <span
@@ -433,9 +456,15 @@ the
 right,
 showing
 the
-criteria evolution with the optimization
-iteration and the 3 first fit parameters. The <span
- style="color: rgb(255, 0, 0);">red</span> dot indicates the
+criteria
+evolution
+with
+the
+optimization
+iteration
+and
+the 3 first fit parameters. The <span style="color: rgb(255, 0, 0);">red</span>
+dot indicates the
 current/final parameter set and criteria. <span
  style="font-style: italic; font-weight: bold;">Right: </span>The
 final fit result on the left.<br>
@@ -576,10 +605,13 @@ important, but a +100% extent is probably realistic in most cases.<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData fitting - </span><span style="font-style: italic;">$Date:
-2010-11-22 14:15:30$ $Revision: 1.7 $
+Farhi - iFit/iData fitting - </span><span style="font-style: italic;">
+$Date: 2011-02-08 16:06:31 $ $Revision: 1.8 $
 </span><span style="font-style: italic;"> </span>- back to <a
- href="index.html">Main iFit Page</a>
+ href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img
+ title="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+ src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+ style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body>
 </html>
