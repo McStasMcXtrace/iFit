@@ -8,7 +8,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -101,8 +101,11 @@ else
           toadd = [ toadd '''' val '''' ];
         elseif isnumeric(val) | islogical(val)
           if length(size(val)) > 2, val=val(:); end
-          if numel(val) > 100, val=val(1:100); end
-          toadd = [ toadd mat2str(val) ];
+          if numel(val) > 10, 
+            val=val(1:10); toadd = [ toadd mat2str(val) '...' ]; 
+          else
+            toadd = [ toadd mat2str(val) ];
+          end
         else
           toadd = [ toadd  '<not listable>' ];
         end

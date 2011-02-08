@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -24,8 +24,6 @@ function [varargout] = get(a_in,varargin)
 for index = 1:length(a_in(:)) % works with object arrays
   argout = 1;
   s = a_in(index);
-  s_cell=struct2cell(struct(s));  
-  names = fieldnames(struct(s));
 
   if nargin == 1   
     if length(a_in(:)) == 1
@@ -66,8 +64,9 @@ for index = 1:length(a_in(:)) % works with object arrays
         % if not found, searches for user Aliases
         if field_not_found
           alias_names = s.Alias.Names; % this is a cellstr of Alias names
-          alias_num   = strmatch(lower(fieldname), lower(alias_names), 'exact');
-          if ~isempty(alias_num)
+          alias_num   = transpose(char(alias_names)); alias_num=transpose(alias_num(:));
+          if ~isempty(strfind(alias_num,fieldname))
+            alias_num   = strmatch(lower(fieldname), lower(alias_names), 'exact');
             alias_values = s.Alias.Values;
             name = alias_names{alias_num(1)};
             link = alias_values{alias_num(1)};
@@ -81,8 +80,11 @@ for index = 1:length(a_in(:)) % works with object arrays
         end
       end
       if field_not_found  % searches within iData fields
-        cell_num = strmatch(lower(fieldname), lower(names), 'exact');
-        if ~isempty(cell_num)        % was the property found immediately (not a sub-field) ?
+        names = fieldnames(struct(s));
+        cell_num = transpose(char(names)); cell_num=transpose(cell_num(:));
+        if ~isempty(strfind(cell_num,fieldname))        % was the property found immediately (not a sub-field) ?
+          cell_num = strmatch(lower(fieldname), lower(names), 'exact');
+          s_cell=struct2cell(struct(s));  
           val = s_cell{cell_num(1)}; % get field from structure
           field_not_found=0;
         else
@@ -157,14 +159,18 @@ if strcmp(name, 'Error')  % Error is sqrt(Signal) if not defined
     end
   end
   if length(val) ~= 1 & ~all(size(val) == size(this))
-    iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) '] has not the same size as the Signal [' num2str(size(this)) '] in iData object ' this.Tag '.\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
+    iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) ...
+    '] has not the same size as the Signal [' num2str(size(this)) ...
+    '] in iData object ' this.Tag '.\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
   end
 elseif strcmp(name, 'Monitor')  % monitor is 1 by default
   if isempty(val) | all(val == 0)
     val = ones(size(this));
   end
   if length(val) ~= 1 & ~all(size(val) == size(this))
-    iData_private_warning(mfilename,[ 'The Monitor [' num2str(size(val)) '] has not the same size as the Signal [' num2str(size(this)) '] in iData object ' this.Tag '.\n\tTo use the default Monitor=1 use s.Monitor=[].' ]);
+    iData_private_warning(mfilename,[ 'The Monitor [' num2str(size(val)) ...
+      '] has not the same size as the Signal [' num2str(size(this)) ...
+      '] in iData object ' this.Tag '.\n\tTo use the default Monitor=1 use s.Monitor=[].' ]);
   end
 end
 

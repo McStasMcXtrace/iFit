@@ -8,11 +8,11 @@ function s = trapz(a,dim)
 %       trapz is complementary to sum and camproj, but takes into account axis.
 %
 % input:  a: object or array (iData/array of)
-%         dim: dimension to project (int)
+%         dim: dimension to integrate (int//array of)
 % output: s: integral of elements (iData/scalar)
 % ex:     c=trapz(a);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/cumsum, iData/camproj, iData/sum
 
 if ~isa(a, 'iData')
@@ -46,9 +46,9 @@ for index=1:ndims(a)
   setaxis(a, index, unique(x),lab);
 end
 
-s = get(a,'Signal');
-e = get(a,'Error');
-m = get(a,'Monitor');
+s = iData_private_cleannaninf(get(a,'Signal'));
+e = iData_private_cleannaninf(get(a,'Error'));
+m = iData_private_cleannaninf(get(a,'Monitor'));
 
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;

@@ -15,7 +15,7 @@ function [s, f] = std(a, dim)
 %         center:     center of distribution (scalar/array)
 % ex:     c=std(a);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/median, iData/mean
 
 if nargin < 2, dim=1; end
@@ -45,7 +45,7 @@ b = camproj(a, abs(dim));
 
 
 % then we compute sum(axis{dim}.*Signal)/sum(Signal)
-s = get(b,'Signal');
+s = iData_private_cleannaninf(get(b,'Signal'));
 if (dim < 0)
   s = s - min(s);
 end

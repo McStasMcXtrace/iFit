@@ -7,7 +7,7 @@ function a=logical(a)
 % output: v: value of the iData Signal (logical)
 % ex:     'logical(iData(rand(10)))'
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 
@@ -23,5 +23,5 @@ if length(a) > 1
   return
 end
 
-a = get(a, 'Signal');
+a = iData_private_cleannaninf(get(a, 'Signal'));
 a = logical(a);

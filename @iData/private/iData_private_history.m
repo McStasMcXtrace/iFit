@@ -24,8 +24,10 @@ if nargin >= 3 | length(varargin)
       tocat = [ tocat ' <' class(b) ' ' b.Tag ' ' b.Source '> ' ];
     elseif isnumeric(b) | islogical(b) 
       if ndims(b) > 2,   b=b(:); end
-      if numel(b) > 100, b=b(1:100); end 
-      toadd = [ toadd c ' ' mat2str(double(b)) ];
+      if numel(b) > 10, b=b(1:10); toadd = [ toadd c ' ' mat2str(double(b)) '...' ]; 
+      else 
+        toadd = [ toadd c ' ' mat2str(double(b)) ];
+      end
     else
       toadd = [ toadd c ' <' class(b) '>'  ];
     end

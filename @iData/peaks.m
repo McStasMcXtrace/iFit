@@ -15,7 +15,7 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
 %
 % References: Slavic, NIM 112 (1973) 253 ; M. Morhac, NIM A 600 (2009) 478 
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/median, iData/mean, iData/std
 
 % inline functions: BaseLine, PeakWidth
@@ -47,7 +47,7 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
   x = getaxis(b,1);
   new_x      = min(x):min(diff(x)):max(x);
   b = interp(b, new_x);
-  signal = get(b,'Signal'); 
+  signal = iData_private_cleannaninf(get(b,'Signal')); 
   signal = signal(:);
   baseline = BaseLine(signal, m);
 
@@ -105,6 +105,7 @@ function sigma = PeakWidth(signal, m)
   if nargin == 1, m=0; end
   
   if (m<1) m=ceil(max(5, length(signal)/50)); end
+  if length(signal) < 4*m, m=3; end
   if (length(signal)<=m) return; end
   
   % Gaussian product function as of Slavic, NIM 112 (1973) 253 
@@ -112,11 +113,9 @@ function sigma = PeakWidth(signal, m)
   Gpm = circshift(signal,  m); Gpm(1:m) = 0; 
   
   sigma = ones(sz)*max(signal);
-  index = find(Gmm < signal & Gpm < signal);
+  index = find(Gmm < signal & Gpm < signal & Gmm~=0 & Gpm~=0);
   sigma(index) = signal(index).*signal(index)./Gmm(index)./Gpm(index);
   index= find(sigma>1);
   sigma(index) = m./sqrt(log(sigma(index)));
   sigma = reshape(sigma, sz);
 end
-  
-  
