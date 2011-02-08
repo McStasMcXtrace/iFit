@@ -28,8 +28,7 @@ algorithms</a></li>
       <li><a href="#mozTocId409995">Gradient methods
 (Newton)</a></li>
       <li><a href="#mozTocId184231">Other optimizers (and
-simplex)
-        </a></li>
+simplex) </a></li>
     </ol>
   </li>
   <li><a href="#mozTocId95530">Model
@@ -40,8 +39,7 @@ constraints</a>
       <li><a href="#mozTocId871054">Parameters varying
 within limits</a></li>
       <li><a href="#mozTocId673530">Limiting parameter
-change
-        </a></li>
+change </a></li>
     </ol>
   </li>
   <li><a href="#mozTocId141584">References</a></li>
@@ -90,7 +88,8 @@ a
 string
 or
 a
-function handle.<span style="font-style: italic;"><br>
+function
+handle.<span style="font-style: italic;"><br>
     </span></li>
   <li><span style="font-style: italic;">guess: </span>the starting
 parameter set that objective depend on (this is a vector of numerical
@@ -161,7 +160,10 @@ some
 information
 gathered
 during
-the minimization procedure (see
+the
+minimization
+procedure
+(see
 below)<br>
   </li>
 </ol>
@@ -310,8 +312,10 @@ among
 the
 most
 efficient
-and fast optimization methods</span><span
- style="font-style: italic; font-weight: bold;"></span><span
+and
+fast
+optimization
+methods</span><span style="font-style: italic; font-weight: bold;"></span><span
  style="font-style: italic;">.</span><br>
 <span style="font-style: italic; font-weight: bold;"></span></div>
 <span style="font-weight: bold;"><br>
@@ -338,6 +342,9 @@ optimizers, with a specified fit criteria.<br>
   <li><span style="font-style: italic; color: rgb(51, 204, 0);">The
 fastest
 methods</span> are the Shor R-algoritm(<span style="font-weight: bold;">fminralg</span>,
+
+
+
     <span style="font-style: italic;">does
 not work
 for one parameter</span>) and the
@@ -346,6 +353,9 @@ Powell method with local Coggins line search<span
   <li><span style="color: rgb(51, 204, 0);">The most efficient methods</span>
 are the Implicit filtering<span style="font-weight: bold;"> (fminimfil)
     </span>and the Hooke method <span style="font-weight: bold;">(fminhooke).
+
+
+
 
 
     </span>The Evolution Strategy with
@@ -680,7 +690,7 @@ search</b></font></p>
       </td>
       <td width="230">
       <p align="CENTER"><span style="color: rgb(0, 153, 0);">Fast and
-efficient</span><i></i></p>
+efficient</span></p>
       </td>
     </tr>
     <tr>
@@ -704,7 +714,7 @@ Coggins<br>
       <p align="CENTER"><span style="color: rgb(0, 153, 0);">very fast</span>,
 especially
 for
-d&gt;16<i></i></p>
+d&gt;16</p>
       </td>
     </tr>
     <tr>
@@ -785,8 +795,11 @@ good
 success
 ratio
 up
-to typically 5-10
-model parameters. Among these, the covariance matrix adaptation
+to
+typically
+5-10
+model
+parameters. Among these, the covariance matrix adaptation
 evolution strategy <span style="font-weight: bold; font-style: italic;">fmincmaes</span>
 can
 deal with high dimensionalities with more than 50 % success. The
@@ -954,20 +967,24 @@ All these constraints may be used simultaneously.<br>
 <ol>
   <li><span style="text-decoration: underline;">Simplex/simulated
 annealing</span><span style="font-weight: bold;"> <a name="fminsimpsa"></a>fminsimpsa
-[SIMPSA by Donckels]</span> Cardoso, Salcedo, Feyo de Azevedo and
+[SIMPSA
+by
+Donckels]</span> Cardoso, Salcedo, Feyo de Azevedo and
 Bardosa, <span style="font-style: italic;">Comp. Chem Engng</span>, <span
  style="font-weight: bold;">21</span> (1997) 1349; Kirkpatrick,<span
  style="font-style: italic;"> J. Stat. Phys.</span> 34 (1984) 975.</li>
   <li><span style="text-decoration: underline;">Nelder-Mead simplex</span>
     <span style="font-weight: bold;"><a name="fminsearch"></a>fminsearch(bnd)
-[fminsearch by Mathworks]</span>
+[fminsearch
+by
+Mathworks]</span>
 Jeffrey C. Lagarias, James A. Reeds, Margaret H. Wright,&nbsp;
 Paul E.
 Wright, "Convergence Properties of the Nelder-Mead Simplex&nbsp;
 Method in
 Low Dimensions", <span style="font-style: italic;">SIAM Journal of
-Optimization</span>, <span style="font-weight: bold;">9(1):&nbsp;
-    </span>p.112-147, 1998.</li>
+Optimization</span>, <span style="font-weight: bold;">9(1):&nbsp; </span>p.112-147,
+1998.</li>
   <li><span style="text-decoration: underline;">Unconstrained Implicit
 filtering</span> <a name="fminimfil"></a><span
  style="font-weight: bold;">fminimfil [imfil by Kelley, 1998 version]</span>
@@ -976,8 +993,11 @@ C. T. Kelley, Iterative Methods for Optimization, <span
 Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.</li>
   <li><span style="text-decoration: underline;">Shor's r-algorithm
 minimization</span><span style="font-weight: bold;"> <a name="fminralg"></a>fminralg
-[solvopt by Kuntsevich and Kappel]</span> Shor N.Z., <span
- style="font-style: italic;">Minimization Methods for
+[solvopt
+by
+Kuntsevich
+and Kappel]</span> Shor N.Z., <span style="font-style: italic;">Minimization
+Methods for
 Non-Differentiable Functions</span>, Springer Series in Computational
 Mathematics, <span style="font-weight: bold;">Vol. 3</span>,
 Springer-Verlag (1985)</li>
@@ -986,7 +1006,10 @@ Newton-CG-Trust region algoirithm</span> <a name="fmincgtrust"></a><span
  style="font-weight: bold;">fmincgtrust [cgtrust from Kelley]</span>
 Broyden, C. G., <span style="font-style: italic;">J. of the Inst of
 Math and Its Appl</span> 1970, <span style="font-weight: bold;">6</span>,
-76-90; Fletcher, R., <span style="font-style: italic;">Computer Journal</span>
+76-90;
+Fletcher,
+R.,
+    <span style="font-style: italic;">Computer Journal</span>
 1970, <span style="font-weight: bold;">13, </span>317-322; Goldfarb,
 D., <span style="font-style: italic;">Mathematics of Computation</span>
 1970, <span style="font-weight: bold;">24, </span>23-26; Shanno, D.
@@ -1001,6 +1024,9 @@ optimizer</span><span style="font-weight: bold;"> <a
 &amp; Engg</span>, Vol&nbsp; <span style="font-weight: bold;">19, </span>(1979)
 99</li>
   <li><span style="text-decoration: underline;">Levenberg-Maquardt searc</span>h
+
+
+
     <a name="fminlm"></a><span style="font-weight: bold;">fminlm
 [LMFsolve by Balda]</span> Fletcher, R., (1971) Rpt. AERE-R 6799,
 Harwell; Fletcher, R., <span style="font-style: italic;">Computer
@@ -1029,9 +1055,13 @@ Covariance Matrix Adaptation (CMA-ES). <span
  style="font-weight: bold;">11(1). </span></li>
   <li><span style="text-decoration: underline;">Shuffled complex
 evolution</span> <a name="fminsce"></a><span style="font-weight: bold;">fminsce
-[SCE by Donckels]</span> Q. Y. Duan et al, <span
- style="font-style: italic;">J. of Opt. Th. and Appl. </span><span
- style="font-weight: bold;">76</span> (1993) 501.</li>
+[SCE
+by
+Donckels]</span> Q. Y. Duan et al, <span style="font-style: italic;">J.
+of
+Opt.
+Th. and Appl. </span><span style="font-weight: bold;">76</span>
+(1993) 501.</li>
   <li><span style="text-decoration: underline;">Particle Swarm
 Optimization</span> <a name="fminswarm"></a><span
  style="font-weight: bold;">fminswarm and fminswarmhybrid [hPSO by
@@ -1040,20 +1070,31 @@ optimization. In: <span style="font-style: italic;">Proc.</span> <span
  style="font-style: italic;">IEEE Conf. on Neural Networks</span>, IV,
 Piscataway, NJ, pp. 1942-1948; Shi, Y. and Eberhart, R. C. A modified
 particle swarm optimizer. <span style="font-style: italic;">Proc.&nbsp;
-IEEE Int Conf. on Evol Comput</span> pp. 69-73. IEEE Press, Piscataway,
+IEEE
+Int
+Conf.
+on Evol Comput</span> pp. 69-73. IEEE Press, Piscataway,
 NJ, 1998<span style="text-decoration: underline;"></span></li>
   <li><span style="text-decoration: underline;">Hooke-Jeeves direct
 search</span> <a name="fminhook"></a><span style="font-weight: bold;">fminhooke
-[hooke by Kelley</span>] Arthur F. Kaupe Jr., <span
- style="font-style: italic;">Communications of the ACM,</span> <span
- style="font-weight: bold;">Vol 6</span>. (1963) 313; R. Hooke and T.
+[hooke
+by
+Kelley</span>] Arthur F. Kaupe Jr., <span style="font-style: italic;">Communications
+of
+the ACM,</span> <span style="font-weight: bold;">Vol 6</span>.
+(1963) 313; R. Hooke and T.
 A. Jeeves, <span style="font-style: italic;">Journal of the ACM</span>,
+
+
+
     <span style="font-weight: bold;">Vol. 8</span>, April 1961, pp. 212
 ; C. T. Kelley, 1998, <span style="font-style: italic;">Iterative
 Methods for Optimization</span></li>
   <li><span style="text-decoration: underline;">Powell minimization</span>
     <a name="fminpowell"></a><span style="font-weight: bold;">fminpowell
-[powell by Secchi]</span> Brent, <span style="font-style: italic;">Algorithms
+[powell
+by
+Secchi]</span> Brent, <span style="font-style: italic;">Algorithms
 for minimization without derivatives</span>, Prentice-Hall (1973)<span
  style="text-decoration: underline;"></span></li>
   <li><span style="text-decoration: underline;">Nelder-Mead simplex
@@ -1070,9 +1111,13 @@ optimizer with parameter real coding</span>, <a name="fminga"></a><span
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span
- style="font-style: italic;">$Date: 2011-01-05 16:22:17 $ $Revision:
-1.2 $</span><span style="font-style: italic;"> </span>- back to <a
- href="index.html">Main iFit Page</a>
+ style="font-style: italic;">
+$Date: 2011-02-08 16:06:31 $ $Revision: 1.9 $
+</span><span style="font-style: italic;"> </span>- back to <a
+ href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img
+ title="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+ src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+ style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
 </body>

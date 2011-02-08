@@ -15,6 +15,7 @@
 <ul id="mozToc">
 <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
   <li><a href="#mozTocId127491">Purpose</a></li>
+  <li><a href="#mozTocId318588">Obtaining the package</a></li>
   <li><a href="#mozTocId969915">What's in the box...</a>
     <ul>
       <li><a href="#mozTocId751903">The
@@ -71,10 +72,13 @@ right</span>. Any text file can be imported straight away, and a set of
 binary files
 are supported.<br>
 <br>
-<h3>Obtaining the package</h3>
+The spirit of the library is to include a single object definition,
+with a limited set of methods that provide all the means to perform the
+usual data analysis procedures.<br>
+<h3><a class="mozTocH3" name="mozTocId318588"></a>Obtaining the package</h3>
 The package is currently available from the mccode.org web site<br>
 <ul>
-  <li>source package for all plateforms, requires a Matlab license to
+  <li>source package for all platforms, requires a Matlab license to
 run [ zip, 3.1 Mb ].</li>
   <li>standalone packages for Linux, Windows and Mac OS X will be
 available in future versions.</li>
@@ -95,21 +99,25 @@ order to perform the following
 operations seamlessly:<br>
 </div>
 <ul style="margin-left: 40px;">
-  <li><a href="Load.html">Load</a> any text formated file, and a large
+  <ul>
+    <li><a href="Load.html">Load</a> any text formated file, and a
+large
 set of binary format files</li>
-  <li>Display object information, including metadata from the original
+    <li>Display object information, including metadata from the
+original
 file<br>
-  </li>
-  <li><a href="Plot.html">Plot</a> the object Signal in a simple view
+    </li>
+    <li><a href="Plot.html">Plot</a> the object Signal in a simple view
 for 1D, 2D and 3D objects</li>
-  <li>Perform <a href="Math.html">mathematical</a> operations using
+    <li>Perform <a href="Math.html">mathematical</a> operations using
 objects (=-/* trigonometric projections integration re-binning...</li>
-  <li><a href="Fit.html">Fit</a> a parametrized model to the object
+    <li><a href="Fit.html">Fit</a> a parametrized model to the object
 Signal, which makes use of the <a href="iOptim.html">iOptim</a> and <a
  href="iFunce.html">iFuncs</a> libraries.<br>
-  </li>
-  <li><a href="Save.html">Save</a> the object into a set of output
+    </li>
+    <li><a href="Save.html">Save</a> the object into a set of output
 formats</li>
+  </ul>
 </ul>
 <div style="margin-left: 40px;">An extended list of iData methods is
 available in the <a href="Methods.html">Methods</a> page.<br>
@@ -122,7 +130,7 @@ library
 gathered in the <a href="iOptim.html">iOptim</a> part of iFit. It
 enables to choose and compare how different optimization methods can
 solve a problem. This library is used transparently by the iData <a
- href="Fit.html">fit</a> method.<br>
+ href="Fit.html">fit</a> method, but it may also be used independently.<br>
 <h4><a class="mozTocH4" name="mozTocId526330"></a>The fit
 functions/models (iFit/iFuncs)</h4>
 A set of parametrized models is given in the <a href="iFuncs.html">iFuncs</a>
@@ -145,17 +153,24 @@ its free format. However, a number of post-import wrappers exist in
 order to reshape the imported data to match specific needs. These
 wrappers are very short to write.<br>
 If needed, other importation methods should be added there, to be able
-to handle more formats.<br>
+to handle more formats. This library is used transparently by the iData
+<a href="Fit.html">fit</a> method, but it may also be used
+independently.
 <h4><a class="mozTocH4" name="mozTocId300912"></a>The documentation
 (iFit/Docs)</h4>
 The documentation is given as web pages, and all methods/functions have
 their own embedded help. To access it use:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">doc</span>(iData)</pre>
+ style="color: rgb(51, 102, 255);">doc</span>(iData)<br></pre>
+A list of all available <a href="Methods.html">iData methods</a> is
+also available, and can be directly accesed with<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">methods</span>(iData)</pre>
 <h4><a class="mozTocH4" name="mozTocId338083"></a>Example data files
 (iFit/Data)</h4>
 Some <a href="../Data">Data</a> files are given as examples to be used
-along the documentation web pages and in the QuickStart.<br>
+along the documentation web pages and in the <a href="QuickStart.html">Quick
+Start</a>.<br>
 </div>
 <h3><a class="mozTocH4" name="mozTocId755938"></a><span
  style="font-style: italic; font-weight: bold;">Ok, let's start !</span>
@@ -184,7 +199,8 @@ Start</a> page. Otherwise, the typical usage would be:</div>
  style="color: rgb(204, 51, 204);">'filename'</span>,<span
  style="color: rgb(204, 51, 204);">'pdf'</span>)<br></pre>
 <h3><a class="mozTocH3" name="mozTocId639966"></a>For beginners</h3>
-<span style="font-weight: bold; font-style: italic;">If you do not know
+<div style="margin-left: 40px;"><span
+ style="font-weight: bold; font-style: italic;">If you do not know
 Matlab</span> already, you will discover that using the iFit library
 does not require advanced IT knowledge. The general syntax are rather
 intuitive, and all methods are able to tolerate (and correct) most of
@@ -211,14 +227,15 @@ using the Scientific Python (see <a
  href="http://www.enthought.com/python">Enthought Python</a> and <a
  href="http://www.pythonxy.com/">Python(x,y)</a>, Pyhton Scientific
 Matplotlib Numeric Numpy...).
-<pre style="margin-left: 80px;"><br></pre>
+</div>
 <h3><a class="mozTocH3" name="mozTocId66420"></a>Help me !<img
  style="width: 107px; height: 128px;" alt="HELP" title="HELP"
  src="images/help.jpeg" align="right"></h3>
 An extensive documentation is provided as web pages (such as this
-one) which you access from Matlab with<br>
+one) which you access from Matlab with either<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">doc</span>(iData)<br></pre>
+ style="color: rgb(51, 102, 255);">doc</span>(iData)<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">methods</span>(iData)<br></pre>
 and help pages for each function/method, which you can access with<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">help</span> iData<br>&gt;&gt; <span
@@ -230,8 +247,11 @@ If you find bugs please send them to me <span
   <li>the iFit version which you can get from the Matlab command <span
  style="font-style: italic;">version(iData)</span><br>
   </li>
-  <li>the script that reproduces the error, together with any required
+  <li>the script/command that reproduces the error together with any
+required
 external data file</li>
+  <li>a copy of the error messages produced by the script/command.<br>
+  </li>
   <li>a smile ;-)</li>
 </ol>
 <h3><a class="mozTocH3" name="mozTocId93435"></a>Credits and Disclaimer<br>
@@ -239,12 +259,13 @@ external data file</li>
 <span style="font-style: italic;">iFit</span> was invented by <a
  href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanuel-farhi/">E.
 Farhi</a> and took many years to come to you. <br>
-Substantial contributions from Y. Debab and P. Willendrup.<br>
+Substantial contributions from <span style="font-style: italic;">Y.
+Debab</span> and <span style="font-style: italic;">P. Willendrup</span>.<br>
 If you produce scientific output using iFit, I'd appreciate if you cite
 the following reference:<br>
 <ul>
   <li>E. Farhi, <span style="font-style: italic;">The iFit data
-analysis library</span>, ILL Computing for Science (2010) .</li>
+analysis library</span>, ILL Computing for Science (2011) .</li>
 </ul>
 iFit is a product from the <a href="http://www.ill.fr/computing">Computing
 for
@@ -263,8 +284,12 @@ be slow. This will be improved gradually...<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit Welcome - $Date: 2011-01-18 15:14:26 $ $Revision: 1.7 $</span>
-- back to <a href="index.html">Main iFit Page</a><br>
+Farhi - iFit Welcome - $Date: 2011-02-08 16:06:31 $ $Revision: 1.8 $</span>
+- back to <a href="index.html">Main iFit Page</a> <a
+ href="http://www.ill.eu/"><img
+ title="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+ src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+ style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body>
 </html>
