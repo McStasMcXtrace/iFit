@@ -12,7 +12,7 @@ function s = camproj(a,dim)
 % output: s: projection of elements (iData/scalar)
 % ex:     c=camproj(a);
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/sum, iData/trapz
 
 if ~isa(a, 'iData')
@@ -46,9 +46,9 @@ for index=1:ndims(a)
   setaxis(a, index, unique(x), xlab);
 end
 
-s = get(a,'Signal');
-e = get(a,'Error');
-m = get(a,'Monitor');
+s = iData_private_cleannaninf(get(a,'Signal'));
+e = iData_private_cleannaninf(get(a,'Error'));
+m = iData_private_cleannaninf(get(a,'Monitor'));
 
 [link, label] = getalias(a, 'Signal');
 cmd = a.Command;
@@ -57,14 +57,14 @@ rmaxis(b, []); % removes all axes
 
 if dim == 0
   for index=1:ndims(a)
-    s = sum(s, index);
+    s = trapz(s, index);
   end
   return  % scalar
 else
   % accumulates on all axes except the rank specified
   for index=1:ndims(a)
     if index~=dim, 
-      s = sum(s, index); 
+      s = trapz(s, index); 
       if numel(e) > 1, e = sum(e, index); e = sqrt(e.*e); end
       if numel(m) > 1, m = sum(m, index); end
     end

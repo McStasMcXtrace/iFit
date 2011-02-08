@@ -119,8 +119,12 @@ if (all(m1==0) | all(m1==1)) & (all(m2==0) | all(m2==1)) m1=0; m2=0; end
 % the 'real' signal is 'Signal'/'Monitor', so we must perform operation on this.
 % then we compute the associated error, and the final monitor
 % finally we multiply the result by the monitor.
-if not(all(m1 == 0)) & p1, y1 = s1./m1; d1 = e1./m1; else y1=s1; d1=e1; end
-if not(all(m2 == 0)) & p1, y2 = s2./m2; d2 = e2./m2; else y2=s2; d2=e2; end
+if not(all(m1 == 0)) & p1, 
+  y1 = genop(@rdivide, s1, m1); d1 = genop(@rdivide,e1,m1); 
+else y1=s1; d1=e1; end
+if not(all(m2 == 0)) & p1, 
+  y2 = genop(@rdivide,s2,m2); d2 = genop(@rdivide,e2,m2); 
+else y2=s2; d2=e2; end
 
 % operation
 switch op
@@ -152,8 +156,8 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'}
   else m3=get(c,'Monitor'); end
   if p1 & ~all(m3 == 0), s3 = genop( @times, s3, m3); end
   try
-    e1s1 = (e1./s1).^2; e1s1(find(s1 == 0)) = 0;
-    e2s2 = (e2./s2).^2; e2s2(find(s2 == 0)) = 0;
+    e1s1 = genop(@rdivide,e1,s1).^2; e1s1(find(s1 == 0)) = 0;
+    e2s2 = genop(@rdivide,e2,s2).^2; e2s2(find(s2 == 0)) = 0;
     e3 = genop(@times, sqrt(genop(@plus, e1s1, e2s2)), s3);
   catch
     e3=[];
@@ -164,7 +168,7 @@ case {'power'}
   if p1 & ~all(m3 == 0), s3 = genop( @times, s3, m3);; end
   try
     e2logs1 = genop(@times, e2, log(s1)); e2logs1(find(s1<=0))   = 0;
-    s2e1_s1 = genop(@times, s2, e1./s1);  s2e1_s1(find(s1 == 0)) = 0;
+    s2e1_s1 = genop(@times, s2, genop(@rdivide,e1,s1));  s2e1_s1(find(s1 == 0)) = 0;
     e3 = s3.*genop(@plus, s2e1_s1, e2logs1);
   catch
     e3=[];
@@ -185,10 +189,10 @@ otherwise
 end
 
 % ensure that Monitor and Error have the right dimensions
-if numel(e3) ~= 1 && numel(e3) ~= numel(s3)
+if numel(e3) > 1 && numel(e3) ~= numel(s3)
   e3 = genop(@times, e3, ones(size(s3)));
 end
-if numel(m3) ~= 1 && numel(m3) ~= numel(s3)
+if numel(m3) > 1 && numel(m3) ~= numel(s3)
   m3 = genop(@times, m3, ones(size(s3)));
 end
 
