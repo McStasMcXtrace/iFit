@@ -28,7 +28,8 @@ data sets</a></li>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span
- style="font-style: italic;">iData</span>, maths<br>
+ style="font-style: italic;">iData</span>, maths, <a
+ href="Methods.html">methods</a><br>
 </div>
 <br>
 <br>
@@ -412,23 +413,51 @@ set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
     </tr>
     <tr>
       <td style="vertical-align: top; font-weight: bold;">times <span
- style="font-style: italic; font-weight: normal;">and</span> *<br>
+ style="font-style: italic; font-weight: normal;">and</span> .*<br>
       </td>
       <td style="vertical-align: top;">s1 * s2</td>
       <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
       <td style="vertical-align: top;">m1*m2<br>
       </td>
-      <td style="vertical-align: top;">multiplication<br>
+      <td style="vertical-align: top;">multiplication (<span
+ style="font-style: italic;">element by element</span>)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">mtimes</span>
+      <span style="font-style: italic; font-weight: normal;">and</span>
+*</td>
+      <td style="vertical-align: top;">s1 x s2<br>
+      </td>
+      <td style="vertical-align: top;">e1 x e2<br>
+      </td>
+      <td style="vertical-align: top;">m1 x m2<br>
+      </td>
+      <td style="vertical-align: top;">matrix multiplication<br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top; font-weight: bold;">divide <span
- style="font-style: italic; font-weight: normal;">and</span> /<br>
+ style="font-style: italic; font-weight: normal;">and</span> ./<br>
       </td>
       <td style="vertical-align: top;">m2&sup2;*(s1/s2)</td>
       <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
       <td style="vertical-align: top;">m1*m2</td>
-      <td style="vertical-align: top;">division<br>
+      <td style="vertical-align: top;">division <span
+ style="font-style: italic;">(element by element)</span> </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">mrdivide</span>
+      <span style="font-style: italic; font-weight: normal;">and</span>
+/</td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">see
+above</span><br>
+      </td>
+      <td style="vertical-align: top; font-style: italic;">see above</td>
+      <td style="vertical-align: top; font-style: italic;">see above</td>
+      <td style="vertical-align: top;">matrix division: currently
+equivalent to the <span style="font-weight: bold;">divide</span>
+operator<br>
       </td>
     </tr>
     <tr>
@@ -460,6 +489,22 @@ independently<br>
       <td style="vertical-align: top;">exponentiation<br>
       </td>
     </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">comparisons:
+
+
+      </span>lt, le, gt, ge, ne, eq<br>
+      </td>
+      <td style="vertical-align: top;">comparison(s1, s2)<br>
+      </td>
+      <td style="vertical-align: top;">&#8730;[(e1/m1)<span
+ style="font-style: italic;"></span>&sup2;+(e2/m2)<span
+ style="font-style: italic;"></span>&sup2;]/[s1/m1+s2/m2]</td>
+      <td style="vertical-align: top;">1<br>
+      </td>
+      <td style="vertical-align: top;">binary comparisons<br>
+      </td>
+    </tr>
   </tbody>
 </table>
 <br>
@@ -467,11 +512,10 @@ All these operations find intersection &#8745; between objects (when axes are
 <span style="font-style: italic;">e.g</span>. partly overlapping),
 rebin
 objects when axes have a different sampling, and then perform the
-mathematical operation. The objects need not as well be of the same
-dimensionalities, in which case they are extended to match the highest
-dimensionality object. In case some objects have a lower
-dimensionalites,
-they are extended along missing dimensions (by mere duplication) so
+mathematical operation. In case some objects have a lower
+dimensionality,
+they are extended along missing dimensions (by mere duplication) to
+match the higher dimensionality, so
 that the operation can be performed. <br>
 <br>
 <a href="images/iData_plus_extend_dims.png"><img
@@ -489,8 +533,14 @@ set
 with
 a
 1D
-data set, which is
-extended. The intersection selects only the positive axis values from
+data
+set,
+which
+is
+extended.
+The
+intersection
+selects only the positive axis values from
 the 1D object, here in [0 5]. As the 2D object has no default Monitor
 (set to 1), we set it to 1/10 of the corresponding mean value in the 1D
 object
@@ -524,8 +574,14 @@ axes
 and
 Monitor
 values
-are consistent
-when performing binary operations, otherwise the intersection may be
+are
+consistent
+when
+performing
+binary
+operations,
+otherwise
+the intersection may be
 empty, or the corresponding <span style="font-style: italic;">Signal</span>
 weighting may be wrong.<br>
 <br>
@@ -534,6 +590,18 @@ detailed in the section '<a href="#mozTocId97186">Merging and combining
 data sets</a>' below. In particular, the difference between the
 summation and the combination will be detailed there.<br>
 <br>
+The usual comparison binary operators<br>
+<ul>
+  <li>greater: gt &gt;</li>
+  <li>greater or equal: ge &gt;=</li>
+  <li>lower: lt &lt;</li>
+  <li>lower or equal: le &lt;=</li>
+  <li>equal: eq ==</li>
+  <li>not equal: ne ~=</li>
+</ul>
+are also implemented. It compares the Signals, taking the Monitor
+weightning into account. The associated error bar is normalized to the
+mean signal.<br>
 <h3><a class="mozTocH3" name="mozTocId463816"></a><span
  style="font-weight: bold;">Statistics, fitting and peak
 searching</span></h3>
@@ -613,7 +681,13 @@ following
 example
 displays
 the
-automatically found peaks on top of the object view:<br>
+automatically
+found
+peaks
+on
+top
+of
+the object view:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(204, 51, 204);">[ ifitpath 'Data/MCA.dat' ]</span>);<br>&gt;&gt; <span
@@ -663,7 +737,13 @@ extract
 projected
 and
 summed
-objects. Technically, the projection on one axis is the sum along all
+objects.
+Technically,
+the
+projection
+on
+one
+axis is the sum along all
 other axis. <br>
 <br>
 <div style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">sum</span>(a,
@@ -687,9 +767,11 @@ rank used for operation as the second argument.<br>
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">xlabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'Time channel'</span>); % 2nd axis<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'Time channel'</span>); <span
+ style="font-style: italic;">% 2nd axis</span><br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">ylabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'Angle channel'</span>);% 1st axis<br>&gt;&gt; <span
+ style="color: rgb(204, 51, 204);">'Angle channel'</span>);<span
+ style="font-style: italic;">% 1st axis</span><br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">subplot</span>([ <span
  style="color: rgb(51, 102, 255);">log</span>(a) <span
  style="color: rgb(51, 102, 255);">log</span>(<span
@@ -799,7 +881,8 @@ repeat
 that
 same
 measurement,
-providing <span style="font-style: italic;">Signal S2</span>
+providing
+<span style="font-style: italic;">Signal S2</span>
 and <span style="font-style: italic;">Monitor M2</span>. If, for this
 example, <span style="font-style: italic;">S2</span> and <span
  style="font-style: italic;">M2</span> are similar to <span
@@ -874,7 +957,8 @@ the
 following
 example,
 the
-object <span style="font-style: italic;">d</span>
+object
+<span style="font-style: italic;">d</span>
 is the catenation of 4 objects<span style="font-style: italic;"> [a b c
 d]</span>, sequentially. The catenation of the 4 axes in '<span
  style="font-style: italic;">d</span>' is the repetition of the initial
@@ -884,24 +968,32 @@ catenation of objects. Last, we assemble the same data set side by side
 onto a new dimension, creating a surface '<span
  style="font-style: italic;">g</span>'.<br>
 <pre style="margin-left: 40px;">&gt;&gt; x=-pi:0.01:pi; a=<span
- style="color: rgb(51, 102, 255);">iData</span>(x,x); <br>&gt;&gt; a.Error=0;                         % replace default Error=sqrt(Signal) by no-error.<br>&gt;&gt; b=<span
+ style="color: rgb(51, 102, 255);">iData</span>(x,x); <br>&gt;&gt; a.Error=0;                         <span
+ style="font-style: italic;">% replace default Error=sqrt(Signal) by no-error.</span><br>&gt;&gt; b=<span
  style="color: rgb(51, 102, 255);">sin</span>(a); c=<span
  style="color: rgb(51, 102, 255);">cos</span>(a); d=<span
- style="color: rgb(51, 102, 255);">exp</span>(-a.*a);  % create new objects by applying operator on the initial linear one<br>&gt;&gt; e=<span
- style="color: rgb(51, 102, 255);">cat</span>(1, [a b c d ]);              % catenate along all X axes, result is a single vector<br>&gt;&gt; f=<span
+ style="color: rgb(51, 102, 255);">exp</span>(-a.*a);  <span
+ style="font-style: italic;">% create new objects by applying operator on the initial linear one</span><br>&gt;&gt; e=<span
+ style="color: rgb(51, 102, 255);">cat</span>(1, [a b c d ]);              <span
+ style="font-style: italic;">% catenate along all X axes, result is a single vector</span><br>&gt;&gt; f=<span
  style="color: rgb(51, 102, 255);">copyobj</span>(e);<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">rmaxis</span>(f,1);                       % reset object axis to the default<br>&gt;&gt; g=<span
- style="color: rgb(51, 102, 255);">cat</span>(2, [a b c d]);               % append objects side-by-side onto new dimension<br>&gt;&gt; <span
+ style="color: rgb(51, 102, 255);">rmaxis</span>(f,1);                       <span
+ style="font-style: italic;">% reset object axis to the default</span><br>&gt;&gt; g=<span
+ style="color: rgb(51, 102, 255);">cat</span>(2, [a b c d]);               <span
+ style="font-style: italic;">% append objects side-by-side onto new dimension</span><br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">subplot</span>([e f g],<span
- style="color: rgb(204, 51, 204);">'tight'</span>)           % plot all<br>&gt;&gt; h=<span
- style="color: rgb(51, 102, 255);">dog</span>(2, g);                       % back to [a b c d] with 'dog'<br></pre>
+ style="color: rgb(204, 51, 204);">'tight'</span>)           <span
+ style="font-style: italic;">% plot all</span><br>&gt;&gt; h=<span
+ style="color: rgb(51, 102, 255);">dog</span>(2, g);                       <span
+ style="font-style: italic;">% back to [a b c d] with 'dog'</span><br></pre>
 <a href="images/Baby-Pluto.jpg"><img alt="iData: cat and dog"
  title="iData: cat and dog" src="images/Baby-Pluto.jpg"
  style="border: 0px solid ; width: 100px; height: 75px;" align="left"></a>Similarly
 to
 the
 cat,
-the <span style="font-weight: bold; font-style: italic;">dog</span>
+the
+<span style="font-weight: bold; font-style: italic;">dog</span>
 operator
 splits an object into slices along a given dimension, returning an
 array with as many elements as the length of this dimension. This is
@@ -920,10 +1012,12 @@ an iData object and a dimension as arguments. The result is an array
 made by duplicating the object.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">zeros</span>(<span
- style="color: rgb(51, 102, 255);">iData</span>, [5 3]);    % creates a 5x3 empty iData array<br>&gt;&gt; a = <span
+ style="color: rgb(51, 102, 255);">iData</span>, [5 3]);    <span
+ style="font-style: italic;">% creates a 5x3 empty iData array</span><br>&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = <span
- style="color: rgb(51, 102, 255);">zeros</span>(a, 5, 3);         % creates a 5x3 constant array of 'peaks' (2D surface)<br></pre>
+ style="color: rgb(51, 102, 255);">zeros</span>(a, 5, 3);         <span
+ style="font-style: italic;">% creates a 5x3 constant array of 'peaks' (2D surface)</span><br></pre>
 The <span style="font-weight: bold;">linspace</span> and <span
  style="font-weight: bold;">logspace</span> binary operators create a
 linearly and logarithmically spaced array of objects, by gradually
@@ -945,7 +1039,8 @@ Linspace (first row) and logspace (2nd row)<br>
 </div>
 <br>
 The <span style="font-weight: bold;">colon</span> operator <span
- style="font-weight: bold;">a:b</span> is the same as linspace with a
+ style="font-weight: bold;">a:b</span> is the same as <span
+ style="font-weight: bold;">linspace</span> with a
 number of steps which is the integer difference between the objects
 mean value.<br>
 <h3><a class="mozTocH3" name="mozTocId991507"></a>Interpolation,
@@ -969,7 +1064,9 @@ for union, are set to 0.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span
  style="color: rgb(51, 102, 255);">iData</span>(<span
  style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = <span
- style="color: rgb(51, 102, 255);">copyobj</span>(a);<br>&gt;&gt; a{1} = a{1}+10; a{2} = a{2}+10;  % shift along X and Y<br>&gt;&gt; a.Signal=a.Signal+5;             % shift along Z<br>&gt;&gt; [ai,bi]=<span
+ style="color: rgb(51, 102, 255);">copyobj</span>(a);<br>&gt;&gt; a{1} = a{1}+10; a{2} = a{2}+10;  <span
+ style="font-style: italic;">% shift along X and Y</span><br>&gt;&gt; a.Signal=a.Signal+5;             <span
+ style="font-style: italic;">% shift along Z</span><br>&gt;&gt; [ai,bi]=<span
  style="color: rgb(51, 102, 255);">intersect</span>(a,b);<br>&gt;&gt; [au,bu]=<span
  style="color: rgb(51, 102, 255);">union</span>(a,b);<br>&gt;&gt; <span
  style="color: rgb(51, 102, 255);">subplot</span>(1,3,1); <span
@@ -1002,15 +1099,25 @@ set of axes.<br>
 <div style="text-align: center;"><a href="images/iData_interp.png"><img
  alt="iData interp" title="iData interp" src="images/iData_interp.png"
  style="border: 0px solid ; width: 444px; height: 200px;" align="middle"></a><br>
+<div style="text-align: left;"><br>
+Last, the <span style="font-weight: bold;">sort</span> operator sorts
+object axes, in ascending or descending order. The corresponding
+Signal, Error, and Monitor values are also re-ordered accordingly.<br>
+</div>
 </div>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span
- style="font-style: italic;"> </span><span style="font-style: italic;">$Date:
-2010-11-22 14:15:30$
-$Revision: 1.11 $</span><span style="font-style: italic;"> </span>- back
-to <a href="index.html">Main iFit Page</a>
+ style="font-style: italic;"> </span><span style="font-style: italic;">
+$Date: 2011-02-08 16:06:31 $ $Revision: 1.12 $
+</span><span style="font-style: italic;"> </span>-
+back
+to <a href="index.html">Main iFit Page </a><a
+ href="http://www.ill.eu/"><img
+ title="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+ src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+ style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body>
 </html>
