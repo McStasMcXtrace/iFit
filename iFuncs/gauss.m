@@ -1,91 +1,88 @@
-function y=gauss(p, varargin)
-% y = gauss(p, x) : Gaussian
+function y=gauss(p, x, y)
+% y = gauss(p, x, [y]) : Gaussian
 %
 %   iFunc/gauss Gaussian fitting function
 %   the function called with a char argument performs specific actions.
 %
-% input:  p: Gaussian model parameters
+% input:  p: Gaussian model parameters (double)
 %            p = [ Amplitude Centre HalfWidth BackGround ]
-%         x: axis (double) or action e.g. 'identify' (char)
-% output: y: model value
+%          or action e.g. 'identify', 'guess' (char)
+%         x: axis (double)
+%         y: when values are given, a guess of the parameters is performed
+% output: y: model value or information structure (guess, identify)
 % ex:     y=gauss([1 0 1 1], -10:10); or y=gauss('identify') or p=gauss('guess',x,y);
 
-% Please retain the function definition structure which should provide:
-% * model evaluation
-% * model identification
-% * guessed parameters from input data
+% Please retain the function definition structure as defined below
+% in most cases, just fill-in the information when HERE is indicated
 
-if nargin==2 && isnumeric(p)
-  % use of model(x,y) triggers parameter guess
-  x = varargin{1};
-  if length(p) == length(x)
-    y = feval(mfilename, 'guess', p, x);
-    return
-  end
-  
-  % use of model([], x) triggers default parameters to be used
-  if isempty(p) 
-    id=feval(mfilename, 'identify');
-    p=id.Guess;
-  end
-  
-  % evaluate model values
-  y=p(1)*exp(-0.5*((x-p(2))/p(3)).^2) + p(4);
-  
-else
-  % check for actions, default is identify
-  action='';
-  if nargin == 0, p=[]; end
-  if ischar(p), action=p; end
-  if isempty(action), action='identify'; end
-  
-  % the names of the model parameters
-  parameter_names = {'Amplitude','Centre','HalfWidth','Background'};
-  
-  % some reasonable X axis to plot the function when nothing is given
-  if nargin < 2
-    % if parameters have been given use them to define a sensible X axis
-    if ~isempty(p)
-      x = linspace(p(2)-3*p(3),p(2)+3*p(3), 100);
-    else
-    % else use default
-      x = linspace(-2,2,100);
-    end
-  end
-  
-  % when we provide the data, guess some parameters y =model(p,x)
-  if nargin >= 3
-    x = varargin{1};
-    y = varargin{end};
-    % use the Y values to guess...
-
-    % make a peak search in 1D signal y=f(x) and assign parameters according to their names
-    p = iFuncs_private_guess(x, y, parameter_names);
-    y = [];
+  if nargin >= 2 && isnumeric(p) && ~isempty(p) && isnumeric(x) && ~isempty(x)
+  %   evaluate: model(p,x, ...)
+    y = evaluate(p, x);
+  elseif nargin == 3 && isnumeric(x) && isnumeric(y) && ~isempty(x) && ~isempty(y)
+  %   guess: model('guess', x,y)
+  %   guess: model(p,       x,y)
+    y = guess(x,y);
+  elseif nargin == 2 && isnumeric(p) && isnumeric(x) && numel(p) == numel(x)
+  %   guess: model(x,y) with numel(x)==numel(y)
+    y = guess(p,x);
+  elseif nargin == 2 && isnumeric(p) && ~isempty(p) && isempty(x)
+  %   evaluate: model(p,[])
+    y = feval(mfilename, p);
+  elseif nargin == 2 && isempty(p) && isnumeric(x) && ~isempty(x)
+  %   identify: model([],x)
+    y = identify; x=x(:);
+    % HERE default parameters when only axes are given <<<<<<<<<<<<<<<<<<<<<<<<<
+    y.Guess  = [1 mean(x) std(x)/2 .1];
+    y.Axes   = { x };
+    y.Values = evaluate(y.Guess, y.Axes{:});
+  elseif nargin == 1 && isnumeric(p) && ~isempty(p) 
+  %   identify: model(p)
+    y = identify;
+    y.Guess  = p;
+    % HERE default axes to represent the model when parameters are given <<<<<<<
+    y.Axes   =  { linspace(p(2)-3*p(3),p(2)+3*p(3), 100) };
+    y.Values = evaluate(y.Guess, y.Axes{:});
+  elseif nargin == 0
+    y = feval(mfilename, [], linspace(-2,2, 100));
   else
-    % default parameters when nothing is given as argument
-    p = [1 mean(x) std(x)/2 .1];
+    y = identify;
   end
+
+end
+% end of model main
+% ------------------------------------------------------------------------------
+
+% inline: evaluate: compute the model values
+function y = evaluate(p, x)
+  X = x; x=x(:);
+  if isempty(x) | isempty(p), y=[]; return; end
   
-  % compute the model values with default, given or guessed parameters
-  model = feval(mfilename, p, x);
+  % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+  y = p(1)*exp(-0.5*((x-p(2))/p(3)).^2) + p(4);
   
-  % some actions for this function to define return value
-  switch action
-  case 'identify'
-    y.Type           = 'iFit fitting function';
-    y.Name           = 'Gaussian (1D)';
-    y.Parameters     = parameter_names;
-    y.Dimension      = 1;         % dimensionality of input space (axes) and result
-    y.Guess          = p;         % default or guessed parameters
-    y.Values         = model;     % default or guessed model values=f(p)
-    y.Axis           = { x };     % the axes used to get the values
-  case 'guess'
-    y = p;
-  otherwise
-    disp([ mfilename ': unknown action ' action ]);
-    y = [];
-  end
-  % and we return 'y' 
+  y = reshape(y, size(X));
+end
+
+% inline: identify: return a structure which identifies the model
+function y =identify()
+  % HERE are the parameter names
+  parameter_names = {'Amplitude','Centre','HalfWidth','Background'};
+  %
+  y.Type           = 'iFit fitting function';
+  y.Name           = [ 'Gaussian (1D) [' mfilename ']' ];
+  y.Parameters     = parameter_names;
+  y.Dimension      = 1;         % dimensionality of input space (axes) and result
+  y.Guess          = [];        % default parameters
+  y.Axes           = {};        % the axes used to get the values
+  y.Values         = [];        % default model values=f(p)
+end
+
+% inline: guess: guess some starting parameter values and return a structure
+function info=guess(x,y)
+  info       = identify;  % create identification structure
+  info.Axes  = { x };
+  % fill guessed information
+  info.Guess = iFuncs_private_guess(x(:), y(:), info.Parameters);
+  info.Values= evaluate(info.Guess, info.Axes{:});
 end
 
