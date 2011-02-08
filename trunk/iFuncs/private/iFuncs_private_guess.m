@@ -13,7 +13,7 @@ function pars=iFuncs_private_guess(x, signal, parameter_names, dim)
 %         dim: dimension to use. Default is 1 (int)
 % output: pars: parameter values (double vector)
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 
 pars=[];
 if nargin < 3, return; end
@@ -29,7 +29,7 @@ parameter_names = lower(parameter_names);
 
 % sort peaks by amplitude
 [dummy,sorti] = sort(amplitude);
-sorti=sorti(end:1);                  % descending amplitude
+sorti=sorti(end:-1:1);                  % descending amplitude
 amplitude = amplitude(sorti);
 sigma     = sigma(sorti);
 position  = position(sorti);
