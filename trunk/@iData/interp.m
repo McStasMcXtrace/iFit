@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -72,13 +72,13 @@ ntimes=0;
 % interpolation axes
 i_axes           = a_axes;
 axis_arg_index   = 0;
-requires_meshgrid= 0;
+requires_meshgrid= 0; has_grid_arg=0;
 
 % parse varargin to overload defaults and set manually the axes
 for index=1:length(varargin)
   c = varargin{index};
   if ischar(c) & ~isempty(strfind(c,'grid')) 
-    requires_meshgrid=1;
+    requires_meshgrid=1; has_grid_arg=1;
   elseif ischar(c)                      % method (char)
     method = c;
   elseif isa(varargin{index}, 'iData')  % set interpolation axes: get axis from other iData object
@@ -236,6 +236,14 @@ if requires_meshgrid
       if index < ndims(a), toeval=[ toeval ', ' ]; end
     end
     eval([ toeval '] = ndgrid(i_axes{:});' ]);
+    if ~has_grid_arg
+    for index=1:ndims(a) 
+      i_axes{index} = unique(i_axes{index});
+      n = ones(1,ndims(a));
+      n(index) = length(i_axes{index});
+      i_axes{index}=reshape(i_axes{index},n);
+    end
+    end
   end
 end
 

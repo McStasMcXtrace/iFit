@@ -8,11 +8,11 @@ function s = sum(a,dim)
 %       camproj accumulates on all other axes.
 %
 % input:  a: object or array (iData/array of)
-%         dim: dimension to accumulate (int)
+%         dim: dimension to accumulate (int/array of)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 if ~isa(a, 'iData')
@@ -46,9 +46,9 @@ for index=1:ndims(a)
   setaxis(a, index, unique(x), xlab);
 end
 
-s = get(a,'Signal');
-e = get(a,'Error');
-m = get(a,'Monitor');
+s = iData_private_cleannaninf(get(a,'Signal'));
+e = iData_private_cleannaninf(get(a,'Error'));
+m = iData_private_cleannaninf(get(a,'Monitor'));
 
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;

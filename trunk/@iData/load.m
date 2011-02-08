@@ -10,6 +10,14 @@ function out = load(a, varargin)
 %   The optional 3rd argument can be force to use a specific loader list (see below)
 %   The input iData object is updated if no output argument is specified.
 %
+%   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
+%     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
+%     HDF4, HDF5, MAT workspace, XML
+%   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX
+%   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
+%   Distant files are supported through e.g. URLs such as 
+%     file://, ftp:// and http://
+%
 % input:  s: object or array (iData)
 %         file: file name(s) to import (char/cellstr)
 %         loader: optional loader method specification (char/struct/cellstr/array of struct)
@@ -28,7 +36,7 @@ function out = load(a, varargin)
 % output: d: single object or array (iData)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad

@@ -10,12 +10,12 @@ function s = prod(a,dim)
 %       All other axes are removed.
 %
 % input:  a: object or array (iData/array of)
-%         dim: dimension to operate (int)
+%         dim: dimension to operate (int//array of)
 % output: s: product of elements (iData/scalar)
 % ex:     c=prod(a);
 %
-% Version: $Revision: 1.6 $
-% See also iData, iData/plus, iData/sum, iData/cumprod, iData/mean
+% Version: $Revision: 1.7 $
+% See also iData, iData/plus, iData/prod, iData/cumprod, iData/mean
 
 if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is prod(iData, dim)']);
@@ -24,45 +24,74 @@ end
 if nargin < 2, dim=1; end
 % handle input iData arrays
 if length(a(:)) > 1
-  s = {};
+  s = a;
   for index=1:length(a(:))
-    s{index} = prod(a(index), dim);
+    s(index) = prod(a(index), dim);
   end
   s = reshape(s, size(a));
   return
 end
 
-s=get(a,'Signal');
-[link, label]          = getalias(a, 'Signal');
-cmd=a.Command;
-b=copyobj(a);
-setaxis(b, [], getaxis(b)); % delete all axes
+% removes warnings
+try
+  warn.set = warning('off','iData:setaxis');
+  warn.get = warning('off','iData:getaxis');
+catch
+  warn = warning('off');
+end
+
+% in all cases, resample the data set on a grid
+a = interp(a,'grid');
+% make axes single vectors for prod/trapz/... to work
+for index=1:ndims(a)
+  [x, xlab] = getaxis(a, index);
+  setaxis(a, index, unique(x), xlab);
+end
+
+s = iData_private_cleannaninf(get(a,'Signal'));
+e = iData_private_cleannaninf(get(a,'Error'));
+m = iData_private_cleannaninf(get(a,'Monitor'));
+
+[link, label] = getalias(a, 'Signal');
+cmd= a.Command;
+b  = copyobj(a);
+rmaxis(b);
+
 if all(dim > 0)
+  % prod on all dimensions requested
   for index=1:length(dim(:))
-    s = prod(s, dim(index));
+    s = prod(s, dim(index)); 
+    if numel(e) > 1, e = prod(e, dim(index)); end
+    if numel(m) > 1, m = prod(m, dim(index)); end
   end
+  % Store Signal
+  s=squeeze(s); e=squeeze(e); m=squeeze(m);
+  setalias(b,'Signal', s, [mfilename ' of ' label ]);
+  b = set(b, 'Error', abs(e), 'Monitor', m);
+  % put back initial axes, except those integrated
   ax_index=1;
   for index=1:ndims(a)
-    if all(index ~= dim)
-      setaxis(b, ax_index, getaxis(a, num2str(index)));
+    if all(dim ~= index)
+      [x, xlab] = getaxis(a, num2str(index)); % get axis definition and label
+      setaxis(b, ax_index, x);
       ax_index = ax_index+1;
     end
   end
-  setalias(b,'Signal', s, [mfilename ' of ' label ]);     % Store Signal
 elseif dim == 0
   for index=1:ndims(a)
-    s = prod(s, index);
+    s = feval(mfilename, a, index);
   end
   return  % scalar
-else  % dim < 0
-  % operates on all axes except the rank specified
-  for index=1:ndims(a)
-    if index~=-dim, s = prod(s,index); end
-  end
-  setaxis(b, 1, getaxis(a, num2str(-dim)));
-  setalias(b,'Signal', s, [ 'product projection of ' label ]);     % Store Signal
 end
 b.Command=cmd;
 b = iData_private_history(b, mfilename, b, dim);
 s = b;
+
+% reset warnings
+try
+  warning(warn.set);
+  warning(warn.get);
+catch
+  warning(warn);
+end
 

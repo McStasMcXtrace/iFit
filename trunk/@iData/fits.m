@@ -1,4 +1,4 @@
-function [pars,criteria,message,output] = fits(a, model, pars, options, constraints,ub)
+function [pars_out,criteria,message,output] = fits(a, model, pars, options, constraints,ub)
 % [pars,criteria,message,output] = fits(a, model, pars, options, constraints) : fit data set on a model
 %
 %   @iData/fits find best parameters estimates in order to minimize the 
@@ -63,7 +63,7 @@ function [pars,criteria,message,output] = fits(a, model, pars, options, constrai
 %         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, fminsearch, optimset, optimget
 
 % nested  functions: eval_criteria
@@ -84,7 +84,7 @@ if nargin < 5
 end
 if nargin < 4, options=[]; end
 if isempty(options)
-  options = 'fminsearch';
+  options = 'fminimfil';
 end
 if ischar(options) | isa(options, 'function_handle')
   algo = options;
@@ -171,7 +171,7 @@ try
     @(pars) eval_criteria(pars, model, options.criteria, a), pars, options, constraints);
 catch
   if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
-    disp([ '** constraints not supported by optimizer ' options.optimizer ])
+    disp([ '** Constraints not supported by optimizer ' options.optimizer ])
   end
   [pars_out,criteria,message,output] = feval(options.optimizer, ...
     @(pars) eval_criteria(pars, model, options.criteria, a), pars, options);
@@ -186,7 +186,7 @@ if nargout > 3
   end
   output.modelName  = constraints.modelName;
   output.modelInfo  = info;
-  output.modelValue = ieval(a, model, pars); % evaluate model iData
+  output.modelValue = ieval(a, model, pars_out); % evaluate model iData
   output.parsNames  = constraints.parsNames;
 end
 
@@ -211,11 +211,11 @@ end
   % criteria to minimize
     
     % then get data
-    Signal = get(a,'Signal');
-    Error  = get(a,'Error');
+    Signal = iData_private_cleannaninf(get(a,'Signal'));
+    Error  = iData_private_cleannaninf(get(a,'Error'));
     Model  = ieval(a, model, pars); % return signal=model values*monitor and monitor
-    Model  = get(Model, 'Signal');
-    m      = get(a,'Monitor'); m=real(m);
+    Model  = iData_private_cleannaninf(get(Model, 'Signal'));
+    m      = iData_private_cleannaninf(get(a,'Monitor')); m=real(m);
     if not(all(m == 1) | all(m == 0)),
       Model  = Model./m;            % fit(signal/monitor) 
       Signal = Signal./m; Error=Error./m; % per monitor
@@ -241,7 +241,7 @@ function c=least_square(Signal, Error, Model)
   if all(Error == 0)
     c = sum(abs(Signal-Model).^2); % raw least square
   else
-    index = find(Error & ~isnan(Error) & ~isinf(Error));
+    index = find(Error~=0 & ~isnan(Error) & ~isinf(Error));
     c=(Signal(index)-Model(index))./Error(index);
     c=abs(c);
     c=sum(c.*c);                % Chi square
