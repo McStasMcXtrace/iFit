@@ -1,6 +1,6 @@
                        Welcome to the iFit/iData package
                         E. Farhi, ILL/CS <farhi@ill.fr>
-                                  Oct 12th, 2010
+                                  Version 1.0 - Feb 2011
 
 ** Purpose:
 This small library aims at providing basic functionality to achieve some of the 

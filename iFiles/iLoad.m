@@ -9,8 +9,8 @@ function [data, format] = iLoad(filename, loader)
 %
 %   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
 %     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
-%     HDF4, HDF5, MAT workspace, XML
-%   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX.
+%     HDF4, HDF5, MAT workspace, XML.
+%   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF.
 %   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
 %   Distant files are supported through e.g. URLs such as 
 %     file://, ftp:// and http://
@@ -35,7 +35,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.31 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.32 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -290,11 +290,19 @@ function data = iLoad_loader_check(file, data, loader)
   if ~isfield(data, 'Source')  & ~isfield(data, 'Date') & ~isfield(data, 'Format') ...
    & ~isfield(data, 'Command') & ~isfield(data,' Data')
     new_data.Data = data;
+    % transfer some standard fields as possible
+    if isfield(data, 'Source'), new_data.Source = data.Source; end
+    if isfield(data, 'Title'), new_data.Title = data.Title; end
+    if isfield(data, 'Date'), new_data.Date = data.Date; end
+    if isfield(data, 'Label'), new_data.Label = data.Label; end
+    
     data = new_data;
+    
   end
   
   if ~isfield(data, 'Source') && ~isfield(data, 'Filename'),  data.Source = file;
   elseif isfield(data, 'Filename'), data.Source = data.Filename; end
+
   if ~isfield(data, 'Title'),   
     [pathname, filename, ext] = fileparts(file);
     if ~strcmp(loader, 'variable'), data.Title  = [ 'File ' filename ext ' ' name  ];

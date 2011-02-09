@@ -47,7 +47,8 @@ images</a></li>
 </ul>
 <br>
 <hr style="width: 100%; height: 2px;">
-<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">plot, subplot, xlabel, xlim, title, saveas</span>, <a href="Methods.html">methods</a>
+<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">plot, subplot, xlabel, xlim, title, saveas</span>,
+<a href="Methods.html">methods</a>
 <div style="text-align: left;"><br>
 The <a href="iData.html">iData</a> objects can be plotted. They then
 show the <span style="font-style: italic;">Signal, </span>usually
@@ -81,7 +82,8 @@ which
 appears
 onto
 plots
-is the <span style="font-style: italic;">Signal/Monitor</span>.
+is
+the <span style="font-style: italic;">Signal/Monitor</span>.
 In
 order
 to
@@ -137,7 +139,8 @@ the
 text
 to
 show,
-the colors. <br>
+the
+colors. <br>
 The zoom tool&nbsp;<img style="width: 53px; height: 24px;" alt="Figure_zoom tool" title="Figure_zoom tool" src="images/Figure_zoom.png" align="middle">is also pretty useful (hey
 ?). To revert to the full view, double click on the figure, or select
 the contextual menu item '<span style="font-style: italic;">Reset view</span>'.<br>
@@ -174,7 +177,7 @@ view<br>
 </div>
 <br>
 Alternate rendering can be obtained with the plot options:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks)</span>;<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a);           <span style="font-style: italic;">% a surface</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'mesh'</span>);    <span style="font-style: italic;">% a wired mesh</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'contour'</span>); <span style="font-style: italic;">% contour plot</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'contourf'</span>);<span style="font-style: italic;">% contour plot with filled regions</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'surfc'</span>);   <span style="font-style: italic;">% a surface with contour plot below</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'plot3'</span>);   <span style="font-style: italic;">% a surface made of lines side by side</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'scatter3'</span>);<span style="font-style: italic;">% a surface made of colored points</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks)</span>;<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a);           <span style="font-style: italic;">% a surface</span>, same as surf(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'mesh'</span>);    <span style="font-style: italic;">% a wired mesh</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'contour'</span>); <span style="font-style: italic;">% contour plot</span>, same as contour(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'contourf'</span>);<span style="font-style: italic;">% contour plot with filled regions</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'surfc'</span>);   <span style="font-style: italic;">% a surface with contour plot below</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'plot3'</span>);   <span style="font-style: italic;">% a surface made of lines side by side</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'scatter3'</span>);<span style="font-style: italic;">% a surface made of colored points</span>, same as scatter3(a)<br></pre>
 <div style="text-align: center;"><a href="images/iData_plot_2d_surf.png"><img alt="iData_plot_2d_surf: plot(a,'surf')" title="iData_plot_2d_surf: plot(a,'surf')" src="images/iData_plot_2d_surf.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>
 <a href="images/iData_plot_2d_mesh2.png"><img alt="iData_plot_2d_mesh: plot(a,'mesh')" title="iData_plot_2d_mesh: plot(a,'mesh')" src="images/iData_plot_2d_mesh2.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><a href="images/iData_plot_2d_surfc.png"><img alt="iData_plot_2d_surfc: plot(a,'surfc')" title="iData_plot_2d_surfc: plot(a,'surfc')" src="images/iData_plot_2d_surfc.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
 <span style="font-style: italic;">Plot 2D: left=</span>plot(a),<span style="font-style: italic;"> center</span>=plot(a,'mesh'), <span style="font-style: italic;">right</span>=plot(a,'surfc')<br>
@@ -188,11 +191,25 @@ Alternate rendering can be obtained with the plot options:<br>
 Other plot types can be requested with keywords in the second argument
 to plot: <br>
 <ul style="color: rgb(204, 51, 204);">
-  <li>contour3</li>
-  <li>surfl</li>
-  <li>pcolor</li>
-  <li>stem3</li>
+  <li>contour3<span style="color: rgb(0, 0, 0);"> (a countour in 3D)</span><br>
+  </li>
+  <li>surfl<span style="color: rgb(0, 0, 0);"> (surface with light)</span><br>
+  </li>
+  <li>pcolor<span style="color: rgb(0, 0, 0);"> (a flat matrix/image
+view, may be advantageously coupled with the <span style="color: rgb(204, 51, 204);">hide_axis</span></span> option)<br>
+  </li>
+  <li>stem3<span style="color: rgb(0, 0, 0);"> (single points which
+show elevation from basal plane)</span><br>
+  </li>
 </ul>
+In addition, the <span style="font-weight: bold;">image</span> plotting
+method allows to send up to 3 objects onto the RGB color channels, and
+display them as a flat image (when using option='<span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">hide_axis</span></span>') :<br>
+<pre style="margin-left: 40px;">&gt;&gt; h =<span style="color: rgb(51, 102, 255);"> image</span>(r,g,b, <span style="color: rgb(204, 51, 204);">'hide_axes'</span>)<br></pre>
+Some of the RGB channels can be left empty to suppress one color. Each
+object is re-scaled in the [0 1] range to use the full channel colors.
+However, when using the option<span style="color: rgb(204, 51, 204);"> 'norm' </span>keyword, the scaling is made global to all images, enabling comparison of relative intensity between channel content.<br>
+<br>
 It is possible, by
 right-clicking on the surface or the axis lines, to pop-up a contextual
 menu which
@@ -287,6 +304,7 @@ used
 
 
 
+
     <span style="font-style: italic;">help
 shading</span>).<br>
   </li>
@@ -294,6 +312,7 @@ shading</span>).<br>
 adds
 transparency
 (see
+
 
 
 
@@ -325,6 +344,7 @@ automatically
 optimized
 (see
 
+
     <span style="font-style: italic;">help axis</span>) </li>
   <li><span style="color: rgb(204, 51, 204);">view2, view3</span>:
 displays 2D/3D views from top or oblique view<br>
@@ -332,6 +352,9 @@ displays 2D/3D views from top or oblique view<br>
   <li><span style="color: rgb(204, 51, 204);">painters</span> (bitmap
 drawing), <span style="color: rgb(204, 51, 204);">zbuffer</span>
 (vectorial drawing): selects the Matlab painters for rendering.</li>
+  <li><span style="color: rgb(204, 51, 204);">hide_axes</span> hides
+XYZ axes and labels, but retains the Title<br>
+  </li>
 </ul>
 A usage examples is <br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'surf interp view2 axis tight transparent'</span>)</pre>
@@ -410,7 +433,8 @@ gathered
 into
 the
 same
-window, the <span style="font-weight: bold; font-style: italic;">subplot</span>
+window,
+the <span style="font-weight: bold; font-style: italic;">subplot</span>
 function
 can be used the same way as with the <a href="#mozTocId574560">overlay</a>
 method shown above.<br>
@@ -498,7 +522,7 @@ axis handle arguments.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData plotting - </span><span style="font-style: italic;">
-$Date: 2011-02-08 16:06:31 $ $Revision: 1.11 $
+$Date: 2011-02-09 22:50:03 $ $Revision: 1.12 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
