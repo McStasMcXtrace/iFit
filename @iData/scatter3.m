@@ -8,13 +8,13 @@ function a = scatter3(a, option)
 % input:  s: object or array (iData)
 %         option: global option for 2D and 3D plots: 
 %                 flat, interp, faceted (for shading)
-%                 transparent, light, clabel
-%                 axis tight, axis auto, view2, view3
+%                 transparent, light, clabel, colorbar
+%                 axis tight, axis auto, view2, view3, hide_axes
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
 % output: h: graphics object handles (cell)
 % ex:     scatter3(iData(peaks)); scatter3(iData(flow));
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot
 
 if nargin ==1

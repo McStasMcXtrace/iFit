@@ -23,7 +23,7 @@ function h=plot(a, method)
 %               For 1D plots y=f(x), method is a string to specify color/symbol.
 %               For 2D plots z=f(x,y), method is a string which may contain:
 %                 surf, mesh, contour, contour3, surfc, surfl, contourf
-%                 plot3, scatter3 (colored points), stem3
+%                 plot3, scatter3 (colored points), stem3, pcolor
 %               For 3D plots c=f(x,y,z), method is a string which may contain:
 %                 plot3 (volume), scatter3 (colored points)
 %                 surf, surf median, surf mean, surf half
@@ -31,8 +31,8 @@ function h=plot(a, method)
 %
 %               Global options for 2D and 3D plots: 
 %                 flat, interp, faceted (for shading)
-%                 transparent, light, clabel
-%                 axis tight, axis auto, view2, view3
+%                 transparent, light, clabel, colorbar
+%                 axis tight, axis auto, view2, view3, hide_axes
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
 %                 
 % output: h: graphics object handles (cell)
@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.46 $
+% Version: $Revision: 1.47 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -168,8 +168,8 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
       h    =surfl(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'mesh'))
       h    =mesh(x,y,z);
-    elseif (strfind(method,'pcolor'))
-      h    =pcolor(x,y,z);
+    elseif (strfind(method,'pcolor') || strfind(method,'image'))
+      h    =pcolor(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'stem3'))
     	method = strrep(method,'stem3','');
     	method = strrep(method,' ','');
@@ -280,6 +280,9 @@ if findstr(method,'painters')
 elseif findstr(method,'zbuffer')
 	set(gcf,'Renderer','zbuffer')
 end
+if (strfind(method,'colorbar'))
+  colorbar
+end
 
 % add a UIcontextMenu so that right-click gives info about the iData plot
 % also make up title string and Properties dialog content
@@ -363,12 +366,19 @@ set(h,   'Tag',  char(a));
 set(gcf, 'Name', char(a));
 
 % labels
-if ~isempty(xlab), xlabel(xlab,'interpreter','none'); end
-if ~isempty(ylab), ylabel(ylab,'interpreter','none'); end
-if ndims(a) == 3 & ~isempty(clab)
-  titl = { clab , titl{:} };
+if findstr(method,'hide_axes')
+  % set(gca,'visible','off'); 
+  set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[])
+  xlabel(' '); ylabel(' '); zlabel(' ');
+  title(a.Title,'interpreter','none');
+else
+  if ~isempty(xlab), xlabel(xlab,'interpreter','none'); end
+  if ~isempty(ylab), ylabel(ylab,'interpreter','none'); end
+  if ndims(a) == 3 & ~isempty(clab)
+    titl = { clab , titl{:} };
+  end
+  title(titl,'interpreter','none');
 end
-title(titl,'interpreter','none');
 
 % ============================================================================
 

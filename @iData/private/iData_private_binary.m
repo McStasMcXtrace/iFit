@@ -61,6 +61,9 @@ elseif isa(b, 'iData') & length(b(:)) > 1
   return
 end
 
+if isempty(a), c=b; return;
+elseif isempty(b), c=a; return; end
+
 try % disable some warnings
   warn.seta = warning('off','iData:setaxis');
   warn.geta = warning('off','iData:getaxis');
