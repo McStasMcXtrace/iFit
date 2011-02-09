@@ -119,9 +119,14 @@ function config = iLoad_ini
     format14.patterns   ={'INX'};
     format14.extension  ='inx';
     
+    format15.name       ='EDF ESRF Data Format';
+    format15.options='';
+    format15.method     ='medfread';
+    format15.extension  ='edf';
+    
 % definition of configuration
     config.loaders =  { format1, format2, format3, format4, format5, format6, ...
-	       format7, format8, format9, format10, format11, format12, format13, format14 };
+	       format7, format8, format9, format10, format11, format12, format13, format14, format15 };
 	       
 	  config.UseSystemDialogs = 'no'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];

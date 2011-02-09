@@ -35,7 +35,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.30 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.31 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -293,15 +293,18 @@ function data = iLoad_loader_check(file, data, loader)
     data = new_data;
   end
   
-  if ~isfield(data, 'Source'),  data.Source = file;         end
+  if ~isfield(data, 'Source') && ~isfield(data, 'Filename'),  data.Source = file;
+  elseif isfield(data, 'Filename'), data.Source = data.Filename; end
   if ~isfield(data, 'Title'),   
     [pathname, filename, ext] = fileparts(file);
     if ~strcmp(loader, 'variable'), data.Title  = [ 'File ' filename ext ' ' name  ];
     else data.Title  = [ 'File ' filename ext ]; end
   end
   
-  if strcmp(loader, 'variable') data.Date   = datestr(now); 
-  else d=dir(file); data.Date=d.date; end
+  if ~isfield(data, 'Date')
+    if strcmp(loader, 'variable') data.Date   = datestr(now); 
+    else d=dir(file); data.Date=d.date; end
+  end
 
   if ~isfield(data, 'Format'),
     if ~strcmp(loader, 'variable'), data.Format  = [ name ' import with Matlab ' method ];  
