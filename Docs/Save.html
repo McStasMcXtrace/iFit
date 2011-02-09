@@ -162,6 +162,9 @@ understand what it contains. However, files are usually large as no
 compression mechanism is applied, natively. However, in some cases, a
 simple numerical representation can be very compact. And such files can
 be compressed afterwards with e.g. ZIP.<br>
+<br>
+The last column indicates if the generated format for export can be
+re-used afterwards and re-imported with iFit.<br>
 <span style="font-weight: bold;"><br>
 </span>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2"
@@ -180,6 +183,8 @@ be compressed afterwards with e.g. ZIP.<br>
       <td
  style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Description<br>
       </td>
+      <td style="vertical-align: top;">Read?<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"></span><span
@@ -195,13 +200,16 @@ M-file</span><span style="color: rgb(204, 51, 204); font-weight: bold;"><br>
 file which reconstructs the whole initial object.<span
  style="font-weight: bold;"><span style="font-weight: bold;"> </span></span>It
 is
-not easily readable by humans<span style="font-weight: bold;">, </span>and
+not
+easily readable by humans<span style="font-weight: bold;">, </span>and
 does
 not have any compression mechanism, producing large files. Such
 files can be imported directly by typing their name from Matlab, even
 without iFit/iData installed. They can also be edited with any text
 editor.<span style="font-weight: bold;"><br>
       </span></td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span
@@ -214,10 +222,13 @@ editor.<span style="font-weight: bold;"><br>
       <td style="vertical-align: top;">Mostly<br>
       </td>
       <td style="vertical-align: top;">The DAT format is a flat text
-files with numerical blocks preceded with a header and readable comments.
+files with numerical blocks preceded with a header and readable
+comments.
 It can be edited with any text editor. Can be
 re-<a href="Load.html">imported with iFit/iData</a>, but axes/alias
 definitions are not re-generated.<br>
+      </td>
+      <td style="vertical-align: top;">Yes<br>
       </td>
     </tr>
   </tbody>
@@ -243,6 +254,8 @@ formats</h4>
       <td
  style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Description<br>
       </td>
+      <td style="vertical-align: top;">Read?<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"></span><span
@@ -257,11 +270,14 @@ Mat-file</span><span
       </td>
       <td style="vertical-align: top;"><span style="font-weight: bold;"></span>The
 Matlab
-workspace binary
+workspace
+binary
 file is compact and fast to read/write. It carries the whole object
 information. Such files require Matlab (or <a
  href="http://www.octave.org">Octave</a>) to be installed prior to
 importation.<span style="font-weight: bold;"> </span></td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"><span
@@ -279,7 +295,10 @@ reconstruct the whole object, but only its main values and alias/axes
 names. Such files can be edited/viewed with e.g <a
  href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>. Such
 files can of course also be <a href="Load.html">imported into iData</a>
-objects.</td>
+objects. IDL and Matlab also have dedicated HDF browsers.<br>
+      </td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"><span
@@ -302,6 +321,8 @@ or <a href="http://www.epic.noaa.gov/java/ncBrowse/">ncBrowse</a>. <a
  href="http://www.opendx.org/about.html">OpenDX</a>, <a
  href="http://www.paraview.org/">ParaView</a>. Such files can of course
 also be <a href="Load.html">imported into iData</a> objects.</td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
     </tr>
   </tbody>
 </table>
@@ -332,6 +353,8 @@ Monitor, and with axes.<br>
       <td
  style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Description<br>
       </td>
+      <td style="vertical-align: top;">Read?<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"></span><span
@@ -346,10 +369,15 @@ Mat-file</span><span
       </td>
       <td style="vertical-align: top;"><span style="font-weight: bold;"></span>The
 comma
-separated value format is a single dump of the object <span
+separated
+value format is a single dump of the object <span
  style="font-style: italic;">Signal</span>. The other information is
-lost. Such files can be imported by e.g. any spreadsheet software, or
-with iFit/iData<span style="font-weight: bold;"></span>.</td>
+lost. Such files can be imported by e.g. any spreadsheet software (<a
+ href="http://www.openoffice.org/">OpenOffice</a>, Excel, <a
+ href="http://projects.gnome.org/gnumeric/">Gnumeric</a>), or
+with <a href="Load.html">iFit/iData</a><span style="font-weight: bold;"></span>.</td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"><span
@@ -372,6 +400,32 @@ edited/viewed with e.g <a
  href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>. Such
 files can of course also be <a href="Load.html">imported into iData</a>
 objects.</td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span
+ style="color: rgb(204, 51, 204); font-weight: bold;">'edf'</span><br
+ style="color: rgb(204, 51, 204);">
+      <span style="color: rgb(204, 51, 204);">EDF ESRF Data format</span><br>
+      </td>
+      <td style="vertical-align: top;">binary with 512-multiple length
+text header<br>
+      </td>
+      <td style="vertical-align: top;">signal plus limited metadata<br>
+      </td>
+      <td style="vertical-align: top;">The EDF format is mainly used at
+the <a href="http://www.esrf.fr">ESRF</a> and can be viewed with e.g. <a
+ href="http://pymca.sourceforge.net/">PyMCA</a>, <a
+ href="http://www.sci.muni.cz/%7Emikulik/Soft4Synchro.html">Zimg</a>, <a
+ href="http://www.gnuplot.info/">GnuPlot</a>, <a
+ href="http://edfexplorer.sourceforge.net/">EDFExplorer</a>, <a
+ href="http://www.esrf.eu/computing/scientific/FIT2D/">Fit2D</a>. This
+format saves a single image/numeric block plus some metadata in its
+header.<br>
+      </td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"><span
@@ -386,7 +440,10 @@ or signal/monitor<br>
       </td>
       <td style="vertical-align: top;">Standard image formats. Can be
 re-<a href="Load.html">imported with iFit/iData</a>, or used elsewhere
-(web, email, ...)</td>
+(web, email, ...). View with e.g. <a href="http://www.gimp.org/">GIMP</a>.<br>
+      </td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span
@@ -398,7 +455,12 @@ re-<a href="Load.html">imported with iFit/iData</a>, or used elsewhere
       <td style="vertical-align: top;">signal/monitor, with axes<br>
       </td>
       <td style="vertical-align: top;">Usual PostScript files. Can be
-directly printed.<br>
+directly printed. Edit/View with <a
+ href="http://www.adobe.com/products/illustrator/">Adobe Illustrator</a>,
+      <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a>, <a
+ href="http://projects.gnome.org/evince/">Gnome/Evince</a>, <a
+ href="http://www.gimp.org/">GIMP</a>. </td>
+      <td style="vertical-align: top;"><br>
       </td>
     </tr>
     <tr>
@@ -411,7 +473,11 @@ directly printed.<br>
       <td style="vertical-align: top;">signal/monitor, with axes<br>
       </td>
       <td style="vertical-align: top;">A portable format for
-displaying/printing with e.g. Acrobat Reader.<br>
+displaying/printing with e.g. <a href="http://get.adobe.com/fr/reader/">Acrobat
+Reader</a> or <a href="http://www.google.com/chrome">Google Chrome</a>,
+      <a href="http://projects.gnome.org/evince/">Gnome/Evince</a>, <a
+ href="http://www.gimp.org/">GIMP</a>. </td>
+      <td style="vertical-align: top;"><br>
       </td>
     </tr>
     <tr>
@@ -424,7 +490,10 @@ displaying/printing with e.g. Acrobat Reader.<br>
       </td>
       <td style="vertical-align: top;">signal/monitor, with axes</td>
       <td style="vertical-align: top;">Similar to PostScript. Files are
-large.<br>
+large. Edit/View with <a
+ href="http://www.adobe.com/products/illustrator/">Adobe Illustrator</a>.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
       </td>
     </tr>
     <tr>
@@ -440,6 +509,8 @@ large.<br>
       <td style="vertical-align: top;">Exports as a single spreadsheet.
 Requires Excel to be installed. Can be
 re-<a href="Load.html">imported with iFit/iData</a>. </td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span
@@ -452,7 +523,9 @@ re-<a href="Load.html">imported with iFit/iData</a>. </td>
       <td style="vertical-align: top;">signal/monitor, with axes</td>
       <td style="vertical-align: top;">A portable editable vectorial
 representation of the object. Can be viewed with e.g. <a
- href="http://inkscape.org/">Inkscape</a>.<br>
+ href="http://inkscape.org/">Inkscape</a>, <a
+ href="http://www.gimp.org/">GIMP</a>. </td>
+      <td style="vertical-align: top;"><br>
       </td>
     </tr>
     <tr>
@@ -469,6 +542,8 @@ representation of the object. Can be viewed with e.g <a
  href="http://freewrl.sourceforge.net/">Freewrl</a>, <a
  href="http://www.octaga.com/">Octaga Player</a>, ...<br>
       </td>
+      <td style="vertical-align: top;"><br>
+      </td>
     </tr>
   </tbody>
 </table>
@@ -478,7 +553,7 @@ representation of the object. Can be viewed with e.g <a
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData saving data -&nbsp;</span><span
  style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2011-02-08 16:06:31 $ $Revision: 1.4 $
+$Date: 2011-02-09 08:39:31 $ $Revision: 1.5 $
 </span><span style="font-style: italic;"> </span>- back to <a
  href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img
  title="ILL, Grenoble, France &lt;www.ill.eu&gt;"

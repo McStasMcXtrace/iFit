@@ -15,6 +15,7 @@ function [filename,format] = saveas(a, varargin)
 %           'nc'   save as NetCDF 
 %         as well as other lossy formats
 %           'hdf4' save as an HDF4 immage
+%           'edf'  EDF ESRF format for 1D and 2D data sets
 %           'gif','bmp' save as an image (no axes, only for 2D data sets)
 %           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
 %           'xls'  save as an Excel sheet (requires Excel to be installed)
@@ -31,8 +32,10 @@ function [filename,format] = saveas(a, varargin)
 %
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 
+%   iData_private_saveas_hdfnc
+%   pmedf_write:
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/load, iData/getframe, save
 
 % handle array of objects to save iteratively
@@ -127,7 +130,7 @@ elseif isempty(format) & isempty(ext)
   format='m'; filename = [ filename '.m' ];
 end
 
-% handle some format aliases
+% handle some format aliases (after extension extraction from file name)
 switch format
 case 'jpg'
   format='jpeg';
@@ -189,6 +192,8 @@ case 'mat'  % single mat-file Matlab output (binary), with the full object descr
   save(filename, 'a');
 case {'hdf5', 'nc',' cdf', 'nx','h5'} % HDF4, HDF5, NetCDF formats: converts fields to double and chars
   filename = saveas_hdfnc(a, filename); % inline function (below)
+case 'edf'  % EDF ESRF format
+  filename = medfwrite(a, filename);
 case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
 case 'csv'  % Spreadsheet comma separated values file format
@@ -244,54 +249,4 @@ end
 
 % end of iData/saveas
 
-% ------------------------------------------------------------------------------
-% inline function to write HDF and NetCDF files
-function filename = saveas_hdfnc(a, filename)
-  [fields, types, dims] = findfield(a);
-  towrite={};
-  for index=1:length(fields(:)) % get all field names
-    val=get(a, fields{index});
-    if isstruct(val) & length(val) > 1
-      val = val(1);
-      iData_private_warning(mfilename,[ 'Export of member ' fields{index} ' in object ' inputname(1) ' ' a.Tag ' is a structure array. Selecting only 1st element.' ]);
-    if iscellstr(val), 
-      val=val(:);
-      val(:, 2)={ ';' }; 
-      val=val'; 
-      val=[ val{1:(end-1)} ];
-    end
-    if ~isnumeric(val) & ~ischar(val), continue; end
-    % make sure field name is valid
-    n = fields{index};
-    n = n(sort([find(isstrprop(n,'alphanum')) find(n == '_') find(n == '.')]));
-    fields{index} = n;
-    if strcmp(format,'nc') | strcmp(format,'cdf')
-      fields{index} = strrep(fields{index}, '.', '_');
-    else
-      fields{index} = strrep(fields{index}, '.', filesep);
-      if isempty(towrite)
-        % initial write wipes out the file
-        delete(filename);
-        hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val, 'WriteMode', 'overwrite');
-      else
-        % consecutive calls are appended
-        try
-          hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val, 'WriteMode', 'append');
-        catch
-          % object already exists: we skip consecutive write
-        end
-      end
-    end
-    if isempty(towrite)
-      towrite={ fields{index}, val };
-    else
-      towrite={ towrite{1:end}, fields{index}, val };
-    end
-  end
-  if strcmp(format,'nc') | strcmp(format,'cdf')
-    [path, name, ext] = fileparts(filename);
-    cdfwrite(name, towrite);
-    filename = [ name '.cdf' ];
-  end
 
-end % saveas_hdfnc

@@ -8,10 +8,10 @@ b.Date = datestr(now);  % new object
 
 % create new tag
 if ~exist('id'),  id=0; end
-if isempty(id), id=0; end
+if isempty(id),   id=0; end
 if id <=0, 
   id = clock;
-  id = fix(id(6)*100); 
+  id = fix(id(6)*999999); 
 else 
   id=id+1;
   if id > 1e7, id=0; end
