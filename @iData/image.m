@@ -19,18 +19,27 @@ function h = image(r, g, b, option)
 % output: h: graphics object handle
 % ex:     image(iData(peaks),'hide axes');
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 if nargin < 4, option = []; end
-if nargin < 3, b=iData; end
-if nargin < 2, g=iData; end
+if nargin < 3, b=''; end
+if nargin < 2, g=''; end
+
+if isempty(r), r=iData; end
+if isempty(g), g=iData; end
+if isempty(b), b=iData; end
+
 
 h = [];
-a = [ r g b];
+a = [ r g(1) b(1) ];
+
+if length(a(:)) > 3
+  a=a(1:3);
+end
 
 % need at least one 2D object
-if ~all(0 < ndims(a) & ndims(a) <= 2), return; end
+if ~all(0 <= ndims(a) & ndims(a) <= 2), return; end
 if ~any(ndims(a) == 2), return; end 
 
 % compute larger axes
@@ -44,11 +53,7 @@ for index=1:length(a)
   this = a(index);
   if ~isempty(this)
     this = interp(this,u);
-    s = get(r,'Signal');
-    m = get(r,'Monitor');
-    if not(all(m == 1) | all(m == 0)),
-      s = genop(@rdivide,s,m);
-    end
+    s = getaxis(this,0);
     if strfind(option,'norm')
       minv = min(minv, min(s(:))); 
       maxv = max(maxv, max(s(:)));
@@ -62,12 +67,12 @@ for index=1:length(a)
     a(index) = this;
     % this now contains a valid object. We keep it for 1D to 2D extension
     if ndims(this) == 2
-      s = zeros(size(s));
       set(this, 'Signal', s);
       this2D = this;
     end
   end
 end
+
 % from there, this2D has the right dimension from a previous
 u=zeros(size(this2D,1),size(this2D,2),3); 
 
@@ -82,9 +87,10 @@ for index=1:length(a)
     else             l = 'Blue';
     end
     lab = [ lab l ': ' this.Title ' ' ];
-    
+    s = getaxis(this,0);
     if strfind(option,'norm')
       s=s-minv; s=s/(maxv-minv);
+      max(s(:))
     else
       s=s-min(s(:)); s=s/max(s(:));
     end
@@ -93,7 +99,8 @@ for index=1:length(a)
 end
 
 % create object to display with plot('image')
-set(this2D, 'Signal', u, 'Title', strtrim(lab));
+this2D.Data.cdata = u;
+set(this2D, 'Signal', 'Data.cdata', 'Title', strtrim(lab));
 setaxis(this2D, 2, x);
 setaxis(this2D, 1, y);
 

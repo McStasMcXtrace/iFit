@@ -10,7 +10,7 @@ function c = mtimes(a,b)
 % output: c: object or array (iData)
 % ex:     c=a*2;
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/power
 
 if isscalar(a) | isscalar(b)
@@ -23,7 +23,7 @@ elseif ndims(a) == 2 & ndims(b) == 2
   c = copyobj(a);
   c1 = dot(getaxis(a,2) , getaxis(b,1));
   c2 = dot(getaxis(a,1) , getaxis(b,2));
-  c0 = getaxis(a,0)  * getaxis(b,0);
+  c0 = double(a)  * double(b);
   [a1n, a1l] = getaxis(a, '1');
   [a2n, a2l] = getaxis(a, '2');
   [a0n, a0l] = getaxis(a, '0');
