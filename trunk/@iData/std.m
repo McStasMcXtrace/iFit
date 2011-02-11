@@ -10,12 +10,12 @@ function [s, f] = std(a, dim)
 %       before computation of std, that is remove background.
 %
 % input:  a: object or array (iData/array of)
-%         dim: dimension to use. Negative dim subtract background (int)
+%         dim: dimension to use. Negative dim subtract background (int/array)
 % output: half_width: standard deviation (scalar/array)
 %         center:     center of distribution (scalar/array)
 % ex:     c=std(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/median, iData/mean
 
 if nargin < 2, dim=1; end
@@ -23,6 +23,16 @@ if length(a) > 1
   s = []; f = [];
   for index=1:length(a)
     [si, fi] = std(a(index), dim);
+    s = [ s si ];
+    f = [ f fi ];
+  end
+  return
+end
+
+if length(dim) > 1
+  s = []; f = [];
+  for index=1:length(dim)
+    [si, fi] = std(a, dim(index));
     s = [ s si ];
     f = [ f fi ];
   end

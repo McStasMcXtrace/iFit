@@ -63,7 +63,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also iData, fminsearch, optimset, optimget
 
 % nested  functions: eval_criteria
@@ -216,9 +216,9 @@ end
     Model  = ieval(a, model, pars); % return signal=model values*monitor and monitor
     Model  = iData_private_cleannaninf(get(Model, 'Signal'));
     m      = iData_private_cleannaninf(get(a,'Monitor')); m=real(m);
-    if not(all(m == 1) | all(m == 0)),
-      Model  = Model./m;            % fit(signal/monitor) 
-      Signal = Signal./m; Error=Error./m; % per monitor
+    if not(all(m == 1 | m == 0)),
+      Model  = genop(@rdivide,Model,m);            % fit(signal/monitor) 
+      Signal = genop(@rdivide,Signal,m); Error=genop(@rdivide,Error,m); % per monitor
     end
     
     % compute criteria

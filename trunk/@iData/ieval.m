@@ -21,7 +21,7 @@ function [b, Info] = ieval(a, model, pars, varargin)
 % ex:     b=ieval(a,'gauss',[1 2 3 4]); ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
 %           ieval(a,'gauss','guess')
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, feval, iData/fits
 
 % private functions: 
@@ -85,7 +85,7 @@ if ischar(model) | isa(model, 'function_handle') % a single model ==============
         % make sure Model has the right dimensionality: Info.Dimension, else sqeeze
         Signal = get(a,'Signal'); Signal(~isfinite(Signal)) = 0;
         m = get(a,'Monitor'); m=real(m);
-        if not(all(m == 1) | all(m == 0)),
+        if not(all(m == 1 | m == 0)),
           Signal = genop(@rdivide,Signal,m);
         end
         % determine indexes on which sum is required. The final Model
@@ -148,7 +148,7 @@ elseif iscell(model) % a set of models =========================================
     if isempty(pars) || (ischar(pars) && strmatch(pars,{'guess','identify'}))
       Signal = get(a,'Signal'); Signal(~isfinite(Signal)) = 0;
       m = get(a,'Monitor'); m=real(m);
-      if not(all(m == 1) | all(m == 0)),
+      if not(all(m == 1 | m == 0)),
         Signal = genop(@rdivide,Signal,m);
       end
       % determine indexes on which sum is required. The final Model
@@ -253,7 +253,7 @@ if isnumeric(Model)
     model = model(:)';
   end
   m = get(b,'Monitor'); m=real(m); m=m(:);
-  if not(all(m == 1) | all(m == 0)),
+  if not(all(m == 1 | m == 0)),
     Model = Model.*m;
   end
   setalias(b,'Signal', Model, model);
