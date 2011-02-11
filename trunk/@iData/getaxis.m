@@ -8,9 +8,11 @@ function [val, lab] = getaxis(s,ax)
 %     the value of the axis is returned.
 %   when the axis input parameter is given as a string/name (e.g. '1' or 'x') 
 %     the corresponding axis definition is returned.
-%   The Signal corresponds to axis 0. 
-%   Axis 1 is often labeled as 'x' (along rows), 2 as 'y' (along columns), etc...
-%   The special syntax s{0} gets the signal, and s{n} gets the axis of rank n.
+%   The Signal/Monitor corresponds to axis 0, and can also be accesed with getaxis(a, 'Signal')
+%   The Error/Monitor an also be accesed with getaxis(a, 'Error')
+%   Axis 1 is often labeled as 'y' (rows, vertical), 2 as 'x' (columns, horizontal).
+%   The special syntax s{0} gets the signal only (same as double(s)), 
+%     and s{n} gets the axis of rank n.
 %
 % input:  s: object or array (iData)
 %         AxisIndex: axis index to inquire in object, or [] (integer).
@@ -18,9 +20,9 @@ function [val, lab] = getaxis(s,ax)
 %                   also be specified as 'n' where n is the axis index, e.g. '1'
 % output: val: axis value, or corresponding axis name  (double/char)
 %         lab: axis label (char)
-% ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'x')
+% ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'y')
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
@@ -54,7 +56,11 @@ if isnumeric(ax) % given as a number, return a number
   end
   if ax == 0
     val=get(s,'Signal'); 
+    m  = get(s,'Monitor'); m=real(m); m=m(:);
     link='Signal';
+    if not(all(m == 1 | m == 0))
+      val = genop(@rdivide,val,m);
+    end
   else
     % get the Axis alias
     if ax <= length(s.Alias.Axis)
@@ -70,21 +76,33 @@ if isnumeric(ax) % given as a number, return a number
     end
   end;
 else % given as a char, return a char
-  axis_str = str2num(ax);
-  if isempty(axis_str) % not a number char
-    ax = strmatch(ax, s.Alias.Axis, 'exact');
-    link = s.Alias.Axis{ax};
+  if     strcmp(ax,'Signal'), 
+    [val, lab] = getaxis(s,0);
+    return;
+  elseif strcmp(ax,'Error')
+    val=get(s,'Error'); 
+    m  = get(s,'Monitor'); m=real(m); m=m(:);
+    link='Error';
+    if not(all(m == 1 | m == 0))
+      val = genop(@rdivide,val,m);
+    end
   else
-    ax = axis_str;
-    if axis_str == 0
-      link = 'Signal';
-    elseif ax <= length(s.Alias.Axis)
+    axis_str = str2num(ax);
+    if isempty(axis_str) % not a number char
+      ax = strmatch(ax, s.Alias.Axis, 'exact');
       link = s.Alias.Axis{ax};
     else
-      val=''; lab=''; return
+      ax = axis_str;
+      if axis_str == 0
+        link = 'Signal';
+      elseif ax <= length(s.Alias.Axis)
+        link = s.Alias.Axis{ax};
+      else
+        val=''; lab=''; return
+      end
     end
+    val = link;
   end
-  val = link;
 end
 
 [dummy, lab]  = getalias(s, link);

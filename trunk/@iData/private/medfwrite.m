@@ -2,14 +2,17 @@ function filename=medfwrite(a, filename)
 % private function to write EDF files
 
 % tests on dimensionality
-if ndims(a) > 2, filename=[]; return; end
+if ndims(a) > 2, 
+  iData_private_warning(mfilename,[ 'Can only export 2D objects to EDF format. Object ' a.Tag ' has ndims=' num2str(ndims(a)) ]);
+  filename=[]; 
+  return; 
+end
 
-s = get(a,'Signal');
+s = getaxis(a,0);
 if ~numel(s), filename=[]; return; end
 
 % create the header
 header = pmedf_emptyHeader;
-
 
 if     isa(s, 'int8'),  db=1; t='SignedByte';
 elseif isa(s, 'uint8'), db=1; t='UnsignedByte';
@@ -48,8 +51,14 @@ header = pmedf_putInHeader(header, 'User', a.User);
 header = pmedf_putInHeader(header, 'Date', a.Date);
 header = pmedf_putInHeader(header, 'Modification', a.ModificationDate);
 
-m = get(a,'Monitor'); m=mean(m(:));
-header = pmedf_putInHeader(header, 'Monitor', num2str(m));
+m = get(a,'Monitor'); 
+if not(all(m==0| m==1))
+  header = pmedf_putInHeader(header, 'SignalNormalizedToMonitor', 'Yes');
+  title(a, [ title(a) ' per monitor' ]);
+  m=mean(m(:));
+  header = pmedf_putInHeader(header, 'Monitor', num2str(m));
+end
+
 e = get(a,'Error'); e=mean(e(:));
 header = pmedf_putInHeader(header, 'Error', num2str(e));
 
