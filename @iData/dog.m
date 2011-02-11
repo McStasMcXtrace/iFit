@@ -10,7 +10,7 @@ function s = dog(dim,a, varargin)
 % output: s: split data set (iData array)
 % ex:     c=dog(1,a,b); c=dog(1,[ a b ]); 
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 
 if length(varargin) >= 1  % syntax: dog(dim,a,b,c,...)
@@ -40,10 +40,10 @@ catch
   warn = warning('off');
 end
 
+if dim <= 0, dim=1; end
 % syntax is now: dog(dim,[a b c ... ])
 a=a(:); s = [];
 if length(a) > 1
-  
   for index=1:length(a)
     s = [ s ; dog(dim, a(index)) ];
   end

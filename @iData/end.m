@@ -4,7 +4,7 @@ function b = end(s,k,n)
 %   @iData/end function defines end value for iData
 %   returns the length of rank 'index' among total dimensions 'n' in object 's'.
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData
 
 % EF 27/07/00 creation
@@ -15,7 +15,7 @@ if length(s(:)) > 1
   return
 end
 
-if length(size(s.Signal)) < n
+if length(size(get(s,'Signal'))) < n
   iData_private_error(mfilename, ['input iData object ' inputname(1) ' ' b.Tag ' has a size [' num2str(size(s)) '] but the dimension ' n ' is requested.' ]);
 end
 

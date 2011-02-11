@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -39,7 +39,7 @@ else
     if isnumeric(v) | islogical(v), 
       if length(size(v)) > 2, v=v(:); end
       if numel(v) > 10, v=v(1:10); end
-      v = mat2str(v); 
+      v = mat2str(v,2); 
       if length(v) > 15, v = [v(1:12) '...' ]; end 
     elseif ischar(v)
       this = s_in;
@@ -53,7 +53,7 @@ else
           if isnumeric(vv), 
             if length(size(vv)) > 2, vv=vv(:); end
             if numel(vv) > 10, vv=vv(1:10); end
-            vv = mat2str(vv); 
+            vv = mat2str(vv,2); 
           elseif ischar(vv)
             vv = vv(:)';
           end
@@ -64,16 +64,13 @@ else
     end
     fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, v, label);
     if strcmp(s_in.Alias.Names{index}, 'Signal') & length(s_in.Alias.Axis) == 0
-      x      = get(s_in, 'Signal');  x=x(:);
-      m      = get(s_in, 'Monitor'); m=m(:);
-      if ~(all(m==1) | all(m==0))
-        x=x./m;
-      end
+      x      = getaxis(s_in, 0);  x=x(:);
       if length(x) == 1
         fprintf(1,' [%g]', x);
       else
         fprintf(1,' [%g:%g]', min(x), max(x));
       end
+      m      = get(s_in, 'Monitor'); m=m(:);
       if ~(all(m==1) | all(m==0))
         fprintf(1,' (per monitor)\n');
       else
@@ -86,13 +83,9 @@ else
     disp('Object axes:');
     disp('[Rank]         [Value] [Description]');
     for index=0:length(s_in.Alias.Axis)
-      [v, l] = getaxis(s_in, num2str(index));
+      [v, l] = getaxis(s_in, num2str(index,2));
       if length(l) > 20, l = [l(1:18) '...' ]; end 
       X      = getaxis(s_in, index); x=X(:);
-      m      = get(s_in, 'Monitor'); m=m(:);
-      if ~(all(m==1) | all(m==0)) & index==0
-        x=x./m;
-      end
       if length(x) == 1
         fprintf(1,'%6i %15s  %s [%g]', index, v, l, x);
       elseif isvector(X)
@@ -100,7 +93,7 @@ else
       else
         fprintf(1,'%6i %15s  %s [%g:%g] size [%s]', index, v, l, min(x), max(x),num2str(size(X)));
       end
-      if index==0 & not(all(m==1) | all(m==0))
+      if index==0 && not(all(m==1 | m==0))
         fprintf(1,' (per monitor)\n');
       else
         fprintf(1,'\n');

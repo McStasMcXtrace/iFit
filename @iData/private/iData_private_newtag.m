@@ -9,12 +9,12 @@ b.Date = datestr(now);  % new object
 % create new tag
 if ~exist('id'),  id=0; end
 if isempty(id),   id=0; end
+if id > 1e6, id=0; end
 if id <=0, 
   id = clock;
-  id = fix(id(6)*999999); 
+  id = fix(id(6)*1e4); 
 else 
   id=id+1;
-  if id > 1e7, id=0; end
 end
 
 b.Tag      = [ 'id' sprintf('%0.f', id) ];;
