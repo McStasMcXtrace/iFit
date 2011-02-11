@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.47 $
+% Version: $Revision: 1.48 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -82,8 +82,8 @@ case 1  % vector type data (1 axis + signal) -> plot
   [y, ylab] = getaxis(a,0); y=y(:);
   e         = get(a,'Error');   e=real(e); e=e(:);
   m         = get(a,'Monitor'); m=real(m); m=m(:);
-  if not(all(m == 1) | all(m == 0)),
-    y = genop(@rdivide,y,m); e=genop(@rdivide,e,m); ylab = [ylab ' per monitor' ];
+  if not(all(m == 1 | m == 0)),
+    e=genop(@rdivide,e,m); ylab = [ylab ' per monitor' ];
   end
   y=real(y);
   
@@ -136,8 +136,8 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   [y, ylab] = getaxis(a,1);
   [z, zlab] = getaxis(a,0);
   m         = get(a,'Monitor');
-  if not(all(m == 1) | all(m == 0)),
-    z = genop(@rdivide,z,m); zlab = [zlab ' per monitor' ];
+  if not(all(m == 1 | m == 0)),
+    zlab = [zlab ' per monitor' ];
   end
   x=real(x);
   y=real(y);
@@ -168,7 +168,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
       h    =surfl(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'mesh'))
       h    =mesh(x,y,z);
-    elseif (strfind(method,'pcolor') || strfind(method,'image'))
+    elseif ~isempty(strfind(method,'pcolor')) || ~isempty(strfind(method,'image'))
       h    =pcolor(x,y,z); set(h,'Edgecolor','none');
     elseif (strfind(method,'stem3'))
     	method = strrep(method,'stem3','');
@@ -208,7 +208,7 @@ case 3  % 3d data sets: volumes
     [z, zlab] = getaxis(a,3);
     [c, clab] = getaxis(a,0);
     m         = get(a,'Monitor');
-    if not(all(m == 1) | all(m == 0)), c = genop(@rdivide,c,m); clab = [clab ' per monitor' ]; end
+    if not(all(m == 1 | m == 0)), clab = [clab ' per monitor' ]; end
     if isvector(a) == 3 || ~isempty(strfind(method, 'scatter3')) % plot3-like
       h=fscatter3(x(:),y(:),z(:),c(:));     % scatter3: require meshgrid
       view(3);
@@ -221,7 +221,7 @@ case 3  % 3d data sets: volumes
       elseif ~isempty(strfind(method, 'slice')) % sliceomatic
         slice(a); h=[];
       else
-        c = getaxis(a,0);                   % isosurface: require meshgrid
+        % isosurface: require meshgrid
         if ~isempty(strfind(method, 'mean'))
           iso = mean(c(:));
         elseif ~isempty(strfind(method, 'half'))
@@ -302,9 +302,8 @@ if length(getaxis(a))
     [v, l] = getaxis(a, num2str(index));
     x      = getaxis(a, index);
     m      = get(a, 'Monitor');
-    if index==0 & not(all(m==1) | all(m==0))
-      m      = get(a, 'Monitor');
-      properties{end+1} = sprintf('%6i %15s  %s [%g:%g] (per monitor)', index, v, l, min(x(:)./m(:)), max(x(:)./m(:)));
+    if index==0 & not(all(m==1 | m==0))
+      properties{end+1} = sprintf('%6i %15s  %s [%g:%g] (per monitor)', index, v, l, min(x(:)), max(x(:)));
     else
       properties{end+1} = sprintf('%6i %15s  %s [%g:%g]', index, v, l, min(x(:)), max(x(:)));
     end
