@@ -35,7 +35,7 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/load, iData/getframe, save
 
 % handle array of objects to save iteratively
@@ -77,7 +77,8 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.jpg', 'JPEG image (*.jpg)'; ...
       '*.tiff;*.tif', 'TIFF image (*.tif)'; ...
       '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
-      '*.wrl', 'Virtual Reality file (*.wrl, *.vrml)'};
+      '*.wrl', 'Virtual Reality file (*.wrl, *.vrml)'; ...
+      '*.vtk', 'VTK volume (*.vtk)'; };
 
 % filenape='gui' pops-up a file selector
 if strcmp(filename, 'gui')  
@@ -191,16 +192,18 @@ case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLO
 case 'mat'  % single mat-file Matlab output (binary), with the full object description
   save(filename, 'a');
 case {'hdf5', 'nc',' cdf', 'nx','h5'} % HDF4, HDF5, NetCDF formats: converts fields to double and chars
-  filename = saveas_hdfnc(a, filename); % inline function (below)
+  filename = iData_private_saveas_hdfnc(a, filename); % inline function (below)
 case 'edf'  % EDF ESRF format
-  filename = medfwrite(a, filename);
+  filename = medfwrite(a, filename); % in private
+case 'vtk'  % VTK volume
+  filename = iData_private_saveas_vtk(a, filename);
 case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
 case 'csv'  % Spreadsheet comma separated values file format
   csvwrite(filename, double(a));
 case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4'}  % bitmap images
   if ndims(a) == 2 
-    b=double(a);
+    b=getaxis(a,0); % Signal/Monitor
     if abs(log10(size(b,1)) - log10(size(b,2))) > 1
       x = round(linspace(1, size(b,1), max(size(b,1), 1024)));
       y = round(linspace(1, size(b,2), max(size(b,2), 1024)));
