@@ -15,14 +15,13 @@ function a = surf(a, option)
 % output: h: graphics object handles (cell)
 % ex:     surf(iData(peaks)); surf(iData(flow));
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot
 
 if nargin ==1
-	h = plot(a, 'surf');
-	return
-else
-	h = plot(a, [ 'surf ' option ]);
+	option='';
 end
+h = plot(a, [ 'surf ' option ]);
+
 
 

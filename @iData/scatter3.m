@@ -14,14 +14,13 @@ function a = scatter3(a, option)
 % output: h: graphics object handles (cell)
 % ex:     scatter3(iData(peaks)); scatter3(iData(flow));
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plot
 
 if nargin ==1
-	h = plot(a, 'scatter3');
-	return
-else
-	h = plot(a, [ 'scatter3 ' option ]);
+	option='';
 end
+h = plot(a, [ 'scatter3 ' option ]);
+
 
 
