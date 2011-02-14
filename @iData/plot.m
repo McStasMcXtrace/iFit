@@ -31,8 +31,8 @@ function h=plot(a, method)
 %
 %               Global options for 2D and 3D plots: 
 %                 flat, interp, faceted (for shading)
-%                 transparent, light, clabel, colorbar
-%                 axis tight, axis auto, view2, view3, hide_axes
+%                 transparent, light, clabel, colorbar, shifted (overlayed 2D)
+%                 axis tight, axis auto, view2, view3, hide_axes (compact layout)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
 %                 
 % output: h: graphics object handles (cell)
@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.48 $
+% Version: $Revision: 1.49 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -57,8 +57,10 @@ if nargin == 1, method=''; end
 if length(a) > 1
   h = cell(size(a));
   ih = ishold;
+  sum_max = 0;
   for index=1:length(a(:))
     h{index} = plot(a(index), method);
+    sum_max = sum_max+max(a(index))-min(a(index));
     if ndims(a(index)) == 1 && isempty(method)
       % change color of line
       colors = 'bgrcm';
@@ -66,9 +68,38 @@ if length(a) > 1
     end
     hold on
   end
+  % re-arrange if this is a 2D overlay
+  for index=1:length(a(:))
+    if length(h{index}) == 1 && ~isempty(strfind(method, 'shifted'))
+      if ndims(a(index)) ~= 1
+        try
+          z= get(h{index},'ZData');
+          if all(z == 0), use_cdata=1; z= get(h{index},'CData');
+          else use_cdata=0; end
+          z = z-min(z(:));
+          z = z+sum_max*index/length(a(:));
+          if use_cdata==0, set(h{index},'ZData',z);
+          else set(h{index},'CData',z); end
+        end
+      else
+        try
+          z= get(h{index},'YData');
+          z = z-min(z(:));
+          z = z+sum_max*index/length(a(:));
+          set(h{index},'YData',z); end
+        end
+      end
+    end
+  end
   h = reshape(h, size(a));
   if ih == 1, hold on; else hold off; end
   return
+end
+
+% check if the object is not too large, else rebin accordingly
+if prod(size(a)) > 1e6
+  iData_private_warning(mfilename, [ 'Object ' a.Tag ' is too large (numel=' num2str(prod(size(a))) ...
+    '.\n\tYou should rebin with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
 end
 
 switch ndims(a) % handle different plotting methods depending on the iData dimensionality
