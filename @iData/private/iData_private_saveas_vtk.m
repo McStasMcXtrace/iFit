@@ -1,66 +1,35 @@
 function filename=iData_private_saveas_vtk(a, filename)
 % private function to write VTK files
 
-% inline: WriteToVTK, export3Dline2VTK, writeVTK
+% inline: WriteToVTK (3D matrix, no axes, not used but keep it here), 
+% export3Dline2VTK (xyz line), writeVTK (3D object), exportTriangulation2VTK (2D surface)
 
 if ndims(a) ~= 2 & ndims(a) ~= 3
   filename=[];
-  iData_private_warning(mfilename,[ 'Can only export 2D and 3D objects to VTK format. Object ' a.Tag ' has ndims=' num2str(ndims(a)) ]);
+  iData_private_warning(mfilename,[ 'Can only export 2D and 3D objects to VTK format.\n\tObject ' a.Tag ' has ndims=' num2str(ndims(a)) ]);
   return
 end
 
-NL = sprintf('\n');
-str = [ '# URL: ifit.mccode.org' NL ...
-        '# Creator: iFit/@iData/saveas - ' version(a) ];
+str=char(a);
 
-m = get(a,'Monitor'); 
-if not(all(m==0| m==1))
-  title(a, [ title(a) ' per monitor' ]);
-  m=mean(m(:));
-  str = [ str NL '# SignalNormalizedToMonitor: Yes' NL ...
-                 '# MeanMonitor: ' num2str(m) NL ];
-end
-
-x = getaxis(a, 2);
-y = getaxis(a, 1);
-
-str = [ str NL '# Title: ' a.Title NL ...
-          '# Label: ' a.Label NL ...
-          '# DisplayName: ' a.DisplayName NL ...
-          '# User: ' a.User NL ...
-          '# CreationDate: ' a.Date NL ...
-          '# ModificationDate: ' a.ModificationDate NL ...
-          '# Tag: ' a.Tag NL ...
-          '# Axis2_Label' xlabel(a) NL ...
-          '# Axis2_Min' num2str(min(x(:))) NL ...
-          '# Axis2_Max', num2str(max(x(:))) NL ...
-          '# Axis2_Length', num2str(length(unique(x(:)))) NL ...
-          '# Axis1_Label' ylabel(a) NL ...
-          '# Axis1_Min', num2str(min(y(:))) NL ...
-          '# Axis1_Max', num2str(max(y(:))) NL ...
-          '# Axis1_Length', num2str(length(unique(y(:)))) NL ];
-          
-str=[ char(a) NL ];
-
-if ndims(a) == 3 && ~isvector(a)
-  Signal = getaxis(a, 0); % Signal/Monitor
-  WriteToVTK(Signal, filename, str); % dump the matrix directly to the file as POINTS
-elseif ndims(a) == 2 && isvector(a)
-  export3Dline2VTK(filename, [ x(:) y(:) Signal(:) ], str); % export as VTK3 LINES, can not re-import
-elseif ndims(a) == 2
+if ndims(a) <= 2 && isvector(a) % line, 1D or 2D
+  if ndims(a) == 2
+    x = getaxis(a, 2);
+    y = getaxis(a, 1);
+  else
+    x = getaxis(a, 1);
+    y = zeros(size(x));
+  end
+  export3Dline2VTK(filename, [ x(:) y(:) Signal(:) ], str); % export as VTK3 LINES
+elseif ndims(a) == 2 % surface with axes
   a = interp(a,'grid');
-  x = getaxis(a, 2);
-  y = getaxis(a, 1);
-  x =[reshape(x,numel(x),1),reshape(y,numel(y),1)];
-  writeVTK(filename, x,delaunayn(x),getaxis(a,0), str);
-elseif ndims(a) == 3
+  x = getaxis(a, 2); x=x(:);
+  y = getaxis(a, 1); y=y(:);
+  z = getaxis(a, 0); z=z(:);
+  exportTriangulation2VTK(filename, [x y z], delaunay(x,y), str);
+elseif ndims(a) == 3 % volume (no axes)
   a = interp(a,'grid');
-  x = getaxis(a, 2);
-  y = getaxis(a, 1);
-  z = getaxis(a, 3);
-  p=[ x(:) y(:) z(:) ]; 
-  u = getaxis(a,0); u=u(:);
-  writeVTK(filename, p,delaunayn(p),u, str);
+  WriteToVTK(getaxis(a,0), filename, str);
 end
 
 % ------------------------------------------------------------------------------
@@ -107,7 +76,7 @@ end
 nl = sprintf('\n'); % Stupid matlab doesn't interpret \n normally.
 
 % Write the file header.
-fwrite(fid, ['# vtk DataFile Version 2.0' nl str 'ASCII' nl ...
+fwrite(fid, ['# vtk DataFile Version 2.0' nl str nl 'ASCII' nl ...
     'DATASET STRUCTURED_POINTS' nl 'DIMENSIONS ' ...
     num2str(N) ' ' num2str(M) ' ' num2str(O) nl 'ASPECT_RATIO 1 1 1' nl ...
     'ORIGIN 0 0 0' nl 'POINT_DATA ' ...
@@ -170,7 +139,7 @@ end
 nbpoint=length(X);
 
 fid=fopen(file,'wt');
-fprintf(fid,'# vtk DataFile Version 3.0\n%sASCII\nDATASET POLYDATA\n', str);
+fprintf(fid,'# vtk DataFile Version 3.0\n%s\nASCII\nDATASET POLYDATA\n', str);
 fprintf(fid,'POINTS %d float\n',nbpoint);
 fprintf(fid,'%3.7f %3.7f %3.7f %3.7f %3.7f %3.7f %3.7f %3.7f %3.7f\n',[X(1:3:end-2) Y(1:3:end-2) Z(1:3:end-2) X(2:3:end-1) Y(2:3:end-1) Z(2:3:end-1) X(3:3:end) Y(3:3:end) Z(3:3:end)]');
 
@@ -202,65 +171,54 @@ fclose(fid);
 
 % ------------------------------------------------------------------------------
 
-function writeVTK(filename,t,p,u, str)
-% vtk export
-% creates a vtk-file filename.vtk containing a simplicial mesh (2- or 3d)
-% and additional vertex data
+function exportTriangulation2VTK(file,XYZ,tri,str)
 %
-% input: filename   destination 
-%                   (string)
-%        p          array of N points 
-%                   (Nxd matrix where d denotes the dimension)
-%        t          triangulation/tetrahedralization of the points in p
-%                   (Mxd+1 array, where M denotes the number of simplices)
-%        u          mesh function assigning a real number to every point in
-%                   p (the vertices of the
-%                   triangulation/tetrahedralization)
-%                   (Nx1 array)
+% This function takes as input a 2D unrestricted triangulation and export
+% it to an ASCII VTK file which can be oppened with the viewer Paraview.
 %
-% example usage:
-%        2d: [X,Y]=meshgrid(0:0.01:1,0:0.01:1);
-%            p=[reshape(X,prod(size(X)),1),reshape(Y,prod(size(Y)),1)];
-%            t=delaunayn(p);
-%            u=peaks(6*p(:,1)-3,6*p(:,2)-3);
-%            writeVTK('test2d',t,p,u);
-%        3d: p=rand(10,3); 
-%            t=delaunayn(p); 
-%            u=sum(p.^2,2);
-%            writeVTKcell('test3d',t,p,u);
-% (the result is accessible with paraview!)
+% Input :
+%           "dir" is the path of the directory where the file is saved (string). (Optional)
+%           "file" is the name without extension of the file (string).
+%           "XYZ" is the coordinate of the vertex of the triangulation (nx3 matrix).
+%           "tri" is the list of triangles which contain indexes of XYZ (mx3 matrix).
 %
-% (c) Daniel Peterseim, 2009-11-07
+% Sample example :
+%
+%   [X,Y,Z]=peaks(25);
+%   X=reshape(X,[],1);
+%   Y=reshape(Y,[],1);
+%   Z=0.4*reshape(Z,[],1);
+%   tri = delaunay(X,Y);
+%   exportTriangulation2VTK('sampleExampleTri',[X Y Z],tri)
+%
+% Note : If the triangulation doesn't have Z component (a plane), put the
+% third column of XYZ with all zeros. Paraview only deals with 3D object.
+%
+% David Gingras, January 2009
 
-[np,dim]=size(p);
-[nt]=size(t,1);
-celltype=[3,5,10];
-
-FID = fopen(filename,'w+');
-fprintf(FID,'# vtk DataFile Version 2.0\n%sASCII\n', str);
-fprintf(FID,'DATASET UNSTRUCTURED_GRID\n');
-
-fprintf(FID,'POINTS %d float\n',np);
-s='%f %f %f \n';
-P=[p zeros(np,3-dim)];
-fprintf(FID,s,P');
-
-fprintf(FID,'CELLS %d %d\n',nt,nt*(dim+2));
-s='%d ';
-for k=1:dim+1
-    s=horzcat(s,{' %d'});
+X=XYZ(:,1);
+Y=XYZ(:,2);
+Z=XYZ(:,3);
+nbpoint=length(X);
+if mod(nbpoint,3)==1
+    X(nbpoint+1:nbpoint+2,1)=[0;0];
+    Y(nbpoint+1:nbpoint+2,1)=[0;0];
+    Z(nbpoint+1:nbpoint+2,1)=[0;0];
+elseif mod(nbpoint,3)==2
+    X(nbpoint+1,1)=0;
+    Y(nbpoint+1,1)=0;
+    Z(nbpoint+1,1)=0;
 end
-s=cell2mat(horzcat(s,{' \n'}));
-fprintf(FID,s,[(dim+1)*ones(nt,1) t-1]');
+nbpoint=length(X);
+fid=fopen(file,'wt');
+fprintf(fid,'# vtk DataFile Version 3.0\n%s\nASCII\nDATASET POLYDATA\n',str);
+fprintf(fid,'POINTS %d float\n',nbpoint);
+fprintf(fid,'%3.7f %3.7f %3.7f %3.7f %3.7f %3.7f %3.7f %3.7f %3.7f\n',[X(1:3:end-2) Y(1:3:end-2) Z(1:3:end-2) X(2:3:end-1) Y(2:3:end-1) Z(2:3:end-1) X(3:3:end) Y(3:3:end) Z(3:3:end)]');
+ntri=length(tri);
+fprintf(fid,'POLYGONS %d %d\n',ntri,4*ntri);
 
-fprintf(FID,'CELL_TYPES %d\n',nt);
-s='%d\n';
-fprintf(FID,s,celltype(dim)*ones(nt,1));
+fprintf(fid,'3 %d %d %d\n',(tri-ones(ntri,3))');
+fclose(fid);
 
-fprintf(FID,'POINT_DATA %s\nSCALARS u float 1\nLOOKUP_TABLE default\n',num2str(np));
-s='%f\n';
-fprintf(FID,s,u);
+% ------------------------------------------------------------------------------
 
-fclose(FID);
-
-% end writeVTK
