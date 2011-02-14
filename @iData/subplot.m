@@ -12,7 +12,7 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/plot
 
 % EF 23/11/07 iData implementation
@@ -53,7 +53,18 @@ h=[];
 for index=1:length(a(:))
   if ~isempty(a(index))
     subplot(m,n,index);
-    h = [ h plot(a(index), varargin{:}) ];
+    if length(a(:)) > 12, 
+      % compact layout
+      if length(varargin)
+        varargin{1}=[ varargin{1} ' hide_axes' ]; 
+      else
+        varargin{1}=' hide_axes';
+      end
+    end
+     
+    this_h = plot(a(index), varargin{:});
+    
+    h = [ h this_h ];
   else h = [ h nan ];
   end
 end
