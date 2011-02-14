@@ -35,7 +35,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.32 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.33 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -272,6 +272,22 @@ function [data, loader] = iLoad_import(filename, loader)
 % -----------------------------------------------------------
 % private function to make the data pretty looking
 function data = iLoad_loader_check(file, data, loader)
+
+  % handle case when a single file generates a data set
+  if isstruct(data) & length(data)>1
+    for index=1:length(data)
+      data(index) = iLoad_loader_check(file, data(index), loader);
+    end
+    return
+  elseif iscell(data) & length(data)>1
+    newdata=[];
+    for index=1:length(data)
+      newdata(index) = iLoad_loader_check(file, data{index}, loader);
+    end
+    data = newdata; % now an array of struct
+    return
+  end
+  
   name='';
   if isstruct(loader),
     method = loader.method;
