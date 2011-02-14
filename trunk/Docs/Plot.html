@@ -3,6 +3,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit Plotting iData objects</title>
 </head><body>
@@ -208,7 +209,7 @@ display them as a flat image (when using option='<span style="color: rgb(0, 0, 0
 <pre style="margin-left: 40px;">&gt;&gt; h =<span style="color: rgb(51, 102, 255);"> image</span>(r,g,b, <span style="color: rgb(204, 51, 204);">'hide_axes'</span>)<br></pre>
 Some of the RGB channels can be left empty to suppress one color. Each
 object is re-scaled in the [0 1] range to use the full channel colors.
-However, when using the option<span style="color: rgb(204, 51, 204);"> 'norm' </span>keyword, the scaling is made global to all images, enabling comparison of relative intensity between channel content.<br>
+However, when using the option<span style="color: rgb(204, 51, 204);"> 'norm' </span>keyword, the scaling is made global to all images, enabling comparison of relative intensity between channel contents.<br>
 <br>
 It is possible, by
 right-clicking on the surface or the axis lines, to pop-up a contextual
@@ -353,8 +354,10 @@ displays 2D/3D views from top or oblique view<br>
 drawing), <span style="color: rgb(204, 51, 204);">zbuffer</span>
 (vectorial drawing): selects the Matlab painters for rendering.</li>
   <li><span style="color: rgb(204, 51, 204);">hide_axes</span> hides
-XYZ axes and labels, but retains the Title<br>
+XYZ axes and labels, but retains the Title</li>
+  <li><span style="color: rgb(204, 51, 204);">shifted</span> for overlayed plots makes sure plots are regularly shifted on the Z axis for better shifted overlayed rendering.<br>
   </li>
+
 </ul>
 A usage examples is <br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'surf interp view2 axis tight transparent'</span>)</pre>
@@ -522,7 +525,7 @@ axis handle arguments.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData plotting - </span><span style="font-style: italic;">
-$Date: 2011-02-09 22:50:03 $ $Revision: 1.12 $
+$Date: 2011-02-14 10:41:26 $ $Revision: 1.13 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
