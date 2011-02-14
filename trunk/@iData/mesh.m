@@ -13,14 +13,13 @@ function a = mesh(a, option)
 % output: h: graphics object handles (cell)
 % ex:     mesh(iData(peaks)); mesh(iData(flow));
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 if nargin ==1
-	h = plot(a, 'mesh');
-	return
-else
-	h = plot(a, [ 'mesh ' option ]);
+	option='';
 end
+h = plot(a, [ 'mesh ' option ]);
+
 
 

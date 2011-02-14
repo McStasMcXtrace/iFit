@@ -35,7 +35,7 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also iData, iData/load, iData/getframe, save
 
 % handle array of objects to save iteratively
@@ -243,7 +243,8 @@ case 'svg'  % scalable vector graphics format (private function)
 case {'vrml','wrl'} % VRML format
   f=figure('visible','off');
   h = plot(a,options);
-  vrml(gca,filename);
+  g = gca;
+  vrml(g,filename);
   close(f);
 otherwise
   iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
