@@ -19,6 +19,11 @@ function config = iLoad_ini
 % Formats will be tried one after the other, in the given order.
 % System wide loaders are tested after user definitions.
 %
+% These formats can be obtained using [config, configfile]=iLoad('','load config').
+% the iLoad_ini configuration file can be saved in the Preference directory
+% using [config, configfile] = iLoad(config,'save config').
+% A list of all supported formats is shown with iLoad('formats');
+%
 % See also: iLoad, save, iData/saveas
 
 % definition of formats
@@ -43,7 +48,7 @@ function config = iLoad_ini
     format4.method     ='looktxt';
     
     format5.name       ='ILL TAS Data (polarized)';
-    format5.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:','PAL'};
+    format5.patterns   ={'PAL','POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
     format5.options    =['--fast --binary --headers ' ...
                         '--section=PARAM --section=VARIA --section=ZEROS --section=DATA ' ...
                         '--section=POLAN --section=STEPS ' ...

@@ -6,6 +6,7 @@ function [data, format] = iLoad(filename, loader)
 % These formats can be obtained using [config, configfile]=iLoad('','load config').
 % the iLoad_ini configuration file can be saved in the Preference directory
 % using [config, configfile] = iLoad(config,'save config').
+% A list of all supported formats is shown with iLoad('formats');
 %
 %   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
 %     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
@@ -35,21 +36,49 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.33 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.34 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
 % private:  iLoad_loader_auto, iLoad_config_load, iLoad_config_save, iLoad_import, iLoad_loader_check
 
+persistent config
+
 data = []; format = [];
 if nargin == 0, filename=''; end
 if nargin < 2,  loader = ''; end
-if strcmp(loader, 'load config')
-  data  = iLoad_config_load;
+if strcmp(loader, 'load config') || strcmp(filename, 'load config')
+  if isempty(config), config  = iLoad_config_load; end
+  data = config;
   return
-elseif strcmp(loader, 'save config')
+elseif strcmp(loader, 'force load config') || strcmp(filename, 'force load config')
+  config  = iLoad_config_load;
+  data = config;
+  return
+elseif strcmp(loader, 'formats') || strcmp(filename,'formats') || strcmp(loader, 'display config')
+  data = iLoad('','load config');
+  fprintf(1, ' EXT                    READER  DESCRIPTION\n');
+  fprintf(1, '-----------------------------------------------------------------\n');  
+  for index=1:length(data.loaders)
+    this=data.loaders{index};
+    if isfield(this,'postprocess'), 
+      if ~isempty(this.postprocess), this.method = [ this.method '/' this.postprocess ]; end
+    end
+    if length(this.method)>25, this.method = [ this.method(1:22) '...' ]; end
+    if ~isfield(this,'extension'), this.extension = '*';
+    elseif isempty(this.extension), this.extension='*'; end
+    if iscellstr(this.extension)
+      fprintf(1,'%4s %25s  %s\n', upper(this.extension{1}), this.method,this.name);
+      for j=2:length(this.extension),fprintf(1,'  |.%s\n', upper(this.extension{j})); end
+    else
+      fprintf(1,'%4s %25s  %s\n', upper(this.extension), this.method,this.name);
+    end
+  end
+  disp([ '% iLoad configuration file: ' config.FileName ]);
+  return
+elseif strcmp(loader, 'save config') || strcmp(filename, 'save config')
   if isempty(filename)
-    config  = iLoad_config_load;
+    config  = iLoad('','load config');
   else
     config = filename;
   end
@@ -156,7 +185,7 @@ if ischar(filename) & length(filename) > 0
     [data, format] = iLoad_import(filename, loader);
   end
 elseif isempty(filename)
-  config = iLoad_config_load;
+  config = iLoad('','load config');
   if exist('uigetfiles') & strcmp(config.UseSystemDialogs, 'no')
       [filename, pathname] = uigetfiles('.*','Select file(s) to load');
   else
@@ -206,7 +235,7 @@ function [data, loader] = iLoad_import(filename, loader)
     loader=loader(loader_index);
   elseif ischar(loader)
     % test if loader is the user name of a function
-    config = iLoad_config_load;
+    config = iLoad('','load config');
     formats = config.loaders;
     loaders={};
     loaders_count=0;
@@ -279,6 +308,8 @@ function data = iLoad_loader_check(file, data, loader)
       data(index) = iLoad_loader_check(file, data(index), loader);
     end
     return
+  elseif iscellstr(data)
+    fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Got a cell of strings. Ignoring\n', file, loader.name, loader.method);
   elseif iscell(data) & length(data)>1
     newdata=[];
     for index=1:length(data)
@@ -356,7 +387,7 @@ function data = iLoad_loader_check(file, data, loader)
 % private function to determine which parser to use to analyze content
 % if allformats == 1, no pattern search is done
 function loaders = iLoad_loader_auto(file)
-  config  = iLoad_config_load;
+  config  = iLoad('','load config');
   loaders = config.loaders;
     
   % read start of file
@@ -393,7 +424,7 @@ function loaders = iLoad_loader_auto(file)
         else ext=loader.extension; end
         if ischar(ext) && length(ext), ext=cellstr(ext); end
         if length(ext) && length(fext) 
-          if isempty(strmatch(fext, ext, 'exact'))
+          if isempty(strmatch(lower(fext), lower(ext), 'exact'))
             patterns_found  = 0;  % extension does not match
             % fprintf(1,'iLoad: method %s file %s: extension does not match (%s) \n', loader.name, file, fext);
           end
@@ -525,15 +556,15 @@ function config = iLoad_config_load
     { 'auread',  'au',  'NeXT/SUN (.au) sound',''}, ...
     { 'wavread', 'wav'  'Microsoft WAVE (.wav) sound',''}, ...
     { 'aviread', 'avi', 'Audio/Video Interleaved (AVI) ',''}, ...
-    { 'mcdfread', {'nc','cdf'}, 'NetCDF 2',''}, ...
-    { 'netcdf',  {'nc','cdf'}, 'NetCDF 1.0','','','load_netcdf1'}, ...
-    { 'fitsread','fits','FITS',''}, ...
-    { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet)',''}, ...
-    { 'imread',  {'bmp','jpg','jpeg','tiff','png','ico'}, 'Image/Picture',''}, ...
-    { 'hdfread', 'h4',  'HDF4',''}, ...
-    { 'hdf5extract',{'hdf','h5'}, 'HDF5',''}, ...
-    { 'load',    'mat', 'Matlab workspace',''}, ...
-    { 'csvread', 'csv', 'Comma Separated Values',''}, ...
+    { 'mcdfread', {'nc','cdf'}, 'NetCDF 2 (.nc)',''}, ...
+    { 'netcdf',   {'nc','cdf'}, 'NetCDF 1.0 (.nc)','','','load_netcdf1'}, ...
+    { 'mfitsread',{'fits','fts'},'FITS',''}, ...
+    { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)',''}, ...
+    { 'mimread',  {'bmp','jpg','jpeg','tiff','png','ico'}, 'Image/Picture',''}, ...
+    { 'mhdf4read',{'hdf4','h4','hdf'},  'HDF4 raster image',''}, ...
+    { 'hdf5extract',{'hdf5','h5'}, 'HDF5',''}, ...
+    { 'load',    'mat', 'Matlab workspace (.mat)',''}, ...
+    { 'csvread', 'csv', 'Comma Separated Values (.csv)',''}, ...
     { 'dlmread', 'dlm', 'Numerical single block',''}, ...
     { 'xmlread', 'xml', 'XML',''}, ...
     { 'importdata','',  'Matlab importer',''}, ...
