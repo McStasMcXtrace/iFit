@@ -1,6 +1,6 @@
                        Welcome to the iFit/iData package
                         E. Farhi, ILL/CS <farhi@ill.fr>
-                                  Version 1.0 - Feb 2011
+                           Version 1.0-RC1 - Feb 2011
 
 ** Purpose:
 This small library aims at providing basic functionality to achieve some of the 
@@ -24,8 +24,7 @@ Contributions are listed in the iFit/Docs/Credits.html page.
 ** Disclaimer:
 This is not a professional tool, and there is no Dev team to actively take care
 of it. Expect occasional failures and bugs. However, I try my best to make the 
-software efficient and reliable. This software is known to be far from ideal,
-especially in terms of speed.
+software efficient and reliable. 
 
 ** Requirements:
 Matlab (any version from 6.x), possibly a C compiler for the looktxt MeX.
