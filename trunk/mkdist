@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# Simple script for setting up an iFit distribution package.
+#
+#   This file is part of the iFit package
+#   Copyright (C) 2010, All rights reserved
+#   Institut Laue Langevin, Grenoble, France
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; version 2 of the License.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# define version and symbols that will be replaced in many places
+IFIT_TARNAME=iFit
+IFIT_NAME=iFit
+IFIT_VERSION=$1
+MONTH=`date +"%b"`
+DAY=`date +"%d"`
+YEAR=`date +"%Y"`
+IFIT_DATE="$MONTH. $DAY, $YEAR"
+IFIT_STRING="$IFIT_NAME $IFIT_VERSION - $MONTH. $DAY, $YEAR"
+
+# Create temporary workdir:
+PW=`pwd`
+TMPDIR=$PWD/..
+DIST=$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION
+
+# Copy current PW checkout to DIST
+cp -rp $PW $DIST
+
+# Go in DIST, clean up CVS/SVN information
+cd $DIST
+echo "Clean up CVS info"
+find . -name CVS -exec rm -rf \{\} \; 2> /dev/null
+find . -name .CVS -exec rm -rf \{\} \; 2> /dev/null
+find . -name CVSROOT -exec rm -rf \{\} \; 2> /dev/null
+rm mkdist
+
+cd $TMPDIR
+# Create tar archive
+zip -r $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip $IFIT_TARNAME-$IFIT_VERSION
+
+echo "========================================================================="
+echo "mkdist: Distro creation for $IFIT_STRING"
+echo Your $IFIT_STRING dist packages are placed in
+echo ../$IFIT_TARNAME-$IFIT_VERSION-src.zip
+
