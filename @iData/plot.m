@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.49 $
+% Version: $Revision: 1.50 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -86,7 +86,7 @@ if length(a) > 1
           z= get(h{index},'YData');
           z = z-min(z(:));
           z = z+sum_max*index/length(a(:));
-          set(h{index},'YData',z); end
+          set(h{index},'YData',z); 
         end
       end
     end

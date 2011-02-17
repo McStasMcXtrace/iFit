@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -67,14 +67,16 @@ for index = 1:length(a_in(:)) % works with object arrays
           alias_num   = transpose(char(alias_names)); alias_num=transpose(alias_num(:));
           if ~isempty(strfind(alias_num,fieldname))
             alias_num   = strmatch(lower(fieldname), lower(alias_names), 'exact');
-            alias_values = s.Alias.Values;
-            name = alias_names{alias_num(1)};
-            link = alias_values{alias_num(1)};
-            field_not_found=0;
-            if ~isempty(s.Data)
-              val = iData_getalias(s, link, name); % eval link value
-            else
-              val = [];
+            if ~isempty(alias_num)
+              alias_values = s.Alias.Values;
+              name = alias_names{alias_num(1)};
+              link = alias_values{alias_num(1)};
+              field_not_found=0;
+              if ~isempty(s.Data)
+                val = iData_getalias(s, link, name); % eval link value
+              else
+                val = [];
+              end
             end
           end
         end
