@@ -8,10 +8,11 @@ function y=gauss(p, x, y)
 %            p = [ Amplitude Centre HalfWidth BackGround ]
 %          or action e.g. 'identify', 'guess' (char)
 %         x: axis (double)
-%         y: when values are given, a guess of the parameters is performed
+%         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=gauss([1 0 1 1], -10:10); or y=gauss('identify') or p=gauss('guess',x,y);
 
+% 1D function template:
 % Please retain the function definition structure as defined below
 % in most cases, just fill-in the information when HERE is indicated
 
@@ -54,13 +55,13 @@ end
 
 % inline: evaluate: compute the model values
 function y = evaluate(p, x)
-  X = x; x=x(:);
+  sx = size(x); x=x(:);
   if isempty(x) | isempty(p), y=[]; return; end
   
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
   y = p(1)*exp(-0.5*((x-p(2))/p(3)).^2) + p(4);
   
-  y = reshape(y, size(X));
+  y = reshape(y, sx);
 end
 
 % inline: identify: return a structure which identifies the model
