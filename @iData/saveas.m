@@ -35,7 +35,7 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, iData/load, iData/getframe, save
 
 % handle array of objects to save iteratively
@@ -69,15 +69,16 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.pdf', 'Portable Document Format (*.pdf)'; ...
       '*.eps', 'Encapsulated PostScrip (color, *.eps)'; ...
       '*.ps',  'PostScrip (color, *.ps)'; ...
-      '*.nc',  'NetCDF (*.nc, *.cdf)'; ...
-      '*.hdf5','Hierarchical Data Format (*.hdf5, *.h5, *.nx)'; ...
+      '*.nc;*.cdf',  'NetCDF (*.nc, *.cdf)'; ...
+      '*.hdf5;*.h5','Hierarchical Data Format 5 (*.hdf5, *.h5, *.nx)'; ...
+      '*.hdf;*.hdf4', 'Hierarchical Data Format 4 image (*.hdf)'; ...
       '*.xls', 'Excel format (requires Excel to be installed, *.xls)'; ...
       '*.csv', 'Comma Separated Values (suitable for Excel, *.csv)'; ...
       '*.png', 'Portable Network Graphics image (*.png)'; ...
       '*.jpg', 'JPEG image (*.jpg)'; ...
       '*.tiff;*.tif', 'TIFF image (*.tif)'; ...
       '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
-      '*.wrl', 'Virtual Reality file (*.wrl, *.vrml)'; ...
+      '*.wrl;*.vrml', 'Virtual Reality file (*.wrl, *.vrml)'; ...
       '*.vtk', 'VTK volume (*.vtk)'; };
 
 % filenape='gui' pops-up a file selector
@@ -141,6 +142,8 @@ case 'ps'
   format='psc';
 case 'netcdf'
   format='cdf';
+case 'hdf4'
+  format='hdf';
 end
 
 % ==============================================================================
@@ -191,8 +194,8 @@ case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLO
   fclose(fid);
 case 'mat'  % single mat-file Matlab output (binary), with the full object description
   save(filename, 'a');
-case {'hdf5', 'nc',' cdf', 'nx','h5'} % HDF4, HDF5, NetCDF formats: converts fields to double and chars
-  filename = iData_private_saveas_hdfnc(a, filename); % inline function (below)
+case {'hdf5', 'nc','cdf', 'nx','h5'} % HDF4, HDF5, NetCDF formats: converts fields to double and chars
+  filename = iData_private_saveas_hdfnc(a, filename, format); % inline function (below)
 case 'edf'  % EDF ESRF format
   filename = medfwrite(a, filename); % in private
 case 'vtk'  % VTK volume
@@ -201,7 +204,7 @@ case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
 case 'csv'  % Spreadsheet comma separated values file format
   csvwrite(filename, double(a));
-case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4'}  % bitmap images
+case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf'}  % bitmap images
   if ndims(a) == 2 
     b=getaxis(a,0); % Signal/Monitor
     if abs(log10(size(b,1)) - log10(size(b,2))) > 1
