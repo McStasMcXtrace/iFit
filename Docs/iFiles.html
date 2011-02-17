@@ -1,49 +1,532 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta http-equiv="content-type"
- content="text/html; charset=ISO-8859-1">
-  <title></title>
-</head>
-<body>
-<h1 style="text-align: center;"><a class="mozTocH1"
- name="mozTocId294096"></a>iFit: iData objects description<br>
-</h1>
+<html><head>
+
+
+
+
+
+  
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+  
+  <title>iFit: iFiles sub-library (iLoad)</title>
+
+</head><body>
+<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: iFiles import sub-library</h1>
+<br>
+
+<ol id="mozToc">
+<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId747249">iLoad the main file importer
+</a></li><li><a href="#mozTocId485865">Supported data formats (default)</a><ol><li><a href="#mozTocId876478">Legacy data formats (text, NetCDF, HDF, FITS, images, XML, CSV, ...)
+</a></li><li><a href="#mozTocId361032">More specific data formats (neutrons and X-ray)</a></li><li><a href="#mozTocId149630">Unsupported data formats: how to import them anyway ?</a></li></ol></li><li><a href="#mozTocId519997">The import filters: customizing data formats (iLoad_ini)
+</a><ol><li><a href="#mozTocId56356">Reading and Writing the iLoad configuration</a></li><li><a href="#mozTocId968211">iLoad configuration structure</a></li><li><a href="#mozTocId120998">In short: procedure to add a new data format</a></li></ol></li>
+</ol>
+
+<br>
+
+
 <hr style="width: 100%; height: 2px;">
-<div style="text-align: center;">Commands we use in this page: <span
- style="font-style: italic;">iData</span><br>
+<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">iLoad</span><br style="font-style: italic;">
 </div>
+
 <br>
-<h3><a name="Desription_of_the_object"></a>Desription of the object</h3>
-The iData object holds some imported data (refer to the <a
- href="Loading.html">Loading</a> page), as well as metadata
-information, in particular how to use this data for e..g. doing Math.<br>
-<h3><a name="How_data_is_stored_in_the_object"></a>How data is stored
-in the object</h3>
+
+<h3><a class="mozTocH3" name="mozTocId747249"></a>iLoad the main file importer<br>
+</h3>
+
+When a new file is imported into an iData object by means of e.g.<br>
+
+<div style="margin-left: 40px;">
+<pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(51, 102, 255);">ifitpath</span> <span style="color: rgb(204, 51, 204);">'Data/ILL_IN6.dat'</span> ]);<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ </span><span style="color: rgb(51, 102, 255);">ifitpath</span><span style="color: rgb(204, 51, 204);"> 'Data/ILL_IN6.dat' ]</span>);</pre>
+
+</div>
+
+the request for file access is sent transparently to the <span style="font-weight: bold;">iLoad</span> function. This latter performs the following operations:<br>
+
+<ol>
+
+  <li>resolves the file name, and identifies directory importation,
+wildcards (*, ?), distant files with URLs (ftp://, http://), compressed
+files (zip, gzip, tar, compress) ;</li>
+  <li>selects a list of possible file types from <span style="font-style: italic;">e.g.</span> file extension ;<br>
+  </li>
+  <li>searches for patterns in text headers to better determine file type ;<br>
+  </li>
+  <li>requests importation by all possible file types one after the other until one succeeds ;<br>
+  </li>
+  <li>formats the file content so that it is returned as a structure containing standard fields ;<br>
+  </li>
+  <li>executes remaining post-process scripts.<br>
+  </li>
+</ol>
+
+The list of known file formats which can be imported is defined in the <span style="font-weight: bold;">iLoad_ini</span>
+file (see <a href="#mozTocId485865">below</a>), which is a list of format definitions with extension,
+patterns to search for, and post-process filters to run after
+importation. The order of these filters is important as they are parsed
+one after the other. A lower level of known formats is then added to
+the iLoad_ini preferences, with more standard file formats (mainly
+those that Matlab knows <span style="font-style: italic;">de-facto</span>).<br>
+
 <br>
-<h3><a name="Definition_of_Aliases"></a>Definition of Aliases (links
-within the object)</h3>
+
+The result of all this mechanics is that importation is fully
+transparent. The file type is determined automatically, imported and
+formatted accordingly. The resulting structure is then ready to be
+converted into an <a href="iData.html">iData</a> object.<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iLoad</span>(filename); <span style="font-style: italic;">% this is a structure</span><br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(a);        <span style="font-style: italic;">% convert to iData object</span><br></pre>
+In the case where the automatic importation fails, it is possible to manually force one format specification to be used<br>
+<pre style="margin-left: 40px;">a = <span style="color: rgb(51, 102, 255);">iLoad</span>(filename, <span style="color: rgb(204, 51, 204);">'HDF5'</span>); <span style="font-style: italic;">% explicitly use HDF5 loader</span></pre>
+
 <br>
-<h3><a name="Definition_of_Axes"></a>Definition of Axes</h3>
+
+<h3><a class="mozTocH3" name="mozTocId485865"></a>Supported data formats (default)</h3>
+The iFiles sub-library comes with a large number of pre-defined import
+filters. These are tested one after the other, based on an initial
+filter selection using the file name extension and optionally pattern
+(wods) recognition in file headers.<br>
 <br>
-<h3><a name="Definition_of_Signal_Error_bar_and"></a>Definition of
-Signal, Error bar and Monitor</h3>
+The filters have been divided into two categories: those that directly
+use formats natively known by Matlab, and those that are more specific
+to neutron and X-ray communities (or other research areas).<br>
+
+<h4><a class="mozTocH4" name="mozTocId876478"></a>Legacy data formats (text, NetCDF, HDF, FITS, images, XML, CSV, ...)<br>
+</h4>
+
+
+
+<span style="font-weight: bold;">
+</span>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format (load)<br>
+      </td>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Text/Binary<br>
+      </td>
+      
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Description<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold;">iData/saveas<br>
+Write<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;"></span><span style="color: rgb(204, 51, 204); font-weight: bold;">text<br>
+      </span><span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204); font-weight: bold;"><br>
+      </span></td>
+      <td style="vertical-align: top;">text<br>
+      </td>
+      
+      <td style="vertical-align: top;">Any text file, using a free format, can be read. Any text editor (gedit, notepad, nedit, ...) can display such files.<br>
+
+      </td>
+      <td style="vertical-align: top;">Yes (DAT, M-file)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'cdf','nc'</span><br style="color: rgb(204, 51, 204);">
+      <span style="color: rgb(204, 51, 204);">NetCDF 1 and 2</span><br>
+      </td>
+      <td style="vertical-align: top;">binary<br>
+      </td>
+      
+      <td style="vertical-align: top;">The <a href="www.unidata.ucar.edu/software/netcdf/">NetCDF</a> format is
+a compact binary format. Such files can be
+edited/viewed with e.g <a href="http://meteora.ucsd.edu/%7Epierce/ncview_home_page.html">ncview</a>
+or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>, <a href="http://www.epic.noaa.gov/java/ncBrowse/">ncBrowse</a>, <a href="http://www.opendx.org/about.html">OpenDX</a><a href="http://www.paraview.org/"></a>. Such files can of course
+also be <a href="Load.html">imported into iData</a> objects.
+      </td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
+    </tr><tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'fits'</span><br style="color: rgb(204, 51, 204);">
+      <span style="color: rgb(204, 51, 204);">FITS astronomical image format</span><br>
+      </td>
+      <td style="vertical-align: top;">binary<br>
+      </td>
+      <td style="vertical-align: top;">The <a href="http://fits.gsfc.nasa.gov/">FITS</a> format is a standard data format used in astronomy. Can be displayed with e.g. <a href="http://www.gimp.org/">GIMP</a>, <a href="http://www.trilon.com/xv/xv.html">xv</a>.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);">'hdf4'<br>
+      </span></span><span style="color: rgb(204, 51, 204);">HDF 4<br>
+image</span><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);"><br>
+      </span></span></td>
+      <td style="vertical-align: top;">binary<br>
+      </td>
+      <td style="vertical-align: top;">The <a href="http://www.hdfgroup.org/">HDF4</a> format is a compact, binary storage format.&nbsp;<span style="font-weight: bold;"></span>Such files can be
+edited/viewed with e.g <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>. IDL and Matlab also have dedicated HDF 4 browsers (see <a href="matlab:doc%20hdftool">hdftool</a>). Also includes HDF-EOS format.</td>
+      <td style="vertical-align: top;">Yes (image)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);">'hdf5'<br>
+      </span></span><span style="color: rgb(204, 51, 204);">HDF 5</span><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);"><br>
+      </span></span></td>
+      <td style="vertical-align: top;">binary<br>
+      </td>
+      <td style="vertical-align: top;">The <a href="http://www.hdfgroup.org/">HDF5</a> format is a compact,
+compressed binary storage format. However, in its use here, it does not
+reconstruct the whole object, but only its main values and alias/axes
+names. Such files can be edited/viewed with e.g <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>, <a href="http://www.opendx.org/about.html">OpenDX</a>. Such
+files can of course also be <a href="Load.html">imported into iData</a>
+objects. IDL and Matlab also have dedicated HDF browsers (see <a href="matlab:doc%20hdftool">hdftool</a>). This format includes the <a href="http://nexusformat.org/">NeXus</a> format.</td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'mat'<br>
+      </span><span style="color: rgb(204, 51, 204);">Matlab<br>
+Mat-file</span><span style="color: rgb(204, 51, 204); font-weight: bold;"><br>
+      </span><span style="color: rgb(204, 51, 204); font-weight: bold;"><br>
+      </span><br>
+      </td>
+      <td style="vertical-align: top;">binary<br>
+      </td>
+      <td style="vertical-align: top;">The
+Matlab
+workspace
+binary
+file is compact and fast to read/write. It carries the whole object
+information. Such files require Matlab (or <a href="http://www.octave.org/">Octave</a>) to be installed prior to
+importation.</td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'xls'</span><br style="color: rgb(204, 51, 204);">
+
+      <span style="color: rgb(204, 51, 204);">Excel spreadsheet</span></td>
+      <td style="vertical-align: top;">binary<br>
+      </td>
+      <td style="vertical-align: top;">Microsoft Excel spreadsheet. Can be viewed with any spreadsheet software (<a href="http://www.openoffice.org/">OpenOffice</a>, Excel, <a href="http://projects.gnome.org/gnumeric/">Gnumeric</a>)</td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);">'gif' 'bmp' 'png' 'tiff' 'jpeg' 'ico'<br>
+</span></span></td>
+      <td style="vertical-align: top;">binary<br>
+      </td>
+      <td style="vertical-align: top;">Standard image formats. View with e.g. <a href="http://www.gimp.org/">GIMP</a>, <a href="http://www.trilon.com/xv/xv.html">xv</a>.</td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'csv'<br>
+      </span><span style="color: rgb(204, 51, 204);">Matlab<br>
+comma separated values</span><span style="color: rgb(204, 51, 204); font-weight: bold;"><br>
+      </span></td>
+      <td style="vertical-align: top;">text<br>
+      </td>
+      <td style="vertical-align: top;">A file spreadsheet format. Can be viewed with any spreadsheet software (<a href="http://www.openoffice.org/">OpenOffice</a>, Excel, <a href="http://projects.gnome.org/gnumeric/">Gnumeric</a>)</td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'xml'</span><br style="color: rgb(204, 51, 204);">
+      <span style="color: rgb(204, 51, 204);">XML description file</span><br>
+      </td>
+      <td style="vertical-align: top;">text<br>
+      </td>
+      <td style="vertical-align: top;">The <a href="http://www.w3.org/XML/">XML</a> format (experimental)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'wk1'</span><br style="color: rgb(204, 51, 204);">
+      <span style="color: rgb(204, 51, 204);">Lotus1-2-3 (first spreadsheet</span>)<br>
+      </td>
+      <td style="vertical-align: top;">text/binary<br>
+      </td>
+      <td style="vertical-align: top;"><a href="http://www-01.ibm.com/software/lotus/">Lotus 123</a> spreadsheet format. A replacement to Microsoft Excel, from IBM.<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'au'</span><br style="color: rgb(204, 51, 204);">
+      <span style="color: rgb(204, 51, 204);">NeXT/SUN (.au) sound</span><br>
+      </td>
+      <td style="vertical-align: top;">binary<br>
+      </td>
+      <td style="vertical-align: top;">Sound format, initially from Sun/NeXT<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'wav'</span><br style="color: rgb(204, 51, 204);">
+      <span style="color: rgb(204, 51, 204);">Microsoft WAVE sound</span><br>
+      </td>
+      <td style="vertical-align: top;">binary<br>
+      </td>
+      <td style="vertical-align: top;">Sound format, standard<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'avi'</span><br style="color: rgb(204, 51, 204);">
+      <span style="color: rgb(204, 51, 204);">Audio/Video Interleaved</span><br style="color: rgb(204, 51, 204);">
+      <span style="color: rgb(204, 51, 204);">multimedia container</span><br>
+      </td>
+      <td style="vertical-align: top;">binary<br>
+      </td>
+      <td style="vertical-align: top;">A video encoding format<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+
+<span style="font-weight: bold;"></span>
+
+
+<h4><a class="mozTocH4" name="mozTocId361032"></a>More specific data formats (neutrons and X-ray)</h4>
+
+
+
+
+<span style="font-weight: bold;">
+</span>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+
+
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format (load)<br>
+      </td>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Text/Binary<br>
+      </td>
+      
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Description<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">iData/saveas</span><br style="font-weight: bold;"><span style="font-weight: bold;">
+Write</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">ILL data<br>
+      </span><span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204); font-weight: bold;"><br>
+      </span></td>
+      <td style="vertical-align: top;">text<br>
+      </td>
+      
+      <td style="vertical-align: top;">Files generated by <a href="http://www.ill.fr">ILL</a>
+instruments. May require post-processing to assign Signal and axes
+right, as well as metadata. This data can also be imported with <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">Lamp</a>.
+
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'spc'<br>
+SPEC</span><br>
+      </td>
+      <td style="vertical-align: top;">text<br>
+      </td>
+      
+      <td style="vertical-align: top;">The <a href="http://www.esrf.fr">ESRF</a> legacy format. May be slow to import due to the file format complexity for large files.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr><tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'sim'<br>
+McStas/PGPLOT</span><br>
+      </td>
+      <td style="vertical-align: top;">text<br>
+      </td>
+      <td style="vertical-align: top;">The legacy format gerenated by <a href="http://www.mcstas.org">McStas</a>.<br>
+      </td>
+      <td style="vertical-align: top;">Similar to the DAT export format<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);">'inx'<br>
+INX</span></span><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);"><br>
+      </span></span></td>
+      <td style="vertical-align: top;">text<br>
+      </td>
+      <td style="vertical-align: top;">The <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/tofhr/inx/">INX</a> format is a simple format for neutron time-of-flight data. This data can also be imported/generated with <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">Lamp</a>.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'edf'</span><br style="color: rgb(204, 51, 204);">
+
+      <span style="color: rgb(204, 51, 204);">EDF ESRF Data format</span><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);">
+      </span></span></td>
+      <td style="vertical-align: top;">binary with 512-multiple length
+text header
+      </td>
+      <td style="vertical-align: top;">The EDF format is mainly used at
+the <a href="http://www.esrf.fr/">ESRF</a> and can be viewed with e.g. <a href="http://pymca.sourceforge.net/">PyMCA</a>, <a href="http://www.sci.muni.cz/%7Emikulik/Soft4Synchro.html">Zimg</a>, <a href="http://www.gnuplot.info/">GnuPlot</a>, <a href="http://edfexplorer.sourceforge.net/">EDFExplorer</a>, <a href="http://www.esrf.eu/computing/scientific/FIT2D/">Fit2D</a>. </td>
+      <td style="vertical-align: top;">Yes<br>
+      </td>
+    </tr>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+  </tbody>
+</table>
+
+
+<span style="font-weight: bold;"></span>
+
+
+
 <br>
+
+<h4><a class="mozTocH4" name="mozTocId149630"></a>Unsupported data formats: how to import them anyway ?</h4>
+
+In principle, any text based data format will be imported, whatever be
+the internal organization of the data and comments. The text is read
+and parsed by the <a href="../iFiles/doc/looktxt.html">looktxt</a>
+tool, and all numerical blocks are named automatically from the
+character strings/comments that preceed these blocks. The result is a
+single structure which holds a <span style="font-style: italic;">Data</span> and a <span style="font-style: italic;">Header</span> field, plus additional
+identification information. The structure can be converted transparently to an <a href="iData.html">iData</a> object.<br>
 <br>
+Binary formats require more work. In principle, if iLoad does not know
+the structure of the file, there is no way to import an unknown data
+format file. However, iLoad allows a rapid prototyping of new import
+filters by mean of a simple routine that should take as input a file
+name, and return a structure or numerical block. Additionally, a
+post-process script can be attached to the new format, and executed
+when the file content is converted into an iData object. The
+specifications of the new data format will then be inserted inside the
+iLoad_ini configuration (locally or globally) together with e.g. file
+extension and other identification info. These steps are detailed in
+the <a href="#mozTocId519997">section below</a>.<br>
+
 <br>
+
+
+
+<h3><a class="mozTocH3" name="mozTocId519997"></a>The import filters: customizing data formats (iLoad_ini)<br>
+</h3>
+
+<h4><a class="mozTocH4" name="mozTocId56356"></a>Reading and Writing the iLoad configuration</h4>
+The full list of supported file formats supported by iLoad and iData can be obtained from command<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'formats'</span>);	          <span style="font-style: italic;">% display the list of supported formats</span><br>&gt;&gt; config = <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'load config'</span>); <span style="font-style: italic;">% retrieve the iLoad configuration and file loaders</span> (from cache)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'force load config'</span>);    <span style="font-style: italic;">% force re-read of the configuration file</span><br></pre>
+The configuration file <a href="../iFiles/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span> is stored by default in the <br>
+<pre style="margin-left: 40px;">[ <span style="color: rgb(51, 102, 255);">ifitpath</span> <span style="color: rgb(204, 51, 204);">'iFiles'</span> filesep <span style="color: rgb(204, 51, 204);">'iLoad_ini'</span> ]</pre>
+and a local copy (which overrides the default) is stored in<br>
+<pre style="margin-left: 40px; color: rgb(51, 102, 255);">prefdir</pre>
+when executing<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>);<br><span style="font-style: italic;">% Saved iLoad configuration into /home/farhi/.matlab/R2007a/iLoad.ini</span> <span style="color: rgb(255, 0, 0);">&lt;- this is prefdir</span><br></pre>
+
+This is where you may add your own customized format definitions. Deleting this file will revert to the default configuration.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m' ]</span>);<br></pre>
+
+<h4><a class="mozTocH4" name="mozTocId968211"></a>iLoad configuration structure</h4>
+Each format entry is a structure with members:<br>
+<ul>
+  <li><span style="font-weight: bold;">loader.name</span>: a description of the format<br>
+  </li>
+  <li><span style="font-weight: bold;">loader.method</span>: the function used to read the file and return a structure or numerical array: <span style="font-style: italic;">data=method(filename)</span><br>
+  </li>
+  <li><span style="font-weight: bold;">loader.extension</span>: a single file extension, or a cell string of file extensions<br>
+  </li>
+  <li><span style="font-weight: bold;">loader.patterns</span>: a cell string of patterns to search in text headers (less than 10% of binary data in the first 10 kb) [optional]</li>
+  <li><span style="font-weight: bold;">loader.options</span>:
+additional options to be passed to the loader.method. A single string
+is catenated after the file name, a cell array is sent as additional
+arguments to the method. [optional]</li>
+  <li>l<span style="font-weight: bold;">oader.postprocess</span>: a script which handles iData commands to shape the final object, <span style="font-style: italic;">id=loader.postprocess(id)</span> [optional]<br>
+  </li>
+</ul>
+
+Let's details one of the <a href="../iFiles/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span> entry for INX files.<br>
+<br>
+<table style="text-align: left; width: 70%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <pre><span style="color: rgb(204, 51, 204);">format14</span>.name       ='INX tof data';<br><span style="color: rgb(204, 51, 204);">format14</span>.extension  ='inx';<br><span style="color: rgb(204, 51, 204);">format14</span>.patterns   ={'INX'};<br><span style="color: rgb(204, 51, 204);">format14</span>.method     ='looktxt';<br><span style="color: rgb(204, 51, 204);">format14</span>.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL';<br><span style="color: rgb(204, 51, 204);">format14</span>.postprocess='load_ill_inx';<span style="color: rgb(204, 51, 204);"></span><br><span style="color: rgb(204, 51, 204);"></span><br><br>(...)<br><br>config.loaders =  { format1, format2, format3, format4, format5, format6, ...<br>	       format7, format8, format9, format10, format11, format12, format13, <span style="color: rgb(204, 51, 204);">format14, </span>format15 };<br></pre>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+Each format is a structure.<br>
+The <span style="font-weight: bold;">name</span> field gives an explicit description of the format (human readable). The <span style="font-weight: bold;">extension</span> <span style="color: rgb(204, 51, 204);">'inx'</span>
+indicates which string should match the file extension so that this
+format is selected for automatic importation. An other way to select
+the importer is by mean of pattern search in the file header content
+(by default the first 10 kb of text). The list of one or more patterns
+is given in the <span style="font-weight: bold;">patterns</span> field (as a cellstr, here {<span style="color: rgb(204, 51, 204);">'INX'</span>}). The <span style="font-weight: bold;">method</span>
+field is the name of the function to read the file. It takes as input a
+string, the file name, and should preferably return a structure or
+numerical array. Here the <a href="../iFiles/doc/looktxt.html">looktxt</a>
+ method is used with syntax<br>
+<pre style="margin-left: 40px;">struct = <span style="color: rgb(51, 102, 255);">looktxt</span>(filename)</pre>
+The <span style="font-weight: bold;">options</span> field provides
+additional options that should be sent to the method. When given as a
+single string, these options are catenated to the filename before being
+sent to the method, e.g.<br>
+<pre style="margin-left: 40px;">struct = <span style="color: rgb(51, 102, 255);">looktxt</span>([ filename <span style="color: rgb(204, 51, 204);">options</span> ])</pre>
+
+When given as a cell, they are passed as additional input arguments to the method, e.g.<br>
+<pre style="margin-left: 40px;">struct=method(filename, options{1}, options{2}, ...)</pre>
+The structure obtained from the method is then converted into an <a href="iData.html">iData</a> object when called from the iData or iData/load method. In these cases, the <span style="font-weight: bold;">postprocess</span> field is used so that the returned <a href="iData.html">iData</a> object is<br>
+<pre style="margin-left: 40px;">object =<span style="color: rgb(204, 51, 204);"> postprocess(</span> <span style="color: rgb(51, 102, 255);">iData(</span> <span style="color: rgb(204, 51, 204);">method</span>(filename, options...) <span style="color: rgb(51, 102, 255);">)</span> <span style="color: rgb(204, 51, 204);">)</span></pre>
+The post-process is a script that takes as input an iData object, and
+returns a possibly modified object (or an array of objects). This is
+where Signal, Axes, Aliases and metadata are re-arranged in the object.
+The post-process scripts are store in the<span style="font-style: italic;"> iFiles/postprocess</span> directory, and use a '<span style="font-style: italic;">load_&lt;format&gt;</span>' function naming convention for clarity. When missing, the default Signal and axes definitions will be used.<br>
+<br>
+The last step required for storing a new data format is to add the format definition to the<span style="font-weight: bold;"> config.loaders</span> field in the <a href="../iFiles/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span> file. Once done, you may re-read the configuration file to update the list of known format<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'force load config'</span>); <span style="font-style: italic;">% force to re-read the configuration files</span></pre>
+
+<h4><a class="mozTocH4" name="mozTocId120998"></a>In short: procedure to add a new data format</h4>
+<ol>
+  <li>Start by getting the documentation about the new data format you wish to implement. This gives the format <span style="font-weight: bold;">name</span> and the <span style="font-weight: bold;">extension</span>.<br>
+  </li>
+  <li>Then write a function (locally or in <span style="color: rgb(51, 102, 255);">ifitpath/iFiles</span>)
+that takes as input a filename and returns the file content as a
+structure. This is where you will open the file, access its guts, and
+return something (or empty/error if this fails). This is your <span style="font-weight: bold;">method</span>.<br>
+  </li>
+  <li>Edit the <span style="font-style: italic;">iLoad_ini </span>file from <span style="color: rgb(51, 102, 255);">prefdir</span> or <span style="color: rgb(51, 102, 255);">ifitpath/iFiles</span>.</li>
+  <li>Create a new structure (which you may name as you wish) and set the name (description), method, and extension fields.</li>
+  <li>Optionally define some <span style="font-weight: bold;">patterns</span> to search, to complement the extension.</li>
+  <li>Optionally write a post-process scrip and preferably place it in the <span style="color: rgb(51, 102, 255);">ifitpath/iFiles/postprocess</span>. </li>
+  <li>Add the new structure to the <span style="font-weight: bold;">config.loaders</span> list (cell) at the end of the <a href="../iFiles/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span>  file.</li>
+  <li>Save the file, and optionally re-read it with <span style="font-style: italic;">iLoad('force load config')</span>.</li>
+  <li>Send me [farhi (at) ill.fr] the method/postprocess and structure information so that I can contribute your work to the package.<br>
+  </li>
+</ol>
+
+
+
+<br>
+
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iFiles - </span><span style="font-style: italic;">
-$Date: 2011-02-08 16:06:31 $ $Revision: 1.4 $
-</span><span style="font-style: italic;"> </span>- back to <a
- href="index.html">Main
+$Date: 2011-02-17 08:59:35 $ $Revision: 1.5 $
+</span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page
-</a><a href="http://www.ill.eu/"><img
- title="ILL, Grenoble, France &lt;www.ill.eu&gt;"
- src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;"
- style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a></div>
+</a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a></div>
 </div>
-</body>
-</html>
+
+</body></html>

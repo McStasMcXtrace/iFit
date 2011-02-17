@@ -3,6 +3,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Saving/exporting data</title>
 </head><body>
@@ -133,7 +135,7 @@ re-used afterwards and re-imported with iFit.<br>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format<br>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format (save)<br>
       </td>
       <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Text/Binary<br>
       </td>
@@ -141,7 +143,7 @@ re-used afterwards and re-imported with iFit.<br>
       </td>
       <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Description<br>
       </td>
-      <td style="vertical-align: top;">Read?<br>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Read?</span><br>
       </td>
     </tr>
     <tr>
@@ -195,7 +197,7 @@ formats</h4>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format<br>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format (save)<br>
       </td>
       <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Text/Binary<br>
       </td>
@@ -203,7 +205,7 @@ formats</h4>
       </td>
       <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Description<br>
       </td>
-      <td style="vertical-align: top;">Read?<br>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Read?</span><br>
       </td>
     </tr>
     <tr>
@@ -227,7 +229,7 @@ importation.<span style="font-weight: bold;"> </span></td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);">'hdf5'<br>
-      <br>
+      </span></span><span style="color: rgb(204, 51, 204);">HDF 5</span><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);"><br>
       </span></span></td>
       <td style="vertical-align: top;">binary<br>
       </td>
@@ -238,7 +240,7 @@ compressed binary storage format. However, in its use here, it does not
 reconstruct the whole object, but only its main values and alias/axes
 names. Such files can be edited/viewed with e.g <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>, <a href="http://www.opendx.org/about.html">OpenDX</a>. Such
 files can of course also be <a href="Load.html">imported into iData</a>
-objects. IDL and Matlab also have dedicated HDF browsers (see <a href="matlab:doc%20hdftool">hdftool</a>).<br>
+objects.<br>
       </td>
       <td style="vertical-align: top;">Yes<br>
       </td>
@@ -251,12 +253,12 @@ objects. IDL and Matlab also have dedicated HDF browsers (see <a href="matlab:do
       </td>
       <td style="vertical-align: top;">Mostly<br>
       </td>
-      <td style="vertical-align: top;">The <a href="www.unidata.ucar.edu/software/netcdf/">NetCDF</a> format is also
+      <td style="vertical-align: top;">The <a href="www.unidata.ucar.edu/software/netcdf/">NetCDF</a> format is
 a compact binary format. However, in its use here, it does not
 reconstruct the whole object, but
 only its main values and alias/axes names. Such files can be
 edited/viewed with e.g <a href="http://meteora.ucsd.edu/%7Epierce/ncview_home_page.html">ncview</a>
-or <a href="http://www.epic.noaa.gov/java/ncBrowse/">ncBrowse</a>. <a href="http://www.opendx.org/about.html">OpenDX</a>, <a href="http://www.paraview.org/">ParaView</a>. Such files can of course
+or <a href="http://www.epic.noaa.gov/java/ncBrowse/">ncBrowse</a>. <a href="http://www.opendx.org/about.html">OpenDX</a>,&nbsp;<a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>. Such files can of course
 also be <a href="Load.html">imported into iData</a> objects.</td>
       <td style="vertical-align: top;">Yes<br>
       </td>
@@ -277,7 +279,7 @@ of these formats are restricted to flat images (1D and 2D).<br>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format<br>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format (save)<br>
       </td>
       <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Text/Binary<br>
       </td>
@@ -285,13 +287,13 @@ of these formats are restricted to flat images (1D and 2D).<br>
       </td>
       <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Description<br>
       </td>
-      <td style="vertical-align: top;">Read?<br>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">Read?</span><br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"></span><span style="color: rgb(204, 51, 204); font-weight: bold;">'csv'<br>
       </span><span style="color: rgb(204, 51, 204);">Matlab<br>
-Mat-file</span><span style="color: rgb(204, 51, 204); font-weight: bold;"><br>
+comma separated values</span><span style="color: rgb(204, 51, 204); font-weight: bold;"><br>
       </span></td>
       <td style="vertical-align: top;">text<br>
       </td>
@@ -308,19 +310,18 @@ with <a href="Load.html">iFit/iData</a><span style="font-weight: bold;"></span>.
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);">'hdf4'<br>
-      </span></span><span style="color: rgb(204, 51, 204);">HDF<br>
+      </span></span><span style="color: rgb(204, 51, 204);">HDF 4<br>
 image</span><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);"><br>
       </span></span></td>
       <td style="vertical-align: top;">binary<br>
       </td>
       <td style="vertical-align: top;">signal only<br>
       </td>
-      <td style="vertical-align: top;">The <a href="http://www.hdfgroup.org/">HDF4</a> format is a compact,
-compressed binary storage format. However, in its use here, it does not
+      <td style="vertical-align: top;">The <a href="http://www.hdfgroup.org/">HDF4</a> format is a compact, binary storage format. However, in its use here, it does not
 reconstruct the whole object, but only its <span style="font-style: italic;">Signal/Monitor</span> values as an <span style="font-weight: bold;">image. </span>Such files can be
 edited/viewed with e.g <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>. Such
 files can of course also be <a href="Load.html">imported into iData</a>
-objects.</td>
+objects. IDL and Matlab also have dedicated HDF 4 browsers (see <a href="matlab:doc%20hdftool">hdftool</a>).</td>
       <td style="vertical-align: top;">Yes<br>
       </td>
     </tr>
@@ -352,7 +353,7 @@ or signal/monitor<br>
       </td>
       <td style="vertical-align: top;">Standard image formats. Can be
 re-<a href="Load.html">imported with iFit/iData</a>, or used elsewhere
-(web, email, ...). View with e.g. <a href="http://www.gimp.org/">GIMP</a>.<br>
+(web, email, ...). View with e.g. <a href="http://www.gimp.org/">GIMP</a>, <a href="http://www.trilon.com/xv/xv.html">xv</a>.<br>
       </td>
       <td style="vertical-align: top;">Yes<br>
       </td>
@@ -457,7 +458,7 @@ representation of the object. Can be viewed with e.g <a href="http://freewrl.sou
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData saving data -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2011-02-14 10:41:27 $ $Revision: 1.6 $
+$Date: 2011-02-17 08:59:35 $ $Revision: 1.7 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body></html>
