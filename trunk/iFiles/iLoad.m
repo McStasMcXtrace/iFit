@@ -36,7 +36,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.34 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.35 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -339,9 +339,9 @@ function data = iLoad_loader_check(file, data, loader)
     new_data.Data = data;
     % transfer some standard fields as possible
     if isfield(data, 'Source'), new_data.Source = data.Source; end
-    if isfield(data, 'Title'), new_data.Title = data.Title; end
-    if isfield(data, 'Date'), new_data.Date = data.Date; end
-    if isfield(data, 'Label'), new_data.Label = data.Label; end
+    if isfield(data, 'Title'),  new_data.Title = data.Title; end
+    if isfield(data, 'Date'),   new_data.Date = data.Date; end
+    if isfield(data, 'Label'),  new_data.Label = data.Label; end
     
     data = new_data;
     
