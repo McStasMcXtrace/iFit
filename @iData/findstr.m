@@ -16,7 +16,7 @@ function [match, field] = findstr(s, str, option)
 %         field: name of iData fields that contain 'str' (cellstr)
 % ex:     findstr(iData,'ILL') or findstr(s,'TITLE','exact case')
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/set, iData/get, iData/findobj, iData/findfield
 
 % EF 23/09/07 iData implementation
@@ -61,7 +61,7 @@ for index=1:length(fields)
     if strfind(option, 'exact')
       j1 = strmatch(str, strs, 'exact');
     else
-      j1 = strmatch(str, strs);
+      j1 = [ strmatch(str, strs) strfind(strs, str) ]; 
     end
   end
   if ~isempty(j1)
