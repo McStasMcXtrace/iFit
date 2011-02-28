@@ -17,7 +17,7 @@ function str=class2str(this, data, flat)
 % See also: mat2str, num2str, eval, sprintf
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.4 $
+% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.5 $
 
 if nargin == 1
   data = this;
@@ -103,7 +103,7 @@ else
     str = [ str class2str(this, struct(data)) ];
     str = [ str '% end of object ' this NL ];
   catch
-    iData_private_warning(mfilename,[ 'can not save ' class(data) '. Skipping.' ]);
+    warning([ mfilename ': can not save ' this ' ' class(data) '. Skipping.' ]);
   end
 end
 
@@ -154,7 +154,7 @@ else
     str = [ '# ' class(data) ' size ' num2str(size(data)) ': ' this NL ];
     str = [ str class2str(this, struct(data),'flat') ];
   catch
-    iData_private_warning(mfilename,[ 'can not save ' class(data) '. Skipping.' ]);
+    warning([ mfilename ': can not save ' this ' ' class(data) '. Skipping.' ]);
   end
 end
 
@@ -162,7 +162,7 @@ end
 
 function str=class2str_validstr(str)
 % validate a string as a single line
-str=strrep(str, sprintf('\n'), ';');
+str=strrep(str(:)', sprintf('\n'), ';');
 index = find(str < 32 | str > 127);
 str(index) = ' ';
 str=strrep(str, '''', '''''');
