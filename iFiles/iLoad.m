@@ -36,7 +36,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.35 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.36 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -47,15 +47,15 @@ persistent config
 data = []; format = [];
 if nargin == 0, filename=''; end
 if nargin < 2,  loader = ''; end
-if strcmp(loader, 'load config') || strcmp(filename, 'load config')
+if strcmp(loader, 'load config') | strcmp(filename, 'load config')
   if isempty(config), config  = iLoad_config_load; end
   data = config;
   return
-elseif strcmp(loader, 'force load config') || strcmp(filename, 'force load config')
+elseif strcmp(loader, 'force load config') | strcmp(filename, 'force load config')
   config  = iLoad_config_load;
   data = config;
   return
-elseif strcmp(loader, 'formats') || strcmp(filename,'formats') || strcmp(loader, 'display config')
+elseif strcmp(loader, 'formats') | strcmp(filename,'formats') | strcmp(loader, 'display config')
   data = iLoad('','load config');
   fprintf(1, ' EXT                    READER  DESCRIPTION\n');
   fprintf(1, '-----------------------------------------------------------------\n');  
@@ -76,7 +76,7 @@ elseif strcmp(loader, 'formats') || strcmp(filename,'formats') || strcmp(loader,
   end
   disp([ '% iLoad configuration file: ' config.FileName ]);
   return
-elseif strcmp(loader, 'save config') || strcmp(filename, 'save config')
+elseif strcmp(loader, 'save config') | strcmp(filename, 'save config')
   if isempty(filename)
     config  = iLoad('','load config');
   else
