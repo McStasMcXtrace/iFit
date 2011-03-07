@@ -45,6 +45,14 @@ find . -name .CVS -exec rm -rf \{\} \; 2> /dev/null
 find . -name CVSROOT -exec rm -rf \{\} \; 2> /dev/null
 rm mkdist
 
+# Update version and date
+for file in README.txt @iData/version.m Docs/index.html Docs/Install.html
+do
+sed 's/@IFIT_VERSION@/'$IFIT_VERSION'/'  $file > $file.tmp
+sed 's/@IFIT_DATE@/'$MONTH'. '$DAY', '$YEAR'/'  $file.tmp > $file
+rm $file.tmp
+done
+
 cd $TMPDIR
 # Create tar archive
 zip -r $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip $IFIT_TARNAME-$IFIT_VERSION

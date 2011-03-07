@@ -3,12 +3,12 @@ function b = version(a)
 %
 %   @iData/version: version of the iData class library
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 
 % EF 23/09/07 iData impementation
 
-vers = '1.0-RC1';
-date = 'Feb 2011';
+vers = '@IFIT_VERSION@';
+date = '@IFIT_DATE@';
 auth = 'E.Farhi, P. Willendrup and Y.Debab, (c) ILL/DS/CS <farhi@ill.eu> GPL2';
 b = [ 'Matlab/iData version ' vers ' (' date ') by ' auth ];
 
