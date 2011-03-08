@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -23,6 +23,7 @@ if length(s_in) > 1
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
 else
   fprintf(1,'%s = iData %iD object of size [%s]:\n',iname, ndims(s_in), num2str(size(s_in)));
+  m = get(s_in, 'Monitor'); m=m(:);
   s=struct(s_in);
   s=rmfield(s,'Alias');
   disp(s)
@@ -70,7 +71,6 @@ else
       else
         fprintf(1,' [%g:%g]', min(x), max(x));
       end
-      m      = get(s_in, 'Monitor'); m=m(:);
       if ~(all(m==1) | all(m==0))
         fprintf(1,' (per monitor)\n');
       else
