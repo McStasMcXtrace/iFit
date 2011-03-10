@@ -34,8 +34,6 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %  OPTIONS is a structure with settings for the simulated annealing, 
 %  compliant with optimset. Default options may be obtained with
 %     o=fminanneal('defaults')
-%  options.TEMP_START sets the starting temperature
-%  options.TEMP_END   sets the end temperature
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min=   vector of minimal values for parameters
@@ -50,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -355,6 +353,10 @@ end % switch
   output.lasterror = lasterror;
 end % try
 
+if isstruct(output) && isfield(output,'lasterror') && isempty(strmatch(output.lasterror.message, 'stop condition:'))
+  disp(output.lasterror.message);
+  rethrow(output.lasterror);
+end
 
 % post optimization checks =====================================================
 
@@ -362,7 +364,7 @@ fval = constraints.criteriaBest;
 pars = constraints.parsBest;
 
 if exitflag==0;
-  message='Algorithm terminated normally';
+  message='Algorithm terminated';
 end
 
 if iterations, 
@@ -406,9 +408,7 @@ return  % actual end of optimization
     
     % compute criteria
     c = feval(fun, pars);         % function=row vector, pars=column
-    if size(c,1) > 1, c=c'; end
     c  = sum(c(:));
-    
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
     [exitflag, message] = fmin_private_check(pars, c, ...
@@ -428,7 +428,7 @@ return  % actual end of optimization
     constraints.funcCounts      = constraints.funcCounts+1; 
     
     if exitflag
-      error(message); % will end optimization in try/catch
+      error([ 'stop condition: ' message ]); % will end optimization in try/catch
     end
   end
   
@@ -442,7 +442,7 @@ return  % actual end of optimization
     
     pars=pars;
     % compute criteria
-    c = feval(fun, pars);
+    c = feval(fun, pars); % function=row vector, pars=column
     if length(c) == 1,
       c = c*ones(1,10)/10;
     end
@@ -465,7 +465,7 @@ return  % actual end of optimization
     constraints.funcCounts      = constraints.funcCounts+1; 
     
     if exitflag
-      error(message); % will end optimization in try/catch
+      error([ 'stop condition: ' message ]); % will end optimization in try/catch
     end
   end
 
@@ -514,22 +514,24 @@ function [pars,exitflag,message] = apply_constraints(pars, constraints,options)
   message='';
 
   if isfield(constraints, 'fixed')  % fix some parameters
-    index = find(constraints.fixed);
-    pars(index) = constraints.parsStart(index);
+    index = find(constraints.fixed & ~isnan(constraints.fixed));
+    if ~isempty(index), pars(index) = constraints.parsStart(index); end
   else
     if isfield(constraints, 'min')  % lower bound for parameters
-      index = find(pars(:) < constraints.min(:));
-      pars(index) = constraints.min(index);
+      index = find(pars(:) < constraints.min(:) & ~isnan(constraints.min(:)));
+      if ~isempty(index), pars(index) = constraints.min(index); end
     end
     if isfield(constraints, 'max')  % upper bound for parameters
-      index = find(pars(:) > constraints.max(:));
-      pars(index) = constraints.max(index);
+      index = find(pars(:) > constraints.max(:) & ~isnan(constraints.max(:)));
+      if ~isempty(index), pars(index) = constraints.max(index); end
     end
     if isfield(constraints, 'step') % restrict parameter change
       parsStep    = pars(:) - constraints.parsPrevious(:);
-      index       = find(constraints.steps(:) & abs(parsStep) > abs(constraints.steps(:)) );
-      parsStep    = sign(parsStep).*abs(constraints.steps(:));
-      pars(index) = constraints.parsPrevious(index) + parsStep(index);
+      index       = find(constraints.steps(:) & abs(parsStep) > abs(constraints.steps(:)) & ~isnan(constraints.steps(:)));
+      if ~isempty(index), 
+        parsStep    = sign(parsStep).*abs(constraints.steps(:));
+        pars(index) = constraints.parsPrevious(index) + parsStep(index);
+      end
     end
   end
   pars=pars';
@@ -619,6 +621,20 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
     istop=options;
     return
   end
+  
+  % handle relative stop conditions
+  if ischar(options.TolFun)
+    if options.TolFun(end)=='%'
+      options.TolFun(end)='';
+      options.TolFun = abs(str2num(options.TolFun)*fval/100);
+    end
+  end
+  if ischar(options.TolX)
+    if options.TolX(end)=='%'
+      options.TolX(end)='';
+      options.TolX = abs(str2num(options.TolX)*pars(:)/100);
+    end
+  end
 
   % normal terminations: function tolerance reached
   if ~isempty(options.TolFun) && options.TolFun
@@ -638,13 +654,13 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
   end
   
   % normal terminations: parameter variation tolerance reached, when function termination is also true
-  if (istop==-1 || istop==-12) & nargin >= 6
-    if ~isempty(options.TolFun) && options.TolX > 0 ...
-      && all(abs(pars(:)-pars_prev(:)) < abs(options.TolX*pars(:))) ...
+  if (istop==-1 || istop==-12)
+    if ~isempty(options.TolX) && options.TolX > 0 ...
+      && all(abs(pars(:)-pars_prev(:)) < abs(options.TolX)) ...
       && any(abs(pars(:)-pars_prev(:)) > 0)
       istop=-5;
-      message = [ 'Termination parameter tolerance criteria reached (delta(parameters)/parameters <= options.TolX=' ...
-            num2str(options.TolX) ')' ];
+      message = [ 'Termination parameter tolerance criteria reached (delta(parameters) <= options.TolX=' ...
+            num2str(mean(options.TolX)) ')' ];
     end
   end
   
