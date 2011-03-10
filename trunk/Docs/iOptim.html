@@ -2,6 +2,7 @@
 <html><head>
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: optimization methods (iOptim)</title>
 </head><body>
@@ -106,10 +107,10 @@ function evaluations allowed, sometimes refered as the 'cost' or
 iterations allowed<br>
   </li>
   <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">TolFun: </span>Termination tolerance on
-the function value (absolute value or change)<br>
+the function value (absolute value or change). Use <span style="color: rgb(204, 51, 204);">'x%'</span> to specifiy a relative function change.<br>
   </li>
   <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">TolX: </span>Termination tolerance on
-parameter change<br>
+parameter change. Use <span style="color: rgb(204, 51, 204);">'x%'</span> to specifiy a relative parameter change.
   </li>
   <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">OutputFcn: </span>Name of an output
 function. When set, it is called at each iteration step. You may use<span style="color: rgb(204, 51, 204);"> 'fminplot', </span>which is
@@ -823,16 +824,16 @@ A similar behavior is obtained by setting constraints as a structure
 with members <span style="font-style: italic;">min</span> and <span style="font-style: italic;">max</span> :<br>
 <pre style="margin-left: 40px;">&gt;&gt; constraints.min = <span style="color: rgb(255, 0, 0);">[ 0.5 0.8 0 0 ]</span>;<br>&gt;&gt; constraints.max = <span style="color: rgb(255, 0, 0);">[ 1 1.2 1 1 ]</span>;<br></pre>
 The <span style="font-style: italic;">constraints</span> vectors
-should have the same length as the model parameter vector.<br>
+should have the same length as the model parameter vector, and <span style="font-style: italic;">NaN</span> values can be used not to apply min/max constraints on specified parameters.<br>
 <span style="font-style: italic;"></span>
 <h4><a class="mozTocH4" name="mozTocId673530"></a>Limiting parameter
 change<br>
 </h4>
 Last, it is possible to restrict the change rate of parameters by
-assigning the <span style="font-style: italic;">constraints.steps</span>
+assigning the 
 field to a vector. Each non-zero value then specifies the absolute
 change that the corresponding parameter can vary between two optimizer
-iterations.<br>
+iterations.<span style="font-style: italic;">constraints.steps. NaN</span> values can be used not to apply step constraints on specified parameters.<br>
 <br>
 In short, the constraints structure can have the following members,
 which all should have the same length as the model parameter vector:<br>
@@ -841,12 +842,12 @@ which all should have the same length as the model parameter vector:<br>
 for fixed parameter, 0 for free parameters<br>
   </li>
   <li><span style="font-style: italic;">constraints.min: </span>the
-minimum value for each parameter. -Inf is supported.<br>
+minimum value for each parameter.<span style="font-style: italic;"> -Inf</span> is supported. <span style="font-style: italic;">NaN </span>can be used.<br>
   </li>
   <li><span style="font-style: italic;">constraints.max: </span>the
-maximum value for each parameter. +Inf is supported.</li>
+maximum value for each parameter.<span style="font-style: italic;"> +Inf</span> is supported. <span style="font-style: italic;">NaN </span>can be used.</li>
   <li><span style="font-style: italic;">constraints.steps: </span>the
-maximum change between iterations for each parameter. +Inf is supported.</li>
+maximum change between iterations for each parameter.<span style="font-style: italic;"> +Inf</span> is supported.</li>
 </ul>
 All these constraints may be used simultaneously.<br>
 <br>
@@ -987,7 +988,7 @@ optimizer with parameter real coding</span>, <a name="fminga"></a><span style="f
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span style="font-style: italic;">
-$Date: 2011-03-08 13:05:03 $ $Revision: 1.10 $
+$Date: 2011-03-10 08:52:44 $ $Revision: 1.11 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
