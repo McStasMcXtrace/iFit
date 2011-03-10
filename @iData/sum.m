@@ -12,7 +12,7 @@ function s = sum(a,dim)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 if ~isa(a, 'iData')
@@ -22,7 +22,7 @@ end
 if nargin < 2, dim=1; end
 % handle input iData arrays
 if length(a(:)) > 1
-  s = a;
+  if dim ~= 0, s = a; else s=zeros(size(a)); end
   for index=1:length(a(:))
     s(index) = sum(a(index), dim);
   end
@@ -76,9 +76,8 @@ if all(dim > 0)
     end
   end
 elseif dim == 0
-  for index=1:ndims(a)
-    s = feval(mfilename, a, index);
-  end
+  s = feval(mfilename, a, 1:ndims(a));
+  s = double(s);
   return  % scalar
 end
 b.Command=cmd;
