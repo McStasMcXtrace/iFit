@@ -12,7 +12,7 @@ function s = trapz(a,dim)
 % output: s: integral of elements (iData/scalar)
 % ex:     c=trapz(a);
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/cumsum, iData/camproj, iData/sum
 
 if ~isa(a, 'iData')
@@ -22,7 +22,7 @@ end
 if nargin < 2, dim=1; end
 % handle input iData arrays
 if length(a(:)) > 1
-  s = a;
+  if dim ~= 0, s = a; else s=zeros(size(a)); end
   for index=1:length(a(:))
     s(index) = feval(mfilename, a(index), dim);
   end
@@ -88,9 +88,8 @@ if all(dim > 0)
     end
   end
 elseif dim == 0
-  for index=1:ndims(a)
-    s = feval(mfilename, a, index);
-  end
+  s = feval(mfilename, a, 1:ndims(a));
+  s = double(s);
   return  % scalar
 end
 b.Command=cmd;
