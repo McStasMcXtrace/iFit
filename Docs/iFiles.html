@@ -5,6 +5,9 @@
 
 
 
+
+
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -46,7 +49,7 @@ the request for file access is sent transparently to the <span style="font-weigh
 <ol>
 
   <li>resolves the file name, and identifies directory importation,
-wildcards (*, ?), distant files with URLs (ftp://, http://), compressed
+wildcards (*, ?), distant files with URLs (file://, ftp://, http://), compressed
 files (zip, gzip, tar, compress) ;</li>
   <li>selects a list of possible file types from <span style="font-style: italic;">e.g.</span> file extension ;<br>
   </li>
@@ -67,8 +70,16 @@ importation. The order of these filters is important as they are parsed
 one after the other. A lower level of known formats is then added to
 the iLoad_ini preferences, with more standard file formats (mainly
 those that Matlab knows <span style="font-style: italic;">de-facto</span>).<br>
-
 <br>
+A <a href="../iFiles/doc/uigetfiles.html">file selector</a>,
+which supports multiple file selection, may be used by
+issuing<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">''</span>)</pre>
+
+
+
+
 
 The result of all this mechanics is that importation is fully
 transparent. The file type is determined automatically, imported and
@@ -77,16 +88,18 @@ converted into an <a href="iData.html">iData</a> object.<br>
 
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iLoad</span>(filename); <span style="font-style: italic;">% this is a structure</span><br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(a);        <span style="font-style: italic;">% convert to iData object</span><br></pre>
 In the case where the automatic importation fails, it is possible to manually force one format specification to be used<br>
-<pre style="margin-left: 40px;">a = <span style="color: rgb(51, 102, 255);">iLoad</span>(filename, <span style="color: rgb(204, 51, 204);">'HDF5'</span>); <span style="font-style: italic;">% explicitly use HDF5 loader</span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iLoad</span>(filename, <span style="color: rgb(204, 51, 204);">'HDF5'</span>); <span style="font-style: italic;">% explicitly use HDF5 loader</span></pre>
 
-<br>
+
 
 <h3><a class="mozTocH3" name="mozTocId485865"></a>Supported data formats (default)</h3>
 The iFiles sub-library comes with a large number of pre-defined import
 filters. These are tested one after the other, based on an initial
 filter selection using the file name extension and optionally pattern
-(wods) recognition in file headers.<br>
-<br>
+(wods) recognition in file headers. <br>
+A compact list of all supported formats is shown with <br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'formats'</span>);</pre>
+
 The filters have been divided into two categories: those that directly
 use formats natively known by Matlab, and those that are more specific
 to neutron and X-ray communities (or other research areas).<br>
@@ -430,10 +443,11 @@ The configuration file <a href="../iFiles/iLoad_ini.m">iLoad_ini</a><span style=
 and a local copy (which overrides the default) is stored in<br>
 <pre style="margin-left: 40px; color: rgb(51, 102, 255);">prefdir</pre>
 when executing<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>);<br><span style="font-style: italic;">% Saved iLoad configuration into /home/farhi/.matlab/R2007a/iLoad.ini</span> <span style="color: rgb(255, 0, 0);">&lt;- this is prefdir</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>, config);<br><span style="font-style: italic;">% Saved iLoad configuration into /home/farhi/.matlab/R2007a/iLoad.ini</span> <span style="color: rgb(255, 0, 0);">&lt;- this is prefdir</span><br></pre>
 
 This is where you may add your own customized format definitions. Deleting this file will revert to the default configuration.<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m' ]</span>);<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m' ]</span>);<br></pre>Last, the <span style="font-style: italic;">config.UseSystemDialogs</span> field of the <span style="font-style: italic;">iLoad</span> configuration can be set to<span style="color: rgb(204, 51, 204);"> 'yes' </span>to use the native Matlab/Java file selector, or to<span style="color: rgb(204, 51, 204);"> 'no' </span>to use<a href="../iFiles/doc/uigetfiles.html"> uigetfiles</a>.<br>
+
 
 <h4><a class="mozTocH4" name="mozTocId968211"></a>iLoad configuration structure</h4>
 Each format entry is a structure with members:<br>
@@ -522,7 +536,7 @@ return something (or empty/error if this fails). This is your <span style="font-
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iFiles - </span><span style="font-style: italic;">
-$Date: 2011-02-17 08:59:35 $ $Revision: 1.5 $
+$Date: 2011-03-10 08:52:44 $ $Revision: 1.6 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page
