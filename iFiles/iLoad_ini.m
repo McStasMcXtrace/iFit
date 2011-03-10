@@ -27,111 +27,112 @@ function config = iLoad_ini
 % See also: iLoad, save, iData/saveas
 
 % definition of formats
-    format1.name       ='ILL Data (normal integers)';
-    format1.patterns   ={'RRRR','AAAA','FFFF','IIII'};
-    format1.options    ='--headers --fortran --catenate --fast --binary --makerows=IIII --makerows=FFFF';
-    format1.method     ='looktxt';
+    ILL_normal.name       ='ILL Data (normal integers)';
+    ILL_normal.patterns   ={'RRRR','AAAA','FFFF','IIII'};
+    ILL_normal.options    ='--headers --fortran --catenate --fast --binary --makerows=IIII --makerows=FFFF --silent';
+    ILL_normal.method     ='looktxt';
     
-    format2.name       ='ILL Data (large integers)';
-    format2.patterns   ={'RRRR','AAAA','FFFF','JJJJ'};
-    format2.options    ='--headers --fortran --catenate --fast --binary --makerows=JJJJ --makerows=FFFF';
-    format2.method     ='looktxt';
+    ILL_integers.name       ='ILL Data (large integers)';
+    ILL_integers.patterns   ={'RRRR','AAAA','FFFF','JJJJ'};
+    ILL_integers.options    ='--headers --fortran --catenate --fast --binary --makerows=JJJJ --makerows=FFFF --silent';
+    ILL_integers.method     ='looktxt';
     
-    format3.name       ='ILL Data (floats only)';
-    format3.patterns   ={'RRRR','AAAA','FFFF'};
-    format3.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF';
-    format3.method     ='looktxt';
+    ILL_float.name       ='ILL Data (floats only)';
+    ILL_float.patterns   ={'RRRR','AAAA','FFFF'};
+    ILL_float.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF --silent';
+    ILL_float.method     ='looktxt';
     
-    format4.name       ='ILL Data (general)';
-    format4.patterns   ={'SSSS'};
-    format4.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF --makerows=JJJJ --makerows=IIII';
-    format4.method     ='looktxt';
+    ILL_general.name       ='ILL Data (general)';
+    ILL_general.patterns   ={'SSSS'};
+    ILL_general.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF --makerows=JJJJ --makerows=IIII --silent';
+    ILL_general.method     ='looktxt';
     
-    format5.name       ='ILL TAS Data (polarized)';
-    format5.patterns   ={'PAL','POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
-    format5.options    =['--fast --binary --headers ' ...
+    ILL_TAS_pol.name       ='ILL TAS Data (polarized)';
+    ILL_TAS_pol.patterns   ={'PAL','POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
+    ILL_TAS_pol.options    =['--fast --binary --headers --silent ' ...
                         '--section=PARAM --section=VARIA --section=ZEROS --section=DATA ' ...
                         '--section=POLAN --section=STEPS ' ...
                         '--metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE ' ...
                         '--metadata=INSTR --metadata=COMND --metadata=TITLE --metadata=MULTI '];
-    format5.method     ='looktxt';
-    format5.postprocess='load_ill_tas'; % load_ill_tas
-    format5.extension  ='scn';
+    ILL_TAS_pol.method     ='looktxt';
+    ILL_TAS_pol.postprocess='load_ill_tas'; % load_ill_tas
+    ILL_TAS_pol.extension  ='scn';
     
-    format6.name       ='ILL TAS Data';
-    format6.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
-    format6.options    =['--fast --binary --headers  ' ...
+    ILL_TAS.name       ='ILL TAS Data';
+    ILL_TAS.patterns   ={'POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
+    ILL_TAS.options    =['--fast --binary --headers --silent ' ...
                         '--section=PARAM --section=VARIA --section=ZEROS --section=DATA ' ...
                         '--section=STEPS ' ...
                         '--metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=DATA ' ...
                         '--metadata=INSTR --metadata=COMND --metadata=TITLE --metadata=MULTI '];
-    format6.method     ='looktxt';
-    format6.postprocess='load_ill_tas'; % load_ill_tas
-    format6.extension  ='scn';
+    ILL_TAS.method     ='looktxt';
+    ILL_TAS.postprocess='load_ill_tas'; % load_ill_tas
+    ILL_TAS.extension  ='scn';
     
-    format7.name       ='SPEC';
-    format7.patterns   ={'#F','#D','#S'};
-    format7.options    ='--fast --binary --headers --metadata="#S " --comment=NULL';
-    format7.method     ='looktxt';
-    format7.extension  ='spc';
+    spec.name       ='SPEC';
+    spec.patterns   ={'#F','#D','#S'};
+    spec.options    ='--fast --binary --headers --metadata="#S " --comment=NULL --silent';
+    spec.method     ='looktxt';
+    spec.extension  ='spc';
     
-    format8.name       ='McStas Scan DAT output';
-    format8.patterns   ={'# type: multiarray_1d','# variables:','# title: Scan of'};
-    format8.options    =['--fast --binary --headers --comment=NULL --metadata=variables  ' ...
-                         '--metadata=xlabel --metadata=ylabel --metadata=xvars'];
-    format8.method     ='looktxt';
-    format8.postprocess='load_mcstas_scan';
+    mcstas_scan.name       ='McStas Scan DAT output';
+    mcstas_scan.patterns   ={'# type: multiarray_1d','# variables:','# title: Scan of'};
+    mcstas_scan.options    =['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
+                         '--metadata=xlabel --metadata=ylabel --metadata=xvars' ];
+    mcstas_scan.method     ='looktxt';
+    mcstas_scan.postprocess='load_mcstas_scan';
     
-    format9.name       ='McStas 2D monitor';
-    format9.patterns   ={'Format: McStas with text headers','# type: array_2d'};
-    format9.options    = ['--fast --binary --headers --comment=NULL --metadata=variables  ' ...
+    mcstas_2D.name       ='McStas 2D monitor';
+    mcstas_2D.patterns   ={'Format: McStas with text headers','# type: array_2d'};
+    mcstas_2D.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
 		    '--metadata=Errors --metadata=Events --metadata=xlabel ' ...
-		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits'];
-    format9.method     ='looktxt';
-    format9.postprocess='load_mcstas_2d';
+		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits --metadata=component' ];
+    mcstas_2D.method     ='looktxt';
+    mcstas_2D.postprocess='load_mcstas_2d';
     
-    format10.name       ='McStas 1D monitor';
-    format10.patterns   ={'Format: McStas with text headers','# type: array_1d'};
-    format10.options    ='--fast --binary --headers --comment=NULL --metadata=variables --metadata=xlabel --metadata=ylabel ';
-    format10.method     ='looktxt';
-    format10.postprocess='load_mcstas_1d';
+    mcstas_1D.name       ='McStas 1D monitor';
+    mcstas_1D.patterns   ={'Format: McStas with text headers','# type: array_1d'};
+    mcstas_1D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables ' ...
+        '--metadata=xlabel --metadata=ylabel  --metadata=component' ];
+    mcstas_1D.method     ='looktxt';
+    mcstas_1D.postprocess='load_mcstas_1d';
     
-    format11.name       ='McStas sim file';
-    format11.extension  ='sim';
-    format11.patterns   ={'begin simulation','  Format: McStas'};
-    format11.options    ='--fast --binary --headers  --comment=NULL';
-    format11.method     ='looktxt';
-    format11.postprocess='load_mcstas_sim';
+    mcstas_sim.name       ='McStas sim file';
+    mcstas_sim.extension  ='sim';
+    mcstas_sim.patterns   ={'begin simulation','Format: McStas'};
+    mcstas_sim.options    ='--fast --binary --headers  --comment=NULL --silent';
+    mcstas_sim.method     ='looktxt';
+    mcstas_sim.postprocess='load_mcstas_sim';
     
-    format12.name       ='McStas Sqw table';
-    format12.patterns   ={'Sqw data file for Isotropic_Sqw'};
-    format12.options    ='--fast --binary  --headers --comment=NULL';
-    format12.method     ='looktxt';
-    format12.postprocess='load_mcstas_sqw';
-    format12.extension  ='sqw';
+    mcstas_sqw.name       ='McStas Sqw table';
+    mcstas_sqw.patterns   ={'Sqw data file for Isotropic_Sqw'};
+    mcstas_sqw.options    ='--fast --binary  --headers --comment=NULL --silent';
+    mcstas_sqw.method     ='looktxt';
+    mcstas_sqw.postprocess='load_mcstas_sqw';
+    mcstas_sqw.extension  ='sqw';
     
-    format13.name       ='ISIS/SPE tof data';
-    format13.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL';
-    format13.method     ='looktxt';
-    format13.postprocess='load_ill_spe';
-    format13.patterns   ={'Phi Grid'};
-    format13.extension  ='spe';
+    ISIS_spe.name       ='ISIS/SPE tof data';
+    ISIS_spe.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL --silent';
+    ISIS_spe.method     ='looktxt';
+    ISIS_spe.postprocess='load_ill_spe';
+    ISIS_spe.patterns   ={'Phi Grid'};
+    ISIS_spe.extension  ='spe';
     
-    format14.name       ='INX tof data';
-    format14.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL';
-    format14.method     ='looktxt';
-    format14.postprocess='load_ill_inx';
-    format14.patterns   ={'INX'};
-    format14.extension  ='inx';
+    ILL_inx.name       ='INX tof data';
+    ILL_inx.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL --silent';
+    ILL_inx.method     ='looktxt';
+    ILL_inx.postprocess='load_ill_inx';
+    ILL_inx.patterns   ={'INX'};
+    ILL_inx.extension  ='inx';
     
-    format15.name       ='EDF ESRF Data Format';
-    format15.options='';
-    format15.method     ='medfread';
-    format15.extension  ='edf';
+    ESRF_edf.name       ='EDF ESRF Data Format';
+    ESRF_edf.options    ='';
+    ESRF_edf.method     ='medfread';
+    ESRF_edf.extension  ='edf';
     
 % definition of configuration
-    config.loaders =  { format1, format2, format3, format4, format5, format6, ...
-	       format7, format8, format9, format10, format11, format12, format13, format14, format15 };
+    config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
+	       spec, mcstas_scan, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, ISIS_spe, ILL_inx, ESRF_edf };
 	       
 	  config.UseSystemDialogs = 'no'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
