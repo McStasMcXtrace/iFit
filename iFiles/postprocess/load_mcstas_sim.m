@@ -12,6 +12,7 @@ if length(filenames(:)) > 0
   % This is a McStas 'overview' plot
   for j=1:length(filenames(:))
     filename = filenames{j};
+    filename = strrep(filename,';','');
     filename(1:length('filename: '))='';
     filename(findstr(' ',filename):length(filename))='';
     filename = fullfile(dirname,filename);

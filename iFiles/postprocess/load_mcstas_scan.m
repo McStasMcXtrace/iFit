@@ -49,7 +49,7 @@ for j=1:siz
     setalias(b,'Error',['this.' getalias(a0,'Signal') '(:,' num2str(1+2*j) ')']);
   end
   b.Title = [ char(ylabel) ': ' char(b.Title) ];
-  b.Label = char(ylabel);
+  b.Label = [ char(ylabel) '(' xvars ')' ];
   a = [a b];
 end
 
