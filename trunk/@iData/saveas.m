@@ -2,7 +2,8 @@ function [filename,format] = saveas(a, varargin)
 % f = saveas(s, filename, format) : save iData object into various data formats
 %
 %   @iData/saveas function to save data sets
-%   This function save the content of iData objects. 
+%   This function save the content of iData objects. saveas(iData,'formats')
+%     prints a list of supported export formats.
 %
 % input:  s: object or array (iData)
 %         filename: name of file to save to. Extension, if missing, is appended (char)
@@ -35,7 +36,7 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, iData/load, iData/getframe, save
 
 % handle array of objects to save iteratively
@@ -80,6 +81,17 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
       '*.wrl;*.vrml', 'Virtual Reality file (*.wrl, *.vrml)'; ...
       '*.vtk', 'VTK volume (*.vtk)'; };
+if strcmp(filename, 'formats')
+  fprintf(1, '       EXT  DESCRIPTION\n');
+  fprintf(1, '-----------------------------------------------------------------\n'); 
+  for index=1:size(filterspec,1)
+    ext = upper(filterspec{index,1});
+    ext = strrep(ext,'.','');
+    ext = strrep(ext,'*','');
+    fprintf(1,'%10s  %s \n', ext, filterspec{index,2});
+  end
+  return
+end
 
 % filenape='gui' pops-up a file selector
 if strcmp(filename, 'gui')  
