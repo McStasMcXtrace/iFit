@@ -203,8 +203,11 @@ d=options.XTol;             %   vector for the first cycle
 exitflag=0;
 
 while exitflag==0      %   MAIN ITERATION CYCLE
-    % d=(A+l*D)\v;            % negative solution increment
+    try
     d=pinv(A+l*D)*v;
+    catch
+    d=(A+l*D)\v;            % negative solution increment
+    end
     xd=x-d;
     rd=feval(FUN,xd); 
     if length(rd) == 1, rd=rd*ones(5,1)/5; 
@@ -242,7 +245,7 @@ while exitflag==0      %   MAIN ITERATION CYCLE
 
     
     if      cnt>=options.MaxIter       exitflag=-2; % max iteration reached
-%    elseif  all(abs(d)<options.XTol)   exitflag=-1; % parameter change increment reached
+    elseif  all(abs(d)<options.XTol/1000)   exitflag=-1; % parameter change increment is negligible
     elseif  all(abs(r)<options.FunTol) exitflag=-5; % function change increment reached
     elseif  nfJ > options.Evals,       exitflag=-3; % max nb function evaluations reached
     end
