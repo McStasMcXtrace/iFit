@@ -1,14 +1,16 @@
-function abstract=fmindemo(dim, verbose, repeat_num)
+function abstract=fmindemo(dim, option, repeat_num)
 % FMINDEMO optimization cross-comparison
 % 
 % A systematic test of all optimization methods is performed using a set of test
 % problems. Starting configurations are chosen randomly.
-% The verbose flag when set displays individual detailed optimization results.
+% The option flag may contain the following keywords:
+%    'verbose' displays individual detailed optimization results.
+%    'rand'    adds a 5% gaussian random noise to all functions
 % The test can be repeated iteratively so that a Monte Carlo sampling of starting
 % parameters give a better stastistical estimate of each method efficiency.
 %
 % Calling:
-%   fmindemo(dimensionality=vector, verbose=0|1, repetitions)
+%   fmindemo(dimensionality=vector, option='verbose, rand', repetitions)
 % Example:
 %   fmindemo([ 2 10 50],1)  % detailed test with 2,5 and 10 parameters
 %   fmindemo(2,[], 10)      % 2 parameters optimization repeated 10 times
@@ -46,10 +48,9 @@ if nargin == 1
     
     return
   else
-    verbose=[];
+    option=[];
   end
 end
-if isempty(verbose), verbose=0; end
 if nargin <= 2
   repeat_num=[];
 end
@@ -57,7 +58,7 @@ if isempty(repeat_num), repeat_num=1; end
 
 if isnumeric(dim) & length(dim) > 1
   for i=1:length(dim)
-    fmindemo(dim(i), verbose);
+    fmindemo(dim(i), option);
   end
   return
 end
@@ -132,7 +133,7 @@ problems={...       % Unimodal functions
   'ftwomaxtwo',   10, ...
   'frand',        1};
 
-if dim == -1
+if dim == 1
   fig=figure;
   % plot 1D parameter space for each function
   n=floor(sqrt(length(problems)));
@@ -142,20 +143,24 @@ if dim == -1
     y=zeros(100);
     for i1=1:100
       p1=-psize+(i1/100)*2*psize;
-      f = feval(str2func(problems{index_problem}), [ p1 ]);
+      if ~isempty(strfind(option, 'rand'))
+        f = feval(str2func(problems{index_problem}), [ p1 ])*(1+0.05*randn);
+      else
+        f = feval(str2func(problems{index_problem}), [ p1 ]);
+      end
       if length(f(:)) ~= 1
         error([ problems{index_problem} ' returns results of wrong dimension ' num2str(size(f)) ]);
       end
       y(i1) = f;
     end
-    fprintf(1, '%s min=%g max=%g\n', problems{index_problem}, min(min(y)), max(max(y)));
-    %subplot(m,n,index_problem);
-    figure(fig);
+    fprintf(1, '%s(%d) min=%g max=%g\n', problems{index_problem}, dim, min(min(y)), max(max(y)));
+    subplot(m,n,index_problem,'v6');
     plot(y); title(problems{index_problem});
-    print('-depsc', [ problems{index_problem} '_' num2str(dim) ]);
+    set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[]);
   end
-  close(fig)
-elseif dim == -2
+  print('-dpng', [ 'dim' '_' num2str(dim) ]);
+  print('-depsc2', [ 'dim' '_' num2str(dim) ]);
+elseif dim == 2
   % plot 2D parameter space for each function
   fig=figure;
   n=floor(sqrt(length(problems)));
@@ -167,20 +172,25 @@ elseif dim == -2
       p1=-psize+(i1/100)*2*psize;
       for i2=1:100
         p2=-psize+(i2/100)*2*psize;
-        f = feval(str2func(problems{index_problem}), [ p1 p2 ]);
+        if ~isempty(strfind(option, 'rand'))
+          f = feval(str2func(problems{index_problem}), [ p1 ])*(1+0.05*randn);
+        else
+          f = feval(str2func(problems{index_problem}), [ p1 ]);
+        end
         if length(f(:)) ~= 1
           error([ problems{index_problem} ' returns results of wrong dimension ' num2str(size(f)) ]);
         end
         y(i1,i2) = f;
       end
     end
-    fprintf(1, '%s min=%g max=%g\n', problems{index_problem}, min(min(y)), max(max(y)));
-    %subplot(m,n,index_problem);
-    figure(fig);
-    surf(y); title(problems{index_problem});
-    print('-depsc', [ problems{index_problem} '_' num2str(dim) ]);
+    fprintf(1, '%s(%d) min=%g max=%g\n', problems{index_problem}, dim, min(min(y)), max(max(y)));
+    subplot(m,n,index_problem,'v6');
+    h=surf(y); set(h,'Edgecolor','none');
+    ylabel(problems{index_problem});
+    set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[]);
   end
-  close(fig)
+  print('-dpng', [ 'dim' '_' num2str(dim) ]);
+  print('-depsc2', [ 'dim' '_' num2str(dim) ]);
 end
 
 dimensionality=randn(1,dim);
@@ -226,9 +236,15 @@ for index_repeat=1:repeat_num
       problems{index_problem}, length(dimensionality) );
     %    disp(startpars)
     startpars = dimensionality*problems{index_problem+1};
-    fun=str2func(problems{index_problem});
+    orig=str2func(problems{index_problem});
+    if ~isempty(strfind(option, 'rand'))
+      fun = @(x)(abs(feval(orig,x)*(1+0.1*randn)));
+    else
+      fun = @(x)(abs(feval(orig,x)));
+    end
+    
     for index=1:length(optimizers)  % loop on optimizers
-      if ~verbose, fprintf(1,'%i', index); end
+      if ~isempty(strfind(option, 'verbose')), fprintf(1,'%i', index); end
       t0 = clock;
       options=feval(optimizers{index},'defaults');
       %if verbose, options.Display='iter'; end
@@ -239,12 +255,13 @@ for index_repeat=1:repeat_num
       if isinf(maxfn), maxfn=0; end
       options.MaxFunEvals=min(20000, max(2500*dim, maxfn));
       options.TolX=0;
+      
+      % OPTIMIZATION is performed HERE =========================================
       try
         [pars, fval, flag, out] = feval(optimizers{index}, fun, startpars(:), options);
       catch
         pars=[]; fval=Inf; out.funCount=Inf; flag=-4;
         out.iterations=Inf; out.algorithm=[ 'ERROR: ' optimizers{index} ];
-        lasterr
       end
       fval = sum(fval(:));
       duration(index)=etime(clock,t0);
@@ -258,7 +275,7 @@ for index_repeat=1:repeat_num
       flags{index}   =f;
       algo{index}    =out.algorithm;
       params{index}=pars;
-      if ~verbose, fprintf(1,'%s ', f(1)); end
+      if ~isempty(strfind(option, 'verbose')), fprintf(1,'%s ', f(1)); end
     end % for optimizers
     disp(' ');
     % sort results
@@ -321,6 +338,7 @@ function f=fjens1(x)
 function f=fsphere(x)
   x = x(:);
   f = sum(x.^2,1);
+  
   f=abs(f);
 
 function f=fssphere(x)
@@ -333,6 +351,7 @@ function f=fssphere(x)
 %  xfeas(x>ub) = ub; 
 %  f=sum(xfeas.^2, 1);
 %  f = f + 1e-9 * sum((xfeas-x).^2); 
+
   f=abs(f);
   
 function f=fspherenoise(x)
@@ -373,6 +392,7 @@ function f = fsphereoneax(x)
   x=x(:);
   f = x(1)^2;
   f = mean(x)^2;
+  
   f=abs(f);
   
 function f=frandsphere(x)
@@ -389,6 +409,7 @@ function f=fspherelb0(x, M) % lbound at zero for 1:M needed
   % M active bounds, f_i = 1 for x = 0
   f = -M + sum((x(1:M) + 1).^2);
   f = f + sum(x(M+1:N).^2);
+  
   f=abs(f);
   
 function f=fspherehull(x)
@@ -399,7 +420,7 @@ function f=fspherehull(x)
   % worst case start point seems x = 2*100*sqrt(N)
   % and small step size
   N = length(x);
-  f = norm(x) + (norm(x-100*sqrt(N)) - 100*N)^2;
+  f = norm(x) + (norm(x-100*sqrt(N)) - 100*N)^2; 
   f=abs(f);
   
 function f=fellilb0(x, idxM, scal) % lbound at zero for 1:M needed
@@ -422,7 +443,7 @@ function f=fellilb0(x, idxM, scal) % lbound at zero for 1:M needed
 %  f = exp(f) - 1;
 %  f = log10(f+1e-19) + 19;
 
-  f = f + 1e-19;
+  f = f + 1e-19; 
   f=abs(f);
   
 function f=fcornersphere(x)
@@ -432,7 +453,7 @@ function f=fcornersphere(x)
   idx = x < 0;
   f = sum(x(idx).^2);
   idx = x > 0;
-  f = f + 2^2*sum(w(idx).*x(idx).^2);
+  f = f + 2^2*sum(w(idx).*x(idx).^2); 
   f=abs(f);
   
 function f=fsectorsphere(x, scal)
@@ -456,6 +477,7 @@ function f=fsectorsphere(x, scal)
   if ~isempty(idx)
     f = f + (scal-1)^2 * sum(x(idx).^2,1);
   end
+  
   f=abs(f);
   
 function f=fstepsphere(x, scal)
@@ -468,13 +490,14 @@ function f=fstepsphere(x, scal)
   f=1e-11+sum(scal.^((0:N-1)/(N-1))*floor(x+0.5).^2);
   f=1e-11+sum(floor(scal.^((0:N-1)/(N-1))'.*x+0.5).^2);
 %  f=1e-11+sum(floor(x+0.5).^2);
+
   f=abs(f);
 
 function f=fstep(x)
   x=x(:);
   % in -5.12..5.12 (bounded)
   N = length(x);
-  f=1e-11+6*N+sum(floor(x));
+  f=1e-11+6*N+sum(floor(x)); 
   f=abs(f);
 
 function f=flnorm(x, scal, e)
@@ -493,6 +516,7 @@ function f=flnorm(x, scal, e)
     scale = scal.^((0:N-1)/(N-1))';
     f=sum(abs(scale.*x).^e);
   end
+  
   f=abs(f);
 
 function f=fneumaier3(x) 
@@ -502,6 +526,7 @@ function f=fneumaier3(x)
   N = length(x);
 %  f = N*(N+4)*(N-1)/6 + sum((x-1).^2) - sum(x(1:N-1).*x(2:N));
   f = sum((x-1).^2) - sum(x(1:N-1).*x(2:N));
+  
   f=abs(f);
   
 function f=fchangingsphere(x)
@@ -514,14 +539,14 @@ function f=fchangingsphere(x)
   end
   %disp(scale(1));
   f = scale_G*x.^2;
-  f=abs(f);
+  f=abs(sum(f));
   
 function f= flogsphere(x)
   x=x(:);
-  f = 1-exp(-sum(x.^2));
+  f = 1-exp(-sum(x.^2)); 
   
 function f= fexpsphere(x)
-  f = exp(sum(x.^2)) - 1;
+  f = exp(sum(x.^2)) - 1; 
   f=abs(f);
   
 function f=fbaluja(x)
@@ -531,7 +556,7 @@ function f=fbaluja(x)
   for i = 2:length(x)
     y(i) = x(i) + y(i-1);
   end
-  f = 1e5 - 1/(1e-5 + sum(abs(y)));
+  f = 1e5 - 1/(1e-5 + sum(abs(y))); 
   f=abs(f);
 
 function f=fschwefel(x)
@@ -540,6 +565,7 @@ function f=fschwefel(x)
   for i = 1:length(x),
     f = f+sum(x(1:i))^2;
   end
+  
   f=abs(f);
 
 function f=fcigar(x, ar)
@@ -547,17 +573,17 @@ function f=fcigar(x, ar)
   if nargin < 2 || isempty(ar)
     ar = 1e3;
   end
-  f = x(1,:).^2 + ar^2*sum(x(2:end,:).^2,1);
+  f = x(1,:).^2 + ar^2*sum(x(2:end,:).^2,1); 
   f=abs(f);
   
 function f=fcigtab(x)
   x=x(:);
-  f = x(1,:).^2 + 1e8*x(end,:).^2 + 1e4*sum(x(2:(end-1),:).^2, 1);
+  f = x(1,:).^2 + 1e8*x(end,:).^2 + 1e4*sum(x(2:(end-1),:).^2, 1); 
   f=abs(f);
   
 function f=ftablet(x)
   x=x(:);
-  f = 1e6*x(1,:).^2 + sum(x(2:end,:).^2, 1);
+  f = 1e6*x(1,:).^2 + sum(x(2:end,:).^2, 1); 
   f=abs(f);
 
 function f=felli(x, lgscal, expon, expon2)
@@ -577,6 +603,7 @@ function f=felli(x, lgscal, expon, expon2)
 %    f = NaN;
 %  end
 %  f = f + randn(size(f));
+
   f=abs(f);
 
 function f=fellitest(x)
@@ -584,7 +611,7 @@ function f=fellitest(x)
   if length(x) < 2, x = [ x ; 0]; end
   beta = 0.9;
   N = length(x);
-  f = (1e6.^((0:(N-1))/(N-1))).^beta * (x.^2).^beta; 
+  f = (1e6.^((0:(N-1))/(N-1))).^beta * (x.^2).^beta;  
   f=abs(f);
   
 function f=fellii(x, scal)
@@ -594,27 +621,27 @@ function f=fellii(x, scal)
   if nargin < 2
     scal = 1;
   end
-  f= (scal*(1:N)).^2 * (x).^2;
+  f= (scal*(1:N)).^2 * (x).^2; 
   f=abs(f);
 
 function f=fplane(x)
   x=x(:);
-  f=x(1);
+  f=x(1); 
   f=abs(f);
 
 function f=ftwoaxes(x)
   x=x(:);
-  f = sum(x(1:floor(end/2)).^2) + 1e6*sum(x(floor(1+end/2):end).^2);
+  f = sum(x(1:floor(end/2)).^2) + 1e6*sum(x(floor(1+end/2):end).^2); 
   f=abs(f);
 
 function f=fparabR(x)
   x=x(:);
-  f = -x(1,:) + 100*sum(x(2:end,:).^2,1);
+  f = -x(1,:) + 100*sum(x(2:end,:).^2,1); 
   f=abs(f);
 
 function f=fsharpR(x)
   x=x(:);
-  f = abs(-x(1)) + 100*norm(x(1:end));
+  f = abs(-x(1)) + 100*norm(x(1:end)); 
   f=abs(f);
   
 function f=frosen(x)
@@ -624,6 +651,7 @@ function f=frosen(x)
   popsi = size(x,2); 
   f = 1e2*sum((x(1:end-1,:).^2 - x(2:end,:)).^2,1) + sum((x(1:end-1,:)-1).^2,1);
   % f = f + f^0.9 .* (2*randn(1,popsi) ./ randn(1,popsi).^0 / (2*N)); 
+  
   f=abs(f);
 
 function f=frosenlin(x)
@@ -637,7 +665,7 @@ function f=frosenlin(x)
   f = 1e2*sum(-(x(1:end-1,:).^2 - x(2:end,:)),1) + ...
       sum((x(1:end-1,:)-1).^2,1);
 
-  f = f + sum((x-x_org).^2,1);
+  f = f + sum((x-x_org).^2,1); 
 %  f(any(abs(x)>30,1)) = NaN; 
   f=abs(f);
 
@@ -645,43 +673,43 @@ function f=frosenmodif(x)
   x=x(:);
   if length(x) < 2, x = [ x ; 0]; end
   f = 74 + 100*(x(2)-x(1)^2)^2 + (1-x(1))^2 ...
-      - 400*exp(-sum((x+1).^2)/2/0.05);
+      - 400*exp(-sum((x+1).^2)/2/0.05); 
   f=abs(f);
   
 function f=fschwefelrosen1(x)
   % in [-10 10] 
   x=x(:);
-  f=sum((x.^2-x(1)).^2 + (x-1).^2);
+  f=sum((x.^2-x(1)).^2 + (x-1).^2); 
   f=abs(f);
   
 function f=fschwefelrosen2(x)
   % in [-10 10] 
   x=x(:);
   if length(x) < 2, x = [ x ; 0]; end
-  f=sum((x(2:end).^2-x(1)).^2 + (x(2:end)-1).^2);
+  f=sum((x(2:end).^2-x(1)).^2 + (x(2:end)-1).^2); 
   f=abs(f);
 
 function f=fdiffpow(x)
   x=x(:);
   if length(x) < 2, x = [ x ; 0]; end
   N = length(x); 
-  f=sum(abs(x).^(2+10*(0:N-1)'/(N-1)));
+  f=sum(abs(x).^(2+10*(0:N-1)'/(N-1))); 
   % f = sqrt(f); 
   f=abs(f);
   
 function f=fabsprod(x)
   x=x(:);
-  f = sum(abs(x),1) + prod(abs(x),1);
+  f = sum(abs(x),1) + prod(abs(x),1); 
   f=abs(f);
 
 function f=ffloor(x)
   x=x(:);
-  f = sum(floor(x+0.5).^2,1); 
+  f = sum(floor(x+0.5).^2,1);  
   f=abs(f);
 
 function f=fmax(x)
   x=x(:);
-  f = max(abs(x), [], 1);
+  f = max(abs(x), [], 1); 
   f=abs(f);
 
 %%% Multimodal functions 
@@ -694,7 +722,7 @@ function f=fbirastrigin(x)
   f = zeros(1,size(x,2));
   f(idx) = 10*(N-sum(cos(2*pi*x(:,idx)),1)) + sum(x(:,idx).^2,1); 
   idx = ~idx;
-  f(idx) = 0.1 + 10*(N-sum(cos(2*pi*(x(:,idx)-2)),1)) + sum((x(:,idx)-2).^2,1); 
+  f(idx) = 0.1 + 10*(N-sum(cos(2*pi*(x(:,idx)-2)),1)) + sum((x(:,idx)-2).^2,1);  
   f=abs(f);
 
 function f=fackley(x)
@@ -707,7 +735,7 @@ function f=fackley(x)
   f = 20-20*exp(-0.2*sqrt(sum(x.^2)/N)); 
   f = f + (exp(1) - exp(sum(cos(2*pi*x))/N));
   % add penalty outside the search interval
-  f = f + sum((x(x>32.768)-32.768).^2) + sum((x(x<-32.768)+32.768).^2);
+  f = f + sum((x(x>32.768)-32.768).^2) + sum((x(x<-32.768)+32.768).^2); 
   f=abs(f);
   
 function f = fbohachevsky(x)
@@ -715,14 +743,14 @@ function f = fbohachevsky(x)
   x=x(:);
   if length(x) < 2, x = [ x ; 0]; end
   f = sum(x(1:end-1).^2 + 2 * x(2:end).^2 - 0.3 * cos(3*pi*x(1:end-1)) ...
-	  - 0.4 * cos(4*pi*x(2:end)) + 0.7);
+	  - 0.4 * cos(4*pi*x(2:end)) + 0.7); 
 	f=abs(f);
   
 function f=fconcentric(x)
   % in  +-600
     x=x(:);
   s = sum(x.^2);
-  f = s^0.25 * (sin(50*s^0.1)^2 + 1);
+  f = s^0.25 * (sin(50*s^0.1)^2 + 1); 
   f=abs(f);
 
 function f=fgriewank(x)
@@ -734,6 +762,7 @@ function f=fgriewank(x)
   % if sum(x(abs(x)>5).^2) > 0
   %   f = 1e4 * sum(x(abs(x)>5).^2) + 1e8 * sum(x(x>5)).^2;
   % end
+  
   f=abs(f);
   
 function f=fspallpseudorastrigin(x, scal, skewfac, skewstart, amplitude)
@@ -799,7 +828,7 @@ function f=frastrigin(x, scal, skewfac, skewstart, amplitude)
   if ~isempty(idx)
     y(idx) =  skewfac*y(idx);
   end
-  f = amplitude * (N-sum(cos(2*pi*y),1)) + sum(y.^2,1);
+  f = amplitude * (N-sum(cos(2*pi*y),1)) + sum(y.^2,1); 
   f=abs(f);
   
 function f = fschaffer(x)
@@ -808,7 +837,7 @@ function f = fschaffer(x)
   if length(x) < 2, x = [ x ; 0]; end
   N = length(x);
   s = x(1:N-1).^2 + x(2:N).^2;
-  f = sum(s.^0.25 .* (sin(50*s.^0.1).^2+1));
+  f = sum(s.^0.25 .* (sin(50*s.^0.1).^2+1)); 
   f=abs(f);
 
 function f=fschwefelmult(x)
@@ -823,14 +852,14 @@ function f=fschwefelmult(x)
   if ~isempty(y)
     f = f + y;
   end
+  
   f=abs(f);
   
 function f=ftwomax(x)
   % Boundaries at +/-5
     x=x(:);
   N = length(x); 
-  f = -abs(sum(x)) + 5*N;
-  f=abs(f);
+  f = abs(sum(x)); %  - 5*N;
 
 function f=ftwomaxtwo(x)
   % Boundaries at +/-10
