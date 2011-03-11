@@ -136,8 +136,8 @@ problems={...       % Unimodal functions
 if dim == 1
   fig=figure;
   % plot 1D parameter space for each function
-  n=floor(sqrt(length(problems)));
-  m=ceil(length(problems)/n);
+  n=floor(sqrt(length(problems)/2));
+  m=ceil(length(problems)/n/2);
   for index_problem=1:2:length(problems)  % loop on functions
     psize=problems{index_problem+1};
     y=zeros(100);
@@ -154,8 +154,8 @@ if dim == 1
       y(i1) = f;
     end
     fprintf(1, '%s(%d) min=%g max=%g\n', problems{index_problem}, dim, min(min(y)), max(max(y)));
-    subplot(m,n,index_problem,'v6');
-    plot(y); title(problems{index_problem});
+    subplot(m,n,(index_problem+1)/2);
+    plot(y); % title(problems{index_problem});
     set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[]);
   end
   print('-dpng', [ 'dim' '_' num2str(dim) ]);
@@ -163,8 +163,8 @@ if dim == 1
 elseif dim == 2
   % plot 2D parameter space for each function
   fig=figure;
-  n=floor(sqrt(length(problems)));
-  m=ceil(length(problems)/n);
+  n=floor(sqrt(length(problems)/2));
+  m=ceil(length(problems)/n/2);
   for index_problem=1:2:length(problems)  % loop on functions
     psize=problems{index_problem+1};
     y=zeros(100,100);
@@ -184,9 +184,9 @@ elseif dim == 2
       end
     end
     fprintf(1, '%s(%d) min=%g max=%g\n', problems{index_problem}, dim, min(min(y)), max(max(y)));
-    subplot(m,n,index_problem,'v6');
+    subplot(m,n,(index_problem+1)/2);
     h=surf(y); set(h,'Edgecolor','none');
-    ylabel(problems{index_problem});
+    % ylabel(problems{index_problem});
     set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[]);
   end
   print('-dpng', [ 'dim' '_' num2str(dim) ]);
