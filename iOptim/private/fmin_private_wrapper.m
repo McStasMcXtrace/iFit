@@ -48,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -350,11 +350,16 @@ otherwise
     options, constraints, ub);
   return
 end % switch
+catch
   output.lasterror = lasterror;
 end % try
 
-if isstruct(output) && isfield(output,'lasterror') && isempty(strmatch(output.lasterror.message, 'stop condition:'))
+if isstruct(output) && isfield(output,'lasterror') && isempty(strfind(output.lasterror.message, 'stop condition:'))
+  disp('Code error when launching the optimizer. Plese fix it...')
   disp(output.lasterror.message);
+  for index=1:length(output.lasterror.stack)
+    disp(output.lasterror.stack(index))
+  end
   rethrow(output.lasterror);
 end
 
@@ -450,7 +455,7 @@ return  % actual end of optimization
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
     [exitflag, message] = fmin_private_check(pars, sum(abs(c)), ...
-       constraints.funcCounts, options, constraints.parsPrevious);
+       constraints.funcCounts, options, constraints.parsPrevious, constraints.criteriaPrevious);
     constraints.message = message;
     
     % save current optimization state
@@ -594,7 +599,6 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
 % options=fmin_private_check(options);
 % or
 % options=fmin_private_check(options, default_options);
-
 
   istop=0; message='';
   
