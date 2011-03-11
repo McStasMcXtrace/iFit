@@ -15,11 +15,11 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options, v
 %           options.mpi:    number of processors to use with MPI on localhost (integer) 
 %           options.seed:   random number seed to use for each iteration (double)
 %           options.gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
-%           options.mode:   'simulate' or 'optimize', which is the default (string)
+%           options.compile: 0 or 1 to force re-compilation of the instrument (boolean)
+%           options.mode:   'simulate' or 'optimize' (string)
 %           options.type:   'minimize' or 'maximize', which is the default (string)
 %           options.monitors:  cell string of monitor names, or empty for all (cellstr)
 %           options.optimizer: function name of the optimizer to use (string or function handle)
-%           options.compile: 0 or 1 to force re-compilation of the instrument (boolean)
 %         as well as other optimizer options such as
 %           options.TolFun ='0.1%'   stop when criteria changes are smaller that 0.1%
 %           options.Display='final'
@@ -30,7 +30,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options, v
 %           constraints.step=  vector of maximal parameter changes per iteration
 %
 % output:  OPTIMUM is the parameter set that maximizes the instrument output
-%            or the MONIOTORS for single simulations.
+%            or the MONITORS for single simulations.
 %          MONITORS contains the instrument output (e.g. at OPTIMUM).
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
@@ -38,9 +38,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options, v
 % example: 
 %   [p,f]=mcstas('templateDIFF',struct('RV',1),struct('mpi',2,'TolFun','0.1%'))
 %   subplot(f);
-%   monitors=mcstas('templateDIFF',struct('RV',1),struct('mode',simulate'))
+%   monitors=mcstas('templateDIFF',struct('RV',1))
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: fminsearch, optimset, http://www.mcstas.org
 
   if nargin < 2
@@ -75,31 +75,41 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options, v
   pars                   = variable_pars;
   options.instrument     = instrument;
   if ~isfield(options,'dir'),       options.dir       = tempname;   use_temp=1; else use_temp=0; end
-  if ~isfield(options,'optimizer'), options.optimizer = @fminimfil; end
   if ~isfield(options,'ncount'),    options.ncount    = 1e5;        end
-  if ~isfield(options,'type'),      options.type      = 'maximize'; end
-  if ~isfield(options,'mode'),      options.mode      = 'optimize'; end
-  
   if  isfield(options,'compile') && (options.compile || strcmp(options.compile,'yes'))
     mcstas_criteria(pars, options);
     options = rmfield(options,'compile');
   end
-  if isfield(options,'monitors')
-    options.monitors = cellstr(options.monitors);
-  end
   
-  % specific optimizer configuration
-  optimizer_options = feval(options.optimizer,'defaults');
-  optimizer_options.OutputFcn = 'fminplot';
-  optimizer_options.Display   = 'iter';
-  field_names=fieldnames(optimizer_options);
-  for index=1:length(fieldnames(optimizer_options))
-    if ~isfield(options, field_names{index})
-      options = setfield(options, field_names{index}, getfield(optimizer_options, field_names{index}));
+  % define simulation or optimization mode (if not set before)
+  if ~isfield(options,'mode')
+    if isfield(options, 'optimizer') | isfield(options,'TolFun') | isfield(options,'TolX') | isfield(options,'type')
+      options.mode      = 'optimize'; 
+    else
+      options.mode      = 'simulate';
     end
   end
   
   if strcmp(options.mode,'optimize')
+    if ~isfield(options,'type'),      options.type      = 'maximize'; end
+    if ~isfield(options,'optimizer'), options.optimizer = @fminimfil; end
+    
+    if isfield(options,'monitors')
+      options.monitors = cellstr(options.monitors);
+    end
+    
+    % specific optimizer configuration
+    optimizer_options = feval(options.optimizer,'defaults');
+    optimizer_options.OutputFcn = 'fminplot';
+    optimizer_options.Display   = 'iter';
+    field_names=fieldnames(optimizer_options);
+    for index=1:length(fieldnames(optimizer_options))
+      if ~isfield(options, field_names{index})
+        options = setfield(options, field_names{index}, getfield(optimizer_options, field_names{index}));
+      end
+    end
+  
+  
     if nargin < 4
     % launch optimizer
     [pars,fval,exitflag,output] = feval(options.optimizer, ...
@@ -122,9 +132,10 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options, v
     % clean up last iteration result when stored into a temporary location
     success = rmdir(options.dir,'s');
   end
+  
+% end of mcstas function
 
 % ------------------------------------------------------------------------------
-
 function criteria = mcstas_criteria(pars, options)
 
   % clean up previous iteration result
@@ -148,7 +159,7 @@ function criteria = mcstas_criteria(pars, options)
     cmd = [ cmd ' ' options.variable_names{index} '=' num2str(pars(index)) ];
   end
   for index=1:length(options.fixed_names)
-    cmd = [ cmd ' ' options.fixed_names{index} '=' options.fixed_pars(index) ];
+    cmd = [ cmd ' ' options.fixed_names{index} '=' options.fixed_pars{index} ];
   end
   disp(cmd);
   system(cmd);
@@ -161,7 +172,7 @@ function criteria = mcstas_criteria(pars, options)
   end
 
   % import McStas simulation result
-  sim = iData(directory); % return a vector of monitors (iData objects)
+  sim = iData(directory); % a vector of monitors (iData objects)
   
   if strcmp(options.mode,'optimize')
     if isfield(options,'monitors') & numel(sim) > 1
@@ -189,4 +200,5 @@ function criteria = mcstas_criteria(pars, options)
   else
     criteria = sim;
   end
-  
+
+% end of mcstas_criteria (inline mcstas)
