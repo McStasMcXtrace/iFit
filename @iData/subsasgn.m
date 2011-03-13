@@ -8,7 +8,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -24,7 +24,7 @@ end
 % first handle object array for first index
 if length(b(:)) > 1 & (strcmp(S(1).type,'()') | strcmp(S(1).type,'{}'))
   c = b(S(1).subs{:}); % get elements in the array
-  d = c(:);
+  if ~isvector(c) d = c(:); else d=c; end
   if length(d) == 1
     d = iData(val);
   else

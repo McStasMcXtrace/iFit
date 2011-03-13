@@ -48,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -476,27 +476,6 @@ return  % actual end of optimization
 
 end % optimizer core end
 
-%   FINJAC       numerical approximation to Jacobi matrix
-%   %%%%%%
-function J = finjac(FUN,r,x,epsx)
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% pars=column, function=row vector or scalar
-  lx=length(x);
-  J=zeros(lx,length(r));
-  if size(x,2) > 1, x=x'; end % column
-  if size(r,1) > 1, r=r'; end % row
-  if length(epsx)<lx, epsx=epsx*ones(lx,1); end
-  for k=1:lx
-      dx=.25*epsx(k);
-      xd=x;
-      xd(k)=xd(k)+dx;
-      rd=feval(FUN,xd);
-      if size(rd,1) > 1, rd=rd'; end % row
-  %   ~~~~~~~~~~~~~~~~    
-      if dx, J(k,:)=((rd-r)/dx); end
-  end
-end
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function constraints = constraints_minmax(pars, constraints)
 % define default min max in constraints, needed by bounded optimizers
@@ -641,7 +620,7 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
   end
 
   % normal terminations: function tolerance reached
-  if ~isempty(options.TolFun) && options.TolFun
+  if ~isempty(options.TolFun) && options.TolFun ~= 0
     if (all(0 < fval) && all(fval <= options.TolFun)) % stop on lower threshold
       istop=-1;
       message = [ 'Termination function tolerance criteria reached (fval <= options.TolFun=' ...

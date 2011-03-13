@@ -19,9 +19,11 @@ if ~isempty(findfield(a, 'zlabel'))
   zlabel(1:length('# zlabel: '))='';
 else zlabel=''; end
 if ~isempty(findfield(a, 'component')) 
-  label = a.Data.Headers.MetaData.component;
+  label = strtrim(a.Data.Headers.MetaData.component);
   label(1:length('# component: '))='';
   a.Label = label;
+  set(a,'Data.Component', label);
+  setalias(a, 'Component', 'Data.Component','Component name');
 end
 
 % Get sizes of x- and y- axes:
