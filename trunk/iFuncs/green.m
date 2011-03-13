@@ -1,16 +1,16 @@
-function y=dho(p, x, y)
-% y = dho(p, x, [y]) : Damped harmonic oscillator
+function y=green(p, x, y)
+% y = green(p, x, [y]) : Green function
 %
-%   iFunc/dho Damped harmonic oscillator fitting function, including Bose factor
+%   iFunc/green Green fitting function
 %   the function called with a char argument performs specific actions.
 %
-% input:  p: Damped harmonic oscillator model parameters (double)
-%            p = [ Amplitude Centre HalfWidth BackGround Temperature(in x units)]
+% input:  p: Green model parameters (double)
+%            p = [ Amplitude Tau BackGround ]
 %          or action e.g. 'identify', 'guess' (char)
 %         x: axis (double)
 %         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
-% ex:     y=dho([1 0 1 1], -10:10); or y=dho('identify') or p=dho('guess',x,y);
+% ex:     y=green([1 0 1 1], -10:10); or y=green('identify') or p=green('guess',x,y);
 
 % 1D function template:
 % Please retain the function definition structure as defined below
@@ -33,7 +33,7 @@ function y=dho(p, x, y)
   %   identify: model([],x)
     y = identify; x=x(:);
     % HERE default parameters when only axes are given <<<<<<<<<<<<<<<<<<<<<<<<<
-    y.Guess  = [1 std(abs(x)) std(x)/4 .1 1];
+    y.Guess  = [1 std(x)/2 std(x)/2 .1];
     y.Axes   = { x };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 1 && isnumeric(p) && ~isempty(p) 
@@ -41,7 +41,7 @@ function y=dho(p, x, y)
     y = identify;
     y.Guess  = p;
     % HERE default axes to represent the model when parameters are given <<<<<<<
-    y.Axes   =  { linspace(p(2)-3*p(3),p(2)+3*p(3), 100) };
+    y.Axes   =  { linspace(0,3*p(2), 100) };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 0
     y = feval(mfilename, [], linspace(-2,2, 100));
@@ -59,26 +59,7 @@ function y = evaluate(p, x)
   if isempty(x) | isempty(p), y=[]; return; end
   
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  % DFM 19.10.95 rev EF 27.06.97
-  omega  =x(:);
-  amp    =p(1);
-  omega_0=p(2); 
-  gamma  =p(3);	
-  T      =p(5);
-
-  n_omega=1./(exp(abs(omega)/T)-1);	% bose
-
-  s_omega  = 0*x;
-  as_omega = 0*x;
-
-  i = find(omega > 0);
-  s_omega(i)=gamma*omega(i)*omega_0^2.*(1+n_omega(i))./((omega(i).^2-omega_0^2).^2+(gamma*omega(i)).^2); % dho stokes
-
-  omega = -omega;
-  i = find(omega > 0);
-  as_omega(i) =gamma*omega(i)*omega_0^2.*(n_omega(i))./((omega(i).^2-omega_0^2).^2 + (gamma*omega(i)).^2); % dho antistokes
-
-  y=amp*(s_omega+as_omega)+p(4);
+  y = (p(1)*p(3)*p(2)^2 ) ./ ( (p(2)^2 - x.^2).^2 + (x*p(3)).^2) + p(4);
   
   y = reshape(y, sx);
 end
@@ -86,10 +67,10 @@ end
 % inline: identify: return a structure which identifies the model
 function y =identify()
   % HERE are the parameter names
-  parameter_names = {'Amplitude','Centre','HalfWidth','Background','Temperature ("x" unit)'};
+  parameter_names = {'Amplitude','Center', 'Width', 'Background'};
   %
   y.Type           = 'iFit fitting function';
-  y.Name           = [ 'Damped harmonic oscillator (1D) [' mfilename ']' ];
+  y.Name           = [ 'Green function (1D) [' mfilename ']' ];
   y.Parameters     = parameter_names;
   y.Dimension      = 1;         % dimensionality of input space (axes) and result
   y.Guess          = [];        % default parameters
@@ -103,7 +84,6 @@ function info=guess(x,y)
   info.Axes  = { x };
   % fill guessed information
   info.Guess = iFuncs_private_guess(x(:), y(:), info.Parameters);
-  info.Guess(end) = 1;
   info.Values= evaluate(info.Guess, info.Axes{:});
 end
 
