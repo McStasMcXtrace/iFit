@@ -1,47 +1,157 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-
-
-
+  
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-  <title></title>
+
+  
+  <title>iFit: iFuncs model functions</title>
+
 </head><body>
-<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: iFuncs fit models</h1><br>
+<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: iFuncs fit models</h1>
+<br>
+
 <ol id="mozToc">
+
 <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId147615">How to use models</a></li><li><a href="#mozTocId96090">List of default fit models</a></li><li><a href="#mozTocId210092">Model builder: making a model easy</a></li><li><a href="#mozTocId854762">How to write manually a model function</a></li>
 </ol>
+
 <br>
+
 
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">fits</span><br>
 </div>
+
 <br>
+
 <h3><a class="mozTocH3" name="mozTocId147615"></a>How to use models</h3>
+
 Models are numerical functions, that take input axes and a parameter set, and return a function evaluation. <br>
+
 <br>
+
 Such models are used in iFit when there is a need to e.g. compute and
 plot a function evaluation corresponding with the axes of an iData
 obect by means of the <span style="font-weight: bold;">ieval</span> function. Similarly, this
 function evluation can be used iteratively in an optimization process
 in order to find a parameter set that matches best the iData object
 Signal, using the <span style="font-weight: bold;">fits</span> method. All these are explained in the <a href="Fit.html">Fit</a> page.<br>
+
 <h3><a class="mozTocH3" name="mozTocId96090"></a><span style="font-weight: bold;">List of default fit models</span></h3>
-Not finalized yet, but this will come shortly.<span style="font-weight: bold;"><br>
+
+<span style="font-style: italic; font-weight: bold;"><br>
 </span>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+
+
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Function<br>
+      </td>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204);"><span style="font-style: italic; font-weight: bold; color: rgb(51, 102, 255);">Description</span><br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Dimensionality<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Parameters<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(0, 0, 0); font-weight: bold; font-style: italic;">gauss</td>
+      <td style="vertical-align: top;">Gaussian<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth Background<br>
+</td></tr><tr>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">lorz<br>
+      </td>
+      <td style="vertical-align: top;">Lorentzian<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth Background</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">dho<br>
+      </td>
+      <td style="vertical-align: top;">Damped harmonic oscillator<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth Background <span style="font-style: italic;">Temperature(in "x" unit)</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">triangl<br>
+      </td>
+      <td style="vertical-align: top;">Triangular<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth Background</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">voigt<br>
+      </td>
+      <td style="vertical-align: top;">Voigt function<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Centre <span style="font-style: italic;">Width_Gauss Width_Lorz </span>Background<br>
+      </td>
+    </tr><tr>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">dirac<br>
+      </td>
+      <td style="vertical-align: top;">Dirac peak<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Centre<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">green<br>
+      </td>
+      <td style="vertical-align: top;">Green function<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth Background</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">strline<br>
+      </td>
+      <td style="vertical-align: top;">Straight line<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;"><span style="font-style: italic;">Gradient</span> Background<br>
+      </td>
+    </tr>
+
+</tbody>
+</table>
+
+<br>
+
+<div style="text-align: center;"><a href="images/iFit_iFuncs.png"><img title="iFit: default functions (in iFuncs)" src="images/iFit_iFuncs.png" alt="iFit: default functions (in iFuncs)" style="border: 0px solid ; width: 560px; height: 420px;" align="middle"></a><br>
+
+</div>
 <h3><a class="mozTocH3" name="mozTocId210092"></a><span style="font-weight: bold;">Model builder: making a model easy<br>
 </span></h3>
+
 Not finalized yet, but this will come shortly.
 <h3><a class="mozTocH3" name="mozTocId854762"></a><span style="font-weight: bold;">How to write manually a model function</span></h3>
-
+We suggest that you start from the 'gauss' function in iFuncs, and
+customize at will. Please retain the function core structure to ensure
+proper execution.<br>
+<br>
 Not finalized yet, but this will come shortly.
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2011-02-18 08:32:55 $ $Revision: 1.5 $
+$Date: 2011-03-13 22:21:31 $ $Revision: 1.6 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
+
 </body></html>
