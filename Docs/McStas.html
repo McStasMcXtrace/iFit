@@ -7,6 +7,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -90,15 +91,19 @@ and then execute:<br>
 <pre>&gt;&gt; [integral,monitors]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, parameters, <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'ncount'</span>,1e4));<br></pre></div>The <span style="font-style: italic;">integral</span> argument returned is an <a href="iData.html">iData</a> object containing the integral of monitors as a function of the scanned parameters. It can be directly plotted with e.g. <br>
 <div style="margin-left: 40px;">
 <pre>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(integral);     <span style="font-style: italic;">% simple plot, or median surface for multidimensional scans</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">scatter3</span>(integral); <span style="font-style: italic;">% coloured points (possibly in 2D,3D)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot3</span>(integral);    <span style="font-style: italic;">% coloured lines in 2D, or volume for multidimensional scans</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">slice</span>(integral);    <span style="font-style: italic;">% only for 3D, use slice-o-matic for volume inspection</span><br></pre></div><a href="images/iFit_McStas_scan2D_integral.png"><img title="iFit: MsCtas scan: ploting the integral monitor value" src="images/iFit_McStas_scan2D_integral.png" alt="iFit: MsCtas scan: ploting the integral monitor value" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>The <span style="font-style: italic;">monitors</span>
-argument returned is a cell array containing individual scan monitors.
+argument returned is an array containing individual scan monitors.
 You may extract and catenate a selection (slices) or it by e.g. the <span style="font-style: italic; font-weight: bold;">iData/cat</span> method.<br>
 <br>
 In the following example, we launch a quick 2D scan:<br>
 <pre style="margin-left: 40px;">&gt;&gt; [p,m]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,[0.7 0.9 1.2],<span style="color: rgb(204, 51, 204);">'L2'</span>,[1 1.3 1.5]),<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'ncount'</span>,1e4));<br></pre>
 Then we may plot, as a 2D surface, the integral value for the last (5th) monitor:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(p(:,:,5));<br></pre>
-<a href="images/iFit_McStas_Monitor_scan.png"><img title="iFit: McStas: evolution of a monitor" src="images/iFit_McStas_Monitor_scan.png" alt="iFit: McStas: evolution of a monitor" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>Let's finally look at the evolution of the 4-th monitor along an 'RV' parameter scan:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = [ m{:,1} ];  % extract an 'RV' line<br>&gt;&gt; b = a(1,:,4);    % get 4th monitor on this line<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">cat</span>(3, b);   <span style="font-style: italic;">% assemble into a single iData object</span><br>&gt;&gt; c.Signal=<span style="color: rgb(51, 102, 255);">squeeze</span>(c.Signal); <span style="font-style: italic;">% clear the singleton axis</span><br style="font-style: italic;">&gt;&gt; <span style="color: rgb(51, 102, 255);">rmaxis</span>(c,2);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setaxis</span>(c,2,<span style="color: rgb(204, 51, 204);">'RV'</span>,[0.7 0.9 1.2]); <span style="font-style: italic;">% create a new RV axis</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c);         <span style="font-style: italic;">% plot</span><br></pre>
+<a href="images/iFit_McStas_Monitor_scan.png"><img title="iFit: McStas: evolution of a monitor" src="images/iFit_McStas_Monitor_scan.png" alt="iFit: McStas: evolution of a monitor" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>You may look at the instrument parameters used for the scans, e.g.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(m,<span style="color: rgb(204, 51, 204);">'RV'</span>)</pre>
+Let's finally look at the evolution of the 4-th monitor, which is a 1D diffractogram, along an 'RV' parameter scan:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">squeeze</span>(m(2,:,:));  <span style="font-style: italic;">         % extract an 'RV' line, with L2=1.3</span><br>&gt;&gt; b = a(:,4);   <span style="font-style: italic;">                   % get 4th monitor on this line</span><br>&gt;&gt; setaxis(b,2,<span style="color: rgb(204, 51, 204);">'RV'</span>);               % define a new axis along the line RV<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">cat</span>(2, b);   <span style="font-style: italic;">                % assemble into a single iData object</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c,<span style="color: rgb(204, 51, 204);">'tight interp'</span>);          <span style="font-style: italic;">% plot</span><br></pre>This methodology also works with 2D monitors assembled along, e.g. a scan line, which creates a 3D volume to explore with <span style="font-style: italic; font-weight: bold;">slice, </span>or <span style="font-style: italic; font-weight: bold;">plot</span>&nbsp; or <span style="font-weight: bold; font-style: italic;">plot3</span>. <br>
+<br>
+
 <div style="margin-left: 40px;">
 </div>
 
@@ -118,8 +123,8 @@ and large memory storage.<br>
 The optimization of instrument parameters is performed as simply as a single simulation, just by e.g. setting <span style="font-style: italic;">options.mode</span> to <span style="color: rgb(204, 51, 204);">'optimize'</span>. <span style="font-style: italic;"><br>
 </span>
 <pre style="margin-left: 40px;">&gt;&gt; [solution, monitors] = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, parameters, options);</pre>
-<span style="font-style: italic;">
-Only numerical</span> parameters can be optimized.<br>
+
+The parameters, as a named structure, are initiated to their starting value, from which the optimization proceeds.<span style="font-style: italic;"> Only numerical</span> parameters can be optimized.<br>
 <br>
 More specifically, the <span style="font-style: italic;">options</span> structure may contain, in addition to the optimization mode, the following members:<br>
 <ul>
@@ -177,12 +182,12 @@ To fix a parameter value during the optimization, use a string parameter value, 
 </ul>
 To restrict a parameter search to a given range, set its minimum and maximum values :<br>
 <ul>
-  <li>parameters.RV = [ 0.7 1.2 ]; % the initial RV value will be used as the mean, 0.95, and will be kept in between 0.7 and 1.2.<br>
+  <li>parameters.RV = [ 0.7 1.2 ]; <span style="font-style: italic;">% the initial RV value will be used as the mean, 0.95, and will be kept in between 0.7 and 1.2.</span><br>
   </li>
 </ul>
 If you wish to restrict tne search range as well as define the starting parameter value, use a 3 element vector :<br>
 <ul>
-  <li>parameters.RV = [ 0.7 0.8 1.2 ]; % the initial RV value will be 0.8</li>
+  <li>parameters.RV = [ 0.7 0.8 1.2 ]; <span style="font-style: italic;">% the initial RV value will be 0.8</span></li>
 </ul>
 
 <br>
@@ -192,7 +197,7 @@ If you wish to restrict tne search range as well as define the starting paramete
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/McStas - </span><span style="font-style: italic;">
-$Date: 2011-03-13 09:44:58 $ $Revision: 1.1 $
+$Date: 2011-03-13 20:32:48 $ $Revision: 1.2 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
