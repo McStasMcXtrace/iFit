@@ -5,7 +5,7 @@ function b = subsref(a,S)
 %   such as a(1:2) or a.field.
 %   The special syntax a{0} where a is a single iData returns the signal, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -66,7 +66,7 @@ for i = 1:length(S)     % can handle multiple index levels
       elseif length(s.subs) == 2
         toadd = [  mat2str(double(s.subs{1})) ', ' mat2str(double(s.subs{2})) ];
       else
-        toadd = [ toadd ', ' '<not listable>' ];  
+        toadd = [ '<not listable>' ];  
       end
       if ~isempty(inputname(1))
         toadd = [  b.Tag ' = ' inputname(1) '(' toadd ');' ];

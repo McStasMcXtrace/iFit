@@ -18,7 +18,7 @@ function stop = fminplot(pars, optimValues, state)
   end
   
   % store data history as rows
-  if isempty(fvalHistory) | optimValues.funcount <= 1
+  if isempty(fvalHistory) | optimValues.funcount < 1
     parsHistory = pars(:)'; 
     fvalHistory = optimValues.fval;
     iterHistory = optimValues.funcount;

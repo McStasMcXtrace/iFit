@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -54,6 +54,9 @@ for index = 1:length(a_in(:)) % works with object arrays
       end
       if strcmp(lower(fieldname), 'filename')
         fieldname = 'Source';
+      end
+      if strcmp(lower(fieldname), 'history')
+        fieldname = 'Command';
       end
 
       % get property from real fields (not Alias/Axis)

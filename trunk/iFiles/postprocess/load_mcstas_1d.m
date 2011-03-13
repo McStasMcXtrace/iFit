@@ -16,9 +16,11 @@ if ~isempty(findfield(a, 'ylabel'))
   ylabel(1:length('# ylabel: '))='';
 else ylabel=''; end
 if ~isempty(findfield(a, 'component')) 
-  label = a.Data.Headers.MetaData.component;
+  label = strtrim(a.Data.Headers.MetaData.component);
   label(1:length('# component: '))='';
   a.Label = label;
+  set(a,'Data.Component', label);
+  setalias(a, 'Component', 'Data.Component','Component name');
 end
 
 Datablock = ['this.' getalias(a,'Signal')];
