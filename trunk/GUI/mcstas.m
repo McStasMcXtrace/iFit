@@ -51,7 +51,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -203,6 +203,18 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   else
     % single simulation/scan
     [pars, fval] = mcstas_criteria(pars, options);
+    if iscell(fval)
+      % before converting to a single iData array, we check that all
+      % simulations returned the same number of monitors
+      siz = cellfun('prodofsize',fval);
+      if all(siz == siz(1))
+        siz = [ siz(1) size(fval) ]; % size of the array to generate
+        fval = reshape(iData(fval), siz);
+        % permute dimensions in order to have monitors as last
+        perm = 1:length(siz); perm(1) = perm(end); perm(end) = 1;
+        fval = permute(fval, perm);
+      end
+    end
     if nargout < 2
       pars     = fval;
     else
@@ -271,7 +283,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     cmd = [ cmd ' --seed=' num2str(options.seed) ];
   end
   
-  % handle single simulation and vectorial scnas
+  % handle single simulation and vectorial scans
   if isfield(options,'variable_names')
     if nargin < 3, 
       ind = cell(1,length(options.variable_names)); ind{1}=1; 
@@ -290,7 +302,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
           cmd = [ cmd ' ' options.variable_names{index} '=' num2str(this) ];
         elseif ischar(this)
           cmd = [ cmd ' ' options.variable_names{index} '=' this ];
-        elseif isvector(this) % parameter is a vector of numerics
+        elseif isvector(this) % parameter is a vector of numerics/scans
           for index_pars=1:length(this) % scan the vector parameter elements
             ind{index} = index_pars;
             if isnumeric(this)
@@ -373,24 +385,29 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     end % else minimize
     criteria(index) = this;
   end
-  if isnumeric(pars)
-    this_pars = cell(size(pars));
-    for index=1:length(this_pars)
-      this_pars{index} = pars(index);
+  if nargout > 1
+    if isnumeric(pars)
+      this_pars = cell(size(pars));
+      for index=1:length(this_pars)
+        this_pars{index} = pars(index);
+      end
+    else
+      this_pars = pars;
     end
-  else
-    this_pars = pars;
+    c = { this_pars{:} ; options.fixed_pars{:} }; c=c(:);
+    f = { options.variable_names{:} ; options.fixed_names{:}}; f=f(:);
+    this_pars = cell2struct(c, f, 1);
+    set(sim, 'Data.Parameters', this_pars);
+    set(sim, 'Data.Criteria', criteria);
+    set(sim, 'Data.Execute', cmd);
+    set(sim, 'Data.Options', options);
+    for index=1:length(f)
+      setalias(sim, f{index}, [ 'Data.Parameters.' f{index} ], [ 'Instrument parameter ' f{index} ]);
+    end
+    setalias(sim, 'Parameters', 'Data.Parameters','Instrument parameters');
+    setalias(sim, 'Criteria', 'Data.Criteria','Integral of monitors (criteria)');
+    setalias(sim, 'Execute', 'Data.Execute','Command line used for Mcstas execution');
+    setalias(sim, 'Options', 'Data.Options','Options used for Mcstas execution');
   end
-  c = { this_pars{:} ; options.fixed_pars{:} }; c=c(:);
-  f = { options.variable_names{:} ; options.fixed_names{:}}; f=f(:);
-  this_pars = cell2struct(c, f, 1);
-  set(sim, 'Data.Parameters', this_pars);
-  set(sim, 'Data.Criteria', criteria);
-  set(sim, 'Data.Execute', cmd);
-  set(sim, 'Data.Options', options);
-  setalias(sim, 'Parameters', 'Data.Parameters','Instrument parameters');
-  setalias(sim, 'Criteria', 'Data.Criteria','Integral of monitors (criteria)');
-  setalias(sim, 'Execute', 'Data.Execute','Command line used for Mcstas execution');
-  setalias(sim, 'Options', 'Data.Options','Options used for Mcstas execution');
 end
 % end of mcstas_criteria (inline mcstas)
