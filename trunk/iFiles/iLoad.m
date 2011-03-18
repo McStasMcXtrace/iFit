@@ -36,7 +36,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.37 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.38 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -57,7 +57,7 @@ elseif strcmp(loader, 'force load config') | strcmp(filename, 'force load config
   return
 elseif strcmp(loader, 'formats') | strcmp(filename,'formats') | strcmp(loader, 'display config')
   data = iLoad('','load config');
-  fprintf(1, ' EXT                    READER  DESCRIPTION\n');
+  fprintf(1, ' EXT                    READER  DESCRIPTION [%s]\n', mfilename);
   fprintf(1, '-----------------------------------------------------------------\n');  
   for index=1:length(data.loaders)
     this=data.loaders{index};
