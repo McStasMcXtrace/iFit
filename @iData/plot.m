@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.50 $
+% Version: $Revision: 1.51 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -137,19 +137,24 @@ case 1  % vector type data (1 axis + signal) -> plot
     return
   else 
     this_method=method;
+    % clean up options that can be used togetehr with linespec
+    % tight, auto, tight, hide, view2, view3, transparent
+    toremove='tight auto hide view2 view3 transparent';
+    toremove=strread(toremove,'%s','delimiter',' ');
+    this_method = strrep(this_method, toremove,'');
     if all(e == 0) | length(x) ~= length(e)
       if length(this_method)
         try
-          h = plot(x,y, method);
+          h = plot(x,y, this_method);
         catch
           this_method=[];
         end
       end
       if ~length(this_method) h = plot(x,y); end
     else
-      if length(method), 
+      if length(this_method), 
         try
-          h = errorbar(x,y,e,method);
+          h = errorbar(x,y,e,this_method);
         catch
           this_method=[];
         end
@@ -306,9 +311,9 @@ end
 if (strfind(method,'auto'))
   axis auto
 end
-if findstr(method,'painters')
+if (strfind(method,'painters'))
 	set(gcf,'Renderer','painters')
-elseif findstr(method,'zbuffer')
+elseif (strfind(method,'zbuffer'))
 	set(gcf,'Renderer','zbuffer')
 end
 if (strfind(method,'colorbar'))
@@ -359,7 +364,9 @@ uicm = uicontextmenu;
 set(uicm,'UserData', properties); 
 uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
   'Callback', [ 'msgbox(get(get(gco,''UIContextMenu''),''UserData''), ''About: Figure ' num2str(gcf) ' ' T ' <' S '>'',''help'');' ] );
-uimenu(uicm, 'Label',[ 'Duplicate ' T ' ...' ], 'Callback',[ 'g=gca; f=figure; c=copyobj(g,f); set(c,''position'',[ 0.1 0.1 0.9 0.8]); set(f,''Name'',''Copy of ' char(a) ''');' ]);
+uimenu(uicm, 'Label',[ 'Duplicate ' T ' ...' ], 'Callback', ...
+   [ 'g=gca; f=figure; c=copyobj(g,f); set(c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+     'set(f,''Name'',''Copy of ' char(a) '''); ' ]);
 uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '"' ]);
 uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
@@ -396,7 +403,7 @@ set(h,   'Tag',  char(a));
 set(gcf, 'Name', char(a));
 
 % labels
-if findstr(method,'hide_axes')
+if (strfind(method,'hide'))
   % set(gca,'visible','off'); 
   set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[])
   xlabel(' '); ylabel(' '); zlabel(' ');
