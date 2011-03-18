@@ -20,7 +20,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -142,8 +142,8 @@ else  % convert input argument into object
         y = get(in,'ydata'); 
         z = get(in,'zdata'); 
         c = get(in,'cdata'); 
-        index=find(~isnan(x) & ~isnan(y) & ~isnan(z) & ~isnan(c)); 
-        if length(index)~=prod(size(x)), x = x(index); y=y(index); z=z(index); c=c(index); end
+        % index=find(~isnan(x) & ~isnan(y) & ~isnan(z) & ~isnan(c)); 
+        % if length(index)~=prod(size(x)), x = x(index); y=y(index); z=z(index); c=c(index); end
         l = get(in,'linestyle');
         t = get(in,'DisplayName');
         if isempty(t), t=get(in,'Tag'); end
