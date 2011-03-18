@@ -143,11 +143,14 @@ if dim == 1
     y=zeros(100);
     for i1=1:100
       p1=-psize+(i1/100)*2*psize;
+      orig=str2func(problems{index_problem});
       if ~isempty(strfind(option, 'rand'))
-        f = feval(str2func(problems{index_problem}), [ p1 ])*(1+0.05*randn);
+        fun = @(x)(abs(feval(orig,p1)*(1+0.1*randn)));
       else
-        f = feval(str2func(problems{index_problem}), [ p1 ]);
+        fun = @(x)(abs(feval(orig,p1)));
       end
+      f = feval(fun, [ p1 ]);
+
       if length(f(:)) ~= 1
         error([ problems{index_problem} ' returns results of wrong dimension ' num2str(size(f)) ]);
       end
@@ -172,11 +175,13 @@ elseif dim == 2
       p1=-psize+(i1/100)*2*psize;
       for i2=1:100
         p2=-psize+(i2/100)*2*psize;
+        orig=str2func(problems{index_problem});
         if ~isempty(strfind(option, 'rand'))
-          f = feval(str2func(problems{index_problem}), [ p1 ])*(1+0.05*randn);
+          fun = @(x)(abs(feval(orig,p2)*(1+0.1*randn)));
         else
-          f = feval(str2func(problems{index_problem}), [ p1 ]);
+          fun = @(x)(abs(feval(orig,p2)));
         end
+        f = feval(fun, [ p1 ]);
         if length(f(:)) ~= 1
           error([ problems{index_problem} ' returns results of wrong dimension ' num2str(size(f)) ]);
         end
@@ -216,7 +221,11 @@ for index=1:length(optimizers)
   options.MaxIter=250*dim;
   options.MaxFunEvals=2500*dim;
   options.TolX=0;
-  options.TolFun=1e-4;
+  if ~isempty(strfind(option, 'rand'))
+    options.TolFun=1e-3;
+  else
+    options.TolFun=1e-4;
+  end
   fprintf(1, '%2i %5s %6i %6i %6.2g %s\n', index, opt, options.MaxFunEvals, options.MaxIter, options.TolFun, alg);
 end
 fprintf(1,'\n');
@@ -333,13 +342,11 @@ function f=fjens1(x)
     f(idx) = f(idx) + 1e-3*abs(randn(1,sum(idx)));
 %    f(idx) = NaN;
   end
-  f=abs(sum(f));
+  f=sum(f);
 
 function f=fsphere(x)
   x = x(:);
   f = sum(x.^2,1);
-  
-  f=abs(f);
 
 function f=fssphere(x)
   x = x(:);
@@ -351,8 +358,6 @@ function f=fssphere(x)
 %  xfeas(x>ub) = ub; 
 %  f=sum(xfeas.^2, 1);
 %  f = f + 1e-9 * sum((xfeas-x).^2); 
-
-  f=abs(f);
   
 function f=fspherenoise(x)
   x = x(:);
@@ -365,7 +370,6 @@ function f=fspherenoise(x)
       + fsum .* (2*randn(1,popsi) ./ randn(1,popsi).^0 / (2*N)) ...
       + 1*fsum^0.9 .* 2*randn(1,popsi) / (2*N); % 
 %  f = fsum; 
-  f=abs(f);
 
 function f=fmixranks(x)
   x=x(:);
@@ -386,21 +390,17 @@ function f=fmixranks(x)
     %pause
     f = ranks+1e-9*randn(1,1);
   end
-  f=abs(f);
   
 function f = fsphereoneax(x)
   x=x(:);
   f = x(1)^2;
   f = mean(x)^2;
   
-  f=abs(f);
-  
 function f=frandsphere(x)
   x=x(:);
   N = length(x);
   idx = ceil(N*rand(7,1));
   f=sum(x(idx).^2);
-  f=abs(f);
 
 function f=fspherelb0(x, M) % lbound at zero for 1:M needed
   x=x(:);
@@ -409,8 +409,6 @@ function f=fspherelb0(x, M) % lbound at zero for 1:M needed
   % M active bounds, f_i = 1 for x = 0
   f = -M + sum((x(1:M) + 1).^2);
   f = f + sum(x(M+1:N).^2);
-  
-  f=abs(f);
   
 function f=fspherehull(x)
   x=x(:);
@@ -421,7 +419,6 @@ function f=fspherehull(x)
   % and small step size
   N = length(x);
   f = norm(x) + (norm(x-100*sqrt(N)) - 100*N)^2; 
-  f=abs(f);
   
 function f=fellilb0(x, idxM, scal) % lbound at zero for 1:M needed
   x=x(:);
@@ -442,9 +439,7 @@ function f=fellilb0(x, idxM, scal) % lbound at zero for 1:M needed
   f = f - sum((xopt*scale(idxM)).^2); 
 %  f = exp(f) - 1;
 %  f = log10(f+1e-19) + 19;
-
   f = f + 1e-19; 
-  f=abs(f);
   
 function f=fcornersphere(x)
   x=x(:);
@@ -454,7 +449,6 @@ function f=fcornersphere(x)
   f = sum(x(idx).^2);
   idx = x > 0;
   f = f + 2^2*sum(w(idx).*x(idx).^2); 
-  f=abs(f);
   
 function f=fsectorsphere(x, scal)
 %
@@ -478,8 +472,6 @@ function f=fsectorsphere(x, scal)
     f = f + (scal-1)^2 * sum(x(idx).^2,1);
   end
   
-  f=abs(f);
-  
 function f=fstepsphere(x, scal)
   x=x(:);
   if length(x) < 2, x = [ x ; 0]; end
@@ -489,16 +481,13 @@ function f=fstepsphere(x, scal)
   N = length(x);
   f=1e-11+sum(scal.^((0:N-1)/(N-1))*floor(x+0.5).^2);
   f=1e-11+sum(floor(scal.^((0:N-1)/(N-1))'.*x+0.5).^2);
-%  f=1e-11+sum(floor(x+0.5).^2);
-
-  f=abs(f);
+%  f=1e-11+sum(floor(x+0.5).^2)
 
 function f=fstep(x)
   x=x(:);
   % in -5.12..5.12 (bounded)
   N = length(x);
   f=1e-11+6*N+sum(floor(x)); 
-  f=abs(f);
 
 function f=flnorm(x, scal, e)
   x=x(:);
@@ -516,8 +505,6 @@ function f=flnorm(x, scal, e)
     scale = scal.^((0:N-1)/(N-1))';
     f=sum(abs(scale.*x).^e);
   end
-  
-  f=abs(f);
 
 function f=fneumaier3(x) 
   x=x(:);
@@ -526,8 +513,6 @@ function f=fneumaier3(x)
   N = length(x);
 %  f = N*(N+4)*(N-1)/6 + sum((x-1).^2) - sum(x(1:N-1).*x(2:N));
   f = sum((x-1).^2) - sum(x(1:N-1).*x(2:N));
-  
-  f=abs(f);
   
 function f=fchangingsphere(x)
   x=x(:);
@@ -539,7 +524,7 @@ function f=fchangingsphere(x)
   end
   %disp(scale(1));
   f = scale_G*x.^2;
-  f=abs(sum(f));
+  f=sum(f);
   
 function f= flogsphere(x)
   x=x(:);
@@ -547,7 +532,6 @@ function f= flogsphere(x)
   
 function f= fexpsphere(x)
   f = exp(sum(x.^2)) - 1; 
-  f=abs(f);
   
 function f=fbaluja(x)
   % in [-0.16 0.16]
@@ -557,7 +541,6 @@ function f=fbaluja(x)
     y(i) = x(i) + y(i-1);
   end
   f = 1e5 - 1/(1e-5 + sum(abs(y))); 
-  f=abs(f);
 
 function f=fschwefel(x)
   x=x(:);
@@ -565,8 +548,6 @@ function f=fschwefel(x)
   for i = 1:length(x),
     f = f+sum(x(1:i))^2;
   end
-  
-  f=abs(f);
 
 function f=fcigar(x, ar)
   x=x(:);
@@ -574,17 +555,14 @@ function f=fcigar(x, ar)
     ar = 1e3;
   end
   f = x(1,:).^2 + ar^2*sum(x(2:end,:).^2,1); 
-  f=abs(f);
   
 function f=fcigtab(x)
   x=x(:);
   f = x(1,:).^2 + 1e8*x(end,:).^2 + 1e4*sum(x(2:(end-1),:).^2, 1); 
-  f=abs(f);
   
 function f=ftablet(x)
   x=x(:);
   f = 1e6*x(1,:).^2 + sum(x(2:end,:).^2, 1); 
-  f=abs(f);
 
 function f=felli(x, lgscal, expon, expon2)
   x=x(:);
@@ -604,15 +582,12 @@ function f=felli(x, lgscal, expon, expon2)
 %  end
 %  f = f + randn(size(f));
 
-  f=abs(f);
-
 function f=fellitest(x)
   x=x(:);
   if length(x) < 2, x = [ x ; 0]; end
   beta = 0.9;
   N = length(x);
   f = (1e6.^((0:(N-1))/(N-1))).^beta * (x.^2).^beta;  
-  f=abs(f);
   
 function f=fellii(x, scal)
   x=x(:);
@@ -622,27 +597,22 @@ function f=fellii(x, scal)
     scal = 1;
   end
   f= (scal*(1:N)).^2 * (x).^2; 
-  f=abs(f);
 
 function f=fplane(x)
   x=x(:);
   f=x(1); 
-  f=abs(f);
 
 function f=ftwoaxes(x)
   x=x(:);
   f = sum(x(1:floor(end/2)).^2) + 1e6*sum(x(floor(1+end/2):end).^2); 
-  f=abs(f);
 
 function f=fparabR(x)
   x=x(:);
   f = -x(1,:) + 100*sum(x(2:end,:).^2,1); 
-  f=abs(f);
 
 function f=fsharpR(x)
   x=x(:);
   f = abs(-x(1)) + 100*norm(x(1:end)); 
-  f=abs(f);
   
 function f=frosen(x)
   x=x(:);
@@ -651,8 +621,6 @@ function f=frosen(x)
   popsi = size(x,2); 
   f = 1e2*sum((x(1:end-1,:).^2 - x(2:end,:)).^2,1) + sum((x(1:end-1,:)-1).^2,1);
   % f = f + f^0.9 .* (2*randn(1,popsi) ./ randn(1,popsi).^0 / (2*N)); 
-  
-  f=abs(f);
 
 function f=frosenlin(x)
   x=x(:);
@@ -667,27 +635,23 @@ function f=frosenlin(x)
 
   f = f + sum((x-x_org).^2,1); 
 %  f(any(abs(x)>30,1)) = NaN; 
-  f=abs(f);
 
 function f=frosenmodif(x)
   x=x(:);
   if length(x) < 2, x = [ x ; 0]; end
   f = 74 + 100*(x(2)-x(1)^2)^2 + (1-x(1))^2 ...
       - 400*exp(-sum((x+1).^2)/2/0.05); 
-  f=abs(f);
   
 function f=fschwefelrosen1(x)
   % in [-10 10] 
   x=x(:);
   f=sum((x.^2-x(1)).^2 + (x-1).^2); 
-  f=abs(f);
   
 function f=fschwefelrosen2(x)
   % in [-10 10] 
   x=x(:);
   if length(x) < 2, x = [ x ; 0]; end
   f=sum((x(2:end).^2-x(1)).^2 + (x(2:end)-1).^2); 
-  f=abs(f);
 
 function f=fdiffpow(x)
   x=x(:);
@@ -695,22 +659,18 @@ function f=fdiffpow(x)
   N = length(x); 
   f=sum(abs(x).^(2+10*(0:N-1)'/(N-1))); 
   % f = sqrt(f); 
-  f=abs(f);
   
 function f=fabsprod(x)
   x=x(:);
   f = sum(abs(x),1) + prod(abs(x),1); 
-  f=abs(f);
 
 function f=ffloor(x)
   x=x(:);
   f = sum(floor(x+0.5).^2,1);  
-  f=abs(f);
 
 function f=fmax(x)
   x=x(:);
   f = max(abs(x), [], 1); 
-  f=abs(f);
 
 %%% Multimodal functions 
 
@@ -723,7 +683,6 @@ function f=fbirastrigin(x)
   f(idx) = 10*(N-sum(cos(2*pi*x(:,idx)),1)) + sum(x(:,idx).^2,1); 
   idx = ~idx;
   f(idx) = 0.1 + 10*(N-sum(cos(2*pi*(x(:,idx)-2)),1)) + sum((x(:,idx)-2).^2,1);  
-  f=abs(f);
 
 function f=fackley(x)
   x=x(:);
@@ -736,7 +695,6 @@ function f=fackley(x)
   f = f + (exp(1) - exp(sum(cos(2*pi*x))/N));
   % add penalty outside the search interval
   f = f + sum((x(x>32.768)-32.768).^2) + sum((x(x<-32.768)+32.768).^2); 
-  f=abs(f);
   
 function f = fbohachevsky(x)
  % -15..15
@@ -744,14 +702,12 @@ function f = fbohachevsky(x)
   if length(x) < 2, x = [ x ; 0]; end
   f = sum(x(1:end-1).^2 + 2 * x(2:end).^2 - 0.3 * cos(3*pi*x(1:end-1)) ...
 	  - 0.4 * cos(4*pi*x(2:end)) + 0.7); 
-	f=abs(f);
   
 function f=fconcentric(x)
   % in  +-600
     x=x(:);
   s = sum(x.^2);
   f = s^0.25 * (sin(50*s^0.1)^2 + 1); 
-  f=abs(f);
 
 function f=fgriewank(x)
   % in [-600 600]
@@ -762,8 +718,6 @@ function f=fgriewank(x)
   % if sum(x(abs(x)>5).^2) > 0
   %   f = 1e4 * sum(x(abs(x)>5).^2) + 1e8 * sum(x(x>5)).^2;
   % end
-  
-  f=abs(f);
   
 function f=fspallpseudorastrigin(x, scal, skewfac, skewstart, amplitude)
 % by default multi-modal about between -30 and 30
@@ -796,7 +750,6 @@ function f=fspallpseudorastrigin(x, scal, skewfac, skewstart, amplitude)
   end
   f = amplitude * (0*N-prod(cos((2*pi)^0*y),1)) + 0.05 * sum(y.^2,1) ...
       + randn(1,1);
-  f=abs(f);
 
 function f=frastrigin(x, scal, skewfac, skewstart, amplitude)
 % by default multi-modal about between -30 and 30
@@ -829,7 +782,6 @@ function f=frastrigin(x, scal, skewfac, skewstart, amplitude)
     y(idx) =  skewfac*y(idx);
   end
   f = amplitude * (N-sum(cos(2*pi*y),1)) + sum(y.^2,1); 
-  f=abs(f);
   
 function f = fschaffer(x)
  % -100..100
@@ -838,7 +790,6 @@ function f = fschaffer(x)
   N = length(x);
   s = x(1:N-1).^2 + x(2:N).^2;
   f = sum(s.^0.25 .* (sin(50*s.^0.1).^2+1)); 
-  f=abs(f);
 
 function f=fschwefelmult(x)
   % -500..500
@@ -853,13 +804,11 @@ function f=fschwefelmult(x)
     f = f + y;
   end
   
-  f=abs(f);
-  
 function f=ftwomax(x)
   % Boundaries at +/-5
     x=x(:);
   N = length(x); 
-  f = abs(sum(x)); %  - 5*N;
+  f = sum(x); %  - 5*N;
 
 function f=ftwomaxtwo(x)
   % Boundaries at +/-10
@@ -870,12 +819,9 @@ function f=ftwomaxtwo(x)
     f = f - 30;
   end
   f = -f;
-  f=abs(f);
 
 function f=frand(x)
   f=1/(1-rand) - 1;
-  f=abs(f);
-
   
 function n=norm2(x)
 x = x(:);
