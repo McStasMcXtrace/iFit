@@ -134,6 +134,7 @@ function config = iLoad_ini
     Matlab_FIG.options  ='';
     Matlab_FIG.method   ='mfigread';
     Matlab_FIG.extension='fig';
+    Matlab_FIG.postprocess='load_fig';
     
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...

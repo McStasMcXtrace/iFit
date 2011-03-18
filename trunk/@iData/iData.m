@@ -20,7 +20,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -113,7 +113,7 @@ else  % convert input argument into object
     elseif ishandle(in)             % convert Handle Graphics Object
       % iData(figure handle)
       if strcmp(get(in,'type'),'hggroup')
-        t = get(in,'DisplayName');
+        try t = get(in,'DisplayName'); catch t=[]; end
         if isempty(t), t=get(in,'Tag'); end
         h = get(in,'Children');
         out = iData(h(1)); % fisrt item
@@ -124,7 +124,7 @@ else  % convert input argument into object
         y = get(in,'ydata'); 
         index = find(~isnan(x) & ~isnan(y));
         if length(index)~=prod(size(x)), x = x(index); y=y(index); end
-        t = get(in,'DisplayName');
+        try t = get(in,'DisplayName'); catch t=[]; end
         if isempty(t), t=get(in,'Tag'); end
         c = get(in,'color');
         m = get(in,'marker');
