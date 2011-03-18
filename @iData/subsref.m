@@ -5,7 +5,7 @@ function b = subsref(a,S)
 %   such as a(1:2) or a.field.
 %   The special syntax a{0} where a is a single iData returns the signal, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -48,7 +48,8 @@ for i = 1:length(S)     % can handle multiple index levels
           x = getaxis(b,index);
           ax= b.Alias.Axis{index};   % definition of Axis
           nd = size(x); nd=nd(find(nd>1));
-          if all(size(x) == size(b) & length(nd) == length(s.subs)) % meshgrid type axes
+          if length(size(x)) == length(size(b)) && ...
+                 all(size(x) == size(b))  && all(length(nd) == length(s.subs)) % meshgrid type axes
             b = setaxis(b, index, ax, x(s.subs{:}));
           else  % vector type axes
             b = setaxis(b, index, ax, x(s.subs{index}));
