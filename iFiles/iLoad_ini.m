@@ -130,9 +130,14 @@ function config = iLoad_ini
     ESRF_edf.method     ='medfread';
     ESRF_edf.extension  ='edf';
     
+    Matlab_FIG.name     ='Matlab Figure';
+    Matlab_FIG.options  ='';
+    Matlab_FIG.method   ='mfigread';
+    Matlab_FIG.extension='fig';
+    
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
-	       spec, mcstas_scan, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, ISIS_spe, ILL_inx, ESRF_edf };
+	       spec, mcstas_scan, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, ISIS_spe, ILL_inx, ESRF_edf, Matlab_FIG };
 	       
 	  config.UseSystemDialogs = 'no'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
