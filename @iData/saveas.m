@@ -16,6 +16,7 @@ function [filename,format] = saveas(a, varargin)
 %           'nc'   save as NetCDF 
 %         as well as other lossy formats
 %           'hdf4' save as an HDF4 immage
+%           'fig'  save as a Matlab figure
 %           'edf'  EDF ESRF format for 1D and 2D data sets
 %           'gif','bmp' save as an image (no axes, only for 2D data sets)
 %           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
@@ -36,7 +37,7 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, iData/load, iData/getframe, save
 
 % handle array of objects to save iteratively
@@ -67,6 +68,7 @@ if isempty(options) && ndims(a) >= 2, options='view2 axis tight'; end
 filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.dat', 'Flat text file with comments (*.dat)'; ...
       '*.mat', 'Matlab binary file (*.mat)'; ...
+      '*.fig', 'Matlab figure (*.fig)'; ...
       '*.pdf', 'Portable Document Format (*.pdf)'; ...
       '*.eps', 'Encapsulated PostScrip (color, *.eps)'; ...
       '*.ps',  'PostScrip (color, *.ps)'; ...
@@ -82,7 +84,7 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.wrl;*.vrml', 'Virtual Reality file (*.wrl, *.vrml)'; ...
       '*.vtk', 'VTK volume (*.vtk)'; };
 if strcmp(filename, 'formats')
-  fprintf(1, '       EXT  DESCRIPTION\n');
+  fprintf(1, '       EXT  DESCRIPTION [%s(iData)]\n', mfilename);
   fprintf(1, '-----------------------------------------------------------------\n'); 
   for index=1:size(filterspec,1)
     ext = upper(filterspec{index,1});
