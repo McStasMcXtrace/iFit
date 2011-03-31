@@ -41,7 +41,7 @@
 #define malloc  mxMalloc
 #define realloc mxRealloc
 #define calloc  mxCalloc
-#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.5 $"
+#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.6 $"
 /* #define free mxFree  */
 #define free NoOp
 
@@ -101,16 +101,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
       mexPrintf("looktxt/mex : argument %i\n", i);
       mexErrMsgTxt("looktxt/mex : Input should be strings.\n");
     }
-    /* get size of input string and allocate a copy */
-    buflen      = (mxGetM(prhs[i])*mxGetN(prhs[i]))+1;
-    InputString = (char*)mxMalloc(buflen+64);
-    if (InputString == NULL || !buflen) {
-      mexPrintf("looktxt/mex : argument %i. Size %i\n", i, buflen);
-      mexErrMsgTxt("looktxt/mex : can not allocate memory for input string.\n");
-    }
-    status      = mxGetString(prhs[i], InputString, buflen);
-    if (status != 0) {
-      mexPrintf("looktxt/mex : argument %i. Status mxGetString=%i\n", i, status);
+    /* read the input argument and return it as a string */
+    InputString = mxArrayToString(prhs[i]);
+    if (!InputString) {
+      mexPrintf("looktxt/mex : argument %i. InputString=NULL\n", i);
       mexErrMsgTxt("looktxt/mex : can not get input parameter.\n");
     }
 
