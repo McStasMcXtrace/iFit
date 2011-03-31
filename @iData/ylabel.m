@@ -10,14 +10,22 @@ function a = ylabel(a, lab)
 % output: b: object or array (iData)
 % ex:     b=ylabel(a);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/plot, iData/xlabel, iData/label, iData/zlabel, iData/clabel
 
 if nargin ==1
-	a = label(a, 1);
+  if isvector(a)
+    a = label(a, 0);
+  else
+	  a = label(a, 1);
+	end
 	return
 else
-	a = label(a, 1, lab);
+	if isvector(a)
+    a = label(a, 0, lab);
+  else
+	  a = label(a, 1, lab);
+	end
 end
 
 if nargout == 0 & length(inputname(1))
