@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.51 $
+% Version: $Revision: 1.52 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -253,7 +253,7 @@ case 3  % 3d data sets: volumes
         h = vol3d('cdata',c,'texture','3D','xdata',x,'ydata',y,'zdata',z);
         alphamap('vdown'); % make object transparent on borders and solid in center
         h = vol3d(h);
-        h = h.handles
+        h = h.handles;
       elseif ~isempty(strfind(method, 'slice')) % sliceomatic
         slice(a); h=[];
       else

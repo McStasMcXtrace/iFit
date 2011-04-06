@@ -22,7 +22,7 @@ function [val, lab] = getaxis(s,ax)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'y')
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
@@ -56,7 +56,7 @@ if isnumeric(ax) % given as a number, return a number
   end
   if ax == 0
     val=get(s,'Signal'); 
-    m  = get(s,'Monitor'); m=real(m); m=m(:);
+    m  = get(s,'Monitor'); m=real(m);
     link='Signal';
     if not(all(m == 1 | m == 0))
       val = genop(@rdivide,val,m);
@@ -81,7 +81,7 @@ else % given as a char, return a char
     return;
   elseif strcmp(ax,'Error')
     val=get(s,'Error'); 
-    m  = get(s,'Monitor'); m=real(m); m=m(:);
+    m  = get(s,'Monitor'); m=real(m);
     link='Error';
     if not(all(m == 1 | m == 0))
       val = genop(@rdivide,val,m);
