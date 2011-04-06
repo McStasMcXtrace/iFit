@@ -9,7 +9,7 @@ function b = cumprod(a,dim)
 % output: s: accumulated product of elements (iData)
 % ex:     c=cumprod(a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumprod
 
 % handle input iData arrays
@@ -37,8 +37,8 @@ s = iData_private_cleannaninf(get(a,'Signal'));
 e = iData_private_cleannaninf(get(a,'Error'));
 m = iData_private_cleannaninf(get(a,'Monitor'));
 
-b = setalias(s, 'Signal',   cumprod(s), dim), [ 'cumprod(' sl ','  num2str(dim) ')' ]);
-b = setalias(s, 'Error',    cumprod(e), dim), [ 'cumprod(Error,'   num2str(dim) ')' ]);
-b = setalias(s, 'Monitor',  cumprod(m), dim), [ 'cumprod(Monitor,' num2str(dim) ')' ]);
+b = setalias(b, 'Signal',   cumprod(s,dim), [ 'cumprod(' sl ','  num2str(dim) ')' ]);
+b = setalias(b, 'Error',    cumprod(e,dim), [ 'cumprod(Error,'   num2str(dim) ')' ]);
+b = setalias(b, 'Monitor',  cumprod(m,dim), [ 'cumprod(Monitor,' num2str(dim) ')' ]);
 b.Command=cmd;
 b = iData_private_history(b, mfilename, a, dim);  
