@@ -1,4 +1,4 @@
-/*****************************************************************************
+two/*****************************************************************************
 *
 *                     Program looktxt.c
 *
@@ -105,7 +105,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.1 $Revision: 1.15 $"
+#define VERSION "1.1 $Revision: 1.16 $"
 #endif
 
 #ifdef __dest_os
@@ -2237,7 +2237,8 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
       /* special case to handle files written by fortran routines */
       if (options.fortran && (c == '-' || c == '+') && (last_is & (Bnumber | Bpoint))) {
         last_is |= Bseparator;  /* [NUM|NUM.] [+|-] NUM -> 2 fortran numbers are touching each other */
-        print_stderr("Warning: File '%s' c='%c' [num pos=%li] two fortran numbers are touching each other\n",
+        if (options.verbose)
+          print_stderr("Warning: File '%s' c='%c' [num pos=%li] two fortran numbers are touching each other\n",
           file.Source, c, startnumpos);
       }
 
