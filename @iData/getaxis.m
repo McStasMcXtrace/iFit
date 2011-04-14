@@ -22,7 +22,7 @@ function [val, lab] = getaxis(s,ax)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'y')
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
@@ -90,7 +90,7 @@ else % given as a char, return a char
     axis_str = str2num(ax);
     if isempty(axis_str) % not a number char
       ax = strmatch(ax, s.Alias.Axis, 'exact');
-      link = s.Alias.Axis{ax};
+      if ~isempty(ax), link = s.Alias.Axis{ax}; end
     else
       ax = axis_str;
       if axis_str == 0

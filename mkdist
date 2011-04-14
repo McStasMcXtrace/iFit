@@ -44,6 +44,7 @@ find . -name CVS -exec rm -rf \{\} \; 2> /dev/null
 find . -name .CVS -exec rm -rf \{\} \; 2> /dev/null
 find . -name CVSROOT -exec rm -rf \{\} \; 2> /dev/null
 rm mkdist
+rm iFiles/looktxt.mex*
 
 # Update version and date
 for file in README.txt @iData/version.m Docs/index.html Docs/Install.html
