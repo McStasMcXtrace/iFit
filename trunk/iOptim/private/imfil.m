@@ -217,7 +217,6 @@ fval = best_fval;
 
 output.iterations = iterations;
 output.algorithm  = options.algorithm;
-output.message    = message;
 output.funcCount  = fcount;
 
 end
