@@ -48,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -186,11 +186,11 @@ case {'cmaes','fmincmaes'}
 
   if     strmatch(exitflag, 'tolx')
     exitflag=-5;
-    message = [ 'Termination parameter tolerance criteria reached (options.TolX=' ...
+    message = [ 'Converged: Termination parameter tolerance criteria reached (options.TolX=' ...
               num2str(options.TolX) ')' ];
   elseif strmatch(exitflag, 'tolfun')
     exitflag=-1;
-    message = [ 'Termination function tolerance criteria reached (options.TolFun=' ...
+    message = [ 'Converged: Termination function tolerance criteria reached (options.TolFun=' ...
               num2str(options.TolFun) ')' ];
   elseif strmatch(exitflag, 'maxiter')
     exitflag=-2;
@@ -232,10 +232,10 @@ case {'fminlm','LMFsolve'}
            'Display',0, 'FunTol', options.TolFun, 'XTol', options.TolX, ...
            'MaxIter', options.MaxIter, 'Evals',options.MaxFunEvals);
   switch exitflag
-  case -5, message='Termination function tolerance criteria reached';
+  case -5, message='Converged: Termination function tolerance criteria reached';
   case -2, message='Maximum number of iterations reached';
   case -3, message='Maximum number of function evaluations reached';
-  case -1, message='Termination parameter tolerance criteria reached';
+  case -1, message='Converged: Termination parameter tolerance criteria reached';
   end
 case {'powell','fminpowell'}
 % Powell minimization ----------------------------------------------------------
@@ -273,6 +273,15 @@ case {'ralg','fminralg','solvopt'}
 case {'fminsearch','fminsearchbnd'}
 % Nelder-Mead simplex, with constraints ----------------------------------------
   [pars,fval,exitflag,output] = fminsearch(@(pars) objective(fun, pars), pars, options);
+%     1  Maximum coordinate difference between current best point and other
+%        points in simplex is less than or equal to TolX, and corresponding 
+%        difference in function values is less than or equal to TolFun.
+%     0  Maximum number of function evaluations or iterations reached.
+%    -1  Algorithm terminated by the output function.
+  if     exitflag == 1, exitflag=-5;
+  elseif exitflag == 0, exitflag=-3;
+  elseif exitflag ==-1, exitflag=-6;
+  end
 case {'simpsa','fminsimpsa','SIMPSA'}
 % simplex/simulated annealing --------------------------------------------------
   constraints = constraints_minmax(pars, constraints);
@@ -326,7 +335,7 @@ case {'Simplex','fminsimplex'}
     [pars,out]=Simplex( fval );
     if Simplex('converged', options.TolFun)             % Test for convergence
       exitflag=-1;
-      message= [ 'Termination function tolerance criteria reached (options.TolFun=' ...
+      message= [ 'Converged: Termination function tolerance criteria reached (options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
       break
     end
@@ -355,7 +364,7 @@ catch
 end % try
 
 if isstruct(output) && isfield(output,'lasterror') && isempty(strfind(output.lasterror.message, 'stop condition:'))
-  disp('Code error when launching the optimizer. Plese fix it...')
+  disp('Code error when launching the optimizer. Please fix it...')
   disp(output.lasterror.message);
   for index=1:length(output.lasterror.stack)
     disp(output.lasterror.stack(index))
@@ -381,6 +390,7 @@ if ~isfield(output,'message')
   if isempty(message), message = constraints.message; end
   output.message         = message;
 end
+  
 output.funcCount       = constraints.funcCounts;
 output.algorithm       = options.algorithm;
 output.parsHistory     = constraints.parsHistory;
@@ -623,14 +633,14 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
   if ~isempty(options.TolFun) && options.TolFun ~= 0
     if (all(0 < fval) && all(fval <= options.TolFun)) % stop on lower threshold
       istop=-1;
-      message = [ 'Termination function tolerance criteria reached (fval <= options.TolFun=' ...
+      message = [ 'Converged: Termination function tolerance criteria reached (fval <= options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
     end
     if ~istop
       if  all(abs(fval-fval_prev) < options.TolFun) ...
        && all(abs(fval-fval_prev) > 0)
         istop=-12;
-        message = [ 'Termination function change tolerance criteria reached (delta(fval) < options.TolFun=' ...
+        message = [ 'Converged: Termination function change tolerance criteria reached (delta(fval) < options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
       end
     end
@@ -642,7 +652,7 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
       && all(abs(pars(:)-pars_prev(:)) < abs(options.TolX)) ...
       && any(abs(pars(:)-pars_prev(:)) > 0)
       istop=-5;
-      message = [ 'Termination parameter tolerance criteria reached (delta(parameters) <= options.TolX=' ...
+      message = [ 'Converged: Termination parameter tolerance criteria reached (delta(parameters) <= options.TolX=' ...
             num2str(mean(options.TolX)) ')' ];
     end
   end
@@ -695,7 +705,7 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
 % -8                Minimum temperature reached (anneal)
 % -9                Global Simplex convergence reached (simplex)
 % -10               Optimization terminated: Stall Flights Limit reached (swarm)
-% -11               Other termination status (cmaes)
+% -11               Other termination status (cmaes/Ralg)
 % -12               Termination function change tolerance criteria reached
 
 end
