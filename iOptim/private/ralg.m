@@ -140,12 +140,12 @@ options(12)=0; options(13)=0;      % same for constraints
 end
 
 % STARTING POINT ----{
- if max(size(x))<=1,      disp(errmes);  disp(error2); x
-                          options(9)=-12; message=error2; return
+ if max(size(x))<=1,      
+                          options(9)=-11; message=error2; return
  elseif size(x,2)==1,     n=size(x,1);  x=x'; trx=1;
  elseif size(x,1)==1,     n=size(x,2);        trx=0;
  else,                    disp(errmes);  disp(error2);
-                          options(9)=-12; message=error2; return
+                          options(9)=-11; message=error2; return
  end
 % ----}
 
@@ -214,9 +214,9 @@ stopf=0;
    else,    f=feval(fun,x);  end
    options(10)=options(10)+1; 
    if isempty(f),      if dispwarn,disp(errmes);disp(error30);end
-                       options(9)=-13; if trx, x=x';end, message=error30; return
+                       options(9)=-11; if trx, x=x';end, message=error30; return
    elseif isnan(f),    if dispwarn,disp(errmes);disp(error31);disp(error6);end
-                       options(9)=-13; if trx, x=x';end, message=error31; return
+                       options(9)=-4; if trx, x=x';end, message=error31; return
    elseif abs(f)==Inf, if dispwarn,disp(errmes);disp(error32);disp(error6);end
                        options(9)=-4; if trx, x=x';end, message=error32; return
    end
@@ -227,7 +227,7 @@ stopf=0;
       else,    fc=feval(func,x);  end
       if isempty(fc),  
              if dispwarn,disp(errmes);disp(error50);end
-             options(9)=-15; if trx, x=x';end, message=error50; return
+             options(9)=-11; if trx, x=x';end, message=error50; return
       elseif isnan(fc),
              if dispwarn,disp(errmes);disp(error51);disp(error6);end
              options(9)=-4; if trx, x=x';end, message=error51; return
@@ -256,13 +256,13 @@ stopf=0;
    end
    if size(g,2)==1, g=g'; end, ng=norm2(g);  
    if size(g,2)~=n,    if dispwarn,disp(errmes);disp(error40);end
-                       options(9)=-14; if trx, x=x';end, message=error40; return
+                       options(9)=-11; if trx, x=x';end, message=error40; return
    elseif isnan(ng),   if dispwarn,disp(errmes);disp(error41);disp(error6);end
-                       options(9)=-14; if trx, x=x';end, message=error41; return
+                       options(9)=-4; if trx, x=x';end, message=error41; return
    elseif ng==Inf,     if dispwarn,disp(errmes);disp(error42);disp(error6);end
-                       options(9)=-14; if trx, x=x';end, message=error42; return
+                       options(9)=-4; if trx, x=x';end, message=error42; return
    elseif ng<ZeroGrad, if dispwarn,disp(errmes);disp(error43);disp(error6);end
-                       options(9)=-14; if trx, x=x';end, message=error43; return
+                       options(9)=-11; if trx, x=x';end, message=error43; return
    end
    if constr, if ~FP
       if appconstr, 
@@ -278,16 +278,16 @@ stopf=0;
       if size(gc,2)==1, gc=gc'; end, ngc=norm2(gc);
       if size(gc,2)~=n,
              if dispwarn,disp(errmes);disp(error60);end
-             options(9)=-16; if trx, x=x';end, message=error60; return
+             options(9)=-11; if trx, x=x';end, message=error60; return
       elseif isnan(ngc),
              if dispwarn,disp(errmes);disp(error61);disp(error6);end
-             options(9)=-16; if trx, x=x';end, message=error61; return
+             options(9)=-11; if trx, x=x';end, message=error61; return
       elseif ngc==Inf, 
              if dispwarn,disp(errmes);disp(error62);disp(error6);end
-             options(9)=-16; if trx, x=x';end, message=error62; return
+             options(9)=-11; if trx, x=x';end, message=error62; return
       elseif ngc<ZeroGrad, 
              if dispwarn,disp(errmes);disp(error63);end
-             options(9)=-16; if trx, x=x';end, message=error63; return
+             options(9)=-11; if trx, x=x';end, message=error63; return
       end
       g=g+PenCoef*gc; ng=norm2(g);
    end, end
@@ -375,7 +375,7 @@ end
          options(10)=options(10)+1;  
          if h1*f==Inf
             if dispwarn, disp(errmes); disp(error5); end
-            options(9)=-17; if trx, x=x';end, message=error5; return
+            options(9)=-11; if trx, x=x';end, message=error5; return
          end
          if constr, fp=f;
            if trx,fc=feval(func,x');
@@ -414,7 +414,7 @@ end
          elseif all(abs(x-x1)<abs(x)*epsnorm), 
                 stepvanish=stepvanish+1;
                 if stepvanish>=5,
-                    options(9)=-14;
+                    options(9)=-11;
                     if dispwarn, disp(termwarn1);        
                                        disp(endwarn(4,:)); end
                     if trx,x=x';end,  message=endwarn(4,:); return
@@ -467,10 +467,10 @@ stepvanish=stepvanish+ksm;
       if size(g,2)==1, g=g'; end,    ng=norm2(g);
       if isnan(ng), 
        if dispwarn, disp(errmes); disp(error41); end
-       options(9)=-14; if trx, x=x'; end, message=error41; return
+       options(9)=-4; if trx, x=x'; end, message=error41; return
       elseif ng==Inf,     
        if dispwarn,disp(errmes);disp(error42);end
-       options(9)=-14; if trx, x=x';end, message=error42; return
+       options(9)=-4; if trx, x=x';end, message=error42; return
       elseif ng<ZeroGrad, 
            if dispwarn,disp(wrnmes);disp(warn1);end
            message=warn1;
@@ -496,13 +496,13 @@ stepvanish=stepvanish+ksm;
          if size(gc,2)==1, gc=gc'; end, ngc=norm2(gc);
          if     isnan(ngc),
                 if dispwarn,disp(errmes);disp(error61);end
-                options(9)=-16; if trx, x=x';end, message=error61; return
+                options(9)=-4; if trx, x=x';end, message=error61; return
          elseif ngc==Inf, 
                 if dispwarn,disp(errmes);disp(error62);end
-                options(9)=-16; if trx, x=x';end, message=error62; return
+                options(9)=-4; if trx, x=x';end, message=error62; return
          elseif ngc<ZeroGrad & ~appconstr, 
                 if dispwarn,disp(errmes);disp(error63);end
-                options(9)=-16; if trx, x=x';end, message=error63; return
+                options(9)=-11; if trx, x=x';end, message=error63; return
          end
          g=g+PenCoef*gc; ng=norm2(g); 
          if Reset, if dispwarn,  disp(wrnmes);  disp(warn21); end
@@ -574,7 +574,7 @@ if kc>=mxtc, termflag=0; end
                   else, stopf=1; 
                   end  
           elseif dx<1.e-12*max(norm2(x),1) & termx>=limxterm 
-                    options(9)=-14;
+                    options(9)=-11;
                     if dispwarn, disp(termwarn1); disp(endwarn(4,:));
                                     if app, disp(appwarn); end
                     end
@@ -596,12 +596,12 @@ if kc>=mxtc, termflag=0; end
     if constr 
       if ng<=ZeroGrad,
           if dispwarn,  disp(termwarn1);  disp(warn1); end
-          options(9)=-18; if trx,x=x';end, message=warn1; return
+          options(9)=-11; if trx,x=x';end, message=warn1; return
       end
     else  
       if ng<=ZeroGrad,        nzero=nzero+1; 
        if dispwarn, disp(wrnmes);  disp(warn1);  end
-       if nzero>=3,  options(9)=-18; if trx,x=x';end, message=warn1; return, end
+       if nzero>=3,  options(9)=-11; if trx,x=x';end, message=warn1; return, end
        g0=-h*g0/2;
        for i=1:10,
           x=x+g0;               
@@ -629,16 +629,16 @@ if kc>=mxtc, termflag=0; end
           if size(g,2)==1, g=g'; end,       ng=norm2(g);
           if ng==Inf
               if dispwarn, disp(errmes);  disp(error42); end
-              options(9)=-14; if trx, x=x'; end, message=error42; return
+              options(9)=-4; if trx, x=x'; end, message=error42; return
           elseif isnan(ng) 
               if dispwarn, disp(errmes);  disp(error41); end
-              options(9)=-14; if trx, x=x'; end, message=error41; return
+              options(9)=-4; if trx, x=x'; end, message=error41; return
           end
           if ng>ZeroGrad, break, end
        end
        if ng<=ZeroGrad,
           if dispwarn,  disp(termwarn1);  disp(warn1); end
-          options(9)=-18; if trx,x=x';end, message=warn1; return
+          options(9)=-11; if trx,x=x';end, message=warn1; return
        end
        h=h1*dx; break
       end
