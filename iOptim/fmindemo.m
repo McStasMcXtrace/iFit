@@ -5,7 +5,7 @@ function abstract=fmindemo(dim, option, repeat_num)
 % problems. Starting configurations are chosen randomly.
 % The option flag may contain the following keywords:
 %    'verbose' displays individual detailed optimization results.
-%    'rand'    adds a 5% gaussian random noise to all functions
+%    'rand'    adds a 10% gaussian random noise to all functions
 % The test can be repeated iteratively so that a Monte Carlo sampling of starting
 % parameters give a better stastistical estimate of each method efficiency.
 %
@@ -19,15 +19,15 @@ function abstract=fmindemo(dim, option, repeat_num)
 % Test functions from Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
 
 if nargin == 0
-  abstract{    1} = fmindemo(1, '',50); 
-  abstract{end+1} = fmindemo(2, '',50);
-  abstract{end+1} = fmindemo(4, '',50); 
-  abstract{end+1} = fmindemo(8, '',40); 
-  abstract{end+1} = fmindemo(12,'',35);
-  abstract{end+1} = fmindemo(16,'',30); 
-  abstract{end+1} = fmindemo(32,'',20); 
-  abstract{end+1} = fmindemo(48,'',10); 
-  abstract{end+1} = fmindemo(64,'',10); 
+  abstract{    1} = fmindemo(1, '',1); 
+  abstract{end+1} = fmindemo(2, '',1);
+  abstract{end+1} = fmindemo(4, '',1); 
+  abstract{end+1} = fmindemo(8, '',1); 
+  abstract{end+1} = fmindemo(12,'',1);
+  abstract{end+1} = fmindemo(16,'',1); 
+  % abstract{end+1} = fmindemo(32,'',20); 
+  % abstract{end+1} = fmindemo(48,'',10); 
+  % abstract{end+1} = fmindemo(64,'',10); 
   return
 end
 
@@ -133,14 +133,15 @@ problems={...       % Unimodal functions
   'ftwomaxtwo',   10, ...
   'frand',        1};
 
-if dim == 1
+if dim == -1
   fig=figure;
   % plot 1D parameter space for each function
+  dim = abs(dim);
   n=floor(sqrt(length(problems)/2));
   m=ceil(length(problems)/n/2);
   for index_problem=1:2:length(problems)  % loop on functions
     psize=problems{index_problem+1};
-    y=zeros(100);
+    y=zeros(100,1);
     for i1=1:100
       p1=-psize+(i1/100)*2*psize;
       orig=str2func(problems{index_problem});
@@ -156,15 +157,18 @@ if dim == 1
       end
       y(i1) = f;
     end
-    fprintf(1, '%s(%d) min=%g max=%g\n', problems{index_problem}, dim, min(min(y)), max(max(y)));
+    [my,mi]=min(y(:));
+    fprintf(1, '%15s(%2d) min=%10.5g at i=%i max=%g\n', problems{index_problem}, dim, my, mi, max(max(y)));
     subplot(m,n,(index_problem+1)/2);
     plot(y); % title(problems{index_problem});
     set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[]);
   end
   print('-dpng', [ 'dim' '_' num2str(dim) ]);
   print('-depsc2', [ 'dim' '_' num2str(dim) ]);
-elseif dim == 2
+  return
+elseif dim == -2
   % plot 2D parameter space for each function
+  dim = abs(dim);
   fig=figure;
   n=floor(sqrt(length(problems)/2));
   m=ceil(length(problems)/n/2);
@@ -177,18 +181,19 @@ elseif dim == 2
         p2=-psize+(i2/100)*2*psize;
         orig=str2func(problems{index_problem});
         if ~isempty(strfind(option, 'rand'))
-          fun = @(x)(abs(feval(orig,p2)*(1+0.1*randn)));
+          fun = @(x)(abs(feval(orig,[ p1 p2] )*(1+0.1*randn)));
         else
-          fun = @(x)(abs(feval(orig,p2)));
+          fun = @(x)(abs(feval(orig,[ p1 p2] )));
         end
-        f = feval(fun, [ p1 ]);
+        f = feval(fun, [ p1 p2 ]);
         if length(f(:)) ~= 1
           error([ problems{index_problem} ' returns results of wrong dimension ' num2str(size(f)) ]);
         end
         y(i1,i2) = f;
       end
     end
-    fprintf(1, '%s(%d) min=%g max=%g\n', problems{index_problem}, dim, min(min(y)), max(max(y)));
+    [my,mi]=min(y(:));
+    fprintf(1, '%15s(%2d) min=%10.5g at i=%i max=%g\n', problems{index_problem}, dim, my, mi, max(max(y)));
     subplot(m,n,(index_problem+1)/2);
     h=surf(y); set(h,'Edgecolor','none');
     % ylabel(problems{index_problem});
@@ -196,6 +201,7 @@ elseif dim == 2
   end
   print('-dpng', [ 'dim' '_' num2str(dim) ]);
   print('-depsc2', [ 'dim' '_' num2str(dim) ]);
+  return
 end
 
 dimensionality=randn(1,dim);
@@ -218,9 +224,9 @@ for index=1:length(optimizers)
     opt=opt(5:end);
     opt=opt(1:min(5, length(opt)));
   end
-  options.MaxIter=250*dim;
+  options.MaxIter    =250*dim;
   options.MaxFunEvals=2500*dim;
-  options.TolX=0;
+  options.TolX       =1e-3;
   if ~isempty(strfind(option, 'rand'))
     options.TolFun=1e-3;
   else
@@ -276,9 +282,25 @@ for index_repeat=1:repeat_num
       duration(index)=etime(clock,t0);
       funcount(index)=out.funcCount;
       iterate(index) =out.iterations;
-
-      if fval < options.TolFun, f='C';
-      else f='n'; end
+% return code     message
+%  0                Algorithm terminated normally
+% -1                Termination function tolerance criteria reached
+% -2                Maximum number of iterations reached
+% -3                Maximum number of function evaluations reached
+% -4                Function value is Inf or Nan
+% -5                Termination parameter tolerance criteria reached
+% -6                Algorithm was terminated by the output function
+% -7                Maximum consecutive rejections exceeded (anneal)
+% -8                Minimum temperature reached (anneal)
+% -9                Global Simplex convergence reached (simplex)
+% -10               Optimization terminated: Stall Flights Limit reached (swarm)
+% -11               Other termination status (cmaes)
+% -12               Termination function change tolerance criteria reached
+      if     fval < options.TolFun,                       f='C';
+      elseif any(flag == [-1 -12]),                 f='c';
+      %elseif any(flag == [-1 -5 -9 -12]),                 f='c';
+      %elseif ~isempty(strfind(out.message, 'Converged')), f='c';
+      else                                                f='n'; end
 
       fvals(index)   =fval;
       flags{index}   =f;
@@ -300,14 +322,8 @@ for index_repeat=1:repeat_num
     score=1:length(optimizers);
     for index=1:length(optimizers)
       f = flags{index};
-      if f(1) == 'C' || f(1)=='c',   
-        if duration(index) > mtime, f='-'; 
-        else f='+'; end
-      elseif f(1)=='n', f=' '; 
-      else f='*'; end
-      % store results into array
-      if f=='+' | f=='-', score(index)=1;
-      else score(index)=0; end
+      if lower(f(1)) == 'c', score(index)=1;
+      else                   score(index)=0; end
     end
     abstract.score    = abstract.score   +score;
     abstract.duration = abstract.duration+duration.*score;
@@ -639,7 +655,7 @@ function f=frosenlin(x)
 function f=frosenmodif(x)
   x=x(:);
   if length(x) < 2, x = [ x ; 0]; end
-  f = 74 + 100*(x(2)-x(1)^2)^2 + (1-x(1))^2 ...
+  f = 100*(x(2)-x(1)^2)^2 + (1-x(1))^2 ...
       - 400*exp(-sum((x+1).^2)/2/0.05); 
   
 function f=fschwefelrosen1(x)
@@ -748,8 +764,7 @@ function f=fspallpseudorastrigin(x, scal, skewfac, skewstart, amplitude)
   if ~isempty(idx)
     y(idx) =  skewfac*y(idx);
   end
-  f = amplitude * (0*N-prod(cos((2*pi)^0*y),1)) + 0.05 * sum(y.^2,1) ...
-      + randn(1,1);
+  f = amplitude * (0*N-prod(cos((2*pi)^0*y),1)) + 0.05 * sum(y.^2,1);
 
 function f=frastrigin(x, scal, skewfac, skewstart, amplitude)
 % by default multi-modal about between -30 and 30
