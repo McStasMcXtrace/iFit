@@ -37,7 +37,7 @@ tests_list = { ...
   'Plot_6_sidebyside', ...
   'Plot_7_subplot', ...
   'Plot_8_projections', ...
-  'Plot_9_slies', ...
+  'Plot_9_slices', ...
   'Save_1'};
 status = cell(size(tests_list));
 errors = status;
@@ -59,7 +59,7 @@ for index=1:length(tests_list)
 end
 
 % write report
-disp(['                Test     Status   Message [' mfilename ']' ]);
+disp(['                Test     Status             [' mfilename ']' ]);
 disp( '------------------------------------------------------')
 for index=1:length(tests_list)
   fprintf(1, '%20s %10s %s\n', tests_list{index}, status{index}, errors{index});
@@ -332,7 +332,7 @@ case 'Plot_8_projections'
   y=a.Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF_7; y=y(32:371); a{1}=y; % define the angular axis
   ylabel(a,'Angle [deg]');
   subplot([ log(a) sum(a) trapz(a) camproj(a) ],'axis tight');
-case 'Plot_9_slies'
+case 'Plot_9_slices'
   a=iData([ ifitpath 'Data/ILL_IN6.dat' ]); 
   plot(a(:,622));                   % extract the object made from channel 622 on second axis, with all columns
 case 'Save_1'

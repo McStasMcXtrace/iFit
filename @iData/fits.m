@@ -63,7 +63,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also iData, fminsearch, optimset, optimget
 
 % nested  functions: eval_criteria
@@ -125,6 +125,7 @@ if isnumeric(constraints) | islogical(constraints)
     constraints.fixed=fixed;
   else
     lb = constraints;
+    constraints     = [];
     constraints.min = lb;
     constraints.max = ub;
   end
