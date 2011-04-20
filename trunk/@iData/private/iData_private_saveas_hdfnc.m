@@ -32,7 +32,9 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
       fields{index} = strrep(fields{index}, '.', filesep);
       if isempty(towrite)
         % initial write wipes out the file
+        try
         delete(filename);
+        end
         hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val, 'WriteMode', 'overwrite');
         towrite = 'append';
       else
