@@ -42,6 +42,7 @@ tests_list = { ...
 status = cell(size(tests_list));
 errors = status;
 failed = 0;
+t0 = clock;
 
 % execute all tests
 for index=1:length(tests_list)
@@ -68,6 +69,7 @@ end
 ratio = 1-failed/length(tests_list);
 disp( '------------------------------------------------------')
 fprintf(1,'Success ratio: %i %%\n', ceil(ratio*100));
+fprintf(1,'Test duration: %g [s]\n', etime(clock,t0));
 
 % ------------------------------------------------------------------------------
 %                               HERE are the TESTS

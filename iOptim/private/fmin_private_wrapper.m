@@ -48,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -406,7 +406,7 @@ if (exitflag & strcmp(options.Display,'notify')) | ...
    strcmp(options.Display,'final') | strcmp(options.Display,'iter')
   disp([ '** Finishing minimization of ' localChar(fun) ' using algorithm ' localChar(options.algorithm) ]);
   disp(' Func_count     min[f(x)]        Parameters');
-  fmin_private_disp(struct('Display','iter'), constraints.funcCounts, fun, pars, fval)
+  fmin_private_disp(struct('Display','iter'), -constraints.funcCounts, fun, pars, fval)
   disp( [ ' Status: ' message ]);
 end
 
@@ -427,8 +427,7 @@ return  % actual end of optimization
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
     [exitflag, message] = fmin_private_check(pars, c, ...
-       constraints.funcCounts, options, ...
-       constraints.parsPrevious, constraints.criteriaPrevious);
+       constraints.funcCounts, options, constraints);
     constraints.message = message;
     
     % save current optimization state
@@ -465,7 +464,7 @@ return  % actual end of optimization
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
     [exitflag, message] = fmin_private_check(pars, sum(abs(c)), ...
-       constraints.funcCounts, options, constraints.parsPrevious, constraints.criteriaPrevious);
+       constraints.funcCounts, options, constraints);
     constraints.message = message;
     
     % save current optimization state
@@ -570,22 +569,16 @@ function fmin_private_disp(options, funccount, fun, pars, fval)
       spars=pars(1:min(20,length(pars)));
       spars=mat2str(spars', 4);  % as a row
       if length(spars) > 50, spars=[ spars(1:47) ' ...' ]; end
-      disp(sprintf(' %5.0f    %12.6g   %s', funccount, fval, spars));
+      disp(sprintf(' %5.0f    %12.6g   %s', abs(funccount), fval, spars));
     end
   end
   
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [istop, message] = fmin_private_check(pars, fval, funccount, options, pars_prev, fval_prev)
+function [istop, message] = fmin_private_check(pars, fval, funccount, options, constraints)
 % standard checks
-% fmin_private_check(pars, fval, funccount, options
-% or
-% fmin_private_check(pars, fval, funccount, options, pars_prev)
-% or
-% fmin_private_check(pars, fval, funccount, options, pars_prev, fval_prev)
-% or
-% options=fmin_private_check(options);
+% fmin_private_check(pars, fval, funccount, options, constraints)
 % or
 % options=fmin_private_check(options, default_options);
 
@@ -615,6 +608,10 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
     return
   end
   
+  pars_prev = constraints.parsPrevious;
+  fval_prev = constraints.criteriaPrevious;
+  fval_best = constraints.criteriaBest;
+  
   % handle relative stop conditions
   if ischar(options.TolFun)
     if options.TolFun(end)=='%'
@@ -637,8 +634,11 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
                 num2str(options.TolFun) ')' ];
     end
     if ~istop
+      % stop on criteria change
       if  all(abs(fval-fval_prev) < options.TolFun) ...
-       && all(abs(fval-fval_prev) > 0)
+       && all(abs(fval-fval_prev) > 0) ...
+       && all(abs(fval-fval_best) < options.TolFun) ...
+       && all(abs(fval-fval_best) > 0) ...
         istop=-12;
         message = [ 'Converged: Termination function change tolerance criteria reached (delta(fval) < options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
@@ -689,8 +689,10 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, p
         message = 'Algorithm was terminated by the output function (options.OutputFcn)';
       end
     end
-    
-    fmin_private_disp(options, funccount, options.optimizer, pars, fval)
+    if istop
+      funccount = -funccount; % trigger iteration display
+    end
+    fmin_private_disp(options,  funccount, options.optimizer, pars, fval);
   end
   
 % return code     message
