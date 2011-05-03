@@ -48,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -559,8 +559,7 @@ function fmin_private_disp(options, funccount, fun, pars, fval)
 
 
   if funccount > 5
-    if     funccount > 500 & mod(funccount,1000) return;
-    elseif funccount > 50  & mod(funccount,100) return;
+    if funccount > 50  & mod(funccount,100) return;
     elseif mod(funccount,10) return; end
   end
 
@@ -611,6 +610,7 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
   pars_prev = constraints.parsPrevious;
   fval_prev = constraints.criteriaPrevious;
   fval_best = constraints.criteriaBest;
+  fval_mean = mean(constraints.criteriaHistory(max(1, length(constraints.criteriaHistory)-100):end));
   
   % handle relative stop conditions
   if ischar(options.TolFun)
@@ -637,8 +637,8 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
       % stop on criteria change
       if  all(abs(fval-fval_prev) < options.TolFun) ...
        && all(abs(fval-fval_prev) > 0) ...
-       && all(abs(fval-fval_best) < options.TolFun) ...
-       && all(abs(fval-fval_best) > 0) ...
+       && all(abs(fval-fval_mean) < options.TolFun) ...
+       && all(abs(fval-fval_mean) > 0) ...
         istop=-12;
         message = [ 'Converged: Termination function change tolerance criteria reached (delta(fval) < options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
