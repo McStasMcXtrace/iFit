@@ -29,8 +29,7 @@ function stop = fminplot(pars, optimValues, state)
   end
   
   if length(fvalHistory) > 9
-    if length(fvalHistory) > 999 & mod(length(fvalHistory),1000) return;
-    elseif length(fvalHistory) > 99 & mod(length(fvalHistory),100) return;
+    if length(fvalHistory) > 99 & mod(length(fvalHistory),100) return;
     elseif mod(length(fvalHistory),5) return; end
   end
 

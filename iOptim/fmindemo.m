@@ -226,7 +226,7 @@ for index=1:length(optimizers)
   end
   options.MaxIter    =250*dim;
   options.MaxFunEvals=2500*dim;
-  options.TolX       =1e-3;
+  options.TolX       =0;
   if ~isempty(strfind(option, 'rand'))
     options.TolFun=1e-3;
   else

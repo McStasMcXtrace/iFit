@@ -32,9 +32,9 @@ if ~isempty(findfield(a, 'component'))
   setalias(a, 'Component', 'Data.Component','Component name');
 end
 
-% special case for McStas files and XYE (3 columns) files
-n = size(a,2);
-if (n >= 2 && size(a,1) >= 5) || ~isempty(strfind(a.Title,'McStas 1D monitor'))
+% special case for McStas files and XYE (2-4 columns) files
+n = size(a,2); % number of columns
+if (n >= 2 && n <= 4 && size(a,1) >= 5) || ~isempty(strfind(a.Title,'McStas 1D monitor'))
 
   Datablock = ['this.' getalias(a,'Signal')];
 
@@ -44,7 +44,7 @@ if (n >= 2 && size(a,1) >= 5) || ~isempty(strfind(a.Title,'McStas 1D monitor'))
   if n>=3
     setalias(a,'Error',[Datablock '(:,3)']);
   else
-    setalias(a,'Error',0);
+    setalias(a,'Error',[]);
   end
   setalias(a,'E','Error');
   if ~isempty(findfield(a, 'Error')) || n >= 4
