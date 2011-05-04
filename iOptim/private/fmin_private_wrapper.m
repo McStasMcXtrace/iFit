@@ -48,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -339,8 +339,8 @@ case {'Simplex','fminsimplex'}
                 num2str(options.TolFun) ')' ];
       break
     end
-    if iterations == options.MaxIter
-      exitflag=-1;
+    if iterations >= options.MaxIter
+      exitflag=-2;
       message = [ 'Maximum number of iterations reached (options.MaxIter=' ...
                 num2str(options.MaxIter) ')' ];;
       break
@@ -610,7 +610,7 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
   pars_prev = constraints.parsPrevious;
   fval_prev = constraints.criteriaPrevious;
   fval_best = constraints.criteriaBest;
-  fval_mean = mean(constraints.criteriaHistory(max(1, length(constraints.criteriaHistory)-100):end));
+  fval_mean = mean(constraints.criteriaHistory(max(1, length(constraints.criteriaHistory)-10):end));
   
   % handle relative stop conditions
   if ischar(options.TolFun)
