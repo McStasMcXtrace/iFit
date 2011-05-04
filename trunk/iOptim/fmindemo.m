@@ -535,7 +535,7 @@ function f=fchangingsphere(x)
   N = length(x);
   global scale_G; global count_G; if isempty(count_G) count_G=-1; end
   count_G = count_G+1;
-  if mod(count_G,10) == 0
+  if mod(count_G,10) == 0 || length(scale_G) ~= length(x)
     scale_G = 10.^(2*rand(1,N));
   end
   %disp(scale(1));
