@@ -1,23 +1,24 @@
-function [pars,fval,exitflag,output] = fmincgtrust(varargin)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmincgtrust(FUN,PARS,[OPTIONS],[CONSTRAINTS]) Steihaug Newton-CG-Trust region algoirithm
+function [pars,fval,exitflag,output] = fminbfgs(varargin)
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminbfgs(FUN,PARS,[OPTIONS],[CONSTRAINTS]) BFGS search
 %
-% This minimization method uses the Steihaug Newton-CG-Trust region algoirithm
+% This minimization method uses the steepest descent/
+% Broyden-Fletcher-Goldfarb-Shanno method with polynomial line search
 % 
 % Calling:
-%   fmincgtrust(fun, pars) asks to minimize the 'fun' objective function with starting
+%   fminbfgs(fun, pars) asks to minimize the 'fun' objective function with starting
 %     parameters 'pars' (vector)
-%   fmincgtrust(fun, pars, options) same as above, with customized options (optimset)
-%   fmincgtrust(fun, pars, options, fixed) 
+%   fminbfgs(fun, pars, options) same as above, with customized options (optimset)
+%   fminbfgs(fun, pars, options, fixed) 
 %     is used to fix some of the parameters. The 'fixed' vector is then 0 for
 %     free parameters, and 1 otherwise.
-%   fmincgtrust(fun, pars, options, lb, ub) 
+%   fminbfgs(fun, pars, options, lb, ub) 
 %     is used to set the minimal and maximal parameter bounds, as vectors.
-%   fmincgtrust(fun, pars, options, constraints) 
+%   fminbfgs(fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
-%   [x,fval] = fmincgtrust(banana,[-1.2, 1])
+%   [x,fval] = fminbfgs(banana,[-1.2, 1])
 %
 % Input:
 %  FUN is the function to minimize (handle or string).
@@ -45,9 +46,9 @@ function [pars,fval,exitflag,output] = fmincgtrust(varargin)
 %   Fletcher, R., Computer Journal 1970, 13, 317-322
 %   Goldfarb, D., Mathematics of Computation 1970, 24, 23-26
 %   Shanno, D. F.,Mathematics of Computation 1970, 24, 647-656
-% Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [cgtrust]
+% Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [bfgswopt]
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.13 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -56,9 +57,9 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options.Display='';
   options.TolFun =1e-3;
   options.TolX   =1e-8;
-  options.MaxIter='100*numberOfVariables';
-  options.MaxFunEvals=10000;
-  options.algorithm  = [ 'Steihaug Newton-CG-Trust region algoirithm (by Kelley) [' mfilename ']' ];
+  options.MaxIter='20*numberOfVariables';
+  options.MaxFunEvals=1000;
+  options.algorithm  = [ 'Broyden-Fletcher-Goldfarb-Shanno (by Kelley) [' mfilename ']' ];
   options.optimizer = mfilename;
   pars = options;
   return
