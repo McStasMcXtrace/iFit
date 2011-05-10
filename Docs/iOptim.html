@@ -3,6 +3,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: optimization methods (iOptim)</title>
 </head><body>
@@ -45,7 +47,7 @@ change </a></li>
 </ol>
 <br>
 <hr style="width: 100%; height: 2px;">
-<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">fminsearch, </span>and many others<br>
+<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">fminsearch, </span>and many other compatible optimizers<br>
 <div style="text-align: left;"><br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId819006"></a>Description of the optimization process and
 general syntax</h3>
@@ -318,7 +320,7 @@ etc... models.<br>
 <ul>
   <li>Each of the 52 model functions [<a href="#Hansen2004">16</a>,<a href="#Suganthan2005">17</a>] to minimize can be solved with up
 to <span style="font-style: italic;">d</span>=64 parameters.</li>
-  <li>Each of the 17 optimizers has solved all the function, with <span style="font-style: italic;">d</span>=1-64 parameters.</li>
+  <li>Each of the 22 optimizers has solved all the function, with <span style="font-style: italic;">d</span>=1-64 parameters.</li>
   <li>Each of these tests has been repeated 5-10 times with a random
 set of starting parameters.</li>
 </ul>
@@ -332,20 +334,20 @@ results are shown in the plot above.<br>
 <table style="width: 100%;" border="1" cellpadding="1" cellspacing="1">
   <col width="113"> <col width="291"> <col width="97"> <col width="104"> <col width="230"> <tbody>
     <tr>
-      <td bgcolor="#ffcccc" width="113">
+      <td width="113" bgcolor="#ffcccc">
       <p align="CENTER"><font color="#3366ff"><i><b>Name</b></i></font></p>
       </td>
-      <td bgcolor="#ffcccc" width="291">
+      <td width="291" bgcolor="#ffcccc">
       <p align="CENTER"><font color="#3366ff"><i><b>Description</b></i></font></p>
       </td>
-      <td bgcolor="#ffcccc" width="97">
+      <td width="97" bgcolor="#ffcccc">
       <p align="CENTER"><font color="#3366ff"><i><b>Overall efficiency
 [%]</b></i></font></p>
       </td>
       <td style="width: 104px; background-color: rgb(255, 204, 204);">
       <p><font color="#3366ff"><i><b>Mean execution time [s]</b></i></font></p>
       </td>
-      <td bgcolor="#ffcccc" width="230">
+      <td width="230" bgcolor="#ffcccc">
       <p align="CENTER"><font color="#3366ff"><i><b>Comments</b></i></font></p>
       </td>
     </tr>
@@ -680,7 +682,67 @@ d&gt;16</p>
       <td width="230">
       <p align="CENTER">&nbsp;</p>
       </td>
+    </tr><tr>
+      <td style="vertical-align: top; text-align: center;">fminanneal [<a href="#fminanneal">18</a>]<br>
+      </td>
+      <td style="vertical-align: top; text-align: center;">Simulated annealing<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
     </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;">fminbfgs [<a href="#fminbfgs">19</a>]<br>
+      </td>
+      <td style="vertical-align: top; text-align: center;">Broyden-Fletcher-Goldfarb-Shanno<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;">fminkalman [<a href="#fminkalman">20</a>]<br>
+      </td>
+      <td style="vertical-align: top; text-align: center;">unscented Kalman filter<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;">fminnewton [<a href="#fminnewton">21</a>]<br>
+      </td>
+      <td style="vertical-align: top; text-align: center;">Newton gradient search<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;">fminrand [<a href="#fminrand">22</a>]<br>
+      </td>
+      <td style="vertical-align: top; text-align: center;">adaptive random search<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+
   </tbody>
 </table>
 <p style="margin-bottom: 0cm;" align="CENTER"><i>Table 2: Optimization
@@ -902,7 +964,8 @@ D., <span style="font-style: italic;">Mathematics of Computation</span>
 F.,<span style="font-style: italic;">Mathematics of Computation</span>
 1970, <span style="font-weight: bold;">24, </span>647-656; C. T.
 Kelley, 1998, <span style="font-style: italic;">Iterative Methods for
-Optimization</span></li>
+Optimization</span><span style="font-weight: bold;"> no. 18</span> in&nbsp;
+Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.</li>
   <li><span style="text-decoration: underline;">Random gradient
 optimizer</span><span style="font-weight: bold;"> <a name="fmingradrand"></a>fmingradrand [ossrs by Belur]</span> <span style="font-style: italic;">Computer Methods in Applied Mechanics
 &amp; Engg</span>, Vol&nbsp; <span style="font-weight: bold;">19, </span>(1979)
@@ -965,7 +1028,8 @@ A. Jeeves, <span style="font-style: italic;">Journal of the ACM</span>,
 
     <span style="font-weight: bold;">Vol. 8</span>, April 1961, pp. 212
 ; C. T. Kelley, 1998, <span style="font-style: italic;">Iterative
-Methods for Optimization</span></li>
+Methods for Optimization, </span><span style="font-weight: bold;">no. 18</span> in&nbsp;
+Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.</li>
   <li><span style="text-decoration: underline;">Powell minimization</span>
     <a name="fminpowell"></a><span style="font-weight: bold;">fminpowell
 [powell
@@ -978,8 +1042,23 @@ and Mead, <span style="font-style: italic;">Computer J</span>., <span style="fon
   <li><span style="text-decoration: underline;">Genetic algorithm
 optimizer with parameter real coding</span>, <a name="fminga"></a><span style="font-weight: bold;">fminga [GA by Ivakpour]</span></li>
   <li><span style="display: block;" id="records_chunks">Hansen, N; Kern, <span style="text-decoration: underline;">S, </span></span><span style="text-decoration: underline;"><a name="Hansen2004"></a>Evaluating the CMA evolution strategy on multimodal test functions</span>, <span style="font-style: italic;">PARALLEL PROBLEM SOLVING FROM NATURE - PPSN VIII</span>- <span style="font-style: italic;">LECTURE NOTES IN COMPUTER SCIENCE</span>, <span style="font-weight: bold;">3242</span> (2004) 282-291. [<a href="http://www.lri.fr/%7Ehansen/ppsn2004hansenkern.pdf">pdf</a>]</li>
-  <li><a name="Suganthan2005"></a>P.N. Suganthan, N. Hansen<span style="font-style: italic;"> et al,</span> <span style="font-style: italic;">Problem definition and evaluation criteria for the CEC 2005 Special Session on Real-Parameter Optimization</span> (2005) [<a href="http://www.lri.fr/%7Ehansen/Tech-Report-May-30-05.pdf">pdf</a>]<br>
+  <li><a name="Suganthan2005"></a>P.N. Suganthan, N. Hansen<span style="font-style: italic;"> et al,</span> <span style="font-style: italic;">Problem definition and evaluation criteria for the CEC 2005 Special Session on Real-Parameter Optimization</span> (2005) [<a href="http://www.lri.fr/%7Ehansen/Tech-Report-May-30-05.pdf">pdf</a>]</li>
+  <li><span style="text-decoration: underline;">Simulated Annealing fminanneal</span><span style="font-weight: bold;"> fminanneal by joachim.vandekerckhove@psy.kuleuven.be</span>&nbsp; <a name="fminanneal"></a>Kirkpatrick, S., Gelatt, C.D., &amp; Vecchi, M.P. (1983). <span style="font-style: italic;">Optimization by Simulated Annealing</span>. Science, <span style="font-weight: bold;">220, </span>671-680</li>
+  <li><span style="text-decoration: underline;">Broyden-Fletcher-Goldfarb-Shanno</span> <a name="fminbfgs"></a><span style="font-weight: bold;">fminbfgs by A.R. Secchi</span>
+Broyden, C. G., J. of the Inst of Math and Its Appl 1970, 6, 76-90 ;
+Fletcher, R., Computer Journal 1970, 13, 317-322 ; Goldfarb, D.,
+Mathematics of Computation 1970, 24, 23-26 ; Shanno, D. F.,Mathematics
+of Computation 1970, 24, 647-656</li>
+  <li><span style="text-decoration: underline;">Unscented Kalman filter</span> <a name="fminkalman"></a><span style="font-weight: bold;">fminkalman by Yi Cao</span> Kalman, R. E. <span style="font-style: italic;">"A New Approach to Linear Filtering and Prediction Problems"</span>, Transactions of the ASME - J. of Basic Engineering Vol. <span style="font-weight: bold;">82</span>: pp. 35 (1960)</li>
+  <li><span style="text-decoration: underline;">Newton search</span> <a name="fminnewton"></a><span style="font-weight: bold;">fminnewton by C.T. Kelley</span> Kelley 1998,
+Iterative Methods for Optimization<span style="font-weight: bold;">, no. 18</span> in&nbsp;
+Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999. ; W. Press, Numerical Recipes, Cambridge (1988)</li>
+  <li><span style="text-decoration: underline;">Adaptive random search</span> <a name="fminrand"></a><span style="font-weight: bold;">fminrand by A.R. Secchi 2001</span>
+A.R. Secchi and C.A. Perlingeiro, "Busca Aleatoria Adaptativa", in
+Proc. of XII Congresso Nacional de Matematica Aplicada e Computacional,
+Sao Jose do Rio Preto, SP, pp. 49-52 (1989).<br>
   </li>
+
 
 </ol>
 
@@ -988,7 +1067,7 @@ optimizer with parameter real coding</span>, <a name="fminga"></a><span style="f
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span style="font-style: italic;">
-$Date: 2011-03-10 08:52:44 $ $Revision: 1.11 $
+$Date: 2011-05-10 09:12:21 $ $Revision: 1.12 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
