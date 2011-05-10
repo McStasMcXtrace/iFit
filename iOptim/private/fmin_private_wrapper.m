@@ -48,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -353,6 +353,30 @@ case {'cgtrust','fmincgtrust'}
     [ options.TolFun .1 options.MaxIter options.MaxIter], options.TolX*options.TolX);
 % [pars,histout] = levmar(pars, @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
   iterations      = size(histout,1);
+% not so efficient optimizers ==================================================
+case {'fminanneal','anneal'}  
+% simulated annealing ----------------------------------------------------------
+  options.MaxTries   = options.MaxIter/10;
+  options.StopVal    = options.TolFun;
+  options.Verbosity=0;
+  [pars,fval,iterations,exitflag] = anneal(@(pars) objective(fun, pars), pars(:)', options);
+  if exitflag==-7,message='Maximum consecutive rejections exceeded (anneal)'; end
+case {'fminbfgs','bfgs'}      
+% Broyden-Fletcher-Goldfarb-Shanno ---------------------------------------------
+  [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
+  iterations = size(histout,1);
+case {'fminkalman','kalmann','ukfopt'}
+% unscented Kalman filter ------------------------------------------------------
+  [pars,iterations] = ukfopt(@(pars) objective(fun, pars(:)), pars(:), ...
+              options.TolFun, norm(pars)*eye(length(pars)), 1e-6*eye(length(pars)), 1e-6);
+case {'ntrust','fminnewton'}
+% Dogleg trust region, Newton model --------------------------------------------
+  [pars,histout,costdata] = ntrust(pars(:),@(pars) objective(fun, pars), ...
+       options.TolFun,options.MaxIter);
+  iterations      = size(histout,1);
+case {'buscarnd','fminrand'}
+% adaptive random search -------------------------------------------------------
+  [pars,fval]=buscarnd(@(pars) objective(fun, pars), pars, options);
 otherwise
   options = feval(optimizer, 'defaults');
   [pars,fval,exitflag,output] = fmin_private_wrapper(options.optimizer, fun, pars, ...
