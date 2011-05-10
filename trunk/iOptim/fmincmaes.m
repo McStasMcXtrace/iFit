@@ -66,7 +66,7 @@ function [pars, fval, exitflag, output] = fmincmaes(varargin)
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de [cmaes]
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also: fminsearch, optimset
 
 % STANDARD part ================================================================
@@ -86,7 +86,6 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options.Science       ='off';
   options.algorithm = [ 'Evolution Strategy with Covariance Matrix Adaptation (CMA-ES by Hansen) [' mfilename ']' ];
   options.optimizer = mfilename;
-  options.efficiency = 'high';
   pars = options;
   return
 end

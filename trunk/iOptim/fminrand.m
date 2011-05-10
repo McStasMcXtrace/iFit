@@ -1,23 +1,23 @@
-function [pars,fval,exitflag,output] = fmincgtrust(varargin)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmincgtrust(FUN,PARS,[OPTIONS],[CONSTRAINTS]) Steihaug Newton-CG-Trust region algoirithm
+function [pars,fval,exitflag,output] = fminrand(varargin)
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminrand(FUN,PARS,[OPTIONS],[CONSTRAINTS]) adaptive random search optimizer
 %
-% This minimization method uses the Steihaug Newton-CG-Trust region algoirithm
+% This minimization method uses an adaptive random search.
 % 
 % Calling:
-%   fmincgtrust(fun, pars) asks to minimize the 'fun' objective function with starting
+%   fminrand(fun, pars) asks to minimize the 'fun' objective function with starting
 %     parameters 'pars' (vector)
-%   fmincgtrust(fun, pars, options) same as above, with customized options (optimset)
-%   fmincgtrust(fun, pars, options, fixed) 
+%   fminrand(fun, pars, options) same as above, with customized options (optimset)
+%   fminrand(fun, pars, options, fixed) 
 %     is used to fix some of the parameters. The 'fixed' vector is then 0 for
 %     free parameters, and 1 otherwise.
-%   fmincgtrust(fun, pars, options, lb, ub) 
+%   fminrand(fun, pars, options, lb, ub) 
 %     is used to set the minimal and maximal parameter bounds, as vectors.
-%   fmincgtrust(fun, pars, options, constraints) 
+%   fminrand(fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
-%   [x,fval] = fmincgtrust(banana,[-1.2, 1])
+%   [x,fval] = fminrand(banana,[-1.2, 1])
 %
 % Input:
 %  FUN is the function to minimize (handle or string).
@@ -41,13 +41,13 @@ function [pars,fval,exitflag,output] = fmincgtrust(varargin)
 %          FVAL is the value of the FUN function evaluated at MINIMUM.
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
-% Reference: Broyden, C. G., J. of the Inst of Math and Its Appl 1970, 6, 76-90
-%   Fletcher, R., Computer Journal 1970, 13, 317-322
-%   Goldfarb, D., Mathematics of Computation 1970, 24, 23-26
-%   Shanno, D. F.,Mathematics of Computation 1970, 24, 647-656
-% Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [cgtrust]
+% Reference: A.R. Secchi and C.A. Perlingeiro, "Busca Aleatoria Adaptativa",
+%   in Proc. of XII Congresso Nacional de Matematica Aplicada e
+%   Computacional, Sao Jose do Rio Preto, SP, pp. 49-52 (1989).
+% Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
+% Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.18 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -56,13 +56,14 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options.Display='';
   options.TolFun =1e-3;
   options.TolX   =1e-8;
-  options.MaxIter='100*numberOfVariables';
-  options.MaxFunEvals=10000;
-  options.algorithm  = [ 'Steihaug Newton-CG-Trust region algoirithm (by Kelley) [' mfilename ']' ];
+  options.MaxIter=1000;
+  options.MaxFunEvals=5000;
+  options.algorithm  = [ 'Adaptive Random Search (by Secchi) [' mfilename ']' ];
   options.optimizer = mfilename;
   pars = options;
   return
 end
 
 [pars,fval,exitflag,output] = fmin_private_wrapper(mfilename, varargin{:});
+
 
