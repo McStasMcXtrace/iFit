@@ -1,4 +1,6 @@
                        Welcome to the iFit/iData package
+                              <ifit.mccode.org>
+                              
                         E. Farhi, ILL/CS <farhi@ill.fr>
                            Version @IFIT_VERSION@ - @IFIT_DATE@
 
