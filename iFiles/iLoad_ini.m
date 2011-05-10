@@ -114,7 +114,6 @@ function config = iLoad_ini
     ISIS_spe.name       ='ISIS/SPE tof data';
     ISIS_spe.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL --silent';
     ISIS_spe.method     ='looktxt';
-    ISIS_spe.postprocess='load_ill_spe';
     ISIS_spe.patterns   ={'Phi Grid'};
     ISIS_spe.extension  ='spe';
     

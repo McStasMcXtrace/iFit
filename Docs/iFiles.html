@@ -10,6 +10,9 @@
 
 
 
+
+
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -250,7 +253,7 @@ comma separated values</span><span style="color: rgb(204, 51, 204); font-weight:
       <td style="vertical-align: top;"><span style="font-weight: bold; color: rgb(204, 51, 204);">'fig' </span><span style="color: rgb(204, 51, 204);">Matlab figure</span></td>
       <td style="vertical-align: top;">binary<br>
       </td>
-      <td style="vertical-align: top;">The Matlab figure can be opened with <span style="font-style: italic;">openfig(file)</span>, and then converted to iData with <span style="font-style: italic;">iData(gcf)</span>.<br>
+      <td style="vertical-align: top;">The Matlab figure can also be opened with <span style="font-style: italic;">openfig(file)</span>, and then converted to iData with <span style="font-style: italic;">iData(gcf)</span>.<br>
       </td>
       <td style="vertical-align: top;">Yes<br>
       </td>
@@ -383,7 +386,7 @@ INX</span></span><span style="font-weight: bold;"><span style="color: rgb(204, 5
       </span></span></td>
       <td style="vertical-align: top;">text<br>
       </td>
-      <td style="vertical-align: top;">The <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/tofhr/inx/">INX</a> format is a simple format for neutron time-of-flight data. This data can also be imported/generated with <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">Lamp</a>.</td>
+      <td style="vertical-align: top;">The <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/tofhr/inx/">INX</a> format is a simple format for reduced neutron time-of-flight data (see <a href="http://www.ill.eu/instruments-support/instruments-groups/groups/tof/software/inx/">example</a>). This data can also be imported/generated with <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">Lamp</a>.</td>
       <td style="vertical-align: top;"><br>
       </td>
     </tr>
@@ -399,7 +402,17 @@ text header
 the <a href="http://www.esrf.fr/">ESRF</a> and can be viewed with e.g. <a href="http://pymca.sourceforge.net/">PyMCA</a>, <a href="http://www.sci.muni.cz/%7Emikulik/Soft4Synchro.html">Zimg</a>, <a href="http://www.gnuplot.info/">GnuPlot</a>, <a href="http://edfexplorer.sourceforge.net/">EDFExplorer</a>, <a href="http://www.esrf.eu/computing/scientific/FIT2D/">Fit2D</a>. </td>
       <td style="vertical-align: top;">Yes<br>
       </td>
+    </tr><tr>
+      <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'spe'<br>
+      </span><span style="color: rgb(204, 51, 204);">ISIS SPE</span><span style="color: rgb(204, 51, 204); font-weight: bold;"><br>
+      </span></td>
+      <td style="vertical-align: top;">text<br>
+      </td>
+      <td style="vertical-align: top;">The SPE data format is obtained after processing ISIS RAW files with <a href="http://horace.isis.rl.ac.uk/">Horace</a> and <a href="http://www.libisis.org/">LibISIS</a>.</td>
+      <td style="vertical-align: top;"><br>
+      </td>
     </tr>
+
     
     
     
@@ -422,7 +435,7 @@ the <a href="http://www.esrf.fr/">ESRF</a> and can be viewed with e.g. <a href="
 
 <h4><a class="mozTocH4" name="mozTocId149630"></a>Unsupported data formats: how to import them anyway ?</h4>
 
-In principle, any text based data format will be imported, whatever be
+In principle, any <span style="font-weight: bold;">text</span> based data format will be imported, whatever be
 the internal organization of the data and comments. The text is read
 and parsed by the <a href="../iFiles/doc/looktxt.html">looktxt</a>
 tool, and all numerical blocks are named automatically from the
@@ -430,15 +443,15 @@ character strings/comments that preceed these blocks. The result is a
 single structure which holds a <span style="font-style: italic;">Data</span> and a <span style="font-style: italic;">Header</span> field, plus additional
 identification information. The structure can be converted transparently to an <a href="iData.html">iData</a> object.<br>
 <br>
-Binary formats require more work. In principle, if iLoad does not know
+<span style="font-weight: bold;">Binary</span> formats require more work. In principle, if <span style="font-style: italic;">iLoad</span> does not know
 the structure of the file, there is no way to import an unknown data
-format file. However, iLoad allows a rapid prototyping of new import
+format file. However, <span style="font-style: italic;">iLoad</span> allows a rapid prototyping of new import
 filters by mean of a simple routine that should take as input a file
 name, and return a structure or numerical block. Additionally, a
 post-process script can be attached to the new format, and executed
-when the file content is converted into an iData object. The
+when the file content is converted into an <span style="font-style: italic;">iData</span> object. The
 specifications of the new data format will then be inserted inside the
-iLoad_ini configuration (locally or globally) together with e.g. file
+<span style="font-style: italic;">iLoad_ini</span> configuration (locally or globally) together with e.g. file
 extension and other identification info. These steps are detailed in
 the <a href="#mozTocId519997">section below</a>.<br>
 
@@ -502,7 +515,7 @@ the importer is by mean of pattern search in the file header content
 is given in the <span style="font-weight: bold;">patterns</span> field (as a cellstr, here {<span style="color: rgb(204, 51, 204);">'INX'</span>}). The <span style="font-weight: bold;">method</span>
 field is the name of the function to read the file. It takes as input a
 string, the file name, and should preferably return a structure or
-numerical array. Here the <a href="../iFiles/doc/looktxt.html">looktxt</a>
+numerical array. In this example, the <a href="../iFiles/doc/looktxt.html">looktxt</a>
  method is used with syntax<br>
 <pre style="margin-left: 40px;">struct = <span style="color: rgb(51, 102, 255);">looktxt</span>(filename)</pre>
 The <span style="font-weight: bold;">options</span> field provides
@@ -515,7 +528,7 @@ When given as a cell, they are passed as additional input arguments to the metho
 <pre style="margin-left: 40px;">struct=method(filename, options{1}, options{2}, ...)</pre>
 The structure obtained from the method is then converted into an <a href="iData.html">iData</a> object when called from the iData or iData/load method. In these cases, the <span style="font-weight: bold;">postprocess</span> field is used so that the returned <a href="iData.html">iData</a> object is<br>
 <pre style="margin-left: 40px;">object =<span style="color: rgb(204, 51, 204);"> postprocess(</span> <span style="color: rgb(51, 102, 255);">iData(</span> <span style="color: rgb(204, 51, 204);">method</span>(filename, options...) <span style="color: rgb(51, 102, 255);">)</span> <span style="color: rgb(204, 51, 204);">)</span></pre>
-The post-process is a script that takes as input an iData object, and
+The post-process is a script that takes as input an <span style="font-style: italic;">iData</span> object, and
 returns a possibly modified object (or an array of objects). This is
 where Signal, Axes, Aliases and metadata are re-arranged in the object.
 The post-process scripts are store in the<span style="font-style: italic;"> iFiles/postprocess</span> directory, and use a '<span style="font-style: italic;">load_&lt;format&gt;</span>' function naming convention for clarity. When missing, the default Signal and axes definitions will be used.<br>
@@ -550,7 +563,7 @@ return something (or empty/error if this fails). This is your <span style="font-
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iFiles - </span><span style="font-style: italic;">
-$Date: 2011-03-18 09:58:24 $ $Revision: 1.8 $
+$Date: 2011-05-10 09:11:40 $ $Revision: 1.9 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page
