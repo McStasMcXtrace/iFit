@@ -7,6 +7,7 @@
 
 
 
+
   <title>iFit: Importing data (iData/load)</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -85,9 +86,8 @@ issuing<br>
 The choice of the file selector can be done in the <span style="font-style: italic;">iLoad</span> configuration (refer to the <a href="iFiles.html#mozTocId56356">iFiles</a> page).<br>
 <br>
 
-By default, an analysis of the data file will be done, and the best
-importer <br>
-method will be used. It is possible to select a prefered method with
+By default, an analysis of the file name extension and the file content will be done, and the best
+importer method will be used. It is possible to select a prefered method with
 e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">'filename'</span>, <span style="color: rgb(204, 51, 204);">'HDF5'</span>)</pre>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">'filename'</span>, <span style="color: rgb(204, 51, 204);">'gui'</span>);&nbsp; % a method selector pops-up.</pre>
@@ -100,7 +100,7 @@ The specified file names may include URL tags such as<br>
   <li><span style="font-weight: bold;">http://</span><span style="font-style: italic;">filename</span></li>
 </ul>
 were the two latter cases first get a copy of the distant file
-(requires write permission), and then import it. A valid Internet
+(requires local write permission), and then import it. A valid Internet
 connection is then required, with proper Proxy settings if needed.<br>
 <h4><a class="mozTocH4" name="mozTocId250466"></a>Compressed files</h4>
 Compressed files (ZIP, TAR, GZIP, Z) can also be imported directly, in
@@ -132,8 +132,10 @@ The current method list is:<img style="width: 340px; height: 338px;" alt="iData 
   <li>ILL TAS Data (polarized or not)</li>
   <li>SPEC</li>
   <li>McStas (Scan DAT output 1D, 2D monitor, sim file, Sqw table)</li>
-  <li>ISIS/SPE tof data</li>
-  <li>INX tof data</li>
+  <li>ISIS/SPE tof data (see <a href="http://horace.isis.rl.ac.uk/">Horace</a> and <a href="http://www.libisis.org/">LibISIS</a>)<br>
+</li>
+  <li>INX tof data (ILL <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/tofhr/inx/">processed TOF</a>)<br>
+</li>
   <li>ESRF data format (*.edf)<br>
   </li>
   <li>Lotus1-2-3 (first spreadsheet) (*.wk1)<br>
@@ -161,7 +163,7 @@ The current method list is:<img style="width: 340px; height: 338px;" alt="iData 
   <li>Numerical single block (*.dlm)<br>
 </li>
   <li>XML (*.xml)</li>
-  <li>FIG (Matlab figure) can be imported with <span style="font-style: italic;">openfig(file)</span>, then <span style="font-style: italic;">iData(gcf)</span>.<br>
+  <li>FIG (Matlab figure)<br>
   </li>
 
 </ul>
@@ -215,7 +217,7 @@ neutron triple-axis diffractometer at the ILL</li>
   <li><span style="font-weight: bold;">Ag_3_a.hdf</span>: an image of an algae cell [HDF4 image]</li>
 
   
-  <li><span style="font-weight: bold;">peaks.hdf5</span>: a surface store as an HDF5 file [HDF5]</li>
+  <li><span style="font-weight: bold;">peaks.hdf5</span>: a surface stored as an HDF5 file [HDF5]</li>
 
   <li><span style="font-weight: bold;">SQW_coh_lGe.nc</span>: the coherent dynamic structure factor obtained from ab-initio molecular dynamics (<a href="http://cms.mpi.univie.ac.at/vasp/">VASP</a>) and analysed with <a href="https://forge.ill.fr/projects/nmoldyn">nMoldyn</a> [NetCDF]<br>
   </li>
@@ -344,7 +346,7 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a href="../iFiles/doc/lookt
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span style="font-style: italic;">
-$Date: 2011-03-18 09:58:24 $ $Revision: 1.14 $
+$Date: 2011-05-10 09:11:40 $ $Revision: 1.15 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
