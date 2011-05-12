@@ -48,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -401,6 +401,15 @@ end
 fval = constraints.criteriaBest;
 pars = constraints.parsBest;
 
+% raise fminplot if is exists
+if ~isempty(options.OutputFcn) & strcmp(options.OutputFcn, 'fminplot')
+  h = findall(0, 'Tag', 'fminplot');
+  if ~isempty(h), 
+    figure(h(1)); 
+    set(h, 'Visible', 'on');
+  end
+end
+
 if exitflag==0;
   message='Algorithm terminated';
 end
@@ -651,7 +660,7 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
   end
 
   % normal terminations: function tolerance reached
-  if ~isempty(options.TolFun) && options.TolFun ~= 0
+  if ~isempty(options.TolFun) && options.TolFun ~= 0 && funccount >= 5*length(pars)
     if (all(0 < fval) && all(fval <= options.TolFun)) % stop on lower threshold
       istop=-1;
       message = [ 'Converged: Termination function tolerance criteria reached (fval <= options.TolFun=' ...
@@ -661,8 +670,7 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
       % stop on criteria change
       if  all(abs(fval-fval_prev) < options.TolFun) ...
        && all(abs(fval-fval_prev) > 0) ...
-       && all(abs(fval-fval_mean) < options.TolFun) ...
-       && all(abs(fval-fval_mean) > 0) ...
+       && all(fval < fval_mean - options.TolFun) 
         istop=-12;
         message = [ 'Converged: Termination function change tolerance criteria reached (delta(fval) < options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
@@ -671,7 +679,7 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
   end
   
   % normal terminations: parameter variation tolerance reached, when function termination is also true
-  if (istop==-1 || istop==-12)
+  if (istop==-1 || istop==-12) 
     if ~isempty(options.TolX) && options.TolX > 0 ...
       && all(abs(pars(:)-pars_prev(:)) < abs(options.TolX)) ...
       && any(abs(pars(:)-pars_prev(:)) > 0)

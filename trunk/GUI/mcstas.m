@@ -51,7 +51,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -86,6 +86,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   if ~isfield(options,'ncount')
     if strcmp(options.mode, 'optimize')
       options.ncount    = 1e5;
+      if ~isfield(options,'TolFun')
+        options.TolFun = '0.1%';
+      end
     else
       options.ncount    = 1e6;
     end
@@ -171,7 +174,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 
   if strcmp(options.mode,'optimize')
     if ~isfield(options,'type'),      options.type      = 'maximize'; end
-    if ~isfield(options,'optimizer'), options.optimizer = @fminimfil; end
+    if ~isfield(options,'optimizer'), options.optimizer = @fminsce; end
     
     if isfield(options,'monitors')
       options.monitors = cellstr(options.monitors);
@@ -180,7 +183,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     % specific optimizer configuration
     optimizer_options = feval(options.optimizer,'defaults');
     optimizer_options.OutputFcn = 'fminplot';
-    optimizer_options.TolFun    = '0.1%';
+    optimizer_options.TolFun    = '1%';
     field_names=fieldnames(optimizer_options);
     for index=1:length(fieldnames(optimizer_options))
       if ~isfield(options, field_names{index})
@@ -394,8 +397,8 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     else
       this_pars = pars;
     end
-    c = { this_pars{:} ; options.fixed_pars{:} }; c=c(:);
-    f = { options.variable_names{:} ; options.fixed_names{:}}; f=f(:);
+    c = { this_pars{:} , options.fixed_pars{:} }; c=c(:);
+    f = { options.variable_names{:} , options.fixed_names{:}}; f=f(:);
     this_pars = cell2struct(c, f, 1);
     set(sim, 'Data.Parameters', this_pars);
     set(sim, 'Data.Criteria', criteria);
