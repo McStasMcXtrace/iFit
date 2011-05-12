@@ -16,6 +16,13 @@ function stop = fminplot(pars, optimValues, state)
     stop = true;  % figure was closed: abort optimization by user
     return
   end
+  name = [ state ' #' num2str(optimValues.funcount) ' ' optimValues.procedure ' [close to abort]' ];
+  try
+    set(h, 'Name', name);
+  catch
+    stop=true;  % figure is not valid: was closed
+    return;
+  end
   
   % store data history as rows
   if isempty(fvalHistory) | optimValues.funcount < 1
@@ -29,23 +36,24 @@ function stop = fminplot(pars, optimValues, state)
   end
   
   if length(fvalHistory) > 9
-    if length(fvalHistory) > 99 & mod(length(fvalHistory),100) return;
+    if length(fvalHistory) > 99 & mod(length(fvalHistory),10) return;
     elseif mod(length(fvalHistory),5) return; end
   end
 
     
   % handle figure
+  % only retain once instance of fminplot
   if length(h) > 1, delete(h(2:end)); h=h(1); end
-  if isempty(h) & optimValues.funcount <=2
+  if isempty(h) & optimValues.funcount <=2 % create it
     h = figure('Tag','fminplot', 'Unit','pixels');
+    ishidden = 0;
     tmp = get(h, 'Position'); tmp(3:4) = [500 400];
     set(h, 'Position', tmp);
   end
   
-  figure(h);
-  name = [ optimValues.procedure ' ' state ' #' num2str(optimValues.funcount) ' [close to abort]' ];
   try
-    set(h, 'Name', name);
+    % raise existing figure (or keep it hidden)
+    figure(h)
   catch
     stop=true;  % figure is not valid: was closed
     return;
@@ -69,6 +77,7 @@ function stop = fminplot(pars, optimValues, state)
   elseif strcmp(state, 'init'), title('Init','FontWeight','bold','FontSize',14); 
   else                          title('Close figure to abort','FontWeight','bold');  end
   l = legend(g,{'Criteria','Start','Best','Last'},'Location','NorthEast');
+  axis auto
   
    % handle second subplot: parameters. The last set is highlighted
   subplot(1,2,2); % this subplot shows some parameters
@@ -97,4 +106,6 @@ function stop = fminplot(pars, optimValues, state)
   set(g(end-1),'MarkerFaceColor','g');
   title(name);
   axis auto
+
 end
+
