@@ -8,6 +8,7 @@ function stop = fminplot(pars, optimValues, state)
   persistent parsHistory;
   persistent fvalHistory;
   persistent iterHistory;
+  persistent updatePlot
   stop = false;
   
   % check if user has closed the figure to end the optimization
@@ -35,11 +36,11 @@ function stop = fminplot(pars, optimValues, state)
     iterHistory = [ iterHistory ; optimValues.funcount ]; 
   end
   
-  if length(fvalHistory) > 9
-    if length(fvalHistory) > 99 & mod(length(fvalHistory),10) return;
-    elseif mod(length(fvalHistory),5) return; end
+  if length(fvalHistory) > 10
+    if ~isempty(updatePlot)
+      if etime(clock, updatePlot) < 10, return; end % plot every 10 secs
+    end
   end
-
     
   % handle figure
   % only retain once instance of fminplot
@@ -106,6 +107,8 @@ function stop = fminplot(pars, optimValues, state)
   set(g(end-1),'MarkerFaceColor','g');
   title(name);
   axis auto
+  
+  updatePlot=clock;
 
 end
 
