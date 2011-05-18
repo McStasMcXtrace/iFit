@@ -41,7 +41,7 @@
 #define malloc  mxMalloc
 #define realloc mxRealloc
 #define calloc  mxCalloc
-#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.6 $"
+#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.7 $"
 /* #define free mxFree  */
 #define free NoOp
 
@@ -162,13 +162,12 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
   } /* end for nrhs (all input string arguments) */
   
-  /* set temporary output file (will be removed at end of MeX) */
+  /* set temporary output file (will be removed at end of MeX): must make sure it is unique */
   if (!has_output_file) {
     char filename[256];
     char *ret=NULL;
-    time_t t;
-    long long_t = (long)time(&t);
     long long_r;
+    /* handle path name: local or pointing to /tmp */
 #ifndef P_tmpdir
 #ifdef _P_tmpdir
 #define P_tmpdir _P_tmpdir
@@ -176,8 +175,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 #define P_tmpdir "."
 #endif   /* def _P_tmpdir */
 #endif   /* ndef P_tmpdir */
-    /* create a unique temporary file of length < 32 using random number set from time seed */
-    srand(long_t);
+    /* create a unique temporary file of length < 32 using random number */
     long_r = rand();
     sprintf(filename, "%s%clk_%li_XXXXXX", P_tmpdir, LK_PATHSEP_C, long_r);
     mktemp(filename);
@@ -189,7 +187,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
     }
     sprintf(varg[carg], "--outfile=%s", filename);
     carg++;
-  }
+  } /* if (!has_output_file) */
+  
   /* display command line */
   for (i=0; i<carg; i++)
   	mexPrintf("%s ", varg[i]);
@@ -225,7 +224,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
         mexPrintf("looktxt: init matrix[%i] to store '%s'...\n", i, output_file.TargetTxt);
       
       parts = fileparts(output_file.TargetTxt);
-      /* make sure that new function craeted by looktxt can be accessed by Matlab */
+      /* make sure that new function created by looktxt can be accessed by Matlab */
       sprintf(addpath, "addpath('%s')", parts.Path);
       mexEvalString(addpath);
       /* evaluate function and set cell element into nargout[file_index] */

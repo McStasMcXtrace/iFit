@@ -36,7 +36,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.40 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.41 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -258,10 +258,15 @@ function [data, loader] = iLoad_import(filename, loader)
       try
         data = iLoad_import(filename, this_loader);
       catch
-        disp(lasterr)
+        l=lasterror;
+        disp(l.message);
         [dummy, name_short, ext] = fileparts(filename);
         fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, this_loader.method);
         data = [];
+        if strcmp(l.identifier, 'MATLAB:nomem') || ~isempty(strmatch(lower(l.message), 'out of memory'))
+          fprintf(1,'iLoad: Not enough memory. Skipping import of this file.\n');
+          break;
+        end
       end
       if ~isempty(data)
         loader = this_loader;
