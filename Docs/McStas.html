@@ -10,6 +10,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -20,10 +21,13 @@
 
   <ifit: changes="" title=""></ifit:>
   </head><body>
-<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: McStas simulation/optimization<br>
+<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: McStas simulation/optimization<br></h1>
+<h1 style="text-align: center;"><a href="http://www.mcstas.org/"><img alt="McStas [www.mcstas.org]" title="McStas [www.mcstas.org]" src="images/mcstas.png" style="border: 2px solid ; width: 150px; height: 88px;" align="right"></a></h1>
+<h1 style="text-align: center;">
 </h1>
 
-<br>
+
+
 <ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId234815">Running a single simulation</a></li><li><a href="#mozTocId821585">Running series of simulations (scans)</a></li><li><a href="#mozTocId690143">Optimizing instrument parameters
 </a></li><li><a href="#mozTocId359721">Optimizing instrument parameters with constraints</a></li></ol>
 
@@ -38,8 +42,8 @@
 In this document, we demonstrate how <a href="index.html">iFit</a>/<a href="iOptim.html">iOptim</a> and <a href="iData.html">iData</a> can all be used transparently to simulate and optimize <a href="http://www.mcstas.org">McStas</a> instrument models.<br>
 <br>
 To import a McStas simulation results, just use <br>
-<pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'single_detector_file'</span>)<br>&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'directory'</span>)<br>&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'scan_directory/mcstas.dat'</span>)<br></pre>
-which returns a single or an array of iData object(s), that you can plot with e.g. <span style="font-style: italic;">subplot</span>.<br>
+<pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'single_detector_file'</span>)<br>&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'directory'</span>)                 <span style="font-style: italic;">% import everything in the directory, including sim files (files may imported more than once)</span><br>&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'scan_directory/mcstas.<span style="font-weight: bold;">dat</span>'</span>) <span style="font-style: italic;">% for scans</span><br>&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'scan_directory/mcstas.<span style="font-weight: bold;">sim</span>'</span>) <span style="font-style: italic;">% for all files from the directory, uniquely</span>.<br></pre>
+which returns a single or an array of <span style="font-style: italic;">iData</span> object(s), that you can plot with e.g. <span style="font-style: italic;">subplot</span>.<br>
 <br>
 <h3><a class="mozTocH3" name="mozTocId234815"></a>Running a single simulation</h3>
 As iFit contains powerful import routines, that support McStas data
@@ -204,7 +208,7 @@ We strongly <span style="font-weight: bold;">recommend</span> to limit the param
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/McStas - </span><span style="font-style: italic;">
-$Date: 2011-05-12 12:43:32 $ $Revision: 1.4 $
+$Date: 2011-05-18 13:23:06 $ $Revision: 1.5 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
