@@ -51,7 +51,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -160,7 +160,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       error([ mfilename ': Parameter ' parameter_names{index} ' of type ' class(value) ' is not supported.' ...
         sprintf('\n') 'Prefer numerical or cell vectors.']);
     end
-  end
+  end % for index
   
   % optimizer configuration and end-user choices
   options.variable_names = variable_names;
@@ -199,38 +199,61 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       [pars,fval,exitflag,output] = feval(options.optimizer, ...
         @(pars) mcstas_criteria(pars, options), pars, options, constraints);
     end
+    output.parameters=parameters;
+    output.command=get(fval(1), 'Execute');
     options.mode = 'simulate'; % evaluate best solution, when optimization is over
     if nargout > 1
       [dummy,fval] = mcstas_criteria(pars, options);
     end
   else
     % single simulation/scan
-    [pars, fval] = mcstas_criteria(pars, options);
+    try
+      [p, fval] = mcstas_criteria(pars, options);
+    catch
+      lasterr
+      error([ mfilename ': Error occured during execution of ' instrument ' simulation.']);
+    end
+    fval = squeeze(fval);
+    p    = squeeze(p);
     if iscell(fval)
       % before converting to a single iData array, we check that all
       % simulations returned the same number of monitors
       siz = cellfun('prodofsize',fval);
       if all(siz == siz(1))
-        siz = [ siz(1) size(fval) ]; % size of the array to generate
-        fval = reshape(iData(fval), siz);
-        % permute dimensions in order to have monitors as last
-        perm = 1:length(siz); perm(1) = perm(end); perm(end) = 1;
-        fval = permute(fval, perm);
+        fval=iData(fval);
       end
     end
     if nargout < 2
       pars     = fval;
     else
-      a = iData(pars);
-      t = 'Scan of';
+      a = iData(p);
+      try
+        t = fval(1); isscan = t.Data.Scan;
+        t = ' Scan of'; isscan = 1;
+      catch
+        t = ''; isscan = 0;
+      end
+      
       for index=1:length(options.variable_names)
         setalias(a, options.variable_names{index}, options.variable_pars{index});
-        setaxis(a, index, options.variable_names{index});
+        if isscan==1
+          setaxis(a, index, options.variable_names{index});
+        end
         t = [ t ' ' options.variable_names{index} ];
       end
       setalias(a, 'Criteria', 1:size(a, ndims(a)), 'Monitor index');
-      setaxis(a, length(options.variable_names)+1, 'Criteria');
-      a.Title = [ instrument ': ' t ];
+      if isscan==1
+        setaxis(a, length(options.variable_names)+1, 'Criteria');
+      end
+      % add other metadata
+      set(a, 'Data.Parameters', parameters);
+      set(a, 'Data.Criteria', p);
+      set(a, 'Data.Execute', get(fval(1),'Execute'));
+      set(a, 'Data.Options', options);
+      setalias(a, 'Parameters', 'Data.Parameters','Instrument parameters');
+      setalias(a, 'Execute', 'Data.Execute','Command line used for Mcstas execution');
+      setalias(a, 'Options', 'Data.Options','Options used for Mcstas execution');
+      a.Title = [ instrument ':' t ];
       a.Label = instrument;
       pars = a;
     end
@@ -245,6 +268,35 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 
 end
 % end of mcstas function
+
+% ------------------------------------------------------------------------------
+
+function system_wait(cmd, options)
+% inline function to execute command and wait for its completion (under Windows)
+% dots are displayed under Windows after every minute waiting.
+  system(cmd);
+  if ispc % wait for completion by monitoring the number of elements in the result directory
+    t=tic; t0=t; first=1;
+    a=dir(options.dir);
+    while length(a) <= 3 % only 'mcstas.sim', '.', '..' when simulation is not completed yet
+      if toc(t) > 60
+        if first==1 % display initial waiting message when computation lasts more than a minute
+            fprintf(1, 'mcstas: Waiting for completion of %s simulation.\n', options.instrument);
+        end
+        fprintf(1,'.');
+        t=tic; first=first+1;
+        if first>74 % go to next line when more than 75 dots in a row...
+            first=2;
+            fprintf(1,'\n');
+        end
+      end
+      a=dir(options.dir); % update directory content list
+    end
+    fprintf(1,' DONE [%10.2g min]\n', toc(t0)/60);
+  else
+    system(cmd);
+  end
+end % system_wait
 
 % ------------------------------------------------------------------------------
 
@@ -296,9 +348,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
       end
     end
     for index=1:length(options.variable_names)
-      if isnumeric(pars)
+      if isnumeric(pars) % all numerics
         cmd = [ cmd ' ' options.variable_names{index} '=' num2str(pars(index)) ];
-      else
+      else % some are cells and chars
         % scan mode, with vector parameters
         this = pars{index};
         if isnumeric(this) && length(this) == 1
@@ -307,7 +359,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
           cmd = [ cmd ' ' options.variable_names{index} '=' this ];
         elseif isvector(this) % parameter is a vector of numerics/scans
           for index_pars=1:length(this) % scan the vector parameter elements
-            ind{index} = index_pars;
+            ind{index} = index_pars; % coordinates of this scan step in the parameter space indices
             if isnumeric(this)
               pars{index} = this(index_pars);
             elseif iscell(this)
@@ -315,30 +367,31 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
             end
             % recursive call to handle all scanned parameters
             [this_criteria, this_sim, ind] = mcstas_criteria(pars, options, criteria, sim, ind);
-            if ~iscell(this_sim)
-              S.type = '()';
+            if ~iscell(this_sim)   % single simulation
               if isempty(criteria) % initialize arrays to the right dimension
-                criteria = zeros([ options.scan_size length(this_sim) ]);
-                sim      = cell(options.scan_size);
+                criteria = zeros([ options.scan_size length(this_criteria) ]); % array of 0
+                sim      = cell( size(criteria) );                             % empty cell
               end
-              % reshape criteria to the last dimensionality
-              this_criteria = reshape(this_criteria, [ ones(size(options.scan_size)) length(this_criteria) ]);
-              this_sim = reshape(this_sim, [ ones(size(options.scan_size)) length(this_sim) ]);
+
               % add single simulation to scan arrays
-              S.subs   = ind;
-              sim      = subsasgn(sim,      S, { this_sim });
-              S.subs   = { ind{:}, ':' };
-              criteria = subsasgn(criteria, S, this_criteria(:)');
+              % store into the last dimensionality (which holds monitors and integrated values)
+              for index_mon=1:length(this_criteria)
+                if isempty(ind), this_ind = { index_mon };
+                else this_ind = { ind{:} index_mon }; end
+                this_ind(cellfun('isempty',this_ind))={1};
+                sim{      sub2ind(size(sim), this_ind{:}) } = this_sim(index_mon);
+                criteria( sub2ind(size(sim), this_ind{:}) ) = this_criteria(index_mon);
+              end
             else
               criteria = this_criteria;
               sim      = this_sim;
             end
-          end
+          end % for index_pars
           if nargout < 2
             criteria = sim;
           end
           return  % return from scan
-        end
+        end % elseif isvector(this): parameter value given as vector 
       end
     end
   end
@@ -348,8 +401,10 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
       cmd = [ cmd ' ' options.fixed_names{index} '=' options.fixed_pars{index} ];
     end
   end
+  
+  % Execute simulation
   disp(cmd);
-  system(cmd);
+  system_wait(cmd, options);
   
   if nargout ==0, return; end
   directory = options.dir;
@@ -412,5 +467,5 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     setalias(sim, 'Execute', 'Data.Execute','Command line used for Mcstas execution');
     setalias(sim, 'Options', 'Data.Options','Options used for Mcstas execution');
   end
-end
+end % mcstas_criteria
 % end of mcstas_criteria (inline mcstas)
