@@ -47,6 +47,7 @@ t0 = clock;
 % execute all tests
 for index=1:length(tests_list)
   try
+    disp([ mfilename ': executing test ' tests_list{index} ' -------------------' ]);
     result= ifittest_execute(tests_list{index});
     err   = '';
   catch
@@ -64,7 +65,7 @@ disp(['                Test     Status             [' mfilename ']' ]);
 disp( '------------------------------------------------------')
 for index=1:length(tests_list)
   fprintf(1, '%20s %10s %s\n', tests_list{index}, status{index}, errors{index});
-  if ~strcmp(status,'OK') failed=failed+1; end
+  if ~strcmp(status{index},'OK'), failed=failed+1; end
 end
 ratio = 1-failed/length(tests_list);
 disp( '------------------------------------------------------')
@@ -172,6 +173,9 @@ case 'iData_2_loadarray'
   get(a,'Data.VARIA.A1');
   a(2).Data.VARIA.A1;
   a(3).Data;
+  if length(a) ~= 3
+    result='FAILED';
+  end
 case 'iData_3_find'
   a=load(iData, [ ifitpath 'Data/sv1850.scn']);
   [match, field]=findstr(a,'TAS');
@@ -339,8 +343,11 @@ case 'Plot_9_slices'
   plot(a(:,622));                   % extract the object made from channel 622 on second axis, with all columns
 case 'Save_1'
   a = iData([ ifitpath 'Data/ILL_IN6.dat']);
-  saveas(a,'','pdf');               % save object as a PDF and use object ID as file name
-  saveas(a,'MakeItSo','hdf5');      % save object as a HDF5 into specified filename. Extension is appended automatically
+  f1= saveas(a,'','pdf');               % save object as a PDF and use object ID as file name
+  f2= saveas(a,'MakeItSo','hdf5');      % save object as a HDF5 into specified filename. Extension is appended automatically
+  if isempty(f1) || isempty(f2), result='FAILED'; end
+  try; delete(f1); end
+  try; delete(f2); end
 otherwise
   disp([ mfilename ': Unknown test procedure ' test '. Skipping.' ]);
 end
