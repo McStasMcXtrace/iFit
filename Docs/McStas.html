@@ -11,6 +11,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -141,7 +142,8 @@ More specifically, the <span style="font-style: italic;">options</span> structur
 <ul>
   <li><span style="font-weight: bold;">options.type</span>:&nbsp;&nbsp; <span style="color: rgb(204, 51, 204);">'minimize'</span> or<span style="color: rgb(204, 51, 204);"> 'maximize'</span>, which is the default (string)</li>
   <li><span style="font-weight: bold;">options.monitors</span>:&nbsp; cell string of monitor names, or empty for all (cellstr)</li>
-  <li><span style="font-weight: bold;">options.optimizer</span>: function name of the optimizer to use, default is <span style="font-style: italic;">fminimfil</span> (string or function handle)</li>
+  <li><span style="font-weight: bold;">options.optimizer</span>: function name of the optimizer to use, default is <span style="font-style: italic;">fminpso</span> (string or function handle). See <a href="iOptim.html">iOptim</a>.<br>
+</li>
   <li><span style="font-weight: bold;">options.mode</span>:&nbsp;&nbsp; should be <span style="color: rgb(204, 51, 204);">'optimize'</span>. This is automatically set whenever an 'optimization' configuration field is set, such as <span style="font-style: italic;">monitors, optimizer, TolFun, ...</span><span style="color: rgb(204, 51, 204);"> </span></li>
 </ul>
 as well as any other optimizer configuration fields such as<br>
@@ -208,7 +210,7 @@ We strongly <span style="font-weight: bold;">recommend</span> to limit the param
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/McStas - </span><span style="font-style: italic;">
-$Date: 2011-05-18 13:23:06 $ $Revision: 1.5 $
+$Date: 2011-05-19 07:49:19 $ $Revision: 1.6 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
