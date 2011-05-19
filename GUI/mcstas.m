@@ -51,7 +51,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -173,8 +173,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Launch optimize and simulate mode ============================================
 
   if strcmp(options.mode,'optimize')
+    % optimize simulation parameters
     if ~isfield(options,'type'),      options.type      = 'maximize'; end
-    if ~isfield(options,'optimizer'), options.optimizer = @fminsce; end
+    if ~isfield(options,'optimizer'), options.optimizer = @fminpso; end
     
     if isfield(options,'monitors')
       options.monitors = cellstr(options.monitors);
@@ -200,17 +201,22 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
         @(pars) mcstas_criteria(pars, options), pars, options, constraints);
     end
     output.parameters=parameters;
-    output.command=get(fval(1), 'Execute');
     options.mode = 'simulate'; % evaluate best solution, when optimization is over
     if nargout > 1
+      fprintf(1,'Evaluating final solution...\n');
       [dummy,fval] = mcstas_criteria(pars, options);
+      output.command=get(fval(1), 'Execute');
     end
   else
     % single simulation/scan
     try
       [p, fval] = mcstas_criteria(pars, options);
     catch
-      lasterr
+      l=lasterror;
+      disp(l.message);
+      for index=1:length(l.stack)
+        disp(l.stack(index))
+      end
       error([ mfilename ': Error occured during execution of ' instrument ' simulation.']);
     end
     fval = squeeze(fval);
@@ -256,10 +262,10 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       a.Title = [ instrument ':' t ];
       a.Label = instrument;
       pars = a;
-    end
+    end 
     exitflag = 0;
     output   = options;
-  end
+  end % else single simulation
   
   if use_temp==1
     % clean up last iteration result when stored into a temporary location
@@ -293,8 +299,6 @@ function system_wait(cmd, options)
       a=dir(options.dir); % update directory content list
     end
     fprintf(1,' DONE [%10.2g min]\n', toc(t0)/60);
-  else
-    system(cmd);
   end
 end % system_wait
 
@@ -403,7 +407,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   
   % Execute simulation
-  disp(cmd);
+  disp([ mfilename ': spawning ' cmd ]);
   system_wait(cmd, options);
   
   if nargout ==0, return; end
