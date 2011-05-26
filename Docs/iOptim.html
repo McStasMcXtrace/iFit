@@ -6,6 +6,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: optimization methods (iOptim)</title>
 </head><body>
@@ -211,7 +213,7 @@ mean execution time is shown. The <span style="color: rgb(102, 204, 204); font-w
       </td>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Mean
 Success
-rate
+ratio
 (%)<br>
       </td>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Mean
@@ -295,6 +297,10 @@ search (fminhooke) are faster, but provide a lower efficiency.<span style="font-
 are the Swarm<span style="font-weight: bold;"> (fminpso)
     </span>and the simplex/simulated
 annealing <span style="font-weight: bold;">(fmisimpsa). </span></li>
+  <li><span style="color: rgb(51, 204, 0); font-style: italic;">For large dimensionalities</span> (many parameters), the<span style="font-weight: bold;"> </span>Evolution Strategy
+with Covariance Matrix Adaptation<span style="font-weight: bold;"> (fmincmaes) </span>proves very efficient, as well as the Shuffled Complex Evolution <span style="font-weight: bold;">(fminsce)</span>. <br>
+  </li>
+
 </ul>
 The <span style="font-style: italic;">Table 1b</span> and <span style="font-style: italic;">Figure 1b</span> present a
 selection of the 'best' optimization methods for noisy functions. For each of them, we
@@ -318,7 +324,7 @@ mean execution time is shown. The <span style="color: rgb(255, 0, 0); font-weigh
       </td>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Mean
 Success
-rate
+ratio
 (%)<br>
       </td>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Mean
@@ -421,6 +427,12 @@ results are shown in the plot below.<br>
 Generally, solving noisy problems require longer optimization search
 time that for continuous problems, and the optimizers that perform best
 in this case are those that intrinsically make use of random numbers.<br>
+<br>
+The <span style="font-weight: bold;">list of all available optimizer methods</span> can be obtained from the command:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData)</span></pre>
+
+
 <p style="margin-bottom: 0cm;">
 
 
@@ -1040,7 +1052,7 @@ Non-Differentiable Functions</span>, Springer Series in Computational
 Mathematics, <span style="font-weight: bold;">Vol. 3</span>,
 Springer-Verlag (1985)</li>
   <li><span style="text-decoration: underline;">Steihaug
-Newton-CG-Trust region algoirithm</span> <a name="fmincgtrust"></a><span style="font-weight: bold;">fmincgtrust [cgtrust from Kelley]</span>
+Newton-CG-Trust region algorithm</span> <a name="fmincgtrust"></a><span style="font-weight: bold;">fmincgtrust [cgtrust from Kelley]</span>
 Broyden, C. G., <span style="font-style: italic;">J. of the Inst of
 Math and Its Appl</span> 1970, <span style="font-weight: bold;">6</span>,
 76-90;
@@ -1156,7 +1168,7 @@ Sao Jose do Rio Preto, SP, pp. 49-52 (1989).<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span style="font-style: italic;">
-$Date: 2011-05-16 13:53:25 $ $Revision: 1.13 $
+$Date: 2011-05-26 08:44:42 $ $Revision: 1.14 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
