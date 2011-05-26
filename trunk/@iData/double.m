@@ -7,7 +7,7 @@ function a=double(a)
 % output: v: value of the iData Signal (double)
 % ex:     'double(iData(rand(10)))'
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also  iData/cell, iData/single, iData/struct, 
 %           iData/char, iData/size
 
@@ -19,7 +19,7 @@ if length(a) > 1
   for index=1:length(a(:))
     b{index} = double(a(index));
   end
-  b = reshape(b, size(a));
+  a = reshape(b, size(a));
   return
 end
 
