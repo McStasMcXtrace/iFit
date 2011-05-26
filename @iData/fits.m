@@ -14,6 +14,8 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %     indicates which parameters are fixed (non zero elements of array).
 %  [pars,...] = fits(a, model, pars, 'optimizer', ...)
 %     uses a specific optimizer and its default options.
+%  [optimizers,functions] = fits(iData)
+%     returns the list of all available optimizers and fit functions
 %
 % input:  a: object or array (iData)
 %         model: model function (char/cellstr)
@@ -63,13 +65,56 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also iData, fminsearch, optimset, optimget
 
 % nested  functions: eval_criteria
 % private functions: least_square, fits_constraints
  
 % handle default parameters, if missing
+if nargin == 1
+  if isempty(a)
+    % return the list of all available optimizers and fit functions
+    output = {};
+    pars_out   = {};
+    fprintf(1, '\n');
+    fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/iOptim');
+    fprintf(1, '-----------------------------------------------------------------\n'); 
+    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'iOptim' ]);
+    for index=1:length(d)
+      this = d(index);
+      try
+        [dummy, method] = fileparts(this.name);
+        options = feval(method,'defaults');
+        if isstruct(options)
+          output{end+1} = options;
+          pars_out{end+1}   = method;
+          fprintf(1, '%15s %s\n', options.optimizer, options.algorithm);
+        end
+      end
+    end % for
+    fprintf(1, '\n');
+    fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', 'iFit/iFuncs');
+    fprintf(1, '-----------------------------------------------------------------\n'); 
+    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'iFuncs' ]);
+    criteria = {}; 
+    for index=1:length(d)
+      this = d(index);
+      try
+        [dummy, method] = fileparts(this.name);
+        options = feval(method,'identify');
+        if isstruct(options)
+          criteria{end+1}   = method;
+          fprintf(1, '%15s %s\n', method, options.Name);
+        end
+      end
+    end % for
+    fprintf(1, '\n');
+    message = 'Optimizers and fit functions list'; 
+    return
+  end
+end
+
 if nargin < 2
   model = '';
 end
