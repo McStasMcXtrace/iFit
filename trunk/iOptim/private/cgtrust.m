@@ -7,7 +7,7 @@ function [xc,histout,costdata] = cgtrust(x0,f,parms,resolution)
 %
 % function [x,histout] = cgtrust(x0,f,parms,resolution)
 %
-% Steihaug Newton-CG-Trust region algoirithm
+% Steihaug Newton-CG-Trust region algorithm
 % 
 % Input: x0 = initial iterate
 %        f = objective function,

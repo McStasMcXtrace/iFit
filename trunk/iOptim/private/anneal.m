@@ -91,7 +91,7 @@ function [minimum,fval,total,exitflag] = anneal(loss, parent, options)
 %    Simulated Annealing. _Science, 220_, 671-680.
 
 %   joachim.vandekerckhove@psy.kuleuven.be
-%   $Revision: 1.3 $  $Date: 2011-05-10 09:09:48 $
+%   $Revision: 1.4 $  $Date: 2011-05-26 08:26:59 $
 
 def = struct(...
         'CoolSched',@(T) (.8*T),...
@@ -145,6 +145,7 @@ T = Tinit;
 initenergy = loss(parent);
 oldenergy = initenergy;
 total = 0;
+exitflag=0;
 if report==2, fprintf(1,'\n  T = %7.5f, loss = %10.5f\n',T,oldenergy); end
 
 while ~finished;

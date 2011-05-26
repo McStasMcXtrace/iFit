@@ -60,7 +60,7 @@ ijob=1;
 jdata=[];
 while(norm(gc) > tol & itc <= maxit)
         if ijob == 1
-	  hess=diffhess(xc,f,gc,hdiff);
+	        hess=diffhess(xc,f,gc,hdiff);
           numf=numf+n; numg=numg+n; numh=numh+1;
         else
           jdata=sdata;
@@ -283,7 +283,7 @@ function z = dirdero(x,w,f,gc,epsnew)
 % used in : ntrust, cgtrust
 % uses:     dirdero, gradest
 if nargin == 4
-epsnew=1.d-6;
+epsnew=1e-6;
 end
 %
 n=length(x);
@@ -301,7 +301,7 @@ epsnew = epsnew/norm(w);
 %
 del=x+epsnew*w;
 f1=feval(f,del);
-g1 = finjac(f, del); g1=reshape(g1, size(x));
+g1 = finjac(f, f1, del, epsnew); g1=reshape(g1, size(x));
 z = (g1 - gc)/epsnew;
 
 end

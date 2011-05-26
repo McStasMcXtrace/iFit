@@ -11,6 +11,14 @@ function stop = fminplot(pars, optimValues, state)
   persistent updatePlot
   stop = false;
   
+  if ~isfield(optimValues, 'funcount')
+    if isfield(optimValues, 'funcCount')
+      optimValues.funcount = optimValues.funcCount;
+    elseif isfield(optimValues, 'funccount')
+      optimValues.funcount = optimValues.funccount;
+    end
+  end
+  
   % check if user has closed the figure to end the optimization
   h = findall(0, 'Tag', 'fminplot');
   if isempty(h) & optimValues.funcount > 5
@@ -43,7 +51,7 @@ function stop = fminplot(pars, optimValues, state)
   end
     
   % handle figure
-  % only retain once instance of fminplot
+  % only retain one instance of fminplot
   if length(h) > 1, delete(h(2:end)); h=h(1); end
   if isempty(h) & optimValues.funcount <=2 % create it
     h = figure('Tag','fminplot', 'Unit','pixels');
@@ -54,7 +62,7 @@ function stop = fminplot(pars, optimValues, state)
   
   try
     % raise existing figure (or keep it hidden)
-    figure(h)
+    if gcf ~= h, figure(h); end
   catch
     stop=true;  % figure is not valid: was closed
     return;
@@ -73,7 +81,8 @@ function stop = fminplot(pars, optimValues, state)
   set(g(end),'MarkerFaceColor','r');
   set(g(end-1),'MarkerFaceColor','g');
   if all(fvalHistory > 0) set(gca, 'yscale', 'log'); end
-  xlabel('Nb of Function Evaluations'); ylabel('Criteria - {\bf Close} figure to abort'); axis auto
+  xlabel([ 'Nb of Function Evaluations. ' num2str(length(pars)) ' Pars' ]); 
+  ylabel('Criteria - {\bf Close} figure to abort');
   if strcmp(state, 'done'),     title('Done','FontWeight','bold','FontSize',14); 
   elseif strcmp(state, 'init'), title('Init','FontWeight','bold','FontSize',14); 
   else                          title('Close figure to abort','FontWeight','bold');  end
@@ -109,6 +118,7 @@ function stop = fminplot(pars, optimValues, state)
   axis auto
   
   updatePlot=clock;
+  drawnow
 
 end
 
