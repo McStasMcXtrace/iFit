@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.52 $
+% Version: $Revision: 1.53 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -137,7 +137,7 @@ case 1  % vector type data (1 axis + signal) -> plot
     return
   else 
     this_method=method;
-    % clean up options that can be used togetehr with linespec
+    % clean up options that can be used together with linespec
     % tight, auto, tight, hide, view2, view3, transparent
     toremove='tight auto hide view2 view3 transparent';
     toremove=strread(toremove,'%s','delimiter',' ');
@@ -154,12 +154,19 @@ case 1  % vector type data (1 axis + signal) -> plot
     else
       if length(this_method), 
         try
-          h = errorbar(x,y,e,this_method);
+          h = errorbar(x,y,e,this_method);          
         catch
           this_method=[];
         end
       end
-      if ~length(this_method) h = errorbar(x,y,e); end
+      if ~length(this_method) 
+        h = errorbar(x,y,e); 
+      end
+      % hide error bars when they are much larger than the signal...
+      if all(abs(e) >  abs(y)*10), 
+        tmp_h=get(h,'children');
+        set(tmp_h(2), 'Visible','off');
+      end
     end
   end
   set(h, 'Tag', a.Tag);
