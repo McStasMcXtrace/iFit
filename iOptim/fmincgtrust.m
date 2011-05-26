@@ -1,7 +1,7 @@
 function [pars,fval,exitflag,output] = fmincgtrust(varargin)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmincgtrust(FUN,PARS,[OPTIONS],[CONSTRAINTS]) Steihaug Newton-CG-Trust region algoirithm
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmincgtrust(FUN,PARS,[OPTIONS],[CONSTRAINTS]) Steihaug Newton-CG-Trust region algorithm
 %
-% This minimization method uses the Steihaug Newton-CG-Trust region algoirithm
+% This minimization method uses the Steihaug Newton-CG-Trust region algorithm
 % 
 % Calling:
 %   fmincgtrust(fun, pars) asks to minimize the 'fun' objective function with starting
@@ -47,7 +47,7 @@ function [pars,fval,exitflag,output] = fmincgtrust(varargin)
 %   Shanno, D. F.,Mathematics of Computation 1970, 24, 647-656
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [cgtrust]
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
@@ -58,7 +58,7 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options.TolX   =1e-8;
   options.MaxIter='100*numberOfVariables';
   options.MaxFunEvals=10000;
-  options.algorithm  = [ 'Steihaug Newton-CG-Trust region algoirithm (by Kelley) [' mfilename ']' ];
+  options.algorithm  = [ 'Steihaug Newton-CG-Trust region algorithm (by Kelley) [' mfilename ']' ];
   options.optimizer = mfilename;
   pars = options;
   return
