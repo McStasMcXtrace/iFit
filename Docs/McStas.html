@@ -12,6 +12,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -49,7 +50,7 @@ which returns a single or an array of <span style="font-style: italic;">iData</s
 <h3><a class="mozTocH3" name="mozTocId234815"></a>Running a single simulation</h3>
 As iFit contains powerful import routines, that support McStas data
 files, it is straight forward to launch a McStas instrument simulation
-from Matlab and get back the simulation results. To do so, you will obviously need to have <span style="font-style: italic;">iFit</span> installed (refer to the <a href="Install.html">Install</a> page), as well as <span style="font-style: italic;">McStas</span> (refer to the <a href="http://www.mcstas.org">McStas web site</a>).<br>
+from Matlab and get back the simulation results. To do so, you will obviously need to have <span style="font-style: italic;">iFit</span> installed (refer to the <a href="Install.html">Install</a> page), as well as <span style="font-style: italic;">McStas</span> (refer to the <a href="http://www.mcstas.org">McStas web site</a>). An easy solution is to install our  <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS Live DVD</a> ready-to-run system with <span style="font-style: italic;">McStas</span> pre-installed, and then put on top <a href="http://www.mathworks.com">Matlab</a> (requires a valid license).<br>
 <br>
 The syntax for running a McStas instrument model is:<br>
 <pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, parameters, options);</pre>
@@ -97,10 +98,12 @@ Scans with string parameters are also possible, such as with<br>
 <ul>
   <li>parameters.Powder={'Na2Ca3Al2F14.laz','Al.laz','Cd.laz'};</li>
 </ul>
-and then execute:<br>
+and then execute for instance:<br>
 
 <div style="margin-left: 40px;">
-<pre>&gt;&gt; [integral,monitors]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, parameters, <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'ncount'</span>,1e4));<br></pre></div>The <span style="font-style: italic;">integral</span> argument returned is an <a href="iData.html">iData</a> object containing the integral of monitors as a function of the scanned parameters. It can be directly plotted with e.g. <br>
+<pre>&gt;&gt; [integral,monitors]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, parameters, <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'ncount'</span>,1e4));<br></pre></div>A live display of the on-going scan is shown when specifying <span style="font-weight: bold;">OutputFcn</span>=<span style="color: rgb(204, 51, 204);">'fminplot' </span>in the last <span style="font-weight: bold;">options</span> argument (struct).<br>
+<br>
+The <span style="font-style: italic;">integral</span> argument returned is an <a href="iData.html">iData</a> object containing the integral of monitors as a function of the scanned parameters. It can be directly plotted with e.g. <br>
 <div style="margin-left: 40px;">
 <pre>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(integral);     <span style="font-style: italic;">% simple plot, or median surface for multidimensional scans</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">scatter3</span>(integral); <span style="font-style: italic;">% coloured points (possibly in 2D,3D)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot3</span>(integral);    <span style="font-style: italic;">% coloured lines in 2D, or volume for multidimensional scans</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">slice</span>(integral);    <span style="font-style: italic;">% only for 3D, use slice-o-matic for volume inspection</span><br></pre></div><a href="images/iFit_McStas_scan2D_integral.png"><img title="iFit: MsCtas scan: ploting the integral monitor value" src="images/iFit_McStas_scan2D_integral.png" alt="iFit: MsCtas scan: ploting the integral monitor value" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>The <span style="font-style: italic;">monitors</span>
 argument returned is an array containing individual scan monitors.
@@ -210,7 +213,7 @@ We strongly <span style="font-weight: bold;">recommend</span> to limit the param
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/McStas - </span><span style="font-style: italic;">
-$Date: 2011-05-19 07:49:19 $ $Revision: 1.6 $
+$Date: 2011-05-26 08:44:42 $ $Revision: 1.7 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

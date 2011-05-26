@@ -3,6 +3,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: fitting a model onto iData objects</title>
 </head><body>
@@ -194,68 +195,74 @@ documentation.<br>
       </td>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Mean
 Success
-rate
+ratio
 (%)<br>
       </td>
-      <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Mean
-execution
-time
-(s)<br>
-      </td>
+      
     </tr>
     <tr>
+      <td style="vertical-align: top;">fminpso</td>
+      <td style="vertical-align: top;">Particle Swarm
+Optimization</td>
+      <td style="vertical-align: top;"><span style="color: rgb(51, 204, 0);">97.0/</span><font color="#33cc00">69.7</font></td>
+    </tr>
+<tr>
       <td style="vertical-align: top; color: rgb(0, 0, 0);"><span style="font-style: italic; font-weight: bold;">fminimfil</span></td>
       <td style="vertical-align: top;">Unconstrained Implicit filtering<br>
       </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">77.5</td>
-      <td style="vertical-align: top;">8.2</td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">92.8/40.5</td>
+      
     </tr>
     <tr>
       <td style="vertical-align: top; color: rgb(0, 0, 0);"><span style="font-style: italic; font-weight: bold;">fminralg</span></td>
       <td style="vertical-align: top;">Shor R-algorithm</td>
-      <td style="vertical-align: top;">61.1</td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">5.5</td>
+      <td style="vertical-align: top;">88.4/<font color="#ff0000">3.3</font></td>
+      
     </tr>
     <tr>
       <td style="vertical-align: top; color: rgb(0, 0, 0);"><span style="font-style: italic; font-weight: bold;">fminhooke</span></td>
       <td style="vertical-align: top;">Hooke-Jeeves direct search</td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">75.5</td>
-      <td style="vertical-align: top; color: rgb(0, 0, 0);">6.7</td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">75.5/38.8</td>
+      
     </tr>
     <tr>
       <td style="vertical-align: top; color: rgb(0, 0, 0);"><span style="font-weight: bold; font-style: italic;">fmincmaes</span></td>
       <td style="vertical-align: top;">Evolution Strategy with
 Covariance Matrix Adaptation</td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">71.8<br>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">71.8/59.5
       </td>
-      <td style="vertical-align: top; color: rgb(0, 0, 0);">12.9</td>
+      
     </tr>
     <tr>
       <td style="vertical-align: top; color: rgb(0, 0, 0);"><span style="font-style: italic;">fminsimpsa</span></td>
       <td style="vertical-align: top;">simplex/simulated
 annealing</td>
-      <td style="vertical-align: top;">64.7<br>
+      <td style="vertical-align: top;"><span style="color: rgb(51, 204, 0);">94.7/</span><font color="#33cc00">67.7</font>
       </td>
-      <td style="vertical-align: top; color: rgb(255, 0, 0);">30.7</td>
+      
     </tr>
     <tr>
       <td style="vertical-align: top; color: rgb(0, 0, 0);">fminsce </td>
       <td style="vertical-align: top;">shuffled complex evolution<br>
       </td>
-      <td style="vertical-align: top;">57.1<br>
+      <td style="vertical-align: top;"><font color="#33cc00">88.0/</font><font color="#33cc00">65.7</font>
       </td>
-      <td style="vertical-align: top; color: rgb(255, 0, 0);">35.2<br>
-      </td>
+      
     </tr>
     <tr>
       <td style="vertical-align: top; color: rgb(0, 0, 0);">fminpowell </td>
       <td style="vertical-align: top;">Powell with Coggins line search<br>
       </td>
-      <td style="vertical-align: top;">59.4<br>
+      <td style="vertical-align: top;"><span style="color: rgb(51, 204, 0);">96.7/</span>30.7
       </td>
-      <td style="vertical-align: top;"><span style="color: rgb(51, 204, 0);">0.7</span><br>
+      
+    </tr><tr>
+      <td style="vertical-align: top;">fminnewton</td>
+      <td style="vertical-align: top;">Newton gradient searh
       </td>
+      <td style="vertical-align: top;">79.1/<font color="#ff0000">1.6</font></td>
     </tr>
+
   </tbody>
 </table>
 <div style="text-align: center;"><span style="font-style: italic;">Table
@@ -275,6 +282,10 @@ methods</span><span style="font-style: italic; font-weight: bold;"></span><span 
 </span><br>
 The choice of the optimizer is done through a 4th input<span style="font-style: italic;"></span> argument <span style="font-style: italic;"><span style="color: rgb(255, 0, 0);">options</span>
 </span>to <span style="font-style: italic;">fits.</span><br>
+<br>
+The <span style="font-weight: bold;">list of all available optimizer methods</span> can be obtained from the command:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData)</span></pre>
+
 <h4><a class="mozTocH4" name="mozTocId422448"></a>Configuring the
 optimization method</h4>
 In order to use these optimizers, one just has to specify their name as
@@ -434,7 +445,7 @@ Stay tuned. This documentation item goes together with the writing of the iFuncs
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData fitting - </span><span style="font-style: italic;">
-$Date: 2011-03-13 22:21:31 $ $Revision: 1.10 $
+$Date: 2011-05-26 08:44:42 $ $Revision: 1.11 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body></html>
