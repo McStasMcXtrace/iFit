@@ -35,6 +35,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %           options.help:   set it to 'yes' or 1 to get help on the instrument and exit
 %           options.info:   set it to 'yes' or 1 to get information on the instrument and exit
 %           options.optimizer: function name of the optimizer to use (string or function handle)
+%           options.OutputFcn: monitors the scan/optimization process on a plot (string)
 %         as well as other optimizer options such as
 %           options.TolFun ='0.1%'   stop when criteria changes are smaller that 0.1%
 %           options.Display='final'
@@ -51,7 +52,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -390,6 +391,23 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
               criteria = this_criteria;
               sim      = this_sim;
             end
+            % optionally plot the criteria during the scan...
+              if isfield(options, 'OutputFcn') 
+                if ~isempty(options.OutputFcn)
+                  if isvector(criteria)
+                    plot(criteria)
+                    xlabel('Scan step'); ylabel('Monitors'); 
+                    t=title([ options.instrument ': ' options.variable_names{index} '=' num2str(pars{index}) ]); 
+                    set(t,'interpreter','none');
+                    drawnow
+                  elseif length(size(criteria)) == 2
+                    surf(criteria);
+                    t=title([ options.instrument ': ' options.variable_names{index} '=' num2str(pars{index}) ]); 
+                    set(t,'interpreter','none');
+                    drawnow
+                  end
+                end
+              end
           end % for index_pars
           if nargout < 2
             criteria = sim;
@@ -397,7 +415,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
           return  % return from scan
         end % elseif isvector(this): parameter value given as vector 
       end
-    end
+    end % for index
   end
   % non scanned parameters (chars, fixed)
   if isfield(options,'fixed_names')
