@@ -48,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -137,10 +137,21 @@ if ischar(options.MaxIter),
   options.MaxIter = eval(options.MaxIter); 
 end
 
+tolfun = options.TolFun;
+if ischar(tolfun)
+  if tolfun(end)=='%'
+    tolfun(end)='';
+    fval = objective(fun, pars);
+    tolfun = abs(str2num(tolfun)*fval/100);
+  end
+else
+  fval = NaN;
+end
+
 if strcmp(options.Display,'iter')
   disp([ '** Starting minimization of ' localChar(fun) ' using algorithm ' localChar(options.algorithm) ]);
   disp('Func_count  min[f(x)]    Parameters');
-  fmin_private_disp(options, constraints.funcCounts, fun, pars, NaN)
+  fmin_private_disp(options, constraints.funcCounts, fun, pars, fval)
 end
 
 message    = constraints.message;
@@ -162,7 +173,7 @@ switch options.optimizer
 case {'cmaes','fmincmaes'}    
 % Evolution Strategy with Covariance Matrix Adaption ---------------------------
   hoptions.MaxIter    = options.MaxIter;
-  hoptions.TolFun     = options.TolFun;
+  hoptions.TolFun     = tolfun;
   hoptions.MaxFunEvals= options.MaxFunEvals;
   hoptions.PopSize    = options.PopulationSize;
   hoptions.DispFinal  = 'off';
@@ -229,7 +240,7 @@ case {'fminlm','LMFsolve'}
 % Levenberg-Maquardt steepest descent ------------------------------------------
   % LMFsolve minimizes the sum of the squares of the objective: sum(objective.^2)
   [pars, fval, iterations, exitflag] = LMFsolve(@(pars) objective_lm(fun, pars), pars, ...
-           'Display',0, 'FunTol', options.TolFun, 'XTol', options.TolX, ...
+           'Display',0, 'FunTol', tolfun, 'XTol', options.TolX, ...
            'MaxIter', options.MaxIter, 'Evals',options.MaxFunEvals);
   switch exitflag
   case -5, message='Converged: Termination function tolerance criteria reached';
@@ -258,7 +269,7 @@ case {'ralg','fminralg','solvopt'}
 % Shor's r-algorithm -----------------------------------------------------------
   opt(1) = -1;
   opt(2) = options.TolX;
-  opt(3) = options.TolFun;
+  opt(3) = tolfun;
   opt(4) = options.MaxIter;
   opt(5) = -1;
   opt(6) = 1e-8; 
@@ -303,7 +314,7 @@ case {'hPSO','fminswarmhybrid'}
   % transfer optimset options and constraints
   hoptions.space     = [ constraints.min(:) constraints.max(:) ];
   hoptions.MaxIter   = options.MaxIter;
-  hoptions.TolFun    = options.TolFun;
+  hoptions.TolFun    = tolfun;
   hoptions.TolX      = options.TolX;
   hoptions.Display   = options.Display;
   hoptions.MaxFunEvals=options.MaxFunEvals;
@@ -333,7 +344,14 @@ case {'Simplex','fminsimplex'}
   for iterations=1:options.MaxIter
     fval = feval(@(pars) objective(fun, pars), pars);
     [pars,out]=Simplex( fval );
-    if Simplex('converged', options.TolFun)             % Test for convergence
+    tolfun = options.TolFun;
+    if ischar(tolfun)
+      if tolfun(end)=='%'
+        tolfun(end)='';
+        tolfun = abs(str2num(tolfun)*fval/100);
+      end
+    end
+    if Simplex('converged', tolfun)             % Test for convergence
       exitflag=-1;
       message= [ 'Converged: Termination function tolerance criteria reached (options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
@@ -348,31 +366,31 @@ case {'Simplex','fminsimplex'}
   end
   pars=Simplex('centroid'); % obtain the final value.
 case {'cgtrust','fmincgtrust'}
-% Steihaug Newton-CG-Trust region algoirithm -----------------------------------
+% Steihaug Newton-CG-Trust region algorithm ------------------------------------
   [pars,histout] = cgtrust(pars, @(pars) objective(fun, pars), ...
-    [ options.TolFun .1 options.MaxIter options.MaxIter], options.TolX*options.TolX);
+    [ tolfun .1 options.MaxIter options.MaxIter], options.TolX*options.TolX);
 % [pars,histout] = levmar(pars, @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
   iterations      = size(histout,1);
 % not so efficient optimizers ==================================================
 case {'fminanneal','anneal'}  
 % simulated annealing ----------------------------------------------------------
   options.MaxTries   = options.MaxIter/10;
-  options.StopVal    = options.TolFun;
+  options.StopVal    = tolfun;
   options.Verbosity=0;
   [pars,fval,iterations,exitflag] = anneal(@(pars) objective(fun, pars), pars(:)', options);
   if exitflag==-7,message='Maximum consecutive rejections exceeded (anneal)'; end
 case {'fminbfgs','bfgs'}      
 % Broyden-Fletcher-Goldfarb-Shanno ---------------------------------------------
-  [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
+  [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) objective(fun, pars), tolfun, options.MaxIter);
   iterations = size(histout,1);
 case {'fminkalman','kalmann','ukfopt'}
 % unscented Kalman filter ------------------------------------------------------
   [pars,iterations] = ukfopt(@(pars) objective(fun, pars(:)), pars(:), ...
-              options.TolFun, norm(pars)*eye(length(pars)), 1e-6*eye(length(pars)), 1e-6);
+              tolfun, norm(pars)*eye(length(pars)), 1e-6*eye(length(pars)), 1e-6);
 case {'ntrust','fminnewton'}
 % Dogleg trust region, Newton model --------------------------------------------
   [pars,histout,costdata] = ntrust(pars(:),@(pars) objective(fun, pars), ...
-       options.TolFun,options.MaxIter);
+       tolfun,options.MaxIter);
   iterations      = size(histout,1);
 case {'buscarnd','fminrand'}
 % adaptive random search -------------------------------------------------------
@@ -469,7 +487,7 @@ return  % actual end of optimization
       constraints.parsBest    =pars;
     end
     constraints.criteriaPrevious= c;
-    constraints.criteriaHistory = [ constraints.criteriaHistory ; constraints.criteriaPrevious ];
+    constraints.criteriaHistory = [ constraints.criteriaHistory ; sum(constraints.criteriaPrevious) ];
     constraints.parsPrevious    = pars;
     constraints.parsHistory     = [ constraints.parsHistory ; pars(:)' ]; 
     constraints.funcCounts      = constraints.funcCounts+1; 
@@ -505,7 +523,7 @@ return  % actual end of optimization
       constraints.criteriaBest=c(:)';
       constraints.parsBest    =pars;
     end
-    constraints.criteriaPrevious= c(:)';
+    constraints.criteriaPrevious= mean(c(:));
     constraints.criteriaHistory = [ constraints.criteriaHistory ; constraints.criteriaPrevious ];
     constraints.parsPrevious    = pars;
     constraints.parsHistory     = [ constraints.parsHistory ; pars(:)' ]; 
@@ -711,9 +729,12 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
         else                    optimValues.state='iter'; end
       end
       optimValues.funcount   = funccount;
+      optimValues.funcCount  = funccount;
+      optimValues.funccount  = funccount;
       optimValues.fval       = sum(fval(:));
       if isfield(options,'procedure'),        optimValues.procedure=options.procedure;
       elseif isfield(options, 'algorithm'),   optimValues.procedure=options.algorithm;
+      elseif isfield(options, 'optimizer'),   optimValues.procedure=options.optimizer;
       else optimValues.procedure  = 'iteration'; end
       istop2 = feval(options.OutputFcn, pars, optimValues, optimValues.state);
       if istop2, 

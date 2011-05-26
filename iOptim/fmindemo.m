@@ -47,6 +47,8 @@ if nargin == 1
     end
     
     return
+  elseif ischar(dim)
+    return
   else
     option=[];
   end
@@ -63,18 +65,8 @@ if isnumeric(dim) & length(dim) > 1
   return
 end
 
-% get optimizers list by testing call with 'defaults'
-optimizers = {};
-d = dir(fileparts(which(mfilename)));
-for index=1:length(d)
-  this = d(index);
-  try
-    [dummy, method] = fileparts(this.name);
-    if isstruct(feval(method,'defaults'))
-      optimizers{end+1} = method;
-    end
-  end
-end
+% get optimizers list (by testing call with 'defaults')
+optimizers = fits(iData);
 
 % fminimfil.Hybrid = 'sr1','bfgs' (default),'none'.
 % fminpowell.Hybrid= 'Coggins' (default),'Golden rule'
