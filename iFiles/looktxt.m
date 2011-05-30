@@ -1,4 +1,4 @@
-% [structs] = looktxt('filename [options]') Import text data
+% [structs] = looktxt('filename', '[options]') Import text data
 % Usage: looktxt [options] file1 file2 ...
 % Action: Search and export numerics in a text/ascii file.
 %    This program analyses files looking for numeric parts
@@ -30,7 +30,7 @@
 % Usual options are: --fast --fortran --binary --force --catenate --comment=NULL
 % List of all options can be obtained using: looktxt --help
 %
-% looktxt  version 1.0.8 (24 Sept 2009) by Farhi E. [farhi@ill.fr]
+% looktxt  version 1.1 $Revision: 1.10 $ (24 Sept 2009) by Farhi E. [farhi@ill.fr]
 
 % if we come there, that's because the mex file is not compiled.
 % we first try to install it, and if it fails, we go for the CC version

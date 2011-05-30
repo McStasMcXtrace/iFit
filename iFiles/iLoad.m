@@ -36,7 +36,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.41 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.42 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -182,6 +182,8 @@ if ischar(filename) & length(filename) > 0
     end
     % The import takes place HERE
     if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
+    % handle the '%20' charcter replacement as space
+    filename = strrep(filename, '%20',' ');
     [data, format] = iLoad_import(filename, loader);
   end
 elseif isempty(filename)
@@ -293,9 +295,9 @@ function [data, loader] = iLoad_import(filename, loader)
     data = feval(loader.method, filename, loader.options{:})
   elseif ischar(loader.options)
     try
-    data = feval(loader.method, [ filename ' '  loader.options ]);
+    data = feval(loader.method, filename, loader.options);
     catch
-    data = feval(loader.method, filename,loader.options);
+    data = feval(loader.method, [ filename ' '  loader.options ]);
     end
   end
   data = iLoad_loader_check(filename, data, loader);
@@ -555,6 +557,9 @@ function config = iLoad_config_load
   % These do not have any pattern recognition or postprocess
   % format = { method, extension, name, options, patterns, postprocess }
   formats = {...
+    { 'csvread', 'csv', 'Comma Separated Values (.csv)',''}, ...
+    { 'dlmread', 'dlm', 'Numerical single block',''}, ...
+    { 'xmlread', 'xml', 'XML',''}, ...
     { 'looktxt', '',    'Data (text format with fastest import method)',    ...
         '--headers --binary --fast --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metadata=x_label --metadata=y_label', '', 'load_mcstas_1d'}, ...
     { 'looktxt', '',    'Data (text format with fast import method)',       '--headers --binary --comment=NULL --silent'}, ...
@@ -571,9 +576,6 @@ function config = iLoad_config_load
     { 'hdf5extract',{'hdf5','h5','nx','nxs','n5'}, 'HDF5',''}, ...
     { 'mhdf4read',{'hdf4','h4','hdf','nx','nxs','n4'},  'HDF4 raster image',''}, ...
     { 'load',    'mat', 'Matlab workspace (.mat)',''}, ...
-    { 'csvread', 'csv', 'Comma Separated Values (.csv)',''}, ...
-    { 'dlmread', 'dlm', 'Numerical single block',''}, ...
-    { 'xmlread', 'xml', 'XML',''}, ...
     { 'importdata','',  'Matlab importer',''}, ...
   };
   for index=1:length(formats) % the default loaders are addded after the INI file
