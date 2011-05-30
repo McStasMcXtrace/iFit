@@ -139,6 +139,6 @@ function config = iLoad_ini
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
 	       spec, mcstas_scan, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, ISIS_spe, ILL_inx, ESRF_edf, Matlab_FIG };
 	       
-	  config.UseSystemDialogs = 'no'; % no: use uigetfiles, else defaults to 'uigetfile'
+	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
     

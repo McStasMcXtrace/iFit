@@ -105,7 +105,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.1 $Revision: 1.18 $"
+#define VERSION "1.1 $Revision: 1.19 $"
 #endif
 
 #ifdef __dest_os
@@ -126,7 +126,7 @@
 #define SEEK_SET 0
 #endif
 
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 #define LK_PATHSEP_C '\\'
 #define LK_PATHSEP_S "\\"
 #else  /* !WIN32 */
@@ -149,7 +149,7 @@
 #include <time.h>
 #include <stdarg.h>
 
-#if !defined(WIN32) && !defined(_WIN32)
+#if !defined(WIN32) && !defined(_WIN32) && !defined(_WIN64)
 #include <unistd.h>
 
 #else /* WIN32 */
@@ -570,7 +570,7 @@ char *str_dup(char *string)
 /*****************************************************************************
 * str_dup_n: Allocate a new copy of initial N chars in a string.
 *****************************************************************************/
-char *str_dup_n(char *string, long n)
+char *str_dup_n(char *string, size_t n)
 {
   char *s;
 
@@ -590,7 +590,7 @@ char *str_cat(char *first, ...)
 {
   char *s;
   va_list ap;
-  long size;
+  size_t size;
   char *arg;
 
   if (!first) return (NULL);
@@ -648,7 +648,7 @@ char *str_quote(char *string)
   char *badchars = "\\\"\r\n\t\a\b\f\v";
   char *quotechars = "\\\"rntabfv";
   char *q=NULL, *res=NULL, *ptr;
-  long len=0, pass;
+  size_t len=0, pass=0;
   int c;
   char new[5];
 
@@ -687,7 +687,7 @@ char *str_quote(char *string)
 * str_valid: Allocate a copy of string made only with valid chars
 *     copy 'string' into 'valid', replacing invalid characters by '_'
 *****************************************************************************/
-char *str_valid(char *string, long n)
+char *str_valid(char *string, size_t n)
 {
   long i;
   char *valid;
@@ -780,8 +780,8 @@ char *str_valid_eol(char *header, struct option_struct options)
 char *str_reverse(char *string)
 {
   char *reverted;
-  int   index;
-  long  index_reverted;
+  size_t index;
+  size_t index_reverted;
 
   if (!string) return(NULL);
   reverted = str_dup(string);
@@ -799,7 +799,7 @@ char *str_reverse(char *string)
 *     or NULL in case of failure (error, not found)
 *     offset (if non NULL) is set to new position after call
 *****************************************************************************/
-char *str_extractline(char *header, char *field, long *offset)
+char *str_extractline(char *header, char *field, size_t *offset)
 {
   char *header_offset;
   char *value    =NULL;
@@ -1074,9 +1074,9 @@ struct fileparts_struct fileparts(char *name)
     char *path_pos   = NULL;
     char *end_pos    = NULL;
     char *name_pos   = NULL;
-    long  dot_length = 0;
-    long  path_length= 0;
-    long  name_length= 0;
+    size_t  dot_length = 0;
+    size_t  path_length= 0;
+    size_t  name_length= 0;
 
     parts.FullName  = str_dup(name);
     /* extract path+filename+extension from full filename */
@@ -1189,7 +1189,11 @@ char *try_open_target(struct fileparts_struct parts, char force)
   }
   /* now tries with local Path=getcwd() */
   FullName=str_free(FullName);
+#if defined(WIN32) || defined(_WIN64)
+  _getcwd(cwd, 1024);
+#else
   getcwd(cwd, 1024);
+#endif
   parts.Path=str_free(parts.Path); 
   parts.Path = str_dup(strlen(cwd) ? cwd : ".");
   FullName = fileparts_fullname(parts);
@@ -1348,7 +1352,7 @@ struct file_struct file_open(char *name, struct option_struct options)
     if (!file.TargetTxt) {
       exit(print_stderr("Invalid Target: outfile=%s parts=%s - %s - %s\n", 
         options.outfile.FullName,
-        parts.Path, parts.Name, parts.Extension));
+        parts.Path ? parts.Path : "", parts.Name, parts.Extension));
     }
 
     /* handle binary output file */
@@ -1842,7 +1846,7 @@ struct data_struct data_free(struct data_struct field)
 /*****************************************************************************
 * data_get_char: Read in file, allocate and read the char part
 *****************************************************************************/
-char *data_get_char(struct file_struct file, long start, long end)
+char *data_get_char(struct file_struct file, size_t start, size_t end)
 {
   char *string;
 
@@ -1854,7 +1858,7 @@ char *data_get_char(struct file_struct file, long start, long end)
   if(fseek(file.SourceHandle, start, SEEK_SET))
     print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_char:%d]\n",
       file.Source, start,__LINE__);
-  if (fread(string, 1, end-start+1, file.SourceHandle) < end-start+1)
+  if (fread(string, 1, end-start, file.SourceHandle) < end-start)
     print_stderr( "Warning: Error in fread(%s,%i) [looktxt:data_get_char:%d]\n",
       file.Source, end-start+1,__LINE__);
   string[end-start+1] = '\0';
@@ -1890,11 +1894,11 @@ char *data_get_line(struct file_struct file, long *start)
 *****************************************************************************/
 float *data_get_float(struct file_struct file, struct data_struct field, struct option_struct options)
 {
-  float  *dataf=NULL;
+  float *dataf=NULL;
   float  value;
   int    fail = 0;
   int    index;
-  FILE *fid;
+  FILE  *fid=NULL;
 /* two hard coded methods for reading numerical values */
 /* 0: fast but requires isspace for numerical speparators (sscanf) */
 /* 1: slightly slower, but can handle separator                    */
@@ -1923,9 +1927,10 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
         fail  = 1;
         value = 0;
         if (options.verbose > 1) {
-          char *string=data_get_char(file, pos, pos+12);
+          char *string=NULL;
           print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%ld [looktxt:data_get_float:%d]\n",
             index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos, __LINE__);
+          string=data_get_char(file, pos, pos+12);
           print_stderr( "         '%s ...'\n", string);
           if (fseek(file.SourceHandle, pos, SEEK_SET))
             print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
@@ -1940,15 +1945,32 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
     }
   } else {
     /* slow method: fread+sscanf */
-    char *string=data_get_char(file, field.n_start-1, field.n_end);
+    char *string=data_get_char(file, field.n_start, field.n_end);
     /* replace separator chars by spaces */
     char *p=string;
-    char *separator;
+    char *separator=NULL;
+
+	if (!string) {
+		print_stderr( "Error: can not get field %s=[%ld:%ld] in file %s [looktxt:data_get_float:%d]\n",
+          field.Name, field.n_start, field.n_end, file.Source, __LINE__);
+		exit(EXIT_FAILURE);
+	}
     p=separator=str_dup(options.separator);
     while((p = strchr(separator,' ')) != NULL) *p=',';
     p=string;
     while ((p = strpbrk(p, separator)) != NULL) *p = ' ';
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+	/* tmpfile requires root access on Windows. MSDN recommands to use tempnam + fopn and then fclose */
+    p = _tempnam( NULL, NULL );
+	if (!p) {
+	  print_stderr( "Error: can not get temporary name [looktxt:data_get_float:%d]\n",
+        __LINE__);
+      exit(EXIT_FAILURE);
+	}
+	fid = fopen(p, "wb+TD");
+#else
     fid=tmpfile(); /* write temporary file to be read with fscanf */
+#endif
     if (!fid) {
       print_stderr( "Error: can not create temporary file [looktxt:data_get_float:%d]\n",
         __LINE__);
@@ -2176,14 +2198,14 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
     char inexp       = 0; /* if we are after an exp */
 
     long pos         = 0; /* current pos */
-    long startcmtpos = -1;/* comment field starting pos */
-    long endcmtpos   = -1;/* comment field end pos */
-    long startcharpos= 0; /* char field start pos */
-    long endcharpos  = 0; /* char field end pos */
-    long startnumpos = 0; /* num field start pos */
-    long endnumpos   = 0; /* num field end pos */
-    long last_eolpos = 0; /* last EOL position */
-    long last_seppos = 0; /* Separator */
+    size_t startcmtpos = 0;/* comment field starting pos */
+    size_t endcmtpos   = 0;/* comment field end pos */
+    size_t startcharpos= 0; /* char field start pos */
+    size_t endcharpos  = 0; /* char field end pos */
+    size_t startnumpos = 0; /* num field start pos */
+    size_t endnumpos   = 0; /* num field end pos */
+    size_t last_eolpos = 0; /* last EOL position */
+    size_t last_seppos = 0; /* Separator */
 
     long rows        = 0; /* number of rows in matrix */
     long columns     = 0; /* number of columns in matrix */
@@ -2282,12 +2304,12 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
           if (!options.catenate) {
             if ((columns != last_columns) && (startnumpos < last_eolpos)) {
               /* change in columns -> end of preceeding num field */
-              endnumpos = last_eolpos - 1;
+              endnumpos = last_eolpos > 0 ? last_eolpos - 1 : 0;
               pos       = last_eolpos;
               is        = Beol;
               need      = needforstartnum;
               fieldend |= Bnumber;
-              endcharpos= startnumpos - 1;
+              endcharpos= startnumpos > 0 ? startnumpos - 1 : 0;
               columns   = last_columns;
               if (startcharpos <= endcharpos) fieldend |= Balpha;
             } else {  /* still in numeric field with same num of columns: NewLine */
@@ -2303,12 +2325,12 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                 if (last_columns && (columns != last_columns)  && (startnumpos < last_eolpos)) {
                   /* change in columns -> end of preceeding num field */
                   if (found) rows--;
-                  endnumpos = last_eolpos - 1;
+                  endnumpos = last_eolpos > 0 ? last_eolpos - 1 : 0;
                   pos       = last_eolpos;
                   is        = Beol;
                   need      = needforstartnum;
                   fieldend |= Bnumber;
-                  endcharpos= startnumpos - 1;
+                  endcharpos= startnumpos > 0 ? startnumpos - 1 : 0;
                   columns   = last_columns;
                   if (startcharpos <= endcharpos) fieldend |= Balpha;
                 }
@@ -2323,7 +2345,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
             /* end of num field ok, except when the num started by a
                single point, not follwed by a 0-9 number */
             endnumpos  = pos - 2;
-            endcharpos = startnumpos - 1;
+            endcharpos = startnumpos > 0 ? startnumpos - 1 : 0;
             fieldend  |= Bnumber;
             if (last_columns == 0)       last_columns = columns;
             if (startcharpos <= endcharpos) fieldend |= Balpha;
@@ -2335,12 +2357,12 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
               if (fieldend & Bnumber) fieldend -= Bnumber;
             } else {
               if ((columns > 0) && (startnumpos >= last_eolpos)) { /* only a line */
-                endnumpos = last_seppos - 1;
+                endnumpos = last_seppos > 0 ? last_seppos - 1 : 0;
                 pos       = last_seppos;
                 is        = Bseparator;
                 need      = needforstartnum;
                 fieldend |= Bnumber;
-                endcharpos = startnumpos - 1;
+                endcharpos = startnumpos > 0 ? startnumpos - 1 : 0;
                 if (fseek(file.SourceHandle, pos, SEEK_SET)) {/* reposition after SEP */
                   print_stderr(
                   "Error: Repositiong error at position %ld in file '%s'\n"
@@ -2349,12 +2371,12 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                 }
                 if (startcharpos <= endcharpos) fieldend |= Balpha;
               } else { /* already passed more than one line */
-                endnumpos = last_eolpos - 1;
+                endnumpos = last_eolpos > 0 ? last_eolpos - 1 : 0;
                 pos       = last_eolpos;
                 is        = Beol;
                 need      = needforstartnum;
                 fieldend |= Bnumber;
-                endcharpos= startnumpos - 1;
+                endcharpos= startnumpos > 0 ? startnumpos - 1 : 0;
                 columns   = last_columns;
                 if (fseek(file.SourceHandle, pos, SEEK_SET)) { /* reposition after EOL */
                   print_stderr(
@@ -2696,7 +2718,7 @@ int file_write_field_array(struct file_struct file,
 
   if (((field.rows*field.columns > MAX_TXT4BIN && options.use_binary==1) || options.use_binary==2) && file.BinHandle) {
     /* write bin array in BinHandle */
-    long start, end;
+    size_t start, end;
     start=ftell(file.BinHandle); /* file opened previously */
     /* position at end of Bin, store that pos */
     count = fwrite(data, sizeof(float),
@@ -2711,7 +2733,7 @@ int file_write_field_array(struct file_struct file,
         file.TargetBin, field.Name, field.rows, field.columns);
       if (format) {
         /* get eof Bin, store pos */
-        end = ftell(file.BinHandle)-1;
+        end = ftell(file.BinHandle); if (end > 1) end--;
         /* write reference (TargetBin, start,end, length) in TxtHandle */
 
         length=end-start+1;
@@ -2915,7 +2937,7 @@ struct write_struct file_write_getsections(struct file_struct file,
             char   value[256];
             double data0=0;      /* first numerical value */
             char  *tmp;
-            if (fseek (file.SourceHandle, field->n_start-1, SEEK_SET))
+            if (fseek (file.SourceHandle, field->n_start-1 > 0 ? field->n_start-1 : 0, SEEK_SET))
               print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:file_write_getsections:%d]\n",
                 file.Source, field->n_start-1,__LINE__);
             if (!fscanf(file.SourceHandle, "%lf", &data0))
@@ -3239,7 +3261,8 @@ long file_write_target(struct file_struct file,
           }
           /* now write the bin reference catenated part (only once) if required */
           end = options.use_binary && file.BinHandle ? 
-                  ftell(file.BinHandle)-1 : 0;
+                  ftell(file.BinHandle) : 0;
+          if (end > 0) end--;
           /* write reference (TargetBin, start,end, length) in TxtHandle */
           length=end-start+1;
           if (file.BinHandle && file.TxtHandle) pfprintf(file.TxtHandle, options.format.BinReference, "slllll",

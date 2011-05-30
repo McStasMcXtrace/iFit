@@ -20,7 +20,7 @@
 /*-----------------------------program texmex.c-----------------------------*/
 
 /*
-% [cell] = looktxt('filename [options]') Import text data
+% [cell] = looktxt('filename', '[options]') Import text data
 */
 
 /*
@@ -41,7 +41,7 @@
 #define malloc  mxMalloc
 #define realloc mxRealloc
 #define calloc  mxCalloc
-#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.7 $"
+#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.8 $"
 /* #define free mxFree  */
 #define free NoOp
 
@@ -112,8 +112,17 @@ void mexFunction(int nlhs, mxArray *plhs[],
     EndFlag = 0;
     StartLexeme = InputString;
     EndString   = InputString+strlen(InputString);
-
-    while ((EndFlag == 0) && (carg < MAX_LENGTH-1)) /* read tokens iteratively */
+    
+    /* the first input argument should be used as is (filename) */
+    if (i==0) {
+      varg[carg] = (char*)mxMalloc(strlen(InputString)+64);
+      if (varg[carg] == NULL) {
+        mexPrintf("looktxt/mex : argument %i. Size %i\n", carg, strlen(InputString));
+        mexErrMsgTxt("looktxt/mex : can not allocate memory for input argument string.\n");
+      }
+      strcpy(varg[carg], InputString);
+      carg++;
+    } else while ((EndFlag == 0) && (carg < MAX_LENGTH-1)) /* read tokens iteratively */
     {
       /* search for begining of a word */
       if (*StartLexeme == ' ')
@@ -177,7 +186,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
 #endif   /* ndef P_tmpdir */
     /* create a unique temporary file of length < 32 using random number */
     long_r = rand();
-    sprintf(filename, "%s%clk_%li_XXXXXX", P_tmpdir, LK_PATHSEP_C, long_r);
+    if (!strcmp(P_tmpdir, LK_PATHSEP_S) || !strcmp(P_tmpdir, "."))
+        sprintf(filename, "lk_%li_XXXXXX", long_r);
+    else
+        sprintf(filename, "%s%clk_%li_XXXXXX", P_tmpdir, LK_PATHSEP_C, long_r);
     mktemp(filename);
     /* allocate it as a new argument to be passed to looktxt */
     varg[carg] = (char*)mxMalloc(strlen(filename)+64);
