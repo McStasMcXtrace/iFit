@@ -48,7 +48,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -56,8 +56,6 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 % in the 'private'.
 %
 % private: 'objective', 'apply_constraints', 'constraints_minmax', 'localChar', 'fmin_private_disp'
-
-% NOT GOOD: anneal, bfgs
 
 % parameter handling ===========================================================
 
@@ -137,15 +135,22 @@ if ischar(options.MaxIter),
   options.MaxIter = eval(options.MaxIter); 
 end
 
-tolfun = options.TolFun;
-if ischar(tolfun)
-  if tolfun(end)=='%'
-    tolfun(end)='';
+if ischar(options.TolFun)
+  options.TolFunChar = options.TolFun;
+  if options.TolFun(end)=='%'
+    options.TolFun(end)='';
     fval = objective(fun, pars);
-    tolfun = abs(str2num(tolfun)*fval/100);
+    options.TolFun = abs(str2num(options.TolFun)*fval/100);
+  else
+    options.TolFun = str2num(options.TolFun);
   end
 else
   fval = NaN;
+end
+
+if ischar(options.TolX)
+  options.TolXChar=options.TolX;
+  options.TolX = abs(str2num(options.TolX)*pars(:)/100);
 end
 
 if strcmp(options.Display,'iter')
@@ -173,7 +178,7 @@ switch options.optimizer
 case {'cmaes','fmincmaes'}    
 % Evolution Strategy with Covariance Matrix Adaption ---------------------------
   hoptions.MaxIter    = options.MaxIter;
-  hoptions.TolFun     = tolfun;
+  hoptions.TolFun     = options.TolFun;
   hoptions.MaxFunEvals= options.MaxFunEvals;
   hoptions.PopSize    = options.PopulationSize;
   hoptions.DispFinal  = 'off';
@@ -240,7 +245,7 @@ case {'fminlm','LMFsolve'}
 % Levenberg-Maquardt steepest descent ------------------------------------------
   % LMFsolve minimizes the sum of the squares of the objective: sum(objective.^2)
   [pars, fval, iterations, exitflag] = LMFsolve(@(pars) objective_lm(fun, pars), pars, ...
-           'Display',0, 'FunTol', tolfun, 'XTol', options.TolX, ...
+           'Display',0, 'FunTol', options.TolFun, 'XTol', options.TolX, ...
            'MaxIter', options.MaxIter, 'Evals',options.MaxFunEvals);
   switch exitflag
   case -5, message='Converged: Termination function tolerance criteria reached';
@@ -269,7 +274,7 @@ case {'ralg','fminralg','solvopt'}
 % Shor's r-algorithm -----------------------------------------------------------
   opt(1) = -1;
   opt(2) = options.TolX;
-  opt(3) = tolfun;
+  opt(3) = options.TolFun;
   opt(4) = options.MaxIter;
   opt(5) = -1;
   opt(6) = 1e-8; 
@@ -314,7 +319,7 @@ case {'hPSO','fminswarmhybrid'}
   % transfer optimset options and constraints
   hoptions.space     = [ constraints.min(:) constraints.max(:) ];
   hoptions.MaxIter   = options.MaxIter;
-  hoptions.TolFun    = tolfun;
+  hoptions.TolFun    = options.TolFun;
   hoptions.TolX      = options.TolX;
   hoptions.Display   = options.Display;
   hoptions.MaxFunEvals=options.MaxFunEvals;
@@ -344,14 +349,16 @@ case {'Simplex','fminsimplex'}
   for iterations=1:options.MaxIter
     fval = feval(@(pars) objective(fun, pars), pars);
     [pars,out]=Simplex( fval );
-    tolfun = options.TolFun;
-    if ischar(tolfun)
-      if tolfun(end)=='%'
-        tolfun(end)='';
-        tolfun = abs(str2num(tolfun)*fval/100);
+    if isfield(options,'TolFunChar')
+      options.TolFun = options.TolFunChar;
+      if options.TolFun(end)=='%'
+        options.TolFun(end)='';
+        options.TolFun = abs(str2num(options.TolFun)*fval/100);
+      else
+        options.TolFun = str2num(options.TolFun);
       end
     end
-    if Simplex('converged', tolfun)             % Test for convergence
+    if Simplex('converged', options.TolFun)             % Test for convergence
       exitflag=-1;
       message= [ 'Converged: Termination function tolerance criteria reached (options.TolFun=' ...
                 num2str(options.TolFun) ')' ];
@@ -368,29 +375,29 @@ case {'Simplex','fminsimplex'}
 case {'cgtrust','fmincgtrust'}
 % Steihaug Newton-CG-Trust region algorithm ------------------------------------
   [pars,histout] = cgtrust(pars, @(pars) objective(fun, pars), ...
-    [ tolfun .1 options.MaxIter options.MaxIter], options.TolX*options.TolX);
+    [ options.TolFun .1 options.MaxIter options.MaxIter], options.TolX*options.TolX);
 % [pars,histout] = levmar(pars, @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
   iterations      = size(histout,1);
 % not so efficient optimizers ==================================================
 case {'fminanneal','anneal'}  
 % simulated annealing ----------------------------------------------------------
   options.MaxTries   = options.MaxIter/10;
-  options.StopVal    = tolfun;
+  options.StopVal    = options.TolFun;
   options.Verbosity=0;
   [pars,fval,iterations,exitflag] = anneal(@(pars) objective(fun, pars), pars(:)', options);
   if exitflag==-7,message='Maximum consecutive rejections exceeded (anneal)'; end
 case {'fminbfgs','bfgs'}      
 % Broyden-Fletcher-Goldfarb-Shanno ---------------------------------------------
-  [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) objective(fun, pars), tolfun, options.MaxIter);
+  [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
   iterations = size(histout,1);
 case {'fminkalman','kalmann','ukfopt'}
 % unscented Kalman filter ------------------------------------------------------
   [pars,iterations] = ukfopt(@(pars) objective(fun, pars(:)), pars(:), ...
-              tolfun, norm(pars)*eye(length(pars)), 1e-6*eye(length(pars)), 1e-6);
+              options.TolFun, norm(pars)*eye(length(pars)), 1e-6*eye(length(pars)), 1e-6);
 case {'ntrust','fminnewton'}
 % Dogleg trust region, Newton model --------------------------------------------
   [pars,histout,costdata] = ntrust(pars(:),@(pars) objective(fun, pars), ...
-       tolfun,options.MaxIter);
+       options.TolFun,options.MaxIter);
   iterations      = size(histout,1);
 case {'buscarnd','fminrand'}
 % adaptive random search -------------------------------------------------------
@@ -664,16 +671,26 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
   fval_mean = mean(constraints.criteriaHistory(max(1, length(constraints.criteriaHistory)-10):end));
   
   % handle relative stop conditions
+  if isfield(options,'TolFunChar')
+    options.TolFun = options.TolFunChar;
+  end
   if ischar(options.TolFun)
     if options.TolFun(end)=='%'
       options.TolFun(end)='';
       options.TolFun = abs(str2num(options.TolFun)*fval/100);
+    else
+      options.TolFun = str2num(options.TolFun);
     end
+  end
+  if isfield(options,'TolXChar')
+    options.TolX = options.TolXChar;
   end
   if ischar(options.TolX)
     if options.TolX(end)=='%'
       options.TolX(end)='';
       options.TolX = abs(str2num(options.TolX)*pars(:)/100);
+    else
+      options.TolX = str2num(options.TolX);
     end
   end
 
