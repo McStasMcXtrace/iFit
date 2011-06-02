@@ -19,6 +19,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %
 % input:  a: object or array (iData)
 %         model: model function (char/cellstr)
+%           when given as a cellstr, the product of all functions is used
 %         pars: initial model parameters (double array)
 %         options: structure as defined by optimset/optimget (char/struct)
 %           if given as a char, it defines the algorithm to use and its default options
@@ -65,7 +66,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also iData, fminsearch, optimset, optimget
 
 % nested  functions: eval_criteria
