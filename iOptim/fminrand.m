@@ -14,6 +14,11 @@ function [pars,fval,exitflag,output] = fminrand(varargin)
 %     is used to set the minimal and maximal parameter bounds, as vectors.
 %   fminrand(fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
+%   fminrand(problem) where problem is a structure with fields
+%     problem.objective:   function to minimize
+%     problem.x0:          starting parameter values
+%     problem.options:     optimizer options (see below)
+%     problem.constraints: optimization constraints
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -47,7 +52,7 @@ function [pars,fval,exitflag,output] = fminrand(varargin)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also: fminsearch, optimset
 
 % default options for optimset

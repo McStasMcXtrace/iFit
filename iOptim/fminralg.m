@@ -15,6 +15,11 @@ function [pars,fval,exitflag,output] = fminralg(varargin)
 %     is used to set the minimal and maximal parameter bounds, as vectors.
 %   fminralg(fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
+%   fminralg(problem) where problem is a structure with fields
+%     problem.objective:   function to minimize
+%     problem.x0:          starting parameter values
+%     problem.options:     optimizer options (see below)
+%     problem.constraints: optimization constraints
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -49,7 +54,7 @@ function [pars,fval,exitflag,output] = fminralg(varargin)
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997 [solvopt]
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also: fminsearch, optimset
 
 % default options for optimset

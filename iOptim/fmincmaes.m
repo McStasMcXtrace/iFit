@@ -23,6 +23,11 @@ function [pars, fval, exitflag, output] = fmincmaes(varargin)
 %     is used to set the minimal and maximal parameter bounds, as vectors.
 %   fmincmaes(fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
+%   fmincmaes(problem) where problem is a structure with fields
+%     problem.objective:   function to minimize
+%     problem.x0:          starting parameter values
+%     problem.options:     optimizer options (see below)
+%     problem.constraints: optimization constraints
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -66,7 +71,7 @@ function [pars, fval, exitflag, output] = fmincmaes(varargin)
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de [cmaes]
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also: fminsearch, optimset
 
 % STANDARD part ================================================================

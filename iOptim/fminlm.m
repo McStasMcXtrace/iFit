@@ -17,6 +17,11 @@ function [pars,fval,exitflag,output] = fminlm(varargin)
 %     is used to set the minimal and maximal parameter bounds, as vectors.
 %   fminlm(fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
+%   fminlm(problem) where problem is a structure with fields
+%     problem.objective:   function to minimize
+%     problem.x0:          starting parameter values
+%     problem.options:     optimizer options (see below)
+%     problem.constraints: optimization constraints
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -49,7 +54,7 @@ function [pars,fval,exitflag,output] = fminlm(varargin)
 % Fletcher, R., Computer Journal 1970, 13, 317-322
 % Contrib: Miroslav Balda, balda AT cdm DOT cas DOT cz 2009 [LMFsolve]
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, optimset
 
 % default options for optimset
