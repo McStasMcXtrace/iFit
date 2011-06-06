@@ -1,14 +1,14 @@
 function edit(a)
-% edit(s) : edit iData object Signal
+% edit(s) : edit iData object Signal/Monitor
 %
-%   @iData/edit function to view the Signal of a data set. 
+%   @iData/edit function to view the Signal/Monitor of a data set. 
 %     The Signal can not (yet) be modified.
 %
 % input:  s: object or array (iData)
 % output: b: object or array (iData)
 % ex:     b=edit(a);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
   if length(a(:)) > 1
@@ -19,6 +19,10 @@ function edit(a)
   end
 
   if exist('uitable')
+    if prod(size(a)) > 1e5
+      iData_private_warning(mfilename, [ 'Object ' a.Tag ' is too large (numel=' num2str(prod(size(a))) ...
+    '.\n\tYou should rebin with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
+    end
     UserData.Monitor = real(get(a,'Monitor'));
     UserData.Signal  = getaxis(a, 'Signal'); % Signal/Monitor
     UserData.Selected= [];
