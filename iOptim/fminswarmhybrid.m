@@ -18,6 +18,11 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(varargin)
 %     is used to set the minimal and maximal parameter bounds, as vectors.
 %   fminswarmhybrid(fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
+%   fminswarmhybrid(problem) where problem is a structure with fields
+%     problem.objective:   function to minimize
+%     problem.x0:          starting parameter values
+%     problem.options:     optimizer options (see below)
+%     problem.constraints: optimization constraints
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -62,7 +67,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(varargin)
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004 [hPSO]
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also: fminsearch, optimset
 
 % default options for optimset

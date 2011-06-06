@@ -17,6 +17,11 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %     is used to set the minimal and maximal parameter bounds, as vectors.
 %   fmin_private_wrapper(optimizer, fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
+%   fmin_private_wrapper(optimizer, problem) where problem is a structure with fields
+%     problem.objective:   function to minimize
+%     problem.x0:          starting parameter values
+%     problem.options:     optimizer options (see below)
+%     problem.constraints: optimization constraints
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -33,7 +38,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %
 %  OPTIONS is a structure with settings for the simulated annealing, 
 %  compliant with optimset. Default options may be obtained with
-%     o=fminanneal('defaults')
+%     o=fmin_private_wrapper(optimizer,'defaults')
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min=   vector of minimal values for parameters
@@ -48,7 +53,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -67,14 +72,6 @@ if nargin < 2, fun = ''; end
 if isempty(optimizer), optimizer = 'fminimfil'; end
 if isempty(fun),       fun = 'defaults'; end
 
-if strcmp(fun,'defaults')
-  pars = feval(optimizer, 'defaults');
-  return
-elseif nargin < 2
-  error([ 'syntax is: ' optimizer '(optimizer, objective, parameters, ...)' ] );
-elseif nargin < 3
-  error([ 'syntax is: ' localChar(optimizer) '(objective, parameters, ...)' ] );
-end
 if nargin < 4
   options=[];
 end
@@ -85,6 +82,25 @@ if nargin < 6
   ub = [];
 end
 
+if strcmp(fun,'defaults')
+  pars = feval(optimizer, 'defaults');
+  return
+elseif nargin < 2
+  error([ 'syntax is: ' optimizer '(optimizer, objective, parameters, ...)' ] );
+elseif nargin == 2 && isstruct(fun)
+  if     isfield(fun, 'x0'),          pars=fun.x0;
+  elseif isfield(fun, 'guess'),       pars=fun.guess;
+  elseif isfield(fun, 'Guess'),       pars=fun.Guess; end
+  if     isfield(fun, 'options'),     options=fun.options; end
+  if     isfield(fun, 'constraints'), constraints=fun.constraints; end 
+  if     isfield(fun, 'objective'),   tmp=fun.objective; fun=[]; fun=tmp; 
+  elseif isfield(fun, 'model'),       tmp=fun.model; fun=[]; fun=tmp;
+  elseif isfield(fun, 'f'),           tmp=fun.f; fun=[]; fun=tmp;
+  elseif isfield(fun, 'function'),    tmp=fun.function; fun=[]; fun=tmp; end
+elseif nargin < 3
+  error([ 'syntax is: ' localChar(optimizer) '(objective, parameters, ...)' ] );
+end
+
 % default arguments when missing
 if isempty(options)
   options=feval(optimizer, 'defaults');
@@ -93,7 +109,7 @@ if length(constraints) & isnumeric(constraints)
   if nargin == 4,               % given as fixed index vector
     fixed = constraints; constraints=[];
     constraints.fixed = fixed;  % avoid warning for variable redefinition.
-  else                          % given as lb,ub parameters (nargin==5)
+  elseif nargin == 5            % given as lb,ub parameters (nargin==5)
     lb = constraints; clear constraints;
     constraints.min = lb;
     constraints.max = ub;

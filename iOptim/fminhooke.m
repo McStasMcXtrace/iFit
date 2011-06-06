@@ -14,6 +14,11 @@ function [pars,fval,exitflag,output] = fminhooke(varargin)
 %     is used to set the minimal and maximal parameter bounds, as vectors.
 %   fminhooke(fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
+%   fminhooke(problem) where problem is a structure with fields
+%     problem.objective:   function to minimize
+%     problem.x0:          starting parameter values
+%     problem.options:     optimizer options (see below)
+%     problem.constraints: optimization constraints
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -46,7 +51,7 @@ function [pars,fval,exitflag,output] = fminhooke(varargin)
 % R. Hooke and T. A. Jeeves, Journal of the ACM, Vol. 8, April 1961, pp. 212.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [hooke]
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % default options for optimset
