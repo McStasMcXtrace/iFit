@@ -20,6 +20,11 @@ function [pars,fval,exitflag,output] = fminpso(varargin)
 %     is used to set the minimal and maximal parameter bounds, as vectors.
 %   fminpso(fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
+%   fminpso(problem) where problem is a structure with fields
+%     problem.objective:   function to minimize
+%     problem.x0:          starting parameter values
+%     problem.options:     optimizer options (see below)
+%     problem.constraints: optimization constraints
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;

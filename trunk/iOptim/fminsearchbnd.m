@@ -14,6 +14,11 @@ function [pars,fval,exitflag,output] = fminsearchbnd(varargin)
 %     is used to set the minimal and maximal parameter bounds, as vectors.
 %   fminsearchbnd(fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
+%   fminsearchbnd(problem) where problem is a structure with fields
+%     problem.objective:   function to minimize
+%     problem.x0:          starting parameter values
+%     problem.options:     optimizer options (see below)
+%     problem.constraints: optimization constraints
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -46,7 +51,7 @@ function [pars,fval,exitflag,output] = fminsearchbnd(varargin)
 %   Method in Low Dimensions", SIAM Journal of Optimization, 9(1):
 %   p.112-147, 1998.
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: fminsearch, optimset
 
 % default options for optimset
