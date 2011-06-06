@@ -1,5 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
+
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -10,16 +12,14 @@
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: iFuncs fit models</h1>
 <br>
 
-<ol id="mozToc">
-
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId147615">How to use models</a></li><li><a href="#mozTocId96090">List of default fit models</a></li><li><a href="#mozTocId210092">Model builder: making a model easy</a></li><li><a href="#mozTocId854762">How to write manually a model function</a></li>
-</ol>
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId147615">How to use models</a></li><li><a href="#mozTocId96090">List of default fit models</a></li><li><a href="#mozTocId210092">Model builder: making a model easy
+</a></li><li><a href="#mozTocId854762">How to write manually a model function</a></li></ol>
 
 <br>
 
 
 <hr style="width: 100%; height: 2px;">
-<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">fits</span><br>
+<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">fits, ifitmakefunc, fits(iData)</span><br>
 </div>
 
 <br>
@@ -36,6 +36,11 @@ obect by means of the <span style="font-weight: bold;">ieval</span> function. Si
 function evluation can be used iteratively in an optimization process
 in order to find a parameter set that matches best the iData object
 Signal, using the <span style="font-weight: bold;">fits</span> method. All these are explained in the <a href="Fit.html">Fit</a> page.<br>
+<br>
+Each function/model can be used in the following ways (for instance model may be 'gauss'):<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>		<span style="font-style: italic;">% display model informations</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'identify'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'plot'</span>)	<span style="font-style: italic;">% plot the model with its default settings</span><span style="color: rgb(255, 0, 0); font-style: italic;"></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(p, x, y ...)	<span style="font-style: italic;">% evaluate the model with parameters p, and axes x,y,...<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>([], x, y ...)	<span style="font-style: italic;">% evaluate the model with axes x,y,... and automatic parameter guess<br></span><span style="font-style: italic;">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'guess'</span>, x, y ...)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ieval</span>(a, @model, p)	<span style="font-style: italic;">% evaluate the model onto the iData object axes with parameters p<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">fits</span>(a, @model, p)	<span style="font-style: italic;">% fit the model onto the iData object</span><br></pre>
+
+
 
 <h3><a class="mozTocH3" name="mozTocId96090"></a><span style="font-weight: bold;">List of default fit models</span></h3>
 
@@ -133,21 +138,59 @@ Signal, using the <span style="font-weight: bold;">fits</span> method. All these
 <div style="text-align: center;"><a href="images/iFit_iFuncs.png"><img title="iFit: default functions (in iFuncs)" src="images/iFit_iFuncs.png" alt="iFit: default functions (in iFuncs)" style="border: 0px solid ; width: 560px; height: 420px;" align="middle"></a><br>
 
 </div>
+<h3><span style="font-weight: normal;">The </span>list of all available fit functions<span style="font-weight: normal;"> can be obtained from the command<span style="font-weight: bold;">:</span></span><br>
+
+
+</h3>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData)</span></pre>
 <h3><a class="mozTocH3" name="mozTocId210092"></a><span style="font-weight: bold;">Model builder: making a model easy<br>
 </span></h3>
 
-Not finalized yet, but this will come shortly.
-<h3><a class="mozTocH3" name="mozTocId854762"></a><span style="font-weight: bold;">How to write manually a model function</span></h3>
-We suggest that you start from the 'gauss' function in iFuncs, and
-customize at will. Please retain the function core structure to ensure
-proper execution.<br>
+
+The <span style="font-style: italic;">ifitmakefunc</span> tool enables to define a new fit function/model from a simple dialog, by entering its <a href="images/ifitmakefunc.png"><img title="ifitmakefunc" src="images/ifitmakefunc.png" alt="ifitmakefunc" style="border: 0px solid ; width: 150px; height: 137px;" align="right"></a>expression as a function of the parameter vector <span style="font-style: italic;">p</span> and the axes <span style="font-style: italic;">x,y,z</span>,...<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc;</span></pre>
+
+The only required argument is the expression, but you may as well&nbsp;
+enter a function name and description, parameter names and default
+values. When started without any parameters, the Gaussian function
+settings are used.<br>
+
 <br>
-Not finalized yet, but this will come shortly.
+
+The function both creates a function file, and returns its function handle, that may be used with <span style="font-weight: bold;">ieval</span> anf <span style="font-weight: bold;">fits</span>.<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; [p,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);</pre>
+
+A quick definition, without using the dialog, can be performed with the syntax:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);</span></span></pre>
+
+
+and, for a more detailed description:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">('function_name', 'description', 'Parameter1 Parameter2 ...', ...<br>	<span style="color: rgb(204, 51, 204);">'expression'<span style="color: rgb(0, 0, 0);">, </span></span>[default parameter values]);<br></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
+
+which is equivalent to:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; fun.function='function_name';			% function name<br>&gt;&gt; fun.Description='function description';		% function long description<br>&gt;&gt; fun.Parameters='Paramater1 Parameter2 ...';		% parameter names<br>&gt;&gt; fun.Guess=[0 1 2 ...] or 'automatic';		% parameter default values, or automatic mode<br>&gt;&gt; fun.Expression='expression using p and x,y,z,t...';	% value of the model<br>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(fun);<br></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
+The resulting function has the ability to identify itself (provide
+detailed informations), compute automatic starting parameters, display
+itself, and evaluate its values of course.The resulting function embeds the automatic guess functionality (<span style="font-style: italic;">iFuncs_private_guess</span>),
+and thus can be stored anywehere in the Matlab search path, but should
+better be in the iFit/iFuncs directory so that it apperas in the <span style="font-style: italic;">fits(iData)</span> function list.<br>
+<pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
+
+<h3><a class="mozTocH3" name="mozTocId854762"></a><span style="font-weight: bold;">How to write manually a model function</span></h3>
+We suggest that you start from the 'gauss' function in <span style="font-style: italic;">iFit/iFuncs, </span>and
+customize at will. Please retain the function core structure to ensure
+proper execution. Store the new function in iFit/iFuncs so that it can access the automatic guess functionality (<span style="font-style: italic;">iFuncs_private_guess</span>). A template function also exists in <span style="font-style: italic;">iFit/iFuncs/private/template.txt</span>.<br>
+<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2011-03-13 22:21:31 $ $Revision: 1.6 $
+$Date: 2011-06-06 10:18:26 $ $Revision: 1.7 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
