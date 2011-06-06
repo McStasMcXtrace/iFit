@@ -1,0 +1,121 @@
+function signal=$FUN(p, $AXES, signal)
+% signal = $FUN(p, $AXES) : $DESCR
+%
+%   iFunc/$FUN $DESCR (fit $DIMD function/model)
+%   the function called with a char argument performs specific actions.
+%
+% input:  p: $FUN model parameters (double)
+%            p = [ $PARS ] as a numerical array
+%          or action e.g. 'identify', 'guess', 'plot' (char)
+%         x: axis (double)
+%    signal: when values are given, a guess of the parameters is performed (double)
+% output: signal: model value or information structure ('guess', 'identify')
+% ex:     signal=$FUN([1 0 1 1], -10:10); or signal=$FUN('identify') or p=$FUN('guess',x,signal);
+%
+% Version: $Revision: 1.1 $
+% See also iData, ifitmakefunc
+
+% $DIMD function created by ifitmakefunc from template (iFit/iFuncs)
+%   Please retain the function definition structure as defined below
+%   in most cases, just fill-in the information when HERE is indicated
+
+  if nargin >= 2 && isnumeric(p) && ~isempty(p) && isnumeric(x) && ~isempty(x)
+  %   evaluate: model(p,x, ...)
+    signal = evaluate(p, x);
+  elseif nargin == 3 && isnumeric(x) && isnumeric(signal) && ~isempty(x) && ~isempty(signal)
+  %   guess: model('guess', x,signal)
+  %   guess: model(p,       x,signal)
+    signal = guess(x,signal);
+  elseif nargin == 2 && isnumeric(p) && isnumeric(x) && numel(p) == numel(x)
+  %   guess: model(x,signal) with numel(x)==numel(signal)
+    signal = guess(p,x);
+  elseif nargin == 2 && isnumeric(p) && ~isempty(p) && isempty(x)
+  %   evaluate: model(p,[])
+    signal = feval(mfilename, p);
+  elseif nargin == 2 && isempty(p) && isnumeric(x) && ~isempty(x)
+  %   identify: model([],x)
+    info = identify; x=x(:);
+    info.Guess  = $DEFPARS;
+    info.Axes   = { x };
+    info.Values = evaluate(info.Guess, info.Axes{:});
+    signal = info;
+  elseif nargin == 1 && isnumeric(p) && ~isempty(p) 
+  %   identify: model(p)
+    signal = identify;
+    signal.Guess  = p;
+    width    = 0;
+    position = 0;
+    parameter_names = lower(signal.Parameters);
+    % HERE default axes to represent the model when parameters are given <<<<<<<
+    % test parameter names
+    for indep_p=1:length(parameter_names)
+      if  ~isempty(strfind(parameter_names{index_p}, 'width')) ...
+        | ~isempty(strfind(parameter_names{index_p}, 'tau')) ...
+        | ~isempty(strfind(parameter_names{index_p}, 'damping'))
+        width = sigma+abs(p(indep_p));                     % kind of embrace all peaks
+      elseif ~isempty(strfind(parameter_names{index_p}, 'centre')) ...
+        |    ~isempty(strfind(parameter_names{index_p}, 'center')) ...
+        |    ~isempty(strfind(parameter_names{index_p}, 'position'))
+        if position == 0, position = p(index_p);
+        else position = mean( [position p(index_p)] ); end % kind of center on all peaks
+      end
+    end
+    if width == 0
+      if position == 0, width=1; else width=abs(position/2); end
+    end
+    signal.Axes   =  { linspace(position-3*width,position+3*width, 100) };
+    signal.Values = evaluate(signal.Guess, signal.Axes{:});
+  elseif nargin == 1 && ischar(p) && strcmp(p, 'plot') % only works for 1D
+    signal = feval(mfilename, [], linspace(-2,2, 100));
+    if signal.Dimension == 1
+      plot(signal.Axes{1}, signal.Values);
+    elseif signal.Dimension == 2
+      surf(signal.Axes{1}, signal.Axes{2}, signal.Values);
+    end
+    title(mfilename)
+  elseif nargin == 0
+    signal = feval(mfilename, [], linspace(-2,2, 100));
+  else
+    signal = identify;
+  end
+
+end
+%                                        end of model main $FUN
+% ------------------------------------------------------------------------------
+
+% inline: evaluate: compute the model values
+function signal = evaluate(p, x)
+  sx = size(x); x=x(:);
+  if isempty(x) | isempty(p), signal=[]; return; end
+  
+  % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+  signal = $EXPR;
+  
+  signal = reshape(signal, sx);
+end
+
+% inline: identify: return a structure which identifies the model
+function signal =identify()
+  % HERE are the parameter names
+  parameter_names = { $PARS };
+  %
+  signal.Type           = 'iFit fitting function';
+  signal.Name           = [ '$DESCR ($DIMD) [' mfilename ']' ];
+  signal.Parameters     = parameter_names;
+  signal.Dimension      = 1;         % dimensionality of input space (axes) and result
+  signal.Guess          = [];        % default parameters
+  signal.Axes           = {};        % the axes used to get the values
+  signal.Values         = [];        % default model values=f(p)
+  signal.function       = mfilename;
+end
+
+% inline: guess: guess some starting parameter values and return a structure
+function info=guess(x,signal)
+  info       = identify;  % create identification structure
+  info.Axes  = { x };
+  % fill guessed information
+  info.Guess = $DEFPARS;
+  info.Values= evaluate(info.Guess, info.Axes{:});
+end
+
+% ==============================================================================

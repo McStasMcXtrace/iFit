@@ -2,15 +2,19 @@ function y=triangl(p, x, y)
 % y = triangl(p, x, [y]) : Triangular
 %
 %   iFunc/triangl Triangular fitting function
-%   the function called with a char argument performs specific actions.
+%   The function called with a char argument performs specific actions.
+%   You may create new fit functions with the 'ifitmakefunc' tool.
 %
 % input:  p: Triangular model parameters (double)
 %            p = [ Amplitude Centre HalfWidth BackGround ]
-%          or action e.g. 'identify', 'guess' (char)
+%          or action e.g. 'identify', 'guess', 'plot' (char)
 %         x: axis (double)
 %         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=triangl([1 0 1 1], -10:10); or y=triangl('identify') or p=triangl('guess',x,y);
+%
+% Version: $Revision: 1.2 $
+% See also iData, ifitmakefunc
 
 % 1D function template:
 % Please retain the function definition structure as defined below
@@ -43,6 +47,14 @@ function y=triangl(p, x, y)
     % HERE default axes to represent the model when parameters are given <<<<<<<
     y.Axes   =  { linspace(p(2)-3*p(3),p(2)+3*p(3), 100) };
     y.Values = evaluate(y.Guess, y.Axes{:});
+  elseif nargin == 1 && ischar(p) && strcmp(p, 'plot') % only works for 1D
+    y = feval(mfilename, [], linspace(-2,2, 100));
+    if y.Dimension == 1
+      plot(y.Axes{1}, y.Values);
+    elseif y.Dimension == 2
+      surf(y.Axes{1}, y.Axes{2}, y.Values);
+    end
+    title(mfilename)
   elseif nargin == 0
     y = feval(mfilename, [], linspace(-2,2, 100));
   else
@@ -81,6 +93,7 @@ function y =identify()
   y.Guess          = [];        % default parameters
   y.Axes           = {};        % the axes used to get the values
   y.Values         = [];        % default model values=f(p)
+  y.function       = mfilename;
 end
 
 % inline: guess: guess some starting parameter values and return a structure
