@@ -4,6 +4,9 @@
 
 
 
+
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: fitting a model onto iData objects</title>
 </head><body>
@@ -77,16 +80,19 @@ is
 possible
 to chose explicitly
 the model function, and the starting parameter set with e.g.<br>
-<pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>);                     <span style="font-style: italic;">% specify model function to use: gauss, and use guessed parameters</span><br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [ 0.5 1 0.01 0 ]);   <span style="font-style: italic;">% specify the starting parameters for the model function</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>);                     <span style="font-style: italic;">% specify model function to use: gauss, and use guessed parameters</span><br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(51, 102, 255);">@gauss</span>, [ 0.5 1 0.01 0 ]);    <span style="font-style: italic;">% specify the starting parameters for the model function</span><br></pre>
 The result of the <span style="font-style: italic;">fits</span> method
 is the model parameter set that matches best the data.<br>
 A number of model functions is available from the <a href="iFuncs.html">iFuncs</a>
-sub-library. Refer
+sub-library. The <span style="font-weight: bold;">list of all available fit functions</span> can be obtained from the command:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData)</span></pre>
+Refer
 to the section <a href="#mozTocId855522">below</a> in order to learn
-how to define new fit models. You can get information about a model by
-inquiring its name. When an object is specified, starting parameters
+how to define new fit models with the <a href="iFuncs.html#mozTocId210092"><span style="font-weight: bold; font-style: italic;">ifitmakefunc</span></a> tool. You can get information about a model by
+inquiring its name. When a single input parameter is specified, starting parameters
 are guessed :<br>
-<pre style="margin-left: 40px;">&gt;&gt; gauss<br>&gt;&gt; gauss(p)<br><br>ans = <br><br>          Type: 'iFit fitting function'<br>          Name: 'Gaussian (1D)'<br>    Parameters: {<span style="color: rgb(255, 0, 0);">'Amplitude'</span>  'Centre'  'HalfWidth'  'Background'}<br>     Dimension: 1<br>         Guess: [1 6.2172e-17 0.5861 0.1000]<br>        Values: [1x100 double]<br>          Axis: {[1x100 double]}</pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(<span style="color: rgb(204, 51, 204);">'identify'</span>)	<span style="font-style: italic;">% return informations about the function</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(<span style="color: rgb(204, 51, 204);">'plot'</span>)	<span style="font-style: italic;">% plot the function with a default parameter set</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(p, x)		<span style="font-style: italic;">% evaluate the function with parameters 'p' ans axis 'x'</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(p)<br><br>ans = <br><br>          Type: 'iFit fitting function'<br>          Name: 'Gaussian (1D)'<br>    Parameters: {<span style="color: rgb(255, 0, 0);"></span>'Amplitude'  'Centre'  'HalfWidth'  'Background'}<br>     Dimension: 1<br>         Guess: [1 6.2172e-17 0.5861 0.1000]<br>        Values: [1x100 double]<br>          Axis: {[1x100 double]}</pre>
 <br>
 <a href="images/iData_fits_gauss.png"><img alt="fits(iData)" title="fits(iData)" src="images/iData_fits_gauss.png" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>In
 order
@@ -103,7 +109,7 @@ fit
 parameters
 onto the data set axes, one can use the <span style="font-style: italic; font-weight: bold;">ieval</span> method,
 which is the same as Matlab <span style="font-style: italic; font-weight: bold;">feval, </span>but for <span style="font-style: italic;">iData</span> objects:
-<pre style="margin-left: 40px;">&gt;&gt; b= <span style="color: rgb(51, 102, 255);">ieval</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, p) <span style="font-style: italic;">% evaluate the 'gauss' model with parameters 'p' onto the 'a' data set axes</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([ a b ])<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; b= <span style="color: rgb(51, 102, 255);">ieval</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, p) <span style="font-style: italic;">% evaluate the 'gauss' model</span> onto the 'a' axes<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([ a b ])           % <span style="font-style: italic;">with parameters 'p' onto the 'a' data set axes</span></pre>
 The evaluated model contains <span style="font-style: italic;">Parameter</span>
 and <span style="font-style: italic;">Model</span> aliases that hold
 the model parameters and description. <br>
@@ -113,7 +119,8 @@ and model dimensionality, and can also build multi-dimensional models
 from lower dimensionality functions (e.g. making a 2D Gaussian from
 multiplied perpendicular 1D Gaussians).<br>
 <h4><a class="mozTocH4" name="mozTocId888705"></a>Getting most of the
-fit results</h4>
+fit results (4th output argument)<br>
+</h4>
 The <span style="font-style: italic;">fits</span> method can return
 additional arguments<br>
 <div style="text-align: center;">
@@ -276,7 +283,7 @@ efficient
 and
 fast
 optimization
-methods</span><span style="font-style: italic; font-weight: bold;"></span><span style="font-style: italic;">.</span><br>
+methods</span><span style="font-style: italic; font-weight: bold;"></span><span style="font-style: italic;">. The two success ratio are given for </span>continuous<span style="font-style: italic;"> and </span>noisy<span style="font-style: italic;"> functions resp.</span><br>
 <span style="font-style: italic; font-weight: bold;"></span></div>
 <span style="font-weight: bold;"></span><span style="font-style: italic;">
 </span><br>
@@ -287,7 +294,8 @@ The <span style="font-weight: bold;">list of all available optimizer methods</sp
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData)</span></pre>
 
 <h4><a class="mozTocH4" name="mozTocId422448"></a>Configuring the
-optimization method</h4>
+optimization method (4th input argument)<br>
+</h4>
 In order to use these optimizers, one just has to specify their name as
 a <span style="font-style: italic;">fits</span> input argument, e.g. <span style="font-style: italic;"><span style="color: rgb(255, 0, 0);">options</span>=<span style="color: rgb(204, 51, 204);">'fminimfil'</span></span> :
 <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, <span style="color: rgb(204, 51, 204);">'fminimfil'</span>)<br></pre>
@@ -329,6 +337,9 @@ values, such as NaN or complex<br>
 optimization method</li>
   <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">optimizer: </span>is the name of the
 optimization function</li>
+  <li><span style="font-style: italic;">options.criteria</span>: the criteria to use with syntax <span style="font-style: italic;">criteria(Signal, Error, Model)</span>. The default is least-square error (see <a href="#mozTocId778987">below</a>).<br>
+  </li>
+
   <li>and more, depending on the optimizer method and implementation<br>
   </li>
 </ul>
@@ -438,14 +449,48 @@ This method relies on the fact that a significant number of parameter
 sets and criteria evaluations must have been performed in the vicinity
 of the final best fit. The choice of the tolerance region is also
 important, but a +100% extent is probably realistic in most cases.<br>
-<h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId855522"></a>Building model functions</h3>
-Stay tuned. This documentation item goes together with the writing of the iFuncs page.<br>
+<h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId855522"></a>Building model functions</h3><a href="images/ifitmakefunc.png"><img title="ifitmakefunc" src="images/ifitmakefunc.png" alt="ifitmakefunc" style="border: 0px solid ; width: 150px; height: 137px;" align="right"></a>The <span style="font-weight: bold; font-style: italic;">ifitmakefunc</span>
+tool has been designed to automatically create model functions from
+either a single expression, or a more defatiled description.Refer to the  <a href="iFuncs.html#mozTocId210092">iFunc/Model Builder</a>.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);</span></span></pre>
+
+The resulting function has the ability to identify itself ('identify', provide
+detailed informations), compute automatic starting parameters ('guess'), display
+itself ('plot'), and evaluate its values of course. It can be directly used with
+<span style="font-weight: bold;">ieval</span> and <span style="font-weight: bold;">fits, </span>either with their name, or their function handle. <br>
+<br>
+
+
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId778987"></a>Specifying the optimization criteria</h3>
-Stay tuned. This documentation item goes together with the writing of the iFuncs page.
+The default optimization criteria is the 'least square error':<br>
+<br>
+<div style="text-align: center;">&#967;&sup2; = &#8721; (Signal-Model)&sup2;.<br>
+<br>
+</div>
+When the Monitor is defined (see <a href="iData.html#mozTocId243435">iData</a> definition), the Signal is normalized, so that<br>
+<br>
+<div style="text-align: center;">&#967;&sup2; = &#8721; (Signal/Monitor-Model)&sup2;.<br>
+<br>
+</div>
+
+When the Error on the Signal is available, the criteria reads<br>
+<br>
+<div style="text-align: center;">&#967;&sup2; = &#8721; (Signal/Monitor-Model)&sup2;/Error&sup2;.<br>
+</div>
+<br>
+The options.criteria can be defined as the name of a criteria function with syntax <span style="font-style: italic;">criteria(Signal, Error, Model)</span> and the default value is:<br>
+<br>
+<div style="text-align: center;"><span style="font-style: italic; font-weight: bold;">options.criteria</span> = <span style="color: rgb(51, 102, 255);">@least_square</span>; <span style="font-style: italic;">% internal 'fits' least square definition</span><br>
+<div style="text-align: left;"><br>
+The Signal will be normalized to the Monitor prior to calling the criteria.<br>
+</div>
+
+<br>
+</div>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData fitting - </span><span style="font-style: italic;">
-$Date: 2011-05-26 08:44:42 $ $Revision: 1.11 $
+$Date: 2011-06-06 10:18:26 $ $Revision: 1.12 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body></html>
