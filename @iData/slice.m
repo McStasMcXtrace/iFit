@@ -7,7 +7,7 @@ function slice(a)
 % input:  s: object or array (iData)
 % ex:     slice(iData(flow));
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/plot, sliceomatic
 
 if ndims(a) < 3 || isvector(a)
@@ -25,6 +25,8 @@ if exist('sliceomatic')
   z=unique(getaxis(a,3));
   c=getaxis(a,0);
   sliceomatic(c, x,y,z);
+  title(a.Title,'interpreter','none');
+  xlabel(xlabel(a)); ylabel(ylabel(a)); zlabel(zlabel(a)); 
 end
 
 
