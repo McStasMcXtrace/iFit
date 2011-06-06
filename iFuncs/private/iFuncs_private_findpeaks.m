@@ -12,7 +12,7 @@ function [sigma, position, amplitude, baseline] = iFuncs_private_findpeaks(signa
 %         amplitude:  amplitude of peaks (scalar/array)
 %         baseline:   baseline (background) (iData)
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 
 % inline functions: BaseLine, PeakWidth
 
@@ -48,7 +48,7 @@ function [sigma, position, amplitude, baseline] = iFuncs_private_findpeaks(signa
   position  = index;
   amplitude = signal(index);
   sigma     = sigma(index);
-end
+end % iFuncs_private_findpeaks
 
 % ==============================================================================
 % inline functions: BaseLine, PeakWidth
