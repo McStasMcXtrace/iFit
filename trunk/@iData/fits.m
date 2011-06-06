@@ -15,7 +15,8 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %  [pars,...] = fits(a, model, pars, 'optimizer', ...)
 %     uses a specific optimizer and its default options.
 %  [optimizers,functions] = fits(iData)
-%     returns the list of all available optimizers and fit functions
+%     returns the list of all available optimizers and fit functions.
+%  You may create new fit functions with the 'ifitmakefunc' tool.
 %
 % input:  a: object or array (iData)
 %         model: model function (char/cellstr)
@@ -66,8 +67,8 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.23 $
-% See also iData, fminsearch, optimset, optimget
+% Version: $Revision: 1.24 $
+% See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % nested  functions: eval_criteria
 % private functions: least_square, fits_constraints
@@ -78,7 +79,8 @@ if nargin == 1
     % return the list of all available optimizers and fit functions
     output = {};
     pars_out   = {};
-    fprintf(1, '\n');
+    fprintf(1, '\n%s\n', version(iData));
+    
     fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/iOptim');
     fprintf(1, '-----------------------------------------------------------------\n'); 
     d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'iOptim' ]);
