@@ -28,4 +28,5 @@ else title(a,'Sqw');
 end
 
 setalias(a,'Error',0);
+a = transpose(a);
 
