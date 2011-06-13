@@ -10,6 +10,7 @@
 
 
 
+
   <title>iFit: Importing data (iData/load)</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -40,8 +41,7 @@ Figures</a></li>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">iData, load, </span><a href="Methods.html">methods</a>
 <div style="text-align: left;"><br>
-In this document we present how to import data as <a href="iData.html">iData</a>
-objetcs from files, variables and figures.<br>
+In this document we present how to import data as <a href="iData.html">iData</a> objects from files, variables and figures.<br>
 </div>
 </div>
 <h3><a class="mozTocH3" name="mozTocId5377"></a>Importing data from a
@@ -107,7 +107,7 @@ connection is then required, with proper Proxy settings if needed.<br>
 <h4><a class="mozTocH4" name="mozTocId250466"></a>Compressed files</h4>
 Compressed files (ZIP, TAR, GZIP, Z) can also be imported directly, in
 which case they are first extracted locally (requires write
-permission), and then imported. This extraction mechanism also appl for
+permission), and then imported. This extraction mechanism also applied for
 distant file.<br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">To get
@@ -224,7 +224,7 @@ neutron triple-axis diffractometer at the ILL [text]</li>
   
   <li><a href="../Data/peaks.hdf5"><span style="font-weight: bold;">peaks.hdf5</span></a>: a surface stored as an HDF5 file [binary, HDF5]</li>
 
-  <li><a href="../Data/SQW_coh_lGe.nc"><span style="font-weight: bold;">SQW_coh_lGe.nc</span></a>: the coherent dynamic structure factor obtained from<span style="font-style: italic;"> ab-initio</span> molecular dynamics (<a href="http://cms.mpi.univie.ac.at/vasp/">VASP</a>) and analysed with <a href="https://forge.ill.fr/projects/nmoldyn">nMoldyn</a> [binary, NetCDF]</li>
+  <li><a href="../Data/SQW_coh_lGe.nc"><span style="font-weight: bold;">SQW_coh_lGe.nc</span></a>: the coherent dynamic structure factor obtained from<span style="font-style: italic;"> ab-initio</span> molecular dynamics (<a href="http://cms.mpi.univie.ac.at/vasp/">VASP</a>) and analyzed with <a href="https://forge.ill.fr/projects/nmoldyn">nMoldyn</a> [binary, NetCDF]</li>
   <li><a href="../Data/IRS21360_graphite002_ipg.nxs"><span style="font-weight: bold;">IRS21360_graphite002_ipg.nxs</span></a>: an <a href="http://www.isis.stfc.ac.uk/instruments/iris/">ISIS/IRIS</a> high resolution TOF spectrometer (<a href="http://nexusformat.org/">NeXus</a> file from  the <a href="mantidproject.org">Mantid Project</a>) [binary, HDF5/NeXus with compression]</li>
   <li><a style="font-weight: bold;" href="../Data/peg268.csv">peg268.csv</a>: an example Comma Separated values files from Excel [text].<br>
   </li>
@@ -245,7 +245,7 @@ such as<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))</pre>
 or<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'a'</span>,1,<span style="color: rgb(204, 51, 204);">'b'</span>,<span style="color: rgb(204, 51, 204);">'a string'</span>))</pre>
-This works for basically any imput object (structure, numeric array,
+This works for basically any input object (structure, numeric array,
 cell, ...).<br>
 <br>
 A special syntax is available to import Signal and Axis definitions
@@ -264,7 +264,7 @@ an empty (or constant) array of objects:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">zeros</span>(<span style="color: rgb(51, 102, 255);">iData</span>, size)  % create a [size] array of empty objects<br>&gt;&gt; a=<span style="color: rgb(51, 102, 255);">zeros</span>(<span style="color: rgb(51, 102, 255);"></span>object, size) % duplicates 'object' as a [size] array<br></pre>
 <h3><a class="mozTocH3" name="mozTocId755882"></a>Importing from Matlab
 Figures<img style="width: 334px; height: 315px;" alt="The Peaks figure imported as an iData" title="The Peaks figure imported as an iData" src="images/Peaks.png" align="right"></h3>
-The direct import method also works fromMatlab figures, when simply
+The direct import method also works from Matlab figures, when simply
 giving a valid Handle Graphics Object to iData:<br>
 <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">figure</span>; <span style="color: rgb(51, 102, 255);">peaks</span>;<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(f);</pre>
 The handle can be a figure, a surface, an axis, a line, ...<br>
@@ -343,7 +343,7 @@ The structures are then converted into <a href="iData.html">iData</a>
 objects, and optionally some data format specific post-processing
 scripts are applied, as described in <span style="font-style: italic;"><a href="iFiles.html#mozTocId120998">iFiles/iLoad_ini</a>.m</span>.
 When no Signal is defined, it is assigned to the largest numerical
-block found in the file. The default axes are set as matrix indices.<br>
+block found in the file. The default axes are set as matrix indexes.<br>
 <br>
 Refer to the <a href="iFiles.html">iFiles</a> documentation to learn
 how to customize load methods and import filters.<br>
@@ -355,7 +355,7 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a href="../iFiles/doc/lookt
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span style="font-style: italic;">
-$Date: 2011-06-02 09:29:31 $ $Revision: 1.17 $
+$Date: 2011-06-13 07:19:29 $ $Revision: 1.18 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

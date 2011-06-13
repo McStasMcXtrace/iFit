@@ -10,24 +10,31 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Installation</title>
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Installation</h1>
 
-<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId780492">Requirements</a></li><li><a href="#mozTocId480203">Obtaining the package</a></li><li><a href="#mozTocId952907">Installation</a></li><li><a href="#mozTocId635674">What's next ?<br>
-</a></li></ol>
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId780492">Requirements</a><ol><li><a href="#mozTocId188272">
+Matlab</a></li><li><a href="#mozTocId467589">C compiler (optional)</a></li></ol></li><li><a href="#mozTocId480203">Obtaining the package</a></li><li><a href="#mozTocId952907">Installation</a></li><li><a href="#mozTocId635674">What's next ?</a></li></ol>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><br>
 </div>
 <h3><a class="mozTocH3" name="mozTocId780492"></a>Requirements</h3>
-The only requirement is to have <a href="http://www.mathworks.com">Matlab</a>
-installed. Any Matlab version from 6.5 (2005) will do.<br>
-This is a commercial
+<h4><a class="mozTocH4" name="mozTocId188272"></a>
+Matlab</h4>
+<div style="margin-left: 40px;">The only requirement is to have <a href="http://www.mathworks.com">Matlab</a>
+installed. Any Matlab version from 6.5 (2005) will do. This is a commercial
 product. Student versions can be bought for lower prices, as well as
-Academic licenses (e.g. for Universities). In principle, the pre-compiled MeX files are shipped with the package (for e.g. <span style="font-style: italic;">looktxt</span>), so that te software is ready to run. However, in the event of a re-compilation of MeX files, a <span style="font-style: italic;">C</span> compiler is often shipped with
+Academic licenses (e.g. for Universities). <br>
+</div>
+<h4><a class="mozTocH4" name="mozTocId467589"></a>C compiler (optional)</h4>
+<div style="margin-left: 40px;">In principle, the pre-compiled MeX files are shipped with the package (for e.g. <span style="font-style: italic;">looktxt</span>), so that the software is ready to run. However, in the event of a re-compilation of MeX files, a <span style="font-style: italic;">C</span> compiler is often shipped with
 Matlab (and installed automatically). The <a href="http://ifit.mccode.org">iFit</a>/<a href="iFiles.html">iFiles</a> library may use it
 sporadically. <br>
+</div>
+
 <br>
 <a href="http://www.ubuntu.com/"><img alt="Ubuntu Linux" title="Ubuntu Linux" src="images/ubuntu.png" style="border: 0px solid ; width: 118px; height: 27px;" align="right"></a>We prefer Linux systems, such as <a href="http://ubuntu.com">Ubuntu</a>, when handling large data sets, and performing <a href="http://www.mcstas.org/">McStas</a> optimizations, so that we fully use multi-core systems (e.g. though threads and MPI). You may use our <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS Live DVD</a> ready-to-run system with <span style="font-style: italic;">McStas</span> pre-installed. Then put on top <a href="http://www.mathworks.com/">Matlab</a> (requires a valid license).
 <h3><a class="mozTocH3" name="mozTocId480203"></a>Obtaining the package</h3>
@@ -37,7 +44,7 @@ The package is currently available from the <a href="http://ifit.mccode.org">ifi
 for
 all platforms, requires a Matlab license to
 run [ <a href="http://ifit.mccode.org/Downloads/iFit.zip">zip</a>, 6.7
-Mb ].</li>
+Mb,&nbsp; <a href="Changes.html">Changes</a> ].</li>
   <li>standalone packages for Linux, Windows and Mac OS X will be
 available in future versions.</li>
   <li>The development repository is available at <a href="http://cvs.mccode.org/cgi-bin/viewvc.cgi/?root=iFitCVS">McCode CVS</a>.<br>
@@ -77,8 +84,8 @@ to learn what iFit can do for you.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit Installation - </span><span style="font-style: italic;">
-$Date: 2011-05-26 08:44:42 $
-$Revision: 1.14 $
+$Date: 2011-06-13 07:19:29 $
+$Revision: 1.15 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit

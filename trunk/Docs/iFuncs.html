@@ -2,6 +2,7 @@
 <html><head>
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -147,7 +148,7 @@ Each function/model can be used in the following ways (for instance model may be
 </span></h3>
 
 
-The <span style="font-style: italic;">ifitmakefunc</span> tool enables to define a new fit function/model from a simple dialog, by entering its <a href="images/ifitmakefunc.png"><img title="ifitmakefunc" src="images/ifitmakefunc.png" alt="ifitmakefunc" style="border: 0px solid ; width: 150px; height: 137px;" align="right"></a>expression as a function of the parameter vector <span style="font-style: italic;">p</span> and the axes <span style="font-style: italic;">x,y,z</span>,...<br>
+The <span style="font-style: italic;">ifitmakefunc</span> tool enables to define a new fit function/model from a simple dialog, by entering its <a href="images/ifitmakefunc.png"><img title="ifitmakefunc" src="images/ifitmakefunc.png" alt="ifitmakefunc" style="border: 0px solid ; width: 150px; height: 137px;" align="right"></a>expression as a function of the parameter vector <span style="font-style: italic; font-weight: bold;">p</span> and the axes <span style="font-style: italic; font-weight: bold;">x,y,z</span>,...<br>
 
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc;</span></pre>
 
@@ -158,13 +159,13 @@ settings are used.<br>
 
 <br>
 
-The function both creates a function file, and returns its function handle, that may be used with <span style="font-weight: bold;">ieval</span> anf <span style="font-weight: bold;">fits</span>.<br>
+The function both creates a function file, and returns its function handle, that may be used with <span style="font-weight: bold;">ieval</span> anf <a href="Fit.html"><span style="font-weight: bold;">fits</span></a>.<br>
 
 <pre style="margin-left: 40px;">&gt;&gt; [p,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);</pre>
 
 A quick definition, without using the dialog, can be performed with the syntax:<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);</span></span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);</span></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);<br></pre>
 
 
 and, for a more detailed description:<br>
@@ -173,7 +174,7 @@ and, for a more detailed description:<br>
 
 which is equivalent to:<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; fun.function='function_name';			% function name<br>&gt;&gt; fun.Description='function description';		% function long description<br>&gt;&gt; fun.Parameters='Paramater1 Parameter2 ...';		% parameter names<br>&gt;&gt; fun.Guess=[0 1 2 ...] or 'automatic';		% parameter default values, or automatic mode<br>&gt;&gt; fun.Expression='expression using p and x,y,z,t...';	% value of the model<br>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(fun);<br></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; fun.function='function_name';			% function name<br>&gt;&gt; fun.Description='function description';		% function long description<br>&gt;&gt; fun.Parameters='Paramater1 Parameter2 ...';		% parameter names<br>&gt;&gt; fun.Guess=[0 1 2 ...] or 'automatic';		% parameter default values, or automatic mode<br>&gt;&gt; fun.Expression='expression using p and x,y,z,t...';	% value of the model<br>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(fun);<br>&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);<span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
 The resulting function has the ability to identify itself (provide
 detailed informations), compute automatic starting parameters, display
 itself, and evaluate its values of course.The resulting function embeds the automatic guess functionality (<span style="font-style: italic;">iFuncs_private_guess</span>),
@@ -190,7 +191,7 @@ proper execution. Store the new function in iFit/iFuncs so that it can access th
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2011-06-06 10:18:26 $ $Revision: 1.7 $
+$Date: 2011-06-13 07:19:29 $ $Revision: 1.8 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
