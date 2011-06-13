@@ -23,7 +23,7 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars)
 %
 % output: fhandle: function handle to the new function, which is also stored locally
 % 
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, gauss
 
 fhandle = [];
@@ -107,16 +107,17 @@ if findstr(defPars, 'auto'), defPars = ''; end
 if ~isempty(expr)
   % compute the number of parameters and corresponding parameter names
   nb_pars = findstr(expr, 'p('); % guess may be wrong when matching e.g. 'exp('...
-  nb_pars
   % we look if this is really a p(n) syntax
-  n = 0;
+  n = [];
   for index=1:length(nb_pars)
-  sscanf(expr((nb_pars(index)+2):end), '%d)')
-  if nb_pars(index)-1 > 0, expr(nb_pars(index)-1); end
-    if length(sscanf(expr((nb_pars(index)+2):end), '%d)')) == 1 ...
-    && (nb_pars(index) == 1 || ~isstrprop(expr(nb_pars(index)-1),'alpha')), n=n+1; end
+    s = sscanf(expr((nb_pars(index)+2):end), '%d)')
+    if length(s) >= 1 ...
+      && (nb_pars(index) == 1 || ~isstrprop(expr(nb_pars(index)-1),'alpha')), 
+      n=[n s(1)]; 
+    end
   end
-  nb_pars = n;
+  if ~isempty(n), nb_pars = max(n);
+  else nb_pars=0; end
   if ~isempty(pars)
     % check if the number of parameters used in the expression matches the parameter names
     if length(strread(pars, '%s','delimiter',' ;,''{}')) ~= nb_pars

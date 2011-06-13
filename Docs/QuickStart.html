@@ -3,6 +3,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Quick Start/Tutorial</title>
 </head><body>
@@ -55,7 +56,7 @@ data
 files</a>. This is done by converting a character string, assumed to be
 a file name, as an <a href="iData.html">iData</a> object:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<span style="color: rgb(51, 102, 255);"></span></pre>
-wich is a neutron scattering signal by a liquid, collected by the
+winch is a neutron scattering signal by a liquid, collected by the
 instrument IN6@ILL. Importation also works across the Internet with <span style="font-style: italic;">http://</span> and <span style="font-style: italic;">ftp://</span> file specifications, as well
 as with compressed contents. A file selector pops-up when the file name
 is given as <span style="color: rgb(204, 51, 204);">''</span> (empty
@@ -175,7 +176,7 @@ determine the best parameter set that describes the <span style="font-style: ita
 procedure makes sure that the model matches the object dimensionality,
 and extends it if needed.<br>
 <pre style="margin-left: 40px;">&gt;&gt; d(<span style="color: rgb(51, 102, 255);">find</span>(d&gt;200))=0;    <span style="font-style: italic;">                     % first remove a large peak on the side</span><br>&gt;&gt; [pars,criteria,message,output] = <span style="color: rgb(51, 102, 255);">fits</span>(<span style="color: rgb(51, 102, 255);"></span>d); <span style="font-style: italic;">% fit with the default Gaussian model, extended to 2D</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(<span style="color: rgb(51, 102, 255);">log10</span>([d output.modelValue*10]),<span style="color: rgb(204, 51, 204);">'tight'</span>)<br></pre>
-Any object can be cut into slices, or assembled with other objetcs to
+Any object can be cut into slices, or assembled with other objects to
 create a higher
 dimension object. The following command puts multiplications of the
 previous object side by side in order to create a 3D volume.<br>
@@ -193,7 +194,7 @@ To save your work simply specify the object, a file name (or empty) and
 optionally a file format (which can also be set from the file name
 extension).<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a, <span style="color: rgb(204, 51, 204);">''</span>, <span style="color: rgb(204, 51, 204);">'svg'</span>)<br></pre>
-The recommeded formats are Matlab MAT, HDF5, SVG, PDF, PNG, Matlab M and flat DAT.<br>
+The recommended formats are Matlab MAT, HDF5, SVG, PDF, PNG, Matlab M and flat DAT.<br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">More about</span> <a href="Save.html">Saving</a><br>
 </div>
@@ -201,7 +202,7 @@ The recommeded formats are Matlab MAT, HDF5, SVG, PDF, PNG, Matlab M and flat DA
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/quick start - </span><span style="font-style: italic;"></span><span style="font-style: italic;">
-$Date: 2011-02-14 10:41:27 $ $Revision: 1.3 $
+$Date: 2011-06-13 07:19:29 $ $Revision: 1.4 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

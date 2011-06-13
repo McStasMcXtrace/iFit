@@ -8,6 +8,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: optimization methods (iOptim)</title>
 </head><body>
@@ -91,10 +92,10 @@ function evaluations allowed, sometimes refered as the 'cost' or
 iterations allowed<br>
   </li>
   <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">TolFun: </span>Termination tolerance on
-the function value (absolute value or change). Use <span style="color: rgb(204, 51, 204);">'x%'</span> to specifiy a relative function change.<br>
+the function value (absolute value or change). Use <span style="color: rgb(204, 51, 204);">'x%'</span> to specify a relative function change.<br>
   </li>
   <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">TolX: </span>Termination tolerance on
-parameter change. Use <span style="color: rgb(204, 51, 204);">'x%'</span> to specifiy a relative parameter change.
+parameter change. Use <span style="color: rgb(204, 51, 204);">'x%'</span> to specify a relative parameter change.
   </li>
   <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">OutputFcn: </span>Name of an output
 function. When set, it is called at each iteration step. You may use<span style="color: rgb(204, 51, 204);"> 'fminplot', </span>which is
@@ -448,23 +449,23 @@ The <span style="font-weight: bold;">list of all available optimizer methods</sp
 	<col width="76">
 	<col width="108">
 	<tbody><tr>
-		<td style="text-align: center;" bgcolor="#ffcccc" width="115">
+		<td style="text-align: center;" width="115" bgcolor="#ffcccc">
 			<p><font color="#3366ff"><i><b>Function Name</b></i></font>
 			</p>
 		</td>
-		<td style="text-align: center;" bgcolor="#ffcccc" width="243">
+		<td style="text-align: center;" width="243" bgcolor="#ffcccc">
 			<p><font color="#3366ff"><i><b>Description</b></i></font></p>
 		</td>
-		<td style="text-align: center;" bgcolor="#ffcccc" width="83">
+		<td style="text-align: center;" width="83" bgcolor="#ffcccc">
 			<p><font color="#3366ff"><i><b>Efficiency<br>(continuous)
 			[%]</b></i></font>
 			</p>
 		</td>
-		<td style="text-align: center;" bgcolor="#ffcccc" width="76">
+		<td style="text-align: center;" width="76" bgcolor="#ffcccc">
 			<p><font color="#3366ff"><i><b>Efficiency<br>(noisy) [%]</b></i></font>
 			</p>
 		</td>
-		<td style="text-align: center;" bgcolor="#ffcccc" width="108">
+		<td style="text-align: center;" width="108" bgcolor="#ffcccc">
 			<p><font color="#3366ff"><i><b>Comments</b></i></font></p>
 		</td>
 	</tr>
@@ -960,7 +961,7 @@ parameter
 constraints</h3>
 In many cases, the model parameters are to be constrained. This
 includes some fixed values, or bounds within which parameters should be
-restricted. This is speficied to the optimizer method by mean of a 4th
+restricted. This is specified to the optimizer method by mean of a 4th
 input
 argument <span style="color: rgb(255, 0, 0); font-style: italic;">constraints</span>
 :<br>
@@ -971,7 +972,7 @@ To fix some of the model parameters to their starting value, you just
 need to define <span style="font-style: italic;">constraints</span> as
 a vector with 0 for free parameters, and 1 for fixed parameters, e.g. :<br>
 <pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fminimfil</span>(objective<span style="color: rgb(204, 51, 204);"></span>, starting, <span style="color: rgb(204, 51, 204);">options</span>, [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ])<br><br></pre>
-will fix the first model paramete. A similar behavior is obtained when
+will fix the first model parameter. A similar behavior is obtained when
 setting constraints as a structure
 with a <span style="font-style: italic;">fixed</span> member :<br>
 <pre style="margin-left: 40px;">&gt;&gt; constraints.fixed = [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ];<br></pre>
@@ -1168,7 +1169,7 @@ Sao Jose do Rio Preto, SP, pp. 49-52 (1989).<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span style="font-style: italic;">
-$Date: 2011-05-26 08:44:42 $ $Revision: 1.14 $
+$Date: 2011-06-13 07:19:29 $ $Revision: 1.15 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
