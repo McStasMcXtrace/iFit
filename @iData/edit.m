@@ -8,7 +8,7 @@ function edit(a)
 % output: b: object or array (iData)
 % ex:     b=edit(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
   if length(a(:)) > 1
@@ -27,13 +27,18 @@ function edit(a)
     UserData.Signal  = getaxis(a, 'Signal'); % Signal/Monitor
     UserData.Selected= [];
     % opens a Table with the Signal content there-in
-    NL = sprintf('\n') ;
+    NL = sprintf('\n');
     f = figure('Name', [ 'Edit ' char(a) ]); % raw Signal, no monitor weightening
-    h = uitable('Data', UserData.Signal, 'Tag',[ mfilename '_' a.Tag ], ...
-      'Units','normalized', 'Position', [0,0,1,1], ...
-      'UserData', UserData ...  % contains the selection indices
-    );
-    
+    p = get(f, 'Position');
+    h = uitable('Data', UserData.Signal);
+    set(h, 'Position', [0,0,p(3),p(4)]); 
+    try
+      set(h, 'Tag',[ mfilename '_' a.Tag ]);
+      set(h, 'Units','normalized');
+      set(h, 'Position', [0,0,1,1]);
+      set(h, 'UserData', UserData);  % contains the selection indices
+    end
+
 %      'CellEditCallback', @iData_edit_CellEditCallback, , ...
 %      'CellSelectionCallback', @iData_edit_CellSelectionCallback, ...
 %      'RearrangeableColumn','on', 'ColumnEditable', true, ...
@@ -68,7 +73,9 @@ function edit(a)
     % uimenu(uicm, 'Separator','on','Label','Plot selection...', 'Callback', @iData_edit_display);
     uimenu(uicm, 'Separator','on','Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData) ''')' ]);
     % attach contexual menu to the table
-    set(h,   'UIContextMenu', uicm); 
+    try
+      set(h,   'UIContextMenu', uicm); 
+    end
   else
     % open the data file
     try

@@ -9,8 +9,6 @@ function [varargout] = findobj(s_in, varargin)
 %   [caller, base] = findobj(s,'Property','Value') 
 %     Returns the iData objects (in s or workspaces)
 %     that match the required properties.
-%   [PropertyValue, base] = findobj(s,'Property')
-%     Returns Property for all found iData objects
 %
 % input:  s: object or array (iData)  (iData)
 %         PropertyName: name of Property to search (char)
@@ -19,7 +17,7 @@ function [varargout] = findobj(s_in, varargin)
 %         base:  objects found in base/MATLAB workspace (iData array)
 % ex :    findobj(iData) or findobj(iData,'Title','MyTitle')
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/set, iData/get, iData/findstr, iData/findfield
 
 % EF 23/09/07 iData implementation
@@ -86,10 +84,9 @@ if nargin == 1  % and this is a iData
   return
 end
 
-
 % now look for Properties in s
-i1 = ones(size(s_caller));
-i2 = ones(size(s_base));
+i1 = [];
+i2 = i1;
 for i = 1:2:length(varargin)
   propname = varargin{i};
   if ~ischar(propname)
@@ -100,17 +97,16 @@ for i = 1:2:length(varargin)
   catch
     propvalue = [];
   end
-  [index1, prop1] = findprop(s_caller, propname, propvalue);
-  [index2, prop2] = findprop(s_base, propname, propvalue);
+  index1 = findprop(s_caller, propname, propvalue);
+  index2 = findprop(s_base,   propname, propvalue);
   % do an AND operation on the properties
-  i1 = i1 & index1;
-  i2 = i2 & index2;
+  i1 = [ i1 index1 ];
+  i2 = [ i2 index2 ];
 end
-i1 = find(i1);
-i2 = find(i2);
-
+i1 = unique(i1);
+i2 = unique(i2);
 if ~isempty(s_caller), s_caller = s_caller(i1); end
-if ~isempty(s_base), s_base = s_base(i2); end
+if ~isempty(s_base),   s_base   = s_base(i2); end
 
 varargout{1} = s_caller;
 varargout{2} = s_base;
@@ -121,9 +117,9 @@ varargout{2} = s_base;
 % inline function
 
 function [index, propvalues]=findprop(array, propname, propvalue)
-% find a property in an array and return both logical index in array and values
+% find a property in an array and return index in array
   propvalues = {};
-  index      = zeros(size(array));
+  index      = [];
   if isempty(array), return; end
   for j = 1:length(array)
     if iscell(array)
@@ -133,7 +129,7 @@ function [index, propvalues]=findprop(array, propname, propvalue)
     end
   end
   if isempty(propvalue), return; end
-  if ~iscell(propvalue), propvalue={ propvalue }; end
+  if ~iscell(propvalue) && ~ischar(propvalue), propvalue={ propvalue }; end
   for j = 1:length(array)
     prop = propvalues{j}; % property value for iData 'j' in caller workspace
     if iscell(prop)
@@ -146,24 +142,26 @@ function [index, propvalues]=findprop(array, propname, propvalue)
           for l=1:length(propvalue)
             this_prop=propvalue{l};
             lpropk = min(length(propk), length(this_prop));
-            if ~index(j)
-              index(j) = all(propk(1:lpropk) == this_prop(1:lpropk)); % compares numeric arrays
+            if all(propk(1:lpropk) == this_prop(1:lpropk)) % compares numeric arrays
+              index = [ index j ];
             end
           end
         end
       end
     else
       if ischar(propvalue)
-        index(j) = ~isempty(findstr(propvalue, prop));
+        if ~isempty(findstr(propvalue, prop))
+          index = [ index j ];
+        end
       else
         for l=1:length(propvalue)
           this_prop=propvalue{l};
           lpropk = min(length(prop), length(this_prop));
-          if ~index(j)
-            index(j) = all(prop(1:lpropk) == this_prop(1:lpropk)); % compares numeric arrays
+          if all(prop(1:lpropk) == this_prop(1:lpropk)) % compares numeric arrays
+            index = [ index j ];
           end
         end
       end
-    end
-  end
+    end % iscell
+  end % for j
 
