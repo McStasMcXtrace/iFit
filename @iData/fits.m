@@ -67,7 +67,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % nested  functions: eval_criteria
@@ -149,6 +149,22 @@ if length(a) > 1
   end
   pars = pars_out;
   return
+end
+
+% test the model: is this a function handle or a char ?
+if ~isa(model, 'function_handle') && ~ischar(model)
+  iData_private_error(mfilename,[ 'The model argument is of class ' class(model) '. Should be a function name, expression or function handle.' ]);
+end
+if ischar(model)
+  % is this an expression ?
+  if ~exist(model)
+    model = ifitmakefunc(model);
+    t=which(char(model));
+  end
+end
+
+if isempty(model)
+  iData_private_error(mfilename,[ 'The model argument is empty. Should be a function name, expression or function handle.' ]);
 end
 
 % handle options

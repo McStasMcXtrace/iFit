@@ -3,6 +3,7 @@
 
 
 
+
   <title>iFit: iData object definition</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -63,7 +64,7 @@ definitions, <span style="font-style: italic;">Signal, Error bars,
 Monitors</span>, and user defined fields (aliases).<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId466436"></a>Introduction to the
 iData objects</h3>
-An iData object is obtained by transforming a file name into an iData
+An iData object is obtained for instance by transforming a file name into an iData
 object <span style="font-style: italic; font-weight: bold;">a</span>
 with<br>
 <div style="margin-left: 40px;">
@@ -76,7 +77,7 @@ Matlab variables:<br>
 These objects, which internal structure can be obtained with the <span style="font-style: italic;">struct(a)</span> method, hold a number of
 important items:<br>
 <ul>
-  <li>Some general information regarding the Source of the Data, Dates,
+  <li>Some general information regarding the Source of the Data (origin, filename), Dates,
 Command History, User name and Creator</li>
   <li>A unique ID, which can be complemented by an object Label (for
 instance the name of an experiment) and a Title (for instance the name
@@ -87,7 +88,8 @@ as a structure</li>
   <li><span style="font-style: italic;">Aliases, </span>which may hold
 themselves data, or be defined as links
 to other parts of the object</li>
-  <li>A <span style="font-style: italic;">Signal, </span>an <span style="font-style: italic;">Error</span> bar and a <span style="font-style: italic;">Monitor</span></li>
+  <li>A <span style="font-style: italic;">Signal, </span>an <span style="font-style: italic;">Error</span> bar and a <span style="font-style: italic;">Monitor</span> which can either hold data, or point to other parts of the object<span style="font-style: italic;"><br>
+    </span></li>
   <li>A series of <span style="font-style: italic;">Axes, </span>which
 are
 usually
@@ -119,8 +121,8 @@ object data (see the <a href="Fit.html">Fit</a> page)</li>
 </ul>
 In the following, we shall present how to manipulate iData objects,
 enrich them with additional information, define relations between the
-object parts as Aliases, define the object Signal and its associated
-Axes.<br>
+object parts as <span style="font-style: italic;">Aliases, </span>define the object <span style="font-style: italic;">Signal</span> and its associated
+<span style="font-style: italic;">Axes.</span><br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">To get
 more help</span>: list of most iData <a href="Methods.html">methods</a>
@@ -135,8 +137,8 @@ Graphics Objects</span> using <span style="font-style: italic; font-weight: bold
 A quick overview of an iData object <span style="font-style: italic; font-weight: bold;">a</span> is displayed
 when issuing the command<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; a<br>ans =  iData object:<br><br>    [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br> tp481575      [257  512] 'File ILL_IN6.dat ILL Data (n...' tp481575=load(iData,...<br></pre>
-showing the object unique ID, its dimensions, title and the last
-command which produced the object. The same output
+showing the object unique ID, its dimensions, title, the last
+command which produced the object, and an optional label (here empty). The same output
 is given by the <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);">display</span>(a)</span>
 command.<br>
 <br>
@@ -192,7 +194,7 @@ name:<br>
 The <span style="font-weight: bold; font-style: italic;">findobj</span>
 method can be used to inquire for all iData objects available in the
 workspace:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">findobj</span>(iData);<a href="images/iData_plot_2d.png"><img src="images/iData_plot_2d.png" title="iData plot 2d: plot(a)" alt="iData plot 2d: plot(a)" style="border: 0px solid ; width: 150px; height: 133px;" align="right"></a><br><span style="color: rgb(51, 102, 255);"></span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">findobj</span>(iData);<a href="images/iData_plot_2d.png"><img src="images/iData_plot_2d.png" title="iData plot 2d: plot(a)" alt="iData plot 2d: plot(a)" style="border: 0px solid ; width: 150px; height: 133px;" align="right"></a><br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">findobj</span>(iData, <span style="color: rgb(204, 51, 204);">'Property'</span>, <span style="color: rgb(204, 51, 204);">'Value')</span>; <span style="font-style: italic;">% searches for objects that match a Property/Value pair</span><a href="images/iData_plot_2d.png"><img src="images/iData_plot_2d.png" title="iData plot 2d: plot(a)" alt="iData plot 2d: plot(a)" style="border: 0px solid ; width: 150px; height: 133px;" align="right"></a><span style="color: rgb(51, 102, 255);"></span></pre>
 It is also possible to plot the object, and we direct the reader to the
 <a href="Plot.html">Plotting</a> page.<br>
 
@@ -200,7 +202,7 @@ It is also possible to plot the object, and we direct the reader to the
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">plot</span>(iData);</pre>
 &nbsp;
 <br>
-Last, the object&nbsp; <span style="font-style: italic;">Signal</span> normalized to the <span style="font-style: italic;">Monitor</span> can be displayed as a Table<br>
+Last, the object&nbsp; <span style="font-style: italic;">Signal</span> normalized to the <span style="font-style: italic;">Monitor</span> can be displayed as a Table (<span style="color: rgb(255, 0, 0);">beware</span> the size of the object !)<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">edit</span>(iData);<a href="images/iData_edit.png"><img title="Edit(iData)" src="images/iData_edit.png" alt="Edit(iData)" style="border: 0px solid ; width: 150px; height: 115px;" align="right"></a></pre>
 
 <br>
@@ -223,7 +225,7 @@ be used with arrays of iData objects.<br>
 This syntax can be simplified by adopting the <span style="font-style: italic;">structure-type</span> one:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath </span><span style="color: rgb(204, 51, 204);">'Data/sv1850.scn']</span>)<br>&gt;&gt; a.Data.VARIA.A1<br>ans =<br><br>    40<br>&gt;&gt; a.Data.VARIA.A1 = 41			<span style="font-style: italic;">% returns the modified object</span><br></pre>
 We shall see below that there is a way to extend an iData object, that
-is add some new information, and to create <span style="font-style: italic;">links</span> within the object.<br>
+is <span style="font-style: italic;">add</span> some new information, and to create <span style="font-style: italic;">links</span> within the object.<br>
 <br>
 The <span style="font-style: italic; font-weight: bold;">Title</span>
 of an object usually stores the origin and type of the data (filename).
@@ -232,13 +234,13 @@ of an object usually stores the origin and type of the data (filename).
 <br>
 In addition, an object <span style="font-weight: bold; font-style: italic;">Label</span> can be
 defined to <span style="font-style: italic;">e.g. </span>sort objects
-with user names, such as 'Measurement1',',Background', ... in the
+with user defined names, such as 'Measurement1',',Background', ... in the
 spirit of Labels (Mac OSX) and Emblems (Linux/Gnome) in window managers
 to provide customized colours and/or icons.<br>
 <br>
 <pre style="margin-left: 40px;">&gt;&gt; a.Label = <span style="color: rgb(204, 51, 204);">'TAS'</span><br>a =  iData object:<br><br>    [Tag]     [Dimension]                           [Title] [Last command]<span style="color: rgb(204, 51, 204);">          [Label]</span><br> tp120236        [15   1] 'UPt3;File sv1850.scn ILL TAS...' tp120236=set(tp12023... <span style="color: rgb(204, 51, 204);">TAS</span> </pre>
 These can be searched using the <span style="font-weight: bold; font-style: italic;">findfield, </span>and <span style="font-weight: bold; font-style: italic;">findstr</span> methods,
-see above.<br>
+see above, or findobj(iData,'Label','TAS').<br>
 <br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId510414"></a>Definition of
 Aliases: links and values (setalias, getalias, set, get)</h3>
@@ -247,7 +249,7 @@ correspond to user fields, dynamically created and evaluated. The
 previously seen <span style="font-style: italic;">UserData</span>
 field of the iData structure is static. One can indeed store something
 there, but there is only one such slot. We shall see that not only we
-can create new field to hold some information, but also that these <span style="font-style: italic;">Aliases</span> can point onto other
+can create new fields to hold some information, but also that these <span style="font-style: italic;">Aliases</span> can point onto other
 aliases or parts of the iData object.<br>
 <br>
 The main methods used to assign and extract Alias <span style="font-style: italic;">definitions</span> are <span style="font-style: italic; font-weight: bold;">setalias</span> and <span style="font-style: italic; font-weight: bold;">getalias</span>
@@ -293,7 +295,7 @@ as a link (reference)</h4>
 The same <span style="font-style: italic;">setalias</span> method can
 be used to assign an Alias as an expression. In the following example,
 a <span style="font-style: italic;">QH</span> alias has been
-automatically defined as a numeric vector when importing the file, :<br>
+automatically defined as a numeric vector when importing the file, and we define a new Alias which points to it:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath </span><span style="color: rgb(204, 51, 204);">'Data/sv1850.scn']</span>)<br>&gt;&gt; a.QH<br>ans =<br><br>    0.9791<br>    ...<br>    1.0214<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>,<span style="color: rgb(204, 51, 204);">'QH'</span>)</pre>
 which makes it so that <span style="font-style: italic;">NewField</span>
 is de-facto <span style="font-style: italic;">QH</span>.<br>
@@ -306,7 +308,7 @@ The <span style="font-style: italic;">AnotherNewField</span> points to
 <br>
 This brings the ability to enrich the Data area of the object with new
 content, and then define an Alias which links to it:<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(0, 0, 0);">a.Data.NewContent1 = <span style="color: rgb(51, 102, 255);">rand</span>(10);<br>&gt;&gt; a.Data.NewContent2 = <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'a'</span>,1,<span style="color: rgb(204, 51, 204);">'b'</span>, <span style="color: rgb(51, 102, 255);">rand</span>(10));<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'HowAreYouToday'</span>, <span style="color: rgb(204, 51, 204);">'Data.NewContent2'</span>);</pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(0, 0, 0);">a.Data.NewContent1 = <span style="color: rgb(51, 102, 255);">rand</span>(10);	<span style="font-style: italic;">		% add </span></span><span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">a new array in the Data</span><br></span><span style="color: rgb(0, 0, 0);">&gt;&gt; a.Data.NewContent2 = <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'a'</span>,1,<span style="color: rgb(204, 51, 204);">'b'</span>, <span style="color: rgb(51, 102, 255);">rand</span>(10));	</span><span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">% add a </span></span><span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">new structure in the Data<br></span></span><span style="color: rgb(0, 0, 0);">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'HowAreYouToday'</span>, <span style="color: rgb(204, 51, 204);">'Data.NewContent2'</span>);</pre>
 Advanced <span style="font-style: italic;">Alias</span>
 definition may be set by means of the<span style="font-style: italic; font-weight: bold;"> 'this' </span>self-referring
 symbol
@@ -321,7 +323,7 @@ expressions.
 refers to the object itself.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>, <span style="color: rgb(204, 51, 204);">'[ this.Data.ZEROS.A1 this.Data.VARIA.A1 ]'</span>) 	<span style="font-style: italic;">% an expression which is built from two links</span><br>&gt;&gt; a.NewField<br><br>ans =<br><br> -115.7500   39.2600<br>&gt;&gt; a.AnotherNewField<br><br>ans =<br><br> -115.7500   39.2600<br></pre>
 In this last example, we have changed the <span style="font-style: italic;">NewField</span> definition, which
-immediately affects <span style="font-style: italic;">AnotherNewField.</span><br>
+immediately affects <span style="font-style: italic;">AnotherNewField </span>(defined above)<span style="font-style: italic;">.</span><br>
 The links are evaluated <span style="font-weight: bold;">dynamically, </span>so
 that
 their
@@ -411,7 +413,8 @@ to <span style="font-style: italic;">set(a,field,value)</span>.</li>
   <li>The <span style="font-weight: bold;">getalias</span> function
 always return the current Alias definition</li>
   <li>The <span style="font-weight: bold;">setalias</span> function
-always set the current Alias defintion</li>
+always set the current Alias definition<br>
+</li>
 </ul>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId134021"></a>Definition of the
 Signal,
@@ -596,7 +599,7 @@ matrix has 2 axes, a volumetric signal has 3. <br>
 The 1st axis relates to the number of rows, the 2nd axis to
 the number
 of columns, the 3rd axis to the depth, and so on. The axis index then
-is associated to the mathematical definition of indices in a
+is associated to the mathematical definition of indexes in a
 matrix/tensor.<br>
 <br>
 However, the 'X', 'Y' convention is<span style="font-style: italic;"></span>
@@ -650,7 +653,7 @@ The axes labels can be defined the same way as <span style="font-style: italic;"
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a, 1, <span style="color: rgb(204, 51, 204);">'change label of QH'</span>)</pre>
 and there is a fast notation for axes of rank 1 to 4, similar to the <span style="font-style: italic;">Matlab Graphics Object</span> syntax,
 where the 'X' and 'Y' are swapped for ranks 1 and 2 (see note above):<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">xlabel</span>(a, <span style="color: rgb(204, 51, 204);">'2st axis label'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ylabel</span>(a, <span style="color: rgb(204, 51, 204);">'1st axis label'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">zlabel</span>(a, <span style="color: rgb(204, 51, 204);">'3st Z axis label'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">clabel</span>(a,<span style="color: rgb(204, 51, 204);"> '4st C axis label'</span>)<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">xlabel</span>(a, <span style="color: rgb(204, 51, 204);">'2st axis label'</span>)	<span style="font-style: italic;">% except for 1d objects where it points to the first axis</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ylabel</span>(a, <span style="color: rgb(204, 51, 204);">'1st axis label'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">zlabel</span>(a, <span style="color: rgb(204, 51, 204);">'3st Z axis label'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">clabel</span>(a,<span style="color: rgb(204, 51, 204);"> '4st C axis label'</span>)<br></pre>
 <span style="color: rgb(255, 0, 0);"><span style="color: rgb(0, 0, 0);"></span>WARNING:
 </span>when assigning an axis, in the case it has been previously
 defined as a link, the target of the link is assigned (refer to the <a href="#mozTocId483786">relevant Alias section</a> for more
@@ -728,7 +731,7 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData objects - $Date: 2011-06-02 09:29:31 $ $Revision:1.7
+Farhi - iFit/iData objects - $Date: 2011-06-13 07:19:29 $ $Revision:1.7
 $
 </span> - back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>

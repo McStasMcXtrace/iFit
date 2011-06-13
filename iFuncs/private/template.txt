@@ -12,7 +12,7 @@ function signal=$FUN(p, $AXES, signal)
 % output: signal: model value or information structure ('guess', 'identify')
 % ex:     signal=$FUN([1 0 1 1], -10:10); or signal=$FUN('identify') or p=$FUN('guess',x,signal);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, ifitmakefunc
 
 % $DIMD function created by ifitmakefunc from template (iFit/iFuncs)
@@ -34,7 +34,7 @@ function signal=$FUN(p, $AXES, signal)
     signal = feval(mfilename, p);
   elseif nargin == 2 && isempty(p) && isnumeric(x) && ~isempty(x)
   %   identify: model([],x)
-    info = identify; x=x(:);
+    info = identify; x=x(:); signal=[];
     info.Guess  = $DEFPARS;
     info.Axes   = { x };
     info.Values = evaluate(info.Guess, info.Axes{:});
