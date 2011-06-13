@@ -21,7 +21,7 @@ function [b, Info] = ieval(a, model, pars, varargin)
 % ex:     b=ieval(a,'gauss',[1 2 3 4]); ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
 %           ieval(a,'gauss','guess')
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also iData, feval, iData/fits
 
 % private functions: 
@@ -256,17 +256,17 @@ if isnumeric(Model)
   if not(all(m == 1 | m == 0)),
     Model = Model.*m;
   end
-  setalias(b,'Signal', Model, model);
-  b.Title = [ model '(' b.Title ')' ];
+  setalias(b,'Signal', Model, char(model));
+  b.Title = [ char(model) '(' b.Title ')' ];
   b.Label = b.Title;
   setalias(b,'Error', 0);
-  setalias(b,'Parameters', pars, [ model ' model parameters for ' char(a) ]);
+  setalias(b,'Parameters', pars, [ char(model) ' model parameters for ' char(a) ]);
   Info.Guess = pars;
   b.Data.Model = Info;
-  setalias(b,'Model','Data.Model',[ model ' model description for ' char(a) ]);
+  setalias(b,'Model','Data.Model',[ char(model) ' model description for ' char(a) ]);
 end
 b.Command=cmd;
-b = iData_private_history(b, mfilename, a, model, pars, varargin{:});  
+b = iData_private_history(b, mfilename, a, char(model), pars, varargin{:});  
 % final check
 b = iData(b);
 
