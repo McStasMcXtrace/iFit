@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.55 $
+% Version: $Revision: 1.56 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -101,7 +101,7 @@ if prod(size(a)) > 1e6
   iData_private_warning(mfilename, [ 'Object ' a.Tag ' is too large (numel=' num2str(prod(size(a))) ...
     '.\n\tYou should rebin with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
 end
-
+zlab = '';
 switch ndims(a) % handle different plotting methods depending on the iData dimensionality
 case 0
   h=[]; return;
@@ -332,13 +332,20 @@ if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
 
 uicm = uicontextmenu; 
 uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
-  'Callback', [ 'msgbox(get(get(gco,''UIContextMenu''),''UserData''), ''About: Figure ' num2str(gcf) ' ' T ' <' S '>'',''help'');' ] );
+  'Callback', [ 'msgbox(getfield(get(get(gco,''UIContextMenu''),''UserData''),''properties''),' ...
+                  '''About: Figure ' num2str(gcf) ' ' T ' <' S '>'', ''help'');' ] );
 uimenu(uicm, 'Label',[ 'Duplicate "' T '" ...' ], 'Callback', ...
-   [ 'g=gca; f=figure; c=copyobj(g,f); set(c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
-     'set(f,''Name'',''Copy of ' char(a) '''); ' ]);
+   [ 'duplicate_cb.g=gca; duplicate_cb.ud=get(duplicate_cb.g,''UserData''); duplicate_cb.f=figure; duplicate_cb.c=copyobj(duplicate_cb.g,gcf); ' ...
+     'set(duplicate_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+     'set(gcf,''Name'',''Copy of ' char(a) '''); ' ...
+     'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
+     'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
+     'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');' ...
+     'xlabel(duplicate_cb.ud.xlabel);ylabel(duplicate_cb.ud.ylabel); clear duplicate_cb;']);
 uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '"' ]);
-uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
-uimenu(uicm, 'Label', [ 'Cmd: ' cmd ]);
+uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
+uimenu(uicm, 'Label', [ 'Cmd: ' cmd ], 'Callback', [ 'listdlg(''ListString'', getfield(get(gca, ''UserData''), ''commands''), ' ...
+             '''ListSize'',[400 300],''Name'',''' T ''',''PromptString'',''' char(a) ''');' ]);
 uimenu(uicm, 'Label', [ 'User: ' a.User ]);
 
 % also make up title string and Properties dialog content
@@ -350,21 +357,21 @@ properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a))
 if ~isempty(a.Label)
   properties{end+1} = [ 'Label: ' a.Label ];
 end
-if length(getaxis(a))
-  properties{end+1} = '[Rank]         [Value] [Description]';
-  uimenu(uicm, 'Separator','on', 'Label', '[Rank]         [Value] [Description]');
-  for index=0:length(getaxis(a))
-    [v, l] = getaxis(a, num2str(index));
-    x      = getaxis(a, index);
-    m      = get(a, 'Monitor');
-    if index==0 & not(all(m==1 | m==0))
-      t = sprintf('%6i %15s  %s [%g:%g] (per monitor)', index, v, l, min(x(:)), max(x(:)));
-    else
-      t = sprintf('%6i %15s  %s [%g:%g]', index, v, l, min(x(:)), max(x(:)));
-    end
-    properties{end+1} = t;
-    uimenu(uicm, 'Label', t);
+
+properties{end+1} = '[Rank]         [Value] [Description]';
+uimenu(uicm, 'Separator','on', 'Label', '[Rank]         [Value] [Description]');
+for index=0:length(getaxis(a))
+  [v, l] = getaxis(a, num2str(index));
+  if length(l) > 20, l = [l(1:18) '...' ]; end 
+  x      = getaxis(a, index);
+  m      = get(a, 'Monitor');
+  if index==0 & not(all(m==1 | m==0))
+    t = sprintf('%6i %15s  %s [%g:%g] (per monitor)', index, v, l, min(x(:)), max(x(:)));
+  else
+    t = sprintf('%6i %15s  %s [%g:%g]', index, v, l, min(x(:)), max(x(:)));
   end
+  properties{end+1} = t;
+  uimenu(uicm, 'Label', t);
 end
 [dummy, fS] = fileparts(S);
 titl ={ T ; [ a.Tag ' <' fS '>' ]};
@@ -378,7 +385,16 @@ try
 catch
 end
 
-set(uicm,'UserData', properties); 
+% UserData storage
+ud.properties=properties;
+ud.xlabel = xlab;
+ud.ylabel = ylab;
+ud.zlabel = zlab;
+ud.title  = titl;
+ud.commands = commandhistory(a);
+set(uicm,'UserData', ud);
+set(gca, 'UserData', ud);
+
 uimenu(uicm, 'Separator','on','Label','Toggle grid', 'Callback','grid');
 if ndims(a) == 1
   uimenu(uicm, 'Label','Toggle error bars', 'Callback','tmp_h=get(gco,''children''); if strcmp(get(tmp_h(2),''visible''),''off''), tmp_v=''on''; else tmp_v=''off''; end; set(tmp_h(2),''visible'',tmp_v); clear tmp_h tmp_v');
