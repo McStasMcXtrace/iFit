@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -133,7 +133,7 @@ function val = iData_getalias(this,link,name)
 
 val = [];
 if (isnumeric(link) | islogical(link)) & ~isempty(link), 
-  if strcmp(name, 'Monitor') && all(val == 0)
+  if strcmp(name, 'Monitor') && ~isempty(val) && all(val == 0)
     val = 1;
   else
     val = link; 

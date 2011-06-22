@@ -10,7 +10,7 @@ function c = combine(a,varargin)
 % output: c: object (iData)
 % ex:     c=combine(a,b); or combine([ a b ])
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
 if length(varargin) >= 1  % syntax: combine(a,b,...)
   s=a(:);
@@ -24,8 +24,7 @@ end
 % now we should only handle a single argument
 c = a(1);
 if length(a) <= 1, return; end
-for index=2:length(a)
-  c = iData_private_binary(c, a(index), 'combine');
-end
+c = iData_private_binary(a, [], 'combine');
+
 
 
