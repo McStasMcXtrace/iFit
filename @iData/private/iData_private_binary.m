@@ -38,6 +38,7 @@ if isa(a, 'iData') & length(a(:)) > 1
   	for index=2:length(a(:))
       c = iData_private_binary(c, a(index), op);
     end
+    return
   elseif isa(b, 'iData') & length(b(:)) ~= length(a(:)) & length(b(:)) ~= 1
     iData_private_warning('binary', ...
     [ 'If you wish to force this operation, use ' op '(a,b{0}) to operate with the object Signal, not the object itself (which has axes).' ]);
@@ -61,7 +62,7 @@ elseif isa(b, 'iData') & length(b(:)) > 1
   return
 end
 
-if isempty(a), c=b; return;
+if     isempty(a), c=b; return;
 elseif isempty(b), c=a; return; end
 
 try % disable some warnings
@@ -222,9 +223,10 @@ if strcmp(op, 'combine')  % dimension of result might change from original objec
   c = setalias(c, 'Signal', s3, [ op '(' al ',' bl ')' ]);
   c = setalias(c, 'Error', abs(e3));
   c = setalias(c, 'Monitor', m3);
+  c = set(c, 'Monitor', m3);
 else
   c = set(c, 'Signal', s3, 'Error', abs(e3), 'Monitor', m3);
-  setalias(c, 'Signal', s3, [ op '(' al ',' bl ')' ]);
+  c = setalias(c, 'Signal', s3, [ op '(' al ',' bl ')' ]);
 end
 
 c.Command=cmd;
