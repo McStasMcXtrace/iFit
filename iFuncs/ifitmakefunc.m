@@ -23,7 +23,7 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars)
 %
 % output: fhandle: function handle to the new function, which is also stored locally
 % 
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, gauss
 
 fhandle = [];
@@ -110,7 +110,7 @@ if ~isempty(expr)
   % we look if this is really a p(n) syntax
   n = [];
   for index=1:length(nb_pars)
-    s = sscanf(expr((nb_pars(index)+2):end), '%d)')
+    s = sscanf(expr((nb_pars(index)+2):end), '%d)');
     if length(s) >= 1 ...
       && (nb_pars(index) == 1 || ~isstrprop(expr(nb_pars(index)-1),'alpha')), 
       n=[n s(1)]; 
@@ -261,7 +261,8 @@ fwrite(fid, template, 'char');
 fclose(fid);
 
 fprintf(1, [ '%s: Wrote function %s(p, %s)\n%% %s\n%% %d parameter(s): %s\n  y=%s;\n\n' ], ...
-  mfilename, fun, ax, descr, nb_pars, pars, expr)
+  mfilename, fun, ax, descr, nb_pars, pars, expr);
+which([ fun '.m' ]); % force to rehash/register the function
 
 % create the handle
 fhandle = str2func(fun);
