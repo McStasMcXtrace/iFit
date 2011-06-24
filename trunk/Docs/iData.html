@@ -4,6 +4,7 @@
 
 
 
+
   <title>iFit: iData object definition</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -427,8 +428,12 @@ As an alias, its value and definition can be accessed with all
 the following methods (refer to the <a href="#mozTocId510414">Alias</a>
 section above):<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData,<span style="color: rgb(204, 51, 204);"> </span><span style="color: rgb(204, 51, 204);">[ ifitpath </span><span style="color: rgb(204, 51, 204);">'Data/sv1850.scn'</span>])	<span style="font-style: italic;">% returns an iData object</span><br>&gt;&gt; a.Signal					<span style="font-style: italic;">% returns the Signal value as an Alias</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(a,<span style="color: rgb(204, 51, 204);">'Signal'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">getalias</span>(a,<span style="color: rgb(204, 51, 204);">'Signal'</span>)				<span style="font-style: italic;">% returns the Signal definition, which here points to the CNTS Alias</span><br></pre>
-In the iData terminology, the Signal is the rank 0 axis (see the <a href="#mozTocId765887">Axis</a> section below)<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">getaxis</span>(a, 0 )	% request Signal value as an axis<br>&gt;&gt; a{0}</pre>
+In the iData terminology, the Signal/Monitor is the rank 0 axis (see the <a href="#mozTocId765887">Axis</a> section below)<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">getaxis</span>(a, 0 )	% request Signal/Monitor value as an axis<br>&gt;&gt; a{0}</pre>
+Setting the axis 0 with a value first multiplies it by the Monitor, and
+then sets the Signal. In case you want to ignore the Monitor weighting,
+simply assign the Signal directly.<br>
+<br>
 The Signal label can be inquired or set with the usual <span style="font-weight: bold; font-style: italic;">setalias</span> and <span style="font-weight: bold; font-style: italic;">label</span> methods
 seen in the <a href="iData.html#mozTocId510414">Alias</a> section.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a,<span style="color: rgb(204, 51, 204);">'Signal'</span>)			<span style="font-style: italic;">% returns the current Signal label</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a,<span style="color: rgb(204, 51, 204);">'Signal'</span>, <span style="color: rgb(204, 51, 204);">'Make it so ?'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a, 0,     , <span style="color: rgb(204, 51, 204);">'Make it so ?'</span>)<br></pre>
@@ -625,7 +630,7 @@ commands returns its definition, which may be a link to a Data part.<br>
 The axis value can also be obtained with the quick reference notation <span style="color: rgb(255, 0, 0);">{n}</span> (which works up to rank
 n=9) :<br>
 <pre style="margin-left: 40px;">&gt;&gt; a{1}		<span style="font-style: italic;">% returns the 1st axis values = getaxis(a,1)</span><br>&gt;&gt; a{<span style="color: rgb(204, 51, 204);">'1'</span>}	<span style="font-style: italic;">% returns axis definition     = getaxis(a,'1')</span><br>ans =<br><br>QH<br></pre>
-In principle, the axis rank should be within 1 and the object dimensionality.<br>
+In principle, the axis rank should be within 1 up to the object dimensionality.<br>
 Upon request, any undefined axis is automatically created when it
 matches the <span style="font-style: italic;">Signal</span>
 dimensionality.<br>
@@ -731,7 +736,7 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData objects - $Date: 2011-06-13 07:19:29 $ $Revision:1.7
+Farhi - iFit/iData objects - $Date: 2011-06-24 12:37:19 $ $Revision:1.7
 $
 </span> - back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
