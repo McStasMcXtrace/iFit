@@ -23,7 +23,7 @@ function s_out = setalias(a_in,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -90,7 +90,6 @@ for index = 1:length(s_out)
     end
     alias_names = a.Alias.Names; % this is a cellstr of Alias names
     alias_num   = strmatch(lower(name), lower(alias_names), 'exact');
-    
     if isempty(link) & any(alias_num <= 3) 
       % set Signal, Error, Monitor to empty (default)
       a.Alias.Values{alias_num} = [];
