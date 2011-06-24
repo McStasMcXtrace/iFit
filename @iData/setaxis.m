@@ -11,9 +11,11 @@ function s_out = setaxis(a_in,indexes,names,values)
 %     corresponding Alias is created, and its value is set, so that
 %     setaxis(a,1,'x',1:10) creates the 1-st rank axis as the alias 'x'
 %     which value is set to 1:10.
-%   The Signal corresponds to axis 0. 
+%   The Signal/Monitor corresponds to axis 0. Setting its value multiplies 
+%     it by the Monitor and then assigns the Signal.
 %   Axis 1 is often labeled as 'x' (along rows), 2 as 'y' (along columns), etc...
-%   The special syntax s{0} assigns the signal, and s{n} assigns the axis of rank n.
+%   The special syntax a{0} multiplies the value by the Monitor and then assigns 
+%   the Signal, and a{n} assigns the axis of rank n.
 %     When the assigned value is a char, the axis definition is set.
 %     When the assigned value is numeric, the axis value is set (as in set).
 %
@@ -27,7 +29,7 @@ function s_out = setaxis(a_in,indexes,names,values)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -135,9 +137,19 @@ for i1 = 1:length(s_out)
       continue;
     end
     if isempty(index), continue; end
+    % assign value to axis when provided
     if nargin==4 & length(name) & ~isempty(index)
-      a = setalias(a, name, values{j1});
-      %a = setaxis( a, index, name);
+      % special case for Signal, which should take into account the Monitor
+      if strcmp(name, 'Signal')
+        m  = get(a,'Monitor'); m=real(m);
+        if not(all(m == 1 | m == 0))
+          values{j1} = genop(@times,values{j1},m);
+        end
+        set(a, 'Signal', values{j1});
+      else
+        a = setalias(a, name, values{j1});
+        %a = setaxis( a, index, name);
+      end
       isvalid=1;
     end
     
@@ -163,8 +175,10 @@ for i1 = 1:length(s_out)
     else
     
       if index == 0
-        % redefine Signal
-        a = setalias(a, 'Signal', name);
+        if ~strcmp(name, 'Signal')
+          % redefine Signal
+          a = setalias(a, 'Signal', name);
+        end
       else
         if index <= length(a.Alias.Axis)
           if ~isempty(a.Alias.Axis{index})

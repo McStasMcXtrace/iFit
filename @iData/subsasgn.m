@@ -3,12 +3,13 @@ function b = subsasgn(a,S,val)
 %
 %   @iData/subsasgn: function defines indexed assignement 
 %   such as a(1:2,3) = b
-%   The special syntax a{0} assigns the signal, and a{n} assigns the axis of rank n.
+%   The special syntax a{0} multiplies the value by the Monitor and then assigns 
+%   the Signal, and a{n} assigns the axis of rank n.
 %     When the assigned value is a char, the axis definition is set (as in setaxis).
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -142,7 +143,11 @@ else
           else 
           % SYNTAX: object{axis_rank} = numeric|char
             if s.subs{:} <= length(b.Alias.Axis)
-              ax= b.Alias.Axis{s.subs{:}}; % re-definition of Axis
+              if all(s.subs{:} > 0)
+                ax= b.Alias.Axis{s.subs{:}}; % re-definition of Axis
+              else
+                ax='Signal';
+              end
               if isempty(ax) & isnumeric(val) % change numerical value of axis
               % SYNTAX: object{axis_rank} = numeric
                 ax=[ 'Axis_' num2str(num2str(s.subs{:})) ];
@@ -153,7 +158,16 @@ else
               % SYNTAX: object{axis_rank} = char: redefine axis link
               % SYNTAX: object{axis_rank} = other: redefine alias
                 if ischar(val), b = setaxis(b, s.subs{:}, val);
-                else b = set(b, ax, val); end
+                else 
+                  % special case for Signal, which should take into account the Monitor
+                  if strcmp(ax, 'Signal')
+                    m  = get(b,'Monitor'); m=real(m);
+                    if not(all(m == 1 | m == 0))
+                      val = genop(@times,val,m);
+                    end
+                  end
+                  b = set(b, ax, val); 
+                end
               end
             else 
             % create new axis as axis rank exceeds dim(object)

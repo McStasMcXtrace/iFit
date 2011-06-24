@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -158,9 +158,9 @@ end
 if strcmp(name, 'Error')  % Error is sqrt(Signal) if not defined
   if isempty(val) & isnumeric(get(this,'Signal'))
     try
-    val = sqrt(abs(get(this,'Signal')));
+      val = sqrt(abs(get(this,'Signal')));
     catch
-    val=0;
+      val=0;
     end
   end
   if length(val) ~= 1 & ~all(size(val) == size(this))
@@ -169,8 +169,8 @@ if strcmp(name, 'Error')  % Error is sqrt(Signal) if not defined
     '] in iData object ' this.Tag '.\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
   end
 elseif strcmp(name, 'Monitor')  % monitor is 1 by default
-  if isempty(val) | all(val == 0)
-    val = ones(size(this));
+  if isempty(val) | all(val == 0) | all(val == 1)
+    val = 1;
   end
   if length(val) ~= 1 & ~all(size(val) == size(this))
     iData_private_warning(mfilename,[ 'The Monitor [' num2str(size(val)) ...

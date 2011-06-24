@@ -2,10 +2,11 @@ function b = subsref(a,S)
 % b = subsref(a,s) : iData indexed references
 %
 %   @iData/subsref: function returns subset indexed references
-%   such as a(1:2) or a.field.
-%   The special syntax a{0} where a is a single iData returns the signal, and a{n} returns the axis of rank n.
+%     such as a(1:2) or a.field.
+%   The special syntax a{0} where a is a single iData returns the 
+%     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines

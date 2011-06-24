@@ -8,28 +8,31 @@ function [val, lab] = getaxis(s,ax)
 %     the value of the axis is returned.
 %   when the axis input parameter is given as a string/name (e.g. '1' or 'x') 
 %     the corresponding axis definition is returned.
-%   The Signal/Monitor corresponds to axis 0, and can also be accesed with getaxis(a, 'Signal')
-%   The Error/Monitor an also be accesed with getaxis(a, 'Error')
+%   The Signal/Monitor corresponds to axis 0, and can also be accessed with
+%     getaxis(a, 'Signal') and a{0}.
+%   The Error/Monitor an also be accessed with getaxis(a, 'Error').
 %   Axis 1 is often labeled as 'y' (rows, vertical), 2 as 'x' (columns, horizontal).
-%   The special syntax s{0} gets the signal only (same as double(s)), 
+%   The special syntax s{0} gets the signal/monitor only (same as double(s)), 
 %     and s{n} gets the axis of rank n.
 %
 % input:  s: object or array (iData)
-%         AxisIndex: axis index to inquire in object, or [] (integer).
+%         AxisIndex: axis index to inquire in object, 
+%           or [] to obtain all axis values 
+%           or '' to obtain all axis definitions (integer).
 %         AxisName: axis name to inquire in object, or '' (char). The name may
 %                   also be specified as 'n' where n is the axis index, e.g. '1'
 % output: val: axis value, or corresponding axis name  (double/char)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'y')
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
 % ============================================================================
 
 if nargin == 1
-  ax = [];
+  ax = '';
 end
 
 if length(s(:)) > 1
@@ -45,10 +48,24 @@ end
 val = []; lab=''; link='';
 
 if isempty(ax)
-  val = s.Alias.Axis;
+  if ischar(ax)
+    val = s.Alias.Axis;
+  else
+    val = {};
+    for index=1:length(s.Alias.Axis)
+      val{end+1} = getaxis(s, index);
+    end
+  end
   return
 end
 if isnumeric(ax) % given as a number, return a number
+  if length(ax) > 1
+    val = {}; lab={};
+    for index=1:length(ax)
+      [val{end+1}, lab{end+1}] = getaxis(s, ax(index));
+    end
+    return
+  end
   ax = ax(1);
   if ax > ndims(s) && ax > length(s.Alias.Axis)
     return
@@ -75,7 +92,14 @@ if isnumeric(ax) % given as a number, return a number
       end
     end
   end;
-else % given as a char, return a char
+else % given as a char/cell, return a char/cell
+  if iscellstr(ax)
+    val = {}; lab={};
+    for index=1:length(ax)
+      [val{end+1}, lab{end+1}] = getaxis(s, ax{index});
+    end
+    return
+  end
   if     strcmp(ax,'Signal'), 
     [val, lab] = getaxis(s,0);
     return;
