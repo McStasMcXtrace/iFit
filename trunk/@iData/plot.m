@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.56 $
+% Version: $Revision: 1.57 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -368,7 +368,8 @@ for index=0:length(getaxis(a))
   if index==0 & not(all(m==1 | m==0))
     t = sprintf('%6i %15s  %s [%g:%g] (per monitor)', index, v, l, min(x(:)), max(x(:)));
   else
-    t = sprintf('%6i %15s  %s [%g:%g]', index, v, l, min(x(:)), max(x(:)));
+    [s, f] = std(a, index);
+    t = sprintf('%6i %15s  %s [%g:%g] <%g +/- %g>', index, v, l, min(x(:)), max(x(:)), f, s);
   end
   properties{end+1} = t;
   uimenu(uicm, 'Label', t);
