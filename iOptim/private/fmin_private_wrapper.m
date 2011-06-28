@@ -1,13 +1,13 @@
 function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars, options, constraints, ub)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmin_private_wrapper(OPTIMIZER, FUN,PARS,[OPTIONS],[CONSTRAINTS]) wrapper to optimizers
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmin_private_wrapper(OPTIMIZER, FUN,PARS,[OPTIONS],[constraints]) wrapper to optimizers
 %
 %  Checks for input arguments and options. Then calls the optimizer with a wrapped 
-%  objective function, which applies constraints and makes stop condition checks.
+%  inline_objective function, which applies constraints and makes stop condition checks.
 %  the main optimizer call is within a try/catch block which exits when an early 
 %  stop is met.
 % 
 % Calling:
-%   fmin_private_wrapper(optimizer, fun, pars) asks to minimize the 'fun' objective function with starting
+%   fmin_private_wrapper(optimizer, fun, pars) asks to minimize the 'fun' inline_objective function with starting
 %     parameters 'pars' (vector)
 %   fmin_private_wrapper(optimizer, fun, pars, options) same as above, with customized options (optimset)
 %   fmin_private_wrapper(optimizer, fun, pars, options, fixed) 
@@ -18,7 +18,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %   fmin_private_wrapper(optimizer, fun, pars, options, constraints) 
 %     where constraints is a structure (see below).
 %   fmin_private_wrapper(optimizer, problem) where problem is a structure with fields
-%     problem.objective:   function to minimize
+%     problem.inline_objective:   function to minimize
 %     problem.x0:          starting parameter values
 %     problem.options:     optimizer options (see below)
 %     problem.constraints: optimization constraints
@@ -31,7 +31,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %  OPTIMIZER is the name/handle to an optimizer function, or '' for default
 %  FUN is a function handle (anonymous function or inline) with a loss
 %  function, which may be of any type, and needn't be continuous. It does,
-%  however, need to return a single value.
+%  however, need to return a single/vector value.
 %
 %  PARS is a vector with initial guess parameters. You must input an
 %  initial guess.
@@ -40,7 +40,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %  compliant with optimset. Default options may be obtained with
 %     o=fmin_private_wrapper(optimizer,'defaults')
 %
-%  CONSTRAINTS may be specified as a structure
+%  constraints may be specified as a structure
 %   constraints.min=   vector of minimal values for parameters
 %   constraints.max=   vector of maximal values for parameters
 %   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
@@ -53,14 +53,35 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
 % each user call function only defines the options... The optimizer by itself is
 % in the 'private'.
 %
-% private: 'objective', 'apply_constraints', 'constraints_minmax', 'localChar', 'fmin_private_disp'
+% private: 'inline_objective', 
+%          'inline_apply_constraints', 
+%          'inline_constraints_minmax', 
+%          'inline_localChar', 
+%          'inline_disp'
+%          'inline_estimate_uncertainty'
+%
+
+% return code     message
+%  0                Algorithm terminated normally
+% -1                Termination function tolerance criteria reached
+% -2                Maximum number of iterations reached
+% -3                Maximum number of function evaluations reached
+% -4                Function value is Inf or Nan
+% -5                Termination parameter tolerance criteria reached
+% -6                Algorithm was terminated by the output function
+% -7                Maximum consecutive rejections exceeded (anneal)
+% -8                Minimum temperature reached (anneal)
+% -9                Global Simplex convergence reached (simplex)
+% -10               Optimization terminated: Stall Flights Limit reached (swarm)
+% -11               Other termination status (cmaes/Ralg)
+% -12               Termination function change tolerance criteria reached
 
 % parameter handling ===========================================================
 
@@ -86,19 +107,19 @@ if strcmp(fun,'defaults')
   pars = feval(optimizer, 'defaults');
   return
 elseif nargin < 2
-  error([ 'syntax is: ' optimizer '(optimizer, objective, parameters, ...)' ] );
+  error([ 'syntax is: ' optimizer '(optimizer, inline_objective, parameters, ...)' ] );
 elseif nargin == 2 && isstruct(fun)
   if     isfield(fun, 'x0'),          pars=fun.x0;
   elseif isfield(fun, 'guess'),       pars=fun.guess;
   elseif isfield(fun, 'Guess'),       pars=fun.Guess; end
   if     isfield(fun, 'options'),     options=fun.options; end
   if     isfield(fun, 'constraints'), constraints=fun.constraints; end 
-  if     isfield(fun, 'objective'),   tmp=fun.objective; fun=[]; fun=tmp; 
+  if     isfield(fun, 'inline_objective'),   tmp=fun.inline_objective; fun=[]; fun=tmp; 
   elseif isfield(fun, 'model'),       tmp=fun.model; fun=[]; fun=tmp;
   elseif isfield(fun, 'f'),           tmp=fun.f; fun=[]; fun=tmp;
   elseif isfield(fun, 'function'),    tmp=fun.function; fun=[]; fun=tmp; end
 elseif nargin < 3
-  error([ 'syntax is: ' localChar(optimizer) '(objective, parameters, ...)' ] );
+  error([ 'syntax is: ' inline_localChar(optimizer) '(inline_objective, parameters, ...)' ] );
 end
 
 % default arguments when missing
@@ -133,7 +154,7 @@ constraints.criteriaHistory = [];
 constraints.criteriaStart   = [];
 constraints.criteriaPrevious= Inf;
 constraints.criteriaBest    = Inf;
-constraints.funcCounts      = 0;
+constraints.funcCount       = 0;
 constraints.message         = '';
 
 options.optimizer = optimizer;
@@ -155,7 +176,7 @@ if ischar(options.TolFun)
   options.TolFunChar = options.TolFun;
   if options.TolFun(end)=='%'
     options.TolFun(end)='';
-    fval = objective(fun, pars);
+    fval = inline_objective(fun, pars);
     options.TolFun = abs(str2num(options.TolFun)*fval/100);
   else
     options.TolFun = str2num(options.TolFun);
@@ -170,9 +191,9 @@ if ischar(options.TolX)
 end
 
 if strcmp(options.Display,'iter')
-  disp([ '** Starting minimization of ' localChar(fun) ' using algorithm ' localChar(options.algorithm) ]);
+  disp([ '** Starting minimization of ' inline_localChar(fun) ' using algorithm ' inline_localChar(options.algorithm) ]);
   disp('Func_count  min[f(x)]    Parameters');
-  fmin_private_disp(options, constraints.funcCounts, fun, pars, fval)
+  inline_disp(options, constraints.funcCount , fun, pars, fval)
 end
 
 message    = constraints.message;
@@ -185,10 +206,10 @@ output     = [];
 
 try
 
-% calls the optimizer with a wrapped 'objective' function
+% calls the optimizer with a wrapped 'inline_objective' function
 %    which applies constraints and makes stop condition checks.
 % the main optimizer call is within a try/catch block which exits when an early 
-%  stop is met. See private 'objective' and 'apply_constraints' below.
+%  stop is met. See private 'inline_objective' and 'inline_apply_constraints' below.
 
 switch options.optimizer
 case {'cmaes','fmincmaes'}    
@@ -213,7 +234,7 @@ case {'cmaes','fmincmaes'}
     sigma = 0.3;
   end
 
-  [pars, fval, iterations, exitflag, output] = cmaes(@(pars) objective(fun, pars), pars, ...
+  [pars, fval, iterations, exitflag, output] = cmaes(@(pars) inline_objective(fun, pars), pars, ...
     sigma, hoptions);
 
   if     strmatch(exitflag, 'tolx')
@@ -244,23 +265,23 @@ case {'cmaes','fmincmaes'}
   end
 case {'ga','fminga','GA'}          
 % genetic algorithm ------------------------------------------------------------
-  constraints = constraints_minmax(pars, constraints);
-  [pars,fval,iretations,output] = GA(@(pars) objective(fun, pars), pars, options,constraints);
+  constraints = inline_constraints_minmax(pars, constraints);
+  [pars,fval,iretations,output] = GA(@(pars) inline_objective(fun, pars), pars, options,constraints);
 case {'gradrand','ossrs','fmingradrand'}
 % random gradient --------------------------------------------------------------
-  [pars,fval,iterations] = ossrs(pars, @(pars) objective(fun, pars), options);
+  [pars,fval,iterations] = ossrs(pars, @(pars) inline_objective(fun, pars), options);
 case {'hooke','fminhooke'}
 % Hooke-Jeeves direct search ---------------------------------------------------
-  [pars,histout] = hooke(pars, @(pars) objective(fun, pars), ...
+  [pars,histout] = hooke(pars, @(pars) inline_objective(fun, pars), ...
                        options.MaxFunEvals, 2.^(-(0:options.MaxIter)), options.TolFun);
   iterations      = size(histout,1);
 case {'imfil','fminimfil'}
 % Unconstrained Implicit filtering (version 1998) ------------------------------
-  [pars,fval,iterations,output] = imfil(pars, @(pars) objective(fun, pars), options); 
+  [pars,fval,iterations,output] = imfil(pars, @(pars) inline_objective(fun, pars), options); 
 case {'fminlm','LMFsolve'}
 % Levenberg-Maquardt steepest descent ------------------------------------------
-  % LMFsolve minimizes the sum of the squares of the objective: sum(objective.^2)
-  [pars, fval, iterations, exitflag] = LMFsolve(@(pars) objective_lm(fun, pars), pars, ...
+  % LMFsolve minimizes the sum of the squares of the inline_objective: sum(inline_objective.^2)
+  [pars, fval, iterations, exitflag] = LMFsolve(@(pars) inline_objective_lm(fun, pars), pars, ...
            'Display',0, 'FunTol', options.TolFun, 'XTol', options.TolX, ...
            'MaxIter', options.MaxIter, 'Evals',options.MaxFunEvals);
   switch exitflag
@@ -278,12 +299,12 @@ case {'powell','fminpowell'}
     t = 'Golden rule'; method=1;
   end
   options.algorithm  = [ 'Powell Search (by Secchi) [' options.optimizer '/' t ']' ];
-  constraints = constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = powell(@(pars) objective(fun, pars), pars, options);
+  constraints = inline_constraints_minmax(pars, constraints);
+  [pars,fval,exitflag,output] = powell(@(pars) inline_objective(fun, pars), pars, options);
 case {'pso','fminpso'}
 % particle swarm ---------------------------------------------------------------
-  constraints = constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = PSO(@(pars) objective(fun, pars),pars, ...
+  constraints = inline_constraints_minmax(pars, constraints);
+  [pars,fval,exitflag,output] = PSO(@(pars) inline_objective(fun, pars),pars, ...
      constraints.min(:),constraints.max(:),options);
   message = output.message;
 case {'ralg','fminralg','solvopt'}
@@ -298,13 +319,13 @@ case {'ralg','fminralg','solvopt'}
   opt(8) = 1e-11;
 
   % call the optimizer
-  [pars,fval,out,iterations, message] = ralg(pars, @(pars) objective(fun, pars), ...
+  [pars,fval,out,iterations, message] = ralg(pars, @(pars) inline_objective(fun, pars), ...
     [], opt,[],[], [], options.MaxFunEvals, options.FunValCheck);
   if out(9) < 0, exitflag = out(9); 
   else exitflag=0; end
 case {'fminsearch','fminsearchbnd'}
 % Nelder-Mead simplex, with constraints ----------------------------------------
-  [pars,fval,exitflag,output] = fminsearch(@(pars) objective(fun, pars), pars, options);
+  [pars,fval,exitflag,output] = fminsearch(@(pars) inline_objective(fun, pars), pars, options);
 %     1  Maximum coordinate difference between current best point and other
 %        points in simplex is less than or equal to TolX, and corresponding 
 %        difference in function values is less than or equal to TolFun.
@@ -316,18 +337,18 @@ case {'fminsearch','fminsearchbnd'}
   end
 case {'simpsa','fminsimpsa','SIMPSA'}
 % simplex/simulated annealing --------------------------------------------------
-  constraints = constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = SIMPSA(@(pars) objective(fun, pars), pars, ...
+  constraints = inline_constraints_minmax(pars, constraints);
+  [pars,fval,exitflag,output] = SIMPSA(@(pars) inline_objective(fun, pars), pars, ...
     constraints.min(:),constraints.max(:),options);
 case {'SCE','fminsce'}
 % shuffled complex evolution ---------------------------------------------------
-  constraints = constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = SCE(@(pars) objective(fun, pars), pars, ...
+  constraints = inline_constraints_minmax(pars, constraints);
+  [pars,fval,exitflag,output] = SCE(@(pars) inline_objective(fun, pars), pars, ...
     constraints.min(:),constraints.max(:),options);
 case {'hPSO','fminswarmhybrid'}
-  constraints = constraints_minmax(pars, constraints);
+  constraints = inline_constraints_minmax(pars, constraints);
   if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
-    hoptions.algorithm = [ 'hybrid Particle Swarm Optimizer (by Leontitsis) [' options.optimizer '/' localChar(options.Hybrid) ']' ];
+    hoptions.algorithm = [ 'hybrid Particle Swarm Optimizer (by Leontitsis) [' options.optimizer '/' inline_localChar(options.Hybrid) ']' ];
   else
     hoptions.algorithm = [ 'Particle Swarm Optimizer (by Leontitsis) [fminswarm]' ];
   end
@@ -357,13 +378,13 @@ case {'hPSO','fminswarmhybrid'}
   else
     hoptions.maxv = abs(constraints.max(:)-constraints.min(:))/2;
   end
-  [pars,fval,iterations,output] = hPSO(@(pars) objective(fun, pars), pars, hoptions);
+  [pars,fval,iterations,output] = hPSO(@(pars) inline_objective(fun, pars), pars, hoptions);
 case {'Simplex','fminsimplex'}
 % Nelder-Mead simplex state machine --------------------------------------------
-  constraints = constraints_minmax(pars, constraints);
+  constraints = inline_constraints_minmax(pars, constraints);
   [pars, out]=Simplex('init', pars, abs(constraints.max(:)-constraints.min(:))/10);  % Initialization
   for iterations=1:options.MaxIter
-    fval = feval(@(pars) objective(fun, pars), pars);
+    fval = feval(@(pars) inline_objective(fun, pars), pars);
     [pars,out]=Simplex( fval );
     if isfield(options,'TolFunChar')
       options.TolFun = options.TolFunChar;
@@ -390,9 +411,9 @@ case {'Simplex','fminsimplex'}
   pars=Simplex('centroid'); % obtain the final value.
 case {'cgtrust','fmincgtrust'}
 % Steihaug Newton-CG-Trust region algorithm ------------------------------------
-  [pars,histout] = cgtrust(pars, @(pars) objective(fun, pars), ...
+  [pars,histout] = cgtrust(pars, @(pars) inline_objective(fun, pars), ...
     [ options.TolFun .1 options.MaxIter options.MaxIter], options.TolX*options.TolX);
-% [pars,histout] = levmar(pars, @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
+% [pars,histout] = levmar(pars, @(pars) inline_objective(fun, pars), options.TolFun, options.MaxIter);
   iterations      = size(histout,1);
 % not so efficient optimizers ==================================================
 case {'fminanneal','anneal'}  
@@ -400,24 +421,24 @@ case {'fminanneal','anneal'}
   options.MaxTries   = options.MaxIter/10;
   options.StopVal    = options.TolFun;
   options.Verbosity=0;
-  [pars,fval,iterations,exitflag] = anneal(@(pars) objective(fun, pars), pars(:)', options);
+  [pars,fval,iterations,exitflag] = anneal(@(pars) inline_objective(fun, pars), pars(:)', options);
   if exitflag==-7,message='Maximum consecutive rejections exceeded (anneal)'; end
 case {'fminbfgs','bfgs'}      
 % Broyden-Fletcher-Goldfarb-Shanno ---------------------------------------------
-  [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) objective(fun, pars), options.TolFun, options.MaxIter);
+  [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) inline_objective(fun, pars), options.TolFun, options.MaxIter);
   iterations = size(histout,1);
 case {'fminkalman','kalmann','ukfopt'}
 % unscented Kalman filter ------------------------------------------------------
-  [pars,iterations] = ukfopt(@(pars) objective(fun, pars(:)), pars(:), ...
+  [pars,iterations] = ukfopt(@(pars) inline_objective(fun, pars(:)), pars(:), ...
               options.TolFun, norm(pars)*eye(length(pars)), 1e-6*eye(length(pars)), 1e-6);
 case {'ntrust','fminnewton'}
 % Dogleg trust region, Newton model --------------------------------------------
-  [pars,histout,costdata] = ntrust(pars(:),@(pars) objective(fun, pars), ...
+  [pars,histout,costdata] = ntrust(pars(:),@(pars) inline_objective(fun, pars), ...
        options.TolFun,options.MaxIter);
   iterations      = size(histout,1);
 case {'buscarnd','fminrand'}
 % adaptive random search -------------------------------------------------------
-  [pars,fval]=buscarnd(@(pars) objective(fun, pars), pars, options);
+  [pars,fval]=buscarnd(@(pars) inline_objective(fun, pars), pars, options);
 otherwise
   options = feval(optimizer, 'defaults');
   [pars,fval,exitflag,output] = fmin_private_wrapper(options.optimizer, fun, pars, ...
@@ -458,30 +479,56 @@ end
 if iterations, 
   output.iterations    = iterations;
 elseif ~isfield(output,'iterations')
-  output.iterations    = constraints.funcCounts;
+  output.iterations    = constraints.funcCount ;
 end
 if ~isfield(output,'message')
   if isempty(message), message = constraints.message; end
   output.message         = message;
 end
   
-output.funcCount       = constraints.funcCounts;
+output.funcCount       = constraints.funcCount ;
 output.algorithm       = options.algorithm;
 output.parsHistory     = constraints.parsHistory;
 output.criteriaHistory = constraints.criteriaHistory;
-output.parsBest        = constraints.parsBest;
+output.parsBest        = constraints.parsBest(:)';
 output.criteriaBest    = constraints.criteriaBest;
 output.options         = options; 
 output.constraints     = constraints;
 output.optimizer       = options.optimizer;
 output.duration        = etime(clock, t0);
+output.fevalDuration   = constraints.fevalDuration;
 
-if (exitflag & strcmp(options.Display,'notify')) | ...
-   strcmp(options.Display,'final') | strcmp(options.Display,'iter')
-  disp([ '** Finishing minimization of ' localChar(fun) ' using algorithm ' localChar(options.algorithm) ]);
-  disp(' Func_count     min[f(x)]        Parameters');
-  fmin_private_disp(struct('Display','iter'), -constraints.funcCounts, fun, pars, fval)
+% estimate parameter uncertainty from the search trajectory
+index      = find(output.criteriaHistory < min(output.criteriaHistory)*4);   % identify tolerance region around optimum                       
+delta_pars = (output.parsHistory(index,:)-repmat(output.parsBest,[length(index) 1])); % get the corresponding parameter set
+weight_pars= exp(-((output.criteriaHistory(index)-min(output.criteriaHistory))/min(output.criteriaHistory)).^2 / 8); % Gaussian weighting for the parameter set
+weight_pars= repmat(weight_pars,[1 length(output.parsBest)]);
+output.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
+
+if length(pars)^2*output.fevalDuration/2 < 60 % should spend less than a minute to compute the Hessian
+  [dp, covp, corp]              = inline_estimate_uncertainty(fun, pars);
+  output.parsHessianUncertainty = reshape(abs(dp), size(pars));
+  output.parsHessianCovariance  = covp;
+  output.parsHessianCorrelation = corp;
+else
+  output.parsHessianUncertainty = [];
+  output.parsHessianCovariance  = [];
+  output.parsHessianCorrelation = [];
+end
+
+if strcmp(options.Display,'final') | strcmp(options.Display,'iter')
+  disp([ sprintf('\n') '** Finishing minimization of ' inline_localChar(fun) ' using algorithm ' inline_localChar(options.algorithm) ]);
   disp( [ ' Status: ' message ]);
+  disp(' Func_count     min[f(x)]        Parameters');
+  inline_disp(struct('Display','iter'), -constraints.funcCount , fun, pars, mean(fval));
+  
+  if length(index) > 10
+    disp(' Gaussian uncertainty on parameters (half width, from the optimization history)')
+    inline_disp(struct('Display','iter'), -1, fun, output.parsHistoryUncertainty, NaN);
+  else
+    disp(' Gaussian uncertainty on parameters (half width, from the Hessian matrix)')
+    inline_disp(struct('Display','iter'), -1, fun, output.parsHessianUncertainty, NaN);
+  end
 end
 
 return  % actual end of optimization
@@ -489,31 +536,33 @@ return  % actual end of optimization
 % ==============================================================================
 % Use nested functions as the criteria wrapper, to access 'constraints' and 'options'
   
-  function c = objective(fun, pars)
+  function c = inline_objective(fun, pars)
   % criteria to minimize, fun returns a scalar, or vector which is summed
   
     % apply constraints on pars first
-    pars                = apply_constraints(pars,constraints,options); % private function
+    pars                = inline_apply_constraints(pars,constraints,options); % private function
     
     % compute criteria
+    t = clock;
     c = feval(fun, pars);         % function=row vector, pars=column
-    c  = sum(c(:));
+    c  = sum(c);
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
     [exitflag, message] = fmin_private_check(pars, c, ...
-       constraints.funcCounts, options, constraints);
+       constraints.funcCount , options, constraints);
     constraints.message = message;
     
     % save current optimization state
     if c < sum(constraints.criteriaBest(:)), 
-      constraints.criteriaBest=c(:)';
+      constraints.criteriaBest=c;
       constraints.parsBest    =pars;
     end
+    constraints.fevalDuration   = etime(clock, t); % time required to estimate the criteria
     constraints.criteriaPrevious= c;
     constraints.criteriaHistory = [ constraints.criteriaHistory ; sum(constraints.criteriaPrevious) ];
     constraints.parsPrevious    = pars;
-    constraints.parsHistory     = [ constraints.parsHistory ; pars(:)' ]; 
-    constraints.funcCounts      = constraints.funcCounts+1; 
+    constraints.parsHistory     = [ constraints.parsHistory ; pars ]; 
+    constraints.funcCount       = constraints.funcCount +1; 
     
     if exitflag
       error([ 'stop condition: ' message ]); % will end optimization in try/catch
@@ -522,45 +571,46 @@ return  % actual end of optimization
   
   % LMFsolve supports criteria as a vector of residuals, which sum is the criteria
   % but gradient is used to guide the optimizer
-  function c = objective_lm(fun, pars)
+  function c = inline_objective_lm(fun, pars)
   % criteria to minimize, with gradient support (approx)
-  
-    % apply constraints on pars first
-    pars                = apply_constraints(pars,constraints,options); % private function
     
-    pars=pars;
+    % apply constraints on pars first
+    pars                = inline_apply_constraints(pars,constraints,options); % private function
+
     % compute criteria
+    t = clock;
     c = feval(fun, pars); % function=row vector, pars=column
     if length(c) == 1,
       c = c*ones(1,10)/10;
     end
-    if size(c,1) > 1, c=c'; end
+    if length(c) > 1, c=c(:)'; end
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
     [exitflag, message] = fmin_private_check(pars, sum(abs(c)), ...
-       constraints.funcCounts, options, constraints);
+       constraints.funcCount , options, constraints);
     constraints.message = message;
     
     % save current optimization state
-    if sum(c(:)) < sum(constraints.criteriaBest(:)), 
-      constraints.criteriaBest=c(:)';
+    if sum(c) < sum(constraints.criteriaBest), 
+      constraints.criteriaBest=c;
       constraints.parsBest    =pars;
     end
-    constraints.criteriaPrevious= mean(c(:));
+    constraints.fevalDuration   = etime(clock, t); % time required to estimate the criteria
+    constraints.criteriaPrevious= sum(c);
     constraints.criteriaHistory = [ constraints.criteriaHistory ; constraints.criteriaPrevious ];
     constraints.parsPrevious    = pars;
-    constraints.parsHistory     = [ constraints.parsHistory ; pars(:)' ]; 
-    constraints.funcCounts      = constraints.funcCounts+1; 
+    constraints.parsHistory     = [ constraints.parsHistory ; pars ]; 
+    constraints.funcCount       = constraints.funcCount +1; 
     
     if exitflag
       error([ 'stop condition: ' message ]); % will end optimization in try/catch
     end
   end
 
-end % optimizer core end
+end % fmin_private_wrapper optimizer core end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function constraints = constraints_minmax(pars, constraints)
+function constraints = inline_constraints_minmax(pars, constraints)
 % define default min max in constraints, needed by bounded optimizers
   if ~isfield(constraints, 'min')
     constraints.min = -2*abs(pars); % default min values
@@ -572,10 +622,10 @@ function constraints = constraints_minmax(pars, constraints)
     index=find(pars == 0);
     constraints.max(index) = 1;
   end
-end
+end % inline_constraints_minmax
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [pars,exitflag,message] = apply_constraints(pars, constraints,options)
+function [pars,exitflag,message] = inline_apply_constraints(pars, constraints,options)
   % take into account constraints on parameters, and perform stop condition checks
   exitflag=0;
   message='';
@@ -601,11 +651,11 @@ function [pars,exitflag,message] = apply_constraints(pars, constraints,options)
       end
     end
   end
-  pars=pars';
-end
+  pars=pars(:)';
+end % inline_apply_constraints
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function strfcn = localChar(fcn)
+function strfcn = inline_localChar(fcn)
 % Convert the fcn to a string for printing
 
   if ischar(fcn)
@@ -622,10 +672,10 @@ function strfcn = localChar(fcn)
       end
   end
 
-end
+end % inline_localChar
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function fmin_private_disp(options, funccount, fun, pars, fval)
+function inline_disp(options, funccount, fun, pars, fval)
 % function called during minimization procedure
 %
 % Displays iteration information every 5 steps, then 10 steps, then 100 steps
@@ -642,11 +692,15 @@ function fmin_private_disp(options, funccount, fun, pars, fval)
       spars=pars(1:min(20,length(pars)));
       spars=mat2str(spars', 4);  % as a row
       if length(spars) > 50, spars=[ spars(1:47) ' ...' ]; end
-      disp(sprintf(' %5.0f    %12.6g   %s', abs(funccount), fval, spars));
+      if isfinite(funccount) && isfinite(fval)
+        disp(sprintf(' %5.0f    %12.6g          %s', abs(funccount), sum(fval), spars));
+      else
+        disp(sprintf('                                %s', spars));
+      end
     end
   end
   
-end
+end % inline_disp
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [istop, message] = fmin_private_check(pars, fval, funccount, options, constraints)
@@ -778,22 +832,78 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
     if istop
       funccount = -funccount; % trigger iteration display
     end
-    fmin_private_disp(options,  funccount, options.optimizer, pars, fval);
+    inline_disp(options,  funccount, options.optimizer, pars, fval);
   end
-  
-% return code     message
-%  0                Algorithm terminated normally
-% -1                Termination function tolerance criteria reached
-% -2                Maximum number of iterations reached
-% -3                Maximum number of function evaluations reached
-% -4                Function value is Inf or Nan
-% -5                Termination parameter tolerance criteria reached
-% -6                Algorithm was terminated by the output function
-% -7                Maximum consecutive rejections exceeded (anneal)
-% -8                Minimum temperature reached (anneal)
-% -9                Global Simplex convergence reached (simplex)
-% -10               Optimization terminated: Stall Flights Limit reached (swarm)
-% -11               Other termination status (cmaes/Ralg)
-% -12               Termination function change tolerance criteria reached
 
-end
+end % fmin_private_check
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [dp,covp,corp] = inline_estimate_uncertainty(fun, pars, options)
+% [dp,covp,corp] = inline_estimate_uncertainty(fun, pars, options)
+% 
+% Estimates the uncertainty around an optimization solution using
+% the error matrix from the criteria jacobian inversion.
+% 
+% Calling:
+%   [p,c,e,o]  = fminpso(fun, p0);
+%   dp = o.parsHessianUncertainty;
+%
+% Input:
+%  FUN is a function handle (anonymous function or inline) with a loss
+%  function, which may be of any type, and needn't be continuous. It does,
+%  however, need to return a single value.
+%
+%  PARS is a vector with initial guess parameters. You must input an
+%  initial guess.
+%
+%  OPTIONS is a structure with settings for the simulated annealing, 
+%  compliant with optimset. Default options may be obtained with
+%     o=fmin_private_wrapper(optimizer,'defaults')
+%
+% Output:
+%  DP is the gaussian uncertainty around PARS
+%  COVP is the error matrix 
+%  CORP is the correlation matrix
+
+
+  n=length(pars);
+  if nargin < 3, options=[]; end
+  if isfield(options,'TolX') TolX = options.TolX; 
+  else TolX = 0; end
+
+  % initialize the curvature matrix alpha = '1/2 d2 Chi2/dpi/dpj' (half Hessian)
+  alpha= zeros(n);
+  dp   = zeros(size(pars));
+  chisq= sum(feval(fun, pars));
+  if TolX <= 0, 
+    TolX = 0.01*pars;
+  end
+  if length(TolX) == 1
+    dp   = TolX*ones(size(pars));
+  else
+    dp   = TolX;
+  end
+
+  % we now build the error matrix 'alpha'
+  for i=1:n
+    p    = pars; p(i) = p(i)+dp(i); chi1 = sum(feval(fun, p));
+    p    = pars; p(i) = p(i)-dp(i); chi2 = sum(feval(fun, p));
+    alpha(i,i) = (chi1-2*chisq+chi2)/2/dp(i)/dp(i); % diagonal terms
+    
+    for j=i+1:n
+      p=pars; p(i)=p(i)+dp(i); p(j)=p(j)+dp(j); chi1=sum(feval(fun,p));
+      p=pars; p(i)=p(i)+dp(i); p(j)=p(j)-dp(j); chi2=sum(feval(fun,p));
+      p=pars; p(i)=p(i)-dp(i); p(j)=p(j)+dp(j); chi3=sum(feval(fun,p));
+      p=pars; p(i)=p(i)-dp(i); p(j)=p(j)-dp(j); chi4=sum(feval(fun,p));
+      alpha(i,j)=(chi1-chi2-chi3+chi4)/8/dp(i)/dp(j);
+      alpha(j,i)=alpha(i,j); % off diagonal terms (symmetric)
+    end
+  end
+
+  alpha = alpha/chisq;      % normalized error matrix
+  covp  = inv(alpha);       % COV MATRIX
+  dp    = sqrt(abs(diag(covp))); % uncertainty on parameters
+  corp  = covp./(dp*dp');   % correlation matrix
+  
+end % inline_estimate_uncertainty
+

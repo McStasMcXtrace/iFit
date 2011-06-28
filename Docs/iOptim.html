@@ -9,13 +9,14 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: optimization methods (iOptim)</title>
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: iOptim Optimization methods</h1>
 <br>
 <ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId819006">Description of the optimization process and
-general syntax</a><ol><li><a href="#mozTocId967127">Optimizers syntax</a></li></ol></li><li><a href="#mozTocId839813">Recommended optimizers</a><ol><li><a href="#mozTocId65177">In short, for continuous problems: Powell (fminpowell)
+general syntax</a><ol><li><a href="#mozTocId967127">Optimizers syntax</a></li><li><a href="#mozTocId228403">Optimization quality</a></li></ol></li><li><a href="#mozTocId839813">Recommended optimizers</a><ol><li><a href="#mozTocId65177">In short, for continuous problems: Powell (fminpowell)
 </a></li><li><a href="#mozTocId266115">In short, for noisy problems: Particle Swarm
 Optimization (fminpso)</a></li></ol></li><li><a href="#mozTocId610281">List of optimizer
 implemented in iFit/iOptim</a></li><li><a href="#mozTocId882538">Benchmarking Optimization methods</a><ol><li><a href="#mozTocId69972">Swarm and Genetic
@@ -142,10 +143,23 @@ which details the final state of the optimizer (char)<br>
 function evaluations performed during the minimization (double)</li>
   <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">iterations: </span>Number of
 iterations performed during the minimization (double)</li>
+</ul>as well as the other useful fields:<br>
+<ul>
+  <li><span style="font-style: italic;">output.parsBest: </span>best optimized parameter<span style="font-style: italic;"></span></li>
+  <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">parsHistory: </span>Parameter
+set history during optimization (double array)</li>
+  <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">criteriaHistory: </span>Criteria
+history during optimization (double vector/array)</li>
+  <li><span style="font-style: italic;">output.parsHistoryUncertainty: </span>uncertainty on optimized parameters (half-width) obtained from the optimization history (vector)</li>
+  <li><span style="font-style: italic;">output.parsHessianUncertainty: </span>uncertainty on optimized parameters (half-width) obtained from the Hessian matrix, which is extremely sensitive to noise. Prefer the <span style="font-style: italic;">output.parsHistoryUncertainty</span> value (vector)</li>
+  <li><span style="font-style: italic;">output.parsHessianCovariance:</span> Covariance matrix at the optimized solution (which diagonal is the parameter variance)</li>
+  <li><span style="font-style: italic;">output.parsHessianCorrelation:</span> Correlation matrix at the optimized solution (off-diagonal values larger that 0.7 indicate cross-correlated parameters)<br>
+  </li>
 </ul>
-In <span style="font-style: italic;">all</span> cases, the optimizer
-can handle <a href="#mozTocId95530"><span style="font-style: italic; font-weight: bold;">constraints,
-</span></a>specified
+
+In <span style="font-style: italic;">all</span> supplied <span style="font-style: italic;">iOptim</span> optimizers cases, the optimizer
+can handle <a href="#mozTocId95530"><span style="font-style: italic; font-weight: bold;">constraints</span></a><span style="font-style: italic; font-weight: bold;">,
+</span>specified
 as
 a
 4th input argument. These are often lower and upper bounds. Refer
@@ -170,6 +184,52 @@ optimization process.<br>
 The iData <a href="Fit.html"><span style="font-style: italic; font-weight: bold;">fits</span></a>
 method is a wrapper to any of the <span style="font-style: italic;">iOptim</span>
 optimizers, with a specified fit criteria.<br>
+<h4><a class="mozTocH4" name="mozTocId228403"></a>Optimization quality</h4>
+An optimization procedure is associated to a criteria minimization. Once a
+local/global minimum has been found, the best found model parameters
+are returned. However, any optimization result is located in an
+uncertainty volume in which a small change of the parameters do not
+produce a change of the criteria larger than the tolerance used during
+the optimization procedure (<span style="font-style: italic;">options.TolX</span> and <span style="font-style: italic;">options.TolFun</span>). <br>
+
+<br>
+
+In practice, if we assume the criteria and parameter distributions
+around the minimum to be roughly Gaussians, we may estimate the
+parameter change when the minimized criteria value is doubled (that is
+extended by its <span style="font-style: italic;">'half-width'</span>) :<br>
+
+<br>
+
+<div style="text-align: center;">{<span style="font-style: italic;"> &#916;p</span> so that <span style="font-style: italic;">&#967;&sup2;(p) &lt; 2*min(&#967;&sup2;) </span>}<br>
+</div>
+
+<br>
+
+This may be obtained from the optimization history, and the result is stored in <span style="font-style: italic;">output.parsHistoryUncertainty</span>. where we use a Gaussian weighting for the parameter sets around the criteria value:<br>
+
+<br>
+
+<div style="text-align: center;">exp[ - <span style="font-style: italic;">(&#967;&sup2;(p)-</span><span style="font-style: italic;">min(&#967;&sup2;)</span>)<span style="font-style: italic;">&sup2;/8/</span><span style="font-style: italic;">min(&#967;&sup2;)</span><span style="font-style: italic;">&sup2; </span>]<br>
+</div>
+
+<br>
+
+Alternatively, if we consider the local criteria hyper-surface to be
+approximated by a quadratic, then the error bar is twice the inverse of
+the Hessian matrix at the optimized solution (which is the criteria
+curvature - very sensitive to noise):<br>
+
+<br>
+
+<div style="text-align: center;"><span style="font-style: italic;">&#916;p &#8764; </span>&#8730;[<span style="font-style: italic;"> 2 ||&#8706;</span><span style="font-style: italic;">&sup2;</span><span style="font-style: italic;">&#967;&sup2; / </span><span style="font-style: italic;"></span><span style="font-style: italic;">&#8706;p<sub>i</sub></span><span style="font-style: italic;">&#8706;p<sub>j</sub></span> <span style="font-style: italic;">||<sup>-1</sup> </span>]<br>
+<span style="font-style: italic;"></span></div>
+
+<span style="font-style: italic;"><br>
+</span>This value is computed and stored in <span style="font-style: italic;">output.parsHessianUncertainty</span>, and the corresponding error matrix (covariance) is stored in <span style="font-style: italic;">output.parsHessianCovariance </span>(its
+diagonal square root is the projected parameter uncertainty). This step
+is only performed when the Hessian matrix requires less than about a
+minute to compute. Additionally, the <span style="font-style: italic;">output.parsHessianCorrelation</span> indicates the cross-correlations between parameters (off-diagonal values larger that 0.7 indicate cross-correlated parameters).
 <h3><a class="mozTocH4" name="mozTocId839813"></a>Recommended optimizers</h3>
 <h4><a class="mozTocH4" name="mozTocId65177"></a>In short, for continuous problems: <span style="font-style: italic;">Powell (fminpowell)</span><br>
 </h4>
@@ -184,11 +244,12 @@ methods</span> are the Shor R-algoritm (<span style="font-weight: bold;">fminral
 
     <span style="font-style: italic;">does
 not work
-for one parameter</span>) and the Newton method<span style="font-weight: bold;"> (fminnewton)</span>. The Powell method is also a good choice <span style="font-weight: bold;">(fminpowell).<br>
-    </span></li><li><span style="color: rgb(51, 204, 0); font-style: italic;">The most efficient methods</span>
+for one parameter</span>) and the Newton method<span style="font-weight: bold;"> (fminnewton)</span>. The Powell method is also a good choice <span style="font-weight: bold;">(fminpowell). </span>The Levenberg-Marquadt <span style="font-weight: bold;">(fminlm)</span> is very effective when the criteria is a vector.</li>
+  <li><span style="font-style: italic;"></span><span style="color: rgb(51, 204, 0); font-style: italic;">The most efficient methods</span>
 are the Swarm<span style="font-weight: bold;"> (fminpso)
     </span>and the Powell method with local Coggins line search <span style="font-weight: bold;">(fmipowell). <br>
 </span></li>
+
 </ul>
 The <span style="font-style: italic;">Table 1a</span> and <span style="font-style: italic;">Figure 1a</span> present a
 selection of the 'best' optimization methods for continuous functions (non noisy problems). For each of them, we
@@ -449,23 +510,23 @@ The <span style="font-weight: bold;">list of all available optimizer methods</sp
 	<col width="76">
 	<col width="108">
 	<tbody><tr>
-		<td style="text-align: center;" width="115" bgcolor="#ffcccc">
+		<td style="text-align: center;" bgcolor="#ffcccc" width="115">
 			<p><font color="#3366ff"><i><b>Function Name</b></i></font>
 			</p>
 		</td>
-		<td style="text-align: center;" width="243" bgcolor="#ffcccc">
+		<td style="text-align: center;" bgcolor="#ffcccc" width="243">
 			<p><font color="#3366ff"><i><b>Description</b></i></font></p>
 		</td>
-		<td style="text-align: center;" width="83" bgcolor="#ffcccc">
+		<td style="text-align: center;" bgcolor="#ffcccc" width="83">
 			<p><font color="#3366ff"><i><b>Efficiency<br>(continuous)
 			[%]</b></i></font>
 			</p>
 		</td>
-		<td style="text-align: center;" width="76" bgcolor="#ffcccc">
+		<td style="text-align: center;" bgcolor="#ffcccc" width="76">
 			<p><font color="#3366ff"><i><b>Efficiency<br>(noisy) [%]</b></i></font>
 			</p>
 		</td>
-		<td style="text-align: center;" width="108" bgcolor="#ffcccc">
+		<td style="text-align: center;" bgcolor="#ffcccc" width="108">
 			<p><font color="#3366ff"><i><b>Comments</b></i></font></p>
 		</td>
 	</tr>
@@ -918,7 +979,7 @@ minima. They are notoriously inefficient with noisy data. <br>
 Maquardt-Levenberg method <span style="font-style: italic; font-weight: bold;">fminlm</span>
 is designed for objective functions/criteria as vectors. Its efficiency
 is then highly improved. However, its memory requirements and execution
-time are significantly higher than other methods.<br>
+time for large dimensionalities are significantly higher than other methods.<br>
 <br>
 </div>
 <div style="text-align: left;">Among these methods, we provide two
@@ -1169,7 +1230,7 @@ Sao Jose do Rio Preto, SP, pp. 49-52 (1989).<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span style="font-style: italic;">
-$Date: 2011-06-13 07:19:29 $ $Revision: 1.15 $
+$Date: 2011-06-28 19:51:03 $ $Revision: 1.16 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>

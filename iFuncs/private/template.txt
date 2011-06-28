@@ -1,5 +1,5 @@
 function signal=$FUN(p, $AXES, signal)
-% signal = $FUN(p, $AXES) : $DESCR
+% signal = $FUN(p, $AXES, {signal}) : $DESCR
 %
 %   iFunc/$FUN $DESCR (fit $DIMD function/model)
 %   the function called with a char argument performs specific actions.
@@ -9,10 +9,10 @@ function signal=$FUN(p, $AXES, signal)
 %          or action e.g. 'identify', 'guess', 'plot' (char)
 %         x: axis (double)
 %    signal: when values are given, a guess of the parameters is performed (double)
-% output: signal: model value or information structure ('guess', 'identify')
+% output: signal: model value or information structure ('guess', 'identify','plot')
 % ex:     signal=$FUN([1 0 1 1], -10:10); or signal=$FUN('identify') or p=$FUN('guess',x,signal);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, ifitmakefunc
 
 % $DIMD function created by ifitmakefunc from template (iFit/iFuncs)
@@ -89,7 +89,7 @@ function signal = evaluate(p, x)
   if isempty(x) | isempty(p), signal=[]; return; end
   
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  signal = $EXPR;
+  $EXPR;
   
   signal = reshape(signal, sx);
 end
