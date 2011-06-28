@@ -1,5 +1,5 @@
-function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars)
-% fhandle = ifitmakefunc(fun, descr, pars, expr, defpars) : build a fit function/model
+function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
+% fhandle = ifitmakefunc(fun, descr, pars, expr, defpars, constraint) : build a fit function/model
 %
 %   iFit/ifitmakefunc fit function/model builder.
 %     when input parameters are missing, a dialog pops-up to request the information
@@ -12,6 +12,7 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars)
 %       fun.Parameters:  the parameter names as words separated with spaces
 %       fun.Guess:       the default parameters, or 'automatic'
 %       fun.Expression:  the expression of the function value
+%       fun.Constraint:  the expression executed before the function evaluation
 %     to make the new function permanent, copy it into [ ifitpath '/iFuncs' ]
 %     The list of all available function can be obtained with the 'fits(iData)' 
 %
@@ -20,10 +21,12 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars)
 %         PARS:    name of parameters, as a single string of words 'a b c ...'
 %         EXPR:    expression of the function value, using 'p' vector as parameter values
 %         DEFPARS: default parameter values (guess, optional, leave empty for automatic guess)
+%         CONSTRAINT: expression to execute before the function evaluation
+%           which may contain any parameter constraints such as 'p(1)=p(5)'
 %
 % output: fhandle: function handle to the new function, which is also stored locally
 % 
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, gauss
 
 fhandle = [];
@@ -48,6 +51,7 @@ elseif nargin == 1 && ~isvarname(fun)
   descr  = '';
   pars   = '';
   defPars= '';
+  constraint='';
 else
   % general case: handle incomplete input and pops-up dialog
   if nargin == 1 && isstruct(fun)
@@ -59,8 +63,10 @@ else
     elseif isfield(fun, 'Parameters'),  pars=fun.Parameters; end
     if isfield(fun, 'Name'),            descr=fun.Name; 
     elseif isfield(fun, 'Description'), descr=fun.Description; end
+    if isfield(fun, 'Constraint'),      constraint=fun.Constraint; end
     if isfield(fun, 'function'),        fun=fun.function; fun=[]; fun=tmp; end
   else
+    if nargin < 6,  constraint=''; end
     if nargin < 5,  defPars='automatic'; end
     if nargin < 4,  expr = 'p(1)*exp(-0.5*((x-p(2))/p(3)).^2) + p(4)'; end
     if nargin < 3   pars = 'Amplitude Centre HalfWidth Background'; end
@@ -74,10 +80,11 @@ else
                   [ '{\bf Description of the fit model}' NL '(a character string, optional)' ], ...
                   [ '{\bf Model parameters names}' NL '(single names separated by spaces, optional)' ], ...
                   [ '{\bf Value of the function {\color{red} required}}' NL '(expression using parameters from vector {\color{blue} p(1), p(2)}, ... and axes {\color{blue} x, y, z, t}, ...)' ], ...
-                  [ '{\bf Default parameter values}' NL '(vector,  e.g [1 2 ...], leave empty to use automatic guess)' ]};
+                  [ '{\bf Default parameter values}' NL '(vector,  e.g [1 2 ...], leave empty to use automatic guess)' ], ...
+                  [ '{\bf Constraint}' NL '(any expresion executed before the function value, optional)' ]};
     dlg_title = 'iFit: Make fit function';
-    num_lines = [ 1 3 1 3 1]';
-    defAns    = {fun, descr, pars, expr, defPars};
+    num_lines = [ 1 3 1 3 1 3]';
+    defAns    = {fun, descr, pars, expr, defPars, constraint};
     options.Resize      = 'on';
     options.WindowStyle = 'normal';   
     options.Interpreter = 'tex';
@@ -91,6 +98,7 @@ else
     pars  = answer{3};
     expr  = answer{4};
     defPars=answer{5};
+    constraint=answer{6};
   end % nargin < 4
 end % else 
 
@@ -110,10 +118,21 @@ if ~isempty(expr)
   % we look if this is really a p(n) syntax
   n = [];
   for index=1:length(nb_pars)
-    s = sscanf(expr((nb_pars(index)+2):end), '%d)');
-    if length(s) >= 1 ...
-      && (nb_pars(index) == 1 || ~isstrprop(expr(nb_pars(index)-1),'alpha')), 
-      n=[n s(1)]; 
+    if nb_pars(index)>2 && isstrprop(expr(nb_pars(index)-1),'alpha'), 
+      continue; 
+    end
+    token          = expr((nb_pars(index)+2):end);
+    closing_parent = strfind(token, ')');
+    if isempty(closing_parent), closing_parent=length(token)+1; end
+    
+    token(1:(closing_parent-1))
+    try
+    s = eval(token(1:(closing_parent-1)));
+    catch
+    s=[];
+    end
+    if length(s) >= 1 ... 
+      n=[n s]; 
     end
   end
   if ~isempty(n), nb_pars = max(n);
@@ -220,7 +239,11 @@ fclose(fid);
 template = strrep(template, '$FUN',   fun);
 template = strrep(template, '$DESCR', [ descr ' [' fun ']' ]);
 template = strrep(template, '$PARS',  pars);
-template = strrep(template, '$EXPR',  expr);
+if ~isempty(constraint)
+  template = strrep(template, '$EXPR',  [ constraint ';' NL 'signal = ' expr ]);
+else
+  template = strrep(template, '$EXPR',  [ 'signal = ' expr ]);
+end
 template = strrep(template, '$DIM',   num2str(dim));
 ax = '';
 if dim==1, ax = [ ax   'x' ]; end
@@ -260,9 +283,16 @@ end
 fwrite(fid, template, 'char');
 fclose(fid);
 
-fprintf(1, [ '%s: Wrote function %s(p, %s)\n%% %s\n%% %d parameter(s): %s\n  y=%s;\n\n' ], ...
-  mfilename, fun, ax, descr, nb_pars, pars, expr);
-which([ fun '.m' ]); % force to rehash/register the function
+% display information and force to rehash/register the function
+fprintf(1, [ '%s: Wrote function signal=%s(p, %s)\n'...
+  '%% %s\n%% %d parameter(s): %s\n' ], ...
+  mfilename, fun, ax, descr, nb_pars, ...
+  pars);
+if ~isempty(constraint)
+  fprintf(1, '  %s;\n' ], constraint);
+end
+% display information and force to rehash/register the function
+fprintf(1, '  signal=%s;\n\nStored in: %s\n', expr, which([ fun '.m' ]));
 
 % create the handle
 fhandle = str2func(fun);
