@@ -1,4 +1,4 @@
-Version: $Revision: 1.10 $  
+Version: $Revision: 1.11 $  
 
 All functions here are meant to minimize an objective scalar function (usually 
 down to zero). The general syntax is the same as the one of fminsearch, 
@@ -65,4 +65,20 @@ sce by Brecht Donckels, BIOMATH, brecht.donckels@ugent.be 2006
   modified to use standard Matlab optimization fminsearch syntax and options
 LMFsolve by Miroslav Balda, balda AT cdm DOT cas DOT cz 2009
   used in fminlm
-  
+  modified to use standard Matlab optimization fminsearch syntax and options
+anneal by Joachim Vandekerckhove, 2006
+  use in fminanneal
+  modified to use standard Matlab optimization fminsearch syntax and options
+bfgswopt by Kelley, 1998, Iterative Methods for Optimization, SIAM Frontier in Applied Mathematics 18
+  used in fminbfgs
+  modified to use standard Matlab optimization fminsearch syntax and options
+ntrust by Kelley, 1998, Iterative Methods for Optimization, SIAM Frontier in Applied Mathematics 18
+  used in fminnewton
+  modified to use standard Matlab optimization fminsearch syntax and options
+ukfopt by Yi Cao at Cranfield University, 08 January 2008
+  used in fminkalman
+  modified to use standard Matlab optimization fminsearch syntax and options
+buscarnd by Argimiro R. Secchi (arge@enq.ufrgs.br) and Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
+  used in fminrand
+  modified to use standard Matlab optimization fminsearch syntax and options
+ 

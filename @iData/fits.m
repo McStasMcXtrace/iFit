@@ -67,11 +67,10 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
-% nested  functions: eval_criteria
-% private functions: least_square, fits_constraints
+% private functions: eval_criteria, least_square
  
 % handle default parameters, if missing
 if nargin == 1
@@ -208,7 +207,7 @@ end
 
 if ~isfield(options,'Display') options.Display=''; end
 if ~isfield(options,'algorithm') options.algorithm=options.optimizer; end
-if isempty(options.Display)    options.Display='notify'; end
+if isempty(options.Display)    options.Display=''; end
 
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
 constraints.parsStart      = pars;
@@ -218,17 +217,17 @@ constraints.criteriaHistory= [];
 constraints.modelName      = info.Name;
 constraints.algorithm      = options.algorithm;
 constraints.optimizer      = options.optimizer;
-constraints.funcCounts     = 0;
+constraints.funcCount      = 0;
+
+if isempty(options.Display)    options.Display='notify'; end
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
   disp([ '** Starting fit of ' a.Tag ' using model ' info.Name ' with optimizer ' options.algorithm ]);
   disp(char(a))
   disp(  '** Minimization performed on parameters:');
-  disp(info.Parameters(:)');
-  disp(pars(:)');
+  for index=1:length(info.Parameters); fprintf(1,'%10s ', info.Parameters{index}); end; fprintf(1,'\n');
+  fprintf(1,'%10.2g ', pars); fprintf(1,'\n');
 end
-
-t0 = clock;
 
 % call minimizer ===============================================================
 try
@@ -236,7 +235,7 @@ try
     @(pars) eval_criteria(pars, model, options.criteria, a), pars, options, constraints);
 catch
   if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
-    disp([ '** Constraints not supported by optimizer ' options.optimizer ])
+    disp([ '** ' mfilename ': Error or Constraints not supported by optimizer ' options.optimizer ])
   end
   [pars_out,criteria,message,output] = feval(options.optimizer, ...
     @(pars) eval_criteria(pars, model, options.criteria, a), pars, options);
@@ -253,12 +252,22 @@ if nargout > 3
   output.modelInfo  = info;
   output.modelValue = ieval(a, model, pars_out); % evaluate model iData
   output.parsNames  = constraints.parsNames;
+  output.corrcoeff  = eval_corrcoef(a, output.modelValue);
 end
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
-  disp([ '** Ending fit of ' a.Tag ' using model ' info.Name ' with optimizer ' options.algorithm ]);
-  disp(info.Parameters(:)');
-  disp(pars_out(:)');
+  disp([ sprintf('\n') '** Ending fit of ' a.Tag ' using model ' info.Name ' with optimizer ' options.algorithm ]);
+  fprintf(1, '   %i iterations. Status: %s\n', output.funcCount, output.message);
+  for index=1:length(info.Parameters); fprintf(1,'%10s ', info.Parameters{index}); end; fprintf(1,'\n');
+  fprintf(1,'%10.2g ', pars_out); fprintf(1,'\n');
+  index=find(output.criteriaHistory < min(output.criteriaHistory)*4);   % identify tolerance region around optimum
+  if length(index) > 10
+    disp('** Gaussian uncertainty on parameters (half width, from the optimization history)')
+    fprintf(1,'%10.2g ', output.parsHistoryUncertainty); fprintf(1,'\n');
+  else
+    disp('** Gaussian uncertainty on parameters (half width, from the Hessian matrix)')
+    fprintf(1,'%10.2g ', output.parsHessianUncertainty); fprintf(1,'\n');
+  end
 end
 
 
@@ -270,35 +279,28 @@ catch
   warning(warn);
 end
 
-% ==============================================================================
-% Use a nested function as the criteria wrapper, to access 'constraints'
-  function c = eval_criteria(pars, model, criteria, a)
-  % criteria to minimize
-    
-    % then get data
-    Signal = iData_private_cleannaninf(get(a,'Signal'));
-    Error  = iData_private_cleannaninf(get(a,'Error'));
-    Model  = ieval(a, model, pars); % return signal=model values*monitor and monitor
-    Model  = iData_private_cleannaninf(get(Model, 'Signal'));
-    m      = iData_private_cleannaninf(get(a,'Monitor')); m=real(m);
-    if not(all(m == 1 | m == 0)),
-      Model  = genop(@rdivide,Model,m);            % fit(signal/monitor) 
-      Signal = genop(@rdivide,Signal,m); Error=genop(@rdivide,Error,m); % per monitor
-    end
-    
-    % compute criteria
-    c = feval(criteria, Signal(:), Error(:), Model(:));
-    
-    % save current optimization state
-    constraints.criteriaHistory = [ constraints.criteriaHistory ; c ];
-    constraints.parsPrevious    = pars;
-    constraints.parsHistory     = [ constraints.parsHistory ; pars ]; 
-    constraints.funcCounts      = constraints.funcCounts+1; 
-  end
-  
 end % fits end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRIVATE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function c = eval_criteria(pars, model, criteria, a)
+% criteria to minimize
+  
+  % then get data
+  Signal = iData_private_cleannaninf(get(a,'Signal'));
+  Error  = iData_private_cleannaninf(get(a,'Error'));
+  Model  = ieval(a, model, pars); % return signal=model values*monitor and monitor
+  Model  = iData_private_cleannaninf(get(Model, 'Signal'));
+  m      = iData_private_cleannaninf(get(a,'Monitor')); m=real(m);
+  if not(all(m == 1 | m == 0)),
+    Model  = genop(@rdivide,Model,m);            % fit(signal/monitor) 
+    Signal = genop(@rdivide,Signal,m); Error=genop(@rdivide,Error,m); % per monitor
+  end
+  
+  % compute criteria
+  c = feval(criteria, Signal(:), Error(:), Model(:));
+  c = c/(prod(size(Signal)) - length(pars) - 1); % normalized 'Chi^2'
+end % eval_criteria
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function c=least_square(Signal, Error, Model)
@@ -309,7 +311,31 @@ function c=least_square(Signal, Error, Model)
     index = find(Error~=0 & ~isnan(Error) & ~isinf(Error));
     c=(Signal(index)-Model(index))./Error(index);
     c=abs(c);
-    c=sum(c.*c);                % Chi square
+    c=abs(c.*c);                % Chi square
   end
-end
+end % least_square
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function r=eval_corrcoef(a, modelValue)
+% correlation coefficient between the data and the model
+
+  Signal = iData_private_cleannaninf(get(a,'Signal'));
+  Error  = iData_private_cleannaninf(get(a,'Error'));
+  Model  = iData_private_cleannaninf(get(modelValue, 'Signal'));
+  m      = iData_private_cleannaninf(get(a,'Monitor')); m=real(m);
+  if not(all(m == 1 | m == 0)),
+    Model  = genop(@rdivide,Model,m);            % fit(signal/monitor) 
+    Signal = genop(@rdivide,Signal,m); Error=genop(@rdivide,Error,m); % per monitor
+  end
+  
+  % compute the correlation coefficient
+  if all(Error == 0)
+    wt = 1;
+  else
+    wt = 1./Error;
+    wt(find(~isfinite(wt))) = 0;
+  end
+  r  = corrcoef(Signal.*wt,Model.*wt);
+  r  = r(1,2);                                     % correlation coefficient
+end % eval_corrcoef
 

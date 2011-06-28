@@ -7,7 +7,7 @@ function a=double(a)
 % output: v: value of the iData Signal (double)
 % ex:     'double(iData(rand(10)))'
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also  iData/cell, iData/single, iData/struct, 
 %           iData/char, iData/size
 
@@ -23,5 +23,5 @@ if length(a) > 1
   return
 end
 
-a = get(a, 'Signal');
+a = getaxis(a, 'Signal');
 a = double(a);
