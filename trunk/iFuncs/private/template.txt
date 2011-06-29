@@ -12,7 +12,7 @@ function signal=$FUN(p, $AXES, signal)
 % output: signal: model value or information structure ('guess', 'identify','plot')
 % ex:     signal=$FUN([1 0 1 1], -10:10); or signal=$FUN('identify') or p=$FUN('guess',x,signal);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, ifitmakefunc
 
 % $DIMD function created by ifitmakefunc from template (iFit/iFuncs)
@@ -48,11 +48,11 @@ function signal=$FUN(p, $AXES, signal)
     parameter_names = lower(signal.Parameters);
     % HERE default axes to represent the model when parameters are given <<<<<<<
     % test parameter names
-    for indep_p=1:length(parameter_names)
+    for index_p=1:length(parameter_names)
       if  ~isempty(strfind(parameter_names{index_p}, 'width')) ...
         | ~isempty(strfind(parameter_names{index_p}, 'tau')) ...
         | ~isempty(strfind(parameter_names{index_p}, 'damping'))
-        width = sigma+abs(p(indep_p));                     % kind of embrace all peaks
+        width = width+abs(p(index_p));                     % kind of embrace all peaks
       elseif ~isempty(strfind(parameter_names{index_p}, 'centre')) ...
         |    ~isempty(strfind(parameter_names{index_p}, 'center')) ...
         |    ~isempty(strfind(parameter_names{index_p}, 'position'))
@@ -72,7 +72,7 @@ function signal=$FUN(p, $AXES, signal)
     elseif signal.Dimension == 2
       surf(signal.Axes{1}, signal.Axes{2}, signal.Values);
     end
-    title(mfilename)
+    title(mfilename);
   elseif nargin == 0
     signal = feval(mfilename, [], linspace(-2,2, 100));
   else
