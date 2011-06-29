@@ -3,6 +3,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -143,7 +144,7 @@ Each function/model can be used in the following ways (for instance model may be
 
 
 </h3>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData)</span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData);</span></pre>
 <h3><a class="mozTocH3" name="mozTocId210092"></a><span style="font-weight: bold;">Model builder: making a model easy<br>
 </span></h3>
 
@@ -151,10 +152,11 @@ Each function/model can be used in the following ways (for instance model may be
 The <span style="font-style: italic;">ifitmakefunc</span> tool enables to define a new fit function/model from a simple dialog, by entering its <a href="images/ifitmakefunc.png"><img title="ifitmakefunc" src="images/ifitmakefunc.png" alt="ifitmakefunc" style="border: 0px solid ; width: 150px; height: 137px;" align="right"></a>expression as a function of the parameter vector <span style="font-style: italic; font-weight: bold;">p</span> and the axes <span style="font-style: italic; font-weight: bold;">x,y,z</span>,...<br>
 
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc;</span></pre>
-
 The only required argument is the expression, but you may as well&nbsp;
 enter a function name and description, parameter names and default
-values. When started without any parameters, the Gaussian function
+values, as well as a constraint to be evaluated before computing the
+function value. When started without any parameters, the Gaussian
+function
 settings are used.<br>
 
 <br>
@@ -168,18 +170,29 @@ A quick definition, without using the dialog, can be performed with the syntax:<
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);</span></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);<br></pre>
 
 
-and, for a more detailed description:<br>
+where&nbsp; <span style="font-weight: bold; font-style: italic;">p</span> is the vector that holds parameters. Axes are<span style="font-weight: bold; font-style: italic;"> x,y,z,t</span>. <br>
+The full syntax for the model builder is:<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">('function_name', 'description', 'Parameter1 Parameter2 ...', ...<br>	<span style="color: rgb(204, 51, 204);">'expression'<span style="color: rgb(0, 0, 0);">, </span></span>[default parameter values]);<br></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">('function_name', 'description', 'Parameter1 Parameter2 ...', ...<br>	<span style="color: rgb(204, 51, 204);">'expression'<span style="color: rgb(0, 0, 0);">, </span></span>[default parameter values], <span style="color: rgb(204, 51, 204);">'constraint'</span>);<br></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
 
 which is equivalent to:<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; fun.function='function_name';			% function name<br>&gt;&gt; fun.Description='function description';		% function long description<br>&gt;&gt; fun.Parameters='Paramater1 Parameter2 ...';		% parameter names<br>&gt;&gt; fun.Guess=[0 1 2 ...] or 'automatic';		% parameter default values, or automatic mode<br>&gt;&gt; fun.Expression='expression using p and x,y,z,t...';	% value of the model<br>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(fun);<br>&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);<span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
-The resulting function has the ability to identify itself (provide
-detailed informations), compute automatic starting parameters, display
-itself, and evaluate its values of course.The resulting function embeds the automatic guess functionality (<span style="font-style: italic;">iFuncs_private_guess</span>),
-and thus can be stored anywehere in the Matlab search path, but should
-better be in the iFit/iFuncs directory so that it apperas in the <span style="font-style: italic;">fits(iData)</span> function list.<br>
+<pre style="margin-left: 40px;">&gt;&gt; fun.function=<span style="color: rgb(204, 51, 204);">'function_name'</span>;			<span style="font-style: italic;">% function name</span><br>&gt;&gt; fun.Description=<span style="color: rgb(204, 51, 204);">'function description'</span>;		<span style="font-style: italic;">% function long description</span><br style="font-style: italic;">&gt;&gt; fun.Parameters=<span style="color: rgb(204, 51, 204);">'Parameter1 Parameter2 ...'</span>;		<span style="font-style: italic;">% parameter names</span>. When empty, names are given according to the Expression analysis (when appropriate)<br>&gt;&gt; fun.Guess=[0 1 2 ...] or <span style="color: rgb(204, 51, 204);">'automatic'</span>;		<span style="font-style: italic;">% parameter default values (vector), or automatic mode</span><br>&gt;&gt; fun.Expression=<span style="color: rgb(204, 51, 204); font-style: italic;">'expression using p and x,y,z,t...'</span>;	<span style="font-style: italic;">% value of the model</span> (required). p is the vector that holds parameters. Axes are x,y,z,t.<br>&gt;&gt; fun.Constraint=<span style="color: rgb(204, 51, 204);">'evaluated before Expression'</span>;	<span style="font-style: italic;">% constraint evaluated prior to the model Expression</span><br>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(fun);<br>&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);<span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
+The resulting function has the ability to identify itself (<span style="color: rgb(204, 51, 204);">'identify'</span>, provide
+detailed informations), compute automatic starting parameters (<span style="color: rgb(204, 51, 204);">'guess'</span>), display
+itself (<span style="color: rgb(204, 51, 204);">'plot'</span>), and evaluate its value of course. The resulting function embeds the automatic guess functionality (<span style="font-style: italic;">iFuncs_private_guess</span>),
+and thus can be stored anywhere in the Matlab search path, but should
+better be in the iFit/iFuncs directory so that it appears in the <span style="font-style: italic;">fits(iData)</span> function list.<br>
+<br>
+To <span style="font-weight: bold;">assemble existing functions</span> into new ones, you may use <span style="font-style: italic;">e.g.</span>:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'gausslorz'</span>, <span style="color: rgb(204, 51, 204);">...<br>  'Gaussian+Lorentzian function'</span>, ...<br>  <span style="color: rgb(204, 51, 204);">'Amplitude1 Centre1 HalfWidth1 Background1 </span></span></span><span style="color: rgb(204, 51, 204);">Amplitude2 Centre2 HalfWidth2 Background2'</span>, ...<br>  <span style="color: rgb(204, 51, 204);">'<span style="color: rgb(51, 102, 255);">gauss</span>(p(1:4),x)+<span style="color: rgb(51, 102, 255);">lorz</span>(p(5:8),x)'</span>, ...<br>  <span style="color: rgb(204, 51, 204);">'automatic</span>', <span style="color: rgb(204, 51, 204);">'p(8)=0'</span>);<br><br>ifitmakefunc: Wrote function signal=gausslorz(p, x)<br>% Gaussian+Lorentzian function<br>% 8 parameter(s):  'Amplitude1' 'Centre1' 'HalfWidth1' 'Background1' 'Amplitude2' 'Centre2' 'HalfWidth2' 'Background2'<br>  p(8)=0;<br>  signal=gauss(p(1:4),x)+lorz(p(5:8),x);<br><br>Stored in: /home/farhi/gausslorz.m<br></pre>
+which creates a new function which is the sum of a Gaussian and a
+Lorentzian. The second redundant Lorentzian Background p(8) parameter
+is forced to 0 so that it does not correlate with the Gaussian
+Background p(4). The function has all the features listed above
+(plot/identify/guess).<br>
+<br>
+
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
 
 <h3><a class="mozTocH3" name="mozTocId854762"></a><span style="font-weight: bold;">How to write manually a model function</span></h3>
@@ -191,7 +204,7 @@ proper execution. Store the new function in iFit/iFuncs so that it can access th
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2011-06-13 07:19:29 $ $Revision: 1.8 $
+$Date: 2011-06-29 09:08:23 $ $Revision: 1.9 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

@@ -13,7 +13,7 @@ function y=gauss(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=gauss([1 0 1 1], -10:10); or y=gauss('identify') or p=gauss('guess',x,y);
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -54,7 +54,7 @@ function y=gauss(p, x, y)
     elseif y.Dimension == 2
       surf(y.Axes{1}, y.Axes{2}, y.Values);
     end
-    title(mfilename)
+    title(mfilename);
   elseif nargin == 0
     y = feval(mfilename, [], linspace(-2,2, 100));
   else
