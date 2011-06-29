@@ -16,6 +16,8 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %     uses a specific optimizer and its default options.
 %  [optimizers,functions] = fits(iData)
 %     returns the list of all available optimizers and fit functions.
+%  fits(iData)
+%     displays the list of all available optimizers and fit functions.
 %  You may create new fit functions with the 'ifitmakefunc' tool.
 %
 % input:  a: object or array (iData)
@@ -67,7 +69,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -78,10 +80,12 @@ if nargin == 1
     % return the list of all available optimizers and fit functions
     output = {};
     pars_out   = {};
-    fprintf(1, '\n%s\n', version(iData));
-    
-    fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/iOptim');
-    fprintf(1, '-----------------------------------------------------------------\n'); 
+    if nargout == 0
+      fprintf(1, '\n%s\n', version(iData));
+      
+      fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/iOptim');
+      fprintf(1, '-----------------------------------------------------------------\n'); 
+    end
     d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'iOptim' ]);
     for index=1:length(d)
       this = d(index);
@@ -91,13 +95,17 @@ if nargin == 1
         if isstruct(options)
           output{end+1} = options;
           pars_out{end+1}   = method;
-          fprintf(1, '%15s %s\n', options.optimizer, options.algorithm);
+          if nargout == 0
+            fprintf(1, '%15s %s\n', options.optimizer, options.algorithm);
+          end
         end
       end
     end % for
-    fprintf(1, '\n');
-    fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', 'iFit/iFuncs');
-    fprintf(1, '-----------------------------------------------------------------\n'); 
+    if nargout == 0
+      fprintf(1, '\n');
+      fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', 'iFit/iFuncs');
+      fprintf(1, '-----------------------------------------------------------------\n'); 
+    end
     d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'iFuncs' ]);
     criteria = {}; 
     for index=1:length(d)
@@ -107,11 +115,36 @@ if nargin == 1
         options = feval(method,'identify');
         if isstruct(options)
           criteria{end+1}   = method;
-          fprintf(1, '%15s %s\n', method, options.Name);
+          if nargout == 0
+            fprintf(1, '%15s %s\n', method, options.Name);
+          end
         end
       end
     end % for
-    fprintf(1, '\n');
+    % local (pwd) functions
+    
+    message = '';
+    d = dir(pwd);
+    for index=1:length(d)
+      this = d(index);
+      try
+        [dummy, method] = fileparts(this.name);
+        options = feval(method,'identify');
+        if isstruct(options)
+          criteria{end+1}   = method;
+          if isempty(message)
+            fprintf(1, '\nLocal functions in: %s\n', pwd);
+            message = ' ';
+          end
+          if nargout == 0
+            fprintf(1, '%15s %s\n', method, options.Name);
+          end
+        end
+      end
+    end % for
+    if nargout == 0
+      fprintf(1, '\n');
+    end
     message = 'Optimizers and fit functions list'; 
     return
   end

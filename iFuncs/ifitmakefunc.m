@@ -26,7 +26,7 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %
 % output: fhandle: function handle to the new function, which is also stored locally
 % 
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, gauss
 
 fhandle = [];
@@ -81,9 +81,9 @@ else
                   [ '{\bf Model parameters names}' NL '(single names separated by spaces, optional)' ], ...
                   [ '{\bf Value of the function {\color{red} required}}' NL '(expression using parameters from vector {\color{blue} p(1), p(2)}, ... and axes {\color{blue} x, y, z, t}, ...)' ], ...
                   [ '{\bf Default parameter values}' NL '(vector,  e.g [1 2 ...], leave empty to use automatic guess)' ], ...
-                  [ '{\bf Constraint}' NL '(any expresion executed before the function value, optional)' ]};
+                  [ '{\bf Constraint}' NL '(any expresion executed before the function Value, optional)' ]};
     dlg_title = 'iFit: Make fit function';
-    num_lines = [ 1 3 1 3 1 3]';
+    num_lines = [ 1 1 1 3 1 3]';
     defAns    = {fun, descr, pars, expr, defPars, constraint};
     options.Resize      = 'on';
     options.WindowStyle = 'normal';   
@@ -103,7 +103,10 @@ else
 end % else 
 
 % default function name, and possibly extract path for storage
-if isempty(fun), fun= tempname; end
+if isempty(fun)
+  fun = clock;
+  fun = sprintf('fun_%i', fix(fun(6)*1e4));
+end
 [ fun_path, fun ]   = fileparts(fun);
 fun                 = genvarname(fun);
 nb_pars             = 0;
@@ -124,12 +127,10 @@ if ~isempty(expr)
     token          = expr((nb_pars(index)+2):end);
     closing_parent = strfind(token, ')');
     if isempty(closing_parent), closing_parent=length(token)+1; end
-    
-    token(1:(closing_parent-1))
     try
-    s = eval(token(1:(closing_parent-1)));
+      s = eval(token(1:(closing_parent-1)));
     catch
-    s=[];
+      s=[];
     end
     if length(s) >= 1 ... 
       n=[n s]; 
@@ -145,6 +146,9 @@ if ~isempty(expr)
                    '  The number of parameters %d used in the expression' NL ...
                    '  may not be the same as the number of parameter names %d\n' ], ...
                    mfilename, fun, expr, nb_pars, length(strread(pars, '%s','delimiter',' ;,''{}')));
+      if length(strread(pars, '%s','delimiter',' ;,''{}')) < nb_pars
+        pars = []; % will guess parameter names
+      end
     end
   end
   
@@ -237,12 +241,12 @@ fclose(fid);
 % $PARS:  name of parameters, as 'a','b', ...
 % $EXPR:  expression of the function value, using 'p' vector as parameter values
 template = strrep(template, '$FUN',   fun);
-template = strrep(template, '$DESCR', [ descr ' [' fun ']' ]);
+template = strrep(template, '$DESCR', descr);
 template = strrep(template, '$PARS',  pars);
 if ~isempty(constraint)
-  template = strrep(template, '$EXPR',  [ constraint ';' NL 'signal = ' expr ]);
+  template = strrep(template, '$EXPR',  [ constraint ';' NL '  signal = ' expr ]);
 else
-  template = strrep(template, '$EXPR',  [ 'signal = ' expr ]);
+  template = strrep(template, '$EXPR',  [ '  signal = ' expr ]);
 end
 template = strrep(template, '$DIM',   num2str(dim));
 ax = '';
@@ -261,6 +265,7 @@ end
 % add the private functions
 % iFit/iFuncs/private/iFuncs_private_findpeaks.m
 % iFit/iFuncs/private/iFuncs_private_guess.m
+line = '% ==============================================================================';
 tmp = fullfile(fileparts(which(mfilename)), 'private', 'iFuncs_private_findpeaks.m');
 fid = fopen(tmp);
 tmp = fread(fid, Inf, 'uint8=>char')';
@@ -271,7 +276,7 @@ tmp = fullfile(fileparts(which(mfilename)), 'private', 'iFuncs_private_guess.m')
 fid = fopen(tmp);
 tmp = fread(fid, Inf, 'uint8=>char')';
 fclose(fid);
-template = [ template NL tmp ];
+template = [ template NL line NL tmp ];
 
 
 % create the function: write it
@@ -289,7 +294,7 @@ fprintf(1, [ '%s: Wrote function signal=%s(p, %s)\n'...
   mfilename, fun, ax, descr, nb_pars, ...
   pars);
 if ~isempty(constraint)
-  fprintf(1, '  %s;\n' ], constraint);
+  fprintf(1, '  %s;\n', constraint);
 end
 % display information and force to rehash/register the function
 fprintf(1, '  signal=%s;\n\nStored in: %s\n', expr, which([ fun '.m' ]));
