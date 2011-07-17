@@ -1,5 +1,4 @@
-* Hight Priority:
-  iData/fits: constraints and so on...
+* High Priority:
   iFit/iview: check base workspace for ID that match instance objects, and get newest ModificationDate. Then update objects.
   iFit/iview: rename Title, Variable (ID)
   iFit/iview: export variable to base workspace 
@@ -14,16 +13,9 @@
   quad
   norm, var, cov, corrcoef
   fft
-  conv (conv2, convn)
   filter, filter2, smooth3
-  deconv
   del2
   quiver, quiver2 with gradient
   
   plot 2D: add possibility to select X or Y cuts from pointer/data tip position on surface, plus handling of arrows to move cursor onto the surface (top view). Will be slice(2D)
-
-* Problems:
-  setalias(a,'x','y(1:10)') i.e. having a subsref expression within an alias does not work
-  define aliases first as simple as possible, then link axes to aliases
-
 
