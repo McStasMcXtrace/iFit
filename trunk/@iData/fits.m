@@ -64,12 +64,14 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %           parsHistory:       Parameter set history during optimization (double array)
 %           criteriaHistory:   Criteria history during optimization (double array)
 %           modelValue:        Last model evaluation (iData)
+%           parsHistoryUncertainty: Uncertainty on the parameters obtained from 
+%                              the optimization trajectory (double)
 %
 % ex:     p=fits(a,'gauss',[1 2 3 4]);
 %         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -144,6 +146,14 @@ if nargin == 1
     end % for
     if nargout == 0
       fprintf(1, '\n');
+      % plot all functions
+      m = ceil(sqrt(length(criteria)));
+      n = ceil(length(criteria)/m);
+      for index=1:length(criteria)
+        this = criteria{index};
+        subplot(m,n,index);
+        id   = feval(this, 'plot');
+      end
     end
     message = 'Optimizers and fit functions list'; 
     return

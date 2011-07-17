@@ -4,10 +4,10 @@ function a=double(a)
 %   @iData/double function to convert iData object into doubles
 %
 % input:  s: object or array (iData)
-% output: v: value of the iData Signal (double)
+% output: v: value of the iData Signal/Monitor (double)
 % ex:     'double(iData(rand(10)))'
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also  iData/cell, iData/single, iData/struct, 
 %           iData/char, iData/size
 
