@@ -6,6 +6,10 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %       all arguments are optional (can be left empty), except the expression ;
 %     when only the first argument is specified as an expression (using p and x,y,z,t)
 %       a model is built from the expression analysis.
+%         ifitmakefunc(EXPR)
+%     when only the first two arguments are specified as an expression (using p 
+%       and x,y,z,t) and a constraints a model is built from the expression analysis.
+%         ifitmakefunc(EXPR, CONSTRAINT)
 %     when only the first argument is specified as a structure, it should define fields
 %       fun.function:    the function name (used for definition and file storage)
 %       fun.Description: the descriptionnof the function
@@ -26,7 +30,7 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %
 % output: fhandle: function handle to the new function, which is also stored locally
 % 
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, gauss
 
 fhandle = [];
@@ -43,6 +47,10 @@ if nargin == 1 && strcmp(fun,'identify')
   y.function       = mfilename;
   fhandle=y;
   return
+elseif nargin == 1 && strcmp(fun,'plot')
+  text(0.1, 0.5, 'Function maker');
+  title(mfilename);
+  return
 elseif nargin == 1 && ~isvarname(fun)
   % special case when only the expression is given
   expr   = fun;
@@ -52,6 +60,15 @@ elseif nargin == 1 && ~isvarname(fun)
   pars   = '';
   defPars= '';
   constraint='';
+elseif nargin == 2 && ~isvarname(fun)
+  % special case when only the expression and the constraint are given
+  expr   = fun;
+  constraint=descr;
+  fun    = '';
+  fun    = '';
+  descr  = '';
+  pars   = '';
+  defPars= '';
 else
   % general case: handle incomplete input and pops-up dialog
   if nargin == 1 && isstruct(fun)
