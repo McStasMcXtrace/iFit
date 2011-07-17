@@ -4,10 +4,10 @@ function a=single(a)
 %   @iData/double function to convert iData object into single floats
 %
 % input:  s: object or array (iData)
-% output: v: value of the iData Signal (single)
+% output: v: value of the iData Signal/Monitor (single)
 % ex:     'single(iData(rand(10)))'
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 

@@ -1,4 +1,4 @@
-function c = iData_private_binary(a, b, op)
+function c = iData_private_binary(a, b, op, varargin)
 % iData_private_binary: handles binary operations
 %
 % Operator may apply on an iData array and:
@@ -12,15 +12,14 @@ function c = iData_private_binary(a, b, op)
 %     operator(a(index), b(index))
 %
 % operator may be: 'plus','minus','combine'
-%                  'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'
+%                  'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide', 'conv'
 %                  'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'
 %
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
-
-% private functions: 
-%   genop: Douglas M. Schwarz, 13 March 2006
 %
+% Version: $Revision: 1.22 $
+
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
 
@@ -123,6 +122,8 @@ if (all(m1==0) | all(m1==1)) & (all(m2==0) | all(m2==1)) m1=0; m2=0; end
 % the 'real' signal is 'Signal'/'Monitor', so we must perform operation on this.
 % then we compute the associated error, and the final monitor
 % finally we multiply the result by the monitor.
+
+% 'y'=normalized signal, 'd'=normalized error
 if not(all(m1 == 0)) & p1, 
   y1 = genop(@rdivide, s1, m1); d1 = genop(@rdivide,e1,m1); 
 else y1=s1; d1=e1; end
@@ -147,8 +148,17 @@ case {'plus','minus','combine'}
 		  e2=[];
 	end
   if p1 & ~all(m3 == 0), s3 = genop( @times, s3, m3); e3=genop(@times, e3, m3); end
-case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide'}
-  s3 = genop(op, y1, y2);
+case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','conv'}
+  if strcmp(op, 'conv')
+    s3 = fconv(y1, y2, varargin{:});
+    if nargin == 4
+      if strfind(varargin{1}, 'norm')
+        m2 = 0;
+      end
+    end
+  else
+    s3 = genop(op, y1, y2);
+  end
   if p1, 
     try
       if     all(m1==0), m3 = m2; 
