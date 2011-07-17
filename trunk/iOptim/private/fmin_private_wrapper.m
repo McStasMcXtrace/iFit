@@ -53,7 +53,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -490,7 +490,7 @@ output.funcCount       = constraints.funcCount ;
 output.algorithm       = options.algorithm;
 output.parsHistory     = constraints.parsHistory;
 output.criteriaHistory = constraints.criteriaHistory;
-output.parsBest        = constraints.parsBest(:)';
+output.parsBest        = constraints.parsBest;
 output.criteriaBest    = constraints.criteriaBest;
 output.options         = options; 
 output.constraints     = constraints;
@@ -506,14 +506,18 @@ weight_pars= repmat(weight_pars,[1 length(output.parsBest)]);
 output.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
 
 if length(pars)^2*output.fevalDuration/2 < 60 % should spend less than a minute to compute the Hessian
-  [dp, covp, corp]              = inline_estimate_uncertainty(fun, pars);
+  [dp, covp, corp,jac,hessian]  = inline_estimate_uncertainty(fun, pars);
   output.parsHessianUncertainty = reshape(abs(dp), size(pars));
   output.parsHessianCovariance  = covp;
   output.parsHessianCorrelation = corp;
+  output.parsHessian            = hessian;
+  output.parsJacobian           = jac;
 else
   output.parsHessianUncertainty = [];
   output.parsHessianCovariance  = [];
   output.parsHessianCorrelation = [];
+  output.parsHessian            = [];
+  output.parsJacobian           = [];
 end
 
 if strcmp(options.Display,'final') | strcmp(options.Display,'iter')
@@ -838,7 +842,7 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
 end % fmin_private_check
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [dp,covp,corp] = inline_estimate_uncertainty(fun, pars, options)
+function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, options)
 % [dp,covp,corp] = inline_estimate_uncertainty(fun, pars, options)
 % 
 % Estimates the uncertainty around an optimization solution using
@@ -864,6 +868,8 @@ function [dp,covp,corp] = inline_estimate_uncertainty(fun, pars, options)
 %  DP is the gaussian uncertainty around PARS
 %  COVP is the error matrix 
 %  CORP is the correlation matrix
+%  JAC  is the Jacobian
+%  HESSIAN is the Hessian
 
 
   n=length(pars);
@@ -884,11 +890,13 @@ function [dp,covp,corp] = inline_estimate_uncertainty(fun, pars, options)
     dp   = TolX;
   end
 
-  % we now build the error matrix 'alpha'
+  % we now build the error matrix 'alpha' and the Jacobian
+  jac = zeros(n,1);
   for i=1:n
     p    = pars; p(i) = p(i)+dp(i); chi1 = sum(feval(fun, p));
     p    = pars; p(i) = p(i)-dp(i); chi2 = sum(feval(fun, p));
     alpha(i,i) = (chi1-2*chisq+chi2)/2/dp(i)/dp(i); % diagonal terms
+    jac(i) = (chi1-chisq)/dp(i);
     
     for j=i+1:n
       p=pars; p(i)=p(i)+dp(i); p(j)=p(j)+dp(j); chi1=sum(feval(fun,p));
@@ -899,9 +907,9 @@ function [dp,covp,corp] = inline_estimate_uncertainty(fun, pars, options)
       alpha(j,i)=alpha(i,j); % off diagonal terms (symmetric)
     end
   end
-
+  hessian=2*alpha;
   alpha = alpha/chisq;      % normalized error matrix
-  covp  = inv(alpha);       % COV MATRIX
+  covp  = pinv(alpha);       % COV MATRIX
   dp    = sqrt(abs(diag(covp))); % uncertainty on parameters
   corp  = covp./(dp*dp');   % correlation matrix
   
