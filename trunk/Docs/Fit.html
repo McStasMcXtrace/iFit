@@ -12,6 +12,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: fitting a model onto iData objects</title>
 </head><body>
@@ -463,12 +464,14 @@ functions that can be written as a single expression:<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);"></span></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">);	<span style="font-style: italic;">% does the same as above, in a single command</span></span></span></pre>
 To assemble existing functions into new ones, you may use e.g.:<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);"></span></span></span><span style="color: rgb(204, 51, 204);">'','','','<span style="color: rgb(51, 102, 255);">gauss</span>(p(1:4),x)+<span style="color: rgb(51, 102, 255);">lorz</span>(p(5:8),x)'<span style="color: rgb(0, 0, 0);">,<span style="color: rgb(204, 51, 204);">''</span>,<span style="color: rgb(204, 51, 204);">'p(8)=0'</span>);</span></span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);"></span></span></span><span style="color: rgb(204, 51, 204);">'<span style="color: rgb(51, 102, 255);">gauss</span>(p(1:4),x)+<span style="color: rgb(51, 102, 255);">lorz</span>(p(5:8),x)'<span style="color: rgb(0, 0, 0);">,<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'p(8)=0'</span>);</span></span><br></pre>
 
 which creates a new function which is the sum of a Gaussian and a
-Lorentzian. The second redundant Lorentzian Background p(8) parameter
+Lorentzian. The second redundant Lorentzian Background <span style="font-style: italic;">p(8)</span> parameter
 is forced to 0 so that it does not correlate with the Gaussian
-Background p(4). Other function information/parameter names (here given as empty) are guessed/defaulted.<br>
+Background <span style="font-style: italic;">p(4)</span>. Other function information/parameter names (here given as empty) are guessed/defaulted.<br>
+<br>
+It is even possible to convolute functions and data sets as new function definitions. Refer to the <br>
 
 
 
@@ -501,7 +504,7 @@ The Signal will be normalized to the Monitor prior to calling the criteria.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData fitting - </span><span style="font-style: italic;">
-$Date: 2011-06-29 09:08:23 $ $Revision: 1.15 $
+$Date: 2011-07-17 21:17:29 $ $Revision: 1.16 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body></html>

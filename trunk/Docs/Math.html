@@ -2,33 +2,28 @@
 <html><head>
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Math operators</title>
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Mathematical operators</h1>
 <br>
-<ol id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
-  <li><a href="#mozTocId725083">A reminder on axes,
-monitors and signal errors</a></li>
-  <li><a href="#mozTocId810783">Unary operators</a></li>
-  <li><a href="#mozTocId714232">Binary operators</a></li>
-  <li><a href="#mozTocId463816">Statistics, fitting and peak
-searching</a></li>
-  <li><a href="#mozTocId981870">Projection, integration and sum</a></li>
-  <li><a href="#mozTocId97186">Merging and combining
-data sets</a></li>
-  <li><a href="#mozTocId622257">Appending and slicing
-data sets</a></li>
-  <li><a href="#mozTocId6742">Creating arrays of objects</a></li>
-  <li><a href="#mozTocId991507">Interpolation, intersection and union</a></li>
-</ol>
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId725083">A reminder on axes,
+monitors and signal errors</a></li><li><a href="#mozTocId810783">Unary operators</a></li><li><a href="#mozTocId714232">Binary operators</a><ol><li><a href="#mozTocId880437">Convolution</a></li><li><a href="#mozTocId650025">Comparisons</a></li></ol></li><li><a href="#mozTocId463816">Statistics, fitting and peak
+searching</a></li><li><a href="#mozTocId981870">Projection, integration and sum</a></li><li><a href="#mozTocId97186">Merging and combining
+data sets</a></li><li><a href="#mozTocId622257">Appending and slicing
+data sets</a></li><li><a href="#mozTocId6742">Creating arrays of
+objects</a></li><li><a href="#mozTocId991507">Interpolation,
+intersection and union</a></li></ol>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">iData</span>, maths, <a href="Methods.html">methods</a><br>
 </div>
 <br>
-<br>
+In this documentation, we review most of the mathematical operations
+that can be applied on iData objects. Separate help pages are available
+for data <a href="Save.html"><a href="Load.html">import, </a>export</a> and <a href="Fit.html">fitting</a>.<br>
 <h3><a class="mozTocH3" name="mozTocId725083"></a>A reminder on axes,
 monitors and signal errors</h3>
 The iData objects have been designed keeping in mind that any
@@ -454,7 +449,18 @@ independently<br>
       </td>
       <td style="vertical-align: top;">binary comparisons<br>
       </td>
+    </tr><tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">conv</span><br>
+      </td>
+      <td style="vertical-align: top;">convolution(s1,s2)<br>
+      </td>
+      <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
+      <td style="vertical-align: top;">m1*m2<br>
+      </td>
+      <td style="vertical-align: top;">convolution (see below)<br>
+      </td>
     </tr>
+
   </tbody>
 </table>
 <br>
@@ -523,7 +529,26 @@ The <span style="font-weight: bold;">combine</span> operation will be
 detailed in the section '<a href="#mozTocId97186">Merging and combining
 data sets</a>' below. In particular, the difference between the
 summation and the combination will be detailed there.<br>
+<h4><a class="mozTocH4" name="mozTocId880437"></a>Convolution</h4>
+The convolution operator uses an FFT method to compute the convolution
+of one iData with anything else. In the background it uses the <span style="font-weight: bold; font-style: italic;">fconv</span> and <span style="font-weight: bold; font-style: italic;">fconvn</span> function (see <a href="iFuncs.html#mozTocId937554">iFuncs</a>), which can be called directly when building fit functions.<br>
 <br>
+The convolution operator can be given additional options in order to control the accuracy and the size of the returned object<br>
+<pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b);	<span style="font-style: italic;">	% returned convoluted object with size which is size(a)+size(b)+1</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'same'</span>);<span style="font-style: italic;">	% returned convoluted object </span><span style="font-style: italic;">with</span><span style="font-style: italic;"> size which is size(a)<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'valid'</span>);<span style="font-style: italic;">	% returned convoluted object </span><span style="font-style: italic;">with</span><span style="font-style: italic;"> size which is size(a)</span>-size(b)+1<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'pad'</span>);<span style="font-style: italic;">	% pads 'a' with starting/ending values to minimize border effects<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'center'</span>);<span style="font-style: italic;">	% centers 'b' so that convolution does not shift 'a' axes<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'norm'</span>);<span style="font-style: italic;">	% normalizes</span><span style="font-style: italic;"> 'b' so that convolution does not change 'a' integral<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'background'</span>);<span style="font-style: italic;">	% subtracts</span><span style="font-style: italic;"> minimal value in 'b' so that convolution does not change 'a' integra</span>l<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'deconv'</span>);	<span style="font-style: italic;">% deconvolution, but very sensitive to noise (use with caution)</span><br></pre>
+
+When the an object has to be convoluted with a response function (<span style="font-style: italic;">e.g.</span> instrument resolution function), the usual options to use should be:<br>
+<pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'same pad background center norm'</span>);<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">convn</span>(a,b);	<span style="font-style: italic;">% same as above</span> in a shorter call<br></pre>
+This is very useful when a measurement has to be corrected with the
+response of the probe (instrument). In this case, a fit of the data may
+be carried out as:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">global</span> b;	<span style="font-style: italic;">% holds the convolution function as a single vector/matrix or iData object</span><br>&gt;&gt; h = <span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);"></span></span></span><span style="color: rgb(204, 51, 204);">'<span style="color: rgb(51, 102, 255);">fconvn</span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);"></span>(</span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">gauss</span>(p(1:4),x), <span style="color: rgb(51, 102, 255);">double</span>(b))<span style="color: rgb(51, 102, 255);"></span>'<span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);"></span>,<span style="color: rgb(204, 51, 204);">'global b'</span>); <span style="font-style: italic;">% creates a fit function with convolution</span><br></span></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">fits</span>(a, h);</pre>
+
+where the vector/matrix<span style="font-style: italic;"> 'b'</span> holds the response function (filter) <span style="font-style: italic;">with the same axis binning</span> as the object <span style="font-style: italic;">'a'</span>. A way to force the binning right is to use:<br>
+<pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">interp</span>(b, a);</pre>
+if the axes of <span style="font-style: italic;">'b'</span> match the ones from <span style="font-style: italic;">'a'</span> in range (overlap).<br>
+
+<h4><a class="mozTocH4" name="mozTocId650025"></a><span style="font-weight: bold;">Comparisons</span></h4>
+
 The usual comparison binary operators<br>
 <ul>
   <li>greater: gt &gt;</li>
@@ -533,7 +558,7 @@ The usual comparison binary operators<br>
   <li>equal: eq ==</li>
   <li>not equal: ne ~=</li>
 </ul>
-are also implemented. It compares the Signals, taking the Monitor
+are also implemented. They compares the Signals, taking the Monitor
 weighting into account. The associated error bar is normalized to the
 mean signal.<br>
 <h3><a class="mozTocH3" name="mozTocId463816"></a><span style="font-weight: bold;">Statistics, fitting and peak
@@ -874,7 +899,7 @@ Signal, Error, and Monitor values are also re-ordered accordingly.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2011-06-13 07:19:29 $ $Revision: 1.14 $
+$Date: 2011-07-17 21:17:29 $ $Revision: 1.15 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
