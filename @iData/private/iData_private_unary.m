@@ -84,7 +84,7 @@ end
 b = set(b, 'Signal', new_s, 'Error', abs(e), 'Monitor', m);
 b = setalias(b, 'Signal', new_s, [  op '(' sl ')' ]);
 b.Command=cmd;
-b = iData_private_history(b, op, b);  
+b = iData_private_history(b, op, a);  
 
 % other methods to treat specifically
 % diff, min, max, sum, prod, sort, trapz

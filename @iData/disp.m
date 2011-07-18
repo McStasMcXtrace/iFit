@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -84,7 +84,11 @@ else
     disp('[Rank]         [Value] [Description]');
     for index=0:length(s_in.Alias.Axis)
       [v, l] = getaxis(s_in, num2str(index,2));
+      try
       [s, f] = std(s_in, index);
+      catch
+          s=NaN; f=NaN;
+      end
       if length(l) > 20, l = [l(1:18) '...' ]; end 
       X      = getaxis(s_in, index); x=X(:);
       if length(x) == 1
