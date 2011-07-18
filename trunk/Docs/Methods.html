@@ -8,6 +8,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -629,12 +630,19 @@ mathematical operators</a> is available.<span style="font-style: italic;"><br>
   <li><a href="matlab:helpwin iData/acos"><span style="font-weight: bold;">acos: </span></a>arc cosine</li>
   <li><a href="matlab:helpwin iData/asin"><span style="font-weight: bold;">asin: </span></a>arc sine</li>
   <li><a href="matlab:helpwin iData/atan"><span style="font-weight: bold;">atan: </span></a>arc tangent</li>
+  <li><span style="font-weight: bold;"><a href="matlab:helpwin iData/conv">conv:</a></span> convolution<span style="font-weight: bold;">.</span> When convolution is to be carried out with a response function (filter), the <a href="matlab:helpwin iData/convn">convn</a> function should be used, which makes sure the filter is centered and normalized. These methods use the <a href="matlab:helpwin iData/fconv">fconv</a> and <a href="matlab:helpwin iData/fconv">fconvn</a> functions (multidimensional FFT convolution).<span style="font-weight: bold;"><br>
+    </span></li>
+
   <li><a href="matlab:helpwin iData/cos"><span style="font-weight: bold;">cos: </span></a>cosine</li>
   <li><a href="matlab:helpwin iData/ctranspose"><span style="font-weight: bold;">ctranspose: </span></a>complex
 conjugate transpose (')<br>
   </li>
   <li><a href="matlab:helpwin iData/exp"><span style="font-weight: bold;">exp: </span></a>exponent</li>
   <li><a href="matlab:helpwin iData/floor"><span style="font-weight: bold;">floor: </span></a>lower interger</li>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/fft">fft</a>: fast Fourier transform, which also transforms the reciprocal axis.</li>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/ifft">ifft</a>: inverse fast Fourier transform, which also transforms the reciprocal axis.<br>
+  </li>
+
   <li><a href="matlab:helpwin iData/ieval"><span style="font-weight: bold;">ieval: </span></a>evaluates a model
 using the axes of an object (similar to <span style="font-style: italic;">eval)</span><br>
   </li>
@@ -761,8 +769,7 @@ initial ones, but may have a different sampling along axes. Its Signal
 is the sum of Signals weighted by the Monitors, performed on the
 intersection range of axes. <span style="font-style: italic;">Fast
 notation is </span><span style="font-weight: bold;">\</span></li>
-  <li><span style="font-weight: bold;"><a href="matlab:helpwin iData/conv">conv:</a></span> object convolution<span style="font-weight: bold;">.</span> When convolution is to be carried out with a response function (filter), the <a href="matlab:helpwin iData/convn">convn</a> function should be used, which makes sure the filter is centered and normalized. These methods use the <a href="matlab:helpwin iData/fconv">fconv</a> and <a href="matlab:helpwin iData/fconv">fconvn</a> functions (multidimensional FFT convolution).<span style="font-weight: bold;"><br>
-    </span></li>
+  
 
   <li><a href="matlab:helpwin iData/cat"><span style="font-weight: bold;">cat: </span></a>concatenates/appends
 objects.
@@ -890,7 +897,7 @@ theobject title.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData methods - </span><span style="font-style: italic;">
-$Date: 2011-07-17 21:17:29 $ $Revision: 1.19 $
+$Date: 2011-07-18 14:07:03 $ $Revision: 1.20 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit

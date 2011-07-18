@@ -4,6 +4,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Math operators</title>
 </head><body>
@@ -23,7 +24,7 @@ intersection and union</a></li></ol>
 <br>
 In this documentation, we review most of the mathematical operations
 that can be applied on iData objects. Separate help pages are available
-for data <a href="Save.html"><a href="Load.html">import, </a>export</a> and <a href="Fit.html">fitting</a>.<br>
+for data <a href="Save.html"></a><a href="Load.html">import, </a>export and <a href="Fit.html">fitting</a>.<br>
 <h3><a class="mozTocH3" name="mozTocId725083"></a>A reminder on axes,
 monitors and signal errors</h3>
 The iData objects have been designed keeping in mind that any
@@ -300,7 +301,26 @@ Monitor<br>
       </td>
       <td style="vertical-align: top;">Real part<br>
       </td>
+    </tr><tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">fft</span><br>
+      </td>
+      <td style="vertical-align: top;">FFT(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">FFT(Error)</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Fourier transform<br>
+      </td>
     </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">ifft</span></td>
+      <td style="vertical-align: top;">FFT<sup>-1</sup>(Signal)</td>
+      <td style="vertical-align: top;">FFT<sup>-1</sup>(Error)</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">inverse Fourier transform</td>
+    </tr>
+
   </tbody>
 </table>
 <br>
@@ -899,7 +919,7 @@ Signal, Error, and Monitor values are also re-ordered accordingly.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2011-07-17 21:17:29 $ $Revision: 1.15 $
+$Date: 2011-07-18 14:07:03 $ $Revision: 1.16 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
