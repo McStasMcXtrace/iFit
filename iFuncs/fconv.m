@@ -25,7 +25,7 @@ function y=fconv(x, h, shape)
 %
 %      See also CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 
 
 y=[];
@@ -112,7 +112,6 @@ else
 end
 
 % reshape output as from convn and conv2
-B=h; C=y;
 if (strfind(shape,'same'))
   sizeA = [size(A) ones(1,ndims(y)-ndims(A))];
   sizeB = [size(h) ones(1,ndims(y)-ndims(h))];
