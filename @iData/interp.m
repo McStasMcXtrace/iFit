@@ -24,7 +24,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -177,7 +177,7 @@ for index=1:ndims(a)
     if length(this_a) ~= length(this_i)
       % not same length
       has_changed=1; 
-    elseif prod(size(this_a)) ~= prod(this_i) % nb of elements has changed, including matrix axes ?
+    elseif prod(size(this_a)) ~= prod(size(this_i)) % nb of elements has changed, including matrix axes ?
       has_changed=1; 
     elseif all(abs(this_a - this_i) > 1e-4*abs(this_a + this_i)/2)
       % or axis variation bigger than 0.01 percent anywhere
