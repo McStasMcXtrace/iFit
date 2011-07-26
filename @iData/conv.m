@@ -1,7 +1,8 @@
 function c = conv(a,b, shape)
 % c = conv(a,b) : computes the convolution of iData objects
 %
-%   @iData/conv function to compute the convolution of data sets
+%   @iData/conv function to compute the convolution of data sets (FFT based).
+%     A deconvolution mode is also possible.
 %
 % input:  a: object or array (iData or numeric)
 %         b: object or array (iData or numeric)
@@ -23,10 +24,11 @@ function c = conv(a,b, shape)
 % output: c: object or array (iData)
 % ex:     c=conv(a,b); c=conv(a,b, 'same pad background center normalize');
 %
-% Version: $Revision: 1.2 $
-% See also iData, iData/times, conv, convn, CONV2, FILTER, FILTER2, FFT, IFFT
+% Version: $Revision: 1.3 $
+% See also iData, iData/times, iData/convn, iData/fft, convn, fconv, fconvn
 if nargin ==1
-	c=a; return
+	c=conv(a, a); 
+	return
 end
 if nargin < 3, shape = 'same'; end
 

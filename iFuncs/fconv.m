@@ -25,7 +25,7 @@ function y=fconv(x, h, shape)
 %
 %      See also CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 
 
 y=[];
@@ -65,7 +65,14 @@ if ~isempty(strfind(shape,'center')) ||  ~isempty(strfind(shape,'centre'))
     end
   end
   % create a new filter grid which has odd number of elements, centered and interpolate
-  h = interpn(h, Y{:}, '*linear',0);
+  if isvector(h)
+    Y = Y{1};
+    h = interp1(h(:), Y(:), '*linear',0);
+  else
+    tmp=Y{2}; Y{2} = Y{1}; Y{1} = tmp;
+    [Y{:}] = ndgrid(Y{:});
+    h = interpn(h, Y{:}, '*linear',0);
+  end
 end
 
 % normalize the filter
