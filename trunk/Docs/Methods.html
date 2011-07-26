@@ -2,13 +2,6 @@
 <html><head>
 
 
-
-
-
-
-
-
-
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -20,20 +13,9 @@
 
 <br>
 
-<ol id="mozToc">
-
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
-  <li><a href="#mozTocId323642">data structure, aliases, signal and axes</a></li>
-  <li><a href="#mozTocId145324">general</a></li>
-  <li><a href="#mozTocId263963">import/export/type casting</a></li>
-  <li><a href="#mozTocId616062">testing/comparing</a></li>
-  <li><a href="#mozTocId222761">math: operators</a></li>
-  <li><a href="#mozTocId179983">math: statistics, fitting and peak
-searching</a></li>
-  <li><a href="#mozTocId434222">math:
-interpolation/projections/integration/sum/combination</a></li>
-  <li><a href="#mozTocId341680">plotting</a></li>
-</ol>
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId323642">data structure, aliases, signal and axes</a></li><li><a href="#mozTocId145324">general</a></li><li><a href="#mozTocId263963">import/export/type casting</a></li><li><a href="#mozTocId616062">testing/comparing</a></li><li><a href="#mozTocId222761">math: common operators</a></li><li><a href="#mozTocId771919">math: convolution and Fourier transforms</a></li><li><a href="#mozTocId179983">math: statistics, fitting and peak
+searching</a></li><li><a href="#mozTocId959842">math: integration and derivatives, projections</a></li><li><a href="#mozTocId617915">math: combination and merging/assembling</a></li><li><a href="#mozTocId434222">math:
+interpolation</a></li><li><a href="#mozTocId341680">plotting</a></li></ol>
 
 <br>
 
@@ -617,7 +599,7 @@ elements<br>
 
 <br>
 
-<h3><a class="mozTocH3" name="mozTocId222761"></a><span style="font-weight: bold;">math</span>: operators</h3>
+<h3><a class="mozTocH3" name="mozTocId222761"></a><span style="font-weight: bold;">math</span>: common operators</h3>
 
 A dedicated documentation about the <a href="Math.html">iData
 mathematical operators</a> is available.<span style="font-style: italic;"><br>
@@ -630,20 +612,14 @@ mathematical operators</a> is available.<span style="font-style: italic;"><br>
   <li><a href="matlab:helpwin iData/acos"><span style="font-weight: bold;">acos: </span></a>arc cosine</li>
   <li><a href="matlab:helpwin iData/asin"><span style="font-weight: bold;">asin: </span></a>arc sine</li>
   <li><a href="matlab:helpwin iData/atan"><span style="font-weight: bold;">atan: </span></a>arc tangent</li>
-  <li><span style="font-weight: bold;"><a href="matlab:helpwin iData/conv">conv:</a></span> convolution<span style="font-weight: bold;">.</span> When convolution is to be carried out with a response function (filter), the <a href="matlab:helpwin iData/convn">convn</a> function should be used, which makes sure the filter is centered and normalized. These methods use the <a href="matlab:helpwin iData/fconv">fconv</a> and <a href="matlab:helpwin iData/fconv">fconvn</a> functions (multidimensional FFT convolution).<span style="font-weight: bold;"><br>
-    </span></li>
+  
 
   <li><a href="matlab:helpwin iData/cos"><span style="font-weight: bold;">cos: </span></a>cosine</li>
   <li><a href="matlab:helpwin iData/ctranspose"><span style="font-weight: bold;">ctranspose: </span></a>complex
 conjugate transpose (')<br>
   </li>
   <li><a href="matlab:helpwin iData/exp"><span style="font-weight: bold;">exp: </span></a>exponent</li>
-  <li><a href="matlab:helpwin iData/floor"><span style="font-weight: bold;">floor: </span></a>lower interger</li>
-  <li><a style="font-weight: bold;" href="matlab:helpwin iData/fft">fft</a>: fast Fourier transform, which also transforms the reciprocal axis.</li>
-  <li><a style="font-weight: bold;" href="matlab:helpwin iData/ifft">ifft</a>: inverse fast Fourier transform, which also transforms the reciprocal axis.<br>
-  </li>
-
-  <li><a href="matlab:helpwin iData/ieval"><span style="font-weight: bold;">ieval: </span></a>evaluates a model
+  <li><a href="matlab:helpwin iData/floor"><span style="font-weight: bold;">floor: </span></a>lower interger</li><li><a href="matlab:helpwin iData/ieval"><span style="font-weight: bold;">ieval: </span></a>evaluates a model
 using the axes of an object (similar to <span style="font-style: italic;">eval)</span><br>
   </li>
   <li><a href="matlab:helpwin iData/imag"><span style="font-weight: bold;">imag: </span></a>imaginary part</li>
@@ -679,7 +655,17 @@ transpose (.')<br>
   </li>
 </ul>
 
-<br>
+<h3><a class="mozTocH3" name="mozTocId771919"></a><span style="font-weight: bold;">math: convolution and Fourier transforms</span></h3>
+A dedicated documentation about the <a href="Math.html#mozTocId401065">iData
+mathematical operators</a> is available.<span style="font-style: italic;"><br>
+</span>
+<ul>
+<li><span style="font-weight: bold;"><a href="matlab:helpwin iData/conv">conv:</a></span> convolution<span style="font-weight: bold;">.</span> When convolution is to be carried out with a response function (filter), the <a href="matlab:helpwin iData/convn">convn</a> function should be used, which makes sure the filter is centered and normalized. These methods use the <a href="matlab:helpwin iData/fconv">fconv</a> and <a href="matlab:helpwin iData/fconv">fconvn</a> functions (multidimensional FFT convolution).<br>
+</li>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/fft">fft</a>: fast Fourier transform, which also transforms the reciprocal axis.</li>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/ifft">ifft</a>: inverse fast Fourier transform, which also transforms the reciprocal axis.</li>
+</ul>
+
 
 <h3><a class="mozTocH3" name="mozTocId179983"></a><span style="font-weight: bold;">math: statistics, fitting and peak
 searching</span></h3>
@@ -712,23 +698,17 @@ parameters to fit the <span style="font-style: italic;">Signal. </span>New fit f
     </span></li>
 </ul>
 
-<br>
-
-<h3><a class="mozTocH3" name="mozTocId434222"></a><span style="font-weight: bold;">math:
-interpolation/projections/integration/sum/combination</span></h3>
-
-A dedicated documentation about the <a href="Math.html#mozTocId981870">these
-operators</a> is available.<span style="font-style: italic;"><br>
-</span><br>
-
+<h3><a class="mozTocH3" name="mozTocId959842"></a><span style="font-weight: bold;">math: integration and derivatives, projections<br>
+</span></h3>
+A dedicated documentation about the <a href="Math.html">iData
+mathematical operators</a> is available.<span style="font-style: italic;"><br>
+</span>
 <ul>
-
-  <li><a href="matlab:helpwin iData/camproj"><span style="font-weight: bold;">camproj:</span> </a>extracts the
+<li><a href="matlab:helpwin iData/camproj"><span style="font-weight: bold;">camproj:</span> </a>extracts the
 projection of the object onto a selected axis by summing along all
 other dimensions. The resulting object is a vectorial object (ndims=1).
 The projection along one axis is the sum along all other axes.<br>
-  </li>
-  <li><a href="matlab:helpwin iData/trapz"><span style="font-weight: bold;">trapz:</span> </a>integrates object
+  </li><li><a href="matlab:helpwin iData/trapz"><span style="font-weight: bold;">trapz:</span> </a>integrates object
 along a given dimension. The resulting object has this dimension
 removed. As opposed to <span style="font-style: italic;">sum, </span>the
 
@@ -742,35 +722,41 @@ removed. As opposed to <span style="font-style: italic;">sum, </span>the
 
 
     <span style="font-style: italic;">trapz</span> method takes into
-account the axis binning, which may be uneven.</li>
-  <li><a href="matlab:helpwin iData/sum"><span style="font-weight: bold;">sum:</span> </a>sums object along a
+account the axis binning, which may be uneven.</li><li><a href="matlab:helpwin iData/sum"><span style="font-weight: bold;">sum:</span> </a>sums object along a
 given dimension. The resulting object has this dimension removed. As
 opposed to <span style="font-style: italic;">trapz, </span>the <span style="font-style: italic;">sum</span> method does not take into
 account the axis binning. <br>
-  </li>
-  <li><a href="matlab:helpwin iData/prod"><span style="font-weight: bold;">prod: </span></a>multiplies object
+  </li><li><a href="matlab:helpwin iData/prod"><span style="font-weight: bold;">prod: </span></a>multiplies object
 elements along a given dimension. The resulting object has this
 dimension removed. This method does not take
-into account the axis binning.</li>
-  <li><a href="matlab:helpwin iData/cumsum"><span style="font-weight: bold;">cumsum: </span></a>computes the
+into account the axis binning.</li><li><a href="matlab:helpwin iData/cumsum"><span style="font-weight: bold;">cumsum: </span></a>computes the
 cumulated sum of an object along a given dimension. The result has the
 same dimension as the initial object, and its last element/slice along
 the specified dimension is the result of the <span style="font-style: italic;">sum</span> method. This is the signal
 primitive.<br>
-  </li>
-  <li><a href="matlab:helpwin iData/cumprod"><span style="font-weight: bold;">cumprod: </span></a>computes the
+  </li><li><a href="matlab:helpwin iData/cumprod"><span style="font-weight: bold;">cumprod: </span></a>computes the
 cumulated product of an object along a given dimension. The result has
 the same dimension as the initial object, and its last
 element/slice along the specified dimension is the result of the <span style="font-style: italic;">prod</span>
 method.</li>
-  <li><a href="matlab:helpwin iData/combine"><span style="font-weight: bold;">combine: </span></a>merges/combines
+  <li><a href="matlab:helpwin iData/del2"><span style="font-weight: bold;">del2</span></a>: computes the Laplacian (local curvature, sum of the second partial derivatives).</li>
+  <li><a href="matlab:helpwin iData/gradient"><span style="font-weight: bold;">gradient</span>: </a>computes the gradient (derivatives) of an object.</li>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/jacobian">jacobian: </a>computes the Jacobian from the object current axes to new axes. This is to be used for object coordinate changes. The<span style="font-style: italic;"> 'from' </span>anf<span style="font-style: italic;"> 'to' </span>axes
+should have the same dimensions. The transformed object is returned, as
+well as the Jacobian which was used for the transformation.<br>
+  </li>
+</ul>
+<h3><a class="mozTocH3" name="mozTocId617915"></a><span style="font-weight: bold;">math: combination and merging/assembling</span></h3>
+A dedicated documentation about the <a href="Math.html">iData
+mathematical operators</a> is available.<span style="font-style: italic;"><br>
+</span>
+<ul>
+<li><a href="matlab:helpwin iData/combine"><span style="font-weight: bold;">combine: </span></a>merges/combines
 objects. The resulting object has the same dimensionality as the
 initial ones, but may have a different sampling along axes. Its Signal
 is the sum of Signals weighted by the Monitors, performed on the
 intersection range of axes. <span style="font-style: italic;">Fast
 notation is </span><span style="font-weight: bold;">\</span></li>
-  
-
   <li><a href="matlab:helpwin iData/cat"><span style="font-weight: bold;">cat: </span></a>concatenates/appends
 objects.
 If
@@ -787,7 +773,16 @@ dimension.</li>
   <li><a href="matlab:helpwin iData/dog"><span style="font-weight: bold;">dog: </span></a>splits an object
 along a given dimension. The result is a vector of objects containing
 the series of slices. This is the opposite operation to <span style="font-style: italic;">cat</span> !</li>
-  <li><a href="matlab:helpwin iData/linspace"><span style="font-weight: bold;">linspace: </span></a>creates
+</ul>
+<br>
+
+
+<h3><a class="mozTocH3" name="mozTocId434222"></a><span style="font-weight: bold;">math:
+interpolation</span></h3>
+
+A dedicated documentation about the <a href="Math.html#mozTocId981870">these
+operators</a> is available.<span style="font-style: italic;"><br>
+</span><ul><li><a href="matlab:helpwin iData/linspace"><span style="font-weight: bold;">linspace: </span></a>creates
 continuous linear series of objects between two objects used as bounds.
 This is a kind of morphing from one object to another one.</li>
   <li><a href="matlab:helpwin iData/logspace"><span style="font-weight: bold;">logspace: </span></a>creates
@@ -846,6 +841,9 @@ min max]) to only affect the view.</li>
 axis limits. This crops the
 initial object. Use the normal <span style="font-style: italic;">zlim([</span>
 min max]) to only affect the view.</li>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/caxis">caxis:</a> remap a surface colours (CData) with the value of an iData object.<br>
+  </li>
+
   <li><a href="matlab:helpwin iData/label"><span style="font-weight: bold;">label: </span></a>sets/gets the
 object Label, or axes/signal labels. Use <span style="font-style: italic;">title</span> to change the object title.<br>
   </li>
@@ -857,18 +855,33 @@ from
 an
 object
 (thumbnail)</li>
+  <li>contour: plots a 2D object as a set of contour lines</li>
+  <li>contour3: plots a 2D object as a set of contour lines in 3D<br>
+  </li>
+  <li>mesh: plots a 2D object as a mesh (wired network)<br>
+  </li>
+
   <li><a href="matlab:helpwin iData/plot3"><span style="font-weight: bold;">plot3: </span></a>plots a 2D/3D
-object as points<br>
+object as points. An array of 1D objects is shown as a waterfall.<br>
   </li>
   <li><a href="matlab:helpwin iData/surf"><span style="font-weight: bold;">surf: </span></a>plots a 2D/3D
-object as a surface<br>
-  </li>
+object as a surface. An array of 1D objects is shown as a waterfall.</li>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/surfc">surfc:</a> plots a 2D/3D
+object as a surface with a contour below. An array of 1D objects is shown as a waterfall.</li>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/surfl">surfl:</a> plots a 2D/3D
+object as a surface with light. An array of 1D objects is shown as a waterfall.</li>
+
   <li><a href="matlab:helpwin iData/scatter3"><span style="font-weight: bold;">scatter3: </span></a>plots a 2D/3D
-object as coloured points</li>
+object as coloured points. An array of 1D objects is shown as a waterfall.</li>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/waterfall">waterfall:</a> plots a 2D/3D object as a waterfall. An array of 1D objects is shown as a waterfall.</li>
+  <li><a href="matlab:helpwin iData/pcolor"><span style="font-weight: bold;">pcolor:</span> </a>plots a 2D/3D object as a flat coloured image.<br>
+  </li>
+
+
   <li><a style="font-weight: bold;" href="matlab:helpwin iData/image">image:
 
     </a>plots up to 3 objects overlayed onto the RGB channels. One
-object at least must be 2D<br>
+object at least must be 2D.<br>
   </li>
   <li><a href="matlab:helpwin iData/slice"><span style="font-weight: bold;">slice: </span></a>opens a slice
 viewer (sliceomatic) for 3D/4D objects<br>
@@ -897,7 +910,7 @@ theobject title.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData methods - </span><span style="font-style: italic;">
-$Date: 2011-07-18 14:07:03 $ $Revision: 1.20 $
+$Date: 2011-07-26 21:15:28 $ $Revision: 1.21 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit

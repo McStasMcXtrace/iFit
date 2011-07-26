@@ -5,6 +5,10 @@
 
 
 
+
+
+
+
   <title>iFit: iData object definition</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -62,7 +66,7 @@ The <span style="font-style: italic;">iData</span> object is a
 structure which holds some imported data
 (numerical blocks), as well as additional metadata and axes
 definitions, <span style="font-style: italic;">Signal, Error bars,
-Monitors</span>, and user defined fields (aliases).<br>
+Monitors</span>, and user defined fields (aliases). A large number of <a href="Methods.html">methods</a> can be used with iData, including data <a href="Load.html">import, </a><a href="Plot.html">plotting, </a><a href="Save.html">saving, </a><a href="Fit.html">fitting</a> and <a href="Math.html">mathematical</a> operators.<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId466436"></a>Introduction to the
 iData objects</h3>
 An iData object is obtained for instance by transforming a file name into an iData
@@ -124,6 +128,8 @@ In the following, we shall present how to manipulate iData objects,
 enrich them with additional information, define relations between the
 object parts as <span style="font-style: italic;">Aliases, </span>define the object <span style="font-style: italic;">Signal</span> and its associated
 <span style="font-style: italic;">Axes.</span><br>
+<br>
+Any object dime,sionality can be handled. A more limited support exists for event based data sets.<br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">To get
 more help</span>: list of most iData <a href="Methods.html">methods</a>
@@ -207,7 +213,6 @@ Last, the object&nbsp; <span style="font-style: italic;">Signal</span> normalize
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">edit</span>(iData);<a href="images/iData_edit.png"><img title="Edit(iData)" src="images/iData_edit.png" alt="Edit(iData)" style="border: 0px solid ; width: 150px; height: 115px;" align="right"></a></pre>
 
 <br>
-<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId964118"></a>Modifying the iData
 object (set)<br>
 </h3>
@@ -275,10 +280,10 @@ will also work.<br>
 <br>
 In addition, each <span style="font-style: italic;">Alias</span> can
 be associated with a label/comment when creating it:<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>,42,<span style="color: rgb(204, 51, 204);">'Does god exist ?'</span>)</pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>,42,<span style="color: rgb(204, 51, 204);">'</span><span style="color: rgb(204, 51, 204);">Answer to the Ultimate Question of Life, the Universe, and Everything</span><span style="color: rgb(204, 51, 204);">'</span>)</pre>
 or with the <span style="font-style: italic; font-weight: bold;">label</span>
 method:<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>,<span style="color: rgb(204, 51, 204);">'Does god exist ?'</span>)<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>,<span style="color: rgb(204, 51, 204);">'Answer to the Ultimate Question of Life, the Universe, and Everything'</span>)<br></pre>
 The current label of an <span style="font-style: italic;">Alias</span>
 is inquired similarly with the label method<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>)<br>ans =<br><br>Does god exist ?<br></pre>
@@ -535,14 +540,13 @@ Axes are required, each may have a dimensionality from 1 to <span style="font-st
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">n</span>
 Axes are required, each being a scalar or vector of same length as
-Signal<br>
+Signal. <span style="font-weight: bold;">NOTE: </span>Not all Math methods support this type of data, and it should be converted, when appropriate, into histogramed with the <span style="font-style: italic;">interp</span> method.<br>
       </td>
     </tr>
   </tbody>
 </table>
 <br>
-The first dimension refers to rows, the second to columns, the third to
-depth and so on.<br>
+The first dimension refers to rows, the second to columns, the third to pages,&nbsp; and so on.<br>
 <h4><a class="mozTocH4" name="mozTocId696835"></a>Error bars definition</h4>
 The <span style="font-style: italic;">Signal</span> is attached to an <span style="font-style: italic;">Error bar</span>, which represents an
 uncertainty on a Signal value. The <span style="font-style: italic;">Error</span>
@@ -617,7 +621,7 @@ corner.<br>
 <span style="font-weight: bold;">NOTE: </span>As a result, the axis of
 rank 1 is usually labeled as 'Y' (on rows, that is vertical for a
 matrix seen from above), and the axis of rank 2 is labeled as 'X' (on
-columns, that is horizontal).<br>
+columns, that is horizontal) except for 1D objects where this is the rank 1.<br>
 <h4><a class="mozTocH4" name="mozTocId205926"></a><span style="font-weight: bold;">getting an axis</span><span style="font-weight: bold;"></span></h4>
 &nbsp;
 As they are basically <span style="font-style: italic;">Aliases, Axes</span>
@@ -736,7 +740,7 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData objects - $Date: 2011-06-24 12:37:19 $ $Revision:1.7
+Farhi - iFit/iData objects - $Date: 2011-07-26 21:15:28 $ $Revision:1.7
 $
 </span> - back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
