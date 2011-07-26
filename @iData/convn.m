@@ -10,10 +10,10 @@ function c = convn(a,b)
 % output: c: object or array (iData)
 % ex:     c=convn(a,b);
 %
-% Version: $Revision: 1.1 $
-% See also iData, iData/conv, iData/times, conv, convn, conv2, filter2, fft
+% Version: $Revision: 1.2 $
+% See also iData, iData/times, iData/conv, iData/fft, convn, fconv, fconvn
 if nargin ==1
-	b=[];
+	b=a;
 end
 c = iData_private_binary(a, b, 'conv', 'same pad background center normalize');
 

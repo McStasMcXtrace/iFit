@@ -1,5 +1,15 @@
 function b = iData_private_unary(a, op)
 % iData_private_unary: handles unary operations
+%
+% 'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical'
+% 'asin', 'acos','atan','cos',sin','exp','log','log10','sqrt','tan','transpose'
+% 'ctranspose', 'sparse','full', 'floor','ceil','round','sign','isfinite','isnan','isinf'
+% 'del2'
+% 'sign','isfinite','isnan','isinf'
+% 'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical'
+% 'uminus','abs','real','imag','uplus','not'
+%
+% present but not used here: 'double','single','logical','find'
 
 % handle input iData arrays
 if length(a(:)) > 1
@@ -67,6 +77,9 @@ case {'sparse','full'}
 case {'floor','ceil','round'}	
 	% apply same operator on error
 	e = feval(op, e);
+case 'del2'
+  s = 2*ndims(a);
+  e = feval(op, e)*2*ndims(a);
 case {'sign','isfinite','isnan','isinf'}
 	% error should become zero (logical)
 	e = zeros(size(s));
