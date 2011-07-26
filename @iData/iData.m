@@ -20,7 +20,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -198,7 +198,7 @@ else  % convert input argument into object
     for index=1:length(out)
       if length(out) == 1 | ~isempty(out(index))
         if isempty(out(index).Source), out(index).Source = inmame; end
-        if isempty(out(index).Title),  out(index).Title  = [ inmame ' ' class(in) ' import into iData ' ]; end
+        if isempty(out(index).Title),  out(index).Title  = [ inmame ' ' class(in) ' import' ]; end
         
         if isempty(out(index).Command)
         	out(index) = iData_private_history(out(index), mfilename, in); 

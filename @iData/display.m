@@ -9,13 +9,17 @@ function d = display(s_in)
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
 
+if ~isempty(inputname(1))
 d = [ sprintf('%s = ',inputname(1)) ];
+else
+d = [ sprintf('%s = ','ans') ];
+end
 if length(s_in) > 1
   d = [ d sprintf(' array [%s]',num2str(size(s_in))) ];
 end
@@ -27,7 +31,7 @@ else
     if length(s_in) > 1
       d = [ d sprintf('Index ') ];
     end
-    d = [ d sprintf('    [Tag]     [Dimension]                           [Title] [Last command]          [Label]\n') ];
+    d = [ d sprintf('    [Tag] [Dimension]                                     [Title] [Last command]          [Label]\n') ];
 
     % now build the output string
     for index=1:length(s_in)
@@ -40,10 +44,12 @@ else
       else
         d = [ d sprintf('%9s ',s.Tag) ];
       end
-      d = [ d sprintf('%15s ', ['[' num2str(size(s)) ']' ]) ];  % size
-      t = cellstr(s.Title); t = deblank(t{1});
-      if length(t) > 31, t = [ t(1:28) '...' ]; end             % title
-      d = [ d sprintf('%33s ', [ '''' t '''' ]) ];
+      d = [ d sprintf('%11s ', ['[' num2str(size(s)) ']' ]) ];  % size
+      t = cellstr(s.Title); t = strtrim(t{1});
+      if length(t) > 31, t = [ t(1:27) '...' ]; end             % object.title
+      t = [ t ' "' title(s) '"' ];
+      if length(t) > 41, t = [ t(1:37) '..."'  ]; end              % title(Signal)
+      d = [ d sprintf('%43s ', [ '''' t '''' ]) ];
       h = cellstr(s.Command); h=deblank(h{end});
       if length(h) > 23, h = [ h(1:20) '...' ]; end             % last command
       d = [ d sprintf('%s ', h) ];
