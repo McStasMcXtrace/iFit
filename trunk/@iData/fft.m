@@ -1,17 +1,17 @@
 function b = fft(a, op)
-% c = fft(a,b) : computes the Discrete Fourier transform of iData objects
+% c = fft(a) : computes the Discrete Fourier transform of iData objects
 %
 %   @iData/fft function to compute the Discrete Fourier transform of data sets
 %     using the FFT algorithm.
 %
 % input:  a: object or array (iData)
-% output: b: object or array (iData)
+% output: c: object or array (iData)
 % ex:     t=linspace(0,1,1000); 
 %         a=iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+2*randn(size(t)));
 %         c=fft(a); plot(abs(c));
 %
-% Version: $Revision: 1.2 $
-% See also iData, iData/ifft, conv, convn, CONV2, FILTER, FILTER2, FFT, IFFT
+% Version: $Revision: 1.3 $
+% See also iData, iData/ifft, iData/conv, FFT, IFFT
 
 if nargin <= 1,
   op = 'fft';
@@ -23,7 +23,7 @@ end
 if length(a(:)) > 1
   b =a;
   for index=1:length(a(:))
-    b(index) = feval(mfilename,a(index), inverse);
+    b(index) = feval(mfilename,a(index), op);
   end
   b = reshape(b, size(a));
   return

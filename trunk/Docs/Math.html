@@ -5,14 +5,17 @@
 
 
 
+
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Math operators</title>
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Mathematical operators</h1>
 <br>
 <ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId725083">A reminder on axes,
-monitors and signal errors</a></li><li><a href="#mozTocId810783">Unary operators</a></li><li><a href="#mozTocId714232">Binary operators</a><ol><li><a href="#mozTocId880437">Convolution</a></li><li><a href="#mozTocId650025">Comparisons</a></li></ol></li><li><a href="#mozTocId463816">Statistics, fitting and peak
-searching</a></li><li><a href="#mozTocId981870">Projection, integration and sum</a></li><li><a href="#mozTocId97186">Merging and combining
+monitors and signal errors</a></li><li><a href="#mozTocId810783">Unary operators</a><ol><li><a href="#mozTocId401065">Fourier transform</a></li><li><a href="#mozTocId218070">Derivatives</a></li></ol></li><li><a href="#mozTocId714232">Binary operators</a><ol><li><a href="#mozTocId880437">Convolution</a></li><li><a href="#mozTocId650025">Comparisons</a></li></ol></li><li><a href="#mozTocId463816">Statistics, fitting and peak
+searching</a></li><li><a href="#mozTocId981870">Projection, integration and sum</a></li><li><a href="#mozTocId97186">Cutting, Merging and combining
 data sets</a></li><li><a href="#mozTocId622257">Appending and slicing
 data sets</a></li><li><a href="#mozTocId6742">Creating arrays of
 objects</a></li><li><a href="#mozTocId991507">Interpolation,
@@ -24,7 +27,7 @@ intersection and union</a></li></ol>
 <br>
 In this documentation, we review most of the mathematical operations
 that can be applied on iData objects. Separate help pages are available
-for data <a href="Save.html"></a><a href="Load.html">import, </a>export and <a href="Fit.html">fitting</a>.<br>
+for data <a href="Load.html">import, </a><a href="Save.html">export</a> and <a href="Fit.html">fitting</a>. A full list is available in the <a href="Methods.html">methods</a> page.<br>
 <h3><a class="mozTocH3" name="mozTocId725083"></a>A reminder on axes,
 monitors and signal errors</h3>
 The iData objects have been designed keeping in mind that any
@@ -38,7 +41,7 @@ measurement of the accuracy of the Signal. You may get more details
 about these definitions in the <a href="iData.html">iData</a> object
 description page. Remember that axis of rank 1 is usually associated to
 Y (vertical, along rows), whereas axis of rank 2 is associated to X
-(horizontal, along columns).<br>
+(horizontal, along columns) except for 1D object where X is rank 1.<br>
 <br>
 The way all of these are used is listed below:<br>
 <ul>
@@ -309,7 +312,7 @@ Monitor<br>
       <td style="vertical-align: top;">FFT(Error)</td>
       <td style="vertical-align: top;"><br>
       </td>
-      <td style="vertical-align: top;">Fourier transform<br>
+      <td style="vertical-align: top;">Fourier transform (see <a href="#mozTocId401065">below</a>)<br>
       </td>
     </tr>
     <tr>
@@ -319,7 +322,57 @@ Monitor<br>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;">inverse Fourier transform</td>
+    </tr><tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">del2</span><br>
+      </td>
+      <td style="vertical-align: top;">&#8711;<sup>2</sup>(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">&#8711;<sup>2</sup>(Error)</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Laplacian &#8721;<sub>i</sub> &#8706;<sup>2</sup>Signal/&#8706;<sup>2</sup>X<sub>i</sub></td>
+    </tr><tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">gradient</span><br>
+      </td>
+      <td style="vertical-align: top;">&#8711;(Signal)<br>
+      </td>
+      <td style="vertical-align: top;">&#8711;(Error)</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Gradient (partial derivatives)<br>
+      </td>
     </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">sum</span><br>
+      </td>
+      <td style="vertical-align: top;">&#8721;(Signal)</td>
+      <td style="vertical-align: top;">&#8721;(Error)</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Sum of the Signal elements (see <a href="#mozTocId981870">below</a>)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">prod</span><br>
+      </td>
+      <td style="vertical-align: top;">&#8719;(Signal)</td>
+      <td style="vertical-align: top;">&#8719;(Error)</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Product of the Signal elements</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">trapz</span><br>
+      </td>
+      <td style="vertical-align: top;">&#8747;(Signal)</td>
+      <td style="vertical-align: top;">&#8747;(Error)</td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Trapezoidal integration<br>
+      </td>
+    </tr>
+
+
 
   </tbody>
 </table>
@@ -330,6 +383,51 @@ The <span style="font-weight: bold;">1/Signal </span>is obtained with
 the binary operator <span style="font-weight: bold;">division.</span>
 The <span style="font-weight: bold;">sqr</span> operator is a short
 cut for <span style="font-weight: bold;">power</span> 2.<br>
+<h4><a class="mozTocH4" name="mozTocId401065"></a>Fourier transform</h4>
+<a href="images/iData_fft.png"><img alt="iData/fft" title="iData/fft" src="images/iData_fft.png" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>The Fourier Transform operators <span style="font-weight: bold;">fft</span> and <span style="font-weight: bold;">ifft</span> perform a Discrete FFT computation from an N-dimensional object. The axes are converted to frequency/reciprocal axes.<br>
+In the following example, we create an object which Signal is the sum
+of 2 sine functions with frequencies 50 and 120 Hz. Then we compute its
+FFT, and again its inverse FFT.<br>
+<pre style="margin-left: 40px;">&gt;&gt; t=linspace(0,1,1000);<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(t,0.7*<span style="color: rgb(51, 102, 255);">sin</span>(2*pi*50*t)+<span style="color: rgb(51, 102, 255);">sin</span>(2*pi*120*t)+0.05*<span style="color: rgb(51, 102, 255);">randn</span>(<span style="color: rgb(51, 102, 255);">size</span>(t)));<br>&gt;&gt; c=<span style="color: rgb(51, 102, 255);">fft</span>(a); d=<span style="color: rgb(51, 102, 255);">ifft</span>(c); <span style="color: rgb(51, 102, 255);">subplot</span>([ a abs(c) d ]);<br></pre>
+The plot on the side shows that the two sine components are identified (the FFT is shown in modulus), and the FFT<sup>-1</sup>(FFT) is indeed the initial signal (within the computation approximations).<br>
+<br>
+The convolution operator, which uses FFT multiplication, is detailed <a href="#mozTocId880437">below</a>.<br>
+<h4><a class="mozTocH4" name="mozTocId218070"></a>Derivatives</h4>
+<a href="images/iData_gradient.png"><img alt="iData/gradient" title="iData/gradient" src="images/iData_gradient.png" style="border: 0px solid ; width: 200px; height: 272px;" align="right"></a>The <span style="font-weight: bold;">gradient</span> operator computes the partial <span style="font-style: italic;">derivatives</span> &#8711; of an object. (see <a href="http://en.wikipedia.org/wiki/Gradient">Gradient definition</a>)<br>
+<br>
+<div style="text-align: center;">&#8711;a = (&#8706;a/&#8706;Y<sub> </sub>&#8706;a/&#8706;X<sub> </sub>&#8706;a/&#8706;Z<sub> ...</sub>)<br>
+<br>
+</div>
+The resulting objects are sorted by axis rank, that is partial(X) is
+2nd, partial(Y) is 1st, partial(Z) is 3rd, etc. In case the axis
+sampling/binning is not regular, a re-binning is automatically
+performed. For 1D objects, the gradient is the derivative. In the following example, we compute the 2D gradient of an object, and plot them.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(peaks);<br>&gt;&gt; g=<span style="color: rgb(51, 102, 255);">gradient</span>(a); <span style="color: rgb(51, 102, 255);">subplot</span>([ a g(1) g(2) ]);<br></pre>
+The <span style="font-weight: bold;">del2</span> operator computes the Laplacian &#916;=&#8711;<sup>2 </sup>of an object (see <a href="http://en.wikipedia.org/wiki/Laplacian">Laplacian definition</a>)<br>
+<br>
+<div style="text-align: center;"><span style="font-style: italic;">&#8711;</span><sup style="font-style: italic;">2</sup><span style="font-style: italic;">a = &#8721;</span><sub style="font-style: italic;">i</sub><span style="font-style: italic;"> (&#8706;</span><sup style="font-style: italic;">2</sup><span style="font-style: italic;">a/&#8706;X</span><sub style="font-style: italic;">i</sub><sup style="font-style: italic;">2</sup><span style="font-style: italic;">)</span><br>
+</div>
+<br>
+which is a measure of the <span style="font-style: italic;">curvature</span> of the object. In this sense, for an N dimension object, it schematically returns, with the <span style="font-style: italic;">del2</span> standard Matlab function, 2N*<span style="color: rgb(51, 102, 255);">del2</span>(Signal). In case the axis sampling/binning is not regular, a rebinning is automatically performed.<br>
+<br>
+Finally the <span style="font-weight: bold;">jacobian</span> operator (see <a href="http://en.wikipedia.org/wiki/Jacobian">Jacobian definition</a>)
+enables to perform a variable change in the representation of the
+Signal. This corresponds to a new axis definition with consecutive
+correction of the Signal so that the integral value is retained between
+the different space representations.<br>
+<br>
+Suppose we want to perform a coordinate change from the axis system <span style="font-style: italic;">X={X1, ... Xn}</span> to a new space <span style="font-style: italic;">Y={Y1, ...Yn}</span> where <span style="font-style: italic;">n</span> is the dimensionality of the object <span style="font-style: italic;">a</span> Signal. Then the Jacobian of the object is:<br>
+<br>
+<div style="text-align: center;"><span style="font-style: italic;">J(a, X, Y) = [ dY</span><sub style="font-style: italic;">i</sub><span style="font-style: italic;">/dX</span><sub style="font-style: italic;">i</sub><span style="font-style: italic;"> ]</span><sub style="font-style: italic;">ij</sub> <br>
+</div>
+<br>
+The new object <span style="font-style: italic;">b</span> infinitesimal element (pixel/bin) in the new representation which ensures &#8747; a dX = &#8747; b dY is such that:<br>
+<br>
+<div style="text-align: center;"><span style="font-style: italic;">b&nbsp; = a | dY/dX |</span><br>
+</div>
+<br>
+which requires to estimate the Jacobian determinant for each pixel/bin in the initial object <span style="font-style: italic;">a</span>. As the Signal holds a single scalar value in each bin, <span style="font-style: italic;">J</span> is the division of the gradient of <span style="font-style: italic;">Y</span> over the gradient of <span style="font-style: italic;">X</span> for the whole Signal.<br>
+
 <h3><a class="mozTocH3" name="mozTocId714232"></a>Binary operators</h3>
 The binary operators take two objects, and perform a relational
 operator, element-by-element. In the following we use the notations:<br>
@@ -441,7 +539,7 @@ operator<br>
       <td style="vertical-align: top;">m1+m2<br>
       </td>
       <td style="vertical-align: top;">add Signals and Monitors
-independently<br>
+independently (see <a href="#mozTocId97186">below</a>)<br>
       </td>
     </tr>
     <tr>
@@ -472,14 +570,26 @@ independently<br>
     </tr><tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">conv</span><br>
       </td>
-      <td style="vertical-align: top;">convolution(s1,s2)<br>
+      <td style="vertical-align: top;">FFT<sup>-1</sup>(FFT(s1)*FFT(s2))<br>
       </td>
       <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
       <td style="vertical-align: top;">m1*m2<br>
       </td>
-      <td style="vertical-align: top;">convolution (see below)<br>
+      <td style="vertical-align: top;">convolution (see <a href="#mozTocId880437">below)</a><br>
+      </td>
+    </tr><tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">interp</span><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">interpolation<br>
       </td>
     </tr>
+
 
   </tbody>
 </table>
@@ -556,8 +666,10 @@ of one iData with anything else. In the background it uses the <span style="font
 The convolution operator can be given additional options in order to control the accuracy and the size of the returned object<br>
 <pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b);	<span style="font-style: italic;">	% returned convoluted object with size which is size(a)+size(b)+1</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'same'</span>);<span style="font-style: italic;">	% returned convoluted object </span><span style="font-style: italic;">with</span><span style="font-style: italic;"> size which is size(a)<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'valid'</span>);<span style="font-style: italic;">	% returned convoluted object </span><span style="font-style: italic;">with</span><span style="font-style: italic;"> size which is size(a)</span>-size(b)+1<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'pad'</span>);<span style="font-style: italic;">	% pads 'a' with starting/ending values to minimize border effects<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'center'</span>);<span style="font-style: italic;">	% centers 'b' so that convolution does not shift 'a' axes<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'norm'</span>);<span style="font-style: italic;">	% normalizes</span><span style="font-style: italic;"> 'b' so that convolution does not change 'a' integral<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'background'</span>);<span style="font-style: italic;">	% subtracts</span><span style="font-style: italic;"> minimal value in 'b' so that convolution does not change 'a' integra</span>l<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'deconv'</span>);	<span style="font-style: italic;">% deconvolution, but very sensitive to noise (use with caution)</span><br></pre>
 
-When the an object has to be convoluted with a response function (<span style="font-style: italic;">e.g.</span> instrument resolution function), the usual options to use should be:<br>
+<a href="images/iData_conv.png"><img alt="iData/convolution" title="iData/convolution" src="images/iData_conv.png" style="border: 0px solid ; width: 200px; height: 272px;" align="right"></a>When the an object has to be convoluted with a response function (<span style="font-style: italic;">e.g.</span> instrument resolution function), the usual options to use should be:<br>
 <pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'same pad background center norm'</span>);<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">convn</span>(a,b);	<span style="font-style: italic;">% same as above</span> in a shorter call<br></pre>
+To perform an auto-convolution, just use:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">convn</span>(a,a);</pre>
 This is very useful when a measurement has to be corrected with the
 response of the probe (instrument). In this case, a fit of the data may
 be carried out as:<br>
@@ -751,8 +863,16 @@ the elastic line, is gradually summed over all angle channels, showing
 inelastic contribution on its shoulders.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([ (a) <span style="color: rgb(51, 102, 255);">cumsum</span>(a) ] ,<span style="color: rgb(204, 51, 204);">'tight'</span>)</pre>
 The <span style="font-weight: bold;">cumprod</span> is the <span style="font-style: italic;">primitive</span> of the <span style="font-style: italic;">Signal, </span>when the axis step is <span style="font-style: italic;">dx</span>=1.<br>
-<h3><a class="mozTocH3" name="mozTocId97186"></a>Merging and combining
+<h3><a class="mozTocH3" name="mozTocId97186"></a>Cutting, Merging and combining
 data sets</h3>
+<h4>Cutting and selecting portions of a data set</h4>
+A way to select a subset of an object from its axis rang is to use <span style="font-weight: bold;">xlim, ylim, zlim, clim</span> for respectively 2nd (X is 1st for 1D objects), 1st, 3rd and 4th dimensions. It is also possible to directly use <span style="font-weight: bold;">find</span>:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">xlim</span>(a, [100 200]);					<span style="font-style: italic;">% selects the object with X axis ranging from 100 to 200</span><br>&gt;&gt; b = a(<span style="color: rgb(51, 102, 255);">:, find</span>(  100 &lt;= a{2} &amp; a{2} &lt;= 200 ));				<span style="font-style: italic;">% same as above: X is rank 2</span>(columns)<br>&gt;&gt; c = a(<span style="color: rgb(51, 102, 255);">find</span>(50 &lt;= a{1} &amp; a{1} &lt;= 150),<span style="color: rgb(51, 102, 255);">find</span>(100 &lt;= a{2} &amp; a{2} &lt;= 200)<span style="color: rgb(51, 102, 255);"></span>);	<span style="font-style: italic;">% cuts along X(rank2) and Y axes(rank1, rows)</span><br></pre>
+
+<pre style="margin-left: 40px;"><a href="images/iData_plus_combine.png"><img style="border: 0px solid ; width: 300px; height: 255px;" src="images/iData_plus_combine.png" title="iData: Math: Plus and Combine compared" alt="iData: Math: Plus and Combine compared" align="right"></a></pre>
+<h4><span style="font-weight: bold;">The difference between addition
+and
+combination</span></h4>
 The <span style="font-weight: bold;">combine</span> operation performs
 an addition of the <span style="font-style: italic;">Signal</span> and
 the <span style="font-style: italic;">Monitor</span>. This is of
@@ -770,10 +890,6 @@ the
 same
 and
 <span style="font-style: italic;">Monitors</span> are not equivalent.<br>
-<pre style="margin-left: 40px;"><a href="images/iData_plus_combine.png"><img style="border: 0px solid ; width: 300px; height: 255px;" src="images/iData_plus_combine.png" title="iData: Math: Plus and Combine compared" alt="iData: Math: Plus and Combine compared" align="right"></a></pre>
-<span style="font-weight: bold;">The difference between addition
-and
-combination</span><br>
 <br>
 Suppose we perform a measurement providing a
 <span style="font-style: italic;">Signal S</span>1 for a given
@@ -907,7 +1023,7 @@ The <span style="font-weight: bold;">interp</span> operator can be
 used to interpolate one object onto an other axis coordinate frame,
 which can be given as an other object, a binning scaling factor, or a
 set of axes.<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(10)</span></span>)+2<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">interp</span>(a,2)<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">interp</span>(a,1:.25:15,3:.25:12)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c],[1 3],<span style="color: rgb(204, 51, 204);">'mesh tight'</span>)<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(10)</span></span>)+2<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">interp</span>(a,2)	<span style="font-style: italic;">% doubled binning</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">interp</span>(a,1:.25:15,3:.25:12)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c],[1 3],<span style="color: rgb(204, 51, 204);">'mesh tight'</span>)<br></pre>
 <div style="text-align: center;"><a href="images/iData_interp.png"><img alt="iData interp" title="iData interp" src="images/iData_interp.png" style="border: 0px solid ; width: 444px; height: 200px;" align="middle"></a><br>
 <div style="text-align: left;"><br>
 Last, the <span style="font-weight: bold;">sort</span> operator sorts
@@ -919,7 +1035,7 @@ Signal, Error, and Monitor values are also re-ordered accordingly.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2011-07-18 14:07:03 $ $Revision: 1.16 $
+$Date: 2011-07-26 21:05:26 $ $Revision: 1.17 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

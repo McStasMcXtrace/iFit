@@ -18,7 +18,7 @@ function c = iData_private_binary(a, b, op, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
@@ -220,11 +220,12 @@ end
 % set Signal label
 if isa(a, 'iData'), [dummy, al] = getaxis(a,'0'); 
 else 
-  al=num2str(a); if length(al) > 10, al=[ al(1:min(length(al),10)) '...' ]; end 
+  al=num2str(a(:)'); if length(al) > 10, al=[ al(1:10) '...' ]; end 
 end
 if isa(b, 'iData'), [dummy, bl] = getaxis(b,'0'); 
 else 
-  bl=num2str(b); if length(bl) > 10, bl=[ bl(1:min(length(bl),10)) '...' ]; end 
+  bl=num2str(b(:)');
+  if length(bl) > 10, bl=[ bl(1:10) '...' ]; end 
 end
 
 % update object (store result)

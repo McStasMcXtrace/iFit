@@ -33,6 +33,11 @@ if isempty(tests_list)
     'Math_8_arrays', ...
     'Math_9_intersect', ...
     'Math_10_interp', ...
+    'Math_11_FFT', ...
+    'Math_12_conv', ...
+    'Math_13_gradient', ...
+    'Math_14_laplacian', ...
+    'Math_15_jacobian', ...
     'Plot_1_1D', ...
     'Plot_2_2D', ...
     'Plot_3_3D', ...
@@ -42,6 +47,7 @@ if isempty(tests_list)
     'Plot_7_subplot', ...
     'Plot_8_projections', ...
     'Plot_9_slices', ...
+    'Plot_10_caxis', ...
     'Save_1', ...
     'iFitmakefunc_1'};
 elseif ischar(tests_list)
@@ -59,9 +65,10 @@ for index=1:length(tests_list)
     result= ifittest_execute(tests_list{index});
     err   = '';
   catch
-    result= 'Failed exec';
+    result= 'FAILED exec';
     lerr  = lasterror;
     err   = lerr.message;
+    if length(err) > 100, err=[ err(1:100) ' ...' ]; end
   end
   status{index} = result;
   errors{index} = err;
@@ -72,12 +79,12 @@ end
 disp(['                Test     Status             [' mfilename ']' ]);
 disp( '------------------------------------------------------')
 for index=1:length(tests_list)
-  fprintf(1, '%20s %10s %s\n', tests_list{index}, status{index}, errors{index});
-  if ~strcmp(status{index},'OK'), failed=failed+1; end
+  fprintf(1, '%20s %-10s %s\n', tests_list{index}, status{index}, errors{index});
+  if strcmp(status{index},'FAILED') || ~isempty(errors{index}), failed=failed+1; end
 end
 ratio = 1-failed/length(tests_list);
 disp( '------------------------------------------------------')
-fprintf(1,'Success ratio: %i %%\n', ceil(ratio*100));
+fprintf(1,'Success ratio: %i %% (%i/%i test failed)\n', ceil(ratio*100), failed, length(tests_list));
 fprintf(1,'Test duration: %g [s]\n', etime(clock,t0));
 
 % ------------------------------------------------------------------------------
@@ -91,7 +98,7 @@ case 'Fit_1'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   p=fits(a);
   if abs(max(abs([ 0.64         1.0008      0.0035         0.0002 ])-abs(p))) < 0.01
-    result = 'OK';
+    result = 'OK  fits(a)';
   else
     result = 'FAILED';
   end 
@@ -101,7 +108,7 @@ case 'Fit_2_gauss'
   b= ieval(a, 'gauss', p);
   plot([ a b ]);
   if max(a-b)/mean(get(a,'Monitor')) < 0.1
-    result = 'OK';
+    result = 'OK  fits(a, ''gauss'', p); ieval(a,''gauss'', p)';
   else
     result = 'FAILED';
   end 
@@ -111,7 +118,7 @@ case 'Fit_3_options'
   options.TolFun=0.01;
   p=fits(a, 'gauss', [], options);
   if abs(max(abs([ 0.64         1.0008      0.0035         0.0002 ])-abs(p))) < 0.01
-    result = 'OK';
+    result = 'OK  fits(a, ''gauss'', [], options);';
   else
     result = 'FAILED';
   end 
@@ -124,8 +131,8 @@ case 'Fit_4_fminplot'
   b = ieval(a, 'gauss', p);
   figure; plot([ a b ]);
   if max(a-b)/mean(get(a,'Monitor')) < 0.1
-    result = 'OK';
-  else
+    result = 'OK fits(a, ''gauss'', [], options.OutputFcn=''fminplot'')';
+  else 
     result = 'FAILED';
   end 
 case 'Fit_5_fix'
@@ -133,7 +140,7 @@ case 'Fit_5_fix'
   p=fits(a, 'gauss', [], 'fminimfil', [ 1 0 0 0 ]);
   % p= 0.5936    1.0008   -0.0037    0.0002
   if abs(max(abs([ 0.5936         1.0008      0.0035         0.0002 ])-abs(p))) < 0.01
-    result = 'OK';
+    result = 'OK  fits(a, ''gauss'', [], ''fminimfil'', [ 1 0 0 0 ])';
   else
     result = 'FAILED';
   end 
@@ -141,7 +148,7 @@ case 'Fit_6_limits'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   p=fits(a, 'gauss', [], 'fminimfil', [ 0.5 0.8 0 0 ], [ 1 1.2 1 1 ]);
   if abs(max(abs([ 0.6363         1.0008      0.0035         0.0002 ])-abs(p))) < 0.01
-    result = 'OK';
+    result = 'OK  fits(a, ''gauss'', [], ''fminimfil'', [ 0.5 0.8 0 0 ], [ 1 1.2 1 1 ]);';
   else
     result = 'FAILED';
   end 
@@ -149,13 +156,12 @@ case 'Fit_7_uncertainties'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   [p,criteria,message,output]= fits(a, 'gauss', [], 'fminimfil');
   index=find(output.criteriaHistory < min(output.criteriaHistory)*2);
-  sigma = std(output.parsHistory(index,:));
-  num2str([p ; sigma], 4);
+  sigma = output.parsHistoryUncertainty;
   % p    = [ 0.6264      1.001   -0.00365  0.0002173 ]
   % sigma= [ 0.004565  2.438e-05  3.159e-05  3.785e-05 ]
   if abs(max(abs([ 0.5936         1.0008      0.0035         0.0002 ])-abs(p))) < 1e-4 && ...
      abs(max(abs([0.004565  2.438e-05  3.159e-05  3.785e-05 ])-abs(sigma))) < 0.01
-    result = 'OK';
+    result = 'OK  [p,criteria,message,output]= fits(a); output.parsHistoryUncertainty';
   else
     result = 'FAILED';
   end 
@@ -164,7 +170,7 @@ case 'iFit_8_lorz'
   p=fits(a,'lorz');
   b = ieval(a, 'lorz', p);
   if max(a-b)/mean(get(a,'Monitor')) < 0.4
-    result = 'OK';
+    result = 'OK  fits(a,''lorz'')';
   else
     result = 'FAILED';
   end 
@@ -174,6 +180,7 @@ case 'iData_1'
   a = iData([ ifitpath 'Data/ILL_IN6.dat']);
   get(a);
   a = iData(rand(10));
+  result = 'OK  iData([ ifitpath ''Data/ILL_IN6.dat'']);';
 case 'iData_2_loadarray'
   a=load(iData, [ ifitpath 'Data/*.scn']);
   get(a,'Title');
@@ -183,6 +190,8 @@ case 'iData_2_loadarray'
   a(3).Data;
   if length(a) ~= 3
     result='FAILED';
+  else
+    result = 'OK  load(''*'')';
   end
 case 'iData_3_find'
   a=load(iData, [ ifitpath 'Data/sv1850.scn']);
@@ -192,7 +201,7 @@ case 'iData_3_find'
   f=findfield(a,'TAS');
   % should return 2 fields
   if length(match) == 4 && length(f) == 2 
-    result = 'OK';
+    result = 'OK  findstr; findfield';
   else
     result = 'FAILED';
   end 
@@ -213,26 +222,32 @@ case 'iData_4_setalias'
   getaxis(a, 1 );
   getaxis(a,'1');
   label(a,1);
+  result = 'OK  load;setalias;getaxis;label';
 case 'iFiles_1'
   a = load(iData, [ ifitpath 'Data/ILL_IN6.dat' ]);
   config = iLoad('load config');
+  result = 'OK  load; iLoad(''config'')';
 case 'load_1'
   a = iData([ ifitpath 'Data' ]);
+  result = 'OK  load';
 case 'load_2'
   a = iData(rand(10));
   a = iData(struct('a',1,'b','a string'));
   a = findobj(iData);
   f=figure; peaks;
   a = iData(f);
+  result = 'OK  iData(peaks); iData(gcf)';
 case 'Math_1_unary'
   a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);
   b = [ log(a) floor(a) sqrt(a) ];
+  result = 'OK  log floor sqrt';
 case 'Math_2_binary'
    a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);
    b = iData([ ifitpath 'Data/ILL_IN20.dat' ]); 
    set(a,'Monitor', mean(b.Monitor)/10);
    c = a+b;
    subplot([ log(a) b log(c) ] ,'tight');
+   result = 'OK  plus';
 case 'Math_3_stats'
   a = iData([ ifitpath 'Data/sv1850.scn' ]);
   [w,x]=std(a); % w=0.036 x=1.0007
@@ -242,7 +257,7 @@ case 'Math_3_stats'
   if abs(w-0.0036) < 1e-4 && abs(x-1.0007) < 1e-4 && ...
    norm(abs(m-[0         7387          119       1630.7])) < 5e-2 && ...
    abs(p(2)-x) < 5e-4 && abs(abs(p(3))-w) < 1e-4
-    result = 'OK';
+    result = 'OK  min max median mean std';
   else
     result = 'FAILED';
   end 
@@ -250,7 +265,7 @@ case 'Math_4_peaks'
   a = iData([ ifitpath 'Data/MCA.dat' ]);
   [half_width, center, amplitude, baseline]=peaks(a);
   if length(amplitude) > 100 && length(amplitude) < 120
-    result = 'OK';
+    result = 'OK  peaks';
   else
     result = 'FAILED';
   end 
@@ -260,12 +275,14 @@ case 'Math_5_proj'
   ylabel(a, 'Angle channel');% 1st axis
   subplot([ log(a) log(camproj(a)) log(sum(a)) ],'tight');
   subplot([ (a) cumsum(a) ] ,'tight');
+  result = 'OK  camproj sum cumsum';
 case 'Math_6_combine'
   a = iData([ ifitpath 'Data/ILL_IN6*.dat' ]);
   a(1)=setalias(a(1),'Monitor', 1);
   a(2)=setalias(a(2),'Monitor', 10);
   b=combine(a);
   c=a(1)+a(2);
+  result = 'OK  plus combine';
 case 'Math_7_catdog'
   x=-pi:0.01:pi; a=iData(x,x); 
   a.Error=0; 
@@ -275,12 +292,14 @@ case 'Math_7_catdog'
   rmaxis(f,1);
   g=cat(2, [a b c d]);
   h=dog(2, g); 
+  result = 'OK  cat dog';
 case 'Math_8_arrays'
   a = zeros(iData, [5 3]); 
   a = iData(peaks);
   b = zeros(a, 5, 3);
   b = linspace(a, cos(a), 5);
   c = logspace(a, sin(a), 5);
+  result = 'OK  linspace logspace';
 case 'Math_9_intersect'
   a = iData(peaks);
   b = copyobj(a);
@@ -288,16 +307,48 @@ case 'Math_9_intersect'
   a.Signal=a.Signal+5;
   [ai,bi]=intersect(a,b);
   [au,bu]=union(a,b);
+  result = 'OK  intersect union';
 case 'Math_10_interp'
   a = iData(peaks(10))+2;
   b = interp(a,2);
   c = interp(a,1:.25:15,3:.25:12);
+  result = 'OK  interp';
+case 'Math_11_FFT'
+  t=linspace(0,1,1000);
+  a = iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+0.05*randn(size(t)));
+  c=fft(a); d=ifft(c);
+  if std(abs(a-d)) > 0.3
+    result='FAILED';
+  else
+    result = 'OK  fft ifft';
+  end
+case 'Math_12_conv'
+  a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
+  plot([a convn(a) ]);
+  a=iData([ ifitpath 'Data/ILL_IN6.dat' ]);
+  subplot([a convn(a) ]);
+  result = 'OK  conv convn';
+case 'Math_13_gradient'
+  a=iData(peaks);
+  g=gradient(a); 
+  if length(g) ~= 2, result='FAILED'; 
+  else result = 'OK  gradient';
+  end
+case 'Math_14_laplacian'
+  a=iData(peaks);
+  b=del2(a);
+  result = 'OK  del2';
+case 'Math_15_jacobian'
+  a=iData(peaks); x=linspace(1,2,size(a,1));
+  g=jacobian(a, x, [],'half X');
+  result = 'OK  jacobian';
 case 'Plot_1_1D'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   plot(a);
   old_mon=getalias(a,'Monitor');
   setalias(a,'Monitor',1);
   figure; plot(a);
+  result = 'OK  plot';
 case 'Plot_2_2D'
   a=load(iData, [ ifitpath 'Data/ILL_D10.dat' ]);
   plot(a);
@@ -309,6 +360,7 @@ case 'Plot_2_2D'
   plot(a,'surfc');   % a surface with contour plot below
   plot(a,'plot3');   % a surface made of lines side by side
   plot(a,'scatter3');% a surface made of colored points, same as scatter3(a)  
+  result = 'OK  surf contour surfc plot3 scatter3';
 case 'Plot_3_3D'
   [x,y,z,v]=flow; c=iData(x,y,z,v);
   plot(c);
@@ -318,15 +370,18 @@ case 'Plot_3_3D'
   plot(c,'plot3');          % plots a volume rendering with semi-transparent style
   plot(c,'scatter3');       % a set of colored points in space
   slice(c);
+  result = 'OK  surf contour surfc plot3 scatter3 slice';
 case 'Plot_4_overlay_1D'
   x=-pi:0.01:pi; a=iData(x,x); 
   a.Error=0;                         % replace default Error=sqrt(Signal) by no-error.
   b=sin(a); c=cos(a); d=exp(-a.*a);  % create new objects by applying operator on the initial linear one
   plot([a b c d]);                   % overlay all objects
+  result = 'OK  plot overlay';
 case 'Plot_5_overlay_2D'
   [x,y,z]=peaks; a=iData(x,y*10,z); 
   c=linspace(a,-a+50,10);            % continuously go from 'a' to a '-a+50' in 10 steps
   plot(c);                           % plot all on the same figure
+  result = 'OK  linspace/waterfall';
 case 'Plot_6_sidebyside'
   x=-pi:0.01:pi; a=iData(x,x); 
   a.Error=0;                         % replace default Error=sqrt(Signal) by no-error.
@@ -336,24 +391,33 @@ case 'Plot_6_sidebyside'
   e=cat(2, [a b c d]);               % catenate 1D objects into a 2D object along 2nd axis 
   e{2} = [ 1 1.5 3 5 ];              % asign 2nd axis values in one go
   plot(e,'mesh');                    % plot
+  result = 'OK  waterfall cat mesh';
 case 'Plot_7_subplot'
   x=-pi:0.01:pi; a=iData(x,x); a.Error=0; % replace default Error=sqrt(Signal) by no-error.
   b=sin(a); c=cos(a); d=exp(-a.*a);       % create new objects by applying operator on the initial linear one
   e=iData(flow); f=iData(peaks);          % create 2D and 3D objects
   subplot([a b c d e f]);                 % plot all into a set of separate frames
+  result = 'OK  subplot';
 case 'Plot_8_projections'
   a=iData([ ifitpath 'Data/ILL_IN6.dat' ]);                       % import data
   y=a.Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF_7; y=y(32:371); a{1}=y; % define the angular axis
   ylabel(a,'Angle [deg]');
   subplot([ log(a) sum(a) trapz(a) camproj(a) ],'axis tight');
+  result = 'OK  sum trapz camproj';
 case 'Plot_9_slices'
   a=iData([ ifitpath 'Data/ILL_IN6.dat' ]); 
   plot(a(:,622));                   % extract the object made from channel 622 on second axis, with all columns
+  result = 'OK  subsref';
+case 'Plot_10_caxis'
+  a=iData(peaks); plot(a); caxis(del2(a));
+  result = 'OK  caxis';
 case 'Save_1'
   a = iData([ ifitpath 'Data/ILL_IN6.dat']);
   f1= saveas(a,'','pdf');               % save object as a PDF and use object ID as file name
   f2= saveas(a,'MakeItSo','hdf5');      % save object as a HDF5 into specified filename. Extension is appended automatically
-  if isempty(f1) || isempty(f2), result='FAILED'; end
+  if isempty(f1) || isempty(f2), result='FAILED'; 
+  else result = 'OK  saveas';
+  end
   try; delete(f1); end
   try; delete(f2); end
 case 'iFitmakefunc_1'
@@ -370,13 +434,15 @@ case 'iFitmakefunc_1'
     'p(1)*sin((x-p(2))/p(3)).*exp(-x/p(4))+p(5)','automatic');
   which('sinexp');
   % perform the fit
-  p1=fits(a,sinexp,[1.15 0.4 0.15 1.7 0.2],'fminpso');
+  p1=fits(a,sinexp,[1.15 0.4 0.15 1.7 0.2],'fminralg');
   if norm(abs(p1(:))-p(:)) > 0.8
     result='FAILED';
+  else result = 'OK  ifitmakefunc fits';
   end
   try; delete('sinexp.m'); end
 otherwise
   disp([ mfilename ': Unknown test procedure ' test '. Skipping.' ]);
+  result=[ 'FAILED Unknown test procedure ' ];
 end
 
 if isempty(result) result='OK'; end
