@@ -23,7 +23,7 @@ function h=plot(a, method)
 %               For 1D plots y=f(x), method is a string to specify color/symbol.
 %               For 2D plots z=f(x,y), method is a string which may contain:
 %                 surf, mesh, contour, contour3, surfc, surfl, contourf
-%                 plot3, scatter3 (colored points), stem3, pcolor
+%                 plot3, scatter3 (colored points), stem3, pcolor, waterfall
 %               For 3D plots c=f(x,y,z), method is a string which may contain:
 %                 plot3 (volume), scatter3 (colored points)
 %                 surf, surf median, surf mean, surf half
@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.57 $
+% Version: $Revision: 1.58 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -59,6 +59,13 @@ if length(a) > 1
   ih = ishold;
   sum_max = 0;
   for index=1:length(a(:))
+    if ndims(a(index)) == 1 && isvector(a(index)) == 1 && ...
+      isempty(getaxis(a(index),2)) && ...
+      (~isempty(strfind(method, 'plot3')) | ~isempty(strfind(method,'stem3')) ...
+       | ~isempty(strfind(method,'scatter3')) | ~isempty(strfind(method, 'mesh')) ...
+       | ~isempty(strfind(method,'surf') ) | ~isempty(strfind(method,'waterfall')))
+      a(index) = setaxis(a(index), 2, index);
+    end
     h{index} = plot(a(index), method);
     sum_max = sum_max+max(a(index))-min(a(index));
     if ndims(a(index)) == 1 && isempty(method)
@@ -121,7 +128,8 @@ case 1  % vector type data (1 axis + signal) -> plot
   if isempty(method), method='b-'; end
   % handle side-by-side 1D plots
   if ~isempty(strfind(method, 'plot3')) | ~isempty(strfind(method,'stem3')) ...
-   | ~isempty(strfind(method,'scatter3')) | ~isempty(strfind(method, 'mesh')) | ~isempty(strfind(method,'surf') )
+   | ~isempty(strfind(method,'scatter3')) | ~isempty(strfind(method, 'mesh')) ...
+   | ~isempty(strfind(method,'surf') ) | ~isempty(strfind(method,'waterfall'))
   	if isempty(getaxis(a,2))
   		ax = 0;
     else
@@ -225,6 +233,8 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
       else h = plot3(x,y,z); end
     elseif (strfind(method,'scatter3'))
       h=fscatter3(x(:),y(:),z(:),z(:));
+    elseif (strfind(method,'waterfall'))
+      h=waterfall(x,y,z);
     else
       h=surf(x,y,z); set(h,'Edgecolor','none');
     end
@@ -366,10 +376,14 @@ for index=0:length(getaxis(a))
   x      = getaxis(a, index);
   m      = get(a, 'Monitor');
   if index==0 & not(all(m==1 | m==0))
-    t = sprintf('%6i %15s  %s [%g:%g] (per monitor)', index, v, l, min(x(:)), max(x(:)));
+    t = sprintf('%6i %15s  %s [%g:%g] (per monitor=%g)', index, v, l, min(x(:)), max(x(:)), mean(m(:)));
   else
-    [s, f] = std(a, index);
-    t = sprintf('%6i %15s  %s [%g:%g] <%g +/- %g>', index, v, l, min(x(:)), max(x(:)), f, s);
+    try
+      [s, f] = std(a, index);
+      t = sprintf('%6i %15s  %s [%g:%g] <%g +/- %g>', index, v, l, min(x(:)), max(x(:)), f, s);
+    catch
+      t = sprintf('%6i %15s  %s [%g:%g]', index, v, l, min(x(:)), max(x(:)));
+    end
   end
   properties{end+1} = t;
   uimenu(uicm, 'Label', t);

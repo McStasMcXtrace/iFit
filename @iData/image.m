@@ -17,15 +17,17 @@ function h = image(r, g, b, option)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
 %                 norm (will use the same color-scale)
 % output: h: graphics object handle
-% ex:     image(iData(peaks),'hide axes');
+% ex:     image(iData(peaks),[],[], 'hide axes');
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot
 
-if nargin < 4, option = []; end
-if nargin < 3, b=''; end
-if nargin < 2, g=''; end
+if nargin < 4, option = ''; end
+if nargin < 3, b=[]; end
+if nargin < 2, g=[]; end
 
+if ischar(g), options=g; g=[]; end
+if ischar(b), options=b; b=[]; end
 if isempty(r), r=iData; end
 if isempty(g), g=iData; end
 if isempty(b), b=iData; end
@@ -90,9 +92,14 @@ for index=1:length(a)
     s = getaxis(this,0);
     if strfind(option,'norm')
       s=s-minv; s=s/(maxv-minv);
-      max(s(:))
     else
-      s=s-min(s(:)); s=s/max(s(:));
+      if ~isinf(min(s(:))) && ~isinf(max(s(:)))
+        s=s-min(s(:)); s=s/max(s(:));
+      else
+        i=find(s>=0 & isfinite(s));
+        j=find(s<0 | ~isfinite(s));
+        s(j)=min(s(j)); s=s/max(s(i));
+      end
     end
     u(:,:,index)=s;
   end
