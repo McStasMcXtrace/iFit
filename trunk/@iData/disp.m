@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -16,6 +16,11 @@ if ~isempty(inputname(1))
   iname = inputname(1);
 else
   iname = 'ans';
+end
+
+% removes warnings during disp
+try
+  warn = warning('off');
 end
  
 if length(s_in) > 1
@@ -106,4 +111,9 @@ else
     end
   end
   iData(s_in);
+end
+
+% reset warnings during disp
+try
+  warning(warn);
 end
