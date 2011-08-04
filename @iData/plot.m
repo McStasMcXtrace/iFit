@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.58 $
+% Version: $Revision: 1.59 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -116,10 +116,10 @@ case 1  % vector type data (1 axis + signal) -> plot
   if size(a,1) ==1 && size(a,2) > 1
     a = transpose(a);
   end
-  [x, xlab] = getaxis(a,1); x=x(:);
-  [y, ylab] = getaxis(a,0); y=y(:);
-  e         = get(a,'Error');   e=real(e); e=e(:);
-  m         = get(a,'Monitor'); m=real(m); m=m(:);
+  [x, xlab] = getaxis(a,1); x=double(x(:));
+  [y, ylab] = getaxis(a,0); y=double(y(:));
+  e         = get(a,'Error');   e=real(double(e)); e=e(:);
+  m         = get(a,'Monitor'); m=real(double(m)); m=m(:);
   if not(all(m == 1 | m == 0)),
     e=genop(@rdivide,e,m); ylab = [ylab ' per monitor' ];
   end
@@ -189,9 +189,9 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   if not(all(m == 1 | m == 0)),
     zlab = [zlab ' per monitor' ];
   end
-  x=real(x);
-  y=real(y);
-  z=real(z);
+  x=real(double(x));
+  y=real(double(y));
+  z=real(double(z));
   if isvector(a) % plot3/fscatter3
     if (strfind(method,'plot3'))
     	method = strrep(method,'plot3','');
@@ -254,10 +254,10 @@ case 3  % 3d data sets: volumes
     if ~isvector(a) && isempty(strfind(method, 'plot3'))
       a = interp(a,'grid'); % make sure we get a grid
     end
-    [x, xlab] = getaxis(a,2);
-    [y, ylab] = getaxis(a,1);
-    [z, zlab] = getaxis(a,3);
-    [c, clab] = getaxis(a,0);
+    [x, xlab] = getaxis(a,2); x=double(x);
+    [y, ylab] = getaxis(a,1); y=double(y);
+    [z, zlab] = getaxis(a,3); z=double(z);
+    [c, clab] = getaxis(a,0); c=double(c);
     m         = get(a,'Monitor');
     if not(all(m == 1 | m == 0)), clab = [clab ' per monitor' ]; end
     if isvector(a) == 3 || ~isempty(strfind(method, 'scatter3')) % plot3-like
@@ -282,12 +282,17 @@ case 3  % 3d data sets: volumes
         else
           iso = [];
         end
-        if ~isempty(iso), 
-          isosurface(x,y,z, c, iso);
-        else 
-          isosurface(x,y,z, c); 
+        try
+          if ~isempty(iso), 
+            isosurface(x,y,z, c, iso);
+          else 
+            isosurface(x,y,z, c); 
+          end
+          h = findobj(gca,'type','patch');
+        catch
+          h = plot(a, 'scatter3');
+          return
         end
-        h = findobj(gca,'type','patch');
       end
     end
     zlabel(zlab);
