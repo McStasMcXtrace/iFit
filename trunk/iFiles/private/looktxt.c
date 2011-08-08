@@ -105,7 +105,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.1 $Revision: 1.19 $"
+#define VERSION "1.1 $Revision: 1.1 $"
 #endif
 
 #ifdef __dest_os
@@ -1850,9 +1850,9 @@ char *data_get_char(struct file_struct file, size_t start, size_t end)
 {
   char *string;
 
-  if (start >= end)       return (NULL);
   if (start < 0) start=0;
   if (end >= file.Size) end=file.Size;
+  if (start >= end)       return (NULL);
   if (!file.SourceHandle) return (NULL);
   string = mem(end - start + 2);
   if(fseek(file.SourceHandle, start, SEEK_SET))

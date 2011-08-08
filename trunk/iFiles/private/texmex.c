@@ -41,7 +41,7 @@
 #define malloc  mxMalloc
 #define realloc mxRealloc
 #define calloc  mxCalloc
-#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.8 $"
+#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.1 $"
 /* #define free mxFree  */
 #define free NoOp
 
@@ -114,7 +114,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     EndString   = InputString+strlen(InputString);
     
     /* the first input argument should be used as is (filename) */
-    if (i==0) {
+    if (i==0 && nrhs > 1) {
       varg[carg] = (char*)mxMalloc(strlen(InputString)+64);
       if (varg[carg] == NULL) {
         mexPrintf("looktxt/mex : argument %i. Size %i\n", carg, strlen(InputString));
