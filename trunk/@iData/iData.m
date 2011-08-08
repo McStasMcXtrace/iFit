@@ -20,7 +20,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -319,7 +319,8 @@ elseif isempty(getalias(in, 'Signal'))
     fields = fields(index); % get all field names containing double data
     dims = dims(index);
     [dummy, index] = sort(dims);
-    index=index(end);
+    [dummy, i, j]=unique(dummy, 'first'); % get the largest, but first occurence 
+    index=index(i(end));                  % when similar sizes are encoutered
     if dummy(index) > 0
       disp([ 'iData: Setting the Signal of ' in.Tag ' to the biggest numerical field ' fields{index} ' with length ' num2str(dummy(end)) '.' ]);
       in = setalias(in,'Signal', fields{index});
