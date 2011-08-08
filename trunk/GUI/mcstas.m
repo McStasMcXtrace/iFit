@@ -52,7 +52,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -225,12 +225,17 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     if iscell(fval)
       % before converting to a single iData array, we check that all
       % simulations returned the same number of monitors
+      for index=1:numel(fval)
+          if isempty(fval{index}), fval{index}=iData; end
+      end
       siz = cellfun('prodofsize',fval);
       if all(siz == siz(1))
         fval=iData(fval);
       end
     end
-    if nargout < 2
+    if isempty(fval)
+      pars=[]; fval=[];
+    elseif nargout < 2
       pars     = fval;
     else
       a = iData(p);
@@ -240,7 +245,6 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       catch
         t = ''; isscan = 0;
       end
-      
       for index=1:length(options.variable_names)
         setalias(a, options.variable_names{index}, options.variable_pars{index});
         if isscan==1
@@ -255,7 +259,11 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       % add other metadata
       set(a, 'Data.Parameters', parameters);
       set(a, 'Data.Criteria', p);
+      if iscell(fval)
+      set(a, 'Data.Execute', get(fval{1},'Execute'));
+      else
       set(a, 'Data.Execute', get(fval(1),'Execute'));
+      end
       set(a, 'Data.Options', options);
       setalias(a, 'Parameters', 'Data.Parameters','Instrument parameters');
       setalias(a, 'Execute', 'Data.Execute','Command line used for Mcstas execution');
@@ -281,14 +289,16 @@ end
 function system_wait(cmd, options)
 % inline function to execute command and wait for its completion (under Windows)
 % dots are displayed under Windows after every minute waiting.
-  system(cmd);
+  [status, result]=system(cmd);
+  disp(result);
+  if status ~= 0, return; end
   if ispc % wait for completion by monitoring the number of elements in the result directory
     t=tic; t0=t; first=1;
     a=dir(options.dir);
     while length(a) <= 3 % only 'mcstas.sim', '.', '..' when simulation is not completed yet
       if toc(t) > 60
         if first==1 % display initial waiting message when computation lasts more than a minute
-            fprintf(1, 'mcstas: Waiting for completion of %s simulation.\n', options.instrument);
+            fprintf(1, 'mcstas: Waiting for completion of %s simulation (dot=min).\n', options.instrument);
         end
         fprintf(1,'.');
         t=tic; first=first+1;
@@ -300,6 +310,18 @@ function system_wait(cmd, options)
       a=dir(options.dir); % update directory content list
     end
     fprintf(1,' DONE [%10.2g min]\n', toc(t0)/60);
+  end
+  % wait for directory to be 'stable' (not being written)
+  this_sum=0;
+  while 1
+      a=dir(options.dir);
+      new_sum=0;
+      for index=1:length(a)
+          new_sum = new_sum+a(index).datenum;
+      end
+      if this_sum == new_sum, break; end
+      this_sum = new_sum;
+      pause(1);
   end
 end % system_wait
 
@@ -380,12 +402,20 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
 
               % add single simulation to scan arrays
               % store into the last dimensionality (which holds monitors and integrated values)
+              if ~isempty(this_sim)
               for index_mon=1:length(this_criteria)
                 if isempty(ind), this_ind = { index_mon };
                 else this_ind = { ind{:} index_mon }; end
                 this_ind(cellfun('isempty',this_ind))={1};
+                try
                 sim{      sub2ind(size(sim), this_ind{:}) } = this_sim(index_mon);
                 criteria( sub2ind(size(sim), this_ind{:}) ) = this_criteria(index_mon);
+                catch
+                sim{      this_ind{:} } = this_sim(index_mon);
+                criteria( this_ind{:})  = this_criteria(index_mon);
+                end
+                
+              end
               end
             else
               criteria = this_criteria;
