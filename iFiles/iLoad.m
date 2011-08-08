@@ -3,7 +3,8 @@ function [data, format] = iLoad(filename, loader)
 %
 % imports any data into Matlab. 
 % The definition of specific formats can be set in the iLoad_ini.m file.
-% These formats can be obtained using [config, configfile]=iLoad('','load config').
+% These formats can be obtained using [config, configfile]=iLoad('load config').
+% The file formats cache can be rebuilt with iLoad('force load config').
 % the iLoad_ini configuration file can be saved in the Preference directory
 % using [config, configfile] = iLoad(config,'save config').
 % A list of all supported formats is shown with iLoad('formats');
@@ -36,7 +37,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.42 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.43 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -77,7 +78,7 @@ elseif strcmp(loader, 'formats') | strcmp(filename,'formats') | strcmp(loader, '
   disp([ '% iLoad configuration file: ' config.FileName ]);
   return
 elseif strcmp(loader, 'save config') | strcmp(filename, 'save config')
-  if isempty(filename)
+  if isempty(filename) || nargin == 1
     config  = iLoad('','load config');
   else
     config = filename;
@@ -573,8 +574,10 @@ function config = iLoad_config_load
     { 'mfitsread',{'fits','fts'},'FITS',''}, ...
     { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)',''}, ...
     { 'mimread',  {'bmp','jpg','jpeg','tiff','png','ico'}, 'Image/Picture',''}, ...
-    { 'hdf5extract',{'hdf5','h5','nx','nxs','n5'}, 'HDF5',''}, ...
-    { 'mhdf4read',{'hdf4','h4','hdf','nx','nxs','n4'},  'HDF4 raster image',''}, ...
+    { 'hdf5extract',{'hdf5','h5'}, 'HDF5',''}, ...
+    { 'hdf5extract',{'nx','nxs','n5','nxspe'}, '/NeXus/HDF5',''}, ...
+    { 'mhdf4read',{'hdf4','h4','hdf'},  'HDF4',''}, ...
+    { 'mhdf4read',{'nx','nxs','n4'},  'NeXus/HDF4',''}, ...
     { 'load',    'mat', 'Matlab workspace (.mat)',''}, ...
     { 'importdata','',  'Matlab importer',''}, ...
   };
