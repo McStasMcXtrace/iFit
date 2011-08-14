@@ -45,7 +45,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.59 $
+% Version: $Revision: 1.60 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -345,6 +345,25 @@ S   = a.Source;
 if length(S) > 23, S=[ '...' S(end-20:end) ]; end
 if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
 
+% DisplayName and Label
+d = '';
+if ~isempty(a.Label) && ~isempty(a.DisplayName)
+  g = cellstr(a.Label); g=deblank(g{1});
+  if length(g) > 13, g = [ g(1:10) ]; end                 % Label/DisplayName
+  d = [ d sprintf('%s', g) ];
+  g = cellstr(a.DisplayName); g=deblank(g{1});
+  if length(g) > 13, g = [ g(1:10) '...' ]; end           % 
+  d = [ d sprintf('/%s', g) ];
+elseif ~isempty(a.Label)
+  g = cellstr(a.Label); g=deblank(g{1});
+  if length(g) > 13, g = [ g(1:10) '...' ]; end           % Label
+  d = [ d sprintf('%s', g) ];
+elseif ~isempty(a.DisplayName)
+  g = cellstr(a.DisplayName); g=deblank(g{1});
+  if length(g) > 13, g = [ g(1:10) '...' ]; end           % DisplayName
+  d = [ d sprintf('%s', g) ];
+end
+
 uicm = uicontextmenu; 
 uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
   'Callback', [ 'msgbox(getfield(get(get(gco,''UIContextMenu''),''UserData''),''properties''),' ...
@@ -357,7 +376,7 @@ uimenu(uicm, 'Label',[ 'Duplicate "' T '" ...' ], 'Callback', ...
      'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
      'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');' ...
      'xlabel(duplicate_cb.ud.xlabel);ylabel(duplicate_cb.ud.ylabel); clear duplicate_cb;']);
-uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '"' ]);
+uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '" ' d ]);
 uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ], 'Callback', [ 'listdlg(''ListString'', getfield(get(gca, ''UserData''), ''commands''), ' ...
              '''ListSize'',[400 300],''Name'',''' T ''',''PromptString'',''' char(a) ''');' ]);
@@ -366,12 +385,9 @@ uimenu(uicm, 'Label', [ 'User: ' a.User ]);
 % also make up title string and Properties dialog content
 
 properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
-             [ 'Title: "' T '"' ], ...
+             [ 'Title: "' T '" ' d ], ...
              [ 'Source: ' a.Source ], ...
              [ 'Last command: ' cmd ]};
-if ~isempty(a.Label)
-  properties{end+1} = [ 'Label: ' a.Label ];
-end
 
 properties{end+1} = '[Rank]         [Value] [Description]';
 uimenu(uicm, 'Separator','on', 'Label', '[Rank]         [Value] [Description]');
@@ -397,8 +413,8 @@ end
 titl ={ T ; [ a.Tag ' <' fS '>' ]};
 if length(T) > 23, T=[ T(1:20) '...' ]; end
 try
-  if ~isempty(a.DisplayName)
-    set(h, 'DisplayName', [ a.DisplayName ' ' T ]);
+  if ~isempty(d)
+    set(h, 'DisplayName', [ d ' ' T ]);
   else
     set(h, 'DisplayName', [ T a.Tag ' <' fS '>' ]);
   end
@@ -459,6 +475,9 @@ else
   if ~isempty(ylab), ylabel(ylab,'interpreter','none'); end
   if ndims(a) == 3 & ~isempty(clab)
     titl = { clab , titl{:} };
+  end
+  if ~isempty(d)
+    titl{1} = [ titl{1} ' ''' d '''' ]; 
   end
   title(titl,'interpreter','none');
 end
