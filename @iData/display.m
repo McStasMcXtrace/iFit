@@ -9,7 +9,7 @@ function d = display(s_in)
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation
@@ -31,7 +31,17 @@ else
     if length(s_in) > 1
       d = [ d sprintf('Index ') ];
     end
-    d = [ d sprintf('    [Tag] [Dimension]                                     [Title] [Last command]          [Label]\n') ];
+    d = [ d sprintf('    [Tag] [Dimension]                                     [Title] [Last command]') ];
+    if length(s_in) > 1
+      if any(~cellfun('isempty', get(s_in,'Label'))) || any(~cellfun('isempty', get(s_in,'DisplayName')))
+        d = [ d '          [Label/DisplayName]' ];
+      end
+    else
+      if ~isempty(get(s_in,'Label')) || ~isempty( get(s_in,'DisplayName'))
+        d = [ d '          [Label/DisplayName]' ];
+      end
+    end
+    d = [ d sprintf('\n') ];
 
     % now build the output string
     for index=1:length(s_in)
@@ -48,14 +58,27 @@ else
       t = cellstr(s.Title); t = strtrim(t{1});
       if length(t) > 31, t = [ t(1:27) '...' ]; end             % object.title
       t = [ t ' "' title(s) '"' ];
-      if length(t) > 41, t = [ t(1:37) '..."'  ]; end              % title(Signal)
+      if length(t) > 41, t = [ t(1:37) '..."'  ]; end           % title(Signal)
       d = [ d sprintf('%43s ', [ '''' t '''' ]) ];
       h = cellstr(s.Command); h=deblank(h{end});
       if length(h) > 23, h = [ h(1:20) '...' ]; end             % last command
       d = [ d sprintf('%s ', h) ];
-      h = cellstr(s.Label); h=deblank(h{end});
-      if length(h) > 13, h = [ h(1:10) '...' ]; end             % Label
-      d = [ d sprintf('%s ', h) ];
+      if ~isempty(s.Label) && ~isempty(s.DisplayName)
+        h = cellstr(s.Label); h=deblank(h{1});
+        if length(h) > 13, h = [ h(1:10) ]; end                 % Label/DisplayName
+        d = [ d sprintf('%s', h) ];
+        h = cellstr(s.DisplayName); h=deblank(h{1});
+        if length(h) > 13, h = [ h(1:10) '...' ]; end           % 
+        d = [ d sprintf('/%s', h) ];
+      elseif ~isempty(s.Label)
+        h = cellstr(s.Label); h=deblank(h{1});
+        if length(h) > 13, h = [ h(1:10) '...' ]; end           % Label
+        d = [ d sprintf('%s', h) ];
+      elseif ~isempty(s.DisplayName)
+        h = cellstr(s.DisplayName); h=deblank(h{1});
+        if length(h) > 13, h = [ h(1:10) '...' ]; end           % DisplayName
+        d = [ d sprintf('%s', h) ];
+      end
 
       d = [ d sprintf('\n') ];
     end
