@@ -9,6 +9,7 @@
 
 
 
+
   <title>iFit: iData object definition</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -83,17 +84,17 @@ These objects, which internal structure can be obtained with the <span style="fo
 important items:<br>
 <ul>
   <li>Some general information regarding the Source of the Data (origin, filename), Dates,
-Command History, User name and Creator</li>
+Command History, User name and Creator.</li>
   <li>A unique ID, which can be complemented by an object Label (for
 instance the name of an experiment) and a Title (for instance the name
-of the sample)</li>
+of the sample).</li>
   <li>A <span style="font-style: italic;">Data</span> field where all
 actual scientific data is stored, usually
-as a structure</li>
+as a structure.</li>
   <li><span style="font-style: italic;">Aliases, </span>which may hold
 themselves data, or be defined as links
-to other parts of the object</li>
-  <li>A <span style="font-style: italic;">Signal, </span>an <span style="font-style: italic;">Error</span> bar and a <span style="font-style: italic;">Monitor</span> which can either hold data, or point to other parts of the object<span style="font-style: italic;"><br>
+to other parts of the object.</li>
+  <li>A <span style="font-style: italic;">Signal, </span>an <span style="font-style: italic;">Error</span> bar and a <span style="font-style: italic;">Monitor</span> which can either hold data, or point to other parts of the object<span style="font-style: italic;">.</span> This defines the <span style="font-weight: bold;">visible</span> part of the object<span style="font-style: italic;">.<br>
     </span></li>
   <li>A series of <span style="font-style: italic;">Axes, </span>which
 are
@@ -106,8 +107,13 @@ to
 
 
     <span style="font-style: italic;">Aliases</span>
-or other <span style="font-style: italic;">Data</span> parts</li>
+or other <span style="font-style: italic;">Data</span> parts. These Axes indicate how to interpret the <span style="font-style: italic;">Signal</span> as a scientific data set.<br>
+</li>
 </ul>
+<div style="text-align: center;"><a href="images/iData_structure.png"><img alt="the iData object internal structure" title="the iData object internal structure" src="images/iData_structure.png" style="border: 0px solid ; width: 710px; height: 355px;" align="middle"></a><br>
+<span style="font-style: italic;">The iData object internal internal structure.</span><br>
+<br>
+</div>
 In principle, the objects should <span style="font-weight: bold;">not</span>
 be accessed or modified as structures. Indeed, some dedicated methods,
 which match the usual Matlab
@@ -740,7 +746,7 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData objects - $Date: 2011-07-26 21:15:28 $ $Revision:1.7
+Farhi - iFit/iData objects - $Date: 2011-08-14 20:20:43 $ $Revision:1.7
 $
 </span> - back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
