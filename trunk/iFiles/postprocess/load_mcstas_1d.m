@@ -34,24 +34,7 @@ end
 
 % special case for McStas files and XYE (2-4 columns) files
 n = size(a,2); % number of columns
-if (n >= 2 && n <= 4 && size(a,1) >= 5) || ~isempty(strfind(a.Title,'McStas 1D monitor'))
-
-  Datablock = ['this.' getalias(a,'Signal')];
-
-  % First column is the scan parm, we denote that 'x'
-  setalias(a,'x',[Datablock '(:,1)'],xlab);
-  setalias(a,'Signal',[Datablock '(:,2)'],ylab);
-  if n>=3
-    setalias(a,'Error',[Datablock '(:,3)']);
-  else
-    setalias(a,'Error',[]);
-  end
-  setalias(a,'E','Error');
-  if ~isempty(findfield(a, 'Error')) || n >= 4
-    setalias(a,'N',[Datablock '(:,4)'],'# Events');
-  end
-  setaxis(a,1,'x');
-else
+if isempty(strfind(a.Title,'McStas 1D monitor')
   xlabel(a, xlab);
   ylabel(a, ylab);
 end
