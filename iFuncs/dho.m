@@ -13,7 +13,7 @@ function y=dho(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=dho([1 0 1 1], -10:10); or y=dho('identify') or p=dho('guess',x,y);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -71,7 +71,7 @@ function y = evaluate(p, x)
   if isempty(x) | isempty(p), y=[]; return; end
   
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  % DFM 19.10.95 rev EF 27.06.97
+  % DFM 19.10.95 rev EF 27.06.97 rev HJ 10.08.2011
   omega  =x(:);
   amp    =p(1);
   omega_0=p(2); 
@@ -80,17 +80,18 @@ function y = evaluate(p, x)
 
   n_omega=1./(exp(abs(omega)/T)-1);	% bose
 
-  s_omega  = 0*x;
-  as_omega = 0*x;
+  dummy  = 0*x;
 
   i = find(omega > 0);
-  s_omega(i)=gamma*omega(i)*omega_0^2.*(1+n_omega(i))./((omega(i).^2-omega_0^2).^2+(gamma*omega(i)).^2); % dho stokes
-
-  omega = -omega;
-  i = find(omega > 0);
-  as_omega(i) =gamma*omega(i)*omega_0^2.*(n_omega(i))./((omega(i).^2-omega_0^2).^2 + (gamma*omega(i)).^2); % dho antistokes
-
-  y=amp*(s_omega+as_omega)+p(4);
+  dummy(i)=gamma*     omega(i) *omega_0^2.*(1+n_omega(i))./((omega(i).^2-omega_0^2).^2+(gamma*omega(i)).^2); % dho stokes
+ 
+  i = find(omega < 0);
+  dummy(i) =gamma*abs(omega(i))*omega_0^2.*(  n_omega(i))./((omega(i).^2-omega_0^2).^2+(gamma*omega(i)).^2); % dho antistokes
+ 
+  i=find(omega==0);
+  dummy(i)=gamma*T*omega_0^2./((omega(i).^2-omega_0^2).^2 + (gamma*omega(i)).^2); % dho
+ 
+  y=amp*dummy+p(4);
   
   y = reshape(y, sx);
 end
