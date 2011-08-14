@@ -36,7 +36,7 @@ function out = load(a, varargin)
 % output: d: single object or array (iData)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -75,8 +75,15 @@ for i=1:length(files)
     catch
       warn = warning('off');
     end
+    if ~iscellstr(loaders{i}.postprocess)
+      loaders{i}.postprocess = cellstr(loaders{i}.postprocess);
+    end
     % apply post-load routine: this may generate more data sets
-    this_iData = feval(loaders{i}.postprocess, this_iData);
+    for j=1:length(loaders{i}.postprocess)
+      if ~isempty(loaders{i}.postprocess{j})
+        this_iData = feval(loaders{i}.postprocess{j}, this_iData);
+      end
+    end
     % reset warnings
     try
       warning(warn.set);
@@ -86,6 +93,9 @@ for i=1:length(files)
     end
   elseif ~isempty(loaders{i}.postprocess)
     iData_private_warning(mfilename,['Can not find post-process function ' loaders{i}.postprocess ' for data format ' loaders{i}.name ]);
+  end
+  if ndims(this_iData) == 2
+    this_iData = iData_check_xye(this_iData);
   end
   out = [ out this_iData ];
 end %for i=1:length(files)
@@ -98,3 +108,36 @@ if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),out);
 end
 
+% ------------------------------------------------------------------------------
+function a = iData_check_xye(a)
+
+% handle input iData arrays
+if length(a(:)) > 1
+  for index=1:length(a(:))
+    a(index) = iData_check_xye(a(index));
+  end
+  return
+end
+
+% special case for McStas files and XYEN (2-4 columns) files
+n = size(a,2); % number of columns
+if (n >= 2 && n <= 4 && size(a,1) >= 5)
+  xlab = xlabel(a);
+  ylab = title(a);
+
+  Datablock = ['this.' getalias(a,'Signal')];
+
+  % First column is the scan parm, we denote that 'x'
+  setalias(a,'x',      [Datablock '(:,1)'],xlab);
+  setalias(a,'Signal', [Datablock '(:,2)'],ylab);
+  if n>=3
+    setalias(a,'Error',[Datablock '(:,3)']);
+  else
+    setalias(a,'Error',[]);
+  end
+  setalias(a,'E','Error');
+  if ~isempty(findfield(a, 'Error')) || n >= 4
+    setalias(a,'N',[Datablock '(:,4)'],'# Events');
+  end
+  setaxis(a,1,'x');
+end
