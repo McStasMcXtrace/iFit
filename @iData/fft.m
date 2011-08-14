@@ -2,7 +2,7 @@ function b = fft(a, op)
 % c = fft(a) : computes the Discrete Fourier transform of iData objects
 %
 %   @iData/fft function to compute the Discrete Fourier transform of data sets
-%     using the FFT algorithm.
+%     using the FFT algorithm. The power spectrum density (PSD) is abs(fft)^2.
 %
 % input:  a: object or array (iData)
 % output: c: object or array (iData)
@@ -10,7 +10,7 @@ function b = fft(a, op)
 %         a=iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+2*randn(size(t)));
 %         c=fft(a); plot(abs(c));
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/ifft, iData/conv, FFT, IFFT
 
 if nargin <= 1,
