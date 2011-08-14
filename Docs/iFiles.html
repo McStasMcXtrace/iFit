@@ -18,6 +18,8 @@
 
 
 
+
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -62,7 +64,7 @@ the request for file access is sent transparently to the <span style="font-weigh
 <ol>
 
   <li>resolves the file name, and identifies directory importation,
-wildcards (*, ?), distant files with URLs (file://, ftp://, http://), compressed
+wildcards (*, ?), distant files with URLs (file://, ftp://, http://, https://), compressed
 files (zip, gzip, tar, compress) ;</li>
   <li>selects a list of possible file types from <span style="font-style: italic;">e.g.</span> file extension ;<br>
   </li>
@@ -422,8 +424,10 @@ the <a href="http://www.esrf.fr/">ESRF</a> and can be viewed with e.g. <a href="
       </td>
       <td style="vertical-align: top;">binary<br>
       </td>
-      <td style="vertical-align: top;">The <a href="http://nexusformat.org/">NeXus</a> files are HDF4/5 files. See above format description for more information. ,This format includes all types of derivatives (such as NX SPE from ISIS).
-      </td>
+      <td style="vertical-align: top;">The <a href="http://nexusformat.org/">NeXus</a>
+files are HDF4/5 files. See above format description for more
+information. ,This format includes all types of derivatives (such as NX
+SPE from ISIS). </td>
       <td style="vertical-align: top;"><br>
       </td>
     </tr>
@@ -457,7 +461,7 @@ and parsed by the <a href="../iFiles/doc/looktxt.html">looktxt</a>
 tool, and all numerical blocks are named automatically from the
 character strings/comments that precede these blocks. The result is a
 single structure which holds a <span style="font-style: italic;">Data</span> and a <span style="font-style: italic;">Header</span> field, plus additional
-identification information. The structure can be converted transparently to an <a href="iData.html">iData</a> object.<br>
+identification information. The structure can be converted transparently to an <a href="iData.html">iData</a> object. However, in some cases, the Signal and Axes definitions will require to be set after creating the object.<br>
 <br>
 <span style="font-weight: bold;">Binary</span> formats require more work. In principle, if <span style="font-style: italic;">iLoad</span> does not know
 the structure of the file, there is no way to import an unknown data
@@ -579,7 +583,7 @@ return something (or empty/error if this fails). This is your <span style="font-
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iFiles - </span><span style="font-style: italic;">
-$Date: 2011-08-08 20:11:22 $ $Revision: 1.13 $
+$Date: 2011-08-14 20:03:24 $ $Revision: 1.14 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page
