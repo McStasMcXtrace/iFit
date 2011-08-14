@@ -20,7 +20,7 @@ function outarray = iData(varargin)
 %   d=iData('filename');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -36,18 +36,22 @@ outarray = [];
 
 if nargin == 0  % create empty object
   % create a new iData object
+  a.Tag          = 0;           % unique ID
   a.Title        = '';          % Data title
-  
   a.Source       = pwd;         % origin of data (filename/path)
-  a.Command      = cellstr('iData');          % Matlab commands/history of the object
-  a.UserData     = '';          % user data storage area
-  a.Label        = '';          % user label (color)
-  a.DisplayName  = '';          % user name for handling data set as a variable
   a.Creator      = [];          % Creator (program) name
   user = getenv('USER');
   if isempty(user), user = getenv('HOME'); end
   if isempty(user), user = getenv('TEMP'); end % gives User name on Windows systems
   a.User         = user;        % User ID
+  a.Date         = datestr(now);;
+  a.ModificationDate  = a.Date; % modification Date
+  a.Command      = cellstr('iData');          % Matlab commands/history of the object
+  a.UserData     = '';          % user data storage area
+  a.Label        = '';          % user label (color)
+  a.DisplayName  = '';          % user name for handling data set as a variable
+  
+  % hidden fields
   a.Data         =[];           % Data storage area
   a.Alias.Names  ={ ...
         'Signal','Error','Monitor'}; % (cell) Alias names
@@ -58,14 +62,12 @@ if nargin == 0  % create empty object
   a.Alias.Labels ={...          % (cell) Alias labels/descriptions
         'Data Signal','Error on Signal','Monitor (weight)'};  
   a.Alias.Axis   ={};           % (cell) ordered list of axes names (Aliases)  
-  
-  a=iData_private_newtag(a);     
-  a.ModificationDate  = a.Date; % modification Date
 
   % create the object
+  a=iData_private_newtag(a); 
   a = class(a, 'iData');
   a.Command      = cellstr([ 'iData %% create ' a.Tag ]);
-  a.Creator      =  version(a);     % Creator (program) name
+  a.Creator      = version(a);     % Creator (program) name
   outarray = [ outarray a ];
   return
 else  % convert input argument into object
@@ -304,6 +306,13 @@ if ~ischar(in.User)
   iData_private_warning(mfilename,'User must be a char');
   in.User = 'Matlab User';
 end
+% check if object.Data is numeric: make it a structure so that it is better organized
+if isnumeric(in.Data) && ~isempty(in.Data)
+  data = in.Data;
+  in.Data = [];
+  in.Data.Signal = data;
+end
+
 if isempty(in.Data)
   in = setalias(in, getalias(in));
 % if signal is invalid, set signal to biggest field link
@@ -318,11 +327,11 @@ elseif isempty(getalias(in, 'Signal'))
   else
     fields = fields(index); % get all field names containing double data
     dims = dims(index);
-    [dummy, index] = sort(dims);
+    [dummy, index] = sort(dims);          % dummy=dims(index)
     [dummy, i, j]=unique(dummy, 'first'); % get the largest, but first occurence 
     index=index(i(end));                  % when similar sizes are encoutered
-    if dummy(index) > 0
-      disp([ 'iData: Setting the Signal of ' in.Tag ' to the biggest numerical field ' fields{index} ' with length ' num2str(dummy(end)) '.' ]);
+    if dims(index) > 0
+      disp([ 'iData: Setting the Signal of ' in.Tag ' to the biggest numerical field ' fields{index} ' with length ' num2str(dims(index)) '.' ]);
       in = setalias(in,'Signal', fields{index});
     end
   end
@@ -334,5 +343,4 @@ in = setaxis(in);
 
 % and make it an iData object
 out = class(struct(in), 'iData');
-
 
