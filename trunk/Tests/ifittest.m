@@ -131,7 +131,7 @@ case 'Fit_4_fminplot'
   b = ieval(a, 'gauss', p);
   figure; plot([ a b ]);
   if max(a-b)/mean(get(a,'Monitor')) < 0.1
-    result = 'OK fits(a, ''gauss'', [], options.OutputFcn=''fminplot'')';
+    result = 'OK  fits(a, ''gauss'', [], options.OutputFcn=''fminplot'')';
   else 
     result = 'FAILED';
   end 
