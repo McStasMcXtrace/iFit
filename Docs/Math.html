@@ -8,6 +8,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Math operators</title>
 </head><body>
@@ -309,7 +311,8 @@ Monitor<br>
       </td>
       <td style="vertical-align: top;">FFT(Signal)<br>
       </td>
-      <td style="vertical-align: top;">FFT(Error)</td>
+      <td style="vertical-align: top;">FFT(Error)<span style="font-style: italic;"> (this may be inappropriate)</span><br>
+</td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;">Fourier transform (see <a href="#mozTocId401065">below</a>)<br>
@@ -318,7 +321,7 @@ Monitor<br>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">ifft</span></td>
       <td style="vertical-align: top;">FFT<sup>-1</sup>(Signal)</td>
-      <td style="vertical-align: top;">FFT<sup>-1</sup>(Error)</td>
+      <td style="vertical-align: top;">FFT<sup>-1</sup>(Error)<span style="font-style: italic;"> (</span><span style="font-style: italic;">this may be inappropriate</span><span style="font-style: italic;">)</span></td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;">inverse Fourier transform</td>
@@ -391,17 +394,19 @@ FFT, and again its inverse FFT.<br>
 <pre style="margin-left: 40px;">&gt;&gt; t=linspace(0,1,1000);<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(t,0.7*<span style="color: rgb(51, 102, 255);">sin</span>(2*pi*50*t)+<span style="color: rgb(51, 102, 255);">sin</span>(2*pi*120*t)+0.05*<span style="color: rgb(51, 102, 255);">randn</span>(<span style="color: rgb(51, 102, 255);">size</span>(t)));<br>&gt;&gt; c=<span style="color: rgb(51, 102, 255);">fft</span>(a); d=<span style="color: rgb(51, 102, 255);">ifft</span>(c); <span style="color: rgb(51, 102, 255);">subplot</span>([ a abs(c) d ]);<br></pre>
 The plot on the side shows that the two sine components are identified (the FFT is shown in modulus), and the FFT<sup>-1</sup>(FFT) is indeed the initial signal (within the computation approximations).<br>
 <br>
-The convolution operator, which uses FFT multiplication, is detailed <a href="#mozTocId880437">below</a>.<br>
+The convolution operator, which uses FFT multiplication, is detailed <a href="#mozTocId880437">below</a>. The frequency power-spectrum is the square of the modulus of the FFT, sqr(abs(FFT)).<br>
 <h4><a class="mozTocH4" name="mozTocId218070"></a>Derivatives</h4>
 <a href="images/iData_gradient.png"><img alt="iData/gradient" title="iData/gradient" src="images/iData_gradient.png" style="border: 0px solid ; width: 200px; height: 272px;" align="right"></a>The <span style="font-weight: bold;">gradient</span> operator computes the partial <span style="font-style: italic;">derivatives</span> &#8711; of an object. (see <a href="http://en.wikipedia.org/wiki/Gradient">Gradient definition</a>)<br>
 <br>
 <div style="text-align: center;">&#8711;a = (&#8706;a/&#8706;Y<sub> </sub>&#8706;a/&#8706;X<sub> </sub>&#8706;a/&#8706;Z<sub> ...</sub>)<br>
 <br>
-</div>
-The resulting objects are sorted by axis rank, that is partial(X) is
+</div>The resulting objects are sorted by axis rank, that is partial(X)
+is
 2nd, partial(Y) is 1st, partial(Z) is 3rd, etc. In case the axis
 sampling/binning is not regular, a re-binning is automatically
-performed. For 1D objects, the gradient is the derivative. In the following example, we compute the 2D gradient of an object, and plot them.<br>
+performed. For 1D objects, the gradient is the derivative. In the
+following example, we compute the 2D gradient of an object, and plot
+them.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(peaks);<br>&gt;&gt; g=<span style="color: rgb(51, 102, 255);">gradient</span>(a); <span style="color: rgb(51, 102, 255);">subplot</span>([ a g(1) g(2) ]);<br></pre>
 The <span style="font-weight: bold;">del2</span> operator computes the Laplacian &#916;=&#8711;<sup>2 </sup>of an object (see <a href="http://en.wikipedia.org/wiki/Laplacian">Laplacian definition</a>)<br>
 <br>
@@ -572,7 +577,7 @@ independently (see <a href="#mozTocId97186">below</a>)<br>
       </td>
       <td style="vertical-align: top;">FFT<sup>-1</sup>(FFT(s1)*FFT(s2))<br>
       </td>
-      <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
+      <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;] <span style="font-style: italic;"> (this may be inappropriate)</span></td>
       <td style="vertical-align: top;">m1*m2<br>
       </td>
       <td style="vertical-align: top;">convolution (see <a href="#mozTocId880437">below)</a><br>
@@ -580,13 +585,13 @@ independently (see <a href="#mozTocId97186">below</a>)<br>
     </tr><tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">interp</span><br>
       </td>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;"><span style="font-style: italic;">s1</span> onto <span style="font-style: italic;">s2</span> axes<br>
       </td>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;"><span style="font-style: italic;">e1</span> onto <span style="font-style: italic;">s2</span> axes<br>
       </td>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;"><span style="font-style: italic;">m1</span> onto <span style="font-style: italic;">s2</span> axes<br>
       </td>
-      <td style="vertical-align: top;">interpolation<br>
+      <td style="vertical-align: top;">interpolation (linear is default, see <a href="#mozTocId991507">below)</a><br>
       </td>
     </tr>
 
@@ -1022,7 +1027,7 @@ for union, are set to 0.<br>
 The <span style="font-weight: bold;">interp</span> operator can be
 used to interpolate one object onto an other axis coordinate frame,
 which can be given as an other object, a binning scaling factor, or a
-set of axes.<br>
+set of axes. The interpolation method can be specified as an additional character argument amongst <span style="color: rgb(204, 51, 204);">linear</span> (default), <span style="color: rgb(204, 51, 204);">cubic, spline, nearest</span>.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(10)</span></span>)+2<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">interp</span>(a,2)	<span style="font-style: italic;">% doubled binning</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">interp</span>(a,1:.25:15,3:.25:12)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c],[1 3],<span style="color: rgb(204, 51, 204);">'mesh tight'</span>)<br></pre>
 <div style="text-align: center;"><a href="images/iData_interp.png"><img alt="iData interp" title="iData interp" src="images/iData_interp.png" style="border: 0px solid ; width: 444px; height: 200px;" align="middle"></a><br>
 <div style="text-align: left;"><br>
@@ -1035,7 +1040,7 @@ Signal, Error, and Monitor values are also re-ordered accordingly.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2011-07-26 21:05:26 $ $Revision: 1.17 $
+$Date: 2011-08-14 20:20:43 $ $Revision: 1.18 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
