@@ -15,7 +15,7 @@ function [data, format] = iLoad(filename, loader)
 %   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF.
 %   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
 %   Distant files are supported through e.g. URLs such as 
-%     file://, ftp:// and http://
+%     file://, ftp:// http:// and https://
 %
 % input arguments:
 %   file:   file name, or cell of file names, or any Matlab variable, or a URL
@@ -37,7 +37,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.43 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.44 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -51,10 +51,18 @@ if nargin < 2,  loader = ''; end
 if strcmp(loader, 'load config') | strcmp(filename, 'load config')
   if isempty(config), config  = iLoad_config_load; end
   data = config;
+  % check for availability of looktxt as MeX file, and trigger compilation if needed.
+  if exist('looktxt') ~= 3
+    looktxt('--version');
+  end
   return
 elseif strcmp(loader, 'force load config') | strcmp(filename, 'force load config')
   config  = iLoad_config_load;
   data = config;
+  % check for availability of looktxt as MeX file, and trigger compilation if needed.
+  if exist('looktxt') ~= 3
+    looktxt('--version');
+  end
   return
 elseif strcmp(loader, 'formats') | strcmp(filename,'formats') | strcmp(loader, 'display config')
   data = iLoad('','load config');
@@ -110,7 +118,8 @@ if ischar(filename) & length(filename) > 0
   
   % handle / to \ substitution for Windows systems, not in URLs
   if ~(strncmp(filename, 'http://', length('http://')) | ...
-       strncmp(filename, 'ftp://', length('ftp://'))   | ...
+       strncmp(filename, 'https://',length('https://'))   | ...
+       strncmp(filename, 'ftp://',  length('ftp://'))   | ...
        strncmp(filename, 'file://', length('file://')) )
     if    ~ispc, filename = strrep(filename, '\', filesep);
     elseif ispc, filename = strrep(filename, '/', filesep);
@@ -165,7 +174,9 @@ if ischar(filename) & length(filename) > 0
   end
   
   % handle files on the internet
-  if strncmp(filename, 'http://', length('http://')) | strncmp(filename, 'ftp://', length('ftp://'))
+  if strncmp(filename, 'http://', length('http://')) ...
+   | strncmp(filename, 'https://',length('https://')) ...
+   | strncmp(filename, 'ftp://', length('ftp://'))
     % access the net. Proxy settings must be set (if any).
     data = urlread(filename);
     % write to temporary file
@@ -199,7 +210,8 @@ elseif isempty(filename)
       [filename, pathname] = uigetfile('*.*', 'Select a file to load');
     end
   end
-  if isempty(filename), return; end
+  if isempty(filename),    return; end
+  if isequal(filename, 0), return; end
   filename = strcat(pathname, filesep, filename);
   if ~iscellstr(filename)
     if isdir(filename)
@@ -562,7 +574,7 @@ function config = iLoad_config_load
     { 'dlmread', 'dlm', 'Numerical single block',''}, ...
     { 'xmlread', 'xml', 'XML',''}, ...
     { 'looktxt', '',    'Data (text format with fastest import method)',    ...
-        '--headers --binary --fast --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metadata=x_label --metadata=y_label', '', 'load_mcstas_1d'}, ...
+        '--headers --binary --fast --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metadata=x_label --metadata=y_label', '', ''}, ...
     { 'looktxt', '',    'Data (text format with fast import method)',       '--headers --binary --comment=NULL --silent'}, ...
     { 'looktxt', '',    'Data (text format)',                               '--headers --comment=NULL --silent'}, ...
     { 'wk1read', 'wk1', 'Lotus1-2-3 (first spreadsheet)',''}, ...
