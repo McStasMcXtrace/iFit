@@ -53,7 +53,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -506,12 +506,16 @@ weight_pars= repmat(weight_pars,[1 length(output.parsBest)]);
 output.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
 
 if length(pars)^2*output.fevalDuration/2 < 60 % should spend less than a minute to compute the Hessian
+  try
   [dp, covp, corp,jac,hessian]  = inline_estimate_uncertainty(fun, pars);
-  output.parsHessianUncertainty = reshape(abs(dp), size(pars));
-  output.parsHessianCovariance  = covp;
-  output.parsHessianCorrelation = corp;
-  output.parsHessian            = hessian;
-  output.parsJacobian           = jac;
+  if ~isempty(covp)
+    output.parsHessianUncertainty = reshape(abs(dp), size(pars));
+    output.parsHessianCovariance  = covp;
+    output.parsHessianCorrelation = corp;
+    output.parsHessian            = hessian;
+    output.parsJacobian           = jac;
+  end
+  end
 else
   output.parsHessianUncertainty = [];
   output.parsHessianCovariance  = [];
@@ -881,6 +885,11 @@ function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, opt
   alpha= zeros(n);
   dp   = zeros(size(pars));
   chisq= sum(feval(fun, pars));
+  
+  covp = [];
+  corp = [];
+  jac  = [];
+  hessian = [];
   if TolX <= 0, 
     TolX = 0.01*pars;
   end
@@ -907,6 +916,7 @@ function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, opt
       alpha(j,i)=alpha(i,j); % off diagonal terms (symmetric)
     end
   end
+  if any(isnan(alpha(:))), return; end 
   hessian=2*alpha;
   alpha = alpha/chisq;      % normalized error matrix
   covp  = pinv(alpha);       % COV MATRIX
