@@ -13,6 +13,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: fitting a model onto iData objects</title>
 </head><body>
@@ -492,7 +493,7 @@ When the Error on the Signal is available, the criteria reads<br>
 <div style="text-align: center;">&#967;&sup2; = &#8721; (Signal/Monitor-Model)&sup2;/Error&sup2;.<br>
 </div>
 <br>
-The options.criteria can be defined as the name of a criteria function with syntax <span style="font-style: italic;">criteria(Signal, Error, Model)</span> and the default value is:<br>
+The options.criteria can be defined as the name of a criteria function with syntax <span style="font-style: italic;">criteria(Signal, Error, Model)</span> where all arguments should have the same dimension, and the default criteria is:<br>
 <br>
 <div style="text-align: center;"><span style="font-style: italic; font-weight: bold;">options.criteria</span> = <span style="color: rgb(51, 102, 255);">@least_square</span>; <span style="font-style: italic;">% internal 'fits' least square definition</span><br>
 <div style="text-align: left;"><br>
@@ -504,7 +505,7 @@ The Signal will be normalized to the Monitor prior to calling the criteria.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData fitting - </span><span style="font-style: italic;">
-$Date: 2011-07-17 21:17:29 $ $Revision: 1.16 $
+$Date: 2011-08-16 14:56:23 $ $Revision: 1.17 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body></html>

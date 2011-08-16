@@ -2,6 +2,8 @@
 <html><head>
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Installation</title>
 </head><body>
@@ -69,20 +71,26 @@ time you start it (this may be automated from the <span style="font-style: itali
 A list of fixed bugs and release history is recorded in the <a href="Changes.html">Changes</a> page.<br>
 <h4><a class="mozTocH4" name="mozTocId359173"></a>Note for Windows 64bits users: recompiling looktxt MeX files<br>
 </h4>
+<h5><span style="font-weight: bold;">Windows 64 (XP, Vista, 7)</span></h5>
 The <a href="iFiles.html">iFiles</a> sub library makes use of a MeX file '<span style="font-style: italic;">looktxt.mexw64</span>'.
 A pre-compiled version for Windows systems is shipped with the package but this binary may
 fail with some Matlab releases. In that case, it is required to <a href="http://www.mathworks.com/support/solutions/en/data/1-ECUGQX/">install a compatible C compiler</a> (currently Microsoft Visual C++). The required downloads are, in order, <a href="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">C++ Express</a> then the <a href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&amp;displaylang=en">SDK</a> (for Matlab &gt;= 2010).<br>
 Older Microsoft Visual C++ 2008 [<a href="http://download.microsoft.com/download/8/b/5/8b5804ad-4990-40d0-a6aa-ce894cbbb3dc/VS2008ExpressENUX1397868.iso">ISO</a>] can also be used together with the SDK for Windows 7 + NET 3.5 [amd64 <a href="http://download.microsoft.com/download/2/E/9/2E911956-F90F-4BFB-8231-E292A7B6F287/GRMSDKX_EN_DVD.iso">ISO</a>]).
 <br>
+<br>
+Then force the recompilation of looktxt with the procedure below.<br>
+<h5>Other systems (Windows 32, Linux, MacOSX)</h5>
+
 All <span style="font-weight: bold;">other platforms</span> provide a valid C compiler<br>
 <ul>
-  <li>lcc for Windows 32bits</li>
-  <li>gcc for Linux systems (install the gcc package)</li>
-  <li>gcc for MacOSX (install Xcode/developper tools)</li>
+  <li>lcc for Windows 32bits (from Matlab)<br>
+</li>
+  <li>gcc for Linux systems (comes with the gcc package)</li>
+  <li>gcc for MacOSX (need to install Xcode/developper tools, including gcc)</li>
 </ul>
 In order to<span style="font-weight: bold;"> force the recompilation of looktxt</span> MeX, <span style="color: rgb(255, 0, 0);">remove</span> the <span style="font-style: italic;">iFiles/private/looktxt.mex*</span> files, and launch<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'force load config'</span>);</pre>
-from the Matlab prompt. <br>
+from the Matlab prompt. The C compiler to use may have to be specified with the command '&gt;&gt; mex -setup'.<br>
 Send me the new looktxt MeX file version in a tar.gz archive, so that I update/add it to the distribution.<br>
 
 <h3><a class="mozTocH3" name="mozTocId635674"></a>What's next ?</h3>
@@ -100,8 +108,8 @@ You may register by entering your email address and press subscribe: <form metho
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit Installation - </span><span style="font-style: italic;">
-$Date: 2011-08-14 20:20:43 $
-$Revision: 1.19 $
+$Date: 2011-08-16 14:56:23 $
+$Revision: 1.20 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
