@@ -8,6 +8,8 @@
 
 
 
+
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -16,54 +18,95 @@
 
   <ifit: changes="" title=""></ifit:>
 </head><body>
-<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Changes</h1>
+<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Changes and Bugs<br>
+</h1>
 
 <br>
 
 <hr style="width: 100%; height: 2px;">
-<ul>
+<h3>Releases and Changes</h3>
+<span style="font-weight: bold;"></span><ul>
 
-  <li><span style="font-weight: bold;">1.0</span>: fixed minor error in looktxt and compatibility issues with Windows. First official release.<br>
-<span style="font-weight: bold;"></span></li>
-  <li><span style="font-weight: bold;">1.0-RC11</span>: pre-release. Added FFT, convolution, Laplacian, gradient and Jacobian in <a href="Math.html">Math</a>.<br>
-<span style="font-weight: bold;"></span></li>
-
-  <li><span style="font-weight: bold;">1.0-RC10: </span>added uncertainty estimate on fit parameters for <a href="iOptim.html">iOptim</a> methods and <a href="Fit.html">iData/fits</a>.<br>
+  
+  <li><span style="font-weight: bold;">1.0</span>: First official iFit release <span style="font-style: italic;">(August 16th 2011</span>)<br>
   </li>
 
-  <li><span style="font-weight: bold;">1.0-RC9:</span> fixed value for Monitor in binary/combine. Clarify handling of <a href="iData.html#mozTocId134021">axis 0</a> as Signal/Monitor.<br>
+  <ul>
+    <li><span style="font-weight: bold;">1.0-RC12</span>: fixed minor error in looktxt and compatibility issues with Windows. First official release.<br>
 <span style="font-weight: bold;"></span></li>
-
-  <li><span style="font-weight: bold;">1.0-RC8</span>: provide MeX pre-compiled files; fixed a few bugs in looktxt/texmex/<a href="iFiles.html">iLoad</a>. <a href="iFuncs.html#mozTocId210092">ifitmakefunc</a> tool to create fit functions (June 2011)<br>
+    <li><span style="font-weight: bold;">1.0-RC11</span>: pre-release. Added FFT, convolution, Laplacian, gradient and Jacobian in <a href="Math.html">Math</a>.<br>
 <span style="font-weight: bold;"></span></li>
-
-  <li><span style="font-weight: bold;">1.0-RC7</span>: fixed iFit/<a href="McStas.html">mcstas</a> (Windows support), added more optimizers in <a href="iOptim.html">iOptim</a> (May 2011)<br>
+    <li><span style="font-weight: bold;">1.0-RC10: </span>added uncertainty estimate on fit parameters for <a href="iOptim.html">iOptim</a> methods and <a href="Fit.html">iData/fits</a>.<br>
+  </li>
+    <li><span style="font-weight: bold;">1.0-RC9:</span> fixed value for Monitor in binary/combine. Clarify handling of <a href="iData.html#mozTocId134021">axis 0</a> as Signal/Monitor.<br>
 <span style="font-weight: bold;"></span></li>
-
-  <li><span style="font-weight: bold;">1.0-RC6</span>: fixed import of multicolumn text files<br>
+    <li><span style="font-weight: bold;">1.0-RC8</span>: provide MeX pre-compiled files; fixed a few bugs in looktxt/texmex/<a href="iFiles.html">iLoad</a>. <a href="iFuncs.html#mozTocId210092">ifitmakefunc</a> tool to create fit functions (June 2011)<br>
 <span style="font-weight: bold;"></span></li>
-
-  <li><span style="font-weight: bold;">1.0-RC5</span>b: fixed typo in
+    <li><span style="font-weight: bold;">1.0-RC7</span>: fixed iFit/<a href="McStas.html">mcstas</a> (Windows support), added more optimizers in <a href="iOptim.html">iOptim</a> (May 2011)<br>
+<span style="font-weight: bold;"></span></li>
+    <li><span style="font-weight: bold;">1.0-RC6</span>: fixed import of multicolumn text files<br>
+<span style="font-weight: bold;"></span></li>
+    <li><span style="font-weight: bold;">1.0-RC5</span>b: fixed typo in
 looktxt. <br>
     <span style="font-weight: bold;"></span></li>
-
-  <li><span style="font-weight: bold;">1.0-RC5</span>: added self test
+    <li><span style="font-weight: bold;">1.0-RC5</span>: added self test
 procedure '<a href="Install.html">ifittest</a>' and fixed a set of bugs</li>
-  <li><span style="font-weight: bold;">1.0-RC4</span>: added <a href="McStas.html">McStas</a>
+    <li><span style="font-weight: bold;">1.0-RC4</span>: added <a href="McStas.html">McStas</a>
 optimization wrapper</li>
-  <li><span style="font-weight: bold;">1.0-RC3</span>: fixed multiple
+    <li><span style="font-weight: bold;">1.0-RC3</span>: fixed multiple
 files import in <a href="iFiles.html">iLoad</a> and DAT export in class2str (March 2011)</li>
-  <li><span style="font-weight: bold;">1.0-RC2</span>: fixed <a href="iFiles.html">iLoad</a>
+    <li><span style="font-weight: bold;">1.0-RC2</span>: fixed <a href="iFiles.html">iLoad</a>
 error for e.g. ILL TAS import (Feb 2011)</li>
-  <li><span style="font-weight: bold;">1.0-RC1</span>: initial release
+    <li><span style="font-weight: bold;">1.0-RC1</span>: initial release
 (Feb 2011)</li>
-</ul>
+  </ul>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  
+  
+</ul><br>
+<h3>Bugs list:</h3>
+
+<h4>Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</h4>
+<div style="margin-left: 40px;">In some cases, the provided
+iFit/iFiles/private/looktxt.mex* may fail to execute (wrong
+architecture, missing library). Remove the invalid mex file, and
+relaunch the importation process. A brand new MeX file will
+automatically be generated, using the system C compiler. <br>
+<br>
+Most systems provide a default C compiler. MacOSX systems require to
+install the Xcode development tools. Windows 32 systems may use the LCC
+compiler shipped with Matlab. Windows 64 systems must have Microsoft
+Visual C++ installed (refer to the <a href="Install.html#mozTocId359173">Install</a> page for the procedure).<br>
+You may need to select the compiler with the 'mex -setup' command from Matlab.<br>
+<span style="font-weight: bold;"><br>
+</span></div>
+<div style="margin-left: 40px;">It has been reported that MeX compilation may fail when spaces are part of the path name to the iFit location. Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.<br>
+<br>
+</div>
+
 
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Changes - </span><span style="font-style: italic;">
-$Date: 2011-08-14 20:22:11 $ $Revision: 1.9 $
+$Date: 2011-08-16 14:56:23 $ $Revision: 1.10 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

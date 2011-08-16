@@ -5,6 +5,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -210,7 +211,16 @@ When some data has to be convoluted with a response function (<span style="font-
 <pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">fconv</span>(a,b, <span style="color: rgb(204, 51, 204);">'same pad background center norm'</span>);<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">fconvn</span>(a,b);	<span style="font-style: italic;">% same as above</span> in a shorter call</pre>
 Using <span style="font-weight: bold; font-style: italic;">fconvn</span>, we may assemble a new function as:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">global</span> b;	<span style="font-style: italic;">% holds the convolution function as a single vector/matrix or iData object</span><br>&gt;&gt; h = <span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);"></span></span></span><span style="color: rgb(204, 51, 204);">'<span style="color: rgb(51, 102, 255);">fconvn</span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);"></span>(</span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">gauss</span>(p(1:4),x), <span style="color: rgb(51, 102, 255);">double</span>(b))<span style="color: rgb(51, 102, 255);"></span>'<span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);"></span>,<span style="color: rgb(204, 51, 204);">'global b'</span>); <span style="font-style: italic;">% creates a fit function with convolution</span></span></span></pre>
-where the vector/matrix<span style="font-style: italic;"> 'b'</span> holds the response function (filter) <span style="font-style: italic;">with the same axis binning</span> as the object <span style="font-style: italic;">'a'</span>. <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
+where the vector/matrix<span style="font-style: italic;"> 'b'</span> holds the response function (filter) <span style="font-style: italic;">with the same axis binning</span> as the object <span style="font-style: italic;">'a'</span>.<br>
+In case the response function can be modeled as a function, you may use e.g. :<br>
+<pre style="margin-left: 40px;">&gt;&gt; h = <span style="color: rgb(51, 102, 255);">ifitmakefunc</span>(<span style="color: rgb(204, 51, 204);">'fconvn(lorz(p(1:4),x)+dho(p(5:9),x), gauss(p(10:13),x))'</span>);</pre>
+which in this example as a Lorentizian plus a DHO convolved with a
+Gaussian. In order for iFit to be able to guess starting parameters,
+you may need to specify manually the parameter names for that function,
+such as in:<br>
+<pre style="margin-left: 40px;">&gt;&gt; h = <span style="color: rgb(51, 102, 255);">ifitmakefunc</span>(<span style="color: rgb(204, 51, 204);">'conv_lorzdho_gauss', ...<br><span style="color: rgb(0, 0, 0);"></span>                    'conv(Lorz+DHO, Gauss)</span>', ...<br>                    [ <span style="color: rgb(204, 51, 204);">'Lorz_Amplitude Lorz_Centre Lorz_HalfWidth Lorz_Background ' ... </span><br style="color: rgb(204, 51, 204);"><span style="color: rgb(204, 51, 204);">                      'DHO_Amplitude DHO_Centre DHO_HalfWidth DHO_Background DHO_Temperature ' ...</span><br style="color: rgb(204, 51, 204);"><span style="color: rgb(204, 51, 204);">                      'Gauss_Amplitude Gauss_Centre Gauss_HalfWidth Gauss_Background'</span> ], ...<br><span style="color: rgb(204, 51, 204);">                    'fconvn(lorz(p(1:4),x)+dho(p(5:9),x), gauss(p(10:13),x))'</span>);</pre>
+
+<pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
 
 <h3><a class="mozTocH3" name="mozTocId854762"></a><span style="font-weight: bold;">How to write manually a model function</span></h3>
 We suggest that you start from the 'gauss' function in <span style="font-style: italic;">iFit/iFuncs, </span>and
@@ -221,7 +231,7 @@ proper execution. Store the new function in iFit/iFuncs so that it can access th
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2011-07-17 21:17:29 $ $Revision: 1.10 $
+$Date: 2011-08-16 14:56:23 $ $Revision: 1.11 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
