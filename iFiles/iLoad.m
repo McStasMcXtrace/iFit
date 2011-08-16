@@ -37,7 +37,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.44 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.45 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -431,6 +431,10 @@ function loaders = iLoad_loader_auto(file)
     if ~isstruct(loader), break; end
 
     if exist(loader.method)
+      for this=sprintf('\r\n\t\b\f\a\v')
+        file_start = strrep(file_start, this, ' ');
+      end
+      
       if strcmp(loader.method, 'looktxt') && ...
               length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9
         % fprintf(1,'iLoad: skip method %s as file %s is probably binary\n', loader.method, file);
@@ -466,6 +470,8 @@ function loaders = iLoad_loader_auto(file)
         loaders_count = loaders_count+1;
         loaders{loaders_count} = loader;
       end
+    else
+      fprintf(1,'iLoad: method %s file %s: method not found ? Check the iLoad_ini configuration file.\n', loader.name, file);
     end % if exist(method)
   end % for index
   

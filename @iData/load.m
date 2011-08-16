@@ -36,7 +36,7 @@ function out = load(a, varargin)
 % output: d: single object or array (iData)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -122,7 +122,11 @@ end
 % special case for McStas files and XYEN (2-4 columns) files
 n = size(a,2); % number of columns
 if (n >= 2 && n <= 4 && size(a,1) >= 5)
-  xlab = xlabel(a);
+  if ~isempty(getaxis(a))
+      xlab = label(a,1);
+  else
+      xlab = 'x [1st column]';
+  end
   ylab = title(a);
 
   Datablock = ['this.' getalias(a,'Signal')];
