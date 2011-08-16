@@ -10,6 +10,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: optimization methods (iOptim)</title>
 </head><body>
@@ -39,13 +40,14 @@ general syntax</h3>
 The <span style="font-style: italic;">iOptim</span> sub-library
 provides a set of <span style="font-weight: bold;">minimization</span>
 routines, that is computational methods which attempt to minimize, in <span style="font-style: italic;">d</span> dimensions, an <span style="font-style: italic;">objective</span> function, often referred
-as the <span style="font-style: italic;">criteria, </span>by varying
+as the <span style="font-style: italic;">criteria </span>or<span style="font-style: italic;"> cost function, </span>by varying
 a set of parameters.<br>
 <br>
 <div style="text-align: center;"><span style="font-style: italic; font-weight: bold;">minimizer: </span><span style="font-weight: bold;"></span>{ vary vector <span style="font-style: italic;">p </span>&#8712; <span style="font-style: italic;">&#8476;</span><sup style="font-style: italic;">d</sup> so that <span style="font-style: italic;">objective(p)</span> is minimal }<br>
 </div>
 <br>
-The syntax which all of these optimizers use is the one from the
+A usual cost function is the least-square between the model and the
+data. The syntax which all of these optimizers use is the one from the
 default Matlab <span style="font-style: italic;">fminsearch</span>
 function :<br>
 </div>
@@ -151,7 +153,9 @@ set history during optimization (double array)</li>
   <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">criteriaHistory: </span>Criteria
 history during optimization (double vector/array)</li>
   <li><span style="font-style: italic;">output.parsHistoryUncertainty: </span>uncertainty on optimized parameters (half-width) obtained from the optimization history (vector)</li>
-  <li><span style="font-style: italic;">output.parsHessianUncertainty: </span>uncertainty on optimized parameters (half-width) obtained from the Hessian matrix, which is extremely sensitive to noise. Prefer the <span style="font-style: italic;">output.parsHistoryUncertainty</span> value (vector)</li>
+  <li><span style="font-style: italic;">output.parsHessianUncertainty: </span>uncertainty
+on optimized parameters (half-width) obtained from the Hessian matrix,
+which is extremely sensitive to noise. Prefer the <span style="font-style: italic;">output.parsHistoryUncertainty</span> value (vector)</li>
   <li><span style="font-style: italic;">output.parsHessianCovariance:</span> Covariance matrix at the optimized solution (which diagonal is the parameter variance)</li>
   <li><span style="font-style: italic;">output.parsHessianCorrelation:</span> Correlation matrix at the optimized solution (off-diagonal values larger that 0.7 indicate cross-correlated parameters)<br>
   </li>
@@ -1230,7 +1234,7 @@ Sao Jose do Rio Preto, SP, pp. 49-52 (1989).<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span style="font-style: italic;">
-$Date: 2011-06-28 19:51:03 $ $Revision: 1.16 $
+$Date: 2011-08-16 14:56:23 $ $Revision: 1.17 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
