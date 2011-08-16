@@ -37,7 +37,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.45 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.46 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -130,7 +130,7 @@ if ischar(filename) & length(filename) > 0
   
   % handle single file name (possibibly with wildcard)
   if ~isempty(find(filename == '*')) | ~isempty(find(filename == '?'))  % wildchar !!#
-    [filepath,name,ext,versn]=fileparts(filename);  % 'file' to search
+    [filepath,name,ext]=fileparts(filename);  % 'file' to search
     if isempty(filepath), filepath = pwd; end
     this_dir = dir(filename);
     if isempty(this_dir), return; this_dir = dir(filepath); end

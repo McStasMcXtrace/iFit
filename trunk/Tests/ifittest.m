@@ -84,7 +84,11 @@ for index=1:length(tests_list)
 end
 ratio = 1-failed/length(tests_list);
 disp( '------------------------------------------------------')
-fprintf(1,'Success ratio: %i %% (%i/%i test failed)\n', ceil(ratio*100), failed, length(tests_list));
+if failed == 0
+  fprintf(1,'Success ratio: %i %% (%i tests)\n', ceil(ratio*100), length(tests_list));
+else
+  fprintf(1,'Success ratio: %i %% (%i/%i test failed)\n', ceil(ratio*100), failed, length(tests_list));
+end
 fprintf(1,'Test duration: %g [s]\n', etime(clock,t0));
 
 % ------------------------------------------------------------------------------
