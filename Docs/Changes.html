@@ -86,18 +86,35 @@ error for e.g. ILL TAS import (Feb 2011)</li>
 <h4>Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</h4>
 <div style="margin-left: 40px;">In some cases, the provided
 iFit/iFiles/private/looktxt.mex* may fail to execute (wrong
-architecture, missing library). Remove the invalid mex file, and
+architecture, missing library).
+</div>
+<br>
+<div style="margin-left: 40px;">
+If a library is mising, just install it. <br>
+Under Windows 64bit systems,
+you need the Visual C++ runtime libraries <i>msvc[mpr]90.dll</i> which
+are provided with the Visual C++ installation (see below), to put in the 
+Windows system directory.
+</div>
+<br>
+<div style="margin-left: 40px;">
+In case this is not a problem of library, remove the invalid mex file 
+(in <i>iFit/iFiles/private</i>) , and
 relaunch the importation process. A brand new MeX file will
 automatically be generated, using the system C compiler. <br>
 <br>
-Most systems provide a default C compiler. MacOSX systems require to
-install the Xcode development tools. Windows 32 systems may use the LCC
-compiler shipped with Matlab. Windows 64 systems must have Microsoft
-Visual C++ installed (refer to the <a href="Install.html#mozTocId359173">Install</a> page for the procedure).<br>
-You may need to select the compiler with the 'mex -setup' command from Matlab.<br>
-<span style="font-weight: bold;"><br>
-</span></div>
-<div style="margin-left: 40px;">It has been reported that MeX compilation may fail when spaces are part of the path name to the iFit location. Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.<br>
+Most systems provide a default C compiler. <br>
+<ul>
+<li>Linux systems usually ship with gcc.</li>
+<li>MacOSX systems require to install the Xcode development tools. </li>
+<li>Windows 32 systems may use the LCC compiler shipped with Matlab. </li>
+<li>Windows 64 systems must have Microsoft Visual C++ installed (refer to the <a href="Install.html#mozTocId359173">Install</a> page for the procedure).</li>
+</ul>
+You may need to select the compiler with the <i>mex -setup</i> command from Matlab.<br>
+<br>
+</div>
+<div style="margin-left: 40px;">It has been reported that MeX compilation may fail when spaces are part of the path name to the iFit location. <br>
+Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.<br>
 <br>
 </div>
 
@@ -106,7 +123,7 @@ You may need to select the compiler with the 'mex -setup' command from Matlab.<b
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Changes - </span><span style="font-style: italic;">
-$Date: 2011-08-16 14:56:23 $ $Revision: 1.10 $
+$Date: 2011-08-17 12:13:59 $ $Revision: 1.11 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
