@@ -25,13 +25,16 @@ function y=fconv(x, h, shape)
 %
 %      See also CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 
 
 y=[];
 if nargin < 2, return; end
 if isempty(x) || isempty(h), return; end
 if nargin < 3, shape = 'full'; end
+
+if isvector(x) && size(x,1) == 1, x=x'; transpose_x=1; else transpose_x=0; end
+if isvector(h) && size(h,1) == 1, h=h'; end
 
 % pad the signal
 if ~isempty(strfind(shape,'pad')) || ~isempty(strfind(shape,'extend'))
@@ -139,6 +142,8 @@ elseif (strfind(shape,'valid'))
   y = y(subs{:});
   
 end
+
+if transpose_x, y=y'; end
 
 % return value
 
