@@ -3,11 +3,17 @@ function ratio=ifittest(tests_list)
 %   the examples from the Documentation.
 %   A report of all test is displayed at the end, with a list of failures.
 %
-%  input:  test:     empty to perform all tests, or a cellstr of test names.
+%  input:  test:     empty to perform all tests, or a cellstr of test names 
+%                    or a string to match a single or category of tests_list
+%
+% ex:     ifittest;
+%         ifittest('Fit')
+%
+% Version: $Revision: 1.10 $
+% See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
-if isempty(tests_list)
-  tests_list = { ...
+all_tests_list = { ...
     'Fit_1', ...
     'Fit_2_gauss', ...
     'Fit_3_options', ...
@@ -50,8 +56,15 @@ if isempty(tests_list)
     'Plot_10_caxis', ...
     'Save_1', ...
     'iFitmakefunc_1'};
+if isempty(tests_list)
+  message = 'All';
+  tests_list = all_tests_list;
 elseif ischar(tests_list)
-  tests_list = { tests_list };
+  message = tests_list;
+  index = strmatch(tests_list, all_tests_list);
+  tests_list = all_tests_list(index);
+else
+  message = 'Selection';
 end
 status = cell(size(tests_list));
 errors = status;
@@ -59,6 +72,8 @@ failed = 0;
 t0 = clock;
 
 % execute all tests
+h = waitbar(0, [ 'iFit test: ' message ' (close to Abort)']);
+test_length = 0;
 for index=1:length(tests_list)
   try
     disp([ mfilename ': executing test ' tests_list{index} ' -------------------' ]);
@@ -73,21 +88,28 @@ for index=1:length(tests_list)
   status{index} = result;
   errors{index} = err;
   close all
+  if length(tests_list) > 1
+    if ~ishandle(h), break; end
+    waitbar(index/length(tests_list), h);
+  end
+  test_length = test_length+1;
 end
+if ishandle(h), delete(h); end
 
 % write report
 disp(['                Test     Status             [' mfilename ']' ]);
 disp( '------------------------------------------------------')
 for index=1:length(tests_list)
+  if isempty(status{index}) && isempty(errors{index}), status{index} = 'Skipped'; end
   fprintf(1, '%20s %-10s %s\n', tests_list{index}, status{index}, errors{index});
   if strcmp(status{index},'FAILED') || ~isempty(errors{index}), failed=failed+1; end
 end
-ratio = 1-failed/length(tests_list);
+ratio = 1-failed/test_length;
 disp( '------------------------------------------------------')
 if failed == 0
-  fprintf(1,'Success ratio: %i %% (%i tests)\n', ceil(ratio*100), length(tests_list));
+  fprintf(1,'Success ratio: %i %% (%i tests)\n', ceil(ratio*100), test_length);
 else
-  fprintf(1,'Success ratio: %i %% (%i/%i test failed)\n', ceil(ratio*100), failed, length(tests_list));
+  fprintf(1,'Success ratio: %i %% (%i/%i tests failed)\n', ceil(ratio*100), failed, test_length);
 end
 fprintf(1,'Test duration: %g [s]\n', etime(clock,t0));
 
@@ -101,7 +123,7 @@ switch(test)
 case 'Fit_1'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   p=fits(a);
-  if abs(max(abs([ 0.64         1.0008      0.0035         0.0002 ])-abs(p))) < 0.01
+  if abs(max(abs([ 0.63         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01
     result = 'OK  fits(a)';
   else
     result = 'FAILED';
@@ -121,7 +143,7 @@ case 'Fit_3_options'
   options=fminimfil('defaults');
   options.TolFun=0.01;
   p=fits(a, 'gauss', [], options);
-  if abs(max(abs([ 0.64         1.0008      0.0035         0.0002 ])-abs(p))) < 0.01
+  if abs(max(abs([ 0.63         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01
     result = 'OK  fits(a, ''gauss'', [], options);';
   else
     result = 'FAILED';
@@ -141,30 +163,29 @@ case 'Fit_4_fminplot'
   end 
 case 'Fit_5_fix'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
-  p=fits(a, 'gauss', [], 'fminimfil', [ 1 0 0 0 ]);
+  p=fits(a, 'gauss', [], 'fminralg', [ 1 0 0 0 ]);
   % p= 0.5936    1.0008   -0.0037    0.0002
   if abs(max(abs([ 0.5936         1.0008      0.0035         0.0002 ])-abs(p))) < 0.01
-    result = 'OK  fits(a, ''gauss'', [], ''fminimfil'', [ 1 0 0 0 ])';
+    result = 'OK  fits(a, ''gauss'', [], ''fminralg'', [ 1 0 0 0 ])';
   else
     result = 'FAILED';
   end 
 case 'Fit_6_limits'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
-  p=fits(a, 'gauss', [], 'fminimfil', [ 0.5 0.8 0 0 ], [ 1 1.2 1 1 ]);
-  if abs(max(abs([ 0.6363         1.0008      0.0035         0.0002 ])-abs(p))) < 0.01
-    result = 'OK  fits(a, ''gauss'', [], ''fminimfil'', [ 0.5 0.8 0 0 ], [ 1 1.2 1 1 ]);';
+  p=fits(a, 'gauss', [], 'fminimfil', [ 0.5 0.8 -1 0 ], [ 1 1.2 1 1 ]);
+  if abs(max(abs([ 0.6363         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01
+    result = 'OK  fits(a, ''gauss'', [], ''fminralg'', [ 0.5 0.8 0 0 ], [ 1 1.2 1 1 ]);';
   else
     result = 'FAILED';
   end 
 case 'Fit_7_uncertainties'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   [p,criteria,message,output]= fits(a, 'gauss', [], 'fminimfil');
-  index=find(output.criteriaHistory < min(output.criteriaHistory)*2);
   sigma = output.parsHistoryUncertainty;
   % p    = [ 0.6264      1.001   -0.00365  0.0002173 ]
   % sigma= [ 0.004565  2.438e-05  3.159e-05  3.785e-05 ]
-  if abs(max(abs([ 0.5936         1.0008      0.0035         0.0002 ])-abs(p))) < 1e-4 && ...
-     abs(max(abs([0.004565  2.438e-05  3.159e-05  3.785e-05 ])-abs(sigma))) < 0.01
+  if abs(max(abs([ 0.63         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01 && ...
+     abs(max(abs([0.015  1.25e-04  5.2e-05  1.1e-04 ])-abs(sigma))) < 1e-5
     result = 'OK  [p,criteria,message,output]= fits(a); output.parsHistoryUncertainty';
   else
     result = 'FAILED';

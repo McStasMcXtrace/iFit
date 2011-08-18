@@ -46,7 +46,7 @@ function stop = fminplot(pars, optimValues, state)
   
   if length(fvalHistory) > 10
     if ~isempty(updatePlot)
-      if etime(clock, updatePlot) < 10, return; end % plot every 10 secs
+      if etime(clock, updatePlot) < 2, return; end % plot every 2 secs
     end
   end
     
