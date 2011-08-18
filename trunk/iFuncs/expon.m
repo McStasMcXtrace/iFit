@@ -2,6 +2,7 @@ function y=expon(p, x, y)
 % y = expon(p, x, [y]) : Exponential decay
 %
 %   iFunc/expon Exponential decay fitting function
+%     Tau is the expeonential decay parameter, in inverse 'x' units.
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
@@ -13,7 +14,7 @@ function y=expon(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=expon([1 0 1 1], -10:10); or y=expon('identify') or p=expon('guess',x,y);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, ifitmakefunc
 
 % 1D function template:

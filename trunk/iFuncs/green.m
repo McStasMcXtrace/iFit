@@ -6,14 +6,14 @@ function y=green(p, x, y)
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
 % input:  p: Green model parameters (double)
-%            p = [ Amplitude Tau BackGround ]
+%            p = [ Amplitude Center Width BackGround ]
 %          or action e.g. 'identify', 'guess', 'plot' (char)
 %         x: axis (double)
 %         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=green([1 0 1 1], -10:10); or y=green('identify') or p=green('guess',x,y);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
