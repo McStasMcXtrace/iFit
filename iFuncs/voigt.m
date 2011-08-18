@@ -1,7 +1,8 @@
 function y=voigt(p, x, y)
 % y = voigt(p, x, [y]) : Voigt function
 %
-%   iFunc/voigt Voigt fitting function, including Bose factor
+%   iFunc/voigt Voigt fitting function, including Bose factor.
+%     The Width parameters of the Gaussian and Lorentzian are the Half Widths.
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
@@ -13,7 +14,7 @@ function y=voigt(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=voigt([1 0 1 1], -10:10); or y=voigt('identify') or p=voigt('guess',x,y);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -69,6 +70,9 @@ end
 function y = evaluate(p, x)
   sx = size(x); x=x(:);
   if isempty(x) | isempty(p), y=[]; return; end
+  
+  p(3) = p(3) * 2; % Half > Full width
+  p(4) = p(4) * 2;
   
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
   % MZ <mzinkin@sghms.ac.uk> adapted from DFM
