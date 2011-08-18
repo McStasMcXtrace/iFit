@@ -68,10 +68,10 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %                              the optimization trajectory (double)
 %
 % ex:     p=fits(a,'gauss',[1 2 3 4]);
-%         o=fminimfil('defaults'); o.OutputFcn='fminplot'; 
+%         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -304,12 +304,20 @@ if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(o
   for index=1:length(info.Parameters); fprintf(1,'%10s ', info.Parameters{index}); end; fprintf(1,'\n');
   fprintf(1,'%10.2g ', pars_out); fprintf(1,'\n');
   index=find(output.criteriaHistory < min(output.criteriaHistory)*4);   % identify tolerance region around optimum
-  if length(index) > 10
-    disp('** Gaussian uncertainty on parameters (half width, from the optimization history)')
-    fprintf(1,'%10.2g ', output.parsHistoryUncertainty); fprintf(1,'\n');
-  else
-    disp('** Gaussian uncertainty on parameters (half width, from the Hessian matrix)')
-    fprintf(1,'%10.2g ', output.parsHessianUncertainty); fprintf(1,'\n');
+  
+  % write uncertainty if not done by fmin_private_wrapper
+  if ~strcmp(options.Display,'final') & ~strcmp(options.Display,'iter')
+    if length(index) > 10 % test length of tolerence region
+      disp('** Gaussian uncertainty on parameters (half width, from the optimization history)')
+      fprintf(1,'%10.2g ', output.parsHistoryUncertainty); fprintf(1,'\n');
+    end
+    if isfield(output,'parsHessianUncertainty')
+      fprintf(1,'** Gaussian uncertainty on parameters (half width, from the Hessian matrix)');
+      if isfield(output, 'corrcoeff')
+        fprintf(1, ', CorrCoef=%g\n', output.corrcoeff);
+      else disp(' '); end
+      fprintf(1,'%10.2g ', output.parsHessianUncertainty); fprintf(1,'\n');
+    end
   end
 end
 
@@ -348,13 +356,21 @@ end % eval_criteria
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function c=least_square(Signal, Error, Model)
 % weighted least square criteria, which is also the Chi square
+% the return value is a vector, and most optimizers use its sum (except LM).
   if all(Error == 0)
-    c = sum(abs(Signal-Model).^2); % raw least square
+    index = find(isfinite(Model) & isfinite(Signal));
+    c = abs(Signal(index)-Model(index)).^2; % raw least square
   else
-    index = find(Error~=0 & ~isnan(Error) & ~isinf(Error));
-    c=(Signal(index)-Model(index))./Error(index);
-    c=abs(c);
-    c=abs(c.*c);                % Chi square
+    % find minimal non zero Error
+    Error = abs(Error);
+    index = find(Error~=0 & isfinite(Error));
+    minError = min(Error(index));
+    % find zero Error, which should be used whenever possible
+    index = find(Error == 0);
+    Error(index) = minError/2;
+    index = find(Error~=0 & isfinite(Error) & isfinite(Model) & isfinite(Signal));
+    c=abs(Signal(index)-Model(index))./Error(index);
+    c=c.*c;                % Chi square
   end
 end % least_square
 

@@ -53,7 +53,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.23 $
+% Version: $Revision: 1.24 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -530,10 +530,11 @@ if strcmp(options.Display,'final') | strcmp(options.Display,'iter')
   disp(' Func_count     min[f(x)]        Parameters');
   inline_disp(struct('Display','iter'), -constraints.funcCount , fun, pars, mean(fval));
   
-  if length(index) > 10
+  if length(index) > 10 % test length of tolerence region
     disp(' Gaussian uncertainty on parameters (half width, from the optimization history)')
     inline_disp(struct('Display','iter'), -1, fun, output.parsHistoryUncertainty, NaN);
-  else
+  end
+  if isfield(output,'parsHessianUncertainty')
     disp(' Gaussian uncertainty on parameters (half width, from the Hessian matrix)')
     inline_disp(struct('Display','iter'), -1, fun, output.parsHessianUncertainty, NaN);
   end
