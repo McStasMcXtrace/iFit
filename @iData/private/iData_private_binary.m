@@ -12,13 +12,13 @@ function c = iData_private_binary(a, b, op, varargin)
 %     operator(a(index), b(index))
 %
 % operator may be: 'plus','minus','combine'
-%                  'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide', 'conv'
+%                  'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide', 'conv', 'xcorr'
 %                  'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'
 %
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.23 $
+% Version: $Revision: 1.24 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
@@ -148,8 +148,8 @@ case {'plus','minus','combine'}
 		  e2=[];
 	end
   if p1 & ~all(m3 == 0), s3 = genop( @times, s3, m3); e3=genop(@times, e3, m3); end
-case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','conv'}
-  if strcmp(op, 'conv')
+case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','conv','xcorr'}
+  if strcmp(op, 'conv') || strcmp(op, 'xcorr')
     s3 = fconv(y1, y2, varargin{:});
     if nargin == 4
       if strfind(varargin{1}, 'norm')

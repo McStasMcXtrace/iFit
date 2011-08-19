@@ -2,13 +2,14 @@ function edit(a)
 % edit(s) : edit iData object Signal/Monitor
 %
 %   @iData/edit function to view the Signal/Monitor of a data set. 
+%     The data appears as a spreadsheet (requires Java to be enabled).
 %     The Signal can not (yet) be modified.
 %
 % input:  s: object or array (iData)
 % output: b: object or array (iData)
 % ex:     b=edit(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
   if length(a(:)) > 1
