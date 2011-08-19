@@ -95,14 +95,16 @@ controls simulation configuration.<br>
   <li><span style="font-weight: bold;">options.dir</span>:&nbsp;&nbsp;&nbsp;
 directory
 where
-to store results. When not defined, a temporary
+to
+store results. When not defined, a temporary
 location is created, and removed after the simulation (string)</li>
   <li><span style="font-weight: bold;">options.ncount</span>: number of
 neutron events per iteration, <span style="font-style: italic;">e.g. </span>1e5
 (double)</li>
   <li><span style="font-weight: bold;">options.mpi</span>:&nbsp;&nbsp;&nbsp;
 number
-of processors to use with MPI (integer. The simulation should be
+of
+processors to use with MPI (integer. The simulation should be
 re-compiled accordingly with <span style="font-style: italic;">options.compile='yes'</span>
   </li>
   <li><span style="font-weight: bold;">options.seed</span>:&nbsp;&nbsp;
@@ -122,7 +124,8 @@ to force re-compilation of the instrument (boolean)</li>
  alt="iFit: McStas simulation run from Matlab/iFit and displayed"
  style="border: 0px solid ; width: 200px; height: 186px;" align="right"></a>In
 the
-following examples, we define required structures on the fly, run
+following
+examples, we define required structures on the fly, run
 the <span style="font-style: italic;">templateDIFF</span> instrument
 (the file must be accessible from Matlab current path) and get back
 monitors:<br>
@@ -210,7 +213,8 @@ Then we may plot, as a 2D surface, the integral value for the last
  alt="iFit: McStas: evolution of a monitor"
  style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>You
 may
-look at the instrument parameters used for the scans, e.g.<br>
+look
+at the instrument parameters used for the scans, e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span
  style="color: rgb(51, 102, 255);">get</span>(m,<span
  style="color: rgb(204, 51, 204);">'RV'</span>)</pre>
@@ -237,7 +241,8 @@ scan line, which creates a 3D volume to explore with <span
 <span style="color: rgb(255, 0, 0); font-weight: bold;">Warning: </span>Beware
 of
 the
-number of iterations required to scan large dimensionality spaces.
+number
+of iterations required to scan large dimensionality spaces.
 In practice you should avoid spaces above 2 or 3 scanned parameters.
 Exceeding this will undoubtedly require very long computation times,
 and large memory storage.<br>
@@ -295,6 +300,7 @@ that 0.1%</span></li>
   <li><span style="color: rgb(204, 51, 204);"><span
  style="color: rgb(0, 0, 0);"><span style="font-weight: bold;">options.OutputFcn</span>=</span>'fminplot'
 
+
     </span>plots the criteria and parameters evolution during the
 optimization. This is the default. Set to <span
  style="color: rgb(204, 51, 204);">''</span> to override this choice.<br>
@@ -308,6 +314,24 @@ optimization.<br>
 <br>
 The optimization returns the best parameter guess, as well as the
 monitor value for this solution.<br>
+In addition, similarly with other iFit <a href="iOptim.html">optimization
+methods</a>, the optimizer final status and optional returned
+information can be obtained with e.g. <br>
+<pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors, <span
+ style="color: rgb(255, 0, 0);">status, output</span>]=<span
+ style="color: rgb(51, 102, 255);">mcstas</span>(<span
+ style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span
+ style="color: rgb(51, 102, 255);">struct</span>(<span
+ style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span
+ style="color: rgb(51, 102, 255);">struct</span>(<span
+ style="color: rgb(204, 51, 204);"></span><span
+ style="color: rgb(204, 51, 204);">'monitors'</span>,<span
+ style="color: rgb(204, 51, 204);">'Banana'</span>,<span
+ style="color: rgb(204, 51, 204);">'mode','optimize','optimizer','fminimfil'</span>));</pre>
+where output stores most of the optimization process data, including
+uncertainty on the best parameter values, <span
+ style="font-style: italic;">output.parsHistoryUncertainty </span>and<span
+ style="font-style: italic;"> </span><span style="font-style: italic;">output.parsHessianUncertainty</span>.<br>
 <br>
 <a href="images/iFit_McStas_optimize.png"><img
  src="images/iFit_McStas_optimize.png"
@@ -315,7 +339,8 @@ monitor value for this solution.<br>
  style="border: 0px solid ; width: 200px; height: 190px;" align="right"></a>In
 the
 following
-example, we search for an optimal monochromator curvature
+example,
+we search for an optimal monochromator curvature
 on the <span style="font-style: italic;">templateDIFF</span>
 instrument model, in order to maximize the <span
  style="font-style: italic;">Diff_Banana</span> monitors:<br>
@@ -396,7 +421,7 @@ the parameter search within boundaries during optimizations.<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/McStas - </span><span style="font-style: italic;">
-$Date: 2011-08-19 14:21:09 $ $Revision: 1.9 $
+$Date: 2011-08-19 14:37:08 $ $Revision: 1.10 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img
