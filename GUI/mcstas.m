@@ -52,7 +52,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -97,7 +97,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   % force compile before going further ?
   if  isfield(options,'compile') & (options.compile | strcmp(options.compile,'yes'))
     ncount = options.ncount;
-    options.ncount=0
+    options.ncount=0;
     mcstas_criteria([], options);
     options = rmfield(options,'compile');
     options.ncount = ncount;
