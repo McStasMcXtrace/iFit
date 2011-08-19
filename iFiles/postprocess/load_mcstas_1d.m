@@ -34,7 +34,7 @@ end
 
 % special case for McStas files and XYE (2-4 columns) files
 n = size(a,2); % number of columns
-if isempty(strfind(a.Title,'McStas 1D monitor')
+if isempty(strfind(a.Title,'McStas 1D monitor'))
   xlabel(a, xlab);
   ylabel(a, ylab);
 end
