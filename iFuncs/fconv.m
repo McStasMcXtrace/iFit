@@ -1,8 +1,10 @@
 function y=fconv(x, h, shape)
-%FCONV Fast Convolution
+%FCONV Fast Convolution/Corelation
 %   y = FCONV(x, h, shape) convolves x and h. A deconvolution mode is also possible.
+%   The correlation, instead of the convolution, can also be computed.
 %   This FFT based convolution should provide the same results as conv2 and convn.
-%   It works with x and h being of any dimensionality.
+%   It works with x and h being of any dimensionality. When only one argument is given, 
+%     the auto-convolution/correlation is computed.
 %
 %      x = input vector (signal)
 %      h = input vector (filter)
@@ -13,6 +15,8 @@ function y=fconv(x, h, shape)
 %                       without the zero-padded edges. Using this option, y has size
 %                       [mx-mh+1,nx-nh+1] when all(size(x) >= size(h)).
 %          deconv       Performs an FFT deconvolution.
+%          correlation  Compute the correlation instead of the convolution (one 
+%                       of the FFT's is then conjugated).
 %          pad          Pads the x signal by replicating its starting/ending values
 %                       in order to minimize the convolution side effects.
 %          center       Centers the h filter so that convolution does not shift
@@ -23,13 +27,14 @@ function y=fconv(x, h, shape)
 %
 % ex:     c=fconv(a,b); c=fconv(a,b, 'same pad background center normalize');
 %
-%      See also CONV, CONV2, FILTER, FILTER2, FFT, IFFT
+%      See also FCONVN, FXCORR, CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 
 
 y=[];
-if nargin < 2, return; end
+if nargin == 0, return; end
+if nargin == 1, h = x; end
 if isempty(x) || isempty(h), return; end
 if nargin < 3, shape = 'full'; end
 
@@ -91,6 +96,10 @@ end
 
 X=fftn(x, Ly2);		         % Fast Fourier transform (pads with zeros up to the next power of 2)
 H=fftn(h, Ly2);	           % Fast Fourier transform
+
+if (strfind(shape,'corr'))
+  H = conj(H);
+end
 
 if (strfind(shape,'deconv'))
   Y=X./H;      	           % FFT Division= deconvolution

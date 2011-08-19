@@ -1,7 +1,8 @@
 function y=fconvn(x, h)
 %FCONV Fast Convolution with nomalization and centering of the filter.
 %   y = FCONVN(x, h) convolves x and h.
-%   It works with x and h being of any dimensionality.
+%   It works with x and h being of any dimensionality. When only one argument is given, 
+%     the auto-convolution is computed.
 %   This is the same as calling 
 %     fconv(x,h, 'same pad background center normalize');
 %
@@ -10,7 +11,7 @@ function y=fconvn(x, h)
 %
 % ex:     c=fconvn(a,b);
 %
-%      See also CONV, CONV2, FILTER, FILTER2, FFT, IFFT
+%      See also FCONV, FXCORR, CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 y=fconv(x,h, 'same pad background center normalize');
