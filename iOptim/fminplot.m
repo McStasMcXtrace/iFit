@@ -109,7 +109,7 @@ function stop = fminplot(pars, optimValues, state)
           parsHistory(1,1), parsHistory(1,2), parsHistory(1,3), 'ro', ...
           parsHistory(best,1), parsHistory(best,2), parsHistory(best,3), 'gv', ...
           parsHistory(end,1), parsHistory(end,2), parsHistory(end,3), 'rs');
-    xlabel('Par1'); ylabel('Par2'); ylabel('Par3'); 
+    xlabel('Par1'); ylabel('Par2'); zlabel('Par3'); 
   end
   
   set(g(end),'MarkerFaceColor','r');
