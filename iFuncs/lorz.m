@@ -2,6 +2,7 @@ function y=lorz(p, x, y)
 % y = lorz(p, x, [y]) : Lorentzian
 %
 %   iFunc/lorz Lorentzian fitting function
+%     y = p(1) ./ (1+ ((x-p(2)).^2/p(3)^2) ) + p(4);
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
@@ -13,7 +14,7 @@ function y=lorz(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=lorz([1 0 1 1], -10:10); or y=lorz('identify') or p=lorz('guess',x,y);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, ifitmakefunc
 
 % 1D function template:

@@ -2,6 +2,7 @@ function y=green(p, x, y)
 % y = green(p, x, [y]) : Green function
 %
 %   iFunc/green Green fitting function
+%     y = (p(1)*p(3)*p(2)^2 ) ./ ( (p(2)^2 - x.^2).^2 + (x*p(3)).^2) + p(4);
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
@@ -13,7 +14,7 @@ function y=green(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=green([1 0 1 1], -10:10); or y=green('identify') or p=green('guess',x,y);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, ifitmakefunc
 
 % 1D function template:

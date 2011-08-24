@@ -2,6 +2,7 @@ function y=strline(p, x, y)
 % y = strline(p, x, [y]) : Straight line
 %
 %   iFunc/strline Straight line fitting function
+%     y=p(2)+p(1)*x;
 %     The Gradient parameter is the slope of the straight line.
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
@@ -12,9 +13,9 @@ function y=strline(p, x, y)
 %         x: axis (double)
 %         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
-% ex:     y=strline([1 0 1 1], -10:10); or y=strline('identify') or p=strline('guess',x,y);
+% ex:     y=strline([1 1], -10:10); or y=strline('identify') or p=strline('guess',x,y);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -97,9 +98,7 @@ function info=guess(x,y)
   info       = identify;  % create identification structure
   info.Axes  = { x };
   % fill guessed information
-  info.Guess = iFuncs_private_guess(x(:), y(:), info.Parameters);
-  info.Guess(1) = (max(y)-min(y))/(max(x)-min(x));
-  info.Guess(2) = min(y)-min(x)*info.Guess(1);
+  info.Guess = polyfit(x, y, 1);
   info.Values= evaluate(info.Guess, info.Axes{:});
 end
 
