@@ -2,6 +2,7 @@ function y=bose(p, x, y)
 % y = bose(p, x, [y]) : Bose
 %
 %   iFunc/bose Bose fitting function
+%     y = 1 ./ (exp(p(1) * x) - 1);
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
@@ -13,7 +14,7 @@ function y=bose(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=bose([1], -10:10); or y=bose('identify') or p=bose('guess',x,y);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, ifitmakefunc
 
 % 1D function template:

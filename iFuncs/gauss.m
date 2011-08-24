@@ -2,6 +2,7 @@ function y=gauss(p, x, y)
 % y = gauss(p, x, [y]) : Gaussian
 %
 %   iFunc/gauss Gaussian fitting function
+%     y = p(1)*exp(-0.5*((x-p(2))/p(3)).^2) + p(4);
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
@@ -13,7 +14,7 @@ function y=gauss(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=gauss([1 0 1 1], -10:10); or y=gauss('identify') or p=gauss('guess',x,y);
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
