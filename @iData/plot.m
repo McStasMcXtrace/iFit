@@ -1,4 +1,4 @@
-function h=plot(a, method)
+function h=plot(a, varargin)
 % h = plot(s, method) : plot iData object
 %
 %   @iData/plot function to plot data sets
@@ -21,6 +21,7 @@ function h=plot(a, method)
 %         method: optional type of plot to render
 %
 %               For 1D plots y=f(x), method is a string to specify color/symbol.
+%                 hide_errorbars is also valid not to plot error bars.
 %               For 2D plots z=f(x,y), method is a string which may contain:
 %                 surf, mesh, contour, contour3, surfc, surfl, contourf
 %                 plot3, scatter3 (colored points), stem3, pcolor, waterfall
@@ -45,7 +46,7 @@ function h=plot(a, method)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.60 $
+% Version: $Revision: 1.61 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -53,7 +54,15 @@ function h=plot(a, method)
 % private functions:
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
-if nargin == 1, method=''; end
+if nargin == 1, method=''; 
+else
+  method = '';
+  for index=1:length(varargin)
+    if ischar(varargin{index}), method = varargin{index};
+    else a = [a(:) varargin{index} ];
+    end
+  end
+end
 if length(a) > 1
   h = cell(size(a));
   ih = ishold;
@@ -68,7 +77,7 @@ if length(a) > 1
     end
     h{index} = plot(a(index), method);
     sum_max = sum_max+max(a(index))-min(a(index));
-    if ndims(a(index)) == 1 && isempty(method)
+    if ndims(a(index)) == 1 && (isempty(method) | ~isempty(strfind(method, 'hide_err')))
       % change color of line
       colors = 'bgrcm';
       set(h{index}, 'color', colors(1+mod(index, length(colors))));
@@ -149,7 +158,7 @@ case 1  % vector type data (1 axis + signal) -> plot
     % tight, auto, tight, hide, view2, view3, transparent
     toremove='tight auto hide view2 view3 transparent';
     toremove=strread(toremove,'%s','delimiter',' ');
-    this_method = strrep(this_method, toremove,'');
+    this_method = deblank(strrep(this_method, toremove,''));
     if all(e == 0) | length(x) ~= length(e)
       if length(this_method)
         try
@@ -171,7 +180,7 @@ case 1  % vector type data (1 axis + signal) -> plot
         h = errorbar(x,y,e); 
       end
       % hide error bars when they are much larger than the signal...
-      if all(abs(e) >  abs(y)*10), 
+      if all(abs(e) >  abs(y)*10) | ~isempty(strfind(method, 'hide_err'))
         tmp_h=get(h,'children');
         set(tmp_h(2), 'Visible','off');
       end
@@ -364,26 +373,61 @@ elseif ~isempty(a.DisplayName)
   d = [ d sprintf('%s', g) ];
 end
 
+% --------------------- contextual menus ---------------------------------------
+% create callback functions: handle camllback for single error on/off
+  function callbak_toggle_error_gco(obj, event)
+    if strcmp(get(obj,'type'),'uimenu'), obj=gco; end
+    tmp_h=get(obj,'children');
+    if length(tmp_h) < 2, return; end
+    if strcmp(get(tmp_h(2),'visible'),'off'), tmp_v='on'; 
+    else tmp_v='off'; end; 
+    set(tmp_h(2),'visible',tmp_v);
+  end
+
+% create callback functions: handle camllback for error on/off in axis frame
+  function callbak_toggle_error_gca(obj, event)
+  % we scan all objects below the axis object, and toggle error bars
+  for index=findobj(gca,'type','hggroup')
+    callbak_toggle_error_gco(index)
+  end
+  end
+  
+% create callback functions: handle callback rotate 2d 3d
+  function callback_rotate(obj, event)
+    [tmp_a,tmp_e]=view; 
+    if (tmp_a==0 & tmp_e==90) view(3); 
+    else view(2); end; 
+    lighting none;alpha(1);shading flat;rotate3d off;axis tight;
+  end
+  
+% create callback functions: duplicate plot
+  function callback_duplicate(obj, event)
+    duplicate_cb.g =gca;
+    duplicate_cb.ud=get(duplicate_cb.g,'UserData'); 
+    duplicate_cb.f =figure; 
+    duplicate_cb.c=copyobj(duplicate_cb.g,gcf);
+    set(duplicate_cb.c,'position',[ 0.1 0.1 0.85 0.8]);
+    if iscellstr(duplicate_cb.ud.title) duplicate_cb.ud.title=duplicate_cb.ud.title{1}; end
+    set(gcf,'Name', [ 'Copy of ' duplicate_cb.ud.title ]); 
+    set(gca,'XTickLabelMode','auto','XTickMode','auto');
+    set(gca,'YTickLabelMode','auto','YTickMode','auto');
+    set(gca,'ZTickLabelMode','auto','ZTickMode','auto');
+    xlabel(duplicate_cb.ud.xlabel);ylabel(duplicate_cb.ud.ylabel); 
+   end
+
+% contextual menu for the single object being displayed
 uicm = uicontextmenu; 
 uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
   'Callback', [ 'msgbox(getfield(get(get(gco,''UIContextMenu''),''UserData''),''properties''),' ...
                   '''About: Figure ' num2str(gcf) ' ' T ' <' S '>'', ''help'');' ] );
-uimenu(uicm, 'Label',[ 'Duplicate "' T '" ...' ], 'Callback', ...
-   [ 'duplicate_cb.g=gca; duplicate_cb.ud=get(duplicate_cb.g,''UserData''); duplicate_cb.f=figure; duplicate_cb.c=copyobj(duplicate_cb.g,gcf); ' ...
-     'set(duplicate_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
-     'set(gcf,''Name'',''Copy of ' char(a) '''); ' ...
-     'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
-     'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
-     'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');' ...
-     'xlabel(duplicate_cb.ud.xlabel);ylabel(duplicate_cb.ud.ylabel); clear duplicate_cb;']);
+uimenu(uicm, 'Label',[ 'Duplicate "' T '" ...' ], 'Callback', @callback_duplicate);
 uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '" ' d ]);
 uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
-uimenu(uicm, 'Label', [ 'Cmd: ' cmd ], 'Callback', [ 'listdlg(''ListString'', getfield(get(gca, ''UserData''), ''commands''), ' ...
+uimenu(uicm, 'Label', [ 'Cmd: ' cmd ], 'Callback', [ 'listdlg(''ListString'', getfield(get(gco, ''UserData''), ''commands''), ' ...
              '''ListSize'',[400 300],''Name'',''' T ''',''PromptString'',''' char(a) ''');' ]);
 uimenu(uicm, 'Label', [ 'User: ' a.User ]);
 
-% also make up title string and Properties dialog content
-
+% make up title string and Properties dialog content
 properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
              [ 'Title: "' T '" ' d ], ...
              [ 'Source: ' a.Source ], ...
@@ -421,7 +465,11 @@ try
 catch
 end
 
-% UserData storage
+if ndims(a) == 1
+  uimenu(uicm, 'Label','Toggle error bars', 'Callback',@callbak_toggle_error_gco);
+end
+uimenu(uicm, 'Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData) ''')' ]);
+% attach contexual menu to plot with UserData storage
 ud.properties=properties;
 ud.xlabel = xlab;
 ud.ylabel = ylab;
@@ -429,14 +477,26 @@ ud.zlabel = zlab;
 ud.title  = titl;
 ud.commands = commandhistory(a);
 set(uicm,'UserData', ud);
-set(gca, 'UserData', ud);
+set(h,   'UIContextMenu', uicm); 
 
-uimenu(uicm, 'Separator','on','Label','Toggle grid', 'Callback','grid');
-if ndims(a) == 1
-  uimenu(uicm, 'Label','Toggle error bars', 'Callback','tmp_h=get(gco,''children''); if strcmp(get(tmp_h(2),''visible''),''off''), tmp_v=''on''; else tmp_v=''off''; end; set(tmp_h(2),''visible'',tmp_v); clear tmp_h tmp_v');
+% contextual menu for the axis frame
+if ~isempty(get(gca, 'UserData'))
+  ud = get(gca, 'UserData');
 end
-if ndims(a) >= 2
-  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback','[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end; clear tmp_a, tmp_e; lighting none;alpha(1);shading flat;rotate3d off;axis tight;');
+uicm = uicontextmenu;
+uimenu(uicm, 'Label',[ 'Duplicate this view...' ], 'Callback', @callback_duplicate);;
+if ndims(a) == 1 && ~isfield(ud,'contextual_1d')
+  ud.contextual_1d = 1;
+end
+if isfield(ud,'contextual_1d') && ud.contextual_1d==1
+  uimenu(uicm, 'Label','Toggle All Error Bars', 'Callback', @callbak_toggle_error_gca);
+end
+uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+if ndims(a) >= 2 && ~isfield(ud,'contextual_2d')
+  ud.contextual_2d = 1;
+end
+if isfield(ud,'contextual_2d') && ud.contextual_2d==1
+  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback',@callback_rotate);
   uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
   uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
@@ -450,14 +510,14 @@ end
 if ~usejava('jvm')
   uimenu(uicm, 'Separator','on','Label','Zoom on/off', 'Callback','zoom');
   uimenu(uicm, 'Label','Pan (move)', 'Callback','pan');
-  set(gcf, 'KeyPressFcn', @(src,evnt) eval('if lower(evnt.Character)==''r'', lighting none;alpha(1);shading flat;axis tight;rotate3d off;; end') );
+  set(gcf, 'KeyPressFcn', @(src,evnt) eval('if lower(evnt.Character)==''r'', lighting none;alpha(1);shading flat;axis tight;rotate3d off; end') );
   if ndims(a) >= 2
     uimenu(uicm, 'Label', 'Rotate', 'Callback','rotate3d on');
   end
 end
 uimenu(uicm, 'Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData) ''')' ]);
-% attach contexual menu to plot
-set(h,   'UIContextMenu', uicm); 
+
+set(gca, 'UserData', ud);
 set(gca, 'UIContextMenu', uicm);
 try
   set(h,   'Tag',  [ mfilename '_' a.Tag ]);
@@ -465,7 +525,7 @@ end
 set(gcf, 'Name', char(a));
 
 % labels
-if (strfind(method,'hide'))
+if (strfind(method,'hide_ax'))
   % set(gca,'visible','off'); 
   set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[])
   xlabel(' '); ylabel(' '); zlabel(' ');
@@ -482,6 +542,7 @@ else
   title(titl,'interpreter','none');
 end
 
+end
 % ============================================================================
 
 
