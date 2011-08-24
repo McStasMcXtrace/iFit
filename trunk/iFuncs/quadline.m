@@ -1,21 +1,20 @@
-function y=expon(p, x, y)
-% y = expon(p, x, [y]) : Exponential decay
+function y=quadline(p, x, y)
+% y = quadline(p, x, [y]) : Quadratic line
 %
-%   iFunc/expon Exponential decay fitting function
-%     Tau is the expeonential decay parameter, in inverse 'x' units.
-%     y=p(3)+p(1)*exp(-x/p(2));
+%   iFunc/quadline Quadratic fitting function
+%     y=p(3)+p(2)*x+p(1)*x.*x;
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
-% input:  p: Exponential decay model parameters (double)
-%            p = [ Amplitude Tau BackGround ]
+% input:  p: Straight line model parameters (double)
+%            p = [ Quadratic Linear Constant ]
 %          or action e.g. 'identify', 'guess', 'plot' (char)
 %         x: axis (double)
 %         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
-% ex:     y=expon([1 0 1 1], -10:10); or y=expon('identify') or p=expon('guess',x,y);
+% ex:     y=quadline([1 0 1], -10:10); or y=quadline('identify') or p=quadline('guess',x,y);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.1 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -39,7 +38,7 @@ function y=expon(p, x, y)
   %   identify: model([],x)
     y = identify; x=x(:);
     % HERE default parameters when only axes are given <<<<<<<<<<<<<<<<<<<<<<<<<
-    y.Guess  = [1 std(x)/2 .1];
+    y.Guess  = [.1 1/(max(x)-min(x)) .1];
     y.Axes   = { x };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 1 && isnumeric(p) && ~isempty(p) 
@@ -47,7 +46,7 @@ function y=expon(p, x, y)
     y = identify;
     y.Guess  = p;
     % HERE default axes to represent the model when parameters are given <<<<<<<
-    y.Axes   =  { linspace(0,3*p(2), 100) };
+    y.Axes   =  { linspace(-1/p(1), 1/p(1), 100) };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 1 && ischar(p) && strcmp(p, 'plot') % only works for 1D
     y = feval(mfilename, [], linspace(-2,2, 100));
@@ -73,7 +72,7 @@ function y = evaluate(p, x)
   if isempty(x) | isempty(p), y=[]; return; end
   
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  y=p(3)+p(1)*exp(-x/p(2));
+  y=p(3)+p(2)*x+p(1)*x.*x;
   
   y = reshape(y, sx);
 end
@@ -81,10 +80,10 @@ end
 % inline: identify: return a structure which identifies the model
 function y =identify()
   % HERE are the parameter names
-  parameter_names = {'Amplitude','Tau', 'Background'};
+  parameter_names = {'Quadratic' 'Linear','Constant'};
   %
   y.Type           = 'iFit fitting function';
-  y.Name           = [ 'Exponential decay (1D) [' mfilename ']' ];
+  y.Name           = [ 'Quadratic equation (1D) [' mfilename ']' ];
   y.Parameters     = parameter_names;
   y.Dimension      = 1;         % dimensionality of input space (axes) and result
   y.Guess          = [];        % default parameters
@@ -98,14 +97,7 @@ function info=guess(x,y)
   info       = identify;  % create identification structure
   info.Axes  = { x };
   % fill guessed information
-  mny = mean(y);
-  if min(y) <= 0, bkg = min(y); else bkg = 0; end
-  pe = polyfit(x,log(y - bkg - abs(bkg)*0.01),1); % p(1) is the highest degree parameter
-  p(1) = exp(pe(2));
-  p(2) = -1/pe(1);
-  p(3) = mny;
-  info.Guess = p;
+  info.Guess = polyfit(x, y, 2); % p(1) is the highest degree parameter
   info.Values= evaluate(info.Guess, info.Axes{:});
-  %log(y-p(3)) = log(p(1))-x/p(2)
 end
 
