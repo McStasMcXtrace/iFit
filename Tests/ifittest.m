@@ -9,7 +9,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -216,7 +216,7 @@ case 'iData_2_loadarray'
   if length(a) ~= 3
     result='FAILED';
   else
-    result = 'OK  load(''*'')';
+    result = 'OK  load(''*.scn'')';
   end
 case 'iData_3_find'
   a=load(iData, [ ifitpath 'Data/sv1850.scn']);
@@ -254,7 +254,11 @@ case 'iFiles_1'
   result = 'OK  load; iLoad(''config'')';
 case 'load_1'
   a = iData([ ifitpath 'Data' ]);
-  result = 'OK  load';
+  if any(find(isempty(a))
+    result = [ 'FAILED ' num2str(length(find(isempty(a))) '/' num2str(length(a)) ];
+  else
+    result = 'OK  load';
+  end
 case 'load_2'
   a = iData(rand(10));
   a = iData(struct('a',1,'b','a string'));
