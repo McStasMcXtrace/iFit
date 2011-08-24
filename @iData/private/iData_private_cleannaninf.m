@@ -11,10 +11,14 @@ if isnumeric(s)
   mins = min(S(index_ok));
 
   S(isnan(S)) = 0;
-  if mins<0, S(find(S == -Inf)) = mins*100;
-  else       S(find(S == -Inf)) = mins/100; end
-  if maxs>0, S(find(S == +Inf)) = maxs*100;
-  else       S(find(S == +Inf)) = maxs/100; end
+  if ~isempty(mins)
+    if mins<0, S(find(S == -Inf)) = mins*100;
+    else       S(find(S == -Inf)) = mins/100; end
+  end
+  if ~isempty(maxs)
+    if maxs>0, S(find(S == +Inf)) = maxs*100;
+    else       S(find(S == +Inf)) = maxs/100; end
+  end
 
   s = reshape(S, size(s));
 end

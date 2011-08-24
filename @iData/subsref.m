@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -37,11 +37,18 @@ for i = 1:length(S)     % can handle multiple index levels
       if any(cellfun('isempty',s.subs)), b=[]; return; end
       if ischar(s.subs{1}) && ~strcmp(s.subs{1},':'), b=get(b, s.subs{:}); return; end
       if length(s.subs) == 1 && all(s.subs{:} == 1), return; end
-      d=get(b,'Signal'); d=d(s.subs{:});  b=set(b,'Signal', d);
+      d=get(b,'Signal'); d=d(s.subs{:});  
+      b=set(b,'Signal', d);  b=setalias(b,'Signal', d);
 
-      d=get(b,'Error');  if numel(d) > 1 & numel(d) == numel(get(a,'Error')), d=d(s.subs{:}); b=set(b,'Error', d); end
+      d=get(b,'Error'); 
+      if numel(d) > 1 & numel(d) == numel(get(a,'Error')),   
+        d=d(s.subs{:}); b=set(b,'Error', d); b = setalias(b, 'Error', d);
+      end
 
-      d=get(b,'Monitor'); if numel(d) > 1 & numel(d) == numel(get(a,'Monitor')), d=d(s.subs{:}); b=set(b,'Monitor', d); end
+      d=get(b,'Monitor');
+      if numel(d) > 1 & numel(d) == numel(get(a,'Monitor')), 
+        d=d(s.subs{:}); b=set(b,'Monitor', d);  b = setalias(b, 'Monitor', d);
+      end
 
       % must also affect axis
       for index=1:ndims(b)

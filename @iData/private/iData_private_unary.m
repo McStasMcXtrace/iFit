@@ -60,8 +60,8 @@ case 'tan'
 	c = cos(s);
 	e = e./(c.*c);
 case { 'transpose', 'ctranspose'}; % .' and ' respectively
-	e = e';
-	m = m';
+	e = feval(op, e);
+	m = feval(op, m);
 	if ndims(b) > 1
   	x1 = getaxis(b, '1'); % axis names
   	x2 = getaxis(b, '2');
@@ -96,6 +96,8 @@ end
 % update object
 b = set(b, 'Signal', new_s, 'Error', abs(e), 'Monitor', m);
 b = setalias(b, 'Signal', new_s, [  op '(' sl ')' ]);
+b = setalias(b, 'Error', e);
+b = setalias(b, 'Monitor', m);
 b.Command=cmd;
 b = iData_private_history(b, op, a);  
 

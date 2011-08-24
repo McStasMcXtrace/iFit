@@ -21,7 +21,7 @@ function [b, Info] = ieval(a, model, pars, varargin)
 % ex:     b=ieval(a,'gauss',[1 2 3 4]); ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
 %           ieval(a,'gauss','guess')
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, feval, iData/fits
 
 % private functions: 
@@ -82,7 +82,7 @@ if ischar(model) | isa(model, 'function_handle') % a single model ==============
     varargin = {};
     if ischar(pars)
       if strmatch(pars,{'guess','identify'})
-        % make sure Model has the right dimensionality: Info.Dimension, else sqeeze
+        % make sure Model has the right dimensionality: Info.Dimension, else squeeze
         Signal = get(a,'Signal'); Signal(~isfinite(Signal)) = 0;
         m = get(a,'Monitor'); m=real(m);
         if not(all(m == 1 | m == 0)),
@@ -242,6 +242,9 @@ if isstruct(Model)
   Info = Model;
   pars  = Info.Guess;
   Model = Info.Values;
+  if isempty(Model), 
+    b=[]; return; 
+  end
 end
 
 % build the output iData object
