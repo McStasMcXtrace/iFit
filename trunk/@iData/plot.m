@@ -46,7 +46,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.61 $
+% Version: $Revision: 1.62 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -414,12 +414,21 @@ end
     set(gca,'ZTickLabelMode','auto','ZTickMode','auto');
     xlabel(duplicate_cb.ud.xlabel);ylabel(duplicate_cb.ud.ylabel); 
    end
+% create callback functions: about object
+  function callback_about(obj, event)
+    ud   = get(get(gco,'UIContextMenu'),'UserData');
+    titl = ud.title;
+    if iscellstr(ud.title) ud.title=ud.title{1}; end
+    f = getframe(gcf);
+    msgbox(  ud.properties, ...
+             [ 'About: Figure ' num2str(gcf) ' ' ud.title ], ...
+             'custom', f.cdata, get(gcf,'Colormap'));
+  end
 
 % contextual menu for the single object being displayed
 uicm = uicontextmenu; 
 uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
-  'Callback', [ 'msgbox(getfield(get(get(gco,''UIContextMenu''),''UserData''),''properties''),' ...
-                  '''About: Figure ' num2str(gcf) ' ' T ' <' S '>'', ''help'');' ] );
+  'Callback', @callback_about);
 uimenu(uicm, 'Label',[ 'Duplicate "' T '" ...' ], 'Callback', @callback_duplicate);
 uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '" ' d ]);
 uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
@@ -468,7 +477,7 @@ end
 if ndims(a) == 1
   uimenu(uicm, 'Label','Toggle error bars', 'Callback',@callbak_toggle_error_gco);
 end
-uimenu(uicm, 'Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData) ''')' ]);
+uimenu(uicm, 'Separator','on','Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData)  sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 % attach contexual menu to plot with UserData storage
 ud.properties=properties;
 ud.xlabel = xlab;
@@ -515,7 +524,7 @@ if ~usejava('jvm')
     uimenu(uicm, 'Label', 'Rotate', 'Callback','rotate3d on');
   end
 end
-uimenu(uicm, 'Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData) ''')' ]);
+uimenu(uicm, 'Separator','on','Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 
 set(gca, 'UserData', ud);
 set(gca, 'UIContextMenu', uicm);
