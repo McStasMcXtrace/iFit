@@ -46,7 +46,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.63 $
+% Version: $Revision: 1.64 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -346,7 +346,14 @@ T   = a.Title; if iscell(T), T=T{1}; end
 T   = regexprep(T,'\s+',' '); % remove duplicated spaces
 cmd = char(a.Command{end});
 S   = a.Source;
-if length(S) > 23, S=[ '...' S(end-20:end) ]; end
+[pS, fS, eS] = fileparts(S);
+if length(pS) > 13, pS=[ '...' pS(end-10:end) ]; end
+if length(fS) > 13, fS=[ '...' fS(end-10:end) ]; end
+if ~isempty(pS), S = [ pS filesep ];
+else             S = '';
+end
+S = [ S fS ];
+if ~isempty(eS), S = [ S '.' eS ]; end
 if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
 
 % DisplayName and Label
@@ -407,17 +414,23 @@ end
   
 % create callback functions: duplicate plot
   function callback_duplicate(obj, event)
+    duplicate_cb.o =gco;
     duplicate_cb.g =gca;
     duplicate_cb.ud=get(duplicate_cb.g,'UserData'); 
     duplicate_cb.f =figure; 
-    duplicate_cb.c=copyobj(duplicate_cb.g,gcf);
-    set(duplicate_cb.c,'position',[ 0.1 0.1 0.85 0.8]);
+    if strcmp(get(duplicate_cb.o,'type'),'axes')
+      duplicate_cb.c=copyobj(duplicate_cb.g,gcf);
+    else
+      duplicate_cb.c=copyobj(duplicate_cb.o,gca);
+    end
+    set(gca,'position',[ 0.1 0.1 0.85 0.8]);
     if iscellstr(duplicate_cb.ud.title) duplicate_cb.ud.title=duplicate_cb.ud.title{1}; end
     set(gcf,'Name', [ 'Copy of ' duplicate_cb.ud.title ]); 
     set(gca,'XTickLabelMode','auto','XTickMode','auto');
     set(gca,'YTickLabelMode','auto','YTickMode','auto');
     set(gca,'ZTickLabelMode','auto','ZTickMode','auto');
     xlabel(duplicate_cb.ud.xlabel);ylabel(duplicate_cb.ud.ylabel); 
+    title(duplicate_cb.ud.title);
    end
 % create callback functions: about object
   function callback_about(obj, event)
@@ -467,14 +480,16 @@ for index=0:length(getaxis(a))
   properties{end+1} = t;
   uimenu(uicm, 'Label', t);
 end
-[dummy, fS] = fileparts(S);
-titl ={ T ; [ a.Tag ' <' fS '>' ]};
+titl ={ T ; [ a.Tag ' <' S '>' ]};
 if length(T) > 23, T=[ T(1:20) '...' ]; end
+if length(S)+length(d) < 30,
+  d = [ d ' ' T ];
+end
 try
   if ~isempty(d)
-    set(h, 'DisplayName', [ d ' ' T ]);
+    set(h, 'DisplayName', [ d ' ' a.Tag ' <' S '>']);
   else
-    set(h, 'DisplayName', [ T a.Tag ' <' fS '>' ]);
+    set(h, 'DisplayName', [ T a.Tag ' <' S '>' ]);
   end
 catch
 end
