@@ -46,7 +46,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.62 $
+% Version: $Revision: 1.63 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -178,11 +178,6 @@ case 1  % vector type data (1 axis + signal) -> plot
       end
       if ~length(this_method) 
         h = errorbar(x,y,e); 
-      end
-      % hide error bars when they are much larger than the signal...
-      if all(abs(e) >  abs(y)*10) | ~isempty(strfind(method, 'hide_err'))
-        tmp_h=get(h,'children');
-        set(tmp_h(2), 'Visible','off');
       end
     end
   end
@@ -374,22 +369,32 @@ elseif ~isempty(a.DisplayName)
 end
 
 % --------------------- contextual menus ---------------------------------------
-% create callback functions: handle camllback for single error on/off
+% create callback functions: handle callback for single error on/off (line
+% or uimenu)
   function callbak_toggle_error_gco(obj, event)
     if strcmp(get(obj,'type'),'uimenu'), obj=gco; end
-    tmp_h=get(obj,'children');
-    if length(tmp_h) < 2, return; end
-    if strcmp(get(tmp_h(2),'visible'),'off'), tmp_v='on'; 
+    tmp_t = get(obj,'type');
+    if strcmp(tmp_t,'hggroup')
+      tmp_h=get(obj,'children'); % hggroup
+    else
+      return
+    end
+    % test if we have a line
+    if length(tmp_h) ~= 2, return; end
+    if ~strcmp(get(tmp_h(2),'type'),'line'), return; end
+    % toggle visible
+    if  strcmp(get(tmp_h(2),'visible'),'off'), tmp_v='on'; 
     else tmp_v='off'; end; 
     set(tmp_h(2),'visible',tmp_v);
   end
 
-% create callback functions: handle camllback for error on/off in axis frame
+% create callback functions: handle callback for error on/off in axis frame
   function callbak_toggle_error_gca(obj, event)
-  % we scan all objects below the axis object, and toggle error bars
-  for index=findobj(gca,'type','hggroup')
-    callbak_toggle_error_gco(index)
-  end
+    % we scan all objects below the axis object, and toggle error bars
+    hg = findobj(gca,'type','hggroup');
+    for i=1:length(hg)
+      callbak_toggle_error_gco(hg(i))
+    end
   end
   
 % create callback functions: handle callback rotate 2d 3d
