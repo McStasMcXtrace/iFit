@@ -46,7 +46,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.64 $
+% Version: $Revision: 1.65 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -79,7 +79,7 @@ if length(a) > 1
     sum_max = sum_max+max(a(index))-min(a(index));
     if ndims(a(index)) == 1 && (isempty(method) | ~isempty(strfind(method, 'hide_err')))
       % change color of line
-      colors = 'bgrcm';
+      colors = 'bgrcmk';
       set(h{index}, 'color', colors(1+mod(index, length(colors))));
     end
     hold on
@@ -378,7 +378,7 @@ end
 % --------------------- contextual menus ---------------------------------------
 % create callback functions: handle callback for single error on/off (line
 % or uimenu)
-  function callbak_toggle_error_gco(obj, event)
+  function callback_toggle_error_gco(obj, event)
     if strcmp(get(obj,'type'),'uimenu'), obj=gco; end
     tmp_t = get(obj,'type');
     if strcmp(tmp_t,'hggroup')
@@ -396,11 +396,11 @@ end
   end
 
 % create callback functions: handle callback for error on/off in axis frame
-  function callbak_toggle_error_gca(obj, event)
+  function callback_toggle_error_gca(obj, event)
     % we scan all objects below the axis object, and toggle error bars
     hg = findobj(gca,'type','hggroup');
     for i=1:length(hg)
-      callbak_toggle_error_gco(hg(i))
+      callback_toggle_error_gco(hg(i))
     end
   end
   
@@ -416,7 +416,6 @@ end
   function callback_duplicate(obj, event)
     duplicate_cb.o =gco;
     duplicate_cb.g =gca;
-    duplicate_cb.ud=get(duplicate_cb.g,'UserData'); 
     duplicate_cb.f =figure; 
     if strcmp(get(duplicate_cb.o,'type'),'axes')
       duplicate_cb.c=copyobj(duplicate_cb.g,gcf);
@@ -424,23 +423,35 @@ end
       duplicate_cb.c=copyobj(duplicate_cb.o,gca);
     end
     set(gca,'position',[ 0.1 0.1 0.85 0.8]);
-    if iscellstr(duplicate_cb.ud.title) duplicate_cb.ud.title=duplicate_cb.ud.title{1}; end
-    set(gcf,'Name', [ 'Copy of ' duplicate_cb.ud.title ]); 
     set(gca,'XTickLabelMode','auto','XTickMode','auto');
     set(gca,'YTickLabelMode','auto','YTickMode','auto');
     set(gca,'ZTickLabelMode','auto','ZTickMode','auto');
+    
+    duplicate_cb.ud=get(duplicate_cb.g,'UserData'); 
+    if ~isstruct(duplicate_cb.ud), return; end
+    if iscellstr(duplicate_cb.ud.title) duplicate_cb.ud.title=duplicate_cb.ud.title{1}; end
+    set(gcf,'Name', [ 'Copy of ' duplicate_cb.ud.title ]); 
     xlabel(duplicate_cb.ud.xlabel);ylabel(duplicate_cb.ud.ylabel); 
     title(duplicate_cb.ud.title);
    end
 % create callback functions: about object
   function callback_about(obj, event)
     ud   = get(get(gco,'UIContextMenu'),'UserData');
-    titl = ud.title;
+    if ~isstruct(ud), return; end
     if iscellstr(ud.title) ud.title=ud.title{1}; end
     f = getframe(gcf);
     msgbox(  ud.properties, ...
              [ 'About: Figure ' num2str(gcf) ' ' ud.title ], ...
              'custom', f.cdata, get(gcf,'Colormap'));
+  end
+% create callback functions: about object
+  function callback_commands(obj, event)
+    ud   = get(get(gco,'UIContextMenu'),'UserData');
+    if ~isstruct(ud), return; end
+    titl = ud.title;
+    if iscellstr(ud.title) ud.title=ud.title{1}; end
+    listdlg('ListString', getfield(ud, 'commands'), ...
+               'ListSize',[400 300],'Name', ud.title ,'PromptString', ud.name );
   end
 
 % contextual menu for the single object being displayed
@@ -448,11 +459,13 @@ uicm = uicontextmenu;
 uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
   'Callback', @callback_about);
 uimenu(uicm, 'Label',[ 'Duplicate "' T '" ...' ], 'Callback', @callback_duplicate);
-uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '" ' d ]);
+if ndims(a) == 1
+  uimenu(uicm, 'Label','Toggle error bars', 'Callback',@callback_toggle_error_gco);
+end
+uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '" ' d ], 'Callback', @callback_about);
 uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
-uimenu(uicm, 'Label', [ 'Cmd: ' cmd ], 'Callback', [ 'listdlg(''ListString'', getfield(get(gco, ''UserData''), ''commands''), ' ...
-             '''ListSize'',[400 300],''Name'',''' T ''',''PromptString'',''' char(a) ''');' ]);
-uimenu(uicm, 'Label', [ 'User: ' a.User ]);
+uimenu(uicm, 'Label', [ 'Cmd: ' cmd ], 'Callback', @callback_commands);
+uimenu(uicm, 'Label', [ 'User: ' a.User ], 'Callback', @callback_about);
 
 % make up title string and Properties dialog content
 properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
@@ -494,9 +507,6 @@ try
 catch
 end
 
-if ndims(a) == 1
-  uimenu(uicm, 'Label','Toggle error bars', 'Callback',@callbak_toggle_error_gco);
-end
 uimenu(uicm, 'Separator','on','Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData)  sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 % attach contexual menu to plot with UserData storage
 ud.properties=properties;
@@ -504,6 +514,7 @@ ud.xlabel = xlab;
 ud.ylabel = ylab;
 ud.zlabel = zlab;
 ud.title  = titl;
+ud.name   = char(a);
 ud.commands = commandhistory(a);
 set(uicm,'UserData', ud);
 set(h,   'UIContextMenu', uicm); 
@@ -518,7 +529,7 @@ if ndims(a) == 1 && ~isfield(ud,'contextual_1d')
   ud.contextual_1d = 1;
 end
 if isfield(ud,'contextual_1d') && ud.contextual_1d==1
-  uimenu(uicm, 'Label','Toggle All Error Bars', 'Callback', @callbak_toggle_error_gca);
+  uimenu(uicm, 'Label','Toggle All Error Bars', 'Callback', @callback_toggle_error_gca);
 end
 uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
 if ndims(a) >= 2 && ~isfield(ud,'contextual_2d')
