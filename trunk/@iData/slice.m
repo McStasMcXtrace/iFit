@@ -1,5 +1,5 @@
 function slice(a)
-% h = slice(s) : Plot a 3D object with slice rendering
+% slice(s) : Plot a 3D object with slice rendering
 %
 %   @iData/slice function to view slices in 3D object
 %     The plot is obtained with Matlab Central sliceomatic
@@ -7,7 +7,7 @@ function slice(a)
 % input:  s: object or array (iData)
 % ex:     slice(iData(flow));
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plot, sliceomatic
 
 if ndims(a) < 3 || isvector(a)

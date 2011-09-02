@@ -1,4 +1,4 @@
-function a = surfl(a, option)
+function h = surfl(a, option)
 % h = surfl(s,option) : Plot a 2D/3D object as surface with light
 %
 %   @iData/surflsurf function to plot a 2D or 3D object with light
@@ -15,7 +15,7 @@ function a = surfl(a, option)
 % output: h: graphics object handles (cell)
 % ex:     surfl(iData(peaks)); surfl(iData(flow));
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 if nargin ==1

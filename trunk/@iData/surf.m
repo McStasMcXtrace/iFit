@@ -1,4 +1,4 @@
-function a = surf(a, option)
+function h = surf(a, option)
 % h = surf(s,option) : Plot a 2D/3D object as surface
 %
 %   @iData/surf function to plot a 2D or 3D object
@@ -15,7 +15,7 @@ function a = surf(a, option)
 % output: h: graphics object handles (cell)
 % ex:     surf(iData(peaks)); surf(iData(flow));
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plot
 
 if nargin ==1

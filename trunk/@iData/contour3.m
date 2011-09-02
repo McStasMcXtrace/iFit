@@ -1,4 +1,4 @@
-function a = contour3(a, option)
+function h = contour3(a, option)
 % h = contour3(s,option) : Plot a 2D/3D object as 3D contour
 %
 %   @iData/contour3 function to plot a 2D or 3D object
@@ -13,7 +13,7 @@ function a = contour3(a, option)
 % output: h: graphics object handles (cell)
 % ex:     contour3(iData(peaks)); contour3(iData(flow));
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 if nargin ==1

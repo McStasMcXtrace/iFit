@@ -1,4 +1,4 @@
-function a = surfc(a, option)
+function h = surfc(a, option)
 % h = surfc(s,option) : Plot a 2D/3D object as surface+contour
 %
 %   @iData/surfc function to plot a 2D or 3D object with contour
@@ -12,7 +12,7 @@ function a = surfc(a, option)
 % output: h: graphics object handles (cell)
 % ex:     surfc(iData(peaks)); surfc(iData(flow));
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 if nargin ==1
