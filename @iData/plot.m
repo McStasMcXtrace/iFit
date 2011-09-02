@@ -36,7 +36,7 @@ function h=plot(a, varargin)
 %                 axis tight, axis auto, view2, view3, hide_axes (compact layout)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
 %                 
-% output: h: graphics object handles (cell)
+% output: h: graphics object handles (cell/array)
 % ex:     plot(iData(rand(10)), 'surfc interp transparent'); plot(iData(1:10), 'r-');
 %         plot(iData(peaks));
 %         [x,y,z,v]=flow; c=iData(x,y,z,v); plot(c,'surf');
@@ -46,7 +46,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.65 $
+% Version: $Revision: 1.66 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -59,7 +59,8 @@ else
   method = '';
   for index=1:length(varargin)
     if ischar(varargin{index}), method = varargin{index};
-    else a = [a(:) varargin{index} ];
+    elseif isa(a,'iData') 
+      a = [a(:) varargin{index} ];
     end
   end
 end
@@ -106,6 +107,9 @@ if length(a) > 1
         end
       end
     end
+  end
+  if all(cellfun('length',h) == 1)
+    h = cell2mat(h);
   end
   h = reshape(h, size(a));
   if ih == 1, hold on; else hold off; end
@@ -215,7 +219,13 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     elseif (strfind(method,'contourf'))
       [C,h]=contourf(x,y,z);
     elseif (strfind(method,'contour'))
-      [C,h]=contour(x,y,z);
+      if isempty(getaxis(a,3))
+        [C,h]=contour(x,y,z);
+      else
+        c=getaxis(a,3); c=mean(c(:));
+        Z(:,:,1)=z; Z(:,:,2)=z; Z(:,:,3)=z;
+        h=contourslice(x,y,[c*0.999 c c*1.001],Z,[],[],c);
+      end
     elseif (strfind(method,'surfc'))
       h    =surfc(x,y,z); % set(h,'Edgecolor','none');
     elseif (strfind(method,'surfl'))
@@ -224,6 +234,11 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
       h    =mesh(x,y,z);
     elseif ~isempty(strfind(method,'pcolor')) || ~isempty(strfind(method,'image'))
       h    =pcolor(x,y,z); set(h,'Edgecolor','none');
+      if ~isempty(getaxis(a,3))
+        c=getaxis(a,3); c=mean(c(:));
+        zh= get(h,'ZData'); zh=ones(size(zh))*c;
+        set(h,'ZData',zh);
+      end
     elseif (strfind(method,'stem3'))
     	method = strrep(method,'stem3','');
     	method = strrep(method,' ','');
@@ -273,6 +288,17 @@ case 3  % 3d data sets: volumes
         alphamap('vdown'); % make object transparent on borders and solid in center
         h = vol3d(h);
         h = h.handles;
+      elseif ~isempty(strfind(method, 'waterfall')) || ~isempty(strfind(method, 'contour'))
+        if ~isempty(strfind(method, ' y '))
+          iy = linspace(min(y(:)), max(y(:)), 10);
+          h = contourslice(x,y,z,c,[],iy,[]);
+        elseif ~isempty(strfind(method, ' x '))
+          ix = linspace(min(x(:)), max(x(:)), 10);
+          h = contourslice(x,y,z,c,ix,[],[]);
+        else
+          iz = linspace(min(z(:)), max(z(:)), 10);
+          h = contourslice(x,y,z,c,[],[],iz);
+        end
       elseif ~isempty(strfind(method, 'slice')) % sliceomatic
         slice(a); h=[];
       else
@@ -463,7 +489,11 @@ if ndims(a) == 1
   uimenu(uicm, 'Label','Toggle error bars', 'Callback',@callback_toggle_error_gco);
 end
 uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '" ' d ], 'Callback', @callback_about);
-uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
+if exist(a.Source,'file') && ~isdir(a.Source)
+  uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
+else
+  uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
+end
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ], 'Callback', @callback_commands);
 uimenu(uicm, 'Label', [ 'User: ' a.User ], 'Callback', @callback_about);
 
