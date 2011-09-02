@@ -37,7 +37,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.46 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.47 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -144,60 +144,75 @@ if ischar(filename) & length(filename) > 0
     return
   end
   
-  % handle compressed files
+  % handle file on the internet
+  url = false; % flag indicating that 'filename' is a temp file to be removed afterwards
+  if strncmp(filename, 'http://', length('http://')) ...
+   | strncmp(filename, 'https://',length('https://')) ...
+   | strncmp(filename, 'ftp://',  length('ftp://'))
+    if (~usejava('mwt'))
+        fprintf(1, 'iLoad: Reading from a URL requires a Java Virtual Machine.\n\tSkipping...');
+        return
+    end
+    % access the net. Proxy settings must be set (if any).
+    try
+      % write to temporary file
+      filename = urlwrite(filename, tempname);
+      url = true;
+    catch
+      fprintf(1, 'iLoad: Can''t read URL "%s".\n', filename);
+      return
+    end
+  end
+  
+  % handle compressed files (local or distant)
   [pathstr, name, ext] = fileparts(filename);
   if     strcmp(ext, '.zip'), cmd = 'unzip';
   elseif strcmp(ext, '.tar'), cmd = 'untar';
-  elseif strcmp(ext, '.gz'),  cmd = 'gunzip';
+  elseif strcmp(ext, '.gz') || strcmp(ext, '.tgz'),  cmd = 'gunzip';
   elseif strcmp(ext, '.Z'),   cmd = 'uncompress';
-  else                       cmd=''; end
+  else                        cmd=''; end
   if ~isempty(cmd)
     % this is a compressed file/url. Extract to temporary dir.
     if strcmp(cmd, 'uncompress')
       copyfile(filename, tempdir, 'f');
       try
         system(['uncompress ' tempdir filesep name ext ]);
-        [data, format] = iLoad([ tempdir filesep name ], loader); % is now local in tempdir
+        filename = [ tempdir filesep name ];
+        url = true;
       catch
+        fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
+        return
       end
-      delete([ tempdir filesep name ]);
-      return
     elseif exist(cmd)
       % extract to temporary dir
-      filenames = feval(cmd, filename, tempdir);
+      try
+        filenames = feval(cmd, filename, tempdir);
+      catch
+        fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
+        return
+      end
       [data, format] = iLoad(filenames, loader); % is now local
       for index=1:length(filenames)
-        delete(filenames{index});
+        try
+          delete(filenames{index});
+        catch
+          fprintf(1,'iLoad: Can''t delete temporary file "%s" (%s).\n', filename{index},cmd);
+        end
       end
       return
     end
   end
   
-  % handle files on the internet
-  if strncmp(filename, 'http://', length('http://')) ...
-   | strncmp(filename, 'https://',length('https://')) ...
-   | strncmp(filename, 'ftp://', length('ftp://'))
-    % access the net. Proxy settings must be set (if any).
-    data = urlread(filename);
-    % write to temporary file
-    tmp_file = tempname;
-    fid = fopen(tmp_file, 'w');
-    fprintf(fid, '%s', data);
-    fclose(fid);
-    [data, format] = iLoad(tmp_file, loader); % is now local
-    delete(tmp_file);
-    return
-  else
-    % local file (general case)
-    if strncmp(filename, 'file://', length('file://'))
-      filename = filename(8:end); % remove 'file://' from name
-    end
-    % The import takes place HERE
-    if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
-    % handle the '%20' charcter replacement as space
-    filename = strrep(filename, '%20',' ');
-    [data, format] = iLoad_import(filename, loader);
+  % local file (general case)
+  if strncmp(filename, 'file://', length('file://'))
+    filename = filename(8:end); % remove 'file://' from name
   end
+  % The import takes place HERE
+  if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
+  % handle the '%20' charcter replacement as space
+  filename = strrep(filename, '%20',' ');
+  [data, format] = iLoad_import(filename, loader);
+  
 elseif isempty(filename)
   config = iLoad('','load config');
   if exist('uigetfiles') & strcmp(config.UseSystemDialogs, 'no')
@@ -223,6 +238,15 @@ else
   % data not empty, but not a file name
   data = iLoad_loader_check([ inputname(1) ' variable of class ' class(filename) ], filename, 'variable');
   format= '' ;
+end
+
+% remove temporary file if needed
+if (url)
+  try
+  delete(filename);
+  catch
+  fprintf(1,'iLoad: Can''t delete temporary file "%s".\n', filename);
+  end
 end
 
 % -----------------------------------------------------------
