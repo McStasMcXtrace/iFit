@@ -24,7 +24,7 @@ end
 % get the main data block header
 [columns_header, data]   = findstr(a, 'DATA_:','case');
 if isempty(columns_header), 
-  warning([ mfilename ': The loaded data set ' a.Tag ' is not an ILL TAS data format' ]);
+  warning([ mfilename ': The loaded data set ' a.Tag ' is not an ILL TAS data format.' ]);
   return; 
 end
 columns_header   = columns_header{1};

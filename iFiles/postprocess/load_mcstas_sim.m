@@ -3,6 +3,10 @@ function a=load_mcstas_sim(a0)
 %
 % Returns an iData style dataset from a McStas sim file
 %
+if isempty(findstr(a0,'McStas'))
+  warning([ mfilename ': The loaded data set ' a0.Tag ' is not a McStas data format.' ]);
+  return
+end
 
 % Find filename fields in sim struct:
 filenames = findstr(a0,'filename');
