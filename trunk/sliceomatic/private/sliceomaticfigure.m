@@ -71,8 +71,8 @@ error(nargchk(1,4,nargin))
   grid on;
   % compute projections
   sx = sum(sum(d.data,1),3); sx=sx(:); sx=sx-min(sx); sx=sx*4/max(sx)+1; 
-  sy = sum(sum(d.data,1),2); sy=sy(:); sy=sy-min(sy); sy=sy*4/max(sy)+1; 
-  sz = sum(sum(d.data,2),3); sz=sz(:); sz=sz-min(sz); sz=sz*4/max(sz)+1; 
+  sy = sum(sum(d.data,3),2); sy=sy(:); sy=sy-min(sy); sy=sy*4/max(sy)+1; 
+  sz = sum(sum(d.data,2),1); sz=sz(:); sz=sz-min(sz); sz=sz*4/max(sz)+1; 
   
   % Set up the four controller axes.
   d.axx    = axes('units','normal','pos',[.2  .81 .6 .1],'box','on',...
