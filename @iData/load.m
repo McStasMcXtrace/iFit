@@ -36,7 +36,7 @@ function out = load(a, varargin)
 % output: d: single object or array (iData)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -94,7 +94,7 @@ for i=1:length(files)
   elseif ~isempty(loaders{i}.postprocess)
     iData_private_warning(mfilename,['Can not find post-process function ' loaders{i}.postprocess ' for data format ' loaders{i}.name ]);
   end
-  if ndims(this_iData) == 2
+  if ndims(this_iData) == 2 % check if this is an XYE column file
     this_iData = iData_check_xye(this_iData);
   end
   out = [ out this_iData ];

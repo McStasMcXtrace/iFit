@@ -1,4 +1,4 @@
-function a = contourf(a, option)
+function h = contourf(a, option)
 % h = contourf(s,option) : Plot a 2D/3D object as filled contour
 %
 %   @iData/contourf function to plot a 2D or 3D object
@@ -13,7 +13,7 @@ function a = contourf(a, option)
 % output: h: graphics object handles (cell)
 % ex:     contourf(iData(peaks)); contourf(iData(flow));
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 if nargin ==1
