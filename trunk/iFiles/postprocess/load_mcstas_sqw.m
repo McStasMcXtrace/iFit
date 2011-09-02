@@ -4,8 +4,12 @@ function a=load_mcstas_sqw(a)
 % Returns an iData style dataset from a McStas Sqw Table (Isotropic Sqw)
 %
 a=iData(a);
-% Find proper axes and Signal
+if isempty(findstr(a,'Sqw'))
+  warning([ mfilename ': The loaded data set ' a.Tag ' is not an Sqw text data format.' ]);
+  return
+end
 
+% Find proper axes and Signal
 [fields, types, dims] = findfield(a);
 index=strmatch('double', types, 'exact');
 fields = fields(index); % get all field names containing double data

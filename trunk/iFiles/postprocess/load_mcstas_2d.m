@@ -4,8 +4,12 @@ function a=load_mcstas_2d(a)
 % Returns an iData style dataset from a McStas 2d monitor file
 %
 a=iData(a);
-% Find proper labels for Signal and Axis
+if isempty(findstr(a,'McStas'))
+  warning([ mfilename ': The loaded data set ' a.Tag ' is not a McStas data format.' ]);
+  return
+end
 
+% Find proper labels for Signal and Axis
 if ~isempty(findfield(a, 'xlabel')) 
   xlabel = a.Data.Headers.MetaData.xlabel; 
   xlabel(1:length('# xlabel: '))='';

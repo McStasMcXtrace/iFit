@@ -7,6 +7,10 @@ function a=load_mcstas_1d(a)
 
 % Find proper labels for Signal and Axis
 a=iData(a);
+if isempty(findstr(a,'McStas'))
+  warning([ mfilename ': The loaded data set ' a.Tag ' is not a McStas data format.' ]);
+  return
+end
 
 if ~isempty(findfield(a, 'xlabel')) 
   xlab = a.Data.Headers.MetaData.xlabel;
