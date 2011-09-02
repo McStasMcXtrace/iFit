@@ -2,6 +2,7 @@ function ratio=ifittest(tests_list)
 % ifittest(test) : performs a self-test procedure of the iFit/iData package, using
 %   the examples from the Documentation.
 %   A report of all test is displayed at the end, with a list of failures.
+%   Current test categories are: Fit iData iFiles Math Plot Save
 %
 %  input:  test:     empty to perform all tests, or a cellstr of test names 
 %                    or a string to match a single or category of tests_list
@@ -9,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -21,14 +22,15 @@ all_tests_list = { ...
     'Fit_5_fix', ...
     'Fit_6_limits', ...
     'Fit_7_uncertainties', ...
-    'iFit_8_lorz', ...
+    'Fit_8_lorz', ...
+    'Fit_9_ifitmakefunc', ...
     'iData_1', ...
     'iData_2_loadarray', ...
     'iData_3_find', ...
     'iData_4_setalias', ...
     'iFiles_1', ...
-    'load_1', ...
-    'load_2', ...
+    'iFiles_2', ...
+    'iFiles_3', ...
     'Math_1_unary', ...
     'Math_2_binary', ...
     'Math_3_stats', ...
@@ -54,8 +56,7 @@ all_tests_list = { ...
     'Plot_8_projections', ...
     'Plot_9_slices', ...
     'Plot_10_caxis', ...
-    'Save_1', ...
-    'iFitmakefunc_1'};
+    'Save_1'};
 if isempty(tests_list)
   message = 'All';
   tests_list = all_tests_list;
@@ -72,7 +73,7 @@ failed = 0;
 t0 = clock;
 
 % execute all tests
-h = waitbar(0, [ 'iFit test: ' message ' (close to Abort)']);
+h = waitbar(0, [ 'iFit test: ' message ' (close to Abort)' ], 'Name','iFit: test running...' );
 test_length = 0;
 for index=1:length(tests_list)
   try
@@ -190,7 +191,7 @@ case 'Fit_7_uncertainties'
   else
     result = 'FAILED';
   end 
-case 'iFit_8_lorz'
+case 'Fit_8_lorz'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   p=fits(a,'lorz');
   b = ieval(a, 'lorz', p);
@@ -199,6 +200,26 @@ case 'iFit_8_lorz'
   else
     result = 'FAILED';
   end 
+case 'Fit_9_ifitmakefunc'
+  % create a new data set and convert it to an iData
+  x = linspace(0,2*pi, 100);
+  p = [1 0.3 .1 2 0.5];
+  y = p(1)*sin((x-p(2))/p(3)).*exp(-x/p(4))+p(5);
+  % add noise
+  y = y+p(1)*0.05*randn(size(y));
+  a = iData(x,y); a.Error=0;
+  % create the corresponding function
+  sinexp = ifitmakefunc('sinexp','Exponentially decreasing sine', ...
+    'Amplitude Centre Period Width Background', ...
+    'p(1)*sin((x-p(2))/p(3)).*exp(-x/p(4))+p(5)','automatic');
+  which('sinexp');
+  % perform the fit
+  p1=fits(a,sinexp,[1.15 0.4 0.15 1.7 0.2],'fminralg');
+  if norm(abs(p1(:))-p(:)) > 0.8
+    result='FAILED';
+  else result = 'OK  ifitmakefunc fits';
+  end
+  try; delete('sinexp.m'); end
   
 % test/examples from Docs/iData.html -------------------------------------------
 case 'iData_1'
@@ -252,14 +273,14 @@ case 'iFiles_1'
   a = load(iData, [ ifitpath 'Data/ILL_IN6.dat' ]);
   config = iLoad('load config');
   result = 'OK  load; iLoad(''config'')';
-case 'load_1'
+case 'iFiles_2'
   a = iData([ ifitpath 'Data' ]);
-  if any(find(isempty(a))
-    result = [ 'FAILED ' num2str(length(find(isempty(a))) '/' num2str(length(a)) ];
+  if length(find(isempty(a))) > 1
+    result = [ 'FAILED ' num2str(length(find(isempty(a)))-1) '/' num2str(length(a)) ];
   else
     result = 'OK  load';
   end
-case 'load_2'
+case 'iFiles_3'
   a = iData(rand(10));
   a = iData(struct('a',1,'b','a string'));
   a = findobj(iData);
@@ -449,26 +470,6 @@ case 'Save_1'
   end
   try; delete(f1); end
   try; delete(f2); end
-case 'iFitmakefunc_1'
-  % create a new data set and convert it to an iData
-  x = linspace(0,2*pi, 100);
-  p = [1 0.3 .1 2 0.5];
-  y = p(1)*sin((x-p(2))/p(3)).*exp(-x/p(4))+p(5);
-  % add noise
-  y = y+p(1)*0.05*randn(size(y));
-  a = iData(x,y); a.Error=0;
-  % create the corresponding function
-  sinexp = ifitmakefunc('sinexp','Exponentially decreasing sine', ...
-    'Amplitude Centre Period Width Background', ...
-    'p(1)*sin((x-p(2))/p(3)).*exp(-x/p(4))+p(5)','automatic');
-  which('sinexp');
-  % perform the fit
-  p1=fits(a,sinexp,[1.15 0.4 0.15 1.7 0.2],'fminralg');
-  if norm(abs(p1(:))-p(:)) > 0.8
-    result='FAILED';
-  else result = 'OK  ifitmakefunc fits';
-  end
-  try; delete('sinexp.m'); end
 otherwise
   disp([ mfilename ': Unknown test procedure ' test '. Skipping.' ]);
   result=[ 'FAILED Unknown test procedure ' ];

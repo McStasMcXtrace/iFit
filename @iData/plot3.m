@@ -1,4 +1,4 @@
-function a = plot3(a, option)
+function h = plot3(a, option)
 % h = plot3(s,option) : Plot a 2D/3D object as separate points or semi-transparent volume
 %
 %   @iData/plot3 function to plot a 2D or 3D object
@@ -15,7 +15,7 @@ function a = plot3(a, option)
 % output: h: graphics object handles (cell)
 % ex:     plot3(iData(peaks)); plot3(iData(flow));
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plot
 
 if nargin ==1

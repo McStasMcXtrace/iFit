@@ -1,4 +1,4 @@
-function a = waterfall(a, option)
+function h = waterfall(a, option)
 % h = waterfall(s,option) : Plot a 2D/3D object as waterfall (side by side lines)
 %
 %   @iData/waterfall function to plot a 2D or 3D object as a waterfall
@@ -12,7 +12,7 @@ function a = waterfall(a, option)
 % output: h: graphics object handles (cell)
 % ex:     waterfall(iData(peaks)); waterfall(iData(flow));
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 if nargin ==1

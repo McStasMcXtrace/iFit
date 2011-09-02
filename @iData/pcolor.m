@@ -1,4 +1,4 @@
-function a =  pcolor(a, option)
+function h =  pcolor(a, option)
 % h =  pcolor(s,option) : Plot a 2D/3D object as a flat matrix image
 %
 %   @iData/ pcolor function to plot a 2D object as a flat matrix image
@@ -12,7 +12,7 @@ function a =  pcolor(a, option)
 % output: h: graphics object handles (cell)
 % ex:      pcolor(iData(peaks));  pcolor(iData(flow));
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 if nargin ==1
