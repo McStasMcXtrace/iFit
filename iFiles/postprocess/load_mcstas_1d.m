@@ -8,7 +8,7 @@ function a=load_mcstas_1d(a)
 % Find proper labels for Signal and Axis
 a=iData(a);
 if isempty(findstr(a,'McStas'))
-  warning([ mfilename ': The loaded data set ' a.Tag ' is not a McStas data format.' ]);
+  warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a McStas data format.' ]);
   return
 end
 
@@ -36,10 +36,41 @@ if ~isempty(findfield(a, 'component'))
   setalias(a, 'Component', 'Data.Component','Component name');
 end
 
-% special case for McStas files and XYE (2-4 columns) files
-n = size(a,2); % number of columns
-if isempty(strfind(a.Title,'McStas 1D monitor'))
+if ~isempty(strfind(a.Title,'McStas 1D monitor'))
   xlabel(a, xlab);
   ylabel(a, ylab);
 end
+
+param = load_mcstas_param(a, 'Param');
+a.Data.Parameters = param;
+setalias(a, 'Parameters', 'Data.Parameters', 'Instrument parameters');
+
+% ------------------------------------------------------------------------------
+% build-up a parameter structure which holds all parameters from the simulation
+function param=load_mcstas_param(a, keyword)
+  if nargin == 1, keyword='Param:'; end
+  param = [];
+
+  par_list = findstr(a, keyword);
+  % search strings of the form 'keyword' optional ':', name '=' value
+  for index=1:length(par_list)
+    line         = par_list{index};
+    reversed_line= line(end:-1:1);
+    equal_sign_id= find(reversed_line == '=');
+    name         = fliplr(strtok(reversed_line((equal_sign_id+1):end),sprintf(' \n\t\r\f;#')));
+    if isempty(name)
+      column_sign_id = findstr(line, keyword);
+      name = strtok(line((column_sign_id+length(keyword)+1):end));
+    end
+    if isfield(a.Data, name)
+      value = getfield(a.Data, name);
+    else
+      value = strtok(fliplr(reversed_line(1:(equal_sign_id-1))),sprintf(' \n\t\r\f;#'));
+      if ~isempty(str2num(value)), value = str2num(value); end
+    end
+    
+    if ~isempty(value) && ~isempty(name) && ischar(name)
+      param = setfield(param, name, value);
+    end
+  end
 
