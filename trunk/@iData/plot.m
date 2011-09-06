@@ -27,7 +27,8 @@ function h=plot(a, varargin)
 %                 plot3, scatter3 (colored points), stem3, pcolor, waterfall
 %               For 3D plots c=f(x,y,z), method is a string which may contain:
 %                 plot3 (volume), scatter3 (colored points)
-%                 surf, surf median, surf mean, surf half
+%                 waterfall, contour (set of coutour plots)
+%                 surf, surf median, surf mean, surf half (isosurface)
 %               The slice(a) method opens the interactive sliceomatic 3D viewer.
 %
 %               Global options for 2D and 3D plots: 
@@ -46,7 +47,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.66 $
+% Version: $Revision: 1.67 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
