@@ -42,17 +42,18 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %
 % output:  OPTIMUM is the parameter set that maximizes the instrument output, or
 %            the integral monitor values for the simulation (as iData object)
-%          MONITORS contains the instrument output as iData objects.
+%          MONITORS contains the instrument output as iData objects. Each object has an additional
+%            Parameter member alias which holds the instrument parameters.
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
 % example: to optimize RV, display result, and then perform a scan
 %   [p,f]=mcstas('templateDIFF', struct('RV',1), struct('TolFun','0.1%'))
-%   subplot(f);
+%   subplot(f); disp(f.Parameters)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
