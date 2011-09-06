@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -33,7 +33,7 @@ else
   s=rmfield(s,'Alias');
   disp(s)
   disp('Object aliases:');
-  disp('          [Name]                           [Value] [Description]');
+  disp('         [Name]                           [Value]   [Description]');
   for index=1:length(s_in.Alias.Names)
     v = s_in.Alias.Values{index};
     if isempty(v)
@@ -46,7 +46,7 @@ else
       if length(size(v)) > 2, v=v(:); end
       if numel(v) > 10, v=v(1:10); end
       v = mat2str(v,2); 
-      if length(v) > 15, v = [v(1:12) '...' ]; end 
+      if length(v) > 32, v = [v(1:29) '...' ]; end 
     elseif ischar(v)
       this = s_in;
       try
@@ -67,8 +67,9 @@ else
           label = [ label ' ''' vv '''' ];
         end
       end
+      if length(v) > 32, v = [ '...' v((end-28):end) ]; end
     end
-    fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, v, label);
+    fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, strtrim(v), strtrim(label));
     if strcmp(s_in.Alias.Names{index}, 'Signal') & length(s_in.Alias.Axis) == 0
       x      = getaxis(s_in, 0);  x=x(:);
       if length(x) == 1
@@ -86,19 +87,20 @@ else
   end
   if length(s_in.Alias.Axis)
     disp('Object axes:');
-    disp('[Rank]         [Value] [Description]');
+    disp('[Rank]         [Value]  [Description]');
     for index=0:length(s_in.Alias.Axis)
       [v, l] = getaxis(s_in, num2str(index,2));
+      s=NaN; f=NaN;
       try
-      [s, f] = std(s_in, index);
-      catch
-          s=NaN; f=NaN;
+        if prod(size(s_in)) < 1e4
+          [s, f] = std(s_in, index);
+        end
       end
       if length(l) > 20, l = [l(1:18) '...' ]; end 
       X      = getaxis(s_in, index); x=X(:);
       if length(x) == 1
         fprintf(1,'%6i %15s  %s [%g]', index, v, l, x);
-      elseif isvector(X)
+      elseif isvector(X) & ~isnan(s) & ~isnan(f)
         fprintf(1,'%6i %15s  %s [%g:%g] length [%i] <%g +/- %g>', index, v, l, min(x), max(x),length(X), f, s);
       else
         fprintf(1,'%6i %15s  %s [%g:%g] size [%s]', index, v, l, min(x), max(x),num2str(size(X)));
