@@ -78,7 +78,7 @@ function config = iLoad_ini
     mcstas_scan.name       ='McStas Scan DAT output';
     mcstas_scan.patterns   ={'# type: multiarray_1d','# variables:','# title: Scan of'};
     mcstas_scan.options    =['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
-                         '--metadata=xlabel --metadata=ylabel --metadata=xvars' ];
+                         '--metadata=xlabel --metadata=ylabel --metadata=xvars --metadata=component --metadata=Param' ];
     mcstas_scan.method     ='looktxt';
     mcstas_scan.postprocess='load_mcstas_scan';
     
@@ -86,13 +86,13 @@ function config = iLoad_ini
     mcstas_2D.patterns   ={'Format: McStas with text headers','# type: array_2d'};
     mcstas_2D.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
 		    '--metadata=Errors --metadata=Events --metadata=xlabel ' ...
-		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits --metadata=component' ];
+		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits --metadata=component --metadata=Param' ];
     mcstas_2D.method     ='looktxt';
     mcstas_2D.postprocess='load_mcstas_2d';
     
     mcstas_1D.name       ='McStas 1D monitor';
     mcstas_1D.patterns   ={'Format: McStas with text headers','# type: array_1d'};
-    mcstas_1D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables ' ...
+    mcstas_1D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  --metadata=Param' ...
         '--metadata=xlabel --metadata=ylabel  --metadata=component' ];
     mcstas_1D.method     ='looktxt';
     mcstas_1D.postprocess='load_mcstas_1d';

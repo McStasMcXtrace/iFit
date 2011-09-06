@@ -5,7 +5,7 @@ function a=load_mcstas_scan(a0)
 %
 a=iData(a0);
 if isempty(findstr(a,'McStas'))
-  warning([ mfilename ': The loaded data set ' a.Tag ' is not a McStas data format.' ]);
+  warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a McStas data format.' ]);
   return
 end
 
@@ -42,6 +42,11 @@ if ~isempty(xvars)
   setaxis(a0,1,'x');
 end
 
+
+param = load_mcstas_param(a0, 'Param');
+a0.Data.Parameters = param;
+setalias(a0, 'Parameters', 'Data.Parameters', 'Instrument parameters');
+
 siz = size(a0.Signal);
 siz = (siz(2)-1)/2;
 
@@ -57,5 +62,26 @@ for j=1:siz
   b.Label = [ char(ylabel) '(' xvars ')' ];
   a = [a b];
 end
+
+% ------------------------------------------------------------------------------
+% build-up a parameter structure which holds all parameters from the simulation
+function param=load_mcstas_param(a, keyword)
+  if nargin == 1, keyword='Param'; end
+  param = [];
+
+  par_list = findstr(a, keyword);
+  % search strings of the form 'keyword' optional ':', name '=' value
+  for index=1:length(par_list)
+    line         = par_list{index};
+    reversed_line= line(end:-1:1);
+    equal_sign_id= find(reversed_line == '=');
+    
+    value        = strtok(fliplr(reversed_line(1:(equal_sign_id-1))),sprintf(' \n\t\r\f;#'));
+    name         = fliplr(strtok(reversed_line((equal_sign_id+1):end),sprintf(' \n\t\r\f;#')));
+    if ~isempty(num2str(value)), value = num2str(value); end
+    if ~isempty(value) && ~isempty(name) && ischar(name)
+      param = setfield(param, name, value);
+    end
+  end
 
 
