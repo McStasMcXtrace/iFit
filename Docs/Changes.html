@@ -10,6 +10,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -22,44 +23,28 @@
 </h1>
 
 <br>
+<ol id="mozToc">
+<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes</a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li></ol></li>
+</ol>
+
 
 <hr style="width: 100%; height: 2px;">
-<h3>Releases and Changes</h3>
+<h3><a class="mozTocH3" name="mozTocId919749"></a>Releases and Changes</h3>
 <span style="font-weight: bold;"></span><ul>
 
   
+  <li><span style="font-weight: bold;">1.0.2</span>: <a href="McStas.html">McStas</a> data files with Parameter member. New <a href="Plot.html#mozTocId734523">waterfall</a> plot stype for 3D data sets (<span style="font-style: italic;">Sept 6th, 2011</span>)<br>
+    <span style="font-weight: bold;"></span></li>
+  <li><span style="font-weight: bold;">1.0.1:</span>
+Added correlation function method, plus a number of minor improvements
+(esp. in plot contextual menus), and bug fix for McStas 1D data set
+import <span style="font-style: italic;">(August 26th 2011</span>)<br>
+<span style="font-weight: bold;"></span></li>
   <li><span style="font-weight: bold;">1.0</span>: First official iFit release <span style="font-style: italic;">(August 16th 2011</span>)<br>
   </li>
 
-  <ul>
-    <li><span style="font-weight: bold;">1.0-RC12</span>: fixed minor error in looktxt and compatibility issues with Windows. First official release.<br>
-<span style="font-weight: bold;"></span></li>
-    <li><span style="font-weight: bold;">1.0-RC11</span>: pre-release. Added FFT, convolution, Laplacian, gradient and Jacobian in <a href="Math.html">Math</a>.<br>
-<span style="font-weight: bold;"></span></li>
-    <li><span style="font-weight: bold;">1.0-RC10: </span>added uncertainty estimate on fit parameters for <a href="iOptim.html">iOptim</a> methods and <a href="Fit.html">iData/fits</a>.<br>
-  </li>
-    <li><span style="font-weight: bold;">1.0-RC9:</span> fixed value for Monitor in binary/combine. Clarify handling of <a href="iData.html#mozTocId134021">axis 0</a> as Signal/Monitor.<br>
-<span style="font-weight: bold;"></span></li>
-    <li><span style="font-weight: bold;">1.0-RC8</span>: provide MeX pre-compiled files; fixed a few bugs in looktxt/texmex/<a href="iFiles.html">iLoad</a>. <a href="iFuncs.html#mozTocId210092">ifitmakefunc</a> tool to create fit functions (June 2011)<br>
-<span style="font-weight: bold;"></span></li>
-    <li><span style="font-weight: bold;">1.0-RC7</span>: fixed iFit/<a href="McStas.html">mcstas</a> (Windows support), added more optimizers in <a href="iOptim.html">iOptim</a> (May 2011)<br>
-<span style="font-weight: bold;"></span></li>
-    <li><span style="font-weight: bold;">1.0-RC6</span>: fixed import of multicolumn text files<br>
-<span style="font-weight: bold;"></span></li>
-    <li><span style="font-weight: bold;">1.0-RC5</span>b: fixed typo in
-looktxt. <br>
-    <span style="font-weight: bold;"></span></li>
-    <li><span style="font-weight: bold;">1.0-RC5</span>: added self test
-procedure '<a href="Install.html">ifittest</a>' and fixed a set of bugs</li>
-    <li><span style="font-weight: bold;">1.0-RC4</span>: added <a href="McStas.html">McStas</a>
-optimization wrapper</li>
-    <li><span style="font-weight: bold;">1.0-RC3</span>: fixed multiple
-files import in <a href="iFiles.html">iLoad</a> and DAT export in class2str (March 2011)</li>
-    <li><span style="font-weight: bold;">1.0-RC2</span>: fixed <a href="iFiles.html">iLoad</a>
-error for e.g. ILL TAS import (Feb 2011)</li>
-    <li><span style="font-weight: bold;">1.0-RC1</span>: initial release
-(Feb 2011)</li>
-  </ul>
+
+  <ul></ul>
 
   
 
@@ -80,23 +65,45 @@ error for e.g. ILL TAS import (Feb 2011)</li>
   
   
   
-</ul><br>
-<h3>Bugs list:</h3>
+</ul>
+<h3><a class="mozTocH3" name="mozTocId855650"></a>Bugs list:</h3>
 
-<h4>Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</h4>
+<div style="margin-left: 40px;">You may test the package integrity by issuing the command:<br>
+</div>
+
+
+
+<pre style="margin-left: 80px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">ifittest</span></pre>
+
+<div style="margin-left: 40px;">
+
+which will test, in a few minutes, all the examples given in this documentation and report
+failures. The test may be aborted by closing the progress bar window.<br>
+<br>
+Please report bugs to  <a href="mailto:ifit-users@mccode.org">ifit-users@mccode.org</a> or to me <span style="font-weight: bold;">[farhi (at) ill.fr]</span>. You are encouraged to register to the <a href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users">ifit-users</a> list.</div>
+
+
+
+
+<h4><a class="mozTocH4" name="mozTocId556618"></a>Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</h4>
+
 <div style="margin-left: 40px;">In some cases, the provided
 iFit/iFiles/private/looktxt.mex* may fail to execute (wrong
 architecture, missing library).
 </div>
+
 <br>
+
 <div style="margin-left: 40px;">
 If a library is mising, just install it. <br>
 Under Windows 64bit systems,
-you need the Visual C++ runtime libraries <i>msvc[mpr]90.dll</i> which
+you need the Visual C++ runtime libraries e.g. <i>msvc[mpr]90.dll</i> which
 are provided with the Visual C++ installation (see below), to put in the 
 Windows system directory.
 </div>
+
 <br>
+
 <div style="margin-left: 40px;">
 In case this is not a problem of library, remove the invalid mex file 
 (in <i>iFit/iFiles/private</i>) , and
@@ -104,17 +111,14 @@ relaunch the importation process. A brand new MeX file will
 automatically be generated, using the system C compiler. <br>
 <br>
 Most systems provide a default C compiler. <br>
-<ul>
-<li>Linux systems usually ship with gcc.</li>
-<li>MacOSX systems require to install the Xcode development tools. </li>
-<li>Windows 32 systems may use the LCC compiler shipped with Matlab. </li>
-<li>Windows 64 systems must have Microsoft Visual C++ installed (refer to the <a href="Install.html#mozTocId359173">Install</a> page for the procedure).</li>
-</ul>
+<ul><li>Linux systems usually ship with gcc.</li><li>MacOSX systems require to install the Xcode development tools. </li><li>Windows 32 systems may use the LCC compiler shipped with Matlab. </li><li>Windows 64 systems must have Microsoft Visual C++ installed (refer to the <a href="../../iFit-1.0.1/Docs/Install.html#mozTocId359173">Install</a> page for the procedure).</li></ul>
 You may need to select the compiler with the <i>mex -setup</i> command from Matlab.<br>
 <br>
 </div>
-<div style="margin-left: 40px;">It has been reported that MeX compilation may fail when spaces are part of the path name to the iFit location. <br>
-Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.<br>
+
+It has been reported that MeX compilation may fail when spaces are part of the path name to the iFit location. <br>
+
+Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.<div style="margin-left: 40px;">
 <br>
 </div>
 
@@ -123,7 +127,7 @@ Move <span style="font-style: italic;">iFit</span> to an other location which do
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Changes - </span><span style="font-style: italic;">
-$Date: 2011-08-17 12:13:59 $ $Revision: 1.11 $
+$Date: 2011-09-06 17:37:55 $ $Revision: 1.12 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
