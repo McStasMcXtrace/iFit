@@ -37,7 +37,7 @@ function [data, format] = iLoad(filename, loader)
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.47 $
+% Author:  E. Farhi <farhi@ill.fr>. % Version: $Revision: 1.48 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -322,8 +322,10 @@ function [data, loader] = iLoad_import(filename, loader)
   % handle single char loaders (IMPORT takes place HERE)
   if ischar(loader)
     tmp=loader; clear loader;
-    loader.method = tmp; loader.name=tmp; loader.options='';
+    loader.method = tmp; loader.options='';
   end
+  if ~isfield(loader,'method'), return; end
+  if ~isfield(loader,'name'), loader.name = loader.method; end
   if isempty(loader.method), return; end
   fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
   if isempty(loader.options)
