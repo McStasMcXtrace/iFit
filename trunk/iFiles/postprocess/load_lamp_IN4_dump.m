@@ -8,6 +8,17 @@ function a=load_lamp_IN4_dump(a,t)
 %
 % (Quick'n'Dirty writup for IN4 data, 20080408 PW)
 %
+% Version: $Revision: 1.2 $
+% See also: iData/load, iLoad, save, iData/saveas
+
+% handle input iData arrays
+if length(a(:)) > 1
+  for index=1:length(a(:))
+    a(index) = feval(mfilename, a(index));
+  end
+  return
+end
+
 a=iData(a);
 % Find proper labels for Signal and Axis
 

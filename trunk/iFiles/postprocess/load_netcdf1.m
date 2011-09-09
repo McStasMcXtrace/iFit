@@ -3,6 +3,16 @@ function b=load_netcdf1(a)
 %
 % Returns an iData style dataset from a NetCDF 1.0 file
 %
+% Version: $Revision: 1.2 $
+% See also: iData/load, iLoad, save, iData/saveas
+
+% handle input iData arrays
+if length(a(:)) > 1
+  for index=1:length(a(:))
+    a(index) = feval(mfilename, a(index));
+  end
+  return
+end
 
 for index=1:length(a.Data.VarArray)
   this = a.Data.VarArray(index);

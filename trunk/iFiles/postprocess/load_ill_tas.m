@@ -4,6 +4,16 @@ function a=load_ill_tas(a)
 % Simple postprocessing for ILL/TAS files.
 % Supports ILL TAS files, including those with multidetectors.
 %
+% Version: $Revision: 1.5 $
+% See also: iData/load, iLoad, save, iData/saveas
+
+% handle input iData arrays
+if length(a(:)) > 1
+  for index=1:length(a(:))
+    a(index) = feval(mfilename, a(index));
+  end
+  return
+end
 
 a=iData(a);
 

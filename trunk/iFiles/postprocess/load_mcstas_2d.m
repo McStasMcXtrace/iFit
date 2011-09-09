@@ -3,6 +3,17 @@ function a=load_mcstas_2d(a)
 %
 % Returns an iData style dataset from a McStas 2d monitor file
 %
+% Version: $Revision: 1.6 $
+% See also: iData/load, iLoad, save, iData/saveas
+
+% handle input iData arrays
+if length(a(:)) > 1
+  for index=1:length(a(:))
+    a(index) = feval(mfilename, a(index));
+  end
+  return
+end
+
 a=iData(a);
 if isempty(findstr(a,'McStas'))
   warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a McStas data format.' ]);
