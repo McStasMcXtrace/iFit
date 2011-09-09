@@ -92,10 +92,10 @@ function config = iLoad_ini
     
     mcstas_1D.name       ='McStas 1D monitor';
     mcstas_1D.patterns   ={'Format: McStas with text headers','# type: array_1d'};
-    mcstas_1D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  --metadata=Param' ...
+    mcstas_1D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  --metadata=Param ' ...
         '--metadata=xlabel --metadata=ylabel  --metadata=component' ];
     mcstas_1D.method     ='looktxt';
-    mcstas_1D.postprocess='load_mcstas_1d';
+    mcstas_1D.postprocess={'load_xyen','load_mcstas_1d'};
     
     mcstas_sim.name       ='McStas sim file';
     mcstas_sim.extension  ='sim';
