@@ -3,6 +3,17 @@ function a=load_mcstas_scan(a0)
 %
 % Returns iData style datasets from a McStas scan output file
 %
+% Version: $Revision: 1.5 $
+% See also: iData/load, iLoad, save, iData/saveas
+
+% handle input iData arrays
+if length(a0(:)) > 1
+  for index=1:length(a0(:))
+    a(index) = feval(mfilename, a0(index));
+  end
+  return
+end
+
 a=iData(a0);
 if isempty(findstr(a,'McStas'))
   warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a McStas data format.' ]);

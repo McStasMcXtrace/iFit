@@ -4,6 +4,15 @@ function b=load_ill_inx(a)
 % Returns an iData style dataset from an ILL INX file
 %
 
+% handle input iData arrays
+if length(a(:)) > 1
+  b = [];
+  for index=1:length(a(:))
+    b(index) = feval(mfilename, a(index));
+  end
+  return
+end
+
 % the INX data set is loaded in catenate mode. 
 % As there is not header, the first block is Data_0
 % its number of rows is the block number

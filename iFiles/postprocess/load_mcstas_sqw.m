@@ -3,6 +3,17 @@ function a=load_mcstas_sqw(a)
 %
 % Returns an iData style dataset from a McStas Sqw Table (Isotropic Sqw)
 %
+% Version: $Revision: 1.4 $
+% See also: iData/load, iLoad, save, iData/saveas
+
+% handle input iData arrays
+if length(a(:)) > 1
+  for index=1:length(a(:))
+    a(index) = feval(mfilename, a(index));
+  end
+  return
+end
+
 a=iData(a);
 if isempty(findstr(a,'Sqw'))
   warning([ mfilename ': The loaded data set ' a.Tag ' is not an Sqw text data format.' ]);

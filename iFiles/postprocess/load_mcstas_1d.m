@@ -4,6 +4,16 @@ function a=load_mcstas_1d(a)
 % Returns an iData style dataset from a McStas 1d monitor file, or even simple XYE files
 % Some labels are also searched.
 %
+% Version: $Revision: 1.11 $
+% See also: iData/load, iLoad, save, iData/saveas
+
+% handle input iData arrays
+if length(a(:)) > 1
+  for index=1:length(a(:))
+    a(index) = feval(mfilename, a(index));
+  end
+  return
+end
 
 % Find proper labels for Signal and Axis
 a=iData(a);
@@ -37,8 +47,8 @@ if ~isempty(findfield(a, 'component'))
 end
 
 if ~isempty(strfind(a.Title,'McStas 1D monitor'))
-  xlabel(a, xlab);
-  ylabel(a, ylab);
+  a=xlabel(a, xlab);
+  a=title(a, ylab);
 end
 
 param = load_mcstas_param(a, 'Param');
