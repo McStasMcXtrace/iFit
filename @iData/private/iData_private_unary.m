@@ -95,9 +95,16 @@ end
 
 % update object
 b = set(b, 'Signal', new_s, 'Error', abs(e), 'Monitor', m);
-b = setalias(b, 'Signal', new_s, [  op '(' sl ')' ]);
-b = setalias(b, 'Error', e);
-b = setalias(b, 'Monitor', m);
+% test if we could update signal as expected, else we store the new value directly in the field
+if ~isequal(get(b,'Signal'), new_s)
+  b = setalias(b, 'Signal', new_s, [  op '(' sl ')' ]);
+end
+if ~isequal(get(b,'Error'), e)
+  b = setalias(b, 'Error', e);
+end
+if ~isequal(get(b,'Monitor'), m)
+  b = setalias(b, 'Monitor', m);
+end
 b.Command=cmd;
 b = iData_private_history(b, op, a);  
 
