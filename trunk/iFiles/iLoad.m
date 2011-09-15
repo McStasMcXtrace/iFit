@@ -14,8 +14,11 @@ function [data, format] = iLoad(filename, loader)
 %     HDF4, HDF5, MAT workspace, XML.
 %   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF.
 %   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
+%
 %   Distant files are supported through e.g. URLs such as 
 %     file://, ftp:// http:// and https://
+%   File names may end with an internal anchor reference '#anchor", as used in HTML 
+%     links, in which case the members matching the anchor are returned.
 %
 % input arguments:
 %   file:   file name, or cell of file names, or any Matlab variable, or a URL
@@ -32,13 +35,14 @@ function [data, format] = iLoad(filename, loader)
 %   data:   a single structure containing file data, or a cell of structures
 %   loader: the loader that was used for importation, or a cell of loaders.
 %
-% example: iLoad; iLoad('file');
+% example: iLoad; iLoad('file'); iLoad('http://path/name'); iLoad('file.zip')
+%          iLoad('file#anchor');
 %
 % See also: importdata, load, iLoad_ini
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.50 $
+% Version: $Revision: 1.51 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -110,11 +114,24 @@ if iscellstr(filename) & length(filename) == 1
   filename = filename{1};
 end
 
+url = false; % flag indicating that 'filename' is a temp file to be removed afterwards
+
 % handle single file name
 if ischar(filename) & length(filename) > 0
-  % local file (general case)
+  % local/distant file (general case)
+  f=find(filename == '#');
+  if length(f) == 1 && f > 1  % the filename contains an internal link (HTML anchor)
+    [fileroot,filesub]=strtok(filename, '#');
+    [data, format]=iLoad(fileroot);
+    % now search for the fieldnames
+    [f,c] = findfield(data, filesub(2:end));
+    index = strmatch(filesub(2:end), f);
+    data = c{index};
+    return
+  end
+  
   if strncmp(filename, 'file://', length('file://'))
-    filename = filename(8:end); % remove 'file://' from name
+    filename = filename(8:end); % remove 'file://' from local name
   end
   
   % handle / to \ substitution for Windows systems, not in URLs
@@ -146,7 +163,6 @@ if ischar(filename) & length(filename) > 0
   end
   
   % handle file on the internet
-  url = false; % flag indicating that 'filename' is a temp file to be removed afterwards
   if strncmp(filename, 'http://', length('http://')) ...
    | strncmp(filename, 'https://',length('https://')) ...
    | strncmp(filename, 'ftp://',  length('ftp://'))
@@ -654,4 +670,36 @@ function config = iLoad_config_load
   
   config.loaders = loaders; % updated list of loaders
 
-  
+% private function getfields, returns all field name and values, that match 'name'
+function [f, c] = findfield(structure, name, parent)
+
+if nargin < 3, parent=''; end
+
+f=[]; c=[];
+if ~isstruct(structure), return; end
+
+c = struct2cell(structure);
+f = fieldnames(structure);
+
+if ~isempty(parent), f = strcat([ parent '.' ], f); end
+
+% only retain fields which name is the begining of name
+index = [];
+for i=1:length(f)
+  if strmatch(f{i}, name)
+    index = [ index i ];
+  end
+end
+f = f(index);
+c = c(index);
+
+% find sub-structures and make a recursive call for each of them
+for index=transpose(find(cellfun('isclass', c, 'struct')))
+  try
+  [sf, sc] = findfield(c{index}, name, f{index});
+  f = [f(:) ; sf(:)];
+  c = [c(:) ; sc(:)];
+  end
+end
+
+

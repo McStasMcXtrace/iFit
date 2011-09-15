@@ -16,7 +16,9 @@ function out = load(a, varargin)
 %   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF
 %   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
 %   Distant files are supported through e.g. URLs such as 
-%     file://, ftp:// and http://
+%     file://, ftp://, http:// and https://
+%   File names may end with an internal anchor reference '#anchor", as used in HTML 
+%     links, in which case the members matching the anchor are returned.
 %
 % input:  s: object or array (iData)
 %         file: file name(s) to import (char/cellstr)
@@ -35,28 +37,31 @@ function out = load(a, varargin)
 %
 % output: d: single object or array (iData)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
+%         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
 % iLoad returns nearly an iData structure.
+% inline: load_check_struct, load_clean_metadata
 % EF 23/09/07 iData implementation
 
-if isempty(varargin), [files, loaders] = iLoad; 
-else [files, loaders] = iLoad(varargin{:}); end
+[files, loaders] = iLoad(varargin{:}); 
 
-if isstruct(files),   files = { files }; end
+if isempty(files), out=[]; return; end
+if ~iscell(files),   files = { files }; end
 if isstruct(loaders), loaders = { loaders }; end
 out = [];
 for i=1:length(files)
-  this_iData =  iData(files{i});	% convert structure from iLoad into iData
+  files{i} = load_check_struct(files{i}, loaders, varargin{:});
+  this_iData =  iData(files{i});	% convert file content from iLoad into iData
   % specific adjustments for looktxt (default import method)
   [pathname,filename,ext] = fileparts(files{i}.Source);
   try % create MetaData alias if present in structure
     c = this_iData.Data.MetaData; clear c;
     this_iData=setalias(this_iData, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
-  catch
+    this_iData=load_clean_metadata(this_iData);
   end
 
   if isfield(files{i},'Headers')
@@ -105,3 +110,45 @@ if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),out);
 end
 
+% ------------------------------------------------------------------------------
+function a=load_clean_metadata(a, loaders, filenames)
+% test each field of MetaData and search for equal aliases
+  this = a.Data.MetaData;
+  meta_names = fieldnames(this);
+  alias_names=getalias(a);
+  %treat each MetaData
+  for index=1:length(meta_names)
+    if numel(getfield(this, meta_names{index})) > 1000
+    for index_alias=1:length(alias_names)
+      % is it big and equal to an alias value ?
+      if isequal(getfield(this, meta_names{index}), get(a, alias_names{index_alias}))
+        % yes: store alias in place of MetaData
+        this = setfield(this, meta_names{index}, getalias(a, alias_names{index_alias}));
+        break
+      end
+    end % for
+    end % if
+  end
+  a.Data.MetaData = this;
+
+% ------------------------------------------------------------------------------
+function s=load_check_struct(data, loaders, filename)
+  if nargin < 3, filename=''; end
+  if isempty(filename), filename=pwd; end
+  if iscell(filename),  filename=filename{1}; end
+  
+  % transfer some standard fields as possible
+  if ~isstruct(data)          s.Data = data; else s=data; end
+  if isfield(data, 'Source'), s.Source = data.Source; 
+  else                        s.Source = filename; end
+  if isfield(data, 'Title'),  s.Title = data.Title; 
+  else 
+    [pathname, filename, ext] = fileparts(filename);
+    s.Title  = [ 'File ' filename ext ];
+  end
+  if isfield(data, 'Date'),   s.Date = data.Date; 
+  else                        s.Date   = datestr(now); end
+  if isfield(data, 'Label'),  s.Label = data.Label; end
+  if ~isfield(s, 'Format'),
+    s.Format  = loaders{1}.name; 
+  end
