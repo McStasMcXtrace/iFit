@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -111,10 +111,17 @@ for i = 1:length(S)     % can handle multiple index levels
       end
     end
   case '.'
-    if ~isstruct(b)
+    if ~isstruct(b) % may be iData object
       b = get(b,s.subs);          % get field from iData
     else
       b = getfield(b,s.subs);     % get field from struct
     end
   end   % switch s.type
 end % for s index level
+
+% test if the requested field is a Data one -> value must be numeric
+if ischar(b) 
+  if strcmp(S(1),'Data') || strcmp(strtok(b, '.'), 'Data')
+    b = get(a, b);
+  end
+end
