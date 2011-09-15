@@ -25,7 +25,7 @@ function s_out = setalias(a_in,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -94,10 +94,10 @@ for index = 1:length(s_out)
        (~isempty(name) && name(1) == '#') )
       continue;
     end
-    if ~isvarname(lower(name)) & isempty(findfield(a, name))
-      iData_private_warning(mfilename,[ 'the Alias "' name '" is not a valid Alias name in object ' inputname(1) ' ' a.Tag '. Fixing it.' ]);
-      name = genvarname(strtrim(name(isstrprop(name,'alphanum'))));
-    end
+%    if ~isvarname(lower(name)) & isempty(findfield(a, name))
+%      iData_private_warning(mfilename,[ 'the Alias "' name '" is not a valid Alias name in object ' inputname(1) ' ' a.Tag '. Fixing it.' ]);
+%      name = genvarname(strtrim(name(isstrprop(name,'alphanum'))));
+%    end
     alias_names = a.Alias.Names; % this is a cellstr of Alias names
     alias_num   = strmatch(lower(name), lower(alias_names), 'exact');
     if isempty(link) & any(alias_num <= 3) 
