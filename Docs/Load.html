@@ -13,32 +13,27 @@
 
 
 
+
+
+
   <title>iFit: Importing data (iData/load)</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId647835"></a>iFit: importing data into objects<br>
 </h1>
 <br>
-<ol id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
-  <li><a href="#mozTocId5377">Importing data from a
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId5377">Importing data from a
 file (iData,
-load) </a>
-    <ol>
-      <li><a href="#mozTocId52427">Distant files</a></li>
-      <li><a href="#mozTocId250466">Compressed files</a></li>
-    </ol>
-  </li>
-  <li><a href="#mozTocId59221">Supported data formats</a></li>
-  <li><a href="#mozTocId782211">Example data files</a></li>
-  <li><a href="#mozTocId141862">Importing directly
+load)
+</a><ol><li><a href="#mozTocId52427">Distant files (http://, ...)
+</a></li><li><a href="#mozTocId250466">Compressed files (.zip, ...)
+</a></li><li><a href="#mozTocId338301">Anchor references (file#anchor)
+</a></li></ol></li><li><a href="#mozTocId59221">Supported data formats</a></li><li><a href="#mozTocId782211">Example data files</a></li><li><a href="#mozTocId141862">Importing directly
 from
-Matlab variables</a></li>
-  <li><a href="#mozTocId755882">Importing from Matlab
-Figures</a></li>
-  <li><a href="#mozTocId672193">How it works
-(looktxt, iLoad, iFiles) </a></li>
-</ol>
+Matlab variables</a></li><li><a href="#mozTocId755882">Importing from Matlab
+Figures</a></li><li><a href="#mozTocId672193">How it works
+(looktxt, iLoad, iFiles)
+</a></li></ol>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">iData, load, </span><a href="Methods.html">methods</a>
@@ -96,7 +91,8 @@ e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">'filename'</span>, <span style="color: rgb(204, 51, 204);">'HDF5'</span>)</pre>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">'filename'</span>, <span style="color: rgb(204, 51, 204);">'gui'</span>);&nbsp; % a method selector pops-up.</pre>
 A list of the supported formats is shown below.<br>
-<h4><a class="mozTocH4" name="mozTocId52427"></a>Distant files</h4>
+<h4><a class="mozTocH4" name="mozTocId52427"></a>Distant files (http://, ...)<br>
+</h4>
 The specified file names may include URL tags such as<br>
 <ul>
   <li><span style="font-weight: bold;">file://</span><span style="font-style: italic;">filename</span></li>
@@ -109,11 +105,21 @@ The specified file names may include URL tags such as<br>
 were the two latter cases first get a copy of the distant file
 (requires local write permission), and then import it. A valid Internet
 connection is then required, with proper Proxy settings if needed.<br>
-<h4><a class="mozTocH4" name="mozTocId250466"></a>Compressed files</h4>
+<h4><a class="mozTocH4" name="mozTocId250466"></a>Compressed files (.zip, ...)<br>
+</h4>
 Compressed files (ZIP, TAR, GZIP, Z) can also be imported directly, in
 which case they are first extracted locally (requires write
 permission), and then imported. This extraction mechanism also applied for
 distant file.<br>
+<h4><a class="mozTocH4" name="mozTocId338301"></a>Anchor references (file#anchor)<br>
+</h4>
+The file name may end with an anchor reference using the '#' character, such as in <br>
+<br>
+<div style="margin-left: 40px;">[ ifitpath '<span style="color: rgb(204, 51, 204);">/Data/sv1850.scn#Data'</span> ]<br style="color: rgb(204, 51, 204);">
+<span style="color: rgb(204, 51, 204);">'http://path/file.zip#Data'</span><br>
+</div>
+<br>
+In this case, the anchor is searched in the imported data, and only the corresponding matching elements are returned.<br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">To get
 more help</span>: <a href="matlab:help%20iData">help iData</a>, <a href="matlab:help%20iData/load">help iData/load</a><br>
@@ -360,7 +366,7 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a href="../iFiles/doc/lookt
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span style="font-style: italic;">
-$Date: 2011-08-14 20:20:43 $ $Revision: 1.20 $
+$Date: 2011-09-15 08:04:28 $ $Revision: 1.21 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
