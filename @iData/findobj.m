@@ -17,7 +17,7 @@ function [varargout] = findobj(s_in, varargin)
 %         base:  objects found in base/MATLAB workspace (iData array)
 % ex :    findobj(iData) or findobj(iData,'Title','MyTitle')
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/set, iData/get, iData/findstr, iData/findfield
 
 % EF 23/09/07 iData implementation
@@ -76,6 +76,13 @@ if length(s_in) == 1     % only one iData passed: we use caller/base objects
   end
 else    % work with s_in
   s_caller = s_in;
+end
+
+if length(s_caller) == 1
+  s_caller=s_caller{1};
+end
+if length(s_base) == 1
+  s_base=s_base{1};
 end
 
 if nargin == 1  % and this is a iData
