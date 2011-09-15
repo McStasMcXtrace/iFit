@@ -37,11 +37,16 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also iData, iData/load, iData/getframe, save
 
+% default options checks
+if nargin < 2, filename = ''; else filename = varargin{1}; end
+if isempty(filename), filename = a.Tag; end
+if nargin < 3, format=''; else format = varargin{2}; end
+
 % handle array of objects to save iteratively
-if length(a) > 1
+if length(a) > 1 & ~strcmp(lower(format),'mat')
   if length(varargin) >= 1, filename_base = varargin{1}; 
   else filename_base = ''; end
   if strcmp(filename_base, 'gui'), filename_base=''; end
@@ -57,12 +62,8 @@ if length(a) > 1
   return
 end
 
-% default options checks
-if nargin < 2, filename = ''; else filename = varargin{1}; end
-if isempty(filename), filename = a.Tag; end
-if nargin < 3, format=''; else format = varargin{2}; end
 if nargin < 4, options=''; else options=varargin{3}; end
-if isempty(options) && ndims(a) >= 2, options='view2 axis tight'; end
+if isempty(options) && any(ndims(a) >= 2), options='view2 axis tight'; end
 
 % supported format list
 filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
@@ -207,7 +208,13 @@ case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLO
   fprintf(fid, '%s', str);
   fclose(fid);
 case 'mat'  % single mat-file Matlab output (binary), with the full object description
-  save(filename, 'a');
+  if ~isempty(inputname(1))
+    eval([ inputname(1) '= a;' ]);
+    save(filename, inputname(1));
+  else
+    eval([ a.Tag '= a;' ]);
+    save(filename, a.Tag);
+  end
 case {'hdf5', 'nc','cdf', 'nx','h5'} % HDF4, HDF5, NetCDF formats: converts fields to double and chars
   filename = iData_private_saveas_hdfnc(a, filename, format); % inline function (below)
 case 'edf'  % EDF ESRF format
