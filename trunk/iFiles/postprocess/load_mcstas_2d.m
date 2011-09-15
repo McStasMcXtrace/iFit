@@ -3,8 +3,10 @@ function a=load_mcstas_2d(a)
 %
 % Returns an iData style dataset from a McStas 2d monitor file
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+% inline: load_mcstas_param
 
 % handle input iData arrays
 if length(a(:)) > 1
@@ -20,25 +22,31 @@ if isempty(findstr(a,'McStas'))
   return
 end
 
-% Find proper labels for Signal and Axis
-if ~isempty(findfield(a, 'xlabel')) 
-  xlabel = a.Data.Headers.MetaData.xlabel; 
-  xlabel(1:length('# xlabel: '))='';
-else xlabel=''; end
-if ~isempty(findfield(a, 'ylabel')) 
-  ylabel = a.Data.Headers.MetaData.ylabel;
-  ylabel(1:length('# ylabel: '))='';
-else ylabel=''; end
-if ~isempty(findfield(a, 'zlabel')) 
-  zlabel = a.Data.Headers.MetaData.zlabel;
-  zlabel(1:length('# zlabel: '))='';
-else zlabel=''; end
-if ~isempty(findfield(a, 'component')) 
-  label = strtrim(a.Data.Headers.MetaData.component);
-  label(1:length('# component: '))='';
-  a.Label = label;
-  set(a,'Data.Component', label);
-  setalias(a, 'Component', 'Data.Component','Component name');
+xlabel=''; ylabel=''; zlabel='';
+d = a.Data;
+if ~isfield(d,'MetaData'), return; end
+
+if isfield(d,'Headers') && isfield(d.Headers,'MetaData') 
+  % Find proper labels for Signal and Axis
+  if ~isempty(findfield(a, 'xlabel'))
+    xlabel = a.Data.Headers.MetaData.xlabel; 
+    xlabel(1:length('# xlabel: '))='';
+  else xlabel=''; end
+  if ~isempty(findfield(a, 'ylabel'))
+    ylabel = a.Data.Headers.MetaData.ylabel;
+    ylabel(1:length('# ylabel: '))='';
+  else ylabel=''; end
+  if ~isempty(findfield(a, 'zlabel'))
+    zlabel = a.Data.Headers.MetaData.zlabel;
+    zlabel(1:length('# zlabel: '))='';
+  else zlabel=''; end
+  if ~isempty(findfield(a, 'component')) 
+    label = strtrim(a.Data.Headers.MetaData.component);
+    label(1:length('# component: '))='';
+    a.Label = label;
+    set(a,'Data.Component', label);
+    setalias(a, 'Component', 'Data.Component','Component name');
+  end
 end
 
 % Get sizes of x- and y- axes:

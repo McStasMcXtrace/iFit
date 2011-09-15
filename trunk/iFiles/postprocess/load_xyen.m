@@ -3,7 +3,7 @@ function a = load_xyen(a)
 %
 % Simple postprocessing for X Y E N files.
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -17,7 +17,6 @@ end
 % special case for McStas files and XYEN (2-4 columns) files
 n = size(a,2); % number of columns
 if (ndims(a) == 2 && n >= 2 && n <= 4 && size(a,1) >= 5)
-  rmaxis(a,2);
   if ~isempty(getaxis(a))
       xlab = label(a,1);
   else
