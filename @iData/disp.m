@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -44,13 +44,15 @@ else
     if length(label) > 30, label = [label(1:28) '...' ]; end 
     if isnumeric(v) | islogical(v), 
       if length(size(v)) > 2, v=v(:); end
-      if numel(v) > 10, v=v(1:10); end
+      if numel(v) > 20, v=v(1:18); end
       v = mat2str(v,2); 
       if length(v) > 32, v = [v(1:29) '...' ]; end 
     elseif ischar(v)
       this = s_in;
       try
-        vv = mat2str(eval(v));
+        vv = eval(v);
+        if length(vv) > 20, vv = vv(1:18); end 
+        vv = mat2str(vv);
         if length(vv) > 20, vv = [vv(1:18) '...' ]; end 
         label = [ label ' ''' vv '''' ];
       catch
@@ -69,7 +71,7 @@ else
       end
       if length(v) > 32, v = [ '...' v((end-28):end) ]; end
     end
-    fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, strtrim(v), strtrim(label));
+    fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, strtrim(v), strtrim(char(label)));
     if strcmp(s_in.Alias.Names{index}, 'Signal') & length(s_in.Alias.Axis) == 0
       x      = getaxis(s_in, 0);  x=x(:);
       if length(x) == 1
@@ -78,9 +80,7 @@ else
         fprintf(1,' [%g:%g]', min(x), max(x));
       end
       if ~(all(m==1) | all(m==0))
-        fprintf(1,' (per monitor)\n');
-      else
-        fprintf(1,'\n');
+        fprintf(1,' (per monitor)');
       end
     end
     fprintf(1, '\n');
@@ -112,7 +112,7 @@ else
       end
     end
   end
-  iData(s_in);
+  %iData(s_in);
 end
 
 % reset warnings during disp

@@ -9,7 +9,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -216,7 +216,7 @@ else
             b = set(b, s.subs, tmp);
             i = i + 2;  % jump next
           else
-            if strcmp(next_s.type, '.')
+            if strcmp(next_s.type, '.') % b.(s.subs).(next_s.subs) = val
               c = getfield(b, s.subs);
               c = setfield(c, next_s.subs, val);
               b = setfield(b, s.subs, c);
