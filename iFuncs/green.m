@@ -7,14 +7,14 @@ function y=green(p, x, y)
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
 % input:  p: Green model parameters (double)
-%            p = [ Amplitude Center Width BackGround ]
+%            p = [ Amplitude Center HalfWidth BackGround ]
 %          or action e.g. 'identify', 'guess', 'plot' (char)
 %         x: axis (double)
 %         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=green([1 0 1 1], -10:10); or y=green('identify') or p=green('guess',x,y);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -80,7 +80,7 @@ end
 % inline: identify: return a structure which identifies the model
 function y =identify()
   % HERE are the parameter names
-  parameter_names = {'Amplitude','Center', 'Width', 'Background'};
+  parameter_names = {'Amplitude','Center', 'HalfWidth', 'Background'};
   %
   y.Type           = 'iFit fitting function';
   y.Name           = [ 'Green function (1D) [' mfilename ']' ];
@@ -98,6 +98,14 @@ function info=guess(x,y)
   info.Axes  = { x };
   % fill guessed information
   info.Guess = iFuncs_private_guess(x(:), y(:), info.Parameters);
+  % compute first and second moment
+  x = x(:); y=y(:);
+  sum_y = sum(y);
+  % first moment (mean)
+  f = sum(y.*x)/sum_y; % mean value
+  % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
+  s = sqrt(abs(sum(x.*x.*y)/sum_y - f*f));
+  info.Guess(2:3) = [ f s ];
   info.Values= evaluate(info.Guess, info.Axes{:});
 end
 

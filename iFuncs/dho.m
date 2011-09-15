@@ -13,7 +13,7 @@ function y=dho(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=dho([1 0 1 1], -10:10); or y=dho('identify') or p=dho('guess',x,y);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -117,6 +117,14 @@ function info=guess(x,y)
   info.Axes  = { x };
   % fill guessed information
   info.Guess = iFuncs_private_guess(x(:), y(:), info.Parameters);
+  % compute first and second moment
+  x = x(:); y=y(:);
+  sum_y = sum(y);
+  % first moment (mean)
+  f = sum(y.*x)/sum_y; % mean value
+  % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
+  s = sqrt(abs(sum(x.*x.*y)/sum_y - f*f));
+  info.Guess(2:3) = [ f s ];
   info.Guess(end) = 1;
   info.Values= evaluate(info.Guess, info.Axes{:});
 end
