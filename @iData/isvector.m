@@ -9,7 +9,7 @@ function v = isvector(s)
 % output: b: object or array (iData)
 % ex:     b=isvector(a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
 %          iData/isnumeric, iData/islogical, iData/isscalar, 
@@ -37,7 +37,13 @@ else
         break;
       end
     end
-    if is_vector, v = length(getaxis(s)); % this is for [x,y,z,... vector data (plot3 style)]: signal and axes are all vectors of same length or 1
+    if is_vector
+      v = 0; % count non singleton dimensions
+      for index=1:length(getaxis(s))
+        if numel(getaxis(s, index)) > 1 % this is for [x,y,z,... vector data (plot3 style)]: signal and axes are all vectors of same length or 1
+          v = v+1;
+        end
+      end
     else v=0; end
   elseif v ~= 1, v=0; end
 end
