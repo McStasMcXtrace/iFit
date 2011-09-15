@@ -3,7 +3,7 @@ function a=load_mcstas_2d(a)
 %
 % Returns an iData style dataset from a McStas 2d monitor file
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % inline: load_mcstas_param
@@ -55,24 +55,37 @@ lims = a.Data.MetaData.xylimits;
 xax = linspace(lims(1),lims(2),siz(1));
 yax = linspace(lims(3),lims(4),siz(2));
 
+% transpose I,E,N fields
+if isnumeric(d.MetaData.variables),
+  d.MetaData.variables = transpose(d.MetaData.variables);
+elseif ischar(d.MetaData.variables)
+  link = d.MetaData.variables;
+  val  = get(a, link);
+  set(a, link, val');
+  d = a.Data;
+end
+
 % First column is the scan parm, we denote that 'x'
 setalias(a,'x',xax,xlabel);
 setalias(a,'y',yax,ylabel);
-setalias(a,'Signal','transpose(this.Data.MetaData.variables)',zlabel);
+setalias(a,'Signal','Data.MetaData.variables',zlabel);
 setalias(a,'I','Signal');
-if ~isempty(findfield(a, 'Error')) 
-  setalias(a,'Error','transpose(this.Data.MetaData.Errors)');
+if ~isempty(findfield(a, 'Error'))
+  d.MetaData.Errors = transpose(d.MetaData.Errors);
+  setalias(a,'Error','Data.MetaData.Errors');
 else setalias(a,'Error',0);
 end
 setalias(a,'E','Error');
 if ~isempty(findfield(a, 'Error')) 
-  setalias(a,'N','transpose(this.Data.MetaData.Events)');
+  d.MetaData.Events = transpose(d.MetaData.Events);
+  setalias(a,'N','Data.MetaData.Events');
 end
 setaxis(a,1,'x');
 setaxis(a,2,'y');
 
-param = load_mcstas_param(a, 'Param');
-a.Data.Parameters = param;
+param        = load_mcstas_param(a, 'Param');
+d.Parameters = param;
+a.Data       = d;
 setalias(a, 'Parameters', 'Data.Parameters', 'Instrument parameters');
 
 % ------------------------------------------------------------------------------
