@@ -6,7 +6,7 @@ function y=quadline(p, x, y)
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
-% input:  p: Straight line model parameters (double)
+% input:  p: Quadratic line model parameters (double)
 %            p = [ Quadratic Linear Constant ]
 %          or action e.g. 'identify', 'guess', 'plot' (char)
 %         x: axis (double)
@@ -14,7 +14,7 @@ function y=quadline(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=quadline([1 0 1], -10:10); or y=quadline('identify') or p=quadline('guess',x,y);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, ifitmakefunc
 
 % 1D function template:

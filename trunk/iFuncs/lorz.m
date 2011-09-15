@@ -14,7 +14,7 @@ function y=lorz(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=lorz([1 0 1 1], -10:10); or y=lorz('identify') or p=lorz('guess',x,y);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -98,6 +98,14 @@ function info=guess(x,y)
   info.Axes  = { x };
   % fill guessed information
   info.Guess = iFuncs_private_guess(x(:), y(:), info.Parameters);
+  % compute first and second moment
+  x = x(:); y=y(:);
+  sum_y = sum(y);
+  % first moment (mean)
+  f = sum(y.*x)/sum_y; % mean value
+  % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
+  s = sqrt(abs(sum(x.*x.*y)/sum_y - f*f));
+  info.Guess(2:3) = [ f s ];
   info.Values= evaluate(info.Guess, info.Axes{:});
 end
 

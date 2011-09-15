@@ -1,5 +1,5 @@
 function y=fconv(x, h, shape)
-%FCONV Fast Convolution/Corelation
+%FCONV Fast Convolution/Correlation
 %   y = FCONV(x, h, shape) convolves x and h. A deconvolution mode is also possible.
 %   The correlation, instead of the convolution, can also be computed.
 %   This FFT based convolution should provide the same results as conv2 and convn.
@@ -29,7 +29,7 @@ function y=fconv(x, h, shape)
 %
 %      See also FCONVN, FXCORR, CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 
 
 y=[];
