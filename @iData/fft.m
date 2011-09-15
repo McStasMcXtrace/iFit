@@ -1,34 +1,38 @@
-function b = fft(a, op)
+function b = fft(a, op, dim)
 % c = fft(a) : computes the Discrete Fourier transform of iData objects
 %
 %   @iData/fft function to compute the Discrete Fourier transform of data sets
 %     using the FFT algorithm. The power spectrum density (PSD) is abs(fft)^2.
+%     fft(a, 'ifft') is equivalent fo ifft(a)
+%     fft(a, op, dim) and fft(a, dim) apply FFT or iFFT along dimension dim. 
 %
-% input:  a: object or array (iData)
+% input:  a:   object or array (iData)
+%         op:  can be 'fft' (default) or 'ifft' (inverse)
+%         dim: dimension to apply FFT upon. dim=0 for all dimensions.
 % output: c: object or array (iData)
 % ex:     t=linspace(0,1,1000); 
 %         a=iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+2*randn(size(t)));
 %         c=fft(a); plot(abs(c));
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/ifft, iData/conv, FFT, IFFT
 
-if nargin <= 1,
-  op = 'fft';
-else
-  op = 'ifft';
-end
+if nargin <= 1, op = ''; end
+if nargin <= 2, dim=[]; end
+
+if isscalar(op) && isnumeric(op), dim=op; op='fft'; end
+if isempty(op),  op='fft'; end
+if isempty(dim), dim=0; end
 
 % handle input iData arrays
 if length(a(:)) > 1
   b =a;
   for index=1:length(a(:))
-    b(index) = feval(mfilename,a(index), op);
+    b(index) = feval(mfilename,a(index), op, dim);
   end
   b = reshape(b, size(a));
   return
 end
-
 % make sure axes are regularly binned
 a = interp(a);
 
@@ -39,19 +43,36 @@ for i=1:length(Ly)
 end
 % compute the FFT
 s = getaxis(a, 'Signal'); % Signal/Monitor
-e = get(a, 'Error');
+e = get(    a, 'Error');
 
 % Fast Fourier transform (pads with zeros up to the next power of 2)
+if length(dim), dim=dim(1); end
 if strcmp(op, 'fft')
-  S=fftn(s, NFFT)/prod(Ly);
+  if dim ==0
+    S=fftn(s, NFFT)/prod(Ly);
+  else
+    S=fft(s, NFFT(dim), dim)/Ly(dim);
+  end
 else
-  S=ifftn(s, NFFT)*prod(Ly);
+  if dim ==0
+    S=ifftn(s, NFFT)*prod(Ly);
+  else
+    S=ifft(s, NFFT(dim), dim)/Ly(dim);
+  end
 end
 if any(abs(e))
   if strcmp(op, 'fft')
-    E=fftn(e, NFFT)*prod(Ly);
+    if dim ==0
+      E=fftn(e, NFFT)*prod(Ly);
+    else
+      E=fft(e, NFFT(dim), dim)/Ly(dim);
+    end
   else
-    E=ifftn(e, NFFT)*prod(Ly);
+    if dim ==0
+      E=ifftn(e, NFFT)*prod(Ly);
+    else
+      E=ifft(e, NFFT(dim), dim)/Ly(dim);
+    end
   end
 else
   E=0;
