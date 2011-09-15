@@ -15,7 +15,7 @@ function [s, f] = std(a, dim)
 %         center:     center of distribution (scalar/array)
 % ex:     c=std(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/median, iData/mean
 
 if nargin < 2, dim=1; end
@@ -64,8 +64,8 @@ x = getaxis(b, 1);
 sum_s = sum(s);
 
 % first moment (mean)
-f = sum(s.*x)./sum_s; % mean value
+f = sum(s.*x)/sum_s; % mean value
 
 % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
-s = sqrt(sum(x.*x.*s/sum_s) - f*f);
+s = sqrt(sum(x.*x.*s)/sum_s - f*f);
 
