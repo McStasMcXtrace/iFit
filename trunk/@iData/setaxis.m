@@ -29,7 +29,7 @@ function s_out = setaxis(a_in,indexes,names,values)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -40,10 +40,14 @@ if nargin == 1
   % makes a check of axes and Signal, notice invalid ones.
   for index = 1:length(a_in(:))
     a = a_in(index); % current object in array/single element
+    axis_1D=[];
     for j1=1:length(a.Alias.Axis)
       try
         link = a.Alias.Axis{j1};
         val  = get(a, link);
+        if numel(val) == 1 % these are to be moved after the other axes
+          axis_1D= [ axis_1D j1 ];
+        end
         if length(find(size(a) > 1)) == 1
           if length(val(:)) ~= size(a, find(size(a) > 1)) & length(val(:)) > 1
             iData_private_warning(mfilename,[ 'the Axis ' a.Alias.Axis{j1} ' ' num2str(j1) '-th rank length ' num2str(length(val(:))) ' does not match the Signal dimension [' num2str(size(a)) '] in object ' inputname(1) ' ' a.Tag '.' ]);
@@ -58,6 +62,18 @@ if nargin == 1
         s_out(index)=subsasgn(a, sb, getaxis(a, j1));
       end
     end
+  end % for
+  if ~isempty(axis_1D)
+    ax = a.Alias.Axis;
+    for index=length(axis_1D):-1:1
+      % remove singleton axis and put it in end position
+      if axis_1D(index) > 3
+        this = ax{axis_1D(index)};
+        ax(axis_1D(index)) = '';
+        ax(end+1) = this;
+      end
+    end
+    s_out(index) = a;
   end
   if nargout == 0 & length(inputname(1))
     assignin('caller',inputname(1),s_out);
