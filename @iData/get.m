@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -115,9 +115,11 @@ for index = 1:length(a_in(:)) % works with object arrays
           field_not_found=0;
         else
           try  % try eval (which works with sub-fields, but is case sensitive)
-            val = eval([ 's.' fieldname ';' ]);
-            field_not_found=0;
-          catch
+            % calls subsref, which calls again 'get' when it is a link
+            if length(strtok(fieldname,' (){}[].')) < 32
+              val = eval([ 's.' fieldname ';' ]); 
+              field_not_found=0;
+            end
           end
         end
       end
@@ -151,7 +153,6 @@ function val = iData_getalias(this,link,name)
 %   NOTE: for standard Aliases (Error, Monitor), makes a dimension check on Signal
 
 % EF 23/09/07 iData impementation
-
 val = [];
 if (isnumeric(link) | islogical(link)) & ~isempty(link), 
   if strcmp(name, 'Monitor') && ~isempty(val) && all(val == 0)
@@ -161,6 +162,7 @@ if (isnumeric(link) | islogical(link)) & ~isempty(link),
   end
   return; 
 end
+%disp([ name ' = ' link ])
 if strcmp(link, name), return; end       % avoids endless iteration.
 if ~isempty(link)
   if  (strncmp(link, 'http://', length('http://')) | ...
