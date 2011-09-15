@@ -18,7 +18,7 @@ function c = iData_private_binary(a, b, op, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
@@ -229,15 +229,17 @@ else
 end
 
 % update object (store result)
-if strcmp(op, 'combine')  % dimension of result might change from original object. 
-                          % Can not store, thus redefine aliases as numerical values
-  c = setalias(c, 'Signal', s3, [ op '(' al ',' bl ')' ]);
-  c = setalias(c, 'Error', abs(e3));
+% update object
+c = set(c, 'Signal', s3, 'Error', abs(e3), 'Monitor', m3);
+% test if we could update signal as expected, else we store the new value directly in the field
+if ~isequal(get(c,'Signal'), s3)
+  c = setalias(c, 'Signal', s3, [  op '(' al ',' bl ')' ]);
+end
+if ~isequal(get(c,'Error'), e3)
+  c = setalias(c, 'Error', e3);
+end
+if ~isequal(get(c,'Monitor'), m3)
   c = setalias(c, 'Monitor', m3);
-  c = set(c, 'Monitor', m3);
-else
-  c = set(c, 'Signal', s3, 'Error', abs(e3), 'Monitor', m3);
-  c = setalias(c, 'Signal', s3, [ op '(' al ',' bl ')' ]);
 end
 
 c.Command=cmd;
