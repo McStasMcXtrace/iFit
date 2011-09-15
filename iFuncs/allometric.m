@@ -1,20 +1,23 @@
-function y=voigt(p, x, y)
-% y = voigt(p, x, [y]) : Voigt function
+function y=allometric(p, x, y)
+% y = allometric(p, x, [y]) : Power/Freundlich/Belehradek function
 %
-%   iFunc/voigt Voigt fitting function, including Bose factor.
-%     The Width parameters of the Gaussian and Lorentzian are the Half Widths.
+%   iFunc/allometric Power/Freundlich/Belehradek fitting function
+%                    to describe power and asymptotic laws
+%     y = p(1)*(x-p(2)).^p(3) + p(4);
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
-% input:  p: Voigt model parameters (double)
-%            p = [ Amplitude Centre Width_Gauss Width_Lorz BackGround ]
+% Reference: Ratkowksy, David A. 1990. Handbook of Nonlinear Regression Models. Marcel Dekker, Inc. 4.3.1 
+%
+% input:  p: Power model parameters (double)
+%            p = [ Amplitude Offset Exponent BackGround ]
 %          or action e.g. 'identify', 'guess', 'plot' (char)
 %         x: axis (double)
 %         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
-% ex:     y=voigt([1 0 1 1], -10:10); or y=voigt('identify') or p=voigt('guess',x,y);
+% ex:     y=allometric([1 0 1 1], -10:10); or y=allometric('identify') or p=allometric('guess',x,y);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.1 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -38,7 +41,7 @@ function y=voigt(p, x, y)
   %   identify: model([],x)
     y = identify; x=x(:);
     % HERE default parameters when only axes are given <<<<<<<<<<<<<<<<<<<<<<<<<
-    y.Guess  = [1 mean(x) std(x)/2 std(x)/2 .1 1];
+    y.Guess  = [1 min(x)-mean(x)/10 .1 .1];
     y.Axes   = { x };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 1 && isnumeric(p) && ~isempty(p) 
@@ -46,18 +49,18 @@ function y=voigt(p, x, y)
     y = identify;
     y.Guess  = p;
     % HERE default axes to represent the model when parameters are given <<<<<<<
-    y.Axes   =  { linspace(p(2)-3*(p(3)+p(4)),p(2)+3*(p(3)+p(4)), 100) };
+    y.Axes   =  { linspace(p(2)-3*p(3),p(2)+3*p(3), 100) };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 1 && ischar(p) && strcmp(p, 'plot') % only works for 1D
-    y = feval(mfilename, [], linspace(-2,2, 100));
+    y = feval(mfilename, [], linspace(0,2, 100));
     if y.Dimension == 1
       plot(y.Axes{1}, y.Values);
     elseif y.Dimension == 2
       surf(y.Axes{1}, y.Axes{2}, y.Values);
     end
-    title(mfilename)
+    title(mfilename);
   elseif nargin == 0
-    y = feval(mfilename, [], linspace(-2,2, 100));
+    y = feval(mfilename, [], linspace(0,2, 100));
   else
     y = identify;
   end
@@ -71,36 +74,19 @@ function y = evaluate(p, x)
   sx = size(x); x=x(:);
   if isempty(x) | isempty(p), y=[]; return; end
   
-  p(3) = p(3) * 2; % Half > Full width
-  p(4) = p(4) * 2;
-  
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  % MZ <mzinkin@sghms.ac.uk> adapted from DFM
-  N = 16;
-	b = -sqrt(log(2))/p(3);
-	a = b*p(4);
-	b = b*2*i;
-	z = a + b*(x-p(2));
-
-	M=2*N; M2=2*M; k=[-M+1:1:M-1]';
-	L=sqrt(N/sqrt(2));
-	tt=(L*tan(k*pi/M2)).^2;
-	f=[0; exp(-tt).*(L^2+tt)];
-	a=real(fft(fftshift(f)))/M2;
-	a=flipud(a(2:N+1));
-	l=L-z;
-	Z=(L+z)./l;
-	pp=polyval(a,Z);
-	y=p(5)+p(1)*real(2*pp ./l.^2+(1/sqrt(pi))*ones(size(z)) ./l);
+  y = p(1)*(x-p(2)).^p(3) + p(4);
+  
+  y = reshape(y, sx);
 end
 
 % inline: identify: return a structure which identifies the model
 function y =identify()
   % HERE are the parameter names
-  parameter_names = {'Amplitude','Centre','Width_Gauss',' Width_Lorz', 'Background'};
+  parameter_names = {'Amplitude','Offset','Exponent','Background'};
   %
   y.Type           = 'iFit fitting function';
-  y.Name           = [ 'Voigt (1D) [' mfilename ']' ];
+  y.Name           = [ 'Allometric/Freundlich (1D) [' mfilename ']' ];
   y.Parameters     = parameter_names;
   y.Dimension      = 1;         % dimensionality of input space (axes) and result
   y.Guess          = [];        % default parameters
@@ -115,15 +101,6 @@ function info=guess(x,y)
   info.Axes  = { x };
   % fill guessed information
   info.Guess = iFuncs_private_guess(x(:), y(:), info.Parameters);
-  % compute first and second moment
-  x = x(:); y=y(:);
-  sum_y = sum(y);
-  % first moment (mean)
-  f = sum(y.*x)/sum_y; % mean value
-  % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
-  s = sqrt(abs(sum(x.*x.*y)/sum_y - f*f))/2;
-  info.Guess(2:3) = [ f s ];
-  info.Guess(4) = info.Guess(3);
   info.Values= evaluate(info.Guess, info.Axes{:});
 end
 
