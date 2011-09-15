@@ -16,11 +16,15 @@ function outarray = iData(varargin)
 %   The output argument is a single object or array of iData.
 %   Input arguments may be more than one, or given as cells.
 %
+% When used with file names, compressed files may be used, as well as URLs and internal
+%   anchor reference using the '#' character, such as in 'http://path/file.zip#Data'.
+% Refer to the iData/load command for more information.
+%
 % examples:
-%   d=iData('filename');
+%   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter

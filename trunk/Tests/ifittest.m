@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -185,8 +185,8 @@ case 'Fit_7_uncertainties'
   sigma = output.parsHistoryUncertainty;
   % p    = [ 0.6264      1.001   -0.00365  0.0002173 ]
   % sigma= [ 0.004565  2.438e-05  3.159e-05  3.785e-05 ]
-  if abs(max(abs([ 0.63         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01 && ...
-     abs(max(abs([0.015  1.25e-04  5.2e-05  1.1e-04 ])-abs(sigma))) < 1e-5
+  if abs(max(abs([ 0.63         1.0008      0.0035         0.0001 ])-abs(p))) < 0.05 && ...
+     abs(max(abs([0.015  1.25e-04  5.2e-05  1.1e-04 ])-abs(sigma))) < 1e-4
     result = 'OK  [p,criteria,message,output]= fits(a); output.parsHistoryUncertainty';
   else
     result = 'FAILED';

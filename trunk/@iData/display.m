@@ -9,7 +9,7 @@ function d = display(s_in)
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation
@@ -54,7 +54,7 @@ else
       else
         d = [ d sprintf('%9s ',s.Tag) ];
       end
-      d = [ d sprintf('%11s ', ['[' num2str(size(s)) ']' ]) ];  % size
+      d = [ d sprintf('%11s ', [ mat2str(size(s)) ]) ];  % size
       t = cellstr(s.Title); t = strtrim(t{1});
       if length(t) > 31, t = [ t(1:27) '...' ]; end             % object.title
       t = [ t ' "' title(s) '"' ];
