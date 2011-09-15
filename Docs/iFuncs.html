@@ -2,6 +2,7 @@
 <html><head>
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: iFuncs model functions</title>
 </head><body>
@@ -143,7 +144,7 @@ Background<br>
       </td>
       <td style="vertical-align: top;">Quadratic line<br>
       </td>
-      <td style="vertical-align: top;">1D<br>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
       </td>
       <td style="vertical-align: top;">Quadratic Linear Constant<br>
       </td>
@@ -153,7 +154,7 @@ Background<br>
       </td>
       <td style="vertical-align: top;">Exponential<br>
       </td>
-      <td style="vertical-align: top;">1D<br>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
       </td>
       <td style="vertical-align: top;">Amplitude Tau Background<br>
       </td>
@@ -163,11 +164,101 @@ Background<br>
       </td>
       <td style="vertical-align: top;">Heaviside (gap)<br>
       </td>
-      <td style="vertical-align: top;">1D<br>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
       </td>
       <td style="vertical-align: top;">Amplitude Centre FulfWidth Background<br>
       </td>
+    </tr><tr>
+      <td style="vertical-align: top; font-weight: bold;">allometric<br>
+      </td>
+      <td style="vertical-align: top;">Allometric (power/asymptotic law)<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Offset Exponent BackGround<br>
+      </td>
     </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">doseresp<br>
+      </td>
+      <td style="vertical-align: top;">Dose-response curve with variable Hill slope<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Center Slope BackGround<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">langevin<br>
+      </td>
+      <td style="vertical-align: top;">Langevin function for magnetic polarization<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Center Width BackGround<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">laplace<br>
+      </td>
+      <td style="vertical-align: top;">Laplace distribution function<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Center Width BackGround</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">lognormal<br>
+      </td>
+      <td style="vertical-align: top;">Log-Normal distribution<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Center Width BackGround<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">pareto<br>
+      </td>
+      <td style="vertical-align: top;">Pareto distribution function<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Exponent Width BackGround<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">poisson<br>
+      </td>
+      <td style="vertical-align: top;">Poisson distribution<br>
+      <span style="color: rgb(255, 0, 0);">WARNING:<span style="font-style: italic;"> </span></span><span style="font-style: italic;">The 'x' axis is assumed to be an integer array (counts)</span><br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Center BackGround<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">sine<br>
+      </td>
+      <td style="vertical-align: top;">Sine function<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Phase_Shift Period BackGround<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">sinedamp<br>
+      </td>
+      <td style="vertical-align: top;">Damped Sine function<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Phase_Shift Period BackGround Decay<br>
+      </td>
+    </tr>
+
 
   </tbody>
 </table>
@@ -267,7 +358,7 @@ function also exists in <span style="font-style: italic;">iFit/iFuncs/private/te
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2011-08-24 07:32:24 $ $Revision: 1.13 $
+$Date: 2011-09-15 14:48:02 $ $Revision: 1.14 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
