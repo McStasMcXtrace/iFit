@@ -47,7 +47,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.67 $
+% Version: $Revision: 1.68 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -460,6 +460,28 @@ end
     set(gcf,'Name', [ 'Copy of ' duplicate_cb.ud.title ]); 
     xlabel(duplicate_cb.ud.xlabel);ylabel(duplicate_cb.ud.ylabel); 
     title(duplicate_cb.ud.title);
+    % create a simplified contextual menu
+    uicm = uicontextmenu; 
+    if ndims(a) >= 2 && ~isfield(ud,'contextual_2d')
+      ud.contextual_2d = 1;
+    end
+    if isfield(duplicate_cb.ud,'contextual_2d') && duplicate_cb.ud.contextual_2d==1
+      uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback','[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end; clear tmp_a, tmp_e; lighting none;alpha(1);shading flat;rotate3d off;axis tight;');
+      uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
+      uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
+      uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
+      uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
+      uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
+    else
+      uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight;rotate3d off;');
+      uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
+    end
+    uimenu(uicm, 'Separator','on','Label','Toggle grid', 'Callback','grid');
+
+    uimenu(uicm, 'Separator','on','Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData)  sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
+    set(gca, 'UserData', ud);
+set(gca, 'UIContextMenu', uicm);
+
    end
 % create callback functions: about object
   function callback_about(obj, event)
