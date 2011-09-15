@@ -1,13 +1,15 @@
 function s_out = setalias(a_in,names,links,labels)
-% [s,...] = setalias(s, AliasName, AliasLink, AliasLabel) : set iData aliases
+% [s,...] = setalias(s, AliasName, AliasLink, {AliasLabel}) : set iData aliases
 %
 %   @iData/setalias function to set iData aliases.
-%   The function works also when AliasName, AliasLink, AliasLabel
+%   The function works also when AliasName, AliasLink, and optional AliasLabel
 %     are given as cell strings. The AliasLink may be of any class, but char is
-%     interpreted as a link to search in the object.
+%     interpreted as a link to search in the object or an external file, such
+%     as '#Data' 'Data' (local links), 'file://path' (full file structure)
+%     or 'file://path#Data' (a part of an external file).
 %   The special name 'this' may be used in Aliases to refer the object itself.
 %   When the link is empty, the alias is removed, so that
-%     setalias(s, alias)       deletes an alias
+%     setalias(s, alias)       deletes an alias, similarly to rmalias
 %     setalias(s, getalias(s)) deletes all alias definitions.
 %   The command setalias(iData,'Signal') sets the Signal to the biggest numerical field.
 %   The input iData object is updated if no output argument is specified.
@@ -23,7 +25,7 @@ function s_out = setalias(a_in,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -84,8 +86,16 @@ for index = 1:length(s_out)
       iData_private_warning(mfilename,[ 'the Alias ' name ' is a protected name in object ' inputname(1) ' ' a.Tag '.' ]);
       continue
     end
+    % check if the alias name is not a file name/link
+    if (strncmp(name, 'http://', length('http://')) | ...
+       strncmp(name, 'https://',length('https://')) | ...
+       strncmp(name, 'ftp://',  length('ftp://'))   | ...
+       strncmp(name, 'file://', length('file://'))  | ...
+       (~isempty(name) && name(1) == '#') )
+      continue;
+    end
     if ~isvarname(lower(name)) & isempty(findfield(a, name))
-      iData_private_warning(mfilename,[ 'the Alias "' name '" is not a valid Alias name in object ' inputname(1) ' ' a.Tag '. Fixing name.' ]);
+      iData_private_warning(mfilename,[ 'the Alias "' name '" is not a valid Alias name in object ' inputname(1) ' ' a.Tag '. Fixing it.' ]);
       name = genvarname(strtrim(name(isstrprop(name,'alphanum'))));
     end
     alias_names = a.Alias.Names; % this is a cellstr of Alias names
@@ -101,7 +111,7 @@ for index = 1:length(s_out)
       a.Alias.Labels(alias_num) = [];
     elseif ~isempty(link)
       % update or add alias
-      if isempty(alias_num) % add
+      if isempty(alias_num) && ~strcmp(name, link) % add
         a.Alias.Names{end+1} = name;
         a.Alias.Values{end+1}= link;
         a.Alias.Labels{end+1}= regexprep(label,'\s+',' ');

@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -61,13 +61,14 @@ for index = 1:length(a_in(:)) % works with object arrays
 
       % get property from real fields (not Alias/Axis)
       field_not_found=1;
-      if isempty(fieldname), val=s; field_not_found=0; end
+      if isempty(fieldname), val=s; field_not_found=0; end % return full object
       if field_not_found  % searches within all aliases
         link = ''; name = '';
-        % if not found, searches for user Aliases
+        % if not found, searches for user Aliases and internal link
         if field_not_found
           alias_names = s.Alias.Names; % this is a cellstr of Alias names
           alias_num   = transpose(char(alias_names)); alias_num=transpose(alias_num(:));
+          % searches for local link as a single name
           if ~isempty(strfind(alias_num,fieldname))
             alias_num   = strmatch(lower(fieldname), lower(alias_names), 'exact');
             if ~isempty(alias_num)
@@ -81,9 +82,29 @@ for index = 1:length(a_in(:)) % works with object arrays
                 val = [];
               end
             end
+          elseif ~isempty(find(fieldname == '.')) % link may be a structure type
+            [fieldroot,fieldsub] = strtok(fieldname, '.');
+            try
+              val = get(s, fieldroot); % gets the Alias root value
+              fieldsub = strread(fieldsub(2:end),'%s','delimiter','.');
+              val = getfield(val, fieldsub{:});
+              field_not_found=0;
+            end
           end
         end
-      end
+        if field_not_found==0 && ischar(val) % we found the Alias value: perhaps this is a link again...
+          if strncmp(val, 'http://', length('http://')) | ...
+             strncmp(val, 'https://',length('https://'))   | ...
+             strncmp(val, 'ftp://',  length('ftp://'))   | ...
+             strncmp(val, 'file://', length('file://'))
+             val = iLoad(val);
+          end
+          if val(1) == '#', val = val(2:end); end % HTML style link
+          try
+            val = get(s, val);
+          end
+        end
+      end % if search within Aliases
       if field_not_found  % searches within iData fields
         names = fieldnames(struct(s));
         cell_num = transpose(char(names)); cell_num=transpose(cell_num(:));
@@ -142,14 +163,21 @@ if (isnumeric(link) | islogical(link)) & ~isempty(link),
 end
 if strcmp(link, name), return; end       % avoids endless iteration.
 if ~isempty(link)
-  try
-    val = get(this, link);               % link may refer to other Aliases
-  catch
+  if  (strncmp(link, 'http://', length('http://')) | ...
+       strncmp(link, 'https://',length('https://'))   | ...
+       strncmp(link, 'ftp://',  length('ftp://'))   | ...
+       strncmp(link, 'file://', length('file://')) )
+    % evaluate external link
+    val = iLoad(link);
+  else
     try
-      val = eval([ '[ ' link ' ]' ]);
+      val = get(this, link);               % link may refer to other Aliases
     catch
-      lasterr
-      iData_private_error(mfilename,[ 'can not evaluate Alias "' name '" as ''' link ''' in iData object ' this.Tag ]);
+      try
+        val = eval([ '[ ' link ' ]' ]);
+      catch
+        iData_private_error(mfilename,[ 'can not evaluate Alias "' name '" as ''' link ''' in iData object ' this.Tag ]);
+      end
     end
   end
 end
