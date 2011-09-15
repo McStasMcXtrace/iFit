@@ -4,8 +4,10 @@ function a=load_mcstas_1d(a)
 % Returns an iData style dataset from a McStas 1d monitor file, or even simple XYE files
 % Some labels are also searched.
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+% inline: load_mcstas_param
 
 % handle input iData arrays
 if length(a(:)) > 1
@@ -22,28 +24,34 @@ if isempty(findstr(a,'McStas'))
   return
 end
 
-if ~isempty(findfield(a, 'xlabel')) 
-  xlab = a.Data.Headers.MetaData.xlabel;
-  xlab(1:max(strfind(xlab,'xlabel')+6))='';
-elseif ~isempty(findfield(a, 'x_label')) 
-  xlab = a.Data.Headers.MetaData.x_label;
-  xlab(1:max(strfind(xlab,'x_label'))+6)='';
-else xlab=''; end
+xlab=''; ylab='';
+d = a.Data;
+if ~isfield(d,'MetaData'), return; end
 
-if ~isempty(findfield(a, 'ylabel')) 
-  ylab = a.Data.Headers.MetaData.ylabel;
-  ylab(1:max(strfind(ylab,'ylabel')+6))='';
-elseif ~isempty(findfield(a, 'y_label')) 
-  ylab = a.Data.Headers.MetaData.y_label;
-  ylab(1:max(strfind(ylab,'y_label')+6))='';
-else ylab=''; end
+if isfield(d,'Headers') && isfield(d.Headers,'MetaData') 
+  if ~isempty(findfield(a, 'xlabel')) 
+    xlab = a.Data.Headers.MetaData.xlabel;
+    xlab(1:max(strfind(xlab,'xlabel')+6))='';
+  elseif ~isempty(findfield(a, 'x_label')) 
+    xlab = a.Data.Headers.MetaData.x_label;
+    xlab(1:max(strfind(xlab,'x_label'))+6)='';
+  end
 
-if ~isempty(findfield(a, 'component')) 
-  label = strtrim(a.Data.Headers.MetaData.component);
-  label(1:length('# component: '))='';
-  a.Label = label;
-  set(a,'Data.Component', label);
-  setalias(a, 'Component', 'Data.Component','Component name');
+  if ~isempty(findfield(a, 'ylabel')) 
+    ylab = a.Data.Headers.MetaData.ylabel;
+    ylab(1:max(strfind(ylab,'ylabel')+6))='';
+  elseif ~isempty(findfield(a, 'y_label')) 
+    ylab = a.Data.Headers.MetaData.y_label;
+    ylab(1:max(strfind(ylab,'y_label')+6))='';
+  end
+
+  if ~isempty(findfield(a, 'component')) 
+    label = strtrim(a.Data.Headers.MetaData.component);
+    label(1:length('# component: '))='';
+    a.Label = label;
+    set(a,'Data.Component', label);
+    setalias(a, 'Component', 'Data.Component','Component name');
+  end
 end
 
 if ~isempty(strfind(a.Title,'McStas 1D monitor'))
