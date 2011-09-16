@@ -39,7 +39,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -54,7 +54,12 @@ if ~iscell(files),   files = { files }; end
 if isstruct(loaders), loaders = { loaders }; end
 out = [];
 for i=1:length(files)
-  files{i} = load_check_struct(files{i}, loaders, varargin{:});
+  filename = '';
+  if length(varargin) >= 1 && ischar(varargin{1}), filename = varargin{1}; end
+  if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Filename'), filename = files{i}.Filename; end
+  if isempty(filename) && isstruct(files{i}) && isfield(files{i},'filename'), filename = files{i}.filename; end
+  if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Source'), filename = files{i}.Source; end
+  files{i} = load_check_struct(files{i}, loaders, filename);
   this_iData =  iData(files{i});	% convert file content from iLoad into iData
   % specific adjustments for looktxt (default import method)
   [pathname,filename,ext] = fileparts(files{i}.Source);

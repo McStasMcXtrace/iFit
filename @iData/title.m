@@ -10,7 +10,7 @@ function a = title(a, lab)
 % output: b: object or array (iData)
 % ex:     b=title(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plot
 
 if nargin ==1
@@ -23,5 +23,4 @@ end
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);
 end
-
 

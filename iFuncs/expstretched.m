@@ -1,21 +1,23 @@
-function y=expon(p, x, y)
-% y = expon(p, x, [y]) : Exponential decay
+function y=expstretched(p, x, y)
+% y = expstretched(p, x, [y]) : Exponential decay
 %
-%   iFunc/expon Exponential decay fitting function
+%   iFunc/expstretched Stretched exponential decay fitting function
 %     Tau is the expeonential decay parameter, in inverse 'x' units.
-%     y=p(3)+p(1)*exp(-x/p(2));
+%     y=p(4)+p(1)*exp(-(x/p(2)).^p(3));
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
-% input:  p: Exponential decay model parameters (double)
-%            p = [ Amplitude Tau BackGround ]
+% input:  p: Stretched exponential decay model parameters (double)
+%            p = [ Amplitude Tau Exponent BackGround ]
 %          or action e.g. 'identify', 'guess', 'plot' (char)
 %         x: axis (double)
 %         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
-% ex:     y=expon([1 0 1], -0:10); or y=expon('identify') or p=expon('guess',x,y);
+% ex:     y=expstretched([1 0 1 1], -10:10); or y=expstretched('identify') or p=expstretched('guess',x,y);
+%         I will not buy this exponential; it is stretched.
+%         <http://en.wikipedia.org/wiki/Dirty_Hungarian_Phrasebook>
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.1 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -39,7 +41,7 @@ function y=expon(p, x, y)
   %   identify: model([],x)
     y = identify; x=x(:);
     % HERE default parameters when only axes are given <<<<<<<<<<<<<<<<<<<<<<<<<
-    y.Guess  = [1 std(x)/2 .1];
+    y.Guess  = [1 std(x)/2 1 .1];
     y.Axes   = { x };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 1 && isnumeric(p) && ~isempty(p) 
@@ -73,7 +75,7 @@ function y = evaluate(p, x)
   if isempty(x) | isempty(p), y=[]; return; end
   
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  y=p(3)+p(1)*exp(-x/p(2));
+  y=p(4)+p(1)*exp(-(x/p(2)).^p(3));
   
   y = reshape(y, sx);
 end
@@ -81,10 +83,10 @@ end
 % inline: identify: return a structure which identifies the model
 function y =identify()
   % HERE are the parameter names
-  parameter_names = {'Amplitude','Tau', 'Background'};
+  parameter_names = {'Amplitude','Tau', 'Exponent', 'Background'};
   %
   y.Type           = 'iFit fitting function';
-  y.Name           = [ 'Exponential decay (1D) [' mfilename ']' ];
+  y.Name           = [ 'Stretched exponential decay (1D) [' mfilename ']' ];
   y.Parameters     = parameter_names;
   y.Dimension      = 1;         % dimensionality of input space (axes) and result
   y.Guess          = [];        % default parameters
@@ -103,7 +105,8 @@ function info=guess(x,y)
   pe = polyfit(x,log(y - bkg - abs(bkg)*0.01),1); % p(1) is the highest degree parameter
   p(1) = exp(pe(2));
   p(2) = -1/pe(1);
-  p(3) = mny;
+  p(3) = 1;
+  p(4) = mny;
   info.Guess = p;
   info.Values= evaluate(info.Guess, info.Axes{:});
   %log(y-p(3)) = log(p(1))-x/p(2)
