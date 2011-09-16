@@ -12,39 +12,41 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/plot
 
 % EF 23/11/07 iData implementation
 
+a = squeeze(a); % remove singleton dimensions
+m=[]; n=[]; dim=[];
+% handle optional arguments
+method = '';
+for index=1:length(varargin)
+  if ischar(varargin{index}),        method = varargin{index};
+  elseif isa(varargin{index},'iData') 
+    a = [a(:) varargin{index} ];
+  elseif isnumeric(varargin{index}), dim    = varargin{index};
+  end
+end
 if length(a(:)) == 1
-  h=plot(a, varargin{:});
+  h=plot(a, method);
   return
 end
 
-a = squeeze(a); % remove singleton dimensions
-m=[];
-n=[];
-if length(varargin) >=1
-  if isnumeric(varargin{1}) | isempty(varargin{1})
-    dim = varargin{1};
-    if length(dim) == 1 & dim(1) > 0
-      m = dim; 
-    elseif length(dim) == 2, m=dim(1); n=dim(2); 
-    else m=[]; end
-    % else use best fit
-    if length(varargin) >= 2  
-      varargin = varargin(2:end);
-    else varargin = {}; end
-  elseif length(size(a)) == 2 & all(size(a) > 1)
-    m = size(a,1); n = size(a,2);
-  end
-end
+if length(dim) == 1 & dim(1) > 0
+  m = dim; 
+elseif length(dim) == 2, m=dim(1); n=dim(2); 
+else m=[]; end
+  
 if any(m==0), m=[]; end
 if isempty(m)
-  p = length(a(:));
-  n = floor(sqrt(p));
-  m = ceil(p/n);
+  if length(size(a)) == 2 & all(size(a) > 1)
+    m = size(a,1); n = size(a,2);
+  else
+    p = length(a(:));
+    n = floor(sqrt(p));
+    m = ceil(p/n);
+  end
 elseif isempty(n)
   n = ceil(length(a(:))/m);
 end
@@ -55,14 +57,10 @@ for index=1:length(a(:))
     subplot(m,n,index);
     if length(a(:)) > 12, 
       % compact layout
-      if length(varargin)
-        varargin{1}=[ varargin{1} ' hide_axes' ]; 
-      else
-        varargin{1}=' hide_axes';
-      end
+      method =[ method ' hide_axes' ]; 
     end
      
-    this_h = plot(a(index), varargin{:});
+    this_h = plot(a(index), method);
     
     h = [ h this_h ];
   else h = [ h nan ];

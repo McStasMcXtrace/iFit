@@ -13,48 +13,36 @@ if length(a(:)) > 1
   return
 end
 
-% the INX data set is loaded in catenate mode. 
-% As there is not header, the first block is Data_0
-% its number of rows is the block number
-% its last column is the length of each group
+% the data read with read_inx comes as:
+% s.Data.header: char
+% s.Data.Par:    double with parameters after the header/comment line
+% s.Data.Mat:    double
+Data = a.Data;
+Data.angle       = a.Data.Par(:,1);
+Data.wavelength  = a.Data.Par(:,2);
+Data.wavevector  = a.Data.Par(:,3);
+Data.temperature = a.Data.Par(:,4);
+Data.signal      = squeeze(a.Data.Mat(:,2,:));
+Data.error       = squeeze(a.Data.Mat(:,3,:));
+Data.energy      = squeeze(a.Data.Mat(:,1,:));
+a.Data = Data;
 
-% get list of Data fields and their size
-nblocks = size(a.Data.Data_0, 1);
-b = [];
-blockstart=1;
-alldata=struct2cell(a.Data);
-blocksdouble=cellfun('isclass', alldata, 'double');
-alldata=alldata(find(blocksdouble));
-blockslength=alldata{1};
-blocksangle =alldata{end-1};
-blocksdata  =alldata{end};
-for index=1:nblocks
-  blocklength=blockslength(index, end);  
-  data = [];
-  data.group = index;
-  data.block = blocksdata((blockstart+1):(blockstart+blocklength), :);  % skip first row ;
-  data.angle = blocksangle(index, 1);
-  data.wavelength=  blocksangle(index, 2);
-  data.wavevector=  blocksangle(index, 3);
-  data.temperature= blocksangle(index, 4);
-  data.Headers=[];
-  c=a; setalias(c, getalias(c)); % copy a and clear Aliases
-  c.Data=data;
-  c=iData(c);
-  c.Title   =[ '#' num2str(index) ' angle=' num2str(data.angle) ' T=' num2str(data.temperature) ' lambda=' num2str(data.wavelength) ' ' a.Title ];
-  
-  setalias(c,'Signal', 'Data.block(:,2)',[ 'Signal #' num2str(index) ' angle=' num2str(data.angle)  ]);
-  setalias(c,'Error',  'Data.block(:,3)');
-  setalias(c,'Energy', 'Data.block(:,1)',[ 'Energy [meV] T=' num2str(data.temperature) ' lambda=' num2str(data.wavelength) ]);
-  setalias(c,'Angle', 'Data.angle','Detection angle [deg]');
-  setalias(c,'Temperature', 'Data.temperature','Sample Temperature [K]');
-  setalias(c,'Wavelength', 'Data.wavelength','Incident wavelength [Angs]');
-  setaxis(c, 1, 'Energy');
-  setaxis(c, 2, 'Angle');
-  
-  blockstart = blockstart+1+blocklength;
-  b = [ b c ];
+b = a;
+
+setalias(b,'Signal', 'Data.signal', b.Data.header(2,:,1));
+setalias(b,'Error',  'Data.error');
+setalias(b,'Energy', 'Data.energy', ...
+  [ 'Energy [meV] T=' num2str(mean(b.Data.temperature)) ' lambda=' num2str(mean(b.Data.wavelength)) ]);
+setalias(b,'Angle',       'Data.angle','Angle [deg]');
+setalias(b,'Wavelength',  'Data.wavelength','Wavelength [Angs]');
+setalias(b,'Wavevector',  'Data.wavevector','Wavevector [Angs]');
+setalias(b,'Temperature', 'Data.temperature','Sample Temperature [K]');
+
+if ndims(b) == 1
+  setaxis(b, 1, 'Energy');
+elseif ndims(a) == 2
+  setaxis(b, 1, 'Energy');
+  setaxis(b, 2, 'Angle');
 end
-
-
+b.Title   =[ b.Data.header(2,:,1) ' ' a.Title ];
 

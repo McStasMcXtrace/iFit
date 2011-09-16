@@ -30,12 +30,27 @@ b = copyobj(a);
 s = get(b,'Signal');
 [dummy, sl] = getaxis(b, '0');
 
-% operation on signal
-new_s = feval(op, s);
-
 % operation on Error
 e = get(b,'Error');
 m = get(b,'Monitor');
+
+% operation on signal
+if strcmp(op, 'sparse')
+  if ndims(a) > 2
+    iData_private_error('unary',['Operation ' op ' can only be used on 2d data sets. Object ' a.Tag ' is ' num2str(ndims(a)) 'd.' ]);
+  end
+  if ~strcmp(class(s), 'double') && ~strcmp(class(s), 'logical')
+    s = double(s);
+  end
+  if ~strcmp(class(e), 'double') && ~strcmp(class(e), 'logical')
+    e = double(e);
+  end
+  if ~strcmp(class(m), 'double') && ~strcmp(class(m), 'logical')
+    m = double(m);
+  end
+end
+new_s = feval(op, s);
+
 switch op
 case 'acos'
 	e = -e./sqrt(1-s*s);
