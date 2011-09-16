@@ -71,7 +71,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -295,7 +295,7 @@ if nargout > 3
   output.modelInfo  = info;
   output.modelValue = ieval(a, model, pars_out); % evaluate model iData
   output.parsNames  = constraints.parsNames;
-  output.corrcoeff  = eval_corrcoef(a, output.modelValue);
+  output.corrcoef   = eval_corrcoef(a, output.modelValue);
 end
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
@@ -313,8 +313,8 @@ if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(o
     end
     if isfield(output,'parsHessianUncertainty')
       fprintf(1,'** Gaussian uncertainty on parameters (half width, from the Hessian matrix)');
-      if isfield(output, 'corrcoeff')
-        fprintf(1, ', CorrCoef=%g\n', output.corrcoeff);
+      if isfield(output, 'corrcoef')
+        fprintf(1, ', CorrCoef=%g\n', output.corrcoef);
       else disp(' '); end
       fprintf(1,'%10.2g ', output.parsHessianUncertainty); fprintf(1,'\n');
     end

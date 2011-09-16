@@ -3,7 +3,7 @@ function a=load_mcstas_sim(a0)
 %
 % Returns an iData style dataset from a McStas sim file
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -21,7 +21,7 @@ end
 
 % Find filename fields in sim struct:
 filenames = findstr(a0,'filename');
-dirname = fileparts(a0.Source);
+dirname   = fileparts(a0.Source);
 a=[];
 if length(filenames(:)) > 0
   % This is a McStas 'overview' plot
@@ -30,6 +30,7 @@ if length(filenames(:)) > 0
     filename = strrep(filename,';','');
     filename(1:length('filename: '))='';
     filename(findstr(' ',filename):length(filename))='';
+    if isempty(filename), continue; end
     filename = fullfile(dirname,filename);
     b = iData(filename);
     a = [a b];

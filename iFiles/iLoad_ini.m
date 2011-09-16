@@ -118,10 +118,9 @@ function config = iLoad_ini
     ISIS_spe.extension  ='spe';
     
     ILL_inx.name       ='INX tof data';
-    ILL_inx.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL --silent';
-    ILL_inx.method     ='looktxt';
+    ILL_inx.options    ='';
+    ILL_inx.method     ='read_inx';
     ILL_inx.postprocess='load_ill_inx';
-    ILL_inx.patterns   ={'INX'};
     ILL_inx.extension  ='inx';
     
     ESRF_edf.name       ='EDF ESRF Data Format';

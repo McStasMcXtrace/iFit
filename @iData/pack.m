@@ -10,7 +10,7 @@ function b = pack(a)
 % output: f: compressed object or array (iData)
 % ex:     b=pack(a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/sparse, iData/full, iData/saveas
 
 if length(a) > 1
@@ -63,11 +63,15 @@ end
 % extract field type and size
 [match, types, nelements]=findfield(a);
 
-largemat = find(nelements > 1000);
+largemat = find(nelements > 10000);
 for index=1:length(largemat)
-  if ~isempty(strmatch(types{index}, {'double','single','logical'}))
+  if ~isempty(strmatch(types{index}, {'double','single','logical','int32','int64','uint32','uint64'}))
     f = match{index}; % field name
     d = get(a, f);    % content
+    % convert d to either logical or double so that sparse can apply
+    if ~strcmp(types{index}, 'double') && ~strcmp(types{index}, 'logical')
+      d = double(d);
+    end
     if issparse(d),
       who_sparse = whos('d'); 
       d = full(d);
