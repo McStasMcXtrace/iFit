@@ -2,6 +2,8 @@
 <html><head>
 
 
+
+
   <title>iFit: iData object definition</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -716,6 +718,7 @@ method acts just like the usual Matlab squeeze one, and removes
 singleton dimensions in multi-dimensional arrays. This is useful when
 working with e.g. <span style="font-weight: bold;">cat, dog,</span>
 and array subscripts such as <span style="font-style: italic;">a(1,:,:)</span>.<br>
+Other operators, such as <span style="font-weight: bold;">fliplr</span> and <span style="font-weight: bold;">flipud, </span>or a simple indexing of the objects as for usual arrays, can be used to manipulate the data sets. Refer to the <a href="Math.html">Math</a> page for more information about slicing, cutting, appending and merging.<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId393725"></a>Going further - some
 other useful methods<br>
 </h3>
@@ -727,7 +730,7 @@ that may be useful.<br>
 <ul>
   <li><span style="font-weight: bold;"><span style="color: rgb(51, 102, 255);">commandhistory</span>(a)</span>:
 return the list of all operations required to obtain an object, from
-initial import.<br>
+initial import. When no output argument is specified, a list dialog shows this history.<br>
   </li>
   <li><span style="font-weight: bold;">b=<span style="color: rgb(51, 102, 255);">copyobj</span>(a)</span>: create a
 copy of an object, with a new unique ID<br>
@@ -773,7 +776,7 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData objects - $Date: 2011-09-15 08:04:28 $ $Revision:1.7
+Farhi - iFit/iData objects - $Date: 2011-09-20 11:35:12 $ $Revision:1.7
 $
 </span> - back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
