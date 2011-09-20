@@ -47,7 +47,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.68 $
+% Version: $Revision: 1.69 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -61,7 +61,7 @@ else
   for index=1:length(varargin)
     if ischar(varargin{index}), method = varargin{index};
     elseif isa(a,'iData') 
-      a = [a(:) varargin{index} ];
+      a = [a(:) ; varargin{index} ];
     end
   end
 end
