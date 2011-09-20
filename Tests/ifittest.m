@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -124,7 +124,7 @@ switch(test)
 case 'Fit_1'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   p=fits(a);
-  if abs(max(abs([ 0.63         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01
+  if abs(max(abs([ 0.61         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01
     result = 'OK  fits(a)';
   else
     result = 'FAILED';
@@ -144,7 +144,7 @@ case 'Fit_3_options'
   options=fminimfil('defaults');
   options.TolFun=0.01;
   p=fits(a, 'gauss', [], options);
-  if abs(max(abs([ 0.63         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01
+  if abs(max(abs([ 0.61         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01
     result = 'OK  fits(a, ''gauss'', [], options);';
   else
     result = 'FAILED';
@@ -185,8 +185,8 @@ case 'Fit_7_uncertainties'
   sigma = output.parsHistoryUncertainty;
   % p    = [ 0.6264      1.001   -0.00365  0.0002173 ]
   % sigma= [ 0.004565  2.438e-05  3.159e-05  3.785e-05 ]
-  if abs(max(abs([ 0.63         1.0008      0.0035         0.0001 ])-abs(p))) < 0.05 && ...
-     abs(max(abs([0.015  1.25e-04  5.2e-05  1.1e-04 ])-abs(sigma))) < 1e-4
+  if abs(max(abs([ 0.61         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01 && ...
+     abs(max(abs([0.015  2e-04  5.2e-05  4e-04 ])-abs(sigma))) < 1e-3
     result = 'OK  [p,criteria,message,output]= fits(a); output.parsHistoryUncertainty';
   else
     result = 'FAILED';
@@ -195,7 +195,7 @@ case 'Fit_8_lorz'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   p=fits(a,'lorz');
   b = ieval(a, 'lorz', p);
-  if max(a-b)/mean(get(a,'Monitor')) < 0.4
+  if abs(max(abs([ 0.76         1.001      0.0019         0.0068 ])-abs(p))) < 0.01
     result = 'OK  fits(a,''lorz'')';
   else
     result = 'FAILED';
