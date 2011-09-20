@@ -40,7 +40,7 @@ setalias(b,'Temperature', 'Data.temperature','Sample Temperature [K]');
 
 if ndims(b) == 1
   setaxis(b, 1, 'Energy');
-elseif ndims(a) == 2
+elseif ndims(b) == 2
   setaxis(b, 1, 'Energy');
   setaxis(b, 2, 'Angle');
 end

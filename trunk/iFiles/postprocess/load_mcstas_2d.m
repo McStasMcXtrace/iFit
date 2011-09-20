@@ -3,7 +3,7 @@ function a=load_mcstas_2d(a)
 %
 % Returns an iData style dataset from a McStas 2d monitor file
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % inline: load_mcstas_param
@@ -45,7 +45,7 @@ if isfield(d,'Headers') && isfield(d.Headers,'MetaData')
     label(1:length('# component: '))='';
     a.Label = label;
     set(a,'Data.Component', label);
-    setalias(a, 'Component', 'Data.Component','Component name');
+    setalias(a, 'Component', 'Data.component','Component name');
   end
 end
 
