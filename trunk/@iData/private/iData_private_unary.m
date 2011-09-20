@@ -8,6 +8,7 @@ function b = iData_private_unary(a, op)
 % 'sign','isfinite','isnan','isinf'
 % 'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical'
 % 'uminus','abs','real','imag','uplus','not'
+% 'flipud','fliplr'
 %
 % present but not used here: 'double','single','logical','find'
 
@@ -85,7 +86,7 @@ case { 'transpose', 'ctranspose'}; % .' and ' respectively
   	if ~isempty(x2), b= setaxis(b, 1, x2, transpose(v2)); end
   	if ~isempty(x1), b= setaxis(b, 2, x1, transpose(v1)); end
   end
-case {'sparse','full'}
+case {'sparse','full','flipud','fliplr'}
   % apply same operator on error and Monitor
 	e = feval(op, e);
 	m = feval(op, m);
