@@ -2,6 +2,7 @@
 <html><head>
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: McStas</title>
   <ifit: changes="" title=""></ifit:>
@@ -201,17 +202,19 @@ optimizer, TolFun, ...</span><span style="color: rgb(204, 51, 204);"> </span></l
 </ul>
 as well as any other optimizer configuration fields such as<br>
 <ul>
-  <li><span style="font-weight: bold;">options.TolFun</span> =<span style="color: rgb(204, 51, 204);">'0.1%'</span>&nbsp;&nbsp;<span style="font-style: italic;"> stop when criteria changes are smaller
+  <li><span style="font-weight: bold;">options.TolFun</span> =<span style="color: rgb(204, 51, 204);">'0.1%'</span>;&nbsp;<span style="font-style: italic;"> % stop when criteria changes are smaller
 that 0.1%,<span style="font-weight: bold;"> </span>this is the default<br>
     </span></li>
-  <li><span style="font-weight: bold;">options.TolX</span> =<span style="color: rgb(204, 51, 204);">'0.1%'</span> <span style="font-style: italic;">stop when parameter changes are smaller
+  
+  <li><span style="font-weight: bold;">options.TolX</span> =<span style="color: rgb(204, 51, 204);">'0.1%';</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-style: italic;">% stop when parameter changes are smaller
 that 0.1%</span></li>
-  <li><span style="font-weight: bold;">options.Display</span>=<span style="color: rgb(204, 51, 204);">'final'</span></li>
-  <li><span style="color: rgb(204, 51, 204);"><span style="color: rgb(0, 0, 0);"><span style="font-weight: bold;">options.OutputFcn</span>=</span>'fminplot'
+
+  <li><span style="font-weight: bold;">options.Display</span>=<span style="color: rgb(204, 51, 204);">'final';</span></li>
+  <li><span style="color: rgb(204, 51, 204);"><span style="color: rgb(0, 0, 0);"><span style="font-weight: bold;">options.OutputFcn</span>=</span>'fminplot';
 
 
-    </span>plots the criteria and parameters evolution during the
-optimization. This is the default. Set to <span style="color: rgb(204, 51, 204);">''</span> to override this choice.<br>
+    </span>% plots the criteria and parameters evolution during the
+optimization. <span style="font-style: italic; font-weight: bold;">This is the default</span>. Set to <span style="color: rgb(204, 51, 204);">''</span> to override this choice.<br>
   </li>
 </ul>
 </div>
@@ -236,7 +239,7 @@ example,
 we search for an optimal monochromator curvature
 on the <span style="font-style: italic;">templateDIFF</span>
 instrument model, in order to maximize the <span style="font-style: italic;">Diff_Banana</span> monitors:<br>
-<pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'mode','optimize','optimizer','fminimfil'</span>));<br>parameters =<br>    0.75<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'mode','optimize','optimizer','fminimfil'</span>));<br>parameters =<br>     RV: 0.75<br></pre>
 During the optimization, a dynamics plot of the criteria evolution (the
 sum of the <span style="font-style: italic;">Banana</span>
 detector counts) and the parameters evolution is shown. The number of
@@ -245,6 +248,8 @@ shown on the dynamic plot. <br>
 The <span style="font-style: italic;">default stopping condition</span>
 is met when the integral monitor change is lower than 0.1%.<br>
 <br>
+To abort the optimization, just <span style="font-weight: bold;">close the optimization plot</span> window. The actual end occurs after a few more iterations.<br>
+<br>
 <span style="color: rgb(255, 0, 0); font-weight: bold;">Warning: </span>as
 <a href="http://www.mcstas.org">McStas</a>
 uses a Monte-Carlo technique (which means 'random'), the criteria is a
@@ -252,7 +257,7 @@ noisy function. The stop conditions must then usually be quite relaxed
 for the optimization to end, or the number of <span style="font-style: italic;">ncounts</span> must be large
 enough to minimize the statistical uncertainty. TolFun=<span style="color: rgb(204, 51, 204);">'0.1%</span>' and
 TolX=<span style="color: rgb(204, 51, 204);">'0.1%'</span> are fair
-choices. Also, we recommend to constrain parameter ranges (see below).<br>
+choices. Also, we recommend to constrain parameter ranges (<span style="color: rgb(255, 0, 0);">see below</span>).<br>
 <h3><a class="mozTocH3" name="mozTocId359721"></a>Optimizing instrument
 parameters with constraints</h3>
 It is quite usual the restrict the parameters search to specified
@@ -289,7 +294,7 @@ the parameter search within boundaries during optimizations.<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/McStas - </span><span style="font-style: italic;">
-$Date: 2011-09-06 16:25:00 $ $Revision: 1.11 $
+$Date: 2011-09-22 13:32:06 $ $Revision: 1.12 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

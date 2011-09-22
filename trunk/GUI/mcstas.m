@@ -48,12 +48,12 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %          OUTPUT additional information returned as a structure.
 %
 % example: to optimize RV, display result, and then perform a scan
-%   [p,f]=mcstas('templateDIFF', struct('RV',1), struct('TolFun','0.1%'))
+%   [p,f]=mcstas('templateDIFF', struct('RV',[0.5 1 1.5]), struct('TolFun','0.1%','monitors','Banana'))
 %   subplot(f); disp(f.Parameters)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -209,6 +209,11 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       [dummy,fval] = mcstas_criteria(pars, options);
       output.command=get(fval(1), 'Execute');
     end
+    pars_struct = [];
+    for index=1:length(pars)
+      pars_struct.(variable_names{index}) = pars(index);
+    end
+    pars = pars_struct;
   else
     % single simulation/scan
     try
