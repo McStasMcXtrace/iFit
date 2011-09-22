@@ -14,7 +14,7 @@ function y=laplace(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=laplace([1 0 1 1], -10:10); or y=laplace('identify') or p=laplace('guess',x,y);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -72,7 +72,7 @@ function y = evaluate(p, x)
   if isempty(x) | isempty(p), y=[]; return; end
   
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  y  = p(4)+ p(1)/2/p(3) .* exp( abs(x - p(2))/p(3) );
+  y  = p(4)+ p(1)/2/p(3) .* exp( - abs(x - p(2))/p(3) );
   
   y = reshape(y, sx);
 end
