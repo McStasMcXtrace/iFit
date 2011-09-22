@@ -12,7 +12,7 @@ function frame = getframe(a, dim)
 % output: frame: frame/thumbnail
 % ex:     f=getframe(a); image(f.cdata);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plot, getframe, image, imwrite
 
 if nargin < 2, dim=0; end
@@ -50,7 +50,9 @@ if dim
 end
 
 % plot the data
-plot(a); view(2);
+plot(a); 
+if ndims(a) <= 2, view(2); end
+drawnow
 if dim
   legend off;
   xlabel(''); ylabel(''); title('');
@@ -60,6 +62,7 @@ if dim
   axis tight;
 end
 % extract frame
+pause(0.1);
 frame=getframe(f); 
 delete(f);
 
