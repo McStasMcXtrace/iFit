@@ -13,7 +13,7 @@ function s_out = set(a_in,varargin)
 %
 % ex      : set(iData,'Title','A nice Title')
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/get, iData/setalias, iData/setaxis
 
 % EF 27/07/00 creation
@@ -78,7 +78,7 @@ for index = 1:length(s_out)
         % check if prop_name exists, and use it'
         try
           if (isempty(prop_name) & (isnumeric(prop_value) | islogical(prop_value))) ...
-            | isnumeric(prop_name)
+            | isnumeric(prop_name) | strcmp(prop_name, prop_value)
             setalias(a, name, prop_value);
           else
             setalias(a, prop_name, prop_value);
