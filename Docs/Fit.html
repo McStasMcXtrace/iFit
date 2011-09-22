@@ -3,6 +3,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: fitting a model onto iData objects</title>
 </head><body>
@@ -178,8 +180,11 @@ which
 provides significantly more information such as:<br>
 <ul>
   <li><span style="font-style: italic;">output.parsBest: </span>best
-fit parameter set for the model<br>
-    <span style="font-style: italic;"></span></li>
+fit parameter set for the model</li>
+  <li><span style="font-style: italic;">output.criteriaBest</span>: best criteria value for the model</li>
+  <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">modelValue: </span>Last model
+evaluation (iData), that is <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);">ieval</span>(a, model, parameters)</span></li>
+
   <li><span style="font-style: italic;">output.algorithm: </span>Algorithm/solver
 used
 (char)</li>
@@ -194,8 +199,7 @@ iterations performed during the fit (double)</li>
 set history during optimization (double array)</li>
   <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">criteriaHistory: </span>Criteria
 history during optimization (double vector/array)</li>
-  <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">modelValue: </span>Last model
-evaluation (iData), that is <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);">ieval</span>(a, model, parameters)</span></li>
+  
   <li><span style="font-style: italic;">output.parsHistoryUncertainty: </span>uncertainty
 on fit parameters (half-width) obtained from the optimization history
 (vector)</li>
@@ -212,9 +216,7 @@ name<br>
   <li><span style="font-style: italic;">output.modelInfo: </span>model
 information (structure)<br>
   </li>
-  <li><span style="font-style: italic;">output.modelValue:</span> model
-value at the optimized solution<br>
-  </li>
+  
   <li><span style="font-style: italic;">output.parsNames:</span>
 parameter names from the model<br>
   </li>
@@ -418,7 +420,7 @@ parameter set history, as a function of iterations/criteria evaluations.<br>
 </div>
 </div>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId919221"></a>Model parameter constraints</h3>
-In many cases, the model parameters are to be constrained. This
+In many cases, the model parameters are to be constrained. Some optimization specialists call these <span style="font-style: italic;">restraints, </span>that is parameter values constraints. This
 includes some fixed values, or bounds within which parameters should be
 restricted. This is given to the <span style="font-style: italic;">fits</span>
 method by mean of a 5th input
@@ -523,7 +525,7 @@ guessed/defaulted.<br>
 It is even possible to convolute and correlate functions and data sets
 as new function definitions. Refer to the <a href="iFuncs.html#mozTocId937554">iFuncs page</a>.
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId778987"></a>Specifying the optimization criteria</h3>
-The default optimization criteria is the 'least square error':<br>
+The default optimization criteria is the '<a href="http://en.wikipedia.org/wiki/Least_squares">least square error</a>':<br>
 <br>
 <div style="text-align: center;">&#967;&sup2; = &#8721; (Signal-Model)&sup2;.<br>
 <br>
@@ -535,7 +537,7 @@ definition), the Signal is normalized, so that<br>
 (Signal/Monitor-Model)&sup2;.<br>
 <br>
 </div>
-When the Error on the Signal is available, the criteria reads<br>
+When the Error on the Signal is available, the weighted criteria reads<br>
 <br>
 <div style="text-align: center;">&#967;&sup2; = &#8721;
 (Signal/Monitor-Model)&sup2;/Error&sup2;.<br>
@@ -550,14 +552,61 @@ the default criteria is:<br>
 = <span style="color: rgb(51, 102, 255);">@least_square</span>; <span style="font-style: italic;">% internal 'fits' least square definition</span><br>
 <div style="text-align: left;"><br>
 The Signal will be normalized to the Monitor prior to calling the
-criteria.<br>
+criteria. The Error is used as weight.<br>
+<br>
+The following pre-defined functions can be used as criteria:<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">criteria(Signal, Error,
+Model)</td>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">Expression<br>
+      </td>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">comment<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">least_square<br>
+      </td>
+      <td style="vertical-align: top; text-align: right;">(|Signal-Model|/Error)<sup>2</sup><br>
+      </td>
+      <td style="vertical-align: top;">non-robust. <a href="http://en.wikipedia.org/wiki/Least_squares">Ref</a>.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">least_absolute<br>
+      </td>
+      <td style="vertical-align: top; text-align: right;">|Signal-Model|/Error<br>
+      </td>
+      <td style="vertical-align: top;">robust. <a href="http://en.wikipedia.org/wiki/Least_absolute_deviation">Ref</a>.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">least_median<br>
+      </td>
+      <td style="vertical-align: top; text-align: right;">median(|Signal-Model|/Error)<br>
+      </td>
+      <td style="vertical-align: top;">robust, scalar. <a href="http://en.wikipedia.org/wiki/Median_absolute_deviation">Ref</a>.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">least_max<br>
+      </td>
+      <td style="vertical-align: top; text-align: right;">max(|Signal-Model|/Error)<br>
+      </td>
+      <td style="vertical-align: top;">non-robust, scalar. <a href="http://en.wikipedia.org/wiki/Absolute_deviation">Ref</a>.<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
 </div>
 <br>
 </div>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData fitting - </span><span style="font-style: italic;">
-$Date: 2011-09-16 15:14:11 $ $Revision: 1.20 $
+$Date: 2011-09-22 12:36:11 $ $Revision: 1.21 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body></html>

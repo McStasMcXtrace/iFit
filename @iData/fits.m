@@ -19,6 +19,12 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %  fits(iData)
 %     displays the list of all available optimizers and fit functions.
 %  You may create new fit functions with the 'ifitmakefunc' tool.
+% 
+% The default fit criteria is the least_square, but others are available:
+%   least_square          (|Signal-Model|/Error).^2     non-robust 
+%   least_absolute         |Signal-Model|/Error         robust
+%   least_median    median(|Signal-Model|/Error)        robust, scalar
+%   least_max          max(|Signal-Model|/Error)        non-robust, scalar
 %
 % input:  a: object or array (iData)
 %         model: model function (char/cellstr)
@@ -71,7 +77,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.31 $
+% Version: $Revision: 1.32 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -151,8 +157,12 @@ if nargin == 1
       n = ceil(length(criteria)/m);
       for index=1:length(criteria)
         this = criteria{index};
-        subplot(m,n,index);
+        subplot(m,n,index); %,'align');
         id   = feval(this, 'plot');
+        set(gca,'XTickLabel',[],'XTick',[]); 
+        set(gca,'YTickLabel',[],'YTick',[]); 
+        xlabel(' '); ylabel(' ');
+        axis tight
       end
     end
     message = 'Optimizers and fit functions list'; 
@@ -350,16 +360,30 @@ function c = eval_criteria(pars, model, criteria, a)
   
   % compute criteria
   c = feval(criteria, Signal(:), Error(:), Model(:));
-  c = c/(prod(size(Signal)) - length(pars) - 1); % normalized 'Chi^2'
+  % devide by the number of degrees of freedom
+  % <http://en.wikipedia.org/wiki/Goodness_of_fit>
+  c = c/(prod(size(Signal)) - length(pars) - 1); % reduced 'Chi^2'
 end % eval_criteria
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% <http://en.wikipedia.org/wiki/Least_squares>
 function c=least_square(Signal, Error, Model)
 % weighted least square criteria, which is also the Chi square
 % the return value is a vector, and most optimizers use its sum (except LM).
+% (|Signal-Model|/Error).^2
+  c = least_absolute(Signal, Error, Model);
+  c = c.*c;
+end % least_square
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% <http://en.wikipedia.org/wiki/Least_absolute_deviation>
+function c=least_absolute(Signal, Error, Model)
+% weighted least absolute criteria
+% the return value is a vector, and most optimizers use its sum (except LM).
+% |Signal-Model|/Error
   if all(Error == 0)
     index = find(isfinite(Model) & isfinite(Signal));
-    c = abs(Signal(index)-Model(index)).^2; % raw least square
+    c = abs(Signal(index)-Model(index)); % raw least absolute
   else
     % find minimal non zero Error
     Error = abs(Error);
@@ -368,11 +392,28 @@ function c=least_square(Signal, Error, Model)
     % find zero Error, which should be used whenever possible
     index = find(Error == 0);
     Error(index) = minError;
-    index = find(Error~=0 & isfinite(Error) & isfinite(Model) & isfinite(Signal));
-    c=abs(Signal(index)-Model(index))./Error(index);
-    c=c.*c;                % Chi square
+    index = find(isfinite(Error) & isfinite(Model) & isfinite(Signal));
+    c=abs((Signal(index)-Model(index))./Error(index));
   end
-end % least_square
+end % least_absolute
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% <http://en.wikipedia.org/wiki/Median_absolute_deviation>
+function c=least_median(Signal, Error, Model)
+% weighted median absolute criteria
+% the return value is a scalar
+% median(|Signal-Model|/Error)
+  c = median(least_absolute(Signal, Error, Model));
+end % least_median
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% <http://en.wikipedia.org/wiki/Absolute_deviation>
+function c=least_max(Signal, Error, Model)
+% weighted median absolute criteria
+% the return value is a scalar
+% median(|Signal-Model|/Error)
+  c = max(least_absolute(Signal, Error, Model));
+end % least_max
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function r=eval_corrcoef(a, modelValue)
