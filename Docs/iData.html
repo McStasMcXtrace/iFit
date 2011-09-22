@@ -4,6 +4,7 @@
 
 
 
+
   <title>iFit: iData object definition</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -75,7 +76,9 @@ with<br>
 which results in an <span style="font-style: italic;">iData</span>
 object. An other way to instantiate an object is to import directly
 Matlab variables:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal)<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal)<br></pre>For impatient readers, we advise you to refer to the <a href="Load.html#mozTocId889584">quick Setting Signal and Axes</a> documentation in the <a href="Load.html">Load</a> page, in order to customize the object. For the others, just go on reading how objects are built, and how to handle them.<br>
+
+<br>
 These objects, which internal structure can be obtained with the <span style="font-style: italic;">struct(a)</span> method, hold a number of
 important items:<br>
 <ul>
@@ -141,7 +144,7 @@ the object <span style="font-style: italic;">Signal</span> and its
 associated
 <span style="font-style: italic;">Axes.</span><br>
 <br>
-Any object dime,sionality can be handled. A more limited support exists
+Any object dimensionality can be handled. A more limited support exists
 for event based data sets.<br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">To get
@@ -156,7 +159,7 @@ Graphics Objects</span> using <span style="font-style: italic; font-weight: bold
 <br>
 A quick overview of an iData object <span style="font-style: italic; font-weight: bold;">a</span> is displayed
 when issuing the command<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; a<br>ans =  iData object:<br><br>    [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br> tp481575      [257  512] 'File ILL_IN6.dat ILL Data (n...' tp481575=load(iData,...<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);	<span style="font-style: italic;">% converts a file name into an iData object</span><br>&gt;&gt; a<br>ans =  iData object:<br><br>    [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br> tp481575      [257  512] 'File ILL_IN6.dat ILL Data (n...' tp481575=load(iData,...<br></pre>
 showing the object unique ID, its dimensions, title, the last
 command which produced the object, and an optional label (here empty).
 The same output
@@ -719,6 +722,10 @@ singleton dimensions in multi-dimensional arrays. This is useful when
 working with e.g. <span style="font-weight: bold;">cat, dog,</span>
 and array subscripts such as <span style="font-style: italic;">a(1,:,:)</span>.<br>
 Other operators, such as <span style="font-weight: bold;">fliplr</span> and <span style="font-weight: bold;">flipud, </span>or a simple indexing of the objects as for usual arrays, can be used to manipulate the data sets. Refer to the <a href="Math.html">Math</a> page for more information about slicing, cutting, appending and merging.<br>
+<br>
+To create an iData vector, just use the bracket [ ... ] symbol<br>
+<pre style="margin-left: 40px;">&gt;&gt; b = [ a 2*a ];</pre>
+
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId393725"></a>Going further - some
 other useful methods<br>
 </h3>
@@ -776,7 +783,7 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData objects - $Date: 2011-09-20 11:35:12 $ $Revision:1.7
+Farhi - iFit/iData objects - $Date: 2011-09-22 12:38:42 $ $Revision:1.7
 $
 </span> - back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
