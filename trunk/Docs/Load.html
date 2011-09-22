@@ -16,6 +16,7 @@
 
 
 
+
   <title>iFit: Importing data (iData/load)</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -28,7 +29,7 @@ load)
 </a><ol><li><a href="#mozTocId52427">Distant files (http://, ...)
 </a></li><li><a href="#mozTocId250466">Compressed files (.zip, ...)
 </a></li><li><a href="#mozTocId338301">Anchor references (file#anchor)
-</a></li></ol></li><li><a href="#mozTocId59221">Supported data formats</a></li><li><a href="#mozTocId782211">Example data files</a></li><li><a href="#mozTocId141862">Importing directly
+</a></li><li><a href="#mozTocId889584">Setting Signal and Axes when they are not set properly</a></li></ol></li><li><a href="#mozTocId59221">Supported data formats</a></li><li><a href="#mozTocId782211">Example data files</a></li><li><a href="#mozTocId141862">Importing directly
 from
 Matlab variables</a></li><li><a href="#mozTocId755882">Importing from Matlab
 Figures</a></li><li><a href="#mozTocId672193">How it works
@@ -119,7 +120,44 @@ The file name may end with an anchor reference using the '#' character, such as 
 <span style="color: rgb(204, 51, 204);">'http://path/file.zip#Data'</span><br>
 </div>
 <br>
-In this case, the anchor is searched in the imported data, and only the corresponding matching elements are returned.<br>
+In this case, the anchor is searched in the imported data, and only the
+corresponding matching elements are returned. The resulting objects are
+thus smaller in size.<br>
+<h4><a class="mozTocH4" name="mozTocId889584"></a>Setting Signal and Axes when they are not set properly</h4>
+
+There may be cases for which the reading of the file is done properly,
+but the Signal, Error and Axes are set to their default values, that is
+the largest numerical block as the Signal, the <span style="font-style: italic;">sqrt(Signal)</span>
+as the Error, and simple indices as Axes. In this case it may be
+appropriate to customize the appearence of the scientific data set by
+setting the Signal, Error aliases, and defining the Axes values.<br>
+<br>
+In order to identify where the Signal and Axes may be stored in the
+object, you should start by displaying the Data content of the object:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; a.Data			<span style="font-style: italic;">% displays the whole object Data structure</span>, as read from the file and stored in memory<br>ans = <br>    RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR: [142198 0 1]<br>    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: [2x1 double]<br>    IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII: [342x1 double]<br>    IIIIIIIIIIIIIIIIIIIIIIIIIIIIII_3: [1x156 double]<br>    FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF: [2x1 double]<br>    FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF_7: [1x384 double]<br>    FFFFFFFFFFFFFFFFFFFFFFFFFFFFF_10: [1x128 double]<br>    IIIIIIIIIIIIIIIIIIIIIIIIIIIII_13: [1x512 double]<br>    <span style="color: rgb(255, 0, 0);">SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS</span>: [340x4 double]<br>    <span style="color: rgb(255, 0, 0);">IIIIIIIIIIIIIIIIIIIIIIIIIIIII_17</span>: [340x1024 double]<br>                             Headers: [1x1 struct]<br></pre>
+In this example, we have highligthed in <span style="color: rgb(255, 0, 0);">red</span> what we shall use as Signal and Axes. Then, we just define:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a.Signal = <span style="color: rgb(204, 51, 204);">'Data.IIIIIIIIIIIIIIIIIIIIIIIIIIIII_17'</span>;</pre>
+
+which sets the definition of the <span style="font-style: italic;">Signal</span> Alias as a link to the <span style="color: rgb(204, 51, 204); font-style: italic;">IIIIIIIIIIIIIIIIIIIIIIIIIIIII_17</span>
+field in the Data member of the object, of size 340 rows by 1024
+columns. Letting the Error to its default empty definition assigns it
+to <span style="font-style: italic; color: rgb(204, 51, 204);">sqrt(this.Signal)</span>, but you may define it as a link to a part of the Data, just as for the Signal. The <span style="font-style: italic;">Signal</span> label can optionally be defined as <br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">title</span>(a, <span style="color: rgb(204, 51, 204);">'Signal label'</span>);<br></pre>
+In order to define the Axes, they can be defined similarly as the Signal:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a{1} = <span style="color: rgb(204, 51, 204);">'this.Data.SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS(:,1)'</span>; % defines the 1st axis as a link to the Data</pre>
+
+where we make use of the <span style="font-weight: bold; font-style: italic;">this</span>
+self reference in the link (meaning find in myself), which allows
+expressions instead of simple static links as for the Signal. This way
+we define the 1st axis as the first column of the <span style="color: rgb(204, 51, 204);">SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS</span> field. It should have the proper dimension, in this example 340.<br>
+In this example, the second Axis of this 2d object has is not part of
+the Data. We may then define it as a numerical value with e.g.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a{2} = <span style="color: rgb(51, 102, 255);">linspace</span>(0.001, 0.003, 1024);</pre>
+
+which is a 1024 element vector from 1 to 3 ms. The Axis labels can be set with e.g.:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a, 1, <span style="color: rgb(204, 51, 204);">'angle channel [1]'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a, 2, <span style="color: rgb(204, 51, 204);">'tof [ms]'</span>)<br></pre>
+
+The final object is now fully described, and ready to be plotted, fitted, and tortured...<br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">To get
 more help</span>: <a href="matlab:help%20iData">help iData</a>, <a href="matlab:help%20iData/load">help iData/load</a><br>
@@ -265,6 +303,14 @@ with e.g.<br>
 imports <span style="font-style: italic;">Signal</span> as 'c' and <span style="font-style: italic;">axes</span> x,y, ... which should then all
 be numerical values with 'x' for the columns, 'y' for the rows, 'z' for
 the depth, ... that is the plotting Matlab convention used e.g. in <span style="font-style: italic;">surf(x,y,z)</span>.<br>
+The Error, defaulted to <span style="color: rgb(204, 51, 204);">sqrt(Signal)</span>, may be defined as well using <span style="font-style: italic;">e.g.</span>:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a.Error = <span style="color: rgb(204, 51, 204);">'Data.myErrors'</span>;	<span style="font-style: italic;">% define the Error alias as a link inside the Data</span></pre>
+where <span style="font-style: italic;">myErrors</span> should be found in the object Data. Identify it by displaying it with e.g.:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a.Data</pre>
+
+
+
+Refer to the <a href="Load.html#mozTocId889584">Setting Signal and Axes when they are not set properly</a> help in order to customize the appearence of the object.<br>
 <br>
 The <span style="font-weight: bold; font-style: italic;">findobj</span>
 method can be used to inquire for all iData objects available in the
@@ -366,7 +412,7 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a href="../iFiles/doc/lookt
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span style="font-style: italic;">
-$Date: 2011-09-15 08:04:28 $ $Revision: 1.21 $
+$Date: 2011-09-22 12:38:42 $ $Revision: 1.22 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
