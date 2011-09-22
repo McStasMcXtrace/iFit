@@ -14,7 +14,7 @@ function y=poisson(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=poisson([1 0 1 1], -10:10); or y=poisson('identify') or p=poisson('guess',x,y);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -38,7 +38,7 @@ function y=poisson(p, x, y)
   %   identify: model([],x)
     y = identify; x=x(:);
     % HERE default parameters when only axes are given <<<<<<<<<<<<<<<<<<<<<<<<<
-    y.Guess  = [1 mean(x) std(x)/4 .1];
+    y.Guess  = [1 (min(x)+mean(x))/2 .1];
     y.Axes   = { x };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 1 && isnumeric(p) && ~isempty(p) 

@@ -3,6 +3,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: iFuncs model functions</title>
 </head><body>
@@ -46,7 +48,7 @@ All these are explained in the <a href="Fit.html">Fit</a> page.<br>
 <br>
 Each function/model can be used in the following ways (for instance
 model may be 'gauss'):<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>		<span style="font-style: italic;">% display model informations</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'identify'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'plot'</span>)	<span style="font-style: italic;">% plot the model with its default settings</span><span style="color: rgb(255, 0, 0); font-style: italic;"></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(p, x, y ...)	<span style="font-style: italic;">% evaluate the model with parameters p, and axes x,y,...<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>([], x, y ...)	<span style="font-style: italic;">% evaluate the model with axes x,y,... and automatic parameter guess<br></span><span style="font-style: italic;">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'guess'</span>, x, y ...)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ieval</span>(a, @model, p)	<span style="font-style: italic;">% evaluate the model onto the iData object axes with parameters p<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">fits</span>(a, @model, p)	<span style="font-style: italic;">% fit the model onto the iData object</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>		<span style="font-style: italic;">% display model informations</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'identify'</span>)		% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'plot'</span>)	<span style="font-style: italic;">% plot the model with its default settings</span><span style="color: rgb(255, 0, 0); font-style: italic;"></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(p, x, y ...)	<span style="font-style: italic;">% evaluate the model with parameters p, and axes x,y,...<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>([], x, y ...)	<span style="font-style: italic;">% evaluate the model with axes x,y,... and automatic parameter guess<br></span><span style="font-style: italic;">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'guess'</span>, x, y ...)	% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ieval</span>(a, @model, p)	<span style="font-style: italic;">% evaluate the model onto the iData object axes with parameters p<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">fits</span>(a, @model, p)	<span style="font-style: italic;">% fit the model onto the iData object</span><br></pre>
 <h3><a class="mozTocH3" name="mozTocId96090"></a><span style="font-weight: bold;">List of default fit models</span></h3>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
@@ -63,112 +65,6 @@ model may be 'gauss'):<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; color: rgb(0, 0, 0); font-weight: bold; font-style: italic;">gauss</td>
-      <td style="vertical-align: top;">Gaussian<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
-      <td style="vertical-align: top;">Amplitude Centre HalfWidth
-Background<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top; font-weight: bold; font-style: italic;">lorz<br>
-      </td>
-      <td style="vertical-align: top;">Lorentzian<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
-      <td style="vertical-align: top;">Amplitude Centre HalfWidth
-Background</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top; font-weight: bold; font-style: italic;">dho<br>
-      </td>
-      <td style="vertical-align: top;">Damped harmonic oscillator<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
-      <td style="vertical-align: top;">Amplitude Centre HalfWidth
-Background <span style="font-style: italic;">Temperature(in "x" unit)</span><br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top; font-weight: bold; font-style: italic;">triangl<br>
-      </td>
-      <td style="vertical-align: top;">Triangular<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
-      <td style="vertical-align: top;">Amplitude Centre HalfWidth
-Background</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top; font-weight: bold; font-style: italic;">voigt<br>
-      </td>
-      <td style="vertical-align: top;">Voigt function<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
-      </td>
-      <td style="vertical-align: top;">Amplitude Centre Half<span style="font-style: italic;">Width_Gauss </span>Half<span style="font-style: italic;">Width_Lorz </span>Background<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top; font-weight: bold; font-style: italic;">dirac<br>
-      </td>
-      <td style="vertical-align: top;">Dirac peak<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
-      </td>
-      <td style="vertical-align: top;">Amplitude Centre<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top; font-weight: bold; font-style: italic;">green<br>
-      </td>
-      <td style="vertical-align: top;">Green function<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
-      </td>
-      <td style="vertical-align: top;">Amplitude Centre HalfWidth
-Background</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top; font-weight: bold; font-style: italic;">strline<br>
-      </td>
-      <td style="vertical-align: top;">Straight line<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
-      </td>
-      <td style="vertical-align: top;"><span style="font-style: italic;">Gradient</span>
-Background<br>
-      </td>
-    </tr><tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold; font-style: italic;">quadline</span><br>
-      </td>
-      <td style="vertical-align: top;">Quadratic line<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
-      </td>
-      <td style="vertical-align: top;">Quadratic Linear Constant<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold; font-style: italic;">expon</span><br>
-      </td>
-      <td style="vertical-align: top;">Exponential<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
-      </td>
-      <td style="vertical-align: top;">Amplitude Tau Background<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold; font-style: italic;">heaviside</span><br>
-      </td>
-      <td style="vertical-align: top;">Heaviside (gap)<br>
-      </td>
-      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
-      </td>
-      <td style="vertical-align: top;">Amplitude Centre FulfWidth Background<br>
-      </td>
-    </tr><tr>
       <td style="vertical-align: top; font-weight: bold;">allometric<br>
       </td>
       <td style="vertical-align: top;">Allometric (power/asymptotic law)<br>
@@ -179,6 +75,52 @@ Background<br>
       </td>
     </tr>
     <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">bigauss</span><br>
+      </td>
+      <td style="vertical-align: top;">Asymmetric Gaussian<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth1
+HalfWidth2 Background</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">bilorz</span><br>
+      </td>
+      <td style="vertical-align: top;">Asymmetric Lorentzian<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth1
+HalfWidth2 Background</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(0, 0, 0); font-weight: bold;">bose</td>
+      <td style="vertical-align: top;">Bose factor<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Tau <span style="font-style: italic;">[h/2pi/kT] in "x" units</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">dho<br>
+      </td>
+      <td style="vertical-align: top;">Damped harmonic oscillator<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth
+Background Temperature <span style="font-style: italic;">(in "x" unit)</span><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">dirac<br>
+      </td>
+      <td style="vertical-align: top;">Dirac peak<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Centre<br>
+      </td>
+    </tr>
+    <tr>
       <td style="vertical-align: top; font-weight: bold;">doseresp<br>
       </td>
       <td style="vertical-align: top;">Dose-response curve with variable Hill slope<br>
@@ -186,6 +128,55 @@ Background<br>
       <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
       </td>
       <td style="vertical-align: top;">Amplitude Center Slope BackGround<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">expon</span><br>
+      </td>
+      <td style="vertical-align: top;">Exponential decay<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Tau Background<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">expstretched</span><br>
+      </td>
+      <td style="vertical-align: top;">Exponential - Stretched<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Tau Exponent Background<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; color: rgb(0, 0, 0); font-weight: bold;">gauss</td>
+      <td style="vertical-align: top;">Gaussian<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth
+Background<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">green<br>
+      </td>
+      <td style="vertical-align: top;">Green function<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth
+Background</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">heaviside</span><br>
+      </td>
+      <td style="vertical-align: top;">Heaviside (gap)<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Centre FulfWidth Background<br>
       </td>
     </tr>
     <tr>
@@ -218,6 +209,15 @@ Background<br>
       </td>
     </tr>
     <tr>
+      <td style="vertical-align: top; font-weight: bold;">lorz<br>
+      </td>
+      <td style="vertical-align: top;">Lorentzian<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth
+Background</td>
+    </tr>
+    <tr>
       <td style="vertical-align: top; font-weight: bold;">pareto<br>
       </td>
       <td style="vertical-align: top;">Pareto distribution function<br>
@@ -239,6 +239,16 @@ Background<br>
       </td>
     </tr>
     <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">quadline</span><br>
+      </td>
+      <td style="vertical-align: top;">Quadratic line<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Quadratic Linear Constant<br>
+      </td>
+    </tr>
+    <tr>
       <td style="vertical-align: top; font-weight: bold;">sine<br>
       </td>
       <td style="vertical-align: top;">Sine function<br>
@@ -251,25 +261,56 @@ Background<br>
     <tr>
       <td style="vertical-align: top; font-weight: bold;">sinedamp<br>
       </td>
-      <td style="vertical-align: top;">Damped Sine function<br>
+      <td style="vertical-align: top;">Damped Sine function (exponential decay)<br>
       </td>
       <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
       </td>
       <td style="vertical-align: top;">Amplitude Phase_Shift Period BackGround Decay<br>
       </td>
     </tr>
-
-
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">strline<br>
+      </td>
+      <td style="vertical-align: top;">Straight line<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Gradient
+Background<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">triangl<br>
+      </td>
+      <td style="vertical-align: top;">Triangular<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth
+Background</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">voigt<br>
+      </td>
+      <td style="vertical-align: top;">Voigt function<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Centre HalfWidth_Gauss HalfWidth_Lorz Background<br>
+      </td>
+    </tr>
   </tbody>
 </table>
 <br>
 <div style="text-align: center;"><a href="images/iFit_iFuncs.png"><img title="iFit: default functions (in iFuncs)" src="images/iFit_iFuncs.png" alt="iFit: default functions (in iFuncs)" style="border: 0px solid ; width: 560px; height: 420px;" align="middle"></a><br>
 </div>
-<h3><a class="mozTocH3" name="mozTocId845956"></a><span style="font-weight: normal;">The </span>list of all available fit
-functions<span style="font-weight: normal;"> can be obtained from the
+<span style="font-weight: normal;">The </span>list of <span style="font-weight: bold;">all available fit
+functions</span><span style="font-weight: normal;"> can be obtained from the
 command<span style="font-weight: bold;">:</span></span><br>
-</h3>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData);</span></pre>
+
+
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData);<br></span></pre>which also prodices the plot above.<br>
+<pre style="margin-left: 40px;"><span style="font-style: italic;"></span><span style="font-style: italic;"></span></pre>
+
 <h3><a class="mozTocH3" name="mozTocId210092"></a><span style="font-weight: bold;">Model builder: making a model easy<br>
 </span></h3>
 The <span style="font-style: italic;">ifitmakefunc</span> tool enables
@@ -358,7 +399,7 @@ function also exists in <span style="font-style: italic;">iFit/iFuncs/private/te
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2011-09-15 14:48:02 $ $Revision: 1.14 $
+$Date: 2011-09-22 12:35:15 $ $Revision: 1.15 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
