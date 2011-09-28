@@ -53,7 +53,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -187,7 +187,12 @@ end
 
 if ischar(options.TolX)
   options.TolXChar=options.TolX;
-  options.TolX = abs(str2num(options.TolX)*pars(:)/100);
+  if options.TolX(end)=='%'
+    options.TolX(end)='';
+    options.TolX = abs(str2num(options.TolX)*pars(:)/100);
+  else
+    options.TolX = str2num(options.TolX);
+  end
 end
 
 if strcmp(options.Display,'iter')
