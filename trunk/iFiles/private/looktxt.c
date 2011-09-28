@@ -105,7 +105,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.1 $Revision: 1.1 $"
+#define VERSION "1.1 $Revision: 1.2 $"
 #endif
 
 #ifdef __dest_os
@@ -870,13 +870,11 @@ char *str_lastword(char *string)
   for (p_start = p_end;
        (p_start < reverted+strlen(reverted)) && (lk_isalnum(*p_start) || *p_start=='_');
        p_start++);
-
   tmp0 = str_dup_n(p_end, p_start - p_end);
   tmp1 = str_reverse(tmp0);
   /* now check that name does not start with  "_" Cnumber */
   for (p_start=tmp1; (lk_isdigit(*p_start) || *p_start=='_') && p_start<tmp1+strlen(tmp1); p_start++);
   word = str_dup(p_start);
-
   reverted=str_free(reverted); tmp0=str_free(tmp0); tmp1=str_free(tmp1);
   return(word);
 } /* str_lastword */
@@ -2414,7 +2412,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         /* define char header associated field */
         if (fieldend & Balpha) {
           field.c_start = startcharpos;
-          field.c_end   = endcharpos-1;
+          field.c_end   = endcharpos-1 > startcharpos ? endcharpos-1 : startcharpos;
 
           /* startcharpos  = pos; */
           fieldend     -= Balpha;
@@ -2426,7 +2424,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
           {
             if (rows <= 0) rows = 1;
             field.n_start = startnumpos;
-            field.n_end   = endnumpos;
+            field.n_end   = endnumpos > startnumpos ? endnumpos : startnumpos;
             field.rows    = rows;
             field.columns = columns;
 
@@ -2818,7 +2816,7 @@ struct write_struct file_write_getsections(struct file_struct file,
   strlist_add(&section_fields, " "); /* no filed stored yet */
 
   if (options.verbose >= 2)
-      printf("VERBOSE[file_write_getsections]:  Analyze header, sections and metadata [0-%ld] ...\n", ptable->length-1);
+      printf("VERBOSE[file_write_getsections]:  Analyze header [0-%ld], sections [%i] and metadata [%i] ...\n", ptable->length-1,options.sections.length,options.metadata.length);
 
   length = ptable->length;
 
@@ -2828,10 +2826,9 @@ struct write_struct file_write_getsections(struct file_struct file,
     struct  data_struct *field;  /* current field from file */
     long    index_meta, index_sec;
     char   *header=NULL;
-    
     field  = &(ptable->List[index]);
+    if (field->c_start > field->c_end) continue;
     header = data_get_char(file, field->c_start, field->c_end);
-    
     for (index_meta=0; index_meta < options.metadata.length; index_meta++)
     { /* scan all MetaData registered entries */
       char *this_metadata=NULL;
@@ -2916,7 +2913,6 @@ struct write_struct file_write_getsections(struct file_struct file,
         }
       }
     }
-
     /* look for section names in header if any. skip ROOT */
     for (index_sec=0; index_sec < options.sections.length; index_sec++)
     { /* scan all registered sections */
@@ -2962,7 +2958,6 @@ struct write_struct file_write_getsections(struct file_struct file,
       field->Section = str_dup(section_current); /* was NULL before except from MetaData */
       
   } /* for index 1st PASS */
-  
   section_current=str_free(section_current);
   last_valid_name=str_free(last_valid_name);
 
