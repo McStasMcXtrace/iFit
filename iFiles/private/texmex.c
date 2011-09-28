@@ -41,7 +41,7 @@
 #define malloc  mxMalloc
 #define realloc mxRealloc
 #define calloc  mxCalloc
-#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.1 $"
+#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.2 $"
 /* #define free mxFree  */
 #define free NoOp
 
@@ -207,11 +207,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
   mexPrintf("\n");
 
   /* call looktxt, using argv set from parsing arguments */
-  NumFiles = looktxt(carg,varg);  /* call main routine, return -1 in case of error, or the number of processes files */
+  NumFiles = looktxt(carg,varg); /* call main routine, return -1 in case of error, or the number of processes files */
   if (has_debug_mode)
     mexPrintf("looktxt: Processed %i file%s.\n", NumFiles, NumFiles > 1 ? "s" : "");
   /* the output file names are stored in the global options.files_to_convert_Target array of char* */
-
   if (NumFiles > 0) {
     plhs[0]=mxCreateCellMatrix(1,NumFiles);
     if (has_debug_mode)
