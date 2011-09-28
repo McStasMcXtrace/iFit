@@ -22,7 +22,7 @@
 %
 %  Written by:  JO ~ 2003 for use with plotdata
 %  Changes:     JO 2004-2005 for use as a standalone routine
-%  Version:     $Revision: 1.2 $
+%  Version:     $Revision: 1.3 $
 %--------------------------------------------------------------------------
 function s = read_inx(filename,varargin)
 
@@ -64,7 +64,7 @@ while (1)
    %-----Rewind-one-step------------------------------
    status     = fseek(FID,Old_Cursor-New_Cursor,'cof');
    %-----Read-one-spectrum----------------------------
-   fprintf(1,'%s: file %s, block %i: reading %i x %i values\n', mfilename, filename, Ncol, Npoints);
+   fprintf(1,'%s: file %s, block %i: reading %i x %i values\n', mfilename, filename, kk, Ncol, Npoints);
    Dummy      = fscanf(FID,'%g',Ncol*Npoints);
    for l=1:Npoints,
        dummyM(l,:,kk)=Dummy(1+(l-1)*Ncol:l*Ncol);
