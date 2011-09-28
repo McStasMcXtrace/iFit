@@ -25,6 +25,7 @@ Data.temperature = a.Data.Par(:,4);
 Data.signal      = squeeze(a.Data.Mat(:,2,:));
 Data.error       = squeeze(a.Data.Mat(:,3,:));
 Data.energy      = squeeze(a.Data.Mat(:,1,:));
+Data.energy      = Data.energy(:,1);
 a.Data = Data;
 
 b = a;
