@@ -36,6 +36,7 @@
 * --fast              Uses a faster reading method, requiring numerics
 *                     to be separated by \n\t\r\f\v and spaces only
 * --makerows=NAME     All fields matching NAME are transformed into row vectors
+* --metadata-only     Only extracts selected meta data (smaller files)
 * --names_lower       Converts all names into lower characters
 * --names_upper       Converts all names into upper characters
 * --names_length=LEN  Sets the maximum length to use for names (32)
@@ -105,7 +106,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.1 $Revision: 1.2 $"
+#define VERSION "1.1 $Revision: 1.3 $"
 #endif
 
 #ifdef __dest_os
@@ -341,6 +342,7 @@ struct option_struct {
   char *separator ; /* separators to use */
   char *comment   ; /* comments start char (to end of line) */
   char *eol       ; /* end of line char */
+  char  metadata_only;
   char *openmode  ;
   char *option_list;
   char *names_root;
@@ -1666,6 +1668,7 @@ struct option_struct options_init(char *pgname)
   options.outfile    = fileparts_init();
   options.sections   = strlist_init("sections");
   options.metadata   = strlist_init("metadata");
+  options.metadata_only=0;
   options.makerows   = strlist_init("makerows");
   options.openmode   = str_dup("wb");
   options.separator  = str_dup(Cseparator);
@@ -3178,7 +3181,9 @@ long file_write_target(struct file_struct file,
     /* From there we have a base name, and we know if there are consecutive_index */
 
     if ((options.nelements_min <  0 || rows*columns >= options.nelements_min)
-     && (options.nelements_max <= 0 || rows*columns <= options.nelements_max) && ptable->List[index].rows) {
+     && (options.nelements_max <= 0 || rows*columns <= options.nelements_max) 
+     && ptable->List[index].rows 
+     && (!options.metadata_only || (options.metadata_only && !strcmp(ptable->List[index].Section,"MetaData")))) {
       int index_field = 0;
       char *section=NULL;
       char str_struct[]=".";
@@ -3456,6 +3461,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       options.verbose    = 3;
     else if(!strcmp("--silent",    argv[i]))
       options.verbose    = 0;
+    else if(!strcmp("--metadata-only",    argv[i]))
+      options.metadata_only = 1;
     else if(!strcmp("--test",    argv[i]))
       options.test       = 1;
     else if(!strcmp("--catenate",  argv[i]) || !strcmp("-c",  argv[i]))

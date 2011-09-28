@@ -42,7 +42,7 @@ function [data, format] = iLoad(filename, loader)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.52 $
+% Version: $Revision: 1.53 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -326,7 +326,7 @@ function [data, loader] = iLoad_import(filename, loader)
     loaders_count=0;
     for index=1:length(formats)
       this_loader = formats{index};
-      if ~isempty(strfind(this_loader.name, loader)) || ~isempty(strfind(this_loader.method, loader))
+      if ~isempty(strfind(this_loader.name, loader)) || ~isempty(strfind(this_loader.method, loader)) || ~isempty(strfind(this_loader.extension, loader))
         loaders_count = loaders_count+1;
         loaders{loaders_count} = this_loader;
       end
