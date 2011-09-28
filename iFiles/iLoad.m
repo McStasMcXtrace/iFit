@@ -42,7 +42,7 @@ function [data, format] = iLoad(filename, loader)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.51 $
+% Version: $Revision: 1.52 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -53,30 +53,60 @@ persistent config
 data = []; format = [];
 if nargin == 0, filename=''; end
 if nargin < 2,  loader = ''; end
-if strcmp(loader, 'load config') | strcmp(filename, 'load config')
+if nargin ==1
+  if ~isempty(strmatch(filename, {'load config','config','force load config','formats','display config'}))
+    data = iLoad('', filename);
+    return
+  end
+end
+if strcmp(loader, 'load config')
   if isempty(config), config  = iLoad_config_load; end
-  data = config;
   % check for availability of looktxt as MeX file, and trigger compilation if needed.
   if exist('looktxt') ~= 3
     looktxt('--version');
   end
+  % look for a specific importer when filename is specified
+  if ~isempty(filename)
+    data = {};
+    for index=1:length(config.loaders)
+      this = config.loaders{index};
+      keepme=0;
+      if ~isempty(strfind(lower(this.name), lower(filename))) | ~isempty(strfind(lower(this.method), lower(filename)))
+        keepme = 1;
+      elseif isfield(this,'extension') && ~isempty(strmatch(lower(filename), lower(this.extension)))
+        keepme=1;
+      end
+      if keepme, data = { data{:} this }; end
+    end
+    if length(data) == 1
+      data = data{1}; 
+    end
+  else
+    data = config;
+  end
   return
-elseif strcmp(loader, 'force load config') | strcmp(filename, 'force load config')
+elseif strcmp(loader, 'force load config')
   config  = iLoad_config_load;
-  data = config;
-  % check for availability of looktxt as MeX file, and trigger compilation if needed.
-  if exist('looktxt') ~= 3
-    looktxt('--version');
+  if ~isempty(filename)
+    data    = iLoad(filename, 'load config');
   end
   return
-elseif strcmp(loader, 'formats') | strcmp(filename,'formats') | strcmp(loader, 'display config')
+elseif strcmp(loader, 'formats') | strcmp(loader, 'display config')
   data = iLoad('','load config');
   fprintf(1, ' EXT                    READER  DESCRIPTION [%s]\n', mfilename);
   fprintf(1, '-----------------------------------------------------------------\n');  
   for index=1:length(data.loaders)
     this=data.loaders{index};
     if isfield(this,'postprocess'), 
-      if ~isempty(this.postprocess), this.method = [ this.method '/' this.postprocess ]; end
+      if ~isempty(this.postprocess)
+        if iscell(this.postprocess)
+          for i=1:length(this.postprocess)
+            this.method = [ this.method '/' this.postprocess{i} ]; 
+          end
+        else
+          this.method = [ this.method '/' this.postprocess ]; 
+        end
+      end
     end
     if length(this.method)>25, this.method = [ this.method(1:22) '...' ]; end
     if ~isfield(this,'extension'), this.extension = '*';
@@ -89,6 +119,9 @@ elseif strcmp(loader, 'formats') | strcmp(filename,'formats') | strcmp(loader, '
     end
   end
   disp([ '% iLoad configuration file: ' config.FileName ]);
+  if ~isempty(filename)
+    data    = iLoad(filename, 'load config');
+  end
   return
 elseif strcmp(loader, 'save config') | strcmp(filename, 'save config')
   if isempty(filename) || nargin == 1
@@ -353,6 +386,7 @@ function [data, loader] = iLoad_import(filename, loader)
     end
   end
   data = iLoad_loader_check(filename, data, loader);
+  if isempty(data), return; end
   if isfield(loader, 'name') data.Format = loader.name; 
   else data.Format=[ loader.method ' import' ]; end
   return
@@ -361,6 +395,7 @@ function [data, loader] = iLoad_import(filename, loader)
 % private function to make the data pretty looking
 function data = iLoad_loader_check(file, data, loader)
 
+  if isempty(data), return; end
   % handle case when a single file generates a data set
   if isstruct(data) & length(data)>1
     for index=1:length(data)
@@ -651,7 +686,7 @@ function config = iLoad_config_load
     skip_format=0;
     for j=1:length(loaders)
       this=loaders{j};
-      if strcmp(format{1}, this.name)
+      if strcmp(format{3}, this.name)
         skip_format=1;
         break;
       end
@@ -665,12 +700,22 @@ function config = iLoad_config_load
       loader.postprocess= format{6};
       loaders = { loaders{:} , loader };
     end
-    
   end
   
+  for index=1:length(loaders)
+    loader = loaders{index};
+    if ~isfield(loader,'method'),     loader.method = ''; end
+    if ~isfield(loader,'extension'),  loader.extension=''; end
+    if ~isfield(loader,'name'),       loader.name=''; end
+    if ~isfield(loader,'options'),    loader.options=''; end
+    if ~isfield(loader,'patterns'),   loader.patterns=''; end
+    if ~isfield(loader,'postprocess'),loader.postprocess=''; end
+    loaders{index} = loader;
+  end
   config.loaders = loaders; % updated list of loaders
 
-% private function getfields, returns all field name and values, that match 'name'
+% ------------------------------------------------------------------------------
+% private function findfield, returns all field name and values, that match 'name'
 function [f, c] = findfield(structure, name, parent)
 
 if nargin < 3, parent=''; end
