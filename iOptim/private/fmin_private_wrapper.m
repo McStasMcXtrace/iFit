@@ -53,7 +53,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -644,27 +644,27 @@ function [pars,exitflag,message] = inline_apply_constraints(pars, constraints,op
   exitflag=0;
   message='';
 
+  if isfield(constraints, 'step') % restrict parameter change
+    parsStep    = pars(:) - constraints.parsPrevious(:);
+    index       = find(constraints.steps(:) & abs(parsStep) > abs(constraints.steps(:)) & ~isnan(constraints.steps(:)));
+    if ~isempty(index), 
+      parsStep    = sign(parsStep).*abs(constraints.steps(:));
+      pars(index) = constraints.parsPrevious(index) + parsStep(index);
+    end
+  end
+  if isfield(constraints, 'min')  % lower bound for parameters
+    index = find(pars(:) < constraints.min(:) & ~isnan(constraints.min(:)));
+    if ~isempty(index), pars(index) = constraints.min(index); end
+  end
+  if isfield(constraints, 'max')  % upper bound for parameters
+    index = find(pars(:) > constraints.max(:) & ~isnan(constraints.max(:)));
+    if ~isempty(index), pars(index) = constraints.max(index); end
+  end
   if isfield(constraints, 'fixed')  % fix some parameters
     index = find(constraints.fixed & ~isnan(constraints.fixed));
     if ~isempty(index), pars(index) = constraints.parsStart(index); end
-  else
-    if isfield(constraints, 'min')  % lower bound for parameters
-      index = find(pars(:) < constraints.min(:) & ~isnan(constraints.min(:)));
-      if ~isempty(index), pars(index) = constraints.min(index); end
-    end
-    if isfield(constraints, 'max')  % upper bound for parameters
-      index = find(pars(:) > constraints.max(:) & ~isnan(constraints.max(:)));
-      if ~isempty(index), pars(index) = constraints.max(index); end
-    end
-    if isfield(constraints, 'step') % restrict parameter change
-      parsStep    = pars(:) - constraints.parsPrevious(:);
-      index       = find(constraints.steps(:) & abs(parsStep) > abs(constraints.steps(:)) & ~isnan(constraints.steps(:)));
-      if ~isempty(index), 
-        parsStep    = sign(parsStep).*abs(constraints.steps(:));
-        pars(index) = constraints.parsPrevious(index) + parsStep(index);
-      end
-    end
   end
+
   pars=pars(:)';
 end % inline_apply_constraints
 
