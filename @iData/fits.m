@@ -77,7 +77,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.32 $
+% Version: $Revision: 1.33 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -381,7 +381,7 @@ function c=least_absolute(Signal, Error, Model)
 % weighted least absolute criteria
 % the return value is a vector, and most optimizers use its sum (except LM).
 % |Signal-Model|/Error
-  if all(Error == 0)
+  if all(Error == 0) || length(Error) == 1
     index = find(isfinite(Model) & isfinite(Signal));
     c = abs(Signal(index)-Model(index)); % raw least absolute
   else
