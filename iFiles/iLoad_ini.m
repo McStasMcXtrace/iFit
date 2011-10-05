@@ -134,9 +134,14 @@ function config = iLoad_ini
     Matlab_FIG.extension='fig';
     Matlab_FIG.postprocess='load_fig';
     
+    PDB.name            ='Protein Data Bank';
+    PDB.extension       ='pdb';
+    PDB.method          ='PDBRead';
+    PDB.patterns        ={'HEADER','TITLE','COMPND','SOURCE','EXPDTA','AUTHOR','REVDAT','SEQRES','MASTER','END'};
+    
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
-	       spec, mcstas_scan, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, ISIS_spe, ILL_inx, ESRF_edf, Matlab_FIG };
+	       spec, mcstas_scan, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, ISIS_spe, ILL_inx, ESRF_edf, Matlab_FIG, PDB };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];

@@ -3,7 +3,7 @@ function a=load_mcstas_2d(a)
 %
 % Returns an iData style dataset from a McStas 2d monitor file
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % inline: load_mcstas_param
@@ -90,17 +90,17 @@ function param=load_mcstas_param(a, keyword)
     equal_sign_id= find(reversed_line == '=');
     name         = fliplr(strtok(reversed_line((equal_sign_id+1):end),sprintf(' \n\t\r\f;#')));
     if isempty(name)
-      column_sign_id = findstr(line, keyword);
+      column_sign_id = strfind(line, keyword);
       name = strtok(line((column_sign_id+length(keyword)+1):end));
     end
     if isfield(a.Data, name)
-      value = getfield(a.Data, name);
+      value = a.Data.(name);
     else
       value = strtok(fliplr(reversed_line(1:(equal_sign_id-1))),sprintf(' \n\t\r\f;#'));
       if ~isempty(str2num(value)), value = str2num(value); end
     end
     
     if ~isempty(value) && ~isempty(name) && ischar(name)
-      param = setfield(param, name, value);
+      param.(name) = value;
     end
   end
