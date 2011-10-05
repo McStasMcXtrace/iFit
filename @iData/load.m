@@ -39,7 +39,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -111,7 +111,7 @@ for i=1:length(out)
   %this_iData = iData_private_history(this_iData, mfilename, a, files{i}.Source);
 end % for
 
-if nargout == 0 & length(inputname(1))
+if nargout == 0 && ~isempty(inputname(1))
   assignin('caller',inputname(1),out);
 end
 

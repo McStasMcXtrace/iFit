@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -41,12 +41,12 @@ for i = 1:length(S)     % can handle multiple index levels
       b=set(b,'Signal', d);  b=setalias(b,'Signal', d);
 
       d=get(b,'Error'); 
-      if numel(d) > 1 & numel(d) == numel(get(a,'Error')),   
+      if numel(d) > 1 && numel(d) == numel(get(a,'Error')),   
         d=d(s.subs{:}); b=set(b,'Error', d); b = setalias(b, 'Error', d);
       end
 
       d=get(b,'Monitor');
-      if numel(d) > 1 & numel(d) == numel(get(a,'Monitor')), 
+      if numel(d) > 1 && numel(d) == numel(get(a,'Monitor')), 
         d=d(s.subs{:}); b=set(b,'Monitor', d);  b = setalias(b, 'Monitor', d);
       end
 
@@ -55,7 +55,7 @@ for i = 1:length(S)     % can handle multiple index levels
         if index <= length(b.Alias.Axis)
           x = getaxis(b,index);
           ax= b.Alias.Axis{index};   % definition of Axis
-          nd = size(x); nd=nd(find(nd>1));
+          nd = size(x); nd=nd(nd>1);
           if length(size(x)) == length(size(b)) && ...
                  all(size(x) == size(b))  && all(length(nd) == length(s.subs)) % meshgrid type axes
             b = setaxis(b, index, ax, x(s.subs{:}));
@@ -69,13 +69,13 @@ for i = 1:length(S)     % can handle multiple index levels
       
       % add command to history
       if ~isempty(inputname(2))
-        toadd = [ inputname(2) ];
+        toadd =   inputname(2);
       elseif length(s.subs) == 1
-        toadd = [  mat2str(double(s.subs{1})) ];
+        toadd =    mat2str(double(s.subs{1}));
       elseif length(s.subs) == 2
         toadd = [  mat2str(double(s.subs{1})) ', ' mat2str(double(s.subs{2})) ];
       else
-        toadd = [ '<not listable>' ];  
+        toadd =   '<not listable>';  
       end
       if ~isempty(inputname(1))
         toadd = [  b.Tag ' = ' inputname(1) '(' toadd ');' ];
@@ -100,9 +100,9 @@ for i = 1:length(S)     % can handle multiple index levels
     if length(b(:)) > 1   % iData array
       b = b(s.subs{:});
     else
-      if isnumeric(s.subs{:}) & length(s.subs{:}) == 1
+      if isnumeric(s.subs{:}) && length(s.subs{:}) == 1
         b=getaxis(b, s.subs{:});
-      elseif ischar(s.subs{:}) & length(str2num(s.subs{:})) == 1
+      elseif ischar(s.subs{:}) && ~isnan(str2double(s.subs{:}))
         b=getaxis(b, s.subs{:}); % definition of axis
       elseif ischar(s.subs{:})
         b=getalias(b, s.subs{:}); % same as b.'alias'
@@ -114,7 +114,7 @@ for i = 1:length(S)     % can handle multiple index levels
     if ~isstruct(b) % may be iData object
       b = get(b,s.subs);          % get field from iData
     else
-      b = getfield(b,s.subs);     % get field from struct
+      b = b.(s.subs);     % get field from struct
     end
   end   % switch s.type
 end % for s index level
