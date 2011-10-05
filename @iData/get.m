@@ -13,7 +13,7 @@ function [varargout] = get(a_in,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -201,7 +201,7 @@ if strcmp(name, 'Error')  % Error is sqrt(Signal) if not defined
     '] in iData object ' this.Tag '.\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
   end
 elseif strcmp(name, 'Monitor')  % monitor is 1 by default
-  if isempty(val) || all(val == 0) || all(val == 1)
+  if isempty(val) | all(val == 0) | all(val == 1)
     val = 1;
   end
   if length(val) ~= 1 && ~all(size(val) == size(this))
