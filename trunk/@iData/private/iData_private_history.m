@@ -11,7 +11,7 @@ if ~ischar(meth)
   return
 end
 
-if nargin >= 3 | length(varargin)
+if nargin >= 3 || ~isempty(varargin)
   toadd = ''; tocat = '';
   for i1=1:length(varargin)
     if i1 > 1, c = ','; else c=''; end
@@ -36,7 +36,7 @@ if nargin >= 3 | length(varargin)
   
 end
 
-for index=1:length(a)
+for index=1:numel(a)
   d=a(index);
   if isempty(d.Command), 
   	d.Command = { meth }; 
@@ -48,4 +48,7 @@ for index=1:length(a)
   a(index) = d;
 end
 
-
+% update output
+if nargout == 0 && ~isempty(inputname(1))
+  assignin('caller',inputname(1),a);
+end

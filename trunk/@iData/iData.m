@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -232,7 +232,7 @@ function b=iData_struct2iData(a)
     b.Data = a.Data;
   end
   for index=1:length(f)
-    if ~isempty(strmatch(f{index},fb,'exact'))
+    if any(strcmp(f{index},fb))
       b = set(b,f{index}, getfield(a,f{index}));
     end
   end
@@ -241,9 +241,8 @@ function b=iData_struct2iData(a)
     b.Data = a;
 %  else
 %    disp(['iData: warning: could not import all fields from structure.' ]);
-
-  if isempty(b.Command), b.Command= cellstr('iData(<struct>)'); end
   end
+  if isempty(b.Command), b.Command= cellstr('iData(<struct>)'); end
   
 % ============================================================================
 % iData_cell2iData: converts a cell into an iData cell

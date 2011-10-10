@@ -8,7 +8,7 @@ function [val, lab] = getaxis(s,ax)
 %     the value of the axis is returned.
 %   when the axis input parameter is given as a string/name (e.g. '1' or 'x') 
 %     the corresponding axis definition is returned.
-%   The Signal/Monitor corresponds to axis 0, and can also be accessed with
+%   The Signal/Monitor corresponds to axis rank 0, and can also be accessed with
 %     getaxis(a, 'Signal') and a{0}.
 %   The Error/Monitor an also be accessed with getaxis(a, 'Error').
 %   Axis 1 is often labeled as 'y' (rows, vertical), 2 as 'x' (columns, horizontal).
@@ -25,7 +25,7 @@ function [val, lab] = getaxis(s,ax)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'y')
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
@@ -35,9 +35,10 @@ if nargin == 1
   ax = '';
 end
 
-if length(s(:)) > 1
+% handle iData array
+if numel(s) > 1
   val = cell(size(s)); lab=val;
-  for index=1:length(s(:))
+  for index=1:numel(s)
     [v,l] = getaxis(s(index), ax);
     val{index} =v;
     lab{index} =l;
@@ -45,19 +46,23 @@ if length(s(:)) > 1
   return
 end
 
+% now we have a single object
 val = []; lab=''; link='';
 
+% syntax: getaxis(object) -> returns all axes definitions
 if isempty(ax)
-  if ischar(ax)
+  if ischar(ax) % syntax: getaxis(object, '') -> definitions
     val = s.Alias.Axis;
-  else
+  else          % syntax: getaxis(object, []) -> values
     val = {};
     for index=1:length(s.Alias.Axis)
-      val{end+1} = getaxis(s, index);
+      [val{end+1}, lab{end+1}] = getaxis(s, index); % consecutive calls for each axis
     end
   end
   return
 end
+
+% syntax: getaxis(object, number) -> return the axis value
 if isnumeric(ax) % given as a number, return a number
   if length(ax) > 1
     val = {}; lab={};
@@ -71,8 +76,8 @@ if isnumeric(ax) % given as a number, return a number
     return
     % iData_private_error(mfilename, [ 'The ' num2str(ax) '-th rank axis request is higher than the iData Signal dimension ' num2str(ndims(s)) ]);
   end
-  if ax == 0
-    val=get(s,'Signal'); 
+  if ax == 0  % syntax: getaxis(object, 0) -> object.Signal
+    val= get(s,'Signal'); 
     m  = get(s,'Monitor'); m=real(m);
     link='Signal';
     if not(all(m == 1 | m == 0))
@@ -107,7 +112,7 @@ else % given as a char/cell, return a char/cell
     val=get(s,'Error'); 
     m  = get(s,'Monitor'); m=real(m);
     link='Error';
-    if not(all(m == 1 | m == 0))
+    if not(all(m(:) == 1 | m(:) == 0))
       val = genop(@rdivide,val,m);
     end
   else
