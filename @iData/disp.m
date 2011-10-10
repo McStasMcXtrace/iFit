@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -90,6 +90,11 @@ else
     disp('[Rank]         [Value]  [Description]');
     for index=0:length(s_in.Alias.Axis)
       [v, l] = getaxis(s_in, num2str(index,2));
+      if ~ischar(v)
+        if numel(v) > 5, v=v(1:10); end
+        v=mat2str(v);
+        if length(v) > 12, v = [v(1:12) '...' ]; end 
+      end
       s=NaN; f=NaN;
       try
         if prod(size(s_in)) < 1e4
@@ -100,12 +105,12 @@ else
       X      = getaxis(s_in, index); x=X(:);
       if length(x) == 1
         fprintf(1,'%6i %15s  %s [%g]', index, v, l, x);
-      elseif isvector(X) & ~isnan(s) & ~isnan(f)
+      elseif isvector(X) && ~isnan(s) && ~isnan(f)
         fprintf(1,'%6i %15s  %s [%g:%g] length [%i] <%g +/- %g>', index, v, l, min(x), max(x),length(X), f, s);
       else
         fprintf(1,'%6i %15s  %s [%g:%g] size [%s]', index, v, l, min(x), max(x),num2str(size(X)));
       end
-      if index==0 && not(all(m==1 | m==0))
+      if index==0 && not(all(m(:)==1 | m(:)==0))
         fprintf(1,' (per monitor)\n');
       else
         fprintf(1,'\n');

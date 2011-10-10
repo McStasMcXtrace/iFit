@@ -77,7 +77,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.33 $
+% Version: $Revision: 1.34 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -381,7 +381,7 @@ function c=least_absolute(Signal, Error, Model)
 % weighted least absolute criteria
 % the return value is a vector, and most optimizers use its sum (except LM).
 % |Signal-Model|/Error
-  if all(Error == 0) || length(Error) == 1
+  if isempty(Error) || isscalar(Error) || all(Error == Error(end))
     index = find(isfinite(Model) & isfinite(Signal));
     c = abs(Signal(index)-Model(index)); % raw least absolute
   else
@@ -389,11 +389,13 @@ function c=least_absolute(Signal, Error, Model)
     Error = abs(Error);
     index = find(Error~=0 & isfinite(Error));
     minError = min(Error(index));
-    % find zero Error, which should be used whenever possible
+    % find zero Error, which should be replaced by minimal Error whenever possible
     index = find(Error == 0);
     Error(index) = minError;
     index = find(isfinite(Error) & isfinite(Model) & isfinite(Signal));
-    c=abs((Signal(index)-Model(index))./Error(index));
+    if isempty(index), c=0;
+    else               c=abs((Signal(index)-Model(index))./Error(index));
+    end
   end
 end % least_absolute
 
@@ -423,13 +425,13 @@ function r=eval_corrcoef(a, modelValue)
   Error  = iData_private_cleannaninf(get(a,'Error'));
   Model  = iData_private_cleannaninf(get(modelValue, 'Signal'));
   m      = iData_private_cleannaninf(get(a,'Monitor')); m=real(m);
-  if not(all(m == 1 | m == 0)),
+  if not(all(m(:) == 1 | m(:) == 0)),
     Model  = genop(@rdivide,Model,m);            % fit(signal/monitor) 
     Signal = genop(@rdivide,Signal,m); Error=genop(@rdivide,Error,m); % per monitor
   end
   
   % compute the correlation coefficient
-  if all(Error == 0)
+  if isempty(Error) || isscalar(Error) || all(Error(:) == Error(end))
     wt = 1;
   else
     wt = 1./Error;

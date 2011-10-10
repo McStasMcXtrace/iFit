@@ -4,7 +4,7 @@ function a=load_ill_tas(a)
 % Simple postprocessing for ILL/TAS files.
 % Supports ILL TAS files, including those with multidetectors.
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -107,10 +107,10 @@ else
 end
 
 FX = []; KFIX = [];
-index_fx  =findfield(a, 'FX', 'case');
-if ~isempty(index_fx), FX = getfield(a, index_fx); end
+index_fx  =findfield(a, 'FX', 'case'); 
+if ~isempty(index_fx), FX = get(a, index_fx{1}); end
 index_kfix=findfield(a, 'KFIX', 'case');
-if ~isempty(index_fx), KFIX = getfield(a, index_kfix); end
+if ~isempty(index_fx), KFIX = get(a, index_kfix{1}); end
 
 % get the monitor
 if ~isempty(index_m12)

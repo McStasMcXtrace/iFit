@@ -1,5 +1,5 @@
-function s_out = rmalias(a_in,names)
-% [s,...] = rmalias(s, AliasName) : removes iData aliases
+function this = rmalias(this,names)
+% s = rmalias(s, AliasName) : removes iData aliases
 %
 %   @iData/rmalias function to remove iData aliases.
 %   The function works also when AliasName is given as a cell string.
@@ -11,7 +11,7 @@ function s_out = rmalias(a_in,names)
 % output: s: array (iData)
 % ex:     rmalias(iData,'Temperature')
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/setalias
 
 % EF 27/07/00 creation
@@ -20,8 +20,8 @@ if nargin == 1
   names='';
 end
 
-s_out = setalias(a_in, names);
+this = setalias(this, names);
 
-if nargout == 0 & length(inputname(1))
-  assignin('caller',inputname(1),s_out);
+if nargout == 0 && ~isempty(inputname(1))
+  assignin('caller',inputname(1), this);
 end
