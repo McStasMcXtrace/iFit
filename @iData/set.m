@@ -1,4 +1,4 @@
-function s_out = set(a_in,varargin)
+function this = set(this,varargin)
 % [s,...] = set(s, 'PropertyName', Propertyvalue, ...) : set iData properties
 %
 %   @iData/set function to set iData properties.
@@ -13,11 +13,13 @@ function s_out = set(a_in,varargin)
 %
 % ex      : set(iData,'Title','A nice Title')
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/get, iData/setalias, iData/setaxis
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
+% ============================================================================
+% calls: subsasgn
 
 % calls: setalias
 
@@ -39,89 +41,59 @@ if nargin == 1
   disp('Error:   (double)   The error bars on the signal to be used for data set math operations/plotting.');
   disp('Monitor: (double)   The monitor(statistical weight) on the signal to be used for data set math operations');
   disp('ModificationDate: (string)   last object modification date');
-  s_out = iData(a_in);
+  this = iData(this);
   return
 end
 
-s_out = a_in(:);
-for index = 1:length(s_out)
-  a = s_out(index); % current object in array/single element
-  cmd=a.Command;
-  
-  i1 = 1; % index in input parameters varargin
-  
-  while i1<=length(varargin)     % first parse fields and values
-    if ischar(varargin{i1})      % normal 'PropertyName', Propertyvalue
-      prop_names  = varargin(i1);         % get single PropertyName
-      prop_values = varargin(i1+1);       % get single Propertyvalue
-      i1 = i1+2;
-    elseif isstruct(varargin{i1})       % import structure
-      prop_names = fieldnames(varargin{i1});         % get PropertyNames
-      prop_values = struct2cell(varargin{i1});
-      i1 = i1+1;
-    elseif iscell(varargin{i1}) && i1 < length(varargin) % import from 2 cells
-      prop_names = varargin{i1};         % get PropertyNames
-      prop_values = varargin{i1+1};      % get Propertyvalues
-      i1 = i1+2;
-    else
-      iData_private_error(mfilename, [ 'cannot handle input Property of type ' class(varargin{i1}) ])
-    end
-    for j1=1:length(prop_names) % loop on properties cell
-      prop_name  = prop_names{j1};
-      prop_value = prop_values{j1};
-      % check for aliases
-      alias_names = a.Alias.Names; % this is a cellstr of Alias names
-      alias_num   = find(strcmpi(prop_name, alias_names));
-      if length(alias_num) >= 1
-        alias_values = a.Alias.Values;
-        name = alias_names{alias_num(1)};
-        prop_name = alias_values{alias_num(1)};
-        if ~ischar(prop_name), prop_name=[]; end
-        % check if prop_name exists, and use it'
-        try
-          if (isempty(prop_name) && (isnumeric(prop_value) || islogical(prop_value))) ...
-            || isnumeric(prop_name) || strcmp(prop_name, prop_value)
-            setalias(a, name, prop_value);
-          else
-            setalias(a, prop_name, prop_value);
-            %eval([ 'a.' prop_name '= prop_value;' ]);
-          end
-        catch
-          if isnumeric(prop_name), 
-            prop_name = mat2str(prop_name(1:10)); 
-            if length(prop_name) > 15, prop_name = [prop_name(1:12) '...' ]; end 
-          end
-          iData_private_warning(mfilename, sprintf('can not set Property Alias %s=%s in object %s.', name, prop_name, [ inputname(1) ' '  a.Tag ]))
-        end
-      else
-        if strncmpi(prop_name, 'filename', 8)
-          prop_name = 'Source';
-        end
-        if strncmpi(prop_name, 'alias', 5)
-          iData_private_warning(mfilename, 'to set Aliases, use the setalias function');
-        elseif strncmpi(prop_name, 'axis', 4)
-          iData_private_warning(mfilename, 'to set Axis, use the setaxis function, or the syntax iData{index}.');
-        else
-          try
-            eval(['a.' prop_name '= prop_value;' ]);
-          catch
-            iData_private_warning(mfilename, sprintf('can not find Property %s in object %s. Setting it.', prop_name, [ inputname(1) ' '  a.Tag ]))
-            if ~isempty(prop_value) || isnumeric(prop_value), setalias(a, prop_name, prop_value); end
-          end
-        end
-      end
-    end % for properties cell
-  end % while
-  a.Command=cmd;
-  a = iData_private_history(a, mfilename, a, varargin{:});  
-  
-  s_out(index) = iData(a); % final check
-end % for index
-
-if length(s_out) > 1
-  s_out = reshape(s_out,size(a_in));
+% handle array of objects
+if numel(this) > 1
+  for index=1:numel(this)
+    this(index) = set(this(index), varargin{:});
+  end
+  if nargout == 0 && ~isempty(inputname(1)) % update array inplace
+    assignin('caller', inputname(1), this);
+  end
+  return
 end
 
+% handle single object
+% extract the Property/Value pairs
+i1 = 1; % index in input parameters varargin
+prop_names = {}; prop_values = {};
+index = 1;
+while index < length(varargin)    % first parse fields and values
+  if ischar(varargin{index})      % normal 'PropertyName', Propertyvalue
+    prop_names{end+1}  = varargin{index};         % get single PropertyName
+    prop_values{end+1} = varargin{index+1};       % get single PropertyValue
+    index = index+2;
+  elseif isstruct(varargin{index})         % import structure
+    prop_names  = fieldnames(varargin{index});         % get PropertyNames
+    prop_values = struct2cell(varargin{index});
+    index = index+1;
+  elseif iscellstr(varargin{index}) && index < length(varargin) % import from 2 cells
+    prop_names  = varargin{index};        % get PropertyNames
+    prop_values = varargin{index+1};      % get PropertyValue
+    index = index+2;
+  else
+  varargin
+    iData_private_error(mfilename, [ 'PropertyName ' num2str(index) ' should be char strings in object ' inputname(1) ' ' this.Tag ' and not ' class(varargin{index}) ]);
+  end
+end
+
+% now update the Properties
+for index=1:length(prop_names) % loop on properties cell
+  % test if this is a unique property, or a composed one
+  if isvarname(prop_names{index})  % extract iData field/alias
+    s    = struct('type', '.', 'subs', prop_names{index});
+    this = subsasgn(this, s, prop_values{index});
+  else % this is a compound property, such as set(this,'Data.Signal', ...)
+  
+    eval([ 'this.'  prop_names{index} ' = prop_values{index};' ]);
+  end
+end
+
+% update the object
 if nargout == 0 && ~isempty(inputname(1))
-  assignin('caller',inputname(1),s_out);
+  assignin('caller',inputname(1),this);
 end
+

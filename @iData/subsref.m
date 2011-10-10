@@ -6,12 +6,15 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
 % EF 27/07/00 creation
 % EF 23/09/07 iData impementation
+% ==============================================================================
+% inline: private function iData_getalias
+% calls:  subsref (recursive), getaxis, getalias, get(Signal, Error, Monitor)
 
 b = a;  % will be refined during the index level loop
 
@@ -22,8 +25,8 @@ end
 for i = 1:length(S)     % can handle multiple index levels
   s = S(i);
   switch s.type
-  case '()'             % extract Data using indexes
-    if length(b(:)) > 1   % iData array
+  case '()' % ======================================================== array
+    if numel(b) > 1   % iData array
       b = b(s.subs{:});
     else                  % single iData
       try % disable some warnings
@@ -34,10 +37,13 @@ for i = 1:length(S)     % can handle multiple index levels
         warn = warning('off');
       end
       % this is where specific class structure is taken into account
-      if any(cellfun('isempty',s.subs)), b=[]; return; end
-      if ischar(s.subs{1}) && ~strcmp(s.subs{1},':'), b=get(b, s.subs{:}); return; end
-      if length(s.subs) == 1 && all(s.subs{:} == 1), return; end
-      d=get(b,'Signal'); d=d(s.subs{:});  
+      if any(cellfun('isempty',s.subs)), b=[]; return; end        % b([])
+      if ischar(s.subs{1}) && ~strcmp(s.subs{1},':')              % b(name) -> s.(name) alias/field value
+        s.type='.';
+        b=subsref(b, s); return;
+      end
+      if length(s.subs) == 1 && all(s.subs{:} == 1), return; end  % b(1)
+      d=get(b,'Signal'); d=d(s.subs{:});                          % b(indices)
       b=set(b,'Signal', d);  b=setalias(b,'Signal', d);
 
       d=get(b,'Error'); 
@@ -96,32 +102,121 @@ for i = 1:length(S)     % can handle multiple index levels
       end
 
     end               % if single iData
-  case '{}'
-    if length(b(:)) > 1   % iData array
-      b = b(s.subs{:});
+  case '{}' % ======================================================== cell
+    if isnumeric(s.subs{:}) && isscalar(s.subs{:})
+      b=getaxis(b, s.subs{:});  % b{rank} value of axis
+    elseif ischar(s.subs{:}) && ~isnan(str2double(s.subs{:}))
+      b=getaxis(b, s.subs{:});  % b{'rank'} definition of axis
+    elseif ischar(s.sub{:})
+      b=getalias(b, s.subs{:}); % b{'alias'} same as b.'alias' definition
     else
-      if isnumeric(s.subs{:}) && length(s.subs{:}) == 1
-        b=getaxis(b, s.subs{:});
-      elseif ischar(s.subs{:}) && ~isnan(str2double(s.subs{:}))
-        b=getaxis(b, s.subs{:}); % definition of axis
-      elseif ischar(s.subs{:})
-        b=getalias(b, s.subs{:}); % same as b.'alias'
-      else
-        iData_private_error(mfilename, [ 'do not know how to extract cell index in ' inputname(1)  ' ' b.Tag '.' ]);
-      end
+      iData_private_error(mfilename, [ 'do not know how to extract cell index in ' inputname(1)  ' ' b.Tag '.' ]);
     end
-  case '.'
-    if ~isstruct(b) % may be iData object
-      b = get(b,s.subs);          % get field from iData
+  case '.'  % ======================================================== structure
+    % protect some fields
+    fieldname = s.subs;
+    if iscellstr(fieldname) && length(fieldname) > 1
+      fieldname = fieldname{1};
+    end
+    if strcmpi(fieldname, 'filename') % 'alias of alias'
+      fieldname = 'Source';
+    elseif strcmpi(fieldname, 'history')
+      fieldname = 'Command';
+    elseif strcmpi(fieldname, 'axes')
+      fieldname = 'Axis';
+    end
+    if any(strcmpi(fieldname, 'alias'))
+      b = getalias(b);
+    elseif any(strcmpi(fieldname, 'axis'))
+      b = getaxis(b);
+    elseif any(strcmpi(fieldname, fieldnames(b))) % structure/class def fields: b.field
+      b = b.(fieldname);
     else
-      b = b.(s.subs);     % get field from struct
+      b = iData_getalias(b,fieldname); % get alias value from iData: b.alias
     end
   end   % switch s.type
 end % for s index level
 
-% test if the requested field is a Data one -> value must be numeric
-if ischar(b) 
-  if strcmp(S(1),'Data') || strcmp(strtok(b, '.'), 'Data')
-    b = get(a, b);
+% ==============================================================================
+% private function iData_getalias
+function val = iData_getalias(this,fieldname)
+% iData_getalias: iData alias evaluation
+%   evaluates s.name to be first s.link, then 'link' (with 'this' defined).
+%   NOTE: for standard Aliases (Error, Monitor), makes a dimension check on Signal
+
+% EF 23/09/07 iData impementation
+
+  val = [];
+  
+  if ~isa(this, 'iData'),   return; end
+  if ~isvarname(fieldname), return; end % not a single identifier (should never happen)
+
+  % searches if this is an alias (it should be)
+  alias_num   = find(strcmpi(fieldname, this.Alias.Names));  % index of the Alias requested
+  if isempty(alias_num), 
+    iData_private_error(mfilename, sprintf('can not find Property "%s" in object %s.', fieldname, this.Tag ));
+    return; 
+  end                    % not a valid alias
+  
+  alias_num = alias_num(1);
+  name      = this.Alias.Names{alias_num};
+  val       = this.Alias.Values{alias_num};  % definition/value of the Alias
+  
+  if (isnumeric(val) || islogical(val))
+    if ~isempty(strcmp(name, 'Monitor')) && all(val(:) == 0) % Monitor=0 -> 1
+      val = 1;
+    end
+    return; 
   end
-end
+  
+  % the link evaluation must be numeric in the end...
+  if ~ischar(val),       return; end  % returns numeric/struct/cell ... content as is.
+  if  strcmp(val, name), return; end  % avoids endless iteration.
+  
+  % val is now only a char
+  % handle URL content (possibly with # anchor)
+  if  (strncmp(val, 'http://', length('http://'))  || ...
+       strncmp(val, 'https://',length('https://')) || ...
+       strncmp(val, 'ftp://',  length('ftp://'))   || ...
+       strncmp(val, 'file://', length('file://')) )
+    % evaluate external link
+    val = iLoad(val); % stored as a structure
+    return
+  end
+  
+  % gets the alias value (evaluate the definition) this.alias -> this.val
+  if ~isempty(val)
+    % handle # anchor style alias
+    if val(1) == '#', val = val(2:end); end % HTML style link
+    % evaluate the alias definition (recursive call through get -> subsref)
+    try
+      % in case this is an other alias/link
+      val = get(this,val); % gets this.(val)
+    catch
+      % evaluation failed, the value is the char (above 'get' will then issue a
+      % 'can not find Property' error, which will come there in the end
+    end
+  end
+
+  % link value has been evaluated, do check in case of standard aliases
+  if strcmp(fieldname, 'Error')  % Error is sqrt(Signal) if not defined
+    s = get(this,'Signal');
+    if isempty(val) && isnumeric(s)
+      val = sqrt(abs(double(s)));
+    end
+    if ~isscalar(val) && ~isequal(size(val),size(this))
+      iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) ...
+      '] has not the same size as the Signal [' num2str(size(this)) ...
+      '] in iData object ' this.Tag '.\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
+    end
+  elseif strcmp(fieldname, 'Monitor')  % monitor is 1 by default
+    if isempty(val) || all(val(:) == 0) || all(val(:) == 1)
+      val = 1;
+    end
+    if length(val) ~= 1 && ~all(size(val) == size(this))
+      iData_private_warning(mfilename,[ 'The Monitor [' num2str(size(val)) ...
+        '] has not the same size as the Signal [' num2str(size(this)) ...
+        '] in iData object ' this.Tag '.\n\tTo use the default Monitor=1 use s.Monitor=[].' ]);
+    end
+  end
+
