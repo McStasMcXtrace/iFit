@@ -8,7 +8,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
@@ -35,7 +35,7 @@ catch
 end
 
 % in all cases, resample the data set on a grid
-a = interp(a,'grid');
+%a = interp(a,'grid');
 % make axes single vectors for sum/trapz/... to work
 for index=1:ndims(a)
   [x, xlab] = getaxis(a, index);

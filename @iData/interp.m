@@ -26,7 +26,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -235,7 +235,7 @@ if ndims(a) > 1 && (length(i_signal) ~= numel(i_signal))
 end
 
 if requires_meshgrid
-  if ndims(a) == 1 && isvector(a) == 1
+  if length(f_axes) == 1 || (ndims(a) == 1 && isvector(a) == 1)
     % nothing to do as we have only one axis, no grid
   else
     % call ndgrid
@@ -316,13 +316,12 @@ end
 
 % transfer Data and Axes
 Data = a.Data;
-Data.Signal =f_signal;
-Data.Error  =f_error;
-Data.Monitor=f_monitor;
+b.Data.Signal =f_signal;
+b.Data.Error  =f_error;
+b.Data.Monitor=f_monitor;
 for index=1:length(f_axes)
-  Data=setfield(Data,[ 'axis' num2str(index) ], f_axes{index});
+  b.Data.([ 'axis' num2str(index) ]) = f_axes{index};
 end
-b.Data = Data;
 
 % clear aliases
 g = getalias(b); g(1:3) = [];
@@ -334,11 +333,14 @@ setalias(b,'Monitor','Data.Monitor');
 
 % clear axes
 setaxis (b, [], getaxis(b));
+
 for index=1:length(f_axes)
-  if length(f_axes) == length(i_labels)
+  if index <= length(i_labels)
     b=setalias(b,[ 'axis' num2str(index) ], [ 'Data.axis' num2str(index) ], i_labels{index});
-    b=setaxis (b, index, [ 'axis' num2str(index) ]);
+  else
+    b=setalias(b,[ 'axis' num2str(index) ], [ 'Data.axis' num2str(index) ]);
   end
+  b=setaxis (b, index, [ 'axis' num2str(index) ]);
 end
 b.Command=cmd;
 b = iData_private_history(b, mfilename, a, varargin{:});  
