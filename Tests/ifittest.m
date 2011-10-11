@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -214,7 +214,8 @@ case 'Fit_9_ifitmakefunc'
     'p(1)*sin((x-p(2))/p(3)).*exp(-x/p(4))+p(5)','automatic');
   which('sinexp');
   % perform the fit
-  p1=fits(a,sinexp,[1.15 0.4 0.15 1.7 0.2],'fminralg');
+  [p1, e, m, o]=fits(a,sinexp,[1.15 0.4 0.15 1.7 0.2],'fminralg');
+  plot(a, o.modelValue);
   if norm(abs(p1(:))-p(:)) > 0.8
     result='FAILED';
   else result = 'OK  ifitmakefunc fits';

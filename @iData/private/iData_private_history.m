@@ -22,7 +22,7 @@ if nargin >= 3 || ~isempty(varargin)
       toadd = [ toadd c b.Tag ];
       if isempty(tocat), tocat = ' %'; end
       tocat = [ tocat ' <' class(b) ' ' b.Tag ' ' b.Source '> ' ];
-    elseif isnumeric(b) | islogical(b) 
+    elseif isnumeric(b) || islogical(b) 
       if ndims(b) > 2,   b=b(:); end
       if numel(b) > 10, b=b(1:10); toadd = [ toadd c ' ' mat2str(double(b)) '...' ]; 
       else 

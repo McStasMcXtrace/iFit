@@ -26,7 +26,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -111,7 +111,7 @@ for index=1:length(varargin)
 end
 
 % check for method to be valid
-if isempty(strmatch(method, {'linear','cubic','spline','nearest'}))
+if isempty(any(strcmp(method, {'linear','cubic','spline','nearest'})))
   iData_private_error(mfilename,['Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest.']);
 end
 
