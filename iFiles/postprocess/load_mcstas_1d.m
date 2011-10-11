@@ -4,7 +4,7 @@ function a=load_mcstas_1d(a)
 % Returns an iData style dataset from a McStas 1d monitor file, or even simple XYE files
 % Some labels are also searched.
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % inline: load_mcstas_param
@@ -49,7 +49,7 @@ if isfield(d,'Headers') && isfield(d.Headers,'MetaData')
     label = strtrim(a.Data.Headers.MetaData.component);
     label(1:length('# component: '))='';
     a.Label = label;
-    set(a,'Data.Component', label);
+    a.Data.Component = label;
     setalias(a, 'Component', 'Data.Component','Component name');
   end
 end

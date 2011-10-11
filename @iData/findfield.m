@@ -17,7 +17,7 @@ function [match, types, dims] = findfield(s, field, option)
 %         nelements: total number of elements in iData fields (double)
 % ex:     findfield(iData) or findfield(iData,'Title') or findfield(s,'Title','exact case')
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/set, iData/get, iData/findobj, iData/findstr
 
 % EF 23/09/07 iData implementation
@@ -52,7 +52,7 @@ if ~isempty(field)
     matchs = match;
   end
   if strfind(option, 'exact')
-    index = strmatch(field, matchs, 'exact');
+    index = find(strcmp(field, matchs));
   else
     if iscellstr(field)
       index = [];
@@ -108,9 +108,9 @@ catch
   index = cellfun('isclass', c, 'struct'); t(find(index)) = {'struct'};
   index = cellfun('isclass', c, 'cell');   t(find(index)) = {'cell'};
   index = cellfun('isclass', c, 'uint8');  t(find(index)) = {'uint8'};
-  index = cellfun('isclass', c, 'uint16');  t(find(index)) = {'uint16'};
-  index = cellfun('isclass', c, 'uint32');  t(find(index)) = {'uint32'};
-  index = cellfun('isclass', c, 'uint64');  t(find(index)) = {'uint64'};
+  index = cellfun('isclass', c, 'uint16'); t(find(index)) = {'uint16'};
+  index = cellfun('isclass', c, 'uint32'); t(find(index)) = {'uint32'};
+  index = cellfun('isclass', c, 'uint64'); t(find(index)) = {'uint64'};
   n = cellfun('length', c);
 end
 

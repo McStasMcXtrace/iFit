@@ -10,7 +10,7 @@ function b = pack(a)
 % output: f: compressed object or array (iData)
 % ex:     b=pack(a);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/sparse, iData/full, iData/saveas
 
 if length(a) > 1
@@ -32,7 +32,7 @@ for index=1:length(alias_names)
     alias_values{index} = get(a, alias_names{index});
   end
   % extract rank if this is an axis
-  rank = strmatch(alias_names{index}, axis_links, 'exact');
+  rank = find(strcmp(alias_names{index}, axis_links));
   if ~isempty(rank)
     alias_ranks(index) = rank(1);
   end
@@ -65,9 +65,12 @@ end
 
 largemat = find(nelements > 10000);
 for index=1:length(largemat)
-  if ~isempty(strmatch(types{index}, {'double','single','logical','int32','int64','uint32','uint64'}))
+  if any(strcmp(types{index}, {'double','single','logical','int32','int64','uint32','uint64'}))
     f = match{index}; % field name
     d = get(a, f);    % content
+    if ndims(d) > 2   % sparse only works with 1-2 d vector/matrix
+      continue
+    end
     % convert d to either logical or double so that sparse can apply
     if ~strcmp(types{index}, 'double') && ~strcmp(types{index}, 'logical')
       d = double(d);
@@ -76,7 +79,7 @@ for index=1:length(largemat)
       who_sparse = whos('d'); 
       d = full(d);
       who_full   = whos('d'); 
-    else
+    elseif
       who_full   = whos('d'); 
       d = sparse(d);
       who_sparse = whos('d'); 
