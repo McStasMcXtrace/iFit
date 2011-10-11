@@ -6,14 +6,14 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
 % EF 27/07/00 creation
 % EF 23/09/07 iData impementation
 % ==============================================================================
-% inline: private function iData_getalias
+% inline: private function iData_getalias (mainly used)
 % calls:  subsref (recursive), getaxis, getalias, get(Signal, Error, Monitor)
 
 b = a;  % will be refined during the index level loop
@@ -115,7 +115,7 @@ for i = 1:length(S)     % can handle multiple index levels
   case '.'  % ======================================================== structure
     % protect some fields
     fieldname = s.subs;
-    if iscellstr(fieldname) && length(fieldname) > 1
+    if length(fieldname) > 1 && iscell(fieldname)
       fieldname = fieldname{1};
     end
     if strcmpi(fieldname, 'filename') % 'alias of alias'
@@ -129,10 +129,19 @@ for i = 1:length(S)     % can handle multiple index levels
       b = getalias(b);
     elseif any(strcmpi(fieldname, 'axis'))
       b = getaxis(b);
-    elseif any(strcmpi(fieldname, fieldnames(b))) % structure/class def fields: b.field
+    elseif any(strcmp(fieldname, fieldnames(b))) % structure/class def fields: b.field
       b = b.(fieldname);
     else
-      b = iData_getalias(b,fieldname); % get alias value from iData: b.alias
+      b = iData_getalias(b,fieldname); % get alias value from iData: b.alias MAIN SPENT TIME
+    end
+    
+    % test if the result is again an Alias or Field
+    if ischar(b) && size(b,1) == 1
+      if any(strcmpi(b, fieldnames(a)))
+        b = a.(b);      % fast access to static fields
+      elseif any(strcmpi(strtok(b,'.'), fieldnames(a))) || any(strcmpi(strtok(b,'.'), a.Alias.Names))
+        b = get(a, b);  % try to evaluate char result
+      end
     end
   end   % switch s.type
 end % for s index level
@@ -154,7 +163,7 @@ function val = iData_getalias(this,fieldname)
   % searches if this is an alias (it should be)
   alias_num   = find(strcmpi(fieldname, this.Alias.Names));  % index of the Alias requested
   if isempty(alias_num), 
-    iData_private_error(mfilename, sprintf('can not find Property "%s" in object %s.', fieldname, this.Tag ));
+    iData_private_error(mfilename, sprintf('can not find Property "%s" in object %s "%s".', fieldname, this.Tag, this.Title ));
     return; 
   end                    % not a valid alias
   
@@ -163,7 +172,7 @@ function val = iData_getalias(this,fieldname)
   val       = this.Alias.Values{alias_num};  % definition/value of the Alias
   
   if (isnumeric(val) || islogical(val))
-    if ~isempty(strcmp(name, 'Monitor')) && all(val(:) == 0) % Monitor=0 -> 1
+    if strcmp(name, 'Monitor') && all(val(:) == 0) % Monitor=0 -> 1
       val = 1;
     end
     return; 
@@ -190,8 +199,8 @@ function val = iData_getalias(this,fieldname)
     if val(1) == '#', val = val(2:end); end % HTML style link
     % evaluate the alias definition (recursive call through get -> subsref)
     try
-      % in case this is an other alias/link
-      val = get(this,val); % gets this.(val)
+      % in case this is an other alias/link: this is were we propagate in the object
+      val = get(this,val); % gets this.(val)                    MAIN SPENT TIME
     catch
       % evaluation failed, the value is the char (above 'get' will then issue a
       % 'can not find Property' error, which will come there in the end
@@ -207,7 +216,7 @@ function val = iData_getalias(this,fieldname)
     if ~isscalar(val) && ~isequal(size(val),size(this))
       iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) ...
       '] has not the same size as the Signal [' num2str(size(this)) ...
-      '] in iData object ' this.Tag '.\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
+      '] in iData object ' this.Tag ' "' this.Title '".\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
     end
   elseif strcmp(fieldname, 'Monitor')  % monitor is 1 by default
     if isempty(val) || all(val(:) == 0) || all(val(:) == 1)
@@ -216,7 +225,7 @@ function val = iData_getalias(this,fieldname)
     if length(val) ~= 1 && ~all(size(val) == size(this))
       iData_private_warning(mfilename,[ 'The Monitor [' num2str(size(val)) ...
         '] has not the same size as the Signal [' num2str(size(this)) ...
-        '] in iData object ' this.Tag '.\n\tTo use the default Monitor=1 use s.Monitor=[].' ]);
+        '] in iData object ' this.Tag ' "' this.Title '".\n\tTo use the default Monitor=1 use s.Monitor=[].' ]);
     end
   end
 

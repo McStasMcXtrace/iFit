@@ -25,7 +25,7 @@ function this = setalias(this,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -44,7 +44,7 @@ if nargin == 1
         if isnumeric(v), v = mat2str(v(1:min(20,length(v))));
         else             v = class(v);
         end
-        iData_private_warning(mfilename,[ 'the Alias ' a.Alias.Names{j1} '=' v ' is not valid in object ' inputname(1) ' ' a.Tag '.' ]);
+        iData_private_warning(mfilename,[ 'the Alias ' a.Alias.Names{j1} '=' v ' is not valid in object ' inputname(1) ' ' a.Tag ' "' a.Title '".' ]);
       end
     end
   end
@@ -87,7 +87,7 @@ for index=1:length(names) % loop on alias names
   
   % check that name is not a class member
   if strcmpi(name, fieldnames(this))
-    iData_private_warning(mfilename,[ 'the Alias ' name ' is a protected name in object ' inputname(1) ' ' this.Tag '.' ]);
+    iData_private_warning(mfilename,[ 'the Alias ' name ' is a protected name in object ' inputname(1) ' ' this.Tag ' "' this.Title '".' ]);
     continue
   end
   % check if the alias name is not a file name/link

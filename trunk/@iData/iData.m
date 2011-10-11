@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -282,31 +282,31 @@ if iscell(in), in = in{1}; end
 in.ModificationDate = datestr(now);
 % check type of fields
 if ~ischar(in.Title) & ~iscellstr(in.Title)
-  iData_private_warning(mfilename,'Title must be a char or cellstr');
+  iData_private_warning(mfilename,['Title must be a char or cellstr in iData object ' in.Tag ' "' in.Title ]);
   in.Title = '';
 end
 if ~ischar(in.Tag)
-  iData_private_warning(mfilename,'Tag must be a char');
+  iData_private_warning(mfilename,['Tag must be a char in iData object ' in.Tag ' "' in.Title ]);
   in = iData_private_newtag(in);
 end
 if ~ischar(in.Source)
-  iData_private_warning(mfilename,'Source must be a char');
+  iData_private_warning(mfilename,['Source must be a char in iData object ' in.Tag ' "' in.Title ]);
   in.Source = '';
 end
 if ~ischar(in.Command) & ~iscellstr(in.Command)
-  iData_private_warning(mfilename,'Command must be a char or cellstr');
+  iData_private_warning(mfilename,['Command must be a char or cellstr in iData object ' in.Tag ' "' in.Title ]);
   in.Command = cellstr('');
 end
 if ~ischar(in.Date)
-  iData_private_warning(mfilename,'Date must be a char');
+  iData_private_warning(mfilename,['Date must be a char in iData object ' in.Tag ' "' in.Title ]);
   in.Date = datestr(now);
 end
 if ~ischar(in.Creator)
-  iData_private_warning(mfilename,'Creator must be a char');
+  iData_private_warning(mfilename,['Creator must be a char in iData object ' in.Tag ' "' in.Title ]);
   in.Creator = version(in);
 end
 if ~ischar(in.User)
-  iData_private_warning(mfilename,'User must be a char');
+  iData_private_warning(mfilename,['User must be a char in iData object ' in.Tag ' "' in.Title ]);
   in.User = 'Matlab User';
 end
 % check if object.Data is numeric: make it a structure so that it is better organized
@@ -321,12 +321,12 @@ if isempty(in.Data)
 % if signal is invalid, set signal to biggest field link
 elseif isempty(getalias(in, 'Signal'))
   [fields, types, dims] = findfield(in);
-  index=strmatch('double', types, 'exact');
-  index=[ index ; strmatch('single',  types, 'exact') ];
-  index=[ index ; strmatch('logical', types, 'exact') ];
-  index=[ index ; strmatch('uint', types) ];
+  index=find(strcmp('double', types));
+  index=[ index ; find(strcmp('single',  types)) ];
+  index=[ index ; find(strcmp('logical', types)) ];
+  index=[ index ; find(strncmp('uint', types, 4)) ];
   if isempty(index), 
-    iData_private_warning(mfilename,['The iData object ' in.Tag ' contains no data at all ! (double/single/logical)']);
+    iData_private_warning(mfilename,['The iData object ' in.Tag ' "' in.Title '" contains no data at all ! (double/single/logical)']);
   else
     fields = fields(index); % get all field names containing double data
     dims = dims(index);

@@ -21,7 +21,7 @@ function [b, Info] = ieval(a, model, pars, varargin)
 % ex:     b=ieval(a,'gauss',[1 2 3 4]); ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
 %           ieval(a,'gauss','guess')
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, feval, iData/fits
 
 % private functions: 
@@ -55,7 +55,7 @@ end
 
 % evaluate model signal
 if ischar(model) | isa(model, 'function_handle') % a single model ==============
-  
+
   Info = feval(model,'identify');  % get identification Info, esp. for Dimension
   
   % check dimensionality
@@ -80,24 +80,23 @@ if ischar(model) | isa(model, 'function_handle') % a single model ==============
   % when no varargin specified, create one if guess or identify requested
   if nargin < 4 & ~isempty(a)
     varargin = {};
-    if ischar(pars)
-      if strmatch(pars,{'guess','identify'})
-        % make sure Model has the right dimensionality: Info.Dimension, else squeeze
-        Signal = get(a,'Signal'); Signal(~isfinite(Signal)) = 0;
-        m = get(a,'Monitor'); m=real(m);
-        if not(all(m == 1 | m == 0)),
-          Signal = genop(@rdivide,Signal,m);
-        end
-        % determine indexes on which sum is required. The final Model
-        % must match model_Info.Dimension
-        if ~isvector(Signal)
-          for i=ndims(a):-1:Info.Dimension
-            Signal=trapz(Signal, i)/size(Signal,i);  % reduce Model dimensionality
-          end
-        end
-        
-        varargin = { Signal };
+
+    if isempty(pars) || (ischar(pars) && any(strcmp(pars,{'guess','identify'})))
+      % make sure Model has the right dimensionality: Info.Dimension, else squeeze
+      Signal = get(a,'Signal'); Signal(~isfinite(Signal)) = 0;
+      m = get(a,'Monitor'); m=real(m);
+      if not(all(m == 1 | m == 0)),
+        Signal = genop(@rdivide,Signal,m);
       end
+      % determine indexes on which sum is required. The final Model
+      % must match model_Info.Dimension
+      if ~isvector(Signal)
+        for i=ndims(a):-1:Info.Dimension
+          Signal=trapz(Signal, i)/size(Signal,i);  % reduce Model dimensionality
+        end
+      end
+      
+      varargin = { Signal };
     end
   end
 
@@ -145,7 +144,7 @@ elseif iscell(model) % a set of models =========================================
     this_axes  = Axes(axis_index:(axis_index+model_Info.Dimension-1));
     
     % Signal for this model if guess needed
-    if isempty(pars) || (ischar(pars) && strmatch(pars,{'guess','identify'}))
+    if isempty(pars) || (ischar(pars) && any(strcmp(pars,{'guess','identify'})))
       Signal = get(a,'Signal'); Signal(~isfinite(Signal)) = 0;
       m = get(a,'Monitor'); m=real(m);
       if not(all(m == 1 | m == 0)),
@@ -169,7 +168,7 @@ elseif iscell(model) % a set of models =========================================
     end 
 
     
-    if isempty(pars) || (ischar(pars) && strmatch(pars,{'guess','identify'}))
+    if isempty(pars) || (ischar(pars) && any(strcmp(pars,{'guess','identify'})))
       % obtained guessed parameters if pars is missing or explicitely requested
       this_pars = feval(model{index}, 'guess', this_axes{:}, varargin{:});
       this_pars = this_pars.Guess;
@@ -202,7 +201,7 @@ elseif iscell(model) % a set of models =========================================
       % assign individual model dimensions
       model_ndim  =ones(1,ndims(a));
       model_ndim(axis_index:(axis_index+model_Info.Dimension-1)) = n;
-    elseif isstruct(model_value) & ischar(pars) & strmatch(pars,{'guess','identify'})
+    elseif isstruct(model_value) && ischar(pars) && any(strcmp(pars,{'guess','identify'}))
       model_ndim   = model_value.Dimension;
       moldel_value = model_value.Values;
     end
@@ -256,7 +255,7 @@ if isnumeric(Model)
     model = model(:)';
   end
   m = get(b,'Monitor'); m=real(m); m=m(:);
-  if not(all(m == 1 | m == 0)),
+  if not(all(m == 1 | m == 0)) && (numel(m) == 1 || numel(m) == numel(Model)),
     Model = Model.*m;
   end
   setalias(b,'Signal', Model, char(model));
@@ -269,7 +268,7 @@ if isnumeric(Model)
   setalias(b,'Model','Data.Model',[ char(model) ' model description for ' char(a) ]);
 end
 b.Command=cmd;
-b = iData_private_history(b, mfilename, a, char(model), pars, varargin{:});  
+b = iData_private_history(b, mfilename, a, char(model), pars, varargin{:});
 % final check
 b = iData(b);
 

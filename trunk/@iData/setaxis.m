@@ -27,7 +27,7 @@ function this = setaxis(this, rank, alias, value)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -72,11 +72,11 @@ end
 if isnumeric(alias), value = alias; alias = ''; end
 
 if ischar(rank)
-  rank = str2num(rank);
+  rank = str2double(rank);
 end
 
 % handle arrays of ranks/alias
-if numel(rank) > 1
+if isempty(isnan(rank)) && numel(rank) > 1
   for index=1:numel(rank)
     this = setaxis(this, rank(index), alias, value);
   end
@@ -117,16 +117,16 @@ if isempty(rank) || isempty(alias), return; end
 % check if the alias already exists in the object
 if strcmpi(alias, fieldnames(this)) % this is a protected field of the object
   iData_private_error(mfilename,[ 'the Alias ' alias ' is a protected name in object ' ...
-    inputname(1) ' ' this.Tag '.' ]);
+    inputname(1) ' ' this.Tag ' "' this.Title '".' ]);
 end
 if isempty(find(strcmpi(alias, this.Alias.Names))) % the alias does not exist yet
   if isempty(value)
     iData_private_warning(mfilename,[ 'the Alias ' alias ' used to define axis rank ' ...
-      num2str(rank) ' does not exist in object ' inputname(1) ' ' this.Tag '.' ]);
+      num2str(rank) ' does not exist in object ' inputname(1) ' ' this.Tag ' "' this.Title '".' ]);
     return;
   else
     iData_private_warning(mfilename,[ 'the Alias ' alias ' used to define axis rank ' ...
-      num2str(rank) ' does not exist in object ' inputname(1) ' ' this.Tag '.\n\tDefining it.' ]);
+      num2str(rank) ' does not exist in object ' inputname(1) ' ' this.Tag ' "' this.Title '".\n\tDefining it.' ]);
   end
 end
 
