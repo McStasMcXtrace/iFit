@@ -6,7 +6,7 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -91,7 +91,7 @@ else
     for index=0:length(s_in.Alias.Axis)
       [v, l] = getaxis(s_in, num2str(index,2));
       if ~ischar(v)
-        if numel(v) > 5, v=v(1:10); end
+        if numel(v) > 5, v=v(1:5); end
         v=mat2str(v);
         if length(v) > 12, v = [v(1:12) '...' ]; end 
       end
