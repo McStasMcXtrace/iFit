@@ -8,13 +8,13 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
-if length(a(:)) > 1
+if numel(a) > 1
   if dim ~= 0, s = a; else s=zeros(size(a)); end
-  for index=1:length(a(:))
+  for index=1:numel(a)
     s(index) = feval(op, a(index), dim);
   end
   s = reshape(s, size(a));
@@ -49,7 +49,7 @@ m = iData_private_cleannaninf(get(a,'Monitor'));
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;
 b  = copyobj(a);
-rmaxis(b);
+rmaxis(b);  % remove all axes, will be rebuilt after operation
 
 
 if all(dim > 0)
@@ -120,7 +120,7 @@ if all(dim > 0)
     % set projection axis
     [x, xlab] = getaxis(a, num2str(dim)); % get axis definition and label
     setaxis(b, 1, x);
-    
+
     if dim == 1, 
 	    s=size(b);
 	    if s(1) == 1, b=transpose(b); end

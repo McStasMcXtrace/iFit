@@ -1,4 +1,4 @@
-function disp(s_in)
+function disp(s_in, name)
 % disp(s) : display iData object (details)
 %
 %   @iData/disp function to display iData object details
@@ -6,13 +6,15 @@ function disp(s_in)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
 
-if ~isempty(inputname(1))
+if nargin == 2 && ~isempty(name)
+  iname = name;
+elseif ~isempty(inputname(1))
   iname = inputname(1);
 else
   iname = 'ans';
@@ -79,7 +81,7 @@ else
       else
         fprintf(1,' [%g:%g]', min(x), max(x));
       end
-      if ~(all(m==1) | all(m==0))
+      if ~(all(m(:)==1) | all(m(:)==0))
         fprintf(1,' (per monitor)');
       end
     end

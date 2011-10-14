@@ -1,4 +1,4 @@
-function d = display(s_in)
+function d = display(s_in, name)
 % d = display(s) : display iData object (from command line)
 %
 % @iData/display function to display iData object.
@@ -9,17 +9,22 @@ function d = display(s_in)
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
 
-if ~isempty(inputname(1))
-d = [ sprintf('%s = ',inputname(1)) ];
+if nargin == 2 && ~isempty(name)
+  iname = name;
+elseif ~isempty(inputname(1))
+  iname = inputname(1);
 else
-d = [ sprintf('%s = ','ans') ];
+  iname = 'ans';
 end
+
+d = [ sprintf('%s = ',iname) ];
+
 if length(s_in) > 1
   d = [ d sprintf(' array [%s]',num2str(size(s_in))) ];
 end
