@@ -47,7 +47,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.69 $
+% Version: $Revision: 1.70 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -69,17 +69,23 @@ if length(a) > 1
   h = cell(size(a));
   ih = ishold;
   sum_max = 0;
+  toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent';
+  toremove=strread(toremove,'%s','delimiter',' ');
+  this_method = method;
+  for index=1:length(toremove)
+    this_method = deblank(strrep(this_method, toremove{index},''));
+  end
   for index=1:length(a(:))
     if ndims(a(index)) == 1 && isvector(a(index)) == 1 && ...
       isempty(getaxis(a(index),2)) && ...
-      (~isempty(strfind(method, 'plot3')) | ~isempty(strfind(method,'stem3')) ...
-       | ~isempty(strfind(method,'scatter3')) | ~isempty(strfind(method, 'mesh')) ...
-       | ~isempty(strfind(method,'surf') ) | ~isempty(strfind(method,'waterfall')))
+      (~isempty(strfind(method, 'plot3'))      || ~isempty(strfind(method,'stem3')) ...
+       || ~isempty(strfind(method,'scatter3')) || ~isempty(strfind(method, 'mesh')) ...
+       || ~isempty(strfind(method,'surf') )    || ~isempty(strfind(method,'waterfall')))
       a(index) = setaxis(a(index), 2, index);
     end
     h{index} = plot(a(index), method);
     sum_max = sum_max+max(a(index))-min(a(index));
-    if ndims(a(index)) == 1 && (isempty(method) | ~isempty(strfind(method, 'hide_err')))
+    if ndims(a(index)) == 1 && isempty(this_method)
       % change color of line
       colors = 'bgrcmk';
       set(h{index}, 'color', colors(1+mod(index, length(colors))));
@@ -141,13 +147,12 @@ case 1  % vector type data (1 axis + signal) -> plot
   
   if isempty(method), method='b-'; end
   % handle side-by-side 1D plots
-  if ~isempty(strfind(method, 'plot3')) | ~isempty(strfind(method,'stem3')) ...
+  if ~isempty(strfind(method,'plot3'))    | ~isempty(strfind(method,'stem3')) ...
    | ~isempty(strfind(method,'scatter3')) | ~isempty(strfind(method, 'mesh')) ...
-   | ~isempty(strfind(method,'surf') ) | ~isempty(strfind(method,'waterfall'))
-  	if isempty(getaxis(a,2))
+   | ~isempty(strfind(method,'surf') )    | ~isempty(strfind(method,'waterfall'))
+  	ax = getaxis(a,2);
+  	if isempty(ax)
   		ax = 0;
-    else
-    	ax = getaxis(a, 2);
     end
     if length(ax) == 1
     	ax = ax*ones(size(a));
@@ -163,8 +168,10 @@ case 1  % vector type data (1 axis + signal) -> plot
     % tight, auto, tight, hide, view2, view3, transparent
     toremove='tight auto hide view2 view3 transparent';
     toremove=strread(toremove,'%s','delimiter',' ');
-    this_method = deblank(strrep(this_method, toremove,''));
-    if all(e == 0) | length(x) ~= length(e)
+    for index=1:length(toremove)
+      this_method = deblank(strrep(this_method, toremove{index},''));
+    end
+    if all(e == 0) || length(x) ~= length(e)
       if length(this_method)
         try
           h = plot(x,y, this_method);
@@ -184,6 +191,13 @@ case 1  % vector type data (1 axis + signal) -> plot
       if ~length(this_method) 
         h = errorbar(x,y,e); 
       end
+      if ~isempty(strfind(this_method, 'hide_err')) || all(abs(e) >= abs(y))
+        if length(h) == 1 && length(get(h,'Children') == 2)
+          eh = get(h,'Children');
+        else eh = h; 
+        end
+        set(eh(2), 'Visible','off');
+      end
     end
   end
 case 2  % surface type data (2 axes+signal) -> surf or plot3
@@ -195,7 +209,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   [y, ylab] = getaxis(a,1);
   [z, zlab] = getaxis(a,0);
   m         = get(a,'Monitor');
-  if not(all(m == 1 | m == 0)),
+  if not(all(m(:) == 1 | m(:) == 0)),
     zlab = [zlab ' per monitor' ];
   end
   x=real(double(x));
@@ -279,7 +293,7 @@ case 3  % 3d data sets: volumes
     [z, zlab] = getaxis(a,3); z=double(z);
     [c, clab] = getaxis(a,0); c=double(c);
     m         = get(a,'Monitor');
-    if not(all(m == 1 | m == 0)), clab = [clab ' per monitor' ]; end
+    if not(all(m(:) == 1 | m(:) == 0)), clab = [clab ' per monitor' ]; end
     if isvector(a) == 3 || ~isempty(strfind(method, 'scatter3')) % plot3-like
       h=fscatter3(x(:),y(:),z(:),c(:));     % scatter3: require meshgrid
       view(3);

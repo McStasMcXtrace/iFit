@@ -3,7 +3,7 @@ function a=load_mcstas_sqw(a)
 %
 % Returns an iData style dataset from a McStas Sqw Table (Isotropic Sqw)
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -16,7 +16,7 @@ end
 
 a=iData(a);
 if isempty(findstr(a,'Sqw'))
-  warning([ mfilename ': The loaded data set ' a.Tag ' is not an Sqw text data format.' ]);
+  warning([ mfilename ': The loaded data set ' a.Tag ' "' a.Title '" is not an Sqw text data format.' ]);
   return
 end
 
@@ -26,14 +26,13 @@ index=strmatch('double', types, 'exact');
 fields = fields(index); % get all field names containing double data
 dims = dims(index);
 q_index = find(dims == size(a.Signal, 1));
-if ~isempty(q_index) q_values= fields{q_index}; end
-w_index = find(dims == size(a.Signal, 2));
-if ~isempty(w_index) w_values= fields{w_index}; end
-
-if ~isempty(q_values)
+if ~isempty(q_index) 
+  q_values= fields{q_index}; 
   setalias(a,'q', q_values, 'Q [AA-1]'); setaxis(a,1,'q');
 end
-if ~isempty(w_values) 
+w_index = find(dims == size(a.Signal, 2));
+if ~isempty(w_index)
+  w_values= fields{w_index}; 
   setalias(a,'w', w_values, 'w [meV]');  setaxis(a,2,'w');
 end
 

@@ -15,6 +15,7 @@ function b = interp(a, varargin)
 %     b=interp(s, ..., 'method') uses specified method for interpolation as one of
 %                    linear (default), spline, cubic, or nearest
 %     b=interp(s, ..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays
+%     b=interp(s, ..., 'nan')  also interpolates on nan values
 %   Extrapolated data is set to 0 for the Signal, Error and Monitor.
 %
 % input:  s: object or array (iData)
@@ -24,9 +25,9 @@ function b = interp(a, varargin)
 %            dimensions 1 to ndims(s) (double vector/matrix)
 %         ntimes: original axis sub-division (integer)
 % output: b: object or array (iData)
-% ex:     b=interp(a, 'grid');
+% ex:     b=interp(a, 'grid','nan');
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -73,7 +74,7 @@ ntimes=0;
 
 % interpolation axes
 f_axes           = i_axes;
-requires_meshgrid= 0; has_grid_arg=0;
+requires_meshgrid= 0; has_grid_arg=0; has_nan_arg=0;
 
 % parse varargin to overload defaults and set manually the axes
 axis_arg_index   = 0;
@@ -81,6 +82,8 @@ for index=1:length(varargin)
   c = varargin{index};
   if ischar(c) & ~isempty(strfind(c,'grid')) 
     requires_meshgrid=1; has_grid_arg=1;
+  elseif ischar(c) & ~isempty(strfind(c,'nan')) 
+    has_nan_arg=1;
   elseif ischar(c)                      % method (char)
     method = c;
   elseif isa(varargin{index}, 'iData')  % set interpolation axes: get axis from other iData object
@@ -197,10 +200,11 @@ for index=1:ndims(a)
   end
 end
 
-if ~has_changed & (~requires_meshgrid | is_grid), return; end
-
 % get Signal, error and monitor.
 i_signal   = get(a,'Signal');
+if any(isnan(i_signal(:))) && has_nan_arg, has_changed=1; end
+if ~has_changed & (~requires_meshgrid | is_grid), return; end
+
 i_class    = class(i_signal); i_signal = double(i_signal);
 
 i_error = getalias(a, 'Error');
@@ -234,6 +238,7 @@ if ndims(a) > 1 && (length(i_signal) ~= numel(i_signal))
   requires_meshgrid = 1;
 end
 
+% compute a new grid before interpolating
 if requires_meshgrid
   if length(f_axes) == 1 || (ndims(a) == 1 && isvector(a) == 1)
     % nothing to do as we have only one axis, no grid
@@ -241,13 +246,30 @@ if requires_meshgrid
     % call ndgrid
     [f_axes{1:ndims(a)}] = ndgrid(f_axes{:});
     if ~has_grid_arg % reshape axes as vectors (but not for 'grid')
-    for index=1:ndims(a) 
-      f_axes{index} = unique(f_axes{index});
-      n = ones(1,ndims(a));
-      n(index) = length(f_axes{index});
-      if length(n) == 1, n=[ n 1]; end
-      f_axes{index}=reshape(f_axes{index},n);
+      for index=1:ndims(a) 
+        f_axes{index} = unique(f_axes{index});
+        n = ones(1,ndims(a));
+        n(index) = length(f_axes{index});
+        if length(n) == 1, n=[ n 1]; end
+        f_axes{index}=reshape(f_axes{index},n);
+      end
     end
+  end
+end
+% handle 'nan' option: remove the values from the axes/signal, and make it nD vectors
+if has_nan_arg
+  i_signal = i_signal(:);
+  index = find(~isnan(i_signal));
+  i_signal = i_signal(index);
+  if length(i_axes) == 1 || (ndims(a) == 1 && isvector(a) == 1)
+    % nothing to do as we have only one axis, no grid
+  else
+    % call ndgrid
+    [i_axes{1:ndims(a)}] = ndgrid(i_axes{:});
+    for i=1:ndims(a)
+      x = i_axes{i}; x=x(:); 
+      x = x(index); 
+      i_axes{i} = x;
     end
   end
 end
@@ -260,7 +282,7 @@ for index=1:ndims(a)
   end
 end
 
-if i_nonmonotonic
+if i_nonmonotonic && ~has_nan_arg
   for index=1:ndims(a)  % apply unique on axes and reorder signal
     i_idx{index}=1:size(a, index);
     [i_axes{index}, i_idx{index}] = unique(i_axes{index});

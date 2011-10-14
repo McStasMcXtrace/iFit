@@ -24,6 +24,7 @@ function [filename,format] = saveas(a, varargin)
 %           'csv'  save as a comma separated value file
 %           'svg'  save as Scalable Vector Graphics (SVG) format
 %           'wrl'  save as Virtual Reality VRML 2.0 file
+%           'dat'  save as Flat text file with comments
 %           If given as format='gui' and filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
@@ -37,7 +38,7 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
