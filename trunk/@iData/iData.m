@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -334,7 +334,7 @@ elseif isempty(getalias(in, 'Signal'))
     [dummy, i, j]=unique(dummy, 'first'); % get the largest, but first occurence 
     index=index(i(end));                  % when similar sizes are encoutered
     if dims(index) > 0
-      disp([ 'iData: Setting the Signal of ' in.Tag ' to the biggest numerical field ' fields{index} ' with length ' num2str(dims(index)) '.' ]);
+      disp([ 'iData: Setting Signal="' fields{index} '" with length ' num2str(dims(index)) ' in object ' in.Tag ' "' in.Title '".' ]);
       in = setalias(in,'Signal', fields{index});
     end
   end

@@ -13,7 +13,7 @@ function [varargout] = get(this,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -34,8 +34,8 @@ if numel(this) > 1
 end
 
 if nargin == 1
-  disp(this);
-  varargout{1} = display(this);
+  disp(this, inputname(1));
+  varargout{1} = display(this, inputname(1));
   return
 end
 

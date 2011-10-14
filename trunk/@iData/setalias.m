@@ -25,7 +25,7 @@ function this = setalias(this,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -116,6 +116,12 @@ for index=1:length(names) % loop on alias names
       this.Alias.Values{end+1}= link;
       this.Alias.Labels{end+1}= regexprep(label,'\s+',' ');
     else
+      % check Error and Monitor values
+      if isnumeric(link) && (alias_num == 2 || alias_num == 3) % Error,Monitor
+        if all(link(:) == link(end))
+          link = link(end);
+        end
+      end
       this.Alias.Names{alias_num} = name;
       if ~isempty(link) || isempty(label),                       this.Alias.Values{alias_num}= link; end
       if ~isempty(label)|| isempty(this.Alias.Labels{alias_num}),this.Alias.Labels{alias_num}= label; end

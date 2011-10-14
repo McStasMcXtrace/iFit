@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -156,7 +156,6 @@ function val = iData_getalias(this,fieldname)
 % EF 23/09/07 iData impementation
 
   val = [];
-  
   if ~isa(this, 'iData'),   return; end
   if ~isvarname(fieldname), return; end % not a single identifier (should never happen)
 
@@ -171,47 +170,49 @@ function val = iData_getalias(this,fieldname)
   name      = this.Alias.Names{alias_num};
   val       = this.Alias.Values{alias_num};  % definition/value of the Alias
   
-  if (isnumeric(val) || islogical(val))
-    if strcmp(name, 'Monitor') && all(val(:) == 0) % Monitor=0 -> 1
-      val = 1;
+  if (~isnumeric(val) && ~islogical(val))
+    % the link evaluation must be numeric in the end...
+    if ~ischar(val),       return; end  % returns numeric/struct/cell ... content as is.
+    if  strcmp(val, name), return; end  % avoids endless iteration.
+    
+    % val is now only a char
+    % handle URL content (possibly with # anchor)
+    if  (strncmp(val, 'http://', length('http://'))  || ...
+         strncmp(val, 'https://',length('https://')) || ...
+         strncmp(val, 'ftp://',  length('ftp://'))   || ...
+         strncmp(val, 'file://', length('file://')) )
+      % evaluate external link
+      val = iLoad(val); % stored as a structure
+      return
     end
-    return; 
-  end
-  
-  % the link evaluation must be numeric in the end...
-  if ~ischar(val),       return; end  % returns numeric/struct/cell ... content as is.
-  if  strcmp(val, name), return; end  % avoids endless iteration.
-  
-  % val is now only a char
-  % handle URL content (possibly with # anchor)
-  if  (strncmp(val, 'http://', length('http://'))  || ...
-       strncmp(val, 'https://',length('https://')) || ...
-       strncmp(val, 'ftp://',  length('ftp://'))   || ...
-       strncmp(val, 'file://', length('file://')) )
-    % evaluate external link
-    val = iLoad(val); % stored as a structure
-    return
-  end
-  
-  % gets the alias value (evaluate the definition) this.alias -> this.val
-  if ~isempty(val)
-    % handle # anchor style alias
-    if val(1) == '#', val = val(2:end); end % HTML style link
-    % evaluate the alias definition (recursive call through get -> subsref)
-    try
-      % in case this is an other alias/link: this is were we propagate in the object
-      val = get(this,val); % gets this.(val)                    MAIN SPENT TIME
-    catch
-      % evaluation failed, the value is the char (above 'get' will then issue a
-      % 'can not find Property' error, which will come there in the end
+    
+    % gets the alias value (evaluate the definition) this.alias -> this.val
+    if ~isempty(val)
+      % handle # anchor style alias
+      if val(1) == '#', val = val(2:end); end % HTML style link
+      % evaluate the alias definition (recursive call through get -> subsref)
+      try
+        % in case this is an other alias/link: this is were we propagate in the object
+        val = get(this,val); % gets this.(val)                    MAIN SPENT TIME
+      catch
+        % evaluation failed, the value is the char (above 'get' will then issue a
+        % 'can not find Property' error, which will come there in the end
+      end
     end
   end
 
   % link value has been evaluated, do check in case of standard aliases
   if strcmp(fieldname, 'Error')  % Error is sqrt(Signal) if not defined
-    s = get(this,'Signal');
-    if isempty(val) && isnumeric(s)
-      val = sqrt(abs(double(s)));
+    
+    if ~isempty(val)
+      if all(val(:) == val(end))
+        val = val(end);
+      end
+    else
+      s = get(this,'Signal');
+      if isnumeric(s)
+        val = sqrt(abs(double(s)));
+      end
     end
     if ~isscalar(val) && ~isequal(size(val),size(this))
       iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) ...
@@ -219,9 +220,11 @@ function val = iData_getalias(this,fieldname)
       '] in iData object ' this.Tag ' "' this.Title '".\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
     end
   elseif strcmp(fieldname, 'Monitor')  % monitor is 1 by default
-    if isempty(val) || all(val(:) == 0) || all(val(:) == 1)
-      val = 1;
+    if isempty(val), val=1;
+    elseif all(val(:) == val(end))
+      val = val(end);
     end
+    if val == 0, val=1; end
     if length(val) ~= 1 && ~all(size(val) == size(this))
       iData_private_warning(mfilename,[ 'The Monitor [' num2str(size(val)) ...
         '] has not the same size as the Signal [' num2str(size(this)) ...

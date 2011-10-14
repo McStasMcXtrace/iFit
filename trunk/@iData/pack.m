@@ -10,7 +10,7 @@ function b = pack(a)
 % output: f: compressed object or array (iData)
 % ex:     b=pack(a);
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/sparse, iData/full, iData/saveas
 
 if length(a) > 1
@@ -79,7 +79,7 @@ for index=1:length(largemat)
       who_sparse = whos('d'); 
       d = full(d);
       who_full   = whos('d'); 
-    elseif
+    else
       who_full   = whos('d'); 
       d = sparse(d);
       who_sparse = whos('d'); 

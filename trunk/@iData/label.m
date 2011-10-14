@@ -11,10 +11,30 @@ function labl = label(this, rank, lab)
 % output: b: object or array (iData)
 % ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
 
 if nargin < 2, rank=[]; end
+if nargin < 3, lab=[]; end
+
+if numel(this) > 1
+  if nargin < 3
+    labl=cell(size(this));
+    for index=1:numel(this)
+      labl{index} = label(this(index), rank, lab);
+    end
+  else
+    for index=1:numel(this)
+      this(index) = label(this(index), rank, lab);
+    end
+    labl=this;
+    if nargout == 0 && ~isempty(inputname(1))
+      assignin('caller',inputname(1),this);
+    end
+  end
+  
+  return
+end
 
 % label(a)
 if isempty(rank), labl=this.Label; return;
