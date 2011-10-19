@@ -25,7 +25,7 @@ function [val, lab] = getaxis(s,ax)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'y')
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
@@ -77,8 +77,8 @@ if isnumeric(ax) % given as a number, return a number
     % iData_private_error(mfilename, [ 'The ' num2str(ax) '-th rank axis request is higher than the iData Signal dimension ' num2str(ndims(s)) ]);
   end
   if ax == 0  % syntax: getaxis(object, 0) -> object.Signal
-    val= get(s,'Signal');
-    m  = get(s,'Monitor'); m=real(m);
+    val= subsref(s,struct('type','.','subs','Signal'));
+    m  = subsref(s,struct('type','.','subs','Monitor')); m=real(m);
     link='Signal';
     if not(all(m == 1 | m == 0))
       val = genop(@rdivide,val,m);
@@ -109,8 +109,8 @@ else % given as a char/cell, return a char/cell
     [val, lab] = getaxis(s,0);
     return;
   elseif strcmp(ax,'Error')
-    val=get(s,'Error'); 
-    m  = get(s,'Monitor'); m=real(m);
+    val= subsref(s,struct('type','.','subs','Error'));
+    m  = subsref(s,struct('type','.','subs','Monitor')); m=real(m);
     link='Error';
     if not(all(m(:) == 1 | m(:) == 0))
       val = genop(@rdivide,val,m);

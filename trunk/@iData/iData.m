@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -330,12 +330,34 @@ elseif isempty(getalias(in, 'Signal'))
   else
     fields = fields(index); % get all field names containing double data
     dims = dims(index);
-    [dummy, index] = sort(dims);          % dummy=dims(index)
-    [dummy, i, j]=unique(dummy, 'first'); % get the largest, but first occurence 
-    index=index(i(end));                  % when similar sizes are encoutered
-    if dims(index) > 0
-      disp([ 'iData: Setting Signal="' fields{index} '" with length ' num2str(dims(index)) ' in object ' in.Tag ' "' in.Title '".' ]);
-      in = setalias(in,'Signal', fields{index});
+    % now we get the largest dim, and reduce the search list
+    index = find(dims == max(dims));
+    dims  = dims(index);
+    fields= fields(index);
+    % does this look like a Signal ?
+    if length(dims) > 1 % when similar sizes are encoutered, get the one which is not monotonic
+      for index=1:length(dims)
+        x = get(in, fields{index});
+        if ischar(x) || length(x) <= 1, continue; end
+        x = diff(x(:));
+        if all(x == x(1)) || all(x > 0) % this is a constant/monotonic step axis
+          continue;
+        elseif any(x < 0) && any(x> 0)
+          dims  = dims(index);
+          fields= fields{index};
+          break;
+        end
+      end
+    end   
+    % in case we still have more than one choice, get the last one
+    if length(dims) > 1 || iscell(fields)
+      dims=dims(end);
+      fields=fields{end};
+    end
+    % index: is the field and dimension index to assign the Signal
+    if dims > 0
+      disp([ 'iData: Setting Signal="' fields '" with length ' num2str(dims) ' in object ' in.Tag ' "' in.Title '".' ]);
+      in = setalias(in,'Signal', fields);
     end
   end
 end

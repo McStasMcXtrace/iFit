@@ -18,7 +18,7 @@ function c = iData_private_binary(a, b, op, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
@@ -102,19 +102,19 @@ if ~isa(a, 'iData')
   s1= a; e1=0; m1=0; p1=0;
   c = copyobj(b);
 else
-  s1 = get(a, 'Signal');
-  e1 = get(a, 'Error');
-  m1 = get(a, 'Monitor');
+  s1 = subsref(a,struct('type','.','subs','Signal'));
+  e1 = subsref(a,struct('type','.','subs','Error'));
+  m1 = subsref(a,struct('type','.','subs','Monitor'));
   c  = copyobj(a);
 end
 if ~isa(b, 'iData') 
   s2= b; e2=0; m2=0; p1=0;
 else
-  s2 = get(b, 'Signal');
-  e2 = get(b, 'Error');
-  m2 = get(b, 'Monitor');
+  s2 = subsref(b,struct('type','.','subs','Signal'));
+  e2 = subsref(b,struct('type','.','subs','Error'));
+  m2 = subsref(b,struct('type','.','subs','Monitor'));
 end
-if (all(m1==0) | all(m1==1)) & (all(m2==0) | all(m2==1)) m1=0; m2=0; end
+if (all(m1(:)==0) || all(m1(:)==1)) && (all(m2(:)==0) || all(m2(:)==1)) m1=0; m2=0; end
 
 % do test on dimensionality for a vector/matrix input
 % use vector duplication to fill iData dimensionality (repmat/kron)
