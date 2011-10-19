@@ -6,14 +6,14 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
 % EF 27/07/00 creation
 % EF 23/09/07 iData impementation
 % ==============================================================================
-% inline: private function iData_getalias (mainly used)
+% inline: private function iData_getAliasValue (mainly used)
 % calls:  subsref (recursive), getaxis, getalias, get(Signal, Error, Monitor)
 
 b = a;  % will be refined during the index level loop
@@ -43,17 +43,19 @@ for i = 1:length(S)     % can handle multiple index levels
         b=subsref(b, s); return;
       end
       if length(s.subs) == 1 && all(s.subs{:} == 1), return; end  % b(1)
-      d=get(b,'Signal'); d=d(s.subs{:});                          % b(indices)
+      ds=iData_getAliasValue(b,'Signal'); 
+      de=iData_getAliasValue(b,'Error'); 
+      dm=iData_getAliasValue(b,'Monitor');
+      
+      d=ds(s.subs{:});                          % b(indices)
       b=set(b,'Signal', d);  b=setalias(b,'Signal', d);
 
-      d=get(b,'Error'); 
-      if numel(d) > 1 && numel(d) == numel(get(a,'Error')),   
-        d=d(s.subs{:}); b=set(b,'Error', d); b = setalias(b, 'Error', d);
+      if numel(de) > 1 && isnumeric(de) 
+        d=de(s.subs{:}); b=set(b,'Error', d); b = setalias(b, 'Error', d);
       end
 
-      d=get(b,'Monitor');
-      if numel(d) > 1 && numel(d) == numel(get(a,'Monitor')), 
-        d=d(s.subs{:}); b=set(b,'Monitor', d);  b = setalias(b, 'Monitor', d);
+      if numel(dm) > 1 && isnumeric(dm)
+        d=dm(s.subs{:}); b=set(b,'Monitor', d);  b = setalias(b, 'Monitor', d);
       end
 
       % must also affect axis
@@ -132,7 +134,7 @@ for i = 1:length(S)     % can handle multiple index levels
     elseif any(strcmp(fieldname, fieldnames(b))) % structure/class def fields: b.field
       b = b.(fieldname);
     else
-      b = iData_getalias(b,fieldname); % get alias value from iData: b.alias MAIN SPENT TIME
+      b = iData_getAliasValue(b,fieldname); % get alias value from iData: b.alias MAIN SPENT TIME
     end
     
     % test if the result is again an Alias or Field
@@ -147,9 +149,9 @@ for i = 1:length(S)     % can handle multiple index levels
 end % for s index level
 
 % ==============================================================================
-% private function iData_getalias
-function val = iData_getalias(this,fieldname)
-% iData_getalias: iData alias evaluation
+% private function iData_getAliasValue
+function val = iData_getAliasValue(this,fieldname)
+% iData_getAliasValue: iData alias evaluation (not the link, but the value)
 %   evaluates s.name to be first s.link, then 'link' (with 'this' defined).
 %   NOTE: for standard Aliases (Error, Monitor), makes a dimension check on Signal
 
@@ -202,30 +204,29 @@ function val = iData_getalias(this,fieldname)
   end
 
   % link value has been evaluated, do check in case of standard aliases
-  if strcmp(fieldname, 'Error')  % Error is sqrt(Signal) if not defined
-    
+  if strcmp(fieldname, 'Error')         % Error is sqrt(Signal) if not defined 
     if ~isempty(val)
       if all(val(:) == val(end))
         val = val(end);
       end
     else
-      s = get(this,'Signal');
+      s = iData_getAliasValue(this,'Signal');
       if isnumeric(s)
         val = sqrt(abs(double(s)));
       end
     end
-    if ~isscalar(val) && ~isequal(size(val),size(this))
+    if ~isempty(val) && ~isscalar(val) && ~isequal(size(val),size(this))
       iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) ...
       '] has not the same size as the Signal [' num2str(size(this)) ...
       '] in iData object ' this.Tag ' "' this.Title '".\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
     end
-  elseif strcmp(fieldname, 'Monitor')  % monitor is 1 by default
+  elseif strcmp(fieldname, 'Monitor')  % Monitor is 1 by default
     if isempty(val), val=1;
     elseif all(val(:) == val(end))
       val = val(end);
     end
     if val == 0, val=1; end
-    if length(val) ~= 1 && ~all(size(val) == size(this))
+    if ~isempty(val) && length(val) ~= 1 && ~all(size(val) == size(this))
       iData_private_warning(mfilename,[ 'The Monitor [' num2str(size(val)) ...
         '] has not the same size as the Signal [' num2str(size(this)) ...
         '] in iData object ' this.Tag ' "' this.Title '".\n\tTo use the default Monitor=1 use s.Monitor=[].' ]);
