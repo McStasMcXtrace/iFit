@@ -10,7 +10,7 @@ function b = pack(a)
 % output: f: compressed object or array (iData)
 % ex:     b=pack(a);
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/sparse, iData/full, iData/saveas
 
 if length(a) > 1
@@ -46,8 +46,8 @@ for index=1:length(alias_names)
   % create the alias and associate a value in Data
   if ~isempty(alias_values{index})
     try
-    b.Data.(alias_names{index}) = alias_values{index};
-    setalias(b, alias_names{index}, ['Data.' alias_names{index}], alias_labels{index});
+      b.Data.(alias_names{index}) = alias_values{index};
+      setalias(b, alias_names{index}, ['Data.' alias_names{index}], alias_labels{index});
     catch
       alias_ranks(index) = 0; % make sure invalid aliases do not become axes
     end
@@ -61,33 +61,46 @@ for index=1:length(alias_names)
 end
 
 % extract field type and size
-[match, types, nelements]=findfield(a);
+[match, types, nelements]=findfield(b);
+
+converted = '';
 
 largemat = find(nelements > 10000);
-for index=1:length(largemat)
-  if any(strcmp(types{index}, {'double','single','logical','int32','int64','uint32','uint64'}))
-    f = match{index}; % field name
-    d = get(a, f);    % content
-    if ndims(d) > 2   % sparse only works with 1-2 d vector/matrix
-      continue
-    end
-    % convert d to either logical or double so that sparse can apply
-    if ~strcmp(types{index}, 'double') && ~strcmp(types{index}, 'logical')
-      d = double(d);
-    end
-    if issparse(d),
-      who_sparse = whos('d'); 
-      d = full(d);
-      who_full   = whos('d'); 
-    else
-      who_full   = whos('d'); 
-      d = sparse(d);
-      who_sparse = whos('d'); 
-    end
-    if who_sparse.bytes < who_full.bytes/2, d = sparse(d);
-    else                                    d = full(d); end
-    set(b, f, d);
+match    = match(largemat);
+types    = types(largemat);
+nelements= nelements(largemat);
+for index=1:length(nelements)
+  f = match{index}; % field name
+  d = get(b, f);    % content
+  if ndims(d) > 2   % sparse only works with 1-2 d vector/matrix
+    continue
   end
+  if ~any(strcmp(class(d), {'double','single','logical','int32','int64','uint32','uint64'}))
+    continue;
+  end
+  % convert d to either logical or double so that sparse can apply
+  if ~strcmp(types{index}, 'double') && ~strcmp(types{index}, 'logical')
+    d = double(d);
+  end
+  id = issparse(d);;
+  if issparse(d)
+    who_sparse = whos('d'); 
+    d = full(d);
+    who_full   = whos('d'); 
+  else
+    who_full   = whos('d');
+    d = sparse(d);
+    who_sparse = whos('d');
+  end
+  if ~id && who_sparse.bytes < who_full.bytes
+    d = sparse(d); converted = [ converted f ' ' ]; set(b, f, d);
+  elseif id && who_full.bytes < who_full.sparse                             
+    d = full(d); converted = [ converted f ' ' ]; set(b, f, d);
+  end
+end
+
+if ~isempty(converted)
+  fprintf(1, '%s: Packed fields %s.\n', mfilename, converted);
 end
 
 % now reduce the size of the Command history
@@ -96,7 +109,7 @@ largemat = cellfun('length', h);
 largemat = find(largemat > 1000);
 for index=1:length(largemat)
   d = h{index};
-  d = [ d(1:800) ' ... ' d(end-100:end) ];
+  d = [ d(1:10) ' ... ' d((end-10):end) ];
   h{index} = d;
 end
 b.Command = h;
