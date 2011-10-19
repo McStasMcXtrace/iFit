@@ -47,7 +47,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.70 $
+% Version: $Revision: 1.71 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -125,8 +125,9 @@ end
 
 % check if the object is not too large, else rebin accordingly
 if prod(size(a)) > 1e6
-  iData_private_warning(mfilename, [ 'Object ' a.Tag ' is too large (numel=' num2str(prod(size(a))) ...
-    '.\n\tYou should rebin with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
+  iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
+    '.\n\tNow rebinning for display purposes with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
+  a=iData_private_reduce(a);
 end
 zlab = '';
 switch ndims(a) % handle different plotting methods depending on the iData dimensionality
@@ -548,13 +549,13 @@ for index=0:length(getaxis(a))
   x      = getaxis(a, index);
   m      = get(a, 'Monitor');
   if index==0 & not(all(m==1 | m==0))
-    t = sprintf('%6i %15s  %s [%g:%g] (per monitor=%g)', index, v, l, min(x(:)), max(x(:)), mean(m(:)));
+    t = sprintf('%6i %15s  %s [%g:%g] (per monitor=%g)', index, v, l, full(min(x(:))), full(max(x(:))), mean(m(:)));
   else
     try
       [s, f] = std(a, index);
-      t = sprintf('%6i %15s  %s [%g:%g] <%g +/- %g>', index, v, l, min(x(:)), max(x(:)), f, s);
+      t = sprintf('%6i %15s  %s [%g:%g] <%g +/- %g>', index, v, l, full(min(x(:))), full(max(x(:))), f, s);
     catch
-      t = sprintf('%6i %15s  %s [%g:%g]', index, v, l, min(x(:)), max(x(:)));
+      t = sprintf('%6i %15s  %s [%g:%g]', index, v, l, full(min(x(:))), full(max(x(:))));
     end
   end
   properties{end+1} = t;
@@ -573,7 +574,6 @@ try
   end
 catch
 end
-
 uimenu(uicm, 'Separator','on','Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData)  sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 % attach contexual menu to plot with UserData storage
 ud.properties=properties;
