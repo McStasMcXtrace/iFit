@@ -27,7 +27,7 @@ function this = setaxis(this, rank, alias, value)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -119,7 +119,18 @@ if strcmpi(alias, fieldnames(this)) % this is a protected field of the object
   iData_private_error(mfilename,[ 'the Alias ' alias ' is a protected name in object ' ...
     inputname(1) ' ' this.Tag ' "' this.Title '".' ]);
 end
+
 if isempty(find(strcmpi(alias, this.Alias.Names))) % the alias does not exist yet
+  if isempty(value)
+    % prehaps the value refers to an existing field in the object
+    try
+      val = get(this, alias);
+      setalias(this, [ 'Axis_' num2str(rank) ], alias);
+      alias = [ 'Axis_' num2str(rank) ];
+    end
+  end
+end
+if isempty(find(strcmpi(alias, this.Alias.Names)))
   if isempty(value)
     iData_private_warning(mfilename,[ 'the Alias ' alias ' used to define axis rank ' ...
       num2str(rank) ' does not exist in object ' inputname(1) ' ' this.Tag ' "' this.Title '".' ]);

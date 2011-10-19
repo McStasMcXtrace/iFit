@@ -39,7 +39,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -63,12 +63,13 @@ for i=1:length(files)
   this_iData =  iData(files{i});	% convert file content from iLoad into iData
   % specific adjustments for looktxt (default import method)
   [pathname,filename,ext] = fileparts(files{i}.Source);
-  try % create MetaData alias if present in structure
+  try % create MetaData alias if present in structure (to reduce memory usage for storage)
     c = this_iData.Data.MetaData; clear c;
     this_iData=setalias(this_iData, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
     this_iData=load_clean_metadata(this_iData);
   end
-
+  % search for default axes (right length and monotonic)
+  this_iData=load_search_axes(this_iData);
   if isfield(files{i},'Headers')
     this_iData.Data.Headers = files{i}.Headers;
     this_iData=setalias(this_iData, 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
@@ -157,3 +158,33 @@ function s=load_check_struct(data, loaders, filename)
   if ~isfield(s, 'Format'),
     s.Format  = loaders{1}.name; 
   end
+  
+% ------------------------------------------------------------------------------
+function a=load_search_axes(a)
+% searches for axes that correspond to the Signal dimensions, and are monotonic
+  % get all numerical data
+  [fields, types, dims] = findfield(a);
+  index  = strmatch('double', types, 'exact');
+  fields = fields(index); % get all field names containing double data
+  dims   = dims(index);
+  s      = getaxis(a, 0); % Signal
+  for rank=1:ndims(a)                    % loop on axes
+    if isempty(getaxis(a, num2str(rank)))% axis is not defined (using default indexing)
+      l = length(getaxis(a, rank));      % length of the axis (indexing)
+      good_length  = find(dims == l);    % field that have the required length
+      % is this the signal itself ?
+      for index=1:length(good_length)
+        x = get(a, fields{good_length(index)});
+        if isequal(fields{good_length(index)},getalias(a,'Signal')) || isequal(x, s)
+          continue
+        end
+        x = diff(x(:));
+        if all(x > 0)
+          setaxis(a, rank, fields{good_length(index)});
+          disp([ 'iData: Setting Axis[' num2str(rank) ']="' fields{good_length(index)} '" with length ' num2str(dims(good_length(index))) ' in object ' a.Tag ' "' a.Title '".' ]);
+          break; % we found an axis that has good dimension and is monotonic
+        end
+      end
+    end
+  end
+  

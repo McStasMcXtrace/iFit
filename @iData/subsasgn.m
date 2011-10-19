@@ -9,7 +9,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -210,7 +210,9 @@ function this = iData_setalias(this, alias, val)
   % searches if this is an alias (it should be)
   alias_num   = find(strcmpi(alias, this.Alias.Names));  % index of the Alias requested
   if isempty(alias_num), 
-    iData_private_error(mfilename, sprintf('can not find Property "%s" in object %s. Creating it.', alias, this.Tag ));
+    iData_private_warning(mfilename, sprintf('Can not find Property "%s" in object %s. Creating it.', alias, this.Tag ));
+    setalias(this, alias, val);
+    return
   end                    % not a valid alias
   
   alias_num = alias_num(1);

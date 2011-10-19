@@ -8,7 +8,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
@@ -36,10 +36,23 @@ end
 
 % in all cases, resample the data set on a grid
 %a = interp(a,'grid');
+
+S.type = '()';
+S.subs = cell(1, ndims(a));
+rebin  = 0;
 % make axes single vectors for sum/trapz/... to work
 for index=1:ndims(a)
   [x, xlab] = getaxis(a, index);
-  setaxis(a, index, unique(x), xlab);
+  [dummy, i,j] = unique(x);
+  if length(x) < length(i)
+    S.subs{index} = i;
+    rebin = 1;
+  else
+    S.subs = ':';
+  end
+end
+if rebin
+  a = subsref(a, S);
 end
 
 s = iData_private_cleannaninf(get(a,'Signal'));
@@ -64,7 +77,7 @@ if all(dim > 0)
     end
     % Store Signal
     s=squeeze(s); e=squeeze(e); m=squeeze(m);
-    setalias(b,'Signal', s, [op ' of ' label ]);
+    setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
   case 'trapz' % TRAPZ =========================================================
     for index=1:length(dim(:))
@@ -87,7 +100,7 @@ if all(dim > 0)
       end
     end
     % Store Signal
-    setalias(b,'Signal', s, [mfilename ' of ' label ' along ' xlab ]); 
+    setalias(b,'Signal', s, [ op ' of ' label ' along ' xlab ]); 
     
   case 'camproj' % camproj =====================================================
     % accumulates on all axes except the rank specified
@@ -99,7 +112,7 @@ if all(dim > 0)
       end
     end
     % Store Signal
-    setalias(b,'Signal', s, [ 'projection of ' label ]);     % Store Signal
+    setalias(b,'Signal', s, [ 'projection of ' label ' on axis ' num2str(dim) ]);     % Store Signal
 	  
 	end % switch (compute)
 	

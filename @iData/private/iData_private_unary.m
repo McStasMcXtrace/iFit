@@ -28,12 +28,12 @@ if length(a(:)) > 1
 end
 cmd=a.Command;
 b = copyobj(a);
-s = get(b,'Signal');
+s = subsref(b,struct('type','.','subs','Signal'));
 [dummy, sl] = getaxis(b, '0');
 
 % operation on Error
-e = get(b,'Error');
-m = get(b,'Monitor');
+e = subsref(b,struct('type','.','subs','Error'));
+m = subsref(b,struct('type','.','subs','Monitor'));
 
 % operation on signal
 if strcmp(op, 'sparse')
@@ -112,13 +112,13 @@ end
 % update object
 b = set(b, 'Signal', new_s, 'Error', abs(e), 'Monitor', m);
 % test if we could update signal as expected, else we store the new value directly in the field
-if ~isequal(get(b,'Signal'), new_s)
+if ~isequal(subsref(b,struct('type','.','subs','Signal')), new_s)
   b = setalias(b, 'Signal', new_s, [  op '(' sl ')' ]);
 end
-if ~isequal(get(b,'Error'), e)
+if ~isequal(subsref(b,struct('type','.','subs','Error')), e)
   b = setalias(b, 'Error', e);
 end
-if ~isequal(get(b,'Monitor'), m)
+if ~isequal(subsref(b,struct('type','.','subs','Monitor')), m)
   b = setalias(b, 'Monitor', m);
 end
 b.Command=cmd;
