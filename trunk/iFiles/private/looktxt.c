@@ -106,7 +106,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.1 $Revision: 1.3 $"
+#define VERSION "1.1 $Revision: 1.4 $"
 #endif
 
 #ifdef __dest_os
@@ -2415,7 +2415,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         /* define char header associated field */
         if (fieldend & Balpha) {
           field.c_start = startcharpos;
-          field.c_end   = endcharpos-1 > startcharpos ? endcharpos-1 : startcharpos;
+          field.c_end   = endcharpos > startcharpos ? endcharpos : startcharpos;
 
           /* startcharpos  = pos; */
           fieldend     -= Balpha;
