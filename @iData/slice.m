@@ -7,7 +7,7 @@ function slice(a)
 % input:  s: object or array (iData)
 % ex:     slice(iData(flow));
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/plot, sliceomatic
 
 if ndims(a) < 3 || isvector(a)
@@ -15,8 +15,9 @@ if ndims(a) < 3 || isvector(a)
 end
 
 if prod(size(a)) > 1e6
-  iData_private_warning(mfilename, [ 'Object ' a.Tag ' is too large (numel=' num2str(prod(size(a))) ...
-    '.\n\tYou should rebin with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
+  iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
+    '.\n\tNow rebinning for display purposes with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
+  a=iData_private_reduce(a);
 end
 
 if exist('sliceomatic')
