@@ -25,7 +25,7 @@ function [val, lab] = getaxis(s,ax)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'y')
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation
@@ -149,7 +149,9 @@ if isempty(val) & ax
   else
     val=1:size(s, ax);
   end
-  iData_private_warning(mfilename, [ 'The ' num2str(ax) '-th rank axis has not been defined yet (use setaxis).\n\tUsing default axis 1:' num2str(length(val)) ' in object ' inputname(1) ' ' s.Tag ]);
+  iData_private_warning(mfilename, ...
+  [ 'The ' num2str(ax) '-th rank axis has not been defined yet (use setaxis).\n\t' ...
+    'Using default value=1:' num2str(length(val)) ' in object ' inputname(1) ' ' s.Tag ' "' s.Title '".'  ]);
   lab = [ 'Axis ' num2str(ax) ];
 end
 
