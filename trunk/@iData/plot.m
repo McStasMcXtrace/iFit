@@ -8,7 +8,7 @@ function h=plot(a, varargin)
 %     coordinate points are plotted using a plot3-type rendering. Further
 %     dimensionalities are not handled.
 %
-%   The scatter3 rendering option is similar to plot3, but colors points 
+%   The scatter3 rendering option is similar to plot3, but color points are set
 %   according to the signal intensity. The 'plot3' option for 3D (volume) objects
 %   uses a semi-transparent volume rendering, whereas the default plot uses
 %   an iso-surface on the median signal.
@@ -32,10 +32,12 @@ function h=plot(a, varargin)
 %               The slice(a) method opens the interactive sliceomatic 3D viewer.
 %
 %               Global options for 2D and 3D plots: 
-%                 flat, interp, faceted (for shading)
+%                 flat, interp, faceted (for shading), view2, view3
 %                 transparent, light, clabel, colorbar, shifted (overlayed 2D)
-%                 axis tight, axis auto, view2, view3, hide_axes (compact layout)
+%               Global options for all plots: 
+%                 axis tight, axis auto, hide_axes (compact layout)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
+%                 whole (do not reduce object size for plotting)
 %                 
 % output: h: graphics object handles (cell/array)
 % ex:     plot(iData(rand(10)), 'surfc interp transparent'); plot(iData(1:10), 'r-');
@@ -47,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.71 $
+% Version: $Revision: 1.72 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -124,9 +126,10 @@ if length(a) > 1
 end
 
 % check if the object is not too large, else rebin accordingly
-if prod(size(a)) > 1e6
+if prod(size(a)) > 1e6 && isempty(strfind(method,'whole'))
   iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
-    '.\n\tNow rebinning for display purposes with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
+    '.\n\tNow rebinning for display purposes with e.g. a=a(1:2:end, 1:2:end, ...).' ...
+    '\n\tUse e.g plot(a, ''whole'') to plot the whole data set and be able to zoom tiny regions.' ]);
   a=iData_private_reduce(a);
 end
 zlab = '';
