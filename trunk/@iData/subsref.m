@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -29,13 +29,6 @@ for i = 1:length(S)     % can handle multiple index levels
     if numel(b) > 1   % iData array
       b = b(s.subs{:});
     else                  % single iData
-      try % disable some warnings
-        warn.seta = warning('off','iData:setaxis');
-        warn.geta = warning('off','iData:getaxis');
-        warn.get  = warning('off','iData:get');
-      catch
-        warn = warning('off');
-      end
       % this is where specific class structure is taken into account
       if any(cellfun('isempty',s.subs)), b=[]; return; end        % b([])
       if ischar(s.subs{1}) && ~strcmp(s.subs{1},':')              % b(name) -> s.(name) alias/field value
@@ -43,6 +36,9 @@ for i = 1:length(S)     % can handle multiple index levels
         b=subsref(b, s); return;
       end
       if length(s.subs) == 1 && all(s.subs{:} == 1), return; end  % b(1)
+      
+      iData_private_warning('enter',mfilename);
+      
       ds=iData_getAliasValue(b,'Signal'); 
       de=iData_getAliasValue(b,'Error'); 
       dm=iData_getAliasValue(b,'Monitor');
@@ -95,13 +91,7 @@ for i = 1:length(S)     % can handle multiple index levels
       % final check
       b = iData(b);
       % reset warnings
-      try
-        warning(warn.seta);
-        warning(warn.geta);
-        warning(warn.get);
-      catch
-        warning(warn);
-      end
+      iData_private_warning('exit',mfilename);
 
     end               % if single iData
   case '{}' % ======================================================== cell
@@ -156,7 +146,6 @@ function val = iData_getAliasValue(this,fieldname)
 %   NOTE: for standard Aliases (Error, Monitor), makes a dimension check on Signal
 
 % EF 23/09/07 iData impementation
-
   val = [];
   if ~isa(this, 'iData'),   return; end
   if ~isvarname(fieldname), return; end % not a single identifier (should never happen)
@@ -171,7 +160,7 @@ function val = iData_getAliasValue(this,fieldname)
   alias_num = alias_num(1);
   name      = this.Alias.Names{alias_num};
   val       = this.Alias.Values{alias_num};  % definition/value of the Alias
-  
+
   if (~isnumeric(val) && ~islogical(val))
     % the link evaluation must be numeric in the end...
     if ~ischar(val),       return; end  % returns numeric/struct/cell ... content as is.
@@ -218,7 +207,7 @@ function val = iData_getAliasValue(this,fieldname)
     if ~isempty(val) && ~isscalar(val) && ~isequal(size(val),size(this))
       iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) ...
       '] has not the same size as the Signal [' num2str(size(this)) ...
-      '] in iData object ' this.Tag ' "' this.Title '".\n\tTo use the default Error=sqrt(Signal) use s.Error=[].' ]);
+      '] in iData object ' this.Tag ' "' this.Title '".\n\tTo use the default Error=sqrt(Signal) assign s.Error=[].' ]);
     end
   elseif strcmp(fieldname, 'Monitor')  % Monitor is 1 by default
     if isempty(val), val=1;

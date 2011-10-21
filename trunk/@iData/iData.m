@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.29 $
+% Version: $Revision: 1.30 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -86,7 +86,7 @@ else  % convert input argument into object
       assignin('caller',inputname(1),outarray)
     end
     return
-  elseif isnumeric(varargin{1}) & length(varargin) > 1  % array -> iData
+  elseif ~isa(varargin{1}, 'iData') && isnumeric(varargin{1}) & length(varargin) > 1  % array -> iData
     % iData(x,y,..., signal)
     index = length(varargin);
     d = iData(varargin{index});  % last argument is the Signal
