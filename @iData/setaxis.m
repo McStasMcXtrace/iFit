@@ -27,7 +27,7 @@ function this = setaxis(this, rank, alias, value)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -186,7 +186,7 @@ function this = iData_checkaxes(this)
     catch
       % the axis value is invalid.
       iData_private_warning(mfilename,[ 'the Axis ' link ' ' num2str(index) ...
-        '-th rank is not valid in object ' inputname(1) ' '  this.Tag '.' ]);
+        '-th rank is not valid in object ' inputname(1) ' '  this.Tag ' "' this.Title '".' ]);
     end
   end % for index
   if ~isempty(axis_1D)  % remove singleton axis and put it in end position

@@ -77,7 +77,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.34 $
+% Version: $Revision: 1.35 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -251,12 +251,7 @@ if ~isstruct(constraints)
 end
 
 % removes warnings
-try
-  warn.set = warning('off','iData:setaxis');
-  warn.get = warning('off','iData:getaxis');
-catch
-  warn = warning('off');
-end
+iData_private_warning('enter', mfilename);
 
 if ~isfield(options,'Display') options.Display=''; end
 if ~isfield(options,'algorithm') options.algorithm=options.optimizer; end
@@ -331,14 +326,8 @@ if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(o
   end
 end
 
-
 % reset warnings
-try
-  warning(warn.set);
-  warning(warn.get);
-catch
-  warning(warn);
-end
+iData_private_warning('exit', mfilename);
 
 end % fits end
 

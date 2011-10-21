@@ -10,7 +10,7 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 if nargin == 1 & isa(dim, 'iData') & length(dim) >= 1 % syntax: cat([a])
   s = cat(1, dim);
@@ -35,12 +35,7 @@ if length(a) <= 1, s=a; return; end
 if dim <= 0, dim=1; end
 
 % removes warnings during interp
-try
-  warn.set = warning('off','iData:setaxis');
-  warn.get = warning('off','iData:getaxis');
-catch
-  warn = warning('off');
-end
+iData_private_warning('enter', mfilename);
 
 % syntax is now: cat(dim,[a b c ... ])
 % first need to compute union axes, but not for dimension 'dim'
@@ -135,11 +130,6 @@ s.Command=cmd;
 s = iData_private_history(s, mfilename, dim, a(1), a(2));
 
 % reset warnings during interp
-try
-  warning(warn.set);
-  warning(warn.get);
-catch
-  warning(warn);
-end
+iData_private_warning('exit', mfilename);
 
 

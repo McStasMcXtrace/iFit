@@ -10,7 +10,7 @@ function s = dog(dim,a, varargin)
 % output: s: split data set (iData array)
 % ex:     c=dog(1,a,b); c=dog(1,[ a b ]); 
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 
 if length(varargin) >= 1  % syntax: dog(dim,a,b,c,...)
@@ -33,12 +33,7 @@ if ~isa(a, 'iData')
 end
 
 % removes warnings during interp
-try
-  warn.set = warning('off','iData:setaxis');
-  warn.get = warning('off','iData:getaxis');
-catch
-  warn = warning('off');
-end
+
 
 if dim <= 0, dim=1; end
 % syntax is now: dog(dim,[a b c ... ])
@@ -54,6 +49,8 @@ if dim > ndims(a)
   iData_private_warning(mfilename,[ 'Can not extract dim=' num2str(dim) ' slices from object ' this.Tag ' with ndims(a)=' num2str(a) ]);
   return
 end
+
+iData_private_warning('enter', mfilename);
 
 % prepare the cell of indices to be sent to sub2ind
 sub=cell(1,ndims(a));
@@ -73,14 +70,6 @@ for index=1:size(a, dim)
   s = [ s ; this_s ];
 end
 
-
-
 % reset warnings during interp
-try
-  warning(warn.set);
-  warning(warn.get);
-catch
-  warning(warn);
-end
-
+iData_private_warning('exit', mfilename);
 

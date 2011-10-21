@@ -27,7 +27,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid','nan');
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -55,12 +55,8 @@ if ndims(a) == 0
   return
 end
 % removes warnings during interp
-try
-  warn.set = warning('off','iData:setaxis');
-  warn.get = warning('off','iData:getaxis');
-catch
-  warn = warning('off');
-end
+iData_private_warning('enter', mfilename);
+
 % default axes/parameters
 i_axes = cell(1,ndims(a)); i_labels=i_axes;
 for index=1:ndims(a)
@@ -203,7 +199,10 @@ end
 % get Signal, error and monitor.
 i_signal   = get(a,'Signal');
 if any(isnan(i_signal(:))) && has_nan_arg, has_changed=1; end
-if ~has_changed & (~requires_meshgrid | is_grid), return; end
+if ~has_changed & (~requires_meshgrid | is_grid), 
+  iData_private_warning('exit');
+  return; 
+end
 
 i_class    = class(i_signal); i_signal = double(i_signal);
 
@@ -312,7 +311,10 @@ for index=1:ndims(a)
     break
   end
 end
-if ~has_changed, return; end
+if ~has_changed, 
+  iData_private_warning('exit');
+  return; 
+end
 
 % interpolation takes place here
 f_signal = iData_interp(i_axes, i_signal, f_axes, method);
@@ -370,12 +372,7 @@ b = iData_private_history(b, mfilename, a, varargin{:});
 b = iData(b);
 
 % reset warnings during interp
-try
-  warning(warn.set);
-  warning(warn.get);
-catch
-  warning(warn);
-end
+iData_private_warning('exit', mfilename);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

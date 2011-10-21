@@ -14,7 +14,7 @@ function s = prod(a,dim)
 % output: s: product of elements (iData/scalar)
 % ex:     c=prod(a);
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/plus, iData/prod, iData/cumprod, iData/mean
 
 if ~isa(a, 'iData')
@@ -33,12 +33,7 @@ if length(a(:)) > 1
 end
 
 % removes warnings
-try
-  warn.set = warning('off','iData:setaxis');
-  warn.get = warning('off','iData:getaxis');
-catch
-  warn = warning('off');
-end
+iData_private_warning('enter', mfilename);
 
 % in all cases, resample the data set on a grid
 a = interp(a,'grid');
@@ -87,10 +82,5 @@ b = iData_private_history(b, mfilename, b, dim);
 s = b;
 
 % reset warnings
-try
-  warning(warn.set);
-  warning(warn.get);
-catch
-  warning(warn);
-end
+iData_private_warning('exit', mfilename);
 

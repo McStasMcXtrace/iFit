@@ -8,7 +8,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
@@ -27,12 +27,7 @@ if isscalar(a)
 end
 
 % removes warnings
-try
-  warn.set = warning('off','iData:setaxis');
-  warn.get = warning('off','iData:getaxis');
-catch
-  warn = warning('off');
-end
+iData_private_warning('enter',mfilename);
 
 % in all cases, resample the data set on a grid
 %a = interp(a,'grid');
@@ -154,10 +149,5 @@ b = iData_private_history(b, op, b, dim);
 s = b;
 
 % reset warnings
-try
-  warning(warn.set);
-  warning(warn.get);
-catch
-  warning(warn);
-end
+iData_private_warning('exit',mfilename);
 
