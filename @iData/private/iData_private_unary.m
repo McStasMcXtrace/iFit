@@ -26,6 +26,9 @@ if length(a(:)) > 1
   b = reshape(b, size(a));
   return
 end
+
+iData_private_warning('enter',[ mfilename ' ' op ]);
+
 cmd=a.Command;
 b = copyobj(a);
 s = subsref(b,struct('type','.','subs','Signal'));
@@ -102,6 +105,7 @@ case {'sign','isfinite','isnan','isinf'}
 case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical','double','single','logical','find'}
 	% result is a single value
 	b = new_s;
+	iData_private_warning('exit',mfilename);
 	return
 case {'uminus','abs','real','imag','uplus','not'}
 	% retain error, do nothing
@@ -110,7 +114,8 @@ otherwise
 end
 
 % update object
-b = set(b, 'Signal', new_s, 'Error', abs(e), 'Monitor', m);
+e = abs(e);
+b = set(b, 'Signal', new_s, 'Error', e, 'Monitor', m);
 % test if we could update signal as expected, else we store the new value directly in the field
 if ~isequal(subsref(b,struct('type','.','subs','Signal')), new_s)
   b = setalias(b, 'Signal', new_s, [  op '(' sl ')' ]);
@@ -126,4 +131,6 @@ b = iData_private_history(b, op, a);
 
 % other methods to treat specifically
 % diff, min, max, sum, prod, sort, trapz
+
+iData_private_warning('exit',mfilename);
 

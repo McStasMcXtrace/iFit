@@ -39,7 +39,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -61,49 +61,39 @@ for i=1:length(files)
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Source'), filename = files{i}.Source; end
   files{i} = load_check_struct(files{i}, loaders, filename);
   this_iData =  iData(files{i});	% convert file content from iLoad into iData
-  % specific adjustments for looktxt (default import method)
-  [pathname,filename,ext] = fileparts(files{i}.Source);
-  try % create MetaData alias if present in structure (to reduce memory usage for storage)
-    c = this_iData.Data.MetaData; clear c;
-    this_iData=setalias(this_iData, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
-    this_iData=load_clean_metadata(this_iData);
-  end
-  % search for default axes (right length and monotonic)
-  this_iData=load_search_axes(this_iData);
-  if isfield(files{i},'Headers')
-    this_iData.Data.Headers = files{i}.Headers;
-    this_iData=setalias(this_iData, 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
-  end
-  if ~isfield(loaders{i}, 'postprocess')
-    loaders{i}.postprocess='';
-  end
-  if ~isempty(loaders{i}.postprocess)
-    % removes warnings
-    try
-      warn.set = warning('off','iData:setaxis');
-      warn.get = warning('off','iData:getaxis');
-      warn.get = warning('off','iData:get');
-    catch
-      warn = warning('off');
+  if ~isempty(this_iData)
+    % specific adjustments for looktxt (default import method)
+    [pathname,filename,ext] = fileparts(files{i}.Source);
+    if isfield(this_iData.Data, 'MetaData')
+      this_iData=setalias(this_iData, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
+      this_iData=load_clean_metadata(this_iData);
     end
-    if ~iscellstr(loaders{i}.postprocess)
-      loaders{i}.postprocess = cellstr(loaders{i}.postprocess);
+    % search for default axes (right length and monotonic)
+    this_iData=load_search_axes(this_iData);
+    if isfield(files{i},'Headers')
+      this_iData.Data.Headers = files{i}.Headers;
+      this_iData=setalias(this_iData, 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
     end
-    % apply post-load routine: this may generate more data sets
-    for j=1:length(loaders{i}.postprocess)
-      if ~isempty(loaders{i}.postprocess{j})
-        this_iData = feval(loaders{i}.postprocess{j}, this_iData);
+    if ~isfield(loaders{i}, 'postprocess')
+      loaders{i}.postprocess='';
+    end
+    if ~isempty(loaders{i}.postprocess)
+      % removes warnings
+      iData_private_warning('enter',mfilename);
+      if ~iscellstr(loaders{i}.postprocess)
+        loaders{i}.postprocess = cellstr(loaders{i}.postprocess);
       end
+      % apply post-load routine: this may generate more data sets
+      for j=1:length(loaders{i}.postprocess)
+        if ~isempty(loaders{i}.postprocess{j})
+          this_iData = feval(loaders{i}.postprocess{j}, this_iData);
+        end
+      end
+      % reset warnings
+      iData_private_warning('exit',mfilename);
+    elseif ~isempty(loaders{i}.postprocess)
+      iData_private_warning(mfilename,['Can not find post-process function ' loaders{i}.postprocess ' for data format ' loaders{i}.name ]);
     end
-    % reset warnings
-    try
-      warning(warn.set);
-      warning(warn.get);
-    catch
-      warning(warn);
-    end
-  elseif ~isempty(loaders{i}.postprocess)
-    iData_private_warning(mfilename,['Can not find post-process function ' loaders{i}.postprocess ' for data format ' loaders{i}.name ]);
   end
   out = [ out this_iData ];
 end %for i=1:length(files)

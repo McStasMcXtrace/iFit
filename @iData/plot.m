@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.72 $
+% Version: $Revision: 1.73 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -57,19 +57,43 @@ function h=plot(a, varargin)
 % private functions:
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
+
+ih = ishold;
+h  = {};
 if nargin == 1, method=''; 
+elseif length(varargin) == 1
+  if ischar(varargin{1})
+    method=varargin{1};
+  elseif isa(varargin{1},'iData')
+    a = [ a(:) ; varargin{index} ];
+  end
 else
+  % split varvargin looking for chars
   method = '';
-  for index=1:length(varargin)
-    if ischar(varargin{index}), method = varargin{index};
-    elseif isa(a,'iData') 
+  index=1;
+  while index <= length(varargin)  % parse input arguments and split with char/methods calls
+    if ischar(varargin{index})
+      method = varargin{index};
+      h{end+1}=plot(a, method);
+      a = []; method='';
+      hold on
+    elseif isa(varargin{index},'iData') 
       a = [a(:) ; varargin{index} ];
     end
+    index=index+1;
   end
 end
+
+if isempty(a)
+  if all(cellfun('length',h) == 1)
+    h = cell2mat(h);
+  end
+  if ih == 1, hold on; else hold off; end
+  return; 
+end
+
+% plot an array of objects
 if length(a) > 1
-  h = cell(size(a));
-  ih = ishold;
   sum_max = 0;
   toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent';
   toremove=strread(toremove,'%s','delimiter',' ');
@@ -125,6 +149,8 @@ if length(a) > 1
   return
 end
 
+% plot a single object
+
 % check if the object is not too large, else rebin accordingly
 if prod(size(a)) > 1e6 && isempty(strfind(method,'whole'))
   iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
@@ -135,7 +161,9 @@ end
 zlab = '';
 switch ndims(a) % handle different plotting methods depending on the iData dimensionality
 case 0
-  h=[]; return;
+  h=[]; 
+  if ih == 1, hold on; else hold off; end
+  return;
 case 1  % vector type data (1 axis + signal) -> plot
   if size(a,1) ==1 && size(a,2) > 1
     a = transpose(a);
@@ -165,6 +193,7 @@ case 1  % vector type data (1 axis + signal) -> plot
     setalias(a, 'Axis_2', ax);
     setaxis(a, 2, 'Axis_2');
     h = plot(a, method);
+    if ih == 1, hold on; else hold off; end
     return
   else 
     this_method=method;
@@ -340,6 +369,7 @@ case 3  % 3d data sets: volumes
           h = findobj(gca,'type','patch');
         catch
           h = plot(a, 'scatter3');
+          if ih == 1, hold on; else hold off; end
           return
         end
       end
@@ -349,6 +379,7 @@ case 3  % 3d data sets: volumes
 otherwise
   iData_private_warning(mfilename, [ 'plotting of ' num2str(ndims(a)) '-th dimensional data is not implemented from ' a.Tag '.\n\tUse sum or camproj to reduce dimensionality for plotting.' ]);
   h=[];
+  if ih == 1, hold on; else hold off; end
   return
 end % switch
 
@@ -651,6 +682,8 @@ else
   end
   title(titl,'interpreter','none');
 end
+
+if ih == 1, hold on; else hold off; end
 
 end
 % ============================================================================

@@ -18,7 +18,7 @@ function c = iData_private_binary(a, b, op, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
@@ -64,13 +64,8 @@ end
 if     isempty(a), c=b; return;
 elseif isempty(b), c=a; return; end
 
-try % disable some warnings
-  warn.seta = warning('off','iData:setaxis');
-  warn.geta = warning('off','iData:getaxis');
-  warn.get  = warning('off','iData:get');
-catch
-  warn = warning('off');
-end
+iData_private_warning('enter',mfilename);
+
 if isa(a, 'iData')
   cmd=a.Command;
 elseif isa(b, 'iData')
@@ -246,10 +241,4 @@ c.Command=cmd;
 c = iData_private_history(c, op, a,b);
 
 % reset warnings
-try
-  warning(warn.seta);
-  warning(warn.geta);
-  warning(warn.get);
-catch
-  warning(warn);
-end
+iData_private_warning('exit',mfilename);
