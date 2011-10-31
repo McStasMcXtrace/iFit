@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -63,8 +63,12 @@ for i = 1:length(S)     % can handle multiple index levels
           if length(size(x)) == length(size(b)) && ...
                  all(size(x) == size(b))  && all(length(nd) == length(s.subs)) % meshgrid type axes
             b = setaxis(b, index, ax, x(s.subs{:}));
-          else  % vector type axes
+          elseif max(s.subs{index}) < numel(x) % vector type axes
             b = setaxis(b, index, ax, x(s.subs{index}));
+          else
+            iData_private_warning(mfilename,[ 'The Axis ' num2str(size(index)) ' [' ...
+    num2str(size(x)) ' can not be resize as a [' num2str(size(s.subs{index})) ...
+    '] vector in iData object ' b.Tag ' "' b.Title '".\n\tTo use the default Error=sqrt(Signal) assign s.Error=[].' ]);
           end
         end
       end 
