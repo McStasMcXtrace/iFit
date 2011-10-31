@@ -39,7 +39,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -172,7 +172,7 @@ function a=load_search_axes(a)
         if all(x > 0)
           setaxis(a, rank, fields{good_length(index)});
           label(  a, rank, fields{good_length(index)});
-          disp([ 'iData: Setting Axis[' num2str(rank) ']="' fields{good_length(index)} '" with length ' num2str(dims(good_length(index))) ' in object ' a.Tag ' "' a.Title '".' ]);
+          disp([ 'iData: Setting Axis_' num2str(rank) '="' fields{good_length(index)} '" with length ' num2str(dims(good_length(index))) ' in object ' a.Tag ' "' a.Title '".' ]);
           break; % we found an axis that has good dimension and is monotonic
         end
       end

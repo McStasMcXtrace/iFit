@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.74 $
+% Version: $Revision: 1.75 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -224,7 +224,7 @@ case 1  % vector type data (1 axis + signal) -> plot
       if ~length(this_method) 
         h = errorbar(x,y,e); 
       end
-      if ~isempty(strfind(this_method, 'hide_err')) || all(abs(e) >= abs(y))
+      if ~isempty(strfind(this_method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0)
         if length(h) == 1 && length(get(h,'Children') == 2)
           eh = get(h,'Children');
         else eh = h; 
