@@ -25,7 +25,7 @@ function this = setalias(this,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -56,6 +56,9 @@ elseif nargin == 2
     return
   end
   links = ''; labels=''; % removes aliases
+  if length(this.Alias.Names) >= 4
+    names = this.Alias.Names(4:end);
+  end
 elseif nargin == 3
   labels='';
 end
@@ -79,6 +82,8 @@ if numel(this) > 1
   return
 end
 
+to_keep = [ this.Alias.Names(1:3) this.Alias.Values(1:3) this.Alias.Axis ];
+
 % handle single object
 for index=1:length(names) % loop on alias names
   name = names{index};
@@ -98,13 +103,16 @@ for index=1:length(names) % loop on alias names
      (~isempty(name) && name(1) == '#') )
     continue;
   end
-  alias_num   = find(strcmpi(name, this.Alias.Names));
+  alias_num   = find(strcmpi(name, this.Alias.Names)); % usually a single match
   if isempty(link) && any(alias_num <= 3) 
     % set Signal, Error, Monitor to empty (default)
     this.Alias.Values{alias_num} = [];
     this.Alias.Labels{alias_num} = [];
   elseif isempty(link) && any(alias_num > 3) % protect Signal, Error, Monitor
     % remove these aliases from Alias list
+    % first check that we will not remove something important: Axes, Signal, ...
+    if any(strcmp(this.Alias.Names{alias_num}, to_keep)), continue; end
+
     this.Alias.Names(alias_num)  = [];
     this.Alias.Values(alias_num) = [];
     this.Alias.Labels(alias_num) = [];
