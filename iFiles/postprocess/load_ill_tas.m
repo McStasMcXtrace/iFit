@@ -4,7 +4,7 @@ function a=load_ill_tas(a)
 % Simple postprocessing for ILL/TAS files.
 % Supports ILL TAS files, including those with multidetectors.
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -70,26 +70,31 @@ index_hkle=[]; % index of QH QK QL EN columns
 index_m12 =[]; % index of M1 M2 monitors
 index_temp=[]; % index for temperatures
 index_pal =[]; % index for polarization analysis
-Variance = zeros(1,length(columns));
+Variance  = zeros(1,length(columns));
+is_pal    = '';
 for j=1:length(columns)
   setalias(a,columns{j},a.Signal(:,j)); % create an alias for each column
   % use STEPS
-  if (~isempty(strmatch(columns{j}, {'QH','QK','QL','EN'},'exact'))) | ...
-    (~isempty(STEPS) & ~isempty(strmatch(columns{j}, STEPS, 'exact'))) | ...
-    (~isempty(STEPS) & ~isempty(strmatch([ 'D' columns{j} ], STEPS, 'exact')))
+  if any(strcmpi(columns{j}, {'QH','QK','QL','EN'}))  || ...
+    (~isempty(STEPS) && any(strcmpi(columns{j}, STEPS))) || ...
+    (~isempty(STEPS) && any(strcmpi([ 'D' columns{j} ], STEPS)))
     if isempty(find(index_hkle == j)), index_hkle = [ index_hkle j ]; end
   end
   % and other usual columns
-  if strmatch(columns{j}, {'M1','M2'},'exact')
+  if strcmpi(columns{j}, {'M1','M2'})
     index_m12 = [ index_m12 j ];
   end
-  if strmatch(columns{j}, {'TT','TRT'},'exact')
+  if strcmpi(columns{j}, {'TT','TRT'})
     index_temp= [ index_temp j ];
   end
-  if strmatch(columns{j}, {'PAL'},'exact')
+  if strcmpi(columns{j}, {'PAL'})     % polarized mode
     index_pal= [ index_pal j ];
+    is_pal='PAL';
+  elseif strcmpi(columns{j}, {'ROI'}) % IMPS mode
+    index_pal= [ index_pal j ];
+    is_pal='ROI';
   end
-  if isempty(strmatch(columns{j},{'PNT','CNTS','TI'}, 'exact'))
+  if isempty(strcmpi(columns{j},{'PNT','CNTS','TI'}))
     if length(a.Signal(:,j))
       Variance(j) = sum( abs(a.Signal(:,j)-mean(a.Signal(:,j)) )) /length(a.Signal(:,j));
     end
@@ -212,8 +217,8 @@ if ~isempty(index_pal)
     % create one iData per PAL state
     index_rows = find( DATA(:,index_pal(1)) == pal(j) );
     this_b = a(index_rows, :);
-    title(this_b, [ title(this_b) ' [PAL=' num2str(j) ']' ]);
-    this_b.Title = [ 'PAL=' num2str(j) ';' this_b.Title  ];
+    title(this_b, [ title(this_b) ' [' is_pal '=' num2str(j) ']' ]);
+    this_b.Title = [ is_pal '=' num2str(j) ';' this_b.Title  ];
     b = [ b this_b ];
   end
   a = b;
