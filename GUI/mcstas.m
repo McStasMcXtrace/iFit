@@ -53,7 +53,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -304,7 +304,7 @@ function system_wait(cmd, options)
     while length(a) <= 3 % only 'mcstas.sim', '.', '..' when simulation is not completed yet
       if toc(t) > 60
         if first==1 % display initial waiting message when computation lasts more than a minute
-            fprintf(1, 'mcstas: Waiting for completion of %s simulation (dot=min).\n', options.instrument);
+            fprintf(1, 'mcstas: Waiting for completion of %s simulation (dots=minutes).\n', options.instrument);
         end
         fprintf(1,'.');
         t=tic; first=first+1;
@@ -357,7 +357,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   if isfield(options,'mpi')
     if isempty(options.mpi)
       cmd = [ cmd ' --mpi' ];
-    else
+    elseif options.mpi > 1
       cmd = [ cmd ' --mpi=' num2str(options.mpi) ];
     end
   end
@@ -491,6 +491,22 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     if any(use_monitors)
       sim = sim(find(use_monitors));
     end
+  end
+  % option to plot the monitors
+  if isfield(options, 'OutputFcn')
+    % is this window already opened ?
+    h = findall(0, 'Tag', 'mcstasplot');
+    if isempty(h) % create it
+      h = figure('Tag','mcstasplot', 'Unit','pixels');
+      tmp = get(h, 'Position'); tmp(3:4) = [500 400];
+      set(h, 'Position', tmp);
+    end
+
+    % raise existing figure (or keep it hidden)
+    if gcf ~= h, figure(h); end
+    hold off
+    subplot(sim,'view2');
+    hold off
   end
   criteria = zeros(length(sim),1);
   for index=1:length(sim)

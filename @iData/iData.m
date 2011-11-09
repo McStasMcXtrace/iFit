@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -281,7 +281,11 @@ if iscell(in), in = in{1}; end
 % update ModifDate
 in.ModificationDate = datestr(now);
 % check type of fields
-if ~ischar(in.Title) & ~iscellstr(in.Title)
+if iscellstr(in.Title)
+  t = strcat(in.Title,';');
+  in.Title=[ t{:} ];
+end
+if ~ischar(in.Title) 
   iData_private_warning(mfilename,['Title must be a char or cellstr in iData object ' in.Tag ' "' in.Title ]);
   in.Title = '';
 end
