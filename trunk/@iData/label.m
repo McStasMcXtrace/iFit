@@ -11,7 +11,7 @@ function labl = label(this, rank, lab)
 % output: b: object or array (iData)
 % ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
 
 if nargin < 2, rank=[]; end
@@ -42,6 +42,9 @@ else              labl = '';
 end
 
 alias = '';
+if iscellstr(rank)
+  rank = rank{1};
+end
 if ischar(rank)  % label(a, '1', ...)
   if ~isnan(str2double(rank))  % e.g. alias = '1'
     rank = str2double(rank);  % now numeric axis index
@@ -55,7 +58,8 @@ if ischar(rank)  % label(a, '1', ...)
   end
 end
 
-if isempty(rank), return; end  % axis alias not found
+if isempty(rank),    return; end  % axis alias not found
+%if ~isnumeric(rank), return; end
 
 % label(a, 1, ...): get the definition of the axis (alias name)
 value = '';
