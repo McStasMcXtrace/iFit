@@ -9,7 +9,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -78,7 +78,7 @@ else
         st = num2str(s.subs{1}); 
         if length(st) > 10,    st=[ st(1:10) '...' ]; end
         if length(s.subs) > 1, st = [ st ', ...' ]; end
-        iData_private_error(mfilename, [ 'object(' num2str(s.subs{:}) ') = ' class(val) ' but expects a numerical value or iData object to assign Signal in object ' inputname(1) ' ' b.Tag ]);
+        iData_private_error(mfilename, [ 'object(' st ') = ' class(val) ' but expects a numerical value or iData object to assign Signal in object ' inputname(1) ' ' b.Tag ]);
       end
       % this is where specific class structure is taken into account
       cmd=b.Command;
@@ -140,7 +140,7 @@ else
       b   = iData_setalias(b, 'Signal', sb);
     	return
     else 
-      iData_private_warning(mfilename, [ 'I can only allocate a sub-object with syntax ' inputname(1) ' ' b.Tag '(1) = ' val.Tag ' which asssigns unweighted Signal. Ignoring and leaving target object unchanged.' ]);
+      iData_private_warning(mfilename, [ 'I can only allocate a sub-object with syntax ' b.Tag ' ' inputname(1) '(1) = ' val.Tag ' which asssigns unweighted Signal. Ignoring and leaving target object unchanged.' ]);
     end                 % if single object
   case '{}'
     if length(b(:)) > 1   % object array -> deal on all elements
