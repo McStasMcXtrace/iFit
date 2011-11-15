@@ -106,7 +106,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.1 $Revision: 1.4 $"
+#define VERSION "1.1 $Revision: 1.5 $"
 #endif
 
 #ifdef __dest_os
@@ -537,7 +537,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
 *****************************************************************************/
 void *mem(size_t size)
 {
-  void *p;
+  void *p=NULL;
   if (!size) return(NULL);
   p = (void *)calloc(1, size);  /* Allocate and clear memory. */
   if(p == NULL) {
@@ -561,10 +561,10 @@ char *memfree(void *p)
 *****************************************************************************/
 char *str_dup(char *string)
 {
-  char *s;
+  char *s=NULL;
 
   if (!string) return(NULL);
-  s = mem(strlen(string) + 1);
+  s = mem(strlen(string)+1);
   strcpy(s, string);
   return s;
 }
@@ -574,7 +574,7 @@ char *str_dup(char *string)
 *****************************************************************************/
 char *str_dup_n(char *string, size_t n)
 {
-  char *s;
+  char *s=NULL;
 
   if (!string) return(NULL);
   if (!n || n > strlen(string)) n = strlen(string);
@@ -590,10 +590,10 @@ char *str_dup_n(char *string, size_t n)
 *****************************************************************************/
 char *str_cat(char *first, ...)
 {
-  char *s;
+  char *s=NULL;
   va_list ap;
   size_t size;
-  char *arg;
+  char *arg=NULL;
 
   if (!first) return (NULL);
   size = 1;     /* Count final '\0'. */
@@ -617,8 +617,7 @@ char *str_cat(char *first, ...)
 *****************************************************************************/
 char *str_free(char *string)
 {
-  memfree(string);
-  return(NULL);
+  return(memfree(string));
 }
 
 /*****************************************************************************
@@ -627,7 +626,7 @@ char *str_free(char *string)
 *****************************************************************************/
 char *str_rep(char *string, char *from, char *to)
 {
-  char *p;
+  char *p=NULL;
 
   if (!string || !strlen(string) || !from || !to) return(string);
   if (strlen(from) != strlen(to)) return(string);
@@ -649,7 +648,7 @@ char *str_quote(char *string)
 {
   char *badchars = "\\\"\r\n\t\a\b\f\v";
   char *quotechars = "\\\"rntabfv";
-  char *q=NULL, *res=NULL, *ptr;
+  char *q=NULL, *res=NULL, *ptr=NULL;
   size_t len=0, pass=0;
   int c;
   char new[5];
@@ -692,9 +691,9 @@ char *str_quote(char *string)
 char *str_valid(char *string, size_t n)
 {
   long i;
-  char *valid;
-  char *tmp1;
-  char *tmp2;
+  char *valid=NULL;
+  char *tmp1 =NULL;
+  char *tmp2 =NULL;
 
   if (!string || !strlen(string)) return(NULL);
   if (!n || n > strlen(string)) n=strlen(string);
@@ -726,9 +725,9 @@ char *str_valid_struct(char *string, char char_struct)
 {
   char *ret=NULL;
   long i;
-  char *valid;
-  char *tmp1;
-  char *tmp2;
+  char *valid=NULL;
+  char *tmp1 =NULL;
+  char *tmp2 =NULL;
   if (!string || !strlen(string)) return(str_dup(""));
 
   tmp2 = tmp1 = str_dup(string);
@@ -781,7 +780,7 @@ char *str_valid_eol(char *header, struct option_struct options)
 *****************************************************************************/
 char *str_reverse(char *string)
 {
-  char *reverted;
+  char *reverted=NULL;
   size_t index;
   size_t index_reverted;
 
@@ -803,7 +802,7 @@ char *str_reverse(char *string)
 *****************************************************************************/
 char *str_extractline(char *header, char *field, size_t *offset)
 {
-  char *header_offset;
+  char *header_offset=NULL;
   char *value    =NULL;
   char *start_pos=NULL;
   char *end_pos  =NULL;
@@ -858,10 +857,10 @@ char *str_lowup(char *name, char type)
 *****************************************************************************/
 char *str_lastword(char *string)
 {
-  char *reverted;
-  char *p_end, *p_start;
-  char *word;
-  char *tmp0, *tmp1;
+  char *reverted=NULL;
+  char *p_end=NULL, *p_start=NULL;
+  char *word=NULL;
+  char *tmp0=NULL, *tmp1=NULL;
 
   if (!string || !strlen(string)) return(NULL);
   reverted = str_reverse(string);
@@ -896,7 +895,7 @@ char *str_lastword(char *string)
 static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...)
 {
   #define MyNL_ARGMAX 50
-  char  *fmt_pos;
+  char  *fmt_pos=NULL;
 
   char *arg_char[MyNL_ARGMAX];
   int   arg_int[MyNL_ARGMAX];
@@ -917,7 +916,7 @@ static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...)
   fmt_pos = fmt;
   while(1)  /* analyse the format string 'fmt' */
   {
-    char *tmp;
+    char *tmp=NULL;
 
     arg_posB[this_arg] = (char *)strchr(fmt_pos, '%');
     tmp = arg_posB[this_arg];
@@ -990,7 +989,7 @@ static int pfprintf(FILE *f, char *fmt, char *fmt_args, ...)
   fmt_pos = fmt;
   for (this_arg=0; this_arg<arg_max; this_arg++)
   {
-    char *fmt_bit;
+    char *fmt_bit=NULL;
     int   arg_n;
 
     if (arg_posB[this_arg]-fmt_pos>0)
@@ -1098,7 +1097,7 @@ struct fileparts_struct fileparts(char *name)
       name_pos    = path_pos+1;
       path_length = name_pos - name;  /* from start to path+sep */
       if (path_length) {
-        parts.Path=str_free(parts.Path);
+        parts.Path = str_free(parts.Path);
         parts.Path = str_cat(name, LK_PATHSEP_S, NULL);
         strncpy(parts.Path, name, path_length);
         parts.Path[path_length]='\0';
@@ -1132,10 +1131,10 @@ struct fileparts_struct fileparts(char *name)
 *****************************************************************************/
 struct fileparts_struct fileparts_free(struct fileparts_struct parts)
 {
-  str_free(parts.FullName);
-  str_free(parts.Path);
-  str_free(parts.Name);
-  str_free(parts.Extension);
+  parts.FullName = str_free(parts.FullName);
+  parts.Path     = str_free(parts.Path);
+  parts.Name     = str_free(parts.Name);
+  parts.Extension= str_free(parts.Extension);
   
   return(parts);
 }
@@ -1164,7 +1163,7 @@ char *try_open_target(struct fileparts_struct parts, char force)
   char  *FullName=NULL;
   struct stat stfile;
   char   cwd[1024];
-  FILE  *fid;
+  FILE  *fid=NULL;
 
   /* starts with specified Path */
   FullName = fileparts_fullname(parts);
@@ -1189,11 +1188,13 @@ char *try_open_target(struct fileparts_struct parts, char force)
   }
   /* now tries with local Path=getcwd() */
   FullName=str_free(FullName);
+  if (!
 #if defined(WIN32) || defined(_WIN64)
-  _getcwd(cwd, 1024);
+    _getcwd(cwd, 1024))
 #else
-  getcwd(cwd, 1024);
+    getcwd(cwd, 1024)
 #endif
+  ) strcpy(cwd, "");
   parts.Path=str_free(parts.Path); 
   parts.Path = str_dup(strlen(cwd) ? cwd : ".");
   FullName = fileparts_fullname(parts);
@@ -1221,192 +1222,6 @@ char *try_open_target(struct fileparts_struct parts, char force)
 } /* try_open_target */
 
 /* structure initializers ************************************************* */
-
-/*****************************************************************************
-* file_init: init a zero file_struct
-*****************************************************************************/
-struct file_struct file_init(void)
-{
-  struct file_struct file;  /* will be the return value */
-
-  file.Source    = NULL;    /* zero structure */
-  file.TargetTxt = NULL;
-  file.TargetBin = NULL;
-  file.SourceHandle= NULL;
-  file.TxtHandle = NULL;
-  file.BinHandle = NULL;
-  file.Path      = NULL;
-  file.SourceName= NULL;
-  file.TargetName= NULL;
-  file.Extension = NULL;
-  file.RootName  = NULL;
-  file.Size = 0;
-  file.Time = 0;
-
-  return(file);
-} /* file_init */
-
-/*****************************************************************************
-* file_open: Open a source file structure
-*     determine file parts, set target names and test for existence
-*     returns: a source file structure
-*       Source       is NULL in case of open error
-*       TargetTxt    is NULL in case of target text creation error (exists)
-*       TargetBin    is NULL in case of target binary creation error (exists)
-*****************************************************************************/
-struct file_struct file_open(char *name, struct option_struct options)
-{
-  struct file_struct file;  /* will be the return value */
-  char  *root=NULL;
-
-  file = file_init();
-
-  if (name && strlen(name))
-  {
-    struct fileparts_struct parts;
-    struct stat stfile;
-
-    /* extracts source file parts */
-    parts = fileparts(name);
-    if (parts.Path)       file.Path      = str_dup(strlen(parts.Path) ? parts.Path: ".");
-    if (parts.Name)       file.SourceName= str_dup(parts.Name);
-    if (parts.Extension)  file.Extension = str_dup(parts.Extension);
-    file.Source= str_dup(name);
-    parts=fileparts_free(parts);
-
-    /* get info about source file */
-    if (stat(file.Source, &stfile) == 0) {
-      file.Size = stfile.st_size;
-      file.Time = stfile.st_mtime;
-    } else {
-      print_stderr( "Error: Source file '%s' can not be accessed [looktxt:file_open:%d]\n", 
-        file.Source,__LINE__);
-      file.Source = str_free(file.Source); 
-      return(file);
-    }
-
-    /* opens source file (for reading) */
-    file.SourceHandle = fopen(file.Source, "rb");
-    if (!file.SourceHandle) {
-      print_stderr( "Error: Source file '%s' can not be opened for reading [looktxt:file_open:%d]\n", 
-        file.Source,__LINE__);
-      file.Source = str_free(file.Source);
-      return(file);
-    }
-    /* sets default output name */
-    parts.FullName  = NULL;
-    if (file.Extension && strlen(file.Extension))
-      parts.Name      = str_cat(file.SourceName, "_", file.Extension, NULL);
-    else
-      parts.Name      = str_dup(file.SourceName);
-    parts.Path      = str_dup(file.Path);
-    parts.Extension = str_dup(options.format.Extension);
-
-    /* handle user target name option or set to default */
-    if (options.outfile.FullName) {
-      if (options.outfile.Name) {
-        if (strcmp(options.outfile.Name,"*")) { /* not '*.ext' */
-          str_free(parts.Name); parts.Name=NULL;
-          if (options.file_index > 1) { /* catenate file index */
-            char chr_index[256];
-            sprintf(chr_index, "_%ld\0", options.file_index);
-            parts.Name      = str_cat(options.outfile.Name, chr_index, NULL);
-          } else parts.Name = str_dup(options.outfile.Name);
-        }
-      }
-      if (options.outfile.Path) {
-        parts.Path=str_free(parts.Path); 
-        parts.Path=str_dup(options.outfile.Path);
-      }
-      if (options.outfile.Extension && strlen(options.outfile.Extension)) {
-        parts.Extension=str_free(parts.Extension);
-        parts.Extension=str_dup(options.outfile.Extension);
-      }
-    }
-    
-    /* check stdout/stderr output */
-    if (options.outfile.FullName
-    && (!strcmp(options.outfile.FullName, "stdout")
-        || !strcmp(options.outfile.FullName, "-"))) {
-      file.TargetTxt = str_dup("stdout");
-      if (options.use_binary && options.verbose >= 1) 
-        print_stderr("Warning: File '%s': Can not use binary target file with stdout output [looktxt:file_open:%d]\n"
-                      "         Using TXT output.\n", 
-          file.Source,__LINE__);
-      options.use_binary = 0;
-    } else if (options.outfile.FullName
-    && !strcmp(options.outfile.FullName, "stderr")) {
-      file.TargetTxt = str_dup("stderr");
-      if (options.use_binary && options.verbose >= 1) 
-        print_stderr("Warning: File '%s': Can not use binary target file with stderr output [looktxt:file_open:%d]\n"
-               "         Using TXT output.\n", 
-          file.Source,__LINE__);
-      options.use_binary = 0;
-    } else
-      file.TargetTxt = options.test ? 
-        fileparts_fullname(parts) : try_open_target(parts, options.force);
-
-    if (options.verbose >= 2) 
-      printf("VERBOSE[file_open]:         file '%s': target TXT %s", 
-        file.Source, file.TargetTxt);
-    if (!file.TargetTxt) {
-      exit(print_stderr("Invalid Target: outfile=%s parts=%s - %s - %s\n", 
-        options.outfile.FullName,
-        parts.Path ? parts.Path : "", parts.Name, parts.Extension));
-    }
-
-    /* handle binary output file */
-    if (options.use_binary) { /* only change extension */
-      str_free(parts.Extension); parts.Extension=NULL;
-      parts.Extension = str_dup("bin");
-      file.TargetBin = options.test ? 
-        fileparts_fullname(parts) : try_open_target(parts, options.force);
-      if (options.verbose >= 2) printf(" BIN %s", file.TargetBin);
-    }
-    if (options.verbose >= 2) printf("\n");
-
-   /* init ROOT Name based on file name and names_root */
-    if (!options.names_root) {
-      root = str_valid(parts.Name, options.names_length);
-    } else if (!strcmp(options.names_root, "NULL"))
-      root = NULL;                           /* no ROOT */
-    else root = str_valid(options.names_root, options.names_length); /* user ROOT */
-
-    parts=fileparts_free(parts);
-
-    file.RootName = ( root ? str_valid(root, 0) : str_dup("") );
-    if (!strncmp(file.RootName, "lk_", 3) && options.verbose >= 1)
-      print_stderr( "Warning: Data root level renamed as %s (started with number).\n"
-                    "         Output file names are unchanged [looktxt:file_open:%d]\n",
-        file.RootName,__LINE__);
-    root=str_free(root);
-
-  } /* if (name is non NULL) */
-  return(file);
-} /* file_open */
-
-/*****************************************************************************
-* file_close: Close a source file and clear allocated memory
-*****************************************************************************/
-struct file_struct file_close(struct file_struct file)
-{
-  if (file.SourceHandle) { 
-    if(fclose(file.SourceHandle)) 
-      print_stderr( "Warning: Could not close input Source file %s [looktxt:file_close:%d]\n",
-        file.Source,__LINE__); 
-    file.SourceHandle=NULL; 
-  }
-
-  file.Source    =str_free(file.Source);
-  file.TargetTxt =str_free(file.TargetTxt);
-  file.TargetBin =str_free(file.TargetBin);
-  file.Path      =str_free(file.Path);
-  file.SourceName=str_free(file.SourceName);
-  file.TargetName=str_free(file.TargetName);
-  file.Extension =str_free(file.Extension);
-  file.RootName  =str_free(file.RootName);
-  return(file);
-}
 
 /*****************************************************************************
 * format_rep_section: Replaces aliases names in format (data part)
@@ -1533,23 +1348,23 @@ struct format_struct format_init(struct format_struct formats[], char *request)
 {
   int   i;
   int   i_format=-1;
-  char *tmp;
+  char *tmp=NULL;
   struct format_struct format;  /* return value */
 
   /* get the format to lower case */
   if (!request || !strlen(request)) i_format=0;
   else {
     char *request_lower=NULL;
-    char tmp[256];
+    char ntmp[256];
 
     request_lower = str_lowup(str_dup(request), 'l');
 
     /* look for a specific format in formats.Name table */
     for (i=0; i < NUMFORMATS; i++)
     {
-      strncpy(tmp, formats[i].Name, 256);
-      str_lowup(tmp, 'l');
-      if (strstr(request_lower, tmp) || !strcmp(request_lower, formats[i].Extension)) i_format = i;
+      strncpy(ntmp, formats[i].Name, 256);
+      str_lowup(ntmp, 'l');
+      if (strstr(request_lower, ntmp) || !strcmp(request_lower, formats[i].Extension)) i_format = i;
     }
     request_lower=str_free(request_lower);
   }
@@ -1697,8 +1512,197 @@ struct option_struct options_free(struct option_struct options)
   options.option_list=str_free(options.option_list);
   options.pgname     =str_free(options.pgname);
   options.openmode   =str_free(options.openmode);
+  options.names_root =str_free(options.names_root);
   return(options);
 } /* options_free*/
+
+/*****************************************************************************
+* file_init: init a zero file_struct
+*****************************************************************************/
+struct file_struct file_init(void)
+{
+  struct file_struct file;  /* will be the return value */
+
+  file.Source    = NULL;    /* zero structure */
+  file.TargetTxt = NULL;
+  file.TargetBin = NULL;
+  file.SourceHandle= NULL;
+  file.TxtHandle = NULL;
+  file.BinHandle = NULL;
+  file.Path      = NULL;
+  file.SourceName= NULL;
+  file.TargetName= NULL;
+  file.Extension = NULL;
+  file.RootName  = NULL;
+  file.Size = 0;
+  file.Time = 0;
+
+  return(file);
+} /* file_init */
+
+/*****************************************************************************
+* file_close: Close a source file and clear allocated memory
+*****************************************************************************/
+struct file_struct file_close(struct file_struct file)
+{
+  if (file.SourceHandle) { 
+    if(fclose(file.SourceHandle)) 
+      print_stderr( "Warning: Could not close input Source file %s [looktxt:file_close:%d]\n",
+        file.Source,__LINE__); 
+    file.SourceHandle=NULL; 
+  }
+
+  file.Source    =str_free(file.Source);
+  file.TargetTxt =str_free(file.TargetTxt);
+  file.TargetBin =str_free(file.TargetBin);
+  file.Path      =str_free(file.Path);
+  file.SourceName=str_free(file.SourceName);
+  file.TargetName=str_free(file.TargetName);
+  file.Extension =str_free(file.Extension);
+  file.RootName  =str_free(file.RootName);
+  return(file);
+}
+
+/*****************************************************************************
+* file_open: Open a source file structure
+*     determine file parts, set target names and test for existence
+*     returns: a source file structure
+*       Source       is NULL in case of open error
+*       TargetTxt    is NULL in case of target text creation error (exists)
+*       TargetBin    is NULL in case of target binary creation error (exists)
+*****************************************************************************/
+struct file_struct file_open(char *name, struct option_struct options)
+{
+  struct file_struct file;  /* will be the return value */
+  char  *root=NULL;
+
+  file = file_init();
+
+  if (name && strlen(name))
+  {
+    struct fileparts_struct parts;
+    struct stat stfile;
+
+    /* extracts source file parts */
+    parts = fileparts(name);
+    if (parts.Path)       file.Path      = str_dup(strlen(parts.Path) ? parts.Path: ".");
+    if (parts.Name)       file.SourceName= str_dup(parts.Name);
+    if (parts.Extension)  file.Extension = str_dup(parts.Extension);
+    file.Source= str_dup(name);
+    parts=fileparts_free(parts);
+
+    /* get info about source file */
+    if (stat(file.Source, &stfile) == 0) {
+      file.Size = stfile.st_size;
+      file.Time = stfile.st_mtime;
+    } else {
+      print_stderr( "Error: Source file '%s' can not be accessed [looktxt:file_open:%d]\n", 
+        file.Source,__LINE__);
+      file.Source = str_free(file.Source); 
+      return(file);
+    }
+
+    /* opens source file (for reading) */
+    file.SourceHandle = fopen(file.Source, "rb");
+    if (!file.SourceHandle) {
+      print_stderr( "Error: Source file '%s' can not be opened for reading [looktxt:file_open:%d]\n", 
+        file.Source,__LINE__);
+      file.Source = str_free(file.Source);
+      return(file);
+    }
+    /* sets default output name */
+    if (file.Extension && strlen(file.Extension))
+      parts.Name      = str_cat(file.SourceName, "_", file.Extension, NULL);
+    else
+      parts.Name      = str_dup(file.SourceName);
+    parts.Path     = str_dup(file.Path);
+    parts.Extension= str_dup(options.format.Extension);
+
+    /* handle user target name option or set to default */
+    if (options.outfile.FullName) {
+      if (options.outfile.Name) {
+        if (strcmp(options.outfile.Name,"*")) { /* not '*.ext' */
+          str_free(parts.Name); parts.Name=NULL;
+          if (options.file_index > 1) { /* catenate file index */
+            char chr_index[256];
+            sprintf(chr_index, "_%ld\0", options.file_index);
+            parts.Name      = str_cat(options.outfile.Name, chr_index, NULL);
+          } else parts.Name = str_dup(options.outfile.Name);
+        }
+      }
+      if (options.outfile.Path) {
+        parts.Path=str_free(parts.Path); 
+        parts.Path=str_dup(options.outfile.Path);
+      }
+      if (options.outfile.Extension && strlen(options.outfile.Extension)) {
+        parts.Extension=str_free(parts.Extension);
+        parts.Extension=str_dup(options.outfile.Extension);
+      }
+    }
+    
+    /* check stdout/stderr output */
+    if (options.outfile.FullName
+    && (!strcmp(options.outfile.FullName, "stdout")
+        || !strcmp(options.outfile.FullName, "-"))) {
+      file.TargetTxt = str_dup("stdout");
+      if (options.use_binary && options.verbose >= 1) 
+        print_stderr("Warning: File '%s': Can not use binary target file with stdout output [looktxt:file_open:%d]\n"
+                      "         Using TXT output.\n", 
+          file.Source,__LINE__);
+      options.use_binary = 0;
+    } else if (options.outfile.FullName
+    && !strcmp(options.outfile.FullName, "stderr")) {
+      file.TargetTxt = str_dup("stderr");
+      if (options.use_binary && options.verbose >= 1) 
+        print_stderr("Warning: File '%s': Can not use binary target file with stderr output [looktxt:file_open:%d]\n"
+               "         Using TXT output.\n", 
+          file.Source,__LINE__);
+      options.use_binary = 0;
+    } else
+      file.TargetTxt = options.test ? 
+        fileparts_fullname(parts) : try_open_target(parts, options.force);
+
+    if (options.verbose >= 2) 
+      printf("VERBOSE[file_open]:         file '%s': target TXT %s", 
+        file.Source, file.TargetTxt);
+    if (!file.TargetTxt) {
+      print_stderr("Invalid Target: outfile=%s parts=%s/%s.%s\n", 
+        options.outfile.FullName ? options.outfile.FullName : "NULL",
+        parts.Path ? parts.Path : "", parts.Name, parts.Extension);
+      file    = file_close(file);
+      options = options_free(options);
+      exit(EXIT_FAILURE);
+    }
+
+    /* handle binary output file */
+    if (options.use_binary) { /* only change extension */
+      parts.Extension = str_free(parts.Extension);
+      parts.Extension = str_dup("bin");
+      file.TargetBin = options.test ? 
+        fileparts_fullname(parts) : try_open_target(parts, options.force);
+      if (options.verbose >= 2) printf(" BIN %s", file.TargetBin);
+    }
+    if (options.verbose >= 2) printf("\n");
+
+   /* init ROOT Name based on file name and names_root */
+    if (!options.names_root) {
+      root = str_valid(parts.Name, options.names_length);
+    } else if (!strcmp(options.names_root, "NULL"))
+      root = NULL;                           /* no ROOT */
+    else root = str_valid(options.names_root, options.names_length); /* user ROOT */
+
+    parts=fileparts_free(parts);
+
+    file.RootName = ( root ? str_valid(root, 0) : str_dup("") );
+    if (!strncmp(file.RootName, "lk_", 3) && options.verbose >= 1)
+      print_stderr( "Warning: Data root level renamed as %s (started with number).\n"
+                    "         Output file names are unchanged [looktxt:file_open:%d]\n",
+        file.RootName,__LINE__);
+    root=str_free(root);
+
+  } /* if (name is non NULL) */
+  return(file);
+} /* file_open */
 
 /* lists functions ******************************************************** */
 
@@ -1732,7 +1736,7 @@ struct strlist_struct strlist_add(struct strlist_struct *list, char *element)
 
   if (list->length  >= list->nalloc) {
     /* increase list size by new element slots */
-    char **p;
+    char **p=NULL;
     int    i;
     list->nalloc = list->length+ALLOC_BLOCK;
     p = (char **)realloc(list->List, list->nalloc*sizeof(char*));
@@ -1762,7 +1766,7 @@ struct strlist_struct strlist_add_void(struct strlist_struct *list, void *elemen
 
   if (list->length  >= list->nalloc) {
     /* increase list size by new element slots */
-    char **p;
+    char **p=NULL;
     int    i;
     list->nalloc = list->length+ALLOC_BLOCK;
     p = (char **)realloc(list->List, list->nalloc*sizeof(char*));
@@ -1849,7 +1853,7 @@ struct data_struct data_free(struct data_struct field)
 *****************************************************************************/
 char *data_get_char(struct file_struct file, size_t start, size_t end)
 {
-  char *string;
+  char *string=NULL;
 
   if (start < 0) start=0;
   if (end >= file.Size) end=file.Size;
@@ -2045,7 +2049,7 @@ void table_add(struct table_struct *table, struct data_struct data)
   if (!data.rows) return;
   if (table->length  >= table->nalloc) {
     /* increase list size by new element slots */
-    void *p;
+    void *p=NULL;
     int   i;
     table->nalloc = table->length+ALLOC_BLOCK;
     p = (void *)realloc(table->List, (table->nalloc)*sizeof(struct data_struct));
@@ -2522,7 +2526,7 @@ int file_write_tag(struct file_struct file, struct option_struct options,
 *****************************************************************************/
 int file_write_headfoot(struct file_struct file, struct option_struct options, char *format)
 {
-  char  *user;
+  char  *user=NULL;
   char   date[64];
   long   date_l; /* date as a long number */
   int    ret=1;
@@ -2702,7 +2706,7 @@ int file_write_field_array(struct file_struct file,
                           struct data_struct field, char *format)
 {
   char flag_written=0;
-  float *data;
+  float *data=NULL;
   long count=0;
   long length;
   
@@ -2819,7 +2823,7 @@ struct write_struct file_write_getsections(struct file_struct file,
   strlist_add(&section_fields, " "); /* no filed stored yet */
 
   if (options.verbose >= 2)
-      printf("VERBOSE[file_write_getsections]:  Analyze header [0-%ld], sections [%i] and metadata [%i] ...\n", ptable->length-1,options.sections.length,options.metadata.length);
+      printf("VERBOSE[file_write_getsections]:  Analyze header [0-%ld], sections [%li] and metadata [%li] ...\n", ptable->length-1,options.sections.length,options.metadata.length);
 
   length = ptable->length;
 
@@ -2919,7 +2923,7 @@ struct write_struct file_write_getsections(struct file_struct file,
     /* look for section names in header if any. skip ROOT */
     for (index_sec=0; index_sec < options.sections.length; index_sec++)
     { /* scan all registered sections */
-      char *this_section;
+      char *this_section=NULL;
       this_section = options.sections.List[index_sec];
       /* if a new section ID is found in the header */
       if (this_section && section_current && strcmp(section_current, this_section)) {
@@ -2981,6 +2985,7 @@ struct write_struct file_write_getsections(struct file_struct file,
   metatable->Name=str_free(metatable->Name);
   metatable->length=metatable->nalloc=0;
   metatable->List=(struct data_struct *)memfree(metatable->List);
+  free(metatable);
 
   return(found_sections);
 } /* file_write_getsections */
@@ -3356,7 +3361,7 @@ int parse_files(struct option_struct options, int argc, char *argv[])
   for(j = 0; j < options.sources_nb; j++) {
     struct file_struct  file;
     struct table_struct *table;
-    char  *filename;
+    char  *filename=NULL;
     int    i;
 
     i = options.files_to_convert_Array[j]; /* does the job for each file */
@@ -3381,7 +3386,9 @@ int parse_files(struct option_struct options, int argc, char *argv[])
         if (options.verbose >= 1) print_stderr("Looktxt: file '%s': wrote %ld numerical field%s into %s\n", 
           file.Source, ret, ret > 1 ? "s" : "", file.TargetTxt);
 #ifdef TEXMEX
-        TexMex_Target_Array[options.file_index] = file; /* to host mfile=file.Source and func=file.RootName */
+        (TexMex_Target_Array[options.file_index]).TargetTxt = strdup(file.TargetTxt); /* to host mfile=file.Source and func=file.RootName */
+        (TexMex_Target_Array[options.file_index]).TargetBin = strdup(file.TargetBin);
+        (TexMex_Target_Array[options.file_index]).RootName  = strdup(file.RootName);
 #endif
       } else {
 #ifdef TEXMEX
@@ -3390,6 +3397,7 @@ int parse_files(struct option_struct options, int argc, char *argv[])
       }
       options.file_index++;
       table=table_free(table);
+      free(table); table=NULL;
     }
     fflush(NULL); /* flush all */
     file=file_close(file);
@@ -3412,8 +3420,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
   char  tmp2[256];
   char  tmp3[BUFFER_SIZE];
   char  tmp4[BUFFER_SIZE];
-  char *tmp5;
-  char *tmp6;
+  char *tmp5=NULL;
+  char *tmp6=NULL;
   char  tmp7[256];
   char  tmp8[BUFFER_SIZE];
 
@@ -3549,12 +3557,12 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       char *root_char=NULL;
       if (strlen(argv[i]) > 13)
         if (strcmp(&argv[i][13], "NULL") && strcmp(&argv[i][13], "0")) {
-          char *tmp1;
-          char *tmp2;
-          tmp1 = str_reverse(&argv[i][13]);
-          tmp2 = str_valid(tmp1, options.names_length);
-          root_char = str_reverse(tmp2);        /* default */
-          str_free(tmp1); str_free(tmp2);
+          char *tmp9=NULL;
+          char *tmp10=NULL;
+          tmp9 = str_reverse(&argv[i][13]);
+          tmp10 = str_valid(tmp1, options.names_length);
+          root_char = str_reverse(tmp10);        /* default */
+          str_free(tmp9); str_free(tmp10);
         }
       options.names_root = root_char ? root_char : str_dup("NULL");
     } else if(argv[i][0] == '-') {
