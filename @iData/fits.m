@@ -77,7 +77,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.35 $
+% Version: $Revision: 1.36 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -316,7 +316,7 @@ if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(o
       disp('** Gaussian uncertainty on parameters (half width, from the optimization history)')
       fprintf(1,'%10.2g ', output.parsHistoryUncertainty); fprintf(1,'\n');
     end
-    if isfield(output,'parsHessianUncertainty')
+    if isfield(output,'parsHessianUncertainty') && ~isempty(output.parsHessianUncertainty)
       fprintf(1,'** Gaussian uncertainty on parameters (half width, from the Hessian matrix)');
       if isfield(output, 'corrcoef')
         fprintf(1, ', CorrCoef=%g\n', output.corrcoef);

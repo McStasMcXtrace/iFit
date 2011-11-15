@@ -53,7 +53,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -505,7 +505,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     % raise existing figure (or keep it hidden)
     if gcf ~= h, figure(h); end
     hold off
-    subplot(sim,'view2');
+    subplot(sim,'view2 axis tight');
     hold off
   end
   criteria = zeros(length(sim),1);
