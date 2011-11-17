@@ -5,6 +5,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   set of parameters. To select the optimization mode, set the options.mode='optimize'
 %   or any other optimization configuration parameter (TolFun, TolX, ...). Default 
 %   mode is 'simulate', which also includes scanning capability.
+% The syntax:
+%   mcstas(instrument,'compile') will simply assemble and compile the instrument 
+% description, without MPI support.
 %
 % input:  INSTRUMENT: name of the instrument description to run (string)
 %         PARAMETERS: a structure that gives instrument parameter names and values (structure)
@@ -53,7 +56,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -72,7 +75,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   % define simulation or optimization mode (if not set before)
   if ~isfield(options,'mode')
     if isfield(options, 'optimizer') | isfield(options,'TolFun') | ...
-       isfield(options,'TolX') | isfield(options,'type') 
+       isfield(options,'TolX') | isfield(options,'type') | ...
+       isfield(options,'MaxFunEvals') | isfield(options,'MaxIter')
       options.mode      = 'optimize'; 
     else
       options.mode      = 'simulate';
@@ -105,12 +109,19 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   end  
   
   % parse parameter values for mcstas_criteria
+  if ischar(parameters) && ~isempty(strfind(parameters,'compile'))
+    options.compile = 1;
+    if ischar(parameters) && (~isempty(strfind(parameters,' mpi')) || ~isempty(strfind(parameters,'mpi ')))
+      options.mpi=2;
+    end
+    parameters      = [];
+  end
   if nargin < 1, parameters = []; end
-  if ~isempty(parameters)
+  if ~isempty(parameters) & isstruct(parameters)
     parameter_names = fieldnames(parameters);
   else
     parameter_names = {};
-  end  
+  end
   fixed_names     = {};
   variable_names  = {};
   fixed_pars      = {};
@@ -174,14 +185,14 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   
 % Launch optimize and simulate mode ============================================
 
+  if isfield(options,'monitors')
+    options.monitors = cellstr(options.monitors);
+  end
+
   if strcmp(options.mode,'optimize')
     % optimize simulation parameters
     if ~isfield(options,'type'),      options.type      = 'maximize'; end
     if ~isfield(options,'optimizer'), options.optimizer = @fminpso; end
-    
-    if isfield(options,'monitors')
-      options.monitors = cellstr(options.monitors);
-    end
     
     % specific optimizer configuration
     optimizer_options = feval(options.optimizer,'defaults');
@@ -228,7 +239,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     end
     fval = squeeze(fval);
     p    = squeeze(p);
-    if iscell(fval)
+    if iscell(fval) && ~isempty(fval)
       % before converting to a single iData array, we check that all
       % simulations returned the same number of monitors
       for index=1:numel(fval)
@@ -340,6 +351,13 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   cmd = [ 'mcrun ' options.instrument ];
   
   % usual McStas/mcrun options
+  if isfield(options,'compile') & (options.compile | strcmp(options.compile,'yes'))
+    cmd = [ cmd ' --force-compile' ];
+    if isempty(pars)
+      options.ncount=0;
+      options.dir   ='';
+    end
+  end
   if isfield(options,'ncount') && ~isempty(options.ncount)
     cmd = [ cmd ' --ncount=' num2str(options.ncount) ];
   end
@@ -350,9 +368,6 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   if isfield(options,'gravitation') && (options.gravitation || strcmp(options.gravitation,'yes'))
     cmd = [ cmd ' --gravitation' ];
-  end
-  if isfield(options,'compile') & (options.compile | strcmp(options.compile,'yes'))
-    cmd = [ cmd ' --force-compile' ];
   end
   if isfield(options,'mpi')
     if isempty(options.mpi)
@@ -461,10 +476,13 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   
   % Execute simulation
-  disp([ mfilename ': spawning ' cmd ]);
+  disp([ mfilename ': ' options.mode ' ' cmd ]);
   system_wait(cmd, options);
   
   if nargout ==0, return; end
+  if isfield(options,'ncount') && options.ncount == 0
+    return
+  end
   directory = options.dir;
 
   if ~isempty(dir([ directory filesep 'mcstas.sim' ]))
@@ -478,7 +496,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     criteria=0; sim=[]; ind=[];
     return
   end
-  
+
   if isfield(options,'monitors') & numel(sim) > 1
     % restrict monitors from simulation by matching patterns
     use_monitors = zeros(size(sim));
