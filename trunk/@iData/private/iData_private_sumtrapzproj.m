@@ -8,7 +8,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
@@ -95,6 +95,7 @@ if all(dim > 0)
       end
     end
     % Store Signal
+    s=squeeze(s); e=squeeze(e); m=squeeze(m);
     setalias(b,'Signal', s, [ op ' of ' label ' along ' xlab ]); 
     
   case 'camproj' % camproj =====================================================
