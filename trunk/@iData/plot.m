@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.75 $
+% Version: $Revision: 1.76 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -93,7 +93,7 @@ if isempty(a)
 end
 
 % plot an array of objects
-if length(a) > 1
+if numel(a) > 1
   sum_max = 0;
   toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent';
   toremove=strread(toremove,'%s','delimiter',' ');
@@ -101,7 +101,10 @@ if length(a) > 1
   for index=1:length(toremove)
     this_method = deblank(strrep(this_method, toremove{index},''));
   end
-  for index=1:length(a(:))
+  % plot objects in the same axis frame
+  % set error bar uniformly along objects
+  common_error_bar='undefined'; % will set the value to 0/1 when 1D found
+  for index=1:numel(a(:))
     if ndims(a(index)) == 1 && isvector(a(index)) == 1 && ...
       isempty(getaxis(a(index),2)) && ...
       (~isempty(strfind(method, 'plot3'))      || ~isempty(strfind(method,'stem3')) ...
@@ -110,6 +113,19 @@ if length(a) > 1
       a(index) = setaxis(a(index), 2, index);
     end
     h{index} = plot(a(index), method);
+    if ndims(a(index)) == 1
+      if length(h{index}) == 1 && length(get(h{index},'Children') == 2)
+        eh = get(h{index},'Children');
+      else eh = h{index}; 
+      end
+      if length(eh) > 1
+        if strcmp(common_error_bar, 'undefined')
+          common_error_bar = get(eh(2), 'Visible');
+        else
+          set(eh(2), 'Visible',common_error_bar);
+        end
+      end
+    end
     sum_max = sum_max+max(a(index))-min(a(index));
     if ndims(a(index)) == 1 && isempty(this_method)
       % change color of line
@@ -119,7 +135,7 @@ if length(a) > 1
     hold on
   end
   % re-arrange if this is a 2D overlay
-  for index=1:length(a(:))
+  for index=1:numel(a(:))
     if length(h{index}) == 1 && ~isempty(strfind(method, 'shifted'))
       if ndims(a(index)) ~= 1
         try
@@ -229,7 +245,7 @@ case 1  % vector type data (1 axis + signal) -> plot
           eh = get(h,'Children');
         else eh = h; 
         end
-        set(eh(2), 'Visible','off');
+        if length(eh) > 1, set(eh(2), 'Visible','off'); end
       end
     end
   end
@@ -451,150 +467,6 @@ elseif ~isempty(a.DisplayName)
   d = [ d sprintf('%s', g) ];
 end
 
-% --------------------- contextual menus ---------------------------------------
-% create callback functions: handle callback for single error on/off (line
-% or uimenu)
-  function callback_toggle_error_gco(obj, event)
-    if strcmp(get(obj,'type'),'uimenu'), obj=gco; end
-    tmp_t = get(obj,'type');
-    if strcmp(tmp_t,'hggroup')
-      tmp_h=get(obj,'children'); % hggroup
-    else
-      return
-    end
-    % test if we have a line
-    if length(tmp_h) ~= 2, return; end
-    if ~strcmp(get(tmp_h(2),'type'),'line'), return; end
-    % toggle visible
-    if  strcmp(get(tmp_h(2),'visible'),'off'), tmp_v='on'; 
-    else tmp_v='off'; end; 
-    set(tmp_h(2),'visible',tmp_v);
-  end
-
-% create callback functions: handle callback for error on/off in axis frame
-  function callback_toggle_error_gca(obj, event)
-    % we scan all objects below the axis object, and toggle error bars
-    hg = findobj(gca,'type','hggroup');
-    for i=1:length(hg)
-      callback_toggle_error_gco(hg(i))
-    end
-  end
-  
-% create callback functions: handle callback rotate 2d 3d
-  function callback_rotate(obj, event)
-    [tmp_a,tmp_e]=view; 
-    if (tmp_a==0 & tmp_e==90) view(3); 
-    else view(2); end; 
-    lighting none;alpha(1);shading flat;rotate3d off;axis tight;
-  end
-  
-% create callback functions: duplicate plot
-  function callback_duplicate(obj, event)
-    duplicate_cb.o =gco;
-    duplicate_cb.g =gca;
-    duplicate_cb.f =figure; 
-    if strcmp(get(duplicate_cb.o,'type'),'axes')
-      duplicate_cb.c=copyobj(duplicate_cb.g,gcf);
-    else
-      duplicate_cb.c=copyobj(duplicate_cb.o,gca);
-    end
-    set(gca,'position',[ 0.1 0.1 0.85 0.8]);
-    set(gca,'XTickLabelMode','auto','XTickMode','auto');
-    set(gca,'YTickLabelMode','auto','YTickMode','auto');
-    set(gca,'ZTickLabelMode','auto','ZTickMode','auto');
-    
-    duplicate_cb.ud=get(duplicate_cb.g,'UserData'); 
-    if ~isstruct(duplicate_cb.ud), return; end
-    if iscellstr(duplicate_cb.ud.title) duplicate_cb.ud.title=duplicate_cb.ud.title{1}; end
-    set(gcf,'Name', [ 'Copy of ' duplicate_cb.ud.title ]); 
-    xlabel(duplicate_cb.ud.xlabel);ylabel(duplicate_cb.ud.ylabel); 
-    title(duplicate_cb.ud.title);
-    % create a simplified contextual menu
-    uicm = uicontextmenu; 
-    if ndims(a) >= 2 && ~isfield(ud,'contextual_2d')
-      ud.contextual_2d = 1;
-    end
-    if isfield(duplicate_cb.ud,'contextual_2d') && duplicate_cb.ud.contextual_2d==1
-      uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback','[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end; clear tmp_a, tmp_e; lighting none;alpha(1);shading flat;rotate3d off;axis tight;');
-      uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
-      uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
-      uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
-      uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
-      uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
-    else
-      uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight;rotate3d off;');
-      uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
-    end
-    uimenu(uicm, 'Separator','on','Label','Toggle grid', 'Callback','grid');
-
-    uimenu(uicm, 'Separator','on','Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData)  sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
-    set(gca, 'UserData', ud);
-set(gca, 'UIContextMenu', uicm);
-
-   end
-% create callback functions: about object
-  function callback_about(obj, event)
-    ud   = get(get(gco,'UIContextMenu'),'UserData');
-    if ~isstruct(ud), return; end
-    if iscellstr(ud.title) ud.title=ud.title{1}; end
-    f = getframe(gcf);
-    msgbox(  ud.properties, ...
-             [ 'About: Figure ' num2str(gcf) ' ' ud.title ], ...
-             'custom', f.cdata, get(gcf,'Colormap'));
-  end
-% create callback functions: about object
-  function callback_commands(obj, event)
-    ud   = get(get(gco,'UIContextMenu'),'UserData');
-    if ~isstruct(ud), return; end
-    titl = ud.title;
-    if iscellstr(ud.title) ud.title=ud.title{1}; end
-    listdlg('ListString', getfield(ud, 'commands'), ...
-               'ListSize',[400 300],'Name', ud.title ,'PromptString', ud.name );
-  end
-
-% contextual menu for the single object being displayed
-uicm = uicontextmenu; 
-uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
-  'Callback', @callback_about);
-uimenu(uicm, 'Label',[ 'Duplicate "' T '" ...' ], 'Callback', @callback_duplicate);
-if ndims(a) == 1
-  uimenu(uicm, 'Label','Toggle error bars', 'Callback',@callback_toggle_error_gco);
-end
-uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '" ' d ], 'Callback', @callback_about);
-if exist(a.Source,'file') && ~isdir(a.Source)
-  uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
-else
-  uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
-end
-uimenu(uicm, 'Label', [ 'Cmd: ' cmd ], 'Callback', @callback_commands);
-uimenu(uicm, 'Label', [ 'User: ' a.User ], 'Callback', @callback_about);
-
-% make up title string and Properties dialog content
-properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
-             [ 'Title: "' T '" ' d ], ...
-             [ 'Source: ' a.Source ], ...
-             [ 'Last command: ' cmd ]};
-
-properties{end+1} = '[Rank]         [Value] [Description]';
-uimenu(uicm, 'Separator','on', 'Label', '[Rank]         [Value] [Description]');
-for index=0:length(getaxis(a))
-  [v, l] = getaxis(a, num2str(index));
-  if length(l) > 20, l = [l(1:18) '...' ]; end 
-  x      = getaxis(a, index);
-  m      = get(a, 'Monitor');
-  if index==0 & not(all(m==1 | m==0))
-    t = sprintf('%6i %15s  %s [%g:%g] (per monitor=%g)', index, v, l, full(min(x(:))), full(max(x(:))), mean(m(:)));
-  else
-    try
-      [s, f] = std(a, index);
-      t = sprintf('%6i %15s  %s [%g:%g] <%g +/- %g>', index, v, l, full(min(x(:))), full(max(x(:))), f, s);
-    catch
-      t = sprintf('%6i %15s  %s [%g:%g]', index, v, l, full(min(x(:))), full(max(x(:))));
-    end
-  end
-  properties{end+1} = t;
-  uimenu(uicm, 'Label', t);
-end
 titl ={ T ; [ a.Tag ' <' S '>' ]};
 if length(T) > 23, T=[ T(1:20) '...' ]; end
 if length(S)+length(d) < 30,
@@ -608,15 +480,80 @@ try
   end
 catch
 end
-uimenu(uicm, 'Separator','on','Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData)  sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
+
+% contextual menu for the single object being displayed
+% internal functions must be avoided as it uses LOTS of memory
+uicm = uicontextmenu; 
+% menu About
+uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
+  'Callback', [ 'msgbox(getfield(get(get(gco,''UIContextMenu''),''UserData''),''properties''),' ...
+                '''About: Figure ' num2str(gcf) ' ' T ' <' S '>'',' ...
+                '''custom'',getfield(getframe(gcf),''cdata''), get(gcf,''Colormap''));' ] );
+
+% menu Toggle error bars (1D object)
+if ndims(a) == 1
+  uimenu(uicm, 'Label','Toggle Error Bars', 'Callback', [...
+   'tmp_h=get(gco,''children'');'...
+   'if strcmp(get(tmp_h(2),''visible''),''off''), tmp_v=''on''; else tmp_v=''off''; end;' ...
+   'set(tmp_h(2),''visible'',tmp_v); clear tmp_h tmp_v' ]);
+end
+uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '" ' d ]);
+if exist(a.Source,'file') && ~isdir(a.Source)
+  uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
+else
+  uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
+end
+% menu List of Commands (history)
+uimenu(uicm, 'Label', [ 'Cmd: ' cmd ' ...' ], 'Callback', [ ...
+ 'tmp_ud = get(get(gco,''UIContextMenu''),''UserData'');' ...
+ 'listdlg(''ListString'', getfield(tmp_ud, ''commands''),' ...
+  '''ListSize'',[400 300],''Name'', tmp_ud.title ,''PromptString'', tmp_ud.name );clear tmp_ud' ])
+uimenu(uicm, 'Label', [ 'User: ' a.User ]);
+
+% make up title string and Properties dialog content
+properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
+             [ 'Title: "' T '" ' d ], ...
+             [ 'Source: ' a.Source ], ...
+             [ 'Last command: ' cmd ]};
+
+properties{end+1} = '[Rank]         [Value] [Description]';
+uimenu(uicm, 'Separator','on', 'Label', '[Rank]         [Value] [Description]');
+for index=0:length(getaxis(a))
+  [v, l] = getaxis(a, num2str(index));
+  if length(l) > 20, l = [l(1:18) '...' ]; end 
+  x      = getaxis(a, index); x=x(:);
+  m      = get(a, 'Monitor');
+  if index==0 & not(all(m==1 | m==0))
+    t = sprintf('%6i %15s  %s [%g:%g] (per monitor=%g) sum=%g', index, v, l, full(min(x)), full(max(x)), mean(m(:)), sum(x));
+  else
+    try
+      [s, f] = std(a, index);
+      if index==0
+        t = sprintf('%6i %15s  %s [%g:%g] <%g +/- %g> sum=%g', index, v, l, full(min(x)), full(max(x)), f, s, sum(x));
+      else
+        t = sprintf('%6i %15s  %s [%g:%g] <%g +/- %g>', index, v, l, full(min(x)), full(max(x)), f, s);
+      end
+    catch
+      t = sprintf('%6i %15s  %s [%g:%g]', index, v, l, full(min(x)), full(max(x)));
+    end
+  end
+  properties{end+1} = t;
+  uimenu(uicm, 'Label', t);
+end
+% menu About iFit
+uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', 'Callback', ...
+  [ 'msgbox(''' version(iData)  sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 % attach contexual menu to plot with UserData storage
 ud.properties=properties;
 ud.xlabel = xlab;
 ud.ylabel = ylab;
 ud.zlabel = zlab;
+if iscell(titl), titl=titl{1}; end
 ud.title  = titl;
 ud.name   = char(a);
 ud.commands = commandhistory(a);
+ud.handle = h;
+
 set(uicm,'UserData', ud);
 set(h,   'UIContextMenu', uicm); 
 
@@ -625,19 +562,41 @@ if ~isempty(get(gca, 'UserData'))
   ud = get(gca, 'UserData');
 end
 uicm = uicontextmenu;
-uimenu(uicm, 'Label',[ 'Duplicate this view...' ], 'Callback', @callback_duplicate);;
+% menu Duplicate (axis frame/window)
+uimenu(uicm, 'Label', 'Duplicate View...', 'Callback', ...
+   [ 'tmp_cb.g=gca; tmp_cb.ud=get(gca,''UserData'');' ...
+     'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
+     'set(tmp_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+     'set(gcf,''Name'',''Copy of ' char(a) '''); ' ...
+     'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
+     'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
+     'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');' ...
+     'title(tmp_cb.ud.title);', ...
+     'xlabel(tmp_cb.ud.xlabel);ylabel(tmp_cb.ud.ylabel); clear tmp_cb;']);
+     
 if ndims(a) == 1 && ~isfield(ud,'contextual_1d')
   ud.contextual_1d = 1;
 end
+% menu Toggle all error bars (axis)
 if isfield(ud,'contextual_1d') && ud.contextual_1d==1
-  uimenu(uicm, 'Label','Toggle All Error Bars', 'Callback', @callback_toggle_error_gca);
+  uimenu(uicm, 'Label','Toggle All Error Bars', 'Callback', [ ... 
+    'tmp_hg = findobj(gca,''type'',''hggroup'');tmp_v=[];'...
+    'for tmp_i=1:length(tmp_hg)'...
+    'tmp_h=get(tmp_hg(tmp_i),''children'');'...
+    'if isempty(tmp_v) ' ...
+    'if strcmp(get(tmp_h(2),''visible''),''off''), tmp_v=''on''; else tmp_v=''off''; end;' ...
+    'end; set(tmp_h(2),''visible'',tmp_v); clear tmp_h;' ...
+    'end; clear tmp_hg tmp_i tmp_v;' ...
+   ]);
 end
 uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
 if ndims(a) >= 2 && ~isfield(ud,'contextual_2d')
   ud.contextual_2d = 1;
 end
 if isfield(ud,'contextual_2d') && ud.contextual_2d==1
-  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback',@callback_rotate);
+  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback', [ ...
+    '[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end;' ...
+    'clear tmp_a tmp_e; lighting none;alpha(1);shading flat;rotate3d off;axis tight;' ]);
   uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
   uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
@@ -656,10 +615,11 @@ if ~usejava('jvm')
     uimenu(uicm, 'Label', 'Rotate', 'Callback','rotate3d on');
   end
 end
-uimenu(uicm, 'Separator','on','Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
-
-set(gca, 'UserData', ud);
+uimenu(uicm, 'Separator','on','Label', 'About iData', ...
+  'Callback',[ 'msgbox(''' version(iData) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 set(gca, 'UIContextMenu', uicm);
+set(gca, 'UserData', ud);
+
 try
   set(h,   'Tag',  [ mfilename '_' a.Tag ]);
 end
@@ -678,7 +638,7 @@ else
     titl = { clab , titl{:} };
   end
   if ~isempty(d)
-    titl{1} = [ titl{1} ' ''' d '''' ]; 
+    titl = [ titl ' ''' d '''' ]; 
   end
   title(titl,'interpreter','none');
 end
