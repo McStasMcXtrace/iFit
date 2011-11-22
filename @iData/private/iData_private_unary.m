@@ -73,8 +73,8 @@ case 'log10'
 case 'sin'
 	e = e.*cos(s);
 case 'sqrt'
-	e = e/(2*sqrt(s));
-  m = m.^0.5;
+	e = e./(2*sqrt(s));
+    m = m.^0.5;
 case 'tan'
 	c = cos(s);
 	e = e./(c.*c);

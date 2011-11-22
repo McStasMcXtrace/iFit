@@ -10,7 +10,7 @@ function a = squeeze(a)
 % output: c: object or array (iData)
 % ex:     c=squeeze(zeros(iData,[2 1 3]));
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/size
 
 d=size(a);
@@ -20,7 +20,7 @@ d = [d ones(1,2-length(d))]; % Make sure siz is at least 2-D
 
 if numel(a) == 1
   % this is a single iData object
-  if ndims(a) <= 2, return; end
+  if ndims(a) <= 2 && length(size(a)) ==2, return; end
   set(a,'Signal',squeeze(get(a,'Signal')));
   for index=1:length(x)
     rmaxis(a, x(index));
