@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -32,6 +32,7 @@ else
   s=struct(s_in);
   s=rmfield(s,'Alias');
   disp(s)
+  % display the Aliases
   disp('Object aliases:');
   disp('         [Name]                           [Value]   [Description]');
   for index=1:length(s_in.Alias.Names)
@@ -85,40 +86,44 @@ else
     end
     fprintf(1, '\n');
   end
-  if length(s_in.Alias.Axis)
-    disp('Object axes:');
-    disp('[Rank]         [Value]  [Description]');
-    for index=0:length(s_in.Alias.Axis)
-      [v, l] = getaxis(s_in, num2str(index,2));
-      if ~ischar(v)
-        if numel(v) > 5, v=v(1:5); end
-        v=mat2str(v);
-        if length(v) > 12, v = [v(1:12) '...' ]; end 
-      end
-      s=NaN; f=NaN;
-      try
-        if prod(size(s_in)) < 1e4
-          [s, f] = std(s_in, index);
-        end
-      end
-      if length(l) > 20, l = [l(1:18) '...' ]; end 
-      X      = getaxis(s_in, index); x=X(:);
-      if length(x) == 1
-        fprintf(1,'%6i %15s  %s [%g]', index, v, l, x);
-      elseif isvector(X) && ~isnan(s) && ~isnan(f)
-        fprintf(1,'%6i %15s  %s [%g:%g] length [%i] <%g +/- %g>', index, v, l, min(x), max(x),length(X), f, s);
-      else
-        fprintf(1,'%6i %15s  %s [%g:%g] size [%s]', index, v, l, full(min(x)), full(max(x)),num2str(size(X)));
-      end
-      if index==0 && not(all(m(:)==1 | m(:)==0))
-        fprintf(1,' (per monitor)\n');
-      else
-        fprintf(1,'\n');
+  
+  % display the Signal and Axes
+  disp('Object axes:');
+  disp('[Rank]         [Value]  [Description]');
+  for index=0:length(s_in.Alias.Axis)
+    [v, l] = getaxis(s_in, num2str(index,2));
+    if ~ischar(v)
+      if numel(v) > 5, v=v(1:5); end
+      v=mat2str(v);
+      if length(v) > 12, v = [v(1:12) '...' ]; end 
+    end
+    s=NaN; f=NaN;
+    try
+      if prod(size(s_in)) < 1e4
+        [s, f] = std(s_in, index);
       end
     end
+    if length(l) > 20, l = [l(1:18) '...' ]; end 
+    X      = getaxis(s_in, index); x=X(:);
+    if length(x) == 1
+      fprintf(1,'%6i %15s  %s [%g]', index, v, l, x);
+    elseif isvector(X) && ~isnan(s) && ~isnan(f)
+      fprintf(1,'%6i %15s  %s [%g:%g] length [%i] <%g +/- %g>', index, v, l, min(x), max(x),length(X), f, s);
+    else
+      fprintf(1,'%6i %15s  %s [%g:%g] size [%s]', index, v, l, full(min(x)), full(max(x)),num2str(size(X)));
+    end
+    if index==0 && not(all(m(:)==1 | m(:)==0))
+      fprintf(1,' (per monitor) sum=%g\n', sum(x));
+    elseif index==0
+      fprintf(1,' sum=%g\n', sum(x));
+    else
+      fprintf(1,'\n');
+    end
   end
+
   %iData(s_in);
 end
 
 % reset warnings during disp
 iData_private_warning('exit',mfilename);
+
