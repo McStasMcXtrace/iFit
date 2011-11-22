@@ -3,14 +3,14 @@ function m = max(a,b)
 %
 %   @iData/max function to compute the maximum value of data sets.
 %     max(iData) returns a single value as the maximum value of the iData signal
-%     max(a,b)   returns an object which signal is the lowest of a and b.
+%     max(a,b)   returns an object which signal is the highest of a and b.
 %
 % input:  a: object or array (iData)
 %         b: object or array (iData/double)
 % output: m: maximum value (double/iData)
 % ex:     b=max(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/max, iData/min
 
 if nargin == 1
