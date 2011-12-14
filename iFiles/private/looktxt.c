@@ -106,7 +106,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "24 Sept 2009"
 #ifndef VERSION
-#define VERSION "1.1 $Revision: 1.5 $"
+#define VERSION "1.1 $Revision: 1.6 $"
 #endif
 
 #ifdef __dest_os
@@ -1190,7 +1190,7 @@ char *try_open_target(struct fileparts_struct parts, char force)
   FullName=str_free(FullName);
   if (!
 #if defined(WIN32) || defined(_WIN64)
-    _getcwd(cwd, 1024))
+    _getcwd(cwd, 1024)
 #else
     getcwd(cwd, 1024)
 #endif
