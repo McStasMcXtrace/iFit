@@ -6,8 +6,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   or any other optimization configuration parameter (TolFun, TolX, ...). Default 
 %   mode is 'simulate', which also includes scanning capability.
 % The syntax:
-%   mcstas(instrument,'compile') will simply assemble and compile the instrument 
-% description, without MPI support.
+%   mcstas(instrument,'compile')     assemble and compile the instrument
+%   mcstas(instrument,'compile mpi') same with MPI support
 %
 % input:  INSTRUMENT: name of the instrument description to run (string)
 %         PARAMETERS: a structure that gives instrument parameter names and values (structure)
@@ -56,7 +56,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -485,31 +485,41 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   directory = options.dir;
 
-  if ~isempty(dir([ directory filesep 'mcstas.sim' ]))
-    directory = [ directory filesep 'mcstas.sim' ];
-  end
-
   % import McStas simulation result
+  sim = [];
   try
-    sim = iData(directory); % a vector of monitors (iData objects)
+    % first try to import monitors from their file names
+    for index=1:length(options.monitors)
+      sim = [ sim iData(fullfile(directory,[ options.monitors{index} '*' ])) ];
+    end
+    if isempty(sim)
+      % if designated monitor file name import fails, import all simulation content
+      if ~isempty(dir([ directory filesep 'mcstas.sim' ]))
+        directory = [ directory filesep 'mcstas.sim' ];
+      end
+      sim = iData(directory); % a vector of monitors (iData objects)
+      
+      % filter all simulation monitor
+      if isfield(options,'monitors') & numel(sim) > 1
+        % restrict monitors from simulation by matching patterns
+        use_monitors = zeros(size(sim));
+        for index=1:length(options.monitors)
+          % find monitors that match a search token
+          this = cellfun('isempty', findstr(sim, options.monitors{index}));
+          this = find(this == 0); % find those that are not empty
+          use_monitors(this) = 1;
+        end
+        if any(use_monitors)
+          sim = sim(find(use_monitors));
+        end
+      end
+    end
   catch
     criteria=0; sim=[]; ind=[];
     return
   end
 
-  if isfield(options,'monitors') & numel(sim) > 1
-    % restrict monitors from simulation by matching patterns
-    use_monitors = zeros(size(sim));
-    for index=1:length(options.monitors)
-      % find monitors that match a search token
-      this = cellfun('isempty', findstr(sim, options.monitors{index}));
-      this = find(this == 0); % find those that are not empty
-      use_monitors(this) = 1;
-    end
-    if any(use_monitors)
-      sim = sim(find(use_monitors));
-    end
-  end
+  
   % option to plot the monitors
   if isfield(options, 'OutputFcn')
     % is this window already opened ?

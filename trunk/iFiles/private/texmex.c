@@ -41,7 +41,7 @@
 #define malloc  mxMalloc
 #define realloc mxRealloc
 #define calloc  mxCalloc
-#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.3 $"
+#define VERSION "Looktxt 1.1 (MeX) $Revision: 1.4 $"
 /* #define free mxFree  */
 #define free NoOp
 
@@ -55,7 +55,7 @@
 
 int NoOp(char *pointer)
 {
-  mxFree((void *)pointer);
+  /* mxFree((void *)pointer); */
   return 0;
 }
 
