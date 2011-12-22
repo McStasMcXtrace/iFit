@@ -2,6 +2,7 @@
 <html><head>
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Math operators</title>
 </head><body>
@@ -952,6 +953,14 @@ the elastic line, is gradually summed over all angle channels, showing
 inelastic contribution on its shoulders.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([ (a) <span style="color: rgb(51, 102, 255);">cumsum</span>(a) ] ,<span style="color: rgb(204, 51, 204);">'tight'</span>)</pre>
 The <span style="font-weight: bold;">cumprod</span> is the <span style="font-style: italic;">primitive</span> of the <span style="font-style: italic;">Signal, </span>when the axis step is <span style="font-style: italic;">dx</span>=1.<br>
+<br>
+The <span style="font-weight: bold;">norm</span> method computes the norm-2 of the object <span style="font-style: italic;">Signal, </span>that is<br>
+<br>
+<div style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">norm</span>(a)
+= &frac12; &#8721;
+<span style="font-style: italic;">|Signal|</span>&sup2;<br>
+</div>
+
 <h3><a class="mozTocH3" name="mozTocId703536"></a>Cutting, Merging and
 combining
 data sets</h3>
@@ -1130,7 +1139,7 @@ Signal, Error, and Monitor values are also re-ordered accordingly.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2011-09-22 12:38:42 $ $Revision: 1.20 $
+$Date: 2011-12-22 10:48:44 $ $Revision: 1.21 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

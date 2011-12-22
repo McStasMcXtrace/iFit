@@ -53,6 +53,9 @@ if strcmp(op, 'sparse')
     m = double(m);
   end
 end
+if strcmp(op, 'norm') && not(all(m == 0))
+  s = genop(@rdivide, s, m);
+end
 new_s = feval(op, s);
 
 switch op
@@ -102,7 +105,7 @@ case 'del2'
 case {'sign','isfinite','isnan','isinf'}
 	% error should become zero (logical)
 	e = zeros(size(s));
-case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical','double','single','logical','find'}
+case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical','double','single','logical','find','norm'}
 	% result is a single value
 	b = new_s;
 	iData_private_warning('exit',mfilename);
