@@ -2,6 +2,7 @@
 <html><head>
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: iData methods</title>
 </head><body>
@@ -172,8 +173,10 @@ each
 object
 dimension)</li>
   <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/squeeze">squeeze: </a>removes singleton
-dimension from iData object or array<br>
+dimension from iData object or array</li>
+  <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/isfield">isfield: </a>check if a name is defined in the iData object as a structure field or alias<br>
   </li>
+
 </ul>
 
 <h3><a class="mozTocH3" name="mozTocId145324"></a><span style="font-weight: bold;">general</span></h3>
@@ -690,7 +693,7 @@ well as base-line/background.</li>
 function onto object axes.</li>
   <li><a href="matlab:helpwin iData/fits"><span style="font-weight: bold;">fits: </span></a>finds best model
 parameters to fit the <span style="font-style: italic;">Signal. </span>New
-fit functions/models can be created with the <a href="iFuncs.html#mozTocId210092">iFunc/Model Builder</a> tool.<span style="font-style: italic;"><br>
+fit functions/models can be created with the <a href="iFuncs.html#mozTocId210092">iFunc/Model Builder</a> tool.<span style="font-style: italic;"> <br>
     </span></li>
 </ul>
 <h3><a class="mozTocH3" name="mozTocId959842"></a><span style="font-weight: bold;">math: integration and derivatives,
@@ -724,8 +727,10 @@ account the axis binning, which may be uneven.</li>
   <li><a href="matlab:helpwin iData/sum"><span style="font-weight: bold;">sum:</span> </a>sums object along a
 given dimension. The resulting object has this dimension removed. As
 opposed to <span style="font-style: italic;">trapz, </span>the <span style="font-style: italic;">sum</span> method does not take into
-account the axis binning. <br>
+account the axis binning.&nbsp;</li>
+  <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/norm">norm: </a>computes the norm-2 of the object Signal.<br>
   </li>
+
   <li><a href="matlab:helpwin iData/prod"><span style="font-weight: bold;">prod: </span></a>multiplies object
 elements along a given dimension. The resulting object has this
 dimension removed. This method does not take
@@ -907,7 +912,7 @@ axis (4th rank) label</li>
 of objects as plots in the same window<br>
   </li>
   <li><a href="matlab:helpwin iData/title"><span style="font-weight: bold;">title: </span></a>sets/gets
-theobject title.<br>
+the object <span style="font-style: italic;">Signal</span> title. To assigne the object title, use <span style="font-style: italic;">object.Title='string'</span>.<br>
   </li>
 </ul>
 <br>
@@ -915,7 +920,7 @@ theobject title.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData methods - </span><span style="font-style: italic;">
-$Date: 2011-09-20 11:35:12 $ $Revision: 1.24 $
+$Date: 2011-12-22 10:48:44 $ $Revision: 1.25 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
