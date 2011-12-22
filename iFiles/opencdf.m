@@ -7,4 +7,5 @@ plot(out);
 
 if ~isdeployed
   assignin('base','ans',out);
+  ans = out
 end
