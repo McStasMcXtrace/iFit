@@ -17,7 +17,7 @@ function str=class2str(this, data, flat)
 % See also: mat2str, num2str, eval, sprintf
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.5 $
+% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.6 $
 
 if nargin == 1
   data = this;
@@ -26,15 +26,15 @@ if nargin == 1
 end
 
 if nargin == 3,
-  str = call2str_flat(this, data);
+  str = class2str_flat(this, data);
 else
-  str = call2str_m(this, data);
+  str = class2str_m(this, data);
 end
 
 return
 
 % ------------------------------------------------------------------------------
-function str = call2str_m(this, data)
+function str = class2str_m(this, data)
 % function to create an m-file string
 
 NL = sprintf('\n');
@@ -108,7 +108,7 @@ else
 end
 
 % ------------------------------------------------------------------------------
-function str = call2str_flat(this, data)
+function str = class2str_flat(this, data)
 % function to create a flat file string
 
 str = '';
