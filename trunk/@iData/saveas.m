@@ -1,8 +1,9 @@
 function [filename,format] = saveas(a, varargin)
-% f = saveas(s, filename, format) : save iData object into various data formats
+% f = saveas(s, filename, format, options) : save iData object into various data formats
 %
 %   @iData/saveas function to save data sets
-%   This function save the content of iData objects. saveas(iData,'formats')
+%     This function saves the content of iData objects. The default format is 'm'.
+%   saveas(iData,'formats')
 %     prints a list of supported export formats.
 %
 % input:  s: object or array (iData)
@@ -38,7 +39,7 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
