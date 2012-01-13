@@ -233,6 +233,7 @@ abstract.score    = zeros(1,length(optimizers));
 abstract.duration = zeros(1,length(optimizers));
 abstract.success  = 0;
 abstract.problems = problems;
+abstract.funcount = zeros(1,length(optimizers));
 
 for index_repeat=1:repeat_num
 
@@ -319,6 +320,7 @@ for index_repeat=1:repeat_num
     end
     abstract.score    = abstract.score   +score;
     abstract.duration = abstract.duration+duration.*score;
+    abstract.funcount = abstract.funcount+funcount.*score;
 
   end % end problems
   abstract.repeat_num = repeat_num;

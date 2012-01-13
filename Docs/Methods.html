@@ -3,6 +3,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: iData methods</title>
 </head><body>
@@ -347,8 +348,9 @@ formats
 (pdf,
 jpg,
 eps,
-...)<br>
-  </li>
+...)</li>
+  <li><a href="matlab:helpwin iData/save">save: </a>is the same as <a href="matlab:helpwin iData/saveas"><span style="font-weight: bold; font-style: italic;">saveas.</span></a></li>
+
   <li><a href="matlab:helpwin iData/getframe"><span style="font-weight: bold; font-style: italic;">getframe: </span></a>creates
 a
 snapshopt
@@ -728,7 +730,7 @@ account the axis binning, which may be uneven.</li>
 given dimension. The resulting object has this dimension removed. As
 opposed to <span style="font-style: italic;">trapz, </span>the <span style="font-style: italic;">sum</span> method does not take into
 account the axis binning.&nbsp;</li>
-  <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/norm">norm: </a>computes the norm-2 of the object Signal.<br>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/norm">norm: </a>computes the norm-2 of the object Signal.<br>
   </li>
 
   <li><a href="matlab:helpwin iData/prod"><span style="font-weight: bold;">prod: </span></a>multiplies object
@@ -750,6 +752,9 @@ method.</li>
 (local curvature, sum of the second partial derivatives).</li>
   <li><a href="matlab:helpwin iData/gradient"><span style="font-weight: bold;">gradient</span>: </a>computes the gradient
 (derivatives) of an object.</li>
+  <li><a href="matlab:helpwin iData/diff">diff: </a>computes the gradient for the 1sty axis only (rows).<br>
+  </li>
+
   <li><a style="font-weight: bold;" href="matlab:helpwin iData/jacobian">jacobian: </a>computes the
 Jacobian from the object current axes to new axes. This is to be used
 for object coordinate changes. The<span style="font-style: italic;">
@@ -786,7 +791,7 @@ dimension.</li>
 along a given dimension. The result is a vector of objects containing
 the series of slices. This is the opposite operation to <span style="font-style: italic;">cat</span> !</li>
 </ul>
-<br>
+
 <h3><a class="mozTocH3" name="mozTocId434222"></a><span style="font-weight: bold;">math:
 interpolation</span></h3>
 A dedicated documentation about the <a href="Math.html#mozTocId981870">these
@@ -818,7 +823,7 @@ objects.<br>
   <li><a href="matlab:helpwin iData/sort"><span style="font-weight: bold;">sort: </span></a>sorts objects axes
 and reorder the corresponding signal.</li>
 </ul>
-<br>
+
 <h3><a class="mozTocH3" name="mozTocId341680"></a><span style="font-weight: bold;">plotting</span></h3>
 A dedicated documentation about the <a href="Plot.html">plotting</a>
 is available.<span style="font-style: italic;"><br>
@@ -920,7 +925,7 @@ the object <span style="font-style: italic;">Signal</span> title. To assigne the
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData methods - </span><span style="font-style: italic;">
-$Date: 2011-12-22 10:48:44 $ $Revision: 1.25 $
+$Date: 2012-01-13 13:46:16 $ $Revision: 1.26 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
