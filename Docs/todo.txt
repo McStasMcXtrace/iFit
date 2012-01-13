@@ -1,10 +1,8 @@
 
 * Low Priority:
-  diff
   quad
-  norm, var, cov, corrcoef
+  var, cov, corrcoef
   smooth3
-  del2
   quiver, quiver2 with gradient
   
   plot 2D: add possibility to select X or Y cuts from pointer/data tip position on surface, plus handling of arrows to move cursor onto the surface (top view). Will be slice(2D)
