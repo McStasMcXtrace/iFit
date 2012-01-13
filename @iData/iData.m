@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.31 $
+% Version: $Revision: 1.32 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -104,12 +104,12 @@ else  % convert input argument into object
   elseif ischar(varargin{1}) & length(varargin) > 1 % filename -> iData
   % iData('filename', ...)
     out = load(iData, varargin{:});        % load file(s) with additional arguments
-
   else
     in = varargin{1};
     if ischar(in)
       % iData('filename')
       out = load(iData, in);        % load file(s)
+      if ~isa(out, 'iData'), outarray=out; return; end
     elseif isa(in, 'iData')
       % iData(iData)
       out = in;                     % just makes a check
