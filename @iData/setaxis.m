@@ -27,7 +27,7 @@ function this = setaxis(this, rank, alias, value)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -65,6 +65,7 @@ if nargin == 1
 end
 
 % check input arguments
+if strcmp(rank, 'Signal'), rank=0; end
 if isempty(rank) && isempty(alias), return; end
 if ~isnumeric(rank), 
   iData_private_error(mfilename,[ 'the axis rank should be numeric and not ' class(rank) '.' ]);
@@ -96,8 +97,16 @@ if isempty(rank) && ~isempty(alias)
 elseif ~isempty(rank) && isempty(alias)
   % get the Axis definition
   if rank == 0
+    if isempty(alias)
+        this = setalias(this, 'Signal',[]);
+        return
+    end
     alias = 'Signal';
     if nargin == 4 % adapt value to Monitor
+      if isempty(value)
+        this = setalias(this, 'Signal',[]);
+        return
+      end
       m  = get(this, 'Monitor'); m=real(m);
       if not(all(m(:) == 1 | m(:) == 0))
         value = genop(@times, value , m);
