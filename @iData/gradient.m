@@ -12,8 +12,8 @@ function b = gradient(a, dim)
 % ex:     a=iData(peaks);
 %         g=gradient(a); subplot([ a g(1) g(2) ]);
 %
-% Version: $Revision: 1.1 $
-% See also iData, iData/del2, diff, gradient, iData/jacobian
+% Version: $Revision: 1.2 $
+% See also iData, iData/diff, iData/del2, diff, gradient, iData/jacobian
 
 if nargin <= 1,
   dim = 0;

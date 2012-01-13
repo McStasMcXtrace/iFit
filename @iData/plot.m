@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.76 $
+% Version: $Revision: 1.77 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -635,7 +635,11 @@ else
   if ~isempty(xlab), xlabel(xlab,'interpreter','none'); end
   if ~isempty(ylab), ylabel(ylab,'interpreter','none'); end
   if ndims(a) == 3 & ~isempty(clab)
-    titl = { clab , titl{:} };
+      if iscell(titl)
+          titl = { clab , titl{:} };
+      else
+          titl = { clab, titl };
+      end
   end
   if ~isempty(d)
     titl = [ titl ' ''' d '''' ]; 
