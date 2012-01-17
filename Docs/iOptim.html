@@ -2,6 +2,8 @@
 <html><head>
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: optimization methods (iOptim)</title>
 </head><body>
@@ -226,7 +228,16 @@ optimization process.<br>
 The iData <a href="Fit.html"><span style="font-style: italic; font-weight: bold;">fits</span></a>
 method is a wrapper to any of the <span style="font-style: italic;">iOptim</span>
 optimizers, with a specified fit criteria.<br>
+<br>
+The objective function should be a function of a single parameter <span style="font-style: italic;">p</span>.<br>
+<pre style="margin-left: 40px;">function y=<span style="color: rgb(51, 102, 255);">objective</span>(p)<br>y = ...<br></pre>
+In case you need additional arguments, you may then rather optimize<br>
+<pre style="margin-left: 40px;">h = @(p) objective(p, a,b,c)</pre>
+
+<span style="font-weight: normal;">which will allow to estimate a</span> more complex objective criteria, with additional arguments, but only consider <span style="font-style: italic;">p </span>as variable parameters during the optimization. In a more compact form, this reads:<br>
+<pre style="margin-left: 40px;">&gt;&gt; ... = <span style="color: rgb(51, 102, 255);">fminimfil</span>(<span style="color: rgb(255, 0, 0);">@(p) objective(p, a,b,c...)</span>, starting_parameters, options, {constraints})</pre>
 <h4><a class="mozTocH4" name="mozTocId228403"></a>Optimization quality</h4>
+
 An optimization procedure is associated to a criteria minimization.
 Once a
 local/global minimum has been found, the best found model parameters
@@ -548,21 +559,21 @@ methods</span> can be obtained from the command:<br>
 <table style="width: 100%;" border="1" cellpadding="2" cellspacing="3">
   <col width="115"> <col width="243"> <col width="83"> <col width="76"> <col width="108"> <tbody>
     <tr>
-      <td style="text-align: center;" bgcolor="#ffcccc" width="115">
+      <td style="text-align: center;" width="115" bgcolor="#ffcccc">
       <p><font color="#3366ff"><i><b>Function Name</b></i></font> </p>
       </td>
-      <td style="text-align: center;" bgcolor="#ffcccc" width="243">
+      <td style="text-align: center;" width="243" bgcolor="#ffcccc">
       <p><font color="#3366ff"><i><b>Description</b></i></font></p>
       </td>
-      <td style="text-align: center;" bgcolor="#ffcccc" width="83">
+      <td style="text-align: center;" width="83" bgcolor="#ffcccc">
       <p><font color="#3366ff"><i><b>Efficiency<br>
 (continuous) [%]</b></i></font> </p>
       </td>
-      <td style="text-align: center;" bgcolor="#ffcccc" width="76">
+      <td style="text-align: center;" width="76" bgcolor="#ffcccc">
       <p><font color="#3366ff"><i><b>Efficiency<br>
 (noisy) [%]</b></i></font> </p>
       </td>
-      <td style="text-align: center;" bgcolor="#ffcccc" width="108">
+      <td style="text-align: center;" width="108" bgcolor="#ffcccc">
       <p><font color="#3366ff"><i><b>Comments</b></i></font></p>
       </td>
     </tr>
@@ -1105,10 +1116,10 @@ min/max constraints on specified parameters.<br>
 change<br>
 </h4>
 Last, it is possible to restrict the change rate of parameters by
-assigning the field to a vector. Each non-zero value then specifies the
+assigning the <span style="font-style: italic;">constraints.steps </span>field to a vector. Each non-zero value then specifies the
 absolute
 change that the corresponding parameter can vary between two optimizer
-iterations.<span style="font-style: italic;">constraints.steps. NaN</span>
+iterations.<span style="font-style: italic;"> NaN</span>
 values can be used not to apply step constraints on specified
 parameters.<br>
 <br>
@@ -1315,7 +1326,7 @@ Sao Jose do Rio Preto, SP, pp. 49-52 (1989).<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span style="font-style: italic;">
-$Date: 2011-09-22 12:37:47 $ $Revision: 1.19 $
+$Date: 2012-01-17 15:33:51 $ $Revision: 1.20 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
