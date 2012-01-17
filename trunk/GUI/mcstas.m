@@ -56,7 +56,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -489,8 +489,10 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   sim = [];
   try
     % first try to import monitors from their file names
-    for index=1:length(options.monitors)
-      sim = [ sim iData(fullfile(directory,[ options.monitors{index} '*' ])) ];
+    if isfield(options,'monitors')
+      for index=1:length(options.monitors)
+        sim = [ sim iData(fullfile(directory,[ options.monitors{index} '*' ])) ];
+      end
     end
     if isempty(sim)
       % if designated monitor file name import fails, import all simulation content
