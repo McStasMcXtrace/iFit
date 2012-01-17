@@ -39,7 +39,7 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.23 $
+% Version: $Revision: 1.24 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
@@ -85,7 +85,8 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.tiff;*.tif', 'TIFF image (*.tif)'; ...
       '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
       '*.wrl;*.vrml', 'Virtual Reality file (*.wrl, *.vrml)'; ...
-      '*.vtk', 'VTK volume (*.vtk)'; };
+      '*.vtk', 'VTK volume (*.vtk)'; ...
+      '*.hdr', 'Analyze volume (*.hdr+img)'; };
 if strcmp(filename, 'formats')
   fprintf(1, '       EXT  DESCRIPTION [%s(iData)]\n', mfilename);
   fprintf(1, '-----------------------------------------------------------------\n'); 
@@ -223,6 +224,9 @@ case 'edf'  % EDF ESRF format
   filename = medfwrite(a, filename); % in private
 case 'vtk'  % VTK volume
   filename = iData_private_saveas_vtk(a, filename);
+case 'hdr'  % Analyze volume
+  filename = iData_private_saveas_analyze(a, filename);
+  
 case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
 case 'csv'  % Spreadsheet comma separated values file format
