@@ -4,7 +4,7 @@ function a=load_ill_tas(a)
 % Simple postprocessing for ILL/TAS files.
 % Supports ILL TAS files, including those with multidetectors.
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -81,10 +81,10 @@ for j=1:length(columns)
     if isempty(find(index_hkle == j)), index_hkle = [ index_hkle j ]; end
   end
   % and other usual columns
-  if strcmpi(columns{j}, {'M1','M2'})
+  if any(strcmpi(columns{j}, {'M1','M2'}))
     index_m12 = [ index_m12 j ];
   end
-  if strcmpi(columns{j}, {'TT','TRT'})
+  if any(strcmpi(columns{j}, {'TT','TRT'}))
     index_temp= [ index_temp j ];
   end
   if strcmpi(columns{j}, {'PAL'})     % polarized mode
@@ -94,7 +94,7 @@ for j=1:length(columns)
     index_pal= [ index_pal j ];
     is_pal='ROI';
   end
-  if isempty(strcmpi(columns{j},{'PNT','CNTS','TI'}))
+  if ~any(strcmpi(columns{j},{'PNT','CNTS','TI'}))
     if length(a.Signal(:,j))
       Variance(j) = sum( abs(a.Signal(:,j)-mean(a.Signal(:,j)) )) /length(a.Signal(:,j));
     end
