@@ -45,6 +45,7 @@ if ~isa(op,'function_handle') & ischar(op)
 	%error('genop:incorrectOperator','Operator must be a function handle.')
 end
 
+x=double(x); y=double(y);
 
 % Compute sizes of x and y, possibly extended with ones so they match
 % in length.

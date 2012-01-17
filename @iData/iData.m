@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.32 $
+% Version: $Revision: 1.33 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -143,6 +143,20 @@ else  % convert input argument into object
         out.Title = [ tl yl t ];
         out.DisplayName = t;
         out.Label=[ 'line ' l ' marker ' m ' color ' num2str(c) ];
+      elseif strcmp(get(in,'type'),'image')
+        x = get(in,'xdata'); 
+        y = get(in,'ydata');
+        z = get(in,'cdata');
+        t = get(in,'Tag');
+        out=iData(x,y,z);
+        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch xl='x'; end
+        try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch yl='y'; end
+        try zl = get(get(in,'parent'),'ZLabel'); zl=[ get(zl,'String') ' ' ]; catch zl=''; end 
+        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end
+        xlabel(out, xl); ylabel(out, yl); label(out, tl);
+        out.Title = t;
+        out.DisplayName = t;
+        out.Label=[ 'image ' t ];
       elseif strcmp(get(in,'type'),'surface')
         x = get(in,'xdata'); 
         y = get(in,'ydata'); 
@@ -174,7 +188,7 @@ else  % convert input argument into object
         out.DisplayName = t;
         out.Label=[ 'surface ' t ' line ' l ];
       else
-        h = [ findobj(in, 'type','line') findobj(in, 'type','surface') ];
+        h = [ findobj(in, 'type','line') findobj(in, 'type','surface') findobj(in, 'type','image')  ];
         try t = get(in,'DisplayName'); catch t=[]; end
         if isempty(t)
           try t = get(in,'Tag'); catch t=[]; end

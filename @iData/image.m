@@ -19,7 +19,7 @@ function h = image(r, g, b, option)
 % output: h: graphics object handle
 % ex:     image(iData(peaks),[],[], 'hide axes');
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/plot
 
 if nargin < 4, option = ''; end
@@ -28,6 +28,17 @@ if nargin < 2, g=[]; end
 
 if ischar(g), options=g; g=[]; end
 if ischar(b), options=b; b=[]; end
+
+a = [r g b ];
+if length(a) == 1 && ndims(a)==3 && size(a,3)==3
+  % the dataset has 3 color channels
+  r=a; g=a; b=a; s=get(a,'Signal');
+  set(r,'Signal',s(:,:,1));
+  set(g,'Signal',s(:,:,2));
+  set(b,'Signal',s(:,:,3));
+  a = [ r g b ];
+end
+
 if isempty(r), r=iData; end
 if isempty(g), g=iData; end
 if isempty(b), b=iData; end
@@ -107,7 +118,8 @@ end
 
 % create object to display with plot('image')
 this2D.Data.cdata = u;
-set(this2D, 'Signal', 'Data.cdata', 'Title', strtrim(lab));
+setalias(this2D, 'Signal', 'Data.cdata')
+set(this2D,'Title', strtrim(lab));
 setaxis(this2D, 2, x);
 setaxis(this2D, 1, y);
 

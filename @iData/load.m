@@ -39,7 +39,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -78,7 +78,7 @@ for i=1:length(files)
       this_iData.Data.Headers = files{i}.Headers;
       this_iData=setalias(this_iData, 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
     end
-    if ~isfield(loaders{i}, 'postprocess')
+    if isempty(loaders) || ~isfield(loaders{i}, 'postprocess')
       loaders{i}.postprocess='';
     end
     if ~isempty(loaders{i}.postprocess)
