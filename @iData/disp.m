@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.23 $
+% Version: $Revision: 1.24 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -38,7 +38,7 @@ else
   for index=1:length(s_in.Alias.Names)
     v = s_in.Alias.Values{index};
     if isempty(v)
-      if strcmp(s_in.Alias.Names{index}, 'Error'), v='sqrt(Signal)';
+      if strcmp(s_in.Alias.Names{index}, 'Error'), v='[] i.e. sqrt(Signal)';
       elseif strcmp(s_in.Alias.Names{index}, 'Monitor'), v='1'; end
     end 
     label = s_in.Alias.Labels{index};

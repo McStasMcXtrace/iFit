@@ -6,6 +6,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: iFuncs model functions</title>
 </head><body>
@@ -53,7 +54,7 @@ model may be 'gauss'):<br>
 <h3><a class="mozTocH3" name="mozTocId96090"></a><span style="font-weight: bold;">List of default fit models</span></h3>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 1016px; height: 831px;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Function<br>
@@ -339,7 +340,7 @@ The full syntax for the model builder is:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(</span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">'expression'<span style="color: rgb(0, 0, 0);">);<br></span></span></span></span>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(</span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">'expression', 'constraints'<span style="color: rgb(0, 0, 0);">);</span></span></span></span><br>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">('function_name', 'description', 'Parameter1 Parameter2 ...', ...<br>	<span style="color: rgb(204, 51, 204);">'expression'<span style="color: rgb(0, 0, 0);">, </span></span>[default parameter values], <span style="color: rgb(204, 51, 204);">'constraint'</span>);<br></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
 which is equivalent to:<br>
 <pre style="margin-left: 40px;">&gt;&gt; fun.function=<span style="color: rgb(204, 51, 204);">'function_name'</span>;			<span style="font-style: italic;">% function name</span><br>&gt;&gt; fun.Description=<span style="color: rgb(204, 51, 204);">'function description'</span>;		<span style="font-style: italic;">% function long description</span><br style="font-style: italic;">&gt;&gt; fun.Parameters=<span style="color: rgb(204, 51, 204);">'Parameter1 Parameter2 ...'</span>;		<span style="font-style: italic;">% parameter names</span>. When empty, names are given according to the Expression analysis (when appropriate)<br>&gt;&gt; fun.Guess=[0 1 2 ...] or <span style="color: rgb(204, 51, 204);">'automatic'</span>;		<span style="font-style: italic;">% parameter default values (vector), or automatic mode</span><br>&gt;&gt; fun.Expression=<span style="color: rgb(204, 51, 204); font-style: italic;">'expression using p and x,y,z,t...'</span>;	<span style="font-style: italic;">% value of the model</span> (required). p is the vector that holds parameters. Axes are x,y,z,t.<br>&gt;&gt; fun.Constraint=<span style="color: rgb(204, 51, 204);">'evaluated before Expression'</span>;	<span style="font-style: italic;">% constraint evaluated </span>prior<span style="font-style: italic;"> to the model Expression</span><br>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(fun);<br>&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);<span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
-The gerenated code will basically be:<br>
+The generated code will basically be:<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">function</span> y=[fun.function](p, axes, ...)<br><span style="font-style: italic;">% [fun.Description]</span><br style="font-style: italic;"><span style="font-style: italic;">% Parameters: [fun.Parameters]</span><br>[fun.Constraint];<br>y=[fun.Expression];<br></pre>
 The resulting function has the ability to identify itself (<span style="color: rgb(204, 51, 204);">'identify'</span>, provide
 detailed informations), compute automatic starting parameters (<span style="color: rgb(204, 51, 204);">'guess'</span>), display
@@ -402,7 +403,7 @@ function also exists in <span style="font-style: italic;">iFit/iFuncs/private/te
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2011-09-22 14:31:19 $ $Revision: 1.16 $
+$Date: 2012-01-17 15:33:51 $ $Revision: 1.17 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

@@ -9,7 +9,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -196,7 +196,13 @@ else
       if any(strcmpi(fieldname, fieldnames(b))) % structure/class def fields: b.field
         b.(fieldname) = val;
       else
-        b = iData_setalias(b,fieldname, val); % set alias value from iData: b.alias
+        if ischar(val)
+          lab = label(b, val);
+          if isempty(lab), lab = val; end
+          b = setalias(b, fieldname, val, lab);
+        else
+          b = iData_setalias(b,fieldname, val); % set alias value from iData: b.alias
+        end
       end
     end
   end   % switch s.type
