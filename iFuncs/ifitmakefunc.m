@@ -30,7 +30,7 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %
 % output: fhandle: function handle to the new function, which is also stored locally
 % 
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, gauss
 
 fhandle = [];
@@ -265,12 +265,13 @@ if ~isempty(constraint)
 else
   template = strrep(template, '$EXPR',  [ '  signal = ' expr ]);
 end
+whos dim
 template = strrep(template, '$DIM',   num2str(dim));
 ax = '';
-if dim==1, ax = [ ax   'x' ]; end
-if dim==2, ax = [ ax ', y' ]; end
-if dim==3, ax = [ ax ', z' ]; end
-if dim==4, ax = [ ax ', t' ]; end
+if dim>=1, ax = [ ax   'x' ]; end
+if dim>=2, ax = [ ax ', y' ]; end
+if dim>=3, ax = [ ax ', z' ]; end
+if dim>=4, ax = [ ax ', t' ]; end
 template = strrep(template, '$AXES',  ax);
 % handle default parameters: static or automatic
 if ~isempty(defPars)
@@ -278,6 +279,7 @@ if ~isempty(defPars)
 else
   template = strrep(template, '$DEFPARS', 'iFuncs_private_guess(x(:), signal(:), info.Parameters)');
 end
+
 
 % add the private functions
 % iFit/iFuncs/private/iFuncs_private_findpeaks.m
