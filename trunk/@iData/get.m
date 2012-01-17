@@ -13,7 +13,7 @@ function [varargout] = get(this,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -48,7 +48,7 @@ for index=1:length(varargin)
   end
   % test if this is a unique property, or a composed one
   if isvarname(property)  % extract iData field/alias
-    if any(strcmp(property, fieldnames(this)))
+    if any(strcmp(property, fieldnames(iData)))
       varargout{1} = this.(property);               % direct static field
     else
       s = struct('type','.','subs', property);      % MAIN TIME SPENT

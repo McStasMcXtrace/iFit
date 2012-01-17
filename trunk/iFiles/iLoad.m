@@ -42,7 +42,7 @@ function [data, format] = iLoad(filename, loader)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.55 $
+% Version: $Revision: 1.56 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -54,12 +54,12 @@ data = []; format = [];
 if nargin == 0, filename=''; end
 if nargin < 2,  loader = ''; end
 if nargin ==1
-  if ~isempty(strmatch(filename, {'load config','config','force load config','formats','display config'}))
-    data = iLoad('', filename);
+  if ~isempty(strmatch(filename, {'load config','config','force','force load config','formats','display config'}))
+    [data, format] = iLoad('', filename);
     return
   end
 end
-if strcmp(loader, 'load config')
+if any(strcmp(loader, {'load config','config'}))
   if isempty(config), config  = iLoad_config_load; end
   % check for availability of looktxt as MeX file, and trigger compilation if needed.
   if exist('looktxt') ~= 3
@@ -85,10 +85,12 @@ if strcmp(loader, 'load config')
     data = config;
   end
   return
-elseif strcmp(loader, 'force load config')
+elseif any(strcmp(loader, {'force','force load config'}))
   config  = iLoad_config_load;
   if ~isempty(filename)
     data    = iLoad(filename, 'load config');
+  else
+    data    = config;
   end
   return
 elseif strcmp(loader, 'formats') | strcmp(loader, 'display config')
@@ -257,7 +259,12 @@ if ischar(filename) & length(filename) > 0
   if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
   % handle the '%20' character replacement as space
   filename = strrep(filename, '%20',' ');
+  try
   [data, format] = iLoad_import(filename, loader);
+  catch
+    fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n', filename);
+    data=[];
+  end
   
 elseif isempty(filename)
   config = iLoad('','load config');

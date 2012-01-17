@@ -39,7 +39,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -47,7 +47,7 @@ function out = load(a, varargin)
 % inline: load_check_struct, load_clean_metadata
 % EF 23/09/07 iData implementation
 
-[files, loaders] = iLoad(varargin{:}); 
+[files, loaders] = iLoad(varargin{:});
 
 if isempty(files), out=[]; return; end
 if isstruct(files) && length(files) == 1 && isfield(files,'loaders')

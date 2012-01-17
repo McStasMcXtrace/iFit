@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -125,7 +125,7 @@ for i = 1:length(S)     % can handle multiple index levels
       b = getalias(b);
     elseif any(strcmpi(fieldname, 'axis'))
       b = getaxis(b);
-    elseif any(strcmp(fieldname, fieldnames(b))) % structure/class def fields: b.field
+    elseif any(strcmpi(fieldname, fieldnames(b))) % structure/class def fields: b.field
       b = b.(fieldname);
     else
       b = iData_getAliasValue(b,fieldname); % get alias value from iData: b.alias MAIN SPENT TIME

@@ -1,13 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta http-equiv="content-type"
- content="text/html; charset=ISO-8859-1">
+<html><head>
+
+
+
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Plotting iData objects</title>
-</head>
-<body>
-<h1 style="text-align: center;"><a class="mozTocH1"
- name="mozTocId294096"></a>iFit: plotting iData objects</h1>
+</head><body>
+<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: plotting iData objects</h1>
 <br>
 <ul id="mozToc">
 <!--mozToc h3 1 h4 2 h5 3 h4 4 h5 5 h6 6-->
@@ -58,23 +57,19 @@ iData objects</a></li>
 </ul>
 <br>
 <hr style="width: 100%; height: 2px;">
-<div style="text-align: center;">Commands we use in this page: <span
- style="font-style: italic;">plot, subplot, xlabel, xlim, title, saveas</span>,
+<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">plot, subplot, xlabel, xlim, title, saveas</span>,
 <a href="Methods.html">methods</a>
 <div style="text-align: left;"><br>
 The <a href="iData.html">iData</a> objects can be plotted. They then
 show the <span style="font-style: italic;">Signal, </span>usually
 divided by the <span style="font-style: italic;">Monitor, </span>as a
 function of the defined <span style="font-style: italic;">Axes</span>
-(or default ones when not defined). A way to plot the raw <span
- style="font-style: italic;">Signal</span> is to set the <span
- style="font-style: italic;">Monitor</span> to 1.<br>
+(or default ones when not defined). A way to plot the raw <span style="font-style: italic;">Signal</span> is to set the <span style="font-style: italic;">Monitor</span> to 1.<br>
 </div>
 </div>
 <h3><a class="mozTocH3" name="mozTocId726945"></a>Plotting objects in a
 single pane (plot)</h3>
-The main plot method for iData objects is <span
- style="font-weight: bold; font-style: italic;">plot. </span>It works
+The main plot method for iData objects is <span style="font-weight: bold; font-style: italic;">plot. </span>It works
 for objects up to <span style="font-style: italic;">ndims(a)&lt;=3</span>.
 Further
 dimensionality
@@ -105,16 +100,7 @@ order
 to
 vizualize the raw <span style="font-style: italic;">Signal, </span>set
 <span style="font-style: italic;">Monitor</span> to 1 with e.g. <br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span
- style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn'</span> ])<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a)<br>&gt;&gt; old_mon=<span
- style="color: rgb(51, 102, 255);">getalias</span>(a,<span
- style="color: rgb(204, 51, 204);">'Monitor'</span>);  <span
- style="font-style: italic;">% save the current Monitor alias if you wish to restore it afterwards</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">setalias</span>(a,<span
- style="color: rgb(204, 51, 204);">'Monitor'</span>,1);<br>&gt;&gt; figure; <span
- style="color: rgb(51, 102, 255);">plot</span>(a)<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn'</span> ])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a)<br>&gt;&gt; old_mon=<span style="color: rgb(51, 102, 255);">getalias</span>(a,<span style="color: rgb(204, 51, 204);">'Monitor'</span>);  <span style="font-style: italic;">% save the current Monitor alias if you wish to restore it afterwards</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'Monitor'</span>,1);<br>&gt;&gt; figure; <span style="color: rgb(51, 102, 255);">plot</span>(a)<br></pre>
 The plot windows offer 'camera ready' quality rendering using openGL.
 Standard tools are available zoom, edit, pan, export image, rotate,
 explore data points with a cursor, customize colors, ...<br>
@@ -124,46 +110,29 @@ volumes, waterfall, ...<br>
 Let us import a simple 1D (vector <span style="font-style: italic;">Signal=f(x)
 </span>) data set into an iData object, and
 plot it:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span
- style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn'</span> ])<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a);<br></pre>
-<div style="text-align: center;"><img
- style="width: 400px; height: 354px;" alt="iData plot 1D with menu"
- title="iData plot 1D with menu" src="images/iData_plot_1d_menu.png"
- align="middle"> <img style="width: 474px; height: 184px;"
- alt="iData plot About" title="iData plot About"
- src="images/iData_plot_About.png" align="middle"><br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn'</span> ])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a);<br></pre>
+<div style="text-align: center;"><img style="width: 400px; height: 354px;" alt="iData plot 1D with menu" title="iData plot 1D with menu" src="images/iData_plot_1d_menu.png" align="middle"> <img style="width: 474px; height: 184px;" alt="iData plot About" title="iData plot About" src="images/iData_plot_About.png" align="middle"><br>
 </div>
 <br>
-A standard Matlab figure appears, with the <span
- style="font-style: italic;">Signal</span> and the <span
- style="font-style: italic;">Axis</span> of rank 1. The curve itself
+A standard Matlab figure appears, with the <span style="font-style: italic;">Signal</span> and the <span style="font-style: italic;">Axis</span> of rank 1. The curve itself
 can be right-cliked in order to pop-up a contextual menu which provides
 (see <span style="font-style: italic;">left</span> image):<br>
 <ul>
-  <li>an information dialog about the object (see <span
- style="font-style: italic;">right</span> image above) and
+  <li>an information dialog about the object (see <span style="font-style: italic;">right</span> image above) and
 the iFit/iData library version,</li>
   <li>the possibility to duplicate the view into an other window,<br>
   </li>
   <li>simple ways to toggle a grid and error bar display, </li>
-  <li>simple way to toggle linear or log scale for the <span
- style="font-style: italic;">Signal</span></li>
+  <li>simple way to toggle linear or log scale for the <span style="font-style: italic;">Signal</span></li>
   <li>a '<span style="font-style: italic;">Reset view</span>' item to
 re-plot the initial object view.<br>
   </li>
 </ul>
 <span style="font-style: italic;">Tip:</span> in case the contextual
 menu item linear/log toggle does not satisfy your expectations, you may
-try to directly plot the log of the object with (see <a
- href="Math.html">Math operators</a>)<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>( <span
- style="color: rgb(51, 102, 255);">log10</span>(a) );</pre>
-As for any Matlab window, it may be edited using the arrow tool&nbsp;<img
- style="width: 24px; height: 26px;" alt="Figure_arrow tool"
- title="Figure_arrow tool" src="images/Figure_arrow.png" align="middle">which
+try to directly plot the log of the object with (see <a href="Math.html">Math operators</a>)<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>( <span style="color: rgb(51, 102, 255);">log10</span>(a) );</pre>
+As for any Matlab window, it may be edited using the arrow tool&nbsp;<img style="width: 24px; height: 26px;" alt="Figure_arrow tool" title="Figure_arrow tool" src="images/Figure_arrow.png" align="middle">which
 allows
 to
 double-click
@@ -189,9 +158,7 @@ show,
 the
 colors.
 <br>
-The zoom tool&nbsp;<img style="width: 53px; height: 24px;"
- alt="Figure_zoom tool" title="Figure_zoom tool"
- src="images/Figure_zoom.png" align="middle">is also pretty useful (hey
+The zoom tool&nbsp;<img style="width: 53px; height: 24px;" alt="Figure_zoom tool" title="Figure_zoom tool" src="images/Figure_zoom.png" align="middle">is also pretty useful (hey
 ?). To revert to the full view, double click on the figure, or select
 the contextual menu item '<span style="font-style: italic;">Reset view</span>'.<br>
 <br>
@@ -206,11 +173,8 @@ description of all the tools available in Matlab plot windows. Most of
 the functionality can also be accessed from the Figure menus. We
 encourage you to read all this, especially late at night in winter.<br>
 <br>
-Additional arguments can be given to plot in order to specify the <span
- style="font-weight: bold;">line
-style and color</span>, such as in the standard Matlab <span
- style="font-style: italic;">plot</span> function, e.g. <span
- style="font-style: italic;">plot(a,'r--')</span> to draw a red dashed
+Additional arguments can be given to plot in order to specify the <span style="font-weight: bold;">line
+style and color</span>, such as in the standard Matlab <span style="font-style: italic;">plot</span> function, e.g. <span style="font-style: italic;">plot(a,'r--')</span> to draw a red dashed
 line. The special style '<span style="font-style: italic;">hide_errorbars</span>'
 will not show error bars, but they can be made visible from the
 contextual menu. The <span style="font-style: italic;">h=plot(...)</span>
@@ -220,97 +184,26 @@ used to perform further access and modification to the view.<br>
 <h4><a class="mozTocH4" name="mozTocId183121"></a>Plots for 2D objects</h4>
 Similarly
 as
-for 1D objects, plots can be generated for 2D objects <span
- style="font-style: italic;">Signal=f(x,y)</span>, and show them up as
+for 1D objects, plots can be generated for 2D objects <span style="font-style: italic;">Signal=f(x,y)</span>, and show them up as
 surfaces:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span
- style="color: rgb(51, 102, 255);">load</span>(iData, <span
- style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_D10.dat'</span> ])<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a);<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_D10.dat'</span> ])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a);<br></pre>
 which results in a surface plot as shown aside. <br>
 <br>
-<div style="text-align: center;"><a href="images/iData_plot_2d.png"><img
- alt="iData plot 2d: plot(a)" title="iData plot 2d: plot(a)"
- src="images/iData_plot_2d.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>
+<div style="text-align: center;"><a href="images/iData_plot_2d.png"><img alt="iData plot 2d: plot(a)" title="iData plot 2d: plot(a)" src="images/iData_plot_2d.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>
 <br>
 <span style="font-style: italic;">Plot 2D: </span>plot(a) with smooth
 view<br>
 </div>
 <br>
 Alternate rendering can be obtained with the plot options:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span
- style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(51, 102, 255);">peaks)</span>;<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a);           <span
- style="font-style: italic;">% a surface</span>, same as <span
- style="color: rgb(51, 102, 255);">surf</span>(a)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,<span
- style="color: rgb(204, 51, 204);">'mesh'</span>);    <span
- style="font-style: italic;">% a wired mesh</span>, same as <span
- style="color: rgb(51, 102, 255);">mesh</span>(a)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,<span
- style="color: rgb(204, 51, 204);">'contour'</span>); <span
- style="font-style: italic;">% contour plot</span>, same as <span
- style="color: rgb(51, 102, 255);">contour</span>(a)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,<span
- style="color: rgb(204, 51, 204);">'contourf'</span>);<span
- style="font-style: italic;">% contour plot with filled regions</span>, same as <span
- style="color: rgb(51, 102, 255);">contour</span>f(a)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,<span
- style="color: rgb(204, 51, 204);">'surfc'</span>);   <span
- style="font-style: italic;">% a surface with contour plot below</span><span
- style="font-style: italic;"></span>, same as <span
- style="color: rgb(51, 102, 255);">surf</span>c(a)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,<span
- style="color: rgb(204, 51, 204);">'surfl'</span>);   <span
- style="font-style: italic;">% a surface with light</span><span
- style="font-style: italic;"></span>, same as <span
- style="color: rgb(51, 102, 255);">surf</span>l(a)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,<span
- style="color: rgb(204, 51, 204);">'plot3'</span>);   <span
- style="font-style: italic;">% a surface made of lines side by side</span><span
- style="font-style: italic;"></span>, same as <span
- style="color: rgb(51, 102, 255);">plot3</span>(a)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,<span
- style="color: rgb(204, 51, 204);">'scatter3'</span>);<span
- style="font-style: italic;">% a surface made of colored points</span>, same as <span
- style="color: rgb(51, 102, 255);">scatter3</span>(a)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,<span
- style="color: rgb(204, 51, 204);">'waterfall'</span>);<span
- style="font-style: italic;">% a surface made of colored points</span>, same as <span
- style="color: rgb(51, 102, 255);">waterfall</span>(a)<br></pre>
-<div style="text-align: center;"><a href="images/iData_plot_2d_surf.png"><img
- alt="iData_plot_2d_surf: plot(a,'surf')"
- title="iData_plot_2d_surf: plot(a,'surf')"
- src="images/iData_plot_2d_surf.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>
-<a href="images/iData_plot_2d_mesh2.png"><img
- alt="iData_plot_2d_mesh: plot(a,'mesh')"
- title="iData_plot_2d_mesh: plot(a,'mesh')"
- src="images/iData_plot_2d_mesh2.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><a
- href="images/iData_plot_2d_surfc.png"><img
- alt="iData_plot_2d_surfc: plot(a,'surfc')"
- title="iData_plot_2d_surfc: plot(a,'surfc')"
- src="images/iData_plot_2d_surfc.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
-<span style="font-style: italic;">Plot 2D: left=</span>plot(a),<span
- style="font-style: italic;"> center</span>=plot(a,'mesh'), <span
- style="font-style: italic;">right</span>=plot(a,'surfc')<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks)</span>;<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a);           <span style="font-style: italic;">% a surface</span>, same as <span style="color: rgb(51, 102, 255);">surf</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'mesh'</span>);    <span style="font-style: italic;">% a wired mesh</span>, same as <span style="color: rgb(51, 102, 255);">mesh</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'contour'</span>); <span style="font-style: italic;">% contour plot</span>, same as <span style="color: rgb(51, 102, 255);">contour</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'contourf'</span>);<span style="font-style: italic;">% contour plot with filled regions</span>, same as <span style="color: rgb(51, 102, 255);">contour</span>f(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'surfc'</span>);   <span style="font-style: italic;">% a surface with contour plot below</span><span style="font-style: italic;"></span>, same as <span style="color: rgb(51, 102, 255);">surf</span>c(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'surfl'</span>);   <span style="font-style: italic;">% a surface with light</span><span style="font-style: italic;"></span>, same as <span style="color: rgb(51, 102, 255);">surf</span>l(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'plot3'</span>);   <span style="font-style: italic;">% a surface made of lines side by side</span><span style="font-style: italic;"></span>, same as <span style="color: rgb(51, 102, 255);">plot3</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'scatter3'</span>);<span style="font-style: italic;">% a surface made of colored points</span>, same as <span style="color: rgb(51, 102, 255);">scatter3</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'waterfall'</span>);<span style="font-style: italic;">% a surface made of colored points</span>, same as <span style="color: rgb(51, 102, 255);">waterfall</span>(a)<br></pre>
+<div style="text-align: center;"><a href="images/iData_plot_2d_surf.png"><img alt="iData_plot_2d_surf: plot(a,'surf')" title="iData_plot_2d_surf: plot(a,'surf')" src="images/iData_plot_2d_surf.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>
+<a href="images/iData_plot_2d_mesh2.png"><img alt="iData_plot_2d_mesh: plot(a,'mesh')" title="iData_plot_2d_mesh: plot(a,'mesh')" src="images/iData_plot_2d_mesh2.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><a href="images/iData_plot_2d_surfc.png"><img alt="iData_plot_2d_surfc: plot(a,'surfc')" title="iData_plot_2d_surfc: plot(a,'surfc')" src="images/iData_plot_2d_surfc.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
+<span style="font-style: italic;">Plot 2D: left=</span>plot(a),<span style="font-style: italic;"> center</span>=plot(a,'mesh'), <span style="font-style: italic;">right</span>=plot(a,'surfc')<br>
 <br>
-<a href="images/iData_plot_2d_plot3.png"><img
- alt="iData_plot_2d_plot3: plot(a,'plot3')"
- title="iData_plot_2d_plot3: plot(a,'plot3')"
- src="images/iData_plot_2d_plot3.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>
-<a href="images/iData_plot_2d_scatter3.png"><img
- alt="iData_plot_2d_scatter3: plot(a,'scatter3')"
- title="iData_plot_2d_scatter3: plot(a,'scatter3')"
- src="images/iData_plot_2d_scatter3.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
-<span style="font-style: italic;">Plot 2D: left=</span>plot(a,'plot3'),<span
- style="font-style: italic;"></span> <span style="font-style: italic;">right</span>=plot(a,'scatter3')<br>
+<a href="images/iData_plot_2d_plot3.png"><img alt="iData_plot_2d_plot3: plot(a,'plot3')" title="iData_plot_2d_plot3: plot(a,'plot3')" src="images/iData_plot_2d_plot3.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>
+<a href="images/iData_plot_2d_scatter3.png"><img alt="iData_plot_2d_scatter3: plot(a,'scatter3')" title="iData_plot_2d_scatter3: plot(a,'scatter3')" src="images/iData_plot_2d_scatter3.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
+<span style="font-style: italic;">Plot 2D: left=</span>plot(a,'plot3'),<span style="font-style: italic;"></span> <span style="font-style: italic;">right</span>=plot(a,'scatter3')<br>
 </div>
 <br>
 <br>
@@ -322,8 +215,7 @@ to plot: <br>
   <li>surfl<span style="color: rgb(0, 0, 0);"> (surface with light)</span><br>
   </li>
   <li>pcolor<span style="color: rgb(0, 0, 0);"> (a flat matrix/image
-view, may be advantageously coupled with the <span
- style="color: rgb(204, 51, 204);">hide_axis</span> option)</span><br>
+view, may be advantageously coupled with the <span style="color: rgb(204, 51, 204);">hide_axis</span> option)</span><br>
   </li>
   <li>stem3<span style="color: rgb(0, 0, 0);"> (single points which
 show elevation from basal plane)</span><br>
@@ -332,30 +224,14 @@ show elevation from basal plane)</span><br>
 <h5><a class="mozTocH4" name="mozTocId822018"></a>Data shown as an
 image (flat)<br>
 </h5>
-<a href="images/iData_image.png"><img alt="iData/image"
- title="iData/image" src="images/iData_image.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>In
+<a href="images/iData_image.png"><img alt="iData/image" title="iData/image" src="images/iData_image.png" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>In
 addition,
 the <span style="font-weight: bold;">image</span>(r,g,b)
 plotting
 method allows to send up to 3 objects onto the RGB color channels, and
-display them as a flat image (when using option='<span
- style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">hide_axis</span></span>')
+display them as a flat image (when using option='<span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">hide_axis</span></span>')
 :<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span
- style="color: rgb(51, 102, 255);">iData</span>([ <span
- style="color: rgb(204, 51, 204);">ifitpath 'Data/Ag_3_a.edf'</span> ])<br>&gt;&gt; h = <span
- style="color: rgb(51, 102, 255);">pcolor</span>(a);			<span
- style="font-style: italic;">% full color image</span><br>&gt;&gt; h =<span
- style="color: rgb(51, 102, 255);"> image</span>(log(a), <span
- style="color: rgb(204, 51, 204);">'hide_axes'</span>);	<span
- style="font-style: italic;">% <span style="color: rgb(255, 0, 0);">red</span> channel image</span><br>&gt;&gt; h =<span
- style="color: rgb(51, 102, 255);"> image</span>([], a, <span
- style="color: rgb(204, 51, 204);">'hide_axes'</span>);	<span
- style="font-style: italic;">% <span style="color: rgb(51, 204, 0);">green</span> channel image</span><br>&gt;&gt; h =<span
- style="color: rgb(51, 102, 255);"> image</span>([],[], a, <span
- style="color: rgb(204, 51, 204);">'hide_axes'</span>);	<span
- style="font-style: italic;">% <span style="color: rgb(51, 51, 255);">blue</span> channel image</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(204, 51, 204);">ifitpath 'Data/Ag_3_a.edf'</span> ])<br>&gt;&gt; h = <span style="color: rgb(51, 102, 255);">pcolor</span>(a);			<span style="font-style: italic;">% full color image</span><br>&gt;&gt; h =<span style="color: rgb(51, 102, 255);"> image</span>(log(a), <span style="color: rgb(204, 51, 204);">'hide_axes'</span>);	<span style="font-style: italic;">% <span style="color: rgb(255, 0, 0);">red</span> channel image</span><br>&gt;&gt; h =<span style="color: rgb(51, 102, 255);"> image</span>([], a, <span style="color: rgb(204, 51, 204);">'hide_axes'</span>);	<span style="font-style: italic;">% <span style="color: rgb(51, 204, 0);">green</span> channel image</span><br>&gt;&gt; h =<span style="color: rgb(51, 102, 255);"> image</span>([],[], a, <span style="color: rgb(204, 51, 204);">'hide_axes'</span>);	<span style="font-style: italic;">% <span style="color: rgb(51, 51, 255);">blue</span> channel image</span><br></pre>
 Some of the RGB channels can be left empty to suppress one color. Each
 object is re-scaled in the [0 1] range to use the full channel colors.
 However, when using the option<span style="color: rgb(204, 51, 204);">
@@ -367,24 +243,16 @@ When a surface has been already plotted, either from the Matlab
 standard surf or the iData plotting methods presented above, the color
 shown on surfaces are usuyally the value of the data itself.<br>
 <br>
-<a href="images/iData_caxis.png"><img alt="iData/caxis"
- title="iData/caxis" src="images/iData_caxis.png"
- style="border: 0px solid ; width: 200px; height: 239px;" align="right"></a>It
+<a href="images/iData_caxis.png"><img alt="iData/caxis" title="iData/caxis" src="images/iData_caxis.png" style="border: 0px solid ; width: 200px; height: 239px;" align="right"></a>It
 is
 possible
 to map the values of any iData object onto a surface. When
 the iData object does not match the surface dimensions, a rescaling is
-automatically performed. This is achieved with the <span
- style="font-weight: bold;">caxis</span> method.<br>
+automatically performed. This is achieved with the <span style="font-weight: bold;">caxis</span> method.<br>
 In the following example, we plot a surface, and then map the colors
 shown on that surface (aka CData) with the Laplacian of the surface
 (curvature):<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span
- style="color: rgb(51, 102, 255);">iData</span>(peaks); <br>&gt;&gt; h = <span
- style="color: rgb(51, 102, 255);">subplot</span>([ a a ]); <br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">caxis</span>(<span
- style="color: rgb(51, 102, 255);">del2</span>(a),h(2));	<span
- style="font-style: italic;">% we map the Laplacian onto the second plot</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(peaks); <br>&gt;&gt; h = <span style="color: rgb(51, 102, 255);">subplot</span>([ a a ]); <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">caxis</span>(<span style="color: rgb(51, 102, 255);">del2</span>(a),h(2));	<span style="font-style: italic;">% we map the Laplacian onto the second plot</span><br></pre>
 The initial object is shown in the upper panel, whereas the re-mapped
 object is shown below. The blue regions indicate a negative curvature
 (top of hills), and the red ones indicate a positive curvature (bottom
@@ -395,8 +263,7 @@ right-clicking on the surface or the axis lines, to pop-up a contextual
 menu which
 provides the following operations:<br>
 <ul>
-  <li>an information dialog about the object (see <span
- style="font-style: italic;">right</span> image above) and
+  <li>an information dialog about the object (see <span style="font-style: italic;">right</span> image above) and
 the iFit/iData library version,</li>
   <li>the possibility to duplicate the view into an other window,<br>
   </li>
@@ -404,22 +271,14 @@ the iFit/iData library version,</li>
   <li>the possibility to smooth the surface appearance, add light and
 make it semi-transparent,<br>
   </li>
-  <li>simple way to toggle linear or log scale for the <span
- style="font-style: italic;">Signal</span></li>
-  <li>simple way to toggle a perspective rendering<span
- style="font-style: italic;"><br>
+  <li>simple way to toggle linear or log scale for the <span style="font-style: italic;">Signal</span></li>
+  <li>simple way to toggle a perspective rendering<span style="font-style: italic;"><br>
     </span></li>
   <li>a '<span style="font-style: italic;">Reset view</span>' item to
 re-plot the initial object view.</li>
 </ul>
-In addition to the edit <img style="width: 24px; height: 26px;"
- alt="Figure_arrow tool" title="Figure_arrow tool"
- src="images/Figure_arrow.png" align="middle"> and zoom tools <img
- style="width: 53px; height: 24px;" alt="Figure_zoom tool"
- title="Figure_zoom tool" src="images/Figure_zoom.png" align="middle">,
-a rotate view tool <img style="width: 26px; height: 24px;"
- alt="Figure rotate tool" title="Figure rotate tool"
- src="images/Figure_rotate.png" align="middle">enables to change the
+In addition to the edit <img style="width: 24px; height: 26px;" alt="Figure_arrow tool" title="Figure_arrow tool" src="images/Figure_arrow.png" align="middle"> and zoom tools <img style="width: 53px; height: 24px;" alt="Figure_zoom tool" title="Figure_zoom tool" src="images/Figure_zoom.png" align="middle">,
+a rotate view tool <img style="width: 26px; height: 24px;" alt="Figure rotate tool" title="Figure rotate tool" src="images/Figure_rotate.png" align="middle">enables to change the
 view-point.<br>
 <br>
 <span style="font-weight: bold; font-style: italic;">NOTE: </span>as
@@ -430,68 +289,19 @@ label, and the axis of rank 2 to 'X'.<br>
 Objects that contain volumetric data <span style="font-style: italic;">Signal=f(x,y,z)</span>
 can also be displayed as iso-surfaces or semi-transparent volumes, such
 as in the following example:<br>
-<pre style="margin-left: 40px;">&gt;&gt; [x,y,z,v]=<span
- style="color: rgb(51, 102, 255);">flow</span>; c=<span
- style="color: rgb(51, 102, 255);">iData</span>(x,y,z,v); <span
- style="color: rgb(51, 102, 255);"></span>;<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c);<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; [x,y,z,v]=<span style="color: rgb(51, 102, 255);">flow</span>; c=<span style="color: rgb(51, 102, 255);">iData</span>(x,y,z,v); <span style="color: rgb(51, 102, 255);"></span>;<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c);<br></pre>
 The default plotting method used is an isosurface using an optimal
 signal value. Other rendering can be plotted with e.g.:<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,<span
- style="color: rgb(204, 51, 204);">'surf median'</span>);    <span
- style="font-style: italic;">% plots the c=median(signal) isosurface, same as plot(d) [default]</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,<span
- style="color: rgb(204, 51, 204);">'surf mean'</span>);      <span
- style="font-style: italic;">% plots the c=mean(signal) isosurface</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,<span
- style="color: rgb(204, 51, 204);">'surf half'</span>);      <span
- style="font-style: italic;">% plots the c=(max-min)/2 isosurface</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,<span
- style="color: rgb(204, 51, 204);">'plot3'</span>);          <span
- style="font-style: italic;">% plots a volume rendering with semi-transparent style</span>, same as <span
- style="color: rgb(51, 102, 255);">plot3</span>(c)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,<span
- style="color: rgb(204, 51, 204);">'scatter3'</span>);       <span
- style="font-style: italic;">% a set of colored points in space</span>, same as <span
- style="color: rgb(51, 102, 255);">scatter3</span>(c)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c,<span
- style="color: rgb(204, 51, 204);">'waterfall'</span>);      <span
- style="font-style: italic;">% a set of colored points in space</span>, same as <span
- style="color: rgb(51, 102, 255);">contour</span>f(c) and <span
- style="color: rgb(51, 102, 255);">waterfall</span>(c)</pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c,<span style="color: rgb(204, 51, 204);">'surf median'</span>);    <span style="font-style: italic;">% plots the c=median(signal) isosurface, same as plot(d) [default]</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c,<span style="color: rgb(204, 51, 204);">'surf mean'</span>);      <span style="font-style: italic;">% plots the c=mean(signal) isosurface</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c,<span style="color: rgb(204, 51, 204);">'surf half'</span>);      <span style="font-style: italic;">% plots the c=(max-min)/2 isosurface</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c,<span style="color: rgb(204, 51, 204);">'plot3'</span>);          <span style="font-style: italic;">% plots a volume rendering with semi-transparent style</span>, same as <span style="color: rgb(51, 102, 255);">plot3</span>(c)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c,<span style="color: rgb(204, 51, 204);">'scatter3'</span>);       <span style="font-style: italic;">% a set of colored points in space</span>, same as <span style="color: rgb(51, 102, 255);">scatter3</span>(c)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c,<span style="color: rgb(204, 51, 204);">'waterfall'</span>);      <span style="font-style: italic;">% a set of colored points in space</span>, same as <span style="color: rgb(51, 102, 255);">contour</span>f(c) and <span style="color: rgb(51, 102, 255);">waterfall</span>(c)</pre>
 <br>
-<div style="text-align: center;"><a href="images/iData_plot_3d_surf.png"><img
- alt="iData_plot_3d_surf: plot(d)" title="iData_plot_3d_surf: plot(d)"
- src="images/iData_plot_3d_surf.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>&nbsp;
-<a href="images/iData_plot_3d_surf_half.png"><img
- alt="iData_plot_3d_surf_half: plot(c,'surf half')"
- title="iData_plot_3d_surf_half: plot(c,'surf half')"
- src="images/iData_plot_3d_surf_half.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
-<span style="font-style: italic;">Plot 3D: left=</span>plot(d,'surf')<span
- style="font-style: italic;">, right=</span>plot(d,'surf half')<span
- style="font-style: italic;"></span><br>
+<div style="text-align: center;"><a href="images/iData_plot_3d_surf.png"><img alt="iData_plot_3d_surf: plot(d)" title="iData_plot_3d_surf: plot(d)" src="images/iData_plot_3d_surf.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>&nbsp;
+<a href="images/iData_plot_3d_surf_half.png"><img alt="iData_plot_3d_surf_half: plot(c,'surf half')" title="iData_plot_3d_surf_half: plot(c,'surf half')" src="images/iData_plot_3d_surf_half.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
+<span style="font-style: italic;">Plot 3D: left=</span>plot(d,'surf')<span style="font-style: italic;">, right=</span>plot(d,'surf half')<span style="font-style: italic;"></span><br>
 <br>
-<a href="images/iData_plot_3d_plot3.png"><img
- alt="iData_plot_3d_plot3: plot(d,'plot3')"
- title="iData_plot_3d_plot3: plot(d,'plot3')"
- src="images/iData_plot_3d_plot3.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>&nbsp;
-<a href="images/iData_plot_3d_scatter3.png"><img
- alt="iData_plot_3d: plot(d,'scatter3')"
- title="iData_plot_3d: plot(d,'scatter3')"
- src="images/iData_plot_3d_scatter3.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>&nbsp;
-<a href="images/iData_plot_3d_waterfall.png"><img
- alt="Plot 3D as waterfall" title="Plot 3D as waterfall"
- src="images/iData_plot_3d_waterfall.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
-<span style="font-style: italic;"></span><span
- style="font-style: italic;">left=</span>plot(d,'plot3')<span
- style="font-style: italic;">, center=</span>plot(d,'scatter3'), <span
- style="font-style: italic;">right</span> plot(d, 'waterfall')<br>
+<a href="images/iData_plot_3d_plot3.png"><img alt="iData_plot_3d_plot3: plot(d,'plot3')" title="iData_plot_3d_plot3: plot(d,'plot3')" src="images/iData_plot_3d_plot3.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>&nbsp;
+<a href="images/iData_plot_3d_scatter3.png"><img alt="iData_plot_3d: plot(d,'scatter3')" title="iData_plot_3d: plot(d,'scatter3')" src="images/iData_plot_3d_scatter3.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>&nbsp;
+<a href="images/iData_plot_3d_waterfall.png"><img alt="Plot 3D as waterfall" title="Plot 3D as waterfall" src="images/iData_plot_3d_waterfall.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
+<span style="font-style: italic;"></span><span style="font-style: italic;">left=</span>plot(d,'plot3')<span style="font-style: italic;">, center=</span>plot(d,'scatter3'), <span style="font-style: italic;">right</span> plot(d, 'waterfall')<br>
 </div>
 <br>
 It is possible, by
@@ -499,8 +309,7 @@ right-clicking on the surface or the axis lines, to pop-up a contextual
 menu which
 provides the following operations:<br>
 <ul>
-  <li>an information dialog about the object (see <span
- style="font-style: italic;">right</span> image above) and
+  <li>an information dialog about the object (see <span style="font-style: italic;">right</span> image above) and
 the iFit/iData library version,</li>
   <li>the possibility to duplicate the view into an other window,<br>
   </li>
@@ -508,33 +317,20 @@ the iFit/iData library version,</li>
   <li>the possibility to smooth the surface appearance, add light and
 make it semi-transparent,<br>
   </li>
-  <li>simple way to toggle linear or log scale for the <span
- style="font-style: italic;">Signal</span></li>
-  <li>simple way to toggle a perspective rendering<span
- style="font-style: italic;"><br>
+  <li>simple way to toggle linear or log scale for the <span style="font-style: italic;">Signal</span></li>
+  <li>simple way to toggle a perspective rendering<span style="font-style: italic;"><br>
     </span></li>
   <li>a '<span style="font-style: italic;">Reset view</span>' item to
 re-plot the initial object view.</li>
 </ul>
-In addition to the edit <img style="width: 24px; height: 26px;"
- alt="Figure_arrow tool" title="Figure_arrow tool"
- src="images/Figure_arrow.png" align="middle"> and zoom tools <img
- style="width: 53px; height: 24px;" alt="Figure_zoom tool"
- title="Figure_zoom tool" src="images/Figure_zoom.png" align="middle">,
-a rotate view tool <img style="width: 26px; height: 24px;"
- alt="Figure rotate tool" title="Figure rotate tool"
- src="images/Figure_rotate.png" align="middle">enables to change the
+In addition to the edit <img style="width: 24px; height: 26px;" alt="Figure_arrow tool" title="Figure_arrow tool" src="images/Figure_arrow.png" align="middle"> and zoom tools <img style="width: 53px; height: 24px;" alt="Figure_zoom tool" title="Figure_zoom tool" src="images/Figure_zoom.png" align="middle">,
+a rotate view tool <img style="width: 26px; height: 24px;" alt="Figure rotate tool" title="Figure rotate tool" src="images/Figure_rotate.png" align="middle">enables to change the
 view-point.<br>
 <br>
-Last but not least the <a
- href="http://www.mathworks.com/matlabcentral/fileexchange/764"><span
- style="font-weight: bold; font-style: italic;">Slice-o-matic</span></a>
+Last but not least the <a href="http://www.mathworks.com/matlabcentral/fileexchange/764"><span style="font-weight: bold; font-style: italic;">Slice-o-matic</span></a>
 viewer for 3D volumetric data set is requested upon command:<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">slice</span>(c)    <span
- style="font-style: italic;">% with ndims(c)=3</span></pre>
-Slices and isosurfaces can be viewer with an interactive tool (see <a
- href="#mozTocId633428">below</a>).<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">slice</span>(c)    <span style="font-style: italic;">% with ndims(c)=3</span></pre>
+Slices and isosurfaces can be viewer with an interactive tool (see <a href="#mozTocId633428">below</a>).<br>
 <br>
 <span style="font-weight: bold; font-style: italic;">NOTE: </span>as
 explained in the <a href="iData.html#mozTocId765887">iData axis
@@ -621,9 +417,7 @@ for better shifted overlayed rendering.<br>
   </li>
 </ul>
 A usage examples is <br>
-<pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a,<span
- style="color: rgb(204, 51, 204);">'surf interp view2 axis tight transparent'</span>)</pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a,<span style="color: rgb(204, 51, 204);">'surf interp view2 axis tight transparent'</span>)</pre>
 <h3><a class="mozTocH3" name="mozTocId574560"></a>Plotting an object
 array
 in a single plot</h3>
@@ -632,38 +426,15 @@ All plot functions can be overlay-ed with the usual hold on Matlab
 command. However, the iData methods provide an integrated way to plot
 an array of objects onto the same figure, such as in the following
 example:<br>
-<pre style="margin-left: 40px;">&gt;&gt; x=-pi:0.01:pi; a=<span
- style="color: rgb(51, 102, 255);">iData</span>(x,x); <br>&gt;&gt; a.Error=0;                         <span
- style="font-style: italic;">% replace default Error=sqrt(Signal) by no-error.</span><br>&gt;&gt; b=<span
- style="color: rgb(51, 102, 255);">sin</span>(a); c=<span
- style="color: rgb(51, 102, 255);">cos</span>(a); d=<span
- style="color: rgb(51, 102, 255);">exp</span>(-a.*a);  <span
- style="font-style: italic;">% create new objects by applying operator on the initial linear one</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>([a b c d]);                   <span
- style="font-style: italic;">% overlay all objects</span><br><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; x=-pi:0.01:pi; a=<span style="color: rgb(51, 102, 255);">iData</span>(x,x); <br>&gt;&gt; a.Error=0;                         <span style="font-style: italic;">% replace default Error=sqrt(Signal) by no-error.</span><br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">sin</span>(a); c=<span style="color: rgb(51, 102, 255);">cos</span>(a); d=<span style="color: rgb(51, 102, 255);">exp</span>(-a.*a);  <span style="font-style: italic;">% create new objects by applying operator on the initial linear one</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([a b c d]);                   <span style="font-style: italic;">% overlay all objects</span><br><br></pre>
 This can also be applied to 2D and 3D objects, even though the latter
 usually produces a crowded plot.<br>
-<pre style="margin-left: 40px;">&gt;&gt; [x,y,z]=<span
- style="color: rgb(51, 102, 255);">peaks</span>; a=<span
- style="color: rgb(51, 102, 255);">iData</span>(x,y*10,z); <br>&gt;&gt; c=<span
- style="color: rgb(51, 102, 255);">linspace</span>(a,-a+50,10);            <span
- style="font-style: italic;">% continuously go from 'a' to a '-a+50' in 10 steps</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(c);                           <span
- style="font-style: italic;">% plot all on the same figure</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; [x,y,z]=<span style="color: rgb(51, 102, 255);">peaks</span>; a=<span style="color: rgb(51, 102, 255);">iData</span>(x,y*10,z); <br>&gt;&gt; c=<span style="color: rgb(51, 102, 255);">linspace</span>(a,-a+50,10);            <span style="font-style: italic;">% continuously go from 'a' to a '-a+50' in 10 steps</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c);                           <span style="font-style: italic;">% plot all on the same figure</span><br></pre>
 which overlays a set of objects, as shown below with a chosen view
 angle.<br>
 <br>
 <div style="text-align: center;">
-<pre style="margin-left: 40px;"><a href="images/iData_plot_overlay.png"><img
- alt="iData_plot_overlay: plot([array])"
- title="iData_plot_overlay: plot([array])"
- src="images/iData_plot_overlay.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a> <a
- href="images/iData_plot_overlay_2D.png"><img
- alt="iData_plot_overlay_2D: plot([array])"
- title="iData_plot_overlay_2D: plot([array])"
- src="images/iData_plot_overlay_2D.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a></pre>
+<pre style="margin-left: 40px;"><a href="images/iData_plot_overlay.png"><img alt="iData_plot_overlay: plot([array])" title="iData_plot_overlay: plot([array])" src="images/iData_plot_overlay.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a> <a href="images/iData_plot_overlay_2D.png"><img alt="iData_plot_overlay_2D: plot([array])" title="iData_plot_overlay_2D: plot([array])" src="images/iData_plot_overlay_2D.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a></pre>
 <div style="text-align: left;">
 <div style="text-align: center;"><span style="font-style: italic;">Plot
 overlay</span>: plot([ array ]):
@@ -680,69 +451,38 @@ A common way to plot a set of 1D curves which depend on a parameter is
 to plot them side by side (waterfall style), so as to form a surface.
 Let us build an
 array of 1D objects and assign it an additional axis.<br>
-<pre style="margin-left: 40px;">&gt;&gt; x=-pi:0.01:pi; a=<span
- style="color: rgb(51, 102, 255);">iData</span>(x,x); <br>&gt;&gt; a.Error=0;                         <span
- style="font-style: italic;">% replace default Error=sqrt(Signal) by no-error.</span><br>&gt;&gt; b=<span
- style="color: rgb(51, 102, 255);">sin</span>(a); c=<span
- style="color: rgb(51, 102, 255);">cos</span>(a); d=<span
- style="color: rgb(51, 102, 255);">exp</span>(-a.*a);  <span
- style="font-style: italic;">% create new objects by applying operator on the initial linear one</span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; x=-pi:0.01:pi; a=<span style="color: rgb(51, 102, 255);">iData</span>(x,x); <br>&gt;&gt; a.Error=0;                         <span style="font-style: italic;">% replace default Error=sqrt(Signal) by no-error.</span><br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">sin</span>(a); c=<span style="color: rgb(51, 102, 255);">cos</span>(a); d=<span style="color: rgb(51, 102, 255);">exp</span>(-a.*a);  <span style="font-style: italic;">% create new objects by applying operator on the initial linear one</span></pre>
 The objects we have defined are 1D objects. In order to have them
 appear in a 2D coordinate frame, one way is to simply assign a new axis
 to each object, and then display them as a surface:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a{2}=1; b{2}=1.5; c{2}=3; d{2}=5;  <span
- style="font-style: italic;">% assign a new 2D axis single value to each 1D objects</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>([a b c d],<span
- style="color: rgb(204, 51, 204);">'surf'</span>);            <span
- style="font-style: italic;">% plot all as a set of lines side by side</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">waterfall</span>([a b c d])               % same as above<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">surf</span>([a b c d]</pre>
+<pre style="margin-left: 40px;">&gt;&gt; a{2}=1; b{2}=1.5; c{2}=3; d{2}=5;  <span style="font-style: italic;">% assign a new 2D axis single value to each 1D objects</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([a b c d],<span style="color: rgb(204, 51, 204);">'surf'</span>);            <span style="font-style: italic;">% plot all as a set of lines side by side</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">waterfall</span>([a b c d])               % same as above<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">surf</span>([a b c d]</pre>
 If the X axis (rank 2) has not been defined, the index of the objects
 in the array is used. The surf method<span style="font-style: italic;">
 'surf' </span>and<span style="font-style: italic;"> 'scatter3'</span>
 methods are here
 equivalen<span style="font-style: italic;">t (colored lines)</span>,
-whereas <span style="font-style: italic;">'plot3' </span>and <span
- style="font-style: italic;">'waterfall'</span> draw simple
+whereas <span style="font-style: italic;">'plot3' </span>and <span style="font-style: italic;">'waterfall'</span> draw simple
 lines.<br>
 <br>
 An other way to achieve a similar result is to assemble the 1D objects
 into a 2D object, and then define the new axis values:<br>
-<pre style="margin-left: 40px;">&gt;&gt; e=<span
- style="color: rgb(51, 102, 255);">cat</span>(2, [a b c d]);               <span
- style="font-style: italic;">% catenate 1D objects into a 2D object along 2nd axis </span><br>&gt;&gt; e{2} = [ 1 1.5 3 5 ];              <span
- style="font-style: italic;">% assign 2nd axis values in one go</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(e,<span
- style="color: rgb(204, 51, 204);">'mesh'</span>);                    <span
- style="font-style: italic;">% plot</span><br><span
- style="color: rgb(51, 102, 255);"></span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; e=<span style="color: rgb(51, 102, 255);">cat</span>(2, [a b c d]);               <span style="font-style: italic;">% catenate 1D objects into a 2D object along 2nd axis </span><br>&gt;&gt; e{2} = [ 1 1.5 3 5 ];              <span style="font-style: italic;">% assign 2nd axis values in one go</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(e,<span style="color: rgb(204, 51, 204);">'mesh'</span>);                    <span style="font-style: italic;">% plot</span><br><span style="color: rgb(51, 102, 255);"></span></pre>
 which has the advantage that the new axis is directly assigned to a
 vector, instead of independent single values.<br>
 <br>
-<div style="text-align: center;"><a
- href="images/iData_plot_sidebyside.png"><img
- alt="iData_plot_sidebyside: plot([ array_1D ], 'surf')"
- title="iData_plot_sidebyside: plot([ array_1D ], 'surf')"
- src="images/iData_plot_sidebyside.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>
-<a href="images/iData_plot_sidebyside_cat.png"><img
- alt="iData_plot_sidebyside_cat: plot(cat(2,[array]), 'mesh')"
- title="iData_plot_sidebyside_cat: plot(cat(2,[array]), 'mesh')"
- src="images/iData_plot_sidebyside_cat.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
+<div style="text-align: center;"><a href="images/iData_plot_sidebyside.png"><img alt="iData_plot_sidebyside: plot([ array_1D ], 'surf')" title="iData_plot_sidebyside: plot([ array_1D ], 'surf')" src="images/iData_plot_sidebyside.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a>
+<a href="images/iData_plot_sidebyside_cat.png"><img alt="iData_plot_sidebyside_cat: plot(cat(2,[array]), 'mesh')" title="iData_plot_sidebyside_cat: plot(cat(2,[array]), 'mesh')" src="images/iData_plot_sidebyside_cat.png" style="border: 0px solid ; width: 200px; height: 177px;" align="middle"></a><br>
 <span style="font-style: italic;">Plots side by side: left=separated
 plots, right=catenated objects</span><br>
 </div>
 </div>
 </div>
 <h3><a class="mozTocH3" name="mozTocId312282"></a>Plotting object
-array in a set of panes (subplot)</h3>
-<a href="images/iData_subplot.png"><img alt="iData subplot([ array ])"
- title="iData subplot([ array ])" src="images/iData_subplot.png"
- style="border: 0px solid ; width: 150px; height: 220px;" align="right"></a>In
+array in a set of panes (multiple-plots <span style="font-style: italic;">aka</span> subplot)</h3>
+<a href="images/iData_subplot.png"><img alt="iData subplot([ array ])" title="iData subplot([ array ])" src="images/iData_subplot.png" style="border: 0px solid ; width: 150px; height: 220px;" align="right"></a>In
 case
 one
-wish
+wishes
 to
 display
 a
@@ -765,23 +505,13 @@ the
 function
 can be used the same way as with the <a href="#mozTocId574560">overlay</a>
 method shown above.<br>
-<pre style="margin-left: 40px;">&gt;&gt; x=-pi:0.01:pi; a=<span
- style="color: rgb(51, 102, 255);">iData</span>(x,x); a.Error=0; <span
- style="font-style: italic;">% replace default Error=sqrt(Signal) by no-error.</span><br>&gt;&gt; b=<span
- style="color: rgb(51, 102, 255);">sin</span>(a); c=<span
- style="color: rgb(51, 102, 255);">cos</span>(a); d=<span
- style="color: rgb(51, 102, 255);">exp</span>(-a.*a);       <span
- style="font-style: italic;">% create new objects by applying operator on the initial linear one</span><br>&gt;&gt; e=<span
- style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(51, 102, 255);">flow</span>); f=<span
- style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(51, 102, 255);">peaks</span>);          <span
- style="font-style: italic;">% create 2D and 3D objects</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">subplot(</span>[a b c d e f]);                 <span
- style="font-style: italic;">% plot all into a set of separate frames</span><br></pre>
-The number of panes is automatically set to a sensible arrangement but
-can be set by hand by giving an additional<span
- style="font-style: italic;"> [m n] </span>vector of tile dimensions.<br>
+<pre style="margin-left: 40px;">&gt;&gt; x=-pi:0.01:pi; a=<span style="color: rgb(51, 102, 255);">iData</span>(x,x); a.Error=0; <span style="font-style: italic;">% replace default Error=sqrt(Signal) by no-error.</span><br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">sin</span>(a); c=<span style="color: rgb(51, 102, 255);">cos</span>(a); d=<span style="color: rgb(51, 102, 255);">exp</span>(-a.*a);       <span style="font-style: italic;">% create new objects by applying operator on the initial linear one</span><br>&gt;&gt; e=<span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">flow</span>); f=<span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks</span>);          <span style="font-style: italic;">% create 2D and 3D objects</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot(</span>[a b c d e f]);                 <span style="font-style: italic;">% plot all into a set of separate frames</span><br></pre>
+The number of tiles is automatically set to a sensible arrangement but
+can be set by hand by giving an additional<span style="font-style: italic;"> [m n] </span>vector of tile dimensions.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot(</span>[a b c d e f], [ 2 3 ]); </pre>
+Additional arguments can also be given to customize the type of plot rendering:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot(</span>[a b c d e f], <span style="color: rgb(204, 51, 204);">'mesh tight'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot(</span>[a b c d e f], [2 3], <span style="color: rgb(204, 51, 204);">'surf light'</span>); &nbsp;<br></pre>
+
 <h3><a class="mozTocH3" name="mozTocId307787"></a>Plotting projections
 and slices</h3>
 Portions of an object can equally be displayed with plot and subplot.<br>
@@ -791,83 +521,24 @@ camproj</span> and <span style="font-style: italic;">trapz</span> can
 be used to produce data projections. <br>
 <br>
 The <span style="font-style: italic;">sum</span> computes the raw
-serial sum of the signal along a given dimension. The <span
- style="font-style: italic;">trapz</span> trapezoidal integration
+serial sum of the signal along a given dimension. The <span style="font-style: italic;">trapz</span> trapezoidal integration
 computes the same, but takes additionally into account the axes values.
 Finally, the <span style="font-style: italic;">camproj</span> does the
 same as sum, but on all other axes than the one specified. In this
 respect, <span style="font-style: italic;">camproj</span> always
 produces a 1D vector which is the projection of the object on the
-selected dimension.<a href="images/iData_plot_projection.png"><img
- alt="iData_plot_projection: plot(trapz sum camproj)"
- title="iData_plot_projection: plot(trapz sum camproj)"
- src="images/iData_plot_projection.png"
- style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>
+selected dimension.<a href="images/iData_plot_projection.png"><img alt="iData_plot_projection: plot(trapz sum camproj)" title="iData_plot_projection: plot(trapz sum camproj)" src="images/iData_plot_projection.png" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>
 On a 2D object <span style="font-style: italic;">sum(a,1)</span> is
-the same as <span style="font-style: italic;">camproj(a,2)</span> and <span
- style="font-style: italic;">sum(a,2)</span> is <span
- style="font-style: italic;">camproj(a,1)</span>.<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span
- style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat'</span> ]);	<span
- style="font-style: italic;">% import data</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">setalias</span>(a, <span
- style="color: rgb(204, 51, 204);">'Angles'</span>, <span
- style="color: rgb(204, 51, 204);">'Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF_7(32:371)',</span><span
- style="color: rgb(204, 51, 204);">'Angle [deg]'<span
- style="color: rgb(0, 0, 0);"></span></span>);<br>&gt;&gt; a{1} = <span
- style="color: rgb(204, 51, 204);">'Angles'</span>;<span
- style="color: rgb(204, 51, 204);"><span style="color: rgb(0, 0, 0);">	</span></span><span
- style="font-style: italic;">% define the angular axis</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">xlabel</span>(a,<span
- style="color: rgb(204, 51, 204);">'Time channel'</span>);<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">setalias</span>(a, <span
- style="color: rgb(204, 51, 204);">'</span><span
- style="color: rgb(204, 51, 204);">Wavelength</span><span
- style="color: rgb(204, 51, 204);">'</span>,<span
- style="color: rgb(204, 51, 204);">'Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFF_10(21)'</span>,<span
- style="color: rgb(204, 51, 204);">'Neutron wavelength [Angs]'</span>);<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">setalias</span>(a, <span
- style="color: rgb(204, 51, 204);">'</span><span
- style="color: rgb(204, 51, 204);">ElasticChannel</span><span
- style="color: rgb(204, 51, 204);">'</span>,<span
- style="color: rgb(204, 51, 204);">'Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFF_10(9)'</span>,<span
- style="color: rgb(204, 51, 204);">'Elastic channel position [ch]'</span>);<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">setalias</span>(a, <span
- style="color: rgb(204, 51, 204);">'</span><span
- style="color: rgb(204, 51, 204);">ChannelW</span><span
- style="color: rgb(204, 51, 204);">idth'</span>,<span
- style="color: rgb(204, 51, 204);">'Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFF_10(18)'</span>,<span
- style="color: rgb(204, 51, 204);">'Channel time width [um]'</span>);<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">setalias</span>(a, <span
- style="color: rgb(204, 51, 204);">'LSD</span><span
- style="color: rgb(204, 51, 204);">'</span>,<span
- style="color: rgb(204, 51, 204);">'Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFF_10(27)'</span>,'<span
- style="color: rgb(204, 51, 204);">Sample-Detector Distance [m]'</span>);<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">subplot<span
- style="color: rgb(0, 0, 0);">([ <span style="color: rgb(51, 102, 255);">log</span>(a) <span
- style="color: rgb(51, 102, 255);">sum</span>(a) <span
- style="color: rgb(51, 102, 255);">trapz</span>(a) <span
- style="color: rgb(51, 102, 255);">camproj</span>(a) ],<span
- style="color: rgb(204, 51, 204);">'axis tight'</span>)</span></span>;<br></pre>
+the same as <span style="font-style: italic;">camproj(a,2)</span> and <span style="font-style: italic;">sum(a,2)</span> is <span style="font-style: italic;">camproj(a,1)</span>.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat'</span> ]);	<span style="font-style: italic;">% import data</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a, <span style="color: rgb(204, 51, 204);">'Angles'</span>, <span style="color: rgb(204, 51, 204);">'Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF_7(32:371)',</span><span style="color: rgb(204, 51, 204);">'Angle [deg]'<span style="color: rgb(0, 0, 0);"></span></span>);<br>&gt;&gt; a{1} = <span style="color: rgb(204, 51, 204);">'Angles'</span>;<span style="color: rgb(204, 51, 204);"><span style="color: rgb(0, 0, 0);">	</span></span><span style="font-style: italic;">% define the angular axis</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlabel</span>(a,<span style="color: rgb(204, 51, 204);">'Time channel'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a, <span style="color: rgb(204, 51, 204);">'</span><span style="color: rgb(204, 51, 204);">Wavelength</span><span style="color: rgb(204, 51, 204);">'</span>,<span style="color: rgb(204, 51, 204);">'Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFF_10(21)'</span>,<span style="color: rgb(204, 51, 204);">'Neutron wavelength [Angs]'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a, <span style="color: rgb(204, 51, 204);">'</span><span style="color: rgb(204, 51, 204);">ElasticChannel</span><span style="color: rgb(204, 51, 204);">'</span>,<span style="color: rgb(204, 51, 204);">'Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFF_10(9)'</span>,<span style="color: rgb(204, 51, 204);">'Elastic channel position [ch]'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a, <span style="color: rgb(204, 51, 204);">'</span><span style="color: rgb(204, 51, 204);">ChannelW</span><span style="color: rgb(204, 51, 204);">idth'</span>,<span style="color: rgb(204, 51, 204);">'Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFF_10(18)'</span>,<span style="color: rgb(204, 51, 204);">'Channel time width [um]'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a, <span style="color: rgb(204, 51, 204);">'LSD</span><span style="color: rgb(204, 51, 204);">'</span>,<span style="color: rgb(204, 51, 204);">'Data.FFFFFFFFFFFFFFFFFFFFFFFFFFFFF_10(27)'</span>,'<span style="color: rgb(204, 51, 204);">Sample-Detector Distance [m]'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot<span style="color: rgb(0, 0, 0);">([ <span style="color: rgb(51, 102, 255);">log</span>(a) <span style="color: rgb(51, 102, 255);">sum</span>(a) <span style="color: rgb(51, 102, 255);">trapz</span>(a) <span style="color: rgb(51, 102, 255);">camproj</span>(a) ],<span style="color: rgb(204, 51, 204);">'axis tight'</span>)</span></span>;<br></pre>
 <h4><a class="mozTocH4" name="mozTocId633428"></a>Plotting slices</h4>
 Data slices and subsets can be obtained by selecting subspaces from
 their
-corresponding indexes.<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span
- style="color: rgb(51, 102, 255);">iData</span>(<span
- style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat'</span> ]); <br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">plot</span>(a(:,622));                   <span
- style="font-style: italic;">% extract the object made from channel 622 on second axis, with all columns</span><br></pre>
-The <a href="http://www.mathworks.com/matlabcentral/fileexchange/764"><span
- style="font-weight: bold;">sliceomatic</span></a> viewer is
-displayed for 3D objects with<a href="images/Sliceomatic.png"><img
- alt="Sliceomatic: slice(a)" title="Sliceomatic: slice(a)"
- src="images/Sliceomatic.png"
- style="border: 0px solid ; width: 200px; height: 188px;" align="right"></a><br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span
- style="color: rgb(51, 102, 255);">iData</span>(flow);<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">slice</span>(a)</pre>
+corresponding indices.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat'</span> ]); <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a(:,622));                   <span style="font-style: italic;">% extract the object made from channel 622 on second axis, with all columns</span><br></pre>
+The <a href="http://www.mathworks.com/matlabcentral/fileexchange/764"><span style="font-weight: bold;">sliceomatic</span></a> viewer is
+displayed for 3D objects with<a href="images/Sliceomatic.png"><img alt="Sliceomatic: slice(a)" title="Sliceomatic: slice(a)" src="images/Sliceomatic.png" style="border: 0px solid ; width: 200px; height: 188px;" align="right"></a><br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(flow);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">slice</span>(a)</pre>
 <h3><a class="mozTocH3" name="mozTocId633772"></a>Setting plot options:
 title, axes labels, axes limits</h3>
 Even though it is possible to set the labels on a Matlab figure with
@@ -877,67 +548,34 @@ that further plots show it. It is also possible to extract portions of
 an object by specifying the axes limits.<br>
 <h4><a class="mozTocH4" name="mozTocId10534"></a>Setting labels, title</h4>
 To set the Signal label, use<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">title</span>(a, <span
- style="color: rgb(204, 51, 204);">'a new Signal label'</span>)</pre>
-which is different from the object title <span
- style="font-style: italic;">a.Title</span> which holds the name of the
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">title</span>(a, <span style="color: rgb(204, 51, 204);">'a new Signal label'</span>)</pre>
+which is different from the object title <span style="font-style: italic;">a.Title</span> which holds the name of the
 whole data set, independently of the assigned Signal in the Data. Also,
-the object may be assigned a global label <span
- style="font-style: italic;">a.Label</span> which may be used e.g. to
+the object may be assigned a global label <span style="font-style: italic;">a.Label</span> which may be used e.g. to
 store object categories (background, calibration, with sample, ...). <br>
 The Signal label can be obtained with<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">title</span>(a)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">label</span>(a,0)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">label</span>(a,<span
- style="color: rgb(204, 51, 204);">'Signal'</span>)<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">title</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a,0)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a,<span style="color: rgb(204, 51, 204);">'Signal'</span>)<br></pre>
 Similarly, the axes can be assigned labels with<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">xlabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'a new X axis label'</span>);              <span
- style="font-style: italic;">% second axis (columns)</span> ,or 1st axis for 1D objects<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">ylabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'a new Y axis label'</span>);              <span
- style="font-style: italic;">% first axis (rows)</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">zlabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'a new Z axis label'</span>);              <span
- style="font-style: italic;">% third axis</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">clabel</span>(a, <span
- style="color: rgb(204, 51, 204);">'a new C axis label'</span>);              <span
- style="font-style: italic;">% fourth axis</span><br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">label</span>(a, rank, <span
- style="color: rgb(204, 51, 204);">'a new axis label for rank'</span>);  <span
- style="font-style: italic;">% any axis of given rank=1, 2, 3, ..., 0 for signal</span><br></pre>
-All of these will be shown upon call to <span
- style="font-style: italic;">plot(a)</span>. The values can be obtained
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">xlabel</span>(a, <span style="color: rgb(204, 51, 204);">'a new X axis label'</span>);              <span style="font-style: italic;">% second axis (columns)</span> ,or 1st axis for 1D objects<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ylabel</span>(a, <span style="color: rgb(204, 51, 204);">'a new Y axis label'</span>);              <span style="font-style: italic;">% first axis (rows)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">zlabel</span>(a, <span style="color: rgb(204, 51, 204);">'a new Z axis label'</span>);              <span style="font-style: italic;">% third axis</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">clabel</span>(a, <span style="color: rgb(204, 51, 204);">'a new C axis label'</span>);              <span style="font-style: italic;">% fourth axis</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a, rank, <span style="color: rgb(204, 51, 204);">'a new axis label for rank'</span>);  <span style="font-style: italic;">% any axis of given rank=1, 2, 3, ..., 0 for signal</span><br></pre>
+All of these will be shown upon call to <span style="font-style: italic;">plot(a)</span>. The values can be obtained
 with e.g<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">xlabel</span>(a)<br>&gt;&gt; <span
- style="color: rgb(51, 102, 255);">label</span>(a, rank)<br>&gt;&gt; ...<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">xlabel</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">label</span>(a, rank)<br>&gt;&gt; ...<br></pre>
 <h4><a class="mozTocH4" name="mozTocId556359"></a>Setting axes limits</h4>
 It is possible to select a subregion of an object by specifying limits
 among the axes. The resulting object does not hold the outer limits
 data anymore.<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">xlim</span>(a,[xmin xmax])</pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(a,[xmin xmax])</pre>
 and similar functions <span style="font-style: italic;">ylim, zlim,
 clim</span>. Keep in mind that 'X' is along the second axis rank, and
 'Y' is along the first.<br>
 In order to only affect the view, we rather recommend to use the
-standard Matlab commands xlim([xmin xmax]) and similar <span
- style="font-style: italic;">ylim, zlim</span> and <span
- style="font-style: italic;">clim</span>.<br>
-<h3><a class="mozTocH3" name="mozTocId553050"></a><span
- style="font-weight: bold;">Exporting plots as figures and
+standard Matlab commands xlim([xmin xmax]) and similar <span style="font-style: italic;">ylim, zlim</span> and <span style="font-style: italic;">clim</span>.<br>
+<h3><a class="mozTocH3" name="mozTocId553050"></a><span style="font-weight: bold;">Exporting plots as figures and
 images</span></h3>
-The figures can be exported from their <span
- style="font-style: italic;">File/Save as</span> menu item. However, it
+The figures can be exported from their <span style="font-style: italic;">File/Save as</span> menu item. However, it
 is possible to automate the export process by directly calling <br>
-<pre style="margin-left: 40px;">&gt;&gt; <span
- style="color: rgb(51, 102, 255);">saveas</span>(a, filename, format)</pre>
-where format may be <span style="font-style: italic;">jpg, png, pdf</span>,<span
- style="font-style: italic;"> HDF</span>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a, filename, format)</pre>
+where format may be <span style="font-style: italic;">jpg, png, pdf</span>,<span style="font-style: italic;"> HDF</span>
 ...
 All
 formats
@@ -951,21 +589,16 @@ iData objects</h3>
 As seen in the <a href="Load.html">Load</a> documentation page, the
 iData method can be used with graphical object including figure and
 axis handle arguments.<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span
- style="color: rgb(51, 102, 255);">iData</span>(gcf);</pre>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(gcf);</pre>
 <br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData plotting - </span><span style="font-style: italic;">
-$Date: 2011-09-06 17:11:55 $ $Revision: 1.19 $
+$Date: 2012-01-17 15:33:51 $ $Revision: 1.20 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
-Page </a><a href="http://www.ill.eu/"><img
- title="ILL, Grenoble, France &lt;www.ill.eu&gt;"
- src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;"
- style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
+Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
-</body>
-</html>
+</body></html>
