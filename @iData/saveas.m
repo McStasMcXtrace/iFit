@@ -39,7 +39,7 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
@@ -76,8 +76,8 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.eps', 'Encapsulated PostScrip (color, *.eps)'; ...
       '*.ps',  'PostScrip (color, *.ps)'; ...
       '*.nc;*.cdf',  'NetCDF (*.nc, *.cdf)'; ...
-      '*.hdf5;*.h5','Hierarchical Data Format 5 (*.hdf5, *.h5, *.nx)'; ...
-      '*.hdf;*.hdf4', 'Hierarchical Data Format 4 image (*.hdf)'; ...
+      '*.hdf;*.hdf5;*.h5','Hierarchical Data Format 5 (*.hdf5, *.h5, *.hdf)'; ...
+      '*.hdf4;*.h4', 'Hierarchical Data Format 4 image (*.hdf4)'; ...
       '*.xls', 'Excel format (requires Excel to be installed, *.xls)'; ...
       '*.csv', 'Comma Separated Values (suitable for Excel, *.csv)'; ...
       '*.png', 'Portable Network Graphics image (*.png)'; ...
@@ -146,7 +146,7 @@ if isempty(ext) & ~isempty(format),
 elseif isempty(format) & ~isempty(ext)
   format = ext(2:end);
 elseif isempty(format) & isempty(ext) 
-  format='m'; filename = [ filename '.m' ];
+  format='mat'; filename = [ filename '.mat' ];
 end
 
 % handle some format aliases (after extension extraction from file name)
@@ -159,8 +159,8 @@ case 'ps'
   format='psc';
 case 'netcdf'
   format='cdf';
-case 'hdf4'
-  format='hdf';
+case 'hdf'
+  format='hdf5';
 end
 
 % ==============================================================================
@@ -227,7 +227,7 @@ case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
 case 'csv'  % Spreadsheet comma separated values file format
   csvwrite(filename, double(a));
-case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf'}  % bitmap images
+case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4'}  % bitmap images
   if ndims(a) == 2 
     b=getaxis(a,0); % Signal/Monitor
     if abs(log10(size(b,1)) - log10(size(b,2))) > 1
