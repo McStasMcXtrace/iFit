@@ -18,4 +18,4 @@
 # peaks.hdf5: a surface stored as an HDF5 file [binary, HDF5]
 # SQW_coh_lGe.nc: the coherent dynamic structure factor obtained from ab-initio molecular dynamics (VASP) and analysed with nMoldyn [binary, NetCDF]
 # IRS21360_graphite002_ipg.nxs: an ISIS/IRIS high resolution TOF spectrometer (NeXus file from the Mantid Project) [binary, HDF5/NeXus with compression]
-
+# cyno_atlas.4dint.hdr and cyno_atlas.4dint.img: Tomographic monkey brain data - Volume dataset in Analyze format
