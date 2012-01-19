@@ -15,7 +15,7 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
 %
 % References: Slavic, NIM 112 (1973) 253 ; M. Morhac, NIM A 600 (2009) 478 
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/median, iData/mean, iData/std
 
 % inline functions: BaseLine, PeakWidth
@@ -59,6 +59,9 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
   Gpm = circshift(signal,  1); Gpm(1) = 0; 
   % a Max is such that Gmm < signal & Gpm < signal
   index = find(Gmm < signal & Gpm < signal & sigma > 4*min(diff(new_x)) & signal-baseline > 0.2*signal);
+  if isempty(index)
+    index = find( Gmm <= signal & Gpm <= signal & sigma > 4*min(diff(new_x)) );
+  end
   
   position  = new_x(index);
   amplitude = signal(index);

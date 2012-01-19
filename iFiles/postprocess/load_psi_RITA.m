@@ -3,7 +3,7 @@ function a=load_psi_RITA(a0)
 %
 % Returns an iData style dataset from a PSI RITA2 file (HDF5)
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -76,6 +76,9 @@ b{1}=index_axis;  % scan axis
 b{2}=transpose(ones(size(m,1),1)*(1:9)); % blade/window axis
 label(b, 2, 'Window index');
 b.Label = [ 'Windows ' b.Label ];
+
+label(a, 1,'Pixels index X'); label(a, 2,'Pixels index Y');
+if ndims(a) == 3, label(a, 3, 'Scan step'); end
 
 a = [ a b ];
 
