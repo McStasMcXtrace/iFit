@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.33 $
+% Version: $Revision: 1.34 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -91,13 +91,20 @@ else  % convert input argument into object
     index = length(varargin);
     d = iData(varargin{index});  % last argument is the Signal
     % handle axes
-      for k1=1:(index-1)
-        % in plotting convention, X=2nd, Y=1st axis
-        if     k1 <= 2 & ndims(d) >= 2, k2 = 3-k1; 
-        else   k2 = k1; end
-        set(d,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
-        setaxis(d, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
-      end
+    for k1=1:(index-1)
+      % in plotting convention, X=2nd, Y=1st axis
+      if     k1 <= 2 & ndims(d) >= 2, k2 = 3-k1; 
+      else   k2 = k1; end
+      set(d,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
+      setaxis(d, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
+    end
+    % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 in Signal
+    if ndims(d)>=2 && isvector(getaxis(d, 1)) && isvector(getaxis(d, 2)) ...
+                && length(getaxis(d, 1)) == size(get(d,'Signal'),2) ...
+                && length(getaxis(d, 2)) == size(get(d,'Signal'),1)
+      s=get(d,'Signal'); set(d, 'Signal', s');
+      disp([ 'iData: The Signal has been transposed to match the axes orientation in object ' d.Tag ' "' d.Title '".' ]);
+    end
       
     outarray = [ outarray d ];
     return
@@ -256,6 +263,22 @@ function b=iData_struct2iData(a)
 %  else
 %    disp(['iData: warning: could not import all fields from structure.' ]);
   end
+  % case of importation from an iFunc model structure
+  if isfield(a, 'Type') && strcmp(a.Type,'iFit fitting function')
+    if ~isempty(a.Guess)
+      try
+      b.Data.Parameters=cell2struct(num2cell(a.Guess), a.Parameters, 2);
+      setalias(b, 'Parameters', 'Data.Parameters',[ a.function ' model parameters' ]);
+      end
+    end
+    setalias(b, 'Signal', 'Data.Values');
+    set(b, 'Error', 0);
+    title(b, a.function);
+    for index=1:length(a.Axes)
+      setaxis(b, index, [ 'Data.Axes{' num2str(index) '}' ]);
+      b.Title=a.Name;
+    end
+  end
   if isempty(b.Command), b.Command= cellstr('iData(<struct>)'); end
   
 % ============================================================================
@@ -379,6 +402,15 @@ elseif isempty(getalias(in, 'Signal'))
     end
   end
 end
+% check in case the x,y axes have been reversed for dim>=2, then swap 1:2 in Signal
+if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
+            && isvector(getaxis(in, 1)) && isvector(getaxis(in, 2)) ...
+            && length(getaxis(in, 1)) == size(get(in,'Signal'),2) ...
+            && length(getaxis(in, 2)) == size(get(in,'Signal'),1)
+  s=get(in,'Signal'); set(in, 'Signal', s');
+  disp([ 'iData: The Signal has been transposed to match the axes orientation in object ' in.Tag ' "' in.Title '".' ]);
+end
+    
 % check aliases (valid ?) by calling setalias(in)
 in = setalias(in);
 % check axis (valid ?) by calling setaxis(in)

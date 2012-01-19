@@ -77,7 +77,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.36 $
+% Version: $Revision: 1.37 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -231,7 +231,9 @@ try
 catch
   [dummy, info] = ieval(a, model,'identify'); % model info 
 end
-if isempty(pars)
+if isstruct(pars)
+  pars=cell2mat(struct2cell(pars));
+elseif isempty(pars)
   pars=info.Guess;               % get default starting parameters
 end
 if isnumeric(constraints) | islogical(constraints)
