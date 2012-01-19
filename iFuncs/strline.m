@@ -3,7 +3,7 @@ function y=strline(p, x, y)
 %
 %   iFunc/strline Straight line fitting function
 %     y=p(2)+p(1)*x;
-%     The Gradient parameter is the slope of the straight line.
+%     The p(1)=Gradient parameter is the slope of the straight line.
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
@@ -15,7 +15,7 @@ function y=strline(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=strline([1 1], -10:10); or y=strline('identify') or p=strline('guess',x,y);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, ifitmakefunc
 
 % 1D function template:

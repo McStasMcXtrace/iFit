@@ -8,7 +8,7 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %       a model is built from the expression analysis.
 %         ifitmakefunc(EXPR)
 %     when only the first two arguments are specified as an expression (using p 
-%       and x,y,z,t) and a constraints a model is built from the expression analysis.
+%       and x,y,z,t) and a constraints, a model is built from the expression analysis.
 %         ifitmakefunc(EXPR, CONSTRAINT)
 %     when only the first argument is specified as a structure, it should define fields
 %       fun.function:    the function name (used for definition and file storage)
@@ -20,6 +20,8 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %     to make the new function permanent, copy it into [ ifitpath '/iFuncs' ]
 %     The list of all available function can be obtained with the 'fits(iData)' 
 %
+% WARNING: the 1D and 2D cases work fine, but higher dimensions (using z,t...) are NOT validated.
+%
 % input:  FUN:     function name or expression (single word or expression or structure)
 %         DESCR:   description of the function (string)
 %         PARS:    name of parameters, as a single string of words 'a b c ...'
@@ -28,9 +30,9 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %         CONSTRAINT: expression to execute before the function evaluation
 %           which may contain any parameter constraints such as 'p(1)=p(5)'
 %
-% output: fhandle: function handle to the new function, which is also stored locally
+% output: fhandle: function handle to the new function, which is also stored locally as a file.
 % 
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, gauss
 
 fhandle = [];
@@ -97,7 +99,7 @@ else
                   [ '{\bf Description of the fit model}' NL '(a character string, optional)' ], ...
                   [ '{\bf Model parameters names}' NL '(single names separated by spaces, optional)' ], ...
                   [ '{\bf Value of the function {\color{red} required}}' NL '(expression using parameters from vector {\color{blue} p(1), p(2)}, ... and axes {\color{blue} x, y, z, t}, ...)' ], ...
-                  [ '{\bf Default parameter values}' NL '(vector,  e.g [1 2 ...], leave empty to use automatic guess)' ], ...
+                  [ '{\bf Default parameter values}' NL '(vector,  e.g [1 2 ...], leave empty for automatic guess)' ], ...
                   [ '{\bf Constraint}' NL '(any expresion executed before the function Value, optional)' ]};
     dlg_title = 'iFit: Make fit function';
     num_lines = [ 1 1 1 3 1 3]';
@@ -130,30 +132,42 @@ nb_pars             = 0;
 dim                 = 0;
 
 % default parameter names
-if findstr(defPars, 'auto'), defPars = ''; end
+if strncmp(defPars, 'auto',4), defPars = ''; end
 
 if ~isempty(expr)
+  % first count the initial p(n) fields and get the used indices
   % compute the number of parameters and corresponding parameter names
-  nb_pars = findstr(expr, 'p('); % guess may be wrong when matching e.g. 'exp('...
-  % we look if this is really a p(n) syntax
-  n = [];
-  for index=1:length(nb_pars)
-    if nb_pars(index)>2 && isstrprop(expr(nb_pars(index)-1),'alpha'), 
-      continue; 
+  % regexp: p(...) with '[0-9:]' characters inside
+  nb_pars = regexp(expr,'\<p\(([\[0-9\:\]]+)\)','tokens'); % return the tokens
+  if ~isempty(nb_pars), 
+    % assemble all matches
+    n = '';
+    for index=1:length(nb_pars)
+      this = nb_pars{index};
+      n = [ n this{1}  ' ' ];
     end
-    token          = expr((nb_pars(index)+2):end);
-    closing_parent = strfind(token, ')');
-    if isempty(closing_parent), closing_parent=length(token)+1; end
-    try
-      s = eval(token(1:(closing_parent-1)));
-    catch
-      s=[];
-    end
-    if length(s) >= 1 ... 
-      n=[n s]; 
-    end
+    nb_pars = unique(str2num([ '[' n ']' ]));
+    used_pars=zeros(1,max(nb_pars));
+    used_pars(nb_pars) = 1;
+  else
+    used_pars=[];
   end
-  if ~isempty(n), nb_pars = max(n);
+  % first convert a,b,c,d...s into p(1) p(2) ...
+  % regexp: single letters starting words
+  letters = regexp(expr,'\<([a-oqrsA-Z][^a-zA-Z]|\<([a-oqrsA-Z]\>)'); % position of single letters
+  for index=1:length(letters)
+    % find a 'free' parameter slot
+    free_par = find(used_pars==0);
+    if isempty(free_par), free_par=length(used_pars)+1; else free_par=free_par(1); end
+    replace = [ 'p(' num2str(free_par) ')' ];
+    used_pars(free_par)=1;
+    nb_pars(free_par) = free_par;
+    expr    = strrep(expr, expr(letters(index)), replace);
+    letters = letters+length(replace)-1; % account for the change in length
+  end
+  
+  if ~isempty(nb_pars), 
+    nb_pars = max(nb_pars);
   else nb_pars=0; end
   if ~isempty(pars)
     % check if the number of parameters used in the expression matches the parameter names
@@ -242,10 +256,14 @@ end
 % ============================ CREATE model ====================================
 
 % load template from [ fileparts(which(mfilename)) filesep 'private' filespe 'template.txt' ]
+if dim==1
 template = fullfile(fileparts(which(mfilename)), 'private', 'template.txt');
+else
+template = fullfile(fileparts(which(mfilename)), 'private', 'template2d.txt');
+end
 [fid, message] = fopen(template);
 if fid == -1
-  error(sprintf('Can not open %s for reading\n  %s\n', template, message));
+  error(sprintf('%s: Can not open %s for reading\n  %s\n', mfilename, template, message));
 end
 
 % read file contents as a string
@@ -260,12 +278,19 @@ fclose(fid);
 template = strrep(template, '$FUN',   fun);
 template = strrep(template, '$DESCR', descr);
 template = strrep(template, '$PARS',  pars);
+% replace expression in the header only (no constraints)
+template = strrep(template, '$EXPRDESCR',  [ '  signal = ' expr ]); 
 if ~isempty(constraint)
-  template = strrep(template, '$EXPR',  [ constraint ';' NL '  signal = ' expr ]);
+  c='';
+  for index=1:size(constraint, 1)
+    c=[ c constraint(index,:) ';' NL ];
+  end
+  constraint = c;
+  template = strrep(template, '$EXPR',  [ constraint '  signal = ' expr ]);
 else
   template = strrep(template, '$EXPR',  [ '  signal = ' expr ]);
 end
-whos dim
+
 template = strrep(template, '$DIM',   num2str(dim));
 ax = '';
 if dim>=1, ax = [ ax   'x' ]; end
@@ -277,7 +302,7 @@ template = strrep(template, '$AXES',  ax);
 if ~isempty(defPars)
   template = strrep(template, '$DEFPARS', num2str(defPars));
 else
-  template = strrep(template, '$DEFPARS', 'iFuncs_private_guess(x(:), signal(:), info.Parameters)');
+  template = strrep(template, '$DEFPARS', 'iFuncs_private_guess(info.Axes, signal, info.Parameters)');
 end
 
 
@@ -308,16 +333,20 @@ fwrite(fid, template, 'char');
 fclose(fid);
 
 % display information and force to rehash/register the function
-fprintf(1, [ '%s: Wrote function signal=%s(p, %s)\n'...
+fprintf(1, [ '%s: Wrote the ' num2str(dim) 'D model as (schematically):\nfunction signal=%s(p, %s)\n'...
   '%% %s\n%% %d parameter(s): %s\n' ], ...
   mfilename, fun, ax, descr, nb_pars, ...
   pars);
 if ~isempty(constraint)
-  fprintf(1, '  %s;\n', constraint);
+  fprintf(1, '%s\n', constraint);
 end
 % display information and force to rehash/register the function
-fprintf(1, '  signal=%s;\n\nStored in: %s\n', expr, which([ fun '.m' ]));
-
+fprintf(1, 'signal=%s;\n\nStored in: %s\n', expr, which([ fun '.m' ]));
+if dim > 2
+  fprintf(1, ['WARNING: the written function is to be tuned.\n' ...
+              '         Only 1D ans 2D functions are fully functional.\n' ...
+              'Edit the file %s and fix it.\n' ], which([ fun '.m' ]));
+end
 % create the handle
 fhandle = str2func(fun);
 

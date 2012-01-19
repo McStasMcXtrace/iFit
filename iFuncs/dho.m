@@ -1,7 +1,8 @@
 function y=dho(p, x, y)
 % y = dho(p, x, [y]) : Damped harmonic oscillator
 %
-%   iFunc/dho Damped harmonic oscillator fitting function, including Bose factor
+%   iFunc/dho Damped harmonic oscillator fitting function, including Bose factor.
+%     y=p(1)*p(3)* x(i) *p(2)^2.*(1+1./(exp(abs(x)/p(5))-1))./((x(i).^2-p(2)^2).^2+(p(3)*x(i)).^2)
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
@@ -13,7 +14,7 @@ function y=dho(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=dho([1 0 1 1], -10:10); or y=dho('identify') or p=dho('guess',x,y);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
