@@ -2,6 +2,8 @@ function y=triangl(p, x, y)
 % y = triangl(p, x, [y]) : Triangular
 %
 %   iFunc/triangl Triangular fitting function
+%     y=(p(3)-sign(x-p(2)).*(x-p(2)))/p(3)^2;
+%     and y is set to the background outside the full width.
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
@@ -13,7 +15,7 @@ function y=triangl(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=triangl([1 0 1 1], -10:10); or y=triangl('identify') or p=triangl('guess',x,y);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, ifitmakefunc
 
 % 1D function template:

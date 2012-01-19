@@ -2,6 +2,7 @@ function y=dirac(p, x, y)
 % y = dirac(p, x, [y]) : Dirac
 %
 %   iFunc/dirac Dirac fitting function
+%      y(x==p(2)) = p(1)
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
@@ -13,7 +14,7 @@ function y=dirac(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=dirac([1 0 1 1], -10:10); or y=dirac('identify') or p=dirac('guess',x,y);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, ifitmakefunc
 
 % 1D function template:

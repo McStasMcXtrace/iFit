@@ -12,7 +12,7 @@ function [sigma, position, amplitude, baseline] = iFuncs_private_findpeaks(signa
 %         amplitude:  amplitude of peaks (scalar/array)
 %         baseline:   baseline (background) (iData)
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 
 % inline functions: BaseLine, PeakWidth
 
@@ -24,9 +24,11 @@ function [sigma, position, amplitude, baseline] = iFuncs_private_findpeaks(signa
   end
 
   % we first compute projection of signal on the selected dimension
-  for index=ndims(signal):1
-    if index~= dim
-      signal= trapz(signal, index);
+  if ~isvector(signal)
+    for index=ndims(signal):1
+      if index~= dim
+        signal= trapz(signal, index);
+      end
     end
   end
 
@@ -42,7 +44,10 @@ function [sigma, position, amplitude, baseline] = iFuncs_private_findpeaks(signa
   % a Max is such that Gmm < signal & Gpm < signal
   index = find(Gmm < signal & Gpm < signal & sigma > 4 & signal-baseline > 0.2*signal);
   if isempty(index)
-    index = find(Gmm < signal & Gpm < signal);
+    index = find(Gmm <= signal & Gpm <= signal & sigma > 1);
+  end
+  if isempty(index)
+    index = find(Gmm <= signal & Gpm <= signal);
   end
   
   position  = index;
