@@ -9,7 +9,7 @@ function v = isvector(s)
 % output: b: object or array (iData)
 % ex:     b=isvector(a);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
 %          iData/isnumeric, iData/islogical, iData/isscalar, 
@@ -32,7 +32,8 @@ else
   if v == 1 & length(getaxis(s)) > 1
     is_vector = 1;
     for ia=1:length(getaxis(s))
-      if length(getaxis(s,ia)) ~= 1 && length(getaxis(s,ia)) ~= length(double(s))
+      x = getaxis(s,ia);
+      if length(x) ~= 1 && length(x) ~= length(double(s))
         is_vector=0;
         break;
       end
