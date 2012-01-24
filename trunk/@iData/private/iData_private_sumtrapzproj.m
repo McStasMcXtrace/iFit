@@ -9,7 +9,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
@@ -67,7 +67,7 @@ if all(dim > 0)
   case 'sum' % SUM =============================================================
     % sum on all dimensions requested
     for index=1:length(dim(:))
-      if numel(e) > 1, e = sum(s+e/2, dim(index))-sum(s-e/2, dim(index)); end
+      if numel(e) > 1, e = sum(e, dim(index)); end
       if numel(m) > 1, m = sum(m, dim(index)); end
       s = sum(s, dim(index)); 
     end
@@ -97,7 +97,7 @@ if all(dim > 0)
         m = permute(m, perm);
       end
       % make the integration
-      if numel(e) > 1, e = trapz(x, s+e/2)-trapz(x, s-e/2); end
+      if numel(e) > 1, e = trapz(x, e); end
       if numel(m) > 1, m = trapz(x, m); end
       s = trapz(x, s);
       if dim(index) ~= 1  % restore initial axes
@@ -114,7 +114,7 @@ if all(dim > 0)
     % accumulates on all axes except the rank specified
     for index=1:ndims(a)
       if index~=dim, 
-        if numel(e) > 1, e = trapz(s+e/2, index)-sum(s-e/2, index); end
+        if numel(e) > 1, e = sum(e, index); end
         if numel(m) > 1, m = sum(m, index); end
         s = trapz(s, index); 
       end
