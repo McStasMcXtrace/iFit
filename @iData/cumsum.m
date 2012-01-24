@@ -9,7 +9,7 @@ function b = cumsum(a,dim)
 % output: s: accumulated sum of elements (iData)
 % ex:     c=cumsum(a);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumprod
 
 % handle input iData arrays
@@ -27,7 +27,7 @@ if isa(a, 'iData') & length(a(:)) > 1
 end
 cmd = a.Command;
 b = copyobj(a);
-[sn, sl] = getaxis(a, '0');
+[sn, sl] = getaxis(a, 'Signal');
 if nargin == 1
   dim=1;
 elseif nargin ~= 2
@@ -38,7 +38,7 @@ e = iData_private_cleannaninf(get(a,'Error'));
 m = iData_private_cleannaninf(get(a,'Monitor'));
 
 b = setalias(b, 'Signal',   cumsum(s,dim), [ 'cumsum(' sl ','  num2str(dim) ')' ]);
-b = setalias(b, 'Error',    cumsum(e,dim), [ 'cumsum(Error,'   num2str(dim) ')' ]);
+b = setalias(b, 'Error',    cumsum(s+e/2, dim)-cumsum(s-e/2, dim), [ 'cumsum(Error,'  num2str(dim) ')' ]);
 b = setalias(b, 'Monitor',  cumsum(m,dim), [ 'cumsum(Monitor,' num2str(dim) ')' ]);
 b.Command=cmd;
 b = iData_private_history(b, mfilename, a, dim);  

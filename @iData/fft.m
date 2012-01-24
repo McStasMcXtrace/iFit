@@ -14,7 +14,7 @@ function b = fft(a, op, dim)
 %         a=iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+2*randn(size(t)));
 %         c=fft(a); plot(abs(c));
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/ifft, iData/conv, FFT, IFFT
 
 if nargin <= 1, op = ''; end
@@ -42,8 +42,8 @@ for i=1:length(Ly)
   NFFT(i)=pow2(nextpow2(Ly(i)));
 end
 % compute the FFT
-s = getaxis(a, 'Signal'); % Signal/Monitor
-e = get(    a, 'Error');
+s = get(a, 'Signal');
+e = get(a, 'Error');
 
 % Fast Fourier transform (pads with zeros up to the next power of 2)
 if length(dim), dim=dim(1); end
@@ -63,15 +63,15 @@ end
 if any(abs(e))
   if strcmp(op, 'fft')
     if dim ==0
-      E=fftn(e, NFFT)*prod(Ly);
+      E=(fftn(s+e/2, NFFT)-fftn(s-e/2, NFFT))*prod(Ly);
     else
-      E=fft(e, NFFT(dim), dim)/Ly(dim);
+      E=(fft(s+e/2, NFFT(dim), dim)-fft(s-e/2, NFFT(dim), dim))/Ly(dim);
     end
   else
     if dim ==0
-      E=ifftn(e, NFFT)*prod(Ly);
+      E=(ifftn(s+e/2, NFFT)-ifftn(s-e/2, NFFT))*prod(Ly);
     else
-      E=ifft(e, NFFT(dim), dim)/Ly(dim);
+      E=(ifft(s+e/2, NFFT(dim), dim)-ifft(s-e/2, NFFT(dim), dim))/Ly(dim);
     end
   end
 else

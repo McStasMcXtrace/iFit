@@ -5,10 +5,11 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 %
 % input:  a: object or array (iData/array of)
 %         dim: dimension to accumulate (int/array of)
+%         op: 'sum','trapz','camproj','prod'
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
@@ -66,9 +67,20 @@ if all(dim > 0)
   case 'sum' % SUM =============================================================
     % sum on all dimensions requested
     for index=1:length(dim(:))
-      s = sum(s, dim(index)); 
-      if numel(e) > 1, e = sum(e, dim(index)); e = sqrt(e.*e); end
+      if numel(e) > 1, e = sum(s+e/2, dim(index))-sum(s-e/2, dim(index)); end
       if numel(m) > 1, m = sum(m, dim(index)); end
+      s = sum(s, dim(index)); 
+    end
+    % Store Signal
+    s=squeeze(s); e=squeeze(e); m=squeeze(m);
+    setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
+    
+  case 'prod' % PROD ===========================================================
+    % product on all dimensions requested
+    for index=1:length(dim(:))
+      if numel(e) > 1, e = prod(s+e/2, dim(index))-prod(s-e/2, dim(index)); end
+      if numel(m) > 1, m = prod(m, dim(index)); end
+      s = prod(s, dim(index)); 
     end
     % Store Signal
     s=squeeze(s); e=squeeze(e); m=squeeze(m);
@@ -85,9 +97,9 @@ if all(dim > 0)
         m = permute(m, perm);
       end
       % make the integration
-      s = trapz(x, s);
-      if numel(e) > 1, e = trapz(x, e); e = sqrt(e.*e); end
+      if numel(e) > 1, e = trapz(x, s+e/2)-trapz(x, s-e/2); end
       if numel(m) > 1, m = trapz(x, m); end
+      s = trapz(x, s);
       if dim(index) ~= 1  % restore initial axes
         s = permute(s,perm);
         e = permute(e,perm);
@@ -102,9 +114,9 @@ if all(dim > 0)
     % accumulates on all axes except the rank specified
     for index=1:ndims(a)
       if index~=dim, 
-        s = trapz(s, index); 
-        if numel(e) > 1, e = sum(e, index); e = sqrt(e.*e); end
+        if numel(e) > 1, e = trapz(s+e/2, index)-sum(s-e/2, index); end
         if numel(m) > 1, m = sum(m, index); end
+        s = trapz(s, index); 
       end
     end
     % Store Signal
@@ -115,7 +127,7 @@ if all(dim > 0)
 	% store new object
 	b = set(b, 'Error', abs(e), 'Monitor', m);
 	switch op
-	case {'sum','trapz'}
+	case {'sum','trapz','prod'}
     % put back initial axes, except those integrated
     ax_index=1;
     for index=1:ndims(a)

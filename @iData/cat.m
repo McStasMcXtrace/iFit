@@ -10,7 +10,7 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 if nargin == 1 & isa(dim, 'iData') & length(dim) >= 1 % syntax: cat([a])
   s = cat(1, dim);
@@ -42,8 +42,9 @@ iData_private_warning('enter', mfilename);
 c_axis = iData_private_caxis(a,'union');
 % use common axes on all axes except dim
 for index=1:length(a)
-	if length(getaxis(a(index), dim)) == 1 || length(getaxis(a(index), dim)) == length(a)
-		c_axis{dim} = getaxis(a(index), dim); % restore initial 'dim' axis from object. Others are the common axes.
+  x = getaxis(a(index), dim);
+	if length(x) == 1 || length(x) == length(a)
+		c_axis{dim} = x; % restore initial 'dim' axis from object. Others are the common axes.
 	end
 	a(index) = interp(a(index), c_axis);
 end

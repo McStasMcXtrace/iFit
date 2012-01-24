@@ -53,18 +53,24 @@ if strcmp(op, 'sparse')
     m = double(m);
   end
 end
-if strcmp(op, 'norm') && not(all(m == 0))
+
+if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log','log10','sqrt','tan'}))) ...
+   && not(all(m(:) == 0 | m(:) == 1))
   s = genop(@rdivide, s, m);
+  e = genop(@rdivide, e, m);
 end
-new_s = feval(op, s);
+
+% non-linear operators should perform on the Signal/Monitor
+% and then multiply again by the Monitor
+new_s = feval(op, s); % new Signal value is set HERE <==========================
 
 switch op
 case 'acos'
-	e = -e./sqrt(1-s*s);
+	e = -e./sqrt(1-s.*s);
 case 'asin'
-	e = e./sqrt(1-s*s);
+	e = e./sqrt(1-s.*s);
 case 'atan'
-	e = e./(1+s*s);
+	e = e./(1+s.*s);
 case 'cos'
 	e = -e.*sin(s);
 case 'exp'
@@ -77,7 +83,7 @@ case 'sin'
 	e = e.*cos(s);
 case 'sqrt'
 	e = e./(2*sqrt(s));
-    m = m.^0.5;
+  m = m.^0.5;
 case 'tan'
 	c = cos(s);
 	e = e./(c.*c);
@@ -100,12 +106,13 @@ case {'floor','ceil','round'}
 	% apply same operator on error
 	e = feval(op, e);
 case 'del2'
-  s = 2*ndims(a);
-  e = feval(op, e)*2*ndims(a);
+  new_s = new_s*2*ndims(a);
+  e = 2*ndims(a)*(del2(s+e/2) - del2(s-e/2));
 case {'sign','isfinite','isnan','isinf'}
-	% error should become zero (logical)
-	e = zeros(size(s));
-case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical','double','single','logical','find','norm'}
+	b = new_s;
+	return
+case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger', ...
+      'islogical','double','single','logical','find','norm'}
 	% result is a single value
 	b = new_s;
 	iData_private_warning('exit',mfilename);
@@ -114,6 +121,12 @@ case {'uminus','abs','real','imag','uplus','not'}
 	% retain error, do nothing
 otherwise
   iData_private_error('unary',['Can not apply operation ' op ' on object ' a.Tag ]);
+end
+
+if ~isempty(find(strcmp(op, {'asin', 'acos','atan','cos','sin','exp','log','log10','sqrt','tan'}))) ...
+   && not(all(m(:) == 0 | m(:) == 1))
+  new_s = genop(@times, new_s, m);
+  e     = genop(@times, e, m);
 end
 
 % update object

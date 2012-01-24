@@ -8,11 +8,11 @@ function a = isinterger(a)
 % output: b: object or array (iData)
 % ex:     b=isinterger(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
 %          iData/isnumeric, iData/islogical, iData/isscalar, 
 %          iData/isvector, iData/issparse
 
-a = iData_private_unary(a, 'isinterger');
+a = iData_private_unary(a, 'isinteger');
 a = uint8(a);
