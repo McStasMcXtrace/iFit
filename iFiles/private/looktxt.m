@@ -30,7 +30,7 @@
 % Usual options are: --fast --fortran --binary --force --catenate --comment=NULL
 % List of all options can be obtained using: looktxt --help
 %
-% looktxt  version 1.1 $Revision: 1.1 $ (24 Sept 2009) by Farhi E. [farhi@ill.fr]
+% looktxt  version 1.1 $Revision: 1.2 $ (24 Sept 2009) by Farhi E. [farhi@ill.fr]
 
 % if we come there, that's because the mex file is not compiled.
 % we first try to install it, and if it fails, we go for the CC version
@@ -68,11 +68,11 @@ if exist('mex') && exist('texmex.c')
   catch
     if ispc
       % assume we use LCC
-      exec=['mex -v -output ' looktxtpath filesep 'looktxt ' looktxtmex ' -L"' fullfile(matlabroot,'sys','lcc','lib') '" -lcrtdll' ];
+      exec=['mex -O -v -output ' looktxtpath filesep 'looktxt ' looktxtmex ' -L"' fullfile(matlabroot,'sys','lcc','lib') '" -lcrtdll' ];
       disp(exec);
       eval(exec);
     else
-      error('Installation failed. Check your C compiler installation');
+      error([ mfilename ': Installation failed. Check your C compiler installation.' ]);
     end
   end
   rehash
