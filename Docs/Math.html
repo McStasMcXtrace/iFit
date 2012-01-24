@@ -4,6 +4,11 @@
 
 
 
+
+
+
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Math operators</title>
 </head><body>
@@ -85,7 +90,18 @@ binary operators to determine intersection of <span style="font-style: italic;">
 objects is automatically performed when the <span style="font-style: italic;">Axes</span> sampling do not match.</li>
 </ul>
 <h3><a class="mozTocH3" name="mozTocId566959"></a>Unary operators</h3>
-All unary operators apply on a single object, element-by-element.<br>
+All unary operators apply on a single object, element-by-element. The <span style="font-style: italic;">Error</span> for an operator <span style="font-style: italic;">f</span> is usually is <span style="font-style: italic;"><br>
+<br>
+</span>
+<div style="margin-left: 40px;"><span style="font-style: italic;">new Error = Error.f'(Signal)</span>. <br>
+<br>
+</div>
+In the cases where the Error can not be determined analytically, and approximation is obtained using<br>
+<br>
+<div style="margin-left: 40px;"><span style="font-style: italic;">new Error = f(Signal + &frac12;Error) - f(Signal - </span><span style="font-style: italic;">&frac12;Error</span><span style="font-style: italic;">)</span>.<br>
+</div>
+<br>
+<span style="color: rgb(255, 0, 0);">Warning:</span> all the operators work on<span style="font-style: italic;"></span> the <span style="font-style: italic;">Signal/Monitor</span> and <span style="font-style: italic;">Error/Monitor</span>.<br>
 <br>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
@@ -120,7 +136,7 @@ Monitor<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">cos</span><sup>-1</sup>(Signal)<br>
       </td>
-      <td style="vertical-align: top;">-Error/(&#8730;(1-Signal&sup2;))<br>
+      <td style="vertical-align: top;">Error/(&#8730;(1-Signal&sup2;))<br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
@@ -336,7 +352,7 @@ Monitor<br>
       </td>
       <td style="vertical-align: top;">FFT(Signal)<br>
       </td>
-      <td style="vertical-align: top;">FFT(Error)<span style="font-style: italic;"> (this may be inappropriate)</span><br>
+      <td style="vertical-align: top;">FFT(Error)<span style="font-style: italic;"></span><br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
@@ -346,8 +362,7 @@ Monitor<br>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">ifft</span></td>
       <td style="vertical-align: top;">FFT<sup>-1</sup>(Signal)</td>
-      <td style="vertical-align: top;">FFT<sup>-1</sup>(Error)<span style="font-style: italic;"> (</span><span style="font-style: italic;">this
-may be inappropriate</span><span style="font-style: italic;">)</span></td>
+      <td style="vertical-align: top;">FFT<sup>-1</sup>(Error)<span style="font-style: italic;"></span></td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;">inverse Fourier transform</td>
@@ -377,8 +392,7 @@ may be inappropriate</span><span style="font-style: italic;">)</span></td>
       <td style="vertical-align: top;"><span style="font-weight: bold;">diff</span><br>
       </td>
       <td style="vertical-align: top;">&#8711;<sub>1</sub>(Signal)</td>
-      <td style="vertical-align: top;"><br>
-      </td>
+      <td style="vertical-align: top;">&#8711;<sub>1</sub>(Error)</td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;">Gradient on 1st axis (rows)<br>
@@ -398,7 +412,7 @@ may be inappropriate</span><span style="font-style: italic;">)</span></td>
       <td style="vertical-align: top;"><span style="font-weight: bold;">prod</span><br>
       </td>
       <td style="vertical-align: top;">&#8719;(Signal)</td>
-      <td style="vertical-align: top;">&#8719;(Error)</td>
+      <td style="vertical-align: top;">&#8719;(Signal+Error/2)-&#8719;(Signal-Error/2)</td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;">Product of the Signal elements</td>
@@ -412,7 +426,18 @@ may be inappropriate</span><span style="font-style: italic;">)</span></td>
       </td>
       <td style="vertical-align: top;">Trapezoidal integration<br>
       </td>
+    </tr><tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">cumsum</span><br>
+      </td>
+      <td style="vertical-align: top;">&#8747;<sub>0</sub><sup>x</sup>(Signal)</td>
+      <td style="vertical-align: top;">&#8747;<sub>0</sub><sup>x</sup>(Error)
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;">Primitive<br>
+      </td>
     </tr>
+
   </tbody>
 </table>
 <br>
@@ -1152,7 +1177,7 @@ Signal, Error, and Monitor values are also re-ordered accordingly.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2012-01-13 13:46:16 $ $Revision: 1.22 $
+$Date: 2012-01-24 15:50:44 $ $Revision: 1.23 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

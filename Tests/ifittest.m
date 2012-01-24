@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -291,11 +291,30 @@ case 'iFiles_3'
 case 'Math_1_unary'
   a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);
   b = [ log(a) floor(a) sqrt(a) ];
-  result = 'OK  log floor sqrt';
+  op = {'asin', 'acos','atan','cos','sin','exp','log','log10','sqrt','tan','transpose',...
+    'ctranspose', 'sparse','full', 'floor','ceil','round',...
+    'del2',...
+    'sign','isfinite','isnan','isinf',...
+    'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical',...
+    'uminus','abs','real','imag','uplus','not',...
+    'flipud','fliplr'};
+  result = 'OK  log floor sqrt cos ...';
+  failed = '';
+  for index=1:length(op)
+    try
+      feval(op{index}, a);
+    catch
+      failed = [ failed ' ' op{index} ];
+    end
+  end
+  if length(failed)
+    result = [ 'FAILED ' failed ];
+  end
 case 'Math_2_binary'
    a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);
    b = iData([ ifitpath 'Data/ILL_IN20.dat' ]); 
    set(a,'Monitor', mean(b.Monitor)/10);
+   c=a.*b; c=a./b; c=a.^b;
    c = a+b;
    subplot([ log(a) b log(c) ] ,'tight');
    result = 'OK  plus';
