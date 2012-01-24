@@ -12,7 +12,7 @@ function b = gradient(a, dim)
 % ex:     a=iData(peaks);
 %         g=gradient(a); subplot([ a g(1) g(2) ]);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/diff, iData/del2, diff, gradient, iData/jacobian
 
 if nargin <= 1,
@@ -39,12 +39,15 @@ s = get(a, 'Signal'); % Signal
 e = get(a, 'Error');
 [dummy, sl] = getaxis(a, '0');
 
-gs = cell(1,ndims(a));
+gs = cell(1,ndims(a)); ge=gs; gm=gs;
 [gs{:}]=gradient(s);
 if any(abs(e))
-  ge = gs;
-  [ge{:}]=gradient(e);
-else ge = cell(sise(gs)); 
+  [ge{:}] = gradient(s+e/2);
+  [gm{:}] = gradient(s-e/2);
+  for index=1:length(ge)
+    ge{index} = ge{index} - gm{index};
+  end
+else ge = 0; 
 end
 
 % create returned object(s): one per dimension (axes)
@@ -62,7 +65,7 @@ for i=1:ndims(s)
   if dim && index ~= dim, continue; end
   g.Command=cmd;
   g = iData_private_history(g, mfilename, a, index);
-  g = set(g, 'Signal', gs{index}, 'Error', ge{index});
+  g = set(g, 'Signal', gs{index}, 'Error', ge);
   g = setalias(g, 'Signal', gs{index}, [  mfilename '(' sl ',' num2str(index) ')' ]);
   b = [ b g ];
 end

@@ -27,7 +27,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid','nan');
 %
-% Version: $Revision: 1.29 $
+% Version: $Revision: 1.30 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -215,7 +215,7 @@ if ~isempty(i_error),
     % keep that as  a constant  value
   else
     % else get the value
-    i_error  =get(a,'Error');
+    i_error  = get(a,'Error');
   end
   i_error    = double(i_error);
 end

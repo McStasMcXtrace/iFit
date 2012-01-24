@@ -9,7 +9,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -236,6 +236,7 @@ function this = iData_setalias(this, alias, val)
   link      = this.Alias.Values{alias_num};  % definition/value of the Alias
   
   % handle URL content (possibly with # anchor)
+  if ischar(link)
   if  (strncmp(link, 'http://', length('http://'))  || ...
        strncmp(link, 'https://',length('https://')) || ...
        strncmp(link, 'ftp://',  length('ftp://'))   || ...
@@ -244,6 +245,7 @@ function this = iData_setalias(this, alias, val)
     iData_private_warning(mfilename, sprintf('can not assign external Property "%s"="%s" in object %s. Ignoring.', ...
       fieldname, link, this.Tag ));
     return
+  end
   end
   
   updated = 0;
