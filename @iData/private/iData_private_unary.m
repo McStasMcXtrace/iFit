@@ -1,9 +1,8 @@
 function b = iData_private_unary(a, op)
 % iData_private_unary: handles unary operations
 %
-% 'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical'
-% 'asin', 'acos','atan','cos',sin','exp','log','log10','sqrt','tan','transpose'
-% 'ctranspose', 'sparse','full', 'floor','ceil','round','sign','isfinite','isnan','isinf'
+% 'asin', 'acos','atan','cos','sin','exp','log','log10','sqrt','tan','transpose'
+% 'ctranspose', 'sparse','full', 'floor','ceil','round'
 % 'del2'
 % 'sign','isfinite','isnan','isinf'
 % 'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical'
@@ -107,7 +106,7 @@ case {'floor','ceil','round'}
 	e = feval(op, e);
 case 'del2'
   new_s = new_s*2*ndims(a);
-  e = 2*ndims(a)*(del2(s+e/2) - del2(s-e/2));
+  e = 2*ndims(a)*del2(e);
 case {'sign','isfinite','isnan','isinf'}
 	b = new_s;
 	return
