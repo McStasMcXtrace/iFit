@@ -77,7 +77,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.37 $
+% Version: $Revision: 1.38 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -307,7 +307,7 @@ end
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
   disp([ sprintf('\n') '** Ending fit of ' a.Tag ' using model ' info.Name ' with optimizer ' options.algorithm ]);
-  fprintf(1, '   %i iterations. Status: %s\n', output.funcCount, output.message);
+  fprintf(1, '   %i iterations. Criteria=%g Status: %s\n', output.funcCount, sum(criteria(:)), output.message);
   for index=1:length(info.Parameters); fprintf(1,'%10s ', info.Parameters{index}); end; fprintf(1,'\n');
   fprintf(1,'%10.2g ', pars_out); fprintf(1,'\n');
   index=find(output.criteriaHistory < min(output.criteriaHistory)*4);   % identify tolerance region around optimum
@@ -384,7 +384,7 @@ function c=least_absolute(Signal, Error, Model)
     index = find(Error == 0);
     Error(index) = minError;
     index = find(isfinite(Error) & isfinite(Model) & isfinite(Signal));
-    if isempty(index), c=0;
+    if isempty(index), c=Inf;
     else               c=abs((Signal(index)-Model(index))./Error(index));
     end
   end
