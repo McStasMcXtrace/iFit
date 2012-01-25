@@ -82,12 +82,16 @@ function [xf, S, nfJ,exitflag] = LMFsolve(varargin)
 % Fletcher, R., (1971): A Modified Marquardt Subroutine for Nonlinear Least
 % Squares. Rpt. AERE-R 6799, Harwell
 
-% M. Balda, 
-% Institute of Thermomechanics, 
-% Academy of Sciences of The Czech Republic,
+% Miroslav Balda, 
 % balda AT cdm DOT cas DOT cz
-% 2007-07-02
-% 2007-10-08    formal changes, improved description
+% 2007-07-02    v 1.0
+% 2008-12-22    v 1.1 * Changed name of the function in LMFsolv
+%                     * Removed part with wrong code for use of analytical 
+%                       form for assembling of Jacobian matrix
+% 2009-01-08    v 1.2 * Changed subfunction printit.m for better one, and
+%                       modified its calling from inside LMFsolve.
+%                     * Repaired a bug, which caused an inclination to
+%                       istability, in charge of slower convergence.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %   OPTIONS
@@ -168,7 +172,7 @@ end
 x=xc(:);
 lx=length(x);
 
-r=feval(FUN,x);             % Residuals at starting point
+r=sqrt(feval(FUN,x));             % Residuals at starting point
 if length(r) == 1, r=r*ones(5,1)/5; 
 else r=r(:); end
 %~~~~~~~~~~~~~~
@@ -209,7 +213,7 @@ while exitflag==0      %   MAIN ITERATION CYCLE
     d=(A+l*D)\v;            % negative solution increment
     end
     xd=x-d;
-    rd=feval(FUN,xd); 
+    rd=sqrt(feval(FUN,xd)); 
     if length(rd) == 1, rd=rd*ones(5,1)/5; 
     else rd=rd(:); end
     nfJ = nfJ+1;
@@ -269,7 +273,7 @@ function J = finjac(FUN,r,x,epsx)
       dx=.25*epsx(k);
       xd=x;
       xd(k)=xd(k)+dx;
-      rd=feval(FUN,xd); 
+      rd=sqrt(feval(FUN,xd)); 
       if length(rd) == 1, rd=rd*ones(5,1)/5; 
       else rd=rd(:); end
   %   ~~~~~~~~~~~~~~~~    
