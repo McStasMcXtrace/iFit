@@ -19,6 +19,7 @@
 
 
 
+
   <title>iFit: Importing data (iData/load)</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -242,6 +243,7 @@ to
 demonstrate
 the functionalities of the package.<br>
 <ul>
+
   <li><a href="../Data/ILL_D10.dat"><span style="font-weight: bold;">ILL_D10.dat</span></a>: some <a href="http://www.ill.eu/d10">D10</a>
 neutron diffractometer measurement at the ILL [text]
   </li>
@@ -281,12 +283,15 @@ neutron triple-axis diffractometer at the ILL [text]</li>
   <li><a href="../Data/SQW_coh_lGe.nc"><span style="font-weight: bold;">SQW_coh_lGe.nc</span></a>: the coherent dynamic structure factor obtained from<span style="font-style: italic;"> ab-initio</span> molecular dynamics (<a href="http://cms.mpi.univie.ac.at/vasp/">VASP</a>) and analyzed with <a href="https://forge.ill.fr/projects/nmoldyn">nMoldyn</a> [binary, NetCDF]</li>
   <li><a href="../Data/IRS21360_graphite002_ipg.nxs"><span style="font-weight: bold;">IRS21360_graphite002_ipg.nxs</span></a>: an <a href="http://www.isis.stfc.ac.uk/instruments/iris/">ISIS/IRIS</a> high resolution TOF spectrometer (<a href="http://nexusformat.org/">NeXus</a> file from  the <a href="mantidproject.org">Mantid Project</a>) [binary, HDF5/NeXus with compression]</li>
   <li><a style="font-weight: bold;" href="../Data/peg268.csv">peg268.csv</a>: an example Comma Separated values files from Excel [text].</li>
-  <li><a style="font-weight: bold;" href="../Data/YIG_4A_corr_vana_spectre.inx">YIG_4A_corr_vana_spectre.inx</a>: an INX example file obtained from <a href="http://www.ill.eu/in5">IN5</a> tof at the ILL [text].</li>
-
-
-
-
+  <li><a style="font-weight: bold;" href="../Data/YIG_4A_corr_vana_spectre.inx">YIG_4A_corr_vana_spectre.inx</a>: an INX example file obtained from <a href="http://www.ill.eu/in5">IN5</a> tof at the ILL [text, INX].</li>
+  <li><a href="../Data/cyno_atlas.4dint.hdr">cyno_atlas.4dint.hdr</a> and <a href="../Data/cyno_atlas.4dint.img">cyno_atlas.4dint.img</a>: Tomographic monkey brain data - Volume dataset in Analyze format. Open the<span style="font-style: italic;"> 'hdr' </span>file. See <a href="http://www.mathworks.com/matlabcentral/fileexchange/3760">ReadAnalyze</a>&nbsp; [binary]</li>
+  <li><a href="../Data/insulin_pilatus6mconverted_orig.cbf">insulin_pilatus6mconverted_orig.cbf</a>: a CBF insulin small angle scattering pattern, e.g. from<a href="http://www.psi.ch/sls/csaxs/software"> cSAXS@SLS</a> [binary, CBF]</li>
+  <li><a href="../Data/rita22010n021140.hdf">rita22010n021140.hdf</a>: a <a href="http://spectroscopy.web.psi.ch/rita2/">RITA2@PSI</a> data file [binary, HDF5/NeXus with compression]</li>
+  <li><a href="../Data/PDBSilk.pdb">PDBSilk.pdb</a>: an example PDB file [text, PDB]</li>
+  <li><a href="../Data/nano_50K_4.8a_03_h4.hdf">nano_50K_4.8a_03_h4.hdf</a>: an inelastic scattering example from <a href="http://www.ill.eu/in5">IN5</a> tof at the ILL [binary, HDF4/NeXus with compression]</li>
+  <li><a href="../Data/Diff_BananaTheta_1314088587.th">Diff_BananaTheta_1314088587.th</a> and <a href="../Data/Diff_BananaPSD_1314088587.th_y">Diff_BananaPSD_1314088587.th_y</a>: example <a href="http://www.mcstas.org">McStas</a> simulation result files [text, McStas]</li>
 </ul>
+
 All of these can be directly accessed with e.g.<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; b = </span>iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data' filesep <span style="color: rgb(0, 0, 0);">filename</span> ]</span>);<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data'<span style="color: rgb(0, 0, 0);"></span> ]</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(a, <span style="color: rgb(204, 51, 204);">'tight'</span>)<br></pre>
 The empty iData object &#8709; can be obtained from:<br>
@@ -418,7 +423,7 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a href="../iFiles/doc/lookt
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span style="font-style: italic;">
-$Date: 2012-01-24 16:29:12 $ $Revision: 1.24 $
+$Date: 2012-01-25 11:02:26 $ $Revision: 1.25 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
