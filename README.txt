@@ -29,7 +29,8 @@ of it. Expect occasional failures and bugs. However, I try my best to make the
 software efficient and reliable. 
 
 ** Requirements:
-Matlab (any version from 6.x), possibly a C compiler for the looktxt MeX.
+Matlab (any version from 6.x), possibly a C compiler for the looktxt  and the
+cbf_uncompress MeX.
 
 ** Installation:
 Copy the library directories where-ever you want or in MALTAB/toolbox/local:

@@ -1,7 +1,7 @@
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.1 $  $Date: 2012-01-24 16:29:13 $
+% $Revision: 1.2 $  $Date: 2012-01-25 11:02:26 $
 % $Author: farhi $
 % $Tag: $
 %
@@ -29,7 +29,7 @@
 % May 9th 2008, Oliver Bunk: 1st version
 %
 
-% example CBF ata files at <http://www.bernstein-plus-sons.com/software/CBF/>
+% example CBF at files at <http://www.bernstein-plus-sons.com/software/CBF/>
 % original Matlab source code from SLS/cSAXS <http://www.psi.ch/sls/csaxs/software>
 
 function [frame,vararg_remain] = cbfread(filename,varargin)
@@ -318,7 +318,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.1 $  $Date: 2012-01-24 16:29:13 $
+% $Revision: 1.2 $  $Date: 2012-01-25 11:02:26 $
 % $Author: farhi $
 % $Tag: $
 %
@@ -393,7 +393,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.1 $  $Date: 2012-01-24 16:29:13 $
+% $Revision: 1.2 $  $Date: 2012-01-25 11:02:26 $
 % $Author: farhi $
 % $Tag: $
 %
@@ -567,7 +567,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.1 $  $Date: 2012-01-24 16:29:13 $
+% $Revision: 1.2 $  $Date: 2012-01-25 11:02:26 $
 % $Author: farhi $
 % $Tag: $
 %
