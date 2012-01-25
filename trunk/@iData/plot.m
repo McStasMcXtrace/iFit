@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.77 $
+% Version: $Revision: 1.78 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -542,7 +542,7 @@ for index=0:length(getaxis(a))
 end
 % menu About iFit
 uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', 'Callback', ...
-  [ 'msgbox(''' version(iData)  sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
+  [ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 % attach contexual menu to plot with UserData storage
 ud.properties=properties;
 ud.xlabel = xlab;
@@ -615,8 +615,8 @@ if ~usejava('jvm')
     uimenu(uicm, 'Label', 'Rotate', 'Callback','rotate3d on');
   end
 end
-uimenu(uicm, 'Separator','on','Label', 'About iData', ...
-  'Callback',[ 'msgbox(''' version(iData) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
+uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', ...
+  'Callback',[ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 set(gca, 'UIContextMenu', uicm);
 set(gca, 'UserData', ud);
 

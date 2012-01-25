@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Changes</title>
@@ -10,9 +11,7 @@
 </h1>
 
 <br>
-<ol id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes</a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li></ol></li>
-</ol>
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes</a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId482415">Data set maximum size</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li></ol></li></ol>
 
 
 <hr style="width: 100%; height: 2px;">
@@ -55,7 +54,13 @@ import <span style="font-style: italic;">(August 26th 2011</span>)<br>
 which will test, in a few minutes, all the examples given in this documentation and report
 failures. The test may be aborted by closing the progress bar window.<br>
 <br>
-Please report bugs to  <a href="mailto:ifit-users@mccode.org">ifit-users@mccode.org</a> or to me <span style="font-weight: bold;">[farhi (at) ill.fr]</span>. You are encouraged to register to the <a href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users">ifit-users</a> list.</div>
+Please report bugs to  <a href="mailto:ifit-users@mccode.org">ifit-users@mccode.org</a> or to me <span style="font-weight: bold;">[farhi (at) ill.fr]</span>. You are encouraged to register to the <a href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users">ifit-users</a> list.<br>
+</div>
+<h4><a class="mozTocH4" name="mozTocId482415"></a>Data set maximum size</h4>
+The iFit package may currently handle routinely data sets up to few 100
+Mb. Larger data sets can still be loaded, but are restricted by the
+disk access and the available memory.<br>
+
 
 
 
@@ -102,7 +107,7 @@ Move <span style="font-style: italic;">iFit</span> to an other location which do
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Changes - </span><span style="font-style: italic;">
-$Date: 2012-01-13 13:46:15 $ $Revision: 1.16 $
+$Date: 2012-01-25 11:02:26 $ $Revision: 1.17 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
