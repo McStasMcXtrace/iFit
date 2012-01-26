@@ -13,7 +13,7 @@ function s=str2struct(string)
 % See also: mat2str, num2str, eval, sprintf, class2str
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.1 $
+% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.2 $
 
 s={};
 if nargin ==0, return; end
@@ -39,6 +39,10 @@ end
 for index=1:numel(cellstring)
   this = cellstring{index};
   [name, line] = strtok(this, sprintf('=: \t'));
+  if isempty(name), continue; end
+  if name(1)=='#' || name(1)=='%' || strncmp(name, '//', 2) || name(1) == '!'
+    continue; % skipp comment lines
+  end
   nextline = min(find(isstrprop(line, 'alphanum')));
   startline=line(1:nextline);
   nextline=max(find(startline == '=' | startline == ' ' | startline == ':'));
@@ -46,6 +50,8 @@ for index=1:numel(cellstring)
   line = line(nextline:end);
   [value, count, errmsg, nextindex] = sscanf(line, '%f');
   comment = strtrim(line(nextindex:end)); comment(~isstrprop(comment,'print')) = ' ';
+  name = strrep(name, '.', '_');
+  name = strrep(name, '-', '_');
   name = genvarname(name);
   if isempty(value), value=comment; end
   if ~isempty(value), s.(name) = value; end
