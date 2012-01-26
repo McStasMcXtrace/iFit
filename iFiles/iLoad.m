@@ -42,7 +42,7 @@ function [data, format] = iLoad(filename, loader)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.56 $
+% Version: $Revision: 1.57 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -153,6 +153,16 @@ url = false; % flag indicating that 'filename' is a temp file to be removed afte
 
 % handle single file name
 if ischar(filename) & length(filename) > 0
+  % handle ~ substitution for $HOME
+  if filename(1) == '~' && (length(filename==1) || filename(2) == '/' || filename(2) == '\')
+    filename(1) = '';
+    if usejava('jvm')
+      filename = [ char(java.lang.System.getProperty('user.home')) filename ];
+    elseif ~ispc  % does not work under Windows
+      filename = [ getenv('HOME') filename ];
+    end
+  end
+
   % local/distant file (general case)
   f=find(filename == '#');
   if length(f) == 1 && f > 1  % the filename contains an internal link (HTML anchor)
