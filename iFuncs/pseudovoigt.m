@@ -1,21 +1,20 @@
-function y=doseresp(p, x, y)
-% y = doseresp(p, x, [y]) : Dose-response curve with variable Hill slope
+function y=pseudovoigt(p, x, y)
+% y = pseudovoigt(p, x, [y]) : Pseudo Voigt
 %
-%   iFunc/doseresp Dose-response curve with variable Hill slope (sigmoid)
-%     y  = p(4)+ p(1) ./ (1+10.^((p(2)-x).*p(3)));
-%   This is a sigmoid S-shaped curve, aka logistic.
+%   iFunc/pseudovoigt Pseudo Voigt fitting function
+%     	y = a * (d * (1/(1+((x-b)/c)^2)) + (1-d) * exp(-0.5 * ((x-b)/c)^2)) 
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
-% input:  p: Dose Response model parameters (double)
-%            p = [ Amplitude Center Slope BackGround ]
+% input:  p: Pseudo Voigt model parameters (double)
+%            p = [ Amplitude Centre HalfWidth BackGround ]
 %          or action e.g. 'identify', 'guess', 'plot' (char)
 %         x: axis (double)
 %         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
-% ex:     y=doseresp([1 0 1 1], -10:10); or y=doseresp('identify') or p=doseresp('guess',x,y);
+% ex:     y=pseudovoigt([1 0 1 1], -10:10); or y=pseudovoigt('identify') or p=pseudovoigt('guess',x,y);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.1 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -39,7 +38,7 @@ function y=doseresp(p, x, y)
   %   identify: model([],x)
     y = identify; x=x(:);
     % HERE default parameters when only axes are given <<<<<<<<<<<<<<<<<<<<<<<<<
-    y.Guess  = [1 mean(x) 1/std(x) .1];
+    y.Guess  = [1 mean(x) std(x)/2 .1 0.5];
     y.Axes   = { x };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 1 && isnumeric(p) && ~isempty(p) 
@@ -50,7 +49,7 @@ function y=doseresp(p, x, y)
     y.Axes   =  { linspace(p(2)-3*p(3),p(2)+3*p(3), 100) };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 1 && ischar(p) && strcmp(p, 'plot') % only works for 1D
-    y = feval(mfilename, [], linspace(0,2, 100));
+    y = feval(mfilename, [], linspace(-2,2, 100));
     if y.Dimension == 1
       plot(y.Axes{1}, y.Values);
     elseif y.Dimension == 2
@@ -58,7 +57,7 @@ function y=doseresp(p, x, y)
     end
     title(mfilename);
   elseif nargin == 0
-    y = feval(mfilename, [], linspace(0,2, 100));
+    y = feval(mfilename, [], linspace(-2,2, 100));
   else
     y = identify;
   end
@@ -73,7 +72,8 @@ function y = evaluate(p, x)
   if isempty(x) | isempty(p), y=[]; return; end
   
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  y  = p(4)+ p(1) ./ (1+10.^((p(2)-x).*p(3)));
+  y = (x-p(2))/p(3); y=y.^2;
+  y = p(1) * (p(5) * (1./(1+y)) + (1-p(5)) * exp(-0.5 * y));
   
   y = reshape(y, sx);
 end
@@ -81,10 +81,10 @@ end
 % inline: identify: return a structure which identifies the model
 function y =identify()
   % HERE are the parameter names
-  parameter_names = {'Amplitude','Center','Slope','Background'};
+  parameter_names = {'Amplitude','Centre','HalfWidth','Background','LorentzianRatio'};
   %
   y.Type           = 'iFit fitting function';
-  y.Name           = [ 'Dose-response (sigmoid) (1D) [' mfilename ']' ];
+  y.Name           = [ 'Pseudo Voigt (1D) [' mfilename ']' ];
   y.Parameters     = parameter_names;
   y.Dimension      = 1;         % dimensionality of input space (axes) and result
   y.Guess          = [];        % default parameters
@@ -98,7 +98,16 @@ function info=guess(x,y)
   info       = identify;  % create identification structure
   info.Axes  = { x };
   % fill guessed information
-  info.Guess = [ max(y)-min(y) mean(x) (max(y)-min(y))/std(x) min(y) ];
+  info.Guess = iFuncs_private_guess(x(:), y(:), info.Parameters);
+  % compute first and second moment
+  x = x(:); y=y(:);
+  sum_y = sum(y);
+  % first moment (mean)
+  f = sum(y.*x)/sum_y; % mean value
+  % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
+  s = sqrt(abs(sum(x.*x.*y)/sum_y - f*f));
+  info.Guess(2:3) = [ f s ]; info.Guess(5)= 0.5;
+  
   info.Values= evaluate(info.Guess, info.Axes{:});
 end
 
