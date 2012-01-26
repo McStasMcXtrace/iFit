@@ -143,17 +143,19 @@ function config = iLoad_ini
     Analyze.options     ='';
     Analyze.method      ='ReadAnalyze';
     Analyze.postprocess ='load_analyze';
-    Analyze.extension   ='hdr';
+    Analyze.extension   ={'hdr','img'};
     
     CBF.name            ='Crystallographic Binary File';
     CBF.extension       ='cbf';
     CBF.method          ='cbfread';
+    CBF.postprocess     ='load_cbf';
     CBF.patterns        ={'###CBF: VERSION'};
     
     
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
-	       spec, mcstas_scan, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, ISIS_spe, ILL_inx, ESRF_edf, Matlab_FIG, PDB, Analyze, CBF};
+	       spec, mcstas_scan, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, ISIS_spe, ILL_inx, ...
+	       ESRF_edf, Matlab_FIG, PDB, Analyze, CBF};
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
