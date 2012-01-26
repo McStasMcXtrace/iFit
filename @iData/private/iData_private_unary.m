@@ -3,6 +3,7 @@ function b = iData_private_unary(a, op)
 %
 % 'asin', 'acos','atan','cos','sin','exp','log','log10','sqrt','tan','transpose'
 % 'ctranspose', 'sparse','full', 'floor','ceil','round'
+% 'asinh','atanh','acosh','sinh','cosh','tanh'
 % 'del2'
 % 'sign','isfinite','isnan','isinf'
 % 'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical'
@@ -53,7 +54,8 @@ if strcmp(op, 'sparse')
   end
 end
 
-if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log','log10','sqrt','tan'}))) ...
+if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
+ 'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh'}))) ...
    && not(all(m(:) == 0 | m(:) == 1))
   s = genop(@rdivide, s, m);
   e = genop(@rdivide, e, m);
@@ -66,12 +68,20 @@ new_s = feval(op, s); % new Signal value is set HERE <==========================
 switch op
 case 'acos'
 	e = -e./sqrt(1-s.*s);
+case 'acosh'
+  e = e./sqrt(s.*s-1);
 case 'asin'
 	e = e./sqrt(1-s.*s);
+case 'asinh'
+  e = e./sqrt(1+s.*s);
 case 'atan'
 	e = e./(1+s.*s);
+case 'atanh'
+  e = e./(1-s.*s);
 case 'cos'
 	e = -e.*sin(s);
+case 'cosh'
+  e = e.*sinh(s);
 case 'exp'
 	e = e.*exp(s);
 case 'log'
@@ -80,12 +90,17 @@ case 'log10'
 	e = e./(log(10)*s);
 case 'sin'
 	e = e.*cos(s);
+case 'sinh'
+  e = e.*cosh(s);
 case 'sqrt'
 	e = e./(2*sqrt(s));
   m = m.^0.5;
 case 'tan'
 	c = cos(s);
 	e = e./(c.*c);
+case 'tanh'
+  c = cosh(s);
+  e = e./(c.*c);
 case { 'transpose', 'ctranspose'}; % .' and ' respectively
 	e = feval(op, e);
 	m = feval(op, m);
@@ -122,7 +137,8 @@ otherwise
   iData_private_error('unary',['Can not apply operation ' op ' on object ' a.Tag ]);
 end
 
-if ~isempty(find(strcmp(op, {'asin', 'acos','atan','cos','sin','exp','log','log10','sqrt','tan'}))) ...
+if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
+ 'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh'}))) ...
    && not(all(m(:) == 0 | m(:) == 1))
   new_s = genop(@times, new_s, m);
   e     = genop(@times, e, m);
