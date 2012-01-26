@@ -14,7 +14,7 @@ function y=Maxwell(p, x, y)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=Maxwell([1 0 1 1], -10:10); or y=Maxwell('identify') or p=Maxwell('guess',x,y);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -49,7 +49,7 @@ function y=Maxwell(p, x, y)
     y.Axes   =  { linspace(p(2)-3*p(3),p(2)+3*p(3), 100) };
     y.Values = evaluate(y.Guess, y.Axes{:});
   elseif nargin == 1 && ischar(p) && strcmp(p, 'plot') % only works for 1D
-    y = feval(mfilename, [], linspace(-2,2, 100));
+    y = feval(mfilename, [], linspace(0,4, 100));
     if y.Dimension == 1
       plot(y.Axes{1}, y.Values);
     elseif y.Dimension == 2
@@ -57,7 +57,7 @@ function y=Maxwell(p, x, y)
     end
     title(mfilename);
   elseif nargin == 0
-    y = feval(mfilename, [], linspace(-2,2, 100));
+    y = feval(mfilename, [], linspace(0,4, 100));
   else
     y = identify;
   end
