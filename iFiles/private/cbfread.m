@@ -1,9 +1,9 @@
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.2 $  $Date: 2012-01-25 11:02:26 $
-% $Author: farhi $
-% $Tag: $
+% Revision: 1.1   Date: 2008/06/10 17:05:13 
+% Author: bunk 
+% Tag: 
 %
 % Description:
 % Macro for reading Crystallographic Binary File (CBF) files written by the
@@ -318,7 +318,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.2 $  $Date: 2012-01-25 11:02:26 $
+% $Revision: 1.3 $  $Date: 2012-01-26 21:51:19 $
 % $Author: farhi $
 % $Tag: $
 %
@@ -393,7 +393,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.2 $  $Date: 2012-01-25 11:02:26 $
+% $Revision: 1.3 $  $Date: 2012-01-26 21:51:19 $
 % $Author: farhi $
 % $Tag: $
 %
@@ -567,7 +567,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.2 $  $Date: 2012-01-25 11:02:26 $
+% $Revision: 1.3 $  $Date: 2012-01-26 21:51:19 $
 % $Author: farhi $
 % $Tag: $
 %
