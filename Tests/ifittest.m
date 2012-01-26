@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -290,15 +290,14 @@ case 'iFiles_3'
   result = 'OK  iData(peaks); iData(gcf)';
 case 'Math_1_unary'
   a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);
-  b = [ log(a) floor(a) sqrt(a) ];
   op = {'asin', 'acos','atan','cos','sin','exp','log','log10','sqrt','tan','transpose',...
     'ctranspose', 'sparse','full', 'floor','ceil','round',...
-    'del2',...
+    'del2','asinh','atanh','acosh','sinh','cosh','tanh', ...
     'sign','isfinite','isnan','isinf',...
     'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical',...
     'uminus','abs','real','imag','uplus','not',...
     'flipud','fliplr'};
-  result = 'OK  log floor sqrt cos ...';
+  result = [ 'OK  log floor sqrt cos ... (' num2str(length(op)) ' operators)' ];
   failed = '';
   for index=1:length(op)
     try

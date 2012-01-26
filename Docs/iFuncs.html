@@ -9,6 +9,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: iFuncs model functions</title>
 </head><body>
@@ -127,7 +129,7 @@ Background Temperature <span style="font-style: italic;">(in "x" unit)</span><br
     <tr>
       <td style="vertical-align: top; font-weight: bold;">doseresp<br>
       </td>
-      <td style="vertical-align: top;">Dose-response curve with variable Hill slope<br>
+      <td style="vertical-align: top;">Dose-response curve with variable Hill slope. This is a sigmoid or S-shaped.<br>
       </td>
       <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
       </td>
@@ -243,9 +245,19 @@ Background</td>
       </td>
     </tr>
     <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">pseudovoigt</span><br>
+      </td>
+      <td style="vertical-align: top;">Pseudo Voigt<br>
+      </td>
+      <td style="vertical-align: top;">1D<br>
+      </td>
+      <td style="vertical-align: top;">Amplitude Center Width BackGround LorentzianRatio<br>
+      </td>
+    </tr>
+<tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">quadline</span><br>
       </td>
-      <td style="vertical-align: top;">Quadratic line<br>
+      <td style="vertical-align: top;">Quadratic line (parabola)<br>
       </td>
       <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
       </td>
@@ -311,9 +323,9 @@ Background</td>
       <td style="vertical-align: top;">Amplitude Centre HalfWidth_Gauss HalfWidth_Lorz Background<br>
       </td>
     </tr><tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">gauss2d</span><br>
+      <td style="vertical-align: top; font-weight: bold;">gauss2d<br>
       </td>
-      <td style="vertical-align: top;">2D Gaussian function<br>
+      <td style="vertical-align: top;">Gaussian function with tilt angle<br>
       </td>
       <td style="vertical-align: top;"><span style="color: rgb(51, 102, 255);">2D</span><br>
       </td>
@@ -321,18 +333,36 @@ Background</td>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">plane2d</span><br>
+      <td style="vertical-align: top; font-weight: bold;">lorz2d<br>
+      </td>
+      <td style="vertical-align: top;">Lorentzian function with tilt angle</td>
+      <td style="vertical-align: top;"><span style="color: rgb(51, 102, 255);">2D</span></td>
+      <td style="vertical-align: top;">Amplitude Centre_X Center_Y HalfWidth_X HalfWidth_Y Angle Background</td>
+    </tr>
+<tr>
+      <td style="vertical-align: top; font-weight: bold;">plane2d<br>
       </td>
       <td style="vertical-align: top;">Planar function<br>
       </td>
       <td style="vertical-align: top;"><span style="color: rgb(51, 102, 255);">2D</span></td>
       <td style="vertical-align: top;">Slope_X Slope_Y Background<br>
       </td>
+    </tr><tr>
+      <td style="vertical-align: top; font-weight: bold;">pseudovoigt2d<br>
+      </td>
+      <td style="vertical-align: top;">Pseudo Voigt with tilt angle</td>
+      <td style="vertical-align: top;"><span style="color: rgb(51, 102, 255);">2D</span></td>
+      <td style="vertical-align: top;">Amplitude Centre_X Center_Y HalfWidth_X HalfWidth_Y Angle Background LorentzianRatio<br>
+      </td>
     </tr>
-
-  </tbody>
-</table>
-<br>
+    <tr>
+      <td style="vertical-align: top; font-weight: bold;">quad2d<br>
+      </td>
+      <td style="vertical-align: top;">Quadratic (parabola) with tilt angle</td>
+      <td style="vertical-align: top;"><span style="color: rgb(51, 102, 255);">2D</span></td>
+      <td style="vertical-align: top;">Amplitude Centre_X Center_Y Curvature_X Curvature_Y Angle Background</td>
+    </tr>
+</tbody></table><br>
 <div style="text-align: center;"><a href="images/iFit_iFuncs.png"><img title="iFit: default functions (in iFuncs)" src="images/iFit_iFuncs.png" alt="iFit: default functions (in iFuncs)" style="border: 0px solid ; width: 560px; height: 420px;" align="middle"></a><br>
 </div>
 <span style="font-weight: normal;">The </span>list of <span style="font-weight: bold;">all available fit
@@ -435,7 +465,7 @@ function also exists in <span style="font-style: italic;">iFit/iFuncs/private/te
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2012-01-25 14:52:10 $ $Revision: 1.19 $
+$Date: 2012-01-26 08:49:19 $ $Revision: 1.20 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
