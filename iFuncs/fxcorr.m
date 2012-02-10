@@ -3,6 +3,8 @@ function y=fxcorr(x, h, shape)
 %   y = FXCORR(x, h) correlates x and h.
 %   It works with x and h being of any dimensionality. When only one argument is given, 
 %     the auto-correlation is computed.
+%   The accuracy of the conv and xcorr operators depends on the sampling. Peaks should
+%     be describes with at least 5 points underneath.
 %   This is the same as calling 
 %     fconv(x,h, 'correlation');
 %
@@ -26,7 +28,7 @@ function y=fxcorr(x, h, shape)
 %
 %      See also FCONV, CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 if nargin == 0, return; end
 if nargin == 1, h = x; end
 if nargin < 3, shape = ''; end
