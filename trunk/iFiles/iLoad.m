@@ -42,7 +42,7 @@ function [data, format] = iLoad(filename, loader)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.57 $
+% Version: $Revision: 1.58 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -270,7 +270,7 @@ if ischar(filename) & length(filename) > 0
   % handle the '%20' character replacement as space
   filename = strrep(filename, '%20',' ');
   try
-  [data, format] = iLoad_import(filename, loader);
+    [data, format] = iLoad_import(filename, loader);
   catch
     fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n', filename);
     data=[];
@@ -468,7 +468,7 @@ function data = iLoad_loader_check(file, data, loader)
   end
   
   if ~isfield(data, 'Date')
-    if strcmp(loader, 'variable') data.Date   = datestr(now); 
+    if strcmp(loader, 'variable') data.Date   = datevec(now); 
     else d=dir(file); data.Date=d.date; end
   end
 
@@ -504,6 +504,7 @@ function loaders = iLoad_loader_auto(file)
   % read start of file
   [fid,message] = fopen(file, 'r');
   if fid == -1
+    fprintf(1, 'iLoad: %s: %s. Check existence/permissions.\n', file, message );
     error([ 'Could not open file ' file ' for reading. ' message '. Check existence/permissions.' ]);
   end
   file_start = fread(fid, 10000, 'uint8=>char')';
