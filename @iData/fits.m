@@ -84,7 +84,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.39 $
+% Version: $Revision: 1.40 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -196,12 +196,12 @@ end
 if nargin < 6
   varargin = {};
 end
-if ischar(options) | isa(options, 'function_handle')
+if (ischar(options) && length(strtok(options))==length(options)) | isa(options, 'function_handle')
   algo = options;
   options           = feval(algo,'defaults');
   if isa(algo, 'function_handle'), algo = func2str(algo); end
   options.optimizer = algo;
-end
+elseif ischar(options), options=str2struct(options); end
 
 % handle input iData arrays
 if length(a) > 1
@@ -260,8 +260,28 @@ try
 catch
   [dummy, info] = ieval(a, model,'identify', varargin{:}); % model info 
 end
+pars_isstruct=0;
+if ischar(pars)
+  pars = str2struct(pars);
+end
 if isstruct(pars)
-  pars=cell2mat(struct2cell(pars));
+  % search 'pars' names in the model parameters, and reorder the parameter vector
+  for index=1:length(info.Parameters)
+    match = strcmp(info.Parameters{index}, fieldnames(pars));
+    if ~isempty(match) && any(match)
+      p(index) = pars.(info.Parameters{index});
+    end
+  end
+  if length(p) ~= length(info.Parameters)
+    disp('Actual parameters')
+    disp(pars)
+    disp([ 'Required model ' info.Name ' parameters' ])
+    disp(info.Parameters)
+    iData_private_error(mfilename,[ 'The parameters entered as a structure do not define all required model parameters.' ]);
+  else
+    pars_isstruct=1;
+    pars = p;
+  end
 elseif isempty(pars)
   pars=info.Guess;               % get default starting parameters
 end
@@ -341,6 +361,10 @@ if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(o
       fprintf(1,'%10.2g ', output.parsHessianUncertainty); fprintf(1,'\n');
     end
   end
+end
+
+if pars_isstruct
+  pars_out = cell2struct(num2cell(pars_out(:)), info.Parameters(:), 1);
 end
 
 % reset warnings

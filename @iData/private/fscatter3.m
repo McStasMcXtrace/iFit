@@ -40,14 +40,13 @@ maxy = max(Y);
 col = cmap;
 
 % determine index into colormap
-
 ii = round(interp1([floor(mins) ceil(maxs)],[1 numclass],C));
 hold on
 colormap(cmap);
 
 % plot each color class in a loop
 
-marker = max(4, 7-log10(length(X(:))));
+marker = max(4, 10-log10(length(X(:))));
 
 k = 0;
 for j = 1:numclass
