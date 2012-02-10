@@ -5,6 +5,8 @@ function y=fconv(x, h, shape)
 %   This FFT based convolution should provide the same results as conv2 and convn.
 %   It works with x and h being of any dimensionality. When only one argument is given, 
 %     the auto-convolution/correlation is computed.
+%   The accuracy of the conv and xcorr operators depends on the sampling. Peaks should
+%     be describes with at least 5 points underneath.
 %
 %      x = input vector (signal)
 %      h = input vector (filter)
@@ -29,7 +31,7 @@ function y=fconv(x, h, shape)
 %
 %      See also FCONVN, FXCORR, CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 
 
 y=[];
