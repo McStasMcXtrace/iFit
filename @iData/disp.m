@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -31,6 +31,8 @@ else
   m = get(s_in, 'Monitor'); m=m(:);
   s=struct(s_in);
   s=rmfield(s,'Alias');
+  if isnumeric(s.Date), s.Date=datestr(s.Date); end
+  if isnumeric(s.ModificationDate), s.ModificationDate=datestr(s.ModificationDate); end
   disp(s)
   % display the Aliases
   disp('Object aliases:');
@@ -97,30 +99,29 @@ else
       v=mat2str(v);
       if length(v) > 12, v = [v(1:12) '...' ]; end 
     end
-    s=NaN; f=NaN;
-    try
-      if prod(size(s_in)) < 1e4
-        [s, f] = std(s_in, index);
-      end
-    end
     if length(l) > 20, l = [l(1:18) '...' ]; end 
     X      = getaxis(s_in, index); x=X(:);
     if length(x) == 1
-      fprintf(1,'%6i %15s  %s [%g]', index, v, l, x);
-    elseif isvector(X) && ~isnan(s) && ~isnan(f)
-      fprintf(1,'%6i %15s  %s [%g:%g] length [%i] <%g +/- %g>', index, v, l, min(x), max(x),length(X), f, s);
+      minmaxstd = sprintf('[%g]', full(x));
+    elseif isvector(X)
+      minmaxstd = sprintf('[%g:%g] length [%i]', full(min(x)), full(max(x)),length(x));
     else
-      fprintf(1,'%6i %15s  %s [%g:%g] size [%s]', index, v, l, full(min(x)), full(max(x)),num2str(size(X)));
+      minmaxstd = sprintf('[%g:%g] size [%s]', full(min(x)), full(max(x)),num2str(size(X)));
     end
-    if index==0 && not(all(m(:)==1 | m(:)==0))
-      fprintf(1,' (per monitor) sum=%g\n', sum(x));
-    elseif index==0
-      fprintf(1,' sum=%g\n', sum(x));
-    else
-      fprintf(1,'\n');
+    if index==0
+      if not(all(m==1 | m==0))
+        minmaxstd=[ minmaxstd sprintf(' (per monitor=%g)', mean(m(:))) ];
+      end
+      minmaxstd=[ minmaxstd sprintf(' sum=%g', sum(iData_private_cleannaninf(x))) ];
     end
+    if prod(size(s_in)) < 1e4
+      try
+        [s, f] = std(s_in, index);
+        minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', f,s) ];
+      end
+    end
+    fprintf(1,'%6i %15s  %s %s\n', index, v, l, minmaxstd);
   end
-
   %iData(s_in);
 end
 

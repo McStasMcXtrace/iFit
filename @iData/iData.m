@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.34 $
+% Version: $Revision: 1.35 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -48,7 +48,7 @@ if nargin == 0  % create empty object
   if isempty(user), user = getenv('HOME'); end
   if isempty(user), user = getenv('TEMP'); end % gives User name on Windows systems
   a.User         = user;        % User ID
-  a.Date         = datestr(now);;
+  a.Date         = datevec(now);
   a.ModificationDate  = a.Date; % modification Date
   a.Command      = cellstr('iData');          % Matlab commands/history of the object
   a.UserData     = '';          % user data storage area
@@ -98,10 +98,11 @@ else  % convert input argument into object
       set(d,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
       setaxis(d, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
     end
-    % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 in Signal
+    % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes in Signal
     if ndims(d)>=2 && isvector(getaxis(d, 1)) && isvector(getaxis(d, 2)) ...
                 && length(getaxis(d, 1)) == size(get(d,'Signal'),2) ...
-                && length(getaxis(d, 2)) == size(get(d,'Signal'),1)
+                && length(getaxis(d, 2)) == size(get(d,'Signal'),1) ...
+                && length(getaxis(d, 1)) ~= length(getaxis(d, 2))
       s=get(d,'Signal'); set(d, 'Signal', s');
       disp([ 'iData: The Signal has been transposed to match the axes orientation in object ' d.Tag ' "' d.Title '".' ]);
     end
@@ -263,6 +264,9 @@ function b=iData_struct2iData(a)
 %  else
 %    disp(['iData: warning: could not import all fields from structure.' ]);
   end
+  if isfield(a, 'Format')
+    setalias(b, 'Format', a.Format);
+  end
   % case of importation from an iFunc model structure
   if isfield(a, 'Type') && strcmp(a.Type,'iFit fitting function')
     if ~isempty(a.Guess)
@@ -316,7 +320,7 @@ end
 if iscell(in), in = in{1}; end
 
 % update ModifDate
-in.ModificationDate = datestr(now);
+in.ModificationDate = datevec(now);
 % check type of fields
 if iscellstr(in.Title)
   t = strcat(in.Title,';');
@@ -338,9 +342,9 @@ if ~ischar(in.Command) & ~iscellstr(in.Command)
   iData_private_warning(mfilename,['Command must be a char or cellstr in iData object ' in.Tag ' "' in.Title ]);
   in.Command = cellstr('');
 end
-if ~ischar(in.Date)
-  iData_private_warning(mfilename,['Date must be a char in iData object ' in.Tag ' "' in.Title ]);
-  in.Date = datestr(now);
+if ~ischar(in.Date) && ~isnumeric(in.Date)
+  iData_private_warning(mfilename,['Date must be a char/vector in iData object ' in.Tag ' "' in.Title ]);
+  in.Date = datevec(now);
 end
 if ~ischar(in.Creator)
   iData_private_warning(mfilename,['Creator must be a char in iData object ' in.Tag ' "' in.Title ]);
@@ -402,13 +406,17 @@ elseif isempty(getalias(in, 'Signal'))
     end
   end
 end
-% check in case the x,y axes have been reversed for dim>=2, then swap 1:2 in Signal
+% check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes
 if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
             && isvector(getaxis(in, 1)) && isvector(getaxis(in, 2)) ...
             && length(getaxis(in, 1)) == size(get(in,'Signal'),2) ...
-            && length(getaxis(in, 2)) == size(get(in,'Signal'),1)
-  s=get(in,'Signal'); set(in, 'Signal', s');
-  disp([ 'iData: The Signal has been transposed to match the axes orientation in object ' in.Tag ' "' in.Title '".' ]);
+            && length(getaxis(in, 2)) == size(get(in,'Signal'),1) ...
+            && length(getaxis(in, 1)) ~= length(getaxis(in, 2))
+  x1 = getaxis(in, '1');
+  x2 = getaxis(in, '2');
+  setaxis(in, 1, x2);
+  setaxis(in, 2, x1);
+  disp([ 'iData: The object has been transposed to match the axes orientation in object ' in.Tag ' "' in.Title '".' ]);
 end
     
 % check aliases (valid ?) by calling setalias(in)

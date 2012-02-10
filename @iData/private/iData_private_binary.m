@@ -18,7 +18,7 @@ function c = iData_private_binary(a, b, op, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
@@ -91,10 +91,10 @@ if isa(a, 'iData') & isa(b, 'iData')
   end
 end
 
-% the p1 flag is true when a monitor normalization is required
+% the p1 flag is true when a monitor normalization is required (not for combine)
 if strcmp(op, 'combine'), p1 = 0; else p1 = 1; end
-if ~isa(a, 'iData') 
-  s1= a; e1=0; m1=0; p1=0;
+if ~isa(a, 'iData')   % constant/scalar
+  s1= a; e1=0; m1=0;
   c = copyobj(b);
 else
   s1 = subsref(a,struct('type','.','subs','Signal'));
@@ -102,8 +102,8 @@ else
   m1 = subsref(a,struct('type','.','subs','Monitor'));
   c  = copyobj(a);
 end
-if ~isa(b, 'iData') 
-  s2= b; e2=0; m2=0; p1=0;
+if ~isa(b, 'iData') % constant/scalar
+  s2= b; e2=0; m2=0;
 else
   s2 = subsref(b,struct('type','.','subs','Signal'));
   e2 = subsref(b,struct('type','.','subs','Error'));
@@ -118,11 +118,12 @@ if (all(m1(:)==0) || all(m1(:)==1)) && (all(m2(:)==0) || all(m2(:)==1)) m1=0; m2
 % then we compute the associated error, and the final monitor
 % finally we multiply the result by the monitor.
 
-% 'y'=normalized signal, 'd'=normalized error
-if not(all(m1 == 0)) & p1, 
+% 'y'=normalized signal, 'd'=normalized error, 'p1' set to true when normalization
+% to the Monitor is required (i.e. all operations except combine).
+if not(all(m1(:) == 0 | m1(:) == 1)) & p1, 
   y1 = genop(@rdivide, s1, m1); d1 = genop(@rdivide,e1,m1); 
 else y1=s1; d1=e1; end
-if not(all(m2 == 0)) & p1, 
+if not(all(m2(:) == 0 | m2(:) == 1)) & p1, 
   y2 = genop(@rdivide,s2,m2); d2 = genop(@rdivide,e2,m2); 
 else y2=s2; d2=e2; end
 
@@ -130,22 +131,28 @@ else y2=s2; d2=e2; end
 switch op
 case {'plus','minus','combine'}
   if strcmp(op, 'combine'), 
-       s3 = genop( @plus,  s1, s2); % @plus without Monitor nomalization
-  else s3 = genop( op,  y1, y2); end
-  try
-    m3 = genop(@plus, m1, m2);
-  catch
-    m3=[];
-	end
+       s3 = genop( @plus,  y1, y2); % @plus without Monitor nomalization
+  else s3 = genop( op,     y1, y2); end
+  
 	try
 		e3 = sqrt(genop(@plus, d1.^2,d2.^2));
 	catch
-		  e2=[];
+		e3 = [];  % set to sqrt(Signal) (default)
 	end
-  if p1 & ~all(m3 == 0), s3 = genop( @times, s3, m3); e3=genop(@times, e3, m3); end
+	
+	if     all(m1==0), m3 = m2; 
+  elseif all(m2==0), m3 = m1; 
+  elseif p1
+    try
+      m3 = genop(@plus, m1, m2);
+    catch
+      m3 = [];  % set to 1 (default)
+    end
+  else m3=get(c,'Monitor'); end
+  
 case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','conv','xcorr'}
   if strcmp(op, 'conv') || strcmp(op, 'xcorr')
-    s3 = fconv(y1, y2, varargin{:});
+    s3 = fconv(y1, y2, varargin{:});  % pass additional arguments to fconv
     if nargin == 4
       if strfind(varargin{1}, 'norm')
         m2 = 0;
@@ -154,43 +161,55 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','conv','xcorr'
   else
     s3 = genop(op, y1, y2);
   end
-  if p1, 
-    try
-      if     all(m1==0), m3 = m2; 
-      elseif all(m2==0), m3 = m1; 
-      else m3 = genop(@times, m1, m2); end
-    catch
-      m3=[];
-    end
-  else m3=get(c,'Monitor'); end
-  if p1 & ~all(m3 == 0), s3 = genop( @times, s3, m3); end
+  
   try
     e1s1 = genop(@rdivide,e1,s1).^2; e1s1(find(s1 == 0)) = 0;
     e2s2 = genop(@rdivide,e2,s2).^2; e2s2(find(s2 == 0)) = 0;
     e3 = genop(@times, sqrt(genop(@plus, e1s1, e2s2)), s3);
   catch
-    e3=[];
+    e3=[];  % set to sqrt(Signal) (default)
   end
+  
+  if     all(m1==0), m3 = m2; 
+  elseif all(m2==0), m3 = m1; 
+  elseif p1
+    try
+      m3 = genop(@times, m1, m2);
+    catch
+      m3 = [];  % set to 1 (default)
+    end
+  else m3=get(c,'Monitor'); end
+  
 case {'power'}
-  if p1, m3 = genop(op, m1, m2); else m3=get(c,'Monitor'); end
   s3 = genop(op, y1, y2);
-  if p1 & ~all(m3 == 0), s3 = genop( @times, s3, m3);; end
+
   try
     e2logs1 = genop(@times, e2, log(s1)); e2logs1(find(s1<=0))   = 0;
     s2e1_s1 = genop(@times, s2, genop(@rdivide,e1,s1));  s2e1_s1(find(s1 == 0)) = 0;
     e3 = s3.*genop(@plus, s2e1_s1, e2logs1);
   catch
-    e3=[];
+    e3 = [];  % set to sqrt(Signal) (default)
   end
+  
+  if     all(m1==0), m3 = m2; 
+  elseif all(m2==0), m3 = m1; 
+  elseif p1
+    try
+      m3 = genop(@times, m1, m2);
+    catch
+      m3 = [];  % set to 1 (default)
+    end
+  else m3=get(c,'Monitor'); end
+  
 case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'}
   s3 = genop(op, y1, y2);
   try
     e3 = sqrt(genop( op, d1.^2, d2.^2));
     e3 = 2*genop(@divide, e3, genop(@plus, y1, y2)); % normalize error to mean signal
   catch
-    e3=[];
+    e3=0; % no error
   end
-  m3 = 1;
+  m3 = 1; % set to 1 (default)
 otherwise
   if isa(a,'iData'), al=a.Tag; else al=num2str(a); end
   if isa(b,'iData'), bl=b.Tag; else bl=num2str(b); end
@@ -223,17 +242,27 @@ else
   if length(bl) > 10, bl=[ bl(1:10) '...' ]; end 
 end
 
+% operate with Signal/Monitor and Error/Monitor (back to Monitor data)
+if not(all(m3(:) == 0 | m3(:) == 1)) & p1, 
+  s3 = genop(@times, s3, m3); e3 = genop(@times,e3,m3); 
+end
+
 % update object (store result)
-% update object
-c = set(c, 'Signal', s3, 'Error', abs(e3), 'Monitor', m3);
+c  = set(c, 'Signal', s3);
+y3 = get(c, 'Signal');
 % test if we could update signal as expected, else we store the new value directly in the field
-if ~isequal(get(c,'Signal'), s3)
+if sum(s3(~isnan(s3))) ~= sum(y3(~isnan(y3)))
   c = setalias(c, 'Signal', s3, [  op '(' al ',' bl ')' ]);
 end
-if ~isequal(get(c,'Error'), e3)
+e3=abs(e3);
+c  = set(c, 'Error', e3);
+y3 = get(c, 'Error');
+if sum(e3(~isnan(e3))) ~= sum(y3(~isnan(y3)))
   c = setalias(c, 'Error', e3);
 end
-if ~isequal(get(c,'Monitor'), m3)
+c  = set(c, 'Monitor', m3);
+y3 = get(c, 'Monitor');
+if sum(m3(~isnan(m3))) ~= sum(y3(~isnan(y3)))
   c = setalias(c, 'Monitor', m3);
 end
 

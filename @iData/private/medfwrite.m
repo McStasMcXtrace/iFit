@@ -48,8 +48,8 @@ if ~isempty(a.DisplayName)
 end
 header = pmedf_putInHeader(header, 'Creator', a.Creator);
 header = pmedf_putInHeader(header, 'User', a.User);
-header = pmedf_putInHeader(header, 'Date', a.Date);
-header = pmedf_putInHeader(header, 'Modification', a.ModificationDate);
+header = pmedf_putInHeader(header, 'Date', get(a,'Date'));
+header = pmedf_putInHeader(header, 'Modification', get(a,'ModificationDate'));
 
 m = get(a,'Monitor'); 
 if not(all(m==0| m==1))

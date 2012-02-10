@@ -1,5 +1,5 @@
 function h=plot(a, varargin)
-% h = plot(s, method) : plot iData object
+% h = plot(s, method, ...) : plot iData object
 %
 %   @iData/plot function to plot data sets
 %   This function plot the signal of the object as a function of the defined axes.
@@ -37,7 +37,7 @@ function h=plot(a, varargin)
 %               Global options for all plots: 
 %                 axis tight, axis auto, hide_axes (compact layout)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
-%                 whole (do not reduce object size for plotting)
+%                 whole (do not reduce large object size for plotting)
 %                 
 % output: h: graphics object handles (cell/array)
 % ex:     plot(iData(rand(10)), 'surfc interp transparent'); plot(iData(1:10), 'r-');
@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.78 $
+% Version: $Revision: 1.79 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -95,7 +95,7 @@ end
 % plot an array of objects
 if numel(a) > 1
   sum_max = 0;
-  toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent';
+  toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent axis';
   toremove=strread(toremove,'%s','delimiter',' ');
   this_method = method;
   for index=1:length(toremove)
@@ -249,6 +249,7 @@ case 1  % vector type data (1 axis + signal) -> plot
       end
     end
   end
+  clear x y e m
 case 2  % surface type data (2 axes+signal) -> surf or plot3
   % check if a re-grid is needed
   if isvector(a) || (~isvector(a) && (~isempty(strfind(method,'plot3')) || ~isempty(strfind(method,'scatter3')) ))
@@ -327,6 +328,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
     end
   end
   zlabel(zlab);
+  clear x y z m
 case 3  % 3d data sets: volumes
   % first test if this is an image
   if isfield(a.Data,'cdata')
@@ -391,6 +393,7 @@ case 3  % 3d data sets: volumes
       end
     end
     zlabel(zlab);
+    clear x y z c m
   end
 otherwise
   iData_private_warning(mfilename, [ 'plotting of ' num2str(ndims(a)) '-th dimensional data is not implemented from ' a.Tag '.\n\tUse sum or camproj to reduce dimensionality for plotting.' ]);
@@ -521,24 +524,32 @@ uimenu(uicm, 'Separator','on', 'Label', '[Rank]         [Value] [Description]');
 for index=0:length(getaxis(a))
   [v, l] = getaxis(a, num2str(index));
   if length(l) > 20, l = [l(1:18) '...' ]; end 
-  x      = getaxis(a, index); x=x(:);
+  x      = getaxis(a, index);
   m      = get(a, 'Monitor');
-  if index==0 & not(all(m==1 | m==0))
-    t = sprintf('%6i %15s  %s [%g:%g] (per monitor=%g) sum=%g', index, v, l, full(min(x)), full(max(x)), mean(m(:)), sum(x));
+  if length(x) == 1
+    minmaxstd = sprintf('[%g]', full(x));
+  elseif isvector(x)
+    minmaxstd = sprintf('[%g:%g] length [%i]', full(min(x)), full(max(x)),length(x));
   else
+    x=x(:);
+    minmaxstd = sprintf('[%g:%g] size [%s]', full(min(x)), full(max(x)),num2str(size(x)));
+  end
+  if index==0
+    if not(all(m==1 | m==0))
+      minmaxstd=[ minmaxstd sprintf(' (per monitor=%g)', mean(m(:))) ];
+    end
+    minmaxstd=[ minmaxstd sprintf(' sum=%g', sum(iData_private_cleannaninf(x))) ];
+  end
+  if prod(size(a)) < 1e4
     try
       [s, f] = std(a, index);
-      if index==0
-        t = sprintf('%6i %15s  %s [%g:%g] <%g +/- %g> sum=%g', index, v, l, full(min(x)), full(max(x)), f, s, sum(x));
-      else
-        t = sprintf('%6i %15s  %s [%g:%g] <%g +/- %g>', index, v, l, full(min(x)), full(max(x)), f, s);
-      end
-    catch
-      t = sprintf('%6i %15s  %s [%g:%g]', index, v, l, full(min(x)), full(max(x)));
+      minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', f,s) ];
     end
   end
+  t = sprintf('%6i %15s  %s %s', index, v, l, minmaxstd);
   properties{end+1} = t;
   uimenu(uicm, 'Label', t);
+  clear x m
 end
 % menu About iFit
 uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', 'Callback', ...

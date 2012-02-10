@@ -4,10 +4,10 @@ function b = iData_private_newtag(a)
 persistent id
 
 b = a;
-b.Date = datestr(now);  % new object
+b.Date = datevec(now);  % new object
 
 % create new tag
-if ~exist('id'),  id=0; end
+% if ~exist('id'),  id=0; end
 if isempty(id),   id=0; end
 if id > 1e6, id=0; end
 if id <=0, 

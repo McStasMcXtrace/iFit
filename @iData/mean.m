@@ -14,7 +14,7 @@ function b = mean(a, dim)
 % output: s: mean of elements (iData/scalar)
 % ex:     c=mean(a);
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/std, iData/combine, iData/mean
 
 if nargin < 2, dim=1; end
@@ -23,7 +23,7 @@ if length(a) > 1
   return
 end
 
-s=get(a,'Signal');
+s=iData_private_cleannaninf(get(a,'Signal'));
 [link, label]          = getalias(a, 'Signal');
 cmd=a.Command;
 b=copyobj(a);
