@@ -1,5 +1,5 @@
 function [pars, fval, exitflag, output] = fmincmaes(varargin)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINCMAES(FUN,PARS,[OPTIONS],[CONSTRAINTS]) Evolution Strategy with Covariance Matrix Adaption
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINCMAES(FUN,PARS,[OPTIONS],[CONSTRAINTS], ...) Evolution Strategy with Covariance Matrix Adaption
 %
 % CMAES implements an Evolution Strategy with Covariance Matrix
 % Adaptation (CMA-ES) for nonlinear function minimization.
@@ -28,13 +28,17 @@ function [pars, fval, exitflag, output] = fmincmaes(varargin)
 %     problem.x0:          starting parameter values
 %     problem.options:     optimizer options (see below)
 %     problem.constraints: optimization constraints
+%   fmincmaes(..., args, ...)
+%     sends additional arguments to the objective function
+%       criteria = FUN(pars, args, ...)
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
 %   [x,fval] = fmincmaes(banana,[-1.2, 1])
 %
 % Input:
-%  FUN is the function to minimize (handle or string).
+%  FUN is the function to minimize (handle or string): criteria = FUN(PARS)
+%  It needs to return a single value or vector.
 %
 %  PARS is a vector with initial guess parameters. You must input an
 %  initial guess.
@@ -43,13 +47,16 @@ function [pars, fval, exitflag, output] = fmincmaes(varargin)
 %  compliant with optimset. Default options may be obtained with
 %      o=fmincmaes('defaults');
 %   options.PopulationSize sets the population size (20-40).
-%   options.OutputFcn options.OutputFcn and options.FunValCheck are not handled.
+%  An empty OPTIONS sets the default configuration.
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min=   vector of minimal values for parameters
 %   constraints.max=   vector of maximal values for parameters
 %   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
 %   constraints.step=  vector of maximal parameter changes per iteration
+%  An empty CONSTRAINTS sets no constraints.
+%
+%  Additional arguments are sent to the objective function.
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -71,7 +78,7 @@ function [pars, fval, exitflag, output] = fmincmaes(varargin)
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de [cmaes]
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also: fminsearch, optimset
 
 % STANDARD part ================================================================
