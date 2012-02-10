@@ -2,6 +2,11 @@
 <html><head>
 
 
+
+
+
+
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Changes</title>
@@ -12,21 +17,21 @@
 </h1>
 
 <br>
-<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes</a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId482415">Data set maximum size</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li></ol></li></ol>
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes</a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId482415">Data set maximum size</a></li><li><a href="#mozTocId332568">Convolution brings strange results (iFuncs/fconv)</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li></ol></li></ol>
 
 
 <hr style="width: 100%; height: 2px;">
-<h3><a class="mozTocH3" name="mozTocId919749"></a>Releases and Changes</h3>
+<h3><a class="mozTocH3" name="mozTocId919749"></a>Releases and Changes<br>
+</h3>
 <span style="font-weight: bold;"></span><ul>
 
   
-  <li><span style="font-weight: bold;">1.1</span>:
-new methods (save, diff, hyperbolic functions), fix of the
-Levenberg-Marquardt optimizer, improved Error propagation for unary
-operators, support for import of Analayze MRI (hdr/img) and
-Crystallographic Binary File (cbf) format, import post-process for HDF
-RITA2@PSI files, direct drag-drop data files using the open{ext}
-functions, added many fit models including 2d functions <span style="font-style: italic;">(Jan 26th 2012)</span><br>
+  <li><span style="font-weight: bold;">1.1</span>: new methods (save, diff, <a href="Math.html">hyperbolic functions</a>), fix of the <a href="iOptim.html">Levenberg-Marquardt optimizer</a>,
+improved Error propagation for unary operators, support for <a href="iFiles.html">import</a> of
+Analyze MRI (hdr/img) and Crystallographic Binary File (cbf) format,
+import post-process for HDF RITA2@PSI files, direct drag-drop data
+files using the open{ext} functions with Matlab &gt;= 2010, added many <a href="iFuncs.html">fit models</a> including 2D
+functions <span style="font-style: italic;">signal=f(x,y)</span>. Improved speed by e.g. +25% <span style="font-style: italic;">(Feb 10th 2012)</span><br>
 <span style="font-weight: bold;"></span></li>
   <li><span style="font-weight: bold;">1.0.4</span>: significant performance improvements (speedup by factor 2-10).<span style="font-style: italic;"> (Oct 24th 2011)</span><br>
 <span style="font-weight: bold;"></span></li>
@@ -70,6 +75,14 @@ Please report bugs to  <a href="mailto:ifit-users@mccode.org">ifit-users@mccode.
 The iFit package may currently handle routinely data sets up to few 100
 Mb. Larger data sets can still be loaded, but are restricted by the
 disk access and the available memory.<br>
+<h4><a class="mozTocH4" name="mozTocId332568"></a>Convolution brings strange results (iFuncs/fconv)<br>
+</h4>
+The <span style="font-style: italic;">fconv</span> function (FFT convolution) provided in the <a href="iFuncs.html">iFuncs</a> sub-library requires
+that the two signals sampling not be too corase. Axes values too
+sparese will lead to inaccurate results. One solution is to resample
+the signals with more points. For iData objects, this can be
+achieved with e.g. the <span style="font-style: italic;">interp(object, 3)</span> to triple the number of points along axes.<br>
+
 
 
 
@@ -117,7 +130,7 @@ Move <span style="font-style: italic;">iFit</span> to an other location which do
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Changes - </span><span style="font-style: italic;">
-$Date: 2012-01-26 21:51:19 $ $Revision: 1.18 $
+$Date: 2012-02-10 16:10:26 $ $Revision: 1.19 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
