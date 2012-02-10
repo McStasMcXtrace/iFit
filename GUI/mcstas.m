@@ -23,7 +23,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %             the vector can be 2 elements to define [min max]. 
 %             the vector can be 4+ elements to define [min ... max]. 
 %             For 2 and 4+ vectors, the parameter starting value is the mean of the vector.
-%           parameters.name = string (simulation ans optimization)
+%           parameters.name = string (simulation and optimization)
 %             defines a fixed parameter, that can not be optimized.
 %         OPTIONS: a structure or string that indicates what to do (structure)
 %           options.dir:    directory where to store results (string)
@@ -35,6 +35,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %           options.mode:   'simulate' or 'optimize' (string)
 %           options.type:   'minimize' or 'maximize', which is the default (string)
 %           options.monitors:  cell string of monitor names, or empty for all (cellstr)
+%             the monitor names can contain expressions made of the monitor name 
+%             followed by any expression using 'this' to refer to the monitor content
+%             such as in 'Monitor1/std(this,1)' which divides the Signal by its X peak width.
 %           options.help:   set it to 'yes' or 1 to get help on the instrument and exit
 %           options.info:   set it to 'yes' or 1 to get information on the instrument and exit
 %           options.optimizer: function name of the optimizer to use (string or function handle)
@@ -56,7 +59,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -69,7 +72,11 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     error([ mfilename ' requires iFit/iData. Get it at <ifit.mccode.org>. Install it with addpath(genpath(''location/to/iFit''))' ] );
   end
   
-% PARSE INPUT PARAMETERS =======================================================
+% PARSE INPUT ARGUMENTS ========================================================
+  
+  if nargin > 2 && ischar(options)
+    options= str2struct(options);
+  end
   
   options.instrument     = instrument;
   % define simulation or optimization mode (if not set before)
@@ -117,7 +124,10 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     parameters      = [];
   end
   if nargin < 1, parameters = []; end
-  if ~isempty(parameters) & isstruct(parameters)
+  if ~isempty(parameters) && ischar(parameters)
+    parameters = str2struct(parameters);
+  end
+  if ~isempty(parameters) && isstruct(parameters)
     parameter_names = fieldnames(parameters);
   else
     parameter_names = {};
@@ -491,7 +501,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     % first try to import monitors from their file names
     if isfield(options,'monitors')
       for index=1:length(options.monitors)
-        sim = [ sim iData(fullfile(directory,[ options.monitors{index} '*' ])) ];
+        [name, R] = strtok(options.monitors{index},' ,;/*+-(){}:%$.');
+        sim = [ sim iData(fullfile(directory,[ name '*' ])) ];
+        setalias(sim, 'CriteriaExpression', R);
       end
     end
     if isempty(sim)
@@ -540,7 +552,13 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   criteria = zeros(length(sim),1);
   for index=1:length(sim)
-    this = double(sim(index));
+    R = '';
+    try
+    R = getalias(sim(index), 'CriteriaExpression');
+    this = sim(index);
+    eval([ 'this = this' R ';' ]);
+    end
+    this = double(this);
     this = sum(this(:));
     if isfield(options,'type') & strcmp(options.type,'maximize')
       this = -sum(this);
