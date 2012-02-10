@@ -1,5 +1,5 @@
 function stop = fminplot(pars, optimValues, state)
-% default plotting function showing the criteria evolution 
+% stop=fminplot(pars, optimValues, state) default plotting function showing the criteria evolution 
 % as well as main parameters and status
 
 % fields in optimValues: funcount, fval, iteration, procedure
