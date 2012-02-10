@@ -11,6 +11,11 @@
 
 
 
+
+
+
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: iFuncs model functions</title>
 </head><body>
@@ -54,8 +59,9 @@ All these are explained in the <a href="Fit.html">Fit</a> page.<br>
 <br>
 Each function/model can be used in the following ways (for instance
 model may be 'gauss'):<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>		<span style="font-style: italic;">% display model informations</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'identify'</span>)		% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'plot'</span>)	<span style="font-style: italic;">% plot the model with its default settings</span><span style="color: rgb(255, 0, 0); font-style: italic;"></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(p, x, y ...)	<span style="font-style: italic;">% evaluate the model with parameters p, and axes x,y,...<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>([], x, y ...)	<span style="font-style: italic;">% evaluate the model with axes x,y,... and automatic parameter guess<br></span><span style="font-style: italic;">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'guess'</span>, x, y ...)	% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ieval</span>(a, @model, p)	<span style="font-style: italic;">% evaluate the model onto the iData object axes with parameters p<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">fits</span>(a, @model, p)	<span style="font-style: italic;">% fit the model onto the iData object</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>		<span style="font-style: italic;">% display model informations</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'identify'</span>)	% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'plot'</span>)	<span style="font-style: italic;">% plot the model with its default settings</span><span style="color: rgb(255, 0, 0); font-style: italic;"></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(p, x, y ...)	<span style="font-style: italic;">% evaluate the model with parameters p, and axes x,y,...<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>([], x, y ...)	<span style="font-style: italic;">% evaluate the model with axes x,y,... and automatic parameter guess<br></span><span style="font-style: italic;">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'guess'</span>, x, y ...)	% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ieval</span>(a, @model, p)	<span style="font-style: italic;">% evaluate the model onto the iData object axes with parameters p<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">fits</span>(a, @model, p)	<span style="font-style: italic;">% fit the model onto the iData object</span><br></pre>
 <h3><a class="mozTocH3" name="mozTocId96090"></a><span style="font-weight: bold;">List of default fit models</span></h3>
+The 1D functions are <span style="font-style: italic;">signal=f(parameters, x)</span>, and the 2D functions are <span style="font-style: italic;">signal=f(parameters, x, y)</span>.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
 <table style="text-align: left; width: 1016px; height: 831px;" border="1" cellpadding="2" cellspacing="2">
@@ -249,7 +255,7 @@ Background</td>
       </td>
       <td style="vertical-align: top;">Pseudo Voigt<br>
       </td>
-      <td style="vertical-align: top;">1D<br>
+      <td style="vertical-align: top;"><span style="color: rgb(51, 204, 0);">1D</span><br>
       </td>
       <td style="vertical-align: top;">Amplitude Center Width BackGround LorentzianRatio<br>
       </td>
@@ -265,6 +271,14 @@ Background</td>
       </td>
     </tr>
     <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">sigmoid</span><br>
+      </td>
+      <td style="vertical-align: top;">Sigmoidal S-shaped curve (similar to Dose Response)<br>
+      </td>
+      <td style="vertical-align: top; color: rgb(51, 204, 0);">1D</td>
+      <td style="vertical-align: top;">Amplitude Center Width BackGround</td>
+    </tr>
+<tr>
       <td style="vertical-align: top; font-weight: bold;">sine<br>
       </td>
       <td style="vertical-align: top;">Sine function<br>
@@ -389,13 +403,14 @@ settings are used.<br>
 <br>
 The function both creates a function file, and returns its function
 handle, that may be used with <span style="font-weight: bold;">ieval</span>
-anf <a href="Fit.html"><span style="font-weight: bold;">fits</span></a>.<br>
+and <a href="Fit.html"><span style="font-weight: bold;">fits</span></a>.<br>
 <pre style="margin-left: 40px;">&gt;&gt; [p,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);</pre>
 A quick definition, without using the dialog, can be performed with the
 syntax:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);</span></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);<br></pre>
 where&nbsp; <span style="font-weight: bold; font-style: italic;">p</span>
-is the vector that holds parameters. Axes are<span style="font-weight: bold; font-style: italic;"> x </span><span style="font-style: italic;">(rows)</span><span style="font-weight: bold; font-style: italic;">,y </span><span style="font-style: italic;">(columns)</span><span style="font-weight: bold; font-style: italic;">,z </span><span style="font-style: italic;">(pages)</span><span style="font-weight: bold; font-style: italic;">,t (time)</span><span style="font-weight: bold;">. </span><br>
+is the vector that holds parameters. Axes are<span style="font-weight: bold; font-style: italic;"> x </span><span style="font-style: italic;">(rows)</span><span style="font-weight: bold; font-style: italic;">,y </span><span style="font-style: italic;">(columns)</span><span style="font-weight: bold; font-style: italic;">,z </span><span style="font-style: italic;">(pages)</span><span style="font-weight: bold; font-style: italic;">,t (time)</span><span style="font-weight: bold;">. </span>The letter parameters <span style="font-style: italic; font-weight: bold;">a,b,c ... o</span> can be used in place of <span style="font-style: italic; font-weight: bold;">p(1), p(2),</span> ... Beware to use a model expression with element-wise division and multiplication operators (<span style="font-weight: bold;">./</span> and <span style="font-weight: bold;">.*</span>). The function builder is known to work well for 1D and 2D functions.<br>
+<br>
 The full syntax for the model builder is:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(</span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">'expression'<span style="color: rgb(0, 0, 0);">);<br></span></span></span></span>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(</span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">'expression', 'constraints'<span style="color: rgb(0, 0, 0);">);</span></span></span></span><br>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">('function_name', 'description', 'Parameter1 Parameter2 ...', ...<br>	<span style="color: rgb(204, 51, 204);">'expression'<span style="color: rgb(0, 0, 0);">, </span></span>[default parameter values], <span style="color: rgb(204, 51, 204);">'constraint'</span>);<br></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
 which is equivalent to:<br>
@@ -417,7 +432,7 @@ functions from simple functions</h4>
 To <span style="font-weight: bold;">assemble existing functions</span>
 into new ones, you may use <span style="font-style: italic;">e.g.</span>:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'gausslorz'</span>, <span style="color: rgb(204, 51, 204);">...<br>  'Gaussian+Lorentzian function'</span>, ...<br>  <span style="color: rgb(204, 51, 204);">'Amplitude1 Centre1 HalfWidth1 Background1 </span></span></span><span style="color: rgb(204, 51, 204);">Amplitude2 Centre2 HalfWidth2 Background2'</span>, ...<br>  <span style="color: rgb(204, 51, 204);">'<span style="color: rgb(51, 102, 255);">gauss</span>(p(1:4),x)+<span style="color: rgb(51, 102, 255);">lorz</span>(p(5:8),x)'</span>, ...<br>  <span style="color: rgb(204, 51, 204);">'automatic</span>', <span style="color: rgb(204, 51, 204);">'p(8)=0'</span>);<br><br>ifitmakefunc: Wrote function signal=gausslorz(p, x)<br>% Gaussian+Lorentzian function<br>% 8 parameter(s):  'Amplitude1' 'Centre1' 'HalfWidth1' 'Background1' 'Amplitude2' 'Centre2' 'HalfWidth2' 'Background2'<br>  p(8)=0;<br>  signal=gauss(p(1:4),x)+lorz(p(5:8),x);<br><br>Stored in: /home/farhi/gausslorz.m<br></pre>
-which creates a new function which is the sum of a Gaussian and a
+which creates a new function which is the <span style="font-weight: bold; font-style: italic;">sum</span> of a Gaussian and a
 Lorentzian. The second redundant Lorentzian Background <span style="font-style: italic;">p(8)</span> parameter
 is forced to 0 so that it does not correlate with the Gaussian
 Background <span style="font-style: italic;">p(4)</span>. The function
@@ -452,7 +467,17 @@ such as in:<br>
 <pre style="margin-left: 40px;">&gt;&gt; h = <span style="color: rgb(51, 102, 255);">ifitmakefunc</span>(<span style="color: rgb(204, 51, 204);">'conv_lorzdho_gauss', ...		<span style="color: rgb(0, 0, 0); font-style: italic;">				% name of the function</span><br><span style="color: rgb(0, 0, 0);"></span>                    'conv(Lorz+DHO, Gauss)</span>', ...	<span style="font-style: italic;">				% description</span><br>                    [ <span style="color: rgb(204, 51, 204);">'Lorz_Amplitude Lorz_Centre Lorz_HalfWidth Lorz_Background ' ... </span>	<span style="font-style: italic;">% Parameter names</span><br style="color: rgb(204, 51, 204);"><span style="color: rgb(204, 51, 204);">                      'DHO_Amplitude DHO_Centre DHO_HalfWidth DHO_Background DHO_Temperature ' ...</span><br style="color: rgb(204, 51, 204);"><span style="color: rgb(204, 51, 204);">                      'Gauss_Amplitude Gauss_Centre Gauss_HalfWidth Gauss_Background'</span> ], ...<br><span style="color: rgb(204, 51, 204);">                    'fconvn(lorz(p(1:4),x)+dho(p(5:9),x), gauss(p(10:13),x))'</span>);	<span style="font-style: italic;">	% expression</span><br></pre>
 Instead of the convolution, the correlation can also be computed using
 the function <span style="font-weight: bold;">fxcorr</span> similarly
-as <span style="font-style: italic;">fconv</span>.<br>
+as <span style="font-style: italic;">fconv</span>. <br>
+<br>
+<span style="color: rgb(255, 0, 0);">Warning: </span>The <span style="font-style: italic;">fconv</span> and <span style="font-style: italic;">fxcorr</span> functions require the <span style="font-style: italic;">x</span>
+axis not to be coarsely sampled. In case the initial data contains
+peaks described with few points underneath (e.g. less than 5),
+the fit model above will fail convolving. One solution is to
+artificially create a finer sampled axis, evaluate the function, and
+reduce back to the initial number of points. The constraints are used
+to define the new finer axis <span style="font-style: italic;">xx</span>, and the final result is re-sampled with 1 point out of 5 :<br>
+<pre style="margin-left: 40px;">&gt;&gt; h = <span style="color: rgb(51, 102, 255);">ifitmakefunc</span>(<span style="color: rgb(204, 51, 204);">'fconvn(lorz(p(1:4),xx)+dho(p(5:9),xx), gauss(p(10:13),xx)); signal=signal(1:5:end);', ...<br>	'xx=linspace(min(x),max(x), 5*length(x));'</span>);</pre>
+
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
 <h3><a class="mozTocH3" name="mozTocId854762"></a><span style="font-weight: bold;">How to write manually a model function</span></h3>
 We suggest that you start from the 'gauss' function in <span style="font-style: italic;">iFit/iFuncs, </span>and
@@ -465,7 +490,7 @@ function also exists in <span style="font-style: italic;">iFit/iFuncs/private/te
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2012-01-26 08:49:19 $ $Revision: 1.20 $
+$Date: 2012-02-10 16:10:26 $ $Revision: 1.21 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
