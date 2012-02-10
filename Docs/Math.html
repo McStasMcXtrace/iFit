@@ -10,6 +10,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Math operators</title>
 </head><body>
@@ -829,6 +831,11 @@ An other example of fit function with convolution is detailed in the <a href="iF
 Similarly, the <span style="font-weight: bold;">xcorr</span> operator
 computes the correlation of two signals. The auto-correlation is simply
 <span style="font-style: italic;">xcorr(a)</span>.<br>
+<br>
+The accuracy of the <span style="font-style: italic;">conv</span> and <span style="font-style: italic;">xcorr</span>
+operators depends on the axis sampling. A coarse axis sampling (that is
+a reduced number of points under a peak, e.g. less than 5) must be avoided. A rebinning
+of the objects using e.g. <span style="font-style: italic;">interp(objects, 5)</span> may solve such issue.<br>
 <h4><a class="mozTocH4" name="mozTocId759562"></a><span style="font-weight: bold;">Comparisons</span></h4>
 The usual comparison binary operators<br>
 <ul>
@@ -1200,7 +1207,7 @@ Signal, Error, and Monitor values are also re-ordered accordingly.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2012-01-26 08:49:19 $ $Revision: 1.24 $
+$Date: 2012-02-10 16:10:26 $ $Revision: 1.25 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
