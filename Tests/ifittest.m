@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -174,7 +174,7 @@ case 'Fit_5_fix'
 case 'Fit_6_limits'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   p=fits(a, 'gauss', [], 'fminimfil', [ 0.5 0.8 -1 0 ], [ 1 1.2 1 1 ]);
-  if abs(max(abs([ 0.6363         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01
+  if abs(max(abs([ 0.61         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01
     result = 'OK  fits(a, ''gauss'', [], ''fminralg'', [ 0.5 0.8 0 0 ], [ 1 1.2 1 1 ]);';
   else
     result = 'FAILED';
