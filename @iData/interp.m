@@ -15,7 +15,6 @@ function b = interp(a, varargin)
 %     b=interp(s, ..., 'method') uses specified method for interpolation as one of
 %                    linear (default), spline, cubic, or nearest
 %     b=interp(s, ..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays
-%     b=interp(s, ..., 'nan')  also interpolates on nan values
 %   Extrapolated data is set to 0 for the Signal, Error and Monitor.
 %
 % input:  s: object or array (iData)
@@ -25,9 +24,9 @@ function b = interp(a, varargin)
 %            dimensions 1 to ndims(s) (double vector/matrix)
 %         ntimes: original axis sub-division (integer)
 % output: b: object or array (iData)
-% ex:     b=interp(a, 'grid','nan');
+% ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -70,7 +69,7 @@ ntimes=0;
 
 % interpolation axes
 f_axes           = i_axes;
-requires_meshgrid= 0; has_grid_arg=0; has_nan_arg=0;
+requires_meshgrid= 0; has_grid_arg=0; 
 
 % parse varargin to overload defaults and set manually the axes
 axis_arg_index   = 0;
@@ -78,8 +77,6 @@ for index=1:length(varargin)
   c = varargin{index};
   if ischar(c) & ~isempty(strfind(c,'grid')) 
     requires_meshgrid=1; has_grid_arg=1;
-  elseif ischar(c) & ~isempty(strfind(c,'nan')) 
-    has_nan_arg=1;
   elseif ischar(c)                      % method (char)
     method = c;
   elseif isa(varargin{index}, 'iData')  % set interpolation axes: get axis from other iData object
@@ -107,6 +104,7 @@ for index=1:length(varargin)
   elseif ~isempty(c)
     iData_private_warning(mfilename,['Input argument ' num2str(index) ' of class ' class(c) ' size [' num2str(size(c)) '] is not supported. Ignoring.']);
   end
+  clear c
 end
 
 % check for method to be valid
@@ -122,7 +120,7 @@ if ndims(a) > 1
     % test for the target axes in case they are given as scalars (axes spacing)
     if isscalar(f_axes{index}) && ~isscalar(i_axes{index})
       x = i_axes{index}; x=unique(x); % also makes it a vector
-      f_axes{index} = min(x):f_axes{index}:max(x);
+      f_axes{index} = min(x):f_axes{index}:max(x); clear x
     end
     if isvector(f_axes{index}) % vectors should be oriented the right way
       d=ones(1, ndims(a));
@@ -158,6 +156,7 @@ if ntimes ~= 0
       a_len  = min(a_len, length(x)*10); % can not reduce or expand more 
                                            % than 10 times each axis
     end
+    clear x
     f_axes{index} = linspace(a_min,a_max,a_len+1);
   end
 end
@@ -174,31 +173,33 @@ if ~is_grid | (requires_meshgrid & is_grid ~= ndims(a))
     v = f_axes{index}; 
     v = unique(v(:));
     f_axes{index} = v;  % vector
+    clear v
   end
 end
 
 % test if interpolation axes have changed w.r.t input object
 has_changed = 0;
 for index=1:ndims(a)  
-  this_a = i_axes{index}; if isvector(this_a), this_a=this_a(:); end
-  this_i = f_axes{index}; if isvector(this_i), this_i=this_i(:); end
-  if ~isequal(this_a, this_i)
+  this_i = i_axes{index}; if isvector(this_i), this_i=this_i(:); end
+  this_f = f_axes{index}; if isvector(this_f), this_f=this_f(:); end
+  if ~isequal(this_i, this_f)
     % length changed ?
-    if length(this_a) ~= length(this_i)
+    if length(this_i) ~= length(this_f)
       % not same length
       has_changed=1; 
-    elseif prod(size(this_a)) ~= prod(size(this_i)) % nb of elements has changed, including matrix axes ?
+    elseif prod(size(this_i)) ~= prod(size(this_f)) % nb of elements has changed, including matrix axes ?
       has_changed=1; 
-    elseif all(abs(this_a(:) - this_i(:)) > 1e-4*abs(this_a(:) + this_i(:))/2)
+    elseif all(abs(this_i(:) - this_f(:)) > 1e-4*abs(this_i(:) + this_f(:))/2)
       % or axis variation bigger than 0.01 percent anywhere
       has_changed=1;
     end
   end
+  clear this_i this_f
 end
 
 % get Signal, error and monitor.
 i_signal   = get(a,'Signal');
-if any(isnan(i_signal(:))) && has_nan_arg, has_changed=1; end
+if any(isnan(i_signal(:))), has_changed=1; end
 if ~has_changed & (~requires_meshgrid | is_grid), 
   iData_private_warning('exit');
   return; 
@@ -255,23 +256,6 @@ if requires_meshgrid
     end
   end
 end
-% handle 'nan' option: remove the values from the axes/signal, and make it nD vectors
-if has_nan_arg
-  i_signal = i_signal(:);
-  index = find(~isnan(i_signal));
-  i_signal = i_signal(index);
-  if length(i_axes) == 1 || (ndims(a) == 1 && isvector(a) == 1)
-    % nothing to do as we have only one axis, no grid
-  else
-    % call ndgrid
-    [i_axes{1:ndims(a)}] = ndgrid(i_axes{:});
-    for i=1:ndims(a)
-      x = i_axes{i}; x=x(:); 
-      x = x(index); 
-      i_axes{i} = x;
-    end
-  end
-end
 
 % make sure input axes are monotonic. output axes should be OK.
 i_nonmonotonic=0;
@@ -281,25 +265,39 @@ for index=1:ndims(a)
   end
 end
 
-if i_nonmonotonic && ~has_nan_arg
-  for index=1:ndims(a)  % apply unique on axes and reorder signal
-    i_idx{index}=1:size(a, index);
-    [i_axes{index}, i_idx{index}] = unique(i_axes{index});
-    if length(i_idx{index}) ~= size(a,index)
-      for j=1:ndims(a), 
-        if j ~= index, f_idx{j}=':';
-        else           f_idx{j}=i_idx{index}; end
-      end
-      i_signal =i_signal(f_idx{:});
-      if isnumeric(i_error) && length(i_error) > 1, 
-          try   i_error  =i_error(f_idx{:});
-          catch i_error=[]; end
-      end
-      if isnumeric(i_error) && length(i_monitor) > 1, 
-          try   i_monitor=i_monitor(f_idx{:});
-          catch i_monitor=[]; end
+
+if i_nonmonotonic
+  % this may fail
+  i_axes_sav   =i_axes;
+  i_signal_sav =i_signal;
+  i_error_sav  =i_error;
+  i_monitor_sav=i_monitor;
+  try
+    for index=1:ndims(a)  % apply unique on axes and reorder signal
+      i_idx{index}=1:size(a, index);
+      [i_axes{index}, i_idx{index}] = unique(i_axes{index});
+      if length(i_idx{index}) ~= size(a,index)
+        for j=1:ndims(a), 
+          if j ~= index, f_idx{j}=':';
+          else           f_idx{j}=i_idx{index}; end
+        end
+        i_signal =i_signal(f_idx{:});
+        if isnumeric(i_error) && length(i_error) > 1, 
+            try   i_error  =i_error(f_idx{:});
+            catch i_error=[]; end
+        end
+        if isnumeric(i_error) && length(i_monitor) > 1, 
+            try   i_monitor=i_monitor(f_idx{:});
+            catch i_monitor=[]; end
+        end
       end
     end
+  catch
+  % the signal can not be re-ordered (signal and axes are highly nonmonotonic)
+    i_axes   =i_axes_sav;
+    i_signal =i_signal_sav;
+    i_error  =i_error_sav;
+    i_monitor=i_monitor_sav;
   end
 end
 
@@ -321,9 +319,11 @@ f_signal = iData_interp(i_axes, i_signal, f_axes, method);
 if isnumeric(i_error) && length(i_error) > 1, 
   f_error  = iData_interp(i_axes, i_error,  f_axes, method); 
 else f_error = i_error; end
+clear i_error
 if isnumeric(i_monitor) && length(i_monitor) > 1, 
   f_monitor= iData_interp(i_axes, i_monitor,f_axes, method);
 else f_monitor = i_monitor; end
+clear i_monitor i_axes
 
 % get back to original Signal class
 if ~strcmp(i_class, 'double')
@@ -337,12 +337,12 @@ if isvector(i_signal) && size(i_signal,1)==1
     f_error  = transpose(f_error);
     f_monitor= transpose(f_monitor);
 end
+clear i_signal
 
 % transfer Data and Axes
-Data = a.Data;
-b.Data.Signal =f_signal;
-b.Data.Error  =f_error;
-b.Data.Monitor=f_monitor;
+b.Data.Signal =f_signal;  clear f_signal
+b.Data.Error  =f_error;   clear f_error
+b.Data.Monitor=f_monitor; clear f_monitor
 for index=1:length(f_axes)
   b.Data.([ 'axis' num2str(index) ]) = f_axes{index};
 end
@@ -384,6 +384,7 @@ if length(i_signal) == numel(i_signal)
   for index=1:length(i_axes)
     x=i_axes{index}; x=x(:); i_axes{index}=x;
   end
+  clear x
 end
 switch length(i_axes)
 case 1    % 1D
@@ -399,9 +400,7 @@ otherwise % nD, n>1
     elseif length(i_axes) == 3
       f_signal = griddata3(i_axes{:}, i_signal, f_axes{:}, method);
     else
-      X = cell2mat(i_axes);
-      xi= cell2mat(f_axes);
-      f_signal = griddatan(X, i_signal, xi, method);
+      f_signal = griddatan(cell2mat(i_axes), i_signal, cell2mat(f_axes), method);
     end
   else
     % f_axes must be an ndgrid result, and monotonic

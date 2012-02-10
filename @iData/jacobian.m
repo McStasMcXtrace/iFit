@@ -30,7 +30,7 @@ function b = jacobian(a, varargin)
 % ex:     a=iData(peaks); x=linspace(1,2,size(a,1));
 %         g=jacobian(a, x, [],'half X');
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/del2, diff, iData/gradient, iData/interp, iData/setaxis, gradient
 
 if nargin <= 1,
@@ -127,11 +127,11 @@ gf = gradient_axis(f_axes);
 % now divide the gradients to form the Jacobian
 cmd=a.Command;
 b = copyobj(a);
-s = get(b,'Signal');
-e = get(b,'Error');
 j = abs(genop(@rdivide, gf, gi));
-s = s.*j;
-e = e.*j;
+clear gi gf
+s = get(b,'Signal').*j;
+e = get(b,'Error') .*j;
+clear j
 
 % assemble the resulting object
 [dummy, sl] = getaxis(b, '0');
@@ -162,7 +162,7 @@ function gp=gradient_axis(ax)
     grad_length = ndims(s);
     if isvector(s), grad_length=1; end
     g = cell(1,grad_length);
-    [g{:}]=gradient(s);
+    [g{:}]=gradient(s); % compute the gradient there
     gs = [];
     % now computes the product for a given gradient(axis)
     for dim=1:grad_length

@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -40,19 +40,23 @@ for i = 1:length(S)     % can handle multiple index levels
       iData_private_warning('enter',mfilename);
       
       ds=iData_getAliasValue(b,'Signal'); 
-      de=iData_getAliasValue(b,'Error'); 
-      dm=iData_getAliasValue(b,'Monitor');
-      
       d=ds(s.subs{:});                          % b(indices)
       b=set(b,'Signal', d);  b=setalias(b,'Signal', d);
-
+      clear ds
+      
+      de=iData_getAliasValue(b,'Error'); 
       if numel(de) > 1 && isnumeric(de) 
-        d=de(s.subs{:}); b=set(b,'Error', d); b = setalias(b, 'Error', d);
+        try % in case Error=sqrt(Signal), the Error is automatically changed when Signal is -> fail
+          d=de(s.subs{:}); b=set(b,'Error', d); b = setalias(b, 'Error', d);
+        end
       end
+      clear de
 
+      dm=iData_getAliasValue(b,'Monitor');
       if numel(dm) > 1 && isnumeric(dm)
         d=dm(s.subs{:}); b=set(b,'Monitor', d);  b = setalias(b, 'Monitor', d);
       end
+      clear dm
 
       % must also affect axis
       for index=1:ndims(b)
@@ -127,6 +131,9 @@ for i = 1:length(S)     % can handle multiple index levels
       b = getaxis(b);
     elseif any(strcmpi(fieldname, fieldnames(b))) % structure/class def fields: b.field
       b = b.(fieldname);
+      if isnumeric(b) && any(strcmp(fieldname, {'Date','ModificationDate'}))
+        b = datestr(b);
+      end
     else
       b = iData_getAliasValue(b,fieldname); % get alias value from iData: b.alias MAIN SPENT TIME
     end

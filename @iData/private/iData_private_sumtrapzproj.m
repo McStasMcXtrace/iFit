@@ -9,7 +9,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
@@ -33,22 +33,19 @@ iData_private_warning('enter',mfilename);
 % in all cases, resample the data set on a grid
 %a = interp(a,'grid');
 
-S.type = '()';
-S.subs = cell(1, ndims(a));
+axes = cell(1, ndims(a));
 rebin  = 0;
 % make axes single vectors for sum/trapz/... to work
 for index=1:ndims(a)
   [x, xlab] = getaxis(a, index);
   [dummy, i,j] = unique(x);
+  axes{index} = dummy;
   if length(x) < length(i)
-    S.subs{index} = i;
     rebin = 1;
-  else
-    S.subs = ':';
   end
 end
 if rebin
-  a = subsref(a, S);
+  a = interp(a, axes{:});
 end
 
 s = iData_private_cleannaninf(get(a,'Signal'));

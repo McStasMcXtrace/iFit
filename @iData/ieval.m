@@ -21,7 +21,7 @@ function [b, Info] = ieval(a, model, pars, varargin)
 % ex:     b=ieval(a,'gauss',[1 2 3 4]); ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
 %           ieval(a,'gauss','guess')
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, feval, iData/fits
 
 % private functions: 
@@ -41,7 +41,7 @@ end
 if length(a) > 1
   b = a;
   for index=1:length(a(:))
-    b(index) = ieval(a(index), model, pars, varargin);
+    b(index) = ieval(a(index), model, pars, varargin{:});
   end
   b = reshape(b, size(a));
   return
@@ -80,24 +80,24 @@ if ischar(model) | isa(model, 'function_handle') % a single model ==============
   % when no varargin specified, create one if guess or identify requested
   if nargin < 4 & ~isempty(a)
     varargin = {};
-
-    if isempty(pars) || (ischar(pars) && any(strcmp(pars,{'guess','identify'})))
-      % make sure Model has the right dimensionality: Info.Dimension, else squeeze
-      Signal = get(a,'Signal'); Signal(~isfinite(Signal)) = 0;
-      m = get(a,'Monitor'); m=real(m);
-      if not(all(m == 1 | m == 0)),
-        Signal = genop(@rdivide,Signal,m);
-      end
-      % determine indexes on which sum is required. The final Model
-      % must match model_Info.Dimension
-      if ~isvector(Signal)
-        for i=ndims(a):-1:Info.Dimension
-          Signal=trapz(Signal, i)/size(Signal,i);  % reduce Model dimensionality
-        end
-      end
-      
-      varargin = { Signal };
+  end
+  if isempty(pars) || (ischar(pars) && any(strcmp(pars,{'guess','identify'})))
+    % make sure Model has the right dimensionality: Info.Dimension, else squeeze
+    Signal = get(a,'Signal'); Signal(~isfinite(Signal)) = 0;
+    m = get(a,'Monitor'); m=real(m);
+    if not(all(m == 1 | m == 0)),
+      Signal = genop(@rdivide,Signal,m);
     end
+    % determine indexes on which sum is required. The final Model
+    % must match model_Info.Dimension
+    if ~isvector(Signal)
+      for i=ndims(a):-1:Info.Dimension
+        Signal=trapz(Signal, i)/size(Signal,i);  % reduce Model dimensionality
+      end
+    end
+    
+    varargin = { Signal varargin{:} };
+    clear Signal
   end
 
   % evaluate model with specified axes. This also works for guess/identify
@@ -166,7 +166,7 @@ elseif iscell(model) % a set of models =========================================
     elseif ~isempty(Signal)
       varargin = { Signal, varargin{:} };
     end 
-
+    clear Signal
     
     if isempty(pars) || (ischar(pars) && any(strcmp(pars,{'guess','identify'})))
       % obtained guessed parameters if pars is missing or explicitely requested
@@ -205,6 +205,8 @@ elseif iscell(model) % a set of models =========================================
       model_ndim   = model_value.Dimension;
       moldel_value = model_value.Values;
     end
+    clear model_value
+    
     model_ndims ={ model_ndims{:} ; model_ndim };
     axis_index  =axis_index+model_Info.Dimension;
     pars_index  =pars_index+length(model_Info.Parameters);
@@ -258,6 +260,7 @@ if isnumeric(Model)
   if not(all(m == 1 | m == 0)) && (numel(m) == 1 || numel(m) == numel(Model)),
     Model = Model.*m;
   end
+  clear m
   setalias(b,'Signal', Model, char(model));
   b.Title = [ char(model) '(' b.Title ')' ];
   b.Label = b.Title;
