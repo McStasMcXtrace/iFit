@@ -1,5 +1,5 @@
-function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars, options, constraints, ub)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmin_private_wrapper(OPTIMIZER, FUN,PARS,[OPTIONS],[constraints]) wrapper to optimizers
+function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars, options, constraints, varargin)
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fmin_private_wrapper(OPTIMIZER, FUN,PARS,[OPTIONS],[constraints], ...) wrapper to optimizers
 %
 %  Checks for input arguments and options. Then calls the optimizer with a wrapped 
 %  inline_objective function, which applies constraints and makes stop condition checks.
@@ -22,6 +22,9 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %     problem.x0:          starting parameter values
 %     problem.options:     optimizer options (see below)
 %     problem.constraints: optimization constraints
+%   fmin_private_wrapper(optimizer, ..., args, ...)
+%     sends additional arguments to the objective function
+%       criteria = FUN(pars, args, ...)
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -29,9 +32,9 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %
 % Input:
 %  OPTIMIZER is the name/handle to an optimizer function, or '' for default
-%  FUN is a function handle (anonymous function or inline) with a loss
-%  function, which may be of any type, and needn't be continuous. It does,
-%  however, need to return a single/vector value.
+%
+%  FUN is the function to minimize (handle or string): criteria = FUN(PARS)
+%  It needs to return a single value or vector.
 %
 %  PARS is a vector with initial guess parameters. You must input an
 %  initial guess.
@@ -39,12 +42,16 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %  OPTIONS is a structure with settings for the simulated annealing, 
 %  compliant with optimset. Default options may be obtained with
 %     o=fmin_private_wrapper(optimizer,'defaults')
+%  An empty OPTIONS sets the default configuration.
 %
 %  constraints may be specified as a structure
 %   constraints.min=   vector of minimal values for parameters
 %   constraints.max=   vector of maximal values for parameters
 %   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
 %   constraints.step=  vector of maximal parameter changes per iteration
+%  An empty CONSTRAINTS sets no constraints.
+%
+%  Additional arguments are sent to the objective function.
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -53,7 +60,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -100,7 +107,7 @@ if nargin < 5
   constraints = [];
 end
 if nargin < 6
-  ub = [];
+  varargin = {};
 end
 
 if strcmp(fun,'defaults')
@@ -114,36 +121,49 @@ elseif nargin == 2 && isstruct(fun)
   elseif isfield(fun, 'Guess'),       pars=fun.Guess; end
   if     isfield(fun, 'options'),     options=fun.options; end
   if     isfield(fun, 'constraints'), constraints=fun.constraints; end 
-  if     isfield(fun, 'inline_objective'),   tmp=fun.inline_objective; fun=[]; fun=tmp; 
+  if     isfield(fun, 'objective'),   tmp=fun.objective; fun=[]; fun=tmp; 
   elseif isfield(fun, 'model'),       tmp=fun.model; fun=[]; fun=tmp;
   elseif isfield(fun, 'f'),           tmp=fun.f; fun=[]; fun=tmp;
   elseif isfield(fun, 'function'),    tmp=fun.function; fun=[]; fun=tmp; end
 elseif nargin < 3
-  error([ 'syntax is: ' inline_localChar(optimizer) '(inline_objective, parameters, ...)' ] );
+  error([ 'syntax is: ' inline_localChar(optimizer) '(objective, parameters, ...)' ] );
+end
+if isempty(pars)
+  error([ inline_localChar(optimizer) ': starting parameters (3rd argument) must not be empty.' ] );
 end
 
 % default arguments when missing
 if isempty(options)
-  options=feval(optimizer, 'defaults');
+  options=optimizer;
 end
-if length(constraints) & isnumeric(constraints) 
-  if nargin == 4,               % given as fixed index vector
-    fixed = constraints; constraints=[];
+if ischar(options) | isa(options, 'function_handle')
+  options=feval(options, 'defaults');
+end
+if isstruct(pars)
+  pars=cell2mat(struct2cell(pars));
+end
+if length(constraints)==length(pars) & (isnumeric(constraints) | islogical(constraints))
+  if nargin < 6,               % given as fixed index vector
+    fixed             = constraints; 
+    constraints       = [];
     constraints.fixed = fixed;  % avoid warning for variable redefinition.
-  elseif nargin == 5            % given as lb,ub parameters (nargin==5)
-    lb = constraints; clear constraints;
+  elseif isnumeric(varargin{1}) && ~isempty(varargin{1}) ...
+      && length(constraints) == length(varargin{1})
+    % given as lb,ub parameters (nargin==6)
+    lb = constraints; 
+    ub = varargin{1};
+    varargin(1) = []; % remove the 'ub' from the additional arguments list
+    constraints     = [];
     constraints.min = lb;
     constraints.max = ub;
   end
 end
 
-if isfield(constraints, 'min')  % test if min values are valid
-  index=find(isnan(constraints.min));
-  constraints.min(index) = -2*abs(pars(index));
+if ~isempty(constraints) && ~isstruct(constraints)
+  error([ inline_localChar(optimizer) ': The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
 end
-if isfield(constraints, 'max')  % test if max values are valid
-  index=find(isnan(constraints.max));
-  constraints.max(index) = 2*abs(pars(index));
+if ~isstruct(options)
+  error([ inline_localChar(optimizer) ': The options argument is of class ' class(options) '. Should be a string or a struct' ]);
 end
 
 constraints.parsStart       = pars;  % used when applying constraints
@@ -158,6 +178,7 @@ constraints.funcCount       = 0;
 constraints.message         = '';
 
 options.optimizer = optimizer;
+if ~isfield(options,'Display') options.Display=''; end
 
 options=fmin_private_check(options, feval(options.optimizer,'defaults'));
 t0=clock;
@@ -176,7 +197,7 @@ if ischar(options.TolFun)
   options.TolFunChar = options.TolFun;
   if options.TolFun(end)=='%'
     options.TolFun(end)='';
-    fval = inline_objective(fun, pars);
+    fval = inline_objective(fun, pars, varargin{:});
     options.TolFun = abs(str2num(options.TolFun)*fval/100);
   else
     options.TolFun = str2num(options.TolFun);
@@ -239,7 +260,7 @@ case {'cmaes','fmincmaes'}
     sigma = 0.3;
   end
 
-  [pars, fval, iterations, exitflag, output] = cmaes(@(pars) inline_objective(fun, pars), pars, ...
+  [pars, fval, iterations, exitflag, output] = cmaes(@(pars) inline_objective(fun, pars, varargin{:}), pars, ...
     sigma, hoptions);
 
   if     strmatch(exitflag, 'tolx')
@@ -271,22 +292,22 @@ case {'cmaes','fmincmaes'}
 case {'ga','fminga','GA'}          
 % genetic algorithm ------------------------------------------------------------
   constraints = inline_constraints_minmax(pars, constraints);
-  [pars,fval,iretations,output] = GA(@(pars) inline_objective(fun, pars), pars, options,constraints);
+  [pars,fval,iretations,output] = GA(@(pars) inline_objective(fun, pars, varargin{:}), pars, options,constraints);
 case {'gradrand','ossrs','fmingradrand'}
 % random gradient --------------------------------------------------------------
-  [pars,fval,iterations] = ossrs(pars, @(pars) inline_objective(fun, pars), options);
+  [pars,fval,iterations] = ossrs(pars, @(pars) inline_objective(fun, pars, varargin{:}), options);
 case {'hooke','fminhooke'}
 % Hooke-Jeeves direct search ---------------------------------------------------
-  [pars,histout] = hooke(pars, @(pars) inline_objective(fun, pars), ...
+  [pars,histout] = hooke(pars, @(pars) inline_objective(fun, pars, varargin{:}), ...
                        options.MaxFunEvals, 2.^(-(0:options.MaxIter)), options.TolFun);
   iterations      = size(histout,1);
 case {'imfil','fminimfil'}
 % Unconstrained Implicit filtering (version 1998) ------------------------------
-  [pars,fval,iterations,output] = imfil(pars, @(pars) inline_objective(fun, pars), options); 
+  [pars,fval,iterations,output] = imfil(pars, @(pars) inline_objective(fun, pars, varargin{:}), options); 
 case {'fminlm','LMFsolve'}
 % Levenberg-Maquardt steepest descent ------------------------------------------
   % LMFsolve minimizes the sum of the squares of the inline_objective: sum(inline_objective.^2)
-  [pars, fval, iterations, exitflag] = LMFsolve(@(pars) inline_objective_lm(fun, pars), pars, ...
+  [pars, fval, iterations, exitflag] = LMFsolve(@(pars) inline_objective_lm(fun, pars, varargin{:}), pars, ...
            'Display',0, 'FunTol', options.TolFun, 'XTol', options.TolX, ...
            'MaxIter', options.MaxIter, 'Evals',options.MaxFunEvals);
   switch exitflag
@@ -305,11 +326,11 @@ case {'powell','fminpowell'}
   end
   options.algorithm  = [ 'Powell Search (by Secchi) [' options.optimizer '/' t ']' ];
   constraints = inline_constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = powell(@(pars) inline_objective(fun, pars), pars, options);
+  [pars,fval,exitflag,output] = powell(@(pars) inline_objective(fun, pars, varargin{:}), pars, options);
 case {'pso','fminpso'}
 % particle swarm ---------------------------------------------------------------
   constraints = inline_constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = PSO(@(pars) inline_objective(fun, pars),pars, ...
+  [pars,fval,exitflag,output] = PSO(@(pars) inline_objective(fun, pars, varargin{:}),pars, ...
      constraints.min(:),constraints.max(:),options);
   message = output.message;
 case {'ralg','fminralg','solvopt'}
@@ -324,13 +345,13 @@ case {'ralg','fminralg','solvopt'}
   opt(8) = 1e-11;
 
   % call the optimizer
-  [pars,fval,out,iterations, message] = ralg(pars, @(pars) inline_objective(fun, pars), ...
+  [pars,fval,out,iterations, message] = ralg(pars, @(pars) inline_objective(fun, pars, varargin{:}), ...
     [], opt,[],[], [], options.MaxFunEvals, options.FunValCheck);
   if out(9) < 0, exitflag = out(9); 
   else exitflag=0; end
 case {'fminsearch','fminsearchbnd'}
 % Nelder-Mead simplex, with constraints ----------------------------------------
-  [pars,fval,exitflag,output] = fminsearch(@(pars) inline_objective(fun, pars), pars, options);
+  [pars,fval,exitflag,output] = fminsearch(@(pars) inline_objective(fun, pars, varargin{:}), pars, options);
 %     1  Maximum coordinate difference between current best point and other
 %        points in simplex is less than or equal to TolX, and corresponding 
 %        difference in function values is less than or equal to TolFun.
@@ -343,12 +364,12 @@ case {'fminsearch','fminsearchbnd'}
 case {'simpsa','fminsimpsa','SIMPSA'}
 % simplex/simulated annealing --------------------------------------------------
   constraints = inline_constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = SIMPSA(@(pars) inline_objective(fun, pars), pars, ...
+  [pars,fval,exitflag,output] = SIMPSA(@(pars) inline_objective(fun, pars, varargin{:}), pars, ...
     constraints.min(:),constraints.max(:),options);
 case {'SCE','fminsce'}
 % shuffled complex evolution ---------------------------------------------------
   constraints = inline_constraints_minmax(pars, constraints);
-  [pars,fval,exitflag,output] = SCE(@(pars) inline_objective(fun, pars), pars, ...
+  [pars,fval,exitflag,output] = SCE(@(pars) inline_objective(fun, pars, varargin{:}), pars, ...
     constraints.min(:),constraints.max(:),options);
 case {'hPSO','fminswarmhybrid'}
   constraints = inline_constraints_minmax(pars, constraints);
@@ -383,13 +404,13 @@ case {'hPSO','fminswarmhybrid'}
   else
     hoptions.maxv = abs(constraints.max(:)-constraints.min(:))/2;
   end
-  [pars,fval,iterations,output] = hPSO(@(pars) inline_objective(fun, pars), pars, hoptions);
+  [pars,fval,iterations,output] = hPSO(@(pars) inline_objective(fun, pars, varargin{:}), pars, hoptions);
 case {'Simplex','fminsimplex'}
 % Nelder-Mead simplex state machine --------------------------------------------
   constraints = inline_constraints_minmax(pars, constraints);
   [pars, out]=Simplex('init', pars, abs(constraints.max(:)-constraints.min(:))/10);  % Initialization
   for iterations=1:options.MaxIter
-    fval = feval(@(pars) inline_objective(fun, pars), pars);
+    fval = feval(@(pars) inline_objective(fun, pars, varargin{:}), pars);
     [pars,out]=Simplex( fval );
     if isfield(options,'TolFunChar')
       options.TolFun = options.TolFunChar;
@@ -416,9 +437,9 @@ case {'Simplex','fminsimplex'}
   pars=Simplex('centroid'); % obtain the final value.
 case {'cgtrust','fmincgtrust'}
 % Steihaug Newton-CG-Trust region algorithm ------------------------------------
-  [pars,histout] = cgtrust(pars, @(pars) inline_objective(fun, pars), ...
+  [pars,histout] = cgtrust(pars, @(pars) inline_objective(fun, pars, varargin{:}), ...
     [ options.TolFun .1 options.MaxIter options.MaxIter], options.TolX*options.TolX);
-% [pars,histout] = levmar(pars, @(pars) inline_objective(fun, pars), options.TolFun, options.MaxIter);
+% [pars,histout] = levmar(pars, @(pars) inline_objective(fun, pars, varargin{:}), options.TolFun, options.MaxIter);
   iterations      = size(histout,1);
 % not so efficient optimizers ==================================================
 case {'fminanneal','anneal'}  
@@ -426,11 +447,11 @@ case {'fminanneal','anneal'}
   options.MaxTries   = options.MaxIter/10;
   options.StopVal    = options.TolFun;
   options.Verbosity=0;
-  [pars,fval,iterations,exitflag] = anneal(@(pars) inline_objective(fun, pars), pars(:)', options);
+  [pars,fval,iterations,exitflag] = anneal(@(pars) inline_objective(fun, pars, varargin{:}), pars(:)', options);
   if exitflag==-7,message='Maximum consecutive rejections exceeded (anneal)'; end
 case {'fminbfgs','bfgs'}      
 % Broyden-Fletcher-Goldfarb-Shanno ---------------------------------------------
-  [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) inline_objective(fun, pars), options.TolFun, options.MaxIter);
+  [pars, histout, costdata,iterations] = bfgswopt(pars(:), @(pars) inline_objective(fun, pars, varargin{:}), options.TolFun, options.MaxIter);
   iterations = size(histout,1);
 case {'fminkalman','kalmann','ukfopt'}
 % unscented Kalman filter ------------------------------------------------------
@@ -438,12 +459,12 @@ case {'fminkalman','kalmann','ukfopt'}
               options.TolFun, norm(pars)*eye(length(pars)), 1e-6*eye(length(pars)), 1e-6);
 case {'ntrust','fminnewton'}
 % Dogleg trust region, Newton model --------------------------------------------
-  [pars,histout,costdata] = ntrust(pars(:),@(pars) inline_objective(fun, pars), ...
+  [pars,histout,costdata] = ntrust(pars(:),@(pars) inline_objective(fun, pars, varargin{:}), ...
        options.TolFun,options.MaxIter);
   iterations      = size(histout,1);
 case {'buscarnd','fminrand'}
 % adaptive random search -------------------------------------------------------
-  [pars,fval]=buscarnd(@(pars) inline_objective(fun, pars), pars, options);
+  [pars,fval]=buscarnd(@(pars) inline_objective(fun, pars, varargin{:}), pars, options);
 otherwise
   options = feval(optimizer, 'defaults');
   [pars,fval,exitflag,output] = fmin_private_wrapper(options.optimizer, fun, pars, ...
@@ -512,7 +533,7 @@ output.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./s
 
 if length(pars)^2*output.fevalDuration/2 < 60 % should spend less than a minute to compute the Hessian
   try
-  [dp, covp, corp,jac,hessian]  = inline_estimate_uncertainty(fun, pars);
+  [dp, covp, corp,jac,hessian]  = inline_estimate_uncertainty(fun, pars, options, varargin{:});
   if ~isempty(covp)
     output.parsHessianUncertainty = reshape(abs(dp), size(pars));
     output.parsHessianCovariance  = covp;
@@ -550,15 +571,15 @@ return  % actual end of optimization
 % ==============================================================================
 % Use nested functions as the criteria wrapper, to access 'constraints' and 'options'
   
-  function c = inline_objective(fun, pars)
+  function c = inline_objective(fun, pars, varargin)
   % criteria to minimize, fun returns a scalar, or vector which is summed
-  
+    if nargin < 3, args={}; end
     % apply constraints on pars first
     pars                = inline_apply_constraints(pars,constraints,options); % private function
     
     % compute criteria
     t = clock;
-    c = feval(fun, pars);         % function=row vector, pars=column
+    c = feval(fun, pars, varargin{:});         % function=row vector, pars=column
     c  = sum(c);
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
@@ -585,15 +606,15 @@ return  % actual end of optimization
   
   % LMFsolve supports criteria as a vector of residuals, which sum is the criteria
   % but gradient is used to guide the optimizer
-  function c = inline_objective_lm(fun, pars)
+  function c = inline_objective_lm(fun, pars, varargin)
   % criteria to minimize, with gradient support (approx)
-    
+    if nargin < 3, args={}; end
     % apply constraints on pars first
     pars                = inline_apply_constraints(pars,constraints,options); % private function
 
     % compute criteria
     t = clock;
-    c = feval(fun, pars); % function=row vector, pars=column
+    c = feval(fun, pars, varargin{:}); % function=row vector, pars=column
     if length(c) == 1,
       c = c*ones(1,10)/10;
     end
@@ -852,7 +873,7 @@ function [istop, message] = fmin_private_check(pars, fval, funccount, options, c
 end % fmin_private_check
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, options)
+function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, options, args)
 % [dp,covp,corp] = inline_estimate_uncertainty(fun, pars, options)
 % 
 % Estimates the uncertainty around an optimization solution using
@@ -884,13 +905,14 @@ function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, opt
 
   n=length(pars);
   if nargin < 3, options=[]; end
+  if nargin < 4, args={}; end
   if isfield(options,'TolX') TolX = options.TolX; 
   else TolX = 0; end
 
   % initialize the curvature matrix alpha = '1/2 d2 Chi2/dpi/dpj' (half Hessian)
   alpha= zeros(n);
   dp   = zeros(size(pars));
-  chisq= sum(feval(fun, pars));
+  chisq= sum(feval(fun, pars, args{:}));
   
   covp = [];
   corp = [];
@@ -904,20 +926,21 @@ function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, opt
   else
     dp   = TolX;
   end
+  dp(find(dp == 0)) = 1e-5;
 
   % we now build the error matrix 'alpha' and the Jacobian
   jac = zeros(n,1);
   for i=1:n
-    p    = pars; p(i) = p(i)+dp(i); chi1 = sum(feval(fun, p));
-    p    = pars; p(i) = p(i)-dp(i); chi2 = sum(feval(fun, p));
+    p    = pars; p(i) = p(i)+dp(i); chi1 = sum(feval(fun, p, args{:}));
+    p    = pars; p(i) = p(i)-dp(i); chi2 = sum(feval(fun, p, args{:}));
     alpha(i,i) = (chi1-2*chisq+chi2)/2/dp(i)/dp(i); % diagonal terms
     jac(i) = (chi1-chisq)/dp(i);
     
     for j=i+1:n
-      p=pars; p(i)=p(i)+dp(i); p(j)=p(j)+dp(j); chi1=sum(feval(fun,p));
-      p=pars; p(i)=p(i)+dp(i); p(j)=p(j)-dp(j); chi2=sum(feval(fun,p));
-      p=pars; p(i)=p(i)-dp(i); p(j)=p(j)+dp(j); chi3=sum(feval(fun,p));
-      p=pars; p(i)=p(i)-dp(i); p(j)=p(j)-dp(j); chi4=sum(feval(fun,p));
+      p=pars; p(i)=p(i)+dp(i); p(j)=p(j)+dp(j); chi1=sum(feval(fun,p, args{:}));
+      p=pars; p(i)=p(i)+dp(i); p(j)=p(j)-dp(j); chi2=sum(feval(fun,p, args{:}));
+      p=pars; p(i)=p(i)-dp(i); p(j)=p(j)+dp(j); chi3=sum(feval(fun,p, args{:}));
+      p=pars; p(i)=p(i)-dp(i); p(j)=p(j)-dp(j); chi4=sum(feval(fun,p, args{:}));
       alpha(i,j)=(chi1-chi2-chi3+chi4)/8/dp(i)/dp(j);
       alpha(j,i)=alpha(i,j); % off diagonal terms (symmetric)
     end

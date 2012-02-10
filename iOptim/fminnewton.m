@@ -1,7 +1,8 @@
 function [pars,fval,exitflag,output] = fminnewton(varargin)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminnewton(FUN,PARS,[OPTIONS],[CONSTRAINTS]) Newton search
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminnewton(FUN,PARS,[OPTIONS],[CONSTRAINTS], ...) Newton search
 %
 % This minimization method uses the Dogleg trust region, Newton model, dense algorithm 
+% The objective function has syntax: criteria = objective(p)
 % 
 % Calling:
 %   fminnewton(fun, pars) asks to minimize the 'fun' objective function with starting
@@ -19,13 +20,17 @@ function [pars,fval,exitflag,output] = fminnewton(varargin)
 %     problem.x0:          starting parameter values
 %     problem.options:     optimizer options (see below)
 %     problem.constraints: optimization constraints
+%   fminnewton(..., args, ...)
+%     sends additional arguments to the objective function
+%       criteria = FUN(pars, args, ...)
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
 %   [x,fval] = fminnewton(banana,[-1.2, 1])
 %
 % Input:
-%  FUN is the function to minimize (handle or string).
+%  FUN is the function to minimize (handle or string): criteria = FUN(PARS)
+%  It needs to return a single value or vector.
 %
 %  PARS is a vector with initial guess parameters. You must input an
 %  initial guess.
@@ -33,12 +38,16 @@ function [pars,fval,exitflag,output] = fminnewton(varargin)
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
 %     o=fminnewton('defaults')
+%  An empty OPTIONS sets the default configuration.
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min=   vector of minimal values for parameters
 %   constraints.max=   vector of maximal values for parameters
 %   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
 %   constraints.step=  vector of maximal parameter changes per iteration
+%  An empty CONSTRAINTS sets no constraints.
+%
+%  Additional arguments are sent to the objective function.
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -46,10 +55,11 @@ function [pars,fval,exitflag,output] = fminnewton(varargin)
 %          FVAL is the value of the FUN function evaluated at MINIMUM.
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
+%
 % Reference: W. Press, Numerical Recipes, Cambridge (1988)
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [ntrust]
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also: fminsearch, optimset
 
 % default options for optimset

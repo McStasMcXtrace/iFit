@@ -1,5 +1,5 @@
 function [pars,fval,exitflag,output] = fminpso(varargin)
-% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminpso(FUN,PARS,[OPTIONS],[CONSTRAINTS]) particle swarm optimization
+% [MINIMUM,FVAL,EXITFLAG,OUTPUT] = fminpso(FUN,PARS,[OPTIONS],[CONSTRAINTS], ...) particle swarm optimization
 %
 % fminpso finds a minimum of a function of several variables using the particle swarm 
 % optimization (PSO) algorithm originally introduced in 1995 by Kennedy and 
@@ -8,6 +8,7 @@ function [pars,fval,exitflag,output] = fminpso(varargin)
 % In 2002, Clerc and Kennedy introduced a constriction factor in PSO, which was
 % later on shown to be superior to the inertia factors. Therefore, the algorithm
 % using a constriction factor was implemented here.
+% The objective function has syntax: criteria = objective(p)
 % 
 % Calling:
 %   fminpso(fun, pars) asks to minimize the 'fun' objective function with starting
@@ -25,13 +26,17 @@ function [pars,fval,exitflag,output] = fminpso(varargin)
 %     problem.x0:          starting parameter values
 %     problem.options:     optimizer options (see below)
 %     problem.constraints: optimization constraints
+%   fminpso(..., args, ...)
+%     sends additional arguments to the objective function
+%       criteria = FUN(pars, args, ...)
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
 %   [x,fval] = fminpso(banana,[-1.2, 1])
 %
 % Input:
-%  FUN is the function to minimize (handle or string).
+%  FUN is the function to minimize (handle or string): criteria = FUN(PARS)
+%  It needs to return a single value or vector.
 %
 %  PARS is a vector with initial guess parameters. You must input an
 %  initial guess.
@@ -42,12 +47,16 @@ function [pars,fval,exitflag,output] = fminpso(varargin)
 %   option.PopulationSize sets the number of particules in the swarm (20-40).
 %   option.SwarmC1 sets the local attractors strength (1-3)
 %   option.SwarmC2 sets the global attractor strength (1-3).
+%  An empty OPTIONS sets the default configuration.
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min= vector of minimal values for parameters
 %   constraints.max= vector of maximal values for parameters
 %   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
 %   constraints.step=  vector of maximal parameter changes per iteration
+%  An empty CONSTRAINTS sets no constraints.
+%
+%  Additional arguments are sent to the objective function.
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered

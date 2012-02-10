@@ -20,13 +20,17 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 %     problem.x0:          starting parameter values
 %     problem.options:     optimizer options (see below)
 %     problem.constraints: optimization constraints
+%   fminswarm(..., args, ...)
+%     sends additional arguments to the objective function
+%       criteria = FUN(pars, args, ...)
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
 %   [x,fval] = fminswarm(banana,[-1.2, 1])
 %
 % Input:
-%  FUN is the function to minimize (handle or string).
+%  FUN is the function to minimize (handle or string): criteria = FUN(PARS)
+%  It needs to return a single value or vector.
 %
 %  PARS is a vector with initial guess parameters. You must input an
 %  initial guess.
@@ -38,12 +42,16 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 %   option.SwarmC1 sets the local attractors strength (1-3)
 %   option.SwarmC2 sets the global attractor strength (1-3).
 %   option.SwarmW  sets inertia weight (0-1).
+%  An empty OPTIONS sets the default configuration.
 %
 %  CONSTRAINTS may be specified as a structure
 %   constraints.min= vector of minimal values for parameters
 %   constraints.max= vector of maximal values for parameters
 %   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
 %   constraints.step=  vector of maximal parameter changes per iteration
+%  An empty CONSTRAINTS sets no constraints.
+%
+%  Additional arguments are sent to the objective function.
 %
 % Output:
 %          MINIMUM is the solution which generated the smallest encountered
@@ -61,7 +69,7 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 % Contrib:
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004 [hPSO]
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also: fminsearch, optimset
 
 % this is a wrapper to fminswarmhybrid, without hybrid optimizer
