@@ -54,6 +54,7 @@ if strcmp(op, 'sparse')
   end
 end
 
+% operate with Signal/Monitor and Error/Monitor
 if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
  'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh'}))) ...
    && not(all(m(:) == 0 | m(:) == 1))
@@ -137,6 +138,7 @@ otherwise
   iData_private_error('unary',['Can not apply operation ' op ' on object ' a.Tag ]);
 end
 
+% operate with Signal/Monitor and Error/Monitor (back to Monitor data)
 if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
  'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh'}))) ...
    && not(all(m(:) == 0 | m(:) == 1))

@@ -1,5 +1,5 @@
-function [pars_out,criteria,message,output] = fits(a, model, pars, options, constraints,ub)
-% [pars,criteria,message,output] = fits(a, model, pars, options, constraints) : fit data set on a model
+function [pars_out,criteria,message,output] = fits(a, model, pars, options, constraints, varargin)
+% [pars,criteria,message,output] = fits(a, model, pars, options, ...) : fit data set on a model
 %
 %   @iData/fits find best parameters estimates in order to minimize the 
 %     fitting criteria using function 'fun' as model, by mean of an optimization method
@@ -14,24 +14,30 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %     indicates which parameters are fixed (non zero elements of array).
 %  [pars,...] = fits(a, model, pars, 'optimizer', ...)
 %     uses a specific optimizer and its default options.
+%  [pars,...] = fits(a, model, pars, options, constraints, args...)
+%     send additional arguments to the fit model(pars, axes, args...)
 %  [optimizers,functions] = fits(iData)
 %     returns the list of all available optimizers and fit functions.
 %  fits(iData)
 %     displays the list of all available optimizers and fit functions.
 %  You may create new fit functions with the 'ifitmakefunc' tool.
 % 
-% The default fit criteria is the least_square, but others are available:
+% The default fit options.criteria is 'least_square', but others are available:
 %   least_square          (|Signal-Model|/Error).^2     non-robust 
 %   least_absolute         |Signal-Model|/Error         robust
 %   least_median    median(|Signal-Model|/Error)        robust, scalar
 %   least_max          max(|Signal-Model|/Error)        non-robust, scalar
 %
 % input:  a: object or array (iData)
+%           when given as an epty iData, the list of optimizers and fit models is shown.
 %         model: model function (char/cellstr)
-%           when given as a cellstr, the product of all functions is used
-%         pars: initial model parameters (double array)
+%           when given as a cellstr, the product of all functions is used.
+%           when set to empty, the 'gauss' 1D function is used (and possibly extended to multidimensional).
+%         pars: initial model parameters (double array). 
+%           when set to empty the starting parameters are guessed.
 %         options: structure as defined by optimset/optimget (char/struct)
-%           if given as a char, it defines the algorithm to use and its default options
+%           if given as a char, it defines the algorithm to use and its default options.
+%           when set to empty, it sets the default algorithm options (fminimfil).
 %           options.TolX
 %             The termination tolerance for x. Its default value is 1.e-4.
 %           options.TolFun
@@ -53,6 +59,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %           options.Display
 %             Display additional information during fit: 'iter','off','final'. Default is 'iter'.
 %         constraints: fixed parameter array. Use 1 for fixed parameters, 0 otherwise (double array)
+%           OR use empty to not set constraints
 %           OR use a structure with some of the following fields:
 %           constraints.min:   minimum parameter values (double array)
 %           constraints.max:   maximum parameter values (double array)
@@ -77,7 +84,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.38 $
+% Version: $Revision: 1.39 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -177,18 +184,22 @@ if isempty(model)
   model = 'gauss';
 end
 if nargin < 3
-  pars = [];
-end
-if nargin < 5
-  constraints = [];
+  pars = [];            % guess starting parameters
 end
 if nargin < 4, options=[]; end
 if isempty(options)
-  options = 'fminimfil';
+  options = 'fminimfil';% default optimizer
+end
+if nargin < 5
+  constraints = [];     % no constraints
+end
+if nargin < 6
+  varargin = {};
 end
 if ischar(options) | isa(options, 'function_handle')
   algo = options;
   options           = feval(algo,'defaults');
+  if isa(algo, 'function_handle'), algo = func2str(algo); end
   options.optimizer = algo;
 end
 
@@ -197,7 +208,7 @@ if length(a) > 1
   pars_out={}; criteria=[]; message={}; output={};
   for index=1:length(a(:))
     [pars_out{index}, criteria(index), message{index}, output{index}] = ...
-      fits(a(index), model, pars, constraints, options);
+      fits(a(index), model, pars, constraints, options, varargin{:});
   end
   pars = pars_out;
   return
@@ -211,7 +222,7 @@ if ischar(model)
   % is this an expression ?
   if ~exist(model)
     model = ifitmakefunc(model);
-    t=which(char(model));
+    t=which(char(model)); % force to rehash the new function
   end
 end
 
@@ -221,34 +232,41 @@ end
 
 % handle options
 if ~isfield(options, 'optimizer')
-  options.optimizer = 'fminsearch';
+  options.optimizer = 'fminsearch'; %  this one does not set 'optimizer'.
 end
 if ~isfield(options, 'criteria')
   options.criteria  = @least_square;
 end
+% handle constraints given as vectors
+if (length(constraints)==length(pars) | isempty(pars)) & (isnumeric(constraints) | islogical(constraints))
+  if nargin<6
+    fixed            = constraints;
+    constraints      =[];
+    constraints.fixed=fixed;
+  elseif isnumeric(varargin{1}) && ~isempty(varargin{1}) ...
+      && length(constraints) == length(varargin{1})
+    % given as lb,ub parameters (nargin==6)
+    lb = constraints;
+    ub = varargin{1};
+    varargin(1) = []; % remove the 'ub' from the additional arguments list
+    constraints     = [];
+    constraints.min = lb;
+    constraints.max = ub;
+  end
+end
+% get starting parameters (guess) if needed
 try
-  [dummy, info] = ieval(a, model,'guess');    % model info with guessed parameters
+  [dummy, info] = ieval(a, model,'guess', varargin{:});    % model info with guessed parameters
 catch
-  [dummy, info] = ieval(a, model,'identify'); % model info 
+  [dummy, info] = ieval(a, model,'identify', varargin{:}); % model info 
 end
 if isstruct(pars)
   pars=cell2mat(struct2cell(pars));
 elseif isempty(pars)
   pars=info.Guess;               % get default starting parameters
 end
-if isnumeric(constraints) | islogical(constraints)
-  if nargin<6
-    fixed            = constraints;
-    constraints      =[];
-    constraints.fixed=fixed;
-  else
-    lb = constraints;
-    constraints     = [];
-    constraints.min = lb;
-    constraints.max = ub;
-  end
-end
-if ~isstruct(constraints)
+
+if ~isstruct(constraints) && ~isempty(constraints)
   iData_private_error(mfilename,[ 'The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
 end
 
@@ -257,7 +275,6 @@ iData_private_warning('enter', mfilename);
 
 if ~isfield(options,'Display') options.Display=''; end
 if ~isfield(options,'algorithm') options.algorithm=options.optimizer; end
-if isempty(options.Display)    options.Display=''; end
 
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
 constraints.parsStart      = pars;
@@ -280,15 +297,13 @@ if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(o
 end
 
 % call minimizer ===============================================================
-try
+if abs(nargin(options.optimizer)) == 1 || abs(nargin(options.optimizer)) >= 6
   [pars_out,criteria,message,output] = feval(options.optimizer, ...
-    @(pars) eval_criteria(pars, model, options.criteria, a), pars, options, constraints);
-catch
-  if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(options.Display, 'notify')
-    disp([ '** ' mfilename ': Error or Constraints not supported by optimizer ' options.optimizer ])
-  end
+    @(pars) eval_criteria(pars, model, options.criteria, a, varargin{:}), pars, options, constraints);
+else
+  % Constraints not supported by optimizer
   [pars_out,criteria,message,output] = feval(options.optimizer, ...
-    @(pars) eval_criteria(pars, model, options.criteria, a), pars, options);
+    @(pars) eval_criteria(pars, model, options.criteria, a, varargin{:}), pars, options);
 end
 
 if nargout > 3
@@ -300,7 +315,7 @@ if nargout > 3
   end
   output.modelName  = constraints.modelName;
   output.modelInfo  = info;
-  output.modelValue = ieval(a, model, pars_out); % evaluate model iData
+  output.modelValue = ieval(a, model, pars_out, varargin{:}); % evaluate model iData
   output.parsNames  = constraints.parsNames;
   output.corrcoef   = eval_corrcoef(a, output.modelValue);
 end
@@ -335,14 +350,17 @@ end % fits end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRIVATE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function c = eval_criteria(pars, model, criteria, a)
+function c = eval_criteria(pars, model, criteria, a, varargin)
 % criteria to minimize
-  
+  if nargin<5, varargin={}; end
   % then get data
   Signal = iData_private_cleannaninf(get(a,'Signal'));
   Error  = iData_private_cleannaninf(get(a,'Error'));
-  Model  = ieval(a, model, pars); % return signal=model values*monitor and monitor
+  Model  = ieval(a, model, pars, varargin{:}); % return signal=model values*monitor and monitor
   Model  = iData_private_cleannaninf(get(Model, 'Signal'));
+  if isempty(Model)
+    iData_private_error(mfilename,[ 'The model ' model ' could not be evaluated (returned empty).' ]);
+  end
   m      = iData_private_cleannaninf(get(a,'Monitor')); m=real(m);
   if not(all(m == 1 | m == 0)),
     Model  = genop(@rdivide,Model,m);            % fit(signal/monitor) 
@@ -353,7 +371,7 @@ function c = eval_criteria(pars, model, criteria, a)
   c = feval(criteria, Signal(:), Error(:), Model(:));
   % devide by the number of degrees of freedom
   % <http://en.wikipedia.org/wiki/Goodness_of_fit>
-  c = c/(prod(size(Signal)) - length(pars) - 1); % reduced 'Chi^2'
+  c = c/(numel(Signal) - length(pars) - 1); % reduced 'Chi^2'
 end % eval_criteria
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
