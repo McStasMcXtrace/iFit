@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.79 $
+% Version: $Revision: 1.80 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -338,6 +338,7 @@ case 3  % 3d data sets: volumes
     % check if a rebining on a grid is required
     if ~isvector(a) && isempty(strfind(method, 'plot3'))
       a = interp(a,'grid'); % make sure we get a grid
+      disp('rebinned')
     end
     [x, xlab] = getaxis(a,2); x=double(x);
     [y, ylab] = getaxis(a,1); y=double(y);
@@ -346,7 +347,13 @@ case 3  % 3d data sets: volumes
     m         = get(a,'Monitor');
     if not(all(m(:) == 1 | m(:) == 0)), clab = [clab ' per monitor' ]; end
     if isvector(a) == 3 || ~isempty(strfind(method, 'scatter3')) % plot3-like
-      h=fscatter3(x(:),y(:),z(:),c(:));     % scatter3: require meshgrid
+      if ~isempty(strfind(method, 'scatter3'))
+        h=fscatter3(x(:),y(:),z(:),c(:));     % scatter3: may require meshgrid
+      else
+        method = strrep(method,'plot3','');
+    	  method = strrep(method,' ','');
+        h=plot3(x(:),y(:),z(:), method);
+      end
       view(3);
     else
       if ~isempty(strfind(method, 'plot3')) % vol3d: does not require meshgrid

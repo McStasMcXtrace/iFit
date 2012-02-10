@@ -60,7 +60,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -136,11 +136,17 @@ end
 if isempty(options)
   options=optimizer;
 end
-if ischar(options) | isa(options, 'function_handle')
+if (ischar(options) && length(strtok(options))==length(options)) | isa(options, 'function_handle')
   options=feval(options, 'defaults');
+elseif ischar(options), options=str2struct(options); end
+if ischar(pars),
+  pars   =str2struct(pars); 
 end
 if isstruct(pars)
+  pars_isstruct=fieldnames(pars);
   pars=cell2mat(struct2cell(pars));
+else
+  pars_isstruct=[];
 end
 if length(constraints)==length(pars) & (isnumeric(constraints) | islogical(constraints))
   if nargin < 6,               % given as fixed index vector
@@ -564,6 +570,10 @@ if strcmp(options.Display,'final') | strcmp(options.Display,'iter')
     disp(' Gaussian uncertainty on parameters (half width, from the Hessian matrix)')
     inline_disp(struct('Display','iter'), -1, fun, output.parsHessianUncertainty, NaN);
   end
+end
+
+if ~isempty(pars_isstruct)
+  pars = cell2struct(num2cell(pars(:)), pars_isstruct(:), 1);
 end
 
 return  % actual end of optimization

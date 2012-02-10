@@ -83,7 +83,7 @@ function config = iLoad_ini
     mcstas_scan.postprocess='load_mcstas_scan';
     
     mcstas_list.name       ='McStas list monitor';
-    mcstas_list.patterns   ={'Format: McStas with text headers','List of neutron events'};
+    mcstas_list.patterns   ={'Format: McStas with text headers','# type: array_2d','# xlabel: List of neutron events'};
     mcstas_list.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent --catenate ' ...
 		    '--metadata=xlabel --metadata=Creator ' ...
 		    '--metadata=ylabel --metadata=xylimits --metadata=component --metadata=Param ' ];

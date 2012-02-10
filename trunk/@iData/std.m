@@ -15,7 +15,7 @@ function [s, f] = std(a, dim)
 %         center:     center of distribution (scalar/array)
 % ex:     c=std(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/median, iData/mean
 
 if nargin < 2, dim=1; end
@@ -51,7 +51,11 @@ if dim == 0
 end
 
 % we first compute projection of iData on the selected dimension
-b = camproj(a, abs(dim));
+if ~isvector(a)
+  b = camproj(a, abs(dim));
+else
+  b = a;
+end
 
 
 % then we compute sum(axis{dim}.*Signal)/sum(Signal)
@@ -59,7 +63,11 @@ s = iData_private_cleannaninf(get(b,'Signal'));
 if (dim < 0)
   s = s - min(s);
 end
-x = getaxis(b, 1);
+if ~isvector(a)
+  x = getaxis(b, 1);
+else
+  x = getaxis(b, abs(dim));
+end
 
 sum_s = sum(s);
 
