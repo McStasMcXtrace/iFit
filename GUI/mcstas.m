@@ -59,7 +59,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -554,9 +554,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   for index=1:length(sim)
     R = '';
     try
-    R = getalias(sim(index), 'CriteriaExpression');
-    this = sim(index);
-    eval([ 'this = this' R ';' ]);
+      R = getalias(sim(index), 'CriteriaExpression');
+      this = sim(index);
+      eval([ 'this = this' R ';' ]);
     end
     this = double(this);
     this = sum(this(:));
