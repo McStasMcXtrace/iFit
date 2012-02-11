@@ -10,6 +10,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: optimization methods (iOptim)</title>
 </head><body>
@@ -223,7 +224,13 @@ In case the objective requires additional arguments, just pass them to the fits 
 assumes the objective function has syntax<br>
 
 
-<pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">objective</span>(p, <span style="color: rgb(255, 0, 0);">additional_arguments</span>)</pre>
+<pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">objective</span>(p, <span style="color: rgb(255, 0, 0);">additional_arguments</span>)<br></pre>Last,
+the starting parameter 'guess' can also be specified as a structure
+which fields contain numbers, or as a string with members separated
+with the ';' character, such as in the following example:<br>
+<pre style="margin-left: 40px;">&gt;&gt; p.par1=4; p.par2=5; 		<span style="font-style: italic;">% optimize two parameters with names par1 and par2. </span><br>&gt;&gt; fminsce<span style="color: rgb(51, 102, 255);"></span>(<span style="color: rgb(51, 102, 255);">objective</span>, p)	<span style="font-style: italic;">% The result is also returned as a structure.</span><br>&gt;&gt; fminsce(<span style="color: rgb(51, 102, 255);">objective</span>, <span style="color: rgb(204, 51, 204);">'par1=4 ;par2=5'</span>)	% create the structure above and optimize...<br></pre>
+<br>
+
 
 
 <h4><a class="mozTocH4" name="mozTocId228403"></a>Optimization quality (parameter uncertainty)<br>
@@ -1356,7 +1363,7 @@ Sao Jose do Rio Preto, SP, pp. 49-52 (1989).<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span style="font-style: italic;">
-$Date: 2012-02-10 16:10:26 $ $Revision: 1.21 $
+$Date: 2012-02-11 02:27:24 $ $Revision: 1.22 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
