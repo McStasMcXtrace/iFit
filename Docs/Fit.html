@@ -13,6 +13,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: fitting a model onto iData objects</title>
 </head><body>
@@ -237,10 +238,21 @@ name<br>
 information (structure)<br>
   </li>
   
+  
   <li><span style="font-style: italic;">output.parsNames:</span>
 parameter names from the model<br>
+
   </li>
-</ul>
+
+</ul>Last, the starting parameter 'guess' can also be specified as a
+<span style="font-weight: bold;">structure</span> which fields contain numbers, or as a <span style="font-weight: bold;">string</span> with members separated with the ';' character, such as in the
+following example:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; p.Amplitude=0.5; p.Center=1; p.HalfWidth=0.0035; p.Background=1e-4; 		<span style="font-style: italic;">% optimize named parameters </span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">'gauss', </span>p)								<span style="font-style: italic;">% The result is also returned as a structure.</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">'gauss','Amplitude=0.5; Center=1; HalfWidth=0.0035; Background=1e-4'</span>)	<span style="font-style: italic;">% create the structure above and fit...<br></span></pre>
+All model named parameters must be specified.<br>
+<pre style="margin-left: 40px;"><span style="font-style: italic;"></span><span style="font-style: italic;"></span></pre>
+
+
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId410769"></a>Specifying/configuring the optimization
 method</h3>
 The iData <span style="font-weight: bold; font-style: italic;">fits</span>
@@ -639,7 +651,7 @@ Model)</td>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData fitting - </span><span style="font-style: italic;">
-$Date: 2012-02-10 16:10:26 $ $Revision: 1.23 $
+$Date: 2012-02-11 02:27:24 $ $Revision: 1.24 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body></html>
