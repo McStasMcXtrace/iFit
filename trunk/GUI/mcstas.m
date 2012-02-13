@@ -59,7 +59,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -69,7 +69,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   end
 
   if ~exist('iData')
-    error([ mfilename ' requires iFit/iData. Get it at <ifit.mccode.org>. Install it with addpath(genpath(''location/to/iFit''))' ] );
+    error([ mfilename ' requires iFit/iData. Get it at <ifit.mccode.org>. Install it with addpath(genpath(''/path/to/iFit''))' ] );
   end
   
 % PARSE INPUT ARGUMENTS ========================================================
@@ -81,7 +81,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   options.instrument     = instrument;
   % define simulation or optimization mode (if not set before)
   if ~isfield(options,'mode')
-    if isfield(options, 'optimizer') | isfield(options,'TolFun') | ...
+    if isfield(options, 'optimizer') || isfield(options,'TolFun') | ...
        isfield(options,'TolX') | isfield(options,'type') | ...
        isfield(options,'MaxFunEvals') | isfield(options,'MaxIter')
       options.mode      = 'optimize'; 
@@ -199,7 +199,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     options.monitors = cellstr(options.monitors);
   end
 
-  if strcmp(options.mode,'optimize')
+  if strcmp(options.mode,'optimize') % ================================ OPTIMIZE
     % optimize simulation parameters
     if ~isfield(options,'type'),      options.type      = 'maximize'; end
     if ~isfield(options,'optimizer'), options.optimizer = @fminpso; end
@@ -230,13 +230,13 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       [dummy,fval] = mcstas_criteria(pars, options);
       output.command=get(fval(1), 'Execute');
     end
+    % re-create a structure of parameters
     pars_struct = [];
     for index=1:length(pars)
       pars_struct.(variable_names{index}) = pars(index);
     end
     pars = pars_struct;
-  else
-    % single simulation/scan
+  else % ================================================ single simulation/scan
     try
       [p, fval] = mcstas_criteria(pars, options);
     catch
@@ -548,6 +548,17 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     if gcf ~= h, figure(h); end
     hold off
     subplot(sim,'view2 axis tight');
+    ud.Parameters = get(sim(1),'Parameters');
+    ud.Execute=cmd;
+    ud.pars   =pars;
+    ud.Options=options;
+    set(h, 'UserData', ud);
+    xl=xlim; yl=ylim;
+    f = fieldnames(ud.Parameters);
+    c = struct2cell(ud.Parameters);
+    if length(f) > 20, f=f(1:20); c=c(1:20); end
+    s = class2str(cell2struct(c(:),f(:),1),'no comment');
+    text(xl(1), mean(yl), s,'Interpreter','none');
     hold off
   end
   criteria = zeros(length(sim),1);
