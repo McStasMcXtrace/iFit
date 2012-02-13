@@ -84,7 +84,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
 %
-% Version: $Revision: 1.40 $
+% Version: $Revision: 1.41 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -227,7 +227,9 @@ if ischar(model)
 end
 
 if isempty(model)
-  iData_private_error(mfilename,[ 'The model argument is empty. Should be a function name, expression or function handle.' ]);
+  iData_private_error(mfilename,[ 'The model argument is empty. Should be a function name, expression or function handle.' ...
+    sprintf('\n') 'Type "fits(iData)" to get a list of available predefined models.' ...
+    sprintf('\n') 'or use "ifitmakefunc" to create one.' ]);
 end
 
 % handle options
