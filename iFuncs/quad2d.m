@@ -6,7 +6,7 @@ function signal=quad2d(p, x, y, signal)
 %     a = cos(theta)^2/2/sx/sx + sin(theta)^2/2/sy/sy;
 %     b =-sin(2*theta)/4/sx/sx + sin(2*theta)/4/sy/sy;
 %     c = sin(theta)^2/2/sx/sx + cos(theta)^2/2/sy/sy;
-%     signal = p(1) ./ (1+ (a*(x-x0).^2+2*b*(x-x0).*(y-y0)+c*(y-y0).^2) ) + p(7);
+%     signal = p(1)*(a*(x-x0).^2+2*b*(x-x0).*(y-y0)+c*(y-y0).^2)+ p(7);
 %   the function called with a char argument performs specific actions.
 %
 % input:  p: quad2d model parameters (double)
@@ -20,7 +20,7 @@ function signal=quad2d(p, x, y, signal)
 % output: signal: model value or information structure ('guess', 'identify','plot')
 % ex:     signal=quad2d([1 2 .5 .2 .3 30 .2], -2:.1:2, -3:.1:3); or p=quad2d('guess',x,y,signal);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % Reference: http://en.wikipedia.org/wiki/Quadratic_function
 % See also iData, ifitmakefunc, gauss, iData/fits
 
