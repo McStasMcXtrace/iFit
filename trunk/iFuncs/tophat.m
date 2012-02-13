@@ -1,22 +1,21 @@
-function y=heaviside(p, x, y)
-% y = heaviside(p, x, [y]) : Heaviside function
+function y=tophat(p, x, y)
+% y = tophat(p, x, [y]) : Top-Hat rectangular function
 %
-%   iFunc/heaviside Heaviside fitting function
-%     y = 0*x+p(4); y(find(x >= p(2))) = p(1);
-%   The Width parameter sign indicates if this is a raising (positive) or 
-%   falling (negative) Heaviside.
+%   iFunc/tophat Top-Hat rectangle fitting function
+%     y=0*x+p(4); y(find(p(2)-p(3) < x & x < p(2)+p(3))) = p(1);
+%     and y is set to the background outside the full width.
 %   The function called with a char argument performs specific actions.
 %   You may create new fit functions with the 'ifitmakefunc' tool.
 %
-% input:  p: Heaviside model parameters (double)
-%            p = [ Amplitude Centre FullWidth BackGround ]
+% input:  p: Top-Hat rectangular model parameters (double)
+%            p = [ Amplitude Centre HalfWidth BackGround ]
 %          or action e.g. 'identify', 'guess', 'plot' (char)
 %         x: axis (double)
 %         y: when values are given, a guess of the parameters is performed (double)
 % output: y: model value or information structure (guess, identify)
-% ex:     y=heaviside([1 0 1 1], -10:10); or y=heaviside('identify') or p=heaviside('guess',x,y);
+% ex:     y=tophat([1 0 1 1], -10:10); or y=tophat('identify') or p=tophat('guess',x,y);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.1 $
 % See also iData, ifitmakefunc
 
 % 1D function template:
@@ -57,7 +56,7 @@ function y=heaviside(p, x, y)
     elseif y.Dimension == 2
       surf(y.Axes{1}, y.Axes{2}, y.Values);
     end
-    title(mfilename);
+    title(mfilename)
   elseif nargin == 0
     y = feval(mfilename, [], linspace(-2,2, 100));
   else
@@ -70,25 +69,20 @@ end
 
 % inline: evaluate: compute the model values
 function y = evaluate(p, x)
-  sx = size(x); x=x(:);
   if isempty(x) | isempty(p), y=[]; return; end
   
   % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
   y = zeros(size(x))+p(4);
-  if p(3) >= 0, y(find(x >= p(2))) = p(1);
-  else y(find(x <= p(2))) = p(1);
-  end
-  
-  y = reshape(y, sx);
+  y(find(p(2)-p(3) < x & x < p(2)+p(3))) = p(1);
 end
 
 % inline: identify: return a structure which identifies the model
 function y =identify()
   % HERE are the parameter names
-  parameter_names = {'Amplitude','Centre','FullWidth','Background'};
+  parameter_names = {'Amplitude','Centre','HalfWidth','Background'};
   %
   y.Type           = 'iFit fitting function';
-  y.Name           = [ 'Heaviside (1D) [' mfilename ']' ];
+  y.Name           = [ 'Top-hat rectangular (1D) [' mfilename ']' ];
   y.Parameters     = parameter_names;
   y.Dimension      = 1;         % dimensionality of input space (axes) and result
   y.Guess          = [];        % default parameters
