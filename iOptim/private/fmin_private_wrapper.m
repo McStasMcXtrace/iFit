@@ -60,7 +60,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.29 $
+% Version: $Revision: 1.30 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -531,7 +531,12 @@ output.duration        = etime(clock, t0);
 output.fevalDuration   = constraints.fevalDuration;
 
 % estimate parameter uncertainty from the search trajectory
+
 index      = find(output.criteriaHistory < min(output.criteriaHistory)*4);   % identify tolerance region around optimum                       
+if isempty(index) % retain 1/4 lower criteria part
+  delta_criteria = output.criteriaHistory - min(output.criteriaHistory);
+  index      = find(abs(delta_criteria/min(output.criteriaHistory)) < 0.25);
+end
 delta_pars = (output.parsHistory(index,:)-repmat(output.parsBest,[length(index) 1])); % get the corresponding parameter set
 weight_pars= exp(-((output.criteriaHistory(index)-min(output.criteriaHistory))/min(output.criteriaHistory)).^2 / 8); % Gaussian weighting for the parameter set
 weight_pars= repmat(weight_pars,[1 length(output.parsBest)]);
