@@ -82,9 +82,9 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %
 % ex:     p=fits(a,'gauss',[1 2 3 4]);
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
-%         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue
+%         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue; plot(a,b)
 %
-% Version: $Revision: 1.41 $
+% Version: $Revision: 1.42 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -196,12 +196,13 @@ end
 if nargin < 6
   varargin = {};
 end
-if (ischar(options) && length(strtok(options))==length(options)) | isa(options, 'function_handle')
+if (ischar(options) && length(strtok(options,' =:;'))==length(options)) | isa(options, 'function_handle')
   algo = options;
   options           = feval(algo,'defaults');
   if isa(algo, 'function_handle'), algo = func2str(algo); end
   options.optimizer = algo;
-elseif ischar(options), options=str2struct(options); end
+elseif ischar(options), options=str2struct(options);
+end
 
 % handle input iData arrays
 if length(a) > 1
@@ -215,7 +216,7 @@ if length(a) > 1
 end
 
 % test the model: is this a function handle or a char ?
-if ~isa(model, 'function_handle') && ~ischar(model)
+if ~isa(model, 'function_handle') && ~ischar(model) && ~iscellstr(model)
   iData_private_error(mfilename,[ 'The model argument is of class ' class(model) '. Should be a function name, expression or function handle.' ]);
 end
 if ischar(model)
@@ -234,7 +235,7 @@ end
 
 % handle options
 if ~isfield(options, 'optimizer')
-  options.optimizer = 'fminsearch'; %  this one does not set 'optimizer'.
+  options.optimizer = 'fminpowell'; %  this one does not set 'optimizer'.
 end
 if ~isfield(options, 'criteria')
   options.criteria  = @least_square;
@@ -363,10 +364,6 @@ if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | strcmp(o
       fprintf(1,'%10.2g ', output.parsHessianUncertainty); fprintf(1,'\n');
     end
   end
-end
-
-if pars_isstruct
-  pars_out = cell2struct(num2cell(pars_out(:)), info.Parameters(:), 1);
 end
 
 % reset warnings

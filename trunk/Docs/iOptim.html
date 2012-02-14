@@ -11,6 +11,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: optimization methods (iOptim)</title>
 </head><body>
@@ -278,10 +280,21 @@ the corresponding error matrix (covariance) is stored in <span style="font-style
 diagonal square root is the projected parameter uncertainty). This step
 is only performed when the Hessian matrix requires less than about a
 minute to compute. Additionally, the <span style="font-style: italic;">output.parsHessianCorrelation</span>indicates
-the cross-correlations between parameters (off-diagonal
+the
+cross-correlations between parameters (off-diagonal
 values larger that 0.7 indicate cross-correlated parameters).The
-Hessian method is very sensitive to noise in the objective function.<br>
-<h3><a class="mozTocH4" name="mozTocId839813"></a>Recommended optimizers</h3>
+Hessian method is very sensitive to noise in the objective function.
+All these Hessian final computations (which may take time) can be
+skipped when using <span style="font-style: italic;">options.Diagnostics</span>=<span style="color: rgb(204, 51, 204);">'off'</span>.<br>
+<h3><a class="mozTocH4" name="mozTocId839813"></a>Recommended optimizers</h3>The process of choosing a sensible optimizer can be automated by using the <span style="font-weight: bold; font-style: italic;">fmin</span>
+optimizer. The objective function is analyzed and a set of best
+optimizers is determined, depending on the execution time, the number
+of parameters, and the type of objective - noisy or continuous:<br>
+<pre style="margin-left: 40px;">&gt;&gt; fmin<span style="color: rgb(51, 102, 255);"></span>(<span style="color: rgb(51, 102, 255);">objective</span>, p)</pre>
+When more than one optimizer is suitable, a random choice is performed,
+with a weighting by the success ratio and the number of function calls
+(optimization speed). Successive calls to <span style="font-style: italic; font-weight: bold;">fmin</span> with the same problem to solve may result in different optimizers and solutions.<br>
+
 <h4><a class="mozTocH4" name="mozTocId65177"></a>In short, for
 continuous problems: <span style="font-style: italic;">Powell
 (fminpowell)</span><br>
@@ -1363,7 +1376,7 @@ Sao Jose do Rio Preto, SP, pp. 49-52 (1989).<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/optimization methods - </span><span style="font-style: italic;">
-$Date: 2012-02-11 02:27:24 $ $Revision: 1.22 $
+$Date: 2012-02-14 03:45:34 $ $Revision: 1.23 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
