@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.81 $
+% Version: $Revision: 1.82 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -196,7 +196,7 @@ case 1  % vector type data (1 axis + signal) -> plot
   if isempty(method), method='b-'; end
   % handle side-by-side 1D plots
   if ~isempty(strfind(method,'plot3'))    | ~isempty(strfind(method,'stem3')) ...
-   | ~isempty(strfind(method,'scatter3')) | ~isempty(strfind(method, 'mesh')) ...
+   | ~isempty(strfind(method,'scatter3')) | ~isempty(strfind(method,'mesh')) ...
    | ~isempty(strfind(method,'surf') )    | ~isempty(strfind(method,'waterfall'))
   	ax = getaxis(a,2);
   	if isempty(ax)
@@ -272,7 +272,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
       if length(method), h = plot3(x,y,z, method);
       else h = plot3(x,y,z); end
     else
-      h=fscatter3(x,y,z,z); view(3);
+      h=fscatter3(x,y,z,z,method); view(3);
     end
   else                % surf and similar stuff
     C = [];
@@ -316,7 +316,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
       if length(method), h = plot3(x(:),y(:),z(:), method);
       else h = plot3(x,y,z); end
     elseif (strfind(method,'scatter3'))
-      h=fscatter3(x(:),y(:),z(:),z(:));
+      h=fscatter3(x(:),y(:),z(:),z(:),method);
     elseif (strfind(method,'waterfall'))
       h=waterfall(x,y,z);
     else
@@ -347,7 +347,7 @@ case 3  % 3d data sets: volumes
     if not(all(m(:) == 1 | m(:) == 0)), clab = [clab ' per monitor' ]; end
     if isvector(a) == 3 || ~isempty(strfind(method, 'scatter3')) % plot3-like
       if ~isempty(strfind(method, 'scatter3'))
-        h=fscatter3(x(:),y(:),z(:),c(:));     % scatter3: may require meshgrid
+        h=fscatter3(x(:),y(:),z(:),c(:), method);     % scatter3: may require meshgrid
       else
         method = strrep(method,'plot3','');
     	  method = strrep(method,' ','');
