@@ -119,6 +119,13 @@ function config = iLoad_ini
     mcstas_sqw.postprocess='load_mcstas_sqw';
     mcstas_sqw.extension  ='sqw';
     
+    mcstas_powder.name       ='McStas powder table (LAZ/LAU)';
+    mcstas_powder.patterns   ={'lattice_a','column_'};
+    mcstas_powder.options    ='--fast --binary  --headers --comment=NULL --silent ';
+    mcstas_powder.method     ='looktxt';
+    mcstas_powder.postprocess='load_mcstas_powder';
+    mcstas_powder.extension  ={'laz','lau'};
+    
     ISIS_spe.name       ='ISIS/SPE tof data';
     ISIS_spe.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL --silent ';
     ISIS_spe.method     ='looktxt';
@@ -162,7 +169,8 @@ function config = iLoad_ini
     
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
-	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, ISIS_spe, ILL_inx, ...
+	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
+	       ISIS_spe, ILL_inx, ...
 	       ESRF_edf, Matlab_FIG, PDB, Analyze, CBF};
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
