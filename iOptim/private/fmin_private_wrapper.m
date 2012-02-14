@@ -60,7 +60,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.31 $
+% Version: $Revision: 1.32 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -137,8 +137,9 @@ end
 if isempty(options)
   options=optimizer;
 end
-if (ischar(options) && length(strtok(options))==length(options)) | isa(options, 'function_handle')
-  options=feval(options, 'defaults');
+
+if (ischar(options) && exist(options) == 2) | isa(options, 'function_handle')
+  options=feval(optimizer, 'defaults');
 elseif ischar(options), options=str2struct(options); end
 if ischar(pars),
   pars   =str2struct(pars); 
@@ -247,7 +248,7 @@ try
 switch options.optimizer
 case 'fmin' % automatic guess
   optimizer = inline_auto_optimizer(fun, pars, varargin);
-  [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars, options, constraints, varargin{:});
+  [pars,fval,exitflag,output] = feval(optimizer, fun, pars, options, constraints, varargin{:});
   return
 case {'cmaes','fmincmaes'}    
 % Evolution Strategy with Covariance Matrix Adaption ---------------------------
@@ -479,7 +480,7 @@ case {'buscarnd','fminrand'}
 otherwise
   options = feval(optimizer, 'defaults');
   [pars,fval,exitflag,output] = fmin_private_wrapper(options.optimizer, fun, pars, ...
-    options, constraints, ub);
+    options, constraints, varargin{:});
   return
 end % switch
 catch
@@ -490,6 +491,9 @@ end % try
 if isstruct(output) && isfield(output,'lasterror') && isempty(strfind(output.lasterror.message, 'stop condition:'))
   disp('Code error when launching the optimizer. Please fix it...')
   disp(output.lasterror.message);
+  for index=1:length(output.lasterror.stack)
+    disp(output.lasterror.stack(index))
+  end
   % this is a real error (not from a stop condition)
   rethrow(output.lasterror);
 end
@@ -513,14 +517,15 @@ if ~isfield(output,'message')
   output.message         = message;
 end
 
-% raise fminplot if is exists
+% raise fminplot if it exists
 if ~isempty(options.OutputFcn) & strcmp(options.OutputFcn, 'fminplot')
-  h = findall(0, 'Tag', 'fminplot');
+  h = findall(0, 'Tag', 'fminplot'); d = findall(0, 'Tag', 'fminplot:stop');
   if ~isempty(h), 
     figure(h(1));
     t = [ '#' num2str(constraints.funcCount) ' f=' num2str(fval,4) ' [End]' sprintf('\n') options.optimizer  ];
     set(h, 'Visible', 'on', 'Name', t);
     title(t); 
+    set(d, 'String','END','BackgroundColor','green' );
   end
 end
   
@@ -884,7 +889,7 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
       elseif isfield(options, 'optimizer'),   optimValues.procedure=options.optimizer;
       else optimValues.procedure  = 'iteration'; end
       istop2 = feval(options.OutputFcn, pars, optimValues, optimValues.state);
-      if istop2, 
+      if istop2 && ~istop
         istop=-6;
         message = 'Algorithm was terminated by the output function (options.OutputFcn)';
       end
@@ -1167,6 +1172,10 @@ end
 
   % choose optimzer on the probability distribution
   index = find(rand_table >= rand);
-  optimizer = optimizers{index(1)};
+  index=index(1);
+  optimizer = optimizers{index};
+  
+  
+  fprintf(1,'** Optimizer selected: %s: success=%g cost=%g\n', optimizer, this_success(index), this_calls(index))
 
 end % inline_auto_optimizer
