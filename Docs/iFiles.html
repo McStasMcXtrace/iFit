@@ -26,6 +26,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -162,6 +163,8 @@ A compact list of all supported formats is shown with <br>
 The filters have been divided into two categories: those that directly
 use formats natively known by Matlab, and those that are more specific
 to neutron and X-ray communities (or other research areas).<br>
+<br>
+A set of example data files is available from the <a href="Load.html#mozTocId782211">Load</a> page and the <a href="../Data">Data</a> directory.<br>
 
 <h4><a class="mozTocH4" name="mozTocId876478"></a>Legacy data formats (text, NetCDF, HDF, FITS, images, XML, CSV, ...)<br>
 </h4>
@@ -571,7 +574,7 @@ when executing<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>, config);<br><span style="font-style: italic;">% Saved iLoad configuration into /home/farhi/.matlab/R2007a/iLoad.ini</span> <span style="color: rgb(255, 0, 0);">&lt;- this is prefdir</span><br></pre>
 
 This is where you may add your own customized format definitions. Deleting this file will revert to the default configuration.<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m' ]</span>);<br></pre>Last, the <span style="font-style: italic;">config.UseSystemDialogs</span> field of the <span style="font-style: italic;">iLoad</span> configuration can be set to<span style="color: rgb(204, 51, 204);"> 'yes' </span>to use the native Matlab/Java file selector, or to<span style="color: rgb(204, 51, 204);"> 'no' </span>to use<a href="../iFiles/doc/uigetfiles.html"> uigetfiles</a>.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m'<span style="color: rgb(0, 0, 0);"> ]</span></span>);<br></pre>Last, the <span style="font-style: italic;">config.UseSystemDialogs</span> field of the <span style="font-style: italic;">iLoad</span> configuration can be set to<span style="color: rgb(204, 51, 204);"> 'yes' </span>to use the native Matlab/Java file selector, or to<span style="color: rgb(204, 51, 204);"> 'no' </span>to use<a href="../iFiles/doc/uigetfiles.html"> uigetfiles</a>.<br>
 
 
 <h4><a class="mozTocH4" name="mozTocId968211"></a>iLoad configuration structure</h4>
@@ -646,7 +649,7 @@ return something (or empty/error if this fails). This is your <span style="font-
   <li>Edit the <span style="font-style: italic;">iLoad_ini </span>file from <span style="color: rgb(51, 102, 255);">prefdir</span> or <span style="color: rgb(51, 102, 255);">ifitpath/iFiles</span>.</li>
   <li>Create a new structure (which you may name as you wish) and set the name (description), method, and extension fields.</li>
   <li>Optionally define some <span style="font-weight: bold;">patterns</span> to search, to complement the extension.</li>
-  <li>Optionally write a post-process scrip and preferably place it in the <span style="color: rgb(51, 102, 255);">ifitpath/iFiles/postprocess</span>. </li>
+  <li>Optionally write a post-process script and preferably place it in the <span style="color: rgb(51, 102, 255);">ifitpath/iFiles/postprocess</span>. </li>
   <li>Add the new structure to the <span style="font-weight: bold;">config.loaders</span> list (cell) at the end of the <a href="../iFiles/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span>  file.</li>
   <li>Save the file, and optionally re-read it with <span style="font-style: italic;">iLoad('force load config')</span>.</li>
   <li>Send me [farhi (at) ill.fr] the method/postprocess and structure information so that I can contribute your work to the package.<br>
@@ -661,7 +664,7 @@ return something (or empty/error if this fails). This is your <span style="font-
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iFiles - </span><span style="font-style: italic;">
-$Date: 2012-02-10 19:24:13 $ $Revision: 1.20 $
+$Date: 2012-02-14 04:24:33 $ $Revision: 1.21 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page
