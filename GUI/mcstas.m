@@ -59,7 +59,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -237,16 +237,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     end
     pars = pars_struct;
   else % ================================================ single simulation/scan
-    try
-      [p, fval] = mcstas_criteria(pars, options);
-    catch
-      l=lasterror;
-      disp(l.message);
-      for index=1:length(l.stack)
-        disp(l.stack(index))
-      end
-      error([ mfilename ': Error occured during execution of ' instrument ' simulation.']);
-    end
+
+    [p, fval] = mcstas_criteria(pars, options);   % may fail at execution
+    
     fval = squeeze(fval);
     p    = squeeze(p);
     if iscell(fval) && ~isempty(fval)
@@ -485,7 +478,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     end
   end
   
-  % Execute simulation
+  % Execute simulation =========================================================
   disp([ mfilename ': ' options.mode ' ' cmd ]);
   system_wait(cmd, options);
   
@@ -544,7 +537,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
       set(h, 'Position', tmp);
     end
 
-    % raise existing figure (or keep it hidden)
+    % raise existing figure (or keep it hidden) and add parameters on top
     if gcf ~= h, figure(h); end
     hold off
     subplot(sim,'view2 axis tight');
@@ -557,10 +550,12 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     f = fieldnames(ud.Parameters);
     c = struct2cell(ud.Parameters);
     if length(f) > 20, f=f(1:20); c=c(1:20); end
-    s = class2str(cell2struct(c(:),f(:),1),'no comment');
+    s = class2str('p',cell2struct(c(:),f(:),1),'no comment');
     text(xl(1), mean(yl), s,'Interpreter','none');
     hold off
   end
+  
+  % evaluate the criteria specifications (monitors, expressions)
   criteria = zeros(length(sim),1);
   for index=1:length(sim)
     R = '';
@@ -576,6 +571,8 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     end % else minimize
     criteria(index) = this;
   end
+  
+  % add aliases to the output objects (Parameters, Command line, ...)
   if nargout > 1
     if isnumeric(pars)
       this_pars = cell(size(pars));
