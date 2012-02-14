@@ -14,21 +14,21 @@ function [b, Info] = ieval(a, model, pars, varargin)
 %
 % input:  a: object or array (iData)
 %         model: model function (char/function handle/cellstr)
-%         pars: model parameters or 'guess' or 'identify' (double array/string)
+%         pars: model parameters (vector) or 'guess' or 'identify'
 %         additional parameters may be passed.
 % output: b: result of evaluation (iData)
 %         Info: structure giving information about the model
 % ex:     b=ieval(a,'gauss',[1 2 3 4]); ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
 %           ieval(a,'gauss','guess')
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also iData, feval, iData/fits
 
 % private functions: 
 %   genop: Douglas M. Schwarz, 13 March 2006
 
 if nargin < 1
-  iData_private_error(mfilename, 'Function evaluation requires at least 1 parameters(iData)');
+  iData_private_error(mfilename, 'Function evaluation requires at least 1 parameter (iData)');
 end
 if nargin < 2
   model = 'gauss';
@@ -60,14 +60,13 @@ if ischar(model) | isa(model, 'function_handle') % a single model ==============
   
   % check dimensionality
   if isfield(Info, 'Dimension')
-    if Info.Dimension < ndims(a) % model dimensionality does not match object one
+    if Info.Dimension <= ndims(a) % model dimensionality does not match object one
       if rem(ndims(a), Info.Dimension) == 0 % must be able to fill object dimensions with model
         list={};
         for index=1:(ndims(a)/Info.Dimension)
           list = { list{:} ; model };
         end
-        [b, Info] = ieval(a, list, pars, varargin{:}); % evaluate with a cell of functions to be multiplied
-        return
+        model = list;
       else
         iData_private_error([ mfilename '/' char(model) ], ...
           [ 'Can not build ' num2str(ndims(a)) ' dimensionality model from ' ...
@@ -76,46 +75,10 @@ if ischar(model) | isa(model, 'function_handle') % a single model ==============
       end
     end
   end
-  
-  % when no varargin specified, create one if guess or identify requested
-  if nargin < 4 & ~isempty(a)
-    varargin = {};
-  end
-  if isempty(pars) || (ischar(pars) && any(strcmp(pars,{'guess','identify'})))
-    % make sure Model has the right dimensionality: Info.Dimension, else squeeze
-    Signal = get(a,'Signal'); Signal(~isfinite(Signal)) = 0;
-    m = get(a,'Monitor'); m=real(m);
-    if not(all(m == 1 | m == 0)),
-      Signal = genop(@rdivide,Signal,m);
-    end
-    % determine indexes on which sum is required. The final Model
-    % must match model_Info.Dimension
-    if ~isvector(Signal)
-      for i=ndims(a):-1:Info.Dimension
-        Signal=trapz(Signal, i)/size(Signal,i);  % reduce Model dimensionality
-      end
-    end
-    
-    varargin = { Signal varargin{:} };
-    clear Signal
-  end
-
-  % evaluate model with specified axes. This also works for guess/identify
-  if ~isempty(varargin)
-    Model = feval(model, pars, Axes{:}, varargin{:});
-  elseif ~isempty(pars)
-    Model = feval(model, pars, Axes{:});
-  else % pars is empty
-    try
-    Model = feval(model, Axes{:});
-    catch
-    Model = [];
-    end
-  end
-  
-  % now got [Model, Info] for single model
+  % and will call the model(cell) syntax below
+end
    
-elseif iscell(model) % a set of models =========================================
+if iscell(model) % a set of models (product) ===================================
   % identify the model dimensionality
   axis_index=1;
   pars_index=1;
@@ -146,7 +109,7 @@ elseif iscell(model) % a set of models =========================================
     % Signal for this model if guess needed
     if isempty(pars) || (ischar(pars) && any(strcmp(pars,{'guess','identify'})))
       Signal = get(a,'Signal'); Signal(~isfinite(Signal)) = 0;
-      m = get(a,'Monitor'); m=real(m);
+      m = get(a,'Monitor'); m=real(m(:));
       if not(all(m == 1 | m == 0)),
         Signal = genop(@rdivide,Signal,m);
       end
@@ -185,7 +148,10 @@ elseif iscell(model) % a set of models =========================================
     end
     model_value  = squeeze(model_value);
     model_values = { model_values{:} ;  model_value }; % append to model values
-    fname = [ char(model{index}) '_f' num2str(index) ];
+    fname = char(model{index});
+    if length(model(:)) > 1
+      fname = [ fname '_f' num2str(index) ];
+    end
     if isempty(model_name)
       model_name   = fname;
     else
@@ -211,8 +177,10 @@ elseif iscell(model) % a set of models =========================================
     axis_index  =axis_index+model_Info.Dimension;
     pars_index  =pars_index+length(model_Info.Parameters);
     pnames = model_Info.Parameters;
-    pnames(2,:) = { ['_f' num2str(index) ] };
-    pnames      = strcat(pnames(1,:), pnames(2,:));  
+    if length(model(:)) > 1
+      pnames(2,:) = { ['_f' num2str(index) ] };
+      pnames      = strcat(pnames(1,:), pnames(2,:));
+    end
     model_namepars  = { model_namepars{:} , pnames{:} };
   end % for sub-models
   
@@ -238,6 +206,8 @@ else
   iData_private_error(mfilename, ['2nd argument "model" must be specified as a char, a cellstr or function handles. Currently of type ' class(model) ]);
 end
 
+% now got [Model, Info] for single model or cell
+
 % assign return values
 if isstruct(Model)
   Info = Model;
@@ -261,17 +231,17 @@ if isnumeric(Model)
     Model = Model.*m;
   end
   clear m
-  setalias(b,'Signal', Model, char(model));
-  b.Title = [ char(model) '(' b.Title ')' ];
+  setalias(b,'Signal', Model, char(Info.Name));
+  b.Title = [ char(Info.Name) '(' b.Title ')' ];
   b.Label = b.Title;
   setalias(b,'Error', 0);
-  setalias(b,'Parameters', pars, [ char(model) ' model parameters for ' char(a) ]);
+  setalias(b,'Parameters', pars, [ char(Info.Name) ' model parameters for ' char(a) ]);
   Info.Guess = pars;
   b.Data.Model = Info;
-  setalias(b,'Model','Data.Model',[ char(model) ' model description for ' char(a) ]);
+  setalias(b,'Model','Data.Model',[ char(Info.Name) ' model description for ' char(a) ]);
 end
 b.Command=cmd;
-b = iData_private_history(b, mfilename, a, char(model), pars, varargin{:});
+b = iData_private_history(b, mfilename, a, char(Info.Name), pars, varargin{:});
 % final check
 b = iData(b);
 

@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.80 $
+% Version: $Revision: 1.81 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -338,7 +338,6 @@ case 3  % 3d data sets: volumes
     % check if a rebining on a grid is required
     if ~isvector(a) && isempty(strfind(method, 'plot3'))
       a = interp(a,'grid'); % make sure we get a grid
-      disp('rebinned')
     end
     [x, xlab] = getaxis(a,2); x=double(x);
     [y, ylab] = getaxis(a,1); y=double(y);

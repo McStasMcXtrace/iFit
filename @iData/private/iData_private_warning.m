@@ -19,16 +19,27 @@ if isempty(warn)  % create the persistent variable the first time
   lasterr('');
 end
 
-% if an error has occured more than 10 s before, we reset the warning state
+% if an error has occured more than 10 s before, we reset the warning state except for long operations
 if ~strcmp(warn.lasterr, lasterr) && etime(clock, warn.date) > 10
-  warn.level  =0; % reset
+  [st,i]=dbstack;
+  long_exec={'fits','interp','ieval','cat','conv','fft','std','peaks','del2','gradient','jacobian','load'};
+  long_flag=0;
+  for index=1:length(long_exec)
+    if any(strcmp(long_exec{index},{ st.name }))
+      long_flag=1;
+      break
+    end
+  end
+  if ~long_flag
+    warn.level  =0; % reset
+  end
 end
 if ~strcmp(warn.lasterr, lasterr) && etime(clock, warn.date) < 1
   warn.level=warn.level-1;
 end
 
 % reset the warning level (e.g. when outdated/invalid)
-if warn.level <=0
+if warn.level <=0 || strcmp(a, 'reset')
   warn.level = 1;
   warn.date  = clock;
   warn.caller= 'root';
@@ -64,7 +75,6 @@ elseif nargin == 2
   warn.caller=a;
   b = [ 'iData/' a ': ' b ];  % MSG
   a = [ 'iData:' a ];         % ID
-
   warning(a,sprintf(b));
 end
 

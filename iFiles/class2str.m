@@ -18,10 +18,13 @@ function str=class2str(this, data, options)
 % See also: mat2str, num2str, eval, sprintf
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.7 $
+% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.8 $
 
 if nargin == 1
   data = this;
+  this = '';
+end
+if isempty(this)
   if isempty(inputname(1)), this = [ class(data) '_str' ];
   else this = inputname(1); end
 end

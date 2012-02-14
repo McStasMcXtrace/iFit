@@ -15,7 +15,7 @@ function s=str2struct(string)
 % See also: mat2str, num2str, eval, sprintf, class2str
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.3 $
+% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.4 $
 
 s={};
 if nargin ==0, return; end
@@ -57,8 +57,9 @@ for index=1:numel(cellstring)
   name = genvarname(name);
   if isempty(value), 
       value=comment;
-      if ~isempty(str2num(value))
-          value=str2num(value);
+      tmp  =str2num(value);
+      if ~isempty(tmp) && isnumeric(tmp)
+          value=tmp;
       end
   end
   if ~isempty(value), s.(name) = value; end
