@@ -59,7 +59,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.22 $
+% Version: $Revision: 1.23 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -236,7 +236,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       pars_struct.(variable_names{index}) = pars(index);
     end
     pars = pars_struct;
-  else % ================================================ single simulation/scan
+  else % ================================================ SINGLE simulation/scan
 
     [p, fval] = mcstas_criteria(pars, options);   % may fail at execution
     
@@ -446,22 +446,31 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
               sim      = this_sim;
             end
             % optionally plot the criteria during the scan...
-              if isfield(options, 'OutputFcn') 
-                if ~isempty(options.OutputFcn)
-                  if isvector(criteria)
-                    plot(criteria)
-                    xlabel('Scan step'); ylabel('Monitors'); 
-                    t=title([ options.instrument ': ' options.variable_names{index} '=' num2str(pars{index}) ]); 
-                    set(t,'interpreter','none');
-                    drawnow
-                  elseif length(size(criteria)) == 2
-                    surf(criteria);
-                    t=title([ options.instrument ': ' options.variable_names{index} '=' num2str(pars{index}) ]); 
-                    set(t,'interpreter','none');
-                    drawnow
-                  end
+            this_criteria = squeeze(criteria);
+            if length(size(this_criteria)) <= 2
+              if (isfield(options, 'OutputFcn') && ~isempty(options.OutputFcn)) ...
+              || (isfield(options, 'Display') && strcmp(options.Display, 'iter'))
+                % is this window already opened ?
+                h = findall(0, 'Tag', 'McStasScan');
+                if isempty(h) % create it
+                  h = figure('Tag','McStasScan', 'Unit','pixels');
+                  tmp = get(h, 'Position'); tmp(3:4) = [500 400];
+                  set(h, 'Position', tmp);
                 end
+                % raise existing figure (or keep it hidden) and add parameters on top
+                if gcf ~= h, figure(h); end
+                if isvector(this_criteria)
+                  plot(this_criteria)
+                  xlabel('Monitors'); ylabel('Integral');
+                else
+                  surf(this_criteria);
+                  ylabel('Scan step'); xlabel('Monitors'); zlabel('Integral');
+                end
+                t=title([ options.instrument ': ' options.variable_names{index} '=' num2str(pars{index}) ]); 
+                set(t,'interpreter','none');
+                drawnow
               end
+            end
           end % for index_pars
           if nargout < 2
             criteria = sim;
@@ -530,9 +539,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   % option to plot the monitors
   if isfield(options, 'OutputFcn')
     % is this window already opened ?
-    h = findall(0, 'Tag', 'mcstasplot');
+    h = findall(0, 'Tag', 'McStasMonitors');
     if isempty(h) % create it
-      h = figure('Tag','mcstasplot', 'Unit','pixels');
+      h = figure('Tag','McStasMonitors', 'Unit','pixels');
       tmp = get(h, 'Position'); tmp(3:4) = [500 400];
       set(h, 'Position', tmp);
     end
@@ -540,7 +549,11 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     % raise existing figure (or keep it hidden) and add parameters on top
     if gcf ~= h, figure(h); end
     hold off
-    subplot(sim,'view2 axis tight');
+    if length(sim) <= 4
+      subplot(sim,'view2 axis tight');
+    else
+      subplot(sim,'view2 axis tight hide_axes'); % use compact layout for many monitors
+    end
     ud.Parameters = get(sim(1),'Parameters');
     ud.Execute=cmd;
     ud.pars   =pars;
@@ -549,8 +562,10 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     xl=xlim; yl=ylim;
     f = fieldnames(ud.Parameters);
     c = struct2cell(ud.Parameters);
-    if length(f) > 20, f=f(1:20); c=c(1:20); end
-    s = class2str('p',cell2struct(c(:),f(:),1),'no comment');
+    if length(sim) <= 4, max_fields=20; else max_fields=5; end
+    if length(f) > max_fields, f=f(1:max_fields); c=c(1:max_fields); dots='...'; 
+    else dots = ''; end
+    s = [ class2str('p',cell2struct(c(:),f(:),1),'no comment') dots ];
     text(xl(1), mean(yl), s,'Interpreter','none');
     hold off
   end
