@@ -17,7 +17,7 @@ function [varargout] = findobj(s_in, varargin)
 %         base:  objects found in base/MATLAB workspace (iData array)
 % ex :    findobj(iData) or findobj(iData,'Title','MyTitle')
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/set, iData/get, iData/findstr, iData/findfield
 
 % EF 23/09/07 iData implementation
@@ -128,23 +128,23 @@ function [index, propvalues]=findprop(array, propname, propvalue)
   propvalues = {};
   index      = [];
   if isempty(array), return; end
-  for j = 1:length(array)
-    if iscell(array)
+  if iscell(array)
+    for j = 1:length(array)
       propvalues{j} = get(array{j},propname);
-    else
-      propvalues{j} = get(array(j),propname);
     end
+  else
+    propvalues = get(array,propname);
   end
   if isempty(propvalue), return; end
   if ~iscell(propvalue) && ~ischar(propvalue), propvalue={ propvalue }; end
-  for j = 1:length(array)
+  for j = 1:length(array(:))
     prop = propvalues{j}; % property value for iData 'j' in caller workspace
     if iscell(prop)
       prop = prop(:);
       for k = 1:length(prop)
         propk = prop{k};
         if ischar(propvalue)
-          index(j) = ~isempty(findstr(propvalue, propk));
+          index(j) = ~isempty(strfind(propvalue, propk));
         else
           for l=1:length(propvalue)
             this_prop=propvalue{l};
