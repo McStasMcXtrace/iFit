@@ -26,8 +26,8 @@ function h=plot(a, varargin)
 %                 surf, mesh, contour, contour3, surfc, surfl, contourf
 %                 plot3, scatter3 (colored points), stem3, pcolor, waterfall
 %               For 3D plots c=f(x,y,z), method is a string which may contain:
-%                 plot3 (volume), scatter3 (colored points)
-%                 waterfall, contour (set of coutour plots)
+%                 plot3 (volume), scatter3 (colored points, supports 'scatter3 filled' and 'scatter3 bubble')
+%                 waterfall (supports 'waterfall x' 'y' and 'z'), contour (set of coutour plots)
 %                 surf, surf median, surf mean, surf half (isosurface)
 %               The slice(a) method opens the interactive sliceomatic 3D viewer.
 %
@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.82 $
+% Version: $Revision: 1.83 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -92,24 +92,30 @@ if isempty(a)
   return; 
 end
 
-% plot an array of objects
-if numel(a) > 1
-  sum_max = 0;
-  toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent axis';
+% clean method string from the plot type and supported options not to be passed to matlab plot commands
+if ischar(method)
+  toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent axis hide_errorbars contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole';
   toremove=strread(toremove,'%s','delimiter',' ');
   this_method = method;
   for index=1:length(toremove)
     this_method = deblank(strrep(this_method, toremove{index},''));
   end
+else
+  this_method = method;
+end
+
+% plot an array of objects
+if numel(a) > 1
+  sum_max = 0;
   % plot objects in the same axis frame
   % set error bar uniformly along objects
   common_error_bar='undefined'; % will set the value to 0/1 when 1D found
   for index=1:numel(a(:))
     if ndims(a(index)) == 1 && isvector(a(index)) == 1 && ...
       isempty(getaxis(a(index),2)) && ...
-      (~isempty(strfind(method, 'plot3'))      || ~isempty(strfind(method,'stem3')) ...
+      (~isempty(strfind(method, 'plot3'))      || ~isempty(strfind(method, 'stem3')) ...
        || ~isempty(strfind(method,'scatter3')) || ~isempty(strfind(method, 'mesh')) ...
-       || ~isempty(strfind(method,'surf') )    || ~isempty(strfind(method,'waterfall')))
+       || ~isempty(strfind(method,'surf') )    || ~isempty(strfind(method, 'waterfall')))
       a(index) = setaxis(a(index), 2, index);
     end
     h{index} = plot(a(index), method);
@@ -208,18 +214,10 @@ case 1  % vector type data (1 axis + signal) -> plot
     % need to create this axis
     setalias(a, 'Axis_2', ax);
     setaxis(a, 2, 'Axis_2');
-    h = plot(a, method);
+    h = plot(a, this_method);
     if ih == 1, hold on; else hold off; end
     return
   else 
-    this_method=method;
-    % clean up options that can be used together with linespec
-    % tight, auto, tight, hide, view2, view3, transparent
-    toremove='tight auto hide view2 view3 transparent';
-    toremove=strread(toremove,'%s','delimiter',' ');
-    for index=1:length(toremove)
-      this_method = deblank(strrep(this_method, toremove{index},''));
-    end
     if all(e == 0) || length(x) ~= length(e)
       if length(this_method)
         try
@@ -267,12 +265,10 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   z=real(double(z));
   if isvector(a) % plot3/fscatter3
     if (strfind(method,'plot3'))
-    	method = strrep(method,'plot3','');
-    	method = strrep(method,' ','');
-      if length(method), h = plot3(x,y,z, method);
+      if length(method), h = plot3(x,y,z, this_method);
       else h = plot3(x,y,z); end
     else
-      h=fscatter3(x,y,z,z,method); view(3);
+      h=fscatter3(x,y,z,z,this_method); view(3);
     end
   else                % surf and similar stuff
     C = [];
@@ -305,18 +301,14 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
         set(h,'ZData',zh);
       end
     elseif (strfind(method,'stem3'))
-    	method = strrep(method,'stem3','');
-    	method = strrep(method,' ','');
-      if length(method), h = stem3(x,y,z, method);
+      if length(method), h = stem3(x,y,z, this_method);
       else h = stem3(x,y,z); end
     elseif (strfind(method,'plot3'))
       a = interp(a,'grid');
-    	method = strrep(method,'plot3','');
-    	method = strrep(method,' ','');
-      if length(method), h = plot3(x(:),y(:),z(:), method);
+      if length(method), h = plot3(x(:),y(:),z(:), this_method);
       else h = plot3(x,y,z); end
     elseif (strfind(method,'scatter3'))
-      h=fscatter3(x(:),y(:),z(:),z(:),method);
+      h=fscatter3(x(:),y(:),z(:),z(:),this_method);
     elseif (strfind(method,'waterfall'))
       h=waterfall(x,y,z);
     else
@@ -347,11 +339,9 @@ case 3  % 3d data sets: volumes
     if not(all(m(:) == 1 | m(:) == 0)), clab = [clab ' per monitor' ]; end
     if isvector(a) == 3 || ~isempty(strfind(method, 'scatter3')) % plot3-like
       if ~isempty(strfind(method, 'scatter3'))
-        h=fscatter3(x(:),y(:),z(:),c(:), method);     % scatter3: may require meshgrid
+        h=fscatter3(x(:),y(:),z(:),c(:), this_method);     % scatter3: may require meshgrid
       else
-        method = strrep(method,'plot3','');
-    	  method = strrep(method,' ','');
-        h=plot3(x(:),y(:),z(:), method);
+        h=plot3(x(:),y(:),z(:), this_method);
       end
       view(3);
     else
