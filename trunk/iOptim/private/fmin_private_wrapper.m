@@ -60,7 +60,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.32 $
+% Version: $Revision: 1.33 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -554,7 +554,8 @@ weight_pars= repmat(weight_pars,[1 length(output.parsBest)]);
 output.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
 
 if length(pars)^2*output.fevalDuration/2 < 60 ... % should spend less than a minute to compute the Hessian
-  && (~isfield(options,'Diagnostics') || ~strcmp(options.Diagnostics,'off')) 
+  && (~isfield(options,'Diagnostics') || ~strcmp(options.Diagnostics,'off')) ...
+  && exitflag ~= -6 % not when user explicitely requested premature end (Abort)
   if length(pars)^2*output.fevalDuration/2 > 5
     disp([ '  Estimating Hessian matrix... (' num2str(length(pars)^2*output.fevalDuration/2) ' [s] remaining, please wait)' ]);
   end
