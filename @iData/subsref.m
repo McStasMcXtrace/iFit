@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -140,9 +140,9 @@ for i = 1:length(S)     % can handle multiple index levels
     
     % test if the result is again an Alias or Field
     if ischar(b) && size(b,1) == 1
-      if any(strcmpi(b, fieldnames(a)))
+      if any(strcmpi(b, fieldnames(a(1))))
         b = a.(b);      % fast access to static fields
-      elseif any(strcmpi(strtok(b,'.'), fieldnames(a))) || any(strcmpi(strtok(b,'.'), a.Alias.Names))
+      elseif any(strcmpi(strtok(b,'.'), fieldnames(a))) || any(strcmpi(strtok(b,'.'), a(1).Alias.Names))
         b = get(a, b);  % try to evaluate char result
       end
     end
@@ -198,6 +198,7 @@ function val = iData_getAliasValue(this,fieldname)
         val = get(this,val); % gets this.(val)                    MAIN SPENT TIME
       catch
         % evaluation failed, the value is the char (above 'get' will then issue a
+
         % 'can not find Property' error, which will come there in the end
       end
     end
