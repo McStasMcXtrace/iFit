@@ -26,7 +26,8 @@ function config = iLoad_ini
 %
 % See also: iLoad, save, iData/saveas
 
-% definition of formats
+% definition of formats ========================================================
+
     ILL_normal.name       ='ILL Data (normal integers)';
     ILL_normal.patterns   ={'RRRR','AAAA','FFFF','IIII'};
     ILL_normal.options    ='--headers --fortran --catenate --fast --binary --makerows=IIII --makerows=FFFF --silent ';
@@ -126,6 +127,12 @@ function config = iLoad_ini
     mcstas_powder.postprocess='load_mcstas_powder';
     mcstas_powder.extension  ={'laz','lau'};
     
+    chalkriver.name     ='ChalkRiver CNBC';
+    chalkriver.patters  ={'Run ','Seq ','Rec ','Mode ','Temp:','File '};
+    chalkriver.options  ='--fast --binary  --headers --comment=NULL --silent --section=Run --metadata=File --metadata=Sig';
+    chalkriver.method   ='looktxt';
+    chalkriver.postprocess='load_chalkriver';
+    
     ISIS_spe.name       ='ISIS/SPE tof data';
     ISIS_spe.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL --silent ';
     ISIS_spe.method     ='looktxt';
@@ -137,6 +144,8 @@ function config = iLoad_ini
     ILL_inx.method     ='read_inx';
     ILL_inx.postprocess='load_ill_inx';
     ILL_inx.extension  ='inx';
+    
+% binary formats ===============================================================
     
     ESRF_edf.name       ='EDF ESRF Data Format';
     ESRF_edf.options    ='';
@@ -170,7 +179,7 @@ function config = iLoad_ini
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
 	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
-	       ISIS_spe, ILL_inx, ...
+	       chalkriver, ISIS_spe, ILL_inx, ...
 	       ESRF_edf, Matlab_FIG, PDB, Analyze, CBF};
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
