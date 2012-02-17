@@ -17,7 +17,7 @@ function [match, types, dims] = findfield(s, field, option)
 %         nelements: total number of elements in iData fields (double)
 % ex:     findfield(iData) or findfield(iData,'Title') or findfield(s,'Title','exact case')
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/set, iData/get, iData/findobj, iData/findstr
 
 % EF 23/09/07 iData implementation
@@ -111,7 +111,11 @@ catch
   index = cellfun('isclass', c, 'uint16'); t(find(index)) = {'uint16'};
   index = cellfun('isclass', c, 'uint32'); t(find(index)) = {'uint32'};
   index = cellfun('isclass', c, 'uint64'); t(find(index)) = {'uint64'};
-  n = cellfun('length', c);
+  index = cellfun('isclass', c, 'int8');   t(find(index)) = {'int8'};
+  index = cellfun('isclass', c, 'int16');  t(find(index)) = {'int16'};
+  index = cellfun('isclass', c, 'int32');  t(find(index)) = {'int32'};
+  index = cellfun('isclass', c, 'int64');  t(find(index)) = {'int64'};
+  n = cellfun('prodofsize', c);
 end
 
 if ~isempty(parent), f = strcat([ parent '.' ], f); end

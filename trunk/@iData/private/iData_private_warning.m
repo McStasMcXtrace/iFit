@@ -22,7 +22,7 @@ end
 % if an error has occured more than 10 s before, we reset the warning state except for long operations
 if ~strcmp(warn.lasterr, lasterr) && etime(clock, warn.date) > 10
   [st,i]=dbstack;
-  long_exec={'fits','interp','ieval','cat','conv','fft','std','peaks','del2','gradient','jacobian','load'};
+  long_exec={'fits','interp','ieval','cat','conv','fft','std','peaks','del2','gradient','jacobian','load','mcstas'};
   long_flag=0;
   for index=1:length(long_exec)
     if any(strcmp(long_exec{index},{ st.name }))
