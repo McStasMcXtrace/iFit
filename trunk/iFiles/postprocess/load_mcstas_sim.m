@@ -3,19 +3,21 @@ function a=load_mcstas_sim(a0)
 %
 % Returns an iData style dataset from a McStas sim file
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
 if length(a0(:)) > 1
+  a = [];
   for index=1:length(a0(:))
-    a(index) = feval(mfilename, a0(index));
+    a = [ a feval(mfilename, a0(index)) ];
   end
   return
 end
 
 if isempty(findstr(a0,'McStas'))
   warning([ mfilename ': The loaded data set ' a0.Tag ' from ' a0.Source ' is not a McStas data format.' ]);
+  a = a0;
   return
 end
 

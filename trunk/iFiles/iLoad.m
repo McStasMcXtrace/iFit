@@ -1,13 +1,16 @@
-function [data, format] = iLoad(filename, loader)
-% [data, loader] = iLoad(file, loader)
+function [data, format] = iLoad(filename, loader, varargin)
+% [data, loader] = iLoad(file, loader, ...)
 %
 % imports any data into Matlab. 
 % The definition of specific formats can be set in the iLoad_ini.m file.
 % These formats can be obtained using [config, configfile]=iLoad('load config').
-% The file formats cache can be rebuilt with iLoad('force load config').
+% The file formats cache can be rebuilt with 
+%   iLoad force
 % the iLoad_ini configuration file can be saved in the Preference directory
-% using [config, configfile] = iLoad(config,'save config').
-% A list of all supported formats is shown with iLoad('formats');
+% using 
+%   [config, configfile] = iLoad(config,'save config').
+% A list of all supported formats is shown with 
+%   iLoad('formats');
 %
 %   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
 %     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
@@ -30,6 +33,7 @@ function [data, format] = iLoad(filename, loader)
 %             loader.options= string of options to catenate after file name
 %                          OR cell of options to use as additional arguments
 %                             to the method
+%   additional arguments are passed to the import routine.
 %
 % output variables:
 %   data:   a single structure containing file data, or a cell of structures
@@ -42,11 +46,12 @@ function [data, format] = iLoad(filename, loader)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.58 $
+% Version: $Revision: 1.59 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
-% private:  iLoad_loader_auto, iLoad_config_load, iLoad_config_save, iLoad_import, iLoad_loader_check
+% private:  iLoad_loader_auto, iLoad_config_load, iLoad_config_save, 
+%           iLoad_import, iLoad_loader_check, findfields
 
 persistent config
 
@@ -169,10 +174,29 @@ if ischar(filename) & length(filename) > 0
     [fileroot,filesub]=strtok(filename, '#');
     [data, format]=iLoad(fileroot);
     % now search for the fieldnames
-    [f,c] = findfield(data, filesub(2:end));
-    index = strmatch(filesub(2:end), f);
-    data = c{index};
-    return
+    f = findfield(data, filesub(2:end)); % calls private function
+    if ~isempty(f)
+      % 'data' will be a cell array of structure based on the initial one
+      this_data = {}; this_format = {};
+      for index=1:length(f)
+        ret = data;
+        fields = textscan(f{index},'%s','Delimiter','.'); % split the path in the structure with '.' char
+        ret.Data = getfield(data,fields{1}{:});             % access that path by expanding it;
+        try
+          fields{1}{1} = 'Headers';
+          ret.Headers = getfield(data,fields{1}{:});
+        end
+        this_data{end+1}   = ret;
+        this_format{end+1} = loader;
+
+      end
+      data   = this_data;
+      format = this_format;
+      return
+    else
+      fprintf(1, 'iLoad: Warning: Could not find pattern "%s". Importing whole file...\n', filesub(2:end));
+      filename = fileroot;
+    end
   end
   
   if strncmp(filename, 'file://', length('file://'))
@@ -212,7 +236,7 @@ if ischar(filename) & length(filename) > 0
    | strncmp(filename, 'https://',length('https://')) ...
    | strncmp(filename, 'ftp://',  length('ftp://'))
     if (~usejava('mwt'))
-        fprintf(1, 'iLoad: Reading from a URL requires a Java Virtual Machine.\n\tSkipping...');
+        fprintf(1, 'iLoad: Reading from a URL requires a Java Virtual Machine.\n\tSkipping...\n');
         return
     end
     % access the net. Proxy settings must be set (if any).
@@ -265,12 +289,12 @@ if ischar(filename) & length(filename) > 0
     end
   end
   
-  % The import takes place HERE
+  % The import takes place HERE ================================================
   if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
   % handle the '%20' character replacement as space
   filename = strrep(filename, '%20',' ');
   try
-    [data, format] = iLoad_import(filename, loader);
+    [data, format] = iLoad_import(filename, loader, varargin{:});
   catch
     fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n', filename);
     data=[];
@@ -314,7 +338,7 @@ end
 
 % -----------------------------------------------------------
 % private function to import single data with given method(s)
-function [data, loader] = iLoad_import(filename, loader)
+function [data, loader] = iLoad_import(filename, loader, varargin)
   data = [];
   if isempty(loader), loader='auto'; end
   if strcmp(loader, 'auto')
@@ -358,7 +382,7 @@ function [data, loader] = iLoad_import(filename, loader)
       if iscell(loader), this_loader = loader{index};
       else this_loader = loader(index); end
       try
-        data = iLoad_import(filename, this_loader);
+        data = iLoad_import(filename, this_loader, varargin{:});
       catch
         l=lasterror;
         disp(l.message);
@@ -392,14 +416,14 @@ function [data, loader] = iLoad_import(filename, loader)
   if isempty(loader.method), return; end
   fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
   if isempty(loader.options)
-    data = feval(loader.method, filename);
+    data = feval(loader.method, filename, varargin{:});
   elseif iscell(loader.options)
-    data = feval(loader.method, filename, loader.options{:})
+    data = feval(loader.method, filename, loader.options{:}, varargin{:})
   elseif ischar(loader.options)
     try
-    data = feval(loader.method, filename, loader.options);
+    data = feval(loader.method, filename, loader.options, varargin{:});
     catch
-    data = feval(loader.method, [ filename ' '  loader.options ]);
+    data = feval(loader.method, [ filename ' '  loader.options ], varargin{:});
     end
   end
   data = iLoad_loader_check(filename, data, loader);
@@ -463,8 +487,8 @@ function data = iLoad_loader_check(file, data, loader)
 
   if ~isfield(data, 'Title'),   
     [pathname, filename, ext] = fileparts(file);
-    if ~strcmp(loader, 'variable'), data.Title  = [ 'File ' filename ext ' ' name  ];
-    else data.Title  = [ 'File ' filename ext ]; end
+    if ~strcmp(loader, 'variable'), data.Title  = [ filename ext ' ' name  ];
+    else data.Title  = [ filename ext ]; end
   end
   
   if ~isfield(data, 'Date')
@@ -734,35 +758,104 @@ function config = iLoad_config_load
 
 % ------------------------------------------------------------------------------
 % private function findfield, returns all field name and values, that match 'name'
-function [f, c] = findfield(structure, name, parent)
+function match = findfield(s, field)
+% match=findfield(s, field, option) : look for numerical fields in a structure
+%
+% input:  s: structure
+%         field: field name to search, or '' (char).
+%         option: 'exact' 'case' or '' (char)
+% output: match: names of structure fields (cellstr)
+% ex:     findfield(s) or findfield(s,'Title')
 
-if nargin < 3, parent=''; end
+if length(s(:)) > 1
+  match = cell(1, length(s(:))); dims=match;
+  for index=1:length(s)
+    match{index}=findfield(s(index), field);
+  end
+  return
+end
 
-f=[]; c=[];
-if ~isstruct(structure), return; end
+match = struct_getfields(struct(s), ''); % return the numerical fields
 
-c = struct2cell(structure);
-f = fieldnames(structure);
+if ~isempty(field)
+  field = lower(field);
+  matchs= lower(match);
 
-if ~isempty(parent), f = strcat([ parent '.' ], f); end
+  if iscellstr(field)
+    index = [];
+    for findex=1:length(field)
+      tmp = strfind(matchs, field{findex});
+      if iscell(tmp), tmp = find(cellfun('isempty', tmp) == 0); end
+      index= [ index ; tmp ];
+    end
+    index = unique(index);
+  else
+    index = strfind(matchs, field);
+  end
 
-% only retain fields which name is the begining of name
-index = [];
-for i=1:length(f)
-  if strmatch(f{i}, name)
-    index = [ index i ];
+  if ~isempty(index) && iscell(index), index = find(cellfun('isempty', index) == 0); end
+  if isempty(index)
+    match=[];
+  else
+    match = match(index);
   end
 end
-f = f(index);
-c = c(index);
+
+% ============================================================================
+% private function iData_getfields, returns field, class, numel 
+function f = struct_getfields(structure, parent)
+
+f=[];
+if ~isstruct(structure), return; end
+if numel(structure) > 1
+  structure=structure(:);
+  for index=1:length(structure)
+    sf = struct_getfields(structure(index), [ parent '(' num2str(index) ')' ]);
+    f = [f(:) ; sf(:)];
+  end
+  return
+end
+
+% get content and type of structure fields
+c = struct2cell(structure);
+f = fieldnames(structure);
+try
+  t = cellfun(@class, c, 'UniformOutput', 0);
+catch
+  t=cell(1,length(c));
+  index = cellfun('isclass', c, 'double'); t(find(index)) = {'double'};
+  index = cellfun('isclass', c, 'single'); t(find(index)) = {'single'};
+  index = cellfun('isclass', c, 'logical');t(find(index)) = {'logical'};
+  index = cellfun('isclass', c, 'struct'); t(find(index)) = {'struct'};
+  index = cellfun('isclass', c, 'uint8');  t(find(index)) = {'uint8'};
+  index = cellfun('isclass', c, 'uint16'); t(find(index)) = {'uint16'};
+  index = cellfun('isclass', c, 'uint32'); t(find(index)) = {'uint32'};
+  index = cellfun('isclass', c, 'uint64'); t(find(index)) = {'uint64'};
+  index = cellfun('isclass', c, 'int8');   t(find(index)) = {'int8'};
+  index = cellfun('isclass', c, 'int16');  t(find(index)) = {'int16'};
+  index = cellfun('isclass', c, 'int32');  t(find(index)) = {'int32'};
+  index = cellfun('isclass', c, 'int64');  t(find(index)) = {'int64'};
+end
+
+toremove=[];
+% only retain numerics
+for index=1:length(c)
+  if ~any(strncmp(t{index},{'dou','sin','int','uin','str'}, 3))
+    toremove(end+1)=index;
+  end
+end
+c(toremove)=[];
+f(toremove)=[];
+
+if ~isempty(parent), f = strcat([ parent '.' ], f); end
 
 % find sub-structures and make a recursive call for each of them
 for index=transpose(find(cellfun('isclass', c, 'struct')))
   try
-  [sf, sc] = findfield(c{index}, name, f{index});
+  sf = struct_getfields(c{index}, f{index});
   f = [f(:) ; sf(:)];
-  c = [c(:) ; sc(:)];
   end
 end
+
 
 
