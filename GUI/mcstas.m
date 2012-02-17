@@ -59,7 +59,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.23 $
+% Version: $Revision: 1.24 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -267,7 +267,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       end
       for index=1:length(options.variable_names)
         setalias(a, options.variable_names{index}, options.variable_pars{index});
-        if isscan==1
+        if isscan==1 && isnumeric(options.variable_pars{index}) && length(options.variable_pars{index}) > 1
           setaxis(a, index, options.variable_names{index});
         end
         t = [ t ' ' options.variable_names{index} ];
@@ -460,8 +460,8 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
                 % raise existing figure (or keep it hidden) and add parameters on top
                 if gcf ~= h, figure(h); end
                 if isvector(this_criteria)
-                  plot(this_criteria)
-                  xlabel('Monitors'); ylabel('Integral');
+                  plot(this, this_criteria)
+                  xlabel([ 'Scan step ' options.variable_names{index} ]); ylabel('Integral');
                 else
                   surf(this_criteria);
                   ylabel('Scan step'); xlabel('Monitors'); zlabel('Integral');

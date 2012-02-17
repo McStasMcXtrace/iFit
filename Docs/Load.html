@@ -22,6 +22,9 @@
 
 
 
+
+
+
   <title>iFit: Importing data (iData/load)</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -186,8 +189,12 @@ The current format list is:<img style="width: 340px; height: 338px;" alt="iData 
   <li>ILL Data (most instruments at the <a href="http://www.ill.fr/YellowBook/">ILL</a>)<br>
   </li>
   <li>ILL TAS Data (polarized or not)</li>
-  <li>SPEC</li>
-  <li>McStas (Scan DAT output, 1D, 2D monitor, event lists, sim file, Sqw table)</li>
+  <li>Chalk River CNBC NRU data, including milti-wire and polarized data<br>
+  </li>
+
+  <li>SPEC ESRF<br>
+</li>
+  <li>McStas (Scan DAT output, 1D, 2D monitor, event lists, sim file, Sqw, LAZ, LAU tables)</li>
   <li>ISIS/SPE tof data (see <a href="http://horace.isis.rl.ac.uk/">Horace</a> and <a href="http://www.libisis.org/">LibISIS</a>)<br>
 </li>
   <li>INX tof data (ILL <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/tofhr/inx/">processed TOF</a>)<br>
@@ -291,7 +298,10 @@ neutron triple-axis diffractometer at the ILL [text]</li>
   <li><a style="font-weight: bold;" href="../Data/rita22010n021140.hdf">rita22010n021140.hdf</a>: a <a href="http://spectroscopy.web.psi.ch/rita2/">RITA2@PSI</a> data file [binary, HDF5/NeXus with compression]</li>
   <li><a style="font-weight: bold;" href="../Data/PDBSilk.pdb">PDBSilk.pdb</a>: an example PDB file [text, PDB]</li>
   <li><a style="font-weight: bold;" href="../Data/nano_50K_4.8a_03_h4.hdf">nano_50K_4.8a_03_h4.hdf</a>: an inelastic scattering example from <a href="http://www.ill.eu/in5">IN5</a> tof at the ILL [binary, HDF4/NeXus with compression]</li>
-  <li><a style="font-weight: bold;" href="../Data/Diff_BananaTheta_1314088587.th">Diff_BananaTheta_1314088587.th</a> and <a style="font-weight: bold;" href="../Data/Diff_BananaPSD_1314088587.th_y">Diff_BananaPSD_1314088587.th_y</a>: example <a href="http://www.mcstas.org">McStas</a> simulation result files [text, McStas]</li>
+  <li><a href="../Data/Diff_BananaTheta_1314088587.th" style="font-weight: bold;">Diff_BananaTheta_1314088587.th</a> and <a style="font-weight: bold;" href="../Data/Diff_BananaPSD_1314088587.th_y">Diff_BananaPSD_1314088587.th_y</a>: example <a href="http://www.mcstas.org">McStas</a> simulation result files [text, McStas]</li>
+  <li><a style="font-weight: bold;" href="../Data/AL20_017.DAT">AL20_017.DAT</a>: example data files from the D3 reflectometer at Chalk River <a href="www.nrc-cnrc.gc.ca/cnbc/">CNBC</a> NRU<br>
+  </li>
+
 </ul>
 
 All of these can be directly accessed with e.g.<br>
@@ -425,7 +435,7 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a href="../iFiles/doc/lookt
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span style="font-style: italic;">
-$Date: 2012-02-14 04:24:33 $ $Revision: 1.27 $
+$Date: 2012-02-17 23:31:07 $ $Revision: 1.28 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

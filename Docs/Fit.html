@@ -14,6 +14,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: fitting a model onto iData objects</title>
 </head><body>
@@ -269,6 +271,17 @@ optimization techniques. No doubt that choosing one at first sight is
 difficult. We provide below a set of preferred optimizers, based on a
 careful comparison explained in the <a href="iOptim.html">iOptim</a>
 documentation.<br>
+<br>
+The process of choosing a sensible optimizer can be automated by using the <span style="font-weight: bold; font-style: italic;">fmin</span>
+optimizer. The objective function is analyzed and a set of best
+optimizers is determined, depending on the execution time, the number
+of parameters, and the type of objective - noisy or continuous:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; fits(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, '<span style="color: rgb(204, 51, 204);">fmin'</span>)</pre>
+
+When more than one optimizer is suitable, a random choice is performed,
+with a weighting by the success ratio and the number of function calls
+(optimization speed). Successive calls to <span style="font-style: italic; font-weight: bold;">fmin</span> with the same problem to solve may result in different optimizers and solutions.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
 <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
@@ -445,7 +458,9 @@ final fit result on the left.<br>
 Also, as explained <a href="#mozTocId888705">above</a>, it is possible
 to obtain, on optimization completion, the whole criteria, and
 parameter set history, as a function of iterations/criteria evaluations.<br>
-<pre style="margin-left: 40px;"><span style="font-style: italic;"></span>&gt;&gt; [p,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>&gt;&gt; output.parsHistory<br>&gt;&gt; output.criteriaHistory</pre>
+<pre style="margin-left: 40px;"><span style="font-style: italic;"></span>&gt;&gt; [p,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>&gt;&gt; output.parsHistory<br>&gt;&gt; output.criteriaHistory<br></pre>The monitoring window above can be re-displayed with:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fminplot</span>(output);</pre>
+
 </div>
 </div>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId919221"></a>Model parameter constraints</h3>
@@ -651,7 +666,7 @@ Model)</td>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData fitting - </span><span style="font-style: italic;">
-$Date: 2012-02-11 02:27:24 $ $Revision: 1.24 $
+$Date: 2012-02-17 23:31:07 $ $Revision: 1.25 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body></html>

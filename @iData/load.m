@@ -1,5 +1,5 @@
 function out = load(a, varargin)
-% d = load(s, file, loader): iData file loader
+% d = load(s, file, loader, ...): iData file loader
 %
 %   @iData/load: imports any data into Matlab/iData object(s)
 %   The input argument 'file' should be a file name, or a cell of file names, 
@@ -29,6 +29,7 @@ function out = load(a, varargin)
 %               loader.method     = function to read data file (char/function_handle)
 %               loader.options    = options (char/cell which is then expanded)
 %               loader.postprocess= function to act on freshly imported iData (char/function_handle)
+%         additional arguments are passed to the import routine.
 %
 % The loading process calls first
 %   data =loader.method(filename, options...)
@@ -39,7 +40,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad

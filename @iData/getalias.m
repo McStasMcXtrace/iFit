@@ -15,7 +15,7 @@ function [link, label, names] = getalias(this,alias)
 %         names: all defined alias names (cellstr)
 % ex:     getalias(iData) or getalias(iData,'Signal')
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/set, iData/get, iData/setalias, iData/rmalias
 
 % EF 23/09/07 iData implementation
@@ -27,7 +27,7 @@ end
 
 if numel(this) > 1
   link = cell(size(this)); label=link; names=link;
-  for index=1:numel(thiss)
+  for index=1:numel(this)
     [l,b,n] = getalias(this(index), alias);
     link{index} =l;
     label{index}=b;

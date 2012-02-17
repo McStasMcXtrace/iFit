@@ -27,7 +27,7 @@ function this = setaxis(this, rank, alias, value)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.23 $
+% Version: $Revision: 1.24 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -131,7 +131,7 @@ end
 
 if isempty(find(strcmpi(alias, this.Alias.Names))) % the alias does not exist yet
   if isempty(value)
-    % prehaps the value refers to an existing field in the object
+    % perhaps the value refers to an existing field in the object
     try
       val = get(this, alias);
       setalias(this, [ 'Axis_' num2str(rank) ], alias);
