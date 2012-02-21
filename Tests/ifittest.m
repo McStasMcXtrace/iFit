@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -92,6 +92,9 @@ for index=1:length(tests_list)
   if length(tests_list) > 1
     if ~ishandle(h), break; end
     waitbar(index/length(tests_list), h);
+    if strcmp(status{index},'FAILED') || ~isempty(errors{index})
+        set(h, 'Color','magenta');
+    end
   end
   test_length = test_length+1;
 end
