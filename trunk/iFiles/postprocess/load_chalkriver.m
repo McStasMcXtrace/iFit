@@ -4,7 +4,7 @@ function a=load_chalkriver(a0)
 % Returns an iData style dataset from a Chalk River CNBC data file
 % each initial data file may contain more than one record. Also handles multiwire detectors.
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -16,7 +16,7 @@ if length(a0(:)) > 1
   return
 end
 
-if isempty(findstr(a0,'Run')) && isempty(findstr(a0,'Sec')) && isempty(findstr(a0,'Rec'))
+if isempty(findstr(a0,'Run','exact')) || isempty(findstr(a0,'Sec','exact')) || isempty(findstr(a0,'Rec','exact'))
   warning([ mfilename ': The loaded data set ' a0.Tag ' from ' a0.Source ' is not a Chalk River data format.' ]);
   a = a0;
   return
@@ -87,10 +87,16 @@ for index=1:length(f)
     end % if Headers
     
     this.Data=Record; setalias(this, 'Signal','');
-    if isfield(Record, 'Instrument'), setalias(this, 'Instrument', 'Data.Instrument'); end
-    if isfield(Record, 'Run'), setalias(this, 'Run', 'Data.Run'); end
-    if isfield(Record, 'Rec'), setalias(this, 'Rec', 'Data.Rec'); end
-    if isfield(Record, 'Seq'), setalias(this, 'Sec', 'Data.Seq'); end
+    lab = '';
+    if isfield(Record, 'Instrument'), 
+      setalias(this, 'Instrument', 'Data.Instrument'); lab = [ lab Record.Instrument ]; end
+    if isfield(Record, 'Run'), 
+      setalias(this, 'Run', 'Data.Run'); lab = [ lab ' Run:' num2str(Record.Run) ]; end
+    if isfield(Record, 'Rec'), 
+      setalias(this, 'Rec', 'Data.Rec'); lab = [ lab ' Rec:' num2str(Record.Rec) ]; end
+    if isfield(Record, 'Seq'), 
+      setalias(this, 'Sec', 'Data.Seq'); lab = [ lab ' Seq:' num2str(Record.Seq) ]; end
+    if ~isempty(lab) this.Label=lab; end
     this = iData(this); % reset Signal to the biggest block
     
     this_size = size(this,2); % the full record
@@ -113,6 +119,7 @@ for index=1:length(f)
           if strncmp(columns{i}, 'Sig', 3)
             this_toadd = setalias(this, 'Signal', columns{i});  % the Signal is set to the last Sig column
             this_toadd.Title = [ this_toadd.Title '#' columns{i} ];
+            this_toadd.Label = [ this_toadd.Label '#' columns{i} ];
             new_this = [ new_this this_toadd ];
           end
         elseif this_size > length(columns) && length(Sig_columns) == 1

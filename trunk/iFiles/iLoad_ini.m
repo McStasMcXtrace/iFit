@@ -128,7 +128,7 @@ function config = iLoad_ini
     mcstas_powder.extension  ={'laz','lau'};
     
     chalkriver.name     ='ChalkRiver CNBC';
-    chalkriver.patters  ={'Run ','Seq ','Rec ','Mode ','Temp:','File '};
+    chalkriver.patterns ={'Run ','Seq ','Rec ','Mode ','Temp:','File '};
     chalkriver.options  ='--fast --binary  --headers --comment=NULL --silent --section=Run --metadata=File --metadata=Sig';
     chalkriver.method   ='looktxt';
     chalkriver.postprocess='load_chalkriver';
