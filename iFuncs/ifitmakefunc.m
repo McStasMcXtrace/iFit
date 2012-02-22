@@ -32,7 +32,7 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %
 % output: fhandle: function handle to the new function, which is also stored locally as a file.
 % 
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, gauss
 
 fhandle = [];
@@ -151,6 +151,7 @@ if ~isempty(expr)
     used_pars(nb_pars) = 1;
   else
     used_pars=[];
+    nb_pars=[];
   end
   % first convert a,b,c,d...s into p(1) p(2) ...
   % regexp: single letters starting words
