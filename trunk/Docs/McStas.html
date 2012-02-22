@@ -8,6 +8,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: McStas</title>
   <ifit: changes="" title=""></ifit:>
@@ -17,14 +18,12 @@
 <h1 style="text-align: center;"><a href="http://www.mcstas.org/"><img alt="McStas [www.mcstas.org]" title="McStas [www.mcstas.org]" src="images/mcstas.png" style="border: 2px solid ; width: 150px; height: 88px;" align="right"></a></h1>
 <h1 style="text-align: center;">
 </h1>
-<ol id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
-  <li><a href="#mozTocId234815">Running a single simulation</a></li>
-  <li><a href="#mozTocId821585">Running series of simulations (scans)</a></li>
-  <li><a href="#mozTocId690143">Optimizing instrument parameters </a></li>
-  <li><a href="#mozTocId359721">Optimizing instrument parameters with
-constraints</a></li>
-</ol>
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId234815">Running a single
+simulation</a></li><li><a href="#mozTocId124981">Displaying the instrument geometry</a></li><li><a href="#mozTocId821585">Running series of
+simulations (scans)</a></li><li><a href="#mozTocId690143">Optimizing instrument
+parameters
+</a></li><li><a href="#mozTocId359721">Optimizing instrument
+parameters with constraints</a></li></ol>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: left;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">mcstas</span><br>
@@ -66,14 +65,17 @@ parameters.powder=<span style="color: rgb(204, 51, 204);">'Na2Ca3Al2F14.laz'</sp
 <div style="text-align: left;"><br>
 and both numerical values and strings are supported. Numerical values
 should be single scalars, whereas strings are used as-is, that is they
-may assign DEFINITION instrument parameters such as filenames, arrays
+may assign DEFINITION instrument parameters such as file names, arrays
 and other types that are sent to the commands line. The unspecified
 instrument parameters are used with their default values (when defined).<br>
 <br>
-The parameters can also be given as a single string with members separated with the ';' character:<br>
+The parameters can also be given as a single string with members separated with the ';' character ans assigned with '=':<br>
 <pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <span style="color: rgb(204, 51, 204);">'RV=1; lambda=2.36; powder=Na2Ca3Al2F14.laz'</span>);</pre>
 
 </div>
+When the instrument is not found in the current directory, it is
+searched in the Mcstas library, and eventually copied locally, which
+triggers its compilation.<br>
 <br>
 The last argument <span style="font-style: italic;">options</span>
 controls simulation configuration.<br>
@@ -117,7 +119,14 @@ The last line displays the simulation results. Usual data analysis
 documentation). <br>
 The resulting McStas data has an additional <span style="font-style: italic;">Parameters</span> field which holds the instrument parameters used for the simulation.<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; monitors(1).Parameters</pre>
+<pre style="margin-left: 40px;">&gt;&gt; monitors(1).Parameters<br></pre>
+<h3><a class="mozTocH3" name="mozTocId124981"></a>Displaying the instrument geometry</h3>
+To display the instrument geometry, use the syntax:<br>
+<pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <span style="color: rgb(204, 51, 204);">'RV=1','mode=display'</span>);</pre>
+which will launch 'mcdisplay' in the background, and open the resulting
+figure. No neutron trajectory is shown though, only the instrument
+geometry.<br>
+
 
 
 <h3><a class="mozTocH3" name="mozTocId821585"></a>Running series of
@@ -188,7 +197,7 @@ single simulation, just by e.g. setting <span style="font-style: italic;">option
 <pre style="margin-left: 40px;">&gt;&gt; [solution, monitors] = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, parameters, options);</pre>
 The parameters, as a named structure, are initiated to their starting
 value, from which the optimization proceeds.<span style="font-style: italic;"> Only numerical</span> parameters can be
-optimized. Also, it is <span style="color: rgb(255, 0, 0);">highly encouraged to use bounded parameter</span>s (that is define constraints, see <a href="#mozTocId359721">below</a>), else the optimizer can get lost, produce unmeaningful results, or return <span style="font-style: italic;">NaN</span> parameter values.<br>
+optimized. Also, it is <span style="color: rgb(255, 0, 0);">highly encouraged to use bounded parameters</span> (that is define constraints, see <a href="#mozTocId359721">below</a>), else the optimizer can get lost, produce unmeaningful results, or return <span style="font-style: italic;">NaN</span> parameter values.<br>
 <br>
 More specifically, the <span style="font-style: italic;">options</span>
 structure may contain, in addition to the optimization mode, the
@@ -309,7 +318,7 @@ the parameter search within boundaries during optimizations.<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/McStas - </span><span style="font-style: italic;">
-$Date: 2012-02-22 02:56:27 $ $Revision: 1.15 $
+$Date: 2012-02-22 22:53:36 $ $Revision: 1.16 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

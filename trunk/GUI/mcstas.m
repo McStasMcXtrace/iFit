@@ -2,17 +2,20 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % [OPTIMUM,MONITORS,EXITFLAG,OUTPUT] = mcstas(INSTRUMENT, PARAMETERS, OPTIONS) : run and optimize a McStas simulation
 %
 % A wrapper to the McStas package to either execute a simulation, or optimize a
-%   set of parameters. To select the optimization mode, set the options.mode='optimize'
-%   or any other optimization configuration parameter (TolFun, TolX, ...). Default 
-%   mode is 'simulate', which also includes scanning capability.
+%   set of parameters.
+%   The default execution mode is 'simulate', which also includes scanning capability.
+%   To select the optimization mode, set the options.mode='optimize' or any other
+%   optimization configuration parameter (TolFun, TolX, ...). 
+%   The Trace 3D view mode is executed when using mode=display
 % The syntax:
 %   mcstas(instrument,'compile')     assemble and compile the instrument
 %   mcstas(instrument,'compile mpi') same with MPI support
 %
 % input:  INSTRUMENT: name of the instrument description to run (string)
+%           when the instrument is not found, it is searched in the McStas examples, and copied locally.
 %         PARAMETERS: a structure that gives instrument parameter names and values (structure)
 %           parameters.name = scalar (optimization and simulation)
-%             define a single value      when options.mode='simulation'
+%             define a single value      when options.mode='simulation' and 'display'
 %             define the starting value  when options.mode='optimization'
 %           parameters.name = vector and cell array (simulation)
 %             define a scanning range for a series of simulations, when options.mode='simulation'
@@ -32,7 +35,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %           options.seed:   random number seed to use for each iteration (double)
 %           options.gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
 %           options.compile: 0 or 1 to force re-compilation of the instrument (boolean)
-%           options.mode:   'simulate' or 'optimize' (string)
+%           options.mode:   'simulate', 'optimize' or 'display' (string)
 %           options.type:   'minimize' or 'maximize', which is the default (string)
 %           options.monitors:  cell string of monitor names, or empty for all (cellstr)
 %             the monitor names can contain expressions made of the monitor name 
@@ -53,13 +56,17 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% example: to optimize RV, display result, and then perform a scan
-%   [p,f]=mcstas('templateDIFF', struct('RV',[0.5 1 1.5]), struct('TolFun','0.1%','monitors','Banana'))
+% example: Optimize templateDIFF instrument parameter RV
+%   [p,f]=mcstas('templateDIFF', 'RV=[0.5 1 1.5]', struct('TolFun','0.1%','monitors','Banana'));
+% Display result
 %   subplot(f); disp(f.Parameters)
+% Perform a scan
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
+% Display instrument geometry
+%   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -78,12 +85,45 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     options= str2struct(options);
   end
   
+  % check if the instrument exists, else attempt to find it
+  [p,f,e] = fileparts(instrument);
+  if isempty(e)
+    instrument = [ instrument '.instr' ];
+  end
+  if ~isempty(instrument)
+    index = dir(instrument);
+  else return;
+  end
+  if isempty(index)
+    mcstas_lib = getenv('MCSTAS');
+    if isempty(mcstas_lib)
+      if ispc
+        mcstas_lib = 'C:\mcstas\lib';
+      else
+        mcstas_lib = '/usr/local/lib/mcstas';
+      end
+    end
+    if ~isempty(mcstas_lib)
+      [p,f,e] = fileparts(instrument);
+      instrument = [ f e ];
+      index = getAllFiles(mcstas_lib, instrument);
+      if ~isempty(index)
+        disp([ mfilename ': Copying instrument ' index ' in ' pwd ] );
+        copyfile(index, instrument);
+      end
+    end
+  end
+  
+  if isempty(index)
+    disp([ mfilename ': ERROR: Can not find instrument ' instrument ]);
+  end
+  
   options.instrument     = instrument;
   % define simulation or optimization mode (if not set before)
   if ~isfield(options,'mode')
-    if isfield(options, 'optimizer') || isfield(options,'TolFun') | ...
-       isfield(options,'TolX') | isfield(options,'type') | ...
-       isfield(options,'MaxFunEvals') | isfield(options,'MaxIter')
+    if isfield(options, 'optimizer')  || isfield(options,'TolFun') || ...
+       isfield(options,'TolX')        || isfield(options,'type')   || ...
+       isfield(options,'MaxFunEvals') || isfield(options,'MaxIter')
       options.mode      = 'optimize'; 
     else
       options.mode      = 'simulate';
@@ -97,7 +137,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     use_temp=0; 
   end
   if ~isfield(options,'ncount')
-    if strcmp(options.mode, 'optimize')
+    if strcmpi(options.mode, 'optimize')
       options.ncount    = 1e5;
       if ~isfield(options,'TolFun')
         options.TolFun = '0.1%';
@@ -116,6 +156,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   end  
   
   % parse parameter values for mcstas_criteria
+  % syntax: mcstas(instr, 'compile mpi') -> only compile
   if ischar(parameters) && ~isempty(strfind(parameters,'compile'))
     options.compile = 1;
     if ischar(parameters) && (~isempty(strfind(parameters,' mpi')) || ~isempty(strfind(parameters,'mpi ')))
@@ -136,7 +177,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   variable_names  = {};
   fixed_pars      = {};
   scan_size       = [];
-  if strcmp(options.mode, 'optimize')
+  if strcmpi(options.mode, 'optimize')
     variable_pars   = [];
   else
     variable_pars   = {};
@@ -149,7 +190,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       fixed_pars{end+1} = value(:)';
       fixed_names{end+1}= parameter_names{index};
     elseif isvector(value) % this is a vector: numeric or cell
-      if strcmp(options.mode, 'optimize')
+      if strcmpi(options.mode, 'optimize')
         if ~isnumeric(value)
           error([ mfilename ': Parameter ' parameter_names{index} ' of type ' class(value) ' is not supported.' ...
             sprintf('\n') 'Optimization only supports numerics as input.']);
@@ -199,7 +240,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     options.monitors = cellstr(options.monitors);
   end
 
-  if strcmp(options.mode,'optimize') % ================================ OPTIMIZE
+  if strcmpi(options.mode,'optimize') % ================================ OPTIMIZE
     % optimize simulation parameters
     if ~isfield(options,'type'),      options.type      = 'maximize'; end
     if ~isfield(options,'optimizer'), options.optimizer = @fminpso; end
@@ -236,7 +277,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       pars_struct.(variable_names{index}) = pars(index);
     end
     pars = pars_struct;
-  else % ================================================ SINGLE simulation/scan
+  elseif strcmpi(options.mode,'simulate') % ============== SINGLE simulation/scan
 
     [p, fval] = mcstas_criteria(pars, options);   % may fail at execution
     
@@ -258,6 +299,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     elseif nargout < 2
       pars     = fval;
     else
+      % create the iData object of the integral(monitors)
       a = iData(p);
       try
         t = fval(1); isscan = t.Data.Scan;
@@ -276,7 +318,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       if isscan==1
         setaxis(a, length(options.variable_names)+1, 'Criteria');
       end
-      % add other metadata
+      % add other metadata to the integral object
       set(a, 'Data.Parameters', parameters);
       set(a, 'Data.Criteria', p);
       if iscell(fval)
@@ -294,6 +336,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     end 
     exitflag = 0;
     output   = options;
+  elseif any(strcmpi(options.mode,{'display','trace'}))
+    pars = mcstas_criteria(pars, options);
   end % else single simulation
   
   if use_temp==1
@@ -306,42 +350,45 @@ end
 
 % ------------------------------------------------------------------------------
 
-function system_wait(cmd, options)
+function status=system_wait(cmd, options)
 % inline function to execute command and wait for its completion (under Windows)
 % dots are displayed under Windows after every minute waiting.
   [status, result]=system(cmd);
   disp(result);
   if status ~= 0, return; end
-  if ispc % wait for completion by monitoring the number of elements in the result directory
-    t=tic; t0=t; first=1;
-    a=dir(options.dir);
-    while length(a) <= 3 % only 'mcstas.sim', '.', '..' when simulation is not completed yet
-      if toc(t) > 60
-        if first==1 % display initial waiting message when computation lasts more than a minute
-            fprintf(1, 'mcstas: Waiting for completion of %s simulation (dots=minutes).\n', options.instrument);
-        end
-        fprintf(1,'.');
-        t=tic; first=first+1;
-        if first>74 % go to next line when more than 75 dots in a row...
-            first=2;
-            fprintf(1,'\n');
-        end
-      end
-      a=dir(options.dir); % update directory content list
-    end
-    fprintf(1,' DONE [%10.2g min]\n', toc(t0)/60);
-  end
-  % wait for directory to be 'stable' (not being written)
-  this_sum=0;
-  while 1
+  % need to wait for simulation to complete, except for Trace mode
+  if ~any(strcmpi(options.mode,{'display','trace'}))
+    if ispc % wait for completion by monitoring the number of elements in the result directory
+      t=tic; t0=t; first=1;
       a=dir(options.dir);
-      new_sum=0;
-      for index=1:length(a)
-          new_sum = new_sum+a(index).datenum;
+      while length(a) <= 3 % only 'mcstas.sim', '.', '..' when simulation is not completed yet
+        if toc(t) > 60
+          if first==1 % display initial waiting message when computation lasts more than a minute
+              fprintf(1, 'mcstas: Waiting for completion of %s simulation (dots=minutes).\n', options.instrument);
+          end
+          fprintf(1,'.');
+          t=tic; first=first+1;
+          if first>74 % go to next line when more than 75 dots in a row...
+              first=2;
+              fprintf(1,'\n');
+          end
+        end
+        a=dir(options.dir); % update directory content list
       end
-      if this_sum == new_sum, break; end
-      this_sum = new_sum;
-      pause(1);
+      fprintf(1,' DONE [%10.2g min]\n', toc(t0)/60);
+    end
+    % wait for directory to be 'stable' (not being written)
+    this_sum=0;
+    while 1
+        a=dir(options.dir);
+        new_sum=0;
+        for index=1:length(a)
+            new_sum = new_sum+a(index).datenum;
+        end
+        if this_sum == new_sum, break; end
+        this_sum = new_sum;
+        pause(1);
+    end
   end
 end % system_wait
 
@@ -350,8 +397,13 @@ end % system_wait
 function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, ind)
 % inline function to compute a single simulation, or a vector of simulations (recursive calls)
   
-  % launch simulation with mcrun
-  cmd = [ 'mcrun ' options.instrument ];
+  % launch simulation with mcrun or mcdisplay
+  if strcmpi(options.mode,'optimize') || strcmpi(options.mode,'simulate')
+    cmd = [ 'mcrun ' options.instrument ];
+  elseif any(strcmpi(options.mode,{'display','trace'}))
+    cmd = [ 'mcdisplay -pMatlab --save ' options.instrument ];
+    options.ncount=0;
+  end
   
   % usual McStas/mcrun options
   if isfield(options,'compile') & (options.compile | strcmp(options.compile,'yes'))
@@ -372,7 +424,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   if isfield(options,'gravitation') && (options.gravitation || strcmp(options.gravitation,'yes'))
     cmd = [ cmd ' --gravitation' ];
   end
-  if isfield(options,'mpi')
+  if isfield(options,'mpi') && ~any(strcmpi(options.mode,{'display','trace','info','help'}))
     if isempty(options.mpi)
       cmd = [ cmd ' --mpi' ];
     elseif options.mpi > 1
@@ -389,7 +441,8 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     cmd = [ cmd ' --seed=' num2str(options.seed) ];
   end
   
-  % handle single simulation and vectorial scans
+  % handle single simulation and vectorial scans ===============================
+  % determine parameter list, those which are fixed and the variable ones
   if isfield(options,'variable_names')
     if nargin < 3, 
       ind = cell(1,length(options.variable_names)); ind{1}=1; 
@@ -398,7 +451,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
         sim      = {};
       end
     end
-    for index=1:length(options.variable_names)
+    for index=1:length(options.variable_names)  % loop on variable parameters
       if isnumeric(pars) % all numerics
         cmd = [ cmd ' ' options.variable_names{index} '=' num2str(pars(index)) ];
       else % some are cells and chars
@@ -427,19 +480,18 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
               % add single simulation to scan arrays
               % store into the last dimensionality (which holds monitors and integrated values)
               if ~isempty(this_sim)
-              for index_mon=1:length(this_criteria)
-                if isempty(ind), this_ind = { index_mon };
-                else this_ind = { ind{:} index_mon }; end
-                this_ind(cellfun('isempty',this_ind))={1};
-                try
-                sim{      sub2ind(size(sim), this_ind{:}) } = this_sim(index_mon);
-                criteria( sub2ind(size(sim), this_ind{:}) ) = this_criteria(index_mon);
-                catch
-                sim{      this_ind{:} } = this_sim(index_mon);
-                criteria( this_ind{:})  = this_criteria(index_mon);
+                for index_mon=1:length(this_criteria)
+                  if isempty(ind), this_ind = { index_mon };
+                  else this_ind = { ind{:} index_mon }; end
+                  this_ind(cellfun('isempty',this_ind))={1};
+                  try
+                  sim{      sub2ind(size(sim), this_ind{:}) } = this_sim(index_mon);
+                  criteria( sub2ind(size(sim), this_ind{:}) ) = this_criteria(index_mon);
+                  catch
+                  sim{      this_ind{:} } = this_sim(index_mon);
+                  criteria( this_ind{:})  = this_criteria(index_mon);
+                  end
                 end
-                
-              end
               end
             else
               criteria = this_criteria;
@@ -488,10 +540,41 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   
   % Execute simulation =========================================================
-  disp([ mfilename ': ' options.mode ' ' cmd ]);
+  disp([ mfilename ': ' options.mode ': ' cmd ]);
+  
+  % remove previous 3d view if any
+  if any(strcmpi(options.mode,{'display','trace'}))
+    % should identify the figure file name
+    [p,f,e] = fileparts(options.instrument);
+    fig = [ f '.fig' ]; % the instrument view has 'fig' extension
+    if ~isempty(p), fig=fullfile(p, fig); end
+    delete(fig);
+  end
+  
+  % EXECUTE here: simulate, optimize and display modes
   system_wait(cmd, options);
   
+  if any(strcmpi(options.mode,{'display','trace'}))
+    % wait for figure to be ready...
+    t=clock;
+    disp([ mfilename ': Waiting for the instrument ' options.instrument ' view to be created as ' fig ])
+    while isempty(dir(fig)) && etime(clock, t) < 60
+      fprintf(1, '.')
+      pause(5);
+    end
+    fprintf(1, '\n');
+    if ~isempty(dir(fig))
+      fig = openfig(fig);
+      h = uicontrol('String','Info','Callback',[ 'helpdlg(''' cmd ''',''Instrument parameters'');' ],'ToolTip', cmd);
+      view(3); set(fig, 'ToolBar','figure','menubar','figure');
+      criteria = fig;
+    else
+      criteria=[];
+    end
+  end
+  
   if nargout ==0, return; end
+    
   if isfield(options,'ncount') && options.ncount == 0
     return
   end
@@ -535,7 +618,6 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     return
   end
 
-  
   % option to plot the monitors
   if (isfield(options, 'OutputFcn') && ~isempty(options.OutputFcn)) ...
   || (isfield(options, 'Display') && strcmp(options.Display, 'iter'))
@@ -575,7 +657,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   criteria = zeros(length(sim),1);
   for index=1:length(sim)
     this = sim(index);
-    if isfield(sim(index), 'CriteriaExpression'))
+    if isfield(sim(index), 'CriteriaExpression')
       R = getalias(sim(index), 'CriteriaExpression');
       try
         eval([ 'this = this' R ';' ]);
@@ -618,3 +700,31 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
 end % mcstas_criteria
 % end of mcstas_criteria (inline mcstas)
+
+% ------------------------------------------------------------------------------
+% function to search for a file recursively
+function fileList = getAllFiles(dirName, File)
+
+  dirData = dir(dirName);                 % Get the data for the current directory
+  dirIndex = [dirData.isdir];             % Find the index for directories
+  fileList = {dirData(~dirIndex).name}';  % Get a list of the files
+  if ~isempty(fileList)
+    index = find(strcmp(File, fileList));
+    if ~isempty(index)
+      fileList = fullfile(dirName,fileList{index(1)});  % get the full path/file name
+      return
+    else
+      fileList = [];
+    end
+  end
+  subDirs = {dirData(dirIndex).name};          % Get a list of the subdirectories
+  validIndex = ~ismember(subDirs,{'.','..'});  % Find index of subdirectories
+                                               %   that are not '.' or '..'
+  for iDir = find(validIndex)                  % Loop over valid subdirectories
+    nextDir = fullfile(dirName,subDirs{iDir}); % Get the subdirectory path
+    fileList = getAllFiles(nextDir, File);     % Recursively call getAllFiles
+    if ~isempty(fileList), return; end
+  end
+
+end
+
