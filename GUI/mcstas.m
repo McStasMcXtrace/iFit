@@ -59,7 +59,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -537,7 +537,8 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
 
   
   % option to plot the monitors
-  if isfield(options, 'OutputFcn')
+  if (isfield(options, 'OutputFcn') && ~isempty(options.OutputFcn)) ...
+  || (isfield(options, 'Display') && strcmp(options.Display, 'iter'))
     % is this window already opened ?
     h = findall(0, 'Tag', 'McStasMonitors');
     if isempty(h) % create it
@@ -573,12 +574,15 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   % evaluate the criteria specifications (monitors, expressions)
   criteria = zeros(length(sim),1);
   for index=1:length(sim)
-    R = '';
-    try
+    this = sim(index);
+    if isfield(sim(index), 'CriteriaExpression'))
       R = getalias(sim(index), 'CriteriaExpression');
-      this = sim(index);
-      eval([ 'this = this' R ';' ]);
+      try
+        eval([ 'this = this' R ';' ]);
+      end
+    else R = '';
     end
+    
     this = double(this);
     this = sum(this(:));
     if isfield(options,'type') & strcmp(options.type,'maximize')
