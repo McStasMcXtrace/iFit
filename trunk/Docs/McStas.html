@@ -6,6 +6,8 @@
 
 
 
+
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: McStas</title>
   <ifit: changes="" title=""></ifit:>
@@ -186,7 +188,7 @@ single simulation, just by e.g. setting <span style="font-style: italic;">option
 <pre style="margin-left: 40px;">&gt;&gt; [solution, monitors] = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, parameters, options);</pre>
 The parameters, as a named structure, are initiated to their starting
 value, from which the optimization proceeds.<span style="font-style: italic;"> Only numerical</span> parameters can be
-optimized.<br>
+optimized. Also, it is <span style="color: rgb(255, 0, 0);">highly encouraged to use bounded parameter</span>s (that is define constraints, see <a href="#mozTocId359721">below</a>), else the optimizer can get lost, produce unmeaningful results, or return <span style="font-style: italic;">NaN</span> parameter values.<br>
 <br>
 More specifically, the <span style="font-style: italic;">options</span>
 structure may contain, in addition to the optimization mode, the
@@ -209,8 +211,8 @@ optimizer, TolFun, ...</span><span style="color: rgb(204, 51, 204);"> </span></l
 </ul>
 as well as any other optimizer configuration fields such as<br>
 <ul>
-  <li><span style="font-weight: bold;">options.TolFun</span> =<span style="color: rgb(204, 51, 204);">'0.1%'</span>;&nbsp;<span style="font-style: italic;"> % stop when criteria changes are smaller
-that 0.1%,<span style="font-weight: bold;"> </span>this is the default<br>
+  <li><span style="font-weight: bold;">options.TolFun</span> =<span style="color: rgb(204, 51, 204);">'1%'</span>;&nbsp;<span style="font-style: italic;"> % stop when criteria changes are smaller
+that 1%,<span style="font-weight: bold;"> this is the default</span><br>
     </span></li>
   
   <li><span style="font-weight: bold;">options.TolX</span> =<span style="color: rgb(204, 51, 204);">'0.1%';</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-style: italic;">% stop when parameter changes are smaller
@@ -259,7 +261,7 @@ detector counts) and the parameters evolution is shown. The number of
 optimized parameters can be large, and only the first 3 ones will be
 shown on the dynamic plot. <br>
 The <span style="font-style: italic;">default stopping condition</span>
-is met when the integral monitor change is lower than 0.1%.<br>
+is met when the integral monitor change is lower than 1%.<br>
 <br>
 To abort the optimization, just <span style="font-weight: bold;">close the optimization plot</span> window. The actual end occurs after a few more iterations.<br>
 <br>
@@ -270,7 +272,7 @@ noisy function. The stop conditions must then usually be quite relaxed
 for the optimization to end, or the number of <span style="font-style: italic;">ncounts</span> must be large
 enough to minimize the statistical uncertainty. TolFun=<span style="color: rgb(204, 51, 204);">'0.1%</span>' and
 TolX=<span style="color: rgb(204, 51, 204);">'0.1%'</span> are fair
-choices. Also, we recommend to constrain parameter ranges (<span style="color: rgb(255, 0, 0);">see below</span>).<br>
+choices. Also, we recommend to constrain parameter ranges (<span style="color: rgb(255, 0, 0);">see <a href="#mozTocId359721">below</a></span>).<br>
 <h3><a class="mozTocH3" name="mozTocId359721"></a>Optimizing instrument
 parameters with constraints</h3>
 It is quite usual the restrict the parameters search to specified
@@ -282,7 +284,7 @@ together with e.g. <span style="font-style: italic;">options.mode=</span><span s
 To fix a parameter value during the optimization, use a string
 parameter value, such as :<br>
 <ul>
-  <li>parameters.L2 = '0.85'; <span style="font-style: italic;">% fix
+  <li>parameters.L2 = <span style="color: rgb(204, 51, 204);">'0.85'</span>; <span style="font-style: italic;">% fix
 the L2 parameter to 0.85 during optimization</span><br>
   </li>
 </ul>
@@ -307,7 +309,7 @@ the parameter search within boundaries during optimizations.<br>
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/McStas - </span><span style="font-style: italic;">
-$Date: 2012-02-11 02:27:24 $ $Revision: 1.14 $
+$Date: 2012-02-22 02:56:27 $ $Revision: 1.15 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

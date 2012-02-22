@@ -25,7 +25,7 @@ if ~strcmp(warn.lasterr, lasterr) && etime(clock, warn.date) > 10
   long_exec={'fits','interp','ieval','cat','conv','fft','std','peaks','del2','gradient','jacobian','load','mcstas'};
   long_flag=0;
   for index=1:length(long_exec)
-    if any(strcmp(long_exec{index},{ st.name }))
+    if any(strcmp(long_exec{index},{ st.name })) % search in the execution stack
       long_flag=1;
       break
     end

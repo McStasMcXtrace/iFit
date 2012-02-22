@@ -17,7 +17,7 @@ function [match, types, dims] = findfield(s, field, option)
 %         nelements: total number of elements in iData fields (double)
 % ex:     findfield(iData) or findfield(iData,'Title') or findfield(s,'Title','exact case')
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/set, iData/get, iData/findobj, iData/findstr
 
 % EF 23/09/07 iData implementation
@@ -53,6 +53,10 @@ if ~isempty(field)
   end
   if strfind(option, 'exact')
     index = find(strcmp(field, matchs));
+    if isempty(index)
+      m=strtrim(cellstr(fliplr(char(strtok(cellstr(fliplr(char(matchs))),'. ')))));
+      index = find(strcmp(field, m));
+    end
   else
     if iscellstr(field)
       index = [];
