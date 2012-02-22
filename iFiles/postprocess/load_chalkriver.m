@@ -4,7 +4,7 @@ function a=load_chalkriver(a0)
 % Returns an iData style dataset from a Chalk River CNBC data file
 % each initial data file may contain more than one record. Also handles multiwire detectors.
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -16,7 +16,9 @@ if length(a0(:)) > 1
   return
 end
 
-if isempty(findstr(a0,'Run','exact')) || isempty(findstr(a0,'Sec','exact')) || isempty(findstr(a0,'Rec','exact'))
+% CNBC files have a Run, Seq and Rec field
+if isempty(findfield(a0,'Run','exact')) || isempty(findfield(a0,'Seq','exact')) ...
+|| isempty(findfield(a0,'Rec','exact'))
   warning([ mfilename ': The loaded data set ' a0.Tag ' from ' a0.Source ' is not a Chalk River data format.' ]);
   a = a0;
   return
@@ -40,6 +42,7 @@ for index=1:length(f)
     if isfield(Data, 'Headers')   % get Headers for this block
       Record.Headers = Data.Headers.(f{index});
       if isfield(Data.Headers, 'MetaData')  % get MetaData for this block
+        Record.MetaData = Data.Headers.MetaData;
         this_f = fieldnames(Data.Headers.MetaData);
         index_file   = find(strncmp(this_f, 'File', 4));  % also contains Instrument and Date
         if record_index <= length(index_file)
@@ -95,7 +98,7 @@ for index=1:length(f)
     if isfield(Record, 'Rec'), 
       setalias(this, 'Rec', 'Data.Rec'); lab = [ lab ' Rec:' num2str(Record.Rec) ]; end
     if isfield(Record, 'Seq'), 
-      setalias(this, 'Sec', 'Data.Seq'); lab = [ lab ' Seq:' num2str(Record.Seq) ]; end
+      setalias(this, 'Seq', 'Data.Seq'); lab = [ lab ' Seq:' num2str(Record.Seq) ]; end
     if ~isempty(lab) this.Label=lab; end
     this = iData(this); % reset Signal to the biggest block
     
@@ -115,9 +118,12 @@ for index=1:length(f)
             columns{i} = [ columns{i} '_' num2str(i) ];
           end
           this = setalias(this, columns{i}, [ block '(:,' num2str(i) ')' ]); % set columns
+          if strncmp(columns{i}, 'Mon', 3)
+            setalias(this, 'Monitor', columns{i});
+          end
           % add the object to the output only if there is a Sig column
           if strncmp(columns{i}, 'Sig', 3)
-            this_toadd = setalias(this, 'Signal', columns{i});  % the Signal is set to the last Sig column
+            this_toadd = copyobj(setalias(this, 'Signal', columns{i}));  % the Signal is set to the last Sig column
             this_toadd.Title = [ this_toadd.Title '#' columns{i} ];
             this_toadd.Label = [ this_toadd.Label '#' columns{i} ];
             new_this = [ new_this this_toadd ];
@@ -125,7 +131,7 @@ for index=1:length(f)
         elseif this_size > length(columns) && length(Sig_columns) == 1
           % this is a multi-wire record: only one Sig record for a matrix
           if strncmp(columns{i}, 'Sig', 3)
-            this_toadd = setalias(this, columns{i}, [ block '(:,' num2str(i) ':end)' ]);
+            this_toadd = copyobj(setalias(this, columns{i}, [ block '(:,' num2str(i) ':end)' ]));
             this_toadd = setalias(this_toadd, 'Signal', columns{i});
             setalias(this_toadd, 'Channel', 1:(this_size-1), 'Multi wire channel');
             setaxis(this_toadd, 1, columns{1});   % Y vertical
