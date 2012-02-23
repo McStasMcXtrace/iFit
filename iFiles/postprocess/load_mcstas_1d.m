@@ -5,7 +5,7 @@ function a=load_mcstas_1d(a)
 % as well as simple XYE files
 % Some labels are also searched.
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % inline: load_mcstas_param
@@ -108,8 +108,8 @@ elseif ~isempty(strfind(a.Format,'McStas list monitor'))
   index_axes = 0;
   for index=1:length(columns)
     setalias(a, columns{index}, [ list '(:,' num2str(index) ')' ]);
-    if strcmp(columns{index}, 'p')
-      setalias(a, 'Signal', columns{index}, 'Intensity');
+    if index==1
+      setalias(a, 'Signal', columns{index});
     elseif index_axes < 3
       index_axes = index_axes +1;
       setaxis(a, index_axes, columns{index});

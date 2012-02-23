@@ -14,7 +14,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % input:  INSTRUMENT: name of the instrument description to run (string)
 %           when the instrument is not found, it is searched in the McStas examples, and copied locally.
 %         PARAMETERS: a structure that gives instrument parameter names and values (structure)
-%           parameters.name = scalar (optimization and simulation)
+%           parameters.name = scalar (optimization, simulation and display)
 %             define a single value      when options.mode='simulation' and 'display'
 %             define the starting value  when options.mode='optimization'
 %           parameters.name = vector and cell array (simulation)
@@ -26,16 +26,16 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %             the vector can be 2 elements to define [min max]. 
 %             the vector can be 4+ elements to define [min ... max]. 
 %             For 2 and 4+ vectors, the parameter starting value is the mean of the vector.
-%           parameters.name = string (simulation and optimization)
+%           parameters.name = string (simulation, optimization and display)
 %             defines a fixed parameter, that can not be optimized.
 %         OPTIONS: a structure or string that indicates what to do (structure)
-%           options.dir:    directory where to store results (string)
+%           options.dir:    directory where to store results (string).
 %           options.ncount: number of neutron events per iteration, e.g. 1e5 (double)
-%           options.mpi:    number of processors to use with MPI on localhost (integer) 
+%           options.mpi:    number of processors/cores to use with MPI on localhost (integer) 
 %           options.seed:   random number seed to use for each iteration (double)
 %           options.gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
 %           options.compile: 0 or 1 to force re-compilation of the instrument (boolean)
-%           options.mode:   'simulate', 'optimize' or 'display' (string)
+%           options.mode:   'simulate' (default), 'optimize' or 'display' (string)
 %           options.type:   'minimize' or 'maximize', which is the default (string)
 %           options.monitors:  cell string of monitor names, or empty for all (cellstr)
 %             the monitor names can contain expressions made of the monitor name 
@@ -60,13 +60,13 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   [p,f]=mcstas('templateDIFF', 'RV=[0.5 1 1.5]', struct('TolFun','0.1%','monitors','Banana'));
 % Display result
 %   subplot(f); disp(f.Parameters)
-% Perform a scan
+% Perform a scan of instrument parameter RV
 %   [monitors_integral,scan]=mcstas('templateDIFF' ,struct('RV',[0.5 1 1.5]))
 %   plot(monitors_integral)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 % See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -359,6 +359,7 @@ function status=system_wait(cmd, options)
   % need to wait for simulation to complete, except for Trace mode
   if ~any(strcmpi(options.mode,{'display','trace'}))
     if ispc % wait for completion by monitoring the number of elements in the result directory
+            % this does not work when using temporary intermediate save with Progress_bar(flag_save=1)
       t=tic; t0=t; first=1;
       a=dir(options.dir);
       while length(a) <= 3 % only 'mcstas.sim', '.', '..' when simulation is not completed yet
@@ -418,7 +419,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   if isfield(options,'dir') && ~isempty(options.dir)
     % clean up previous simulation result
-    success = rmdir(options.dir,'s');
+    if ~isempty(dir(options.dir))
+      error([ mfilename ': ERROR: The target directory "' options.dir '" already exists. Use an other target, or delete it prior to the execution.' ]);
+    end
     cmd = [ cmd ' --dir=' options.dir ];
   end
   if isfield(options,'gravitation') && (options.gravitation || strcmp(options.gravitation,'yes'))
@@ -440,7 +443,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   if isfield(options,'seed') && ~isempty(options.seed)
     cmd = [ cmd ' --seed=' num2str(options.seed) ];
   end
-  
+  dir_orig = options.dir;
   % handle single simulation and vectorial scans ===============================
   % determine parameter list, those which are fixed and the variable ones
   if isfield(options,'variable_names')
@@ -451,6 +454,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
         sim      = {};
       end
     end
+
     for index=1:length(options.variable_names)  % loop on variable parameters
       if isnumeric(pars) % all numerics
         cmd = [ cmd ' ' options.variable_names{index} '=' num2str(pars(index)) ];
@@ -462,8 +466,12 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
         elseif ischar(this)
           cmd = [ cmd ' ' options.variable_names{index} '=' this ];
         elseif isvector(this) % parameter is a vector of numerics/scans
+          if isempty(dir(dir_orig))
+            mkdir(dir_orig)
+          end
           for index_pars=1:length(this) % scan the vector parameter elements
             ind{index} = index_pars; % coordinates of this scan step in the parameter space indices
+            options.dir = [ dir_orig filesep num2str(prod([ ind{:} ]) -1) ];
             if isnumeric(this)
               pars{index} = this(index_pars);
             elseif iscell(this)
