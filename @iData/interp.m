@@ -26,7 +26,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.31 $
+% Version: $Revision: 1.32 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -201,7 +201,7 @@ end
 i_signal   = get(a,'Signal');
 if any(isnan(i_signal(:))), has_changed=1; end
 if ~has_changed & (~requires_meshgrid | is_grid), 
-  iData_private_warning('exit');
+  iData_private_warning('exit', mfilename);
   return; 
 end
 
@@ -310,7 +310,7 @@ for index=1:ndims(a)
   end
 end
 if ~has_changed, 
-  iData_private_warning('exit');
+  iData_private_warning('exit', mfilename);
   return; 
 end
 
