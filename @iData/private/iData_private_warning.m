@@ -52,12 +52,14 @@ if warn.level <=0 || strcmp(a, 'reset')
   lasterr('');
 end
 
-if strcmp(a, 'enter')
-  % save the current warning state (level)
+if warn.level >= 2
   % disable some warnings
   warn.structs = [ ...
     warning('off','iData:setaxis') warning('off','iData:getaxis') ...
     warning('off','iData:get')     warning('off','iData:subsref') ];
+end
+if strcmp(a, 'enter')
+  % save the current warning state (level)
   warn.date = clock;
   warn.level=warn.level+1;
 elseif strcmp(a, 'exit')

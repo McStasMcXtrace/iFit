@@ -40,7 +40,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.31 $
+% Version: $Revision: 1.32 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -55,10 +55,11 @@ if isstruct(files) && length(files) == 1 && isfield(files,'loaders')
     out=files;
     return;
 end
-if ~iscell(files),   files = { files }; end
-if isstruct(loaders), loaders = { loaders }; end
+if ~iscell(files),   files   = { files }; end
+if ~iscell(loaders), loaders = { loaders }; end
 out = [];
-for i=1:length(files)
+
+for i=1:numel(files)
   filename = '';
   if length(varargin) >= 1 && ischar(varargin{1}), filename = varargin{1}; end
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Filename'), filename = files{i}.Filename; end
