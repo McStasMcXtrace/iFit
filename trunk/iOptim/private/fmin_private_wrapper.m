@@ -60,7 +60,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.33 $
+% Version: $Revision: 1.34 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -717,7 +717,7 @@ function [pars,exitflag,message] = inline_apply_constraints(pars, constraints,op
     if ~isempty(index), pars(index) = constraints.parsStart(index); end
   end
 
-  pars=pars(:)';
+  pars=pars(:)'; % parameters is a row
 end % inline_apply_constraints
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -824,7 +824,7 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
   if ischar(options.TolX)
     if options.TolX(end)=='%'
       options.TolX(end)='';
-      options.TolX = abs(str2num(options.TolX)*pars(:)/100);
+      options.TolX = abs(str2num(options.TolX)*pars/100);
     else
       options.TolX = str2num(options.TolX);
     end
@@ -851,12 +851,14 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
   
   % normal terminations: parameter variation tolerance reached, when function termination is also true
   if (istop==-1 || istop==-12) 
-    if ~isempty(options.TolX) && options.TolX > 0 ...
-      && all(abs(pars(:)-pars_prev(:)) < abs(options.TolX)) ...
-      && any(abs(pars(:)-pars_prev(:)) > 0)
-      istop=-5;
-      message = [ 'Converged: Termination parameter tolerance criteria reached (delta(parameters) <= options.TolX=' ...
-            num2str(mean(options.TolX)) ')' ];
+    if ~isempty(options.TolX) && isnumeric(options.TolX)
+      index=find(isfinite(options.TolX) & options.TolX);
+      if all(abs(pars(index)-pars_prev(index)) < abs(options.TolX(index))) ...
+      && any(abs(pars(index)-pars_prev(index)) > 0)
+        istop=-5;
+        message = [ 'Converged: Termination parameter tolerance criteria reached (delta(parameters) <= options.TolX=' ...
+              num2str(mean(options.TolX)) ')' ];
+      end
     end
   end
   
@@ -868,10 +870,15 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
       message = [ 'Maximum number of function evaluations reached (options.MaxFunEvals=' ...
                 num2str(options.MaxFunEvals) ')' ];
     end
-    
-    if strcmp(options.FunValCheck,'on') & any(isnan(fval) | isinf(fval))
+
+    % the function value is nan or parameters just went to nan
+    if strcmp(options.FunValCheck,'on') ...
+    && (any(isnan(fval) | isinf(fval)) || any(isnan(pars(:)) & ~isnan(pars_prev(:)))) 
       istop=-4;
       message = 'Function value is Inf or Nan (options.FunValCheck)';
+    else
+      index = find(isnan(pars(:)) & ~isnan(pars_prev(:)));
+      pars(index) = pars_prev(index);
     end
 
     if ~isempty(options.OutputFcn)

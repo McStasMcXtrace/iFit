@@ -2,11 +2,44 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % [OPTIMUM,MONITORS,EXITFLAG,OUTPUT] = mcstas(INSTRUMENT, PARAMETERS, OPTIONS) : run and optimize a McStas simulation
 %
 % A wrapper to the McStas package to either execute a simulation, or optimize a
-%   set of parameters.
-%   The default execution mode is 'simulate', which also includes scanning capability.
-%   To select the optimization mode, set the options.mode='optimize' or any other
-%   optimization configuration parameter (TolFun, TolX, ...). 
-%   The Trace 3D view mode is executed when using mode=display
+%   set of parameters. When given as strings, the PARAMETERS and OPTIONS are 
+%   searched for name=value pairs, separated by the ';' character.
+%
+% The default execution mode is 'simulate', which also includes scanning capability.
+% Scans of parameters with vectors and cell strings are possible. Multiple
+% dimension scans are also possible
+%   mcstas('instrument','parameter1=1; parameter2=[2 3 4]','dir=scan_test')
+%   mcstas('instrument',struct('p1',1,'p2',[2 3 4],'p3',{'Al.laz','Cu.laz'}))
+% The resulting integrated monitors are returned in OPTIMUM, MONITORS holds the
+%   monitors content as iData objects. The EXITFLAG is set to 0, and OUTPUT
+%   holds the options used. If the options.dir is not set, a temporary directory
+%   is created for the simulations, then deleted. 
+%
+% To select the optimization mode, set the options.mode='optimize' or any other
+%     optimization configuration parameter (TolFun, TolX, ...). 
+%     Only numerical parameters can be optimized, others are kept fixed. The search
+%     is restricted to a bounded range when parameters are given as vectors [min,max].
+%     As McStas simulations are noisy, it is recommended to constraint all parameters. 
+%     The criteria used for the search can be given in the options.monitors as a
+%     string or cell of strings. The sum of the monitor content is then used. 
+%     The default optimization maximizes the criteria.
+%     Each entry should begin by the monitor filename possibly followed by any 
+%     expression using 'this' to refer to the monitor content:
+%       options.monitors='Monitor' will match all files starting by 'Monitor'
+%       options.monitors={'Monitor1','Monitor2'} uses two monitor integrals
+%       options.monitors='Monitor1/std(this)^4' divides the monitor by its half width^4
+%       options.monitors='Monitor1; this = this/std(this)^4' same as above
+%     The OuputFcn is set to 'fminplot' as default. Define options.OutputFcn=''
+%     to override this choice.
+%   mcstas('instrument','parameter1=[0 1]; parameter2=[2 4]','dir=optim_test; mode=optimize')
+% The best optimized parameter set is returned in OPTIMUM, MONITORS holds the
+%   optimized monitors content as iData objects. The EXITFLAG is the return value
+%   from the optimizer, and OUTPUT holds additional simulation and optimization stuff.
+%
+% The Trace 3D view mode is executed when using mode=display, but does not show neutron
+%     trajectories.
+%   mcstas('instrument','parameter1=Al.laz; parameter2=3','mode=display')
+%
 % The syntax:
 %   mcstas(instrument,'compile')     assemble and compile the instrument
 %   mcstas(instrument,'compile mpi') same with MPI support
@@ -29,7 +62,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %           parameters.name = string (simulation, optimization and display)
 %             defines a fixed parameter, that can not be optimized.
 %         OPTIONS: a structure or string that indicates what to do (structure)
-%           options.dir:    directory where to store results (string).
+%           options.dir:    directory where to store results (string)
+%           options.overwrite: 0 or 1 to either keep or force output
+%             directory to be overwritten (boolean)
 %           options.ncount: number of neutron events per iteration, e.g. 1e5 (double)
 %           options.mpi:    number of processors/cores to use with MPI on localhost (integer) 
 %           options.seed:   random number seed to use for each iteration (double)
@@ -51,9 +86,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %
 % output:  OPTIMUM is the parameter set that maximizes the instrument output, or
 %            the integral monitor values for the simulation (as iData object)
-%          MONITORS contains the instrument output as iData objects. Each object has an additional
-%            Parameter member alias which holds the instrument parameters.
-%          EXITFLAG return state of the optimizer
+%          MONITORS contains the instrument output as iData objects. Each object has an
+%            additional Parameter member alias which holds the instrument parameters.
+%          EXITFLAG return state of the optimizer, or 0.
 %          OUTPUT additional information returned as a structure.
 %
 % example: Optimize templateDIFF instrument parameter RV
@@ -66,8 +101,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.27 $
-% See also: fminsearch, fminimfil, optimset, http://www.mcstas.org
+% Version: $Revision: 1.28 $
+% See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
 
@@ -239,11 +274,16 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   if isfield(options,'monitors')
     options.monitors = cellstr(options.monitors);
   end
+  
+  warn.structs = [ ...
+    warning('off','iData:setaxis') warning('off','iData:getaxis') ...
+    warning('off','iData:get')     warning('off','iData:subsref') ];
 
   if strcmpi(options.mode,'optimize') % ================================ OPTIMIZE
     % optimize simulation parameters
     if ~isfield(options,'type'),      options.type      = 'maximize'; end
     if ~isfield(options,'optimizer'), options.optimizer = @fminpso; end
+    options.overwrite = 1;
     
     % specific optimizer configuration
     optimizer_options = feval(options.optimizer,'defaults');
@@ -340,6 +380,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     pars = mcstas_criteria(pars, options);
   end % else single simulation
   
+  warning(warn.structs);
+
   if use_temp==1
     % clean up last iteration result when stored into a temporary location
     success = rmdir(options.dir,'s');
@@ -419,6 +461,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   if isfield(options,'dir') && ~isempty(options.dir)
     % clean up previous simulation result
+    if isfield(options, 'overwrite') && options.overwrite
+      index = rmdir(options.dir, 's');
+    end
     if ~isempty(dir(options.dir))
       error([ mfilename ': ERROR: The target directory "' options.dir '" already exists. Use an other target, or delete it prior to the execution.' ]);
     end

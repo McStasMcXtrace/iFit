@@ -46,7 +46,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.59 $
+% Version: $Revision: 1.60 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -142,10 +142,15 @@ end
 
 % multiple file handling
 if iscellstr(filename) & length(filename) > 1 & ~isempty(filename)
-  data  = cell(length(filename(:)), 1);
+  data  = {};
   format= data;
   for index=1:length(filename(:))
-    [data{index}, format{index}] = iLoad(filename{index}, loader);
+    [this_data, this_format] = iLoad(filename{index}, loader);
+    if ~iscell(this_data),   this_data  ={ this_data }; end
+    if ~iscell(this_format), this_format={ this_format }; end
+    data  = { data{:}   this_data{:} };
+    format= { format{:} this_format{:} };
+    clear this_data this_format
   end
   return
 end
@@ -220,10 +225,12 @@ if ischar(filename) & length(filename) > 0
     [filepath,name,ext]=fileparts(filename);  % 'file' to search
     if isempty(filepath), filepath = pwd; end
     this_dir = dir(filename);
-    if isempty(this_dir), return; this_dir = dir(filepath); end
-    index = find(real([this_dir.isdir]) == 0);
+    if isempty(this_dir), return; end % directory is empty
+    % removes '.' and '..'
+    index = find(~strcmp('.', {this_dir.name}) & ~strcmp('..', {this_dir.name}));
     this_dir = char(this_dir.name);
     this_dir = (this_dir(index,:));
+    if isempty(this_dir), return; end % directory only contains '.' and '..'
     rdir = cellstr(this_dir); % original directory listing as cell
     rdir = strcat([ filepath filesep ], char(rdir));
     filename = cellstr(rdir);
