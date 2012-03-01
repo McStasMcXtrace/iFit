@@ -1,38 +1,39 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
-
-
-
-
-
-
-
-
-
-
-
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+  
   <title>iFit: Changes</title>
+
 
   <ifit: changes="" title=""></ifit:>
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Changes and Bugs<br>
 </h1>
 
+
 <br>
-<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes
+
+<ol id="mozToc">
+<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes
 </a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId482415">Data set maximum size</a></li><li><a href="#mozTocId332568">Convolution brings strange results (iFuncs/fconv)
-</a></li><li><a href="#mozTocId473369">Too many warnings displayed</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li></ol></li></ol>
+</a></li><li><a href="#mozTocId473369">Too many warnings displayed</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li></ol></li>
+</ol>
+
 
 
 <hr style="width: 100%; height: 2px;">
 <h3><a class="mozTocH3" name="mozTocId919749"></a>Releases and Changes<br>
 </h3>
-<span style="font-weight: bold;"></span><ul>
 
-  
+<span style="font-weight: bold;"></span>
+<ul>
+
+
+  <li><span style="font-weight: bold;">1.1.1</span>: Reading of Chalk River <a href="http://www.nrc-cnrc.gc.ca/eng/ibp/cnbc.html">CNBC</a> data files, improved recursive reading of subdirectories and handling of iData arrays. New <a href="Plot.html">colormap</a> plotting method.<br>
+<span style="font-weight: bold;"></span></li>
   <li><span style="font-weight: bold;">1.1</span>: new methods (save, diff, <a href="Math.html">hyperbolic functions</a>), fix of the <a href="iOptim.html">Levenberg-Marquardt optimizer</a>,
 improved Error propagation for unary operators, support for <a href="iFiles.html">import</a> of
 Analyze MRI (hdr/img) and Crystallographic Binary File (cbf) format,
@@ -58,18 +59,22 @@ import <span style="font-style: italic;">(August 26th 2011</span>)<br>
   </li>
 
 
-  <ul></ul>
+  
 
   
 </ul>
+
 <h3><a class="mozTocH3" name="mozTocId855650"></a>Bugs list:</h3>
+
 
 <div style="margin-left: 40px;">You may test the package integrity by issuing the command:<br>
 </div>
 
 
 
+
 <pre style="margin-left: 80px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">ifittest</span></pre>
+
 
 <div style="margin-left: 40px;">
 
@@ -78,20 +83,28 @@ failures. The test may be aborted by closing the progress bar window.<br>
 <br>
 Please report bugs to  <a href="mailto:ifit-users@mccode.org">ifit-users@mccode.org</a> or to me <span style="font-weight: bold;">[farhi (at) ill.fr]</span>. You are encouraged to register to the <a href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users">ifit-users</a> list.<br>
 </div>
+
 <h4><a class="mozTocH4" name="mozTocId482415"></a>Data set maximum size</h4>
+
 The iFit package may currently handle routinely data sets up to few 100
 Mb. Larger data sets can still be loaded, but are restricted by the
 disk access and the available memory.<br>
+
 <h4><a class="mozTocH4" name="mozTocId332568"></a>Convolution brings strange results (iFuncs/fconv)<br>
 </h4>
+
 The <span style="font-style: italic;">fconv</span> function (FFT convolution) provided in the <a href="iFuncs.html">iFuncs</a> sub-library requires
 that the two signals sampling not be too corase. Axes values too
 sparese will lead to inaccurate results. One solution is to re-sample
 the signals with more points. For iData objects, this can be
 achieved with e.g. the <span style="font-style: italic;">interp(object, 3)</span> to triple the number of points along axes.<br>
+
 <h4><a class="mozTocH4" name="mozTocId473369"></a>Too many warnings displayed</h4>
+
 If the warnings being displayed produce too much output, you may reduce the level of verbosity with:<br>
+
 <pre style="margin-left: 80px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">warning off backtrace	<span style="font-style: italic; color: rgb(0, 0, 0);">% reduce the warning message length</span><br><span style="color: rgb(0, 0, 0);">&gt;&gt; </span>warning off			<span style="color: rgb(0, 0, 0); font-style: italic;">% suppress all warnings (not recommended)</span><br></span></pre>
+
 
 
 
@@ -101,12 +114,15 @@ If the warnings being displayed produce too much output, you may reduce the leve
 
 <h4><a class="mozTocH4" name="mozTocId556618"></a>Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</h4>
 
+
 <div style="margin-left: 40px;">In some cases, the provided
 iFit/iFiles/private/looktxt.mex* may fail to execute (wrong
 architecture, missing library).
 </div>
 
+
 <br>
+
 <div style="margin-left: 40px;">
 Under Windows 64bit systems,
 you need the Visual C++ runtime libraries e.g. <i>msvc[mpr]90.dll</i> which
@@ -114,7 +130,9 @@ are provided with the Visual C++ installation (see below), to put in the
 Windows system directory.
 </div>
 
+
 <br>
+
 
 <div style="margin-left: 40px;">
 In case this is not a problem of library, remove the invalid mex file 
@@ -128,22 +146,27 @@ You may need to select the compiler with the <i>mex -setup</i> command from Matl
 <br>
 </div>
 
+
 It has been reported that MeX compilation may fail when spaces are part of the path name to the iFit location. <br>
 
-Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.<div style="margin-left: 40px;">
+
+Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.
+<div style="margin-left: 40px;">
 <br>
 </div>
+
 
 
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Changes - </span><span style="font-style: italic;">
-$Date: 2012-02-21 03:52:45 $ $Revision: 1.23 $
+$Date: 2012-03-01 22:00:23 $ $Revision: 1.24 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
+
 
 </body></html>
