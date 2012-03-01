@@ -14,7 +14,7 @@ function this = rmaxis(this,rank)
 % output: s: array (iData)
 % ex:     rmaxis(iData, 1) removes the 'x' axis (rank 1)
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/setaxis
 
 % EF 27/07/00 creation
@@ -22,6 +22,14 @@ function this = rmaxis(this,rank)
 if nargin == 1
   rank = [];
 end
+% handle array of objects
+if numel(this) > 1
+  for index=1:numel(this)
+    this(index) = rmaxis(this(index), rank);
+  end
+  return
+end
+
 if isempty(rank)       % removes all axes
   this.Alias.Axis = {};
 elseif isnumeric(rank) % removes some axes from their ranks

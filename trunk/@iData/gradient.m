@@ -12,7 +12,7 @@ function b = gradient(a, dim)
 % ex:     a=iData(peaks);
 %         g=gradient(a); subplot([ a g(1) g(2) ]);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/diff, iData/del2, diff, gradient, iData/jacobian
 
 if nargin <= 1,
@@ -20,12 +20,11 @@ if nargin <= 1,
 end
 
 % handle input iData arrays
-if length(a(:)) > 1
+if numel(a) > 1
   b =cell(size(a));
-  for index=1:length(a(:))
+  for index=1:numel(a)
     b{index} = feval(mfilename,a(index), dim);
   end
-  b = reshape(b, size(a));
   return
 end
 

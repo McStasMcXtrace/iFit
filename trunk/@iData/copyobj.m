@@ -8,14 +8,14 @@ function a = copyobj(a)
 % output: b: object or array (iData)
 % ex:     b=copyobj(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/uplus, iData/findobj
 
 % handle input iData arrays
-if length(a(:)) > 1
-  b = a;
-  for index=1:length(a(:))
-    b(index) = copyobj(a(index));
+if numel(a) > 1
+  b = [];
+  for index=1:numel(a)
+    b = [ b copyobj(a(index)) ];
   end
   a = reshape(b, size(a));
   return

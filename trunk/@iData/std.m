@@ -15,13 +15,13 @@ function [s, f] = std(a, dim)
 %         center:     center of distribution (scalar/array)
 % ex:     c=std(a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/median, iData/mean
 
 if nargin < 2, dim=1; end
-if length(a) > 1
+if numel(a) > 1
   s = []; f = [];
-  for index=1:length(a)
+  for index=1:numel(a)
     [si, fi] = std(a(index), dim);
     s = [ s si ];
     f = [ f fi ];

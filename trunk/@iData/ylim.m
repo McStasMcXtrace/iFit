@@ -3,18 +3,34 @@ function a = ylim(a, lims)
 %
 %   @iData/ylim function to reduce the Y axis (rank 1, rows) limits
 %     ylim(s) returns the current Y axis limits. 
+%     Undefined axis returns [NaN NaN] as limits.
 %
 % input:  s: object or array (iData)
 %         limits: new axis limits (vector)
 % output: b: object or array (iData)
 % ex:     b=ylim(a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plot, iData/ylabel
 
+% handle input iData arrays
+if nargin == 1, lims = ''; end
+if numel(a) > 1
+  s = [];
+  for index=1:numel(a)
+    s = [ s ; feval(mfilename, a(index), lims) ];
+  end
+  if ~isempty(lims)
+    a = reshape(s, size(a));
+  else
+    a = s;
+  end
+  return
+end
+
 axisvalues = getaxis(a, 1);
-if isempty(axisvalues), return; end
-if nargin == 1
+if isempty(axisvalues), a=[nan nan]; return; end
+if isempty(lims)
   a=[ min(axisvalues) max(axisvalues) ]; 
   return
 end

@@ -8,12 +8,11 @@ function a = isfinite(a)
 % output: b: array (int)
 % ex:     b=isfinite(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
 %          iData/isnumeric, iData/islogical, iData/isscalar, 
 %          iData/isvector, iData/issparse
 
 a = iData_private_unary(a, 'isfinite');
-a=uint8(double(a));
 

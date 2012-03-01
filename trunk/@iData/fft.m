@@ -14,7 +14,7 @@ function b = fft(a, op, dim)
 %         a=iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+2*randn(size(t)));
 %         c=fft(a); plot(abs(c));
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/ifft, iData/conv, FFT, IFFT
 
 if nargin <= 1, op = ''; end
@@ -25,10 +25,10 @@ if isempty(op),  op='fft'; end
 if isempty(dim), dim=0; end
 
 % handle input iData arrays
-if length(a(:)) > 1
-  b =a;
-  for index=1:length(a(:))
-    b(index) = feval(mfilename,a(index), op, dim);
+if numel(a) > 1
+  b = [];
+  for index=1:numel(a)
+    b = [ b feval(mfilename,a(index), op, dim) ];
   end
   b = reshape(b, size(a));
   return
@@ -129,7 +129,7 @@ setalias(b,'Signal', 'Data.Signal');
 setalias(b,'Error',  'Data.Error');
 b = setalias(b, 'Signal', S, [  op '(' sl ')' ]);
 % clear axes
-setaxis (b, [], getaxis(b));
+rmaxis (b);
 for index=1:ndims(a)
   [def, lab]= getaxis(a, num2str(index));
   if isempty(lab), lab=[ 'axis' num2str(index) ' frequency' ];

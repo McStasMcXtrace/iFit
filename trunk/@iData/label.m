@@ -11,7 +11,7 @@ function labl = label(this, rank, lab)
 % output: b: object or array (iData)
 % ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
 
 if nargin < 2, rank=[]; end
@@ -71,7 +71,7 @@ elseif ~isempty(rank) && rank > 0 && rank <= length(this.Alias.Axis)
 end
 
 % does the axis alias already exists ? if not create it so that we can set its label
-if nargin == 3
+if nargin == 3 && ~isempty(lab)
   if rank > 0
     % create an axis
     if isempty(value), value = getaxis(this, rank); end % probably the default axis
@@ -93,7 +93,7 @@ if ~isempty(alias_num)
   labl = this.Alias.Labels{alias_num};
 end
 
-if nargin == 2  % return the current label value
+if nargin == 2 || isempty(lab)  % return the current label value
   return;
 end
 

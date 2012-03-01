@@ -3,19 +3,35 @@ function a = clim(a, lims)
 %
 %   @iData/clim function to reduce the C axis (rank 4) limits
 %     clim(s) returns the current C axis limits. 
+%     Undefined axis returns [NaN NaN] as limits.
 %
 % input:  s: object or array (iData)
 %         limits: new axis limits (vector)
 % output: b: object or array (iData)
 % ex:     b=clim(a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plot, iData/ylabel
 
+% handle input iData arrays
+if nargin == 1, lims = ''; end
+if numel(a) > 1
+  s = [];
+  for index=1:numel(a)
+    s = [ s ; feval(mfilename, a(index), lims) ];
+  end
+  if ~isempty(lims)
+    a = reshape(s, size(a));
+  else
+    a = s;
+  end
+  return
+end
+
 axisvalues = getaxis(a, 4);
-if isempty(axisvalues), return; end
-if nargin == 1
-  a=[ min(axisvalues) max(axisvalues) ]; 
+if isempty(axisvalues), a=[nan nan]; return; end
+if isempty(lims)
+  a=[ min(axisvalues) max(axisvalues) ];
   return
 end
 

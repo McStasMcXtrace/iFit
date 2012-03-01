@@ -10,8 +10,15 @@ function c = mtimes(a,b)
 % output: c: object or array (iData)
 % ex:     c=a*2;
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/power
+
+if nargin == 1,
+  b = a;
+end
+
+if isa(a, 'iData') && numel(a) > 1, a=a(1); end
+if isa(b, 'iData') && numel(b) > 1, b=b(end); end
 
 if isscalar(a) | isscalar(b)
   c = iData_private_binary(a, b, 'times');
