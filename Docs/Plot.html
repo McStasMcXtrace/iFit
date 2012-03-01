@@ -3,58 +3,27 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Plotting iData objects</title>
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: plotting iData objects</h1>
 <br>
-<ul id="mozToc">
-<!--mozToc h3 1 h4 2 h5 3 h4 4 h5 5 h6 6-->
-  <li><a href="#mozTocId726945">Plotting objects in a
-single pane (plot)</a>
-    <ul>
-      <li><a href="#mozTocId650151">Plots for 1D objects</a></li>
-      <li><a href="#mozTocId183121">Plots for 2D objects</a>
-        <ul>
-          <li><a href="#mozTocId822018">Data shown as an image (flat)</a></li>
-          <li><a href="#mozTocId725793">Mapping an object onto a
-surface (CData)</a></li>
-          <li><a href="#mozTocId676798">Contextual menu</a></li>
-        </ul>
-      </li>
-      <li><a href="#mozTocId734523">Plots for 3D objects</a></li>
-      <li><a href="#mozTocId899102">Options for 2D and 3D objects</a></li>
-    </ul>
-  </li>
-  <li><a href="#mozTocId574560">Plotting an object array
-in a single plot</a>
-    <ul>
-      <li><a href="#mozTocId362480">Overlayed plot</a></li>
-      <li><a href="#mozTocId111536">Side by side
-plotting: Single objects and Catenated objects (waterfall) </a></li>
-    </ul>
-  </li>
-  <li><a href="#mozTocId312282">Plotting object
-array in a set of panes (subplot)</a></li>
-  <li><a href="#mozTocId307787">Plotting projections
-and slices</a>
-    <ul>
-      <li><a href="#mozTocId937033">Plotting projections</a></li>
-      <li><a href="#mozTocId633428">Plotting slices</a></li>
-    </ul>
-  </li>
-  <li><a href="#mozTocId633772">Setting plot options:
-title, axes labels, axes limits</a>
-    <ul>
-      <li><a href="#mozTocId10534">Setting labels, title</a></li>
-      <li><a href="#mozTocId556359">Setting axes limits</a></li>
-    </ul>
-  </li>
-  <li><a href="#mozTocId553050">Exporting plots as figures and
-images</a></li>
-  <li><a href="#mozTocId46720">Importing plots as
-iData objects</a></li>
-</ul>
+<ul id="mozToc"><!--mozToc h3 1 h4 2 h5 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId726945">Plotting objects in a
+single pane (plot)</a><ul><li><a href="#mozTocId650151">Plots for 1D objects</a></li><li><a href="#mozTocId183121">Plots for 2D objects</a><ul><li><a href="#mozTocId822018">Data shown as an
+image (flat)
+</a></li><li><a href="#mozTocId725793">Mapping an object
+onto a surface (CData)</a></li><li><a href="#mozTocId406394">Having separate colors in plot of arrays</a></li><li><a href="#mozTocId676798">Contextual menu</a></li></ul></li><li><a href="#mozTocId734523">Plots for 3D objects</a></li><li><a href="#mozTocId899102">Options for 2D and 3D
+objects</a></li></ul></li><li><a href="#mozTocId574560">Plotting an object
+array
+in a single plot</a><ul><li><a href="#mozTocId362480">Overlayed plot</a></li><li><a href="#mozTocId111536">Side by side
+plotting: Single objects and Catenated objects (waterfall)
+</a></li></ul></li><li><a href="#mozTocId312282">Plotting object
+array in a set of panes (multiple-plots aka subplot)</a></li><li><a href="#mozTocId307787">Plotting projections
+and slices</a><ul><li><a href="#mozTocId937033">Plotting projections</a></li><li><a href="#mozTocId633428">Plotting slices</a></li></ul></li><li><a href="#mozTocId633772">Setting plot options:
+title, axes labels, axes limits</a><ul><li><a href="#mozTocId10534">Setting labels, title</a></li><li><a href="#mozTocId556359">Setting axes limits</a></li></ul></li><li><a href="#mozTocId553050">Exporting plots as figures and
+images</a></li><li><a href="#mozTocId46720">Importing plots as
+iData objects</a></li></ul>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">plot, subplot, xlabel, xlim, title, saveas</span>,
@@ -257,6 +226,21 @@ The initial object is shown in the upper panel, whereas the re-mapped
 object is shown below. The blue regions indicate a negative curvature
 (top of hills), and the red ones indicate a positive curvature (bottom
 of hills).<br>
+<h5><a class="mozTocH5" name="mozTocId406394"></a>Having separate colors in plot of arrays</h5>
+It is possible to associate one colormap (that is a set of colors glued
+onto a surface) for each object displayed in a same coordinate
+frame/window. The <span style="font-style: italic; font-weight: bold;">colormap</span>
+function should then be used. It supports the same options as plot, but
+colormaps can be specified in the list of arguments. When ommitted, a
+set of predefined colormaps is chosen for each object.<br>
+<pre style="margin-left: 40px;"><a href="images/iData_colormap.png"><img alt="iData/colormap with shifted option" title="iData/colormap with shifted option" src="images/iData_colormap.png" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a></pre>
+
+This plotting method is particularly pretty looking when using the <span style="color: rgb(204, 51, 204);">'shifted'</span> option, which then separate objects one from the other so that they can be well identified on the figure.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(51, 102, 255);">ifitpath</span> <span style="color: rgb(204, 51, 204);">'Data/Ag_3_a.edf'</span> ]);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">iData</span>(peaks);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">colormap</span>(a/10000,<span style="color: rgb(255, 0, 0);">1-pink</span>,b,<span style="color: rgb(255, 0, 0);">jet</span>,<span style="color: rgb(204, 51, 204);">'shifted transparent interp'</span>);<br></pre>
+The first object is set to scale, and plotted with the (1-pink) color
+set, which enhanced low signals (blue-grey style). The second object is
+shown with the jet color set (blue to red).<br>
+
 <h5><a class="mozTocH4" name="mozTocId676798"></a>Contextual menu</h5>
 It is possible, by
 right-clicking on the surface or the axis lines, to pop-up a contextual
@@ -595,7 +579,7 @@ axis handle arguments.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData plotting - </span><span style="font-style: italic;">
-$Date: 2012-01-17 15:33:51 $ $Revision: 1.20 $
+$Date: 2012-03-01 22:35:48 $ $Revision: 1.21 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
