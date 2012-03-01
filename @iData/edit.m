@@ -9,11 +9,11 @@ function edit(a)
 % output: b: object or array (iData)
 % ex:     b=edit(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
-  if length(a(:)) > 1
-    for index=1:length(a(:))
+  if numel(a) > 1
+    for index=1:numel(a)
       edit(a(index));
     end
     return

@@ -21,7 +21,7 @@ function [b, Info] = ieval(a, model, pars, varargin)
 % ex:     b=ieval(a,'gauss',[1 2 3 4]); ieval(a, {'gauss','lorentz'}, [1 2 3 4, 5 6 7 8]);
 %           ieval(a,'gauss','guess')
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also iData, feval, iData/fits
 
 % private functions: 
@@ -38,10 +38,10 @@ if nargin < 3
 end
 
 % handle array of objects to fit iteratively
-if length(a) > 1
-  b = a;
-  for index=1:length(a(:))
-    b(index) = ieval(a(index), model, pars, varargin{:});
+if numel(a) > 1
+  b = [];
+  for index=1:numel(a)
+    b = [ b ieval(a(index), model, pars, varargin{:}) ];
   end
   b = reshape(b, size(a));
   return

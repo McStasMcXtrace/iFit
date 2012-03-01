@@ -26,7 +26,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     b=interp(a, 'grid');
 %
-% Version: $Revision: 1.32 $
+% Version: $Revision: 1.33 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -36,11 +36,12 @@ function b = interp(a, varargin)
 % pcolor/surf with view(2) shows x=1:20, y=1:10
 
 % handle input iData arrays
-if length(a) > 1
-  b = a;
-  for index=1:length(a(:))
-    b(index) = interp(a(index), varargin{:});
+if numel(a) > 1
+  b = [];
+  for index=1:numel(a)
+    b = [ b interp(a(index), varargin{:}) ];
   end
+  b = reshape(b, size(a));
   return
 end
 
@@ -356,7 +357,7 @@ setalias(b,'Error',  'Data.Error');
 setalias(b,'Monitor','Data.Monitor');
 
 % clear axes
-setaxis (b, [], getaxis(b));
+rmaxis (b);
 
 for index=1:length(f_axes)
   if index <= length(i_labels)

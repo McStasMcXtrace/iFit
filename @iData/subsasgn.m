@@ -9,7 +9,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.23 $
+% Version: $Revision: 1.24 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -65,11 +65,11 @@ else
   s = S(1);
   switch s.type
   case '()'       
-    if length(b(:)) > 1   % array() -> deal on all elements
+    if numel(b) > 1   % array() -> deal on all elements
     % SYNTAX: array(index) = val: set Data using indexes
-      c = b(:);           
+      c = [];           
       for j = 1:length(s.subs{:})
-        c(j) = subsasgn(c(j),s,val);
+        c = [ c subsasgn(c(j),s,val) ];
       end
       b = reshape(c, size(b));
     elseif ~isa(val, 'iData') % single object() = Signal (val must be num)
@@ -143,11 +143,11 @@ else
       iData_private_warning(mfilename, [ 'I can only allocate a sub-object with syntax ' b.Tag ' ' inputname(1) '(1) = ' val.Tag ' which asssigns unweighted Signal. Ignoring and leaving target object unchanged.' ]);
     end                 % if single object
   case '{}'
-    if length(b(:)) > 1   % object array -> deal on all elements
+    if numel(b) > 1   % object array -> deal on all elements
     % SYNTAX: array{ref}=val
-      c = b(:);
-      for j = 1:length(c)
-        c(j) = subsasgn(c(j),s,val);
+      c = [];
+      for j = 1:numel(c)
+        c = [ c subsasgn(c(j),s,val) ];
       end
       b = reshape(c, size(b));
     else
@@ -171,10 +171,10 @@ else
     end
   case '.'
   % SYNTAX: object.field = val
-    if length(b(:)) > 1   % object array -> deal on all elements
-      c = b(:);
+    if numel(b) > 1   % object array -> deal on all elements
+      c = [];
       for j = 1:length(c)
-        c(j) = subsasgn(c(j),s,val);
+        c = [ c subsasgn(c(j),s,val) ];
       end
       b = reshape(c, size(b));
     else

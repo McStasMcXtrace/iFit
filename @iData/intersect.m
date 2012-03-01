@@ -12,7 +12,7 @@ function [ai,bi] = intersect(a, b)
 %         bi: object or array (iData)
 % ex:     b=intersect(a, a);
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/setaxis, iData/getaxis, iData/interp, iData/union
 
 if nargin == 2
@@ -22,13 +22,13 @@ if nargin == 2
   return
 end
 
-if length(a) == 1, ai=a; bi=a; return; end
+if numel(a) == 1, ai=a; bi=a; return; end
 
 % first check if all objects have same axes
 all_identical_axes=1;
 for index=1:ndims(a(1)) % loop on axes
   x = getaxis(a(1), index);
-  for obj=2:length(a)
+  for obj=2:numel(a)
     if ~isequal(getaxis(a(obj), index), x)
       all_identical_axes=0; break;
     end
@@ -43,7 +43,7 @@ c_axis = iData_private_caxis(a,'intersection');
 
 % loop on all iData to interpolate
 ai = a; bi=[];
-for index=1:length(a)
+for index=1:numel(a)
   ai(index) = interp(a(index), c_axis(1:ndims(a)));
 end
 

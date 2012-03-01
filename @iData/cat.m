@@ -10,7 +10,7 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 if nargin == 1 & isa(dim, 'iData') & length(dim) >= 1 % syntax: cat([a])
   s = cat(1, dim);
@@ -22,7 +22,8 @@ if ~isa(a, 'iData')
 end
 
 if length(varargin) > 1  % syntax: cat(dim,a,b,c,...)
-  s=a(:);
+  if numel(a) == 1, s=a; 
+  else s=a(:); end
   for index=1:length(varargin)
     s = [ s ; varargin{index} ];
   end
@@ -41,7 +42,7 @@ iData_private_warning('enter', mfilename);
 % first need to compute union axes, but not for dimension 'dim'
 c_axis = iData_private_caxis(a,'union');
 % use common axes on all axes except dim
-for index=1:length(a)
+for index=1:numel(a)
   x = getaxis(a(index), dim);
 	if length(x) == 1 || length(x) == length(a)
 		c_axis{dim} = x; % restore initial 'dim' axis from object. Others are the common axes.
@@ -51,7 +52,7 @@ end
 
 % now catenate Signal, Error and Monitor 
 [link, label]          = getalias(a(1), 'Signal');
-for index=1:length(a)
+for index=1:numel(a)
   s{index}=get(a(index),'Signal');
   if isvector(s{index}), ss=s{index}; ss=ss(:); s{index}=ss; end
 end
@@ -61,7 +62,7 @@ ss = cat(dim, s{:});
 % first test if all Errors are sqrt(this.Signal) (that is default=[])
 % first test if all Monitors are 1 (that is default=[])
 se = 1; sm = 1;
-for index=1:length(a)
+for index=1:numel(a)
   if ~strcmp(getalias(a(index),'Error'), 'sqrt(this.Signal)')
     se = 0;
   end
@@ -91,7 +92,7 @@ if sm == 1  % all Monitors are default, just copy the default
   sm = [];
 else
   % some Monitors are not default: we catenate all of them as values
-  for index=1:length(a)
+  for index=1:numel(a)
     sm = getalias(a(index),'Monitor');
     if ~isnumeric(sm) || ~isscalar(sm)
       sm = get(a(index),'Monitor');
@@ -103,7 +104,7 @@ else
 end
 
 % and extend axis 'dim'
-for index=1:length(a)
+for index=1:numel(a)
   s{index}=getaxis(a(index),dim); 
   if isempty(s{index}), s{index}=index;
   elseif isvector(s{index}), sx=s{index}; sx=sx(:); s{index}=sx; end

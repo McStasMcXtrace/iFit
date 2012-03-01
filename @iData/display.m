@@ -9,7 +9,7 @@ function d = display(s_in, name)
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation
@@ -25,19 +25,18 @@ end
 
 d = [ sprintf('%s = ',iname) ];
 
-if length(s_in) > 1
+if numel(s_in) > 1
   d = [ d sprintf(' array [%s]',num2str(size(s_in))) ];
 end
 if length(s_in) == 0
     d = [ d sprintf(' iData object: empty\n') ];
 else
     d = [ d sprintf(' iData object:\n\n') ];
-    s_in = s_in(:);
-    if length(s_in) > 1
+    if numel(s_in) > 1
       d = [ d sprintf('Index ') ];
     end
     d = [ d sprintf('    [Tag] [Dimension]                                     [Title] [Last command]') ];
-    if length(s_in) > 1
+    if numel(s_in) > 1
       if any(~cellfun('isempty', get(s_in,'Label'))) || any(~cellfun('isempty', get(s_in,'DisplayName')))
         d = [ d '          [Label/DisplayName]' ];
       end
@@ -49,7 +48,7 @@ else
     d = [ d sprintf('\n') ];
 
     % now build the output string
-    for index=1:length(s_in)
+    for index=1:numel(s_in)
       s = s_in(index);
       if length(s_in) > 1
         d = [ d sprintf('%5i ',index) ];                        % index

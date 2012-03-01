@@ -9,74 +9,59 @@ function iData_private_warning(a,b)
 persistent warn;   % store the warning level
 
 if nargin == 0
-  a = 'enter';
+  a = 'enter'; b='unknown';
 end
 
 if isempty(warn)  % create the persistent variable the first time
-  warn.date   =clock;
-  warn.level  =0;
-  warn.lasterr='';
-  lasterr('');
+  warn.level  ={};  % will hold the caller history
 end
 
-% if an error has occured more than 10 s before, we reset the warning state except for long operations
-if ~strcmp(warn.lasterr, lasterr) && etime(clock, warn.date) > 10
-  [st,i]=dbstack;
-  long_exec={'fits','interp','ieval','cat','conv','fft','std','peaks','del2','gradient','jacobian','load','mcstas'};
-  long_flag=0;
-  for index=1:length(long_exec)
-    if any(strcmp(long_exec{index},{ st.name })) % search in the execution stack
-      long_flag=1;
-      break
-    end
-  end
-  if ~long_flag
-    warn.level  =0; % reset
-  end
-end
-if ~strcmp(warn.lasterr, lasterr) && etime(clock, warn.date) < 1
-  warn.level=warn.level-1;
-end
+% ==============================================================================
+% standard messages (a=not a mfilename)
 
-% reset the warning level (e.g. when outdated/invalid)
-if warn.level <=0 || strcmp(a, 'reset')
-  warn.level = 1;
+% reset/initiate the warning level stack (e.g. when outdated/invalid)
+if isempty(warn.level) || strcmp(a, 'reset')
+  warn.level = {'root'};
   warn.date  = clock;
-  warn.caller= 'root';
-  warn.lasterr='';
-  warn.structs=[];
-  warning('on','iData:setaxis');
-  warning('on','iData:getaxis');
-  warning('on','iData:get');
-  warning('on','iData:subsref');
-  lasterr('');
+  warn.lastwarn='';
+  this_state = [ ...
+    warning('on','iData:setaxis') warning('on','iData:getaxis') ...
+    warning('on','iData:get')     warning('on','iData:subsref') ];
+  warn.structs= { this_state };
 end
 
-if warn.level >= 2
-  % disable some warnings
-  warn.structs = [ ...
-    warning('off','iData:setaxis') warning('off','iData:getaxis') ...
-    warning('off','iData:get')     warning('off','iData:subsref') ];
-end
 if strcmp(a, 'enter')
   % save the current warning state (level)
   warn.date = clock;
-  warn.level=warn.level+1;
+  warn.level{end+1} = b;% store caller mfilename (passed as arg to warning call)
+  %disp([ a ' ' b ]); 
+  %disp(warn.level);
+  % unactivate warnings if not directly the caller
+  if length(warn.level) >= 3  % first is 'root', then main caller, then children
+    this_state = [ ...
+      warning('off','iData:setaxis') warning('off','iData:getaxis') ...
+      warning('off','iData:get')     warning('off','iData:subsref') ];
+  else
+    this_state = warn.structs{end}; % copy the one from the previous state
+  end
+  warn.structs{end+1} = this_state;
+  warn.lastwarn = lastwarn;
+  
 elseif strcmp(a, 'exit')
   % restore the previous warning state
-  if ~isempty(warn.structs)
-    warning(warn.structs);
+  this_state = warn.structs{end};
+  warning(this_state); % restore previous state
+  warn.structs(end) = [];
+  warn.level(end) = [];         % remove last entry
+  %disp([ a ' ' b ]); 
+  %disp(warn.level);
+  warn.lastwarn='';
+elseif nargin == 2     % normal warning message ===============================
+  if ~strcmp(lastwarn, warn.lastwarn)
+    b = [ 'iData/' a ': ' b ];  % MSG
+    a = [ 'iData:' a ];         % ID
+    warning(a,sprintf(b));
+    warn.lastwarn = lastwarn;
   end
-  warn.level=warn.level-1;
-  warn.lasterr='';  % if we went there, all was fine: clean previous errors
-  lasterr('');
-  if warn.level > 50 % can not exceed too many levels
-    warn.level  =0;  % reset (track of level goes wrong...)
-  end
-elseif nargin == 2
-  warn.caller=a;
-  b = [ 'iData/' a ': ' b ];  % MSG
-  a = [ 'iData:' a ];         % ID
-  warning(a,sprintf(b));
 end
 

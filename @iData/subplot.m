@@ -12,7 +12,7 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, iData/plot
 
 % EF 23/11/07 iData implementation
@@ -24,11 +24,15 @@ method = '';
 for index=1:length(varargin)
   if ischar(varargin{index}),        method = varargin{index};
   elseif isa(varargin{index},'iData') 
-    a = [a(:) ; varargin{index} ];
+    if numel(a) == 1
+      a = [a ; varargin{index} ];
+    else
+      a = [a(:) ; varargin{index} ];
+    end
   elseif isnumeric(varargin{index}), dim    = varargin{index};
   end
 end
-if length(a(:)) == 1
+if numel(a) == 1
   h=plot(a, method);
   return
 end
@@ -43,7 +47,7 @@ if isempty(m)
   if length(size(a)) == 2 & all(size(a) > 1)
     m = size(a,1); n = size(a,2);
   else
-    p = length(a(:));
+    p = numel(a);
     n = floor(sqrt(p));
     m = ceil(p/n);
   end
@@ -52,9 +56,9 @@ elseif isempty(n)
 end
 
 h=[];
-for index=1:length(a(:))
+for index=1:numel(a)
   if ~isempty(a(index))
-    if length(a(:)) > 12, 
+    if numel(a) > 12, 
       % compact layout
       method =[ method ' hide_axes' ]; 
     end

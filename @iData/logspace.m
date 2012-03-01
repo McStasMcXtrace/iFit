@@ -10,41 +10,48 @@ function v = logspace(a,b,n)
 % output: v: vector (iData array)
 % ex:     b=logspace(a,b);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/max, iData/min, iData/colon, iData/linspace
 
-if ~isa(a, 'iData') | ~isa(b,'iData')
-  iData_private_error(mfilename, 'Operation requires 2 single iData objects as argument');
-end
-
-if nargin == 2
+if nargin <= 2
   n = [];
 end
-if isempty(n) | n <=0
+if nargin == 1, b=a; end
+
+if isempty(n) || n <=0
   n=10;
 end
 
+if isa(a, 'iData') && numel(a) > 1, a=a(1); end
+if isa(b, 'iData') && numel(b) > 1, b=b(end); end
+
+% get scalar value (if specified as number of 1x1 object)
 if     isempty(a), a=0; 
 elseif isempty(b), b=0; 
 elseif isscalar(a) & isa(a, 'iData'), a=get(a,'Signal');
 elseif isscalar(b) & isa(b, 'iData'), b=get(b,'Signal');
 end
 
-if ~isa(a, 'iData') & isscalar(a) & ~isempty(b)
-  s=a*ones(size(get(b,'Signal'))); a=copyobj(b); set(a,'Signal', s);
-elseif ~isa(b, 'iData') & isscalar(b) & ~isempty(a)
-  s=b*ones(size(get(a,'Signal'))); b=copyobj(a); set(b,'Signal', s);
+% one of (a,b) must be an iData else fallback to the usual linspace
+if ~isa(a,'iData') && ~isa(b,'iData')
+  v=logspace(a,b,n);
+  return
 end
 
-
-[a,b] = intersect(a,b);
+% create constant objects from scalar input, using the other object as template
+if ~isa(a, 'iData') & isnumeric(a) & ~isempty(b)
+  s=mean(a(:))*ones(size(get(b,'Signal'))); a=copyobj(b); set(a,'Signal', s);
+elseif ~isa(b, 'iData') & isnumeric(b) & ~isempty(a)
+  s=mean(b(:))*ones(size(get(a,'Signal'))); b=copyobj(a); set(b,'Signal', s);
+else
+  [a,b] = intersect(a,b); % get intersection for operation (not needed when using copyobj)
+end
 
 xa = logspace(1,0,n);
 xa = (xa-1); xa=xa/max(xa);
 
 v = [];
 for index=1:n
-  c = a.*xa(index) + b.*(1-xa(index));
-  v = [ v c ];
+  v = [ v a.*xa(index) + b.*(1-xa(index)) ];
 end
 

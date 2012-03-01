@@ -39,7 +39,7 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
@@ -48,18 +48,18 @@ if isempty(filename), filename = a.Tag; end
 if nargin < 3, format=''; else format = varargin{2}; end
 
 % handle array of objects to save iteratively
-if length(a) > 1 & ~strcmp(lower(format),'mat')
+if numel(a) > 1 & ~strcmp(lower(format),'mat')
   if length(varargin) >= 1, filename_base = varargin{1}; 
   else filename_base = ''; end
   if strcmp(filename_base, 'gui'), filename_base=''; end
   filename = cell(size(a));
-  for index=1:length(a(:))
-    [filename{index}, format] = saveas(a(index), varargin{:});
+  for index=1:numel(a)
     if isempty(filename_base), filename_base = filename{index}; end
-    if length(a(:)) > 1
+    if numel(a) > 1
       [path, name, ext] = fileparts(filename_base);
-      varargin{1} = [ path name '_' num2str(index) ext ];
+      varargin{1} = [ path name '_' num2str(index,'%04d') ext ];
     end
+    [filename{index}, format] = saveas(a(index), varargin{:});
   end
   return
 end

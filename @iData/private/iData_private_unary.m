@@ -13,15 +13,15 @@ function b = iData_private_unary(a, op)
 % present but not used here: 'double','single','logical','find'
 
 % handle input iData arrays
-if length(a(:)) > 1
-  switch op
-  case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical'}
-    b = ones(size(a));
-  otherwise
-    b =a;
-  end
-  for index=1:length(a(:))
-    b(index) = iData_private_unary(a(index), op);
+if numel(a) > 1
+  b = [];
+  for index=1:numel(a)
+    this = iData_private_unary(a(index), op);
+    if (isnumeric(this)||islogical(this)) && ~isa(this, 'iData') && ~isscalar(this), 
+      if isempty(b), b={}; end 
+      this = { this };
+    end
+    b = [ b  this ];
   end
   b = reshape(b, size(a));
   return
@@ -125,6 +125,7 @@ case 'del2'
   e = 2*ndims(a)*del2(e);
 case {'sign','isfinite','isnan','isinf'}
 	b = new_s;
+	iData_private_warning('exit',mfilename);
 	return
 case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger', ...
       'islogical','double','single','logical','find','norm'}

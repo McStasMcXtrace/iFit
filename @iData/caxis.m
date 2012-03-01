@@ -2,7 +2,7 @@ function c = caxis(a, h)
 % c = caxis(s, h) : Use the 2D/3D data as the colormap (CData property) in current object.
 %
 %   @iData/caxis function to use the current object as the colomap (CData).
-%     The idata object is automatically rescaled in order to math the current 
+%     The idata object is automatically rescaled in order to match the current 
 %       surface/view axes.
 %
 % input:  s: object or array (iData)
@@ -10,7 +10,7 @@ function c = caxis(a, h)
 % output: c: graphics object handles that have been modified (handle array)
 % ex:     a=iData(peaks); plot(a); caxis(del2(a));
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/plot
 
 if nargin ==1
@@ -19,14 +19,15 @@ end
 c=[];
 
 % only one colormap/CData can be used
-if length(a) > 1
-  return
+if numel(a) > 1
+  iData_private_warning(mfilename, ['I can not handle iData arrays. ' inputname(1) ' size is [' num2str(size(s)) ']. Using first array element.']);
+  a = a(1);
 end
 
 % handle handle array as input
 if length(h) > 1
   for index=1:length(h)
-    c = [  caxis(a, h(index)) ];
+    c = [ c caxis(a, h(index)) ];
   end
   return
 end

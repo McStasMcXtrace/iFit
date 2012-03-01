@@ -18,34 +18,34 @@ function c = iData_private_binary(a, b, op, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
 
 % handle input iData arrays
-if isa(a, 'iData') & length(a(:)) > 1
+if isa(a, 'iData') & numel(a) > 1
   c = [];
-  if isa(b, 'iData') & length(b(:)) == length(a(:))
+  if isa(b, 'iData') & numel(b) == numel(a)
   	% add element to element
-    for index=1:length(a(:))
+    for index=1:numel(a)
       c = [ c iData_private_binary(a(index), b(index), op) ];
     end
   elseif isempty(b)
   	% process all elements from vector
   	c = a(1);
-  	for index=2:length(a(:))
+  	for index=2:numel(a)
       c = iData_private_binary(c, a(index), op);
     end
     return
-  elseif isa(b, 'iData') & length(b(:)) ~= length(a(:)) & length(b(:)) ~= 1
+  elseif isa(b, 'iData') & numel(b) ~= numel(a) & numel(b) ~= 1
     iData_private_warning('binary', ...
     [ 'If you wish to force this operation, use ' op '(a,b{0}) to operate with the object Signal, not the object itself (which has axes).' ]);
     iData_private_error('binary',...
-    [ 'Dimension of objects do not match for operator ' op ': 1st is ' num2str(length(a(:))) ' and 2nd is ' num2str(length(b(:))) ]);
+    [ 'Dimension of object arrays do not match for operator ' op ': 1st is ' num2str(numel(a)) ' and 2nd is ' num2str(numel(b)) ]);
   else
     % add single element to vector
-    for index=1:length(a(:))
+    for index=1:numel(a(:))
       c = [ c iData_private_binary(a(index), b, op) ];
     end
   end
@@ -53,9 +53,9 @@ if isa(a, 'iData') & length(a(:)) > 1
   	c = reshape(c, size(a));
   end
   return
-elseif isa(b, 'iData') & length(b(:)) > 1
+elseif isa(b, 'iData') & numel(b) > 1
   c = [];
-  for index=1:length(b(:))
+  for index=1:numel(b)
     c = [ c iData_private_binary(a, b(index), op) ];
   end
   return
@@ -64,7 +64,7 @@ end
 if     isempty(a), c=b; return;
 elseif isempty(b), c=a; return; end
 
-iData_private_warning('enter',mfilename);
+iData_private_warning('enter',[ mfilename ' ' op ]);
 
 if isa(a, 'iData')
   cmd=a.Command;
@@ -163,8 +163,8 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','conv','xcorr'
   end
   
   try
-    e1s1 = genop(@rdivide,e1,s1).^2; e1s1(find(s1 == 0)) = 0;
-    e2s2 = genop(@rdivide,e2,s2).^2; e2s2(find(s2 == 0)) = 0;
+    if all(s1(:)==0) e1s1=0; else e1s1 = genop(@rdivide,e1,s1).^2; e1s1(find(s1 == 0)) = 0; end
+    if all(s2(:)==0) e2s2=0; else e2s2 = genop(@rdivide,e2,s2).^2; e2s2(find(s2 == 0)) = 0; end
     e3 = genop(@times, sqrt(genop(@plus, e1s1, e2s2)), s3);
   catch
     e3=[];  % set to sqrt(Signal) (default)

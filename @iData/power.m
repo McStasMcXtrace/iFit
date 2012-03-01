@@ -8,8 +8,11 @@ function c = power(a,b)
 % output: c: object or array (iData)
 % ex:     c=a.^2;
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/times, iData/rdivide, iData/power
 
+if nargin == 1,
+  b = a;
+end
 c = iData_private_binary(a, b, 'power');
 

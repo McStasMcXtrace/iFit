@@ -12,13 +12,13 @@ function frame = getframe(a, dim)
 % output: frame: frame/thumbnail
 % ex:     f=getframe(a); image(f.cdata);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/plot, getframe, image, imwrite
 
 if nargin < 2, dim=0; end
-if length(a) > 1
+if numel(a) > 1
   frame = cell(size(a));
-  for index=1:length(a(:))
+  for index=1:numel(a)
     frame{index} = getframe(a(index), dim);
   end
   return

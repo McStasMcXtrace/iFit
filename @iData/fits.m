@@ -84,7 +84,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue; plot(a,b)
 %
-% Version: $Revision: 1.42 $
+% Version: $Revision: 1.43 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % private functions: eval_criteria, least_square
@@ -205,9 +205,9 @@ elseif ischar(options), options=str2struct(options);
 end
 
 % handle input iData arrays
-if length(a) > 1
+if numel(a) > 1
   pars_out={}; criteria=[]; message={}; output={};
-  for index=1:length(a(:))
+  for index=1:numel(a)
     [pars_out{index}, criteria(index), message{index}, output{index}] = ...
       fits(a(index), model, pars, constraints, options, varargin{:});
   end

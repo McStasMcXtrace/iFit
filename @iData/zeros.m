@@ -9,7 +9,7 @@ function s = zeros(iData_in,varargin)
 % ex: zeros(iData,5,5) will create a 5-by-5 empty iData array
 %     zeros(s,5,5) will return a 5-by-5 array filled with 's'
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData
 
 % EF 27/07/00 creation
@@ -20,9 +20,9 @@ s = zeros(varargin{:});
 s_index = 1;
 long_s = iData_in(1);
 
-for i = 2:length(s(:))
+for i = 2:numel(s)
   s_index = s_index +1;
-  if s_index > length(iData_in(:)), s_index = 1; end
+  if s_index > numel(iData_in), s_index = 1; end
   long_s = [ long_s copyobj(iData_in(s_index)) ];
 end
 

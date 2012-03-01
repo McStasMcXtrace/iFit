@@ -9,17 +9,17 @@ function b = cumprod(a,dim)
 % output: s: accumulated product of elements (iData)
 % ex:     c=cumprod(a);
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumprod
 
 % handle input iData arrays
-if isa(a, 'iData') & length(a(:)) > 1
-  b = a(:);
-  for index=1:length(a(:))
+if isa(a, 'iData') && numel(a) > 1
+  b = [];
+  for index=1:numel(a)
     if nargin == 1
-      b(index) = cumprod(a(index));
+      b = [ b feval(mfilename, a(index)) ];
     else
-      b(index) = cumprod(a(index), dim);
+      b = [ b feval(mfilename, a(index), dim) ];
     end
   end
   b = reshape(b, size(a));

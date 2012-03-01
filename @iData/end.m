@@ -4,14 +4,14 @@ function b = end(s,k,n)
 %   @iData/end function defines end value for iData
 %   returns the length of rank 'index' among total dimensions 'n' in object 's'.
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
 
-if length(s(:)) > 1
-  if n == 1, b=length(s(:)); else b=size(s,k); end
+if numel(s) > 1
+  if n == 1, b=numel(s); else b=size(s,k); end
   return
 end
 S = get(s,'Signal');

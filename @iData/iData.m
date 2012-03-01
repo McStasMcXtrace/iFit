@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.35 $
+% Version: $Revision: 1.36 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -78,7 +78,7 @@ else  % convert input argument into object
   if isa(varargin{1}, 'iData') & length(varargin{1}) > 1
   % iData(iData)
     in = varargin{1};
-    for index=1:length(in)
+    for index=1:numel(in)
       out(index) = iData(in(index));        % check all elements
     end
     outarray = [ outarray out ];
@@ -223,7 +223,7 @@ else  % convert input argument into object
       out = [];
     end
     if length(inputname(1)), inmame=[ inputname(1) ' ' ]; else inmame=''; end
-    for index=1:length(out)
+    for index=1:numel(out)
       if length(out) == 1 | ~isempty(out(index))
         if isempty(out(index).Source), out(index).Source = inmame; end
         if isempty(out(index).Title),  out(index).Title  = [ inmame class(in) ]; end
@@ -234,7 +234,7 @@ else  % convert input argument into object
         out(index) = iData_check(out(index));  % private function
       end
     end
-    if isa(in, 'iData') & nargout == 0
+    if isa(in, 'iData') & nargout == 0 & length(inputname(1))
       assignin('caller',inputname(1),out);
     end
   end
@@ -289,7 +289,7 @@ function b=iData_struct2iData(a)
 % iData_cell2iData: converts a cell into an iData cell
 function b=iData_cell2iData(a)
   b = [];
-  for k=1:length(a(:))
+  for k=1:numel(a)
     b = [ b iData(a{k}) ];
   end
   try
@@ -310,8 +310,8 @@ function b=iData_num2iData(v)
 function out = iData_check(in)
 % make consistency checks on iData object
 
-if length(in) > 1
-  for index = 1:length(in)
+if numel(in) > 1
+  for index = 1:numel(in)
     out(index) = iData_check(in(index));
   end
   return
