@@ -5,6 +5,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: iData methods</title>
 </head><body>
@@ -262,8 +263,8 @@ corresponding
 content
 and
 members</li>
-  <li><a href="matlab:helpwin iData/flipud">flipud: </a>flips along up/down, that is revert the Y axis (vertical) on 2D objects</li>
-  <li><a href="matlab:helpwin iData/fliplr">fliplr: </a>flips along left/right, that is revert the X axis (horizontal) on 2D objects</li>
+  <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/flipud">flipud: </a>flips along up/down, that is revert the Y axis (vertical) on 2D objects</li>
+  <li><a href="matlab:helpwin iData/fliplr"><span style="font-weight: bold; font-style: italic;">fliplr:</span> </a>flips along left/right, that is revert the X axis (horizontal) on 2D objects</li>
 
   <li><a href="matlab:helpwin iData/full"><span style="font-weight: bold; font-style: italic;">full: </span></a>switches
 the
@@ -350,7 +351,7 @@ formats
 jpg,
 eps,
 ...)</li>
-  <li><a href="matlab:helpwin iData/save">save: </a>is the same as <a href="matlab:helpwin iData/saveas"><span style="font-weight: bold; font-style: italic;">saveas.</span></a></li>
+  <li><a href="matlab:helpwin iData/save"><span style="font-weight: bold; font-style: italic;">save:</span> </a>is the same as <a href="matlab:helpwin iData/saveas"><span style="font-weight: bold; font-style: italic;">saveas.</span></a></li>
 
   <li><a href="matlab:helpwin iData/getframe"><span style="font-weight: bold; font-style: italic;">getframe: </span></a>creates
 a
@@ -408,6 +409,12 @@ a
 logical
 array
 (true/false)</li>
+  <li><a style="font-weight: bold;" href="matlab:helpwin iData/ones">ones:</a> <a href="matlab:helpwin iData/zeros"><span style="font-weight: bold; font-style: italic;"></span></a>initialize
+an
+array
+of
+objects (same as zeros)</li>
+
   <li><a href="matlab:helpwin iData/real"><span style="font-weight: bold; font-style: italic;">real: </span></a>extracts
 the
 real
@@ -447,7 +454,7 @@ structure<br>
 an
 array
 of
-objects<br>
+objects (same as ones)<br>
   </li>
 </ul>
 <br>
@@ -756,7 +763,7 @@ method.</li>
 (local curvature, sum of the second partial derivatives).</li>
   <li><a href="matlab:helpwin iData/gradient"><span style="font-weight: bold;">gradient</span>: </a>computes the gradient
 (derivatives) of an object.</li>
-  <li><a href="matlab:helpwin iData/diff">diff: </a>computes the gradient for the 1sty axis only (rows).<br>
+  <li><a href="matlab:helpwin iData/diff"><span style="font-weight: bold; font-style: italic;">diff:</span> </a>computes the gradient for the 1sty axis only (rows).<br>
   </li>
 
   <li><a style="font-weight: bold;" href="matlab:helpwin iData/jacobian">jacobian: </a>computes the
@@ -903,8 +910,10 @@ a flat coloured image.<br>
 
 
     </a>plots up to 3 objects overlayed onto the RGB channels. One
-object at least must be 2D.<br>
+object at least must be 2D.</li>
+  <li><a href="matlab:helpwin iData/colormap"><span style="font-weight: bold;">colormap: </span></a>plots an array of 2D objects, each with a separate color rendering.<br>
   </li>
+
   <li><a href="matlab:helpwin iData/slice"><span style="font-weight: bold;">slice: </span></a>opens a slice
 viewer (sliceomatic) for 3D/4D objects<br>
   </li>
@@ -924,12 +933,12 @@ of objects as plots in the same window<br>
 the object <span style="font-style: italic;">Signal</span> title. To assigne the object title, use <span style="font-style: italic;">object.Title='string'</span>.<br>
   </li>
 </ul>
-<br>
+
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData methods - </span><span style="font-style: italic;">
-$Date: 2012-01-26 08:49:19 $ $Revision: 1.27 $
+$Date: 2012-03-01 22:35:48 $ $Revision: 1.28 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
