@@ -30,7 +30,7 @@ function b = jacobian(a, varargin)
 % ex:     a=iData(peaks); x=linspace(1,2,size(a,1));
 %         g=jacobian(a, x, [],'half X');
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/del2, diff, iData/gradient, iData/interp, iData/setaxis, gradient
 
 if nargin <= 1,
@@ -38,12 +38,11 @@ if nargin <= 1,
 end
 
 % handle input iData arrays
-if length(a(:)) > 1
+if numel(a) > 1
   b =cell(size(a));
-  for index=1:length(a(:))
+  for index=1:numel(a)
     b{index} = feval(mfilename,a(index), varargin{:});
   end
-  b = reshape(b, size(a));
   return
 end
 

@@ -10,14 +10,15 @@ function b = pack(a)
 % output: f: compressed object or array (iData)
 % ex:     b=pack(a);
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/sparse, iData/full, iData/saveas
 
-if length(a) > 1
-  b = a;
-  for index=1:length(a(:))
-    b(index) = pack(a(index));
+if numel(a) > 1
+  b = [];
+  for index=1:numel(a)
+    b = [ b pack(a(index)) ];
   end
+  b = reshape(b, size(a));
   return
 end
 

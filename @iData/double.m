@@ -7,19 +7,19 @@ function a=double(a)
 % output: v: value of the iData Signal/Monitor (double)
 % ex:     'double(iData(rand(10)))'
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also  iData/cell, iData/single, iData/struct, 
 %           iData/char, iData/size
 
 % EF 11/07/00 creation
 % EF 23/09/07 iData implementation
 
-if length(a) > 1
-  b = {};
-  for index=1:length(a(:))
+if numel(a) > 1
+  b = cell(size(a));
+  for index=1:numel(a)
     b{index} = double(a(index));
   end
-  a = reshape(b, size(a));
+  a = b;
   return
 end
 

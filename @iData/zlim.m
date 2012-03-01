@@ -3,18 +3,34 @@ function a = zlim(a, lims)
 %
 %   @iData/zlim function to reduce the Z axis (rank 3) limits
 %     zlim(s) returns the current Z axis limits. 
+%     Undefined axis returns [NaN NaN] as limits.
 %
 % input:  s: object or array (iData)
 %         limits: new axis limits (vector)
 % output: b: object or array (iData)
 % ex:     b=zlim(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/plot, iData/ylabel
 
+% handle input iData arrays
+if nargin == 1, lims = ''; end
+if numel(a) > 1
+  s = [];
+  for index=1:numel(a)
+    s = [ s ; feval(mfilename, a(index), lims) ];
+  end
+  if ~isempty(lims)
+    a = reshape(s, size(a));
+  else
+    a = s;
+  end
+  return
+end
+
 axisvalues = getaxis(a, 3);
-if isempty(axisvalues), return; end
-if nargin == 1
+if isempty(axisvalues), a=[nan nan]; return; end
+if isempty(lims)
   a=[ min(axisvalues) max(axisvalues) ]; 
   return
 end

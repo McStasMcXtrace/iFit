@@ -40,7 +40,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.32 $
+% Version: $Revision: 1.33 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -103,7 +103,7 @@ for i=1:numel(files)
   end
   out = [ out this_iData ];
 end %for i=1:length(files)
-for i=1:length(out)
+for i=1:numel(out)
   out(i).Command={[ out(i).Tag '=load(iData,''' out(i).Source ''');' ]};
   %this_iData = iData_private_history(this_iData, mfilename, a, files{i}.Source);
 end % for

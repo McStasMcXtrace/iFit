@@ -19,7 +19,7 @@ function h = image(r, g, b, option)
 % output: h: graphics object handle
 % ex:     image(iData(peaks),[],[], 'hide axes');
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plot
 
 if nargin < 4, option = ''; end
@@ -47,7 +47,7 @@ if isempty(b), b=iData; end
 h = [];
 a = [ r g(1) b(1) ];
 
-if length(a(:)) > 3
+if numel(a) > 3
   a=a(1:3);
 end
 
@@ -62,7 +62,7 @@ y=getaxis(u,1); y=double(y);
 
 % normalize to monitor and compute min/max
 minv=Inf; maxv=-Inf;
-for index=1:length(a)
+for index=1:numel(a)
   this = a(index);
   if ~isempty(this)
     this = interp(this,u);
@@ -91,7 +91,7 @@ u=zeros(size(this2D,1),size(this2D,2),3);
 
 lab = '';
 % normalize within [min,max]
-for index=1:length(a)
+for index=1:numel(a)
   this = a(index);
   if ndims(this) == 1, this=this2D+this; end  % extend to 2D
   if ~isempty(this)

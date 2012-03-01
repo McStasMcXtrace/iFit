@@ -11,13 +11,21 @@ function this = rmalias(this,names)
 % output: s: array (iData)
 % ex:     rmalias(iData,'Temperature')
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/setalias
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
 if nargin == 1
   names='';
+end
+
+% handle array of objects
+if numel(this) > 1
+  for index=1:numel(this)
+    this(index) = rmalias(this(index), names);
+  end
+  return
 end
 
 this = setalias(this, names);

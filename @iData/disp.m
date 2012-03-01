@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -23,7 +23,7 @@ end
 % removes warnings during disp
 iData_private_warning('enter',mfilename);
  
-if length(s_in) > 1
+if numel(s_in) > 1
   eval([ iname ' = s_in;' ])
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
 else

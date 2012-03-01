@@ -14,11 +14,11 @@ function b = median(a, dim)
 % output: s: median of elements (iData/scalar)
 % ex:     c=median(a);
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/std, iData/combine, iData/median
 
 if nargin < 2, dim=1; end
-if length(a) > 1
+if numel(a) > 1
   a = combine(a);
   return
 end
@@ -27,7 +27,7 @@ s=iData_private_cleannaninf(get(a,'Signal'));
 [link, label]          = getalias(a, 'Signal');
 cmd=a.Command;
 b=copyobj(a);
-setaxis(b, [], getaxis(b)); % delete all axes
+rmaxis(b); % delete all axes
 if dim==1 & ndims(a)==1
   b = median(s, dim);
   return

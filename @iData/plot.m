@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.84 $
+% Version: $Revision: 1.85 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -139,7 +139,7 @@ if numel(a) > 1
       set(h{index}, 'color', colors(1+mod(index, length(colors))));
     end
     hold on
-  end
+  end % for
   % re-arrange if this is a 2D overlay
   for index=1:numel(a(:))
     if length(h{index}) == 1 && ~isempty(strfind(method, 'shifted'))

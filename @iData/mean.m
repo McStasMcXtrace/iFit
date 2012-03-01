@@ -14,11 +14,11 @@ function b = mean(a, dim)
 % output: s: mean of elements (iData/scalar)
 % ex:     c=mean(a);
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/std, iData/combine, iData/mean
 
 if nargin < 2, dim=1; end
-if length(a) > 1
+if numel(a) > 1
   b = combine(a);
   return
 end
@@ -27,12 +27,13 @@ s=iData_private_cleannaninf(get(a,'Signal'));
 [link, label]          = getalias(a, 'Signal');
 cmd=a.Command;
 b=copyobj(a);
-setaxis(b, [], getaxis(b)); % delete all axes
+rmaxis(b); % delete all axes
 if dim==1 & ndims(a)==1
   b = mean(s, dim);
   return
 elseif dim > 0
   s = mean(s, dim);
+  % copy all axes except the one on which operation runs
   ax_index=1;
   for index=1:ndims(a)
     if index ~= dim

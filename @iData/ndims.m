@@ -7,15 +7,15 @@ function v=ndims(s)
 % output: dimensionality of Signal in the object (double array)
 % ex :    ndims(iData)
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also  iData/size
 
 % EF 11/07/00 creation
 % EF 23/09/07 iData implementation
 
-if length(s(:)) > 1
+if numel(s) > 1
   v = zeros(size(s)); 
-  for index=1:length(s(:))
+  for index=1:numel(s)
     v(index) =ndims(s(index));
   end
   return

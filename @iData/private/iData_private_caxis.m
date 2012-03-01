@@ -24,7 +24,7 @@ for index=1:max_ndims
 end
 
 % loop on all iData to find intersection area
-for index=1:length(a)
+for index=1:numel(a)
   if ndims(a(index)) ~= ndims(a(1))
     iData_private_warning(mfilename, [ 'Object ' type ' requires same dimensionality.\n\tobject ' inputname(1) ' ' a(1).Tag ' is ' num2str(ndims(a(1))) ' but object ' a(index).Tag ' is ' num2str(ndims(a(index))) '. Extending object.' ]);
   end
@@ -47,7 +47,7 @@ end
 
 % build new axes
 for j_ax = 1:max_ndims  % for each dimension
-  c_len{j_ax} = c_len{j_ax}/length(a);                  % mean axis length from original data
+  c_len{j_ax} = c_len{j_ax}/numel(a);                  % mean axis length from original data
   len         = (c_max{j_ax}-c_min{j_ax})/c_step{j_ax}; % theoretical axis length
   c_len{j_ax} = min(len+1, 10*c_len{j_ax});             % can not extend axes more than 10 times
   c_axis{j_ax}= linspace(c_min{j_ax}, c_max{j_ax}, c_len{j_ax});

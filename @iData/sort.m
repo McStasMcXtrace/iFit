@@ -12,7 +12,7 @@ function s = sort(a,dim,mode)
 % output: s: sorted data (iData)
 % ex:     c=sort(a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plus, iData/sort, iData/unique
 if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is sort(iData, dim, mode)']);
@@ -22,10 +22,10 @@ if nargin < 2, dim=1; end
 if nargin < 3, mode='ascend'; end
 
 % handle input iData arrays
-if length(a(:)) > 1
-  s = a(:);
-  for index=1:length(a(:))
-    s(index) = sort(a(index), dim, mode);
+if numel(a) > 1
+  s = [];
+  for index=1:numel(a)
+    s = [ s sort(a(index), dim, mode) ];
   end
   s = reshape(s, size(a));
   return

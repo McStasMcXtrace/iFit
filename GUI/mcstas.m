@@ -101,7 +101,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -694,15 +694,17 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     ud.Execute=cmd;
     ud.pars   =pars;
     ud.Options=options;
-    set(h, 'UserData', ud);
     xl=xlim; yl=ylim;
     f = fieldnames(ud.Parameters);
     c = struct2cell(ud.Parameters);
-    if length(sim) <= 4, max_fields=20; else max_fields=5; end
+    max_fields=20; % at most 20 parameters displayed, else this is too much to read
     if length(f) > max_fields, f=f(1:max_fields); c=c(1:max_fields); dots='...'; 
     else dots = ''; end
-    s = [ class2str('p',cell2struct(c(:),f(:),1),'no comment') dots ];
-    text(xl(1), mean(yl), s,'Interpreter','none');
+    s = [ 'Instrument ' options.instrument sprintf('\n') class2str('p',cell2struct(c(:),f(:),1),'no comment') dots ];
+    ud.Information = cellstr(s);
+    set(h, 'UserData', ud);
+    
+    t = uicontrol('String','Info','Callback',[ 'helpdlg(getfield(get(gcbf,''UserData''),''Information''),''' options.instrument ' parameters'');' ],'ToolTip', s);
     hold off
   end
   
