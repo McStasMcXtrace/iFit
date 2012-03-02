@@ -1,16 +1,16 @@
 function h = colormap(varargin)
-% colormap: Produce surfaces from iData 2D objects with different colormaps
+% h=colormap(objects, colormaps, ..., options): Produce surfaces from iData 2D objects with different colormaps
 %
-% colormap(z1,cm1, z2, cm2, ..., option)
+% h=colormap(z1,cm1, z2, cm2, ...)
 %   Produces surfaces with different colormaps.
 %   iData 2D object z1 is plotted as surface 1, which is coloured with map cm1 (Nx3)
-%   ...
-%   options specify the type of plot rendering.
 %
-% colormap(z1, z2, ...)
-% Same as above with a set of default colormaps
+% h=colormap(z1, z2, ...)
+%   Same as above with a set of default colormaps
 %
-% Any string argument will be interpreted as an 'option' for the 2D iData/plot
+% h=colormap(..., options)
+%   Options specify the type of plot rendering (same as used in iData/plot)
+%   Any string argument will be interpreted as an 'option' for the 2D iData/plot
 %                 surf, mesh, contour, contour3, surfc, surfl, contourf
 %                 plot3, scatter3 (colored points), stem3, pcolor, waterfall
 %                 flat, interp, faceted (for shading), view2, view3
@@ -18,6 +18,9 @@ function h = colormap(varargin)
 %                 axis tight, axis auto, hide_axes (compact layout)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
 %                 whole (do not reduce large object size for plotting)
+%
+% In addition, the 'log' option can be used to employ a log-scale color set
+%   which enhances contrast on low signal values in the plot.
 %
 % Available colormaps are:
 %    hsv        - Hue-saturation-value color map.
@@ -38,10 +41,17 @@ function h = colormap(varargin)
 %    spring     - Shades of magenta and yellow color map.
 %    winter     - Shades of blue and green color map.
 %    summer     - Shades of green and yellow color map.
+%
+% input: z1,z2,...:   iData objects (single or arrays)
+%        cm1, cm2...: colormaps (Mx3 matrices, such as jet)
+%        options:     string specifying the type of rendering for iData/plot.
+% output: h:          graphics object handles (cell/array)
+% example: a=iData(gauss2d); colormap(a,jet,a+1,hsv,'log transparent')
+%
+% Version: $Revision: 1.2 $
+% See also iData, iData/plot, iData/surf, iData/caxis
 
-% Copyright (c) 2001 by OPTI-NUM solutions
-% http://www.mathworks.com/matlabcentral/newsreader/view_thread/29419 ; 28/02/2012
-
+tic
 z=[]; cm = []; options='';
 for index=1:length(varargin)
   this = varargin{index};
@@ -51,7 +61,17 @@ for index=1:length(varargin)
   elseif ischar(this), options=[ options ' ' this ]; 
   end
 end
-cm= [ cm {hot} {cool} {winter} {spring} {jet} {hsv} {bone} {copper} {pink} ]; % default colormaps at the end in case too few are defined
+clear varargin
+
+% default colormaps at the end in case too few are defined
+if length(cm) < numel(z)
+  cm_list={'hsv' 'hot' 'gray' 'bone' 'copper' 'pink' 'jet'	'cool' 'autumn' 'spring' 'winter' 'summer'};
+  for index=(length(cm)+1):numel(z)
+    this_cm = feval( cm_list{rem(index,length(cm_list))+1}, 64 );
+    cm= [ cm {this_cm}  ];
+  end
+  clear this_cm
+end
 
 % Build the actual colormap by catenation
 cmap = cat(1, cm{:});
@@ -62,31 +82,46 @@ ci= {};
 for index=1:numel(z)
   % compute local colormap so that it matches the object values
   this = double(z(index)); 
-  if any(this < 0) this = this-min(this(:)); end
-  zfloor=linspace(min(this(:)),max(this(:)), size(cm{index},1));
-  cind  =zeros(size(this));
-  % count elements which are lower than each colormap value zfloor
-  % sum up all colormaps on top of each other
-  for k=1:prod(size(this)), 
-    cind(k)=sum(zfloor<=this(k))+sumcm; 
+  % do we need log scale color map ? (to enhance low signal)
+  if ~isempty(strfind(options, 'log'))
+    if any(this < 0) this = this-min(this(:)); end
+    this_min=min(this(find(this > 0)));
+    this(find(this<=0)) = this_min/2;
+    this = log(this);
   end
-  ci{index} = cind;
-  sumcm = sumcm+size(cm{index},1);
+  zscale = linspace(min(this(:)),max(this(:)), size(cm{index},1));
+  cindex = zeros(size(this));
+  % count elements which are lower than each colormap value zscale
+  
+  for k=1:length(zscale)
+    to_add         = find(zscale(k)<=this);
+    cindex(to_add) = cindex(to_add)+1;
+  end
+  % sum up all colormaps on top of each other
+  cindex    = cindex+sumcm;
+  ci{index} = cindex;
+  sumcm     = sumcm+size(cm{index},1);
+  
+  clear this cindex zscale
 end
+clear cm
 
-% And now we make the surfaces:
+% And now we make the surfaces
 h = plot(z, options);
+
 for index=1:numel(z)
-  this = z(index);
   try
     set(h(index), 'CDataMapping','direct', 'CData', ci{index});
   end
   if index==1
+    this = z(index);
     title(title(this));
     xlabel(xlabel(this));
     if ndims(this) >= 2, ylabel(ylabel(this)); end
+    clear this z
   end
 end
 
 colormap(cmap);
+
 

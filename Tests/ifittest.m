@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -299,7 +299,7 @@ case 'Math_1_unary'
     'sign','isfinite','isnan','isinf',...
     'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical',...
     'uminus','abs','real','imag','uplus','not',...
-    'flipud','fliplr'};
+    'flipud','fliplr','permute','conj'};
   result = [ 'OK  log floor sqrt cos ... (' num2str(length(op)) ' operators)' ];
   failed = '';
   for index=1:length(op)
@@ -453,6 +453,7 @@ case 'Plot_5_overlay_2D'
   [x,y,z]=peaks; a=iData(x,y*10,z); 
   c=linspace(a,-a+50,10);            % continuously go from 'a' to a '-a+50' in 10 steps
   plot(c);                           % plot all on the same figure
+  colormap(c);
   result = 'OK  linspace/waterfall';
 case 'Plot_6_sidebyside'
   x=-pi:0.01:pi; a=iData(x,x); 
