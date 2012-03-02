@@ -24,9 +24,9 @@ function b = interp(a, varargin)
 %            dimensions 1 to ndims(s) (double vector/matrix)
 %         ntimes: original axis sub-division (integer)
 % output: b: object or array (iData)
-% ex:     b=interp(a, 'grid');
+% ex:     a=iData(peaks); b=interp(a, 'grid'); c=interp(a, 2);
 %
-% Version: $Revision: 1.33 $
+% Version: $Revision: 1.34 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
 
 % input: option: linear, spline, cubic, nearest
@@ -46,7 +46,6 @@ if numel(a) > 1
 end
 
 % build new iData object to hold the result
-cmd=a.Command;
 b = copyobj(a);
 
 % object check
@@ -108,6 +107,10 @@ for index=1:length(varargin)
   clear c
 end
 
+b = iData_private_history(b, mfilename, a, varargin{:});
+cmd=b.Command;
+clear varargin a
+
 % check for method to be valid
 if isempty(any(strcmp(method, {'linear','cubic','spline','nearest'})))
   iData_private_error(mfilename,['Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest.']);
@@ -115,16 +118,16 @@ end
 
 % test axes and decide to call meshgrid if necessary
 is_grid=0;
-if isvector(a) >= 2, requires_meshgrid=1; end % plot3/event style
-if ndims(a) > 1
-  for index=1:ndims(a)
+if isvector(b) >= 2, requires_meshgrid=1; end % plot3/event style
+if ndims(b) > 1
+  for index=1:ndims(b)
     % test for the target axes in case they are given as scalars (axes spacing)
     if isscalar(f_axes{index}) && ~isscalar(i_axes{index})
       x = i_axes{index}; x=unique(x); % also makes it a vector
       f_axes{index} = min(x):f_axes{index}:max(x); clear x
     end
     if isvector(f_axes{index}) % vectors should be oriented the right way
-      d=ones(1, ndims(a));
+      d=ones(1, ndims(b));
       d(index) = length(f_axes{index});
       f_axes{index} = reshape(f_axes{index}, d);
     end
@@ -132,7 +135,7 @@ if ndims(a) > 1
     if any(size(f_axes{index}) == 1)       & is_grid, requires_meshgrid=1; end 
     try
       % this axis is a grid, others should also be...
-      if all(size(f_axes{index}) == size(a)),  is_grid=is_grid+1; end 
+      if all(size(f_axes{index}) == size(b)),  is_grid=is_grid+1; end 
     end
   end
 end
@@ -142,7 +145,7 @@ if nargin == 1 & ~is_grid, ntimes=1; end
 
 if ntimes ~= 0
   % rebin iData object using the smallest axes steps for new axes
-  for index=1:ndims(a)
+  for index=1:ndims(b)
     x = i_axes{index}; x=unique(x); % also makes it a vector
     a_step = diff(x);
     a_step = a_step(find(a_step));
@@ -163,13 +166,13 @@ if ntimes ~= 0
 end
 
 % some of the axes are non consistent or not grid: re-bin onto vector axes
-if ~is_grid | (requires_meshgrid & is_grid ~= ndims(a))
+if ~is_grid | (requires_meshgrid & is_grid ~= ndims(b))
   % first make axes unique as vectors (sorted)
-  for index=1:ndims(a)
+  for index=1:ndims(b)
     % make the axis as a vector on each dimension
-    s = size(a);
-    n = ones(1, ndims(a)); if ndims(a) == 1, n = [n 1 ]; end
-    if length(find(size(a) > 1)) == 1, n(index) = max(size(a)); % plot3 like
+    s = size(b);
+    n = ones(1, ndims(b)); if ndims(b) == 1, n = [n 1 ]; end
+    if length(find(size(b) > 1)) == 1, n(index) = max(size(b)); % plot3 like
     else n(index) = s(index); end
     v = f_axes{index}; 
     v = unique(v(:));
@@ -180,7 +183,7 @@ end
 
 % test if interpolation axes have changed w.r.t input object
 has_changed = 0;
-for index=1:ndims(a)  
+for index=1:ndims(b)  
   this_i = i_axes{index}; if isvector(this_i), this_i=this_i(:); end
   this_f = f_axes{index}; if isvector(this_f), this_f=this_f(:); end
   if ~isequal(this_i, this_f)
@@ -199,7 +202,7 @@ for index=1:ndims(a)
 end
 
 % get Signal, error and monitor.
-i_signal   = get(a,'Signal');
+i_signal   = get(b,'Signal');
 if any(isnan(i_signal(:))), has_changed=1; end
 if ~has_changed & (~requires_meshgrid | is_grid), 
   iData_private_warning('exit', mfilename);
@@ -208,7 +211,7 @@ end
 
 i_class    = class(i_signal); i_signal = double(i_signal);
 
-i_error = getalias(a, 'Error');
+i_error = getalias(b, 'Error');
 if ~isempty(i_error),   
   % check if Error is sqrt(Signal) or a constant
   if strcmp(i_error, 'sqrt(this.Signal)')
@@ -217,39 +220,39 @@ if ~isempty(i_error),
     % keep that as  a constant  value
   else
     % else get the value
-    i_error  = get(a,'Error');
+    i_error  = get(b,'Error');
   end
   i_error    = double(i_error);
 end
   
-i_monitor = getalias(a, 'Monitor');
+i_monitor = getalias(b, 'Monitor');
 if ~isempty(i_monitor),   
   % check if Monitor is 1 or a constant
   if isnumeric(i_monitor) && isscalar(i_monitor) == 1
     % keep that as a constant  value
   else
     % else get the value
-    i_monitor  =get(a,'Monitor');
+    i_monitor  =get(b,'Monitor');
   end
   i_monitor    = double(i_monitor);
 end
 
 % do we need to compute a new grid from axis ?
-if ndims(a) > 1 && (length(i_signal) ~= numel(i_signal))
+if ndims(b) > 1 && (length(i_signal) ~= numel(i_signal))
   requires_meshgrid = 1;
 end
 
 % compute a new grid before interpolating
 if requires_meshgrid
-  if length(f_axes) == 1 || (ndims(a) == 1 && isvector(a) == 1)
+  if length(f_axes) == 1 || (ndims(b) == 1 && isvector(b) == 1)
     % nothing to do as we have only one axis, no grid
   else
     % call ndgrid
-    [f_axes{1:ndims(a)}] = ndgrid(f_axes{:});
+    [f_axes{1:ndims(b)}] = ndgrid(f_axes{:});
     if ~has_grid_arg % reshape axes as vectors (but not for 'grid')
-      for index=1:ndims(a) 
+      for index=1:ndims(b) 
         f_axes{index} = unique(f_axes{index});
-        n = ones(1,ndims(a));
+        n = ones(1,ndims(b));
         n(index) = length(f_axes{index});
         if length(n) == 1, n=[ n 1]; end
         f_axes{index}=reshape(f_axes{index},n);
@@ -260,7 +263,7 @@ end
 
 % make sure input axes are monotonic. output axes should be OK.
 i_nonmonotonic=0;
-for index=1:ndims(a)
+for index=1:ndims(b)
   if any(diff(i_axes{index},1,index) <= 0)
     i_nonmonotonic=1; break;
   end
@@ -274,11 +277,11 @@ if i_nonmonotonic
   i_error_sav  =i_error;
   i_monitor_sav=i_monitor;
   try
-    for index=1:ndims(a)  % apply unique on axes and reorder signal
-      i_idx{index}=1:size(a, index);
+    for index=1:ndims(b)  % apply unique on axes and reorder signal
+      i_idx{index}=1:size(b, index);
       [i_axes{index}, i_idx{index}] = unique(i_axes{index});
-      if length(i_idx{index}) ~= size(a,index)
-        for j=1:ndims(a), 
+      if length(i_idx{index}) ~= size(b,index)
+        for j=1:ndims(b), 
           if j ~= index, f_idx{j}=':';
           else           f_idx{j}=i_idx{index}; end
         end
@@ -304,7 +307,7 @@ end
 
 % last test to check if axes have changed
 has_changed = 0;
-for index=1:ndims(a)
+for index=1:ndims(b)
   if ~isequal(i_axes{index}, f_axes{index})
     has_changed = 1;
     break
@@ -367,8 +370,7 @@ for index=1:length(f_axes)
   end
   b=setaxis (b, index, [ 'axis' num2str(index) ]);
 end
-b.Command=cmd;
-b = iData_private_history(b, mfilename, a, varargin{:});  
+b.Command=cmd; 
 % final check
 b = iData(b);
 

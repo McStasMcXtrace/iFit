@@ -1,4 +1,4 @@
-function b = iData_private_unary(a, op)
+function b = iData_private_unary(a, op, varargin)
 % iData_private_unary: handles unary operations
 %
 % 'asin', 'acos','atan','cos','sin','exp','log','log10','sqrt','tan','transpose'
@@ -8,7 +8,7 @@ function b = iData_private_unary(a, op)
 % 'sign','isfinite','isnan','isinf'
 % 'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical'
 % 'uminus','abs','real','imag','uplus','not'
-% 'flipud','fliplr'
+% 'flipud','fliplr', 'permute','conj'
 %
 % present but not used here: 'double','single','logical','find'
 
@@ -31,14 +31,14 @@ iData_private_warning('enter',[ mfilename ' ' op ]);
 
 cmd=a.Command;
 b = copyobj(a);
-s = subsref(b,struct('type','.','subs','Signal'));
-[dummy, sl] = getaxis(b, '0');
 
-% operation on Error
+% get Signal Error and Monitor
+s = subsref(b,struct('type','.','subs','Signal'));
+[dummy, sl] = getaxis(b, '0');  % signal definition/label
 e = subsref(b,struct('type','.','subs','Error'));
 m = subsref(b,struct('type','.','subs','Monitor'));
 
-% operation on signal
+% omake sure sparese is done with 'double' type
 if strcmp(op, 'sparse')
   if ndims(a) > 2
     iData_private_error('unary',['Operation ' op ' can only be used on 2d data sets. Object ' a.Tag ' is ' num2str(ndims(a)) 'd.' ]);
@@ -54,6 +54,9 @@ if strcmp(op, 'sparse')
   end
 end
 
+% non-linear operators should perform on the Signal/Monitor
+% and then multiply again by the Monitor
+
 % operate with Signal/Monitor and Error/Monitor
 if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
  'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh'}))) ...
@@ -62,9 +65,12 @@ if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log
   e = genop(@rdivide, e, m);
 end
 
-% non-linear operators should perform on the Signal/Monitor
-% and then multiply again by the Monitor
-new_s = feval(op, s); % new Signal value is set HERE <==========================
+% new Signal value is set HERE <================================================
+if length(varargin)
+  new_s = feval(op, s, varargin{:});
+else
+  new_s = feval(op, s);
+end
 
 switch op
 case 'acos'
@@ -133,8 +139,11 @@ case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger
 	b = new_s;
 	iData_private_warning('exit',mfilename);
 	return
-case {'uminus','abs','real','imag','uplus','not'}
+case {'uminus','abs','real','imag','uplus','not','conj'}
 	% retain error, do nothing
+case {'permute'}
+  e = feval(op, e, varargin{:});
+  m = feval(op, m, varargin{:});
 otherwise
   iData_private_error('unary',['Can not apply operation ' op ' on object ' a.Tag ]);
 end
@@ -162,9 +171,6 @@ if ~isequal(subsref(b,struct('type','.','subs','Monitor')), m)
 end
 b.Command=cmd;
 b = iData_private_history(b, op, a);  
-
-% other methods to treat specifically
-% diff, min, max, sum, prod, sort, trapz
 
 iData_private_warning('exit',mfilename);
 

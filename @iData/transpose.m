@@ -8,12 +8,14 @@ function a = transpose(a)
 % output: b: object or array (iData)
 % ex:     b=transpose(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/transpose, iData/ctranspose, iData/setaxis, iData/getaxis
 
-if length(a) > 1
+if numel(a) > 1
   a = builtin('transpose', a);
-else
+elseif ndims(a) <=2
   a = iData_private_unary(a, 'transpose');
+else
+  a = permute(a, [2 1]);
 end
 

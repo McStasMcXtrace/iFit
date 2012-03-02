@@ -12,7 +12,7 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, iData/plot
 
 % EF 23/11/07 iData implementation
@@ -32,6 +32,7 @@ for index=1:length(varargin)
   elseif isnumeric(varargin{index}), dim    = varargin{index};
   end
 end
+clear varargin
 if numel(a) == 1
   h=plot(a, method);
   return
