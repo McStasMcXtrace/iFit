@@ -32,7 +32,7 @@ function fhandle = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %
 % output: fhandle: function handle to the new function, which is also stored locally as a file.
 % 
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, gauss
 
 fhandle = [];
@@ -156,6 +156,7 @@ if ~isempty(expr)
   % first convert a,b,c,d...s into p(1) p(2) ...
   % regexp: single letters starting words
   letters = regexp(expr,'\<([a-oqrsA-Z][^a-zA-Z]|\<([a-oqrsA-Z]\>)'); % position of single letters
+  letter_names = {};
   for index=1:length(letters)
     % find a 'free' parameter slot
     free_par = find(used_pars==0);
@@ -163,6 +164,7 @@ if ~isempty(expr)
     replace = [ 'p(' num2str(free_par) ')' ];
     used_pars(free_par)=1;
     nb_pars(free_par) = free_par;
+    letter_names(free_par) = { expr(letters(index)) };
     expr    = strrep(expr, expr(letters(index)), replace);
     letters = letters+length(replace)-1; % account for the change in length
   end
@@ -235,6 +237,11 @@ if isempty(pars)
       name = [ 'Width_' num2str(index) ];
     else
       name = [ fun '_p' num2str(index) ];
+    end
+    if ~isempty(letter_names)
+      if index <= length(letter_names) && ~isempty(letter_names{index})
+        name=[ name '_' letter_names{index} ];
+      end
     end
     if index==1, 
       pars = [ '''' name '''' ];

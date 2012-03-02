@@ -3,6 +3,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Saving/exporting data</title>
 </head><body>
@@ -46,7 +47,7 @@ dialog pops-up. The filename extension defines the format to use, when
 this latter is not specified initially. Last, when the format is set to
 <span style="color: rgb(204, 51, 204);"> 'gui'</span>, a format
 selector dialog pops-up.The <span style="font-weight: bold;">save</span> method is equivalent to saveas.<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[</span><span style="color: rgb(204, 51, 204);"> ifitpath '</span><span style="color: rgb(204, 51, 204);">Data/ILL_IN6.dat'</span>])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);">''</span>,<span style="color: rgb(204, 51, 204);">'pdf'</span>)               <span style="font-style: italic;">% save object as a PDF and use object ID as file name</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);">'MakeItSo'</span>,<span style="color: rgb(204, 51, 204);">'hdf5'</span>)      <span style="font-style: italic;">% save object as a HDF5 into specified filename. Extension is appended automatically</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);">'MakeItSo'</span>,<span style="color: rgb(204, 51, 204);">'hdf5'</span>)        <span style="font-style: italic;">% 'save' is equivalent to 'saveas'</span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[</span><span style="color: rgb(204, 51, 204);"> ifitpath '</span><span style="color: rgb(204, 51, 204);">Data/ILL_IN6.dat'</span>])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);">''</span>,<span style="color: rgb(204, 51, 204);">'pdf'</span>)               <span style="font-style: italic;">% save object as a PDF and use object ID as file name</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);">'MakeItSo'</span>,<span style="color: rgb(204, 51, 204);">'hdf5'</span>)      <span style="font-style: italic;">% save object as a HDF5 into specified filename. Extension is appended automatically</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);">'MakeItSo'</span>,<span style="color: rgb(204, 51, 204);">'hdf5'</span>)        <span style="font-style: italic;">% 'save' is equivalent to 'saveas'</span></pre>
 <br>
 We recommend the following formats for storing data sets:<br>
 <ul>
@@ -471,7 +472,7 @@ representation of the object. Can be viewed with e.g <a href="http://freewrl.sou
       <td style="vertical-align: top;">A
 MRI volume data format. The 'hdr' file requires an ssociated 'img'
 file. <a href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Format</a> from the Analyze <a href="http://www.analyzedirect.com/">Biomedical Imaging Resource of the Mayo Clinic</a>. </td>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Yes<br>
       </td>
     </tr>
 
@@ -483,7 +484,7 @@ file. <a href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Form
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData saving data -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2012-03-01 16:27:52 $ $Revision: 1.17 $
+$Date: 2012-03-02 13:00:21 $ $Revision: 1.18 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </body></html>

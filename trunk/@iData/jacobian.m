@@ -30,7 +30,7 @@ function b = jacobian(a, varargin)
 % ex:     a=iData(peaks); x=linspace(1,2,size(a,1));
 %         g=jacobian(a, x, [],'half X');
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/del2, diff, iData/gradient, iData/interp, iData/setaxis, gradient
 
 if nargin <= 1,
@@ -93,6 +93,7 @@ for index=1:length(varargin)
     iData_private_warning(mfilename,['Input argument ' num2str(index) ' of class ' class(c) ' size [' num2str(size(c)) '] is not supported. Ignoring.']);
   end
 end
+clear varargin
 
 % tests axes
 if ndims(a) > 1
