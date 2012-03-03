@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -299,7 +299,7 @@ case 'Math_1_unary'
     'sign','isfinite','isnan','isinf',...
     'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical',...
     'uminus','abs','real','imag','uplus','not',...
-    'flipud','fliplr','permute','conj'};
+    'flipud','fliplr','permute','conj','cumtrapz','sum','prod','trapz','cumsum','cumprod'};
   result = [ 'OK  log floor sqrt cos ... (' num2str(length(op)) ' operators)' ];
   failed = '';
   for index=1:length(op)

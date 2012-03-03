@@ -9,37 +9,12 @@ function b = cumprod(a,dim)
 % output: s: accumulated product of elements (iData)
 % ex:     c=cumprod(a);
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumprod
-
-% handle input iData arrays
-if isa(a, 'iData') && numel(a) > 1
-  b = [];
-  for index=1:numel(a)
-    if nargin == 1
-      b = [ b feval(mfilename, a(index)) ];
-    else
-      b = [ b feval(mfilename, a(index), dim) ];
-    end
-  end
-  b = reshape(b, size(a));
-  return
+if ~isa(a, 'iData')
+  iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
 end
-cmd = a.Command;
-b = copyobj(a);
-[sn, sl] = getaxis(a, 'Signal');
-if nargin == 1
-  dim=1;
-elseif nargin ~= 2
-  iData_private_error(mfilename,['syntax is cumprod(iData, dim)']);
-end
-s = iData_private_cleannaninf(get(a,'Signal'));
-e = iData_private_cleannaninf(get(a,'Error'));
-m = iData_private_cleannaninf(get(a,'Monitor'));
 
-b = setalias(b, 'Signal',   cumprod(s,dim), [ 'cumprod(' sl ','  num2str(dim) ')' ]);
-b = setalias(b, 'Error',    cumprod(s+e/2,dim)-cumprod(s-e/2,dim), [ 'cumprod(Error,'   num2str(dim) ')' ]);
-b = setalias(b, 'Monitor',  cumprod(m,dim), [ 'cumprod(Monitor,' num2str(dim) ')' ]);
-b.Command=cmd;
-b = iData_private_history(b, mfilename, a, dim);  
+if nargin < 2, dim=1; end
 
+b = iData_private_sumtrapzproj(a,dim, 'cumprod');

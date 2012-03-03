@@ -40,7 +40,7 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.33 $
+% Version: $Revision: 1.34 $
 % See also: iLoad, save, iData/saveas, iData_load_ini
 
 % calls private/iLoad
@@ -92,6 +92,7 @@ for i=1:numel(files)
       % apply post-load routine: this may generate more data sets
       for j=1:length(loaders{i}.postprocess)
         if ~isempty(loaders{i}.postprocess{j})
+          disp([ mfilename ': Calling post-process ' loaders{i}.postprocess{j} ]);
           this_iData = feval(loaders{i}.postprocess{j}, this_iData);
         end
       end

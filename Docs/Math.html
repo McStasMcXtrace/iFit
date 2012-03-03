@@ -13,6 +13,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Math operators</title>
 </head><body>
@@ -1021,7 +1022,7 @@ to
 when <span style="font-style: italic;">dx</span>=1.<br>
 <br>
 Last, the <span style="font-style: italic;">cumulated</span> versions
-of sum and prod, <span style="font-weight: bold;"> cumsum</span> and <span style="font-weight: bold;">cumprod, </span>return objects of same
+of sum, trapz and prod, <span style="font-weight: bold;"> cumsum</span>, <span style="font-weight: bold;">cumtrapz</span> and <span style="font-weight: bold;">cumprod, </span>return objects of same
 dimensionality for which the operation is performed gradually along the
 chosen axis. The last slice along the axis contains the sum and prod
 results.<br>
@@ -1032,7 +1033,7 @@ channel, resulting in a constant line (right side of the sum), whereas
 the elastic line, is gradually summed over all angle channels, showing
 inelastic contribution on its shoulders.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([ (a) <span style="color: rgb(51, 102, 255);">cumsum</span>(a) ] ,<span style="color: rgb(204, 51, 204);">'tight'</span>)</pre>
-The <span style="font-weight: bold;">cumprod</span> is the <span style="font-style: italic;">primitive</span> of the <span style="font-style: italic;">Signal, </span>when the axis step is <span style="font-style: italic;">dx</span>=1.<br>
+The <span style="font-weight: bold;">cumtrapz</span> is the <span style="font-style: italic; color: rgb(255, 0, 0);">primitive</span> of the <span style="font-style: italic;">Signal, </span>which is equal to cumsum when the axis step is <span style="font-style: italic;">dx</span>=1.<br>
 <br>
 The <span style="font-weight: bold;">norm</span> method computes the norm-2 of the object <span style="font-style: italic;">Signal, </span>that is<br>
 <br>
@@ -1219,7 +1220,7 @@ Signal, Error, and Monitor values are also re-ordered accordingly.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2012-03-02 13:00:21 $ $Revision: 1.26 $
+$Date: 2012-03-03 21:16:35 $ $Revision: 1.27 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

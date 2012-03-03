@@ -6,6 +6,10 @@ function iData_private_warning(a,b)
 % iData_private_warning('exit');   restores the previous warning level state
 % iData_private_warning('mfilename','MSG');
 
+% the warning should be displayed:
+% * when the 'stack' indicates an execution from a master command
+% * when the message is different from previous ones
+
 persistent warn;   % store the warning level
 
 if nargin == 0

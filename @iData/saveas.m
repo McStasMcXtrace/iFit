@@ -26,6 +26,7 @@ function [filename,format] = saveas(a, varargin)
 %           'svg'  save as Scalable Vector Graphics (SVG) format
 %           'wrl'  save as Virtual Reality VRML 2.0 file
 %           'dat'  save as Flat text file with comments
+%           'fits' save as FITS binary image (only for 2D objects)
 %           If given as format='gui' and filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
@@ -37,9 +38,10 @@ function [filename,format] = saveas(a, varargin)
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 
 %   iData_private_saveas_hdfnc
-%   pmedf_write:
+%   pmedf_write
+%   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
@@ -226,7 +228,11 @@ case 'vtk'  % VTK volume
   filename = iData_private_saveas_vtk(a, filename);
 case 'hdr'  % Analyze volume
   filename = iData_private_saveas_analyze(a, filename);
-  
+case {'fits','fit','fts'} % FITS image
+  if ndims(a) == 2
+    a = double(a);
+    fitswrite(a, filename);
+  end
 case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
 case 'csv'  % Spreadsheet comma separated values file format
