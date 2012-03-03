@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.36 $
+% Version: $Revision: 1.37 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -75,7 +75,7 @@ if nargin == 0  % create empty object
   outarray = [ outarray a ];
   return
 else  % convert input argument into object
-  if isa(varargin{1}, 'iData') & length(varargin{1}) > 1
+  if isa(varargin{1}, 'iData') & numel(varargin{1}) > 1
   % iData(iData)
     in = varargin{1};
     for index=1:numel(in)
@@ -223,8 +223,9 @@ else  % convert input argument into object
       out = [];
     end
     if length(inputname(1)), inmame=[ inputname(1) ' ' ]; else inmame=''; end
+
     for index=1:numel(out)
-      if length(out) == 1 | ~isempty(out(index))
+      if numel(out) == 1 | ~isempty(out(index))
         if isempty(out(index).Source), out(index).Source = inmame; end
         if isempty(out(index).Title),  out(index).Title  = [ inmame class(in) ]; end
         

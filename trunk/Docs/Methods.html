@@ -2,10 +2,6 @@
 <html><head>
 
 
-
-
-
-
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: iData methods</title>
 </head><body>
@@ -753,12 +749,17 @@ account the axis binning.&nbsp;</li>
 elements along a given dimension. The resulting object has this
 dimension removed. This method does not take
 into account the axis binning.</li>
+  <li><a href="matlab:helpwin cumtrapz"><span style="font-weight: bold;">cumtrapz: </span></a>computes the
+cumulated integral of an object along a given dimension, that is the primitive. The result has the
+same dimension as the initial object, and its last element/slice along
+the specified dimension is the result of the <span style="font-style: italic;">sum</span> method.<br>
+  </li>
   <li><a href="matlab:helpwin iData/cumsum"><span style="font-weight: bold;">cumsum: </span></a>computes the
 cumulated sum of an object along a given dimension. The result has the
 same dimension as the initial object, and its last element/slice along
 the specified dimension is the result of the <span style="font-style: italic;">sum</span> method. This is the signal
-primitive.<br>
-  </li>
+primitive, equal to <span style="font-style: italic;">cumtrapz</span> when dx=1.</li>
+
   <li><a href="matlab:helpwin iData/cumprod"><span style="font-weight: bold;">cumprod: </span></a>computes the
 cumulated product of an object along a given dimension. The result has
 the same dimension as the initial object, and its last
@@ -943,7 +944,7 @@ the object <span style="font-style: italic;">Signal</span> title. To assigne the
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData methods - </span><span style="font-style: italic;">
-$Date: 2012-03-02 13:00:21 $ $Revision: 1.29 $
+$Date: 2012-03-03 21:16:35 $ $Revision: 1.30 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit

@@ -9,6 +9,7 @@
 
 
 
+
   
   
   
@@ -322,7 +323,7 @@ Start</a> page. Otherwise, the typical usage would be:</div>
 
 
 
-<pre style="margin-left: 80px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">Start Matlab...<br>&gt;&gt; </span>addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/some/path/to/iFit'</span>))<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>a=<span style="color: rgb(51, 102, 255);">iData</span>(file)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">plot</span>(a)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>b=2*a+<span style="color: rgb(51, 102, 255);">log</span>(a)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>parameters=<span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">'gauss'</span>)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);">'filename'</span>,<span style="color: rgb(204, 51, 204);">'pdf'</span>)<br></pre>
+<pre style="margin-left: 80px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">Start Matlab...<br>&gt;&gt; </span>addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/some/path/to/iFit'</span>))<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<span style="color: rgb(51, 102, 255);"></span><br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">plot</span>(log10(a))<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>b=2*a+<span style="color: rgb(51, 102, 255);">log</span>(a)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>parameters=<span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">'gauss2d'</span>)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);">'filename.</span><span style="color: rgb(204, 51, 204);">pdf'</span>)<br></pre>
 
 
 
@@ -504,7 +505,7 @@ be slow. This will be improved gradually...<br>
 
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit Welcome - $Date: 2012-02-17 23:31:07 $ $Revision: 1.34 $</span>
+Farhi - iFit Welcome - $Date: 2012-03-03 21:16:35 $ $Revision: 1.35 $</span>
 - back to <a href="index.html">Main iFit Page</a> <a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 

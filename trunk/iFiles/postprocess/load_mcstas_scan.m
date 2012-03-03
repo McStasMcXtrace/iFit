@@ -3,7 +3,7 @@ function a=load_mcstas_scan(a0)
 %
 % Returns iData style datasets from a McStas scan output file
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -65,7 +65,7 @@ a = [];
 for j=1:siz
   b = copyobj(a0);
   ylabel=cnames(2*j);
-  setalias(b,'Signal',['this.' getalias(a0,'Signal') '(:,' num2str(2*j) ')'],ylabel);
+  setalias(b,'Signal', ['this.' getalias(a0,'Signal') '(:,' num2str(2*j) ')'], ylabel);
   if ~isempty(findfield(a0, '_ERR')) 
     setalias(b,'Error',['this.' getalias(a0,'Signal') '(:,' num2str(1+2*j) ')']);
   end

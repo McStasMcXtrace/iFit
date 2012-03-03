@@ -12,7 +12,7 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1.19 $
+% Version: $Revision: 1.20 $
 % See also iData, iData/plot
 
 % EF 23/11/07 iData implementation
@@ -57,6 +57,7 @@ elseif isempty(n)
 end
 
 h=[];
+iData_private_warning('enter', mfilename);
 for index=1:numel(a)
   if ~isempty(a(index))
     if numel(a) > 12, 
@@ -75,3 +76,4 @@ for index=1:numel(a)
   else h = [ h ; nan ];
   end
 end
+iData_private_warning('exit', mfilename);
