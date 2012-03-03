@@ -17,7 +17,7 @@ function [varargout] = findobj(s_in, varargin)
 %         base:  objects found in base/MATLAB workspace (iData array)
 % ex :    findobj(iData) or findobj(iData,'Title','MyTitle')
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/set, iData/get, iData/findstr, iData/findfield
 
 % EF 23/09/07 iData implementation
@@ -112,8 +112,9 @@ for i = 1:2:length(varargin)
 end
 i1 = unique(i1);
 i2 = unique(i2);
-if ~isempty(s_caller), s_caller = s_caller(i1); end
-if ~isempty(s_base),   s_base   = s_base(i2); end
+
+if numel(s_caller), s_caller = s_caller(i1); end
+if numel(s_base),   s_base   = s_base(i2);   end
 
 varargout{1} = s_caller;
 varargout{2} = s_base;
@@ -129,15 +130,16 @@ function [index, propvalues]=findprop(array, propname, propvalue)
   index      = [];
   if isempty(array), return; end
   if iscell(array)
-    for j = 1:length(array)
+    for j = 1:numel(array)
       propvalues{j} = get(array{j},propname);
     end
   else
     propvalues = get(array,propname);
   end
+
   if isempty(propvalue), return; end
   if ~iscell(propvalue) && ~ischar(propvalue), propvalue={ propvalue }; end
-  for j = 1:length(array(:))
+  for j = 1:numel(array)
     prop = propvalues{j}; % property value for iData 'j' in caller workspace
     if iscell(prop)
       prop = prop(:);
@@ -157,7 +159,7 @@ function [index, propvalues]=findprop(array, propname, propvalue)
       end
     else
       if ischar(propvalue)
-        if ~isempty(findstr(propvalue, prop))
+        if ~isempty(strfind(prop, propvalue))
           index = [ index j ];
         end
       else

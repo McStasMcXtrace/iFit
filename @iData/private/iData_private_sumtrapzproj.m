@@ -9,7 +9,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
@@ -55,35 +55,33 @@ m = iData_private_cleannaninf(get(a,'Monitor'));
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;
 b  = copyobj(a);
-rmaxis(b);  % remove all axes, will be rebuilt after operation
-
 
 if all(dim > 0)
   % compute new object
   switch op
-  case 'sum' % SUM =============================================================
+  case {'sum','cumsum'} % SUM =============================================================
     % sum on all dimensions requested
     for index=1:length(dim(:))
-      if numel(e) > 1, e = sum(e, dim(index)); end
-      if numel(m) > 1, m = sum(m, dim(index)); end
-      s = sum(s, dim(index)); 
+      if numel(e) > 1, e = feval(op, e, dim(index)); end
+      if numel(m) > 1, m = feval(op, m, dim(index)); end
+      s = feval(op, s, dim(index)); 
     end
     % Store Signal
     s=squeeze(s); e=squeeze(e); m=squeeze(m);
     setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
-  case 'prod' % PROD ===========================================================
+  case {'prod','cumprod'} % PROD ===========================================================
     % product on all dimensions requested
     for index=1:length(dim(:))
-      if numel(e) > 1, e = prod(s+e/2, dim(index))-prod(s-e/2, dim(index)); end
-      if numel(m) > 1, m = prod(m, dim(index)); end
-      s = prod(s, dim(index)); 
+      if numel(e) > 1, e = feval(op, s+e/2, dim(index))-feval(op, s-e/2, dim(index)); end
+      if numel(m) > 1, m = feval(op, m, dim(index)); end
+      s = feval(op, s, dim(index)); 
     end
     % Store Signal
     s=squeeze(s); e=squeeze(e); m=squeeze(m);
     setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
-  case 'trapz' % TRAPZ =========================================================
+  case {'trapz','cumtrapz'} % TRAPZ =========================================================
     for index=1:length(dim(:))
       [x, xlab]     = getaxis(a,dim(index));
       if dim(index) ~= 1  % we put the dimension to integrate on as first
@@ -94,9 +92,9 @@ if all(dim > 0)
         m = permute(m, perm);
       end
       % make the integration
-      if numel(e) > 1, e = trapz(x, e); end
-      if numel(m) > 1, m = trapz(x, m); end
-      s = trapz(x, s);
+      if numel(e) > 1, e = feval(op, x, e); end
+      if numel(m) > 1, m = feval(op, x, m); end
+      s = feval(op, x, s);
       if dim(index) ~= 1  % restore initial axes
         s = permute(s,perm);
         e = permute(e,perm);
@@ -124,7 +122,9 @@ if all(dim > 0)
 	% store new object
 	b = set(b, 'Error', abs(e), 'Monitor', m);
 	switch op
+	% same axes
 	case {'sum','trapz','prod'}
+	  rmaxis(b);  % remove all axes, will be rebuilt after operation
     % put back initial axes, except those integrated
     ax_index=1;
     for index=1:ndims(a)
@@ -135,6 +135,7 @@ if all(dim > 0)
       end
     end
   case 'camproj'
+    rmaxis(b);  % remove all axes, will be rebuilt after operation
     % set projection axis
     [x, xlab] = getaxis(a, num2str(dim)); % get axis definition and label
     setaxis(b, 1, x);

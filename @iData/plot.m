@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.86 $
+% Version: $Revision: 1.87 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -60,6 +60,8 @@ function h=plot(a, varargin)
 
 ih = ishold;
 h  = {};
+
+% analyze input arguments
 if nargin == 1, method=''; 
 elseif length(varargin) == 1
   if ischar(varargin{1})
@@ -107,6 +109,7 @@ end
 
 % plot an array of objects
 if numel(a) > 1
+  iData_private_warning('enter', mfilename);
   sum_max = 0;
   % plot objects in the same axis frame
   % set error bar uniformly along objects
@@ -169,8 +172,10 @@ if numel(a) > 1
   end
   h = reshape(h, size(a));
   if ih == 1, hold on; else hold off; end
+  
+  iData_private_warning('exit', mfilename);
   return
-end
+end % plot array
 
 % plot a single object
 
