@@ -84,7 +84,7 @@ Older Microsoft Visual C++ 2008 [<a href="http://download.microsoft.com/download
 Just use the default installtion settings, then use<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mex</span> -setup							<span style="font-style: italic;">% select compiler</span><br>[1] Microsoft Windows VS2008<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/location/to/iFit'</span>))			<span style="font-style: italic;">% install iFit</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span> ([ ifitpath <span style="color: rgb(204, 51, 204);">'iFiles/private/looktxt.mexw64'</span> ])	<span style="font-style: italic;">% delete old looktxt MeX</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span> <span style="color: rgb(204, 51, 204);">force</span><span style="font-style: italic;">							% reload importer methods and recompile looktxt<br></span></pre>
 
-An other solution, somewhat more complex to tune, is to use <span style="font-style: italic;">gcc</span> (from e.g. <a href="http://www.mingw.org/">MingW) </a>and the <a href="gnumex.sourceforge.net/">gnumex</a> tool. The <a href="http://www.bloodshed.net/devcpp.html">Dev-Cpp</a> compiler (which includes gcc) may also be used.<br>
+An other solution, somewhat more complex to tune, is to use <span style="font-style: italic;">gcc</span> (from e.g. <a href="http://www.mingw.org/">MingW) </a>and the <a href="http://gnumex.sourceforge.net/">gnumex</a> tool. The <a href="http://www.bloodshed.net/devcpp.html">Dev-Cpp</a> compiler (which includes gcc) may also be used.<br>
 <br>
 Then force the recompilation of looktxt with the procedure below.<br>
 <h5>Other systems (Windows 32, Linux, MacOSX)</h5>
@@ -116,8 +116,8 @@ You may register by entering your email address and press subscribe: <form metho
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit Installation - </span><span style="font-style: italic;">
-$Date: 2012-02-21 03:52:45 $
-$Revision: 1.24 $
+$Date: 2012-03-05 10:56:28 $
+$Revision: 1.25 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
