@@ -4,6 +4,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Plotting iData objects</title>
 </head><body>
@@ -206,6 +207,7 @@ object is re-scaled in the [0 1] range to use the full channel colors.
 However, when using the option<span style="color: rgb(204, 51, 204);">
 'norm' </span>keyword, the scaling is made global to all images,
 enabling comparison of relative intensity between channel contents.<br>
+An other possibility to supperpose different contributions with separated colors is to use the <a href="#mozTocId406394">colormap</a> method below.<br>
 <h5><a class="mozTocH5" name="mozTocId725793"></a>Mapping an object
 onto a surface (CData)</h5>
 When a surface has been already plotted, either from the Matlab
@@ -235,11 +237,15 @@ colormaps can be specified in the list of arguments. When ommitted, a
 set of predefined colormaps is chosen for each object.<br>
 <pre style="margin-left: 40px;"><a href="images/iData_colormap.png"><img alt="iData/colormap with shifted option" title="iData/colormap with shifted option" src="images/iData_colormap.png" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a></pre>
 
-This plotting method is particularly pretty looking when using the <span style="color: rgb(204, 51, 204);">'shifted'</span> option, which then separate objects one from the other so that they can be well identified on the figure.<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(51, 102, 255);">ifitpath</span> <span style="color: rgb(204, 51, 204);">'Data/Ag_3_a.edf'</span> ]);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">iData</span>(peaks);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">colormap</span>(a/10000,<span style="color: rgb(255, 0, 0);">1-pink</span>,b,<span style="color: rgb(255, 0, 0);">jet</span>,<span style="color: rgb(204, 51, 204);">'shifted transparent interp'</span>);<br></pre>
-The first object is set to scale, and plotted with the (1-pink) color
-set, which enhanced low signals (blue-grey style). The second object is
-shown with the jet color set (blue to red).<br>
+This plotting method is particularly pretty looking when using the <span style="color: rgb(204, 51, 204);">'shifted'</span>
+option, which then separate objects one from the other so that they can
+be well identified on the figure. Choosing colormaps which are well
+separated in color scales allow to visualize different contributions,
+just like the <a href="#/usr/pgi/linux86-64/2010/bin:/usr/pgi/linux86-64/2010/mpi/mvapich/bin">image</a> plotting method.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(51, 102, 255);">ifitpath</span> <span style="color: rgb(204, 51, 204);">'Data/Ag_3_a.edf'</span> ]);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">iData</span>(peaks);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">colormap</span>(a/10000,<span style="color: rgb(255, 0, 0);">hsv</span>,b,<span style="color: rgb(255, 0, 0);">spring</span>,<span style="color: rgb(204, 51, 204);">'shifted transparent interp'</span>);<br></pre>
+The first object is set to scale, and plotted with the <span style="font-style: italic;">hsv</span> color
+set. The second object is
+shown with the spring color set. Adding the<span style="color: rgb(204, 51, 204);"> 'log' </span>keyword to the options will use the log of the signal for the color scale, in order to enhance low signals.<br>
 
 <h5><a class="mozTocH4" name="mozTocId676798"></a>Contextual menu</h5>
 It is possible, by
@@ -579,7 +585,7 @@ axis handle arguments.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData plotting - </span><span style="font-style: italic;">
-$Date: 2012-03-01 22:35:48 $ $Revision: 1.21 $
+$Date: 2012-03-05 10:02:33 $ $Revision: 1.22 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit
