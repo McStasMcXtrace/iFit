@@ -1,6 +1,9 @@
 function outarray = iData(varargin)
 % d = iData(a, ...) : iData class object constructor
 %
+% The iData objects are the containers where to import your data sets. It is then
+% possible to Load, Plot, apply Math operators, Fit, and Save.
+%
 % Creates an iData object which contains data along with additional information.
 %   An iData object may store any Data, and define its Signal, Error, Monitor, 
 %     and Axes as aliases refering to e.g. parts of the Data.
@@ -18,13 +21,16 @@ function outarray = iData(varargin)
 %
 % When used with file names, compressed files may be used, as well as URLs and internal
 %   anchor reference using the '#' character, such as in 'http://path/file.zip#Data'.
-% Refer to the iData/load command for more information.
+%
+% Type <a href="matlab:helpwin iData/doc">doc(iData)</a> to access the iFit/iData Documentation.
+% Refer to <a href="matlab:helpwin iData/load">iData/load</a> for more information about loading data sets.
+% iData is part of iFit http://ifit.mccode.org 
 %
 % examples:
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.38 $
+% Version: $Revision: 1.39 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
