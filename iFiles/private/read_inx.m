@@ -22,7 +22,7 @@
 %
 %  Written by:  JO ~ 2003 for use with plotdata
 %  Changes:     JO 2004-2005 for use as a standalone routine
-%  Version:     $Revision: 1.3 $
+%  Version:     $Revision: 1.4 $
 %--------------------------------------------------------------------------
 function s = read_inx(filename,varargin)
 
@@ -44,6 +44,9 @@ while (1)
    Dummy      = fgetl(FID);
    header     = Dummy;
    Dummy      = str2num(Dummy);
+   if isempty(Dummy)
+     error([mfilename ': ERROR: File ',filename,' is probably not an INX data file.']);
+   end
    Npoints    = Dummy(length(Dummy));
    Dummy      = fgetl(FID);
    header     = strvcat(header,Dummy);
