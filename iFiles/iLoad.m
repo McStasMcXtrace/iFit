@@ -46,7 +46,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.60 $
+% Version: $Revision: 1.61 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -374,8 +374,12 @@ function [data, loader] = iLoad_import(filename, loader, varargin)
     loaders_count=0;
     for index=1:length(formats)
       this_loader = formats{index};
-      if ~isempty(strfind(this_loader.name, loader)) || ~isempty(strfind(this_loader.method, loader)) || ~isempty(strfind(this_loader.extension, loader))
-        loaders_count = loaders_count+1;
+      i1 = strfind(this_loader.name, loader);   if isempty(i1), i1=0; end
+      i2 = strfind(this_loader.method, loader); if isempty(i2), i2=0; end
+      i3 = strfind(this_loader.extension, loader); if iscell(i3), i3 = ~cellfun('isempty', i3); end
+      if all(isempty(i3)), i3=0; end
+      if i1 || i2 || any(i3)
+        loaders_count          = loaders_count+1;
         loaders{loaders_count} = this_loader;
       end
     end
@@ -703,7 +707,7 @@ function config = iLoad_config_load
     { 'dlmread', 'dlm', 'Numerical single block',''}, ...
     { 'xmlread', 'xml', 'XML',''}, ...
     { 'looktxt', '',    'Data (text format with fastest import method)',    ...
-        '--headers --binary --fast --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metadata=x_label --metadata=y_label', ...
+        '--headers --binary --fast --catenate --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metadata=x_label --metadata=y_label', ...
           '',{'load_xyen','load_vitess_2d'}}, ...
     { 'looktxt', '',    'Data (text format with fast import method)',       ...
         '--headers --binary --comment=NULL --silent','','load_xyen'}, ...

@@ -114,6 +114,12 @@ else
     [tmp, count] = fread(fid, 512, 'char');
     header = sprintf('%c', tmp);
 end
+% check if this an EDF file
+if isempty(strfind(header,'DataType')) || isempty(strfind(header,'ByteOrder')) ...
+|| isempty(strfind(header, 'Size')) || isempty(strfind(header, 'Dim_1'))
+  error([ mfilename ': ' f ' is probably not an EDF file.' ])
+end
+
 while ~strcmp(header(length(header)-length(closing)+1:length(header)), closing)
     if 0 % Octave 2.1.55 produces warning of "implicit conversion from matrix to string"
     	header = [header, fscanf(fid, '%c', hsize)];
