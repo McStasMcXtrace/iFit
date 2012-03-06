@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -27,7 +27,7 @@ if numel(s_in) > 1
   eval([ iname ' = s_in;' ])
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
 else
-  fprintf(1,'%s = iData %iD object of size [%s]:\n',iname, ndims(s_in), num2str(size(s_in)));
+  fprintf(1,'%s = <a href="matlab:helpwin iData">iData</a> %iD object of size [%s]:\n',iname, ndims(s_in), num2str(size(s_in)));
   m = get(s_in, 'Monitor'); m=m(:);
   s=struct(s_in);
   s=rmfield(s,'Alias');
