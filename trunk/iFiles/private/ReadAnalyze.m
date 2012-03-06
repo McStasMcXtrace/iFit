@@ -80,7 +80,11 @@ end;
 %
 FileName=sprintf('%s.hdr',name);
 %
-pid=fopen(FileName,'r','ieee-be');
+[pid, message]=fopen(FileName,'r','ieee-be');
+if pid == -1
+  disp(message)
+  error([ mfilename ': ' FileName ' is probably not an Analyze IMG/HDR file.' ])
+end
 %
 % Uncertainty if filesize is written as a int16 or int32
 %

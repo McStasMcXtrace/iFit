@@ -24,7 +24,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.37 $
+% Version: $Revision: 1.38 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -367,6 +367,9 @@ if isempty(in.Data)
 % if signal is invalid, set signal to biggest field link
 elseif isempty(getalias(in, 'Signal'))
   [fields, types, dims] = findfield(in);
+  % remove fields that we do not want as Signal
+  index=[ find(strcmp('Date', fields)) find(strcmp('ModificationDate', fields)) ] ;
+  types(index) = {'char'};
   index=find(strcmp('double', types));
   index=[ index ; find(strcmp('single',  types)) ];
   index=[ index ; find(strcmp('logical', types)) ];
@@ -376,6 +379,7 @@ elseif isempty(getalias(in, 'Signal'))
   else
     fields = fields(index); % get all field names containing double data
     dims = dims(index);
+    fields_all = fields; dims_all=dims;
     % now we get the largest dim, and reduce the search list
     index = find(dims == max(dims));
     dims  = dims(index);
@@ -391,22 +395,37 @@ elseif isempty(getalias(in, 'Signal'))
         elseif any(x < 0) && any(x> 0)
           dims  = dims(index);
           fields= fields{index};
-          break;
+          break;  % this usually would select the first match
         end
       end
     end   
-    % in case we still have more than one choice, get the last one
+    % in case we still have more than one choice, get the first one
     if length(dims) > 1 || iscell(fields)
-      dims=dims(end);
-      fields=fields{end};
+      dims=dims(1);
+      fields=fields{1};
     end
+
     % index: is the field and dimension index to assign the Signal
     if dims > 0
       disp([ 'iData: Setting Signal="' fields '" with length ' num2str(dims) ' in object ' in.Tag ' "' in.Title '".' ]);
       in = setalias(in,'Signal', fields);
     end
+    % look for vectors that may have the proper length as axes
+    for index=1:ndims(in)
+      if isempty(getaxis(in, num2str(index)))
+        % search for a vector of length size(in, index)
+        ax = find(dims_all == size(in, index)); if length(ax) > 1; ax=ax(1); end
+        if ~isempty(ax) && length(unique(get(in, fields_all{ax}))) == dims_all(ax)
+          in = setaxis(in, index, [ 'Axis_' num2str(index) ], fields_all{ax});
+          dims(ax) = 0;
+        else
+          break; % all previous axes must be defined. If one misses, we end the search
+        end
+      end
+    end 
   end
 end
+
 % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes
 if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
             && isvector(getaxis(in, 1)) && isvector(getaxis(in, 2)) ...

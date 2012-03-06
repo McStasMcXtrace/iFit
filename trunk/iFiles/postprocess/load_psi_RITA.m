@@ -3,7 +3,7 @@ function a=load_psi_RITA(a0)
 %
 % Returns an iData style dataset from a PSI RITA2 file (HDF5)
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -71,7 +71,7 @@ b.windowcounts = windowcounts(1:9, :);
 setalias(b, 'Signal', 'windowcounts');
 % extend the monitor so that it also spans along the blades
 m=double(a.Data.entry1.control.data)*ones(1,9);
-set(b, 'Monitor', m)
+set(b, 'Monitor', m);
 b{1}=index_axis;  % scan axis
 b{2}=transpose(ones(size(m,1),1)*(1:9)); % blade/window axis
 label(b, 2, 'Window index');

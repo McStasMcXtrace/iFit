@@ -18,7 +18,7 @@ function c = iData_private_binary(a, b, op, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.29 $
+% Version: $Revision: 1.30 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
@@ -61,8 +61,13 @@ elseif isa(b, 'iData') & numel(b) > 1
   return
 end
 
-if     isempty(a), c=b; return;
-elseif isempty(b), c=a; return; end
+if (isempty(a) || isempty(b))
+  if any(strcmp(op, {'plus','minus','combine'}))
+    if     isempty(a), c=b; return;
+    elseif isempty(b), c=a; return; end
+  else c = []; return; 
+  end
+end
 
 iData_private_warning('enter',[ mfilename ' ' op ]);
 
@@ -76,8 +81,8 @@ end
 if (~isscalar(a) && isvector(a) && size(a,1)==1 && ~isscalar(b) && ~isvector(b)) || ...
    (~isscalar(b) && isvector(b) && size(b,1)==1 && ~isscalar(a) && ~isvector(a))
   transpose_ab = 1;
-  a = transpose(a);
-  b = transpose(b);
+  a = permute(a,[ 2 1 3:length(size(a)) ]);
+  b = permute(b,[ 2 1 3:length(size(b)) ]);
 else
   transpose_ab = 0;
 end
@@ -226,9 +231,9 @@ end
 
 % handle special case of operation with transposed 1D data set and an other one
 if transpose_ab==1
-  s3 = transpose(s3);
-  e3 = transpose(e3);
-  m3 = transpose(m3);
+  s3 = permute(s3,[ 2 1 3:length(size(s3)) ]);
+  e3 = permute(e3,[ 2 1 3:length(size(e3)) ]);
+  m3 = permute(m3,[ 2 1 3:length(size(m3)) ]);
 end
 
 % set Signal label
