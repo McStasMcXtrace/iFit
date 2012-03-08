@@ -4,7 +4,7 @@ function b = iData_private_newtag(a)
 persistent id
 
 b = a;
-b.Date = datevec(now);  % new object
+b.Date = clock;  % new object
 
 % create new tag
 % if ~exist('id'),  id=0; end
@@ -17,8 +17,8 @@ else
   id=id+1;
 end
 
-b.Tag      = [ 'id' sprintf('%0.f', id) ];;
+b.Tag      = [ 'id' sprintf('%0.f', id) ];
       
-if nargout == 0 & length(inputname(1))
+if nargout == 0 && ~isempty(inputname(1))
   assignin('caller',inputname(1),b);
 end

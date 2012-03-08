@@ -40,8 +40,8 @@ function out = load(a, varargin)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.35 $
-% See also: iLoad, save, iData/saveas, iData_load_ini
+% Version: $Revision: 1.36 $
+% See also: iLoad, save, iData/saveas, iFiles
 
 % calls private/iLoad
 % iLoad returns nearly an iData structure.
@@ -149,8 +149,8 @@ function s=load_check_struct(data, loaders, filename)
     [pathname, filename, ext] = fileparts(filename);
     s.Title  = [ 'File ' filename ext ];
   end
-  if isfield(data, 'Date'),   s.Date = data.Date; 
-  else                        s.Date   = datevec(now); end
+  if isfield(data, 'Date'),   s.Date   = data.Date; 
+  else                        s.Date   = clock; end
   if isfield(data, 'Label'),  s.Label = data.Label; end
   if ~isfield(s, 'Format'),
     s.Format  = loaders{1}.name; 
