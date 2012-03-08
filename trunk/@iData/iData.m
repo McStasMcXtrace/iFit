@@ -30,7 +30,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.40 $
+% Version: $Revision: 1.41 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -56,7 +56,7 @@ if nargin == 0  % create empty object
   a.User         = user;        % User ID
   a.Date         = clock;
   a.ModificationDate  = a.Date; % modification Date
-  a.Command      = cellstr('iData');          % Matlab commands/history of the object
+  a.Command      = '';          % Matlab commands/history of the object
   a.UserData     = '';          % user data storage area
   a.Label        = '';          % user label (color)
   a.DisplayName  = '';          % user name for handling data set as a variable
@@ -76,7 +76,7 @@ if nargin == 0  % create empty object
   % create the object
   a=iData_private_newtag(a); 
   a = class(a, 'iData');
-  a.Command      = cellstr([ 'iData %% create ' a.Tag ]);
+  a.Command      = { [ 'iData %% create ' a.Tag ] };
   a.Creator      = version(a);     % Creator (program) name
   outarray = [ outarray a ];
   return
