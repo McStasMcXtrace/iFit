@@ -1,7 +1,5 @@
 function config = iLoad_ini
-% config = iLoad_ini
-%
-% User definitions of specific import formats to be used by iLoad
+% config = iLoad_ini User definitions of specific import formats to be used by iLoad
 %
 % Each format is specified as a structure with the following fields
 %   method:   function name to use, called as method(filename, options...)

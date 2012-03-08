@@ -1,5 +1,5 @@
 function y=fxcorr(x, h, shape)
-%FCONV Correlation
+%FXCORR Correlation
 %   y = FXCORR(x, h) correlates x and h.
 %   It works with x and h being of any dimensionality. When only one argument is given, 
 %     the auto-correlation is computed.
@@ -28,7 +28,7 @@ function y=fxcorr(x, h, shape)
 %
 %      See also FCONV, CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 if nargin == 0, return; end
 if nargin == 1, h = x; end
 if nargin < 3, shape = ''; end

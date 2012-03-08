@@ -1,7 +1,7 @@
 function d = ifitpath
-% ifitpath: iFit library location
+% ifitpath iFit library location
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 
 d = [ fileparts(which('iData/version')) filesep '..' filesep ];
 

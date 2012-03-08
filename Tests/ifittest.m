@@ -1,5 +1,5 @@
 function ratio=ifittest(tests_list)
-% ifittest(test) : performs a self-test procedure of the iFit/iData package, using
+% success=ifittest(test) : performs a self-test procedure of the iFit/iData package, using
 %   the examples from the Documentation.
 %   A report of all test is displayed at the end, with a list of failures.
 %   Current test categories are: Fit iData iFiles Math Plot Save
@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.23 $
+% Version: $Revision: 1.24 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end

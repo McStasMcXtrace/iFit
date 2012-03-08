@@ -1,7 +1,7 @@
 function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % [OPTIMUM,MONITORS,EXITFLAG,OUTPUT] = mcstas(INSTRUMENT, PARAMETERS, OPTIONS) : run and optimize a McStas simulation
 %
-% A wrapper to the McStas package to either execute a simulation, or optimize a
+% A wrapper to the <a href="http://www.mcstas.org">McStas</a> package to either execute a simulation, or optimize a
 %   set of parameters. When given as strings, the PARAMETERS and OPTIONS are 
 %   searched for name=value pairs, separated by the ';' character.
 %
@@ -101,7 +101,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.29 $
+% Version: $Revision: 1.30 $
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
