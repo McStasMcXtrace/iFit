@@ -11,7 +11,7 @@ b.Date = clock;  % new object
 if isempty(id),   id=0; end
 if id > 1e6, id=0; end
 if id <=0, 
-  id = clock;
+  id = b.Date;
   id = fix(id(6)*1e4); 
 else 
   id=id+1;
