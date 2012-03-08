@@ -42,11 +42,11 @@ function [data, format] = iLoad(filename, loader, varargin)
 % example: iLoad; iLoad('file'); iLoad('http://path/name'); iLoad('file.zip')
 %          iLoad('file#anchor');
 %
-% See also: importdata, load, iLoad_ini
+% See also: importdata, load, iLoad_ini, iFiles
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.61 $
+% Version: $Revision: 1.62 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -503,7 +503,7 @@ function data = iLoad_loader_check(file, data, loader)
   end
   
   if ~isfield(data, 'Date')
-    if strcmp(loader, 'variable') data.Date   = datevec(now); 
+    if strcmp(loader, 'variable') data.Date   = clock; 
     else d=dir(file); data.Date=d.date; end
   end
 

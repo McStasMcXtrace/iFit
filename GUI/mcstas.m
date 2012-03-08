@@ -101,7 +101,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -115,6 +115,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   end
   
 % PARSE INPUT ARGUMENTS ========================================================
+
+  pars=[]; fval= []; exitflag=-1; output=[];
   
   if nargin > 2 && ischar(options)
     options= str2struct(options);
@@ -563,7 +565,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
                   set(h, 'Position', tmp);
                 end
                 % raise existing figure (or keep it hidden) and add parameters on top
-                if gcf ~= h, figure(h); end
+                if gcf ~= h, set(0, 'CurrentFigure', h); end
                 if isvector(this_criteria)
                   plot(this, this_criteria)
                   xlabel([ 'Scan step ' options.variable_names{index} ]); ylabel('Integral');
@@ -683,7 +685,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     end
 
     % raise existing figure (or keep it hidden) and add parameters on top
-    if gcf ~= h, figure(h); end
+    if gcf ~= h, set(0, 'CurrentFigure', h); end
     hold off
     if length(sim) <= 4
       subplot(sim,'view2 axis tight');

@@ -95,7 +95,7 @@ function stop = fminplot(pars, optimValues, state)
   
   try
     % raise existing figure (or keep it hidden)
-    if gcf ~= h, figure(h); end
+    if gcf ~= h, set(0, 'CurrentFigure', h); end
   catch
     stop=true;  % figure is not valid: was closed
     return;
