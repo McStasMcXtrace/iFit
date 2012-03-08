@@ -1,5 +1,5 @@
 function str=class2str(this, data, options)
-% class2str(this,data) Create a string [ 'this = data;' ]
+% str=class2str(this,data) Create a string [ 'this = data;' ]
 %   This function creates a string containing Matlab code describing a variable.
 %   class2str(this, data, 'flat') creates a flat text with commented 
 %     data blocks, which is not an m-file, but rather a Linux-style config file.
@@ -18,7 +18,7 @@ function str=class2str(this, data, options)
 % See also: mat2str, num2str, eval, sprintf
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.8 $
+% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.9 $
 
 if nargin == 1
   data = this;
