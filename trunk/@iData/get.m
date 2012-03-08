@@ -13,7 +13,7 @@ function [varargout] = get(this,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iData) or get(iData,'Title')
 %
-% Version: $Revision: 1.31 $
+% Version: $Revision: 1.32 $
 % See also iData, iData/set, iData/getalias, iData/getaxis, iData/findobj
 
 % EF 27/07/00 creation
@@ -49,7 +49,11 @@ for index=1:length(varargin)
   % test if this is a unique property, or a composed one
   if isvarname(property)  % extract iData field/alias
     if any(strcmp(property, fieldnames(iData)))
-      varargout{1} = this.(property);               % direct static field
+      b = this.(property);               % direct static field
+      if isnumeric(b) && any(strcmp(property, {'Date','ModificationDate'}))
+        b = datestr(b);
+      end
+      varargout{1} = b;
     else
       s = struct('type','.','subs', property);      % MAIN TIME SPENT
       varargout{1} = subsref(this, s);              % calls subsref directly (single subsref level)
@@ -58,7 +62,7 @@ for index=1:length(varargin)
     try
       varargout{1} = eval([ 'this.' property ]);  % calls subsref by eval (recursive subsref levels)
     catch
-      varargout{1} = eval([ property ]);          % this is a full expression: evaluate it...
+      varargout{1} = eval(property);              % this is a full expression: evaluate it...
     end
   end
 end

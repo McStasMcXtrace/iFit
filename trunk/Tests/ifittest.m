@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -279,7 +279,7 @@ case 'iFiles_1'
   result = 'OK  load; iLoad(''config'')';
 case 'iFiles_2'
   a = iData([ ifitpath 'Data' ]);
-  if length(find(isempty(a))) > 2
+  if length(find(isempty(a))) > 3
     result = [ 'FAILED ' num2str(length(find(isempty(a)))-1) '/' num2str(length(a)) ];
   else
     result = 'OK  load';

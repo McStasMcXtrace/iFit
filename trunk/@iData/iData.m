@@ -30,7 +30,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.39 $
+% Version: $Revision: 1.40 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -54,7 +54,7 @@ if nargin == 0  % create empty object
   if isempty(user), user = getenv('HOME'); end
   if isempty(user), user = getenv('TEMP'); end % gives User name on Windows systems
   a.User         = user;        % User ID
-  a.Date         = datevec(now);
+  a.Date         = clock;
   a.ModificationDate  = a.Date; % modification Date
   a.Command      = cellstr('iData');          % Matlab commands/history of the object
   a.UserData     = '';          % user data storage area
@@ -327,38 +327,38 @@ end
 if iscell(in), in = in{1}; end
 
 % update ModifDate
-in.ModificationDate = datevec(now);
+in.ModificationDate = clock;
 % check type of fields
 if iscellstr(in.Title)
   t = strcat(in.Title,';');
   in.Title=[ t{:} ];
 end
 if ~ischar(in.Title) 
-  iData_private_warning(mfilename,['Title must be a char or cellstr in iData object ' in.Tag ' "' in.Title ]);
+  iData_private_warning(mfilename,['Title must be a char or cellstr in iData object ' in.Tag ' "' in.Title '. Re-setting to empty.']);
   in.Title = '';
 end
 if ~ischar(in.Tag)
-  iData_private_warning(mfilename,['Tag must be a char in iData object ' in.Tag ' "' in.Title ]);
+  iData_private_warning(mfilename,['Tag must be a char in iData object ' in.Tag ' "' in.Title '. Re-setting to a new Tad id.' ]);
   in = iData_private_newtag(in);
 end
 if ~ischar(in.Source)
-  iData_private_warning(mfilename,['Source must be a char in iData object ' in.Tag ' "' in.Title ]);
-  in.Source = '';
+  iData_private_warning(mfilename,['Source must be a char in iData object ' in.Tag ' "' in.Title '. Re-setting to pwd.' ]);
+  in.Source = pwd;
 end
 if ~ischar(in.Command) & ~iscellstr(in.Command)
-  iData_private_warning(mfilename,['Command must be a char or cellstr in iData object ' in.Tag ' "' in.Title ]);
+  iData_private_warning(mfilename,['Command must be a char or cellstr in iData object ' in.Tag ' "' in.Title '. Re-setting to empty.' ]);
   in.Command = cellstr('');
 end
 if ~ischar(in.Date) && ~isnumeric(in.Date)
-  iData_private_warning(mfilename,['Date must be a char/vector in iData object ' in.Tag ' "' in.Title ]);
-  in.Date = datevec(now);
+  iData_private_warning(mfilename,['Date must be a char/vector in iData object ' in.Tag ' "' in.Title '. Re-setting to "now".' ]);
+  in.Date = clock;
 end
 if ~ischar(in.Creator)
-  iData_private_warning(mfilename,['Creator must be a char in iData object ' in.Tag ' "' in.Title ]);
+  iData_private_warning(mfilename,['Creator must be a char in iData object ' in.Tag ' "' in.Title '. Re-setting to "iFit/iData".' ]);
   in.Creator = version(in);
 end
 if ~ischar(in.User)
-  iData_private_warning(mfilename,['User must be a char in iData object ' in.Tag ' "' in.Title ]);
+  iData_private_warning(mfilename,['User must be a char in iData object ' in.Tag ' "' in.Title '. Re-setting to Matlab User.']);
   in.User = 'Matlab User';
 end
 % check if object.Data is numeric: make it a structure so that it is better organized
@@ -376,6 +376,7 @@ elseif isempty(getalias(in, 'Signal'))
   % remove fields that we do not want as Signal
   index=[ find(strcmp('Date', fields)) find(strcmp('ModificationDate', fields)) ] ;
   types(index) = {'char'};
+  % now get the numeric ones
   index=find(strcmp('double', types));
   index=[ index ; find(strcmp('single',  types)) ];
   index=[ index ; find(strcmp('logical', types)) ];
