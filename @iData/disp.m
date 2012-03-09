@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -31,6 +31,11 @@ else
   m = get(s_in, 'Monitor'); m=m(:);
   s=struct(s_in);
   s=rmfield(s,'Alias');
+  T   = s.Title; if ~ischar(T), T=char(T); end
+  if ~isvector(T), T=transpose(T); T=T(:)'; end
+  T   = regexprep(T,'\s+',' '); % remove duplicated spaces
+  if length(T) > 70, T=[ T(1:70) '...' ]; end
+  s.Title=T;
   if isnumeric(s.Date), s.Date=datestr(s.Date); end
   if isnumeric(s.ModificationDate), s.ModificationDate=datestr(s.ModificationDate); end
   disp(s)

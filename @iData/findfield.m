@@ -17,7 +17,7 @@ function [match, types, dims] = findfield(s, field, option)
 %         nelements: total number of elements in iData fields (double)
 % ex:     findfield(iData) or findfield(iData,'Title') or findfield(s,'Title','exact case')
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/set, iData/get, iData/findobj, iData/findstr
 
 % EF 23/09/07 iData implementation
@@ -41,8 +41,11 @@ if numel(s) > 1
   end
   return
 end
-
-[match, types, dims] = iData_getfields(struct(s), '');
+struct_s=struct(s);
+struct_s=rmfield(struct_s,'Alias');
+struct_s=rmfield(struct_s,'Command');
+struct_s=rmfield(struct_s,'Tag');
+[match, types, dims] = iData_getfields(struct_s, '');
 
 if ~isempty(field)
   if isempty(strfind(option, 'case'))

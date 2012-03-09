@@ -7,7 +7,7 @@ function c = char(s)
 % input:  s: object or array (iData) 
 % output: c: iData identification (char)
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 %
@@ -17,7 +17,9 @@ function c = char(s)
 c=[];
 for index=1:numel(s)
   t = s(index);
-  T = t.Title;  if iscell(T), T = T{1}; end
+  T = t.Title;  if ~ischar(T), T=char(T); end
+  if size(T, 1)~=1, T=transpose(T); T=T(:)'; end
+  T   = regexprep(T,'\s+',' '); % remove duplicated spaces
   cmd = t.Command{end};
   if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
   c = strvcat(c, [ 'iData ' cmd ' [' num2str(size(t)) '] "' strtrim(T) '" <' t.Source '>' ]); 
