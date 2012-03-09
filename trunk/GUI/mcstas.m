@@ -101,7 +101,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.31 $
+% Version: $Revision: 1.32 $
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -607,9 +607,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   
   % EXECUTE here: simulate, optimize and display modes
-  system_wait(cmd, options);
+  status = system_wait(cmd, options);
   
-  if any(strcmpi(options.mode,{'display','trace'}))
+  if any(strcmpi(options.mode,{'display','trace'})) && status == 0
     % wait for figure to be ready...
     t=clock;
     disp([ mfilename ': Waiting for the instrument ' options.instrument ' view to be created as ' fig ])
@@ -629,7 +629,11 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   
   if nargout ==0, return; end
-    
+  if status
+    disp([ mfilename ': ERROR: Failed to execute ' cmd ]);
+    return
+  end
+  
   if isfield(options,'ncount') && options.ncount == 0
     return
   end
@@ -692,6 +696,12 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     else
       subplot(sim,'view2 axis tight hide_axes'); % use compact layout for many monitors
     end
+    % add quick overview of shown monitors
+    sim_abstract = 'Monitors:';
+    for index=1:numel(sim)
+      sim_abstract=[ sim_abstract sprintf('\n') '* ' sim(index).Label ...
+        sprintf(' [I I_err N]=[%g %g %g] %s', sim(index).values, sim(index).statistics) ];
+    end
     ud.Parameters = get(sim(1),'Parameters');
     ud.Execute=cmd;
     ud.pars   =pars;
@@ -699,20 +709,23 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     xl=xlim; yl=ylim;
     f = fieldnames(ud.Parameters);
     c = struct2cell(ud.Parameters);
-    max_fields=20; % at most 20 parameters displayed, else this is too much to read
-    if length(f) > max_fields, f=f(1:max_fields); c=c(1:max_fields); dots='...'; 
+    max_fields=10; % at most as many parameters displayed, else this is too much to read
+    if length(f) > max_fields, 
+      dots=sprintf(' ... [%i other parameters]', length(f)-max_fields);
+      f=f(1:max_fields); c=c(1:max_fields); 
     else dots = ''; end
-    s = [ 'Instrument ' options.instrument sprintf('\n') class2str('p',cell2struct(c(:),f(:),1),'no comment') dots ];
+    s = [ 'Instrument ' options.instrument sprintf('\n%s\n',cmd) sim_abstract sprintf('\nParameters:\n') class2str('  p',cell2struct(c(:),f(:),1),'no comment') dots ];
     ud.Information = cellstr(s);
     set(h, 'UserData', ud);
     
     t = uicontrol('String','Info','Callback',[ 'helpdlg(getfield(get(gcbf,''UserData''),''Information''),''' options.instrument ' parameters'');' ],'ToolTip', s);
+    set(h, 'ToolBar','figure','menubar','figure');
     hold off
   end
   
   % evaluate the criteria specifications (monitors, expressions)
-  criteria = zeros(length(sim),1);
-  for index=1:length(sim)
+  criteria = zeros(numel(sim),1);
+  for index=1:numel(sim)
     this = sim(index);
     if isfield(sim(index), 'CriteriaExpression')
       R = getalias(sim(index), 'CriteriaExpression');
