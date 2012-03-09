@@ -91,6 +91,7 @@ function stop = fminplot(pars, optimValues, state)
     % add a 'STOP' button: push-button
     d = uicontrol(h, 'String','START','Callback','fminplot([],[],''abort'');', ...
       'Tag','fminplot:stop','ToolTip','Click here to abort optimization');
+    set(h, 'ToolBar','figure','menubar','figure');
   end
   
   try
