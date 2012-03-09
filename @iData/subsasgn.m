@@ -9,7 +9,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -189,6 +189,11 @@ else
         fieldname = 'Command';
       elseif strcmpi(fieldname, 'axes')
         fieldname = 'Axis';
+      elseif strcmpi(fieldname, 'title')
+        T   = val; if ~ischar(T), T=char(T); end
+        if size(T,1)~=1, T=transpose(T); T=T(:)'; end
+        T   = regexprep(T,'\s+',' '); % remove duplicated spaces
+        val = T;
       end
       if any(strcmpi(fieldname, {'alias','axis'}))
         iData_private_error(mfilename, [ 'can not redefine ' fieldname ' in object ' inputname(1) ' ' b.Tag ]);
