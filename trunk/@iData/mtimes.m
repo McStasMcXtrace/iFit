@@ -10,19 +10,33 @@ function c = mtimes(a,b)
 % output: c: object or array (iData)
 % ex:     c=a*2;
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/power
 
 if nargin == 1,
   b = a;
 end
+c=[];
 
-if isa(a, 'iData') && numel(a) > 1, a=a(1); end
-if isa(b, 'iData') && numel(b) > 1, b=b(end); end
+% handle handle array as input
+if numel(b) > 1
+  for index=1:length(b)
+    c = [ c feval(mfilename, a, b(index)) ];
+  end
+  return
+elseif numel(a) > 1
+  for index=1:length(a)
+    c = [ c feval(mfilename, a(index), b) ];
+  end
+  return
+end
 
 if isscalar(a) | isscalar(b)
   c = iData_private_binary(a, b, 'times');
 elseif ndims(a) == 2 & ndims(b) == 2
+  if isa(a, 'iData') && numel(a) > 1, a=a(1); end
+  if isa(b, 'iData') && numel(b) > 1, b=b(end); end
+  
   if size(a,2) ~= size(b,1)
     iData_private_error(mfilename,[ 'the number of columns of a (' num2str(size(a,2)) ') must equal the number of rows of b (' num2str(size(b,1)) ').' ]);
   end

@@ -12,7 +12,7 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision: 1.21 $
 % See also iData, iData/plot
 
 % EF 23/11/07 iData implementation
@@ -64,11 +64,7 @@ for index=1:numel(a)
       % compact layout
       method =[ method ' hide_axes' ]; 
     end
-    if (strfind(method,'hide_ax'))
-      subplot(m,n,index,'v6');
-    else
-      subplot(m,n,index);
-    end
+    subplot(m,n,index);
      
     this_h = plot(a(index), method);
     

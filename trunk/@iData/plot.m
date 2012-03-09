@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.88 $
+% Version: $Revision: 1.89 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -441,7 +441,8 @@ if (strfind(method,'colorbar'))
 end
 
 % add a UIcontextMenu so that right-click gives info about the iData plot
-T   = a.Title; if iscell(T), T=T{1}; end
+T   = a.Title; if ~ischar(T), T=char(T); end
+if ~isvector(T), T=transpose(T); T=T(:)'; end
 T   = regexprep(T,'\s+',' '); % remove duplicated spaces
 cmd = char(a.Command{end});
 S   = a.Source;
@@ -474,6 +475,7 @@ elseif ~isempty(a.DisplayName)
   d = [ d sprintf('%s', g) ];
 end
 
+T_char = char(T);
 titl ={ T ; [ a.Tag ' <' S '>' ]};
 if length(T) > 23, T=[ T(1:20) '...' ]; end
 if length(S)+length(d) < 30,
@@ -519,7 +521,7 @@ uimenu(uicm, 'Label', [ 'User: ' a.User ]);
 
 % make up title string and Properties dialog content
 properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
-             [ 'Title: "' T '" ' d ], ...
+             [ 'Title: "' T_char '" ' d ], ...
              [ 'Source: ' a.Source ], ...
              [ 'Last command: ' cmd ]};
 
@@ -645,7 +647,7 @@ if (strfind(method,'hide_ax'))
   % set(gca,'visible','off'); 
   % set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[])
   xlabel(' '); ylabel(' '); zlabel(' ');
-  title(a.Title,'interpreter','none');
+  title(T,'interpreter','none');
 else
   if ~isempty(xlab), xlabel(xlab,'interpreter','none'); end
   if ~isempty(ylab), ylabel(ylab,'interpreter','none'); end
@@ -659,7 +661,7 @@ else
   if ~isempty(d)
     titl = [ titl ' ''' d '''' ]; 
   end
-  title(titl,'interpreter','none');
+  title(textwrap(cellstr(T_char),80),'interpreter','none');
 end
 
 if ih == 1, hold on; else hold off; end

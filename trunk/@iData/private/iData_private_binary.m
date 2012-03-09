@@ -18,13 +18,14 @@ function c = iData_private_binary(a, b, op, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
 
 % handle input iData arrays
-if isa(a, 'iData') & numel(a) > 1
+
+if (isa(a, 'iData') & numel(a) > 1)
   c = [];
   if isa(b, 'iData') & numel(b) == numel(a)
   	% add element to element
