@@ -5,7 +5,7 @@ function a=load_mcstas_1d(a)
 % as well as simple XYE files
 % Some labels are also searched.
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % inline: load_mcstas_param
@@ -70,6 +70,7 @@ if isfield(d,'Headers') && isfield(d.Headers,'MetaData')
     creator(1:length('# Creator: '))='';
     a.Creator=creator; 
   end
+  
 end
 
 % treat specific data formats 1D, 2D, List for McStas ==========================
@@ -115,12 +116,33 @@ elseif ~isempty(strfind(a.Format,'McStas list monitor'))
       setaxis(a, index_axes, columns{index});
     end
   end
+  if ~isfield(a, 'N'), setalias(a, 'N', length(a{0})); end
 end
+
+% build the title: 
+%   sum(I) sqrt(sum(I_err^2)) sum(N)
+if isfield(a, 'E'), e=a.E; else e=0; end
+if isfield(a, 'N'), n=a.N; else n=0; end
+s = a{0}; 
+values = [ sum(s(:)), sqrt(sum(e(:).^2)), sum(n(:)) ];
+t_sum = sprintf(' I=%g I_err=%g N=%g', values);
+%   X0 dX, Y0 dY ...
+t_XdX = '';
+if ndims(a) == 1; ax='X'; else ax = 'YXZ'; end
+for index=1:ndims(a)
+  [dx,x0]=std(a,index);
+  t_XdX = [t_XdX sprintf(' %c0=%g d%c=%g;', ax(index), x0, ax(index), dx) ];
+end
+a.Title = [ a.Title, t_sum, t_XdX ];
+setalias(a,'statistics',  t_XdX,'Center and Gaussian half width');
+setalias(a,'values',values,'I I_err N');
 
 % get the instrument parameters
 param = load_mcstas_param(a, 'Param');
 a.Data.Parameters = param;
 setalias(a, 'Parameters', 'Data.Parameters', 'Instrument parameters');
+
+% end of loader
 
 % ------------------------------------------------------------------------------
 % build-up a parameter structure which holds all parameters from the simulation
