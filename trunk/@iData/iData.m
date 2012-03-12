@@ -30,7 +30,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.41 $
+% Version: $Revision: 1.42 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -270,6 +270,9 @@ function b=iData_struct2iData(a)
     b.Data = a;
 %  else
 %    disp(['iData: warning: could not import all fields from structure.' ]);
+  elseif isfield(a, 'Headers')
+    b.Data.Headers = a.Headers;
+    b=setalias(b, 'Headers', 'Data.Headers', 'Headers (text)' );
   end
   if isfield(a, 'Format')
     setalias(b, 'Format', a.Format);
@@ -416,15 +419,46 @@ elseif isempty(getalias(in, 'Signal'))
     if dims > 0
       disp([ 'iData: Setting Signal="' fields '" with length ' num2str(dims) ' in object ' in.Tag ' "' in.Title '".' ]);
       in = setalias(in,'Signal', fields);
+      % search if there is a corresponding label (in Headers)
+      lab = '';
+      if isfield(in.Data, 'Headers')
+        fields = fliplr(strtok(fliplr(fields), '.'));
+        if isfield(in.Data.Headers, fields)
+          in = label(in, 0, in.Data.Headers.(fields));
+        end
+      end
     end
     % look for vectors that may have the proper length as axes
+    dims = [];
     for index=1:ndims(in)
       if isempty(getaxis(in, num2str(index)))
         % search for a vector of length size(in, index)
-        ax = find(dims_all == size(in, index)); if length(ax) > 1; ax=ax(1); end
-        if ~isempty(ax) && length(unique(get(in, fields_all{ax}))) == dims_all(ax)
-          in = setaxis(in, index, [ 'Axis_' num2str(index) ], fields_all{ax});
-          dims(ax) = 0;
+        ax = find(dims_all == size(in, index));   % length of dim, or length(dim)+1
+        if isempty(ax), ax = find(dims_all == size(in, index)+1); end
+        if length(ax) > 1; ax=ax(1); end
+        if ~isempty(ax)
+          val = get(in, fields_all{ax});
+          if isvector(val)
+            if length(val) == size(in, index)
+              in = setaxis(in, index, [ 'Axis_' num2str(index) ], fields_all{ax});
+              dims(ax) = 0;
+            elseif length(val) == size(in, index)+1
+              val = (val(1:(end-1)) + val(2:end))/2;
+              in = setaxis(in, index, [ 'Axis_' num2str(index) ], val);
+              dims(ax) = 0;
+            end
+            if dims(ax) == 0  % the axis could be found
+              % search if there is a corresponding label (in Headers)
+              if isfield(in.Data, 'Headers')
+                fields=fliplr(strtok(fliplr(fields_all{ax}), '.'));
+                if isfield(in.Data.Headers, fields)
+                  label(in, index, in.Data.Headers.(fields));
+                end
+              end
+              disp([ 'iData: Setting Axis{' num2str(index) '} ="' fields_all{ax} '" with length ' num2str(length(val)) ' in object ' in.Tag ' "' in.Title '".' ]);
+            end
+          end
+          clear val
         else
           break; % all previous axes must be defined. If one misses, we end the search
         end
@@ -443,6 +477,7 @@ if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
   x2 = getaxis(in, '2');
   setaxis(in, 1, x2);
   setaxis(in, 2, x1);
+  clear x1 x2
   disp([ 'iData: The object has been transposed to match the axes orientation in object ' in.Tag ' "' in.Title '".' ]);
 end
     

@@ -7,7 +7,7 @@ function this = setalias(this,names,links,labels)
 %     interpreted as a link to search in the object or an external file, such
 %     as '#Data' 'Data' (local links), 'file://path' (full file structure)
 %     or 'file://path#Data' (a part of an external file).
-%   The special name 'this' may be used in Aliases to refer the object itself.
+%   The special name 'this' may be used in the Alias link to refer the object itself.
 %   When the link is empty, the alias is removed, so that
 %     setalias(s, alias)       deletes an alias, similarly to rmalias
 %     setalias(s, getalias(s)) deletes all alias definitions.
@@ -25,7 +25,7 @@ function this = setalias(this,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.21 $
+% Version: $Revision: 1.22 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -61,20 +61,9 @@ elseif nargin == 2
   end
 elseif nargin == 3
   labels='';
-  if strcmp(names, 'Signal') && isempty(links)
-      % reset Signal to the default largest numerical field
-      this.Alias.Values{1} = '';
-      this = iData(this);
-  end
 end
 
 if isempty(names), return; end
-names = cellstr(names);
-
-if  ischar(links), links = cellstr(links); end
-if ~iscell(links), links = { links }; end
-
-labels= cellstr(labels);
 
 % handle array of objects
 if numel(this) > 1
@@ -86,6 +75,20 @@ if numel(this) > 1
   end
   return
 end
+
+if strcmp(names, 'Signal') && isempty(links)
+  % reset Signal to the default largest numerical field
+  this.Alias.Values{1} = '';
+  this = iData(this);
+  return
+end
+
+names = cellstr(names);
+
+if  ischar(links), links = cellstr(links); end
+if ~iscell(links), links = { links }; end
+
+labels= cellstr(labels);
 
 to_keep = [ this.Alias.Names(1:3) this.Alias.Values(1:3) this.Alias.Axis ];
 

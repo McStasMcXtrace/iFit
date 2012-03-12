@@ -8,6 +8,7 @@ function this = setaxis(this, rank, alias, value)
 %       The alias name must exist in the object, or it is created and assigned to the axis value.
 %     setaxis(object, rank, value) sets axis value (possibly creates an alias).
 %     setaxis(object)              tests all axes
+%     setaxis(object,'Signal')     sets the Signal to the biggest numerical field
 %   The input iData object is updated if no output argument is specified.
 %   The Signal/Monitor corresponds to axis rank 0. Setting its value multiplies 
 %     it by the Monitor and then assigns the Signal.
@@ -27,7 +28,7 @@ function this = setaxis(this, rank, alias, value)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.24 $
+% Version: $Revision: 1.25 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -88,7 +89,6 @@ elseif iscell(alias)
   end
   return
 end
-
 % get the rank from the axis definition (alias) 
 if isempty(rank) && ~isempty(alias)
   rank = find(strcmp(alias, this.Alias.Axis));
@@ -97,7 +97,7 @@ if isempty(rank) && ~isempty(alias)
 elseif ~isempty(rank) && isempty(alias)
   % get the Axis definition
   if rank == 0
-    if isempty(alias)
+    if isempty(alias) % reset Signal (find biggest field)
         this = setalias(this, 'Signal',[]);
         return
     end
@@ -198,7 +198,7 @@ function this = iData_checkaxes(this)
         '-th rank is not valid in object ' inputname(1) ' '  this.Tag ' "' this.Title '".' ]);
     end
   end % for index
-  if ~isempty(axis_1D)  % remove singleton axis and put it in end position
+  if ~isempty(axis_1D)  % remove singleton axes and put them in end position
     ax = this.Alias.Axis;
     for index=length(axis_1D):-1:1
       if axis_1D(index) > 3

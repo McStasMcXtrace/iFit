@@ -37,7 +37,7 @@ function h=plot(a, varargin)
 %               Global options for all plots: 
 %                 axis tight, axis auto, hide_axes (compact layout)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
-%                 whole (do not reduce large object size for plotting)
+%                 whole or full (do not reduce large object size for plotting)
 %                 
 % output: h: graphics object handles (cell/array)
 % ex:     plot(iData(rand(10)), 'surfc interp transparent'); plot(iData(1:10), 'r-');
@@ -49,7 +49,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.89 $
+% Version: $Revision: 1.90 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -180,13 +180,18 @@ if numel(a) > 1
 end % plot array
 
 % plot a single object
+method = lower(method);
 
 % check if the object is not too large, else rebin accordingly
-if prod(size(a)) > 1e6 && isempty(strfind(method,'whole'))
-  iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
-    '.\n\tNow rebinning for display purposes with e.g. a=a(1:2:end, 1:2:end, ...).' ...
-    '\n\tUse e.g plot(a, ''whole'') to plot the whole data set and be able to zoom tiny regions.' ]);
-  a=iData_private_reduce(a);
+if prod(size(a)) > 1e6 
+  if isempty([ strfind(method,'whole') strfind(method,'full') ])
+    iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
+      '.\n\tNow rebinning for display purposes with e.g. a=a(1:2:end, 1:2:end, ...).' ...
+      '\n\tUse e.g plot(a, ''whole'') to plot the whole data set and be able to zoom tiny regions.' ]);
+    a=iData_private_reduce(a);
+  else
+    method = [ method ' opengl' ];
+  end
 end
 zlab = '';
 switch ndims(a) % handle different plotting methods depending on the iData dimensionality
@@ -431,10 +436,12 @@ end
 if (strfind(method,'auto'))
   axis auto
 end
-if (strfind(method,'painters'))
+if (strfind(method,'opengl'))
+	set(gcf,'Renderer','OpenGL')
+elseif (strfind(method,'painters'))
 	set(gcf,'Renderer','painters')
 elseif (strfind(method,'zbuffer'))
-	set(gcf,'Renderer','zbuffer')
+	set(gcf,'Renderer','zbuffer');
 end
 if (strfind(method,'colorbar'))
   colorbar
