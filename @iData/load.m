@@ -8,6 +8,7 @@ function out = load(a, varargin)
 %     that most common data importers are tested until one works. User may configure
 %     a list of prefered loader definitions in a file called iData_load_ini.
 %   The optional 3rd argument can be force to use a specific loader list (see below)
+%     load(iData, filename, loader)
 %   The input iData object is updated if no output argument is specified.
 %
 %   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
@@ -38,9 +39,10 @@ function out = load(a, varargin)
 %
 % output: d: single object or array (iData)
 % ex:     load(iData,'file'); load(iData); load(iData, 'file', 'gui'); load(a,'','looktxt')
+%         load(iData, [ ifitpath 'Data/peaks.hdf5' ], 'HDF')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.36 $
+% Version: $Revision: 1.37 $
 % See also: iLoad, save, iData/saveas, iFiles
 
 % calls private/iLoad
@@ -74,12 +76,7 @@ for i=1:numel(files)
       this_iData=setalias(this_iData, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
       this_iData=load_clean_metadata(this_iData);
     end
-    % search for default axes (right length and monotonic)
-    this_iData=load_search_axes(this_iData);
-    if isfield(files{i},'Headers')
-      this_iData.Data.Headers = files{i}.Headers;
-      this_iData=setalias(this_iData, 'Headers', 'Data.Headers', [ 'Headers from ' filename ext ]);
-    end
+    
     if isempty(loaders) || ~isfield(loaders{i}, 'postprocess')
       loaders{i}.postprocess='';
     end
@@ -154,35 +151,5 @@ function s=load_check_struct(data, loaders, filename)
   if isfield(data, 'Label'),  s.Label = data.Label; end
   if ~isfield(s, 'Format'),
     s.Format  = loaders{1}.name; 
-  end
-  
-% ------------------------------------------------------------------------------
-function a=load_search_axes(a)
-% searches for axes that correspond to the Signal dimensions, and are monotonic
-  % get all numerical data
-  [fields, types, dims] = findfield(a);
-  index  = strmatch('double', types, 'exact');
-  fields = fields(index); % get all field names containing double data
-  dims   = dims(index);
-  s      = getaxis(a, 0); % Signal
-  for rank=1:ndims(a)                    % loop on axes
-    if isempty(getaxis(a, num2str(rank)))% axis is not defined (using default indexing)
-      l = length(getaxis(a, rank));      % length of the axis (indexing)
-      good_length  = find(dims == l);    % field that have the required length
-      % is this the signal itself ?
-      for index=1:length(good_length)
-        x = get(a, fields{good_length(index)});
-        if isequal(fields{good_length(index)},getalias(a,'Signal')) || isequal(x, s)
-          continue
-        end
-        x = diff(x(:));
-        if all(x > 0)
-          setaxis(a, rank, fields{good_length(index)});
-          label(  a, rank, fields{good_length(index)});
-          disp([ 'iData: Setting Axis_' num2str(rank) '="' fields{good_length(index)} '" with length ' num2str(dims(good_length(index))) ' in object ' a.Tag ' "' a.Title '".' ]);
-          break; % we found an axis that has good dimension and is monotonic
-        end
-      end
-    end
   end
   
