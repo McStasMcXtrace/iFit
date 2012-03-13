@@ -8,7 +8,7 @@ function y=size(s, dim)
 % output: v: size of the iData Signal (double)
 % ex:     size(iData), size(iData,1)
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/disp, iData/get, length
 
 % EF 23/09/07 iData implementation
@@ -19,7 +19,11 @@ if numel(s) > 1  % this is an array of iData
   return
 end
 
-s = subsref(s,struct('type','.','subs','Signal'));
-if nargin > 1, y = size(s, dim);
-else           y = size(s); end
+y = size(subsref(s,struct('type','.','subs','Signal')));
+if nargin > 1, 
+  if dim > length(y), y=0; 
+  else
+    y = y(dim); 
+  end
+end
 

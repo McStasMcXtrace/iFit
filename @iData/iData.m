@@ -30,7 +30,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.42 $
+% Version: $Revision: 1.43 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -424,7 +424,7 @@ elseif isempty(getalias(in, 'Signal'))
       if isfield(in.Data, 'Headers')
         fields = fliplr(strtok(fliplr(fields), '.'));
         if isfield(in.Data.Headers, fields)
-          in = label(in, 0, in.Data.Headers.(fields));
+          in.Alias.Labels{1} = in.Data.Headers.(fields);
         end
       end
     end
@@ -452,7 +452,7 @@ elseif isempty(getalias(in, 'Signal'))
               if isfield(in.Data, 'Headers')
                 fields=fliplr(strtok(fliplr(fields_all{ax}), '.'));
                 if isfield(in.Data.Headers, fields)
-                  label(in, index, in.Data.Headers.(fields));
+                  in.Alias.Labels{index+1} = in.Data.Headers.(fields);
                 end
               end
               disp([ 'iData: Setting Axis{' num2str(index) '} ="' fields_all{ax} '" with length ' num2str(length(val)) ' in object ' in.Tag ' "' in.Title '".' ]);
@@ -466,7 +466,6 @@ elseif isempty(getalias(in, 'Signal'))
     end 
   end
 end
-
 % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes
 if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
             && isvector(getaxis(in, 1)) && isvector(getaxis(in, 2)) ...
@@ -480,7 +479,7 @@ if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
   clear x1 x2
   disp([ 'iData: The object has been transposed to match the axes orientation in object ' in.Tag ' "' in.Title '".' ]);
 end
-    
+
 % check aliases (valid ?) by calling setalias(in)
 in = setalias(in);
 % check axis (valid ?) by calling setaxis(in)
