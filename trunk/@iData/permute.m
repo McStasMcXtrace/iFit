@@ -15,7 +15,7 @@ function a = permute(a, order)
 % output: c: object or array (iData)
 % ex:     c=permute(iData(rand(2,3,4)),[2 3 1]);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/size
 
 % handle iData array: use built-in permute
@@ -35,7 +35,9 @@ if length(order) < ndims(a)
 end
 
 % use permute on Signal, Error, Monitor
-a = iData_private_unary(a, 'permute', order);
+if ~isvector(a)
+  a = iData_private_unary(a, 'permute', order);
+end
 
 % then swap axes
 if length(a.Alias.Axis) == length(order)    % all axes defined

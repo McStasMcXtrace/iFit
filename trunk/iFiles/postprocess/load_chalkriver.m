@@ -4,7 +4,7 @@ function a=load_chalkriver(a0)
 % Returns an iData style dataset from a Chalk River CNBC data file
 % each initial data file may contain more than one record. Also handles multiwire detectors.
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -89,7 +89,7 @@ for index=1:length(f)
       Record.Instrument='';
     end % if Headers
     
-    this.Data=Record; setalias(this, 'Signal','');
+    this.Data=Record;
     lab = '';
     if isfield(Record, 'Instrument'), 
       setalias(this, 'Instrument', 'Data.Instrument'); lab = [ lab Record.Instrument ]; end
@@ -100,7 +100,7 @@ for index=1:length(f)
     if isfield(Record, 'Seq'), 
       setalias(this, 'Seq', 'Data.Seq'); lab = [ lab ' Seq:' num2str(Record.Seq) ]; end
     if ~isempty(lab) this.Label=lab; end
-    this = iData(this); % reset Signal to the biggest block
+    this = setalias(this, 'Signal',''); % reset Signal to the biggest block
     
     this_size = size(this,2); % the full record
     % get the real number of columns
