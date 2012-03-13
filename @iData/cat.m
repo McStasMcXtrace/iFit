@@ -10,7 +10,7 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 if nargin == 1 & isa(dim, 'iData') & length(dim) >= 1 % syntax: cat([a])
   s = cat(1, dim);
@@ -52,7 +52,7 @@ for index=1:numel(a)
 end
 
 % now catenate Signal, Error and Monitor 
-[link, label]          = getalias(a(1), 'Signal');
+lab = label(a, 0); if iscellstr(lab), lab=[ lab{1} '...' ]; end
 for index=1:numel(a)
   s{index}=get(a(index),'Signal');
   if isvector(s{index}), ss=s{index}; ss=ss(:); s{index}=ss; end
@@ -120,7 +120,7 @@ end
 % now build final result
 cmd = get(a(1),'Command');
 s = copyobj(a(1));  % with extended (union) axes
-setalias(s,'Signal', ss, [ 'catenated ' label ]);     % Store Signal
+setalias(s,'Signal', ss, [ 'catenated ' lab ]);     % Store Signal
 setalias(s,'Error',  se);
 setalias(s,'Monitor',sm);
 % create or modify catenated dimension axis

@@ -11,7 +11,7 @@ function labl = label(this, rank, lab)
 % output: b: object or array (iData)
 % ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
 
 if nargin < 2, rank=[]; end
@@ -59,17 +59,17 @@ if ischar(rank)  % label(a, '1', ...)
 end
 
 if isempty(rank),    return; end  % axis alias not found
+if rank < 0,         return; end  % invalid rank
 %if ~isnumeric(rank), return; end
 
 % label(a, 1, ...): get the definition of the axis (alias name)
 value = '';
 if ~isempty(rank) && rank == 0
-  alias = 'Signal';
+  alias = 'Signal'; value = this.Alias.Values{1};
 elseif ~isempty(rank) && rank > 0 && rank <= length(this.Alias.Axis)
   alias = this.Alias.Axis{rank};  % name of the alias/axis (or direct value storage)
   if ~ischar(alias), value = alias; alias = ''; end
 end
-
 % does the axis alias already exists ? if not create it so that we can set its label
 if nargin == 3 && ~isempty(lab)
   if rank > 0
@@ -77,10 +77,11 @@ if nargin == 3 && ~isempty(lab)
     if isempty(value), value = getaxis(this, rank); end % probably the default axis
     setaxis(this, rank, value);
     alias = getaxis(this, num2str(rank));
-  else
-    try
-    value = get(this, alias); 
-    catch
+  else% rank=0, Signal
+    if isempty(value)
+      try
+        value = get(this, alias); 
+      end
     end
     if isempty(value), value = 0; end
     setalias(this, alias, value, lab);

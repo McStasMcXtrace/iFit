@@ -5,7 +5,7 @@ function a=load_mcstas_1d(a)
 % as well as simple XYE files
 % Some labels are also searched.
 %
-% Version: $Revision: 1.16 $
+% Version: $Revision: 1.17 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % inline: load_mcstas_param
@@ -59,7 +59,7 @@ if isfield(d,'Headers') && isfield(d.Headers,'MetaData')
  
   if ~isempty(findfield(a, 'component')) 
     label = strtrim(a.Data.Headers.MetaData.component);
-    label(1:length('# component: '))='';
+    label(1:length('# component:'))='';
     a.Label = label;
     a.Data.Component = label;
     setalias(a, 'Component', 'Data.Component','Component name');
@@ -67,7 +67,7 @@ if isfield(d,'Headers') && isfield(d.Headers,'MetaData')
   
   if ~isempty(findfield(a, 'Creator'))
     creator = a.Data.Headers.MetaData.Creator;
-    creator(1:length('# Creator: '))='';
+    creator(1:length('# Creator:'))='';
     a.Creator=creator; 
   end
   
@@ -102,21 +102,23 @@ elseif ~isempty(strfind(a.Format,'McStas 2D monitor'))
 elseif ~isempty(strfind(a.Format,'McStas list monitor'))
   % the Signal has been set to the biggest field, which contains indeed the List
   list = getalias(a, 'Signal');
-  setalias(a, 'List', list, 'List of events');
+  if ischar(list)
+      setalias(a, 'List', list, 'List of events');
 
-  % column signification is given by tokens from the ylab
-  columns = strread(ylab,'%s','delimiter',' ');
-  index_axes = 0;
-  for index=1:length(columns)
-    setalias(a, columns{index}, [ list '(:,' num2str(index) ')' ]);
-    if index==1
-      setalias(a, 'Signal', columns{index});
-    elseif index_axes < 3
-      index_axes = index_axes +1;
-      setaxis(a, index_axes, columns{index});
-    end
+      % column signification is given by tokens from the ylab
+      columns = strread(ylab,'%s','delimiter',' ');
+      index_axes = 0;
+      for index=1:length(columns)
+        setalias(a, columns{index}, [ list '(:,' num2str(index) ')' ]);
+        if index==1
+          setalias(a, 'Signal', columns{index});
+        elseif index_axes < 3
+          index_axes = index_axes +1;
+          setaxis(a, index_axes, columns{index});
+        end
+      end
+      if ~isfield(a, 'N'), setalias(a, 'N', length(a{0})); end
   end
-  if ~isfield(a, 'N'), setalias(a, 'N', length(a{0})); end
 end
 
 % build the title: 

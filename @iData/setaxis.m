@@ -28,7 +28,7 @@ function this = setaxis(this, rank, alias, value)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -89,6 +89,7 @@ elseif iscell(alias)
   end
   return
 end
+
 % get the rank from the axis definition (alias) 
 if isempty(rank) && ~isempty(alias)
   rank = find(strcmp(alias, this.Alias.Axis));
@@ -97,16 +98,12 @@ if isempty(rank) && ~isempty(alias)
 elseif ~isempty(rank) && isempty(alias)
   % get the Axis definition
   if rank == 0
-    if isempty(alias) % reset Signal (find biggest field)
-        this = setalias(this, 'Signal',[]);
-        return
+    if isempty(alias) || isempty(value) % reset Signal (find biggest field)
+      this = setalias(this, 'Signal',[]);
+      return
     end
     alias = 'Signal';
     if nargin == 4 % adapt value to Monitor
-      if isempty(value)
-        this = setalias(this, 'Signal',[]);
-        return
-      end
       m  = get(this, 'Monitor'); m=real(m);
       if not(all(m(:) == 1 | m(:) == 0))
         value = genop(@times, value , m);
@@ -131,7 +128,8 @@ end
 
 if isempty(find(strcmpi(alias, this.Alias.Names))) % the alias does not exist yet
   if isempty(value)
-    % perhaps the value refers to an existing field in the object
+    % perhaps the value refers to an existing field in the object: create a
+    % new Alias
     try
       val = get(this, alias);
       setalias(this, [ 'Axis_' num2str(rank) ], alias);
@@ -139,6 +137,7 @@ if isempty(find(strcmpi(alias, this.Alias.Names))) % the alias does not exist ye
     end
   end
 end
+% try again
 if isempty(find(strcmpi(alias, this.Alias.Names)))
   if isempty(value)
     iData_private_warning(mfilename,[ 'the Alias ' alias ' used to define axis rank ' ...
@@ -180,20 +179,23 @@ function this = iData_checkaxes(this)
   size_this=size(this);
   for index=1:length(this.Alias.Axis) % scan axis definitions and values
     link = this.Alias.Axis{index};
+    if length(size_this) < index, size_this(index)=1; end
     try
       val  = get(this, link);
       if numel(val) == 1 % these are to be moved after the other axes
         axis_1D= [ axis_1D index ];
       end
       % the axis value is valid, but does not have the right dimension
-      if (numel(val) > 1 && length(find(size_this > 1)) == 1 && numel(val) ~= size_this(find(size(this) > 1))) ...
-      || (size(val, index) ~= size_this(index) && numel(val) ~= size_this(index))
+      % test: val is a vector and matches the length of numel(Signal)
+      % OR numel(val) == numel(Signal)
+      if ( numel(val) ~= prod(size_this) )
         iData_private_warning(mfilename, [ 'the Axis ' link ' ' num2str(index) ...
-          '-th rank length ' num2str(size(val)) ' does not match the Signal dimension [' ...
+          '-th rank length [' num2str(size(val)) '] does not match the Signal dimension [' ...
           num2str(size_this) '] in object ' inputname(1) ' ' this.Tag '.' ]);
       end
     catch
       % the axis value is invalid.
+      
       iData_private_warning(mfilename,[ 'the Axis ' link ' ' num2str(index) ...
         '-th rank is not valid in object ' inputname(1) ' '  this.Tag ' "' this.Title '".' ]);
     end
