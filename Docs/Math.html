@@ -14,6 +14,7 @@
 
 
 
+
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Math operators</title>
 </head><body>
@@ -1192,7 +1193,7 @@ The <span style="font-weight: bold;">intersect</span> and <span style="font-weig
 minimum and maximum axes bounds, as well as a axes binning. The <span style="font-style: italic;">inner</span> and <span style="font-style: italic;">outer</span> values are returned by the
 intersect and union methods resp. Resulting objects are interpolated,
 using the <span style="font-weight: bold;">interp</span>
-operator,&nbsp; onto this new axis system, so that binary operators are
+operator, onto this new axis system, so that binary operators are
 easy to apply afterwards.<br>
 In the following example, we shift an object along axes, and signal
 value, and then show the intersection and union. Extrapolated values,
@@ -1214,13 +1215,18 @@ nearest</span>.<br>
 Last, the <span style="font-weight: bold;">sort</span> operator sorts
 object axes, in ascending or descending order. The corresponding
 Signal, Error, and Monitor values are also re-ordered accordingly.<br>
+<br>
+For event based data sets, the <span style="font-weight: bold;">hist</span> operator transforms the event object into an histogrammed data set.
+The histogram axes can be given as vectors (where event will be
+cumulated), or a number of bins within the [min max] of the
+distributions.<br>
 </div>
 </div>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2012-03-03 21:16:35 $ $Revision: 1.27 $
+$Date: 2012-03-14 10:07:20 $ $Revision: 1.28 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
