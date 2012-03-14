@@ -37,6 +37,7 @@ function h=plot(a, varargin)
 %               Global options for all plots: 
 %                 axis tight, axis auto, hide_axes (compact layout)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
+%                 opengl (faster for large data sets)
 %                 whole or full (do not reduce large object size for plotting)
 %                 
 % output: h: graphics object handles (cell/array)
@@ -49,7 +50,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.90 $
+% Version: $Revision: 1.91 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -194,6 +195,16 @@ if prod(size(a)) > 1e6
   end
 end
 zlab = '';
+
+% possibly select Rendered prior to start plotting
+if (strfind(method,'opengl'))   % faster for large data sets
+	set(gcf,'Renderer','OpenGL')
+elseif (strfind(method,'painters'))
+	set(gcf,'Renderer','painters')
+elseif (strfind(method,'zbuffer'))
+	set(gcf,'Renderer','zbuffer');
+end
+
 switch ndims(a) % handle different plotting methods depending on the iData dimensionality
 case 0
   h=[]; 
@@ -435,13 +446,6 @@ if (strfind(method,'tight'))
 end
 if (strfind(method,'auto'))
   axis auto
-end
-if (strfind(method,'opengl'))
-	set(gcf,'Renderer','OpenGL')
-elseif (strfind(method,'painters'))
-	set(gcf,'Renderer','painters')
-elseif (strfind(method,'zbuffer'))
-	set(gcf,'Renderer','zbuffer');
 end
 if (strfind(method,'colorbar'))
   colorbar
