@@ -19,10 +19,10 @@ function c=hist(a, varargin)
 % input:  a: object or array (iData)
 %         axis1, axis2, ...: bins or number of bins  (vector or scalar)
 % output: c: histogrammed object (iData)
-% ex:     
+% ex:     a=iData([ ifitpath 'Data/Monitor_GV*']); b=hist(a);
 %
-% Version: $Revision: 1.1 $
-% See also iData, accumarray, hist, histc, iData/plot, sum
+% Version: $Revision: 1.2 $
+% See also iData, accumarray, hist, histc, iData/plot, sum, iData/interp
 
 % private: histcn from % Bruno Luong: <brunoluong@yahoo.com> 25/August/2011
 
