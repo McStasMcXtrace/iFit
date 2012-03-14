@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.29 $
+% Version: $Revision: 1.30 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -31,21 +31,24 @@ else
   m = get(s_in, 'Monitor'); m=m(:);
   s=struct(s_in);
   s=rmfield(s,'Alias');
+  % print source with hyperlink
+  T= s.Source;
+  s=rmfield(s,'Source');
+  if exist(T,'file') && length(T) < 65
+    if length(T) > 70, Ts=[ T(1:60) '...' T((end-8):end) ]; else Ts=T; end
+    T =[ '<a href="' T '">' Ts '</a>' ];
+  end
+  fprintf(1,'              Source: %s\n', T)
+  
+  % update title
   T   = s.Title; if ~ischar(T), T=char(T); end
   if ~isvector(T), T=transpose(T); T=T(:)'; end
   T   = regexprep(T,'\s+',' '); % remove duplicated spaces
   if length(T) > 69, T=[ T(1:60) '...' T((end-8):end) ]; end
   s.Title=T;
-  T= s.Source;
-  s=rmfield(s,'Source');
   if isnumeric(s.Date), s.Date=datestr(s.Date); end
   if isnumeric(s.ModificationDate), s.ModificationDate=datestr(s.ModificationDate); end
   disp(s)
-  if exist(T,'file') && length(T) < 65
-    if length(T) > 70, Ts=[ T(1:60) '...' T((end-8):end) ]; else Ts=T; end
-    T =[ '<a href="' T '">' Ts '</a>' ];
-  end
-  disp([ '              Source: ' T ])
   
   % display the Aliases
   disp('Object aliases:');

@@ -10,7 +10,7 @@ function c = combine(a,varargin)
 % output: c: object (iData)
 % ex:     c=combine(a,b); or combine([ a b ])
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
 if length(varargin) >= 1  % syntax: combine(a,b,...)
   s=a(:);
@@ -23,9 +23,13 @@ if length(varargin) >= 1  % syntax: combine(a,b,...)
 end
 
 % now we should only handle a single argument
-c = a(1);
-if length(a) <= 1, return; end
-c = iData_private_binary(a, [], 'combine');
-
+if all(isvector(a) > 1)
+  % combine event data sets by simple catenation
+  c = cat(1, a);
+else
+  c = a(1);
+  if length(a) <= 1, return; end
+  c = iData_private_binary(a, [], 'combine');
+end
 
 

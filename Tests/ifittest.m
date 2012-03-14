@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.25 $
+% Version: $Revision: 1.26 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -384,7 +384,9 @@ case 'Math_10_interp'
   a = iData(peaks(10))+2;
   b = interp(a,2);
   c = interp(a,1:.25:15,3:.25:12);
-  result = 'OK  interp';
+  a=iData([ ifitpath 'Data/Monitor_GV*']); 
+  b=hist(a);
+  result = 'OK  interp/hist';
 case 'Math_11_FFT'
   t=linspace(0,1,1000);
   a = iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+0.05*randn(size(t)));
