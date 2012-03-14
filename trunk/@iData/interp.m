@@ -16,6 +16,7 @@ function b = interp(a, varargin)
 %                    linear (default), spline, cubic, or nearest
 %     b=interp(s, ..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays
 %   Extrapolated data is set to 0 for the Signal, Error and Monitor.
+%   For Event data sets, we recommand th use the hist method.
 %
 % input:  s: object or array (iData)
 %         d: single object from which interpolation axes are extracted (iData)
@@ -26,8 +27,8 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     a=iData(peaks); b=interp(a, 'grid'); c=interp(a, 2);
 %
-% Version: $Revision: 1.34 $
-% See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis
+% Version: $Revision: 1.35 $
+% See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis, iData/hist
 
 % input: option: linear, spline, cubic, nearest
 % axes are defined as rank of matrix dimensions

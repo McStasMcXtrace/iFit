@@ -1,4 +1,4 @@
-function s = cat(dim,a,varargin)
+function b = cat(dim,a,varargin)
 % s = cat(dim,a,...) : catenate iData objects elements along dimension
 %
 %   @iData/cat function to catenate iData objects elements along dimension dim
@@ -10,10 +10,10 @@ function s = cat(dim,a,varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 if nargin == 1 & isa(dim, 'iData') & length(dim) >= 1 % syntax: cat([a])
-  s = cat(1, dim);
+  b = cat(1, dim);
   return
 end
 
@@ -21,43 +21,57 @@ if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is cat(dim, iData, ...)']);
 end
 
-if length(varargin) > 1  % syntax: cat(dim,a,b,c,...)
-  if numel(a) == 1, s=a; 
-  else s=a(:); end
+if length(varargin) >= 1  % syntax: cat(dim,a,b,c,...)
+  if numel(a) == 1, b=a; 
+  else b=a(:); end
   for index=1:length(varargin)
-    s = [ s ; varargin{index} ];
+    b = [ b ; varargin{index} ];
   end
   clear varargin
-  s = cat(dim, s);
+  b = cat(dim, b);
   return
 end
 % syntax is now: cat(dim,[a(:)])
 a=a(:);
-if length(a) <= 1, s=a; return; end
+if length(a) <= 1, b=a; return; end
 if dim <= 0, dim=1; end
 
 % removes warnings during interp
 iData_private_warning('enter', mfilename);
 
 % syntax is now: cat(dim,[a b c ... ])
-% first need to compute union axes, but not for dimension 'dim'
-c_axis = iData_private_caxis(a,'union');
-% use common axes on all axes except dim
-for index=1:numel(a)
-  x = getaxis(a(index), dim);
-	if length(x) == 1 || length(x) == length(a)
-		c_axis{dim} = x; % restore initial 'dim' axis from object. Others are the common axes.
+if ~all(isvector(a)>1)
+  % first need to compute union axes, but not for dimension 'dim'
+  c_axis = iData_private_caxis(a,'union');
+  % use common axes on all axes except dim
+  for index=1:numel(a)
+    x = getaxis(a(index), dim);
+	  if length(x) == 1 || length(x) == length(a)
+		  c_axis{dim} = x; % restore initial 'dim' axis from object. Others are the common axes.
+	  end
+	  a(index) = interp(a(index), c_axis);
 	end
-	a(index) = interp(a(index), c_axis);
+else
+  if dim ~= 1
+    iData_private_warning(mfilename, [' Event data sets can only be catenated one after the other. Using dim=1.']);
+  end
+  dim = 1; % can only catenate one after the other event sets
 end
 
 % now catenate Signal, Error and Monitor 
 lab = label(a, 0); if iscellstr(lab), lab=[ lab{1} '...' ]; end
+s={};
 for index=1:numel(a)
   s{index}=get(a(index),'Signal');
   if isvector(s{index}), ss=s{index}; ss=ss(:); s{index}=ss; end
 end
 ss = cat(dim, s{:});
+
+% now build final result
+cmd = get(a(1),'Command');
+b = copyobj(a(1));  % with extended (union) axes
+setalias(b,'Signal', ss, [ 'catenated ' lab ]);     % Store Signal
+clear ss
 
 % Error handling
 % first test if all Errors are sqrt(this.Signal) (that is default=[])
@@ -87,6 +101,8 @@ else
   end
   se = cat(dim, s{:});
 end
+setalias(b,'Error',  se);
+clear se
 
 % then decide what to catenate for Monitors
 if sm == 1  % all Monitors are default, just copy the default
@@ -103,34 +119,37 @@ else
   end
   sm = cat(dim, s{:});
 end
+setalias(b,'Monitor',sm);
+clear sm
 
-% and extend axis 'dim'
-for index=1:numel(a)
-  s{index}=getaxis(a(index),dim); 
-  if isempty(s{index}), s{index}=index;
-  elseif isvector(s{index}), sx=s{index}; sx=sx(:); s{index}=sx; end
+% event data set: catenate all axes
+% histogram data set: catenate only dimension 'dim'
+for d=1:ndims(a(1))
+  if ~all(isvector(a) > 1), d=dim; end 
+  s={};
+  for index=1:numel(a)  % get all axes for a given dimension, in object array
+    sx=getaxis(a(index),d);
+    if isempty(sx), sx=index;
+    elseif isvector(sx), sx=sx(:); end
+    s{index}=sx;
+  end
+  dx=getaxis(a(1),num2str(d));
+  if isempty(dx)
+    dx=[ 'Axis_' num2str(d) ];
+  end
+  if isvector(s{1}) % catenate the axes (for dim 'd')
+    sx = cat(1, s{:});
+  else
+    sx = cat(dim, s{:});
+  end
+  setaxis(b, d, dx, sx);
+  clear sx s
+  
+  if ~all(isvector(a) > 1), break; end
 end
 
-if isvector(s{1})
-  sx = cat(1, s{:});
-else
-  sx = cat(dim, s{:});
-end
-
-% now build final result
-cmd = get(a(1),'Command');
-s = copyobj(a(1));  % with extended (union) axes
-setalias(s,'Signal', ss, [ 'catenated ' lab ]);     % Store Signal
-setalias(s,'Error',  se);
-setalias(s,'Monitor',sm);
-% create or modify catenated dimension axis
-dx=getaxis(a(1),num2str(dim));
-if isempty(dx)
-  dx=[ 'Axis_' num2str(dim) ];
-end
-setaxis(s, dim, dx, sx);
-s.Command=cmd;
-s = iData_private_history(s, mfilename, dim, a(1), a(2));
+b.Command=cmd;
+b = iData_private_history(b, mfilename, dim, a(1), a(2));
 
 % reset warnings during interp
 iData_private_warning('exit', mfilename);

@@ -48,7 +48,7 @@ function h = colormap(varargin)
 % output: h:          graphics object handles (cell/array)
 % example: a=iData(gauss2d); colormap(a,jet,a+1,hsv,'log transparent')
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iData/plot, iData/surf, iData/caxis
 
 tic
@@ -74,7 +74,11 @@ if length(cm) < numel(z)
 end
 
 % Build the actual colormap by catenation
-cmap = cat(1, cm{:});
+if numel(cm) > 1
+  cmap = cat(1, cm{:});
+else
+  cmap=cm;
+end
 
 % Now we make up the color indices.
 sumcm = 0;
