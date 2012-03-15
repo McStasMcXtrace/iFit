@@ -3,7 +3,7 @@ function a=load_mcstas_scan(a0)
 %
 % Returns iData style datasets from a McStas scan output file
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
@@ -43,8 +43,12 @@ else xvars=''; end
 if ~isempty(xvars)
   xvars_i = find(cellfun('isempty', strfind(cnames,xvars)) == 0);
   if ~isempty(xvars_i)
+    if length(xvars_i) > 1
+      cnames=cnames(xvars_i(end):end);
+      xvars_i=xvars_i(1);
+    end
     setalias(a0,'x',['this.' getalias(a0,'Signal') '(:,' num2str(xvars_i) ')' ],xvars); % create an alias for xvars
-    setalias(a0,xvars,['this.' getalias(a0,'Signal') '(:,' num2str(xvars_i) ')' ],xvars); % create an alias for xvars
+    setalias(a0,xvars,'x',xvars); % create an alias for xvars
     % locate xvars label and column
     xlabel=xvars;
   end
