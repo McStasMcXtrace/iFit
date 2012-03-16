@@ -4,6 +4,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -88,17 +89,18 @@ Please report bugs to  <a href="mailto:ifit-users@mccode.org">ifit-users@mccode.
 </div>
 
 <h4><a class="mozTocH4" name="mozTocId482415"></a>Data set maximum size</h4>
-
 The iFit package may currently handle routinely data sets up to few 100
 Mb. Larger data sets can still be loaded, but are restricted by the
-disk access and the available memory.<br>
+disk access and the available memory. Currently, files can be read at
+about 8 Mb/s, mainly limited by the hard disk speed. Some binary files
+can be imported faster (HDF import is nearly immediate, whatever be the
+size).<br>
 
 <h4><a class="mozTocH4" name="mozTocId332568"></a>Convolution brings strange results (iFuncs/fconv)<br>
 </h4>
 
-The <span style="font-style: italic;">fconv</span> function (FFT convolution) provided in the <a href="iFuncs.html">iFuncs</a> sub-library requires
-that the two signals sampling not be too corase. Axes values too
-sparese will lead to inaccurate results. One solution is to re-sample
+The <span style="font-style: italic;">fconv</span> function (FFT convolution) provided in the <a href="iFuncs.html">iFuncs</a> sub-library requires the two signals sampling not to be too coarse. Axes values too
+sparse will lead to inaccurate results. One solution is to re-sample
 the signals with more points. For iData objects, this can be
 achieved with e.g. the <span style="font-style: italic;">interp(object, 3)</span> to triple the number of points along axes.<br>
 
@@ -164,7 +166,7 @@ Move <span style="font-style: italic;">iFit</span> to an other location which do
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Changes - </span><span style="font-style: italic;">
-$Date: 2012-03-16 13:49:57 $ $Revision: 1.27 $
+$Date: 2012-03-16 14:09:39 $ $Revision: 1.28 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
