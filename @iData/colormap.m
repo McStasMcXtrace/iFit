@@ -48,15 +48,16 @@ function h = colormap(varargin)
 % output: h:          graphics object handles (cell/array)
 % example: a=iData(gauss2d); colormap(a,jet,a+1,hsv,'log transparent')
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/plot, iData/surf, iData/caxis
 
 tic
 z=[]; cm = []; options='';
 for index=1:length(varargin)
   this = varargin{index};
-  if     isa(this, 'iData') && all(ndims(this)==2), z = [ z this ]; 
-  elseif isnumeric(this) && size(this,2)==3
+  if     isa(this, 'iData') % objects to plot (single or array)
+    for n=1:numel(this), z = [ z this(n) ]; end
+  elseif ~isa(this, 'iData') && isnumeric(this) && size(this,2)==3 % colormap matrix
     cm = [ cm {this} ];
   elseif ischar(this), options=[ options ' ' this ]; 
   end
@@ -65,7 +66,7 @@ clear varargin
 
 % default colormaps at the end in case too few are defined
 if length(cm) < numel(z)
-  cm_list={'hsv' 'hot' 'gray' 'bone' 'copper' 'pink' 'jet'	'cool' 'autumn' 'spring' 'winter' 'summer'};
+  cm_list={'hsv' 'jet' 'hot' 'cool' 'autumn' 'spring' 'winter' 'summer' 'copper' 'pink' 'gray' 'bone'  };
   for index=(length(cm)+1):numel(z)
     this_cm = feval( cm_list{rem(index,length(cm_list))+1}, 64 );
     cm= [ cm {this_cm}  ];
@@ -84,6 +85,7 @@ end
 sumcm = 0;
 ci= {};
 for index=1:numel(z)
+  if ndims(z(index))~=2, continue; end   % only for 2D objects
   % compute local colormap so that it matches the object values
   this = double(z(index)); 
   % do we need log scale color map ? (to enhance low signal)
@@ -111,19 +113,21 @@ end
 clear cm
 
 % And now we make the surfaces
-h = plot(z, options);
+h = surf(z, options);
 
 for index=1:numel(z)
-  try
-    set(h(index), 'CDataMapping','direct', 'CData', ci{index});
-  end
   if index==1
     this = z(index);
     title(title(this));
     xlabel(xlabel(this));
     if ndims(this) >= 2, ylabel(ylabel(this)); end
-    clear this z
+    clear this
   end
+  if ndims(z(index))~=2, continue; end   % only for 2D objects
+  try
+    set(h(index), 'CDataMapping','direct', 'CData', ci{index});
+  end
+  
 end
 
 colormap(cmap);

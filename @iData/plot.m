@@ -50,7 +50,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.91 $
+% Version: $Revision: 1.92 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -139,7 +139,8 @@ if numel(a) > 1
         end
       end
     end
-    sum_max = sum_max+max(a(index))-min(a(index));
+    s = getaxis(a(index), 0);
+    sum_max = sum_max+max(s(:))-min(s(:));
     if ndims(a(index)) == 1 && isempty(this_method)
       % change color of line
       colors = 'bgrcmk';
@@ -147,16 +148,19 @@ if numel(a) > 1
     end
     hold on
   end % for
-  % re-arrange if this is a 2D overlay
+
+  % re-arrange if this is a 2D overlay (shifted)
   for index=1:numel(a(:))
     if length(h{index}) == 1 && ~isempty(strfind(method, 'shifted'))
       if ndims(a(index)) ~= 1
         try
-          z= get(h{index},'ZData');
-          if all(z == 0), use_cdata=1; z= get(h{index},'CData');
+          z= get(h{index},'ZData'); 
+          c= get(h{index},'CData');
+          if all(z(:) == 0) || ~isequal(z, c)
+              use_cdata=1; z= c;
           else use_cdata=0; end
           z = z-min(z(:));
-          z = z+sum_max*index/length(a(:));
+          z = z+sum_max*index/numel(a);
           if use_cdata==0, set(h{index},'ZData',z);
           else set(h{index},'CData',z); end
         end
