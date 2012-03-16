@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -35,7 +35,7 @@ for i = 1:length(S)     % can handle multiple index levels
         s.type='.';
         b=subsref(b, s); return;
       end
-      if length(s.subs) == 1 && all(s.subs{:} == 1), return; end  % b(1)
+      if length(s.subs) == 1 && all(s.subs{:} == 1), continue; end  % b(1)
       
       iData_private_warning('enter',mfilename);
       

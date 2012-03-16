@@ -101,7 +101,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.32 $
+% Version: $Revision: 1.33 $
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -699,8 +699,8 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     % add quick overview of shown monitors
     sim_abstract = 'Monitors:';
     for index=1:numel(sim)
-      sim_abstract=[ sim_abstract sprintf('\n') '* ' sim(index).Label ...
-        sprintf(' [I I_err N]=[%g %g %g] %s', sim(index).values, sim(index).statistics) ];
+      sim_abstract=[ sim_abstract sprintf('\n') '* ' get( sim(index),'Label') ...
+        sprintf(' [I I_err N]=[%g %g %g] %s', get(sim(index),'values'), get(sim(index),'statistics')) ] ;
     end
     ud.Parameters = get(sim(1),'Parameters');
     ud.Execute=cmd;
