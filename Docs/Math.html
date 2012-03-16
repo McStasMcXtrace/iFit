@@ -2,20 +2,6 @@
 <html><head>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Math operators</title>
 </head><body>
@@ -490,7 +476,7 @@ cut for <span style="font-weight: bold;">power</span> 2.<br>
 <h4><a class="mozTocH4" name="mozTocId222123"></a>Fourier transform</h4>
 <a href="images/iData_fft.png"><img alt="iData/fft" title="iData/fft" src="images/iData_fft.png" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>The
 Fourier Transform operators <span style="font-weight: bold;">fft</span>
-and <span style="font-weight: bold;">ifft</span> perform a Discrete
+and 'inverse' <span style="font-weight: bold;">ifft</span> perform a Discrete
 FFT computation from an N-dimensional object. The axes are converted to
 frequency/reciprocal axes.<br>
 In the following example, we create an object which Signal is the sum
@@ -677,7 +663,7 @@ operator<br>
       <td style="vertical-align: top;">m1+m2<br>
       </td>
       <td style="vertical-align: top;">add Signals and Monitors
-independently (see <a href="#mozTocId97186">below</a>)<br>
+independently (see <a href="#mozTocId97186">below</a>). Event lists objects are catenated.<br>
       </td>
     </tr>
     <tr>
@@ -1220,7 +1206,7 @@ Signal, Error, and Monitor values are also re-ordered accordingly.<br>
 For event based data sets, the <span style="font-weight: bold;">hist</span> operator transforms the event object into an histogrammed data set.
 The histogram axes can be given as vectors (where event will be
 cumulated), or a number of bins within the [min max] of the
-distributions.<br>
+distributions. The <span style="font-weight: bold;">hist</span> operator is much faster than the interpolation one, <b>interp</b> for event based data. <br>
 <pre>&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(204, 51, 204);">ifitpath 'Data/Monitor_GV*'</span>]);<br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">hist</span>(a);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">surf</span>(b, <span style="color: rgb(204, 51, 204);">'median'</span>);<br></pre>
 </div>
 </div>
@@ -1228,7 +1214,7 @@ distributions.<br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2012-03-14 15:22:09 $ $Revision: 1.29 $
+$Date: 2012-03-16 13:32:51 $ $Revision: 1.30 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
