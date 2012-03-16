@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -34,7 +34,7 @@ else
   % print source with hyperlink
   T= s.Source;
   s=rmfield(s,'Source');
-  if exist(T,'file') && length(T) < 65
+  if exist(T,'file')
     if length(T) > 70, Ts=[ T(1:60) '...' T((end-8):end) ]; else Ts=T; end
     T =[ '<a href="' T '">' Ts '</a>' ];
   end
