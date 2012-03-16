@@ -101,7 +101,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.33 $
+% Version: $Revision: 1.34 $
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -620,6 +620,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     fprintf(1, '\n');
     if ~isempty(dir(fig))
       fig = openfig(fig);
+      cmdshort=cmd; if length(cmd) > 70, cmdshort=[ cmd(1:60) '... ' cmd((end-8):end) ]; end 
       h = uicontrol('String','Info','Callback',[ 'helpdlg(''' cmd ''',''Instrument parameters'');' ],'ToolTip', cmd);
       view(3); set(fig, 'ToolBar','figure','menubar','figure');
       criteria = fig;
@@ -714,10 +715,10 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
       dots=sprintf(' ... [%i other parameters]', length(f)-max_fields);
       f=f(1:max_fields); c=c(1:max_fields); 
     else dots = ''; end
-    s = [ 'Instrument ' options.instrument sprintf('\n%s\n',cmd) sim_abstract sprintf('\nParameters:\n') class2str('  p',cell2struct(c(:),f(:),1),'no comment') dots ];
+    cmdshort=cmd; if length(cmd) > 70, cmdshort=[ cmd(1:60) '... ' cmd((end-8):end) ]; end
+    s = [ 'Instrument ' options.instrument sprintf('\n%s\n',cmdshort) sim_abstract sprintf('\nParameters:\n') class2str('  p',cell2struct(c(:),f(:),1),'no comment') dots ];
     ud.Information = cellstr(s);
     set(h, 'UserData', ud);
-    
     t = uicontrol('String','Info','Callback',[ 'helpdlg(getfield(get(gcbf,''UserData''),''Information''),''' options.instrument ' parameters'');' ],'ToolTip', s);
     set(h, 'ToolBar','figure','menubar','figure');
     hold off
