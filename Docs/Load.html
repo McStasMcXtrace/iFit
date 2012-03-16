@@ -1,32 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   <title>iFit: Importing data (iData/load)</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -101,7 +75,11 @@ importer method will be used. It is possible to select a prefered method with
 e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">'filename'</span>, <span style="color: rgb(204, 51, 204);">'HDF5'</span>)</pre>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">'filename'</span>, <span style="color: rgb(204, 51, 204);">'gui'</span>);&nbsp; % a method selector pops-up.</pre>
-A list of the supported formats is shown below.<br>
+A list of the supported formats is shown <a href="#mozTocId59221">below.</a><br>
+<br>
+The resulting objects will usually be 1D, 2D, 3D, nD histograms or nD event lists. Refer to the <a href="iData.html">iData</a> and <a href="Math.html">Math</a>
+page to learn how to manipulate these objects (set, get, setalias, getalias, setaxis, getaxis), and in particular how to
+reduce/extend their dimensionality (<i>sum, indexing,</i> ...), or convert events into histograms (<i>hist, interp</i>).<br>
 <h4><a class="mozTocH4" name="mozTocId52427"></a>Distant files (http://, ...)<br>
 </h4>
 The specified file names may include URL tags such as<br>
@@ -301,14 +279,13 @@ neutron triple-axis diffractometer at the ILL [text]</li>
   <li><a style="font-weight: bold;" href="../Data/rita22010n021140.hdf">rita22010n021140.hdf</a>: a <a href="http://spectroscopy.web.psi.ch/rita2/">RITA2@PSI</a> data file [binary, HDF5/NeXus with compression]</li>
   <li><a style="font-weight: bold;" href="../Data/PDBSilk.pdb">PDBSilk.pdb</a>: an example PDB file [text, PDB]</li>
   <li><a style="font-weight: bold;" href="../Data/nano_50K_4.8a_03_h4.hdf">nano_50K_4.8a_03_h4.hdf</a>: an inelastic scattering example from <a href="http://www.ill.eu/in5">IN5</a> tof at the ILL [binary, HDF4/NeXus with compression]</li>
-  <li><a href="../Data/Diff_BananaTheta_1314088587.th" style="font-weight: bold;">Diff_BananaTheta_1314088587.th</a> and <a style="font-weight: bold;" href="../Data/Diff_BananaPSD_1314088587.th_y">Diff_BananaPSD_1314088587.th_y</a>: example <a href="http://www.mcstas.org">McStas</a> simulation result files [text, McStas]</li>
-  <li><a style="font-weight: bold;" href="../Data/AL20_017.DAT">AL20_017.DAT</a>: example data files from the D3 reflectometer at Chalk River <a href="http://www.nrc-cnrc.gc.ca/cnbc/">CNBC</a> NRU<br>
-  </li>
+  <li><a href="../Data/Diff_BananaTheta_1314088587.th" style="font-weight: bold;">Diff_BananaTheta_1314088587.th</a> and <a style="font-weight: bold;" href="../Data/Diff_BananaPSD_1314088587.th_y">Diff_BananaPSD_1314088587.th_y</a>: example <a href="http://www.mcstas.org">McStas</a> simulation result files, 1D and 2D [text, McStas]</li>
+  <li><a style="font-weight: bold;" href="../Data/Monitor_GV_1330447143_list.L.x.y.z">Monitor_GV_1330447143_list.L.x.y.z</a>: a list of events simulated with <a href="http://www.mcstas.org/">McStas</a>, for the L3 strain-scanner at <a href="http://www.nrc-cnrc.gc.ca/cnbc/">CNBC</a> NRU [text, McStas]</li>
 
-</ul>
+  <li><a style="font-weight: bold;" href="../Data/AL20_017.DAT">AL20_017.DAT</a>: example data files from the D3 reflectometer at Chalk River <a href="http://www.nrc-cnrc.gc.ca/cnbc/">CNBC</a> NRU [text]</li></ul>
 
 All of these can be directly accessed with e.g.<br>
-<pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; b = </span>iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data' filesep <span style="color: rgb(0, 0, 0);">filename</span> ]</span>);<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data'<span style="color: rgb(0, 0, 0);"></span> ]</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(a, <span style="color: rgb(204, 51, 204);">'tight'</span>)<br></pre>
+<pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; b = </span>iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/' <span style="color: rgb(0, 0, 0);">filename</span> ]</span>);<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data'<span style="color: rgb(0, 0, 0);"></span> ]</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(a, <span style="color: rgb(204, 51, 204);">'tight'</span>)<br></pre>
 The empty iData object &#8709; can be obtained from:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span><br>&gt;&gt; a=<span style="color: rgb(51, 102, 255);">zeros</span>(<span style="color: rgb(51, 102, 255);">iData</span>, size)<br></pre>
 <h3><a class="mozTocH3" name="mozTocId141862"></a>Importing directly
@@ -438,7 +415,7 @@ more help: </span><a href="iFiles.html">iFiles</a>, <a href="../iFiles/doc/lookt
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData loading data - </span><span style="font-style: italic;">
-$Date: 2012-03-05 10:56:28 $ $Revision: 1.31 $
+$Date: 2012-03-16 13:32:51 $ $Revision: 1.32 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit
 Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

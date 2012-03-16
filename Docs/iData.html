@@ -2,12 +2,6 @@
 <html><head>
 
 
-
-
-
-
-
-
   <title>iFit: iData object definition</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 </head><body>
@@ -65,8 +59,17 @@ The <span style="font-style: italic;">iData</span> object is a
 structure which holds some imported data
 (numerical blocks), as well as additional metadata and axes
 definitions, <span style="font-style: italic;">Signal, Error bars,
-Monitors</span>, and user defined fields (aliases). A large number of <a href="Methods.html">methods</a> can be used with iData, including data
+Monitors</span>,
+and user defined fields (aliases). These objects, which are used as
+normal Matlab variables, often contain 1D, 2D, 3D, nD histograms or nD
+event lists.
+You will learn below how to customize these objects (set, get,
+setalias, getalias, setaxis, getaxis, indexing).<br>
+<br>
+A large number of <a href="Methods.html">methods</a> can be used with iData, including data
 <a href="Load.html">import, </a><a href="Plot.html">plotting, </a><a href="Save.html">saving, </a><a href="Fit.html">fitting</a> and <a href="Math.html">mathematical</a> operators.<br>
+<br>
+For impatient readers, we advise you to refer to the <a href="Load.html#mozTocId889584">quick Setting Signal and Axes</a> documentation in the <a href="Load.html">Load</a> page, in order to customize the object. For the others, just go on reading how objects are built, and how to handle them.<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId466436"></a>Introduction to the
 iData objects</h3>
 An iData object is obtained for instance by transforming a file name
@@ -79,9 +82,9 @@ with<br>
 which results in an <span style="font-style: italic;">iData</span>
 object. An other way to instantiate an object is to import directly
 Matlab variables:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal)<br></pre>For impatient readers, we advise you to refer to the <a href="Load.html#mozTocId889584">quick Setting Signal and Axes</a> documentation in the <a href="Load.html">Load</a> page, in order to customize the object. For the others, just go on reading how objects are built, and how to handle them.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal<br></pre>
 
-<br>
+
 These objects, which internal structure can be obtained with the <span style="font-style: italic;">struct(a)</span> method, hold a number of
 important items:<br>
 <ul>
@@ -577,8 +580,8 @@ Axes are required, each may have a dimensionality from 1 to <span style="font-st
 Axes are required, each being a scalar or vector of same length as
 Signal. <span style="font-weight: bold;">NOTE: </span>Not all Math
 methods support this type of data, and it should be converted, when
-appropriate, into nD grid histogramed with the<span style="font-style: italic;"></span> <span style="font-weight: bold; font-style: italic;">hist</span> or <span style="font-weight: bold; font-style: italic;">interp</span> operators (see <a href="Math.html#mozTocId208686">Math/interpolation</a>).<br>
-      </td>
+appropriate, into nD grid histogramed with the <b><i>hist</i></b> or <b><i>interp<b></b></i><b> operators (see <a href="Math.html#mozTocId208686">Math/interpolation</a>).<br>
+      </b></b></td>
     </tr>
   </tbody>
 </table>
@@ -786,7 +789,7 @@ initialize an array of empty iData objects<br>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iData objects - $Date: 2012-03-14 15:22:09 $ $Revision:1.7
+Farhi - iFit/iData objects - $Date: 2012-03-16 13:32:51 $ $Revision:1.7
 $
 </span> - back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
