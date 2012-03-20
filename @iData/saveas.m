@@ -27,7 +27,10 @@ function [filename,format] = saveas(a, varargin)
 %           'wrl'  save as Virtual Reality VRML 2.0 file
 %           'dat'  save as Flat text file with comments
 %           'fits' save as FITS binary image (only for 2D objects)
-%           If given as format='gui' and filename extension is not specified, a format list pops-up
+%           'hdr'  save as HDR/IMG Analyze MRI volume (3D)
+%           'stl'  save as STL stereolithography (geometry), binary
+%           'stla' save as STL stereolithography (geometry), ascii
+%           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
 %
@@ -40,8 +43,9 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 %   pmedf_write
 %   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
+%   stlwrite
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
@@ -88,7 +92,8 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
       '*.wrl;*.vrml', 'Virtual Reality file (*.wrl, *.vrml)'; ...
       '*.vtk', 'VTK volume (*.vtk)'; ...
-      '*.hdr', 'Analyze volume (*.hdr+img)'; };
+      '*.hdr', 'Analyze volume (*.hdr+img)'; ...
+      '*.stl', 'Stereolithography geometry (*.stl)' };
 if strcmp(filename, 'formats')
   fprintf(1, '       EXT  DESCRIPTION [%s(iData)]\n', mfilename);
   fprintf(1, '-----------------------------------------------------------------\n'); 
@@ -282,6 +287,25 @@ case {'vrml','wrl'} % VRML format
   g = gca;
   vrml(g,filename);
   close(f);
+case {'stl','stla','stlb'} % STL ascii, binary
+  if ~isfield(a.Data, 'vertices') || ~isfield(a.Data, 'faces')
+    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
+  else
+    if any(strcmp(format, {'stl','stlb'}))
+      mode = 'binary';
+    else
+      mode = 'ascii';
+    end
+    
+    % get Title
+    T   = a.Title; if ~ischar(T), T=char(T); end
+    if ~isvector(T), T=transpose(T); T=T(:)'; end
+    T   = regexprep(T,'\s+',' '); % remove duplicated spaces
+    if length(T) > 69, T=[ T(1:60) '...' T((end-8):end) ]; end
+    
+    stlwrite(filename, a.Data, 'Mode', mode, 'Title', T);
+  end
+
 otherwise
   iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
   filename = [];
