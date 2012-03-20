@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -77,7 +77,7 @@ for i = 1:length(S)     % can handle multiple index levels
         end
       end 
       
-      b = copyobj(b);
+      b = setaxis(copyobj(b));
       
       % add command to history
       if ~isempty(inputname(2))
