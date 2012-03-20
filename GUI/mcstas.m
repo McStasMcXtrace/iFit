@@ -101,7 +101,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.34 $
+% Version: $Revision: 1.35 $
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -643,14 +643,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   % import McStas simulation result
   sim = [];
   try
-    % first try to import monitors from their file names
-    if isfield(options,'monitors')
-      for index=1:length(options.monitors)
-        [name, R] = strtok(options.monitors{index},' ,;/*+-(){}:%$.');
-        sim = [ sim iData(fullfile(directory,[ name '*' ])) ];
-        setalias(sim, 'CriteriaExpression', R);
-      end
-    end
+    
     if isempty(sim)
       % if designated monitor file name import fails, import all simulation content
       if ~isempty(dir([ directory filesep 'mcstas.sim' ]))
@@ -671,6 +664,14 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
         if any(use_monitors)
           sim = sim(find(use_monitors));
         end
+      end
+    end
+    % first try to import monitors from their file names
+    if isfield(options,'monitors')
+      for index=1:length(options.monitors)
+        [name, R] = strtok(options.monitors{index},' ,;/*+-(){}:%$.');
+        sim = [ sim iData(fullfile(directory,[ name '*' ])) ];
+        setalias(sim, 'CriteriaExpression', R);
       end
     end
   catch

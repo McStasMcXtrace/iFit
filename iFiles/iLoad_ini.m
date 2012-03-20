@@ -143,6 +143,19 @@ function config = iLoad_ini
     ILL_inx.postprocess='load_ill_inx';
     ILL_inx.extension  ='inx';
     
+    STL_ascii.name     ='STL ascii';
+    STL_ascii.method   ='mstlread';
+    STL_ascii.options  ='ascii';
+    STL_ascii.patterns ={'facet','vertex','endfacet'};
+    STL_ascii.extension={'stl','stla'};
+    STL_ascii.postprocess='load_stl';
+    
+    STL_binary.name     ='STL binary';
+    STL_binary.method   ='mstlread';
+    STL_binary.options  ='binary';
+    STL_binary.extension={'stl','stlb'};
+    STL_binary.postprocess='load_stl';
+    
 % binary formats ===============================================================
     
     ESRF_edf.name       ='EDF ESRF Data Format';
@@ -177,8 +190,8 @@ function config = iLoad_ini
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
 	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
-	       chalkriver, ISIS_spe, ILL_inx, ...
-	       ESRF_edf, Matlab_FIG, PDB, Analyze, CBF};
+	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, ...
+	       ESRF_edf, Matlab_FIG, PDB, Analyze, CBF, STL_binary};
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
