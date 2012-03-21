@@ -22,7 +22,7 @@ function outarray = iData(varargin)
 % When used with file names, compressed files may be used, as well as URLs and internal
 %   anchor reference using the '#' character, such as in 'http://path/file.zip#Data'.
 %
-% Type <a href="matlab:helpwin iData/doc">doc(iData)</a> to access the iFit/iData Documentation.
+% Type <a href="matlab:doc(iData)">doc(iData)</a> to access the iFit/iData Documentation.
 % Refer to <a href="matlab:helpwin iData/load">iData/load</a> for more information about loading data sets.
 % iData is part of iFit http://ifit.mccode.org 
 %
@@ -30,7 +30,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.43 $
+% Version: $Revision: 1.44 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
