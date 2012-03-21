@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.31 $
+% Version: $Revision: 1.32 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -50,7 +50,7 @@ else
   if isnumeric(s.ModificationDate), s.ModificationDate=datestr(s.ModificationDate); end
   disp(s)
   
-  % display the Aliases
+  % display the Aliases ---------------------------------------------------
   disp('Object aliases:');
   disp('         [Name]                           [Value]   [Description]');
   for index=1:length(s_in.Alias.Names)
@@ -89,6 +89,15 @@ else
         end
       end
       if length(v) > 32, v = [ '...' v((end-28):end) ]; end
+    else 
+      label = [ label ' (' class(v) ')' ];
+      v=class2str('s',v,'no comments'); 
+      v=strrep(v,sprintf('\n'),''); v=v(:)';
+      if length(v) > 32, v = [v(1:29) '...' ]; end 
+    end
+    if strcmp(s_in.Alias.Names{index}, 'Format'),
+      if isempty(label), label='help about formats'; end
+      label=[ '<a href="matlab:doc(iData,''Load'')">' label '</a>' ];
     end
     fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, strtrim(v), strtrim(char(label)));
     if strcmp(s_in.Alias.Names{index}, 'Signal') & length(s_in.Alias.Axis) == 0
@@ -105,7 +114,7 @@ else
     fprintf(1, '\n');
   end
   
-  % display the Signal and Axes
+  % display the Signal and Axes -------------------------------------------
   disp('Object axes:');
   disp('[Rank]         [Value]  [Description]');
   for index=0:length(s_in.Alias.Axis)

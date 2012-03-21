@@ -28,6 +28,8 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %   least_median    median(|Signal-Model|/Error)        robust, scalar
 %   least_max          max(|Signal-Model|/Error)        non-robust, scalar
 %
+%  Type <a href="matlab:doc(iData,'Fit')">doc(iData,'Fit')</a> to access the iFit/Fit Documentation.
+%
 % input:  a: object or array (iData)
 %           when given as an epty iData, the list of optimizers and fit models is shown.
 %         model: model function (char/cellstr)
@@ -84,7 +86,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue; plot(a,b)
 %
-% Version: $Revision: 1.44 $
+% Version: $Revision: 1.45 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc, iFuncs
 
 % private functions: eval_criteria, least_square

@@ -9,7 +9,7 @@ function d = display(s_in, name)
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation
@@ -80,11 +80,11 @@ else
         d = [ d sprintf('/%s', h) ];
       elseif ~isempty(s.Label)
         h = cellstr(s.Label); h=deblank(h{1});
-        if length(h) > 13, h = [ h(1:10) '...' ]; end           % Label
+        if length(h) > 18, h = [ h(1:15) '...' ]; end           % Label
         d = [ d sprintf('%s', h) ];
       elseif ~isempty(s.DisplayName)
         h = cellstr(s.DisplayName); h=deblank(h{1});
-        if length(h) > 13, h = [ h(1:10) '...' ]; end           % DisplayName
+        if length(h) > 18, h = [ h(1:15) '...' ]; end           % DisplayName
         d = [ d sprintf('%s', h) ];
       end
 

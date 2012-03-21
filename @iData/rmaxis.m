@@ -14,7 +14,7 @@ function this = rmaxis(this,rank)
 % output: s: array (iData)
 % ex:     rmaxis(iData, 1) removes the 'x' axis (rank 1)
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/setaxis
 
 % EF 27/07/00 creation
@@ -26,6 +26,9 @@ end
 if numel(this) > 1
   for index=1:numel(this)
     this(index) = rmaxis(this(index), rank);
+  end
+  if nargout == 0 & ~isempty(inputname(1))
+    assignin('caller',inputname(1),this);
   end
   return
 end

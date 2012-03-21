@@ -28,7 +28,7 @@ function this = setaxis(this, rank, alias, value)
 % ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
 %         a{1} =  'Temperature'            does the same
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 % See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
 
 % EF 27/07/00 creation
@@ -62,6 +62,9 @@ end
 %     setaxis(object)              tests all axes
 if nargin == 1
   this = iData_checkaxes(this);
+  if nargout == 0 & length(inputname(1))
+    assignin('caller',inputname(1),this);
+  end
   return
 end
 
@@ -87,6 +90,9 @@ elseif iscell(alias)
   for index=1:numel(alias)
     this = setaxis(this, rank, alias{index}, value);
   end
+  if nargout == 0 & length(inputname(1))
+    assignin('caller',inputname(1),this);
+  end
   return
 end
 
@@ -100,6 +106,9 @@ elseif ~isempty(rank) && isempty(alias)
   if rank == 0
     if isempty(alias) || isempty(value) % reset Signal (find biggest field)
       this = setalias(this, 'Signal',[]);
+      if nargout == 0 & length(inputname(1))
+        assignin('caller',inputname(1),this);
+      end
       return
     end
     alias = 'Signal';

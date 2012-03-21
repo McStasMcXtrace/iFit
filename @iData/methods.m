@@ -1,9 +1,11 @@
-function d = doc(a)
-% doc(iData): iData web page documentation
+function d = methods(a)
+% methods(iData): iData web methods documentation
 %
-%   @iData/doc: web page documentation
+%   @iData/methods: web page documentation
 %
-% Version: $Revision: 1.1 $
+%  Type <a href="matlab:doc(iData,'Methods')">doc(iData,'Methods')</a> to access the iFit/Methods Documentation.
+%
+% Version: $Revision: 1.2 $
 
 % EF 23/10/10 iData impementation
 

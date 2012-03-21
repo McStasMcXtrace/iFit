@@ -1,5 +1,5 @@
-function m = max(a,b, dim)
-% m = max(a,b, dim) : computes the maximum value of iData object(s)
+function [m,id] = max(a,b, dim)
+% [m,id] = max(a,b, dim) : computes the maximum value of iData object(s)
 %
 %   @iData/max function to compute the maximum value of data sets.
 %     max(iData) returns a single value as the maximum value of the iData signal
@@ -10,10 +10,11 @@ function m = max(a,b, dim)
 %         b: object or array (iData/double)
 %         dim: dimension on which to operate
 %
-% output: m: maximum value (double/iData)
+% output: m:  maximum value (double/iData)
+%         id: returns the indices of the maximum value (integer)
 % ex:     b=max(a);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/max, iData/min
 
 if nargin == 1
@@ -22,26 +23,29 @@ end
 if nargin <= 2
   dim = [];
 end
+id=[];
 
 % handle input iData arrays
 if numel(a) > 1 & isa(a,'iData')
   m = [];
   for index=1:numel(a)
-    m = [ m max(a(index), b, dim) ];
+    [y,i] = max(a(index), b, dim);
+    m  = [ m  y ];
+    id = [ id i ]; 
   end
   m = reshape(m, size(a));
   return
 end
 
 if ~isa(a, 'iData')
-  m = max(b, a, dim);
+  [m,id] = max(b, a, dim);
   return
 end
 
 % return a scalar for max(a)
 if isempty(b) && isempty(dim)
   m = get(a, 'Signal');
-  m = max(m(:));
+  [m,id] = max(m(:));
   return
 end
 
@@ -56,7 +60,8 @@ else
 % handle iData and scalar/vector/matrix min/max
   m = copyobj(a);
   if isempty(dim) || ~isempty(b)
-    set(m, 'Signal', max(get(a,'Signal'), b));
+    [y,id] = max(get(a,'Signal'), b);
+    set(m, 'Signal', y);
   else
     rmaxis(m); % delete all axes
     % copy all axes except the one on which operation runs
@@ -67,7 +72,8 @@ else
         ax_index = ax_index+1;
       end
     end
-    set(m, 'Signal', max(get(a,'Signal'), [], dim), [mfilename ' of ' label(a) ]);     % Store Signal
+    [y,id] = max(get(a,'Signal'), [], dim);
+    set(m, 'Signal', y, [mfilename ' of ' label(a) ]);     % Store Signal
   end
 end
 m.Command=cmd;
