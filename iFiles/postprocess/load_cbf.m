@@ -3,8 +3,13 @@ function a=load_cbf(a)
 %
 % Returns an iData style dataset from a CBF file
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+if ~isa(a,'iData')
+  a = load(iData,a,'CBF');
+  return
+end
 
 % handle input iData arrays
 if length(a(:)) > 1

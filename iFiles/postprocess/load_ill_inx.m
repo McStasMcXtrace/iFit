@@ -4,6 +4,11 @@ function b=load_ill_inx(a)
 % Returns an iData style dataset from an ILL INX file
 %
 
+if ~isa(a,'iData')
+  b = load(iData,a,'ILL INX');
+  return
+end
+
 % handle input iData arrays
 if length(a(:)) > 1
   b = [];

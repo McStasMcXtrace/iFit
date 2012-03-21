@@ -137,7 +137,7 @@ function config = iLoad_ini
     ISIS_spe.patterns   ={'Phi Grid'};
     ISIS_spe.extension  ='spe';
     
-    ILL_inx.name       ='INX tof data';
+    ILL_inx.name       ='ILL INX tof data';
     ILL_inx.options    ='';
     ILL_inx.method     ='read_inx';
     ILL_inx.postprocess='load_ill_inx';
@@ -158,14 +158,14 @@ function config = iLoad_ini
     
     OFF_ascii.name      ='OFF 3D ascii';
     OFF_ascii.method    ='looktxt';
-    OFF_ascii.options   ='--fast --binary --headers --comment=NULL --metadata=OFF';
+    OFF_ascii.options   ='--fast --binary --headers --comment=NULL --metadata=OFF --silent';
     OFF_ascii.extension ='off';
     OFF_ascii.patterns  ={'OFF'};
     OFF_ascii.postprocess='load_stl';
     
     PLY_ascii.name      ='PLY 3D ascii';
     PLY_ascii.method    ='looktxt';
-    PLY_ascii.options   ='--fast --binary --headers --comment=NULL';
+    PLY_ascii.options   ='--fast --binary --headers --comment=NULL --silent';
     PLY_ascii.extension ='ply';
     PLY_ascii.patterns  ={'ply','format ascii','element','end_header'};
     PLY_ascii.postprocess='load_stl';

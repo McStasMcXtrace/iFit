@@ -3,8 +3,13 @@ function a=load_mcstas_scan(a0)
 %
 % Returns iData style datasets from a McStas scan output file
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+if ~isa(a0,'iData')
+  a = load(iData,a0,'McStas scan');
+  return
+end
 
 % handle input iData arrays
 if length(a0(:)) > 1
