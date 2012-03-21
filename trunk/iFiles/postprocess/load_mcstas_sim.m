@@ -3,8 +3,13 @@ function a=load_mcstas_sim(a0)
 %
 % Returns an iData style dataset from a McStas sim file
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+if ~isa(a0,'iData')
+  a = load(iData,a0,'McStas sim');
+  return
+end
 
 % handle input iData arrays
 if length(a0(:)) > 1

@@ -3,8 +3,13 @@ function a = load_analyze(a)
 % Returns an iData style dataset from an Analyze volume dataset
 % typically used in medical imaging.
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+if ~isa(a,'iData')
+  a = load(iData,a,'Analyze');
+  return
+end
 hdr=a.Data.hdr;
 x = ([1:hdr.dim(1)]-hdr.origin(1))*hdr.siz(1);
 y = ([1:hdr.dim(2)]-hdr.origin(2))*hdr.siz(2);

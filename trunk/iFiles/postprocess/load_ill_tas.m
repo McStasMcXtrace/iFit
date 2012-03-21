@@ -4,8 +4,13 @@ function a=load_ill_tas(a)
 % Simple postprocessing for ILL/TAS files.
 % Supports ILL TAS files, including those with multidetectors.
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision: 1.9 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+if ~isa(a,'iData')
+  a = load(iData,a,'ILL TAS');
+  return
+end
 
 % handle input iData arrays
 if length(a(:)) > 1
@@ -37,8 +42,9 @@ if isempty(columns_header),
   warning([ mfilename ': The loaded data set ' a.Tag ' is not an ILL TAS data format.' ]);
   return; 
 end
-columns_header   = columns_header{1};
-
+if iscell(columns_header)
+  columns_header   = columns_header{1};
+end
 % detect if this is a MULTI detector file
 try
   MULTI  = a.MetaData.MULTI; 

@@ -5,10 +5,15 @@ function a=load_mcstas_1d(a)
 % as well as simple XYE files
 % Some labels are also searched.
 %
-% Version: $Revision: 1.17 $
+% Version: $Revision: 1.18 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 % inline: load_mcstas_param
+
+if ~isa(a,'iData')
+  a = load(iData,a,'McStas 1D');
+  return
+end
 
 % handle input iData arrays
 if length(a(:)) > 1
