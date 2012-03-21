@@ -17,6 +17,8 @@ function h=plot(a, varargin)
 %     refers to the 2nd dimension (along columns), whereas the 'Y' axis refers to
 %     the first dimension (along rows).
 %
+%  Type <a href="matlab:doc(iData,'Plot')">doc(iData,'Plot')</a> to access the iFit/Plot Documentation.
+%
 % input:  s: object or array (iData)
 %         method: optional type of plot to render
 %
@@ -50,7 +52,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.92 $
+% Version: $Revision: 1.93 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -60,7 +62,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 
 ih = ishold;
-h  = {};
+h  = [];
 
 % analyze input arguments
 if nargin == 1, method=''; 
@@ -78,7 +80,7 @@ else
   while index <= length(varargin)  % parse input arguments and split with char/methods calls
     if ischar(varargin{index})
       method = varargin{index};
-      h{end+1}=plot(a, method);
+      h =[ h plot(a, method) ];
       a = []; method='';
       hold on
     elseif isa(varargin{index},'iData') 
@@ -91,16 +93,13 @@ end
 clear varargin
 
 if isempty(a)
-  if all(cellfun('length',h) == 1)
-    h = cell2mat(h);
-  end
   if ih == 1, hold on; else hold off; end
   return; 
 end
 
 % clean method string from the plot type and supported options not to be passed to matlab plot commands
 if ischar(method)
-  toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent axis hide_errorbars contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole';
+  toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent axis hide_errorbars contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full';
   toremove=strread(toremove,'%s','delimiter',' ');
   this_method = method;
   for index=1:length(toremove)
@@ -150,34 +149,38 @@ if numel(a) > 1
   end % for
 
   % re-arrange if this is a 2D overlay (shifted)
+  if all(cellfun('length',h) == 1)
+    h = cell2mat(h);
+  end
   for index=1:numel(a(:))
-    if length(h{index}) == 1 && ~isempty(strfind(method, 'shifted'))
+    if length(h(index)) == 1 && ~isempty(strfind(method, 'shifted'))
       if ndims(a(index)) ~= 1
         try
-          z= get(h{index},'ZData'); 
-          c= get(h{index},'CData');
-          if all(z(:) == 0) || ~isequal(z, c)
-              use_cdata=1; z= c;
-          else use_cdata=0; end
+          z= get(h(index),'ZData'); 
+          c= get(h(index),'CData');
+          if all(z(:) == 0)
+               use_cdata=1; z= c;
+          else use_cdata=0; 
+          clear c
+          end
           z = z-min(z(:));
           z = z+sum_max*index/numel(a);
-          if use_cdata==0, set(h{index},'ZData',z);
-          else set(h{index},'CData',z); end
+          if use_cdata==0, 
+               set(h(index),'ZData',z);
+          else set(h(index),'CData',z); 
+          end
         end
       else
         try
-          z= get(h{index},'YData');
+          z= get(h(index),'YData');
           z = z-min(z(:));
           z = z+sum_max*index/length(a(:));
-          set(h{index},'YData',z); 
+          set(h(index),'YData',z); 
         end
       end
     end
   end
-  if all(cellfun('length',h) == 1)
-    h = cell2mat(h);
-  end
-  h = reshape(h, size(a));
+  
   if ih == 1, hold on; else hold off; end
   
   iData_private_warning('exit', mfilename);
@@ -482,11 +485,11 @@ if ~isempty(a.Label) && ~isempty(a.DisplayName)
   d = [ d sprintf('/%s', g) ];
 elseif ~isempty(a.Label)
   g = cellstr(a.Label); g=deblank(g{1});
-  if length(g) > 13, g = [ g(1:10) '...' ]; end           % Label
+  if length(g) > 23, g = [ g(1:20) '...' ]; end           % Label
   d = [ d sprintf('%s', g) ];
 elseif ~isempty(a.DisplayName)
   g = cellstr(a.DisplayName); g=deblank(g{1});
-  if length(g) > 13, g = [ g(1:10) '...' ]; end           % DisplayName
+  if length(g) > 23, g = [ g(1:20) '...' ]; end           % DisplayName
   d = [ d sprintf('%s', g) ];
 end
 
@@ -498,7 +501,7 @@ if length(S)+length(d) < 30,
 end
 try
   if ~isempty(d)
-    set(h, 'DisplayName', [ d ' ' a.Tag ' <' S '>']);
+    set(h, 'DisplayName', [ d ]);
   else
     set(h, 'DisplayName', [ T a.Tag ' <' S '>' ]);
   end
@@ -526,6 +529,9 @@ if exist(a.Source,'file') && ~isdir(a.Source)
   uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
 else
   uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
+end
+if ~isempty(d)
+  uimenu(uicm, 'Label', [ 'Label: ' d ]);
 end
 % menu List of Commands (history)
 uimenu(uicm, 'Label', [ 'Cmd: ' cmd ' ...' ], 'Callback', [ ...

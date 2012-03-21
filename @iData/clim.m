@@ -10,7 +10,7 @@ function a = clim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=clim(a);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/plot, iData/ylabel
 
 % handle input iData arrays
@@ -24,6 +24,9 @@ if numel(a) > 1
     a = reshape(s, size(a));
   else
     a = s;
+  end
+  if nargout == 0 & nargin == 2 & ~isempty(inputname(1))
+    assignin('caller',inputname(1),a);
   end
   return
 end

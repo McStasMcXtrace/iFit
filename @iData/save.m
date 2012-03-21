@@ -6,6 +6,8 @@ function [filename,format] = save(a, varargin)
 %   save(iData,'formats')
 %     prints a list of supported export formats.
 %
+%  Type <a href="matlab:doc(iData,'Save')">doc(iData,'Save')</a> to access the iFit/Save Documentation.
+%
 % input:  s: object or array (iData)
 %         filename: name of file to save to. Extension, if missing, is appended (char)
 %                   If the filename already exists, the file is overwritten.
@@ -39,7 +41,7 @@ function [filename,format] = save(a, varargin)
 %   iData_private_save_hdfnc
 %   pmedf_write:
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iData, iData/load, iData/getframe, save, saveas
 
 [filename,format] = saveas(a, varargin{:});

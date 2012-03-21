@@ -25,7 +25,7 @@ function this = setalias(this,names,links,labels)
 %         setalias(iData,'Temperature',1:20)
 %         setalias(iData,'T_pi','[ this.Data.Temperature pi ]')
 %
-% Version: $Revision: 1.23 $
+% Version: $Revision: 1.24 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/rmalias
 
 % EF 27/07/00 creation
@@ -54,6 +54,9 @@ elseif nargin == 2
   if length(names) == 1 && strcmp(names{1}, 'Signal')
     this.Alias.Values{1}='';
     this = iData(this);  % check the object
+    if nargout == 0 & ~isempty(inputname(1))
+      assignin('caller',inputname(1),this);
+    end
     return
   end
   links = ''; labels=''; % removes aliases
@@ -81,6 +84,9 @@ if any(strcmp('Signal',names)) && isempty(links)
   % reset Signal to the default largest numerical field
   this.Alias.Values{1} = '';
   this = iData(this);
+  if nargout == 0 & ~isempty(inputname(1))
+    assignin('caller',inputname(1),this);
+  end
   return
 end
 

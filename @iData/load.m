@@ -21,6 +21,8 @@ function out = load(a, varargin)
 %   File names may end with an internal anchor reference '#anchor", as used in HTML 
 %     links, in which case the members matching the anchor are returned.
 %
+%  Type <a href="matlab:doc(iData,'Load')">doc(iData,'Load')</a> to access the iFit/Load Documentation.
+%
 % input:  s: object or array (iData)
 %         file: file name(s) to import (char/cellstr)
 %         loader: optional loader method specification (char/struct/cellstr/array of struct)
@@ -42,7 +44,7 @@ function out = load(a, varargin)
 %         load(iData, [ ifitpath 'Data/peaks.hdf5' ], 'HDF')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.37 $
+% Version: $Revision: 1.38 $
 % See also: iLoad, save, iData/saveas, iFiles
 
 % calls private/iLoad

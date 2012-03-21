@@ -10,7 +10,7 @@ function a = zlim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=zlim(a);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also iData, iData/plot, iData/ylabel
 
 % handle input iData arrays
@@ -24,6 +24,9 @@ if numel(a) > 1
     a = reshape(s, size(a));
   else
     a = s;
+  end
+  if nargout == 0 & nargin == 2 & length(inputname(1))
+    assignin('caller',inputname(1),a);
   end
   return
 end

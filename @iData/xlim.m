@@ -10,7 +10,7 @@ function a = xlim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=xlim(a);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/plot, iData/xlabel
 
 % handle input iData arrays
@@ -24,6 +24,9 @@ if numel(a) > 1
     a = reshape(s, size(a));
   else
     a = s;
+  end
+  if nargout == 0 & nargin ==2 && length(inputname(1))
+    assignin('caller',inputname(1),a);
   end
   return
 end

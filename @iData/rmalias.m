@@ -11,7 +11,7 @@ function this = rmalias(this,names)
 % output: s: array (iData)
 % ex:     rmalias(iData,'Temperature')
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/setalias
 
 % EF 27/07/00 creation
@@ -24,6 +24,9 @@ end
 if numel(this) > 1
   for index=1:numel(this)
     this(index) = rmalias(this(index), names);
+  end
+  if nargout == 0 & ~isempty(inputname(1))
+    assignin('caller',inputname(1),this);
   end
   return
 end

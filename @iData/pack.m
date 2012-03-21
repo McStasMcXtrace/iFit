@@ -10,7 +10,7 @@ function b = pack(a)
 % output: f: compressed object or array (iData)
 % ex:     b=pack(a);
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/sparse, iData/full, iData/saveas
 
 if numel(a) > 1
@@ -19,6 +19,9 @@ if numel(a) > 1
     b = [ b pack(a(index)) ];
   end
   b = reshape(b, size(a));
+  if nargout == 0 & ~isempty(inputname(1))
+    assignin('caller',inputname(1),b);
+  end
   return
 end
 
@@ -115,7 +118,7 @@ for index=1:length(largemat)
 end
 b.Command = h;
 
-if nargout == 0 & length(inputname(1))
+if nargout == 0 & ~isempty(inputname(1))
   assignin('caller',inputname(1),b);
 end
 
