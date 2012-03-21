@@ -36,7 +36,7 @@ else  % ascii, text
   end
 
   % then the slower one
-  if isempty(v)
+  if isempty(n) || isempty(v)
     [f,v,c]=rndread(file);
   end
 end
@@ -325,3 +325,5 @@ end
 if verbose
     disp('Done!');
 end
+
+% ------------------------------------------------------------------------------

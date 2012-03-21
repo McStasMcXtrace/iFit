@@ -47,7 +47,7 @@ function [filename,format] = saveas(a, varargin)
 %   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
 %   stlwrite
 %
-% Version: $Revision: 1.29 $
+% Version: $Revision: 1.30 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
@@ -289,7 +289,7 @@ case {'vrml','wrl'} % VRML format
   g = gca;
   vrml(g,filename);
   close(f);
-case {'stl','stla','stlb'} % STL ascii, binary
+case {'stl','stla','stlb','off','ply'} % STL ascii, binary
   if ~isfield(a.Data, 'vertices') || ~isfield(a.Data, 'faces')
     iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
   else
@@ -304,8 +304,11 @@ case {'stl','stla','stlb'} % STL ascii, binary
     if ~isvector(T), T=transpose(T); T=T(:)'; end
     T   = regexprep(T,'\s+',' '); % remove duplicated spaces
     if length(T) > 69, T=[ T(1:60) '...' T((end-8):end) ]; end
-    
-    stlwrite(filename, a.Data, 'Mode', mode, 'Title', T);
+    if strncmp(format,'stl',3)
+      stlwrite(filename, a.Data, 'Mode', mode, 'Title', T);
+    elseif strncmp(format,'off',3)
+    elseif strncmp(format,'ply',3)
+    end
   end
 
 otherwise
