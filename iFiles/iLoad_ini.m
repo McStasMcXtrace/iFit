@@ -143,18 +143,33 @@ function config = iLoad_ini
     ILL_inx.postprocess='load_ill_inx';
     ILL_inx.extension  ='inx';
     
-    STL_ascii.name     ='STL ascii';
+    STL_ascii.name     ='STL/SLP 3D ascii';
     STL_ascii.method   ='mstlread';
     STL_ascii.options  ='ascii';
     STL_ascii.patterns ={'facet','vertex','endfacet'};
-    STL_ascii.extension={'stl','stla'};
+    STL_ascii.extension={'stl','stla','slp'};
     STL_ascii.postprocess='load_stl';
     
-    STL_binary.name     ='STL binary';
+    STL_binary.name     ='STL 3D binary';
     STL_binary.method   ='mstlread';
     STL_binary.options  ='binary';
     STL_binary.extension={'stl','stlb'};
     STL_binary.postprocess='load_stl';
+    
+    OFF_ascii.name      ='OFF 3D ascii';
+    OFF_ascii.method    ='looktxt';
+    OFF_ascii.options   ='--fast --binary --headers --comment=NULL --metadata=OFF';
+    OFF_ascii.extension ='off';
+    OFF_ascii.patterns  ={'OFF'};
+    OFF_ascii.postprocess='load_stl';
+    
+    PLY_ascii.name      ='PLY 3D ascii';
+    PLY_ascii.method    ='looktxt';
+    PLY_ascii.options   ='--fast --binary --headers --comment=NULL';
+    PLY_ascii.extension ='ply';
+    PLY_ascii.patterns  ={'ply','format ascii','element','end_header'};
+    PLY_ascii.postprocess='load_stl';
+    
     
 % binary formats ===============================================================
     
@@ -190,7 +205,7 @@ function config = iLoad_ini
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
 	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
-	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, ...
+	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, OFF_ascii, PLY_ascii, ...
 	       ESRF_edf, Matlab_FIG, PDB, Analyze, CBF, STL_binary};
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
