@@ -3,8 +3,13 @@ function a = load_xyen(a)
 %
 % Simple postprocessing for X Y E N files.
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+if ~isa(a,'iData')
+  a = load(iData,a,mfilename);
+  return
+end
 
 % handle input iData arrays
 if length(a(:)) > 1

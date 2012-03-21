@@ -46,7 +46,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.62 $
+% Version: $Revision: 1.63 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -374,11 +374,13 @@ function [data, loader] = iLoad_import(filename, loader, varargin)
     loaders_count=0;
     for index=1:length(formats)
       this_loader = formats{index};
-      i1 = strfind(this_loader.name, loader);   if isempty(i1), i1=0; end
-      i2 = strfind(this_loader.method, loader); if isempty(i2), i2=0; end
-      i3 = strfind(this_loader.extension, loader); if iscell(i3), i3 = ~cellfun('isempty', i3); end
+      i1 = strfind(lower(this_loader.name), lower(loader));   if isempty(i1), i1=0; end
+      i2 = strfind(lower(this_loader.method), lower(loader)); if isempty(i2), i2=0; end
+      i3 = strfind(lower(this_loader.extension), lower(loader)); if iscell(i3), i3 = ~cellfun('isempty', i3); end
+      i4 = strfind(lower(this_loader.postprocess), lower(loader)); if iscell(i4), i4 = ~cellfun('isempty', i4); end
       if all(isempty(i3)), i3=0; end
-      if i1 || i2 || any(i3)
+      if all(isempty(i4)), i4=0; end
+      if i1 || i2 || any(i3) || any(i4)
         loaders_count          = loaders_count+1;
         loaders{loaders_count} = this_loader;
       end

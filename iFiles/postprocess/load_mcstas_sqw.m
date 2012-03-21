@@ -3,8 +3,13 @@ function a=load_mcstas_sqw(a)
 %
 % Returns an iData style dataset from a McStas Sqw Table (Isotropic Sqw)
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+if ~isa(a,'iData')
+  a = load(iData,a,'McStas Sqw');
+  return
+end
 
 % handle input iData arrays
 if length(a(:)) > 1

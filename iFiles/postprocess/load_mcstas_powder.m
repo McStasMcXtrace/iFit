@@ -4,8 +4,13 @@ function a=load_mcstas_powder(a)
 % Returns an iData style dataset from a McStas Powder file (LAZ/LAU)
 % such files can be obtained from Crystallographica and ICSD <icsd.ill.fr>
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+if ~isa(a,'iData')
+  a = load(iData,a,'McStas powder');
+  return
+end
 
 % handle input iData arrays
 if length(a(:)) > 1

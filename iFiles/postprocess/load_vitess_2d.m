@@ -3,8 +3,13 @@ function a=load_vitess_2d(a)
 %
 % Returns an iData style dataset from a VITESS 2d monitor file
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+if ~isa(a,'iData')
+  a = load(iData,a,mfilename);
+  return
+end
 
 % handle input iData arrays
 if length(a(:)) > 1

@@ -3,8 +3,13 @@ function b=load_stl(a)
 %
 % Returns an iData style dataset from a STL file (ascii or binary)
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also: iData/load, iLoad, save, iData/saveas
+
+if ~isa(a,'iData')
+  b = load(iData,a,'STL');
+  return
+end
 
 % handle input iData arrays
 if length(a(:)) > 1
