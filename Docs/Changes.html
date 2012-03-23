@@ -5,6 +5,7 @@
 
 
 
+
   
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
@@ -20,11 +21,9 @@
 
 <br>
 
-<ol id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes
-</a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId482415">Data set maximum size</a></li><li><a href="#mozTocId332568">Convolution brings strange results (iFuncs/fconv)
-</a></li><li><a href="#mozTocId473369">Too many warnings displayed</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li></ol></li>
-</ol>
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes
+</a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId482415">Data set maximum size</a></li><li><a href="#mozTocId786389">NetCDF files written by Matlab can not be read by other software (hdfview, ncBrowse)</a></li><li><a href="#mozTocId332568">Convolution brings strange results (iFuncs/fconv)
+</a></li><li><a href="#mozTocId473369">Too many warnings displayed</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li></ol></li></ol>
 
 
 
@@ -36,8 +35,11 @@
 <ul>
 
 
+  <li><span style="font-weight: bold;">1.1.2</span>: Support for PLY, STL, OFF geometry files (vertices/faces).<br>
+<span style="font-weight: bold;"></span></li>
   <li><span style="font-weight: bold;">1.1.1</span>: Reading of Chalk River <a href="http://www.nrc-cnrc.gc.ca/eng/ibp/cnbc.html">CNBC</a> data files, improved recursive reading of subdirectories and handling of iData arrays. New <a href="Plot.html#mozTocId406394">colormap</a> plotting method. Improvements in the iOptim/McStas plotting. Speed up by +12% (March 16th, 2012)<br>
 <span style="font-weight: bold;"></span></li>
+
   <li><span style="font-weight: bold;">1.1</span>: new methods (save, diff, <a href="Math.html">hyperbolic functions</a>), fix of the <a href="iOptim.html">Levenberg-Marquardt optimizer</a>,
 improved Error propagation for unary operators, support for <a href="iFiles.html">import</a> of
 Analyze MRI (hdr/img) and Crystallographic Binary File (cbf) format,
@@ -93,8 +95,12 @@ The iFit package may currently handle routinely data sets up to few 100
 Mb. Larger data sets can still be loaded, but are restricted by the
 disk access and the available memory. Currently, files can be read at
 about 8 Mb/s, mainly limited by the hard disk speed. Some binary files
-can be imported faster (HDF import is nearly immediate, whatever be the
-size).<br>
+can be imported faster (HDF initial access is nearly immediate, whatever be the
+file size).<br>
+<h4><a class="mozTocH4" name="mozTocId786389"></a>NetCDF files written by Matlab can not be read by other software (hdfview, ncBrowse)</h4>
+It has been reported that the NetCDF 2.0 files written by Matlab &lt; 2010b can not be re-opened with other software (<a href="http://meteora.ucsd.edu/%7Epierce/ncview_home_page.html">ncview</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>, <a href="http://www.epic.noaa.gov/java/ncBrowse/">ncBrowse</a>). In such cases, we recommend to rather export in HDF5 format with:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(object, <span style="color: rgb(204, 51, 204);">'file.hdf5'</span>)</pre>
+
 
 <h4><a class="mozTocH4" name="mozTocId332568"></a>Convolution brings strange results (iFuncs/fconv)<br>
 </h4>
@@ -166,7 +172,7 @@ Move <span style="font-style: italic;">iFit</span> to an other location which do
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Changes - </span><span style="font-style: italic;">
-$Date: 2012-03-16 14:09:39 $ $Revision: 1.28 $
+$Date: 2012-03-23 22:30:50 $ $Revision: 1.29 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

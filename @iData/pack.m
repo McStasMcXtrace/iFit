@@ -10,7 +10,7 @@ function b = pack(a)
 % output: f: compressed object or array (iData)
 % ex:     b=pack(a);
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/sparse, iData/full, iData/saveas
 
 if numel(a) > 1
@@ -112,9 +112,9 @@ h = b.Command;
 largemat = cellfun('length', h);
 largemat = find(largemat > 1000);
 for index=1:length(largemat)
-  d = h{index};
-  d = [ d(1:10) ' ... ' d((end-10):end) ];
-  h{index} = d;
+  d = h{largemat(index)};
+  d = [ d(1:50) ' ... ' d((end-50):end) ];
+  h{largemat(index)} = d;
 end
 b.Command = h;
 

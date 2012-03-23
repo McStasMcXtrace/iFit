@@ -5,6 +5,9 @@ function [filename,format] = save(a, varargin)
 %     This function saves the content of iData objects. The default format is 'm'.
 %   save(iData,'formats')
 %     prints a list of supported export formats.
+%   save(iData,'file.ext')            determine file format from the extension
+%   save(iData,'file','format')       sets file format explicitly
+%   save(iData,'file','format clean') sets file format explicitly and remove NaN and Inf.
 %
 %  Type <a href="matlab:doc(iData,'Save')">doc(iData,'Save')</a> to access the iFit/Save Documentation.
 %
@@ -14,7 +17,7 @@ function [filename,format] = save(a, varargin)
 %                   If given as filename='gui', a file selector pops-up
 %         format: data format to use (char), or determined from file name extension
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
-%           'mat'  save as a '.mat' binary file (same as 'save')
+%           'mat'  save as a '.mat' binary file (same as 'save', default)
 %           'hdf5' save as an HDF5 data set
 %           'nc'   save as NetCDF 
 %         as well as other lossy formats
@@ -28,7 +31,13 @@ function [filename,format] = save(a, varargin)
 %           'svg'  save as Scalable Vector Graphics (SVG) format
 %           'wrl'  save as Virtual Reality VRML 2.0 file
 %           'dat'  save as Flat text file with comments
-%           If given as format='gui' and filename extension is not specified, a format list pops-up
+%           'fits' save as FITS binary image (only for 2D objects)
+%           'hdr'  save as HDR/IMG Analyze MRI volume (3D)
+%           'stl'  save as STL stereolithography (geometry), binary
+%           'stla' save as STL stereolithography (geometry), ascii
+%           'off'  save as Object File Format (geometry), ascii
+%           'ply'  save as PLY (geometry), ascii
+%           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
 %
@@ -39,10 +48,12 @@ function [filename,format] = save(a, varargin)
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 
 %   iData_private_save_hdfnc
-%   pmedf_write:
+%   pmedf_write
+%   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
+%   stlwrite
 %
-% Version: $Revision: 1.2 $
-% See also iData, iData/load, iData/getframe, save, saveas
+% Version: $Revision: 1.3 $
+% See also iData, iData/saveas, iData/load, iData/getframe, save, saveas
 
 [filename,format] = saveas(a, varargin{:});
 

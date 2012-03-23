@@ -8,7 +8,7 @@ function s = commandhistory(a)
 % output: b: command history (char/cell)
 % ex:     b=commandhistory(a);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iData/disp, iData/display
 
 % handle input iData arrays
@@ -24,5 +24,8 @@ s = a.Command;
 if nargout == 0
   T   = a.Title; if iscell(T), T=T{1}; end
   T   = regexprep(T,'\s+',' '); % remove duplicated spaces
-  listdlg('ListString', s, 'ListSize',[400 300],'Name', T ,'PromptString', char(a)); 
+  selection = listdlg('ListString', s, 'ListSize',[400 300],'Name', T ,'PromptString', char(a)); 
+  if ~isempty(selection)
+      s=s{selection};
+  end
 end
