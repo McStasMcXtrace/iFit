@@ -18,7 +18,7 @@ function c = iData_private_binary(a, b, op, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.31 $
+% Version: $Revision: 1.32 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
@@ -28,14 +28,14 @@ function c = iData_private_binary(a, b, op, varargin)
 if (isa(a, 'iData') & numel(a) > 1)
   c = [];
   if isa(b, 'iData') & numel(b) == numel(a)
-  	% add element to element
+    % add element to element
     for index=1:numel(a)
       c = [ c iData_private_binary(a(index), b(index), op) ];
     end
   elseif isempty(b)
-  	% process all elements from vector
-  	c = a(1);
-  	for index=2:numel(a)
+    % process all elements from vector
+    c = a(1);
+    for index=2:numel(a)
       c = iData_private_binary(c, a(index), op);
     end
     return
@@ -51,7 +51,7 @@ if (isa(a, 'iData') & numel(a) > 1)
     end
   end
   if ~isempty(b)
-  	c = reshape(c, size(a));
+    c = reshape(c, size(a));
   end
   return
 elseif isa(b, 'iData') & numel(b) > 1
@@ -91,7 +91,7 @@ end
 % get Signal, Error and Monitor for 'a' and 'b'
 if isa(a, 'iData') & isa(b, 'iData') 
   if strcmp(op, 'combine')
-    [a,b] = union(a,b); % perform combine on union
+    [a,b] = union(a,b);     % perform combine on union
   else
     [a,b] = intersect(a,b); % perform operation on intersection
   end
@@ -139,18 +139,27 @@ case {'plus','minus','combine'}
   if strcmp(op, 'combine'), 
        s3 = genop( @plus,  y1, y2); % @plus without Monitor nomalization
   else s3 = genop( op,     y1, y2); end
+  i1 = isnan(y1); i2=isnan(y2);
+  % if NaN's are found, use non NaN values in the other data set 
+  if ~isempty(i1), s3(i1) = y2(i1); end
+  if ~isempty(i2), s3(i2) = y1(i2); end
   
-	try
-		e3 = sqrt(genop(@plus, d1.^2,d2.^2));
-	catch
-		e3 = [];  % set to sqrt(Signal) (default)
-	end
-	
-	if     all(m1==0), m3 = m2; 
+  try
+    e3 = sqrt(genop(@plus, d1.^2,d2.^2));
+    if ~isempty(i1), e3(i1) = e2(i1); end
+    if ~isempty(i2), e3(i2) = e1(i2); end
+  catch
+    e3 = [];  % set to sqrt(Signal) (default)
+  end
+  
+  
+  if     all(m1==0), m3 = m2; 
   elseif all(m2==0), m3 = m1; 
   elseif p1
     try
       m3 = genop(@plus, m1, m2);
+      if ~isempty(i1), m3(i1) = m2(i1); end
+      if ~isempty(i2), m3(i2) = m1(i2); end
     catch
       m3 = [];  % set to 1 (default)
     end

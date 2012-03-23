@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.32 $
+% Version: $Revision: 1.33 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -64,7 +64,7 @@ else
     if isnumeric(v) | islogical(v), 
       if length(size(v)) > 2, v=v(:); end
       if numel(v) > 20, v=v(1:18); end
-      v = mat2str(v,2); 
+      v = mat2str(v,5); 
       if length(v) > 32, v = [v(1:29) '...' ]; end 
     elseif ischar(v)
       this = s_in;

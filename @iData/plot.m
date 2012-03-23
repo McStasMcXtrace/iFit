@@ -52,7 +52,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.93 $
+% Version: $Revision: 1.94 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -99,11 +99,16 @@ end
 
 % clean method string from the plot type and supported options not to be passed to matlab plot commands
 if ischar(method)
-  toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent axis hide_errorbars contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full';
+  toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full';
   toremove=strread(toremove,'%s','delimiter',' ');
   this_method = method;
   for index=1:length(toremove)
-    this_method = deblank(strrep(this_method, toremove{index},''));
+    [d1,d2,d3,d4]= regexp(this_method,[ '\<' toremove{index} ]);
+    if isempty(d1), continue; end
+    next_space   = find(this_method(d1:end) == ' ');
+    if isempty(next_space), d2=length(this_method);
+    elseif length(next_space) >= 1, d2=d1+next_space(1)-1; end
+    this_method(d1:d2)='';
   end
 else
   this_method = method;
@@ -269,7 +274,7 @@ case 1  % vector type data (1 axis + signal) -> plot
       if ~length(this_method) 
         h = errorbar(x,y,e); 
       end
-      if ~isempty(strfind(this_method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0)
+      if ~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0)
         if length(h) == 1 && length(get(h,'Children') == 2)
           eh = get(h,'Children');
         else eh = h; 
@@ -359,7 +364,7 @@ case 3  % 3d data sets: volumes
     xlab=''; ylab=''; clab='';
   else
     % check if a rebining on a grid is required
-    if ~isvector(a) && isempty(strfind(method, 'plot3'))
+    if ~isvector(a) && isempty(strfind(method, 'plot3')) && isempty(strfind(method, 'scatter3')) 
       a = interp(a,'grid'); % make sure we get a grid
     end
     [x, xlab] = getaxis(a,2); x=double(x);
@@ -368,7 +373,7 @@ case 3  % 3d data sets: volumes
     [c, clab] = getaxis(a,0); c=double(c);
     m         = get(a,'Monitor');
     if not(all(m(:) == 1 | m(:) == 0)), clab = [clab ' per monitor' ]; end
-    if isvector(a) == 3 || ~isempty(strfind(method, 'scatter3')) % plot3-like
+    if isvector(a) >= 3 || ~isempty(strfind(method, 'scatter3')) % plot3-like
       if ~isempty(strfind(method, 'scatter3'))
         h=fscatter3(x(:),y(:),z(:),c(:), this_method);     % scatter3: may require meshgrid
       else
