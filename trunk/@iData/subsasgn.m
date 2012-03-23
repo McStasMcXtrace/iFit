@@ -9,7 +9,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -98,28 +98,17 @@ else
       end
       
       % add command to history
-      toadd = '(';
+      toadd = '(';              % indices
       if ~isempty(inputname(2))
         toadd = [ toadd inputname(2) ];
-      elseif length(s.subs) == 1
-        toadd = [ toadd mat2str(s.subs{1}) ];
       else
-        toadd = [ toadd mat2str(s.subs{1}) ', ' mat2str(s.subs{2}) ];
+        toadd = [ toadd iData_mat2str(s.subs{:}) ];
       end
-      toadd = [ toadd ') = ' ];
+      toadd = [ toadd ') = ' ]; % values
       if ~isempty(inputname(3))
         toadd = [ toadd inputname(3) ];
-      elseif ischar(val)
-        toadd = [ toadd '''' val '''' ];
-      elseif isnumeric(val) | islogical(val)
-        if length(size(val)) > 2, val=val(:); end
-        if numel(val) > 10, 
-          val=val(1:10); toadd = [ toadd mat2str(val) '...' ]; 
-        else
-          toadd = [ toadd mat2str(val) ];
-        end
       else
-        toadd = [ toadd  '<not listable>' ];
+        toadd = [ toadd iData_mat2str(val) ];
       end
       if ~isempty(inputname(1))
         toadd = [ inputname(1) toadd ';' ];
@@ -220,7 +209,7 @@ if nargout == 0 && ~isempty(inputname(1))
   assignin('caller',inputname(1),b);
 end
 
-% % ==============================================================================
+% ==============================================================================
 % private function iData_setalias
 function this = iData_setalias(this, alias, val)
 % iData_setalias: iData alias assigment
@@ -270,4 +259,25 @@ function this = iData_setalias(this, alias, val)
     this.Alias.Values{alias_num} = val;
   end
   
-  
+% ==============================================================================
+function toadd=iData_mat2str(varargin)
+
+toadd ='';
+for index=1:length(varargin)
+  if index==1, c=''; else c=','; end
+  b = varargin{index};
+  if ischar(b)
+    if numel(b) > 100, b=[ b(1:20) '...' b((end-20):end) ]; end 
+    toadd = [ toadd c ' ''' b '''' ];
+  elseif isa(b, 'iData')
+    toadd = [ toadd ' <' class(b) ' ' b.Tag ' ' b.Source '> ' ];
+  elseif isnumeric(b) || islogical(b) 
+    if ndims(b) > 2,   b=b(:); end
+    if numel(b) > 50, toadd = [ toadd c ' [' mat2str(double(b(1:20))) '...' mat2str(double(b((end-20):end))) ']' ]; 
+    else 
+      toadd = [ toadd c ' ' mat2str(double(b)) ];
+    end
+  else
+    toadd = [ toadd c ' <' class(b) '>'  ];
+  end
+end

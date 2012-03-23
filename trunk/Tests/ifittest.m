@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.26 $
+% Version: $Revision: 1.27 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -74,6 +74,8 @@ t0 = clock;
 
 % execute all tests
 h = waitbar(0, [ 'iFit test: ' message ' (close to Abort)' ], 'Name','iFit: test running...' );
+set(h, 'HandleVisibility','off');
+t=findall(h,'Type','text'); set(t,'Interpreter','none');
 test_length = 0;
 for index=1:length(tests_list)
   try
@@ -91,7 +93,9 @@ for index=1:length(tests_list)
   close all
   if length(tests_list) > 1
     if ~ishandle(h), break; end
-    waitbar(index/length(tests_list), h);
+    waitbar(index/length(tests_list), h, ...
+        [ 'iFit test: ' message ': ' tests_list{index} ' (close to Abort)' ],...
+        'Name','iFit: test running...');
     if strncmp(status{index},'FAILED',6) || ~isempty(errors{index})
         set(h, 'Color','magenta');
     end

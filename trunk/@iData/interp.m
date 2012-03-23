@@ -27,7 +27,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     a=iData(peaks); b=interp(a, 'grid'); c=interp(a, 2);
 %
-% Version: $Revision: 1.35 $
+% Version: $Revision: 1.36 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis, iData/hist
 
 % input: option: linear, spline, cubic, nearest
@@ -352,10 +352,19 @@ for index=1:length(f_axes)
   b.Data.([ 'axis' num2str(index) ]) = f_axes{index};
 end
 
-% clear aliases
-g = getalias(b); g(1:3) = [];
-setalias(b, g);
-% make new aliases/axes
+% update new aliases, but remove old axes which are numeric (to free memory)
+g = getalias(b);
+to_remove=[];
+for index=4:length(g)
+  if any(strcmp(g{index}, b.Alias.Axis))
+    if isnumeric(b.Alias.Values{index})
+      to_remove=[ to_remove index ];
+    end
+  end
+end
+b.Alias.Values(to_remove) = [];
+b.Alias.Names(to_remove)  = [];
+b.Alias.Labels(to_remove) = [];
 setalias(b,'Signal', 'Data.Signal');
 setalias(b,'Error',  'Data.Error');
 setalias(b,'Monitor','Data.Monitor');

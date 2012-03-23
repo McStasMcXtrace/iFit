@@ -10,7 +10,7 @@ function v = linspace(a,b,n)
 % output: v: vector (iData array)
 % ex:     b=linspace(a,b);
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also iData, iData/max, iData/min, iData/colon, iData/logspace
 
 if nargin <= 2
@@ -51,6 +51,8 @@ xa = linspace(1,0,n);
 
 v = [];
 for index=1:n
-  v = [ v a.*xa(index) + b.*(1-xa(index)) ];
+  this = a.*xa(index) + b.*(1-xa(index));
+  this=setalias(this,'linspace',[ xa(index) 1-xa(index) ]);
+  v = [ v this ];
 end
 

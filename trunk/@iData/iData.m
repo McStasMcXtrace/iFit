@@ -30,7 +30,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.44 $
+% Version: $Revision: 1.45 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -438,7 +438,7 @@ elseif isempty(getalias(in, 'Signal'))
         if length(ax) > 1; ax=ax(1); end
         if ~isempty(ax)
           val = get(in, fields_all{ax});
-          if isvector(val)
+          if isvector(val) && ~strcmp(fields_all{ax},getalias(in,'Signal'))
             if length(val) == size(in, index)
               in = setaxis(in, index, [ 'Axis_' num2str(index) ], fields_all{ax});
               dims(ax) = 0;

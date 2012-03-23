@@ -5,6 +5,9 @@ function [filename,format] = saveas(a, varargin)
 %     This function saves the content of iData objects. The default format is 'm'.
 %   saveas(iData,'formats')
 %     prints a list of supported export formats.
+%   saveas(iData,'file.ext')            determine file format from the extension
+%   saveas(iData,'file','format')       sets file format explicitly
+%   saveas(iData,'file','format clean') sets file format explicitly and remove NaN and Inf.
 %
 %  Type <a href="matlab:doc(iData,'Save')">doc(iData,'Save')</a> to access the iFit/Save Documentation.
 %
@@ -14,7 +17,7 @@ function [filename,format] = saveas(a, varargin)
 %                   If given as filename='gui', a file selector pops-up
 %         format: data format to use (char), or determined from file name extension
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
-%           'mat'  save as a '.mat' binary file (same as 'save')
+%           'mat'  save as a '.mat' binary file (same as 'save', default)
 %           'hdf5' save as an HDF5 data set
 %           'nc'   save as NetCDF 
 %         as well as other lossy formats
@@ -32,6 +35,8 @@ function [filename,format] = saveas(a, varargin)
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D)
 %           'stl'  save as STL stereolithography (geometry), binary
 %           'stla' save as STL stereolithography (geometry), ascii
+%           'off'  save as Object File Format (geometry), ascii
+%           'ply'  save as PLY (geometry), ascii
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
@@ -47,7 +52,7 @@ function [filename,format] = saveas(a, varargin)
 %   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
 %   stlwrite
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
@@ -129,8 +134,16 @@ if strcmp(filename, 'gui')
   end
 end
 
+% search for option to clean the data set from NaN's and Inf's
+index=regexp(format, '\<clean\>');  % search the word
+if ~isempty(index)
+  index=index(1);
+  format(index:(index+length('clean')-1)) = '';
+  a = iData_private_cleannaninf(a);
+end
+
 % format='gui' pops-up a list of available file formats, if not given from file extension
-if strcmp(format, 'gui')
+if any(regexp(format, '\<gui\>'))
   liststring= filterspec(:,2);
   format_index=listdlg('ListString',liststring,'Name',[ 'Select format to save ' filename ], ...
     'PromptString', {'Select format ',['to save file ' filename ]}, ...
@@ -139,6 +152,8 @@ if strcmp(format, 'gui')
   format = filterspec{format_index,1};
   format = format(3:end);
 end
+
+format=lower(strtrim(format));
 
 % handle aliases
 switch format
@@ -173,9 +188,11 @@ case 'hdf'
   format='hdf5';
 end
 
+% remove NaN values, which are usually not well supported by text based formats
+
 % ==============================================================================
 % handle specific format actions
-switch lower(format)
+switch format
 case 'm'  % single m-file Matlab output (text), with the full object description
   NL = sprintf('\n');
   str = [ 'function this=' name NL ...
@@ -193,7 +210,8 @@ case 'm'  % single m-file Matlab output (text), with the full object description
           class2str('this', a) ];
   [fid, message]=fopen(filename,'w+');
   if fid == -1
-    iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag ]);
+    iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
+    disp(message)
     return
   end
   fprintf(fid, '%s', str);
@@ -214,7 +232,8 @@ case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLO
           class2str('', a, 'flat') ];
   [fid, message]=fopen(filename,'w+');
   if fid == -1
-    iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag ]);
+    iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
+    disp(message)
     return
   end
   fprintf(fid, '%s', str);
@@ -289,10 +308,25 @@ case {'vrml','wrl'} % VRML format
   g = gca;
   vrml(g,filename);
   close(f);
+<<<<<<< saveas.m
+case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
+  if ndims(a) == 1
+=======
 case {'stl','stla','stlb','off','ply'} % STL ascii, binary
   if ~isfield(a.Data, 'vertices') || ~isfield(a.Data, 'faces')
+>>>>>>> 1.30
     iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
+    return
   else
+    if ndims(a) == 2
+      [x, xlab] = getaxis(a,2); x=double(x);
+      [y, ylab] = getaxis(a,1); y=double(y);
+      [z, clab] = getaxis(a,0); c=double(c);
+    elseif ndims(a) >= 3
+      [x, xlab] = getaxis(a,2); x=double(x);
+      [y, ylab] = getaxis(a,1); y=double(y);
+      [z, zlab] = getaxis(a,3); z=double(z);
+    end
     if any(strcmp(format, {'stl','stlb'}))
       mode = 'binary';
     else
@@ -304,11 +338,52 @@ case {'stl','stla','stlb','off','ply'} % STL ascii, binary
     if ~isvector(T), T=transpose(T); T=T(:)'; end
     T   = regexprep(T,'\s+',' '); % remove duplicated spaces
     if length(T) > 69, T=[ T(1:60) '...' T((end-8):end) ]; end
+<<<<<<< saveas.m
+    % get the faces and vertices
+    v = [x(:) y(:) z(:)];
+    f = delaunay(x(:),y(:));
+    %f=delaunayn(v,{'Qx','Qv','Tv', 'Qt','Qbb','Qc','Qz'});
+    [v, indexm, indexn] =  unique(v, 'rows');
+    f = indexn(f);
+    if strncmp(format,'stl',3)  % STL format
+      stlwrite(filename, f,v, 'Mode', mode, 'Title', T);
+    else                        % OFF and PLY formats
+      [fid, message]=fopen(filename,'w+');
+      if fid == -1
+        iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
+        disp(message)
+        return
+      end
+      % write header
+      if strcmp(format,'ply')   % OFF format
+        fprintf(fid,'ply\nformat ascii 1.0\ncomment This is a PLY file format for %s\nelement vertex %d\n', ...
+          T, size(v,1));
+        fprintf(fid,'property float x\nproperty float y\nproperty float z\nelement face %d\n', size(f,1));
+        fprintf(fid,'property list uchar int vertex_indices\nend_header\n');
+      else                      % PLY
+        fprintf(fid,'OFF\n%i %i 0\n',...
+          size(v,1), size(f,1));
+      end
+      % write data
+      str = num2str(v,5); str(:,end+1) = sprintf('\n');
+      str = str'; str = str(:)';
+      fprintf(fid,'%s', str);
+      f = [ (size(f,2)+1)*ones(size(f,1),1) f ];
+      str = num2str(f-1); str(:,end+1) = sprintf('\n');
+      str = str'; str = str(:)';
+      fprintf(fid,'%s', str);
+      if strcmp(format,'off')
+        fprintf(fid,'# This is an Object File Format (geomview) for %s\n', T);
+       end
+      fclose(fid);
+    end
+=======
     if strncmp(format,'stl',3)
       stlwrite(filename, a.Data, 'Mode', mode, 'Title', T);
     elseif strncmp(format,'off',3)
     elseif strncmp(format,'ply',3)
     end
+>>>>>>> 1.30
   end
 
 otherwise

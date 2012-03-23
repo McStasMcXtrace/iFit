@@ -11,7 +11,7 @@ function this = rmalias(this,names)
 % output: s: array (iData)
 % ex:     rmalias(iData,'Temperature')
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also iData, iData/getalias, iData/get, iData/set, iData/setalias
 
 % EF 27/07/00 creation
@@ -36,7 +36,7 @@ if isempty(names)
   this.Alias.Values(4:end)=[];
   this.Alias.Labels(4:end)=[];
 else
-  this = setalias(this, names);
+  this = setalias(this, names,'');
 end
 
 if nargout == 0 && ~isempty(inputname(1))

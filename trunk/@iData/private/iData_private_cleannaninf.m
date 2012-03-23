@@ -2,6 +2,12 @@ function s=iData_private_cleannaninf(s)
 % iData_private_cleannaninf: clean NaNs and Infs from a numerical field
 %
 
+if isa(s,'iData')
+  s=set(s,'Signal',iData_private_cleannaninf(get(s,'Signal')));
+  s=set(s,'Error', iData_private_cleannaninf(get(s,'Error')));
+  return
+end
+  
 if isnumeric(s)
   S = s(:);
   if all(isfinite(S)), return; end
