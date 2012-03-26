@@ -52,7 +52,7 @@ function [filename,format] = saveas(a, varargin)
 %   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
 %   stlwrite
 %
-% Version: $Revision: 1.31 $
+% Version: $Revision: 1.32 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
@@ -308,14 +308,8 @@ case {'vrml','wrl'} % VRML format
   g = gca;
   vrml(g,filename);
   close(f);
-<<<<<<< saveas.m
 case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
-  if ndims(a) == 1
-=======
-case {'stl','stla','stlb','off','ply'} % STL ascii, binary
-  if ~isfield(a.Data, 'vertices') || ~isfield(a.Data, 'faces')
->>>>>>> 1.30
-    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
+  if ndims(a) == 1    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
     return
   else
     if ndims(a) == 2
@@ -338,7 +332,6 @@ case {'stl','stla','stlb','off','ply'} % STL ascii, binary
     if ~isvector(T), T=transpose(T); T=T(:)'; end
     T   = regexprep(T,'\s+',' '); % remove duplicated spaces
     if length(T) > 69, T=[ T(1:60) '...' T((end-8):end) ]; end
-<<<<<<< saveas.m
     % get the faces and vertices
     v = [x(:) y(:) z(:)];
     f = delaunay(x(:),y(:));
@@ -377,13 +370,6 @@ case {'stl','stla','stlb','off','ply'} % STL ascii, binary
        end
       fclose(fid);
     end
-=======
-    if strncmp(format,'stl',3)
-      stlwrite(filename, a.Data, 'Mode', mode, 'Title', T);
-    elseif strncmp(format,'off',3)
-    elseif strncmp(format,'ply',3)
-    end
->>>>>>> 1.30
   end
 
 otherwise
