@@ -1,39 +1,44 @@
-function b = cat(dim,a,varargin)
+function b = cat(varargin)
 % s = cat(dim,a,...) : catenate iData objects elements along dimension
 %
 %   @iData/cat function to catenate iData objects elements along dimension dim
-%     cat(dim,a,b,c) catenates along axis of rank dim. The axis is then extended.
-%       cat(1,a) accumulates on first dimension (columns)
+%     cat(dim,a,b,c,...) catenates along axis of rank dim. The axis is then extended.
+%     cat(1,a,...) accumulates on first dimension (columns)
+%     cat(a,b...)  accumulates on first dimension (columns) (uses dim=1)
+%     cat(0,a,...) catenates objects along a new dimension (dim = ndims(a)+1)
 %
 % input:  a: object or array (iData/array of)
 %         dim: dimension to accumulate (int)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision: 1.19 $
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
-if nargin == 1 & isa(dim, 'iData') & length(dim) >= 1 % syntax: cat([a])
-  b = cat(1, dim);
-  return
+
+% first parse inputs searching for the dimension, and building the object array
+dim=1; a=[];
+for index=1:length(varargin)
+  this=varargin{index};
+  if ~isa(this,'iData') && isnumeric(this)
+    dim = this;
+  elseif isa(this,'iData')
+    if numel(this) > 1
+      this = reshape(this, 1, numel(this));
+    end
+    a = [ a this ];
+  end
 end
 
-if ~isa(a, 'iData')
+if all(isempty(a))
   iData_private_error(mfilename,['syntax is cat(dim, iData, ...)']);
 end
 
-if length(varargin) >= 1  % syntax: cat(dim,a,b,c,...)
-  if numel(a) == 1, b=a; 
-  else b=a(:); end
-  for index=1:length(varargin)
-    b = [ b ; varargin{index} ];
-  end
-  clear varargin
-  b = cat(dim, b);
-  return
+if isempty(dim) || dim <= 0 || dim > ndims(a(1))
+  dim = ndims(a(1))+1;
 end
+
 % syntax is now: cat(dim,[a(:)])
-a=a(:);
-if length(a) <= 1, b=a; return; end
+if numel(a) <= 1, b=a; return; end
 if dim <= 0, dim=1; end
 
 % removes warnings during interp

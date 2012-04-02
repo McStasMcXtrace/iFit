@@ -7,7 +7,7 @@ function out = load(a, varargin)
 %   The choice of the data file importer is set by default to automatic, so
 %     that most common data importers are tested until one works. User may configure
 %     a list of prefered loader definitions in a file called iData_load_ini.
-%   The optional 3rd argument can be force to use a specific loader list (see below)
+%   The optional 3rd argument can be set to use a specific loader list (see below)
 %     load(iData, filename, loader)
 %   The input iData object is updated if no output argument is specified.
 %
@@ -44,7 +44,7 @@ function out = load(a, varargin)
 %         load(iData, [ ifitpath 'Data/peaks.hdf5' ], 'HDF')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.38 $
+% Version: $Revision: 1.39 $
 % See also: iLoad, save, iData/saveas, iFiles
 
 % calls private/iLoad
@@ -70,35 +70,45 @@ for i=1:numel(files)
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'filename'), filename = files{i}.filename; end
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Source'), filename = files{i}.Source; end
   files{i} = load_check_struct(files{i}, loaders, filename);
-  this_iData =  iData(files{i});	% convert file content from iLoad into iData
-  if ~isempty(this_iData)
-    % specific adjustments for looktxt (default import method)
-    [pathname,filename,ext] = fileparts(files{i}.Source);
-    if isfield(this_iData.Data, 'MetaData')
-      this_iData=setalias(this_iData, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
-      this_iData=load_clean_metadata(this_iData);
-    end
-    
-    if isempty(loaders) || ~isfield(loaders{i}, 'postprocess')
-      loaders{i}.postprocess='';
-    end
-    if ~isempty(loaders{i}.postprocess)
-      % removes warnings
-      iData_private_warning('enter',mfilename);
-      if ~iscellstr(loaders{i}.postprocess)
-        loaders{i}.postprocess = cellstr(loaders{i}.postprocess);
+  if isstruct(files{i}.Data) && any(cellfun('isclass', struct2cell(files{i}.Data), 'iData'))
+    this_iData = [];
+    struct_data = struct2cell(files{i}.Data);
+    for index=1:length(struct_data)
+      if isa(struct_data{index}, 'iData')
+        this_iData = [ this_iData struct_data{index} ];
       end
-      % apply post-load routine: this may generate more data sets
-      for j=1:length(loaders{i}.postprocess)
-        if ~isempty(loaders{i}.postprocess{j})
-          % disp([ mfilename ': Calling post-process ' loaders{i}.postprocess{j} ]);
-          this_iData = feval(loaders{i}.postprocess{j}, this_iData);
+    end
+  else
+    this_iData =  iData(files{i});	% convert file content from iLoad into iData
+    if ~isempty(this_iData)
+      % specific adjustments for looktxt (default import method)
+      [pathname,filename,ext] = fileparts(files{i}.Source);
+      if isfield(this_iData.Data, 'MetaData')
+        this_iData=setalias(this_iData, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
+        this_iData=load_clean_metadata(this_iData);
+      end
+      
+      if isempty(loaders) || ~isfield(loaders{i}, 'postprocess')
+        loaders{i}.postprocess='';
+      end
+      if ~isempty(loaders{i}.postprocess)
+        % removes warnings
+        iData_private_warning('enter',mfilename);
+        if ~iscellstr(loaders{i}.postprocess)
+          loaders{i}.postprocess = cellstr(loaders{i}.postprocess);
         end
+        % apply post-load routine: this may generate more data sets
+        for j=1:length(loaders{i}.postprocess)
+          if ~isempty(loaders{i}.postprocess{j})
+            % disp([ mfilename ': Calling post-process ' loaders{i}.postprocess{j} ]);
+            this_iData = feval(loaders{i}.postprocess{j}, this_iData);
+          end
+        end
+        % reset warnings
+        iData_private_warning('exit',mfilename);
+      elseif ~isempty(loaders{i}.postprocess)
+        iData_private_warning(mfilename,['Can not find post-process function ' loaders{i}.postprocess ' for data format ' loaders{i}.name ]);
       end
-      % reset warnings
-      iData_private_warning('exit',mfilename);
-    elseif ~isempty(loaders{i}.postprocess)
-      iData_private_warning(mfilename,['Can not find post-process function ' loaders{i}.postprocess ' for data format ' loaders{i}.name ]);
     end
   end
   out = [ out this_iData ];
