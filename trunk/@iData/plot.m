@@ -41,6 +41,7 @@ function h=plot(a, varargin)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
 %                 opengl (faster for large data sets)
 %                 whole or full (do not reduce large object size for plotting)
+%                 figure (open 
 %                 
 % output: h: graphics object handles (cell/array)
 % ex:     plot(iData(rand(10)), 'surfc interp transparent'); plot(iData(1:10), 'r-');
@@ -52,7 +53,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.94 $
+% Version: $Revision: 1.95 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -122,6 +123,7 @@ if numel(a) > 1
   % set error bar uniformly along objects
   common_error_bar='undefined'; % will set the value to 0/1 when 1D found
   for index=1:numel(a(:))
+    if isempty(a(index)), h{index} = []; continue; end
     if ndims(a(index)) == 1 && isvector(a(index)) == 1 && ...
       isempty(getaxis(a(index),2)) && ...
       (~isempty(strfind(method, 'plot3'))      || ~isempty(strfind(method, 'stem3')) ...
@@ -152,12 +154,12 @@ if numel(a) > 1
     end
     hold on
   end % for
-
+  
   % re-arrange if this is a 2D overlay (shifted)
-  if all(cellfun('length',h) == 1)
+  if all(cellfun('length',h) <= 1)
     h = cell2mat(h);
   end
-  for index=1:numel(a(:))
+  for index=1:numel(h)
     if length(h(index)) == 1 && ~isempty(strfind(method, 'shifted'))
       if ndims(a(index)) ~= 1
         try

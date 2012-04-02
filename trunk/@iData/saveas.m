@@ -52,29 +52,17 @@ function [filename,format] = saveas(a, varargin)
 %   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
 %   stlwrite
 %
-% Version: $Revision: 1.32 $
+% Version: $Revision: 1.33 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
 if nargin < 2, filename = ''; else filename = varargin{1}; end
 if isempty(filename), filename = a.Tag; end
 if nargin < 3, format=''; else format = varargin{2}; end
-
-% handle array of objects to save iteratively
-if numel(a) > 1 & ~strcmp(lower(format),'mat')
-  if length(varargin) >= 1, filename_base = varargin{1}; 
-  else filename_base = ''; end
-  if strcmp(filename_base, 'gui'), filename_base=''; end
-  filename = cell(size(a));
-  for index=1:numel(a)
-    if isempty(filename_base), filename_base = filename{index}; end
-    if numel(a) > 1
-      [path, name, ext] = fileparts(filename_base);
-      varargin{1} = [ path name '_' num2str(index,'%04d') ext ];
-    end
-    [filename{index}, format] = saveas(a(index), varargin{:});
-  end
-  return
+% if the filename is given only as an extension, use it as the format
+if nargin == 2 && filename(1) == '.'
+  format=filename(2:end);
+  filename='';
 end
 
 if nargin < 4, options=''; else options=varargin{3}; end
@@ -100,7 +88,9 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.wrl;*.vrml', 'Virtual Reality file (*.wrl, *.vrml)'; ...
       '*.vtk', 'VTK volume (*.vtk)'; ...
       '*.hdr', 'Analyze volume (*.hdr+img)'; ...
-      '*.stl', 'Stereolithography geometry (*.stl)' };
+      '*.stl;*.stla;*.stlb', 'Stereolithography geometry (*.stl)'; ...
+      '*.off', 'Object File Format geometry (*.off)'; ...
+      '*.ply', 'PLY geometry (*.ply)' };
 if strcmp(filename, 'formats')
   fprintf(1, '       EXT  DESCRIPTION [%s(iData)]\n', mfilename);
   fprintf(1, '-----------------------------------------------------------------\n'); 
@@ -113,11 +103,12 @@ if strcmp(filename, 'formats')
   return
 end
 
-% filenape='gui' pops-up a file selector
-if strcmp(filename, 'gui')  
+% filename='gui' pops-up a file selector
+if strcmp(filename, 'gui')
+  if numel(a) > 1, t=[ num2str(numel(a)) ' objects' ]; else t=get(a.Title); end
   [filename, pathname, filterindex] = uiputfile( ...
        filterspec, ...
-        ['Save ' a.Title ' as...'], a.Tag);
+        ['Save ' t ' as...'], a.Tag);
   if ~isempty(filename) & filename ~= 0
     ext = filterspec{filterindex,1};
     if iscellstr(ext), ext=ext{1}; end
@@ -172,6 +163,23 @@ elseif isempty(format) & ~isempty(ext)
   format = ext(2:end);
 elseif isempty(format) & isempty(ext) 
   format='mat'; filename = [ filename '.mat' ];
+end
+
+% handle array of objects to save iteratively
+if numel(a) > 1 & ~strcmp(lower(format),'mat')
+  if length(varargin) >= 1, filename_base = varargin{1}; 
+  else filename_base = ''; end
+  if strcmp(filename_base, 'gui'), filename_base=''; end
+  if isempty(filename_base), filename_base='iData'; end
+  filename = cell(size(a));
+  for index=1:numel(a)
+    if numel(a) > 1
+      [path, name, ext] = fileparts(filename_base);
+      varargin{1} = [ path name '_' num2str(index,'%04d') ext ];
+    end
+    [filename{index}, format] = saveas(a(index), varargin{:});
+  end
+  return
 end
 
 % handle some format aliases (after extension extraction from file name)
