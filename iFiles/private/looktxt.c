@@ -79,6 +79,7 @@
 * 1.06  (29/05/09) GCC-4 support (libc/vfprintf is not suited for us)
 * 1.0.7 (09/07/09) fixed metadata export, speed-up by factor 2.
 * 1.0.8 (24/09/09) upgrade MeX support. Build with 'make mex'
+* 1.2.0 (02/04/12) added direct export to MAT files
 *
 *****************************************************************************/
 
@@ -103,10 +104,29 @@
 
 /* Identification ********************************************************* */
 
+/* USE_MEX  is defined when compiled as a MeX from Matlab (triggers USE_MAT)
+   compile with:
+   mex -O looktxt.c
+   in this case, MAT files are not written, but data is directly send back as MEX output arguments 
+ */
+
+/* USE_MAT is defined when support for export to MAT is requested 
+   to compile as a standalone executable with MAT file support use:
+     export $MATLABROOT=<matlabroot> is e.g. /usr/local/matlab
+     export $ARCH=<arch>             is e.g. glnxa64
+     gcc -I$MATLABROOT/extern/include -L$MATLABROOT/bin/<arch> -DUSE_MAT -O2 -o looktxt looktxt.c
+ */
+ 
+/* USE_NEXUS is defined when support for export to NeXus/HDF5 is requested 
+   to compile use:
+     gcc -DUSE_NEXUS -O2 -o looktxt looktxt.c -lNeXus
+ */
+
+
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
-#define DATE    "24 Sept 2009"
+#define DATE    "2 April 2012"
 #ifndef VERSION
-#define VERSION "1.1 $Revision: 1.6 $"
+#define VERSION "1.2 $Revision: 1.7 $"
 #endif
 
 #ifdef __dest_os
@@ -176,7 +196,27 @@ int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
 
 #endif
 
-/* Declarations *********************************************************** */
+/* MATLAB support *********************************************************** */
+
+/* as MEX, we use USE_MAT, but send the blocks directly to matlab engine */
+#ifdef  USE_MEX
+#ifndef USE_MAT
+#define USE_MAT
+#endif
+#include <mex.h>	   /* include MEX library for Matlab */
+#endif
+
+#ifdef USE_MAT
+#include <mat.h>     /* MAT file support */
+#include <matrix.h>  /* mxArray support */
+#endif 
+
+/* USE_NEXUS/HDF5 support ******************************************************* */
+#ifdef USE_NEXUS
+#include <napi.h>
+#endif
+
+/* Declarations ************************************************************* */
 
 #define Ceol       "\n\f"
 #define Ccomment   "#%"
@@ -256,6 +296,9 @@ int file_write_section(struct file_struct file, struct option_struct options,
 int file_write_field_data(struct file_struct file, struct data_struct field, char *format);
 int file_write_field_array(struct file_struct file, struct data_struct field,
                           struct option_struct options, char *format);
+int file_write_field_array_matnexus(struct file_struct file,
+                          struct option_struct options,
+                          struct data_struct field, struct strlist_struct to_catenate)
 struct write_struct file_write_getsections(struct file_struct file,
                        struct option_struct options,
                        struct table_struct *ptable);
@@ -267,7 +310,7 @@ int  parse_files(struct option_struct options, int argc, char *argv[]);
 int  main(int argc, char *argv[]);
 */
 
-#ifndef TEXMEX
+#ifndef USE_MEX
 int print_stderr(char *format, ...) {
   va_list ap;
   int ret=0;
@@ -356,6 +399,7 @@ struct option_struct {
   struct strlist_struct   makerows; /* field to transform into row */
   long  nelements_min;  /* extracts only fields with n_elements >= min */
   long  nelements_max;  /* extracts only fields with n_elements <= max */
+  char  ismatnexus;     /* 0=TxT/Bin format ; 1=MAT; 2=HDF5/NeXus compressed */
 };
 
 /* lists stuctures ******************************************************** */
@@ -366,6 +410,8 @@ struct data_struct {
   char *Header;     /* char header of the field */
   char *Section;    /* name of the section the field is in (extracted from Header) */
   long  index;      /* index of this data block */
+  long  cat_index;  /* index of the base data block, when catenating */
+  long  cat_rows;   /* catenated number of rows */
   long  rows, columns;  /* field numeric dimensions */
   long  n_start, n_end; /* indexes of numeric part in original file */
   long  c_start, c_end; /* indexes of char part in original file */
@@ -378,19 +424,19 @@ struct table_struct {
   struct data_struct *List;   /* an array of data_struct */
 };
 
-
-#ifdef TEXMEX
-struct file_struct TexMex_Target_Array[MAX_LENGTH];
-#endif
-
 /* Format definitions ***************************************************** */
 
-#define NUMFORMATS 7
+#define NUMFORMATS 10
+#ifdef USE_MEX
+#define LOOKTXT_FORMAT "MAT"     /* default format when in Matlab/MeX mode */
+#else
 #define LOOKTXT_FORMAT "Matlab"  /* default format */
+#endif
 #define ROOT_SECTION   "looktxt_root"
 
-/* Name, Extension,
-   Header, Footer, BeginSection, EndSection, AssignTag, BeginData, EndData;
+/* format_struct {
+   Name, Extension,
+   Header, Footer, BeginSection, EndSection, AssignTag, BeginData, EndData, BinReference }
  */
 struct format_struct Global_Formats[NUMFORMATS] = {
   { "Matlab", "m",
@@ -414,6 +460,21 @@ struct format_struct Global_Formats[NUMFORMATS] = {
     "]; %% %NAM\n",
     " bin_ref('%FIL',%BEG,%ROW,%COL); \n"
   },
+#ifdef USE_MAT
+  { "MAT file","mat", 
+    "Header Matlab MAT", "Footer", "BeginSection", "EndSection", "AssignTag", "BeginData", "EndData" },
+#else
+  { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#endif
+#ifdef USE_NEXUS
+  { "NeXus5/HDF5","h5",
+    "HDF5 Nexus", "Footer", "BeginSection", "EndSection", "AssignTag", "BeginData", "EndData" },
+  { "NeXus4/HDF4","h4",
+    "HDF4 Nexus", "Footer", "BeginSection", "EndSection", "AssignTag", "BeginData", "EndData" },
+#else
+  { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+  { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#endif
   { "Scilab", "sci",
     "function %NAM = %NAM()\n"
       "// %TXT %FMT function generated by " __FILE__ " " VERSION " from %SRC (size %SIZ)\n"
@@ -1362,9 +1423,10 @@ struct format_struct format_init(struct format_struct formats[], char *request)
     /* look for a specific format in formats.Name table */
     for (i=0; i < NUMFORMATS; i++)
     {
+      if (!formats[i].Name || !strlen(formats[i].Name)) continue;
       strncpy(ntmp, formats[i].Name, 256);
       str_lowup(ntmp, 'l');
-      if (strstr(request_lower, ntmp) || !strcmp(request_lower, formats[i].Extension)) i_format = i;
+      if (strstr(request_lower, ntmp) || strstr(ntmp, request_lower) || !strcmp(request_lower, formats[i].Extension)) { i_format = i; break; }
     }
     request_lower=str_free(request_lower);
   }
@@ -1373,6 +1435,7 @@ struct format_struct format_init(struct format_struct formats[], char *request)
     i_format = 0; /* default format is #0 */
     print_stderr( "Warning: Unknown output format '%s'. Using %s [looktxt:format_init:%d]\n", 
       request, formats[i_format].Name,__LINE__);
+    if (formats[i_format].Name == NULL) exit(EXIT_FAILURE);
   }
   format = formats[i_format];
   if (request && strstr(request,"binary"))
@@ -1490,6 +1553,7 @@ struct option_struct options_init(char *pgname)
   options.comment    = str_dup(Ccomment);
   options.eol        = str_dup(Ceol);
   options.option_list= NULL;
+  options.ismatnexus = 0;
   options.format     = format_init(Global_Formats,
     getenv("LOOKTXT_FORMAT") ? getenv("LOOKTXT_FORMAT") : LOOKTXT_FORMAT);
   return(options);
@@ -1857,7 +1921,7 @@ char *data_get_char(struct file_struct file, size_t start, size_t end)
 
   if (start < 0) start=0;
   if (end >= file.Size) end=file.Size;
-  if (start >= end)       return (NULL);
+  if (start >  end)       return (NULL);
   if (!file.SourceHandle) return (NULL);
   string = mem(end - start + 2);
   if(fseek(file.SourceHandle, start, SEEK_SET))
@@ -1965,7 +2029,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
     p=string;
     while ((p = strpbrk(p, separator)) != NULL) *p = ' ';
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-	/* tmpfile requires root access on Windows. MSDN recommands to use tempnam + fopn and then fclose */
+	/* tmpfile requires root access on Windows. MSDN recommands to use tempnam + fopen and then fclose */
     p = _tempnam( NULL, NULL );
 	if (!p) {
 	  print_stderr( "Error: can not get temporary name [looktxt:data_get_float:%d]\n",
@@ -2106,9 +2170,10 @@ struct table_struct *table_free(struct table_struct *table)
 void print_version(char *pgmname)
 { /* Show program help. pgmname = argv[0] */
   printf("%s " VERSION " (" DATE ") by " AUTHOR "\n", pgmname);
-  printf("Copyright (C) 2009 Institut laue Langevin"
-         "This is free software; see the source for copying conditions.  There is NO\n"
-         "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
+  printf("Copyright (C) 2009 Institut Laue Langevin <http://www.ill.eu/computing>\n"
+         "  This is free software; see the source for copying conditions.\n"
+         "  There is NO warranty; not even for MERCHANTABILITY or FITNESS\n"
+         "  FOR A PARTICULAR PURPOSE. Used in iFit <http://ifit.mccode.org>.\n");
 } /* print_version */
 
 void print_usage(char *pgmname, struct option_struct options)
@@ -2171,7 +2236,9 @@ void print_usage(char *pgmname, struct option_struct options)
 "\n"
 );
   printf( "Available output formats are (default is %s):\n  ", options.format.Name);
-  for (i=0; i < NUMFORMATS; printf("\"%s\" " , Global_Formats[i++].Name) );
+  for (i=0; i < NUMFORMATS; i++)
+    if (Global_Formats[i].Name && strlen(Global_Formats[i].Name)) 
+      printf("\"%s\" " , Global_Formats[i].Name);
   printf( "\n  Adding 'binary' to the FORMAT name will do the same as --binary.\n");
   printf( "  The LOOKTXT_FORMAT environment variable may set the default FORMAT to use.\n");
   exit(EXIT_SUCCESS);
@@ -2486,12 +2553,12 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
 int file_write_tag(struct file_struct file, struct option_struct options,
                        char *section, char *name, char *value, char *format)
 {
-  int   ret=1;
-  char str_struct[]=".";
+  int   ret           =0;
+  char  str_struct[]  =".";
   char *struct_section=NULL;
-  char *struct_name=NULL;
+  char *struct_name   =NULL;
 
-  if (!format || !name || !value) return(0);
+  if (!format || !name || !value || !file.TxtHandle) return(0);
 
   if (options.use_struct) str_struct[0] = options.use_struct;
   if (section && strlen(section)) {
@@ -2508,7 +2575,32 @@ int file_write_tag(struct file_struct file, struct option_struct options,
    || strstr(options.format.Name,"Matlab") || strstr(options.format.Name,"Octave"))
    str_rep(value, "'","\"");
 
-  if (file.TxtHandle) ret = pfprintf(file.TxtHandle, format, "ssss",
+#ifdef USE_MAT
+  if (options.ismatnexus == 1) {  /* MAT output */
+    if (options.verbose > 2) printf("DEBUG[file_write_tag]: writing in MAT: %s=%s\n", struct_name, value);
+#ifdef USE_MEX
+    /* directly send the variable to the MEX output argument 'plhs' */
+#else
+    /* write to MAT file */
+    ret = !matPutVariable((MATFile*)file.TxtHandle, struct_name, mxCreateString(value));
+#endif
+  } else
+#endif /* USE_MAT */
+#ifdef USE_NEXUS
+  if (options.ismatnexus == 2) {  /* HDF/NeXus output */
+    int length = strlen(value);
+    if (options.verbose > 2) printf("DEBUG[file_write_tag]: writing in HDF: %s=%s\n", struct_name, value);
+    NXMDisableErrorReporting(); /* unactivate NeXus error messages */
+    NXmakedata((NXhandle)file.TxtHandle, name, NX_CHAR, 1, &length);
+    NXopendata((NXhandle)file.TxtHandle, name);
+    ret = NXputdata ((NXhandle)file.TxtHandle, value);
+    if (ret == NX_ERROR) ret=0; else ret=1;
+    NXclosedata((NXhandle)file.TxtHandle);
+
+    NXMEnableErrorReporting();  /* enable NeXus error messages */
+  } else
+#endif /* USE_NEXUS */
+  ret = pfprintf(file.TxtHandle, format, "ssss",
     file.RootName ? file.RootName : "", /* 1  BAS=PAR=ROT  */
     struct_section,/* 2  SEC  */
     struct_name,   /* 3  NAM  */
@@ -2532,7 +2624,7 @@ int file_write_headfoot(struct file_struct file, struct option_struct options, c
   int    ret=1;
   time_t t;
 
-  if (!file.TargetTxt || !format | !strlen(format)) return(0);
+  if (!file.TargetTxt || !format || !strlen(format) || !file.TxtHandle) return(0);
 
   if (options.verbose >= 3)
     printf("\nDEBUG[file_write_headfoot]: Writing %s header/footer\n", file.TargetTxt);
@@ -2548,7 +2640,33 @@ int file_write_headfoot(struct file_struct file, struct option_struct options, c
   strncpy(date, ctime(&t), 64);
   if (strlen(date)) date[strlen(date)-1] = '\0';
 
-  if (file.TxtHandle) ret = pfprintf(file.TxtHandle, format, "sssslsssssl",
+#ifdef USE_MAT
+  if (options.ismatnexus == 1) 
+  { /* MAT Header */ }  
+  else 
+#endif /* USE_MAT */
+#ifdef USE_NEXUS
+  if (options.ismatnexus == 2) 
+  { 
+    if (format == options.format.Header) {
+      /* add NeXus file attributes: creator  */
+      char tmp[1024];
+      sprintf(tmp, "looktxt " VERSION " " DATE " " AUTHOR 
+        "\nCopyright (C) 2009 Institut Laue Langevin <http://www.ill.eu/computing>"
+        "\nPart of <ifit.mccode.org> (C) ILL");
+      NXputattr((NXhandle)file.TxtHandle, "creator", 
+        tmp, strlen(tmp), NX_CHAR);
+      NXputattr((NXhandle)file.TxtHandle, "user", 
+        user, strlen(user), NX_CHAR);
+      NXputattr((NXhandle)file.TxtHandle, "format", 
+        options.format.Name, strlen(options.format.Name), NX_CHAR);
+      NXputattr((NXhandle)file.TxtHandle, "command", 
+        options.option_list, strlen(options.option_list), NX_CHAR);
+    }
+  }  
+  else 
+#endif /* USE_NEXUS */
+  ret = pfprintf(file.TxtHandle, format, "sssslsssssl",
     options.format.Name,                  /* 1   FMT */
     user,                                 /* 2   USR */
     options.option_list,                  /* 3   CMD */
@@ -2563,49 +2681,51 @@ int file_write_headfoot(struct file_struct file, struct option_struct options, c
 
   if (format == options.format.Header) {
     char tmp[256];
+    char tmp2[1024];
     strcpy(tmp, "Creator");
-    file_write_tag(file, options, "",
-      str_lowup(tmp, options.names_lowup),
-      VERSION " " DATE " " AUTHOR,
+    sprintf(tmp2, "looktxt " VERSION " " DATE " " AUTHOR 
+        "; Copyright (C) 2009 Institut Laue Langevin <http://www.ill.eu/computing>"
+        "; Part of <ifit.mccode.org> (C) ILL");
+    file_write_tag(file, options, "", str_lowup(tmp, options.names_lowup),
+      tmp2,
       options.format.AssignTag);
     strcpy(tmp, "User");
-    file_write_tag(file, options, "",
-      str_lowup(tmp, options.names_lowup),
+    file_write_tag(file, options, "", str_lowup(tmp, options.names_lowup),
       user,
       options.format.AssignTag);
     strcpy(tmp, "Source");
-    file_write_tag(file, options, "",
-      str_lowup(tmp, options.names_lowup),
+    file_write_tag(file, options, "", str_lowup(tmp, options.names_lowup),
       file.Source,
       options.format.AssignTag);
     strcpy(tmp, "Date");
-    file_write_tag(file, options, "",
-      str_lowup(tmp, options.names_lowup),
+    file_write_tag(file, options, "", str_lowup(tmp, options.names_lowup),
       date,
       options.format.AssignTag);
     strcpy(tmp, "Format");
-    file_write_tag(file, options, "",
-      str_lowup(tmp, options.names_lowup),
+    file_write_tag(file, options, "", str_lowup(tmp, options.names_lowup),
       options.format.Name,
       options.format.AssignTag);
     strcpy(tmp, "Command");
-    file_write_tag(file, options, "",
-      str_lowup(tmp, options.names_lowup),
+    file_write_tag(file, options, "", str_lowup(tmp, options.names_lowup),
       options.option_list,
       options.format.AssignTag);
     strcpy(tmp, "Filename");
-    file_write_tag(file, options, "",
-      str_lowup(tmp, options.names_lowup),
+    file_write_tag(file, options, "", str_lowup(tmp, options.names_lowup),
       file.TargetTxt,
       options.format.AssignTag);
     strcpy(tmp, "Variable");
-    file_write_tag(file, options, "",
-      str_lowup(tmp, options.names_lowup),
+    file_write_tag(file, options, "", str_lowup(tmp, options.names_lowup),
       file.RootName ? file.RootName : "",
       options.format.AssignTag);
   }
-
-  if (file.TxtHandle) fflush(file.TxtHandle);
+  /* no flush when in MAT/NeXus/HDF format */
+  if (!options.ismatnexus) fflush(file.TxtHandle);
+#ifdef USE_NEXUS
+  else if (options.ismatnexus == 2) {
+    NXhandle pHandle=(NXhandle)file.TxtHandle;
+    NXflush(&pHandle);
+  }
+#endif
   user=str_free(user);
   return(ret);
 
@@ -2618,31 +2738,44 @@ int file_write_headfoot(struct file_struct file, struct option_struct options, c
 int file_write_section(struct file_struct file, struct option_struct options,
                        char *section, char *format)
 {
-  int   ret=0;
-
-  char str_struct[]=".";
-  char *struct_section=NULL;
+  int   ret=1;
 
   /* ROOT section should be ignored */
-  if (!format          || !section || !strlen(section)
+  if (!format          || !section || !strlen(section) || !file.TxtHandle
    || (!strstr(options.format.Name,"IDL") && !strcmp(section, ROOT_SECTION))) return(0);
-
-  if (options.use_struct) str_struct[0] = options.use_struct;
-  if (section && strlen(section)) {
-    if (options.use_struct && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
-      struct_section = str_cat(str_struct, section, NULL);
-    else struct_section = str_dup(section);
-  } else struct_section = str_dup(strstr(options.format.Name,"IDL") ? ROOT_SECTION : "");
 
   if (options.verbose >= 2)
     printf("VERBOSE[file_write_section]: file '%s': Writing %s begin/end section\n", file.TargetTxt, section);
 
-  if (file.TxtHandle) pfprintf(file.TxtHandle, format, "sss",
-    file.RootName ? file.RootName : "",     /* 1  BAS=PAR  */
-    struct_section,                         /* 2  SEC  */
-    section ? section : "");                /* 3  NAM=TIT */
+  if (!options.ismatnexus) {
+    char str_struct[]=".";
+    char *struct_section=NULL;
+  
+    if (options.use_struct) str_struct[0] = options.use_struct;
+    if (section && strlen(section)) {
+      if (options.use_struct && file.RootName && strlen(file.RootName) && !strstr(options.format.Name,"IDL"))
+        struct_section = str_cat(str_struct, section, NULL);
+      else struct_section = str_dup(section);
+    } else struct_section = str_dup(strstr(options.format.Name,"IDL") ? ROOT_SECTION : "");
+    
+    pfprintf(file.TxtHandle, format, "sss",
+      file.RootName ? file.RootName : "",     /* 1  BAS=PAR  */
+      struct_section,                         /* 2  SEC  */
+      section ? section : "");                /* 3  NAM=TIT */
+    struct_section=str_free(struct_section);
+  }
+#ifdef USE_NEXUS
+  else if (options.ismatnexus == 2) {
+    NXMDisableErrorReporting(); /* unactivate NeXus error messages */
+    if (format == options.format.BeginSection) {
+      NXmakegroup((NXhandle)file.TxtHandle, section, "NXdata");
+      NXopengroup((NXhandle)file.TxtHandle, section, "NXdata");
+    } else
+      NXclosegroup((NXhandle)file.TxtHandle);
 
-  struct_section=str_free(struct_section);
+    NXMEnableErrorReporting();  /* enable NeXus error messages */
+  }
+#endif
 
   return (ret);
 
@@ -2663,7 +2796,7 @@ int file_write_field_data(struct file_struct file,
   char *name    =field.Name_valid;
   char *section =field.Section;
 
-  if (!format || !field.Name || !strlen(field.Name)) return(0);
+  if (!format || !field.Name || !strlen(field.Name) || file.TxtHandle) return(0);
   if (!field.rows) return(0);
   if (options.verbose >= 3) {
     printf("\nDEBUG[file_write_field_data]: file '%s': Writing Part Data %s begin/end\n", file.TargetTxt, field.Name);
@@ -2683,7 +2816,7 @@ int file_write_field_data(struct file_struct file,
   } else struct_name = str_dup("Name");
 
 /* default BAS.Data.Section.Name */
-  if (file.TxtHandle) pfprintf(file.TxtHandle, format, "ssslls",
+  if (!options.ismatnexus) pfprintf(file.TxtHandle, format, "ssslls",
     struct_section,  /* 1 SEC */
     field.Name,      /* 2 TIT */
     struct_name,     /* 3 NAM */
@@ -2696,6 +2829,113 @@ int file_write_field_data(struct file_struct file,
   return(1);
 
 } /* file_write_field_data */
+
+#if defined(USE_MAT) || defined(USE_NEXUS)
+/*****************************************************************************
+* file_write_field_array_matnexus: Write output file Data array using Mat/NeXus format
+* Used by: file_write_target, file_write_field_array
+*****************************************************************************/
+int file_write_field_array_matnexus(struct file_struct file,
+                          struct option_struct options,
+                          struct data_struct field, struct strlist_struct to_catenate)
+{
+  long   index_field=0;
+  float *data       =NULL;
+  long   num_rows   =0; /* total number of rows in array */
+  long   num_index  =0; /* current number of rows in array (block by block) */
+  char  *struct_name=NULL;
+  int    ret        =0;
+  
+  num_rows = field.rows;
+  /* compute the total size of the data (nb of rows, same nb of columns) */
+  for (index_field=0; index_field < to_catenate.length; index_field++) {
+    /* write catenated field data: rows x columns (but do not write bin reference yet) */
+    struct  data_struct *f=(struct data_struct *)(to_catenate.List[index_field]);
+    num_rows += f->rows;
+  }
+  
+  /* get the first data block */
+  data      = data_get_float(file, field, options); /* first block */
+  if (field.rows < num_rows) { /* reallocate to the total size (rest is assigned below) */
+    data = (float *)realloc(data, num_rows*field.columns*sizeof(float));
+    if(data == NULL) {
+      print_stderr( "Error: Memory exhausted during re-allocation of size %ld for '%s' [looktxt:file_write_field_array_matnexus:%d].", 
+        num_rows*field.columns*sizeof(float), field.Name,__LINE__);
+      exit(EXIT_FAILURE);
+    }
+  }
+  num_index = field.rows*field.rows; /* number of elements already stored in 'data' */
+  
+  /* and append the other 'to catenate' blocks */
+  for (index_field=0; index_field < to_catenate.length; index_field++) {
+    float               *d    =NULL;
+    struct  data_struct *f    =(struct  data_struct *)(to_catenate.List[index_field]);
+    long                 index=0;
+    d = data_get_float(file, *f, options); /* consecutive block */
+    if (!d) {
+      print_stderr( "Error: Memory exhausted during re-allocation of size %ld for '%s' [looktxt:file_write_field_array_matnexus:%d].", 
+        f->rows*f->columns*sizeof(float), f->Name,__LINE__);
+      exit(EXIT_FAILURE);
+    }
+    /* catenate data (copy in 'data') */
+    for (index=0; index < (f->rows*f->columns); data[num_index+index] = d[index++]);
+    num_index += f->rows*f->columns;      /* shift to next block index */
+    f->rows=0;                            /* unactivate once treated */
+    
+    d=(float*)memfree(d);
+  }
+  
+  /* determine variable name */
+  if (field.Section && strlen(field.Section) && options.use_struct) {
+    char str_struct[]=".";
+    if (options.use_struct) str_struct[0] = options.use_struct;
+    struct_name = str_cat(field.Section, str_struct, field.Name_valid, NULL);
+  } else struct_name = str_dup(field.Name_valid);
+
+#ifdef USE_MAT
+  if (options.ismatnexus == 1) { /* MAT file */
+    mxArray *mx;
+    int status;
+    
+    /* create the Matlab array to store */
+    mx = mxCreateNumericMatrix(field.rows, field.columns, mxSINGLE_CLASS, mxREAL);
+    if (!mx) return(0);
+    mxSetData(mx, data);
+    if (options.verbose > 2) 
+      printf("\nDEBUG[file_write_field_array]: sending data to MAT %s[%ix%i]\n", field.Name, field.rows, field.columns);
+#ifdef USE_MEX
+    /* directly send the variable to the MEX output argument 'plhs' */
+#else
+    /* write to MAT file */
+    status = matPutVariable((MATFile*)file.TxtHandle, struct_name, mx);
+    if (status) return(0);
+#endif
+  }
+#endif
+#ifdef USE_NEXUS
+  if (options.ismatnexus == 2) { /* NeXus/HDF file */
+    int length[2]={num_rows,field.columns};
+    NXMDisableErrorReporting(); /* unactivate NeXus error messages */
+    /* create the Data block in HDF4 or HDF file */
+    if (strstr(options.format.Name, "HDF4"))
+      NXmakedata((NXhandle)file.TxtHandle, field.Name, NX_FLOAT32, 2, length);
+    else
+      NXcompmakedata((NXhandle)file.TxtHandle, field.Name, NX_FLOAT32, 2, length, NX_COMP_LZW, length);
+    NXopendata((NXhandle)file.TxtHandle, field.Name);
+    ret = NXputdata ((NXhandle)file.TxtHandle, data);
+    if (ret == NX_ERROR) ret=0; else ret=1;
+    NXclosedata((NXhandle)file.TxtHandle);
+    NXMEnableErrorReporting();  /* enable NeXus error messages */
+  }
+#endif
+  /* free the numerical float array */
+  struct_name=str_free(struct_name);
+  data = (float*)memfree(data);
+  
+  return(ret);
+  
+} /* file_write_field_array_matnexus */
+#endif /* defined(USE_MAT) || defined(USE_NEXUS) */
 
 /*****************************************************************************
 * file_write_field_array: Write output file Data array using selected format
@@ -2720,7 +2960,16 @@ int file_write_field_array(struct file_struct file,
       file.TargetTxt, field.Name, field.n_start, field.n_end);
     return(0);
   }
-
+#if defined(USE_MAT) || defined(USE_NEXUS)
+  if (options.ismatnexus)
+  { /* write data block in MAT file */ 
+    struct  strlist_struct to_catenate = strlist_init("empty");
+    count = file_write_field_array_matnexus(file,options, field, to_catenate);
+    strlist_free(to_catenate);
+    return(count);
+  }
+  else
+#endif /* defined(USE_MAT) || defined(USE_NEXUS) */
   if (((field.rows*field.columns > MAX_TXT4BIN && options.use_binary==1) || options.use_binary==2) && file.BinHandle) {
     /* write bin array in BinHandle */
     size_t start, end;
@@ -2734,7 +2983,7 @@ int file_write_field_array(struct file_struct file,
          field.Name, file.TargetBin,__LINE__);
     } else {
       if (options.verbose >= 3)
-        printf("\nDEBUG[file_write_field_array]: file '%s': Writing Data %s values (%ld x %ld) \n", 
+        printf("\nDEBUG[file_write_field_array]: file '%s': Writing Data '%s' values (%ld x %ld) \n", 
         file.TargetBin, field.Name, field.rows, field.columns);
       if (format) {
         /* get eof Bin, store pos */
@@ -2783,7 +3032,12 @@ int file_write_field_array(struct file_struct file,
   return (count > 0);
 } /* file_write_field_array */
 
-/* definition of a write structure, which gathers section information */
+
+
+
+
+
+/* definition of a write structure, which gathers section information ******* */
 
 struct write_struct {
   struct strlist_struct section_names;  /* name of found sections */
@@ -3016,9 +3270,35 @@ long file_write_target(struct file_struct file,
   if (!ptable || !ptable->length || !ptable->nalloc) return(0);
   
   time(&StartTime); /* compute starting time */
+  
+  if (options.verbose >= 2)
+      printf("\nDEBUG[file_write_target]: Opening target file %s\n", file.TargetTxt);
 
-  /* open output files txt/bin */
+  /* open output files txt/bin : failure -> file.TxtHandle=NULL*/
   if (!options.test) {
+#ifdef USE_MAT
+    if (options.ismatnexus == 1) {
+      /* Matlab MAT file */
+      options.openmode[0] = 'w';
+      MATFile *pmat = matOpen(file.TargetTxt, "wz"); /* use compression */
+      file.TxtHandle = (FILE*)pmat;                  /* if NULL -> inactivate output */
+    } else 
+#endif /* USE_MAT */
+#ifdef USE_NEXUS
+    if (options.ismatnexus == 2) {
+      /* NeXus/HDF5 file. Could propose as well HDF4 and NeXusXML */
+      NXhandle pHandle;
+      options.openmode[0] = 'w';
+      NXopen(file.TargetTxt, 
+        strstr(options.format.Name,"HDF4") ? NXACC_CREATE4 : NXACC_CREATE5, &pHandle);
+      NXmakegroup(pHandle, 
+        options.names_root && strcmp(options.names_root,"NULL") ? options.names_root : "entry",
+        "NXentry");
+      NXopengroup(pHandle, "entry", "NXentry");
+      file.TxtHandle = (FILE*)pHandle;
+    } else
+#endif /* USE_NEXUS */
+    /* other text/binary files */
     if (file.TargetTxt) {
       if (!strcmp(file.TargetTxt, "stdout") || !strcmp(file.TargetTxt, "-"))
         file.TxtHandle=stdout;
@@ -3035,14 +3315,14 @@ long file_write_target(struct file_struct file,
     }
 
     if (!file.TxtHandle) 
-      exit(print_stderr( "Error: Can not open text target file '%s' in mode %s. Exiting  [looktxt:file_write_target:%d]\n", 
+      exit(print_stderr( "Error: Can not open target file '%s' in mode %s. Exiting  [looktxt:file_write_target:%d]\n", 
         file.TargetTxt, options.openmode,__LINE__));
     if (!file.BinHandle && options.use_binary) {
       print_stderr( "Warning: Can not open binary target file '%s' in mode %s. Using text [looktxt:file_write_target:%d]\n", 
         file.TargetBin, options.openmode,__LINE__);
       options.use_binary = 0;
     }
-  }
+  } /* if !options.text */
 
   section_current       = str_dup(ROOT_SECTION);
   section_current_valid = str_valid_struct(section_current, options.use_struct);
@@ -3068,7 +3348,6 @@ long file_write_target(struct file_struct file,
           section_names.List[index], section_names.List[index]);
     }
   }
-
   file_write_section(file, options, section_current, options.format.BeginSection);
 
   for (index=0; index < ptable->length; index++) {
@@ -3144,7 +3423,6 @@ long file_write_target(struct file_struct file,
       str_free(ptable->List[index].Section);
       ptable->List[index].Section = str_dup("");
     }
-
     /* look if name matches one already registered in the section */
     /* we try with: name, name_(field.index), and name_(1-length) */
     redundant  = -1;
@@ -3183,7 +3461,7 @@ long file_write_target(struct file_struct file,
       }
     } while(redundant < ptable->length); /* exit with break */
 
-    /* From there we have a base name, and we know if there are consecutive_index */
+    /* From there we have a base name, and we know if there are consecutive indices */
 
     if ((options.nelements_min <  0 || rows*columns >= options.nelements_min)
      && (options.nelements_max <= 0 || rows*columns <= options.nelements_max) 
@@ -3213,7 +3491,12 @@ long file_write_target(struct file_struct file,
         section=str_free(section); 
 
       }
-      /* add Data to Section for next data output */
+      /* add "Data" to Section for next data output */
+#ifdef USE_NEXUS
+      if (options.ismatnexus == 2 && (ptable->List[index].Section && strlen(ptable->List[index].Section)) && !options.use_struct)
+        section = str_dup(ptable->List[index].Section);
+      else
+#endif
       section=str_cat("Data",
         options.use_struct && ptable->List[index].Section && strlen(ptable->List[index].Section) ?
           str_struct : "",
@@ -3221,15 +3504,21 @@ long file_write_target(struct file_struct file,
       str_lowup(section, options.names_lowup);
       str_free(ptable->List[index].Section);
       ptable->List[index].Section = section;
-
+      
       /* special case for IDL */
-      if (strstr(options.format.Name,"IDL")
-          && file.TxtHandle
+      if (strstr(options.format.Name,"IDL") && file.TxtHandle
           && (!ptable->List[index].rows || !ptable->List[index].columns
           || ptable->List[index].n_start >= ptable->List[index].n_end))
           fprintf(file.TxtHandle, "; %s %s is empty\n",
             ptable->List[index].Section, ptable->List[index].Name);
-      else {
+#if defined(USE_MAT) || defined(USE_NEXUS)
+      else if (file.TxtHandle && options.ismatnexus) {
+        /* treat specifically Mat and NeXus output for catenated data */
+        /* need to build the full array before writing it */
+        ret += file_write_field_array_matnexus(file, options, ptable->List[index], to_catenate);
+      }
+#endif /* defined(USE_MAT) || defined(USE_NEXUS) */
+      else if (file.TxtHandle) {
         /* init base field: rows x columns as BAS.Data.Section.Name */
         file_write_field_data(file, options, ptable->List[index], options.format.BeginData);
         /* special case for IDL */
@@ -3248,7 +3537,7 @@ long file_write_target(struct file_struct file,
           
           /* force binary blocks to be written whatever be their size */
           if (options.use_binary) options.use_binary=2; 
-          
+
           /* write first block of catenate data */
           ret += file_write_field_array(file, options, ptable->List[index],
               NULL); /* and possibly write bin part */
@@ -3278,6 +3567,7 @@ long file_write_target(struct file_struct file,
             bin_field.rows,     /* 5 ROW */
             bin_field.columns); /* 6 COL */
           if (options.use_binary) options.use_binary=1; /* back to default binary mode */
+
         } /* end catenated fields (else) */
         /* end Data.Section part */
 
@@ -3323,7 +3613,7 @@ long file_write_target(struct file_struct file,
   if (options.verbose >= 2)
     printf("VERBOSE[file_write_target]: time elapsed %g [s]\n", difftime(EndTime,StartTime));
 
-  /* close output files: done at end of function parse_files */
+  /* close Source file: done at end of function parse_files */
 
   if (options.verbose >= 2) {
     printf("VERBOSE[file_write_target]: file '%s': classify %ld section%s:\n", file.Source, section_names.length, section_names.length > 1 ? "s" : "");
@@ -3340,7 +3630,22 @@ long file_write_target(struct file_struct file,
     file.BinHandle=NULL; 
   }
   if (file.TxtHandle && file.TargetTxt 
-   && strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) { 
+   && strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) {
+#ifdef USE_MAT
+    if (file.TxtHandle && options.ismatnexus == 1) { 
+      if (matClose((MATFile*)file.TxtHandle))
+      exit(print_stderr( "Warning: Could not close output MAT file %s [looktxt:file_write_target:matClose:%d]\n",
+        file.TargetTxt,__LINE__));
+    } else
+#endif
+#ifdef USE_NEXUS
+  if (file.TxtHandle && options.ismatnexus == 2) { 
+    NXclosegroup((NXhandle)file.TxtHandle);
+    if (NXclose((NXhandle*)file.TxtHandle) == NX_ERROR)
+      exit(print_stderr( "Warning: Could not close output NeXus/HDF5 file %s [looktxt:file_write_target:NXclose:%d]\n",
+        file.TargetTxt,__LINE__));
+  } else
+#endif /* USE_NEXUS */
     if(fclose(file.TxtHandle)) 
       print_stderr( "Warning: Could not close output Text file %s [looktxt:file_write_target:%d]\n",
         file.TargetTxt,__LINE__);
@@ -3385,15 +3690,6 @@ int parse_files(struct option_struct options, int argc, char *argv[])
         found_sections.section_fields=strlist_free(found_sections.section_fields);
         if (options.verbose >= 1) print_stderr("Looktxt: file '%s': wrote %ld numerical field%s into %s\n", 
           file.Source, ret, ret > 1 ? "s" : "", file.TargetTxt);
-#ifdef TEXMEX
-        (TexMex_Target_Array[options.file_index]).TargetTxt = strdup(file.TargetTxt); /* to host mfile=file.Source and func=file.RootName */
-        (TexMex_Target_Array[options.file_index]).TargetBin = strdup(file.TargetBin);
-        (TexMex_Target_Array[options.file_index]).RootName  = strdup(file.RootName);
-#endif
-      } else {
-#ifdef TEXMEX
-        TexMex_Target_Array[options.file_index] = file_init();
-#endif
       }
       options.file_index++;
       table=table_free(table);
@@ -3428,9 +3724,6 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
   /* init section */
   for (i=0; i<MAX_LENGTH; i++) {
     options.files_to_convert_Array[i] = 0;
-#ifdef TEXMEX
-    TexMex_Target_Array[i]= file_init();
-#endif
   }
 
   for(i = 1; i < argc; i++)
@@ -3560,7 +3853,7 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
           char *tmp9=NULL;
           char *tmp10=NULL;
           tmp9 = str_reverse(&argv[i][13]);
-          tmp10 = str_valid(tmp1, options.names_length);
+          tmp10 = str_valid(tmp9, options.names_length);
           root_char = str_reverse(tmp10);        /* default */
           str_free(tmp9); str_free(tmp10);
         }
@@ -3577,6 +3870,17 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     } else
       print_usage(argv[0], options);
   } /* for i */
+#ifdef USE_MAT
+  if (strstr(options.format.Name, "MAT") && !strstr(options.format.Name, "Matlab")) {
+    options.ismatnexus = 1;
+    options.use_binary = 0;
+  }
+#endif
+#ifdef USE_NEXUS
+  if (strstr(options.format.Name, "HDF"))
+    options.ismatnexus = 2;
+    options.use_binary = 0;
+#endif
 
   /* check again for binary */
   if (!options.use_binary)
@@ -3601,7 +3905,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
      options.use_struct = 0;
   }
 
-  if (options.names_root && !strcmp(options.names_root,"NULL") && (strstr(options.format.Name, "Matlab")
+  if (options.names_root && !strcmp(options.names_root,"NULL") 
+  && (strstr(options.format.Name, "Matlab")
     ||  strstr(options.format.Name, "Scilab")
     ||  strstr(options.format.Name, "Octave")
     ||  strstr(options.format.Name, "IDL")))
