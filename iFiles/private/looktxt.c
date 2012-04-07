@@ -128,7 +128,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "2 April 2012"
 #ifndef VERSION
-#define VERSION "1.2 $Revision: 1.9 $"
+#define VERSION "1.2 $Revision: 1.10 $"
 #endif
 
 #ifdef __dest_os
@@ -200,11 +200,26 @@ int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
 /* MATLAB support *********************************************************** */
 
 /* as MEX, we use USE_MAT, but send the blocks directly to matlab engine */
+#ifdef MATLAB_MEX_FILE
+#ifndef USE_MEX
+#define USE_MEX
+#endif
+#endif
+
 #ifdef  USE_MEX
 #ifndef USE_MAT
 #define USE_MAT
 #endif
 #include <mex.h>	   /* include MEX library for Matlab */
+
+#define printf  mexPrintf	/* Addapt looktxt.c code to Mex syntax */
+#define malloc  mxMalloc
+#define realloc mxRealloc
+#define calloc  mxCalloc
+/* #define free mxFree  */
+#define free    NoOp
+#define print_stderr mexPrintf
+#define exit(ret) { char msg[1024]; sprintf(msg, "Looktxt/mex exited with code %i\n", ret); if (ret) mexErrMsgTxt(msg); }
 #endif
 
 #ifdef USE_MAT
@@ -325,6 +340,12 @@ int print_stderr(char *format, ...) {
   va_end(ap);
   return(ret);
 }
+#else
+int NoOp(void *pointer)
+{
+  /* mxFree((void *)pointer); */
+  return 0;
+}
 #endif
 
 /* Structure definitions ************************************************** */
@@ -411,7 +432,7 @@ struct option_struct {
   struct strlist_struct   makerows; /* field to transform into row */
   long  nelements_min;  /* extracts only fields with n_elements >= min */
   long  nelements_max;  /* extracts only fields with n_elements <= max */
-  char  ismatnexus;     /* 0=TxT/Bin format ; 1=MAT; 2=HDF5/NeXus compressed */
+  char  ismatnexus;     /* 0=TxT/Bin format ; 1=MAT; 2=HDF5/NeXus compressed; 3=MEX */
 };
 
 /* lists stuctures ******************************************************** */
@@ -438,11 +459,12 @@ struct table_struct {
 
 /* Format definitions ***************************************************** */
 
-#define NUMFORMATS 10
+#define NUMFORMATS 11
 #ifdef USE_MEX
-#define LOOKTXT_FORMAT "MAT"     /* default format when in Matlab/MeX mode */
+#define LOOKTXT_FORMAT "MEX"    /* default format when in Matlab/MeX mode */
+mxArray *mxOut;                 /* a cell array or single struct */
 #else
-#define LOOKTXT_FORMAT "Matlab"  /* default format */
+#define LOOKTXT_FORMAT "Matlab" /* default format */
 #endif
 #define ROOT_SECTION   "looktxt_root"
 
@@ -474,6 +496,12 @@ struct format_struct Global_Formats[NUMFORMATS] = {
   },
 #ifdef USE_MAT
   { "MATfile","mat", 
+    "Header Matlab MAT", "Footer", "BeginSection", "EndSection", "AssignTag", "BeginData", "EndData" },
+#else
+  { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#endif
+#ifdef USE_MEX
+  { "MEX","", 
     "Header Matlab MAT", "Footer", "BeginSection", "EndSection", "AssignTag", "BeginData", "EndData" },
 #else
   { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
@@ -1730,7 +1758,7 @@ struct file_struct file_open(char *name, struct option_struct options)
         parts.Extension=str_dup(options.outfile.Extension);
       }
     }
-    
+
     /* check stdout/stderr output */
     if (options.outfile.FullName
     && (!strcmp(options.outfile.FullName, "stdout")
@@ -1750,6 +1778,11 @@ struct file_struct file_open(char *name, struct option_struct options)
           file.Source,__LINE__);
       options.use_binary = 0;
     } else
+#ifdef USE_MEX
+    if (options.ismatnexus == 3)
+      file.TargetTxt = str_dup("mex");
+    else
+#endif
       file.TargetTxt = options.test ? 
         fileparts_fullname(parts) : try_open_target(parts, options.force);
 
@@ -1757,7 +1790,7 @@ struct file_struct file_open(char *name, struct option_struct options)
       printf("VERBOSE[file_open]:         file '%s': target TXT %s", 
         file.Source, file.TargetTxt);
     if (!file.TargetTxt) {
-      print_stderr("Invalid Target: outfile=%s parts=%s/%s.%s\n", 
+      print_stderr("ERROR: Invalid Target: outfile=%s parts=%s/%s.%s\n", 
         options.outfile.FullName ? options.outfile.FullName : "NULL",
         parts.Path ? parts.Path : "", parts.Name, parts.Extension);
       file    = file_close(file);
@@ -2973,7 +3006,7 @@ int file_write_field_array_matnexus(struct file_struct file,
     if (!file.mxRoot || !mxIsStruct(file.mxRoot)) return(0);
     mxArray *mxMatrix   =mxCreateNumericMatrix(
         num_rows,field.columns, mxSINGLE_CLASS, mxREAL);
-    mxSetData(mxMatrix, data);
+    memcpy((void *)(mxGetPr(mxMatrix)), (void *)data, sizeof(data));
     /* add field to 'Root'.'Data' */
     if (field.Section && strlen(field.Section)) {
       mxArray   *mxSection=mxGetField(file.mxData, 0, field.Section);
@@ -3805,9 +3838,15 @@ long file_write_target(struct file_struct file,
         file.TxtHandle = NULL;
       }
     } else
-#if USE_MEX
-    if (file.TxtHandle && options.ismatnexus == 1) { 
-      /* transfer the mxRoot=file.TxtHandle structure to the output cell array */
+#ifdef USE_MEX
+    if (file.TxtHandle && options.ismatnexus == 3) {
+      /* write mxRoot to file and free it */
+      mxSetField(file.mxRoot, 0, "Data", file.mxData);
+      if (options.out_headers) {
+        mxSetField(file.mxRoot, 0, "Headers", file.mxHeaders);
+      }
+      /* transfer the mxRoot structure to the output cell array */
+      mxSetCell(mxOut, options.file_index, mxDuplicateArray(file.mxRoot));
     } else
 #endif
 #endif
@@ -3836,6 +3875,11 @@ long file_write_target(struct file_struct file,
 int parse_files(struct option_struct options, int argc, char *argv[])
 {
   int j;
+  
+#ifdef USE_MEX
+  /* allocate the return value of the mex to a cell array */
+  mxOut = mxCreateCellMatrix(1, options.sources_nb);
+#endif
 
   for(j = 0; j < options.sources_nb; j++) {
     struct file_struct  file;
@@ -4225,7 +4269,7 @@ int main(int argc, char *argv[])
   if (!options.sources_nb) {
     print_stderr( "Warning: No file to process\n");
     print_stderr( "         Type 'looktxt --help' for help.\n");
-    exit(EXIT_SUCCESS);
+    return(0);
   }
 
   /* re-read program arguments and calls 'scan_file' for each file name */
@@ -4239,3 +4283,126 @@ int main(int argc, char *argv[])
   return((int)ret);
 
 } /* main */
+
+/* interface with Matlab */
+#ifdef USE_MEX
+/* contributed code argv/argc interface from James Tursa
+   http://www.mathworks.com/matlabcentral/newsreader/view_thread/160255
+ */
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
+     const mxArray *prhs[])
+{
+  char *argv[MAX_LENGTH];   /* build a fake argv array */
+  int   argc = 1;
+  int   i    = 0;
+  
+  /* set program name argv[0] */
+  argv[0] = (char*)mxMalloc(MAX_LENGTH);
+  if (!argv[0]) {
+    mexPrintf("looktxt/mex : argument %i. Size %i\n", 0, MAX_LENGTH);
+    mexErrMsgTxt("looktxt/mex : can not allocate program name string argv[0].\n");
+  }
+  strcpy(argv[0],"looktxt");
+
+  /* check in/out parameters */
+  if (nlhs > 1)
+	  mexErrMsgTxt("looktxt : Too many output arguments (1 max).");
+
+  /* allocate memory and parse input arguments (tokens from string arguments) */
+  for (i = 0; i < nrhs; i++)
+  {
+    long  buflen     = 0;       /* number of arguments for call */
+    char *InputString= NULL;    /* input string which is then split into arguments */
+    int   status     = 0;       /* flag for getting input string */
+    char  EndFlag    = 0;       /* flag to exit while loop */
+    char *StartLexeme= NULL;
+    char *EndLexeme  = NULL;
+    char *EndString  = NULL;
+    char  lexeme[MAX_LENGTH];   /* current argument, stored in argv */
+
+    if (mxIsChar(prhs[i]) != 1) /* must be a char */
+    {
+      mexPrintf("looktxt/mex : argument %i\n", i);
+      mexErrMsgTxt("looktxt/mex : Input should be strings.\n");
+    }
+    /* read the input argument and return it as a string */
+    InputString = mxArrayToString(prhs[i]);
+    if (!InputString) {
+      mexPrintf("looktxt/mex : argument %i. InputString=NULL\n", i);
+      mexErrMsgTxt("looktxt/mex : can not get input parameter.\n");
+    }
+
+    /* cut input string into separated arguments for main(argc,argv) syntax */
+    EndFlag = 0;
+    StartLexeme = InputString;
+    EndString   = InputString+strlen(InputString);
+    
+    /* the first input argument should be used as is (filename) */
+    if (i==0 && nrhs > 1) {
+      argv[argc] = (char*)mxMalloc(strlen(InputString)+64);
+      if (argv[argc] == NULL) {
+        mexPrintf("looktxt/mex : argument %i. Size %i\n", argc, strlen(InputString));
+        mexErrMsgTxt("looktxt/mex : can not allocate memory for input argument string.\n");
+      }
+      strcpy(argv[argc], InputString);
+      argc++;
+    } else while ((EndFlag == 0) && (argc < MAX_LENGTH-1)) /* read tokens iteratively */
+    {
+      /* search for begining of a word */
+      if (*StartLexeme == ' ')
+        while (*StartLexeme == ' ' && StartLexeme < EndString) {
+         /* look for first non ' ' : StartLexeme */
+          StartLexeme++;  /* pass all spaces */
+        }
+      /* now StartLexeme points on a non space or is at end */
+      if (*StartLexeme == '\0' || StartLexeme >= EndString) EndFlag = 1; /* end of file reached, no other word to read */
+      else {
+        /* look for position of end of word (first next ' ') : EndLexeme */
+        EndLexeme = strchr(StartLexeme+1, ' ');
+
+        if (EndLexeme == NULL)
+          EndLexeme = EndString;
+
+        if (EndLexeme - StartLexeme > 0) {
+          /* copy this word as a 'lexeme' element */
+          strncpy(lexeme, StartLexeme, EndLexeme - StartLexeme+1);
+          lexeme[EndLexeme - StartLexeme] = '\0';
+          StartLexeme = EndLexeme+1;  /* will continue with next word following */
+        }
+      } /* else */
+
+      if (strlen(lexeme) != 0 && lexeme != NULL && EndFlag == 0)
+      {
+        /* transfer the word into allocated argv[] */
+        argv[argc] = (char*)mxMalloc(strlen(lexeme)+64);
+        if (argv[argc] == NULL) {
+          mexPrintf("looktxt/mex : argument %i. Size %i\n", argc, strlen(lexeme));
+          mexErrMsgTxt("looktxt/mex : can not allocate memory for input argument string.\n");
+        }
+        strcpy(argv[argc], lexeme);
+        argc++;
+      }
+      else
+        EndFlag = 1; /* invalid word found: we end the search for tokens */
+    } /* while */
+    mxFree(InputString);
+
+  } /* end for nrhs (all input string arguments) */
+  
+  /* display command line */
+  for (i=0; i<argc; i++)
+  	mexPrintf("%s ", argv[i]);
+  mexPrintf("\n");
+  
+  /* call 'main' */
+  i = main(argc, argv);
+  
+  /* send back the mxout array */
+  if (i)
+    plhs[0] = mxOut;
+    
+  /* free the argv/argc arrays */
+  for (i=0; i < argc; mxFree(argv[i++]));
+        
+} 
+#endif
