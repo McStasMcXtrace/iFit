@@ -30,7 +30,7 @@
 % Usual options are: --fast --fortran --binary --force --catenate --comment=NULL
 % List of all options can be obtained using: looktxt --help
 %
-% looktxt  version 1.1 $Revision: 1.2 $ (24 Sept 2009) by Farhi E. [farhi@ill.fr]
+% looktxt  version 1.1 $Revision: 1.3 $ (24 Sept 2009) by Farhi E. [farhi@ill.fr]
 
 % if we come there, that's because the mex file is not compiled.
 % we first try to install it, and if it fails, we go for the CC version
@@ -58,8 +58,8 @@ function data = looktxt(args)
 data = [];
 if nargin == 0, args=''; end
 
-if exist('mex') && exist('texmex.c')
-  looktxtmex = which('texmex.c');
+if exist('mex') && exist('looktxt.c')
+  looktxtmex = which('looktxt.c');
   looktxtpath = fileparts(looktxtmex);
   exec = [ 'mex -O -output ' looktxtpath filesep 'looktxt ' looktxtmex ];
   disp(exec);
