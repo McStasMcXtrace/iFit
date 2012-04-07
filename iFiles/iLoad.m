@@ -46,7 +46,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.63 $
+% Version: $Revision: 1.64 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -465,6 +465,8 @@ function data = iLoad_loader_check(file, data, loader)
     end
     data = newdata; % now an array of struct
     return
+  elseif iscell(data) && numel(data) == 1 && isstruct(data{1})
+    data = data{1};
   end
   
   name='';
