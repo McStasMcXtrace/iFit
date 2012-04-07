@@ -115,6 +115,8 @@
      export MATLABROOT=/usr/local/matlab
      export ARCH=glnxa64
      gcc -I$MATLABROOT/extern/include -L$MATLABROOT/bin/$ARCH -DUSE_MAT -O2 -o looktxt -lmat -lmx looktxt.c
+   WARNING: the Matlab HDF libraries are incompatible with NeXus: 
+            do not mix MAT/MEX + NeXus (causes SEG FAULT)
  */
  
 /* USE_NEXUS is defined when support for export to NeXus/HDF5 is requested 
@@ -126,7 +128,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "2 April 2012"
 #ifndef VERSION
-#define VERSION "1.2 $Revision: 1.8 $"
+#define VERSION "1.2 $Revision: 1.9 $"
 #endif
 
 #ifdef __dest_os
@@ -160,7 +162,6 @@
 #endif /* !MAC */
 #endif /* !WIN32 */
 
-/* remove comments if your compiler does not auto include some libraries */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -209,6 +210,9 @@ int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
 #ifdef USE_MAT
 #include <mat.h>     /* MAT file support */
 #include <matrix.h>  /* mxArray support */
+#ifdef USE_NEXUS
+#undef USE_NEXUS     /* NeXus and Matlab use incompatible libraries */
+#endif 
 #endif 
 
 /* USE_NEXUS/HDF5 support ******************************************************* */
@@ -348,6 +352,8 @@ struct file_struct {
   time_t Time;        /* source Creation date */
 #ifdef USE_MAT
   mxArray *mxRoot;    /* hold the mxArray Matlab structure */
+  mxArray *mxData;    /* Root.Data */
+  mxArray *mxHeaders; /* Root.Headers */
 #endif
 #ifdef USE_NEXUS
   NXhandle nxHandle;
@@ -1608,6 +1614,8 @@ struct file_struct file_init(void)
   file.Time = 0;
 #ifdef USE_MAT
   file.mxRoot    = NULL;
+  file.mxData    = NULL;
+  file.mxHeaders = NULL;
 #endif
 #ifdef USE_NEXUS
   file.nxHandle = NULL;
@@ -1636,6 +1644,13 @@ struct file_struct file_close(struct file_struct file)
   file.TargetName=str_free(file.TargetName);
   file.Extension =str_free(file.Extension);
   file.RootName  =str_free(file.RootName);
+#ifdef USE_MAT
+  mxDestroyArray(file.mxData);
+  if (file.mxHeaders)
+    mxDestroyArray(file.mxHeaders);
+  mxDestroyArray(file.mxRoot); 
+  file.mxRoot = file.mxData = file.mxHeaders = NULL; 
+#endif
   return(file);
 }
 
@@ -2251,7 +2266,11 @@ void print_usage(char *pgmname, struct option_struct options)
   for (i=0; i < NUMFORMATS; i++)
     if (Global_Formats[i].Name && strlen(Global_Formats[i].Name)) 
       printf("\"%s\" " , Global_Formats[i].Name);
-  printf( "\n  Adding 'binary' to the FORMAT name will do the same as --binary.\n");
+  printf("\n");
+#ifdef USE_MAT
+  printf( "  The MATfile format is a binary Matlab derived from HDF5\n");
+#endif 
+  printf( "  Adding 'binary' to the FORMAT name will do the same as --binary.\n");
   printf( "  The LOOKTXT_FORMAT environment variable may set the default FORMAT to use.\n");
   exit(EXIT_SUCCESS);
 } /* print_usage */
@@ -2571,20 +2590,51 @@ int file_write_tag(struct file_struct file, struct option_struct options,
 
 #ifdef USE_MAT
   if (options.ismatnexus == 1 || options.ismatnexus == 3) {  /* MAT/MEX output */
-    if (options.verbose > 2) printf("DEBUG[file_write_tag]: writing in MAT/MEX: %s=%s\n", name, value);
+    if (options.verbose > 2) 
+      printf("DEBUG[file_write_tag]: writing in MAT/MEX: %s.%s=%s\n", 
+        section && strlen(section) ? section : "ROOT", name, value);
     /* assign the name/value to structure, possibly as a sub-structure */
-    if (!mxIsStruct(file.mxRoot))
-      exit(print_stderr("ERROR: mxRoot is not a structure [looktxt:file_write_tag:%i]\n", __LINE__));
+    if (!file.mxRoot || !mxIsStruct(file.mxRoot)) return(0);
+
     if (section && strlen(section)) {
-      mxArray *mxSection=mxGetField(file.mxRoot, 0, section);
-      if (!mxSection) 
-        exit(print_stderr("ERROR: section %s not found in mxRoot [looktxt:file_write_tag:%i]\n", section, __LINE__));
-      mxAddField(mxSection,    name);
+      
+      char parent=0;
+      mxArray *mxSection=NULL;
+      mxArray *Parent=NULL;
+
+      /* determine if the section exists in Data or Headers. 
+         Create structure if needed */
+      /* when out_headers == 2 we send the field to Headers */
+      if (options.out_headers != 2)
+        Parent = file.mxData;
+      else
+        Parent = file.mxHeaders;
+
+      mxSection = mxGetField(Parent, 0, section);
+      if (!mxSection || !mxIsStruct(mxSection)) { 
+        /* need to create the field in the Data/Header ? */
+        mxAddField(Parent, section);
+        mxSection = mxCreateStructMatrix(1,1, 1, (const char **)&name);
+        if (!mxSection || !mxIsStruct(mxSection)) 
+          exit(print_stderr("mxSection %s.%s.%s is empty\n",
+            options.out_headers == 2 ? "Headers" : "Data", section, name));
+      } else mxAddField(mxSection,    name);
+      
       mxSetField(mxSection, 0, name,    mxCreateString(value));
-      mxSetField(file.mxRoot,    0, section, mxSection);
+      mxSetField(Parent,    0, section, mxSection);
+
+      if (options.out_headers != 2)
+        file.mxData    = Parent;
+      else
+        file.mxHeaders = Parent;
     } else {
-      mxAddField(file.mxRoot,       name);
-      mxSetField(file.mxRoot,    0, name,    mxCreateString(value));
+      if (options.out_headers == 2) {
+        mxAddField(file.mxHeaders,       name);
+        mxSetField(file.mxHeaders,    0, name,    mxCreateString(value));
+      } else {
+        mxAddField(file.mxRoot,       name);
+        mxSetField(file.mxRoot,    0, name,    mxCreateString(value));
+      }
     }
   } else 
 #endif /* USE_MAT */
@@ -2626,10 +2676,9 @@ int file_write_tag(struct file_struct file, struct option_struct options,
       struct_section,/* 2  SEC  */
       struct_name,   /* 3  NAM  */
       value);        /* 4  VAL  */
-    struct_section=str_free(struct_section); struct_name=str_free(struct_name);
-    }
 
-  
+    struct_section=str_free(struct_section); struct_name=str_free(struct_name);
+  }
 
   return(ret);
 
@@ -2687,8 +2736,9 @@ int file_write_headfoot(struct file_struct file, struct option_struct options, c
       /* stay here for the header tags below */
     }
   }  
-  else 
+  else
 #endif /* USE_NEXUS */
+  if (!options.ismatnexus)
   ret = pfprintf(file.TxtHandle, format, "sssslsssssl",
     options.format.Name,                  /* 1   FMT */
     user,                                 /* 2   USR */
@@ -2701,7 +2751,7 @@ int file_write_headfoot(struct file_struct file, struct option_struct options, c
     file.RootName ? file.RootName : "",   /* 9   BAS=PAR=NAM=ROT */
     date,                                 /* 10  DATE */
     date_l);                              /* 11  DATL */
-
+    
   if (format == options.format.Header) {
     char tmp[256];
     char tmp2[1024];
@@ -2872,7 +2922,6 @@ int file_write_field_array_matnexus(struct file_struct file,
   float *data       =NULL;
   long   num_rows   =0; /* total number of rows in array */
   long   num_index  =0; /* current number of rows in array (block by block) */
-  char  *struct_name=NULL;
   int    ret        =0;
   
   num_rows = field.rows;
@@ -2914,31 +2963,37 @@ int file_write_field_array_matnexus(struct file_struct file,
     d=(float*)memfree(d);
   }
   
-  /* determine variable name */
-  if (field.Section && strlen(field.Section) && options.use_struct) {
-    char str_struct[]=".";
-    if (options.use_struct) str_struct[0] = options.use_struct;
-    struct_name = str_cat(field.Section, str_struct, field.Name_valid, NULL);
-  } else struct_name = str_dup(field.Name_valid);
+  if (options.verbose >= 3)
+    printf("\nDEBUG[file_write_field_array_matnexus]: file '%s': Writing Data '%s' values (%ld x %ld) \n", 
+      file.TargetTxt, field.Name, field.rows, field.columns);
 
 #ifdef USE_MAT
   if (options.ismatnexus == 1 || options.ismatnexus == 3) { /* MAT file */
     /* assign the name/value to structure, possibly as a sub-structure */
-    if (!file.mxRoot || !mxIsStruct(file.mxRoot))
-      exit(print_stderr("ERROR: mxRoot is not a structure [looktxt:file_write_field_array_matnexus:%i]\n",__LINE__));
-    mxArray *mxData   =mxCreateNumericMatrix(
+    if (!file.mxRoot || !mxIsStruct(file.mxRoot)) return(0);
+    mxArray *mxMatrix   =mxCreateNumericMatrix(
         num_rows,field.columns, mxSINGLE_CLASS, mxREAL);
-    mxSetData(mxData, data);
+    mxSetData(mxMatrix, data);
+    /* add field to 'Root'.'Data' */
     if (field.Section && strlen(field.Section)) {
-      mxArray   *mxSection=mxGetField(file.mxRoot, 0, field.Section);
-      if (!mxSection) 
-        exit(print_stderr("ERROR: section %s not found in mxRoot [looktxt:file_write_field_array_matnexus:%i]\n", field.Section, __LINE__));
-      mxAddField(mxSection,    field.Name_valid);
-      mxSetField(mxSection, 0, field.Name_valid,    mxData);
-      mxSetField(file.mxRoot,    0, field.Section, mxSection);
+      mxArray   *mxSection=mxGetField(file.mxData, 0, field.Section);
+      if (!mxSection || !mxIsStruct(mxSection)) { 
+        /* need to create the field in the Data/Header ? */
+        mxAddField(file.mxData, field.Section);
+        mxSection = mxCreateStructMatrix(1,1, 1, (const char **)&(field.Name_valid));
+        if (!mxSection || !mxIsStruct(mxSection)) {
+          print_stderr("mxSection %s.%s.%s is empty\n",
+            "Data", field.Section, field.Name_valid);
+        } else ret=1;
+      } else { mxAddField(mxSection, field.Name_valid); ret=1; }
+      
+      mxSetField(mxSection,   0, field.Name_valid,  mxMatrix);
+      mxSetField(file.mxData, 0, field.Section,     mxSection);
+      
     } else {
-      mxAddField(file.mxRoot, field.Name_valid);
-      mxSetField(file.mxRoot,    0, field.Name_valid,    mxData);
+      mxAddField(file.mxData, field.Name_valid);
+      mxSetField(file.mxData,    0, field.Name_valid,    mxMatrix);
+      ret=1;
     }
   }
 #endif
@@ -2959,7 +3014,6 @@ int file_write_field_array_matnexus(struct file_struct file,
   }
 #endif
   /* free the numerical float array */
-  struct_name=str_free(struct_name);
   data = (float*)memfree(data);
   
   return(ret);
@@ -3311,15 +3365,26 @@ long file_write_target(struct file_struct file,
       /* Matlab MAT/MEX: we create the structure 'mx' */
       /* The 'root' structure for each Source file, will be populated with sections */
       /* Each section will be populated with fields */
-      const char *field_names[] = {"Data"};
-      file.mxRoot = mxCreateStructMatrix(1, 1, 1, field_names); /* base structure */
+      const char *data[] = {"Data"};
+      file.mxRoot = mxCreateStructMatrix(1, 1, 1, data);  /* 'root' structure */
+      if (options.out_headers)
+        mxAddField(file.mxRoot, "Headers"); 
       if (!file.mxRoot || !mxIsStruct(file.mxRoot))
         exit(print_stderr("ERROR: mxRoot is not a structure [looktxt:file_write_target:%i]\n",__LINE__));
-      /* now add all other Sections */
+      
+      /* now add all other Sections to 'Data' and 'Headers' */
       for (index=0; index < section_names.length; index++) {
-        const char *fname=str_dup(section_names.List[index]);
-        mxAddField(file.mxRoot, fname);
+        if (index == 0) {
+          /* create the 'Data' and possibly 'Headers' sub-structures */
+          file.mxData = mxCreateStructMatrix(1,1,1, (const char **)&(section_names.List[index]));
+          if (options.out_headers)
+            file.mxHeaders = mxCreateStructMatrix(1,1,1, (const char **)&(section_names.List[index]));
+        }
+        mxAddField(file.mxData, section_names.List[index]);
+        if (options.out_headers)
+          mxAddField(file.mxHeaders, section_names.List[index]);
       }
+      file.TxtHandle = (FILE*)file.mxRoot;
     }
     else
 #endif /* USE_MAT */
@@ -3330,7 +3395,8 @@ long file_write_target(struct file_struct file,
       options.openmode[0] = 'w';
       NXopen(file.TargetTxt, 
         strstr(options.format.Name,"HDF4") ? NXACC_CREATE4 : NXACC_CREATE5, &pHandle);
-      file.nxHandle = file.TxtHandle = pHandle;
+      file.nxHandle  = pHandle;
+      
       NXmakegroup(file.nxHandle, 
         options.names_root && strcmp(options.names_root,"NULL") ? options.names_root : "entry",
         "NXentry");
@@ -3343,7 +3409,7 @@ long file_write_target(struct file_struct file,
         NXmakegroup(file.nxHandle, "Headers", "NXentry");
       /* go back to root level */
       NXclosegroup(file.nxHandle); /* back to /, attributes will go there */
-
+      file.TxtHandle = (FILE*)pHandle;
     } else
 #endif /* USE_NEXUS */
     /* other text/binary files */
@@ -3536,12 +3602,9 @@ long file_write_target(struct file_struct file,
               str_struct : "",
             ptable->List[index].Section, NULL);
           str_lowup(section, options.names_lowup);
-        } else section=str_dup(ptable->List[index].Section);
-#ifdef USE_MAT
-        if (options.ismatnexus == 1 || options.ismatnexus == 3) {
-          mxAddField(file.mxRoot, "Headers");
-        }
-#endif
+        } else
+          section=str_dup(ptable->List[index].Section);
+
 #ifdef USE_NEXUS
         if (options.ismatnexus == 2) {
           char *nxHeaderPath=str_cat("/",
@@ -3561,9 +3624,11 @@ long file_write_target(struct file_struct file,
           
         }
 #endif
+        options.out_headers = 2;
         file_write_tag(file, options, section,
                        ptable->List[index].Name_valid, ptable->List[index].Header,
                        options.format.AssignTag);
+        options.out_headers = 1;
 #ifdef USE_NEXUS
         if (options.ismatnexus == 2) {
           /* move back to entry.Data.<section> */
@@ -3575,7 +3640,7 @@ long file_write_target(struct file_struct file,
       }
       /* add "Data" to Section for next data output */
 #if defined(USE_NEXUS) || defined(USE_MAT)
-      if (options.ismatnexus == 2 && (ptable->List[index].Section && strlen(ptable->List[index].Section)) && !options.use_struct)
+      if (options.ismatnexus)
         section = str_dup(ptable->List[index].Section);
       else
 #endif
@@ -3714,23 +3779,31 @@ long file_write_target(struct file_struct file,
   if (file.TxtHandle && file.TargetTxt 
    && strcmp(file.TargetTxt, "stdout") && strcmp(file.TargetTxt, "stderr")) {
 #ifdef USE_MAT
-    if (file.mxRoot && options.ismatnexus == 1) { 
-      /* We open the MAT file */
-      MATFile *pmat  = matOpen(file.TargetTxt, "wz"); /* use compression */
-      if (!pmat) 
-        exit(print_stderr( "Warning: Could not open Matlab Binary file %s [looktxt:file_write_target:%d]\n",
-        file.TargetTxt,__LINE__));
-      /* write mxRoot to file and free it */
-      matPutVariable(pmat, file.RootName, file.mxRoot);
-      if (matClose(pmat) != 0)
-        exit(print_stderr( "Warning: Could not close Matlab Binary file %s [looktxt:file_write_target:%d]\n",
-        file.TargetTxt,__LINE__));
-      mxDestroyArray(file.mxRoot); 
-      /* close the MAT file */
-      
-      file.TxtHandle = NULL; 
-      file.mxRoot    = NULL;
-      
+    if (options.ismatnexus == 1 && file.mxRoot && mxIsStruct(file.mxRoot)) { 
+      /* We open the MAT file. mode 'wz' does not work properly */
+      MATFile *pmat  = matOpen(file.TargetTxt, "w7.3"); /* use HDF compression */
+      if (!pmat) {
+        print_stderr( "Warning: Could not open Matlab Binary file %s [looktxt:file_write_target:%d]\n",
+        file.TargetTxt,__LINE__);
+        ret=0;
+      } else {
+        /* write mxRoot to file and free it */
+        mxSetField(file.mxRoot, 0, "Data", file.mxData);
+        if (options.out_headers) {
+          mxSetField(file.mxRoot, 0, "Headers", file.mxHeaders);
+        }
+        if (matPutVariable(pmat, options.names_root ? 
+          options.names_root : file.RootName, file.mxRoot))
+          print_stderr("Error putting mxRoot\n");
+        
+        /* close the MAT file and free memory */
+        if (matClose(pmat) != 0) {
+          print_stderr( "Warning: Could not close Matlab Binary file %s [looktxt:file_write_target:%d]\n",
+          file.TargetTxt,__LINE__);
+          ret=0;
+        }
+        file.TxtHandle = NULL;
+      }
     } else
 #if USE_MEX
     if (file.TxtHandle && options.ismatnexus == 1) { 
@@ -3972,6 +4045,10 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       print_usage(argv[0], options);
   } /* for i */
   
+  /* check again for binary */
+  if (!options.use_binary)
+    options.use_binary = strstr(options.format.Name, "binary") ? 1 : 0;
+  
 #ifdef USE_MEX
   if (strstr(options.format.Name, "MEX")) {
     options.ismatnexus = 3;
@@ -3983,7 +4060,7 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     options.ismatnexus = 1;
     options.use_binary = 0;
     /* a variable name is required for MAT export */
-    if (options.names_root && strcmp(options.names_root, "NULL"))
+    if (options.names_root && !strcmp(options.names_root, "NULL"))
       options.names_root = str_free(options.names_root);
   } 
 #endif
@@ -3992,10 +4069,7 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     options.ismatnexus = 2;
     options.use_binary = 0;
 #endif
-
-  /* check again for binary */
-  if (!options.use_binary)
-    options.use_binary = strstr(options.format.Name, "binary") ? 1 : 0;
+  if (options.ismatnexus) options.use_struct=0;
 
   /* format dependent options */
   /* Matlab, Octave and Scilab require --struct=. */
