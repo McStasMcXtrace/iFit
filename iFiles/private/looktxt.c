@@ -128,7 +128,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "2 April 2012"
 #ifndef VERSION
-#define VERSION "1.2 $Revision: 1.10 $"
+#define VERSION "1.2 $Revision: 1.11 $"
 #endif
 
 #ifdef __dest_os
@@ -1978,7 +1978,7 @@ struct data_struct data_free(struct data_struct field)
 char *data_get_char(struct file_struct file, size_t start, size_t end)
 {
   char *string=NULL;
-
+  start=start-1;
   if (start < 0) start=0;
   if (end >= file.Size) end=file.Size;
   if (start >  end)       return (NULL);
@@ -2031,7 +2031,6 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
 /* two hard coded methods for reading numerical values */
 /* 0: fast but requires isspace for numerical speparators (sscanf) */
 /* 1: slightly slower, but can handle separator                    */
-  int    method=options.fast;
 
   if (!field.rows || !field.columns || !file.Source) return (NULL);
   if (field.n_start > field.n_end) return (NULL);
@@ -2044,7 +2043,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
       field.rows, field.columns,__LINE__);
     exit(EXIT_FAILURE);
   }
-  if (method == 1) {
+  if (options.fast == 1) {
     /* fast method: fscanf */
     if (fseek(file.SourceHandle, field.n_start-1 > 0 ? field.n_start-1 : 0, SEEK_SET))
       print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
@@ -2988,6 +2987,7 @@ int file_write_field_array_matnexus(struct file_struct file,
         f->rows*f->columns*sizeof(float), f->Name,__LINE__);
       exit(EXIT_FAILURE);
     }
+    
     /* catenate data (copy in 'data') */
     for (index=0; index < (f->rows*f->columns); data[num_index+index] = d[index++]);
     num_index += f->rows*f->columns;      /* shift to next block index */
@@ -3005,8 +3005,8 @@ int file_write_field_array_matnexus(struct file_struct file,
     /* assign the name/value to structure, possibly as a sub-structure */
     if (!file.mxRoot || !mxIsStruct(file.mxRoot)) return(0);
     mxArray *mxMatrix   =mxCreateNumericMatrix(
-        num_rows,field.columns, mxSINGLE_CLASS, mxREAL);
-    memcpy((void *)(mxGetPr(mxMatrix)), (void *)data, sizeof(data));
+        field.columns, num_rows, mxSINGLE_CLASS, mxREAL);
+    memcpy((void *)(mxGetPr(mxMatrix)), (void *)data, num_rows*field.columns*sizeof(float));
     /* add field to 'Root'.'Data' */
     if (field.Section && strlen(field.Section)) {
       mxArray   *mxSection=mxGetField(file.mxData, 0, field.Section);
@@ -3845,8 +3845,14 @@ long file_write_target(struct file_struct file,
       if (options.out_headers) {
         mxSetField(file.mxRoot, 0, "Headers", file.mxHeaders);
       }
-      /* transfer the mxRoot structure to the output cell array */
-      mxSetCell(mxOut, options.file_index, mxDuplicateArray(file.mxRoot));
+      /* allocate the return value of the mex */
+      if (options.file_index == 0 && options.sources_nb == 1) {
+        mxOut = mxDuplicateArray(file.mxRoot);
+      } else {
+        mxOut = mxCreateCellMatrix(1, options.sources_nb);
+        /* transfer the mxRoot structure to the output cell array */
+        mxSetCell(mxOut, options.file_index, mxDuplicateArray(file.mxRoot));
+      }
     } else
 #endif
 #endif
@@ -3875,11 +3881,6 @@ long file_write_target(struct file_struct file,
 int parse_files(struct option_struct options, int argc, char *argv[])
 {
   int j;
-  
-#ifdef USE_MEX
-  /* allocate the return value of the mex to a cell array */
-  mxOut = mxCreateCellMatrix(1, options.sources_nb);
-#endif
 
   for(j = 0; j < options.sources_nb; j++) {
     struct file_struct  file;
