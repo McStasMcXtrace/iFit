@@ -44,7 +44,7 @@ function out = load(a, varargin)
 %         load(iData, [ ifitpath 'Data/peaks.hdf5' ], 'HDF')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.39 $
+% Version: $Revision: 1.40 $
 % See also: iLoad, save, iData/saveas, iFiles
 
 % calls private/iLoad
@@ -102,6 +102,7 @@ for i=1:numel(files)
           if ~isempty(loaders{i}.postprocess{j})
             % disp([ mfilename ': Calling post-process ' loaders{i}.postprocess{j} ]);
             this_iData = feval(loaders{i}.postprocess{j}, this_iData);
+            this_iData = setalias(this_iData, 'postprocess', loaders{i}.postprocess{j});
           end
         end
         % reset warnings

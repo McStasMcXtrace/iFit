@@ -4,7 +4,7 @@ function a=load_ill_tas(a)
 % Simple postprocessing for ILL/TAS files.
 % Supports ILL TAS files, including those with multidetectors.
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')
@@ -38,9 +38,10 @@ end
 % get the main data block header
 [columns_header, data]   = findstr(a, 'DATA_:','case');
 if iscell(columns_header)
-  [dummy, sorti] = sort(cellfun('prodofsize', columns_header));
-  columns_header = columns_header{end};
-  data           = data{end};
+  [dummy, sorti] = sort(cellfun('prodofsize', columns_header)); 
+  
+  columns_header = columns_header{sorti(end)};
+  data           = data{sorti(end)};
 end
 
 if isempty(columns_header), 
@@ -60,6 +61,7 @@ end
 % Find spaces and determine proper aliases for the columns
 columns = strread(columns_header,'%s','delimiter',' ;');
 % restrict to the number of columns in DataBlock
+a.Signal= a.Signal';
 c       = size(a, 2);
 columns = columns((end-c+1):end);
 
