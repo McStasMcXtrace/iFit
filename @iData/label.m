@@ -11,7 +11,7 @@ function labl = label(this, rank, lab)
 % output: b: object or array (iData)
 % ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
 
 if nargin < 2, rank=[]; end
@@ -92,9 +92,11 @@ end
 alias_num   = find(strcmpi(alias, this.Alias.Names));
 if ~isempty(alias_num)
   labl = this.Alias.Labels{alias_num};
+  
 end
 
 if nargin == 2 || isempty(lab)  % return the current label value
+  labl(~isstrprop(labl,'print'))=' ';
   return;
 end
 
