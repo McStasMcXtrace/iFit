@@ -128,7 +128,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "2 April 2012"
 #ifndef VERSION
-#define VERSION "1.2 $Revision: 1.11 $"
+#define VERSION "1.2 $Revision: 1.12 $"
 #endif
 
 #ifdef __dest_os
@@ -443,8 +443,6 @@ struct data_struct {
   char *Header;     /* char header of the field */
   char *Section;    /* name of the section the field is in (extracted from Header) */
   long  index;      /* index of this data block */
-  long  cat_index;  /* index of the base data block, when catenating */
-  long  cat_rows;   /* catenated number of rows */
   long  rows, columns;  /* field numeric dimensions */
   long  n_start, n_end; /* indexes of numeric part in original file */
   long  c_start, c_end; /* indexes of char part in original file */
@@ -1673,10 +1671,9 @@ struct file_struct file_close(struct file_struct file)
   file.Extension =str_free(file.Extension);
   file.RootName  =str_free(file.RootName);
 #ifdef USE_MAT
-  mxDestroyArray(file.mxData);
-  if (file.mxHeaders)
-    mxDestroyArray(file.mxHeaders);
-  mxDestroyArray(file.mxRoot); 
+  if (file.mxData)    mxDestroyArray(file.mxData);
+  if (file.mxHeaders) mxDestroyArray(file.mxHeaders);
+  if (file.mxRoot)    mxDestroyArray(file.mxRoot); 
   file.mxRoot = file.mxData = file.mxHeaders = NULL; 
 #endif
   return(file);
@@ -2029,7 +2026,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
   int    index;
   FILE  *fid=NULL;
 /* two hard coded methods for reading numerical values */
-/* 0: fast but requires isspace for numerical speparators (sscanf) */
+/* 0: fast but requires isspace for numerical separators (sscanf) */
 /* 1: slightly slower, but can handle separator                    */
 
   if (!field.rows || !field.columns || !file.Source) return (NULL);
@@ -2056,10 +2053,13 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
         value = 0;
         if (options.verbose > 1) {
           char *string=NULL;
+          int   len=field.n_end - field.n_start;
+          if (len < 0 || len > 10) len=10;
           print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%ld [looktxt:data_get_float:%d]\n",
             index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos, __LINE__);
-          string=data_get_char(file, pos, pos+12);
-          print_stderr( "         '%s ...'\n", string);
+          string=data_get_char(file, pos, pos+len);
+          print_stderr( "         '%s ...' (probably contains a non 'isspace' separator)\n", string);
+          print_stderr( "         Do not use --fast if this value is important to you. Ignoring.\n", string);
           if (fseek(file.SourceHandle, pos, SEEK_SET))
             print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
               file.Source, pos, __LINE__);
@@ -2980,7 +2980,6 @@ int file_write_field_array_matnexus(struct file_struct file,
   for (index_field=0; index_field < to_catenate.length; index_field++) {
     float               *d    =NULL;
     struct  data_struct *f    =(struct  data_struct *)(to_catenate.List[index_field]);
-    long                 index=0;
     d = data_get_float(file, *f, options); /* consecutive block */
     if (!d) {
       print_stderr( "Error: Memory exhausted during re-allocation of size %ld for '%s' [looktxt:file_write_field_array_matnexus:%d].", 
@@ -2989,7 +2988,7 @@ int file_write_field_array_matnexus(struct file_struct file,
     }
     
     /* catenate data (copy in 'data') */
-    for (index=0; index < (f->rows*f->columns); data[num_index+index] = d[index++]);
+    memcpy(&(data[num_index]), d, f->rows*f->columns*sizeof(float));
     num_index += f->rows*f->columns;      /* shift to next block index */
     f->rows=0;                            /* unactivate once treated */
     
@@ -3847,12 +3846,14 @@ long file_write_target(struct file_struct file,
       }
       /* allocate the return value of the mex */
       if (options.file_index == 0 && options.sources_nb == 1) {
-        mxOut = mxDuplicateArray(file.mxRoot);
+        mxOut = file.mxRoot;
       } else {
         mxOut = mxCreateCellMatrix(1, options.sources_nb);
         /* transfer the mxRoot structure to the output cell array */
-        mxSetCell(mxOut, options.file_index, mxDuplicateArray(file.mxRoot));
+        mxSetCell(mxOut, options.file_index, file.mxRoot);
       }
+      /* avoid freeing the blocks */
+      file.mxData = file.mxHeaders = file.mxRoot=NULL; 
     } else
 #endif
 #endif
@@ -4110,9 +4111,10 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
   } 
 #endif
 #ifdef USE_NEXUS
-  if (strstr(options.format.Name, "HDF"))
+  if (strstr(options.format.Name, "HDF")) {
     options.ismatnexus = 2;
     options.use_binary = 0;
+  }
 #endif
   if (options.ismatnexus) options.use_struct=0;
 
@@ -4145,7 +4147,6 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       options.format.Name,__LINE__);
 
   /* build the option list string */
-
   sprintf(tmp0, " --nelements_min=%ld --nelements_max=%ld --names_length=%d",
     options.nelements_min, options.nelements_max, options.names_length);
 
