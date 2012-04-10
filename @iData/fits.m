@@ -86,7 +86,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue; plot(a,b)
 %
-% Version: $Revision: 1.45 $
+% Version: $Revision: 1.46 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc, iFuncs
 
 % private functions: eval_criteria, least_square
@@ -471,7 +471,11 @@ function r=eval_corrcoef(a, modelValue)
     wt = 1./Error;
     wt(find(~isfinite(wt))) = 0;
   end
-  r  = corrcoef(Signal.*wt,Model.*wt);
-  r  = r(1,2);                                     % correlation coefficient
+  r = corrcoef(Signal.*wt,Model.*wt);
+  r = r(1,2);                                     % correlation coefficient
+  if isnan(r)
+    r = corrcoef(Signal,Model);
+    r = r(1,2);
+  end
 end % eval_corrcoef
 
