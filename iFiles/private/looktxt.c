@@ -128,7 +128,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "2 April 2012"
 #ifndef VERSION
-#define VERSION "1.2 $Revision: 1.12 $"
+#define VERSION "1.2 $Revision: 1.13 $"
 #endif
 
 #ifdef __dest_os
@@ -460,7 +460,7 @@ struct table_struct {
 #define NUMFORMATS 11
 #ifdef USE_MEX
 #define LOOKTXT_FORMAT "MEX"    /* default format when in Matlab/MeX mode */
-mxArray *mxOut;                 /* a cell array or single struct */
+mxArray *mxOut=NULL;                 /* a cell array or single struct */
 #else
 #define LOOKTXT_FORMAT "Matlab" /* default format */
 #endif
@@ -1975,8 +1975,8 @@ struct data_struct data_free(struct data_struct field)
 char *data_get_char(struct file_struct file, size_t start, size_t end)
 {
   char *string=NULL;
-  start=start-1;
-  if (start < 0) start=0;
+  if      (start < 0) start=0;
+  else if (start)     start=start-1;
   if (end >= file.Size) end=file.Size;
   if (start >  end)       return (NULL);
   if (!file.SourceHandle) return (NULL);
@@ -2020,7 +2020,7 @@ char *data_get_line(struct file_struct file, long *start)
 *****************************************************************************/
 float *data_get_float(struct file_struct file, struct data_struct field, struct option_struct options)
 {
-  float *dataf=NULL;
+  float *data=NULL;
   float  value;
   int    fail = 0;
   int    index;
@@ -2033,9 +2033,9 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
   if (field.n_start > field.n_end) return (NULL);
   if (!file.SourceHandle)          return (NULL);
 
-  dataf = (float*)mem(field.rows*field.columns*sizeof(float));
+  data = (float*)mem(field.rows*field.columns*sizeof(float));
 
-  if (!dataf) {
+  if (!data) {
     print_stderr( "Error: Memory exhausted during allocation of float[%ld x %ld] [looktxt:data_get_float:%d]\n",
       field.rows, field.columns,__LINE__);
     exit(EXIT_FAILURE);
@@ -2069,7 +2069,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
           string=str_free(string);
         }
       }
-      dataf[index] = (float)value;
+      data[index] = (float)value;
     }
   } else {
     /* slow method: fread+sscanf */
@@ -2078,11 +2078,11 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
     char *p=string;
     char *separator=NULL;
 
-	if (!string) {
-		print_stderr( "Error: can not get field %s=[%ld:%ld] in file %s [looktxt:data_get_float:%d]\n",
-          field.Name, field.n_start, field.n_end, file.Source, __LINE__);
-		exit(EXIT_FAILURE);
-	}
+	  if (!string) {
+		  print_stderr( "Error: can not get field %s=[%ld:%ld] in file %s [looktxt:data_get_float:%d]\n",
+            field.Name, field.n_start, field.n_end, file.Source, __LINE__);
+		  exit(EXIT_FAILURE);
+	  }
     p=separator=str_dup(options.separator);
     while((p = strchr(separator,' ')) != NULL) *p=',';
     p=string;
@@ -2090,12 +2090,12 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 	/* tmpfile requires root access on Windows. MSDN recommands to use tempnam + fopen and then fclose */
     p = _tempnam( NULL, NULL );
-	if (!p) {
-	  print_stderr( "Error: can not get temporary name [looktxt:data_get_float:%d]\n",
-        __LINE__);
-      exit(EXIT_FAILURE);
-	}
-	fid = fopen(p, "wb+TD");
+	  if (!p) {
+	    print_stderr( "Error: can not get temporary name [looktxt:data_get_float:%d]\n",
+          __LINE__);
+        exit(EXIT_FAILURE);
+	  }
+	  fid = fopen(p, "wb+TD");
 #else
     fid=tmpfile(); /* write temporary file to be read with fscanf */
 #endif
@@ -2131,11 +2131,11 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
           string=str_free(string);
         }
       }
-      dataf[index] = (float)value;
+      data[index] = (float)value;
     }
     fclose(fid); fid=NULL;
   }
-  return(dataf);
+  return(data);
 } /* data_get_float */
 
 /*****************************************************************************
@@ -2974,19 +2974,20 @@ int file_write_field_array_matnexus(struct file_struct file,
       exit(EXIT_FAILURE);
     }
   }
-  num_index = field.rows*field.rows; /* number of elements already stored in 'data' */
+  num_index = field.rows*field.columns; /* number of elements already stored in 'data' */
   
   /* and append the other 'to catenate' blocks */
   for (index_field=0; index_field < to_catenate.length; index_field++) {
     float               *d    =NULL;
     struct  data_struct *f    =(struct  data_struct *)(to_catenate.List[index_field]);
+    
     d = data_get_float(file, *f, options); /* consecutive block */
     if (!d) {
       print_stderr( "Error: Memory exhausted during re-allocation of size %ld for '%s' [looktxt:file_write_field_array_matnexus:%d].", 
         f->rows*f->columns*sizeof(float), f->Name,__LINE__);
       exit(EXIT_FAILURE);
     }
-    
+
     /* catenate data (copy in 'data') */
     memcpy(&(data[num_index]), d, f->rows*f->columns*sizeof(float));
     num_index += f->rows*f->columns;      /* shift to next block index */
@@ -2997,15 +2998,24 @@ int file_write_field_array_matnexus(struct file_struct file,
   
   if (options.verbose >= 3)
     printf("\nDEBUG[file_write_field_array_matnexus]: file '%s': Writing Data '%s' values (%ld x %ld) \n", 
-      file.TargetTxt, field.Name, field.rows, field.columns);
+      file.TargetTxt, field.Name, num_rows, field.columns);
 
 #ifdef USE_MAT
   if (options.ismatnexus == 1 || options.ismatnexus == 3) { /* MAT file */
+    /* Matlab uses a columns-wise storage convention (Fortran like) -> transpose */
+    int i,j;
+    float *tdata = malloc(num_rows*field.columns*sizeof(float));
+    for (i=0; i<num_rows; i++)
+      for (j=0; j<field.columns; j++)
+        tdata[j*num_rows+i] = data[i*field.columns+j];
+    data = memfree(data); data=tdata; tdata=NULL;
+    
     /* assign the name/value to structure, possibly as a sub-structure */
     if (!file.mxRoot || !mxIsStruct(file.mxRoot)) return(0);
     mxArray *mxMatrix   =mxCreateNumericMatrix(
-        field.columns, num_rows, mxSINGLE_CLASS, mxREAL);
+        num_rows, field.columns, mxSINGLE_CLASS, mxREAL);
     memcpy((void *)(mxGetPr(mxMatrix)), (void *)data, num_rows*field.columns*sizeof(float));
+    
     /* add field to 'Root'.'Data' */
     if (field.Section && strlen(field.Section)) {
       mxArray   *mxSection=mxGetField(file.mxData, 0, field.Section);
@@ -3034,9 +3044,9 @@ int file_write_field_array_matnexus(struct file_struct file,
     int length[2]={num_rows,field.columns};
     NXMDisableErrorReporting(); /* unactivate NeXus error messages */
     /* create the Data block in HDF4 or HDF file */
-    if (strstr(options.format.Name, "HDF4"))
+    if (strstr(options.format.Name, "HDF4") || num_rows*field.columns < 1000) {
       NXmakedata(file.nxHandle, field.Name, NX_FLOAT32, 2, length);
-    else
+    } else
       NXcompmakedata(file.nxHandle, field.Name, NX_FLOAT32, 2, length, NX_COMP_LZW, length);
     NXopendata(file.nxHandle, field.Name);
     ret = NXputdata (file.nxHandle, data);
@@ -3820,8 +3830,8 @@ long file_write_target(struct file_struct file,
         ret=0;
       } else {
         /* write mxRoot to file and free it */
-        mxSetField(file.mxRoot, 0, "Data", file.mxData);
-        if (options.out_headers) {
+        if (file.mxData) mxSetField(file.mxRoot, 0, "Data", file.mxData);
+        if (options.out_headers && file.mxHeaders) {
           mxSetField(file.mxRoot, 0, "Headers", file.mxHeaders);
         }
         if (matPutVariable(pmat, options.names_root ? 
@@ -3839,16 +3849,19 @@ long file_write_target(struct file_struct file,
     } else
 #ifdef USE_MEX
     if (file.TxtHandle && options.ismatnexus == 3) {
-      /* write mxRoot to file and free it */
-      mxSetField(file.mxRoot, 0, "Data", file.mxData);
-      if (options.out_headers) {
-        mxSetField(file.mxRoot, 0, "Headers", file.mxHeaders);
-      }
+      if (file.mxRoot) {
+        /* write mxRoot to file and free it */
+        if (file.mxData) mxSetField(file.mxRoot, 0, "Data", file.mxData);
+        if (options.out_headers && file.mxHeaders) {
+          mxSetField(file.mxRoot, 0, "Headers", file.mxHeaders);
+        }
+      } else file.mxRoot = mxCreateDoubleMatrix(0,0, mxREAL);
       /* allocate the return value of the mex */
       if (options.file_index == 0 && options.sources_nb == 1) {
         mxOut = file.mxRoot;
       } else {
-        mxOut = mxCreateCellMatrix(1, options.sources_nb);
+        if (options.file_index == 0)
+          mxOut = mxCreateCellMatrix(1, options.sources_nb);
         /* transfer the mxRoot structure to the output cell array */
         mxSetCell(mxOut, options.file_index, file.mxRoot);
       }
@@ -4398,7 +4411,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
   
   /* call 'main' */
   i = main(argc, argv);
-  
   /* send back the mxout array */
   if (i)
     plhs[0] = mxOut;

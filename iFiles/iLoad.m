@@ -46,7 +46,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.64 $
+% Version: $Revision: 1.65 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -68,7 +68,7 @@ if any(strcmp(loader, {'load config','config'}))
   if isempty(config), config  = iLoad_config_load; end
   % check for availability of looktxt as MeX file, and trigger compilation if needed.
   if exist('looktxt') ~= 3
-    looktxt('--version');
+    looktxt;
   end
   % look for a specific importer when filename is specified
   if ~isempty(filename)
@@ -459,14 +459,17 @@ function data = iLoad_loader_check(file, data, loader)
   elseif iscellstr(data)
     fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Got a cell of strings. Ignoring\n', file, loader.name, loader.method);
   elseif iscell(data) & length(data)>1
-    newdata=[];
+    index_out=1;
     for index=1:length(data)
-      newdata(index) = iLoad_loader_check(file, data{index}, loader);
+      if ~isempty(data{index})
+        newdata(index_out) = iLoad_loader_check(file, data{index}, loader);
+        index_out = index_out+1;
+      end
     end
     data = newdata; % now an array of struct
     return
-  elseif iscell(data) && numel(data) == 1 && isstruct(data{1})
-    data = data{1};
+  elseif iscell(data) && numel(find(~cellfun('isempty', data))) == 1
+    data = data{find(~cellfun('isempty', data))};
   end
   
   name='';
@@ -539,7 +542,6 @@ function data = iLoad_loader_check(file, data, loader)
 function loaders = iLoad_loader_auto(file)
   config  = iLoad('','load config');
   loaders = config.loaders;
-    
   % read start of file
   [fid,message] = fopen(file, 'r');
   if fid == -1
