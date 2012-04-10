@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.33 $
+% Version: $Revision: 1.34 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -118,7 +118,7 @@ else
   disp('Object axes:');
   disp('[Rank]         [Value]  [Description]');
   for index=0:length(s_in.Alias.Axis)
-    [v, l] = getaxis(s_in, num2str(index,2));
+    [v, l] = getaxis(s_in, num2str(index,2)); 
     if ~ischar(v)
       if numel(v) > 5, v=v(1:5); end
       v=mat2str(v);

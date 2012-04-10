@@ -9,7 +9,7 @@ function d = display(s_in, name)
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation
@@ -89,6 +89,7 @@ else
       end
 
       d = [ d sprintf('\n') ];
+      
     end
 end
 

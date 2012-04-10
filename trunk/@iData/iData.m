@@ -30,7 +30,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.46 $
+% Version: $Revision: 1.47 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -130,7 +130,7 @@ else  % convert input argument into object
     elseif isstruct(in)
       % iData(struct)
       out = iData_struct2iData(in); % convert struct to iData
-    elseif all(ishandle(in)) && numel(in)==1            % convert Handle Graphics Object
+    elseif all(ishandle(in)) & numel(in)==1 % convert Handle Graphics Object
       % iData(figure handle)
       if strcmp(get(in,'type'),'hggroup')
         try t = get(in,'DisplayName'); catch t=[]; end
