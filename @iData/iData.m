@@ -30,7 +30,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.45 $
+% Version: $Revision: 1.46 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -81,7 +81,7 @@ if nargin == 0  % create empty object
   outarray = [ outarray a ];
   return
 else  % convert input argument into object
-  if isa(varargin{1}, 'iData') & numel(varargin{1}) > 1
+  if isa(varargin{1}, 'iData') && numel(varargin{1}) > 1
   % iData(iData)
     in = varargin{1};
     for index=1:numel(in)
@@ -92,14 +92,14 @@ else  % convert input argument into object
       assignin('caller',inputname(1),outarray)
     end
     return
-  elseif ~isa(varargin{1}, 'iData') && isnumeric(varargin{1}) & length(varargin) > 1  % array -> iData
+  elseif ~isa(varargin{1}, 'iData') && isnumeric(varargin{1}) && length(varargin) > 1  % array -> iData
     % iData(x,y,..., signal)
     index = length(varargin);
     d = iData(varargin{index});  % last argument is the Signal
     % handle axes
     for k1=1:(index-1)
       % in plotting convention, X=2nd, Y=1st axis
-      if     k1 <= 2 & ndims(d) >= 2, k2 = 3-k1; 
+      if     k1 <= 2 && ndims(d) >= 2, k2 = 3-k1; 
       else   k2 = k1; end
       set(d,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
       setaxis(d, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
@@ -130,7 +130,7 @@ else  % convert input argument into object
     elseif isstruct(in)
       % iData(struct)
       out = iData_struct2iData(in); % convert struct to iData
-    elseif ishandle(in)             % convert Handle Graphics Object
+    elseif all(ishandle(in)) && numel(in)==1            % convert Handle Graphics Object
       % iData(figure handle)
       if strcmp(get(in,'type'),'hggroup')
         try t = get(in,'DisplayName'); catch t=[]; end
@@ -311,8 +311,9 @@ function b=iData_cell2iData(a)
 function b=iData_num2iData(v)
   b=iData;
   b.Data.Signal = v;
+  setalias(b,'Signal','Data.Signal');
   if length(size(v)) > 2, v=v(:); end
-  if numel(v) > 100, v=v(1:100); end
+  if numel(v) > 10, v=v(1:10); end
   v = mat2str(double(v)); 
   b.Command= cellstr([ 'iData(' v ')' ]);
 
