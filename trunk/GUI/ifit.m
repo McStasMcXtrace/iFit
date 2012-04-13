@@ -165,7 +165,7 @@ for index=1:length(varargin)
       do_command=0;
     end
   end
-end
+end % for
 
 % when no command is specified, use default after parsing arguments
 if do_command < 0 && ~isempty(argv)
