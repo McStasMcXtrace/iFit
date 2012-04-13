@@ -121,14 +121,14 @@
  
 /* USE_NEXUS is defined when support for export to NeXus/HDF5 is requested 
    to compile use:
-     gcc -DUSE_NEXUS -O2 -o looktxt looktxt.c -lNeXus
+     gcc -DUSE_NEXUS -O2 -o looktxt looktxt.c -lNeXus -lm
  */
 
 
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "2 April 2012"
 #ifndef VERSION
-#define VERSION "1.2 $Revision: 1.13 $"
+#define VERSION "1.2 $Revision: 1.14 $"
 #endif
 
 #ifdef __dest_os
@@ -170,6 +170,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <stdarg.h>
+#include <math.h>
 
 #if !defined(WIN32) && !defined(_WIN32) && !defined(_WIN64)
 #include <unistd.h>
@@ -493,7 +494,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
     " bin_ref('%FIL',%BEG,%ROW,%COL); \n"
   },
 #ifdef USE_MAT
-  { "MATfile","mat", 
+  { "MATfile/HDF","mat", 
     "Header Matlab MAT", "Footer", "BeginSection", "EndSection", "AssignTag", "BeginData", "EndData" },
 #else
   { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
@@ -864,6 +865,7 @@ char *str_valid_eol(char *header, struct option_struct options)
   if (strstr(options.format.Name, "Matlab")
   ||  strstr(options.format.Name, "Scilab")
   ||  strstr(options.format.Name, "Octave")
+  ||  strstr(options.format.Name, "MEX")
   ||  strstr(options.format.Name, "IDL")) {
     char *p=header;
     while ((p = strpbrk(p, "\n\r\f\t\v")) != NULL) *p = ';';
@@ -3003,16 +3005,18 @@ int file_write_field_array_matnexus(struct file_struct file,
 #ifdef USE_MAT
   if (options.ismatnexus == 1 || options.ismatnexus == 3) { /* MAT file */
     /* Matlab uses a columns-wise storage convention (Fortran like) -> transpose */
-    int i,j;
-    float *tdata = malloc(num_rows*field.columns*sizeof(float));
+    int      i,j;
+    float   *tdata   = malloc(num_rows*field.columns*sizeof(float));
+    mxArray *mxMatrix= NULL;
+    
     for (i=0; i<num_rows; i++)
       for (j=0; j<field.columns; j++)
         tdata[j*num_rows+i] = data[i*field.columns+j];
-    data = memfree(data); data=tdata; tdata=NULL;
+    data = (float*)memfree(data); data=tdata; tdata=NULL;
     
     /* assign the name/value to structure, possibly as a sub-structure */
     if (!file.mxRoot || !mxIsStruct(file.mxRoot)) return(0);
-    mxArray *mxMatrix   =mxCreateNumericMatrix(
+    mxMatrix   =mxCreateNumericMatrix(
         num_rows, field.columns, mxSINGLE_CLASS, mxREAL);
     memcpy((void *)(mxGetPr(mxMatrix)), (void *)data, num_rows*field.columns*sizeof(float));
     
@@ -3042,12 +3046,29 @@ int file_write_field_array_matnexus(struct file_struct file,
 #ifdef USE_NEXUS
   if (options.ismatnexus == 2) { /* NeXus/HDF file */
     int length[2]={num_rows,field.columns};
+    
     NXMDisableErrorReporting(); /* unactivate NeXus error messages */
-    /* create the Data block in HDF4 or HDF file */
-    if (strstr(options.format.Name, "HDF4") || num_rows*field.columns < 1000) {
+    /* create the Data block */
+    if (num_rows*field.columns < 125) /* 4k chunk size */
       NXmakedata(file.nxHandle, field.Name, NX_FLOAT32, 2, length);
-    } else
-      NXcompmakedata(file.nxHandle, field.Name, NX_FLOAT32, 2, length, NX_COMP_LZW, length);
+    else {
+      int chunk[2];
+      if (num_rows*field.columns < 30000) {/* 1Mb of floats */
+        chunk[1]=num_rows; chunk[2]=field.columns;
+      } else if (num_rows < 30000) {
+        chunk[1]=num_rows; chunk[2]=1;
+      } else if (field.columns < 30000) {
+        chunk[1]=1; chunk[1]=field.columns;
+      } else {
+        int ratio;
+        ratio=(int)((double)num_rows/10000)+1;
+        chunk[1]=(int)((double)num_rows/ratio); 
+        ratio=(int)((double)field.columns/10000)+1;
+        chunk[2]=(int)((double)field.columns/ratio);
+      }
+      NXcompmakedata(file.nxHandle, field.Name, NX_FLOAT32, 2, length, 
+        NX_COMP_LZW, chunk);
+    }
     NXopendata(file.nxHandle, field.Name);
     ret = NXputdata (file.nxHandle, data);
     if (ret == NX_ERROR) ret=0; else ret=1;
@@ -3985,12 +4006,18 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       options.use_binary = 1;
     else if(!strcmp("--headers",    argv[i]) || !strcmp("-H",     argv[i]))
       options.out_headers= 1;
+    else if(!strncmp("--headers=",    argv[i], 10))
+      options.out_headers= atoi(&argv[i][10]);
     else if(!strcmp("--force",     argv[i]) || !strcmp("-F",     argv[i]))
       options.force      = 1;
     else if(!strcmp("--fast",      argv[i]))
       options.fast       = 1;
+    else if(!strncmp("--fast=",     argv[i],7))
+      options.fast       = atoi(&argv[i][7]);
     else if(!strcmp("--verbose",   argv[i]) || !strcmp("-v",   argv[i]))
       options.verbose    = 2;
+    else if(!strncmp("--verbosity=",   argv[i], 12))
+      options.verbose    = atoi(&argv[i][12]);
     else if(!strcmp("--debug",     argv[i]))
       options.verbose    = 3;
     else if(!strcmp("--silent",    argv[i]))
@@ -4001,6 +4028,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       options.test       = 1;
     else if(!strcmp("--catenate",  argv[i]) || !strcmp("-c",  argv[i]))
       options.catenate   = 1;
+    else if(!strncmp("--catenate=",  argv[i],11) )
+      options.catenate   = atoi(&argv[i][11]);
     else if(!strcmp("--fortran",   argv[i]) || !strcmp("--wrapped",   argv[i]))
       options.fortran    = 1;
     else if(!strncmp("--section=", argv[i], 10))
@@ -4411,9 +4440,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
   
   /* call 'main' */
   i = main(argc, argv);
-  /* send back the mxout array */
-  if (i)
-    plhs[0] = mxOut;
+  /* send back the mxOut array */
+  if (i && nlhs) {
+    if (!mxOut) plhs[0] = mxCreateString("created output file");
+    else plhs[0] = mxOut;
+  }
     
   /* free the argv/argc arrays */
   for (i=0; i < argc; mxFree(argv[i++]));
