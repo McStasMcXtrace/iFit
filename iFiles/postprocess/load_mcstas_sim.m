@@ -3,7 +3,7 @@ function a=load_mcstas_sim(a0)
 %
 % Returns an iData style dataset from a McStas sim file
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision: 1.10 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a0,'iData')
@@ -35,8 +35,9 @@ if length(filenames(:)) > 0
   % This is a McStas 'overview' plot
   for j=1:length(filenames(:))
     filename = filenames{j};
-    filename = strrep(filename,';','');
+    filename(~isstrprop(filename,'print')) = '';
     filename(1:length('filename: '))='';
+    filename=strtrim(filename);
     filename(findstr(' ',filename):length(filename))='';
     if isempty(filename), continue; end
     filename = fullfile(dirname,filename);
