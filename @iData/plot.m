@@ -53,7 +53,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.95 $
+% Version: $Revision: 1.96 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -651,19 +651,25 @@ else
   uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight;rotate3d off;');
   uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
 end
-% add rotate/pan/zoom tools in case java machine is not started
-if ~usejava('jvm')
-  uimenu(uicm, 'Separator','on','Label','Zoom on/off', 'Callback','zoom');
-  uimenu(uicm, 'Label','Pan (move)', 'Callback','pan');
-  set(gcf, 'KeyPressFcn', @(src,evnt) eval('if lower(evnt.Character)==''r'', lighting none;alpha(1);shading flat;axis tight;rotate3d off; end') );
-  if ndims(a) >= 2
-    uimenu(uicm, 'Label', 'Rotate', 'Callback','rotate3d on');
-  end
-end
+
 uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', ...
   'Callback',[ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 set(gca, 'UIContextMenu', uicm);
 set(gca, 'UserData', ud);
+
+% add rotate/pan/zoom tools to the figure in case java machine is not started
+if ~usejava('jvm')
+  uicmf = uicontextmenu;
+  uimenu(uicmf, 'Label','Zoom on/off', 'Callback','zoom');
+  uimenu(uicmf, 'Label','Pan on/off',  'Callback','pan');
+  if ndims(a) >= 2
+    uimenu(uicmf, 'Label', 'Rotate on/off', 'Callback','rotate3d');
+  end
+  uimenu(uicmf, 'Label','Legend on/off', 'Callback','legend(gca, ''toggle'',''Location'',''Best'');');
+  uimenu(uicmf, 'Label','Print...', 'Callback','printpreview');
+  set(gcf, 'UIContextMenu', uicmf);
+  set(gcf, 'KeyPressFcn', @(src,evnt) eval('if lower(evnt.Character)==''r'', lighting none;alpha(1);shading flat;axis tight;rotate3d off; zoom off; pan off; end') );
+end
 
 try
   set(h,   'Tag',  [ mfilename '_' a.Tag ]);
