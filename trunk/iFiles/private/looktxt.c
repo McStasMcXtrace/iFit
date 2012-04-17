@@ -128,7 +128,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "2 April 2012"
 #ifndef VERSION
-#define VERSION "1.2 $Revision: 1.14 $"
+#define VERSION "1.2 $Revision: 1.15 $"
 #endif
 
 #ifdef __dest_os
@@ -3048,6 +3048,7 @@ int file_write_field_array_matnexus(struct file_struct file,
     int length[2]={num_rows,field.columns};
     
     NXMDisableErrorReporting(); /* unactivate NeXus error messages */
+    NXsetcache(1024000*10);
     /* create the Data block */
     if (num_rows*field.columns < 125) /* 4k chunk size */
       NXmakedata(file.nxHandle, field.Name, NX_FLOAT32, 2, length);

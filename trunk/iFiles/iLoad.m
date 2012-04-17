@@ -46,7 +46,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.65 $
+% Version: $Revision: 1.66 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -309,7 +309,7 @@ if ischar(filename) & length(filename) > 0
   
 elseif isempty(filename)
   config = iLoad('','load config');
-  if exist('uigetfiles') & strcmp(config.UseSystemDialogs, 'no')
+  if exist('uigetfiles') & (strcmp(config.UseSystemDialogs, 'no') | isdeployed)
       [filename, pathname] = uigetfiles('.*','Select file(s) to load');
   else
     if usejava('swing')

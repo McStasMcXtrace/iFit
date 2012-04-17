@@ -7,7 +7,7 @@ function c = char(s)
 % input:  s: object or array (iData) 
 % output: c: iData identification (char)
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 %
@@ -23,5 +23,6 @@ for index=1:numel(s)
   cmd = t.Command{end};
   if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
   c = strvcat(c, [ 'iData ' cmd ' [' num2str(size(t)) '] "' strtrim(T) '" <' t.Source '>' ]); 
+  c(~isstrprop(c,'print'))='';
 end
 

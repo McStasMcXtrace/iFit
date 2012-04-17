@@ -9,7 +9,7 @@ function d = display(s_in, name)
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision: 1.15 $
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation
@@ -28,13 +28,16 @@ d = [ sprintf('%s = ',iname) ];
 if numel(s_in) > 1
   d = [ d sprintf(' array [%s]',num2str(size(s_in))) ];
 end
+if isdeployed, id='iData';
+else           id='<a href="matlab:helpwin iData">iData</a>';
+end
 if length(s_in) == 0
-    d = [ d sprintf(' <a href="matlab:helpwin iData">iData</a> object: empty\n') ];
+    d = [ d sprintf(' %s object: empty\n',id) ];
 else
     if numel(s_in) == 1
-      d = [ d sprintf(' <a href="matlab:helpwin iData">iData</a> %iD object:\n\n', ndims(s_in)) ];
+      d = [ d sprintf(' %s %iD object:\n\n', id, ndims(s_in)) ];
     else
-      d = [ d sprintf(' <a href="matlab:helpwin iData">iData</a> object:\n\n') ];
+      d = [ d sprintf(' %s object:\n\n', id) ];
     end
     if numel(s_in) > 1
       d = [ d sprintf('Index ') ];
