@@ -46,7 +46,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.66 $
+% Version: $Revision: 1.67 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -67,8 +67,21 @@ end
 if any(strcmp(loader, {'load config','config'}))
   if isempty(config), config  = iLoad_config_load; end
   % check for availability of looktxt as MeX file, and trigger compilation if needed.
-  if exist('looktxt') ~= 3
-    looktxt;
+  if exist('looktxt') ~= 3 && ~isdeployed
+    p = pwd;
+    cd (fullfile(ifitpath,'iFiles','private'))
+    try
+      mex -O cbf_uncompress.c
+      mex -O looktxt.c
+    catch
+      try
+        mex ('-O','cbf_uncompress.c', ['-L"' mathlabroot '\sys\lcc\lib"'],'-lcrtdll');
+        mex ('-O','looktxt.c',        ['-L"' mathlabroot '\sys\lcc\lib"'],'-lcrtdll');
+      catch
+        fprintf(1, 'iLoad: Can''t compile looktxt.c and cbf_uncompress.c\n       in %s\n', pwd);
+      end
+    end
+    cd (p)
   end
   % look for a specific importer when filename is specified
   if ~isempty(filename)
@@ -145,7 +158,7 @@ if iscellstr(filename) & length(filename) > 1 & ~isempty(filename)
   data  = {};
   format= data;
   for index=1:length(filename(:))
-    [this_data, this_format] = iLoad(filename{index}, loader);
+    [this_data, this_format] = iLoad(filename{index}, loader, varargin{:});
     if ~iscell(this_data),   this_data  ={ this_data }; end
     if ~iscell(this_format), this_format={ this_format }; end
     data  = { data{:}   this_data{:} };
@@ -177,7 +190,7 @@ if ischar(filename) & length(filename) > 0
   f=find(filename == '#');
   if length(f) == 1 && f > 1  % the filename contains an internal link (HTML anchor)
     [fileroot,filesub]=strtok(filename, '#');
-    [data, format]=iLoad(fileroot);
+    [data, format]=iLoad(fileroot, loader, varargin{:});
     % now search for the fieldnames
     f = findfield(data, filesub(2:end)); % calls private function
     if ~isempty(f)
@@ -234,7 +247,7 @@ if ischar(filename) & length(filename) > 0
     rdir = cellstr(this_dir); % original directory listing as cell
     rdir = strcat([ filepath filesep ], char(rdir));
     filename = cellstr(rdir);
-    [data, format] = iLoad(filename, loader);
+    [data, format] = iLoad(filename, loader, varargin{:});
     return
   end
   
@@ -284,7 +297,7 @@ if ischar(filename) & length(filename) > 0
         fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
         return
       end
-      [data, format] = iLoad(filenames, loader); % is now local
+      [data, format] = iLoad(filenames, loader, varargin{:}); % is now local
       for index=1:length(filenames)
         try
           delete(filenames{index});
@@ -300,6 +313,7 @@ if ischar(filename) & length(filename) > 0
   if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
   % handle the '%20' character replacement as space
   filename = strrep(filename, '%20',' ');
+  if filename(end) == ';', filename(end)=''; end % in case there is a leading ';' in place of \n
   try
     [data, format] = iLoad_import(filename, loader, varargin{:});
   catch
@@ -327,7 +341,7 @@ elseif isempty(filename)
       filename = [ filename filesep '*']; 
     end % all elements in case of directory
   end
-  [data, format] = iLoad(filename, loader);
+  [data, format] = iLoad(filename, loader, varargin{:});
 else
   % data not empty, but not a file name
   data = iLoad_loader_check([ inputname(1) ' variable of class ' class(filename) ], filename, 'variable');
