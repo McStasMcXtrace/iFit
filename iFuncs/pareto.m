@@ -14,13 +14,13 @@ function y=pareto(varargin)
 % output: y: model value
 % ex:     y=pareto([1 0 1 1], -10:10); or plot(pareto);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Pareto distribution distribution function (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Exponent','Width','Background'};
 y.Description='Pareto distribution distribution function. http://en.wikipedia.org/wiki/Pareto_distribution';
-y.Expression= @(p,x) p(4)+ p(1)*(p(3)./x).^p(2);
+y.Expression= @(p,x) p(4)+ p(1)*(p(3)./abs(x)).^p(2);
 y.Guess     = @(x,y) [ (max(y(:))-min(y(:)))/2 mean(abs(x(:))) std(x(:)) min(y(:)) ];
 
 y = iFunc(y);

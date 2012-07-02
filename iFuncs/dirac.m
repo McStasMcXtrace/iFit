@@ -14,7 +14,7 @@ function y=dirac(varargin)
 % output: y: model value
 % ex:     y=dirac([1 0 1 1], -10:10); or plot(dirac)
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iFunc/fits, iFunc/plot
 
 y.Name       = [ 'Dirac (1D) [' mfilename ']' ];
@@ -22,7 +22,7 @@ y.Description='Dirac peak fitting function';
 y.Parameters = {'Amplitude','Centre'};
 y.Expression = @(p,x) p(1)*(abs(x - p(2)) == min(abs(x(:) - p(2))));
 y.Dimension  = 1;   
-y.Guess      = [];
+y.Guess      = @(x,signal) [ max(signal(:)) sum(signal(:).*x(:))/sum(signal(:)) ];
 
 y = iFunc(y);
 

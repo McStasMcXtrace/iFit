@@ -32,13 +32,15 @@ function f = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %
 % output: f: new model object
 % 
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, gauss, iFunc
 
-fhandle = [];
+f       = [];
 NL      = sprintf('\n');
 
-if nargin == 1 && ~isvarname(fun) && (ischar(fun) || isa(fun,'function_handle'))
+if nargin == 1 && strcmp(fun, 'identify')
+  return
+elseif nargin == 1 && ~isvarname(fun) && (ischar(fun) || isa(fun,'function_handle'))
   % special case when only the expression is given
   expr   = fun;
   fun    = '';

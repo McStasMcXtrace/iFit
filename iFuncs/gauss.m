@@ -12,7 +12,7 @@ function y=gauss(varargin)
 % output: y: model value
 % ex:     y=gauss([1 0 1 1], -10:10); or plot(gauss)
 %
-% Version: $Revision: 1.13 $
+% Version: $Revision: 1.14 $
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Gaussian (1D) [' mfilename ']' ];
@@ -20,8 +20,8 @@ y.Description='Single 1D Gaussian model';
 y.Parameters={'Amplitude','Centre','HalfWidth','Background'};
 y.Expression= @(p,x) p(1)*exp(-0.5*((x-p(2))/p(3)).^2) + p(4);
 y.Guess     = @(x,signal) [ NaN ...
-                            sum(signal.*x)/sum(signal) ...
-                            sqrt(abs(sum(x.*x.*signal)/sum(signal) - sum(signal.*x)/sum(signal)*sum(signal.*x)/sum(signal))) ...
+                            sum(signal(:).*x(:))/sum(signal(:)) ...
+                            sqrt(abs(sum(x(:).*x(:).*signal(:))/sum(signal(:)) - sum(signal(:).*x(:))/sum(signal(:))*sum(signal(:).*x(:))/sum(signal(:)))) ...
                             NaN ];
 y = iFunc(y);
 
