@@ -38,7 +38,7 @@ function a = iFunc(varargin)
 %         b=iFunc('p(1)*x+p(2)');
 %         b=iFunc('signal=p(1)*x+p(2);');
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iFunc, iFunc/feval, iFunc/plot, iFunc/fit
 
 
@@ -365,11 +365,11 @@ function a = iFunc_private_check(a)
   
   % create a default Name for Labels
   if isempty(a.Name)
-    e = textwrap(cellstr(a.Expression),80);
+    e = textwrap(cellstr(char(a.Expression)),80);
     if length(e) > 3, e=e(1:3); end
     e = sprintf('%s', e{:}); if e(end) == ';', e(end)=''; end
     token = regexp(e, '\<signal\>\s*=','match');
-    e = strrep(e, token{1}, '');
+    if ~isempty(token), e = strrep(e, token{1}, ''); end
     if length(e) > 20, e=[ e(1:17) '...' ]; end
     a.Name = e;
   end
