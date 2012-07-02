@@ -17,7 +17,7 @@ else
   id=id+1;
 end
 
-b.Tag      = [ 'id' sprintf('%0.f', id) ];
+b.Tag      = [ 'iD' sprintf('%0.f', id) ];
       
 if nargout == 0 && ~isempty(inputname(1))
   assignin('caller',inputname(1),b);

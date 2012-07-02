@@ -13,7 +13,7 @@ function this = set(this,varargin)
 %
 % ex      : set(iData,'Title','A nice Title')
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/get, iData/setalias, iData/setaxis
 
 % EF 27/07/00 creation
@@ -25,22 +25,22 @@ function this = set(this,varargin)
 
 if nargin == 1
   disp('iData object properties:');
-  disp('Title:   (string)   title of the Data set');
-  disp('Tag:     (string)   unique ID for the Data set');
-  disp('Source:  (string)   origin of data (filename/path)');
-  disp('Command: (cellstr)  history of commands applied to object');
-  disp('Date:    (string)   Data set creation date');
-  disp('UserData:(any type) user data storage area');
-  disp('Label:   (string)   user label');
-  disp('DisplayName (string)string displayed in plot legends');
-  disp('Creator: (string)   application that created this data set');
-  disp('User:    (string)   user of this Data set');
-  disp('Data:    (any type) Data storage area');
-  disp('Axis:    list of axis defined for data set math operations/plotting. Use setaxis/getaxis');
-  disp('Alias:   list of aliases/links to data items.                        Use setalias/getalias');
-  disp('Signal:  (double)   The signal to be used for data set math operations/plotting.');
-  disp('Error:   (double)   The error bars on the signal to be used for data set math operations/plotting.');
-  disp('Monitor: (double)   The monitor(statistical weight) on the signal to be used for data set math operations');
+  disp('Title:      (string)   title of the Data set');
+  disp('Tag:        (string)   unique ID for the Data set');
+  disp('Source:     (string)   origin of data (filename/path)');
+  disp('Command:    (cellstr)  history of commands applied to object');
+  disp('Date:       (string)   data set creation date');
+  disp('UserData:   (any type) user data storage area');
+  disp('Label:      (string)   user label');
+  disp('DisplayName (string)   string displayed in plot legends');
+  disp('Creator:    (string)   application that created this data set');
+  disp('User:       (string)   user of this Data set');
+  disp('Data:       (any type) Data storage area');
+  disp('Signal:     (double)   The signal to be used for data set math operations/plotting.');
+  disp('Error:      (double)   the error bars on the signal to be used for data set math operations/plotting.');
+  disp('Monitor:    (double)   the monitor(statistical weight) on the signal to be used for data set math operations');
+  disp('Axis:       list of axis defined for data set math operations/plotting. Use setaxis/getaxis');
+  disp('Alias:      list of aliases/links to data items.                        Use setalias/getalias');
   disp('ModificationDate: (string)   last object modification date');
   this = iData(this);
   return
@@ -76,7 +76,6 @@ while index < length(varargin)    % first parse fields and values
     prop_values = varargin{index+1};      % get PropertyValue
     index = index+2;
   else
-  varargin
     iData_private_error(mfilename, [ 'PropertyName ' num2str(index) ' should be char strings in object ' inputname(1) ' ' this.Tag ' and not ' class(varargin{index}) ]);
   end
 end

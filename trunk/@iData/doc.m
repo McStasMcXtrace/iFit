@@ -13,7 +13,7 @@ function d = doc(a, page)
 %     doc(iData,'Plot')
 %     doc(iData,'Methods')
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision: 1.6 $
 
 % EF 23/10/10 iData impementation
 if nargin ==1, page=''; end
@@ -33,12 +33,11 @@ else
   disp(d);
   % attempts to guess how to launch the browser
   if ispc
-    cmd = 'start';
+    system([ 'start /D "' ifitpath '" Docs'])
   elseif ismac
-    cmd = 'open';
+    system([ 'open "' d '"' ]);
   else
-    cmd = 'gnome-open';
+    system([ 'gnome-open "' d '"' ]);
   end
-  system([ cmd ' ' d ]);
 end
 

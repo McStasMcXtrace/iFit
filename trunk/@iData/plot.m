@@ -53,7 +53,7 @@ function h=plot(a, varargin)
 %   vol3d:     Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Version: $Revision: 1.96 $
+% Version: $Revision: 1.97 $
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
 %          shading, lighting, surf, iData/slice
@@ -75,7 +75,7 @@ elseif length(varargin) == 1
     a = [ a(:) ; b(:) ]; method='';
   end
 else
-  % split varvargin looking for chars
+  % split varargin looking for chars
   method = '';
   index=1;
   while index <= length(varargin)  % parse input arguments and split with char/methods calls
@@ -147,10 +147,11 @@ if numel(a) > 1
     end
     s = getaxis(a(index), 0);
     sum_max = sum_max+max(s(:))-min(s(:));
-    if ndims(a(index)) == 1 && isempty(this_method)
+    if ndims(a(index)) == 1 && isempty(this_method) && strcmp(get(h{index},'Type'),'line')
       % change color of line
       colors = 'bgrcmk';
       set(h{index}, 'color', colors(1+mod(index, length(colors))));
+
     end
     hold on
   end % for

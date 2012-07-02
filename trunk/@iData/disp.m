@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.35 $
+% Version: $Revision: 1.36 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -95,14 +95,15 @@ else
     else 
       label = [ label ' (' class(v) ')' ];
       v=class2str('s',v,'no comments'); 
-      v=strrep(v,sprintf('\n'),''); v=v(:)';
       if length(v) > 32, v = [v(1:29) '...' ]; end 
     end
     if strcmp(s_in.Alias.Names{index}, 'Format') && ~isdeployed
       if isempty(label), label='help about formats'; end
       label=[ '<a href="matlab:doc(iData,''Load'')">' label '</a>' ];
     end
-    fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, strtrim(v), strtrim(char(label)));
+    v = strtrim(v); v(~isstrprop(v,'print'))=''; 
+    label = strtrim(char(label)); label(~isstrprop(label,'print'))=''; 
+    fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, v, label);
     if strcmp(s_in.Alias.Names{index}, 'Signal') & length(s_in.Alias.Axis) == 0
       x      = getaxis(s_in, 0);  x=x(:);
       if length(x) == 1

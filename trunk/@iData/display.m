@@ -2,14 +2,14 @@ function d = display(s_in, name)
 % d = display(s) : display iData object (from command line)
 %
 % @iData/display function to display iData object.
-%   Used when no ';' sign folows a iData object in matlab.
+%   Used when no ';' sign follows a iData object in matlab.
 % The return value may be catched as a string to display.  
 %
 % input:  s: object or array (iData) 
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision: 1.16 $
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation
@@ -66,27 +66,27 @@ else
         d = [ d sprintf('%9s ',s.Tag) ];
       end
       d = [ d sprintf('%11s ', [ mat2str(size(s)) ]) ];  % size
-      t = cellstr(s.Title); t = strtrim(t{1});
+      t = cellstr(s.Title); t = strtrim(t{1}); t(~isstrprop(t,'print'))=''; 
       if length(t) > 31, t = [ t(1:27) '...' ]; end             % object.title
-      t = [ t ' "' title(s) '"' ];
+      t = [ t ' "' title(s) '"' ]; t = strtrim(t); t(~isstrprop(t,'print'))=''; 
       if length(t) > 41, t = [ t(1:37) '..."'  ]; end           % title(Signal)
       d = [ d sprintf('%43s ', [ '''' t '''' ]) ];
-      h = cellstr(s.Command); h=deblank(h{end});
+      h = cellstr(s.Command); h = strtrim(h{1}); h(~isstrprop(h,'print'))=''; 
       if length(h) > 23, h = [ h(1:20) '...' ]; end             % last command
       d = [ d sprintf('%s ', h) ];
       if ~isempty(s.Label) && ~isempty(s.DisplayName)
-        h = cellstr(s.Label); h=deblank(h{1});
+        h = cellstr(s.Label); h = strtrim(h{1}); h(~isstrprop(h,'print'))=''; 
         if length(h) > 13, h = [ h(1:10) ]; end                 % Label/DisplayName
         d = [ d sprintf('%s', h) ];
-        h = cellstr(s.DisplayName); h=deblank(h{1});
+        h = cellstr(s.DisplayName); h = strtrim(h{1}); h(~isstrprop(h,'print'))=''; 
         if length(h) > 13, h = [ h(1:10) '...' ]; end           % 
         d = [ d sprintf('/%s', h) ];
       elseif ~isempty(s.Label)
-        h = cellstr(s.Label); h=deblank(h{1});
+        h = cellstr(s.Label); h = strtrim(h{1}); h(~isstrprop(h,'print'))=''; 
         if length(h) > 18, h = [ h(1:15) '...' ]; end           % Label
         d = [ d sprintf('%s', h) ];
       elseif ~isempty(s.DisplayName)
-        h = cellstr(s.DisplayName); h=deblank(h{1});
+        h = cellstr(s.DisplayName); h = strtrim(h{1}); h(~isstrprop(h,'print'))=''; 
         if length(h) > 18, h = [ h(1:15) '...' ]; end           % DisplayName
         d = [ d sprintf('%s', h) ];
       end

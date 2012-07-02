@@ -1,14 +1,11 @@
 function b = iData_private_unary(a, op, varargin)
 % iData_private_unary: handles unary operations
 %
-% 'asin', 'acos','atan','cos','sin','exp','log','log10','sqrt','tan','transpose'
-% 'ctranspose', 'sparse','full', 'floor','ceil','round'
-% 'asinh','atanh','acosh','sinh','cosh','tanh'
-% 'del2'
-% 'sign','isfinite','isnan','isinf'
-% 'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger','islogical'
-% 'uminus','abs','real','imag','uplus','not'
-% 'flipud','fliplr', 'permute','conj'
+% Supported operations:
+% abs acosh acos asinh asin atanh atan ceil conj cosh cos ctranspose del2 exp 
+% fliplr flipud floor full imag isfinite isfloat isinf isinteger islogical 
+% isnan isnumeric isreal isscalar issparse log10 log norm not permute 
+% real round sign sinh sin sparse sqrt tanh tan transpose uminus uplus 
 %
 % present but not used here: 'double','single','logical','find'
 
@@ -38,7 +35,7 @@ s = subsref(b,struct('type','.','subs','Signal'));
 e = subsref(b,struct('type','.','subs','Error'));
 m = subsref(b,struct('type','.','subs','Monitor'));
 
-% omake sure sparese is done with 'double' type
+% make sure sparse is done with 'double' type
 if strcmp(op, 'sparse')
   if ndims(a) > 2
     iData_private_error('unary',['Operation ' op ' can only be used on 2d data sets. Object ' a.Tag ' is ' num2str(ndims(a)) 'd.' ]);

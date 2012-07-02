@@ -1,4 +1,38 @@
-function ifit_console(varargin)
+function ifit(varargin)
+% Usage:  ifit [options] argruments commands 
+%
+%  iFit executable from command line.
+%  Project page at <http://ifit.mccode.org>
+%
+%  arguments:
+%    Any file name, including directories (imports all recursively).
+%      Files can also be given as distant URLs (via http and ftp), and as compressed
+%      content (zip, tar, gzip).
+%      Script files (.m) are executed, other files are imported.
+%    Any numerical value, including arrays given as e.g. '[ 1 2 ...]'.
+%    The 'empty' argument is obtained from the '[]' argument
+%    Any argument given between double quotes is used as a string argument.
+%    Any argument given between simple quotes is evaluated as a an expression.
+%
+%  Once all arguments have been processed, they are stored in the 'this'
+%    variable (cell array) for further use, and the program enters in interactive
+%    mode except when the --exit argument is specified.
+%  In interactive mode, any Matlab command can be entered if it spans on a single line.
+%  To execute multiple lines and control statements (if/while/for...), write them
+%    in a script and type 'run <script>'.
+%
+%  options:
+%  --exit or -e
+%      exits immediately after all execution of command line arguments.
+%  --save or -s or --save=FILE
+%      save the all variables when commands have been executed.
+%  --run=SCRIPT or -r=SCRIPT
+%      executes the SCRIPT when starting.
+%
+%  Examples:
+%    ifit --save file1.*  subplot 
+
+% Manual build:
 % mcc -m ifit_console -a /home/farhi/svn/Matlab/iFit
 % buildmcr('.')
 
@@ -15,9 +49,10 @@ disp('                            <ifit.mccode.org>');
 disp('                E. Farhi, Institut Laue Langevin, France (c)');
 disp(' ');
 disp([ '** Starting iFit on ' datestr(now) ])
+disp('Type ''help'' to learn how to use this software. Type ''exit'' or Ctrl-C to exit.');
 disp(' ')
 
-ifit_options.line     ='help'; % the current line to execute
+ifit_options.line     =''; % the current line to execute
 ifit_options.index    =1;      % the index of the input
 this                  ={};     % the buffer from the command line
 ifit_options.save     =0;
@@ -28,12 +63,13 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   if strcmp(ifit_options.line, 'help')        % 'help' command ---------------------------------
     disp('Enter any Matlab/iFit command.');
     disp('      Use ''run script.m'' to execute a script from a file.');
-    disp('      Control statements are allowed (for/while loops, tests, switch/case...).');
+    disp('      Control statements are allowed (for/while loops, tests, switch/case...) when');
+    disp('      they span on a single line, or in scripts.
     disp('Keys: Arrow-Up/Down  Navigate in command history.');
     disp('      Ctrl-C         Exit (same as ''exit'' or ''return'' commands.');
     disp('Help: Type ''doc(iData,''iFit'')'' or see <ifit.mccode.org> <ifit-users@mccode.org>.');
     disp(' ');     
-    ifit_options.line = 'doc(iData,''iFit'');';
+    ifit_options.line = 'doc(iData,''iFit''); disp('' '');';
   elseif strncmp(ifit_options.line,'run ', 4) % 'run' command ----------------------------------
     ifit_options.line = strtrim(ifit_options.line(5:end));
     if ~isempty(dir(ifit_options.line))
@@ -49,7 +85,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
       ifit_options=rmfield(ifit_options, 'f');
       ifit_options=rmfield(ifit_options, 'e');
     else
-      disp(['Can not open file ' ifit_options.line]);
+      disp(['Error: iFit: Can not open file ' ifit_options.line]);
     end
   end
   
@@ -88,9 +124,13 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
       end
       this{end+1} = ifit_options.line;
     elseif strcmp(ifit_options.line, '--save') || strcmp(ifit_options.line, '-s')
-      ifit_options.save=1;
+      ifit_options.save='ifit.mat';
     elseif strncmp(ifit_options.line, '--save=', 7)
       options.save=ifit_options.line(8:end);
+    elseif strncmp(ifit_options.line, '--run=', 6)
+      options.save=[ 'run ' ifit_options.line(7:end) ];
+    elseif strncmp(ifit_options.line, '-r=', 3)
+      options.save=[ 'run ' ifit_options.line(4:end) ];
     elseif strcmp(ifit_options.line, '--exit') || strcmp(ifit_options.line, '-e')
       ifit_options.exit=1;
     elseif strcmp(ifit_options.line, '--help') || strcmp(ifit_options.line, '-h')
@@ -122,14 +162,18 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
         '      exits immediately after all execution of command line arguments.' NL ...
         '  --save or -s or --save=FILE' NL ...
         '      save the all variables when commands have been executed.' NL ...
+        '  --run=SCRIPT or -r=SCRIPT' NL ...
+        '      executes the SCRIPT when starting.' NL ...
         NL ...
         '  Examples:' NL ...
         '    ifit --save file1.*  subplot ' NL NL ];
       disp(ifit_options.t);
       ifit_options=rmfield(ifit_options, 't');
       if isempty(varargin) && ~isempty(this) % last argument has just been processed
-        disp('Info: all imported arguments have been stored in ''this''.');
+        disp('Info: all imported arguments have been stored in cell array ''this''.');
+        disp('      access them with e.g. this{1} ...');
         disp(this);
+        clear varargin
       end
     elseif ~isempty(str2num(ifit_options.line))
       % numerical value(ifit_options.line) as a matrix
@@ -173,11 +217,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   elseif ifit_options.exit
     ifit_options.line = 'exit';
   else
-    if ~isdeployed
-      ifit_options.line = input([ 'iFit:' num2str(ifit_options.index) '>> ' ],'s');
-    else
-      ifit_options.line = input([ 'iFit:' num2str(ifit_options.index) ],'s');
-    end
+    ifit_options.line = input([ 'iFit:' num2str(ifit_options.index) ' ' ],'s');
   end
   if ~isempty(ifit_options.line)
     ifit_options.index=ifit_options.index+1;
@@ -185,9 +225,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
 end
 
 % auto save ?
-if isnumeric(ifit_options.save) && ifit_options.save
-  save('ifit.mat','-v7.3');
-elseif ischar(ifit_options.save)
+if ischar(ifit_options.save)
   save(ifit_options.save, '-v7.3');
 end
 
