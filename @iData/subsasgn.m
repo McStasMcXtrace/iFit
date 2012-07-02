@@ -9,7 +9,7 @@ function b = subsasgn(a,S,val)
 %     When the assigned value is numeric, the axis value is set (as in set).
 %   The special syntax a{'alias'} is a quick way to define an alias.
 %
-% Version: $Revision: 1.27 $
+% Version: $Revision: 1.28 $
 % See also iData, iData/subsref
 
 % This implementation is very general, except for a few lines
@@ -187,8 +187,10 @@ else
       if any(strcmpi(fieldname, {'alias','axis'}))
         iData_private_error(mfilename, [ 'can not redefine ' fieldname ' in object ' inputname(1) ' ' b.Tag ]);
       end
-      if any(strcmpi(fieldname, fieldnames(b))) % structure/class def fields: b.field
-        b.(fieldname) = val;
+      f     = fieldnames(b);
+      index = find(strcmpi(fieldname, fieldnames(b)));
+      if ~isempty(index) % structure/class def fields: b.field
+        b.(f{index}) = val;
       else
         if strcmpi(fieldname, 'Signal') && isempty(val)
           b = setalias(b, 'Signal', []);        % reset Signal to the biggest field

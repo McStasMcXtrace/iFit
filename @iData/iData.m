@@ -30,7 +30,7 @@ function outarray = iData(varargin)
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Revision: 1.47 $
+% Version: $Revision: 1.48 $
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
 
 % object definition and converter
@@ -229,7 +229,6 @@ else  % convert input argument into object
       out = [];
     end
     if length(inputname(1)), inmame=[ inputname(1) ' ' ]; else inmame=''; end
-
     for index=1:numel(out)
       if numel(out) == 1 | ~isempty(out(index))
         if isempty(out(index).Source), out(index).Source = inmame; end
@@ -372,10 +371,7 @@ if isnumeric(in.Data) && ~isempty(in.Data)
   in.Data.Signal = data;
 end
 
-if isempty(in.Data)
-  in = setalias(in, getalias(in));
-% if signal is invalid, set signal to biggest field link
-elseif isempty(getalias(in, 'Signal'))
+if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
   [fields, types, dims] = findfield(in);
   % remove fields that we do not want as Signal
   index=[ find(strcmp('Date', fields)) find(strcmp('ModificationDate', fields)) ] ;
@@ -467,6 +463,7 @@ elseif isempty(getalias(in, 'Signal'))
     end 
   end
 end
+
 % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes
 if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
             && isvector(getaxis(in, 1)) && isvector(getaxis(in, 2)) ...
@@ -486,6 +483,4 @@ in = setalias(in);
 % check axis (valid ?) by calling setaxis(in)
 in = setaxis(in);
 
-% and make it an iData object
-out = class(struct(in), 'iData');
-
+out = in;

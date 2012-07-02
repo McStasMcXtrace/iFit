@@ -9,7 +9,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
 %
-% Version: $Revision: 1.11 $
+% Version: $Revision: 1.12 $
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
@@ -83,7 +83,7 @@ if all(dim > 0)
     
   case {'trapz','cumtrapz'} % TRAPZ =========================================================
     for index=1:length(dim(:))
-      [x, xlab]     = getaxis(a,dim(index));
+      [x, xlab]     = getaxis(a,dim(index)); x=x(:);
       if dim(index) ~= 1  % we put the dimension to integrate on as first
         perm=1:ndims(a);
         perm(dim(index))=1; perm(1)=dim(index);
@@ -158,6 +158,8 @@ end
 b.Command=cmd;
 b = iData_private_history(b, op, b, dim);
 s = b;
+
+if isscalar(s), s=double(s); end
 
 % reset warnings
 iData_private_warning('exit',mfilename);
