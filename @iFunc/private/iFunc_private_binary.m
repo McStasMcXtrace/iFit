@@ -233,7 +233,8 @@ if isFa && isFb
     sprintf('p=%s_p(%i:%i); %% evaluate 1st expression for %s\n', tmp_a, i1a, i2a, op), ...
     a.Expression, ...
     sprintf('\n%s_s = signal;\n', tmp_a), ...
-    sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1a, i2a) ];
+    sprintf('%s_p(%i:%i)=p(1:%d); %% updated parameters\n', ...
+      tmp_a, i1a, i2a, length(a.Parameters)) ];
   
   % handle dimensionality expansion
   if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
@@ -252,39 +253,39 @@ if isFa && isFb
   c.Expression = [ c.Expression, ...
     sprintf('p=%s_p(%i:%i); %% evaluate 2nd expression for %s\n', tmp_a, i1b, i2b, op), ...
     b.Expression, ...
-    sprintf('\n%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1b, i2b), ...
+    sprintf('\n%s_p(%i:%i)=p(1:%d); %% updated parameters\n', ...
+      tmp_a, i1b, i2b, length(b.Parameters)), ...
     sprintf('p=%s_p;\n'  , tmp_a) ];
   if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
-    % arrrange 2nd signal so that dimensions match singleton ones for the 1st signal
-    % if b.Dimension == 1
-    %  c.Expression = [ c.Expression, ...
-    %    sprintf('signal=reshape(signal, [ ones(1,%i) numel(signal) ]);\n', a.Dimension) ];
-    %else
-    %  c.Expression = [ c.Expression, ...
-    %    sprintf('signal=reshape(signal, [ ones(1,%i) size(signal) ]);\n', a.Dimension) ];
-    %end
+    % orthogonal operation
     c.Expression = [ c.Expression, ...
       sprintf('signal=bsxfun(@%s, %s_s, signal); %% operation: %s (orthogonal axes)\n', op(2:end), tmp_a, op) ];
   else
     c.Expression = [ c.Expression, ...
       sprintf('signal=feval(@%s, %s_s, signal%s); %% operation: %s\n', op, tmp_a, v, op) ];
   end
-  c.Eval=char(c); % trigger new Eval
 
 elseif isFa && ischar(b)
   c.Expression = [ c.Expression sprintf('\nsignal=%s(signal,%s%s);', op, b, v) ];
+  c.Name       = sprintf('%s(%s,%s)', op, c.Name, b(1:min(10,length(b))));
 elseif isFb && ischar(a)
   c.Expression = [ c.Expression sprintf('\nsignal=%s(%s,signal%s);', op, a, v) ];
-elseif isFa && ~isempty(inputname(2)) && ~isempty(whos('global',inputname(2)))
-  c.Expression = [ c.Expression sprintf('\nglobal %s; signal=%s(%s,signal%s);', inputname(2), op, inputname(2), v) ];
-elseif isFb && ~isempty(inputname(1)) && ~isempty(whos('global',inputname(1)))
-  c.Expression = [ c.Expression sprintf('\nglobal %s; signal=%s(signal,%s%v);', inputname(1), op, inputname(1), v) ];
+  c.Name       = sprintf('%s(%s,%s)', op, a(1:min(10,length(a))), c.Name);
 elseif   isFa && isnumeric(b) && isnumeric(b)
-  c.Expression = [ c.Expression sprintf('\nsignal=%s(signal,%s%s);', op, mat2str(double(b)), v) ];
+  b = mat2str(double(b)); 
+  c.Expression = [ c.Expression sprintf('\nsignal=%s(signal,%s%s);', op, b, v) ];
+  if length(b) > 13, b=[ b(1:10) '...' ]; end
+  c.Name       = sprintf('%s(%s,%s)', op, c.Name, b);
 elseif isFb && isnumeric(a) && isnumeric(a)
-  c.Expression = [ c.Expression sprintf('\nsignal=%s(%s,signal%v);', op, mat2str(double(a)), v) ];
+  a = mat2str(double(a));
+  c.Expression = [ c.Expression sprintf('\nsignal=%s(%s,signal%v);', op, a, v) ];
+  if length(a) > 13, a=[ a(1:10) '...' ]; end
+  c.Name       = sprintf('%s(%s,%s)', op, c.Name, b);
 else
   error(['iFunc:' mfilename ], [mfilename ': can not apply operator ' op ' between class ' class(a) ' and class ' ...
       class(b) '.' ]);
 end
+
+c.Eval=char(c); % trigger new Eval
+
 

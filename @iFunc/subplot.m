@@ -10,7 +10,7 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iFunc, iFunc/plot
 
 m=[]; n=[]; dim=[];
@@ -54,9 +54,11 @@ h=[];
 for index=1:numel(a)
   if ~isempty(a(index))
     subplot(m,n,index);
-     
     this_h = plot(a(index));
     
+    if length(a)> 12
+      title(strtok(a(index).Name));
+    end
     h = [ h ; this_h(:) ];
   else h = [ h ; nan ];
   end

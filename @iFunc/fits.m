@@ -5,8 +5,9 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %     fitting criteria using model 'fun', by mean of an optimization method
 %     described with the 'options' structure argument.
 %     Additional constraints may be set by fixing some parameters, or define
-%     more advanced constraints (min, max, steps). The last arguments controls the fitting
-%     options with the optimset mechanism, and the constraints to apply during optimization.
+%     more advanced constraints (min, max, steps). The last arguments controls the 
+%     fitting options with the optimset mechanism, and the constraints to apply
+%     during optimization.
 %  [pars,...] = fits(a, model, pars, options, lb, ub)
 %     uses lower and upper bounds as parameter constraints (double arrays)
 %  [pars,...] = fits(a, model, pars, options, fixed)
@@ -14,7 +15,14 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %  [pars,...] = fits(a, model, pars, 'optimizer', ...)
 %     uses a specific optimizer and its default options options=feval(optimizer,'defaults')
 %  [pars,...] = fits(a, model, pars, options, constraints, args...)
-%     send additional arguments to the fit model(pars, axes, args...)
+%     send additional arguments to the fit model(pars, axes, args...).
+%
+%  When the data is entered as a structure or iData object with a Monitor value, 
+%    the fit is performed on Signal/Monitor.
+%  When parameters, options, and constraints are entered as a string with
+%    name=value pairs, the string is interpreted as a structure description, so
+%    that options='TolX=1e-4; optimizer=fminpso' is a compact form for 
+%    options=struct('TolX','1e-4','optimizer','fminpso').
 % 
 % The default fit options.criteria is 'least_square', but others are available:
 %   least_square          (|Signal-Model|/Error).^2     non-robust 
@@ -26,14 +34,18 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %
 % input:  model: model function (iFunc)
 %         data: array or structure/object (numeric or structure or cell)
-%               Can be entered as a single numeric array (the Signal), or as a structure/object
-%                 with possible members Signal, Error, Monitor, Axes={x,y,...}
+%               Can be entered as a single numeric array (the Signal), or as a 
+%                 structure/object with possible members 
+%                   Signal, Error, Monitor, Axes={x,y,...}
 %               or as a cell { x,y, ... , Signal }
-%         pars: initial model parameters (double array). 
+%               or as an iData object
+%           The 1st axis 'x' is row wise, the 2nd 'y' is column wise.
+%         pars: initial model parameters (double array, string or structure). 
 %           when set to empty or 'guess', the starting parameters are guessed.
+%           Named parameters can be given as a structure or string 'p1=...; p2=...'
 %         options: structure as defined by optimset/optimget (char/struct)
-%           if given as a char, it defines the algorithm to use and its default options.
-%           when set to empty, it sets the default algorithm options (fminimfil).
+%           if given as a char, it defines the algorithm to use and its default %             options (single optimizer name or string describing a structure.
+%           when set to empty, it sets the default algorithm options (fmin).
 %           options.TolX
 %             The termination tolerance for x. Its default value is 1.e-4.
 %           options.TolFun
@@ -61,6 +73,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %           constraints.max:   maximum parameter values (double array)
 %           constraints.step:  maximum parameter step/change allowed.
 %           constraints.fixed: fixed parameter flag. Use 1 for fixed parameters, 0 otherwise (double array)
+%           OR use a string 'min=...; max=...'
 %
 % output: 
 %         pars:              best parameter estimates (double array)
@@ -80,7 +93,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(gauss,data,[1 2 3 4],o); b=o.modelValue; plot(a,b)
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also fminsearch, optimset, optimget, iFunc
 
 % first get the axes and signal from 'data'
@@ -159,10 +172,9 @@ elseif strcmp(pars,'guess')
   pars = model.ParameterValues;
 elseif isempty(pars)
   if ~isempty(model.ParameterValues)
-    pars = model.ParameterValues;     % use stored starting parameters
+    pars = model.ParameterValues;                % use stored starting parameters
   else     
-    feval(model, pars, Axes{:}, Signal);         % get default starting parameters
-    pars = model.ParameterValues;
+    pars = feval(model, 'guess', Axes{:}, Signal);         % get default starting parameters
   end
 end
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
@@ -170,7 +182,7 @@ pars = reshape(pars, [ 1 numel(pars)]); % a single row
 % handle options
 if nargin < 4, options=[]; end
 if isempty(options)
-  options = 'fminpowell';% default optimizer
+  options = 'fmin';% default optimizer
 end
 if (ischar(options) && length(strtok(options,' =:;'))==length(options)) | isa(options, 'function_handle')
   algo = options;
@@ -180,7 +192,7 @@ if (ischar(options) && length(strtok(options,' =:;'))==length(options)) | isa(op
 elseif ischar(options), options=str2struct(options);
 end
 if ~isfield(options, 'optimizer')
-  options.optimizer = 'fminpowell';
+  options.optimizer = 'fmin';
 end
 if ~isfield(options, 'criteria')
   options.criteria  = @least_square;
@@ -209,6 +221,7 @@ if (length(constraints)==length(pars) | isempty(pars)) & (isnumeric(constraints)
     constraints.min = lb;
     constraints.max = ub;
   end
+elseif ischar(constraints), options=str2struct(constraints);
 end
 if ~isstruct(constraints) && ~isempty(constraints)
   error([ 'iFunc:' mfilename],[ 'The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
@@ -281,7 +294,14 @@ pars_out = reshape(pars_out, [ 1 numel(pars_out) ]); % row vector
 model.ParameterValues = pars_out;
 if nargout > 3
   output.modelValue = feval(model, pars_out, a.Axes{:});
-  output.modelAxes  = a.Axes{:};
+  if not(all(a.Monitor == 1 | a.Monitor == 0)) % fit(signal/monitor) 
+    output.modelValue    = bsxfun(@rdivide,output.modelValue, a.Monitor); 
+  end
+  if length(a.Axes) == 1
+    output.modelAxes  = a.Axes{1};
+  else
+    output.modelAxes  = a.Axes(:);
+  end
   output.model      = model;
   
   % set output/results

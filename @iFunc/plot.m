@@ -12,7 +12,7 @@ function h = plot(a, p, varargin)
 %
 % ex:     b=plot(gauss); plot(gauss*lorz, [1 2 3 4, 5 6 7 8]);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iFunc, iFunc/fit, iFunc/feval
 
 if nargin < 2, 
@@ -58,9 +58,12 @@ function h=iFunc_plot(name, signal, ax)
 % this internal function plots a single model, 1D, 2D or 3D.
 
 if isvector(signal)
+  if isscalar(signal), signal = signal*ones(size(ax{1})); end
   h = plot(ax{1}, signal);
 elseif ndims(signal) == 2
   h = surf(ax{2}, ax{1}, signal);
+  view(3)
+  set(h,'EdgeColor','None');
 elseif ndims(signal) == 3
   h =patch(isosurface(ax{2}, ax{1}, ax{3}, signal, mean(signal(:))));
   set(h,'EdgeColor','None','FaceColor','green'); alpha(0.7);
@@ -122,3 +125,40 @@ function h=iFunc_plot_menu(h, a, name)
 
   set(uicm,'UserData', ud);
   set(h,   'UIContextMenu', uicm); 
+  
+  % add contextual menu to the axis ============================================
+  % contextual menu for the axis frame
+
+  uicm = uicontextmenu;
+  % menu Duplicate (axis frame/window)
+  uimenu(uicm, 'Label', 'Duplicate View...', 'Callback', ...
+     [ 'tmp_cb.g=gca;' ...
+       'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
+       'set(tmp_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+       'set(gcf,''Name'',''Copy of ' a.Name '''); ' ...
+       'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
+       'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
+       'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
+       
+  if ndims(a) == 1 && ~isfield(ud,'contextual_1d')
+    ud.contextual_1d = 1;
+  end
+  uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+  if ndims(a) >= 2 
+    uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback', [ ...
+      '[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end;' ...
+      'clear tmp_a tmp_e; lighting none;alpha(1);shading flat;rotate3d off;axis tight;' ]);
+    uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
+    uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
+    uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
+    uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
+    uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
+  else
+    uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight;rotate3d off;');
+    uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
+  end
+
+  uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', ...
+    'Callback',[ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
+  set(gca, 'UIContextMenu', uicm);
+
