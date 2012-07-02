@@ -12,15 +12,15 @@ function y=sinedamp(varargin)
 % output: y: model value
 % ex:     y=sinedamp([1 0 1 1], -10:10); or plot(sinedamp);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iFunc/fits, iFunc/plot, sine, expon
 
-y.Name           = [ 'Damped Sine function (1D) [' mfilename ']' ];
+y.Name           = [ 'Damped-Sine function (1D) [' mfilename ']' ];
 y.Parameters     = {'Amplitude','Phase_Shift','Period','Background','Decay'};
 y.Dimension      = 1;
 y.Description    = 'Damped Sine function';
 y.Expression     = @(p,x) p(4) + p(1)*sin((x - p(2))/p(3)).*exp(-x/p(5));
-y.Guess          =  @(x,y) [ max(y)-min(y) mean(x) std(x)/4 min(y) std(x)*4 ];
+y.Guess          =  @(x,y) [ max(y(:))-min(y(:)) mean(x(:)) std(x(:))/4 min(y(:)) std(x(:))*4 ];
 y = iFunc(y);
 
 if length(varargin)

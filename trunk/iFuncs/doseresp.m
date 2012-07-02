@@ -13,7 +13,7 @@ function y=doseresp(varargin)
 % output: y: model value
 % ex:     y=doseresp([1 0 1 1], -10:10); or plot(doseresp)
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision: 1.4 $
 % See also iData, iFunc/fits, iFunc/plot, sigmoid
 
 y.Name           = [ 'Dose-response (sigmoid) (1D) [' mfilename ']' ];
@@ -21,7 +21,7 @@ y.Description    = 'sigmoid S-shaped curve, aka logistic, aka dose response';
 y.Parameters     = {'Amplitude','Center','Slope','Background'};
 y.Expression = @(p,x) p(4)+ p(1) ./ (1+10.^((p(2)-x).*p(3)));
 y.Dimension      = 1;
-y.Guess          =  @(x,y) [ max(y)-min(y) mean(x) (max(y)-min(y))/std(x) min(y) ];
+y.Guess          =  @(x,y) [ max(y(:))-min(y(:)) mean(x(:)) (max(y(:))-min(y(:)))/std(x(:)) min(y(:)) ];
 y = iFunc(y);
 
 if length(varargin)

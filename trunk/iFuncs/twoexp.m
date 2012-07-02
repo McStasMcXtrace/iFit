@@ -12,10 +12,10 @@ function y=twoexp(varargin)
 % output: y: model value
 % ex:     signal=twoexp([1 0 1 1], -10:10); or plot(twoexp)
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iFunc/fits, iFunc/plot, expon, sinedamp
 
-y.Name           = [ '2 Exponential decay (1D) [' mfilename ']' ];
+y.Name           = [ 'Bi-Exponential decay (1D) [' mfilename ']' ];
 y.Parameters     = {'Amplitude1' 'Tau1 decay in inverse "x" unit' 'Amplitude2' 'Tau2 decay in inverse "x" unit' 'Background'};
 y.Dimension      = 1;         % dimensionality of input space (axes) and result
 y.Description    = '2 Exponential decay';
