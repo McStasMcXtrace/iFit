@@ -20,7 +20,7 @@ function [signal, ax, name] = feval(a, p, varargin)
 % ex:     b=feval(gauss,[1 2 3 4]); feval(gauss*lorz, [1 2 3 4, 5 6 7 8]);
 %           feval(gauss,'guess', -5:5, -abs(-5:5))
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iFunc, iFunc/fit, iFunc/plot
 
 % handle input iFunc arrays
@@ -78,18 +78,18 @@ if strcmp(p, 'plot')
   signal=plot(a);
   return
 elseif strcmp(p, 'identify')
-  signal=get(a);
+  signal=a;
   return
 end
 
 % when there are NaN values in parameter values, we replace them by guessed values
-if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmp(p, 'guess')
+if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmpi(p, 'guess')
   % call private method to guess parameters from axes, signal and parameter names
   
   % args={x,y,z, ... signal}
   args=cell(1,a.Dimension+1); args(1:end) = { [] };
   args(1:min(length(varargin),a.Dimension+1)) = varargin(1:min(length(varargin),a.Dimension+1));
-  args_opt = varargin((a.Dimension+1):end);
+  args_opt = varargin((a.Dimension+2):end);
   
   p0 = p; % save initial 'p' values
   
@@ -151,12 +151,16 @@ if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmp(p, 'guess')
           signal = 1;
         end
         clear ax index
-        eval(a.Guess);       % returns a vector and redefines 'p'
+        try
+          p = eval(a.Guess);       % returns a vector
+        catch
+          eval(a.Guess);       % returns a vector and redefines 'p'
+        end
         p2 = p;
         p  = p0;             % restore initial value
       end
       % merge auto and possibly manually set values
-      index=~isnan(p2);
+      index     = ~isnan(p2);
       p1(index) = p2(index);
       clear p2
     catch
@@ -168,6 +172,7 @@ if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmp(p, 'guess')
       % we use the 'p1' auto guess values
     end
   end
+
   signal = p1;  % auto-guess overridden by 'Guess' definition
   % transfer the guessed values from 'signal' to the NaN ones in 'p'
   if any(isnan(p)) && ~isempty(signal)
@@ -175,7 +180,7 @@ if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmp(p, 'guess')
   end
   a.ParameterValues = p; % the guessed values
   
-  if ~strcmp(p0, 'guess')
+  if ~strcmpi(p0, 'guess')
     % return the signal and axes
     [signal, ax, name] = feval(a, p, varargin{1:a.Dimension});
   else
@@ -251,7 +256,7 @@ end
 
 % Eval contains both the Constraint and the Expression
 % in case the evaluation is empty, we compute it (this should better have been done before)
-if isempty(a.Eval), 
+if isempty(a.Eval) 
   a.Eval=char(a);
 end
 
