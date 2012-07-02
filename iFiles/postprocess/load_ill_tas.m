@@ -4,7 +4,7 @@ function a=load_ill_tas(a)
 % Simple postprocessing for ILL/TAS files.
 % Supports ILL TAS files, including those with multidetectors.
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision: 1.13 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')
@@ -24,11 +24,12 @@ a=iData(a);
 
 % re-assign DATA in case the file has more than one data block (MULTI, ...)
 try
-  DATA  = a.MetaData.DATA; 
-  setalias(a,'Signal',DATA,[ 'Data CNTS' ]);
+  DATA  = a.MetaData.DATA;
 catch
-  DATA  = a.Signal;
+  DATA  = [];
 end
+if isempty(DATA), DATA=a.Signal; end
+setalias(a,'Signal',DATA,[ 'Data CNTS' ]);
 
 try
   STEPS = a.Data.STEPS;
@@ -58,10 +59,12 @@ try
 catch
   MULTI=[];
 end
+
 % Find spaces and determine proper aliases for the columns
 columns = strread(columns_header,'%s','delimiter',' ;');
 % restrict to the number of columns in DataBlock
 c       = size(a, 2);
+columns = columns(~cellfun('isempty', columns));
 columns = columns((end-c+1):end);
 
 % check if a scan step exists
@@ -83,6 +86,7 @@ index_temp=[]; % index for temperatures
 index_pal =[]; % index for polarization analysis
 Variance  = zeros(1,length(columns));
 is_pal    = '';
+
 for j=1:length(columns)
   setalias(a,columns{j},a.Signal(:,j)); % create an alias for each column
   % use STEPS

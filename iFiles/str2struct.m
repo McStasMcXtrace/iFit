@@ -15,7 +15,7 @@ function s=str2struct(string)
 % See also: mat2str, num2str, eval, sprintf, class2str
 %
 % Part of: iFiles utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.4 $
+% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.5 $
 
 s={};
 if nargin ==0, return; end
@@ -30,7 +30,7 @@ cellstring = {};
 % split the string into seperate lines if they contain <EOL> characters
 for index=1:numel(string)
   this = string{index};
-  split = textscan(this,'%s','delimiter',sprintf('\n\r\f;'));
+  split = textscan(this,'%s','Delimiter',sprintf('\n\r\f;'));
   for j=1:numel(split)
     this_split=split{j};
     cellstring = { cellstring{:} this_split{:} };

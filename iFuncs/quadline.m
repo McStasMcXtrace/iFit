@@ -1,103 +1,31 @@
-function y=quadline(p, x, y)
+function y=quadline(varargin)
 % y = quadline(p, x, [y]) : Quadratic line
 %
 %   iFunc/quadline Quadratic fitting function
 %     y=p(3)+p(2)*x+p(1)*x.*x;
-%   The function called with a char argument performs specific actions.
-%   You may create new fit functions with the 'ifitmakefunc' tool.
+%
+% Reference: http://en.wikipedia.org/wiki/Quadratic_function
 %
 % input:  p: Quadratic line model parameters (double)
 %            p = [ Quadratic Linear Constant ]
-%          or action e.g. 'identify', 'guess', 'plot' (char)
+%          or 'guess'
 %         x: axis (double)
-%         y: when values are given, a guess of the parameters is performed (double)
-% output: y: model value or information structure (guess, identify)
+%         y: when values are given and p='guess', a guess of the parameters is performed (double)
+% output: y: model value
 % ex:     y=quadline([1 0 1], -10:10); or y=quadline('identify') or p=quadline('guess',x,y);
 %
-% Version: $Revision: 1.2 $
-% See also iData, ifitmakefunc
+% Version: $Revision: 1.3 $
+% See also iFunc, iFunc/fits, iFunc/plot, strline, quad2d
 
-% 1D function template:
-% Please retain the function definition structure as defined below
-% in most cases, just fill-in the information when HERE is indicated
+y.Name      = [ 'Quadratic equation (1D) [' mfilename ']' ];
+y.Parameters={'Quadratic' 'Linear','Constant'};
+y.Description='Quadratic equation. Ref: http://en.wikipedia.org/wiki/Quadratic_function';
+y.Expression= @(p,x) p(3)+p(2)*x+p(1)*x.*x;
+y.Guess     = @(x,y) [ polyfit(x, y, 2) ];
 
-  if nargin >= 2 && isnumeric(p) && ~isempty(p) && isnumeric(x) && ~isempty(x)
-  %   evaluate: model(p,x, ...)
-    y = evaluate(p, x);
-  elseif nargin == 3 && isnumeric(x) && isnumeric(y) && ~isempty(x) && ~isempty(y)
-  %   guess: model('guess', x,y)
-  %   guess: model(p,       x,y)
-    y = guess(x,y);
-  elseif nargin == 2 && isnumeric(p) && isnumeric(x) && numel(p) == numel(x)
-  %   guess: model(x,y) with numel(x)==numel(y)
-    y = guess(p,x);
-  elseif nargin == 2 && isnumeric(p) && ~isempty(p) && isempty(x)
-  %   evaluate: model(p,[])
-    y = feval(mfilename, p);
-  elseif nargin == 2 && isempty(p) && isnumeric(x) && ~isempty(x)
-  %   identify: model([],x)
-    y = identify; x=x(:);
-    % HERE default parameters when only axes are given <<<<<<<<<<<<<<<<<<<<<<<<<
-    y.Guess  = [.1 1/(max(x)-min(x)) .1];
-    y.Axes   = { x };
-    y.Values = evaluate(y.Guess, y.Axes{:});
-  elseif nargin == 1 && isnumeric(p) && ~isempty(p) 
-  %   identify: model(p)
-    y = identify;
-    y.Guess  = p;
-    % HERE default axes to represent the model when parameters are given <<<<<<<
-    y.Axes   =  { linspace(-1/p(1), 1/p(1), 100) };
-    y.Values = evaluate(y.Guess, y.Axes{:});
-  elseif nargin == 1 && ischar(p) && strcmp(p, 'plot') % only works for 1D
-    y = feval(mfilename, [], linspace(-2,2, 100));
-    if y.Dimension == 1
-      plot(y.Axes{1}, y.Values);
-    elseif y.Dimension == 2
-      surf(y.Axes{1}, y.Axes{2}, y.Values);
-    end
-    title(mfilename)
-  elseif nargin == 0
-    y = feval(mfilename, [], linspace(-2,2, 100));
-  else
-    y = identify;
-  end
+y = iFunc(y);
 
-end
-% end of model main
-% ------------------------------------------------------------------------------
-
-% inline: evaluate: compute the model values
-function y = evaluate(p, x)
-  sx = size(x); x=x(:);
-  if isempty(x) | isempty(p), y=[]; return; end
-  
-  % HERE is the model evaluation <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-  y=p(3)+p(2)*x+p(1)*x.*x;
-  
-  y = reshape(y, sx);
-end
-
-% inline: identify: return a structure which identifies the model
-function y =identify()
-  % HERE are the parameter names
-  parameter_names = {'Quadratic' 'Linear','Constant'};
-  %
-  y.Type           = 'iFit fitting function';
-  y.Name           = [ 'Quadratic equation (1D) [' mfilename ']' ];
-  y.Parameters     = parameter_names;
-  y.Dimension      = 1;         % dimensionality of input space (axes) and result
-  y.Guess          = [];        % default parameters
-  y.Axes           = {};        % the axes used to get the values
-  y.Values         = [];        % default model values=f(p)
-  y.function       = mfilename;
-end
-
-% inline: guess: guess some starting parameter values and return a structure
-function info=guess(x,y)
-  info       = identify;  % create identification structure
-  info.Axes  = { x };
-  % fill guessed information
-  info.Guess = polyfit(x, y, 2); % p(1) is the highest degree parameter
-  info.Values= evaluate(info.Guess, info.Axes{:});
+if length(varargin)
+  y = y(varargin{:});
 end
 
