@@ -70,7 +70,7 @@ function config = iLoad_ini
     
     spec.name       ='SPEC';
     spec.patterns   ={'#F','#D','#S'};
-    spec.options    ='--fast --binary --headers --metadata=''#S '' --comment=NULL --silent ';
+    spec.options    ='--fast --binary --headers --metadata="#S " --comment=NULL --silent ';
     spec.method     ='looktxt';
     spec.extension  ='spc';
     

@@ -3,7 +3,7 @@ function a=load_mcstas_sqw(a)
 %
 % Returns an iData style dataset from a McStas Sqw Table (Isotropic Sqw)
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')
@@ -27,7 +27,7 @@ end
 
 % Find proper axes and Signal
 [fields, types, dims] = findfield(a);
-index=strmatch('double', types, 'exact');
+index=[ strmatch('double', types, 'exact') ; strmatch('single', types, 'exact') ];
 fields = fields(index); % get all field names containing double data
 dims = dims(index);
 q_index = find(dims == size(a.Signal, 1));

@@ -60,7 +60,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.34 $
+% Version: $Revision: 1.35 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -872,13 +872,24 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
     end
 
     % the function value is nan or parameters just went to nan
-    if strcmp(options.FunValCheck,'on') ...
-    && (any(isnan(fval) | isinf(fval)) || any(isnan(pars(:)) & ~isnan(pars_prev(:)))) 
+    if strcmp(options.FunValCheck,'on') && (any(isnan(fval) | isinf(fval)))
       istop=-4;
       message = 'Function value is Inf or Nan (options.FunValCheck)';
-    else
+    end
+    
+    if any(isnan(pars))
       index = find(isnan(pars(:)) & ~isnan(pars_prev(:)));
-      pars(index) = pars_prev(index);
+      if ~isempty(index)
+        pars(index) = pars_prev(index);
+      end
+      index = find(isnan(pars(:)) & ~isnan(constraint.parsBest(:)));
+      if ~isempty(index)
+        pars(index) = constraint.parsBest(index);
+      end
+      index = find(isnan(pars(:)) & ~isnan(constraint.parsStart(:)));
+      if ~isempty(index)
+        pars(index) = constraint.parsStart(index);
+      end
     end
 
     if ~isempty(options.OutputFcn)

@@ -107,6 +107,8 @@
 /* USE_MEX  is defined when compiled as a MeX from Matlab (triggers USE_MAT)
    compile with:
      mex -O looktxt.c
+ * Under Windows 32 bits
+     mex ('-O','-v','-output','looktxt.c',['-L"' mathlabroot '\sys\lcc\lib"'],'-lcrtdll')
    in this case, MAT files are not written, but data is directly send back as MEX output arguments 
  */
 
@@ -128,7 +130,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "2 April 2012"
 #ifndef VERSION
-#define VERSION "1.2 $Revision: 1.15 $"
+#define VERSION "1.2 $Revision: 1.16 $"
 #endif
 
 #ifdef __dest_os
@@ -4445,10 +4447,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
   if (i && nlhs) {
     if (!mxOut) plhs[0] = mxCreateString("created output file");
     else plhs[0] = mxOut;
-  }
+  } if (!nlhs)
+    plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
     
   /* free the argv/argc arrays */
-  for (i=0; i < argc; mxFree(argv[i++]));
-        
+  /* for (i=0; i < argc; mxFree(argv[i++])); */
 } 
 #endif

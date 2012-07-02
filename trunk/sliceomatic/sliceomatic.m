@@ -194,14 +194,14 @@ function sliceomatic(p1,p2,xmesh,ymesh,zmesh)
     index_1      = find(~isnan(p1) & ~isinf(p1));
     p1(index_0)    = min(p1(index_1))/10;
     
-    d.data=p1;
+    d.data=double(p1);
     
     if nargin>=4
       
       if nargin==4
-        zmesh=ymesh;
-        ymesh=xmesh;
-        xmesh=p2;
+        zmesh=double(ymesh);
+        ymesh=double(xmesh);
+        xmesh=double(p2);
       end
       % check if zmesh is empty (surface)
       if isempty(zmesh)
