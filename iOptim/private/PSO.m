@@ -257,7 +257,7 @@ for i = 1:OPTIONS.MaxIter,
     
     % give user feedback on screen if requested
     
-    if strcmp(OPTIONS.Display,'iter'),
+    if 0 && strcmp(OPTIONS.Display,'iter'),
         if nITERATIONS == 1,
             disp(' Nr Iter  Nr Fun Eval    Current best function    Current worst function       Best function');
             disp(sprintf(' %5.0f     %5.0f             %12.6g              %12.6g           %15.6g',nITERATIONS,nFUN_EVALS,min(FITNESS(:,i)),max(FITNESS(:,i)),GBEST_FITNESS(i)));
