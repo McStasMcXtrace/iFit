@@ -17,7 +17,7 @@ function [varargout] = findobj(s_in, varargin)
 %         base:  objects found in base/MATLAB workspace (iData array)
 % ex :    findobj(iData) or findobj(iData,'Title','MyTitle')
 %
-% Version: $Revision: 1.10 $
+% Version: $Revision: 1.11 $
 % See also iData, iData/set, iData/get, iData/findstr, iData/findfield
 
 % EF 23/09/07 iData implementation
@@ -50,7 +50,7 @@ try
 catch
   isdeployed=0;
 end
-if ~isdeployed
+try
   vars = evalin('base','whos');
   vars_name  = {vars.name};
   vars_class = {vars.class};

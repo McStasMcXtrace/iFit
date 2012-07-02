@@ -7,7 +7,7 @@ function a=logical(a)
 % output: v: value of the iData Signal (logical)
 % ex:     'logical(iData(rand(10)))'
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision: 1.8 $
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 
@@ -17,7 +17,7 @@ function a=logical(a)
 if numel(a) > 1
   b = cell(size(a));
   for index=1:numel(a)
-    b{index} = iData_private_unary(a(index), mfilename);
+    b{index} = feval(mfilename, a(index));
   end
   a = b;
   return

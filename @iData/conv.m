@@ -3,6 +3,8 @@ function c = conv(a,b, shape)
 %
 %   @iData/conv function to compute the convolution of data sets (FFT based).
 %     A deconvolution mode is also possible.
+%     When used with a single scalar value, it is used as a width to build a 
+%       gaussian function.
 %
 % input:  a: object or array (iData or numeric)
 %         b: object or array (iData or numeric)
@@ -24,10 +26,21 @@ function c = conv(a,b, shape)
 % output: c: object or array (iData)
 % ex:     c=conv(a,b); c=conv(a,b, 'same pad background center normalize');
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision: 1.5 $
 % See also iData, iData/times, iData/convn, iData/fft, iData/xcorr, fconv, fconvn, fxcorr
 if nargin ==1
 	b = a;
+end
+if isscalar(b)
+  b = [ 1 mean(getaxis(a,1)) double(b) 0]; % use input as a width
+  b = gauss(b, getaxis(a,1));
+  c = convn(a,b);
+  return
+elseif isscalar(a)
+  a = [ 1 mean(getaxis(a,1)) double(a) 0]; % use input as a width
+  a = gauss(a, getaxis(b,1));
+  c = convn(a,b);
+  return
 end
 if nargin < 3, shape = 'same'; end
 

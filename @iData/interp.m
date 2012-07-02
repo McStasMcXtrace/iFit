@@ -27,7 +27,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     a=iData(peaks); b=interp(a, 'grid'); c=interp(a, 2);
 %
-% Version: $Revision: 1.36 $
+% Version: $Revision: 1.37 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis, iData/hist
 
 % input: option: linear, spline, cubic, nearest
@@ -119,7 +119,10 @@ end
 
 % test axes and decide to call meshgrid if necessary
 is_grid=0;
-if isvector(b) >= 2, requires_meshgrid=1; end % plot3/event style
+if isvector(b) >= 2 % plot3/event style
+    requires_meshgrid=1; 
+    if nargin == 1, ntimes=1; end
+end 
 if ndims(b) > 1
   for index=1:ndims(b)
     % test for the target axes in case they are given as scalars (axes spacing)
@@ -155,14 +158,17 @@ if ntimes ~= 0
     a_min  = min(x);
     a_max  = max(x);
     a_len  = (a_max - a_min)/a_step;
-    if ntimes > 0 & ntimes < 10
-      a_len = a_len*ntimes;
+    if isvector(b) >= 2 && a_len > numel(b)^(1/ndims(b))*2
+      a_len = prod(size(b))^(1/ndims(b))*2;
+    end
+    if ntimes > 0
+      a_len = a_len*min(10,ntimes);
     else
       a_len  = min(a_len, length(x)*10); % can not reduce or expand more 
-                                           % than 10 times each axis
+                                         % than 10 times each axis
     end
     clear x
-    f_axes{index} = linspace(a_min,a_max,a_len+1);
+    f_axes{index} = linspace(a_min,a_max,ceil(a_len+1));
   end
 end
 
@@ -200,6 +206,11 @@ for index=1:ndims(b)
     end
   end
   clear this_i this_f
+end
+
+if isvector(b) >=2 % event data set
+  b = hist(b, f_axes{:});
+  return
 end
 
 % get Signal, error and monitor.
@@ -289,11 +300,15 @@ if i_nonmonotonic
         i_signal =i_signal(f_idx{:});
         if isnumeric(i_error) && length(i_error) > 1, 
             try   i_error  =i_error(f_idx{:});
-            catch i_error=[]; end
+            catch
+                i_error=[]; 
+            end
         end
         if isnumeric(i_error) && length(i_monitor) > 1, 
             try   i_monitor=i_monitor(f_idx{:});
-            catch i_monitor=[]; end
+            catch
+                i_monitor=[]; 
+            end
         end
       end
     end
@@ -308,6 +323,10 @@ end
 
 % last test to check if axes have changed
 has_changed = 0;
+for index=1:ndims(b)    % change to double before interpolation
+  i_axes{index}=double(i_axes{index});
+  f_axes{index}=double(f_axes{index});
+end
 for index=1:ndims(b)
   if ~isequal(i_axes{index}, f_axes{index})
     has_changed = 1;
