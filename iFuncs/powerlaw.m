@@ -12,7 +12,7 @@ function y=powerlaw(varargin)
 % output: y: model value
 % ex:     y=powerlaw([1 0 1 1], -10:10); or plot(powerlaw);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'power law (1D) [' mfilename ']' ];
@@ -22,9 +22,9 @@ y.Expression= @(p,x) real(p(1)*(x - p(2)).^p(3) + p(4));
 % fill guessed information
   % ln y = ln a + c*ln (x-b)
 y.Guess     = @(x,y) [ ...
-  exp(subsref(getfield(strline('guess', log(x),log(y)), 'Guess'), struct('type','()', 'subs',{{1}}))) ...
+  exp(subsref(strline('guess', log(x(:)),log(y(:))), struct('type','()', 'subs',{{1}}))) ...
   mean(x(:)) ...
-  subsref(getfield(strline('guess', log(x),log(y)), 'Guess'), struct('type','()', 'subs',{{2}})) ...
+  subsref(strline('guess', log(x(:)),log(y(:))), struct('type','()', 'subs',{{2}})) ...
   min(y(:)) ];
 
 y = iFunc(y);

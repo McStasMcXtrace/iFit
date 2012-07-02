@@ -11,10 +11,11 @@ function y=constant(varargin)
 % output: y: model value
 % ex:     y=constant('Temperature');
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iFunc, iFunc/fits, iFunc/plot, quadline, plane2d
 
-if length(varargin)==1 && ischar(varargin{1}) && ~strcmp(varargin{1}, 'guess')
+if length(varargin)==1 && ischar(varargin{1}) ...
+        && ~any(strcmp(varargin{1}, {'guess','identify'})) && ~isempty(varargin{1})
   y.Name      = varargin{1};
   y.Parameters= { y.Name };
   varargin(1) = [];

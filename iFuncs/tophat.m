@@ -13,7 +13,7 @@ function y=tophat(varargin)
 % output: y: model value
 % ex:     y=tophat([1 0 1 1], -10:10); or plot(tophat);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iFunc, iFunc/fits, iFunc/plot, heavisde, triangl
 
 y.Name      = [ 'Top-Hat rectangular function (1D) [' mfilename ']' ];
@@ -21,8 +21,8 @@ y.Parameters={'Amplitude','Centre','HalfWidth','Background'};
 y.Description='Top-Hat rectangular function';
 y.Expression= @(p,x) p(1)*(p(2)-p(3) < x & x < p(2)+p(3))+p(4);
 y.Guess     = @(x,signal) [ NaN ...
-                            sum(signal.*x)/sum(signal) ...
-                            sqrt(abs(sum(x.*x.*signal)/sum(signal) - sum(signal.*x)/sum(signal)*sum(signal.*x)/sum(signal))) ...
+                            sum(signal(:).*x(:))/sum(signal(:)) ...
+                            sqrt(abs(sum(x(:).*x(:).*signal(:))/sum(signal(:)) - sum(signal(:).*x(:))/sum(signal(:))*sum(signal(:).*x(:))/sum(signal)(:))) ...
                             NaN ];
 
 y = iFunc(y);

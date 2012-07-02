@@ -21,10 +21,10 @@ function signal=lorz2d(varargin)
 % output: signal: model value
 % ex:     signal=lorz2d([1 2 .5 .2 .3 30 .2], -2:.1:2, -3:.1:3); or plot(lorz2d)
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iData, iFunc/fits, iFunc/plot, lorz
 
-signal.Name           = [ '2D Lorenztian function with tilt angle (2D) [' mfilename ']' ];
+signal.Name           = [ 'Lorenztian-2D function with tilt angle (2D) [' mfilename ']' ];
 signal.Description    = '2D Lorenztian function with tilt angle. http://en.wikipedia.org/wiki/Gaussian_function';
 signal.Parameters     = {  'Amplitude' 'Centre_X' 'Center_Y' 'HalfWidth_X' 'HalfWidth_Y' 'Angle tilt [deg]' 'Background' };
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result

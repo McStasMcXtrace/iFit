@@ -16,16 +16,16 @@ function y=pseudovoigt(varargin)
 % output: y: model value
 % ex:     y=pseudovoigt([1 0 1 1], -10:10); or plot(pseudovoigt);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iFunc, iFunc/fits, iFunc/plot
 
-y.Name      = [ 'Pseudo Voigt (1D) [' mfilename ']' ];
+y.Name      = [ 'Pseudo-Voigt (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','HalfWidth','Background','LorentzianRatio'};
 y.Description='Single 1D Pseudo Voigt model (convolution of gauss and lorz approx.). Ref: P. Thompson, D.E. Cox, J.B. Hastings, J. Appl. Cryst. 1987, 20, 79.';
 y.Expression= @(p,x) p(1) * (p(5) * (1./(1+ ((x-p(2))/p(3)).^2 )) + (1-p(5)) * exp(-0.5 * ((x-p(2))/p(3)).^2 ));
 y.Guess     = @(x,signal) [ NaN ...
-                            sum(signal.*x)/sum(signal) ...
-                            sqrt(abs(sum(x.*x.*signal)/sum(signal) - sum(signal.*x)/sum(signal)*sum(signal.*x)/sum(signal))) ...
+                            sum(signal(:).*x(:))/sum(signal(:)) ...
+                            sqrt(abs(sum(x(:).*x(:).*signal(:))/sum(signal(:)) - sum(signal(:).*x(:))/sum(signal(:))*sum(signal(:).*x(:))/sum(signal(:)))) ...
                             NaN 0.5 ];
 
 y = iFunc(y);
