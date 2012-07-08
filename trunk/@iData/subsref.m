@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision: 1.30 $
+% Version: $Revision: 1.31 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -34,6 +34,31 @@ for i = 1:length(S)     % can handle multiple index levels
       if ischar(s.subs{1}) && ~strcmp(s.subs{1},':')              % b(name) -> s.(name) alias/field value
         s.type='.';
         b=subsref(b, s); return;
+      elseif isa(s.subs{1}, 'iFunc')
+        % evaluate model onto iData axes
+        model      = s.subs{1};
+        if length(s.subs) > 1
+          pars = s.subs{2};
+          s.subs(2) = [];
+        elseif ~isempty(model.ParameterValues)
+          pars = model.ParameterValues;
+        else
+          pars = '';
+        end
+        modelValue = feval(model, pars, b, s.subs{2:end});
+        dm=iData_getAliasValue(b,'Monitor');
+        if not(all(dm == 1 | dm == 0)) % fit(signal/monitor) 
+          modelValue    = bsxfun(@times,modelValue, dm); 
+        end
+        setalias(b,'Signal', modelValue, model.Name);
+        setalias(b,'Parameters', pars, [ model.Name ' model parameters for ' b.Title ]);
+        b.Title = [ model.Name '(' char(b) ')' ];
+        b.Label = b.Title;
+        b.DisplayName = b.Title;
+        setalias(b,'Error', 0);
+        
+        setalias(b,'Model', model, model.Name);
+        return
       end
       if length(s.subs) == 1 && all(s.subs{:} == 1), continue; end  % b(1)
       

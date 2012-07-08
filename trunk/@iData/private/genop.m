@@ -49,6 +49,8 @@ if exist('bsxfun','builtin')
   try % this may fail. The legacy genop takes over in case of error
     z = bsxfun(op, x, y); % faster implementation avaialble from Matlab >= R2007a
     return;
+  catch
+    whos x y
   end
 end
 
