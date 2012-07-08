@@ -38,7 +38,7 @@ function a = iFunc(varargin)
 %         b=iFunc('p(1)*x+p(2)');
 %         b=iFunc('signal=p(1)*x+p(2);');
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iFunc, iFunc/feval, iFunc/plot, iFunc/fit
 
 
@@ -129,16 +129,20 @@ else   % import data to create a single object
       error(['iFunc:' mfilename ], '%s: function %s should return at least one output value.\n  signal=f(p, axes{:}, additional_arguments{:})', ...
         mfilename, func2str(this));
     end
-    if nargin(this) <= 1
-      error(['iFunc:' mfilename ], '%s: function %s should use at least two input arguments.\n  signal=f(p, x,y,z, ...)', ...
+    if ~abs(nargin(this)) || ~abs(nargout(this))
+      error(['iFunc:' mfilename ], '%s: function %s should use at least one input and output arguments.\n  signal=f(p, x,y,z, ...)', ...
         mfilename, func2str(this));
     end
-    a.Expression  = this;
-    if a.Dimension == 0
-      a.Dimension   = nargin(this) - 1;
+    if exist(func2str(this))
+      a = feval(this);
+    else
+      a.Expression  = this;
+      if a.Dimension == 0
+        a.Dimension   = nargin(this) - 1;
+      end
     end
   else
-    error(['iFunc:' mfilename ], [mfilename ': import of ' inputname(1) ' of class ' class(this) ' is not supported.' ]);
+    error(['iFunc:' mfilename ], [mfilename ': import of ' inputname(1) ' of class ' class(this) ' is not supported. Use struct, function handle, char, iFunc object.' ]);
   end
   
   % check parameter names wrt expression and dimensionality, ...
