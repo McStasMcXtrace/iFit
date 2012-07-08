@@ -18,7 +18,7 @@ function c = iData_private_binary(a, b, op, varargin)
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
-% Version: $Revision: 1.33 $
+% Version: $Revision: 1.34 $
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
 % or the simpler average error estimate (derivative).
@@ -93,11 +93,7 @@ if isa(a, 'iData') & isa(b, 'iData')
   if strcmp(op, 'combine')
     [a,b] = union(a,b);     % perform combine on union
   else
-    % check if the objects are orthogonal, in which case no intersection should be done
-    if ~all(find(size(a) == 1) == find(size(b) > 1))
-      [a,b] = intersect(a,b); % perform operation on intersection
-    end
-    
+    [a,b] = intersect(a,b); % perform operation on intersection
   end
 end
 
