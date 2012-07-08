@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
 
@@ -64,7 +64,7 @@ uncertainties and the fit quality</a></li>
 </ol>
 <br>
 <hr style="width: 100%; height: 2px;">
-<div style="text-align: center;">Commands we use in this page: iData/<span style="font-weight: bold; font-style: italic;">fits</span>, <span style="font-style: italic; font-weight: bold;">ieval</span> <a href="iFuncs.html">iFuncs</a> models and <a href="iOptim.html">iOptim</a>
+<div style="text-align: center;">Commands we use in this page: iData/<span style="font-weight: bold; font-style: italic;">fits</span>, <span style="font-style: italic; font-weight: bold;">eval</span> <a href="iFuncs.html">iFuncs</a> models and <a href="iOptim.html">iOptim</a>
 routines<br>
 </div>
 <br>
@@ -121,7 +121,7 @@ available fit functions</span> can be obtained from the command:<br>
 Refer
 to the section <a href="#mozTocId855522">below</a> in order to learn
 how to define new fit models with the <a href="iFuncs.html#mozTocId210092"><span style="font-weight: bold; font-style: italic;">ifitmakefunc</span></a>
-tool. You can get information about a model by
+tool, or directly with the iFunc class. You can get information about a model by
 inquiring its name. When a single input parameter is specified,
 starting parameters
 are guessed :<br>
@@ -129,8 +129,7 @@ are guessed :<br>
 A fast way to define a new model and fit it to the data is to directly
 execute, with <span style="font-style: italic;">p</span> the parameter vector, and <span style="font-style: italic;">x,y</span>,... the axes:<br>
 <pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>);</pre>
-which will transparently call the <a href="iFuncs.html#mozTocId210092"><span style="font-weight: bold; font-style: italic;">ifitmakefunc</span></a>
-tool to create the model function, and then use it for the fit.<br>
+which will transparently create the model function, and then use it for the fit.<br>
 <br>
 <a href="images/iData_fits_gauss.png"><img alt="fits(iData)" title="fits(iData)" src="images/iData_fits_gauss.png" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>In
 order
@@ -146,15 +145,13 @@ the
 fit
 parameters
 onto
-the iData object data set axes, one can use the <span style="font-style: italic; font-weight: bold;">ieval</span> method,
-which is the same as Matlab <span style="font-style: italic; font-weight: bold;">feval, </span>but for <a href="iData.html"><span style="font-style: italic;">iData</span></a>
-objects:
-<pre style="margin-left: 40px;">&gt;&gt; b= <span style="color: rgb(51, 102, 255);">ieval</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, p) <span style="font-style: italic;">% evaluate the 'gauss' model</span> onto the 'a' axes<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([ a b ])           % <span style="font-style: italic;">with parameters 'p', and plot both data and fit</span></pre>
+the iData object data set axes, use the model as argument to the object:
+<pre style="margin-left: 40px;">&gt;&gt; b= <span style="color: rgb(51, 102, 255);"></span>a(<span style="color: rgb(204, 51, 204);">gauss</span>, p) <span style="font-style: italic;">% evaluate the 'gauss' model</span> onto the 'a' axes, with parameters 'p'<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([ a b ])  % <span style="font-style: italic;">with parameters 'p', and plot both data and fit</span></pre>
 The evaluated model contains <span style="font-style: italic;">Parameter</span>
 and <span style="font-style: italic;">Model</span> aliases that hold
 the model parameters and description. <br>
 <br>
-The <span style="font-style: italic;">fits</span> and <span style="font-style: italic;">ieval</span> functions work with any data
+The <span style="font-style: italic;">fits</span> function work with any data
 and model dimensionality, and can also build multi-dimensional models
 from lower dimensionality functions (e.g. making a 2D Gaussian from
 multiplied perpendicular 1D Gaussians).<br>
@@ -206,7 +203,7 @@ provides significantly more information such as:<br>
 fit parameter set for the model</li>
   <li><span style="font-style: italic;">output.criteriaBest</span>: best criteria value for the model</li>
   <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">modelValue: </span>Last model
-evaluation (iData), that is <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);">ieval</span>(a, model, parameters)</span></li>
+evaluation (iData), that is <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);">eval</span>(a, model, parameters)</span></li>
 
   <li><span style="font-style: italic;">output.algorithm: </span>Algorithm/solver
 used
@@ -434,7 +431,7 @@ In order to follow the optimization process, you may define a call to a
 user function at each optimization iteration. A default plotting
 facility has been implemented as the <span style="font-style: italic; font-weight: bold;">fminplot</span>
 function:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; options=<span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);">fminimfil</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>)<br>&gt;&gt; options.<span style="color: rgb(255, 0, 0);">OutputFcn</span>=<span style="color: rgb(204, 51, 204);">'fminplot'</span>;<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>p =<br><br>    0.6263    1.0008   -0.0037    0.0002<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">ieval</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, p)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">figure; plot</span>([ a b ])<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; options=<span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);">fminimfil</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>)<br>&gt;&gt; options.<span style="color: rgb(255, 0, 0);">OutputFcn</span>=<span style="color: rgb(204, 51, 204);">'fminplot'</span>;<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>p =<br><br>    0.6263    1.0008   -0.0037    0.0002<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">eval</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, p)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">figure; plot</span>([ a b ])<br></pre>
 <div style="text-align: center;"><a href="images/iOptim_fminplot.png"><img alt="fits with options.OutputFcn=fminplot" title="fits with options.OutputFcn=fminplot" src="images/iOptim_fminplot.png" style="border: 0px solid ; width: 300px; height: 285px;"></a> <span style="text-decoration: underline;"><a href="images/iData_fits_gauss.png"><img alt="iData fits(gauss) with plot" title="iData fits(gauss) with plot" src="images/iData_fits_gauss.png" style="border: 0px solid ; width: 330px; height: 292px;"></a></span><br>
 <span style="font-style: italic; font-weight: bold;">Left: </span>The <span style="font-style: italic;">options.OutputFcn='fminplot' </span>window
 on
@@ -550,7 +547,7 @@ The resulting function has the ability to identify itself (<span style="color: r
 detailed informations), compute automatic starting parameters (<span style="color: rgb(204, 51, 204);">'guess'</span>), display
 itself (<span style="color: rgb(204, 51, 204);">'plot'</span>), and
 evaluate its value of course. It can be directly used with
-<span style="font-weight: bold;">ieval</span> and <span style="font-weight: bold;">fits, </span>either with their name, or
+<span style="font-weight: bold;">eval</span> and <span style="font-weight: bold;">fits, </span>either with their name, or
 their function handle. <br>
 <br>
 It is even possible to directly call the fitting method and create the
@@ -666,7 +663,8 @@ Model)</td>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/iData fitting - </span><span style="font-style: italic;">
-$Date: 2012-02-17 23:31:07 $ $Revision: 1.25 $
+$Date: 2012-07-08 17:34:47 $ $Revision: 1.26 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
+
 </body></html>
