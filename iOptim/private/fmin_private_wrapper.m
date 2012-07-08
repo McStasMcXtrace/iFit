@@ -60,7 +60,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.35 $
+% Version: $Revision: 1.36 $
 % See also: fminsearch, optimset
 
 % NOTE: all optimizers have been gathered here so that maintenance is minimized
@@ -98,7 +98,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 
 if nargin < 1, optimizer=''; end
 if nargin < 2, fun = ''; end
-if isempty(optimizer), optimizer = 'fminimfil'; end
+if isempty(optimizer), optimizer = 'fmin'; end
 if isempty(fun),       fun = 'defaults'; end
 
 if nargin < 4
@@ -247,7 +247,9 @@ try
 
 switch options.optimizer
 case 'fmin' % automatic guess
-  optimizer = inline_auto_optimizer(fun, pars, varargin);
+  [optimizer, algorithm] = inline_auto_optimizer(fun, pars, varargin);
+  options.optimizer = optimizer;
+  options.algorithm = algorithm;
   [pars,fval,exitflag,output] = feval(optimizer, fun, pars, options, constraints, varargin{:});
   return
 case {'cmaes','fmincmaes'}    
@@ -577,7 +579,8 @@ else
   output.parsJacobian           = [];
 end
 
-if strcmp(options.Display,'final') | strcmp(options.Display,'iter')
+if strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
+  || (strcmp(options.Display,'notify') && isempty(strfind(message, 'Converged')))
   disp([ sprintf('\n') '** Finishing minimization of ' inline_localChar(fun) ' using algorithm ' inline_localChar(options.algorithm) ]);
   disp( [ ' Status: ' message ]);
   disp(' Func_count     min[f(x)]        Parameters');
@@ -1005,7 +1008,7 @@ end % inline_estimate_uncertainty
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function optimizer = inline_auto_optimizer(fun, pars, varargin)
+function [optimizer, name] = inline_auto_optimizer(fun, pars, varargin)
 % optimizer = inline_auto_optimizer(fun, pars, varargin)
 %
 % Determine the best optimizer to use, depending on:
@@ -1195,6 +1198,11 @@ end
   optimizer = optimizers{index};
   
   
-  fprintf(1,'** Optimizer selected: %s: success=%g cost=%g\n', optimizer, this_success(index), this_calls(index))
+  fprintf(1,'** Optimizer selected: %s: success=%g cost=%g\n', optimizer, this_success(index), this_calls(index));
+  
+  pars = feval(optimizer, 'defaults');
+  
+  if isfield(pars, 'algorithm'), name = pars.algorithm; 
+  else                           name = optimizer; end
 
 end % inline_auto_optimizer
