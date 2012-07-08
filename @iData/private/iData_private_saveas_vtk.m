@@ -2,7 +2,7 @@ function filename=iData_private_saveas_vtk(a, filename)
 % private function to write VTK files
 
 % inline: WriteToVTK (3D matrix, no axes, not used but keep it here), 
-% export3Dline2VTK (xyz line), writeVTK (3D object), exportTriangulation2VTK (2D surface)
+% export3Dline2VTK (xyz line), writeVTK (3D object, binary), exportTriangulation2VTK (2D surface), WriteToVTK(3D with axes, ascii)
 
 if ndims(a) ~= 2 & ndims(a) ~= 3
   filename=[];
@@ -20,6 +20,7 @@ if ndims(a) <= 2 && isvector(a) % line, 1D or 2D
     x = getaxis(a, 1);
     y = zeros(size(x));
   end
+  Signal = getaxis(a, 0);
   export3Dline2VTK(filename, [ x(:) y(:) Signal(:) ], str); % export as VTK3 LINES
 elseif ndims(a) == 2 % surface with axes
   a = interp(a,'grid');
@@ -63,38 +64,66 @@ function WriteToVTK(matrix, filename, str)
 % Get the matrix dimensions.
 [N M O] = size(matrix);
 
+if M*N*O > 1e5  % if big data set, we save in binary
+  fmt = 'BINARY'
+else
+  fmt = 'ASCII';
+end
+
 % Get the maximum value for the normalisation.
 mx = max(matrix(:));
 
 % Open the file.
 fid = fopen(filename, 'w');
 if fid == -1
-    error('Cannot open file for writing.');
+    error([ 'WriteToVTK: Cannot open file ' filename ' for writing.' ]);
 end
 
 % New line.
 nl = sprintf('\n'); % Stupid matlab doesn't interpret \n normally.
 
 % Write the file header.
-fwrite(fid, ['# vtk DataFile Version 2.0' nl str nl 'ASCII' nl ...
-    'DATASET STRUCTURED_POINTS' nl 'DIMENSIONS ' ...
-    num2str(N) ' ' num2str(M) ' ' num2str(O) nl 'ASPECT_RATIO 1 1 1' nl ...
-    'ORIGIN 0 0 0' nl 'POINT_DATA ' ...
-    num2str(N*M*O) nl 'SCALARS volume_scalars char 1' nl 'LOOKUP_TABLE default' nl]);
+fwrite(fid, ['# vtk DataFile Version 2.0' nl ...
+    str nl ...
+    fmt nl ...
+    'DATASET STRUCTURED_POINTS' nl ...
+    'DIMENSIONS ' num2str(N) ' ' num2str(M) ' ' num2str(O) nl ...
+    'ASPECT_RATIO 1 1 1' nl ...
+    'ORIGIN 0 0 0' nl ....
+    'POINT_DATA '  num2str(N*M*O) nl ...
+    'SCALARS volume_scalars char 1' nl ...
+    );
 
-for z = 1:O
-    % Get this layer.
-    v = matrix(:, :, z);
-    % Scale it. This assumes there are no negative numbers. I'm not sure
-    % this is actually necessary.
-    v = round(100 .* v(:) ./ mx);
-    % Write the values as text numbers.
-    fwrite(fid, num2str(v'));
-    % Newline.
-    fwrite(fid, nl);
-    
-    % Display progress.
-    disp([num2str(round(100*z/O)) '%']);
+if strcmp(fmp, 'ASCII')
+  fwrite(fid, [ 'LOOKUP_TABLE default' nl ]);
+  for z = 1:O
+      % Get this layer.
+      v = matrix(:, :, z);
+      % Scale it. This assumes there are no negative numbers. I'm not sure
+      % this is actually necessary.
+      v = round(100 .* v(:) ./ mx);
+      % Write the values as text numbers.
+      fwrite(fid, num2str(v'));
+      % Newline.
+      fwrite(fid, nl);
+      
+      % Display progress.
+      disp([num2str(round(100*z/O)) '%']);
+  end
+else % BINARY
+  tp = class(matrix;
+  if( strcmp(tp, 'uint8') > 0 )      typ = 'unsigned_char';
+  elseif( strcmp(tp, 'int8') > 0 )   typ = 'char';
+  elseif( strcmp(tp, 'uint16') > 0 ) typ = 'unsigned_short';
+  elseif( strcmp(tp, 'int16') > 0 )  typ = 'short';
+  elseif( strcmp(tp, 'uint32') > 0 ) typ = 'unsigned_int';
+  elseif( strcmp(tp, 'int32') > 0 )  typ = 'int';
+  elseif( strcmp(tp, 'single') > 0 ) typ = 'float';
+  elseif( strcmp(tp, 'double') > 0 ) typ = 'double';
+  end
+  fprintf(fid, 'SCALARS image_data %s\n', typ);
+  fprintf(fid, 'LOOKUP_TABLE default\n');
+  fwrite(fid,matrix,class(matrix));      % write data as binary
 end
 
 % Close the file.
@@ -219,6 +248,4 @@ fprintf(fid,'POLYGONS %d %d\n',ntri,4*ntri);
 
 fprintf(fid,'3 %d %d %d\n',(tri-ones(ntri,3))');
 fclose(fid);
-
-% ------------------------------------------------------------------------------
 

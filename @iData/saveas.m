@@ -37,6 +37,7 @@ function [filename,format] = saveas(a, varargin)
 %           'stla' save as STL stereolithography (geometry), ascii
 %           'off'  save as Object File Format (geometry), ascii
 %           'ply'  save as PLY (geometry), ascii
+%           'vtk'  save as VTK ascii (<1e5 elements) or binary
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
@@ -52,7 +53,7 @@ function [filename,format] = saveas(a, varargin)
 %   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
 %   stlwrite
 %
-% Version: $Revision: 1.33 $
+% Version: $Revision: 1.34 $
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks
