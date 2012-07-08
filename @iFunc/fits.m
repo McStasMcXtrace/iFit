@@ -1,5 +1,5 @@
 function [pars_out,criteria,message,output] = fits(model, a, pars, options, constraints, varargin)
-% [pars,criteria,message,output] = fits(model, data, pars, options, ...) : fit a model on a data set
+% [pars,criteria,message,output] = fits(model, data, pars, options, constraints, ...) : fit a model on a data set
 %
 %   @iFunc/fits find best parameter estimates in order to minimize the 
 %     fitting criteria using model 'fun', by mean of an optimization method
@@ -8,13 +8,13 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %     more advanced constraints (min, max, steps). The last arguments controls the 
 %     fitting options with the optimset mechanism, and the constraints to apply
 %     during optimization.
-%  [pars,...] = fits(a, model, pars, options, lb, ub)
+%  [pars,...] = fits(model, data, pars, options, lb, ub)
 %     uses lower and upper bounds as parameter constraints (double arrays)
-%  [pars,...] = fits(a, model, pars, options, fixed)
+%  [pars,...] = fits(model, data, pars, options, fixed)
 %     indicates which parameters are fixed (non zero elements of array).
-%  [pars,...] = fits(a, model, pars, 'optimizer', ...)
+%  [pars,...] = fits(model, data, pars, 'optimizer', ...)
 %     uses a specific optimizer and its default options options=feval(optimizer,'defaults')
-%  [pars,...] = fits(a, model, pars, options, constraints, args...)
+%  [pars,...] = fits(model, data, pars, options, constraints, args...)
 %     send additional arguments to the fit model(pars, axes, args...).
 %
 %  When the data is entered as a structure or iData object with a Monitor value, 
@@ -32,7 +32,8 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %
 %  Type <a href="matlab:doc(iData,'Fit')">doc(iData,'Fit')</a> to access the iFit/Fit Documentation.
 %
-% input:  model: model function (iFunc)
+% input:  model: model function (iFunc). When entered as an empty object, the
+%           list of optimizers and fit models is shown.
 %         data: array or structure/object (numeric or structure or cell)
 %               Can be entered as a single numeric array (the Signal), or as a 
 %                 structure/object with possible members 
@@ -44,7 +45,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %           when set to empty or 'guess', the starting parameters are guessed.
 %           Named parameters can be given as a structure or string 'p1=...; p2=...'
 %         options: structure as defined by optimset/optimget (char/struct)
-%           if given as a char, it defines the algorithm to use and its default %             options (single optimizer name or string describing a structure.
+%           if given as a char, it defines the algorithm to use and its default %             options (single optimizer name or string describing a structure).
 %           when set to empty, it sets the default algorithm options (fmin).
 %           options.TolX
 %             The termination tolerance for x. Its default value is 1.e-4.
@@ -91,10 +92,11 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %
 % ex:     p=fits(gauss, data,[1 2 3 4]);
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
-%         [p,c,m,o]=fits(gauss,data,[1 2 3 4],o); b=o.modelValue; plot(a,b)
+%         [p,c,m,o]=fits(gauss,data,[1 2 3 4],o); 
+%         plot(a); hold on; plot(o.modelAxes, o.modelValue,'r');
 %
-% Version: $Revision: 1.2 $
-% See also fminsearch, optimset, optimget, iFunc
+% Version: $Revision: 1.3 $
+% See also fminsearch, optimset, optimget, iFunc, iData/fits, iData, ifitmakefunc
 
 % first get the axes and signal from 'data'
 
@@ -102,6 +104,87 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 % a.Error (numeric)
 % a.Monitor (numeric)
 % a.Axes (cell of numeric)
+
+% singlme empty argument: show funcs/optim list ================================
+% handle default parameters, if missing
+if nargin == 1 && isempty(model)
+    % return the list of all available optimizers and fit functions
+    output     = {};
+    pars_out   = {};
+    warn       = warning('off','MATLAB:dispatcher:InexactCaseMatch');
+    if nargout == 0
+      fprintf(1, '\n%s\n', version(iData));
+      
+      fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/iOptim');
+      fprintf(1, '-----------------------------------------------------------------\n'); 
+    end
+    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'iOptim' ]);
+    for index=1:length(d)
+      this = d(index);
+      try
+        [dummy, method] = fileparts(this.name);
+        options = feval(method,'defaults');
+        if isstruct(options)
+          output{end+1} = options;
+          pars_out{end+1}   = method;
+          if nargout == 0
+            fprintf(1, '%15s %s\n', options.optimizer, options.algorithm);
+          end
+        end
+      end
+    end % for
+    if nargout == 0
+      fprintf(1, '\n');
+      fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', 'iFit/iFuncs');
+      fprintf(1, '-----------------------------------------------------------------\n'); 
+    end
+    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'iFuncs' ]);
+    criteria = []; 
+    for index=1:length(d)
+      this = d(index);
+      try
+        [dummy, method] = fileparts(this.name);
+        options = feval(method,'identify');
+        if isa(options, 'iFunc')
+          criteria   = [ criteria options ];
+          if nargout == 0
+            fprintf(1, '%15s %s\n', method, options.Name);
+          end
+        end
+      end
+    end % for
+    
+    % local (pwd) functions
+    message = '';
+    d = dir(pwd);
+    for index=1:length(d)
+      this = d(index);
+      try
+        [dummy, method] = fileparts(this.name);
+        options = feval(method,'identify');
+        if isa(options, 'iFunc')
+          criteria   = [ criteria options ];
+          if isempty(message)
+            fprintf(1, '\nLocal functions in: %s\n', pwd);
+            message = ' ';
+          end
+          if nargout == 0
+            fprintf(1, '%15s %s\n', method, options.Name);
+          end
+        end
+      end
+    end % for
+
+    if nargout == 0 && length(criteria)
+      fprintf(1, '\n');
+      % plot all functions
+      subplot(criteria);
+    end
+    message = 'Optimizers and fit functions list'; 
+    warning(warn);
+    return
+end
+
 
 % check of input arguments =====================================================
 
@@ -116,7 +199,7 @@ end
 
 % extract Signal from input argument, as well as a Data identifier
 % default values
-Monitor=1; Error=1; Axes={}; Signal=[]; Name = '';
+Monitor=1; Error=1; Axes={}; Signal=[]; Name = ''; is_idata=[];
 if iscell(a)
   Signal = a{end};
   a(end) = [];
@@ -125,19 +208,34 @@ elseif isstruct(a) || isa(a, 'iData')
   if isfield(a,'Signal')  Signal  = a.Signal; end
   if isfield(a,'Error')   Error   = a.Error; end
   if isfield(a,'Monitor') Monitor = a.Monitor; end
-  if isfield(a,'Axes')    Axes    = a.Axes; end
   if isa(a, 'iData')
+    is_idata = a;
     Axes=cell(1,ndims(a));
     for index=1:ndims(a)
       Axes{index} = getaxis(a, index);
     end
-    Name = [ inputname(2) ' ' char(a) ];
+    Name = strtrim([ inputname(2) ' ' char(a) ]);
+  elseif isfield(a,'Axes')    Axes    = a.Axes; 
   end
 elseif isnumeric(a)
   Signal = a; 
 end
 if isempty(Name)
   Name   = [ class(a) ' ' mat2str(size(Signal)) ' ' inputname(2) ];
+end
+
+% create the new Data structure to pass to the criteria
+a = [];
+a.Signal = iFunc_private_cleannaninf(Signal);
+a.Error  = iFunc_private_cleannaninf(Error);
+a.Monitor= iFunc_private_cleannaninf(Monitor);
+a.Axes   = Axes;
+clear Signal Error Monitor Axes
+
+% starting configuration
+SignalMon = a.Signal;
+if not(all(a.Monitor(:) == 1 | a.Monitor(:) == 0)),
+  SignalMon  = bsxfun(@rdivide,SignalMon, a.Monitor); 
 end
 
 % handle parameters: from char, structure or vector
@@ -168,13 +266,13 @@ if isstruct(pars)
     pars = p;
   end
 elseif strcmp(pars,'guess')
-  feval(model, pars, Axes{:}, Signal);           % get default starting parameters
+  feval(model, pars, a.Axes{:}, SignalMon);           % get default starting parameters
   pars = model.ParameterValues;
 elseif isempty(pars)
   if ~isempty(model.ParameterValues)
     pars = model.ParameterValues;                % use stored starting parameters
   else     
-    pars = feval(model, 'guess', Axes{:}, Signal);         % get default starting parameters
+    pars = feval(model, 'guess', a.Axes{:}, SignalMon);         % get default starting parameters
   end
 end
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
@@ -197,8 +295,8 @@ end
 if ~isfield(options, 'criteria')
   options.criteria  = @least_square;
 end
-if ~isfield(options,'Display')   options.Display=''; end
-if isempty(options.Display)    options.Display='notify'; end
+if ~isfield(options,'Display')   options.Display  =''; end
+if  isempty(options.Display)     options.Display  ='notify'; end
 if ~isfield(options,'algorithm') options.algorithm=options.optimizer; end
 
 % handle constraints
@@ -242,12 +340,12 @@ if numel(model) > 1
   return
 end
 
-if isempty(Signal)
+if isempty(a.Signal)
   error([ 'iFunc:' mfilename ],[ 'Undefined/empty Signal ' inputname(2) ' to fit. Syntax is fits(model, Signal, parameters, ...).' ]);
 end
 
-if isvector(Signal) ndimS = 1;
-else                ndimS = ndims(Signal)
+if isvector(a.Signal) ndimS = 1;
+else                  ndimS = ndims(a.Signal)
 end
 % handle case when model dimensionality is larger than actual Signal
 if model.Dimension > ndimS
@@ -267,16 +365,16 @@ elseif model.Dimension ~= ndimS
   error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has higher dimension than model %s dimensionality %d.\n', Name, ndimS, model.Name, model.Dimension);
 end
 
-% create the new Data structure to pass to the criteria
-a = [];
-a.Signal = iFunc_private_cleannaninf(Signal);
-a.Error  = iFunc_private_cleannaninf(Error);
-a.Monitor= iFunc_private_cleannaninf(Monitor);
-a.Axes   = Axes;
-clear Signal Error Monitor Axes
+feval(model, pars, a.Axes{:}, SignalMon); % this updates the 'model' with starting parameter values
 
-% starting configuration
-feval(model, pars, a.Axes{:}, a.Signal); % this updates the 'model' with starting parameter values
+if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
+  fprintf(1, '** Starting fit of %s\n   using model    %s\n   with optimizer %s\n', ...
+    Name,  model.Name, options.algorithm);
+  disp(  '** Minimization performed on parameters:');
+  for index=1:length(model.Parameters); 
+    fprintf(1,'  p(%3d)=%20s=%g\n', index,strtok(model.Parameters{index}), pars(index)); 
+  end;
+end
 
 % we need to call the optimization method with the eval_criteria as FUN
 % call minimizer ===============================================================
@@ -294,13 +392,31 @@ pars_out = reshape(pars_out, [ 1 numel(pars_out) ]); % row vector
 model.ParameterValues = pars_out;
 if nargout > 3
   output.modelValue = feval(model, pars_out, a.Axes{:});
-  if not(all(a.Monitor == 1 | a.Monitor == 0)) % fit(signal/monitor) 
-    output.modelValue    = bsxfun(@rdivide,output.modelValue, a.Monitor); 
+  output.corrcoef   = eval_corrcoef(a.Signal, a.Error, a.Monitor, output.modelValue);
+  if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
+    fprintf(1, ' Correlation coefficient=%g\n', output.corrcoef);
   end
-  if length(a.Axes) == 1
-    output.modelAxes  = a.Axes{1};
+  
+  if ~isempty(is_idata)
+    % make it an iData
+    b = is_idata;
+    setalias(b,'Signal', output.modelValue, model.Name);
+    b.Title = [ model.Name '(' char(b) ')' ];
+    b.Label = b.Title;
+    b.DisplayName = b.Title;
+    setalias(b,'Error', 0);
+    setalias(b,'Parameters', pars_out, [ model.Name ' model parameters for ' Name ]);
+    setalias(b,'Model', model, model.Name);
+    output.modelValue = b;
   else
-    output.modelAxes  = a.Axes(:);
+    if not(all(a.Monitor == 1 | a.Monitor == 0)) % fit(signal/monitor) 
+      output.modelValue    = bsxfun(@rdivide,output.modelValue, a.Monitor); 
+    end
+    if length(a.Axes) == 1
+      output.modelAxes  = a.Axes{1};
+    else
+      output.modelAxes  = a.Axes(:);
+    end
   end
   output.model      = model;
   
@@ -311,15 +427,13 @@ if nargout > 3
     output.message = [ '(' num2str(message) ') ' output.message ];
   end
   output.parsNames  = model.Parameters;
-  output.corrcoef   = eval_corrcoef(a.Signal, a.Error, a.Monitor, output.modelValue);
+  
 end
 if pars_isstruct
   pars_out = cell2struct(num2cell(pars_out), strtok(model.Parameters), 2);
 end
 
 end % fits
-
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRIVATE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -334,7 +448,7 @@ function c = eval_criteria(model, pars, criteria, a, varargin)
   end
   a.Monitor =real(a.Monitor);
   if not(all(a.Monitor == 1 | a.Monitor == 0)),
-    Model    = bsxfun(@rdivide,Model,   a.Monitor); % fit(signal/monitor) 
+    % Model    = bsxfun(@rdivide,Model,   a.Monitor); % fit(signal/monitor) 
     a.Signal = bsxfun(@rdivide,a.Signal,a.Monitor); 
     a.Error  = bsxfun(@rdivide,a.Error, a.Monitor); % per monitor
   end

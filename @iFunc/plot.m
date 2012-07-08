@@ -12,7 +12,7 @@ function h = plot(a, p, varargin)
 %
 % ex:     b=plot(gauss); plot(gauss*lorz, [1 2 3 4, 5 6 7 8]);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iFunc, iFunc/fit, iFunc/feval
 
 if nargin < 2, 
@@ -23,7 +23,10 @@ if ndims(a) > 3
   error([ 'iFunc:' mfilename ], 'Can only plot dimensionality <= 3. Failed to plot ndims=%d model %s\n', ndims(a), a.Name);
 end
 if strcmp(p, 'guess'), p=[]; end
+
+% evaluate the model value, and axes
 [signal, ax, name] = feval(a, p, varargin{:});
+
 % Parameters are stored in the updated model
 if length(inputname(1))
   assignin('caller',inputname(1),a); % update in original object
