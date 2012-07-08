@@ -45,15 +45,17 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   mcstas(instrument,'compile mpi') same with MPI support
 %
 % input:  INSTRUMENT: name of the instrument description to run (string)
-%           when the instrument is not found, it is searched in the McStas examples, and copied locally.
-%         PARAMETERS: a structure that gives instrument parameter names and values (structure)
+%           when the instrument is not found, it is searched in the McStas 
+%           examples, and copied locally.
+%         PARAMETERS: a structure that gives instrument parameter names and 
+%             values (structure)
 %           parameters.name = scalar (optimization, simulation and display)
 %             define a single value      when options.mode='simulation' and 'display'
 %             define the starting value  when options.mode='optimization'
 %           parameters.name = vector and cell array (simulation)
-%             define a scanning range for a series of simulations, when options.mode='simulation'
-%             multi-dimensional scans (that is more than one parameter given as 
-%             vector) are possible.
+%             define a scanning range for a series of simulations, when 
+%             options.mode='simulation' multi-dimensional scans (that is more 
+%             than one parameter given vector) are possible.
 %           parameters.name = vector (optimize)
 %             the vector can be 3 elements to define [min start max]. 
 %             the vector can be 2 elements to define [min max]. 
@@ -101,7 +103,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 %
-% Version: $Revision: 1.35 $
+% Version: $Revision: 1.36 $
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
