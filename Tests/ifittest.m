@@ -10,7 +10,7 @@ function ratio=ifittest(tests_list)
 % ex:     ifittest;
 %         ifittest('Fit')
 %
-% Version: $Revision: 1.28 $
+% Version: $Revision: 1.29 $
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 if nargin ==0, tests_list=''; end
@@ -133,19 +133,19 @@ switch(test)
 % test/examples from Docs/Fit.html
 case 'Fit_1'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
-  p=fits(a);
+  p=fits(a,'','','fminimfil');
   if abs(max(abs([ 0.61         1.0008      0.0035         0.0001 ])-abs(p))) < 0.01
     result = 'OK  fits(a)';
   else
     result = 'FAILED';
   end 
 case 'Fit_2_gauss'
-  a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
-  p=fits(a, 'gauss', [ 0.5 1 0.003 0 ]);   % specify the starting parameters for the model function
-  b= ieval(a, 'gauss', p);
+  a= load(iData, [ ifitpath 'Data/sv1850.scn' ]);
+  p= fits(a, 'gauss', [ 0.5 1 0.003 0 ],'fminimfil');   % specify the starting parameters for the model function
+  b= a(gauss, p);
   plot([ a b ]);
   if max(a-b)/mean(get(a,'Monitor')) < 0.1
-    result = 'OK  fits(a, ''gauss'', p); ieval(a,''gauss'', p)';
+    result = 'OK  fits(a, ''gauss'', p);';
   else
     result = 'FAILED';
   end 
@@ -163,9 +163,9 @@ case 'Fit_4_fminplot'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   options=fminimfil('defaults');
   options.OutputFcn='fminplot';
-  p=fits(a, 'gauss', [], options);
+  p= fits(a, 'gauss', [], options);
   % p=[ 0.6263    1.0008   -0.0037    0.0002 ]
-  b = ieval(a, 'gauss', p);
+  b = a(gauss, p);
   figure; plot([ a b ]);
   if max(a-b)/mean(get(a,'Monitor')) < 0.1
     result = 'OK  fits(a, ''gauss'', [], options.OutputFcn=''fminplot'')';
@@ -203,8 +203,8 @@ case 'Fit_7_uncertainties'
   end 
 case 'Fit_8_lorz'
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
-  p=fits(a,'lorz');
-  b = ieval(a, 'lorz', p);
+  p=fits(a,'lorz','','fminimfil');
+  b = a(lorz, p);
   if abs(max(abs([ 0.65         1.001      0.0019         0.0068 ])-abs(p))) < 0.01
     result = 'OK  fits(a,''lorz'')';
   else
