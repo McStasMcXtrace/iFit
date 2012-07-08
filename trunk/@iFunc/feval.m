@@ -20,7 +20,7 @@ function [signal, ax, name] = feval(a, p, varargin)
 % ex:     b=feval(gauss,[1 2 3 4]); feval(gauss*lorz, [1 2 3 4, 5 6 7 8]);
 %           feval(gauss,'guess', -5:5, -abs(-5:5))
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision: 1.3 $
 % See also iFunc, iFunc/fit, iFunc/plot
 
 % handle input iFunc arrays
@@ -39,23 +39,18 @@ if numel(a) > 1
   return
 end
 
+% handle input parameter 'p' ===================================================
+
 if nargin < 2
   p = '';
 end
 
-% handle case where varargin contains itself a cell as 1st arg for axes and
-% Signal
-if ~isempty(varargin) && iscell(varargin{1})
-  Axes = varargin{1};
-  if length(Axes) > a.Dimension
-    Signal = Axes{a.Dimension+1};
-    Axes = Axes(1:a.Dimension);
-  end
-  varargin=varargin(2:end);
+if isa(p, 'iData')
+  varargin = { p varargin{:} };
+  p = '';
 end
 
-% handle input parameter cell (iterative function evaluation)
-if iscell(p) && ~isempty(p)
+if iscell(p) && ~isempty(p) % as a cell (iterative function evaluation)
   signal = {}; ax={}; name={};
   for index=1:numel(a)
     [signal{end+1}, ax{end+1}, name{end+1}] = feval(a, p{index}, varargin{:});
@@ -66,20 +61,55 @@ if iscell(p) && ~isempty(p)
   return
 end
 
-ax=[]; name=a.Name;
-
-% guess parameters ========================================================
-% when p=[]='guess' we guess them all
-if isempty(p)
-  p = NaN*ones(size(a.Parameters));
-end
-
 if strcmp(p, 'plot')
   signal=plot(a);
   return
 elseif strcmp(p, 'identify')
   signal=a;
   return
+end
+
+% handle varargin ==============================================================
+% handle case where varargin contains itself a cell as 1st arg for axes and
+% Signal
+if ~isempty(varargin) 
+  this = varargin{1};
+  if iscell(this)
+    Axes = this;
+    if length(Axes) > a.Dimension
+      Signal = Axes{a.Dimension+1};
+      Axes   = Axes(1:a.Dimension);
+    end
+    if ~isempty(Signal), Axes{end+1} = Signal; end
+    varargin=[ Axes{:} varargin(2:end) ];
+  elseif (isstruct(this) && isfield(this, 'Axes')) || isa(this, 'iData')
+    Signal = {};
+    if isfield(this,'Signal')  
+      Signal  = this.Signal;
+      if isfield(this,'Monitor') 
+        Signal  = bsxfun(@rdivide,Signal, this.Monitor); 
+      end
+    end
+
+    if isa(this, 'iData')
+      Axes=cell(1,ndims(this));
+      for index=1:ndims(this)
+        Axes{index} = getaxis(this, index);
+      end
+    elseif isfield(this,'Axes')    Axes    = this.Axes; 
+    end
+    if ~isempty(Signal), Axes{end+1} = Signal; end
+    varargin= [ Axes{:} varargin(2:end) ];
+  end
+  clear this Axes Signal
+end
+
+ax=[]; name=a.Name;
+
+% guess parameters ========================================================
+% when p=[]='guess' we guess them all
+if isempty(p)
+  p = NaN*ones(size(a.Parameters));
 end
 
 % when there are NaN values in parameter values, we replace them by guessed values
@@ -117,6 +147,13 @@ if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmpi(p, 'guess')
   
   varargin = [ args args_opt ];
   clear args
+  
+  % convert axes to nD arrays for operations to take place
+  % check the axes and possibly use ndgrid to allow nD operations in the
+  % Expression/Constraint
+  if a.Dimension > 1 && all(cellfun(@isvector, varargin(1:a.Dimension)))
+    [varargin{1:a.Dimension}] = ndgrid(varargin{1:a.Dimension});
+  end
   
   % automatic guessed parameter values -> signal
   p1 = iFunc_private_guess(varargin, a.Parameters); % call private here -> auto guess
@@ -164,6 +201,7 @@ if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmpi(p, 'guess')
       p1(index) = p2(index);
       clear p2
     catch
+      disp([ 'Error: Could not evaluate Guess in mode ' a.Name ' ' a.Tag ]);
       disp(a.Guess);
       disp('Axes and signal:');
       disp(varargin);
@@ -284,6 +322,7 @@ try
   e = e(~strncmp('%', e, 1)); % remove comment lines
   eval(sprintf('%s\n', e{:}));
 catch
+  disp([ 'Error: Could not evaluate Expression in mode ' a.Name ' ' a.Tag ]);
   disp(a)
   a.Eval
   lasterr
