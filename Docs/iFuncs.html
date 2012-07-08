@@ -51,7 +51,7 @@ set, and return a function evaluation. <br>
 <br>
 Such models are used in iFit when there is a need to e.g. compute and
 plot a function evaluation corresponding with the axes of an iData
-obect by means of the <span style="font-weight: bold;">ieval</span>
+obect by means of the <span style="font-weight: bold;">eval</span>
 function. Similarly, this
 function evluation can be used iteratively in an optimization process
 in order to find a parameter set that matches best the iData object
@@ -60,7 +60,7 @@ All these are explained in the <a href="Fit.html">Fit</a> page.<br>
 <br>
 Each function/model can be used in the following ways (for instance
 model may be 'gauss'):<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>		<span style="font-style: italic;">% display model informations</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'identify'</span>)	% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'plot'</span>)	<span style="font-style: italic;">% plot the model with its default settings</span><span style="color: rgb(255, 0, 0); font-style: italic;"></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(p, x, y ...)	<span style="font-style: italic;">% evaluate the model with parameters p, and axes x,y,...<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>([], x, y ...)	<span style="font-style: italic;">% evaluate the model with axes x,y,... and automatic parameter guess<br></span><span style="font-style: italic;">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'guess'</span>, x, y ...)	% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ieval</span>(a, @model, p)	<span style="font-style: italic;">% evaluate the model onto the iData object axes with parameters p<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">fits</span>(a, @model, p)	<span style="font-style: italic;">% fit the model onto the iData object</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>		<span style="font-style: italic;">% display model informations</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'identify'</span>)	% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'plot'</span>)	<span style="font-style: italic;">% plot the model with its default settings</span><span style="color: rgb(255, 0, 0); font-style: italic;"></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(p, x, y ...)	<span style="font-style: italic;">% evaluate the model with parameters p, and axes x,y,...<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>([], x, y ...)	<span style="font-style: italic;">% evaluate the model with axes x,y,... and automatic parameter guess<br></span><span style="font-style: italic;">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'guess'</span>, x, y ...)	% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">eval</span>(a, @model, p)	<span style="font-style: italic;">% evaluate the model onto the iData object axes with parameters p<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">fits</span>(a, @model, p)	<span style="font-style: italic;">% fit the model onto the iData object</span><br></pre>
 <h3><a class="mozTocH3" name="mozTocId96090"></a><span style="font-weight: bold;">List of default fit models</span></h3>
 The 1D functions are <span style="font-style: italic;">signal=f(parameters, x)</span>, and the 2D functions are <span style="font-style: italic;">signal=f(parameters, x, y)</span>.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
@@ -413,7 +413,7 @@ function
 settings are used.<br>
 <br>
 The function both creates a function file, and returns its function
-handle, that may be used with <span style="font-weight: bold;">ieval</span>
+handle, that may be used with <span style="font-weight: bold;">eval</span>
 and <a href="Fit.html"><span style="font-weight: bold;">fits</span></a>.<br>
 <pre style="margin-left: 40px;">&gt;&gt; [p,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span><span style="color: rgb(204, 51, 204);"></span>);</pre>
 A quick definition, without using the dialog, can be performed with the
@@ -501,7 +501,7 @@ function also exists in <span style="font-style: italic;">iFit/iFuncs/private/te
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/fit models - </span><span style="font-style: italic;">
-$Date: 2012-02-13 20:13:12 $ $Revision: 1.22 $
+$Date: 2012-07-08 17:34:47 $ $Revision: 1.23 $
 </span><span style="font-style: italic;"> </span>-
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>

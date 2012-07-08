@@ -617,7 +617,7 @@ set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
       <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
       <td style="vertical-align: top;">m1*m2<br>
       </td>
-      <td style="vertical-align: top;">multiplication (<span style="font-style: italic;">element by element</span>)<br>
+      <td style="vertical-align: top;">multiplication (<span style="font-style: italic;">element by element</span>). When object orientations are complementary (orthogonal), the final object is built with dimensionality expansion.<br>
       </td>
     </tr>
     <tr>
@@ -634,12 +634,12 @@ set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">divide <span style="font-style: italic; font-weight: normal;">and</span> ./<br>
+      <td style="vertical-align: top; font-weight: bold;">rdivide <span style="font-style: italic; font-weight: normal;">and</span> ./<br>
       </td>
       <td style="vertical-align: top;">m2&sup2;*(s1/s2)</td>
       <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
       <td style="vertical-align: top;">m1*m2</td>
-      <td style="vertical-align: top;">division <span style="font-style: italic;">(element by element)</span> </td>
+      <td style="vertical-align: top;">division <span style="font-style: italic;">(element by element)</span>. When object orientations are complementary (orthogonal), the final object is built with dimensionality expansion. </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">mrdivide</span>
@@ -676,7 +676,7 @@ independently (see <a href="#mozTocId97186">below</a>). Event lists objects are 
       </td>
       <td style="vertical-align: top;">m1<sup>m2</sup><br>
       </td>
-      <td style="vertical-align: top;">exponentiation<br>
+      <td style="vertical-align: top;">exponentiation. When object orientations are complementary (orthogonal), the final object is built with dimensionality expansion.<br>
       </td>
     </tr>
     <tr>
@@ -932,7 +932,7 @@ and the <a href="iOptim.html">iOptim</a> pages).<br>
 <br>
 In the case where a better peak estimate is required, or any other
 advanced model parameter determination, the <a href="Fit.html"><span style="font-weight: bold;">fits</span></a> method can be used. This
-latter makes use of the <span style="font-weight: bold;">ieval</span>
+latter makes use of the <span style="font-weight: bold;">eval</span>
 method, which evaluates a model function onto the object axes.<br>
 <h3><a class="mozTocH3" name="mozTocId439767"></a><span style="font-weight: bold;">Projection, integration and sum</span></h3>
 <a href="images/iData_sum_camproj.png"><img alt="iData: sum and projection" title="iData: sum and projection" src="images/iData_sum_camproj.png" style="border: 0px solid ; width: 200px; height: 408px;" align="right"></a>There
@@ -1215,7 +1215,7 @@ distributions. The <span style="font-weight: bold;">hist</span> operator is much
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
-$Date: 2012-03-16 14:09:39 $ $Revision: 1.31 $
+$Date: 2012-07-08 17:34:47 $ $Revision: 1.32 $
 </span><span style="font-style: italic;"> </span>-
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
