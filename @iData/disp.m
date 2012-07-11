@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Revision: 1.36 $
+% Version: $Revision: 1.37 $
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation
@@ -27,7 +27,7 @@ if numel(s_in) > 1
   eval([ iname ' = s_in;' ])
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
 else
-  if isdeployed, id='iData';
+  if isdeployed || ~usejava('jvm'), id='iData';
   else           id='<a href="matlab:helpwin iData">iData</a>';
   end
   fprintf(1,'%s = %s %iD object of size [%s]:\n',iname, id, ndims(s_in), num2str(size(s_in)));
