@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iFunc) 
 % ex:     'disp(iFunc)'
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iFunc, iFunc/display, iFunc/get
 
 if nargin == 2 && ~isempty(name)
@@ -21,7 +21,7 @@ if numel(s_in) > 1
   eval([ iname ' = s_in;' ])
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
 else
-  if isdeployed, id='iFunc';
+  if isdeployed || ~usejava('jvm'), id='iFunc';
   else           id='<a href="matlab:helpwin iFunc">iFunc</a>';
   end
   fprintf(1,'%s = %s %iD model:\n',iname, id, s_in.Dimension);

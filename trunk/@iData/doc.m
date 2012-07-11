@@ -13,7 +13,7 @@ function d = doc(a, page)
 %     doc(iData,'Plot')
 %     doc(iData,'Methods')
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision: 1.7 $
 
 % EF 23/10/10 iData impementation
 if nargin ==1, page=''; end
@@ -26,7 +26,7 @@ d = [ fileparts(which('iData/version')) filesep '..' filesep 'Docs' filesep page
 disp(version(iData))
 disp('Opening iData documentation from ')
 
-if ~isdeployed
+if ~isdeployed && usejava('jvm')
   disp([ '  <a href="matlab:web ' d '">web ' d '</a>' ])
   web(d);
 else
