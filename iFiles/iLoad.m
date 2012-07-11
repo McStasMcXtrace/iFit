@@ -46,7 +46,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % Part of: iFiles utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Revision: 1.67 $
+% Version: $Revision: 1.68 $
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
@@ -191,29 +191,44 @@ if ischar(filename) & length(filename) > 0
   if length(f) == 1 && f > 1  % the filename contains an internal link (HTML anchor)
     [fileroot,filesub]=strtok(filename, '#');
     [data, format]=iLoad(fileroot, loader, varargin{:});
-    % now search for the fieldnames
-    f = findfield(data, filesub(2:end)); % calls private function
-    if ~isempty(f)
-      % 'data' will be a cell array of structure based on the initial one
+    % now search pattern in the file names or fields
+    if iscell(data) && isdir(fileroot)
       this_data = {}; this_format = {};
-      for index=1:length(f)
-        ret = data;
-        fields = textscan(f{index},'%s','Delimiter','.'); % split the path in the structure with '.' char
-        ret.Data = getfield(data,fields{1}{:});             % access that path by expanding it;
-        try
-          fields{1}{1} = 'Headers';
-          ret.Headers = getfield(data,fields{1}{:});
+      % name is a directory. We search for the pattern in file names
+      f = [];
+      for index=1:length(data)
+        if any(strfind(data{index}.Source, filesub(2:end)))
+          this_data{end+1}   = data{index};
+          this_format{end+1} = loader;
         end
-        this_data{end+1}   = ret;
-        this_format{end+1} = loader;
-
       end
       data   = this_data;
       format = this_format;
       return
     else
-      fprintf(1, 'iLoad: Warning: Could not find pattern "%s". Importing whole file...\n', filesub(2:end));
-      filename = fileroot;
+      f = findfield(data, filesub(2:end)); % calls private function
+      if ~isempty(f)
+        this_data = {}; this_format = {};
+        % 'data' will be a cell array of structure based on the initial one
+        for index=1:length(f)
+          ret = data;
+          fields = textscan(f{index},'%s','Delimiter','.'); % split the path in the structure with '.' char
+          ret.Data = getfield(data,fields{1}{:});             % access that path by expanding it;
+          try
+            fields{1}{1} = 'Headers';
+            ret.Headers = getfield(data,fields{1}{:});
+          end
+          this_data{end+1}   = ret;
+          this_format{end+1} = loader;
+
+        end   
+        data   = this_data;
+        format = this_format;
+        return
+      else
+        fprintf(1, 'iLoad: Warning: Could not find pattern "%s". Importing whole file...\n', filesub(2:end));
+        filename = fileroot;
+      end
     end
   end
   
@@ -323,7 +338,7 @@ if ischar(filename) & length(filename) > 0
   
 elseif isempty(filename)
   config = iLoad('','load config');
-  if exist('uigetfiles') & (strcmp(config.UseSystemDialogs, 'no') | isdeployed)
+  if exist('uigetfiles') & (strcmp(config.UseSystemDialogs, 'no') | isdeployed | ~usejava('jvm'))
       [filename, pathname] = uigetfiles('.*','Select file(s) to load');
   else
     if usejava('swing')
@@ -433,7 +448,7 @@ function [data, loader] = iLoad_import(filename, loader, varargin)
     loader = loader{1};
   end
 
-  % handle single char loaders (IMPORT takes place HERE)
+  % handle single char loaders (IMPORT takes place HERE) =======================
   if ischar(loader)
     tmp=loader; clear loader;
     loader.method = tmp; loader.options='';
@@ -582,7 +597,7 @@ function loaders = iLoad_loader_auto(file)
         file_start = strrep(file_start, this, ' ');
       end
       
-      if strcmp(loader.method, 'looktxt') && ...
+      if strcmp(loader.method, 'read_anytext') && ...
               length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9
         % fprintf(1,'iLoad: skip method %s as file %s is probably binary\n', loader.method, file);
         patterns_found  = 0;
@@ -726,12 +741,12 @@ function config = iLoad_config_load
     { 'csvread', 'csv', 'Comma Separated Values (.csv)',''}, ...
     { 'dlmread', 'dlm', 'Numerical single block',''}, ...
     { 'xmlread', 'xml', 'XML',''}, ...
-    { 'looktxt', '',    'Data (text format with fastest import method)',    ...
+    { 'read_anytext', '',    'Data (text format with fastest import method)',    ...
         '--headers --binary --fast --catenate --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metadata=x_label --metadata=y_label', ...
           '',{'load_xyen','load_vitess_2d'}}, ...
-    { 'looktxt', '',    'Data (text format with fast import method)',       ...
+    { 'read_anytext', '',    'Data (text format with fast import method)',       ...
         '--headers --binary --comment=NULL --silent','','load_xyen'}, ...
-    { 'looktxt', '',    'Data (text format)',                               ...
+    { 'read_anytext', '',    'Data (text format)',                               ...
         '--headers --comment=NULL --silent','','load_xyen'}, ...
     { 'wk1read', 'wk1', 'Lotus1-2-3 (first spreadsheet)',''}, ...
     { 'auread',  'au',  'NeXT/SUN (.au) sound',''}, ...
