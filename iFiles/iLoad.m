@@ -33,6 +33,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %             loader.options= string of options to catenate after file name
 %                          OR cell of options to use as additional arguments
 %                             to the method
+%           leave it empty ('') for automatic setting.
 %   additional arguments are passed to the import routine.
 %
 % output variables:
