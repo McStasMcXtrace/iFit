@@ -29,22 +29,22 @@ function config = iLoad_ini
     ILL_normal.name       ='ILL Data (normal integers)';
     ILL_normal.patterns   ={'RRRR','AAAA','FFFF','IIII'};
     ILL_normal.options    ='--headers --fortran --catenate --fast --binary --makerows=IIII --makerows=FFFF --silent ';
-    ILL_normal.method     ='looktxt';
+    ILL_normal.method     ='read_anytext';
     
     ILL_integers.name       ='ILL Data (large integers)';
     ILL_integers.patterns   ={'RRRR','AAAA','FFFF','JJJJ'};
     ILL_integers.options    ='--headers --fortran --catenate --fast --binary --makerows=JJJJ --makerows=FFFF --silent ';
-    ILL_integers.method     ='looktxt';
+    ILL_integers.method     ='read_anytext';
     
     ILL_float.name       ='ILL Data (floats only)';
     ILL_float.patterns   ={'RRRR','AAAA','FFFF'};
     ILL_float.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF --silent ';
-    ILL_float.method     ='looktxt';
+    ILL_float.method     ='read_anytext';
     
     ILL_general.name       ='ILL Data (general)';
     ILL_general.patterns   ={'SSSS'};
     ILL_general.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF --makerows=JJJJ --makerows=IIII --silent ';
-    ILL_general.method     ='looktxt';
+    ILL_general.method     ='read_anytext';
     
     ILL_TAS_pol.name       ='ILL TAS Data (polarized)';
     ILL_TAS_pol.patterns   ={'PAL','POSQE:','PARAM:','DATA_:','LOCAL:','USER_:'};
@@ -53,7 +53,7 @@ function config = iLoad_ini
                         '--section=POLAN --section=STEPS ' ...
                         '--metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE ' ...
                         '--metadata=INSTR --metadata=COMND --metadata=TITLE --metadata=MULTI '];
-    ILL_TAS_pol.method     ='looktxt';
+    ILL_TAS_pol.method     ='read_anytext';
     ILL_TAS_pol.postprocess='load_ill_tas'; % load_ill_tas
     ILL_TAS_pol.extension  ='scn';
     
@@ -64,21 +64,21 @@ function config = iLoad_ini
                         '--section=STEPS ' ...
                         '--metadata=LOCAL --metadata=USER --metadata=EXPNO --metadata=DATE --metadata=DATA ' ...
                         '--metadata=INSTR --metadata=COMND --metadata=TITLE --metadata=MULTI '];
-    ILL_TAS.method     ='looktxt';
+    ILL_TAS.method     ='read_anytext';
     ILL_TAS.postprocess='load_ill_tas'; % load_ill_tas
     ILL_TAS.extension  ='scn';
     
     spec.name       ='SPEC';
     spec.patterns   ={'#F','#D','#S'};
-    spec.options    ='--fast --binary --headers --metadata="#S " --comment=NULL --silent ';
-    spec.method     ='looktxt';
+    spec.options    ='--fast --binary --headers --metadata=''#S '' --comment=NULL --silent ';
+    spec.method     ='read_anytext';
     spec.extension  ='spc';
     
     mcstas_scan.name       ='McStas Scan DAT output';
     mcstas_scan.patterns   ={'# type: multiarray_1d','# variables:','# title: Scan of'};
     mcstas_scan.options    =['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
                          '--metadata=xlabel --metadata=ylabel --metadata=xvars --metadata=component --metadata=Param --metadata=Creator ' ];
-    mcstas_scan.method     ='looktxt';
+    mcstas_scan.method     ='read_anytext';
     mcstas_scan.postprocess='load_mcstas_scan';
     
     mcstas_list.name       ='McStas list monitor';
@@ -86,7 +86,7 @@ function config = iLoad_ini
     mcstas_list.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent --catenate ' ...
 		    '--metadata=xlabel --metadata=Creator ' ...
 		    '--metadata=ylabel --metadata=xylimits --metadata=component --metadata=Param ' ];
-    mcstas_list.method     ='looktxt';
+    mcstas_list.method     ='read_anytext';
     mcstas_list.postprocess='load_mcstas_1d';
     
     mcstas_2D.name       ='McStas 2D monitor';
@@ -94,46 +94,46 @@ function config = iLoad_ini
     mcstas_2D.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
 		    '--metadata=Errors --metadata=Events --metadata=xlabel --metadata=Creator ' ...
 		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits --metadata=component --metadata=Param ' ];
-    mcstas_2D.method     ='looktxt';
+    mcstas_2D.method     ='read_anytext';
     mcstas_2D.postprocess='load_mcstas_1d';
     
     mcstas_1D.name       ='McStas 1D monitor';
     mcstas_1D.patterns   ={'Format: McStas with text headers','# type: array_1d'};
     mcstas_1D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  ' ...
         '--metadata=xlabel --metadata=ylabel  --metadata=component --metadata=Param --metadata=Creator ' ];
-    mcstas_1D.method     ='looktxt';
+    mcstas_1D.method     ='read_anytext';
     mcstas_1D.postprocess={'load_xyen','load_mcstas_1d'};
     
     mcstas_sim.name       ='McStas sim file';
     mcstas_sim.extension  ='sim';
     mcstas_sim.patterns   ={'begin simulation','Format: McStas'};
     mcstas_sim.options    ='--fast --binary --headers  --comment=NULL --silent ';
-    mcstas_sim.method     ='looktxt';
+    mcstas_sim.method     ='read_anytext';
     mcstas_sim.postprocess='load_mcstas_sim';
     
     mcstas_sqw.name       ='McStas Sqw table';
     mcstas_sqw.patterns   ={'Sqw data file for Isotropic_Sqw'};
     mcstas_sqw.options    ='--fast --binary  --headers --comment=NULL --silent ';
-    mcstas_sqw.method     ='looktxt';
+    mcstas_sqw.method     ='read_anytext';
     mcstas_sqw.postprocess='load_mcstas_sqw';
     mcstas_sqw.extension  ='sqw';
     
     mcstas_powder.name       ='McStas powder table (LAZ/LAU)';
     mcstas_powder.patterns   ={'lattice_a','column_'};
     mcstas_powder.options    ='--fast --binary  --headers --comment=NULL --silent ';
-    mcstas_powder.method     ='looktxt';
+    mcstas_powder.method     ='read_anytext';
     mcstas_powder.postprocess='load_mcstas_powder';
     mcstas_powder.extension  ={'laz','lau'};
     
     chalkriver.name     ='ChalkRiver CNBC';
     chalkriver.patterns ={'Run ','Seq ','Rec ','Mode ','Temp:','File '};
     chalkriver.options  ='--fast --binary  --headers --comment=NULL --silent --section=Run --metadata=File --metadata=Sig';
-    chalkriver.method   ='looktxt';
+    chalkriver.method   ='read_anytext';
     chalkriver.postprocess='load_chalkriver';
     
     ISIS_spe.name       ='ISIS/SPE tof data';
     ISIS_spe.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL --silent ';
-    ISIS_spe.method     ='looktxt';
+    ISIS_spe.method     ='read_anytext';
     ISIS_spe.patterns   ={'Phi Grid'};
     ISIS_spe.extension  ='spe';
     
@@ -157,14 +157,14 @@ function config = iLoad_ini
     STL_binary.postprocess='load_stl';
     
     OFF_ascii.name      ='OFF 3D ascii';
-    OFF_ascii.method    ='looktxt';
+    OFF_ascii.method    ='read_anytext';
     OFF_ascii.options   ='--fast --binary --headers --comment=NULL --metadata=OFF --silent';
     OFF_ascii.extension ='off';
     OFF_ascii.patterns  ={'OFF'};
     OFF_ascii.postprocess='load_stl';
     
     PLY_ascii.name      ='PLY 3D ascii';
-    PLY_ascii.method    ='looktxt';
+    PLY_ascii.method    ='read_anytext';
     PLY_ascii.options   ='--fast --binary --headers --comment=NULL --silent';
     PLY_ascii.extension ='ply';
     PLY_ascii.patterns  ={'ply','format ascii','element','end_header'};
