@@ -24,6 +24,8 @@ function h=plot(a, varargin)
 %
 %               For 1D plots y=f(x), method is a string to specify color/symbol.
 %                 hide_errorbars is also valid not to plot error bars.
+%                 To plot a set of 1D objects side by side, specify a 2D plot 
+%                 option such as 'surf' or 'plot3'.
 %               For 2D plots z=f(x,y), method is a string which may contain:
 %                 surf, mesh, contour, contour3, surfc, surfl, contourf
 %                 plot3, scatter3 (colored points), stem3, pcolor, waterfall
@@ -147,7 +149,9 @@ if numel(a) > 1
     end
     s = getaxis(a(index), 0);
     sum_max = sum_max+max(s(:))-min(s(:));
-    if ndims(a(index)) == 1 && isempty(this_method) && strcmp(get(h{index},'Type'),'line')
+    this_h = get(h{index},'Type'); if iscell(this_h), this_h=this_h{1}; end
+    if ndims(a(index)) == 1 && isempty(this_method) ...
+    && any(strcmp(this_h,{'line','hggroup'})) && isempty(strfind(method,'scatter3'))
       % change color of line
       colors = 'bgrcmk';
       set(h{index}, 'color', colors(1+mod(index, length(colors))));
@@ -253,7 +257,7 @@ case 1  % vector type data (1 axis + signal) -> plot
     % need to create this axis
     setalias(a, 'Axis_2', ax);
     setaxis(a, 2, 'Axis_2');
-    h = plot(a, this_method);
+    h = plot(a, method);
     if ih == 1, hold on; else hold off; end
     return
   else 
@@ -289,8 +293,13 @@ case 1  % vector type data (1 axis + signal) -> plot
   clear x y e m
 case 2  % surface type data (2 axes+signal) -> surf or plot3
   % check if a re-grid is needed
-  if isvector(a) || (~isvector(a) && (~isempty(strfind(method,'plot3')) || ~isempty(strfind(method,'scatter3')) ))
+  if isvector(a)
+    a_is_vector = 1; % plot as lines
+  elseif (~isvector(a) && (~isempty(strfind(method,'plot3')) || ~isempty(strfind(method,'scatter3')) ))
     a = interp(a,'grid');
+    a_is_vector = 1; % plot as lines, even after re-sampling (requested explicitly)
+  else
+    a_is_vector = 0;
   end
   [x, xlab] = getaxis(a,2);
   [y, ylab] = getaxis(a,1);
@@ -302,12 +311,12 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   x=real(double(x));
   y=real(double(y));
   z=real(double(z));
-  if isvector(a) % plot3/fscatter3
-    if (strfind(method,'plot3'))
+  if a_is_vector % plot3/fscatter3
+    if (strfind(method,'scatter3'))
+      h=fscatter3(x,y,z,z,this_method); view(3);
+    else
       if length(method), h = plot3(x,y,z, this_method);
       else h = plot3(x,y,z); end
-    else
-      h=fscatter3(x,y,z,z,this_method); view(3);
     end
   else                % surf and similar stuff
     C = [];
