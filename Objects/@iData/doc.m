@@ -22,7 +22,7 @@ if isempty(page), page='index.html'; end
 if isempty(e), e='.html'; end
 page = [ f e ];
 
-d = [ fileparts(which('iData/version')) filesep '..' filesep 'Docs' filesep page ];
+d = [ ifitpath filesep 'Docs' filesep page ];
 disp(version(iData))
 disp('Opening iData documentation from ')
 

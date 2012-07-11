@@ -40,10 +40,13 @@ cp -rp $PW $DIST
 
 # Go in DIST, clean up CVS/SVN information
 cd $DIST
-echo "Clean up CVS info"
+echo "Clean up CVS/SVN info and temporary files"
 find . -name CVS -exec rm -rf \{\} \; 2> /dev/null
 find . -name .CVS -exec rm -rf \{\} \; 2> /dev/null
 find . -name CVSROOT -exec rm -rf \{\} \; 2> /dev/null
+find . -name svn -exec rm -rf \{\} \; 2> /dev/null
+find . -name .svn -exec rm -rf \{\} \; 2> /dev/null
+find . -name "*~" -exec rm -rf \{\} \; 2> /dev/null
 rm mkdist
 # we keep the MeX files as some users may not hace C compilers installed (e.g. Windows 64 bit)
 # rm iFiles/looktxt.mex*

@@ -3,6 +3,6 @@ function d = ifitpath
 %
 % Version: $Revision: 1.2 $
 
-d = [ fileparts(which('iData/version')) filesep '..' filesep ];
+d = [ fileparts(which('iData/version')) filesep '..' filesep '..' filesep ];
 
 
