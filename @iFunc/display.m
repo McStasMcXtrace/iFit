@@ -9,7 +9,7 @@ function d = display(s_in, name)
 % output: d: string to display (char)
 % ex:     'display(iFunc)' or 'iFunc'
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision: 1.2 $
 % See also iFunc, iFunc/disp, iFunc/get
 
 if nargin == 2 && ~isempty(name)
@@ -25,7 +25,7 @@ d = [ sprintf('%s = ',iname) ];
 if numel(s_in) > 1
   d = [ d sprintf(' array [%s]',num2str(size(s_in))) ];
 end
-if isdeployed, id='iFunc';
+if isdeployed || ~usejava('jvm'), id='iFunc';
 else           id='<a href="matlab:helpwin iFunc">iFunc</a>';
 end
 if length(s_in) == 0 || all(ndims(s_in) == 0)
