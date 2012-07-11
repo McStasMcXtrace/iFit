@@ -15,6 +15,10 @@
 * Example: looktxt -f Matlab -c -s PARAM -s DATA filename
 * Usual options are: --fast --fortran --binary --force --catenate --comment=NULL
 *
+* MeX usage: looktxt(arg1, ...)
+*   all arguments are separated, and given as strings, such as in
+*   looktxt('--format=MATfile','filename','-H')
+*
 * Main Options are:
 * --binary   or -b    Stores numerical matrices into an additional binary
 *                     float file, which makes further import much faster.
@@ -130,7 +134,7 @@
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
 #define DATE    "2 April 2012"
 #ifndef VERSION
-#define VERSION "1.2 $Revision: 1.16 $"
+#define VERSION "1.2 $Revision: 1.17 $"
 #endif
 
 #ifdef __dest_os
@@ -4357,19 +4361,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
 
   /* allocate memory and parse input arguments (tokens from string arguments) */
   for (i = 0; i < nrhs; i++)
-  {
-    long  buflen     = 0;       /* number of arguments for call */
-    char *InputString= NULL;    /* input string which is then split into arguments */
-    int   status     = 0;       /* flag for getting input string */
-    char  EndFlag    = 0;       /* flag to exit while loop */
-    char *StartLexeme= NULL;
-    char *EndLexeme  = NULL;
-    char *EndString  = NULL;
-    char  lexeme[MAX_LENGTH];   /* current argument, stored in argv */
-
+  { 
+    char *InputString;
+    
     if (mxIsChar(prhs[i]) != 1) /* must be a char */
     {
-      mexPrintf("looktxt/mex : argument %i\n", i);
+      mexPrintf("looktxt/mex : argument %i (%s)\n", i, mxGetClassName(prhs[i]));
       mexErrMsgTxt("looktxt/mex : Input should be strings.\n");
     }
     /* read the input argument and return it as a string */
@@ -4378,60 +4375,16 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
       mexPrintf("looktxt/mex : argument %i. InputString=NULL\n", i);
       mexErrMsgTxt("looktxt/mex : can not get input parameter.\n");
     }
-
-    /* cut input string into separated arguments for main(argc,argv) syntax */
-    EndFlag = 0;
-    StartLexeme = InputString;
-    EndString   = InputString+strlen(InputString);
     
-    /* the first input argument should be used as is (filename) */
-    if (i==0 && nrhs > 1) {
-      argv[argc] = (char*)mxMalloc(strlen(InputString)+64);
-      if (argv[argc] == NULL) {
-        mexPrintf("looktxt/mex : argument %i. Size %i\n", argc, strlen(InputString));
-        mexErrMsgTxt("looktxt/mex : can not allocate memory for input argument string.\n");
-      }
-      strcpy(argv[argc], InputString);
-      argc++;
-    } else while ((EndFlag == 0) && (argc < MAX_LENGTH-1)) /* read tokens iteratively */
-    {
-      /* search for begining of a word */
-      if (*StartLexeme == ' ')
-        while (*StartLexeme == ' ' && StartLexeme < EndString) {
-         /* look for first non ' ' : StartLexeme */
-          StartLexeme++;  /* pass all spaces */
-        }
-      /* now StartLexeme points on a non space or is at end */
-      if (*StartLexeme == '\0' || StartLexeme >= EndString) EndFlag = 1; /* end of file reached, no other word to read */
-      else {
-        /* look for position of end of word (first next ' ') : EndLexeme */
-        EndLexeme = strchr(StartLexeme+1, ' ');
-
-        if (EndLexeme == NULL)
-          EndLexeme = EndString;
-
-        if (EndLexeme - StartLexeme > 0) {
-          /* copy this word as a 'lexeme' element */
-          strncpy(lexeme, StartLexeme, EndLexeme - StartLexeme+1);
-          lexeme[EndLexeme - StartLexeme] = '\0';
-          StartLexeme = EndLexeme+1;  /* will continue with next word following */
-        }
-      } /* else */
-
-      if (strlen(lexeme) != 0 && lexeme != NULL && EndFlag == 0)
-      {
-        /* transfer the word into allocated argv[] */
-        argv[argc] = (char*)mxMalloc(strlen(lexeme)+64);
-        if (argv[argc] == NULL) {
-          mexPrintf("looktxt/mex : argument %i. Size %i\n", argc, strlen(lexeme));
-          mexErrMsgTxt("looktxt/mex : can not allocate memory for input argument string.\n");
-        }
-        strcpy(argv[argc], lexeme);
-        argc++;
-      }
-      else
-        EndFlag = 1; /* invalid word found: we end the search for tokens */
-    } /* while */
+    /* transfer the word into allocated argv[] */
+    argv[argc] = (char*)mxMalloc(strlen(InputString)+64);
+    if (argv[argc] == NULL) {
+      mexPrintf("looktxt/mex : argument %i. Size %i\n", argc, strlen(InputString));
+      mexErrMsgTxt("looktxt/mex : can not allocate memory for input argument string.\n");
+    }
+    strcpy(argv[argc], InputString);
+    argc++;
+    
     mxFree(InputString);
 
   } /* end for nrhs (all input string arguments) */
@@ -4444,10 +4397,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
   /* call 'main' */
   i = main(argc, argv);
   /* send back the mxOut array */
-  if (i && nlhs) {
-    if (!mxOut) plhs[0] = mxCreateString("created output file");
-    else plhs[0] = mxOut;
-  } if (!nlhs)
+  if (i) {
+    if (!mxOut)   plhs[0] = mxCreateString("created output file");
+    else        { plhs[0] = mxDuplicateArray(mxOut); mxDestroyArray(mxOut); }
+  } else
     plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
     
   /* free the argv/argc arrays */
