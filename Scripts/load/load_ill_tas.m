@@ -213,6 +213,7 @@ else
 end
 % make up Signal label
 xl = xlabel(a);
+if isempty(xl), xl = getaxis(a,'1'); end
 if ~isempty(TT) & isnumeric(TT), xl = sprintf('%s T=%.2f K',xl,TT); end
 if ~isempty(FX) & isnumeric(FX), 
   if ~isempty(KFIX) & isnumeric(KFIX)
