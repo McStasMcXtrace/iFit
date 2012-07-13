@@ -224,6 +224,8 @@ if isempty(Name)
   Name   = [ class(a) ' ' mat2str(size(Signal)) ' ' inputname(2) ];
 end
 
+if ~iscell(Axes) && isvector(Axes), Axes = { Axes }; end
+
 % create the new Data structure to pass to the criteria
 a = [];
 a.Signal = iFunc_private_cleannaninf(Signal);
@@ -236,6 +238,31 @@ clear Signal Error Monitor Axes
 SignalMon = a.Signal;
 if not(all(a.Monitor(:) == 1 | a.Monitor(:) == 0)),
   SignalMon  = bsxfun(@rdivide,SignalMon, a.Monitor); 
+end
+
+if isempty(a.Signal)
+  error([ 'iFunc:' mfilename ],[ 'Undefined/empty Signal ' inputname(2) ' to fit. Syntax is fits(model, Signal, parameters, ...).' ]);
+end
+
+if isvector(a.Signal) ndimS = 1;
+else                  ndimS = ndims(a.Signal);
+end
+% handle case when model dimensionality is larger than actual Signal
+if model.Dimension > ndimS
+  error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has lower dimension than model %s dimensionality %d.\n', Name, ndimS, model.Name, model.Dimension);
+% handle case when model dimensionality is smaller than actual Signal
+elseif model.Dimension < ndimS && rem(ndimS, model.Dimension) == 0
+  % extend model to match Signal dimensions
+  disp(sprintf('iFunc:%s: Extending model %s dimensionality %d to data %s dimensionality %d.\n', ...
+    mfilename, model.Name, model.Dimension, Name, ndimS));
+  new_model=model;
+  for index=2:(ndimS/model.Dimension)
+    new_model = new_model * model;
+  end
+  model = new_model;
+  clear new_model
+elseif model.Dimension ~= ndimS
+  error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has higher dimension than model %s dimensionality %d.\n', Name, ndimS, model.Name, model.Dimension);
 end
 
 % handle parameters: from char, structure or vector
@@ -340,31 +367,6 @@ if numel(model) > 1
   return
 end
 
-if isempty(a.Signal)
-  error([ 'iFunc:' mfilename ],[ 'Undefined/empty Signal ' inputname(2) ' to fit. Syntax is fits(model, Signal, parameters, ...).' ]);
-end
-
-if isvector(a.Signal) ndimS = 1;
-else                  ndimS = ndims(a.Signal)
-end
-% handle case when model dimensionality is larger than actual Signal
-if model.Dimension > ndimS
-  error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has lower dimension than model %s dimensionality %d\n', Name, ndimS, model.Name, model.Dimension);
-% handle case when model dimensionality is smaller than actual Signal
-elseif model.Dimension < ndimS && rem(ndimS, model.Dimension) == 0
-  % extend model to match Signal dimensions
-  disp(sprintf('iFunc:%s: Extending model %s dimensionality %d to data %s dimensionality %d.\n', ...
-    mfilename, model.Name, model.Dimension, Name, ndimS));
-  new_model=model;
-  for index=2:(ndimS/model.Dimension)
-    new_model = new_model * model;
-  end
-  model = new_model;
-  clear new_model
-elseif model.Dimension ~= ndimS
-  error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has higher dimension than model %s dimensionality %d.\n', Name, ndimS, model.Name, model.Dimension);
-end
-
 feval(model, pars, a.Axes{:}, SignalMon); % this updates the 'model' with starting parameter values
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
@@ -400,6 +402,10 @@ if nargout > 3
   if ~isempty(is_idata)
     % make it an iData
     b = is_idata;
+    % fit(signal/monitor) but object has already Monitor -> we compensate Monitor^2
+    if not(all(a.Monitor == 1 | a.Monitor == 0)) 
+      output.modelValue    = bsxfun(@times,output.modelValue, a.Monitor); 
+    end
     setalias(b,'Signal', output.modelValue, model.Name);
     b.Title = [ model.Name '(' char(b) ')' ];
     b.Label = b.Title;
@@ -409,9 +415,6 @@ if nargout > 3
     setalias(b,'Model', model, model.Name);
     output.modelValue = b;
   else
-    if not(all(a.Monitor == 1 | a.Monitor == 0)) % fit(signal/monitor) 
-      output.modelValue    = bsxfun(@rdivide,output.modelValue, a.Monitor); 
-    end
     if length(a.Axes) == 1
       output.modelAxes  = a.Axes{1};
     else

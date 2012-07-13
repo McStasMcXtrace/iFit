@@ -313,7 +313,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   z=real(double(z));
   if a_is_vector % plot3/fscatter3
     if (strfind(method,'scatter3'))
-      h=fscatter3(x,y,z,z,this_method); view(3);
+      h=fscatter3(x(:),y(:),z(:),z(:),this_method); view(3);
     else
       if length(method), h = plot3(x,y,z, this_method);
       else h = plot3(x,y,z); end
