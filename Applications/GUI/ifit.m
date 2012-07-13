@@ -33,7 +33,8 @@ function ifit(varargin)
 %    ifit --save file1.*  subplot 
 
 % Manual build:
-% mcc -m ifit_console -a /home/farhi/svn/Matlab/iFit
+% addpath(genpath('/home/farhi/svn/Matlab/iFit/trunk'))
+% mcc -m ifit -a /home/farhi/svn/Matlab/iFit/trunk
 % buildmcr('.')
 
 disp(' ');
@@ -64,7 +65,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     disp('Enter any Matlab/iFit command.');
     disp('      Use ''run script.m'' to execute a script from a file.');
     disp('      Control statements are allowed (for/while loops, tests, switch/case...) when');
-    disp('      they span on a single line, or in scripts.
+    disp('      they span on a single line, or in scripts.');
     disp('Keys: Arrow-Up/Down  Navigate in command history.');
     disp('      Ctrl-C         Exit (same as ''exit'' or ''return'' commands.');
     disp('Help: Type ''doc(iData,''iFit'')'' or see <ifit.mccode.org> <ifit-users@mccode.org>.');
