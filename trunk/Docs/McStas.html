@@ -31,7 +31,7 @@ parameters with constraints</a></li></ol>
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">mcstas</span><br>
 </div>
 <br>
-In this document, we demonstrate how <a href="index.html">iFit</a>/<a href="iOptim.html">iOptim</a> and <a href="iData.html">iData</a> can
+In this document, we demonstrate how <a href="index.html">iFit</a>/<a href="Optimizers.html">Optimizers</a> and <a href="iData.html">iData</a> can
 all be used transparently to simulate and optimize <a href="http://www.mcstas.org">McStas</a> instrument models.<br>
 <br>
 To import a McStas simulation results, just use <br>
@@ -213,7 +213,7 @@ default (string)</li>
 cell string of monitor names, or empty for all (cellstr)</li>
   <li><span style="font-weight: bold;">options.optimizer</span>:
 function name of the optimizer to use, default is <span style="font-style: italic;">fminpso</span> (string or function
-handle). See <a href="iOptim.html">iOptim</a>.<br>
+handle). See <a href="Optimizers.html">Optimizers</a>.<br>
   </li>
   <li><span style="font-weight: bold;">options.mode</span>:&nbsp;&nbsp;
 should be <span style="color: rgb(204, 51, 204);">'optimize'</span>.
@@ -240,13 +240,13 @@ optimization. <span style="font-style: italic; font-weight: bold;">This is the d
 </ul>
 </div>
 The default optimizer configuration is used when not specified (see the
-<a href="iOptim.html">iOptim</a> page for more details), as well
+<a href="Optimizers.html">Optimizers</a> page for more details), as well
 as the interactive plotting and verbose information during the
 optimization.<br>
 <br>
 The optimization returns the best parameter guess, as well as the
 monitor value for this solution.<br>
-In addition, similarly with other iFit <a href="iOptim.html">optimization
+In addition, similarly with other iFit <a href="Optimizers.html">optimization
 methods</a>, the optimizer final status and optional returned
 information can be obtained with e.g. <br>
 <pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'mode','optimize','optimizer','fminimfil'</span>));</pre>

@@ -15,9 +15,9 @@
 
 
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-  <title>iFit: optimization methods (iOptim)</title>
+  <title>iFit: optimization methods (Optimizers)</title>
 </head><body>
-<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: iOptim Optimization methods</h1>
+<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Optimizers Optimization methods</h1>
 <br>
 <ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId819006">Description of the optimization process and
 general syntax</a><ol><li><a href="#mozTocId967127">Optimizers syntax</a></li><li><a href="#mozTocId228403">Optimization quality (parameter uncertainty)</a></li></ol></li><li><a href="#mozTocId839813">Recommended optimizers</a><ol><li><a href="#mozTocId65177">In short, for
@@ -26,7 +26,7 @@ continuous problems: Powell
 </a></li><li><a href="#mozTocId266115">In short, for noisy
 problems: Particle Swarm
 Optimization (fminpso)</a></li></ol></li><li><a href="#mozTocId610281">List of optimizer
-implemented in iFit/iOptim</a></li><li><a href="#mozTocId882538">Benchmarking Optimization methods</a><ol><li><a href="#mozTocId69972">Swarm and Genetic
+implemented in iFit/Optimizers</a></li><li><a href="#mozTocId882538">Benchmarking Optimization methods</a><ol><li><a href="#mozTocId69972">Swarm and Genetic
 algorithms</a></li><li><a href="#mozTocId409995">Gradient methods
 (Newton)</a></li><li><a href="#mozTocId184231">Other optimizers (and
 simplex)
@@ -44,7 +44,7 @@ compatible optimizers<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId819006"></a>Description of the optimization process and
 general syntax</h3>
 <br>
-The <span style="font-style: italic;">iOptim</span> sub-library
+The <span style="font-style: italic;">Optimizers</span> sub-library
 provides a set of <span style="font-weight: bold;">minimization</span>
 routines, that is computational methods which attempt to minimize, in <span style="font-style: italic;">d</span> dimensions, an <span style="font-style: italic;">objective</span> function, often referred
 as the <span style="font-style: italic;">criteria </span>or<span style="font-style: italic;"> cost function, </span>by varying
@@ -117,7 +117,7 @@ parameter change. Use <span style="color: rgb(204, 51, 204);">'x%'</span>
 to specify a relative parameter change. </li>
   <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">OutputFcn: </span>Name of an output
 function. When set, it is called at each iteration step. You may use<span style="color: rgb(204, 51, 204);"> 'fminplot', </span>which is
-provided in <span style="font-style: italic;">iOptim.</span> Refer to the <a href="Fit.html#mozTocId684694">Fit</a> page for more information about <span style="font-weight: bold; font-style: italic;">fminplot</span>.<br>
+provided in <span style="font-style: italic;">Optimizers.</span> Refer to the <a href="Fit.html#mozTocId684694">Fit</a> page for more information about <span style="font-weight: bold; font-style: italic;">fminplot</span>.<br>
   </li>
   <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">FunValCheck: </span>Check for invalid
 values, such as NaN or complex</li>
@@ -187,7 +187,7 @@ Correlation matrix at the optimized solution (off-diagonal values
 larger that 0.7 indicate cross-correlated parameters)<br>
   </li>
 </ul>
-In <span style="font-style: italic;">all</span> supplied <span style="font-style: italic;">iOptim</span> optimizers cases, the
+In <span style="font-style: italic;">all</span> supplied <span style="font-style: italic;">Optimizers</span> optimizers cases, the
 optimizer
 can handle <a href="#mozTocId95530"><span style="font-style: italic; font-weight: bold;">constraints</span><span style="font-weight: bold;"></span></a> (or more specifically <span style="font-style: italic;">restraints, </span>that is constraints on parameters values)<span style="font-style: italic; font-weight: bold;">,
 </span>specified
@@ -211,7 +211,7 @@ All of these methods support constraints on parameters during the
 optimization process (see <a href="#mozTocId95530">below</a>).<br>
 <br>
 The iData <a href="Fit.html"><span style="font-style: italic; font-weight: bold;">fits</span></a>
-method is a wrapper to any of the <span style="font-style: italic;">iOptim</span>
+method is a wrapper to any of the <span style="font-style: italic;">Optimizers</span>
 optimizers, with a specified fit criteria.<br>
 <br>
 The objective function should be a function of a single parameter <span style="font-style: italic;">p</span>.<br>
@@ -355,7 +355,7 @@ ratio
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">fminpso [<a href="iOptim.html#fminpso">8</a>]</td>
+      <td style="vertical-align: top; font-weight: bold;">fminpso [<a href="Optimizers.html#fminpso">8</a>]</td>
       <td style="vertical-align: top; font-weight: bold;">Particle
 Swarm
 Optimization</td>
@@ -364,7 +364,7 @@ Optimization</td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">fminpowell</span>
-[<a href="iOptim.html#fminpowell">13</a>] </td>
+[<a href="Optimizers.html#fminpowell">13</a>] </td>
       <td style="vertical-align: top; font-weight: bold;">Powell with
 Coggins line search</td>
       <td style="vertical-align: top; font-weight: bold;"><span style="color: rgb(51, 204, 0);">99.21</span></td>
@@ -372,7 +372,7 @@ Coggins line search</td>
 </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">fminhooke [<a href="iOptim.html#fminhook">12</a>]</td>
+      <td style="vertical-align: top;">fminhooke [<a href="Optimizers.html#fminhook">12</a>]</td>
       <td style="vertical-align: top;">Hooke-Jeeves direct search</td>
       <td style="vertical-align: top;"><span style="color: rgb(51, 204, 0);">97.2<br>
 </span></td>
@@ -380,7 +380,7 @@ Coggins line search</td>
 </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; color: rgb(0, 0, 0);">fminimfil [<a href="iOptim.html#fminimfil">3</a>]</td>
+      <td style="vertical-align: top; color: rgb(0, 0, 0);">fminimfil [<a href="Optimizers.html#fminimfil">3</a>]</td>
       <td style="vertical-align: top;">Unconstrained Implicit filtering<br>
       </td>
       <td style="vertical-align: top; color: rgb(0, 0, 0);">93.5</td>
@@ -388,14 +388,14 @@ Coggins line search</td>
 </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; color: rgb(0, 0, 0);">fminralg [<a href="iOptim.html#fminimfil">4</a>]</td>
+      <td style="vertical-align: top; color: rgb(0, 0, 0);">fminralg [<a href="Optimizers.html#fminimfil">4</a>]</td>
       <td style="vertical-align: top;">Shor R-algorithm</td>
       <td style="vertical-align: top;">88.9</td>
       <td style="vertical-align: top; color: rgb(51, 204, 0);"><span style="font-weight: bold;">165</span><br>
 </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; color: rgb(0, 0, 0);">fminsimpsa [<a href="iOptim.html#fminsimpsa">1</a>] </td>
+      <td style="vertical-align: top; color: rgb(0, 0, 0);">fminsimpsa [<a href="Optimizers.html#fminsimpsa">1</a>] </td>
       <td style="vertical-align: top;">simplex/simulated annealing</td>
       <td style="vertical-align: top;"><span style="color: rgb(51, 255, 51);">97.1</span><br>
       </td>
@@ -471,7 +471,7 @@ ratio
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">fminpso [<a href="iOptim.html#fminpso">8</a>]</td>
+      <td style="vertical-align: top; font-weight: bold;">fminpso [<a href="Optimizers.html#fminpso">8</a>]</td>
       <td style="vertical-align: top; font-weight: bold;">Particle
 Swarm
 Optimization</td>
@@ -482,7 +482,7 @@ Optimization</td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">fminsimpsa</span>
-[<a href="iOptim.html#fminsimpsa">1</a>]</td>
+[<a href="Optimizers.html#fminsimpsa">1</a>]</td>
       <td style="vertical-align: top; font-weight: bold;">simplex/simulated
 annealing</td>
       <td style="vertical-align: top; font-weight: bold;"><span style="color: rgb(51, 204, 0);">84.8</span><br>
@@ -491,7 +491,7 @@ annealing</td>
 </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">fminsce [<a href="iOptim.html#fminsce">10</a>]</td>
+      <td style="vertical-align: top;">fminsce [<a href="Optimizers.html#fminsce">10</a>]</td>
       <td style="vertical-align: top;">Shuffled Complex Evolution</td>
       <td style="vertical-align: top;">85.2<br>
 </td>
@@ -499,7 +499,7 @@ annealing</td>
 </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; color: rgb(0, 0, 0);">fmincmaes [<a href="iOptim.html#fmincmaes">9</a>]</td>
+      <td style="vertical-align: top; color: rgb(0, 0, 0);">fmincmaes [<a href="Optimizers.html#fmincmaes">9</a>]</td>
       <td style="vertical-align: top; color: rgb(0, 0, 0);">Evolution
 Strategy
 with Covariance Matrix Adaptation</td>
@@ -509,7 +509,7 @@ with Covariance Matrix Adaptation</td>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">fminimfil [<a href="iOptim.html#fminimfil">3</a>]</td>
+      <td style="vertical-align: top;">fminimfil [<a href="Optimizers.html#fminimfil">3</a>]</td>
       <td style="vertical-align: top;">Unconstrained Implicit filtering</td>
       <td style="vertical-align: top;"><span style="color: rgb(0, 0, 0);">56.8</span><br>
 </td>
@@ -517,7 +517,7 @@ with Covariance Matrix Adaptation</td>
 </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">fminhooke [<a href="iOptim.html#fminhook">12</a>] </td>
+      <td style="vertical-align: top;">fminhooke [<a href="Optimizers.html#fminhook">12</a>] </td>
       <td style="vertical-align: top;">Hooke-Jeeves direct
 search </td>
       <td style="vertical-align: top; font-weight: bold;"><span style="font-weight: normal;">56.3</span><br>
@@ -543,9 +543,9 @@ methods</span><span style="font-style: italic; font-weight: bold;"></span><span 
 <span style="font-weight: bold;"></span><br>
 </div>
 <h3><a class="mozTocH4" name="mozTocId610281"></a>List of optimizer
-implemented in iFit/iOptim</h3>
+implemented in iFit/Optimizers</h3>
 We have performed extended tests of all the optimizers that are given
-in the <span style="font-style: italic;">iOptim</span> sub-library.
+in the <span style="font-style: italic;">Optimizers</span> sub-library.
 For each optimizer, we have minimized a <a href="images/dim_2.png">set
 of functions</a>, which include sharp, broad, with local minima,
 etc... The function set has also been used when adding a Gaussian noise
@@ -595,7 +595,7 @@ methods</span> can be obtained from the command:<br>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminanneal [<a href="iOptim.html#fminanneal">18</a>]</p>
+      <p>fminanneal [<a href="Optimizers.html#fminanneal">18</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Simulated annealing</p>
@@ -615,7 +615,7 @@ methods</span> can be obtained from the command:<br>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p><span style="color: rgb(255, 0, 0);">fminbfgs</span> [<a href="iOptim.html#fminbfgs">19</a>]</p>
+      <p><span style="color: rgb(255, 0, 0);">fminbfgs</span> [<a href="Optimizers.html#fminbfgs">19</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Broyden-Fletcher-Goldfarb-Shanno</p>
@@ -635,7 +635,7 @@ methods</span> can be obtained from the command:<br>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fmincgtrust [<a href="iOptim.html#fmincgtrust">5</a>]</p>
+      <p>fmincgtrust [<a href="Optimizers.html#fmincgtrust">5</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Steihaug Newton-Conjugate-Gradient-Trust</p>
@@ -653,7 +653,7 @@ methods</span> can be obtained from the command:<br>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fmincmaes</span> [<a href="iOptim.html#fmincmaes">9</a>]</p>
+      <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fmincmaes</span> [<a href="Optimizers.html#fmincmaes">9</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Evolution Strategy with Covariance Matrix
@@ -673,7 +673,7 @@ Adaptation</p>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminga [<a href="iOptim.html#fminga">15</a>]</p>
+      <p>fminga [<a href="Optimizers.html#fminga">15</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Genetic Algorithm (real coding)</p>
@@ -693,7 +693,7 @@ Adaptation</p>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p><span style="color: rgb(255, 0, 0);">fmingradrand</span> [<a href="iOptim.html#fmingradrand">6</a>]</p>
+      <p><span style="color: rgb(255, 0, 0);">fmingradrand</span> [<a href="Optimizers.html#fmingradrand">6</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Random Gradient</p>
@@ -712,7 +712,7 @@ Adaptation</p>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminhooke [<a href="iOptim.html#fminhook">12</a>]</p>
+      <p>fminhooke [<a href="Optimizers.html#fminhook">12</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Hooke-Jeeves direct search</p>
@@ -730,7 +730,7 @@ Adaptation</p>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminimfil [<a href="iOptim.html#fminimfil">3</a>]</p>
+      <p>fminimfil [<a href="Optimizers.html#fminimfil">3</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Implicit filtering</p>
@@ -750,7 +750,7 @@ Adaptation</p>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminkalman [<a href="iOptim.html#fminkalman">20</a>]</p>
+      <p>fminkalman [<a href="Optimizers.html#fminkalman">20</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">unscented Kalman filter</p>
@@ -770,7 +770,7 @@ Adaptation</p>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminlm [<a href="iOptim.html#fminlm">7</a>]</p>
+      <p>fminlm [<a href="Optimizers.html#fminlm">7</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Levenberg-Maquardt</p>
@@ -790,7 +790,7 @@ Adaptation</p>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p><span style="color: rgb(255, 0, 0);">fminnewton</span> [<a href="iOptim.html#fminnewton">21</a>]</p>
+      <p><span style="color: rgb(255, 0, 0);">fminnewton</span> [<a href="Optimizers.html#fminnewton">21</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Newton gradient search</p>
@@ -809,7 +809,7 @@ Adaptation</p>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminpowell [<a href="iOptim.html#fminpowell">13</a>]</p>
+      <p>fminpowell [<a href="Optimizers.html#fminpowell">13</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Powell Search with Coggins</p>
@@ -842,7 +842,7 @@ with Coggins</td>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fminpso</span> [<a href="iOptim.html#fminpso">8</a>]</p>
+      <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fminpso</span> [<a href="Optimizers.html#fminpso">8</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Particle Swarm Optimization</p>
@@ -861,7 +861,7 @@ with Coggins</td>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminralg [<a href="iOptim.html#fminimfil">4</a>]</p>
+      <p>fminralg [<a href="Optimizers.html#fminimfil">4</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Shor r-algorithm</p>
@@ -879,7 +879,7 @@ with Coggins</td>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminrand [<a href="iOptim.html#fminrand">22</a>]</p>
+      <p>fminrand [<a href="Optimizers.html#fminrand">22</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">adaptive random search</p>
@@ -899,7 +899,7 @@ with Coggins</td>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fminsce</span> [<a href="iOptim.html#fminsce">10</a>]</p>
+      <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fminsce</span> [<a href="Optimizers.html#fminsce">10</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Shuffled Complex Evolution</p>
@@ -919,7 +919,7 @@ with Coggins</td>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p><span style="color: rgb(255, 0, 0);">fminsearchbnd</span> [<a href="iOptim.html#fminsearch">2</a>] (<span style="font-style: italic;">fminsearch)</span></p>
+      <p><span style="color: rgb(255, 0, 0);">fminsearchbnd</span> [<a href="Optimizers.html#fminsearch">2</a>] (<span style="font-style: italic;">fminsearch)</span></p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Nelder-Mead simplex (<span style="font-style: italic;">fminsearch</span>)<br>
@@ -939,7 +939,7 @@ with Coggins</td>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminsimplex [<a href="iOptim.html#fminsimplex">14</a>]</p>
+      <p>fminsimplex [<a href="Optimizers.html#fminsimplex">14</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Nelder-Mead simplex (alternate implementation
@@ -959,7 +959,7 @@ than <span style="font-style: italic;">fminsearch</span>)<br>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fminsimpsa</span> [<a href="iOptim.html#fminsimpsa">1</a>]</p>
+      <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fminsimpsa</span> [<a href="Optimizers.html#fminsimpsa">1</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">simplex/simulated annealing</p>
@@ -978,7 +978,7 @@ than <span style="font-style: italic;">fminsearch</span>)<br>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fminswarm</span> [<a href="iOptim.html#fminswarm">11</a>]</p>
+      <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fminswarm</span> [<a href="Optimizers.html#fminswarm">11</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Particule Swarm Optimizer (alternate
@@ -1000,7 +1000,7 @@ implementation than <span style="font-style: italic;">fminpso</span>)<br>
     </tr>
     <tr>
       <td style="text-align: left; color: rgb(0, 0, 0);" width="115">
-      <p>fminswarmhybrid [<a href="iOptim.html#fminswarm">11</a>]</p>
+      <p>fminswarmhybrid [<a href="Optimizers.html#fminswarm">11</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
       <p align="CENTER">Hybrid Particule Swarm Optimizer</p>
@@ -1022,7 +1022,7 @@ implementation than <span style="font-style: italic;">fminpso</span>)<br>
 </table>
 <br>
 <i>Table 2: Optimization
-methods in iFit/iOptim, with mean success ratio in the
+methods in iFit/Optimizers, with mean success ratio in the
 dimensionality range d=1-64. Bold values indicate recommended
 algorithms. Default parameters from Matlab implementations are used,
 and MaxFun=2500*d, MaxIter=250*d, TolFun=1e-4. </i><font style="color: rgb(51, 204, 0);" color="#009900"><i>Best</i></font><span style="color: rgb(51, 204, 0);">
@@ -1031,7 +1031,7 @@ highlighted in green</span>.</i>
 <span style="color: rgb(255, 0, 0);">Methods to avoid are in red</span>.<br>
 </p>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId882538"></a>Benchmarking Optimization methods</h3>
-Most of the optimizers given with <span style="font-style: italic;">iOptim</span>
+Most of the optimizers given with <span style="font-style: italic;">Optimizers</span>
 have been gathered from the open-source community. In a few cases, the
 same mathematical method has been implemented as a number of equivalent
 methods (swarm, simplex), but with different overall success ratios. This
@@ -1104,7 +1104,7 @@ simplex)<br>
 </div>
 </div>
 </div>
-<div style="text-align: center;"><a href="images/other.png"><img src="images/other.png" title="iOptim: Other methods" alt="iOptim: Other methods" style="border: 0px solid ; width: 400px; height: 299px;"></a><a href="images/other_rand.png"><img alt="Other methods for noisy problems" title="Other methods for noisy problems" src="images/other_rand.png" style="border: 0px solid ; width: 400px; height: 300px;"></a><br>
+<div style="text-align: center;"><a href="images/other.png"><img src="images/other.png" title="Optimizers: Other methods" alt="Optimizers: Other methods" style="border: 0px solid ; width: 400px; height: 299px;"></a><a href="images/other_rand.png"><img alt="Other methods for noisy problems" title="Other methods for noisy problems" src="images/other_rand.png" style="border: 0px solid ; width: 400px; height: 300px;"></a><br>
 <span style="font-style: italic;">Figure 4: Mean success ratio and solving
 time for other non-conventional methods, as a function of the
 number of parameters to optimize.<br>

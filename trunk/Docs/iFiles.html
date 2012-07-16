@@ -41,10 +41,10 @@
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
   
-  <title>iFit: iFiles sub-library (iLoad)</title>
+  <title>iFit: Loaders sub-library (iLoad)</title>
 
 </head><body>
-<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: iFiles import sub-library</h1>
+<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Loaders import sub-library</h1>
 <br>
 
 <ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId747249">iLoad the main file importer
@@ -63,7 +63,7 @@
 <br style="font-style: italic;">
 </div>
 
-The iFiles sub-library takes care to import a large set of file
+The Loaders sub-library takes care to import a large set of file
 formats, and return them as a structure. This structure can then be
 converted into an iData object.<br>
 
@@ -104,7 +104,7 @@ one after the other. A lower level of known formats is then added to
 the <span style="font-style: italic;">iLoad_ini </span>preferences, with more standard file formats (mainly
 those that Matlab knows <span style="font-style: italic;">de-facto</span>).<br>
 <br>
-A <a href="../iFiles/doc/uigetfiles.html">file selector</a>,
+A <a href="../Loaders/doc/uigetfiles.html">file selector</a>,
 which supports multiple file selection, may be used by
 issuing<br>
 
@@ -163,7 +163,7 @@ In this case, the anchor is searched in the imported data, and only the correspo
 
 
 <h3><a class="mozTocH3" name="mozTocId485865"></a>Supported data formats (default)</h3>
-The iFiles sub-library comes with a large number of predefined import
+The Loaders sub-library comes with a large number of predefined import
 filters. These are tested one after the other, based on an initial
 filter selection using the file name extension and optionally pattern
 (wods) recognition in file headers. <br>
@@ -582,7 +582,7 @@ unit <span class="mw-redirect">normal</span> and vertices (ordered by the right-
 
 In principle, any <span style="font-weight: bold;">text</span> based data format will be imported, whatever be
 the internal organization of the data and comments. The text is read
-and parsed by the <a href="../iFiles/doc/looktxt.html">looktxt</a>
+and parsed by the <a href="../Loaders/doc/looktxt.html">looktxt</a>
 tool, and all numerical blocks are named automatically from the
 character strings/comments that precede these blocks. The result is a
 single structure which holds a <span style="font-style: italic;">Data</span> and a <span style="font-style: italic;">Header</span> field, plus additional
@@ -611,15 +611,15 @@ The <span style="font-weight: bold;">class2str </span>function can more generall
 <h4><a class="mozTocH4" name="mozTocId56356"></a>Reading and Writing the iLoad configuration</h4>
 The full list of supported file formats supported by iLoad and iData can be obtained from command<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'formats'</span>);	          <span style="font-style: italic;">% display the list of supported formats</span><br>&gt;&gt; config = <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'load config'</span>); <span style="font-style: italic;">% retrieve the iLoad configuration and file loaders</span> (from cache)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'force load config'</span>);    <span style="font-style: italic;">% force re-read of the configuration file</span><br></pre>
-The configuration file <a href="../iFiles/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span> is stored by default in the <br>
-<pre style="margin-left: 40px;">[ <span style="color: rgb(51, 102, 255);">ifitpath</span> <span style="color: rgb(204, 51, 204);">'iFiles'</span> filesep <span style="color: rgb(204, 51, 204);">'iLoad_ini'</span> ]</pre>
+The configuration file <a href="../Loaders/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span> is stored by default in the <br>
+<pre style="margin-left: 40px;">[ <span style="color: rgb(51, 102, 255);">ifitpath</span> <span style="color: rgb(204, 51, 204);">'Loaders'</span> filesep <span style="color: rgb(204, 51, 204);">'iLoad_ini'</span> ]</pre>
 and a local copy (which overrides the default) is stored in<br>
 <pre style="margin-left: 40px; color: rgb(51, 102, 255);">prefdir</pre>
 when executing<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>, config);<br><span style="font-style: italic;">% Saved iLoad configuration into /home/farhi/.matlab/R2007a/iLoad.ini</span> <span style="color: rgb(255, 0, 0);">&lt;- this is prefdir</span><br></pre>
 
 This is where you may add your own customized format definitions. Deleting this file will revert to the default configuration.<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m'<span style="color: rgb(0, 0, 0);"> ]</span></span>);<br></pre>Last, the <span style="font-style: italic;">config.UseSystemDialogs</span> field of the <span style="font-style: italic;">iLoad</span> configuration can be set to<span style="color: rgb(204, 51, 204);"> 'yes' </span>to use the native Matlab/Java file selector, or to<span style="color: rgb(204, 51, 204);"> 'no' </span>to use<a href="../iFiles/doc/uigetfiles.html"> uigetfiles</a>.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m'<span style="color: rgb(0, 0, 0);"> ]</span></span>);<br></pre>Last, the <span style="font-style: italic;">config.UseSystemDialogs</span> field of the <span style="font-style: italic;">iLoad</span> configuration can be set to<span style="color: rgb(204, 51, 204);"> 'yes' </span>to use the native Matlab/Java file selector, or to<span style="color: rgb(204, 51, 204);"> 'no' </span>to use<a href="../Loaders/doc/uigetfiles.html"> uigetfiles</a>.<br>
 
 
 <h4><a class="mozTocH4" name="mozTocId968211"></a>iLoad configuration structure</h4>
@@ -640,7 +640,7 @@ arguments to the method. [optional]</li>
   </li>
 </ul>
 
-Let's details one of the <a href="../iFiles/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span> entry for INX files.<br>
+Let's details one of the <a href="../Loaders/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span> entry for INX files.<br>
 <br>
 <table style="text-align: left; width: 70%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
@@ -661,7 +661,7 @@ the importer is by mean of pattern search in the file header content
 is given in the <span style="font-weight: bold;">patterns</span> field (as a <span style="font-style: italic;">cellstr, </span>here {<span style="color: rgb(204, 51, 204);">'INX'</span>}). The <span style="font-weight: bold;">method</span>
 field is the name of the function to read the file. It takes as input a
 string, the file name, and should preferably return a structure or
-numerical array. In this example, the <a href="../iFiles/doc/looktxt.html">looktxt</a>
+numerical array. In this example, the <a href="../Loaders/doc/looktxt.html">looktxt</a>
  method is used with syntax<br>
 <pre style="margin-left: 40px;">struct = <span style="color: rgb(51, 102, 255);">looktxt</span>(filename)</pre>
 The <span style="font-weight: bold;">options</span> field provides
@@ -677,25 +677,25 @@ The structure obtained from the method is then converted into an <a href="iData.
 The post-process is a script that takes as input an <span style="font-style: italic;">iData</span> object, and
 returns a possibly modified object (or an array of objects). This is
 where Signal, Axes, Aliases and metadata are re-arranged in the object.
-The post-process scripts are store in the<span style="font-style: italic;"> iFiles/postprocess</span> directory, and use a '<span style="font-style: italic;">load_&lt;format&gt;</span>' function naming convention for clarity. When missing, the default Signal and axes definitions will be used.<br>
+The post-process scripts are store in the<span style="font-style: italic;"> Loaders/postprocess</span> directory, and use a '<span style="font-style: italic;">load_&lt;format&gt;</span>' function naming convention for clarity. When missing, the default Signal and axes definitions will be used.<br>
 <br>
-The last step required for storing a new data format is to add the format definition to the<span style="font-weight: bold;"> config.loaders</span> field in the <a href="../iFiles/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span> file. Once done, you may re-read the configuration file to update the list of known format<br>
+The last step required for storing a new data format is to add the format definition to the<span style="font-weight: bold;"> config.loaders</span> field in the <a href="../Loaders/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span> file. Once done, you may re-read the configuration file to update the list of known format<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'force load config'</span>); <span style="font-style: italic;">% force to re-read the configuration files</span></pre>
 
 <h4><a class="mozTocH4" name="mozTocId120998"></a>In short: procedure to add a new data format</h4>
 <ol>
   <li>Start by getting the documentation about the new data format you wish to implement. This gives the format <span style="font-weight: bold;">name</span> and the <span style="font-weight: bold;">extension</span>.<br>
   </li>
-  <li>Then write a function (locally or in <span style="color: rgb(51, 102, 255);">ifitpath/iFiles</span>)
+  <li>Then write a function (locally or in <span style="color: rgb(51, 102, 255);">ifitpath/Loaders</span>)
 that takes as input a filename and returns the file content as a
 structure. This is where you will open the file, access its guts, and
 return something (or empty/error if this fails). This is your <span style="font-weight: bold;">method</span>.<br>
   </li>
-  <li>Edit the <span style="font-style: italic;">iLoad_ini </span>file from <span style="color: rgb(51, 102, 255);">prefdir</span> or <span style="color: rgb(51, 102, 255);">ifitpath/iFiles</span>.</li>
+  <li>Edit the <span style="font-style: italic;">iLoad_ini </span>file from <span style="color: rgb(51, 102, 255);">prefdir</span> or <span style="color: rgb(51, 102, 255);">ifitpath/Loaders</span>.</li>
   <li>Create a new structure (which you may name as you wish) and set the name (description), method, and extension fields.</li>
   <li>Optionally define some <span style="font-weight: bold;">patterns</span> to search, to complement the extension.</li>
-  <li>Optionally write a post-process script and preferably place it in the <span style="color: rgb(51, 102, 255);">ifitpath/iFiles/postprocess</span>. </li>
-  <li>Add the new structure to the <span style="font-weight: bold;">config.loaders</span> list (cell) at the end of the <a href="../iFiles/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span>  file.</li>
+  <li>Optionally write a post-process script and preferably place it in the <span style="color: rgb(51, 102, 255);">ifitpath/Loaders/postprocess</span>. </li>
+  <li>Add the new structure to the <span style="font-weight: bold;">config.loaders</span> list (cell) at the end of the <a href="../Loaders/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span>  file.</li>
   <li>Save the file, and optionally re-read it with <span style="font-style: italic;">iLoad('force load config')</span>.</li>
   <li>Send me [farhi (at) ill.fr] the method/postprocess and structure information so that I can contribute your work to the package.<br>
   </li>
@@ -708,7 +708,7 @@ return something (or empty/error if this fails). This is your <span style="font-
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi - iFit/iFiles - </span><span style="font-style: italic;">
+Farhi - iFit/Loaders - </span><span style="font-style: italic;">
 $Date: 2012-03-21 22:12:34 $ $Revision: 1.28 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main
 iFit

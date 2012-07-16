@@ -101,7 +101,7 @@ function [pars_out,criteria,message,output] = fits(a, model, varargin)
 %         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue; plot(a,b)
 %
 % Version: $Revision: 1.47 $
-% See also iData, fminsearch, optimset, optimget, ifitmakefunc, iFuncs, iFunc/fits
+% See also iData, fminsearch, optimset, optimget, ifitmakefunc, Models, iFunc/fits
 
 % handle input parameters
 % ======================================================

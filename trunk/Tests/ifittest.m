@@ -2,7 +2,7 @@ function ratio=ifittest(tests_list)
 % success=ifittest(test) : performs a self-test procedure of the iFit/iData package, using
 %   the examples from the Documentation.
 %   A report of all test is displayed at the end, with a list of failures.
-%   Current test categories are: Fit iData iFiles Math Plot Save
+%   Current test categories are: Fit iData Loaders Math Plot Save
 %
 %  input:  test:     empty to perform all tests, or a cellstr of test names 
 %                    or a string to match a single or category of tests_list
@@ -28,9 +28,9 @@ all_tests_list = { ...
     'iData_2_loadarray', ...
     'iData_3_find', ...
     'iData_4_setalias', ...
-    'iFiles_1', ...
-    'iFiles_2', ...
-    'iFiles_3', ...
+    'Loaders_1', ...
+    'Loaders_2', ...
+    'Loaders_3', ...
     'Math_1_unary', ...
     'Math_2_binary', ...
     'Math_3_stats', ...
@@ -280,18 +280,18 @@ case 'iData_4_setalias'
   getaxis(a,'1');
   label(a,1);
   result = 'OK  load;setalias;getaxis;label';
-case 'iFiles_1'
+case 'Loaders_1'
   a = load(iData, [ ifitpath 'Data/ILL_IN6.dat' ]);
   config = iLoad('load config');
   result = 'OK  load; iLoad(''config'')';
-case 'iFiles_2'
+case 'Loaders_2'
   a = iData([ ifitpath 'Data' ]);
   if length(find(isempty(a))) > 3
     result = [ 'FAILED ' num2str(length(find(isempty(a)))-1) '/' num2str(length(a)) ];
   else
     result = 'OK  load';
   end
-case 'iFiles_3'
+case 'Loaders_3'
   a = iData(rand(10));
   a = iData(struct('a',1,'b','a string'));
   a = findobj(iData);

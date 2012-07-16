@@ -1,6 +1,6 @@
-function pars=iFuncs_private_guess(x, signal, parameter_names)
-% pars=iFuncs_private_guess(x, signal, parameter_names)
-%      iFuncs_private_guess({x y...}, signal, parameter_names)
+function pars=Models_private_guess(x, signal, parameter_names)
+% pars=Models_private_guess(x, signal, parameter_names)
+%      Models_private_guess({x y...}, signal, parameter_names)
 %   guess private function to compute an estimate of parameters
 %   given a signal and the model parameter names.
 %   The following parameters can be set:
@@ -46,7 +46,7 @@ function pars=iFuncs_private_guess(x, signal, parameter_names)
         signal1d=signal1d(:);     % signal along dimension (now 1D)
         zero_pars =find(~pars);   % will set those parameters which have not been set
         if isempty(x1d), x1d=1:length(signal1d); end
-        pars(zero_pars) = iFuncs_private_guess(x1d, signal1d, parameter_names(zero_pars));
+        pars(zero_pars) = Models_private_guess(x1d, signal1d, parameter_names(zero_pars));
       end
     else % case for empty signal: we use the axes to determine the parameters
       for dim=1:length(x)
@@ -58,7 +58,7 @@ function pars=iFuncs_private_guess(x, signal, parameter_names)
           end
         end
         zero_pars =find(~pars);  % will set those parameters which have not been set
-        pars(zero_pars) = iFuncs_private_guess(x1d, [], parameter_names(zero_pars));
+        pars(zero_pars) = Models_private_guess(x1d, [], parameter_names(zero_pars));
       end
     end
     return
@@ -66,7 +66,7 @@ function pars=iFuncs_private_guess(x, signal, parameter_names)
     if iscell(x) && length(x)==1, x=x{1}; end
   end
   if ~isempty(signal)
-    [sigma, position, amplitude, baseline] = iFuncs_private_findpeaks(signal, 1, 0);
+    [sigma, position, amplitude, baseline] = Models_private_findpeaks(signal, 1, 0);
     signal=signal(:);
     if isempty(sigma)
       sum_s = sum(signal); x1d=1:length(signal); x1d=x1d(:);
@@ -123,4 +123,4 @@ function pars=iFuncs_private_guess(x, signal, parameter_names)
       end
     end
   end
-end % iFuncs_private_guess
+end % Models_private_guess

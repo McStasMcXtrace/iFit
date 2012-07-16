@@ -115,10 +115,10 @@ if nargin == 1 && isempty(model)
     if nargout == 0
       fprintf(1, '\n%s\n', version(iData));
       
-      fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/iOptim');
+      fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/Optimizers');
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
-    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'iOptim' ]);
+    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'Optimizers' ]);
     for index=1:length(d)
       this = d(index);
       try
@@ -135,10 +135,10 @@ if nargin == 1 && isempty(model)
     end % for
     if nargout == 0
       fprintf(1, '\n');
-      fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', 'iFit/iFuncs');
+      fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', 'iFit/Models');
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
-    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'iFuncs' ]);
+    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'Models' ]);
     criteria = []; 
     for index=1:length(d)
       this = d(index);

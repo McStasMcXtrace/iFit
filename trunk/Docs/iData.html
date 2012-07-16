@@ -372,7 +372,7 @@ the
 target
 one.<br>
 <h5>Links to external resources</h5>
-In the case the link begins with <span style="color: rgb(204, 51, 204);">file://</span>, <span style="color: rgb(204, 51, 204);">ftp://</span>, <span style="color: rgb(204, 51, 204);">http://</span>, or <span style="color: rgb(204, 51, 204);">https://</span> the external resource is accessed when requesting the alias value, and its full content is retrieved as a structure using <a href="iFiles.html">iLoad</a>. The external link may optionally end with an anchor specification <span style="font-style: italic;">#keyword</span>, and the matching elements in the external file are then selected and returned.<br>
+In the case the link begins with <span style="color: rgb(204, 51, 204);">file://</span>, <span style="color: rgb(204, 51, 204);">ftp://</span>, <span style="color: rgb(204, 51, 204);">http://</span>, or <span style="color: rgb(204, 51, 204);">https://</span> the external resource is accessed when requesting the alias value, and its full content is retrieved as a structure using <a href="Loaders.html">iLoad</a>. The external link may optionally end with an anchor specification <span style="font-style: italic;">#keyword</span>, and the matching elements in the external file are then selected and returned.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>, <span style="color: rgb(204, 51, 204);">[ 'file://' <span style="color: rgb(51, 102, 255);">ifitpath</span> '/Data/sv1884.scn#Data' ]</span>) <br></pre>
 The file is accessed for each alias value request.<br>
 
@@ -593,7 +593,7 @@ The <span style="font-style: italic;">Signal</span> is attached to an <span styl
 uncertainty on a Signal value. The <span style="font-style: italic;">Error</span>
 bar is considered to be symmetric w.r.t. each <span style="font-style: italic;">Signal</span> value. This Error propagates
 along most <a href="Math.html">mathematical</a> operators and is also
-used for proper weighting of <a href="iOptim.html">optimization</a>
+used for proper weighting of <a href="Optimizers.html">optimization</a>
 methods when performing model <a href="Fit.html">fit</a>
 using e.g. a least-square criteria. No error bar mechanism is currently
 implemented for axes and aliases.<br>

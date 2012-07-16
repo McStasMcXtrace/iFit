@@ -1,4 +1,4 @@
-function [sigma, position, amplitude, baseline] = iFuncs_private_findpeaks(signal, dim, m)
+function [sigma, position, amplitude, baseline] = Models_private_findpeaks(signal, dim, m)
 % [half_width, center, amplitude, baseline] = findpeaks(s, dim, m) : find peak position and width of signal
 %
 %   findpeaks private function to compute an estimate of peak position and width along
@@ -53,7 +53,7 @@ function [sigma, position, amplitude, baseline] = iFuncs_private_findpeaks(signa
   position  = index;
   amplitude = signal(index);
   sigma     = sigma(index);
-end % iFuncs_private_findpeaks
+end % Models_private_findpeaks
 
 % ==============================================================================
 % inline functions: BaseLine, PeakWidth
