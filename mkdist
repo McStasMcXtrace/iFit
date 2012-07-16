@@ -49,7 +49,7 @@ find . -name .svn -exec rm -rf \{\} \; 2> /dev/null
 find . -name "*~" -exec rm -rf \{\} \; 2> /dev/null
 rm mkdist
 # we keep the MeX files as some users may not hace C compilers installed (e.g. Windows 64 bit)
-# rm iFiles/looktxt.mex*
+# rm Loaders/looktxt.mex*
 
 # Update version and date
 for file in README.txt @iData/version.m Docs/index.html Docs/Install.html

@@ -18,7 +18,7 @@ function signal=$FUN(p, $AXES, signal)
 % Reference: http://en.wikipedia.org/wiki/Gaussian_function
 % See also iData, ifitmakefunc, gauss, iData/fits
 
-% $DIMD function created by ifitmakefunc from template2d (iFit/iFuncs)
+% $DIMD function created by ifitmakefunc from template2d (iFit/Models)
 %   Please retain the function definition structure as defined below
 %   in most cases, just fill-in the information when HERE is indicated
 

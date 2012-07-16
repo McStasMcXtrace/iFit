@@ -20,7 +20,7 @@ load)
 from
 Matlab variables</a></li><li><a href="#mozTocId755882">Importing from Matlab
 Figures</a></li><li><a href="#mozTocId672193">How it works
-(looktxt, iLoad, iFiles)
+(looktxt, iLoad, Loaders)
 </a></li></ol>
 <br>
 <hr style="width: 100%; height: 2px;">
@@ -66,11 +66,11 @@ of files (given as a cell of strings {...})<br>
 </div>
 which return an array of iData objects.<br>
 <br>
-A <a href="../iFiles/doc/uigetfiles.html">file selector</a>,
+A <a href="../Loaders/doc/uigetfiles.html">file selector</a>,
 which supports multiple file selection, may be used by
 issuing<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">''</span>)<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData,<span style="color: rgb(204, 51, 204);">''</span>)<br></pre>
-The choice of the file selector can be done in the <span style="font-style: italic;">iLoad</span> configuration (refer to the <a href="iFiles.html#mozTocId56356">iFiles</a> page).<br>
+The choice of the file selector can be done in the <span style="font-style: italic;">iLoad</span> configuration (refer to the <a href="Loaders.html#mozTocId56356">Loaders</a> page).<br>
 <br>
 
 By default, an analysis of the file name extension and the file content will be done, and the best
@@ -158,13 +158,13 @@ In principle, any text based file is loaded transparently (see <a href="#mozTocI
 wrapper, but many formats are supported. In some case, additional axis
 definition specific to the format will be applied.<br>
 <br>
-The list of available methods is usually stored in the <span style="font-style: italic; color: rgb(204, 51, 204);">iFit/iFiles/iLoad_ini.m</span>
+The list of available methods is usually stored in the <span style="font-style: italic; color: rgb(204, 51, 204);">iFit/Loaders/iLoad_ini.m</span>
 file, <br>
 and can be obtained from the <span style="font-weight: bold; font-style: italic;">iLoad</span> function<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'formats'</span>);</pre>A local <span style="font-style: italic;">iLoad.ini</span>
 configuration file may be stored in the Matlab
 <span style="font-style: italic;">Preferences</span> directory, which
-then overrides the system default (refer to the <a href="iFiles.html#mozTocId56356">iLoad configuration</a> help page).<br>
+then overrides the system default (refer to the <a href="Loaders.html#mozTocId56356">iLoad configuration</a> help page).<br>
 The current format list is:<img style="width: 340px; height: 338px;" alt="iData load import method selector" title="iData load import method selector" src="images/iData_load_method_selector.png" align="right"><br>
 <ul>
   <li>any Data in text format<br>
@@ -225,7 +225,7 @@ The current format list is:<img style="width: 340px; height: 338px;" alt="iData 
 
 
 </ul>
-A detailed list of format descriptions can be found in the <a href="iFiles.html">iFiles</a> help pages, as well as the <a href="iFiles.html#mozTocId120998">procedure</a> to be used to define new data formats. Some of these formats are
+A detailed list of format descriptions can be found in the <a href="Loaders.html">Loaders</a> help pages, as well as the <a href="Loaders.html#mozTocId120998">procedure</a> to be used to define new data formats. Some of these formats are
 also available for <a href="Save.html">Saving</a> iData objects.<br>
 <br>
 <h3><a class="mozTocH3" name="mozTocId782211"></a>Example data files</h3>
@@ -340,9 +340,9 @@ giving a valid Handle Graphics Object to iData:<br>
 <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">figure</span>; <span style="color: rgb(51, 102, 255);">peaks</span>;<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(f);</pre>
 The handle can be a figure, a surface, an axis, a line, ...<br>
 <h3><a class="mozTocH3" name="mozTocId672193"></a>How it works
-(looktxt, iLoad, <a href="iFiles.html">iFiles</a>)<br>
+(looktxt, iLoad, <a href="Loaders.html">Loaders</a>)<br>
 </h3>
-The file names to import are sent to the <a href="iFiles.html">iFiles</a>/iLoad
+The file names to import are sent to the <a href="Loaders.html">Loaders</a>/iLoad
 routine,
 which
 scans
@@ -371,7 +371,7 @@ order
 to
 identify the proper importation method to use.<br>
 <br>
-The text files are processed with the <a href="../iFiles/doc/looktxt.html">looktxt</a> parser (refer to <a href="http://looktxt.sourceforge.net">http://looktxt.sourceforge.net</a>)
+The text files are processed with the <a href="../Loaders/doc/looktxt.html">looktxt</a> parser (refer to <a href="http://looktxt.sourceforge.net">http://looktxt.sourceforge.net</a>)
 and
 translated
 into
@@ -412,15 +412,15 @@ numerical blocks (in text files).<br>
 <br>
 The structures are then converted into <a href="iData.html">iData</a>
 objects, and optionally some data format specific post-processing
-scripts are applied, as described in <span style="font-style: italic;"><a href="iFiles.html#mozTocId120998">iFiles/iLoad_ini</a>.m</span>.
+scripts are applied, as described in <span style="font-style: italic;"><a href="Loaders.html#mozTocId120998">Loaders/iLoad_ini</a>.m</span>.
 When no Signal is defined, it is assigned to the largest numerical
 block found in the file. The default axes are set as matrix indexes.<br>
 <br>
-Refer to the <a href="iFiles.html">iFiles</a> documentation to learn
+Refer to the <a href="Loaders.html">Loaders</a> documentation to learn
 how to customize load methods and import filters.<br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">To get
-more help: </span><a href="iFiles.html">iFiles</a>, <a href="../iFiles/doc/looktxt.html">looktxt</a><br>
+more help: </span><a href="Loaders.html">Loaders</a>, <a href="../Loaders/doc/looktxt.html">looktxt</a><br>
 </div>
 <br>
 <hr style="width: 100%; height: 2px;">

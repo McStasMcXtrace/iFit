@@ -17,7 +17,7 @@ function f = ifitmakefunc(fun, descr, pars, expr, defPars, constraint)
 %       fun.Guess:       the default parameters, or 'automatic'
 %       fun.Expression:  the expression of the function value
 %       fun.Constraint:  the expression executed before the function evaluation
-%     to make the new function permanent, copy it into [ ifitpath '/iFuncs' ]
+%     to make the new function permanent, copy it into [ ifitpath '/Models' ]
 %     The list of all available function can be obtained with the 'fits(iData)' 
 %
 % WARNING: the 1D and 2D cases work fine, but higher dimensions (using z,t...) are NOT validated.

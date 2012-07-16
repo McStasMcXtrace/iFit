@@ -17,7 +17,7 @@ function str=class2str(this, data, options)
 %          
 % See also: mat2str, num2str, eval, sprintf
 %
-% Part of: iFiles utilities (ILL library)
+% Part of: Loaders utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.10 $
 
 if nargin == 1

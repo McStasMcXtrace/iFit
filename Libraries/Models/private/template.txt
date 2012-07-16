@@ -16,7 +16,7 @@ function signal=$FUN(p, $AXES, signal)
 % Version: $Revision: 1.6 $
 % See also iData, ifitmakefunc, iData/fits
 
-% $DIMD function created by ifitmakefunc from template (iFit/iFuncs)
+% $DIMD function created by ifitmakefunc from template (iFit/Models)
 %   Please retain the function definition structure as defined below
 %   in most cases, just fill-in the information when HERE is indicated
 
