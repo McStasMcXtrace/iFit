@@ -28,15 +28,15 @@ objects
       <li><a href="#mozTocId858815">The
 optimization
 library
-(iFit/iOptim)</a></li>
+(iFit/Optimizers)</a></li>
       <li><a href="#mozTocId526330">The fit
-functions/models (iFit/iFuncs)</a></li>
+functions/models (iFit/Models)</a></li>
       <li><a href="#mozTocId897464">The
 lower
 level
 import
 routines
-(iFit/iFiles) </a></li>
+(iFit/Loaders) </a></li>
       <li><a href="#mozTocId300912">The documentation
 (iFit/Docs)</a></li>
       <li><a href="#mozTocId338083">Example data files
@@ -84,7 +84,7 @@ The spirit of the library is to include a single object definition,
 with a set of methods that provide all the means to perform the
 usual data analysis procedures.<br>
 <br>
-<div style="text-align: center;"><span style="font-style: italic;">Main functionalities are:</span> [ <a href="iData.html">iData</a> <a href="Load.html">Load</a> <a href="Plot.html">Plot</a> <a href="Math.html">Math</a> <a href="Fit.html">Fit</a> <a href="Save.html">Save</a> <a href="iOptim.html">Optimization</a> <a href="iFuncs.html">Fit functions</a> ]<br>
+<div style="text-align: center;"><span style="font-style: italic;">Main functionalities are:</span> [ <a href="iData.html">iData</a> <a href="Load.html">Load</a> <a href="Plot.html">Plot</a> <a href="Math.html">Math</a> <a href="Fit.html">Fit</a> <a href="Save.html">Save</a> <a href="Optimizers.html">Optimization</a> <a href="Models.html">Fit functions</a> ]<br>
 
 </div>
 <h3><a class="mozTocH3" name="mozTocId318588"></a>Obtaining the package</h3>
@@ -152,7 +152,7 @@ objects (=-/* trigonometric projections integration re-binning...)</li>
 
     
   <li><a href="Fit.html">Fit</a> a parametrized model to the object
-Signal, which makes use of the <a href="iOptim.html">iOptim</a> and <a href="iFuncs.html">iFuncs</a> libraries.<br>
+Signal, which makes use of the <a href="Optimizers.html">Optimizers</a> and <a href="Models.html">Models</a> libraries.<br>
 
     </li>
 
@@ -175,20 +175,20 @@ available in the <a href="Methods.html">Methods</a> page.<br>
 <h4 style="margin-left: 40px;"><a class="mozTocH4" name="mozTocId858815"></a>The
 optimization
 library
-(iFit/<a href="iOptim.html">iOptim</a>)</h4>
+(iFit/<a href="Optimizers.html">Optimizers</a>)</h4>
 
 
 
 <div style="margin-left: 40px;">A set of optimization routines has been
-gathered in the <a href="iOptim.html">iOptim</a> part of iFit. It
+gathered in the <a href="Optimizers.html">Optimizers</a> part of iFit. It
 enables to choose and compare how different optimization methods can
 solve a problem. This library is used transparently by the iData <a href="Fit.html">fits</a> method, but it may also be used independently.<br>
 <h4><a class="mozTocH4" name="mozTocId526330"></a>The fit
-functions/models (iFit/<a href="iFuncs.html">iFuncs</a>)</h4>
-A set of parametrized models is given in the <a href="iFuncs.html">iFuncs</a>
+functions/models (iFit/<a href="Models.html">Models</a>)</h4>
+A set of parametrized models is given in the <a href="Models.html">Models</a>
 part of iFit in order to fit some imported data and find best parameter
 sets which describe it. These functions may be used by the iData <a href="Fit.html">fits</a> and <span style="font-style: italic;">eval</span>
-method, and the lower level <a href="iOptim.html">iOptim</a> library.<br>
+method, and the lower level <a href="Optimizers.html">Optimizers</a> library.<br>
 </div>
 
 
@@ -198,13 +198,13 @@ lower
 level
 import
 routines
-(iFit/<a href="iFiles.html">iFiles</a>)<br>
+(iFit/<a href="Loaders.html">Loaders</a>)<br>
 </h4>
 
 
 
 <div style="margin-left: 40px;">The file import method used by iData is
-performed on a lower level by the <a href="iFiles.html">iFiles</a>
+performed on a lower level by the <a href="Loaders.html">Loaders</a>
 part of iFit. Its purpose is to import any text file, without knowing
 its free format. However, a number of post-import wrappers exist in
 order to reshape the imported data to match specific needs. These
@@ -232,16 +232,16 @@ contributions from others.</li>
 mathematical models and find the best parameter set</li>
   <li><a href="iData.html">iData</a>: the description of the
 fundamental object used in iFit, properties and how to handle it</li>
-  <li><a href="iFiles.html">iFiles</a>: how to import data files into
+  <li><a href="Loaders.html">Loaders</a>: how to import data files into
 structures, which can be converted into iData afterwards. This is a
 sub-library which you should only use if you need the data NOT to be an
 object (but you then loose most of the iData capabilities).</li>
-  <li><a href="iFuncs.html">iFuncs</a>: model functions that cab be use
+  <li><a href="Models.html">Models</a>: model functions that cab be use
 for data fitting. A function maker tool is also provided.<br>
   </li>
   <li><a href="index.html">index</a>: This iFit Welcome page.</li>
   <li><a href="Install.html">Install</a>: the installation page.</li>
-  <li><a href="iOptim.html">iOptim</a>: the low level optimization
+  <li><a href="Optimizers.html">Optimizers</a>: the low level optimization
 methods.</li>
   <li><a href="Load.html">Load</a>: how to load data set directly as
 iData objects. This is what you should use.</li>
@@ -280,7 +280,7 @@ transparently for end-user applications:<br>
   <li><a href="McStas.html">McStas</a>: a wrapper to run simulations or
 optimize <a href="http://www.mcstas.org">McStas</a> instrument
 parameters has been written.&nbsp;</li>
-  <li><a href="iFuncs.html#mozTocId210092">iFunc/Model Builder</a>: a
+  <li><a href="Models.html#mozTocId210092">iFunc/Model Builder</a>: a
 tool to create fit function/models.<br>
   </li>
 </ul>

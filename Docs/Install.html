@@ -32,7 +32,7 @@ Academic licenses (e.g. for Universities). <br>
 </div>
 <h4><a class="mozTocH4" name="mozTocId467589"></a>C compiler (optional)</h4>
 <div style="margin-left: 40px;">In principle, the pre-compiled MeX files are shipped with the package (for e.g. <span style="font-style: italic;">looktxt</span>), so that the software is ready to run. However, in the event of a re-compilation of MeX files, a <span style="font-style: italic;">C</span> compiler is often shipped with
-Matlab (and installed automatically). The <a href="http://ifit.mccode.org">iFit</a>/<a href="iFiles.html">iFiles</a> library may use it
+Matlab (and installed automatically). The <a href="http://ifit.mccode.org">iFit</a>/<a href="Loaders.html">Loaders</a> library may use it
 sporadically. <br>
 </div>
 
@@ -78,12 +78,12 @@ A list of fixed bugs and release history is recorded in the <a href="Changes.htm
 <h4><a class="mozTocH4" name="mozTocId359173"></a>Note for Windows 64bits users: recompiling looktxt MeX files<br>
 </h4>
 <h5><span style="font-weight: bold;">Windows 64 (XP, Vista, 7)</span></h5>
-The <a href="iFiles.html">iFiles</a> sub library makes use of a MeX file '<span style="font-style: italic;">looktxt.mexw64</span>'.
+The <a href="Loaders.html">Loaders</a> sub library makes use of a MeX file '<span style="font-style: italic;">looktxt.mexw64</span>'.
 A pre-compiled version for Windows systems is shipped with the package but this binary may
 fail with some Matlab releases. In that case, it is required to <a href="http://www.mathworks.com/support/solutions/en/data/1-ECUGQX/">install a compatible C compiler</a> (currently Microsoft Visual C++). The required downloads are, in order, <a href="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">C++ Express</a> then the <a href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&amp;displaylang=en">SDK</a> (for Matlab &gt;= 2010).<br>
 Older Microsoft Visual C++ 2008 [<a href="http://download.microsoft.com/download/8/b/5/8b5804ad-4990-40d0-a6aa-ce894cbbb3dc/VS2008ExpressENUX1397868.iso">ISO</a>] can also be used together with the SDK for Windows 7 + NET 3.5 [amd64 <a href="http://download.microsoft.com/download/2/E/9/2E911956-F90F-4BFB-8231-E292A7B6F287/GRMSDKX_EN_DVD.iso">ISO</a>]).
 Just use the default installtion settings, then use<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mex</span> -setup							<span style="font-style: italic;">% select compiler</span><br>[1] Microsoft Windows VS2008<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/location/to/iFit'</span>))			<span style="font-style: italic;">% install iFit</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span> ([ ifitpath <span style="color: rgb(204, 51, 204);">'iFiles/private/looktxt.mexw64'</span> ])	<span style="font-style: italic;">% delete old looktxt MeX</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span> <span style="color: rgb(204, 51, 204);">force</span><span style="font-style: italic;">							% reload importer methods and recompile looktxt<br></span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mex</span> -setup							<span style="font-style: italic;">% select compiler</span><br>[1] Microsoft Windows VS2008<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/location/to/iFit'</span>))			<span style="font-style: italic;">% install iFit</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span> ([ ifitpath <span style="color: rgb(204, 51, 204);">'Loaders/private/looktxt.mexw64'</span> ])	<span style="font-style: italic;">% delete old looktxt MeX</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span> <span style="color: rgb(204, 51, 204);">force</span><span style="font-style: italic;">							% reload importer methods and recompile looktxt<br></span></pre>
 
 An other solution, somewhat more complex to tune, is to use <span style="font-style: italic;">gcc</span> (from e.g. <a href="http://www.mingw.org/">MingW) </a>and the <a href="http://gnumex.sourceforge.net/">gnumex</a> tool. The <a href="http://www.bloodshed.net/devcpp.html">Dev-Cpp</a> compiler (which includes gcc) may also be used.<br>
 <br>
@@ -97,7 +97,7 @@ All <span style="font-weight: bold;">other platforms</span> provide a valid C co
   <li>gcc for Linux systems (comes with the gcc package)</li>
   <li>gcc for MacOSX (need to install Xcode/developper tools, including gcc)</li>
 </ul>
-In order to<span style="font-weight: bold;"> force the recompilation of looktxt</span> MeX, <span style="color: rgb(255, 0, 0);">remove</span> the <span style="font-style: italic;">iFit/iFiles/private/looktxt.mex*</span> files, and launch<br>
+In order to<span style="font-weight: bold;"> force the recompilation of looktxt</span> MeX, <span style="color: rgb(255, 0, 0);">remove</span> the <span style="font-style: italic;">iFit/Loaders/private/looktxt.mex*</span> files, and launch<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span><span style="color: rgb(204, 51, 204);"> force</span></pre>
 from the Matlab prompt. The C compiler to use may have to be specified with the command '<span style="font-style: italic;">&gt;&gt; mex -setup</span>'.<br>
 Send me the new looktxt MeX file version in a tar.gz archive, so that I update/add it to the distribution.<br>

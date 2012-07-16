@@ -43,9 +43,9 @@ function [data, format] = iLoad(filename, loader, varargin)
 % example: iLoad; iLoad('file'); iLoad('http://path/name'); iLoad('file.zip')
 %          iLoad('file#anchor');
 %
-% See also: importdata, load, iLoad_ini, iFiles
+% See also: importdata, load, iLoad_ini, Loaders
 %
-% Part of: iFiles utilities (ILL library)
+% Part of: Loaders utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
 % Version: $Revision: 1.68 $
 
@@ -70,7 +70,7 @@ if any(strcmp(loader, {'load config','config'}))
   % check for availability of looktxt as MeX file, and trigger compilation if needed.
   if exist('looktxt') ~= 3 && ~isdeployed
     p = pwd;
-    cd (fullfile(ifitpath,'iFiles','private'))
+    cd (fullfile(ifitpath,'Loaders','private'))
     try
       mex -O cbf_uncompress.c
       mex -O looktxt.c

@@ -804,7 +804,7 @@ summation and the combination will be detailed there.<br>
 <h4><a class="mozTocH4" name="mozTocId121035"></a>Convolution/correlation</h4>
 The convolution operator uses an FFT method to compute the convolution
 of one iData with anything else. In the background it uses the <span style="font-weight: bold; font-style: italic;">fconv</span> and <span style="font-weight: bold; font-style: italic;">fconvn</span> function
-(see <a href="iFuncs.html#mozTocId937554">iFuncs</a>), which can be
+(see <a href="Models.html#mozTocId937554">Models</a>), which can be
 called directly when building fit functions.<br>
 <br>
 The convolution operator can be given additional options in order to
@@ -828,7 +828,7 @@ binning is to use:<br>
 if the axes of <span style="font-style: italic;">'b'</span> match the
 ones from <span style="font-style: italic;">'a'</span> in range
 (overlap). <br>
-An other example of fit function with convolution is detailed in the <a href="iFuncs.html#mozTocId937554">iFuncs</a> help page.<br>
+An other example of fit function with convolution is detailed in the <a href="Models.html#mozTocId937554">Models</a> help page.<br>
 <br>
 Similarly, the <span style="font-weight: bold;">xcorr</span> operator
 computes the correlation of two signals. The auto-correlation is simply
@@ -928,7 +928,7 @@ shown above, which only provides one Gaussian estimate, the <span style="font-we
 peaks as necessary, and is very fast. It also works with iData object
 arrays. This method is also used as a basis to determine some starting
 parameters for most fit functions (see the <a href="Fit.html">Fitting</a>
-and the <a href="iOptim.html">iOptim</a> pages).<br>
+and the <a href="Optimizers.html">Optimizers</a> pages).<br>
 <br>
 In the case where a better peak estimate is required, or any other
 advanced model parameter determination, the <a href="Fit.html"><span style="font-weight: bold;">fits</span></a> method can be used. This

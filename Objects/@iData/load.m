@@ -45,7 +45,7 @@ function out = load(a, varargin)
 %         load(iData, 'http://file.gz#Data')
 %
 % Version: $Revision: 1.40 $
-% See also: iLoad, save, iData/saveas, iFiles
+% See also: iLoad, save, iData/saveas, Loaders
 
 % calls private/iLoad
 % iLoad returns nearly an iData structure.

@@ -14,7 +14,7 @@ function s=str2struct(string)
 %          
 % See also: mat2str, num2str, eval, sprintf, class2str
 %
-% Part of: iFiles utilities (ILL library)
+% Part of: Loaders utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. $Revision: 1.5 $
 
 s={};
