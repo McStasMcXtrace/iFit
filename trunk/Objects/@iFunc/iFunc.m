@@ -3,7 +3,7 @@ function a = iFunc(varargin)
 %
 % Any Fit Model function can be created from a mathematical expression, a
 % structure, a function handle or an other object.
-
+%
 % The model can store the following information members:
 %   Expression:       The expression for the function (string) or function handle
 %                       signal=Expression(p, x,y, ...)
@@ -195,7 +195,7 @@ function a = iFunc_private_check(a)
   const = n_const;
   
   if ischar(a.Parameters)
-    pars              = textscan(a.Parameters, '%s','Delimiter',' ;,''{}');
+    pars              = strread(a.Parameters, '%s','delimiter',' ;,''"{}'); % is a cellstr
   elseif isstruct(a.Parameters)
     pars              = fieldnames(pars);
   elseif iscellstr(a.Parameters)

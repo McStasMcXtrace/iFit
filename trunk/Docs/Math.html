@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
 
@@ -98,7 +98,7 @@ In the cases where the Error can not be determined analytically, and approximati
 <br>
 <span style="color: rgb(255, 0, 0);">Warning:</span> all the operators work on<span style="font-style: italic;"></span> the <span style="font-style: italic;">Signal/Monitor</span> and <span style="font-style: italic;">Error/Monitor</span>.<br>
 <br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Operator</td>
@@ -572,7 +572,7 @@ When not defined the <span style="font-style: italic;">Monitor</span>
 is set to 1, and the <span style="font-style: italic;">Error</span> is
 set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
 <br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Operator<br>
@@ -676,7 +676,9 @@ independently (see <a href="#mozTocId97186">below</a>). Event lists objects are 
       </td>
       <td style="vertical-align: top;">m1<sup>m2</sup><br>
       </td>
-      <td style="vertical-align: top;">exponentiation. When object orientations are complementary (orthogonal), the final object is built with dimensionality expansion.<br>
+      <td style="vertical-align: top;">exponentiation. When object 
+orientations are complementary (orthogonal), the final object is built 
+with dimensionality expansion.<br>
       </td>
     </tr>
     <tr>
@@ -811,15 +813,18 @@ The convolution operator can be given additional options in order to
 control the accuracy and the size of the returned object<br>
 <pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b);	<span style="font-style: italic;">	% returned convoluted object with size which is size(a)+size(b)+1</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'same'</span>);<span style="font-style: italic;">	% returned convoluted object </span><span style="font-style: italic;">with</span><span style="font-style: italic;"> size which is size(a)<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'valid'</span>);<span style="font-style: italic;">	% returned convoluted object </span><span style="font-style: italic;">with</span><span style="font-style: italic;"> size which is size(a)</span>-size(b)+1<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'pad'</span>);<span style="font-style: italic;">	% pads 'a' with starting/ending values to minimize border effects<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'center'</span>);<span style="font-style: italic;">	% centers 'b' so that convolution does not shift 'a' axes<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'norm'</span>);<span style="font-style: italic;">	% normalizes</span><span style="font-style: italic;"> 'b' so that convolution does not change 'a' integral<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'background'</span>);<span style="font-style: italic;">	% subtracts</span><span style="font-style: italic;"> minimal value in 'b' so that convolution does not change 'a' integra</span>l<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'deconv'</span>);	<span style="font-style: italic;">% deconvolution, but very sensitive to noise (use with caution)</span><br></pre>
 <a href="images/iData_conv.png"><img alt="iData/convolution" title="iData/convolution" src="images/iData_conv.png" style="border: 0px solid ; width: 200px; height: 272px;" align="right"></a>When
-the an object has to be convoluted with a response function (<span style="font-style: italic;">e.g.</span> instrument resolution
+the 1st object has to be convoluted with a response function (<span style="font-style: italic;">e.g.</span> instrument resolution
 function), the usual options to use should be:<br>
-<pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'same pad background center norm'</span>);<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">convn</span>(a,b);	<span style="font-style: italic;">% same as above</span> in a shorter call<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'same pad background center norm'</span>);<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">convn</span>(a,b);	<span style="font-style: italic;">% same as above in a shorter call</span><br></pre>
 To perform an auto-convolution, just use:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">convn</span>(a,a);</pre>
+When the second argument 'b' is given as a scalar, a Gaussian with that width is built.<br>
+<pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">convn</span>(a, 3)	<span style="font-style: italic;">% convolution of an iData with a normalized Gaussian of width 3</span></pre>
+
 This is very useful when a measurement has to be corrected with the
 response of the probe (instrument). In this case, a fit of the data may
 be carried out as:<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">global</span> b;	<span style="font-style: italic;">% holds the convolution function as a single vector/matrix or iData object</span><br>&gt;&gt; h = <span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);"></span></span></span><span style="color: rgb(204, 51, 204);">'<span style="color: rgb(51, 102, 255);">fconvn</span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);"></span>(</span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">gauss</span>(p(1:4),x), <span style="color: rgb(51, 102, 255);">double</span>(b))<span style="color: rgb(51, 102, 255);"></span>'<span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);"></span>,<span style="color: rgb(204, 51, 204);">'global b'</span>); <span style="font-style: italic;">% creates a fit function with convolution</span><br></span></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">fits</span>(a, h);</pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">global</span> b;	<span style="font-style: italic;">		% holds the convolution function as a single vector/matrix or iData object</span><br>&gt;&gt; h = <span style="color: rgb(51, 102, 255);">convn(</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);"></span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">gauss, <span style="color: rgb(204, 51, 204);">'</span></span><span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">double(b)'</span>);	</span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">% creates a fit function with convolution</span></span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(0, 0, 0);"></span><br><span style="color: rgb(0, 0, 0);">&gt;&gt; h.Constraint=<span style="color: rgb(0, 0, 0);"> </span><span style="color: rgb(204, 51, 204);">'global b'</span>; <span style="font-style: italic;">	% declares b as an external global variable</span><br></span></span>&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fits</span>(a, h);</pre>
 where the vector/matrix<span style="font-style: italic;"> 'b'</span>
 holds the response function (filter) <span style="font-style: italic;">with
 the same axis binning</span> as the object <span style="font-style: italic;">'a'</span>. A way to force the right
@@ -833,8 +838,8 @@ An other example of fit function with convolution is detailed in the <a href="Mo
 Similarly, the <span style="font-weight: bold;">xcorr</span> operator
 computes the correlation of two signals. The auto-correlation is simply
 <span style="font-style: italic;">xcorr(a)</span>.<br>
-<br>
-The accuracy of the <span style="font-style: italic;">conv</span> and <span style="font-style: italic;">xcorr</span>
+<br><span style="color: rgb(255, 0, 0);">
+Warning: </span>The accuracy of the <span style="font-style: italic;">conv</span> and <span style="font-style: italic;">xcorr</span>
 operators depends on the axis sampling. A coarse axis sampling (that is
 a reduced number of points under a peak, e.g. less than 5) must be avoided. A rebinning
 of the objects using e.g. <span style="font-style: italic;">interp(objects, 5)</span> may solve such issue.<br>
@@ -1220,4 +1225,5 @@ $Date: 2012-07-08 17:34:47 $ $Revision: 1.32 $
 back
 to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
+
 </body></html>

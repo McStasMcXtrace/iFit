@@ -222,7 +222,6 @@ case 'Fit_9_ifitmakefunc'
   sinexp = ifitmakefunc('sinexp','Exponentially decreasing sine', ...
     'Amplitude Centre Period Width Background', ...
     'p(1)*sin((x-p(2))/p(3)).*exp(-x/p(4))+p(5)','automatic');
-  which('sinexp');
   % perform the fit
   [p1, e, m, o]=fits(a,sinexp,[1.15 0.4 0.15 1.7 0.2],'fminralg');
   plot(a, o.modelValue);
