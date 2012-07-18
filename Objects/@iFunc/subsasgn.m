@@ -84,10 +84,13 @@ else
       index = find(strcmpi(fieldname, fieldnames(b)));
       if ~isempty(index) % structure/class def fields: b.field
         b.(f{index}) = val;
-        if strcmp(f{index},{'Expression','Constraint'})
-          % check object when modifying key members
+        if any(strcmp(f{index},{'Expression','Constraint'}))
+          % must triger new Eval string
           b.Eval='';
-          b=iFunc(b);
+        end
+        if any(strcmp(f{index},{'Expression'}))
+        % check object when modifying key member
+          b = iFunc(b);
         end
       else
         error([ mfilename ': can not set iFunc object Property ''' fieldname ''' in iFunc model ' b.Tag '.' ]);

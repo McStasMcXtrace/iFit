@@ -266,10 +266,18 @@ if isFa && isFb
   end
 
 elseif isFa && ischar(b)
-  c.Expression = [ c.Expression sprintf('\nsignal=%s(signal,%s%s);', op, b, v) ];
+  if strcmp(op, 'plus') && ~isempty(find(b == '=' | b == ';'))
+    c.Expression = [ c.Expression sprintf('\n%s%s;', b, v) ];
+  else
+    c.Expression = [ c.Expression sprintf('\nsignal=%s(signal,%s%s);', op, b, v) ];
+  end
   c.Name       = sprintf('%s(%s,%s)', op, c.Name, b(1:min(10,length(b))));
 elseif isFb && ischar(a)
-  c.Expression = [ c.Expression sprintf('\nsignal=%s(%s,signal%s);', op, a, v) ];
+  if strcmp(op, 'plus') && ~isempty(find(a == '=' | a == ';'))
+    c.Expression = [ sprintf('%s%s;\n', a, v) c.Expression  ];
+  else
+    c.Expression = [ c.Expression sprintf('\nsignal=%s(%s,signal%s);', op, a, v) ];
+  end
   c.Name       = sprintf('%s(%s,%s)', op, a(1:min(10,length(a))), c.Name);
 elseif   isFa && isnumeric(b) && isnumeric(b)
   b = mat2str(double(b)); 

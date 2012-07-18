@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
 
@@ -26,7 +26,9 @@ Figures</a></li><li><a href="#mozTocId672193">How it works
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">iData, load, </span><a href="Methods.html">methods</a>
 <div style="text-align: left;"><br>
-In this document we present how to import data as <a href="iData.html">iData</a> objects from files, variables and figures.<br>
+In this document we present how to import data as <a href="iData.html">iData</a>
+ objects from files, variables and figures. Extensive help about how to 
+create iData objects and supported file formats can be found in the <a href="Load.html">Load</a> page.<br>
 </div>
 </div>
 <h3><a class="mozTocH3" name="mozTocId5377"></a>Importing data from a
@@ -45,7 +47,7 @@ points to the iFit library location:<br>
 </div>
 These commands result in the following output, which produce an iData
 object:<br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top;">
@@ -64,17 +66,17 @@ of files (given as a cell of strings {...})<br>
 <pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>( <span style="color: rgb(204, 51, 204);">[ ifitpath '</span><span style="color: rgb(204, 51, 204);">Data' ]</span>);</pre>
 <pre>&gt;&gt; a = i<span style="color: rgb(51, 102, 255);">Data</span>(<span style="font-weight: bold;">{</span> <span style="color: rgb(204, 51, 204);">[ ifitpath </span><span style="color: rgb(204, 51, 204);">'Data/*.dat' ]</span> ,...<br><span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">[ ifitpath </span><span style="color: rgb(204, 51, 204);">'</span><span style="color: rgb(204, 51, 204);">Data/sv1850.scn' ]</span>,...<br><span style="color: rgb(204, 51, 204);">[ ifitpath </span><span style="color: rgb(204, 51, 204);">'</span><span style="color: rgb(204, 51, 204);">Data/sv1884.scn'</span> ],...<br><span style="color: rgb(204, 51, 204);">[ ifitpath </span><span style="color: rgb(204, 51, 204);">'</span><span style="color: rgb(204, 51, 204);">Data/sv4700.scn'</span> ] <span style="font-weight: bold;">}</span>);<br></pre>
 </div>
-which return an array of iData objects.<br>
+which returns an array of iData objects.<br>
 <br>
 A <a href="../Loaders/doc/uigetfiles.html">file selector</a>,
 which supports multiple file selection, may be used by
 issuing<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">''</span>)<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData,<span style="color: rgb(204, 51, 204);">''</span>)<br></pre>
-The choice of the file selector can be done in the <span style="font-style: italic;">iLoad</span> configuration (refer to the <a href="Loaders.html#mozTocId56356">Loaders</a> page).<br>
+The choice of the file selector style can be done in the <span style="font-style: italic;">iLoad</span> configuration (refer to the <a href="Loaders.html#mozTocId56356">Loaders</a> page).<br>
 <br>
 
 By default, an analysis of the file name extension and the file content will be done, and the best
-importer method will be used. It is possible to select a prefered method with
+importer method will be used. It is possible to select a preferred method with
 e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">'filename'</span>, <span style="color: rgb(204, 51, 204);">'HDF5'</span>)</pre>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">'filename'</span>, <span style="color: rgb(204, 51, 204);">'gui'</span>);&nbsp; % a method selector pops-up.</pre>
@@ -114,6 +116,7 @@ The file name may end with an anchor reference using the '#' character, such as 
 In this case, the anchor is searched in the imported data, and only the
 corresponding matching elements are returned. The resulting objects are
 thus smaller in size.<br>
+ 
 <h4><a class="mozTocH4" name="mozTocId889584"></a>Setting Signal and Axes when they are not set properly</h4>
 
 There may be cases for which the reading of the file is done properly,

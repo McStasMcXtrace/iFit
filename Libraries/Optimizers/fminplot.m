@@ -73,6 +73,13 @@ function stop = fminplot(pars, optimValues, state)
       fvalHistory = [ fvalHistory ; optimValues.fval ];
     end
     
+    % determine best guess up to now
+    [dummy, best] = sort(fvalHistory); % sort in ascending order
+    best= best(1);
+    
+    % store userData in case we need to access the optimization history from the plot
+    set(gcf,'UserData', struct('parsHistory',parsHistory,'fvalHistory',fvalHistory,'best',best, 'bestPars',parsHistory(best,:)));
+    
     if length(fvalHistory) > 10
       if ~isempty(updatePlot)
         if etime(clock, updatePlot) < 2, return; end % plot every 2 secs
@@ -106,10 +113,6 @@ function stop = fminplot(pars, optimValues, state)
   set(h,'MenuBar','figure', 'ToolBar', 'figure');
   d = findall(0, 'Tag', 'fminplot:stop');
   set(d, 'String','STOP','BackgroundColor','red');
-  
-  % determine best guess up to now
-  [dummy, best] = sort(fvalHistory); % sort in ascending order
-  best= best(1);
   
   % handle first subplot: criteria
   subplot(1,2,1); % this subplot shows the criteria
@@ -179,8 +182,7 @@ function stop = fminplot(pars, optimValues, state)
   
   set(g(end),'MarkerFaceColor','r');
   set(g(end-1),'MarkerFaceColor','g');
-  % store userData in case we need to access the optimization history from the plot
-  set(gcf,'UserData', struct('parsHistory',parsHistory,'fvalHistory',fvalHistory,'best',best, 'bestPars',parsHistory(best,:)));
+
   % resize axis frame to display title properly
   p=get(gca,'Position'); p(4)=0.75; set(gca,'Position',p);
   title([ '#' num2str(length(fvalHistory)) ' f=' num2str(optimValues.fval,4) ' [close to abort]' sprintf('\n') optimValues.procedure  ]);

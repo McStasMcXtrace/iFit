@@ -1,4 +1,4 @@
-function [signal, ax, name] = feval(a, p, varargin)
+function [signal, ax, name] = feval(model, p, varargin)
 % [signal, axes] = feval(model, parameters, axes, ...) evaluate a function
 %
 %   @iFunc/feval applies the function 'model' using the specified parameters and axes
@@ -25,17 +25,17 @@ function [signal, ax, name] = feval(a, p, varargin)
 
 % handle input iFunc arrays
 
-if numel(a) > 1
+if numel(model) > 1
   signal = {}; ax={}; name={};
-  for index=1:numel(a)
-    [signal{end+1}, ax{end+1}, name{end+1}] = feval(a(index), p, varargin{:});
+  for index=1:numel(model)
+    [signal{end+1}, ax{end+1}, name{end+1}] = feval(model(index), p, varargin{:});
   end
   if numel(signal) == 1, 
     signal=signal{1}; ax=ax{1};
   end
-  signal = reshape(signal, size(a));
-  ax     = reshape(ax, size(a));
-  name   = reshape(name, size(a));
+  signal = reshape(signal, size(model));
+  ax     = reshape(ax, size(model));
+  name   = reshape(name, size(model));
   return
 end
 
@@ -50,10 +50,10 @@ if isa(p, 'iData')
   p = '';
 end
 
-if iscell(p) && ~isempty(p) % as a cell (iterative function evaluation)
+if iscell(p) && ~isempty(p) % as model cell (iterative function evaluation)
   signal = {}; ax={}; name={};
-  for index=1:numel(a)
-    [signal{end+1}, ax{end+1}, name{end+1}] = feval(a, p{index}, varargin{:});
+  for index=1:numel(model)
+    [signal{end+1}, ax{end+1}, name{end+1}] = feval(model, p{index}, varargin{:});
   end
   if numel(signal) == 1, 
     signal=signal{1}; ax=ax{1}; name=name{1};
@@ -62,23 +62,23 @@ if iscell(p) && ~isempty(p) % as a cell (iterative function evaluation)
 end
 
 if strcmp(p, 'plot')
-  signal=plot(a);
+  signal=plot(model);
   return
 elseif strcmp(p, 'identify')
-  signal=a;
+  signal=model;
   return
 end
 
 % handle varargin ==============================================================
-% handle case where varargin contains itself a cell as 1st arg for axes and
+% handle case where varargin contains itself model cell as 1st arg for axes and
 % Signal
 if ~isempty(varargin) 
   this = varargin{1};
   if iscell(this)
     Axes = this;
-    if length(Axes) > a.Dimension
-      Signal = Axes{a.Dimension+1};
-      Axes   = Axes(1:a.Dimension);
+    if length(Axes) > model.Dimension
+      Signal = Axes{model.Dimension+1};
+      Axes   = Axes(1:model.Dimension);
     end
     if ~isempty(Signal), Axes{end+1} = Signal; end
     varargin=[ Axes{:} varargin(2:end) ];
@@ -104,28 +104,28 @@ if ~isempty(varargin)
   clear this Axes Signal
 end
 
-ax=[]; name=a.Name;
+ax=[]; name=model.Name;
 
 % guess parameters ========================================================
 % when p=[]='guess' we guess them all
 if isempty(p)
-  p = NaN*ones(size(a.Parameters));
+  p = NaN*ones(size(model.Parameters));
 end
 
 % when there are NaN values in parameter values, we replace them by guessed values
-if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmpi(p, 'guess')
+if (any(isnan(p)) && length(p) == length(model.Parameters)) || strcmpi(p, 'guess')
   % call private method to guess parameters from axes, signal and parameter names
   
   % args={x,y,z, ... signal}
-  args=cell(1,a.Dimension+1); args(1:end) = { [] };
-  args(1:min(length(varargin),a.Dimension+1)) = varargin(1:min(length(varargin),a.Dimension+1));
-  args_opt = varargin((a.Dimension+2):end);
+  args=cell(1,model.Dimension+1); args(1:end) = { [] };
+  args(1:min(length(varargin),model.Dimension+1)) = varargin(1:min(length(varargin),model.Dimension+1));
+  args_opt = varargin((model.Dimension+2):end);
   
   p0 = p; % save initial 'p' values
   
-  % all args are empty, we generate a fake 1D/2D axes/signal
-  if a.Dimension <= 2 && all(cellfun('isempty',args))
-    if a.Dimension == 1
+  % all args are empty, we generate model fake 1D/2D axes/signal
+  if model.Dimension <= 2 && all(cellfun('isempty',args))
+    if model.Dimension == 1
       args{1} = linspace(-5,5,50); 
       x=args{1}; p2 = [1 mean(x) std(x)/2 .1]; 
       args{2} = p2(1)*exp(-0.5*((x-p2(2))/p2(3)).^2)+((p2(2)-x)*p2(1)/p2(3)/100) + p2(4);
@@ -151,17 +151,18 @@ if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmpi(p, 'guess')
   % convert axes to nD arrays for operations to take place
   % check the axes and possibly use ndgrid to allow nD operations in the
   % Expression/Constraint
-  if a.Dimension > 1 && all(cellfun(@isvector, varargin(1:a.Dimension)))
-    [varargin{1:a.Dimension}] = ndgrid(varargin{1:a.Dimension});
+  if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension)))
+    [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
   end
   
   % automatic guessed parameter values -> signal
-  p1 = iFunc_private_guess(varargin, a.Parameters); % call private here -> auto guess
+  p1 = iFunc_private_guess(varargin, model.Parameters); % call private here -> auto guess
 
-  for j=find(isnan(p1))
-    if strfind(lower(a.Parameters{j}), 'width') | ...
-       strfind(lower(a.Parameters{j}), 'amplitude') | ...
-       strfind(lower(a.Parameters{j}), 'intensity')
+  % check for NaN guessed values and null amplitude
+  for j=find(isnan(p1) | p1 == 0)
+    if any([strfind(lower(model.Parameters{j}), 'width') ...
+       strfind(lower(model.Parameters{j}), 'amplitude') ...
+       strfind(lower(model.Parameters{j}), 'intensity')])
       p1(j) = abs(randn)/10;
     else
       p1(j) = 0;
@@ -169,29 +170,29 @@ if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmpi(p, 'guess')
   end
 
   % specific guessed values (if any) -> p2 override p1
-  if ~isempty(a.Guess) && ~all(cellfun('isempty',varargin))
+  if ~isempty(model.Guess) && ~all(cellfun('isempty',varargin))
     try
-      if isa(a.Guess, 'function_handle')
-        p2 = feval(a.Guess, varargin{:}); % returns a vector
-      elseif isnumeric(a.Guess)
-        p2 = a.Guess;
+      if isa(model.Guess, 'function_handle')
+        p2 = feval(model.Guess, varargin{:}); % returns model vector
+      elseif isnumeric(model.Guess)
+        p2 = model.Guess;
       else
         ax = 'xyztu';
-        for index=1:a.Dimension % allocate axes
+        for index=1:model.Dimension % allocate axes
           if index <= length(varargin)
             eval([ ax(index) '=varargin{' num2str(index) '};' ]);
           end
         end
-        if length(varargin) > a.Dimension && ~isempty(varargin{a.Dimension+1})
-          signal = varargin{a.Dimension+1};
+        if length(varargin) > model.Dimension && ~isempty(varargin{model.Dimension+1})
+          signal = varargin{model.Dimension+1};
         else
           signal = 1;
         end
         clear ax index
         try
-          p = eval(a.Guess);       % returns a vector
+          p = eval(model.Guess);       % returns model vector
         catch
-          eval(a.Guess);       % returns a vector and redefines 'p'
+          eval(model.Guess);       % returns model vector and redefines 'p'
         end
         p2 = p;
         p  = p0;             % restore initial value
@@ -201,8 +202,8 @@ if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmpi(p, 'guess')
       p1(index) = p2(index);
       clear p2
     catch
-      disp([ 'Error: Could not evaluate Guess in mode ' a.Name ' ' a.Tag ]);
-      disp(a.Guess);
+      disp([ 'Error: Could not evaluate Guess in mode ' model.Name ' ' model.Tag ]);
+      disp(model.Guess);
       disp('Axes and signal:');
       disp(varargin);
       lasterr
@@ -216,36 +217,36 @@ if (any(isnan(p)) && length(p) == length(a.Parameters)) || strcmpi(p, 'guess')
   if any(isnan(p)) && ~isempty(signal)
     index = find(isnan(p)); p(index) = signal(index);
   end
-  a.ParameterValues = p; % the guessed values
+  model.ParameterValues = p; % the guessed values
   
   if ~strcmpi(p0, 'guess')
     % return the signal and axes
-    [signal, ax, name] = feval(a, p, varargin{1:a.Dimension});
+    [signal, ax, name] = feval(model, p, varargin{1:model.Dimension});
   else
-    ax=0; name=a.Name;
+    ax=0; name=model.Name;
   end
   
   % Parameters are stored in the updated model
   if length(inputname(1))
-    assignin('caller',inputname(1),a); % update in original object
+    assignin('caller',inputname(1),model); % update in original object
   end
   return
 end
 
 % guess axes ==============================================================
 % complement axes if too few are given
-if length(varargin) < a.Dimension
+if length(varargin) < model.Dimension
   % not enough axes, but some may be given: we set them to 'empty' so that default axes are used further
-  for index=(length(varargin)+1):a.Dimension
+  for index=(length(varargin)+1):model.Dimension
     varargin{index} = [];
   end
 end
 
 % default return value...
 signal= [];
-parameter_names = lower(a.Parameters);
+parameter_names = lower(model.Parameters);
 % check axes and define missing ones
-for index=1:a.Dimension
+for index=1:model.Dimension
   % check for default axes to represent the model when parameters are given
   % test parameter names
   
@@ -286,48 +287,48 @@ end
 % convert axes to nD arrays for operations to take place
 % check the axes and possibly use ndgrid to allow nD operations in the
 % Expression/Constraint
-if a.Dimension > 1 && all(cellfun(@isvector, varargin(1:a.Dimension)))
-  [varargin{1:a.Dimension}] = ndgrid(varargin{1:a.Dimension});
+if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension)))
+  [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
 end
 
 % evaluate expression ==========================================================
 
 % Eval contains both the Constraint and the Expression
 % in case the evaluation is empty, we compute it (this should better have been done before)
-if isempty(a.Eval) 
-  a.Eval=char(a);
+if isempty(model.Eval) 
+  model.Eval=char(model);
 end
 
-% assign parameters and axes for the evaluation of the expression, in case this is a char
+% assign parameters and axes for the evaluation of the expression, in case this is model char
 % p already exists, we assign axes, re-assign varargin if needed
 ax = 'xyztu';
-for index=1:a.Dimension
+for index=1:model.Dimension
   eval([ ax(index) '=varargin{' num2str(index) '};' ]);
 end
 if nargout > 1
-  ax = varargin(1:a.Dimension);
+  ax = varargin(1:model.Dimension);
 else
   clear ax
 end
 
 % remove axes from varargin -> leaves additional optional arguments to the function
-varargin(1:a.Dimension) = []; 
+varargin(1:model.Dimension) = []; 
 if isempty(varargin)
   clear varargin
 end
 
 % evaluate now...
 try
-  e = cellstr(a.Eval);
+  e = cellstr(model.Eval);
   e = e(~strncmp('%', e, 1)); % remove comment lines
   eval(sprintf('%s\n', e{:}));
 catch
-  disp([ 'Error: Could not evaluate Expression in mode ' a.Name ' ' a.Tag ]);
-  disp(a)
-  a.Eval
+  disp([ 'Error: Could not evaluate Expression in mode ' model.Name ' ' model.Tag ]);
+  disp(model)
+  model.Eval
   lasterr
   error([ 'iFunc:' mfilename ], 'Failed model evaluation.');
 end
 p    = mat2str(p); if length(p) > 20, p=[ p(1:20) '...' ]; end
-name = [ a.Name '(' p ') ' ];
+name = [ model.Name '(' p ') ' ];
 

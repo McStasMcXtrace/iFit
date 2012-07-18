@@ -5,6 +5,8 @@ function c = conv(a,b, shape)
 %     A deconvolution mode is also possible.
 %     When used with a single scalar value, it is used as a width to build a 
 %       gaussian function.
+%     when one of the argument is a character string, it is used as-is in the 
+%     operator expression. 
 %
 % input:  a: object or array (iFunc or numeric)
 %         b: object or array (iFunc or numeric)
