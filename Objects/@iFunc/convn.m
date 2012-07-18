@@ -6,6 +6,8 @@ function c = convn(a,b)
 %       conv(a,b, 'same pad background center normalize')
 %     When used with a single scalar value, it is used as a width to build a 
 %       gaussian function.
+%     when one of the argument is a character string, it is used as-is in the 
+%     operator expression. 
 %
 % input:  a: object or array, signal (iFunc or numeric)
 %         b: object or array, filter (iFunc or numeric)

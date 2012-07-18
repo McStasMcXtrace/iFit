@@ -109,5 +109,8 @@ end
   % return value
   ret = char(ret);
 
-  
+  if nargout == 0 && ~isempty(inputname(1))
+    s.Eval = ret;
+    assignin('caller',inputname(1),s);
+  end
 

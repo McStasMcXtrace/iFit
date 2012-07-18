@@ -53,14 +53,19 @@ end
 
 % call the single plot method
 h = iFunc_plot(name, signal, ax);
-h = iFunc_plot_menu(h, a, name);
+if ~isempty(h)
+  h = iFunc_plot_menu(h, a, name);
+end
 
 % ------------------------------------------------------------------------------
 % simple plot of the model "name" signal(ax)
 function h=iFunc_plot(name, signal, ax)
 % this internal function plots a single model, 1D, 2D or 3D.
 
-if isvector(signal)
+if isempty(signal)
+  h = [];
+  return
+elseif isvector(signal)
   if isscalar(signal), signal = signal*ones(size(ax{1})); end
   h = plot(ax{1}, signal);
 elseif ndims(signal) == 2

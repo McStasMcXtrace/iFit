@@ -64,7 +64,7 @@ uncertainties and the fit quality</a></li>
 </ol>
 <br>
 <hr style="width: 100%; height: 2px;">
-<div style="text-align: center;">Commands we use in this page: iData/<span style="font-weight: bold; font-style: italic;">fits</span>, <span style="font-style: italic; font-weight: bold;">eval</span> <a href="Models.html">Models</a> models and <a href="Optimizers.html">Optimizers</a>
+<div style="text-align: center;">Commands we use in this page: iData/<span style="font-weight: bold; font-style: italic;">fits</span>, <a href="iFunc.html">iFunc</a>, <span style="font-style: italic; font-weight: bold;"></span><a href="Models.html">Models</a> and <a href="Optimizers.html">Optimizers</a>
 routines<br>
 </div>
 <br>
@@ -109,7 +109,7 @@ possible
 to
 chose explicitly
 the model function, and the starting parameter set with e.g.<br>
-<pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>);                     <span style="font-style: italic;">% specify model function to use: gauss, and use guessed parameters</span><br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(51, 102, 255);">@gauss</span>, [ 0.5 1 0.01 0 ]);    <span style="font-style: italic;">% specify the starting parameters for the model function</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>);                    <span style="font-style: italic;">% specify model function to use: gauss, and use guessed parameters</span><br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(51, 102, 255);">gauss</span>, [ 0.5 1 0.01 0 ]);    <span style="font-style: italic;">% specify the starting parameters for the model function</span><br></pre>
 The result of the <span style="font-style: italic;">fits</span> method
 is the model parameter set that matches best the data. The number of
 fit parameters is not limited.<br>
@@ -121,11 +121,11 @@ available fit functions</span> can be obtained from the command:<br>
 Refer
 to the section <a href="#mozTocId855522">below</a> in order to learn
 how to define new fit models with the <a href="Models.html#mozTocId210092"><span style="font-weight: bold; font-style: italic;">ifitmakefunc</span></a>
-tool, or directly with the iFunc class. You can get information about a model by
+tool, or directly with the <a href="iFunc.html">iFunc</a> class. You can get information about a model by
 inquiring its name. When a single input parameter is specified,
 starting parameters
 are guessed :<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(<span style="color: rgb(204, 51, 204);">'identify'</span>)	<span style="font-style: italic;">% return informations about the function</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(<span style="color: rgb(204, 51, 204);">'plot'</span>)	<span style="font-style: italic;">% plot the function with a default parameter set</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(p, x)		<span style="font-style: italic;">% evaluate the function with parameters 'p' and axis 'x'</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(p)<br><br>ans = <br><br>          Type: 'iFit fitting function'<br>          Name: 'Gaussian (1D)'<br>    Parameters: {<span style="color: rgb(255, 0, 0);"></span>'Amplitude'  'Centre'  'HalfWidth'  'Background'}<br>     Dimension: 1<br>         Guess: [1 6.2172e-17 0.5861 0.1000]<br>        Values: [1x100 double]<br>          Axis: {[1x100 double]}</pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">disp(gauss</span><span style="color: rgb(204, 51, 204);"></span>)	<span style="font-style: italic;">	% return information about the function</span><br>&gt;&gt; plot(<span style="color: rgb(51, 102, 255);">gauss</span><span style="color: rgb(204, 51, 204);"></span>)		<span style="font-style: italic;">% plot the function with a default parameter set</span> and axes<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(p, x)		<span style="font-style: italic;">% evaluate the function with parameters 'p' and axis 'x'</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(p)		% same as above with guessed axes<br><br></pre>
 A fast way to define a new model and fit it to the data is to directly
 execute, with <span style="font-style: italic;">p</span> the parameter vector, and <span style="font-style: italic;">x,y</span>,... the axes:<br>
 <pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>);</pre>
@@ -147,15 +147,14 @@ parameters
 onto
 the iData object data set axes, use the model as argument to the object:
 <pre style="margin-left: 40px;">&gt;&gt; b= <span style="color: rgb(51, 102, 255);"></span>a(<span style="color: rgb(204, 51, 204);">gauss</span>, p) <span style="font-style: italic;">% evaluate the 'gauss' model</span> onto the 'a' axes, with parameters 'p'<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([ a b ])  % <span style="font-style: italic;">with parameters 'p', and plot both data and fit</span></pre>
-The evaluated model contains <span style="font-style: italic;">Parameter</span>
+In this case, the evaluated model is an iData object, which contains <span style="font-style: italic;">Parameter</span>
 and <span style="font-style: italic;">Model</span> aliases that hold
 the model parameters and description. <br>
 <br>
 The <span style="font-style: italic;">fits</span> function work with any data
 and model dimensionality, and can also build multi-dimensional models
 from lower dimensionality functions (e.g. making a 2D Gaussian from
-multiplied perpendicular 1D Gaussians).<br>
-<br>
+multiplied orthogonal 1D Gaussians).<br>
 <h4><a class="mozTocH4" name="mozTocId888705"></a>Getting most of the
 fit results (4th output argument)<br>
 </h4>
@@ -203,7 +202,8 @@ provides significantly more information such as:<br>
 fit parameter set for the model</li>
   <li><span style="font-style: italic;">output.criteriaBest</span>: best criteria value for the model</li>
   <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">modelValue: </span>Last model
-evaluation (iData), that is <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);">eval</span>(a, model, parameters)</span></li>
+evaluation (iData), that is <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);"></span>a(model, parameters)<br>
+</span></li>
 
   <li><span style="font-style: italic;">output.algorithm: </span>Algorithm/solver
 used
@@ -247,7 +247,7 @@ parameter names from the model<br>
 <span style="font-weight: bold;">structure</span> which fields contain numbers, or as a <span style="font-weight: bold;">string</span> with members separated with the ';' character, such as in the
 following example:<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; p.Amplitude=0.5; p.Center=1; p.HalfWidth=0.0035; p.Background=1e-4; 		<span style="font-style: italic;">% optimize named parameters </span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">'gauss', </span>p)								<span style="font-style: italic;">% The result is also returned as a structure.</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">'gauss','Amplitude=0.5; Center=1; HalfWidth=0.0035; Background=1e-4'</span>)	<span style="font-style: italic;">% create the structure above and fit...<br></span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; p.Amplitude=0.5; p.Center=1; p.HalfWidth=0.0035; p.Background=1e-4; 		<span style="font-style: italic;">% optimize named parameters </span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);"> gauss, </span>p)								<span style="font-style: italic;">% The result is also returned as a structure.</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">'gauss','Amplitude=0.5; Center=1; HalfWidth=0.0035; Background=1e-4'</span>)	<span style="font-style: italic;">% create the structure above and fit...<br></span></pre>
 All model named parameters must be specified.<br>
 <pre style="margin-left: 40px;"><span style="font-style: italic;"></span><span style="font-style: italic;"></span></pre>
 
@@ -270,7 +270,7 @@ careful comparison explained in the <a href="Optimizers.html">Optimizers</a>
 documentation.<br>
 <br>
 The process of choosing a sensible optimizer can be automated by using the <span style="font-weight: bold; font-style: italic;">fmin</span>
-optimizer. The objective function is analyzed and a set of best
+optimizer (which is the default choice). The objective function is analyzed and a set of best
 optimizers is determined, depending on the execution time, the number
 of parameters, and the type of objective - noisy or continuous:<br>
 
@@ -281,7 +281,7 @@ with a weighting by the success ratio and the number of function calls
 (optimization speed). Successive calls to <span style="font-style: italic; font-weight: bold;">fmin</span> with the same problem to solve may result in different optimizers and solutions.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Optimizer<br>
@@ -422,16 +422,17 @@ optimization function (solver)<br>
 criteria to use with syntax <span style="font-style: italic;">criteria(Signal,
 Error, Model)</span>. The default is least-square error (see <a href="#mozTocId778987">below</a>).<br>
   </li>
-  <li>and more, depending on the optimizer method and implementation<br>
-  </li>
-</ul>
+  <li>and more, depending on the optimizer method and implementation</li></ul>The options can also be entered as a single string such as in :<br>
+<pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, <span style="color: rgb(0, 0, 0);">[]</span></span>, <span style="color: rgb(204, 51, 204);">'optimizer=fminimfil; Display=final; TolFun=0.01;'</span>);</pre>
+which avoids creating a structure.<br>
+
 <h4><a class="mozTocH4" name="mozTocId684694"></a>Monitoring the
 performance of the optimization method and the fit process</h4>
 In order to follow the optimization process, you may define a call to a
 user function at each optimization iteration. A default plotting
 facility has been implemented as the <span style="font-style: italic; font-weight: bold;">fminplot</span>
 function:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; options=<span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);">fminimfil</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>)<br>&gt;&gt; options.<span style="color: rgb(255, 0, 0);">OutputFcn</span>=<span style="color: rgb(204, 51, 204);">'fminplot'</span>;<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>p =<br><br>    0.6263    1.0008   -0.0037    0.0002<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">eval</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, p)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">figure; plot</span>([ a b ])<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; options=<span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);">fminimfil</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>)<br>&gt;&gt; options.<span style="color: rgb(255, 0, 0);">OutputFcn</span>=<span style="color: rgb(204, 51, 204);">'fminplot'</span>;<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>p =<br><br>    0.6263    1.0008   -0.0037    0.0002<br>&gt;&gt; b = a(<span style="color: rgb(204, 51, 204);">gauss</span>, p)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">figure; plot</span>([ a b ])<br></pre>
 <div style="text-align: center;"><a href="images/Optimizers_fminplot.png"><img alt="fits with options.OutputFcn=fminplot" title="fits with options.OutputFcn=fminplot" src="images/Optimizers_fminplot.png" style="border: 0px solid ; width: 300px; height: 285px;"></a> <span style="text-decoration: underline;"><a href="images/iData_fits_gauss.png"><img alt="iData fits(gauss) with plot" title="iData fits(gauss) with plot" src="images/iData_fits_gauss.png" style="border: 0px solid ; width: 330px; height: 292px;"></a></span><br>
 <span style="font-style: italic; font-weight: bold;">Left: </span>The <span style="font-style: italic;">options.OutputFcn='fminplot' </span>window
 on
@@ -455,7 +456,7 @@ final fit result on the left.<br>
 Also, as explained <a href="#mozTocId888705">above</a>, it is possible
 to obtain, on optimization completion, the whole criteria, and
 parameter set history, as a function of iterations/criteria evaluations.<br>
-<pre style="margin-left: 40px;"><span style="font-style: italic;"></span>&gt;&gt; [p,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>&gt;&gt; output.parsHistory<br>&gt;&gt; output.criteriaHistory<br></pre>The monitoring window above can be re-displayed with:<br>
+<pre style="margin-left: 40px;"><span style="font-style: italic;"></span>&gt;&gt; [p,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>&gt;&gt; output.parsHistory<br>&gt;&gt; output.criteriaHistory<br></pre>The monitoring window above can be re-displayed with:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fminplot</span>(output);</pre>
 
 </div>
@@ -473,15 +474,15 @@ argument <span style="color: rgb(255, 0, 0); font-style: italic;">constraints</s
 To fix some of the model parameters to their starting value, you just
 need to define <span style="font-style: italic;">constraints</span> as
 a vector with 0 for free parameters, and 1 for fixed parameters, e.g. :<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ])<br>** Minimization performed on parameters:<br>    'Amplitude'    'Centre'    'HalfWidth'    'Background'<br><br>    <span style="color: rgb(255, 0, 0);">0.5936</span>    0.9998    0.0018    0.0050<br><br>p =<br><br>    <span style="color: rgb(255, 0, 0);">0.5936</span>    1.0008   -0.0037    0.0002<br><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ])<br>** Minimization performed on parameters:<br>    'Amplitude'    'Centre'    'HalfWidth'    'Background'<br><br>    <span style="color: rgb(255, 0, 0);">0.5936</span>    0.9998    0.0018    0.0050<br><br>p =<br><br>    <span style="color: rgb(255, 0, 0);">0.5936</span>    1.0008   -0.0037    0.0002<br><br></pre>
 will fix the first model parameter, which is here the <span style="color: rgb(255, 0, 0);">Amplitude</span>. This parameter name
 can be checked
 by simply entering the name of the model, which returns some
 information structure :<br>
-<pre style="margin-left: 40px;">&gt;&gt; gauss<br>ans = <br>          Type: 'iFit fitting function'<br>          Name: 'Gaussian (1D)'<br>    Parameters: {<span style="color: rgb(255, 0, 0);">'Amplitude'</span>  'Centre'  'HalfWidth'  'Background'}<br>     Dimension: 1<br>         Guess: [1 6.2172e-17 0.5861 0.1000]<br>        Values: [1x100 double]<br>          Axis: {[1x100 double]}<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; disp(gauss)<br>ans = iFunc 1D model:<br>         Expression: @(p,x)p(1)*exp(-0.5*((x-p(2))/p(3)).^2)+p(4)<br>        Description: Single 1D Gaussian model<br>                Tag: 'iF420775'<br>               Date: '17-Jul-2012 15:50:11'<br>               Name: 'Gaussian (1D) [gauss]'<br>         Parameters: {'Amplitude'  'Centre'  'HalfWidth'  'Background'}<br>              Guess: [function_handle]<br>          Dimension: 1<br>    ParameterValues: []<br>           UserData: ''<br><br>Parameters:<br>  p(  1)=           Amplitude<br>  p(  2)=              Centre<br>  p(  3)=           HalfWidth<br>  p(  4)=          Background<br></pre>
 A similar behavior is obtained when setting constraints as a structure
 with a <span style="font-style: italic;">fixed</span> member :<br>
-<pre style="margin-left: 40px;">&gt;&gt; constraints.fixed = [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ];<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, constraints);<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; constraints.fixed = [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ];<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, constraints);<br></pre>
 The <span style="font-style: italic;">constraints</span>.<span style="font-style: italic;">fixed</span> vector should
 have the same length as the model parameter vector.<br>
 <h4><a class="mozTocH4" name="mozTocId871054"></a>Parameters varying
@@ -542,12 +543,12 @@ than 0.95 is usually good.
 tool has been designed to automatically create model functions from
 either a single expression, or a more detailed description. Refer to
 the <a href="Models.html#mozTocId210092">Models/Model Builder</a>.<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc;                               <span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">% pops-up a dialog to define the new fit function/model</span><br></span></span>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span>)<br></span></span></pre>
-The resulting function has the ability to identify itself (<span style="color: rgb(204, 51, 204);">'identify'</span>, provide
-detailed informations), compute automatic starting parameters (<span style="color: rgb(204, 51, 204);">'guess'</span>), display
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc;                               <span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">% pops-up a dialog to define the new fit function/model</span><br></span></span>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">iFunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span>)<br></span></span></pre>
+The resulting model has the ability to identify itself (<span style="color: rgb(204, 51, 204);">'identify'</span>, provide
+detailed information), compute automatic starting parameters (<span style="color: rgb(204, 51, 204);">'guess'</span>), display
 itself (<span style="color: rgb(204, 51, 204);">'plot'</span>), and
 evaluate its value of course. It can be directly used with
-<span style="font-weight: bold;">eval</span> and <span style="font-weight: bold;">fits, </span>either with their name, or
+<span style="font-weight: bold;">fits, </span>either with their name, or
 their function handle. <br>
 <br>
 It is even possible to directly call the fitting method and create the
@@ -555,7 +556,7 @@ model function on the fly, which makes the fit much easier for simple
 functions that can be written as a single expression:<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);"></span></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">);	<span style="font-style: italic;">% does the same as above, in a single command</span></span></span></pre>
 To assemble existing functions into new ones, you may use e.g.:<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);"></span></span></span><span style="color: rgb(204, 51, 204);">'<span style="color: rgb(51, 102, 255);">gauss</span>(p(1:4),x)+<span style="color: rgb(51, 102, 255);">lorz</span>(p(5:8),x)'<span style="color: rgb(0, 0, 0);">,<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'p(8)=0;'</span>);</span></span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=gauss+lorz; h.Constraint = <span style="color: rgb(204, 51, 204);">'p(8)=0;'</span>;<br></pre>
 which creates a new function which is the sum of a Gaussian and a
 Lorentzian. The second redundant Lorentzian Background <span style="font-style: italic;">p(8)</span> parameter
 is forced to 0 so that it does not correlate with the Gaussian
@@ -612,7 +613,7 @@ The criteria is then normalized to the number of degrees of freedom by dividing 
 <br>
 The following pre-defined functions can be used as criteria:<br>
 <br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">criteria(Signal, Error,

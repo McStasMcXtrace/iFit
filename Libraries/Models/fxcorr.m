@@ -23,6 +23,7 @@ function y=fxcorr(x, h, shape)
 %          normalize    Normalizes the h filter so that the correlation does not
 %                       change the x signal integral.
 %          background   Remove the background from the filter h (subtracts the minimal value)
+%          deconv       Performs a deconvolution/decorrelation
 %
 % ex:     c=fxcorr(a,b);
 %

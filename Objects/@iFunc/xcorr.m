@@ -1,12 +1,14 @@
 function c = xcorr(a,b, shape)
-% c = xcorr(a,b) : computes the correlation of iData objects
+% c = xcorr(a,b) : computes the correlation of iFunc models
 %
 %   @iData/xcorr function to compute the correlation of data sets (FFT based).
 %     A decorrelation mode is also possible. When only one argument is given, 
 %     the auto-correlation is computed.
+%     when one of the argument is a character string, it is used as-is in the 
+%     operator expression. 
 %
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
+% input:  a: object or array (iFunc or numeric)
+%         b: object or array (iFunc or numeric)
 %     shape: optional shape of the return value
 %          full         Returns the full two-dimensional correlation.
 %          same         Returns the central part of the correlation of the same size as a.
@@ -20,12 +22,13 @@ function c = xcorr(a,b, shape)
 %          normalize    Normalizes the 'b' filter so that the correlation does not
 %                       change the 'a' signal integral.
 %          background   Remove the background from the filter 'b' (subtracts the minimal value)
+%          deconv       Performs a deconvolution/decorrelation
 %
-% output: c: object or array (iData)
+% output: c: object or array (iFunc)
 % ex:     c=xcorr(a,b); c=xcorr(a,b, 'same pad background center normalize');
 %
 % Version: $Revision: 1.1 $
-% See also iData, iData/times, iData/convn, iData/fft, convn, fconv, fconvn
+% See also iFunc, iFunc/times, iFunc/convn, iFunc/fft, convn, fconv, fconvn
 if nargin ==1
 	b = a;
 end
