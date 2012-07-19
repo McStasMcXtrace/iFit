@@ -23,6 +23,8 @@ function stop = fminplot(pars, optimValues, state)
   persistent updatePlot
   stop = false;
   
+  old_gcf = get(0, 'CurrentFigure');
+  
   if isstruct(pars)  % we feed fminplot with an 'output' structure =============
     parsHistory = pars.parsHistory;
     fvalHistory = pars.criteriaHistory;
@@ -91,7 +93,7 @@ function stop = fminplot(pars, optimValues, state)
   % only retain one instance of fminplot
   if length(h) > 1, delete(h(2:end)); h=h(1); end
   if isempty(h) & optimValues.funcount <=2 % create it
-    h = figure('Tag','fminplot', 'Unit','pixels','MenuBar','figure', 'ToolBar', 'figure');
+    h = figure('Tag','fminplot', 'Unit','pixels','MenuBar','figure', 'ToolBar', 'figure','HandleVisibility','off');
     ishidden = 0;
     tmp = get(h, 'Position'); tmp(3:4) = [500 400];
     set(h, 'Position', tmp);
@@ -130,7 +132,7 @@ function stop = fminplot(pars, optimValues, state)
   if strcmp(state, 'done')
     set(d, 'String','END','BackgroundColor','green' );
   elseif strcmp(state, 'init'), 
-    set(d, 'String','INIT','BackgroundColor','red' );
+    set(d, 'String','INIT','BackgroundColor','yellow' );
   else
     NL = sprintf('\n');
     i = 1:length(pars);
@@ -190,6 +192,8 @@ function stop = fminplot(pars, optimValues, state)
   
   updatePlot=clock;
   drawnow
+  
+  set(0, 'CurrentFigure', old_gcf);
 
 end
 

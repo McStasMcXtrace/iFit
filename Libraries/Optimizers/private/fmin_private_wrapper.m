@@ -899,7 +899,7 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
       optimValues = options;
       if ~isfield(optimValues,'state')
         if istop,               optimValues.state='done';
-        elseif funccount  <= 5, optimValues.state='init';
+        elseif funccount  <= 2, optimValues.state='init';
         else                    optimValues.state='iter'; end
       end
       optimValues.funcount   = funccount;
