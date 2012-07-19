@@ -177,8 +177,7 @@ if length(r) == 1, r=r*ones(5,1)/5;
 else r=r(:); end
 %~~~~~~~~~~~~~~
 S=r'*r;
-epsx=options.XTol(:); if all(epsx == 0), epsx=1e-4; end
-if length(epsx)<lx, epsx=epsx*ones(lx,1); end
+epsx=options.XTol(:);
 J=options.Jacobian(FUN,r,x,epsx);
 nfJ = lx+1;
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -267,7 +266,8 @@ function J = finjac(FUN,r,x,epsx)
   J=zeros(length(r), lx);
   x=x(:)';
   r=r(:);
-  if length(epsx)<lx, epsx=epsx*ones(1,lx); end
+  if numel(epsx)==1, epsx=epsx*max(abs(x),1); end
+  if any(epsx == 0), epsx(find(~epsx)) = 1e-4; end
   epsx=epsx(:)';
   for k=1:lx
       dx=.25*epsx(k);
