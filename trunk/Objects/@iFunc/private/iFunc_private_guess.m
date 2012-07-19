@@ -75,7 +75,7 @@ function pars=iFunc_private_guess(x, signal, parameter_names)
   if ~isempty(signal)
     [sigma, position, amplitude, baseline] = iFunc_private_findpeaks(signal, 1, 0);
     signal=signal(:);
-    if isempty(sigma) || (length(sigma) == 1 && sigma<1)
+    if isempty(sigma) || (length(sigma) == 1)
       sum_s = sum(signal); x1d=1:length(signal); x1d=x1d(:);
       % first moment (mean)
       f = sum(signal.*x1d)/sum_s; % mean value

@@ -118,17 +118,19 @@ if nargin == 1 && isempty(model)
       fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/Optimizers');
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
-    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'Optimizers' ]);
+    d = dir([ fileparts(which(mfilename)) filesep '..' filesep '..' filesep 'Libraries' filesep 'Optimizers' ]);
     for index=1:length(d)
       this = d(index);
       try
-        [dummy, method] = fileparts(this.name);
-        options = feval(method,'defaults');
-        if isstruct(options)
-          output{end+1} = options;
-          pars_out{end+1}   = method;
-          if nargout == 0
-            fprintf(1, '%15s %s\n', options.optimizer, options.algorithm);
+        if exist(this.name) == 2 && nargin(this.name)
+          [dummy, method] = fileparts(this.name);
+          options = feval(method,'defaults');
+          if isstruct(options)
+            output{end+1} = options;
+            pars_out{end+1}   = method;
+            if nargout == 0
+              fprintf(1, '%15s %s\n', options.optimizer, options.algorithm);
+            end
           end
         end
       end
@@ -138,17 +140,19 @@ if nargin == 1 && isempty(model)
       fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', 'iFit/Models');
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
-    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'Models' ]);
+    d = dir([ fileparts(which(mfilename)) filesep '..' filesep '..' filesep 'Libraries' filesep 'Models' ]);
     criteria = []; 
     for index=1:length(d)
       this = d(index);
       try
-        [dummy, method] = fileparts(this.name);
-        options = feval(method,'identify');
-        if isa(options, 'iFunc')
-          criteria   = [ criteria options ];
-          if nargout == 0
-            fprintf(1, '%15s %s\n', method, options.Name);
+        if exist(this.name) == 2 && nargin(this.name)
+          [dummy, method] = fileparts(this.name);
+          options = feval(method,'identify');
+          if isa(options, 'iFunc')
+            criteria   = [ criteria options ];
+            if nargout == 0
+              fprintf(1, '%15s %s\n', method, options.Name);
+            end
           end
         end
       end
@@ -160,16 +164,18 @@ if nargin == 1 && isempty(model)
     for index=1:length(d)
       this = d(index);
       try
-        [dummy, method] = fileparts(this.name);
-        options = feval(method,'identify');
-        if isa(options, 'iFunc')
-          criteria   = [ criteria options ];
-          if isempty(message)
-            fprintf(1, '\nLocal functions in: %s\n', pwd);
-            message = ' ';
-          end
-          if nargout == 0
-            fprintf(1, '%15s %s\n', method, options.Name);
+        if exist(this.name) == 2 && nargin(this.name)
+          [dummy, method] = fileparts(this.name);
+          options = feval(method,'identify');
+          if isa(options, 'iFunc')
+            criteria   = [ criteria options ];
+            if isempty(message)
+              fprintf(1, '\nLocal functions in: %s\n', pwd);
+              message = ' ';
+            end
+            if nargout == 0
+              fprintf(1, '%15s %s\n', method, options.Name);
+            end
           end
         end
       end
@@ -189,7 +195,7 @@ end
 % check of input arguments =====================================================
 
 if isempty(model)
-  disp([ 'iFunc:' mfilename ': Using default gaussian model as fit function.' ]);
+  disp([ 'iFunc:' mfilename ': Using default gaussian model as fit function (model = gauss)' ]);
   model = gauss;
 end
 

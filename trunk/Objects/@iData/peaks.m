@@ -63,9 +63,21 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
     index = find( Gmm <= signal & Gpm <= signal & sigma > 4*min(diff(new_x)) );
   end
   
-  position  = new_x(index);
-  amplitude = signal(index);
-  sigma     = sigma(index); 
+  if numel(index) <= 1
+      sum_s = sum(signal); x1d=1:length(signal); x1d=x1d(:);
+      % first moment (mean)
+      f = sum(signal.*x1d)/sum_s; % mean value
+      % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
+      s = sqrt(sum(x1d.*x1d.*signal)/sum_s - f*f);
+      position=new_x(round(f));
+      sigma   =s/2*min(diff(x));
+      amplitude=max(signal)-min(signal);
+      baseline =ones(size(signal))*min(signal);
+  else
+    position  = new_x(index);
+    amplitude = signal(index);
+    sigma     = sigma(index); 
+  end
   
   set(b, 'Signal', baseline);
   baseline  = b; 
