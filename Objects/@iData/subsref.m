@@ -30,7 +30,6 @@ for i = 1:length(S)     % can handle multiple index levels
       b = b(s.subs{:});
     else                  % single iData
       % this is where specific class structure is taken into account
-      if any(cellfun('isempty',s.subs)), b=[]; return; end        % b([])
       if ischar(s.subs{1}) && ~strcmp(s.subs{1},':')              % b(name) -> s.(name) alias/field value
         s.type='.';
         b=subsref(b, s); return;
@@ -45,7 +44,11 @@ for i = 1:length(S)     % can handle multiple index levels
         else
           pars = '';
         end
+        if isempty(pars), pars='guess'; end
         modelValue = feval(model, pars, b, s.subs{2:end});
+        if strcmp(pars,'guess')
+          modelValue = feval(model, modelValue, b, s.subs{2:end});
+        end
         dm=iData_getAliasValue(b,'Monitor');
         if not(all(dm == 1 | dm == 0)) % fit(signal/monitor) 
           modelValue    = bsxfun(@times,modelValue, dm); 
@@ -59,6 +62,7 @@ for i = 1:length(S)     % can handle multiple index levels
         
         setalias(b,'Model', model, model.Name);
         return
+      elseif any(cellfun('isempty',s.subs)), b=[]; return;        % b([])
       end
       if length(s.subs) == 1 && all(s.subs{:} == 1), continue; end  % b(1)
       

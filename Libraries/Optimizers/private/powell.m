@@ -283,6 +283,7 @@ function [stepsize,xo,Ot,nS,it]=coggins(S,x0,d,problem,tol,mxit,stp)
    else
      zo=.5*(a1*(z(2)+z(3))*y(1)+a2*(z(3)+z(1))*y(2)+a3*(z(1)+z(2))*y(3))/ ...
         (a1*y(1)+a2*y(2)+a3*y(3));
+     if any(isnan(zo)), zo=z(2); end
      x=x0+zo*d;
      ym=feval(S,x)*problem;
      nS=nS+1;

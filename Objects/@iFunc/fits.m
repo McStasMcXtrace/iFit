@@ -118,19 +118,17 @@ if nargin == 1 && isempty(model)
       fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/Optimizers');
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
-    d = dir([ fileparts(which(mfilename)) filesep '..' filesep '..' filesep 'Libraries' filesep 'Optimizers' ]);
+    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'Optimizers' ]);
     for index=1:length(d)
       this = d(index);
       try
-        if exist(this.name) == 2 && nargin(this.name)
-          [dummy, method] = fileparts(this.name);
-          options = feval(method,'defaults');
-          if isstruct(options)
-            output{end+1} = options;
-            pars_out{end+1}   = method;
-            if nargout == 0
-              fprintf(1, '%15s %s\n', options.optimizer, options.algorithm);
-            end
+        [dummy, method] = fileparts(this.name);
+        options = feval(method,'defaults');
+        if isstruct(options)
+          output{end+1} = options;
+          pars_out{end+1}   = method;
+          if nargout == 0
+            fprintf(1, '%15s %s\n', options.optimizer, options.algorithm);
           end
         end
       end
@@ -140,19 +138,17 @@ if nargin == 1 && isempty(model)
       fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', 'iFit/Models');
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
-    d = dir([ fileparts(which(mfilename)) filesep '..' filesep '..' filesep 'Libraries' filesep 'Models' ]);
+    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'Models' ]);
     criteria = []; 
     for index=1:length(d)
       this = d(index);
       try
-        if exist(this.name) == 2 && nargin(this.name)
-          [dummy, method] = fileparts(this.name);
-          options = feval(method,'identify');
-          if isa(options, 'iFunc')
-            criteria   = [ criteria options ];
-            if nargout == 0
-              fprintf(1, '%15s %s\n', method, options.Name);
-            end
+        [dummy, method] = fileparts(this.name);
+        options = feval(method,'identify');
+        if isa(options, 'iFunc')
+          criteria   = [ criteria options ];
+          if nargout == 0
+            fprintf(1, '%15s %s\n', method, options.Name);
           end
         end
       end
@@ -164,18 +160,16 @@ if nargin == 1 && isempty(model)
     for index=1:length(d)
       this = d(index);
       try
-        if exist(this.name) == 2 && nargin(this.name)
-          [dummy, method] = fileparts(this.name);
-          options = feval(method,'identify');
-          if isa(options, 'iFunc')
-            criteria   = [ criteria options ];
-            if isempty(message)
-              fprintf(1, '\nLocal functions in: %s\n', pwd);
-              message = ' ';
-            end
-            if nargout == 0
-              fprintf(1, '%15s %s\n', method, options.Name);
-            end
+        [dummy, method] = fileparts(this.name);
+        options = feval(method,'identify');
+        if isa(options, 'iFunc')
+          criteria   = [ criteria options ];
+          if isempty(message)
+            fprintf(1, '\nLocal functions in: %s\n', pwd);
+            message = ' ';
+          end
+          if nargout == 0
+            fprintf(1, '%15s %s\n', method, options.Name);
           end
         end
       end
@@ -195,7 +189,7 @@ end
 % check of input arguments =====================================================
 
 if isempty(model)
-  disp([ 'iFunc:' mfilename ': Using default gaussian model as fit function (model = gauss)' ]);
+  disp([ 'iFunc:' mfilename ': Using default gaussian model as fit function.' ]);
   model = gauss;
 end
 
@@ -442,34 +436,82 @@ if pars_isstruct
   pars_out = cell2struct(num2cell(pars_out), strtok(model.Parameters), 2);
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EMBEDDED FUNCTION %%%%%%%%%%%%%%%%%%%%%%%%%%%
+% this way 'options' is available in here...
+
+  function c = eval_criteria(model, pars, criteria, a, varargin)
+  
+  % criteria to minimize
+    if nargin<5, varargin={}; end
+    % then get model value
+    Model  = feval(model, pars, a.Axes{:}, varargin{:}); % return model values
+    Model  = iFunc_private_cleannaninf(Model);
+    if isempty(Model)
+      error([ 'iFunc:' mfilename ],[ 'The model ' model ' could not be evaluated (returned empty).' ]);
+    end
+    a.Monitor =real(a.Monitor);
+    
+    if not(all(a.Monitor == 1 | a.Monitor == 0)), % fit(signal/monitor) 
+      a.Signal = bsxfun(@rdivide,a.Signal,a.Monitor); 
+      a.Error  = bsxfun(@rdivide,a.Error, a.Monitor); % per monitor
+    end
+
+    % compute criteria
+    c = feval(criteria, a.Signal(:), a.Error(:), Model(:));
+    % divide by the number of degrees of freedom
+    % <http://en.wikipedia.org/wiki/Goodness_of_fit>
+    if numel(a.Signal) > length(pars)-1
+      c = c/(numel(a.Signal) - length(pars) - 1); % reduced 'Chi^2'
+    end
+    
+    % overlay data and Model when in 'OutputFcn' mode
+    if (isfield(options, 'OutputFcn') && ~isempty(options.OutputFcn) && ~isscalar(a.Signal))
+      if ~isfield(options, 'updated')
+        options.updated   = -clock;
+        options.funcCount = 0;
+      end
+      
+      options.funcCount = options.funcCount+1;
+      
+      if (options.funcCount < 50 && abs(etime(options.updated, clock)) > 0.5) ...
+       || abs(etime(options.updated, clock)) > 2
+        old_gcf = get(0, 'CurrentFigure');
+        
+        % is this window already opened ?
+        h = findall(0, 'Tag', 'iFunc:fits');
+        if isempty(h) % create it
+          h = figure('Tag','iFunc:fits', 'Unit','pixels');
+          tmp = get(h, 'Position'); tmp(3:4) = [500 400];
+          set(h, 'Position', tmp);
+        end
+        % raise existing figure (or keep it hidden)
+        
+        if old_gcf ~= h, set(0, 'CurrentFigure', h); end
+      
+        if isvector(a.Signal)
+          set(plot(a.Signal,'r-'),'DisplayName','Data');   hold on
+          set(plot(Model,'b--'),'DisplayName',model.Name); hold off
+        else
+          set(surf(a.Signal),'DisplayName','Data');  hold on; 
+          set(surf(Model),'DisplayName',model.Name); hold off
+        end
+        options.updated = clock;
+        if length(pars) > 20, pars= pars(1:20); end
+        pars = mat2str(pars);
+        if length(pars) > 50, pars = [ pars(1:47) ' ...' ']' ]; end
+        set(h, 'Name', [ mfilename ': ' options.algorithm ': ' model.Name ' f=' num2str(sum(c(:))) ]);
+        title({ [ mfilename ': ' options.algorithm ': ' model.Name ' #' num2str(options.funcCount) ], ...
+                pars });
+        set(0, 'CurrentFigure', old_gcf);
+      end
+    end
+    
+  end % eval_criteria (embedded)
+
 end % fits
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRIVATE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
-function c = eval_criteria(model, pars, criteria, a, varargin)
-% criteria to minimize
-  if nargin<5, varargin={}; end
-  % then get model value
-  Model  = feval(model, pars, a.Axes{:}, varargin{:}); % return model values
-  Model  = iFunc_private_cleannaninf(Model);
-  if isempty(Model)
-    error([ 'iFunc:' mfilename ],[ 'The model ' model ' could not be evaluated (returned empty).' ]);
-  end
-  a.Monitor =real(a.Monitor);
-  if not(all(a.Monitor == 1 | a.Monitor == 0)),
-    % Model    = bsxfun(@rdivide,Model,   a.Monitor); % fit(signal/monitor) 
-    a.Signal = bsxfun(@rdivide,a.Signal,a.Monitor); 
-    a.Error  = bsxfun(@rdivide,a.Error, a.Monitor); % per monitor
-  end
-  
-  % compute criteria
-  c = feval(criteria, a.Signal(:), a.Error(:), Model(:));
-  % divide by the number of degrees of freedom
-  % <http://en.wikipedia.org/wiki/Goodness_of_fit>
-  if numel(a.Signal) > length(pars)-1
-    c = c/(numel(a.Signal) - length(pars) - 1); % reduced 'Chi^2'
-  end
-end % eval_criteria
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % <http://en.wikipedia.org/wiki/Least_squares>
