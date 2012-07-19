@@ -47,7 +47,7 @@ if np < 2; eta=.1; else eta = parms(2); end
 if np < 3; maxit=100; else maxit = parms(3); end
 if np < 4; maxitl=20; else maxitl = parms(4); end
 if nargin < 5
-resolution = 1.d-12;
+  resolution = 1.d-12;
 end
 numf=0; numg=0;
 hdiff=sqrt(resolution);
@@ -289,7 +289,8 @@ function J = finjac(FUN,r,x,epsx)
   J=zeros(lx,length(r));
   if size(x,2) > 1, x=x'; end % column
   if size(r,1) > 1, r=r'; end % row
-  if length(epsx)<lx, epsx=epsx*ones(lx,1); end
+  if numel(epsx)==1, epsx=epsx*max(abs(x),1); end
+  if any(epsx == 0), epsx(find(~epsx)) = 1e-4; end
   for k=1:lx
       dx=.25*epsx(k);
       xd=x;

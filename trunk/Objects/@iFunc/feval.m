@@ -202,7 +202,7 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || strcmpi(p, 'guess
       p1(index) = p2(index);
       clear p2
     catch
-      disp([ 'Error: Could not evaluate Guess in mode ' model.Name ' ' model.Tag ]);
+      disp([ 'Error: Could not evaluate Guess in model ' model.Name ' ' model.Tag ]);
       disp(model.Guess);
       disp('Axes and signal:');
       disp(varargin);

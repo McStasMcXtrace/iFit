@@ -80,7 +80,10 @@ function stop = fminplot(pars, optimValues, state)
     best= best(1);
     
     % store userData in case we need to access the optimization history from the plot
-    set(gcf,'UserData', struct('parsHistory',parsHistory,'fvalHistory',fvalHistory,'best',best, 'bestPars',parsHistory(best,:)));
+    if ~isempty(h) 
+      set(h(1),'UserData', struct('parsHistory',parsHistory,...
+        'fvalHistory',fvalHistory,'best',best, 'bestPars',parsHistory(best,:))); 
+    end
     
     if length(fvalHistory) > 10
       if ~isempty(updatePlot)
@@ -93,7 +96,7 @@ function stop = fminplot(pars, optimValues, state)
   % only retain one instance of fminplot
   if length(h) > 1, delete(h(2:end)); h=h(1); end
   if isempty(h) & optimValues.funcount <=2 % create it
-    h = figure('Tag','fminplot', 'Unit','pixels','MenuBar','figure', 'ToolBar', 'figure','HandleVisibility','off');
+    h = figure('Tag','fminplot', 'Unit','pixels','MenuBar','figure', 'ToolBar', 'figure');
     ishidden = 0;
     tmp = get(h, 'Position'); tmp(3:4) = [500 400];
     set(h, 'Position', tmp);
@@ -105,7 +108,7 @@ function stop = fminplot(pars, optimValues, state)
   
   try
     % raise existing figure (or keep it hidden)
-    if gcf ~= h, set(0, 'CurrentFigure', h); end
+    if old_gcf ~= h, set(0, 'CurrentFigure', h); end
   catch
     stop=true;  % figure is not valid: was closed
     return;
@@ -142,6 +145,7 @@ function stop = fminplot(pars, optimValues, state)
     else
       dots='';
     end
+    pars=pars(:)';
     t=[' Click here to abort optimization' NL 'Start=' num2str(parsHistory(1,i)) dots NL ...
        'Current=' num2str(pars(i)) dots NL 'Best=' num2str(parsHistory(best,i)) dots ];
     set(d, 'String','STOP', 'ToolTip', t);
