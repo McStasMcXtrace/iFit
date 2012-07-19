@@ -39,21 +39,23 @@ function ifit(varargin)
 
 disp(' ');
 % banner from http://www.network-science.de/ascii/
-disp('                      ____  ,                 _______ __ ');
-disp('                     /  _/ // __    _ _      / ____(_) /_');
-disp('                     / /     / /   / /      / /_  / / __/');
-disp('                   _/ /     / /___/ /___   / __/ / / /_  ');
-disp('                  /___/    /_____/_____/  /_/   /_/\__/  ');
+disp('                             _  ______ _  __ 
+disp('                            (_)/ ____/(_)/ /_  (C) ILL');
+disp('                           / // /_   / // __/ ');
+disp('                          / // __/  / // /_   ');
+disp('                         /_//_/    /_/ \__/   ');
 disp(' ');
 disp('                          ** Welcome to iFit **');
 disp('                            <ifit.mccode.org>');
 disp('                E. Farhi, Institut Laue Langevin, France (c)');
 disp(' ');
+disp(version(iData));
+disp(' ');
 disp([ '** Starting iFit on ' datestr(now) ])
 disp('Type ''help'' to learn how to use this software. Type ''exit'' or Ctrl-C to exit.');
 disp(' ')
 
-ifit_options.line     =''; % the current line to execute
+ifit_options.line     ='';     % the current line to execute
 ifit_options.index    =1;      % the index of the input
 this                  ={};     % the buffer from the command line
 ifit_options.save     =0;
@@ -69,6 +71,10 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     disp('Keys: Arrow-Up/Down  Navigate in command history.');
     disp('      Ctrl-C         Exit (same as ''exit'' or ''return'' commands.');
     disp('Help: Type ''doc(iData,''iFit'')'' or see <ifit.mccode.org> <ifit-users@mccode.org>.');
+    disp('To import some data, use e.g. d=iData(''filename'');');
+    disp('To create a model, use e.g. f=iFunc(''expression''); or type fits(iFunc) to get a list of available models.');
+    disp('To fit a model to data, use e.g. fits(f,d)');
+    disp('Data and Models can be manipulated (+-/*...) using the Matlab syntax.');
     disp(' ');     
     ifit_options.line = 'doc(iData,''iFit''); disp('' '');';
   elseif strncmp(ifit_options.line,'run ', 4) % 'run' command ----------------------------------

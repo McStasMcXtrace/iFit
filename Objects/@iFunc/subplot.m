@@ -57,7 +57,8 @@ for index=1:numel(a)
     this_h = plot(a(index));
     
     if length(a)> 12
-      title(strtok(a(index).Name));
+      title(strtok(a(index).Name), 'interpreter','none');
+      set(gca,'XTickLabel',[],'YTickLabel',[],'ZTickLabel',[])
     end
     h = [ h ; this_h(:) ];
   else h = [ h ; nan ];
