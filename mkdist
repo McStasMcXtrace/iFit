@@ -52,7 +52,7 @@ rm mkdist
 # rm Loaders/looktxt.mex*
 
 # Update version and date
-for file in README.txt @iData/version.m Docs/index.html Docs/Install.html
+for file in README.txt Objects/@iData/version.m Docs/index.html Docs/Install.html
 do
 sed 's/@IFIT_VERSION@/'$IFIT_VERSION'/'  $file > $file.tmp
 sed 's/@IFIT_DATE@/'$MONTH'. '$DAY', '$YEAR'/'  $file.tmp > $file

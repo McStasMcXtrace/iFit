@@ -39,7 +39,7 @@ function ifit(varargin)
 
 disp(' ');
 % banner from http://www.network-science.de/ascii/
-disp('                             _  ______ _  __ 
+disp('                             _  ______ _  __ ');
 disp('                            (_)/ ____/(_)/ /_  (C) ILL');
 disp('                           / // /_   / // __/ ');
 disp('                          / // __/  / // /_   ');
@@ -66,13 +66,14 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   if strcmp(ifit_options.line, 'help')        % 'help' command ---------------------------------
     disp('Enter any Matlab/iFit command.');
     disp('      Use ''run script.m'' to execute a script from a file.');
-    disp('      Control statements are allowed (for/while loops, tests, switch/case...) when');
-    disp('      they span on a single line, or in scripts.');
+    disp('      Control statements are allowed (for/while loops, tests, ');
+    disp('      switch/case...) when they span on one line, or in scripts.');
     disp('Keys: Arrow-Up/Down  Navigate in command history.');
     disp('      Ctrl-C         Exit (same as ''exit'' or ''return'' commands.');
     disp('Help: Type ''doc(iData,''iFit'')'' or see <ifit.mccode.org> <ifit-users@mccode.org>.');
     disp('To import some data, use e.g. d=iData(''filename'');');
-    disp('To create a model, use e.g. f=iFunc(''expression''); or type fits(iFunc) to get a list of available models.');
+    disp('To create a model, use e.g. f=iFunc(''expression''); ');
+    disp('  or type fits(iFunc) to get a list of available models.');
     disp('To fit a model to data, use e.g. fits(f,d)');
     disp('Data and Models can be manipulated (+-/*...) using the Matlab syntax.');
     disp(' ');     
@@ -207,7 +208,10 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
           ans = feval(ifit_options.line, this{:})
         else
           this{end+1} = iData(ifit_options.line);
-          
+          ans = this{end}
+          if length(varargin) == 1
+            subplot(ans);
+          end
         end
         ifit_options=rmfield(ifit_options, 'p');
         ifit_options=rmfield(ifit_options, 'f');
