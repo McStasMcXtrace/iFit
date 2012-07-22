@@ -33,6 +33,7 @@ function ifit(varargin)
 %    ifit --save file1.*  subplot 
 
 % Manual build:
+% Better use the 'make.sh' script, or
 % addpath(genpath('/home/farhi/svn/Matlab/iFit/trunk'))
 % mcc -m ifit -a /home/farhi/svn/Matlab/iFit/trunk
 % buildmcr('.')

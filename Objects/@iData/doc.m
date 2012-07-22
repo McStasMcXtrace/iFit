@@ -22,22 +22,13 @@ if isempty(page), page='index.html'; end
 if isempty(e), e='.html'; end
 page = [ f e ];
 
-d = [ ifitpath filesep 'Docs' filesep page ];
+url = [ ifitpath filesep 'Docs' filesep page ];
 disp(version(iData))
 disp('Opening iData documentation from ')
-
-if ~isdeployed && usejava('jvm')
-  disp([ '  <a href="matlab:web ' d '">web ' d '</a>' ])
-  web(d);
+if length(url)
+  disp([ '  <a href="matlab:web ' url '">web ' url '</a>' ]);
 else
-  disp(d);
-  % attempts to guess how to launch the browser
-  if ispc
-    system([ 'start /D "' ifitpath '" Docs'])
-  elseif ismac
-    system([ 'open "' d '"' ]);
-  else
-    system([ 'gnome-open "' d '"' ]);
-  end
+  disp([ '  ' url ]);
 end
+web(d);
 
