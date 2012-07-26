@@ -118,7 +118,7 @@ if nargin == 1 && isempty(model)
       fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/Optimizers');
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
-    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'Optimizers' ]);
+    d = dir([ fileparts(which('fminpso')) ]);
     for index=1:length(d)
       this = d(index);
       try
@@ -138,7 +138,7 @@ if nargin == 1 && isempty(model)
       fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', 'iFit/Models');
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
-    d = dir([ fileparts(which(mfilename)) filesep '..' filesep 'Models' ]);
+    d = dir([ fileparts(which('gauss')) ]);
     criteria = []; 
     for index=1:length(d)
       this = d(index);
