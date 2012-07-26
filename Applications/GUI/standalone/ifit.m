@@ -81,6 +81,9 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     ifit_options.line = 'doc(iData,''iFit''); disp('' '');';
   elseif strncmp(ifit_options.line,'run ', 4) % 'run' command ----------------------------------
     ifit_options.line = strtrim(ifit_options.line(5:end));
+    if ~exist(ifit_options.line) && exist([ ifit_options.line '.m' ])
+      ifit_options.line = [ ifit_options.line '.m' ];
+    end
     if ~isempty(dir(ifit_options.line))
       [ifit_options.p,ifit_options.f,ifit_options.e]=fileparts(ifit_options.line);
       if isempty(ifit_options.p), ifit_options.p=pwd; end
