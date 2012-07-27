@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
 
@@ -197,7 +197,10 @@ a
 to the documentation of each minimizer for more information, and the
 documentation about <a href="Fit.html#mozTocId919221">fitting</a>
 models onto data
-sets. The number of optimization parameters is not restricted.
+sets. The number of optimization parameters is not restricted.<br>
+<br>
+As an example we may find the minimum of the <a href="http://en.wikipedia.org/wiki/Rosenbrock_function">Rosenbrock function</a> :<br>
+<pre style="margin-left: 40px;">&gt;&gt; banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fmin</span>(banana, [0 0])<br></pre>
 <h4><a class="mozTocH4" name="mozTocId967127"></a>Optimizers syntax</h4>
 All of these optimizers follow the same syntax, just as the
 default
@@ -574,22 +577,22 @@ methods</span> can be obtained from the command:<br>
 <p style="margin-bottom: 0cm;">
 <style type="text/css">td p { margin-bottom: 0in; }p { margin-bottom: 0.08in; }a:link {  }</style>
 <table style="width: 100%;" border="1" cellpadding="2" cellspacing="3">
-  <col width="115"> <col width="243"> <col width="83"> <col width="76"> <col width="108"> <tbody>
+  <colgroup><col width="115"> <col width="243"> <col width="83"> <col width="76"> <col width="108"> </colgroup><tbody>
     <tr>
-      <td style="text-align: center;" width="115" bgcolor="#ffcccc">
+      <td style="text-align: center;" bgcolor="#ffcccc" width="115">
       <p><font color="#3366ff"><i><b>Function Name</b></i></font> </p>
       </td>
-      <td style="text-align: center;" width="243" bgcolor="#ffcccc">
+      <td style="text-align: center;" bgcolor="#ffcccc" width="243">
       <p><font color="#3366ff"><i><b>Description</b></i></font></p>
       </td>
-      <td style="text-align: center;" width="83" bgcolor="#ffcccc">
+      <td style="text-align: center;" bgcolor="#ffcccc" width="83">
       <p><font color="#3366ff"><i><b>Success ratio<br>
 (continuous) [%]</b></i></font> </p>
       </td>
-      <td style="text-align: center;" width="76" bgcolor="#ffcccc">
+      <td style="text-align: center;" bgcolor="#ffcccc" width="76">
       <p><font color="#3366ff"><i><b>Success</b></i></font><span style="font-style: italic;"><span style="font-weight: bold;"> </span></span><font color="#3366ff"><i><b>ratio</b></i></font><font color="#3366ff"><i><b> (noisy) [%]</b></i></font> </p>
       </td>
-      <td style="text-align: center;" width="108" bgcolor="#ffcccc">
+      <td style="text-align: center;" bgcolor="#ffcccc" width="108">
       <p><font color="#3366ff"><i><b>Comments</b></i></font></p>
       </td>
     </tr>
@@ -1381,4 +1384,5 @@ $Date: 2012-03-05 10:56:28 $ $Revision: 1.25 $
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
 </div>
+
 </body></html>
