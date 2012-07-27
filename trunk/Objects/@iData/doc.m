@@ -30,5 +30,5 @@ if length(url)
 else
   disp([ '  ' url ]);
 end
-web(d);
+web(url);
 
