@@ -49,6 +49,7 @@ disp(' ');
 disp('                          ** Welcome to iFit **');
 disp('                            <ifit.mccode.org>');
 disp('                E. Farhi, Institut Laue Langevin, France (c)');
+disp('                      Licensed under the EUPL V.1.1');
 disp(' ');
 disp(version(iData));
 disp(' ');
@@ -71,13 +72,16 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     disp('      switch/case...) when they span on one line, or in scripts.');
     disp('Keys: Arrow-Up/Down  Navigate in command history.');
     disp('      Ctrl-C         Exit (same as ''exit'' or ''return'' commands.');
-    disp('Help: Type ''doc(iData,''iFit'')'' or see <ifit.mccode.org> <ifit-users@mccode.org>.');
+    disp('Help: Type ''doc(iData,''iFit'')'' ');
+    disp('      see or <ifit.mccode.org> <ifit-users@mccode.org>.');
     disp('To import some data, use e.g. d=iData(''filename'');');
     disp('To create a model, use e.g. f=iFunc(''expression''); ');
     disp('  or type fits(iFunc) to get a list of available models.');
     disp('To fit a model to data, use e.g. fits(f,d)');
     disp('Data and Models can be manipulated (+-/*...) using the Matlab syntax.');
     disp(' ');     
+    disp('Matlab is a registered trademark of The Mathworks Inc.');
+    disp('Source code for this software is available at <ifit.mccode.org>.')
     ifit_options.line = 'doc(iData,''iFit''); disp('' '');';
   elseif strncmp(ifit_options.line,'run ', 4) % 'run' command ----------------------------------
     ifit_options.line = strtrim(ifit_options.line(5:end));

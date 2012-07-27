@@ -18,13 +18,13 @@ else
     browser = getenv('BROWSER');
     if isempty(browser)
       [flag, out]=system('locate firefox');
-      if isempty(editor) && ~isempty(out), editor='firefox'; end
+      if isempty(browser) && ~isempty(out), browser='firefox'; end
       [flag, out]=system('locate google-chrome');
-      if isempty(editor) && ~isempty(out), editor='google-chrome'; end
+      if isempty(browser) && ~isempty(out), browser='google-chrome'; end
       [flag, out]=system('locate konqueror');
-      if isempty(editor) && ~isempty(out), editor='konqueror'; end
+      if isempty(browser) && ~isempty(out), browser='konqueror'; end
       [flag, out]=system('locate seamonkey');
-      if isempty(editor) && ~isempty(out), editor='seamonkey'; end
+      if isempty(browser) && ~isempty(out), browser='seamonkey'; end
     end
     if isempty(browser), browser = 'gnome-open'; end
     if ~isempty(url)
