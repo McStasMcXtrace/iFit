@@ -1,7 +1,9 @@
 #!/bin/sh
 # create standalone ifit distribution
 #
-# usage: make.sh <ifitpath> <target>
+# usage: make.sh <<target>
+
+echo usage: make.sh target
 
 # location of the make script
 export m=$PWD
