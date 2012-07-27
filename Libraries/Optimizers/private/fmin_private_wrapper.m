@@ -247,7 +247,7 @@ try
 
 switch options.optimizer
 case 'fmin' % automatic guess
-  [optimizer, algorithm] = inline_auto_optimizer(fun, pars, varargin);
+  [optimizer, algorithm] = inline_auto_optimizer(fun, pars, varargin{:});
   options.optimizer = optimizer;
   options.algorithm = algorithm;
   [pars,fval,exitflag,output] = feval(optimizer, fun, pars, options, constraints, varargin{:});
@@ -545,10 +545,13 @@ output.fevalDuration   = constraints.fevalDuration;
 
 % estimate parameter uncertainty from the search trajectory
 
-index      = find(output.criteriaHistory < min(output.criteriaHistory)*4);   % identify tolerance region around optimum                       
-if isempty(index) % retain 1/4 lower criteria part
+index      = find(output.criteriaHistory < min(output.criteriaHistory)*4);   % identify tolerance region around optimum 
+if length(index) < 3 % retain 1/4 lower criteria part
   delta_criteria = output.criteriaHistory - min(output.criteriaHistory);
   index      = find(abs(delta_criteria/min(output.criteriaHistory)) < 0.25);
+end
+if length(index) < 3
+  index = 1:length(output.criteriaHistory);
 end
 delta_pars = (output.parsHistory(index,:)-repmat(output.parsBest,[length(index) 1])); % get the corresponding parameter set
 weight_pars= exp(-((output.criteriaHistory(index)-min(output.criteriaHistory))/min(output.criteriaHistory)).^2 / 8); % Gaussian weighting for the parameter set
@@ -561,7 +564,7 @@ if length(pars)^2*output.fevalDuration/2 < 60 ... % should spend less than a min
   if length(pars)^2*output.fevalDuration/2 > 5
     disp([ '  Estimating Hessian matrix... (' num2str(length(pars)^2*output.fevalDuration/2) ' [s] remaining, please wait)' ]);
   end
-  try
+  %try
   [dp, covp, corp,jac,hessian]  = inline_estimate_uncertainty(fun, pars, options, varargin{:});
   if ~isempty(covp)
     output.parsHessianUncertainty = reshape(abs(dp), size(pars));
@@ -570,7 +573,7 @@ if length(pars)^2*output.fevalDuration/2 < 60 ... % should spend less than a min
     output.parsHessian            = hessian;
     output.parsJacobian           = jac;
   end
-  end
+  %end
 else
   output.parsHessianUncertainty = [];
   output.parsHessianCovariance  = [];
@@ -925,7 +928,7 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
 end % inline_private_check
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, options, args)
+function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, options, varargin)
 % [dp,covp,corp] = inline_estimate_uncertainty(fun, pars, options)
 % 
 % Estimates the uncertainty around an optimization solution using
@@ -964,7 +967,7 @@ function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, opt
   % initialize the curvature matrix alpha = '1/2 d2 Chi2/dpi/dpj' (half Hessian)
   alpha= zeros(n);
   dp   = zeros(size(pars));
-  chisq= sum(feval(fun, pars, args{:}));
+  chisq= sum(feval(fun, pars, varargin{:}));
   
   covp = [];
   corp = [];
@@ -983,16 +986,16 @@ function [dp,covp,corp,jac,hessian] = inline_estimate_uncertainty(fun, pars, opt
   % we now build the error matrix 'alpha' and the Jacobian
   jac = zeros(n,1);
   for i=1:n
-    p    = pars; p(i) = p(i)+dp(i); chi1 = sum(feval(fun, p, args{:}));
-    p    = pars; p(i) = p(i)-dp(i); chi2 = sum(feval(fun, p, args{:}));
+    p    = pars; p(i) = p(i)+dp(i); chi1 = sum(feval(fun, p, varargin{:}));
+    p    = pars; p(i) = p(i)-dp(i); chi2 = sum(feval(fun, p, varargin{:}));
     alpha(i,i) = (chi1-2*chisq+chi2)/2/dp(i)/dp(i); % diagonal terms
     jac(i) = (chi1-chisq)/dp(i);
     
     for j=i+1:n
-      p=pars; p(i)=p(i)+dp(i); p(j)=p(j)+dp(j); chi1=sum(feval(fun,p, args{:}));
-      p=pars; p(i)=p(i)+dp(i); p(j)=p(j)-dp(j); chi2=sum(feval(fun,p, args{:}));
-      p=pars; p(i)=p(i)-dp(i); p(j)=p(j)+dp(j); chi3=sum(feval(fun,p, args{:}));
-      p=pars; p(i)=p(i)-dp(i); p(j)=p(j)-dp(j); chi4=sum(feval(fun,p, args{:}));
+      p=pars; p(i)=p(i)+dp(i); p(j)=p(j)+dp(j); chi1=sum(feval(fun,p, varargin{:}));
+      p=pars; p(i)=p(i)+dp(i); p(j)=p(j)-dp(j); chi2=sum(feval(fun,p, varargin{:}));
+      p=pars; p(i)=p(i)-dp(i); p(j)=p(j)+dp(j); chi3=sum(feval(fun,p, varargin{:}));
+      p=pars; p(i)=p(i)-dp(i); p(j)=p(j)-dp(j); chi4=sum(feval(fun,p, varargin{:}));
       alpha(i,j)=(chi1-chi2-chi3+chi4)/8/dp(i)/dp(j);
       alpha(j,i)=alpha(i,j); % off diagonal terms (symmetric)
     end
@@ -1057,13 +1060,13 @@ if nargin < 3, varargin = {}; end
 dimensions = [ 1     2     4     6     8    10    12    16    20    24    28    32    40    48    64 ];
 
 tic
-fval1 = feval(fun, pars);
+fval1 = feval(fun, pars, varargin{:});
 t1 = toc;
 if t1 > 5
   disp([ 'Analysing the objective function. Please wait (' num2str(t1) '[s])' ])
 end
 tic
-fval2 = feval(fun, pars);
+fval2 = feval(fun, pars, varargin{:});
 t2 = toc;
 
 elapsed = mean([t1,t2]);

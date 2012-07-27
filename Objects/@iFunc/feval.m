@@ -12,7 +12,7 @@ function [signal, ax, name] = feval(model, p, varargin)
 %     values are then replaced by the guessed ones.
 %
 % input:  model: model function (iFunc, single or array)
-%         parameters: model parameters (vector, cell or vectors) or 'guess'
+%         parameters: model parameters (vector, cell or vectors, structure, iData) or 'guess'
 %         ...: additional parameters may be passed, which are then forwarded to the model
 % output: signal: result of the evaluation (vector/matrix/cell)
 %         axes:   returns the axes used for evaluation (cell of vector/matrix)
@@ -313,9 +313,6 @@ end
 
 % remove axes from varargin -> leaves additional optional arguments to the function
 varargin(1:model.Dimension) = []; 
-if isempty(varargin)
-  clear varargin
-end
 
 % evaluate now...
 try
