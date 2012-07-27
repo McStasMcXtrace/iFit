@@ -9,11 +9,11 @@ function b = version(a,long_request)
 
 vers = '@IFIT_VERSION@';
 date = '@IFIT_DATE@';
-auth = 'E.Farhi, P. Willendrup and Y.Debab, (c) ILL/DS/CS <farhi@ill.eu> GPL2';
-contrib = 'Eric Ludlam, Felix Morsdorf, Joe Conti, Douglas M. Schwarz, Alexandros Leontitsis, F. Sigworth, Argimiro R. Secchi, Sheela V. Belur, Javad Ivakpour, Nikolaus Hansen, Alexei Kuntsevich and Franz Kappel, C.T. Kelley, Brecht Donckels, Miroslav Balda, Paul Spencer, Juerg Schwizer, Daniel Buckton, Petr Mikulik, David Gingras, Joachim Vandekerckhove, Yi Cao, Sachin A. Nikumbh, Oliver Bunk, R. G. Abraham, Bruno Luong, J. Ollivier, D. Riley, E. Trautman, F. Esmonde-White, A.S. Mian';
+auth = 'E.Farhi, P. Willendrup and Y.Debab, (c) ILL/DS/CS <farhi@ill.eu> EUPL';
+contrib = 'Eric Ludlam, Felix Morsdorf, Joe Conti, Douglas M. Schwarz, Alexandros Leontitsis, F. Sigworth, Argimiro R. Secchi, Sheela V. Belur, Javad Ivakpour, Nikolaus Hansen, Alexei Kuntsevich and Franz Kappel, C.T. Kelley, Brecht Donckels, Miroslav Balda, Paul Spencer, Juerg Schwizer, Daniel Buckton, Petr Mikulik, David Gingras, Joachim Vandekerckhove, Yi Cao, Sachin A. Nikumbh, Oliver Bunk, R. G. Abraham, Bruno Luong, J. Ollivier, D. Riley, E. Trautman, F. Esmonde-White, A.S. Mian, S. Cheng';
 
 b = [ 'iFit/iData version ' vers ' (' date ') by ' auth '.' ];
 if nargin > 1
-  b = [ b ' Contributions from ' contrib '.' ];
+  b = [ b '** Licensed under the EUPL V.1.1 ** Contributions from ' contrib '.' ];
 end
 
