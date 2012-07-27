@@ -48,6 +48,8 @@ else
       if isempty(editor) && ~isempty(out), editor='gedit'; end
       [flag, out]=system('locate nedit');
       if isempty(editor) && ~isempty(out), editor='nedit'; end
+      [flag, out]=system('locate kate');
+      if isempty(editor) && ~isempty(out), editor='kate'; end
       [flag, out]=system('locate xedit');
       if isempty(editor) && ~isempty(out), editor='xedit'; end
       [flag, out]=system('locate xemacs');
