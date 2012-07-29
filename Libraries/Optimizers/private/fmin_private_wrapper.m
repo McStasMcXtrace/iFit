@@ -115,7 +115,7 @@ if strcmp(fun,'defaults')
   pars = feval(optimizer, 'defaults');
   return
 elseif nargin < 2
-  error([ 'syntax is: ' optimizer '(optimizer, inline_objective, parameters, ...)' ] );
+  error([ 'syntax is: ' optimizer '(optimizer, objective, parameters, ...)' ] );
 elseif nargin == 2 && isstruct(fun)
   if     isfield(fun, 'x0'),          pars=fun.x0;
   elseif isfield(fun, 'guess'),       pars=fun.guess;
@@ -131,6 +131,10 @@ elseif nargin < 3
 end
 if isempty(pars)
   error([ inline_localChar(optimizer) ': starting parameters (3rd argument) must not be empty.' ] );
+end
+
+if ~ischar(fun) && ~isa(fun, 'function_handle')
+  error([ inline_localChar(optimizer) ': objective function (2nd argument) must be a char or function_handle, but is a ' class(fun) '.' ] );
 end
 
 % default arguments when missing

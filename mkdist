@@ -21,7 +21,7 @@
 
 # Version: $Revision: 1.5 $
 # define version and symbols that will be replaced in many places
-IFIT_TARNAME=iFit
+IFIT_TARNAME=ifit
 IFIT_NAME=iFit
 IFIT_VERSION=$1
 MONTH=`date +"%b"`
@@ -52,16 +52,58 @@ rm mkdist
 # rm Loaders/looktxt.mex*
 
 # Update version and date
-for file in README.txt Objects/@iData/version.m Docs/index.html Docs/Install.html
+for file in README.txt Objects/@iData/version.m Docs/index.html Docs/Install.html Applications/GUI/standalone/deb/control Applications/GUI/standalone/deb/debcreate
 do
-sed 's/@IFIT_VERSION@/'$IFIT_VERSION'/'  $file > $file.tmp
+sed 's/@IFIT_VERSION@/'$IFIT_VERSION'/'  $file     > $file.tmp
+sed 's/@IFIT_NAME@/'$IFIT_NAME'/'        $file.tmp > $file
+sed 's/@IFIT_TARNAME@/'$IFIT_TARNAME'/'  $file     > $file.tmp
 sed 's/@IFIT_DATE@/'$MONTH'. '$DAY', '$YEAR'/'  $file.tmp > $file
 rm $file.tmp
 done
 
 cd $TMPDIR
-# Create tar archive
+# Create tar archive SRC
 zip -r $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip $IFIT_TARNAME-$IFIT_VERSION
+
+if [ -x `which mcc` ]
+then
+  echo create the standalone version into $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
+  cd $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone
+  ./make.sh $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
+  cd $TMPDIR
+fi
+
+if [ -e $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64 ]
+then
+  if [ -e /etc/debian_version ]
+  then
+    if [ -e build-chroot-amd64 ]
+    then
+      echo Proceeding to amd64 .deb build from $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
+      # First, clean up in case of previous iFit installs in the chrooot
+      sudo rm -f  build-chroot-amd64/usr/local/bin/*
+      sudo rm -rf build-chroot-amd64/usr/local/ifit
+      echo install amd64 mex distribution in /root
+      sudo cp $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone/deb/debcreate build-chroot-amd64/root
+      sudo cp -rf $IFIT_TARNAME-$IFIT_VERSION-amd64 build-chroot-amd64/root
+      sudo cp -rf $IFIT_TARNAME-$IFIT_VERSION build-chroot-amd64/root
+      sudo mkdir  build-chroot-amd64/build
+      sudo chroot build-chroot-amd64 apt-get update
+      sudo chmod u+x build-chroot-amd64/root/debcreate
+      sudo chroot build-chroot-amd64   /root/debcreate $1 amd64
+      echo
+      echo
+      echo Build packages created:
+      echo
+      cp build-chroot-amd64/build/*deb .
+      ls -lf $IFIT_TARNAME-$IFIT_VERSION*.* $IFIT_TARNAME-$IFIT_VERSION*.*
+      echo
+    else
+      echo You need a chroot environment based on debootstrap in build-chroot-amd64 before building the amd64 deb package - create using something like
+      echo sudo debootstrap --arch amd64 precise build-chroot-amd64
+    fi # build chroot present
+  fi # debian
+fi # amd64 build
 
 echo "========================================================================="
 echo "mkdist: Distro creation for $IFIT_STRING"
