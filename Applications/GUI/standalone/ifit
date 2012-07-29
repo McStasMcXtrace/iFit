@@ -7,11 +7,24 @@
 exe_name=$0
 exe_dir=`dirname "$0"`
 echo "------------------------------------------"
-
+if [ -d "/opt/MATLAB/MATLAB_Compiler_Runtime/v713/" ]
+then
   MCRROOT="/opt/MATLAB/MATLAB_Compiler_Runtime/v713/"
+fi
+if [ ! -d $MCRROOT ]
+then
+  echo "The Matlab Compiler Runtime can not be found. "
+  echo "If it has been installed already, define the MCRROOT"
+  echo "variable to the proper location such as:"
+  echo "  export MCRROOT=/opt/MATLAB/MATLAB_Compiler_Runtime/v713/"
+  echo "."
+  echo "You can get the MCR installer at "
+  echo "  http://ifit.mccode.org/Downloads/binary/glnx64/"
+  echo "Download and install it with: ./sudo MCRInstaller.bin"
+  echo "and specify the /opt/MATLAB location."
+else
 
-  echo Setting up environment variables
-  echo ---
+  echo Starting iFit using $MCRROOT
   LD_LIBRARY_PATH=.:${MCRROOT}/runtime/glnxa64 ;
   LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/bin/glnxa64 ;
   LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/sys/os/glnxa64;
@@ -23,9 +36,10 @@ echo "------------------------------------------"
   XAPPLRESDIR=${MCRROOT}/X11/app-defaults ;
   export LD_LIBRARY_PATH;
   export XAPPLRESDIR;
-  echo LD_LIBRARY_PATH is ${LD_LIBRARY_PATH};
+  # echo LD_LIBRARY_PATH is ${LD_LIBRARY_PATH};
 
   "${exe_dir}"/run_ifit $*
 
-exit
+fi
 
+exit
