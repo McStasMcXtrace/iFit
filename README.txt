@@ -69,4 +69,5 @@
 ** Contacts:
   You can register to the iFit mailing list at <http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users>
   Send messages to the ifit-users@mail.mccode.org.
+  Help pages are available at <http://ifit.mccode.org>
 
