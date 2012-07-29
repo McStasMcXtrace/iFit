@@ -32,7 +32,7 @@ user mailinglist</a></li></ol>
 <p style="margin-left: 40px;">When installing a 'stand-alone' release of
  iFit, there is simply NO dependency. The package contains everything 
 required. You only need to have a running system. The stand-alone 
-package is distributed for <span style="font-style: italic;">Linux, Windows</span> and <span style="font-style: italic;">Mac OSX</span> systems, both in x86 (32 bits) and x86_64 (64 bits) systems. See below to <a href="#mozTocId480203">download</a> the required stand-alone package.<br>
+package is distributed for <span style="font-style: italic;">Linux, Windows</span> and <span style="font-style: italic;">Mac OSX</span> systems, for&nbsp; x86_64 (64 bits) systems. See below to <a href="#mozTocId480203">download</a> the required stand-alone package.<br>
 </p>
 <p style="margin-left: 40px;">The stand-alone version provides full iFit
  functionality at no cost. You can execute any script (list of commands)
@@ -45,7 +45,7 @@ Matlab - source code release<br>
 </h4>
 
 <div style="margin-left: 40px;">The only requirement is to have <a href="http://www.mathworks.com">Matlab</a>
-installed. Any Matlab version from 7.4 (R2007a) will do. no need for any additional toolbox. This is a commercial
+installed. Any Matlab version from 7.4 (R2007a) will do, no need for any additional toolbox. This is a commercial
 product. Student versions can be bought for lower prices, as well as
 Academic licenses (e.g. for Universities). See below to <a href="#mozTocId480203">download</a> the required source package.
 </div>
@@ -71,12 +71,13 @@ execute iFit even without purchasing Matlab. See the installation
 instructions below.<br>
 </li>
 <ul>
-  <li>Linux 32 bits: debian installer or MCR + iFit (compiled using Matlab R2010a on a Ubuntu 12.04 system)<br>
-  </li>
-  <li>Linux 64 bits: deb installer or MCR + iFit (compiled using Matlab R2010a on a Ubuntu 12.04 system)</li>
-  <li>Windows 32 bits: MCR + iFit (compiled using Matlab R2008a on a Vista system)</li>
-  <li>Windows 64 bits: MCR + iFit (compiled using Matlab R2008a on a Vista system)</li>
-  <li>Mac OSX 32 bits (Intel): MCR + iFit (compiled using Matlab R2010a on a Leopard system)</li>
+  
+  <li>Debian Linux 64 bits (incl. Ubuntu): <a href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller.bin">R2010a MCR</a>, then <a href="http://ifit.mccode.org/Downloads/binary/glnx64/ifit-1.2-amd64.deb">iFit debian</a> package (compiled using Matlab R2010a on a Ubuntu 12.04 system)</li>
+<li>Other Linux 64 bits:&nbsp;<a href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller.bin">R2010a MCR</a>, then <a href="http://ifit.mccode.org/Downloads/binary/glnx64/ifit-1.2-amd64.zip">iFit binary</a> (compiled using Matlab R2010a on a Ubuntu 12.04 system)</li>
+
+  
+  <li>Windows 64 bits: MCR + iFit (compiled using Matlab R2010a on a W7 system)</li>
+  
   <li>Mac OSX 64 bits (Intel): MCR + iFit (compiled using Matlab R2010a on a Leopard system)</li>
 </ul>
 
@@ -84,16 +85,29 @@ instructions below.<br>
 
 </ul>Older releases can be obtained <a href="http://ifit.mccode.org/Downloads/">here</a>.<br>
 <h3><a class="mozTocH3" name="mozTocId890374"></a>Installation - stand-alone distribution</h3>
-<p>Install the Matlab Compiler Runtime (MCR) for your system. Just click
- on OK all the way through. On Unix Systems, we recommend to install it 
-in<span style="font-style: italic;"> /opt/MATLAB</span> (requires administrative privileges).</p>
-<p>Then install the iFit stand-alone package where-ever you wish.&nbsp;</p>
+<p>Install the R2010a Matlab Compiler Runtime (MCR) for your system if 
+it has not be installed previously. This is not required if you only 
+wish to upgrade iFit. Just click
+ on OK all the way through. <br>
+</p>
+<p><span style="font-weight: bold;">On Linux Systems,</span> we recommend to install the MCR 
+in<span style="font-style: italic;"> /opt/MATLAB</span> (requires administrative privileges).<br>
+</p>
+<pre style="margin-left: 40px;">chmod u+x MCRINstaller.bin<br>sudo ./MCRInstaller.bin<br></pre>
+
+<p>Then install the iFit stand-alone package where-ever you wish. If you
+ have not installer the MCR in /opt/MATLAB, you need to define the 
+MCRROOT environment variable to its location prior to starting iFit :<br>
+</p>
+<pre style="margin-left: 40px;">export MCRROOT=/opt/MATLAB/MATLAB_Compiler_Runtime/v713/<br>ifit<br></pre>
+<p></p>
+
 <p><span style="font-weight: bold; font-style: italic;">On Linux systems</span><span style="font-weight: bold;"></span>,
  if you use the Debian package installer (.deb), nothing else is 
 required. If you use a manual installation (.zip) we recommend that you 
-extract the archive content in the directory <span style="font-style: italic;">/usr/local/iFit</span>. You then need to check the 'run_ifit.sh' script in the package for the location of the MCR installation (something like <span style="font-style: italic;">/opt/MATLAB/MATLAB_Compiler_Runtime/v713/</span>). <br>
+extract the archive content in the directory <span style="font-style: italic;">/usr/local/ifit</span>.<br>
 </p>
-<p>To launch iFit, click on the 'ifit' (run_ifit on Linux systems) icon 
+<p>To launch iFit, click on the 'ifit' icon in 
 the installation directory. You can also drag-n-drop files on the iFit 
 icon to directly import data files and plot them.<br>
 </p>
