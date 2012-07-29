@@ -7,4 +7,5 @@ Terminal=true
 Exec=ifit %f
 Name=iFit
 Comment=iFit stand-alone. Drag-n-drop me.
-Icon=gnome-panel-launcher
+Icon=iFit-logo.png
+# logo obtained with font URW Palladio L, italic, bold, blue
