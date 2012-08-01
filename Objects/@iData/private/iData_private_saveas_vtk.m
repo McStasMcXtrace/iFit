@@ -91,8 +91,7 @@ fwrite(fid, ['# vtk DataFile Version 2.0' nl ...
     'ASPECT_RATIO 1 1 1' nl ...
     'ORIGIN 0 0 0' nl ....
     'POINT_DATA '  num2str(N*M*O) nl ...
-    'SCALARS volume_scalars char 1' nl ...
-    );
+    'SCALARS volume_scalars char 1' nl ] );
 
 if strcmp(fmp, 'ASCII')
   fwrite(fid, [ 'LOOKUP_TABLE default' nl ]);
@@ -111,7 +110,7 @@ if strcmp(fmp, 'ASCII')
       disp([num2str(round(100*z/O)) '%']);
   end
 else % BINARY
-  tp = class(matrix;
+  tp = class(matrix);
   if( strcmp(tp, 'uint8') > 0 )      typ = 'unsigned_char';
   elseif( strcmp(tp, 'int8') > 0 )   typ = 'char';
   elseif( strcmp(tp, 'uint16') > 0 ) typ = 'unsigned_short';
