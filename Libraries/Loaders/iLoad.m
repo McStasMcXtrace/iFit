@@ -65,9 +65,8 @@ if nargin ==1
     return
   end
 end
-if any(strcmp(loader, {'load config','config'}))
-  if isempty(config), config  = iLoad_config_load; end
-  % check for availability of looktxt as MeX file, and trigger compilation if needed.
+if any(strcmp(loader, {'load config','config','force','force load config'}))
+% check for availability of looktxt as MeX file, and trigger compilation if needed.
   if exist('looktxt') ~= 3 && ~isdeployed
     p = pwd;
     cd (fullfile(fullfile(fileparts(which(mfilename)),'private'))
@@ -76,14 +75,19 @@ if any(strcmp(loader, {'load config','config'}))
       mex -O looktxt.c
     catch
       try
-        mex ('-O','cbf_uncompress.c', ['-L"' mathlabroot '\sys\lcc\lib"'],'-lcrtdll');
-        mex ('-O','looktxt.c',        ['-L"' mathlabroot '\sys\lcc\lib"'],'-lcrtdll');
+        mex ('-O','cbf_uncompress.c', ['-L"' matlabroot '\sys\lcc\lib"'],'-lcrtdll');
+        mex ('-O','looktxt.c',        ['-L"' matlabroot '\sys\lcc\lib"'],'-lcrtdll');
       catch
         fprintf(1, 'iLoad: Can''t compile looktxt.c and cbf_uncompress.c\n       in %s\n', pwd);
       end
     end
     cd (p)
   end
+end
+
+if any(strcmp(loader, {'load config','config'}))
+  if isempty(config), config  = iLoad_config_load; end
+  
   % look for a specific importer when filename is specified
   if ~isempty(filename)
     data = {};
