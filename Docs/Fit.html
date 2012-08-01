@@ -281,7 +281,7 @@ with a weighting by the success ratio and the number of function calls
 (optimization speed). Successive calls to <span style="font-style: italic; font-weight: bold;">fmin</span> with the same problem to solve may result in different optimizers and solutions.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Optimizer<br>
@@ -543,7 +543,7 @@ than 0.95 is usually good.
 tool has been designed to automatically create model functions from
 either a single expression, or a more detailed description. Refer to
 the <a href="Models.html#mozTocId210092">Models/Model Builder</a>.<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc;                               <span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">% pops-up a dialog to define the new fit function/model</span><br></span></span>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">iFunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span>)<br></span></span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc;                              <span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">% pops-up a dialog to define the new fit function/model</span><br></span></span>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">iFunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);	<span style="font-style: italic;">% directly create an iFunc model</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span>)<br></span></span></pre>
 The resulting model has the ability to identify itself (<span style="color: rgb(204, 51, 204);">'identify'</span>, provide
 detailed information), compute automatic starting parameters (<span style="color: rgb(204, 51, 204);">'guess'</span>), display
 itself (<span style="color: rgb(204, 51, 204);">'plot'</span>), and
@@ -555,7 +555,7 @@ It is even possible to directly call the fitting method and create the
 model function on the fly, which makes the fit much easier for simple
 functions that can be written as a single expression:<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);"></span></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span></span></span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">);	<span style="font-style: italic;">% does the same as above, in a single command</span></span></span></pre>
-To assemble existing functions into new ones, you may use e.g.:<br>
+To assemble existing functions into new ones, you may use e.g. :<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=gauss+lorz; h.Constraint = <span style="color: rgb(204, 51, 204);">'p(8)=0;'</span>;<br></pre>
 which creates a new function which is the sum of a Gaussian and a
 Lorentzian. The second redundant Lorentzian Background <span style="font-style: italic;">p(8)</span> parameter
@@ -613,7 +613,7 @@ The criteria is then normalized to the number of degrees of freedom by dividing 
 <br>
 The following pre-defined functions can be used as criteria:<br>
 <br>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">criteria(Signal, Error,

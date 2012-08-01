@@ -88,7 +88,7 @@ Last, the <span style="font-weight: bold;">Constraint</span> property holds any 
 <br>
 
 <a href="images/iFunc_subplot.png"><img alt="iFunc: subplot" title="iFunc: subplot" src="images/iFunc_subplot.png" style="border: 0px solid; width: 200px; height: 304px;" align="right"></a>A list of pre-defined models is shown in the <a href="Models.html">Models</a> page (Gaussian, Lorentzian, exponential, lines, quadratic, ...). Edit their code to see how to define new models:<br>
-<pre style="margin-left: 40px;">&gt;&gt; edit gauss<br>&gt;&gt; edit voigt<br>&gt;&gt; ifitmakefunc(voig) <span style="font-style: italic;">% pop-up a dialogue</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span> gauss <span style="font-style: italic;">% edit the function definition (from a file)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span> voigt<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span>(voig) <span style="font-style: italic;">% edit the object definition</span></pre>
 
 
 When no parameter value is known, some guessed values are estimated from the analysis of the model value and expression.<br>
@@ -134,7 +134,13 @@ flipud log10 plus(+) sinh minus(-)<br>
       </td>
       <td style="vertical-align: top;">mtimes(*) times (.*) mpower(^) power(.^) mrdivide(/) rdivide(./) conv convn<br>
       </td>
-    </tr>
+    </tr><tr>
+  <td style="vertical-align: top;"><span style="font-weight: bold;">Other operators</span><br>
+  </td>
+  <td style="vertical-align: top;">edit plot char copyobj doc feval fits get set subplot conv convn xcorr<br>
+  </td>
+</tr>
+
   </tbody>
 </table>
 
@@ -158,7 +164,7 @@ The addition operator <span style="font-style: italic;">plus (+)</span> used wit
 instance the following example does the same as above, explicitly 
 setting the new signal value, and the next one displays a text before 
 evaluating the model :<br>
-<pre style="margin-left: 40px;">&gt;&gt; c = gauss + <span style="color: rgb(204, 51, 204);">'signal = signal + zeros(size(x));'<span style="color: rgb(0, 0, 0);">;	<span style="font-style: italic;">% add code after the Expression<br></span></span></span>&gt;&gt; c = <span style="color: rgb(204, 51, 204);">'disp(''Gaussian comming'');'<span style="color: rgb(0, 0, 0);">+ gauss;	<span style="font-style: italic;">% add code after the Expression</span></span></span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; c = gauss + <span style="color: rgb(204, 51, 204);">'signal = signal + zeros(size(x));'<span style="color: rgb(0, 0, 0);">;	<span style="font-style: italic;">% add code after the Expression (append)<br></span></span></span>&gt;&gt; c = <span style="color: rgb(204, 51, 204);">'disp(''Gaussian comming'');'<span style="color: rgb(0, 0, 0);">+ gauss;		<span style="font-style: italic;">% add code before the Expression</span></span></span><span style="font-style: italic;"> (prepend)</span><br></pre>
 
 
 
@@ -174,7 +180,7 @@ You can also use the convolution related operators<br>
 <ul>
 
   <li><span style="font-weight: bold;">conv: </span>convolution</li>
-  <li><span style="font-weight: bold;">convn: </span>normalized convolution (which normalizes the 2nd argument)<br>
+  <li><span style="font-weight: bold;">convn: </span>normalized convolution (which normalizes and centers the 2nd argument)<br>
 </li>
   <li><span style="font-weight: bold;">xcorr: </span>cross-correlation</li>
 </ul>
