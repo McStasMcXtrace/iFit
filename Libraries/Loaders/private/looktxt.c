@@ -112,7 +112,7 @@
    compile with:
      mex -O looktxt.c
  * Under Windows 32 bits
-     mex ('-O','-v','-output','looktxt.c',['-L"' mathlabroot '\sys\lcc\lib"'],'-lcrtdll')
+     mex ('-O','-v','-output','looktxt.c',['-L"' matlabroot '\sys\lcc\lib"'],'-lcrtdll')
    in this case, MAT files are not written, but data is directly send back as MEX output arguments 
  */
 
@@ -223,6 +223,7 @@ int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
 #define malloc  mxMalloc
 #define realloc mxRealloc
 #define calloc  mxCalloc
+#define main    MexMain
 /* #define free mxFree  */
 #define free    NoOp
 #define print_stderr mexPrintf
