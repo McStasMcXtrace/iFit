@@ -13,7 +13,7 @@ if isempty(varargin)
 end
 
 argv={};
-format = 'MATfile'; % default output format, but can be overriden
+
 user.outfile = '';
 user.format  = '';
 remove_tempname = 0;
@@ -75,10 +75,7 @@ if isempty(user.outfile)
 elseif strncmp(user.outfile, '--outfile=', length('--outfile='))
   user.outfile= user.outfile((length('--outfile=')+1):end);
 end
-if isempty(user.format)
-  user.format =          'MATfile';
-  argv{end+1} = '--format=MATfile';
-elseif strncmp(user.format, '--format=', length('--format='))
+if strncmp(user.format, '--format=', length('--format='))
   user.format= user.format((length('--format=')+1):end);
 end
 
@@ -86,7 +83,7 @@ end
 s = looktxt(argv{:});
 
 % import the MAT file from the temporary file, into structure ==================
-if strcmp(format, 'MATfile')
+if ischar(user.outfile) && ~isempty(dir(user.outfile))
   s = user.outfile;
   try
     s = load(user.outfile);
@@ -102,6 +99,6 @@ if strcmp(format, 'MATfile')
 end
 
 % delete temporary file ========================================================
-if remove_tempname
+if remove_tempname && ~isempty(dir(user.outfile))
   delete(user.outfile);
 end
