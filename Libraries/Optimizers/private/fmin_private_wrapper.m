@@ -621,7 +621,8 @@ return  % actual end of optimization
     % compute criteria
     t = clock;
     c = feval(fun, pars, varargin{:});         % function=row vector, pars=column
-    c  = sum(c);
+    c = double(c);
+    c = sum(c(:));
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
     [exitflag, message] = inline_private_check(pars, c, ...
@@ -656,6 +657,7 @@ return  % actual end of optimization
     % compute criteria
     t = clock;
     c = feval(fun, pars, varargin{:}); % function=row vector, pars=column
+    c = double(c);
     if length(c) == 1,
       c = c*ones(1,10)/10;
     end
