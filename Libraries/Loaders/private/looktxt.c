@@ -466,7 +466,7 @@ struct table_struct {
 
 #define NUMFORMATS 11
 #ifdef USE_MEX
-#define LOOKTXT_FORMAT "MEX"    /* default format when in Matlab/MeX mode */
+#define LOOKTXT_FORMAT "MATfile"    /* default format when in Matlab/MeX mode */
 mxArray *mxOut=NULL;                 /* a cell array or single struct */
 #else
 #define LOOKTXT_FORMAT "Matlab" /* default format */

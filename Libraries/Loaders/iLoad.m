@@ -70,7 +70,7 @@ if any(strcmp(loader, {'load config','config'}))
   % check for availability of looktxt as MeX file, and trigger compilation if needed.
   if exist('looktxt') ~= 3 && ~isdeployed
     p = pwd;
-    cd (fullfile(ifitpath,'Loaders','private'))
+    cd (fullfile(fullfile(fileparts(which(mfilename)),'private'))
     try
       mex -O cbf_uncompress.c
       mex -O looktxt.c
