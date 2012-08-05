@@ -25,7 +25,7 @@
 
 <ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes
 </a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId482415">Data set maximum size</a></li><li><a href="#mozTocId786389">NetCDF files written by Matlab can not be read by other software (hdfview, ncBrowse)</a></li><li><a href="#mozTocId332568">Convolution brings strange results (Models/fconv)
-</a></li><li><a href="#mozTocId473369">Too many warnings displayed</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li></ol></li></ol>
+</a></li><li><a href="#mozTocId473369">Too many warnings displayed</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li><li><a href="#mozTocId63182">Limitations in the standalone (binary) package</a></li></ol></li></ol>
 
 
 
@@ -140,9 +140,9 @@ architecture, missing library).
 
 <div style="margin-left: 40px;">
 Under Windows 64bit systems,
-you need the Visual C++ runtime libraries e.g. <i>msvc[mpr]90.dll</i> which
+you may need the Visual C++ runtime libraries e.g. <i>msvc[mpr]90.dll</i> which
 are provided with the Visual C++ installation (see below), to put in the 
-Windows system directory.
+Windows system directory.<br>
 </div>
 
 
@@ -165,8 +165,9 @@ You may need to select the compiler with the <i>mex -setup</i> command from Matl
 It has been reported that MeX compilation may fail when spaces are part of the path name to the iFit location. <br>
 
 
-Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.
-<div style="margin-left: 40px;">
+Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.<br>
+<h4><a class="mozTocH4" name="mozTocId63182"></a>Limitations in the standalone (binary) package</h4>
+When running the standalone version (binary), new Matlab functions can <span style="font-weight: bold; font-style: italic;">not</span> be defined, except anonymous functions (inline). You may use iFunc models as a substitute. Also, the <span style="font-style: italic;">doc, web</span> and <span style="font-style: italic;">edit</span> commands are limited, and may not work properly, depending on the system.<div style="margin-left: 40px;">
 <br>
 </div>
 

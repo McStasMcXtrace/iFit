@@ -81,7 +81,10 @@ The name of the parameters can be changed by accessing the <span style="font-wei
 
 The <span style="font-weight: bold;">ParameterValues</span> property holds the last parameter values (e.g. when returned from a fit or a function evaluation).<br>
 
-The <span style="font-weight: bold;">Guess</span> property should return a vector of parameter values<span style="font-style: italic;"> 'p' </span>as a function of the axes <span style="font-style: italic;">x,y,z...</span> and a <span style="font-style: italic;">signal. </span>This is a character string or a function handle <span style="font-style: italic;">p=@Guess(x,y,z, ..., signal)</span><br>
+The <span style="font-weight: bold;">Guess</span> property should return a vector of parameter values<span style="font-style: italic;"> 'p' </span>as a function of the axes <span style="font-style: italic;">x,y,z...</span> and a <span style="font-style: italic;">signal. </span>This is a character string or a function handle <span style="font-style: italic;">p=@Guess(x,y,z, ..., signal)</span>.
+ Values of the parameters left as NaN indicate that the automatic guess 
+procedure should be used (which is based upon a signal peak search, and 
+baseline  analysis).<br>
 
 Last, the <span style="font-weight: bold;">Constraint</span> property holds any script to change the parameter values (character string modifying <span style="font-style: italic;">'p'</span>) from axes<span style="font-style: italic;"> x,y,z,...</span> or a function handle <span style="font-style: italic;">p=@Constraint(p, x,y,...)</span><br>
 
@@ -101,7 +104,7 @@ The <span style="color: rgb(51, 102, 255);">plot</span> method demonstrated abov
 The evaluation of a model with a set of parameters is obtained by calling the <span style="color: rgb(51, 102, 255);">feval</span> function with the parameter values, or sending these values directly to the object :<br>
 <pre style="margin-left: 40px;">&gt;&gt; signal = <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0])<br>&gt;&gt; gauss([ 1 0 .1 0])
 </pre>
-In this case, tentative axes are computed from the model definition. Axes can also be passed as additional arguments for <span style="font-style: italic;">x,y,z,...</span><br>
+In this case, tentative axes are computed from the model definition. Axes can also be passed as additional arguments for <span style="font-style: italic;">x,y,z,...</span> either as separate arguments, as a cell array {x,y,...}, as a structure, or as an iData object which axes are used.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )
 &gt;&gt; gauss([ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )</pre>
 
