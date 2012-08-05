@@ -31,8 +31,8 @@ user mailinglist</a></li></ol>
 </h4>
 <p style="margin-left: 40px;">When installing a 'stand-alone' release of
  iFit, there is simply NO dependency. The package contains everything 
-required. You only need to have a running system. The stand-alone 
-package is distributed for <span style="font-style: italic;">Linux, Windows</span> and <span style="font-style: italic;">Mac OSX</span> systems, for&nbsp; x86_64 (64 bits) systems. See below to <a href="#mozTocId480203">download</a> the required stand-alone package.<br>
+required. You need to install the Matlab Compiler Runtime, available below. The stand-alone 
+package is distributed for <span style="font-style: italic;">Linux, Windows</span> and <span style="font-style: italic;">Mac OSX</span> systems. See below to <a href="#mozTocId480203">download</a> the required stand-alone package.<br>
 </p>
 <p style="margin-left: 40px;">The stand-alone version provides full iFit
  functionality at no cost. You can execute any script (list of commands)
@@ -52,7 +52,7 @@ Academic licenses (e.g. for Universities). See below to <a href="#mozTocId480203
 <h4><a class="mozTocH4" name="mozTocId467589"></a>C compiler (optional)</h4>
 <div style="margin-left: 40px;">In principle, the pre-compiled MeX files are shipped with the package (for e.g. <span style="font-style: italic;">looktxt</span>), so that the software is ready to run. However, in the event of a re-compilation of MeX files, a <span style="font-style: italic;">C</span> compiler is often shipped with
 Matlab (and installed automatically). The <a href="http://ifit.mccode.org">iFit</a>/<a href="Loaders.html">Loaders</a> library may use it
-sporadically. <br>
+sporadically. This is not required for stand-alone versions.<br>
 </div>
 
 <br>
@@ -61,12 +61,12 @@ sporadically. <br>
 </h3>
 The package is currently available from the <a href="http://ifit.mccode.org">ifit.mccode.org</a> web site:<br>
 <ul>
-  <li><a href="http://ifit.mccode.org/Downloads/iFit.zip">source package</a>
+  <li><a style="font-weight: bold;" href="http://ifit.mccode.org/Downloads/iFit.zip">source package</a>
 for
 all platforms, requires a Matlab license to
 run [ <a href="http://ifit.mccode.org/Downloads/iFit.zip">zip</a>, 14
 Mb,&nbsp; <a href="Changes.html">Changes</a> ].</li>
-  <li>standalone packages for Linux, Windows and Mac OS X allow to 
+  <li><span style="font-weight: bold;">standalone packages</span> for Linux, Windows and Mac OS X allow to 
 execute iFit even without purchasing Matlab. See the installation 
 instructions below.<br>
 </li>
@@ -78,25 +78,25 @@ instructions below.<br>
   
   <li>Windows 64 bits: MCR, then iFit binary (compiled using Matlab R2010a on a W7 system)</li>
   
-  <li><span style="font-weight: bold;">Mac OSX 64 bits (Intel)</span>: <a href="http://ifit.mccode.org/Downloads/binary/mac64/MCRInstaller.dmg">R2011a MCR</a>, then <a href="http://ifit.mccode.org/Downloads/binary/mac64/ifit-1.2-maci64.zip">iFit binary</a> (compiled using Matlab R2011a on a Snow Leopard system)</li>
+  <li><span style="font-weight: bold;">Mac OSX 64 bits (Intel)</span>: <a href="http://ifit.mccode.org/Downloads/binary/mac64/MCRInstaller.dmg">R2011a MCR</a>, then <a href="http://ifit.mccode.org/Downloads/binary/mac64/ifit-1.2-maci64.zip">iFit binary</a> (compiled using Matlab R2011a on a Snow Leopard 10.6 system)</li>
 </ul>
 
   <li>The development repository is available at <a href="http://cvs.mccode.org/cgi-bin/viewvc.cgi/?root=iFitCVS">McCode CVS</a>.</li>
 
 </ul>Older releases can be obtained <a href="http://ifit.mccode.org/Downloads/">here</a>.<br>
 <h3><a class="mozTocH3" name="mozTocId890374"></a>Installation - stand-alone distribution</h3>
-<p>Install the R2010a Matlab Compiler Runtime (MCR) for your system if 
+<p>Install the Matlab Compiler Runtime (MCR) for your system if 
 it has not be installed previously. This is not required if you only 
 wish to upgrade iFit. Just click
  on OK all the way through. <br>
 </p>
-<p><span style="font-weight: bold;">On Linux Systems,</span> we recommend to install the MCR 
+<p><span style="font-weight: bold;">On Linux Systems</span><span style="font-weight: bold;">,</span> we recommend to install the MCR 
 in<span style="font-style: italic;"> /opt/MATLAB</span> (requires administrative privileges).<br>
 </p>
 <pre style="margin-left: 40px;">chmod u+x MCRINstaller.bin<br>sudo ./MCRInstaller.bin<br></pre>
 
-<p>Then install the iFit stand-alone package where-ever you wish. If you
- have not installer the MCR in /opt/MATLAB, you need to define the 
+<p>Prefer the <span style="font-style: italic;">/opt/MATLAB</span> location. Then install the iFit stand-alone package where-ever you wish. If you
+ have not installed the MCR in <span style="font-style: italic;">/opt/MATLAB</span>, you need to define the 
 MCRROOT environment variable to its location prior to starting iFit :<br>
 </p>
 <pre style="margin-left: 40px;">export MCRROOT=/opt/MATLAB/MATLAB_Compiler_Runtime/v713/<br>ifit<br></pre>
@@ -107,7 +107,10 @@ MCRROOT environment variable to its location prior to starting iFit :<br>
 required. If you use a manual installation (.zip) we recommend that you 
 extract the archive content in the directory <span style="font-style: italic;">/usr/local/ifit</span>.<br>
 </p>
-<p>To launch iFit, click on the 'ifit' icon in 
+<p><span style="font-weight: bold;">On MacOSX Systems</span>, install the MCR by double-cliking the <span style="font-style: italic;">MCRInstaller.dmg</span>. The install location defaults to <span style="font-style: italic;">/Applications/MATLAB</span>. Then extract the zip archive anywhere at your choice.<br>
+</p>
+
+<p>To launch <a href="iFit.html">iFit</a>, click on the 'ifit' icon in 
 the installation directory. You can also drag-n-drop files on the iFit 
 icon to directly import data files and plot them.<br>
 </p>
@@ -129,6 +132,7 @@ For our users who love challenges and command lines, this may be
 achieved e.g. with<br>
 <pre style="margin-left: 40px;">% unzip iFit.zip<br>% cp -r iFit /path/to<br></pre>Start Matlab by clicking on its icon or typing the <span style="font-style: italic;">matlab</span> command in a terminal.<img style="width: 45px; height: 38px;" alt="Matlab icon" title="Matlab icon" src="images/ml_icon.gif"><br>
 
+
 <pre style="margin-left: 40px;">% matlab<br></pre>
 In order to use iFit, you need to import all its methods into Matlab
 each
@@ -144,8 +148,8 @@ The <a href="Loaders.html">Loaders</a> sub library makes use of a MeX file '<spa
 A pre-compiled version for Windows systems is shipped with the package but this binary may
 fail with some Matlab releases. In that case, it is required to <a href="http://www.mathworks.com/support/solutions/en/data/1-ECUGQX/">install a compatible C compiler</a> (currently Microsoft Visual C++). The required downloads are, in order, <a href="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">C++ Express</a> then the <a href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&amp;displaylang=en">SDK</a> (for Matlab &gt;= 2010).<br>
 Older Microsoft Visual C++ 2008 [<a href="http://download.microsoft.com/download/8/b/5/8b5804ad-4990-40d0-a6aa-ce894cbbb3dc/VS2008ExpressENUX1397868.iso">ISO</a>] can also be used together with the SDK for Windows 7 + NET 3.5 [amd64 <a href="http://download.microsoft.com/download/2/E/9/2E911956-F90F-4BFB-8231-E292A7B6F287/GRMSDKX_EN_DVD.iso">ISO</a>]).
-Just use the default installtion settings, then use<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mex</span> -setup							<span style="font-style: italic;">% select compiler</span><br>[1] Microsoft Windows VS2008<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/location/to/iFit'</span>))			<span style="font-style: italic;">% install iFit</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span> ([ ifitpath <span style="color: rgb(204, 51, 204);">'Loaders/private/looktxt.mexw64'</span> ])	<span style="font-style: italic;">% delete old looktxt MeX</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span> <span style="color: rgb(204, 51, 204);">force</span><span style="font-style: italic;">							% reload importer methods and recompile looktxt<br></span></pre>
+Just use the default installation settings, then use<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mex</span> -setup							<span style="font-style: italic;">% select compiler</span><br>[1] Microsoft Windows VS2008<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/location/to/iFit'</span>))			<span style="font-style: italic;">% install iFit</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span> ([ ifitpath <span style="color: rgb(204, 51, 204);">'Libraries/Loaders/private/looktxt.mexw64'</span> ])	<span style="font-style: italic;">% delete old looktxt MeX</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span> <span style="color: rgb(204, 51, 204);">force</span><span style="font-style: italic;">							% reload importer methods and recompile looktxt<br></span></pre>
 
 An other solution, somewhat more complex to tune, is to use <span style="font-style: italic;">gcc</span> (from e.g. <a href="http://www.mingw.org/">MingW) </a>and the <a href="http://gnumex.sourceforge.net/">gnumex</a> tool. The <a href="http://www.bloodshed.net/devcpp.html">Dev-Cpp</a> compiler (which includes gcc) may also be used.<br>
 <br>
@@ -159,10 +163,9 @@ All <span style="font-weight: bold;">other platforms</span> provide a valid C co
   <li>gcc for Linux systems (comes with the gcc package)</li>
   <li>gcc for MacOSX (need to install Xcode/developper tools, including gcc)</li>
 </ul>
-In order to<span style="font-weight: bold;"> force the recompilation of looktxt</span> MeX, <span style="color: rgb(255, 0, 0);">remove</span> the <span style="font-style: italic;">iFit/Loaders/private/looktxt.mex*</span> files, and launch<br>
+In order to<span style="font-weight: bold;"> force the recompilation of looktxt</span> MeX, <span style="color: rgb(255, 0, 0);">remove</span> the <span style="font-style: italic;">iFit/Libraries/Loaders/private/looktxt.mex*</span> files, and launch<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span><span style="color: rgb(204, 51, 204);"> force</span></pre>
-from the Matlab prompt. The C compiler to use may have to be specified with the command '<span style="font-style: italic;">&gt;&gt; mex -setup</span>'.<br>
-Send me the new looktxt MeX file version in a tar.gz archive, so that I update/add it to the distribution.<br>
+from the Matlab prompt. The C compiler to use may have to be specified with the command '<span style="font-style: italic;">&gt;&gt; mex -setup</span>'. Send me the new looktxt MeX file version in a tar.gz archive, so that I update/add it to the distribution.<br>
 
 <h3><a class="mozTocH3" name="mozTocId635674"></a>What's next ?</h3>
 You may test the package integrity by issuing the command:<br>

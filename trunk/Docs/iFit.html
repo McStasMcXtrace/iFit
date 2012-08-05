@@ -7,27 +7,46 @@
 
 
 
-  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-  <title>iFit: Quick Start/Tutorial</title>
+  
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+  
+<title>iFit: Stand-alone command prompt</title>
+
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: running the stand-alone application<br>
-</h1><br>
-<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId889413">Starting</a><ol><li><a href="#mozTocId441758">
-Command options/arguments</a></li></ol></li><li><a href="#mozTocId711798">Short introduction to Matlab syntax</a><ol><li><a href="#mozTocId315210">Variables and data type</a></li><li><a href="#mozTocId495160">
+</h1>
+<br>
+
+<ol id="mozToc">
+<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId889413">Starting</a><ol><li><a href="#mozTocId441758">
+Command options/arguments
+</a></li></ol></li><li><a href="#mozTocId80479">Limitations</a></li><li><a href="#mozTocId711798">Short introduction to Matlab syntax</a><ol><li><a href="#mozTocId315210">Variables and data type</a></li><li><a href="#mozTocId495160">
 Control statements</a></li><li><a href="#mozTocId782746">
-Scripts and lists of statements</a></li><li><a href="#mozTocId887543">Functions</a></li><li><a href="#mozTocId873567">
-Importing data files</a></li></ol></li><li><a href="#mozTocId80479">Limitations</a></li></ol>
+Scripts and lists of statements
+</a></li><li><a href="#mozTocId887543">Functions</a></li><li><a href="#mozTocId873567">
+Importing data files</a></li></ol></li>
+</ol>
+
 
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic; font-weight: bold;">ifit</span><br>
 </div>
+
 <br>
+
 In this document, we demonstrate shortly how to use the <a href="index.html">iFit</a> executable (stand-alone distribution), which mainly manipulates <a href="iData.html">iData</a> and <a href="iFunc.html">iFunc</a> objects. It provides a free fully functional iFit package for users without Matlab license.<br>
+
 <br>
+
 If you do not know about Matlab, refer to the quick tutorial below.<br>
+
 <br>
+
 The object of these tools is to<br>
+
 <ul>
+
   <li>import transparently data files, whatever be their format [<a href="Load.html">Load</a>]<br>
   </li>
   <li>organize the data files contents, and in particular define their
@@ -42,8 +61,10 @@ axes if needed [<a href="iData.html">iData axes and aliases</a>]<br>
   <li>save results transparently into some common scientific formats [<a href="Save.html">Save</a>]<br>
   </li>
 </ul>
+
 Each of these tasks has dedicated, detailed, documentation, as shown in
 links above.<br>
+
 <div style="text-align: center;">
 <h3 style="text-align: left;"><a class="mozTocH3" name="mozTocId889413"></a>Starting</h3>
 <div style="text-align: left;">Start the iFit command line by launching the '<span style="font-weight: bold; font-style: italic;">ifit</span>' program in the stand-alone installation directory, or by clicking on the iFit icon (when available).<br>
@@ -153,7 +174,7 @@ available in the <a href="iData.html">iData</a>/<a href="Save.html">Save</a> pag
   </div>
 
   <div style="margin-left: 80px;">
-imports a data file, and fit it to a Gaussian model (default). The list of all available fit models is available in the <a href="Models.html">Models</a><a href="Save.html"></a> page.<br>
+imports a data file, and fit it to a Gaussian model (default). The list of all available fit models is available in the <a href="Models.html">Models</a> page.<br>
 This is the same as <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">gauss</span>, <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'Data/ILL_IN20.dat'</span>}))<br>
 </div>
   <div style="margin-left: 40px;"><span style="font-style: italic; font-weight: bold;">ifit Data/ILL_IN20.dat '<span style="color: rgb(204, 51, 204);">"lorz"</span>'fits</span><br>
@@ -175,7 +196,20 @@ This is the same as <span style="color: rgb(51, 102, 255);">fits</span>(<span st
 
   <div style="margin-left: 80px;">
 imports a set of data files, and then run the Matlab SCRIPT, which can use the <span style="font-style: italic;">'this'</span> cell array in the further processing, and finally exits.<br>
-  </div>
+</div>
+  <h3><a class="mozTocH3" name="mozTocId80479"></a>Limitations</h3>
+
+
+The iFit stand-alone distribution provides a fully functional Matlab prompt (terminal) which <span style="font-weight: bold; font-style: italic;">includes:</span><br>
+
+  <ul>
+<li>Scripting and command execution</li><li>All Matlab variables, functions and commands</li><li>All iData/iFunc object methods and interfaces</li><li>Plotting capabilities with e.g. openGL rendering and plot editor<br>
+  </li><li>Third-party tools such as slice-o-matic</li>
+  </ul>
+
+However, new Matlab functions can <span style="font-weight: bold; font-style: italic;">not</span> be defined, except anonymous functions (inline). You may use iFunc models as a substitute. Also, the <span style="font-style: italic;">doc, web</span> and <span style="font-style: italic;">edit</span> commands are limited, and may not work properly, depending on the system.<br>
+
+  
 
 </div>
 <div style="text-align: left;">
@@ -230,7 +264,7 @@ single line when separating each statement with the ';' character. We
 use below <span style="font-style: italic;">disp</span> to display a value.<br>
 </p>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">for</span> index=1:10; disp(index); <span style="color: rgb(51, 102, 255);">end</span></pre>
-<p></p>
+
 <h4><a class="mozTocH4" name="mozTocId782746"></a>
 Scripts and lists of statements<br>
 </h4>
@@ -268,21 +302,10 @@ As seen <a href="#mozTocId889413">above, </a>data files can be directly imported
 To save your work, issue the save command:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(iData_objects, <span style="color: rgb(204, 51, 204);">'filename'</span>, <span style="color: rgb(204, 51, 204);">'format'</span>)<br></pre>
 Refer to the iData/<a href="Save.html">Save</a> page for more information on the available formats and procedures.<br>
-<h3><a class="mozTocH3" name="mozTocId80479"></a>Limitations</h3>
-
-The iFit stand-alone distribution provides a fully functional Matlab prompt (terminal) which <span style="font-weight: bold; font-style: italic;">includes:</span><br>
-<ul>
-  <li>Scripting and command execution</li>
-  <li>All Matlab variables, functions and commands</li>
-  <li>All iData/iFunc object methods and interfaces</li>
-  <li>Plotting capabilities with e.g. openGL rendering and plot editor<br>
-  </li>
-  <li>Third-party tools such as slice-o-matic</li>
-</ul>
-However, new Matlab functions can <span style="font-weight: bold; font-style: italic;">not</span> be defined, except anonymous functions (inline). You may use iFunc models as a substitute.<br>
 <br>
 </div>
-</div><hr style="width: 100%; height: 2px;">
+</div>
+<hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/executable - </span><span style="font-style: italic;"></span><span style="font-style: italic;">
 $Date: 2012-07-02 16:32:58 $ $Revision: 1.1 $
@@ -290,4 +313,5 @@ $Date: 2012-07-02 16:32:58 $ $Revision: 1.1 $
 back to <a href="index.html">Main
 iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
+
 </body></html>

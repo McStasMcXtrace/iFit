@@ -1,6 +1,6 @@
-Package: @IFIT_TARNAME@-@IFIT_VERSION@
+Package: @IFIT_TARNAME@
 Version: @IFIT_VERSION@
-Architecture: amd64
+Architecture: arch
 Installed-Size: 14296
 Depends: bash
 Section: Science
@@ -34,3 +34,4 @@ Description: @IFIT_NAME@ generic data analysis and fitting to models
  To start @IFIT_NAME@, use: @IFIT_TARNAME@
  .
  Refer to <ifit.mccode.org> for on-line documentation.
+ Matlab is a registered trademark of The Mathworks Inc.

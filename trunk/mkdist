@@ -82,19 +82,34 @@ then
   then
     if [ -e build-chroot-amd64 ]
     then
-      echo Proceeding to amd64 .deb build from $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
-      # First, clean up in case of previous iFit installs in the chrooot
-      sudo rm -f  build-chroot-amd64/usr/local/bin/*
-      sudo rm -rf build-chroot-amd64/usr/local/ifit
-      echo install amd64 mex distribution in /root
-      sudo cp $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone/deb/debcreate build-chroot-amd64/root
-      sudo cp -rf $IFIT_TARNAME-$IFIT_VERSION-amd64 build-chroot-amd64/root
-      sudo cp -rf $IFIT_TARNAME-$IFIT_VERSION build-chroot-amd64/root
-      sudo mkdir  build-chroot-amd64/build
-      sudo chroot build-chroot-amd64 apt-get update
+      BUILDDIR="build-chroot-amd64/build/$IFIT_TARNAME-$IFIT_VERSION"
+      echo Proceeding to amd64 .deb build 
+      echo from $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
+      echo into $BUILDDIR
+      
+      # First, clean up in case of previous iFit installs in the chroot
+      sudo rm -rf ${BUILDDIR}
+      # install package in build location
+      sudo mkdir -p ${BUILDDIR}/DEBIAN
+      sudo mkdir -p ${BUILDDIR}/usr/local/bin
+      sudo mkdir -p ${BUILDDIR}/usr/local/$IFIT_TARNAME
+      sudo mkdir -p ${BUILDDIR}/usr/share/applications
+      sudo mkdir -p ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME
+      sudo mkdir -p ${BUILDDIR}/usr/share/pixmaps
+      sudo cp -r $IFIT_TARNAME-$IFIT_VERSION-amd64/*    ${BUILDDIR}/usr/local/$IFIT_TARNAME
+      sudo cp -r $IFIT_TARNAME-$IFIT_VERSION/Docs/*     ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/COPYING    ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/copyright
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/README.txt ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone/ifit.desktop \
+                                                        ${BUILDDIR}/usr/share/applications/
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone/iFit-logo.png \
+                                                        ${BUILDDIR}/usr/share/pixmaps/
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone/deb/control \
+                                                        ${BUILDDIR}/DEBIAN
+      # sudo chroot build-chroot-amd64 apt-get update
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone/deb/debcreate build-chroot-amd64/root/debcreate
       sudo chmod u+x build-chroot-amd64/root/debcreate
       sudo chroot build-chroot-amd64   /root/debcreate $1 amd64
-      echo
       echo
       echo Build packages created:
       echo

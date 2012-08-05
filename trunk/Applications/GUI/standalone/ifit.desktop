@@ -8,4 +8,5 @@ Exec=ifit %f
 Name=iFit
 Comment=iFit stand-alone. Drag-n-drop me.
 Icon=iFit-logo.png
+Categories=Education;Applications;
 # logo obtained with font URW Palladio L, italic, bold, blue

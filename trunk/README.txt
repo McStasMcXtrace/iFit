@@ -64,7 +64,7 @@
     >> addpath(genpath('/path/to/iFit'))
     >> doc(iData)
 
-  hen refer to the Quick Start tutorial (in iFit/Docs/QuickStart.html).
+  Then refer to the Quick Start tutorial (in iFit/Docs/QuickStart.html).
 
 ** Contacts:
   You can register to the iFit mailing list at <http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users>

@@ -36,10 +36,15 @@ if ~isdeployed
 else
   disp([ mfilename ' ' url ]);
   % attempts to guess how to launch the editor
+  if ~isempty(url), url = [ '"' url '"' ]; end
   if ispc
-    system([ 'notepad "' url '"' ])
+    system([ 'notepad ' url ])
   elseif ismac
-    system([ 'open "' url '"' ]);
+    if ~isempty(dir(url(2:(end-1))))
+      system([ 'open -t ' url ]);
+    else
+      system('open -t');
+    end
   else
     editor = getenv('EDITOR');
     if isempty(editor) || any(strcmp(editor,{'vi','vim','nano'}))
@@ -57,7 +62,7 @@ else
     end
     if ~isempty(editor)
       if ~isempty(url)
-        editor = [ editor ' "' url '"' ];
+        editor = [ editor ' ' url ];
       end
       system( editor );
     else
