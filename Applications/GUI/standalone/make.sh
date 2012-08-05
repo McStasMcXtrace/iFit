@@ -20,6 +20,8 @@ mcc -m ifit -a $p
 mv ifit run_ifit
 rm run_ifit.sh
 cp $m/ifit .
+cp $p/README.txt .
+cp $p/COPYING .
 cd $m
 mv edit.m edit.m.org
 mv web.m  web.m.org

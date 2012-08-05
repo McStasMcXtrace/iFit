@@ -12,11 +12,11 @@
 
 
 
-<ul id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId127491">Purpose</a></li><li style="font-weight: bold;"><a href="#mozTocId318588">Obtaining the package</a></li><li><a href="#mozTocId969915">What's in the box...</a><ul><li style="font-weight: bold;"><a href="#mozTocId751903">The
+<ul id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId127491">Purpose</a></li><li><a href="#mozTocId318588">Obtaining the package</a></li><li><a href="#mozTocId969915">What's in the box...</a><ul><li><a href="#mozTocId751903">The
 iData
 objects
-(iFit/@iData): the core of the package
-</a></li><li style="font-weight: bold;"><a href="#mozTocId419212">The iFunc objects (iFit/@iFunc): the core of the package</a></li><li><a href="#mozTocId858815">The
+(iFit/@iData): the core data set
+</a></li><li><a href="#mozTocId419212">The iFunc objects (iFit/@iFunc): the core model</a></li><li><a href="#mozTocId858815">The
 optimization
 library
 (iFit/Optimizers)</a></li><li><a href="#mozTocId526330">The fit
@@ -29,9 +29,9 @@ routines
 </a></li><li><a href="#mozTocId300912">The documentation
 (iFit/Docs)</a></li><li><a href="#mozTocId338083">Example data files
 (iFit/Data)</a></li><li><a href="#mozTocId54326">Interfaces with other
-software and Graphical front-ends (iFit/GUI)</a></li></ul></li><li style="font-weight: bold;"><a href="#mozTocId755938">Ok, let's start !
+software and Graphical front-ends (iFit/GUI)</a></li></ul></li><li><a href="#mozTocId755938">Ok, let's start !
 
-</a></li><li><a href="#mozTocId639966">For beginners</a></li><li style="font-weight: bold;"><a href="#mozTocId66420">Help me !</a></li><li><a href="#mozTocId93435">Credits and Disclaimer
+</a></li><li><a href="#mozTocId639966">For beginners</a></li><li><a href="#mozTocId66420">Help me !</a></li><li><a href="#mozTocId93435">Credits and Disclaimer
 </a></li></ul>
 
 
@@ -72,27 +72,27 @@ usual data analysis procedures.<br>
 </div>
 <h3><a class="mozTocH3" name="mozTocId318588"></a>Obtaining the package</h3>
 To install the package, refer to the <a href="Install.html">Install</a>
-page, you just need <a href="http://www.mathworks.com">Matlab</a> (for the source package), or just a running computer for the stand-alone package.
+page. You only need <a href="http://www.mathworks.com">Matlab</a> for the source package. The stand-alone (binary) package requires to install the Matlab Compiler Runtime (refer to the <a href="Install.html">Install</a>
+page).
 Please register to the <a href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users">ifit-users</a>
 mailing list.<br>
 The package is currently available from the <a href="http://ifit.mccode.org/">ifit.mccode.org</a> web site:<br>
 <ul>
-  <li><a href="http://ifit.mccode.org/Downloads/iFit.zip">source package</a>
+  <li><a style="font-weight: bold;" href="http://ifit.mccode.org/Downloads/iFit.zip">source package</a>
 for
 all platforms, requires a Matlab license to
 run [ <a href="http://ifit.mccode.org/Downloads/iFit.zip">zip</a>, 14
 Mb,&nbsp; <a href="Changes.html">Changes</a> and Bugs].<br>
   </li>
-  <li>standalone packages (no need for a Matlab license) for Linux, Windows and Mac OS X are
-available from the <a href="Install.html">Install</a> page. You will then use the <a href="iFit.html">iFit</a> interface to the package. </li>
-  <li>The development repository is available at <a href="http://cvs.mccode.org/cgi-bin/viewvc.cgi/?root=iFitCVS">McCode
-CVS</a>.</li>
+  <li><span style="font-weight: bold;">standalone packages</span> (no need for a Matlab license) for Linux, Windows and Mac OS X are
+available from the <a href="Install.html">Install</a> page. You will then use the <a href="iFit.html">iFit</a> interface to the package (look at this page). </li>
+  
 </ul>
 <h3><a class="mozTocH3" name="mozTocId969915"></a>What's in the box...<img style="width: 128px; height: 100px;" alt="iFit package" title="iFit package" src="images/box.jpeg" align="right"></h3>
 <h4 style="margin-left: 40px;"><a class="mozTocH4" name="mozTocId751903"></a>The
 iData
 objects
-(iFit/@<a href="iData.html">iData</a>): the core of the package<br>
+(iFit/@<a href="iData.html">iData</a>): the core data set<br>
 </h4>
 </div>
 </div>
@@ -151,8 +151,11 @@ formats</li>
 
 <div style="margin-left: 40px;">An extended list of iData methods is
 available in the <a href="Methods.html">Methods</a> page.<br>
-<h4><a class="mozTocH4" name="mozTocId419212"></a>The <a href="iFunc.html">iFunc</a> objects (iFit/@<a href="iFunc.html">iFunc</a>): the core of the package</h4>
-<p>The <a href="iFunc.html">iFunc</a> objects hold models (mathematical expressions that return a vector, matrix, ...) value, as a function of a parameter set, and axes. You can easily create new models, or use those from the <a href="Models.html">Models</a> page, and combine them to build more complex models. The objects support most usual mathematical operators.<br>
+<h4><a class="mozTocH4" name="mozTocId419212"></a>The <a href="iFunc.html">iFunc</a> objects (iFit/@<a href="iFunc.html">iFunc</a>): the core model</h4>
+<p>The <a href="iFunc.html">iFunc</a> objects hold models (mathematical 
+expressions that return a vector, matrix, ...) value, as a function of a
+ parameter set, and axes. You can easily create new models, or use those
+ from the <a href="Models.html">Models</a> page, and combine them to build more complex models. The objects support most usual mathematical operators.<br>
 </p>
 
 </div>
@@ -274,7 +277,9 @@ optimize <a href="http://www.mcstas.org">McStas</a> instrument
 parameters has been written.&nbsp;</li>
   <li><a href="Models.html#mozTocId210092">iFunc/Model Builder</a>: a
 tool to create fit function/models.</li>
-<li><a href="iFit.html">iFit</a>: the prompt interface used in the stand-alone release. Can execute any Matlab expression, scripts, handle iData and iFunc objects, optimizers, plotting, ...<br>
+<li><a href="iFit.html">iFit</a>: the prompt interface used in the 
+stand-alone release. Can execute any Matlab expression, scripts, handle 
+iData and iFunc objects, optimizers, plotting, ...<br>
 </li>
 
 </ul>
