@@ -10,6 +10,8 @@ cd    ${BUILDDIR}/usr/local/bin
 rm -f ${BUILDDIR}/usr/local/bin/ifit
 ln -s ../ifit/ifit .
 cd $PW
+chmod a+x ${BUILDDIR}/usr/local/bin/ifit
+chmod a+x ${BUILDDIR}/usr/local/ifit/ifit
 
 echo create the DEB build directory
 sed -i "s/arch/$2/g" ${BUILDDIR}/DEBIAN/control
