@@ -31,5 +31,6 @@ else
       browser = [ browser ' "' url '"' ];
     end
     system( browser );
+    disp('Warning: if the browser does not start, launch it manually and enter the above mentioned URL');
   end
 end

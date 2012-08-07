@@ -15,16 +15,13 @@ function popupmessage(textfile,titlename,command);
 
 if exist('command')~=1 % setup message
  if exist('textfile')~=1
-   error('Please specify the filename. help popupmessage for more info.');
- end
- if exist(textfile)~=2
-   error(sprintf('File %s does not exist or is not a text file.',textfile));
+   error('Please specify the filename. type: help popupmessage for more info.');
  end
  if exist('titlename')~=1
      titlename='';
  end
  if isempty(titlename)
-     titlename=textfile;
+     titlename=textfile;mystrings
  end
     
  f=figure;
@@ -52,21 +49,27 @@ set(handles.textbox,'position',tbpos);
 %-----------------------------------
 function h=addTextBox(f,textfile)
 
-fid=fopen(textfile,'r');
-if (fid==-1) 
-  error('Please check your filename, cannot open file');
+if ~isempty(dir(textfile))
+  fid=fopen(textfile,'r');
+  if (fid==-1) 
+    error('Please check your filename, cannot open file');
+  end
+
+  id=1;
+  while 1
+       tline = fgetl(fid);
+       if ~ischar(tline), break, end
+       mystrings{id}=tline; id=id+1;
+  end
+  fclose(fid);
+else
+  mystrings = textscan(textfile,'%s','Delimiter','\n\r');
+  mystrings = mystrings{1};
 end
 
 tbpos=getTBPos(f);
 h=uicontrol(f,'style','listbox','position',tbpos,'tag','textbox');
-
-id=1;
-while 1
-     tline = fgetl(fid);
-     if ~ischar(tline), break, end
-     mystrings{id}=tline; id=id+1;
-end
-fclose(fid);
+  
 if exist('mystrings','var')
     set(h,'string',mystrings);
 end

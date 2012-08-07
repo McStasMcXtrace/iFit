@@ -217,8 +217,8 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
         else
           this{end+1} = iData(ifit_options.line);
           ans = this{end}
-          if length(varargin) == 1
-            subplot(ans);
+          if isempty(varargin) && length(this) <= 20 % last file imported. Plot all imported data sets
+            subplot(this{cellfun('isclass',this,'iData')});
           end
         end
         ifit_options=rmfield(ifit_options, 'p');

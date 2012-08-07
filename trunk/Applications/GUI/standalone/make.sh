@@ -11,6 +11,7 @@ export m=$PWD
 export p=`realpath $PWD/../../..`
 mv edit.m.org edit.m
 mv web.m.org  web.m
+mv help.m.org help.m
 mkdir -p $1
 cd $1
 echo Creating the stand-alone version 
@@ -25,3 +26,4 @@ cp $p/COPYING .
 cd $m
 mv edit.m edit.m.org
 mv web.m  web.m.org
+mv help.m help.m.org
