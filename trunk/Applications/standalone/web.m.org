@@ -5,9 +5,13 @@ if length(varargin)
 else
   url = '';
 end
+if isempty(url), return; end
 if ~isdeployed && usejava('jvm')
   builtin('web',varargin{:});
 else
+  if ~isempty(private_help(url))
+    return
+  end
   disp([ mfilename ' ' url ]);
   % attempts to guess how to launch the browser
   if ispc
@@ -31,6 +35,70 @@ else
       browser = [ browser ' "' url '"' ];
     end
     system( browser );
-    disp('Warning: if the browser does not start, launch it manually and enter the above mentioned URL');
+    disp('WARNING: if the browser does not start, launch it manually and enter the above mentioned URL');
+    disp('         Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.');
   end
 end
+
+% ------------------------------------------------------------------------------
+
+function h=private_help(varargin)
+% HELP Display help text in Command Window, for iFit commands and methods
+%
+% HELP FUN displays a description of and syntax for the function FUN.
+%     When FUN is in multiple directories on the MATLAB path, HELP displays
+%     information about the first FUN found on the path.
+%
+% HELP PATHNAME/FUN displays help for the function FUN in the PATHNAME
+%     directory. Use this syntax to get help for overloaded functions.
+%
+% HELP CLASSNAME.METHODNAME displays help for the method METHODNAME of
+%     the fully qualified class CLASSNAME. To determine CLASSNAME for
+%     METHODNAME, use CLASS(OBJ), where METHODNAME is of the same class as
+%     the object OBJ.
+%
+%     HELP CLASSNAME displays help for the fully qualified class CLASSNAME.
+%
+% example: help iData/cos; help iFunc
+
+h = '';
+if length(varargin)
+  url = varargin{1};
+else
+  url = '';
+end
+if isempty(url), return; end
+if ~isdeployed
+  if length(varargin)
+    disp([ '  <a href="matlab:help ' url '">help ' url '</a>' ])
+  end
+  builtin('help',varargin{:});
+else
+  disp([ mfilename ' ' url ]);
+  % attempts to guess what to display
+  [p,f,e] = fileparts(url);
+  h = fullfile(p , [f '.txt' ]); 
+  
+  % is the url a path to an iFit function ?
+  if ~isempty(dir(h))
+    fid = fopen(h, 'r');
+    h   = fread(fid, Inf, 'uint8=>char')';
+    fclose(fid);
+  elseif any(strcmp(strtok(url, '.'), {'iData','iFunc'}))
+  % is the url an iFit class.method or class
+    [c, m] = strtok(url, '.');
+    if isempty(m), m = c; else m=m(2:end); end
+    url    = fullfile('Objects', [ '@' c ], m);
+    feval(mfilename, url);
+    return
+  else
+  % is the url an iFit function ?
+    feval(mfilename, which(url));
+    return
+  end
+  % get the help string from the corresponding file (must have been generated at deploy stage)
+  
+  % display the help
+  fprintf(1, '%s', h);
+end
+

@@ -55,6 +55,10 @@ disp(version(iData));
 disp(' ');
 disp([ '** Starting iFit on ' datestr(now) ])
 disp('Type ''help'' to learn how to use this software. Type ''exit'' or Ctrl-C to exit.');
+if ispc
+  disp('WARNING: under Windows platforms, file names containing spaces, such as "My Documents" ')
+  disp('         are not well supported. Rename files and move directories to other locations.')
+end
 disp(' ')
 
 ifit_options.line     ='';     % the current line to execute
@@ -64,25 +68,41 @@ ifit_options.save     =0;
 ifit_options.exit     =0;
 
 while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
+  ifit_options.line = strtrim(ifit_options.line);
   % handle specific commands (to override limitations from stand-alone)
-  if strcmp(ifit_options.line, 'help')        % 'help' command ---------------------------------
-    disp('Enter any Matlab/iFit command.');
-    disp('      Use ''run script.m'' to execute a script from a file.');
-    disp('      Control statements are allowed (for/while loops, tests, ');
-    disp('      switch/case...) when they span on one line, or in scripts.');
-    disp('Keys: Arrow-Up/Down  Navigate in command history.');
-    disp('      Ctrl-C         Exit (same as ''exit'' or ''return'' commands.');
-    disp('Help: Type ''doc(iData,''iFit'')'' ');
-    disp('      see or <ifit.mccode.org> <ifit-users@mccode.org>.');
-    disp('To import some data, use e.g. d=iData(''filename'');');
-    disp('To create a model, use e.g. f=iFunc(''expression''); ');
-    disp('  or type fits(iFunc) to get a list of available models.');
-    disp('To fit a model to data, use e.g. fits(f,d)');
-    disp('Data and Models can be manipulated (+-/*...) using the Matlab syntax.');
-    disp(' ');     
-    disp('Matlab is a registered trademark of The Mathworks Inc.');
-    disp('Source code for this software is available at <ifit.mccode.org>.')
-    ifit_options.line = 'doc(iData,''iFit''); disp('' '');';
+  if strcmp(strtok(ifit_options.line), 'doc')
+    ifit_options.line = [ 'help' ifit_options.line(4:end) ];
+  end
+  if strcmp(strtok(ifit_options.line), 'help')        % 'help' command ---------------------------------
+    if length(ifit_options.line) > 4
+    disp(ifit_options.line)
+      [ifit_options.t, ifit_options.line] = strtok(ifit_options.line);
+      ifit_options=rmfield(ifit_options, 't');
+      ifit_options.line      = strtrim(ifit_options.line);
+      if ~isempty(ifit_options.line), 
+        web(ifit_options.line); 
+        ifit_options.line = '';
+      end
+    else
+      disp('Enter any Matlab/iFit command.');
+      disp('      Use ''run script.m'' to execute a script from a file.');
+      disp('      Control statements are allowed (for/while loops, tests, ');
+      disp('      switch/case...) when they span on one line, or in scripts.');
+      disp('Keys: Arrow-Up/Down  Navigate in command history.');
+      disp('      Ctrl-C         Exit (same as ''exit'' or ''return'' commands.');
+      disp('Help: Type ''doc(iData,''iFit'')'' ');
+      disp('      see or <ifit.mccode.org> <ifit-users@mccode.org>.');
+      disp('To import some data, use e.g. d=iData(''filename'');');
+      disp('To create a model, use e.g. f=iFunc(''expression''); ');
+      disp('  or type fits(iFunc) to get a list of available models.');
+      disp('To fit a model to data, use e.g. fits(f,d)');
+      disp('Data and Models can be manipulated (+-/*...) using the Matlab syntax.');
+      disp(' ');     
+      disp('Matlab is a registered trademark of The Mathworks Inc.');
+      disp('Source code for this software is available at <ifit.mccode.org>.')
+      disp('Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.');
+      ifit_options.line = 'doc(iData,''iFit''); disp('' '');';
+    end
   elseif strncmp(ifit_options.line,'run ', 4) % 'run' command ----------------------------------
     ifit_options.line = strtrim(ifit_options.line(5:end));
     if ~exist(ifit_options.line) && exist([ ifit_options.line '.m' ])
