@@ -1,0 +1,72 @@
+function edit(varargin)
+% EDIT Edit or create M-file
+%   EDIT FUN opens the file FUN.M in a text editor.  FUN must be the
+%   name of an M-file or a MATLABPATH relative partial pathname (see
+%   PARTIALPATH).
+%
+%   EDIT FILE.EXT opens the specified file.  MAT and MDL files will
+%   only be opened if the extension is specified.  P and MEX files
+%   are binary and cannot be directly edited.
+%
+%   EDIT X Y Z ... will attempt to open all specified files in an
+%   editor.  Each argument is treated independently.
+%
+%   EDIT, by itself, opens up a new editor window.
+%
+%   By default, the MATLAB built-in editor is used.  The user may
+%   specify a different editor by modifying the Editor/Debugger
+%   Preferences.
+%
+%   If the specified file does not exist and the user is using the
+%   MATLAB built-in editor, an empty file may be opened depending on
+%   the Editor/Debugger Preferences.  If the user has specified a
+%   different editor, the name of the non-existent file will always
+%   be passed to the other editor.
+
+if length(varargin)
+  url = varargin{1};
+else
+  url = '';
+end
+if ~isdeployed
+  if length(varargin)
+    disp([ '  <a href="matlab:edit ' url '">edit ' url '</a>' ])
+  end
+  builtin('edit',varargin{:});
+else
+  disp([ mfilename ' ' url ]);
+  % attempts to guess how to launch the editor
+  if ~isempty(url), url = [ '"' url '"' ]; end
+  if ispc
+    system([ 'notepad ' url ])
+  elseif ismac
+    if ~isempty(dir(url(2:(end-1))))
+      system([ 'open -t ' url ]);
+    else
+      system('open -t');
+    end
+  else
+    editor = getenv('EDITOR');
+    if isempty(editor) || any(strcmp(editor,{'vi','vim','nano'}))
+      editor = '';
+      [flag, out]=system('locate gedit');
+      if isempty(editor) && ~isempty(out), editor='gedit'; end
+      [flag, out]=system('locate nedit');
+      if isempty(editor) && ~isempty(out), editor='nedit'; end
+      [flag, out]=system('locate kate');
+      if isempty(editor) && ~isempty(out), editor='kate'; end
+      [flag, out]=system('locate xedit');
+      if isempty(editor) && ~isempty(out), editor='xedit'; end
+      [flag, out]=system('locate xemacs');
+      if isempty(editor) && ~isempty(out), editor='xemacs'; end
+    end
+    if ~isempty(editor)
+      if ~isempty(url)
+        editor = [ editor ' ' url ];
+      end
+      system( editor );
+    else
+      popupmessage(url);
+    end
+  end
+end
