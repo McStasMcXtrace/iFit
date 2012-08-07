@@ -52,7 +52,7 @@ rm mkdist
 # rm Loaders/looktxt.mex*
 
 # Update version and date
-for file in README.txt Objects/@iData/version.m Docs/index.html Docs/Install.html Applications/GUI/standalone/deb/control Applications/GUI/standalone/deb/debcreate
+for file in README.txt Objects/@iData/version.m Docs/index.html Docs/Install.html Applications/standalone/deb/control Applications/standalone/deb/debcreate
 do
 sed 's/@IFIT_VERSION@/'$IFIT_VERSION'/'  $file     > $file.tmp
 sed 's/@IFIT_NAME@/'$IFIT_NAME'/'        $file.tmp > $file
@@ -68,7 +68,7 @@ zip -r $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip $IFIT_TARNAME-$IFIT_VERSION
 if [ -x `which mcc` ]
 then
   echo create the standalone version into $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
-  cd $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone
+  cd $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone
   ./make.sh $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
   cd $TMPDIR
   cp $IFIT_TARNAME-$IFIT_VERSION/README.txt $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
@@ -100,14 +100,14 @@ then
       sudo cp -r $IFIT_TARNAME-$IFIT_VERSION/Docs/*     ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/COPYING    ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/copyright
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/README.txt ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/
-      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone/ifit.desktop \
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/ifit.desktop \
                                                         ${BUILDDIR}/usr/share/applications/
-      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone/iFit-logo.png \
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/iFit-logo.png \
                                                         ${BUILDDIR}/usr/share/pixmaps/
-      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone/deb/control \
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/deb/control \
                                                         ${BUILDDIR}/DEBIAN
       # sudo chroot build-chroot-amd64 apt-get update
-      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/GUI/standalone/deb/debcreate build-chroot-amd64/root/debcreate
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/deb/debcreate build-chroot-amd64/root/debcreate
       sudo chmod u+x build-chroot-amd64/root/debcreate
       sudo chroot build-chroot-amd64   /root/debcreate $1 amd64
       echo
