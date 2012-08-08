@@ -17,18 +17,5 @@ function d = doc(a, page)
 
 % EF 23/10/10 iFunc impementation
 if nargin ==1, page=''; end
-if isempty(page), page='index.html'; end
-[p,f,e] = fileparts(page);
-if isempty(e), e='.html'; end
-page = [ f e ];
-
-url = [ ifitpath filesep 'Docs' filesep page ];
-disp(version(iFunc))
-disp('Opening iFunc documentation from ')
-if length(url)
-  disp([ '  <a href="matlab:web ' url '">web ' url '</a>' ]);
-else
-  disp([ '  ' url ]);
-end
-web(url);
-
+if isempty(page), page='iFunc.html'; end
+doc(iData, page);

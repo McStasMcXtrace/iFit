@@ -31,7 +31,7 @@ then
   echo "You can get the MCR installer at "
   echo "  http://ifit.mccode.org/Downloads/binary/"
   echo "Download and install it with: ./sudo MCRInstaller.bin or MCRInstaller.dmg"
-  echo "and specify the /opt/MATLAB location (linux) and the defaut (MacOSX)."
+  echo "and specify the /opt/MATLAB location (linux) and the default (MacOSX)."
 else
   echo Starting iFit using $MCRROOT
   DYLD_LIBRARY_PATH=.:${MCRROOT}/runtime/maci ;

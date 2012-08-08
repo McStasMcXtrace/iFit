@@ -12,7 +12,6 @@ else
   if ~isempty(private_help(url))
     return
   end
-  disp([ mfilename ' ' url ]);
   % attempts to guess how to launch the browser
   if ispc
     system([ 'start /D "' ifitpath '" Docs']);
@@ -36,7 +35,6 @@ else
     end
     system( browser );
     disp('WARNING: if the browser does not start, launch it manually and enter the above mentioned URL');
-    disp('         Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.');
   end
 end
 
@@ -69,12 +67,8 @@ else
 end
 if isempty(url), return; end
 if ~isdeployed
-  if length(varargin)
-    disp([ '  <a href="matlab:help ' url '">help ' url '</a>' ])
-  end
   builtin('help',varargin{:});
 else
-  disp([ mfilename ' ' url ]);
   % attempts to guess what to display
   [p,f,e] = fileparts(url);
   h = fullfile(p , [f '.txt' ]); 
@@ -89,11 +83,14 @@ else
     [c, m] = strtok(url, '.');
     if isempty(m), m = c; else m=m(2:end); end
     url    = fullfile('Objects', [ '@' c ], m);
-    feval(mfilename, url);
+    h = feval(mfilename, url);
     return
   else
   % is the url an iFit function ?
-    feval(mfilename, which(url));
+    if ~isempty(dir(which(url)))
+      h = feval(mfilename, which(url));
+    else h=[]; 
+    end
     return
   end
   % get the help string from the corresponding file (must have been generated at deploy stage)
