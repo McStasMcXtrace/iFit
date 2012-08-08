@@ -54,7 +54,10 @@ disp(' ');
 disp(version(iData));
 disp(' ');
 disp([ '** Starting iFit on ' datestr(now) ])
-disp('Type ''help'' to learn how to use this software. Type ''exit'' or Ctrl-C to exit.');
+disp('   Type ''help'' to learn how to use this software.');
+disp('   iFit   help is fully available at <http://ifit.mccode.org>.')
+disp('   Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.')
+disp('   Type ''exit'' or Ctrl-C to exit.');
 if ispc
   disp('WARNING: under Windows platforms, file names containing spaces, such as "My Documents" ')
   disp('         are not well supported. Rename files and move directories to other locations.')
@@ -90,16 +93,16 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
       disp('      switch/case...) when they span on one line, or in scripts.');
       disp('Keys: Arrow-Up/Down  Navigate in command history.');
       disp('      Ctrl-C         Exit (same as ''exit'' or ''return'' commands.');
-      disp('Help: Type ''doc(iData,''iFit'')'' ');
-      disp('      see or <ifit.mccode.org> <ifit-users@mccode.org>.');
+      disp('Help: Type ''doc(iData,''iFit'')'' to open local web pages.');
+      disp('      or see <ifit.mccode.org> and contact <ifit-users@mccode.org>.');
+      disp('      Type ''help <ifit topic/method>'' to display specific help.')
       disp('To import some data, use e.g. d=iData(''filename'');');
       disp('To create a model, use e.g. f=iFunc(''expression''); ');
       disp('  or type fits(iFunc) to get a list of available models.');
       disp('To fit a model to data, use e.g. fits(f,d)');
       disp('Data and Models can be manipulated (+-/*...) using the Matlab syntax.');
-      disp(' ');     
-      disp('Matlab is a registered trademark of The Mathworks Inc.');
       disp('Source code for this software is available at <ifit.mccode.org>.')
+      disp('Matlab is a registered trademark of The Mathworks Inc.');
       disp('Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.');
       ifit_options.line = 'doc(iData,''iFit''); disp('' '');';
     end

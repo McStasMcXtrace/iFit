@@ -25,7 +25,7 @@ page = [ f e ];
 url = [ ifitpath filesep 'Docs' filesep page ];
 disp(version(iData))
 disp('Opening iData documentation from ')
-if length(url)
+if length(url) && ~isdeployed && usejava('jvm')
   disp([ '  <a href="matlab:web ' url '">web ' url '</a>' ]);
 else
   disp([ '  ' url ]);
