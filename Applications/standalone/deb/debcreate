@@ -15,6 +15,7 @@ chmod a+x ${BUILDDIR}/usr/local/ifit/ifit
 
 echo create the DEB build directory
 sed -i "s/arch/$2/g" ${BUILDDIR}/DEBIAN/control
+sed -i "s|\`dirname \"\$0\"\`|/usr/local/ifit|g" ${BUILDDIR}/usr/local/ifit/ifit
 
 find ${BUILDDIR} -type d -exec chmod 0755 \{\} \;
 
