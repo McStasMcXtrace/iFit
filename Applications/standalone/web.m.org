@@ -83,13 +83,15 @@ else
     [c, m] = strtok(url, '.');
     if isempty(m), m = c; else m=m(2:end); end
     url    = fullfile('Objects', [ '@' c ], m);
-    h = feval(mfilename, url);
+    feval(mfilename, url);
     return
   else
   % is the url an iFit function ?
     if ~isempty(dir(which(url)))
-      h = feval(mfilename, which(url));
+      feval(mfilename, which(url));
     else h=[]; 
+      disp([ 'help: ' url ' documentation can not be found in the standalone help system.') ]);
+      disp('Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.');
     end
     return
   end
