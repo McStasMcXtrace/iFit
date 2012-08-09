@@ -22,6 +22,8 @@
 
   A number of additions, included in the software, where obtained from the Matlab 
   Central contributions, and are BSD licensed.
+  
+  Matlab is a registered trademark of The Mathworks Inc.
 
   Contributions are listed in the iFit/Docs/Credits.html page.
 

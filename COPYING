@@ -11,6 +11,9 @@
  This License covers all the files part of this work, except the example Data files,
  and Third-Party contributed work (Applications/sliceomatic and a number 
  of 'private' directories) which are mostly BSD and GPL.
+ 
+ Matlab is a registered trademark of The Mathworks Inc. Related software (e.g. 
+ Matlab Compiler Runtime and Matlab) are covered by specific licenses.
 
                         Emmanuel Farhi
                         
