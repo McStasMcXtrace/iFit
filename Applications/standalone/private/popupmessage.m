@@ -21,7 +21,7 @@ if exist('command')~=1 % setup message
      titlename='';
  end
  if isempty(titlename)
-     titlename=textfile;mystrings
+     titlename=textfile;
  end
     
  f=figure;
