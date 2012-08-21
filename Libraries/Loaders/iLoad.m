@@ -425,6 +425,7 @@ function [data, loader] = iLoad_import(filename, loader, varargin)
   % handle multiple loaders (cell or struct array)
   if (iscell(loader) | isstruct(loader)) & length(loader) > 1
     loader=loader(:);
+    recompile = 0;
     for index=1:length(loader)
       if iscell(loader), this_loader = loader{index};
       else this_loader = loader(index); end
@@ -433,6 +434,15 @@ function [data, loader] = iLoad_import(filename, loader, varargin)
       catch
         l=lasterror;
         disp(l.message);
+        if strcmpi(l.message, 'Invalid MEX-file') && ~recompile
+          % attempt to recompile MeX file
+          lo = which('looktxt');
+          if exist(lo) == 3
+            delete(lo)
+            recompile = 1;
+            iLoad('force');
+          end
+        end
         [dummy, name_short, ext] = fileparts(filename);
         fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, this_loader.method);
         data = [];
