@@ -562,9 +562,12 @@ weight_pars= exp(-((output.criteriaHistory(index)-min(output.criteriaHistory))/m
 weight_pars= repmat(weight_pars,[1 length(output.parsBest)]);
 output.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
 
-if length(pars)^2*output.fevalDuration/2 < 60 ... % should spend less than a minute to compute the Hessian
+if ((strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
+  || (strcmp(options.Display,'notify') && isempty(strfind(message, 'Converged')))) || nargout == 4) ...
+  && ((isfield(options,'Diagnostics') && strcmp(options.Diagnostics,'on')) ...
+ || (length(pars)^2*output.fevalDuration/2 < 60 ... % should spend less than a minute to compute the Hessian
   && (~isfield(options,'Diagnostics') || ~strcmp(options.Diagnostics,'off')) ...
-  && exitflag ~= -6 % not when user explicitely requested premature end (Abort)
+  && exitflag ~= -6)) % not when user explicitely requested premature end (Abort)
   if length(pars)^2*output.fevalDuration/2 > 5
     disp([ '  Estimating Hessian matrix... (' num2str(length(pars)^2*output.fevalDuration/2) ' [s] remaining, please wait)' ]);
   end

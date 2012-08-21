@@ -287,7 +287,9 @@ is only performed when the Hessian matrix requires less than about a
 minute to compute. Additionally, the <span style="font-style: italic;">output.parsHessianCorrelation</span>indicates
 the
 cross-correlations between parameters (off-diagonal
-values larger that 0.7 indicate cross-correlated parameters).The
+values larger that 0.7 indicate cross-correlated parameters).<br>
+The Hessian statistics are explicitly computed when <span style="font-style: italic;">options.Diagnostics</span>=<span style="color: rgb(204, 51, 204);">'on'</span>, or when the time required for computation does not exceed about a minute. The parameter uncertainties are displayed when <span style="font-style: italic;">options.Display</span> is set to <span style="color: rgb(204, 51, 204);">'final'</span> or<span style="color: rgb(204, 51, 204);"> 'iter'</span>.<br>
+The
 Hessian method is very sensitive to noise in the objective function.
 All these Hessian final computations (which may take time) can be
 skipped when using <span style="font-style: italic;">options.Diagnostics</span>=<span style="color: rgb(204, 51, 204);">'off'</span>.<br>
