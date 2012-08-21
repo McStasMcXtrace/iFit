@@ -12,29 +12,46 @@ else
   if ~isempty(private_help(url))
     return
   end
-  % attempts to guess how to launch the browser
-  if ispc
-    system([ 'start /D "' ifitpath '" Docs']);
-  elseif ismac
-    system([ 'open "' url '"' ]);
+  if usejava('jvm') && ~ispc && ~ismac
+    % use Java browser
+    if ~isempty(dir(url))
+      url = [ 'file://' url ]; % local file
+    end
+    hFig       = figure('menubar','none','Name',url);
+    je         = javax.swing.JEditorPane('text/html',url);
+    jp         = javax.swing.JScrollPane(je);
+    [hcomponent, hcontainer] = javacomponent(jp, [], hfig);
+    set(hcontainer, 'units', 'normalized', 'position', [0,0,1,1]);
+    je.setEditable(false);
+    je.setPage(url);
+    disp('This Web browser does NOT support hyperlinks. Navigate through pages by');
+    disp('  requesting other pages among the following (with e.g. "doc(iData,''Load'')")');
+    dir([ ifitpath filesep 'Docs'  filesep '*.html' ]);
   else
-    browser = getenv('BROWSER');
-    if isempty(browser)
-      [flag, out]=system('locate firefox');
-      if isempty(browser) && ~isempty(out), browser='firefox'; end
-      [flag, out]=system('locate google-chrome');
-      if isempty(browser) && ~isempty(out), browser='google-chrome'; end
-      [flag, out]=system('locate konqueror');
-      if isempty(browser) && ~isempty(out), browser='konqueror'; end
-      [flag, out]=system('locate seamonkey');
-      if isempty(browser) && ~isempty(out), browser='seamonkey'; end
+    % attempts to guess how to launch the browser
+    if ispc
+      system([ 'start /D "' ifitpath '" Docs']);
+    elseif ismac
+      system([ 'open "' url '"' ]);
+    else
+      browser = getenv('BROWSER');
+      if isempty(browser)
+        [flag, out]=system('locate firefox');
+        if isempty(browser) && ~isempty(out), browser='firefox'; end
+        [flag, out]=system('locate google-chrome');
+        if isempty(browser) && ~isempty(out), browser='google-chrome'; end
+        [flag, out]=system('locate konqueror');
+        if isempty(browser) && ~isempty(out), browser='konqueror'; end
+        [flag, out]=system('locate seamonkey');
+        if isempty(browser) && ~isempty(out), browser='seamonkey'; end
+      end
+      if isempty(browser), browser = 'gnome-open'; end
+      if ~isempty(url)
+        browser = [ browser ' "' url '"' ];
+      end
+      system( browser );
+      disp('WARNING: if the browser does not start, launch it manually and enter the above mentioned URL');
     end
-    if isempty(browser), browser = 'gnome-open'; end
-    if ~isempty(url)
-      browser = [ browser ' "' url '"' ];
-    end
-    system( browser );
-    disp('WARNING: if the browser does not start, launch it manually and enter the above mentioned URL');
   end
 end
 

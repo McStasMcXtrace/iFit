@@ -1,17 +1,15 @@
-% Display a text file in a popupmenu
-%
-% function popupmessage(filename,titlename)
-%
-% filename-name of the file
-% titlename-name of the window
-%
-% Written by Samuel Cheng, Copyright 2005
-%
-% You are allowed to redistribute and use this code if this m-file is not modified.
+function popupmessage(filename)
 
-% http://www.mathworks.com/matlabcentral/fileexchange/7396-display-a-text-file/content/popupmessage.m
+  % the Figure
+  handles(1)=figure('units','pixels',...
+      'position',[250 250 700 700],...
+      'menubar','none');
 
-function popupmessage(textfile,titlename,command);
+  handles(2)=uicontrol('style','pushbutton',...
+      'units','normalized',...
+      'position',[0.1 0.01 0.1 0.05],...
+      'string','Load ...', 'ForegroundColor','blue',...    
+      'callback',@event_load);
 
 if exist('command')~=1 % setup message
  if exist('textfile')~=1
@@ -24,85 +22,61 @@ if exist('command')~=1 % setup message
      titlename=textfile;
  end
     
- f=figure;
- set(f,'menubar','none','tag','figure');
- 
- h1=addTextBox(f,textfile);
- h2=addOkayButton(f,'OK');
- set(f,'resizefcn','popupmessage('''','''',''resize_callback'')');
- set(f,'name',titlename,'numbertitle','off');
- handles=guihandles(f);
- guidata(f,handles);
-else
-
- feval(command);
-
-end
-
-function resize_callback
-handles=guidata(gcbo);
-tbpos=getTBPos(handles.figure);
-bpos=getOKPos(handles.figure);
-set(handles.okaybutton,'position',bpos);
-set(handles.textbox,'position',tbpos);
-
-%-----------------------------------
-function h=addTextBox(f,textfile)
-
-if ~isempty(dir(textfile))
-  fid=fopen(textfile,'r');
-  if (fid==-1) 
-    error('Please check your filename, cannot open file');
+  if nargin == 0
+    filename = '';
   end
-
-  id=1;
-  while 1
-       tline = fgetl(fid);
-       if ~ischar(tline), break, end
-       mystrings{id}=tline; id=id+1;
+  if ~isempty(filename)
+    action_load(filename);
   end
-  fclose(fid);
-else
-  mystrings = textscan(textfile,'%s','Delimiter','\n\r');
-  mystrings = mystrings{1};
-end
-
-tbpos=getTBPos(f);
-h=uicontrol(f,'style','listbox','position',tbpos,'tag','textbox');
   
-if exist('mystrings','var')
-    set(h,'string',mystrings);
+  % ----------------------------------------------------------------------------
+
+  function event_load(obj,event)
+      action_load('');
+  end
+  
+  function action_load(filename)
+    if nargin == 0,       filename == ''; end
+    if isempty(filename), filename = uigetfile; end
+    if ~ischar(filename) || all(filename == 0),     return; end
+    if ~isempty(dir(filename))
+      content=fileread(filename);
+      titl = filename;
+    else
+      content = filename;
+      titl = content(:)';
+    end
+    set(handles(3),'string',content);
+    
+    if length(titl) > 80, titl = [ titl(1:79) ' ...' ]; end
+    if ~isempty(titl)
+      set(handles(1), 'name', titl);
+      set(handles(6), 'ToolTip', [ 'File:' titl sprintf('\nSize:') num2str(length(content)) ], 'String',titl);
+    end
+  end
+  
+  function event_save(obj,event)
+      action_save('');
+  end
+  
+  function action_save(filename)
+    if nargin == 0,       filename == ''; end
+    if isempty(filename), filename = uiputfile; end
+    if ~ischar(filename) || all(filename == 0),     return; end
+
+    content = get(handles(3),'string');
+    fid = fopen(filename);
+    if fid == -1
+      error([ mfilename ': Could not open file ' filename ]);
+    end
+    fprintf(fid, '%s', content);
+    fclose(fid);
+  end
+  
+  function event_close(obj,event)
+      delete(handles(1));
+  end
+  
 end
-%------------------------------------
-function tbpos=getTBPos(f)
 
-margins=[10 10 10 50]; % left, right, top, bottom
-pos=get(f,'position');
-tbpos=[margins(1) margins(4) pos(3)-margins(1)-margins(2) ...
-    pos(4)-margins(3)-margins(4)];
-tbpos(tbpos<1)=1;
 
-%----------------------------------
-function h=addOkayButton(f,btext)
-
-bpos=getOKPos(f);
-h=uicontrol(f,'style','pushbutton','position',bpos,'string',btext,'tag','okaybutton');
-set(h,'callback','popupmessage('''','''',''okaybutton_callback'')');
-
-%-----------------------------------
-function h=okaybutton_callback
-handles=guidata(gcbo);
-close(handles.figure);
-
-%------------------------------------
-function tbpos=getOKPos(f)
-
-bsize=[60,30];
-badjustpos=[0,25];
-
-pos=get(f,'position');
-
-tbpos=[pos(3)/2-bsize(1)/2+badjustpos(1) -bsize(2)/2+badjustpos(2)...
-    bsize(1) bsize(2)];
-tbpos=round(tbpos);
-tbpos(tbpos<1)=1;
