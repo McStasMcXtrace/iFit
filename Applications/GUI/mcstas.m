@@ -74,6 +74,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %           options.compile: 0 or 1 to force re-compilation of the instrument (boolean)
 %           options.mode:   'simulate' (default), 'optimize' or 'display' (string)
 %           options.type:   'minimize' or 'maximize', which is the default (string)
+%           options.particle: 'n' (default) or 'x' depending if you use McStas or McXtrace (string)
 %           options.monitors:  cell string of monitor names, or empty for all (cellstr)
 %             the monitor names can contain expressions made of the monitor name 
 %             followed by any expression using 'this' to refer to the monitor content
@@ -113,7 +114,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   end
 
   if ~exist('iData')
-    error([ mfilename ' requires iFit/iData. Get it at <ifit.mccode.org>. Install it with addpath(genpath(''/path/to/iFit''))' ] );
+    error([ mfilename ' requires iFit/iData. Get it at <ifit.mccode.org>. Install source code with addpath(genpath(''/path/to/iFit'')) or use standalone version.' ] );
   end
   
 % PARSE INPUT ARGUMENTS ========================================================
@@ -133,16 +134,28 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     index = dir(instrument);
   else return;
   end
-  if isempty(index)
-    mcstas_lib = getenv('MCSTAS');
-    if isempty(mcstas_lib)
-      if ispc
-        mcstas_lib = 'C:\mcstas\lib';
-      else
-        mcstas_lib = '/usr/local/lib/mcstas';
-      end
+  
+  % check for McStas/McXtrace existence
+  mcstas_lib   = getenv('MCSTAS');
+  mcxtrace_lib = getenv('MCXTRACE');
+  if isempty(mcstas_lib)
+    if ispc
+      mcstas_lib = 'C:\mcstas\lib';
+    else
+      mcstas_lib = '/usr/local/lib/mcstas';
     end
-    if ~isempty(mcstas_lib)
+  end
+  if isempty(mcxtrace_lib)
+    if ispc
+      mcxtrace_lib = 'C:\mcxtrace\lib';
+    else
+      mcxtrace_lib = '/usr/local/lib/mcxtrace';
+    end
+  end
+  
+  % find instrument in McStas/McXtrace installation ?
+  if isempty(index)
+    if ~isempty(dir(mcstas_lib))
       [p,f,e] = fileparts(instrument);
       instrument = [ f e ];
       index = getAllFiles(mcstas_lib, instrument);
@@ -150,11 +163,26 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
         disp([ mfilename ': Copying instrument ' index ' in ' pwd ] );
         copyfile(index, instrument);
       end
+    elseif ~isempty(dir(mcxtrace_lib))
+      [p,f,e] = fileparts(instrument);
+      instrument = [ f e ];
+      index = getAllFiles(mcxtrace_lib, instrument);
+      if ~isempty(index)
+        disp([ mfilename ': Copying instrument ' index ' in ' pwd ] );
+        copyfile(index, instrument);
+      end
+    else mcstas_lib=''; mcxtrace_lib=''; index=[];
     end
   end
   
   if isempty(index)
     disp([ mfilename ': ERROR: Can not find instrument ' instrument ]);
+  end
+  
+  if ~isempty(mcstas_lib) && isempty(mcxtrace_lib)
+    options.particle = 'n';
+  elseif isempty(mcstas_lib) && ~isempty(mcxtrace_lib)
+    options.particle = 'x';
   end
   
   options.instrument     = instrument;
@@ -169,11 +197,15 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     end
   end
   
+  if ~isfield(options,'particle')
+    options.particle = 'n';
+  end
+  
   if ~isfield(options,'dir')
     options.dir = tempname;
     use_temp    = 1; 
   else 
-    use_temp=0; 
+    use_temp    = 0; 
   end
   if ~isfield(options,'ncount')
     if strcmpi(options.mode, 'optimize')
@@ -187,10 +219,10 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   end
   % force compile before going further ?
   if  isfield(options,'compile') & (options.compile | strcmp(options.compile,'yes'))
-    ncount = options.ncount;
-    options.ncount=0;
+    ncount         = options.ncount;
+    options.ncount = 0;
     mcstas_criteria([], options);
-    options = rmfield(options,'compile');
+    options        = rmfield(options,'compile');
     options.ncount = ncount;
   end  
   
@@ -443,12 +475,18 @@ end % system_wait
 
 function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, ind)
 % inline function to compute a single simulation, or a vector of simulations (recursive calls)
+
+  if options.particle == 'x'
+    prefix = 'mx';
+  else
+    prefix = 'mc';
+  end
   
-  % launch simulation with mcrun or mcdisplay
+  % launch simulation with mcrun/mxrun or mcdisplay/mxdisplay
   if strcmpi(options.mode,'optimize') || strcmpi(options.mode,'simulate')
-    cmd = [ 'mcrun ' options.instrument ];
+    cmd = [ prefix 'run ' options.instrument ];
   elseif any(strcmpi(options.mode,{'display','trace'}))
-    cmd = [ 'mcdisplay -pMatlab --save ' options.instrument ];
+    cmd = [ prefix 'display -pMatlab --save ' options.instrument ];
     options.ncount=0;
   end
   
@@ -768,9 +806,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
       setalias(sim, f{index}, [ 'Data.Parameters.' f{index} ], [ 'Instrument parameter ' f{index} ]);
     end
     setalias(sim, 'Parameters', 'Data.Parameters','Instrument parameters');
-    setalias(sim, 'Criteria', 'Data.Criteria','Integral of monitors (criteria)');
-    setalias(sim, 'Execute', 'Data.Execute','Command line used for Mcstas execution');
-    setalias(sim, 'Options', 'Data.Options','Options used for Mcstas execution');
+    setalias(sim, 'Criteria',   'Data.Criteria',  'Integral of monitors (criteria)');
+    setalias(sim, 'Execute',    'Data.Execute',   'Command line used for Mcstas execution');
+    setalias(sim, 'Options',    'Data.Options',   'Options used for Mcstas execution');
   end
 end % mcstas_criteria
 % end of mcstas_criteria (inline mcstas)
