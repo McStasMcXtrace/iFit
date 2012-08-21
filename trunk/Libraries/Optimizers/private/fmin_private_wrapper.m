@@ -703,7 +703,7 @@ function constraints = inline_constraints_minmax(pars, constraints)
 end % inline_constraints_minmax
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [pars,exitflag,message] = inline_apply_constraints(pars, constraints,options)
+function [pars,exitflag,message] = inline_apply_constraints(pars, constraints, options)
   % take into account constraints on parameters, and perform stop condition checks
   exitflag=0;
   message='';
@@ -716,17 +716,28 @@ function [pars,exitflag,message] = inline_apply_constraints(pars, constraints,op
       pars(index) = constraints.parsPrevious(index) + parsStep(index);
     end
   end
-  if isfield(constraints, 'min')  % lower bound for parameters
+  if isfield(constraints, 'min')    % lower bound for parameters
     index = find(pars(:) < constraints.min(:) & ~isnan(constraints.min(:)));
     if ~isempty(index), pars(index) = constraints.min(index); end
   end
-  if isfield(constraints, 'max')  % upper bound for parameters
+  if isfield(constraints, 'max')    % upper bound for parameters
     index = find(pars(:) > constraints.max(:) & ~isnan(constraints.max(:)));
     if ~isempty(index), pars(index) = constraints.max(index); end
   end
   if isfield(constraints, 'fixed')  % fix some parameters
     index = find(constraints.fixed & ~isnan(constraints.fixed));
     if ~isempty(index), pars(index) = constraints.parsStart(index); end
+  end
+  if isfield(constraints, 'eval')   % evaluate expression with 'p'
+    p = pars;
+    try
+      if isa(constraints.eval, 'function_handle')
+        p = feval(constraints.eval, p);
+      elseif ischar(constraints.eval)
+        eval(constraints.eval);
+      end
+    end
+    pars = p;
   end
 
   pars=pars(:)'; % parameters is a row
