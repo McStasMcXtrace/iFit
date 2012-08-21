@@ -21,47 +21,26 @@
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: iData objects fitting</h1>
 <br>
-<ol id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
-  <li><a href="#mozTocId73031">Fitting
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId73031">Fitting
 a
 model
 to
 the
-Data</a>
-    <ol>
-      <li><a href="#mozTocId888705">Getting most of the
+Data</a><ol><li><a href="#mozTocId888705">Getting most of the
 fit results (4th output argument)
-        </a></li>
-    </ol>
-  </li>
-  <li><a href="#mozTocId410769">Specifying/configuring the optimization
-method</a>
-    <ol>
-      <li><a href="#mozTocId842297">Choosing an
-optimization method</a></li>
-      <li><a href="#mozTocId422448">Configuring the
+</a></li></ol></li><li><a href="#mozTocId410769">Specifying/configuring the optimization
+method</a><ol><li><a href="#mozTocId842297">Choosing an
+optimization method</a></li><li><a href="#mozTocId422448">Configuring the
 optimization method (4th input argument)
-        </a></li>
-      <li><a href="#mozTocId684694">Monitoring the
-performance of the optimization method and the fit process</a></li>
-    </ol>
-  </li>
-  <li><a href="#mozTocId919221">Model parameter constraints</a>
-    <ol>
-      <li><a href="#mozTocId267246">Fixed parameters</a></li>
-      <li><a href="#mozTocId871054">Parameters varying
-within limits</a></li>
-      <li><a href="#mozTocId673530">Limiting parameter
+</a></li><li><a href="#mozTocId684694">Monitoring the
+performance of the optimization method and the fit process</a></li></ol></li><li><a href="#mozTocId919221">Model parameter constraints</a><ol><li><a href="#mozTocId267246">Fixed parameters</a></li><li><a href="#mozTocId871054">Parameters varying
+within limits</a></li><li><a href="#mozTocId673530">Limiting parameter
 change
-        </a></li>
-    </ol>
-  </li>
-  <li><a href="#mozTocId179895">Estimating the model parameter
-uncertainties and the fit quality</a></li>
-  <li><a href="#mozTocId855522">Building model functions</a></li>
-  <li><a href="#mozTocId778987">Specifying the optimization criteria</a></li>
-</ol>
+</a></li><li><a href="#mozTocId364529">
+Other constraints/restraints
+</a></li></ol></li><li><a href="#mozTocId179895">Estimating the model parameter uncertainties
+and the fit quality
+</a></li><li><a href="#mozTocId855522">Building model functions</a></li><li><a href="#mozTocId778987">Specifying the optimization criteria</a></li></ol>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: iData/<span style="font-weight: bold; font-style: italic;">fits</span>, <a href="iFunc.html">iFunc</a>, <span style="font-style: italic; font-weight: bold;"></span><a href="Models.html">Models</a> and <a href="Optimizers.html">Optimizers</a>
@@ -523,7 +502,24 @@ maximum value for each parameter. +Inf is supported.</li>
   <li><span style="font-style: italic;">constraints.steps: </span>the
 maximum change between iterations for each parameter. +Inf is supported.</li>
 </ul>
-All these constraints may be used simultaneously. <span style="font-style: italic;">NaN</span> values in these constraints are ignored (the corresponding parameters are not constrained).<br>
+<h4><a class="mozTocH4" name="mozTocId364529"></a>
+Other constraints/restraints
+</h4>
+<p>The <span style="font-style: italic;">constraints.eval</span> member can be used to specify any other constraints/restraint by mean of <br>
+</p>
+
+<ul>
+<li>either an expression making use of 'p', 'constraints',' and 
+'options', and returning the modified 'p' values (this expression is 
+evaluated) ;<br>
+  </li><li>or a function handle of 'p', returning modified 'p' values.</li>
+</ul>
+
+<p>For instance one could use <span style="font-style: italic;">constraints.eval=<span style="color: rgb(204, 51, 204);">'p(3)=p(1);'</span>.</span></p>
+<br>
+All these constraints may be used simultaneously. <span style="font-style: italic;"><br>
+NaN</span> values in these constraints are ignored (the corresponding parameters are not constrained).<br>
+<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId179895"></a>Estimating the model parameter uncertainties
 and the fit quality<br>
 </h3>

@@ -44,6 +44,9 @@ function [pars,fval,exitflag,output] = fminsce(varargin)
 %   constraints.min= vector of minimal values for parameters
 %   constraints.max= vector of maximal values for parameters
 %   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
+%   constraints.eval=  expression making use of 'p', 'constraints', and 'options' 
+%                        and returning modified 'p'
+%                      or function handle p=@constraints.eval(p)
 %  An empty CONSTRAINTS sets no constraints.
 %
 %  Additional arguments are sent to the objective function.
