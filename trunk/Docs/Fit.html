@@ -528,11 +528,17 @@ the <a href="Optimizers.html#mozTocId228403">Optimizers help</a>. The
 uncertainty on the fit parameters can be obtained from<span style="font-style: italic;"> output.parsHistoryUncertainty</span> and <span style="font-style: italic;">output.parsHessianUncertainty.&nbsp;</span>Additionally,
 the <span style="font-style: italic;">output.parsHessianCorrelation</span>
 indicates the cross-correlations between parameters (off-diagonal
-values larger that 0.7 indicate cross-correlated parameters).<br>
+values larger that 0.7 indicate cross-correlated parameters). <br>
+The Hessian statistics are explicitly computed when <span style="font-style: italic;">options.Diagnostics</span>=<span style="color: rgb(204, 51, 204);">'on'</span>, or when the time required for computation does not exceed about a minute.<br>
+The parameter uncertainties are displayed when <span style="font-style: italic;">options.Display</span> is set to <span style="color: rgb(204, 51, 204);">'final'</span> or<span style="color: rgb(204, 51, 204);"> 'iter'</span>.<br>
+The
+Hessian method is very sensitive to noise in the objective function.
+All these Hessian final computations (which may take time) can be
+skipped when using <span style="font-style: italic;">options.Diagnostics</span>=<span style="color: rgb(204, 51, 204);">'off'</span>.<br>
 <br>
 The fit quality can be assessed from the <span style="font-style: italic;">output.corrcoef </span>returned value
 which goes from 0 (very bad fit) to 1 (perfect fit). A value higher
-than 0.95 is usually good.
+than 0.95 is usually very good.
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId855522"></a>Building model functions</h3>
 <a href="images/ifitmakefunc.png"><img title="ifitmakefunc" src="images/ifitmakefunc.png" alt="ifitmakefunc" style="border: 0px solid ; width: 150px; height: 137px;" align="right"></a>The
 <span style="font-weight: bold; font-style: italic;">ifitmakefunc</span>
