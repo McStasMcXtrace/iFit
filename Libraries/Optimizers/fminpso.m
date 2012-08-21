@@ -54,6 +54,9 @@ function [pars,fval,exitflag,output] = fminpso(varargin)
 %   constraints.max= vector of maximal values for parameters
 %   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
 %   constraints.step=  vector of maximal parameter changes per iteration
+%   constraints.eval=  expression making use of 'p', 'constraints', and 'options' 
+%                        and returning modified 'p'
+%                      or function handle p=@constraints.eval(p)
 %  An empty CONSTRAINTS sets no constraints.
 %
 %  Additional arguments are sent to the objective function.
