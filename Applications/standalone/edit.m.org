@@ -23,27 +23,28 @@ function edit(varargin)
 %   different editor, the name of the non-existent file will always
 %   be passed to the other editor.
 
+persistent success
+
 if length(varargin)
   url = varargin{1};
 else
   url = '';
 end
-if ~isdeployed
-  if length(varargin)
-    disp([ '  <a href="matlab:edit ' url '">edit ' url '</a>' ])
-  end
-  builtin('edit',varargin{:});
-else
-  disp([ mfilename ' ' url ]);
+
+disp([ mfilename ' ' url ]);
+% attempts to guess how to launch the editor
+if ~isempty(url), url = [ '"' url '"' ]; end
+
+if success == 0 % only try once per session to launch external editor in case of failure
+
   % attempts to guess how to launch the editor
-  if ~isempty(url), url = [ '"' url '"' ]; end
   if ispc
-    system([ 'notepad ' url ])
+    success = system([ 'notepad ' url ])
   elseif ismac
     if ~isempty(dir(url(2:(end-1))))
-      system([ 'open -t ' url ]);
+      success = system([ 'open -t ' url ]);
     else
-      system('open -t');
+      success = system('open -t');
     end
   else
     editor = getenv('EDITOR');
@@ -64,9 +65,13 @@ else
       if ~isempty(url)
         editor = [ editor ' ' url ];
       end
-      system( editor );
-    else
-      popupmessage(url);
+      success = system( editor );
     end
   end
 end
+
+% when external editor fails to launch, 'success ~=0'
+if success ~=0
+  fallback_edit(url); % in private
+end
+

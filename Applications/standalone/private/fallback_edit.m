@@ -1,4 +1,5 @@
 function popupmessage(filename)
+% popupmessage: basic text editor written in 100% Matlab
 
 % the Figure
 handles(1)=figure('units','pixels',...
@@ -29,22 +30,22 @@ handles(5)=uicontrol('style','pushbutton',...
     'units','normalized',...
     'position',[0.85 0.01 0.1 0.05],...
     'string','Close', 'ForegroundColor','red',...  
-    'Tooltip','Close this window', ...  
+    'Tooltip','Close this window without saving content.', ...  
     'callback',@event_close);
     
 handles(6)=uicontrol('style','text',...
     'units','normalized',...
     'position',[0.4 0.01 0.4 0.05],...
     'string','');
-    
-  if nargin == 0
-    filename = '';
-  end
-  if ~isempty(filename)
-    action_load(filename);
-  end
   
-  % ----------------------------------------------------------------------------
+if nargin == 0
+  filename = '';
+end
+if ~isempty(filename)
+  action_load(filename);
+end
+  
+% ----------------------------------------------------------------------------
 
   function event_load(obj,event)
       action_load('');
@@ -54,6 +55,7 @@ handles(6)=uicontrol('style','text',...
     if nargin == 0,       filename == ''; end
     if isempty(filename), filename = uigetfile; end
     if ~ischar(filename) || all(filename == 0),     return; end
+    
     if ~isempty(dir(filename))
       content=fileread(filename);
       titl = filename;
@@ -65,6 +67,7 @@ handles(6)=uicontrol('style','text',...
     
     if length(titl) > 80, titl = [ titl(1:79) ' ...' ]; end
     if ~isempty(titl)
+      % update information text in lower part
       set(handles(1), 'name', titl);
       set(handles(6), 'ToolTip', [ 'File:' titl sprintf('\nSize:') num2str(length(content)) ], 'String',titl);
     end
@@ -86,6 +89,9 @@ handles(6)=uicontrol('style','text',...
     end
     fprintf(fid, '%s', content);
     fclose(fid);
+    % update information text in lower part
+    set(handles(1), 'name', filename);
+    set(handles(6), 'ToolTip', [ 'File:' filename sprintf('\nSize:') num2str(length(content)) ], 'String',titl);
   end
   
   function event_close(obj,event)
