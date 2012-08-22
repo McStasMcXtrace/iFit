@@ -151,6 +151,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
       % a string explicitly indicated as such
       ifit_options.line=ifit_options.line(2:(end-1));
       this{end+1} = ifit_options.line;
+      ans = this{end};
     elseif (ifit_options.line(1)=='''' && ifit_options.line(end)=='''')
       % an expression explicitly indicated as such
       ifit_options.line=ifit_options.line(2:(end-1));
@@ -162,6 +163,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
         disp(lasterr)
       end
       this{end+1} = ifit_options.line;
+      ans = this{end};
     elseif strcmp(ifit_options.line, '--save') || strcmp(ifit_options.line, '-s')
       ifit_options.save='ifit.mat';
     elseif strncmp(ifit_options.line, '--save=', 7)
@@ -217,6 +219,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     elseif ~isempty(str2num(ifit_options.line))
       % numerical value(ifit_options.line) as a matrix
       this{end+1} = str2num(ifit_options.line);
+      ans = this{end};
     else
       % check if a file import/conversion to iData is needed
       % apparently not a file name ? -> store string as is
@@ -229,13 +232,14 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
                    && isempty(strncmp(ifit_options.line,'ftp:',4)) ...
                    && isempty(dir(ifit_options.line));
       if ~ifit_options.not_a_file % probably a file name
-        % check if the file is a script
+        % check if the file is a script or desktop launcher
         [ifit_options.p,ifit_options.f,ifit_options.e]=fileparts(ifit_options.line);
         if strcmp(ifit_options.e, 'm')
           % request to execute the script
           ifit_options.line = [ 'run ' ifit_options.line ];
           ifit_options.not_a_file = nan;  % will retain the line as a command
-        elseif ismethod(iData, ifit_options.line) || any(exist(ifit_options.line) == [ 3 5 6 ])
+        elseif ismethod(iData, ifit_options.line) || ismethod(iFunc, ifit_options.line) ...
+            || any(exist(ifit_options.line) == [ 2 3 5 6 ])
           ans = feval(ifit_options.line, this{:})
         else
           this{end+1} = iData(ifit_options.line);

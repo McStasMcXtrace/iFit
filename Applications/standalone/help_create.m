@@ -18,3 +18,49 @@ function help_create
       fclose(fid);
     end
   end
+  
+  return
+  
+  % now we create launchers for Linux (OpenDesktop .desktop files) and Windows (.bat files)
+  
+  % Linux OpenDesktop/FreeDesktop ----------------------------------------------
+  % <http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>
+  % valid for Gnome, KDE, XFce, ...
+  
+  % file ifit_<operator>.desktop
+  % Exec=ifit %F <operator>
+  % Name=<operator> (description)
+  % Icon=<operator.png> or <iFit logo>
+  % Comment=<operator> command | operator | model
+  % Type=Application
+  % GenericName=iFit Data Analysis
+  % Categories=Education;Applications;Science;NumericalAnalysis;Physics
+  % Terminal=true
+  % Version=1.0
+  
+  % Windows BAT file
+  % file ifit_<operator>.bat
+  % @echo off
+  % rem Comment=<operator> command | operator | model
+  % rem Name=<operator>
+  % ifit %~s* <operator>
+  
+  % categories for launchers ---------------------------------------------------
+  
+  % Model list (iFunc)
+  [optimizers,functions] = fits(iFunc)
+  % Mathematical operators (iFunc), save 'ans'
+  abs del2 floor sparse transpose  acos conj full sqrt uminus  acosh real  asin exp ndims round xcorr  asinh imag norm  atan cos isempty not sign tan  atanh cosh fliplr log sin tanh  ceil ctranspose flipud log10 sinh minus conv convn xcorr fits
+  % Commands (iFunc)
+  edit plot char copyobj doc feval  get subplot 
+  
+  % Mathematical operators (iData), save 'ans'
+  abs acos asin atan cos sin tan cosh, sinh, tanh acosh, asinh, atan exp log log10 sqrt ctranspose
+  transpose permute floor ceil round sign uminus imag real fft ifft del2 gradient diff sum prod trapz cumsum 
+  plus minus times mtimes rdivide combine power lt le gt ge ne eq conv xcorr interp 
+  mean max mean median std peaks camproj cumtrapz norm cat dog linspace logspace intersect union hist
+   
+  % Commands (iData)
+  edit plot char copyobj doc feval  get subplot surf mesh load contour surfc surfl plot3 scatter3 waterfall
+  image caxis colormap slice
+  

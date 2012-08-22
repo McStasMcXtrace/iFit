@@ -34,6 +34,7 @@ end
 disp([ mfilename ' ' url ]);
 % attempts to guess how to launch the editor
 if ~isempty(url), url = [ '"' url '"' ]; end
+if isempty(success), success=0; end
 
 if success == 0 % only try once per session to launch external editor in case of failure
 

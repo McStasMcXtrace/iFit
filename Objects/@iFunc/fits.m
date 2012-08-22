@@ -16,6 +16,11 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %     uses a specific optimizer and its default options options=feval(optimizer,'defaults')
 %  [pars,...] = fits(model, data, pars, options, constraints, args...)
 %     send additional arguments to the fit model(pars, axes, args...).
+%  [optimizers,functions] = fits(iFunc)
+%     returns the list of all available optimizers and fit functions.
+%  fits(iFunc)
+%     displays the list of all available optimizers and fit functions.
+%  You may create new fit models with the 'ifitmakefunc' tool.
 %
 %  When the data is entered as a structure or iData object with a Monitor value, 
 %    the fit is performed on Signal/Monitor.

@@ -20,7 +20,7 @@ function [pars_out,criteria,message,output] = fits(a, model, varargin)
 %     returns the list of all available optimizers and fit functions.
 %  fits(iData)
 %     displays the list of all available optimizers and fit functions.
-%  You may create new fit functions with the 'ifitmakefunc' tool.
+%  You may create new fit models with the 'ifitmakefunc' tool.
 %
 %  When the iData object contains a Monitor value, the fit is performed on
 %    Signal/Monitor.
