@@ -6,7 +6,7 @@ Type=Application
 Terminal=true
 Exec=ifit %F
 Name=iFit
-Comment=iFit stand-alone. Drag-n-drop me.
+Comment=iFit stand-alone. Drag-n-drop to me.
 Icon=iFit-logo.png
 Categories=Education;Applications;
 # logo obtained with font URW Palladio L, italic, bold, blue

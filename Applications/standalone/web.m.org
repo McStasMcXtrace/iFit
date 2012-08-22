@@ -24,6 +24,9 @@ end
 if ~isempty(private_help(url))
   return
 end
+
+if isempty(success), success=0; end
+
 if success == 0 % only try once per session to launch external browser in case of failure
 
   % attempts to guess how to launch the browser
@@ -47,10 +50,11 @@ if success == 0 % only try once per session to launch external browser in case o
     if ~isempty(url)
       browser = [ browser ' "' url '"' ];
     end
+    disp(browser)
     success = system( browser );
   end
 end
-
+success
 % when external editor fails to launch, 'success ~=0'
 if success ~=0
   fallback_web(url); % in private
@@ -107,8 +111,9 @@ else
   % is the url an iFit function ?
     if ~isempty(dir(which(url)))
       feval(mfilename, which(url));
-    else h=[]; 
-      disp([ 'help: ' url ' documentation can not be found in the standalone help system.') ]);
+    else 
+      h=[]; 
+      disp([ 'help: ' url ' documentation can not be found in the standalone help system.' ]);
       disp('Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.');
     end
     return
