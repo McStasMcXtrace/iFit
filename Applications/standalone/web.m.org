@@ -54,7 +54,7 @@ if success == 0 % only try once per session to launch external browser in case o
     success = system( browser );
   end
 end
-success
+
 % when external editor fails to launch, 'success ~=0'
 if success ~=0
   fallback_web(url); % in private

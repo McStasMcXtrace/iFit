@@ -1,5 +1,16 @@
-function popupmessage(filename)
-% popupmessage: basic text editor written in 100% Matlab
+function fallback_edit(filename)
+% fallback_edit: basic text editor written in 100% Matlab
+%
+%   Opens a simplistic text editor, 100% Matlab.
+%     Can be used as replacement for the 'edit' command in deployed applications.
+%   The editor can load and save files. 
+%   Support for Cut/Copy/Paste depends on the system, but will be very limited.
+%
+%   fallback_edit       Opens an empty editor.
+%   fallback_edit(file) Opens an editor displaying the specified file.
+%
+%   Copyright: Licensed under the EUPL V.1.1
+%              E. Farhi, ILL, France <farhi@ill.fr> Aug 2012
 
 % the Figure
 handles(1)=figure('units','pixels',...
@@ -83,15 +94,18 @@ end
     if ~ischar(filename) || all(filename == 0),     return; end
 
     content = get(handles(3),'string');
-    fid = fopen(filename);
+    fid = fopen(filename, 'w+');
     if fid == -1
       error([ mfilename ': Could not open file ' filename ]);
     end
-    fprintf(fid, '%s', content);
+    content = cellstr(content);
+    for index=1:length(content)
+      fprintf(fid, '%s\n', deblank(content{index}));
+    end
     fclose(fid);
     % update information text in lower part
     set(handles(1), 'name', filename);
-    set(handles(6), 'ToolTip', [ 'File:' filename sprintf('\nSize:') num2str(length(content)) ], 'String',titl);
+    set(handles(6), 'ToolTip', [ 'File:' filename sprintf('\nSize:') num2str(length(content)) ], 'String',filename);
   end
   
   function event_close(obj,event)

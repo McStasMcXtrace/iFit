@@ -25,11 +25,15 @@
 # define version and symbols that will be replaced in many places
 IFIT_TARNAME=ifit
 IFIT_NAME=iFit
-IFIT_VERSION=$1
 MONTH=`date +"%b"`
 DAY=`date +"%d"`
 YEAR=`date +"%Y"`
 IFIT_DATE="$MONTH. $DAY, $YEAR"
+if [ "y$1" = "y" ]; then
+  IFIT_VERSION="$YEAR.$MONTH.$DAY"
+else
+  IFIT_VERSION=$1
+fi
 IFIT_STRING="$IFIT_NAME $IFIT_VERSION - $MONTH. $DAY, $YEAR"
 
 # Create temporary workdir:
@@ -38,6 +42,7 @@ TMPDIR=$PWD/..
 DIST=$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION
 
 # Copy current PW checkout to DIST
+rm -rf $DIST
 cp -rp $PW $DIST
 
 # Go in DIST, clean up CVS/SVN information
@@ -65,6 +70,7 @@ done
 
 cd $TMPDIR
 # Create tar archive SRC
+rm $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip
 zip -r $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip $IFIT_TARNAME-$IFIT_VERSION
 
 if [ -x `which mcc` ]
@@ -111,7 +117,7 @@ then
       # sudo chroot build-chroot-amd64 apt-get update
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/deb/debcreate build-chroot-amd64/root/debcreate
       sudo chmod u+x build-chroot-amd64/root/debcreate
-      sudo chroot build-chroot-amd64   /root/debcreate $1 amd64
+      sudo chroot build-chroot-amd64   /root/debcreate IFIT_VERSION amd64
       echo
       echo Build packages created:
       echo

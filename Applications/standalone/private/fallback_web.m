@@ -1,12 +1,29 @@
 function fallback_web(url)
-% fallback_web: basic text editor written in 100% Matlab
+% fallback_web: basic web browser
+%
+%   Opens a simplistic web browser, built from Matlab/Java.
+%     Can be used as replacement for the 'web' command in deployed applications.
+%     Requires a running JVM.
+%   The browser has a display pane, a Home button, a Back button, an editable URL 
+%   field, and keep track of the navigation history.
+%
+%   fallback_web      Opens an empty browser.
+%   fallback_web(url) Opens a browser displaying the specified URL.
+%
+%   Copyright: Licensed under the EUPL V.1.1
+%              E. Farhi, ILL, France <farhi@ill.fr> Aug 2012
 
   list = {};
 
   if nargin == 0
     url = '';
   end
-  if isempty(url), url = [ ifitpath filesep 'Docs' filesep 'index.html' ]; end
+  if exist('ifitpath')
+    Home = [ ifitpath filesep 'Docs' filesep 'index.html' ];
+  else
+    Home = 'http://ifit.mccode.org';
+  end
+  if isempty(url), url = Home; end
 
   % use Java browser
   if usejava('jvm') 
@@ -17,7 +34,7 @@ function fallback_web(url)
       if strncmp(root, 'file://',7)
         root = root(8:end);
       end
-      handles(1) = figure('menubar','none', 'Name', url, 'KeyPressFcn',@KeyPressFcn);
+      handles(1) = figure('menubar','none', 'Name', url);
       % button bar [ Back URL History Home ]
       % Back button
       handles(2) = uicontrol('style','pushbutton','Units','Normalized', ...
@@ -33,9 +50,22 @@ function fallback_web(url)
         'String', 'History', 'Position',[0.70 0.91 0.14 0.05], 'Callback',@setFromHistory);
       % HOME button
       handles(5) = uicontrol('style','pushbutton','Units','Normalized', ...
-        'ToolTip', sprintf('Go back to iFit main page\n%s', [ ifitpath filesep 'Docs' filesep 'index.html' ] ), ...
+        'ToolTip', sprintf('Go back to iFit main page\n%s',Home ), ...
         'String','HOME','Position',[0.85 0.91 0.14 0.05], 'Callback',@setHome);
-        
+      % File Menu
+      handles(6) = uimenu(handles(1), 'Label', 'File');
+      uimenu(handles(6), 'Label', 'Open URL', 'Callback', @openURL, 'Accelerator','O');
+      uimenu(handles(6), 'Label', 'Save as...', 'Callback', @savePage, 'Accelerator','S');
+      uimenu(handles(6), 'Label', 'Export page', 'Callback', @printPage, 'Accelerator','P');
+      uimenu(handles(6), 'Separator','on', 'Label', 'Quit', ...
+        'Callback', @exitBrowser, 'Accelerator','Q');
+      % Navigation Menu
+      handles(6) = uimenu(handles(1), 'Label', 'Navigation');
+      uimenu(handles(6), 'Label', 'Home', 'Callback', @setHome, 'Accelerator','H');
+      uimenu(handles(6), 'Label', 'Back', 'Callback', @setBack, 'Accelerator','B');
+      uimenu(handles(6), 'Label', 'Set from history...', 'Callback', @setFromHistory, 'Accelerator','L');
+      uimenu(handles(6), 'Separator','on', 'Label', 'About this Browser', 'Callback', @aboutBrowser);
+      
       je         = javax.swing.JEditorPane('text/html',url);
       jp         = javax.swing.JScrollPane(je);
       [hcomponent, hcontainer] = javacomponent(jp, [], handles(1));
@@ -61,10 +91,30 @@ function fallback_web(url)
       setPage(link);
     end
   end
+  
+  function exitBrowser(src,evnt) % Menu File:Quit
+    delete(handles(1));
+  end
+  
+  function printPage(src,evnt)   % Menu File:Print
+    filemenufcn(gcbf,'FileSaveAs');
+  end
+  
+  function savePage(src,evnt)    % Menu File:Save as
+    filename = uiputfile('*.html','Save page as HTML');
+    if ~ischar(filename) || all(filename == 0),     return; end
+    content  = je.getText;
+    fid = fopen(filename, 'w+');
+    if fid == -1
+      error([ mfilename ': Could not open file ' filename ]);
+    end
+    fprintf(fid, '%s', char(content));
+    fclose(fid);
+  end
     
-  function setPage(link)
+  function setPage(link)         % set the JEditorPane content (URL)
     % used to set the URL in the JEditorPane
-    if any(link == '#') % is there an chor here ?
+    if any(link == '#') % is there an anchor here ?
       [link, anchor] = strtok(link, '#');
       if isempty(anchor), link = [ '#' link ]; end
     else
@@ -87,22 +137,18 @@ function fallback_web(url)
     list{end+1} = url;
   end
   
-  function KeyPressFcn(src,evnt)
-    % used to handle key pressed in the figure
-    % 'h'         -> setHome
-    % 'backspace' -> back in history
-    if lower(evnt.Key) == 'h'
-      setHome
-    elseif lower(evnt.Key) == 'backspace'
-      
+  function setHome(src,evnt)     % go back to Home
+    setPage(Home);
+  end
+  
+  function openURL(src,evnt)     % open a URL from a Dialog
+    link = inputdlg('Enter the URL to go to','Open URL',1,{''});
+    if ~isempty(link)
+      setPage(link{1});
     end
   end
   
-  function setHome(src,evnt)
-    setPage([ ifitpath filesep 'Docs' filesep 'index.html' ]);
-  end
-  
-  function setURL(src, evnt)
+  function setURL(src, evnt)     % set URL by changing the URL edit box content
     link = get(handles(3), 'String');
     if ~isempty(link)
       setPage(link);
@@ -111,7 +157,7 @@ function fallback_web(url)
     end
   end
   
-  function setFromHistory(src, evnt)
+  function setFromHistory(src, evnt)  % list the history and jump to item
     link = listdlg('ListString',list, 'InitialValue', length(list), ...
       'ListSize', [ 400 100 ], 'SelectionMode', 'single', ...
       'Name','Select URL to go back to');
@@ -120,11 +166,15 @@ function fallback_web(url)
     list = list(1:link);
   end
   
-  function setBack(src, evnt)
+  function setBack(src, evnt)    % go back one URL
     if length(list) > 1
       l = length(list);
       setPage(list{l-1});
       list = list(1:(l-1));
     end
+  end
+  
+  function aboutBrowser(src, evnt) % about dialog
+    helpdlg(sprintf('This is a simplistic web browser, built from Matlab/Java. E. Farhi, ILL, France <farhi@ill.fr> Aug 2012. Copyright: Licensed under the EUPL V.1.1. VISIT http://ifit.mccode.org for more.'), 'About this simplistic Browser');
   end
 end

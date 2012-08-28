@@ -65,6 +65,10 @@ if nargin ==1
     return
   end
 end
+
+% ------------------------------------------------------------------------------
+% begin configuration stuff
+% ------------------------------------------------------------------------------
 if any(strcmp(loader, {'load config','config','force','force load config'}))
 % check for availability of looktxt as MeX file, and trigger compilation if needed.
   if exist('looktxt') ~= 3 && ~isdeployed
@@ -157,6 +161,9 @@ elseif strcmp(loader, 'save config') | strcmp(filename, 'save config')
   data = iLoad_config_save(config);
   return
 end
+% ------------------------------------------------------------------------------
+% end configuration stuff
+% ------------------------------------------------------------------------------
 
 % multiple file handling
 if iscellstr(filename) & length(filename) > 1 & ~isempty(filename)
@@ -260,12 +267,12 @@ if ischar(filename) & length(filename) > 0
     this_dir = dir(filename);
     if isempty(this_dir), return; end % directory is empty
     % removes '.' and '..'
-    index = find(~strcmp('.', {this_dir.name}) & ~strcmp('..', {this_dir.name}));
+    index    = find(~strcmp('.', {this_dir.name}) & ~strcmp('..', {this_dir.name}));
     this_dir = char(this_dir.name);
     this_dir = (this_dir(index,:));
     if isempty(this_dir), return; end % directory only contains '.' and '..'
-    rdir = cellstr(this_dir); % original directory listing as cell
-    rdir = strcat([ filepath filesep ], char(rdir));
+    rdir     = cellstr(this_dir); % original directory listing as cell
+    rdir     = strcat([ filepath filesep ], char(rdir));
     filename = cellstr(rdir);
     [data, format] = iLoad(filename, loader, varargin{:});
     return
@@ -750,7 +757,6 @@ function config = iLoad_config_load
   
   % ADD default loaders: method, ext, name, options
   % default importers, when no user specification is given. 
-  % These do not have any pattern recognition or postprocess
   % format = { method, extension, name, options, patterns, postprocess }
   formats = {...
     { 'csvread', 'csv', 'Comma Separated Values (.csv)',''}, ...
