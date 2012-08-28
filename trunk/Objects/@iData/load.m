@@ -52,7 +52,7 @@ function out = load(a, varargin)
 % inline: load_check_struct, load_clean_metadata
 % EF 23/09/07 iData implementation
 
-[files, loaders] = iLoad(varargin{:});
+[files, loaders] = iLoad(varargin{:}); % import files as structires HERE
 
 if isempty(files), out=[]; return; end
 if isstruct(files) && length(files) == 1 && isfield(files,'loaders')
@@ -114,6 +114,19 @@ for i=1:numel(files)
   end
   out = [ out this_iData ];
 end %for i=1:length(files)
+
+% clean 'out' for unique entries (e.g. mcstas/mcstas.sim creates duplicates)
+[b, i1] = unique(get(out, 'Source')); % name is unique
+if 1 < length(out) && length(i1) < length(out)
+  % some data sets seem to be duplicated: make additional tests
+  [b, i2] = unique(sum(out, 0));      % sum of Signal is unique
+  [b, i3] = unique(get(out, 'Title'));% Title is unique
+  [b, i4] = unique(get(out, 'Label'));% Title is unique
+  [b, i5] = unique(cellfun('prodofsize',get(out,'Signal'))); % size of Signal is unique
+  i = unique([i1 i2 i3 i4 i5 ]);
+  out = out(i);
+end
+
 for i=1:numel(out)
   out(i).Command={[ out(i).Tag '=load(iData,''' out(i).Source ''');' ]};
   %this_iData = iData_private_history(this_iData, mfilename, a, files{i}.Source);

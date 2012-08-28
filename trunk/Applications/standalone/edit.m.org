@@ -31,6 +31,36 @@ else
   url = '';
 end
 
+if ishandle(url)
+  % activate hidden edit items in the figure
+  search_list= [ findall(url,'type','uimenu') ; findall(url,'type','uitoggletool') ; findall(url,'type','uitogglesplittool') ];
+  search_tags= get(search_list, 'Tag');
+  items      = {...
+    'figMenuInsert',...
+       'figMenuInsertTextbox','figMenuInsertTextArrow','figMenuInsertArrow', ...
+       'figMenuInsertRectangle', ...          
+  'figMenuEdit', ...
+    'figMenuEditGCO', 'figMenuEditGCA', 'figMenuEditGCF', 'figMenuEditCut','figMenuEditCopy','figMenuEditPaste', ...
+  'Standard.EditPlot', 'Exploration.Brushing'};
+  
+  for index = 1:length(items)
+    h = find(strcmp(items{index}, search_tags));
+    if ~isempty(h)
+      h = search_list(h);
+      set(h, 'Visible','on');
+      if strcmp(items{index},'figMenuEditGCO')
+        set(h, 'Callback','uiinspect(gco)')
+      elseif strcmp(items{index},'figMenuEditGCA')
+        set(h, 'Callback','uiinspect(gca)')
+      elseif strcmp(items{index},'figMenuEditGCF')
+        set(h, 'Callback','uiinspect(gcf)')
+      end
+    end
+  end
+  disp([ 'Info: You can use ''inspect(' num2str(url) ')'' to edit properties of graphical objects.' ]);
+  return
+end
+
 disp([ mfilename ' ' url ]);
 % attempts to guess how to launch the editor
 if ~isempty(url), url = [ '"' url '"' ]; end
