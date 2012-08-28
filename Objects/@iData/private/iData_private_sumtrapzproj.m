@@ -147,11 +147,7 @@ if all(dim > 0)
 	end % switch (store)
 	
 elseif dim == 0
-  if strcmp(op, 'camproj')
-    s = feval('sum', a, 1:ndims(a));
-  else
-    s = feval(op, a, 1:ndims(a));
-  end
+  s = sum(s(:));
   s = double(s);
   return  % scalar
 end

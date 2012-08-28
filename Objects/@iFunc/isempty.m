@@ -16,7 +16,7 @@ elseif ~numel(s), y=1; return;
 end
 for index = 1:numel(s)
   t = s(index);
-  if t.Dimension == 0 || isempty(t.Parameters), empty = 1;
+  if t.Dimension == 0 && isempty(t.Parameters), empty = 1;
   else                                          empty = 0; end
   y(index) = empty;
 end

@@ -15,6 +15,8 @@ matlab -nojvm -nosplash -r "addpath(genpath('$p')); help_create; exit"
 
 mv edit.m.org edit.m
 mv web.m.org  web.m
+mv inspect.m.org  inspect.m
+mv propedit.m.org propedit.m
 mkdir -p $1
 cd $1
 echo Creating the stand-alone version 
@@ -29,3 +31,5 @@ cp $p/COPYING .
 cd $m
 mv edit.m edit.m.org
 mv web.m  web.m.org
+mv inspect.m   inspect.m.org
+mv propedit.m  propedit.m.org

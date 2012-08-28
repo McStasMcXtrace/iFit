@@ -277,8 +277,8 @@ function a = iFunc_private_check(a)
   end % if ‪~empty(expr)
 
   % return when model can not be defined
-  if isempty(expr) || dim == 0 || nb_pars == 0
-    warning('iFunc:emptyModel', 'Expression does not contain any axes (x,y,z...) or parameters (p, a,b,c...). Empty model.'); 
+  if isempty(expr) || nb_pars == 0
+    warning('iFunc:emptyModel', 'Expression does not contain any axes (x,y,z...) or parameters (p). Empty model.'); 
     return
   end
   % dim:     holds model dimensionality

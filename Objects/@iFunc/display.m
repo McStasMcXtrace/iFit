@@ -28,7 +28,7 @@ end
 if isdeployed || ~usejava('jvm'), id='iFunc';
 else           id='<a href="matlab:helpwin iFunc">iFunc</a>';
 end
-if length(s_in) == 0 || all(ndims(s_in) == 0)
+if length(s_in) == 0
     d = [ d sprintf(' %s model: empty\n',id) ];
 else
     if numel(s_in) == 1
