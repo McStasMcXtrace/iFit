@@ -38,12 +38,13 @@ function [operator, comment] = launcher_read_opendesktop(launcher)
   % Version=1.0
   
   operator = []; comment = [];
-  
   % the Exec member should always start with ifit, and will contain %F
   if ~isfield(launcher, 'Exec'),     return; end
-  if ~strcmp(launcher.Exec, 'ifit'), return; end
+  if ~strncmp(launcher.Exec, 'ifit', 4), return; end
   % remove 'ifit' and the %F tokens
-  
+  operator = strrep(launcher.Exec, 'ifit','');
+  operator = strrep(operator, '%F','');
+  if isfield(launcher,'Comment'), comment = launcher.Comment; end
 
 function [operator, comment] = launcher_read_windowsbat(launcher)
 % Windows BAT file
