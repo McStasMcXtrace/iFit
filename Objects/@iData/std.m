@@ -51,26 +51,21 @@ if dim == 0
 end
 
 % we first compute projection of iData on the selected dimension
-if ~isvector(a)
-  b = camproj(a, abs(dim));
-else
-  b = a;
+if ~isvector(a) || length(a.Alias.Axis) < ndims(a)
+  a = interp(a, 'grid'); % make it a clean grid style data set
 end
 
+s = get(a,'Signal'); 
+x = getaxis(a, abs(dim));
+s=s(:); x=x(:);
 
 % then we compute sum(axis{dim}.*Signal)/sum(Signal)
-s = iData_private_cleannaninf(get(b,'Signal'));
+s = iData_private_cleannaninf(s);
 if (dim < 0)
   s = s - min(s);
 end
-if ~isvector(a)
-  x = getaxis(b, 1);
-else
-  x = getaxis(b, abs(dim));
-end
 
-sum_s = sum(s);
-
+sum_s = sum(s); 
 % first moment (mean)
 f = sum(s.*x)/sum_s; % mean value
 
