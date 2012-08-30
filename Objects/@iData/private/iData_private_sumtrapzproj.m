@@ -107,13 +107,16 @@ if all(dim > 0)
     
   case 'camproj' % camproj =====================================================
     % accumulates on all axes except the rank specified
+    [x, xlab]     = getaxis(a,dim);
     for index=1:ndims(a)
       if index~=dim, 
+        if ~isvector(x), x = sum(x, index); end
         if numel(e) > 1, e = sum(e, index); end
         if numel(m) > 1, m = sum(m, index); end
         s = trapz(s, index); 
       end
     end
+    setaxis(b, 1, x);
     % Store Signal
     setalias(b,'Signal', s, [ 'projection of ' label ' on axis ' num2str(dim) ]);     % Store Signal
 	  

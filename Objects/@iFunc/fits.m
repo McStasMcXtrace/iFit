@@ -151,8 +151,12 @@ if nargin == 1 && isempty(model)
     for index=1:length(d)
       this = d(index);
       try
-        [dummy, method] = fileparts(this.name);
-        options = feval(method,'identify');
+        [dummy, method, ext] = fileparts(this.name);
+        if strcmp(ext, '.m')
+          options = feval(method,'identify');
+        else
+          options = [];
+        end
         if isa(options, 'iFunc')
           criteria   = [ criteria options ];
           if nargout == 0
@@ -203,6 +207,9 @@ end
 
 if nargin < 2
 	a = [];
+	inname = '';
+else
+	inname = inputname(2);
 end
 
 % extract Signal from input argument, as well as a Data identifier
@@ -222,14 +229,20 @@ elseif isstruct(a) || isa(a, 'iData')
     for index=1:ndims(a)
       Axes{index} = getaxis(a, index);
     end
-    Name = strtrim([ inputname(2) ' ' char(a) ]);
+    Name = strtrim([ inname ' ' char(a) ]);
   elseif isfield(a,'Axes')    Axes    = a.Axes; 
   end
 elseif isnumeric(a)
   Signal = a; 
+  % create index axes
+  for index=1:ndims(a)
+    if size(a, index) > 1
+      Axes{end+1} = 1:size(a, index);
+    end
+  end
 end
 if isempty(Name)
-  Name   = [ class(a) ' ' mat2str(size(Signal)) ' ' inputname(2) ];
+  Name   = strtrim([ class(a) ' ' mat2str(size(Signal)) ' ' inname ]);
 end
 
 if ~iscell(Axes) && isvector(Axes), Axes = { Axes }; end
@@ -249,7 +262,7 @@ if not(all(a.Monitor(:) == 1 | a.Monitor(:) == 0)),
 end
 
 if isempty(a.Signal)
-  error([ 'iFunc:' mfilename ],[ 'Undefined/empty Signal ' inputname(2) ' to fit. Syntax is fits(model, Signal, parameters, ...).' ]);
+  error([ 'iFunc:' mfilename ],[ 'Undefined/empty Signal ' inname ' to fit. Syntax is fits(model, Signal, parameters, ...).' ]);
 end
 
 if isvector(a.Signal) ndimS = 1;

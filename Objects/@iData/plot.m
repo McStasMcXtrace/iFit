@@ -377,7 +377,8 @@ case 3  % 3d data sets: volumes
   else
     % check if a rebining on a grid is required
     if ~isvector(a) && isempty(strfind(method, 'plot3')) && isempty(strfind(method, 'scatter3')) 
-      a = interp(a,'grid'); % make sure we get a grid
+    whos a
+      a = interp(a,1); % make sure we get a grid
     end
     [x, xlab] = getaxis(a,2); x=double(x);
     [y, ylab] = getaxis(a,1); y=double(y);

@@ -325,6 +325,6 @@ catch
   lasterr
   error([ 'iFunc:' mfilename ], 'Failed model evaluation.');
 end
-p    = mat2str(p); if length(p) > 20, p=[ p(1:20) '...' ]; end
+p    = num2str(p(:)', '%g'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
 
