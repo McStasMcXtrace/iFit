@@ -5,7 +5,7 @@ function fallback_web(url)
 %     Can be used as replacement for the 'web' command in deployed applications.
 %     Requires a running JVM.
 %   The browser has a display pane, a Home button, a Back button, an editable URL 
-%   field, and keep track of the navigation history.
+%   field, and keep track of the navigation history. Does not support proxy settings.
 %
 %   fallback_web      Opens an empty browser.
 %   fallback_web(url) Opens a browser displaying the specified URL.
@@ -70,10 +70,10 @@ function fallback_web(url)
       jp         = javax.swing.JScrollPane(je);
       [hcomponent, hcontainer] = javacomponent(jp, [], handles(1));
       set(hcontainer, 'units', 'normalized', 'position', [0,0,1,.9]);
-      
+      je.setDragEnabled(true)
       je.setEditable(false);
       setPage(url);
-      set(je, 'HyperlinkUpdateCallback',@action_follow_link)
+      set(je, 'HyperlinkUpdateCallback',@action_follow_link);
   else
     disp('Can not display Web page (Java not available). Open it manually :')
     disp(url)
@@ -86,7 +86,7 @@ function fallback_web(url)
     % triggered when passing over a link in the JEditorPane
     l    = get(obj);                      % this is a structure
     event= l.HyperlinkUpdateCallbackData; % this is the event caught by the Listener
-    if strcmp(event.eventType,'ACTIVATED')
+    if isfield(event, 'eventType') && strcmp(event.eventType,'ACTIVATED')
       link = event.description;
       setPage(link);
     end
@@ -128,13 +128,19 @@ function fallback_web(url)
     if ~isempty(dir(link))
       link = [ 'file://' link ]; % local file
     end
-    je.setPage([ link anchor ]);
+    try
+      je.setPage([ link anchor ]);
+    catch % usually java.net.MalformedURLException from JEditorPane
+      disp([ mfilename ': Can not open URL ' link ])
+      return
+    end
     url        = strtok(link,'#');
     root       = fileparts(url);
     if strncmp(root, 'file://',7)
       root = root(8:end);
     end
     list{end+1} = url;
+    set(handles(3), 'String', url);
   end
   
   function setHome(src,evnt)     % go back to Home
@@ -153,7 +159,7 @@ function fallback_web(url)
     if ~isempty(link)
       setPage(link);
     else
-      set(handles(3), 'String', url);
+      set(handles(3), 'String', url); % restore the previous URL
     end
   end
   
@@ -175,6 +181,6 @@ function fallback_web(url)
   end
   
   function aboutBrowser(src, evnt) % about dialog
-    helpdlg(sprintf('This is a simplistic web browser, built from Matlab/Java. E. Farhi, ILL, France <farhi@ill.fr> Aug 2012. Copyright: Licensed under the EUPL V.1.1. VISIT http://ifit.mccode.org for more.'), 'About this simplistic Browser');
+    helpdlg(sprintf('This is a simplistic web browser, built from Matlab/Java. Does not support proxy settings. E. Farhi, ILL, France <farhi@ill.fr> Aug 2012. Copyright: Licensed under the EUPL V.1.1. VISIT http://ifit.mccode.org for more.'), 'About this simplistic Browser');
   end
 end
