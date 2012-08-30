@@ -1,7 +1,7 @@
-function [operator, comment] = launcher_write(filename, operator, comment)
+function [operator, comment] = launcher_write(filename, operator)
 % launcher_write: writes a .desktop (OpenDesktop/Linux) or .bat (Windows) launcher
 %
-%   [operator, comment] = launcher_write(filename, operator, comment)
+%   [operator, comment] = launcher_write(filename, operator)
 %     writes a filename launcher, and feed-in the operator/command
 %   filename: char
 %   operator: char
@@ -12,8 +12,14 @@ if nargin < 2, operator = []; end
 if ~ischar(filename), return;  end
 
 % determine file type (from extension or platform)
-[p,f,e] = fileparts(filename);
-if isempty(p), p=pwd; end
+if isdir(filename) && nargin > 1
+  p = filename;
+  f = operator;
+  e = '';
+else
+  [p,f,e] = fileparts(filename);
+  if isempty(p), p=pwd; end
+end
 if isempty(e)
   if ispc,       e='.bat';
   elseif isunix, e='.desktop';
@@ -25,7 +31,13 @@ launcher.operator = operator;
 
 % get the help string from the command, then only the fisrt line
 try
-  h = help(operator);
+  if ismethod(iData, operator)
+    h = help([ 'iData/' operator ]);
+  elseif ismethod(iFunc, operator)
+    h = help([ 'iFunc/' operator ]);
+  else
+    h = help(operator);
+  end
   h = strtok(h, sprintf('\n\r\f'));
 catch
   h = 'operator';
@@ -44,7 +56,7 @@ else
       % if operator is iData TODO
       launcher.type = 'data set';
     case 'iFunc'
-      % if operator is iFunc, adds 'fits' after the model name
+      % if operator is iFunc, adds 'fits' after the model name to allow fiting to data set
       operator = [ operator ' fits' ];
       launcher.type = 'model';
     case 'struct'
@@ -55,6 +67,18 @@ else
         % with no axis, but parameters, and a return value
         launcher.type = 'optimizer';
       end
+    otherwise
+      launcher.type = 'method';
+    end
+  catch
+    if ismethod(iData, operator) && ismethod(iFunc, operator)
+      launcher.type = 'Data/Model method';
+    elseif ismethod(iData, operator)
+      launcher.type = 'Data set method';
+    elseif ismethod(iFunc, operator)
+      launcher.type = 'Model method';
+    elseif exist(operator)
+      launcher.type = 'method';
     end
   end
 end
@@ -95,7 +119,7 @@ function [operator, comment] = launcher_write_opendesktop(launcher)
   fprintf(fid, 'Terminal=true\n');
   fprintf(fid, 'Categories=Education;Applications;Science;NumericalAnalysis;Physics\n');
   fclose(fid);
-  
+  fileattrib(launcher.filename, '+x','a');
 
 function [operator, comment] = launcher_write_windowsbat(launcher)
 % Windows BAT file file ifit_<operator>.bat
