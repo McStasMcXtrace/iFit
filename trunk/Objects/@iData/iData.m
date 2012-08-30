@@ -377,12 +377,13 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
   index=[ find(strcmp('Date', fields)) find(strcmp('ModificationDate', fields)) ] ;
   types(index) = {'char'};
   % now get the numeric ones
-  index=find(strcmp('double', types));
-  index=[ index ; find(strcmp('single',  types)) ];
-  index=[ index ; find(strcmp('logical', types)) ];
-  index=[ index ; find(strncmp('uint', types, 4)) ];
+  index=          find(strcmp( 'double', types));
+  index=[ index ; find(strcmp( 'single', types)) ];
+  index=[ index ; find(strcmp( 'logical',types)) ];
+  index=[ index ; find(strncmp('uint',   types, 4)) ];
+  index=[ index ; find(strncmp('int',    types, 3)) ];
   if isempty(index), 
-    iData_private_warning(mfilename,['The iData object ' in.Tag ' "' in.Title '" contains no data at all ! (double/single/logical)']);
+    iData_private_warning(mfilename,['The iData object ' in.Tag ' "' in.Title '" contains no data at all ! (double/single/logical/int/uint)']);
   else
     fields = fields(index); % get all field names containing double data
     dims = dims(index);
@@ -426,7 +427,6 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
       end
     end
     % look for vectors that may have the proper length as axes
-    dims = [];
     for index=1:ndims(in)
       if isempty(getaxis(in, num2str(index)))
         % search for a vector of length size(in, index)
@@ -436,15 +436,16 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
         if ~isempty(ax)
           val = get(in, fields_all{ax});
           if isvector(val) && ~strcmp(fields_all{ax},getalias(in,'Signal'))
-            if length(val) == size(in, index)
+            if length(val) == size(in, index) && min(val(:)) < max(val(:))
               in = setaxis(in, index, [ 'Axis_' num2str(index) ], fields_all{ax});
-              dims(ax) = 0;
-            elseif length(val) == size(in, index)+1
+              found = 1;
+            elseif length(val) == size(in, index)+1 && min(val(:)) < max(val(:))
               val = (val(1:(end-1)) + val(2:end))/2;
               in = setaxis(in, index, [ 'Axis_' num2str(index) ], val);
-              dims(ax) = 0;
+              found = 1;
+            else found = 0;
             end
-            if dims(ax) == 0  % the axis could be found
+            if found == 1  % the axis could be found
               % search if there is a corresponding label (in Headers)
               if isfield(in.Data, 'Headers')
                 fields=fliplr(strtok(fliplr(fields_all{ax}), '.'));

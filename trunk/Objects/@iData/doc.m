@@ -23,12 +23,14 @@ if isempty(e), e='.html'; end
 page = [ f e ];
 
 url = [ ifitpath filesep 'Docs' filesep page ];
-disp(version(iData))
-disp('Opening iData documentation from ')
-if length(url) && ~isdeployed && usejava('jvm')
-  disp([ '  <a href="matlab:web ' url '">web ' url '</a>' ]);
-else
-  disp([ '  ' url ]);
+if ~isempty(dir(url)) % page exists ?
+  disp(version(iData))
+  disp('Opening iData documentation from ')
+  if length(url) && ~isdeployed && usejava('jvm')
+    disp([ '  <a href="matlab:web ' url '">web ' url '</a>' ]);
+  else
+    disp([ '  ' url ]);
+  end
+  web(url);
 end
-web(url);
 

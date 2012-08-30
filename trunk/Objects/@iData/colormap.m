@@ -46,7 +46,7 @@ function h = colormap(varargin)
 %        cm1, cm2...: colormaps (Mx3 matrices, such as jet)
 %        options:     string specifying the type of rendering for iData/plot.
 % output: h:          graphics object handles (cell/array)
-% example: a=iData(gauss2d); colormap(a,jet,a+1,hsv,'log transparent')
+% example: a=iData(feval(gauss2d)); colormap(a,jet,a+1,hsv,'log transparent')
 %
 % Version: $Revision: 1.5 $
 % See also iData, iData/plot, iData/surf, iData/caxis
