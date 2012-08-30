@@ -23,7 +23,7 @@ function ifit(varargin)
 %
 %  options:
 %  --exit or -e
-%      exits immediately after all execution of command line arguments.
+%      exits - should be specified after all other commands/arguments
 %  --save or -s or --save=FILE
 %      save the all variables when commands have been executed.
 %  --run=SCRIPT or -r=SCRIPT
@@ -49,8 +49,9 @@ ifit_options.save     =0;
 while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   ifit_options.line = strtrim(ifit_options.line);
   % handle specific commands (to override limitations from stand-alone)
-  if strcmp(strtok(ifit_options.line,' ('), 'doc')
+  if strcmp(strtok(ifit_options.line,' '), 'doc')
     ifit_options.line = [ 'help' ifit_options.line(4:end) ];
+    disp(ifit_options.line);
   end
   if strcmp(strtok(ifit_options.line,' ('),  'propedit')
     ifit_options.line = [ 'uiinspect' ifit_options.line(9:end) ];
@@ -64,6 +65,23 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     end
   elseif strncmp(ifit_options.line,'run ', 4) % 'run' command ------------------
     ifit_options.line = inline_runscript(ifit_options.line);
+  elseif strncmp(ifit_options.line,'clear ', 5)% 'clear' must retain ifit_options and this
+    ifit_options.line = [ 'clearvars ' ifit_options.line(6:end) ];
+  end
+  if strncmp(ifit_options.line,'clearvars ', 10)
+    ifit_options.line = [ ifit_options.line ' -except ifit_options this' ];
+  end
+  if ~isempty(dir(ifit_options.line)) || ...
+    any([ strncmp(ifit_options.line, {'file://','http://'},7) ...
+          strncmp(ifit_options.line,  'ftp://', 6) ...
+          strncmp(ifit_options.line,  'https://',8) ])
+    ifit_options.line = textscan(ifit_options.line, '%s', 'Delimiter',' ');
+    if ~isempty(ifit_options.line)  % filenames have been droped in the terminal
+      ifit_options.line = ifit_options.line{1};
+      this{end+1} = iData(ifit_options.line); % import them
+      ifit_options.line = '';
+      ans = this{end}
+    end
   end
   
   % now do the work (evaluate what to do) --------------------------------------
@@ -74,42 +92,45 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
       if length(ifit_options.line) > 250
         ifit_options.line = [ ifit_options.line(1:250) ' ...' ];
       end
-      disp('Error when evaluating:')
+      disp('Error when evaluating expression:')
       disp(ifit_options.line)
       disp(lasterr)
       ifit_options.line = '';
     end
   end
   
-  % collect next command to execute
-  if exist('varargin') == 1 && ~isempty(varargin) % from command line ------------------------------------
-    ifit_options.not_a_file = 0;
+  % collect next command to execute: from input arguments, or prompt
+  
+  if exist('varargin') == 1 && ~isempty(varargin) % from command line ----------
     % we clear the argument from the command line after reading it
     ifit_options.line = varargin{1}; varargin(1) = []; 
     disp([ 'iFit:' num2str(ifit_options.index) '>> argument ' ifit_options.line ]);
     % specific case of imported arguments from the command line
     if (ifit_options.line(1)=='"' && ifit_options.line(end)=='"')
-      % a string explicitly indicated as such
+      % a "string" explicitly indicated as such
       ifit_options.line=ifit_options.line(2:(end-1));
       this{end+1} = ifit_options.line;
       ans = this{end};
+      ifit_options.line = '';
     elseif (ifit_options.line(1)=='''' && ifit_options.line(end)=='''')
-      % an expression explicitly indicated as such
+      % an 'expression' explicitly indicated as such
       ifit_options.line=ifit_options.line(2:(end-1));
       try
         ifit_options.line = eval(ifit_options.line);
       catch
-        disp('Error when evaluating argument:')
+        disp('Error when evaluating expression argument:')
         disp(ifit_options.line)
         disp(lasterr)
+        ifit_options.line = '';
       end
       this{end+1} = ifit_options.line;
       ans = this{end};
+      ifit_options.line = '';
     % some startup arguments known as commands
     elseif strcmp(ifit_options.line, '--save') || strcmp(ifit_options.line, '-s')
-      ifit_options.save='ifit.mat';
+      ifit_options.save='ifit.mat'; ifit_options.line = '';
     elseif strncmp(ifit_options.line, '--save=', 7)
-      ifit_options.save=ifit_options.line(8:end);
+      ifit_options.save=ifit_options.line(8:end); ifit_options.line = '';
     elseif strncmp(ifit_options.line, '--run=', 6)
       ifit_options.line=[ 'run ' ifit_options.line(7:end) ];
     elseif strncmp(ifit_options.line, '-r=', 3)
@@ -118,24 +139,29 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
       ifit_options.line='exit';
     elseif strcmp(ifit_options.line, '--help') || strcmp(ifit_options.line, '-h')
       inline_display_usage; % see below
+      ifit_options.line = '';
     elseif strncmp(fliplr(ifit_options.line), fliplr('.m'), 2)
       % a script is given as argument : execute it
       ifit_options.line=[ 'run ' ifit_options.line ];
     elseif ~isempty(str2num(ifit_options.line))
       % numerical value(ifit_options.line) as a matrix
       this{end+1} = str2num(ifit_options.line);
-      ans = this{end};
+      ans = this{end}; % we do not print the output, which may be BIG
+      ifit_options.line = '';
     elseif ismethod(iData, ifit_options.line) || ismethod(iFunc, ifit_options.line) ...
-            || any(exist(ifit_options.line) == [ 2 3 5 6 ])
-      % a known method/function (iData, iFunc, ...)
+            || (any(exist(ifit_options.line) == [ 2 3 5 6 ]) && isempty(dir(ifit_options.line)))
+      % a known method/function (iData, iFunc, ...) but not a file name
       try
-        ans = feval(ifit_options.line, this{:})
+        ifit_options.line = builtin('feval',ifit_options.line, this{:});
       catch
         disp('Error when evaluating method:')
         disp(ifit_options.line)
-        disp(this{:})
+        if ~isempty(this), disp(this{:}); end
         disp(lasterr)
       end
+      this{end+1} = ifit_options.line;
+      ans = this{end}
+      ifit_options.line = '';
     elseif strncmp(fliplr(ifit_options.line), fliplr('.desktop'), 8) || strncmp(fliplr(ifit_options.line), fliplr('.bat'), 4)
       % a desktop launcher is given as argument : read operator/command from it and evaluate
       ifit_options.line = launcher_read(ifit_options.line);
@@ -167,7 +193,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
         subplot(this{cellfun('isclass',this,'iFunc')});
       end
     end
-  else % not from varargin
+  else % not from varargin, from prompt ----------------------------------------
     ifit_options.line = input([ 'iFit:' num2str(ifit_options.index) ' ' ],'s');
   end
   if ~isempty(strtrim(ifit_options.line))
@@ -185,7 +211,7 @@ disp([ '** Ending iFit on ' datestr(now) ])
 disp(  '** Thanks for using iFit <ifit.mccode.org> **')
 
 % ------------------------------------------------------------------------------
-%       inline private functions
+%                             inline private functions
 % ------------------------------------------------------------------------------
 
 function inline_display_banner
@@ -216,6 +242,9 @@ function inline_display_banner
   disp(' ')
 
 function inline_display_help
+  disp(version(iData, 'contrib'))
+  disp([ 'Built using Matlab ' version ])
+  disp(' ');
   disp('Enter any Matlab/iFit command.');
   disp('      Use ''run script.m'' to execute a script from a file.');
   disp('      Control statements are allowed (for/while loops, tests, ');
@@ -267,11 +296,13 @@ function inline_display_usage
   disp(' ')
   disp('  Examples:')
   disp('    ifit --save file1.*  subplot ')
+  exit; % exit the application
   
 function line = inline_display_helpcommand(line)
-  [t, line] = strtok(line);
+  [t, line] = strtok(line); % remove first command 'help'
   line      = strtrim(line);
   if ~isempty(line), 
+    disp([ 'web(' line ')' ]);
     web(line); 
     line = '';
   end  
