@@ -30,6 +30,8 @@ function b = interp(a, varargin)
 % Version: $Revision: 1.37 $
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis, iData/hist
 
+% iData_interp and iData_meshgrid are in private
+
 % input: option: linear, spline, cubic, nearest
 % axes are defined as rank of matrix dimensions
 % plot function is plot(y,x,Signal)
@@ -81,7 +83,7 @@ for index=1:length(varargin)
     requires_meshgrid=1;
   elseif ischar(c)                      % method (char)
     method = c;
-  elseif isa(varargin{index}, 'iData')  % set interpolation axes: get axis from other iData object
+  elseif isa(varargin{index}, 'iData')  % iData object axes
     if length(c) > 1
       iData_private_warning(mfilename,['Can not interpolate onto all axes of input argument ' num2str(index) ' which is an array of ' num2str(numel(c)) ' elements. Using first element only.']);
       c = c(1);
@@ -93,13 +95,13 @@ for index=1:length(varargin)
         i_labels{axis_arg_index} = lab;
       end
     end
-  elseif isnumeric(c) & length(c) ~= 1  % set interpolation axes: vector/matrix
+  elseif isnumeric(c) & length(c) ~= 1  % vector/matrix axes
     axis_arg_index = axis_arg_index+1;
     if ~isempty(c), f_axes{axis_arg_index} = c; end
   elseif isnumeric(c) & length(c) == 1  % ntimes rebinning (max 10 times)
     ntimes=c;
     if abs(ntimes) > 10, ntimes=10; end
-  elseif iscell(c)                      %set interpolation axes: cell(vector/matrix)
+  elseif iscell(c)                      % cell(vector/matrix) axes
     for j1 = 1:length(c(:))
       axis_arg_index = axis_arg_index+1;
       if ~isempty(c{j1}), f_axes{axis_arg_index} = c{j1}; end
@@ -108,7 +110,7 @@ for index=1:length(varargin)
     iData_private_warning(mfilename,['Input argument ' num2str(index) ' of class ' class(c) ' size [' num2str(size(c)) '] is not supported. Ignoring.']);
   end
   clear c
-end
+end % input arguments parsing
 
 b = iData_private_history(b, mfilename, a, varargin{:});
 cmd=b.Command;
@@ -123,59 +125,45 @@ end
 % check/determine output axes for interpolation --------------------------------
 
 % test axes and decide to call meshgrid if necessary
-is_grid=0;
+
 if isvector(b) >= 2 % plot3/event style
   requires_meshgrid=1; 
   if nargin == 1, ntimes=1; end
 end
 
-% check for axes for vector: are they vectors, oriented properly ?
-if ndims(b) > 1
-  for index=1:ndims(b)
-    % this axis is a vector, but others are grids: require meshgrid.
-    if any(size(f_axes{index}) == 1) & is_grid, requires_meshgrid=1; end 
-    try
-      % this axis is a grid, others should also be...
-      if all(size(f_axes{index}) == size(b)),  is_grid=is_grid+1; end 
-    end
-  end
-end
-
-% trigger regular axis check/rebin when interp(a) called
-if nargin == 1 & ~is_grid, ntimes=1; end
-
 % check final axes
+s_dims = size(b); % Signal/object dimensions
+
 for index=1:ndims(b)
   v = f_axes{index}; 
   if isempty(v), v= i_axes{index}; end % no axis specified, use the initial one
 
-  % some of the axes are non consistent or not grid ? re-bin onto vector axes
-  if ~is_grid | (requires_meshgrid & is_grid ~= ndims(b)) | ntimes
-    % compute the initial axis length
-    if isvector(v), a_len = numel(v);
-    else            a_len = size( v, index);
-    end
-    if isvector(b) >= 2 && a_len > prod(size(b))^(1/ndims(b))*2 % event data set
-      a_len = prod(size(b))^(1/ndims(b))*2;
-    end
-    if ntimes > 0 % expand it if requested
-      a_len = a_len*ntimes;
-    end
-    if a_len == 1
-      a_len = 2;
-    end
-    v = v(:); % make all axes vectors
-    if numel(v) > numel(i_axes{index})*10 || ntimes > 0 || any(diff(v) == 0)
-      v = linspace(min(v), max(v), ceil(a_len) );
-    elseif ~issorted(v, 'rows')
-      v = unique(v);
-    end
+  % compute the initial axis length
+  if isvector(v), a_len = numel(v);
+  else            a_len = size( v, index);
   end
-  f_axes{index} = v;
-  clear v
+  if isvector(b) >= 2 && a_len > prod(size(b))^(1/ndims(b))*2 % event data set
+    a_len = prod(size(b))^(1/ndims(b))*2;
+  end
+  if ntimes > 0 % expand it if requested
+    a_len = a_len*ntimes;
+  end
+  if a_len == 1, a_len = 2; end
+  s_dims(index) = a_len;
+
+end
+
+% do we need to recompute the final axes ?
+if requires_meshgrid || ntimes
+  [f_axes, changed, flag] = iData_meshgrid(f_axes, s_dims, method); % private function
 end
 
 % check if interpolation is indeed required ------------------------------------
+
+if isvector(b) >=2 % event data set: redirect to hist method (accumarray)
+  b = hist(b, f_axes{:});
+  return
+end
 
 % test if interpolation axes have changed w.r.t input object (for possible quick exit)
 has_changed = 0;
@@ -197,21 +185,17 @@ for index=1:ndims(b)
   clear this_i this_f
 end
 
-if isvector(b) >=2 % event data set
-  b = hist(b, f_axes{:});
-  return
-end
-
 % get Signal, error and monitor.
 i_signal   = get(b,'Signal');
 
-% quick exit is Signal has NaN's (can not interpolate), or axes have not changed
+% quick exit check based on the Signal
 if any(isnan(i_signal(:))), has_changed=1; end
-if ~has_changed & (~requires_meshgrid | is_grid), 
+if ~has_changed & ~requires_meshgrid 
   iData_private_warning('exit', mfilename);
   return; 
 end
 
+% prepare interpolation Signal, Error, Monitor ---------------------------------
 i_class    = class(i_signal); i_signal = double(i_signal);
 
 i_error = getalias(b, 'Error');
@@ -220,7 +204,7 @@ if ~isempty(i_error),
   if strcmp(i_error, 'sqrt(this.Signal)')
     i_error=[];
   elseif isnumeric(i_error) && isscalar(i_error) == 1
-    % keep that as  a constant  value
+    % keep that as a constant value
   else
     % else get the value
     i_error  = get(b,'Error');
@@ -232,7 +216,7 @@ i_monitor = getalias(b, 'Monitor');
 if ~isempty(i_monitor),   
   % check if Monitor is 1 or a constant
   if isnumeric(i_monitor) && isscalar(i_monitor) == 1
-    % keep that as a constant  value
+    % keep that as a constant value
   else
     % else get the value
     i_monitor  =get(b,'Monitor');
@@ -240,23 +224,10 @@ if ~isempty(i_monitor),
   i_monitor    = double(i_monitor);
 end
 
-% do we need to compute a new grid from axis ?
-if ndims(b) > 1 && (length(i_signal) ~= numel(i_signal))
-  requires_meshgrid = 1;
-end
-
-% compute a new grid before interpolating
-if requires_meshgrid
-  if length(f_axes) == 1 || (ndims(b) == 1 && isvector(b) == 1)
-    % nothing to do as we have only one axis, no grid
-  else
-    % call ndgrid
-    [f_axes{1:ndims(b)}] = ndgrid(f_axes{:});  % Warning: may be time consuming
-  end
-end
-
 % check f_axes vector orientation
-for index=1:ndims(b) 
+for index=1:ndims(b)
+  i_axes{index} = double(i_axes{index});
+  f_axes{index} = double(f_axes{index});
   if isvector(f_axes{index})
     % orient the vector along the dimension
     n = ones(1,ndims(b));
@@ -276,33 +247,7 @@ end
 
 if i_nonmonotonic
   % transform the initial data into individual points, then interpolate on a regular grid
-  for index=1:ndims(b)
-    v = i_axes{index}; 
-    
-    % compute the initial axis length
-    if isvector(v), a_len = numel(v);
-    else            a_len = size( v, index);
-    end
-    if isvector(b) >= 2 && a_len > prod(size(b))^(1/ndims(b))*2 % event data set
-      a_len = prod(size(b))^(1/ndims(b))*2;
-    end
-    if a_len == 1
-      a_len = 2;
-    end
-    v = v(:); % make all axes vectors (vectorize initial axes)
-    v = linspace(min(v), max(v), ceil(a_len) );
-    
-    % orient the vector along the dimension
-    n = ones(1,ndims(b));
-    n(index) = numel(v);
-    if length(n) == 1, n=[ n 1]; end
-    i_axes_new{index} = reshape(v,n);
-    
-    % now make the initial axes into event-style data set (all columns)
-    v = i_axes{index}; v=v(:); 
-    i_axes{index}=v;
-    clear v
-  end
+  i_axes_new  = iData_meshgrid(i_axes, size(b));
   i_signal    = iData_interp(i_axes, i_signal(:),  i_axes_new, method);
   if isnumeric(i_error) && length(i_error) > 1, 
     i_error   = iData_interp(i_axes, i_error(:),   i_axes_new, method); 
@@ -321,7 +266,8 @@ for index=1:ndims(b)    % change to double before interpolation
   f_axes{index}=double(f_axes{index});
 end
 for index=1:ndims(b)
-  if ~isequal(i_axes{index}, f_axes{index})
+  x = i_axes{index}; x=x(:)';
+  if ~isequal(i_axes{index}, f_axes{index}) && ~isequal(x, 1:length(i_axes{index}))
     has_changed = 1;
     break
   end
@@ -399,37 +345,4 @@ b = iData(b);
 % reset warnings during interp
 iData_private_warning('exit', mfilename);
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% private function for interpolation
-function f_signal = iData_interp(i_axes, i_signal, f_axes, method)
-
-if isempty(i_signal), f_signal=[]; return; end
-if length(i_signal) == numel(i_signal)
-  for index=1:length(i_axes)
-    x=i_axes{index}; x=x(:); i_axes{index}=x;
-  end
-  clear x
-end
-switch length(i_axes)
-case 1    % 1D
-  f_signal = interp1(i_axes{1},   i_signal, f_axes{1},   method, 0);
-otherwise % nD, n>1
-  if length(i_signal) <= 1  % single value ?
-    f_signal = i_signal;
-    return
-  end
-  if length(i_signal) == numel(i_signal)  % long vector nD Data set
-    if length(i_axes) == 2
-      f_signal = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
-    elseif length(i_axes) == 3
-      f_signal = griddata3(i_axes{[2 1 3]}, i_signal, f_axes{[2 1 3]}, method);
-    else
-      f_signal = griddatan(cell2mat(i_axes), i_signal, cell2mat(f_axes), method);
-    end
-  else
-    % f_axes must be an ndgrid result, and monotonic
-    f_signal = interpn(i_axes{:}, i_signal, f_axes{:}, method, 0);
-  end
-end
 
