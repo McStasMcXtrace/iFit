@@ -101,8 +101,12 @@ for i=1:numel(files)
         for j=1:length(loaders{i}.postprocess)
           if ~isempty(loaders{i}.postprocess{j})
             % disp([ mfilename ': Calling post-process ' loaders{i}.postprocess{j} ]);
-            this_iData = feval(loaders{i}.postprocess{j}, this_iData);
-            this_iData = setalias(this_iData, 'postprocess', loaders{i}.postprocess{j});
+            try
+              this_iData = feval(loaders{i}.postprocess{j}, this_iData);
+              this_iData = setalias(this_iData, 'postprocess', loaders{i}.postprocess{j});
+            catch
+              iData_private_warning(mfilename, [ 'Error when calling post-process ' loaders{i}.postprocess{j} ]);
+            end
           end
         end
         % reset warnings

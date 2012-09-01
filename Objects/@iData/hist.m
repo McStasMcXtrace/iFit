@@ -7,7 +7,10 @@ function c=hist(a, varargin)
 %   hist(a, axis1, axis2, ...) specify the axes as bin edges. The axes 
 %     should be vectors or a single value that indicates the number of bins in the
 %     range [min, max] of the corresponding axis rank in the initial object. 
-%     The bin edges vectors have length(a{k])+1 elements.
+%     The bin edges vectors have length(a{k])+1 elements. A default of 33 bins 
+%     is used when not specified.
+%
+%   hist(a, [ bin1 bin2 ...]) same as above when specifying the number of bins.
 %
 %   hist(a, ..., 'Fun', FUN) 
 %     applies the function FUN to each subset of elements of VAL.  FUN is
@@ -49,6 +52,19 @@ for index=1:length(varargin)
   end
 end
 
+% check if varargin first argument is a bin vector
+if length(varargin) && length(varargin{1} == ndims(a))
+  arg = cell(1,length(varargin)+ndims(a)-1);
+  d   = varargin{1};
+  for index=1:ndims(a)
+    arg{index} = d(index);
+  end
+  for index=1:(length(varargin)-1)
+    arg(ndims(a)+index) = varargin(index+1);
+  end
+  varargin = arg;
+end
+
 % is the Signal already specified in options (should not)
 signal = get(a, 'Signal'); signal=signal(:);
 if ~use_accumdata
@@ -80,6 +96,7 @@ rmaxis(c); rmalias(c);
 c=setalias(c, 'Signal','Data.signal');
 for index=1:length(edges)
   [link, lab] = getaxis(a, num2str(index));
+  if isempty(link), continue; end
   if ~ischar(link), link=['Axis_' num2str(index)]; end
   c.Data.(link) = edges{index};
   c=setalias(c, link, [ 'Data.' link ], lab);
