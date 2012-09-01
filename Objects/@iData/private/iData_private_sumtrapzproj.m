@@ -4,7 +4,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 %   @iData/iData_private_sumtrapzproj function to compute the sum/trapz/camproj of the elements of the data set
 %
 % input:  a: object or array (iData/array of)
-%         dim: dimension to accumulate (int/array of)
+%         dim: dimension to accumulate (int/array of/'radial')
 %         op: 'sum','trapz','camproj','prod'
 % output: s: sum/trapz/camproj of elements (iData/scalar)
 % ex:     c=iData_private_sumtrapzproj(a, dim, 'sum');
@@ -31,22 +31,8 @@ end
 iData_private_warning('enter',mfilename);
 
 % in all cases, resample the data set on a grid
-%a = interp(a,'grid');
-
-axes = cell(1, ndims(a));
-rebin  = 0;
 % make axes single vectors for sum/trapz/... to work
-for index=1:ndims(a)
-  [x, xlab] = getaxis(a, index);
-  [dummy, i,j] = unique(x);
-  axes{index} = dummy;
-  if length(x) < length(i)
-    rebin = 1;
-  end
-end
-if rebin
-  a = interp(a, axes{:});
-end
+a = meshgrid(a, 'vector');
 
 s = iData_private_cleannaninf(get(a,'Signal'));
 e = iData_private_cleannaninf(get(a,'Error'));

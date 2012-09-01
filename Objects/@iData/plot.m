@@ -296,7 +296,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   if isvector(a)
     a_is_vector = 1; % plot as lines
   elseif (~isvector(a) && (~isempty(strfind(method,'plot3')) || ~isempty(strfind(method,'scatter3')) ))
-    a = interp(a,'grid');
+    a = meshgrid(a);
     a_is_vector = 1; % plot as lines, even after re-sampling (requested explicitly)
   else
     a_is_vector = 0;
@@ -352,7 +352,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
       if length(method), h = stem3(x,y,z, this_method);
       else h = stem3(x,y,z); end
     elseif (strfind(method,'plot3'))
-      a = interp(a,'grid');
+      a = meshgrid(a);
       if length(method), h = plot3(x(:),y(:),z(:), this_method);
       else h = plot3(x,y,z); end
     elseif (strfind(method,'scatter3'))
@@ -377,8 +377,7 @@ case 3  % 3d data sets: volumes
   else
     % check if a rebining on a grid is required
     if ~isvector(a) && isempty(strfind(method, 'plot3')) && isempty(strfind(method, 'scatter3')) 
-    whos a
-      a = interp(a,1); % make sure we get a grid
+      a = meshgrid(a); % make sure we get a grid
     end
     [x, xlab] = getaxis(a,2); x=double(x);
     [y, ylab] = getaxis(a,1); y=double(y);

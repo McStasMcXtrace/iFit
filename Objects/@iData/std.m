@@ -52,7 +52,7 @@ end
 
 % we first compute projection of iData on the selected dimension
 if ~isvector(a) || length(a.Alias.Axis) < ndims(a)
-  a = interp(a, 'grid'); % make it a clean grid style data set
+  a = meshgrid(a); % make it a clean grid style data set
 end
 
 s = get(a,'Signal'); 
