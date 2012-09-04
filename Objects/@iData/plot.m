@@ -206,9 +206,9 @@ method = lower(method);
 if prod(size(a)) > 1e6 
   if isempty([ strfind(method,'whole') strfind(method,'full') ])
     iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
-      '.\n\tNow rebinning for display purposes with e.g. a=a(1:2:end, 1:2:end, ...).' ...
+      '.\n\tNow rebinning for display purposes with e.g. a=reducevolume(a);' ...
       '\n\tUse e.g plot(a, ''whole'') to plot the whole data set and be able to zoom tiny regions.' ]);
-    a=iData_private_reduce(a);
+    a=reducevolume(a);
   else
     method = [ method ' opengl' ];
   end
