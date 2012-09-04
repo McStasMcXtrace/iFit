@@ -40,7 +40,7 @@ else
   if numel(a) > 1
     s = [];
     for index=1:numel(a)
-      s = [ s feval(op, a(index), dim, center) ];
+      s = [ s feval(mfilename, a(index), dim, center) ];
     end
     s = reshape(s, size(a));
     return

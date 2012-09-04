@@ -18,8 +18,8 @@ end
 
 if prod(size(a)) > 1e6
   iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
-    '.\n\tNow rebinning for display purposes with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
-  a=iData_private_reduce(a);
+    '.\n\tNow rebinning for display purposes with e.g. a=reducevolume(a);' ]);
+  a=reducevolume(a);
 end
 
 if exist('sliceomatic')
