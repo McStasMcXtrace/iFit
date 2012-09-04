@@ -38,6 +38,8 @@ function [filename,format] = saveas(a, varargin)
 %           'off'  save as Object File Format (geometry), ascii
 %           'ply'  save as PLY (geometry), ascii
 %           'vtk'  save as VTK ascii (<1e5 elements) or binary
+%           'x3d'  save as X3D (geometry) file, ascii
+%           'xhtml' save as embedded HTML/X3D file (using Flash plugin for rendering)
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
@@ -91,7 +93,9 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.hdr', 'Analyze volume (*.hdr+img)'; ...
       '*.stl;*.stla;*.stlb', 'Stereolithography geometry (*.stl)'; ...
       '*.off', 'Object File Format geometry (*.off)'; ...
-      '*.ply', 'PLY geometry (*.ply)' };
+      '*.ply', 'PLY geometry (*.ply)'; ...
+      '*.x3d',   'X3D (geometry) file, ascii (*.x3d)'; ...
+      '*.xhtml', 'embedded HTML/X3D file (using Flash plugin for rendering)' };
 if strcmp(filename, 'formats')
   fprintf(1, '       EXT  DESCRIPTION [%s(iData)]\n', mfilename);
   fprintf(1, '-----------------------------------------------------------------\n'); 
@@ -316,6 +320,11 @@ case {'vrml','wrl'} % VRML format
   h = plot(a,options);
   g = gca;
   vrml(g,filename);
+  close(f);
+case {'x3d','xhtml'} % X3D/XHTML format
+  f=figure('visible','off');
+  h = plot(a,options);
+  figure2xhtml(filename, f, struct('interactive',true,'output', format));
   close(f);
 case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
   if ndims(a) == 1    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' does not seem to be exportatble as a ' format ' file. Ignoring.' ]);

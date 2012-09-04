@@ -319,7 +319,7 @@ try
   e = e(~strncmp('%', e, 1)); % remove comment lines
   eval(sprintf('%s\n', e{:}));
 catch
-  disp([ 'Error: Could not evaluate Expression in mode ' model.Name ' ' model.Tag ]);
+  disp([ 'Error: Could not evaluate Expression in model ' model.Name ' ' model.Tag ]);
   disp(model)
   model.Eval
   lasterr
