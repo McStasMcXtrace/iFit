@@ -43,7 +43,7 @@ function [operator, comment] = launcher_read_opendesktop(launcher)
   if ~strncmp(launcher.Exec, 'ifit', 4), return; end
   % remove 'ifit' and the %F tokens
   operator = strrep(launcher.Exec, 'ifit','');
-  operator = strrep(operator, '%F','');
+  operator = strtok(strrep(operator, '%F',''));
   if isfield(launcher,'Comment'), comment = launcher.Comment; end
 
 function [operator, comment] = launcher_read_windowsbat(launcher)
