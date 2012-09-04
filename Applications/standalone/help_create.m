@@ -1,13 +1,71 @@
-% create the help strings, to store in .txt files in the Docs/Help directory
-function help_create
+function make(target)
+
+
+% location of the iFit directory
+cd(ifitpath); p=pwd;  % get fully qualified path for ifitpath
+% location of the make script
+m=fullfile(p, 'Applications', 'standalone');
+
+if nargin == 0
+  target = '';
+end
+if isempty(target)
+  [dummy, vers] = version(iData); % get version number
+  target = fullfile(ifitpath, '..', [ 'ifit-' vers '-' lower(computer) ]);
+end
+dummy=rmdir(target, 's'); 
+mkdir(target);              % remove previous package
+cd (target); target = pwd;  % get fully qualified path for target
+
+% create the help pages
+create_help(ifitpath);
+
+% activate some standalone only scripts (which are in principle forbiden by Matlab Compiler)
+cd(m);
+movefile('edit.m.org',     'edit.m');
+movefile('web.m.org',      'web.m');
+movefile('inspect.m.org',  'inspect.m');
+movefile('propedit.m.org', 'propedit.m');
+
+disp(  'Creating the deployed version');
+disp([ 'from ' p ]) 
+disp([ 'into ' target ])
+
+cd   (target);
+disp([ 'mcc -m ifit -a ', p ])
+mcc('-m', 'ifit', '-a', p);
+
+% tuning the standalone
+movefile('ifit', 'run_ifit');
+delete('run_ifit.sh');
+copyfile([ m filesep 'ifit' ],       target)
+copyfile([ p filesep 'README.txt' ], target)
+copyfile([ p filesep 'COPYING' ],    target)
+
+% restore initial state
+cd(m)
+movefile('edit.m',     'edit.m.org');
+movefile('web.m',      'web.m.org');
+movefile('inspect.m',  'inspect.m.org');
+movefile('propedit.m', 'propedit.m.org');
+
+% create launchers for models, operators and commands
+create_launchers_models(   fullfile(target, 'models'));
+create_launchers_operators(fullfile(target, 'operators'));
+create_launchers_commands( fullfile(target, 'commands'));
+
+disp('DONE');
+
+% ------------------------------------------------------------------------------
+
+% create the help strings, to store as .txt files available for 'help' and 'doc'
+function create_help(pw)
   to_parse = {'Objects/@iData','Objects/@iFunc','Libraries/Loaders','Libraries/Models','Libraries/Optimizers','Scripts/load','Applications/standalone','Tests'};
-  pw = ifitpath;
   disp('Creating help pages for deployed version');
   for index=1:length(to_parse)
     d = to_parse{index};
     disp(d);
-    cd (pw);
-    cd (d);
+    cd ([ pw filesep d ]);
     c = dir('*.m');       % get the contents m files
     for fun= 1:length(c); % scan functions
       [p,f,e] = fileparts(c(fun).name);
@@ -19,11 +77,10 @@ function help_create
     end
   end
   
-  return
+function create_launchers_models(target)
+  % create launchers for Linux (OpenDesktop .desktop files) and Windows (.bat files)
   
-  % now we create launchers for Linux (OpenDesktop .desktop files) and Windows (.bat files)
-  
-  % categories for launchers ---------------------------------------------------
+  mkdir(target);
   
   % Model list (predefined iFunc)
   d = dir([ fileparts(which('gauss')) ]);
@@ -31,26 +88,29 @@ function help_create
   for index=1:length(d)
     this = d(index);
     try
-      [dummy, method] = fileparts(this.name);
+      [dummy, method, ext] = fileparts(this.name);
       options = feval(method,'identify');
-      if isa(options, 'iFunc')
-        launcher_write(method);
+      if isa(options, 'iFunc') && strcmp(ext, '.m')
+        launcher_write(target, method);
       end
     end
   end % for
+
+function create_launchers_commands(target)
+  % Commands
+  mkdir(target);
   
-  % Mathematical operators (iFunc), save 'ans'
-  % abs del2 floor sparse transpose  acos conj full sqrt uminus  acosh real  asin exp ndims round xcorr  asinh imag norm  atan cos isempty not sign tan  atanh cosh fliplr log sin tanh  ceil ctranspose flipud log10 sinh minus conv convn xcorr fits
-  % Commands (iFunc)
-  % edit plot char copyobj doc feval  get subplot 
+  d = { 'caxis', 'char', 'colormap', 'contour', 'copyobj', 'doc', 'edit', 'feval', 'get', 'image', 'load', 'mesh', 'plot', 'plot3', 'scatter3', 'slice', 'subplot', 'surf', 'surfc', 'surfl', 'waterfall' };
+  for index=1:length(d)
+    launcher_write(target, d{index});
+  end
   
-  % Mathematical operators (iData), save 'ans'
-  % abs acos asin atan cos sin tan cosh, sinh, tanh acosh, asinh, atan exp log log10 sqrt ctranspose
-  % transpose permute floor ceil round sign uminus imag real fft ifft del2 gradient diff sum prod trapz cumsum 
-  % plus minus times mtimes rdivide combine power lt le gt ge ne eq conv xcorr interp 
-  % mean max mean median std peaks camproj cumtrapz norm cat dog linspace logspace intersect union hist
-   
-  % Commands (iData)
-  % edit plot char copyobj doc feval  get subplot surf mesh load contour surfc surfl plot3 scatter3 waterfall
-  % image caxis colormap slice
+function create_launchers_operators(target)
+  % save the final object 'ans'
+  mkdir(target);
+  
+  d = { 'abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh', 'camproj', 'cat', 'ceil', 'combine', 'conj', 'conv', 'convn', 'cos', 'cosh', 'ctranspose', 'cumsum', 'cumtrapz', 'del2', 'diff', 'dog', 'eq', 'exp', 'fft', 'fits', 'fliplr', 'flipud', 'floor', 'full', 'ge', 'gradient', 'gt', 'hist', 'ifft', 'imag', 'interp', 'intersect', 'isempty', 'le', 'linspace', 'log', 'log10', 'logspace', 'lt', 'max', 'mean', 'median', 'minus', 'mtimes', 'ndims', 'ne', 'norm', 'not', 'peaks', 'permute', 'plus', 'power', 'prod', 'rdivide', 'real', 'round', 'sign', 'sin', 'sinh', 'sqrt', 'std', 'sum', 'tan', 'tanh', 'times', 'transpose', 'trapz', 'uminus', 'union', 'xcorr' };
+  for index=1:length(d)
+    launcher_write(target, d{index});
+  end
   

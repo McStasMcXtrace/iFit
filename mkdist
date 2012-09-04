@@ -55,7 +55,7 @@ find . -name svn -exec rm -rf \{\} \; 2> /dev/null
 find . -name .svn -exec rm -rf \{\} \; 2> /dev/null
 find . -name "*~" -exec rm -rf \{\} \; 2> /dev/null
 rm mkdist
-# we keep the MeX files as some users may not hace C compilers installed (e.g. Windows 64 bit)
+# we keep the MeX files as some users may not have C compilers installed (e.g. Windows 64 bit)
 # rm Loaders/looktxt.mex*
 
 # Update version and date
@@ -76,11 +76,8 @@ zip -r $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip $IFIT_TARNAME-$IFIT_VERSION
 if [ -x `which mcc` ]
 then
   echo create the standalone version into $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
-  cd $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone
-  ./make.sh $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
+  matlab -nojvm -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); make('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64'); exit"
   cd $TMPDIR
-  cp $IFIT_TARNAME-$IFIT_VERSION/README.txt $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
-  cp $IFIT_TARNAME-$IFIT_VERSION/COPYING $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
   zip -r $IFIT_TARNAME-$IFIT_VERSION-amd64.zip $IFIT_TARNAME-$IFIT_VERSION-amd64
 fi
 
