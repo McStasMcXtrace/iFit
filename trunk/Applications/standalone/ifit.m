@@ -152,19 +152,32 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
             || (any(exist(ifit_options.line) == [ 2 3 5 6 ]) && isempty(dir(ifit_options.line)))
       % a known method/function (iData, iFunc, ...) but not a file name
       try
-        ifit_options.line = builtin('feval',ifit_options.line, this{:});
+        ans = nargout(ifit_options.line);
+        if nargout(ifit_options.line) > 1, 
+          ans=cell(1,nargout(ifit_options.line));
+          [ans{:}]          = builtin('feval',ifit_options.line, this{:});
+          ifit_options.line = ans;
+        else
+          ifit_options.line = builtin('feval',ifit_options.line, this{:});
+        end
       catch
         disp('Error when evaluating method:')
         disp(ifit_options.line)
-        if ~isempty(this), disp(this{:}); end
+        if ~isempty(this), disp(this); end
         disp(lasterr)
       end
       this{end+1} = ifit_options.line;
       ans = this{end}
       ifit_options.line = '';
     elseif strncmp(fliplr(ifit_options.line), fliplr('.desktop'), 8) || strncmp(fliplr(ifit_options.line), fliplr('.bat'), 4)
-      % a desktop launcher is given as argument : read operator/command from it and evaluate
+      % a desktop launcher is given as argument : read operator/command
+      % from it and evaluate
       ifit_options.line = launcher_read(ifit_options.line);
+      try
+        this{end+1} = eval(ifit_options.line); 
+      catch
+        this{end+1} = ifit_options.line;
+      end
     else
       % argument is not an iFit/Matlab method, a command, a number, "string", 'expression', a script, a launcher
       % read data file and convert it to iData
