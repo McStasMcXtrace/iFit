@@ -123,7 +123,7 @@ for i=1:nargin
 end
 
 % Process inputs
-defaultoptions=struct('output','both','height',500,'width',500,'headlight',true,'title','Matlab X3D','interactive',false,'embedimages',false);
+defaultoptions=struct('output','both','height',500,'width',500,'headlight',true,'title','Matlab X3D','interactive',false,'embedimages',false,'Description','');
 if(isempty(options)), options=defaultoptions;
 else
     tags = fieldnames(defaultoptions);

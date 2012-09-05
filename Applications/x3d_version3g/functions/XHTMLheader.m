@@ -28,6 +28,9 @@ function [data,loc_body]=XHTMLheader(options)
         data=XMLaddProperty('name','ncomments',data);
         data=XMLaddProperty('cols','60',data);
         data=XMLaddProperty('rows','3',data);
+        if ~isempty(options.Description)
+          data=XMLaddString(options.Description,data);
+        end
     end
     
     
