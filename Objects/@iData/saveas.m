@@ -324,7 +324,12 @@ case {'vrml','wrl'} % VRML format
 case {'x3d','xhtml'} % X3D/XHTML format
   f=figure('visible','off');
   h = plot(a,options);
-  figure2xhtml(filename, f, struct('interactive',true,'output', format));
+  titl = strrep(char(a),'<','[');
+  titl = strrep(titl,'>',']');
+  desc = evalc('disp(a)');
+  desc = strrep(desc,'<','[');
+  desc = strrep(desc,'>',']');
+  figure2xhtml(filename, f, struct('interactive',true,'output', format,'title',titl,'Description',desc));
   close(f);
 case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
   if ndims(a) == 1    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
