@@ -13,8 +13,6 @@ function web(varargin)
 %    not necessary.  Also, the file can be referenced relative to the
 %    current working directory.
 
-persistent success
-
 if length(varargin)
   url = varargin{1};
 else
@@ -25,40 +23,9 @@ if ~isempty(private_help(url))
   return
 end
 
-if isempty(success), success=0; end
 
-if success == 0 % only try once per session to launch external browser in case of failure
-
-  % attempts to guess how to launch the browser
-  if ispc
-    success = -1; % was: system([ 'start /D "' ifitpath '" Docs']); to open Docs dir
-  elseif ismac
-    success = system([ 'open "' url '"' ]);
-  else
-    browser = getenv('BROWSER');
-    if isempty(browser)
-      [flag, out]=system('locate firefox');
-      if isempty(browser) && ~isempty(out), browser='firefox'; end
-      [flag, out]=system('locate google-chrome');
-      if isempty(browser) && ~isempty(out), browser='google-chrome'; end
-      [flag, out]=system('locate konqueror');
-      if isempty(browser) && ~isempty(out), browser='konqueror'; end
-      [flag, out]=system('locate seamonkey');
-      if isempty(browser) && ~isempty(out), browser='seamonkey'; end
-    end
-    if isempty(browser), browser = 'gnome-open'; end
-    if ~isempty(url)
-      browser = [ browser ' "' url '"' ];
-    end
-    disp(browser)
-    success = system( browser );
-  end
-end
-
-% when external editor fails to launch, 'success ~=0'
-if success ~=0
-  fallback_web(url); % in private
-end
+% launches our internal Web browser which follows 'matlab:' URL's
+fallback_web(url); % in private
 
 % ------------------------------------------------------------------------------
 
