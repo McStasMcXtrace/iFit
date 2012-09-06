@@ -25,7 +25,7 @@ function ifit(varargin)
 %  --exit or -e
 %      exits - should be specified after all other commands/arguments
 %  --save or -s or --save=FILE
-%      save the all variables when commands have been executed.
+%      save the workspace variables when commands have been executed.
 %  --run=SCRIPT or -r=SCRIPT
 %      executes the SCRIPT when starting.
 %
@@ -216,7 +216,7 @@ end
 
 % auto save ?
 if ischar(ifit_options.save)
-  save(ifit_options.save, '-v7.3');
+  save(ifit_options.save, '-v7.3'); % default format is Matlab/HDF (compressed)
 end
 
 close all

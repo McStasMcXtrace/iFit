@@ -43,7 +43,8 @@ c_axis = iData_private_caxis(a,'intersection');
 
 % loop on all iData to interpolate
 ai = a; bi=[];
+
 for index=1:numel(a)
-  ai(index) = interp(a(index), c_axis(1:ndims(a)));
+  ai(index) = interp(a(index), c_axis(1:ndims(a(index))));
 end
 
