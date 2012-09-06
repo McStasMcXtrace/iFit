@@ -39,7 +39,11 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
   end
 
   % we first compute projection of iData on the selected dimension
-  b = camproj(a, abs(dim));
+  if ndims(a) > 1 && ~isvector(a)
+    b = camproj(a, abs(dim));
+  else
+    b = copyobj(a);
+  end
 
   % then we compute sum(axis{dim}.*Signal)/sum(Signal)
   
