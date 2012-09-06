@@ -42,7 +42,7 @@ function fallback_web(url)
         'String','<-','Position',[0.01 0.91 0.04 0.05], 'Callback',@setBack);
       % URL text
       handles(3) = uicontrol('style','edit','Units','Normalized', ...
-        'ToolTip', 'Type a URL here', 'BackgroundColor','white', ...
+        'ToolTip', 'Type a URL here (http://, file://, ...) or "matlab:<command>"', 'BackgroundColor','white', ...
         'String', url, 'Position',[0.06 0.91 0.63 0.05], 'Callback',@setURL);
       % History
       handles(4) = uicontrol('style','pushbutton','Units','Normalized', ...
@@ -120,24 +120,48 @@ function fallback_web(url)
     else
       anchor = '';
     end
-    if ~isempty(dir([ root filesep link ]))
-      link = [ root filesep link ];
-    elseif link(1) == '#'
-      link = [ url link ];
-    end
-    if ~isempty(dir(link))
-      link = [ 'file://' link ]; % local file
-    end
-    try
-      je.setPage([ link anchor ]);
-    catch % usually java.net.MalformedURLException from JEditorPane
-      disp([ mfilename ': Can not open URL ' link ])
-      return
-    end
-    url        = strtok(link,'#');
-    root       = fileparts(url);
-    if strncmp(root, 'file://',7)
-      root = root(8:end);
+    % test if this is a 'matlab:' command
+    if strncmp(link, 'matlab:', length('matlab:'))
+      url = link; root = link;
+      if strncmp(link, 'matlab:helpwin', length('matlab:helpwin'))
+        link = [ 'matlab:help ' link(15:end) ];
+      end
+      % evaluate the matlab command
+      try
+        link = evalc(link(8:end));
+      end
+      link = strrep(link, sprintf('\n'),'<br>');
+      % highlight the first line
+      index = strfind(link, '<br>');
+      if length(index) > 1
+        index=index(1);
+        link = [ '<b>' link(1:(index-1)) ' </b> ' link(index:end) ];
+      end
+      % put the result of the matlab command in the browser
+      try
+        je.setText( link );
+      end
+    else % this is a supported URL
+      if ~isempty(dir([ root filesep link ]))
+        link = [ root filesep link ];
+      elseif link(1) == '#'
+        link = [ url link ];
+      end
+      if ~isempty(dir(link))
+        link = [ 'file://' link ]; % local file
+      end
+      try
+        je.setText(' ');
+        je.setPage([ link anchor ]);
+      catch % usually java.net.MalformedURLException from JEditorPane
+        disp([ mfilename ': Can not open URL ' link ])
+        return
+      end
+      url        = strtok(link,'#');
+      root       = fileparts(url);
+      if strncmp(root, 'file://',7)
+        root = root(8:end);
+      end
     end
     list{end+1} = url;
     set(handles(3), 'String', url);
