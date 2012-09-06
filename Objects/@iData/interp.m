@@ -154,7 +154,7 @@ for index=1:ndims(b)
 end
 
 % do we need to recompute the final axes ?
-if requires_meshgrid || ntimes
+if length(f_axes) > 1 && (requires_meshgrid || ntimes)
   [f_axes, changed, flag] = iData_meshgrid(f_axes, s_dims, method); % private function
 end
 
@@ -245,9 +245,11 @@ for index=1:ndims(b)
   end
 end
 
-if i_nonmonotonic
-  % transform the initial data into individual points, then interpolate on a regular grid
+if i_nonmonotonic && length(i_axes) > 1
+  % transform the initial data into individual points, then interpolate on
+  % a regular grid
   i_axes_new  = iData_meshgrid(i_axes, size(b));
+  
   i_signal    = iData_interp(i_axes, i_signal(:),  i_axes_new, method);
   if isnumeric(i_error) && length(i_error) > 1, 
     i_error   = iData_interp(i_axes, i_error(:),   i_axes_new, method); 
@@ -267,7 +269,7 @@ for index=1:ndims(b)    % change to double before interpolation
 end
 for index=1:ndims(b)
   x = i_axes{index}; x=x(:)';
-  if ~isequal(i_axes{index}, f_axes{index}) && ~isequal(x, 1:length(i_axes{index}))
+  if ~isequal(i_axes{index}, f_axes{index})
     has_changed = 1;
     break
   end

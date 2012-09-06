@@ -2,8 +2,8 @@ function make(target)
 
 
 % location of the iFit directory
-cd(ifitpath); p=pwd;  % get fully qualified path for ifitpath
-% location of the make script
+cd(ifitpath); p=pwd;  % get fully qualified path for p=ifitpath
+% location of the make script m=location(make.m)
 m=fullfile(p, 'Applications', 'standalone');
 
 if nargin == 0
@@ -17,8 +17,20 @@ dummy=rmdir(target, 's');
 mkdir(target);              % remove previous package
 cd (target); target = pwd;  % get fully qualified path for target
 
-% create the help pages
+% create the help pages (private)d.dir = dir(d.path);
 create_help(ifitpath);
+
+% force to recompile the MeX files
+functions clear % clear MeX
+% find MeX files used by the system
+d.path= fullfile(p, 'Libraries','Loaders','private', [ '*.' mexext ]);
+d.dir = dir(d.path);
+for index=1:length(d.dir)
+  x = d.dir(index);
+  delete(fullfile(p, 'Libraries','Loaders','private', x.name));
+end
+% recompile all MeX files
+iLoad force
 
 % activate some standalone only scripts (which are in principle forbiden by Matlab Compiler)
 cd(m);
@@ -99,8 +111,8 @@ function create_launchers_models(target)
 function create_launchers_commands(target)
   % Commands
   mkdir(target);
-  
-  d = { 'caxis', 'char', 'colormap', 'contour', 'copyobj', 'doc', 'edit', 'feval', 'get', 'image', 'load', 'mesh', 'plot', 'plot3', 'scatter3', 'slice', 'subplot', 'surf', 'surfc', 'surfl', 'waterfall' };
+  % 'load' and 'plot' commands are part of ifit default behaviour.  
+  d = { 'caxis', 'char', 'colormap', 'contour', 'copyobj', 'doc', 'edit', 'feval', 'get', 'image', 'mesh', 'plot3', 'scatter3', 'slice', 'subplot', 'surf', 'surfc', 'surfl', 'waterfall','reducevolume' };
   for index=1:length(d)
     launcher_write(target, d{index});
   end
