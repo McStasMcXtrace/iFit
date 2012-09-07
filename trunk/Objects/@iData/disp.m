@@ -131,11 +131,11 @@ else
     if length(l) > 20, l = [l(1:18) '...' ]; end 
     X      = getaxis(s_in, index); x=X(:);
     if length(x) == 1
-      minmaxstd = sprintf('[%g]', full(x));
+      minmaxstd = sprintf('[%g]', x);
     elseif isvector(X)
-      minmaxstd = sprintf('[%g:%g] length [%i]', full(min(x)), full(max(x)),length(x));
+      minmaxstd = sprintf('[%g:%g] length [%i]', min(x), max(x),length(x));
     else
-      minmaxstd = sprintf('[%g:%g] size [%s]', full(min(x)), full(max(x)),num2str(size(X)));
+      minmaxstd = sprintf('[%g:%g] size [%s]', min(x), max(x),num2str(size(X)));
     end
     if index==0
       if not(all(m==1 | m==0))

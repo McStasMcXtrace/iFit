@@ -235,8 +235,8 @@ case 1  % vector type data (1 axis + signal) -> plot
   end
   [x, xlab] = getaxis(a,1); x=double(x(:));
   [y, ylab] = getaxis(a,0); y=double(y(:));
-  e         = get(a,'Error');   e=real(double(e)); e=e(:);
-  m         = get(a,'Monitor'); m=real(double(m)); m=m(:);
+  e         = get(a,'Error');   e=real(double(e(:)));
+  m         = get(a,'Monitor'); m=real(double(m(:)));
   if not(all(m == 1 | m == 0)),
     e=genop(@rdivide,e,m); ylab = [ylab ' per monitor' ];
   end
