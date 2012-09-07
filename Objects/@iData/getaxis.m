@@ -78,7 +78,10 @@ if isnumeric(ax) % given as a number, return a number
   end
   if ax == 0  % syntax: getaxis(object, 0) -> object.Signal
     val= subsref(s,struct('type','.','subs','Signal'));
-    m  = subsref(s,struct('type','.','subs','Monitor')); m=real(m);
+    if ~isfloat(val), val=double(val); end
+    m  = subsref(s,struct('type','.','subs','Monitor')); 
+    if ~isfloat(val), val=double(val); end
+    m=real(m);
     link='Signal';
     if not(all(m == 1 | m == 0))
       val = genop(@rdivide,val,m);
@@ -110,7 +113,10 @@ else % given as a char/cell, return a char/cell
     return;
   elseif strcmp(ax,'Error')
     val= subsref(s,struct('type','.','subs','Error'));
-    m  = subsref(s,struct('type','.','subs','Monitor')); m=real(m);
+    if ~isfloat(val), val=double(val); end
+    m  = subsref(s,struct('type','.','subs','Monitor')); 
+    if ~isfloat(val), val=double(val); end
+    m=real(m);
     link='Error';
     if not(all(m(:) == 1 | m(:) == 0))
       val = genop(@rdivide,val,m);
@@ -168,6 +174,9 @@ if ~ischar(val)
     else
       if prod(size(val)) == prod(size(s)), val = reshape(val, size(s)); end
     end
+  end
+  if isnumeric(val) && ~isfloat(val)
+    val = double(val);
   end
 end
 
