@@ -10,7 +10,7 @@ function f_signal = iData_interp(i_axes, i_signal, f_axes, method)
 %  f_signal: interpolated new signal (double array)
 
 if isempty(i_signal), f_signal=[]; return; end
-if length(i_signal) == numel(i_signal)
+if isvector(i_signal) % force axes to be vectors
   for index=1:length(i_axes)
     x=i_axes{index}; x=x(:); i_axes{index}=x;
   end

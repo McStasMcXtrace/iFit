@@ -249,6 +249,25 @@ if i_nonmonotonic && length(i_axes) > 1
   % transform the initial data into individual points, then interpolate on
   % a regular grid
   i_axes_new  = iData_meshgrid(i_axes, size(b));
+  % must make sure initial axes given as vector have same length as signal
+  flag_ndgrid_needed = 0;
+  for index=1:length(i_axes)
+    x=i_axes{index}; x=x(:);
+    % make sure length(x) == numel(i_signal) for interpolation to work
+    if length(x) < numel(i_signal)
+      if isempty(length(x) == size(i_signal))
+        iData_private_error(mfilename,sprintf('The axis rank %d of length=%d does not match the object %s Signal dimensions %s\n', ...
+          index, length(x), a.Tag, mat2str(size(i_signal)) ...
+        ));
+      else
+        flag_ndgrid_needed = 1;
+      end
+    end
+    i_axes{index} = x;  % now a vector...
+  end
+  if flag_ndgrid_needed
+    [i_axes{:}] = ndgrid(i_axes{:});
+  end
   
   i_signal    = iData_interp(i_axes, i_signal(:),  i_axes_new, method);
   if isnumeric(i_error) && length(i_error) > 1, 
