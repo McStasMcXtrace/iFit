@@ -80,7 +80,7 @@ if strncmp(user.format, '--format=', length('--format='))
 end
 
 % call looktxt >>>>
-s = looktxt(argv{:});
+looktxt(argv{:});
 
 % import the MAT file from the temporary file, into structure ==================
 if ischar(user.outfile) && ~isempty(dir(user.outfile))
