@@ -224,8 +224,7 @@ int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
 #define realloc mxRealloc
 #define calloc  mxCalloc
 #define main    MexMain
-/* #define free mxFree  */
-#define free    NoOp
+#define free    NoOp      /* do not free in MeX mode */
 #define print_stderr mexPrintf
 #define exit(ret) { char msg[1024]; sprintf(msg, "Looktxt/mex exited with code %i\n", ret); if (ret) mexErrMsgTxt(msg); }
 #endif
@@ -351,6 +350,7 @@ int print_stderr(char *format, ...) {
 #else
 int NoOp(void *pointer)
 {
+  /* do not free in MeX mode */
   /* mxFree((void *)pointer); */
   return 0;
 }
@@ -1680,9 +1680,11 @@ struct file_struct file_close(struct file_struct file)
   file.Extension =str_free(file.Extension);
   file.RootName  =str_free(file.RootName);
 #ifdef USE_MAT
+#ifndef USE_MEX /* do not free in MeX mode */
   if (file.mxData)    mxDestroyArray(file.mxData);
   if (file.mxHeaders) mxDestroyArray(file.mxHeaders);
   if (file.mxRoot)    mxDestroyArray(file.mxRoot); 
+#endif
   file.mxRoot = file.mxData = file.mxHeaders = NULL; 
 #endif
   return(file);
@@ -2631,15 +2633,19 @@ int file_write_tag(struct file_struct file, struct option_struct options,
 
 #ifdef USE_MAT
   if (options.ismatnexus == 1 || options.ismatnexus == 3) {  /* MAT/MEX output */
+    mxArray *mxString=NULL;
     if (options.verbose > 2) 
       printf("DEBUG[file_write_tag]: writing in MAT/MEX: %s.%s=%s\n", 
         section && strlen(section) ? section : "ROOT", name, value);
     /* assign the name/value to structure, possibly as a sub-structure */
     if (!file.mxRoot || !mxIsStruct(file.mxRoot)) return(0);
+    
+    mxString = mxCreateString(value);
 
     if (section && strlen(section)) {
       
       char parent=0;
+      char section_created = 0;
       mxArray *mxSection=NULL;
       mxArray *Parent=NULL;
 
@@ -2656,12 +2662,13 @@ int file_write_tag(struct file_struct file, struct option_struct options,
         /* need to create the field in the Data/Header ? */
         mxAddField(Parent, section);
         mxSection = mxCreateStructMatrix(1,1, 1, (const char **)&name);
+        section_created = 1;
         if (!mxSection || !mxIsStruct(mxSection)) 
           exit(print_stderr("mxSection %s.%s.%s is empty\n",
             options.out_headers == 2 ? "Headers" : "Data", section, name));
       } else mxAddField(mxSection,    name);
       
-      mxSetField(mxSection, 0, name,    mxCreateString(value));
+      mxSetField(mxSection, 0, name,    mxString);
       mxSetField(Parent,    0, section, mxSection);
 
       if (options.out_headers != 2)
@@ -2671,12 +2678,16 @@ int file_write_tag(struct file_struct file, struct option_struct options,
     } else {
       if (options.out_headers == 2) {
         mxAddField(file.mxHeaders,       name);
-        mxSetField(file.mxHeaders,    0, name,    mxCreateString(value));
+        mxSetField(file.mxHeaders,    0, name,    mxString);
       } else {
         mxAddField(file.mxRoot,       name);
-        mxSetField(file.mxRoot,    0, name,    mxCreateString(value));
+        mxSetField(file.mxRoot,    0, name,    mxString);
       }
     }
+#ifndef USE_MEX
+    mxDestroyArray(mxString);
+#endif /* do not free in MeX mode */
+    mxString = NULL;
   } else 
 #endif /* USE_MAT */
 #ifdef USE_NEXUS
@@ -3030,10 +3041,12 @@ int file_write_field_array_matnexus(struct file_struct file,
     /* add field to 'Root'.'Data' */
     if (field.Section && strlen(field.Section)) {
       mxArray   *mxSection=mxGetField(file.mxData, 0, field.Section);
+      char       section_created=0;
       if (!mxSection || !mxIsStruct(mxSection)) { 
         /* need to create the field in the Data/Header ? */
         mxAddField(file.mxData, field.Section);
         mxSection = mxCreateStructMatrix(1,1, 1, (const char **)&(field.Name_valid));
+        section_created = 1;
         if (!mxSection || !mxIsStruct(mxSection)) {
           print_stderr("mxSection %s.%s.%s is empty\n",
             "Data", field.Section, field.Name_valid);
@@ -3044,10 +3057,14 @@ int file_write_field_array_matnexus(struct file_struct file,
       mxSetField(file.mxData, 0, field.Section,     mxSection);
       
     } else {
-      mxAddField(file.mxData, field.Name_valid);
+      mxAddField(file.mxData,       field.Name_valid);
       mxSetField(file.mxData,    0, field.Name_valid,    mxMatrix);
       ret=1;
     }
+#ifndef USE_MEX
+    mxDestroyArray(mxMatrix);
+#endif /* do not free in MeX mode */
+    mxMatrix = NULL;
   }
 #endif
 #ifdef USE_NEXUS
@@ -3859,10 +3876,15 @@ long file_write_target(struct file_struct file,
         ret=0;
       } else {
         /* write mxRoot to file and free it */
+        if (options.verbose >= 2) {
+          printf("VERBOSE[file_write_target]: writing file '%s'\n", file.TargetTxt);
+        }
         if (file.mxData) mxSetField(file.mxRoot, 0, "Data", file.mxData);
+        
         if (options.out_headers && file.mxHeaders) {
           mxSetField(file.mxRoot, 0, "Headers", file.mxHeaders);
         }
+        
         if (matPutVariable(pmat, options.names_root ? 
           options.names_root : file.RootName, file.mxRoot))
           print_stderr("Error putting mxRoot\n");
@@ -3873,7 +3895,11 @@ long file_write_target(struct file_struct file,
           file.TargetTxt,__LINE__);
           ret=0;
         }
+        
         file.TxtHandle = NULL;
+#ifdef USE_MEX
+        file.mxRoot = file.mxHeaders = file.mxData = NULL; /* do not free */
+#endif
       }
     } else
 #ifdef USE_MEX
@@ -4390,21 +4416,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
 
   } /* end for nrhs (all input string arguments) */
   
-  /* display command line */
-  for (i=0; i<argc; i++)
-  	mexPrintf("%s ", argv[i]);
-  mexPrintf("\n");
-  
   /* call 'main' */
   i = main(argc, argv);
   /* send back the mxOut array */
-  if (i) {
+
+  if (i && nlhs) {
     if (!mxOut)   plhs[0] = mxCreateString("created output file");
-    else        { plhs[0] = mxDuplicateArray(mxOut); mxDestroyArray(mxOut); }
-  } else
+    else        { plhs[0] = mxOut; }
+  } else {
     plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
-    
-  /* free the argv/argc arrays */
-  /* for (i=0; i < argc; mxFree(argv[i++])); */
+  }
+  /* all allocated blocks are freed by Matlab API automatically */
+  /* no need to call ANY free, mxFree, mxDestroyArray */
+
 } 
 #endif
