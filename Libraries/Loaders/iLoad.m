@@ -478,7 +478,7 @@ function [data, loader] = iLoad_import(filename, loader, varargin)
   if ~isfield(loader,'method'), return; end
   if ~isfield(loader,'name'), loader.name = loader.method; end
   if isempty(loader.method), return; end
-  fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
+  % fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
   if isempty(loader.options)
     data = feval(loader.method, filename, varargin{:});
   elseif iscell(loader.options)
@@ -494,6 +494,7 @@ function [data, loader] = iLoad_import(filename, loader, varargin)
   if isempty(data), return; end
   if isfield(loader, 'name') data.Format = loader.name; 
   else data.Format=[ loader.method ' import' ]; end
+  data.Loader = loader;
   return
   
 % -----------------------------------------------------------
