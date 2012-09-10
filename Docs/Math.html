@@ -98,7 +98,7 @@ In the cases where the Error can not be determined analytically, and approximati
 <br>
 <span style="color: rgb(255, 0, 0);">Warning:</span> all the operators work on<span style="font-style: italic;"></span> the <span style="font-style: italic;">Signal/Monitor</span> and <span style="font-style: italic;">Error/Monitor</span>.<br>
 <br>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Operator</td>
@@ -572,7 +572,7 @@ When not defined the <span style="font-style: italic;">Monitor</span>
 is set to 1, and the <span style="font-style: italic;">Error</span> is
 set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
 <br>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; background-color: rgb(255, 204, 204);">Operator<br>
@@ -1205,6 +1205,12 @@ nearest</span>.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(10)</span></span>)+2<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">interp</span>(a,2)	<span style="font-style: italic;">% doubled binning</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">interp</span>(a,1:.25:15,3:.25:12)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c],[1 3],<span style="color: rgb(204, 51, 204);">'mesh tight'</span>)<br></pre>
 <div style="text-align: center;"><a href="images/iData_interp.png"><img alt="iData interp" title="iData interp" src="images/iData_interp.png" style="border: 0px solid ; width: 444px; height: 200px;" align="middle"></a><br>
 <div style="text-align: left;"><br>
+To compress an object and reduce its binning, that is the number of elements on each dimension, you can use the <span style="font-weight: bold;">reducevolume</span>
+ method. Without argument, it reduces the number of elements to less 
+than 1e6. Additional arguments indicate the compression factor on each 
+dimension. This method is automatically used when plotting large 
+objects.<br>
+<br>
 Last, the <span style="font-weight: bold;">sort</span> operator sorts
 object axes, in ascending or descending order. The corresponding
 Signal, Error, and Monitor values are also re-ordered accordingly.<br>
