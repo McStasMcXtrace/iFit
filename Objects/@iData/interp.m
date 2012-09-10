@@ -117,8 +117,8 @@ cmd=b.Command;
 clear varargin a
 
 % check for method to be valid
-if isempty(any(strcmp(method, {'linear','cubic','spline','nearest'})))
-  iData_private_warning(mfilename,['Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest. Defaulting to linear.']);
+if isempty(any(strcmp(method, {'linear','cubic','spline','nearest','v4'})))
+  iData_private_warning(mfilename,['Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest, v4. Defaulting to linear.']);
   method = 'linear';
 end
 
@@ -155,7 +155,7 @@ end
 
 % do we need to recompute the final axes ?
 if length(f_axes) > 1 && (requires_meshgrid || ntimes)
-  [f_axes, changed, flag] = iData_meshgrid(f_axes, s_dims, method); % private function
+  f_axes = iData_meshgrid(f_axes, s_dims, method); % private function
 end
 
 % check if interpolation is indeed required ------------------------------------
@@ -186,7 +186,7 @@ for index=1:ndims(b)
 end
 
 % get Signal, error and monitor.
-i_signal   = get(b,'Signal');
+i_signal = subsref(b,struct('type','.','subs','Signal'));
 
 % quick exit check based on the Signal
 if any(isnan(i_signal(:))), has_changed=1; end
@@ -207,7 +207,7 @@ if ~isempty(i_error),
     % keep that as a constant value
   else
     % else get the value
-    i_error  = get(b,'Error');
+    i_error  = subsref(b,struct('type','.','subs','Error'));
   end
   i_error    = double(i_error);
 end
@@ -219,7 +219,7 @@ if ~isempty(i_monitor),
     % keep that as a constant value
   else
     % else get the value
-    i_monitor  =get(b,'Monitor');
+    i_monitor  =subsref(b,struct('type','.','subs','Monitor'));
   end
   i_monitor    = double(i_monitor);
 end
@@ -237,15 +237,15 @@ for index=1:ndims(b)
   end
 end
 
-% make sure input axes are monotonic. output axes should be OK.
+% make sure input axes are monotonic. output axes should be OK ------------
 i_nonmonotonic=0;
 for index=1:ndims(b)
-  if ~isempty(find(diff(i_axes{index},1,index) < 0))
+  if ~isempty(find(diff(i_axes{index},1,index) <= 0))
     i_nonmonotonic=index; break;
   end
 end
 
-if i_nonmonotonic && length(i_axes) > 1
+if i_nonmonotonic && length(i_axes) > 1 
   % transform the initial data into individual points, then interpolate on
   % a regular grid
   i_axes_new  = iData_meshgrid(i_axes, size(b));
@@ -265,11 +265,17 @@ if i_nonmonotonic && length(i_axes) > 1
     end
     i_axes{index} = x;  % now a vector...
   end
+  % signal is a grid but axes are vectors, axes should also be...
   if flag_ndgrid_needed
     [i_axes{:}] = ndgrid(i_axes{:});
+    for index=1:length(i_axes)
+        i_axes{index} = i_axes{index}(:);
+    end
   end
-  
+
+  % interpolate initial data on monotonic initial axes
   i_signal    = iData_interp(i_axes, i_signal(:),  i_axes_new, method);
+
   if isnumeric(i_error) && length(i_error) > 1, 
     i_error   = iData_interp(i_axes, i_error(:),   i_axes_new, method); 
   end
@@ -280,7 +286,7 @@ if i_nonmonotonic && length(i_axes) > 1
   clear i_axes_new
 end
 
-% last test to check if axes have changed
+% last test to check if axes have changed ---------------------------------
 has_changed = 0;
 for index=1:ndims(b)    % change to double before interpolation
   i_axes{index}=double(i_axes{index});
@@ -298,8 +304,9 @@ if ~has_changed,
   return; 
 end
 
-% interpolation takes place here
+% interpolation takes place here ------------------------------------------
 f_signal = iData_interp(i_axes, i_signal, f_axes, method);
+
 if isnumeric(i_error) && length(i_error) > 1, 
      f_error = iData_interp(i_axes, i_error,  f_axes, method); 
 else f_error = i_error; end
@@ -323,7 +330,7 @@ if isvector(i_signal) && size(i_signal,1)==1
 end
 clear i_signal
 
-% transfer Data and Axes
+% transfer Data and Axes --------------------------------------------------
 b.Data.Signal =f_signal;  clear f_signal
 b.Data.Error  =f_error;   clear f_error
 b.Data.Monitor=f_monitor; clear f_monitor

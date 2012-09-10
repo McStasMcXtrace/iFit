@@ -151,7 +151,6 @@ function fallback_web(url)
         link = [ 'file://' link ]; % local file
       end
       try
-        je.setText(' ');
         je.setPage([ link anchor ]);
       catch % usually java.net.MalformedURLException from JEditorPane
         disp([ mfilename ': Can not open URL ' link ])
