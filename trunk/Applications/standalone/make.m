@@ -21,7 +21,7 @@ cd (target); target = pwd;  % get fully qualified path for target
 create_help(ifitpath);
 
 % force to recompile the MeX files
-functions clear % clear MeX
+clear functions % clear MeX
 % find MeX files used by the system
 d.path= fullfile(p, 'Libraries','Loaders','private', [ '*.' mexext ]);
 d.dir = dir(d.path);

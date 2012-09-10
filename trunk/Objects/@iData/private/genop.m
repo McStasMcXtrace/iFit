@@ -50,6 +50,7 @@ if exist('bsxfun','builtin')
     z = bsxfun(op, x, y); % faster implementation avaialble from Matlab >= R2007a
     return;
   catch
+    disp([ mfilename ': failed bsxfun. Using slower genop function' ]);
     whos x y
   end
 end

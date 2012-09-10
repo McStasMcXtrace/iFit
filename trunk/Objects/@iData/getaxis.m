@@ -80,7 +80,7 @@ if isnumeric(ax) % given as a number, return a number
     val= subsref(s,struct('type','.','subs','Signal'));
     if ~isfloat(val), val=double(val); end
     m  = subsref(s,struct('type','.','subs','Monitor')); 
-    if ~isfloat(val), val=double(val); end
+    if ~isfloat(m), m=double(m); end
     m=real(m);
     link='Signal';
     if not(all(m == 1 | m == 0))
@@ -115,7 +115,7 @@ else % given as a char/cell, return a char/cell
     val= subsref(s,struct('type','.','subs','Error'));
     if ~isfloat(val), val=double(val); end
     m  = subsref(s,struct('type','.','subs','Monitor')); 
-    if ~isfloat(val), val=double(val); end
+    if ~isfloat(m), m=double(m); end
     m=real(m);
     link='Error';
     if not(all(m(:) == 1 | m(:) == 0))
