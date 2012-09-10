@@ -44,49 +44,21 @@ end
 
 % check if axes are monotonic (that is their 'unique' values corresponds to the 
 % Signal dimensions).
-if length(find(Signal>1)) == 1 % vector or event type data set
-  flag_linspace = ones(1, length(in));
-else
-  flag_linspace = zeros(1, length(in));
-  for index=1:length(in)
-    x = in{index}; sx = size(x); j = find(sx > 1);
-
-    if any(sx(j) ~= Signal(j))
-      % does not match Signal size (a vector or mesh with wrong size) 
-      % in principle the iData internal checks prevent that but we never know...
-      flag_linspace(index)=1;
-    elseif ~isempty(strfind(method, 'vector')) && ~isvector(x)
-      % vector requested but axis is not a vector
-      flag_linspace(index)=1; 
-    elseif ndims(x) == 2 && (~issorted(x, 'rows') || ~issorted(x', 'rows'))
-      % axis is not sorted
-      flag_linspace(index)=1; % may have good length, sorting is wrong
-    end
-  end
-end
-
-% determine regular vector-type axes for those flagged
 out = in;
+
 for index=1:length(in)
   x = in{index}; 
-  if flag_linspace(index) == 1
-    x=x(:); ux = unique(x);
-    if length(ux) == Signal(index) 
-      % we get a nice vector from the initial axis values
-      out{index} = ux; changed=1;
-    else
-      % we use a new regular vector
-      out{index} = linspace(min(x), max(x), Signal(index));
-      changed    = 1; % new axis requires interpolation
-    end
+
+  x=x(:); ux = unique(x);
+  if length(ux) == Signal(index) 
+    % we get a nice vector from the initial axis values
+    out{index} = ux; changed=1;
   else
-    % use fake index axes just for ndgrid to work
-    if numel(x) == Signal(index)
-      out{index} = x;
-    else
-      out{index} = 1:Signal(index);
-    end
+    % we use a new regular vector
+    out{index} = linspace(min(x), max(x), Signal(index));
+    changed    = 1; % new axis requires interpolation
   end
+ 
 end
 
 % make sure we have grid style axes

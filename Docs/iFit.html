@@ -39,7 +39,7 @@ In this document, we demonstrate shortly how to use the <a href="index.html">iFi
 
 <br>
 
-If you do not know about Matlab, refer to the quick tutorial below.<br>
+If you do not know about Matlab, refer to the quick tutorial <a href="#mozTocId711798">below</a>.<br>
 
 <br>
 
@@ -47,15 +47,17 @@ The object of these tools is to<br>
 
 <ul>
 
-  <li>import transparently data files, whatever be their format [<a href="Load.html">Load</a>]<br>
+  <li>import transparently data files, whatever be their format [<a href="Load.html">Load</a>], with commands such as <span style="font-style: italic;">a=</span><span style="color: rgb(51, 102, 255); font-style: italic;">iData</span><span style="font-style: italic;">(</span><span style="color: rgb(204, 51, 204); font-style: italic;">'filename'</span><span style="font-style: italic;">)</span><br>
   </li>
   <li>organize the data files contents, and in particular define their
 axes if needed [<a href="iData.html">iData axes and aliases</a>]<br>
   </li>
   <li>display/plot the data [<a href="Plot.html">Plot</a>]<br>
   </li>
-  <li>apply mathematical operations [<a href="Math.html">Math</a>]<br>
-  </li>
+  <li>apply mathematical operations [<a href="Math.html">Math</a>]</li>
+<li>create multi-parameter model functions in view to fit data sets [ <a href="iFunc.html">iFunc</a> ], with e.g. <span style="font-style: italic;">m=</span><span style="color: rgb(51, 102, 255); font-style: italic;">iFunc</span><span style="font-style: italic;">(</span><span style="color: rgb(204, 51, 204); font-style: italic;">'expression'</span><span style="font-style: italic;">)</span><br>
+</li>
+
   <li>fit multi parameter models onto data sets [<a href="Fit.html">Fit</a>, <a href="Models.html">Models, </a><a href="Optimizers.html">Optimizers]</a><br>
   </li>
   <li>save results transparently into some common scientific formats [<a href="Save.html">Save</a>]<br>
@@ -76,7 +78,7 @@ Command options/arguments<br>
 
 </div>
 <div style="text-align: left;">You can start the iFit program with additional arguments which allow to perform predefined operations when starting.<br>
-  <table style=" text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <table style=" text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
     <tbody>
       <tr>
         <td style="vertical-align: top; font-weight: bold;">--save<br>
@@ -221,12 +223,12 @@ powerful numeric calculator. It works in interactive mode (with a prompt
 <h4><a class="mozTocH4" name="mozTocId315210"></a>Variables and data type</h4>
 Matlab supports real ('double'), complex, integer, character strings, 
 structures and lists ('cell'). With iFit, we provide 2 new data types: <a href="iData.html">iData</a> to store data sets, and <a href="iFunc.html">iFunc</a> to store models for e.g. fitting. These data types can be stored in named variables with the equal sign, or in the '<span style="font-style: italic;">ans</span>' (latest answer) variable: The <span style="font-weight: bold;">';'</span> sign at the end of a statement suppresses the display of the result. The <span style="font-weight: bold;">'%'</span> character indicates a comment. The square brackets<span style="font-weight: bold;"> []</span> are used to define vectors and matrices. The curly brackets<span style="font-weight: bold;"> {}</span> are used to access cell array (lists) elements. To access elements from a string or an array, use the the parenthesis <span style="font-weight: bold; font-style: italic;">(index) </span>with an index starting from 1 for the 1st element. To access a cell array element, use <span style="font-style: italic; font-weight: bold;">{index}</span>. The <span style="font-weight: bold;">':'</span> character indicates a range.<br>
-<pre style="margin-left: 40px;">&gt;&gt; 1+2<br><span style="font-weight: bold;">ans</span> =<br>     3<br>&gt;&gt; a=1+2;<br>&gt;&gt; a = [ 1 2 3 4 ];			% a vector of numbers<br>&gt;&gt; b=<span style="color: rgb(204, 51, 204);">'a string'</span>;<br>&gt;&gt; c.first=1;	<span style="font-style: italic;">			% a structure with two fields</span><br>&gt;&gt; c.second=<span style="color: rgb(204, 51, 204);">'string in a structure'</span>;<br>&gt;&gt; d={a,b,c};	<span style="font-style: italic;">			% a cell array (list) containing the 3 variables a,b,c</span> values<br>&gt;&gt; d{2}<br>ans =<br>    <span style="color: rgb(204, 51, 204);">a string</span>
+<pre style="margin-left: 40px;">&gt;&gt; 1+2<br><span style="font-weight: bold;">ans</span> =<br>     3<br>&gt;&gt; a=1+2;<br>&gt;&gt; a = [ 1 2 3 4 ];			<span style="font-style: italic;">% a vector of numbers</span><br>&gt;&gt; b=<span style="color: rgb(204, 51, 204);">'a string'</span>;<br>&gt;&gt; c.first=1;	<span style="font-style: italic;">			% a structure with two fields</span><br>&gt;&gt; c.second=<span style="color: rgb(204, 51, 204);">'string in a structure'</span>;<br>&gt;&gt; d={a,b,c};	<span style="font-style: italic;">			% a cell array (list) containing the 3 variables a,b,c</span> values<br>&gt;&gt; d{2}<br>ans =<br>    <span style="color: rgb(204, 51, 204);">a string</span>
 </pre>
 <h4><a class="mozTocH4" name="mozTocId495160"></a>
 Control statements</h4>
 <p>Matlab supports a set of control statements:</p>
-<table style=" text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style=" text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top;">
