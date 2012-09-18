@@ -367,7 +367,7 @@ if (length(constraints)==length(pars) | isempty(pars)) & (isnumeric(constraints)
     constraints.min = lb;
     constraints.max = ub;
   end
-elseif ischar(constraints), options=str2struct(constraints);
+elseif ischar(constraints), constraints=str2struct(constraints);
 end
 if ~isstruct(constraints) && ~isempty(constraints)
   error([ 'iFunc:' mfilename],[ 'The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);

@@ -260,7 +260,7 @@ with a weighting by the success ratio and the number of function calls
 (optimization speed). Successive calls to <span style="font-style: italic; font-weight: bold;">fmin</span> with the same problem to solve may result in different optimizers and solutions.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Optimizer<br>
@@ -517,7 +517,14 @@ evaluated) ;<br>
 
 <p>For instance one could use <span style="font-style: italic;">constraints.eval=<span style="color: rgb(204, 51, 204);">'p(3)=p(1);'</span>.</span></p>
 <br>
-All these constraints may be used simultaneously. <span style="font-style: italic;"><br>
+All these constraints may be used simultaneously. <br>
+The <span style="font-style: italic;">constraints</span> input argument can also be entered as a character string, like the input <span style="font-style: italic;">parameters</span> and <span style="font-style: italic;">options</span> :<br>
+
+<br>
+
+<div style="margin-left: 40px;">constraints=<span style="color: rgb(204, 51, 204);">'min=[0 0 0 0]; max=[1 10 3 0.1]; eval=p(4)=0'</span>;</div>
+<br>
+<span style="font-style: italic;">
 NaN</span> values in these constraints are ignored (the corresponding parameters are not constrained).<br>
 <br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId179895"></a>Estimating the model parameter uncertainties
@@ -615,7 +622,7 @@ The criteria is then normalized to the number of degrees of freedom by dividing 
 <br>
 The following pre-defined functions can be used as criteria:<br>
 <br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">criteria(Signal, Error,

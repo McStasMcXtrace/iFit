@@ -103,7 +103,16 @@ if isFa && isFb
     if length(index_same) > 1 % more than one parameter with same name
       for k=2:length(index_same)
         [tok,rem] = strtok(Parameters{index_same(k)});
-        Parameters{index_same(k)} = [ tok '_' num2str(k) ' ' rem ];
+        % check if parameter name is already a renamed one with '_<number>'
+        j = regexp(tok, '_[0-9]+$', 'match');
+        if ~isempty(j)
+          j = j{1};                       % the new incremented parameter duplicate
+          j = str2num(j(2:end))+length(index_same)-1; 
+          tok((end-length(j)):end) = '';  % the root of the name
+        else
+          j = k;
+        end
+        Parameters{index_same(k)} = [ tok '_' num2str(j) ' ' rem ];
       end
     end
   end
