@@ -170,7 +170,9 @@ if length(constraints)==length(pars) & (isnumeric(constraints) | islogical(const
     constraints.max = ub;
   end
 end
-
+if ~isempty(constraints) && ischar(constraints)
+  constraints = str2struct(constraints);
+end
 if ~isempty(constraints) && ~isstruct(constraints)
   error([ inline_localChar(optimizer) ': The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
 end
@@ -737,7 +739,7 @@ function [pars,exitflag,message] = inline_apply_constraints(pars, constraints, o
       if isa(constraints.eval, 'function_handle')
         p = feval(constraints.eval, p);
       elseif ischar(constraints.eval)
-        eval(constraints.eval);
+        eval([ constraints.eval ';' ]);
       end
     end
     pars = p;

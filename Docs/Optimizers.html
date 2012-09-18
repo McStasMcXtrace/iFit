@@ -122,7 +122,12 @@ provided in <span style="font-style: italic;">Optimizers.</span> Refer to the <a
   </li>
   <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">FunValCheck: </span>Check for invalid
 values, such as NaN or complex</li>
-</ul>
+</ul>The options can be enetered as a character string, which is evaluated to build a structure, such as:<br>
+<br>
+<div style="margin-left: 40px;"><span style="color: rgb(255, 0, 0);">options</span>=<span style="color: rgb(204, 51, 204);">'Display=final; TolFun=1e-4; OutputFcn=fminplot'</span>;<br>
+  <br>
+</div>
+
 The results from the minimizer are as follow:<br>
 <ol>
   <li><span style="font-style: italic;">parameters: </span>is the
@@ -344,7 +349,7 @@ optimizer is both excellent in success ratio and execution time.</span><br>
 <span style="font-style: italic; font-weight: bold;">
 <br>
 </span>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Optimizer<br>
@@ -460,7 +465,7 @@ optimizer is good in success ratio, with fair execution time.<br>
 </span><span style="font-style: italic; font-weight: bold;">
 <br>
 </span>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Optimizer<br>
@@ -579,7 +584,7 @@ methods</span> can be obtained from the command:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData)</span></pre>
 <p style="margin-bottom: 0cm;">
 <style type="text/css">td p { margin-bottom: 0in; }p { margin-bottom: 0.08in; }a:link {  }</style>
-<table style="width: 100%;" border="1" cellpadding="2" cellspacing="3">
+<table style="width: 100%;" cellpadding="2" cellspacing="3" border="1">
   <colgroup><col width="115"> <col width="243"> <col width="83"> <col width="76"> <col width="108"> </colgroup><tbody>
     <tr>
       <td style="text-align: center;" bgcolor="#ffcccc" width="115">
@@ -1212,6 +1217,12 @@ evaluated) ;<br>
 
 <p>For instance one could use <span style="font-style: italic;">constraints.eval=<span style="color: rgb(204, 51, 204);">'p(3)=p(1);'</span>.</span></p>
 All these constraints may be used simultaneously.<br>
+<br>
+The <span style="font-style: italic;">constraints</span> input argument can also be entered as a character string, like the input <span style="font-style: italic;">parameters</span> and <span style="font-style: italic;">options</span> :<br>
+<br>
+<div style="margin-left: 40px;">constraints=<span style="color: rgb(204, 51, 204);">'min=[0 0 0 0]; max=[1 10 3 0.1]; eval=p(4)=0'</span>;<br>
+</div>
+
 <br>
 </div>
 </div>
