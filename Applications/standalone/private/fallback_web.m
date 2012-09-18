@@ -80,7 +80,7 @@ function fallback_web(url)
   end
 
 % ------------------------------------------------------------------------------
-%                              Navitation actions
+%                              Navigation actions
 % ------------------------------------------------------------------------------
   function action_follow_link(obj,event)
     % triggered when passing over a link in the JEditorPane
@@ -124,7 +124,7 @@ function fallback_web(url)
     if strncmp(link, 'matlab:', length('matlab:'))
       url = link; root = link;
       if strncmp(link, 'matlab:helpwin', length('matlab:helpwin'))
-        link = [ 'matlab:help ' link(15:end) ];
+        link = [ 'matlab:web ' link(15:end) ]; % uses embedded help system
       end
       % evaluate the matlab command
       try
