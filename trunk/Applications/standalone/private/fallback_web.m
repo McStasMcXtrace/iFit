@@ -126,6 +126,10 @@ function fallback_web(url)
       if strncmp(link, 'matlab:helpwin', length('matlab:helpwin'))
         link = [ 'matlab:web ' link(15:end) ]; % uses embedded help system
       end
+      % check if we have %20 in the URL and replace them by spaces
+      if ~isempty(strfind(link, '%20'))
+        link = strrep(link, '%20', ' ');
+      end
       % evaluate the matlab command
       try
         link = evalc(link(8:end));
@@ -149,6 +153,10 @@ function fallback_web(url)
       end
       if ~isempty(dir(link))
         link = [ 'file://' link ]; % local file
+      end
+      % check if we have spaces in the URL and replace them by %20
+      if any(link == ' ')
+        link = strrep(link, ' ', '%20');
       end
       try
         je.setPage([ link anchor ]);
