@@ -190,6 +190,7 @@ constraints.criteriaPrevious= Inf;
 constraints.criteriaBest    = Inf;
 constraints.funcCount       = 0;
 constraints.message         = '';
+constraints.fevalDuration   = 0;
 
 options.optimizer = optimizer;
 if ~isfield(options,'Display') options.Display=''; end
