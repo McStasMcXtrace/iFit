@@ -40,7 +40,7 @@ change
 Other constraints/restraints
 </a></li></ol></li><li><a href="#mozTocId179895">Estimating the model parameter uncertainties
 and the fit quality
-</a></li><li><a href="#mozTocId855522">Building model functions</a></li><li><a href="#mozTocId778987">Specifying the optimization criteria</a></li></ol>
+</a></li><li><a href="#mozTocId855522">Building model functions</a></li><li><a href="#mozTocId778987">Specifying the optimization criteria</a></li><li><a href="#mozTocId200215">Issues when fitting</a></li></ol>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: iData/<span style="font-weight: bold; font-style: italic;">fits</span>, <a href="iFunc.html">iFunc</a>, <span style="font-style: italic; font-weight: bold;"></span><a href="Models.html">Models</a> and <a href="Optimizers.html">Optimizers</a>
@@ -667,6 +667,21 @@ Model)</td>
   </tbody>
 </table>
 <br>
+<h3><a class="mozTocH3" name="mozTocId200215"></a>Issues when fitting</h3>
+If you can not obtain a good fit, you can think about the following things to do:<br>
+<ul>
+  <li>redefine the data set <span style="font-style: italic;">Error</span>, which is used as weighting factor in the evaluation of the criteria. The <span style="font-style: italic;">sqrt(Signal)</span> (default) may not be suited. Try setting a.Error=1 ;</li>
+  <li>change the criteria definition (see <a href="#mozTocId778987">above</a>). The<span style="font-style: italic;"> least square</span> (default) may not be suited to the Signal ;</li>
+  <li>try with a specific <a href="Optimizers.html">optimizer</a>. The default <span style="font-style: italic;">fmin</span> optimizer, that makes a guess of a suitable routine may do a wrong guess ;</li>
+  <li>if the chosen optimizer is heuristic (that is non deterministic), 
+such as swarm and annealing methods, repeat the fit. The solution will 
+be different ;</li>
+  <li>set <a href="#mozTocId919221">constraints</a> to model parameters,
+ so that they remain reasonable. In practice, set the minimum and 
+maximum range values. Use Nan or Inf not to constraint a parameter ;</li>
+  <li>set the starting parameter set to a sensible guess, rather than relying on the automatic guess.</li>
+</ul>
+Good luck !<br>
 </div>
 <br>
 </div>
