@@ -72,7 +72,7 @@ disp('DONE');
 
 % create the help strings, to store as .txt files available for 'help' and 'doc'
 function create_help(pw)
-  to_parse = {'Objects/@iData','Objects/@iFunc','Libraries/Loaders','Libraries/Models','Libraries/Optimizers','Scripts/load','Applications/standalone','Tests'};
+  to_parse = {'Objects/@iData','Objects/@iFunc','Libraries/Loaders','Libraries/Models','Libraries/Optimizers','Scripts/load','Applications/standalone','Applications/GUI', 'Applications/sliceomatic', 'Tests'};
   disp('Creating help pages for deployed version');
   for index=1:length(to_parse)
     d = to_parse{index};
