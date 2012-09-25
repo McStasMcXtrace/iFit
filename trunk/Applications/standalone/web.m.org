@@ -76,7 +76,7 @@ else
     return
   else
   % is the url an iFit function ?
-    if ~isempty(dir(which(url)))
+    if ~isempty(dir(which(url))) && ~strcmp(url, which(url))
       feval(mfilename, which(url));
     else 
       h=[]; 
