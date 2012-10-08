@@ -14,7 +14,8 @@ function s = sum(a,dim)
 % ex:     c=sum(a);
 %
 % Version: $Revision: 1.19 $
-% See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
+% See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean,
+% iData/camproj, iData/trapz, iData/cart2sph
 
 if ~isa(a, 'iData')
   iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
