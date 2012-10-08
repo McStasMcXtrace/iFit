@@ -20,7 +20,7 @@ function s = camproj(a,dim, center)
 % ex:     c=camproj(a);
 %
 % Version: $Revision: 1.12 $
-% See also iData, iData/rotate, iData/sum, iData/trapz
+% See also iData, iData/rotate, iData/sum, iData/trapz, iData/cart2sph
 
 if ~isa(a, 'iData')
   iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
@@ -105,4 +105,5 @@ else
   s = setaxis( s, 1, rho);
   s = xlabel(  s, 'Radius');
   s = setalias(s, 'Center', center);
+  s = iData_private_history(s, mfilename, a, dim, center);
 end
