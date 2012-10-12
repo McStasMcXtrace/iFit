@@ -239,10 +239,12 @@ function val = iData_getAliasValue(this,fieldname)
       % evaluate the alias definition (recursive call through get -> subsref)
       try
         % in case this is an other alias/link: this is were we propagate in the object
-        val = get(this,val); % gets this.(val)                    MAIN SPENT TIME
+        val2 = '';
+        while ischar(val) && ~strcmp(val2, val) % search until we resolve the Alias/link
+          val = get(this,val); % gets this.(val)                    MAIN SPENT TIME
+        end
       catch
         % evaluation failed, the value is the char (above 'get' will then issue a
-
         % 'can not find Property' error, which will come there in the end
       end
     end
