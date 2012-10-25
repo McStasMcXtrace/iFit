@@ -3,7 +3,8 @@ function s = camproj(a,dim, center)
 %
 %   @iData/camproj function to compute the projection/sum of the elements of the data set
 %     camproj(a,dim) projects along axis of rank dim. All other axes are removed.
-%       If dim=0, projection is done on all axes and the total is returned as a scalar value. 
+%       If dim=0, projection is done on all axes and the total is returned as a 
+%         scalar value. 
 %       camproj(a,1) projects on first dimension (rows).
 %       camproj is the complementary to sum.
 %
@@ -11,13 +12,16 @@ function s = camproj(a,dim, center)
 %       the 'center' of the distribution (1st moment) is used as symmetry point 
 %       for the computation of the radius.
 %     camproj(a,'radial', center) specifies the 'center' of the integration 
-%       (vector of coordinates) or a single value used as center on all axes (for instance 0).
+%       (vector of coordinates) or a single value used as center on all axes 
+%       (for instance 0). All axes are considered to be distances.
+%     The radial distribution can then be transformed into an histogram with
+%     e.g. hist(camproj(a), 100);
 %
 % input:  a:     object or array (iData/array of)
 %         dim:   dimension rank to project to (int or 'radial')
 %         center:scalar or a vector which length is the object dimensionality 
 % output: s: projection of elements (iData 1D/scalar)
-% ex:     c=camproj(a);
+% ex:     c=camproj(a); hist(c, 100);
 %
 % Version: $Revision: 1.12 $
 % See also iData, iData/rotate, iData/sum, iData/trapz, iData/cart2sph

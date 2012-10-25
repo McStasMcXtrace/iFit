@@ -67,7 +67,9 @@ S.subs=cell(1,length(R));
 
 % scan dimensions and rebin them
 for index=1:length(R)
-  lx = length(getaxis(s, index));
+  lx = getaxis(s, index);
+  if isvector(lx), lx=length(lx);
+  else             lx=size(lx,index); end
   if R(index) > 1
     S.subs{index}=ceil(1:R(index):lx);
   else

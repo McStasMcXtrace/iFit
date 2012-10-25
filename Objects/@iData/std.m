@@ -58,6 +58,8 @@ end
 s = get(a,'Signal'); 
 x = getaxis(a, abs(dim));
 s=s(:); x=x(:);
+if ~isfloat(s), s=double(s); end
+if ~isfloat(x), s=double(x); end
 
 % then we compute sum(axis{dim}.*Signal)/sum(Signal)
 s = iData_private_cleannaninf(s);
