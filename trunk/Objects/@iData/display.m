@@ -71,7 +71,7 @@ else
       t = [ t ' "' title(s) '"' ]; t = strtrim(t); t(~isstrprop(t,'print'))=''; 
       if length(t) > 41, t = [ t(1:37) '..."'  ]; end           % title(Signal)
       d = [ d sprintf('%43s ', [ '''' t '''' ]) ];
-      h = cellstr(s.Command); h = strtrim(h{1}); h(~isstrprop(h,'print'))=''; 
+      h = cellstr(s.Command); h = strtrim(h{end}); h(~isstrprop(h,'print'))=''; 
       if length(h) > 23, h = [ h(1:20) '...' ]; end             % last command
       d = [ d sprintf('%s ', h) ];
       if ~isempty(s.Label) && ~isempty(s.DisplayName)

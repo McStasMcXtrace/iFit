@@ -70,6 +70,7 @@ signal = get(a, 'Signal'); signal=signal(:);
 if ~use_accumdata
   varargin{end+1} = 'AccumData';
   varargin{end+1} = signal;
+  use_accumdata = length(varargin);
 end
 
 % build the matrix of events
@@ -88,12 +89,34 @@ if isempty(use_axes), c=a; return; end
 % now call the magic function (private)
 [count edges] = histcn(axes, varargin{:});
 
+% compute the Error and Monitor
+e = subsref(a,struct('type','.','subs','Error'));
+if  ~isempty(e) && not(all(e(:) == 0 | e(:) == 1))
+  varargin{use_accumdata} = e.^2;
+  count_e = histcn(axes, varargin{:});
+  count_e = sqrt(count_e);
+else
+  count_e = e;
+end
+
+m = subsref(a,struct('type','.','subs','Monitor'));
+if  ~isempty(m) && not(all(m(:) == 0 | m(:) == 1))
+  varargin{use_accumdata} = m;
+  count_m = histcn(axes, varargin{:});
+else
+  count_m = m;
+end
+
 % assemble final new object
 c = copyobj(a);
 c.Data=[];
 c.Data.signal=count;
 rmaxis(c); rmalias(c);
-c=setalias(c, 'Signal','Data.signal');
+
+c = setalias(c, 'Signal','Data.signal');
+c = setalias(c, 'Error',   count_e);
+c = setalias(c, 'Monitor', count_m);
+
 for index=1:length(edges)
   [link, lab] = getaxis(a, num2str(index));
   if isempty(link), continue; end

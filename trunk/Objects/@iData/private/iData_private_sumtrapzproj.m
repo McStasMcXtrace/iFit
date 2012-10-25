@@ -30,9 +30,14 @@ end
 % removes warnings
 iData_private_warning('enter',mfilename);
 
-% in all cases, resample the data set on a grid
+% some cases:
+% signal is vector nD -> 
+
+% in all cases except projection, resample the data set on a grid
 % make axes single vectors for sum/trapz/... to work
-a = meshgrid(a, 'vector');
+if any(strcmp(op, {'sum','cumsum','prod','cumprod','trapz','cumtrapz'}))
+  a = meshgrid(a, 'vector');
+end
 
 s = iData_private_cleannaninf(get(a,'Signal'));
 e = iData_private_cleannaninf(get(a,'Error'));
@@ -48,6 +53,9 @@ if all(dim > 0)
   case {'sum','cumsum'} % SUM =============================================================
     % sum on all dimensions requested
     for index=1:length(dim(:))
+      if dim(index) == 1 && isvector(s)
+        s = s(:); e=e(:); m=m(:);
+      end
       if numel(e) > 1, e = feval(op, e, dim(index)); end
       if numel(m) > 1, m = feval(op, m, dim(index)); end
       s = feval(op, s, dim(index)); 
@@ -59,6 +67,9 @@ if all(dim > 0)
   case {'prod','cumprod'} % PROD ===========================================================
     % product on all dimensions requested
     for index=1:length(dim(:))
+      if dim(index) == 1 && isvector(s)
+        s = s(:); e=e(:); m=m(:);
+      end
       if numel(e) > 1, e = feval(op, s+e/2, dim(index))-feval(op, s-e/2, dim(index)); end
       if numel(m) > 1, m = feval(op, m, dim(index)); end
       s = feval(op, s, dim(index)); 
@@ -76,15 +87,19 @@ if all(dim > 0)
         s = permute(s, perm);
         e = permute(e, perm); 
         m = permute(m, perm);
+      elseif isvector(s)
+        s = s(:); x=x(:); e=e(:); m=m(:);
       end
       % make the integration
-      if numel(e) > 1, e = feval(op, x, e); end
-      if numel(m) > 1, m = feval(op, x, m); end
-      s = feval(op, x, s);
-      if dim(index) ~= 1  % restore initial axes
-        s = permute(s,perm);
-        e = permute(e,perm);
-        m = permute(m,perm);
+      if ~isscalar(s)
+        if numel(e) > 1, e = feval(op, x, e, dim(index)); end
+        if numel(m) > 1, m = feval(op, x, m, dim(index)); end
+        s = feval(op, x, s, dim(index));
+        if dim(index) ~= 1  % restore initial axes
+          s = permute(s,perm);
+          e = permute(e,perm);
+          m = permute(m,perm);
+        end
       end
     end
     % Store Signal
@@ -94,26 +109,29 @@ if all(dim > 0)
   case 'camproj' % camproj =====================================================
     % accumulates on all axes except the rank specified
     [x, xlab]     = getaxis(a,dim);
-    for index=1:ndims(a)
-      if index~=dim, 
-        if ~isvector(x), x = sum(x, index); end
-        if numel(e) > 1, e = sum(e, index); end
-        if numel(m) > 1, m = sum(m, index); end
-        s = trapz(s, index); 
+    s             = subsref(a,struct('type','.','subs','Signal')); 
+    if isvector(s),   lx=length(s); else 
+      lx=size(s, dim); 
+      if isvector(x)
+        % replicate X along other axes
+        sz = size(s); sz(dim) = 1;
+        x = repmat(x, sz);
       end
     end
-    setaxis(b, 1, x);
+    rmaxis(b);
+    setaxis(b, 1, x(:));
     % Store Signal
-    setalias(b,'Signal', s, [ 'projection of ' label ' on axis ' num2str(dim) ]);     % Store Signal
+    setalias(b,'Signal', s(:), [ 'projection of ' label ' on axis ' num2str(dim) ]);     % Store Signal
+    b = set(b, 'Error', abs(e(:)), 'Monitor', m(:));
+    b = hist(b, lx); % faster than doing sum on each dimension
 	  
 	end % switch (compute)
 	
-	% store new object
-	b = set(b, 'Error', abs(e), 'Monitor', m);
-	switch op
-	% same axes
-	case {'sum','trapz','prod'}
-	  rmaxis(b);  % remove all axes, will be rebuilt after operation
+	if any(strcmp(op, {'sum','trapz','prod'}))
+	  % store new object
+	  b = set(b, 'Error', abs(e), 'Monitor', m);
+
+    rmaxis(b);  % remove all axes, will be rebuilt after operation
     % put back initial axes, except those integrated
     ax_index=1;
     for index=1:ndims(a)
@@ -123,17 +141,7 @@ if all(dim > 0)
         ax_index = ax_index+1;
       end
     end
-  case 'camproj'
-    rmaxis(b);  % remove all axes, will be rebuilt after operation
-    % set projection axis
-    [x, xlab] = getaxis(a, num2str(dim)); % get axis definition and label
-    setaxis(b, 1, x);
-
-    if dim == 1, 
-	    s=size(b);
-	    if s(1) == 1, b=transpose(b); end
-	  end
-	end % switch (store)
+  end
 	
 elseif dim == 0
   s = sum(s(:));
