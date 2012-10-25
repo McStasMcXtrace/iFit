@@ -5,9 +5,11 @@ function s = cart2sph(a, center)
 %     cart2sph(a) Transforms the object axes into spherical coordinates, which
 %       allow radial integration aferwards.
 %       The 'center' of the distribution (1st moment) is used as symmetry point 
-%       for the computation of the radius.
+%       for the computation of the radius. All axes are considered to be
+%       distances.
 %     cart2sph(a,center) specifies the 'center' of the integration 
-%       (vector of coordinates) or a single value used as center on all axes (for instance 0).
+%       (vector of coordinates) or a single value used as center on all
+%       axes (for instance 0).
 %
 % input:  a:     object or array (iData/array of)
 %         center:scalar or a vector which length is the object dimensionality 

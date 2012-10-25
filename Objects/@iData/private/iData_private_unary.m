@@ -63,6 +63,7 @@ if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log
 end
 
 % new Signal value is set HERE <================================================
+if ~isfloat(s), s=double(s); end
 if length(varargin)
   new_s = feval(op, s, varargin{:});
 else

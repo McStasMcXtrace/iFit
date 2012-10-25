@@ -1,4 +1,4 @@
-function [out, changed, flag_linspace] = iData_meshgrid(in, Signal, method)
+function [out, changed] = iData_meshgrid(in, Signal, method)
 % iData_meshgrid: checks/determine an axis system so that 
 % * it is regular
 % * it matches the Signal dimensions 
@@ -37,7 +37,7 @@ if isempty(Signal)
   end
 else
   % is Signal already a size ?
-  if ~isvector(Signal) || length(Signal) ~= length(in)
+  if ~isvector(Signal) || length(find(Signal>1)) ~= length(in)
     Signal = size(Signal);
   end
 end

@@ -32,7 +32,7 @@ end
 % check axes dimensions
 s_dims = size(a); % Signal/object dimensions
 
-for index=1:ndims(a)
+parfor index=1:ndims(a)
   v = getaxis(a, index);
 
   % compute the initial axis length
@@ -45,6 +45,9 @@ for index=1:ndims(a)
   if a_len == 1, a_len = 2; end
   s_dims(index) = a_len;
 
+end
+if ndims(a) == 1
+  s_dims = [ max(s_dims) 1 ];
 end
 
 if isvector(a) > 2
