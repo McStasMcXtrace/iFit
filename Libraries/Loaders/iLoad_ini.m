@@ -178,6 +178,19 @@ function config = iLoad_ini
     ESRF_edf.method     ='medfread';
     ESRF_edf.extension  ='edf';
     
+    Roper_SPE.name      ='SPE CCD by WinView from Roper Scientific / PI Acton';
+    Roper_SPE.method    ='speread';
+    Roper_SPE.extension ='spe';
+    
+    Mar_CCD.name        ='MarResearch CCD Camera';
+    Mar_CCD.method      ='marread';
+    Mar_CCD.extension   ={'mar','mccd'};
+    
+    Andor_SIF.name      ='Andor SIF CCD Camera';
+    Andor_SIF.method    ='sifread';
+    Andor_SIF.extension ='sif';
+    Andor_SIF.patterns  = 'Andor Technology Multi-Channel File';
+    
     Matlab_FIG.name     ='Matlab Figure';
     Matlab_FIG.options  ='';
     Matlab_FIG.method   ='mfigread';
@@ -206,7 +219,7 @@ function config = iLoad_ini
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
 	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
 	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, OFF_ascii, PLY_ascii, ...
-	       ESRF_edf, Matlab_FIG, PDB, Analyze, CBF, STL_binary};
+	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, Matlab_FIG, PDB, Analyze, CBF, STL_binary};
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];

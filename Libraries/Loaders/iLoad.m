@@ -167,15 +167,15 @@ end
 
 % multiple file handling
 if iscellstr(filename) & length(filename) > 1 & ~isempty(filename)
-  data  = {};
+  data  = cell(1,length(filename(:)));
   format= data;
-  for index=1:length(filename(:))
+  parfor index=1:length(filename(:))
     [this_data, this_format] = iLoad(filename{index}, loader, varargin{:});
     if ~iscell(this_data),   this_data  ={ this_data }; end
     if ~iscell(this_format), this_format={ this_format }; end
-    data  = { data{:}   this_data{:} };
-    format= { format{:} this_format{:} };
-    clear this_data this_format
+    data{index}  = this_data{:};
+    format{index}= this_format{:};
+    % clear this_data this_format can not clear in parfor
   end
   return
 end
