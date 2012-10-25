@@ -69,6 +69,13 @@ description page. Remember that axis of rank 1 is usually associated to
 Y (vertical, along rows), whereas axis of rank 2 is associated to X
 (horizontal, along columns) except for 1D object where X is rank 1.<br>
 <br>
+To get the signal and axes values, use:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; a{0}; <span style="font-style: italic;">% or <span style="color: rgb(51, 102, 255);">getaxis</span>(a, 0) to get the <span style="font-weight: bold;">Signal</span> (0-rank)</span><br>&gt;&gt; a{1}; <span style="font-style: italic;">% or <span style="color: rgb(51, 102, 255);">getaxis</span>(a, 1) to get the <span style="font-weight: bold;">1-st rank axis</span>, that is 'x' for vector-type data, and 'y' for 2D+</span><br>&gt;&gt; a{2}; <span style="font-style: italic;">% or <span style="color: rgb(51, 102, 255);">getaxis</span>(a, 2) to get the <span style="font-weight: bold;">2-nd rank axis</span>, that is 'x' for 2D+ data sets</span>
+</pre>
+
+
+In case the axis definitions is not what you want, you can re-assign them using the <span style="font-weight: bold;">setaxis</span> method (refer to the <span style="font-weight: bold;">iData</span> object documentation).<br>
+<br>
 The way all of these are used is listed below:<br>
 <ul>
   <li>All mathematical methods <a href="http://en.wikipedia.org/wiki/Propagation_of_error">propagate the <span style="font-style: italic;">Error</span></a> together with the <span style="font-style: italic;">Signal, </span>assuming Error
@@ -1027,14 +1034,21 @@ channel, resulting in a constant line (right side of the sum), whereas
 the elastic line, is gradually summed over all angle channels, showing
 inelastic contribution on its shoulders.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([ (a) <span style="color: rgb(51, 102, 255);">cumsum</span>(a) ] ,<span style="color: rgb(204, 51, 204);">'tight'</span>)</pre>
-The <span style="font-weight: bold;">cumtrapz</span> is the <span style="font-style: italic; color: rgb(255, 0, 0);">primitive</span> of the <span style="font-style: italic;">Signal, </span>which is equal to cumsum when the axis step is <span style="font-style: italic;">dx</span>=1.<br>
+The <span style="font-weight: bold;">cumtrapz</span> is the <span style="font-style: italic; color: rgb(255, 0, 0);">primitive</span> of the <span style="font-style: italic;">Signal, </span>which is equal to <span style="font-style: italic;">cumsum</span> when the axis step is <span style="font-style: italic;">dx</span>=1.<br>
 <br>
 The <span style="font-weight: bold;">norm</span> method computes the norm-2 of the object <span style="font-style: italic;">Signal, </span>that is<br>
 <br>
 <div style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">norm</span>(a)
 = &frac12; &#8721;
 <span style="font-style: italic;">|Signal|</span>&sup2;<br>
-</div>
+<br>
+</div>The <span style="font-weight: bold;">camproj</span> can also be used with <span style="font-style: italic;">dim='radial'</span>
+ in order to integrate a data set radially. This integration can also be
+ coupled with a more general Cartesian to spherical coordinate 
+transformation with <span style="font-weight: bold;">cart2sph</span> :<a href="images/iData_radial.png"><img alt="iData: radial integration" title="iData: radial integration" src="images/iData_radial.png" style="border: 0px solid; width: 200px; height: 279px;" align="right"></a><br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/*.cbf' ]</span>);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">camproj</span>(a,<span style="color: rgb(204, 51, 204);">'radial'</span>); <span style="font-style: italic;">% returns a distribution to be transformed into an histogram</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">cart2sph</span>(a);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(log(a), hist(b,500), log(c))<br></pre>
+<br>
+
 
 <h3><a class="mozTocH3" name="mozTocId703536"></a>Cutting, Merging and
 combining
