@@ -18,7 +18,7 @@ function frame = getframe(a, dim)
 if nargin < 2, dim=0; end
 if numel(a) > 1
   frame = cell(size(a));
-  for index=1:numel(a)
+  parfor index=1:numel(a)
     frame{index} = getframe(a(index), dim);
   end
   return

@@ -29,8 +29,9 @@ if (isa(a, 'iData') & numel(a) > 1)
   c = [];
   if isa(b, 'iData') & numel(b) == numel(a)
     % add element to element
-    for index=1:numel(a)
-      c = [ c iData_private_binary(a(index), b(index), op) ];
+    c = zeros(iData, numel(a), 1);
+    parfor index=1:numel(a)
+      c(index) = iData_private_binary(a(index), b(index), op);
     end
   elseif isempty(b)
     % process all elements from vector
@@ -46,8 +47,9 @@ if (isa(a, 'iData') & numel(a) > 1)
     [ 'Dimension of object arrays do not match for operator ' op ': 1st is ' num2str(numel(a)) ' and 2nd is ' num2str(numel(b)) ]);
   else
     % add single element to vector
-    for index=1:numel(a(:))
-      c = [ c iData_private_binary(a(index), b, op) ];
+    c = zeros(iData, numel(a), 1);
+    parfor index=1:numel(a(:))
+      c(index) = iData_private_binary(a(index), b, op);
     end
   end
   if ~isempty(b)
@@ -55,9 +57,9 @@ if (isa(a, 'iData') & numel(a) > 1)
   end
   return
 elseif isa(b, 'iData') & numel(b) > 1
-  c = [];
-  for index=1:numel(b)
-    c = [ c iData_private_binary(a, b(index), op) ];
+  c = zeros(iData, numel(b), 1);
+  parfor index=1:numel(b)
+    c(index) = iData_private_binary(a, b(index), op);
   end
   return
 end

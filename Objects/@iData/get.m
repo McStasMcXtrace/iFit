@@ -25,9 +25,9 @@ function [varargout] = get(this,varargin)
 varargout = {};
 
 if numel(this) > 1
-  varg = {};
-  for index=1:numel(this)
-    varg{end+1} = get(this(index), varargin{:});
+  varg = cell(1, numel(this));
+  parfor index=1:numel(this)
+    varg{index} = get(this(index), varargin{:});
   end
   varargout{1} = varg;
   return

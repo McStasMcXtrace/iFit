@@ -22,7 +22,7 @@ end
 % handle input iData arrays
 if numel(a) > 1
   b =cell(size(a));
-  for index=1:numel(a)
+  parfor index=1:numel(a)
     b{index} = feval(mfilename,a(index), dim);
   end
   return
@@ -46,10 +46,10 @@ else ge = 0;
 end
 
 % create returned object(s): one per dimension (axes)
-g = copyobj(a);
+
 cmd=a.Command;
-b = [];
-for i=1:ndims(s)
+b = zeros(iData, 1, ndims(s));
+parfor i=1:ndims(s)
   % build each partial: beware index 1 and 2 are to swap
   index = i;
   if ndims(a) > 1
@@ -58,10 +58,11 @@ for i=1:ndims(s)
     end
   end
   if dim && index ~= dim, continue; end
+  g = copyobj(a);
   g.Command=cmd;
   g = iData_private_history(g, mfilename, a, index);
   g = set(g, 'Signal', gs{index}, 'Error', ge{index});
   g = setalias(g, 'Signal', gs{index}, [  mfilename '(' sl ',' num2str(index) ')' ]);
-  b = [ b g ];
+  b(i) = g;
 end
 

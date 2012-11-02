@@ -84,7 +84,8 @@ else  % convert input argument into object
   if isa(varargin{1}, 'iData') && numel(varargin{1}) > 1
   % iData(iData)
     in = varargin{1};
-    for index=1:numel(in)
+    out = zeros(iData, numel(in), 1);
+    parfor index=1:numel(in)
       out(index) = iData(in(index));        % check all elements
     end
     outarray = [ outarray out ];
@@ -207,8 +208,8 @@ else  % convert input argument into object
         if isempty(t)
           try t = get(in,'Tag'); catch t=[]; end
         end
-        out = [];
-        for index=1:length(h)
+        out = zeros(iData, length(h), 1);
+        parfor index=1:length(h)
           this_out = iData(h(index));
           if isempty(this_out.Title) && ~isempty(t)
             this_out.Title = t;
@@ -237,9 +238,9 @@ else  % convert input argument into object
         if isempty(out(index).Command)
         	out(index) = iData_private_history(out(index), mfilename, in); 
         end
-        out(index) = iData_check(out(index));  % private function
       end
     end
+    out = iData_check(out); % private function
     if isa(in, 'iData') & nargout == 0 & length(inputname(1))
       assignin('caller',inputname(1),out);
     end
@@ -295,14 +296,14 @@ function b=iData_struct2iData(a)
   if isempty(b.Command), b.Command= cellstr('iData(<struct>)'); end
   
 % ============================================================================
-% iData_cell2iData: converts a cell into an iData cell
+% iData_cell2iData: converts a cell into an iData array
 function b=iData_cell2iData(a)
-  b = [];
-  for k=1:numel(a)
-    b = [ b iData(a{k}) ];
+  b = zeros(iData, numel(a), 1);
+  parfor k=1:numel(a)
+    b(k) = iData(a{k});
   end
   try
-      b = reshape(b,size(a));
+    b = reshape(b,size(a));
   end
 
 % ============================================================================
@@ -321,7 +322,8 @@ function out = iData_check(in)
 % make consistency checks on iData object
 
 if numel(in) > 1
-  for index = 1:numel(in)
+  out = zeros(iData, numel(in), 1);
+  parfor index = 1:numel(in)
     out(index) = iData_check(in(index));
   end
   return

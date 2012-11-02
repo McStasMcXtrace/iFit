@@ -29,9 +29,9 @@ function s = rotate(a, theta)
 
   % handle input iData arrays
   if numel(a) > 1
-    s = [];
-    for index=1:numel(a)
-      s = [ s feval(op, a(index), dim, theta) ];
+    s = zeros(iData, numel(a), 1);
+    parfor index=1:numel(a)
+      s(index) = feval(mfilename, a(index), theta);
     end
     s = reshape(s, size(a));
     return
@@ -41,7 +41,7 @@ function s = rotate(a, theta)
   s    = copyobj(a);
   s    = interp(s, 1); % make sure we use a regular grid (use ndgrid on current object)
   Axes = cell(1, ndims(a)+1);
-  for index=1:length(Axes)
+  parfor index=1:length(Axes)
     Axes{index} = unique(getaxis(s, index));
   end
   % add Theta

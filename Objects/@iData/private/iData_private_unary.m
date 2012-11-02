@@ -18,7 +18,7 @@ if numel(a) > 1
       if isempty(b), b={}; end 
       this = { this };
     end
-    b = [ b  this ];
+    b = [ b this ];
   end
   b = reshape(b, size(a));
   return

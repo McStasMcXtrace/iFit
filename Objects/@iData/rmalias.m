@@ -22,7 +22,7 @@ end
 
 % handle array of objects
 if numel(this) > 1
-  for index=1:numel(this)
+  parfor index=1:numel(this)
     this(index) = rmalias(this(index), names);
   end
   if nargout == 0 & ~isempty(inputname(1))

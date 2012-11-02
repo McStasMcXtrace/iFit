@@ -21,9 +21,9 @@ end
 
 % handle input iData arrays
 if numel(a) > 1
-  b = [];
-  for index=1:numel(a)
-    b = [ b interp(a(index), varargin{:}) ];
+  b = zeros(iData, numel(a), 1);
+  parfor index=1:numel(a)
+    b(index) = meshgrid(a(index),method);
   end
   b = reshape(b, size(a));
   return

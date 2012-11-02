@@ -42,9 +42,9 @@ if all_identical_axes, ai=a; bi=[]; return; end
 c_axis = iData_private_caxis(a,'intersection');
 
 % loop on all iData to interpolate
-ai = a; bi=[];
+ai = zeros(iData, numel(a),1); bi=[];
 
-for index=1:numel(a)
+parfor index=1:numel(a)
   ai(index) = interp(a(index), c_axis(1:ndims(a(index))));
 end
 

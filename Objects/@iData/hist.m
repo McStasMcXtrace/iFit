@@ -32,8 +32,9 @@ function c=hist(a, varargin)
 c=[];
 % handle handle array as input
 if numel(a) > 1
-  for index=1:numel(a)
-    c = [ c hist(a(index), varargin{:}) ];
+  c = zeros(iData, numel(a), 1);
+  parfor index=1:numel(a)
+    c(index) = hist(a(index), varargin{:});
   end
   return
 end
@@ -53,7 +54,7 @@ for index=1:length(varargin)
 end
 
 % check if varargin first argument is a bin vector
-if length(varargin) && length(varargin{1} == ndims(a))
+if length(varargin) && length(varargin{1}) == ndims(a)
   arg = cell(1,length(varargin)+ndims(a)-1);
   d   = varargin{1};
   for index=1:ndims(a)
@@ -220,14 +221,14 @@ clear varargin;
 if nd<length(edges)
     nd = length(edges); % wasting CPU time warranty
 else
-    edges(end+1:nd) = {DEFAULT_NBINS};
+    edges((end+1):nd) = {DEFAULT_NBINS};
 end
 
 % Allocation of array loc: index location of X in the bins
 loc = zeros(size(X));
 sz  = zeros(1,nd);
 % Loop in the dimension
-for d=1:nd
+parfor d=1:nd
     ed = edges{d};
     Xd = X(:,d);
     if isempty(ed)
@@ -246,7 +247,7 @@ end % for-loop
 % Clean
 clear dummy ed
 
-% This is need for seldome points that hit the right border
+% This is needed for seldom points that hit the right border
 sz = max([sz; max(loc,[],1)]);
 
 % Compute the mid points

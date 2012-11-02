@@ -20,11 +20,11 @@ if nargin < 3, lab=[]; end
 if numel(this) > 1
   if nargin < 3
     labl=cell(size(this));
-    for index=1:numel(this)
+    parfor index=1:numel(this)
       labl{index} = label(this(index), rank, lab);
     end
   else
-    for index=1:numel(this)
+    parfor index=1:numel(this)
       this(index) = label(this(index), rank, lab);
     end
     labl=this;
@@ -92,7 +92,6 @@ end
 alias_num   = find(strcmpi(alias, this.Alias.Names));
 if ~isempty(alias_num)
   labl = this.Alias.Labels{alias_num};
-  
 end
 
 if nargin == 2 || isempty(lab)  % return the current label value

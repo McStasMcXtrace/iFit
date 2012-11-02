@@ -26,9 +26,9 @@ if isempty(dim), dim=0; end
 
 % handle input iData arrays
 if numel(a) > 1
-  b = [];
-  for index=1:numel(a)
-    b = [ b feval(mfilename,a(index), op, dim) ];
+  b = zeros(iData, numel(a), 1);
+  parfor index=1:numel(a)
+    b(index) = feval(mfilename,a(index), op, dim);
   end
   b = reshape(b, size(a));
   return
@@ -38,7 +38,7 @@ a = interp(a);
 
 % Find smallest power of 2 that is > Ly
 Ly=size(a);
-for i=1:length(Ly)         
+parfor i=1:length(Ly)         
   NFFT(i)=pow2(nextpow2(Ly(i)));
 end
 % compute the FFT
@@ -82,9 +82,9 @@ end
 R.type='()';
 for i=1:length(NFFT)
   if strcmp(op, 'fft')
-  R.subs{i} = 1:ceil(NFFT(i)/2);
+    R.subs{i} = 1:ceil(NFFT(i)/2);
   else
-  R.subs{i} = 1:ceil(NFFT(i));
+    R.subs{i} = 1:ceil(NFFT(i));
   end
 end
 S=subsref(S,R);
@@ -114,9 +114,9 @@ for index=1:ndims(a)
   x = unique(x);
   x = mean(diff(x));
   if strcmp(op, 'fft')
-  f = 1/x/2*linspace(0,1,NFFT(index)/2);
+    f = 1/x/2*linspace(0,1,NFFT(index)/2);
   else
-  f = 1/x*linspace(0,1,NFFT(index));
+    f = 1/x*linspace(0,1,NFFT(index));
   end
   Data=setfield(Data,[ 'axis' num2str(index) ], f);
 end

@@ -23,9 +23,9 @@ if nargin < 3, mode='ascend'; end
 
 % handle input iData arrays
 if numel(a) > 1
-  s = [];
+  s = zeros(iData, numel(a), 1);
   for index=1:numel(a)
-    s = [ s sort(a(index), dim, mode) ];
+    s(index) = sort(a(index), dim, mode);
   end
   s = reshape(s, size(a));
   return

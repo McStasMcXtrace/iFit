@@ -27,9 +27,9 @@ if nargin < 2, center=[]; end
 
 % handle input iData arrays
 if numel(a) > 1
-  s = [];
-  for index=1:numel(a)
-    s = [ s feval(mfilename, a(index), center) ];
+  s = zeros(iData, numel(a),1);
+  parfor index=1:numel(a)
+    s(index) = feval(mfilename, a(index), center);
   end
   s = reshape(s, size(a));
   return
@@ -43,11 +43,9 @@ end
 if ischar(center) || isempty(center)
   % use 1st moment for each integration axis (automatic)
   center=zeros(1,ndims(a));
-  center_index = 1;
 
-  for index=1:ndims(a)
-    [dummy, center(center_index)] = std(a, index);
-    center_index = center_index+1;
+  parfor index=1:ndims(a)
+    [dummy, center(index)] = std(a, index);
   end
 end
 
@@ -81,12 +79,10 @@ elseif ndims(a) == 3
   x = getaxis(a, 0);
 else
   rho = zeros(size(s));
-  center_index=1;
   % we extract Signal and all axes, except 'dim'
   for index=1:ndims(a)
     % then compute the sqrt(sum(axes.*axes))
-    x            = iData_private_cleannaninf(getaxis(a, index)) - center(center_index);
-    center_index = center_index+1;
+    x            = iData_private_cleannaninf(getaxis(a, index)) - center(index);
     rho          = rho + x.*x;
     clear x
   end

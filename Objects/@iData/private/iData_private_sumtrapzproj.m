@@ -14,9 +14,9 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 
 % handle input iData arrays
 if numel(a) > 1
-  s = [];
+  s = zeros(iData, numel(a), 1);
   for index=1:numel(a)
-    s = [ s feval(op, a(index), dim) ];
+    s(index) = feval(op, a(index), dim);
   end
   s = reshape(s, size(a));
   return
@@ -50,7 +50,7 @@ b  = copyobj(a);
 if all(dim > 0)
   % compute new object
   switch op
-  case {'sum','cumsum'} % SUM =============================================================
+  case {'sum','cumsum'} % SUM ==================================================
     % sum on all dimensions requested
     for index=1:length(dim(:))
       if dim(index) == 1 && isvector(s)
@@ -64,7 +64,7 @@ if all(dim > 0)
     s=squeeze(s); e=squeeze(e); m=squeeze(m);
     setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
-  case {'prod','cumprod'} % PROD ===========================================================
+  case {'prod','cumprod'} % PROD ===============================================
     % product on all dimensions requested
     for index=1:length(dim(:))
       if dim(index) == 1 && isvector(s)
@@ -78,7 +78,7 @@ if all(dim > 0)
     s=squeeze(s); e=squeeze(e); m=squeeze(m);
     setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
-  case {'trapz','cumtrapz'} % TRAPZ =========================================================
+  case {'trapz','cumtrapz'} % TRAPZ ============================================
     for index=1:length(dim(:))
       [x, xlab]     = getaxis(a,dim(index)); x=x(:);
       if dim(index) ~= 1  % we put the dimension to integrate on as first
