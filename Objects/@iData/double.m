@@ -16,7 +16,7 @@ function a=double(a)
 
 if numel(a) > 1
   b = cell(size(a));
-  for index=1:numel(a)
+  parfor index=1:numel(a)
     b{index} = double(a(index));
   end
   a = b;

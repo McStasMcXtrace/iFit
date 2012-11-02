@@ -15,11 +15,11 @@ function b = isfield(a, field)
 if nargin == 1, field=[]; end
 
 if numel(a) > 1
-  if isempty(field), b=cell(size(a));
-  else b = zeros(size(a)); end
-  for index=1:numel(a)
+  if isempty(field), b = cell(size(a));
+  else               b = zeros(size(a)); end
+  parfor index=1:numel(a)
     if isempty(field), b{index} = feval(mfilename, a(index), field);
-    else b(index) = feval(mfilename, a(index), field); end
+    else               b(index) = feval(mfilename, a(index), field); end
   end
   return
 end

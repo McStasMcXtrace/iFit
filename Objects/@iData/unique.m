@@ -20,9 +20,9 @@ if nargin < 2, dim=1; end
 
 % handle input iData arrays
 if numel(a) > 1
-  s = [];
-  for index=1:numel(a)
-    s = [ s unique(a(index), dim) ];
+  s = zeros(iData, numel(a), 1);
+  parfor index=1:numel(a)
+    s(index) = unique(a(index), dim);
   end
   s = reshape(s, size(a));
   return
@@ -47,15 +47,14 @@ for index=tounique
   [x, uniquei] = unique(x);
   if length(uniquei) ~= size(a, index)
     toeval='';
+    S.type='()';
     for j=1:ndims(a), 
-      if j ~= index, str_idx{j}=':';
-      else str_idx{j}='uniquei'; end
-      if j>1, toeval=[ toeval ',' str_idx{j} ];
-      else toeval=[ str_idx{j} ]; end
+      if j ~= index, S.subs{j}=':';
+      else           S.subs{j}=uniquei; end
     end
-    sd =eval([ 'sd(' toeval ')' ]);
-    se =eval([ 'se(' toeval ')' ]);
-    sm =eval([ 'sm(' toeval ')' ]);
+    sd =subsref(sd, S);
+    if numel(se) == numel(sd), se =subsref(se, S); end
+    if numel(sm) == numel(sd), sm =subsref(sm, S); end
     setaxis(s, dim, x);
     was_uniqueed=1;
   end

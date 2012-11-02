@@ -3,7 +3,7 @@ function b = jacobian(a, varargin)
 %
 %   @iData/jacobian computes the Jacobian from the object current axes to new axes. 
 %   This is to be used for object coordinate/variable changes. 
-%   The 'from' anf 'to' axes should have the same dimensions. 
+%   The 'from' and 'to' axes should have the same dimensions. 
 %   The transformed object is returned, as well as the Jacobian which was used 
 %   for the transformation.
 %     b=jacobian(s, d) where 'd' is an iData object computes 's' on the 'd' axes.
@@ -39,16 +39,16 @@ end
 
 % handle input iData arrays
 if numel(a) > 1
-  b =cell(size(a));
-  for index=1:numel(a)
-    b{index} = feval(mfilename,a(index), varargin{:});
+  b =zeros(iData, size(a));
+  parfor index=1:numel(a)
+    b(index) = feval(mfilename,a(index), varargin{:});
   end
   return
 end
 
 % 'from' axes
 i_axes = cell(1,ndims(a)); i_labels=i_axes;
-for index=1:ndims(a)
+parfor index=1:ndims(a)
   [i_axes{index}, i_labels{index}] = getaxis(a, index);  % loads object axes, or 1:end if not defined 
 end
 

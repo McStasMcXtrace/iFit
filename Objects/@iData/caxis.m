@@ -20,14 +20,15 @@ c=[];
 
 % only one colormap/CData can be used
 if numel(a) > 1
-  iData_private_warning(mfilename, ['I can not handle iData arrays. ' inputname(1) ' size is [' num2str(size(s)) ']. Using first array element.']);
+  iData_private_warning(mfilename, ['I can not handle iData arrays. ' inputname(1) ' size is [' num2str(size(a)) ']. Using first array element.']);
   a = a(1);
 end
 
 % handle handle array as input
 if length(h) > 1
-  for index=1:length(h)
-    c = [ c caxis(a, h(index)) ];
+  c = zeros(size(h));
+  parfor index=1:length(h)
+    c(index) = caxis(a, h(index));
   end
   return
 end
@@ -37,7 +38,7 @@ c = findall(h, 'Type', 'surface');
 
 if isempty(c), return; end
 
-for index=1:length( c)
+parfor index=1:numel(c)
   % for each CData type object, interpolate the iData object onto the handle object axes
   x = get( c(index), 'XData'); % columns
   y = get( c(index), 'YData'); % rows

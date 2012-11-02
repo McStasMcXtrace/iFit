@@ -40,9 +40,9 @@ function b = interp(a, varargin)
 
 % handle input iData arrays
 if numel(a) > 1
-  b = [];
-  for index=1:numel(a)
-    b = [ b interp(a(index), varargin{:}) ];
+  b = zeros(iData, numel(a), 1);
+  parfor index=1:numel(a)
+    b(index) = interp(a(index), varargin{:});
   end
   b = reshape(b, size(a));
   return
@@ -62,10 +62,10 @@ warning('off','MATLAB:griddata:DuplicateDataPoints');
 
 % default axes/parameters
 i_axes = cell(1,ndims(a)); i_labels=i_axes;
-for index=1:ndims(a)
+parfor index=1:ndims(a)
   [i_axes{index}, i_labels{index}] = getaxis(a, index);  % loads object axes, or 1:end if not defined 
 end
-for index=ndims(a):length(a.Alias.Axis)
+parfor index=ndims(a):length(a.Alias.Axis)
   [dummy, i_labels{index}] = getaxis(a, index);  % additional inactive axes labels (used to create new axes)
 end
 method='linear';
@@ -134,7 +134,7 @@ end
 % check final axes
 s_dims = size(b); % Signal/object dimensions
 
-for index=1:ndims(b)
+parfor index=1:ndims(b)
   v = f_axes{index}; 
   if isempty(v), v= i_axes{index}; end % no axis specified, use the initial one
 
@@ -153,17 +153,17 @@ for index=1:ndims(b)
 
 end
 
+% check if interpolation is indeed required ------------------------------------
+if isvector(b) >=2 % event data set: redirect to hist method (accumarray)
+  f_axes = iData_meshgrid(f_axes, s_dims, 'vector'); % private function
+  b = hist(b, f_axes{:});
+  return
 % do we need to recompute the final axes ?
-if length(f_axes) > 1 && (requires_meshgrid || ntimes)
+elseif length(f_axes) > 1 && (requires_meshgrid || ntimes)
   f_axes = iData_meshgrid(f_axes, s_dims, method); % private function
 end
 
-% check if interpolation is indeed required ------------------------------------
 
-if isvector(b) >=2 % event data set: redirect to hist method (accumarray)
-  b = hist(b, f_axes{:});
-  return
-end
 
 % test if interpolation axes have changed w.r.t input object (for possible quick exit)
 has_changed = 0;
@@ -225,7 +225,7 @@ if ~isempty(i_monitor),
 end
 
 % check f_axes vector orientation
-for index=1:ndims(b)
+parfor index=1:ndims(b)
   i_axes{index} = double(i_axes{index});
   f_axes{index} = double(f_axes{index});
   if isvector(f_axes{index})
@@ -268,7 +268,7 @@ if i_nonmonotonic && length(i_axes) > 1
   % signal is a grid but axes are vectors, axes should also be...
   if flag_ndgrid_needed
     [i_axes{:}] = ndgrid(i_axes{:});
-    for index=1:length(i_axes)
+    parfor index=1:length(i_axes)
         i_axes{index} = i_axes{index}(:);
     end
   end
@@ -288,7 +288,7 @@ end
 
 % last test to check if axes have changed ---------------------------------
 has_changed = 0;
-for index=1:ndims(b)    % change to double before interpolation
+parfor index=1:ndims(b)    % change to double before interpolation
   i_axes{index}=double(i_axes{index});
   f_axes{index}=double(f_axes{index});
 end

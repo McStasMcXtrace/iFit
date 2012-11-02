@@ -16,7 +16,7 @@ if numel(s) > 1
   y = zeros(size(s));
 elseif ~numel(s), y=1; return;
 end
-for index = 1:numel(s)
+parfor index = 1:numel(s)
   if any(size(s(index))) == 0, empty = 1;
   else                         empty = 0; end
   y(index) = empty;

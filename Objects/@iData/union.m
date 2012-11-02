@@ -42,11 +42,9 @@ c_axis = iData_private_caxis(a,'union');
 
 % loop on all iData to interpolate
 ai = a; bi=[];
-for index=1:numel(a)
+parfor index=1:numel(a)
   if ~isempty(a(index))
     ai(index) = interp(a(index), c_axis);
-  else
-    ai(index) = a(index);
   end
 end
 

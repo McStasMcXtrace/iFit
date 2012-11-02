@@ -38,7 +38,7 @@ end
 % handle iData array
 if numel(s) > 1
   val = cell(size(s)); lab=val;
-  for index=1:numel(s)
+  parfor index=1:numel(s)
     [v,l] = getaxis(s(index), ax);
     val{index} =v;
     lab{index} =l;
@@ -54,9 +54,9 @@ if isempty(ax)
   if ischar(ax) % syntax: getaxis(object, '') -> definitions
     val = s.Alias.Axis;
   else          % syntax: getaxis(object, []) -> values
-    val = {};
-    for index=1:length(s.Alias.Axis)
-      [val{end+1}, lab{end+1}] = getaxis(s, index); % consecutive calls for each axis
+    val = cell(1, length(s.Alias.Axis)); lab=val;
+    parfor index=1:length(s.Alias.Axis)
+      [val{index}, lab{index}] = getaxis(s, index); % consecutive calls for each axis
     end
   end
   return
@@ -65,9 +65,9 @@ end
 % syntax: getaxis(object, number) -> return the axis value
 if isnumeric(ax) % given as a number, return a number
   if length(ax) > 1
-    val = {}; lab={};
-    for index=1:length(ax)
-      [val{end+1}, lab{end+1}] = getaxis(s, ax(index));
+    val = cell(1, length(ax)); lab=val;
+    parfor index=1:length(ax)
+      [val{index}, lab{index}] = getaxis(s, ax(index));
     end
     return
   end
@@ -102,9 +102,9 @@ if isnumeric(ax) % given as a number, return a number
   end;
 else % given as a char/cell, return a char/cell
   if iscellstr(ax)
-    val = {}; lab={};
-    for index=1:length(ax)
-      [val{end+1}, lab{end+1}] = getaxis(s, ax{index});
+    val = cell(1, length(ax)); lab=val;
+    parfor index=1:length(ax)
+      [val{index}, lab{index}] = getaxis(s, ax{index});
     end
     return
   end

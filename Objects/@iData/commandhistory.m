@@ -14,7 +14,7 @@ function s = commandhistory(a)
 % handle input iData arrays
 if numel(a) > 1
   s = cell(size(a));
-  for index=1:numel(a)
+  parfor index=1:numel(a)
     s{index} = commandhistory(a(index));
   end
   return

@@ -14,9 +14,9 @@ function b = pack(a)
 % See also iData, iData/sparse, iData/full, iData/saveas
 
 if numel(a) > 1
-  b = [];
-  for index=1:numel(a)
-    b = [ b pack(a(index)) ];
+  b = zeros(iData, numel(a), 1);
+  parfor index=1:numel(a)
+    b(index) = pack(a(index));
   end
   b = reshape(b, size(a));
   if nargout == 0 & ~isempty(inputname(1))
@@ -30,7 +30,7 @@ end
 axis_links   = getaxis(a);
 alias_values = cell(size(alias_names));
 alias_ranks  = zeros(size(alias_values));
-for index=1:length(alias_names)
+parfor index=1:length(alias_names)
   % get value if this is not set to default (Error, Monitor)
   if ~isempty(alias_links{index})
     alias_values{index} = get(a, alias_names{index});

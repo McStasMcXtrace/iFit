@@ -20,13 +20,15 @@ c=[];
 
 % handle handle array as input
 if numel(b) > 1
+  c = zeros(iData, length(b), 1);
   for index=1:length(b)
-    c = [ c feval(mfilename, a, b(index)) ];
+    c(index) = feval(mfilename, a, b(index));
   end
   return
 elseif numel(a) > 1
+  c = zeros(iData, length(a), 1);
   for index=1:length(a)
-    c = [ c feval(mfilename, a(index), b) ];
+    c(index) = feval(mfilename, a(index), b);
   end
   return
 end

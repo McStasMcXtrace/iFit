@@ -52,7 +52,7 @@ function out = load(a, varargin)
 % inline: load_check_struct, load_clean_metadata
 % EF 23/09/07 iData implementation
 
-[files, loaders] = iLoad(varargin{:}); % import files as structires HERE
+[files, loaders] = iLoad(varargin{:}); % import files as structures HERE
 
 if isempty(files), out=[]; return; end
 if isstruct(files) && length(files) == 1 && isfield(files,'loaders')

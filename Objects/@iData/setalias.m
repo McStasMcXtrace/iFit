@@ -71,7 +71,7 @@ if isempty(names), return; end
 
 % handle array of objects
 if numel(this) > 1
-  for index=1:numel(this)
+  parfor index=1:numel(this)
     this(index) = setalias(this(index), names, links, labels);
   end
   if nargout == 0 && ~isempty(inputname(1)) % update array inplace
