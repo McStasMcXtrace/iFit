@@ -682,7 +682,15 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
 
   % import McStas simulation result
   sim = [];
-  try
+%  try
+    % select monitors from their file names and apply expression (if any)
+    if isfield(options,'monitors')
+      for index=1:length(options.monitors)
+        [name, R] = strtok(options.monitors{index},' ,;/*+-(){}:%$.');
+        sim = [ sim iData(fullfile(directory,[ '*' name '*' ])) ];
+        setalias(sim, 'CriteriaExpression', R);
+      end
+    end
     
     if isempty(sim)
       % if designated monitor file name import fails, import all simulation content
@@ -697,8 +705,8 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
         use_monitors = zeros(size(sim));
         for index=1:length(options.monitors)
           % find monitors that match a search token
-          this = cellfun('isempty', findstr(sim, options.monitors{index}));
-          this = find(this == 0); % find those that are not empty
+          this = cellfun('isempty', findstr(sim, strtok(options.monitors{index},' ,;/*+-(){}:%$.')));
+          this = find(this == 0); % find those that are not empty (match token)
           use_monitors(this) = 1;
         end
         if any(use_monitors)
@@ -706,18 +714,12 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
         end
       end
     end
-    % first try to import monitors from their file names
-    if isfield(options,'monitors')
-      for index=1:length(options.monitors)
-        [name, R] = strtok(options.monitors{index},' ,;/*+-(){}:%$.');
-        sim = [ sim iData(fullfile(directory,[ name '*' ])) ];
-        setalias(sim, 'CriteriaExpression', R);
-      end
-    end
-  catch
-    criteria=0; sim=[]; ind=[];
-    return
-  end
+    sim
+    
+%  catch
+%    criteria=0; sim=[]; ind=[];
+%    return
+%  end
 
   % option to plot the monitors
   if (isfield(options, 'OutputFcn') && ~isempty(options.OutputFcn)) ...
