@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
 
@@ -13,8 +13,8 @@
 
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: McStas</title>
-  <ifit: changes="" title=""></ifit:>
-</head><body>
+  </head><body><ifit: changes="" title=""></ifit:>
+
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: McStas simulation/optimization<br>
 </h1>
 <h1 style="text-align: center;"><a href="http://www.mcstas.org/"><img alt="McStas [www.mcstas.org]" title="McStas [www.mcstas.org]" src="images/mcstas.png" style="border: 2px solid ; width: 150px; height: 88px;" align="right"></a></h1>
@@ -108,6 +108,9 @@ should be <span style="color: rgb(204, 51, 204);">'simulate'<span style="color: 
     </span></li>
   <li><span style="font-weight: bold;">options.compile</span>: 0 or 1
 to force re-compilation of the instrument (boolean)</li>
+<li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
+cell string of monitor names, or empty for all (cellstr)</li>
+
 </ul>
 <a href="images/iFit_McStas_simulate.png"><img src="images/iFit_McStas_simulate.png" alt="iFit: McStas simulation run from Matlab/iFit and displayed" style="border: 0px solid ; width: 200px; height: 186px;" align="right"></a>In
 the
@@ -116,13 +119,22 @@ examples, we define required structures on the fly, run
 the <span style="font-style: italic;">templateDIFF</span> instrument
 (the file must be accessible from Matlab current path) and get back
 monitors:<br>
-<pre style="margin-left: 40px;">&gt;&gt; monitors=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1),<span style="color: rgb(51, 102, 255);"> struct</span>(<span style="color: rgb(204, 51, 204);">'ncount'<span style="color: rgb(0, 0, 0);">,1e6</span></span><span style="color: rgb(204, 51, 204);"></span>))<br>monitors =  array [1  5] iData object:<br><br>Index     [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br>    1  id445199        [40  40] 'File Diff_Mono_XY_1299773321...' id445199=load(iData,... Diff_Mono_XY <br>    2  id445212        [40   1] 'File Diff_Mono_Lambda_129977...' id445212=load(iData,... Diff_Mono_... <br>    3  id445224        [40   1] 'File Diff_Sample_Lambda_1299...' id445224=load(iData,... Diff_Sampl... <br>    4  id445236      [340    1] 'File Diff_BananaTheta_129977...' id445236=load(iData,... Diff_Banan... <br>    5  id445248      [170   25] 'File Diff_BananaPSD_12997733...' id445248=load(iData,... Diff_Banan... <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(monitors)<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; monitors=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1),<span style="color: rgb(51, 102, 255);"> struct</span>(<span style="color: rgb(204, 51, 204);">'ncount'<span style="color: rgb(0, 0, 0);">,1e6</span></span><span style="color: rgb(204, 51, 204);"></span>))<br>&gt;&gt; monitors=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, <span style="color: rgb(51, 102, 255);">'</span><span style="color: rgb(204, 51, 204);">RV=1'</span>,<span style="color: rgb(51, 102, 255);"> </span><span style="color: rgb(204, 51, 204);">'ncount=1e6'<span style="color: rgb(0, 0, 0);"></span></span><span style="color: rgb(204, 51, 204);"></span>);	<span style="font-style: italic;">% same as above</span><br>monitors =  array [1  5] iData object:<br><br>Index     [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br>    1  id445199        [40  40] 'File Diff_Mono_XY_1299773321...' id445199=load(iData,... Diff_Mono_XY <br>    2  id445212        [40   1] 'File Diff_Mono_Lambda_129977...' id445212=load(iData,... Diff_Mono_... <br>    3  id445224        [40   1] 'File Diff_Sample_Lambda_1299...' id445224=load(iData,... Diff_Sampl... <br>    4  id445236      [340    1] 'File Diff_BananaTheta_129977...' id445236=load(iData,... Diff_Banan... <br>    5  id445248      [170   25] 'File Diff_BananaPSD_12997733...' id445248=load(iData,... Diff_Banan... <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(monitors)<br></pre>
 The last line displays the simulation results. Usual data analysis
 (display, mathematics, fit, export) can be performed (refer to the <a href="index.html">iFit</a> and <a href="iData.html">iData</a>
 documentation). <br>
 The resulting McStas data has an additional <span style="font-style: italic;">Parameters</span> field which holds the instrument parameters used for the simulation.<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; monitors(1).Parameters<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; monitors(1).Parameters<br></pre>The<span style="font-weight: bold; font-style: italic;"> 'monitors' </span>option
+ can be specified to limit the number of monitor files to load after 
+each simulation. Specifying a monitor list highly speeds-up the 
+importation of files after each iteration.<br>
+It should contain one token string or a cellstr {...} of tokens to 
+search for. These tokens are compared with the monitor file names, and 
+only matches are imported. If no match can be identified, all monitors 
+are read, the monitor list can be reduced by searching tokens in the 
+data sets contents.<br>
+
 <h3><a class="mozTocH3" name="mozTocId124981"></a>Displaying the instrument geometry</h3>
 To display the instrument geometry, use the syntax:<br>
 <pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <span style="color: rgb(204, 51, 204);">'RV=1','mode=display'</span>);</pre>
@@ -210,7 +222,10 @@ following members:<br>
     <span style="color: rgb(204, 51, 204);">'minimize'</span> or<span style="color: rgb(204, 51, 204);"> 'maximize'</span>, which is the
 default (string)</li>
   <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
-cell string of monitor names, or empty for all (cellstr)</li>
+cell string of monitor names, or empty for all (cellstr). This option 
+actually improved dramatically the file importation by selecting only 
+the relevant files.<br>
+</li>
   <li><span style="font-weight: bold;">options.optimizer</span>:
 function name of the optimizer to use, default is <span style="font-style: italic;">fminpso</span> (string or function
 handle). See <a href="Optimizers.html">Optimizers</a>.<br>
@@ -258,13 +273,14 @@ the
 following
 example,
 we search for an optimal monochromator curvature
-on the <span style="font-style: italic;">templateDIFF</span>
-instrument model, in order to maximize the <span style="font-style: italic;">Banana</span> monitors:<br>
-<pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'mode','optimize','optimizer','fminimfil'</span>));<br>parameters =<br>     RV: 0.75<br></pre>
-The monitors to use as optimization criteria can be part of a more
+(parameter <span style="font-style: italic;">RV</span>) on the <span style="font-style: italic;">templateDIFF</span>
+instrument model, in order to maximize the <span style="font-style: italic;">Banana</span> monitors (as<span style="font-style: italic;"> 'monitors' </span>option):<br>
+<pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'optimizer','fminimfil'</span>));<br>parameters =<br>     RV: 0.75<br></pre>
+The monitors to use as optimization criteria (<span style="font-style: italic;">options.monitors</span>) can be part of a more
 complex expression, which still must start with the name of the
-monitor, and then refer to itself with the<span style="font-style: italic;"> 'this' </span>variable, such as in the following example where we define the criteria as <span style="font-style: italic;">Amplitude/width&sup2;</span> (for a single peak)<br>
+monitor, and then refer to itself with the<span style="font-style: italic;"> 'this' </span>variable (<a href="iData.html">iData</a>  object), such as in the following example where we define the criteria as <span style="font-style: italic;">Amplitude/width&sup2;</span> (for a single peak)<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(0, 0, 0);">options.monitors=</span><span style="color: rgb(204, 51, 204);">'Banana; this=max(this)/std(this)^2'<br></span><span style="color: rgb(0, 0, 0);">options.monitors=</span><span style="color: rgb(204, 51, 204);">'Banana/std(this)^4'</span><br></pre>
+When the monitor filter selects more than one data set (e.g. more than one file match the monitor selection name), <span style="font-style: italic;">'this'</span> is an <a href="iData.html">iData</a>  array. Specifying a monitor list highly speeds-up the importation of files after each iteration.<br>
 For simpler definitions, the <span style="font-style: italic;">options</span> can be given as a string, similarly to the starting parameters:<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(204, 51, 204);">'RV=[1 3]'</span>, <span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors=</span><span style="color: rgb(204, 51, 204);">Banana; </span><span style="color: rgb(204, 51, 204);">mode=optimize;'</span>)</pre>
 During the optimization, a dynamic plot of the criteria evolution (the
