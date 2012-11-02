@@ -50,8 +50,10 @@ end
 xa = logspace(1,0,n);
 xa = (xa-1); xa=xa/max(xa);
 
-v = [];
+v = zeros(iData, n, 1);
 for index=1:n
-  v = [ v a.*xa(index) + b.*(1-xa(index)) ];
+  this = a.*xa(index) + b.*(1-xa(index));
+  this = setalias(this,'logspace',[ xa(index) 1-xa(index) ]);
+  v(index) = this;
 end
 

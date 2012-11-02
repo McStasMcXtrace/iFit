@@ -25,9 +25,9 @@ end
 
 % handle input iData arrays
 if numel(a) > 1
-  s = [];
-  for index=1:numel(a)
-    s = [ s feval(mfilename, a(index), R) ];
+  s = zeros(iData, numel(a), 1);
+  parfor index=1:numel(a)
+    s(index) = feval(mfilename, a(index), R);
   end
   s = reshape(s, size(a));
   return
@@ -71,7 +71,7 @@ for index=1:length(R)
   if isvector(lx), lx=length(lx);
   else             lx=size(lx,index); end
   if R(index) > 1
-    S.subs{index}=ceil(1:R(index):lx);
+    S.subs{index} = ceil(1:R(index):lx);
   else
     S.subs{index} = ':';
   end

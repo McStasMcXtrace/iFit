@@ -24,7 +24,7 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
   if nargin < 3, m=0; end
   if numel(a) > 1
     sigma = cell(size(a)); position = sigma; amplitude = sigma; baseline = sigma;
-    for index=1:numel(a)
+    parfor index=1:numel(a)
       [si, fi, ai, bi] = peaks(a(index), dim, m);
       sigma{index}     = si;
       position{index}  = fi;
@@ -68,15 +68,22 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
   end
   
   if numel(index) <= 1
-      sum_s = sum(signal); x1d=1:length(signal); x1d=x1d(:);
-      % first moment (mean)
-      f = sum(signal.*x1d)/sum_s; % mean value
-      % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
-      s = sqrt(sum(x1d.*x1d.*signal)/sum_s - f*f);
-      position=new_x(round(f));
-      sigma   =s/2*min(diff(x));
-      amplitude=max(signal)-min(signal);
-      baseline =ones(size(signal))*min(signal);
+    sum_s = sum(signal); x1d=1:length(signal); x1d=x1d(:);
+    % first moment (mean)
+    f = sum(signal.*x1d)/sum_s; % mean value
+    % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
+    s = sqrt(sum(x1d.*x1d.*signal)/sum_s - f*f);
+    f = round(f);
+    if     f < 1,             f=1; 
+    elseif f > length(new_x), f=length(new_x); 
+    end
+    position=new_x(f);
+    sigma   =s/2*min(diff(x));
+    if ~isreal(sigma)
+      sigma = std(x1d);
+    end
+    amplitude=max(signal)-min(signal);
+    baseline =ones(size(signal))*min(signal);
   else
     position  = new_x(index);
     amplitude = signal(index);

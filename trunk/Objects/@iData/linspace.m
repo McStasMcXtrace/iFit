@@ -49,10 +49,10 @@ end
 
 xa = linspace(1,0,n);
 
-v = [];
-for index=1:n
+v = zeros(iData, n, 1);
+parfor index=1:n
   this = a.*xa(index) + b.*(1-xa(index));
-  this=setalias(this,'linspace',[ xa(index) 1-xa(index) ]);
-  v = [ v this ];
+  this = setalias(this,'linspace',[ xa(index) 1-xa(index) ]);
+  v(index) = this;
 end
 

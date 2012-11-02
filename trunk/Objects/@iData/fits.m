@@ -111,7 +111,7 @@ function [pars_out,criteria,message,output] = fits(a, model, varargin)
 
 pars_out=[]; criteria=[]; message=[]; output=[];
 
-if nargin == 1 && isempty(a)
+if nargin == 1 && all(isempty(a))
   if nargout == 0
     fits(iFunc);
   else
@@ -145,10 +145,11 @@ end
 
 % handle input iData arrays
 if numel(a) > 1
-  pars_out={}; criteria=[]; message={}; output={};
-  for index=1:numel(a)
+  pars_out=cell(1,numel(a)) ; criteria=zeros(1,numel(a)); 
+  message =pars_out; output=pars_out;
+  parfor index=1:numel(a)
     [pars_out{index}, criteria(index), message{index}, output{index}] = ...
-      fits(a(index), model, varargin{:});
+      fits(model, a(index), varargin{:});
   end
   pars = pars_out;
   return

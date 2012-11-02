@@ -17,7 +17,7 @@ if nargin < 3, method=''; end
 if isa(in, 'iData')
   if isempty(Signal), Signal = size(in); end
   out = cell(1,ndims(in));
-  for index=1:length(out)
+  parfor index=1:length(out)
     out{index} = getaxis(in, index);  % loads object axes, or 1:end if not defined 
   end
   in = out;

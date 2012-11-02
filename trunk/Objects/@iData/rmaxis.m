@@ -24,7 +24,7 @@ if nargin == 1
 end
 % handle array of objects
 if numel(this) > 1
-  for index=1:numel(this)
+  parfor index=1:numel(this)
     this(index) = rmaxis(this(index), rank);
   end
   if nargout == 0 & ~isempty(inputname(1))

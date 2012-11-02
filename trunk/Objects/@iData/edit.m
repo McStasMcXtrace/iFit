@@ -13,7 +13,7 @@ function edit(a)
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
   if numel(a) > 1
-    for index=1:numel(a)
+    parfor index=1:numel(a)
       edit(a(index));
     end
     return

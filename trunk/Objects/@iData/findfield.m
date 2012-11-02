@@ -33,7 +33,7 @@ end
 
 if numel(s) > 1
   match = cell(1, numel(s)); types=match; dims=match;
-  for index=1:numel(s)
+  parfor index=1:numel(s)
     [m,t,n] = findfield(s(index), field, option);
     match{index}=m;
     types{index}=t;

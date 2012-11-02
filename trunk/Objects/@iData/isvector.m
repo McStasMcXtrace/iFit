@@ -17,7 +17,7 @@ function v = isvector(s)
 
 if numel(s) > 1
   v = zeros(size(s)); 
-  for index=1:numel(s)
+  parfor index=1:numel(s)
     v(index) =isvector(s(index));
   end
   return

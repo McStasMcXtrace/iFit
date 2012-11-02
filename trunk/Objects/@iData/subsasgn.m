@@ -66,12 +66,10 @@ else
   switch s.type
   case '()'       
     if numel(b) > 1   % array() -> deal on all elements
-    % SYNTAX: array(index) = val: set Data using indexes
-      c = [];           
-      for j = 1:length(s.subs{:})
-        c = [ c subsasgn(c(j),s,val) ];
+    % SYNTAX: array(index) = val: set Data using indexes         
+      parfor j = 1:length(s.subs{:})
+        b(j) = subsasgn(b(j), s,val);
       end
-      b = reshape(c, size(b));
     elseif ~isa(val, 'iData') % single object() = Signal (val must be num)
     % SYNTAX: object(index) = numeric: set Signal, index can be a subset
       if ~isnumeric(val)
@@ -134,11 +132,9 @@ else
   case '{}'
     if numel(b) > 1   % object array -> deal on all elements
     % SYNTAX: array{ref}=val
-      c = [];
-      for j = 1:numel(c)
-        c = [ c subsasgn(c(j),s,val) ];
+      parfor j = 1:numel(b)
+        b(j) = subsasgn(b(j),s,val);
       end
-      b = reshape(c, size(b));
     else
     % object{ref}
       if isnumeric(s.subs{:}) && isscalar(s.subs{:}) && ischar(val)
@@ -161,11 +157,9 @@ else
   case '.'
   % SYNTAX: object.field = val
     if numel(b) > 1   % object array -> deal on all elements
-      c = [];
-      for j = 1:length(c)
-        c = [ c subsasgn(c(j),s,val) ];
+      parfor j = 1:length(b)
+        b(j) = subsasgn(b(j),s,val);
       end
-      b = reshape(c, size(b));
     else
     % protect some fields
       fieldname = s.subs;
