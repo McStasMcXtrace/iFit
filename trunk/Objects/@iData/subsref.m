@@ -93,8 +93,9 @@ for i = 1:length(S)     % can handle multiple index levels
           x = getaxis(b,index);
           ax= b.Alias.Axis{index};   % definition of Axis
           nd = size(x); nd=nd(nd>1);
-          if length(size(x)) == length(size(b)) && ...
-                 all(size(x) == size(b))  && all(length(nd) == length(s.subs)) % meshgrid type axes
+          whos x b
+          if length(size(x)) == length(size(a)) && ...
+                 all(size(x) == size(a))  && all(length(nd) == length(s.subs)) % meshgrid type axes
             b = setaxis(b, index, ax, x(s.subs{:}));
           elseif max(s.subs{index}) <= numel(x) % vector type axes
             b = setaxis(b, index, ax, x(s.subs{index}));
