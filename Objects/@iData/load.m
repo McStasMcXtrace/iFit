@@ -127,7 +127,7 @@ if 1 < length(out) && length(i1) < length(out)
   [b, i3] = unique(get(out, 'Title'));% Title is unique
   [b, i4] = unique(get(out, 'Label'));% Title is unique
   [b, i5] = unique(cellfun('prodofsize',get(out,'Signal'))); % size of Signal is unique
-  i = unique([i1 i2 i3 i4 i5 ]);
+  i = unique([i1(:) ; i2(:) ; i3(:) ; i4(:) ; i5(:) ]);
   out = out(i);
 end
 
