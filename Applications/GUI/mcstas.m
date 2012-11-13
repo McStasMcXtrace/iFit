@@ -1,5 +1,5 @@
 function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
-% [OPTIMUM,MONITORS,EXITFLAG,OUTPUT] = mcstas(INSTRUMENT, PARAMETERS, OPTIONS) : run and optimize a McStas simulation
+% [OPTIMUM,MONITORS,EXITFLAG,OUTPUT] = mcstas(INSTRUMENT, PARAMETERS, OPTIONS) : run and optimize a McStas/McXtrace simulation
 %
 % A wrapper to the <a href="http://www.mcstas.org">McStas</a> package to either execute a simulation, or optimize a
 %   set of parameters. When given as strings, the PARAMETERS and OPTIONS are 
@@ -14,6 +14,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   monitors content as iData objects. The EXITFLAG is set to 0, and OUTPUT
 %   holds the options used. If the options.dir is not set, a temporary directory
 %   is created for the simulations, then deleted. 
+% To select neutron (McStas) or X-rays (McXtrace) flavour, set the options.particle
+%   to 'n' or 'x'.
 %
 % To select the optimization mode, set the options.mode='optimize' or any other
 %     optimization configuration parameter (TolFun, TolX, ...). 

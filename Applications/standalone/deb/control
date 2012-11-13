@@ -20,7 +20,8 @@ Description: @IFIT_NAME@ generic data analysis and fitting to models
  - iData objects to hold data sets ; Import with:          iData('filename')
  - iFunc objects to hold models ;    Create new ones with: iFunc('expression')
  - fit model to data with: fits(data, model)
- - documentation is available in /usr/local/share/doc/@IFIT_TARNAME@.
+ - documentation is available in /usr/local/share/doc/@IFIT_TARNAME@
+ .
  .
  You can not define new Matlab functions in this stand-alone release, but can define
  new iFunc objects to hold your function body.
