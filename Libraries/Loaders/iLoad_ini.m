@@ -72,7 +72,7 @@ function config = iLoad_ini
     spec.patterns   ={'#F','#D','#S'};
     spec.options    ='--fast --binary --headers --metadata=''#S '' --comment=NULL --silent ';
     spec.method     ='read_anytext';
-    spec.extension  ='spc';
+    spec.extension  ={'spc','spec'};
     
     mcstas_scan.name       ='McStas Scan DAT output';
     mcstas_scan.patterns   ={'# type: multiarray_1d','# variables:','# title: Scan of'};
@@ -156,6 +156,12 @@ function config = iLoad_ini
     STL_binary.extension={'stl','stlb'};
     STL_binary.postprocess='load_stl';
     
+    PDB.name            ='Protein Data Bank';
+    PDB.extension       ='pdb';
+    PDB.method          ='PDB_Geometry';
+    PDB.patterns        ={'HEADER','TITLE','COMPND','SOURCE','EXPDTA','AUTHOR','REVDAT'};
+    PDB.postprocess     = 'load_xyen';
+    
     OFF_ascii.name      ='OFF 3D ascii';
     OFF_ascii.method    ='read_anytext';
     OFF_ascii.options   ='--fast --binary --headers --comment=NULL --metadata=OFF --silent';
@@ -191,16 +197,16 @@ function config = iLoad_ini
     Andor_SIF.extension ='sif';
     Andor_SIF.patterns  = 'Andor Technology Multi-Channel File';
     
+    ADSC_CCD.name       ='ADSC CCD Camera';
+    ADSC_CCD.method     ='adsc_read';
+    ADSC_CCD.extension  ='img';
+    ADSC_CCD.patterns   ={'HEADER_BYTES','CCD_IMAGE_SATURATION'};
+    
     Matlab_FIG.name     ='Matlab Figure';
     Matlab_FIG.options  ='';
     Matlab_FIG.method   ='mfigread';
     Matlab_FIG.extension='fig';
     Matlab_FIG.postprocess='load_fig';
-    
-    PDB.name            ='Protein Data Bank';
-    PDB.extension       ='pdb';
-    PDB.method          ='PDBRead';
-    PDB.patterns        ={'HEADER','TITLE','COMPND','SOURCE','EXPDTA','AUTHOR','REVDAT','SEQRES','MASTER','END'};
     
     Analyze.name        ='Analyze volume data';
     Analyze.options     ='';
@@ -218,8 +224,8 @@ function config = iLoad_ini
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
 	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
-	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, OFF_ascii, PLY_ascii, ...
-	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, Matlab_FIG, PDB, Analyze, CBF, STL_binary};
+	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, ...
+	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, Analyze, CBF, STL_binary};
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
