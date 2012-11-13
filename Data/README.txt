@@ -25,3 +25,7 @@
 # PDBSilk.pdb: an example PDB file [text, PDB]
 # nano_50K_4.8a_03_h4.hdf: an inelastic scattering example [binary, HDF5/NeXus with compression]
 # Diff_Banana*: example McStas simulation result files [text, McStas]
+# Monitor_GV_1330447143_list.L.x.y.z: a neutron event list from McStas [text, McStas]
+# 111107AgBH.0001.mccd: a Mar345 Research CCD image [TIFF binary]
+# peg268.csv: a comma separated values spreadsheet [text CSV]
+# Q1_Test_Protein.img: Image taken with ADSC Quantum 1 Detector of sample of Protein [text/binary]
