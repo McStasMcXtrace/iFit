@@ -197,13 +197,15 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
       disp(this);
       clear varargin
       % last file imported. Plot all imported data sets / functions
-      if 0 < length(this(cellfun('isclass',this,'iData'))) && length(this(cellfun('isclass',this,'iData'))) <= 20 
-        figure('Name','iFit: imported data sets'); 
-        subplot(this{cellfun('isclass',this,'iData')});
-      end
-      if 0 < length(this(cellfun('isclass',this,'iFunc'))) && length(this(cellfun('isclass',this,'iFunc'))) <= 20 
-        figure('Name','iFit: imported models'); 
-        subplot(this{cellfun('isclass',this,'iFunc')});
+      if  isempty(ifit_options.line) % no command was given as last argument
+        if 0 < length(this(cellfun('isclass',this,'iData'))) && length(this(cellfun('isclass',this,'iData'))) <= 20
+          figure('Name','iFit: imported data sets'); 
+          subplot(this{cellfun('isclass',this,'iData')});
+        end
+        if 0 < length(this(cellfun('isclass',this,'iFunc'))) && length(this(cellfun('isclass',this,'iFunc'))) <= 20
+          figure('Name','iFit: imported models'); 
+          subplot(this{cellfun('isclass',this,'iFunc')});
+        end
       end
     end
   else % not from varargin, from prompt ----------------------------------------

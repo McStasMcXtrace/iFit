@@ -112,7 +112,7 @@ function create_launchers_commands(target)
   % Commands
   mkdir(target);
   % 'load' and 'plot' commands are part of ifit default behaviour.  
-  d = { 'caxis', 'char', 'colormap', 'contour', 'copyobj', 'doc', 'edit', 'feval', 'get', 'image', 'mesh', 'plot3', 'scatter3', 'slice', 'subplot', 'surf', 'surfc', 'surfl', 'waterfall','reducevolume' };
+  d = { 'caxis', 'char', 'colormap', 'contour', 'copyobj', 'doc', 'edit', 'feval', 'get', 'image', 'mesh', 'plot', 'plot3', 'scatter3', 'slice', 'subplot', 'surf', 'surfc', 'surfl', 'waterfall','reducevolume' };
   for index=1:length(d)
     launcher_write(target, d{index});
   end
