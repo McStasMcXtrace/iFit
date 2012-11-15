@@ -165,6 +165,8 @@ for i = 1:length(S)     % can handle multiple index levels
       if isnumeric(b) && any(strcmpi(fieldname, {'Date','ModificationDate'}))
         b = datestr(b);
       end
+    elseif any(strcmpi(fieldname, getalias(a)))
+      b = iData_getAliasValue(b,fieldname);
     elseif any(strcmp(fieldname,methods(b))) % b.method = ismethod(b, fieldname)
       if i == length(S)
         if nargout(fieldname) ==0
