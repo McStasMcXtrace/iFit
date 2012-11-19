@@ -7,7 +7,7 @@ function this = rmaxis(this,rank)
 %   The Axis can be specified as a rank (1-ndims) or an axis name. 
 %   When the Axis is empty, all axes are removed.
 %   The input iData object is updated if no output argument is specified.
-%   Axis 1 is often labeled as 'y' (rows, vertical), 2 as 'x' (columns, horizontal).
+%   Axis 1 is often labelled as 'y' (rows, vertical), 2 as 'x' (columns, horizontal).
 %
 % input:  s: object or array (iData)
 %         AxisIndex: rank or alias name of the axis

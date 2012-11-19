@@ -339,9 +339,10 @@ if iscellstr(in.Title)
   in.Title=[ t{:} ];
 end
 if ~ischar(in.Title) 
-  iData_private_warning(mfilename,['Title must be a char or cellstr in iData object ' in.Tag ' "' in.Title '. Re-setting to empty.']);
+  iData_private_warning(mfilename,['Title must be a char or cellstr in iData object ' in.Tag ' (' class(in.Title) '). Re-setting to empty.']);
   in.Title = '';
 end
+in.Title = strtrim(in.Title);
 if ~ischar(in.Tag)
   iData_private_warning(mfilename,['Tag must be a char in iData object ' in.Tag ' "' in.Title '. Re-setting to a new Tad id.' ]);
   in = iData_private_newtag(in);
@@ -426,6 +427,8 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
         if isfield(in.Data.Headers, fields)
           in.Alias.Labels{1} = in.Data.Headers.(fields);
         end
+      else
+        label(in, 0, fields);
       end
     end
     % look for vectors that may have the proper length as axes
@@ -434,6 +437,7 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
         % search for a vector of length size(in, index)
         ax = find(dims_all == size(in, index));   % length of dim, or length(dim)+1
         if isempty(ax), ax = find(dims_all == size(in, index)+1); end
+        ax = ax(~strcmp(getalias(in,'Signal'), fields_all(ax)));
         if length(ax) > 1; ax=ax(1); end
         if ~isempty(ax)
           val = get(in, fields_all{ax});
@@ -454,6 +458,8 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
                 if isfield(in.Data.Headers, fields)
                   in.Alias.Labels{index+1} = in.Data.Headers.(fields);
                 end
+              else
+                label(in, index, fields_all{ax});
               end
               disp([ 'iData: Setting Axis{' num2str(index) '} ="' fields_all{ax} '" with length ' num2str(length(val)) ' in object ' in.Tag ' "' in.Title '".' ]);
             end
