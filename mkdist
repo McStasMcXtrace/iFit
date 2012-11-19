@@ -100,6 +100,7 @@ then
       sudo mkdir -p ${BUILDDIR}/usr/local/$IFIT_TARNAME
       sudo mkdir -p ${BUILDDIR}/usr/share/applications
       sudo mkdir -p ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME
+      sudo mkdir -p ${BUILDDIR}/usr/share/icons/$IFIT_TARNAME
       sudo mkdir -p ${BUILDDIR}/usr/share/pixmaps
       sudo cp -r $IFIT_TARNAME-$IFIT_VERSION-amd64/*    ${BUILDDIR}/usr/local/$IFIT_TARNAME
       sudo cp -r $IFIT_TARNAME-$IFIT_VERSION/Docs/*     ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/
@@ -111,10 +112,12 @@ then
                                                         ${BUILDDIR}/usr/share/pixmaps/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/deb/control \
                                                         ${BUILDDIR}/DEBIAN
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/icons/*.png \
+                                                        ${BUILDDIR}/usr/share/icons/$IFIT_TARNAME/
       # sudo chroot build-chroot-amd64 apt-get update
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/deb/debcreate build-chroot-amd64/root/debcreate
       sudo chmod u+x build-chroot-amd64/root/debcreate
-      sudo chroot build-chroot-amd64   /root/debcreate IFIT_VERSION amd64
+      sudo chroot build-chroot-amd64   /root/debcreate $IFIT_VERSION amd64
       echo
       echo Build packages created:
       echo
