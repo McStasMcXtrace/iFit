@@ -28,7 +28,7 @@ parameters
 parameters with constraints</a></li></ol>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: left;">
-<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">mcstas</span><br>
+<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">mcstas</span> (mcxtrace)<br>
 </div>
 <br>
 In this document, we demonstrate how <a href="index.html">iFit</a>/<a href="Optimizers.html">Optimizers</a> and <a href="iData.html">iData</a> can
@@ -110,6 +110,9 @@ should be <span style="color: rgb(204, 51, 204);">'simulate'<span style="color: 
 to force re-compilation of the instrument (boolean)</li>
 <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
 cell string of monitor names, or empty for all (cellstr)</li>
+<li><span style="font-weight: bold;">options.particle</span>: <span style="color: rgb(204, 51, 204);">'n' </span>for neutrons<span style="color: rgb(255, 0, 0);"> (McStas) </span>or<span style="color: rgb(204, 51, 204);"> 'x' </span>for X-rays<span style="color: rgb(255, 0, 0);"> (McXtrace). </span>Default is <span style="color: rgb(204, 51, 204);">'n'</span>.<br>
+</li>
+
 
 </ul>
 <a href="images/iFit_McStas_simulate.png"><img src="images/iFit_McStas_simulate.png" alt="iFit: McStas simulation run from Matlab/iFit and displayed" style="border: 0px solid ; width: 200px; height: 186px;" align="right"></a>In
@@ -212,7 +215,7 @@ single simulation, just by e.g. setting <span style="font-style: italic;">option
 <pre style="margin-left: 40px;">&gt;&gt; [solution, monitors] = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, parameters, options);</pre>
 The parameters, as a named structure, are initiated to their starting
 value, from which the optimization proceeds.<span style="font-style: italic;"> Only numerical</span> parameters can be
-optimized. Also, it is <span style="color: rgb(255, 0, 0);">highly encouraged to use bounded parameters</span> (that is define constraints, see <a href="#mozTocId359721">below</a>), else the optimizer can get lost, produce unmeaningful results, or return <span style="font-style: italic;">NaN</span> parameter values.<br>
+optimized. Also, it is <span style="color: rgb(255, 0, 0);">highly encouraged to use bounded parameters</span> (that is define constraints, see <a href="#mozTocId359721">below</a>), else the optimizer can get lost, produce un-meaningful results, or return <span style="font-style: italic;">NaN</span> parameter values.<br>
 <br>
 More specifically, the <span style="font-style: italic;">options</span>
 structure may contain, in addition to the optimization mode, the
@@ -223,7 +226,7 @@ following members:<br>
 default (string)</li>
   <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
 cell string of monitor names, or empty for all (cellstr). This option 
-actually improved dramatically the file importation by selecting only 
+actually improves dramatically the file importation by selecting only 
 the relevant files.<br>
 </li>
   <li><span style="font-weight: bold;">options.optimizer</span>:
