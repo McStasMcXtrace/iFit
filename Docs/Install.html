@@ -29,8 +29,8 @@ user mailinglist</a></li></ol>
 <h3><a class="mozTocH3" name="mozTocId780492"></a>Requirements</h3>
 <h4><a class="mozTocH4" name="mozTocId870880"></a>Stand-alone / run-time release / no Matlab license required<br>
 </h4>
-<p style="margin-left: 40px;">When installing a 'stand-alone' release of
- iFit, there is simply NO dependency. The package contains everything 
+<p style="margin-left: 40px;">When installing a <a href="iFit.html">'stand-alone' release of
+ iFit</a>, there is simply NO dependency. The package contains everything 
 required. You need to install the Matlab Compiler Runtime, available below. The stand-alone 
 package is distributed for <span style="font-style: italic;">Linux, Windows</span> and <span style="font-style: italic;">Mac OSX</span> systems. See below to <a href="#mozTocId480203">download</a> the required stand-alone package.<br>
 </p>
@@ -51,12 +51,12 @@ Academic licenses (e.g. for Universities). See below to <a href="#mozTocId480203
 </div>
 <h4><a class="mozTocH4" name="mozTocId467589"></a>C compiler (optional)</h4>
 <div style="margin-left: 40px;">In principle, the pre-compiled MeX files are shipped with the package (for e.g. <span style="font-style: italic;">looktxt</span>), so that the software is ready to run. However, in the event of a re-compilation of MeX files, a <span style="font-style: italic;">C</span> compiler is often shipped with
-Matlab (and installed automatically). The <a href="http://ifit.mccode.org">iFit</a>/<a href="Loaders.html">Loaders</a> library may use it
+Matlab (and installed automatically). The <a href="Loaders.html">Loaders</a> library may use it
 sporadically. This is not required for stand-alone versions.<br>
 </div>
 
 <br>
-<a href="http://www.ubuntu.com/"><img alt="Ubuntu Linux" title="Ubuntu Linux" src="images/ubuntu.png" style="border: 0px solid ; width: 118px; height: 27px;" align="right"></a>We prefer Linux systems, such as <a href="http://ubuntu.com">Ubuntu</a>, when handling large data sets, and performing <a href="http://www.mcstas.org/">McStas</a> optimizations, so that we fully use multi-core systems (e.g. though threads and MPI). You may use our <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS Live DVD</a> ready-to-run system with <span style="font-style: italic;">McStas</span> pre-installed. Then add on top <a href="http://www.mathworks.com/">Matlab</a> (requires a valid license).
+<a href="http://www.ubuntu.com/"><img alt="Ubuntu Linux" title="Ubuntu Linux" src="images/ubuntu.png" style="border: 0px solid ; width: 118px; height: 27px;" align="right"></a>We prefer Linux systems, such as <a href="http://ubuntu.com">Ubuntu</a>, when handling large data sets, and performing <a href="http://www.mcstas.org/">McStas</a> optimizations, so that we fully use multi-core systems (e.g. though threads and MPI). You may use our <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS Live DVD</a> ready-to-run system with <span style="font-style: italic;">McStas</span> pre-installed. Then, add on top <a href="http://www.mathworks.com/">Matlab</a> (requires a valid license).
 <h3><a class="mozTocH3" name="mozTocId480203"></a>Obtaining the package / Download<br>
 </h3>
 The package is currently available from the <a href="http://ifit.mccode.org">ifit.mccode.org</a> web site:<br>
@@ -68,7 +68,7 @@ run [ <a href="http://ifit.mccode.org/Downloads/iFit.zip">zip</a>, 14
 Mb,&nbsp; <a href="Changes.html">Changes</a> ].</li>
   <li><span style="font-weight: bold;">standalone packages</span> for Linux, Windows and Mac OS X allow to 
 execute iFit even without purchasing Matlab. Select your system type and follow the installation 
-instructions below. <br>
+instructions below. Refer to the <a href="iFit.html">iFit standalone</a> help for more about using this version.<br>
 </li>
 <ul>
   
@@ -80,16 +80,16 @@ instructions below. <br>
 </span></li>
 <li><a href="http://ifit.mccode.org/Downloads/binary/win64"><span style="font-weight: bold;">Windows 64 bits</span></a>: <span style="font-style: italic;"></span>Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
 </span><a href="http://ifit.mccode.org/Downloads/binary/win64/MCRInstaller64.exe"></a></li>
-<li><span style="font-weight: bold;"><a href="http://ifit.mccode.org/Downloads/binary/maci32">Mac OSX 32 bits</a> (Intel)</span>: Should also work on <span style="font-style: italic;">MacOSX 64bits.</span> Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
+<li><span style="font-weight: bold;"><a href="http://ifit.mccode.org/Downloads/binary/mac32">Mac OSX 32 bits</a> (Intel)</span>: Should also work on <span style="font-style: italic;">MacOSX 64bits.</span> Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
 </span></li>
 
 
   
-  <li><span style="font-weight: bold;"><a href="http://ifit.mccode.org/Downloads/binary/maci64">Mac OSX 64 bits</a> (Intel)</span>: Use the MCR installer and the zip archive.<span style="font-style: italic;"></span><a href="http://ifit.mccode.org/Downloads/binary/mac64/MCRInstaller64.dmg"><br>
+  <li><span style="font-weight: bold;"><a href="http://ifit.mccode.org/Downloads/binary/mac64">Mac OSX 64 bits</a> (Intel)</span>: Use the MCR installer and the zip archive.<span style="font-style: italic;"></span><a href="http://ifit.mccode.org/Downloads/binary/mac64/MCRInstaller64.dmg"><br>
 </a></li>
 </ul>
 
-  <li>The development repository is available at <a href="http://svn.mccode.org/cgi-bin/viewvc.cgi/?root=iFitSVN">McCode SVN</a>.</li>
+  <li>The development repository is available at <a href="http://cvs.mccode.org/cgi-bin/viewvc.cgi/?root=iFitSVN">McCode SVN</a>.</li>
 
 </ul>All releases, including old ones, can be obtained <a href="http://ifit.mccode.org/Downloads/">here</a>.<br>
 <h3><a class="mozTocH3" name="mozTocId890374"></a>Installation - stand-alone distribution</h3>
@@ -101,7 +101,7 @@ wish to upgrade iFit. Just click
 <p><span style="font-weight: bold;">On Debian Linux systems</span><span style="font-weight: bold;"></span>,
  if you use the Debian package installers (.deb), nothing else is 
 required. Double click the deb packages (MCR, then iFit) and wait. Then 
-you can start iFit from the Dash or from menu Applications/<span style="font-style: italic;">Education/iFit</span>. Drag-n-drop of data files is possible on the iFit launcher.
+you can start iFit from the Dash or from menu Applications/<span style="font-style: italic;">Education/iFit</span>. Drag-n-drop of data files is possible on the iFit launcher, as well as single operator icons from <span style="font-weight: bold; font-style: italic;">/usr/local/ifit/</span>.
 </p>
 
 <p><span style="font-weight: bold;">On Other Linux systems</span><span style="font-weight: bold;">,</span> we recommend to install the MCR 
@@ -121,13 +121,13 @@ MCRROOT environment variable to its location prior to starting iFit :<br>
 
 <p><span style="font-weight: bold;">On MacOSX systems</span>, install the MCR by double-cliking the corresponding <span style="font-style: italic;">MCRInstaller.dmg</span>. The install location defaults to <span style="font-style: italic;">/Applications/MATLAB</span>. Then extract the zip archive anywhere at your choice, and launch <span style="font-style: italic;">ifit</span> from there.<br>
 </p>
-<p><span style="font-weight: bold;">On Windows systems</span>, install the MCR by double-cliking the corresponding <span style="font-style: italic;">MCRInstaller.exe</span>. The install location defaults to <span style="font-style: italic;">/Program Files/MATLAB</span>. Then extract the zip archive anywhere at your choice, and launch <span style="font-style: italic;">ifit</span> from there.
+<p><span style="font-weight: bold;">On Windows systems</span>, install the MCR by double-cliking the corresponding <span style="font-style: italic;">MCRInstaller.exe</span>. The install location defaults to <span style="font-style: italic;">C:\Program Files\MATLAB</span>. Then extract the zip archive anywhere at your choice, and launch <span style="font-style: italic;">ifit</span> from there.
 </p>
 
 
 <p>To launch <a href="iFit.html">iFit</a>, click on the 'ifit' icon in 
 the installation directory. You can also drag-n-drop files on the iFit 
-icon to directly import data files and plot them.<br>
+icon to directly import data files and plot them (linux and Windows systems).<br>
 </p>
 
 
