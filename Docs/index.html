@@ -88,7 +88,12 @@ Mb,&nbsp; <a href="Changes.html">Changes</a> and Bugs].<br>
 available from the <a href="Install.html">Install</a> page. You will then use the <a href="iFit.html">iFit</a> interface to the package (look at this page). </li>
   
 </ul>
-<h3><a class="mozTocH3" name="mozTocId969915"></a>What's in the box...<img style="width: 128px; height: 100px;" alt="iFit package" title="iFit package" src="images/box.jpeg" align="right"></h3>
+<h3><a class="mozTocH3" name="mozTocId969915"></a>What's in the box...</h3>
+<p>What you will handle mainly deals with <a href="iData.html">iData</a> and <a href="iFunc.html">iFunc</a> objects. Please start to read these pages first, as well as the <a href="QuickStart.html">Quick
+Start</a> page if you're in a hurry.<br>
+</p>
+<h3><img style="width: 128px; height: 100px;" alt="iFit package" title="iFit package" src="images/box.jpeg" align="right"></h3>
+
 <h4 style="margin-left: 40px;"><a class="mozTocH4" name="mozTocId751903"></a>The
 iData
 objects
@@ -195,7 +200,7 @@ routines
 <div style="margin-left: 40px;">The file import method used by iData is
 performed on a lower level by the <a href="Loaders.html">Loaders</a>
 part of iFit. Its purpose is to import any text file, without knowing
-its free format. However, a number of post-import wrappers exist in
+its format. A number of post-import wrappers exist in
 order to reshape the imported data to match specific needs. These
 wrappers are very short to write.<br>
 If needed, other importation methods should be added there, to be able
@@ -273,10 +278,9 @@ Specific interfaces have been written in order to use iFit
 transparently for end-user applications:<br>
 <ul>
   <li><a href="McStas.html">McStas</a>: a wrapper to run simulations or
-optimize <a href="http://www.mcstas.org">McStas</a> instrument
-parameters has been written.&nbsp;</li>
-  <li><a href="Models.html#mozTocId210092">iFunc/Model Builder</a>: a
-tool to create fit function/models.</li>
+optimize <a href="http://www.mcstas.org">McStas</a> and McXtrace instrument
+parameters.&nbsp;</li>
+  <li><a href="Models.html#mozTocId210092">iFunc/Model Builder</a>: a dialogue to create <a href="iFunc.html">iFunc</a> fit function/models.</li>
 <li><a href="iFit.html">iFit</a>: the prompt interface used in the 
 stand-alone release. Can execute any Matlab expression, scripts, handle 
 iData and iFunc objects, optimizers, plotting, ...<br>

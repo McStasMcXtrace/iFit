@@ -46,11 +46,14 @@
 
 
 
-  <li><span style="font-weight: bold;">1.2</span>: Support for
+  <li><span style="font-weight: bold;">1.3</span>: Support for <a href="Loaders.html#mozTocId361032">SIF, MarCCD, Roper SPE</a> <a href="http://www.adsc-xray.com/products.html">ADSC</a> X-ray CCD. Export to <a href="http://www.web3d.org/x3d/specifications/x3d_specification.html">X3D</a>, fix for some text file import, support for the <a href="http://www.mathworks.com/products/parallel-computing/">Parallel Computing Toolbox</a> (when available), improved interpolation, added <span style="font-style: italic;">meshgrid</span>, rotate, radial integration (<a href="Math.html#mozTocId439767"><span style="font-style: italic;">cart2sph</span></a>), better support for event files. Improved <a href="McStas.html">McStas</a>/McXtrace support. Embedded help system, array and graphics editor in standalone version.<br>
+<span style="font-weight: bold;"></span></li>
+<li><span style="font-weight: bold;">1.2</span>: Support for
 reading PLY, STL, OFF geometry files (vertices/faces). Improved import
 of text/ascii files containing numerics. Standalone <a href="iFit.html">iFit</a> distributable software. Speed-up by a factor x2.5. New <a href="iFunc.html">iFunc</a> model objects. Improved Optimizers and fitting.<br>
 <span style="font-weight: bold;"></span></li>
-  <li><span style="font-weight: bold;">1.1.1</span>: Reading of Chalk River <a href="http://www.nrc-cnrc.gc.ca/eng/ibp/cnbc.html">CNBC</a> data files, improved recursive reading of subdirectories and handling of iData arrays. New <a href="Plot.html#mozTocId406394">colormap</a> plotting method. Improvements in the Optimizers/McStas plotting. Speed up by +12% (March 16th, 2012)<br>
+
+  <li><span style="font-weight: bold;">1.1.1</span>: Reading of Chalk River <a href="http://www.nrc-cnrc.gc.ca/eng/ibp/cnbc.html">CNBC</a> data files, improved recursive reading of sub-directories and handling of iData arrays. New <a href="Plot.html#mozTocId406394">colormap</a> plotting method. Improvements in the Optimizers/McStas plotting. Speed up by +12% (March 16th, 2012)<br>
 <span style="font-weight: bold;"></span></li>
 
   <li><span style="font-weight: bold;">1.1</span>: new methods (save, diff, <a href="Math.html">hyperbolic functions</a>), fix of the <a href="Optimizers.html">Levenberg-Marquardt optimizer</a>,
@@ -215,7 +218,7 @@ You may need to select the compiler with the <i>mex -setup</i> command from Matl
 
 
 It has been reported that MeX compilation may fail when spaces are part 
-of the path name to the iFit location (esp. under Windows systems)/<br>
+of the path name to the iFit location (esp. under Windows systems).<br>
 
 
 
@@ -244,7 +247,7 @@ Then we first make a copy of the initial Matlab library to update<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"># sudo mv /usr/local/MATLAB/R2012a/sys/os/glnxa64/libgfortran.so.3 /usr/local/MATLAB/R2012a/sys/os/glnxa64/libgfortran.so.3.org</span><br></pre>
 Then we copy the library from the system into the Matlab location<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);"># sudo ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/local/MATLAB/R2012a/sys/os/glnxa64/</span></pre>
-<br>
+Then, you need to restart Matlab/iFit to notice the issue has been fixed.<br>
 <br>
 <br>
 
