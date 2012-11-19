@@ -159,7 +159,7 @@ function config = iLoad_ini
     PDB.name            ='Protein Data Bank';
     PDB.extension       ='pdb';
     PDB.method          ='PDB_Geometry';
-    PDB.patterns        ={'HEADER','TITLE','COMPND','SOURCE','EXPDTA','AUTHOR','REVDAT'};
+    PDB.patterns        ={'HEADER','COMPND','SOURCE','EXPDTA','AUTHOR','REVDAT'};
     PDB.postprocess     = 'load_xyen';
     
     OFF_ascii.name      ='OFF 3D ascii';
@@ -175,7 +175,6 @@ function config = iLoad_ini
     PLY_ascii.extension ='ply';
     PLY_ascii.patterns  ={'ply','format ascii','element','end_header'};
     PLY_ascii.postprocess='load_stl';
-    
     
 % binary formats ===============================================================
     

@@ -96,7 +96,7 @@ Backbone_Name={};
 current_residue = -100; % Current residue number.  -100 is used to mean it doesn't
                         % have a residue.
 
-
+unknown_residues = {};
 FID = fopen(name,'r'); % Open the file
 while not(feof(FID))  % read and store PDB co-ordinates line by line
 
@@ -118,10 +118,8 @@ while not(feof(FID))  % read and store PDB co-ordinates line by line
                 restype=restype+1; end;
 	    
                 % No idea what kind of residue this is.
-	        if (restype==21) 
-                  disp('No idea about this residue type');
-                  disp(str);
-                  disp('Ignoring it and proceeding anyway.');
+	              if (restype==21) 
+	                unknown_residues{end+1} = str;
                 end
 
                 % Set up the next residue storage site. 
@@ -145,10 +143,10 @@ while not(feof(FID))  % read and store PDB co-ordinates line by line
             clear str; for j=0:2 str(1+j)=line(18+j); end;
             if (strcmp(str,'HOH')~=1)  % Check that it isn't water of hydration
                   
-	         clear str;str=line(13);for j=0:2;if (str==' ') str=line(14+j);end;end
+	               clear str;str=line(13);for j=0:2;if (str==' ') str=line(14+j);end;end
                  if (strcmp(str,'C')==1)|(strcmp(str,'N')==1)|(strcmp(str,'O')==1)                   
                          % We know what type of atom it is
-		         number_of_residues=number_of_residues+1;
+		                     number_of_residues=number_of_residues+1;
                          current_residue = -1;
                          clear str2; for j=31:54; str2(j-30)=line(j);end
                          x = sscanf(str2,'%f %f %f');
@@ -165,11 +163,9 @@ while not(feof(FID))  % read and store PDB co-ordinates line by line
                          Backbone_Size(number_of_residues)=9.13;
                          Backbone_Charge(number_of_residues)=9;
                          end
-                 else 		 
-		         disp([ mfilename ': Warning: Never heard of atom type' ]);
-                         disp(line);
-                         disp('** Will just pretend it does not exist');
-		 end 
+                 elseif length(str) > 1 		 
+		                     unknown_residues{end+1} = str;
+		             end 
             end 
 
         end
@@ -177,7 +173,11 @@ while not(feof(FID))  % read and store PDB co-ordinates line by line
 end
 
 fclose(FID);
-fprintf(1, '%s: %s: Number of Residues successfully read: %i\n', mfilename, name, number_of_residues);
+fprintf(1, '%s: %s: Read %i Residues\n', mfilename, name, number_of_residues);
+if ~isempty(unknown_residues)
+  fprintf(1,'  Unknown residues found in PDB file:\n')
+  disp(unique(unknown_residues))
+end
 
 
 % Average the position of the elements in each residue
@@ -252,8 +252,10 @@ Excess = total_charge - total_volume*rho_water;
 % Save results
     pofr = [r', p];
     Ivq = [q',I'];
-    result.PairCorrelationFunction = pofr;
-    result.ScatteringFunction = Ivq;
+    result.PairCorrelationFunction = p;
+    result.Radius_Angs     = r';
+    result.StructureFactor = I';
+    result.Momentum_invAngs   = q';
     result.Backbone_Charge   = Backbone_Charge;
     result.Backbone_Position = Backbone_Position;
     result.Backbone_Elements = Backbone_Elements;
