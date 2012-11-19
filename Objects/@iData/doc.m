@@ -1,4 +1,4 @@
-function d = doc(a, page)
+function url = doc(a, page)
 % doc(iData): iData web page documentation
 %
 %   @iData/doc: web page documentation
