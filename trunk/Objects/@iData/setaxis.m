@@ -12,7 +12,7 @@ function this = setaxis(this, rank, alias, value)
 %   The input iData object is updated if no output argument is specified.
 %   The Signal/Monitor corresponds to axis rank 0. Setting its value multiplies 
 %     it by the Monitor and then assigns the Signal.
-%   Axis 1 is often labeled as 'y' (rows, vertical), 2 as 'x' (columns, horizontal).
+%   Axis 1 is often labelled as 'y' (rows, vertical), 2 as 'x' (columns, horizontal).
 %   The special syntax a{0} multiplies the value by the Monitor and then assigns 
 %   the Signal, and a{n} assigns the axis of rank n.
 %     When the assigned value is a char, the axis definition is set.
