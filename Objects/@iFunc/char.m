@@ -95,7 +95,7 @@ end
     has_signal = 0;
     for index=1:length(e)
       d = strrep(e{index},'  ','');
-      if d(end) ~= ';', d = [ d ';' ]; end
+      if d(end) ~= ';', d = [ d '; ' ]; end
       if ~isempty(regexp(d, '\<signal\>\s*=')), has_signal = 1; end
       if index == length(e) && ~has_signal
         ret{end+1} = sprintf('signal = %s', d);

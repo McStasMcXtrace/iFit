@@ -214,7 +214,7 @@ function a = iFunc_private_check(a)
     % first count the initial p(n) fields and get the used indices
     % compute the number of parameters and corresponding parameter names
     % regexp: p(...) with '[0-9:]' characters inside
-    nb_pars = regexp(expr,'\<p\(([\[0-9\:\]]+)\)','tokens'); % return the tokens
+    nb_pars = regexp(expr,'\<p\(([\[0-9\:,;\s\]]+)\)','tokens'); % return the tokens
     if ~isempty(nb_pars)
       % assemble all matches
       n = '';
@@ -277,8 +277,12 @@ function a = iFunc_private_check(a)
   end % if ‪~empty(expr)
 
   % return when model can not be defined
-  if isempty(expr) || nb_pars == 0
-    warning('iFunc:emptyModel', 'Expression does not contain any axes (x,y,z...) or parameters (p). Empty model.'); 
+  if isempty(expr)
+    warning('iFunc:emptyModel', 'Expression does not contain any axes (x,y,z...). Empty model.'); 
+    return
+  end
+  if nb_pars == 0
+    warning('iFunc:emptyModel', 'Expression does not contain any parameter (p). Empty model.'); 
     return
   end
   % dim:     holds model dimensionality
