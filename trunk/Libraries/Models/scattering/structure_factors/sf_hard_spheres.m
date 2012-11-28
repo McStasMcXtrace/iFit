@@ -4,7 +4,7 @@ function y=sf_hard_spheres(varargin)
 %   iFunc/sf_hard_spheres Hard Sphere structure factor, suited for simple liquids
 %     The 'x' wave-vector/momentum axis is usually in nm-1 or Angs-1.
 %     The parameter RHS is given in inverse unit of the axis (that is nm or Angs).
-%     Typical values for parameters are RHS=3-50 Angs, rho=0.2.
+%     Typical values for parameters are R=3-50 Angs, rho=0.2.
 %     The Hard Sphere model corresponds with the Sticky Hard Sphere model with large tau.
 %     The model returns the S(q) structure factor.
 %
@@ -13,7 +13,7 @@ function y=sf_hard_spheres(varargin)
 %          Extracted from sasfit/sasfit_sq/sasfit_sq_HardSphere.c
 %
 % input:  p: hard sphere model parameters (double)
-%            p = [ RHS=Hard_Sphere_Radius rho=Volume_Fraction ]
+%            p = [ R=Hard_Sphere_Radius rho=Volume_Fraction ]
 %          or 'guess'
 %         x: wave-vector/momentum axis (double, e.g. nm-1 or Angs-1)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
@@ -25,7 +25,7 @@ function y=sf_hard_spheres(varargin)
 
 y.Name      = [ 'Hard Sphere S(q) (1D) [' mfilename ']' ];
 y.Description='Hard Sphere scattering structure factor [Percus-Yevick]';
-y.Parameters={'RHS hard sphere radius [1/x]', ...
+y.Parameters={'R hard sphere radius [1/x]', ...
               'rho hard sphere volume fraction'};
 y.Expression= { ...
   'A=2.0*abs(p(1)*x); fp=max(0, min(p(2), 1)); '...
