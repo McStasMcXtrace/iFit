@@ -68,7 +68,7 @@ to
 the
 Data</h3>
 The <span style="font-style: italic; font-weight: bold;">fits</span>
-function for <a href="iData.html">iData</a> objects provides a simple
+function for <a href="iData.html">iData</a> and <a href="iFunc.html">iFunc</a> objects provides a simple
 mean to find the best model parameters which fits a data set. <br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a<span style="color: rgb(204, 51, 204);"></span>);<br>'Amplitude'    'Centre'    'HalfWidth'    'Background'<br> 0.6786         1.0008      0.0035         0.0002<br></pre>
 will fit the data <span style="font-style: italic;">Signal/Monitor</span>
@@ -94,9 +94,9 @@ is the model parameter set that matches best the data. The number of
 fit parameters is not limited.<br>
 <br>
 A number of model functions is available from the <a href="Models.html">Models</a>
-sub-library. The <span style="font-weight: bold;">list of all
-available fit functions</span> can be obtained from the command:<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData);</span></pre>
+sub-library. The<a href="Models.html"> <span style="font-weight: bold;">list of all
+available fit functions</span></a> can be obtained from the command:<a href="Models.html"><img title="iFit: default functions (in Models)" src="images/iFit_Models.png" alt="iFit: default functions (in Models)" style="border: 2px solid; border: 2px solid; width: 200px; height: 112px;" align="right"></a>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(iData); <span style="font-style: italic;">			% or fits(iFunc)</span></pre>
 Refer
 to the section <a href="#mozTocId855522">below</a> in order to learn
 how to define new fit models with the <a href="Models.html#mozTocId210092"><span style="font-weight: bold; font-style: italic;">ifitmakefunc</span></a>
