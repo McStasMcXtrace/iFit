@@ -22,24 +22,10 @@
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Models (fit models)</h1>
 <br>
-<ol id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
-  <li><a href="#mozTocId147615">How to use models</a></li>
-  <li><a href="#mozTocId96090">List of default fit models</a></li>
-  <li><a href="#mozTocId845956">The list of all available fit functions
-can be obtained from the command:
-    </a></li>
-  <li><a href="#mozTocId210092">Model builder: making a model easy
-    </a>
-    <ol>
-      <li><a href="#mozTocId775891">Creating complex functions from
-simple functions</a></li>
-      <li><a href="#mozTocId937554">Using signal
-convolution/correlation in new functions</a></li>
-    </ol>
-  </li>
-  <li><a href="#mozTocId854762">How to write manually a model function</a></li>
-</ol>
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId147615">How to use models</a></li><li><a href="#mozTocId96090">List of default fit models</a></li><li><a href="#mozTocId285330">Specialized models</a></li><li><a href="#mozTocId210092">Model builder: defining a new model easy
+</a><ol><li><a href="#mozTocId775891">Creating complex
+functions from simple functions</a></li><li><a href="#mozTocId937554">Using signal
+convolution/correlation in new functions</a></li></ol></li><li><a href="#mozTocId854762">How to write manually a model function</a></li></ol>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">fits, <a href="#mozTocId775891">ifitmakefunc, </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
@@ -70,7 +56,7 @@ You can edit their code to see how to define new models:<br>
 The 1D functions are <span style="font-style: italic;">signal=f(parameters, x)</span>, and the 2D functions are <span style="font-style: italic;">signal=f(parameters, x, y)</span>.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 1016px; height: 831px;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 1016px; height: 1301px;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Function<br>
@@ -405,9 +391,97 @@ command<span style="font-weight: bold;">:</span></span><br>
 
 
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData);<br></span></pre>which also produces the plot above.<br>
+<h3><a class="mozTocH3" name="mozTocId285330"></a>Specialized models</h3>
+<h4>Scattering models (neutrons, x-rays)</h4>
+<p>We list below a number of models used to describe neutron and x-ray 
+scattering from matter. The structure factor S(q) accounts for the 
+structure of matter at the atomistic/molecular level, whereas the form 
+factor P(q) accounts for the geometrical arrangement of large scale 
+scattering units (micelles, tubes, ...). In practice, the scattering 
+from a material can be described by:<br>
+</p>
+<p style="text-align: center;"><span style="font-style: italic;">I(q) = P(q).S(q)</span><br>
+</p>
+<p style="text-align: left;">where <span style="font-style: italic;">q</span> is the momentum exchange in the material. These models have been extracted from the following sources:<br>
+</p>
+<ul>
+  <li><a href="http://kur.web.psi.ch/sans1/SANSSoft/sasfit.html">SASfit</a>, by
+    <a href="http://kur.web.psi.ch/sans1/SANSSoft/KJ33.html">Joachim
+Kohlbrecher</a> and <a href="mailto:ingo%28at%29cs.tu-berlin.de">Ingo
+Bressler</a> PSI (2006-2011)</li>
+</ul>
+<p style="text-align: left;"></p>
+<table style="text-align: left; width: 1016px; height: 13px;" cellpadding="2" cellspacing="2" border="1">
+
+<tbody><tr><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Structure factors<br>
+      </td><td style="vertical-align: top; background-color: rgb(255, 204, 204);"><span style="font-style: italic; font-weight: bold; color: rgb(51, 102, 255);">Description</span><br>
+      </td><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Dimensionality<br>
+      </td><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Parameters<br>
+      </td></tr><tr>
+    <td style="vertical-align: top; font-weight: bold;">sf_hard_spheres<br>
+    </td>
+    <td style="vertical-align: top;">Hard Sphere structure factor [Percus-Yevick]<br>
+    </td>
+    <td style="vertical-align: top; color: rgb(51, 204, 0);">1D
+    </td>
+    <td style="vertical-align: top;">R rho<br>
+    </td>
+  </tr><tr>
+    <td style="vertical-align: top; font-weight: bold;">sf_square_well <br>
+    </td>
+    <td style="vertical-align: top;">structure factor of particles interacting with a square well potential [Sharma]<br>
+    </td>
+    <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+    </td>
+    <td style="vertical-align: top;">R rho epsilon Delta T<br>
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; font-weight: bold;">sf_sticky_hard_spheres<br>
+    </td>
+    <td style="vertical-align: top;">Sticky Hard Sphere structure factor [Baxter/Menon]<br>
+    </td>
+    <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+    </td>
+    <td style="vertical-align: top;">R rho tau<br>
+    </td>
+  </tr>
+
+</tbody>
+</table>
+<br>
+
+<table style="text-align: left; width: 1016px; height: 59px;" cellpadding="2" cellspacing="2" border="1">
+<tbody><tr><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Form factors: small angle<br>
+      </td><td style="vertical-align: top; background-color: rgb(255, 204, 204);"><span style="font-style: italic; font-weight: bold; color: rgb(51, 102, 255);">Description</span><br>
+      </td><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Dimensionality<br>
+      </td><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Parameters<br>
+      </td></tr><tr>
+    <td style="vertical-align: top; font-weight: bold;">ff_core_shell<br>
+    </td>
+    <td style="vertical-align: top;">Spherical/core shell form factor [Guinier]<br>
+    </td>
+    <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+    </td>
+    <td style="vertical-align: top;">R1 R2 eta1 eta2<br>
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; font-weight: bold;">ff_sphere&nbsp; <br>
+    </td>
+    <td style="vertical-align: top;">Sphere form factor [Guinier]<br>
+    </td>
+    <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<br>
+    </td>
+    <td style="vertical-align: top;">R eta<br>
+    </td>
+  </tr>
+</tbody>
+</table>
+
 <pre style="margin-left: 40px;"><span style="font-style: italic;"></span><span style="font-style: italic;"></span></pre>
 
-<h3><a class="mozTocH3" name="mozTocId210092"></a><span style="font-weight: bold;">Model builder: making a model easy<br>
+<h3><a class="mozTocH3" name="mozTocId210092"></a><span style="font-weight: bold;">Model builder: defining a new model easy<br>
 </span></h3>
 The <span style="font-style: italic;">ifitmakefunc</span> tool enables
 to define a new fit function/model from a simple dialog, by entering
