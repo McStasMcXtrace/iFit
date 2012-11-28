@@ -72,7 +72,7 @@ disp('DONE');
 
 % create the help strings, to store as .txt files available for 'help' and 'doc'
 function create_help(pw)
-  to_parse = {'Objects/@iData','Objects/@iFunc','Libraries/Loaders','Libraries/Models','Libraries/Optimizers','Scripts/load','Applications/standalone','Applications/GUI', 'Applications/sliceomatic', 'Tests'};
+  to_parse = {'Objects/@iData','Objects/@iFunc','Libraries/Loaders','Libraries/Models','Libraries/Models/scattering/structure_factors','Libraries/Models/scattering/form_factors','Libraries/Optimizers','Scripts/load','Applications/standalone','Applications/GUI', 'Applications/sliceomatic', 'Tests'};
   disp('Creating help pages for deployed version');
   for index=1:length(to_parse)
     d = to_parse{index};
@@ -95,7 +95,9 @@ function create_launchers_models(target)
   mkdir(target);
   
   % Model list (predefined iFunc)
-  d = dir([ fileparts(which('gauss')) ]);
+  d = [ dir(fileparts(which('gauss')))                % Library/Models
+        dir(fileparts(which('ff_core_shell')))        % Library/Models/scattering/form_factors
+        dir(fileparts(which('sf_hard_spheres'))) ];   % Library/Models/scattering/structure_factors
   criteria = []; 
   for index=1:length(d)
     this = d(index);
