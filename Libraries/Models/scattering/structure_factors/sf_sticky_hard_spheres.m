@@ -4,7 +4,7 @@ function y=sf_sticky_hard_spheres(varargin)
 %   iFunc/sf_sticky_hard_spheres Sticky Hard Sphere structure factor 
 %          (for e.g. spheres in dielectric liquids)
 %     The 'x' wave-vector/momentum axis is usually in nm-1 or Angs-1.
-%     Typical values for parameters are RHS=50 Angs, rho=0.04, tau=0.15
+%     Typical values for parameters are R=50 Angs, rho=0.04, tau=0.15
 %     The Sticky Hard Sphere model converges to the Hard Sphere model [PY] with
 %       increasing tau (e.g. tau > 10).
 %     The model returns the S(q) structure factor.
@@ -13,7 +13,7 @@ function y=sf_sticky_hard_spheres(varargin)
 %          Extracted from sasfit/sasfit_sq/sasfit_sq_StickyHardSphere.c
 %
 % input:  p: sticky hard sphere model parameters (double)
-%            p = [ RHS=hard_sphere_radius rho=Volume_Fraction tau=stickiness ]
+%            p = [ R=hard_sphere_radius rho=Volume_Fraction tau=stickiness ]
 %          or 'guess'
 %         x: wave-vector/momentum axis (double, e.g. nm-1 or Angs-1)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
@@ -25,7 +25,7 @@ function y=sf_sticky_hard_spheres(varargin)
 
 y.Name      = [ 'Sticky Hard Sphere S(q) (1D) [' mfilename ']' ];
 y.Description='Sticky Hard Sphere scattering structure factor [Baxter/Menon]';
-y.Parameters={'RHS hard sphere radius [1/x]', ...
+y.Parameters={'R hard sphere radius [1/x]', ...
               'rho hard sphere volume fraction', ...
               'tau stickiness'};
 y.Expression= { ...

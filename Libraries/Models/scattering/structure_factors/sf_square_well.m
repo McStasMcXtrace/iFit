@@ -5,7 +5,7 @@ function y=sf_square_well(varargin)
 %       square well potential [Sharma]
 %     The 'x' wave-vector/momentum axis is usually in nm-1 or Angs-1.
 %     Typical values for parameters are 
-%       RHS=10 Angs, rho=0.02, epsilon=1.5*T, Delta=1.2*RHS
+%       R=10 Angs, rho=0.02, epsilon=1.5*T, Delta=1.2*RHS
 %     The model returns the S(q) structure factor.
 %
 %     Ref: Sharma, R. V.; Sharma, K. C. Physica, 89A, 213. (1977).
@@ -24,7 +24,7 @@ function y=sf_square_well(varargin)
 
 y.Name      = [ 'Square well S(q) (1D) [' mfilename ']' ];
 y.Description='Square well potential scattering structure factor [Sharma]';
-y.Parameters={'RHS hard sphere radius [1/x]', ...
+y.Parameters={'R hard sphere radius [1/x]', ...
               'rho hard sphere volume fraction', ...
               'epsilon square well depth [K]', ...
               'Delta square well width [1/x]', ...
