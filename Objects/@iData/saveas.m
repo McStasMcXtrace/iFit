@@ -210,7 +210,7 @@ end
 switch format
 case 'm'  % single m-file Matlab output (text), with the full object description
   NL = sprintf('\n');
-  if isdeployed
+  if ~isdeployed
     str = [ 'function this=' name NL ];
   else
     str = '';
@@ -237,8 +237,8 @@ case 'm'  % single m-file Matlab output (text), with the full object description
   fprintf(fid, '%s', str);
   fclose(fid);
   if isdeployed
-    disp([ 'Warning: The standalone/deployed version of iFit does not allow to read back\n' ...
-           '  function definitions. This m-file has been converted to a script that you can\n' ...
+    disp([ 'Warning: The standalone/deployed version of iFit does not allow to read back' NL ...
+           '  function definitions. This m-file has been converted to a script that you can' NL ...
            '  import as "this" by typing: run ' filename ]);
   end
 case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
