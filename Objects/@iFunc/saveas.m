@@ -151,10 +151,11 @@ end
 % handle specific format actions
 switch format
 case 'm'  % single m-file Matlab output (text), with the full object description
-  e = cellstr(a.Eval);
+  [dummy,e] = char(a); % get the model header
+  e         = cellstr(e);
   a.Eval = '';
   NL = sprintf('\n');
-  if isdeployed
+  if ~isdeployed
     str = [ 'function this=' name NL ];
   else
     str = '';
@@ -184,8 +185,8 @@ case 'm'  % single m-file Matlab output (text), with the full object description
   fprintf(fid, '%s', class2str('this', a));
   fclose(fid);
   if isdeployed
-    disp([ 'Warning: The standalone/deployed version of iFit does not allow to read back\n' ...
-           '  function definitions. This m-file has been converted to a script that you can\n' ...
+    disp([ 'Warning: The standalone/deployed version of iFit does not allow to read back' NL ...
+           '  function definitions. This m-file has been converted to a script that you can' NL ...
            '  import as "this" by typing: run ' filename ]);
   end
 case 'dat'  % flat text file with commented blocks
