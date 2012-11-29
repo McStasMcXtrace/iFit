@@ -1,4 +1,4 @@
-function ret = char(s)
+function [ret, header] = char(s)
 % ret = char(s) : convert iFunc into character
 %
 %   @iFunc/char: function to convert iFunc objects into char
@@ -66,6 +66,7 @@ end
   ret{end+1} = '% output:';
   ret{end+1} = '%   signal: function value or information';
   ret{end+1} = '';
+  header = char(ret);
 
   % now write the core of the model (for evaluation)
   if ~isempty(s.Constraint) 
