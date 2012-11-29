@@ -34,7 +34,7 @@ function [filename,format] = saveas(a, varargin)
 
 % default options checks
 if nargin < 2, filename = ''; else filename = varargin{1}; end
-if isempty(filename), filename = a.Tag; end
+if isempty(filename), filename = [ 'iFit_' a.Tag ]; end
 if nargin < 3, format=''; else format = varargin{2}; end
 % if the filename is given only as an extension, use it as the format
 if nargin == 2 && filename(1) == '.'

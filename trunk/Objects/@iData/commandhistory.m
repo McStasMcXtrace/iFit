@@ -32,7 +32,7 @@ if nargout == 0
   end
   if ~ok
     % save all commands to a script file
-    [filename, pathname] = uiputfile('*.m', 'Save commands to as');
+    [filename, pathname] = uiputfile('*.m', 'Save commands to as', [ 'iFit_' a.Tag '_history' ]);
     if filename == 0, return; end % user press Cancel
     filename = fullfile(pathname, filename);
     [pathname, name, ext] = fileparts(filename); % get name without extension
