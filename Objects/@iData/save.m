@@ -8,6 +8,8 @@ function [filename,format] = save(a, varargin)
 %   save(iData,'file.ext')            determine file format from the extension
 %   save(iData,'file','format')       sets file format explicitly
 %   save(iData,'file','format clean') sets file format explicitly and remove NaN and Inf.
+%     To load back a model from an m-file, type its file name at the prompt.
+%     To load back a model from an mat-file, type 'load filename.mat' at the prompt.
 %
 %  Type <a href="matlab:doc(iData,'Save')">doc(iData,'Save')</a> to access the iFit/Save Documentation.
 %

@@ -7,6 +7,8 @@ function [filename,format] = saveas(a, varargin)
 %     prints a list of supported export formats.
 %   saveas(iFunc,'file.ext')            determine file format from the extension
 %   saveas(iFunc,'file','format')       sets file format explicitly
+%     To load back a model from an m-file, type its file name at the prompt.
+%     To load back a model from an mat-file, type 'load filename.mat' at the prompt.
 %
 % input:  s: object or array (iFunc)
 %         filename: name of file to save to. Extension, if missing, is appended (char)
@@ -18,9 +20,7 @@ function [filename,format] = saveas(a, varargin)
 %         as well as other lossy formats
 %           'hdf4' save as an HDF4 immage
 %           'fig'  save as a Matlab figure
-%           'gif','bmp' save as an image (no axes, only for 2D data sets)
-%           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
-%           'svg'  save as Scalable Vector Graphics (SVG) format
+%           'gif','bmp','png','tiff','jpeg','ps','pdf','ill','eps' save as an image
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
@@ -28,9 +28,6 @@ function [filename,format] = saveas(a, varargin)
 % output: f: filename(s) used to save data (char)
 % ex:     b=saveas(a, 'file', 'm');
 %         b=saveas(a, 'file', 'gif', 'axis tight');
-%
-% Contributed code (Matlab Central): 
-%   plot2svg:   Juerg Schwizer, 22-Jan-2006 
 %
 % Version: $Revision: 1.34 $
 % See also iFunc, save
@@ -60,7 +57,6 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.png', 'Portable Network Graphics image (*.png)'; ...
       '*.jpg', 'JPEG image (*.jpg)'; ...
       '*.tiff;*.tif', 'TIFF image (*.tif)'; ...
-      '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
 };
 if strcmp(filename, 'formats')
   fprintf(1, '       EXT  DESCRIPTION [%s(iFunc)]\n', mfilename);
@@ -76,7 +72,7 @@ end
 
 % filename='gui' pops-up a file selector
 if strcmp(filename, 'gui')
-  if numel(a) > 1, t=[ num2str(numel(a)) ' objects' ]; else t=get(a.Title); end
+  if numel(a) > 1, t=[ num2str(numel(a)) ' objects' ]; else t=get(a,'Name'); end
   [filename, pathname, filterindex] = uiputfile( ...
        filterspec, ...
         ['Save ' t ' as...'], a.Tag);
@@ -158,7 +154,12 @@ case 'm'  % single m-file Matlab output (text), with the full object description
   e = cellstr(a.Eval);
   a.Eval = '';
   NL = sprintf('\n');
-  str = [ 'function this=' name NL ...
+  if isdeployed
+    str = [ 'function this=' name NL ];
+  else
+    str = '';
+  end
+  str = [ str ...
           '% Original data: ' NL ...
           '%   class:    ' class(a) NL ...
           '%   variable: ' inputname(1) NL ...
@@ -182,6 +183,11 @@ case 'm'  % single m-file Matlab output (text), with the full object description
   end
   fprintf(fid, '%s', class2str('this', a));
   fclose(fid);
+  if isdeployed
+    disp([ 'Warning: The standalone/deployed version of iFit does not allow to read back\n' ...
+           '  function definitions. This m-file has been converted to a script that you can\n' ...
+           '  import as "this" by typing: run ' filename ]);
+  end
 case 'dat'  % flat text file with commented blocks
   a.Eval = '';
   NL = sprintf('\n');
@@ -222,11 +228,6 @@ case 'fig'  % Matlab figure format
   f=figure('visible','off');
   plot(a,options);
   saveas(f, filename, 'fig');
-  close(f);
-case 'svg'  % scalable vector graphics format (private function)
-  f=figure('visible','off');
-  plot(a,options);
-  plot2svg(filename, f);
   close(f);
 
 otherwise

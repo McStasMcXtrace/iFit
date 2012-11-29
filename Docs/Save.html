@@ -45,9 +45,9 @@ from the object unique ID (tag). When the filename is set to<span style="color: 
 dialog pops-up. The filename extension defines the format to use, when
 this latter is not specified initially. Last, when the format is set to
 <span style="color: rgb(204, 51, 204);"> 'gui'</span>, a format
-selector dialog pops-up.The <span style="font-weight: bold;">save</span> method is equivalent to saveas.<br>
+selector dialog pops-up.The <span style="font-weight: bold;">save</span> method is equivalent to <span style="font-style: italic;">saveas.</span><br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[</span><span style="color: rgb(204, 51, 204);"> ifitpath '</span><span style="color: rgb(204, 51, 204);">Data/ILL_IN6.dat'</span>])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);">''</span>,<span style="color: rgb(204, 51, 204);">'pdf'</span>)               <span style="font-style: italic;">% save object as a PDF and use object ID as file name</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);">'MakeItSo'</span>,<span style="color: rgb(204, 51, 204);">'hdf5'</span>)      <span style="font-style: italic;">% save object as a HDF5 into specified filename. Extension is appended automatically</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);">'MakeItSo'</span>,<span style="color: rgb(204, 51, 204);">'hdf5'</span>)        <span style="font-style: italic;">% 'save' is equivalent to 'saveas'</span></pre>
-<br>
+
 We recommend the following formats for storing data sets:<br>
 <ul>
   <li><span style="font-weight: bold;">text formats</span>: Matlab m
@@ -60,10 +60,12 @@ Matlab .mat (for re-use from Matlab)</li>
 </ul>A short list of available export formats is displayed with:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">saveas</span>(iData, <span style="color: rgb(204, 51, 204);">'formats'</span>);</pre>
 Last, the <b>getframe</b> method generates a snapshot picture (thumbnail). The <span style="font-weight: bold;">class2str </span>function can more generally write any Matlab variable as a character string. And the <span style="font-weight: bold;">str2struct</span> function can read a character string and search for [<span style="font-style: italic;">name</span>{=: }<span style="font-style: italic;">value</span>] pairs in single lines, to set a return structure.<br>
+<br>
+To load back an m or mat file into memory for re-use, type the m-file name without extension, or '<span style="font-style: italic;">load filename.mat</span>' for MAT-files. Refer to the <a href="Load.html">Load</a> page for other ways to import data files and objects.<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId939028"></a> Conversion to other <span style="font-style: italic;">Matlab</span> types<br>
 </h3>
 <br>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">Convert
@@ -135,7 +137,7 @@ The last column indicates if the generated format for export can be
 re-used afterwards and re-imported with iFit.<br>
 <span style="font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format (save)<br>
@@ -169,7 +171,7 @@ files can be imported directly by typing their name from Matlab, even
 without iFit/iData installed. They can also be edited with any text
 editor.<span style="font-weight: bold;"><br>
       </span></td>
-      <td style="vertical-align: top;">Yes<br>
+      <td style="vertical-align: top;">Yes. <span style="font-style: italic;">Type the file name (without the .m extension) at the prompt</span><br>
       </td>
     </tr>
     <tr>
@@ -200,7 +202,7 @@ formats</h4>
 
 <span style="font-weight: bold;">
 </span>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format (save)<br>
@@ -230,7 +232,7 @@ binary
 file is compact and fast to read/write. It carries the whole object
 information. Such files require Matlab (or <a href="http://www.octave.org">Octave</a>) to be installed prior to
 importation.<span style="font-weight: bold;"> </span></td>
-      <td style="vertical-align: top;">Yes<br>
+      <td style="vertical-align: top;">Yes. Type <span style="font-style: italic;">'load filename.mat'</span> at the prompt
       </td>
     </tr>
     <tr>
@@ -284,7 +286,7 @@ generate them is smaller.<br>
 <br>
 <span style="font-weight: bold;">
 </span>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; background-color: rgb(255, 204, 204); font-weight: bold; font-style: italic;">format (save)<br>
