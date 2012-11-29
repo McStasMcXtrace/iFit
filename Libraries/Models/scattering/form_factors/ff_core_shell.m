@@ -12,7 +12,7 @@ function y=ff_core_shell(varargin)
 %          Extracted from sasfit/sasfit_ff/sasfit_ff_spherical_shell.c
 %
 % input:  p: sphere model parameters (double)
-%            p = [ R=Sphere_Radius eta=SLD particle/matrix ]
+%            p = [ R1=Shell_Radius R2=core_radius eta1=SLD shell/matrix eta2=SLD core/shell ]
 %          or 'guess'
 %         x: wave-vector/momentum axis (double, e.g. nm-1 or Angs-1)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
@@ -26,11 +26,11 @@ y.Name      = [ 'Spherical/core shell P(q) (1D) [' mfilename ']' ];
 y.Description='Concentric spherical geometry, with 2 shells form factor [Guinier]';
 y.Parameters={'R1 shell (outer) sphere radius [1/x]', ...
               'R2 core (inner) sphere radius [1/x]', ...
-              'eta1 scattering length density difference between core and matrix', ...
-              'eta2 scattering length density difference between shell and core'};
+              'eta1 scattering length density difference between shell and matrix [x^2]', ...
+              'eta2 scattering length density difference between shell and core [x^2]'};
 y.Expression= @(p, x) ( sqrt(ff_sphere(p([1 3]), x )) - sqrt(ff_sphere(p([2 4]), x )) ).^2;
 y.Dimension = 1;
-y.Guess     = @(x,signal) [ pi/std(x(:)) 1e-6 ];
+y.Guess     = @(x,signal) [ pi/std(x(:)) 1e-6 pi/std(x(:))/2 1e-6 ];
 y = iFunc(y);
 
 if length(varargin)
