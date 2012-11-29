@@ -62,6 +62,20 @@ Matlab .mat (for re-use from Matlab)</li>
 Last, the <b>getframe</b> method generates a snapshot picture (thumbnail). The <span style="font-weight: bold;">class2str </span>function can more generally write any Matlab variable as a character string. And the <span style="font-weight: bold;">str2struct</span> function can read a character string and search for [<span style="font-style: italic;">name</span>{=: }<span style="font-style: italic;">value</span>] pairs in single lines, to set a return structure.<br>
 <br>
 To load back an m or mat file into memory for re-use, type the m-file name without extension, or '<span style="font-style: italic;">load filename.mat</span>' for MAT-files. Refer to the <a href="Load.html">Load</a> page for other ways to import data files and objects.<br>
+<br>
+Last, you can also save the object history, that is all operations 
+performed from creation to current status, as a Matlab script, by 
+issuing the command:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">commandhistory</span>(a)</pre>
+and selecting '<span style="font-style: italic;">Save all to file...</span>'
+ button. A file selector will pop-up. Enter a filename to generate an 
+m-file script. This script can be read back to reproduce the object. <span style="font-weight: bold; font-style: italic;">A warning is in place here</span>:
+ if the object was obtained using other objects, these must be available
+ at the time the script is executed. Also, if large static arrays have 
+been used in the process, as they can not be saved in the history the 
+corresponding commands will fail. Last, if you compress the object with 
+e.g. pack, some of the history may be lost.<br>
+<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId939028"></a> Conversion to other <span style="font-style: italic;">Matlab</span> types<br>
 </h3>
 <br>
