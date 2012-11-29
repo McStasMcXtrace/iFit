@@ -11,17 +11,16 @@
 </head><body>
 <h1 style="text-align: center;">iFit: iFunc object description</h1>
 
-<ul id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId466436">Creating
+<ul id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId466436">Creating
 and inquiring iFunc models (iFunc, get, plot, subplot)
-</a></li><li><a href="#mozTocId443357">Manipulating models: operators
-</a></li><li><a href="#mozTocId443357">Fitting model parameters onto data</a></li>
-</ul>
+</a></li><li><a href="#mozTocId2492">Saving objects for further re-use: save, saveas</a></li><li><a href="#mozTocId443357">Manipulating models: operators
+</a></li><li><a href="#mozTocId443357">Fitting model parameters onto data
+</a></li></ul>
 
 <br>
 
 <hr style="width: 100%; height: 2px;">
-<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">iFunc</span>
+<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">iFunc, save, fits</span>
 </div>
 
 <br>
@@ -106,7 +105,18 @@ The evaluation of a model with a set of parameters is obtained by calling the <s
 </pre>
 In this case, tentative axes are computed from the model definition. Axes can also be passed as additional arguments for <span style="font-style: italic;">x,y,z,...</span> either as separate arguments, as a cell array {x,y,...}, as a structure, or as an iData object which axes are used.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )
-&gt;&gt; gauss([ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )</pre>
+&gt;&gt; gauss([ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )<br></pre>
+<h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId2492"></a>Saving objects for further re-use: save, saveas</h3>
+<p>Once you have created an manipulated a model, it is possible to export it into a file so that you can re-use it latter. To do so, use <span style="font-style: italic;">saveas(object, ...)</span> similarly as when <a href="Save.html">saving iData objects</a>. '<span style="font-style: italic;">save</span>' is equivalent to <span style="font-style: italic;">saveas</span>.<br>
+</p>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iFunc</span>(<span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>) + gauss ;<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a);			<span style="font-style: italic;">% save as a Matlab m-file function</span>, file name is automatically set to the model iD<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);"> ''</span>, <span style="color: rgb(204, 51, 204);">'mat'</span>)		<span style="font-style: italic;">% same, with a 'mat' file</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);"> 'model.</span><span style="color: rgb(204, 51, 204);">mat'</span>)	<span style="font-style: italic;">% same, with a 'mat' file, specifying the file name</span>
+</pre>
+<p>The supported export formats are [ as listed with <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);">saveas</span>(iFunc,<span style="color: rgb(204, 51, 204);">'formats'</span>)</span> ]:<br>
+</p>
+<pre style="margin-left: 40px;">         M  Matlab script/function (*.m) <br>       DAT  Flat text file with comments (*.dat) <br>       MAT  Matlab binary file (*.mat) <br>       FIG  Matlab figure (*.fig) <br>       PDF  Portable Document Format (*.pdf) <br>       EPS  Encapsulated PostScrip (color, *.eps) <br>        PS  PostScrip (color, *.ps) <br>   HDF4;H4  Hierarchical Data Format 4 image (*.hdf4) <br>       PNG  Portable Network Graphics image (*.png) <br>       JPG  JPEG image (*.jpg) <br>  TIFF;TIF  TIFF image (*.tif) <br></pre>
+<p>We recommend to save iFunc models as MAT files, or m-files. <br>
+To load back an <span style="font-style: italic;">m</span> or <span style="font-style: italic;">mat</span> file into memory for re-use, type the m-file name without extension, or '<span style="font-style: italic;">load filename.mat</span>' for MAT-files.</p>
+
 
 
 
@@ -140,7 +150,7 @@ flipud log10 plus(+) sinh minus(-)<br>
     </tr><tr>
   <td style="vertical-align: top;"><span style="font-weight: bold;">Other operators</span><br>
   </td>
-  <td style="vertical-align: top;">edit plot char copyobj doc feval fits get set subplot conv convn xcorr<br>
+  <td style="vertical-align: top;">edit plot char copyobj doc feval fits get set subplot conv convn xcorr save saveas<br>
   </td>
 </tr>
 
@@ -152,13 +162,19 @@ flipud log10 plus(+) sinh minus(-)<br>
 The full list of operators can be obtained from the <br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">methods</span> iFunc</pre>
 The element-wise times(.*), divide(./) and power(.^) operators apply the
- operation along the model dimensions.&nbsp; The matrix-operators 
-mtimes(*), <a href="images/iFunc_operators.png"><img alt="iFunc: + .* and * operators" title="iFunc: + .* and * operators" src="images/iFunc_operators.png" style="border: 0px solid; width: 200px; height: 279px;" align="right"></a>mrdivide(/) and mpower(^) operator perform <span style="font-style: italic;">orthogonal multiplication</span>, with extension of the model dimensionality. <br>
+ operation along the model dimensions, with parallel axes.&nbsp; The matrix-operators 
+mtimes(*), <a href="images/iFunc_operators.png"><img alt="iFunc: + .* and * operators" title="iFunc: + .* and * operators" src="images/iFunc_operators.png" style="border: 0px solid; width: 200px; height: 279px;" align="right"></a>mrdivide(/) and mpower(^) operator perform <span style="font-style: italic;"><span style="font-weight: bold;">orthogonal</span> axes multiplication</span>, with extension of the model dimensionality. <br>
 <br>
-In binary operations, passing one of the arguments as a string will 
+Examples are easier to understand, so let's see a few operations :<br>
+
+
+<pre style="margin-left: 40px;">&gt;&gt; a = gauss  + lorz;		<span style="font-style: italic;">% addition</span><br>&gt;&gt; b = gauss  * lorz; 		<span style="font-style: italic;">% <span style="font-weight: bold;">orthogonal</span> axes multiplication 2x 1D -&gt; 2D</span><br>&gt;&gt; c = gauss .* lorz; 		<span style="font-style: italic;">% parallel axes multiplication</span><br>&gt;&gt; c.Constraint = <span style="color: rgb(204, 51, 204);">'p(8) = 0;'</span>;	% avoid having two Background parameters<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c])<br></pre>
+
+
+In binary operations, passing one of the arguments as a <span style="font-weight: bold;">string</span> will 
 simply insert the corresponding code into the model Expression as the 
-argument to the operator. For instance the following statement adds a 
-zero value vector to the gauss model value :<br>
+argument to the operator. For instance the following statement appends a 
+zero value vector to the <span style="font-style: italic;">gauss</span> model value :<br>
 <div style="margin-left: 40px;">
   <pre>&gt;&gt; c = gauss + <span style="color: rgb(204, 51, 204);">'zeros(size(x))'</span></pre>
 </div>
@@ -168,14 +184,6 @@ instance the following example does the same as above, explicitly
 setting the new signal value, and the next one displays a text before 
 evaluating the model :<br>
 <pre style="margin-left: 40px;">&gt;&gt; c = gauss + <span style="color: rgb(204, 51, 204);">'signal = signal + zeros(size(x));'<span style="color: rgb(0, 0, 0);">;	<span style="font-style: italic;">% add code after the Expression (append)<br></span></span></span>&gt;&gt; c = <span style="color: rgb(204, 51, 204);">'disp(''Gaussian comming'');'<span style="color: rgb(0, 0, 0);">+ gauss;		<span style="font-style: italic;">% add code before the Expression</span></span></span><span style="font-style: italic;"> (prepend)</span><br></pre>
-
-
-
-
-
-Examples are easier to understand, so let's see a few operations :<br>
-
-<pre style="margin-left: 40px;">&gt;&gt; a = gauss  + lorz;		<span style="font-style: italic;">% addition</span><br>&gt;&gt; b = gauss  * lorz; 		<span style="font-style: italic;">% <span style="font-weight: bold;">orthogonal</span> multiplication 2x 1D -&gt; 2D</span><br>&gt;&gt; c = gauss .* lorz; 		<span style="font-style: italic;">% parallel multiplication</span><br>&gt;&gt; c.Constraint = <span style="color: rgb(204, 51, 204);">'p(8) = 0;'</span>;	% avoid having two Background parameters<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c])<br><br></pre>
 
 
 You can also use the convolution related operators<br>
@@ -201,7 +209,7 @@ Once models have been assembled, it is possible to use them for fitting,
 for this is :<br>
 <pre style="margin-left: 40px;">&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fits</span>(model, data, starting_parameters, options, constraints, ...)</pre>
 
-The data can be given as an iData object, a vector/matrix, <br>
+The data can be given as an <a href="iData.html">iData</a> object, a vector/matrix, <br>
 <div style="margin-left: 40px;"><span style="font-style: italic;">data=[ .... ]</span><br>
 </div>
 a structure with members <br>
@@ -212,6 +220,7 @@ a structure with members <br>
 </div>
 or a cell <br>
 <div style="margin-left: 40px;"><span style="font-style: italic;">data={ x,y, ... , Signal }</span><br>
+<br>
 </div>
 Similarly to the <a href="iData.html">iData</a> objects, the 'x' 1st 
 rank axis corresponds to rows, 'y' to columns. When the data has a 
@@ -225,7 +234,7 @@ The fit begins from the given starting values, or from guessed values if entered
 <br>
 The model value when the fit procedure ends is stored in the output.modelValue member :<br>
 <pre style="margin-left: 40px;">&gt;&gt; [parameters,criteria,message,<span style="color: rgb(255, 0, 0);">output</span>]= <span style="color: rgb(51, 102, 255);">fits</span>(<span style="color: rgb(204, 51, 204);">model,<span style="color: rgb(0, 0, 0);"> a, </span></span>initial_parameters,...)</pre>
-which is an <a href="iData.html">iData</a> object when a is given as an iData. In this case, <span style="font-style: italic;">fits(iFunc, iData, ...)</span> is equivalent to <span style="font-style: italic;">fits(iData, iFunc, ...)</span>.<br>
+which is an <a href="iData.html">iData</a> object when <span style="font-style: italic;">a</span> is given as an iData. In this case, <span style="font-style: italic;">fits(iFunc, iData, ...)</span> is equivalent to <span style="font-style: italic;">fits(iData, iFunc, ...)</span>.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a, <span style="color: rgb(255, 0, 0);">output</span>.modelValue)</pre>
 <br>
 
