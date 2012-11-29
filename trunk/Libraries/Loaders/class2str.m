@@ -69,6 +69,13 @@ elseif isa(data, 'iData')
          '  setaxis('  this ', mat2str(1:length(' this '_s.Alias.Axis)), ' this '_s.Alias.Axis);' NL ...
          'end' NL ];
   if ~nocomment, str = [ str '% end of iData ' this NL ]; end
+elseif isa(data, 'iFunc')
+  if ~nocomment, str = [ '% ' this ' (' class(data) ') size ' num2str(size(data)) NL ]; end
+  str = [ str class2str(this, struct(data), options) ];
+  if ~nocomment, str = [ str NL '% handling of iFunc objects -------------------------------------' NL ]; end
+  str = [ str 'if ~exist(''iFunc''), return; end' NL ];
+  str = [ str this ' = iFunc(' this ');' ];
+  if ~nocomment, str = [ str '% end of iFunc ' this NL ]; end
 elseif isnumeric(data) | islogical(data)
   if ~nocomment, str = [ '% ' this ' numeric (' class(data) ') size ' num2str(size(data)) NL ]; end
   str = [ str this ' = ' mat2str(data(:)) ';' NL ];
