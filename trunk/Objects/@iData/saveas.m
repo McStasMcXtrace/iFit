@@ -8,6 +8,8 @@ function [filename,format] = saveas(a, varargin)
 %   saveas(iData,'file.ext')            determine file format from the extension
 %   saveas(iData,'file','format')       sets file format explicitly
 %   saveas(iData,'file','format clean') sets file format explicitly and remove NaN and Inf.
+%     To load back a model from an m-file, type its file name at the prompt.
+%     To load back a model from an mat-file, type 'load filename.mat' at the prompt.
 %
 %  Type <a href="matlab:doc(iData,'Save')">doc(iData,'Save')</a> to access the iFit/Save Documentation.
 %
@@ -110,7 +112,7 @@ end
 
 % filename='gui' pops-up a file selector
 if strcmp(filename, 'gui')
-  if numel(a) > 1, t=[ num2str(numel(a)) ' objects' ]; else t=get(a.Title); end
+  if numel(a) > 1, t=[ num2str(numel(a)) ' objects' ]; else t=get(a,'Title'); end
   [filename, pathname, filterindex] = uiputfile( ...
        filterspec, ...
         ['Save ' t ' as...'], a.Tag);
@@ -208,7 +210,12 @@ end
 switch format
 case 'm'  % single m-file Matlab output (text), with the full object description
   NL = sprintf('\n');
-  str = [ 'function this=' name NL ...
+  if isdeployed
+    str = [ 'function this=' name NL ];
+  else
+    str = '';
+  end
+  str = [ str ...
           '% Original data: ' NL ...
           '%   class:    ' class(a) NL ...
           '%   variable: ' inputname(1) NL ...
@@ -229,6 +236,11 @@ case 'm'  % single m-file Matlab output (text), with the full object description
   end
   fprintf(fid, '%s', str);
   fclose(fid);
+  if isdeployed
+    disp([ 'Warning: The standalone/deployed version of iFit does not allow to read back\n' ...
+           '  function definitions. This m-file has been converted to a script that you can\n' ...
+           '  import as "this" by typing: run ' filename ]);
+  end
 case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
   NL = sprintf('\n');
   str = [ '# Format: data with text headers' NL ...
