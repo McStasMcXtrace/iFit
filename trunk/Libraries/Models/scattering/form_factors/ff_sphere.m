@@ -26,7 +26,7 @@ function y=ff_sphere(varargin)
 y.Name      = [ 'Sphere P(q) (1D) [' mfilename ']' ];
 y.Description='Sphere form factor [Guinier]';
 y.Parameters={'R sphere radius [1/x]', ...
-              'eta scattering length density difference between particle and matrix'};
+              'eta scattering length density difference between particle and matrix [x^2]'};
 y.Expression= @(p,x) ( (p(2)*4.0*pi*(sin(p(1)*x) - p(1)*x.*cos(p(1)*x))./(x+(x == 0)).^3).*(x ~= 0) ...
   + (x == 0).*(p(2)*4/3*pi*p(1)^3) ).^2;
   
