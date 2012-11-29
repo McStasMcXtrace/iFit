@@ -112,6 +112,9 @@ end
       delete(handles(1));
   end
   
+  % protect figure from over-plotting
+  set(handles(1),'HandleVisibility','callback');
+  
 end
 
 

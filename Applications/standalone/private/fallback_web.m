@@ -214,4 +214,8 @@ function fallback_web(url)
   function aboutBrowser(src, evnt) % about dialog
     helpdlg(sprintf('This is a simplistic web browser, built from Matlab/Java. Does not support proxy settings. E. Farhi, ILL, France <farhi@ill.fr> Aug 2012. Copyright: Licensed under the EUPL V.1.1. VISIT http://ifit.mccode.org for more.'), 'About this simplistic Browser');
   end
+  
+  % protect figure from over-plotting
+  set(handles(1),'HandleVisibility','callback');
+  
 end
