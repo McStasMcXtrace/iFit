@@ -113,7 +113,7 @@ function hFig = uiinspect(obj, fig)
       end
       if nargin < 2
           fig = [];
-      elseif ~ishandle(fig) || ~ishghandle(fig) || ~isa(handle(fig),'figure')
+      elseif ~ishandle(fig) | ~ishghandle(fig) | ~isa(handle(fig),'figure')
           myError('YMA:uiinspect:notAFigure','Second input to uiinspect must be a valid figure handle');
       end
 
