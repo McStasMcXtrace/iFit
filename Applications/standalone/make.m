@@ -1,5 +1,8 @@
 function make(target)
-
+% make: standalone creation
+% 
+% This function creates a standalone version of the iFit distribution.
+% It requires the Matlab Compiler. Shortcuts/launchers are also created for Linux/Windows.
 
 % location of the iFit directory
 cd(ifitpath); p=pwd;  % get fully qualified path for p=ifitpath
@@ -34,10 +37,12 @@ iLoad force
 
 % activate some standalone only scripts (which are in principle forbiden by Matlab Compiler)
 cd(m);
-movefile('edit.m.org',     'edit.m');
-movefile('web.m.org',      'web.m');
-movefile('inspect.m.org',  'inspect.m');
-movefile('propedit.m.org', 'propedit.m');
+if ~isempty(dir('edit.m.org'))
+  movefile('edit.m.org',     'edit.m');
+  movefile('web.m.org',      'web.m');
+  movefile('inspect.m.org',  'inspect.m');
+  movefile('propedit.m.org', 'propedit.m');
+end
 
 disp(  'Creating the deployed version');
 disp([ 'from ' p ]) 
@@ -48,8 +53,10 @@ disp([ 'mcc -m ifit -a ', p ])
 mcc('-m', 'ifit', '-a', p);
 
 % tuning the standalone
-movefile('ifit', 'run_ifit');
-delete('run_ifit.sh');
+if ~isempty(dir('run_ifit'))
+  movefile('ifit', 'run_ifit');
+  delete('run_ifit.sh');
+end
 copyfile([ m filesep 'ifit' ],       target)
 copyfile([ p filesep 'README.txt' ], target)
 copyfile([ p filesep 'COPYING' ],    target)
