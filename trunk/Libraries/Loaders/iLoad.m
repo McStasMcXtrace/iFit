@@ -202,7 +202,16 @@ if ischar(filename) & length(filename) > 0
   f=find(filename == '#');
   if length(f) == 1 && f > 1  % the filename contains an internal link (HTML anchor)
     [fileroot,filesub]=strtok(filename, '#');
-    [data, format]=iLoad(fileroot, loader, varargin{:});
+    if isdir(fileroot) % directory with token to search
+      % get full recursive listing
+      filerec=getAllFiles(fileroot);
+      % find items that match the token
+      found = ~cellfun('isempty',strfind(filerec, filesub(2:end)));
+      filerec = filerec(found);
+      [data, format]=iLoad(filerec, loader, varargin{:});
+    else
+      [data, format]=iLoad(fileroot, loader, varargin{:});
+    end
     % now search pattern in the file names or fields
     if iscell(data) && isdir(fileroot)
       this_data = {}; this_format = {};
@@ -925,5 +934,21 @@ for index=transpose(find(cellfun('isclass', c, 'struct')))
   end
 end
 
+function fileList = getAllFiles(dirName)
+
+  dirData = dir(dirName);      %# Get the data for the current directory
+  dirIndex = [dirData.isdir];  %# Find the index for directories
+  fileList = {dirData(~dirIndex).name}';  %'# Get a list of the files
+  if ~isempty(fileList)
+    fileList = cellfun(@(x) fullfile(dirName,x),...  %# Prepend path to files
+                       fileList,'UniformOutput',false);
+  end
+  subDirs = {dirData(dirIndex).name};  %# Get a list of the subdirectories
+  validIndex = ~ismember(subDirs,{'.','..'});  %# Find index of subdirectories
+                                               %#   that are not '.' or '..'
+  for iDir = find(validIndex)                  %# Loop over valid subdirectories
+    nextDir = fullfile(dirName,subDirs{iDir});    %# Get the subdirectory path
+    fileList = [fileList; getAllFiles(nextDir)];  %# Recursively call getAllFiles
+  end
 
 

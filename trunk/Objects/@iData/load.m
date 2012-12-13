@@ -91,6 +91,11 @@ for i=1:numel(files)
       if isempty(loaders) || ~isfield(loaders{i}, 'postprocess')
         loaders{i}.postprocess='';
       end
+      if isempty(loaders{i}.postprocess) && isfield(files{i},'Loader')
+        if isfield(files{i}.Loader, 'postprocess')
+          loaders{i}.postprocess = files{i}.Loader.postprocess;
+        end
+      end
       if ~isempty(loaders{i}.postprocess)
         % removes warnings
         iData_private_warning('enter',mfilename);
