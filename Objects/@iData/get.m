@@ -29,6 +29,12 @@ if numel(this) > 1
   parfor index=1:numel(this)
     varg{index} = get(this(index), varargin{:});
   end
+
+  sz =  cellfun('prodofsize',varg);
+  if all(sz == sz(1)) && all(cellfun(@isnumeric,varg))
+    varg = cell2mat(varg);
+  end
+
   varargout{1} = varg;
   return
 end
