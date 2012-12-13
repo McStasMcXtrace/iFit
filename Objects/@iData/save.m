@@ -39,6 +39,9 @@ function [filename,format] = save(a, varargin)
 %           'stla' save as STL stereolithography (geometry), ascii
 %           'off'  save as Object File Format (geometry), ascii
 %           'ply'  save as PLY (geometry), ascii
+%           'vtk'  save as VTK ascii (<1e5 elements) or binary
+%           'x3d'  save as X3D (geometry) file, ascii
+%           'xhtml' save as embedded HTML/X3D file (using Flash plugin for rendering)
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'

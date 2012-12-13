@@ -66,6 +66,8 @@ function h=plot(a, varargin)
 
 ih = ishold;
 h  = [];
+funcs=[]; % additional iFunc objects to plot afterwards...
+method = '';
 
 % analyze input arguments
 if nargin == 1, method=''; 
@@ -75,11 +77,12 @@ elseif length(varargin) == 1
   elseif isa(varargin{1},'iData')
     b = varargin{1};
     a = [ a(:) ; b(:) ]; method='';
+  elseif isa(varargin{1},'iFunc')
+    funcs = varargin{1};
   end
 else
   % split varargin looking for chars
-  method = '';
-  index=1;
+  index=1;  
   while index <= length(varargin)  % parse input arguments and split with char/methods calls
     if ischar(varargin{index})
       method = varargin{index};
@@ -89,6 +92,8 @@ else
     elseif isa(varargin{index},'iData') 
       b = varargin{index};
       a = [ a(:) ; b(:) ];
+    elseif isa(varargin{index},'iFunc')
+      funcs = [ funcs ; varargin{index} ];
     end
     index=index+1;
   end
@@ -708,9 +713,13 @@ else
   title(textwrap(cellstr(T_char),80),'interpreter','none');
 end
 
-if ih == 1, hold on; else hold off; end
-
+% handle iFunc objects
+if ~isempty(funcs)
+  hold on
+  h = [ h plot(funcs) ];
 end
+
+if ih == 1, hold on; else hold off; end
 % ============================================================================
 
 

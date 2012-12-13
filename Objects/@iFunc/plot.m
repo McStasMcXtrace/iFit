@@ -45,7 +45,7 @@ if iscell(signal)
       colors = 'bgrcmk';
       set(h(index), 'color', colors(1+mod(index, length(colors))));
     end
-    h = iFunc_plot_menu(h(index), a(index), name{index});
+    h(index) = iFunc_plot_menu(h(index), a(index), name{index});
   end
   if ih == 1, hold on; else hold off; end
   return
