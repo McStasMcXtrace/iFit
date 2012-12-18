@@ -31,6 +31,9 @@ function a = iFunc(varargin)
 %
 % From a function handle
 %  The function should have syntax model(p, x,y,...) and return the model value.
+%
+%   The syntax iFunc(iData object) evaluates the iFunc model using the iData
+%     object axes, and returns the model valueas a numerical array.
 % 
 % input:  s: iFunc, string, structure, function handle
 % output: b: model object (iFunc)
