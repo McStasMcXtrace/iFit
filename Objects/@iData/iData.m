@@ -16,6 +16,8 @@ function outarray = iData(varargin)
 %   The special syntax iData(x,y, .., c) creates an iData with
 %     signal c and axes x,y, ... where these are all numerics with 'x'
 %     for the columns (2nd axis rank), 'y' for the rows (1st axis rank), ...
+%   The syntax iData(iFunc object) evaluates the iFunc model using the iData
+%     object axes, and returns the model value as an iData object.
 %   The output argument is a single object or array of iData.
 %   Input arguments may be more than one, or given as cells.
 %
