@@ -34,7 +34,7 @@ function [pars,fval,exitflag,output] = fminpowell(varargin)
 %  It needs to return a single value or vector.
 %
 %  PARS is a vector with initial guess parameters. You must input an
-%  initial guess.
+%  initial guess. PARS can also be given as a single-level structure.
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
