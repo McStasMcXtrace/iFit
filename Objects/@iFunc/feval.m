@@ -61,6 +61,22 @@ if iscell(p) && ~isempty(p) % as model cell (iterative function evaluation)
   return
 end
 
+% convert a structure of parameters into an array matching model parameter
+% names.
+if isstruct(p)
+  new = [];
+  for index=1:length(model.Parameters)
+    if isfield(p, model.Parameters{index})
+      new = [ new p.(model.Parameters{index}) ];
+    end
+  end
+  if length(new) == length(model.Parameters)
+    p = new;
+  else
+    error([ 'iFunc:' mfilename ], 'Fields of the parameters "p" given as a structure do not match the model Parameters.');
+  end
+end
+
 if strcmp(p, 'plot')
   signal=plot(model);
   return
