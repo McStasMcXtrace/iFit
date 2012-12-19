@@ -35,6 +35,7 @@ function [pars,fval,exitflag,output] = fminralg(varargin)
 %
 %  PARS is a vector with initial guess parameters. You must input an
 %  initial guess. Dimensionality must be greater than 1.
+%  PARS can also be given as a single-level structure.
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with

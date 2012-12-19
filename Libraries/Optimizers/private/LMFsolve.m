@@ -273,12 +273,11 @@ function J = finjac(FUN,r,x,epsx)
       dx=.25*epsx(k);
       xd=x;
       xd(k)=xd(k)+dx;
-      rd=sqrt(feval(FUN,xd)); 
+      rd=sqrt(feval(FUN,xd));
       if length(rd) == 1, rd=rd*ones(5,1)/5; 
       else rd=rd(:); end
   %   ~~~~~~~~~~~~~~~~    
       if dx, J(:,k)=((rd-r)/dx); end
   end
-
 end % finjac
 
