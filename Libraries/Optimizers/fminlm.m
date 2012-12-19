@@ -35,7 +35,7 @@ function [pars,fval,exitflag,output] = fminlm(varargin)
 %  It needs to return a single value or vector.
 %
 %  PARS is a vector with initial guess parameters. You must input an
-%  initial guess.
+%  initial guess. PARS can also be given as a single-level structure.
 %
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
@@ -75,7 +75,7 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options.Display  = [];        %   no print of iterations
   options.MaxIter  = 5000;       %   maximum number of iterations allowed
   options.ScaleD   = [];        %   automatic scaling by D = diag(diag(J'*J))
-  options.TolFun   = 1e-5;      %   tolerace for final function value
+  options.TolFun   = 1e-6;      %   tolerace for final function value
   options.TolX     = 1e-4;      %   tolerance on difference of x-solutions
   options.MaxFunEvals=10000;
   options.algorithm  = [ 'Levenberg-Maquardt (by Balda) [' mfilename ']' ];
