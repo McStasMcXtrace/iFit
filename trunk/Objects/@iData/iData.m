@@ -279,22 +279,7 @@ function b=iData_struct2iData(a)
   if isfield(a, 'Format')
     setalias(b, 'Format', a.Format);
   end
-  % case of importation from an iFunc model structure
-  if isfield(a, 'Type') && strcmp(a.Type,'iFit fitting function')
-    if ~isempty(a.Guess)
-      try
-      b.Data.Parameters=cell2struct(num2cell(a.Guess), a.Parameters, 2);
-      setalias(b, 'Parameters', 'Data.Parameters',[ a.function ' model parameters' ]);
-      end
-    end
-    setalias(b, 'Signal', 'Data.Values');
-    set(b, 'Error', 0);
-    title(b, a.function);
-    for index=1:length(a.Axes)
-      setaxis(b, index, [ 'Data.Axes{' num2str(index) '}' ]);
-      b.Title=a.Name;
-    end
-  end
+  
   if isempty(b.Command), b.Command= cellstr('iData(<struct>)'); end
   
 % ============================================================================
