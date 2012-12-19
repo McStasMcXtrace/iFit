@@ -424,6 +424,14 @@ if nargout > 3
   if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
     fprintf(1, ' Correlation coefficient=%g\n', output.corrcoef);
   end
+  if abs(output.corrcoef) < 0.6 && ~isscalar(a.Error)
+    name = inputname(2);
+    if isempty(name)
+      name = 'a';
+    end
+    fprintf(1, ' WARNING: The fit result is BAD. You may improve it by setting %s.Error=1\n',...
+      name);
+  end
   
   if ~isempty(is_idata)
     % make it an iData
