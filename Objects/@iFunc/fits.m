@@ -255,11 +255,16 @@ a.Monitor= iFunc_private_cleannaninf(Monitor);
 a.Axes   = Axes;
 clear Signal Error Monitor Axes
 
-% starting configuration
-SignalMon = a.Signal;
-if not(all(a.Monitor(:) == 1 | a.Monitor(:) == 0)),
-  SignalMon  = bsxfun(@rdivide,SignalMon, a.Monitor); 
+% handle Monitor normalisation
+a.Monitor =real(a.Monitor);
+if not(all(a.Monitor == 1 | a.Monitor == 0 | isnan(a.Monitor))), % fit(signal/monitor) 
+  a.Signal = bsxfun(@rdivide,a.Signal,a.Monitor); 
+  if not(all(a.Error == 1 | a.Error == 0 | isnan(a.Error)))
+    a.Error  = bsxfun(@rdivide,a.Error, a.Monitor); % per monitor
+  end
 end
+
+% starting configuration
 
 if isempty(a.Signal)
   error([ 'iFunc:' mfilename ],[ 'Undefined/empty Signal ' inname ' to fit. Syntax is fits(model, Signal, parameters, ...).' ]);
@@ -314,13 +319,13 @@ if isstruct(pars)
     pars = p;
   end
 elseif strcmp(pars,'guess')
-  feval(model, pars, a.Axes{:}, SignalMon);           % get default starting parameters
+  feval(model, pars, a.Axes{:}, a.Signal);           % get default starting parameters
   pars = model.ParameterValues;
 elseif isempty(pars)
   if ~isempty(model.ParameterValues)
     pars = model.ParameterValues;                % use stored starting parameters
   else     
-    pars = feval(model, 'guess', a.Axes{:}, SignalMon);         % get default starting parameters
+    pars = feval(model, 'guess', a.Axes{:}, a.Signal);         % get default starting parameters
   end
 end
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
@@ -388,7 +393,7 @@ if numel(model) > 1
   return
 end
 
-feval(model, pars, a.Axes{:}, SignalMon); % this updates the 'model' with starting parameter values
+feval(model, pars, a.Axes{:}, a.Signal); % this updates the 'model' with starting parameter values
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
   fprintf(1, '** Starting fit of %s\n   using model    %s\n   with optimizer %s\n', ...
@@ -415,7 +420,7 @@ pars_out = reshape(pars_out, [ 1 numel(pars_out) ]); % row vector
 model.ParameterValues = pars_out;
 if nargout > 3
   output.modelValue = feval(model, pars_out, a.Axes{:});
-  output.corrcoef   = eval_corrcoef(a.Signal, a.Error, a.Monitor, output.modelValue);
+  output.corrcoef   = eval_corrcoef(a.Signal, a.Error, output.modelValue);
   if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
     fprintf(1, ' Correlation coefficient=%g\n', output.corrcoef);
   end
@@ -460,29 +465,23 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EMBEDDED FUNCTION %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % this way 'options' is available in here...
 
-  function c = eval_criteria(model, pars, criteria, a, varargin)
+  function c = eval_criteria(model, p, criteria, a, varargin)
   
   % criteria to minimize
     if nargin<5, varargin={}; end
     % then get model value
-    Model  = feval(model, pars, a.Axes{:}, varargin{:}); % return model values
+    Model  = feval(model, p, a.Axes{:}, varargin{:}); % return model values
     Model  = iFunc_private_cleannaninf(Model);
     if isempty(Model)
       error([ 'iFunc:' mfilename ],[ 'The model ' model ' could not be evaluated (returned empty).' ]);
     end
-    a.Monitor =real(a.Monitor);
     
-    if not(all(a.Monitor == 1 | a.Monitor == 0)), % fit(signal/monitor) 
-      a.Signal = bsxfun(@rdivide,a.Signal,a.Monitor); 
-      a.Error  = bsxfun(@rdivide,a.Error, a.Monitor); % per monitor
-    end
-
     % compute criteria
     c = feval(criteria, a.Signal(:), a.Error(:), Model(:));
     % divide by the number of degrees of freedom
     % <http://en.wikipedia.org/wiki/Goodness_of_fit>
-    if numel(a.Signal) > length(pars)-1
-      c = c/(numel(a.Signal) - length(pars) - 1); % reduced 'Chi^2'
+    if numel(a.Signal) > length(p)-1 && 0
+      c = c/(numel(a.Signal) - length(p) - 1); % reduced 'Chi^2'
     end
     
     % overlay data and Model when in 'OutputFcn' mode
@@ -517,12 +516,12 @@ end
           set(surf(Model),'DisplayName',model.Name); hold off
         end
         options.updated = clock;
-        if length(pars) > 20, pars= pars(1:20); end
-        pars = mat2str(pars);
-        if length(pars) > 50, pars = [ pars(1:47) ' ...' ']' ]; end
+        if length(p) > 20, p= p(1:20); end
+        p = mat2str(p);
+        if length(p) > 50, p = [ p(1:47) ' ...' ']' ]; end
         set(h, 'Name', [ mfilename ': ' options.algorithm ': ' model.Name ' f=' num2str(sum(c(:))) ]);
         title({ [ mfilename ': ' options.algorithm ': ' model.Name ' #' num2str(options.funcCount) ], ...
-                pars });
+                p });
         set(0, 'CurrentFigure', old_gcf);
       end
     end
@@ -533,68 +532,9 @@ end % fits
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRIVATE FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% <http://en.wikipedia.org/wiki/Least_squares>
-function c=least_square(Signal, Error, Model)
-% weighted least square criteria, which is also the Chi square
-% the return value is a vector, and most optimizers use its sum (except LM).
-% (|Signal-Model|/Error).^2
-  c = least_absolute(Signal, Error, Model);
-  c = c.*c;
-end % least_square
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% <http://en.wikipedia.org/wiki/Least_absolute_deviation>
-function c=least_absolute(Signal, Error, Model)
-% weighted least absolute criteria
-% the return value is a vector, and most optimizers use its sum (except LM).
-% |Signal-Model|/Error
-  if isempty(Error) || isscalar(Error) || all(Error == Error(end))
-    index = find(isfinite(Model) & isfinite(Signal));
-    c = abs(Signal(index)-Model(index)); % raw least absolute
-  else
-    % find minimal non zero Error
-    Error = abs(Error);
-    index = find(Error~=0 & isfinite(Error));
-    minError = min(Error(index));
-    % find zero Error, which should be replaced by minimal Error whenever possible
-    index = find(Error == 0);
-    Error(index) = minError;
-    index = find(isfinite(Error) & isfinite(Model) & isfinite(Signal));
-    if isempty(index), c=Inf;
-    else               c=abs((Signal(index)-Model(index))./Error(index));
-    end
-  end
-end % least_absolute
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% <http://en.wikipedia.org/wiki/Median_absolute_deviation>
-function c=least_median(Signal, Error, Model)
-% weighted median absolute criteria
-% the return value is a scalar
-% median(|Signal-Model|/Error)
-  c = median(least_absolute(Signal, Error, Model));
-end % least_median
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% <http://en.wikipedia.org/wiki/Absolute_deviation>
-function c=least_max(Signal, Error, Model)
-% weighted median absolute criteria
-% the return value is a scalar
-% median(|Signal-Model|/Error)
-  c = max(least_absolute(Signal, Error, Model));
-end % least_max
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function r=eval_corrcoef(Signal, Error, Monitor, Model)
+function r=eval_corrcoef(Signal, Error, Model)
 % correlation coefficient between the data and the model
-
-  if not(all(Monitor(:) == 1 | Monitor(:) == 0)),
-    Model  = bsxfun(@rdivide,Model, Monitor); % fit(signal/monitor) 
-    Signal = bsxfun(@rdivide,Signal,Monitor); 
-    Error  = bsxfun(@rdivide,Error, Monitor); % per monitor
-  end
   
   % compute the correlation coefficient
   if isempty(Error) || isscalar(Error) || all(Error(:) == Error(end))
