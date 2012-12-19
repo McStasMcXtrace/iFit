@@ -716,7 +716,10 @@ end
 % handle iFunc objects
 if ~isempty(funcs)
   hold on
-  h = [ h plot(funcs) ];
+  hline = plot(funcs);
+  set(findobj(hline,'Type','Line'),'LineStyle','--');
+  h = [ h hline ];
+  
 end
 
 if ih == 1, hold on; else hold off; end
