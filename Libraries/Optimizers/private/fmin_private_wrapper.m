@@ -37,7 +37,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %  It needs to return a single value or vector.
 %
 %  PARS is a vector with initial guess parameters. You must input an
-%  initial guess.
+%  initial guess. PARS can also be given as a single-level structure.
 %
 %  OPTIONS is a structure with settings for the simulated annealing, 
 %  compliant with optimset. Default options may be obtained with
@@ -96,10 +96,10 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 % nargin stuff (number of parameters)
 % default options for optimset
 
-if nargin < 1, optimizer=''; end
-if nargin < 2, fun = ''; end
+if nargin < 1,         optimizer =''; end
+if nargin < 2,         fun       = ''; end
 if isempty(optimizer), optimizer = 'fmin'; end
-if isempty(fun),       fun = 'defaults'; end
+if isempty(fun),       fun       = 'defaults'; end
 
 if nargin < 4
   options=[];
@@ -148,9 +148,28 @@ elseif ischar(options), options=str2struct(options); end
 if ischar(pars),
   pars   =str2struct(pars); 
 end
+% handle case when parameters are given as structures
 if isstruct(pars)
   pars_isstruct=fieldnames(pars);
   pars=cell2mat(struct2cell(pars));
+  % check if constraints are also structures, but with same fields
+  check = {'min','max','fixed','step'}
+  for index=1:length(check)
+    if isfield(constraints,check{index}) && isstruct(constraints.(check{index}))
+      new = [];
+      for f=1:length(pars_isstruct)
+        if isfield(constraints.(check{index}), pars_isstruct{f})
+          new = [ new constraints.(check{index}).(pars_isstruct{f}) ];
+        end
+      end
+      if length(new) == length(pars)
+        constraints.(check{index}) = new;
+      else
+        error([ inline_localChar(optimizer) ': parameters and constraint %s are given as structures, but not with same length/fields (%i and %i resp.).' ],  ...
+          check{index}, length(pars_isstruct), length(fieldnames(constraints.(check{index}))) );
+      end
+    end
+  end
 else
   pars_isstruct=[];
 end
@@ -231,7 +250,7 @@ if ischar(options.TolX)
   end
 end
 
-if strcmp(options.Display,'iter')
+if strncmp(options.Display,'iter',4)
   disp([ '** Starting minimization of ' inline_localChar(fun) ' using algorithm ' inline_localChar(options.algorithm) ]);
   disp('Func_count  min[f(x)]    Parameters');
   inline_disp(options, constraints.funcCount , fun, pars, fval)
@@ -243,6 +262,7 @@ iterations = 0;
 fval       = Inf;       % in case this is a vector, it should be a row
 pars       = pars(:);   % should be a column
 output     = [];  
+
 % Optimizer call ===============================================================
 
 try
@@ -328,7 +348,7 @@ case {'imfil','fminimfil'}
 case {'fminlm','LMFsolve'}
 % Levenberg-Maquardt steepest descent ------------------------------------------
   % LMFsolve minimizes the sum of the squares of the inline_objective: sum(inline_objective.^2)
-  [pars, fval, iterations, exitflag] = LMFsolve(@(pars) inline_objective_lm(fun, pars, varargin{:}), pars, ...
+  [pars, fval, iterations, exitflag] = LMFsolve(@(pars) inline_objective(fun, pars, varargin{:}), pars, ...
            'Display',0, 'FunTol', options.TolFun, 'XTol', options.TolX, ...
            'MaxIter', options.MaxIter, 'Evals',options.MaxFunEvals);
   switch exitflag
@@ -341,9 +361,9 @@ case {'powell','fminpowell'}
 % Powell minimization ----------------------------------------------------------
   if isempty(options.Hybrid), options.Hybrid='Coggins'; end
   if strcmp(lower(options.Hybrid), 'coggins') 
-    t = 'Coggins'; method=0;
+    t = 'Coggins';
   else 
-    t = 'Golden rule'; method=1;
+    t = 'Golden rule';
   end
   options.algorithm  = [ 'Powell Search (by Secchi) [' options.optimizer '/' t ']' ];
   constraints = inline_constraints_minmax(pars, constraints);
@@ -487,9 +507,8 @@ case {'buscarnd','fminrand'}
 % adaptive random search -------------------------------------------------------
   [pars,fval]=buscarnd(@(pars) inline_objective(fun, pars, varargin{:}), pars, options);
 otherwise
-  options = feval(optimizer, 'defaults');
-  [pars,fval,exitflag,output] = fmin_private_wrapper(options.optimizer, fun, pars, ...
-    options, constraints, varargin{:});
+  % unknown optimizer. 
+  error([ inline_localChar(optimizer) ': Unknown optimizer.' ]);
   return
 end % switch
 catch
@@ -509,7 +528,8 @@ end
 
 % post optimization checks =====================================================
 
-fval = constraints.criteriaBest; fval=sum(fval(:));
+fval = constraints.criteriaBest; 
+fval=sum(fval(:));
 pars = constraints.parsBest;
 
 if exitflag==0;
@@ -560,11 +580,12 @@ end
 if length(index) < 3
   index = 1:length(output.criteriaHistory);
 end
+try
 delta_pars = (output.parsHistory(index,:)-repmat(output.parsBest,[length(index) 1])); % get the corresponding parameter set
 weight_pars= exp(-((output.criteriaHistory(index)-min(output.criteriaHistory))/min(output.criteriaHistory)).^2 / 8); % Gaussian weighting for the parameter set
 weight_pars= repmat(weight_pars,[1 length(output.parsBest)]);
 output.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
-
+end
 if ((strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
   || (strcmp(options.Display,'notify') && isempty(strfind(message, 'Converged')))) || nargout == 4) ...
   && ((isfield(options,'Diagnostics') && strcmp(options.Diagnostics,'on')) ...
@@ -609,6 +630,7 @@ if strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
   end
 end
 
+% restore initial parameters as a structure (when given as such)
 if ~isempty(pars_isstruct)
   pars = cell2struct(num2cell(pars(:)), pars_isstruct(:), 1);
 end
@@ -620,68 +642,39 @@ return  % actual end of optimization
   
   function c = inline_objective(fun, pars, varargin)
   % criteria to minimize, fun returns a scalar, or vector which is summed
-    if nargin < 3, args={}; end
+    if nargin < 3, varargin={}; end
     % apply constraints on pars first
     pars                = inline_apply_constraints(pars,constraints,options); % private function
     
     % compute criteria
     t = clock;
     c = feval(fun, pars, varargin{:});         % function=row vector, pars=column
-    c = double(c);
-    c = sum(c(:));
+    c = double(c(:)');
+    switch options.optimizer
+    case {'fminlm','LMFsolve'}
+      % LMFsolve supports criteria as a vector of residuals, which sum is the criteria
+      % but gradient is used to guide the optimizer
+      if length(c) == 1,
+        c = c*ones(1,10)/10;
+      end
+    otherwise
+      c = sum(c);
+    end
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
-    [exitflag, message] = inline_private_check(pars, c, ...
+    [exitflag, message] = inline_private_check(pars, sum(c), ...
        constraints.funcCount , options, constraints);
     constraints.message = message;
     
     % save current optimization state
-    if c < sum(constraints.criteriaBest(:)), 
+    if sum(c) < sum(constraints.criteriaBest(:)), 
       constraints.criteriaBest=c;
       constraints.parsBest    =pars;
     end
     constraints.fevalDuration   = etime(clock, t); % time required to estimate the criteria
     constraints.criteriaPrevious= c;
-    constraints.criteriaHistory = [ constraints.criteriaHistory ; sum(constraints.criteriaPrevious) ];
-    constraints.parsPrevious    = pars;
-    constraints.parsHistory     = [ constraints.parsHistory ; pars ]; 
-    constraints.funcCount       = constraints.funcCount +1; 
-    
-    if exitflag
-      error([ 'stop condition: ' message ]); % will end optimization in try/catch
-    end
-  end
-  
-  % LMFsolve supports criteria as a vector of residuals, which sum is the criteria
-  % but gradient is used to guide the optimizer
-  function c = inline_objective_lm(fun, pars, varargin)
-  % criteria to minimize, with gradient support (approx)
-    if nargin < 3, args={}; end
-    % apply constraints on pars first
-    pars                = inline_apply_constraints(pars,constraints,options); % private function
-
-    % compute criteria
-    t = clock;
-    c = feval(fun, pars, varargin{:}); % function=row vector, pars=column
-    c = double(c);
-    if length(c) == 1,
-      c = c*ones(1,10)/10;
-    end
-    if length(c) > 1, c=c(:)'; end
-    
-    % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
-    [exitflag, message] = inline_private_check(pars, sum(abs(c)), ...
-       constraints.funcCount , options, constraints);
-    constraints.message = message;
-    
-    % save current optimization state
-    if sum(c) < sum(constraints.criteriaBest), 
-      constraints.criteriaBest=c;
-      constraints.parsBest    =pars;
-    end
-    constraints.fevalDuration   = etime(clock, t); % time required to estimate the criteria
-    constraints.criteriaPrevious= sum(c);
-    constraints.criteriaHistory = [ constraints.criteriaHistory ; constraints.criteriaPrevious ];
+    constraints.criteriaHistory = [ constraints.criteriaHistory ; sum(constraints.criteriaPrevious)
+     ];
     constraints.parsPrevious    = pars;
     constraints.parsHistory     = [ constraints.parsHistory ; pars ]; 
     constraints.funcCount       = constraints.funcCount +1; 
@@ -783,7 +776,7 @@ function inline_disp(options, funccount, fun, pars, fval)
   end
 
   if isfield(options,'Display')
-    if strcmp(options.Display, 'iter')
+    if strncmp(options.Display, 'iter',4)
       spars=pars(1:min(20,length(pars)));
       spars=mat2str(spars', 4);  % as a row
       if length(spars) > 50, spars=[ spars(1:47) ' ...' ]; end
