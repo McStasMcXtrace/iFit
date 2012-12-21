@@ -153,7 +153,7 @@ if isstruct(pars)
   pars_isstruct=fieldnames(pars);
   pars=cell2mat(struct2cell(pars));
   % check if constraints are also structures, but with same fields
-  check = {'min','max','fixed','step'}
+  check = {'min','max','fixed','step'};
   for index=1:length(check)
     if isfield(constraints,check{index}) && isstruct(constraints.(check{index}))
       new = [];
@@ -632,7 +632,9 @@ end
 
 % restore initial parameters as a structure (when given as such)
 if ~isempty(pars_isstruct)
+  try
   pars = cell2struct(num2cell(pars(:)), pars_isstruct(:), 1);
+  end
 end
 
 return  % actual end of optimization
