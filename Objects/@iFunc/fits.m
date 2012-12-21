@@ -301,11 +301,21 @@ if ischar(pars) && ~strcmp(pars,'guess')
 end
 if isstruct(pars)
   % search 'pars' names in the model parameters, and reorder the parameter vector
-  p = [];
+  p = []; f=fieldnames(pars);
   for index=1:length(model.Parameters)
-    match = strcmp(model.Parameters{index}, fieldnames(pars));
-    if ~isempty(match) && any(match)
+    match = strcmp(model.Parameters{index}, f);
+    if any(match) && isscalar(pars.(model.Parameters{index})) ...
+      && isnumeric(pars.(model.Parameters{index}))
       p(index) = pars.(model.Parameters{index});
+    end
+  end
+  % we try to simply build a parameter vector
+  if length(p) ~= length(model.Parameters)
+    p = [];
+    for index=1:length(f)
+      if isnumeric(pars.(f{index}))
+        p = [ p pars.(f{index}) ];
+      end
     end
   end
   if length(p) ~= length(model.Parameters)
@@ -313,7 +323,7 @@ if isstruct(pars)
     disp(pars)
     disp([ 'Required model ' model.Name ' ' model.Tag ' parameters' ])
     disp(model.Parameters)
-    error([ 'iFunc:' mfilename], [ 'The parameters entered as a structure do not define all required model parameters.' ]);
+    error([ 'iFunc:' mfilename], [ 'The parameters entered as a structure do not define all required model parameters.\n\tUse a vector or a structure with same fields or number of numerical values.' ]);
   else
     pars_isstruct=1;
     pars = p;
