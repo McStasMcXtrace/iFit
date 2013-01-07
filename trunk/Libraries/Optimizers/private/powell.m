@@ -102,7 +102,7 @@ while it < mxit,
 
   if norm2(xo-x0) < tol*(0.1+norm2(x0)) & abs(yo-y0) < tol*(0.1+abs(y0)),
     istop=-1;
-    message='Termination function tolerance criteria reached';
+    message='Converged: Termination function tolerance criteria reached';
     break;
   end
     

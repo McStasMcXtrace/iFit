@@ -53,11 +53,13 @@ disp([ 'mcc -m ifit -a ', p ])
 mcc('-m', 'ifit', '-a', p);
 
 % tuning the standalone
-if ~isempty(dir('run_ifit'))
-  movefile('ifit', 'run_ifit');
-  delete('run_ifit.sh');
+if ~ispc
+  if ~isempty(dir('run_ifit'))
+    movefile('ifit', 'run_ifit');
+    delete('run_ifit.sh');
+  end
+  copyfile([ m filesep 'ifit' ],       target)
 end
-copyfile([ m filesep 'ifit' ],       target)
 copyfile([ p filesep 'README.txt' ], target)
 copyfile([ p filesep 'COPYING' ],    target)
 
