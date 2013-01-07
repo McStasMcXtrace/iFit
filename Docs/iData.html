@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
 
@@ -82,7 +82,7 @@ with<br>
 which results in an <span style="font-style: italic;">iData</span>
 object. An other way to instantiate an object is to import directly
 Matlab variables:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal)<br></pre>
 
 
 These objects, which internal structure can be obtained with the <span style="font-style: italic;">struct(a)</span> method, hold a number of
@@ -178,7 +178,7 @@ But a more useful formatting of the same information is obtained using
 <pre>&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">disp</span>(a)<br></pre>
 </div>
 which both result in the following output<br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top;">
@@ -191,6 +191,10 @@ which both result in the following output<br>
 This latter display indicates the definition of the <span style="font-style: italic;">Signal, Aliases</span> and
 <span style="font-style: italic;">Axes</span> (if any - see <a href="#mozTocId510414">below</a>).<br>
 <br>
+As we shall see <a href="#mozTocId134021">below</a>, it is simple to extract the object value<span style="font-style: italic;"> (Signal) </span>and Axes:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a.Signal					<span style="font-style: italic;">% returns the Signal value</span><br>&gt;&gt; a{0}						% <span style="font-style: italic;">returns the Signal/Monitor value</span><br>&gt;&gt; a{1}						% <span style="font-style: italic;">request the 1st axis values</span><br></pre>
+
+
 A single field can be accessed in an object or an array of objects, by
 means of the <span style="font-style: italic; font-weight: bold;">get</span>
 function (just like for the <span style="font-style: italic;">Matlab
@@ -504,7 +508,7 @@ and Signal, and the dimensionality (except memory restrictions). The
 following table indicates the different types of <span style="font-style: italic;">Signal</span> that the iData can handle,
 and the associated requirements regarding <span style="font-style: italic;">Axes.</span><br>
 <br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">Dimensionality<br>
