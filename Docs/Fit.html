@@ -663,7 +663,14 @@ Model)</td>
       </td>
       <td style="vertical-align: top;">non-robust, scalar. <a href="http://en.wikipedia.org/wiki/Absolute_deviation">Ref</a>. <br>
       </td>
-    </tr>
+    </tr><tr>
+  <td style="vertical-align: top;">max_likelihood<br>
+  </td>
+  <td style="vertical-align: top; text-align: right;">(|Signal-Model|/&#963;).^2 + 1/2 log(2&#960;&#963;)</td>
+  <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Maximum_likelihood">Ref</a>. Minimize <span style="font-style: italic;">-log(L)</span><br>
+  </td>
+</tr>
+
   </tbody>
 </table>
 <br>
@@ -671,7 +678,8 @@ Model)</td>
 If you can not obtain a good fit, you can think about the following things to do:<br>
 <ul>
   <li>redefine the data set <span style="font-style: italic;">Error</span>, which is used as weighting factor in the evaluation of the criteria. The <span style="font-style: italic;">sqrt(Signal)</span> (default) may not be suited. Try setting a.Error=1 ;</li>
-  <li>change the criteria definition (see <a href="#mozTocId778987">above</a>). The<span style="font-style: italic;"> least square</span> (default) may not be suited to the Signal ;</li>
+  <li>change the criteria definition (see <a href="#mozTocId778987">above</a>). The<span style="font-style: italic;"> <span style="font-weight: bold;">least square</span></span> (default) may not be suited to the Signal ; you may try the <span style="font-weight: bold; font-style: italic;">Maximum likelihood</span>.<br>
+</li>
   <li>try with a specific <a href="Optimizers.html">optimizer</a>. The default <span style="font-style: italic;">fmin</span> optimizer, that makes a guess of a suitable routine may do a wrong guess ;</li>
   <li>if the chosen optimizer is heuristic (that is non deterministic), 
 such as swarm and annealing methods, repeat the fit. The solution will 

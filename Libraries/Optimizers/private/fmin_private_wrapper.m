@@ -193,7 +193,7 @@ if ~isempty(constraints) && ischar(constraints)
   constraints = str2struct(constraints);
 end
 if ~isempty(constraints) && ~isstruct(constraints)
-  error([ inline_localChar(optimizer) ': The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
+  error([ inline_localChar(optimizer) ': The constraints argument is of class ' class(constraints) '. Should be a vector or a struct' ]);
 end
 if ~isstruct(options)
   error([ inline_localChar(optimizer) ': The options argument is of class ' class(options) '. Should be a string or a struct' ]);
@@ -532,17 +532,23 @@ fval = constraints.criteriaBest;
 fval=sum(fval(:));
 pars = constraints.parsBest;
 
-if exitflag==0;
-  message='Algorithm terminated';
-end
-
 if iterations, 
   output.iterations    = iterations;
 elseif ~isfield(output,'iterations')
   output.iterations    = constraints.funcCount ;
 end
+
+% determine message (return status of optimiser)
+if isempty(message) && isfield(constraints,'message')
+  message = constraints.message;
+end
+
+if isempty(message)
+  if exitflag==0
+    message='Algorithm terminated';
+  end
+end
 if ~isfield(output,'message')
-  if isempty(message), message = constraints.message; end
   output.message         = message;
 end
 
@@ -614,9 +620,10 @@ else
 end
 
 if strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
-  || (strcmp(options.Display,'notify') && isempty(strfind(message, 'Converged')))
+  || (strcmp(options.Display,'notify') && isempty(strfind(message, 'Converged'))) ...
+  || (isfield(options,'Diagnostics') && strcmp(options.Diagnostics,'on'))
   disp([ sprintf('\n') '** Finishing minimization of ' inline_localChar(fun) ' using algorithm ' inline_localChar(options.algorithm) ]);
-  disp( [ ' Status: ' message ]);
+  disp( [ ' Status: ' output.message ]);
   disp(' Func_count     min[f(x)]        Parameters');
   inline_disp(struct('Display','iter'), -constraints.funcCount , fun, pars, mean(fval));
   
@@ -704,7 +711,7 @@ function constraints = inline_constraints_minmax(pars, constraints)
 end % inline_constraints_minmax
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [pars,exitflag,message] = inline_apply_constraints(pars, constraints, options)
+function pars = inline_apply_constraints(pars, constraints, options)
   % take into account constraints on parameters, and perform stop condition checks
   exitflag=0;
   message='';
@@ -886,7 +893,7 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
       end
     end
   end
-  
+
   % abnormal terminations
   if ~istop
 

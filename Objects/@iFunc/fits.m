@@ -360,6 +360,11 @@ if ~isfield(options, 'criteria')
 end
 if ~isfield(options,'Display')   options.Display  =''; end
 if  isempty(options.Display)     options.Display  ='notify'; end
+% update name of optimizer
+options_defaults = feval(options.optimizer,'defaults');
+if isfield(options_defaults,'algorithm')
+  options.algorithm = options_defaults.algorithm;
+end
 if ~isfield(options,'algorithm') options.algorithm=options.optimizer; end
 
 % handle constraints
@@ -431,8 +436,10 @@ model.ParameterValues = pars_out;
 if nargout > 3
   output.modelValue = feval(model, pars_out, a.Axes{:});
   output.corrcoef   = eval_corrcoef(a.Signal, a.Error, output.modelValue);
-  if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
-    fprintf(1, ' Correlation coefficient=%g\n', output.corrcoef);
+  output.residuals  = a.Signal - output.modelValue;
+  if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | ...
+    (isfield(options,'Diagnostics') && strcmp(options.Diagnostics, 'on'))
+    fprintf(1, ' Correlation coefficient=%g (closer to 1 is better)\n', output.corrcoef);
   end
   if abs(output.corrcoef) < 0.6 && ~isscalar(a.Error)
     name = inputname(2);
@@ -498,7 +505,7 @@ end
     c = feval(criteria, a.Signal(:), a.Error(:), Model(:));
     % divide by the number of degrees of freedom
     % <http://en.wikipedia.org/wiki/Goodness_of_fit>
-    if numel(a.Signal) > length(p)-1 && 0
+    if numel(a.Signal) > length(p)-1
       c = c/(numel(a.Signal) - length(p) - 1); % reduced 'Chi^2'
     end
     
