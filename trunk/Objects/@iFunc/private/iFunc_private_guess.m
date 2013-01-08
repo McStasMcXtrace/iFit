@@ -72,7 +72,7 @@ function pars=iFunc_private_guess(x, signal, parameter_names)
     if iscell(x) && length(x)==1, x=x{1}; end
   end
   if isempty(x), x=linspace(-5,6,50); end
-  if ~isempty(signal)
+  if ~isempty(signal) && isnumeric(signal)
     [sigma, position, amplitude, baseline] = iFunc_private_findpeaks(signal, 1, 0);
     signal=signal(:);
     if isempty(sigma) || (length(sigma) == 1)
