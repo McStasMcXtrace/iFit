@@ -295,18 +295,20 @@ end
 if nargin < 3
   pars = []; % will use default/guessed parameters
 end
-pars_isstruct=0;
+pars_isstruct=[];
 if ischar(pars) && ~strcmp(pars,'guess')
   pars = str2struct(pars);
 end
 if isstruct(pars)
   % search 'pars' names in the model parameters, and reorder the parameter vector
   p = []; f=fieldnames(pars);
-  for index=1:length(model.Parameters)
-    match = strcmp(model.Parameters{index}, f);
-    if any(match) && isscalar(pars.(model.Parameters{index})) ...
-      && isnumeric(pars.(model.Parameters{index}))
-      p(index) = pars.(model.Parameters{index});
+  for index=1:length(f)
+    match = strcmp(f{index}, model.Parameters);
+    if any(match) && isscalar(pars.(f{index})) ...
+      && isnumeric(pars.(f{index}))
+      p(index) = pars.(f{index});
+    else
+      pars_isstruct.(f{index}) = pars.(f{index});
     end
   end
   % we try to simply build a parameter vector
@@ -325,7 +327,7 @@ if isstruct(pars)
     disp(model.Parameters)
     error([ 'iFunc:' mfilename], [ 'The parameters entered as a structure do not define all required model parameters.\n\tUse a vector or a structure with same fields or number of numerical values.' ]);
   else
-    pars_isstruct=1;
+    if isempty(pars_isstruct), pars_isstruct=1; end
     pars = p;
   end
 elseif strcmp(pars,'guess')
@@ -483,8 +485,16 @@ if nargout > 3
   output.parsNames  = model.Parameters;
   
 end
-if pars_isstruct
+if ~isempty(pars_isstruct)
+  % first rebuild the model parameter structure
   pars_out = cell2struct(num2cell(pars_out), strtok(model.Parameters), 2);
+  % then add initial additional fields
+  if isstruct(pars_isstruct)
+    f = fieldnames(pars_isstruct);
+    for index=1:length(f)
+      pars_out.(f{index}) = pars_isstruct.(f{index});
+    end
+  end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EMBEDDED FUNCTION %%%%%%%%%%%%%%%%%%%%%%%%%%%
