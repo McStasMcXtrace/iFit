@@ -33,11 +33,14 @@ else
   if ~isempty(u)
     fprintf(1, '         Constraint: %s\n', u); 
   end
-  u = char(s.Expression); u=strtrim(u); u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
+  u=cellstr(s_in); u = u(~strncmp('%', u, 1)); % remove comment lines 
+  u=[ u{:} ];
+  u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
   if length(u) > 70, u = [ u(1:67) '...' ]; end
   fprintf(1, '         Expression: %s\n', u); 
+  u = u(1:min(length(u),60));
   if strcmp(s.Name, s.Description)       || isempty(s.Name),        s =rmfield(s, 'Name'); end
-  if strcmp(s.Expression, s.Description) || isempty(s.Description), s =rmfield(s, 'Description'); 
+  if strcmp(u, s.Description) || isempty(s.Description), s =rmfield(s, 'Description'); 
   else
     u = s.Description; u=strtrim(u); u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
     fprintf(1, '        Description: %s\n', s.Description); 
