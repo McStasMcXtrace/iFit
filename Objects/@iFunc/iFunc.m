@@ -169,13 +169,16 @@ function a = iFunc_private_check(a)
     error(['iFunc:' mfilename ], [mfilename ': the model Expression should be a char or function_handle or cellstr, not a class ' ...
       class(a.Expression) '.' ]);
   end
+
   % handle multiple lines in Expression -> single char with \n at end of lines (except last)
   n_expr = '';
   for index=1:size(expr, 1)
+    d = strtrim(expr(index,:));
+    if d(end) ~= ';', d = [ d ';' ]; end
     if index == size(expr, 1)
-      n_expr = [ n_expr deblank(expr(index,:)) ';' ];
+      n_expr = [ n_expr d ];
     else
-      n_expr = [ n_expr deblank(expr(index,:)) sprintf(';\n') ];
+      n_expr = [ n_expr d sprintf('\n') ];
     end
   end
   expr = n_expr;
@@ -303,7 +306,7 @@ function a = iFunc_private_check(a)
       end
     end
     e = strrep(e, ';;','; ');
-    a.Expression = char(e);
+    a.Expression = cellstr(e);
   end % else keep function handle value
   a.Dimension  = dim;
 
@@ -371,7 +374,8 @@ function a = iFunc_private_check(a)
   end
   
   if isempty(a.Eval)
-    a.Eval = char(a);
+    a.Eval = cellstr(a);
+    a.Eval = a.Eval(:);
   end
   
   % create a default Name for Labels
@@ -386,9 +390,9 @@ function a = iFunc_private_check(a)
   end
   
   % handle non char fields to convert to single strings
-  if ~isvector(a.Description), a.Description=char(a.Description)'; a.Description = a.Description(1:end); end
-  if ~isvector(a.Expression),  a.Expression =char(a.Expression)';  a.Expression  = a.Expression(1:end); end
-  if ~isvector(a.Constraint),  a.Constraint =char(a.Constraint)';  a.Constraint  = a.Constraint(1:end); end
-  if ~isvector(a.Guess),       a.Guess      =char(a.Guess)';       a.Guess       = a.Guess(1:end); end
+  %if ~isvector(a.Description), a.Description=char(a.Description)'; a.Description = a.Description(1:end); end
+  %if ~isvector(a.Expression),  a.Expression =char(a.Expression)';  a.Expression  = a.Expression(1:end); end
+  %if ~isvector(a.Constraint),  a.Constraint =char(a.Constraint)';  a.Constraint  = a.Constraint(1:end); end
+  %if ~isvector(a.Guess),       a.Guess      =char(a.Guess)';       a.Guess       = a.Guess(1:end); end
 
 % end iFunc_private_check

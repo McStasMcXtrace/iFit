@@ -59,15 +59,17 @@ else
       if length(u) > 20, u = [ u(1:18) '.' ]; end
       t = [ t ' ' u ];
       
-      if ~strcmp(s.Description, s.Expression) && ~strcmp(s.Name, u)
-        u = s.Description; u(~isstrprop(u,'print'))=''; u=strtrim(u); if ~isvector(u), u=u'; end
-        if length(u) > 10, u = [ u(1:9) '.' ]; end                % Name/Description/Expression
-        t = [ t ' ' u ];
-      end
-      
       if isa(s.Expression, 'function_handle')
         s.Expression = func2str(s.Expression);
       end
+      s.Expression = char(s.Expression);
+      if ~strcmp(s.Description, s.Expression) && ~strcmp(s.Name, u)
+        u = s.Description; u(~isstrprop(u,'print'))=''; u=strtrim(u); if ~isvector(u), u=u'; end
+        if length(u) > 10, u = [ u(1:9) '.' ]; end % Name/Description/Expression
+        t = [ t ' ' u ];
+      end
+      
+      
       if ~strcmp(s.Expression, u)
         u = s.Expression; u(~isstrprop(u,'print'))=' '; if ~isvector(u), u=u'; end
         if length(u) > 20, u = [ u(1:18) '..' ]; end
