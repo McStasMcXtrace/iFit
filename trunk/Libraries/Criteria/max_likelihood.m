@@ -16,8 +16,10 @@ function c=max_likelihood(Signal, Error, Model)
     % make sure weight=1/sigma does not reach unrealistic values
     %   initially, most weights will be equal, but when fit impproves, 
     %   stdE will get lower, allowing better matching of initial weight.
+    normE = sum(Error(index));
     stdE  = std(residuals(index));
     Error( Error < stdE ) = stdE; 
+    Error = Error *(normE/sum(Error(index)));
     sigma2 = Error.^2;
   end
   
