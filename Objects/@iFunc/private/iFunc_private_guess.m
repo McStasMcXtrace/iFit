@@ -74,6 +74,8 @@ function pars=iFunc_private_guess(x, signal, parameter_names)
   if isempty(x), x=linspace(-5,6,50); end
   if ~isempty(signal) && isnumeric(signal)
     [sigma, position, amplitude, baseline] = iFunc_private_findpeaks(signal, 1, 0);
+    % [sigma, position, amplitude, baseline] = peaks(iData(signal),1,0);
+    % baseline = double(baseline);
     signal=signal(:);
     if isempty(sigma) || (length(sigma) == 1)
       sum_s = sum(signal); x1d=1:length(signal); x1d=x1d(:);
@@ -127,8 +129,12 @@ function pars=iFunc_private_guess(x, signal, parameter_names)
         if ~set_width && ~isempty(x), pars(index_p) = x(round(position(index))); set_width=1; end
       elseif ~isempty(strfind(parameter_names{index_p}, 'background')) ...
         |    ~isempty(strfind(parameter_names{index_p}, 'constant'))
-        if ~set_background, pars(index_p) = mean(baseline); set_background=1; end
+        if ~set_background, 
+          pars(index_p) = mean(baseline);
+          set_background=1; 
+        end
       end
     end
   end
+
 end % iFunc_private_guess
