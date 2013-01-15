@@ -1,4 +1,4 @@
-function y=lorz(p, x, y)
+function y=lorz(varargin)
 % y = lorz(p, x, [y]) : Lorentzian
 %
 %   iFunc/lorz Lorentzian fitting function
@@ -26,3 +26,6 @@ y.Guess     = @(x,signal) [ NaN ...
 
 y = iFunc(y);
 
+if length(varargin)
+  y = y(varargin{:});
+end

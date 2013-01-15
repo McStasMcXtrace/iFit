@@ -59,7 +59,15 @@ for index=1:numel(cellstring)
       value=comment;
       tmp  =str2num(value);
       if ~isempty(tmp) && isnumeric(tmp)
-          value=tmp;
+        value=tmp;
+      end
+      if ischar(value)
+        if value(1) == '''' || value(1) == '"'
+          value = value(2:end);
+        end
+        if value(end) == '''' || value(end) == '"'
+          value = value(1:(end-1));
+        end
       end
   end
   if ~isempty(value), s.(name) = value; end

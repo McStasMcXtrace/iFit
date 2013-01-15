@@ -11,16 +11,18 @@ function c=least_absolute(Signal, Error, Model)
     index = find(isfinite(Model) & isfinite(Signal));
     c = abs(Signal(index)-Model(index)); % raw least absolute
   else
-    % find minimal non zero Error
-    Error = abs(Error);
-    index = find(Error~=0 & isfinite(Error));
-    minError = min(Error(index));
-    % find zero Error, which should be replaced by minimal Error whenever possible
-    index = find(Error == 0);
-    Error(index) = minError;
     index = find(isfinite(Error) & isfinite(Model) & isfinite(Signal));
+    residuals  = Signal - Model;
+    % make sure weight=1/sigma does not reach unrealistic values
+    %   initially, most weights will be equal, but when fit impproves, 
+    %   stdE will get lower, allowing better matching of initial weight.
+    normE = sum(Error(index));
+    stdE  = std(residuals(index));
+    Error( Error < stdE ) = stdE; 
+    Error = Error *(normE/sum(Error(index)));
+    
     if isempty(index), c=Inf;
-    else               c=abs((Signal(index)-Model(index))./Error(index));
+    else               c=abs((residuals(index))./Error(index));
     end
   end
 end % least_absolute
