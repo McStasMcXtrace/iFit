@@ -483,7 +483,8 @@ if nargout > 3
     output.message = [ '(' num2str(message) ') ' output.message ];
   end
   output.parsNames  = model.Parameters;
-  
+  % final plot when in OutputFcn mode
+  eval_criteria(model, pars_out, options.criteria, a, varargin{:});
 end
 if ~isempty(pars_isstruct)
   % first rebuild the model parameter structure
@@ -520,7 +521,7 @@ end
     end
     
     % overlay data and Model when in 'OutputFcn' mode
-    if (isfield(options, 'OutputFcn') && ~isempty(options.OutputFcn) && ~isscalar(a.Signal))
+    if (isfield(options, 'OutputFcn') && ~isempty(options.OutputFcn) && ~isscalar(a.Signal) && ndims(a.Signal) <= 2)
       if ~isfield(options, 'updated')
         options.updated   = -clock;
         options.funcCount = 0;
@@ -530,34 +531,7 @@ end
       
       if (options.funcCount < 50 && abs(etime(options.updated, clock)) > 0.5) ...
        || abs(etime(options.updated, clock)) > 2
-        old_gcf = get(0, 'CurrentFigure');
-        
-        % is this window already opened ?
-        h = findall(0, 'Tag', 'iFunc:fits');
-        if isempty(h) % create it
-          h = figure('Tag','iFunc:fits', 'Unit','pixels');
-          tmp = get(h, 'Position'); tmp(3:4) = [500 400];
-          set(h, 'Position', tmp);
-        end
-        % raise existing figure (or keep it hidden)
-        
-        if old_gcf ~= h, set(0, 'CurrentFigure', h); end
-      
-        if isvector(a.Signal)
-          set(plot(a.Signal,'r-'),'DisplayName','Data');   hold on
-          set(plot(Model,'b--'),'DisplayName',model.Name); hold off
-        else
-          set(surf(a.Signal),'DisplayName','Data');  hold on; 
-          set(surf(Model),'DisplayName',model.Name); hold off
-        end
-        options.updated = clock;
-        if length(p) > 20, p= p(1:20); end
-        p = mat2str(p);
-        if length(p) > 50, p = [ p(1:47) ' ...' ']' ]; end
-        set(h, 'Name', [ mfilename ': ' options.algorithm ': ' model.Name ' f=' num2str(sum(c(:))) ]);
-        title({ [ mfilename ': ' options.algorithm ': ' model.Name ' #' num2str(options.funcCount) ], ...
-                p });
-        set(0, 'CurrentFigure', old_gcf);
+        iFunc_private_fminplot(a,model,p,Model,options,c)
       end
     end
     
@@ -611,5 +585,37 @@ function s=iFunc_private_cleannaninf(s)
 
     s = double(reshape(S, size(s)));
   end
+end % iFunc_private_cleannaninf
 
-end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
+% plot/update OutputFcn fitting monitoring window (used in eval_criteria)
+  old_gcf = get(0, 'CurrentFigure');
+  
+  % is this window already opened ?
+  h = findall(0, 'Tag', 'iFunc:fits');
+  if isempty(h) % create it
+    h = figure('Tag','iFunc:fits', 'Unit','pixels');
+    tmp = get(h, 'Position'); tmp(3:4) = [500 400];
+    set(h, 'Position', tmp);
+  end
+  % raise existing figure (or keep it hidden)
+  
+  if old_gcf ~= h, set(0, 'CurrentFigure', h); end
+
+  if isvector(a.Signal)
+    set(plot(a.Signal,'r-'),'DisplayName','Data');   hold on
+    set(plot(ModelValue,'b--'),'DisplayName',model.Name); hold off
+  else
+    set(surf(a.Signal),'DisplayName','Data');  hold on; 
+    set(surf(ModelValue),'DisplayName',model.Name); hold off
+  end
+  options.updated = clock;
+  if length(p) > 20, p= p(1:20); end
+  p = mat2str(p);
+  if length(p) > 50, p = [ p(1:47) ' ...' ']' ]; end
+  set(h, 'Name', [ mfilename ': ' options.algorithm ': ' model.Name ' f=' num2str(sum(criteria(:))) ]);
+  title({ [ mfilename ': ' options.algorithm ': ' model.Name ' #' num2str(options.funcCount) ], ...
+          p });
+  set(0, 'CurrentFigure', old_gcf);
+end % iFunc_private_fminplot
