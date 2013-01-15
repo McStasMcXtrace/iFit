@@ -716,7 +716,6 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
         end
       end
     end
-    sim
     
 %  catch
 %    criteria=0; sim=[]; ind=[];

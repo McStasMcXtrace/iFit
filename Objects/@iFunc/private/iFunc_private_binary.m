@@ -303,6 +303,6 @@ else
       class(b) '.' ]);
 end
 
-c.Eval=char(c); % trigger new Eval
+c.Eval=cellstr(c); % trigger new Eval
 
 
