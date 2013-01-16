@@ -113,20 +113,16 @@ for index=1:length(varargin)
       instrument = this;
       continue; % jump to next argument in the list
     end
-    [status, result] = system([ 'cif2hkl --no-output-files --verbose ' this ]);
-    if status == 0
-      try
-        eval(result);
-        if exist('structure') && isstruct(structure)
-          this = structure;
-        end
-      catch
-        disp('Warning: could not evaluate result from CIF2HKL (CrysFML)')
-        disp(result)
-      end
+    % call cif2hkl
+    if exist('cif2hkl') == 3
+      % use MeX in verbose and no-output-files mode ('-')
+      result = cif2hkl(this,[],[],'-',1);
+      this = str2struct(result);
     else
-      disp('Warning: could not execute CIF2HKL (CrysFML). Not compiled/in executables path ?')
-      disp(result);
+      disp('cif2hkl is missing: compile it with e.g: ')
+      disp('  gfortran -fPIC -c cif2hkl.f90')
+      disp('  mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -I/usr/lib/gcc/x86_64-linux-gnu/4.6 -lgfortran')
+      error('Missing cif2hkl MeX')
     end
   end % ischar
   if isnumeric(this) && length(this) >= 14                   % numeric -> struct
@@ -213,7 +209,6 @@ end
 if isempty(instrument)
   instrument = 'templateDIFF';
 end
-
 f = fieldnames(Rietveld.structure);
 nb_atoms = length(f);
 
@@ -234,7 +229,7 @@ for index=1:length(f)
   if length(this) < 7, this = [ this 0 ]; end
   this(5) = min(1,max(0,this(5)));
   % setup the Guess for the atom
-  Guess      = [ Guess this ];
+  Guess      = [ Guess(:) ; this(:) ];
   % add parameter names per atom type
   Parameters{end+1} = [ 'Rietveld_' f{index} '_x' ];
   Parameters{end+1} = [ 'Rietveld_' f{index} '_y' ];
@@ -264,6 +259,7 @@ y.Parameters = Parameters;
 Expression = { ...
   'tmp=tempname;', ...
   'fid=fopen(tmp,''w'');', ...
+  'fprintf(fid,''! FullProf/CrysFML file format\n'');', ...
   [ 'fprintf(fid,''Title  ' Rietveld.title ' sample\n'');' ], ...
   'fprintf(fid,''!      a           b           c          alpha   beta    gamma\n'');', ...
   'fprintf(fid,''Cell   ''); fprintf(fid,''%f '', p(1:6)); fprintf(fid,''\n'');', ...
@@ -284,7 +280,7 @@ end
 Expression{end+1} = 'fclose(fid);';
 
 % generate hklF2 (cif2hkl)
-Expression{end+1} = [ 'system([''cif2hkl -o ' Rietveld.CFML_write ' '' tmp ]);' ];
+Expression{end+1} = [ 'cif2hkl(tmp,''' Rietveld.CFML_write ''');' ];
 
 % delete temporary file
 Expression{end+1} = 'delete(tmp);';
