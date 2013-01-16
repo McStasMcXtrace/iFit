@@ -50872,7 +50872,8 @@ end subroutine sort_d
 !   verbose:   0 or 1 for silent and verbose display resp.
 ! OUPUT:
 !   file_out: the reflection list file name (string)
-subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose)
+!   message:  a message to display (string)
+subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
 
   use CFML_Crystallographic_Symmetry,  only: Space_Group_Type
   use CFML_Crystal_Metrics,            only: Crystal_Cell_Type
@@ -50887,10 +50888,10 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose)
   
   ! subroutine I/O
   character(len=1024)         :: file_in, file_out     ! Name of the input/output file
-  character(len=1024)         :: ext                   ! file name extension
   real*8                      :: lambda                ! probe wavelength
-  character(len=1024)         :: mode                  ! 'p' or 'x'
+  character(len=1024)         :: mode                  ! 'p' or 'x' or '-'
   integer                     :: verbose               ! 0 or 1 for verbose mode
+  character*4096              :: message
   
   ! local variables
   type (File_List_Type)       :: fich_cfl
@@ -50900,6 +50901,7 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose)
   type (Reflection_List_Type) :: hkl
   real                        :: stlmax
   integer                     :: lun=1, MaxNumRef, I, Y
+  character(len=1024)         :: ext                   ! file name extension
 
   integer, parameter                             :: n_elements=423
   character (Len = 8), dimension(n_elements)     :: element
@@ -50907,8 +50909,9 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose)
   real                                           :: sigma_coh, sigma_inc, sigma_abs, mass
   
   character(len=1024)                            :: formula
-  character(len=1024)                            :: aa
+  character(len=4096)                            :: s1,s2,s3  ! temporary string for concatenation
   integer*4, dimension(3)                        :: today, now
+  character*2   eol
   
   integer dot_pos
   integer sep_pos
@@ -50923,6 +50926,8 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose)
   else
     stlmax= 1.0
   end if
+  
+  message = ''
   
   ! set the element name, cross sections and weight
   ! list of isotopes
@@ -51196,12 +51201,13 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose)
   ! Compute reflections: mode could be an option (CFL, CIF, SHX, PCR)
   call ReadN_set_Xtal_Structure(file_in, Cell, SpG, A , Mode=ext, file_list=fich_cfl)
   if (A%Natoms .eq. 0) then
-    write (*,*) "ERROR: cif2hkl: Could not extract a crystallographic structure from file ",trim(file_in)
-    write (*,*) "       Check file existence/permissions and type (should be a CFL,CIF,ShellX)."
+    message = "ERROR: cif2hkl: Could not extract a crystallographic structure from file "//&
+      trim(file_in)//eol//&
+      "       Check file existence/permissions and type (should be a CFL,CIF,ShellX)."//eol
     return
   end if
   if (verbose .ne. 0) then
-    write (*,fmt="(a,a,a)") "structure.file='",trim(file_in),"';"
+    message = "structure.file='"//trim(file_in)//"';"//eol
   end if
     
   !Compute cross section
@@ -51210,13 +51216,19 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose)
   sigma_abs=0
   mass     =0
   formula  =""
+  message = ""
+  eol=char(13)//char(10)
   
   if (verbose .ne. 0) then
-    write(*,*)                  "%cell         [    a         b         c        alpha     beta      gamma ]"
-    write(*,fmt="(a,6f10.5,a)") "structure.cell=[ ", Cell%cell(1), Cell%cell(2), Cell%cell(3), &
-                                             Cell%ang(1), Cell%ang(2), Cell%ang(3), "];"
-    write(*,fmt="(a,a,a,i4,a)")      "structure.Spgr='",  trim(SpG%SPG_Symb),"'; % space group [Number ",SpG%NumSpg, "]"
-    write(*,*)                  "%atoms        [    x/a       y/b       z/c      Biso      Occ       Spin      Charge ]"
+    s1 = trim(ADJUSTL(message))//eol//&
+      "% cell         [    a         b         c        alpha     beta      gamma ]"//eol
+    write(s2,fmt="(a,6f10.5,a)") "cell=[ ", &
+         Cell%cell(1), Cell%cell(2), Cell%cell(3), &
+         Cell%ang(1), Cell%ang(2), Cell%ang(3), "];"//eol
+    write(s3,fmt="(a,i4,a)") "Spgr='"//trim(SpG%SPG_Symb)//"'; % space group [Number ",&
+         SpG%NumSpg, "]"//eol
+    message = trim(s1)//trim(s2)//trim(s3)//&
+      "% atoms       [    x/a       y/b       z/c      Biso      Occ       Spin      Charge ]"//eol
   end if
   
   do I=1, A%Natoms
@@ -51228,32 +51240,36 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose)
         sigma_inc = sigma_inc + 4*pi*binc(Y)*binc(Y)*A%atom(i)%Mult*1E8
         sigma_abs = sigma_abs + Sabs(Y)*A%atom(i)%Mult
         mass      = mass+weight(Y)*A%atom(i)%Mult
-        write(unit=aa, fmt='(a,a,a,I3)') trim(formula)," ", trim(element(Y)), A%atom(i)%Mult
-        formula   = trim(adjustl(aa))
+        s1 = adjustl(formula)
+        write(unit=s2, fmt='(I3)') A%atom(i)%Mult
+        formula   = trim(s1)//" "//trim(element(Y))//trim(adjustl(s2))
         ! display verbose information
         ! Label,x/a, y/b, z/c, B, occ, Spin, Charge
         if (verbose .ne. 0) then
-          write(*,fmt="(a,a,a,7f10.5,a)") "structure.",trim(A%atom(i)%lab),"=[",A%atom(i)%X, &
-            A%atom(i)%Biso,A%atom(i)%Occ,A%atom(i)%moment,A%atom(i)%Charge,"];"
+          write(s2,fmt="(a,a,a,7f10.5,a)") trim(message),trim(A%atom(i)%lab),"=[",A%atom(i)%X, &
+            A%atom(i)%Biso,A%atom(i)%Occ,A%atom(i)%moment,A%atom(i)%Charge,"];"//eol
+          message = s2
         end if
         exit
       end if
     end do
   end do
   if (verbose .ne. 0) then
-    write(*,fmt="(a,a,a,a)") "structure.title='",trim(formula), " ["//trim(SpG%CrystalSys)//", "//trim(SpG%Centre)//"]';"
+    s1 = trim(message)//"title='"//trim(formula)//" ["//trim(SpG%SPG_Symb)//&
+      ", "//trim(SpG%CrystalSys)//", "//trim(SpG%Centre)//"]';"//eol
 !    write(*,*) "% sigma_coh  ",  sigma_coh, " coherent   scattering cross section in [barn]"
 !    write(*,*) "% sigma_inc  " , sigma_inc, " incoherent scattering cross section in [barn]"
 !    write(*,*) "% sigma_abs  " , sigma_abs, " absorption scattering cross section in [barn]"
 !    write(*,*) "% density    ",  mass/cell%cellVol, " in [g/cm^3]"
 !    write(*,*) "% weight     ",  mass,         " in [g/mol]"
 !    write(*,*) "% Vc         ",  cell%cellVol, " volume of unit cell in [A^3]" 
+    message = s1
   end if
   
   ! suppress Sfac computation and output when has --no-output-files option
-  if (mode .ne. '-') then
+  if (mode(1:1) .ne. '-') then
     MaxNumRef = Get_MaxNumRef(stlmax,Cell%CellVol,mult=SpG%NumOps)
-    if (mode == "p") then
+    if (mode(1:1) == "p") then
       ! powder mode:
       !    Hkl_Uni(Crystalcell, Spacegroup,Friedel,Value1,Value2,Code,Num_Ref,Reflex, no_order)
       call Hkl_Uni(Cell,Spg,.true.,0.0,stlmax,"s",MaxNumRef,hkl)
@@ -51318,53 +51334,62 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose)
 End subroutine CFML_cif2hkl
 
 
-subroutine print_version(pgmname)
+subroutine print_version(pgmname,message)
   ! Show program version. pgmname = argv[0] ================================
   character*1024 pgmname
+  character*1024, intent(out) :: message
   
   character*80 AUTHOR, DATE, VERSION
+  character*2   eol
+  
+  eol=char(13)//char(10)
   
   AUTHOR ="Farhi E. [farhi@ill.fr] using crysFML <http://forge.ill.fr/projects/crysfml>"
   DATE   ="18 Dec 2012"
   VERSION="1.1"
   
-  write(*,*) trim(pgmname)//" "//trim(VERSION)//" ("//trim(DATE)//") by "//trim(AUTHOR)
-  write(*,*)"  Copyright (C) 2009 Institut Laue Langevin, EUPL license."
-  write(*,*)"  This is free software; see the source for copying conditions."
-  write(*,*)"  There is NO warranty; not even for MERCHANTABILITY or FITNESS"
-  write(*,*)"  FOR A PARTICULAR PURPOSE."
+  
+  message = trim(pgmname)//" "//trim(VERSION)//" ("//trim(DATE)//") by "//trim(AUTHOR)//eol//&
+   "  Copyright (C) 2009 Institut Laue Langevin, EUPL license."//eol//&
+   "  This is free software; see the source for copying conditions."//eol//&
+   "  There is NO warranty; not even for MERCHANTABILITY or FITNESS"//eol//&
+   "  FOR A PARTICULAR PURPOSE."//eol
 end subroutine print_version
 
-subroutine print_usage(pgmname)
+subroutine print_usage(pgmname,message)
   ! Show program help. pgmname = argv[0] ===================================
   character*1024 pgmname
+  character*4096,intent(out) :: message
   
-  call print_version(pgmname);
-  write(*,*)"Usage: "//trim(pgmname)//" [options][-o outfile] file1 file2 ..."
-  write(*,*)"Action: Read a CIF/CFL/SHX/PCR crystallographic description "
-  write(*,*)"        and generates a HKL F^2 reflection list."
-  write(*,*)"Input:"
-  write(*,*)"  file1...          Input file in CIF, PCR, CFL, SHX, INS, RES format."
-  write(*,*)"                      The file format is determined from its extension"
-  write(*,*)"                        .CIF           Crystallographic Information File"
-  write(*,*)"                        .PCR/.CFL      FullProf file"
-  write(*,*)"                        .SHX/.INS/.RES ShelX file"
-  write(*,*)"Output:"
-  write(*,*)"  a file with readable header, and reflection list with columns"
-  write(*,*)"    [ H K L Multiplicity Sin(Theta/Lambda) d_spacing |F|^2 ]"
-  write(*,*)"Options:"
-  write(*,*)"--help     or -h    Show this help"
-  write(*,*)"--version  or -v    Display program version"
-  write(*,*)"--out FILE          Specify the name of the next output file."
-  write(*,*)"   -o FILE            Default is to add .hkl to the initial file name."
-  write(*,*)"--lambda LAMBDA     Set the incoming probe wavelength [Angs]."
-  write(*,*)"   -l    LAMBDA       Default is 0.5"
-  write(*,*)"--powder   or -p    Generate a list of unique HKL reflections (for powders). Default."
-  write(*,*)"--xtal     or -x    Generate a list of all HKL reflections (for single crystals)."
-  write(*,*)"--verbose           Display processing details."
-  write(*,*)"--no-outout-files   Just read the CIF/CFL/ShellX file (for checking)."
+  character*2   eol
   
-  write(*,*)"Example: "//trim(pgmname)//" -o CaF2.laz CaF2.cfl"
+  eol=char(13)//char(10)
+
+  message = "Usage: "//trim(pgmname)//" [options][-o outfile] file1 file2 ..."//eol//&
+    "Action: Read a CIF/CFL/SHX/PCR crystallographic description"//eol//&
+    "        and generates a HKL F^2 reflection list."//eol//&
+    "Input:"//eol//&
+    "  file1...          Input file in CIF, PCR, CFL, SHX, INS, RES format."//eol//&
+    "                      The file format is determined from its extension"//eol//&
+    "                        .CIF           Crystallographic Information File"//eol//&
+    "                        .PCR/.CFL      FullProf file"//eol//&
+    "                        .SHX/.INS/.RES ShelX file"//eol//&
+    "Output:"//eol//&
+    "  a file with readable header, and reflection list with columns"//eol//&
+    "    [ H K L Multiplicity Sin(Theta/Lambda) d_spacing |F|^2 ]"//eol//&
+    "Options:"//eol//&
+    "--help     or -h    Show this help"//eol//&
+    "--version  or -v    Display program version"//eol//&
+    "--out FILE          Specify the name of the next output file."//eol//&
+    "   -o FILE            Default is to add .hkl to the initial file name."//eol//&
+    "--lambda LAMBDA     Set the incoming probe wavelength [Angs]."//eol//&
+    "   -l    LAMBDA       Default is 0.5"//eol//&
+    "--powder   or -p    Generate a list of unique HKL reflections (for powders). Default."//eol//&
+    "--xtal     or -x    Generate a list of all HKL reflections (for single crystals)."//eol//&
+    "--verbose           Display processing details."//eol//&
+    "--no-outout-files   Just read the CIF/CFL/ShellX file (for checking)."//eol//&
+    "Example: "//trim(pgmname)//" -o CaF2.laz CaF2.cfl"//eol
+
 end subroutine print_usage
 
 
@@ -51381,24 +51406,30 @@ program cif2hkl
   character(len=1024) :: outfile
   character(len=1024) :: ext            ! input file name extension
   real*8              :: lambda= 0.5    ! wavelength (determines minimum d)
-  character(len=1024) :: mode="p"       ! 'p'=powder, 's'=SX output file
+  character(len=1024) :: mode="p"       ! 'p'=powder, 's'=SX output file, '-'=no output
   integer             :: verbose=0      ! verbose mode to display additional information
+  
+  character*4096      :: message
 
   argc    = iargc()       ! number of arguments
   call getarg(0, pgmname) ! program name
   outfile = ""
+  message = ""
 
   if (argc == 0) then
-    call print_usage(pgmname);
+    call print_usage(pgmname, message)
+    write(*,*) trim(message)
   else 
     do while (i < argc)
       i = i + 1
       call getarg(i, argv)
       if (argv(1:2) == "-h" .or. argv(1:6) == "--help") then
-        call print_usage(pgmname)
+        call print_usage(pgmname, message)
+        write(*,*) trim(message)
       end if
       if (argv(1:2) == "-v" .or. argv(1:9) == "--version") then
-        call print_version(pgmname)
+        call print_version(pgmname, message)
+        write(*,*) trim(message)
       end if
       if ( (argv(1:8) == "--lambda" .or. argv(1:2) == "-l") .and. i<argc) then
         i=i+1
@@ -51428,7 +51459,8 @@ program cif2hkl
         if (len_trim(outfile) == 0) then
           outfile = trim(argv)//".hkl"  ! append .hkl extension
         end if
-        call cfml_cif2hkl(argv, outfile, lambda, mode, verbose);
+        call cfml_cif2hkl(argv, outfile, lambda, mode, verbose, message)
+        write(*,*) trim(message)
 
         ! revert outfile to default
         outfile = ""
