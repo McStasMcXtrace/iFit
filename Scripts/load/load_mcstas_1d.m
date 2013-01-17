@@ -65,7 +65,7 @@ if isfield(d,'Headers') && isfield(d.Headers,'MetaData')
   if ~isempty(findfield(a, 'component')) 
     label = strtrim(a.Data.Headers.MetaData.component);
     label(1:length('# component:'))='';
-    a.Label = label;
+    a.Label = strtrim(label);
     a.Data.Component = label;
     setalias(a, 'Component', 'Data.Component','Component name');
   end

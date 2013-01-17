@@ -250,7 +250,7 @@ end
 disp([ mfilename ': Assembling Rietveld model ' Rietveld.title ' with ' num2str(length(Guess)) ' parameters, and instrument ' instrument ]);
 
 y.Name       = strtrim([ Rietveld.title ' Rietveld refinement [' mfilename ']' ]);
-y.Description= strtrim([ Rietveld.title ' Rietveld refinement using virtual experiment diffractometer with McStas.' ]);
+y.Description= strtrim([ 'Rietveld refinement using McStas virtual experiment ' instrument ]);
 y.Guess      = Guess;
 y.Parameters = Parameters;
 
@@ -288,6 +288,12 @@ Expression{end+1} = 'delete(tmp);';
 % start to build the instrument related Expression
 Expression{end+1} = [ 'instrument = ' mat2str(instrument) ';' ];
 % additional fit parameters into instrument parameters
+Expression{end+1} = [ 'instr_pars = [];' ];
+% check if one instrument parameter has been defined (required for the simulation
+% not to wait for manual input
+if ~isstruct(variable_p) && ~isstruct(constant_p)
+  error([ mfilename ': The instrument simulation has no parameter defined. You need to define one at least, e.g. lambda="2.36"' ])
+end
 if isstruct(variable_p)
   f = fieldnames(variable_p);
   for index=1:length(f)
@@ -313,12 +319,11 @@ if isstruct(mcstas_options)
     end
   end
 else
-  Expression{end+1} = 'mcstas_options = [];';
+  Expression{end+1} = 'mcstas_options.ncounts = 1e5;';
 end
 
 % evaluate model with mcstas/instrument
 Expression{end+1} = [ 'signal = mcstas(instrument, instr_pars, mcstas_options); '];
-Expression{end+1} = 'if length(signal) > 1, signal = signal(end); end';
 
 y.Expression = Expression;
 
@@ -332,7 +337,29 @@ if y.Dimension == 0
   % evaluate 'signal' with Guess parameters
   disp([ mfilename ': Determining the model dimension... (please wait)' ]);
   signal      = feval(y,y.Guess);
+  if length(signal) > 1
+    disp([  mfilename ': The instrument simulation ' mat2str(instrument) ' returns ' ...
+      num2str(length(signal)) ' monitor files:' ]);
+    disp(signal);
+    mcstas_options.monitors = get(signal,'Component');
+    mcstas_options.monitors = strtrim(mcstas_options.monitors{end});
+    disp([ mfilename ': Restricting the model to use the last monitor ' mat2str(mcstas_options.monitors) ])
+    Expression{end}   = [ 'mcstas_options.monitors = ' mat2str(mcstas_options.monitors) ];
+    Expression{end+1} = [ 'signal = mcstas(instrument, instr_pars, mcstas_options); '];
+    signal = signal(end);
+  end
+  disp(signal); % this is an iData object
   y.Dimension = ndims(signal);
   disp([ mfilename ': Setting dimension of the Rietveld model ' Rietveld.title ' to ' num2str(y.Dimension) ]);
+  ax = ',x,y,z,t';
+  Expression{end+1} = 'if length(signal) > 1, signal = signal(end); end';
+  Expression{end+1} = [ 'signal = double(interp(signal ' ax(1:(2*y.Dimension)) '));' ];
+  y.Expression = Expression; % now returns a double array
+  % adds axes signification to model description
+  for index=1:y.Dimension
+    x = getaxis(signal, index); x=x(:);
+    y.Description = [ y.Description ...
+      sprintf('\n  Axis %i "%s" label is "%s", range [%g:%g]', index, ax(2*index), label(signal, index), min(x), max(x)) ];
+  end
 end
 
