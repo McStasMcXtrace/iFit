@@ -95,7 +95,12 @@ if ~isempty(alias_num)
 end
 
 if nargin == 2 || isempty(lab)  % return the current label value
-  labl(~isstrprop(labl,'print'))=' ';
+  if ischar(labl)
+    labl(~isstrprop(labl,'print'))=' ';
+  else
+    labl = class(labl);
+  end
+  labl = strtrim(labl);
   return;
 end
 
