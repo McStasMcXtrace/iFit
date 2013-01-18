@@ -51289,8 +51289,15 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
     !Write reflection file
     open( unit=lun,file=file_out,status="replace",action="write")
     write(unit=lun,fmt="(a,a,a)")    "# TITLE  ",     trim(formula), " ["//trim(SpG%CrystalSys)//", "//trim(SpG%Centre)//"]"
+    write(unit=lun,fmt="(a)") "#        a         b         c       alpha     beta      gamma"
     write(unit=lun,fmt="(a,6f10.5)") "# CELL ", Cell%cell(1), Cell%cell(2), Cell%cell(3), Cell%ang(1), Cell%ang(2), Cell%ang(3)
-    write(unit=lun,fmt="(a,a,a,i4,a)")      "# SPCGRP  ",    trim(SpG%SPG_Symb)," [Number ",SpG%NumSpg, "]"
+    write(unit=lun,fmt="(a,a,a,i4,a)") "# SPCGRP  ",    trim(SpG%SPG_Symb)," [Number ",SpG%NumSpg, "]"
+    write(unit=lun,fmt="(a)") "#                    X         Y         Z         B         Occ       Spin      Charge"
+    do I=1, A%Natoms
+      write(unit=lun,fmt="(a,a,7f10.5)") "# Atom  ",A%atom(i)%lab,&
+            A%atom(i)%X, &
+            A%atom(i)%Biso,A%atom(i)%Occ,A%atom(i)%moment,A%atom(i)%Charge
+    end do
     write(unit=lun,fmt="(a)")        "# COMMAND cif2hkl "//trim(file_in)//" --output "//trim(file_out)
     write(unit=lun,fmt="(a)")        "# CIF2HKL (c) ILL 2012 E. Farhi <farhi@ill.eu>"
     write(unit=lun,fmt=1000) today, now

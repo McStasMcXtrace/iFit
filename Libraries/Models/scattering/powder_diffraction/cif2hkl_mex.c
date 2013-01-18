@@ -1,6 +1,6 @@
 /* program cif2hkl */
 /* compile with:
-      gfortran -fPIC -c cif2hkl.f90
+      gfortran -O2 -fPIC -c cif2hkl.f90
       mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -I/usr/lib/gcc/x86_64-linux-gnu/4.6 -lgfortran
  */
 
@@ -35,7 +35,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
    */
   
   if(nrhs == 0)
-    mexErrMsgTxt("At least one string input required.");
+    mexErrMsgTxt("At least one string input required. Syntax: cif2hkl(file_in, file_out, lambda, mode, verbose)");
     
   for (i=0; i<4095; message[i++]=' '); message[4095]='\0';
   
