@@ -51279,6 +51279,13 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
       ! sort SX Bragg peaks
       call sort_d(hkl)
     end if
+    ! exit when no reflection can be computed
+    if (hkl%Nref == 0) then
+      message = "ERROR: cif2hkl: No reflection list can be set from file "//&
+        trim(file_in)//eol//&
+        "       Check file existence/permissions and type (should be a CFL,CIF,ShellX)."//eol
+      return
+    end if
     ! mode="nuc" (neutron), "ele" (electrons), "x" x-rays
     call Structure_Factors(A,SpG,hkl,mode="NUC")
 
