@@ -43,8 +43,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   mcstas('instrument','parameter1=Al.laz; parameter2=3','mode=display')
 %
 % The syntax:
-%   mcstas(instrument,'compile')     assemble and compile the instrument
-%   mcstas(instrument,'compile mpi') same with MPI support
+%   mcstas(instrument,'--compile')     assemble and compile the instrument
+%   mcstas(instrument,'--compile mpi') same with MPI support
+%   mcstas(instrument,'--info')        returns instrument information
 %
 % input:  INSTRUMENT: name of the instrument description to run (string)
 %           when the instrument is not found, it is searched in the McStas 
@@ -226,19 +227,27 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     mcstas_criteria([], options);
     options        = rmfield(options,'compile');
     options.ncount = ncount;
-  end  
+  end
+  if isfield(options,'info') && options.info
+    options.mode = 'info';
+  end
   
   % parse parameter values for mcstas_criteria
   % syntax: mcstas(instr, 'compile mpi') -> only compile
-  if ischar(parameters) && ~isempty(strfind(parameters,'compile'))
-    options.compile = 1;
-    if ischar(parameters) && (~isempty(strfind(parameters,' mpi')) || ~isempty(strfind(parameters,'mpi ')))
-      options.mpi=2;
+  if ischar(parameters) 
+    if ~isempty(strfind(parameters,'--compile')) || ~isempty(strfind(parameters,'-c'))
+      options.compile = 1;
+      if ischar(parameters) && (~isempty(strfind(parameters,' mpi')) || ~isempty(strfind(parameters,'mpi ')))
+        options.mpi=2;
+      end
+    end
+    if ~isempty(strfind(parameters,'--info')) || ~isempty(strfind(parameters,'-i'))
+      options.mode = 'info';
     end
     parameters      = [];
   end
   if nargin < 1, parameters = []; end
-  if ~isempty(parameters) && ischar(parameters)
+  if ischar(parameters)
     parameters = str2struct(parameters);
   end
   if ~isempty(parameters) && isstruct(parameters)
@@ -414,8 +423,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     end 
     exitflag = 0;
     output   = options;
-  elseif any(strcmpi(options.mode,{'display','trace'}))
-    pars = mcstas_criteria(pars, options);
+  elseif any(strcmpi(options.mode,{'display','trace','info'}))
+    [pars, fval] = mcstas_criteria(pars, options);
   end % else single simulation
   
   warning(warn.structs);
@@ -430,14 +439,14 @@ end
 
 % ------------------------------------------------------------------------------
 
-function status=system_wait(cmd, options)
+function [status, result]=system_wait(cmd, options)
 % inline function to execute command and wait for its completion (under Windows)
 % dots are displayed under Windows after every minute waiting.
   [status, result]=system(cmd);
   disp(result);
   if status ~= 0, return; end
   % need to wait for simulation to complete, except for Trace mode
-  if ~any(strcmpi(options.mode,{'display','trace'}))
+  if ~any(strcmpi(options.mode,{'display','trace','info'}))
     if ispc % wait for completion by monitoring the number of elements in the result directory
             % this does not work when using temporary intermediate save with Progress_bar(flag_save=1)
       t=tic; t0=t; first=1;
@@ -445,13 +454,13 @@ function status=system_wait(cmd, options)
       while length(a) <= 3 % only 'mcstas.sim', '.', '..' when simulation is not completed yet
         if toc(t) > 60
           if first==1 % display initial waiting message when computation lasts more than a minute
-              fprintf(1, 'mcstas: Waiting for completion of %s simulation (dots=minutes).\n', options.instrument);
+            fprintf(1, 'mcstas: Waiting for completion of %s simulation (dots=minutes).\n', options.instrument);
           end
           fprintf(1,'.');
           t=tic; first=first+1;
           if first>74 % go to next line when more than 75 dots in a row...
-              first=2;
-              fprintf(1,'\n');
+            first=2;
+            fprintf(1,'\n');
           end
         end
         a=dir(options.dir); % update directory content list
@@ -461,14 +470,14 @@ function status=system_wait(cmd, options)
     % wait for directory to be 'stable' (not being written)
     this_sum=0;
     while 1
-        a=dir(options.dir);
-        new_sum=0;
-        for index=1:length(a)
-            new_sum = new_sum+a(index).datenum;
-        end
-        if this_sum == new_sum, break; end
-        this_sum = new_sum;
-        pause(1);
+      a=dir(options.dir);
+      new_sum=0;
+      for index=1:length(a)
+          new_sum = new_sum+a(index).datenum;
+      end
+      if this_sum == new_sum, break; end
+      this_sum = new_sum;
+      pause(1);
     end
   end
 end % system_wait
@@ -485,7 +494,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   
   % launch simulation with mcrun/mxrun or mcdisplay/mxdisplay
-  if strcmpi(options.mode,'optimize') || strcmpi(options.mode,'simulate')
+  if any(strcmpi(options.mode,{'optimize','simulate','info'}))
     cmd = [ prefix 'run ' options.instrument ];
   elseif any(strcmpi(options.mode,{'display','trace'}))
     cmd = [ prefix 'display -pMatlab --save ' options.instrument ];
@@ -509,7 +518,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
       index = rmdir(options.dir, 's');
     end
     if ~isempty(dir(options.dir))
-      error([ mfilename ': ERROR: The target directory "' options.dir '" already exists. Use an other target, or delete it prior to the execution.' ]);
+      error([ mfilename ': ERROR: The target directory "' options.dir '" already exists. Use an other target, delete it prior to the execution, or use options.overwrite=1.' ]);
     end
     cmd = [ cmd ' --dir=' options.dir ];
   end
@@ -523,7 +532,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
       cmd = [ cmd ' --mpi=' num2str(options.mpi) ];
     end
   end
-  if isfield(options,'info')
+  if strcmp(options.mode, 'info')
     cmd = [ cmd ' --info' ];
   end
   if isfield(options,'help')
@@ -649,7 +658,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   
   % EXECUTE here: simulate, optimize and display modes
-  status = system_wait(cmd, options);
+  [status, result] = system_wait(cmd, options);
   
   if any(strcmpi(options.mode,{'display','trace'})) && status == 0
     % wait for figure to be ready...
@@ -669,6 +678,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     else
       criteria=[];
     end
+  elseif strcmpi(options.mode,'info')
+    criteria = str2struct(result);
+    return
   end
   
   if nargout ==0, return; end
