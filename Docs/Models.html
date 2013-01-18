@@ -56,7 +56,7 @@ You can edit their code to see how to define new models:<br>
 The 1D functions are <span style="font-style: italic;">signal=f(parameters, x)</span>, and the 2D functions are <span style="font-style: italic;">signal=f(parameters, x, y)</span>.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 1016px; height: 1301px;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 1016px; height: 1301px;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Function<br>
@@ -411,7 +411,7 @@ Kohlbrecher</a> and <a href="mailto:ingo%28at%29cs.tu-berlin.de">Ingo
 Bressler</a> PSI (2006-2011)</li>
 </ul>
 <p style="text-align: left;"></p>
-<table style="text-align: left; width: 1016px; height: 13px;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 1016px; height: 13px;" border="1" cellpadding="2" cellspacing="2">
 
 <tbody><tr><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Structure factors<br>
       </td><td style="vertical-align: top; background-color: rgb(255, 204, 204);"><span style="font-style: italic; font-weight: bold; color: rgb(51, 102, 255);">Description</span><br>
@@ -451,7 +451,7 @@ Bressler</a> PSI (2006-2011)</li>
 </table>
 <br>
 
-<table style="text-align: left; width: 1016px; height: 59px;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 1016px; height: 59px;" border="1" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Form factors: small angle<br>
       </td><td style="vertical-align: top; background-color: rgb(255, 204, 204);"><span style="font-style: italic; font-weight: bold; color: rgb(51, 102, 255);">Description</span><br>
       </td><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Dimensionality<br>
@@ -487,7 +487,7 @@ The <span style="font-style: italic;">ifitmakefunc</span> tool enables
 to define a new fit function/model from a simple dialog, by entering
 its <a href="images/ifitmakefunc.png"><img title="ifitmakefunc" src="images/ifitmakefunc.png" alt="ifitmakefunc" style="border: 0px solid ; width: 150px; height: 137px;" align="right"></a>expression
 as a function of the parameter vector <span style="font-style: italic; font-weight: bold;">p</span> and the axes <span style="font-style: italic; font-weight: bold;">x,y,z</span>,...<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc;</span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc;<br><span style="color: rgb(0, 0, 0);">&gt;&gt; h=</span>edit<span style="color: rgb(0, 0, 0);">(iFunc);	<span style="font-style: italic;">% equivalent</span></span><br></span></pre>
 The only required argument is the expression, but you may as well&nbsp;
 enter a function name and description, parameter names and default
 values, as well as a constraint to be evaluated before computing the
