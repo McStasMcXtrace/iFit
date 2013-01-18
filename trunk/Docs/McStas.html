@@ -21,7 +21,7 @@
 <h1 style="text-align: center;">
 </h1>
 <ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId234815">Running a single
-simulation</a></li><li><a href="#mozTocId124981">Displaying the instrument geometry</a></li><li><a href="#mozTocId821585">Running series of
+simulation</a></li><li><a href="#mozTocId124981">Getting instrument information and Displaying the instrument geometry</a></li><li><a href="#mozTocId821585">Running series of
 simulations (scans)</a></li><li><a href="#mozTocId690143">Optimizing instrument
 parameters
 </a></li><li><a href="#mozTocId359721">Optimizing instrument
@@ -76,7 +76,7 @@ The parameters can also be given as a single string with members separated with 
 
 </div>
 When the instrument is not found in the current directory, it is
-searched in the Mcstas library, and eventually copied locally, which
+searched in the Mcstas library (may be specified with the MCSTAS environment variable), and eventually copied locally, which
 triggers its compilation.<br>
 <br>
 The last argument <span style="font-style: italic;">options</span>
@@ -138,12 +138,15 @@ only matches are imported. If no match can be identified, all monitors
 are read, the monitor list can be reduced by searching tokens in the 
 data sets contents.<br>
 
-<h3><a class="mozTocH3" name="mozTocId124981"></a>Displaying the instrument geometry</h3>
-To display the instrument geometry, use the syntax:<br>
-<pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <span style="color: rgb(204, 51, 204);">'RV=1','mode=display'</span>);</pre>
+<h3><a class="mozTocH3" name="mozTocId124981"></a>Getting instrument information and Displaying the instrument geometry</h3>To display the instrument geometry, use the syntax:<br>
+<pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, <span style="color: rgb(204, 51, 204);">'RV=1','mode=display'</span>);</pre>
 which will launch 'mcdisplay' in the background, and open the resulting
 figure. No neutron trajectory is shown though, only the instrument
 geometry.<br>
+<br>
+In order to just get information about the instrument, especially its input parameters, you can run<br>
+<pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <span style="color: rgb(204, 51, 204);">'parameters=values...','mode=info'</span>);<br>&gt;&gt; result  = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <span style="color: rgb(204, 51, 204);">'</span><span style="color: rgb(204, 51, 204);">--info'</span>);	<span style="font-style: italic;">% same as above</span></pre>
+
 
 
 
