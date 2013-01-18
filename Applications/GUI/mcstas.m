@@ -138,54 +138,20 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   else return;
   end
   
-  % check for McStas/McXtrace existence
-  mcstas_lib   = getenv('MCSTAS');
-  mcxtrace_lib = getenv('MCXTRACE');
-  if isempty(mcstas_lib)
-    if ispc
-      mcstas_lib = 'C:\mcstas\lib';
-    else
-      mcstas_lib = '/usr/local/lib/mcstas';
-    end
-  end
-  if isempty(mcxtrace_lib)
-    if ispc
-      mcxtrace_lib = 'C:\mcxtrace\lib';
-    else
-      mcxtrace_lib = '/usr/local/lib/mcxtrace';
-    end
-  end
-  
-  % find instrument in McStas/McXtrace installation ?
+  % check for instrument in McStas/McXtrace libraries
+  search_dir = { getenv('MCSTAS'), getenv('MCXTRACE'), ...
+    '/usr/local/lib/mc*', 'C:\mc*'};
   if isempty(index)
-    if ~isempty(dir(mcstas_lib))
-      [p,f,e] = fileparts(instrument);
-      instrument = [ f e ];
-      index = getAllFiles(mcstas_lib, instrument);
-      if ~isempty(index)
-        disp([ mfilename ': Copying instrument ' index ' in ' pwd ] );
-        copyfile(index, instrument);
-      end
-    elseif ~isempty(dir(mcxtrace_lib))
-      [p,f,e] = fileparts(instrument);
-      instrument = [ f e ];
-      index = getAllFiles(mcxtrace_lib, instrument);
-      if ~isempty(index)
-        disp([ mfilename ': Copying instrument ' index ' in ' pwd ] );
-        copyfile(index, instrument);
-      end
-    else mcstas_lib=''; mcxtrace_lib=''; index=[];
+    % search the instrument recursively in all existing directories in this list
+    index = getAllFiles(search_dir, instrument);
+    if ~isempty(index)
+      disp([ mfilename ': Copying instrument ' index ' in ' pwd ] );
+      copyfile(index, instrument);
     end
   end
   
   if isempty(index)
-    disp([ mfilename ': ERROR: Can not find instrument ' instrument ]);
-  end
-  
-  if ~isempty(mcstas_lib) && isempty(mcxtrace_lib)
-    options.particle = 'n';
-  elseif isempty(mcstas_lib) && ~isempty(mcxtrace_lib)
-    options.particle = 'x';
+    error([ mfilename ': ERROR: Can not find instrument ' instrument ]);
   end
   
   options.instrument     = instrument;
@@ -832,7 +798,21 @@ end % mcstas_criteria
 % function to search for a file recursively
 function fileList = getAllFiles(dirName, File)
 
+  % allow search in many directories
+  if iscell(dirName)
+    for d=1:length(dirName)
+      fileList=getAllFiles(dirName{d}, File);
+      if ~isempty(fileList)
+        break
+      end
+    end
+    return
+  end
+  
   dirData = dir(dirName);                 % Get the data for the current directory
+  fileList= [];
+  if ~isdir(dirName), dirName = fileparts(dirName); end
+  if isempty(dirData), return; end
   dirIndex = [dirData.isdir];             % Find the index for directories
   fileList = {dirData(~dirIndex).name}';  % Get a list of the files
   if ~isempty(fileList)
@@ -847,6 +827,7 @@ function fileList = getAllFiles(dirName, File)
   subDirs = {dirData(dirIndex).name};          % Get a list of the subdirectories
   validIndex = ~ismember(subDirs,{'.','..'});  % Find index of subdirectories
                                                %   that are not '.' or '..'
+  
   for iDir = find(validIndex)                  % Loop over valid subdirectories
     nextDir = fullfile(dirName,subDirs{iDir}); % Get the subdirectory path
     fileList = getAllFiles(nextDir, File);     % Recursively call getAllFiles
