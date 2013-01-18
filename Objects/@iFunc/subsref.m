@@ -37,6 +37,16 @@ for i = 1:length(S)     % can handle multiple index levels
       if isnumeric(b) && strcmpi(fieldname, 'Date')
         b = datestr(b);
       end
+    elseif any(strcmp(fieldname, b.Parameters)) % b.<parameter name>
+      index=find(strcmp(fieldname, b.Parameters));
+      if ~isempty(b.ParameterValues)
+        b = b.ParameterValues;
+        b = b(index);
+      end
+    elseif strcmp(fieldname, 'p')
+      if ~isempty(b.ParameterValues)
+        b = b.ParameterValues;
+      end
     elseif ismethod(b, fieldname)
       if i == length(S)
         if nargout(fieldname) ==0

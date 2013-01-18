@@ -13,7 +13,9 @@
 
 <ul id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId466436">Creating
 and inquiring iFunc models (iFunc, get, plot, subplot)
-</a></li><li><a href="#mozTocId966568">
+</a><ul><li><a href="#mozTocId780038">
+Accessing or modifying parameter values</a></li><li><a href="#mozTocId354273">
+Defining a new model</a></li></ul></li><li><a href="#mozTocId966568">
 Evaluating a model with parameter values and axes</a></li><li><a href="#mozTocId2492">Saving objects for further re-use: save, saveas</a></li><li><a href="#mozTocId443357">Manipulating models: operators
 </a></li><li><a href="#mozTocId443357">Fitting model parameters onto data
 </a></li></ul>
@@ -87,12 +89,30 @@ procedure should be used (which is based upon a signal peak search, and
 baseline  analysis).<br>
 
 Last, the <span style="font-weight: bold;">Constraint</span> property holds any script to change the parameter values (character string modifying <span style="font-style: italic;">'p'</span>) from axes<span style="font-style: italic;"> x,y,z,...</span> or a function handle <span style="font-style: italic;">p=@Constraint(p, x,y,...)</span><br>
-<br>
+<h4><a class="mozTocH4" name="mozTocId780038"></a>
+Accessing or modifying parameter values</h4>
+<p>Parameters from a model can be accessed in many equivalent ways. If <span style="font-style: italic;">'a'</span> is an iFunc model :<br>
+</p>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);"></span>a.Parameters		<span style="font-style: italic;">% lists all parameter names</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(a)		<span style="font-style: italic;">% display the model description, with the list of parameter names and last evaluated values</span><br>&gt;&gt; a.p			<span style="font-style: italic;">% returns a vector of parameter values</span><br>&gt;&gt; a.ParameterValues	<span style="font-style: italic;">% same as above, last evaluated parameter values</span><br></pre>
+<p>If, for instance, the model has an<span style="font-style: italic;"> 'Slope' </span>parameter, you can get specifically its value with :<br>
+</p>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);"></span>a.Slope		<span style="font-style: italic;">% display the value of the 'Slope' parameter</span></pre>
+
+<p>Alternatively, it is possible to modify parameter values :<br>
+</p>
+<pre style="margin-left: 40px;">&gt;&gt; a.p(1) = 2;<br>&gt;&gt; a.Slope = 2;<br></pre>
+
+<h4><a class="mozTocH4" name="mozTocId354273"></a>
+  <span style="font-weight: bold;">Defining a new model</span></h4>
 <span style="font-weight: bold;">To define a new model</span> with a dialogue window, use:<br>
+
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span>(iFunc) <span style="font-style: italic;"></span></pre>
 
 
-<a href="images/iFunc_subplot.png"><img alt="iFunc: subplot" title="iFunc: subplot" src="images/iFunc_subplot.png" style="border: 0px solid; width: 200px; height: 304px;" align="right"></a>A list of pre-defined models is shown in the <a href="Models.html">Models</a> page (Gaussian, Lorentzian, exponential, lines, quadratic, ...). Edit their code to see how to define new models:<br>
+<a href="images/iFunc_subplot.png"><img alt="iFunc: subplot" title="iFunc: subplot" src="images/iFunc_subplot.png" style="border: 0px solid; width: 200px; height: 304px;" align="right"></a>Refer to the dedicated help on this topic in the <a href="Models.html">Models</a>
+ page, which also lists pre-defined models (Gaussian, Lorentzian, 
+exponential, lines, quadratic, ...). Edit their code to see how to 
+define new models:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span> gauss <span style="font-style: italic;">% edit the function definition (from a file)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span> voigt<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span>(voig) <span style="font-style: italic;">% edit the object definition</span></pre>
 
 
@@ -118,11 +138,11 @@ parameters matching the model ones, x,y,z,... are axes values for ranks
 usable in the Expression as<span style="font-style: italic;"> 'varargin' </span>cell. <br>
 <br>
 The evaluation of a model with a set of parameters is obtained by calling the <span style="color: rgb(51, 102, 255);">feval</span> function with the parameter values, or sending these values directly to the object :<br>
-<pre style="margin-left: 40px;">&gt;&gt; signal = <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0])<br>&gt;&gt; gauss([ 1 0 .1 0])
+<pre style="margin-left: 40px;">&gt;&gt; signal = <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0])<br>&gt;&gt; gauss([ 1 0 .1 0])		<span style="font-style: italic;">	% same as above: evaluate model</span>
 </pre>
 In this case, tentative axes are computed from the model definition. Axes can also be passed as additional arguments for <span style="font-style: italic;">x,y,z,...</span> either as separate arguments, as a cell array {x,y,...}, as a structure, or as an iData object which axes are used.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )
-&gt;&gt; gauss([ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )<br></pre>
+&gt;&gt; gauss([ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )		<span style="font-style: italic;">% same as above: evaluate model</span><br></pre>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId2492"></a>Saving objects for further re-use: save, saveas</h3>
 <p>Once you have created an manipulated a model, it is possible to 
 export it into a file so that you can re-use it latter. To do so, use <span style="font-style: italic;">saveas(object, ...)</span> similarly as when <a href="Save.html">saving iData objects</a>. '<span style="font-style: italic;">save</span>' is equivalent to <span style="font-style: italic;">saveas</span>.<br>

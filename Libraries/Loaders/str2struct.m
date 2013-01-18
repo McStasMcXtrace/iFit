@@ -40,37 +40,61 @@ end
 % interpret the line as <name> <separator> <value> <comment>
 for index=1:numel(cellstring)
   this = cellstring{index};
+  [name, value] = str2struct_value_pair(this);
+  if ~isempty(name) && ~isempty(value) 
+    if ~isstruct(value), s.(name) = value; 
+    else
+      f = fieldnames(value);
+      s.(name).(f{1}) = value.(f{1});
+    end
+  end
+end
+
+% ==============================================================================
+function [name, value] = str2struct_value_pair(this)
   [name, line] = strtok(this, sprintf('=: \t'));
-  if isempty(name), continue; end
+  value = [];
+  if isempty(name), return; end
   if name(1)=='#' || name(1)=='%' || strncmp(name, '//', 2) || name(1) == '!'
-    continue; % skip comment lines
+    name=[]; % skip comment lines
+    return
   end
   nextline = min(find(isstrprop(line, 'alphanum')));
   startline=line(1:nextline);
   nextline=max(find(startline == '=' | startline == ' ' | startline == ':'));
-  if nextline >= 1, nextline=nextline+1; else continue; end
+  if   nextline >= 1, nextline=nextline+1; 
+  else name = []; return; end
   line = line(nextline:end);
+  % extract numerical value after the starting token 'name'
   [value, count, errmsg, nextindex] = sscanf(line, '%f');
   comment = strtrim(line(nextindex:end)); comment(~isstrprop(comment,'print')) = ' ';
   name = strrep(name, '.', '_');
   name = strrep(name, '-', '_');
   name = genvarname(name);
+  % when value can not be obtained, try with num2str (for expressions)
   if isempty(value), 
-      value=comment;
-      tmp  =str2num(value);
-      if ~isempty(tmp) && isnumeric(tmp)
-        value=tmp;
-      end
-      if ischar(value)
-        if value(1) == '''' || value(1) == '"'
-          value = value(2:end);
-        end
+    value=comment;
+    tmp  =str2num(value);
+    if ~isempty(tmp) && isnumeric(tmp)
+      value=tmp;
+    end
+    if ischar(value)
+      % check if the 'value' as char starts/ends with quotes
+      if value(1) == '''' || value(1) == '"'
+        value = value(2:end);
         if value(end) == '''' || value(end) == '"'
           value = value(1:(end-1));
         end
+      else
+        % check again if value contains itself an assignement
+        if ~isempty(find(value == '='))
+          [n,v] =  str2struct_value_pair(value);
+          if ~isempty(n) && ~isempty(v)
+            s.(n) = v;
+            value = s;
+          end
+        end
       end
+    end
   end
-  if ~isempty(value), s.(name) = value; end
-end
-
 
