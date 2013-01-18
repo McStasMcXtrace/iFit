@@ -1,7 +1,7 @@
 /* program cif2hkl */
 /* compile with:
       gfortran -O2 -fPIC -c cif2hkl.f90
-      mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -I/usr/lib/gcc/x86_64-linux-gnu/4.6 -lgfortran
+      mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran
  */
 
 
