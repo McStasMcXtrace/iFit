@@ -77,10 +77,10 @@ if nargin == 0
   return
 end
 
-variable_p     = [];  % will store variable parameters for both Rietveld and instrument
+variable_p     = [];  % will store variable parameters for both CFL and instrument
 constant_p     = [];  % will store fixed instrument parameters to be used by model
 instrument     = '';  % name of the instrument model to use
-Rietveld       = [];
+CFL            = [];
 mcstas_options = [];
 
 atoms={'H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si','P','S','Cl','Ar',...
@@ -99,7 +99,6 @@ atoms={'H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si','P','S','
 % char      -> read file with cif2hkl(--no-output-files --verbose <file>)
 % numeric   -> [a b c aa bb cc (Z x y z B occ spin charge) .. ], use fixed instrument parameters
 % structure -> analyse fields and search for Spgr, cell, atoms, x,y,z,...
-
 for index=1:length(varargin)
   this = varargin{index};
   if ischar(this)   % char -> struct
@@ -114,15 +113,23 @@ for index=1:length(varargin)
       continue; % jump to next argument in the list
     end
     % call cif2hkl
-    if exist('cif2hkl') == 3
-      % use MeX in verbose and no-output-files mode ('-')
-      result = cif2hkl(this,[],[],'-',1);
-      this = str2struct(result);
+    if ~isempty(dir(this))
+      if exist('cif2hkl') == 3
+        % use MeX in verbose and no-output-files mode ('-')
+        result = cif2hkl(this,[],[],'-',1);
+        result = str2struct(result);
+        if isstruct(result) && isfield(result, 'structure')
+          this = result;
+        end
+      else
+        disp('cif2hkl is missing: compile it with e.g: ')
+        disp('  gfortran -O2 -fPIC -c cif2hkl.f90')
+        disp('  mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran')
+        error('Missing cif2hkl MeX')
+      end
     else
-      disp('cif2hkl is missing: compile it with e.g: ')
-      disp('  gfortran -O2 -fPIC -c cif2hkl.f90')
-      disp('  mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -I/usr/lib/gcc/x86_64-linux-gnu/4.6 -lgfortran')
-      error('Missing cif2hkl MeX')
+      disp([ mfilename ': Unknown char argument ' this '. Ignoring' ])
+      continue
     end
   end % ischar
   if isnumeric(this) && length(this) >= 14                   % numeric -> struct
@@ -145,25 +152,24 @@ for index=1:length(varargin)
   end % is numeric
   if isstruct(this) % struct -> store numeric fields into variable_p, and char into constant_p
     f = fieldnames(this);
-    
     for j=1:length(f)
       % check if the name of the field is <atom> optionally followed by a number
       [at,nb] = strtok(f{j}, '0123456789'); % supposed to be an atom, and nb is a 'number' or empty
-      %  handle Rietveld parameters
+      %  handle CFL parameters
       if any(strcmpi(f{j}, {'Spgr','Spg','Group','SpaceGroup','SubG','SpaceG','SPCGRP'}))
         if isnumeric(this.(f{j})), this.(f{j}) = num2str(this.(f{j})); end
-        Rietveld.Spgr = this.(f{j});
-      elseif any(strncmpi(f{j}, {'struct','atoms'},3))
-        Rietveld.structure = this.(f{j});
-      elseif any(strncmpi(f{j}, {'CFML_write'},6))
-        Rietveld.CFML_write = this.(f{j});
+        CFL.Spgr = this.(f{j});
+      elseif any(strncmpi(f{j}, {'struct','atoms'},5))
+        CFL.structure = this.(f{j});
+      elseif strcmpi(f{j}, 'CFML_write')
+        CFL.CFML_write = this.(f{j});
       elseif any(strcmp(at, atoms)) && (isempty(nb) || ~isempty(str2num(nb))) && length(this.(f{j})) >= 3 && length(this.(f{j})) <= 7
         % the name of the field is <atom> optionally followed by a number, and value length is 3-7
-        Rietveld.structure.(f{j}) = this.(f{j});
-      elseif any(strncmpi(f{j}, {'cell','lattice'},4))
-        Rietveld.cell = this.(f{j});
-      elseif strncmpi(f{j}, 'title',4)
-        Rietveld.title = this.(f{j});
+        CFL.structure.(f{j}) = this.(f{j});
+      elseif any(strcmpi(f{j}, {'cell','lattice'}))
+        CFL.cell = this.(f{j});
+      elseif strcmpi(f{j}, 'title')
+        CFL.title = this.(f{j});
       % handle McStas parameters
       elseif any(strcmpi(f{j},{'ncount','dir','mpi','seed','gravitation','compile','particle','monitors'}))
         mcstas_options.(f{j}) = this.(f{j});
@@ -180,34 +186,35 @@ for index=1:length(varargin)
   end
 end
 
-% check Rietveld structure members =============================================
+% check CFL structure members =============================================
 % Required: cell, Spgr, structure.<atoms>
-if ~isstruct(Rietveld)
+if ~isstruct(CFL)
   error([ mfilename ': No sample parameters defined for Rietveld refinement. See "help rietveld".' ])
 end
-if ~isfield(Rietveld,'Spgr')
+if ~isfield(CFL,'Spgr')
   disp([ mfilename ': Space group not defined. Using default cubic "F m -3 m".' ])
-  Rietveld.Spgr = 'F m -3 m'; % default group when not specified
+  CFL.Spgr = 'F m -3 m'; % default group when not specified
 end
-if ~isfield(Rietveld, 'cell')
+if ~isfield(CFL, 'cell')
   disp([ mfilename ': lattice constants not defined. Using default a=b=c=2*pi and 90 deg angles.' ])
-  Rietveld.cell = [ 2*pi 2*pi 2*pi 90 90 90 ];
+  CFL.cell = [ 2*pi 2*pi 2*pi 90 90 90 ];
 end
-if ~isfield(Rietveld, 'title')
-  Rietveld.title = '';
+if ~isfield(CFL, 'title')
+  CFL.title = '';
 end
-if ~isfield(Rietveld, 'structure')
-  error([ mfilename ': No atom positions defined in the cell (Rietveld.structure). See "help rietveld".' ])
+if ~isfield(CFL, 'structure')
+  error([ mfilename ': No atom positions defined in the cell (CFL.structure). See "help rietveld".' ])
 end
-if ~isstruct(Rietveld.structure)
+if ~isstruct(CFL.structure)
   error([ mfilename ': The atom positions should be defined as a named structure with [x y z {Biso occ spin charge}] values. See "help rietveld".' ])
 end
-if ~isfield(Rietveld,'CFML_write')
-  Rietveld.CFML_write = 'reflections.laz';
-  disp([ mfilename ': Intermediate reflection file not defined. Using default CFML_write=''' Rietveld.CFML_write '''.' ])
+if ~isfield(CFL,'CFML_write')
+  CFL.CFML_write = 'reflections.laz';
+  disp([ mfilename ': Intermediate reflection file not defined. Using default CFML_write=''' CFL.CFML_write '''.' ])
 end
 if isempty(instrument)
-  instrument = 'templateDIFF';
+  instrument = 'templateDIFF.instr';
+  disp([ mfilename ': Instrument description file not defined, using instrument=''' instrument '''.' ]);
 end
 % getting list of instrument parameters if not given...
 if ~isstruct(variable_p) && ~isstruct(constant_p)
@@ -226,17 +233,17 @@ if ~isstruct(variable_p) && ~isstruct(constant_p)
   end
 end
 
-f        = fieldnames(Rietveld.structure);
+f        = fieldnames(CFL.structure);
 nb_atoms = length(f);
 
 % build the list of parameters for 'p' and the Guess value =====================
 % p(1:6): cell [a b c aa bb cc]
-Parameters = {'Rietveld_a','Rietveld_b','Rietveld_c','Rietveld_alpha','Rietveld_beta','Rietveld_gamma'};
-Guess      = Rietveld.cell;
+Parameters = {'Sample_a','Sample_b','Sample_c','Sample_alpha','Sample_beta','Sample_gamma'};
+Guess      = CFL.cell;
 Guess(4:6) = mod(Guess(4:6),360);
 % p(7:(nb_atoms*7+6)): atoms [x y z {Biso occ spin charge}]
 for index=1:length(f)
-  this       = Rietveld.structure.(f{index});
+  this       = CFL.structure.(f{index});
   this(1:3)  = min(1,max(0,this(1:3)));
   
   % add optional/missing values {Biso occ spin charge}
@@ -248,13 +255,13 @@ for index=1:length(f)
   % setup the Guess for the atom
   Guess      = [ Guess(:) ; this(:) ];
   % add parameter names per atom type
-  Parameters{end+1} = [ 'Rietveld_' f{index} '_x' ];
-  Parameters{end+1} = [ 'Rietveld_' f{index} '_y' ];
-  Parameters{end+1} = [ 'Rietveld_' f{index} '_z' ];
-  Parameters{end+1} = [ 'Rietveld_' f{index} '_Biso' ];
-  Parameters{end+1} = [ 'Rietveld_' f{index} '_Occ' ];
-  Parameters{end+1} = [ 'Rietveld_' f{index} '_Spin' ];
-  Parameters{end+1} = [ 'Rietveld_' f{index} '_Charge' ];
+  Parameters{end+1} = [ 'Sample_' f{index} '_x' ];
+  Parameters{end+1} = [ 'Sample_' f{index} '_y' ];
+  Parameters{end+1} = [ 'Sample_' f{index} '_z' ];
+  Parameters{end+1} = [ 'Sample_' f{index} '_Biso' ];
+  Parameters{end+1} = [ 'Sample_' f{index} '_Occ' ];
+  Parameters{end+1} = [ 'Sample_' f{index} '_Spin' ];
+  Parameters{end+1} = [ 'Sample_' f{index} '_Charge' ];
 end
 % add other parameters from 'variable_p'
 if isstruct(variable_p)
@@ -264,9 +271,9 @@ if isstruct(variable_p)
     Guess = [ Guess(:) ; variable_p.(f{index}) ];
   end
 end
-disp([ mfilename ': Assembling Rietveld model ' Rietveld.title ' with ' num2str(length(Guess)) ' parameters, and instrument ' instrument ]);
+disp([ mfilename ': Assembling Rietveld model ' CFL.title ' with ' num2str(length(Guess)) ' parameters, and instrument ' instrument ]);
 
-y.Name       = strtrim([ Rietveld.title ' Rietveld refinement [' mfilename ']' ]);
+y.Name       = strtrim([ CFL.title ' Rietveld refinement [' mfilename ']' ]);
 y.Description= strtrim([ 'Rietveld refinement using McStas virtual experiment ' instrument ]);
 y.Guess      = Guess;
 y.Parameters = Parameters;
@@ -277,15 +284,15 @@ Expression = { ...
   'tmp=tempname; tmp = [ tmp ''.cfl'' ];', ...
   'fid=fopen(tmp,''w'');', ...
   'fprintf(fid,''! FullProf/CrysFML file format\n'');', ...
-  [ 'fprintf(fid,''Title  ' Rietveld.title ' sample\n'');' ], ...
+  [ 'fprintf(fid,''Title  ' CFL.title ' sample\n'');' ], ...
   'fprintf(fid,''!      a           b           c          alpha   beta    gamma\n'');', ...
   'fprintf(fid,''Cell   ''); fprintf(fid,''%f '', p(1:6)); fprintf(fid,''\n'');', ...
   'fprintf(fid,''!     Space Group\n'');', ...
-  [ 'fprintf(fid,''Spgr  ' Rietveld.Spgr '\n'');' ], ...
+  [ 'fprintf(fid,''Spgr  ' CFL.Spgr '\n'');' ], ...
   'fprintf(fid,''!                X        Y       Z     B       occ       Spin  Charge\n'');' ...
   };
 % add the Atom list
-f = fieldnames(Rietveld.structure);
+f = fieldnames(CFL.structure);
 for index=1:nb_atoms
   i1 = 7+(index-1)*7; % index of <atoms> block in 'p', with 7 values each
   i2 = i1+6;
@@ -297,7 +304,7 @@ end
 Expression{end+1} = 'fclose(fid);';
 
 % generate hklF2 (cif2hkl)
-Expression{end+1} = [ 'cif2hkl(tmp,''' Rietveld.CFML_write ''');' ];
+Expression{end+1} = [ 'cif2hkl(tmp,''' CFL.CFML_write ''');' ];
 
 % delete temporary file
 Expression{end+1} = 'delete([ tmp ]);';
@@ -363,7 +370,7 @@ if y.Dimension == 0
   end
   disp(signal); % this is an iData object
   y.Dimension = ndims(signal);
-  disp([ mfilename ': Setting dimension of the Rietveld model ' Rietveld.title ' to ' num2str(y.Dimension) ]);
+  disp([ mfilename ': Setting dimension of the Rietveld model ' CFL.title ' to ' num2str(y.Dimension) ]);
   ax = ',x,y,z,t';
   Expression{end+1} = 'if length(signal) > 1, signal = signal(end); end';
   Expression{end+1} = [ 'signal = double(interp(signal ' ax(1:(2*y.Dimension)) '));' ];
