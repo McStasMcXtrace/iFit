@@ -92,6 +92,17 @@ else
         % check object when modifying key member
           b = iFunc(b);
         end
+      elseif any(strcmp(fieldname, b.Parameters)) % b.<parameter name>
+        index=find(strcmp(fieldname, b.Parameters));
+        if ~isempty(b.ParameterValues)
+          if isnumeric(val) && isscalar(val)
+            b.ParameterValues(index) = val;
+          end
+        end
+      elseif strcmp(fieldname, 'p')
+        if isnumeric(val)
+          b.ParameterValues=val;
+        end
       else
         error([ mfilename ': can not set iFunc object Property ''' fieldname ''' in iFunc model ' b.Tag '.' ]);
       end
