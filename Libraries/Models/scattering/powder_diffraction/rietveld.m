@@ -120,7 +120,7 @@ for index=1:length(varargin)
       this = str2struct(result);
     else
       disp('cif2hkl is missing: compile it with e.g: ')
-      disp('  gfortran -fPIC -c cif2hkl.f90')
+      disp('  gfortran -O2 -fPIC -c cif2hkl.f90')
       disp('  mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -I/usr/lib/gcc/x86_64-linux-gnu/4.6 -lgfortran')
       error('Missing cif2hkl MeX')
     end
@@ -150,7 +150,7 @@ for index=1:length(varargin)
       % check if the name of the field is <atom> optionally followed by a number
       [at,nb] = strtok(f{j}, '0123456789'); % supposed to be an atom, and nb is a 'number' or empty
       %  handle Rietveld parameters
-      if any(strcmpi(f{j}, {'Spgr','Spg','Group','SpaceGroup','SubG','SpaceG'}))
+      if any(strcmpi(f{j}, {'Spgr','Spg','Group','SpaceGroup','SubG','SpaceG','SPCGRP'}))
         if isnumeric(this.(f{j})), this.(f{j}) = num2str(this.(f{j})); end
         Rietveld.Spgr = this.(f{j});
       elseif any(strncmpi(f{j}, {'struct','atoms'},3))
@@ -209,7 +209,24 @@ end
 if isempty(instrument)
   instrument = 'templateDIFF';
 end
-f = fieldnames(Rietveld.structure);
+% getting list of instrument parameters if not given...
+if ~isstruct(variable_p) && ~isstruct(constant_p)
+  disp([ mfilename ': The instrument simulation has no parameter defined. Getting the list of instrument parameters... ' ]);
+  info=mcstas(instrument,'--info');
+  % list of parameters is in info.Param
+  if isfield(info,'Param') && isstruct(info.Param)
+    f = fieldnames(info.Param);
+    for index=1:length(f)
+      if isnumeric(info.Param.(f{index})) && isscalar(info.Param.(f{index}))
+        variable_p.(f{index}) = info.Param.(f{index});
+      else
+        constant_p.(f{index}) = info.Param.(f{index});
+      end
+    end
+  end
+end
+
+f        = fieldnames(Rietveld.structure);
 nb_atoms = length(f);
 
 % build the list of parameters for 'p' and the Guess value =====================
@@ -244,7 +261,7 @@ if isstruct(variable_p)
   f = fieldnames(variable_p);
   for index=1:length(f)
     Parameters{end+1} = f{index};
-    Guess = [ Guess variable_p.(f{index}) ];
+    Guess = [ Guess(:) ; variable_p.(f{index}) ];
   end
 end
 disp([ mfilename ': Assembling Rietveld model ' Rietveld.title ' with ' num2str(length(Guess)) ' parameters, and instrument ' instrument ]);
@@ -257,7 +274,7 @@ y.Parameters = Parameters;
 % assemble the core Expression of the model ====================================
 % start to write the CFL file (temporary file name)
 Expression = { ...
-  'tmp=tempname;', ...
+  'tmp=tempname; tmp = [ tmp ''.cfl'' ];', ...
   'fid=fopen(tmp,''w'');', ...
   'fprintf(fid,''! FullProf/CrysFML file format\n'');', ...
   [ 'fprintf(fid,''Title  ' Rietveld.title ' sample\n'');' ], ...
@@ -283,17 +300,13 @@ Expression{end+1} = 'fclose(fid);';
 Expression{end+1} = [ 'cif2hkl(tmp,''' Rietveld.CFML_write ''');' ];
 
 % delete temporary file
-Expression{end+1} = 'delete(tmp);';
+Expression{end+1} = 'delete([ tmp ]);';
 
 % start to build the instrument related Expression
 Expression{end+1} = [ 'instrument = ' mat2str(instrument) ';' ];
 % additional fit parameters into instrument parameters
 Expression{end+1} = [ 'instr_pars = [];' ];
-% check if one instrument parameter has been defined (required for the simulation
-% not to wait for manual input
-if ~isstruct(variable_p) && ~isstruct(constant_p)
-  error([ mfilename ': The instrument simulation has no parameter defined. You need to define one at least, e.g. lambda="2.36"' ])
-end
+
 if isstruct(variable_p)
   f = fieldnames(variable_p);
   for index=1:length(f)
@@ -363,3 +376,4 @@ if y.Dimension == 0
   end
 end
 
+y.ParameterValues = Guess;
