@@ -15,8 +15,8 @@ function b = interp(a, varargin)
 %     b=interp(s, ..., 'method') uses specified method for interpolation as one of
 %                    linear (default), spline, cubic, or nearest
 %     b=interp(s, ..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays
-%   Extrapolated data is set to 0 for the Signal, Error and Monitor.
-%   For Event data sets, we recommand th use the hist method.
+%   Extrapolated data is set to NaN for the Signal, Error and Monitor.
+%   For Event data sets, we recommand to use the 'hist' method.which is much faster.
 %
 % input:  s: object or array (iData)
 %         d: single object from which interpolation axes are extracted (iData)
@@ -126,7 +126,8 @@ end
 
 % test axes and decide to call meshgrid if necessary
 
-if isvector(b) >= 2 % plot3/event style
+if isvector(b) >= 2 % plot3/event
+  iData_private_warning(mfilename,['This is an Event data set. The "hist" method is highly recommended rather that "interp".']);
   requires_meshgrid=1; 
   if nargin == 1, ntimes=1; end
 end
