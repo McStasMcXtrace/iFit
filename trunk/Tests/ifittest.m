@@ -195,8 +195,8 @@ case 'Fit_7_uncertainties'
   sigma = output.parsHistoryUncertainty;
   % p    = [ 0.6264      1.001   -0.00365  0.0002173 ]
   % sigma= [ 0.004565  2.438e-05  3.159e-05  3.785e-05 ]
-  if abs(max(abs([ 0.64         1.0008      0.0035         0.0001 ])-abs(p))) < 0.02 && ...
-     all(abs([0.03  1e-03  1e-03  1e-03 ]) > abs(sigma))
+  if abs(max(abs([ 0.6251    1.0008    0.0037   -0.0010 ])-abs(p))) < 0.02 && ...
+     all(abs([0.03  1e-03  1e-03  0.01 ]) > abs(sigma))
     result = 'OK  [p,criteria,message,output]= fits(a); output.parsHistoryUncertainty';
   else
     result = 'FAILED';
