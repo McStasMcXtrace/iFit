@@ -19,7 +19,7 @@ end
 
 switch length(i_axes)
 case 1    % 1D
-  f_signal = interp1(i_axes{1},   i_signal, f_axes{1},   method, 0);
+  f_signal = interp1(i_axes{1},   i_signal, f_axes{1},   method, NaN);
 otherwise % nD, n>1
   if length(i_signal) <= 1  % single value ?
     f_signal = i_signal;
@@ -39,6 +39,6 @@ otherwise % nD, n>1
   else
     % f_axes must be an ndgrid result, and monotonic
     if ~any(strcmp(method,{'linear','nearest','cubic','spline'})), method='linear'; end
-    f_signal = interpn(i_axes{:}, i_signal, f_axes{:}, method, 0);
+    f_signal = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
   end
 end
