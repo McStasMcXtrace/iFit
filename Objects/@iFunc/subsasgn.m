@@ -99,9 +99,9 @@ else
           b.ParameterValues(index)  = val;
           b.Constraint.fixed(index) = nan;
         else % set constraint
-          if ischar(val) && strncmp(val, 'fix', 3)
+          if ischar(val) && any(strncmp(val, {'fix','loc'}, 3))
             b.Constraint.fixed(index) = 1;
-          elseif ischar(val) && strncmp(val, 'cle', 3)
+          elseif ischar(val) && any(strncmp(val, {'cle','unl'}, 3))
             b.Constraint.fixed(index) = 0;
           else
             if ischar(val) && length(str2num(val))==2
@@ -109,8 +109,8 @@ else
             end
             if isnumeric(val) && length(val)==2
               % val=[min max] -> set min(index) and max(index)
-              b.Constraint.min = val(1);
-              b.Constraint.max = val(2);
+              b.Constraint.min(index) = val(1);
+              b.Constraint.max(index) = val(2);
               b.Constraint.fixed(index) = 0;
             elseif ischar(val) && length(str2num(val)) <= 1
               % val = 'val'   -> set fixed(index)

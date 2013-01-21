@@ -7,9 +7,11 @@ function [signal, ax, name] = feval(model, p, varargin)
 %   parameters = feval(model, 'guess', x,y, ..., signal...)
 %     makes a quick parameter guess. This requires to specify the signal
 %     to guess from to be passed after the axes.
-%   signal = feval(model, parameters, x,y, ..., signal...)
+%   signal = feval(model, [ ... Nan ... ], x,y, ..., signal...)
 %     requires some of the initial parameters to be given, others as NaN's. These
-%     values are then replaced by the guessed ones, and the model value is returned.
+%     values are then replaced by guessed ones, and the model value is returned.
+%   signal = feval(model, parameters, x,y, ...)
+%     evaluates the model with given parameters and axes
 %
 % input:  model: model function (iFunc, single or array)
 %         parameters: model parameters (vector, cell or vectors, structure, iData) or 'guess'
@@ -128,17 +130,20 @@ if ~isempty(varargin)
 end
 
 ax=[]; name=model.Name;
+guessed = '';
 % guess parameters ========================================================
 % when length(p) < Parameters, we fill NaN's ; when p=[] we guess them all
-if strcmp(p, 'guess')
+if strcmp(p, 'guess') || isempty(p)
   p = NaN*ones(1, numel(model.Parameters));
+  guessed = 'full';
 elseif isnumeric(p) && length(p) < length(model.Parameters) % fill NaN's from p+1 to model.Parameters
   p((length(p)+1):length(model.Parameters)) = NaN;
 end
 % when there are NaN values in parameter values, we replace them by guessed values
 if (any(isnan(p)) && length(p) == length(model.Parameters))
   % call private method to guess parameters from axes, signal and parameter names
- 
+  if isempty(guessed), guessed = 'partial'; end
+  
   % args={x,y,z, ... signal}
   args=cell(1,model.Dimension+1); args(1:end) = { [] };
   args(1:min(length(varargin),model.Dimension+1)) = varargin(1:min(length(varargin),model.Dimension+1));
@@ -198,7 +203,7 @@ if (any(isnan(p)) && length(p) == length(model.Parameters))
     if isa(model.Guess, 'function_handle')
       n = nargin(model.Guess);                % number of required arguments
       try
-        if n > 0
+        if n > 0 && length(varargin) >= n
           p2 = feval(model.Guess, varargin{1:n}); % returns model vector
         else
           p2 = feval(model.Guess, varargin{:}); % returns model vector
@@ -215,7 +220,7 @@ if (any(isnan(p)) && length(p) == length(model.Parameters))
       p  = p0;             % restore initial value
     end
     if isempty(p2)
-      disp([ 'Warning: Could not evaluate Guess in model ' model.Name ' ' model.Tag ]);
+      disp([ mfilename ': Warning: Could not evaluate Guess in model ' model.Name ' ' model.Tag ]);
       disp(model.Guess);
       disp('Axes and signal:');
       disp(varargin);
@@ -233,18 +238,15 @@ if (any(isnan(p)) && length(p) == length(model.Parameters))
     index = find(isnan(p)); p(index) = signal(index);
   end
   model.ParameterValues = p; % the guessed values
-
-  if ~all(isnan(p0))
+  
+  if ~strcmp(guessed,'full')
     % return the signal and axes
     [signal, ax, name] = feval(model, p, varargin{:});
   else
     ax=0; name=model.Name;
   end
-  % Parameters are stored in the updated model
-  
-  guessed = 1;
-else
-  guessed = 0;
+  % Parameters are stored in the updated model (see assignin below)
+
 end % 'guess'
 
 % apply constraints (fixed are handled in 'fits')
@@ -262,7 +264,7 @@ if ~isempty(inputname(1))
   assignin('caller',inputname(1),model); % update in original object
 end
 
-if guessed
+if ~isempty(guessed)
   return
 end
 

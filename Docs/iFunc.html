@@ -15,8 +15,9 @@
 and inquiring iFunc models (iFunc, get, plot, subplot)
 </a><ul><li><a href="#mozTocId780038">
 Accessing or modifying parameter values</a></li><li><a href="#mozTocId354273">
-Defining a new model</a></li></ul></li><li><a href="#mozTocId966568">
-Evaluating a model with parameter values and axes</a></li><li><a href="#mozTocId2492">Saving objects for further re-use: save, saveas</a></li><li><a href="#mozTocId443357">Manipulating models: operators
+  Defining a new model</a></li></ul></li><li><a href="#mozTocId966568">
+Evaluating a model with parameter values and axes</a></li><li><a href="#mozTocId579374">Setting and removing constraints on models</a></li><li><a href="#mozTocId215011">
+</a></li><li><a href="#mozTocId2492">Saving objects for further re-use: save, saveas</a></li><li><a href="#mozTocId443357">Manipulating models: operators
 </a></li><li><a href="#mozTocId443357">Fitting model parameters onto data
 </a></li></ul>
 
@@ -83,7 +84,7 @@ The name of the parameters can be changed by accessing the <span style="font-wei
 
 The <span style="font-weight: bold;">ParameterValues</span> property holds the last parameter values (e.g. when returned from a fit or a function evaluation).<br>
 
-The <span style="font-weight: bold;">Guess</span> property should return a vector of parameter values<span style="font-style: italic;"> 'p' </span>as a function of the axes <span style="font-style: italic;">x,y,z...</span> and a <span style="font-style: italic;">signal. </span>This is a character string or a function handle <span style="font-style: italic;">p=@Guess(x,y,z, ..., signal)</span>.
+The <span style="font-weight: bold;">Guess</span> property should return a vector of parameter values<span style="font-style: italic;"> 'p' </span>as a function of the axes <span style="font-style: italic;">x,y,z...</span> and a <span style="font-style: italic;">signal. </span>This is a character string, vector or a function handle <span style="font-style: italic;">p=@Guess(x,y,z, ..., signal)</span>.
  Values of the parameters left as <span style="font-style: italic;">NaN</span> indicate that the automatic guess 
 procedure should be used (which is based upon a signal peak search, and 
 baseline  analysis).<br>
@@ -143,6 +144,21 @@ The evaluation of a model with a set of parameters is obtained by calling the <s
 In this case, tentative axes are computed from the model definition. Axes can also be passed as additional arguments for <span style="font-style: italic;">x,y,z,...</span> either as separate arguments, as a cell array {x,y,...}, as a structure, or as an iData object which axes are used.<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )
 &gt;&gt; gauss([ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )		<span style="font-style: italic;">% same as above: evaluate model</span><br></pre>
+<h3><a class="mozTocH3" name="mozTocId579374"></a>Setting and removing constraints on models</h3>
+Models are often used for fitting purposes (refer to the <a href="Fit.html">Fit</a> help page).<br>
+<br>
+To set a constraint on a model parameter, define the 'constraint' input 
+argument when calling <span style="font-weight: bold; font-style: italic;">fits</span> or set the constraint directly on the model 
+parameters with:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span><br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% to unlock value during a fit process</span>
+&gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br></pre>
+
+For instance<br>
+<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;<br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;<br>&gt;&gt; f.Background = [0 1e-4];<br></pre>
+
+<br>
+
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId2492"></a>Saving objects for further re-use: save, saveas</h3>
 <p>Once you have created an manipulated a model, it is possible to 
 export it into a file so that you can re-use it latter. To do so, use <span style="font-style: italic;">saveas(object, ...)</span> similarly as when <a href="Save.html">saving iData objects</a>. '<span style="font-style: italic;">save</span>' is equivalent to <span style="font-style: italic;">saveas</span>.<br>

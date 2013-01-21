@@ -79,10 +79,8 @@ else
         this_max = Inf;
       end
       const = '';
-      if length(s.Constraint.fixed) >=p
-        if s.Constraint.fixed(p)
-          const = [ ' (fixed)' ];
-        end
+      if length(s.Constraint.fixed) >=p && s.Constraint.fixed(p)
+        const = [ ' (fixed)' ];
       elseif any(isfinite([this_min this_max]))
         const = [ ' in ' mat2str([this_min this_max]) ];
       end
