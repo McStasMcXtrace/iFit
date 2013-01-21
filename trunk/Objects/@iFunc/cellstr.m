@@ -41,12 +41,15 @@ end
     ret{end+1} = '%';
   end
   
+  % in header: the Constraint+Expression
   ret{end+1} = '% Expression:';
-  if ~isempty((s.Constraint)) 
-    e = textwrap(cellstr(s.Constraint),80);
-    if length(e) > 3, e=e(1:3); e{end+1} = '...'; end
-    for index=1:length(e)
-      ret{end+1} = sprintf('%%   %s', e{index});
+  if ~isempty(s.Constraint)
+    if isfield(s.Constraint, 'Expression') && ~isempty(s.Constraint.Expression)
+      e = textwrap(cellstr(char(s.Constraint.Expression)),80);
+      if length(e) > 3, e=e(1:3); e{end+1} = '...'; end
+      for index=1:length(e)
+        ret{end+1} = sprintf('%%   %s', e{index});
+      end
     end
   end
   e = textwrap(cellstr(char(s.Expression)),80);
@@ -60,7 +63,25 @@ end
   ret{end+1} = [ '%   p: Parameters (' num2str(length(s.Parameters)) ' values, degrees of freedom)' ];
   p = cellstr(s.Parameters);
   for index=1:length(p)
-    ret{end+1} = sprintf('%%      p(%2d)=%s', index, p{index});
+    line = sprintf('%%      p(%2d)=%s', index, p{index});
+
+    if length(s.Constraint.min) >=index && isfinite(s.Constraint.min(index))
+      this_min = s.Constraint.min(index);
+    else
+      this_min = -Inf;
+    end
+    if length(s.Constraint.max) >=index && isfinite(s.Constraint.max(index))
+      this_max = s.Constraint.max(index);
+    else
+      this_max = Inf;
+    end
+    if length(s.Constraint.fixed) >=index && s.Constraint.fixed(index)
+      line = [ line ' (fixed)' ];
+    elseif any(isfinite([this_min this_max]))
+      line = [ line ' in ' mat2str([this_min this_max]) ];
+    end
+    ret{end+1} = line;
+
   end
   ret{end+1} = [ '%   ' ax(1:(end-1)) ': model axes (' num2str(s.Dimension) ' vector/matrix, dimensionality)' ];
   ret{end+1} = '%   ...: additional arguments to the model function';
@@ -70,24 +91,42 @@ end
   header = char(ret);
 
   % now write the core of the model (for evaluation)
-  if ~isempty(s.Constraint) 
-    if isa(s.Constraint ,'function_handle')
-      ret{end+1} = sprintf('p2 = feval(%s, p, %s); p(~isnan(p2))=p2(~isnan(p2));', fun2str(s.Constraint), ax(1:(end-1)));
-    else
-      ret{end+1} = '% The Constraint';
-      e = cellstr(s.Constraint);
-      for index=1:length(e)
-        this = strtrim(e{index});
-        if this(end) == ';'
-          ret{end+1} = sprintf('%s\n', e{index});
-        else
-          ret{end+1} = sprintf('%s;\n', e{index});
+  if ~isempty(s.Constraint)
+    if isfield(s.Constraint, 'Expression') 
+      if isa(s.Constraint.Expression ,'function_handle')
+        ret{end+1} = sprintf('p2 = feval(%s, p, %s); p(~isnan(p2))=p2(~isnan(p2));', ...
+          fun2str(s.Constraint), ax(1:(end-1)));
+      elseif ~isempty(s.Constraint.Expression)
+        e = cellstr(s.Constraint.Expression);
+        for index=1:length(e)
+          this = strtrim(e{index});
+          if this(end) == ';'
+            ret{end+1} = sprintf('%s\n', e{index});
+          else
+            ret{end+1} = sprintf('%s;\n', e{index});
+          end
         end
       end
     end
-  end
+    % these are handled in fits or feval, so we skip them
+%    i = find(isfinite(s.Constraint.fixed));
+%    if ~isempty(i)
+%      ret{end+1} = sprintf('p(%s) = %s;', ...
+%        mat2str(i), mat2str(s.Constraint.fixed(i)));
+%    end
+%    i = find(isfinite(s.Constraint.min));
+%    if ~isempty(i)
+%      ret{end+1} = sprintf('p(%s) = max(p(%s), %s);', ...
+%        mat2str(i), mat2str(i),  mat2str(s.Constraint.min(i)));
+%    end
+%    i = find(isfinite(s.Constraint.max));
+%    if ~isempty(i)
+%      ret{end+1} = sprintf('p(%s) = min(p(%s), %s);', ...
+%        mat2str(i), mat2str(i),  mat2str(s.Constraint.max(i)));
+%    end
+  end % constraint
   
-  % this one has to return a 'signal' value in the last line
+  % the Expression has to return a 'signal' value in the last line
   if isa(s.Expression ,'function_handle')
     ret{end+1} = sprintf('signal = feval(%s, p, %s);', func2str(s.Expression), ax(1:(end-1)));
   else

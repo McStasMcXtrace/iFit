@@ -102,13 +102,9 @@ function h=iFunc_plot_menu(h, a, name)
                [ 'Description: ' a.Description ]};
 
   % Expression
-  if ~isempty(a.Constraint)
-    u = char(a.Constraint); u=strtrim(u); u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
-    if length(u) > 300, u = [ u(1:297) '...' ]; end
-    properties{end+1} = [ 'Constraint: ' u(:)' ];
-  end
-
-  u = char(a.Expression); u=strtrim(u); u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
+  u=cellstr(a); u = u(~strncmp('%', u, 1)); % remove comment lines 
+  u=[ u{:} ];
+  u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
   if length(u) > 300, u = [ u(1:297) '...' ]; end
   properties{end+1} = [ 'Expression: ' u(:)' ];
 

@@ -7,14 +7,14 @@ function [signal, ax, name] = feval(model, p, varargin)
 %   parameters = feval(model, 'guess', x,y, ..., signal...)
 %     makes a quick parameter guess. This requires to specify the signal
 %     to guess from to be passed after the axes.
-%   parameters = feval(model, parameters, x,y, ..., signal...)
-%     requires some of the initial parameters to be given as NaN's. These
-%     values are then replaced by the guessed ones.
+%   signal = feval(model, parameters, x,y, ..., signal...)
+%     requires some of the initial parameters to be given, others as NaN's. These
+%     values are then replaced by the guessed ones, and the model value is returned.
 %
 % input:  model: model function (iFunc, single or array)
 %         parameters: model parameters (vector, cell or vectors, structure, iData) or 'guess'
 %         ...: additional parameters may be passed, which are then forwarded to the model
-% output: signal: result of the evaluation (vector/matrix/cell)
+% output: signal: result of the evaluation (vector/matrix/cell) or guessed parameters (vector)
 %         axes:   returns the axes used for evaluation (cell of vector/matrix)
 %
 % ex:     b=feval(gauss,[1 2 3 4]); feval(gauss*lorz, [1 2 3 4, 5 6 7 8]);
@@ -42,12 +42,12 @@ end
 % handle input parameter 'p' ===================================================
 
 if nargin < 2
-  p = '';
+  p = [];
 end
 
 if isa(p, 'iData')
   varargin = { p varargin{:} };
-  p = '';
+  p = [];
 end
 
 if iscell(p) && ~isempty(p) % as model cell (iterative function evaluation)
@@ -77,12 +77,19 @@ if isstruct(p)
   end
 end
 
-if strcmp(p, 'plot')
-  signal=plot(model);
-  return
-elseif strcmp(p, 'identify')
-  signal=model;
-  return
+if ischar(p)
+  if strcmp(p, 'plot')
+    signal=plot(model);
+    return
+  elseif strcmp(p, 'identify')
+    signal=model;
+    return
+  elseif ~strcmp(p, 'guess')
+    disp([ mfilename ': Unknown parameter value ' p '. Using "guess" instead.'])
+    p=[];
+  end
+elseif ~isvector(p) && ~isempty(p)
+  error([ 'iFunc:' mfilename ], [ 'Starting parameters "p" should be given as a vector, structure, character or empty, not ' class(p) ]);
 end
 
 % handle varargin ==============================================================
@@ -121,17 +128,17 @@ if ~isempty(varargin)
 end
 
 ax=[]; name=model.Name;
-
 % guess parameters ========================================================
-% when p=[]='guess' we guess them all
-if isempty(p)
-  p = NaN*ones(size(model.Parameters));
+% when length(p) < Parameters, we fill NaN's ; when p=[] we guess them all
+if strcmp(p, 'guess')
+  p = NaN*ones(1, numel(model.Parameters));
+elseif isnumeric(p) && length(p) < length(model.Parameters) % fill NaN's from p+1 to model.Parameters
+  p((length(p)+1):length(model.Parameters)) = NaN;
 end
-
 % when there are NaN values in parameter values, we replace them by guessed values
-if (any(isnan(p)) && length(p) == length(model.Parameters)) || strcmpi(p, 'guess')
+if (any(isnan(p)) && length(p) == length(model.Parameters))
   % call private method to guess parameters from axes, signal and parameter names
-  
+ 
   % args={x,y,z, ... signal}
   args=cell(1,model.Dimension+1); args(1:end) = { [] };
   args(1:min(length(varargin),model.Dimension+1)) = varargin(1:min(length(varargin),model.Dimension+1));
@@ -185,75 +192,79 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || strcmpi(p, 'guess
       p1(j) = 0;
     end
   end
-
   % specific guessed values (if any) -> p2 override p1
   if ~isempty(model.Guess) && ~all(cellfun('isempty',varargin))
-    try
-      if isa(model.Guess, 'function_handle')
-        n = nargin(model.Guess);                % number of required arguments
+
+    if isa(model.Guess, 'function_handle')
+      n = nargin(model.Guess);                % number of required arguments
+      try
         if n > 0
           p2 = feval(model.Guess, varargin{1:n}); % returns model vector
         else
           p2 = feval(model.Guess, varargin{:}); % returns model vector
         end
-        clear n
-      elseif isnumeric(model.Guess)
-        p2 = model.Guess;
-      else
-        ax = 'xyztu';
-        for index=1:model.Dimension % allocate axes
-          if index <= length(varargin)
-            eval([ ax(index) '=varargin{' num2str(index) '};' ]);
-          end
-        end
-        if length(varargin) > model.Dimension && ~isempty(varargin{model.Dimension+1}) && isnumeric(varargin{model.Dimension+1})
-          signal = varargin{model.Dimension+1};
-        else
-          signal = 1;
-        end
-        clear ax index
-        try
-          p = eval(model.Guess);       % returns model vector
-        catch
-          eval(model.Guess);       % returns model vector and redefines 'p'
-        end
-        p2 = p;
-        p  = p0;             % restore initial value
+      catch
+        p2 = [];
       end
+      clear n
+    elseif isnumeric(model.Guess)
+      p2 = model.Guess;
+    else
+      % request guess in sandbox
+      p2 = iFunc_feval_guess(model, varargin);
+      p  = p0;             % restore initial value
+    end
+    if isempty(p2)
+      disp([ 'Warning: Could not evaluate Guess in model ' model.Name ' ' model.Tag ]);
+      disp(model.Guess);
+      disp('Axes and signal:');
+      disp(varargin);
+      disp('Using auto-guess values.');
+    else
       % merge auto and possibly manually set values
       index     = ~isnan(p2);
       p1(index) = p2(index);
       clear p2
-    catch
-      disp([ 'Error: Could not evaluate Guess in model ' model.Name ' ' model.Tag ]);
-      disp(model.Guess);
-      disp('Axes and signal:');
-      disp(varargin);
-      lasterr
-      rethrow(lasterror)
-      % we use the 'p1' auto guess values
     end
   end
-
   signal = p1;  % auto-guess overridden by 'Guess' definition
   % transfer the guessed values from 'signal' to the NaN ones in 'p'
   if any(isnan(p)) && ~isempty(signal)
     index = find(isnan(p)); p(index) = signal(index);
   end
   model.ParameterValues = p; % the guessed values
-  
-  if ~strcmpi(p0, 'guess')
+
+  if ~all(isnan(p0))
     % return the signal and axes
     [signal, ax, name] = feval(model, p, varargin{:});
   else
     ax=0; name=model.Name;
   end
   % Parameters are stored in the updated model
-  if length(inputname(1))
-    assignin('caller',inputname(1),model); % update in original object
-  end
-  return
+  
+  guessed = 1;
+else
+  guessed = 0;
 end % 'guess'
+
+% apply constraints (fixed are handled in 'fits')
+i = find(isfinite(model.Constraint.min));
+if ~isempty(i)
+  p(i) = max(p(i), model.Constraint.min(i));
+end
+i = find(isfinite(model.Constraint.max));
+if ~isempty(i)
+  p(i) = min(p(i), model.Constraint.max(i));
+end
+model.ParameterValues = p;
+
+if ~isempty(inputname(1))
+  assignin('caller',inputname(1),model); % update in original object
+end
+
+if guessed
+  return
+end
 
 % guess axes ==============================================================
 % complement axes if too few are given
@@ -329,16 +340,19 @@ end
 if length(p) < length(model.Parameters)
   p = transpose([ p(:) ; zeros(length(model.Parameters) - length(p), 1) ]);
 end
-model.ParameterValues = p;
+
+model.ParameterValues = p; % store current set of parameters
 
 % request evaluation in sandbox
-[signal,ax] = iFunc_feval_inline(model, varargin{:});
+[signal,ax,p] = iFunc_feval_expr(model, varargin{:});
+
+% model.ParameterValues = p; % store current set of parameters (updated)
 
 p    = num2str(p(:)', '%g'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
 
 % ==============================================================================
-function [signal,iFunc_ax] = iFunc_feval_inline(model, varargin)
+function [signal,iFunc_ax,p] = iFunc_feval_expr(model, varargin)
 % private function to evluate an expression in a reduced environment so that 
 % internal function variables do not affect the result.
 
@@ -367,6 +381,7 @@ varargin(1:model.Dimension) = [];
 % * struct_p         holds the parameters as a structure (inactiated for now)
 % * model.Parameters holds the names of these parameters
 % 
+
 p       = reshape(model.ParameterValues,1,numel(model.ParameterValues));
 
 % if we wish to have parameters usable as a structure
@@ -384,3 +399,28 @@ catch
   error([ 'iFunc:' mfilename ], 'Failed model evaluation.');
 end
 
+% ==============================================================================
+function p = iFunc_feval_guess(model, varargin)
+% private function to evluate a guess in a reduced environment so that 
+% internal function variables do not affect the result.
+  ax = 'x y z t u ';
+  p  = [];
+  if model.Dimension
+    eval([ '[' ax(1:(2*model.Dimension)) ']=deal(varargin{' mat2str(1:model.Dimension) '});' ]);
+  end
+  if length(varargin) > model.Dimension && ~isempty(varargin{model.Dimension+1}) && isnumeric(varargin{model.Dimension+1})
+    signal = varargin{model.Dimension+1};
+  else
+    signal = 1;
+  end
+  clear ax
+  try
+    p = eval(model.Guess);     % returns model vector
+  end
+  if isempty(p)
+    try
+      eval(model.Guess);       % returns model vector and redefines 'p'
+    catch
+      p = [];
+    end
+  end
