@@ -57,6 +57,8 @@ elseif strncmpi(a.Format, 'CFL',3)
   % get Atom Section and build a vertex list from all entries matching atoms
   if isfield(a.Data,'Atom')
     Atom = a.Data.Atom;
+  elseif isfield(a.Data,'structure')
+    Atom = a.Data.structure;
   else
     Atom = a.Data;
   end
@@ -71,7 +73,8 @@ elseif strncmpi(a.Format, 'CFL',3)
       'Am','Cm','Bk','Cf','Es','Fm','Md','No','Lr','Rf','Db','Sg','Bh','Hs','Mt',...
       'Ds','Rg','Cn','Uut','Uuq','Uup','Uuh','Uuo'};
   for index=1:length(f)
-    if isnumeric(Atom.(f{index})) && ~isempty(Atom.(f{index})) && sum(strcmpi(f{index}, atoms)) == 1
+    [at,nb] = strtok(f{index}, '0123456789'); % supposed to be an atom, and nb is a 'number' or empty
+    if isnumeric(Atom.(f{index})) && ~isempty(Atom.(f{index})) && sum(strcmpi(at, atoms)) == 1
       vertices = [ vertices ; Atom.(f{index}) ];
     end
   end
@@ -120,7 +123,9 @@ if nf
   a.Data.faces    = faces;
   a.Data.face     = size(a.Data.faces,1);
 end
-a.Data.MetaData.OFF = [ size(a.Data.vertices,1) size(a.Data.faces,1) ];
+if isfield(a.Data,'MetaData')
+  a.Data.MetaData.OFF = [ size(a.Data.vertices,1) size(a.Data.faces,1) ];
+end
 
 
 a.Data.Signal=ones(size(a.Data.vertices, 1),1);

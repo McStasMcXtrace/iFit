@@ -157,10 +157,16 @@ function config = iLoad_ini
     STL_binary.postprocess='load_stl';
     
     CFL.name     ='CFL FullProf crystallography file';
+    CFL.patterns ={'Spgr','Atom'};
     CFL.method   ='read_anytext';
     CFL.options  ='--headers --fortran --catenate --fast --binary --section=Atom --silent --metadata=Spgr --metadata=Cell --metadata=Spgr ';
     CFL.extension={'cfl'};
     CFL.postprocess='load_stl';
+    
+    CIF.name     = 'CFL/PCR FullProf, CIF, INS/RES/SHX ShellX file (CrysFML)';
+    CIF.method   ='mcifread';
+    CIF.extension={'cif','pcr','pcr','cfl','ins','res','shx'};
+    CIF.postprocess='load_stl';
     
     PDB.name            ='Protein Data Bank';
     PDB.extension       ='pdb';
@@ -229,7 +235,7 @@ function config = iLoad_ini
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
 	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
-	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, ...
+	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, CIF, ...
 	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, Analyze, CBF, STL_binary};
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
