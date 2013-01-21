@@ -28,6 +28,15 @@ function [pars_out,criteria,message,output] = fits(a, model, varargin)
 %    name=value pairs, the string is interpreted as a structure description, so
 %    that options='TolX=1e-4; optimizer=fminpso' is a compact form for 
 %    options=struct('TolX','1e-4','optimizer','fminpso').
+%
+%   To set a constraint on a model parameter, define the 'constraint' input argument
+%   or set the constraint directly on the model parameters with:
+%     model.parameter='fix'     % to lock its value during a fit process
+%     model.parameter='clear'   % to unlock value during a fit process
+%     model.parameter=[min max] % to bound value
+%     model.parameter=[nan nan] % to remove bound constraint
+%     model.parameter=''        % to remove all constraints on 'parameter'
+%     model.Constraint=''       % to remove all constraints
 % 
 % The default fit options.criteria is 'least_square', but others are available:
 %   least_square          (|Signal-Model|/Error).^2     non-robust 
@@ -73,6 +82,8 @@ function [pars_out,criteria,message,output] = fits(a, model, varargin)
 %             The 'fminplot' function may be used.
 %           options.Display
 %             Display additional information during fit: 'iter','off','final'. Default is 'iter'.
+%           options.Diagnostics
+%             When set to 'on' or 1, returns the correlation coefficient and Hessian matrix
 %         constraints: fixed parameter array. Use 1 for fixed parameters, 0 otherwise (double array)
 %           OR use empty to not set constraints
 %           OR use a structure with some of the following fields:

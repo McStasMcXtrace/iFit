@@ -28,6 +28,15 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %    name=value pairs, the string is interpreted as a structure description, so
 %    that options='TolX=1e-4; optimizer=fminpso' is a compact form for 
 %    options=struct('TolX','1e-4','optimizer','fminpso').
+%
+%   To set a constraint on a model parameter, define the 'constraint' input argument
+%   or set the constraint directly on the model parameters with:
+%     model.parameter='fix'     % to lock its value during a fit process
+%     model.parameter='clear'   % to unlock value during a fit process
+%     model.parameter=[min max] % to bound value
+%     model.parameter=[nan nan] % to remove bound constraint
+%     model.parameter=''        % to remove all constraints on 'parameter'
+%     model.Constraint=''       % to remove all constraints
 % 
 % The default fit options.criteria is 'least_square', but others are available:
 %   least_square          (|Signal-Model|/Error).^2     non-robust 
@@ -73,6 +82,8 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %             The 'fminplot' function may be used.
 %           options.Display
 %             Display additional information during fit: 'iter','off','final'. Default is 'iter'.
+%           options.Diagnostics
+%             When set to 'on' or 1, returns the correlation coefficient and Hessian matrix
 %         constraints: fixed parameter array. Use 1 for fixed parameters, 0 otherwise (double array)
 %           OR use empty to not set constraints
 %           OR use a structure with some of the following fields:
@@ -417,12 +428,12 @@ for index=1:length(model.Parameters)
   if length(model.Constraint.min) >=index && isfinite(model.Constraint.min(index))
     this_min = model.Constraint.min(index);
   else
-    this_min = -Inf;
+    this_min = NaN;
   end
   if length(model.Constraint.max) >=index && isfinite(model.Constraint.max(index))
-    this_max = s.Constraint.max(index);
+    this_max = model.Constraint.max(index);
   else
-    this_max = Inf;
+    this_max = NaN;
   end
   if length(model.Constraint.fixed) >=index && model.Constraint.fixed(index)
     if ~isfield(constraints,'fixed'), 
@@ -431,15 +442,16 @@ for index=1:length(model.Parameters)
     constraints.fixed(index) = 1;
   elseif any(isfinite([this_min this_max]))
     if ~isfield(constraints,'min'), 
-      constraints.min = -Inf*zeros(1, length(model.Parameters));
+      constraints.min = NaN*ones(1, length(model.Parameters));
     end
     if ~isfield(constraints,'max'), 
-      constraints.max =  Inf*zeros(1, length(model.Parameters));
+      constraints.max =  NaN*ones(1, length(model.Parameters));
     end
     constraints.min(index) = this_min;
     constraints.max(index) = this_max;
   end
 end
+
 % set other constraints fields used during optimization monitoring
 constraints.parsStart      = pars;
 constraints.parsHistory    = [];
@@ -478,12 +490,13 @@ model.ParameterValues = pars_out;
 if ~isempty(inputname(1))  
   assignin('caller',inputname(1),model); % update in original object
 end
-if nargout > 3
+
+if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
   output.modelValue = feval(model, pars_out, a.Axes{:});
   output.corrcoef   = eval_corrcoef(a.Signal, a.Error, output.modelValue);
   output.residuals  = a.Signal - output.modelValue;
   if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | ...
-    (isfield(options,'Diagnostics') && strcmp(options.Diagnostics, 'on'))
+    (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
     fprintf(1, ' Correlation coefficient=%g (closer to 1 is better)\n', output.corrcoef);
   end
   if abs(output.corrcoef) < 0.6 && ~isscalar(a.Error)
