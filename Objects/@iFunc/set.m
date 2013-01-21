@@ -4,12 +4,25 @@ function this = set(this,varargin)
 %   @iFunc/set function to set iFunc properties.
 %   set(s, 'PropertyName', Propertyvalue, ...}) 
 %     sets values into given property names for the iFunc object s.
-%   set(s, Struct.Field, ...)
+%     The PropertyName can be any iFunc object field, or a model parameter name
+%       or 'p' to designate the vector of parameter values.
+%   set(s, 'Struct.Field', ...)
 %     sets values from given structure fields into the iFunc object s.
 %   set(s, CellNames, CellValues, ...)
 %     sets values from given cells into the iFunc object s.
 %   set(s) indicates the signification of the iFunc base properties
 %   The input iFunc object is updated if no output argument is specified.
+%
+%   A faster syntax for the 'set' method is: s.PropertyName = PropertyValue
+%   To set a constraint on a model parameter, use:
+%     s.parameter='fix'     % to lock its value during a fit process
+%     s.parameter='clear'   % to unlock value during a fit process
+%     s.parameter=[min max] % to bound value
+%     s.parameter=[nan nan] % to remove bound constraint
+%     s.parameter=''        % to remove all constraints on 'parameter'
+%     s.Constraint=''       % to remove all constraints
+%
+%   When the Property is a model parameter name 
 %
 % ex      : set(iFunc,'Title','A nice Title')
 %

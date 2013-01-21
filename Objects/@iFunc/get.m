@@ -5,8 +5,11 @@ function [varargout] = get(this,varargin)
 %   get(s) displays all property names and their current values for
 %     the iFunc object 's'.
 %   get(s,'PropertyName',...) returns only particular properties.
-%     the PropertyName may also be an object Alias or an Axis
+%     The PropertyName can be any iFunc object field, or a model parameter name
+%       or 'p' to designate the vector of parameter values (when previously set).
 %   Input 's' can be a single iFunc or a iFunc array
+%
+%   A faster syntax for the 'set' method is: s.PropertyName
 %
 % input:  s: object or array (iFunc)
 %         PropertyName: name of Property to search (char)
