@@ -430,7 +430,7 @@ case {'hPSO','fminswarmhybrid','fminswarm'}
   hoptions.FunValCheck=options.FunValCheck;
   hoptions.OutputFcn  =options.OutputFcn;
 
-  hoptions.Hybrid    = options.Hybrid;
+  hoptions.Hybrid     =options.Hybrid;
   hoptions.c1         =options.SwarmC1;
   hoptions.c2         =options.SwarmC2;
   hoptions.w          =options.SwarmW;
@@ -452,6 +452,7 @@ case {'Simplex','fminsimplex'}
   [pars, out]=Simplex('init', pars, abs(constraints.max(:)-constraints.min(:))/10);  % Initialization
   for iterations=1:options.MaxIter
     fval = feval(@(pars) inline_objective(fun, pars, varargin{:}), pars);
+
     [pars,out]=Simplex( fval );
     if isfield(options,'TolFunChar')
       options.TolFun = options.TolFunChar;
@@ -654,7 +655,6 @@ return  % actual end of optimization
     if nargin < 3, varargin={}; end
     % apply constraints on pars first
     pars                = inline_apply_constraints(pars,constraints,options); % private function
-    
     % compute criteria
     t = clock;
     c = feval(fun, pars, varargin{:});         % function=row vector, pars=column
@@ -699,14 +699,22 @@ end % fmin_private_wrapper optimizer core end
 function constraints = inline_constraints_minmax(pars, constraints)
 % define default min max in constraints, needed by bounded optimizers
   if ~isfield(constraints, 'min')
-    constraints.min = -2*abs(pars); % default min values
-    index=find(pars == 0);
-    constraints.min(index) = -1;
+    constraints.min = NaN*ones(size(pars));
+  end
+  for i=find(isnan(constraints.min));
+    constraints.min(i) = -2*abs(pars(i)); % default min values
+    if pars(i) == 0
+      constraints.min(i) = -1;
+    end
   end
   if ~isfield(constraints, 'max')
-    constraints.max =  2*abs(pars); % default max values
-    index=find(pars == 0);
-    constraints.max(index) = 1;
+    constraints.max = NaN*ones(size(pars));
+  end
+  for i=find(isnan(constraints.max));
+    constraints.max(i) =  2*abs(pars(i)); % default max values
+    if pars(i) == 0
+      constraints.max(i) = 1;
+    end
   end
 end % inline_constraints_minmax
 
@@ -725,11 +733,11 @@ function pars = inline_apply_constraints(pars, constraints, options)
     end
   end
   if isfield(constraints, 'min')    % lower bound for parameters
-    index = find(pars(:) < constraints.min(:) & ~isnan(constraints.min(:)));
+    index = find(pars(:) < constraints.min(:) & isfinite(constraints.min(:)));
     if ~isempty(index), pars(index) = constraints.min(index); end
   end
   if isfield(constraints, 'max')    % upper bound for parameters
-    index = find(pars(:) > constraints.max(:) & ~isnan(constraints.max(:)));
+    index = find(pars(:) > constraints.max(:) & isfinite(constraints.max(:)));
     if ~isempty(index), pars(index) = constraints.max(index); end
   end
   if isfield(constraints, 'fixed')  % fix some parameters
@@ -914,13 +922,13 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
       if ~isempty(index)
         pars(index) = pars_prev(index);
       end
-      index = find(isnan(pars(:)) & ~isnan(constraint.parsBest(:)));
+      index = find(isnan(pars(:)) & ~isnan(constraints.parsBest(:)));
       if ~isempty(index)
-        pars(index) = constraint.parsBest(index);
+        pars(index) = constraints.parsBest(index);
       end
-      index = find(isnan(pars(:)) & ~isnan(constraint.parsStart(:)));
+      index = find(isnan(pars(:)) & ~isnan(constraints.parsStart(:)));
       if ~isempty(index)
-        pars(index) = constraint.parsStart(index);
+        pars(index) = constraints.parsStart(index);
       end
     end
 

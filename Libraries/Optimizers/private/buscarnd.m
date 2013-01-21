@@ -96,9 +96,6 @@ xo=x0; pars=x0; fval=feval(S,x0);
 yo=fval*problem;
 best_pars = pars;
 best_fval = fval;
-if strcmp(options.Display,'iter')
-  fmin_private_disp_start(mfilename, S, xo, yo*problem);
-end
 
 nS=1;
 it=0;
