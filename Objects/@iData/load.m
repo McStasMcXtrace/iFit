@@ -73,6 +73,7 @@ for i=1:numel(files)
   if isstruct(files{i}.Data) && any(cellfun('isclass', struct2cell(files{i}.Data), 'iData'))
     this_iData = [];
     struct_data = struct2cell(files{i}.Data);
+    files{i} = {};  % free memory
     for index=1:length(struct_data)
       if isa(struct_data{index}, 'iData')
         this_iData = [ this_iData struct_data{index} ];
@@ -96,6 +97,7 @@ for i=1:numel(files)
           loaders{i}.postprocess = files{i}.Loader.postprocess;
         end
       end
+      files{i} = {};  % free memory
       if ~isempty(loaders{i}.postprocess)
         % removes warnings
         iData_private_warning('enter',mfilename);

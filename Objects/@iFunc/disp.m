@@ -27,11 +27,12 @@ else
   fprintf(1,'%s = %s %iD model:\n',iname, id, s_in.Dimension);
   % clean up redundant/empty fields
   s = struct(s_in);
-
-  u = char(s.Constraint); u=strtrim(u); u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
-  if length(u) > 70, u = [ u(1:67) '...' ]; end
-  if ~isempty(u)
-    fprintf(1, '         Constraint: %s\n', u); 
+  if isfield(s.Constraint, 'Expression') && ~isempty(s.Constraint.Expression)
+    u = char(s.Constraint.Expression); u=strtrim(u); u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
+    if length(u) > 70, u = [ u(1:67) '...' ]; end
+    if ~isempty(u)
+      fprintf(1, '         Constraint: %s\n', u); 
+    end
   end
   u=cellstr(s_in); u = u(~strncmp('%', u, 1)); % remove comment lines 
   u=[ u{:} ];
@@ -52,23 +53,43 @@ else
   s=rmfield(s, 'Expression');
   if isnumeric(s.Date), s.Date=datestr(s.Date); end
   % object Properties displayed as a structure
-  disp(s)
+  disp(rmfield(s,'Constraint'))
   % now display parameters in compact form
   if ~isempty(s.Parameters)
     disp('Parameters:')
     for p=1:length(s.Parameters)
       [name, R] = strtok(s.Parameters{p}); % make sure we only get the first word (not following comments)
       R = strtrim(R);
-      fprintf(1,'  p(%3d)=%20s', p, name);
+      line = sprintf('  p(%3d)=%20s', p, name);
       val  = [];
       if ~isempty(s.ParameterValues)
         try
           val = s.ParameterValues(p);
         end
       end
-      if ~isempty(val), fprintf(1, '=%g', val); end
-      if ~isempty(R),   fprintf(1, '  %% entered as: %s', R); end
-      fprintf(1, '\n');
+      % add Constraint if meaningful
+      if length(s.Constraint.min) >=p
+        this_min = s.Constraint.min(p);
+      else
+        this_min = -Inf;
+      end
+      if length(s.Constraint.max) >=p
+        this_max = s.Constraint.max(p);
+      else
+        this_max = Inf;
+      end
+      const = '';
+      if length(s.Constraint.fixed) >=p
+        if s.Constraint.fixed(p)
+          const = [ ' (fixed)' ];
+        end
+      elseif any(isfinite([this_min this_max]))
+        const = [ ' in ' mat2str([this_min this_max]) ];
+      end
+      if ~isempty(val) && isfinite(val), line = [ line sprintf('=%g ', val)  ]; end
+      if ~isempty(const), line = [ line const ]; end
+      if ~isempty(R),     line = [ line sprintf('  %% entered as: %s', R) ]; end
+      fprintf(1, '%s\n', line);
     end
 
   end
