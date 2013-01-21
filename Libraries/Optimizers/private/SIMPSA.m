@@ -228,7 +228,7 @@ while 1,
     %  dimensions of vector Y: (NDIM+1) x 1
     
     % give user feedback if requested
-    if strcmp(OPTIONS.Display,'iter'),
+    if 0 && strcmp(OPTIONS.Display,'iter'),
         if nITERATIONS == 0,
             disp(' Nr Iter  Nr Fun Eval    Min function       Best function        TEMP           Algorithm Step');
         else
@@ -273,7 +273,7 @@ while 1,
         Y = help(:,2);
         P = help(:,3:end);
         
-        if strcmp(OPTIONS.Display,'iter'),
+        if 0 && strcmp(OPTIONS.Display,'iter'),
             disp(sprintf('%5.0f      %5.0f       %12.6g     %15.6g      %12.6g       %s',nITERATIONS,nFUN_EVALS,Y(1),YBEST,TEMP,ALGOSTEP));
         end
         
