@@ -114,19 +114,8 @@ for index=1:length(varargin)
     end
     % call cif2hkl
     if ~isempty(dir(this))
-      if exist('cif2hkl') == 3
-        % use MeX in verbose and no-output-files mode ('-')
-        result = cif2hkl(this,[],[],'-',1);
-        result = str2struct(result);
-        if isstruct(result) && isfield(result, 'structure')
-          this = result;
-        end
-      else
-        disp('cif2hkl is missing: compile it with e.g: ')
-        disp('  gfortran -O2 -fPIC -c cif2hkl.f90')
-        disp('  mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran')
-        error('Missing cif2hkl MeX')
-      end
+      result = iLoad(this,'cif');
+      this = result.Data;
     else
       disp([ mfilename ': Unknown char argument ' this '. Ignoring' ])
       continue
@@ -159,7 +148,7 @@ for index=1:length(varargin)
       if any(strcmpi(f{j}, {'Spgr','Spg','Group','SpaceGroup','SubG','SpaceG','SPCGRP'}))
         if isnumeric(this.(f{j})), this.(f{j}) = num2str(this.(f{j})); end
         CFL.Spgr = this.(f{j});
-      elseif any(strncmpi(f{j}, {'struct','atoms'},5))
+      elseif any(strncmpi(f{j}, {'struct','atom'},4))
         CFL.structure = this.(f{j});
       elseif strcmpi(f{j}, 'CFML_write')
         CFL.CFML_write = this.(f{j});
