@@ -139,33 +139,34 @@ else y2=s2; d2=e2; end
 switch op
 case {'plus','minus','combine'}
   if strcmp(op, 'combine'), 
-       s3 = genop( @plus,  y1, y2); % @plus without Monitor nomalization
+       s3 = genop( @plus,  y1, y2); % @plus without Monitor nomalization (y=s)
+       if isscalar(m1), m1=m1*ones(size(s1)); end
+       if isscalar(m2), m2=m2*ones(size(s2)); end
   else s3 = genop( op,     y1, y2); end
   i1 = isnan(y1); i2=isnan(y2);
-  % if NaN's are found, use non NaN values in the other data set 
-  if ~isempty(i1), s3(i1) = y2(i1); end
-  if ~isempty(i2), s3(i2) = y1(i2); end
+  % if NaN's are found (from interp), use non NaN values in the other data set 
+  if any(i1), s3(i1) = y2(i1); end
+  if any(i2), s3(i2) = y1(i2); end
   
   try
     e3 = sqrt(genop(@plus, d1.^2,d2.^2));
-    if ~isempty(i1), e3(i1) = e2(i1); end
-    if ~isempty(i2), e3(i2) = e1(i2); end
+    if any(i1), e3(i1) = e2(i1); end
+    if any(i2), e3(i2) = e1(i2); end
   catch
     e3 = [];  % set to sqrt(Signal) (default)
   end
   
-  
   if     all(m1==0), m3 = m2; 
   elseif all(m2==0), m3 = m1; 
-  elseif p1
+  else
     try
       m3 = genop(@plus, m1, m2);
-      if ~isempty(i1), m3(i1) = m2(i1); end
-      if ~isempty(i2), m3(i2) = m1(i2); end
+      if any(i1), m3(i1) = m2(i1); end
+      if any(i2), m3(i2) = m1(i2); end
     catch
       m3 = [];  % set to 1 (default)
     end
-  else m3=get(c,'Monitor'); end
+  end
   
 case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','conv','xcorr'}
   if strcmp(op, 'conv') || strcmp(op, 'xcorr')
@@ -271,16 +272,18 @@ y3 = get(c, 'Signal');
 if sum(s3(~isnan(s3))) ~= sum(y3(~isnan(y3)))
   c = setalias(c, 'Signal', s3, [  op '(' al ',' bl ')' ]);
 end
+% for Error and Monitor, we do the same, except that these are set to scalars
+% in setalias, so we directly set them in c.Alias.Values{2|3}
 e3=abs(e3);
 c  = set(c, 'Error', e3);
 y3 = get(c, 'Error');
 if sum(e3(~isnan(e3))) ~= sum(y3(~isnan(y3)))
-  c = setalias(c, 'Error', e3);
+  c.Alias.Values{2} = e3;
 end
 c  = set(c, 'Monitor', m3);
 y3 = get(c, 'Monitor');
 if sum(m3(~isnan(m3))) ~= sum(y3(~isnan(y3)))
-  c = setalias(c, 'Monitor', m3);
+  c.Alias.Values{3} = m3;
 end
 
 c.Command=cmd;
