@@ -39,13 +39,17 @@ for i = 1:length(S)     % can handle multiple index levels
       end
     elseif any(strcmp(fieldname, b.Parameters)) % b.<parameter name>
       index=find(strcmp(fieldname, b.Parameters));
-      if ~isempty(b.ParameterValues)
+      if index <= length(b.ParameterValues)
         b = b.ParameterValues;
         b = b(index);
+      else
+        b = [];
       end
-    elseif strcmp(fieldname, 'p')
+    elseif strcmp(fieldname, 'p')               % b.p
       if ~isempty(b.ParameterValues)
         b = b.ParameterValues;
+      else
+        b = [];
       end
     elseif ismethod(b, fieldname)
       if i == length(S)

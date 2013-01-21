@@ -63,6 +63,10 @@ if nargin == 0  % create the empty iFunc object structure
   a.Expression  = ''; % the expression to evaluate to get the function value
                       % char or function_handle(p, x,y, ...)
   a.Constraint  = ''; % code to evaluate before computing the Expression
+                      % can be: a function_handle
+                      %         a char/cellstr
+                      %         a vector (length p)
+                      %         a structure with fields: min, max, fixed
   a.Dimension   = 0;  % function dimensionality (1,2,3,4...) 0=scalar=empty
   a.ParameterValues = [];
   a.Eval        = ''; % code to evaluate for the model value
@@ -160,6 +164,44 @@ function a = iFunc_private_check(a)
   nb_pars             = 0;
   dim                 = 0;
   
+  % Constraint can be of char, cellstr, function_handle, structure
+  const.min   = nan*ones(length(a.Parameters),1);
+  const.max   = nan*ones(length(a.Parameters),1);
+  const.fixed = zeros(length(a.Parameters),1);
+  const.Expression = '';
+  if ~isstruct(a.Constraint)
+    % build a structure of Constraints: these are evaluated in feval
+    if ischar(a.Constraint) || iscellstr(a.Constraint) || isa(a.Constraint,'function_handle')
+      const.Expression = char(a.Constraint);
+    elseif isnumeric(a.Constraint)
+      if length(a.Constraint) == length(a.Parameters)
+        const.fixed = a.Constraint(:)';
+      else
+        error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be vector of length ' ...
+          num2str(length(a.Parameters)) ' (Parameters).' ]);
+      end
+    else
+      error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be a char or cellstr, function_handle, vector, but not a ' ...
+        class(a.Constraint) '.' ]);
+    end
+    a.Constraint = const;
+  else
+    % update the Constraint structure, search for min, max, fixed, Expression
+    f=fieldnames(const);
+    for index=1:length(f)
+      if isfield(a.Constraint,f{index})
+        v_new = a.Constraint.(f{index});
+        l     = length(v_new);
+        v_old = const.(f{index});
+        if l <= length(a.Parameters)
+          v_old(1:l) = v_new;
+          const.(f{index}) = v_old;
+        end
+      end
+    end
+    a.Constraint = const;
+  end
+  
   % Expression can be of char, cellstr and function_handle
   if isa(a.Expression,'function_handle')
     expr = func2str(a.Expression);
@@ -182,23 +224,6 @@ function a = iFunc_private_check(a)
     end
   end
   expr = n_expr;
-  % Constraint can be of char, cellstr
-  if ischar(a.Constraint) || iscellstr(a.Constraint) 
-    const = char(a.Constraint);
-  else
-    error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be a char or cellstr, not a class ' ...
-      class(a.Constraint) '.' ]);
-  end
-  % handle multiple lines in Expression -> single char with \n at end of lines (except last)
-  n_const = '';
-  for index=1:size(const, 1)
-    if index == size(const, 1)
-      n_const = [ n_const deblank(const(index,:)) ';' ];
-    else
-      n_const = [ n_const deblank(const(index,:)) sprintf(';\n') ];
-    end
-  end
-  const = n_const;
   
   if ischar(a.Parameters)
     pars              = strread(a.Parameters, '%s','delimiter',' ;,''"{}'); % is a cellstr

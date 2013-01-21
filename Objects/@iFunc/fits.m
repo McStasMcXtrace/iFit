@@ -45,6 +45,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %                   Signal, Error, Monitor, Axes={x,y,...}
 %               or as a cell { x,y, ... , Signal }
 %               or as an iData object
+%               or as a file name
 %           The 1st axis 'x' is row wise, the 2nd 'y' is column wise.
 %         pars: initial model parameters (double array, string or structure). 
 %           when set to empty or 'guess', the starting parameters are guessed.
@@ -212,14 +213,42 @@ else
 	inname = inputname(2);
 end
 
+if nargin < 3, pars = [];        end % will use guessed values
+if nargin < 4, options=[];       end
+if nargin < 5, constraints = []; end
+
+% check for vectorized input of data sets
+% handle array of model functions
+if numel(model) > 1
+  pars_out={} ; criteria={}; message={}; output={};
+  for index=1:numel(model)
+    [pars_out{end+1},criteria{end+1},message{end+1},output{end+1}]= ...
+      fits(model(index), a, pars, options, constraints, varargin{:});
+  end
+  return
+end
+% handle array of data sets
+if (iscellstr(a) || isstruct(a) || isa(a,'iData')) && numel(a) > 1
+  pars_out={} ; criteria={}; message={}; output={};
+  for index=1:numel(model)
+    [pars_out{end+1},criteria{end+1},message{end+1},output{end+1}]= ...
+      fits(model, a(1), pars, options, constraints, varargin{:});
+  end
+  return
+end
+
 % extract Signal from input argument, as well as a Data identifier
 % default values
 Monitor=1; Error=1; Axes={}; Signal=[]; Name = ''; is_idata=[];
+if iscellstr(a) || ischar(a)
+  a = iData(a);
+end
 if iscell(a)
   Signal = a{end};
   a(end) = [];
   Axes = a;
-elseif isstruct(a) || isa(a, 'iData')
+end
+if isstruct(a) || isa(a, 'iData')
   if isfield(a,'Signal')  Signal  = a.Signal; end
   if isfield(a,'Error')   Error   = a.Error; end
   if isfield(a,'Monitor') Monitor = a.Monitor; end
@@ -292,13 +321,12 @@ elseif model.Dimension ~= ndimS
 end
 
 % handle parameters: from char, structure or vector
-if nargin < 3
-  pars = []; % will use default/guessed parameters
-end
+
 pars_isstruct=[];
 if ischar(pars) && ~strcmp(pars,'guess')
   pars = str2struct(pars);
 end
+if isempty(pars), pars=[]; end
 if isstruct(pars)
   % search 'pars' names in the model parameters, and reorder the parameter vector
   p = []; f=fieldnames(pars);
@@ -330,20 +358,12 @@ if isstruct(pars)
     if isempty(pars_isstruct), pars_isstruct=1; end
     pars = p;
   end
-elseif strcmp(pars,'guess')
-  feval(model, pars, a.Axes{:}, a.Signal);           % get default starting parameters
-  pars = model.ParameterValues;
-elseif isempty(pars)
-  if ~isempty(model.ParameterValues)
-    pars = model.ParameterValues;                % use stored starting parameters
-  else     
-    pars = feval(model, 'guess', a.Axes{:}, a.Signal);         % get default starting parameters
-  end
+elseif strcmp(pars,'guess') || (isnumeric(pars) && length(pars) < length(model.Parameters))
+  pars = feval(model, pars, a.Axes{:}, a.Signal); % guess missing starting parameters
 end
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
 
 % handle options
-if nargin < 4, options=[]; end
 if isempty(options)
   options = 'fmin';% default optimizer
 end
@@ -370,9 +390,7 @@ end
 if ~isfield(options,'algorithm') options.algorithm=options.optimizer; end
 
 % handle constraints
-if nargin < 5
-  constraints = [];     % no constraints
-end
+
 % handle constraints given as vectors
 if (length(constraints)==length(pars) | isempty(pars)) & (isnumeric(constraints) | islogical(constraints))
   if nargin<6
@@ -394,6 +412,35 @@ end
 if ~isstruct(constraints) && ~isempty(constraints)
   error([ 'iFunc:' mfilename],[ 'The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
 end
+% update Constraints with those from the model (if any not set yet)
+for index=1:length(model.Parameters)
+  if length(model.Constraint.min) >=index && isfinite(model.Constraint.min(index))
+    this_min = model.Constraint.min(index);
+  else
+    this_min = -Inf;
+  end
+  if length(model.Constraint.max) >=index && isfinite(model.Constraint.max(index))
+    this_max = s.Constraint.max(index);
+  else
+    this_max = Inf;
+  end
+  if length(model.Constraint.fixed) >=index && model.Constraint.fixed(index)
+    if ~isfield(constraints,'fixed'), 
+      constraints.fixed = zeros(1, length(model.Parameters));
+    end
+    constraints.fixed(index) = 1;
+  elseif any(isfinite([this_min this_max]))
+    if ~isfield(constraints,'min'), 
+      constraints.min = -Inf*zeros(1, length(model.Parameters));
+    end
+    if ~isfield(constraints,'max'), 
+      constraints.max =  Inf*zeros(1, length(model.Parameters));
+    end
+    constraints.min(index) = this_min;
+    constraints.max(index) = this_max;
+  end
+end
+% set other constraints fields used during optimization monitoring
 constraints.parsStart      = pars;
 constraints.parsHistory    = [];
 constraints.criteriaHistory= [];
@@ -401,16 +448,9 @@ constraints.algorithm      = options.algorithm;
 constraints.optimizer      = options.optimizer;
 constraints.funcCount      = 0;
 
-% handle arrays of model functions
-if numel(model) > 1
-  pars_out={} ; criteria={}; message={}; output={};
-  for index=1:numel(model)
-    [pars_out{end+1},criteria{end+1},message{end+1},output{end+1}]=fits(model(index), a, pars, options, constraints, varargin{:});
-  end
-  return
-end
-
-feval(model, pars, a.Axes{:}, a.Signal); % this updates the 'model' with starting parameter values
+% update the 'model' with starting parameter values
+model.ParameterValues = pars;
+% feval(model, pars, a.Axes{:}, a.Signal); 
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
   fprintf(1, '** Starting fit of %s\n   using model    %s\n   with optimizer %s\n', ...
@@ -435,6 +475,9 @@ end
 % format output arguments ======================================================
 pars_out = reshape(pars_out, [ 1 numel(pars_out) ]); % row vector
 model.ParameterValues = pars_out;
+if ~isempty(inputname(1))  
+  assignin('caller',inputname(1),model); % update in original object
+end
 if nargout > 3
   output.modelValue = feval(model, pars_out, a.Axes{:});
   output.corrcoef   = eval_corrcoef(a.Signal, a.Error, output.modelValue);
@@ -507,6 +550,9 @@ end
     if nargin<5, varargin={}; end
     % then get model value
     Model  = feval(model, p, a.Axes{:}, varargin{:}); % return model values
+    % get actual parameters used during eval (in case of Constraints)
+    p = model.ParameterValues;
+    % send it back to input call
     Model  = iFunc_private_cleannaninf(Model);
     if isempty(Model)
       error([ 'iFunc:' mfilename ],[ 'The model ' model ' could not be evaluated (returned empty).' ]);

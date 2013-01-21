@@ -87,21 +87,48 @@ else
         if any(strcmp(f{index},{'Expression','Constraint'}))
           % must triger new Eval string
           b.Eval='';
-        end
-        if any(strcmp(f{index},{'Expression'}))
-        % check object when modifying key member
+          % check object when modifying key member
           b = iFunc(b);
         end
       elseif any(strcmp(fieldname, b.Parameters)) % b.<parameter name>
         index=find(strcmp(fieldname, b.Parameters));
-        if ~isempty(b.ParameterValues)
-          if isnumeric(val) && isscalar(val)
-            b.ParameterValues(index) = val;
+        if isnumeric(val) && isscalar(val)
+          if index > length(b.ParameterValues)
+            b.ParameterValues((length(b.ParameterValues)+1):(index-1)) = NaN;
+          end
+          b.ParameterValues(index)  = val;
+          b.Constraint.fixed(index) = nan;
+        else % set constraint
+          if ischar(val) && strncmp(val, 'fix', 3)
+            b.Constraint.fixed(index) = 1;
+          elseif ischar(val) && strncmp(val, 'cle', 3)
+            b.Constraint.fixed(index) = 0;
+          else
+            if ischar(val) && length(str2num(val))==2
+              val = str2num(val);
+            end
+            if isnumeric(val) && length(val)==2
+              % val=[min max] -> set min(index) and max(index)
+              b.Constraint.min = val(1);
+              b.Constraint.max = val(2);
+              b.Constraint.fixed(index) = 0;
+            elseif ischar(val) && length(str2num(val)) <= 1
+              % val = 'val'   -> set fixed(index)
+              val = str2num(val);
+              if isempty(val)
+                b.Constraint.fixed(index) = 0;
+                b.Constraint.min(index)   = nan;
+                b.Constraint.max(index)   = nan;
+              else
+                b.Constraint.fixed(index) = 1;
+              end
+            end
           end
         end
       elseif strcmp(fieldname, 'p')
         if isnumeric(val)
           b.ParameterValues=val;
+          b.Constraint.fixed(index) = nan;
         end
       else
         error([ mfilename ': can not set iFunc object Property ''' fieldname ''' in iFunc model ' b.Tag '.' ]);

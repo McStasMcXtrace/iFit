@@ -159,6 +159,8 @@ end
 [pars_out, criteria, message, output] = fits(model, a, varargin{:});
 
 % format output arguments (to iData) ===========================================
-
+if nargin > 1 && ~isempty(inputname(2))  
+  assignin('caller',inputname(2),model); % update in original object
+end
 
 
