@@ -1,9 +1,28 @@
 function y = rietveld(varargin) 
-% usage:
-%   fits(rietveld, measurement, pars, options, constraints)
-% with   rieltveld(instr_par, sample_par, instrument, mcstas_options, ...) as iFunc
-%   and p={instr_par, sample_par} is a structure/cell which holds parameters that vary (numerics)
-%          members as chars are assumed to remain constant.
+% model=rietveld(parameters, ...., instrument, ....) Rietveld refinement of powder
+%
+% This function build a fit model from:
+%   * a sample structure
+%   * a McStas instrument model (usually a diffractometer)
+% The model can then be used for refinement as a usual fit model:
+%   fits(model, data_set, parameters, options, constraints)
+%
+% Any powder structure can be entered, and there is no limitation on the number
+%   of parameters/atoms n the cell. The powder model takes into account 
+%   Biso, charge, occupancy, spin
+%   Equally, the instrument model can be of any complexity, including sample
+%   environments, other sample phases (incl. amorphous), multi-dimensional PSD 
+%   detectors, ... It is possible to specify which monitor file to use from 
+%   the McStas instrument. The instrument resolution function is not computed
+%   using the legacy Caglioti formalism, but is fully convoluted with the
+%   sample component from the McStas instrument description.
+%   The default, and recommended, instrument is templateDIFF, but others are possible
+%   including TOF-diffractometers, PSD-diffractometers, and even Laue.
+%
+% Once set, the fit parameters may be constraint with either the usual 'constraints'
+%   argument to 'fits', or by setting the model constraints such as:
+%     model.Sample_a     = 'fix';     % fix 'a' lattice parameter
+%     model.Sample_alpha = [80 110];  % restrict alpha lattice angle in degrees
 % 
 % Parameters of the model can be entered as:
 % * a structure with one field 'structure.<atom>' per atom in the cell, named from the atom, e.g.
@@ -21,7 +40,7 @@ function y = rietveld(varargin)
 %       gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
 %       compile: 0 or 1 to force re-compilation of the instrument (boolean)
 %       particle: 'n' (default) or 'x' depending if you use McStas or McXtrace (string)
-%       monitors:  cell string of monitor names, or empty for all (cellstr)
+%       monitors:  cell string of monitor names (cellstr)
 %     Only the last monitor in the selection is used to compute the refinement criteria.
 %     Type 'help mcstas' for more information about these items.
 %
@@ -42,10 +61,6 @@ function y = rietveld(varargin)
 %
 % * All additional structure fields are sent to the McStas instrument model.
 %
-% WARNING: at least ONE instrument parameter must be given.
-%   All instrument parameters given as scalar numerical values are refined, 
-%   others are kept fixed.
-%
 % Exemple: refine a NaCaAlF powder structure with the templateDIFF McStas instrument
 %    Sample.title = 'Na2Ca3Al2F14';
 %    Sample.cell  = [10.242696  10.242696  10.242696  90.000  90.000  90.000];
@@ -58,7 +73,7 @@ function y = rietveld(varargin)
 %    Sample.F3    = [0.46123  0.46123  0.46123  0.88899  0.33333   0.0  -1.0];
 % The resulting hklF2 file 'reflections.laz' will be used by the instrument Powder 
 % parameter and the model is computed at constant wavelength lambda=2.36 (given as char)
-%    f = rietveld(Sample, 'templateDIFF.instr',' Powder=reflections.laz; lambda=''2.36'' ');
+%    f = rietveld(Sample, 'templateDIFF.instr',' Powder=reflections.laz; lambda="2.36"');
 % Then 'f' is an iFunc Rietveld model. Then perform the Rietveld refinement.
 %    p = fits(measurement, f); % where measurement holds a measured powder diffractogram
 %
