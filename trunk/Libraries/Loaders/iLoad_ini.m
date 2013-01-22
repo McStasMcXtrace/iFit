@@ -144,14 +144,14 @@ function config = iLoad_ini
     ILL_inx.extension  ='inx';
     
     STL_ascii.name     ='STL/SLP 3D ascii';
-    STL_ascii.method   ='mstlread';
+    STL_ascii.method   ='read_stl';
     STL_ascii.options  ='ascii';
     STL_ascii.patterns ={'facet','vertex','endfacet'};
     STL_ascii.extension={'stl','stla','slp'};
     STL_ascii.postprocess='load_stl';
     
     STL_binary.name     ='STL 3D binary';
-    STL_binary.method   ='mstlread';
+    STL_binary.method   ='read_stl';
     STL_binary.options  ='binary';
     STL_binary.extension={'stl','stlb'};
     STL_binary.postprocess='load_stl';
@@ -164,13 +164,13 @@ function config = iLoad_ini
     CFL.postprocess='load_stl';
     
     CIF.name     = 'CFL/PCR FullProf, CIF, INS/RES/SHX ShellX file (CrysFML)';
-    CIF.method   ='mcifread';
+    CIF.method   ='read_cif';
     CIF.extension={'cif','pcr','pcr','cfl','ins','res','shx'};
     CIF.postprocess='load_stl';
     
     PDB.name            ='Protein Data Bank';
     PDB.extension       ='pdb';
-    PDB.method          ='PDB_Geometry';
+    PDB.method          ='read_pdb';
     PDB.patterns        ={'HEADER','COMPND','SOURCE','EXPDTA','AUTHOR','REVDAT'};
     PDB.postprocess     = 'load_xyen';
     
@@ -192,42 +192,42 @@ function config = iLoad_ini
     
     ESRF_edf.name       ='EDF ESRF Data Format';
     ESRF_edf.options    ='';
-    ESRF_edf.method     ='medfread';
+    ESRF_edf.method     ='read_edf';
     ESRF_edf.extension  ='edf';
     
     Roper_SPE.name      ='SPE CCD by WinView from Roper Scientific / PI Acton';
-    Roper_SPE.method    ='speread';
+    Roper_SPE.method    ='read_spe';
     Roper_SPE.extension ='spe';
     
     Mar_CCD.name        ='MarResearch CCD Camera';
-    Mar_CCD.method      ='marread';
+    Mar_CCD.method      ='read_mar';
     Mar_CCD.extension   ={'mar','mccd'};
     
     Andor_SIF.name      ='Andor SIF CCD Camera';
-    Andor_SIF.method    ='sifread';
+    Andor_SIF.method    ='read_sif';
     Andor_SIF.extension ='sif';
     Andor_SIF.patterns  = 'Andor Technology Multi-Channel File';
     
     ADSC_CCD.name       ='ADSC CCD Camera';
-    ADSC_CCD.method     ='adsc_read';
+    ADSC_CCD.method     ='read_adsc';
     ADSC_CCD.extension  ='img';
     ADSC_CCD.patterns   ={'HEADER_BYTES','CCD_IMAGE_SATURATION'};
     
     Matlab_FIG.name     ='Matlab Figure';
     Matlab_FIG.options  ='';
-    Matlab_FIG.method   ='mfigread';
+    Matlab_FIG.method   ='read_fig';
     Matlab_FIG.extension='fig';
     Matlab_FIG.postprocess='load_fig';
     
     Analyze.name        ='Analyze volume data';
     Analyze.options     ='';
-    Analyze.method      ='ReadAnalyze';
+    Analyze.method      ='read_analyze';
     Analyze.postprocess ='load_analyze';
     Analyze.extension   ={'hdr','img'};
     
     CBF.name            ='Crystallographic Binary File';
     CBF.extension       ='cbf';
-    CBF.method          ='cbfread';
+    CBF.method          ='read_cbf';
     CBF.postprocess     ='load_cbf';
     CBF.patterns        ={'###CBF: VERSION'};
     

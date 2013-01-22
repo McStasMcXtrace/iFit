@@ -1,4 +1,4 @@
-function s = mcdfread(filename)
+function s = read_cdf2(filename)
 % mcdfread Wrapper to cdfread which reconstructs the CDF structure
 
 [data, info] = cdfread(filename);
