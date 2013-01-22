@@ -3,7 +3,7 @@
 %
 % http://www.mathworks.com/matlabcentral/fileexchange/11224-andor-sif-image-reader
 % http://www.andor.com/scientific-cameras
-function info=sifread(filename, framenumber)
+function info=read_sif(filename, framenumber)
 
 file = filename;
 if nargin==1

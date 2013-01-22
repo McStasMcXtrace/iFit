@@ -1,4 +1,4 @@
-function S = netcdf(File,varargin)
+function S = read_cdf1(File,varargin)
 % Function to read NetCDF files
 %   S = netcdf(File)
 % Input Arguments

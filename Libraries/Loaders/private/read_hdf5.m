@@ -1,4 +1,4 @@
-function Data = hdf5extract(hdf_fname)
+function Data = read_hdf5(hdf_fname)
 % HDF5 Extract read and return HDF5 data.
 % DATASTRUCT = HDF5EXTRACT('FILENAME')
 

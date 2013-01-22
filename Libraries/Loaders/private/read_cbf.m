@@ -32,7 +32,7 @@
 % example CBF at files at <http://www.bernstein-plus-sons.com/software/CBF/>
 % original Matlab source code from SLS/cSAXS <http://www.psi.ch/sls/csaxs/software>
 
-function [frame,vararg_remain] = cbfread(filename,varargin)
+function [frame,vararg_remain] = read_cbf(filename,varargin)
 
 % 0: no debug information
 % 1: some feedback

@@ -1,4 +1,4 @@
-% function [imag, header] = adsc_read(fname)
+% function [imag, header] = read_adsc(fname)
 %
 %  Read an image file written by an ADSC detector.
 %  ADSC detectors write images in the "SMV" file format which consists of a text header and uncompressed image.
@@ -29,7 +29,7 @@
 %
 %   GEST - August 7, 2004. Gil Toombes, get1 _ at _ cornell.edu 
 
-function frame = adsc_read(fname)
+function frame = read_adsc(fname)
 
 frame = [];
 

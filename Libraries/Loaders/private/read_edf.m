@@ -1,4 +1,4 @@
-function s = medfread(filename)
+function s = read_edf(filename)
 % medfread Wrapper to pmedf_read which reconstructs the EDF structure
 % only reads the first block/image
 

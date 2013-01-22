@@ -70,7 +70,7 @@
 % PDB format information can be found at http://www.rcsb.org/pdb/
 
 % ***************** The Actual Function *************************************
-function result = PDB_Geometry(name)
+function result = read_pdb(name)
 
 rho_water = 0.334611 ; % Density of electrons per cubic Angstrom in solvent.
 

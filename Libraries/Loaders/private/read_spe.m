@@ -23,7 +23,7 @@
 % May 9th 2008, Oliver Bunk: 1st version
 %
 
-function [frame,vararg_remain] = speread(filename,varargin)
+function [frame,vararg_remain] = read_spe(filename,varargin)
 
 % 0: no debug information
 % 1: some feedback
