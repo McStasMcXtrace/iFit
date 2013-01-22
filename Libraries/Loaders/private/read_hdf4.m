@@ -31,11 +31,11 @@ if length(s) > 1
     end
     if     length(this)==1
       if strcmp(typ,'Vgroup') == 1
-        this = mhdf4read(this);
+        this = feval(mfilename,this);
       else
         this = hdfread  (this); 
       end
-    elseif length(this)> 1 this = mhdf4read(this); end
+    elseif length(this)> 1 this = feval(mfilename,this); end
     out = setfield(out, name, this);
   end
   s = out;
@@ -47,7 +47,7 @@ end
 
 % recursive call for Vgroups
 if strcmp(typ,'Vgroup') & length(s.Vgroup) 
-  s = mhdf4read(s.Vgroup);
+  s = feval(mfilename, s.Vgroup);
   return
 end
 
@@ -60,7 +60,7 @@ for index=1:length(list)
     this = getfield(s, list{index});
     if ~isempty(this)
       if     length(this)==1 this = hdfread  (this); 
-      elseif length(this)> 1 this = mhdf4read(this); 
+      elseif length(this)> 1 this = feval(mfilename,this);
       end
       if ~isempty(this) 
         if isempty(out) out = this; 

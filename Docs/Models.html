@@ -22,8 +22,10 @@
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Models (fit models)</h1>
 <br>
-<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId147615">How to use models</a></li><li><a href="#mozTocId96090">List of default fit models</a></li><li><a href="#mozTocId285330">Specialized models</a></li><li><a href="#mozTocId210092">Model builder: defining a new model easy
-</a><ol><li><a href="#mozTocId775891">Creating complex
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId147615">How to use models</a></li><li><a href="#mozTocId96090">List of default fit models</a></li><li><a href="#mozTocId285330">Specialized models</a><ol><li><a href="#mozTocId597620">Scattering models (neutrons, x-rays)</a></li><li><a href="#mozTocId344379">
+
+Powder structure refinement (Rietveld)</a></li></ol></li><li><a href="#mozTocId810939">Model builder: defining a new model easy
+  </a><ol><li><a href="#mozTocId775891">Creating complex
 functions from simple functions</a></li><li><a href="#mozTocId937554">Using signal
 convolution/correlation in new functions</a></li></ol></li><li><a href="#mozTocId854762">How to write manually a model function</a></li></ol>
 <br>
@@ -392,7 +394,7 @@ command<span style="font-weight: bold;">:</span></span><br>
 
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData);<br></span></pre>which also produces the plot above.<br>
 <h3><a class="mozTocH3" name="mozTocId285330"></a>Specialized models</h3>
-<h4>Scattering models (neutrons, x-rays)</h4>
+<h4><a class="mozTocH4" name="mozTocId597620"></a>Scattering models (neutrons, x-rays)</h4>
 <p>We list below a number of models used to describe neutron and x-ray 
 scattering from matter. The structure factor S(q) accounts for the 
 structure of matter at the atomistic/molecular level, whereas the form 
@@ -409,6 +411,8 @@ from a material can be described by:<br>
     <a href="http://kur.web.psi.ch/sans1/SANSSoft/KJ33.html">Joachim
 Kohlbrecher</a> and <a href="mailto:ingo%28at%29cs.tu-berlin.de">Ingo
 Bressler</a> PSI (2006-2011)</li>
+<li>CrysFML by <a href="mailto:jrc@ill.eu">Juan Rodriguez-Carvajal</a> and <a href="mailto:jplatas@ull.es">Javier Gonzalez-Platas</a>, ILL and <span class="st">ULL, Tenerife, <em>Spain</em></span></li>
+
 </ul>
 <p style="text-align: left;"></p>
 <table style="text-align: left; width: 1016px; height: 13px;" border="1" cellpadding="2" cellspacing="2">
@@ -480,9 +484,82 @@ Bressler</a> PSI (2006-2011)</li>
 </table>
 
 <pre style="margin-left: 40px;"><span style="font-style: italic;"></span><span style="font-style: italic;"></span></pre>
+<h4><a class="mozTocH4" name="mozTocId344379"></a>
 
-<h3><a class="mozTocH3" name="mozTocId210092"></a><span style="font-weight: bold;">Model builder: defining a new model easy<br>
-</span></h3>
+Powder structure refinement (Rietveld)</h4>
+
+
+
+<table style="text-align: left; width: 1016px; height: 59px;" border="1" cellpadding="2" cellspacing="2">
+
+<tbody><tr><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Powder diffraction<br>
+      </td><td style="vertical-align: top; background-color: rgb(255, 204, 204);"><span style="font-style: italic; font-weight: bold; color: rgb(51, 102, 255);">Description</span><br>
+      </td><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Dimensionality<br>
+      </td><td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Parameters<br>
+      </td></tr><tr>
+    <td style="vertical-align: top; font-weight: bold;">rietveld<br>
+    </td>
+    <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Rietveld_refinement">Rietveld</a> refinement of powder sample <br>
+with full McStas instrument model<br>
+    </td>
+    <td style="vertical-align: top; color: rgb(51, 204, 0);">1D, 2D, 3D<br>
+    </td>
+    <td style="vertical-align: top;">sample structure, <br>
+instrument parameters<br>
+    </td>
+  </tr>
+  
+</tbody>
+</table>
+
+
+<pre style="margin-left: 40px;"><span style="font-style: italic;"></span><span style="font-style: italic;"></span></pre>
+
+
+The 'rietveld' model allows to prepare a sample+instrument model in order to fit a diffraction/structure data set.<br>
+The syntax to build the model, and then perform the refinement is:<br>
+<div style="margin-left: 40px;">
+  <pre>&gt;&gt; model=<span style="color: rgb(51, 102, 255);">rietveld</span>(structure, ...., instrument, ....)<br>&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fits</span>(model, measurement);<br></pre>
+</div>
+
+where <br>
+the 'structure' describes the initial sample structure (space group, 
+cell parameters abc &#945;&#946;&#947;, atom positions, ...); it can be given as a CIF,
+ FullProf or ShellX file, as well as from a <span style="font-style: italic;">struct</span> type variable with fields<span style="font-style: italic;"> 'Spgr' </span>and <span style="font-style: italic;">'cell'</span>, followed with atoms (giving xyz Biso occupancy spin charge, where only xyz are mandatory, others are optional):<br>
+<div style="margin-left: 40px;">
+  <pre>Sample.cell&nbsp; = [10.242696&nbsp; 10.242696&nbsp; 10.242696&nbsp; 90.000&nbsp; 90.000&nbsp; 90.000];
+Sample.Spgr&nbsp; = 'I 21 3';
+Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp; 0.50000&nbsp;&nbsp; 0.0&nbsp;&nbsp; 2.0];<br>...<br></pre>
+</div>
+the instrument is the name of the McStas instrument description (<span style="font-style: italic;">templateDIFF.instr</span> is the default). The McStas simulation can be controlled using the default McStas options, as described in the <a href="McStas.html">dedicated help page</a> : <span style="font-weight: bold;">dir, ncount, mpi, seed, gravitation, compile, monitors</span>.
+ The monitors options is particularly recommended to specify which 
+monitor file to use from the virtual experiment. The resulting model 
+data set should be of the same type as the diffractometer measured data 
+set (e.g. TOF-angle, height-angle, ...), but not necessarily with same 
+binning and axes range.<br>
+<br>
+Any other '<span style="font-style: italic;">name=value</span>' argument
+ is assumed to be an instrument parameter. Any scalar parameter is made 
+into a model parameter, whereas string/char parameters are set as fixed 
+instrument parameters. By default, the sample structure (powder/single 
+crystal) is made available to the McStas instrument by mean of a <span style="font-style: italic;">'reflections.laz'</span> file which should be used by a <span style="font-style: italic;">PowderN</span> or <span style="font-style: italic;">Isotropic_Sqw</span> component. This name can be changed by specifying the 'CFML_write=filename' option.<br>
+<br>
+An example of Rietveld model is obtained from a CFL file, and the templateDIFF instrument including <span style="font-style: italic;">PowderN(reflections=Powder,...)</span>. We thus specify the fixed instrument parameter <span style="font-style: italic;">Powder='reflections.laz'</span>. The wavelength is kept fixed at 2.36, and we use monitor names matching <span style="font-style: italic;">BananaTheta</span>.<br>
+<pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">rietveld</span>([ <span style="color: rgb(51, 102, 255);">ifitpath</span> <span style="color: rgb(204, 51, 204);">'Data/Na2Ca3Al2F14.cfl'</span> ], <span style="color: rgb(204, 51, 204);">'templateDIFF.instr'</span>, <span style="color: rgb(204, 51, 204);">'Powder=reflections.laz; lambda="2.36"; monitors=BananaTheta'</span>);</pre>
+Once built, it is possible to set constraints on the model with the syntax such as (see <a href="iFunc.html#mozTocId579374">iFunc</a> page) :<br>
+<pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span><br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% to unlock value during a fit process</span>
+&gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span></pre>
+Then we import a data set<br>
+<pre style="margin-left: 40px;">&gt;&gt; measurement = iData([ <span style="color: rgb(51, 102, 255);">ifitpath</span> <span style="color: rgb(204, 51, 204);">'Data/nac_1645179.dat'</span> ]);</pre>
+
+The refinement is then obtained by starting :<br>
+<pre style="margin-left: 40px;">&gt;&gt; parameters = <span style="color: rgb(51, 102, 255);">fits</span>(model, measurement)</pre>
+
+with optional arguments as described in the <a href="Fit.html">Fit</a> page (the 'constraints' argument of <span style="font-style: italic;">fits</span> is partly redundant with the model constraints seen above).<br>
+Remember to bound most or all of the model parameters for a faster and more reliable convergence of the optimization.<br>
+<h3><a class="mozTocH3" name="mozTocId810939"></a><span style="font-weight: bold;">Model builder: defining a new model easy<br>
+  </span></h3>
+
 The <span style="font-style: italic;">ifitmakefunc</span> tool enables
 to define a new fit function/model from a simple dialog, by entering
 its <a href="images/ifitmakefunc.png"><img title="ifitmakefunc" src="images/ifitmakefunc.png" alt="ifitmakefunc" style="border: 0px solid ; width: 150px; height: 137px;" align="right"></a>expression
