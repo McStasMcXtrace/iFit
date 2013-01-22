@@ -495,9 +495,11 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
   output.modelValue = feval(model, pars_out, a.Axes{:});
   output.corrcoef   = eval_corrcoef(a.Signal, a.Error, output.modelValue);
   output.residuals  = a.Signal - output.modelValue;
+  output.Rfactor    = sum(a.Error.*output.residuals.^2)/sum(a.Error.*a.Signal);
   if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | ...
     (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
-    fprintf(1, ' Correlation coefficient=%g (closer to 1 is better)\n', output.corrcoef);
+    fprintf(1, ' Correlation coefficient=%g (closer to 1 is better)\n',  output.corrcoef);
+    fprintf(1, ' Weighted R-factor      =%g (smaller that 1 is better)\n', output.Rfactor);
   end
   if abs(output.corrcoef) < 0.6 && ~isscalar(a.Error)
     name = inputname(2);
