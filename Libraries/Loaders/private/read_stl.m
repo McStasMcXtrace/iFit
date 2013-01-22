@@ -1,4 +1,4 @@
-function data=mstlread(file, option)
+function data=read_stl(file, option)
 % mstlread Wrapper to read ascii and binary STL files
 
 % private: 

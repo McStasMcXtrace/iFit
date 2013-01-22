@@ -1,4 +1,4 @@
-function s = mhdf4read(filename)
+function s = read_hdf4(filename)
 % mhdf4read Wrapper to hdfinfo/hdfread which reconstructs the HDF4 structure
 
 if ischar(filename)

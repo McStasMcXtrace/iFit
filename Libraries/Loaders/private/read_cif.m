@@ -1,4 +1,4 @@
-function data = mcifread(file)
+function data = read_cif(file)
 % mstlread Wrapper to read ascii and binary STL files
   data = [];
   if exist('cif2hkl') == 3

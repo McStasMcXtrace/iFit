@@ -27,7 +27,7 @@
 % July 17th 2008, Oliver Bunk: 1st version
 %
 
-function [frame,vararg_remain] = marread(filename,varargin)
+function [frame,vararg_remain] = read_mar(filename,varargin)
 
 % 0: no debug information
 % 1: some feedback

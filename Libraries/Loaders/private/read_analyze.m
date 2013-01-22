@@ -1,6 +1,6 @@
-function Analyze = ReadAnalyze(filename)
+function Analyze = read_analyze(filename)
 % Load Analyze hdr/img dataset.
-%   Analyze = ReadAnalyze(filename)
+%   Analyze = read_analyze(filename)
 %
 %   Analyze is a struct with members:
 %     hdr - header information
