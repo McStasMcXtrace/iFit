@@ -112,16 +112,10 @@ else
               b.Constraint.min(index) = val(1);
               b.Constraint.max(index) = val(2);
               b.Constraint.fixed(index) = 0;
-            elseif ischar(val) && length(str2num(val)) <= 1
-              % val = 'val'   -> set fixed(index)
-              val = str2num(val);
-              if isempty(val)
-                b.Constraint.fixed(index) = 0;
+            elseif isempty(val)
+              b.Constraint.fixed(index) = 0;
                 b.Constraint.min(index)   = nan;
                 b.Constraint.max(index)   = nan;
-              else
-                b.Constraint.fixed(index) = 1;
-              end
             end
           end
         end
