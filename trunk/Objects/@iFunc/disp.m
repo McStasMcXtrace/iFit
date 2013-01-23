@@ -56,7 +56,7 @@ else
   disp(rmfield(s,'Constraint'))
   % now display parameters in compact form
   if ~isempty(s.Parameters)
-    disp('Parameters:')
+    fprintf(1,'Parameters (%i):', length(s.Parameters))
     for p=1:length(s.Parameters)
       [name, R] = strtok(s.Parameters{p}); % make sure we only get the first word (not following comments)
       R = strtrim(R);
