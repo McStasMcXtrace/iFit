@@ -249,6 +249,11 @@ if (any(isnan(p)) && length(p) == length(model.Parameters))
 
 end % 'guess'
 
+% format parameters as columns
+p = p(:);
+model.Constraint.min=model.Constraint.min(:);
+model.Constraint.max=model.Constraint.max(:);
+model.Constraint.fixed=model.Constraint.fixed(:);
 % apply constraints (fixed are handled in 'fits')
 i = find(isfinite(model.Constraint.min));
 if ~isempty(i)
