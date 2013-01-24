@@ -39,7 +39,6 @@ function y = rietveld(varargin)
 %       seed:   random number seed to use for each iteration (double)
 %       gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
 %       compile: 0 or 1 to force re-compilation of the instrument (boolean)
-%       particle: 'n' (default) or 'x' depending if you use McStas or McXtrace (string)
 %       monitors:  cell string of monitor names (cellstr)
 %     Only the last monitor in the selection is used to compute the refinement criteria.
 %     Type 'help mcstas' for more information about these items.
@@ -175,8 +174,12 @@ for index=1:length(varargin)
       elseif strcmpi(f{j}, 'title')
         CFL.title = this.(f{j});
       % handle McStas parameters
-      elseif any(strcmpi(f{j},{'ncount','dir','mpi','seed','gravitation','compile','particle','monitors'}))
+      elseif any(strcmpi(f{j},{'ncount','dir','mpi','seed','gravitation', ...
+          'compile','particle','monitors','overwrite'}))
         mcstas_options.(f{j}) = this.(f{j});
+        if strcmp(f{j}, 'dir')
+          mcstas_options.overwrite = 1;
+        end
       % handle other parameters (instrument)
       elseif isnumeric(this.(f{j})) && isscalar(this.(f{j}))
         variable_p.(f{j}) = this.(f{j});
@@ -285,7 +288,7 @@ y.Parameters = Parameters;
 % assemble the core Expression of the model ====================================
 % start to write the CFL file (temporary file name)
 Expression = { ...
-  'tmp=tempname; tmp = [ tmp ''.cfl'' ];', ...
+  'tmp = [ tempname ''.cfl'' ];', ...
   'fid=fopen(tmp,''w'');', ...
   'fprintf(fid,''! FullProf/CrysFML file format\n'');', ...
   [ 'fprintf(fid,''Title  ' CFL.title ' sample\n'');' ], ...
@@ -293,7 +296,7 @@ Expression = { ...
   'fprintf(fid,''Cell   ''); fprintf(fid,''%f '', p(1:6)); fprintf(fid,''\n'');', ...
   'fprintf(fid,''!     Space Group\n'');', ...
   [ 'fprintf(fid,''Spgr  ' CFL.Spgr '\n'');' ], ...
-  'fprintf(fid,''!                X        Y       Z     B       occ       Spin  Charge\n'');' ...
+  'fprintf(fid,''!                X        Y       Z     B       Occ       Spin  Charge\n'');' ...
   };
 % add the Atom list
 f = fieldnames(CFL.structure);
@@ -301,7 +304,7 @@ for index=1:nb_atoms
   i1 = 7+(index-1)*7; % index of <atoms> block in 'p', with 7 values each
   i2 = i1+6;
   lab = upper(strtok(f{index},'0123456789 '));
-  Expression{end+1} = [ 'fprintf(fid,''Atom  ' f{index} ' ' lab '''); fprintf(fid,''%g '',p(' ...
+  Expression{end+1} = [ 'fprintf(fid,''Atom  ' f{index} ' ' lab ' ''); fprintf(fid,''%g '',p(' ...
     num2str(i1) ':' num2str(i2) ')); fprintf(fid,''\n'');' ];
 end
 % close the file and request cif2hkl
@@ -311,7 +314,7 @@ Expression{end+1} = 'fclose(fid);';
 Expression{end+1} = [ 'cif2hkl(tmp,''' CFL.CFML_write ''');' ];
 
 % delete temporary file
-Expression{end+1} = 'delete([ tmp ]);';
+Expression{end+1} = 'delete(tmp);';
 
 % start to build the instrument related Expression
 Expression{end+1} = [ 'instrument = ' mat2str(instrument) ';' ];
@@ -356,35 +359,35 @@ y.Expression = Expression;
 % create iFunc object
 y = iFunc(y);
 
-% check model Dimension. If 0, then start a short McStas simulation to determine the monitor dimensionality
-if y.Dimension == 0
-  % evaluate 'signal' with Guess parameters
-  disp([ mfilename ': Determining the model dimension... (please wait)' ]);
-  signal      = feval(y,y.Guess);
-  if length(signal) > 1
-    disp([  mfilename ': The instrument simulation ' mat2str(instrument) ' returns ' ...
-      num2str(length(signal)) ' monitor files:' ]);
-    disp(signal);
-    mcstas_options.monitors = get(signal,'Component');
-    mcstas_options.monitors = strtrim(mcstas_options.monitors{end});
-    disp([ mfilename ': Restricting the model to use the last monitor ' mat2str(mcstas_options.monitors) ])
-    Expression{end}   = [ 'mcstas_options.monitors = ' mat2str(mcstas_options.monitors) ];
-    Expression{end+1} = [ 'signal = mcstas(instrument, instr_pars, mcstas_options); '];
-    signal = signal(end);
-  end
-  disp(signal); % this is an iData object
-  y.Dimension = ndims(signal);
-  disp([ mfilename ': Setting dimension of the Rietveld model ' CFL.title ' to ' num2str(y.Dimension) ]);
-  ax = ',x,y,z,t';
-  Expression{end+1} = 'if length(signal) > 1, signal = signal(end); end';
-  Expression{end+1} = [ 'signal = double(interp(signal ' ax(1:(2*y.Dimension)) '));' ];
-  y.Expression = Expression; % now returns a double array
-  % adds axes signification to model description
-  for index=1:y.Dimension
-    x = getaxis(signal, index); x=x(:);
-    y.Description = [ y.Description ...
-      sprintf('\n  Axis %i "%s" label is "%s", range [%g:%g]', index, ax(2*index), label(signal, index), min(x), max(x)) ];
-  end
+% get model Dimension: start a short McStas simulation to determine the 
+% monitor dimensionality
+
+% evaluate 'signal' with Guess parameters
+disp([ mfilename ': Determining the model dimension... (please wait)' ]);
+signal      = feval(y,y.Guess);
+if length(signal) > 1
+  disp([  mfilename ': The instrument simulation ' mat2str(instrument) ' returns ' ...
+    num2str(length(signal)) ' monitor files:' ]);
+  disp(signal);
+  mcstas_options.monitors = get(signal,'Component');
+  mcstas_options.monitors = strtrim(mcstas_options.monitors{end});
+  disp([ mfilename ': Restricting the model to use the last monitor ' mat2str(mcstas_options.monitors) ])
+  Expression{end}   = [ 'mcstas_options.monitors = ' mat2str(mcstas_options.monitors) ];
+  Expression{end+1} = [ 'signal = mcstas(instrument, instr_pars, mcstas_options); '];
+  signal = signal(end);
+end
+disp(signal); % this is an iData object
+y.Dimension = ndims(signal);
+disp([ mfilename ': Setting dimension of the Rietveld model ' CFL.title ' to ' num2str(y.Dimension) ]);
+ax = ',x,y,z,t';
+Expression{end+1} = 'if length(signal) > 1, signal = signal(end); end';
+Expression{end+1} = [ 'signal = double(interp(signal ' ax(1:(2*y.Dimension)) '));' ];
+y.Expression = Expression; % now returns a double array
+% add axes signification to model description
+for index=1:y.Dimension
+  x = getaxis(signal, index); x=x(:);
+  y.Description = [ y.Description ...
+    sprintf('\n  Axis %i "%s" label is "%s", range [%g:%g]', index, ax(2*index), label(signal, index), min(x), max(x)) ];
 end
 
 y.ParameterValues = Guess;
