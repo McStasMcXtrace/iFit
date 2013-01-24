@@ -205,12 +205,13 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       options.compile = 1;
       if ischar(parameters) && (~isempty(strfind(parameters,' mpi')) || ~isempty(strfind(parameters,'mpi ')))
         options.mpi=2;
+        parameters      = [];
       end
     end
     if ~isempty(strfind(parameters,'--info')) || ~isempty(strfind(parameters,'-i'))
       options.mode = 'info';
+      parameters      = [];
     end
-    parameters      = [];
   end
   if nargin < 1, parameters = []; end
   if ischar(parameters)
