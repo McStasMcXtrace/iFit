@@ -50906,7 +50906,7 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
   integer, parameter                             :: n_elements=423
   character (Len = 8), dimension(n_elements)     :: element
   real ( KIND = dp ), dimension(n_elements)      :: Bcoh, Binc, weight, Sabs
-  real                                           :: sigma_coh, sigma_inc, sigma_abs, mass
+  real                                           :: sigma_coh, sigma_inc, sigma_abs, mass, F
   
   character(len=1024)                            :: formula
   character(len=4096)                            :: s1,s2,s3  ! temporary string for concatenation
@@ -50927,6 +50927,7 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
     stlmax= 1.0
   end if
   
+  eol=char(13)//char(10)
   message = ''
   
   ! set the element name, cross sections and weight
@@ -51207,19 +51208,7 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
     return
   end if
   if (verbose .ne. 0) then
-    message = "structure.file='"//trim(file_in)//"';"//eol
-  end if
-    
-  !Compute cross section
-  sigma_coh=0
-  sigma_inc=0
-  sigma_abs=0
-  mass     =0
-  formula  =""
-  message = ""
-  eol=char(13)//char(10)
-  
-  if (verbose .ne. 0) then
+    message = "file='"//trim(file_in)//"';"//eol
     s1 = trim(ADJUSTL(message))//eol//&
       "% cell         [    a         b         c        alpha     beta      gamma ]"//eol
     write(s2,fmt="(a,6f10.5,a)") "cell=[ ", &
@@ -51228,8 +51217,15 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
     write(s3,fmt="(a,i4,a)") "Spgr='"//trim(SpG%SPG_Symb)//"'; % space group [Number ",&
          SpG%NumSpg, "]"//eol
     message = trim(s1)//trim(s2)//trim(s3)//&
-      "% atoms       [    x/a       y/b       z/c      Biso      Occ       Spin      Charge ]"//eol
+      "%             [    x/a       y/b       z/c      Biso      Occ       Spin      Charge ]"//eol
   end if
+  
+  !Compute cross section
+  sigma_coh=0
+  sigma_inc=0
+  sigma_abs=0
+  mass     =0
+  formula  =""
   
   do I=1, A%Natoms
     do Y = 1,n_elements
@@ -51325,21 +51321,24 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
     write(unit=lun,fmt="(a,f14.5,a)") "# lattice_cc ", Cell%ang(3),   " lattice angle gamma in [deg]"
     write(unit=lun,fmt="(a)") "#"
     write(unit=lun,fmt="(a)") "# Format parameters: Crystallographica format"
-    write(unit=lun,fmt="(a)") "# column_j  4   multiplicity 'j'"
-    write(unit=lun,fmt="(a)") "# column_d  5   d-spacing 'd' in [Angs]"
-    write(unit=lun,fmt="(a)") "# column_F2 7   norm of scattering factor |F|^2 in [barn]"
     write(unit=lun,fmt="(a)") "# column_h  1"
     write(unit=lun,fmt="(a)") "# column_k  2"
     write(unit=lun,fmt="(a)") "# column_l  3"
+    write(unit=lun,fmt="(a)") "# column_j  4   multiplicity 'j'"
+    write(unit=lun,fmt="(a)") "# column_d  5   d-spacing 'd' in [Angs]"
+    write(unit=lun,fmt="(a)") "# column_F2 6   norm of scattering factor |F|^2 in [barn]"
     write(unit=lun,fmt="(a)") "#"
     write(unit=lun,fmt="(a,i5,a,f10.4,a)") "# List ",hkl%Nref, " reflections for lambda > ", &
             lambda, " [Angs], decreasing d-spacing."
     write(unit=lun,fmt="(a)") &
-            "# H   K   L     Mult    SinTh/Lda     dspc                   |Fc|^2"
+            "# H   K   L     Mult    dspc                   |Fc|^2"
     do i=1,hkl%Nref
-      write(unit=lun,fmt="(3(i3,1x),i5,1x,2(f13.5,1x),f25.5)") &
+      F    = hkl%ref(i)%Fc
+      if ((F+1.0) .ne. F) then ! except for NaN's
+        write(unit=lun,fmt="(3(i3,1x),i5,1x,2(f13.5,1x),f25.5)") &
         hkl%ref(i)%h, hkl%ref(i)%mult, &
-        hkl%ref(i)%S,0.5/hkl%ref(i)%S, hkl%ref(i)%Fc*hkl%ref(i)%Fc
+        0.5/hkl%ref(i)%S, F*F
+      end if
     end do
     
     close (unit=lun)
