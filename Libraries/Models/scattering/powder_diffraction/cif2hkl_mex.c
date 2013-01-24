@@ -2,6 +2,8 @@
 /* compile with:
       gfortran -O2 -fPIC -c cif2hkl.f90
       mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran
+   get single executable
+      gfortran -O2 -o cif2hkl cif2hkl.o -lm
  */
 
 
@@ -87,11 +89,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
   for (i=4095; i>=0; i--)
     if (message[i] != ' ' && message[i] != '\0') break;
   message[i]='\0';
-  if (strlen(message))
+  if (strlen(message) && message[0] != ' ' && message[1] != ' ') {
     if (nlhs)
       plhs[0] = mxCreateString(message);
     else
-      mexPrintf("%s\n", message); 
+      mexPrintf("%s\n", message);
+  } 
+  else
+    plhs[0] = mxCreateString("");
   
 } 
 #endif
