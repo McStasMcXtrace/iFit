@@ -796,7 +796,7 @@ function inline_disp(options, funccount, fun, pars, fval)
     if strncmp(options.Display, 'iter',4)
       spars=pars(1:min(20,length(pars)));
       spars=mat2str(spars', 4);  % as a row
-      if length(spars) > 50, spars=[ spars(1:47) ' ...' ]; end
+      if length(spars) > 45, spars=[ spars(1:42) ' ...]' ]; end
       index = isfinite(fval);
       if isfinite(funccount) && ~isempty(index)
         disp(sprintf(' %5.0f    %12.6g          %s', abs(funccount), sum(fval(index)), spars));
