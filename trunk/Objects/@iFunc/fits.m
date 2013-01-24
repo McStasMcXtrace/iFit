@@ -678,5 +678,6 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
   set(h, 'Name', [ mfilename ': ' options.algorithm ': ' model.Name ' f=' num2str(sum(criteria(:))) ]);
   title({ [ mfilename ': ' options.algorithm ': ' model.Name ' #' num2str(options.funcCount) ], ...
           p });
+  legend show
   set(0, 'CurrentFigure', old_gcf);
 end % iFunc_private_fminplot
