@@ -79,7 +79,7 @@ if isstruct(p)
   end
 end
 
-if ischar(p)
+if ~isempty(p) && ischar(p)
   if strcmp(p, 'plot')
     signal=plot(model);
     return
@@ -385,7 +385,7 @@ varargin(1:model.Dimension) = [];
 % in the evaluation:
 % * x,y,z,...        hold the axes
 % * p                holds the numerical values of the parameters (row)
-% * struct_p         holds the parameters as a structure (inactiated for now)
+% * struct_p         holds the parameters as a structure (inactivated for now)
 % * model.Parameters holds the names of these parameters
 % 
 
