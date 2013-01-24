@@ -75,7 +75,8 @@ elseif strncmpi(a.Format, 'CFL',3)
   for index=1:length(f)
     [at,nb] = strtok(f{index}, '0123456789'); % supposed to be an atom, and nb is a 'number' or empty
     if isnumeric(Atom.(f{index})) && ~isempty(Atom.(f{index})) && sum(strcmpi(at, atoms)) == 1
-      vertices = [ vertices ; Atom.(f{index}) ];
+      l = Atom.(f{index}); l=l(:)';
+      vertices = [ vertices ; l ];
     end
   end
   nv = size(vertices, 1); nf = 0;
