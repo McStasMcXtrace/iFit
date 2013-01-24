@@ -7,6 +7,7 @@ function s = read_anytext(varargin)
 % * import the MAT file as a structure
 
 % handle input arguments =======================================================
+s = [];
 if isempty(varargin)
   looktxt('--help');
   return
