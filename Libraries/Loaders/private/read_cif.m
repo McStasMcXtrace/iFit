@@ -1,7 +1,7 @@
 function data = read_cif(file)
 % mstlread Wrapper to read ascii and binary STL files
   data = [];
-  if exist('cif2hkl') == 3
+  if exist('cif2hkl') == 3 || exist('cif2hkl') == 7
     % use MeX in verbose and no-output-files mode ('-')
     this = cif2hkl(file,[],[],'-',1);
     this = str2struct(this);
