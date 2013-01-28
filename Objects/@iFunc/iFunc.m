@@ -164,7 +164,7 @@ function a = iFunc_private_check(a)
   nb_pars             = 0;
   dim                 = 0;
   
-  % Constraint can be of char, cellstr, function_handle, structure
+  % Constraint can be of char, cellstr, function_handle, scalar, vector, structure
   const.min   = nan*ones(length(a.Parameters),1);
   const.max   = nan*ones(length(a.Parameters),1);
   const.fixed = zeros(length(a.Parameters),1);
@@ -175,13 +175,15 @@ function a = iFunc_private_check(a)
       const.Expression = char(a.Constraint);
     elseif isnumeric(a.Constraint)
       if length(a.Constraint) == length(a.Parameters)
-        const.fixed = a.Constraint(:)';
+        const.fixed = a.Constraint(:);
+      elseif length(a.Constraint) == 1
+        const.fixed = const.fixed*a.Constraint;
       else
-        error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be vector of length ' ...
+        error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be scalar or vector of length ' ...
           num2str(length(a.Parameters)) ' (Parameters).' ]);
       end
     else
-      error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be a char or cellstr, function_handle, vector, but not a ' ...
+      error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be a char or cellstr, function_handle, scalar or vector, but not a ' ...
         class(a.Constraint) '.' ]);
     end
     a.Constraint = const;
@@ -193,8 +195,10 @@ function a = iFunc_private_check(a)
         v_new = a.Constraint.(f{index});
         l     = length(v_new);
         v_old = const.(f{index});
-        if l <= length(a.Parameters)
+        if isnumeric(v_old) && l <= length(a.Parameters)
           v_old(1:l) = v_new;
+          const.(f{index}) = v_old;
+        elseif ~isnumeric(v_old) % Expression
           const.(f{index}) = v_old;
         end
       end

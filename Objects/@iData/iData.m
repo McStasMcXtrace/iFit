@@ -115,6 +115,10 @@ else  % convert input argument into object
       s=get(d,'Signal'); set(d, 'Signal', s');
       disp([ 'iData: The Signal has been transposed to match the axes orientation in object ' d.Tag ' "' d.Title '".' ]);
     end
+    if ~isempty(inputname(index))
+        d.Label=[ inputname(index) ' (' class(varargin{index}) ')' ];
+        d.DisplayName=d.Label;
+    end
       
     outarray = [ outarray d ];
     return
@@ -135,20 +139,24 @@ else  % convert input argument into object
       out = iData_struct2iData(in); % convert struct to iData
     elseif all(ishandle(in)) & numel(in)==1 % convert Handle Graphics Object
       % iData(figure handle)
+      try 
+        t = get(in,'DisplayName');
+        if isempty(t), t=get(get(in,'Parent'),'DisplayName'); end
+      catch t=[]; end
+      if isempty(t), t=get(in,'Tag'); end
+      if isempty(t), t=num2str(in); end
       if strcmp(get(in,'type'),'hggroup')
-        try t = get(in,'DisplayName'); catch t=[]; end
-        if isempty(t), t=get(in,'Tag'); end
+        t = [ 'figure ' t ];
         h = get(in,'Children');
         out = iData(h(1)); % fisrt item
         out = set(out,'Title', t);
         out = set(out, 'DisplayName', t);
+        out = set(out, 'Label', t);
       elseif strcmp(get(in,'type'),'line')
         x = get(in,'xdata'); 
         y = get(in,'ydata'); 
         index = find(~isnan(x) & ~isnan(y));
         if length(index)~=prod(size(x)), x = x(index); y=y(index); end
-        try t = get(in,'DisplayName'); catch t=[]; end
-        if isempty(t), t=get(in,'Tag'); end
         c = get(in,'color');
         m = get(in,'marker');
         l = get(in,'linestyle');
@@ -157,14 +165,15 @@ else  % convert input argument into object
         try yl = get(get(in,'parent'),'YLabel'); yl=[ get(yl,'String') ' ' ]; catch yl=''; end;
         try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end;
         label(out,0,yl);
+        t = [ 'line ' t ];
         out.Title = [ tl yl t ];
         out.DisplayName = t;
-        out.Label=[ 'line ' l ' marker ' m ' color ' num2str(c) ];
+        out.Label=[ t ' marker ' m ' color ' num2str(c) ];
       elseif strcmp(get(in,'type'),'image')
         x = get(in,'xdata'); 
         y = get(in,'ydata');
         z = get(in,'cdata');
-        t = get(in,'Tag');
+        t = [ 'image ' t ];
         out=iData(x,y,z);
         try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch xl='x'; end
         try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch yl='y'; end
@@ -173,7 +182,7 @@ else  % convert input argument into object
         xlabel(out, xl); ylabel(out, yl); label(out, tl);
         out.Title = t;
         out.DisplayName = t;
-        out.Label=[ 'image ' t ];
+        out.Label=t;
       elseif strcmp(get(in,'type'),'surface')
         x = get(in,'xdata'); 
         y = get(in,'ydata'); 
@@ -182,8 +191,6 @@ else  % convert input argument into object
         % index=find(~isnan(x) & ~isnan(y) & ~isnan(z) & ~isnan(c)); 
         % if length(index)~=prod(size(x)), x = x(index); y=y(index); z=z(index); c=c(index); end
         l = get(in,'linestyle');
-        t = get(in,'DisplayName');
-        if isempty(t), t=get(in,'Tag'); end
         if all(z == c)
           out=iData(x,y,z);
         else
@@ -201,24 +208,24 @@ else  % convert input argument into object
           zlabel(out, zl);
           t = [ tl t ];
         end
+        t = [ 'surface ' t ];
         out.Title = t;
         out.DisplayName = t;
-        out.Label=[ 'surface ' t ' line ' l ];
+        out.Label=[ t ' line ' l ];
       else
-        h = [ findobj(in, 'type','line') findobj(in, 'type','surface') findobj(in, 'type','image')  ];
-        try t = get(in,'DisplayName'); catch t=[]; end
-        if isempty(t)
-          try t = get(in,'Tag'); catch t=[]; end
-        end
-        out = zeros(iData, length(h), 1);
-        parfor index=1:length(h)
+        h = [ findobj(in, 'type','line') ; findobj(in, 'type','surface') ; findobj(in, 'type','image')  ];
+        out = [];
+        for index=1:length(h)
           this_out = iData(h(index));
           if isempty(this_out.Title) && ~isempty(t)
             this_out.Title = t;
+            this_out.Label = t;
             this_out.DisplayName = t;
           end
           if ~isempty(t), this_out.Source = t; end
-          out = [ out this_out ];
+          if  ~isscalar(get(this_out,'Signal'))
+            out = [ out this_out ];
+          end
         end
       end
     elseif isnumeric(in)
@@ -231,11 +238,11 @@ else  % convert input argument into object
       iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(in) ' is not supported. Ignore.' ]);
       out = [];
     end
-    if length(inputname(1)), inmame=[ inputname(1) ' ' ]; else inmame=''; end
+    if ~isempty(inputname(1)), in_name=[ inputname(1) ' ' ]; else in_name=''; end
     for index=1:numel(out)
-      if numel(out) == 1 | ~isempty(out(index))
-        if isempty(out(index).Source), out(index).Source = inmame; end
-        if isempty(out(index).Title),  out(index).Title  = [ inmame class(in) ]; end
+      if numel(out) == 1 || ~isempty(out(index))
+        if isempty(out(index).Source), out(index).Source = in_name; end
+        if isempty(out(index).Title),  out(index).Title  = [ in_name ' (' class(in) ')' ]; end
         
         if isempty(out(index).Command)
         	out(index) = iData_private_history(out(index), mfilename, in); 
