@@ -1211,7 +1211,7 @@ while isempty(stopflag)
   end
   
   % Update B and D from C
-
+  C(isnan(C)) = 0;
   if ~flgDiagonalOnly && (ccov1+ccovmu+neg.ccov) > 0 && mod(countiter, 1/(ccov1+ccovmu+neg.ccov)/N/10) < 1
     C=triu(C)+triu(C,1)'; % enforce symmetry to prevent complex numbers
     [B,tmp] = eig(C);     % eigen decomposition, B==normalized eigenvectors
