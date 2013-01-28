@@ -145,6 +145,10 @@ end
 
 for i=1:numel(out)
   out(i).Command={[ out(i).Tag '=load(iData,''' out(i).Source ''');' ]};
+  if isempty(out(i).DisplayName)
+    [p,f,e] = fileparts(filename);
+    out(i) = set(out(i),'DisplayName',[ f e ]);
+  end
   %this_iData = iData_private_history(this_iData, mfilename, a, files{i}.Source);
 end % for
 

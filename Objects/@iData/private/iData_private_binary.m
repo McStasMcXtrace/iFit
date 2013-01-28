@@ -143,10 +143,10 @@ case {'plus','minus','combine'}
        if isscalar(m1), m1=m1*ones(size(s1)); end
        if isscalar(m2), m2=m2*ones(size(s2)); end
   else s3 = genop( op,     y1, y2); end
-  i1 = isnan(y1); i2=isnan(y2);
+  i1 = isnan(y1(:)); i2=isnan(y2(:));
   % if NaN's are found (from interp), use non NaN values in the other data set 
-  if any(i1), s3(i1) = y2(i1); end
-  if any(i2), s3(i2) = y1(i2); end
+  if any(i1) && ~isscalar(y2), s3(i1) = y2(i1); end
+  if any(i2) && ~isscalar(y1), s3(i2) = y1(i2); end
   
   try
     e3 = sqrt(genop(@plus, d1.^2,d2.^2));

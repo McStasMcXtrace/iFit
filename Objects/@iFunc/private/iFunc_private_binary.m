@@ -42,34 +42,43 @@ else
   v = [ ', ''' char(varargin{1}) '''' ];
 end
 
+if ~isFa && ischar(a) && isvarname(a)
+  a = constant(a);
+  isFa = 1;
+end
+if ~isFb && ischar(b) && isvarname(b)
+  b = constant(b);
+  isFb = 1;
+end
+
 % make sure we have chars only (get rid of function handles)
 if isFa 
   ax = 'x,y,z,t,u,'; ax = ax(1:(a.Dimension*2));
   if isa(a.Expression, 'function_handle')
-    a.Expression = sprintf('signal = feval(%s, p, %s);', func2str(a.Expression), ax(1:(end-1)));
+    a.Expression = { sprintf('signal = feval(%s, p, %s);', func2str(a.Expression), ax(1:(end-1))) };
   end
-  if isa(a.Constraint, 'function_handle')
-    a.Constraint = sprintf('p = feval(%s, p, %s);', func2str(a.Constraint), ax(1:(end-1)));
+  if isa(a.Constraint.Expression, 'function_handle')
+    a.Constraint.Expression = sprintf('p = feval(%s, p, %s);', func2str(a.Constraint.Expression), ax(1:(end-1)));
   end
   if isa(a.Guess, 'function_handle')
     a.Guess = sprintf('[ feval(%s, %s, signal) ]', func2str(a.Guess), ax(1:(end-1)));
-  elseif isnumeric(a.Guess)
-    a.Guess = mat2str(double(a.Guess));
+  elseif isempty(b.Guess)
+    a.Guess = NaN*ones(length(a.Parameters),1);
   end
 end
 
 if isFb
   ax = 'x,y,z,t,u,'; ax = ax(1:(b.Dimension*2));
   if isa(b.Expression, 'function_handle')
-    b.Expression = sprintf('signal = feval(%s, p, %s);', func2str(b.Expression), ax(1:(end-1)));
+    b.Expression = { sprintf('signal = feval(%s, p, %s);', func2str(b.Expression), ax(1:(end-1))) };
   end
-  if isa(b.Constraint, 'function_handle')
-    b.Constraint = sprintf('p = feval(%s, p, %s);', func2str(b.Constraint), ax(1:(end-1)));
+  if isa(b.Constraint.Expression, 'function_handle')
+    b.Constraint.Expression = { sprintf('p = feval(%s, p, %s);', func2str(b.Constraint.Expression), ax(1:(end-1))) };
   end
   if isa(b.Guess, 'function_handle')
     b.Guess = sprintf('[ feval(%s, %s, signal) ]', func2str(b.Guess), ax(1:(end-1)));
-  elseif isnumeric(b.Guess)
-    b.Guess = mat2str(double(b.Guess));
+  elseif isempty(b.Guess)
+    b.Guess = NaN*ones(length(b.Parameters),1);
   end
 end
 
@@ -81,7 +90,7 @@ if isFa && isFb
   if a.Dimension ~= b.Dimension && 0
     error(['iFunc:' mfilename ], [mfilename ': can not apply operator ' op ' between iFunc objects of different dimensions' num2str(a.Dimension) ' and ' num2str(b.Dimension) '.' ]);
   end
-  
+
   % use Tag-based names to copy/store signal and parameters
   tmp_a=a.Tag; 
   tmp_b=b.Tag; 
@@ -117,26 +126,26 @@ if isFa && isFb
     end
   end
   c.Parameters=Parameters; clear Parameters
-  
-  % append ParameterValues
-  if length(a.ParameterValues) == length(a.Parameters) && length(b.ParameterValues) == length(b.Parameters)
-    ParameterValues(i1a:i2a)=a.ParameterValues;
-    ParameterValues(i1b:i2b)=b.ParameterValues;
-  else
-    ParameterValues=[];
-  end
-  c.ParameterValues=ParameterValues; clear ParameterValues
-  
+
   % append parameter Guess
+  if ischar(a) && isnumeric(b)
+    b.Guess = mat2str(b.Guess);
+  elseif ischar(b) && isnumeric(a)
+    a.Guess = mat2str(a.Guess);
+  end
+
   if ischar(a.Guess) && ischar(b.Guess)
     Guess = [ '[ ' a.Guess ' ' b.Guess ' ]' ];
-  elseif length(a.Guess) == length(a.Parameters) && length(b.Guess) == length(b.Parameters) ...
-     && isnumeric(a.Guess) && isnumeric(b.Guess)
-    Guess(i1a:i2a)=a.Guess;
-    Guess(i1b:i2b)=b.Guess;
+  elseif isnumeric(a.Guess) && isnumeric(b.Guess) && ...
+         length(a.Guess) == length(a.Parameters) && ...
+         length(b.Guess) == length(b.Parameters)
+    Guess = NaN*ones(length(a.Parameters)+length(b.Parameters), 1);
+    if length(a.Guess)==length(i1a:i2a), Guess(i1a:i2a)=a.Guess(:); end
+    if length(b.Guess)==length(i1b:i2b), Guess(i1b:i2b)=b.Guess(:); end
   else
     Guess=[];
   end
+
   c.Guess=Guess; clear Guess
   
   % append UserData
@@ -171,14 +180,14 @@ if isFa && isFb
   end
   
   % append Constraint ==========================================================
-  if     isempty(a.Constraint), c.Constraint = b.Constraint;
-  elseif isempty(b.Constraint), c.Constraint = a.Constraint;
+  if     isempty(a.Constraint.Expression), c.Constraint.Expression = b.Constraint.Expression;
+  elseif isempty(b.Constraint.Expression), c.Constraint.Expression = a.Constraint.Expression;
   else
     % append Constraint: 1st
-    c.Constraint = [ ...
+    c.Constraint.Expression = [ ...
       sprintf('%s_p = p; %% store the whole parameter values\n'  , tmp_a), ... % full parameter vector
       sprintf('p=%s_p(%i:%i); %% evaluate 1st constraint for %s\n', tmp_a, i1a, i2a, op), ...
-      a.Constraint, ...
+      a.Constraint.Expression, ...
       sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1a, i2a) ];
       
     % handle dimensionality expansion
@@ -186,25 +195,44 @@ if isFa && isFb
       ax = 'xyztu';
       % store inital axes definitions
       for index=1:c.Dimension
-        c.Constraint = [ c.Constraint, sprintf('%s_%s = %s; %% store initial axes\n', tmp_a, ax(index), ax(index)) ];
+        c.Constraint.Expression = [ c.Constraint.Expression, sprintf('%s_%s = %s; %% store initial axes\n', tmp_a, ax(index), ax(index)) ];
       end
       % set 'b' axes from input axes, shifted backwards
       for index=1:b.Dimension
-        c.Constraint = [ c.Constraint, sprintf('%s = %s; %% axes for 2nd object\n', ax(index), ax(index+a.Dimension)) ];
+        c.Constraint.Expression = [ c.Constraint.Expression, sprintf('%s = %s; %% axes for 2nd object\n', ax(index), ax(index+a.Dimension)) ];
       end
     end
     
     % append Constraint: 2nd
-    c.Constraint = [ c.Constraint, ...
+    c.Constraint.Expression = [ c.Constraint.Expression, ...
       sprintf('p=%s_p(%i:%i); %% evaluate 2nd constraint for %s\n', tmp_a, i1b, i2b, op)
-      b.Constraint, ...
+      b.Constraint.Expression, ...
       sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1b, i2b), ...
       sprintf('p=%s_p; %% restore initial parameter values\n'  , tmp_a) ];
     % restore initial axes definitions
     if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
       for index=1:c.Dimension
-        c.Constraint = [ c.Constraint, sprintf('%s = %s_%s; %% restore initial axes\n', ax(index), tmp_a, ax(index)) ];
+        c.Constraint.Expression = [ c.Constraint.Expression, sprintf('%s = %s_%s; %% restore initial axes\n', ax(index), tmp_a, ax(index)) ];
       end
+    end
+  end
+  
+  % append Constraint.fixed, min, max
+  if isFa && isFb
+    c.Constraint.fixed = [ a.Constraint.fixed ; b.Constraint.fixed ];
+    c.Constraint.min   = [ a.Constraint.min   ; b.Constraint.min ];
+    c.Constraint.max   = [ a.Constraint.max   ; b.Constraint.max ];
+  end
+  
+  % append ParameterValues
+  if isFa && isFb
+    if isempty(a.ParameterValues) && ~isempty(b.ParameterValues)
+      a.ParameterValues = NaN*ones(length(a.Parameters),1); 
+    elseif isempty(b.ParameterValues) && ~isempty(a.ParameterValues) 
+      b.ParameterValues = NaN*ones(length(b.Parameters),1);
+    end
+    if length(a.ParameterValues) == length(a.Parameters) && length(b.ParameterValues) == length(b.Parameters)
+      c.ParameterValues = [ a.ParameterValues(:) ; b.ParameterValues(:) ];
     end
   end
   
@@ -237,65 +265,63 @@ if isFa && isFb
   
   % append Expression:
   % =========================================================
-  c.Expression = [ ...
+  c.Expression = { ...
     sprintf('%s_p = p; %% store the whole parameter values\n'  , tmp_a), ...
     sprintf('p=%s_p(%i:%i); %% evaluate 1st expression for %s\n', tmp_a, i1a, i2a, op), ...
-    a.Expression, ...
+    a.Expression{:}, ...
     sprintf('\n%s_s = signal;\n', tmp_a), ...
     sprintf('%s_p(%i:%i)=p(1:%d); %% updated parameters\n', ...
-      tmp_a, i1a, i2a, length(a.Parameters)) ];
+      tmp_a, i1a, i2a, length(a.Parameters)) };
   
   % handle dimensionality expansion
   if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
     ax = 'xyztu';
     % store inital axes definitions
     for index=1:c.Dimension
-      c.Expression = [ c.Expression, sprintf('%s_%s = %s; %% store initial axes\n', tmp_a, ax(index), ax(index)) ];
+      c.Expression{end+1} = sprintf('%s_%s = %s; %% store initial axes\n', tmp_a, ax(index), ax(index));
     end
     % set 'b' axes from input axes, shifted backwards
     for index=1:b.Dimension
-      c.Expression = [ c.Expression, sprintf('%s = %s; %% axes for 2nd object\n', ax(index), ax(index+a.Dimension)) ];
+      c.Expression{end+1} = sprintf('%s = %s; %% axes for 2nd object\n', ax(index), ax(index+a.Dimension));
     end
   end
   
-  % append Expression: 2nd
-  c.Expression = [ c.Expression, ...
+  % append Expression: 2nd  
+  c.Expression = { c.Expression{:}, ...
     sprintf('p=%s_p(%i:%i); %% evaluate 2nd expression for %s\n', tmp_a, i1b, i2b, op), ...
-    b.Expression, ...
+    b.Expression{:}, ...
     sprintf('\n%s_p(%i:%i)=p(1:%d); %% updated parameters\n', ...
       tmp_a, i1b, i2b, length(b.Parameters)), ...
-    sprintf('p=%s_p;\n'  , tmp_a) ];
+    sprintf('p=%s_p;\n'  , tmp_a) };
   if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
     % orthogonal operation
-    c.Expression = [ c.Expression, ...
-      sprintf('signal=bsxfun(@%s, %s_s, signal); %% operation: %s (orthogonal axes)\n', op(2:end), tmp_a, op) ];
+    c.Expression{end+1} = sprintf('signal=bsxfun(@%s, %s_s, signal); %% operation: %s (orthogonal axes)\n', op(2:end), tmp_a, op);
   else
-    c.Expression = [ c.Expression, ...
-      sprintf('signal=feval(@%s, %s_s, signal%s); %% operation: %s\n', op, tmp_a, v, op) ];
+    c.Expression{end+1} = sprintf('signal=feval(@%s, %s_s, signal%s); %% operation: %s\n', op, tmp_a, v, op);
   end
 
 elseif isFa && ischar(b)
   if strcmp(op, 'plus') && ~isempty(find(b == '=' | b == ';'))
-    c.Expression = [ c.Expression sprintf('\n%s%s;', b, v) ];
+    c.Expression{end+1} = sprintf('\n%s%s;', b, v) ;
   else
-    c.Expression = [ c.Expression sprintf('\nsignal=%s(signal,%s%s);', op, b, v) ];
+    c.Expression{end+1} = sprintf('\nsignal=%s(signal,%s%s);', op, b, v);
   end
   c.Name       = sprintf('%s(%s,%s)', op, c.Name, b(1:min(10,length(b))));
 elseif isFb && ischar(a)
   if strcmp(op, 'plus') && ~isempty(find(a == '=' | a == ';'))
-    c.Expression = [ sprintf('%s%s;\n', a, v) c.Expression  ];
+    c.Expression = { sprintf('%s%s;\n', a, v), c.Expression{:} } ;
   else
-    c.Expression = [ c.Expression sprintf('\nsignal=%s(%s,signal%s);', op, a, v) ];
+    c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%s);', op, a, v);
   end
   c.Name       = sprintf('%s(%s,%s)', op, a(1:min(10,length(a))), c.Name);
 elseif   isFa && isnumeric(b) && isnumeric(b)
   b = mat2str(double(b)); 
-  c.Expression = [ c.Expression sprintf('\nsignal=%s(signal,%s%s);', op, b, v) ];
+  c.Expression{end+1} = sprintf('\nsignal=%s(signal,%s%s);', op, b, v);
   if length(b) > 13, b=[ b(1:10) '...' ]; end
   c.Name       = sprintf('%s(%s,%s)', op, c.Name, b);
 elseif isFb && isnumeric(a) && isnumeric(a)
   a = mat2str(double(a));
-  c.Expression = [ c.Expression sprintf('\nsignal=%s(%s,signal%v);', op, a, v) ];
+  c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%v);', op, a, v);
   if length(a) > 13, a=[ a(1:10) '...' ]; end
   c.Name       = sprintf('%s(%s,%s)', op, c.Name, b);
 else

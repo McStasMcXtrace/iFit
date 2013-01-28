@@ -75,7 +75,7 @@ end
     else
       this_max = Inf;
     end
-    if length(s.Constraint.fixed) >=index && s.Constraint.fixed(index)
+    if length(s.Constraint.fixed) >=index && s.Constraint.fixed(index) ~= 0
       line = [ line ' (fixed)' ];
     elseif any(isfinite([this_min this_max]))
       line = [ line ' in ' mat2str([this_min this_max]) ];
