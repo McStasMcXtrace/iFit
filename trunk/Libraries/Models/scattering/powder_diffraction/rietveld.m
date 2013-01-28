@@ -166,7 +166,7 @@ for index=1:length(varargin)
         CFL.structure = this.(f{j});
       elseif strcmpi(f{j}, 'CFML_write')
         CFL.CFML_write = this.(f{j});
-      elseif any(strcmp(at, atoms)) && (isempty(nb) || ~isempty(str2num(nb))) && length(this.(f{j})) >= 3 && length(this.(f{j})) <= 7
+      elseif any(strcmpi(at, atoms)) && (isempty(nb) || ~isempty(str2num(nb))) && length(this.(f{j})) >= 3 && length(this.(f{j})) <= 7
         % the name of the field is <atom> optionally followed by a number, and value length is 3-7
         CFL.structure.(f{j}) = this.(f{j});
       elseif any(strcmpi(f{j}, {'cell','lattice'}))
@@ -391,3 +391,4 @@ for index=1:y.Dimension
 end
 
 y.ParameterValues = Guess;
+
