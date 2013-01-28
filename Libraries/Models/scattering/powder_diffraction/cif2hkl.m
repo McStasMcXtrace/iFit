@@ -71,6 +71,7 @@ disp(cmd)
 % launch the command
 [status, result] = system(cmd);
 if status ~= 0
+    disp(result)
   error('cif2hkl executable not available. Compile it with: gfortran -O2 -o cif2hkl cif2hkl.f90 -lm');
 end
 
