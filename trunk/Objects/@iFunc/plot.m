@@ -26,6 +26,9 @@ if strcmp(p, 'guess'), p=[]; end
 
 % evaluate the model value, and axes
 [signal, ax, name] = feval(a, p, varargin{:});
+if isempty(p) && length(signal) == length(a.Parameters)
+  [signal, ax, name] = feval(a, signal, varargin{:});
+end
 
 % Parameters are stored in the updated model
 if length(inputname(1))
@@ -94,7 +97,7 @@ function h=iFunc_plot_menu(h, a, name)
     'Callback', [ 'msgbox(getfield(get(get(gco,''UIContextMenu''),''UserData''),''properties''),' ...
                   '''About: Model ' name ''',' ...
                   '''custom'',getfield(getframe(gcf),''cdata''), get(gcf,''Colormap''));' ] );
-  uimenu(uicm, 'Label', name);
+  uimenu(uicm, 'Label', name) ;
 
   % make up title string and Properties dialog content
   properties={ [ 'Model ' a.Tag ': ' num2str(ndims(a)) 'D model' ], ...
@@ -125,7 +128,8 @@ function h=iFunc_plot_menu(h, a, name)
   end
 
   ud.properties=properties;     
-  ud.handle = h;
+  ud.handle    = h;
+  ud.ParameterVales = a.ParameterValues;
 
   set(uicm,'UserData', ud);
   set(h,   'UIContextMenu', uicm); 
@@ -165,4 +169,10 @@ function h=iFunc_plot_menu(h, a, name)
   uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', ...
     'Callback',[ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
   set(gca, 'UIContextMenu', uicm);
+  
+  if a.Dimension == 1
+    ylabel(a.Name)
+  else
+    zlabel(a.Name)
+  end
 

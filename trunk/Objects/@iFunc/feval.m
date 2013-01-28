@@ -132,6 +132,9 @@ end
 ax=[]; name=model.Name;
 guessed = '';
 % guess parameters ========================================================
+if isempty(p) && length(model.ParameterValues) == numel(model.Parameters)
+  p = model.ParameterValues;
+end
 % when length(p) < Parameters, we fill NaN's ; when p=[] we guess them all
 if strcmp(p, 'guess') || isempty(p)
   p = NaN*ones(1, numel(model.Parameters));
@@ -140,7 +143,7 @@ elseif isnumeric(p) && length(p) < length(model.Parameters) % fill NaN's from p+
   p((length(p)+1):length(model.Parameters)) = NaN;
 end
 % when there are NaN values in parameter values, we replace them by guessed values
-if (any(isnan(p)) && length(p) == length(model.Parameters))
+if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
   % call private method to guess parameters from axes, signal and parameter names
   if isempty(guessed), guessed = 'partial'; end
   

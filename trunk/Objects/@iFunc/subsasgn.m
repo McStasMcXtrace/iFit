@@ -83,7 +83,20 @@ else
       f     = fieldnames(b);
       index = find(strcmpi(fieldname, fieldnames(b)));
       if ~isempty(index) % structure/class def fields: b.field
-        b.(f{index}) = val;
+        if strcmp(f{index},'Constraint') && ~isstruct(val)
+          if ischar(val) || iscellstr(val) || isa(val,'function_handle')
+            b.Constraint.Expression = val;
+          elseif isnumeric(val) && isscalar(val)
+            b.Constraint.fixed = val*ones(length(b.Parameters),1);
+          elseif isnumeric(val) && length(val) == length(b.Parameters)
+            b.Constraint.fixed = val(:);
+          else
+            error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be a char or cellstr, function_handle, struct, scalar or Parameter-length vector, but not a ' ...
+        class(val) '.' ]);
+          end
+        else
+          b.(f{index}) = val;
+        end
         if any(strcmp(f{index},{'Expression','Constraint'}))
           % must triger new Eval string
           b.Eval='';
@@ -97,7 +110,6 @@ else
             b.ParameterValues((length(b.ParameterValues)+1):(index-1)) = NaN;
           end
           b.ParameterValues(index)  = val;
-          b.Constraint.fixed(index) = nan;
         else % set constraint
           if ischar(val) && any(strncmp(val, {'fix','loc'}, 3))
             b.Constraint.fixed(index) = 1;
@@ -114,8 +126,8 @@ else
               b.Constraint.fixed(index) = 0;
             elseif isempty(val)
               b.Constraint.fixed(index) = 0;
-                b.Constraint.min(index)   = nan;
-                b.Constraint.max(index)   = nan;
+              b.Constraint.min(index)   = nan;
+              b.Constraint.max(index)   = nan;
             end
           end
         end
