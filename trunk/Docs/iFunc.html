@@ -122,7 +122,7 @@ When no parameter value is known, some guessed values are estimated from the ana
 
 The <span style="color: rgb(51, 102, 255);">plot</span> method demonstrated above can display a set of models in a single axis frame, or a set of panels (<span style="color: rgb(51, 102, 255);">subplot</span>) :<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([gauss lorz])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([gauss sine.*expon])<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([gauss lorz])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([gauss sine<span style="color: rgb(255, 0, 0);">.*</span>expon])	<span style="font-style: italic;">% use unary and binary operators, see below</span><br></pre>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId966568"></a>
 Evaluating a model with parameter values and axes</h3>
 The syntax for evaluating a model is<br>
@@ -147,16 +147,19 @@ In this case, tentative axes are computed from the model definition. Axes can al
 Models are often used for fitting purposes (refer to the <a href="Fit.html">Fit</a> help page).<br>
 <br>
 To set a constraint on a model parameter, define the 'constraint' input 
-argument when calling <span style="font-weight: bold; font-style: italic;">fits</span> or set the constraint directly on the model 
+argument when calling <span style="font-weight: bold; font-style: italic;">fits</span> (see <a href="Fit.html">Fit</a>) or set the constraint directly on the model 
 parameters with:<br>
 
 <pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span><br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% to unlock value during a fit process</span>
-&gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br></pre>
+&gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br>&gt;&gt; model.Constraint = 0;     <span style="font-style: italic;">% to unlock/free all Parameters during a fit process<br></span>&gt;&gt; model.Constraint = 1;     <span style="font-style: italic;">% to lock/fix all Parameters during a fit process</span><br></pre>
 
 For instance<br>
-<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;<br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;<br>&gt;&gt; f.Background = [0 1e-4];<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			% create a Gaussian model<br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		% fix its Amplitude<br>&gt;&gt; f.Background = [0 1e-4];	% bound its background<br></pre>
 
-<br>
+Alternatively, you can use the <span style="font-weight: bold;">mlock, munlock </span>and <span style="font-weight: bold;">xlim</span> methods:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, {<span style="color: rgb(204, 51, 204);">'Amplitude','Background'</span>})	<span style="font-style: italic;">% fix these 2 parameters</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f, <span style="color: rgb(204, 51, 204);">'Background'</span>)		<span style="font-style: italic;">% unlock that parameter</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f, <span style="color: rgb(204, 51, 204);">   'Background'</span>, [0 1e-3])	<span style="font-style: italic;">% force parameter within range</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f,  <span style="color: rgb(204, 51, 204);">  'Background'</span>, [])		<span style="font-style: italic;">% remove limits constraint</span>
+</pre>
+
 
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId2492"></a>Saving objects for further re-use: save, saveas</h3>
 <p>Once you have created an manipulated a model, it is possible to 
@@ -182,7 +185,7 @@ Models can be assembled to create more complex models. This is achieved simply w
 
 <br>
 
-<table style=" text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style=" text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
 
   <tbody>
     <tr>
@@ -215,7 +218,8 @@ flipud log10 plus(+) sinh minus(-)<br>
 The full list of operators can be obtained from the <br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">methods</span> iFunc</pre>
 The element-wise times(.*), divide(./) and power(.^) operators apply the
- operation along the model dimensions, with parallel axes.&nbsp; The matrix-operators 
+ operation along the model dimensions, with parallel axes.&nbsp; <br>
+The matrix-operators 
 mtimes(*), <a href="images/iFunc_operators.png"><img alt="iFunc: + .* and * operators" title="iFunc: + .* and * operators" src="images/iFunc_operators.png" style="border: 0px solid; width: 200px; height: 279px;" align="right"></a>mrdivide(/) and mpower(^) operator perform <span style="font-style: italic;"><span style="font-weight: bold;">orthogonal</span> axes multiplication</span>, with extension of the model dimensionality. <br>
 <br>
 Examples are easier to understand, so let's see a few operations :<br>
@@ -227,7 +231,7 @@ Examples are easier to understand, so let's see a few operations :<br>
 In binary operations, passing one of the arguments as a <span style="font-weight: bold;">string</span> will 
 simply insert the corresponding code into the model Expression as the 
 argument to the operator. For instance the following statement appends a 
-zero value vector to the <span style="font-style: italic;">gauss</span> model value :<br>
+zero value vector to the <span style="font-style: italic;">gauss</span> model value (axes are <span style="font-style: italic;">x,y,z</span>,... and parameters values are in <span style="font-style: italic;">p</span>):<br>
 <div style="margin-left: 40px;">
   <pre>&gt;&gt; c = gauss + <span style="color: rgb(204, 51, 204);">'zeros(size(x))'</span></pre>
 </div>
@@ -239,6 +243,11 @@ evaluating the model :<br>
 <pre style="margin-left: 40px;">&gt;&gt; c = gauss + <span style="color: rgb(204, 51, 204);">'signal = signal + zeros(size(x));'<span style="color: rgb(0, 0, 0);">;	<span style="font-style: italic;">% add code after the Expression (append)<br></span></span></span>&gt;&gt; c = <span style="color: rgb(204, 51, 204);">'disp(''Gaussian comming'');'<span style="color: rgb(0, 0, 0);">+ gauss;		<span style="font-style: italic;">% add code before the Expression</span></span></span><span style="font-style: italic;"> (prepend)</span><br></pre>
 
 
+Last, when using a single word character string as one of the arguments 
+to a binary operation, a constant Parameter is used, for instance :<br>
+<pre style="margin-left: 40px;">&gt;&gt; c = gauss + <span style="color: rgb(204, 51, 204);">'Background'		</span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">	% add a new Background parameter<br></span></span></span>&gt;&gt; c = gauss + constant(<span style="color: rgb(204, 51, 204);">'Background'</span>)	<span style="font-style: italic;">	% same as above</span><br>&gt;&gt; c = gauss + constant				<span style="font-style: italic;">% same as above, but not naming explicitly the new Constant</span>
+&gt;&gt; d = gauss.*<span style="color: rgb(204, 51, 204);">'Amplitude'</span> + <span style="color: rgb(204, 51, 204);">'Background'</span>	<span style="font-style: italic;">% add 2 new constant Parameters</span>
+</pre>
 You can also use the convolution related operators<br>
 
 <ul>
