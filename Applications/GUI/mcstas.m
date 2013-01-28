@@ -653,6 +653,8 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   if nargout ==0, return; end
   if status
     disp([ mfilename ': ERROR: Failed to execute ' cmd ]);
+    status
+    result
     return
   end
   
