@@ -103,34 +103,48 @@ else
           % check object when modifying key member
           b = iFunc(b);
         end
-      elseif any(strcmp(fieldname, b.Parameters)) % b.<parameter name>
+      elseif any(strcmp(fieldname, b.Parameters)) % b.<parameter name> = <value>
         index=find(strcmp(fieldname, b.Parameters));
-        if isnumeric(val) && isscalar(val)
+        if isnumeric(val) && isscalar(val)  % set constraint: scalar
           if index > length(b.ParameterValues)
             b.ParameterValues((length(b.ParameterValues)+1):(index-1)) = NaN;
           end
           b.ParameterValues(index)  = val;
-        else % set constraint
+        else                                % set constraint: 'fix', 'clear', 'set', [min max]
           if ischar(val) && any(strncmp(val, {'fix','loc'}, 3))
-            b.Constraint.fixed(index) = 1;
+            b.Constraint.fixed(index) = 1; val = 'skip';
           elseif ischar(val) && any(strncmp(val, {'cle','unl'}, 3))
+            b.Constraint.fixed(index) = 0; val = 'skip';
+          elseif ischar(val) && any(length(str2num(val)) == [1 2])
+            val = str2num(val);
+          end
+          if isempty(val)
             b.Constraint.fixed(index) = 0;
-          else
-            if ischar(val) && length(str2num(val))==2
-              val = str2num(val);
+            b.Constraint.min(index)   = nan;
+            b.Constraint.max(index)   = nan;
+            b.Constraint.set{index}   = [];
+          elseif (~strcmp(val, 'skip') && ischar(val)) || isa(val, 'function_handle')
+            % replace occurencies of Parameter names (as single words)
+            if ischar(val)
+              % build the list of replacement strings
+              replace = strcat('p(', cellstr(num2str(transpose(1:length(b.Parameters)))), ')');
+              % replace Parameter names by their p(n) representation
+              val = regexprep(val, strcat('\<"', b.Parameters, '"\>' ), replace);
             end
-            if isnumeric(val) && length(val)==2
-              % val=[min max] -> set min(index) and max(index)
-              b.Constraint.min(index) = val(1);
-              b.Constraint.max(index) = val(2);
-              b.Constraint.fixed(index) = 0;
-            elseif isempty(val)
-              b.Constraint.fixed(index) = 0;
-              b.Constraint.min(index)   = nan;
-              b.Constraint.max(index)   = nan;
-            end
+            b.Constraint.set{index}   = val;
+            b.Constraint.fixed(index) = 1; % this also fixes the value
+          elseif isnumeric(val) && length(val)==2
+            % val=[min max] -> set min(index) and max(index)
+            b.Constraint.min(index) = val(1);
+            b.Constraint.max(index) = val(2);
+          elseif isnumeric(val) && length(val)==1 % from str2num(char) above
+            % val='value' -> set value and fix it
+            b.ParameterValues(index)  = val;
+            b.Constraint.fixed(index) = 1;
           end
         end
+        % check object when modifying key member
+        b = iFunc(b);
       elseif strcmp(fieldname, 'p')
         if isnumeric(val)
           b.ParameterValues=val;

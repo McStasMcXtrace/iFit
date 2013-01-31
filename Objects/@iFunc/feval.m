@@ -218,7 +218,7 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
     elseif isnumeric(model.Guess)
       p2 = model.Guess;
     else
-      % request guess in sandbox
+      % request char eval guess in sandbox
       p2 = iFunc_feval_guess(model, varargin);
       p  = p0;             % restore initial value
     end
@@ -254,9 +254,11 @@ end % 'guess'
 
 % format parameters as columns
 p = p(:);
-model.Constraint.min=model.Constraint.min(:);
-model.Constraint.max=model.Constraint.max(:);
+model.Constraint.min  =model.Constraint.min(:);
+model.Constraint.max  =model.Constraint.max(:);
 model.Constraint.fixed=model.Constraint.fixed(:);
+model.Constraint.set  =model.Constraint.set(:);
+
 % apply constraints (fixed are handled in 'fits')
 i = find(isfinite(model.Constraint.min));
 if ~isempty(i)
@@ -266,6 +268,10 @@ i = find(isfinite(model.Constraint.max));
 if ~isempty(i)
   p(i) = min(p(i), model.Constraint.max(i));
 end
+
+% apply 'set' Constraints (with char)
+p = iFunc_feval_set(model, p, varargin);
+
 model.ParameterValues = p;
 
 if ~isempty(inputname(1))
@@ -363,7 +369,7 @@ name = [ model.Name '(' p ') ' ];
 
 % ==============================================================================
 function [signal,iFunc_ax,p] = iFunc_feval_expr(model, varargin)
-% private function to evluate an expression in a reduced environment so that 
+% private function to evaluate an expression in a reduced environment so that 
 % internal function variables do not affect the result.
 
 signal = [];
@@ -411,8 +417,9 @@ end
 
 % ==============================================================================
 function p = iFunc_feval_guess(model, varargin)
-% private function to evluate a guess in a reduced environment so that 
-% internal function variables do not affect the result.
+% private function to evaluate a guess in a reduced environment so that 
+% internal function variables do not affect the result. 
+% Guess=char as fhandle are handled directly in the core function
   ax = 'x y z t u ';
   p  = [];
   if model.Dimension
@@ -434,3 +441,40 @@ function p = iFunc_feval_guess(model, varargin)
       p = [];
     end
   end
+
+% ==============================================================================
+function p = iFunc_feval_set(model, p, varargin)
+% private function to evaluate a parameter set expression in a reduced environment so that 
+% internal function variables do not affect the result.
+
+  i = find(~cellfun('isempty', model.Constraint.set));
+  if ~isempty(i)
+
+    ax = 'x y z t u ';
+    if model.Dimension
+      eval([ '[' ax(1:(2*model.Dimension)) ']=deal(varargin{' mat2str(1:model.Dimension) '});' ]);
+    end
+    if length(varargin) > model.Dimension && ~isempty(varargin{model.Dimension+1}) && isnumeric(varargin{model.Dimension+1})
+      signal = varargin{model.Dimension+1};
+    else
+      signal = 1;
+    end
+    clear ax
+
+    for index=i
+      try
+        if isa(model.Constraint.set{index}, 'function_handle') && ...
+           nargout(model.Constraint.set{index}) == 1
+          n = nargin(model.Constraint.set{index})
+          if n > 0 && length(varargin) >= n
+            p(index) = feval(model.Constraint.set{index}, p, varargin{1:n});
+          else
+            p(index) = feval(model.Constraint.set{index}, p, varargin);
+          end
+        elseif ischar(model.Constraint.set{index})
+          p(index) = eval(model.Constraint.set{index});
+        end
+      end % try
+    end
+  end
+  

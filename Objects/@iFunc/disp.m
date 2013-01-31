@@ -84,6 +84,10 @@ else
       elseif any(isfinite([this_min this_max]))
         const = [ ' in ' mat2str([this_min this_max]) ];
       end
+      if length(s.Constraint.set) >=p && ~isempty(s.Constraint.set{p}) && ...
+        (ischar(s.Constraint.set{p}) || isa(s.Constraint.set{p}, 'function_handle'))
+        const = [ const ' set from ' char(s.Constraint.set(p)) ];
+      end
       if ~isempty(val) && isfinite(val), line = [ line sprintf('=%g ', val)  ]; end
       if ~isempty(const), line = [ line const ]; end
       if ~isempty(R),     line = [ line sprintf('  %% entered as: %s', R) ]; end
