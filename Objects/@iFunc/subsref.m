@@ -39,7 +39,7 @@ for i = 1:length(S)     % can handle multiple index levels
       end
     elseif any(strcmp(fieldname, b.Parameters)) % b.<parameter name>
       index=find(strcmp(fieldname, b.Parameters));
-      if index <= length(b.ParameterValues)
+      if index <= length(b.ParameterValues) % last parameter value used
         b = b.ParameterValues;
         b = b(index);
       else

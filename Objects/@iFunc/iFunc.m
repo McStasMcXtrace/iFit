@@ -7,6 +7,8 @@ function a = iFunc(varargin)
 % The model can store the following information members:
 %   Expression:       The expression for the function (string) or function handle
 %                       signal=Expression(p, x,y, ...)
+%                         The parameter names surrounded by "" are replaced
+%                         by the corresponing p(n)
 %   Guess:            Vector, expression or function to evaluate in order to obtain
 %                       guessed parameters from axes x,y,z, ... and signal
 %                       p=Guess(x,y,z, ..., signal) should return a vector. NaN values 
@@ -18,6 +20,14 @@ function a = iFunc(varargin)
 %   Parameters:       The Parameter names (cellstr)
 %   Constraint:       An expression or a function handle with syntax 
 %                       p=Constraint(p, x,y,...). NaN values are not changed.
+%                     The Constraint may also be defined as a structure with
+%                       min: a vector of minimal values per parameter
+%                       max: a vector of maximal values per parameter
+%                       fixed: a vector of 0(free) and 1(fixed) per parameter
+%                       set: a cell of expressions per parameter
+%                       Expression: an Expression to be evaluated
+%                         The parameter names surrounded by "" are replaced
+%                         by the corresponing p(n)
 %
 % From a character string
 %   the Expression should make use of x,y,z,t,u to denote axes of rank 1-5,
@@ -168,15 +178,16 @@ function a = iFunc_private_check(a)
   const.min   = nan*ones(length(a.Parameters),1);
   const.max   = nan*ones(length(a.Parameters),1);
   const.fixed = zeros(length(a.Parameters),1);
+  const.set   = cell(length(a.Parameters),1);
   const.Expression = '';
   if ~isstruct(a.Constraint)
     % build a structure of Constraints: these are evaluated in feval
     if ischar(a.Constraint) || iscellstr(a.Constraint) || isa(a.Constraint,'function_handle')
-      const.Expression = char(a.Constraint);
+      const.Expression = char(a.Constraint);          % iFunc.Constraint = char or cellstr or fhandle
     elseif isnumeric(a.Constraint)
-      if length(a.Constraint) == length(a.Parameters)
+      if length(a.Constraint) == length(a.Parameters) % iFunc.Constraint = vector
         const.fixed = a.Constraint(:);
-      elseif length(a.Constraint) == 1
+      elseif length(a.Constraint) == 1                % iFunc.Constraint = scalar (0 or 1)
         const.fixed = const.fixed*a.Constraint;
       else
         error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be scalar or vector of length ' ...
@@ -191,15 +202,15 @@ function a = iFunc_private_check(a)
     % update the Constraint structure, search for min, max, fixed, Expression
     f=fieldnames(const);
     for index=1:length(f)
-      if isfield(a.Constraint,f{index})
+      if isfield(a.Constraint,f{index}) %  the Constraint given by user has the field from const
         v_new = a.Constraint.(f{index});
         l     = length(v_new);
         v_old = const.(f{index});
-        if isnumeric(v_old) && l <= length(a.Parameters)
+        if isnumeric(v_old) && l <= length(a.Parameters)  % this is a numeric field
           v_old(1:l) = v_new;
-          const.(f{index}) = v_old;
-        elseif ~isnumeric(v_old) % Expression
-          const.(f{index}) = v_old;
+          const.(f{index}) = v_old; % update the values
+        else
+          const.(f{index}) = v_new;
         end
       end
     end
@@ -249,7 +260,8 @@ function a = iFunc_private_check(a)
     % first count the initial p(n) fields and get the used indices
     % compute the number of parameters and corresponding parameter names
     % regexp: p(...) with '[0-9:]' characters inside
-    nb_pars = regexp(expr,'\<p\(([\[0-9\:,;\s\]]+)\)','tokens'); % return the tokens
+    nb_pars = [ regexp(expr,'\<p\(([\[0-9\:,;\s\]]+)\)','tokens')  ...
+                regexp(expr,'_p\(([\[0-9\:,;\s\]]+)\)','tokens') ]; % return the tokens
     if ~isempty(nb_pars)
       % assemble all matches
       n = '';
@@ -257,8 +269,8 @@ function a = iFunc_private_check(a)
         this = nb_pars{index};
         n = [ n this{1}  ' ' ];
       end
-      nb_pars = unique(str2num([ '[' n ']' ]));
-      used_pars=zeros(1,max(nb_pars));
+      nb_pars  = unique(str2num([ '[' n ']' ]));
+      used_pars= zeros(1,max(nb_pars));
       used_pars(nb_pars) = 1;
     else
       used_pars=[];
@@ -320,9 +332,16 @@ function a = iFunc_private_check(a)
     warning('iFunc:emptyModel', 'Expression does not contain any parameter (p). Empty model.'); 
     return
   end
+  
+  % build the list of replacement strings
+  replace = strcat('p(', cellstr(num2str(transpose(1:length(a.Parameters)))), ')');
+  % replace Parameter names by their p(n) representation
+  expr = regexprep(expr, strcat('\<"', a.Parameters, '"\>' ), replace);
+  a.Constraint.Expression = regexprep(a.Constraint.Expression, strcat('\<"', a.Parameters, '"\>' ), replace);
+
   % dim:     holds model dimensionality
   % nb_pars: holds number of parameter used in expression
-  if ~isa(a.Expression, 'function_handle') 
+  if ~isa(a.Expression, 'function_handle')
     % check that Expression can define the 'signal'
     e = textscan(expr,'%s','Delimiter',sprintf('\n\r\f'),'MultipleDelimsAsOne',1); e=e{1};
     has_signal = 0;

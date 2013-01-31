@@ -217,11 +217,12 @@ if isFa && isFb
     end
   end
   
-  % append Constraint.fixed, min, max
+  % append Constraint.fixed, min, max, set
   if isFa && isFb
     c.Constraint.fixed = [ a.Constraint.fixed ; b.Constraint.fixed ];
     c.Constraint.min   = [ a.Constraint.min   ; b.Constraint.min ];
     c.Constraint.max   = [ a.Constraint.max   ; b.Constraint.max ];
+    c.Constraint.set   = [ a.Constraint.set   ; b.Constraint.set ];
   end
   
   % append ParameterValues

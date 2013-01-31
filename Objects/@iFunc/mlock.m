@@ -35,11 +35,16 @@ if nargin == 1 % display fixed parameters
     for p=1:length(a.Parameters)
       [name, R] = strtok(a.Parameters{p}); % make sure we only get the first word (not following comments)
       
-      if length(a.Constraint.fixed) >=p && a.Constraint.fixed(p)
+      if (length(a.Constraint.fixed) >=p && a.Constraint.fixed(p)) || ...
+         (length(a.Constraint.set) >=p && ~isempty(a.Constraint.set{p})) 
         if (count == 0)
           fprintf(1, 'Locked/Fixed Parameters in %s %iD model "%s"\n', a.Tag, a.Dimension, a.Name)
         end
         count = count +1;
+        if length(a.Constraint.set) >=p && ~isempty(a.Constraint.set{p}) && ...
+          (ischar(a.Constraint.set{p}) || isa(a.Constraint.set{p}, 'function_handle'))
+          name = [ name ' set from ' char(a.Constraint.set(p)) ];
+        end
         fprintf(1,'%20s (fixed)\n', name);
       end
     end
@@ -68,7 +73,7 @@ end
 if ischar(name), name = cellstr(name); end
 % now with a single cellstr
 for index=1:length(name)
-  s    = struct('type', '.', 'subs', name{index});
+  s = struct('type', '.', 'subs', name{index});
   a = subsasgn(a, s, 'fix');
 end
 
