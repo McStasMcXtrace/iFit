@@ -28,7 +28,7 @@ function stop = fminplot(pars, optimValues, state)
   if isstruct(pars)  % we feed fminplot with an 'output' structure =============
     parsHistory = pars.parsHistory;
     fvalHistory = pars.criteriaHistory;
-    optimValues.funcount = 0;
+    optimValues.funcount = pars.funcCount;
     optimValues.fval     = fvalHistory(end);
     optimValues.procedure= pars.optimizer;
     pars        = parsHistory(end, :);
@@ -36,6 +36,9 @@ function stop = fminplot(pars, optimValues, state)
     updatePlot  = 0;
     h = findall(0, 'Tag', 'fminplot'); 
     d = findall(0, 'Tag', 'fminplot:stop');
+    
+    [dummy, best] = sort(fvalHistory); % sort in ascending order
+    best= best(1);
     
   else              % normal execution during optimization =====================
     
