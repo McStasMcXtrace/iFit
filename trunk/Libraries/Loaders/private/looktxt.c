@@ -2457,6 +2457,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
               fieldend |= Bnumber;
               endcharpos= startnumpos > 0 ? startnumpos - 1 : 0;
               columns   = last_columns;
+              rows--; /* remove row with less/more columns than the previous */
               if (startcharpos <= endcharpos) fieldend |= Balpha;
             } else {  /* still in numeric field with same num of columns: NewLine */
               last_columns = columns;
