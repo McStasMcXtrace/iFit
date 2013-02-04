@@ -19,7 +19,10 @@ end
 
 switch length(i_axes)
 case 1    % 1D
-  f_signal = interp1(i_axes{1},   i_signal, f_axes{1},   method, NaN);
+  X=i_axes{1};
+  Y=i_signal;
+  [X,I] = unique(X); Y=Y(I);
+  f_signal = interp1(X,   Y, f_axes{1},   method, NaN);
 otherwise % nD, n>1
   if length(i_signal) <= 1  % single value ?
     f_signal = i_signal;

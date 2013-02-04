@@ -62,7 +62,7 @@ for i = 1:length(S)     % can handle multiple index levels
         
         setalias(b,'Model', model, model.Name);
         return
-      elseif any(cellfun('isempty',s.subs)), b=[]; return;        % b([])
+      elseif any(cellfun('isempty',s.subs)), b=iData; return;        % b([])
       end
       if length(s.subs) == 1 && all(s.subs{:} == 1), continue; end  % b(1)
       
