@@ -91,7 +91,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %           constraints.max:   maximum parameter values (double array)
 %           constraints.step:  maximum parameter step/change allowed.
 %           constraints.fixed: fixed parameter flag. Use 1 for fixed parameters, 0 otherwise (double array)
-%           constraints.eval=  expression making use of 'p', 'constraints', and 'options' 
+%           constraints.Expression=  expression making use of 'p', 'constraints', and 'options' 
 %                              and returning modified 'p'
 %                              or function handle p=@constraints.eval(p)
 %           OR use a string 'min=...; max=...'
@@ -677,8 +677,8 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
   if length(p) > 20, p= p(1:20); end
   p = mat2str(p);
   if length(p) > 50, p = [ p(1:47) ' ...' ']' ]; end
-  set(h, 'Name', [ mfilename ': ' options.algorithm ': ' model.Name ' f=' num2str(sum(criteria(:))) ]);
-  title({ [ mfilename ': ' options.algorithm ': ' model.Name ' #' num2str(options.funcCount) ], ...
+  set(h, 'Name', [ mfilename ': ' options.algorithm ': ' model.Name ' f=' sprintf('%g',sum(criteria(:))) ]);
+  title({ [ mfilename ': ' options.algorithm ': ' model.Name ' #' sprintf('%g',options.funcCount) ], ...
           p });
   legend show
   set(0, 'CurrentFigure', old_gcf);

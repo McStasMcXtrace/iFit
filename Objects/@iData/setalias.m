@@ -31,6 +31,10 @@ function this = setalias(this,names,links,labels)
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
 
+persistent fields
+
+if isempty(fields), fields=fieldnames(iData); end
+
 s_out=this;
 if nargin == 1
   % makes a check of aliases, Signal, Error, Monitor, warns invalid ones.
@@ -106,7 +110,7 @@ for index=1:length(names) % loop on alias names
   if length(labels)== length(names), label= labels{index}; else label=''; end
   
   % check that name is not a class member
-  if strcmpi(name, fieldnames(this))
+  if strcmpi(name, fields)
     iData_private_warning(mfilename,[ 'the Alias ' name ' is a protected name in object ' inputname(1) ' ' this.Tag ' "' this.Title '".' ]);
     continue
   end

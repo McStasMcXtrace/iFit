@@ -9,6 +9,10 @@ function b = subsasgn(a,S,val)
 
 % This implementation is very general, except for a few lines
 
+persistent fields
+
+if isempty(fields), fields=fieldnames(iFunc); end
+
 b = a;  % will be refined during the index level loop
 
 if isempty(S)
@@ -80,8 +84,8 @@ else
       if length(fieldname) > 1 && iscellstr(fieldname)
         fieldname = fieldname{1};
       end
-      f     = fieldnames(b);
-      index = find(strcmpi(fieldname, fieldnames(b)));
+      if isa(b, 'iFunc'), f=fields; else f=fieldnames(b); end
+      index = find(strcmpi(fieldname, f));
       if ~isempty(index) % structure/class def fields: b.field
         if strcmp(f{index},'Constraint') && ~isstruct(val)
           if ischar(val) || iscellstr(val) || isa(val,'function_handle')

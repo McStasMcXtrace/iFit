@@ -14,10 +14,13 @@ function [content,fields]=cell(s)
 % EF 27/07/00 creation
 % EF 23/09/07 iData implementation
 
+persistent fields
+
+if isempty(fields), fields=fieldnames(iData); end
+
 if length(s(:)) > 1
   iData_private_warning(mfilename, ['I can not handle iData arrays. ' inputname(1) ' size is [' num2str(size(s)) ']. Using first array element.']);
   s = s(1);
 end
 
 content = struct2cell(s);
-fields  = fieldnames(s);

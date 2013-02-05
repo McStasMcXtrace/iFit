@@ -24,6 +24,10 @@ function [varargout] = get(this,varargin)
 % ============================================================================
 % calls: subsref (mainly): get is a wrapper to subsref
 
+persistent fields
+
+if isempty(fields), fields=fieldnames(iFunc); end
+
 % handle array of objects
 varargout = {};
 
@@ -51,7 +55,7 @@ for index=1:length(varargin)
   end
   % test if this is a unique property, or a composed one
   if isvarname(property)  % extract iFunc field/alias
-    if any(strcmp(property, fieldnames(iFunc)))
+    if any(strcmp(property, fields))
       b = this.(property);               % direct static field
       if isnumeric(b) && any(strcmp(property, {'Date','ModificationDate'}))
         b = datestr(b);

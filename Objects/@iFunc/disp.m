@@ -53,7 +53,7 @@ else
   s=rmfield(s, 'Expression');
   if isnumeric(s.Date), s.Date=datestr(s.Date); end
   % object Properties displayed as a structure
-  disp(rmfield(s,'Constraint'))
+  disp(s)
   % now display parameters in compact form
   if ~isempty(s.Parameters)
     fprintf(1,'Parameters (%i):\n', length(s.Parameters))
