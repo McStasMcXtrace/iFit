@@ -1,6 +1,6 @@
 /* program cif2hkl */
 /* compile with:
-      gfortran -O2 -fPIC -c cif2hkl.f90
+      mex -c -O cif2hkl.F90
       mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran
    get single executable
       gfortran -O2 -o cif2hkl cif2hkl.o -lm
@@ -30,7 +30,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
   double lambda = 1.0;
   long   verbose= 0;
   int    i      = 0;
-  char   message[4096];
+  char   *message;
   
   /* input arguments:
    *        file_in, file_out, lambda, mode, verbose
@@ -38,7 +38,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
   
   if(nrhs == 0)
     mexErrMsgTxt("At least one string input required. Syntax: cif2hkl(file_in, file_out, lambda, mode, verbose)");
-    
+  
+  /* create output buffer */
+  message = mxCalloc(4096, sizeof(char));
+  if(message == NULL) 
+    mexErrMsgTxt("Not enough memory to create result string.");
   for (i=0; i<4095; message[i++]=' '); message[4095]='\0';
   
   /* prhs[0] = file_in: must be non empty */
@@ -86,6 +90,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
     
   /* call the Fortran code */
   cfml_cif2hkl_(file_in, file_out, &lambda, mode, &verbose, message);
+  
+  /* do a trim starting from end of message (search for non space) */
   for (i=4095; i>=0; i--)
     if (message[i] != ' ' && message[i] != '\0') break;
   message[i]='\0';
