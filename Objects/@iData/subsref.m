@@ -18,6 +18,10 @@ function b = subsref(a,S)
 
 b = a;  % will be refined during the index level loop
 
+persistent fields
+
+if isempty(fields), fields=fieldnames(iData); end
+
 if isempty(S)
   return
 end
@@ -33,7 +37,7 @@ for i = 1:length(S)     % can handle multiple index levels
       if ischar(s.subs{1}) && ~strcmp(s.subs{1},':')              % b(name) -> s.(name) alias/field value
         s.type='.';
         b=subsref(b, s); return;
-      elseif isa(s.subs{1}, 'iFunc')
+      elseif isa(s.subs{1}, 'iFunc')                              % b(iFunc, par, ...)
         % evaluate model onto iData axes
         model      = s.subs{1};
         if length(s.subs) > 1
@@ -154,8 +158,8 @@ for i = 1:length(S)     % can handle multiple index levels
     elseif strcmpi(fieldname, 'axes')
       fieldname = 'Axis';
     end
-    f     = fieldnames(b);
-    index = find(strcmpi(fieldname, fieldnames(b)));
+    if isa(b, 'iData'), f=fields; else f=fieldnames(b); end
+    index = find(strcmpi(fieldname, f));
     if any(strcmpi(fieldname, 'alias'))
       b = getalias(b);
     elseif any(strcmpi(fieldname, 'axis'))
@@ -186,9 +190,9 @@ for i = 1:length(S)     % can handle multiple index levels
     
     % test if the result is again an Alias or Field
     if ischar(b) && size(b,1) == 1
-      if any(strcmpi(b, fieldnames(a(1))))
+      if any(strcmpi(b, fields))
         b = a.(b);      % fast access to static fields
-      elseif any(strcmpi(strtok(b,'.'), fieldnames(a))) || any(strcmpi(strtok(b,'.'), a(1).Alias.Names))
+      elseif any(strcmpi(strtok(b,'.'), fields)) || any(strcmpi(strtok(b,'.'), a(1).Alias.Names))
         b = get(a, b);  % try to evaluate char result
       end
     end

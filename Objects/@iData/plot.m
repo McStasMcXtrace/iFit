@@ -477,7 +477,8 @@ if (strfind(method,'auto'))
   axis auto
 end
 if (strfind(method,'colorbar'))
-  colorbar
+  cb = colorbar;
+  title(cb, label(a, 'Signal'));
 end
 
 % add a UIcontextMenu so that right-click gives info about the iData plot
@@ -698,8 +699,8 @@ if (strfind(method,'hide_ax'))
   xlabel(' '); ylabel(' '); zlabel(' ');
   title(T,'interpreter','none');
 else
-  if ~isempty(xlab), xlabel(xlab,'interpreter','none'); end
-  if ~isempty(ylab), ylabel(ylab,'interpreter','none'); end
+  if ~isempty(xlab), xlabel(xlab); end
+  if ~isempty(ylab), ylabel(ylab); end
   if ndims(a) == 3 & ~isempty(clab)
       if iscell(titl)
           titl = { clab , titl{:} };

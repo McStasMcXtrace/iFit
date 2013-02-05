@@ -35,6 +35,10 @@ function this = setaxis(this, rank, alias, value)
 % EF 23/09/07 iData implementation
 % ==============================================================================
 
+persistent fields
+
+if isempty(fields), fields=fieldnames(iData); end
+
 if nargin < 3
   alias='';
 end
@@ -130,7 +134,7 @@ end
 if isempty(rank) || isempty(alias), return; end
 
 % check if the alias already exists in the object
-if strcmpi(alias, fieldnames(this)) % this is a protected field of the object
+if strcmpi(alias, fields) % this is a protected field of the object
   iData_private_error(mfilename,[ 'the Alias ' alias ' is a protected name in object ' ...
     inputname(1) ' ' this.Tag ' "' this.Title '".' ]);
 end

@@ -18,6 +18,10 @@ function b = subsasgn(a,S,val)
 
 b = a;  % will be refined during the index level loop
 
+persistent fields
+
+if isempty(fields), fields=fieldnames(iData); end
+
 if isempty(S)
   return
 end
@@ -181,8 +185,8 @@ else
       if any(strcmpi(fieldname, {'alias','axis'}))
         iData_private_error(mfilename, [ 'can not redefine ' fieldname ' in object ' inputname(1) ' ' b.Tag ]);
       end
-      f     = fieldnames(b);
-      index = find(strcmpi(fieldname, fieldnames(b)));
+      if isa(b, 'iData'), f=fields; else f=fieldnames(b); end
+      index = find(strcmpi(fieldname, f));
       if ~isempty(index) % structure/class def fields: b.field
         b.(f{index}) = val;
       else

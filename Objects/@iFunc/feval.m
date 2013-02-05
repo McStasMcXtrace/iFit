@@ -364,7 +364,7 @@ model.ParameterValues = p; % store current set of parameters
 
 % model.ParameterValues = p; % store current set of parameters (updated)
 
-p    = num2str(p(:)', '%g'); if length(p) > 20, p=[ p(1:20) '...' ]; end
+p    = sprintf('%g ', p(:)'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
 
 % ==============================================================================
