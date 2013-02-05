@@ -25,9 +25,9 @@ if nargin >= 3 || ~isempty(varargin)
       tocat = [ tocat ' <' class(b) ' ' b.Tag ' ' b.Source '> ' ];
     elseif isnumeric(b) || islogical(b) 
       if ndims(b) > 2,   b=b(:); end
-      if numel(b) > 50, toadd = [ toadd c ' [' mat2str(double(b(1:20))) '...' mat2str(double(b((end-20):end))) ']' ]; 
+      if numel(b) > 50, toadd = [ toadd c ' [' sprintf('%g ',double(b(1:20))) '...' sprintf('%g ',double(b((end-20):end))) ']' ]; 
       else 
-        toadd = [ toadd c ' ' mat2str(double(b)) ];
+        toadd = [ toadd c ' ' sprintf('%g ',double(b)) ];
       end
     else
       toadd = [ toadd c ' <' class(b) '>'  ];

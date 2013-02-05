@@ -23,7 +23,7 @@ if numel(s) > 1
 end
   
 % single object to char
-  if isempty(s), ret='[]'; return; end
+  if isempty(s), ret={'[]'}; return; end
 
   ax = 'x,y,z,t,u,'; ax = ax(1:(s.Dimension*2));
   

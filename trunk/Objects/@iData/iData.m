@@ -263,9 +263,12 @@ return
 % iData_struct2iData: converts a structure into an iData
 function b=iData_struct2iData(a)
 
+  persistent fb
+
+  if isempty(fb), fb=fieldnames(iData); end
+
   f  = fieldnames(a);
   b  = iData; 
-  fb = fieldnames(b);
   if isfield(a, 'Data')   % start by storing the raw Data
     b.Data = a.Data;
   end

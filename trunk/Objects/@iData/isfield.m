@@ -12,6 +12,10 @@ function b = isfield(a, field)
 % Version: $Revision: 1.2 $
 % See also iData, isfield
 
+persistent fields
+
+if isempty(fields), fields=fieldnames(iData); end
+
 if nargin == 1, field=[]; end
 
 if numel(a) > 1
@@ -25,12 +29,12 @@ if numel(a) > 1
 end
 
 if isempty(field)
-  b = [ fieldnames(a) ; getalias(a) ; {'history','filename','axes','alias','axis' }' ];
+  b = [ fields ; getalias(a) ; {'history','filename','axes','alias','axis' }' ];
   return
 end
 
 b= false;
-if any(strcmpi(field, fieldnames(a)))
+if any(strcmpi(field, fields))
   b = true;
 elseif any(strcmpi(field, getalias(a)))
   b = true;

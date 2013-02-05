@@ -9,6 +9,10 @@ function b = subsref(a,S)
 
 % This implementation is very general, except for a few lines
 
+persistent fields
+
+if isempty(fields), fields=fieldnames(iFunc); end
+
 b = a;  % will be refined during the index level loop
 
 if isempty(S)
@@ -30,8 +34,8 @@ for i = 1:length(S)     % can handle multiple index levels
     if length(fieldname) > 1 && iscell(fieldname)
       fieldname = fieldname{1};
     end
-    f     = fieldnames(b);
-    index = find(strcmpi(fieldname, fieldnames(b)));
+    if isa(b, 'iFunc'), f=fields; else f=fieldnames(b); end
+    index = find(strcmpi(fieldname, f));
     if ~isempty(index) % structure/class def fields: b.field
       b = b.(f{index});
       if isnumeric(b) && strcmpi(fieldname, 'Date')

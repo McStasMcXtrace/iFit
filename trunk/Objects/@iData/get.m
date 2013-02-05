@@ -21,8 +21,12 @@ function [varargout] = get(this,varargin)
 % ============================================================================
 % calls: subsref (mainly): get is a wrapper to subsref
 
+persistent fields
+
 % handle array of objects
 varargout = {};
+
+if isempty(fields), fields=fieldnames(iData); end
 
 if numel(this) > 1
   varg = cell(1, numel(this));
@@ -54,7 +58,7 @@ for index=1:length(varargin)
   end
   % test if this is a unique property, or a composed one
   if isvarname(property)  % extract iData field/alias
-    if any(strcmp(property, fieldnames(iData)))
+    if any(strcmp(property, fields))
       b = this.(property);               % direct static field
       if isnumeric(b) && any(strcmp(property, {'Date','ModificationDate'}))
         b = datestr(b);
