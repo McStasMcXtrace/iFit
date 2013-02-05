@@ -61,7 +61,7 @@ function stop = fminplot(pars, optimValues, state)
       return
     end
     % update figure name
-    name = [ state ' #' num2str(optimValues.funcount) ' f=' num2str(optimValues.fval,4) ' ' optimValues.procedure ' [close to abort]' ];
+    name = [ state ' #' sprintf('%i',optimValues.funcount) ' f=' sprintf('%g',optimValues.fval) ' ' optimValues.procedure ' [close to abort]' ];
     try
       set(h, 'Name', name);
     catch
@@ -133,7 +133,7 @@ function stop = fminplot(pars, optimValues, state)
   set(g(end),'MarkerFaceColor','r');
   set(g(end-1),'MarkerFaceColor','g');
   if all(fvalHistory > 0) set(gca, 'yscale', 'log'); end
-  xlabel([ 'Nb of Function Evaluations. ' num2str(length(pars)) ' Pars' ]); 
+  xlabel([ 'Nb of Function Evaluations. ' sprintf('%i',length(pars)) ' Pars' ]); 
   ylabel('Criteria - {\bf Close figure to abort}');
   if strcmp(state, 'done')
     set(d, 'String','END','BackgroundColor','green' );
@@ -149,8 +149,8 @@ function stop = fminplot(pars, optimValues, state)
       dots='';
     end
     pars=pars(:)';
-    t=[' Click here to abort optimization' NL 'Start=' num2str(parsHistory(1,i)) dots NL ...
-       'Current=' num2str(pars(i)) dots NL 'Best=' num2str(parsHistory(best,i)) dots ];
+    t=[' Click here to abort optimization' NL 'Start=' sprintf('%g ',parsHistory(1,i)) dots NL ...
+       'Current=' sprintf('%g ',pars(i)) dots NL 'Best=' sprintf('%g ',parsHistory(best,i)) dots ];
     set(d, 'String','STOP', 'ToolTip', t);
     title([ 'Best=[' sprintf('%g ',parsHistory(best,i)) dots ']' ],'FontWeight','bold');
   end
@@ -186,7 +186,7 @@ function stop = fminplot(pars, optimValues, state)
           parsHistory(1,index(1)),   parsHistory(1,index(2)),   parsHistory(1,index(3)), 'ro', ...
           parsHistory(best,index(1)),parsHistory(best,index(2)),parsHistory(best,index(3)), 'gv', ...
           parsHistory(end,index(1)), parsHistory(end,index(2)), parsHistory(end,index(3)), 'rs');
-    xlabel([ 'Par' num2str(index(1)) ]); ylabel([ 'Par' num2str(index(2)) ]); zlabel([ 'Par' num2str(index(3)) ]); 
+    xlabel([ 'Par' sprintf('%i',index(1)) ]); ylabel([ 'Par' sprintf('%i',index(2)) ]); zlabel([ 'Par' sprintf('%i',index(3)) ]); 
   end
   
   set(g(end),'MarkerFaceColor','r');
@@ -194,7 +194,7 @@ function stop = fminplot(pars, optimValues, state)
 
   % resize axis frame to display title properly
   p=get(gca,'Position'); p(4)=0.75; set(gca,'Position',p);
-  title([ '#' num2str(length(fvalHistory)) ' f=' num2str(optimValues.fval,4) ' [close to abort]' sprintf('\n') optimValues.procedure  ]);
+  title([ '#' sprintf('%i',length(fvalHistory)) ' f=' sprintf('%g',optimValues.fval) ' [close to abort]' sprintf('\n') optimValues.procedure  ]);
   axis auto
   
   updatePlot=clock;
