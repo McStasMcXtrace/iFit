@@ -586,13 +586,13 @@ function data = iLoad_loader_check(file, data, loader)
     if ~strcmp(loader, 'variable'), data.Format  = [ name ' import with Matlab ' method ];  
     else data.Format  = [ 'Matlab ' method ]; end
   end
-  if ~isfield(data, 'Command'),
-    if strcmp(loader, 'variable')
-      data.Command = [ method '(' file ', '''  options ''')' ];
-    else
-      data.Command = [ method '(''' file ''', '''  options ''')' ];
-    end
+
+  if strcmp(loader, 'variable')
+    data.Command = [ 'iLoad(' file ', ''' method ''', '''  options '''); % ' method ' method ' ];
+  else
+    data.Command = [ 'iLoad(''' file ', ''' method ''', ''' options '''); % ' method ' method' ];
   end
+
   if ~isfield(data, 'Creator'), data.Creator = [ name ' iData/load/' method ]; 
   else data.Creator = [ name ' iData/load/' method ' - ' data.Creator ]; end
   if ~isfield(data, 'User'),
