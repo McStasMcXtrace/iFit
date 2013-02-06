@@ -70,7 +70,7 @@ for i=1:numel(files)
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'filename'), filename = files{i}.filename; end
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Source'), filename = files{i}.Source; end
   files{i} = load_check_struct(files{i}, loaders, filename);
-  if isstruct(files{i}.Data) && any(cellfun('isclass', struct2cell(files{i}.Data), 'iData'))
+  if isfield(files{i},'Data') && isstruct(files{i}.Data) && any(cellfun('isclass', struct2cell(files{i}.Data), 'iData'))
     this_iData = [];
     struct_data = struct2cell(files{i}.Data);
     files{i} = {};  % free memory
@@ -111,6 +111,7 @@ for i=1:numel(files)
             try
               this_iData = feval(loaders{i}.postprocess{j}, this_iData);
               this_iData = setalias(this_iData, 'postprocess', loaders{i}.postprocess{j});
+              this_iData = iData_private_history(this_iData, loaders{i}.postprocess{j}, this_iData);
             catch
               iData_private_warning(mfilename, [ 'Error when calling post-process ' loaders{i}.postprocess{j} ]);
             end
@@ -144,7 +145,7 @@ if 1 < length(out) && length(i1) < length(out)
 end
 
 for i=1:numel(out)
-  out(i).Command={[ out(i).Tag '=load(iData,''' out(i).Source ''');' ]};
+  out(i).Command{end+1}=[ out(i).Tag '=load(iData,''' out(i).Source ''');' ];
   if isempty(out(i).DisplayName)
     [p,f,e] = fileparts(filename);
     out(i) = set(out(i),'DisplayName',[ f e ]);
