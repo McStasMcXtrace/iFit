@@ -289,6 +289,9 @@ function b=iData_struct2iData(a)
   if isfield(a, 'Format')
     setalias(b, 'Format', a.Format);
   end
+  if isfield(a, 'Command')
+    b.Command = a.Command;
+  end
   
   if isempty(b.Command), b.Command= cellstr('iData(<struct>)'); end
   
