@@ -158,7 +158,8 @@ For instance<br>
 
 Alternatively, you can use the <span style="font-weight: bold;">mlock, munlock </span>and <span style="font-weight: bold;">xlim</span> methods:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, {<span style="color: rgb(204, 51, 204);">'Amplitude','Background'</span>})	<span style="font-style: italic;">% fix these 2 parameters</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f, <span style="color: rgb(204, 51, 204);">'Background'</span>)		<span style="font-style: italic;">% unlock that parameter</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f, <span style="color: rgb(204, 51, 204);">   'Background'</span>, [0 1e-3])	<span style="font-style: italic;">% force parameter within range</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f,  <span style="color: rgb(204, 51, 204);">  'Background'</span>, [])		<span style="font-style: italic;">% remove limits constraint</span><br></pre>
-When setting the object Expression, the Constraint.Expression, or any 
+Under the hood, the constraints are stored as a structure with fields <span style="font-style: italic;">min, max, fixed, set</span> (with one expression per parameter), and <span style="font-style: italic;">eval</span> (to be evaluated before the object Expression).<br>
+When setting the object Expression, the Constraint.eval, or any 
 parameter 'set' expression, any parameter name surrounded by double 
 quotes, e.g. <span style="font-style: italic;">"Amplitude"</span>, are replaced by their corresponding <span style="font-style: italic;">p(n)</span> value.<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId2492"></a>Saving objects for further re-use: save, saveas</h3>
