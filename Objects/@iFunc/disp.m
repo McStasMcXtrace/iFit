@@ -27,8 +27,8 @@ else
   fprintf(1,'%s = %s %iD model:\n',iname, id, s_in.Dimension);
   % clean up redundant/empty fields
   s = struct(s_in);
-  if isfield(s.Constraint, 'Expression') && ~isempty(s.Constraint.Expression)
-    u = char(s.Constraint.Expression); u=strtrim(u); u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
+  if isfield(s.Constraint, 'eval') && ~isempty(s.Constraint.eval)
+    u = char(s.Constraint.eval); u=strtrim(u); u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
     if length(u) > 70, u = [ u(1:67) '...' ]; end
     if ~isempty(u)
       fprintf(1, '         Constraint: %s\n', u); 

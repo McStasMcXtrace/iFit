@@ -91,7 +91,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %           constraints.max:   maximum parameter values (double array)
 %           constraints.step:  maximum parameter step/change allowed.
 %           constraints.fixed: fixed parameter flag. Use 1 for fixed parameters, 0 otherwise (double array)
-%           constraints.Expression=  expression making use of 'p', 'constraints', and 'options' 
+%           constraints.eval:  expression making use of 'p', 'constraints', and 'options' 
 %                              and returning modified 'p'
 %                              or function handle p=@constraints.eval(p)
 %           OR use a string 'min=...; max=...'

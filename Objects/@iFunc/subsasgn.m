@@ -89,7 +89,7 @@ else
       if ~isempty(index) % structure/class def fields: b.field
         if strcmp(f{index},'Constraint') && ~isstruct(val)
           if ischar(val) || iscellstr(val) || isa(val,'function_handle')
-            b.Constraint.Expression = val;
+            b.Constraint.eval = val;
           elseif isnumeric(val) && isscalar(val)
             b.Constraint.fixed = val*ones(length(b.Parameters),1);
           elseif isnumeric(val) && length(val) == length(b.Parameters)

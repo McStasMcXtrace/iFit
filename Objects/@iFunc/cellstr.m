@@ -44,8 +44,8 @@ end
   % in header: the Constraint+Expression
   ret{end+1} = '% Expression:';
   if ~isempty(s.Constraint)
-    if isfield(s.Constraint, 'Expression') && ~isempty(s.Constraint.Expression)
-      e = textwrap(cellstr(char(s.Constraint.Expression)),80);
+    if isfield(s.Constraint, 'eval') && ~isempty(s.Constraint.eval)
+      e = textwrap(cellstr(char(s.Constraint.eval)),80);
       if length(e) > 3, e=e(1:3); e{end+1} = '...'; end
       for index=1:length(e)
         ret{end+1} = sprintf('%%   %s', e{index});
@@ -92,12 +92,12 @@ end
 
   % now write the core of the model (for evaluation)
   if ~isempty(s.Constraint)
-    if isfield(s.Constraint, 'Expression') 
-      if isa(s.Constraint.Expression ,'function_handle')
+    if isfield(s.Constraint, 'eval') 
+      if isa(s.Constraint.eval ,'function_handle')
         ret{end+1} = sprintf('p2 = feval(%s, p, %s); p(~isnan(p2))=p2(~isnan(p2));', ...
           fun2str(s.Constraint), ax(1:(end-1)));
-      elseif ~isempty(s.Constraint.Expression)
-        e = cellstr(s.Constraint.Expression);
+      elseif ~isempty(s.Constraint.eval)
+        e = cellstr(s.Constraint.eval);
         for index=1:length(e)
           this = strtrim(e{index});
           if this(end) == ';'
