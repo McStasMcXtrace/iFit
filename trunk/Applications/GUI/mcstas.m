@@ -755,9 +755,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     this = sim(index);
     if isfield(sim(index), 'CriteriaExpression')
       R = getalias(sim(index), 'CriteriaExpression');
-      try
-        eval([ 'this = this' R ';' ]);
-      end
+      this = mcstas_eval(this, R); % use sandbox for eval (see below)
     else R = '';
     end
     
@@ -838,4 +836,14 @@ function fileList = getAllFiles(dirName, File)
   end
 
 end
+
+% ------------------------------------------------------------------------------
+% evaluate property in a reduced environment
+function this = mcstas_eval(this, expr)
+  try
+    eval([ 'this = this' expr ';' ]);  % calls subsref by eval (recursive subsref levels)
+  catch
+    this
+    error([ mfilename ': Error when evaluating monitor definition this=this' expr ';' ])
+  end
 
