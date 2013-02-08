@@ -404,6 +404,7 @@ end
 % private function to import single data with given method(s)
 function [data, loader] = iLoad_import(filename, loader, varargin)
   data = [];
+  
   if isempty(loader), loader='auto'; end
   if strcmp(loader, 'auto')
     loader = iLoad_loader_auto(filename);
@@ -494,6 +495,15 @@ function [data, loader] = iLoad_import(filename, loader, varargin)
   if ~isfield(loader,'method'), return; end
   if ~isfield(loader,'name'), loader.name = loader.method; end
   if isempty(loader.method), return; end
+  % skip SVN/GIT/CVS files
+  f = lower(filename);
+  if any([ strfind(f, [ '.svn' filesep ]) ...
+           strfind(f, [ '.git' filesep ]) ...
+           strfind(f, [ '.cvs' filesep ]) ])
+    loader = [];
+    return
+  end
+  
   % fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
   if isempty(loader.options)
     data = feval(loader.method, filename, varargin{:});
