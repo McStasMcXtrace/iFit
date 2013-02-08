@@ -179,11 +179,11 @@ function a = iFunc_private_check(a)
   const.max   = nan*ones(length(a.Parameters),1);
   const.fixed = zeros(length(a.Parameters),1);
   const.set   = cell(length(a.Parameters),1);
-  const.Expression = '';
+  const.eval  = '';
   if ~isstruct(a.Constraint)
     % build a structure of Constraints: these are evaluated in feval
     if ischar(a.Constraint) || iscellstr(a.Constraint) || isa(a.Constraint,'function_handle')
-      const.Expression = char(a.Constraint);          % iFunc.Constraint = char or cellstr or fhandle
+      const.eval = char(a.Constraint);          % iFunc.Constraint = char or cellstr or fhandle
     elseif isnumeric(a.Constraint)
       if length(a.Constraint) == length(a.Parameters) % iFunc.Constraint = vector
         const.fixed = a.Constraint(:);
@@ -337,7 +337,7 @@ function a = iFunc_private_check(a)
   replace = strcat('p(', cellstr(num2str(transpose(1:length(a.Parameters)))), ')');
   % replace Parameter names by their p(n) representation
   expr = regexprep(expr, strcat('\<"', a.Parameters, '"\>' ), replace);
-  a.Constraint.Expression = regexprep(a.Constraint.Expression, strcat('\<"', a.Parameters, '"\>' ), replace);
+  a.Constraint.eval = regexprep(a.Constraint.eval, strcat('\<"', a.Parameters, '"\>' ), replace);
 
   % dim:     holds model dimensionality
   % nb_pars: holds number of parameter used in expression
@@ -436,11 +436,5 @@ function a = iFunc_private_check(a)
     if length(e) > 20, e=[ e(1:17) '...' ]; end
     a.Name = e;
   end
-  
-  % handle non char fields to convert to single strings
-  %if ~isvector(a.Description), a.Description=char(a.Description)'; a.Description = a.Description(1:end); end
-  %if ~isvector(a.Expression),  a.Expression =char(a.Expression)';  a.Expression  = a.Expression(1:end); end
-  %if ~isvector(a.Constraint),  a.Constraint =char(a.Constraint)';  a.Constraint  = a.Constraint(1:end); end
-  %if ~isvector(a.Guess),       a.Guess      =char(a.Guess)';       a.Guess       = a.Guess(1:end); end
 
 % end iFunc_private_check

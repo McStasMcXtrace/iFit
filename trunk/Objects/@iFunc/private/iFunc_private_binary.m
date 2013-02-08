@@ -57,8 +57,8 @@ if isFa
   if isa(a.Expression, 'function_handle')
     a.Expression = { sprintf('signal = feval(%s, p, %s);', func2str(a.Expression), ax(1:(end-1))) };
   end
-  if isa(a.Constraint.Expression, 'function_handle')
-    a.Constraint.Expression = sprintf('p = feval(%s, p, %s);', func2str(a.Constraint.Expression), ax(1:(end-1)));
+  if isa(a.Constraint.eval, 'function_handle')
+    a.Constraint.eval = sprintf('p = feval(%s, p, %s);', func2str(a.Constraint.eval), ax(1:(end-1)));
   end
   if isa(a.Guess, 'function_handle')
     a.Guess = sprintf('[ feval(%s, %s, signal) ]', func2str(a.Guess), ax(1:(end-1)));
@@ -72,8 +72,8 @@ if isFb
   if isa(b.Expression, 'function_handle')
     b.Expression = { sprintf('signal = feval(%s, p, %s);', func2str(b.Expression), ax(1:(end-1))) };
   end
-  if isa(b.Constraint.Expression, 'function_handle')
-    b.Constraint.Expression = { sprintf('p = feval(%s, p, %s);', func2str(b.Constraint.Expression), ax(1:(end-1))) };
+  if isa(b.Constraint.eval, 'function_handle')
+    b.Constraint.eval = { sprintf('p = feval(%s, p, %s);', func2str(b.Constraint.eval), ax(1:(end-1))) };
   end
   if isa(b.Guess, 'function_handle')
     b.Guess = sprintf('[ feval(%s, %s, signal) ]', func2str(b.Guess), ax(1:(end-1)));
@@ -180,14 +180,14 @@ if isFa && isFb
   end
   
   % append Constraint ==========================================================
-  if     isempty(a.Constraint.Expression), c.Constraint.Expression = b.Constraint.Expression;
-  elseif isempty(b.Constraint.Expression), c.Constraint.Expression = a.Constraint.Expression;
+  if     isempty(a.Constraint.eval), c.Constraint.eval = b.Constraint.eval;
+  elseif isempty(b.Constraint.eval), c.Constraint.eval = a.Constraint.eval;
   else
     % append Constraint: 1st
-    c.Constraint.Expression = [ ...
+    c.Constraint.eval = [ ...
       sprintf('%s_p = p; %% store the whole parameter values\n'  , tmp_a), ... % full parameter vector
       sprintf('p=%s_p(%i:%i); %% evaluate 1st constraint for %s\n', tmp_a, i1a, i2a, op), ...
-      a.Constraint.Expression, ...
+      a.Constraint.eval, ...
       sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1a, i2a) ];
       
     % handle dimensionality expansion
@@ -195,24 +195,24 @@ if isFa && isFb
       ax = 'xyztu';
       % store inital axes definitions
       for index=1:c.Dimension
-        c.Constraint.Expression = [ c.Constraint.Expression, sprintf('%s_%s = %s; %% store initial axes\n', tmp_a, ax(index), ax(index)) ];
+        c.Constraint.eval = [ c.Constraint.eval, sprintf('%s_%s = %s; %% store initial axes\n', tmp_a, ax(index), ax(index)) ];
       end
       % set 'b' axes from input axes, shifted backwards
       for index=1:b.Dimension
-        c.Constraint.Expression = [ c.Constraint.Expression, sprintf('%s = %s; %% axes for 2nd object\n', ax(index), ax(index+a.Dimension)) ];
+        c.Constraint.eval = [ c.Constraint.eval, sprintf('%s = %s; %% axes for 2nd object\n', ax(index), ax(index+a.Dimension)) ];
       end
     end
     
     % append Constraint: 2nd
-    c.Constraint.Expression = [ c.Constraint.Expression, ...
+    c.Constraint.eval = [ c.Constraint.eval, ...
       sprintf('p=%s_p(%i:%i); %% evaluate 2nd constraint for %s\n', tmp_a, i1b, i2b, op)
-      b.Constraint.Expression, ...
+      b.Constraint.eval, ...
       sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1b, i2b), ...
       sprintf('p=%s_p; %% restore initial parameter values\n'  , tmp_a) ];
     % restore initial axes definitions
     if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
       for index=1:c.Dimension
-        c.Constraint.Expression = [ c.Constraint.Expression, sprintf('%s = %s_%s; %% restore initial axes\n', ax(index), tmp_a, ax(index)) ];
+        c.Constraint.eval = [ c.Constraint.eval, sprintf('%s = %s_%s; %% restore initial axes\n', ax(index), tmp_a, ax(index)) ];
       end
     end
   end
