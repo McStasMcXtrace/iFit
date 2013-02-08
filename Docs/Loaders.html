@@ -439,7 +439,7 @@ right, as well as metadata. This data can also be imported with <a href="http://
       </td>
       <td style="vertical-align: top;">text<br>
       </td>
-      <td style="vertical-align: top;"><a href="http://www.rcsb.org/pdb/">Protein Data Bank</a> file describing e.g. proteins. View with e.g. <a href="http://jmol.sourceforge.net">Jmol</a>. The file structure is read, the gyration radius <span style="font-style: italic;">Rg</span>, Protein density, volume, excess charge, scattering structure factor <span style="font-style: italic;">S(q)</span> and pair correlation function. These files can be viewed by <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.pymol.org/">PyMol</a>, <a href="http://viewmol.sourceforge.net/">ViewMol</a>, <a href="http://rasmol.org/">RasMol</a>, <a href="http://avogadro.openmolecules.net/wiki/Main_Page">Avogadro,</a> <a href="http://msg.ucsf.edu/local/programs/garlic/index.html">Garlic</a>, <a href="http://gdis.sourceforge.net/">GDis</a>, ...<br>
+      <td style="vertical-align: top;"><a href="http://www.rcsb.org/pdb/">Protein Data Bank</a> file describing e.g. proteins. View with e.g. <a href="http://jmol.sourceforge.net">Jmol</a>. The file structure is read, the gyration radius <span style="font-style: italic;">Rg</span>, Protein density, volume, excess charge, scattering structure factor <span style="font-style: italic;">S(q)</span> and pair correlation function. These files can be viewed by <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.pymol.org/">PyMol</a>, <a href="http://viewmol.sourceforge.net/">ViewMol</a>, <a href="http://rasmol.org/">RasMol</a>, <a href="http://avogadro.openmolecules.net/wiki/Main_Page">Avogadro,</a> <a href="http://msg.ucsf.edu/local/programs/garlic/index.html">Garlic</a>, <a href="http://gdis.sourceforge.net/">GDis</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a> <a href="http://www.yasara.org/">Yasara</a> ...<br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
@@ -586,6 +586,17 @@ file. <a href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Form
       <td style="vertical-align: top;">Yes<br>
       </td>
     </tr><tr>
+  <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;"></span><span style="color: rgb(204, 51, 204); font-weight: bold;">'nii'</span><br style="color: rgb(204, 51, 204);">
+    <span style="color: rgb(204, 51, 204); font-weight: bold;">NifTI</span> <span style="color: rgb(204, 51, 204); font-weight: bold;"></span><span style="color: rgb(204, 51, 204);">volume</span><br>
+  </td>
+  <td style="vertical-align: top;">binary<br>
+  </td>
+  <td style="vertical-align: top;">A <a href="http://nifti.nimh.nih.gov/">NifTI</a> medical imaging volume data format<br>
+  </td>
+  <td style="vertical-align: top;"><br>
+  </td>
+</tr>
+<tr>
       <td style="vertical-align: top;"><span style="font-weight: bold; color: rgb(204, 51, 204);">STL/SLP/PLY/OFF</span><br style="color: rgb(204, 51, 204);"><span style="color: rgb(204, 51, 204);">
 Volume/geometry</span><br>
 <br>
@@ -597,7 +608,7 @@ and <a href="http://en.wikipedia.org/wiki/PLY_%28file_format%29">PLY</a> format 
 They describe raw unstructured triangulated surfaces/volumes by the
 unit <span class="mw-redirect">normal</span> and vertices (ordered by 
 the right-hand rule) of the triangles using a three-dimensional 
-Cartesian coordinate system. These files can be viewed with <a href="http://meshlab.sourceforge.net/">MeshLab</a>, <a href="http://www.varlog.com/admesh-htm">AdMesh</a>, <a href="http://free-cad.sourceforge.net/">FreeCAD</a>, <a href="http://www.geomview.org/">Geomview</a>.<br>
+Cartesian coordinate system. These files can be viewed with <a href="http://meshlab.sourceforge.net/">MeshLab</a>, <a href="http://www.varlog.com/admesh-htm">AdMesh</a>, <a href="http://free-cad.sourceforge.net/">FreeCAD</a>, <a href="http://www.geomview.org/">Geomview</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>.
 </td>
       <td style="vertical-align: top;">Yes<br>
       </td>
@@ -607,10 +618,21 @@ Cartesian coordinate system. These files can be viewed with <a href="http://mesh
   </td>
   <td style="vertical-align: top;">text<br>
   </td>
-  <td style="vertical-align: top;">The <a href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a> format is the IUCr standard format for structure descriptions. The PCR and CFL file formats are used by <a href="http://www.ill.eu/sites/fullprof/">FullProf</a> and <a href="http://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">CrysFML</a>. The RES, SHX and INS formats are used by <a href="http://shelx.uni-ac.gwdg.de/SHELX/">ShellX</a>. Such files can be viewed by <a href="http://www.lwfinger.net/drawxtl/">DrawXtl</a>, <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.pymol.org/">PyMol</a>, <a href="http://rasmol.org/">RasMol</a>, <a href="http://avogadro.openmolecules.net/wiki/Main_Page">Avogadro,</a><a href="http://msg.ucsf.edu/local/programs/garlic/index.html"></a> <a href="http://gdis.sourceforge.net/">GDis</a></td>
+  <td style="vertical-align: top;">The <a href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a> format is the IUCr standard format for structure descriptions. The PCR and CFL file formats are used by <a href="http://www.ill.eu/sites/fullprof/">FullProf</a> and <a href="http://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">CrysFML</a>. The RES, SHX and INS formats are used by <a href="http://shelx.uni-ac.gwdg.de/SHELX/">ShellX</a>. Such files can be viewed by <a href="http://www.lwfinger.net/drawxtl/">DrawXtl</a>, <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.pymol.org/">PyMol</a>, <a href="http://rasmol.org/">RasMol</a>, <a href="http://avogadro.openmolecules.net/wiki/Main_Page">Avogadro,</a> <a href="http://gdis.sourceforge.net/">GDis, </a><a href="http://www.cgl.ucsf.edu/chimera/">Chimera </a><a href="http://www.yasara.org/">Yasara</a></td>
+  <td style="vertical-align: top;"><br>
+  </td>
+</tr><tr>
+  <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">MRC/CCP4/IMOD, EZD</span><br style="color: rgb(204, 51, 204);">
+    <span style="color: rgb(204, 51, 204);">electron density map</span><br>
+  </td>
+  <td style="vertical-align: top;">text(EZD) and binary<br>
+  </td>
+  <td style="vertical-align: top;">Electron density maps in <a href="http://en.wikipedia.org/wiki/MRC_%28file_format%29">MRC</a>/<a href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a> and <a href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a> file formats. Can be visualized with <a href="http://www.pymol.org/">PyMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org">Yasara</a>.<br>
+  </td>
   <td style="vertical-align: top;"><br>
   </td>
 </tr>
+
 
 
 
