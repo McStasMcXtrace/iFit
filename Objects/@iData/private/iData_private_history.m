@@ -42,7 +42,7 @@ for index=1:numel(a)
   if isempty(d.Command), 
   	d.Command = { meth }; 
   else
-  	if ~iscellstr(d.Command), d.Command = cellstr(d.Command); end
+  	if ~iscellstr(d.Command), d.Command = { d.Command }; end
   	d.Command{end+1} = meth;
   end
   d.Command=d.Command(:);

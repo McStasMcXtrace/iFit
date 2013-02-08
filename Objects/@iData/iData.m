@@ -245,7 +245,7 @@ else  % convert input argument into object
         if isempty(out(index).Title),  out(index).Title  = [ in_name ' (' class(in) ')' ]; end
         
         if isempty(out(index).Command)
-        	out(index) = iData_private_history(out(index), mfilename, in); 
+          out(index) = iData_private_history(out(index), mfilename, in); 
         end
       end
     end
@@ -351,9 +351,8 @@ if ~ischar(in.Source)
   iData_private_warning(mfilename,['Source must be a char in iData object ' in.Tag ' "' in.Title '. Re-setting to pwd.' ]);
   in.Source = pwd;
 end
-if ~ischar(in.Command) & ~iscellstr(in.Command)
-  iData_private_warning(mfilename,['Command must be a char or cellstr in iData object ' in.Tag ' "' in.Title '. Re-setting to empty.' ]);
-  in.Command = cellstr('');
+if ~iscellstr(in.Command)
+  in.Command = { in.Command };
 end
 if ~ischar(in.Date) && ~isnumeric(in.Date)
   iData_private_warning(mfilename,['Date must be a char/vector in iData object ' in.Tag ' "' in.Title '. Re-setting to "now".' ]);

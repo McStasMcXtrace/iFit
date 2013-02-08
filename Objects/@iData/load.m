@@ -65,6 +65,7 @@ out = [];
 
 for i=1:numel(files)
   filename = '';
+  if isempty(files{i}), continue; end
   if length(varargin) >= 1 && ischar(varargin{1}), filename = varargin{1}; end
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Filename'), filename = files{i}.Filename; end
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'filename'), filename = files{i}.filename; end
@@ -107,14 +108,8 @@ for i=1:numel(files)
         % apply post-load routine: this may generate more data sets
         for j=1:length(loaders{i}.postprocess)
           if ~isempty(loaders{i}.postprocess{j})
-            % disp([ mfilename ': Calling post-process ' loaders{i}.postprocess{j} ]);
-            try
-              this_iData = feval(loaders{i}.postprocess{j}, this_iData);
-              this_iData = setalias(this_iData, 'postprocess', loaders{i}.postprocess{j});
-              this_iData = iData_private_history(this_iData, loaders{i}.postprocess{j}, this_iData);
-            catch
-              iData_private_warning(mfilename, [ 'Error when calling post-process ' loaders{i}.postprocess{j} ]);
-            end
+            % call private method (see below)
+            this_iData = load_eval_postprocess(this_iData, loaders{i}.postprocess{j});
           end
         end
         % reset warnings
@@ -180,6 +175,7 @@ function a=load_clean_metadata(a, loaders, filenames)
 
 % ------------------------------------------------------------------------------
 function s=load_check_struct(data, loaders, filename)
+% check final structure and add missing fields
   if nargin < 3, filename=''; end
   if isempty(filename), filename=pwd; end
   if iscell(filename),  filename=filename{1}; end
@@ -199,4 +195,23 @@ function s=load_check_struct(data, loaders, filename)
   if ~isfield(s, 'Format'),
     s.Format  = loaders{1}.name; 
   end
-  
+
+% ------------------------------------------------------------------------------
+function this = load_eval_postprocess(this, postprocess)
+% evaluate the postprocess in a reduced environment, with only 'this'
+  try
+    if isvarname(postprocess) && exist(postprocess) == 2
+      this = feval(postprocess, this);
+    elseif isempty(postprocess == '=')
+      this = eval(postprocess);
+    else
+      eval(postprocess);
+    end
+
+    this = setalias(this, 'postprocess', postprocess);
+    this = iData_private_history(this, postprocess, this);
+  catch
+    iData_private_warning(mfilename, [ 'Error when calling post-process ' postprocess ]);
+  end
+    
+    
