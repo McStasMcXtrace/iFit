@@ -1,8 +1,10 @@
-function slice(a)
+function slice(a, method)
 % slice(s) : Plot a 3D object with slice rendering
 %
 %   @iData/slice function to view slices in 3D object
 %     The plot is obtained with Matlab Central sliceomatic
+%     To avoid rebinning large objects, use:
+%       slice(a, 'whole')
 %
 % input:  s: object or array (iData)
 % ex:     slice(iData(flow));
@@ -15,11 +17,17 @@ if ndims(a) < 3
 elseif  isvector(a)
   iData_private_error(mfilename, [ 'Use hist to create a volume to display with Slice-o-matic or use plot instead.' ]);
 end
+if nargin < 2
+  method = '';
+end
 
 if prod(size(a)) > 1e6
-  iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
-    '.\n\tNow rebinning for display purposes with e.g. a=reducevolume(a);' ]);
-  a=reducevolume(a);
+  if isempty([ strfind(method,'whole') strfind(method,'full') ])
+    iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
+      ').\n\tNow rebinning for display purposes with e.g. a=reducevolume(a);' ...
+      '\n\tUse e.g slice(a, ''whole'') to plot the whole data set and be able to zoom tiny regions.' ]);
+    a=reducevolume(a);
+  end
 end
 
 if exist('sliceomatic')
