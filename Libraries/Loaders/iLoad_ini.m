@@ -188,6 +188,13 @@ function config = iLoad_ini
     PLY_ascii.patterns  ={'ply','format ascii','element','end_header'};
     PLY_ascii.postprocess='load_stl';
     
+    EZD.name            ='EZD electronic density map';
+    EZD.method          ='read_anytext';
+    EZD.options         ='--fortran --headers --binary --fast --catenate --comment=NULL --silent';
+    EZD.extension       ='ezd';
+    EZD.patterns        ={'EZD_MAP','CELL','EXTENT'};
+    EZD.postprocess     ='this.Data.MAP = reshape(this.Data.MAP, this.Data.EXTENT);';
+    
 % binary formats ===============================================================
     
     ESRF_edf.name       ='EDF ESRF Data Format';
@@ -214,13 +221,11 @@ function config = iLoad_ini
     ADSC_CCD.patterns   ={'HEADER_BYTES','CCD_IMAGE_SATURATION'};
     
     Matlab_FIG.name     ='Matlab Figure';
-    Matlab_FIG.options  ='';
     Matlab_FIG.method   ='read_fig';
     Matlab_FIG.extension='fig';
     Matlab_FIG.postprocess='load_fig';
     
     Analyze.name        ='Analyze volume data';
-    Analyze.options     ='';
     Analyze.method      ='read_analyze';
     Analyze.postprocess ='load_analyze';
     Analyze.extension   ={'hdr','img'};
@@ -231,12 +236,19 @@ function config = iLoad_ini
     CBF.postprocess     ='load_cbf';
     CBF.patterns        ={'###CBF: VERSION'};
     
+    MRC.name            ='MRC/CCP4 electron density map';
+    MRC.extension       ={'mrc','ccp4','map','res'};
+    MRC.method          ='read_mrc';
+    
+    NifTI.name          = 'NifTI-1 MRI volume data';
+    NifTI.extension     = 'nii';
+    NifTI.method        ='read_nii';
     
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
 	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
-	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, CIF, ...
-	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, Analyze, CBF, STL_binary};
+	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, CIF, EZD, ...
+	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, Analyze, CBF, STL_binary, MRC, NifTI };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];

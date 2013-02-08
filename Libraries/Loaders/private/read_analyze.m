@@ -111,7 +111,7 @@ if (dims == 3) | (dim(4) == 1)
 end;  
 fread(pid,4,'ushort');          
 fread(pid,6,'ushort');          
-Datatype=fread(pid,1,'ushort');    % datatype       
+Datatype=fread(pid,1,'ushort');    % datatype  
 BitsPrVoxel=fread(pid,1,'ushort'); %Bits pr. voxel
 fread(pid,1,'ushort');
 fread(pid,2,'ushort');        
