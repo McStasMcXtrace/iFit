@@ -211,13 +211,17 @@ constraints.funcCount       = 0;
 constraints.message         = '';
 constraints.fevalDuration   = 0;
 
+if isfield(constraints, 'Expression') && ~isfield(constraints, 'eval')
+  constraints.eval = constraints.Expression;
+end
+
 options.optimizer = optimizer;
 if ~isfield(options,'Display') options.Display=''; end
 
 options=inline_private_check(options, feval(options.optimizer,'defaults'));
 t0=clock;
 
-n = prod(size(pars));
+n = prod(size(pars)); N=n; % these are for the following 'eval's
 numberOfVariables = n;
 numberofvariables = n;
 if ischar(options.MaxFunEvals), 
