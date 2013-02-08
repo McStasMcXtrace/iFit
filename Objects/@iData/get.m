@@ -69,14 +69,19 @@ for index=1:length(varargin)
       varargout{1} = subsref(this, s);              % calls subsref directly (single subsref level)
     end
   else % this is a compound property, such as get(this,'Data.Signal')
-    try
-      varargout{1} = eval([ 'this.' property ]);  % calls subsref by eval (recursive subsref levels)
-    catch
-      varargout{1} = eval(property);              % this is a full expression: evaluate it...
-    end
+    varargout{1} = get_eval(this, property); % calls inline (below)
   end
 end
 
 if isempty(varargout)
   varargout={[]};
 end
+
+% ------------------------------------------------------------------------------
+% evaluate property in a reduced environment
+function this = get_eval(this, property)
+  try
+    this = eval([ 'this.' property ]);  % calls subsref by eval (recursive subsref levels)
+  catch
+    this = eval(property);              % this is a full expression: evaluate it...
+  end

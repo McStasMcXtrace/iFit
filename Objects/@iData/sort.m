@@ -50,23 +50,23 @@ for index=tosort
   [x, sorti] = sort(x, index, mode);
   if ~isequal(sorti, 1:size(a, index))
     toeval='';
+    S.type = '()';
+    S.subs = {};
     for j=1:ndims(a), 
-      if j ~= index, str_idx{j}=':';
-      else str_idx{j}='sorti'; end
-      if j>1, toeval=[ toeval ',' str_idx{j} ];
-      else toeval=[ str_idx{j} ]; end
+      if j ~= index, S.subs{j}=':';
+      else           S.subs{j}=sorti; end
     end
     try
-      sd =eval([ 'sd(' toeval ')' ]);
+      sd =subsref(sd, S);
     catch
     end
     try
-      se =eval([ 'se(' toeval ')' ]);
+      se =subsref(se, S);
     catch
-      sd=[];
+      se=[];
     end
     try
-      sm =eval([ 'sm(' toeval ')' ]);
+      sm =subsref(sm, S);
     catch
       sm=[];
     end
