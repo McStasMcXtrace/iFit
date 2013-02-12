@@ -2444,7 +2444,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
 */
         if ((last_is & (Bnumber | Bpoint)) && (is & (Beol | Bseparator))) {
           columns++; /* detects num end : one more column */
-          if (found && (columns == 1)) rows++;  /* this is a new line starting */
+          if (found && (columns <= 1)) rows++;  /* this is a new line starting */
         }
         if (is & Beol) {  /* reached end of line */
           if (!options.catenate) {
