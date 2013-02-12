@@ -310,9 +310,15 @@ if isempty(a.Signal)
   error([ 'iFunc:' mfilename ],[ 'Undefined/empty Signal ' inname ' to fit. Syntax is fits(model, Signal, parameters, ...).' ]);
 end
 
-if isvector(a.Signal) ndimS = 1;
+if isvector(a.Signal) 
+  ndimS = 1;
+  % check if we have an event-type nD data set
+  if all(cellfun(@isvector, a.Axes)) && all(cellfun(@numel, a.Axes) == numel(a.Signal))
+    ndimS = length(a.Axes);
+  end
 else                  ndimS = ndims(a.Signal);
 end
+
 % handle case when model dimensionality is larger than actual Signal
 if model.Dimension > ndimS
   error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has lower dimension than model %s dimensionality %d.\n', Name, ndimS, model.Name, model.Dimension);
@@ -371,6 +377,7 @@ if isstruct(pars)
   end
 elseif strcmp(pars,'guess') || (isnumeric(pars) && length(pars) < length(model.Parameters))
   pars = feval(model, pars, a.Axes{:}, a.Signal); % guess missing starting parameters
+  pars = model.ParameterValues;
 end
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
 
@@ -562,11 +569,12 @@ end
 % this way 'options' is available in here...
 
   function c = eval_criteria(model, p, criteria, a, varargin)
-  
+
   % criteria to minimize
     if nargin<5, varargin={}; end
     % then get model value
     Model  = feval(model, p, a.Axes{:}, varargin{:}); % return model values
+
     % get actual parameters used during eval (in case of Constraints)
     p = model.ParameterValues;
     % send it back to input call
