@@ -335,8 +335,8 @@ end
 
 % convert axes to nD arrays for operations to take place
 % check the axes and possibly use ndgrid to allow nD operations in the
-% Expression/Constraint
-if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension)))
+% Expression/Constraint. Only for non event style axes.
+if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension))) && length(unique(cellfun(@numel, varargin(1:model.Dimension)))) ~= 1
   [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
 end
 
