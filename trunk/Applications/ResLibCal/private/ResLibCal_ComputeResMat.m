@@ -65,7 +65,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     R0=1; RM=[]; RMS=[]; bragg = [];
     
     % choice of method
-    if ~isempty(strfind(EXP.method, 'rescal'))
+    if ~isempty(strfind(EXP.method, 'rescal5'))
       if exist('rc_cnmat') == 2
         % a,b,c,alpha,beta,gamma, QH,QK,QL
         f=0.4826; % f converts from energy units into k^2, f=0.4826 for meV
@@ -93,16 +93,16 @@ function resolution = ResLibCal_ComputeResMat(EXP)
       else
         disp([mfilename ': res3ax (JO) is not available' ]);
       end
-    elseif ~isempty(strfind(EXP.method, 'vtas'))
-      if exist('vTAS_AFILL') == 2
+    elseif ~isempty(strfind(EXP.method, 'AFILL'))
+      if exist('Rescal_AFILL') == 2
         % This method is 100% equivalent to ResCal5/Cooper-Nathans
-        method    = @vTAS_AFILL; 
+        method    = @Rescal_AFILL; 
         EXProt    = ResLibCal_SampleRotateS(h,k,l,EXP);
         EXProt.QH = h; EXProt.QK=k; EXProt.QL=l; EXProt.W=w;
         [R0,RM]   = feval(method,h,k,l,w, EXProt);
         RMS       = ResLibCal_RM2RMS(h,k,l,w,EXProt,RM);
       else
-        disp([mfilename ': vTAS_AFILL is not available' ]);
+        disp([mfilename ': rescal/AFILL is not available' ]);
       end
     else % default is 'reslib'
       if ~isempty(strfind(EXP.method, 'cooper')) EXP.method=0; 
