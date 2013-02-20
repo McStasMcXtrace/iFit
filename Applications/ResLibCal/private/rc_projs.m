@@ -91,7 +91,7 @@ B=[A(1,1:2),A(1,4);A(2,1:2),A(2,4);A(4,1:2),A(4,4)];
 
 [R0P,MP]=rc_int(3,R0,B);
 
-theta=0.5*atan(2*MP(1,2)./(MP(1,1)-MP(2,2)));
+theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
 S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
 
 MP=S*MP*S';
@@ -116,7 +116,7 @@ title(EXP.method);
 
 MP=A(1:2,1:2);
 
-theta=0.5*atan(2*MP(1,2)./(MP(1,1)-MP(2,2)));
+theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
 S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
 
 MP=S*MP*S';
@@ -130,7 +130,7 @@ set(line(x,y),'LineStyle','--')
 
 [R0P,MP]=rc_int(2,R0,B);
 
-theta=0.5*atan(2*MP(1,2)./(MP(1,1)-MP(2,2)));
+theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
 S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
 
 MP=S*MP*S';
@@ -152,7 +152,7 @@ ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
 
 MP=[A(1,1) A(1,4);A(4,1) A(4,4)];
 
-theta=0.5*atan(2*MP(1,2)./(MP(1,1)-MP(2,2)));
+theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
 S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
 
 MP=S*MP*S';
@@ -167,7 +167,7 @@ title('Energy resolution')
 
 [R0P,MP]=rc_int(1,R0,B);
 
-theta=0.5*atan(2*MP(1,2)./(MP(1,1)-MP(2,2)));
+theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
 S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
 
 MP=S*MP*S';
@@ -189,7 +189,7 @@ ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
 
 MP=[A(2,2) A(2,4);A(4,2) A(4,4)];
 
-theta=0.5*atan(2*MP(1,2)./(MP(1,1)-MP(2,2)));
+theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
 S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
 
 MP=S*MP*S';
