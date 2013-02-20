@@ -32,7 +32,11 @@ if  numel(out.resolution) > 1
     if iscell(this.resolution), this.resolution=this.resolution{index};
     else                        this.resolution=this.resolution(index); 
     end
-    if index > 1, this_mode = [ mode ' scan' ]; else this_mode=mode; end
+    if index > 1, 
+      this_mode = [ mode ' scan' ]; hold on
+    else 
+      this_mode=mode; hold off; 
+    end
     feval(mfilename, this, this_mode);
   end
   hold off
@@ -100,7 +104,6 @@ hwhm_xp=const/sqrt(MP(1,1));
 hwhm_yp=const/sqrt(MP(2,2));
 [x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta); pqx=max(x)-min(x); pqy=max(y)-min(y);
 subplot(2,2,1);
-hold on
 set(line(x,y),'Color','k')
 if isempty(strfind(mode, 'scan')), fill(x,y,'r'); end
 if ~isempty(strfind(mode,'rlu'))
@@ -225,6 +228,8 @@ end
 
 out.resolution.Bragg  = 2.35./sqrt(diag(NP)); % in rlu or Q frame
 out.resolution.phonon = [ pqx,pqy,pe ];
+
+hold off
 
 % ==============================================================================
 
