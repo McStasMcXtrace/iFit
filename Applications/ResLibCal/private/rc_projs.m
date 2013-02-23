@@ -114,6 +114,8 @@ else
   ylabel([ 'Q_y [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y)) ])
 end
 title(EXP.method);
+pb=pbaspect; pbq = max(pb(1:2));
+pb(1:2) = pbq; pbaspect(pb);
 
 %---------------- Add slice through Qx,Qy plane ----------------------
 
@@ -150,6 +152,8 @@ else
   xlabel([ 'Q_x [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
 end
 ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
+pb=pbaspect; pbe=pb(2);
+pb(1) = pbq; pbaspect(pb);
 
 %---------------- Add slice through Qx,W plane ----------------------
 
@@ -187,6 +191,8 @@ else
   xlabel([ 'Q_y [A^{-1}] {\delta}Q_y=' num2str(max(x)-min(x)) ])
 end
 ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
+pb=pbaspect; 
+pb(1:2) = [ pbq pbe ]; pbaspect(pb);
 
 %---------------- Add slice through Qy,W plane ----------------------
 
@@ -208,9 +214,9 @@ set(line(x,y),'LineStyle','--')
 
 message = [ res, ...
   { ['Bragg width in ' frame ' (FWHM):'], ...
-  sprintf(' dQ1=%7.3g dQ2=%7.3g [Å-1] dE=%7.3g [meV]', dqx,dqy,de), ...
+  sprintf(' dQ1=%7.3g dQ2=%7.3g [A-1] dE=%7.3g [meV]', dqx,dqy,de), ...
     ['Phonon width in ' frame ' (FWHM):'], ...
-  sprintf(' pQ1=%7.3g pQ2=%7.3g [Å-1] pE=%7.3g [meV]', pqx,pqy,pe)}, ...
+  sprintf(' pQ1=%7.3g pQ2=%7.3g [A-1] pE=%7.3g [meV]', pqx,pqy,pe)}, ...
   inst ];
 
 % fill 4th sub-panel with uicontrol

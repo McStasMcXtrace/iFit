@@ -47,7 +47,7 @@ function out = ResLibCal(varargin)
 % out      = ResLibCal_UpdateResolution3(out)
 
 
-ResLibCal_version = [ mfilename ' 1.0 (Feb 2013) $Revision$' ];
+ResLibCal_version = [ mfilename ' 1.0 (Feb 2013) $Revision: 1.0$' ];
 
 % menu actions:
 if ~isempty(varargin)
@@ -72,7 +72,7 @@ if ~isempty(varargin)
     % menu items ---------------------------------------------------------------
     case 'file_open'
       EXP = ResLibCal_fig2EXP(get(0,'CurrentFigure'));
-      if isfield(EXP,'EXP') EXP = EXP.EXP; end
+      if isfield(EXP,'EXP'), EXP = EXP.EXP; end
       if length(varargin) < 1, varargin{2} = ''; end
       if length(varargin) < 2, varargin{3} = EXP; end
       out = ResLibCal_Open(varargin{2:end});  % (filename, EXP)
@@ -94,6 +94,7 @@ if ~isempty(varargin)
         if exist(filename,'file')
           feval(mfilename, 'create');
         else
+          fig = findall(0, 'Tag','ResLibCal');
           delete(fig);
           openfig('ResLibCal');
         end
@@ -105,7 +106,8 @@ if ~isempty(varargin)
       % save configuration
       ResLibCal_Saveas(varargin{2:end}); % (filename, EXP)
     case 'file_print'
-      printdlg(gcf);
+      fig = findall(0, 'Tag','ResLibCal');
+      printdlg(fig);
     case 'file_export'
       [filename, pathname] = uiputfile( ...
          {'*.pdf',  'Portable Document Format (*.pdf)'; ...
@@ -114,11 +116,11 @@ if ~isempty(varargin)
           '*.jpg',  'JPEG image (*.jpg)'; ...
           '*.tif',  'TIFF image, compressed (*.tif)'; ...
           '*.bmp',  'Windows bitmap (*.bmp)'; ...
-          '*.fig',  'MATLAB figure (*.fig)'; ...
           '*.*',  'All Files (*.*)'}, ...
           'Export configuration window as...');
       if isempty(filename) || all(filename == 0), return; end
       filename = fullfile(pathname, filename);
+      fig = findall(0, 'Tag','ResLibCal');
       saveas(fig, filename);
       disp([ '% Exported ' ResLibCal_version ' window to file ' filename ]);
     case 'file_exit'
@@ -148,6 +150,8 @@ if ~isempty(varargin)
       web(link);
     case 'help_about'
       % get the ILL logo from object
+      fig = findall(0, 'Tag','ResLibCal');
+      if isempty(fig), return; end
       cdata = get(findall(fig, 'Tag', 'ILL_logo'), 'CData');
       message = {...
         [ '{\fontsize{14}{\color{blue}' ResLibCal_version '} EUPL license} ' ], ...
@@ -163,7 +167,7 @@ if ~isempty(varargin)
       msgbox(message, ...
         'About: ResLibCal', ...
         'custom',cdata,jet,CreateMode);
-    case 'view_update'
+    case 'view_update' 
       out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
       ResLibCal_ViewResolution(out,2); % if not opened, open at least the 2D view
       ResLibCal_UpdateViews(out);
@@ -201,10 +205,12 @@ if ~isempty(varargin)
       % update E, K, lambda
       ResLibCal_UpdateEKLfixed(varargin{2:end});  % arg is edit box handle
     case 'update_handle'
-      % handle uitable update
-      if length(varargin) < 2, return; end
+      % handle uitable/iopopup/ and other updates from widget CallBack
+      if length(varargin) < 2, return; end % requires handle as arg
       h     = varargin{2};
-      if strcmp(get(h,'Type'),'uitable')
+      tag   = get(h, 'Tag');
+      % handle case of uitable collimators/distances
+      if strcmp(tag,'EXP_collimators') && strcmp(get(h,'Type'), 'uitable')
         event = varargin{3};
         data  = get(h,'Data'); % NewData
         if ~isempty(event.Error) || isnan(event.NewData) 
@@ -214,7 +220,15 @@ if ~isempty(varargin)
         else
           out = feval(mfilename, 'update');
         end
+      elseif strcmp(get(h,'Type'), 'uitable')
+        if any(strcmp(tag,{'EXP_mono_tau_popup','EXP_ana_tau_popup'}))
+          ResLibCal_UpdateDTau(h);
+        elseif any(strcmp(tag,{'EXP_efixed','EXP_Kfixed','EXP_Lfixed'}))
+          ResLibCal_UpdateEKLfixed(h);
+        end
       end
+      % update computation and plots
+      feval(mfilename, 'update');
     otherwise
       try
         out = ResLibCal_Open(action, varargin{2:end});
