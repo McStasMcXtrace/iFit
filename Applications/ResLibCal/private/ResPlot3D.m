@@ -141,6 +141,9 @@ for i=1:len
    h=plot3(xproj3,yproj3,zproj3); set(h,'Tag','ResLibCal_View3_Proj3');
 end;
 
+da=daspect; da(1:2) = max(da(1:2)); daspect(da);
+pb=pbaspect; pb(1:2)=da(1); pbaspect(pb);
+
 % add contextual menu
 if isempty(findall(gcf,'Tag','ResLibCal_View3_Context'))
   %finalize 3D plot

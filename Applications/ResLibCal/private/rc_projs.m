@@ -114,8 +114,9 @@ else
   ylabel([ 'Q_y [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y)) ])
 end
 title(EXP.method);
-pb=pbaspect; pbq = max(pb(1:2));
-pb(1:2) = pbq; pbaspect(pb);
+da=daspect; da(1:2) = max(da(1:2)); daspect(da);
+pb=pbaspect; pb(1:2)=da(1); pbaspect(pb);
+x1=xlim; x2=ylim;
 
 %---------------- Add slice through Qx,Qy plane ----------------------
 
@@ -152,8 +153,7 @@ else
   xlabel([ 'Q_x [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
 end
 ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
-pb=pbaspect; pbe=pb(2);
-pb(1) = pbq; pbaspect(pb);
+xlim(x1); xe=ylim;
 
 %---------------- Add slice through Qx,W plane ----------------------
 
@@ -191,8 +191,7 @@ else
   xlabel([ 'Q_y [A^{-1}] {\delta}Q_y=' num2str(max(x)-min(x)) ])
 end
 ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
-pb=pbaspect; 
-pb(1:2) = [ pbq pbe ]; pbaspect(pb);
+xlim(x2); ylim(xe);
 
 %---------------- Add slice through Qy,W plane ----------------------
 
