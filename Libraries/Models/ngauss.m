@@ -57,7 +57,7 @@ y.Expression = [ y.Expression sprintf('+p(%i)',3*index+1) ];
 y.Expression= eval(y.Expression); % make it a function handle (faster to evaluate)
 
 if length(p) > 1
-  y.ParameterValues = p
+  y.ParameterValues = p;
 end                            
 
 y = iFunc(y);
