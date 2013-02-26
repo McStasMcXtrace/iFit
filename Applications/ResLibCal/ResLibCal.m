@@ -141,8 +141,8 @@ if ~isempty(varargin)
     case 'view_resolution3'
       out = ResLibCal_ViewResolution('',3);  % open/raise View Res2
       out = ResLibCal_UpdateViews(out);
-    case 'view_matrix'                 % not used currently
-      out = ResLibCal_ViewResolution('',1);  % open/raise View Matrix
+    case 'view_tas'
+      out = ResLibCal_ViewResolution('',1);  % open/raise View TAS
       out = ResLibCal_UpdateViews(out);
     case 'help_content'
       link = fullfile(fileparts(which(mfilename)), 'doc', [ mfilename '.html' ]);
@@ -205,7 +205,7 @@ if ~isempty(varargin)
       % update E, K, lambda
       ResLibCal_UpdateEKLfixed(varargin{2:end});  % arg is edit box handle
     case 'update_handle'
-      % handle uitable/iopopup/ and other updates from widget CallBack
+      % handle uitable/popup/menu and other updates from widget CallBack
       if length(varargin) < 2, return; end % requires handle as arg
       h     = varargin{2};
       tag   = get(h, 'Tag');
@@ -226,6 +226,8 @@ if ~isempty(varargin)
         elseif any(strcmp(tag,{'EXP_efixed','EXP_Kfixed','EXP_Lfixed'}))
           ResLibCal_UpdateEKLfixed(h);
         end
+      elseif strcmp(get(h,'Type'), 'uimenu')
+        ResLibCal(get(h,'Tag'));
       end
       % update computation and plots
       feval(mfilename, 'update');
@@ -271,6 +273,7 @@ function out = ResLibCal_UpdateViews(out)
 %
   if nargin == 0, out = ''; end
   if ~isstruct(out), out = ResLibCal_Compute; end
+  out = ResLibCal_UpdateResolution1(out); % TAS geometry
   out = ResLibCal_UpdateResolution2(out); % 2D, also shows matrix
   out = ResLibCal_UpdateResolution3(out); % 3D
 
@@ -289,6 +292,19 @@ function out = ResLibCal_ViewResolution(out, dim)
   else
     figure(h);
   end
+  
+% ==============================================================================
+function out = ResLibCal_UpdateResolution1(out)
+% ResLibCal_UpdateResolution2: update the 2D view
+%
+  if nargin == 0, out = ''; end
+  if ~isstruct(out), out = ResLibCal_Compute; end
+  h = findall(0, 'Tag','ResLibCal_View1');
+  if isempty(h), return; end
+  set(0,'CurrentFigure', h);
+  
+  % update/show the TAS geometry
+  out = ResLibCal_TASview(out)
 
 % ==============================================================================
 function out = ResLibCal_UpdateResolution2(out)
