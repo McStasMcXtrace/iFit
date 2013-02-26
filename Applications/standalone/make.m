@@ -4,6 +4,8 @@ function make(target)
 % This function creates a standalone version of the iFit distribution.
 % It requires the Matlab Compiler. Shortcuts/launchers are also created for Linux/Windows.
 
+if ~exist('mcc'), return; end
+
 % location of the iFit directory
 cd(ifitpath); p=pwd;  % get fully qualified path for p=ifitpath
 % location of the make script m=location(make.m)
@@ -54,7 +56,7 @@ mcc('-m', 'ifit', '-a', p);
 
 % tuning the standalone
 if ~ispc
-  if ~isempty(dir('run_ifit'))
+  if isempty(dir('run_ifit'))
     movefile('ifit', 'run_ifit');
     delete('run_ifit.sh');
   end
