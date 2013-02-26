@@ -142,7 +142,6 @@ for i=1:len
 end;
 
 da=daspect; da(1:2) = max(da(1:2)); daspect(da);
-pb=pbaspect; pb(1:2)=da(1); pbaspect(pb);
 
 % add contextual menu
 if isempty(findall(gcf,'Tag','ResLibCal_View3_Context'))
