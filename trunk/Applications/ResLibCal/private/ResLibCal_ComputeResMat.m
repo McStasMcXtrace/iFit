@@ -184,7 +184,7 @@ function [A,Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP)
 
     vv    = vv./repmat(c,[3 1]);
     s     = vv'*bb;
-    qt    = [EXP.QH EXP.QK EXP.QL ]*s';
+    qt    = [h k l ]*s';
     qs    = sum(qt.*qt); Q=sqrt(qs);
     
     sm =EXP.mono.dir;
