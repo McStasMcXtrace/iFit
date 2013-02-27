@@ -304,7 +304,7 @@ function out = ResLibCal_UpdateResolution1(out)
   set(0,'CurrentFigure', h);
   
   % update/show the TAS geometry
-  out = ResLibCal_TASview(out)
+  out = ResLibCal_TASview(out);
 
 % ==============================================================================
 function out = ResLibCal_UpdateResolution2(out)
