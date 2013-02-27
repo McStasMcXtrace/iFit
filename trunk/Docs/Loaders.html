@@ -120,8 +120,10 @@ formatted accordingly. The resulting structure is then ready to be
 converted into an <a href="iData.html">iData</a> object.<br>
 
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iLoad</span>(filename); <span style="font-style: italic;">% this is a structure</span><br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(a);        <span style="font-style: italic;">% convert to iData object</span><br></pre>
-In the case where the automatic importation fails, it is possible to manually force one format specification to be used<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iLoad</span>(filename, <span style="color: rgb(204, 51, 204);">'HDF5'</span>); <span style="font-style: italic;">% explicitly use HDF5 loader<br></span></pre>
+In the case where the automatic importation fails, it is possible to 
+manually force one format specification to be used, from the <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);">iLoad</span> <span style="color: rgb(204, 51, 204);">formats</span></span> output<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'formats'</span>)
+...<br>HDF   read_hdf5/load_psi_RITA  HDF5<br>...<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iLoad</span>(filename, <span style="color: rgb(204, 51, 204);">'HDF5'</span>); <span style="font-style: italic;">% explicitly use HDF5 loader<br></span></pre>
 <h4><a class="mozTocH4" name="mozTocId52427"></a>Distant files (http://, ...)<br>
 </h4>
 
@@ -183,7 +185,7 @@ A set of example data files is available from the <a href="Load.html#mozTocId782
 
 <span style="font-weight: bold;">
 </span>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
 
   <tbody>
     <tr>
@@ -393,7 +395,7 @@ comma separated values</span><span style="color: rgb(204, 51, 204); font-weight:
 
 <span style="font-weight: bold;">
 </span>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
 
 
   <tbody>
@@ -668,6 +670,14 @@ character strings/comments that precede these blocks. The result is a
 single structure which holds a <span style="font-style: italic;">Data</span> and a <span style="font-style: italic;">Header</span> field, plus additional
 identification information. The structure can be converted transparently to an <a href="iData.html">iData</a> object. However, in some cases, the Signal and Axes definitions will require to be set after creating the object.<br>
 <br>
+If you can not import a reluctant <span style="font-weight: bold;">text</span> file, try the most tolerant text reader configurations:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','text format with fast import method'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','Data (text format)'</span>)<br></pre>
+
+will import the raw content, without post formatting of the object in 
+memory. You will probably need to assign manually some of the Signal and
+ Axes (see <a href="iData.html">iData</a> object help).<br>
+<br>
 <span style="font-weight: bold;">Binary</span> formats require more work. In principle, if <span style="font-style: italic;">iLoad</span> does not know
 the structure of the file, there is no way to import an unknown data
 format file. However, <span style="font-style: italic;">iLoad</span> allows a rapid prototyping of new import
@@ -722,7 +732,7 @@ arguments to the method. [optional]</li>
 
 Let's details one of the <a href="../Loaders/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span> entry for INX files.<br>
 <br>
-<table style="text-align: left; width: 70%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 70%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top;">
@@ -775,7 +785,7 @@ return something (or empty/error if this fails). This is your <span style="font-
   <li>Create a new structure (which you may name as you wish) and set the name (description), method, and extension fields.</li>
   <li>Optionally define some <span style="font-weight: bold;">patterns</span> to search, to complement the extension.</li>
   <li>Optionally write a post-process script and preferably place it in the <span style="color: rgb(51, 102, 255);">ifitpath/Loaders/postprocess</span>. </li>
-  <li>Add the new structure to the <span style="font-weight: bold;">config.loaders</span> list (cell) at the end of the <a href="../Loaders/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span>  file.</li>
+  <li>Add the new structure to the <span style="font-weight: bold;">config.loaders</span> list (cell) at the end of the <a href="../Librarires/Loaders/iLoad_ini.m">iLoad_ini</a><span style="font-weight: bold;"></span>  file.</li>
   <li>Save the file, and optionally re-read it with <span style="font-style: italic;">iLoad('force load config')</span>.</li>
   <li>Send me [farhi (at) ill.fr] the method/postprocess and structure information so that I can contribute your work to the package.<br>
   </li>
