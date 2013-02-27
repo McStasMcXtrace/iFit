@@ -47,7 +47,7 @@ points to the iFit library location:<br>
 </div>
 These commands result in the following output, which produce an iData
 object:<br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top;">
@@ -161,10 +161,10 @@ In principle, any text based file is loaded transparently (see <a href="#mozTocI
 wrapper, but many formats are supported. In some case, additional axis
 definition specific to the format will be applied.<br>
 <br>
-The list of available methods is usually stored in the <span style="font-style: italic; color: rgb(204, 51, 204);">iFit/Loaders/iLoad_ini.m</span>
+The list of available methods is usually stored in the <a href="../Librarires/Loaders/iLoad_ini.m"><span style="font-style: italic; color: rgb(204, 51, 204);">iFit/Librarires/Loaders/iLoad_ini.m</span></a>
 file, <br>
 and can be obtained from the <span style="font-weight: bold; font-style: italic;">iLoad</span> function<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'formats'</span>);</pre>A local <span style="font-style: italic;">iLoad.ini</span>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'formats'</span>);	<span style="font-style: italic;">% or: iData('formats')</span></pre>A local <span style="font-style: italic;">iLoad.ini</span>
 configuration file may be stored in the Matlab
 <span style="font-style: italic;">Preferences</span> directory, which
 then overrides the system default (refer to the <a href="Loaders.html#mozTocId56356">iLoad configuration</a> help page).<br>
@@ -245,6 +245,17 @@ The current supported format list is (details in <a style="font-weight: bold;" h
 A detailed list of format descriptions can be found in the <a style="font-weight: bold;" href="Loaders.html">Loaders</a> help pages, as well as the <a href="Loaders.html#mozTocId120998">procedure</a> to be used to define new data formats. Some of these formats are
 also available for <a href="Save.html">Saving</a> iData objects.<br>
 <br>
+To force a file to be imported with a specific data format, specify the format description or extension as listed from the <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'formats'</span>)</span> output e.g.:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'formats'</span>)<br>...<br>PDB        read_pdb/load_xyen  Protein Data Bank<br>...<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','Protein Data Bank'<span style="color: rgb(0, 0, 0);">)<br></span></span>&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','PDB'<span style="color: rgb(0, 0, 0);">)</span></span><br></pre>
+
+If you can not import a reluctant <span style="font-weight: bold;">text</span> file, try the most tolerant text reader configurations:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','text format with fast import method'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','Data (text format)'</span>)<br></pre>
+will import the raw content, without post formatting of the object in 
+memory. You will probably need to assign manually some of the Signal and
+ Axes (see <a href="iData.html">iData</a> object help).<br>
+
+
+
 <h3><a class="mozTocH3" name="mozTocId782211"></a>Example data files</h3>
 <a href="images/iFit_Data.png"><img alt="iFit: example Data" title="iFit: example Data" src="images/iFit_Data.png" style="border: 0px solid ; width: 300px; height: 266px;" align="right"></a>The
 iFit
