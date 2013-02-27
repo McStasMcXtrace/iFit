@@ -5,7 +5,7 @@ function config = iLoad_ini
 %   method:   function name to use, called as method(filename, options...)
 %   extension:a single or a cellstr of extensions associated with the method
 %   patterns: list of strings to search in data file. If all found, then method
-%             is qualified
+%             is qualified. The patterns can be regular expressions.
 %   name:     name of the method/format
 %   options:  additional options to pass to the method.
 %             If given as a string they are catenated with file name
@@ -178,7 +178,7 @@ function config = iLoad_ini
     OFF_ascii.method    ='read_anytext';
     OFF_ascii.options   ='--fast --binary --headers --comment=NULL --metadata=OFF --silent';
     OFF_ascii.extension ='off';
-    OFF_ascii.patterns  ={'OFF'};
+    OFF_ascii.patterns  ={'\<OFF\>'};
     OFF_ascii.postprocess='load_stl';
     
     PLY_ascii.name      ='PLY 3D ascii';
