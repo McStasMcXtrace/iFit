@@ -17,7 +17,7 @@ function EXP = ResLibCal_Open(filename, EXP)
   if isempty(filename)
     [filename, pathname] = uigetfile( ...
        {'*.m;*.ini',  'ResLibCal configuration M-file (*.m;*.ini)'; ...
-        '*.cfg;*.par','ResCal5 configuration (*.par;*.cfg)' ; ...
+        '*.cfg;*.par;*.res','ResCal5 configuration (*.par;*.cfg;*.res)' ; ...
         '*.*',  'All Files, including ILL TAS Data (*.*)'}, ...
         'Open configuration as ResLibCal, ResCal, ILL TAS Data, ...');
     if isempty(filename) || all(filename == 0), return; end
@@ -40,14 +40,14 @@ function EXP = ResLibCal_Open(filename, EXP)
   end
   if ischar(content) && ~isempty(content)  % content of a file, or string to evaluate
     try
-      eval(content);% this should make an 'EXP' or 'config' variable
-      content = ''; % success unactivates further interpretation of input
+      evalc(content);% this should make an 'EXP' or 'config' variable
       if ~isempty(config)
         EXP = config; % replace EXP full config (override any previous setting)
+        content = ''; % success unactivates further interpretation of input
       end
     end
   end
- 
+
   if ischar(content) || isstruct(content) % converted from a string or read from a file
     % read content as a structure, ResCal par/cfg, ...
     if isfield(EXP,'EXP'), EXP=EXP.EXP; end

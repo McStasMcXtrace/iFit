@@ -86,7 +86,11 @@ elseif isstruct(data)
   f = fieldnames(data);
   if ~nocomment, str = [ '% ' this ' (' class(data) ') length ' num2str(length(f)) NL ]; end
   for index=1:length(f)
-    str = [ str class2str([ this '.' f{index} ], getfield(data, f{index}), options) ];
+    if isempty(deblank(this))
+      str = [ str class2str([ f{index} ], getfield(data, f{index}), options) ];
+    else
+      str = [ str class2str([ this '.' f{index} ], getfield(data, f{index}), options) ];
+    end
   end
   if ~nocomment, str = [ str '% end of struct ' this NL ]; end
 elseif iscellstr(data)
