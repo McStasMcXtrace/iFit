@@ -112,7 +112,11 @@ t=text(X(1)+x,Y(1)+y,Z(1),'Detector');
 set([ l t ],'Color','black');
 
 % add contextual menu ----------------------------------------------------------
-title(sprintf('TAS: A1=%5.3g A2=%5.3g A3=%5.3g A4=%5.3g A5=%5.3g A6=%5.3g', out.resolution.angles));
+H   = EXP.QH; K=EXP.QK; L=EXP.QL; W=EXP.W;
+if EXP.infin==-1, l = 'KI'; else l='KF'; end
+t = { sprintf('%s=%g [Angs-1] QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]', l, EXP.Kfixed, H,K,L,W), ...
+      sprintf('A1=%5.3g A2=%5.3g A3=%5.3g A4=%5.3g A5=%5.3g A6=%5.3g', out.resolution.angles) };
+title(t);
 
 if isempty(findall(gcf,'Tag','ResLibCal_TASView_Context'))
   %finalize 3D plot
