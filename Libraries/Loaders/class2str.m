@@ -6,7 +6,9 @@ function str=class2str(this, data, options)
 %   class2str(this, data, 'no comments') removes comments from the output file
 %
 % input arguments:
-%   this: string containg the name of the object to describe
+%   this: string containg the name of the object to describe. Use '' to name the 
+%           root level from the input variable name, and ' ' to ignore root level 
+%           in structures.
 %   data: any data set (struct, array, cell, iData, char)
 %   options: optinal argument which may contain 'flat' and 'no comments'
 %
@@ -86,7 +88,11 @@ elseif isstruct(data)
   f = fieldnames(data);
   if ~nocomment, str = [ '% ' this ' (' class(data) ') length ' num2str(length(f)) NL ]; end
   for index=1:length(f)
-    str = [ str class2str([ this '.' f{index} ], getfield(data, f{index}), options) ];
+    if isempty(deblank(this))
+      str = [ str class2str([ f{index} ], getfield(data, f{index}), options) ];
+    else
+      str = [ str class2str([ this '.' f{index} ], getfield(data, f{index}), options) ];
+    end
   end
   if ~nocomment, str = [ str '% end of struct ' this NL ]; end
 elseif iscellstr(data)
