@@ -19,6 +19,27 @@ persistent compiled
 
 this_path = fileparts(which(mfilename));
 
+% check if we use the cif2hkl executable, or need to compile the MeX
+if ~isdeployed && isempty(compiled)
+  p = pwd;
+  cd (fullfile(fileparts(which(mfilename))))
+  fprintf(1, '%s: compiling cif2hkl...\n', mfilename);
+  try
+    mex -c -O cif2hkl.F90
+    mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran
+    compiled = 1;
+  catch
+    compiled = 0;
+    error('%s: Can''t compile cif2hkl.F90\n       in %s\n', ...
+      mfilename, pwd);
+  end
+  cd (p)
+  if compiled
+    rehash
+    error('%s: Compilation went FINE. Please rethrow your command so that the new MeX can be used...', mfilename);
+  end
+end
+
 % handle input arguments
 if nargin < 1
   file_in = [];
@@ -49,27 +70,6 @@ if nargin < 5
 end
 if isempty(verbose) || ~isnumeric(verbose)
   verbose=0;
-end
-
-% check if we use the cif2hkl executable, or need to compile the MeX
-if ~isdeployed && isempty(compiled)
-  p = pwd;
-  cd (fullfile(fileparts(which(mfilename))))
-  fprintf(1, '%s: compiling cif2hkl...\n', mfilename);
-  try
-    mex -c -O cif2hkl.F90
-    mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran
-    compiled = 1;
-  catch
-    compiled = 0;
-    error('%s: Can''t compile cif2hkl.F90\n       in %s\n', ...
-      mfilename, pwd);
-  end
-  cd (p)
-  if compiled
-    rehash
-    error('%s: Compilation went FINE. Please rethrow your command so that the new MeX can be used...', mfilename);
-  end
 end
 
 % assemble command line
