@@ -78,6 +78,21 @@ if isfield(d,'Headers') && isfield(d.Headers,'MetaData')
   
 end
 
+% check that guessed Signal is indeed what we look for
+signal = getalias(a, 'Signal');
+if ischar(signal) && ~isempty(strfind(signal, 'MetaData'))
+  % biggest field is not the list but some MetaData, search other List 
+  % should be 'Data.MataData.variables' or 'Data.I'
+  for search = {'Data.I','Data.Sqw','Data.MetaData.variables'}
+    if ~isempty(findfield(a,search,'case exact numeric')), signal = search; break; end
+  end
+  if isempty(signal)
+    [match, types, dims] = findfield(s, '', 'numeric');
+    if length(match) > 1, signal = match{2}; end
+  end
+  if ~isempty(signal), setalias(a, 'Signal', signal); end
+end
+
 % treat specific data formats 1D, 2D, List for McStas ==========================
 if ~isempty(strfind(a.Format,'McStas 1D monitor'))
   xlabel(a, xlab);
@@ -105,24 +120,24 @@ elseif ~isempty(strfind(a.Format,'McStas 2D monitor'))
   setaxis(a,1,'x');
   setaxis(a,2,'y');
 elseif ~isempty(strfind(a.Format,'McStas list monitor'))
-  % the Signal has been set to the biggest field, which contains indeed the List
+  % the Signal should contain the List
   list = getalias(a, 'Signal');
   if ischar(list)
-      setalias(a, 'List', list, 'List of events');
+    setalias(a, 'List', list, 'List of events');
 
-      % column signification is given by tokens from the ylab
-      columns = strread(ylab,'%s','delimiter',' ');
-      index_axes = 0;
-      for index=1:length(columns)
-        setalias(a, columns{index}, [ list '(:,' num2str(index) ')' ]);
-        if index==1
-          setalias(a, 'Signal', columns{index});
-        elseif index_axes < 3
-          index_axes = index_axes +1;
-          setaxis(a, index_axes, columns{index});
-        end
+    % column signification is given by tokens from the ylab
+    columns = strread(ylab,'%s','delimiter',' ');
+    index_axes = 0;
+    for index=1:length(columns)
+      setalias(a, columns{index}, [ list '(:,' num2str(index) ')' ]);
+      if index==1
+        setalias(a, 'Signal', columns{index});
+      elseif index_axes < 3
+        index_axes = index_axes +1;
+        setaxis(a, index_axes, columns{index});
       end
-      if ~isfield(a, 'N'), setalias(a, 'N', length(a{0})); end
+    end
+    if ~isfield(a, 'N'), setalias(a, 'N', length(a{0})); end
   end
 end
 
