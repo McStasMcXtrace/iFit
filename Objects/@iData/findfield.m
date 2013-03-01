@@ -7,11 +7,12 @@ function [match, types, dims] = findfield(s, field, option)
 %   [match,type,n] = findfield(iData, field) returns the names of all iData fields 
 %     that match 'field'
 %   The optional 'option' may contain 'exact' to search for the exact occurence, and 'case'
-%   to specifiy a case sensitive search.
+%   to specifiy a case sensitive search. 
+%   The 'numeric' option will return only numerical fields.
 %
 % input:  s: object or array (iData)
 %         field: field name to search, or '' (char).
-%         option: 'exact' 'case' or '' (char)
+%         option: 'exact' 'case' or '' or 'numeric' (char)
 % output: match: names of iData fields (cellstr)
 %         types:  types of iData fields (cellstr), e.g. 'double', 'char', 'struct'...
 %         nelements: total number of elements in iData fields (double)
@@ -46,6 +47,27 @@ struct_s=rmfield(struct_s,'Alias');
 struct_s=rmfield(struct_s,'Command');
 struct_s=rmfield(struct_s,'Tag');
 [match, types, dims] = iData_getfields(struct_s, '');
+
+if ~isempty(strfind(option, 'numeric'))
+  % remove fields that we do not want as Signal
+  index=[ find(strcmp('Date', match)) find(strcmp('ModificationDate', match)) ] ;
+  types(index) = {'char'};
+  % now get the numeric ones
+  index=          find(strcmp( 'double', types));
+  index=[ index ; find(strcmp( 'single', types)) ];
+  index=[ index ; find(strcmp( 'logical',types)) ];
+  index=[ index ; find(strncmp('uint',   types, 4)) ];
+  index=[ index ; find(strncmp('int',    types, 3)) ];
+  
+  match  = match(index); % get all field names containing double data
+  dims   = dims(index);
+  types  = types(index);
+  
+  % sort fields in descending size order
+  [dims, index]  = sort(dims, 'descend');
+  match  = match(index);
+  types  = types(index);
+end
 
 if ~isempty(field)
   if isempty(strfind(option, 'case'))

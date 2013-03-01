@@ -374,26 +374,12 @@ if isnumeric(in.Data) && ~isempty(in.Data)
 end
 
 if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
-  [fields, types, dims] = findfield(in);
-  % remove fields that we do not want as Signal
-  index=[ find(strcmp('Date', fields)) find(strcmp('ModificationDate', fields)) ] ;
-  types(index) = {'char'};
-  % now get the numeric ones
-  index=          find(strcmp( 'double', types));
-  index=[ index ; find(strcmp( 'single', types)) ];
-  index=[ index ; find(strcmp( 'logical',types)) ];
-  index=[ index ; find(strncmp('uint',   types, 4)) ];
-  index=[ index ; find(strncmp('int',    types, 3)) ];
-  if isempty(index), 
+  % get numeric fields sorted in descending size order
+  [fields, types, dims] = findfield(in, '', 'numeric');
+  if isempty(fields), 
     iData_private_warning(mfilename,['The iData object ' in.Tag ' "' in.Title '" contains no data at all ! (double/single/logical/int/uint)']);
   else
-    fields = fields(index); % get all field names containing double data
-    dims = dims(index);
     fields_all = fields; dims_all=dims;
-    % now we get the largest dim, and reduce the search list
-    index = find(dims == max(dims));
-    dims  = dims(index);
-    fields= fields(index);
     % does this look like a Signal ?
     if length(dims) > 1 % when similar sizes are encoutered, get the one which is not monotonic
       for index=1:length(dims)
