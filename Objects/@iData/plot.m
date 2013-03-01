@@ -150,12 +150,16 @@ if numel(a) > 1
     s = getaxis(a(index), 0);
     sum_max = sum_max+max(s(:))-min(s(:));
     this_h = get(h{index},'Type'); if iscell(this_h), this_h=this_h{1}; end
-    if ndims(a(index)) == 1 && isempty(this_method) ...
-    && any(strcmp(this_h,{'line','hggroup'})) && isempty(strfind(method,'scatter3'))
-      % change color of line
-      colors = 'bgrcmk';
-      set(h{index}, 'color', colors(1+mod(index, length(colors))));
-
+    % do we specify a color ? if none, we will circulate colors along array elements
+    if any(strcmp(this_h,{'line','hggroup'})) % we have drawn lines
+      if ~any(this_method == 'b' | this_method == 'g' | this_method == 'r' | this_method == 'c' | this_method == 'm' | this_method == 'k')
+        this_method = '';
+      end
+      if isempty(this_method) && isempty(strfind(method,'scatter3'))
+        % change color of line
+        colors = 'bgrcmk';
+        set(h{index}, 'color', colors(1+mod(index, length(colors))));
+      end
     end
     hold on
   end % for
