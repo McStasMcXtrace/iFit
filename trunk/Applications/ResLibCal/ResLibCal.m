@@ -4,6 +4,11 @@ function out = ResLibCal(varargin)
 % To compute directly the resolution function, sending an EXP ResLib-like
 %   configuration structure, use:
 %   out = ResLibCal(EXP);
+% To use ResLibCal from the command line, use:
+%   out = ReslibCal(command, arguments...);
+% where 'command' is one of:
+%   open, save, saveas, export, exit, reset, print, create, 
+%   update, compute, view2, view3
 %
 % The application contains a main interface with:
 % * Menu, Method, Scan and Instrument parameters (main)
@@ -16,6 +21,8 @@ function out = ResLibCal(varargin)
 %
 % The 2D and 3D views can be closed without ending the application.
 % When Method/Scan is closed, or Exit is selected all views are closed
+%
+% Version: $Revision: 1.2 $
 
 % Contributions:
 % ResCal5: rc_cnmat rc_popma rc_int rc_focus rc_bragg rc_bragghklz
@@ -46,7 +53,6 @@ function out = ResLibCal(varargin)
 % out      = ResLibCal_UpdateResolution2(out)
 % out      = ResLibCal_UpdateResolution3(out)
 
-
 ResLibCal_version = [ mfilename ' 1.0 (Feb 2013) $Revision: 1.1 $' ];
 
 % menu actions:
@@ -70,13 +76,13 @@ if ~isempty(varargin)
     action = varargin{1};
     switch lower(action)
     % menu items ---------------------------------------------------------------
-    case 'file_open'
+    case {'file_open','open'}
       EXP = ResLibCal_fig2EXP(get(0,'CurrentFigure'));
       if isfield(EXP,'EXP'), EXP = EXP.EXP; end
       if length(varargin) < 1, varargin{2} = ''; end
       if length(varargin) < 2, varargin{3} = EXP; end
       out = ResLibCal_Open(varargin{2:end});  % (filename, EXP)
-    case 'file_reset'
+    case {'file_reset','reset'}
       filename = fullfile(prefdir, 'ResLibCal.ini');
       if ~exist(filename, 'file')
         source = 'the factory defaults.';
@@ -99,16 +105,16 @@ if ~isempty(varargin)
           openfig('ResLibCal');
         end
       end
-    case 'file_save'
+    case {'file_save','save'}
       % save configuration so that it is re-opened at next re-start
       ResLibCal_Save; % (filename=prefdir)
-    case 'file_saveas'
+    case {'file_saveas','saveas'}
       % save configuration
       ResLibCal_Saveas(varargin{2:end}); % (filename, EXP)
-    case 'file_print'
+    case {'file_print','print'}
       fig = findall(0, 'Tag','ResLibCal');
       printdlg(fig);
-    case 'file_export'
+    case {'file_export','export'}
       [filename, pathname] = uiputfile( ...
          {'*.pdf',  'Portable Document Format (*.pdf)'; ...
           '*.eps',  'Encapsulated Postscript (*.eps)'; ...
@@ -123,7 +129,7 @@ if ~isempty(varargin)
       fig = findall(0, 'Tag','ResLibCal');
       saveas(fig, filename);
       disp([ '% Exported ' ResLibCal_version ' window to file ' filename ]);
-    case 'file_exit'
+    case {'file_exit','exit'}
       % save configuration so that it is re-opened at next re-start
       ResLibCal_Save;
       % close windows
@@ -135,10 +141,10 @@ if ~isempty(varargin)
         fig=findall(0, 'Tag',hObjects{index});
         if ishandle(fig), delete(fig); end
       end
-    case 'view_resolution2'
+    case {'view_resolution2','view2'}
       out = ResLibCal_ViewResolution('',2);  % open/raise View Res2
       out = ResLibCal_UpdateViews(out);
-    case 'view_resolution3'
+    case {'view_resolution3','view3'}
       out = ResLibCal_ViewResolution('',3);  % open/raise View Res2
       out = ResLibCal_UpdateViews(out);
     case 'view_tas'
@@ -192,10 +198,11 @@ if ~isempty(varargin)
         delete(fig(2:end)); % remove duplicated windows
       end
       out = ResLibCal_fig2EXP(fig);
-    case 'update'
+    case {'update','compute'}
       % update all opened views with new computation (widget update)
       out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
-      if strcmp(get(findobj(gcf, 'Tag','View_AutoUpdate'), 'Checked'), 'on')
+      fig = findall(0, 'Tag','ResLibCal');
+      if ~isempty(fig) && strcmp(get(findobj(fig, 'Tag','View_AutoUpdate'), 'Checked'), 'on')
         out = ResLibCal_UpdateViews(out);
       end
     case 'update_d_tau'

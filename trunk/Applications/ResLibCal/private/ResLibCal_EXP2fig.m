@@ -111,19 +111,19 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   ResLibCal_field2fig(EXP, 'EXP_orient2', fig);
 
   %-------------------------   Spatial parameters     --------------------------
-  set(findobj(fig,'Tag','EXP_beam_width'),     'String',num2str(EXP.beam.width));
-  set(findobj(fig,'Tag','EXP_beam_height'),    'String',num2str(EXP.beam.height));
-  set(findobj(fig,'Tag','EXP_detector_width'), 'String',num2str(EXP.detector.width));
-  set(findobj(fig,'Tag','EXP_detector_height'),'String',num2str(EXP.detector.height));
-  set(findobj(fig,'Tag','EXP_mono_width'),     'String',num2str(EXP.mono.width));
-  set(findobj(fig,'Tag','EXP_mono_height'),    'String',num2str(EXP.mono.height));
-  set(findobj(fig,'Tag','EXP_mono_depth'),     'String',num2str(EXP.mono.depth));
-  set(findobj(fig,'Tag','EXP_ana_width'),      'String',num2str(EXP.ana.width));
-  set(findobj(fig,'Tag','EXP_ana_height'),     'String',num2str(EXP.ana.height));
-  set(findobj(fig,'Tag','EXP_ana_depth'),      'String',num2str(EXP.ana.depth));
-  set(findobj(fig,'Tag','EXP_sample_width'),   'String',num2str(EXP.sample.width));
-  set(findobj(fig,'Tag','EXP_sample_depth'),   'String',num2str(EXP.sample.depth));
-  set(findobj(fig,'Tag','EXP_sample_height'),  'String',num2str(EXP.sample.height));
+  ResLibCal_field2fig(EXP, 'EXP_beam_width', fig);
+  ResLibCal_field2fig(EXP, 'EXP_beam_height', fig);
+  ResLibCal_field2fig(EXP, 'EXP_detector_width', fig);
+  ResLibCal_field2fig(EXP, 'EXP_detector_height', fig);
+  ResLibCal_field2fig(EXP, 'EXP_mono_width', fig);
+  ResLibCal_field2fig(EXP, 'EXP_mono_height', fig);
+  ResLibCal_field2fig(EXP, 'EXP_mono_depth', fig);
+  ResLibCal_field2fig(EXP, 'EXP_ana_width', fig);
+  ResLibCal_field2fig(EXP, 'EXP_ana_height', fig);
+  ResLibCal_field2fig(EXP, 'EXP_ana_depth', fig);
+  ResLibCal_field2fig(EXP, 'EXP_sample_width', fig);
+  ResLibCal_field2fig(EXP, 'EXP_sample_depth', fig);
+  ResLibCal_field2fig(EXP, 'EXP_sample_height', fig);
 
   % Crystal curvatures
   ResLibCal_field2fig(EXP, 'EXP_mono_rv', fig);
