@@ -47,9 +47,13 @@
 
 
   <li>1.3.1: Support for CIF/CFL/ShellX structure, EZD/CCP4/MRC electron
- density formats. New Rietveld model that uses a McStas neutron diffractometer 
+ density <a href="Loaders.html">formats</a>. New Rietveld model that uses a McStas neutron diffractometer 
 model to convolve the structure factors and fit with diffractometer 
-data. Added TAS neutron spectrometer resolution computation <a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>.<br>
+data. Added TAS neutron spectrometer resolution computation <a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>. <a href="iData.html">iData</a> <span style="font-style: italic;">commandhistory</span> can be <a href="Save.html">saved</a> as a Matlab script. Added <span style="font-style: italic;">nlorz</span> and <span style="font-style: italic;">ngauss</span> <a href="Models.html">Models </a>. Fix of iData/<span style="font-style: italic;">combine</span> with scalar Monitor values. Better memory handling in <a href="Load.html">iData/load</a>. <a href="iFunc.html">iFunc</a>
+ support parameter fix/min/max/assign as 
+object.&lt;par&gt;=&lt;value&gt;. Fix in reading text files with 
+changing columns number. Execution speed improvement in all object 
+operators. Allow <a href="Fit.html">fitting</a> of event data sets. <br>
 <span style="font-weight: bold;"></span></li>
 <li><span style="font-weight: bold;">1.3</span>: Support for <a href="Loaders.html#mozTocId361032">SIF, MarCCD, Roper SPE</a> <a href="http://www.adsc-xray.com/products.html">ADSC</a> X-ray CCD. Export to <a href="http://www.web3d.org/x3d/specifications/x3d_specification.html">X3D</a>, fix for some text file import, support for the <a href="http://www.mathworks.com/products/parallel-computing/">Parallel Computing Toolbox</a> (when available), improved interpolation, added <span style="font-style: italic;">meshgrid</span>, <span style="font-style: italic;">rotate, </span>radial integration (<a href="Math.html#mozTocId439767"><span style="font-style: italic;">cart2sph</span></a>), better support for event files, save of iFunc models to m-files. Added simple models for <a href="Models.html#mozTocId285330">small angle scattering</a> form factors and structure factors. Improved <a href="McStas.html">McStas</a>/McXtrace support. Embedded help system, array and graphics editor in <a href="iFit.html">standalone</a> version. Save object history to script file <span style="font-style: italic;">(Nov. 29th 2012)</span>.<br>
 <span style="font-weight: bold;"></span></li>
