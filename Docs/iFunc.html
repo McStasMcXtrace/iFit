@@ -154,7 +154,7 @@ parameters with:<br>
 &gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'expression'</span>        <span style="font-style: italic;">% to set the parameter from an expression</span><br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br>&gt;&gt; model.Constraint = 0;     <span style="font-style: italic;">% to unlock/free all Parameters during a fit process<br></span>&gt;&gt; model.Constraint = 1;     <span style="font-style: italic;">% to lock/fix all Parameters during a fit process</span><br></pre>
 
 For instance<br>
-<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			% create a Gaussian model<br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		% fix its Amplitude<br>&gt;&gt; f.Background = [0 1e-4];	% bound its background<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude</span><br>&gt;&gt; f.Background = [0 1e-4];	<span style="font-style: italic;">% bound its background</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'p(1)/1000'</span>;	<span style="font-style: italic;">% use an expression referring to p(1)=Amplitude value</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'"Amplitude"/1000'</span>;	<span style="font-style: italic;">% same as above with direct naming of parameters using ""</span><br></pre>
 
 Alternatively, you can use the <span style="font-weight: bold;">mlock, munlock </span>and <span style="font-weight: bold;">xlim</span> methods:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, {<span style="color: rgb(204, 51, 204);">'Amplitude','Background'</span>})	<span style="font-style: italic;">% fix these 2 parameters</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f, <span style="color: rgb(204, 51, 204);">'Background'</span>)		<span style="font-style: italic;">% unlock that parameter</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f, <span style="color: rgb(204, 51, 204);">   'Background'</span>, [0 1e-3])	<span style="font-style: italic;">% force parameter within range</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f,  <span style="color: rgb(204, 51, 204);">  'Background'</span>, [])		<span style="font-style: italic;">% remove limits constraint</span><br></pre>
@@ -186,7 +186,7 @@ Models can be assembled to create more complex models. This is achieved simply w
 
 <br>
 
-<table style=" text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style=" text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
 
   <tbody>
     <tr>
