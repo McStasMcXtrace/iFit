@@ -53,7 +53,7 @@ function out = ResLibCal(varargin)
 % out      = ResLibCal_UpdateResolution2(out)
 % out      = ResLibCal_UpdateResolution3(out)
 
-ResLibCal_version = [ mfilename ' 1.0 (Feb 2013) $Revision: 1.1 $' ];
+ResLibCal_version = [ mfilename ' 1.0.1 (March 2013)' ];
 
 % menu actions:
 if ~isempty(varargin)
