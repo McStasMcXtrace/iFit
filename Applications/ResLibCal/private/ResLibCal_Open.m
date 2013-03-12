@@ -48,7 +48,7 @@ function EXP = ResLibCal_Open(filename, EXP)
     end
   end
 
-  if ischar(content) || isstruct(content) % converted from a string or read from a file
+  if ischar(content) || isstruct(content) || isnumeric(content) % converted from a string or read from a file
     % read content as a structure, ResCal par/cfg, ...
     if isfield(EXP,'EXP'), EXP=EXP.EXP; end
     EXP = ResLibCal_RescalPar2EXP(content, EXP);
