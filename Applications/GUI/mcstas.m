@@ -106,6 +106,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   plot(monitors_integral)
 % Display instrument geometry
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
+% Type <a href="matlab:doc(iData,'McStas')">doc(iData,'McStas')</a> to access the iFit/McStas Documentation.
 %
 % Version: $Revision: 1.36 $
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
@@ -846,4 +847,4 @@ function this = mcstas_eval(this, expr)
     this
     error([ mfilename ': Error when evaluating monitor definition this=this' expr ';' ])
   end
-
+end % mcstas_eval

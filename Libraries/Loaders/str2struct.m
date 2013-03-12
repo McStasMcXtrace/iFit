@@ -52,6 +52,7 @@ end
 
 % ==============================================================================
 function [name, value] = str2struct_value_pair(this)
+  % split token 'this' as name=value
   [name, line] = strtok(this, sprintf('=: \t'));
   value = [];
   if isempty(name), return; end
@@ -71,6 +72,11 @@ function [name, value] = str2struct_value_pair(this)
   name = strrep(name, '.', '_');
   name = strrep(name, '-', '_');
   name = genvarname(name);
+  % handle case where line starts with a number not separated from
+  % following text
+  if nextindex <= length(line) &&  ~isspace(line(nextindex))
+    value = line; % then a char
+  end
   % when value can not be obtained, try with num2str (for expressions)
   if isempty(value), 
     value=comment;
