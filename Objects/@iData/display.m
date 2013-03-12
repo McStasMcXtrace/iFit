@@ -31,6 +31,7 @@ end
 if isdeployed || ~usejava('jvm'), id='iData';
 else           id='<a href="matlab:helpwin iData">iData</a>';
 end
+if isvector(s_in) > 1, id = [ id ' list/event']; end
 if length(s_in) == 0
   d = [ d sprintf(' %s object: empty\n',id) ];
 else
