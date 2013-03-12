@@ -91,7 +91,7 @@ else  % convert input argument into object
       out(index) = iData(in(index));        % check all elements
     end
     outarray = [ outarray out ];
-    if nargout == 0 & length(inputname(1))
+    if nargout == 0 && ~isempty(inputname(1))
       assignin('caller',inputname(1),outarray)
     end
     return
@@ -99,6 +99,7 @@ else  % convert input argument into object
     % iData(x,y,..., signal)
     index = length(varargin);
     d = iData(varargin{index});  % last argument is the Signal
+    
     % handle axes
     for k1=1:(index-1)
       % in plotting convention, X=2nd, Y=1st axis
@@ -106,6 +107,7 @@ else  % convert input argument into object
       else   k2 = k1; end
       set(d,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
       setaxis(d, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
+      label(d, k1, inputname(k2));
     end
     % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes in Signal
     if ndims(d)>=2 && isvector(getaxis(d, 1)) && isvector(getaxis(d, 2)) ...
@@ -118,6 +120,8 @@ else  % convert input argument into object
     if ~isempty(inputname(index))
         d.Label=[ inputname(index) ' (' class(varargin{index}) ')' ];
         d.DisplayName=d.Label;
+        label(d, 0, inputname(index));
+        d.Title=inputname(index);
     end
       
     outarray = [ outarray d ];
@@ -142,7 +146,8 @@ else  % convert input argument into object
       try 
         t = get(in,'DisplayName');
         if isempty(t), t=get(get(in,'Parent'),'DisplayName'); end
-      catch t=[]; end
+      catch
+        t=[]; end
       if isempty(t), t=get(in,'Tag'); end
       if isempty(t), t=num2str(in); end
       if strcmp(get(in,'type'),'hggroup')
@@ -156,14 +161,17 @@ else  % convert input argument into object
         x = get(in,'xdata'); 
         y = get(in,'ydata'); 
         index = find(~isnan(x) & ~isnan(y));
-        if length(index)~=prod(size(x)), x = x(index); y=y(index); end
+        if length(index)~=numel(x), x = x(index); y=y(index); end
         c = get(in,'color');
         m = get(in,'marker');
         l = get(in,'linestyle');
         out=iData(x,y);
-        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch xl='x'; end; xlabel(out, xl);
-        try yl = get(get(in,'parent'),'YLabel'); yl=[ get(yl,'String') ' ' ]; catch yl=''; end;
-        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end;
+        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch 
+            xl='x'; end; xlabel(out, xl);
+        try yl = get(get(in,'parent'),'YLabel'); yl=[ get(yl,'String') ' ' ]; catch 
+            yl=''; end;
+        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch 
+            tl=''; end;
         label(out,0,yl);
         t = [ 'line ' t ];
         out.Title = [ tl yl t ];
@@ -175,10 +183,14 @@ else  % convert input argument into object
         z = get(in,'cdata');
         t = [ 'image ' t ];
         out=iData(x,y,z);
-        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch xl='x'; end
-        try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch yl='y'; end
-        try zl = get(get(in,'parent'),'ZLabel'); zl=[ get(zl,'String') ' ' ]; catch zl=''; end 
-        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end
+        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch 
+            xl='x'; end
+        try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch 
+            yl='y'; end
+        try zl = get(get(in,'parent'),'ZLabel'); zl=[ get(zl,'String') ' ' ]; catch 
+            zl=''; end 
+        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch 
+            tl=''; end
         xlabel(out, xl); ylabel(out, yl); label(out, tl);
         out.Title = t;
         out.DisplayName = t;
@@ -196,10 +208,14 @@ else  % convert input argument into object
         else
           out=iData(x,y,z,c);
         end
-        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch xl='x'; end
-        try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch yl='y'; end
-        try zl = get(get(in,'parent'),'ZLabel'); zl=[ get(zl,'String') ' ' ]; catch zl=''; end 
-        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch tl=''; end
+        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch 
+            xl='x'; end
+        try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch
+            yl='y'; end
+        try zl = get(get(in,'parent'),'ZLabel'); zl=[ get(zl,'String') ' ' ]; catch 
+            zl=''; end 
+        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch 
+            tl=''; end
         xlabel(out, xl); ylabel(out, yl); label(out, tl);
         if all(z == c)
           t = [ tl zl t ];
@@ -250,7 +266,7 @@ else  % convert input argument into object
       end
     end
     out = iData_check(out); % private function
-    if isa(in, 'iData') & nargout == 0 & length(inputname(1))
+    if isa(in, 'iData') && nargout == 0 && ~isempty(inputname(1))
       assignin('caller',inputname(1),out);
     end
   end
@@ -274,7 +290,7 @@ function b=iData_struct2iData(a)
   end
   for index=1:length(f)
     if any(strcmp(f{index},fb))
-      b = set(b,f{index}, getfield(a,f{index}));
+      b = set(b,f{index}, a.(f{index}));
     end
   end
     

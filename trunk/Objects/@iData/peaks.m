@@ -49,7 +49,8 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
   
   % first we make sure the axis is regularly sampled
   x = getaxis(b,1);
-  new_x      = min(x):min(diff(x)):max(x);
+  dx= abs(diff(x)); dx=dx(dx ~= 0);
+  new_x      = min(x):min(dx):max(x);
   b = interp(b, new_x);
   signal = iData_private_cleannaninf(get(b,'Signal')); 
   signal = signal(:);

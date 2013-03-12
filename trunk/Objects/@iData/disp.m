@@ -30,6 +30,7 @@ else
   if isdeployed || ~usejava('jvm'), id='iData';
   else           id='<a href="matlab:helpwin iData">iData</a>';
   end
+  if isvector(s_in) > 1, id = [ id ' list/event']; end
   fprintf(1,'%s = %s %iD object of size [%s]:\n',iname, id, ndims(s_in), num2str(size(s_in)));
   m = get(s_in, 'Monitor'); m=m(:);
   s=struct(s_in);
