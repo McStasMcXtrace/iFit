@@ -14,21 +14,21 @@ function a = ylabel(a, lab)
 % See also iData, iData/plot, iData/xlabel, iData/label, iData/zlabel, iData/clabel
 
 if nargin ==1
-  if isvector(a)
+  if isvector(a) == 1
     a = label(a, 0);
   else
 	  a = label(a, 1);
-	end
-	return
+  end
+  return
 else
-	if isvector(a)
+	if isvector(a) == 1
     a = label(a, 0, lab);
   else
-	  a = label(a, 1, lab);
-	end
+	a = label(a, 1, lab);
+  end
 end
 
-if nargout == 0 & length(inputname(1))
+if nargout == 0 && ~isempty(inputname(1))
   assignin('caller',inputname(1),a);
 end
 

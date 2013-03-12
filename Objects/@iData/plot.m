@@ -107,7 +107,7 @@ end
 
 % clean method string from the plot type and supported options not to be passed to matlab plot commands
 if ischar(method)
-  toremove='plot3 stem3 scatter3 mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full';
+  toremove='plot3 stem3 scatter3 scatter stem plot mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full';
   toremove=strread(toremove,'%s','delimiter',' ');
   this_method = method;
   for index=1:length(toremove)
@@ -128,8 +128,8 @@ if numel(a) > 1
     if isempty(a(index)), h{index} = []; continue; end
     if ndims(a(index)) == 1 && isvector(a(index)) == 1 && ...
       isempty(getaxis(a(index),2)) && ...
-      (~isempty(strfind(method, 'plot3'))      || ~isempty(strfind(method, 'stem3')) ...
-       || ~isempty(strfind(method,'scatter3')) || ~isempty(strfind(method, 'mesh')) ...
+      (~isempty(strfind(method, 'plot3'))      || ~isempty(strfind(method, 'stem')) ...
+       || ~isempty(strfind(method,'scatter'))  || ~isempty(strfind(method, 'mesh')) ...
        || ~isempty(strfind(method,'surf') )    || ~isempty(strfind(method, 'waterfall')))
       a(index) = setaxis(a(index), 2, index);
     end
@@ -155,7 +155,7 @@ if numel(a) > 1
       if ~any(this_method == 'b' | this_method == 'g' | this_method == 'r' | this_method == 'c' | this_method == 'm' | this_method == 'k')
         this_method = '';
       end
-      if isempty(this_method) && isempty(strfind(method,'scatter3'))
+      if isempty(this_method) && isempty(strfind(method,'scatter'))
         % change color of line
         colors = 'bgrcmk';
         set(h{index}, 'color', colors(1+mod(index, length(colors))));
@@ -248,9 +248,9 @@ case 1  % vector type data (1 axis + signal) -> plot
   
   if isempty(method), method='b-'; end
   % handle side-by-side 1D plots
-  if ~isempty(strfind(method,'plot3'))    | ~isempty(strfind(method,'stem3')) ...
-   | ~isempty(strfind(method,'scatter3')) | ~isempty(strfind(method,'mesh')) ...
-   | ~isempty(strfind(method,'surf') )    | ~isempty(strfind(method,'waterfall'))
+  if ~isempty(strfind(method,'plot3'))    || ~isempty(strfind(method,'stem')) ...
+   || ~isempty(strfind(method,'scatter')) || ~isempty(strfind(method,'mesh')) ...
+   || ~isempty(strfind(method,'surf') )   || ~isempty(strfind(method,'waterfall'))
   	ax = getaxis(a,2);
   	if isempty(ax)
   		ax = 0;
@@ -299,7 +299,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   % check if a re-grid is needed
   if isvector(a)
     a_is_vector = 1; % plot as lines
-  elseif (~isvector(a) && (~isempty(strfind(method,'plot3')) || ~isempty(strfind(method,'scatter3')) ))
+  elseif (~isvector(a) && (~isempty(strfind(method,'plot3')) || ~isempty(strfind(method,'scatter')) ))
     a = meshgrid(a);
     a_is_vector = 1; % plot as lines, even after re-sampling (requested explicitly)
   else
@@ -316,7 +316,7 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   y=real(double(y));
   z=real(double(z));
   if a_is_vector % plot3/fscatter3
-    if (strfind(method,'scatter3'))
+    if (strfind(method,'scatter'))
       h=fscatter3(x(:),y(:),z(:),z(:),this_method); view(3);
     else
       if length(method), h = plot3(x,y,z, this_method);
@@ -352,14 +352,14 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
         zh= get(h,'ZData'); zh=ones(size(zh))*c;
         set(h,'ZData',zh);
       end
-    elseif (strfind(method,'stem3'))
+    elseif (strfind(method,'stem'))
       if length(method), h = stem3(x,y,z, this_method);
       else h = stem3(x,y,z); end
     elseif (strfind(method,'plot3'))
       a = meshgrid(a);
       if length(method), h = plot3(x(:),y(:),z(:), this_method);
       else h = plot3(x,y,z); end
-    elseif (strfind(method,'scatter3'))
+    elseif (strfind(method,'scatter'))
       h=fscatter3(x(:),y(:),z(:),z(:),this_method);
     elseif (strfind(method,'waterfall'))
       h=waterfall(x,y,z);
@@ -380,7 +380,7 @@ case 3  % 3d data sets: volumes
     xlab=''; ylab=''; clab='';
   else
     % check if a rebining on a grid is required
-    if ~isvector(a) && isempty(strfind(method, 'plot3')) && isempty(strfind(method, 'scatter3')) 
+    if ~isvector(a) && isempty(strfind(method, 'plot3')) && isempty(strfind(method, 'scatter')) 
       a = meshgrid(a); % make sure we get a grid
     end
     [x, xlab] = getaxis(a,2); x=double(x);
@@ -389,8 +389,8 @@ case 3  % 3d data sets: volumes
     [c, clab] = getaxis(a,0); c=double(c);
     m         = get(a,'Monitor');
     if not(all(m(:) == 1 | m(:) == 0)), clab = [clab ' per monitor' ]; end
-    if isvector(a) >= 3 || ~isempty(strfind(method, 'scatter3')) % plot3-like
-      if ~isempty(strfind(method, 'scatter3'))
+    if isvector(a) >= 3 || ~isempty(strfind(method, 'scatter')) % plot3-like
+      if ~isempty(strfind(method, 'scatter'))
         h=fscatter3(x(:),y(:),z(:),c(:), this_method);     % scatter3: may require meshgrid
       else
         h=plot3(x(:),y(:),z(:), this_method);
