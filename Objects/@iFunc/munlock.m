@@ -4,7 +4,10 @@ function a = munlock(a, varargin)
 %   @iFunc/munlock unlock model parameters during further fit process.
 %     to unlock/clear a parameter model, use munlock(model, parameter)
 %
-%   munlock(model, {Parameter1, Parameter2, ...})
+%   To unlock/free a set of parameters, you may use a regular expression as:
+%     munlock(model, regexp(model.Parameters, 'token1|token2|...'))
+%
+%   munlock(model, {'Parameter1', 'Parameter2', ...})
 %     unlock/free parameter for further fits
 %   munlock(model)
 %     display free parameters
@@ -47,7 +50,13 @@ if nargin == 1 % display free parameters
   if count == 0
     fprintf(1, 'No unlocked/free Parameters in %s %iD model "%s"\n', a.Tag, a.Dimension, a.Name);
   end
+  a = count;
   return
+end
+
+% handle case where names are obtained from regexp = cell with length=Parameters
+if length(varargin) == 1 && length(varargin{1}) == length(a.Parameters)
+  varargin{1} = a.Parameters{~cellfun(@isempty, varargin{1})};
 end
 
 % handle multiple parameter name arguments
@@ -62,7 +71,7 @@ end
 
 % now with a single input argument
 if ~ischar(name) && ~iscellstr(name)
-  error([ mfilename ': can not unlock model parameters with a Parameter name if class ' class(name) ' in iFunc model ' a.Tag '.' ]);
+  error([ mfilename ': can not unlock model parameters with a Parameter name of class ' class(name) ' in iFunc model ' a.Tag '.' ]);
 end
 
 if ischar(name), name = cellstr(name); end
