@@ -45,7 +45,6 @@ frame = struct('header',[], 'data',[]);
 
 % check minimum number of input arguments
 if (nargin < 1)
-    image_read_sub_help(mfilename,'cbf');
     error('At least the filename has to be specified as input parameter.');
 end
 
@@ -118,6 +117,7 @@ if ~c_routine
   end
   rehash
 end
+if strcmp(filename, 'compile'), return; end
 
 % try to open the data file
 if (debug_level >= 1)

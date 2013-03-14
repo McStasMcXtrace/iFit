@@ -1,5 +1,5 @@
 function ifit(varargin)
-% Usage:  ifit [options] argruments commands 
+% Usage:  ifit [options] arguments commands 
 %
 %  iFit executable from command line.
 %  Project page at <http://ifit.mccode.org>

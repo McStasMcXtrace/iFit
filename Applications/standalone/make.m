@@ -37,7 +37,7 @@ end
 % recompile all MeX files
 iLoad force
 
-% activate some standalone only scripts (which are in principle forbiden by Matlab Compiler)
+% activate some standalone only scripts (which are in principle forbidden by Matlab Compiler)
 cd(m);
 if ~isempty(dir('edit.m.org'))
   movefile('edit.m.org',     'edit.m');
