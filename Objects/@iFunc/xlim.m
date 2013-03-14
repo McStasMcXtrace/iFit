@@ -3,8 +3,11 @@ function a = xlim(a, varargin)
 %
 %   @iFunc/xlim bound model parameters during further fit process.
 %
+%   To bound a set of parameters, you may use a regular expression as:
+%     xlim(model, regexp(model.Parameters, 'token1|token2|...'), [min max])
+%
 %   xlim(model, parameter, [min max])
-%     limit a parameter in model within [min max]. Inf and nans are ignored.
+%     limit a parameter in model within [min max]. Inf and NaNs are ignored.
 %   xlim(model, parameter, [])
 %     remove the parameter bounds in model
 %   xlim(model, parameter)
@@ -60,9 +63,13 @@ if nargin == 1 % display bounded parameters
   return
 end
 
+% handle case where names are obtained from regexp = cell with length=Parameters
+if length(varargin) >= 1 && length(varargin{1}) == length(a.Parameters)
+  varargin{1} = a.Parameters{~cellfun(@isempty, varargin{1})};
+end
 
-value = [];
 % handle multiple parameter name arguments
+value = [];
 if length(varargin) > 2
   for index=1:2:length(varargin)
     % search for char|cellstr, numeric, by pairs
@@ -83,7 +90,7 @@ else
 end
 
 if ~ischar(name) && ~iscellstr(name)
-  error([ mfilename ': can not lock model parameters with a Parameter name if class ' class(name) ' in iFunc model ' a.Tag '.' ]);
+  error([ mfilename ': can not lock model parameters with a Parameter name of class ' class(name) ' in iFunc model ' a.Tag '.' ]);
 end
 
 % now with a name/value
