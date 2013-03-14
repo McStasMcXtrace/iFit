@@ -112,7 +112,7 @@
    compile with:
      mex -O looktxt.c
  * Under Windows 32 bits
-     mex ('-O','-v','-output','looktxt.c',['-L"' matlabroot '\sys\lcc\lib"'],'-lcrtdll')
+     mex ('-O','-v','looktxt.c',['-L"' matlabroot '\sys\lcc\lib"'],'-lcrtdll')
    in this case, MAT files are not written, but data is directly send back as MEX output arguments 
  */
 
@@ -207,26 +207,16 @@ int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
 /* MATLAB support *********************************************************** */
 
 /* as MEX, we use USE_MAT, but send the blocks directly to matlab engine */
-#ifdef MATLAB_MEX_FILE
-#ifndef USE_MEX
-#define USE_MEX
-#endif
-#endif
 
 #ifdef  USE_MEX
 #ifndef USE_MAT
 #define USE_MAT
 #endif
 #include <mex.h>	   /* include MEX library for Matlab */
-
 #define printf  mexPrintf	/* Addapt looktxt.c code to Mex syntax */
-#define malloc  mxMalloc
-#define realloc mxRealloc
-#define calloc  mxCalloc
-#define main    MexMain
-#define free    NoOp      /* do not free in MeX mode */
 #define print_stderr mexPrintf
 #define exit(ret) { char msg[1024]; sprintf(msg, "Looktxt/mex exited with code %i\n", ret); if (ret) mexErrMsgTxt(msg); }
+#define main    MexMain
 #endif
 
 #ifdef USE_MAT
@@ -235,6 +225,10 @@ int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
 #ifdef USE_NEXUS
 #undef USE_NEXUS     /* NeXus and Matlab use incompatible libraries */
 #endif 
+#define malloc  mxMalloc
+#define realloc mxRealloc
+#define calloc  mxCalloc
+#define free    NoOp      /* do not free in MeX mode */
 #endif 
 
 /* USE_NEXUS/HDF5 support ******************************************************* */
@@ -347,14 +341,13 @@ int print_stderr(char *format, ...) {
   va_end(ap);
   return(ret);
 }
-#else
+#endif
 int NoOp(void *pointer)
 {
   /* do not free in MeX mode */
   /* mxFree((void *)pointer); */
   return 0;
 }
-#endif
 
 /* Structure definitions ************************************************** */
 

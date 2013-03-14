@@ -4,7 +4,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 % imports any data into Matlab. 
 % The definition of specific formats can be set in the iLoad_ini.m file.
 % These formats can be obtained using [config, configfile]=iLoad('load config').
-% The file formats cache can be rebuilt with 
+% The file formats cache and MeX files can be rebuilt with
 %   iLoad force
 % the iLoad_ini configuration file can be saved in the Preference directory
 % using 
@@ -57,47 +57,28 @@ function [data, format] = iLoad(filename, loader, varargin)
 persistent config
 persistent compiled
 
-if isempty(config), config  = iLoad_config_load; end
+if isempty(config)
+  config  = iLoad_config_load; 
+end
 
 data = []; format = [];
 if nargin == 0, filename=''; end
 if nargin < 2,  loader = ''; end
 if nargin ==1
-  if ~isempty(strmatch(filename, {'load config','config','force','force load config','formats','display config'}))
+  if any(strcmp(filename, {'load config','config','force','force load config','formats','display config','load','save','compile'}))
     [data, format] = iLoad('', filename);
     return
+  elseif  isstruct(filename)
+    config = filename;
+    loader = 'save';
   end
 end
 
 % ------------------------------------------------------------------------------
 % begin configuration stuff
 % ------------------------------------------------------------------------------
-if any(strcmp(loader, {'load config','config','force','force load config'}))
-% check for availability of looktxt as MeX file, and trigger compilation if needed.
-  if isempty(compiled) && ~isdeployed && exist('looktxt') ~= 3
-    p = pwd;
-    cd (fullfile(fileparts(which(mfilename)),'private'))
-    fprintf(1, '%s: compiling looktxt and cbf_uncompress...\n', mfilename);
-    try
-      mex -O cbf_uncompress.c
-      mex -O looktxt.c
-      compiled = 1;
-    catch
-      try
-        mex ('-O','cbf_uncompress.c', ['-L"' matlabroot '\sys\lcc\lib"'],'-lcrtdll');
-        mex ('-O','looktxt.c',        ['-L"' matlabroot '\sys\lcc\lib"'],'-lcrtdll');
-        compiled = 2;
-      catch
-        compiled = 0;
-        error('%s: Can''t compile looktxt.c and cbf_uncompress.c\n       in %s\n', ...
-          mfilename, pwd);
-      end
-    end
-    cd (p)
-  end
-end
 
-if any(strcmp(loader, {'load config','config'}))
+if any(strcmp(loader, {'load config','config','load'}))
   
   % look for a specific importer when filename is specified
   if ~isempty(filename)
@@ -119,15 +100,28 @@ if any(strcmp(loader, {'load config','config'}))
     data = config;
   end
   return
-elseif any(strcmp(loader, {'force','force load config'}))
+elseif any(strcmp(loader, {'force','force load config','compile'}))
+  % check MeX files
+  if exist('looktxt') ~= 3,        read_anytext('compile'); end
+  if exist('cbf_uncompress') ~= 3, read_cbf('compile'); end
+  if exist('cif2hkl') ~= 3,        cif2hkl('compile'); end
+  % display the MeX/binary files used
+  if strcmp(loader, 'compile')
+    disp([ mfilename ': MeX/binary importer used' ])
+    disp(which('looktxt')); 
+    disp(which('cbf_uncompress')); 
+    disp(which('cif2hkl'));
+  end
+  
   config  = iLoad_config_load;
   if ~isempty(filename)
     data    = iLoad(filename, 'load config');
   else
     data    = config;
   end
+  disp([ '% Loaded iLoad format descriptions from ' config.FileName ]);
   return
-elseif strcmp(loader, 'formats') | strcmp(loader, 'display config')
+elseif strcmp(loader, 'formats') || strcmp(loader, 'display config')
   data = iLoad('','load config');
   fprintf(1, ' EXT                    READER  DESCRIPTION [%s]\n', mfilename);
   fprintf(1, '-----------------------------------------------------------------\n');  
@@ -159,7 +153,7 @@ elseif strcmp(loader, 'formats') | strcmp(loader, 'display config')
     data    = iLoad(filename, 'load config');
   end
   return
-elseif strcmp(loader, 'save config') | strcmp(filename, 'save config')
+elseif any(strcmp(loader, {'save config','save'}))
   if isempty(filename) || nargin == 1
     config  = iLoad('','load config');
   else
@@ -779,6 +773,11 @@ function config = iLoad_config_load
   % check if other configuration fields are present, else defaults
   if ~isfield(config, 'UseSystemDialogs'), config.UseSystemDialogs = 'no'; end
   if ~isfield(config, 'FileName'),         config.FileName = ''; end
+  if ~isfield(config, 'MeX'), config.MeX = []; end
+  if ~ischar(config.MeX) && ~isempty(config.MeX)
+    if ~isfield(config.MeX, 'looktxt'),      config.MeX.looktxt = 'yes'; end
+    if ~isfield(config.MeX, 'cif2hkl'),      config.MeX.cif2hkl = 'yes'; end
+  end
   
   loaders = config.loaders;
   
