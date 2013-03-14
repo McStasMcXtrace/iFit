@@ -1,7 +1,7 @@
 function s = read_anytext(varargin)
 % import any text using 'looktxt'.
 %
-% the importation consists in performing the folling tasks:
+% the importation consists in performing the following tasks:
 % * handle arguments, looking for options (possibly with "string") and filenames
 % * launch looktxt as MeX and MATfile format on temporary file
 % * import the MAT file as a structure
@@ -78,6 +78,10 @@ elseif strncmp(user.outfile, '--outfile=', length('--outfile='))
 end
 if strncmp(user.format, '--format=', length('--format='))
   user.format= user.format((length('--format=')+1):end);
+  argv{end+1} = [ '--format=' user.format ];
+elseif exist('looktxt') ~= 3 % use binary/executable, not MeX
+  user.format= 'MATfile';
+  argv{end+1} = [ '--format=' user.format ];
 end
 
 % call looktxt >>>>
@@ -85,9 +89,8 @@ looktxt(argv{:});
 
 % import the MAT file from the temporary file, into structure ==================
 if ischar(user.outfile) && ~isempty(dir(user.outfile))
-  s = user.outfile;
   try
-    s = load(user.outfile);
+    s = load(user.outfile); % must be a MAT-file
     % check if there is only one struct field at first level then access it (probably
     % the temporary variable name).
     f = fieldnames(s);
@@ -95,7 +98,7 @@ if ischar(user.outfile) && ~isempty(dir(user.outfile))
       s = s.(f{1});
     end
   catch
-    s= user.outfile;
+    s = [];
   end
 end
 
