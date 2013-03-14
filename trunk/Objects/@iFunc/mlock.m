@@ -4,7 +4,10 @@ function a = mlock(a, varargin)
 %   @iFunc/mlock lock model parameters during further fit process.
 %     to lock/fix a parameter model, use mlock(model, parameter)
 %
-%   mlock(model, {Parameter1, Parameter2, ...})
+%   To lock/fix a set of parameters, you may use a regular expression as:
+%     mlock(model, regexp(model.Parameters, 'token1|token2|...'))
+%
+%   mlock(model, {'Parameter1', 'Parameter2', ...})
 %     lock/fix parameter for further fits
 %   mlock(model)
 %     display fixed parameters
@@ -52,7 +55,13 @@ if nargin == 1 % display fixed parameters
   if count == 0
     fprintf(1, 'No locked/fixed Parameters in %s %iD model "%s"\n', a.Tag, a.Dimension, a.Name);
   end
+  a = count;
   return
+end
+
+% handle case where names are obtained from regexp = cell with length=Parameters
+if length(varargin) == 1 && length(varargin{1}) == length(a.Parameters)
+  varargin{1} = a.Parameters{~cellfun(@isempty, varargin{1})};
 end
 
 % handle multiple parameter name arguments
@@ -66,8 +75,9 @@ else
 end
 
 % now with a single input argument
+if isempty(name), return; end
 if ~ischar(name) && ~iscellstr(name)
-  error([ mfilename ': can not lock model parameters with a Parameter name if class ' class(name) ' in iFunc model ' a.Tag '.' ]);
+  error([ mfilename ': can not lock model parameters with a Parameter name of class ' class(name) ' in iFunc model ' a.Tag '.' ]);
 end
 
 if ischar(name), name = cellstr(name); end
