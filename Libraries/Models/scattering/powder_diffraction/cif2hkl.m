@@ -1,4 +1,4 @@
-function result = cif2hkl(file_in, file_out, lambda, mode, verbose)
+function result = cif2hkl(varargin)
 % result = cif2hkl(file_in, file_out, lambda, mode, verbose)
 %
 % Read a CIF/CFL/SHX/PCR crystallographic description
@@ -13,60 +13,103 @@ function result = cif2hkl(file_in, file_out, lambda, mode, verbose)
 % Output:
 %   result:    command result (char)
 %   file_out is written when mode is not '-'
-%   
+
+% this function is called when the MeX is not present/compiled
 
 persistent compiled
 
+result = [];
+
 this_path = fileparts(which(mfilename));
 
-% check if we use the cif2hkl executable, or need to compile the MeX
+% check if we use the cif2hkl executable, or need to compile the MeX (only once)
 if ~isdeployed && isempty(compiled)
-  p = pwd;
-  cd (fullfile(fileparts(which(mfilename))))
-  fprintf(1, '%s: compiling cif2hkl...\n', mfilename);
-  try
-    mex -c -O cif2hkl.F90
-    mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran
-    compiled = 1;
-  catch
-    compiled = 0;
-    error('%s: Can''t compile cif2hkl.F90\n       in %s\n', ...
-      mfilename, pwd);
-  end
-  cd (p)
-  if compiled
-    rehash
-    error('%s: Compilation went FINE. Please rethrow your command so that the new MeX can be used...', mfilename);
+  compiled = 0;
+  % check if iLoad config allows MeX
+  config = iLoad('config');
+  if isfield(config, 'MeX') && ...
+   ((isfield(config.MeX, mfilename) && strcmp(config.MeX.(mfilename), 'yes')) ...
+     || strcmp(config.MeX, 'yes'))
+    % attempt to compile MeX
+    p = pwd;
+    cd (fullfile(this_path))
+    fprintf(1, '%s: compiling cif2hkl mex...\n', mfilename);
+    try
+      disp('mex -c -O cif2hkl.F90')
+      mex -c -O cif2hkl.F90
+      disp('mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran')
+      mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran
+      compiled = 1;
+    catch
+      cd (p);
+      error('%s: Can''t compile cif2hkl.F90 as MeX\n       in %s\n', ...
+        mfilename, fullfile(this_path));
+    end
+    cd (p)
+    if compiled
+      rehash
+      % rethrow cif2hkl command with new MeX
+      if exist(mfilename) == 3
+        result = cif2hkl(varargin{:})
+      elseif nargin > 0
+        error('%s: MeX compiled successfully. Rethrow command to use it.');
+      end
+    end
+    return
+  elseif isempty(dir(mfilename)) % no executable available
+    % attempt to compile as binary
+    p = pwd;
+    cd (fullfile(this_path))
+    fprintf(1, '%s: compiling cif2hkl binary...\n', mfilename);
+    cmd = 'gfortran -O2 -o cif2hkl cif2hkl.F90 -lm'; 
+    disp(cmd)
+    [status, result] = system(cmd);
+    cd (p)
+    if status ~= 0 % not OK, compilation failed
+      error('%s: Can''t compile cif2hkl.F90 as binary\n       in %s\n', ...
+        mfilename, fullfile(this_path));
+    end
   end
 end
 
 % handle input arguments
+% varargin = file_in, file_out, lambda, mode, verbose
 if nargin < 1
   file_in = [];
+else
+  file_in = varargin{1};
 end
 if isempty(file_in) || ~ischar(file_in)
   error('At least one string input required. Syntax: cif2hkl(file_in, file_out, lambda, mode, verbose)')
 end
 if nargin < 2
   file_out = [];
+else
+  file_out = varargin{2};
 end
 if isempty(file_out)
   file_out = [ file_in '.laz' ];
 end
 if nargin < 3
   lambda = [];
+else
+  lambda = varargin{3};
 end
 if isempty(lambda) || ~isnumeric(lambda)
   lambda=0.5;
 end
 if nargin < 4
   mode = [];
+else
+  mode = varargin{4};
 end
 if isempty(mode) || ~ischar(mode)
   mode='p'; % powder or xtal
 end
 if nargin < 5
   verbose = [];
+else
+  verbose = varargin{5};
 end
 if isempty(verbose) || ~isnumeric(verbose)
   verbose=0;
@@ -95,11 +138,12 @@ end
 
 cmd = [ cmd ' ' file_in ];
 disp(cmd)
+
 % launch the command
 [status, result] = system(cmd);
 if status ~= 0
   disp(result)
-  error([ 'cif2hkl executable not available. Compile it with: "gfortran -O2 -o cif2hkl cif2hkl.f90 -lm" in ' fullfile(fileparts(which(mfilename))) ]);
+  error([ mfilename ' executable not available. Compile it with: "gfortran -O2 -o cif2hkl cif2hkl.F90 -lm" in ' fullfile(fileparts(which(mfilename))) ]);
 end
 
 
