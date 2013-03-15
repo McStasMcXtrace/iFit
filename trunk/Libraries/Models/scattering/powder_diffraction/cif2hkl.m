@@ -25,8 +25,6 @@ this_path = fileparts(which(mfilename));
 % check if we use the cif2hkl executable, or need to compile the MeX (only once)
 if ~isdeployed && isempty(compiled)
   compiled = 0;
-  p = pwd;
-  cd (fullfile(this_path))
   
   % check if iLoad config allows MeX
   config = iLoad('config');
@@ -36,17 +34,20 @@ if ~isdeployed && isempty(compiled)
     % attempt to compile MeX
     fprintf(1, '%s: compiling mex...\n', mfilename);
     try
-      disp('mex -c -O cif2hkl.F90')
-      mex -c -O cif2hkl.F90
-      disp('mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran')
-      mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran
+      cmd={'-c', '-O', '-output',fullfile(this_path,'cif2hkl.o'), ...
+           fullfile(this_path,'cif2hkl.F90')};
+      disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
+      mex (cmd{:});
+      cmd={'-O', '-output', fullfile(this_path,mfilename), ...
+        fullfile(this_path,'cif2hkl_mex.c'), fullfile(this_path,'cif2hkl.o'), ...
+        '-lgfortran'};
+      disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
+      mex (cmd{:});
       compiled = 1;
     catch
-      cd (p);
       error('%s: Can''t compile cif2hkl.F90 as MeX\n       in %s\n', ...
         mfilename, fullfile(this_path));
     end
-    cd (p)
     if compiled
       rehash
       % rethrow cif2hkl command with new MeX
@@ -57,19 +58,20 @@ if ~isdeployed && isempty(compiled)
       end
     end
     return
-  elseif isempty(dir(mfilename)) % no executable available
+  elseif isempty(dir(fullfile(this_path,mfilename))) % no executable available
     % attempt to compile as binary
     fprintf(1, '%s: compiling binary...\n', mfilename);
-    cmd = 'gfortran -O2 -o cif2hkl cif2hkl.F90 -lm'; 
-    disp(cmd)
-    [status, result] = system(cmd);
-    cd (p)
+    cmd = {'gfortran', '-O2', '-o', fullfile(this_path,mfilename), ...
+       fullfile(this_path,'cif2hkl.F90'), '-lm'}; 
+    disp([ sprintf('%s ', cmd{:}) ]);
+    [status, result] = system(sprintf('%s ', cmd{:}));
     if status ~= 0 % not OK, compilation failed
       error('%s: Can''t compile cif2hkl.F90 as binary\n       in %s\n', ...
         mfilename, fullfile(this_path));
     end
   end
 end
+
 if isempty(varargin) || strcmp(varargin{1}, 'compile'), return; end
 
 % handle input arguments
