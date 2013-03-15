@@ -260,7 +260,7 @@ with a weighting by the success ratio and the number of function calls
 (optimization speed). Successive calls to <span style="font-style: italic; font-weight: bold;">fmin</span> with the same problem to solve may result in different optimizers and solutions.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Optimizer<br>
@@ -529,19 +529,44 @@ The <span style="font-style: italic;">constraints</span> input argument can also
 <span style="font-style: italic;">
 NaN</span> values in these constraints are ignored (the corresponding parameters are not constrained).<br>
 <h4><a class="mozTocH4" name="mozTocId359603"></a>Using constraints within the model</h4>
-It may be easier to store constraints directly within the model used during the fit. The main advantage is that constraints can be directly related to the name of the model parameters.<br>
+It may be easier to store constraints directly within the model used 
+during the fit. The main advantage is that constraints can be directly 
+related to the name of the model parameters.<br>
 <br>
 To set a constraint on a model parameter, define the 'constraint' input 
-argument as indicated above or set the constraint directly on the model 
+argument when calling <span style="font-weight: bold; font-style: italic;">fits</span> (see <a href="file:///home/farhi/svn/Matlab/iFit/trunk/Docs/Fit.html">Fit</a>) or set the constraint directly on the model 
 parameters with:<br>
+
+
 <pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span><br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% to unlock value during a fit process</span>
-&gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br></pre>
-For instance<br>
-
-<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;<br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;<br>&gt;&gt; f.Background = [0 1e-4];<br></pre>
+&gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'expression'</span>        <span style="font-style: italic;">% to set the parameter from an expression</span><br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br>&gt;&gt; model.Constraint = 0;     <span style="font-style: italic;">% to unlock/free all Parameters during a fit process<br></span>&gt;&gt; model.Constraint = 1;     <span style="font-style: italic;">% to lock/fix all Parameters during a fit process</span><br></pre>
 
 
-<h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId179895"></a>Estimating the model parameter uncertainties
+Any parameter name surrounded by double 
+quotes, e.g. <span style="font-style: italic;">"Amplitude"</span>, are replaced by their corresponding <span style="font-style: italic;">p(n)</span> value in an expression used for setting a parameter value (cross-constraints). For instance<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude</span><br>&gt;&gt; f.Background = [0 1e-4];	<span style="font-style: italic;">% bound its background</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'p(1)/1000'</span>;	<span style="font-style: italic;">% use an expression referring to </span>p(1)/1000<span style="font-style: italic;"> value</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'"Amplitude"/1000'</span>;	<span style="font-style: italic;">% same as above with direct naming as</span><span style="font-style: italic;"> p(1)=Amplitude</span>
+</pre>
+
+
+Alternatively, you can use the <span style="font-weight: bold;">mlock, munlock </span>and <span style="font-weight: bold;">xlim</span> methods:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, {<span style="color: rgb(204, 51, 204);">'Amplitude','Background'</span>})	<span style="font-style: italic;">% fix these 2 parameters</span>, same as setting parameters to 'fix' <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f, <span style="color: rgb(204, 51, 204);">'Background'</span>)		<span style="font-style: italic;">% unlock that parameter</span>, same as f.Background='clear'<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f, <span style="color: rgb(204, 51, 204);">   'Background'</span>, [0 1e-3])	<span style="font-style: italic;">% force parameter within range</span>, same as f.Background=[min max]<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f,  <span style="color: rgb(204, 51, 204);">  'Background'</span>, [])		<span style="font-style: italic;">% remove limits constraint</span><br></pre>
+
+Last, you can fix/clear/bound parameters based on a <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> search such as:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, <span style="color: rgb(51, 102, 255);">regexp</span>(f.Parameters, <span style="color: rgb(204, 51, 204);">'Amplitude|Background'</span>})</pre>
+
+where we have used the '|' OR operator.<br>
+
+<br>
+
+To list parameters which are fixed, free and bounded, use:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f)</pre>
+
+
+which return the number of parameters in each category.<h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId179895"></a>Estimating the model parameter uncertainties
 and the fit quality<br>
 </h3>
 Some theoretical notes&nbsp; about the goodness of fit are indicated in
@@ -636,7 +661,7 @@ The criteria is then normalized to the number of degrees of freedom by dividing 
 <br>
 The following pre-defined functions can be used as criteria:<br>
 <br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">criteria(Signal, Error,

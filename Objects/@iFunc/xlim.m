@@ -65,7 +65,7 @@ end
 
 % handle case where names are obtained from regexp = cell with length=Parameters
 if length(varargin) >= 1 && length(varargin{1}) == length(a.Parameters)
-  varargin{1} = a.Parameters{~cellfun(@isempty, varargin{1})};
+  varargin{1} = a.Parameters(find(~cellfun(@isempty, varargin{1})));
 end
 
 % handle multiple parameter name arguments

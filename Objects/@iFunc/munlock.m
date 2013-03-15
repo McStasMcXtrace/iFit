@@ -37,13 +37,27 @@ if nargin == 1 % display free parameters
   if ~isempty(a.Parameters)
     for p=1:length(a.Parameters)
       [name, R] = strtok(a.Parameters{p}); % make sure we only get the first word (not following comments)
+      if length(a.Constraint.min) >=p
+        this_min = a.Constraint.min(p);
+      else
+        this_min = -Inf;
+      end
+      if length(a.Constraint.max) >=p
+        this_max = a.Constraint.max(p);
+      else
+        this_max = Inf;
+      end
       
       if length(a.Constraint.fixed) >=p && ~a.Constraint.fixed(p)
         if (count == 0)
           fprintf(1, 'Unlocked/Free Parameters in %s %iD model "%s"\n', a.Tag, a.Dimension, a.Name)
         end
         count = count +1;
-        fprintf(1,'%20s (free)\n', name);
+        if any(isfinite([this_min this_max]))
+          fprintf(1,'%20s (free) in %s\n', name, mat2str([this_min this_max]));
+        else
+          fprintf(1,'%20s (free)\n', name);
+        end
       end
     end
   end
@@ -56,7 +70,7 @@ end
 
 % handle case where names are obtained from regexp = cell with length=Parameters
 if length(varargin) == 1 && length(varargin{1}) == length(a.Parameters)
-  varargin{1} = a.Parameters{~cellfun(@isempty, varargin{1})};
+  varargin{1} = a.Parameters(find(~cellfun(@isempty, varargin{1})));
 end
 
 % handle multiple parameter name arguments
