@@ -374,7 +374,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
         setaxis(a, length(options.variable_names)+1, 'Criteria');
       end
       % add other metadata to the integral object
-      set(a, 'Data.Parameters', parameters);
+      % set(a, 'Data.Parameters', parameters);
       set(a, 'Data.Criteria', p);
       if iscell(fval)
       set(a, 'Data.Execute', get(fval{1},'Execute'));
@@ -781,7 +781,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     c = { this_pars{:} , options.fixed_pars{:} }; c=c(:);
     f = { options.variable_names{:} , options.fixed_names{:}}; f=f(:);
     this_pars = cell2struct(c, f, 1);
-    set(sim, 'Data.Parameters', this_pars);
+    % set(sim, 'Data.Parameters', this_pars);
     set(sim, 'Data.Criteria', criteria);
     set(sim, 'Data.Execute', cmd);
     set(sim, 'Data.Options', options);

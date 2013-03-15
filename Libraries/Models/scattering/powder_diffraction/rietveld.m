@@ -389,6 +389,10 @@ for index=1:y.Dimension
   y.Description = [ y.Description ...
     sprintf('\n  Axis %i "%s" label is "%s", range [%g:%g]', index, ax(2*index), label(signal, index), min(x), max(x)) ];
 end
+if isfield(signal.Data,'Parameters')
+  disp([ mfilename ': Instrument ' mat2str(instrument) ' has the following parameters:' ])
+  disp(signal.Data.Parameters);
+end
 
 y.ParameterValues = Guess;
 
