@@ -476,7 +476,10 @@ if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
     Name,  model.Name, options.algorithm);
   disp(  '** Minimization performed on parameters:');
   for index=1:length(model.Parameters); 
-    fprintf(1,'  p(%3d)=%20s=%g\n', index,strtok(model.Parameters{index}), pars(index)); 
+    fprintf(1,'  p(%3d)=%20s=%g', index,strtok(model.Parameters{index}), pars(index)); 
+    if isfield(constraints, 'fixed') && length(constraints.fixed) >= index && constraints.fixed(index)
+      fprintf(1, ' (fixed)'); end
+    fprintf('\n');
   end;
 end
 
