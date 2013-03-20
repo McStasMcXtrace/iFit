@@ -259,7 +259,7 @@ model.Constraint.max  =model.Constraint.max(:);
 model.Constraint.fixed=model.Constraint.fixed(:);
 model.Constraint.set  =model.Constraint.set(:);
 
-% apply constraints (fixed are handled in 'fits')
+% apply constraints (fixed are handled in 'fits' -> forwarded to the optimizer)
 i = find(isfinite(model.Constraint.min));
 if ~isempty(i)
   p(i) = max(p(i), model.Constraint.min(i));
@@ -447,7 +447,7 @@ function p = iFunc_feval_set(model, p, varargin)
 % private function to evaluate a parameter set expression in a reduced environment so that 
 % internal function variables do not affect the result.
 
-  i = find(~cellfun('isempty', model.Constraint.set));
+  i = find(~cellfun('isempty', model.Constraint.set)); i=i(:)';
   if ~isempty(i)
 
     ax = 'x y z t u ';
@@ -465,7 +465,7 @@ function p = iFunc_feval_set(model, p, varargin)
       try
         if isa(model.Constraint.set{index}, 'function_handle') && ...
            nargout(model.Constraint.set{index}) == 1
-          n = nargin(model.Constraint.set{index})
+          n = nargin(model.Constraint.set{index});
           if n > 0 && length(varargin) >= n
             p(index) = feval(model.Constraint.set{index}, p, varargin{1:n});
           else
@@ -474,7 +474,11 @@ function p = iFunc_feval_set(model, p, varargin)
         elseif ischar(model.Constraint.set{index})
           p(index) = eval(model.Constraint.set{index});
         end
+      catch
+        warning([ 'iFunc:' mfilename ], 'Could not evaluate model.Constraint.set on p(%i):', index);
+        disp(model.Constraint.set{index})
       end % try
+      
     end
   end
   
