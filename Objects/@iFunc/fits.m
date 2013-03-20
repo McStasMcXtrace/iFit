@@ -292,6 +292,7 @@ a = [];
 a.Signal = iFunc_private_cleannaninf(Signal);
 a.Error  = iFunc_private_cleannaninf(Error);
 a.Monitor= iFunc_private_cleannaninf(Monitor);
+a.Name   = Name;
 a.Axes   = Axes;
 clear Signal Error Monitor Axes
 
@@ -321,12 +322,12 @@ end
 
 % handle case when model dimensionality is larger than actual Signal
 if model.Dimension > ndimS
-  error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has lower dimension than model %s dimensionality %d.\n', Name, ndimS, model.Name, model.Dimension);
+  error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has lower dimension than model %s dimensionality %d.\n', a.Name, ndimS, model.Name, model.Dimension);
 % handle case when model dimensionality is smaller than actual Signal
 elseif model.Dimension < ndimS && rem(ndimS, model.Dimension) == 0
   % extend model to match Signal dimensions
   disp(sprintf('iFunc:%s: Extending model %s dimensionality %d to data %s dimensionality %d.\n', ...
-    mfilename, model.Name, model.Dimension, Name, ndimS));
+    mfilename, model.Name, model.Dimension, a.Name, ndimS));
   new_model=model;
   for index=2:(ndimS/model.Dimension)
     new_model = new_model * model;
@@ -334,7 +335,7 @@ elseif model.Dimension < ndimS && rem(ndimS, model.Dimension) == 0
   model = new_model;
   clear new_model
 elseif model.Dimension ~= ndimS
-  error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has higher dimension than model %s dimensionality %d.\n', Name, ndimS, model.Name, model.Dimension);
+  error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has higher dimension than model %s dimensionality %d.\n', a.Name, ndimS, model.Name, model.Dimension);
 end
 
 % handle parameters: from char, structure or vector
@@ -473,7 +474,7 @@ model.ParameterValues = pars;
 
 if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
   fprintf(1, '** Starting fit of %s\n   using model    %s\n   with optimizer %s\n', ...
-    Name,  model.Name, options.algorithm);
+    a.Name,  model.Name, options.algorithm);
   disp(  '** Minimization performed on parameters:');
   for index=1:length(model.Parameters); 
     fprintf(1,'  p(%3d)=%20s=%g', index,strtok(model.Parameters{index}), pars(index)); 
@@ -534,7 +535,7 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
     b.Label = b.Title;
     b.DisplayName = b.Title;
     setalias(b,'Error', 0);
-    setalias(b,'Parameters', pars_out, [ model.Name ' model parameters for ' Name ]);
+    setalias(b,'Parameters', pars_out, [ model.Name ' model parameters for ' a.Name ]);
     setalias(b,'Model', model, model.Name);
     output.modelValue = b;
   else
@@ -676,21 +677,23 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
   % raise existing figure (or keep it hidden)
   
   if old_gcf ~= h, set(0, 'CurrentFigure', h); end
+  n1 = strtrim(a.Name);     if length(n1) > 40, n1 = [ n1(1:37) '...' ]; end
+  n2 = strtrim(model.Name); if length(n2) > 40, n2 = [ n2(1:37) '...' ]; end
 
   if isvector(a.Signal)
-    set(plot(a.Signal,'r-'),'DisplayName','Data');   hold on
-    set(plot(ModelValue,'b--'),'DisplayName',model.Name); hold off
+    set(plot(a.Signal,'r-'),'DisplayName',n1);   hold on
+    set(plot(ModelValue,'b--'),'DisplayName',n2); hold off
   else
-    set(surf(a.Signal),'DisplayName','Data');  hold on; 
-    set(surf(ModelValue),'DisplayName',model.Name); hold off
+    set(surf(a.Signal),'DisplayName',n1);  hold on; 
+    set(surf(ModelValue),'DisplayName',n2); hold off
   end
   options.updated = clock;
   if length(p) > 20, p= p(1:20); end
   p = mat2str(p);
   if length(p) > 50, p = [ p(1:47) ' ...' ']' ]; end
-  set(h, 'Name', [ mfilename ': ' options.algorithm ': ' model.Name ' f=' sprintf('%g',sum(criteria(:))) ]);
-  title({ [ mfilename ': ' options.algorithm ': ' model.Name ' #' sprintf('%g',options.funcCount) ], ...
-          p });
+  set(h, 'Name', [ mfilename ': ' options.algorithm ': ' n2 ' f=' sprintf('%g',sum(criteria(:))) ]);
+  title({ [ mfilename ': ' options.algorithm ': ' n2 ' #' sprintf('%g',options.funcCount) ], ...
+          a.Name, p });
   legend show
   set(0, 'CurrentFigure', old_gcf);
 end % iFunc_private_fminplot
