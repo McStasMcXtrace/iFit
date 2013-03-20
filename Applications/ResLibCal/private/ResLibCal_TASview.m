@@ -23,7 +23,14 @@ else
   return
 end
 cla;
-angles    = out.resolution.angles*pi/180;
+
+if iscell(out.resolution)
+  i = ceil(length(out.resolution)/2);
+  angles    = out.resolution{i}.angles*pi/180;
+else
+  i = 1;
+  angles    = out.resolution.angles*pi/180;
+end
 A1 = angles(1); A2 = angles(2); A3 = angles(3); A4 = angles(4); A5 = angles(5); A6 = angles(6);
 distances = EXP.arms(1:4);
 x = 0; y = 0; direction=0;
@@ -113,9 +120,15 @@ set([ l t ],'Color','black');
 
 % add contextual menu ----------------------------------------------------------
 H   = EXP.QH; K=EXP.QK; L=EXP.QL; W=EXP.W;
+if length(H) > 1, H=H(ceil(length(H)/2)); end
+if length(K) > 1, K=K(ceil(length(K)/2)); end
+if length(L) > 1, L=L(ceil(length(L)/2)); end
+if length(W) > 1, W=W(ceil(length(W)/2)); end
+
 if EXP.infin==-1, l = 'KI'; else l='KF'; end
-t = { sprintf('%s=%g [Angs-1] QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]', l, EXP.Kfixed, H,K,L,W), ...
-      sprintf('A1=%5.3g A2=%5.3g A3=%5.3g A4=%5.3g A5=%5.3g A6=%5.3g', out.resolution.angles) };
+
+t = { sprintf('%s=%g [Angs^{-1}] QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]', l, EXP.Kfixed, H,K,L,W), ...
+      sprintf('A1=%5.3g A2=%5.3g A3=%5.3g A4=%5.3g A5=%5.3g A6=%5.3g [deg]', angles*180/pi) };
 title(t);
 
 if isempty(findall(gcf,'Tag','ResLibCal_TASView_Context'))
