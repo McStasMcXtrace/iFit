@@ -119,7 +119,7 @@ function stop = fminplot(pars, optimValues, state)
   
   % update button label and color
   set(h,'MenuBar','figure', 'ToolBar', 'figure');
-  d = findall(0, 'Tag', 'fminplot:stop');
+  d = findall(h, 'Tag', 'fminplot:stop');
   set(d, 'String','STOP','BackgroundColor','red');
   
   % handle first subplot: criteria
