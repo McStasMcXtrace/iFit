@@ -673,6 +673,9 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
     h = figure('Tag','iFunc:fits', 'Unit','pixels');
     tmp = get(h, 'Position'); tmp(3:4) = [500 400];
     set(h, 'Position', tmp);
+    % add a Parameters button to display the current parameter values
+    d = uicontrol(h, 'String','Param','Callback','helpdlg(get(gcbo, ''UserData''),''Current Parameters'');', ...
+      'Tag','fits:param','ToolTip','Click here to show current parameters');
   end
   % raise existing figure (or keep it hidden)
   
@@ -696,4 +699,34 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
           a.Name, p });
   legend show
   set(0, 'CurrentFigure', old_gcf);
+  % store information for the 'Param' button
+  d = findall(h, 'Tag', 'fits:param');
+  if ~isempty(d)
+    % store the list of non fixed parameters
+    if ~isempty(model.Parameters)
+      ud = { ...
+        sprintf('Data:      %s', a.Name),...
+        sprintf('Model:     %s', model.Name), ...
+        sprintf('Algorithm: %s', options.algorithm), ...
+        sprintf('Iteration: %i', options.funcCount), ...
+        sprintf('Criteria:  %g', sum(criteria(:))) };
+      for i=1:length(model.Parameters)
+        if length(model.Constraint.fixed) >=i && ~model.Constraint.fixed(i)
+          [name, R] = strtok(model.Parameters{i}); % make sure we only get the first word (not following comments)
+          val  = [];
+          if ~isempty(model.ParameterValues)
+            try
+              val = model.ParameterValues(i);
+            end
+          end
+          if ~isempty(val) && isfinite(val)
+            ud{end+1} = sprintf('%s = %g', name, val);
+          end
+        end
+      end % for
+      set(d, 'UserData', ud);
+      set(d, 'ToolTip',  sprintf('%s\n', ud{:}));
+    end
+  end
+  
 end % iFunc_private_fminplot
