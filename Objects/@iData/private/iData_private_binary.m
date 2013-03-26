@@ -64,6 +64,12 @@ elseif isa(b, 'iData') & numel(b) > 1
   return
 end
 
+if isa(a,'iFunc')
+  a = subsref(b, struct('type','()','subs', a) );
+elseif isa(b, 'iFunc')
+  b = subsref(a, struct('type','()','subs', b) );
+end
+
 if (isempty(a) || isempty(b))
   if any(strcmp(op, {'plus','minus','combine'}))
     if     isempty(a), c=b; return;
