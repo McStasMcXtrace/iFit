@@ -73,9 +73,9 @@ instructions below. Refer to the <a href="iFit.html">iFit standalone</a> help fo
 <ul>
   
   
-<li><a href="http://ifit.mccode.org/Downloads/binary/glnx32"><span style="font-weight: bold;">Debian Linux 32 bits</span></a> (incl. Ubuntu): Should also work on <span style="font-style: italic;">Linux 64bits. </span>Select the .deb packages.</li>
+<li><a href="http://ifit.mccode.org/Downloads/binary/glnx32"><span style="font-weight: bold;">Debian Linux 32 bits</span></a> (incl. Ubuntu): Should also work on <span style="font-style: italic;">Linux 64bits. </span>Select the .deb packages (MCR then iFit).</li>
 <li><a href="http://ifit.mccode.org/Downloads/binary/glnx32"><span style="font-weight: bold;">Other Linux 32 bits</span></a>: Should also work on <span style="font-style: italic;">Linux 64bits. </span>Use the MCR bin installer and zip archives.</li>
-<li><a href="http://ifit.mccode.org/Downloads/binary/glnx64"><span style="font-weight: bold;">Debian Linux 64 bits</span></a> (incl. Ubuntu): Select the .deb packages.</li>
+<li><a href="http://ifit.mccode.org/Downloads/binary/glnx64"><span style="font-weight: bold;">Debian Linux 64 bits</span></a> (incl. Ubuntu): Select the .deb packages (MCR then iFit).</li>
 <li><a href="http://ifit.mccode.org/Downloads/binary/glnx64"><span style="font-weight: bold;">Other Linux 64 bits</span></a>: Use the MCR bin installer and zip archives.</li><li><a href="http://ifit.mccode.org/Downloads/binary/win32"><span style="font-weight: bold;">Windows 32 bits</span></a>: Should also work on <span style="font-style: italic;">Windows 64bits. </span>Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
 </span></li>
 <li><a href="http://ifit.mccode.org/Downloads/binary/win64"><span style="font-weight: bold;">Windows 64 bits</span></a>: <span style="font-style: italic;"></span>Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
@@ -104,6 +104,7 @@ required. Double click the deb packages (MCR, then iFit) and wait. Then
 you can start iFit from the Dash or from menu Applications/<span style="font-style: italic;">Education/iFit</span>. Drag-n-drop of data files is possible on the iFit launcher, as well as single operator icons from <span style="font-weight: bold; font-style: italic;">/usr/local/ifit/</span>.
 </p>
 
+
 <p><span style="font-weight: bold;">On Other Linux systems</span><span style="font-weight: bold;">,</span> we recommend to install the MCR 
 in<span style="font-style: italic;"> /opt/MATLAB</span> (requires administrative privileges).<br>
 </p>
@@ -119,7 +120,11 @@ MCRROOT environment variable to its location prior to starting iFit :<br>
 <p></p>
 
 
-<p><span style="font-weight: bold;">On MacOSX systems</span>, install the MCR by double-cliking the corresponding <span style="font-style: italic;">MCRInstaller.dmg</span>. The install location defaults to <span style="font-style: italic;">/Applications/MATLAB</span>. Then extract the zip archive anywhere at your choice, and launch <span style="font-style: italic;">ifit</span> from there.<br>
+<p><span style="font-weight: bold;">On MacOSX systems</span>, install the MCR by double-cliking the corresponding <span style="font-style: italic;">MCRInstaller.dmg</span>. The install location defaults to <span style="font-style: italic;">/Applications/MATLAB</span>. Then extract the zip archive anywhere at your choice, and launch <span style="font-style: italic;">ifit</span> from there. <span style="color: rgb(255, 0, 0); font-weight: bold;">NOTE: </span>Currently,
+ Matlab only allows one MCR on MacOSX machines. Delete first the 
+previous Matlab Runtime Component by removing the folder named 
+&#8220;MATLAB/MATLAB_Component_Runtime&#8221; in the Applications folder. 
+Alternatively, download and launch the archive including the MCR (when available in <span style="font-style: italic;">mac32</span> or <span style="font-style: italic;">mac64</span>) which embeds and allows to run a locally different MCR.<br>
 </p>
 <p><span style="font-weight: bold;">On Windows systems</span>, install the MCR by double-cliking the corresponding <span style="font-style: italic;">MCRInstaller.exe</span>. The install location defaults to <span style="font-style: italic;">C:\Program Files\MATLAB</span>. Then extract the zip archive anywhere at your choice, and launch <span style="font-style: italic;">ifit</span> from there.
 </p>
