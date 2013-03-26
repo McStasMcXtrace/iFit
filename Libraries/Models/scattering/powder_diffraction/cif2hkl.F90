@@ -29,7 +29,7 @@
 ! --powder   or -p    Generate a list of unique HKL reflections (for powders). Default.
 ! --xtal     or -x    Generate a list of all HKL reflections (for single crystals).
 ! --verbose           Display processing details.
-! --no-outout-files   Just read the CIF/CFL/ShellX file (for checking).
+! --no-outout-files   Just read the CIF/CFL/ShelX file (for checking).
 ! Example: ./cif2hkl -o CaF2.laz CaF2.cfl
 
 ! Compile with:
@@ -50877,7 +50877,7 @@ end subroutine sort_d
 ! OUPUT:
 !   file_out: the reflection list file name (string)
 !   message:  a message to display (string)
-subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
+subroutine CFML_cif2hkl(file_in, file_out, lambda, powxtal, verbose, message, mode)
 
   use CFML_Crystallographic_Symmetry,  only: Space_Group_Type
   use CFML_Crystal_Metrics,            only: Crystal_Cell_Type
@@ -50893,9 +50893,10 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
   ! subroutine I/O
   character(len=1024)         :: file_in, file_out     ! Name of the input/output file
   real*8                      :: lambda                ! probe wavelength
-  character(len=1024)         :: mode                  ! 'p' or 'x' or '-'
+  character(len=1024)         :: powxtal               ! 'p' or 'x' or '-'
   integer                     :: verbose               ! 0 or 1 for verbose mode
   character*4096              :: message
+  character(len=1024)         :: mode                  ! NUC,XRA,MAG,ELE
   
   ! local variables
   type (File_List_Type)       :: fich_cfl
@@ -51208,7 +51209,7 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
   if (A%Natoms .eq. 0) then
     message = "ERROR: cif2hkl: Could not extract a crystallographic structure from file "//&
       trim(file_in)//eol//&
-      "       Check file existence/permissions and type (should be a CFL,CIF,ShellX)."//eol
+      "       Check file existence/permissions and type (should be a CFL,CIF,ShelX)."//eol
     return
   end if
   if (verbose .ne. 0) then
@@ -51267,9 +51268,9 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
   end if
   
   ! suppress Sfac computation and output when has --no-output-files option
-  if (mode(1:1) .ne. '-') then
+  if (powxtal(1:1) .ne. '-') then
     MaxNumRef = Get_MaxNumRef(stlmax,Cell%CellVol,mult=SpG%NumOps)
-    if (mode(1:1) == "p") then
+    if (powxtal(1:1) == "p") then
       ! powder mode:
       !    Hkl_Uni(Crystalcell, Spacegroup,Friedel,Value1,Value2,Code,Num_Ref,Reflex, no_order)
       call Hkl_Uni(Cell,Spg,.true.,0.0,stlmax,"s",MaxNumRef,hkl)
@@ -51283,11 +51284,11 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
     if (hkl%Nref == 0) then
       message = "ERROR: cif2hkl: No reflection list can be set from file "//&
         trim(file_in)//eol//&
-        "       Check file existence/permissions and type (should be a CFL,CIF,ShellX)."//eol
+        "       Check file existence/permissions and type (should be a CFL,CIF,ShelX)."//eol
       return
     end if
-    ! mode="nuc" (neutron), "ele" (electrons), "x" x-rays
-    call Structure_Factors(A,SpG,hkl,mode="NUC")
+    ! mode="nuc" (neutron), "ele" (electrons), "xra" x-rays
+    call Structure_Factors(A,SpG,hkl,mode=mode)
 
     ! get current date/time
     call idate(today)   ! today(1)=day, (2)=month, (3)=year
@@ -51306,7 +51307,7 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
             A%atom(i)%Biso,A%atom(i)%Occ,A%atom(i)%moment,A%atom(i)%Charge
     end do
     write(unit=lun,fmt="(a)")        "# COMMAND cif2hkl "//trim(file_in)//" --output "//trim(file_out)
-    write(unit=lun,fmt="(a)")        "# CIF2HKL (c) ILL 2012 E. Farhi <farhi@ill.eu>"
+    write(unit=lun,fmt="(a)")        "# CIF2HKL (c) ILL 2012 E. Farhi <farhi@ill.eu> based on CrysFML"
     write(unit=lun,fmt=1000) today, now
   1000 format ( '# DATE    ', i2.2, '/', i2.2, '/', i4.4, ' at ', i2.2, ':', i2.2, ':', i2.2)
     write(unit=lun,fmt="(a)") "#"  
@@ -51323,6 +51324,17 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, mode, verbose, message)
     write(unit=lun,fmt="(a,f14.5,a)") "# lattice_aa ", Cell%ang(1),   " lattice angle alpha in [deg]"
     write(unit=lun,fmt="(a,f14.5,a)") "# lattice_bb ", Cell%ang(2),   " lattice angle beta in [deg]"
     write(unit=lun,fmt="(a,f14.5,a)") "# lattice_cc ", Cell%ang(3),   " lattice angle gamma in [deg]"
+    Select Case (l_case(mode(1:3)))
+      Case("nuc")
+        write(unit=lun,fmt="(a)") "# STRUCTURE FACTORS(NEUTRONS)"
+      Case("xra")
+        write(unit=lun,fmt="(a)") "# STRUCTURE FACTORS(X-RAYS)"
+      Case("ele")
+        write(unit=lun,fmt="(a)") "# STRUCTURE FACTORS(ELECTRONS)"
+      Case default
+        message = "ERROR: cif2hkl: unknown option: --mode "//trim(mode)//eol
+        return
+    End Select
     write(unit=lun,fmt="(a)") "#"
     write(unit=lun,fmt="(a)") "# Format parameters: Crystallographica format"
     write(unit=lun,fmt="(a)") "# column_h  1"
@@ -51403,9 +51415,11 @@ subroutine print_usage(pgmname,message)
     "   -l    LAMBDA       Default is 0.5"//eol//&
     "--powder   or -p    Generate a list of unique HKL reflections (for powders). Default."//eol//&
     "--xtal     or -x    Generate a list of all HKL reflections (for single crystals)."//eol//&
+    "--mode MODE         Generate structure factors for given probe, where MODE is"//eol//&
+    "   -m  MODE           NUC=neutron(default) XRA=xrays ELE=electrons"//eol//&
     "--verbose           Display processing details."//eol//&
-    "--no-outout-files   Just read the CIF/CFL/ShellX file (for checking)."//eol//&
-    "Example: "//trim(pgmname)//" -o CaF2.laz CaF2.cfl"//eol
+    "--no-outout-files   Just read the CIF/CFL/ShelX file (for checking)."//eol//&
+    "Example: "//trim(pgmname)//" --powder --mode NUC -o CaF2.laz CaF2.cfl"//eol
 
 end subroutine print_usage
 
@@ -51421,8 +51435,9 @@ program cif2hkl
   character(len=1024) :: outfile
   character(len=1024) :: ext            ! input file name extension
   real*8              :: lambda= 0.5    ! wavelength (determines minimum d)
-  character(len=1024) :: mode="p"       ! 'p'=powder, 's'=SX output file, '-'=no output
+  character(len=1024) :: powxtal="p"    ! 'p'=powder, 's'=SX output file, '-'=no output
   integer             :: verbose=0      ! verbose mode to display additional information
+  character(len=1024) :: mode="NUC"     ! 'NUC','XRA','ELE'
   
   character*4096      :: message
 
@@ -51455,17 +51470,21 @@ program cif2hkl
         i=i+1
         call getarg(i, outfile)
       end if
+      if ( (argv(1:6) == "--mode".or. argv(1:2) == "-m") .and. i < argc) then
+        i=i+1
+        call getarg(i, mode)
+      end if
       if (argv(1:2) == "-p" .or. argv(1:3) == "--p") then
-        mode = "p"
+        powxtal = "p"
       end if
       if (argv(1:2) == "-x" .or. argv(1:3) == "--x") then
-        mode = "x"
+        powxtal = "x"
       end if
       if (argv(1:8) == "-verbose" .or. argv(1:9) == "--verbose") then
         verbose = 1
       end if
       if (argv(1:4) == "--no") then
-        mode = "-"
+        powxtal = "-"
       end if
       if (argv(1:1) .ne. '-') then
         ! convert argv[i]: process conversion
@@ -51474,7 +51493,7 @@ program cif2hkl
         if (len_trim(outfile) == 0) then
           outfile = trim(argv)//".hkl"  ! append .hkl extension
         end if
-        call cfml_cif2hkl(argv, outfile, lambda, mode, verbose, message)
+        call cfml_cif2hkl(argv, outfile, lambda, powxtal, verbose, message, mode)
         write(*,*) trim(message)
 
         ! revert outfile to default
