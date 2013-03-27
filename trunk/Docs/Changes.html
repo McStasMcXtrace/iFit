@@ -46,12 +46,12 @@
 
 
 
-  <li>1.3.1: Support for CIF/CFL/ShelX structure, EZD/CCP4/MRC electron
- density <a href="Loaders.html">formats</a>. New Rietveld model that uses a McStas neutron diffractometer 
+  <li>1.3.1: Support for loading CIF/CFL/ShelX structure, <a href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a>/<a href="http://en.wikipedia.org/wiki/MRC_%28file_format%29">MRC</a>/<a href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a> electron
+ density <a href="Loaders.html">formats</a>. Load/save of <a href="http://en.wikipedia.org/wiki/YAML">YAML</a>/<a href="http://en.wikipedia.org/wiki/JSON">JSON</a> files. New <a href="Models.html#mozTocId344379">Rietveld</a> model that uses a McStas neutron diffractometer 
 model to convolve the structure factors and fit with diffractometer 
 data. Added TAS neutron spectrometer resolution computation <a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>. <a href="iData.html">iData</a> <span style="font-style: italic;">commandhistory</span> can be <a href="Save.html">saved</a> as a Matlab script. Added <span style="font-style: italic;">nlorz</span> and <span style="font-style: italic;">ngauss</span> <a href="Models.html">Models </a>. Fix of iData/<span style="font-style: italic;">combine</span> with scalar Monitor values. Better memory handling in <a href="Load.html">iData/load</a>. <a href="iFunc.html">iFunc</a>
  support parameter fix/min/max/assign as 
-object.&lt;par&gt;=&lt;value&gt;. Fix in reading text files with 
+<span style="font-style: italic;">object.&lt;par&gt;=&lt;value&gt;</span>. Fix in reading text files with 
 changing columns number. Execution speed improvement in all object 
 operators. Allow <a href="Fit.html">fitting</a> of event data sets. <br>
 <span style="font-weight: bold;"></span></li>
@@ -200,8 +200,8 @@ Windows system directory.<br>
 
 
 
-In case this is not a problem of library, remove the invalid mex file 
-(in <i>iFit/Loaders/private</i>) , and
+In case this is not a problem of library, <span style="color: rgb(255, 0, 0);">remove</span> the invalid mex file 
+(in <i>iFit/Libraries/Loaders/private</i>) , and
 relaunch the importation process. A brand new MeX file will
 automatically be generated, using the system C compiler. <br>
 
@@ -228,11 +228,9 @@ You may need to select the compiler with the <i>mex -setup</i> command from Matl
 
 
 It has been reported that MeX compilation may fail when spaces are part 
-of the path name to the iFit location (esp. under Windows systems).<br>
-
-
-
-Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.<br>
+of the path name to the iFit location (esp. under Windows systems). Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.<br>
+<br>
+Refer to the related item in the <a href="Install.html#mozTocId359173">Install</a> page.<br>
 
 <h4><a class="mozTocH4" name="mozTocId63182"></a>Limitations in the standalone (binary) package</h4>
 
@@ -260,6 +258,11 @@ Then we copy the library from the system into the Matlab location<br>
 Then, you need to restart Matlab/iFit to notice the issue has been fixed.<br>
 <br>
 <h4><a class="mozTocH4" name="mozTocId383867"></a>Import of a text file fails</h4>
+First check that the looktxt MeX file is working (this will appear in 
+the error message). If not, remove the invalid one (in 
+iFit/Libraries/Loaders/private) and restart the importation. A new MeX 
+file will be compiled from the source (requires a valid compiler, see <a href="#mozTocId556618">above</a>).<br>
+<br>
 If you can not import a reluctant <span style="font-weight: bold;">text</span> file, try the most tolerant text reader configurations:<br>
 
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','text format with fast import method'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','Data (text format)'</span>)</pre>

@@ -1,7 +1,10 @@
 function b = interp(a, varargin)
 % [b...] = interp(s, ...) : interpolate iData object
 %
-%   @iData/interp function to interpolate data sets
+%   @iData/interp function to interpolate data sets.
+%
+%   The multidimensional interpolation is based on a Delauney tessellation 
+%     using the Computational Geometry Algorithms Library, CGAL.
 %   This function computes the values of the object 's' interpolated
 %   on a new axis grid, which may be specified from an other object, as independent axes,
 %   or as a rebinning of the original axes.
