@@ -54,6 +54,7 @@ find . -name CVSROOT -exec rm -rf \{\} \; 2> /dev/null
 find . -name svn -exec rm -rf \{\} \; 2> /dev/null
 find . -name .svn -exec rm -rf \{\} \; 2> /dev/null
 find . -name "*~" -exec rm -rf \{\} \; 2> /dev/null
+find . -name .AppleDouble -exec rm -rf \{\} \; 2> /dev/null
 rm mkdist
 # we keep the MeX files as some users may not have C compilers installed (e.g. Windows 64 bit)
 # rm Loaders/looktxt.mex*

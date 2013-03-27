@@ -42,6 +42,8 @@ function [filename,format] = saveas(a, varargin)
 %           'vtk'  save as VTK ascii (<1e5 elements) or binary
 %           'x3d'  save as X3D (geometry) file, ascii
 %           'xhtml' save as embedded HTML/X3D file (using Flash plugin for rendering)
+%           'yaml' save as YAML/JSON format, ascii
+%
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
@@ -99,7 +101,8 @@ filterspec = {'*.m',   'Matlab script/function (*.m)'; ...
       '*.x3d',   'X3D (geometry) file, ascii (*.x3d)'; ...
       '*.xhtml', 'embedded HTML/X3D file (*.html using Flash plugin for rendering)';
       '*.edf', 'EDF ESRF format for 1D and 2D data sets (*.edf)' ; 
-      '*.fits;*.fit;*.fts','IAU FITS binary image (*.fits, only for 2D objects)' };
+      '*.fits;*.fit;*.fts','IAU FITS binary image (*.fits, only for 2D objects)';
+      '*.yaml;*.yml;*.json','YAML/JSON interchange format (*.yaml,*.json)' };
 if strcmp(filename, 'formats')
   fprintf(1, '       EXT  DESCRIPTION [%s(iData)]\n', mfilename);
   fprintf(1, '-----------------------------------------------------------------\n'); 
@@ -408,7 +411,8 @@ case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
       fclose(fid);
     end
   end
-
+case {'yaml','yml','json'}
+  YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
 otherwise
   iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
   filename = [];

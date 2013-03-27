@@ -1196,6 +1196,8 @@ Most binary operators require to interpolate the objects onto common
 axes prior to applying the mathematical operation. The common axes may
 be obtained from intersection or union of object axes.<br>
 <br>
+The interpolation method used is based on a Delauney triangular multidimensional tessellation (using the <a href="http://www.cgal.org/">Computational Geometry Algorithms Library</a>, <acronym title="Computational Geometry Algorithms Library">CGAL</acronym>).<br>
+<br>
 The <span style="font-weight: bold;">intersect</span> and <span style="font-weight: bold;">union</span> binary operators determine the
 minimum and maximum axes bounds, as well as a axes binning. The <span style="font-style: italic;">inner</span> and <span style="font-style: italic;">outer</span> values are returned by the
 intersect and union methods resp. Resulting objects are interpolated,

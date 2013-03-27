@@ -380,7 +380,17 @@ comma separated values</span><span style="color: rgb(204, 51, 204); font-weight:
       </td>
       <td style="vertical-align: top;"><br>
       </td>
-    </tr>
+    </tr><tr>
+  <td style="vertical-align: top;"><span style="color: rgb(204, 51, 204); font-weight: bold;">'yaml','json'</span><br style="color: rgb(204, 51, 204);">
+    <span style="color: rgb(204, 51, 204);">meta language configuration files</span><br>
+  </td>
+  <td style="vertical-align: top;">text<br>
+  </td>
+  <td style="vertical-align: top;">Data serialization format such as "<a href="http://en.wikipedia.org/wiki/YAML">YAML</a> Ain't <a href="http://en.wikipedia.org/wiki/Markup_language" title="Markup language">Markup Language</a>" and <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>  JavaScript Object Notation</td>
+  <td style="vertical-align: top;">yes<br>
+  </td>
+</tr>
+
 
   </tbody>
 </table>
@@ -620,7 +630,7 @@ Cartesian coordinate system. These files can be viewed with <a href="http://mesh
   </td>
   <td style="vertical-align: top;">text<br>
   </td>
-  <td style="vertical-align: top;">The <a href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a> format is the IUCr standard format for structure descriptions. The PCR and CFL file formats are used by <a href="http://www.ill.eu/sites/fullprof/">FullProf</a> and <a href="http://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">CrysFML</a>. The RES, SHX and INS formats are used by <a href="http://shelx.uni-ac.gwdg.de/SHELX/">ShelX</a>. Such files can be viewed by <a href="http://www.lwfinger.net/drawxtl/">DrawXtl</a>, <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.pymol.org/">PyMol</a>, <a href="http://rasmol.org/">RasMol</a>, <a href="http://avogadro.openmolecules.net/wiki/Main_Page">Avogadro,</a> <a href="http://gdis.sourceforge.net/">GDis, </a><a href="http://www.cgl.ucsf.edu/chimera/">Chimera </a><a href="http://www.yasara.org/">Yasara</a></td>
+  <td style="vertical-align: top;">The <a href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a> format is the <a href="http://www.iucr.org/">IUCr</a> standard format for structure descriptions. The PCR and CFL file formats are used by <a href="http://www.ill.eu/sites/fullprof/">FullProf</a> and <a href="http://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">CrysFML</a>. The RES, SHX and INS formats are used by <a href="http://shelx.uni-ac.gwdg.de/SHELX/">ShelX</a>. Such files can be viewed by <a href="http://www.lwfinger.net/drawxtl/">DrawXtl</a>, <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.pymol.org/">PyMol</a>, <a href="http://rasmol.org/">RasMol</a>, <a href="http://avogadro.openmolecules.net/wiki/Main_Page">Avogadro,</a> <a href="http://gdis.sourceforge.net/">GDis, </a><a href="http://www.cgl.ucsf.edu/chimera/">Chimera </a><a href="http://www.yasara.org/">Yasara</a></td>
   <td style="vertical-align: top;"><br>
   </td>
 </tr><tr>
@@ -629,7 +639,7 @@ Cartesian coordinate system. These files can be viewed with <a href="http://mesh
   </td>
   <td style="vertical-align: top;">text(EZD) and binary<br>
   </td>
-  <td style="vertical-align: top;">Electron density maps in <a href="http://en.wikipedia.org/wiki/MRC_%28file_format%29">MRC</a>/<a href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a> and <a href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a> file formats. Can be visualized with <a href="http://www.pymol.org/">PyMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org">Yasara</a>.<br>
+  <td style="vertical-align: top;">Electron density maps in <a href="http://en.wikipedia.org/wiki/MRC_%28file_format%29">MRC</a>/<a href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a> and <a href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a> file formats. Can be visualized with <a href="http://www.pymol.org/">PyMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org">Yasara</a>, <a href="http://mem.ibs.fr/VEDA/">VEDA</a>.<br>
   </td>
   <td style="vertical-align: top;"><br>
   </td>
@@ -709,11 +719,15 @@ when executing<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>, config);<br><span style="font-style: italic;">% Saved iLoad configuration into /home/farhi/.matlab/R2007a/iLoad.ini</span> <span style="color: rgb(255, 0, 0);">&lt;- this is prefdir</span><br></pre>
 
 This is where you may add your own customized format definitions. Deleting this file will revert to the default configuration.<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m'<span style="color: rgb(0, 0, 0);"> ]</span></span>);<br></pre>Last, the <span style="font-style: italic;">config.UseSystemDialogs</span> field of the <span style="font-style: italic;">iLoad</span> configuration can be set to<span style="color: rgb(204, 51, 204);"> 'yes' </span>to use the native Matlab/Java file selector, or to<span style="color: rgb(204, 51, 204);"> 'no' </span>to use<a href="../Loaders/doc/uigetfiles.html"> uigetfiles</a>.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m'<span style="color: rgb(0, 0, 0);"> ]</span></span>);<br></pre>Last, the <span style="font-style: italic;">config.UseSystemDialogs</span> field of the <span style="font-style: italic;">iLoad</span> configuration can be set to<span style="color: rgb(204, 51, 204);"> 'yes' </span>to use the native Matlab/Java file selector, or to<span style="color: rgb(204, 51, 204);"> 'no' </span>to use<a href="../Loaders/doc/uigetfiles.html"> uigetfiles</a>. The config.MeX field configures if C/Fortran external interfaces (looktxt, cif2hkl) should be use as MeX or as separate executable files.<br>
+<br>
+To update a configuration, send it to iLoad:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>, config);</pre>
+<br>
 
 
 <h4><a class="mozTocH4" name="mozTocId968211"></a>iLoad configuration structure</h4>
-Each format entry is a structure with members:<br>
+Each format <span style="font-style: italic;">'loaders'</span> entry is a structure with members:<br>
 <ul>
   <li><span style="font-weight: bold;">loader.name</span>: a description of the format<br>
   </li>
