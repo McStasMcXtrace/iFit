@@ -7,7 +7,7 @@ function [ret, header] = char(s)
 % input:  s: object or array (iFunc) 
 % output: ret: iFunc identification (char)
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 % See also  iFunc/struct, iFunc/char
 %
 

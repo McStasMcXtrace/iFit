@@ -3,7 +3,7 @@ function a=load_mcstas_scan(a0)
 %
 % Returns iData style datasets from a McStas scan output file
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision$
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a0,'iData')

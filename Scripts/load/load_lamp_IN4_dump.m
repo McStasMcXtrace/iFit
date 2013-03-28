@@ -8,7 +8,7 @@ function a=load_lamp_IN4_dump(a,t)
 %
 % (Quick'n'Dirty writup for IN4 data, 20080408 PW)
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision$
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays

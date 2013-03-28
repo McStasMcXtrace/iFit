@@ -44,7 +44,7 @@ function out = load(a, varargin)
 %         load(iData, [ ifitpath 'Data/peaks.hdf5' ], 'HDF')
 %         load(iData, 'http://file.gz#Data')
 %
-% Version: $Revision: 1.40 $
+% Version: $Revision$
 % See also: iLoad, save, iData/saveas, Loaders
 
 % calls private/iLoad

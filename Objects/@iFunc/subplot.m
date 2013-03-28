@@ -10,7 +10,7 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision$
 % See also iFunc, iFunc/plot
 
 m=[]; n=[]; dim=[];

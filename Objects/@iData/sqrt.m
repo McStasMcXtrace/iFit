@@ -7,7 +7,7 @@ function a = sqrt(a)
 % output: b: object or array (iData)
 % ex:     b=sqrt(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision$
 % See also iData, iData/sqrt, iData/power
 
 a = iData_private_unary(a, 'sqrt');

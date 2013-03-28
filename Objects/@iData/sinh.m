@@ -7,7 +7,7 @@ function a = sinh(a)
 % output: b: object or array (iData)
 % ex:     b=sinh(a);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
 a = iData_private_unary(a, 'sinh');

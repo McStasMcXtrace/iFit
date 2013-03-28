@@ -66,7 +66,7 @@ function [pars,fval,exitflag,output] = fminimfil(varargin)
 %   Frontiers in Applied Mathematics, SIAM, Philadelphia, 1999.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [imfil, 1998 version]
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision$
 % See also: fminsearch, optimset
 
 % default options for optimset

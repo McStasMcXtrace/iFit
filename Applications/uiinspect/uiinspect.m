@@ -94,7 +94,7 @@ function hFig = uiinspect(obj, fig)
 % referenced and attributed as such. The original author maintains the right to be solely associated with this work.
 
 % Programmed by Yair M. Altman: altmany(at)gmail.com
-% $Revision: 1.22 $  $Date: 2011/12/09 00:13:47 $
+% $Revision$  $Date$
 
   try
       % Arg check

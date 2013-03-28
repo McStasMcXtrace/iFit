@@ -67,7 +67,7 @@ function [pars,fval,exitflag,output] = fminralg(varargin)
 % Contrib: Alexei Kuntsevich alex@bedvgm.kfunigraz.ac.at 
 %   and Franz Kappel franz.kappel@kfunigraz.ac.at, Graz (Austria) 1997 [solvopt]
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision$
 % See also: fminsearch, optimset
 
 % default options for optimset

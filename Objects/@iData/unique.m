@@ -10,7 +10,7 @@ function s = unique(a,dim,mode)
 % output: s: data set with unique axes (iData)
 % ex:     c=unique(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision$
 % See also iData, iData/plus, iData/unique, iData/sort
 if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is unique(iData, dim)']);

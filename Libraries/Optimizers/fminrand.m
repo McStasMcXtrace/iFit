@@ -65,7 +65,7 @@ function [pars,fval,exitflag,output] = fminrand(varargin)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001
 % Modified by Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
 %
-% Version: $Revision: 1.20 $
+% Version: $Revision$
 % See also: fminsearch, optimset
 
 % default options for optimset

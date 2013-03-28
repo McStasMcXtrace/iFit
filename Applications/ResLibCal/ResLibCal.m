@@ -23,10 +23,7 @@ function out = ResLibCal(varargin)
 % The 2D and 3D views can be closed without ending the application.
 % When the main window is closed, or Exit is selected all views are closed
 %
-% Version: $Revision:$
-% $Id:$
-% $Date:$
-% $Rev:$
+% Version: $Revision$ $Date$
 
 % Contributions:
 % ResCal5: rc_cnmat rc_popma rc_int rc_focus rc_bragg rc_bragghklz
@@ -57,7 +54,7 @@ function out = ResLibCal(varargin)
 % out      = ResLibCal_UpdateResolution2(out)
 % out      = ResLibCal_UpdateResolution3(out)
 
-ResLibCal_version = [ mfilename ' 1.0.1 (March 2013)' ];
+ResLibCal_version = [ mfilename ' $Revision$ ($Date$)' ];
 
 % menu actions:
 if ~isempty(varargin)

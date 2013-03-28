@@ -13,7 +13,7 @@ function url = doc(a, page)
 %     doc(iData,'Plot')
 %     doc(iData,'Methods')
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision$
 
 % EF 23/10/10 iData impementation
 if nargin ==1, page=''; end

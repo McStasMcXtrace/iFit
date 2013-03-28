@@ -59,7 +59,7 @@ function [pars,fval,exitflag,output] = fmin(varargin)
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 % See also: fminsearch, optimset
 
 % default options for optimset

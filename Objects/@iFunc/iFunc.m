@@ -51,7 +51,7 @@ function a = iFunc(varargin)
 %         b=iFunc('p(1)*x+p(2)');
 %         b=iFunc('signal=p(1)*x+p(2);');
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision$
 % See also iFunc, iFunc/feval, iFunc/plot, iFunc/fit
 
 

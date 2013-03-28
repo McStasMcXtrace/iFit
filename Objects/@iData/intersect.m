@@ -12,7 +12,7 @@ function [ai,bi] = intersect(a, b)
 %         bi: object or array (iData)
 % ex:     b=intersect(a, a);
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision$
 % See also iData, iData/setaxis, iData/getaxis, iData/interp, iData/union
 
 if nargin == 2
