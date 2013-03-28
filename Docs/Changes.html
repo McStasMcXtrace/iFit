@@ -136,7 +136,7 @@ Mb. Larger data sets can still be loaded, but are restricted by the
 disk access and the available memory. Currently, files can be read at
 about 8 Mb/s, mainly limited by the hard disk speed. Some binary files
 can be imported faster (HDF initial access is nearly immediate, whatever be the
-file size).<br>
+file size). We recommend to use SSD to load files with increased efficiency.<br>
 
 <h4><a class="mozTocH4" name="mozTocId786389"></a>NetCDF files written by Matlab can not be read by other software (hdfview, ncBrowse)</h4>
 
@@ -150,9 +150,9 @@ It has been reported that the NetCDF 2.0 files written by Matlab &lt; 2010b can 
 </h4>
 
 
-The <span style="font-style: italic;">fconv</span> function (FFT convolution) provided in the <a href="Models.html">Models</a> sub-library requires the two signals sampling not to be too coarse. Axes values too
+The <span style="font-style: italic;">fconv</span> function (FFT <a href="Math.html">convolution</a>) provided in the <a href="Models.html">Models</a> sub-library requires the two signals sampling not to be too coarse. Axes values too
 sparse will lead to inaccurate results. One solution is to re-sample
-the signals with more points. For iData objects, this can be
+the signals with more points. For <a href="iData.html">iData</a> objects, this can be
 achieved with e.g. the <span style="font-style: italic;">interp(object, 3)</span> to triple the number of points along axes.<br>
 
 
@@ -172,7 +172,7 @@ If the warnings being displayed produce too much output, you may reduce the leve
 
 
 
-<h4><a class="mozTocH4" name="mozTocId556618"></a>Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</h4>
+<h4><a class="mozTocH4" name="mozTocId556618"></a>Execution/compilation issue with text files importer (iLoad/iData/load, looktxt, CrysFML/cif2hkl)</h4>
 
 
 
@@ -203,10 +203,9 @@ Windows system directory.<br>
 In case this is not a problem of library, <span style="color: rgb(255, 0, 0);">remove</span> the invalid mex file 
 (in <i>iFit/Libraries/Loaders/private</i>) , and
 relaunch the importation process. A brand new MeX file will
-automatically be generated, using the system C compiler. <br>
+automatically be generated, using the system C compiler. For manual compilation, navigate to the <span style="font-style: italic;">iFit/Libraries/Loaders/private</span> directory and issue:<br>
+<pre style="margin-left: 40px;">mex -O looktxt.c -DUSE_MEX<br>mex -O cbf_uncompress<br></pre>
 
-
-<br>
 
 
 Most systems provide a default C compiler. <br>
@@ -229,6 +228,12 @@ You may need to select the compiler with the <i>mex -setup</i> command from Matl
 
 It has been reported that MeX compilation may fail when spaces are part 
 of the path name to the iFit location (esp. under Windows systems). Move <span style="font-style: italic;">iFit</span> to an other location which does not include spaces in its name (e.g. avoid <span style="font-style: italic;">My Documents</span>) for compilation.<br>
+<br>
+A Fortran compiler is required when using <span style="font-style: italic;">cif2hkl</span> (CIF,CFL,PCR,ShelX files), especially for the Rietveld model function. For manual compilation, navigate to the <span style="font-style: italic;">iFit/Scripts/Models/scattering/powder_diffraction</span> directory and issue:<br>
+<pre style="margin-left: 40px;"># gfortran -O2 -o cif2hkl cif2hkl.F90 -lm<br></pre>
+
+
+which creates the cif2hkl executable file, used by iFit.<br>
 <br>
 Refer to the related item in the <a href="Install.html#mozTocId359173">Install</a> page.<br>
 
@@ -256,7 +261,6 @@ Then we first make a copy of the initial Matlab library to update<br>
 Then we copy the library from the system into the Matlab location<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);"># sudo ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3 /usr/local/MATLAB/R2012a/sys/os/glnxa64/</span></pre>
 Then, you need to restart Matlab/iFit to notice the issue has been fixed.<br>
-<br>
 <h4><a class="mozTocH4" name="mozTocId383867"></a>Import of a text file fails</h4>
 First check that the looktxt MeX file is working (this will appear in 
 the error message). If not, remove the invalid one (in 

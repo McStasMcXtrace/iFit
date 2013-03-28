@@ -391,7 +391,8 @@ y.Dimension = ndims(signal);
 disp([ mfilename ': Setting dimension of the Rietveld model ' CFL.title ' to ' num2str(y.Dimension) ]);
 ax = ',x,y,z,t';
 Expression{end+1} = 'if length(signal) > 1, signal = signal(end); end';
-Expression{end+1} = [ 'signal = double(interp(signal ' ax(1:(2*y.Dimension)) '));' ];
+Expression{end+1} = [ 'if ~isempty(x), signal = interp(signal ' ax(1:(2*y.Dimension)) '); end;' ];
+Expression{end+1} = 'signal = double(signal);';
 y.Expression = Expression; % now returns a double array
 % add axes signification to model description
 for index=1:y.Dimension

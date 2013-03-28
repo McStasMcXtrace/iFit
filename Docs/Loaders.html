@@ -333,7 +333,7 @@ comma separated values</span><span style="color: rgb(204, 51, 204); font-weight:
       </td>
       <td style="vertical-align: top;">The <a href="http://www.w3.org/XML/">XML</a> format (experimental)<br>
       </td>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Yes<br>
       </td>
     </tr>
     <tr>
@@ -686,7 +686,7 @@ If you can not import a reluctant <span style="font-weight: bold;">text</span> f
 
 will import the raw content, without post formatting of the object in 
 memory. You will probably need to assign manually some of the Signal and
- Axes (see <a href="iData.html">iData</a> object help).<br>
+ Axes (see <a href="iData.html">iData</a> object help). It may be that the <span style="font-style: italic;">looktxt</span> MeX file is corrupted. Refer to the <a href="Changes.html#mozTocId556618">Changes/Bugs</a> and <a href="Install.html#mozTocId359173">Install</a> pages.<br>
 <br>
 <span style="font-weight: bold;">Binary</span> formats require more work. In principle, if <span style="font-style: italic;">iLoad</span> does not know
 the structure of the file, there is no way to import an unknown data
@@ -719,7 +719,9 @@ when executing<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>, config);<br><span style="font-style: italic;">% Saved iLoad configuration into /home/farhi/.matlab/R2007a/iLoad.ini</span> <span style="color: rgb(255, 0, 0);">&lt;- this is prefdir</span><br></pre>
 
 This is where you may add your own customized format definitions. Deleting this file will revert to the default configuration.<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m'<span style="color: rgb(0, 0, 0);"> ]</span></span>);<br></pre>Last, the <span style="font-style: italic;">config.UseSystemDialogs</span> field of the <span style="font-style: italic;">iLoad</span> configuration can be set to<span style="color: rgb(204, 51, 204);"> 'yes' </span>to use the native Matlab/Java file selector, or to<span style="color: rgb(204, 51, 204);"> 'no' </span>to use<a href="../Loaders/doc/uigetfiles.html"> uigetfiles</a>. The config.MeX field configures if C/Fortran external interfaces (looktxt, cif2hkl) should be use as MeX or as separate executable files.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m'<span style="color: rgb(0, 0, 0);"> ]</span></span>);<br></pre>Last, the <span style="font-style: italic;">config.UseSystemDialogs</span> field of the <span style="font-style: italic;">iLoad</span> configuration can be set to<span style="color: rgb(204, 51, 204);"> 'yes' </span>to use the native Matlab/Java file selector, or to<span style="color: rgb(204, 51, 204);"> 'no' </span>to use<a href="../Loaders/doc/uigetfiles.html"> uigetfiles</a>.
+ The config.MeX field configures if C/Fortran external interfaces 
+(looktxt, cif2hkl) should be use as MeX or as separate executable files.<br>
 <br>
 To update a configuration, send it to iLoad:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>, config);</pre>
