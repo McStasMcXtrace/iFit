@@ -11,7 +11,7 @@ function data = ind2sub(data, indexes)
 % output: s(index)
 % ex :    ind2sub(s, 1)
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision$
 % See also iData, iData/disp, iData/get, iData/size
 
 % EF 23/09/07 iData implementation

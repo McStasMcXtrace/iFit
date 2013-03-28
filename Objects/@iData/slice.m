@@ -9,7 +9,7 @@ function slice(a, method)
 % input:  s: object or array (iData)
 % ex:     slice(iData(flow));
 %
-% Version: $Revision: 1.9 $
+% Version: $Revision$
 % See also iData, iData/plot, sliceomatic
 
 if ndims(a) < 3

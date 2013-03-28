@@ -14,7 +14,7 @@ function pars=iFunc_private_guess(x, signal, parameter_names)
 %         parameter_names: names of model parameters (cellstr)
 % output: pars: parameter values (double vector)
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 
   pars=[];
   if nargin == 2

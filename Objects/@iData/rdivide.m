@@ -8,7 +8,7 @@ function c = rdivide(a,b)
 % output: c: object or array (iData)
 % ex:     c=a./2; c=a./b;
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision$
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
 if nargin ==1
 	b=[];

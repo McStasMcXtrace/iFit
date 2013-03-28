@@ -65,7 +65,7 @@ function [pars,fval,exitflag,output] = fmingradrand(varargin)
 % Reference: Computer Methods in Applied Mechanics & Engg, Vol  19, (1979) 99
 % Contrib: Sheela V. Belur(sbelur@csc.com) 1998 [ossrs]
 %
-% Version: $Revision: 1.18 $
+% Version: $Revision$
 % See also: fminsearch, optimset
 
 % default options for optimset

@@ -14,7 +14,7 @@ function y=dho(varargin)
 % output: y: model value
 % ex:     y=dho([1 0 1 1], -10:10); or y=plot(dho);
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision$
 % See also iData, iFunc/fits, iFunc/plot
 
 y.Name       = [ 'Damped-harmonic-oscillator (1D) [' mfilename ']' ];

@@ -30,7 +30,7 @@ function b = interp(a, varargin)
 % output: b: object or array (iData)
 % ex:     a=iData(peaks); b=interp(a, 'grid'); c=interp(a, 2);
 %
-% Version: $Revision: 1.37 $
+% Version: $Revision$
 % See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis, iData/hist
 
 % iData_interp and iData_meshgrid are in private

@@ -11,7 +11,7 @@ function [ai,bi] = union(a, b)
 % output: b: object or array (iData)
 % ex:     b=union(a, a);
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision$
 % See also iData, iData/setaxis, iData/getaxis, iData/intersect
 
 if nargin == 2

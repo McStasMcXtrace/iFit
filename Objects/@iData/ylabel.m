@@ -10,7 +10,7 @@ function a = ylabel(a, lab)
 % output: b: object or array (iData)
 % ex:     b=ylabel(a);
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision$
 % See also iData, iData/plot, iData/xlabel, iData/label, iData/zlabel, iData/clabel
 
 if nargin ==1

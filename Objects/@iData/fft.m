@@ -14,7 +14,7 @@ function b = fft(a, op, dim)
 %         a=iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+2*randn(size(t)));
 %         c=fft(a); plot(abs(c));
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision$
 % See also iData, iData/ifft, iData/conv, FFT, IFFT
 
 if nargin <= 1, op = ''; end

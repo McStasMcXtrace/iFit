@@ -8,7 +8,7 @@ function a = uplus(a)
 % output: b: object or array (iFunc)
 % ex:     b=uplus(a);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 % See also iFunc, iFunc/uminus, iFunc/abs, iFunc/real, iFunc/imag, iFunc/uplus
 
 a = iFunc_private_unary(a, 'uplus');

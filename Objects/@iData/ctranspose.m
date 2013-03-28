@@ -8,7 +8,7 @@ function a = ctranspose(a)
 % output: b: object or array (iData)
 % ex:     b=ctranspose(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision$
 % See also iData, iData/transpose, iData/ctranspose, iData/setaxis, iData/getaxis
 
 if numel(a) > 1

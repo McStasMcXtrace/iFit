@@ -8,7 +8,7 @@ function a = full(a)
 % output: b: object or array (iFunc)
 % ex:     b=full(a);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 % See also iFunc, iFunc/full, iFunc/sparse
 
 a = iFunc_private_unary(a, 'full');

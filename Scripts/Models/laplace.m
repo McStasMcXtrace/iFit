@@ -12,7 +12,7 @@ function y=laplace(varargin)
 % output: y: model value
 % ex:     y=laplace([1 0 1 1], -10:10); or plot(laplace);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Laplace distribution function (1D) [' mfilename ']' ];

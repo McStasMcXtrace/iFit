@@ -8,7 +8,7 @@ function a = norm(a)
 % output: b: norm (double)
 % ex:     b=norm(a);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 % See also iData, iData/sum, iData/trapz, norm
 
 a = iData_private_unary(a, 'norm');

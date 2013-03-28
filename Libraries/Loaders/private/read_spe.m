@@ -1,8 +1,8 @@
 %
 % Filename: $RCSfile: speread.m,v $
 %
-% $Revision: 1.1 $  $Date: 2008/06/10 17:05:14 $
-% $Author: bunk $
+% $Revision$  $Date$
+% $Author$
 % $Tag: $
 %
 % Description:

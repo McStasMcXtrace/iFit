@@ -5,7 +5,7 @@ function [pars,fval,istop]=buscarnd(S,x0,options)
 %
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Revision: 1.1 $  $Date: 2011-05-10 09:09:48 $
+%   $Revision$  $Date$
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 %
 %   Based on the algorithm of the same author written in C
