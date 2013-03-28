@@ -42,6 +42,9 @@ function [filename,format] = save(a, varargin)
 %           'vtk'  save as VTK ascii (<1e5 elements) or binary
 %           'x3d'  save as X3D (geometry) file, ascii
 %           'xhtml' save as embedded HTML/X3D file (using Flash plugin for rendering)
+%           'yaml' save as YAML/JSON format, ascii
+%           'xml'  save as an XML file, ascii
+%
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'

@@ -15,10 +15,11 @@
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Installation</h1>
 
-<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId780492">Requirements</a><ol><li><a href="#mozTocId870880">Stand-alone / run-time release / no Matlab license required
+<ol id="mozToc"><!--mozToc h3 1 h4 2--><li><a href="#mozTocId780492">Requirements</a><ol><li><a href="#mozTocId870880">Stand-alone / run-time release / no Matlab license required
 </a></li><li><a href="#mozTocId188272">
 Matlab - source code release
-</a></li><li><a href="#mozTocId467589">C compiler (optional)</a></li></ol></li><li style="font-weight: bold;"><a href="#mozTocId480203">Obtaining the package / Download
+</a></li><li><a href="#mozTocId467589">C compiler (optional)</a></li><li><a href="#mozTocId22836">
+Fortran compiler (optional)</a></li></ol></li><li><a href="#mozTocId480203">Obtaining the package / Download
 </a></li><li><a href="#mozTocId890374">Installation - stand-alone distribution</a></li><li><a href="#mozTocId952907">Installation - source distribution
 </a><ol><li><a href="#mozTocId359173">Note for Windows 64bits users: recompiling looktxt MeX files - source distribution
 </a></li></ol></li><li><a href="#mozTocId635674">What's next ?</a></li><li><a href="#mozTocId67587">Subscribe to the
@@ -52,10 +53,19 @@ Academic licenses (e.g. for Universities). See below to <a href="#mozTocId480203
 <h4><a class="mozTocH4" name="mozTocId467589"></a>C compiler (optional)</h4>
 <div style="margin-left: 40px;">In principle, the pre-compiled MeX files are shipped with the package (for e.g. <span style="font-style: italic;">looktxt</span>), so that the software is ready to run. However, in the event of a re-compilation of MeX files, a <span style="font-style: italic;">C</span> compiler is often shipped with
 Matlab (and installed automatically). The <a href="Loaders.html">Loaders</a> library may use it
-sporadically. This is not required for stand-alone versions.<br>
+sporadically. This is not required for stand-alone versions. Refer to the <a href="Changes.html">Changes/Bugs</a> page in case of troubles.<br>
+</div>
+<h4><a class="mozTocH4" name="mozTocId22836"></a>
+Fortran compiler (optional)</h4>
+<div style="margin-left: 40px;">
+
+The CIF/CFL/PCR/ShelX file support is available when the <span style="font-style: italic;">cif2hkl </span>program
+ can be compiled (usually this is done automatically). We supply these 
+executable files in the Download/binary section of the iFit web site. We
+ recommend to install <a href="http://gcc.gnu.org/wiki/GFortranBinaries">gfortran, </a>which exists for all systems (for windows, get the single file installer). Refer to the <a href="Changes.html">Changes/Bugs</a> page in case of troubles.<br>
+  <br>
 </div>
 
-<br>
 <a href="http://www.ubuntu.com/"><img alt="Ubuntu Linux" title="Ubuntu Linux" src="images/ubuntu.png" style="border: 0px solid ; width: 118px; height: 27px;" align="right"></a>We prefer Linux systems, such as <a href="http://ubuntu.com">Ubuntu</a>, when handling large data sets, and performing <a href="http://www.mcstas.org/">McStas</a> optimizations, so that we fully use multi-core systems (e.g. though threads and MPI). You may use our <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS Live DVD</a> ready-to-run system with <span style="font-style: italic;">McStas</span> pre-installed. Then, add on top <a href="http://www.mathworks.com/">Matlab</a> (requires a valid license).
 <h3><a class="mozTocH3" name="mozTocId480203"></a>Obtaining the package / Download<br>
 </h3>
@@ -66,32 +76,32 @@ for
 all platforms, requires a Matlab license to
 run [ <a href="http://ifit.mccode.org/Downloads/iFit.zip">zip</a>, 22
 Mb,&nbsp; <a href="Changes.html">Changes</a> ].</li>
-  <li><span style="font-weight: bold;">standalone packages</span> for Linux, Windows and Mac OS X allow to 
+  <li><a href="http://ifit.mccode.org/Downloads/binary/"><span style="font-weight: bold;">standalone packages</span></a> for Linux, Windows and Mac OS X allow to 
 execute iFit even without purchasing Matlab. Select your system type and follow the installation 
 instructions below. Refer to the <a href="iFit.html">iFit standalone</a> help for more about using this version.<br>
 </li>
 <ul>
   
   
-<li><a href="http://ifit.mccode.org/Downloads/binary/glnx32"><span style="font-weight: bold;">Debian Linux 32 bits</span></a> (incl. Ubuntu): Should also work on <span style="font-style: italic;">Linux 64bits. </span>Select the .deb packages (MCR then iFit).</li>
-<li><a href="http://ifit.mccode.org/Downloads/binary/glnx32"><span style="font-weight: bold;">Other Linux 32 bits</span></a>: Should also work on <span style="font-style: italic;">Linux 64bits. </span>Use the MCR bin installer and zip archives.</li>
-<li><a href="http://ifit.mccode.org/Downloads/binary/glnx64"><span style="font-weight: bold;">Debian Linux 64 bits</span></a> (incl. Ubuntu): Select the .deb packages (MCR then iFit).</li>
-<li><a href="http://ifit.mccode.org/Downloads/binary/glnx64"><span style="font-weight: bold;">Other Linux 64 bits</span></a>: Use the MCR bin installer and zip archives.</li><li><a href="http://ifit.mccode.org/Downloads/binary/win32"><span style="font-weight: bold;">Windows 32 bits</span></a>: Should also work on <span style="font-style: italic;">Windows 64bits. </span>Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
+<li><a href="http://ifit.mccode.org/Downloads/binary/glnx32">Debian Linux 32 bits</a> (incl. Ubuntu): Should also work on <span style="font-style: italic;">Linux 64bits. </span>Select the .deb packages (MCR then iFit).</li>
+<li><a href="http://ifit.mccode.org/Downloads/binary/glnx32">Other Linux 32 bits</a>: Should also work on <span style="font-style: italic;">Linux 64bits. </span>Use the MCR bin installer and zip archives.</li>
+<li><a href="http://ifit.mccode.org/Downloads/binary/glnx64">Debian Linux 64 bits</a> (incl. Ubuntu): Select the .deb packages (MCR then iFit).</li>
+<li><a href="http://ifit.mccode.org/Downloads/binary/glnx64">Other Linux 64 bits</a>: Use the MCR bin installer and zip archives.</li><li><a href="http://ifit.mccode.org/Downloads/binary/win32">Windows 32 bits</a>: Should also work on <span style="font-style: italic;">Windows 64bits. </span>Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
 </span></li>
-<li><a href="http://ifit.mccode.org/Downloads/binary/win64"><span style="font-weight: bold;">Windows 64 bits</span></a>: <span style="font-style: italic;"></span>Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
+<li><a href="http://ifit.mccode.org/Downloads/binary/win64">Windows 64 bits</a>: <span style="font-style: italic;"></span>Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
 </span><a href="http://ifit.mccode.org/Downloads/binary/win64/MCRInstaller64.exe"></a></li>
-<li><span style="font-weight: bold;"><a href="http://ifit.mccode.org/Downloads/binary/mac32">Mac OSX 32 bits</a> (Intel)</span>: Should also work on <span style="font-style: italic;">MacOSX 64bits.</span> Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
+<li><a href="http://ifit.mccode.org/Downloads/binary/mac32">Mac OSX 32 bits</a> (Intel): Should also work on <span style="font-style: italic;">MacOSX 64bits.</span> Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
 </span></li>
 
 
   
-  <li><span style="font-weight: bold;"><a href="http://ifit.mccode.org/Downloads/binary/mac64">Mac OSX 64 bits</a> (Intel)</span>: Use the MCR installer and the zip archive.<span style="font-style: italic;"></span><a href="http://ifit.mccode.org/Downloads/binary/mac64/MCRInstaller64.dmg"><br>
+  <li><a href="http://ifit.mccode.org/Downloads/binary/mac64">Mac OSX 64 bits</a> (Intel): Use the MCR installer and the zip archive.<span style="font-style: italic;"></span><a href="http://ifit.mccode.org/Downloads/binary/mac64/MCRInstaller64.dmg"><br>
 </a></li>
 </ul>
 
   <li>The development repository is available at <a href="http://cvs.mccode.org/cgi-bin/viewvc.cgi/?root=iFitSVN">McCode SVN</a>.</li>
 
-</ul>All releases, including old ones, can be obtained <a href="http://ifit.mccode.org/Downloads/">here</a>.<br>
+</ul>All releases, including old ones and release candidates, can be obtained <a href="http://ifit.mccode.org/Downloads/">here</a>.<br>
 <h3><a class="mozTocH3" name="mozTocId890374"></a>Installation - stand-alone distribution</h3>
 <p>Install the Matlab Compiler Runtime (MCR) for your system if 
 it has not be installed previously (see above for links). This is not required if you only 
@@ -101,7 +111,7 @@ wish to upgrade iFit. Just click
 <p><span style="font-weight: bold;">On Debian Linux systems</span><span style="font-weight: bold;"></span>,
  if you use the Debian package installers (.deb), nothing else is 
 required. Double click the deb packages (MCR, then iFit) and wait. Then 
-you can start iFit from the Dash or from menu Applications/<span style="font-style: italic;">Education/iFit</span>. Drag-n-drop of data files is possible on the iFit launcher, as well as single operator icons from <span style="font-weight: bold; font-style: italic;">/usr/local/ifit/</span>.
+you can start iFit from the Dash or from menu <span style="font-style: italic;">Applications/Education/iFit</span>. Drag-n-drop of data files is possible on the iFit launcher, as well as on operator icons from <span style="font-weight: bold; font-style: italic;">/usr/local/ifit/</span>.
 </p>
 
 
@@ -123,7 +133,7 @@ MCRROOT environment variable to its location prior to starting iFit :<br>
 <p><span style="font-weight: bold;">On MacOSX systems</span>, install the MCR by double-cliking the corresponding <span style="font-style: italic;">MCRInstaller.dmg</span>. The install location defaults to <span style="font-style: italic;">/Applications/MATLAB</span>. Then extract the zip archive anywhere at your choice, and launch <span style="font-style: italic;">ifit</span> from there. <span style="color: rgb(255, 0, 0); font-weight: bold;">NOTE: </span>Currently,
  Matlab only allows one MCR on MacOSX machines. Delete first the 
 previous Matlab Runtime Component by removing the folder named 
-&#8220;MATLAB/MATLAB_Component_Runtime&#8221; in the Applications folder. 
+&#8220;MATLAB/MATLAB_Component_Runtime&#8221; in the <span style="font-style: italic;">Applications</span> folder. 
 Alternatively, download and launch the archive including the MCR (when available in <span style="font-style: italic;">mac32</span> or <span style="font-style: italic;">mac64</span>) which embeds and allows to run a locally different MCR.<br>
 </p>
 <p><span style="font-weight: bold;">On Windows systems</span>, install the MCR by double-cliking the corresponding <span style="font-style: italic;">MCRInstaller.exe</span>. The install location defaults to <span style="font-style: italic;">C:\Program Files\MATLAB</span>. Then extract the zip archive anywhere at your choice, and launch <span style="font-style: italic;">ifit</span> from there.
@@ -151,6 +161,7 @@ directory in the target location that suits you.</li>
 For our users who love challenges and command lines, this may be
 achieved e.g. with<br>
 <pre style="margin-left: 40px;">% unzip iFit.zip<br>% cp -r iFit /path/to<br></pre>Start Matlab by clicking on its icon or typing the <span style="font-style: italic;">matlab</span> command in a terminal.<img style="width: 45px; height: 38px;" alt="Matlab icon" title="Matlab icon" src="images/ml_icon.gif"><br>
+
 
 
 <pre style="margin-left: 40px;">% matlab<br></pre>
@@ -187,13 +198,13 @@ In order to<span style="font-weight: bold;"> force the recompilation of looktxt<
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span><span style="color: rgb(204, 51, 204);"> force</span></pre>
 from the Matlab prompt. The C compiler to use may have to be specified with the command '<span style="font-style: italic;">&gt;&gt; mex -setup</span>'. Send me the newly compiled looktxt MeX file in a tar.gz/zip archive, so that I update/add it to the distribution.<br>
 <br>
-Refer to the related item in the <a href="Changes.html#mozTocId556618">Changes/Bugs</a> page.<br>
+Refer to the related item in the <a href="Changes.html#mozTocId556618">Changes/Bugs</a> page, especially for manual compilation.<br>
 
 <h3><a class="mozTocH3" name="mozTocId635674"></a>What's next ?</h3>
 You may test the package integrity by issuing the command:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">ifittest</span></pre>
 which will test, in a few minutes, all the examples given in this documentation and report
-failures. In principle all should go right.. Refer to the <a href="index.html#mozTocId66420">iFit Help</a> in case of trouble.<br>
+failures. In principle all should go right. Refer to the <a href="index.html#mozTocId66420">iFit Help</a> in case of trouble.<br>
 You may start with the <a href="QuickStart.html">Quick Start</a> page
 to learn what iFit can do for you.<br>
 <h3><a class="mozTocH3" name="mozTocId67587"></a>Subscribe to the

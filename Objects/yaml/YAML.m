@@ -80,6 +80,9 @@ classdef YAML
             %WRITE serialize and write yaml data to file
             S = YAML.dump( X );
             fid = fopen(filepath,'w');
+            fprintf(fid,'%s\n', '%YAML 1.1');
+            fprintf(fid,'# File: %s\n', filepath);
+            fprintf(fid,'# Date: %s\n', datestr(now));
             fprintf(fid,'%s',S);
             fclose(fid);
         end

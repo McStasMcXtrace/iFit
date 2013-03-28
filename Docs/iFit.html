@@ -35,7 +35,7 @@ Importing data files</a></li></ol></li>
 
 <br>
 
-In this document, we demonstrate shortly how to use the <a href="index.html">iFit</a> executable (stand-alone distribution), which mainly manipulates <a href="iData.html">iData</a> and <a href="iFunc.html">iFunc</a> objects. It provides a free fully functional iFit package for users without Matlab license.<br>
+In this document, we demonstrate shortly how to use the <a href="index.html">iFit</a> executable (stand-alone distribution), which mainly manipulates <a href="iData.html">iData</a> and <a href="iFunc.html">iFunc</a> objects. It provides a free fully functional iFit package for users without <a href="http://www.mathworks.com/">Matlab</a> license.<br>
 
 <br>
 
@@ -66,10 +66,12 @@ axes if needed [<a href="iData.html">iData axes and aliases</a>]<br>
 
 Each of these tasks has dedicated, detailed, documentation, as shown in
 links above.<br>
+<br>
+<span style="font-style: italic;">If you are a regular iFit standalone user and get used to </span><a style="font-style: italic;" href="http://www.mathworks.com/">Matlab</a><span style="font-style: italic;"> commands, you may consider to buy a license. Cost for students and academic institutes is reduced.</span><br>
 
 <div style="text-align: center;">
 <h3 style="text-align: left;"><a class="mozTocH3" name="mozTocId889413"></a>Starting</h3>
-<div style="text-align: left;">Start the iFit command line by launching the '<span style="font-weight: bold; font-style: italic;">ifit</span>' program in the stand-alone installation directory, or by clicking on the iFit icon (when available).<br>
+<div style="text-align: left;"><a href="images/iFit_standalone.png"><img alt="iFit standalone window (no Matlab license required)" title="iFit standalone window (no Matlab license required)" src="images/iFit_standalone.png" style="border: 0px solid; border: 0px solid; width: 300px; height: 198px;" align="right"></a>Start the iFit command line by launching the '<span style="font-weight: bold; font-style: italic;">ifit</span>' program in the stand-alone installation directory, or by clicking on the iFit icon (when available).<br>
 <pre style="margin-left: 40px;">% ifit<br>% ifit datafile<br></pre>
 You can also <span style="font-style: italic;">drag-n-drop</span> data 
 files on the program in order to directly import them into iData objects
@@ -207,8 +209,12 @@ imports a set of data files, and then run the Matlab SCRIPT, which can use the <
 The iFit stand-alone distribution provides a fully functional Matlab prompt (terminal) which <span style="font-weight: bold; font-style: italic;">includes:</span><br>
 
   <ul>
-<li>Scripting and command execution</li><li>All Matlab variables, functions and commands</li><li>All iData/iFunc object methods and interfaces</li><li>Plotting capabilities with e.g. openGL rendering and plot editor<br>
-  </li><li>Third-party tools such as slice-o-matic</li>
+<li>Scripting and command execution</li><li>All <a href="http://www.mathworks.com/">Matlab</a> variables, functions and commands</li><li>All <a href="iData.html">iData</a>/<a href="iFunc.html">iFunc</a> object methods and interfaces</li><li>Plotting capabilities with e.g. openGL rendering and plot editor<br>
+  </li><li>Third-party tools such as <a href="http://www.mathworks.com/matlabcentral/fileexchange/764">slice-o-matic</a></li>
+<li>The <a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a> application</li>
+<li>Hooks to the <a href="http://www.mcstas.org/">McStas</a> and <a href="http://www.mcxtrace.org/">McXtrace</a> ray-tracing software<br>
+</li>
+
   </ul>
 
 However, new Matlab functions can <span style="font-weight: bold; font-style: italic;">not</span> be defined, except anonymous functions (inline). You may use iFunc models as a substitute. Also, the <span style="font-style: italic;">doc, web, help</span> and <span style="font-style: italic;">edit</span> commands are limited, and may not work properly, depending on the system.<br>
