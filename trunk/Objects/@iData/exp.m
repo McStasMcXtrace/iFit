@@ -7,7 +7,7 @@ function a = exp(a)
 % output: b: object or array (iData)
 % ex:     b=exp(a);
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision$
 % See also iData, iData/exp, iData/log, iData/log10, iData/sqrt
 
 a = iData_private_unary(a, 'exp');

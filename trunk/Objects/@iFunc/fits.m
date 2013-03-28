@@ -115,7 +115,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %         [p,c,m,o]=fits(gauss,data,[1 2 3 4],o); 
 %         plot(a); hold on; plot(o.modelAxes, o.modelValue,'r');
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision$
 % See also fminsearch, optimset, optimget, iFunc, iData/fits, iData, ifitmakefunc
 
 % first get the axes and signal from 'data'

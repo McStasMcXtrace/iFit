@@ -8,7 +8,7 @@ function a = ceil(a)
 % output: b: object or array (iData)
 % ex:     b=ceil(a);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 % See also iData, iData/floor, iData/ceil, iData/round
 
 a = iData_private_unary(a, 'ceil');

@@ -30,7 +30,7 @@ function [filename,format] = save(a, varargin)
 % ex:     b=save(a, 'file', 'm');
 %         b=save(a, 'file', 'gif', 'axis tight');
 %
-% Version: $Revision: 1.34 $
+% Version: $Revision$
 % See also iFunc, saveas
 
 [filename,format] = saveas(a, varargin{:});

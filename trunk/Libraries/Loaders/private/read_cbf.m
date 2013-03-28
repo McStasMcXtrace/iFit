@@ -318,8 +318,8 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.3 $  $Date: 2012-01-26 21:51:19 $
-% $Author: farhi $
+% $Revision$  $Date$
+% $Author$
 % $Tag: $
 %
 % Description:
@@ -393,8 +393,8 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.3 $  $Date: 2012-01-26 21:51:19 $
-% $Author: farhi $
+% $Revision$  $Date$
+% $Author$
 % $Tag: $
 %
 % Description:
@@ -567,8 +567,8 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1.3 $  $Date: 2012-01-26 21:51:19 $
-% $Author: farhi $
+% $Revision$  $Date$
+% $Author$
 % $Tag: $
 %
 % Description:

@@ -15,7 +15,7 @@ function y=sigmoid(varargin)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=sigmoid([1 0 1 1], -10:10); or plot(sigmoid);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot, doseresp
 
 y.Name           = [ 'Sigmoidal curve (1D) [' mfilename ']' ];

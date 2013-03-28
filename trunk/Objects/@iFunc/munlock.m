@@ -16,7 +16,7 @@ function a = munlock(a, varargin)
 % output: b: object or array (iFunc)
 % ex:     b=munlock(a,'Intensity');
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/mlock, iFunc/xlim
 
 % calls subsasgn with 'clear' for each parameter given

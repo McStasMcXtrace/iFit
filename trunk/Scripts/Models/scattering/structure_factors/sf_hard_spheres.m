@@ -20,7 +20,7 @@ function y=sf_hard_spheres(varargin)
 % output: y: model value (intensity)
 % ex:     y=sf_hard_spheres([10 0.2], 0:0.01:1); or plot(sf_hard_spheres,[10 0.1],0:0.01:1)
 %
-% Version: $Revision: 1.14 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Hard Sphere S(q) (1D) [' mfilename ']' ];

@@ -7,7 +7,7 @@ function c = char(s)
 % input:  s: object or array (iData) 
 % output: c: iData identification (char)
 %
-% Version: $Revision: 1.8 $
+% Version: $Revision$
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 %

@@ -8,7 +8,7 @@ function s = commandhistory(a)
 % output: b: command history (char/cell)
 % ex:     b=commandhistory(a);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision$
 % See also iData, iData/disp, iData/display
 
 % handle input iData arrays

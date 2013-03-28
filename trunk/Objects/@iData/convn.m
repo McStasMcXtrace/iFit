@@ -12,7 +12,7 @@ function c = convn(a,b)
 % output: c: object or array (iData)
 % ex:     c=convn(a,b);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision$
 % See also iData, iData/times, iData/conv, iData/fft, iData/xcorr, fconv, fconvn, fxcorr
 if nargin ==1
 	b=a;

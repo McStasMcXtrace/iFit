@@ -9,7 +9,7 @@ function d = display(s_in, name)
 % output: d: string to display (char)
 % ex:     'display(iFunc)' or 'iFunc'
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision$
 % See also iFunc, iFunc/disp, iFunc/get
 
 if nargin == 2 && ~isempty(name)

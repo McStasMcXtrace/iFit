@@ -24,7 +24,7 @@ function signal=pseudovoigt2d(varargin)
 % output: signal: model value
 % ex:     signal=pseudovoigt2d([1 2 .5 .2 .3 30 .2], -2:.1:2, -3:.1:3); or plot(pseudovoigt2d);
 %
-% Version: $Revision: 1.4 $
+% Version: $Revision$
 % See also iData, iFunc/fits, iFunc/plot, lorz
 
 signal.Name           = [ 'Pseudo-Voigt-2D function with tilt angle (2D) [' mfilename ']' ];

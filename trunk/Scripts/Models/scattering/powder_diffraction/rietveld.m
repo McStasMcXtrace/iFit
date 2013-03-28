@@ -74,7 +74,7 @@ function y = rietveld(varargin)
 % parameter and the model is computed at constant wavelength lambda=2.36 (given as char)
 %    f = rietveld(Sample, 'templateDIFF.instr',' Powder=reflections.laz; lambda="2.36"');
 % you may plot the model (using McStas) in the [10 170] angular range:
-%    plot(f, f.Guess, linspace(10,170,300));
+%    plot(f, f.Guess, linspace(-.2,.2,50),linspace(10,170,300));
 % Then 'f' is an iFunc Rietveld model. Then perform the Rietveld refinement:
 %    p = fits(measurement, f); % where measurement holds a measured powder diffractogram
 %

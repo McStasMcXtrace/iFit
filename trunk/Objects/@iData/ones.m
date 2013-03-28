@@ -9,7 +9,7 @@ function s = ones(iData_in,varargin)
 % ex: ones(iData,5,5) will create a 5-by-5 empty iData array
 %     ones(s,5,5) will return a 5-by-5 array filled with 's'
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 % See also iData
 
 % EF 27/07/00 creation

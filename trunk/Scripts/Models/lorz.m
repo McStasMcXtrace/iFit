@@ -12,7 +12,7 @@ function y=lorz(varargin)
 % output: y: model value
 % ex:     y=lorz([1 0 1 1], -10:10); or plot(lorz)
 %
-% Version: $Revision: 1.6 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name       = [ 'Lorentzian (1D) [' mfilename ']' ];

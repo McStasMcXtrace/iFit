@@ -12,7 +12,7 @@ function h = plot(a, p, varargin)
 %
 % ex:     b=plot(gauss); plot(gauss*lorz, [1 2 3 4, 5 6 7 8]);
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision$
 % See also iFunc, iFunc/fit, iFunc/feval
 
 if nargin < 2, 

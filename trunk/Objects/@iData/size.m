@@ -8,7 +8,7 @@ function y=size(s, dim)
 % output: v: size of the iData Signal (double)
 % ex:     size(iData), size(iData,1)
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision$
 % See also iData, iData/disp, iData/get, length
 
 % EF 23/09/07 iData implementation

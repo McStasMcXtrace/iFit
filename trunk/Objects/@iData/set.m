@@ -13,7 +13,7 @@ function this = set(this,varargin)
 %
 % ex      : set(iData,'Title','A nice Title')
 %
-% Version: $Revision: 1.12 $
+% Version: $Revision$
 % See also iData, iData/get, iData/setalias, iData/setaxis
 
 % EF 27/07/00 creation

@@ -3,7 +3,7 @@ function [b, vers] = version(a,long_request)
 %
 %   @iData/version: version of the iData class library
 %
-% Version: $Revision: 1.15 $
+% Version: $Revision$
 
 % EF 23/09/07 iData impementation
 

@@ -12,7 +12,7 @@ function b = gradient(a, dim)
 % ex:     a=iData(peaks);
 %         g=gradient(a); subplot([ a g(1) g(2) ]);
 %
-% Version: $Revision: 1.5 $
+% Version: $Revision$
 % See also iData, iData/diff, iData/del2, diff, gradient, iData/jacobian
 
 if nargin <= 1,

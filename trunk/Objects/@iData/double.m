@@ -7,7 +7,7 @@ function a=double(a)
 % output: v: value of the iData Signal/Monitor (double)
 % ex:     'double(iData(rand(10)))'
 %
-% Version: $Revision: 1.7 $
+% Version: $Revision$
 % See also  iData/cell, iData/single, iData/struct, 
 %           iData/char, iData/size
 

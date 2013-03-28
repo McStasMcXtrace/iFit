@@ -8,7 +8,7 @@ function a = fliplr(a)
 % output: b: object or array (iData)
 % ex:     b=fliplr(a);
 %
-% Version: $Revision: 1.1 $
+% Version: $Revision$
 % See also iData, iData/fliplr, fliplr, iData/flipud, flipud
 
 a = iData_private_unary(a, 'fliplr');

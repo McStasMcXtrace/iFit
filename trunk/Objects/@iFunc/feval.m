@@ -1,5 +1,5 @@
 function [signal, ax, name] = feval(model, p, varargin)
-% [signal, axes] = feval(model, parameters, axes, ...) evaluate a function
+% [signal, axes] = feval(model, parameters, x,y, ...) evaluate a function
 %
 %   @iFunc/feval applies the function 'model' using the specified parameters and axes
 %     and function parameters 'pars' with optional additional parameters.
@@ -15,6 +15,7 @@ function [signal, ax, name] = feval(model, p, varargin)
 %
 % input:  model: model function (iFunc, single or array)
 %         parameters: model parameters (vector, cell or vectors, structure, iData) or 'guess'
+%         x,y,..:  axes values to be used for the computation (vector,matrix)
 %         ...: additional parameters may be passed, which are then forwarded to the model
 % output: signal: result of the evaluation (vector/matrix/cell) or guessed parameters (vector)
 %         axes:   returns the axes used for evaluation (cell of vector/matrix)
@@ -22,7 +23,7 @@ function [signal, ax, name] = feval(model, p, varargin)
 % ex:     b=feval(gauss,[1 2 3 4]); feval(gauss*lorz, [1 2 3 4, 5 6 7 8]);
 %           feval(gauss,'guess', -5:5, -abs(-5:5))
 %
-% Version: $Revision: 1.3 $
+% Version: $Revision$
 % See also iFunc, iFunc/fit, iFunc/plot
 
 % handle input iFunc arrays
