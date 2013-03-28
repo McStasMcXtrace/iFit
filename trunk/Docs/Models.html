@@ -2,21 +2,6 @@
 <html><head>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <title>iFit: Models model functions</title>
 </head><body>
@@ -639,7 +624,7 @@ to define the new finer axis <span style="font-style: italic;">xx</span>, and th
 
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span></pre>
 <h3><a class="mozTocH3" name="mozTocId854762"></a><span style="font-weight: bold;">How to write manually a model function</span></h3>
-We suggest that you start from the<span style="color: rgb(51, 102, 255);"> 'gauss' </span>function in <span style="font-style: italic;">iFit/Libraries/Models, </span>and
+We suggest that you start from the<span style="color: rgb(51, 102, 255);"> 'gauss' </span>function in <span style="font-style: italic;">iFit/Scripts/Models, </span>and
 customize at will. Please retain the function core structure to ensure
 proper execution. More complex models can be derived from e.g. the <span style="color: rgb(51, 102, 255);">voigt</span> function.<br>
 <pre style="margin-left: 40px;">&gt;&gt; edit gauss<br>&gt;&gt; edit voigt<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ifitmakefunc</span>(voigt)	<span style="font-style: italic;">% pop-up a dialogue</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span>(voigt)		<span style="font-style: italic;">% same as ifitmakefunc for iFunc objects</span><br></pre>
