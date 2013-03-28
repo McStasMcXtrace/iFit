@@ -19,6 +19,7 @@
   and redistribute the code in other products). In particular, the derived work 
   must be licensed under the EUPL or a Compatible License, label all modifications 
   explicitly, distribute the Source Code, and cite the Original work.
+  The Source code of iFit is freely available at <http://ifit.mccode.org>
 
   A number of additions, included in the software, where obtained from the Matlab 
   Central contributions, and are BSD licensed.
