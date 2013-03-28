@@ -8,21 +8,25 @@ function out = ResLibCal(varargin)
 %   out = ReslibCal(command, arguments...);
 % where 'command' is one of:
 %   open, save, saveas, export, exit, reset, print, create, 
-%   update, compute, view2, view3
+%   update, compute, view2, view3, view_tas
 %
 % The application contains a main interface with:
 % * Menu, Method, Scan and Instrument parameters (main)
 % * Resolution function plot (2D)
 % * Resolution function plot (3D)
+% * Instrument view
 %
 % when changing any value in the main GUI:
 % * Method and Scan parameters, Instrument parameters
 % any opened view is updated after a recomputation of the resolution
 %
 % The 2D and 3D views can be closed without ending the application.
-% When Method/Scan is closed, or Exit is selected all views are closed
+% When the main window is closed, or Exit is selected all views are closed
 %
-% Version: $Revision: 1.2 $
+% Version: $Revision:$
+% $Id:$
+% $Date:$
+% $Rev:$
 
 % Contributions:
 % ResCal5: rc_cnmat rc_popma rc_int rc_focus rc_bragg rc_bragghklz
