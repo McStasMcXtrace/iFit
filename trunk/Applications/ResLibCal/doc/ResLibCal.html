@@ -4,8 +4,11 @@
 <h1 style=" text-align: center;"><a class="mozTocH1" name="mozTocId841636"></a>ResLibCal: a tool to compute triple-axis neutron spectrometer resolution</h1>
 <br>
 <div style="text-align: center;">E. Farhi, <span style="font-style: italic;">ILL/DS/CS - Version 1.0 Feb 2013</span><br>
-</div>
 <br>
+</div>
+<div style="text-align: center;">
+using parts from <a href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>, <a href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>, Res3ax and <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
+</div>
 <hr style="width: 100%; height: 2px;"><br>
 <ol id="mozToc"><!--mozToc h3 1 h4 2 h4 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId771790">Purpose</a></li><li><a href="#mozTocId789429">Obtaining the package</a></li><li><a href="#mozTocId173490">Installation - starting</a></li><li><a href="#mozTocId637458">Usage</a><ol><li><a href="#mozTocId744097">Usage: the main interface</a></li><li><a href="#mozTocId444562">Usage: plotting the TAS resolution function</a></li><li><a href="#mozTocId244259">Usage: handling computation along a scan (measurement sequences)</a></li><li><a href="#mozTocId807901">Usage: reading saved configurations
   </a></li><li><a href="#mozTocId927463">Usage: exporting the results, saving the configuration</a></li><li><a href="#mozTocId281751">Usage: non interactive mode (compute only)</a></li></ol></li><li><a href="#mozTocId393985">Help</a></li><li><a href="#mozTocId811100">Credits and disclaimer</a></li></ol>
@@ -14,7 +17,13 @@
 <h3><a class="mozTocH3" name="mozTocId771790"></a><span style="font-weight: bold;">Purpose</span></h3>
 This ResLibCal application gathers a set of analytical computation methods to 
 estimate the resolution function of a triple-axis neutron spectrometer 
-(TAS). ResLibCal is based on <a href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans and Popovici methods are proposed [1-5], in different implementations.<br>
+(TAS). ResLibCal is based on <a href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans and Popovici methods are proposed [<a href="#mozTocId811100">1-5</a>], in different implementations from:<br>
+
+<ul>
+<li><span style="font-weight: bold;"><a href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a></span> (A. Zheludev)<span style="font-style: italic;"></span></li><li><a href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/"><span style="font-weight: bold;">ResCal5</span></a> (A. Tennant and D. Mc Morrow)<span style="font-style: italic;"></span></li><li><span style="font-weight: bold;">Res3ax</span> (J. Ollivier)<span style="font-style: italic;"></span></li><li><a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/"><span style="font-weight: bold;">ResCal</span></a> from (Hargreave,Hullah,1979), ported into <span style="font-weight: bold;"><a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/vtas/">vTAS</a>_view</span> (Y.Raoul/A. Bouvet/A. Filhol)</li>
+</ul>
+
+
 <h3><a class="mozTocH3" name="mozTocId789429"></a>Obtaining the package</h3>
 The package can be obtained <a href="http://ifit.mccode.org/Downloads/ResLibCal.zip">here</a> [ZIP 220 ko]. You can also browse the source code <a href="http://ifit.mccode.org/Applications/ResLibCal/">here</a>. <br>
 It does not depend on any other toolbox/library.<br>
@@ -165,7 +174,7 @@ This application was written by E. Farhi (c) ILL/DS/CS 2013 &lt;farhi@ill.eu&gt;
   <li><a href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/"><span style="font-weight: bold;">ResCal5</span></a> (A. Tennant and D. Mc Morrow), using especially <span style="font-style: italic;">rc_cnmat, rc_popma, rc_projs</span></li>
   <li><span style="font-weight: bold;">Res3ax</span> (J. Ollivier), using <span style="font-style: italic;">res3ax5</span></li>
   
-<li><a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/"><span style="font-weight: bold;">ResCal</span></a> from (Hargreave,Hullah,1979), ported into <span style="font-weight: bold;"><a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/vtas/">vTAS</a>_view</span> (A. Bouvet/A. Filhol)</li>
+<li><a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/"><span style="font-weight: bold;">ResCal</span></a> from (Hargreave,Hullah,1979), ported into <span style="font-weight: bold;"><a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/vtas/">vTAS</a>_view</span> (Y. Raoul/A. Bouvet/A. Filhol)</li>
 
 </ul>
 Some bugs have been corrected in ResLib, ResCal5/rc_popma, and Res3ax by cross comparing codes and independent 
