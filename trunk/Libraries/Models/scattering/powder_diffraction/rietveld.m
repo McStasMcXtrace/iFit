@@ -73,7 +73,9 @@ function y = rietveld(varargin)
 % The resulting hklF2 file 'reflections.laz' will be used by the instrument Powder 
 % parameter and the model is computed at constant wavelength lambda=2.36 (given as char)
 %    f = rietveld(Sample, 'templateDIFF.instr',' Powder=reflections.laz; lambda="2.36"');
-% Then 'f' is an iFunc Rietveld model. Then perform the Rietveld refinement.
+% you may plot the model (using McStas) in the [10 170] angular range:
+%    plot(f, f.Guess, linspace(10,170,300));
+% Then 'f' is an iFunc Rietveld model. Then perform the Rietveld refinement:
 %    p = fits(measurement, f); % where measurement holds a measured powder diffractogram
 %
 % See also: mcstas, iFunc, iData, iFunc/fits
@@ -358,6 +360,14 @@ y.Expression = Expression;
 
 % create iFunc object
 y = iFunc(y);
+
+% restraint structure parameters: xyz in [0 1], angles in [0 180]
+%                                 Biso in [0 10], Occ in [0 1]
+%                                 Spin Charge in [-10 10]
+xlim(y, regexp(y.Parameters, '_x\>|_y\>|_z\>|_Occ\>'), [0 1]); % \> = end of Parameter names
+xlim(y, {'Sample_alpha','Sample_beta','Sample_gamma'}, [0 180]);
+xlim(y, regexp(y.Parameters, '_Biso\>'), [0 10]);
+xlim(y, regexp(y.Parameters, '_Spin\>|_Charge\>'), [-10 10]);
 
 % get model Dimension: start a short McStas simulation to determine the 
 % monitor dimensionality
