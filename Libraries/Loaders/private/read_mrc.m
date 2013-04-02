@@ -231,10 +231,10 @@ if ~strncmp(MRC.cmap, 'MAP',3)
   return; % not an MRC file
 end
 MRC.stamp = fread(fid,[4],'char');    %Character: 4 bytes
-MRC.rms=fread(fid,[1],'float');       %float: 4 bytes
+MRC.rms   = fread(fid,[1],'float');       %float: 4 bytes
 MRC.nlabl = fread(fid,[1],'int');     %integer: 4 bytes
-MRC.labl = fread(fid,[800],'uint8=>char');   %Character: 800 bytes
-MRC.labl = reshape(MRC.labl, [ 10 80 ]);
+MRC.labl  = fread(fid,[800],'uint8=>char');   %Character: 800 bytes
+MRC.labl  = strtrim(deblank(regexprep(MRC.labl(:)','\s{2,}',' ')));
 
 if MRC.mode==0
     beval=MRC.nx*MRC.ny*MRC.nz;
@@ -329,7 +329,7 @@ Header=struct(...
 
 Data.Volume= Data_read;
 Data.Header= Header; % contains MRC
-Data.Title =MRC.labl;
+Data.Title = MRC.labl;
 Data.Format='MRC electron density map'; 
 
 clear Data_read;
@@ -435,7 +435,7 @@ MRC.stamp = fread(fid,[4],'char');    %Character: 4 bytes
 MRC.rms   = fread(fid,[1],'float');       %float: 4 bytes
 MRC.nlabl = fread(fid,[1],'int');     %integer: 4 bytes
 MRC.labl  = fread(fid,[800],'uint8=>char');   %Character: 800 bytes
-MRC.labl  = reshape(MRC.labl, [ 10 80 ]);
+MRC.labl  = strtrim(deblank(regexprep(MRC.labl(:)','\s{2,}',' ')));
 
 for i=1:MRC.nz
     if MRC.mode==0
