@@ -229,7 +229,6 @@ case 'Fit_9_ifitmakefunc'
     result='FAILED';
   else result = 'OK  ifitmakefunc fits';
   end
-  try; delete('sinexp.m'); end
   
 % test/examples from Docs/iData.html -------------------------------------------
 case 'iData_1'
