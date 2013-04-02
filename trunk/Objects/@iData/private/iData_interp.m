@@ -30,11 +30,8 @@ otherwise % nD, n>1
   end
   if isvector(i_signal)  % long vector nD Data set
     if length(i_axes) == 2
-      if ~any(strcmp(method,{'linear','nearest','cubic','v4'})), method='linear'; end
+      if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
       f_signal = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
-    elseif length(i_axes) == 3 % method: linear or nearest
-      if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end
-      f_signal = griddata3(i_axes{[2 1 3]}, i_signal, f_axes{[2 1 3]}, method);
     else                       % method: linear or nearest
       if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end
       f_signal = griddatan(cell2mat(i_axes), i_signal, cell2mat(f_axes), method);
@@ -42,6 +39,7 @@ otherwise % nD, n>1
   else
     % f_axes must be an ndgrid result, and monotonic
     if ~any(strcmp(method,{'linear','nearest','cubic','spline'})), method='linear'; end
+    for i=1:length(i_axes); v=i_axes{i};  if numel(v) == length(v), i_axes{i}=v(:); end; end
     f_signal = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
   end
 end
