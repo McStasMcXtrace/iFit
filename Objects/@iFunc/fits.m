@@ -698,7 +698,8 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
   title({ [ mfilename ': ' options.algorithm ': ' n2 ' #' sprintf('%g',options.funcCount) ], ...
           a.Name, p });
   legend show
-  set(0, 'CurrentFigure', old_gcf);
+  set(h,'MenuBar','figure', 'ToolBar', 'figure');
+  
   % store information for the 'Param' button
   d = findall(h, 'Tag', 'fits:param');
   if ~isempty(d)
@@ -728,5 +729,7 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
       set(d, 'ToolTip',  sprintf('%s\n', ud{:}));
     end
   end
+  
+  set(0, 'CurrentFigure', old_gcf);
   
 end % iFunc_private_fminplot
