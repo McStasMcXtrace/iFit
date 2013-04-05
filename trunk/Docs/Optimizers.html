@@ -562,9 +562,9 @@ of functions</a>, which include sharp, broad, with local minima,
 etc... The function set has also been used when adding a Gaussian noise
 of 10%.<br>
 <ul>
-  <li>Each of the 52 model functions [<a href="#Hansen2004">16</a>,<a href="#Suganthan2005">17</a>] to minimize can be solved with up
+  <li>Each of the 52 model functions [<a href="#Hansen2004">16</a>,<a href="#Suganthan2005">17</a>] to minimize has been solved with up
 to <span style="font-style: italic;">d</span>=64 parameters.</li>
-  <li>Each of the 22 optimizers has solved all the function, with <span style="font-style: italic;">d</span>=1-64 parameters.</li>
+  <li>Each of the 22 optimizers has solved all the functions, with <span style="font-style: italic;">d</span>=1-64 parameters.</li>
   <li>Each of these tests has been repeated 5-10 times with a random
 set of starting parameters.</li>
 </ul>
@@ -572,11 +572,11 @@ This makes about 80000 optimizations... We then present a list of
 these optimizers, with their mean solving success ratio for both
 continuous and noisy problems. This provides a quantitative measurement
 of optimizers, which
-help in choosing good methods, and put aside bad ones. More detailed
-results are shown in the plot below.<br>
+helps in choosing good methods, and put aside bad ones. More detailed
+results are shown in the table and plots below.<br>
 <br>
-Generally, solving noisy problems require longer optimization search
-time that for continuous problems, and the optimizers that perform best
+Generally, solving noisy problems requires longer optimization search
+time than for continuous problems, and the optimizers that perform best
 in this case are those that intrinsically make use of random numbers.<br>
 <br>
 The <span style="font-weight: bold;">list of all available optimizer
