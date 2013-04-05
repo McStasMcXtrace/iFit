@@ -562,16 +562,16 @@ class MlabWrap(object):
            identify_errors=True,
            print_expression=False,
            on_new_output=sys.stdout.write):
-    """ Evaluates a matlab expression synchronously.
-    
-    Input:
-      expression: to be evaluated (string)
-      identify_errors: report Matlab errors (True/False)
-      print_expression: display expression to be evaluated (True/False)
-      on_new_output: function called to print Matlab evaluation result (function=sys.stdout.write)
+      """ Evaluates a matlab expression synchronously.
       
-    The return value of the function is the Matlab output following the call.
-    """
+      Input:
+        expression: to be evaluated (string)
+        identify_errors: report Matlab errors (True/False)
+        print_expression: display expression to be evaluated (True/False)
+        on_new_output: function called to print Matlab evaluation result (function=sys.stdout.write)
+        
+      The return value of the function is the Matlab output following the call.
+      """
       self._session.eval(expression, 
         identify_errors=identify_errors,
         print_expression=print_expression,
