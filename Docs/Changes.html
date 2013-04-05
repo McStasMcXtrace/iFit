@@ -260,6 +260,11 @@ If you can not import a reluctant <span style="font-weight: bold;">text</span> f
 will import the raw content, without post formatting of the object in 
 memory. You will probably need to assign manually some of the Signal and
  Axes (see <a href="iData.html">iData</a> object help).<br>
+<br>
+Text files containing <span style="font-weight: bold;">NaN's inside matrices</span>
+ are not imported properly (NaN is read as a text inside a matrix, and 
+thus breaks the matrix into bits). One way is to replace all NaN's by 0 
+values.<br>
 
 
 

@@ -2,6 +2,7 @@ function a=load_mcstas_sqw(a)
 % function a=load_mcstas_sqw(a)
 %
 % Returns an iData style dataset from a McStas Sqw Table (Isotropic Sqw)
+% and nMoldyn S(q,w) NetCDF files.
 %
 % Version: $Revision$
 % See also: iData/load, iLoad, save, iData/saveas
@@ -21,8 +22,17 @@ end
 
 a=iData(a);
 if isempty(findstr(a,'Sqw'))
-  warning([ mfilename ': The loaded data set ' a.Tag ' "' a.Title '" is not an Sqw text data format.' ]);
+  warning([ mfilename ': The loaded data set ' a.Tag ' "' a.Title '" is not an Sqw data format.' ]);
   return
+end
+
+% handle import of NetCDF files from nMoldyn
+if isfield(a, 'Sqwtotal')
+    setaxis(a, 'Signal','Sqwtotal');
+    if isfield(a,'q'),         setaxis(a,1,'q'); end
+    if isfield(a,'frequency'), setaxis(a,2,'frequency'); end
+    if isfield(a,'title_nc'),  label(a, 0, a.title_nc); end
+    return
 end
 
 % Find proper axes and Signal
