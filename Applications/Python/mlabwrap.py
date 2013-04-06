@@ -35,7 +35,7 @@
 ##   - should test classes and further improve struct support?
 ##   - should we transform 1D vectors into row vectors when handing them to
 ##     matlab?
-##   - what should be flattend? Should there be a scalarization opition?
+##   - what should be flattend? Should there be a scalarization option?
 ##   - ``autosync_dirs`` is a bit of a hack (and maybe``handle_out``, too)...
 ##   - is ``global mlab`` in unpickling of proxies OK?
 ##   - hasattr fun for proxies (__deepcopy__ etc.)
@@ -141,7 +141,7 @@ Fine points and limitations
     mlab._autosync_dirs = False
 
 - you can customize how matlab is called by setting the environment variable
-  ``MLABRAW_CMD_STR`` (e.g. to add useful opitons like '-nojvm'). For the
+  ``MLABRAW_CMD_STR`` (e.g. to add useful optons like '-nojvm'). For the
   rather convoluted semantics see
   <http://www.mathworks.com/access/helpdesk/help/techdoc/apiref/engopen.html>.
 

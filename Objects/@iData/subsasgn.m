@@ -183,7 +183,7 @@ else
         val = T;
       end
       if any(strcmpi(fieldname, {'alias','axis'}))
-        iData_private_error(mfilename, [ 'can not redefine ' fieldname ' in object ' inputname(1) ' ' b.Tag ]);
+        iData_private_warning(mfilename, [ 'redefine ' fieldname ' in object ' inputname(1) ' ' b.Tag ]);
       end
       if isa(b, 'iData'), f=fields; else f=fieldnames(b); end
       index = find(strcmpi(fieldname, f));

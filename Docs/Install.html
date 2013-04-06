@@ -19,7 +19,7 @@
 </a></li><li><a href="#mozTocId188272">
 Matlab - source code release
 </a></li><li><a href="#mozTocId467589">C compiler (optional)</a></li><li><a href="#mozTocId22836">
-Fortran compiler (optional)</a></li></ol></li><li><a href="#mozTocId480203">Obtaining the package / Download
+Fortran compiler (optional)</a></li></ol></li><li style="font-weight: bold;"><a href="#mozTocId480203">Obtaining the package / Download
 </a></li><li><a href="#mozTocId890374">Installation - stand-alone distribution</a></li><li><a href="#mozTocId952907">Installation - source distribution
 </a><ol><li><a href="#mozTocId359173">Note for Windows 64bits users: recompiling looktxt MeX files - source distribution
 </a></li></ol></li><li><a href="#mozTocId635674">What's next ?</a></li><li><a href="#mozTocId67587">Subscribe to the
@@ -136,13 +136,17 @@ previous Matlab Runtime Component by removing the folder named
 &#8220;MATLAB/MATLAB_Component_Runtime&#8221; in the <span style="font-style: italic;">Applications</span> folder. 
 Alternatively, download and launch the archive including the MCR (when available in <span style="font-style: italic;">mac32</span> or <span style="font-style: italic;">mac64</span>) which embeds and allows to run a locally different MCR.<br>
 </p>
-<p><span style="font-weight: bold;">On Windows systems</span>, install the MCR by double-cliking the corresponding <span style="font-style: italic;">MCRInstaller.exe</span>. The install location defaults to <span style="font-style: italic;">C:\Program Files\MATLAB</span>. Then extract the zip archive anywhere at your choice, and launch <span style="font-style: italic;">ifit</span> from there.
+<p><span style="font-weight: bold;">On Windows systems</span>, install the MCR by double-cliking the corresponding <span style="font-style: italic;">MCRInstaller.exe</span>. The install location defaults to <span style="font-style: italic;">C:\Program Files\MATLAB</span>. Then extract the zip archive anywhere at your choice, and launch <span style="font-style: italic;">ifit</span> from there. <span style="color: rgb(255, 0, 0); font-weight: bold;">NOTE: </span>You may also need to add the path to the <span style="font-style: italic;">ifit</span> executable in the PATH environment variable, so that<span style="font-style: italic;"> 'ifit' </span>is known by the system and you can use drag-n-drop on it as well as on <span style="font-style: italic;">ifit</span> command icons.<br>
+From the Desktop, right-click the Computer icon and select properties. 
+Click the Advanced Settings, and then the Environment Variables button. 
+Edit the PATH item in the System variables list (lower panel), and add 
+at the end <span style="color: rgb(204, 51, 204);">';full_path_to_ifit'</span>. <span style="font-style: italic;">Logout</span> and <span style="font-style: italic;">re-login</span> to take into account this change.<br>
 </p>
 
 
 <p>To launch <a href="iFit.html">iFit</a>, click on the 'ifit' icon in 
 the installation directory. You can also drag-n-drop files on the iFit 
-icon to directly import data files and plot them (linux and Windows systems).<br>
+icon to directly import data files and plot them (Linux and Windows systems). This also works when using the operators short cuts included in the iFit standalone directory (under Linux and Windows).<br>
 </p>
 
 
