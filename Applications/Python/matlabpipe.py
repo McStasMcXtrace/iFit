@@ -15,18 +15,12 @@ Dependencies: scipy
 Tested Matlab Versions: 2009b, 2010a, 2010b, 2011a
 License: MIT
 
-Limitations:
-as it uses pipe with matlab save stdio, only Matlab v4 types can be transferred,
-that is strings, scalars, vectors and 2D matrices...
-Modification can only be done through a save to file 
-
 Usage:
-
-from matlabpipe import MatlabPipe
-mp=MatlabPipe(matlab_process_path='/opt/MATLAB/R2010a/bin/matlab', matlab_version='2010a')
-mp.open()
-mp.eval('a=[ 1 2 3 4 ]; plot(a);')
-b = mp.get('a');
+>>>> from matlabpipe import MatlabPipe
+>>>> mp=MatlabPipe(matlab_process_path='/opt/MATLAB/R2010a/bin/matlab', matlab_version='2010a')
+>>>> mp.open()
+>>>> mp.eval('a=[ 1 2 3 4 ]; plot(a);')
+>>>> b = mp.get('a');
 """
 
 from cStringIO import StringIO
@@ -48,13 +42,31 @@ class MatlabConnectionError(Exception):
   """Raised for errors related to the Matlab connection."""
   pass
 
-def find_matlab_process(binary='matlab'):
-  """"Tries to guess Matlab process path."""
-  cmd = ['which', binary]
-  try:
-    return subprocess.check_output(cmd).strip()
-  except:
+def which(program):
+    def is_exe(fpath):
+        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+
+    def ext_candidates(fpath):
+        yield fpath
+        for ext in os.environ.get("PATHEXT", "").split(os.pathsep):
+            yield fpath + ext
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, program)
+            for candidate in ext_candidates(exe_file):
+                if is_exe(candidate):
+                    return candidate
+
     return None
+
+def find_matlab_process(binary='matlab'):
+  """"Tries to guess Matlab/iFit process path."""
+  return which(binary)
 
 
 def find_matlab_version(matlab_version):
@@ -357,6 +369,8 @@ class MatlabPipe(object):
       return ret[names_to_get[0]]
     return ret
     # end get
+    
+  # ============================================================================  
 
   def _check_open(self):
     if not self.process or self.process.returncode:
@@ -375,7 +389,7 @@ class MatlabPipe(object):
       new_output = self.process.stdout.read(65536)
       output_tail += new_output
     chunk_to_take, chunk_to_keep = output_tail.split(wait_for_str, 1)
-    chunk_to_take += wait_for_str
+    # chunk_to_take += wait_for_str
     self.stdout_to_read = chunk_to_keep
     if on_new_output: on_new_output(chunk_to_take)
     all_output.write(chunk_to_take)
@@ -390,6 +404,7 @@ class MatlabPipe(object):
     ret = self._read_until(self.expected_output_end, on_new_output)
     # now read until the prompt comes in
     self._read_until('>> ', on_new_output)
+    
     return ret
 
 
