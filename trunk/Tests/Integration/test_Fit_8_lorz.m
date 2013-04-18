@@ -1,4 +1,4 @@
-function result = Fit_8_lorz
+function result = test_Fit_8_lorz
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   p=fits(a,'lorz','','fminimfil');
   b = a(lorz, p);

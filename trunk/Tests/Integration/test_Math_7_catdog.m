@@ -1,4 +1,4 @@
-function result = Math_7_catdog
+function result = test_Math_7_catdog
   x=-pi:0.01:pi; a=iData(x,x); 
   a.Error=0; 
   b=sin(a); c=cos(a); d=exp(-a.*a);

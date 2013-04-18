@@ -1,4 +1,4 @@
-function result = Math_2_binary
+function result = test_Math_2_binary
    a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);
    b = iData([ ifitpath 'Data/ILL_IN20.dat' ]); 
    set(a,'Monitor', mean(b.Monitor)/10);

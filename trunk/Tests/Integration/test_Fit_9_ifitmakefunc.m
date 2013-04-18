@@ -1,4 +1,4 @@
-function result = Fit_9_ifitmakefunc
+function result = test_Fit_9_ifitmakefunc
   % create a new data set and convert it to an iData
   x = linspace(0,2*pi, 100);
   p = [1 0.3 .1 2 0.5];

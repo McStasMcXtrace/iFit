@@ -1,4 +1,4 @@
-function result = Fit_7_uncertainties
+function result = test_Fit_7_uncertainties
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   [p,criteria,message,output]= fits(a, 'gauss', [], 'fminimfil');
   sigma = output.parsHistoryUncertainty;

@@ -1,4 +1,4 @@
-function result = Math_8_arrays
+function result = test_Math_8_arrays
   a = zeros(iData, [5 3]); 
   a = iData(peaks);
   b = zeros(a, 5, 3);

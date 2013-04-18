@@ -1,4 +1,4 @@
-function result = Fit_4_fminplot
+function result = test_Fit_4_fminplot
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   options=fminimfil('defaults');
   options.OutputFcn='fminplot';

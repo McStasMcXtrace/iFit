@@ -1,4 +1,4 @@
-function result = Math_5_proj
+function result = test_Math_5_proj
   a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);
   xlabel(a, 'Time channel'); % 2nd axis
   ylabel(a, 'Angle channel');% 1st axis
