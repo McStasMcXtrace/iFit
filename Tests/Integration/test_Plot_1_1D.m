@@ -1,4 +1,4 @@
-function result = Plot_1_1D
+function result = test_Plot_1_1D
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   plot(a);
   old_mon=getalias(a,'Monitor');

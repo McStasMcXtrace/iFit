@@ -1,4 +1,4 @@
-function result = Fit_3_options
+function result = test_Fit_3_options
   a=load(iData, [ ifitpath 'Data/sv1850.scn' ]);
   options=fminimfil('defaults');
   options.TolFun=0.01;

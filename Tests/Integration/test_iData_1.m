@@ -1,4 +1,4 @@
-function result = iData_1
+function result = test_iData_1
   a = iData([ ifitpath 'Data/ILL_IN6.dat']);
   get(a);
   a = iData(rand(10));

@@ -1,4 +1,4 @@
-function result = iData_2_loadarray
+function result = test_iData_2_loadarray
   a=load(iData, [ ifitpath 'Data/*.scn']);
   get(a,'Title');
   get(a(1),'Title');
