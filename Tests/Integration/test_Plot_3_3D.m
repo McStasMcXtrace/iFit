@@ -1,4 +1,4 @@
-function result = Plot_3_3D
+function result = test_Plot_3_3D
   [x,y,z,v]=flow; c=iData(x,y,z,v);
   plot(c);
   plot(c,'surf median');    % plots the c=median(signal) isosurface, same as plot(d) [default]

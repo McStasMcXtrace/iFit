@@ -1,4 +1,4 @@
-function result = iData_4_setalias
+function result = test_iData_4_setalias
   a=load(iData, [ ifitpath 'Data/sv1850.scn']);
   setalias(a,'NewField',42);
   a.NewField = 42;

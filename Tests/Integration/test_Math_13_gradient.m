@@ -1,4 +1,4 @@
-function result = Math_13_gradient
+function result = test_Math_13_gradient
   a=iData(peaks);
   g=gradient(a); 
   if length(g) ~= 2, result='FAILED'; 

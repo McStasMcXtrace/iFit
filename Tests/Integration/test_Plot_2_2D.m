@@ -1,4 +1,4 @@
-function result = Plot_2_2D
+function result = test_Plot_2_2D
   a=load(iData, [ ifitpath 'Data/ILL_D10.dat' ]);
   plot(a);
   a=iData(peaks);

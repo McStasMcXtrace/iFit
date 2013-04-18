@@ -1,4 +1,4 @@
-function result = iData_3_find
+function result = test_iData_3_find
   a=load(iData, [ ifitpath 'Data/sv1850.scn']);
   [match, field]=findstr(a,'TAS');
   % should return 4 fields

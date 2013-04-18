@@ -1,4 +1,4 @@
-function result = Math_3_stats
+function result = test_Math_3_stats
   a = iData([ ifitpath 'Data/sv1850.scn' ]);
   [w,x]=std(a); % w=0.036 x=1.0007
   m=[ min(a) max(a) median(a) mean(a) ];

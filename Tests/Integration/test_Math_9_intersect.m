@@ -1,4 +1,4 @@
-function result = Math_9_intersect
+function result = test_Math_9_intersect
   a = iData(peaks);
   b = copyobj(a);
   a{1} = a{1}+10; a{2} = a{2}+10; 
