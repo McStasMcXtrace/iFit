@@ -1,4 +1,4 @@
-function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method)
+function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
 % iData_plot_1d: plot a 1D iData object
 % used in iData/plot
 
@@ -31,28 +31,28 @@ if size(a,1) ==1 && size(a,2) > 1
     % need to create this axis
     setalias(a, 'Axis_2', ax);
     setaxis(a, 2, 'Axis_2');
-    h = plot(a, method);
+    h = plot(a, method, varargin{:});
     ret = 1;
   else 
     if all(e == 0) || length(x) ~= length(e)
       if length(this_method)
         try
-          h = plot(x,y, this_method);
+          h = plot(x,y, this_method, varargin{:});
         catch
           this_method=[];
         end
       end
-      if ~length(this_method) h = plot(x,y); end
+      if ~length(this_method) h = plot(x,y, varargin{:}); end
     else
       if length(this_method), 
         try
-          h = errorbar(x,y,e,this_method);          
+          h = errorbar(x,y,e,this_method, varargin{:});          
         catch
           this_method=[];
         end
       end
       if ~length(this_method) 
-        h = errorbar(x,y,e); 
+        h = errorbar(x,y,e, varargin{:}); 
       end
       if ~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0)
         if length(h) == 1 && length(get(h,'Children') == 2)

@@ -1,4 +1,4 @@
-function [h, xlab, ylab, zlab, ret] = iData_plot_3d(a, method, this_method)
+function [h, xlab, ylab, zlab, ret] = iData_plot_3d(a, method, this_method, varargin)
 % iData_plot_3d: plot a 3D iData object
 % used in iData/plot
 
@@ -23,7 +23,7 @@ ret = 0;
       if ~isempty(strfind(method, 'scatter'))
         h=fscatter3(x(:),y(:),z(:),c(:), this_method);     % scatter3: may require meshgrid
       else
-        h=plot3(x(:),y(:),z(:), this_method);
+        h=plot3(x(:),y(:),z(:), this_method, varargin{:});
       end
       view(3);
     else
@@ -35,13 +35,13 @@ ret = 0;
       elseif ~isempty(strfind(method, 'waterfall')) || ~isempty(strfind(method, 'contour'))
         if ~isempty(strfind(method, ' y '))
           iy = linspace(min(y(:)), max(y(:)), 10);
-          h = contourslice(x,y,z,c,[],iy,[]);
+          h = contourslice(x,y,z,c,[],iy,[], varargin{:});
         elseif ~isempty(strfind(method, ' x '))
           ix = linspace(min(x(:)), max(x(:)), 10);
-          h = contourslice(x,y,z,c,ix,[],[]);
+          h = contourslice(x,y,z,c,ix,[],[], varargin{:});
         else
           iz = linspace(min(z(:)), max(z(:)), 10);
-          h = contourslice(x,y,z,c,[],[],iz);
+          h = contourslice(x,y,z,c,[],[],iz, varargin{:});
         end
       elseif ~isempty(strfind(method, 'slice')) % sliceomatic
         slice(a); h=[];
@@ -58,13 +58,13 @@ ret = 0;
         end
         try
           if ~isempty(iso), 
-            isosurface(x,y,z, c, iso);
+            isosurface(x,y,z, c, iso, varargin{:});
           else 
-            isosurface(x,y,z, c); 
+            isosurface(x,y,z, c, varargin{:}); 
           end
           h = findobj(gca,'type','patch');
         catch
-          h = plot(a, 'scatter3');
+          h = plot(a, 'scatter3', varargin{:});
           ret = 1;
         end
       end

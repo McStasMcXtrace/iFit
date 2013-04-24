@@ -62,7 +62,9 @@ if isFa
   end
   if isa(a.Guess, 'function_handle')
     a.Guess = sprintf('[ feval(%s, %s, signal) ]', func2str(a.Guess), ax(1:(end-1)));
-  elseif isempty(b.Guess)
+  elseif isnumeric(a.Guess)
+    a.Guess = num2str(a.Guess);
+  elseif isempty(a.Guess)
     a.Guess = NaN*ones(length(a.Parameters),1);
   end
 end
@@ -77,6 +79,8 @@ if isFb
   end
   if isa(b.Guess, 'function_handle')
     b.Guess = sprintf('[ feval(%s, %s, signal) ]', func2str(b.Guess), ax(1:(end-1)));
+  elseif isnumeric(b.Guess)
+    b.Guess = num2str(b.Guess);
   elseif isempty(b.Guess)
     b.Guess = NaN*ones(length(b.Parameters),1);
   end
@@ -240,10 +244,15 @@ if isFa && isFb
   % append Guess ==========================================================
   if ~isempty(a.Guess) && ~isempty(b.Guess)
     % append Guess: 1st
-    c.Guess = [ ...
-      sprintf('p=%s; %% evaluate 1st guess for %s\n', a.Guess, op), ...
-      sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1a, i2a) ];
-      
+    if strncmp(a.Guess(1:2),'p=',2) % 'a' is already the result of a binary operation
+      c.Guess = [ ...
+        sprintf('%s; %% evaluate 1st guess for %s\n', a.Guess, op), ...
+        sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1a, i2a) ];
+    else
+      c.Guess = [ ...
+        sprintf('p=%s; %% evaluate 1st guess for %s\n', a.Guess, op), ...
+        sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1a, i2a) ];
+    end
     % handle dimensionality expansion
     if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
       ax = 'xyztu';
@@ -258,10 +267,17 @@ if isFa && isFb
     end
     
     % append Guess: 2nd
-    c.Guess = [ c.Guess, ...
-      sprintf('p=%s; %% evaluate 2nd Guess for %s\n', b.Guess, op), ...
-      sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1b, i2b), ...
-      sprintf('p=%s_p; %% restore initial parameter values\n'  , tmp_a) ];
+    if strncmp(b.Guess(1:2),'p=',2) % 'b' is already the result of a binary operation
+      c.Guess = [ c.Guess, ...
+        sprintf('%s; %% evaluate 2nd Guess for %s\n', b.Guess, op), ...
+        sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1b, i2b), ...
+        sprintf('p=%s_p; %% restore initial parameter values\n'  , tmp_a) ];
+    else
+      c.Guess = [ c.Guess, ...
+        sprintf('p=%s; %% evaluate 2nd Guess for %s\n', b.Guess, op), ...
+        sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1b, i2b), ...
+        sprintf('p=%s_p; %% restore initial parameter values\n'  , tmp_a) ];
+    end
   end
   
   % append Expression:
