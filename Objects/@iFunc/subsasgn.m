@@ -1,7 +1,7 @@
 function b = subsasgn(a,S,val)
 % b = subsasgn(a,index,b) : iFunc indexed assignement
 %
-%   @iFunc/subsasgn: function defines indexed assignement 
+%   @iFunc/subsasgn: function defines indexed assignement
 %   such as a(1:2,3) = b
 %
 % Version: $Revision$
@@ -27,19 +27,19 @@ if numel(b) > 1 && any(strcmp(S(1).type,{'()','{}'}))
     d = iFunc(val);
   else
     if ~isempty( S(2:end) ) % array([1 2 3]).something = something
-		  for j = 1:length(d)
-		    d(j) = subsasgn(d(j),S(2:end),val);
-		  end
-		else	% single level array assigment as array([1 2 3]) = something
-			for j = 1:length(d)
-				if length(val) == 1, d(j) = iFunc(val);
-				elseif length(val) == length(d)
-					d = iFunc(val);
-				else
-					error([ mfilename ': can not assign ' num2str(length(d)) ' iFunc array to ' num2str(length(val)) ' ' class(val) ' array for object ' inputname(1) ' ' b(1).Tag ]);
-				end
-			end
-		end
+          for j = 1:length(d)
+            d(j) = subsasgn(d(j),S(2:end),val);
+          end
+        else    % single level array assigment as array([1 2 3]) = something
+            for j = 1:length(d)
+                if length(val) == 1, d(j) = iFunc(val);
+                elseif length(val) == length(d)
+                    d = iFunc(val);
+                else
+                    error([ mfilename ': can not assign ' num2str(length(d)) ' iFunc array to ' num2str(length(val)) ' ' class(val) ' array for object ' inputname(1) ' ' b(1).Tag ]);
+                end
+            end
+        end
   end
   if prod(size(c)) ~= 0 && prod(size(c)) == prod(size(d)) && length(c) > 1
     c = reshape(d, size(c));
@@ -57,14 +57,14 @@ else
     b = subsasgn(a, S(1:(end-1)), b);
     return
   end
-  
+
   % single level assignment
   s = S(1);
   switch s.type
-  case '()'       
+  case '()'
     if numel(b) > 1   % array() -> deal on all elements
     % SYNTAX: array(index) = val: set Data using indexes
-      c = [];           
+      c = [];
       for j = 1:length(s.subs{:})
         c = [ c subsasgn(c(j),s,val) ];
       end
@@ -107,11 +107,11 @@ else
           % check object when modifying key member
           b = iFunc(b);
         end
-      elseif any(strcmp(fieldname, b.Parameters)) % b.<parameter name> = <value>
-        index=find(strcmp(fieldname, b.Parameters));
+      elseif any(strcmp(fieldname, strtok(b.Parameters))) % b.<parameter name> = <value>
+        index=find(strcmp(fieldname, strtok(b.Parameters)));
         if isnumeric(val) && isscalar(val)  % set constraint: scalar
           if index > length(b.ParameterValues)
-            b.ParameterValues((length(b.ParameterValues)+1):(index-1)) = NaN;
+b.ParameterValues((length(b.ParameterValues)+1):(index-1)) = NaN;
           end
           b.ParameterValues(index)  = val;
         else                                % set constraint: 'fix', 'clear', 'set', [min max]
@@ -133,7 +133,7 @@ else
               % build the list of replacement strings
               replace = strcat('p(', cellstr(num2str(transpose(1:length(b.Parameters)))), ')');
               % replace Parameter names by their p(n) representation
-              val = regexprep(val, strcat('\<"', b.Parameters, '"\>' ), replace);
+              val = regexprep(val, strcat('\<"', strtok(b.Parameters), '"\>' ), replace);
             end
             b.Constraint.set{index}   = val;
             b.Constraint.fixed(index) = 1; % this also fixes the value
@@ -159,10 +159,5 @@ else
       end
     end
   end   % switch s.type
-  
-end
 
-if nargout == 0 && ~isempty(inputname(1))
-  assignin('caller',inputname(1),b);
-end
-
+end 

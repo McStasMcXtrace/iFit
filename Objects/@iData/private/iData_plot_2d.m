@@ -1,4 +1,4 @@
-function [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method)
+function [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin)
 % iData_plot_2d: plot a 2D iData object
 % used in iData/plot
 
@@ -25,8 +25,8 @@ function [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method)
     if (strfind(method,'scatter'))
       h=fscatter3(x(:),y(:),z(:),z(:),this_method); view(3);
     else
-      if length(method), h = plot3(x,y,z, this_method);
-      else h = plot3(x,y,z); end
+      if length(method), h = plot3(x,y,z, this_method, varargin{:});
+      else h = plot3(x,y,z, varargin{:}); end
     end
   else                % surf and similar stuff
     C = [];
@@ -34,16 +34,17 @@ function [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method)
       z = z;
     end
     if (strfind(method,'contour3'))
-      [C,h]=contour3(x,y,z);
+      [C,h]=contour3(x,y,z, varargin{:});
     elseif (strfind(method,'contourf'))
-      [C,h]=contourf(x,y,z);
+      [C,h]=contourf(x,y,z, varargin{:});
     elseif (strfind(method,'contour'))
       if isempty(getaxis(a,3))
-        [C,h]=contour(x,y,z);
+        [C,h]=contour(x,y,z, varargin{:});
       else
+        % display contour in a non-zero plane
         c=getaxis(a,3); c=mean(c(:));
         Z(:,:,1)=z; Z(:,:,2)=z; Z(:,:,3)=z;
-        h=contourslice(x,y,[c*0.999 c c*1.001],Z,[],[],c);
+        h=contourslice(x,y,[c*0.999 c c*1.001],Z,[],[],c, varargin{:});
       end
     elseif (strfind(method,'surfc'))
       h    =surfc(x,y,z); % set(h,'Edgecolor','none');

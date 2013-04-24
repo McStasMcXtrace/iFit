@@ -43,7 +43,8 @@ function h=plot(a, varargin)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
 %                 opengl (faster for large data sets)
 %                 whole or full (do not reduce large object size for plotting)
-%                 figure (open 
+%                 figure (open a new figure window)
+%         args: additional arguments passed to the plotting method
 %                 
 % output: h: graphics object handles (cell/array)
 % ex:     plot(iData(rand(10)), 'surfc interp transparent'); plot(iData(1:10), 'r-');
@@ -64,46 +65,76 @@ function h=plot(a, varargin)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 
-ih = ishold;
-h  = [];
-funcs=[]; % additional iFunc objects to plot afterwards...
+ih     = ishold;
+h      = [];
+funcs  = []; % additional iFunc objects to plot afterwards...
 method = '';
+args   = {};
 
 % analyze input arguments
-if nargin == 1, method=''; 
+if nargin == 1, 
+  h = iData_plot(a, '');
 elseif length(varargin) == 1
   if ischar(varargin{1})
     method=varargin{1};
   elseif isa(varargin{1},'iData')
     b = varargin{1};
-    a = [ a(:) ; b(:) ]; method='';
+    a = [ a(:) ; b(:) ];
   elseif isa(varargin{1},'iFunc')
     funcs = varargin{1};
   end
-else
+  h = iData_plot(a, method);
+else % multiple plot/methods to render
+  % first extract non char/iData/iFunc
+  for index=1:length(varargin)
+    if ~ischar(varargin{index}) && ~isa(varargin{index},'iData') && ~isa(varargin{index},'iFunc')
+      args{end+1}    = varargin{index};
+      varargin{index}= '';
+    end
+  end
+  varargin = varargin(~cellfun(@isempty, varargin)); % now only contains char/iData/iFunc
   % split varargin looking for chars
   index=1;  
   while index <= length(varargin)  % parse input arguments and split with char/methods calls
-    if ischar(varargin{index})
-      method = varargin{index};
-      h =[ h plot(a, method) ];
-      a = []; method='';
-      hold on
-    elseif isa(varargin{index},'iData') 
-      b = varargin{index};
-      a = [ a(:) ; b(:) ];
-    elseif isa(varargin{index},'iFunc')
-      funcs = [ funcs ; varargin{index} ];
+    if ~isempty(varargin{index})
+        if ischar(varargin{index})
+          method = varargin{index};
+          h =[ h iData_plot(a, method, args{:}) ];
+          a = []; method='';
+          hold on
+        elseif isa(varargin{index},'iData') 
+          b = varargin{index};
+          a = [ a(:) ; b(:) ];
+        elseif isa(varargin{index},'iFunc')
+          funcs = [ funcs ; varargin{index} ];
+        end
     end
     index=index+1;
   end
+  return
 end
 clear varargin
 
+% handle iFunc objects
+if ~isempty(funcs)
+  hold on
+  hline = plot(funcs);
+  set(findobj(hline,'Type','Line'),'LineStyle','--');
+  h = [ h hline ];
+end
+
+if ih == 1, hold on; else hold off; end
+
+
+% =========================================================================
+function h = iData_plot(a, method, varargin)
+
+h      = [];
 if isempty(a)
-  if ih == 1, hold on; else hold off; end
   return; 
 end
+
+if isempty(method), method='plot'; end
 
 % clean method string from the plot type and supported options not to be passed to matlab plot commands
 if ischar(method)
@@ -120,10 +151,8 @@ end
 % plot an array of objects =====================================================
 if numel(a) > 1
   iData_private_warning('enter', mfilename);
-  h = iData_plot_array(a, method, this_method);
+  h = iData_plot_array(a, method, this_method, varargin{:});
   iData_private_warning('exit', mfilename);
-  
-  if ih == 1, hold on; else hold off; end
   return
 end % plot array
 
@@ -158,14 +187,13 @@ ret = 0;
 switch ndims(a) % handle different plotting methods depending on the iData dimensionality
 case 0
   h=[]; 
-  if ih == 1, hold on; else hold off; end
   return;
 case 1  % vector type data (1 axis + signal) -> plot
-  [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method); % in private
+  [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin{:}); % in private
 case 2  % surface type data (2 axes+signal) -> surf or plot3
-  [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method); % in private
+  [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin{:}); % in private
 case 3  % 3d data sets: volumes
-  [h, xlab, ylab, zlab, ret] = iData_plot_3d(a, method, this_method); % in private
+  [h, xlab, ylab, zlab, ret] = iData_plot_3d(a, method, this_method, varargin{:}); % in private
 otherwise
   iData_private_warning(mfilename, [ 'plotting of ' num2str(ndims(a)) '-th dimensional data is not implemented from ' a.Tag '.\n\tUse sum or camproj to reduce dimensionality for plotting.' ]);
   h=[];
@@ -173,7 +201,6 @@ otherwise
 end % switch
 
 if ret
-  if ih == 1, hold on; else hold off; end
   return
 end
 
@@ -277,15 +304,6 @@ else
   title(textwrap(cellstr(char(T)),80),'interpreter','none');
 end
 
-% handle iFunc objects
-if ~isempty(funcs)
-  hold on
-  hline = plot(funcs);
-  set(findobj(hline,'Type','Line'),'LineStyle','--');
-  h = [ h hline ];
-end
-
-if ih == 1, hold on; else hold off; end
 % ============================================================================
 
 

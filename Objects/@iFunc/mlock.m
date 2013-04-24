@@ -13,6 +13,7 @@ function a = mlock(a, varargin)
 %     display fixed parameters
 %
 % input:  s: object or array (iFunc)
+%         parameters: names or index of parameters to lock/fix (char or scalar)
 % output: b: object or array (iFunc)
 % ex:     b=mlock(a,'Intensity');
 %
