@@ -1,4 +1,4 @@
-function h = contourf(a, option)
+function h = contourf(a, option, varargin)
 % h = contourf(s,option) : Plot a 2D/3D object as filled contour
 %
 %   @iData/contourf function to plot a 2D or 3D object
@@ -16,10 +16,14 @@ function h = contourf(a, option)
 % Version: $Revision$
 % See also iData, iData/plot
 
-if nargin ==1
+if nargin <=1
 	option='';
 end
-h = plot(a, [ 'contourf ' option ]);
+if ischar(option)
+  h = plot(a, [ 'contourf ' option ], varargin{:});
+else
+  h = plot(a, 'contourf', option , varargin{:});
+end
 
 
 

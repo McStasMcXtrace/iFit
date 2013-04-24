@@ -1,4 +1,4 @@
-function h = contour(a, option)
+function h = contour(a, option, varargin)
 % h = contour(s,option) : Plot a 2D/3D object as contour
 %
 %   @iData/contour function to plot a 2D or 3D object
@@ -16,10 +16,15 @@ function h = contour(a, option)
 % Version: $Revision$
 % See also iData, iData/plot
 
-if nargin ==1
+if nargin <=1
 	option='';
 end
-h = plot(a, [ 'contour ' option ]);
+
+if ischar(option)
+  h = plot(a, [ 'contour ' option ], varargin{:});
+else
+  h = plot(a, 'contour', option , varargin{:});
+end
 
 
 

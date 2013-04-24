@@ -49,7 +49,7 @@ if nargin < 2
 end
 
 if isa(p, 'iData')
-  varargin = { p varargin{:} };
+  varargin = { p varargin{:} }; % will evaluate on iData axes with guesses pars
   p = [];
 end
 
@@ -133,6 +133,8 @@ end
 ax=[]; name=model.Name;
 guessed = '';
 % guess parameters ========================================================
+
+% some ParameterValues have been defined already. Use them.
 if isempty(p) && length(model.ParameterValues) == numel(model.Parameters)
   p = model.ParameterValues;
 end
@@ -203,7 +205,6 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
   end
   % specific guessed values (if any) -> p2 override p1
   if ~isempty(model.Guess) && ~all(cellfun('isempty',varargin))
-
     if isa(model.Guess, 'function_handle')
       n = nargin(model.Guess);                % number of required arguments
       try
@@ -228,7 +229,7 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
       disp(model.Guess);
       disp('Axes and signal:');
       disp(varargin);
-      disp('Using auto-guess values.');
+      warning('Using auto-guess values.');
     else
       % merge auto and possibly manually set values
       index     = ~isnan(p2);
@@ -279,7 +280,10 @@ if ~isempty(inputname(1))
   assignin('caller',inputname(1),model); % update in original object
 end
 
-if ~isempty(guessed)
+% return here with syntax:
+% feval(model) when model.ParameterValues is empty
+% feval(model, 'guess')
+if ~isempty(guessed) 
   return
 end
 
@@ -293,8 +297,9 @@ if length(varargin) < model.Dimension
 end
 
 % default return value...
-signal= [];
+signal          = [];
 parameter_names = lower(model.Parameters);
+AxisOrientation = ''; ParallelAxes=1;
 % check axes and define missing ones
 for index=1:model.Dimension
   % check for default axes to represent the model when parameters are given
@@ -323,21 +328,30 @@ for index=1:model.Dimension
     if ~isnan(width) && ~isnan(position)
       if isempty(varargin{index}) || all(all(isnan(varargin{index})))
 		    % axis is not set: use default axis from parameter names and values given
-		    varargin{index} = linspace(position-3*width,position+3*width, 50);
+		    varargin{index} = linspace(position-3*width,position+3*width, 50+index);
+		    % orient the axis along the right dimension to indicate this is not an event type
+        d = ones(1,max(2,model.Dimension)); d(index) = numel(varargin{index});
+        varargin{index} = reshape(varargin{index}, d);
 		    width = NaN; position = NaN;
 		    break; % go to next axis (exit index_p loop)
 		  end
     end
   end
   if isempty(varargin{index})
-    varargin{index} = linspace(-5,5,50);
+    varargin{index} = linspace(-5,5,50+index);
+    % orient the axis along the right dimension to indicate this is not an event type
+    d = ones(1,max(2,model.Dimension)); d(index) = numel(varargin{index});
+    varargin{index} = reshape(varargin{index}, d);
   end
+  % check if axes are vectors of same length and orientation (event type model)
+  if isempty(AxisOrientation), AxisOrientation=size(varargin{index});
+  elseif any(AxisOrientation ~= size(varargin{index})), ParallelAxes=0; end
 end
 
 % convert axes to nD arrays for operations to take place
 % check the axes and possibly use ndgrid to allow nD operations in the
 % Expression/Constraint. Only for non event style axes.
-if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension))) && length(unique(cellfun(@numel, varargin(1:model.Dimension)))) ~= 1
+if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension))) && ~ParallelAxes
   [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
 end
 
@@ -482,4 +496,4 @@ function p = iFunc_feval_set(model, p, varargin)
       
     end
   end
-  
+
