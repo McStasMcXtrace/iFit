@@ -21,8 +21,11 @@ y.Name       = [ 'Dirac (1D) [' mfilename ']' ];
 y.Description='Dirac peak fitting function';
 y.Parameters = {'Amplitude','Centre'};
 y.Expression = @(p,x) p(1)*(abs(x - p(2)) == min(abs(x(:) - p(2))));
-y.Dimension  = 1;   
-y.Guess      = @(x,signal) [ max(signal(:)) sum(signal(:).*x(:))/sum(signal(:)) ];
+y.Dimension  = 1;
+% moments of distributions
+m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
+
+y.Guess      = @(x,signal) [ NaN m1(x, signal-min(signal(:)) ];
 
 y = iFunc(y);
 

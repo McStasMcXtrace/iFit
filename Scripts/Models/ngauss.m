@@ -50,9 +50,9 @@ y.Parameters = Parameters;
 Expression  = @(p,x) p(1)*exp(-0.5*((x-p(2))/p(3)).^2); % single function to use as template
 y.Expression = '@(p,x) gauss(p(1:3),x)';
 for index=2:n
-  y.Expression = [ y.Expression sprintf('+gauss(p(%i:%i),x)', 3*n-2, 3*n) ];
+  y.Expression = [ y.Expression sprintf('+gauss(p(%i:%i),x)', 3*index-2, 3*index) ];
 end
-y.Expression = [ y.Expression sprintf('+p(%i)',3*index+1) ];
+y.Expression = [ y.Expression sprintf('+p(%i)',3*n+1) ];
 
 y.Expression= eval(y.Expression); % make it a function handle (faster to evaluate)
 
