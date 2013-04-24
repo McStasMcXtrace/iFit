@@ -21,10 +21,11 @@ y.Parameters={'Amplitude','Centre','HalfWidth','Background'};
 y.Description='Triangular function';
 % MZ <mzinkin@sghms.ac.uk>
 y.Expression= @(p,x) ((p(3)-sign(x-p(2)).*(x-p(2)))/p(3)^2)*p(1).*(abs(x-p(2)) < p(3))+p(4);
-y.Guess     = @(x,signal) [ NaN ...
-                            sum(signal(:).*x(:))/sum(signal(:)) ...
-                            sqrt(abs(sum(x(:).*x(:).*signal(:))/sum(signal(:)) - sum(signal(:).*x(:))/sum(signal(:))*sum(signal(:).*x(:))/sum(signal(:)))) ...
-                            NaN ];
+
+m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
+m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
+
+y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ];
                             
 y = iFunc(y);
 

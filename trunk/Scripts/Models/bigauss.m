@@ -22,11 +22,11 @@ y.Name      = [ 'Bi-Gaussian (1D) [' mfilename ']' ];
 y.Description='Bi-Gaussian/asymmetric fitting function. Ref: T. S. Buys, K. De Clerk, Bi-Gaussian fitting of skewed peaks, Anal. Chem., 1972, 44 (7), pp 1273–1275';
 y.Parameters= { 'Amplitude', 'Centre', 'HalfWidth1', 'HalfWidth2', 'BackGround' };
 y.Expression= @(p, x) p(1)*exp(-0.5*((x-p(2)) ./ (p(3)*(x < p(2)) + p(4) * (x >= p(2)))).^2) + p(5);
-y.Guess     = @(x,signal) [ NaN ...
-                            sum(signal(:).*x(:))/sum(signal(:)) ...
-                            sqrt(abs(sum(x(:).*x(:).*signal(:))/sum(signal(:)) - sum(signal(:).*x(:))/sum(signal(:))*sum(signal(:).*x(:))/sum(signal(:))))/1.5 ...
-                            sqrt(abs(sum(x(:).*x(:).*signal(:))/sum(signal(:)) - sum(signal(:).*x(:))/sum(signal(:))*sum(signal(:).*x(:))/sum(signal(:))))*1.5 ...
-                            NaN ];
+% moments of distributions
+m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
+m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
+
+y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:)))/1.5 m2(x, s-min(s(:)))*1.5 NaN ];
 
 y=iFunc(y);
 

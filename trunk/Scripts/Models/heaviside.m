@@ -23,10 +23,12 @@ y.Description='Heaviside model. The Width parameter sign indicates if this is a 
 y.Expression= {'signal = zeros(size(x))+p(4);', ...
   'if p(3) >= 0, signal(find(x >= p(2))) = p(1);', ...
   'else signal(find(x <= p(2))) = p(1); end' };
-y.Guess     = @(x,signal) [ NaN ...
-                            sum(signal(:).*x(:))/sum(signal(:)) ...
-                            sqrt(abs(sum(x(:).*x(:).*signal(:))/sum(signal(:)) - sum(signal(:).*x(:))/sum(signal(:))*sum(signal(:).*x(:))/sum(signal(:)))) ...
-                            NaN ];
+
+% moments of distributions
+m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
+m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
+
+y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ];
 
 y = iFunc(y);
 
