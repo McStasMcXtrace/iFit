@@ -123,7 +123,7 @@ else
   e2 = subsref(b,struct('type','.','subs','Error'));
   m2 = subsref(b,struct('type','.','subs','Monitor'));
 end
-if (all(m1(:)==0) || all(m1(:)==1)) && (all(m2(:)==0) || all(m2(:)==1)) m1=0; m2=0; end
+if all(m1(:)==0) && all(m2(:)==0), m1=0; m2=0; end
 
 % do test on dimensionality for a vector/matrix input
 % use vector duplication to fill iData dimensionality (repmat/kron)
