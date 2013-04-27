@@ -45,17 +45,19 @@ if dim <= 0, dim=1; end
 iData_private_warning('enter', mfilename);
 
 % syntax is now: cat(dim,[a b c ... ])
-if ~all(isvector(a)>1)
+if ~any(isvector(a)>1)
   % first need to compute union axes, but not for dimension 'dim'
   c_axis = iData_private_caxis(a,'union');
   % use common axes on all axes except dim
   for index=1:numel(a)
     x = getaxis(a(index), dim);
-	  if length(x) == 1 || length(x) == length(a)
-		  c_axis{dim} = x; % restore initial 'dim' axis from object. Others are the common axes.
-	  end
-	  a(index) = interp(a(index), c_axis);
-	end
+    if length(x) == 1 || length(x) == length(a)
+      c_axis{dim} = x; % restore initial 'dim' axis from object. Others are the common axes.
+    end
+    if dim > ndims(a(index))
+      a(index) = interp(a(index), c_axis);
+    end
+  end
 else
   if dim ~= 1
     iData_private_warning(mfilename, [' Event data sets can only be catenated one after the other. Using dim=1.']);
