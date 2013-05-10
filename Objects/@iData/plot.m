@@ -92,7 +92,7 @@ else % multiple plot/methods to render
       varargin{index}= '';
     end
   end
-  varargin = varargin(~cellfun(@isempty, varargin)); % now only contains char/iData/iFunc
+  varargin = args; % now only contains char/iData/iFunc
   % split varargin looking for chars
   index=1;  
   while index <= length(varargin)  % parse input arguments and split with char/methods calls
@@ -254,6 +254,10 @@ if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
 % DisplayName and Label
 d = '';
 if ~isempty(a.Label) && ~isempty(a.DisplayName)
+  if strcmp(a.Label, a.DisplayName)
+      if ~isempty(title(a)), a.DisplayName=title(a);
+      else a.DisplayName=fS; end
+  end
   g = cellstr(a.Label); g=deblank(g{1});
   if length(g) > 13, g = [ g(1:10) ]; end                 % Label/DisplayName
   d = [ d sprintf('%s', g) ];
