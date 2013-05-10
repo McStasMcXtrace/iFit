@@ -314,9 +314,9 @@ function b=iData_struct2iData(a)
 % ============================================================================
 % iData_cell2iData: converts a cell into an iData array
 function b=iData_cell2iData(a)
-  b = zeros(iData, numel(a), 1);
-  parfor k=1:numel(a)
-    b(k) = iData(a{k});
+  b = [];
+  for k=1:numel(a)
+    b = [ b iData(a{k}) ];
   end
   try
     b = reshape(b,size(a));

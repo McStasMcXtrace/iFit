@@ -19,11 +19,15 @@ if numel(s) > 1  % this is an array of iData
   return
 end
 
-y = size(subsref(s,struct('type','.','subs','Signal')));
-if nargin > 1, 
-  if dim > length(y), y=0; 
-  else
-    y = y(dim); 
+if numel(s) == 0
+  y=0;
+else
+  y = size(subsref(s,struct('type','.','subs','Signal')));
+  if nargin > 1, 
+    if dim > length(y), y=0; 
+    else
+      y = y(dim); 
+    end
   end
 end
 

@@ -101,7 +101,11 @@ if ~iscell(links), links = { links }; end
 
 labels= cellstr(labels);
 
-to_keep = [ this.Alias.Names(1:3) this.Alias.Values(1:3) this.Alias.Axis ];
+if numel(this)
+  to_keep = [ this.Alias.Names(1:3) this.Alias.Values(1:3) this.Alias.Axis ];
+else
+  to_keep = [];
+end
 
 % handle single object
 for index=1:length(names) % loop on alias names
