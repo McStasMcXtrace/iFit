@@ -4415,10 +4415,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
   /* send back the mxOut array */
 
   if (i && nlhs) {
-    if (!mxOut)   plhs[0] = mxCreateString("created output file");
+    if (!mxOut)   plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
     else        { plhs[0] = mxOut; }
   } else {
-    plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
+    if (nlhs) plhs[0] = mxCreateDoubleMatrix(0,0,mxREAL);
   }
   /* all allocated blocks are freed by Matlab API automatically */
   /* no need to call ANY free, mxFree, mxDestroyArray */

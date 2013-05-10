@@ -6,6 +6,10 @@ function s = read_anytext(varargin)
 % * launch looktxt as MeX and MATfile format on temporary file
 % * import the MAT file as a structure
 
+% TODO: 
+% support replacement by fread; regexprep; fprintf (NaN, Inf, ...)
+% support option compile
+
 % handle input arguments =======================================================
 s = [];
 if isempty(varargin)

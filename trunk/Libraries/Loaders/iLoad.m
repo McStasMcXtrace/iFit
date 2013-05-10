@@ -64,7 +64,7 @@ end
 data = []; format = [];
 if nargin == 0, filename=''; end
 if nargin < 2,  loader = ''; end
-if nargin ==1
+if nargin ==1 && ischar(filename)
   if any(strcmp(filename, {'load config','config','force','force load config','formats','display config','load','save','compile'}))
     [data, format] = iLoad('', filename);
     return
