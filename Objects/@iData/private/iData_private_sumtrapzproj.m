@@ -40,7 +40,7 @@ if any(strcmp(op, {'sum','cumsum','prod','cumprod','trapz','cumtrapz'}))
 end
 
 s = iData_private_cleannaninf(get(a,'Signal'));
-e = iData_private_cleannaninf(get(a,'Error'));
+e = iData_private_cleannaninf(get(a,'Error')); 
 m = iData_private_cleannaninf(get(a,'Monitor'));
 
 [link, label] = getalias(a, 'Signal');
@@ -52,6 +52,7 @@ if all(dim > 0)
   switch op
   case {'sum','cumsum'} % SUM ==================================================
     % sum on all dimensions requested
+    e=e.^2;
     for index=1:length(dim(:))
       if dim(index) == 1 && isvector(s)
         s = s(:); e=e(:); m=m(:);
@@ -61,7 +62,7 @@ if all(dim > 0)
       s = feval(op, s, dim(index)); 
     end
     % Store Signal
-    s=squeeze(s); e=squeeze(e); m=squeeze(m);
+    s=squeeze(s); e=sqrt(squeeze(e)); m=squeeze(m);
     setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
   case {'prod','cumprod'} % PROD ===============================================
@@ -79,6 +80,7 @@ if all(dim > 0)
     setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
   case {'trapz','cumtrapz'} % TRAPZ ============================================
+    e=e.^2;
     for index=1:length(dim(:))
       [x, xlab]     = getaxis(a,dim(index)); x=x(:);
       if dim(index) ~= 1  % we put the dimension to integrate on as first
@@ -103,7 +105,7 @@ if all(dim > 0)
       end
     end
     % Store Signal
-    s=squeeze(s); e=squeeze(e); m=squeeze(m);
+    s=squeeze(s); e=sqrt(squeeze(e)); m=squeeze(m);
     setalias(b,'Signal', s, [ op ' of ' label ' along ' xlab ]); 
     
   case 'camproj' % camproj =====================================================
@@ -124,12 +126,12 @@ if all(dim > 0)
     setalias(b,'Signal', s(:), [ 'projection of ' label ' on axis ' num2str(dim) ]);     % Store Signal
     b = set(b, 'Error', abs(e(:)), 'Monitor', m(:));
     b = hist(b, lx); % faster than doing sum on each dimension
-	  
-	end % switch (compute)
+
+  end % switch (op, compute)
 	
-	if any(strcmp(op, {'sum','trapz','prod'}))
-	  % store new object
-	  b = set(b, 'Error', abs(e), 'Monitor', m);
+  if any(strcmp(op, {'sum','trapz','prod'}))
+	% store new object
+	b = set(b, 'Error', abs(e), 'Monitor', m);
 
     rmaxis(b);  % remove all axes, will be rebuilt after operation
     % put back initial axes, except those integrated
