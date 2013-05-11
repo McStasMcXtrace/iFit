@@ -1,7 +1,7 @@
 function c = eq(a,b)
 % c = eq(a,b) : equal comparison of iData objects
 %
-%   @iData/eq (~=) copmarison operator
+%   @iData/eq (==) comparison operator
 %     when comparing two iData objects, the monitor weighting is applied.
 %
 % input:  a: object or array (iData or numeric)
