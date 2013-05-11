@@ -17,7 +17,7 @@ License: MIT
 
 Usage:
 >>>> from matlabpipe import MatlabPipe
->>>> mp=MatlabPipe(matlab_process_path='/opt/MATLAB/R2010a/bin/matlab', matlab_version='2010a')
+>>>> mp=MatlabPipe(matlab_process_path='/opt/MATLAB/R2010a/bin/matlab')
 >>>> mp.open()
 >>>> mp.eval('a=[ 1 2 3 4 ]; plot(a);')
 >>>> b = mp.get('a');
@@ -113,10 +113,10 @@ class MatlabPipe(object):
       matlab_process_path = find_matlab_process()
     if matlab_version == 'guess':
       matlab_version = find_matlab_version(matlab_process_path)
-    print 'Matlab version %s' % matlab_version
+    #print 'Matlab version %s' % matlab_version
     print 'Matlab path    %s' % matlab_process_path
     if not is_valid_version_code(matlab_version):
-      print 'Invalid version code %s, defaulting to 2010a' % matlab_version
+    #  print 'Invalid version code %s, defaulting to 2010a' % matlab_version
       matlab_version = '2010a'
     if not os.path.exists(matlab_process_path):
       raise ValueError('Matlab process path %s does not exist' % matlab_process_path)
@@ -227,7 +227,7 @@ class MatlabPipe(object):
         temp.seek(0)
         # get the content of the buffer
         temp_str = temp.read()  
-        temp.close()
+        
         # tell Matlab to expect data from stdin
         self.process.stdin.write('load stdio;\n')
         # Matlab then issue message 'flushed_stdout' \n 'ack load stdio'
@@ -236,6 +236,7 @@ class MatlabPipe(object):
         self.process.stdin.write(temp_str)
         # wait for actual processing acknowledgement by Matlab
         self._read_until('ack load finished\n', on_new_output=on_new_output)
+        temp.close()
         success = True
       except:
         pass
@@ -324,10 +325,11 @@ class MatlabPipe(object):
       # evaluate pipe content to get the included variables
       try:
         ret = mlabio.loadmat(temp, chars_as_strings=True, squeeze_me=True, struct_as_record=True)
+        # clear pipe stream
+        temp.close()
       except:
         success=False
-      # clear pipe stream
-      temp.close()
+      
       
     if not success:
       # stdio did not work, or not requested: we use temporary files
