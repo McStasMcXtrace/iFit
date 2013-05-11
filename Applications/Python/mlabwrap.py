@@ -72,7 +72,7 @@ N.B.: The result here is a 1x3 matrix (and not a flat lenght 3 array) of type
 double (and not int), as matlab built around matrices of type double (see
 ``MlabWrap._flatten_row_vecs``).
 
-Matlab(tm)ab, unlike python has multiple value returns. To emulate calls like
+Matlab(tm), unlike python has multiple value returns. To emulate calls like
 ``[a,b] = sort([3,2,1])`` just do:
 
 >>> mlab.sort([3,1,2], nout=2)
@@ -86,6 +86,11 @@ You can look at the documentation of a matlab function just by using help,
 as usual:
 
 >>> help(mlab.sort)
+
+You can also directly talk to the Matlab instance with methods
+>>> mlab._eval('matlab commands')
+>>> mlab._get('variable name in Matlab workspace')
+>>> mlab._set('variable name in Matlab workspace', value)
 
 In almost all cases that should be enough -- if you need to do trickier
 things, then get raw with ``mlab._do``, or build your child class that
@@ -283,10 +288,10 @@ class MlabObjectProxy(object):
         rep = "".join(output)
         klass = self._mlabwrap._do("class(%s)" % self._name)
         #XXX what about classes?
-        if klass in ("struct","iData","iFunc"):
-          rep = "\n" + self._mlabwrap._format_struct(self._name)
-        else:
-          rep = ""
+#        if klass in ("struct","iData","iFunc"):
+#          rep = "\n" + self._mlabwrap._format_struct(self._name)
+#        else:
+#          rep = ""
         return "<%s of matlab-class: %r; internal name: %r; has parent: %s>\n%s" % (
             type(self).__name__, klass,
             self._name, ['yes', 'no'][self._parent is None],
@@ -417,6 +422,7 @@ class MlabWrap(object):
     def __del__(self):
         mlabraw.close(self._session)
     def _format_struct(self, varname):
+        """unactivated as it takes time top get fieldnames"""
         res = []
         fieldnames = self._do("fieldnames(%s)" % varname)
         size       = numpy.ravel(self._do("size(%s)" % varname))
