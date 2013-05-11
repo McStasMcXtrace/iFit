@@ -70,6 +70,7 @@ h      = [];
 funcs  = []; % additional iFunc objects to plot afterwards...
 method = '';
 args   = {};
+vargs  = {};
 
 % analyze input arguments
 if nargin == 1, 
@@ -89,27 +90,32 @@ else % multiple plot/methods to render
   for index=1:length(varargin)
     if ~ischar(varargin{index}) && ~isa(varargin{index},'iData') && ~isa(varargin{index},'iFunc')
       args{end+1}    = varargin{index};
-      varargin{index}= '';
+      varargin{index}='';
+    else
+      vargs{end+1} = varargin{index};
     end
   end
-  varargin = args; % now only contains char/iData/iFunc
+  varargin =vargs; % now only contains char/iData/iFunc
   % split varargin looking for chars
   index=1;  
   while index <= length(varargin)  % parse input arguments and split with char/methods calls
     if ~isempty(varargin{index})
         if ischar(varargin{index})
-          method = varargin{index};
+          method = varargin{index}; % plot stored iData objects with current method
           h =[ h iData_plot(a, method, args{:}) ];
           a = []; method='';
           hold on
-        elseif isa(varargin{index},'iData') 
+        elseif isa(varargin{index},'iData') % store some iData objects until we plot them
           b = varargin{index};
           a = [ a(:) ; b(:) ];
-        elseif isa(varargin{index},'iFunc')
+        elseif isa(varargin{index},'iFunc') % store some iData objects until we plot them (at the end)
           funcs = [ funcs ; varargin{index} ];
         end
     end
     index=index+1;
+  end
+  if numel(a) > 0 % if we have some objects left, we plot them with default method
+    h =[ h iData_plot(a, '', args{:}) ];
   end
   return
 end

@@ -89,7 +89,11 @@ if isnumeric(ax) % given as a number, return a number
   else
     % get the Axis alias
     if ax <= length(s.Alias.Axis)
-      link = s.Alias.Axis{ax};
+      if ischar(s.Alias.Axis)
+        link = s.Alias.Axis(ax,:);
+      elseif iscell(s.Alias.Axis)
+        link = s.Alias.Axis{ax};
+      end
       % get the axis value. This means the axis link is correctly defined.
       if ~isempty(link)
         try
@@ -130,8 +134,12 @@ else % given as a char/cell, return a char/cell
       ax = axis_str;
       if axis_str == 0
         link = 'Signal';
-      elseif ax <= length(s.Alias.Axis)
-        link = s.Alias.Axis{ax};
+      elseif 0 < ax && ax <= length(s.Alias.Axis)
+        if ischar(s.Alias.Axis)
+          link = s.Alias.Axis(ax,:);
+        elseif iscell(s.Alias.Axis)
+          link = s.Alias.Axis{ax};
+        end
       else
         val=''; lab=''; return
       end
