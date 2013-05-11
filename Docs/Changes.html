@@ -10,7 +10,7 @@
 
   
   
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
 
 
   
@@ -46,7 +46,14 @@
 
 
 
-  <li><span style="font-weight: bold;">1.3.1</span>: Support for loading CIF/CFL/ShelX structure, <a href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a>/<a href="http://en.wikipedia.org/wiki/MRC_%28file_format%29">MRC</a>/<a href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a> electron
+  <li><b>1.4</b>: Python interface. Fix in iData integration routines 
+error bar propagation (trapz, sum, ...). Fix in iData/combine when 
+monitors are default (1). Better detection of duplicated data sets from 
+recursive iData/load. Fixed auto guess in gauss,lorz,... Models. Added 
+proper Unit/integration test infrastructure. Fixed some methods for 
+iFunc objects with parameter names followed with comments.<br>
+<span style="font-weight: bold;"></span></li>
+<li><span style="font-weight: bold;">1.3.1</span>: Support for loading CIF/CFL/ShelX structure, <a href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a>/<a href="http://en.wikipedia.org/wiki/MRC_%28file_format%29">MRC</a>/<a href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a> electron
  density <a href="Loaders.html">formats</a>. Load/save of <a href="http://en.wikipedia.org/wiki/YAML">YAML</a>/<a href="http://en.wikipedia.org/wiki/JSON">JSON</a>/<a href="http://en.wikipedia.org/wiki/XML">XML</a> files. New <a href="Models.html#mozTocId344379">Rietveld</a> model that uses a McStas neutron diffractometer 
 model to convolve the structure factors and fit with diffractometer 
 data. Added TAS neutron spectrometer resolution computation <a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>. <a href="iData.html">iData</a> <span style="font-style: italic;">commandhistory</span> can be <a href="Save.html">saved</a> as a Matlab script. Added <span style="font-style: italic;">nlorz</span> and <span style="font-style: italic;">ngauss</span> <a href="Models.html">Models</a>. Fix of iData/<span style="font-style: italic;">combine</span> with scalar Monitor values. Better memory handling in <a href="Load.html">iData/load</a>. <a href="iFunc.html">iFunc</a>
@@ -55,6 +62,7 @@ data. Added TAS neutron spectrometer resolution computation <a href="../Applicat
 changing columns number. Execution speed improvement in all object 
 operators. Allow <a href="Fit.html">fitting</a> of event data sets. <br>
 <span style="font-weight: bold;"></span></li>
+
 <li><span style="font-weight: bold;">1.3</span>: Support for <a href="Loaders.html#mozTocId361032">SIF, MarCCD, Roper SPE</a> <a href="http://www.adsc-xray.com/products.html">ADSC</a> X-ray CCD. Export to <a href="http://www.web3d.org/x3d/specifications/x3d_specification.html">X3D</a>, fix for some text file import, support for the <a href="http://www.mathworks.com/products/parallel-computing/">Parallel Computing Toolbox</a> (when available), improved interpolation, added <span style="font-style: italic;">meshgrid</span>, <span style="font-style: italic;">rotate, </span>radial integration (<a href="Math.html#mozTocId439767"><span style="font-style: italic;">cart2sph</span></a>), better support for event files, save of iFunc models to m-files. Added simple models for <a href="Models.html#mozTocId285330">small angle scattering</a> form factors and structure factors. Improved <a href="McStas.html">McStas</a>/McXtrace support. Embedded help system, array and graphics editor in <a href="iFit.html">standalone</a> version. Save object history to script file <span style="font-style: italic;">(Nov. 29th 2012)</span>.<br>
 <span style="font-weight: bold;"></span></li>
 
@@ -264,7 +272,7 @@ memory. You will probably need to assign manually some of the Signal and
 Text files containing <span style="font-weight: bold;">NaN's inside matrices</span>
  are not imported properly (NaN is read as a text inside a matrix, and 
 thus breaks the matrix into bits). One way is to replace all NaN's by 0 
-values.<br>
+values. This also stands for <b>Inf's</b> and other text embedded inside numerical blocks.<br>
 
 
 
