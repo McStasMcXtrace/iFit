@@ -4,6 +4,8 @@ function s = unique(a,dim,mode)
 %   @iData/unique function to set unique the data set on its axes
 %     unique(a,dim) set unique along axis of rank dim. 
 %       If dim=0, operates on all axes.
+%   Alternatively, you can use 'isequal' to find unique data sets and remove 
+%     duplicates.
 %
 % input:  a: object or array (iData)
 %         dim: dimension to unique (int)
@@ -11,7 +13,7 @@ function s = unique(a,dim,mode)
 % ex:     c=unique(a);
 %
 % Version: $Revision$
-% See also iData, iData/plus, iData/unique, iData/sort
+% See also iData, iData/plus, iData/unique, iData/sort, iData/isequal
 if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is unique(iData, dim)']);
 end
