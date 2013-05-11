@@ -126,17 +126,20 @@ end %for i=1:length(files)
 [b, i1] = unique(get(out, 'Source')); % name is unique
 if 1 < length(out) && length(i1) < length(out)
   % some data sets seem to be duplicated: make additional tests
-  [b, i2] = unique(sum(out, 0));      % sum of Signal is unique
-  [b, i3] = unique(get(out, 'Title'));% Title is unique
-  [b, i4] = unique(get(out, 'Label'));% Title is unique
-  i5 = get(out,'Signal');
-  if iscell(i5)
-    [b, i5] = unique(cellfun('prodofsize',i5)); % size of Signal is unique
-  else
-    i5=[];
+  % look for similarities
+  sources = get(out, 'Source');
+  titls   = get(out, 'Title');
+  labs    = get(out, 'Label');
+  i       = 1:length(out);
+  for index=1:length(out)
+    j = find(strcmp(sources{index}, sources) & strcmp(titls{index}, titls) & strcmp(labs{index}, labs));
+    if length(j) > 1, i(j(2:end)) = 0; end
   end
-  i = unique([i1(:) ; i2(:) ; i3(:) ; i4(:) ; i5(:) ]);
-  out = out(i);
+  i = unique(i(i>0));
+  if length(out) > length(i)
+    disp(sprintf('Removing duplicated data sets %i -> %i', length(out), length(i)))
+    out = out(i);
+  end
 end
 
 for i=1:numel(out)
