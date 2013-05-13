@@ -3,7 +3,7 @@ function a=load_fig(a0)
 %
 % Returns an iData style dataset from a Matlab figure
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a0,'iData')

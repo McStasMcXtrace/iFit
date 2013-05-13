@@ -9,7 +9,7 @@ function a = sparse(a)
 % output: b: object or array (iData)
 % ex:     b=sparse(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/full, iData/sparse
 
 a = iData_private_unary(a, 'sparse');

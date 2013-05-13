@@ -3,7 +3,7 @@ function b=load_stl(a)
 %
 % Returns an iData style dataset from a STL file (ascii or binary)
 %
-% Version: $Revision$
+% Version: $Revision: 1012 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')

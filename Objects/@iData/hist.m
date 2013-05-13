@@ -24,7 +24,7 @@ function c=hist(a, varargin)
 % output: c: histogrammed object (iData)
 % ex:     a=iData([ ifitpath 'Data/Monitor_GV*']); b=hist(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, accumarray, hist, histc, iData/plot, sum, iData/interp
 
 % private: histcn from % Bruno Luong: <brunoluong@yahoo.com> 25/August/2011

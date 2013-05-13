@@ -15,7 +15,7 @@ function [s, f] = std(a, dim)
 %         center:     center of distribution (scalar/array)
 % ex:     c=std(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/median, iData/mean
 
 if nargin < 2, dim=1; end

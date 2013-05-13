@@ -15,7 +15,7 @@ function s=str2struct(string)
 % See also: mat2str, num2str, eval, sprintf, class2str
 %
 % Part of: Loaders utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. $Revision$
+% Author:  E. Farhi <farhi@ill.fr>. $Revision: 1008 $
 
 s={};
 if nargin ==0, return; end

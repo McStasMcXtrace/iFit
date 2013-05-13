@@ -19,7 +19,7 @@ function y=sf_square_well(varargin)
 % output: y: model value (intensity S(q))
 % ex:     y=sf_square_well([50 0.05 15 10 10], -10:10); or plot(sf_square_well,[10 0.02 15 10 10], 0:0.01:1)
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Square well S(q) (1D) [' mfilename ']' ];

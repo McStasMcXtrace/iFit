@@ -18,7 +18,7 @@ function h = scatter3(a, option)
 % output: h: graphics object handles (cell)
 % ex:     scatter3(iData(peaks)); scatter3(iData(flow));
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/plot
 
 if nargin ==1

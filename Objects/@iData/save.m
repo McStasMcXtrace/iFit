@@ -60,7 +60,7 @@ function [filename,format] = save(a, varargin)
 %   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
 %   stlwrite
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/saveas, iData/load, iData/getframe, save, saveas
 
 [filename,format] = saveas(a, varargin{:});

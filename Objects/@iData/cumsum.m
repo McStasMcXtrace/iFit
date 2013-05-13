@@ -9,7 +9,7 @@ function b = cumsum(a,dim)
 % output: s: accumulated sum of elements (iData)
 % ex:     c=cumsum(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumprod
 
 if ~isa(a, 'iData')

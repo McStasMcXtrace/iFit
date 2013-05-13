@@ -14,7 +14,7 @@ function y=heaviside(varargin)
 % output: y: model value
 % ex:     y=heaviside([1 0 1 1], -10:10); or plot(heaviside);
 %
-% Version: $Revision$
+% Version: $Revision: 1024 $
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Heaviside (1D) [' mfilename ']' ];

@@ -74,3 +74,5 @@
   Send messages to the ifit-users@mail.mccode.org.
   Help pages are available at <http://ifit.mccode.org>
 
+--------------------------------------------------------------------------------
+$Revision: 1008 $ - $Date$

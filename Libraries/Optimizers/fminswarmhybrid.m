@@ -78,7 +78,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(varargin)
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004 [hPSO]
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also: fminsearch, optimset
 
 % default options for optimset

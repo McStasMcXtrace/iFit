@@ -12,7 +12,7 @@ function b = meshgrid(a, method)
 % output: s: object (iData)
 % ex:     c=meshgrid(a); c=meshgrid(a, 'vector linear')
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/interp, iData/hist
 
 if nargin < 2

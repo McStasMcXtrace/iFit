@@ -16,7 +16,7 @@ function s = cart2sph(a, center)
 % output: s: object with cartesian/spherical (iData)
 % ex:     c=cart2sph(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/rotate, iData/sum, iData/trapz, iData/camproj
 
 if ~isa(a, 'iData')

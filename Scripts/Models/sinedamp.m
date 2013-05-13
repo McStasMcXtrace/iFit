@@ -12,7 +12,7 @@ function y=sinedamp(varargin)
 % output: y: model value
 % ex:     y=sinedamp([1 0 1 1], -10:10); or plot(sinedamp);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iFunc/fits, iFunc/plot, sine, expon
 
 y.Name           = [ 'Damped-Sine function (1D) [' mfilename ']' ];

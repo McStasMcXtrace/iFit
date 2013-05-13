@@ -3,7 +3,7 @@ function a=load_mcstas_sim(a0)
 %
 % Returns an iData style dataset from a McStas sim file
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a0,'iData')

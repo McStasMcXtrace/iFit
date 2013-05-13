@@ -4,7 +4,7 @@ function a=load_mcstas_sqw(a)
 % Returns an iData style dataset from a McStas Sqw Table (Isotropic Sqw)
 % and nMoldyn S(q,w) NetCDF files.
 %
-% Version: $Revision$
+% Version: $Revision: 1014 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')
