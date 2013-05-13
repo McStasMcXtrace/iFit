@@ -9,7 +9,7 @@ function c = gt(a,b)
 % output: c: object or array which Signal is the comparison result (iData)
 % ex:     c= a>1; d=find(a>b);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/find, iData/gt, iData/lt, iData/ge, iData/le, iData/ne, iData/eq
 
 if nargin ==1

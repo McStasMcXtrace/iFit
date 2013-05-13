@@ -62,7 +62,7 @@ function [pars,fval,exitflag,output] = fminga(varargin)
 % Contrib:
 % By: Javad Ivakpour javad7@gmail.com, May 2006
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also: fminsearch, optimset
 
 % default options for optimset

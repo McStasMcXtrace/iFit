@@ -81,7 +81,7 @@ function [pars, fval, exitflag, output] = fmincmaes(varargin)
 % Contrib:
 % Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de [cmaes]
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also: fminsearch, optimset
 
 % STANDARD part ================================================================

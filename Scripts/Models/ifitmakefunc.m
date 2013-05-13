@@ -30,7 +30,7 @@ function f = ifitmakefunc(varargin)
 %
 % output: f: new model object
 % 
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, gauss, iFunc
 
 f       = [];

@@ -3,7 +3,7 @@ function a=load_psi_RITA(a0)
 %
 % Returns an iData style dataset from a PSI RITA2 file (HDF5)
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a0,'iData')

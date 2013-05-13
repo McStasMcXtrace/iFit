@@ -7,7 +7,7 @@ function a = log10(a)
 % output: b: object or array (iFunc)
 % ex:     b=log10(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, iFunc/exp, iFunc/log, iFunc/log10, iFunc/sqrt
 
 a = iFunc_private_unary(a, 'log10');

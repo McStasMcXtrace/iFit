@@ -11,7 +11,7 @@ function c = mldivide(a,b)
 % output: c: object or array (iData)
 % ex:     c=a\b;
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/combine
 if nargin ==1
 	b=[];

@@ -14,7 +14,7 @@ function y=quadline(varargin)
 % output: y: model value
 % ex:     y=quadline([1 0 1], -10:10); or y=quadline('identify') or p=quadline('guess',x,y);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, iFunc/fits, iFunc/plot, strline, quad2d
 
 y.Name      = [ 'Quadratic equation (1D) [' mfilename ']' ];

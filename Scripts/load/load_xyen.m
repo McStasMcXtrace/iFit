@@ -3,7 +3,7 @@ function a = load_xyen(a)
 %
 % Simple postprocessing for X Y E N files.
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')

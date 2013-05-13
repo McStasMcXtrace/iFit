@@ -22,7 +22,7 @@
 %
 %  Written by:  JO ~ 2003 for use with plotdata
 %  Changes:     JO 2004-2005 for use as a standalone routine
-%  Version:     $Revision$
+%  Version:     $Revision: 1008 $
 %--------------------------------------------------------------------------
 function s = read_inx(filename,varargin)
 

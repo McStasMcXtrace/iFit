@@ -8,7 +8,7 @@ function a = fliplr(a)
 % output: b: object or array (iFunc)
 % ex:     b=fliplr(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, iFunc/fliplr, fliplr, iFunc/flipud, flipud
 
 a = iFunc_private_unary(a, 'fliplr');
