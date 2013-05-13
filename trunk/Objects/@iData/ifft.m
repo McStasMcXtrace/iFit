@@ -10,7 +10,7 @@ function b = ifft(a, varargin)
 %         a=iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+2*randn(size(t)));
 %         c=fft(a); d=ifft(c); plot([ a d ])
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/fft, iData/conv, FFT, IFFT
 
 b = fft(a, 'ifft', varargin{:});

@@ -15,7 +15,7 @@ function y=ngauss(varargin)
 % output: y: model value
 % ex:     y=ngauss([1 0 1 0.5 2 0.5 0], -10:10); or plot(ngauss)
 %
-% Version: $Revision$
+% Version: $Revision: 1024 $
 % See also iFunc, iFunc/fits, iFunc/plot
 
 if nargin > 0

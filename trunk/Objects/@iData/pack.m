@@ -10,7 +10,7 @@ function b = pack(a)
 % output: f: compressed object or array (iData)
 % ex:     b=pack(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/sparse, iData/full, iData/saveas
 
 if numel(a) > 1

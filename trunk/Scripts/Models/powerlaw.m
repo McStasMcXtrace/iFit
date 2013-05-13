@@ -12,7 +12,7 @@ function y=powerlaw(varargin)
 % output: y: model value
 % ex:     y=powerlaw([1 0 1 1], -10:10); or plot(powerlaw);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'power law (1D) [' mfilename ']' ];

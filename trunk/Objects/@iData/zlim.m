@@ -10,7 +10,7 @@ function a = zlim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=zlim(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/plot, iData/ylabel
 
 % handle input iData arrays

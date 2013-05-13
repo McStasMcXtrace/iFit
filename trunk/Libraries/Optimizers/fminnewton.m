@@ -62,7 +62,7 @@ function [pars,fval,exitflag,output] = fminnewton(varargin)
 % Reference: W. Press, Numerical Recipes, Cambridge (1988)
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [ntrust]
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also: fminsearch, optimset
 
 % default options for optimset

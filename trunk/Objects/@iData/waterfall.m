@@ -12,7 +12,7 @@ function h = waterfall(a, option)
 % output: h: graphics object handles (cell)
 % ex:     waterfall(iData(peaks)); waterfall(iData(flow));
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/plot
 
 if nargin ==1

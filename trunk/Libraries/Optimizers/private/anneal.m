@@ -91,7 +91,7 @@ function [minimum,fval,total,exitflag] = anneal(loss, parent, options)
 %    Simulated Annealing. _Science, 220_, 671-680.
 
 %   joachim.vandekerckhove@psy.kuleuven.be
-%   $Revision$  $Date$
+%   $Revision: 1008 $  $Date$
 
 def = struct(...
         'CoolSched',@(T) (.8*T),...

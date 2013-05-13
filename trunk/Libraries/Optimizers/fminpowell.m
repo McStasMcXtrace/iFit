@@ -65,7 +65,7 @@ function [pars,fval,exitflag,output] = fminpowell(varargin)
 % Reference: Brent, Algorithms for minimization without derivatives, Prentice-Hall (1973)
 % Contrib: Argimiro R. Secchi (arge@enq.ufrgs.br) 2001 [powell]
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also: fminsearch, optimset
 
 % default options for optimset

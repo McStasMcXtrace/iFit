@@ -29,7 +29,7 @@ function [filename,format] = saveas(a, varargin)
 % ex:     b=saveas(a, 'file', 'm');
 %         b=saveas(a, 'file', 'gif', 'axis tight');
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, save
 
 % default options checks

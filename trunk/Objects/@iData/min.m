@@ -13,7 +13,7 @@ function m = min(a,b, dim)
 % output: m: minimum value (double/iData)
 % ex:     b=min(a); or min(a,1)
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/min, iData/max
 
 if nargin == 1

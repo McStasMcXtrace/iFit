@@ -6,7 +6,7 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines

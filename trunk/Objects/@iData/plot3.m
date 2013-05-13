@@ -15,7 +15,7 @@ function h = plot3(a, option)
 % output: h: graphics object handles (cell)
 % ex:     plot3(iData(peaks)); plot3(iData(flow));
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/plot
 
 if nargin ==1

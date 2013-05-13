@@ -7,7 +7,7 @@ function a = del2(a)
 % output: b: object or array (iFunc)
 % ex:     b=del2(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, iFunc/gradient, del2, gradient, iFunc/jacobian
 
 % make sure axes are regularly binned

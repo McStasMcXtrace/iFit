@@ -9,7 +9,7 @@ function edit(a)
 % output: b: object or array (iData)
 % ex:     b=edit(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
   if numel(a) > 1

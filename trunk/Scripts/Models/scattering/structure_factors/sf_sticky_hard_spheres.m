@@ -20,7 +20,7 @@ function y=sf_sticky_hard_spheres(varargin)
 % output: y: model value
 % ex:     y=sf_sticky_hard_spheres([10 0.2 0.15], 0:0.01:1); or plot(sf_sticky_hard_spheres,[10 0.2 0.15], 0:0.01:1)
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Sticky Hard Sphere S(q) (1D) [' mfilename ']' ];

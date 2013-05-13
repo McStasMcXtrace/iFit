@@ -5,7 +5,7 @@
 ##
 ## o author: Alexander Schmolck (A.Schmolck@gmx.net)
 ## o created: 2000-04-08T15:52:17+00:00
-## o last changed: $Date: 2009-03-24 02:09:50 $
+## o last changed: $Date$
 ## o license: see file LICENSE
 ## o keywords: python, helper functions
 ## o requires: python >= 2.4

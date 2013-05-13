@@ -13,7 +13,7 @@ function signal=plane2d(varargin)
 % output: signal: model value
 % ex:     signal=plane2d([1 2 .5 .2 .3 30 .2], -2:.1:2, -3:.1:3); or plot(plane2d);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iFunc/fits, iFunc/plot, gauss
 
 signal.Name           = [ 'Planar function (2D) [' mfilename ']' ];

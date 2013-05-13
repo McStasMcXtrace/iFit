@@ -7,7 +7,7 @@ function y = isempty(s)
 % output: false(0) or true(1) whether Signal is empty in the objects
 % ex :    isempty(iFunc)
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, iFunc/disp, iFunc/get
 
 if numel(s) > 1

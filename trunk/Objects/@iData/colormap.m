@@ -48,7 +48,7 @@ function h = colormap(varargin)
 % output: h:          graphics object handles (cell/array)
 % example: a=iData(feval(gauss2d)); colormap(a,jet,a+1,hsv,'log transparent')
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iData/plot, iData/surf, iData/caxis
 
 tic

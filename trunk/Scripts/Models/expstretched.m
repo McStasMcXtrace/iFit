@@ -16,7 +16,7 @@ function y=expstretched(varargin)
 %         I will not buy this exponential; it is stretched.
 %         <http://en.wikipedia.org/wiki/Dirty_Hungarian_Phrasebook>
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iData, iFunc/fits, iFunc/plot
 
 

@@ -6,7 +6,7 @@ function disp(s_in, name)
 % input:  s: object or array (iFunc) 
 % ex:     'disp(iFunc)'
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, iFunc/display, iFunc/get
 
 if nargin == 2 && ~isempty(name)

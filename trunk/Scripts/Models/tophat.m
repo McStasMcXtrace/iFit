@@ -13,7 +13,7 @@ function y=tophat(varargin)
 % output: y: model value
 % ex:     y=tophat([1 0 1 1], -10:10); or plot(tophat);
 %
-% Version: $Revision$
+% Version: $Revision: 1024 $
 % See also iFunc, iFunc/fits, iFunc/plot, heavisde, triangl
 
 y.Name      = [ 'Top-Hat rectangular function (1D) [' mfilename ']' ];

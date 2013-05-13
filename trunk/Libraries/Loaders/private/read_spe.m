@@ -1,7 +1,7 @@
 %
 % Filename: $RCSfile: speread.m,v $
 %
-% $Revision$  $Date$
+% $Revision: 1008 $  $Date$
 % $Author$
 % $Tag: $
 %

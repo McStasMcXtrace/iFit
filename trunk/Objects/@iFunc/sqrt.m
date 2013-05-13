@@ -7,7 +7,7 @@ function a = sqrt(a)
 % output: b: object or array (iFunc)
 % ex:     b=sqrt(a);
 %
-% Version: $Revision$
+% Version: $Revision: 1008 $
 % See also iFunc, iFunc/sqrt, iFunc/power
 
 a = iFunc_private_unary(a, 'sqrt');
