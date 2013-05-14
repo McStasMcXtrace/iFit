@@ -13,7 +13,7 @@ function y=bilorz(varargin)
 % output: y: model value
 % ex:     y=bilorz([1 0 1 1], -10:10); or plot(bilorz)
 %
-% Version: $Revision: 1024 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Bi-Lorentzian (1D) [' mfilename ']' ];

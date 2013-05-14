@@ -3,7 +3,7 @@ function a = load_analyze(a)
 % Returns an iData style dataset from an Analyze volume dataset
 % typically used in medical imaging.
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')

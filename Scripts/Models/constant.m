@@ -11,7 +11,7 @@ function y=constant(varargin)
 % output: y: model value
 % ex:     y=constant('Temperature');
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot, quadline, plane2d
 
 if length(varargin)==1 && ischar(varargin{1}) ...

@@ -8,7 +8,7 @@ function a = norm(a)
 % output: b: norm (double)
 % ex:     b=norm(a);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/sum, iFunc/trapz, norm
 
 a = iFunc_private_unary(a, 'norm');

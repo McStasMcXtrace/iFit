@@ -21,7 +21,7 @@
 
 # requires: chroot, dpkg-deb, debootstrap
 
-# Version: $Revision: 1.5 $
+# Version: $Revision$
 # define version and symbols that will be replaced in many places
 IFIT_TARNAME=ifit
 IFIT_NAME=iFit

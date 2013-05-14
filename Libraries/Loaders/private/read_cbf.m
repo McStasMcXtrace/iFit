@@ -318,7 +318,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1008 $  $Date$
+% $Revision$  $Date$
 % $Author$
 % $Tag: $
 %
@@ -393,7 +393,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1008 $  $Date$
+% $Revision$  $Date$
 % $Author$
 % $Tag: $
 %
@@ -567,7 +567,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Revision: 1008 $  $Date$
+% $Revision$  $Date$
 % $Author$
 % $Tag: $
 %

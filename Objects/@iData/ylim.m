@@ -10,7 +10,7 @@ function a = ylim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=ylim(a);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/plot, iData/ylabel
 
 % handle input iData arrays

@@ -29,7 +29,7 @@ function y=fxcorr(x, h, shape)
 %
 %      See also FCONV, CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 if nargin == 0, return; end
 if nargin == 1, h = x; end
 if nargin < 3, shape = ''; end

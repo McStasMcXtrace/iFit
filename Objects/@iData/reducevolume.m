@@ -14,7 +14,7 @@ function s = reducevolume(a, R)
 %    When omitted, the volume/size reduction is performed on bigger axes until
 %    the final object contains less than 1e6 elements.
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, reducevolume,plot, iData/plot, iData/size
 
 % rebinning object so that its number of elements is smaller 

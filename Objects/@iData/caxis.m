@@ -10,7 +10,7 @@ function c = caxis(a, h)
 % output: c: graphics object handles that have been modified (handle array)
 % ex:     a=iData(peaks); plot(a); caxis(del2(a));
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/plot
 
 if nargin ==1

@@ -15,7 +15,7 @@ function y=nlorz(varargin)
 % output: y: model value
 % ex:     y=nlorz([1 0 1 0.5 2 0.5 0], -10:10); or plot(nlorz(3))
 %
-% Version: $Revision: 1024 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 if nargin > 0

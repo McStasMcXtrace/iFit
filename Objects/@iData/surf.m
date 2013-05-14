@@ -15,7 +15,7 @@ function h = surf(a, option)
 % output: h: graphics object handles (cell)
 % ex:     surf(iData(peaks)); surf(iData(flow));
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/plot, iData/colormap, iData/caxis
 
 if nargin ==1

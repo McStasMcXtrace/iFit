@@ -9,7 +9,7 @@ function a = sign(a)
 % output: b: object or array (iFunc)
 % ex:     b=sign(a);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/sign, iFunc/isreal, iFunc/isfinite, iFunc/isnan,
 %          iFunc/isinf, iFunc/isfloat, iFunc/isinterger,
 %          iFunc/isnumeric, iFunc/islogical, iFunc/isscalar, 

@@ -5,7 +5,7 @@ function y = subsindex(s)
 %   I = subsindex(S) is called for the syntax 'X(S)' to use S as an index.
 %   The returned index is the convertion of S to integer.
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/subsasgn, iData/subsref
 
 % EF 23/09/07 iData implementation

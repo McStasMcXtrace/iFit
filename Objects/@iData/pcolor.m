@@ -12,7 +12,7 @@ function h =  pcolor(a, option)
 % output: h: graphics object handles (cell)
 % ex:      pcolor(iData(peaks));  pcolor(iData(flow));
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/plot
 
 if nargin ==1

@@ -8,7 +8,7 @@ function c = minus(a,b)
 % output: c: object or array (iData)
 % ex:     c=a-1;
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
 
 if nargin ==1

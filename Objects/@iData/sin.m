@@ -7,7 +7,7 @@ function a = sin(a)
 % output: b: object or array (iData)
 % ex:     b=sin(a);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
 a = iData_private_unary(a, 'sin');

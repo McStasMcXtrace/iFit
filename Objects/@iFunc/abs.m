@@ -8,7 +8,7 @@ function a = abs(a)
 % output: b: object or array (iFunc)
 % ex:     b=abs(a);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/uminus, iFunc/abs, iFunc/real, iFunc/imag, iFunc/uplus
 
 a = iFunc_private_unary(a, 'abs');

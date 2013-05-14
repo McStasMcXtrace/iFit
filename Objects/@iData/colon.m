@@ -8,7 +8,7 @@ function c = colon(a,d,b)
 % output: b: object (iData)
 % ex:     c=a:b; c=a:2:b;
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/floor, iData/ceil, iData/round, iData/combine
 
 if nargin == 1

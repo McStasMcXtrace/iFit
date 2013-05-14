@@ -66,7 +66,7 @@ function [pars,fval,exitflag,output] = fminlm(varargin)
 %   Fletcher, R., Computer Journal 1970, 13, 317-322
 % Contrib: Miroslav Balda, balda AT cdm DOT cas DOT cz 2009 [LMFsolve]
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also: fminsearch, optimset
 
 % default options for optimset

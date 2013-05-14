@@ -3,7 +3,7 @@ function b=load_netcdf1(a)
 %
 % Returns an iData style dataset from a NetCDF 1.0 file
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')

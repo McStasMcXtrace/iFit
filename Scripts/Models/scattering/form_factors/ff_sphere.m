@@ -20,7 +20,7 @@ function y=ff_sphere(varargin)
 % output: y: model value (intensity)
 % ex:     y=ff_sphere([10 2e-6], 0:0.01:1); or plot(ff_sphere,[10 1e-6],0:0.01:1)
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot, ff_core_shell
 
 y.Name      = [ 'Sphere P(q) (1D) [' mfilename ']' ];

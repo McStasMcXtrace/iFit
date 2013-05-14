@@ -62,7 +62,7 @@ function [filename,format] = saveas(a, varargin)
 %   struct2xml
 %   yaml (in Objects)
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/load, iData/getframe, save
 
 % default options checks

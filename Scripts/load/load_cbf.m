@@ -3,7 +3,7 @@ function a=load_cbf(a)
 %
 % Returns an iData style dataset from a CBF file
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')
