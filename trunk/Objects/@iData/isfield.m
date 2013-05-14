@@ -9,7 +9,7 @@ function b = isfield(a, field)
 % output: b: true when the name is already defined, false otherwise
 % ex:     b=isfield(a, 'history');
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, isfield
 
 persistent fields

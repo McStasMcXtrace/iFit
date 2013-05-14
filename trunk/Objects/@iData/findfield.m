@@ -18,7 +18,7 @@ function [match, types, dims] = findfield(s, field, option)
 %         nelements: total number of elements in iData fields (double)
 % ex:     findfield(iData) or findfield(iData,'Title') or findfield(s,'Title','exact case')
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/set, iData/get, iData/findobj, iData/findstr
 
 % EF 23/09/07 iData implementation

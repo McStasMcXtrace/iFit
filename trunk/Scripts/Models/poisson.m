@@ -13,7 +13,7 @@ function y=poisson(varargin)
 % output: y: model value or information structure (guess, identify)
 % ex:     y=poisson([1 0 1 1], -10:10); or plot(poisson);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Poisson distribution function (1D) [' mfilename ']' ];

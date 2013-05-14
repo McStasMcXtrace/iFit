@@ -75,4 +75,4 @@
   Help pages are available at <http://ifit.mccode.org>
 
 --------------------------------------------------------------------------------
-$Revision: 1008 $ - $Date$
+$Revision$ - $Date$

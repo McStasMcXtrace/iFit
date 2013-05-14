@@ -15,7 +15,7 @@ function y=allometric(varargin)
 % output: y: model value
 % ex:     y=allometric([1 0 1 1], -10:10); or plot(allometric)
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Allometric/Freundlich (1D) [' mfilename ']' ];

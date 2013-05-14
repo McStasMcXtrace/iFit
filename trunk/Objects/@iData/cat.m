@@ -12,7 +12,7 @@ function b = cat(varargin)
 % output: s: catenated data set (iData)
 % ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
 %
-% Version: $Revision: 1025 $
+% Version: $Revision$
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 
 % first parse inputs searching for the dimension, and building the object array

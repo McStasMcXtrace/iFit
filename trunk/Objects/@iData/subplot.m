@@ -12,7 +12,7 @@ function h=subplot(a, varargin)
 % output: h: plot handles (double)
 % ex:     subplot([ a a ])
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/plot
 
 % EF 23/11/07 iData implementation

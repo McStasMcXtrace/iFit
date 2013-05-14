@@ -11,7 +11,7 @@ function labl = label(this, rank, lab)
 % output: b: object or array (iData)
 % ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
 
 if nargin < 2, rank=[]; end

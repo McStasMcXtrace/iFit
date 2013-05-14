@@ -7,7 +7,7 @@ function v=ndims(s)
 % output: dimensionality of model in the object (double array)
 % ex :    ndims(iFunc)
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 
 if numel(s) > 1
   v = zeros(size(s)); 

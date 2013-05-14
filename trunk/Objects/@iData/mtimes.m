@@ -10,7 +10,7 @@ function c = mtimes(a,b)
 % output: c: object or array (iData)
 % ex:     c=a*2;
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/power
 
 if nargin == 1,

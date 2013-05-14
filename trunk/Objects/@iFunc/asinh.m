@@ -7,7 +7,7 @@ function a = asinh(a)
 % output: b: object or array (iFunc)
 % ex:     b=asinh(a);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/cos, iFunc/acos, iFunc/sin, iFunc/asin, iFunc/tan, iFunc/atan
 
 a = iFunc_private_unary(a, 'asinh');

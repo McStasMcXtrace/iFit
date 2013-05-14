@@ -14,7 +14,7 @@ function y=lognormal(varargin)
 % output: y: model value
 % ex:     y=lognormal([1 0 1 1], -10:10); or plot(lognormal);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Log-Normal distribution function (1D) [' mfilename ']' ];
