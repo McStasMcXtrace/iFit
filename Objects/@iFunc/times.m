@@ -10,7 +10,7 @@ function c = times(a,b)
 % output: c: object or array (iFunc)
 % ex:     c=lorz.*gauss;
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/minus, iFunc/plus, iFunc/times, iFunc/rdivide
 
 if nargin ==1

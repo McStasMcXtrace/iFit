@@ -37,7 +37,7 @@
 """
 from __future__ import division
 __docformat__ = "restructuredtext en"
-__revision__ = "$Id: awmstools.py,v 1.29 2009-03-24 02:09:50 aschmolc Exp $"
+__revision__ = "$Id$"
 __version__  = "0.9"
 __author__   = "Alexander Schmolck <a.schmolck@gmx.net>"
 __test__ = {} # this is for doctest

@@ -10,7 +10,7 @@ function v = logspace(a,b,n)
 % output: v: vector (iData array)
 % ex:     b=logspace(a,b);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/max, iData/min, iData/colon, iData/linspace
 
 if nargin <= 2

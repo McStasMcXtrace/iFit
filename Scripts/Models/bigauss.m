@@ -15,7 +15,7 @@ function y=bigauss(varargin)
 %
 % Ref: T. S. Buys, K. De Clerk, Bi-Gaussian fitting of skewed peaks, Anal. Chem., 1972, 44 (7), pp 1273–1275
 %
-% Version: $Revision: 1024 $
+% Version: $Revision$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Bi-Gaussian (1D) [' mfilename ']' ];

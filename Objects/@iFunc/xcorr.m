@@ -27,7 +27,7 @@ function c = xcorr(a,b, shape)
 % output: c: object or array (iFunc)
 % ex:     c=xcorr(a,b); c=xcorr(a,b, 'same pad background center normalize');
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/times, iFunc/convn, iFunc/fft, convn, fconv, fconvn
 if nargin ==1
 	b = a;

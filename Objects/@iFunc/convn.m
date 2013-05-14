@@ -14,7 +14,7 @@ function c = convn(a,b)
 % output: c: object or array (iFunc)
 % ex:     c=convn(a,b);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/times, iData/convn, iFunc/xcorr, fconv, fconvn, fxcorr
 if nargin ==1
 	b=a;

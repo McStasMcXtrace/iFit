@@ -8,7 +8,7 @@ function a = not(a)
 % output: b: object or array (iFunc)
 % ex:     b=not(a);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/or, iFunc/and
 
 a = iFunc_private_unary(a, 'not');

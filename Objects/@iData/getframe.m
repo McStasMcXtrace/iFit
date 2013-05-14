@@ -12,7 +12,7 @@ function frame = getframe(a, dim)
 % output: frame: frame/thumbnail
 % ex:     f=getframe(a); image(f.cdata);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/plot, getframe, image, imwrite
 
 if nargin < 2, dim=0; end

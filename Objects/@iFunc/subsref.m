@@ -4,7 +4,7 @@ function b = subsref(a,S)
 %   @iFunc/subsref: function returns subset indexed references
 %     such as a(1:2) or a.field.
 %
-% Version: $Revision: 1022 $
+% Version: $Revision$
 % See also iFunc, iFunc/subsasgn
 
 % This implementation is very general, except for a few lines

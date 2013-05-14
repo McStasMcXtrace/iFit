@@ -9,7 +9,7 @@ function s = zeros(iData_in,varargin)
 % ex: zeros(iData,5,5) will create a 5-by-5 empty iData array
 %     zeros(s,5,5) will return a 5-by-5 array filled with 's'
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData
 
 % EF 27/07/00 creation

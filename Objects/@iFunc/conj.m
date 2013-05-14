@@ -7,7 +7,7 @@ function a = conj(a)
 % output: b: object or array (iFunc)
 % ex:     b=conj(a);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/transpose, iFunc/ctranspose, iFunc?imag, iFunc/real
 
 a = iFunc_private_unary(a, 'conj');

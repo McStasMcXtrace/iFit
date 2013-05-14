@@ -7,7 +7,7 @@ function a = real(a)
 % output: b: object or array (iData)
 % ex:     b=real(a);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
 a = iData_private_unary(a, 'real');

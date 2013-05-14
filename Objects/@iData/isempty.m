@@ -7,7 +7,7 @@ function y = isempty(s)
 % output: false(0) or true(1) whether Signal is empty in the objects
 % ex :    isempty(iData)
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iData, iData/disp, iData/get, iData/size
 
 % EF 23/09/07 iData implementation

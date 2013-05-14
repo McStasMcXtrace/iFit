@@ -8,7 +8,7 @@ function a = floor(a)
 % output: b: object or array (iFunc)
 % ex:     b=floor(a);
 %
-% Version: $Revision: 1008 $
+% Version: $Revision$
 % See also iFunc, iFunc/floor, iFunc/ceil, iFunc/round
 
 a = iFunc_private_unary(a, 'floor');

@@ -13,7 +13,7 @@ function h = contourf(a, option, varargin)
 % output: h: graphics object handles (cell)
 % ex:     contourf(iData(peaks)); contourf(iData(flow));
 %
-% Version: $Revision: 1022 $
+% Version: $Revision$
 % See also iData, iData/plot
 
 if nargin <=1
