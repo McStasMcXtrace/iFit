@@ -82,7 +82,8 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   ResLibCal_field2fig(EXP, 'EXP_Kfixed', fig);
   ResLibCal_field2fig(EXP, 'EXP_Lfixed', fig);
   if isfield(EXP,'fx')
-    set(findobj(fig,'Tag','EXP_Kf_button'),'Value', (EXP.fx == 2)+2*(EXP.fx == 1));
+    set(findobj(fig,'Tag','EXP_Kf_button'),'Value', (EXP.fx == 2));
+    set(findobj(fig,'Tag','EXP_Ki_button'),'Value', (EXP.fx == 1));
   else
     set(findobj(fig,'Tag','EXP_Kf_button'),'Value', (EXP.infin == -1));
     set(findobj(fig,'Tag','EXP_Ki_button'),'Value', (EXP.infin ==  1));
