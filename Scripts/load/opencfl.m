@@ -4,7 +4,7 @@ function out = opencfl(filename)
 %        (Required cif2hkl to have been compiled with gfortran, see Install page).
 
 out = load(iData,filename, 'CFL');
-subplot(out);
+figure; subplot(out);
 
 if ~isdeployed
   assignin('base','ans',out);

@@ -3,7 +3,7 @@ function out = opennc(filename)
 %        and set the 'ans' variable to an iData object with its content
 
 out = iData(filename);
-subplot(out);
+figure; subplot(out);
 
 if ~isdeployed
   assignin('base','ans',out);
