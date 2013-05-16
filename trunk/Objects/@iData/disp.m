@@ -74,13 +74,21 @@ else
       this = s_in;
       try
         vv = eval(v);
+        if numel(vv) > 2
+          if isvector(vv), sz=sprintf(' length [%i]', numel(vv)); 
+          else sz=sprintf(' size %s', mat2str(size(vv))); end
+        else sz = []; end
         if length(vv) > 20, vv = vv(1:18); end 
         vv = mat2str(vv);
         if length(vv) > 20, vv = [vv(1:18) '...' ]; end 
-        label = [ label ' ''' vv '''' ];
+        label = [ label ' ''' vv '''' sz ];
       catch
         try
           vv = get(s_in, v);
+          if numel(vv) > 2
+            if isvector(vv), sz=sprintf(' length [%i]', numel(vv)); 
+            else sz=sprintf(' size %s', mat2str(size(vv))); end
+          else sz = []; end
           if isnumeric(vv), 
             if length(size(vv)) > 2, vv=vv(:); end
             if numel(vv) > 10, vv=vv(1:10); end
@@ -89,7 +97,7 @@ else
             vv = vv(:)';
           end
           if length(vv) > 20, vv = [vv(1:18) '...' ]; end
-          label = [ label ' ''' vv '''' ];
+          label = [ label ' ''' vv '''' sz ];
         end
       end
       if length(v) > 32, v = [ '...' v((end-28):end) ]; end
@@ -136,7 +144,7 @@ else
     elseif isvector(X)
       minmaxstd = sprintf('[%g:%g] length [%i]', min(x), max(x),length(x));
     else
-      minmaxstd = sprintf('[%g:%g] size [%s]', min(x), max(x),num2str(size(X)));
+      minmaxstd = sprintf('[%g:%g] size %s', min(x), max(x),mat2str(size(X)));
     end
     if index==0
       if not(all(m==1 | m==0))
