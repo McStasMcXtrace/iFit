@@ -110,8 +110,8 @@ else
       if isempty(label), label='help about formats'; end
       label=[ '<a href="matlab:doc(iData,''Load'')">' label '</a>' ];
     end
-    v = strtrim(v); v(~isstrprop(v,'print'))=''; 
-    label = strtrim(char(label)); label(~isstrprop(label,'print'))=''; 
+    v = strtrim(v); v(~isstrprop(v,'print') | v=='\')=''; 
+    label = strtrim(char(label)); label(~isstrprop(label,'print') | label=='\')=''; 
     fprintf(1,'%15s  %32s   %s', s_in.Alias.Names{index}, v, label);
     if strcmp(s_in.Alias.Names{index}, 'Signal') & length(s_in.Alias.Axis) == 0
       x      = getaxis(s_in, 0);  x=x(:);
