@@ -67,27 +67,27 @@ else
       d = [ d sprintf('%9s ',s.Tag) ];
     end
     d = [ d sprintf('%11s ', [ mat2str(size(s)) ]) ];  % size
-    t = cellstr(s.Title); t = strtrim(t{1}); t(~isstrprop(t,'print'))=''; 
+    t = cellstr(s.Title); t = strtrim(t{1}); t(~isstrprop(t,'print') | t=='\')=''; 
     if length(t) > 31, t = [ t(1:27) '...' ]; end             % object.title
-    t = [ t ' "' title(s) '"' ]; t = strtrim(t); t(~isstrprop(t,'print'))=''; 
+    t = [ t ' "' title(s) '"' ]; t = strtrim(t); t(~isstrprop(t,'print') | t=='\')=''; 
     if length(t) > 41, t = [ t(1:37) '..."'  ]; end           % title(Signal)
     d = [ d sprintf('%43s ', [ '''' t '''' ]) ];
-    h = cellstr(s.Command); h = strtrim(h{end}); h(~isstrprop(h,'print'))=''; 
+    h = cellstr(s.Command); h = strtrim(h{end}); h(~isstrprop(h,'print') | h=='\')=''; 
     if length(h) > 23, h = [ h(1:20) '...' ]; end             % last command
     d = [ d sprintf('%s ', h) ];
     if ~isempty(s.Label) && ~isempty(s.DisplayName)
-      h = cellstr(s.Label); h = strtrim(h{1}); h(~isstrprop(h,'print'))=''; 
+      h = cellstr(s.Label); h = strtrim(h{1}); h(~isstrprop(h,'print') | h=='\')=''; 
       if length(h) > 13, h = [ h(1:10) ]; end                 % Label/DisplayName
       d = [ d sprintf('%s', h) ];
-      h = cellstr(s.DisplayName); h = strtrim(h{1}); h(~isstrprop(h,'print'))=''; 
+      h = cellstr(s.DisplayName); h = strtrim(h{1}); h(~isstrprop(h,'print') | h=='\')=''; 
       if length(h) > 13, h = [ h(1:10) '...' ]; end           % 
       d = [ d sprintf('/%s', h) ];
     elseif ~isempty(s.Label)
-      h = cellstr(s.Label); h = strtrim(h{1}); h(~isstrprop(h,'print'))=''; 
+      h = cellstr(s.Label); h = strtrim(h{1}); h(~isstrprop(h,'print') | h=='\')=''; 
       if length(h) > 18, h = [ h(1:15) '...' ]; end           % Label
       d = [ d sprintf('%s', h) ];
     elseif ~isempty(s.DisplayName)
-      h = cellstr(s.DisplayName); h = strtrim(h{1}); h(~isstrprop(h,'print'))=''; 
+      h = cellstr(s.DisplayName); h = strtrim(h{1}); h(~isstrprop(h,'print') | h=='\')=''; 
       if length(h) > 18, h = [ h(1:15) '...' ]; end           % DisplayName
       d = [ d sprintf('%s', h) ];
     end
@@ -96,8 +96,6 @@ else
     
   end
 end
-
-
 
 if nargout == 0
   fprintf(1,d);
