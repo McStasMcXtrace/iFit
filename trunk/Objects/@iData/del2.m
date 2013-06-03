@@ -11,7 +11,7 @@ function a = del2(a)
 % See also iData, iData/gradient, del2, gradient, iData/jacobian
 
 % make sure axes are regularly binned
-a = interp(a);
+%a = interp(a);
 
 a = iData_private_unary(a, 'del2');
 
