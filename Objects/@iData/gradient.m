@@ -48,8 +48,8 @@ end
 % create returned object(s): one per dimension (axes)
 
 cmd=a.Command;
-b = zeros(iData, 1, ndims(s));
-parfor i=1:ndims(s)
+b = [];
+for i=1:ndims(s)
   % build each partial: beware index 1 and 2 are to swap
   index = i;
   if ndims(a) > 1
@@ -57,12 +57,12 @@ parfor i=1:ndims(s)
     elseif i == 2, index=1;
     end
   end
-  if dim && index ~= dim, continue; end
+  if dim && index ~= dim,  continue; end
   g = copyobj(a);
   g.Command=cmd;
   g = iData_private_history(g, mfilename, a, index);
-  g = set(g, 'Signal', gs{index}, 'Error', ge{index});
+  g = setalias(g, 'Error',  ge{index});
   g = setalias(g, 'Signal', gs{index}, [  mfilename '(' sl ',' num2str(index) ')' ]);
-  b(i) = g;
+  b = [ b g ];
 end
 
