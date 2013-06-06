@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">  
+  <meta http-equiv="content-type" content="text/html; charset=windows-1252">  
   <title>iFit: Welcome</title>
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: a simple library to analyze data</h1>
@@ -61,6 +61,8 @@ Any text file can be imported straight away, and a set of
 binary files
 are supported. Any data dimensionality can be handled, including event
 based data sets (even though not all methods do work for these). Any model can be assembled for fitting data sets.<br>
+<br>
+<i><b>iFit</b></i> can also be used transparently from <a href="http://python.org/">Python </a>/ <a href="http://www.numpy.org/">NumPy</a>. Refer to our <a href="Python.html">PyFit</a> documentation. <a href="http://python.org/"><img alt="Python" title="Python" src="images/python-logo.gif" align="right" border="0" height="34" width="100"></a><a href="http://www.numpy.org/"><img alt="NumPy" title="NumPy" src="images/numpy_logo.png" align="right" border="0" height="34" width="100"></a><br>
 
 <br>
 The spirit of the library is to include single object definitions,
@@ -73,9 +75,12 @@ usual data analysis procedures.<br>
 </div>
 <h3><a class="mozTocH3" name="mozTocId318588"></a>Obtaining the package</h3>
 To install the package, refer to the <a href="Install.html">Install</a>
-page. You only need <a href="http://www.mathworks.com">Matlab</a> for the source package. The stand-alone (binary) package requires to install the Matlab Compiler Runtime (refer to the <a style="font-weight: bold;" href="Install.html">Install</a>
+page. <br>
+You need <a href="http://www.mathworks.com">Matlab</a> to make use of 
+the source package. The stand-alone (binary) package does not require 
+Matlab, but you will need the Matlab Compiler Runtime (refer to the <a style="font-weight: bold;" href="Install.html">Install</a>
 page).
-<br>
+The <a href="Python.html">Python</a> interface requires either Matlab or the iFit standalone package to be installed.<br>
 <br>
 The package is currently available from the <a href="http://ifit.mccode.org/">ifit.mccode.org</a> web site:<br>
 <ul>
@@ -286,10 +291,11 @@ optimize <a href="http://www.mcstas.org">McStas</a> and <a href="http://www.mcxt
 </li>
 
   <li><a href="Models.html#mozTocId210092">iFunc/Model Builder</a>: a dialogue to create <a href="iFunc.html">iFunc</a> fit function/models.</li>
-<li><a href="iFit.html">iFit standalone</a>: the prompt interface used in the 
-stand-alone release. Can execute any Matlab expression, scripts, handle 
-iData and iFunc objects, optimizers, plotting, ...<br>
+<li><a href="iFit.html">iFit standalone</a>: the prompt interface used in the no-Matlab-license release. Can execute any Matlab expression, scripts, handle 
+iData and iFunc objects, optimizers, plotting, ...</li>
+<li><a href="Python.html">PyFit</a>: using iFit transparently from <a href="http://www.numpy.org/">Python/NumPy</a>.<br>
 </li>
+
 
 </ul>
 </div>
