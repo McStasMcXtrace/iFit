@@ -390,6 +390,8 @@ class MlabWrap(object):
     def __init__(self):
         """Create a new matlab(tm) wrapper object.
         """
+        location = os.path.abspath(
+                os.path.realpath(os.path.dirname(__file__))+os.sep+'..'+os.sep+'..' )
         self._array_cast  = None
         """specifies a cast for arrays. If the result of an
         operation is a numpy array, ``return_type(res)`` will be returned
@@ -419,6 +421,11 @@ class MlabWrap(object):
         """The matlab(tm) types we can handle ourselves with a bit of
            effort. To turn on autoconversion for e.g. cell arrays do:
            ``mlab._dont_proxy["cell"] = True``."""
+        if 'matlab' in self._session.matlab_process_path:
+          # addpath to iFit location if using Matlab
+          print "Installing iFit"
+          self._eval("addpath(genpath('"+location+"'));", print_expression=True)
+          print self._eval('disp(version(iData));')
     def __del__(self):
         mlabraw.close(self._session)
     def _format_struct(self, varname):
