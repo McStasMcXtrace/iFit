@@ -119,7 +119,6 @@ else  % convert input argument into object
     end
     if ~isempty(inputname(index))
         d.Label=[ inputname(index) ' (' class(varargin{index}) ')' ];
-        d.DisplayName=d.Label;
         label(d, 0, inputname(index));
         d.Title=inputname(index);
     end
@@ -155,7 +154,6 @@ else  % convert input argument into object
         h = get(in,'Children');
         out = iData(h(1)); % fisrt item
         out = set(out,'Title', t);
-        out = set(out, 'DisplayName', t);
         out = set(out, 'Label', t);
       elseif strcmp(get(in,'type'),'line')
         x = get(in,'xdata'); 
