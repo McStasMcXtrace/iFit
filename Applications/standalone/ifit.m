@@ -135,6 +135,8 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
       ifit_options.line=[ 'run ' ifit_options.line(7:end) ];
     elseif strncmp(ifit_options.line, '-r=', 3)
       ifit_options.line=[ 'run ' ifit_options.line(4:end) ];
+    elseif strcmp(ifit_options.line, '-r')
+      ifit_options.line=varargin{1}; varargin(1) = []; 
     elseif strcmp(ifit_options.line, '--exit') || strcmp(ifit_options.line, '-e')
       ifit_options.line='exit';
     elseif strcmp(ifit_options.line, '--help') || strcmp(ifit_options.line, '-h')
