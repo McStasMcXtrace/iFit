@@ -119,7 +119,10 @@ for i=1:numel(files)
       end
     end
   end
-  out = [ out this_iData ];
+  % transpose to make columns
+  if numel(out) > 1 && size(out,2) > 1 && size(out,1) == 1, out=out'; end
+  if numel(this_iData) > 1 && size(this_iData,2) > 1 && size(this_iData,1) == 1, this_iData=this_iData'; end
+  out = [ out ; this_iData ];
 end %for i=1:length(files)
 
 % clean 'out' for unique entries (e.g. mcstas/mcstas.sim creates duplicates)
