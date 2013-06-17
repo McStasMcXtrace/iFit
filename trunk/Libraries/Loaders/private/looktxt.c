@@ -2,18 +2,22 @@
 *
 *                     Program looktxt.c
 *
-* looktxt version Looktxt 1.0.8 (24 Sept 2009) by Farhi E. [farhi@ill.fr]
+* looktxt version Looktxt 1.3 $Revision$ (14 June 2013) by Farhi E. [farhi@ill.fr]
 *
 * Usage: looktxt [options] file1 file2 ...
 * Action: Search and export numerics in a text/ascii file.
-*   This program analyses files looking for numeric parts
+*   This program analyses files looking for numeric parts.
 *   Each identified numeric field is named and exported
 *   into an output filename, usually as a structure with fields
 *     ROOT.SECTION.FIELD = VALUE
 *   In order to sort your data, you may specify as many --section
 *   and --metadata options as necessary
-* Example: looktxt -f Matlab -c -s PARAM -s DATA filename
-* Usual options are: --fast --fortran --binary --force --catenate --comment=NULL
+* All character sets are supported as long as numbers have format
+*   [+-][0-9].[0-9](e[+-][0-9])
+* Infinite and Not-a-Number values are also supported.
+*
+* Example: looktxt -f Matlab -s PARAM -s DATA filename
+* Usual options are: --fast --binary --force --comment=NULL
 *
 * MeX usage: looktxt(arg1, ...)
 *   all arguments are separated, and given as strings, such as in
@@ -22,12 +26,14 @@
 * Main Options are:
 * --binary   or -b    Stores numerical matrices into an additional binary
 *                     float file, which makes further import much faster.
-* --catenate or -c    Catenates similar numerical fields
+* --catenate or -c    Catenates similar numerical fields (default)
+* --catenate=0        Do not catenate similar fields (slower)
 * --force    or -F    Overwrites existing files
 * --format=FORMAT     Sets the output format for generated files. See below
 *       -f FORMAT
-* --fortran --wrapped Catenates single Fortran-style output lines with
-*                     previous matrices
+* --fortran --wrapped Catenates wrapped/single Fortran-style output lines with
+*                     previous matrices (default)
+* --fortran=0         Do not use Fortran compatibility mode 
 * --headers  or -H    Extracts headers for each numerical field
 * --help     or -h    Show this help
 * --section=SEC       Classifies fields into section matching word SEC
@@ -84,6 +90,7 @@
 * 1.0.7 (09/07/09) fixed metadata export, speed-up by factor 2.
 * 1.0.8 (24/09/09) upgrade MeX support. Build with 'make mex'
 * 1.2.0 (02/04/12) added direct export to MAT files
+* 1.3.3 (14/06/13) fixed HDF5 output for large files. Improve non fscan data_get. Added NeXus/XML
 *
 *****************************************************************************/
 
@@ -110,7 +117,7 @@
 
 /* USE_MEX  is defined when compiled as a MeX from Matlab (triggers USE_MAT)
    compile with:
-     mex -O looktxt.c
+     mex -O looktxt.c -DUSE_MEX
  * Under Windows 32 bits
      mex ('-O','-v','looktxt.c',['-L"' matlabroot '\sys\lcc\lib"'],'-lcrtdll')
    in this case, MAT files are not written, but data is directly send back as MEX output arguments 
@@ -127,14 +134,14 @@
  
 /* USE_NEXUS is defined when support for export to NeXus/HDF5 is requested 
    to compile use:
-     gcc -DUSE_NEXUS -O2 -o looktxt looktxt.c -lNeXus -lm
+     gcc -DUSE_NEXUS -O2 -o looktxt looktxt.c -lNeXus
  */
 
 
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
-#define DATE    "2 April 2012"
+#define DATE    "14 June 2013"
 #ifndef VERSION
-#define VERSION "1.2 $Revision$"
+#define VERSION "1.3 $Revision$"
 #endif
 
 #ifdef __dest_os
@@ -213,10 +220,10 @@ int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
 #define USE_MAT
 #endif
 #include <mex.h>	   /* include MEX library for Matlab */
-#define printf  mexPrintf	/* Addapt looktxt.c code to Mex syntax */
+#define printf       mexPrintf	/* Addapt looktxt.c code to Mex syntax */
 #define print_stderr mexPrintf
-#define exit(ret) { char msg[1024]; sprintf(msg, "Looktxt/mex exited with code %i\n", ret); if (ret) mexErrMsgTxt(msg); }
-#define main    MexMain
+#define exit(ret)    { char msg[1024]; sprintf(msg, "Looktxt/mex exited with code %i\n", ret); if (ret) mexErrMsgTxt(msg); }
+#define main         MexMain
 #endif
 
 #ifdef USE_MAT
@@ -231,7 +238,7 @@ int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
 #define free    NoOp      /* do not free in MeX mode */
 #endif 
 
-/* USE_NEXUS/HDF5 support ******************************************************* */
+/* USE_NEXUS/HDF support ******************************************************* */
 #ifdef USE_NEXUS
 #include <napi.h>
 #endif
@@ -240,7 +247,7 @@ int  lk_isprint(char c) { return( c>=' ' && c <='~' ); }
 
 #define Ceol       "\n\f"
 #define Ccomment   "#%"
-#define Cseparator "\t\v\r,; $()[]{}=|<>&\"/\\"
+#define Cseparator "\t\v\r,; $()[]{}=|<>&\"/\\:'"
 
 #define Bnumber      1  /* flags */
 #define Balpha       2
@@ -433,7 +440,7 @@ struct option_struct {
   struct strlist_struct   makerows; /* field to transform into row */
   long  nelements_min;  /* extracts only fields with n_elements >= min */
   long  nelements_max;  /* extracts only fields with n_elements <= max */
-  char  ismatnexus;     /* 0=TxT/Bin format ; 1=MAT; 2=HDF5/NeXus compressed; 3=MEX */
+  char  ismatnexus;     /* 0=TxT/Bin format ; 1=MAT; 2=HDF/NeXus compressed; 3=MEX */
 };
 
 /* lists stuctures ******************************************************** */
@@ -456,9 +463,11 @@ struct table_struct {
   struct data_struct *List;   /* an array of data_struct */
 };
 
+int options_warnings=100;
+
 /* Format definitions ***************************************************** */
 
-#define NUMFORMATS 11
+#define NUMFORMATS 12
 #ifdef USE_MEX
 #define LOOKTXT_FORMAT "MATfile"    /* default format when in Matlab/MeX mode */
 mxArray *mxOut=NULL;                 /* a cell array or single struct */
@@ -510,7 +519,10 @@ struct format_struct Global_Formats[NUMFORMATS] = {
     "HDF5 Nexus", "Footer", "BeginSection", "EndSection", "AssignTag", "BeginData", "EndData" },
   { "NeXus4/HDF4","h4",
     "HDF4 Nexus", "Footer", "BeginSection", "EndSection", "AssignTag", "BeginData", "EndData" },
+  { "NeXus/XML","xml",
+    "XML NeXus", "Footer", "BeginSection", "EndSection", "AssignTag", "BeginData", "EndData" },
 #else
+  { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
   { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
   { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 #endif
@@ -1296,7 +1308,7 @@ char *try_open_target(struct fileparts_struct parts, char force)
     getcwd(cwd, 1024)
 #endif
   ) strcpy(cwd, "");
-  parts.Path=str_free(parts.Path); 
+  parts.Path = str_free(parts.Path); 
   parts.Path = str_dup(strlen(cwd) ? cwd : ".");
   FullName = fileparts_fullname(parts);
 
@@ -1569,14 +1581,14 @@ struct option_struct options_init(char *pgname)
   options.sources_nb = 0;
   options.use_struct = 0;
   options.use_binary = 0;
-  options.catenate   = 0;
+  options.catenate   = 1;
   options.force      = 0;
   options.out_table  = 0;
   options.out_headers= 0;
   options.verbose    = 1;
   options.test       = 0;
   options.file_index = 0;
-  options.fortran    = 0;
+  options.fortran    = 1;
   options.nelements_min=0;
   options.nelements_max=0;
   options.names_length =32;
@@ -1596,6 +1608,7 @@ struct option_struct options_init(char *pgname)
   options.ismatnexus = 0;
   options.format     = format_init(Global_Formats,
     getenv("LOOKTXT_FORMAT") ? getenv("LOOKTXT_FORMAT") : LOOKTXT_FORMAT);
+  options_warnings   = 100; /* shows this number of warnings at most */
   return(options);
 } /* options_init*/
 
@@ -2025,14 +2038,10 @@ char *data_get_line(struct file_struct file, long *start)
 float *data_get_float(struct file_struct file, struct data_struct field, struct option_struct options)
 {
   float *data=NULL;
-  float  value;
-  int    fail = 0;
-  int    index;
-  FILE  *fid=NULL;
+  
 /* two hard coded methods for reading numerical values */
 /* 0: fast but requires isspace for numerical separators (sscanf) */
 /* 1: slightly slower, but can handle separator                    */
-
   if (!field.rows || !field.columns || !file.Source) return (NULL);
   if (field.n_start > field.n_end) return (NULL);
   if (!file.SourceHandle)          return (NULL);
@@ -2046,99 +2055,85 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
   }
   if (options.fast == 1) {
     /* fast method: fscanf */
+    
+    long index=0;
     if (fseek(file.SourceHandle, field.n_start-1 > 0 ? field.n_start-1 : 0, SEEK_SET))
-      print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
+      if (options_warnings-- > 0)
+        print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
         file.Source, field.n_start-1, __LINE__);
     for (index =0; index < field.rows*field.columns; index ++) {
-      long pos=ftell(file.SourceHandle);
-      if (fail) value = 0;
-      else if (!fscanf(file.SourceHandle, "%f", &value)) {
-        fail  = 1;
-        value = 0;
+      long   pos = ftell(file.SourceHandle);
+      float  value=0;
+      if (!fscanf(file.SourceHandle, "%f", &value)) {
         if (options.verbose > 1) {
-          char *string=NULL;
-          int   len=field.n_end - field.n_start;
+          char  *string=NULL;
+          long   len=field.n_end - field.n_start;
           if (len < 0 || len > 10) len=10;
-          print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%ld [looktxt:data_get_float:%d]\n",
-            index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos, __LINE__);
+
           string=data_get_char(file, pos, pos+len);
-          print_stderr( "         '%s ...' (probably contains a non 'isspace' separator)\n", string);
-          print_stderr( "         Do not use --fast if this value is important to you. Ignoring.\n", string);
-          if (fseek(file.SourceHandle, pos, SEEK_SET))
+          if (options_warnings-- > 0) {
+            print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%ld [looktxt:data_get_float:%d]\n",
+              index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos, __LINE__);
+            print_stderr( "         '%s ...' (probably contains a non 'isspace' separator)\n", string);
+            print_stderr( "         Do not use --fast if this value is important to you. Ignoring.\n", string);
+          }
+          if (fseek(file.SourceHandle, pos+1, SEEK_SET) && options_warnings-- > 0)
             print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
               file.Source, pos, __LINE__);
-          if (!fscanf(file.SourceHandle, "%f", &value))
-            print_stderr( "Warning: Format error when reading float [looktxt:data_get_float:%d]\n", __LINE__);
-          value=0;
+          
           string=str_free(string);
         }
       }
       data[index] = (float)value;
-    }
+    } /* end for */
   } else {
-    /* slow method: fread+sscanf */
-    char *string=data_get_char(file, field.n_start, field.n_end);
+    /* slower method: fread+sscanf */
+    char *string   = data_get_char(file, field.n_start, field.n_end);
     /* replace separator chars by spaces */
-    char *p=string;
-    char *separator=NULL;
+    char *p        = NULL;
+    char *separator= NULL;
+    long  index=0;
 
 	  if (!string) {
 		  print_stderr( "Error: can not get field %s=[%ld:%ld] in file %s [looktxt:data_get_float:%d]\n",
             field.Name, field.n_start, field.n_end, file.Source, __LINE__);
 		  exit(EXIT_FAILURE);
 	  }
-    p=separator=str_dup(options.separator);
-    while((p = strchr(separator,' ')) != NULL) *p=',';
-    p=string;
-    while ((p = strpbrk(p, separator)) != NULL) *p = ' ';
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-	/* tmpfile requires root access on Windows. MSDN recommands to use tempnam + fopen and then fclose */
-    p = _tempnam( NULL, NULL );
-	  if (!p) {
-	    print_stderr( "Error: can not get temporary name [looktxt:data_get_float:%d]\n",
-          __LINE__);
-        exit(EXIT_FAILURE);
+	  
+	  /* replace all non digit characters by spaces, except nan and inf */
+	  for (p=string; p < string+strlen(string) -1; p++) {
+	    char c=lk_tolower(*p);
+	    if (!strchr("0123456789e.+-naif", c)) *p=' ';
 	  }
-	  fid = fopen(p, "wb+TD");
-#else
-    fid=tmpfile(); /* write temporary file to be read with fscanf */
-#endif
-    if (!fid) {
-      print_stderr( "Error: can not create temporary file [looktxt:data_get_float:%d]\n",
-        __LINE__);
-      exit(EXIT_FAILURE);
-    }
-    if (fwrite(string, sizeof(char), strlen(string), fid) < strlen(string))
-      print_stderr( "Warning: Error in fwrite(%s,%i) [looktxt:data_get_float:%d]\n",
-        "tmpfile", strlen(string),__LINE__);
-    string=str_free(string); separator=str_free(separator);
-    if (fseek(fid, 0, SEEK_SET))
-      print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
-        file.Source, 0,__LINE__);
+    
+    /* iteratively read numeric values from the string */
+    p=string;
     for (index =0; index < field.rows*field.columns; index ++) {
-      long pos=ftell(fid);
-      if (fail) value = 0;
-      else if (!fscanf(fid, "%f", &value)) {
-        fail  = 1;
-        value = 0;
-        if (options.verbose > 1) {
-          char *string=data_get_char(file, pos, pos+12);
-          print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%li [looktxt:data_get_float:%d]\n",
-            index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos,__LINE__);
-          print_stderr( "         '%s ...'\n", string);
-          if (fseek(fid, pos, SEEK_SET))
-            print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
-              file.Source, pos,__LINE__);
-          if (!fscanf(fid, "%f", &value))
-            print_stderr( "Warning: Format error when reading float [looktxt:data_get_float:%d]\n",__LINE__);
-          value=0;
-          string=str_free(string);
-        }
-      }
+      char fail=0;
+      float value=0;
+      
+      /* read the next number */
+      if (!sscanf(p, " %f ", &value)) fail  = 1;
       data[index] = (float)value;
+      
+      /* search for next separator */
+      if ((p = strchr(p, ' ')) == NULL) fail = 1;
+      /* then next digit */
+      while (p && p < string+strlen(string) -1 && !strchr("0123456789e.+-naif", lk_tolower(*p))) {
+	      p++;
+	    }
+      
+      if (fail && options_warnings-- > 0 && options.verbose > 1) {
+		    print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s [looktxt:data_get_float:%d]\n",
+            index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source,__LINE__);
+        if (!p) break;
+	    }
+        
     }
-    fclose(fid); fid=NULL;
+    string = str_free(string);
+
   }
+  
   return(data);
 } /* data_get_float */
 
@@ -2251,18 +2246,23 @@ void print_usage(char *pgmname, struct option_struct options)
   "     ROOT.SECTION.FIELD = VALUE\n"
   "   In order to sort your data, you may specify as many --section\n"
   "   and --metadata options as necessary\n"
-  "Example: %s -f Matlab -c -s PARAM -s DATA filename\n"
-  "Usual options are: --fast --fortran --binary --force --catenate --comment=NULL\n\n", pgmname);
+  "   All character sets are supported as long as numbers have format\n"
+  "     [+-][0-9].[0-9](e[+-][0-9])\n"
+  "   Infinite and Not-a-Number values are also supported.\n\n"
+  "Example: %s -f Matlab -s PARAM -s DATA filename\n"
+  "Usual options are: --fast --binary --force --comment=NULL\n\n", pgmname);
   printf(
 "Main Options are:\n"
 "--binary   or -b    Stores numerical matrices into an additional binary\n"
 "                    float file, which makes further import much faster.\n"
-"--catenate or -c    Catenates similar numerical fields\n"
+"--catenate or -c    Catenates similar numerical fields (default)\n"
+"--catenate=0        Do not catenate similar fields (slower)\n"
 "--force    or -F    Overwrites existing files\n"
 "--format=FORMAT     Sets the output format for generated files. See below\n"
 "      -f FORMAT     \n"
-"--fortran --wrapped Catenates single Fortran-style output lines with\n"
-"                    previous matrices\n"
+"--fortran --wrapped Catenates wrapped/single Fortran-style output lines with\n"
+"                    previous matrices (default)\n"
+"--fortran=0         Do not use Fortran compatibility mode\n"
 "--headers  or -H    Extracts headers for each numerical field\n"
 "--help     or -h    Show this help\n"
 "--section=SEC       Classifies fields into section matching word SEC\n"
@@ -2345,6 +2345,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
     size_t endnumpos   = 0; /* num field end pos */
     size_t last_eolpos = 0; /* last EOL position */
     size_t last_seppos = 0; /* Separator */
+    char   isNAN       = 0, isINF=0;
+    char   sNAN[]      = "nan";
+    char   sINF[]      = "inf";
 
     long rows        = 0; /* number of rows in matrix */
     long columns     = 0; /* number of columns in matrix */
@@ -2375,7 +2378,8 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
       printf("VERBOSE[file_scan]: Scanning file %s [0-%ld] ...\n", file.Source, (long)file.Size);
 
     do {
-      c = getc(file.SourceHandle);
+      c = lk_tolower(getc(file.SourceHandle));
+      
       last_is = is;
       if (c == EOF) { /* end of file reached : exit */
         last_eolpos = file.Size;
@@ -2388,7 +2392,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         + Balpha     * (lk_isprint(c) != 0)
         + Bpoint     * (c == '.')
         + Beol       * (c == '\n' || c == '\f')
-        + Bexp       * (lk_tolower(c) == 'e' && possiblenum)
+        + Bexp       * (c == 'e' && possiblenum)
         /* must be in a number field */
         + Bsign      *((c == '-' || c == '+') && (last_is & (Bexp | Bseparator | Beol)))
         /* must be after exponent or not in
@@ -2400,12 +2404,14 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
       /* special case to handle files written by fortran routines */
       if (options.fortran && (c == '-' || c == '+') && (last_is & (Bnumber | Bpoint))) {
         last_is |= Bseparator;  /* [NUM|NUM.] [+|-] NUM -> 2 fortran numbers are touching each other */
-        if (options.verbose)
+        if (options.verbose && options_warnings-- > 0)
           print_stderr("Warning: File '%s' c='%c' [num pos=%li] two fortran numbers are touching each other\n",
           file.Source, c, startnumpos);
       }
 
       if (is & Bseparator) c=' ';
+      if (!(is & Beol) && !(is & Bseparator) && c != EOF && !lk_isprint(c)) { c='b'; is |= Bseparator; }
+      
       if (!(possiblecmt) && (is & Bcomment)) { /* activate new comment field */
         possiblecmt = 1;
         startcmtpos = pos;
@@ -2417,8 +2423,10 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
           possiblecmt = 0;
         } else is = last_is;  /* keeps last non-comment char state */
       } /* if (possiblecmt) */
-      if ( (!possiblecmt) && (!possiblenum) && (is & needforstartnum)
-        && (last_is & (Bseparator | Beol))) { /* activate num search */
+      
+      /* detect a start of numeric, or NaN or Inf */
+      if ( (!possiblecmt) && (!possiblenum) && ((is & needforstartnum) || c == 'n' || c == 'i')
+        && (last_is & (Bseparator | Beol))) { /* activate num search after separator */
         possiblenum = 1;
         startnumpos = pos;
         need        = needforstartnum;
@@ -2428,6 +2436,23 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
 
       if (possiblenum && !(possiblecmt)) { /* in num field */
         found = is & need;
+        if (last_is & (Bseparator | Beol))
+          if      (c == 'n') { isNAN=1; }
+          else if (c == 'i') { isINF=1; }
+          
+        /* handle NaN and Inf scanning */
+        if (isNAN && isNAN <= strlen(sNAN) && c == sNAN[isNAN -1]) {
+          found = 1;
+          is |= Bnumber; 
+          isNAN++;
+        }
+        else isNAN=0;
+        if (isINF && isINF <= strlen(sINF) && c == sINF[isINF -1]) {
+          found = 1;
+          is |= Bnumber; 
+          isINF++;
+        }
+        else isINF=0;
 
 /* last column : update when found and (EOL and not groupnum)
 *                or (EOL and groupnum and columns (not empty previous num line))
@@ -2481,6 +2506,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         } /* if (is & Beol) */
 
         if (!found) {
+          isNAN       = isINF=0;
           if (last_is & (Beol | Bseparator) && (need != Bnumber)) {
             /* end of num field ok, except when the num started by a
                single point, not follwed by a 0-9 number */
@@ -2503,7 +2529,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                 need      = needforstartnum;
                 fieldend |= Bnumber;
                 endcharpos = startnumpos > 0 ? startnumpos - 1 : 0;
-                if (fseek(file.SourceHandle, pos, SEEK_SET)) {/* reposition after SEP */
+                if (fseek(file.SourceHandle, pos, SEEK_SET) && options_warnings-- > 0) {/* reposition after SEP */
                   print_stderr(
                   "Error: Repositiong error at position %ld in file '%s'\n"
                   "       Ignoring (may generate wrong results) [looktxt:file_scan:sep:%d]\n", pos, file.Source,__LINE__);
@@ -2518,7 +2544,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                 fieldend |= Bnumber;
                 endcharpos= startnumpos > 0 ? startnumpos - 1 : 0;
                 columns   = last_columns;
-                if (fseek(file.SourceHandle, pos, SEEK_SET)) { /* reposition after EOL */
+                if (fseek(file.SourceHandle, pos, SEEK_SET) && options_warnings-- > 0) { /* reposition after EOL */
                   print_stderr(
                   "Error: Repositiong error at position %ld in file '%s'\n"
                   "       Ignoring (may generate wrong results) [looktxt:file_scan:eol:%d]\n", pos, file.Source,__LINE__);
@@ -2561,19 +2587,28 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         } /* Balpha */
         /* define numeric field */
         if (fieldend & Bnumber) {
-          columns = last_columns;
+          
+          if (rows>1 && columns != last_columns && columns && last_columns) {
+            /* case when a vector is split on many lines (fortran style) */
+            rows=1; columns += rows*last_columns;
+          } else {
+            /* keep a matrix shape. Should reposition after previous eol */
+            columns = last_columns;
+          }
           if (columns && (startnumpos <= endnumpos))
           {
             if (rows <= 0) rows = 1;
+            
             field.n_start = startnumpos;
             field.n_end   = endnumpos > startnumpos ? endnumpos : startnumpos;
             field.rows    = rows;
             field.columns = columns;
 
             table_add(table, field);  /* STORING field, Name=Section=NULL */
-            pos   = endnumpos+1;
+            
+            pos      = endnumpos+1;
             startcharpos = pos;
-            if (fseek(file.SourceHandle, pos, SEEK_SET)) { /* reposition after Numeric*/
+            if (fseek(file.SourceHandle, pos, SEEK_SET) && options_warnings-- > 0) { /* reposition after Numeric */
               print_stderr(
               "Error: Repositiong error at position %ld in file '%s'\n"
               "       Ignoring (may generate wrong results) [looktxt:file_scan:Bnumber:%d]\n", pos, file.Source,__LINE__);
@@ -3067,27 +3102,8 @@ int file_write_field_array_matnexus(struct file_struct file,
     
     NXMDisableErrorReporting(); /* unactivate NeXus error messages */
     NXsetcache(1024000*10);
-    /* create the Data block */
-    if (num_rows*field.columns < 125) /* 4k chunk size */
-      NXmakedata(file.nxHandle, field.Name, NX_FLOAT32, 2, length);
-    else {
-      int chunk[2];
-      if (num_rows*field.columns < 30000) {/* 1Mb of floats */
-        chunk[1]=num_rows; chunk[2]=field.columns;
-      } else if (num_rows < 30000) {
-        chunk[1]=num_rows; chunk[2]=1;
-      } else if (field.columns < 30000) {
-        chunk[1]=1; chunk[1]=field.columns;
-      } else {
-        int ratio;
-        ratio=(int)((double)num_rows/10000)+1;
-        chunk[1]=(int)((double)num_rows/ratio); 
-        ratio=(int)((double)field.columns/10000)+1;
-        chunk[2]=(int)((double)field.columns/ratio);
-      }
-      NXcompmakedata(file.nxHandle, field.Name, NX_FLOAT32, 2, length, 
-        NX_COMP_LZW, chunk);
-    }
+    /* create the Data block. NXcompmakedata is buggy, uses all memory */
+    NXmakedata(file.nxHandle, field.Name, NX_FLOAT32, 2, length);
     NXopendata(file.nxHandle, field.Name);
     ret = NXputdata (file.nxHandle, data);
     if (ret == NX_ERROR) ret=0; else ret=1;
@@ -3120,7 +3136,7 @@ int file_write_field_array(struct file_struct file,
   /*        binary for big */
   data = data_get_float(file, field, options);
   if (!data) {
-    if (options.verbose >= 1)
+    if (options.verbose >= 1  && options_warnings-- > 0)
     if (options.verbose >= 2 || field.n_start < field.n_end)
     print_stderr("Warning: File '%s': Data %s is empty (%ld:%ld)\n",
       file.TargetTxt, field.Name, field.n_start, field.n_end);
@@ -3143,7 +3159,7 @@ int file_write_field_array(struct file_struct file,
     /* position at end of Bin, store that pos */
     count = fwrite(data, sizeof(float),
       field.rows*field.columns, file.BinHandle);
-    if (count != field.rows*field.columns) {
+    if (count != field.rows*field.columns && options_warnings-- > 0) {
        print_stderr( "Warning: Could not write properly field %s in BIN file '%s'.\n"
          "(permissions, disk full, broken link ?). Using TXT output [looktxt:file_write_field_array:%d]\n",
          field.Name, file.TargetBin,__LINE__);
@@ -3182,7 +3198,7 @@ int file_write_field_array(struct file_struct file,
         this_count = file.TxtHandle ? 
           fprintf(file.TxtHandle, "%g%c", value,
             strstr(options.format.Name,"IDL") && i*field.columns+j < field.columns*field.rows-1 ? ',' : ' ') : 1;
-        if (!this_count) {
+        if (!this_count && options_warnings-- > 0) {
           print_stderr( "Warning: Could not write properly field %s in TXT file '%s'.\n"
             "(permissions, disk full, broken link ?) [looktxt:file_write_field_array:%d]\n",
             field.Name, file.TargetBin,__LINE__);
@@ -3360,10 +3376,10 @@ struct write_struct file_write_getsections(struct file_struct file,
             char   value[256];
             double data0=0;      /* first numerical value */
             char  *tmp;
-            if (fseek (file.SourceHandle, field->n_start-1 > 0 ? field->n_start-1 : 0, SEEK_SET))
+            if (fseek (file.SourceHandle, field->n_start-1 > 0 ? field->n_start-1 : 0, SEEK_SET) && options_warnings-- > 0)
               print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:file_write_getsections:%d]\n",
                 file.Source, field->n_start-1,__LINE__);
-            if (!fscanf(file.SourceHandle, "%lf", &data0))
+            if (!fscanf(file.SourceHandle, "%lf", &data0) && options_warnings-- > 0)
               print_stderr( "Warning: Error in reading float fscanf(%s) [looktxt:file_write_getsections:%d]\n",
                 file.Source, __LINE__);
             sprintf(value, "_%ld", (long)data0);
@@ -3472,7 +3488,7 @@ long file_write_target(struct file_struct file,
 #endif /* USE_MAT */
 #ifdef USE_NEXUS
     if (options.ismatnexus == 2) {
-      /* NeXus/HDF5 file */
+      /* NeXus/HDF file */
       NXhandle pHandle;
       options.openmode[0] = 'w';
       NXopen(file.TargetTxt, 
@@ -3923,7 +3939,7 @@ long file_write_target(struct file_struct file,
   if (file.TxtHandle && options.ismatnexus == 2) {
     NXclosegroup(file.nxHandle);
     if (NXclose(&(file.nxHandle)) == NX_ERROR)
-      exit(print_stderr( "Warning: Could not close output NeXus/HDF5 file %s [looktxt:file_write_target:NXclose:%d]\n",
+      exit(print_stderr( "Warning: Could not close output NeXus/HDF file %s [looktxt:file_write_target:NXclose:%d]\n",
         file.TargetTxt,__LINE__));
     file.nxHandle=file.TxtHandle=NULL;
   } else
@@ -4060,6 +4076,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
       options.catenate   = atoi(&argv[i][11]);
     else if(!strcmp("--fortran",   argv[i]) || !strcmp("--wrapped",   argv[i]))
       options.fortran    = 1;
+    else if(!strncmp("--fortran=",  argv[i],10) )
+      options.fortran   = atoi(&argv[i][11]);
     else if(!strncmp("--section=", argv[i], 10))
       strlist_add(&(options.sections), &argv[i][10]);
     else if(!strncmp("--makerows=", argv[i], 11))
@@ -4287,8 +4305,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     options.verbose == 2 ? " --verbose"    : "",
     options.verbose == 3 ? " --debug"      : "",
     options.test == 1 ?    " --test"       : "",
-    options.catenate ?     " --catenate"   : "",
-    options.fortran ?      " --fortran"    : "",
+    options.catenate ?     " --catenate"   : " --catenate=0",
+    options.fortran ?      " --fortran"    : " --fortran=0",
     options.use_binary ?   " --binary"     : "",
     options.fast ?         " --fast"       : "",
     options.openmode[0]=='a' ? " --append" : "",
@@ -4306,8 +4324,8 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
     tmp4, /* metadata */
     tmp8, /* makerows */
     NULL);
-  if (options.verbose >= 3)
-      printf("\nDEBUG[options_parse]: Command line options=%s\n", options.option_list);
+  if (options.verbose >= 2)
+      printf("\nVERBOSE[options_parse]: Command line=%s\n", options.option_list);
   str_free(tmp5); str_free(tmp6);
 
   return(options);
