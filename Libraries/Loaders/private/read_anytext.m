@@ -73,7 +73,9 @@ if isnumeric(user.format) && user.format <= length(argv)
   user.format = argv{user.format}; 
 end
 
-if isempty(user.outfile)
+% line below: we do not force MAT file write, and then request MEX
+% with direct memory allocation in the Matlab workspace. faster by 15%.
+if isempty(user.outfile) && 0
   user.outfile     = [ tempname '.mat' ];  % usually in TMP directory
   argv{end+1} = [ '--outfile=' user.outfile ];
   remove_tempname = 1;
@@ -89,24 +91,31 @@ elseif exist('looktxt') ~= 3 % use binary/executable, not MeX
 end
 
 % call looktxt >>>>
-looktxt(argv{:});
-
-% import the MAT file from the temporary file, into structure ==================
-if ischar(user.outfile) && ~isempty(dir(user.outfile))
-  try
-    s = load(user.outfile); % must be a MAT-file
-    % check if there is only one struct field at first level then access it (probably
-    % the temporary variable name).
-    f = fieldnames(s);
-    if length(f) == 1
-      s = s.(f{1});
+if isempty(user.outfile)
+  % pure MEX call. No temporary file.
+  user.format= 'MEX';
+  argv{end+1} = [ '--format=' user.format ];
+  s = looktxt(argv{:});
+else
+  looktxt(argv{:});
+  
+  % import the MAT file from the temporary file, into structure ==================
+  if ~isempty(user.outfile) && ischar(user.outfile) && ~isempty(dir(user.outfile))
+    try
+      s = load(user.outfile); % must be a MAT-file
+      % check if there is only one struct field at first level then access it (probably
+      % the temporary variable name).
+      f = fieldnames(s);
+      if length(f) == 1
+        s = s.(f{1});
+      end
+    catch
+      s = [];
     end
-  catch
-    s = [];
   end
-end
 
-% delete temporary file ========================================================
-if remove_tempname && ~isempty(dir(user.outfile))
-  delete(user.outfile);
+  % delete temporary file ========================================================
+  if remove_tempname && ~isempty(dir(user.outfile))
+    delete(user.outfile);
+  end
 end
