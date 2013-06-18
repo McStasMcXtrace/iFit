@@ -1,4 +1,5 @@
-function result = test_Fit_9_ifitmakefunc
+function result = test_Models_ifitmakefunc
+
   % create a new data set and convert it to an iData
   x = linspace(0,2*pi, 100);
   p = [1 0.3 .1 2 0.5];
@@ -13,7 +14,9 @@ function result = test_Fit_9_ifitmakefunc
   % perform the fit
   [p1, e, m, o]=fits(a,sinexp,[1.15 0.4 0.15 1.7 0.2],'fminralg');
   plot(a, o.modelValue);
+  
   if norm(abs(p1(:))-p(:)) > 0.8
-    result='FAILED';
-  else result = 'OK  ifitmakefunc fits';
+    result = [ 'OK     ' mfilename ];
+  else
+    result = [ 'FAILED ' mfilename ];
   end
