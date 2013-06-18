@@ -374,6 +374,8 @@ b.Command=cmd;
 % final check
 b = iData(b);
 
+if isscalar(b), b=double(b); end
+
 % reset warnings during interp
 iData_private_warning('exit', mfilename);
 

@@ -1,4 +1,4 @@
-function data = ind2sub(data, indexes)
+function data = ind2sub(data, index)
 % ind2sub(s,index) : get indexed element in an iData array
 %
 %   @iData/ind2sub is equivalent to accessing directly the indexed element in arrays,
@@ -16,16 +16,16 @@ function data = ind2sub(data, indexes)
 
 % EF 23/09/07 iData implementation
 % ind2sub 
-  if nargin < 2, indexes=[]; end
-  if ~length(indexes), data=[]; return; end
-  valid = find(indexes > 0 & indexes <= numel(data));
-  indexes = indexes(valid);
+  if nargin < 2, index=[]; end
+  if ~length(index), data=[]; return; end
+
+  index = index(index > 0);
   if length(data) > 1, 
-    data=data(indexes);
+    data=data(index);
   else
     if length(data) == 0, data=[]; 
     else 
-    	S = data.Signal;
-    	data = S(1);
+    	S = get(data,'Signal');
+    	data = S(index);
     end
   end    

@@ -221,7 +221,7 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
       p2 = model.Guess;
     else
       % request char eval guess in sandbox
-      p2 = iFunc_feval_guess(model, varargin);
+      p2 = iFunc_feval_guess(model, varargin{:});
       p  = p0;             % restore initial value
     end
     if isempty(p2)

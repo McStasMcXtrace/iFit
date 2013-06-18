@@ -7,7 +7,7 @@ function c = conv(a,b, shape)
 %       gaussian function.
 %
 % input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
+%         b: object or array (iData or numeric or scalar)
 %     shape: optional shape of the return value
 %          full         Returns the full two-dimensional convolution.
 %          same         Returns the central part of the convolution of the same size as a.

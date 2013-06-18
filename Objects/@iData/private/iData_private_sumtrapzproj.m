@@ -47,6 +47,10 @@ m = iData_private_cleannaninf(get(a,'Monitor'));
 cmd= a.Command;
 b  = copyobj(a);
 
+if any(dim == 0) && ~strcmp(op, 'sum')
+  dim=1:ndims(a);
+end
+
 if all(dim > 0)
   % compute new object
   switch op
@@ -81,6 +85,7 @@ if all(dim > 0)
     
   case {'trapz','cumtrapz'} % TRAPZ ============================================
     e=e.^2;
+
     for index=1:length(dim(:))
       [x, xlab]     = getaxis(a,dim(index)); x=x(:);
       if dim(index) ~= 1  % we put the dimension to integrate on as first

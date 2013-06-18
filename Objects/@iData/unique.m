@@ -1,7 +1,7 @@
 function s = unique(a,dim,mode)
 % s = unique(a,dim) : set unique iData objects axes with no repetitions
 %
-%   @iData/unique function to set unique the data set on its axes
+%   @iData/unique function to remove duplicates along data set axes
 %     unique(a,dim) set unique along axis of rank dim. 
 %       If dim=0, operates on all axes.
 %   Alternatively, you can use 'isequal' to find unique data sets and remove 

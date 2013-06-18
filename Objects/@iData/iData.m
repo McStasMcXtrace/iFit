@@ -248,6 +248,13 @@ else  % convert input argument into object
     elseif iscell(in)
       % iData(cell)
       out = iData_cell2iData(in);   % convert cell/cellstr to cell(iData)
+    elseif isa(in, 'iFunc')
+      [signal, ax, name] = feval(in);
+      if length(signal) == length(in.Parameters)
+        [signal, ax, name] = feval(in, signal);
+      end
+      out = iData(ax{:}, signal);
+      setalias(out, 'Error', 0);
     else
       iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(in) ' is not supported. Ignore.' ]);
       out = [];

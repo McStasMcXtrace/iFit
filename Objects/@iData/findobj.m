@@ -113,8 +113,8 @@ end
 i1 = unique(i1);
 i2 = unique(i2);
 
-if numel(s_caller), s_caller = s_caller(i1); end
-if numel(s_base),   s_base   = s_base(i2);   end
+if numel(s_caller), s_caller = s_caller(i1(i1 > 0)); end
+if numel(s_base),   s_base   = s_base(i2(i2 > 0));   end
 
 varargout{1} = s_caller;
 varargout{2} = s_base;
