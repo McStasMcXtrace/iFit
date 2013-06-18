@@ -1,5 +1,11 @@
 function result=test_iData_copyobj
 
-  b=copyobj(iData(peaks));
+a=iData(peaks);  
+b=copyobj(a);
   
-  result = [ 'FAILED ' mfilename ];
+  if isequal(a,b)
+    result = [ 'OK     ' mfilename ];
+  else
+    result = [ 'FAILED ' mfilename ];
+  end
+
