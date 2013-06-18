@@ -82,7 +82,7 @@ for index=1:length(tests_list)
     waitbar(index/length(tests_list), h, ...
         [ 'iFit test: ' tests_list{index} ' (close to Abort)' ],...
         'Name','iFit: test running...');
-    if any(strncmp(status{index},{'FAILE','ERROR'},5)) || ~isempty(errors)
+    if any(strncmp(status{index},{'FAILE','ERROR'},5))
       set(h, 'Color','magenta');
       failed = failed+1;
     end
@@ -95,8 +95,9 @@ if ishandle(h), delete(h); end
 disp(['                Test     Status             [' mfilename ']' ]);
 disp( '------------------------------------------------------')
 for index=1:length(tests_list)
-  if isempty(status{index}), status{index} = 'Skipped'; end
-  fprintf(1, '%20s %-10s\n', tests_list{index}, status{index});
+  if ~isempty(status{index})
+    fprintf(1, '%20s %-20s\n', status{index},tests_list{index});
+  end
 end
 
 ratio = 1-failed/test_length;

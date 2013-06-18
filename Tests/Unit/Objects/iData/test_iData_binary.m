@@ -1,13 +1,13 @@
 function result = test_iData_binary
 
-  op = {'combine','conv','convn','eq','ge','gt','le','lt','minus','mpower', ...
-  'mrdivide','mtimes','ne','plus','power','rdivide','times','xcorr'};
+  op = {'combine','conv','convn','eq','ge','gt','le','lt','minus', ...
+  'mrdivide','ne','plus','power','rdivide','times','xcorr'};
   
   a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);    a.Monitor=1;
   b = iData([ ifitpath 'Data/ILL_IN6_2.dat' ]);  b.Monitor=2;
-  da=double(a); db=double(b);
+  da=get(a,'Signal'); db=get(b,'Signal');
   result = [ 'OK     ' mfilename ' (' num2str(length(op)) ' operators)' ];
-  failed = mfilename;
+  failed = '';
   for index=1:length(op)
     % operator on double(iData)
     switch op{index}
@@ -40,7 +40,7 @@ function result = test_iData_binary
     end
   end
   if length(failed)
-    result = [ 'FAILED ' failed ];
+    result = [ 'FAILED ' mfilename ' ' failed ];
   end
   
   

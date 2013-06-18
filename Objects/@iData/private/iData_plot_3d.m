@@ -7,7 +7,7 @@ ret = 0;
 % first test if this is an image
   if isfield(a.Data,'cdata')
     h=image(a.Data.cdata);
-    xlab=''; ylab=''; clab='';
+    xlab=''; ylab=''; zlab='';
   else
     % check if a rebining on a grid is required
     if ~isvector(a) && isempty(strfind(method, 'plot3')) && isempty(strfind(method, 'scatter')) 

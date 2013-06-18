@@ -1,7 +1,7 @@
 function result=test_iData_rmaxis
 
   a=iData(peaks);
-  a{1} = linspace(-5,5,length(size(a,1)));
+  a{1} = linspace(-5,5,size(a,1));
   b=copyobj(a);
   rmaxis(b, 1);
   

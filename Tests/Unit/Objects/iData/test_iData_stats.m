@@ -9,7 +9,7 @@ function result = test_iData_stats
   if abs(w-0.0036) < 1e-4 && abs(x-1.0007) < 1e-4 && ...
    norm(abs(m-[0         7387          119       1630.7])) < 5e-2 && ...
    abs(p(2)-x) < 5e-4 && abs(abs(p(3))-w) < 1e-4
-    result = 'OK  min max median mean std';
+    result = [ 'OK     ' mfilename ];
   else
-    result = 'FAILED';
-  end 
+    result = [ 'FAILED ' mfilename ];
+  end

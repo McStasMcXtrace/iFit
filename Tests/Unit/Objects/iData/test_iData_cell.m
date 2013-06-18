@@ -1,7 +1,7 @@
 function result=test_iData_cell
 
 a=iData(peaks);
-cell(a);
+a=cell(a);
 if iscell(a)
   result = [ 'OK     ' mfilename ];
 else
