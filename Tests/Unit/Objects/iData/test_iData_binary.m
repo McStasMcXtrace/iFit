@@ -6,8 +6,8 @@ function result = test_iData_binary
   a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);    a.Monitor=1;
   b = iData([ ifitpath 'Data/ILL_IN6_2.dat' ]);  b.Monitor=2;
   da=double(a); db=double(b);
-  result = [ 'OK  iData binary (' num2str(length(op)) ' operators)' ];
-  failed = '';
+  result = [ 'OK     ' mfilename ' (' num2str(length(op)) ' operators)' ];
+  failed = mfilename;
   for index=1:length(op)
     % operator on double(iData)
     switch op{index}

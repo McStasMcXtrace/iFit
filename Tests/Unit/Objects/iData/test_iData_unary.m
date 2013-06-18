@@ -11,7 +11,7 @@ function result = test_iData_unary
   
   a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);
   d = double(a);
-  result = [ 'OK  iData unary (' num2str(length(op)) ' operators)' ];
+  result = [ 'OK     ' mfilename ' (' num2str(length(op)) ' operators)' ];
   failed = '';
   for index=1:length(op)
     
