@@ -68,7 +68,7 @@ else
   % single level assignment
   s = S(1);
   switch s.type
-  case '()'       
+  case '()'
     if numel(b) > 1   % array() -> deal on all elements
     % SYNTAX: array(index) = val: set Data using indexes         
       parfor j = 1:length(s.subs{:})
@@ -121,15 +121,22 @@ else
       b = iData_private_history(b, toadd);
       % final check
       b = iData(b);
-    elseif length(s.subs{:}) == 1 && s.subs{:} == 1
-    % SYNTAX: object(1) = iData: just assign objects
+    elseif length(s.subs) == 1 && length(s.subs{:}) == 1 && s.subs{:} == 1
+    % SYNTAX: object(1) = iData: just assign objects on common axis frame
       [b,val]=union(b,val); % extrapolated values from 'val' are set to zero by interp
       val = subsref(val,struct('type','.','subs','Signal'));  % values to use for assignment
       i   = find(val);
       sb  = subsref(b,struct('type','.','subs','Signal'));    % signal to assign
-    	sb(i) = val(i);
+      sb(i) = val(i);
       b   = iData_setalias(b, 'Signal', sb);
-    	return
+      return
+    elseif length(s.subs) == ndims(val)
+      % a(index) = iData(index)
+      sb  = subsref(b,struct('type','.','subs','Signal'));    % signal to assign
+      sb  = subsref(sb, s);
+      if all(size(sb) == size(val))
+        b = subsasgn(a, s, double(val));
+      end
     else 
       iData_private_warning(mfilename, [ 'I can only allocate a sub-object with syntax ' b.Tag ' ' inputname(1) '(1) = ' val.Tag ' which asssigns unweighted Signal. Ignoring and leaving target object unchanged.' ]);
     end                 % if single object

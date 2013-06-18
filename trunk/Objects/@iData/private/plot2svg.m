@@ -179,7 +179,7 @@ for i=1:size(cmap,1)
 end
 
 % Open SVG-file
-[pathstr,name,ext,versn] = fileparts(finalname);
+[pathstr,name,ext] = fileparts(finalname);
 %PLOT2SVG_globals.basefilename = fullfile(pathstr,name);
 PLOT2SVG_globals.basefilepath = pathstr;
 PLOT2SVG_globals.basefilename = name;

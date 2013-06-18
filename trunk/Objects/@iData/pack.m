@@ -69,13 +69,14 @@ end
 
 converted = '';
 
-largemat = find(nelements > 10000);
+largemat = find(nelements > 1000);
 match    = match(largemat);
 types    = types(largemat);
 nelements= nelements(largemat);
 for index=1:length(nelements)
   f = match{index}; % field name
   d = get(b, f);    % content
+
   if ndims(d) > 2   % sparse only works with 1-2 d vector/matrix
     continue
   end

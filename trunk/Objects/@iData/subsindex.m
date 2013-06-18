@@ -14,9 +14,10 @@ if numel(s) > 1
    s = s(1);
 end
 
-y = get(s,'Signal');
+y = int32(get(s,'Signal'));
 u = unique(y);
-if all(u == 0 | u == 1)
+if length(u) <= 2 && all(u == 0 | u == 1)
   % signal is logical already
   y = find(y);
 end
+y=y-1;

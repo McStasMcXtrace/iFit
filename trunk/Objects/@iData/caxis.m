@@ -2,7 +2,7 @@ function c = caxis(a, h)
 % c = caxis(s, h) : Use the 2D/3D data as the colormap (CData property) in current object.
 %
 %   @iData/caxis function to use the current object as the colomap (CData).
-%     The idata object is automatically rescaled in order to match the current 
+%     The iData object is automatically rescaled in order to match the current 
 %       surface/view axes.
 %
 % input:  s: object or array (iData)

@@ -314,6 +314,7 @@ case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4'}  % bitmap im
   case 'gif'
     imwrite(b, jet(64), filename, format, 'Comment',char(a));
   otherwise
+    if strcmp(format,'hdf4'), format='hdf'; end
     imwrite(b, jet(64), filename, format);
   end
 case 'epsc' % color encapsulated postscript file format, with TIFF preview
@@ -359,7 +360,7 @@ case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
     if ndims(a) == 2
       [x, xlab] = getaxis(a,2); x=double(x);
       [y, ylab] = getaxis(a,1); y=double(y);
-      [z, clab] = getaxis(a,0); c=double(c);
+      [z, zlab] = getaxis(a,0); z=double(z);
     elseif ndims(a) >= 3
       [x, xlab] = getaxis(a,2); x=double(x);
       [y, ylab] = getaxis(a,1); y=double(y);
@@ -377,6 +378,9 @@ case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
     T   = regexprep(T,'\s+',' '); % remove duplicated spaces
     if length(T) > 69, T=[ T(1:60) '...' T((end-8):end) ]; end
     % get the faces and vertices
+    if isvector(x) && isvector(y)
+      [x,y] = meshgrid(x,y);
+    end
     v = [x(:) y(:) z(:)];
     f = delaunay(x(:),y(:));
     %f=delaunayn(v,{'Qx','Qv','Tv', 'Qt','Qbb','Qc','Qz'});

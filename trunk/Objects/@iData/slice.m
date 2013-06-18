@@ -1,4 +1,4 @@
-function slice(a, method)
+function h = slice(a, method)
 % slice(s) : Plot a 3D object with slice rendering
 %
 %   @iData/slice function to view slices in 3D object
@@ -36,8 +36,11 @@ if exist('sliceomatic')
   z=unique(getaxis(a,3));
   c=getaxis(a,0);
   sliceomatic(c, x,y,z);
+  h = findobj('name','Sliceomatic');
+  set(h, 'Name', [ 'Sliceomatic: ' char(a) ]); 
   title(a.Title,'interpreter','none');
-  xlabel(xlabel(a)); ylabel(ylabel(a)); zlabel(zlabel(a)); 
+  xlabel(xlabel(a)); ylabel(ylabel(a)); zlabel(zlabel(a));
+else
+  h = plot(a);
 end
-
 
