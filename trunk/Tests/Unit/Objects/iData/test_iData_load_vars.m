@@ -1,7 +1,12 @@
-function result = test_Loaders_3
+function result = test_iData_load_vars
+
   a = iData(rand(10));
-  a = iData(struct('a',1,'b','a string'));
-  a = findobj(iData);
+  b = iData(struct('a',1,'b','a string'));
   f = figure; peaks;
-  a = iData(f);
-  result = 'OK  iData(peaks); iData(gcf)';
+  d = iData(f);
+  
+  if all(~isempty([ a b d ]))
+    result = [ 'OK     ' mfilename ];
+  else
+    result = [ 'FAILED ' mfilename ];
+  end
