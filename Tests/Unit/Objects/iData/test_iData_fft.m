@@ -1,9 +1,10 @@
-function result = test_Math_11_FFT
+function result = test_iData_fft
+
   t=linspace(0,1,1000);
   a = iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+0.05*randn(size(t)));
   c=fft(a); d=ifft(c);
   if std(abs(a-d)) > 0.3
-    result='FAILED';
+    result = [ 'OK     ' mfilename ];
   else
-    result = 'OK  fft ifft';
+    result = [ 'FAILED ' mfilename ];
   end
