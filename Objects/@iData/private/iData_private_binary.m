@@ -174,7 +174,7 @@ case {'plus','minus','combine'}
     end
   end
   
-case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','conv','xcorr'}
+case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv','xcorr'}
   if strcmp(op, 'conv') || strcmp(op, 'xcorr')
     s3 = fconv(y1, y2, varargin{:});  % pass additional arguments to fconv
     if nargin == 4

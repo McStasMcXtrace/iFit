@@ -1,9 +1,10 @@
-function b = jacobian(a, varargin)
-% [b, j] = jacobian(a, ...) : computes the gradient (derivative) of iData objects
+function [b, j] = jacobian(a, varargin)
+% [b, j] = jacobian(a, new_axes, 'new_axes_labels'...) : computes the gradient (derivative) of iData objects
 %
 %   @iData/jacobian computes the Jacobian from the object current axes to new axes. 
-%   This is to be used for object coordinate/variable changes. 
-%   The 'from' and 'to' axes should have the same dimensions. 
+%   This is to be used for object coordinate/variable changes from the
+%   given object axes to new axes. The 'from' and 'to' axes should have the same dimensions.
+%
 %   The transformed object is returned, as well as the Jacobian which was used 
 %   for the transformation.
 %     b=jacobian(s, d) where 'd' is an iData object computes 's' on the 'd' axes.
@@ -12,11 +13,16 @@ function b = jacobian(a, varargin)
 %     b=jacobian(s, {X1,X2, ... Xn}) is the same as above
 %     b=jacobian(s, ..., 'xlab','ylab',...) specifies the new axes labels
 %     b=jacobian(s, ..., {'xlab','ylab',...})
-%   The Jacobian is not a single axis assignement, nor an interpolation.
+%   The Jacobian is not a mere axis assignement, nor an interpolation.
+%
+%   The Jacobian tranform retains the full integral of the initial object, that
+%   is:
+%      trapz(s,0) == trapz(jacobian(s, ...),0)
+%
 %   A direct axes assignation is perfomed by using 'setaxis' (which does not affect
 %   the Signal, and retains its sum, but not its integral). 
 %   A direct axes rebinning can be performed by using 'interp' (which affects the
-%   Signal, and retains its sum, but not its integral).
+%   Signal, its sum, but usually retains its integral).
 %    
 % input:  a: object or array (iData)
 %         d: single object from which 'to' axes are extracted (iData)
@@ -63,7 +69,9 @@ for index=1:length(varargin)
   c = varargin{index};
   if isa(varargin{index}, 'iData')  % get 'to' axis from other iData object
     if length(c) > 1
-      iData_private_warning(mfilename,['Can not apply Jacobian onto all axes of input argument ' num2str(index) ' which is an array of ' num2str(numel(c)) ' elements. Using first element only.']);
+      iData_private_warning(mfilename, ...
+          ['Can not apply Jacobian onto all axes of input argument ' num2str(index) ...
+           ' which is an iData array of ' num2str(numel(c)) ' elements. Using first element only.']);
       c = c(1);
     end
     for j1 = 1:ndims(c)
@@ -90,7 +98,9 @@ for index=1:length(varargin)
       if ~isempty(c{j1}) f_axes{axis_arg_index} = c{j1}; end
     end
   elseif ~isempty(c)
-    iData_private_warning(mfilename,['Input argument ' num2str(index) ' of class ' class(c) ' size [' num2str(size(c)) '] is not supported. Ignoring.']);
+    iData_private_warning(mfilename, ...
+        ['Input argument ' num2str(index) ' of class ' class(c) ' size [' ...
+         num2str(size(c)) '] is not supported. Ignoring.']);
   end
 end
 clear varargin
@@ -111,7 +121,9 @@ if ndims(a) > 1
     try
       % axes must have same size as the initial ones
       if ~all(size(i_axes{index}) == size(f_axes{index}))
-        iData_private_warning(mfilename,['Jacobian can only be computed if axes have same size. Object axis{%i}=[' num2str(size(i_axes{index})) '], new axis=[' size(f_axes{index}) '].' ]);
+        iData_private_warning(mfilename,...
+            ['Jacobian can only be computed if axes have same size. Object axis{%i}=[' ...
+             num2str(size(i_axes{index})) '], new axis=[' size(f_axes{index}) '].' ]);
         
       end 
     end
@@ -129,14 +141,18 @@ cmd=a.Command;
 b = copyobj(a);
 j = abs(genop(@rdivide, gf, gi));
 clear gi gf
-s = get(b,'Signal').*j;
-e = get(b,'Error') .*j;
-clear j
+s = get(b,'Signal')./j;
+e = get(b,'Error') ./j;
+if nargout < 2
+  clear j
+elseif all(j(:) == j(1))
+  j = j(1);
+end
 
 % assemble the resulting object
 [dummy, sl] = getaxis(b, '0');
 b = set(b, 'Signal', s, 'Error', abs(e));
-b = setalias(b, 'Signal', s, [  mfilename '(' sl ')' ]);
+b = label(b, 0, [  mfilename '(' sl ')' ]);
 
 % redefine axes
 for index=1:length(f_axes)
@@ -164,7 +180,7 @@ function gp=gradient_axis(ax)
     g = cell(1,grad_length);
     [g{:}]=gradient(s); % compute the gradient there
     gs = [];
-    % now computes the product for a given gradient(axis)
+    % now computes the product(g) for a given gradient(axis)
     for dim=1:grad_length
       if ~isempty(g{dim}) && any(g{dim})
         if isempty(gs), gs = g{dim};
@@ -178,7 +194,7 @@ function gp=gradient_axis(ax)
       v(index) = length(gs);
       gs       = reshape(gs, v);
     end
-    if isempty(gp), gp = s;
+    if isempty(gp), gp = gs;
     else            gp = genop(@times, gp, gs);
     end
   end % for index
