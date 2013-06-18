@@ -1,4 +1,6 @@
 function c=least_absolute(Signal, Error, Model)
+% c=least_absolute(Signal, Error, Model)
+%
 % weighted least absolute criteria
 % the return value is a vector, and most optimizers use its sum (except LM).
 % |Signal-Model|/Error

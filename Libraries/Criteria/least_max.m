@@ -1,4 +1,6 @@
 function c=least_max(Signal, Error, Model)
+% c=least_max(Signal, Error, Model)
+%
 % weighted median absolute criteria
 % the return value is a scalar
 % median(|Signal-Model|/Error)

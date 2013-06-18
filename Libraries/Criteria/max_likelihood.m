@@ -1,4 +1,6 @@
 function c=max_likelihood(Signal, Error, Model)
+% c=max_likelihood(Signal, Error, Model)
+%
 % Maximum-likelihood criteria, which minimizes the Normal log-likelihood
 % the return value is a vector, and most optimizers use its sum (except LM).
 % (|Signal-Model|/sigma).^2 + 1/2 log(2pi sigma)
