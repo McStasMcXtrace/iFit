@@ -9,7 +9,7 @@ function result=test_Optimizers
     p = [ p ; x ];
   end
   
-  if all(mean(abs(p)) > 0.9)
+  if all(mean(abs(p)) > 0.8)
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];

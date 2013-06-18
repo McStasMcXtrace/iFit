@@ -15,7 +15,7 @@ function result = test_Models_ifitmakefunc
   [p1, e, m, o]=fits(a,sinexp,[1.15 0.4 0.15 1.7 0.2],'fminralg');
   plot(a, o.modelValue);
   
-  if norm(abs(p1(:))-p(:)) > 0.8
+  if all(abs(abs(p1(:))-p(:)) < 0.4)
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];

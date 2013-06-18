@@ -2,10 +2,12 @@ function result=test_iData_end
 
   a = iData(peaks);
   
-  b = zeros(a, 2,3);
+  b = zeros(iData, 2,3);
+  b(end)=a;
   c = b(end);
+  d=a{0};
   
-  if all(c.Signal(:) == 1)
+  if isequal(a,c) && double(c(end)) == c(end)
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];

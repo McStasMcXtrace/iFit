@@ -4,7 +4,17 @@ function result=test_iData_save
   formats={'m','mat','fig','ps','hdf4','jpg','tiff','hdf5','nc','edf','png',...
     'csv','svg','wrl','dat','ply','vtk', 'stl', 'off', 'x3d', 'fits', ...
     'yaml','xml','pdf','eps'};
+  result = [ 'OK     ' mfilename ' (' num2str(length(formats)) ' formats)' ];
+  failed = '';
   for index=1:length(formats)
-    f=save(a, 'test', formats{index}); delete(f);
+    f=save(a, 'test', formats{index}); 
+    if ~isempty(f)
+        delete(f);
+    else
+        failed = [ failed ' ' formats{index} ];
+    end
   end
   
+  if ~isempty(failed)
+    result = [ 'FAILED ' mfilename ' ' failed ];
+  end
