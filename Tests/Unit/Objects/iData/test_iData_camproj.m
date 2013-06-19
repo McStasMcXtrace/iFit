@@ -4,7 +4,7 @@ function result=test_iData_camproj
   b=[ camproj(a) sum(a) prod(a) cumsum(a) cumprod(a) ];
   
   if length(b) == 5
-    result =   'OK     iData camproj sum cumsum';
+    result = [ 'OK     ' mfilename ];
   else
-    result =   'FAILED iData camproj sum cumsum';
+    result = [ 'FAILED ' mfilename ];
   end
