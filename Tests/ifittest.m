@@ -92,11 +92,11 @@ end
 if ishandle(h), delete(h); end
 
 % write report
-disp(['                Test     Status             [' mfilename ']' ]);
+disp(['Status          Test                        [' mfilename ']' ]);
 disp( '------------------------------------------------------')
 for index=1:length(tests_list)
   if ~isempty(status{index})
-    fprintf(1, '%20s %-20s\n', status{index},tests_list{index});
+    fprintf(1, '%-40s %s\n', status{index},tests_list{index});
   end
 end
 
