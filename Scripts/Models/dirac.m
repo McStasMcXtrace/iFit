@@ -25,7 +25,7 @@ y.Dimension  = 1;
 % moments of distributions
 m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
 
-y.Guess      = @(x,signal) [ NaN m1(x, signal-min(signal(:)) ];
+y.Guess      = @(x,signal) [ NaN m1(x, signal-min(signal(:))) ];
 
 y = iFunc(y);
 
