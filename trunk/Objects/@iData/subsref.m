@@ -158,7 +158,7 @@ for i = 1:length(S)     % can handle multiple index levels
     elseif strcmpi(fieldname, 'axes')
       fieldname = 'Axis';
     end
-    if isa(b, 'iData'), f=fields; else f=fieldnames(b); end
+    if isa(b, 'iData'), f=fields; elseif isstruct(b), f=fieldnames(b); else f=[]; end
     index = find(strcmpi(fieldname, f));
     if any(strcmpi(fieldname, 'alias'))
       b = getalias(b);
@@ -208,6 +208,7 @@ function val = iData_getAliasValue(this,fieldname)
 
 % EF 23/09/07 iData impementation
   val = [];
+  if iscellstr(fieldname), fieldname = fieldname{1}; end
   if ~isa(this, 'iData'),   return; end
   if ~isvarname(fieldname), return; end % not a single identifier (should never happen)
 
