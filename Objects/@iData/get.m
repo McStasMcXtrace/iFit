@@ -57,7 +57,7 @@ for index=1:length(varargin)
     iData_private_error(mfilename, [ 'PropertyName should be char strings in object ' inputname(1) ' ' this.Tag ' "' this.Title '" and not ' class(property) ]);
   end
   % test if this is a unique property, or a composed one
-  if isvarname(property)  % extract iData field/alias
+  if isvarname(property) || isvalid(property) % extract iData field/alias
     if any(strcmp(property, fields))
       b = this.(property);               % direct static field
       if isnumeric(b) && any(strcmp(property, {'Date','ModificationDate'}))
@@ -65,7 +65,12 @@ for index=1:length(varargin)
       end
       varargout{1} = b;
     else
-      s = struct('type','.','subs', property);      % MAIN TIME SPENT
+      % a string containing members MAIN TIME SPENT
+      s = [];
+      for k=strsplit(property,'.')
+        s(end+1).type='.';
+        s(end).subs=k{1};
+      end
       varargout{1} = subsref(this, s);              % calls subsref directly (single subsref level)
     end
   else % this is a compound property, such as get(this,'Data.Signal')
@@ -85,3 +90,9 @@ function this = get_eval(this, property)
   catch
     this = eval(property);              % this is a full expression: evaluate it...
   end
+
+  function TF = isvalid(property)
+    TF = isstrprop(property, 'alphanum') | (property == '_') | (property == '.');
+    TF = all(TF);
+  
+    
