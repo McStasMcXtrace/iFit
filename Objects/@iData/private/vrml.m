@@ -124,7 +124,7 @@ sendStr(3,'children [\n');
 sendStr(2,'Viewpoint {\n');
 sendStr(3,sprintf('position %f %f %f\n',obj.CameraPosition));
 sendStr(3,sprintf('fieldOfView %f\n',obj.CameraViewAngle*pi/180));
-if graphicsversion(obj_handle,'handlegraphics')
+if ~exist('graphicsversion') || graphicsversion(obj_handle,'handlegraphics')
     axesXForm = get(obj_handle, 'XForm');
 else
     axesXForm = getAxesTransformationMatrix(obj_handle);
@@ -414,7 +414,7 @@ sendStr(3,'}\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function surfColor(obj) %#ok<*DEFNU>
-if ismatrix(obj.CData)
+if all(size(obj.CData) > 0)
     outputColormap(get(get(obj.Parent,'Parent'),'Colormap'));
 else
     error(message('MATLAB:vrml:RGBTexturesNotSupported'));
@@ -677,3 +677,4 @@ else
     no = [o(2) o(3) o(4) o(1)];
     o = no;
 end
+
