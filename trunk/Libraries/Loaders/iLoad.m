@@ -55,7 +55,6 @@ function [data, format] = iLoad(filename, loader, varargin)
 %           iLoad_import, iLoad_loader_check, findfields
 
 persistent config
-persistent compiled
 
 if isempty(config)
   config  = iLoad_config_load; 
@@ -72,6 +71,11 @@ if nargin ==1 && ischar(filename)
     config = filename;
     loader = 'save';
   end
+end
+% is the loader in fact an option ?
+if ischar(loader) && (strncmp(loader,'--',2) || strncmp(loader,'-',1))
+  varargin{end+1} = loader;
+  loader='';
 end
 
 % ------------------------------------------------------------------------------
@@ -229,6 +233,7 @@ if ischar(filename) & length(filename) > 0
       return
     else
       f = findfield(data, filesub(2:end)); % calls private function
+      if all(cellfun(@isempty, f)), f=[]; end
       if ~isempty(f)
         this_data = {}; this_format = {};
         % 'data' will be a cell array of structure based on the initial one
@@ -868,6 +873,7 @@ if length(s(:)) > 1
   return
 end
 
+if iscell(s), s=s{1}; end
 match = struct_getfields(struct(s), ''); % return the numerical fields
 
 if ~isempty(field)
