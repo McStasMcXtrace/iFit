@@ -66,8 +66,8 @@ for index=1:length(tests_list)
     end
   catch exception
     if ~isempty(exception.stack),
-      result = sprintf('ERROR: %s. file %s, line %s', ...
-        exception.message, exception.stack.file, exception.stack.line);
+      result = sprintf('ERROR: %s. file %s, line %i', ...
+        exception.message, exception.stack(1).file, exception.stack(1).line);
     else
       result= sprintf('ERROR: %s.', exception.message);
     end
@@ -83,7 +83,9 @@ for index=1:length(tests_list)
         [ 'iFit test: ' tests_list{index} ' (close to Abort)' ],...
         'Name','iFit: test running...');
     if any(strncmp(status{index},{'FAILE','ERROR'},5))
-      set(h, 'Color','magenta');
+      if ishandle(h)
+        set(h, 'Color','magenta');
+      end
       failed = failed+1;
     end
   end
@@ -128,4 +130,5 @@ function fileList = getAllFiles(dirName)
     fileList = [fileList; getAllFiles(nextDir)];  %# Recursively call getAllFiles
   end
   
+
 
