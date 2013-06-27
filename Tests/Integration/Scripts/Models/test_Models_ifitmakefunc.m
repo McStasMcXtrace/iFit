@@ -5,7 +5,7 @@ function result = test_Models_ifitmakefunc
   p = [1 0.3 .1 2 0.5];
   y = p(1)*sin((x-p(2))/p(3)).*exp(-x/p(4))+p(5);
   % add noise
-  y = y+p(1)*0.05*randn(size(y));
+  y = y+p(1)*0.01*randn(size(y));
   a = iData(x,y); a.Error=0;
   % create the corresponding function
   sinexp = ifitmakefunc('sinexp','Exponentially decreasing sine', ...

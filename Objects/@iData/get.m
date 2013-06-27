@@ -67,7 +67,9 @@ for index=1:length(varargin)
     else
       % a string containing members MAIN TIME SPENT
       s = [];
-      for k=strsplit(property,'.')
+      split = textscan(property,'%s','Delimiter','.'); split=split{end};
+      split = split(:)';
+      for k=split
         s(end+1).type='.';
         s(end).subs=k{1};
       end
