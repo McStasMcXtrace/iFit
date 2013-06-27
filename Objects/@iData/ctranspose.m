@@ -2,7 +2,9 @@ function a = ctranspose(a)
 % b = ctranspose(s) : complex conjugate transpose of iData object
 %
 %   @iData/ctranspose function to return the complex conjugate transpose of data sets
-%   which corresponds to syntax: b = s'
+%     which corresponds to syntax: b = s'
+%   When the argument is an iData array, the whole array is transposed. To
+%     transpose each array element, use transpose(s) or b=s.'
 %
 % input:  s: object or array (iData)
 % output: b: object or array (iData)
