@@ -77,6 +77,7 @@ if isfield(d,'Headers') && isfield(d.Headers,'MetaData')
   end
   
 end
+clear d
 
 % check that guessed Signal is indeed what we look for
 signal = getalias(a, 'Signal');
@@ -100,21 +101,27 @@ if ~isempty(strfind(a.Format,'McStas 1D monitor'))
 elseif ~isempty(strfind(a.Format,'McStas 2D monitor'))
   % Get sizes of x- and y- axes:
   siz = size(a.Data.MetaData.variables');
+  if all(siz < size(getaxis(a,'Signal')))
+    siz = size(getaxis(a,'Signal')');
+  else
+    setalias(a,'Signal','Data.MetaData.variables',zlab);
+  end
   lims = a.Data.MetaData.xylimits;
   xax = linspace(lims(1),lims(2),siz(1));
   yax = linspace(lims(3),lims(4),siz(2));
 
-  % First column is the scan parm, we denote that 'x'
+  % set axes
+
   setalias(a,'y',xax,xlab);
   setalias(a,'x',yax,ylab);
-  setalias(a,'Signal','Data.MetaData.variables',zlab);
+
   setalias(a,'I','Signal');
   if ~isempty(findfield(a, 'Error'))
     setalias(a,'Error','Data.MetaData.Errors');
   else setalias(a,'Error',0);
   end
   setalias(a,'E','Error');
-  if ~isempty(findfield(a, 'Error')) 
+  if ~isempty(findfield(a, 'Events')) 
     setalias(a,'N','Data.MetaData.Events');
   end
   setaxis(a,1,'x');
@@ -147,6 +154,7 @@ if isfield(a, 'E'), e=a.E; else e=0; end
 if isfield(a, 'N'), n=a.N; else n=0; end
 s = a{0}; 
 values = [ sum(s(:)), sqrt(sum(e(:).^2)), sum(n(:)) ];
+clear s
 t_sum = sprintf(' I=%g I_err=%g N=%g', values);
 %   X0 dX, Y0 dY ...
 t_XdX = '';
