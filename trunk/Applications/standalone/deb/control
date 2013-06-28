@@ -1,7 +1,7 @@
 Package: @IFIT_TARNAME@
 Version: @IFIT_VERSION@
 Architecture: arch
-Installed-Size: 14296
+Installed-Size: 48100
 Depends: bash
 Section: Science
 Priority: optional
