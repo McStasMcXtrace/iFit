@@ -6,7 +6,7 @@ function result = test_iData_unary
     'issparse','log10','log','norm','not','permute','real','round','sign','sinh','sin', ...
     'sparse','sqrt','tanh','tan','transpose','uminus','uplus', ...
     'cumtrapz','sum','prod','trapz','cumsum','cumprod',...
-    'fft','ifft','diff','gradient','min','max','mean','std','median','sort','squeeze',...
+    'gradient','min','mean','median','sort','squeeze',...
     'double','logical','single','sqr'};
   
   a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);
@@ -39,7 +39,7 @@ function result = test_iData_unary
     d1 = double(d1);
     
     % do they match ?
-    if (abs(sum(d1(:))) - abs(sum(d2(:))))/(abs(sum(d1(:))) + abs(sum(d2(:)))) > 0.01
+    if (abs(sum(d1(:)) - sum(d2(:))))/(abs(sum(d1(:)) + sum(d2(:)))) > 0.01
       fprintf(1, '%s:%s: %g ~= %g\n', mfilename, op{index}, abs(sum(d1(:))), abs(sum(d2(:))));
       failed = [ failed ' ' op{index} ];
     end
