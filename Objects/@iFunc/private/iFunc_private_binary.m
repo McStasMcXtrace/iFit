@@ -331,16 +331,16 @@ elseif isFb && ischar(a)
     c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%s);', op, a, v);
   end
   c.Name       = sprintf('%s(%s,%s)', op, a(1:min(10,length(a))), c.Name);
-elseif   isFa && isnumeric(b) && isnumeric(b)
+elseif isFa && isnumeric(b)
   b = mat2str(double(b)); 
   c.Expression{end+1} = sprintf('\nsignal=%s(signal,%s%s);', op, b, v);
   if length(b) > 13, b=[ b(1:10) '...' ]; end
   c.Name       = sprintf('%s(%s,%s)', op, c.Name, b);
-elseif isFb && isnumeric(a) && isnumeric(a)
+elseif isFb && isnumeric(a)
   a = mat2str(double(a));
-  c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%v);', op, a, v);
+  c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%s);', op, a, v);
   if length(a) > 13, a=[ a(1:10) '...' ]; end
-  c.Name       = sprintf('%s(%s,%s)', op, c.Name, b);
+  c.Name       = sprintf('%s(%s,%s)', op, c.Name, a);
 else
   error(['iFunc:' mfilename ], [mfilename ': can not apply operator ' op ' between class ' class(a) ' and class ' ...
       class(b) '.' ]);

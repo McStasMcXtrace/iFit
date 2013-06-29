@@ -28,7 +28,7 @@ function [signal, ax, name] = feval(model, p, varargin)
 
 % handle input iFunc arrays
 
-if numel(model) > 1
+if isa(model, 'iFunc') && numel(model) > 1
   signal = {}; ax={}; name={};
   for index=1:numel(model)
     [signal{end+1}, ax{end+1}, name{end+1}] = feval(model(index), p, varargin{:});
@@ -46,6 +46,12 @@ end
 
 if nargin < 2
   p = [];
+end
+
+if ischar(model) && isa(p, 'iFunc')
+  % call to an iFunc method
+  signal = builtin('feval', model, p, varargin{:});
+  return
 end
 
 if isa(p, 'iData')
