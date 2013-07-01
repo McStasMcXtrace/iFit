@@ -338,9 +338,9 @@ for index=1:model.Dimension
 		    % orient the axis along the right dimension to indicate this is not an event type
         d = ones(1,max(2,model.Dimension)); d(index) = numel(varargin{index});
         varargin{index} = reshape(varargin{index}, d);
-		    width = NaN; position = NaN;
-		    break; % go to next axis (exit index_p loop)
-		  end
+		width = NaN; position = NaN;
+		break; % go to next axis (exit index_p loop)
+      end
     end
   end
   if isempty(varargin{index})
@@ -351,7 +351,8 @@ for index=1:model.Dimension
   end
   % check if axes are vectors of same length and orientation (event type model)
   if isempty(AxisOrientation), AxisOrientation=size(varargin{index});
-  elseif any(AxisOrientation ~= size(varargin{index})), ParallelAxes=0; end
+  elseif length(AxisOrientation) == length(size(varargin{index})) ...
+          && any(AxisOrientation ~= size(varargin{index})), ParallelAxes=0; end
 end
 
 % convert axes to nD arrays for operations to take place

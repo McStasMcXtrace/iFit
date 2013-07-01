@@ -175,7 +175,7 @@ if isFa && isFb
   t = iFunc;
   c.Tag  = t.Tag;
   c.Date = t.Date;
-  
+
   % handle cross/orthogonal axes operation -> extend dimension
   if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
     c.Dimension=a.Dimension + b.Dimension;
@@ -332,15 +332,22 @@ elseif isFb && ischar(a)
   end
   c.Name       = sprintf('%s(%s,%s)', op, a(1:min(10,length(a))), c.Name);
 elseif isFa && isnumeric(b)
-  b = mat2str(double(b)); 
-  c.Expression{end+1} = sprintf('\nsignal=%s(signal,%s%s);', op, b, v);
-  if length(b) > 13, b=[ b(1:10) '...' ]; end
-  c.Name       = sprintf('%s(%s,%s)', op, c.Name, b);
+  % special case for mpower iFunc^n -> dimension extension
+  if strcmp(op, 'mpower') && b == floor(b) && b>1
+    for index=1:(b-1)
+      c = c*a;
+    end
+  else
+    b = mat2str(double(b)); 
+    c.Expression{end+1} = sprintf('\nsignal=%s(signal,%s%s);', op, b, v);
+    if length(b) > 13, b=[ b(1:10) '...' ]; end
+  end
+  c.Name       = sprintf('%s(%s,%g)', op, c.Name, b);
 elseif isFb && isnumeric(a)
   a = mat2str(double(a));
   c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%s);', op, a, v);
   if length(a) > 13, a=[ a(1:10) '...' ]; end
-  c.Name       = sprintf('%s(%s,%s)', op, c.Name, a);
+  c.Name       = sprintf('%s(%s,%g)', op, c.Name, a);
 else
   error(['iFunc:' mfilename ], [mfilename ': can not apply operator ' op ' between class ' class(a) ' and class ' ...
       class(b) '.' ]);
