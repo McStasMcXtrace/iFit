@@ -3,40 +3,28 @@ function result = test_iFunc_binary
 % operator may be: 'plus','minus','times','rdivide','conv', 'xcorr', 'power'
 %                  'mtimes','mrdivide','mpower' -> perform orthogonal axes dimensionality extension
 
-  op = {'combine','conv','convn','eq','ge','gt','le','lt','minus', ...
-  'mrdivide','ne','plus','power','rdivide','times','xcorr'};
+  op = {'plus','minus','times','rdivide','conv', 'xcorr', 'power'};
   
-  a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);    a.Monitor=1;
-  b = iData([ ifitpath 'Data/ILL_IN6_2.dat' ]);  b.Monitor=2;
-  da=get(a,'Signal'); db=get(b,'Signal');
+  a = gauss;
+  b = lorz;
+  
   result = [ 'OK     ' mfilename ' (' num2str(length(op)) ' operators)' ];
   failed = '';
+  
   for index=1:length(op)
-    % operator on double(iData)
+    % perform op on iFunc
+    c  = feval(op{index}, a, b);
+    d1 = feval(c); % evaluate function
+    
+    % perform op on feval(iFunc)
     switch op{index}
-    case 'conv'
-      d2 = feval('fconv', da, db, 'same'); 
-    case 'convn'
-      d2 = feval('fconv', da, db, 'same pad background center normalize');
     case 'xcorr'
-      d2 = feval('fconv', da, db, 'same correlation');
-    case 'combine'
-      d2 = (da+db)/(a.Monitor+b.Monitor);
-    case {'mpower','mtimes'}
-      d2 = 0;
+      d2 = fxcorr(feval(a), feval(b));
     otherwise
-      d2 = feval(op{index}, da/a.Monitor, db/b.Monitor);
+      d2 = feval(op{index}, feval(a), feval(b));
     end
     
-    % operator on iData
-    try
-      d1 = feval(op{index}, a, b);
-    catch
-      failed = [ failed ' ' upper(op{index}) ];
-    end
-    d1 = double(d1);
-    
-    % do they match ?
+    % test if they match
     if (abs(sum(d1(:))) - abs(sum(d2(:))))/(abs(sum(d1(:))) + abs(sum(d2(:)))) > 0.01
       fprintf(1, '%s:%s: %g ~= %g\n', mfilename, op{index}, abs(sum(d1(:))), abs(sum(d2(:))));
       failed = [ failed ' ' op{index} ];
