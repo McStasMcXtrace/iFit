@@ -3,7 +3,9 @@ function s = read_image(filename)
 
 s       = imfinfo(filename);
 s.image = imread(filename);
-try
-  s.EXIF = exifread(filename);
+if exist('exifread') == 2
+    try
+    s.EXIF = exifread(filename);
+    end
 end
 

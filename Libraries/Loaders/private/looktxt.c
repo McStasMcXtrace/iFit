@@ -4051,136 +4051,136 @@ struct option_struct options_parse(struct option_struct options, int argc, char 
   {
     if(!strcmp("-h", argv[i]))
       print_usage(argv[0], options);
-    else if(!strcasecmp("--help",      argv[i]))
+    else if(!strcmp("--help",      argv[i]))
       print_usage(argv[0], options);
-    else if(!strcasecmp("--version",      argv[i]))
+    else if(!strcmp("--version",      argv[i]))
     { print_version(argv[0]); exit(EXIT_SUCCESS); }
-    else if(!strcasecmp("--append",      argv[i]))
+    else if(!strcmp("--append",      argv[i]))
     { options.openmode[0]= 'a'; options.force = 1; }
-    else if(!strncasecmp("--struct=", argv[i], 9)) {
+    else if(!strncmp("--struct=", argv[i], 9)) {
       char *struct_char=NULL;
       if (strlen(argv[i]) > 9)
-        if (strcasecmp(&argv[i][9], "NULL") && strcmp(&argv[i][9], "0"))
+        if (strcmp(&argv[i][9], "NULL") && strcmp(&argv[i][9], "0"))
           struct_char = str_dup(&argv[i][9]);
       if (!struct_char) options.use_struct = '\0';
       else {
         options.use_struct = struct_char[0];
         struct_char=str_free(struct_char);
       }
-    } else if(!strcasecmp("--struct",    argv[i]))
+    } else if(!strcmp("--struct",    argv[i]))
       options.use_struct = '.';
-    else if(!strcasecmp("--binary",    argv[i]) || !strcmp("-b",    argv[i]))
+    else if(!strcmp("--binary",    argv[i]) || !strcmp("-b",    argv[i]))
       options.use_binary = 1;
-    else if(!strcasecmp("--headers",    argv[i]) || !strcmp("-H",     argv[i]))
+    else if(!strcmp("--headers",    argv[i]) || !strcmp("-H",     argv[i]))
       options.out_headers= 1;
-    else if(!strncasecmp("--headers=",    argv[i], 10))
+    else if(!strncmp("--headers=",    argv[i], 10))
       options.out_headers= atoi(&argv[i][10]);
-    else if(!strcasecmp("--force",     argv[i]) || !strcmp("-F",     argv[i]))
+    else if(!strcmp("--force",     argv[i]) || !strcmp("-F",     argv[i]))
       options.force      = 1;
-    else if(!strcasecmp("--fast",      argv[i]))
+    else if(!strcmp("--fast",      argv[i]))
       options.fast       = 1;
-    else if(!strncasecmp("--fast=",     argv[i],7))
+    else if(!strncmp("--fast=",     argv[i],7))
       options.fast       = atoi(&argv[i][7]);
-    else if(!strcasecmp("--verbose",   argv[i]) || !strcmp("-v",   argv[i]))
+    else if(!strcmp("--verbose",   argv[i]) || !strcmp("-v",   argv[i]))
       options.verbose    = 2;
-    else if(!strncasecmp("--verbosity=",   argv[i], 12))
+    else if(!strncmp("--verbosity=",   argv[i], 12))
       options.verbose    = atoi(&argv[i][12]);
-    else if(!strcasecmp("--debug",     argv[i]))
+    else if(!strcmp("--debug",     argv[i]))
       options.verbose    = 3;
-    else if(!strcasecmp("--silent",    argv[i]))
+    else if(!strcmp("--silent",    argv[i]))
       options.verbose    = 0;
-    else if(!strcasecmp("--metadata-only",    argv[i]))
+    else if(!strcmp("--metadata-only",    argv[i]))
       options.metadata_only = 1;
-    else if(!strcasecmp("--test",    argv[i]))
+    else if(!strcmp("--test",    argv[i]))
       options.test       = 1;
-    else if(!strcasecmp("--catenate",  argv[i]) || !strcmp("-c",  argv[i]))
+    else if(!strcmp("--catenate",  argv[i]) || !strcmp("-c",  argv[i]))
       options.catenate   = 1;
-    else if(!strncasecmp("--catenate=",  argv[i],11) )
+    else if(!strncmp("--catenate=",  argv[i],11) )
       options.catenate   = atoi(&argv[i][11]);
-    else if(!strcasecmp("--fortran",   argv[i]) || !strcasecmp("--wrapped",   argv[i]))
+    else if(!strcmp("--fortran",   argv[i]) || !strcmp("--wrapped",   argv[i]))
       options.fortran    = 1;
-    else if(!strncasecmp("--fortran=",  argv[i],10) )
+    else if(!strncmp("--fortran=",  argv[i],10) )
       options.fortran   = atoi(&argv[i][11]);
-    else if(!strncasecmp("--section=", argv[i], 10))
+    else if(!strncmp("--section=", argv[i], 10))
       strlist_add(&(options.sections), &argv[i][10]);
-    else if(!strncasecmp("--makerows=", argv[i], 11))
+    else if(!strncmp("--makerows=", argv[i], 11))
       strlist_add(&(options.makerows), &argv[i][11]);
-    else if((!strcasecmp("--section",   argv[i]) || !strcmp("-s",   argv[i])) && (i + 1) <= argc)
+    else if((!strcmp("--section",   argv[i]) || !strcmp("-s",   argv[i])) && (i + 1) <= argc)
       strlist_add(&(options.sections), argv[++i]);
-    else if(!strcasecmp("--makerows",   argv[i]) && (i + 1) <= argc)
+    else if(!strcmp("--makerows",   argv[i]) && (i + 1) <= argc)
       strlist_add(&(options.makerows), argv[++i]);
-    else if(!strncasecmp("--metadata=", argv[i], 11))
+    else if(!strncmp("--metadata=", argv[i], 11))
       strlist_add(&(options.metadata), &argv[i][11]);
-    else if((!strcasecmp("--metadata",   argv[i]) || !strcmp("-m",   argv[i])) && (i + 1) <= argc)
+    else if((!strcmp("--metadata",   argv[i]) || !strcmp("-m",   argv[i])) && (i + 1) <= argc)
       strlist_add(&(options.metadata), argv[++i]);
 
-    else if(!strncasecmp("--comment=", argv[i], 10)) {
+    else if(!strncmp("--comment=", argv[i], 10)) {
       str_free(options.comment);
-      if (strcasecmp(&argv[i][10],"NULL"))
+      if (strcmp(&argv[i][10],"NULL"))
         options.comment = str_dup(&argv[i][10]);
       else
         options.comment = str_dup("");
-    } else if(!strcasecmp("--comment", argv[i]) && (i + 1) <= argc) {
+    } else if(!strcmp("--comment", argv[i]) && (i + 1) <= argc) {
       str_free(options.comment);
-      if (strcasecmp(argv[++i],"NULL"))
+      if (strcmp(argv[++i],"NULL"))
         options.comment = str_dup(argv[++i]);
       else
         options.comment = str_dup("");
-    } else if(!strncasecmp("--eol=",   argv[i], 6)) {
+    } else if(!strncmp("--eol=",   argv[i], 6)) {
       str_free(options.eol);
-      if (strcasecmp(&argv[i][6],"NULL"))
+      if (strcmp(&argv[i][6],"NULL"))
         options.eol = str_dup(&argv[i][6]);
       else
         options.eol = str_dup("");
-    } else if(!strcasecmp("--eol",     argv[i]) && (i + 1) <= argc) {
+    } else if(!strcmp("--eol",     argv[i]) && (i + 1) <= argc) {
       str_free(options.eol);
-      if (strcasecmp(&argv[i][6],"NULL"))
+      if (strcmp(&argv[i][6],"NULL"))
         options.eol = str_dup(argv[++i]);
       else
         options.eol = str_dup("\n");
-    } else if(!strncasecmp("--separator=", argv[i], 12)) {
+    } else if(!strncmp("--separator=", argv[i], 12)) {
       str_free(options.separator);
-      if (strcasecmp(&argv[i][12],"NULL"))
+      if (strcmp(&argv[i][12],"NULL"))
         options.separator = str_dup(&argv[i][12]);
       else
         options.separator = str_dup("");
-    } else if(!strcasecmp("--separator",   argv[i]) && (i + 1) <= argc) {
+    } else if(!strcmp("--separator",   argv[i]) && (i + 1) <= argc) {
       str_free(options.separator);
-      if (strcasecmp(argv[++i],"NULL"))
+      if (strcmp(argv[++i],"NULL"))
         options.separator = str_dup(argv[++i]);
       else
         options.separator = str_dup("");
-    } else if(!strncasecmp("--outfile=", argv[i], 10))
+    } else if(!strncmp("--outfile=", argv[i], 10))
       options.outfile = fileparts(&argv[i][10]);
-    else if((!strcasecmp("--outfile",   argv[i]) || !strcmp("-o",   argv[i])) && (i + 1) <= argc)
+    else if((!strcmp("--outfile",   argv[i]) || !strcmp("-o",   argv[i])) && (i + 1) <= argc)
       options.outfile = fileparts(argv[++i]);
-    else if(!strncasecmp("--format=",  argv[i], 9)) {
+    else if(!strncmp("--format=",  argv[i], 9)) {
       format_free(options.format);
       options.format = format_init(Global_Formats, &argv[i][9]);
-    } else if((!strcasecmp("--format",  argv[i]) || !strcmp("-f",  argv[i])) && (i + 1) <= argc) {
+    } else if((!strcmp("--format",  argv[i]) || !strcmp("-f",  argv[i])) && (i + 1) <= argc) {
       format_free(options.format);
       options.format = format_init(Global_Formats, argv[++i]);
-    } else if(!strncasecmp("--nelements_min=",  argv[i], 16)) {
+    } else if(!strncmp("--nelements_min=",  argv[i], 16)) {
       options.nelements_min = atoi(&argv[i][16]);
-    } else if(!strcasecmp("--nelements_min",  argv[i]) && (i + 1) <= argc) {
+    } else if(!strcmp("--nelements_min",  argv[i]) && (i + 1) <= argc) {
       options.nelements_min = atoi(argv[++i]);
-    } else if(!strncasecmp("--nelements_max=",  argv[i], 16)) {
+    } else if(!strncmp("--nelements_max=",  argv[i], 16)) {
       options.nelements_max = atoi(&argv[i][16]);
-    } else if(!strcasecmp("--nelements_max",  argv[i]) && (i + 1) <= argc) {
+    } else if(!strcmp("--nelements_max",  argv[i]) && (i + 1) <= argc) {
       options.nelements_max = atoi(argv[++i]);
 
-    } else if(!strncasecmp("--names_length=",  argv[i], 15)) {
+    } else if(!strncmp("--names_length=",  argv[i], 15)) {
       options.names_length = atoi(&argv[i][16]);
-    } else if(!strcasecmp("--names_length",  argv[i]) && (i + 1) <= argc) {
+    } else if(!strcmp("--names_length",  argv[i]) && (i + 1) <= argc) {
       options.names_length = atoi(argv[++i]);
-    } else if(!strcasecmp("--names_lower", argv[i]))
+    } else if(!strcmp("--names_lower", argv[i]))
       options.names_lowup= 'l';
-    else if(!strcasecmp("--names_upper", argv[i]))
+    else if(!strcmp("--names_upper", argv[i]))
       options.names_lowup= 'u';
-    else if(!strncasecmp("--names_root=", argv[i], 13)) {
+    else if(!strncmp("--names_root=", argv[i], 13)) {
       char *root_char=NULL;
       if (strlen(argv[i]) > 13)
-        if (strcasecmp(&argv[i][13], "NULL") && strcmp(&argv[i][13], "0")) {
+        if (strcmp(&argv[i][13], "NULL") && strcmp(&argv[i][13], "0")) {
           char *tmp9=NULL;
           char *tmp10=NULL;
           tmp9 = str_reverse(&argv[i][13]);
