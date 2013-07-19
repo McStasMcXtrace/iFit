@@ -69,6 +69,15 @@ sed 's/@IFIT_DATE@/'$MONTH'. '$DAY', '$YEAR'/'  $file.tmp > $file
 rm $file.tmp
 done
 
+# detect architecture
+arch=`uname -m`
+if [[ "$arch" == 'x86_64']]
+then
+  ARCH=amd64
+else
+  ARCH=i686
+fi
+
 cd $TMPDIR
 # Create tar archive SRC
 rm $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip
@@ -76,21 +85,21 @@ zip -r $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip $IFIT_TARNAME-$IFIT_VERSION
 
 if [ -x `which mcc` ]
 then
-  echo create the standalone version into $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
-  matlab -nojvm -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); make('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64'); exit"
+  echo create the standalone version into $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-$ARCH
+  matlab -nojvm -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); ifitdeploy('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-$ARCH'); exit"
   cd $TMPDIR
-  zip -r $IFIT_TARNAME-$IFIT_VERSION-amd64.zip $IFIT_TARNAME-$IFIT_VERSION-amd64
+  zip -r $IFIT_TARNAME-$IFIT_VERSION-$ARCH.zip $IFIT_TARNAME-$IFIT_VERSION-$ARCH
 fi
 
-if [ -e $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64 ]
+if [ -e $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-$ARCH4 ]
 then
   if [ -e /etc/debian_version ]
   then
-    if [ -e build-chroot-amd64 ]
+    if [ -e build-chroot-$ARCH ]
     then
-      BUILDDIR="build-chroot-amd64/build/$IFIT_TARNAME-$IFIT_VERSION"
-      echo Proceeding to amd64 .deb build 
-      echo from $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-amd64
+      BUILDDIR="build-chroot-$ARCH/build/$IFIT_TARNAME-$IFIT_VERSION"
+      echo Proceeding to $ARCH .deb build 
+      echo from $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-$ARCH
       echo into $BUILDDIR
       
       # First, clean up in case of previous iFit installs in the chroot
@@ -103,7 +112,7 @@ then
       sudo mkdir -p ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME
       sudo mkdir -p ${BUILDDIR}/usr/share/icons/$IFIT_TARNAME
       sudo mkdir -p ${BUILDDIR}/usr/share/pixmaps
-      sudo cp -r $IFIT_TARNAME-$IFIT_VERSION-amd64/*    ${BUILDDIR}/usr/local/$IFIT_TARNAME
+      sudo cp -r $IFIT_TARNAME-$IFIT_VERSION-$ARCH/*    ${BUILDDIR}/usr/local/$IFIT_TARNAME
       sudo cp -r $IFIT_TARNAME-$IFIT_VERSION/Docs/*     ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/COPYING    ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/copyright
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/README.txt ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/
@@ -115,22 +124,22 @@ then
                                                         ${BUILDDIR}/DEBIAN
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/icons/*.png \
                                                         ${BUILDDIR}/usr/share/icons/$IFIT_TARNAME/
-      # sudo chroot build-chroot-amd64 apt-get update
-      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/deb/debcreate build-chroot-amd64/root/debcreate
-      sudo chmod u+x build-chroot-amd64/root/debcreate
-      sudo chroot build-chroot-amd64   /root/debcreate $IFIT_VERSION amd64
+      # sudo chroot build-chroot-$ARCH apt-get update
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/deb/debcreate build-chroot-$ARCH/root/debcreate
+      sudo chmod u+x build-chroot-$ARCH/root/debcreate
+      sudo chroot build-chroot-$ARCH   /root/debcreate $IFIT_VERSION $ARCH
       echo
       echo Build packages created:
       echo
-      cp build-chroot-amd64/build/*deb .
+      cp build-chroot-$ARCH/build/*deb .
       ls -lf $IFIT_TARNAME-$IFIT_VERSION*.* $IFIT_TARNAME-$IFIT_VERSION*.*
       echo
     else
-      echo You need a chroot environment based on debootstrap in build-chroot-amd64 before building the amd64 deb package - create using something like
-      echo sudo debootstrap --arch amd64 precise build-chroot-amd64
+      echo You need a chroot environment based on debootstrap in e.g. build-chroot-$ARCH before building the $ARCH deb package - create using something like
+      echo sudo debootstrap --arch $ARCH precise build-chroot-$ARCH
     fi # build chroot present
   fi # debian
-fi # amd64 build
+fi # $ARCH build
 
 echo "========================================================================="
 echo "mkdist: Distro creation for $IFIT_STRING"
