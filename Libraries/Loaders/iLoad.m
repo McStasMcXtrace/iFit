@@ -578,7 +578,8 @@ function data = iLoad_loader_check(file, data, loader)
   end
 
   if ~isfield(data, 'Source') && ~isfield(data, 'Filename'),  data.Source = file;
-  elseif ~isfield(data, 'Source') && isfield(data, 'Filename'), data.Source = data.Filename; end
+  elseif ( ~isfield(data, 'Source') || ( isfield(data, 'Source') && isempty(data.Source) )) ...
+     && isfield(data, 'Filename'), data.Source = data.Filename; end
 
   if ~isfield(data, 'Title'),   
     [pathname, filename, ext] = fileparts(file);
@@ -866,7 +867,7 @@ function match = findfield(s, field)
 % ex:     findfield(s) or findfield(s,'Title')
 
 if length(s(:)) > 1
-  match = cell(1, length(s(:))); dims=match;
+  match = cell(1, length(s(:)));
   for index=1:length(s)
     match{index}=findfield(s(index), field);
   end
@@ -939,7 +940,7 @@ end
 toremove=[];
 % only retain numerics
 for index=1:length(c)
-  if ~any(strncmp(t{index},{'dou','sin','int','uin','str'}, 3))
+  if ~any(strncmp(t{index},{'dou','sin','int','uin','str','log'}, 3))
     toremove(end+1)=index;
   end
 end

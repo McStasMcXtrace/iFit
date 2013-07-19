@@ -405,11 +405,13 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
     if length(dims) > 1 % when similar sizes are encoutered, get the one which is not monotonic
       for index=1:length(dims)
         x = get(in, fields{index});
-        if ischar(x) || length(x) <= 1, continue; end
+        if ischar(x) || length(x) <= 1, 
+          continue; 
+        end
         x = diff(x(:));
         if all(x == x(1)) || all(x > 0) % this is a constant/monotonic step axis
           continue;
-        elseif any(x < 0) && any(x> 0)
+        elseif any(x <= 0) && any(x>= 0)
           dims  = dims(index);
           fields= fields{index};
           break;  % this usually would select the first match
