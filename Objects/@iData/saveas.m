@@ -20,7 +20,7 @@ function [filename,format] = saveas(a, varargin)
 %         format: data format to use (char), or determined from file name extension
 %           'hdf5' save as an HDF5 data set
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
-%           'mat'  save as a '.mat' binary file (same as 'save', default)
+%           'mat'  save as a '.mat' binary file (same as 'save', DEFAULT)
 %           'nc'   save as NetCDF 
 %         as well as other lossy formats
 %           'csv'  save as a comma separated value file
