@@ -5,8 +5,11 @@ function [signal, ax, name] = feval(model, p, varargin)
 %     and function parameters 'pars' with optional additional parameters.
 %
 %   parameters = feval(model, 'guess', x,y, ..., signal...)
-%     makes a quick parameter guess. This requires to specify the signal
+%     makes a quick parameter guess. This usually requires to specify the signal
 %     to guess from to be passed after the axes.
+%   signal = feval(model, NaN, x,y, ..., signal...)
+%     same as above, but force to get the evaluated function value with
+%     guessed parameters.
 %   signal = feval(model, [ ... Nan ... ], x,y, ..., signal...)
 %     requires some of the initial parameters to be given, others as NaN's. These
 %     values are then replaced by guessed ones, and the model value is returned.
@@ -86,6 +89,7 @@ if isstruct(p)
   end
 end
 
+% some usual commands 
 if ~isempty(p) && ischar(p)
   if strcmp(p, 'plot')
     signal=plot(model);
@@ -151,6 +155,7 @@ if strcmp(p, 'guess') || isempty(p)
 elseif isnumeric(p) && length(p) < length(model.Parameters) % fill NaN's from p+1 to model.Parameters
   p((length(p)+1):length(model.Parameters)) = NaN;
 end
+
 % when there are NaN values in parameter values, we replace them by guessed values
 if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
   % call private method to guess parameters from axes, signal and parameter names
@@ -214,6 +219,10 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
     if isa(model.Guess, 'function_handle')
       n = nargin(model.Guess);                % number of required arguments
       try
+        % moments of distributions
+        m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
+        m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
+        
         if n > 0 && length(varargin) >= n
           p2 = feval(model.Guess, varargin{1:n}); % returns model vector
         else
@@ -289,7 +298,7 @@ end
 % return here with syntax:
 % feval(model) when model.ParameterValues is empty
 % feval(model, 'guess')
-if ~isempty(guessed) 
+if ~isempty(guessed)
   return
 end
 
@@ -453,6 +462,9 @@ function p = iFunc_feval_guess(model, varargin)
     signal = 1;
   end
   clear ax
+  % moments of distributions (used in some Guesses, e.g. gauss, lorz, ...)
+  m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
+  m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
   try
     p = eval(model.Guess);     % returns model vector
   end

@@ -1,0 +1,11 @@
+function result=test_iFunc_copyobj
+
+a=gauss;
+b=copyobj(a);
+a=struct(a); a=rmfield(a, 'Tag');
+b=struct(b); b=rmfield(b, 'Tag');
+if isequal(a,b)
+  result = [ 'OK     ' mfilename ];
+else
+  result = [ 'FAILED ' mfilename ];
+end

@@ -15,6 +15,45 @@ function h = plot(a, p, varargin)
 % Version: $Revision$
 % See also iFunc, iFunc/fit, iFunc/feval
 
+% test if further arguments are iFuncs
+noassign = 0;
+if nargin > 1
+  if isa(p, 'iFunc'), 
+      a = [ a(:) ; p ]; p = ''; noassign = 1; 
+  end
+  varg = varargin;
+  for index=1:length(varargin)
+    if isa(varargin{index}, 'iFunc'), 
+        a = [ a(:) ; varargin{index} ]; varg(index) = []; noassign = 1; 
+    end
+  end
+  varargin = varg;
+end
+
+% handle array of objects
+if numel(a) > 1
+  h = [];
+  is = ishold;
+  colors = 'bgrcmk';
+  for index=1:numel(a)
+    if iscell(p) && length(p) == numel(a)
+      h(index) = feval(mfilename, a(index), p{index}, varargin{:});
+    else
+      h(index) = feval(mfilename, a(index), p, varargin{:});
+    end
+    if ndims(a) == 1 % set the color, line style
+      set(h(index), 'color', colors(1+mod(index, length(colors))));
+    end
+    hold on
+  end
+  if nargout == 0 && ~isempty(inputname(1)) && ~noassign % update array inplace
+    assignin('caller', inputname(1), a);
+  end
+  if ~is, hold off; end
+  return
+end
+
+% now single object
 if nargin < 2, 
   p=a.ParameterValues;
 end
@@ -26,7 +65,7 @@ if strcmp(p, 'guess'), p=[]; end
 
 % evaluate the model value, and axes
 [signal, ax, name] = feval(a, p, varargin{:});
-if isempty(p) && length(signal) == length(a.Parameters)
+if isempty(p) && length(signal) == length([ a.Parameters ])
   [signal, ax, name] = feval(a, signal, varargin{:});
 end
 
