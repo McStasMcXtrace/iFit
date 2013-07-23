@@ -6,7 +6,7 @@
 <title>iFit: iFunc model definition</title>
 
   
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
 
 </head><body>
 <h1 style="text-align: center;">iFit: iFunc object description</h1>
@@ -89,6 +89,10 @@ procedure should be used (which is based upon a signal peak search, and
 baseline  analysis). The Guess is used when starting a fit procedure for starting parameters.<br>
 
 Last, the <span style="font-weight: bold;">Constraint</span> property holds any script to change the parameter values (character string modifying <span style="font-style: italic;">'p'</span>) from axes<span style="font-style: italic;"> x,y,z,...</span> or a function handle <span style="font-style: italic;">p=@Constraint(p, x,y,...)</span>. See <a href="#mozTocId579374">below</a> on how to define Constraints.<br>
+<br>
+To print out the <i>equivalent function</i> <i>f(p, x, ...)</i> from an object, convert it to a <i>char</i> or <i>cellstr</i>:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iFunc</span>(<span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>)<br>&gt;&gt; char(a)<br>&gt;&gt; cellstr(a)<br></pre>
+
 <h4><a class="mozTocH4" name="mozTocId780038"></a>
 Accessing or modifying parameter values</h4>
 <p>Parameters from a model can be accessed in many equivalent ways. If <span style="font-style: italic;">'a'</span> is an iFunc model :<br>
@@ -194,7 +198,7 @@ Models can be assembled to create more complex models. This is achieved simply w
 
 <br>
 
-<table style=" text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style=" text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
 
   <tbody>
     <tr>
