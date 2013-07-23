@@ -1,9 +1,0 @@
-function result=test_iFunc_subplot
-
-a=iFunc('x*p(1)+p(2)'); b=gauss; c=voigt2d;
-h = subplot(a,b,c);
-if length(h) == 3
-  result = [ 'OK     ' mfilename ];
-else
-  result = [ 'FAILED ' mfilename ];
-end
