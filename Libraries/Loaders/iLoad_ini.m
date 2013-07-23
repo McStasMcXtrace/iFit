@@ -195,9 +195,13 @@ function config = iLoad_ini
     EZD.patterns        ={'EZD_MAP','CELL','EXTENT'};
     EZD.postprocess     ='this.Data.MAP = reshape(this.Data.MAP, this.Data.EXTENT);';
     
-    yaml.name           = 'YAML/JSON';
+    yaml.name           = 'YAML';
     yaml.method         = 'read_yaml';
-    yaml.extension      = {'yaml','yml','json'};
+    yaml.extension      = {'yaml','yml'};
+    
+    json.name           = 'JSON';
+    json.method         = 'json2mat';
+    json.extension      = 'json';
     
 % binary formats ===============================================================
     
@@ -251,7 +255,7 @@ function config = iLoad_ini
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
 	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
-	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, CIF, EZD, yaml, ...
+	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, CIF, EZD, yaml, json, ...
 	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, Analyze, CBF, STL_binary, MRC, NifTI };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
