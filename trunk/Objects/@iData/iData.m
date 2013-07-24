@@ -401,25 +401,41 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
     iData_private_warning(mfilename,['The iData object ' in.Tag ' "' in.Title '" contains no data at all ! (double/single/logical/int/uint)']);
   else
     fields_all = fields; dims_all=dims;
-    % does this look like a Signal ?
+    % does this looks like a Signal ?
+    
     if length(dims) > 1 % when similar sizes are encoutered, get the one which is not monotonic
-      for index=1:length(dims)
+      % list of 'biggest' fields
+      maxdim=find(dims == dims(1)); maxdim2 = maxdim;
+      % move 'error' and constant/monotonic down in the list
+      for idx=1:length(maxdim)
+        index=maxdim2(idx);
         x = get(in, fields{index});
-        if ischar(x) || length(x) <= 1, 
+        if ischar(x) || length(x) <= 1
+          % this is a char: move to end of list
+          maxdim([ end idx]) = maxdim([ idx end] );
           continue; 
         end
         x = diff(x(:));
-        if all(x == x(1)) || all(x > 0) % this is a constant/monotonic step axis
-          continue;
-        elseif any(x <= 0) && any(x>= 0)
-          dims  = dims(index);
-          fields= fields{index};
-          break;  % this usually would select the first match
+        if all(x == x(1)) || all(x > 0) || ~isempty(strfind(lower(fields{index}), 'error'))
+          % this is a constant/monotonic value or 'error'
+          % move down in fields list
+          maxdim([ end idx]) = maxdim([ idx end] );
         end
       end
-    end   
-    % in case we still have more than one choice, get the first one
+      fields(maxdim2) = fields(maxdim);
+    end
+    
+    % in case we have more than one choice, get the first one and error bars
+    error_id = [];
     if length(dims) > 1 || iscell(fields)
+      % do we have an 'error' which has same dimension ?
+      for index=find(dims(:)' == dims(1))
+        if index==1, continue; end % not the signal itself
+        if ~isempty(strfind(lower(fields{index}), 'error'))
+          error_id = fields{index};
+        end
+      end
+      
       dims=dims(1);
       fields=fields{1};
     end
@@ -437,6 +453,10 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
         end
       else
         label(in, 0, fields);
+      end
+      % assign potential 'error' bars
+      if ~isempty(error_id)
+        in = setalias(in,'Error', error_id);
       end
     end
     % look for vectors that may have the proper length as axes
