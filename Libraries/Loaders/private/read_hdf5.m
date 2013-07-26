@@ -1,137 +1,78 @@
-function [Data, Att] = read_hdf5(hdf_fname)
-% HDF5 Extract read and return HDF5 data.
-% DATASTRUCT = HDF5EXTRACT('FILENAME')
+function data = read_hdf5(filename)
+%READ_HDF5 Returns the contents of an HDF5 file as a structure
+%   The READ_HDF5 function reads an HDF5 file and returns the contents of
+%   that file as the fields of a structure.  Groups are treated as elements
+%   of their parent structure.  If the file file cannot be opened a -1 is
+%   returned.
+%
+%   Example
+%       data=read_hdf5('input.h5');
+%
+%   Version 1.0
+%   Maintained by: Samuel Lazerson (lazerson@pppl.gov)
+%   Date  05/02/2012
 
-% by Daniel Buckton
-% 28 Mar 2007 (Updated 28 Mar 2007) 
+% Try to read the file first
 
-DataInfo = hdf5info(hdf_fname);
-BaseStr = 'DataInfo.GroupHierarchy';
-
-LevelStr.CurrentLevel =1;
-LevelStr.MaxLevel=16;
-Data = []; Att = [];
-[Data, Att] = get_struct(Data,Att, DataInfo,hdf_fname,BaseStr,LevelStr);
-Data.Attributes = Att;
-
-function [Data, Att] = get_struct(Data,Att,DataInfo,hdf_fname,DataStr,LevelStr)
-
-if LevelStr.CurrentLevel > LevelStr.MaxLevel
-    error('Exceeded Maximum Level')    
+% read file structure
+if exist('h5info')
+  data_info = h5info(filename);
+else
+  data_info = hdf5info(filename);
+  data_info = data_info.GroupHierarchy;
 end
 
-nGroups     = eval(['length(' DataStr '.Groups)']);
-nDataSets   = eval(['length(' DataStr '.Datasets)']);
-nAttributes = eval(['length(' DataStr '.Attributes)']);
+% recursive call
+data = getGroup(filename, data_info);
 
-for iDataSet = 1:nDataSets;
-  % get Data and Attributes
-    eval( [ '[D,A] = hdf5read(''' hdf_fname ''',''' eval([DataStr '.Datasets(' num2str(iDataSet) ').Name']) ''', ''ReadAttributes'',true);' ] )
-    if strcmp(class(D), 'hdf5.h5string'), D=char(D.Data); end
-    eval(['Data.' eval([ 'ProcessString(' DataStr '.Datasets(' num2str(iDataSet) ').Name)']) ' = D;' ]); clear D;
-    if ~isempty(A)
-      eval(['Att.' eval([ 'ProcessString(' DataStr '.Datasets(' num2str(iDataSet) ').Name)']) ' = A;' ])
+
+
+% inline function ==============================================================
+function data = getGroup(filename, data_info)
+
+root = data_info.Name;
+if ~strcmp(root, '/'), root = [ root  '/' ]; end
+
+% Get group datasets
+nvars   = length(data_info.Datasets);
+for i = 1: nvars
+    if exist('h5read')
+      val = h5read(filename,[root data_info.Datasets(i).Name]);
+    else
+      val = hdf5read(filename,[data_info.Datasets(i).Name]);
+    end
+    if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+    [p, name]   = fileparts(data_info.Datasets(i).Name);
+    data.(name) = val;
+    
+    % get dataset attributes
+    natts = length(data_info.Datasets(i).Attributes);
+    for j=1:natts
+        val = data_info.Datasets(i).Attributes(j).Value;
+        if iscell(data_info.Datasets(i).Attributes(j).Value), val = {1}; end
+        if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+        [p, name] = fileparts(data_info.Datasets(i).Attributes(j).Name);
+        data.(name) = val;
     end
 end
 
-LevelStr.CurrentLevel =LevelStr.CurrentLevel +1;
-for iGroup = 1:nGroups,
-    DataInputStr=[DataStr '.Groups(' num2str(iGroup) ')'];
-    [Data,Att] = get_struct(Data,Att,DataInfo,hdf_fname,DataInputStr,LevelStr);
+% get group attributes
+natts = length(data_info.Attributes);
+for j=1:natts
+    val = data_info.Attributes(j).Value;
+    if iscell(data_info.Attributes(j).Value), val = {1}; end
+    if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+    [p, name] = fileparts(data_info.Attributes(j).Name);
+    data.(name) = val;
+end
+
+% Get each subgroup
+ngroups = length(data_info.Groups);
+for i = 1 : ngroups
+  group = getGroup(filename, data_info.Groups(i));
+  % assign the name of the group
+  [p, name] = fileparts(data_info.Groups(i).Name);
+  data.(name) = group;
 end
 
 
-function s1 = ProcessString(s)
-%PROCESSSTRING Replace matlab incompatable strings with underscore or .
-%when a tree structure is desired
-%   PROCESSSTRING(S) replaces incompatable characters in string S with _.
-%
-
-if isempty(s)
-   s1 = s([]);
-else
-   
-   if ~isstr(s),
-      warning('MATLAB:deblank:NonStringInput','Input must be a string.')
-   end
-   
-   s1 = s;
-   
-   % Replace incompatable characters
-   ind = find( isspace(s) | (s =='-') | (s =='=') | (s =='.'));
-   if ~isempty(ind),
-      if ind(1)==1,
-          s1(1) = [];
-          ind(1) = [];
-          ind = ind-1;
-      end
-      
-      s1(ind) = repmat('_',1,length(ind));
-   end
-
-   s = s1;
-   
-   ind = find( s =='/');
-   if ~isempty(ind),
-      if ind(1)==1,
-          s1(1) = [];
-          ind(1) = [];
-          ind = ind-1;
-      end
-      s1(ind) = repmat('.',1,length(ind));
-      ind2 = find(s1(ind+1)=='_');
-      s1(ind(ind2)+1)=[];
-  end
-end
-
-
-function s1 = defalse(s)
-%DEFALSE Replace matlab incompatable strings with underscore.
-%   DEFALSE(S) replaces incompatable characters in string S with _.
-%
-
-if isempty(s)
-   s1 = s([]);
-else
-   
-   if ~isstr(s),
-      warning('MATLAB:deblank:NonStringInput','Input must be a string.')
-   end
-   
-   s1 = s;
-   
-   % Replace incompatable characters
-   ind = find( isspace(s) | (s == '/') | (s =='-') | (s =='=') | (s =='.'));
-   if ~isempty(ind),
-      if ind(1)==1,
-          s1(1) = [];
-          ind(1) = [];
-          ind = ind-1;
-      end
-      
-      s1(ind) = repmat('_',1,length(ind));
-   end
-   if s1(1)=='_'
-       s1(1)=[];
-   end
-end
-
-function s1 = endstring(s)
-%ENDSTRING Returns any part of the string that is after a foreslash (/).
-
-if isempty(s)
-   s1 = s([]);
-else
-   
-   if ~isstr(s),
-      warning('MATLAB:endstring:NonStringInput','Input must be a string.')
-   end
-   
-   s1 = s;
-   
-   if sum(s == '/')~=0,
-      ind = find(s(end:-1:1)=='/');
-      s1 = s1(end-ind(1)+2:end);       
-   end
-             
-end
