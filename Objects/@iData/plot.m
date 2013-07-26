@@ -124,6 +124,7 @@ clear varargin
 % handle iFunc objects
 if ~isempty(funcs)
   hold on
+  axis(axis); % fix plot limits
   hline = plot(funcs);
   set(findobj(hline,'Type','Line'),'LineStyle','--');
   h = [ h hline ];
