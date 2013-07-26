@@ -5,6 +5,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
   for index=1:length(fields(:)) % get all field names
     if isempty(fields{index}), continue; end
     val=get(a, fields{index});
+    if strcmp(types{index}, 'hdf5.h5string'), val = char(val.Data); end
     if isstruct(val) & length(val) > 1
       val = val(1);
       iData_private_warning(mfilename,[ 'Export of member ' fields{index} ' in object ' inputname(1) ' ' a.Tag ' is a structure array. Selecting only 1st element.' ]);
@@ -37,11 +38,14 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
         end
         hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val, 'WriteMode', 'overwrite');
         towrite = 'append';
+        % write root level attributes: file_name, HFD5_Version, file_time, NeXus_version
       else
         % consecutive calls are appended
         try
           hdf5write(filename, [ filesep 'iData' filesep fields{index} ], val, 'WriteMode', 'append');
           % when object already exists: we skip consecutive write
+          % write group attributes: NXclass=NXentry or NXData
+          % when encountering Signal, define its attributes: signal=1; axes={axes names}
         end
       end
     end

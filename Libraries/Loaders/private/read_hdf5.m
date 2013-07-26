@@ -1,4 +1,4 @@
-function Data = read_hdf5(hdf_fname)
+function [Data, Att] = read_hdf5(hdf_fname)
 % HDF5 Extract read and return HDF5 data.
 % DATASTRUCT = HDF5EXTRACT('FILENAME')
 
@@ -10,27 +10,34 @@ BaseStr = 'DataInfo.GroupHierarchy';
 
 LevelStr.CurrentLevel =1;
 LevelStr.MaxLevel=16;
-Data = [];
-Data = get_struct(Data,DataInfo,hdf_fname,BaseStr,LevelStr);
+Data = []; Att = [];
+[Data, Att] = get_struct(Data,Att, DataInfo,hdf_fname,BaseStr,LevelStr);
+Data.Attributes = Att;
 
-
-function Data = get_struct(Data,DataInfo,hdf_fname,DataStr,LevelStr)
+function [Data, Att] = get_struct(Data,Att,DataInfo,hdf_fname,DataStr,LevelStr)
 
 if LevelStr.CurrentLevel > LevelStr.MaxLevel
     error('Exceeded Maximum Level')    
 end
 
-nGroups = eval(['length(' DataStr '.Groups)']);
-nDataSets = eval(['length(' DataStr '.Datasets)']);
+nGroups     = eval(['length(' DataStr '.Groups)']);
+nDataSets   = eval(['length(' DataStr '.Datasets)']);
+nAttributes = eval(['length(' DataStr '.Attributes)']);
 
 for iDataSet = 1:nDataSets;
-    eval(['Data.' eval([ 'ProcessString(' DataStr '.Datasets(' num2str(iDataSet) ').Name)']) ' = hdf5read(''' hdf_fname ''',''' eval([DataStr '.Datasets(' num2str(iDataSet) ').Name']) ''');' ])
+  % get Data and Attributes
+    eval( [ '[D,A] = hdf5read(''' hdf_fname ''',''' eval([DataStr '.Datasets(' num2str(iDataSet) ').Name']) ''', ''ReadAttributes'',true);' ] )
+    if strcmp(class(D), 'hdf5.h5string'), D=char(D.Data); end
+    eval(['Data.' eval([ 'ProcessString(' DataStr '.Datasets(' num2str(iDataSet) ').Name)']) ' = D;' ]); clear D;
+    if ~isempty(A)
+      eval(['Att.' eval([ 'ProcessString(' DataStr '.Datasets(' num2str(iDataSet) ').Name)']) ' = A;' ])
+    end
 end
 
 LevelStr.CurrentLevel =LevelStr.CurrentLevel +1;
 for iGroup = 1:nGroups,
     DataInputStr=[DataStr '.Groups(' num2str(iGroup) ')'];
-    Data = get_struct(Data,DataInfo,hdf_fname,DataInputStr,LevelStr);
+    [Data,Att] = get_struct(Data,Att,DataInfo,hdf_fname,DataInputStr,LevelStr);
 end
 
 
