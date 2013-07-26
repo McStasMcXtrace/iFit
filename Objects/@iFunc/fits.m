@@ -499,7 +499,9 @@ end
 pars_out = reshape(pars_out, [ 1 numel(pars_out) ]); % row vector
 model.ParameterValues = pars_out;
 if ~isempty(inputname(1))  
+    try
   assignin('caller',inputname(1),model); % update in original object
+    end
 end
 
 if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))

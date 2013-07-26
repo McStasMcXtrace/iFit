@@ -16,7 +16,7 @@
 
 
 
-  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <meta http-equiv="content-type" content="text/html; charset=windows-1252">
   <title>iFit: fitting a model onto iData objects</title>
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: iData objects fitting</h1>
@@ -165,7 +165,7 @@ fit parameter set for the model obtained during the optimization<br>
   </li>
   <li><span style="font-style: italic;">criteria: </span>is the
 criteria value (<span style="font-style: italic;">least square</span>
-&#967;&sup2; by default - see <a href="#mozTocId778987">below</a> on how to
+&#967;² by default - see <a href="#mozTocId778987">below</a> on how to
 change this setting)</li>
   <li><span style="font-style: italic;">message: </span>is the final
 optimization routine state (converged, failed, ...)<br>
@@ -207,7 +207,7 @@ on fit parameters (half-width) obtained from the Hessian matrix, which
 is extremely sensitive to noise. Prefer the <span style="font-style: italic;">output.parsHistoryUncertainty</span> value
 (vector)</li>
   <li><span style="font-style: italic;">output.corrcoef</span>: fit
-correlation coefficient (closer to 1 indicates a good fit), as obtained from Matlab <a href="matlab:help%20corrcoeff">corrcoef</a>.<br>
+<a href="http://en.wikipedia.org/wiki/Correlation_coefficient">correlation coefficient</a> (closer to 1 indicates a good fit), as obtained from Matlab <a href="matlab:help%20corrcoeff">corrcoef</a>.<br>
 </li>
   <li><span style="font-style: italic;">output.modelName:</span> model
 name<br>
@@ -260,7 +260,7 @@ with a weighting by the success ratio and the number of function calls
 (optimization speed). Successive calls to <span style="font-style: italic; font-weight: bold;">fmin</span> with the same problem to solve may result in different optimizers and solutions.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Optimizer<br>
@@ -628,20 +628,20 @@ assumes the model function has syntax<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId778987"></a>Specifying the optimization criteria</h3>
 The default optimization criteria is the '<a href="http://en.wikipedia.org/wiki/Least_squares">least square error</a>':<br>
 <br>
-<div style="text-align: center;">&#967;&sup2; = &#8721; (Signal-Model)&sup2;.<br>
+<div style="text-align: center;">&#967;² = &#8721; (Signal-Model)².<br>
 <br>
 </div>
 When the Monitor is defined (see <a href="iData.html#mozTocId243435">iData</a>
 definition), the Signal is normalized, so that<br>
 <br>
-<div style="text-align: center;">&#967;&sup2; = &#8721;
-(Signal/Monitor-Model)&sup2;.<br>
+<div style="text-align: center;">&#967;² = &#8721;
+(Signal/Monitor-Model)².<br>
 <br>
 </div>
 When the Error on the Signal is available, the weighted criteria reads<br>
 <br>
-<div style="text-align: center;">&#967;&sup2; = &#8721;
-(Signal/Monitor-Model)&sup2;/Error&sup2;.<br>
+<div style="text-align: center;">&#967;² = &#8721;
+(Signal/Monitor-Model)²/Error².<br>
 </div>
 <br>
 The options.criteria can be defined as the name of a criteria function
@@ -650,18 +650,18 @@ Model)</span> where all arguments should have the same dimension, and
 the default criteria is:<br>
 <br>
 <div style="text-align: center;"><span style="font-style: italic; font-weight: bold;">options.criteria</span>
-=<span style="color: rgb(204, 51, 204);"> 'least_square'</span>; <span style="font-style: italic;">% internal 'fits' least square definition</span><br>
+=<span style="color: rgb(204, 51, 204);"> 'least_square'</span>; <span style="font-style: italic;">% criteria definition</span><br>
 <div style="text-align: left;"><br>
 The Signal will be normalized to the Monitor prior to calling the
 criteria. The Error is used as weight.<br>
 The criteria is then normalized to the number of degrees of freedom by dividing it by<br>
 <br>
-<div style="text-align: center;">&#967;&sup2; &#8592; &#967;&sup2; /(<span style="font-style: italic;">number_of_data_points_in_the_Signal </span>- <span style="font-style: italic;">number_of_parameters</span> -1)<br>
+<div style="text-align: center;">&#967;² &#8592; &#967;² /(<span style="font-style: italic;">number_of_data_points_in_the_Signal </span>- <span style="font-style: italic;">number_of_parameters</span> -1)<br>
 </div>
 <br>
 The following pre-defined functions can be used as criteria:<br>
 <br>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">criteria(Signal, Error,
@@ -708,7 +708,15 @@ Model)</td>
   <td style="vertical-align: top; text-align: right;">(|Signal-Model|/&#963;).^2 + 1/2 log(2&#960;&#963;)</td>
   <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Maximum_likelihood">Ref</a>. Minimize <span style="font-style: italic;">-log(L)</span><br>
   </td>
+</tr><tr>
+  <td valign="top">max_corrcoef<br>
+  </td>
+  <td align="right" valign="top">1-corrcoef(Signal, Model)<br>
+  </td>
+  <td valign="top"><br>
+  </td>
 </tr>
+
 
   </tbody>
 </table>

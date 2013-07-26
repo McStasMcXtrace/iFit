@@ -59,7 +59,7 @@ end
 
 if isa(p, 'iData')
   varargin = { p varargin{:} }; % will evaluate on iData axes with guesses pars
-  p = [];
+  p = NaN;
 end
 
 if iscell(p) && ~isempty(p) % as model cell (iterative function evaluation)
@@ -251,6 +251,10 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
       p1(index) = p2(index);
       clear p2
     end
+  end
+  if all(p1 == 0) && ~isempty(model.ParameterValues) ...
+   && ~all(model.ParameterValues == 0)
+    p1 = model.ParameterValues;
   end
   signal = p1;  % auto-guess overridden by 'Guess' definition
   % transfer the guessed values from 'signal' to the NaN ones in 'p'
