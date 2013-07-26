@@ -3,7 +3,7 @@
 
 
 
-  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <meta http-equiv="content-type" content="text/html; charset=windows-1252">
   <title>iFit: Math operators</title>
 </head><body>
 <h1 style="text-align: center;">iFit: Mathematical operators</h1>
@@ -100,7 +100,7 @@ All unary operators apply on a single object, element-by-element. The <span styl
 </div>
 In the cases where the Error can not be determined analytically, and approximation is obtained using<br>
 <br>
-<div style="margin-left: 40px;"><span style="font-style: italic;">new Error = f(Signal + &frac12;Error) - f(Signal - </span><span style="font-style: italic;">&frac12;Error</span><span style="font-style: italic;">)</span>.<br>
+<div style="margin-left: 40px;"><span style="font-style: italic;">new Error = f(Signal + ½Error) - f(Signal - </span><span style="font-style: italic;">½Error</span><span style="font-style: italic;">)</span>.<br>
 </div>
 <br>
 <span style="color: rgb(255, 0, 0);">Warning:</span> all the operators work on<span style="font-style: italic;"></span> the <span style="font-style: italic;">Signal/Monitor</span> and <span style="font-style: italic;">Error/Monitor</span>.<br>
@@ -138,7 +138,7 @@ Monitor<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">cos</span><sup>-1</sup>(Signal)<br>
       </td>
-      <td style="vertical-align: top;">Error/(&#8730;(1-Signal&sup2;))<br>
+      <td style="vertical-align: top;">Error/(&#8730;(1-Signal²))<br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
@@ -151,7 +151,7 @@ Monitor<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">sin</span><sup>-1</sup>(Signal)<br>
       </td>
-      <td style="vertical-align: top;">Error/(&#8730;(1-Signal&sup2;))</td>
+      <td style="vertical-align: top;">Error/(&#8730;(1-Signal²))</td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;">Arc sine. Signal should be [-1:1]</td>
@@ -161,7 +161,7 @@ Monitor<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">tan</span><sup>-1</sup>(Signal)<br>
       </td>
-      <td style="vertical-align: top;">Error/(1+Signal&sup2;)</td>
+      <td style="vertical-align: top;">Error/(1+Signal²)</td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;">Arc tangent.<br>
@@ -195,7 +195,7 @@ Monitor<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">tan</span>(Signal)<br>
       </td>
-      <td style="vertical-align: top;">Error/<span style="font-style: italic;">cos</span>&sup2;(Signal)<br>
+      <td style="vertical-align: top;">Error/<span style="font-style: italic;">cos</span>²(Signal)<br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
@@ -601,7 +601,7 @@ set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
       </td>
       <td style="vertical-align: top;">m3*(s1/m1+s2/m2)<br>
       </td>
-      <td style="vertical-align: top;">&#8730;[(e1/m1)<span style="font-style: italic;"></span>&sup2;+(e2/m2)<span style="font-style: italic;"></span>&sup2;]<br>
+      <td style="vertical-align: top;">&#8730;[(e1/m1)<span style="font-style: italic;"></span>²+(e2/m2)<span style="font-style: italic;"></span>²]<br>
       </td>
       <td style="vertical-align: top;">m1+m2<br>
       </td>
@@ -612,7 +612,7 @@ set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
       <td style="vertical-align: top; font-weight: bold;">minus <span style="font-style: italic; font-weight: normal;">and</span> -<br>
       </td>
       <td style="vertical-align: top;">m3*(s1/m1 - s2/m2)</td>
-      <td style="vertical-align: top;">&#8730;[(e1/m1)<span style="font-style: italic;"></span>&sup2;+(e2/m2)<span style="font-style: italic;"></span>&sup2;]</td>
+      <td style="vertical-align: top;">&#8730;[(e1/m1)<span style="font-style: italic;"></span>²+(e2/m2)<span style="font-style: italic;"></span>²]</td>
       <td style="vertical-align: top;">m1+m2</td>
       <td style="vertical-align: top;">subtraction<br>
       </td>
@@ -621,7 +621,7 @@ set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
       <td style="vertical-align: top; font-weight: bold;">times <span style="font-style: italic; font-weight: normal;">and</span> .*<br>
       </td>
       <td style="vertical-align: top;">s1 * s2</td>
-      <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
+      <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²]</td>
       <td style="vertical-align: top;">m1*m2<br>
       </td>
       <td style="vertical-align: top;">multiplication (<span style="font-style: italic;">element by element</span>). When object orientations are complementary (orthogonal), the final object is built with dimensionality expansion.<br>
@@ -643,8 +643,8 @@ set to<span style="font-style: italic;"> &#8730;Signal.</span><br>
     <tr>
       <td style="vertical-align: top; font-weight: bold;">rdivide <span style="font-style: italic; font-weight: normal;">and</span> ./<br>
       </td>
-      <td style="vertical-align: top;">m2&sup2;*(s1/s2)</td>
-      <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]</td>
+      <td style="vertical-align: top;">m2²*(s1/s2)</td>
+      <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²]</td>
       <td style="vertical-align: top;">m1*m2</td>
       <td style="vertical-align: top;">division <span style="font-style: italic;">(element by element)</span>. When object orientations are complementary (orthogonal), the final object is built with dimensionality expansion. </td>
     </tr>
@@ -667,7 +667,7 @@ operator<br>
       </td>
       <td style="vertical-align: top;">s1+s2<br>
       </td>
-      <td style="vertical-align: top;">&#8730;[e1<span style="font-style: italic;"></span>&sup2;+e2<span style="font-style: italic;"></span>&sup2;]</td>
+      <td style="vertical-align: top;">&#8730;[e1<span style="font-style: italic;"></span>²+e2<span style="font-style: italic;"></span>²]</td>
       <td style="vertical-align: top;">m1+m2<br>
       </td>
       <td style="vertical-align: top;">add Signals and Monitors
@@ -697,7 +697,7 @@ with dimensionality expansion.<br>
       </td>
       <td style="vertical-align: top;">comparison(s1, s2)<br>
       </td>
-      <td style="vertical-align: top;">&#8730;[(e1/m1)<span style="font-style: italic;"></span>&sup2;+(e2/m2)<span style="font-style: italic;"></span>&sup2;]/[s1/m1+s2/m2]</td>
+      <td style="vertical-align: top;">&#8730;[(e1/m1)<span style="font-style: italic;"></span>²+(e2/m2)<span style="font-style: italic;"></span>²]/[s1/m1+s2/m2]</td>
       <td style="vertical-align: top;">1<br>
       </td>
       <td style="vertical-align: top;">binary comparisons<br>
@@ -708,7 +708,7 @@ with dimensionality expansion.<br>
       </td>
       <td style="vertical-align: top;">FFT<sup>-1</sup>(FFT(s1)*FFT(s2))<br>
       </td>
-      <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]
+      <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²]
       <span style="font-style: italic;"> (this may be inappropriate)</span></td>
       <td style="vertical-align: top;">m1*m2<br>
       </td>
@@ -719,7 +719,7 @@ with dimensionality expansion.<br>
       <td style="vertical-align: top;"><span style="font-weight: bold;">xcorr</span><br>
       </td>
       <td style="vertical-align: top;">FFT<sup>-1</sup>(FFT(s1)*FFT<sup>*</sup>(s2))</td>
-      <td style="vertical-align: top;">s3*[(e1/s1)&sup2;+(e2/s2)&sup2;]
+      <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²]
       <span style="font-style: italic;"> (this may be inappropriate)</span></td>
       <td style="vertical-align: top;">m1*m2</td>
       <td style="vertical-align: top;">correlation (see&nbsp;<a href="#mozTocId880437">below)</a></td>
@@ -881,7 +881,7 @@ easy way to determine Gaussian widths of Signal distributions along
 axes. It returns the half width and center of the Signal distribution.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>);<br>&gt;&gt; [w,x]=<span style="color: rgb(51, 102, 255);">std</span>(a)<br>w =<br>    0.0036<br>x =<br>    1.0007<br>&gt;&gt; [ min(a) max(a) median(a) mean(a) ]<br>ans =<br><br>            0         7387          119       1630.7<br></pre>
 indicates that the <span style="font-style: italic;">Signal</span> is
-distributed in 1.0007 &plusmn; 0.0036, and gives min, max, ... As a
+distributed in 1.0007 ± 0.0036, and gives min, max, ... As a
 comparison, the fit to a Gaussian function returns<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a)<br>   'Amplitude'    <span style="color: rgb(255, 0, 0);">'Centre'    'HalfWidth'</span>    'Background'<br>      0.67857      <span style="color: rgb(255, 0, 0);"> 1.0008    0.0034641 </span>  0.00024067<br></pre>
 which is about the same as the 1st and 2nd moment estimates. Here, the <span style="font-style: italic;">Amplitude</span> fit parameter is the one
@@ -889,6 +889,10 @@ for <span style="font-style: italic;">Signal/Monitor</span>, which is
 indeed different from the value returned by <span style="font-weight: bold;">max</span> when <span style="font-style: italic;">Monitor</span> is not 1. Use <span style="font-style: italic;">setalias(object, 'Monitor',1)</span> to
 get similar values from <span style="font-weight: bold;">fits</span>
 and <span style="font-weight: bold;">max</span> in this example.<br>
+<br>
+It is also possible to compute with the <b>corrcoef</b> method the 
+correlation between an object and something else, e.g. a vector, an 
+iFunc model or a single vector of same length as the object signal.<br>
 <br>
 These operators apply iteratively on object arrays. The <span style="font-style: italic;">mean</span> and <span style="font-style: italic;">median</span> then point to the <span style="font-style: italic;">combine</span> operator, the <span style="font-style: italic;">min</span> and <span style="font-style: italic;">max</span> return the minimum and maximum
 along all objects.<br>
@@ -1039,8 +1043,8 @@ The <span style="font-weight: bold;">cumtrapz</span> is the <span style="font-st
 The <span style="font-weight: bold;">norm</span> method computes the norm-2 of the object <span style="font-style: italic;">Signal, </span>that is<br>
 <br>
 <div style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">norm</span>(a)
-= &frac12; &#8721;
-<span style="font-style: italic;">|Signal|</span>&sup2;<br>
+= ½ &#8721;
+<span style="font-style: italic;">|Signal|</span>²<br>
 <br>
 </div>The <span style="font-weight: bold;">camproj</span> can also be used with <span style="font-style: italic;">dim='radial'</span>
  in order to integrate a data set radially. This integration can also be
