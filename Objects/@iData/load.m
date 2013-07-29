@@ -184,9 +184,8 @@ function s=load_check_struct(data, loaders, filename)
 function this = load_eval_postprocess(this, postprocess)
 % evaluate the postprocess in a reduced environment, with only 'this'
   try
-    disp([ 'Calling load_eval_postprocess: '  postprocess ])
+    % disp([ mfilename ': Calling post-process '  postprocess ])
     if isvarname(postprocess) && exist(postprocess) == 2
-    this
       this = feval(postprocess, this);
     elseif isempty(postprocess == '=')
       this = eval(postprocess);
