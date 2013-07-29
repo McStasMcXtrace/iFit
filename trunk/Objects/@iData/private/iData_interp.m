@@ -34,6 +34,12 @@ otherwise % nD, n>1
       f_signal = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
     else                       % method: linear or nearest
       if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end
+      % i_axes and f_axes must be columns, and cell2mat append them for
+      % griddatan
+      for index=1:length(i_axes)
+        x = i_axes{index}; i_axes{index}=x(:); 
+        x = f_axes{index}; f_axes{index}=x(:); clear x;
+      end
       f_signal = griddatan(cell2mat(i_axes), i_signal, cell2mat(f_axes), method);
     end
   else
