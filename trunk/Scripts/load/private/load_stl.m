@@ -2,23 +2,7 @@ function b=load_stl(a)
 % function a=load_stl(a)
 %
 % Returns an iData style dataset from a STL file (ascii or binary)
-%
-% Version: $Revision$
-% See also: iData/load, iLoad, save, iData/saveas
-
-if ~isa(a,'iData')
-  b = load(iData,a);
-  return
-end
-
-% handle input iData arrays
-if length(a(:)) > 1
-  b = [];
-  for index=1:length(a(:))
-    b = [ b feval(mfilename, a(index)) ];
-  end
-  return
-end
+% or an OFF, PLY, CFL, EZD file
 
 vertices = []; faces = [];
 if isfield(a.Data.MetaData, 'OFF')
@@ -113,7 +97,7 @@ end
 
 % store the vertices and faces
 if isempty(vertices)
-  warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a STL/SLP/OFF/PLY/CFL data format.' ]); 
+  warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a STL/SLP/OFF/PLY/CFL/EZD data format.' ]); 
   b = a;
   return
 end

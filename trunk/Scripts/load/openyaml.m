@@ -1,11 +1,26 @@
 function out = openyaml(filename)
-%OPENYAML Open a YAML/JSON File, display it
+%OPENYAML Open a YAML File, display it
 %        and set the 'ans' variable to an iData object with its content
 
-out = load(iData,filename, 'YAML');
-subplot(out);
-
-if ~isdeployed
-  assignin('base','ans',out);
-  ans = out
+if ~isa(filename,'iData')
+  out = iData(iLoad(filename,'YAML'));
+else
+  out = filename;
 end
+
+if length(out(:)) > 1
+  % handle input iData arrays
+  for index=1:length(out(:))
+    out(index) = feval(mfilename, out(index));
+  end
+end
+
+if ~nargout
+  figure; subplot(out);
+  
+  if ~isdeployed
+    assignin('base','ans',out);
+    ans = out
+  end
+end
+
