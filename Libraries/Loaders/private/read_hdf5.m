@@ -38,6 +38,7 @@ for i = 1: nvars
     end
     if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
     [p, name]   = fileparts(data_info.Datasets(i).Name);
+    name = genvarname(name);
     data.(name) = val;
     
     % get dataset attributes
@@ -48,6 +49,7 @@ for i = 1: nvars
         if iscell(data_info.Datasets(i).Attributes(j).Value), val = {1}; end
         if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
         [p, aname] = fileparts(data_info.Datasets(i).Attributes(j).Name);
+        aname = genvarname(aname);
         data.Attributes.(name).(aname) = val;
     end
 end
@@ -60,6 +62,7 @@ for j=1:natts
     if iscell(data_info.Attributes(j).Value), val = {1}; end
     if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
     [p, name] = fileparts(data_info.Attributes(j).Name);
+    name = genvarname(name);
     data.Attributes.(name) = val;
 end
 
@@ -69,6 +72,7 @@ for i = 1 : ngroups
   group = getGroup(filename, data_info.Groups(i));
   % assign the name of the group
   [p, name] = fileparts(data_info.Groups(i).Name);
+  name = genvarname(name);
   data.(name) = group;
 end
 
