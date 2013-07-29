@@ -110,12 +110,10 @@ elseif any(strcmp(loader, {'force','force load config','compile'}))
   if exist('cbf_uncompress') ~= 3, read_cbf('compile'); end
   if exist('cif2hkl') ~= 3,        cif2hkl('compile'); end
   % display the MeX/binary files used
-  if strcmp(loader, 'compile')
-    disp([ mfilename ': MeX/binary importer used' ])
-    disp(which('looktxt')); 
-    disp(which('cbf_uncompress')); 
-    disp(which('cif2hkl'));
-  end
+  disp([ mfilename ': MeX/binary importer used' ])
+  disp(which('looktxt')); 
+  disp(which('cbf_uncompress')); 
+  disp(which('cif2hkl'));
   
   config  = iLoad_config_load;
   if ~isempty(filename)
@@ -423,26 +421,9 @@ function [data, loader] = iLoad_import(filename, loader, varargin)
       'Name', ['Loader for ' filename_short ]);
     if isempty(loader_index), loader=[]; return; end
     loader=loader(loader_index);
-  elseif ischar(loader)
+  elseif ischar(loader) || iscellstr(loader)
     % test if loader is the user name of a function
-    config = iLoad('','load config');
-    formats = config.loaders;
-    loaders={};
-    loaders_count=0;
-    for index=1:length(formats)
-      this_loader = formats{index};
-      i1 = strfind(lower(this_loader.name), lower(loader));   if isempty(i1), i1=0; end
-      i2 = strfind(lower(this_loader.method), lower(loader)); if isempty(i2), i2=0; end
-      i3 = strfind(lower(this_loader.extension), lower(loader)); if iscell(i3), i3 = ~cellfun('isempty', i3); end
-      i4 = strfind(lower(this_loader.postprocess), lower(loader)); if iscell(i4), i4 = ~cellfun('isempty', i4); end
-      if all(isempty(i3)), i3=0; end
-      if all(isempty(i4)), i4=0; end
-      if i1 || i2 || any(i3) || any(i4)
-        loaders_count          = loaders_count+1;
-        loaders{loaders_count} = this_loader;
-      end
-    end
-    if ~isempty(loaders) loader = loaders; end
+    loader = iLoad_config_find(loader);
   end
   
   % handle multiple loaders (cell or struct array)
@@ -789,11 +770,11 @@ function config = iLoad_config_load
   
   % ADD default loaders: method, ext, name, options
   % default importers, when no user specification is given. 
-  % format = { method, extension, name, options, patterns, postprocess }
+  % format = { method, extension, name, {options, patterns, postprocess} }
   formats = {...
     { 'csvread', 'csv', 'Comma Separated Values (.csv)',''}, ...
     { 'dlmread', 'dlm', 'Numerical single block',''}, ...
-    { 'xmlread', 'xml', 'XML',''}, ...
+    { 'xmlread', 'xml', 'XML','','','opennxs'}, ...
     { 'read_anytext', '',    'Data (text format with fastest import method)',    ...
         '--headers --binary --fast --catenate --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metadata=x_label --metadata=y_label  --catenate --fortran', ...
           '',{'load_xyen','load_vitess_2d'}}, ...
@@ -805,22 +786,23 @@ function config = iLoad_config_load
     { 'auread',  'au',  'NeXT/SUN (.au) sound',''}, ...
     { 'wavread', 'wav'  'Microsoft WAVE (.wav) sound',''}, ...
     { 'aviread', 'avi', 'Audio/Video Interleaved (AVI) ',''}, ...
-    { 'read_cdf2', {'nc','cdf'}, 'NetCDF 2 (.nc)',''}, ...
-    { 'read_cdf1',   {'nc','cdf'}, 'NetCDF 1.0 (.nc)','','',{'load_netcdf1','load_mcstas_sqw'}}, ...
+    { 'read_cdf2', {'nc','cdf'}, 'NetCDF 2 (.nc)','','',{'opencdf','opensqw'}}, ...
+    { 'read_cdf1', {'nc','cdf'}, 'NetCDF 1 (.nc)','','',{'opencdf','opensqw'}}, ...
     { 'read_fits',{'fits','fts'},'FITS',''}, ...
     { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)',''}, ...
     { 'read_image',  {'bmp','jpg','jpeg','tiff','tif','png','ico'}, 'Image/Picture',''}, ...
-    { 'read_hdf5',{'hdf','hdf5','h5'}, 'HDF5','','','load_psi_RITA'}, ...
-    { 'read_hdf5',{'nx','nxs','n5','nxspe'}, 'NeXus/HDF5',''}, ...
-    { 'read_hdf4',{'hdf4','h4','hdf'},  'HDF4',''}, ...
-    { 'read_hdf4',{'nx','nxs','n4'},  'NeXus/HDF4',''}, ...
-    { 'load',    'mat', 'Matlab workspace (.mat)',''}, ...
+    { 'read_hdf5',{'hdf','hdf5','h5'}, 'HDF5','','',{'opennxs','load_psi_RITA'}}, ...
+    { 'read_hdf5',{'nx','nxs','n5','nxspe'}, 'NeXus/HDF5','','','opennxs'}, ...
+    { 'read_hdf4',{'hdf4','h4','hdf'},  'HDF4','','','opennxs'}, ...
+    { 'read_hdf4',{'nx','nxs','n4'},  'NeXus/HDF4','','','opennxs'}, ...
+    { 'load',    'mat', 'Matlab workspace (.mat)','','','opennxs'}, ...
     { 'importdata','',  'Matlab importer',''}, ...
   };
   for index=1:length(formats) % the default loaders are addded after the INI file
     format = formats{index};
     if isempty(format), break; end
-    if length(format) < 4, continue; end
+    if length(format) < 3, continue; end
+    if length(format) < 4, format{4}=''; end
     if length(format) < 5, format{5}=''; end
     if length(format) < 6, format{6}=''; end
     % check if format already exists in list
@@ -974,4 +956,36 @@ function fileList = getAllFiles(dirName)
     fileList = [fileList; getAllFiles(nextDir)];  %# Recursively call getAllFiles
   end
 
+% ------------------------------------------------------------------------------
+function loader = iLoad_config_find(loader)
+% searches in the config for given names
 
+if iscellstr(loader)
+  loaders = {};
+  for index=1:numel(loader)
+    this    = iLoad_config_find(loader{index});
+    loaders = [ loaders ; this(:) ];
+  end
+  loader = loaders;
+elseif ischar(loader)
+  % test if loader is the user name of a function
+  config  = iLoad('','load config');
+  formats = config.loaders;
+  loaders ={};
+  loaders_count=0;
+  for index=1:length(formats)
+    this_loader = formats{index};
+    i1 = strfind(lower(this_loader.name), lower(loader));   if isempty(i1), i1=0; end
+    i2 = strfind(lower(this_loader.method), lower(loader)); if isempty(i2), i2=0; end
+    i3 = strfind(lower(this_loader.extension), lower(loader)); if iscell(i3), i3 = ~cellfun('isempty', i3); end
+    i4 = strfind(lower(this_loader.postprocess), lower(loader)); if iscell(i4), i4 = ~cellfun('isempty', i4); end
+    if all(isempty(i3)), i3=0; end
+    if all(isempty(i4)), i4=0; end
+    if i1 || i2 || any(i3) || any(i4)
+      loaders_count          = loaders_count+1;
+      loaders{loaders_count} = this_loader;
+    end
+  end
+  if ~isempty(loaders) loader = loaders; end
+end
+  

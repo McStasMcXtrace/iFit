@@ -6,5 +6,5 @@ function result = test_Loaders_dir_Data
   if length(find(isempty(a))) > 3
     result = [ 'FAILED ' num2str(length(find(isempty(a)))-1) '/' num2str(length(a)) ];
   else
-    result = [ 'OK     ' mfilename ];
+    result = [ 'OK     ' mfilename ' (' num2str(numel(a)) ' files)' ];
   end

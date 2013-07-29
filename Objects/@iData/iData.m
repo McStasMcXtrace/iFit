@@ -43,6 +43,7 @@ function outarray = iData(varargin)
 %   iData_num2iData
 %   iData_cell2iData
 %   iData_check
+%   load_clean_metadata
 
 outarray = [];
 
@@ -316,6 +317,12 @@ function b=iData_struct2iData(a)
   
   if isempty(b.Command), b.Command= cellstr('iData(<struct>)'); end
   
+  [pathname,filename,ext] = fileparts(b.Source);
+  if isfield(b.Data, 'MetaData')
+    b=setalias(b, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
+    b=load_clean_metadata(b);
+  end
+  
 % ============================================================================
 % iData_cell2iData: converts a cell into an iData array
 function b=iData_cell2iData(a)
@@ -416,8 +423,10 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
           continue; 
         end
         x = diff(x(:));
-        if all(x == x(1)) || all(x > 0) || ~isempty(strfind(lower(fields{index}), 'error'))
-          % this is a constant/monotonic value or 'error'
+        if all(x == x(1)) || all(x > 0) ...
+          || ~isempty(strfind(lower(fields{index}), 'error')) ...
+          || ~isempty(strfind(lower(fields{index}), 'monitor'))
+          % this is a constant/monotonic value or 'error' or 'monitor'
           % move down in fields list
           maxdim([ end idx]) = maxdim([ idx end] );
         end
@@ -426,13 +435,15 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
     end
     
     % in case we have more than one choice, get the first one and error bars
-    error_id = [];
+    error_id = []; monitor_id=[];
     if length(dims) > 1 || iscell(fields)
       % do we have an 'error' which has same dimension ?
       for index=find(dims(:)' == dims(1))
         if index==1, continue; end % not the signal itself
         if ~isempty(strfind(lower(fields{index}), 'error'))
           error_id = fields{index};
+        elseif ~isempty(strfind(lower(fields{index}), 'monitor'))
+          monitor_id = fields{index};
         end
       end
       
@@ -454,9 +465,12 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
       else
         label(in, 0, fields);
       end
-      % assign potential 'error' bars
+      % assign potential 'error' bars and 'monitor'
       if ~isempty(error_id)
         in = setalias(in,'Error', error_id);
+      end
+      if ~isempty(monitor_id)
+        in = setalias(in,'Monitor', monitor_id);
       end
     end
     % look for vectors that may have the proper length as axes
@@ -521,3 +535,24 @@ in = setalias(in);
 in = setaxis(in);
 
 out = in;
+
+% ------------------------------------------------------------------------------
+function a=load_clean_metadata(a, loaders, filenames)
+% test each field of MetaData and search for equal aliases
+  this = a.Data.MetaData;
+  meta_names = fieldnames(this);
+  alias_names=getalias(a);
+  %treat each MetaData
+  for index=1:length(meta_names)
+    if numel(getfield(this, meta_names{index})) > 1000
+    for index_alias=1:length(alias_names)
+      % is it big and equal to an alias value ?
+      if isequal(getfield(this, meta_names{index}), get(a, alias_names{index_alias}))
+        % yes: store alias in place of MetaData
+        this = setfield(this, meta_names{index}, getalias(a, alias_names{index_alias}));
+        break
+      end
+    end % for
+    end % if
+  end
+  a.Data.MetaData = this;

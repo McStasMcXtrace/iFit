@@ -1,9 +1,9 @@
-function out = openxml(filename)
-%OPENXML Open an XML file, display it
+function out = openjson(filename)
+%OPENJSON Open a JSON File, display it
 %        and set the 'ans' variable to an iData object with its content
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'XML'));
+  out = iData(iLoad(filename,'JSON'));
 else
   out = filename;
 end
