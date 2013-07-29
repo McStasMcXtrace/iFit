@@ -7,12 +7,6 @@ function data = read_hdf5(filename)
 %
 %   Example
 %       data=read_hdf5('input.h5');
-%
-%   Version 1.0
-%   Maintained by: Samuel Lazerson (lazerson@pppl.gov)
-%   Date  05/02/2012
-
-% Try to read the file first
 
 % read file structure
 if exist('h5info')
@@ -25,11 +19,12 @@ end
 % recursive call
 data = getGroup(filename, data_info);
 
-
+% return
 
 % inline function ==============================================================
 function data = getGroup(filename, data_info)
 
+data = [];
 root = data_info.Name;
 if ~strcmp(root, '/'), root = [ root  '/' ]; end
 
@@ -47,23 +42,25 @@ for i = 1: nvars
     
     % get dataset attributes
     natts = length(data_info.Datasets(i).Attributes);
+    if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
     for j=1:natts
         val = data_info.Datasets(i).Attributes(j).Value;
         if iscell(data_info.Datasets(i).Attributes(j).Value), val = {1}; end
         if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
-        [p, name] = fileparts(data_info.Datasets(i).Attributes(j).Name);
-        data.(name) = val;
+        [p, aname] = fileparts(data_info.Datasets(i).Attributes(j).Name);
+        data.Attributes.(name).(aname) = val;
     end
 end
 
 % get group attributes
 natts = length(data_info.Attributes);
+if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
 for j=1:natts
     val = data_info.Attributes(j).Value;
     if iscell(data_info.Attributes(j).Value), val = {1}; end
     if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
     [p, name] = fileparts(data_info.Attributes(j).Name);
-    data.(name) = val;
+    data.Attributes.(name) = val;
 end
 
 % Get each subgroup

@@ -140,7 +140,7 @@ function config = iLoad_ini
     ILL_inx.name       ='ILL INX tof data';
     ILL_inx.options    ='';
     ILL_inx.method     ='read_inx';
-    ILL_inx.postprocess='load_ill_inx';
+    ILL_inx.postprocess='openinx';
     ILL_inx.extension  ='inx';
     
     STL_ascii.name     ='STL/SLP 3D ascii';
@@ -148,25 +148,25 @@ function config = iLoad_ini
     STL_ascii.options  ='ascii';
     STL_ascii.patterns ={'facet','vertex','endfacet'};
     STL_ascii.extension={'stl','stla','slp'};
-    STL_ascii.postprocess='load_stl';
+    STL_ascii.postprocess='openstl';
     
     STL_binary.name     ='STL 3D binary';
     STL_binary.method   ='read_stl';
     STL_binary.options  ='binary';
     STL_binary.extension={'stl','stlb'};
-    STL_binary.postprocess='load_stl';
+    STL_binary.postprocess='openstl';
     
     CFL.name     ='CFL FullProf crystallography file';
     CFL.patterns ={'Spgr','Atom'};
     CFL.method   ='read_anytext';
     CFL.options  ='--headers --fortran --catenate --fast --binary --section=Atom --silent --metadata=Spgr --metadata=Cell --metadata=Spgr ';
     CFL.extension={'cfl'};
-    CFL.postprocess='load_stl';
+    CFL.postprocess='opencfl';
     
     CIF.name     = 'CFL/PCR FullProf, CIF, INS/RES/SHX ShellX file (CrysFML)';
     CIF.method   ='read_cif';
     CIF.extension={'cif','pcr','pcr','cfl','ins','res','shx'};
-    CIF.postprocess='load_stl';
+    CIF.postprocess='opencif';
     
     PDB.name            ='Protein Data Bank';
     PDB.extension       ='pdb';
@@ -179,14 +179,14 @@ function config = iLoad_ini
     OFF_ascii.options   ='--fast --binary --headers --comment=NULL --metadata=OFF --silent';
     OFF_ascii.extension ='off';
     OFF_ascii.patterns  ={'\<OFF\>'};
-    OFF_ascii.postprocess='load_stl';
+    OFF_ascii.postprocess='openoff';
     
     PLY_ascii.name      ='PLY 3D ascii';
     PLY_ascii.method    ='read_anytext';
     PLY_ascii.options   ='--fast --binary --headers --comment=NULL --silent';
     PLY_ascii.extension ='ply';
     PLY_ascii.patterns  ={'ply','format ascii','element','end_header'};
-    PLY_ascii.postprocess='load_stl';
+    PLY_ascii.postprocess='openply';
     
     EZD.name            ='EZD electronic density map';
     EZD.method          ='read_anytext';
@@ -235,13 +235,13 @@ function config = iLoad_ini
     
     Analyze.name        ='Analyze volume data';
     Analyze.method      ='read_analyze';
-    Analyze.postprocess ='load_analyze';
+    Analyze.postprocess ='openhdr';
     Analyze.extension   ={'hdr','img'};
     
     CBF.name            ='Crystallographic Binary File';
     CBF.extension       ='cbf';
     CBF.method          ='read_cbf';
-    CBF.postprocess     ='load_cbf';
+    CBF.postprocess     ='opencbf';
     CBF.patterns        ={'###CBF: VERSION'};
     
     MRC.name            ='MRC/CCP4 electron density map';

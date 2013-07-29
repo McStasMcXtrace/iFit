@@ -49,7 +49,7 @@ function out = load(a, varargin)
 
 % calls private/iLoad
 % iLoad returns nearly an iData structure.
-% inline: load_check_struct, load_clean_metadata
+% inline: load_check_struct
 % EF 23/09/07 iData implementation
 
 [files, loaders] = iLoad(varargin{:}); % import files as structures HERE
@@ -70,8 +70,12 @@ for i=1:numel(files)
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Filename'), filename = files{i}.Filename; end
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'filename'), filename = files{i}.filename; end
   if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Source'), filename = files{i}.Source; end
+  
   files{i} = load_check_struct(files{i}, loaders, filename);
+
+  
   if isfield(files{i},'Data') && isstruct(files{i}.Data) && any(cellfun('isclass', struct2cell(files{i}.Data), 'iData'))
+    % a structure containing an iData
     this_iData = [];
     struct_data = struct2cell(files{i}.Data);
     files{i} = {};  % free memory
@@ -81,15 +85,10 @@ for i=1:numel(files)
       end
     end
   else
+    % usually a structure from iLoad
     this_iData =  iData(files{i});	% convert file content from iLoad into iData
     if ~isempty(this_iData)
       % specific adjustments for looktxt (default import method)
-      [pathname,filename,ext] = fileparts(files{i}.Source);
-      if isfield(this_iData.Data, 'MetaData')
-        this_iData=setalias(this_iData, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
-        this_iData=load_clean_metadata(this_iData);
-      end
-      
       if isempty(loaders) || ~isfield(loaders{i}, 'postprocess')
         loaders{i}.postprocess='';
       end
@@ -159,27 +158,6 @@ if nargout == 0 && ~isempty(inputname(1))
 end
 
 % ------------------------------------------------------------------------------
-function a=load_clean_metadata(a, loaders, filenames)
-% test each field of MetaData and search for equal aliases
-  this = a.Data.MetaData;
-  meta_names = fieldnames(this);
-  alias_names=getalias(a);
-  %treat each MetaData
-  for index=1:length(meta_names)
-    if numel(getfield(this, meta_names{index})) > 1000
-    for index_alias=1:length(alias_names)
-      % is it big and equal to an alias value ?
-      if isequal(getfield(this, meta_names{index}), get(a, alias_names{index_alias}))
-        % yes: store alias in place of MetaData
-        this = setfield(this, meta_names{index}, getalias(a, alias_names{index_alias}));
-        break
-      end
-    end % for
-    end % if
-  end
-  a.Data.MetaData = this;
-
-% ------------------------------------------------------------------------------
 function s=load_check_struct(data, loaders, filename)
 % check final structure and add missing fields
   if nargin < 3, filename=''; end
@@ -206,7 +184,9 @@ function s=load_check_struct(data, loaders, filename)
 function this = load_eval_postprocess(this, postprocess)
 % evaluate the postprocess in a reduced environment, with only 'this'
   try
+    disp([ 'Calling load_eval_postprocess: '  postprocess ])
     if isvarname(postprocess) && exist(postprocess) == 2
+    this
       this = feval(postprocess, this);
     elseif isempty(postprocess == '=')
       this = eval(postprocess);
@@ -217,7 +197,7 @@ function this = load_eval_postprocess(this, postprocess)
     this = setalias(this, 'postprocess', postprocess);
     this = iData_private_history(this, postprocess, this);
   catch
-    iData_private_warning(mfilename, [ 'Error when calling post-process ' postprocess ]);
+    warning([mfilename ': Error when calling post-process ' postprocess ]);
   end
     
     
