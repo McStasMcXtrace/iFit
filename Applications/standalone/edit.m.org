@@ -57,7 +57,7 @@ if ishandle(url)
       end
     end
   end
-  disp([ 'Info: You can use ''inspect(' num2str(url) ')'' to edit properties of graphical objects.' ]);
+  disp([ 'Info: You can also use ''inspect(' num2str(url) ')'' to edit properties of graphical objects.' ]);
   return
 end
 
