@@ -82,7 +82,7 @@ Command options/arguments<br>
 
 </div>
 <div style="text-align: left;">You can start the iFit program with additional arguments which allow to perform predefined operations when starting.<br>
-  <table style=" text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+  <table style=" text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
     <tbody>
       <tr>
         <td style="vertical-align: top; font-weight: bold;">--save<br>
@@ -217,7 +217,11 @@ The iFit stand-alone distribution provides a fully functional Matlab prompt (ter
 
   </ul>
 
-However, new Matlab functions can <span style="font-weight: bold; font-style: italic;">not</span> be defined, except anonymous functions (inline). You may use iFunc models as a substitute. Also, the <span style="font-style: italic;">doc, web, help</span> and <span style="font-style: italic;">edit</span> commands are limited, and may not work properly, depending on the system.<br>
+However, new Matlab functions can <span style="font-weight: bold; font-style: italic;">not</span> be defined, except anonymous functions (inline). You may use <a href="iFunc.html">iFunc</a> models as a substitute. Also, the <span style="font-style: italic;">doc, web, help</span> and <span style="font-style: italic;">edit</span> commands are limited, and may not work properly, depending on the system.<br>
+<br>
+To edit graphical objects (plot elements such as titles, axes labels, ...), you can use:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span>(gcf);	<span style="font-style: italic;">% edit the current figure</span>. <span style="font-weight: bold;">Select the 'arrow'</span> tool in the tool bar then double-click objects.<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">inspect</span>(gcf) <span style="font-style: italic;">% open a property editor</span><br></pre>
+The edit command also works with files, to launch the system text editor or a simplistic editor.<br>
 
   
 
@@ -236,7 +240,7 @@ structures and lists ('cell'). With iFit, we provide 2 new data types: <a href="
 <h4><a class="mozTocH4" name="mozTocId495160"></a>
 Control statements</h4>
 <p>Matlab supports a set of control statements:</p>
-<table style=" text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style=" text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top;">

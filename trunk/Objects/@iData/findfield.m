@@ -79,7 +79,8 @@ if ~isempty(field)
   if strfind(option, 'exact')
     index = find(strcmp(field, matchs));
     if isempty(index)
-      m=strtrim(cellstr(fliplr(char(strtok(cellstr(fliplr(char(matchs))),'. ')))));
+      % extract last words of 'matchs'
+      m     = find_last_word(matchs);
       index = find(strcmp(field, m));
     end
   else
@@ -159,4 +160,9 @@ for index=transpose(find(cellfun('isclass', c, 'struct')))
   end
 end
 
+% ------------------------------------------------------------------------------
+function m = find_last_word(matchs)
+% m=strtrim(cellstr(fliplr(char(strtok(cellstr(fliplr(char(matchs))),'. ')))));
+  m = cellfun(@(s)s((find(s == '.', 1, 'last')+1):end), matchs, 'UniformOutput', false);
+  index = cellfun(@isempty, m); m(index) = matchs(index);
 

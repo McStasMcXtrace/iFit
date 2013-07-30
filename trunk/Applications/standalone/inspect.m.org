@@ -9,5 +9,9 @@ function inspect(varargin)
 %    INSPECT with no argument launches a blank inspector window.
 
   if usejava('jvm')
-    uiinspect(varargin{:});
+    if nargin == 0
+      uiinspect(gcf);
+    else
+      uiinspect(varargin{:});
+    end
   end

@@ -130,7 +130,7 @@ for i = 1:length(S)     % can handle multiple index levels
   
       b = iData_private_history(b, toadd);
       % final check
-      b = iData(b);
+      b = iData_check(b);
       % reset warnings
       iData_private_warning('exit',mfilename);
 
@@ -192,8 +192,13 @@ for i = 1:length(S)     % can handle multiple index levels
     if ischar(b) && size(b,1) == 1
       if any(strcmpi(b, fields))
         b = a.(b);      % fast access to static fields
-      elseif any(strcmpi(strtok(b,'.'), fields)) || any(strcmpi(strtok(b,'.'), a(1).Alias.Names))
-        b = get(a, b);  % try to evaluate char result
+      else
+        % strtk = strtok(b,'.');
+        strtk = find(b == '.', 1, 'last');
+        if isempty(strtk), strtk = b; else strtk = b(1:(strtk-1)); end
+        if any(strcmpi(strtk, fields)) || any(strcmpi(strtk, a(1).Alias.Names))
+          b = get(a, b);  % try to evaluate char result
+        end
       end
     end
   end   % switch s.type
@@ -208,7 +213,8 @@ function val = iData_getAliasValue(this,fieldname)
 
 % EF 23/09/07 iData impementation
   val = [];
-  if iscellstr(fieldname), fieldname = fieldname{1}; end
+  if iscell(fieldname), fieldname = fieldname{1}; end
+  if ~ischar(fieldname), return; end
   if ~isa(this, 'iData'),   return; end
   if ~isvarname(fieldname), return; end % not a single identifier (should never happen)
 

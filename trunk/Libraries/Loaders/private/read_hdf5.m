@@ -31,14 +31,15 @@ if ~strcmp(root, '/'), root = [ root  '/' ]; end
 % Get group datasets
 nvars   = length(data_info.Datasets);
 for i = 1: nvars
-    if exist('h5read')
+    if exist('h5read','file')
       val = h5read(filename,[root data_info.Datasets(i).Name]);
     else
       val = hdf5read(filename,[data_info.Datasets(i).Name]);
     end
     if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
     [p, name]   = fileparts(data_info.Datasets(i).Name);
-    name = genvarname(name);
+    name(~isstrprop(name,'alphanum')) = '_';
+    % name = genvarname(name);
     data.(name) = val;
     
     % get dataset attributes
@@ -49,7 +50,8 @@ for i = 1: nvars
         if iscell(data_info.Datasets(i).Attributes(j).Value), val = {1}; end
         if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
         [p, aname] = fileparts(data_info.Datasets(i).Attributes(j).Name);
-        aname = genvarname(aname);
+        %aname = genvarname(aname);
+        aname(~isstrprop(aname,'alphanum')) = '_';
         data.Attributes.(name).(aname) = val;
     end
 end
@@ -62,7 +64,8 @@ for j=1:natts
     if iscell(data_info.Attributes(j).Value), val = {1}; end
     if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
     [p, name] = fileparts(data_info.Attributes(j).Name);
-    name = genvarname(name);
+    % name = genvarname(name);
+    name(~isstrprop(name,'alphanum')) = '_';
     data.Attributes.(name) = val;
 end
 
