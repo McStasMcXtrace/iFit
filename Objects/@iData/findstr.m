@@ -48,7 +48,8 @@ fields = fields(index); % get all field names containg char data
 
 for index=1:length(fields)
   strfield = get(s, fields{index});
-  if iscellstr(strfield)
+  if isempty(strfield), continue; end
+  if iscell(strfield) && ischar(strfield{1})
     strfield= char(strfield);
   end
   if ~ischar(strfield), continue; end
