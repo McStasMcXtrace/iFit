@@ -158,11 +158,16 @@ for i = 1:length(S)     % can handle multiple index levels
     elseif strcmpi(fieldname, 'axes')
       fieldname = 'Axis';
     end
-    if isa(b, 'iData'), f=fields; elseif isstruct(b), f=fieldnames(b); else f=[]; end
+    if isa(b, 'iData'), 
+      isiData = 1; f=fields; 
+    else
+      isiData = 0;
+      if isstruct(b), f=fieldnames(b); else f=[]; end
+    end
     index = find(strcmpi(fieldname, f));
-    if any(strcmpi(fieldname, 'alias'))
+    if isiData && any(strcmpi(fieldname, 'alias'))
       b = getalias(b);
-    elseif any(strcmpi(fieldname, 'axis'))
+    elseif isiData && any(strcmpi(fieldname, 'axis'))
       b = getaxis(b);
     elseif ~isempty(index) % structure/class def fields: b.field
       b = b.(f{index(1)});
@@ -175,7 +180,7 @@ for i = 1:length(S)     % can handle multiple index levels
       if i == length(S)
         if nargout(fieldname) ==0
           feval(fieldname, b);
-          c=[];
+          c = [];
         else
           c = feval(fieldname, b);
         end

@@ -54,7 +54,6 @@ for index=1:length(fields)
   end
   if ~ischar(strfield), continue; end
   strfield = strtrim(strfield); % get char content of field
-  if ~ischar(strfield), continue; end
   if isempty(strfind(option, 'case'))
     str = lower(str);
     strs= lower(strfield);

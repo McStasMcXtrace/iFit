@@ -165,7 +165,7 @@ else   % import data to create a single object
   % check parameter names wrt expression and dimensionality, ...
   a = iFunc_private_check(a);
   
-end % if
+end % if nargin
 
 % ------------------------------------------------------------------------------
 % iFunc_private_checkexpr: check the function expression/object

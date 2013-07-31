@@ -67,9 +67,13 @@ for i=1:numel(files)
   filename = '';
   if isempty(files{i}), continue; end
   if length(varargin) >= 1 && ischar(varargin{1}), filename = varargin{1}; end
-  if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Filename'), filename = files{i}.Filename; end
-  if isempty(filename) && isstruct(files{i}) && isfield(files{i},'filename'), filename = files{i}.filename; end
-  if isempty(filename) && isstruct(files{i}) && isfield(files{i},'Source'), filename = files{i}.Source; end
+  if isstruct(files{i}) && isempty(filename)
+    f = fieldnames(files{i});
+    index = [ find(strcmpi(f,'filename'),1) find(strcmpi(f,'file_name'),1) find(strcmpi(f,'source'),1) ];
+    if ~isempty(index)
+      filename = files{i}.(f{index(1)}); 
+    end
+  end
   
   files{i} = load_check_struct(files{i}, loaders, filename);
 

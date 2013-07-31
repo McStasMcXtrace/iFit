@@ -8,8 +8,18 @@ function data = read_hdf5(filename)
 %   Example
 %       data=read_hdf5('input.h5');
 
+persistent h5_present
+
+if isempty(h5_present)
+  if exist('h5info')
+    h5_present = 1;
+  else
+    h5_present = 0;
+  end
+end
+
 % read file structure
-if exist('h5info')
+if h5_present
   data_info = h5info(filename);
 else
   data_info = hdf5info(filename);
@@ -21,62 +31,64 @@ data = getGroup(filename, data_info);
 
 % return
 
-% inline function ==============================================================
-function data = getGroup(filename, data_info)
+  % inline function ==============================================================
+  function data = getGroup(filename, data_info)
+  % getGroup: recursively traverse the HDF tree
 
-data = [];
-root = data_info.Name;
-if ~strcmp(root, '/'), root = [ root  '/' ]; end
+    data = [];
+    root = data_info.Name;
+    if ~strcmp(root, '/'), root = [ root  '/' ]; end
 
-% Get group datasets
-nvars   = length(data_info.Datasets);
-for i = 1: nvars
-    if exist('h5read','file')
-      val = h5read(filename,[root data_info.Datasets(i).Name]);
-    else
-      val = hdf5read(filename,[data_info.Datasets(i).Name]);
+    % Get group datasets
+    nvars   = length(data_info.Datasets);
+    for i = 1: nvars
+        if h5_present
+          val = h5read(filename,[root data_info.Datasets(i).Name]);
+        else
+          val = hdf5read(filename,[data_info.Datasets(i).Name]);
+        end
+        if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+        [p, name]   = fileparts(data_info.Datasets(i).Name);
+        name(~isstrprop(name,'alphanum')) = '_';
+        % name = genvarname(name);
+        data.(name) = val;
+        
+        % get dataset attributes
+        natts = length(data_info.Datasets(i).Attributes);
+        if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
+        for j=1:natts
+            val = data_info.Datasets(i).Attributes(j).Value;
+            if iscell(data_info.Datasets(i).Attributes(j).Value), val = {1}; end
+            if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+            [p, aname] = fileparts(data_info.Datasets(i).Attributes(j).Name);
+            %aname = genvarname(aname);
+            aname(~isstrprop(aname,'alphanum')) = '_';
+            data.Attributes.(name).(aname) = val;
+        end
     end
-    if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
-    [p, name]   = fileparts(data_info.Datasets(i).Name);
-    name(~isstrprop(name,'alphanum')) = '_';
-    % name = genvarname(name);
-    data.(name) = val;
-    
-    % get dataset attributes
-    natts = length(data_info.Datasets(i).Attributes);
+
+    % get group attributes
+    natts = length(data_info.Attributes);
     if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
     for j=1:natts
-        val = data_info.Datasets(i).Attributes(j).Value;
-        if iscell(data_info.Datasets(i).Attributes(j).Value), val = {1}; end
+        val = data_info.Attributes(j).Value;
+        if iscell(data_info.Attributes(j).Value), val = {1}; end
         if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
-        [p, aname] = fileparts(data_info.Datasets(i).Attributes(j).Name);
-        %aname = genvarname(aname);
-        aname(~isstrprop(aname,'alphanum')) = '_';
-        data.Attributes.(name).(aname) = val;
+        [p, name] = fileparts(data_info.Attributes(j).Name);
+        % name = genvarname(name);
+        name(~isstrprop(name,'alphanum')) = '_';
+        data.Attributes.(name) = val;
     end
+
+    % Get each subgroup
+    ngroups = length(data_info.Groups);
+    for i = 1 : ngroups
+      group = getGroup(filename, data_info.Groups(i));
+      % assign the name of the group
+      [p, name] = fileparts(data_info.Groups(i).Name);
+      name = genvarname(name);
+      data.(name) = group;
+    end
+  end
+
 end
-
-% get group attributes
-natts = length(data_info.Attributes);
-if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
-for j=1:natts
-    val = data_info.Attributes(j).Value;
-    if iscell(data_info.Attributes(j).Value), val = {1}; end
-    if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
-    [p, name] = fileparts(data_info.Attributes(j).Name);
-    % name = genvarname(name);
-    name(~isstrprop(name,'alphanum')) = '_';
-    data.Attributes.(name) = val;
-end
-
-% Get each subgroup
-ngroups = length(data_info.Groups);
-for i = 1 : ngroups
-  group = getGroup(filename, data_info.Groups(i));
-  % assign the name of the group
-  [p, name] = fileparts(data_info.Groups(i).Name);
-  name = genvarname(name);
-  data.(name) = group;
-end
-
-
