@@ -363,7 +363,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     
   elseif isempty(filename)
     config = iLoad('','load config');
-    if exist('uigetfiles') & (strcmp(config.UseSystemDialogs, 'no') | isdeployed | ~usejava('jvm'))
+    if exist('uigetfiles') && (strcmp(config.UseSystemDialogs, 'no') || isdeployed || ~usejava('jvm'))
         [filename, pathname] = uigetfiles('.*','Select file(s) to load');
     else
       if usejava('swing')
@@ -537,10 +537,12 @@ function [data, format] = iLoad(filename, loader, varargin)
 
       if (isfield(loader, 'exist') && loader.exist == 1) ...
         || exist(loader.method, 'file')
-        for this=sprintf('\r\n\t\b\f\a\v')
-          file_start = strrep(file_start, this, ' ');
+        %file_start(isstrprop(file_start,'wspace')) = ' ';
+        file_start(isspace(file_start)) = ' ';
+        %for this=sprintf('\r\n\t\b\f\a\v')
+        %  file_start = strrep(file_start, this, ' ');
           % file_start(file_start == this) = ' ';
-        end
+        %end
         
         if strcmp(loader.method, 'read_anytext') && ...
                 length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9
@@ -771,7 +773,7 @@ function config = iLoad_config_load
       config.FileName= configfile;
     end
     disp([ '% Loaded iLoad format descriptions from ' config.FileName ]);
-  elseif exist('iLoad_ini')
+  elseif exist('iLoad_ini', 'file')
     config = iLoad_ini;
   end
   

@@ -72,34 +72,39 @@ else
       if length(v) > 32, v = [v(1:29) '...' ]; end 
     elseif ischar(v)
       this = s_in;
-      try
-        vv = eval(v);
+      vv = [];
+      
+      % attempt to evaluate char content
+      if ~exist(v)
+        try
+          vv = eval(v);
+        end
+      end
+      if isempty(vv)
+        try
+          vv = get(s_in, v);
+        end
+      end
+      
+      % add some more information from the content of the char field
+      if ~isempty(vv)
         if numel(vv) > 2
           if isvector(vv), sz=sprintf(' length [%i]', numel(vv)); 
           else sz=sprintf(' size %s', mat2str(size(vv))); end
         else sz = []; end
-        if length(vv) > 20, vv = vv(1:18); end 
-        vv = mat2str(vv);
-        if length(vv) > 20, vv = [vv(1:18) '...' ]; end 
-        label = [ label ' ''' vv '''' sz ];
-      catch
-        try
-          vv = get(s_in, v);
-          if numel(vv) > 2
-            if isvector(vv), sz=sprintf(' length [%i]', numel(vv)); 
-            else sz=sprintf(' size %s', mat2str(size(vv))); end
-          else sz = []; end
-          if isnumeric(vv), 
-            if length(size(vv)) > 2, vv=vv(:); end
-            if numel(vv) > 10, vv=vv(1:10); end
-            vv = mat2str(vv,2); 
-          elseif ischar(vv)
-            vv = vv(:)';
-          end
+        if isnumeric(vv), 
+          if length(size(vv)) > 2, vv=vv(:); end
+          if numel(vv) > 10, vv=vv(1:10); end
+          vv = mat2str(vv,2); 
+        end
+        if ischar(vv)
+          vv = vv(:)';
           if length(vv) > 20, vv = [vv(1:18) '...' ]; end
           label = [ label ' ''' vv '''' sz ];
         end
+        
       end
+      
       if length(v) > 32, v = [ '...' v((end-28):end) ]; end
     else 
       label = [ label ' (' class(v) ')' ];
