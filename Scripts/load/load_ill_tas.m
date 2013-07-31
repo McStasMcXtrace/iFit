@@ -57,7 +57,7 @@ try
   MULTI  = a.MetaData.MULTI; 
   setalias(a, 'MULTI', 'this.Data.MetaData.MULTI', 'Multidetector');
 catch
-  MULTI=[];
+  MULTI = [];
 end
 
 % Find spaces and determine proper aliases for the columns
@@ -201,6 +201,7 @@ a.Title=regexprep(a.Title,'\s+',' ');
 
 
 % set Signal and default axis
+
 if isempty(MULTI)
   setalias(a,'Signal','CNTS',[ 'Data CNTS' ]);  % has been defined in DATA_ columns
   setaxis(a,1,columns{index});
@@ -209,7 +210,7 @@ else
   setalias(a,'Channel',1:size(MULTI,2), 'Detector channel');
   setaxis(a,1,columns{index});
   setaxis(a,2,'Channel');
-  setalias(a,'Monitor', get(a, columns{index_m12}) * 1:size(MULTI,2));
+  setalias(a,'Monitor', double(get(a, columns{index_m12})) * 1:size(MULTI,2));
 end
 % make up Signal label
 xl = xlabel(a);
