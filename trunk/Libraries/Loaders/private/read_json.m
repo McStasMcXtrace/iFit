@@ -1,5 +1,4 @@
-function M=json2mat(J,tag)
-
+function M=read_json(J,tag)
 %JSON2MAT converts a javscript data object (JSON) into a Matlab structure
 %         using s recursive approach. J can also be a file name.
 %
@@ -7,6 +6,7 @@ function M=json2mat(J,tag)
 %         notice lala.lolo{3}.bubu is read as a 2D matrix.
 %
 % Jonas Almeida, March 2010
+% rename as json2mat to read_json
 
 if exist('tag')~=1
     tag={};

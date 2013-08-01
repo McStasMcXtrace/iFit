@@ -26,7 +26,7 @@ elseif ~isempty(findstr(out, 'NeXus'))
 
   % search for a 'process' group, and build a CommandHistory from it
 
-  % get title, instrument.name, 
+  % get title, instrument.name
 end
 
 if ~nargout
