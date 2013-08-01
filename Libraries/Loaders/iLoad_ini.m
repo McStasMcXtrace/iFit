@@ -200,7 +200,7 @@ function config = iLoad_ini
     yaml.extension      = {'yaml','yml'};
     
     json.name           = 'JSON';
-    json.method         = 'json2mat';
+    json.method         = 'read_json';
     json.extension      = 'json';
     
 % binary formats ===============================================================

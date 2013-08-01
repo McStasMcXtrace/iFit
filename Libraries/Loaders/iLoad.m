@@ -356,8 +356,8 @@ function [data, format] = iLoad(filename, loader, varargin)
     if filename(end) == ';', filename(end)=''; end % in case there is a leading ';' in place of \n
     try
       [data, format] = iLoad_import(filename, loader, varargin{:});
-    catch
-      fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n', filename);
+    catch ME
+      fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n  %s', filename, getReport(ME));
       data=[];
     end
     
@@ -485,6 +485,12 @@ function [data, format] = iLoad(filename, loader, varargin)
       return
     end
     
+    % check if the file is in Matlab search path, but not directly accessble.
+    if isempty(dir(filename)) && exist(filename, 'file')
+      filename = which(filename);
+      fprintf(1, 'iLoad: Accessing file %s.\n', filename);
+    end
+
     % fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
     if isempty(loader.options)
       data = feval(loader.method, filename, varargin{:});
@@ -632,7 +638,7 @@ function data = iLoad_loader_check(file, data, loader)
   end
   if isempty(name), name=method; end
   if iscell(options), options= cellstr(options{1}); options= [ options{1} ' ...' ]; end
-  if ~isfield(data, 'Source')  & ~isfield(data, 'Date') & ~isfield(data, 'Format') ...
+  if ~isfield(data, 'Source')  & ~isfield(data, 'Date') ...
    & ~isfield(data, 'Command') & ~isfield(data,' Data')
     new_data.Data = data;
     % transfer some standard fields as possible
@@ -806,8 +812,8 @@ function config = iLoad_config_load
     { 'auread',  'au',  'NeXT/SUN (.au) sound',''}, ...
     { 'wavread', 'wav'  'Microsoft WAVE (.wav) sound',''}, ...
     { 'aviread', 'avi', 'Audio/Video Interleaved (AVI) ',''}, ...
-    { 'read_cdf2', {'nc','cdf'}, 'NetCDF 2 (.nc)','','',{'opencdf','opensqw'}}, ...
-    { 'read_cdf1', {'nc','cdf'}, 'NetCDF 1 (.nc)','','',{'opencdf','opensqw'}}, ...
+    { 'read_cdf', {'cdf'}, 'CDF (.cdf)','','',{'opencdf','opensqw'}}, ...
+    { 'read_nc', {'nc','cdf'}, 'NetCDF (.nc)','','',{'opencdf','opensqw'}}, ...
     { 'read_fits',{'fits','fts'},'FITS',''}, ...
     { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)',''}, ...
     { 'read_image',  {'bmp','jpg','jpeg','tiff','tif','png','ico'}, 'Image/Picture',''}, ...
@@ -1022,7 +1028,7 @@ function loader = iLoad_config_find(loader)
       i4 = strfind(lower(this_loader.postprocess), lower(loader)); if iscell(i4), i4 = ~cellfun('isempty', i4); end
       if all(isempty(i3)), i3=0; end
       if all(isempty(i4)), i4=0; end
-      if i1 || i2 || any(i3) || any(i4)
+      if any([ i1 i2 i3 i4 ])
         loaders_count          = loaders_count+1;
         loaders{loaders_count} = this_loader;
       end

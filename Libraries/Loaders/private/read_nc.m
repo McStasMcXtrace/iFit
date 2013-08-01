@@ -1,4 +1,92 @@
-function S = read_cdf1(File,varargin)
+function S = read_nc(File,varargin)
+
+  
+  try
+    % a NetCDF reader using netcdf lib (faster)
+    S = read_nc2(File);
+  catch
+    % a basic NC reader that does not make use of the nc library, but is limited to NC1
+    S = read_nc1(File);
+  end
+  
+% ______________________________________________________________________________
+
+function obj = read_nc2(File)
+% inspire from netcdfobj contribution on Matlab Central.
+
+  % open the file
+  fid = netcdf.open(File);
+  obj = struct();
+  
+  obj.Name       = '/';
+  obj.Filename   = File;
+  obj.Group      = [];
+  obj.Format     = netcdf.inqFormat(fid);
+  obj.NetCDF_Version = netcdf.inqLibVers;
+   
+  % inquire global dimensions
+  [nd,nvars,natts,unlimdimID]= netcdf.inq(fid);
+  % now read the underlying structure dimension: obj.Dimensions(:) = struct(Name, Length)
+  obj.Dimensions = [];
+  for ii=1:nd
+    [name, len]        = netcdf.inqDim(fid,ii-1);
+    Dimension = struct('Name', name, 'Length', len);
+    if isempty(obj.Dimensions)
+      obj.Dimensions = Dimension;
+    else
+      obj.Dimensions(end+1) = Dimension ;
+    end
+  end
+  
+  % get global attributes
+  obj.Attributes = [];
+  jj = 1;
+  while 1
+    try
+      Attribute.Name  = netcdf.inqAttName(fid,netcdf.getConstant('NC_GLOBAL'),jj-1);
+      Attribute.Value = netcdf.getAtt(fid,netcdf.getConstant('NC_GLOBAL'),Attribute.Name);
+      if isempty(obj.Attributes)
+        obj.Attributes = Attribute;
+      else
+        obj.Attributes(end+1) = Attribute;
+      end
+      jj = jj + 1;
+    catch
+      break; % no more global Attribute
+    end
+  end
+
+  % now read variables: obj.Variables(:) = struct
+  obj.Variables = [];
+  for ii=1:nvars
+      [Variable.Name, Variable.Datatype, dimids, numatts] = ...
+        netcdf.inqVar(fid,ii-1); % get all meta data
+      Variable.Data = netcdf.getVar(fid,ii-1);   % get value
+      
+      % get variable attributes: obj.Variables(:).Attributes = struct(Name, Value)
+      Variable.Attributes = [];
+      for jj=1:numatts
+         Attribute.Name =netcdf.inqAttName(fid,ii-1,jj-1);
+         Attribute.Value=netcdf.getAtt(fid,ii-1,Attribute.Name);
+         if isempty(Variable.Attributes)
+           Variable.Attributes = Attribute;
+         else
+           Variable.Attributes(end+1) = Attribute;
+         end
+      end
+      if isempty(obj.Variables)
+        obj.Variables = Variable;
+      else
+        obj.Variables(end+1) = Variable;
+      end
+  end
+  
+  % close the file
+  netcdf.close(fid);
+
+% ______________________________________________________________________________
+
+function S = read_nc1(File, varargin)
 % Function to read NetCDF files
 %   S = netcdf(File)
 % Input Arguments
@@ -30,13 +118,19 @@ try
    Magic = fread(fp,4,'uint8=>char');
    if strcmp(Magic(1:3),'CDF') error('Not a NetCDF file'); end
    if uint8(Magic(4))~=1       error('Version not supported'); end
+   % use a structure compatible with 'ncinfo'
+   S.Name       = '/';
+   S.Filename   = File;
+   S.Group      = [];
+   S.Format     = 'FORMAT_CLASSIC';
    S.NumRecs  = fread(fp,1,'uint32=>uint32');
-   S.DimArray = DimArray(fp);
-   S.AttArray = AttArray(fp);
-   S.VarArray = VarArray(fp);
+   S.Dimensions = DimArray(fp);
+   S.Attributes = AttArray(fp);
+   S.Variables  = VarArray(fp);
+   
 
 % Setup indexing to arrays and records
-   Var = ones(1,length(S.VarArray));
+   Var = ones(1,length(S.Variables));
    Rec = ones(1,S.NumRecs);
    for i = 1:2:length(varargin)
       if     strcmp(upper(varargin{i}),'VAR') Var=Var*0; Var(varargin{i+1})=1;
@@ -46,28 +140,28 @@ try
    if sum(Var)==0 fclose(fp); return; end
 
 % Read non-record variables
-   Dim = double(cat(2,S.DimArray.Dim));
-   ID  = double(cat(2,S.VarArray.Type));
+   Dim = double(cat(2,S.Dimensions.Length));
+   ID  = double(cat(2,S.Variables.Datatype));
 
-   for i = 1:length(S.VarArray)
-      D = Dim(S.VarArray(i).DimID+1); N = prod(D); RecID{i}=find(D==0);
+   for i = 1:length(S.Variables)
+      D = Dim(S.Variables(i).Size+1); N = prod(D); RecID{i}=find(D==0);
       if isempty(RecID{i})
          if length(D)==0 D = [1,1]; N = 1; elseif length(D)==1 D=[D,1]; end
          if Var(i)
-            S.VarArray(i).Data = ReOrder(fread(fp,N,[Type(ID(i)),'=>',Type(ID(i))]),D);
+            S.Variables(i).Data = ReOrder(fread(fp,N,[Type(ID(i)),'=>',Type(ID(i))]),D);
             fread(fp,(Pad(N,ID(i))-N)*Size(ID(i)),'uint8=>uint8');
          else fseek(fp,Pad(N,ID(i))*Size(ID(i)),'cof'); end
-      else S.VarArray(i).Data = []; end
+      else S.Variables(i).Data = []; end
    end
 
 % Read record variables
    for k = 1:S.NumRecs
-      for i = 1:length(S.VarArray)
+      for i = 1:length(S.Variables)
          if ~isempty(RecID{i})
-            D = Dim(S.VarArray(i).DimID+1); D(RecID{i}) = 1; N = prod(D);
+            D = Dim(S.Variables(i).Size+1); D(RecID{i}) = 1; N = prod(D);
             if length(D)==1 D=[D,1]; end
             if Var(i) & Rec(k)
-               S.VarArray(i).Data = cat(RecID{i},S.VarArray(i).Data,...
+               S.Variables(i).Data = cat(RecID{i},S.Variables(i).Data,...
                   ReOrder(fread(fp,N,[Type(ID(i)),'=>',Type(ID(i))]),D));
                if N > 1 fread(fp,(Pad(N,ID(i))-N)*Size(ID(i)),'uint8=>uint8'); end
             else fseek(fp,Pad(N,ID(i))*Size(ID(i)),'cof'); end
@@ -109,8 +203,8 @@ function S = DimArray(fp)
 % Read DimArray into structure
    if fread(fp,1,'uint32=>uint32') == 10 % NC_DIMENSION
       for i = 1:fread(fp,1,'uint32=>uint32')
-         S(i).Str = String(fp);
-         S(i).Dim = fread(fp,1,'uint32=>uint32');
+         S(i).Name = String(fp);
+         S(i).Length = fread(fp,1,'uint32=>uint32');
       end
    else fread(fp,1,'uint32=>uint32'); S = []; end
 
@@ -118,10 +212,10 @@ function S = AttArray(fp)
 % Read AttArray into structure
    if fread(fp,1,'uint32=>uint32') == 12 % NC_ATTRIBUTE
       for i = 1:fread(fp,1,'uint32=>uint32')
-         S(i).Str = String(fp);
+         S(i).Name = String(fp);
          ID       = fread(fp,1,'uint32=>uint32');
          Num      = fread(fp,1,'uint32=>uint32');
-         S(i).Val = fread(fp,Pad(Num,ID),[Type(ID),'=>',Type(ID)]).';
+         S(i).Value = fread(fp,Pad(Num,ID),[Type(ID),'=>',Type(ID)]).';
       end
    else fread(fp,1,'uint32=>uint32'); S = []; end
 
@@ -129,12 +223,12 @@ function S = VarArray(fp)
 % Read VarArray into structure
    if fread(fp,1,'uint32=>uint32') == 11 % NC_VARIABLE
       for i = 1:fread(fp,1,'uint32=>uint32')
-         S(i).Str      = String(fp);
+         S(i).Name      = String(fp);
          Num           = double(fread(fp,1,'uint32=>uint32'));
-         S(i).DimID    = double(fread(fp,Num,'uint32=>uint32'));
-         S(i).AttArray = AttArray(fp);
-         S(i).Type     = fread(fp,1,'uint32=>uint32');
-         S(i).VSize    = fread(fp,1,'uint32=>uint32');
+         S(i).Size     = double(fread(fp,Num,'uint32=>uint32'));
+         S(i).Attributes = AttArray(fp);
+         S(i).Datatype     = fread(fp,1,'uint32=>uint32');
+         S(i).ChunkSSize    = fread(fp,1,'uint32=>uint32');
          S(i).Begin    = fread(fp,1,'uint32=>uint32'); % Classic 32 bit format only
       end
    else fread(fp,1,'uint32=>uint32'); S = []; end

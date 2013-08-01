@@ -88,11 +88,16 @@ for i=1:numel(files)
         this_iData = [ this_iData struct_data{index} ];
       end
     end
+    clear struct_data
   else
     % usually a structure from iLoad
-    this_iData =  iData(files{i});	% convert file content from iLoad into iData
+    
+    % convert file content from iLoad into iData
+    this_iData = iData_struct2iData(files{i});	
+    % assign default Signal and axes
+    this_iData = iData_check(this_iData);
+    % post-processing
     if ~isempty(this_iData)
-      % specific adjustments for looktxt (default import method)
       if isempty(loaders) || ~isfield(loaders{i}, 'postprocess')
         loaders{i}.postprocess='';
       end
@@ -103,7 +108,7 @@ for i=1:numel(files)
       end
       files{i} = {};  % free memory
       if ~isempty(loaders{i}.postprocess)
-        % removes warnings
+        % remove warnings
         iData_private_warning('enter',mfilename);
         if ~iscellstr(loaders{i}.postprocess)
           loaders{i}.postprocess = cellstr(loaders{i}.postprocess);
@@ -126,6 +131,7 @@ for i=1:numel(files)
   if numel(out) > 1 && size(out,2) > 1 && size(out,1) == 1, out=out'; end
   if numel(this_iData) > 1 && size(this_iData,2) > 1 && size(this_iData,1) == 1, this_iData=this_iData'; end
   out = [ out ; this_iData ];
+  clear this_iData
 end %for i=1:length(files)
 
 % clean 'out' for unique entries (e.g. mcstas/mcstas.sim creates duplicates)
