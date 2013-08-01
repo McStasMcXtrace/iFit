@@ -107,26 +107,16 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
     if dims > 0
       disp([ 'iData: Setting Signal="' fields '" with length ' num2str(dims) ' in object ' in.Tag ' "' in.Title '".' ]);
       in = setalias(in,'Signal', fields);
-      % search if there is a corresponding label (in Headers/Attributes)
-      % 'fields' contain the full path to Signal, e.g. 'Data.<path>'
-
-      % if we use 'Headers' from e.g. read_anytext/looktxt
-      % we e.g. relate in.Data.<field path> 
-      %       to label in.Data.Headers.<field path>
-      if isfield(in.Data, 'Headers')
-        
-        fields = nan;
-      end
-      % if we use 'Attributes' from e.g. read_hdf
-      % we e.g. relate in.Data.<group>.<field> 
-      %      to label  in.Data.<group>.Attributes.<field>
       
-      if isfield(in.Data, 'Attributes')
+      % get potential attribute (in Data.Headers or Data.Attributes fields)
+      attribute = iData_getAttribute(in, fields);
       
-        fields = nan;
+      if isstruct(attribute)
+        attribute = class2str(' ',attribute, 'no comments');
       end
-      if ischar(fields)
-        in.Alias.Labels{1} = fields;
+      if ischar(attribute)
+        if numel(attribute) > 80, attribute=[ attribute(1:77) ' ...' ]; end
+        in.Alias.Labels{1} = attribute;
       end
 
       % assign potential 'error' bars and 'monitor'
@@ -199,4 +189,7 @@ in = setalias(in);
 in = setaxis(in);
 
 out = in;
+
+% ------------------------------------------------------------------------------
+function iData_check_get_attributes(a, field)
 

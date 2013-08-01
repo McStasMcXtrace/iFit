@@ -25,15 +25,14 @@ elseif ~isempty(findstr(out,'Sqw'))
   else
 
     % Find proper axes and Signal
-    [fields, types, dims] = findfield(out);
-    index=[ strmatch('double', types, 'exact') ; strmatch('single', types, 'exact') ];
-    fields = fields(index); % get all field names containing double data
-    dims = dims(index);
+    [fields, types, dims] = findfield(out, '', 'numeric');
+    % get Momentum
     q_index = find(dims == size(out.Signal, 1));
     if ~isempty(q_index) 
       q_values= fields{q_index}; 
       setalias(out,'q', q_values, 'Q [AA-1]'); setaxis(out,1,'q');
     end
+    % get Energy
     w_index = find(dims == size(out.Signal, 2));
     if ~isempty(w_index)
       w_values= fields{w_index}; 
