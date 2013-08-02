@@ -18,10 +18,11 @@ function [filename,format] = saveas(a, varargin)
 %                   If the filename already exists, the file is overwritten.
 %                   If given as filename='gui', a file selector pops-up
 %         format: data format to use (char), or determined from file name extension
+%           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
 %           'mat'  save as a '.mat' binary file (same as 'save', DEFAULT)
-%           'nc'   save as NetCDF 
+%           'nc'   save as NetCDF
 %         as well as other lossy formats
 %           'csv'  save as a comma separated value file
 %           'dat'  save as Flat text file with comments
@@ -96,6 +97,7 @@ filterspec = { ...
       '*.m',   'Matlab script/function (*.m)'; ...
       '*.mat', 'Matlab binary file (*.mat)'; ...
       '*.nc;*.cdf',  'NetCDF (*.nc, *.cdf)'; ...
+      '*.cdf',  'CDF (*.cdf)'; ...
       '*.off', 'Object File Format geometry (*.off)'; ...
       '*.ply', 'PLY geometry (*.ply)'; ...
       '*.pdf', 'Portable Document Format (*.pdf)'; ...
@@ -168,8 +170,8 @@ format=lower(strtrim(format));
 
 % handle aliases
 switch format
-case {'netcdf','nc'}
-  format='cdf';
+case 'netcdf'
+  format='nc';
 case 'vrml'
   format='wrl';
 end
@@ -211,7 +213,7 @@ case 'eps'
 case 'ps'
   format='psc';
 case 'netcdf'
-  format='cdf';
+  format='nc';
 case 'hdf'
   format='hdf5';
 end
@@ -284,7 +286,7 @@ case 'mat'  % single mat-file Matlab output (binary), with the full object descr
     eval([ a.Tag '= a;' ]);
     save(filename, a.Tag);
   end
-case {'hdf5', 'nc','cdf', 'nx','h5'} % HDF4, HDF5, NetCDF formats: converts fields to double and chars
+case {'hdf5', 'nc','cdf', 'nx','h5'} % HDF4, HDF5, CDF, NetCDF formats: converts fields to double and chars
   filename = iData_private_saveas_hdfnc(a, filename, format); % inline function (below)
 case 'edf'  % EDF ESRF format
   filename = medfwrite(a, filename); % in private

@@ -304,22 +304,3 @@ function b=iData_num2iData(v)
   b.Command= cellstr([ 'iData(' v ')' ]);
 
 % ------------------------------------------------------------------------------
-function a=load_clean_metadata(a, loaders, filenames)
-% test each field of MetaData and search for equal aliases
-  this = a.Data.MetaData;
-  meta_names = fieldnames(this);
-  alias_names=getalias(a);
-  %treat each MetaData
-  for index=1:length(meta_names)
-    if numel(getfield(this, meta_names{index})) > 1000
-    for index_alias=1:length(alias_names)
-      % is it big and equal to an alias value ?
-      if isequal(getfield(this, meta_names{index}), get(a, alias_names{index_alias}))
-        % yes: store alias in place of MetaData
-        this = setfield(this, meta_names{index}, getalias(a, alias_names{index_alias}));
-        break
-      end
-    end % for
-    end % if
-  end
-  a.Data.MetaData = this;

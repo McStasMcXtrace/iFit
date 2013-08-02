@@ -190,6 +190,4 @@ in = setaxis(in);
 
 out = in;
 
-% ------------------------------------------------------------------------------
-function iData_check_get_attributes(a, field)
 
