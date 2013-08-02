@@ -53,9 +53,7 @@ data = getGroup(filename, data_info);
           val = hdf5read(filename,[data_info.Datasets(i).Name]);
         end
         if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
-        [p, name]   = fileparts(data_info.Datasets(i).Name);
-        name(~isstrprop(name,'alphanum')) = '_';
-        % name = genvarname(name);
+        name        = getName(data_info.Datasets(i).Name);
         data.(name) = val;
         
         % get dataset attributes: group.Attributes.<dataset>.<attribute>
@@ -65,9 +63,7 @@ data = getGroup(filename, data_info);
             val = data_info.Datasets(i).Attributes(j).Value;
             if iscell(data_info.Datasets(i).Attributes(j).Value), val = {1}; end
             if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
-            [p, aname] = fileparts(data_info.Datasets(i).Attributes(j).Name);
-            %aname = genvarname(aname);
-            aname(~isstrprop(aname,'alphanum')) = '_';
+            aname        = getName(data_info.Datasets(i).Attributes(j).Name);
             data.Attributes.(name).(aname) = val;
         end
     end
@@ -79,9 +75,7 @@ data = getGroup(filename, data_info);
         val = data_info.Attributes(j).Value;
         if iscell(data_info.Attributes(j).Value), val = {1}; end
         if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
-        [p, name] = fileparts(data_info.Attributes(j).Name);
-        % name = genvarname(name);
-        name(~isstrprop(name,'alphanum')) = '_';
+        name = getName(data_info.Attributes(j).Name);
         data.Attributes.(name) = val;
     end
 
@@ -90,10 +84,16 @@ data = getGroup(filename, data_info);
     for i = 1 : ngroups
       group = getGroup(filename, data_info.Groups(i));
       % assign the name of the group
-      [p, name] = fileparts(data_info.Groups(i).Name);
-      name = genvarname(name);
+      name = getName(data_info.Groups(i).Name);
       data.(name) = group;
     end
   end
 
 end
+
+function name = getName(location)
+  [p, name, ext]   = fileparts(location);
+  name = [ name ext ];
+  name(~isstrprop(name,'alphanum') | name == '.' | name == '-' | name == '+') = '_';
+  end
+  
