@@ -1,9 +1,10 @@
 function filename = iData_private_saveas_hdfnc(a, filename, format)
-% private function to write HDF and NetCDF files
+% private function to write HDF, CDF and NetCDF files
+  % format='HDF','CDF','NC' (netCDF)
 
   % export all fields
   [fields, types, dims] = findfield(a);
-  
+
   % this will store the list of fields to write
   towrite={};
   for index=1:length(fields(:)) % scan all field names
@@ -32,7 +33,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
     % is the field an 'Attribute' ?
     
     % now handle different file formats: HDF5, CDF, NetCDF
-    if strcmp(format,'cdf')         % CDF
+    if strcmpi(format,'cdf')         % CDF
       % build a list of items to wite in one shot at the end of the routine
       n(n == '.') = '_'; 
       if isempty(towrite)
