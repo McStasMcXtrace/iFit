@@ -2,8 +2,13 @@ function data = read_hdf5(filename)
 %READ_HDF5 Returns the contents of an HDF5 file as a structure
 %   The READ_HDF5 function reads an HDF5 file and returns the contents of
 %   that file as the fields of a structure.  Groups are treated as elements
-%   of their parent structure.  If the file file cannot be opened a -1 is
+%   of their parent structure.  If the file cannot be opened a -1 is
 %   returned.
+%
+% The returned structure has:
+% data.<group>.<data>             the main branch holding the HDF4 data sets
+% data.<group>.Attributes.<data>  the sub-structure holding all attributes with  
+%                 similar structure as the main branch
 %
 %   Example
 %       data=read_hdf5('input.h5');
@@ -53,7 +58,7 @@ data = getGroup(filename, data_info);
         % name = genvarname(name);
         data.(name) = val;
         
-        % get dataset attributes
+        % get dataset attributes: group.Attributes.<dataset>.<attribute>
         natts = length(data_info.Datasets(i).Attributes);
         if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
         for j=1:natts
@@ -67,7 +72,7 @@ data = getGroup(filename, data_info);
         end
     end
 
-    % get group attributes
+    % get group attributes: group.Attributes.<attribute>
     natts = length(data_info.Attributes);
     if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
     for j=1:natts
