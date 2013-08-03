@@ -12,7 +12,9 @@ s = hdfinfo(filename);
 % recursive call
 [data, Attributes] = getGroup(s);
 
-data.Attributes = Attributes;
+if isstruct(data) && ~isempty(Attributes)
+  data.Attributes = Attributes;
+end
 
 % ------------------------------------------------------------------------------
 function [data, Attributes] = getGroup(s)
@@ -26,6 +28,8 @@ function [data, Attributes] = getGroup(s)
   data = []; Attributes = [];
   
   if numel(s) > 1
+    % we have an array of elements: we create as many data.(name) entries as necessary
+    % and fill them with recursive calls
     for index=1:length(s)
       % a single element in the array
       this = s(index);
@@ -35,7 +39,7 @@ function [data, Attributes] = getGroup(s)
       if isempty(Attributes)
         Attributes = getAttributes(this);
       end
-      
+
       % handle group or other direct access data set
       if isfield(this, 'Vgroup')
         [this, Attribute] = getGroup(this);
@@ -51,8 +55,10 @@ function [data, Attributes] = getGroup(s)
     end
   else
     % a single Vgroup or root element
-    [data, Attributes]  = getSingle(s);
-     
+
+    [data, Attribute]  = getSingle(s); % will return a struct if needed
+    Attributes = catStruct(Attributes, Attribute);
+    
   end
 
 % ------------------------------------------------------------------------------
@@ -70,7 +76,6 @@ function [data, Attributes] = getSingle(this)
   if isfield(this, 'Vgroup') && ~isempty(this.Vgroup)
     % recursive call for Vgroups
     name                               = getName(this);
-    
     if isempty(name)
       [data,Attribute]                 = getGroup(this.Vgroup);
       Attributes = catStruct(Attributes, Attribute);
@@ -84,17 +89,36 @@ function [data, Attributes] = getSingle(this)
       % test for existence of data sets
       if isfield(this, list{index}) && ~isempty(this.(list{index}))
         this_info = this.(list{index});
-        if     length(this_info)==1
-          data = hdfread  (this_info);
-          Attribute  = getAttributes(this_info);
+        this_name = getName(this_info);
+        if length(this_info)==1
+          if isempty(this_name)
+            data = hdfread  (this_info);
+            Attribute  = getAttributes(this_info);
+            Attributes = catStruct(Attributes, Attribute);
+          else
+            data.(this_name) = hdfread  (this_info);
+            Attribute.(this_name) = getAttributes(this_info);
+            if strcmp(list{index}, 'Vdata') 
+              data.(this_name) = cell2struct( ...
+                data.(this_name), { this_info.Fields(:).Name }, 1);
+            end
+          end
+          
         elseif length(this_info)> 1
-          [data,Attribute] = getGroup (this_info);
+          if isempty(this_name)
+            [data,Attribute] = getGroup (this_info);
+            Attributes = catStruct(Attributes, Attribute);
+          else
+            [data.(this_name),Attribute.(this_name)] = getGroup (this_info);
+          end
         end
-        Attributes = catStruct(Attributes, Attribute);
-        break
-        
       end
+      
     end % for list
+    if isempty(data)
+      fprintf(1, 'Unkown group/data type\n');
+      this
+    end
   end
 
 % ------------------------------------------------------------------------------
@@ -117,7 +141,10 @@ function name = getName(this, index)
     end
   end
   % pretty-fy
-  name(~isstrprop(name,'alphanum')) = '_';
+  name(~isstrprop(name,'alphanum') | name == '.' | name == '-' | name == '+') = '_';
+  if ~isempty(name)
+    name = genvarname(name);
+  end
   
 function Attributes = getAttributes(this)
   % getAttributes: get the current level Attributes
