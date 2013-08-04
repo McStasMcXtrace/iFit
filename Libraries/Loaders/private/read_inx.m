@@ -45,7 +45,8 @@ while (1)
    header     = Dummy;
    Dummy      = str2num(Dummy);
    if isempty(Dummy)
-     error([mfilename ': ERROR: File ',filename,' is probably not an INX data file.']);
+     s = [];
+     return
    end
    Npoints    = Dummy(length(Dummy));
    Dummy      = fgetl(FID);

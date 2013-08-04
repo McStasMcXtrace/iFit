@@ -4,8 +4,12 @@ function data = read_bruker(file)
 %   which should contain 
 %      a 'acqus', 'pdata/1' directory, 'fid' or 'ser'
 %
-% Credits: DOSYToolbox, Copyright 2007-2008  <Mathias Nilsson>
+% Credits: 
+% DOSYToolbox, Copyright 2007-2008  <Mathias Nilsson>
 % <http://dosytoolbox.chemistry.manchester.ac.uk>
+%
+% matNMR, Jacco van Beek, 2009
+% <http://matnmr.sourceforge.net/>
 
   if ~isdir(file)
     file = fileparts(file);
@@ -28,6 +32,42 @@ function data = read_bruker(file)
     data = []; % not a Bruker NMR file
   end
   
+  if ~isempty(data)
+    % now check for processed data
+    size1last = data.procs.SI;
+    BlockingTD2=data.procs.XDIM;
+    
+    if isstruct(data.proc2s)
+      size2last   = data.proc2s.SI;
+      BlockingTD1 = data.proc2s.XDIM;
+    else
+      size2last   = 1;
+      BlockingTD1 = 1;
+    end
+    
+    %
+    %If no blocking is specified then the full size will be taken
+    %
+    if (BlockingTD2 == 0), QTEMP3 = size1last;
+    else                   QTEMP3 = BlockingTD2;
+    end
+
+    if (BlockingTD1 == 0), QTEMP4 = size2last;
+    else                   QTEMP4 = BlockingTD1;
+    end
+    BrukerByteOrdering = ~data.procs.BYTORDP + 1;
+    
+    % read real part from processed   
+    data.Real = readBrukerProcessedData(fullfile(file, 'pdata', '1', '1r'), ...
+       size1last, size2last, QTEMP3, QTEMP4, ...
+       BrukerByteOrdering);
+    % read imaginary part from processed
+  %     
+    data.Imag = readBrukerProcessedData(fullfile(file, 'pdata', '1', '1i'), ...
+       size1last, size2last, QTEMP3, QTEMP4, ...
+       BrukerByteOrdering);
+  end
+     
   
 % ------------------------------------------------------------------------------
 
@@ -103,64 +143,15 @@ if path
     %% ---------- Read in direct dimension
     DataDim=0;
     acquspath=fullfile(path, 'acqus');
-    fileid_acqus=fopen(acquspath,'rt');
-    if fileid_acqus==-1
-        error(['cannot open file: ' acquspath])
-    end
+    
     DataDim=1;
     %%read in the lot
     kk=1;
     parmflag=0;
-    while 1
-        if parmflag==1
-            parmflag=0;
-        else
-            parmline=fgetl(fileid_acqus);
-        end
-        if parmline==-1;  break;  end;
-        
-        if length(parmline)<2
-            disp('probably a cut of line - I will continue anyway')
-        elseif strcmp(parmline(1:2),'##')
-            if strcmp(parmline(3),'$')
-                parmend=find(parmline=='=');
-                if strcmp(parmline(parmend+2),'(')
-                    parmname=parmline(4:(parmend(1))-1);
-                    parmlist=[];
-                    while 1
-                        parmline=fgetl(fileid_acqus);
-                         if strcmp(parmline(1),'#') || strcmp(parmline(1),'<') || strcmp(parmline(1),'>') || strcmp(parmline(1),'$')
-                            parmflag=1;
-                            break
-                        else
-                            parmcell=textscan(parmline,'%q',1024);
-                            tadam=parmcell{1};
-                            tmplist=zeros(length(tadam),1);
-                            for m=1:length(tadam)
-                                tmplist(m)=str2num(cell2mat(tadam(m)));%#ok
-                            end
-                            parmlist=[parmlist; tmplist];                   %#ok<AGROW>
-                        end
-                    end
-                    procpar.(parmname)=parmlist;
-                else
-                    procpar.(parmline(4:(parmend(1))-1))=parmline((parmend+2):end);
-                end
-            else
-                parmend=find(parmline=='=');
-                procpar.(parmline(3:(parmend(1)-1)))=parmline((parmend+2):end);
-            end
-        elseif strcmp(parmline(1:2),'$$')
-            str=['acqinfo' num2str(kk)];
-            procpar.(str)=parmline(4:end);
-            kk=kk+1;
-        else
-            %do nothing
-        end
-    end
+    procpar = str2struct(acquspath);
     
     brukerdata.acqus=procpar;
-    fclose(fileid_acqus);
+
     a=procpar.PULPROG;
     a(1)=[];
     a(end)=[];
@@ -171,214 +162,85 @@ if path
     %assuming that diffusion is always the second dimensionm
     
     acquspath=fullfile(path, 'acqu2s');
-    fileid_acqu2s=fopen(acquspath,'rt');
-    
-    if fileid_acqu2s==-1
-        disp(['cannot open file: ' acquspath])
-        disp('Probably a 1D experiment')
-        DataDim=1;
+    if ~exist(acquspath)
+      disp(['cannot open file: ' acquspath])
+      disp('Probably a 1D experiment')
+      DataDim=1;
+      procpar2 = [];
     else        
-       DataDim=2;
-        %%read in the lot
-        kk=1;
-        parmflag=0;
-        while 1
-            if parmflag==1
-                parmflag=0;
-            else
-                parmline=fgetl(fileid_acqu2s);
-            end
-            if parmline==-1;  break;  end;
-            
-            if length(parmline)<2
-                disp('probably a cut of line - I will continue anyway')
-            elseif strcmp(parmline(1:2),'##')
-                if strcmp(parmline(3),'$')
-                    parmend=find(parmline=='=');
-                    if strcmp(parmline(parmend+2),'(')
-                        parmname=parmline(4:(parmend(1))-1);
-                        parmlist=[];
-                        while 1
-                            parmline=fgetl(fileid_acqu2s);
-                            if strcmp(parmline(1),'#') || strcmp(parmline(1),'<') || strcmp(parmline(1),'>') || strcmp(parmline(1),'$')
-                                parmflag=1;
-                                break
-                            else
-                                parmcell=textscan(parmline,'%q',1024);
-                                tadam=parmcell{1};
-                                tmplist=zeros(length(tadam),1);
-                                for m=1:length(tadam)
-                                    tmplist(m)=str2num(cell2mat(tadam(m)));%#ok
-                                end
-                                parmlist=[parmlist; tmplist]; %#ok<AGROW>
-                            end
-                        end
-                        procpar2.(parmname)=parmlist;
-                    else
-                        procpar2.(parmline(4:(parmend(1))-1))=parmline((parmend+2):end);
-                    end
-                else
-                    parmend=find(parmline=='=');
-                    procpar2.(parmline(3:(parmend(1)-1)))=parmline((parmend+2):end);
-                end
-            elseif strcmp(parmline(1:2),'$$')
-                str=['acqinfo' num2str(kk)];
-                procpar2.(str)=parmline(4:end);
-                kk=kk+1;
-            else
-                %do nothing
-            end
-        end
+      DataDim=2;
+      %%read in the lot
+      kk=1;
+      parmflag=0;
+      procpar2 = str2struct(acquspath);
     end
     
+    brukerdata.acqu2s=procpar2;
     
     %% ---------- Read in second indirect (non diffusion) dimension
     
     %
-     acquspath=fullfile(path, 'acqu3s');
-    fileid_acqu3s=fopen(acquspath,'rt');
+    acquspath=fullfile(path, 'acqu3s');
     
-    if fileid_acqu3s==-1
-        %not a 3D experiment
-        disp('Not a 3D experiment')
+    if ~exist(acquspath)
+      %not a 3D experiment
+      disp('Not a 3D experiment')
+      procpar3 = [];
 %         disp(['cannot open file: ' acquspath])
 %         disp('Probably a 1D experiment - setting ngrad=1')
 %         brukerdata.ngrad=1;
     else      
-        DataDim=3;
-       % brukerdata.ngrad=0;
-        %%read in the lot
-        kk=1;
-        parmflag=0;
-        while 1
-            if parmflag==1
-                parmflag=0;
-            else
-                parmline=fgetl(fileid_acqu3s);
-            end
-            if parmline==-1;  break;  end;
-            
-            if length(parmline)<2
-                disp('probably a cut of line - I will continue anyway')
-            elseif strcmp(parmline(1:2),'##')
-                if strcmp(parmline(3),'$')
-                    parmend=find(parmline=='=');
-                    if strcmp(parmline(parmend+2),'(')
-                        parmname=parmline(4:(parmend(1))-1);
-                        parmlist=[];
-                        while 1
-                            parmline=fgetl(fileid_acqu3s);
-                             if strcmp(parmline(1),'#') || strcmp(parmline(1),'<') || strcmp(parmline(1),'>') || strcmp(parmline(1),'$')
-                                parmflag=1;
-                                break
-                            else
-                                parmcell=textscan(parmline,'%q',1024);
-                                tadam=parmcell{1};
-                                tmplist=zeros(length(tadam),1);
-                                for m=1:length(tadam)
-                                    tmplist(m)=str2num(cell2mat(tadam(m)));
-                                end
-                                parmlist=[parmlist; tmplist]; %#ok<AGROW>
-                            end
-                        end
-                        procpar3.(parmname)=parmlist;
-                    else
-                        procpar3.(parmline(4:(parmend(1))-1))=parmline((parmend+2):end);
-                    end
-                else
-                    parmend=find(parmline=='=');
-                    procpar3.(parmline(3:(parmend(1)-1)))=parmline((parmend+2):end);
-                end
-            elseif strcmp(parmline(1:2),'$$')
-                str=['acqinfo' num2str(kk)];
-                procpar3.(str)=parmline(4:end);
-                kk=kk+1;
-            else
-                %do nothing
-            end
-        end
+      DataDim=3;
+      % brukerdata.ngrad=0;
+      %%read in the lot
+      kk=1;
+      parmflag=0;
+      procpar3 = str2struct(acquspath);
     end
     
-  % procpar3
+    brukerdata.acqu3s=procpar3;
+    
+% procs
     
     
     %% Read Processing parameters
     %get processing parameters, if there are any
-    brukerdata.sw=str2double(brukerdata.acqus.SW);
+    brukerdata.sw=brukerdata.acqus.SW;
     procspath=fullfile(path, 'pdata','1','procs');
     
-    fileid_procs=fopen(procspath,'rt');
-    if (fileid_procs)==-1
+    if ~exist(procspath,'file')
         disp(['cannot open file: ' procspath])
         disp('estimating processing parameters from acquisition parameters');
         
-        brukerdata.sf=str2double(brukerdata.acqus.BF1);
-        brukerdata.sfo1=str2double(brukerdata.acqus.SFO1);
+        brukerdata.sf=brukerdata.acqus.BF1;
+        brukerdata.sfo1=brukerdata.acqus.SFO1;
         brukerdata.sp=(brukerdata.sfo1/brukerdata.sf-1)*1e6+0.5*brukerdata.sw*(brukerdata.sfo1/brukerdata.sf)-brukerdata.sw;
         brukerdata.lp=0;
         brukerdata.rp=0;
-        brukerdata.procs='';
+        brukerdata.procs=brukerdata.acqus;
     else
         
         %%read in the lot
         kk=1;
         parmflag=0;
-        while 1
-            if parmflag==1
-                parmflag=0;
-            else
-                parmline=fgetl(fileid_procs);
-            end
-            if parmline==-1;  break;  end;
-            
-            if length(parmline)<2
-                disp('probably a cut of line - I will continue anyway')
-            elseif strcmp(parmline(1:2),'##')
-                if strcmp(parmline(3),'$')
-                    parmend=find(parmline=='=');
-                    if strcmp(parmline(parmend+2),'(')
-                        parmname=parmline(4:(parmend(1))-1);
-                        parmlist=[];
-                        while 1
-                            parmline=fgetl(fileid_procs);
-                             if strcmp(parmline(1),'#') || strcmp(parmline(1),'<') || strcmp(parmline(1),'>') || strcmp(parmline(1),'$')
-                                parmflag=1;
-                                break
-                            else
-                                parmcell=textscan(parmline,'%q',1024);
-                                tadam=parmcell{1};
-                                tmplist=zeros(length(tadam),1);
-                                for m=1:length(tadam)
-                                    tmplist(m)=str2num(cell2mat(tadam(m)));%#ok
-                                end
-                                parmlist=[parmlist; tmplist];                   %#ok<AGROW>
-                            end
-                        end
-                        procpar3.(parmname)=parmlist;
-                    else
-                        procpar3.(parmline(4:(parmend(1))-1))=parmline((parmend+2):end);
-                    end
-                else
-                    parmend=find(parmline=='=');
-                    procpar3.(parmline(3:(parmend(1)-1)))=parmline((parmend+2):end);
-                end
-            elseif strcmp(parmline(1:2),'$$')
-                str=['acqinfo' num2str(kk)];
-                procpar3.(str)=parmline(4:end);
-                kk=kk+1;
-            else
-                %do nothing
-            end
-        end
+        procpar3 = str2struct(procspath);
         
-        brukerdata.procs=procpar3;
-        fclose(fileid_procs);        
-        brukerdata.sp=str2double(brukerdata.procs.OFFSET)-brukerdata.sw;        
-        brukerdata.lp=str2double(brukerdata.procs.PHC1);
-        brukerdata.rp=str2double(brukerdata.procs.PHC0)*-1 - brukerdata.lp;
+        brukerdata.procs=procpar3;     
+        brukerdata.sp=brukerdata.procs.OFFSET-brukerdata.sw;        
+        brukerdata.lp=brukerdata.procs.PHC1;
+        brukerdata.rp=-brukerdata.procs.PHC0 - brukerdata.lp;
         
         
     end
+    
+    procspath=fullfile(path, 'pdata','1','procs2');
+    if exist(procspath,'file')
+      brukerdata.proc2s = str2struct(procspath);
+    else
+      brukerdata.proc2s = brukerdata.acqu2s;
+    end
+    
+    
     %% Sort out parameters in DOSY Toolbox format
     
     if DataDim==1
@@ -386,22 +248,13 @@ if path
         brukerdata.arraydim=1;
         brukerdata.ngrad=1;
         fidpath=fullfile(path, 'fid');
-        brukerdata.acqu2s=[];
-        brukerdata.acqu3s=[];
     elseif DataDim==2
         disp('2D data')
-        brukerdata.acqu2s=procpar2;
-        brukerdata.acqu3s=[];
-        brukerdata.arraydim=str2num(brukerdata.acqu2s.TD); %#ok<*ST2NM>
-        fclose(fileid_acqu2s);        
+        brukerdata.arraydim=brukerdata.acqu2s.TD; %#ok<*ST2NM>    
         fidpath=fullfile(path, 'ser');
     elseif DataDim==3
         disp('3D data')
-        brukerdata.acqu2s=procpar2;
-        brukerdata.acqu3s=procpar3;
-        brukerdata.arraydim=str2num(brukerdata.acqu2s.TD).*str2num(brukerdata.acqu3s.TD); 
-        fclose(fileid_acqu2s);   
-        fclose(fileid_acqu3s);        
+        brukerdata.arraydim=brukerdata.acqu2s.TD.*brukerdata.acqu3s.TD;        
         fidpath=fullfile(path, 'ser');
     else
        error(['Cannot determine data dimension'])
@@ -414,9 +267,9 @@ if path
     if DataDim==1
        
     elseif DataDim==2
-        brukerdata.sw1=str2double(brukerdata.acqu2s.SW);
+        brukerdata.sw1=brukerdata.acqu2s.SW;
     elseif DataDim==3
-       brukerdata.sw1=str2double(brukerdata.acqu3s.SW);
+       brukerdata.sw1=brukerdata.acqu3s.SW;
     else
        error(['Cannot determine data dimension'])
     end
@@ -425,8 +278,8 @@ if path
     
     %Get the parameters I need for now (in units I like)
     brukerdata.filename=path(1:end-1);
-    brukerdata.np=str2double(brukerdata.acqus.TD)/2;
-    brukerdata.sfrq=str2double(brukerdata.acqus.SFO1);
+    brukerdata.np=brukerdata.acqus.TD/2;
+    brukerdata.sfrq=brukerdata.acqus.SFO1;
     brukerdata.at=brukerdata.np/(brukerdata.sw*brukerdata.sfrq);
     
     
@@ -467,7 +320,7 @@ if path
     gzlvlpath=fullfile(path, 'difflist');
     fileid_gzlvl=fopen(gzlvlpath,'rt');
     if (fileid_gzlvl~=-1)
-        for k=1:str2num(brukerdata.acqu2s.TD)
+        for k=1:brukerdata.acqu2s.TD
             parmline=fgetl(fileid_gzlvl);
             brukerdata.Gzlvl(k)=str2double(parmline);
             if parmline==-1;
@@ -531,7 +384,7 @@ if path
         brukerdata.dosyconstant='non existing';
         brukerdata.ngrad=1;
         if DataDim==2
-            brukerdata.ni=str2double(brukerdata.acqu2s.TD)/2;
+            brukerdata.ni=brukerdata.acqu2s.TD/2;
             brukerdata.sp1=brukerdata.sp;
         end
     end
@@ -546,7 +399,7 @@ if path
     %automatically triggered if the raw data would overflow (but even in the
     %modern age of large effective ADC resolution this is probably a rare event!)
     
-    switch str2double(brukerdata.acqus.BYTORDA)
+    switch brukerdata.acqus.BYTORDA
         case 0
             %little endian
             byte_format='l';
@@ -558,7 +411,7 @@ if path
             error('unknown data format (BYTORDA)')
     end
     
-    switch str2double(brukerdata.acqus.DTYPA)
+    switch brukerdata.acqus.DTYPA
         case 0
             %32 bit integer
             byte_size='int32';
@@ -622,14 +475,14 @@ if path
     % first check if GRPDLY exists and use that if so
     decim=1;
     dspfvs=1;
-    if isfield(brukerdata.acqus,'GRPDLY') && str2double(brukerdata.acqus.GRPDLY)~=-1;
-        brukerdata.digshift=str2double(brukerdata.acqus.GRPDLY);
+    if isfield(brukerdata.acqus,'GRPDLY') && brukerdata.acqus.GRPDLY~=-1;
+        brukerdata.digshift=brukerdata.acqus.GRPDLY;
         %disp('Hi')
     else
         %brukerdata.acqus.DECIM=0;
         
         if isfield(brukerdata.acqus,'DECIM')
-            decim=str2double(brukerdata.acqus.DECIM);
+            decim=brukerdata.acqus.DECIM;
             switch decim
                 case 2
                     decimrow=1;
@@ -684,7 +537,7 @@ if path
             decimrow=Inf;
         end
         if isfield(brukerdata.acqus,'DSPFVS')
-            dspfvs=str2double(brukerdata.acqus.DSPFVS);
+            dspfvs=brukerdata.acqus.DSPFVS;
             switch dspfvs
                 case 10
                     dspfvsrow=2;
@@ -732,10 +585,10 @@ if path
     if DataDim==3
         
         if isfield(procpar,'AQSEQ')
-            if str2double(procpar.AQSEQ)==0
+            if procpar.AQSEQ==0
                 %all is fine - this is the structure we expect
                 
-            elseif str2double(procpar.AQSEQ)==1
+            elseif procpar.AQSEQ==1
                 % reversed order - lets fix it
                 
                 orgfid=brukerdata.FID;
@@ -934,3 +787,93 @@ end
 %
 %
 %26-09-'00
+
+
+%
+%
+%
+% matNMR v. 3.9.0 - A processing toolbox for NMR/EPR under MATLAB
+%
+% Copyright (c) 1997-2009  Jacco van Beek
+% jabe@users.sourceforge.net
+%
+%
+% This program is free software; you can redistribute it and/or
+% modify it under the terms of the GNU General Public License
+% as published by the Free Software Foundation; either version 2
+% of the License, or (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program; if not, write to the Free Software
+% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+%
+% --> gpl.txt
+%
+% Should yo be too lazy to do this, please remember:
+%    - The code may be altered under the condition that all changes are clearly marked 
+%      with your name and the date and that none of the names currently present in the 
+%      code are removed.
+%
+% Furthermore:
+%    -Please update the BugFixes.txt (i.e. the changelog file)!
+%    -Please inform me of useful changes and annoying bugs!
+%
+% Jacco
+%
+%
+% ====================================================================================
+%
+%
+% readBrukerProcessedData.m reads XWINNMR processed spectra.
+%
+% syntax: readBrukerProcessedData(File Name, sizeTD2, sizeTD1, Blocking Factor TD2, Blocking Factor TD1, ByteOrdering);
+%
+% For the Blocking Factor look in the procs and proc2s files in the directory
+% of the spectrum. Needed are the XDIM parameters (procs is for TD2 and proc2s
+% is for TD1).
+%
+% ByteOrdering is an optional parameter which specifies the byte ordering, as this may vary across
+% architectures. By default it is 1, meaning "big endian". The other possibilities are
+%     2 = little endian
+%
+% Jacco van Beek
+% ETH Zurich
+% 20-07-'00
+
+function Return = readBrukerProcessedData(FileName, SizeTD2, SizeTD1, BlockingTD2, BlockingTD1, ByteOrdering);
+
+if (nargin == 5)
+  ByteOrdering = 1;
+end
+
+if (ByteOrdering == 1)
+  ByteOrdering = 'b';
+else
+  ByteOrdering = 'l';
+end
+
+Return = zeros(SizeTD1,SizeTD2);
+
+f1 = SizeTD1 / BlockingTD1;
+f2 = SizeTD2 / BlockingTD2;
+
+id = fopen(FileName, 'r', ByteOrdering);
+
+k=1:BlockingTD2;
+for o=1:f1
+  for p=1:f2
+    for i=1:BlockingTD1;
+      [a,count] = fread(id, BlockingTD2, 'int32');
+      Return(i + (o-1)*BlockingTD1 ,k + (p-1)*BlockingTD2) = a.';
+    end
+  end
+end
+
+fclose(id);
+
+Return = fliplr(flipud(Return));
