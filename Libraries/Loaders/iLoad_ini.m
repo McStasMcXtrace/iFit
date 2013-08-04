@@ -36,13 +36,13 @@ function config = iLoad_ini
     ILL_integers.options    ='--headers --fortran --catenate --fast --binary --makerows=JJJJ --makerows=FFFF --silent ';
     ILL_integers.method     ='read_anytext';
     
-    ILL_float.name       ='ILL Data (floats only)';
-    ILL_float.patterns   ={'RRRR','AAAA','FFFF'};
-    ILL_float.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF --silent ';
-    ILL_float.method     ='read_anytext';
+    ILL_float.name          ='ILL Data (floats only)';
+    ILL_float.patterns      ={'RRRR','AAAA','FFFF'};
+    ILL_float.options       ='--headers --fortran --catenate --fast --binary --makerows=FFFF --silent ';
+    ILL_float.method        ='read_anytext';
     
     ILL_general.name       ='ILL Data (general)';
-    ILL_general.patterns   ={'SSSS'};
+    ILL_general.patterns   ={'RRRR','AAAA','SSSS'};
     ILL_general.options    ='--headers --fortran --catenate --fast --binary --makerows=FFFF --makerows=JJJJ --makerows=IIII --silent ';
     ILL_general.method     ='read_anytext';
     
@@ -204,6 +204,16 @@ function config = iLoad_ini
     json.extension      = 'json';
     
 % binary formats ===============================================================
+
+    nmr_jeol.name       = 'JEOL NMR data set';
+    nmr_jeol.method     = 'read_jeol';
+    nmr_jeol.extension  = {'hdr','bin','asc','jdf'};
+    
+    nmr_varian.name     = 'Varian NMR data set';
+    nmr_varian.method   = 'read_varian';
+
+    nmr_bruker.name     = 'Bruker NMR data set';
+    nmr_bruker.method   = 'read_bruker';
     
     ESRF_edf.name       ='EDF ESRF Data Format';
     ESRF_edf.options    ='';
@@ -255,8 +265,11 @@ function config = iLoad_ini
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
 	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
-	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, CIF, EZD, yaml, json, ...
-	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, Analyze, CBF, STL_binary, MRC, NifTI };
+	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, EZD, ...
+	       nmr_jeol, nmr_bruker, nmr_varian, ...
+	       yaml, json, ...
+	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
+	       Analyze, CBF, STL_binary, MRC, NifTI, CIF };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];

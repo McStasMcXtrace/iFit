@@ -18,10 +18,10 @@ if nargin == 1, option=''; end
 if isempty(option)
   % try all importers
   try
-    data = mstlread(file, 'ascii');
+    data = read_stl(file, 'ascii');
   end
   if isempty(data), 
-    data = mstlread(file, 'binary');
+    data = read_stl(file, 'binary');
   end
 end
 
