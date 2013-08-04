@@ -18,32 +18,34 @@ function [filename,format] = save(a, varargin)
 %                   If the filename already exists, the file is overwritten.
 %                   If given as filename='gui', a file selector pops-up
 %         format: data format to use (char), or determined from file name extension
-%           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
-%           'mat'  save as a '.mat' binary file (same as 'save', default)
+%           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set
-%           'nc'   save as NetCDF 
+%           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
+%           'mat'  save as a '.mat' binary file (same as 'save', DEFAULT)
+%           'nc'   save as NetCDF
 %         as well as other lossy formats
-%           'hdf4' save as an HDF4 immage
-%           'fig'  save as a Matlab figure
-%           'edf'  EDF ESRF format for 1D and 2D data sets
-%           'gif','bmp' save as an image (no axes, only for 2D data sets)
-%           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
-%           'xls'  save as an Excel sheet (requires Excel to be installed)
 %           'csv'  save as a comma separated value file
-%           'svg'  save as Scalable Vector Graphics (SVG) format
-%           'wrl'  save as Virtual Reality VRML 2.0 file
 %           'dat'  save as Flat text file with comments
+%           'edf'  EDF ESRF format for 1D and 2D data sets
+%           'fig'  save as a Matlab figure
 %           'fits' save as FITS binary image (only for 2D objects)
+%           'gif','bmp' save as an image (no axes, only for 2D data sets)
+%           'hdf4' save as an HDF4 image
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D)
-%           'stl'  save as STL stereolithography (geometry), binary
-%           'stla' save as STL stereolithography (geometry), ascii
+%           'json' save as JSON JavaScript Object Notation, ascii
+%           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
 %           'off'  save as Object File Format (geometry), ascii
 %           'ply'  save as PLY (geometry), ascii
+%           'stl'  save as STL stereolithography (geometry), binary
+%           'stla' save as STL stereolithography (geometry), ascii
+%           'svg'  save as Scalable Vector Graphics (SVG) format
 %           'vtk'  save as VTK ascii (<1e5 elements) or binary
+%           'wrl'  save as Virtual Reality VRML 2.0 file
 %           'x3d'  save as X3D (geometry) file, ascii
 %           'xhtml' save as embedded HTML/X3D file (using Flash plugin for rendering)
-%           'yaml' save as YAML/JSON format, ascii
+%           'xls'  save as an Excel sheet (requires Excel to be installed)
 %           'xml'  save as an XML file, ascii
+%           'yaml' save as YAML format, ascii
 %
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options

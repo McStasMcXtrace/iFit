@@ -399,7 +399,7 @@ MRC.ny = fread(fid,[1],'int');        %integer: 4 bytes
 MRC.nz = fread(fid,[1],'int');        %integer: 4 bytes
 MRC.mode = fread(fid,[1],'int');      %integer: 4 bytes
 if MRC.mode > 5 || MRC.mode < 0
-  ffprintf([ mfilename ': wrong MODE=%i\n' ], MRC.mode);
+  fprintf([ mfilename ': wrong MODE=%i\n' ], MRC.mode);
   return;
 end
 MRC.nxstart= fread(fid,[1],'int');    %integer: 4 bytes
