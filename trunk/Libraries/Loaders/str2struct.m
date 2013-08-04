@@ -5,7 +5,8 @@ function s=str2struct(string)
 %   The member assignation can be specified with spaces, '=' and ':'
 %
 % input arguments:
-%   string: string from which the structure should be extracted
+%   string: string from which the structure should be extracted. It can
+%           also be a file name, which is then read.
 %
 % output variables:
 %   s: structure which contains the named values
@@ -20,6 +21,13 @@ function s=str2struct(string)
 s={};
 if nargin ==0, return; end
 if isempty(string), return; end
+
+if ischar(string) && exist(string, 'file')
+  fid=fopen(string); 
+  string=fread(fid, Inf); fclose(fid);
+  string=char(string');
+  string(find(string=='$' | string=='#')) = '';
+end
 if ~ischar(string) && ~iscell(string), return; end
 
 % transform the string into a cellstr
