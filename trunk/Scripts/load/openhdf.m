@@ -17,16 +17,25 @@ if length(out(:)) > 1
   for index=1:length(out(:))
     out(index) = feval(mfilename, out(index));
   end
-elseif ~isempty(findstr(out, 'NeXus'))
-  % special studff for NeXus files
+else
+  % convert all links to valid links in iData objects
   
-  % identify Signal, and search for its Attributes: axes, signal=1
+  
+  % links from hdf5 have path with structure.
+  if ~isempty(findstr(out, 'NeXus')) || ~isempty(findstr(out, 'NX_class'))
+    % special studff for NeXus files
+    
+    % identify Signal, and search for its Attributes: axes, signal=1
 
-  % identify root Attributes
+    % identify root Attributes
 
-  % search for a 'process' group, and build a CommandHistory from it
+    % search for a 'process' group, and build a CommandHistory from it
 
-  % get title, instrument.name
+    % get title, instrument.name
+    
+    % call other specific importers
+    % load_psi_RITA
+  end % if Nexus
 end
 
 if ~nargout

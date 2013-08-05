@@ -3,7 +3,7 @@
 
 
   <title>iFit: iData object definition</title>
-  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <meta http-equiv="content-type" content="text/html; charset=windows-1252">
 </head><body>
 <h1 style="text-align: center;">iFit: iData object description</h1>
 <ul id="mozToc">
@@ -82,7 +82,7 @@ with<br>
 which results in an <span style="font-style: italic;">iData</span>
 object. An other way to instantiate an object is to import directly
 Matlab variables:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal)<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal)	% give the axes first, then the Signal<br></pre>
 
 
 These objects, which internal structure can be obtained with the <span style="font-style: italic;">struct(a)</span> method, hold a number of
@@ -178,7 +178,7 @@ But a more useful formatting of the same information is obtained using
 <pre>&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">disp</span>(a)<br></pre>
 </div>
 which both result in the following output<br>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top;">
@@ -224,14 +224,17 @@ apply with iData arrays, as shown above, and then returns cell arrays.<br>
 The content of objects can be searched with the <span style="font-weight: bold; font-style: italic;">findstr</span> and <span style="font-weight: bold; font-style: italic;">findfield</span>
 methods which search for a character string as a content or as a field
 name:<br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath </span><span style="color: rgb(204, 51, 204);">'Data/sv1850.scn']</span>)<br>&gt;&gt; [match, field]=findstr(a,<span style="color: rgb(204, 51, 204);">'TAS'</span>);<span style="font-style: italic;">% searches matches within object contents</span><br>match = <br><br>    'UPt3;File sv1850.scn ILL <span style="color: rgb(204, 51, 204);">TAS</span> Data'<br>    [1x105 char]<br>    [1x169 char]<br>    'E<span style="color: rgb(204, 51, 204);">TAS</span>=     '<br>field = <br><br>    'Title'<br>    'Creator'<br>    'Data.Headers.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'<br>    'Data.Headers.PARAM.E<span style="color: rgb(204, 51, 204);">TAS</span>'<br>&gt;&gt; findfield(a,<span style="color: rgb(204, 51, 204);">'TAS'</span>)	<span style="font-style: italic;">% searches matches within object members/aliases/fields</span><br>ans = <br><br>    'Data.PARAM.E<span style="color: rgb(204, 51, 204);">TAS</span>'<br>    'Data.Headers.PARAM.E<span style="color: rgb(204, 51, 204);">TAS</span>'<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath </span><span style="color: rgb(204, 51, 204);">'Data/sv1850.scn']</span>)<br>&gt;&gt; [match, field]=<font color="#3366ff">findstr</font>(a,<span style="color: rgb(204, 51, 204);">'TAS'</span>);<span style="font-style: italic;">% searches matches within object contents</span><br>match = <br><br>    'UPt3;File sv1850.scn ILL <span style="color: rgb(204, 51, 204);">TAS</span> Data'<br>    [1x105 char]<br>    [1x169 char]<br>    'E<span style="color: rgb(204, 51, 204);">TAS</span>=     '<br>field = <br><br>    'Title'<br>    'Creator'<br>    'Data.Headers.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'<br>    'Data.Headers.PARAM.E<span style="color: rgb(204, 51, 204);">TAS</span>'<br>&gt;&gt; <font color="#3366ff">findfield</font>(a,<span style="color: rgb(204, 51, 204);">'TAS'</span>)	<span style="font-style: italic;">% searches matches within object members/aliases/fields</span><br>ans = <br><br>    'Data.PARAM.E<span style="color: rgb(204, 51, 204);">TAS</span>'<br>    'Data.Headers.PARAM.E<span style="color: rgb(204, 51, 204);">TAS</span>'<br></pre>
+Some data file formats provide additional 'attributes' to each numeric content (e.g. NeXus/HDF/NetCDF/CDF. See <a href="Loaders.html">Loaders</a>). You can access these associated attributes with the <i><b>fileattrib</b></i> method:<br>
+<br>
+<pre style="margin-left: 40px;">&gt;&gt; <font color="#3366ff">fileattrib</font>(a, <font color="#cc33cc">'Data.Headers.PARAM.ETAS'</font>)<br>ans =<br><br> ETAS= <br>&gt;&gt; a=<font color="#3366ff">iData</font>(<span style="color: rgb(204, 51, 204);">[ ifitpath </span><font color="#cc33cc">'Data/IRS21360_graphite002_ipg.nxs'</font> ]);<br>&gt;&gt; <font color="#3366ff">getalias</font>(a,<font color="#cc33cc">'Signal'</font>)<br>ans =<br><br>Data.mantid_workspace_1.workspace.values<br>&gt;&gt; <font color="#3366ff">fileattrib</font>(a,<font color="#cc33cc">'Signal'</font>)<br>ans = <br>        signal: 1<br>          axes: 'axis1,axis2'<br>         units: ''<br>    unit_label: ''<br></pre>
 The <span style="font-weight: bold; font-style: italic;">findobj</span>
-method can be used to inquire for all iData objects available in the
+method can be used to inquire all iData objects available in the
 workspace:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">findobj</span>(iData);<a href="images/iData_plot_2d.png"><img src="images/iData_plot_2d.png" title="iData plot 2d: plot(a)" alt="iData plot 2d: plot(a)" style="border: 0px solid ; width: 150px; height: 133px;" align="right"></a><br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">findobj</span>(iData, <span style="color: rgb(204, 51, 204);">'Property'</span>, <span style="color: rgb(204, 51, 204);">'Value')</span>; <span style="font-style: italic;">% searches for objects that match a Property/Value pair</span><a href="images/iData_plot_2d.png"><img src="images/iData_plot_2d.png" title="iData plot 2d: plot(a)" alt="iData plot 2d: plot(a)" style="border: 0px solid ; width: 150px; height: 133px;" align="right"></a><span style="color: rgb(51, 102, 255);"></span></pre>
 It is also possible to plot the object, and we direct the reader to the
 <a href="Plot.html">Plotting</a> page.<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">plot</span>(iData);</pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">plot</span>(a);</pre>
 &nbsp;
 <br>
 Last, the object&nbsp; <span style="font-style: italic;">Signal</span>
@@ -508,7 +511,7 @@ and Signal, and the dimensionality (except memory restrictions). The
 following table indicates the different types of <span style="font-style: italic;">Signal</span> that the iData can handle,
 and the associated requirements regarding <span style="font-style: italic;">Axes.</span><br>
 <br>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">Dimensionality<br>

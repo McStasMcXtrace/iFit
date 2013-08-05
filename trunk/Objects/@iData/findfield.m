@@ -9,6 +9,7 @@ function [match, types, dims] = findfield(s, field, option)
 %   The optional 'option' may contain 'exact' to search for the exact occurence, and 'case'
 %   to specifiy a case sensitive search. 
 %   The 'numeric' option will return only numerical fields.
+%   The 'char'    option will return only character fields.
 %
 % input:  s: object or array (iData)
 %         field: field name to search, or '' (char).
@@ -48,16 +49,20 @@ struct_s=rmfield(struct_s,'Command');
 struct_s=rmfield(struct_s,'Tag');
 [match, types, dims] = iData_getfields(struct_s, '');
 
-if ~isempty(strfind(option, 'numeric'))
+if ~isempty(strfind(option, 'numeric')) || ~isempty(strfind(option, 'char'))
   % remove fields that we do not want as Signal
   index=[ find(strcmp('Date', match)) find(strcmp('ModificationDate', match)) ] ;
   types(index) = {'char'};
   % now get the numeric ones
-  index=          find(strcmp( 'double', types));
-  index=[ index ; find(strcmp( 'single', types)) ];
-  index=[ index ; find(strcmp( 'logical',types)) ];
-  index=[ index ; find(strncmp('uint',   types, 4)) ];
-  index=[ index ; find(strncmp('int',    types, 3)) ];
+  if ~isempty(strfind(option, 'numeric'))
+    index=          find(strcmp( 'double', types));
+    index=[ index ; find(strcmp( 'single', types)) ];
+    index=[ index ; find(strcmp( 'logical',types)) ];
+    index=[ index ; find(strncmp('uint',   types, 4)) ];
+    index=[ index ; find(strncmp('int',    types, 3)) ];
+  else % 'char' option
+    index=          find(strcmp( 'char', types));
+  end
   
   match  = match(index); % get all field names containing double data
   dims   = dims(index);

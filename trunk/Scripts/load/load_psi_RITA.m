@@ -42,8 +42,11 @@ t = findfield(a, {'temperature','magnetic','Qh','Qk','Ql','Qm','energy','energy_
                  'a1','a2','a3','a4','a5','a6'});
 if ~isempty(t)
   for index=1:length(t)
-    this = fliplr(strtok(fliplr(t{index}), '.'));
-    setalias(a, this, t{index});
+    % we should skip any Attributes items
+    if isempty(strfind(t{index}, 'Attributes')) && isempty(strfind(t{index}, 'Headers'))
+      this = fliplr(strtok(fliplr(t{index}), '.'));
+      setalias(a, this, t{index});
+    end
   end
 end
 
@@ -54,16 +57,16 @@ data_alias    = fieldnames(a.Data.entry1.data);
 for index=1:length(data_alias)
   member=get(a, [ 'Data.entry1.data.' data_alias{index} ]);
 
-  % find the member which varies most
-  if ~isvector(member), member=member(5,:); end
+  % find the numeric member which varies most
+  if ~isnumeric(member), continue; end
+  % get middle blade for matrices
+  if ~isvector(member), member=member(ceil(size(member,1)/2),:); end 
   member=double(member);
   if ndims(member)==2 && std(member) > index_axis_std
-    if any(strcmp(data_alias{index}, {'Qh','Qk','Ql','energy_transfer'}))
+    if any(strcmp(data_alias{index}, {'Qh','Qk','Ql','energy_transfer'})) ...
+            || (any(strcmp(data_alias{index}, {'a1','a2','a3','a4','a5','a6'})) && index_axis_std==0)
       index_axis_std = std(member);
-      index_axis = data_alias{index};
-    elseif any(strcmp(data_alias{index}, {'a1','a2','a3','a4','a5','a6'})) && index_axis_std==0
-      index_axis_std = std(member);
-      index_axis = data_alias{index};
+      index_axis     = data_alias{index};
     end
   end
 end
@@ -71,7 +74,7 @@ end
 % all blades should be gathered as a 2nd returned object which gives the 
 % integrated counts per blade per scan step
 b = a;
-windowcounts = a.windowcounts;
+windowcounts   = a.windowcounts;
 b.windowcounts = windowcounts(1:9, :);
 setalias(b, 'Signal', 'windowcounts');
 % extend the monitor so that it also spans along the blades

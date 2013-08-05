@@ -1,20 +1,35 @@
-function attribute = iData_getAttribute(in, fields)
+function [attribute, f] = iData_getAttribute(in, field)
 % search if there is a corresponding label (in Headers/Attributes)
 
-  attribute = [];
+  attribute = []; f=[];
   
-  % 'fields' contain the full path to Signal, e.g. 'Data.<path>'
+  index = find(strcmp(field, in.Alias.Names));
+  if ~isempty(index)
+    field = in.Alias.Values{index(1)};
+  end
+  
+  if any(strfind(field, 'Attributes')) || any(strfind(field, 'Headers'))
+    attribute = NaN;  % already an Attribute
+    f         = field;
+  end
+  
+  % 'field' contains the full path to Signal, e.g. 'Data.<path>'
 
-  % if we use 'Headers' from e.g. read_anytext/looktxt
+  % if we use 'Headers' or 'Attributes' from e.g. read_anytext/looktxt
   % we e.g. relate in.Data.<field path> 
   %       to label in.Data.Headers.<field path>
-  if isfield(in.Data, 'Headers')
-    if strncmp(fields, 'Data.', length('Data.'))
-      fields = [ 'Data.Headers.' fields( (length('Data.')+1):end ) ];
+  %       or       in.Data.Attributes.<field path>
+  if isfield(in.Data, 'Headers') || isfield(in.Data, 'Attributes')
+    if strncmp(field, 'Data.', length('Data.'))
+      for f={[ 'Data.Headers.'    field( (length('Data.')+1):end ) ], ...
+             [ 'Data.Attributes.' field( (length('Data.')+1):end ) ]}
+        try
+          attribute = get(in, f); % Data.Headers.<field>
+          return
+        end
+      end
     end
-    if isfield(in, fields)
-      attribute = get(in, fields); % evaluate to get content of link
-    end
+    
   end
   
   % if we use 'Attributes' from e.g. read_hdf/HDF or NetCDF/CDF
@@ -22,28 +37,36 @@ function attribute = iData_getAttribute(in, fields)
   %      to label  in.Data.<group>.Attributes.<field>
   if isfield(in.Data, 'Attributes')
     % get group and field names
-    lastword_index = find(fields == '.', 2, 'last'); % get the group and the field name
-    if isempty(lastword_index)
-      lastword = fields; 
-      group    = '';
-      base     = '';
-    elseif isscalar(lastword_index)
-      lastword = fields((lastword_index+1):end); 
-      group    = fields(1:lastword_index);
-      base     = '';
-    else 
-      lastword = fields( (lastword_index(2)+1):end ); 
-      group    = fields( (lastword_index(1)+1):lastword_index(2) ); 
-      base     = fields(1:lastword_index(1));
-    end
+    [base, group, lastword] = getAttributePath(field);
     % we prepend the last word with Attributes. and check for existence
-    try
-      attribute = get(in, [ base group 'Attributes.' lastword ]); % evaluate to get content of link
-    catch
+    for f={ [ base group 'Attributes.' lastword ] , ...
+            [ base group 'Attributes' ] }
       try
-        attribute = get(in, [ base group 'Attributes' ]); % evaluate to get content of link
+        attribute = get(in, f); % evaluate to get content of link
+        return
       end
     end
   end
   
+% ------------------------------------------------------------------------------
   
+function [base, group, lastword] = getAttributePath(field)
+% function to split the entry name into basename, group and dataset
+% duplicated from iData_getAttribute
+
+  % get group and field names
+  lastword_index = find(field == '.' | field == '/', 2, 'last'); % get the group and the field name
+  if isempty(lastword_index)
+    lastword = field; 
+    group    = '';
+    base     = '';                            % Attributes.<field>.
+  elseif isscalar(lastword_index)
+    lastword = field((lastword_index+1):end); 
+    group    = field(1:lastword_index);
+    base     = '';                            % <group>.Attributes.<field>
+  else 
+    lastword = field( (lastword_index(2)+1):end ); 
+    group    = field( (lastword_index(1)+1):lastword_index(2) ); 
+    base     = field(1:lastword_index(1));    % <basename>.<group>.Attributes.<field>
+  end
+
