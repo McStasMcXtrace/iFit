@@ -49,6 +49,11 @@ if nargin == 1
   return
 end
 
+if length(varargin) == 1 && iscellstr(varargin{1})
+  varargin = varargin{1};
+end
+out = {};
+
 % handle single object
 for index=1:length(varargin)
   property = varargin{index}; % get PropertyName
@@ -63,7 +68,7 @@ for index=1:length(varargin)
       if isnumeric(b) && any(strcmp(property, {'Date','ModificationDate'}))
         b = datestr(b);
       end
-      varargout{1} = b;
+      out{end+1} = b;
     else
       % a string containing members MAIN TIME SPENT
       s = [];
@@ -74,12 +79,17 @@ for index=1:length(varargin)
         s(end).subs=k{1};
       end
       
-      varargout{1} = subsref(this, s);              % calls subsref directly (single subsref level)
+      out{end+1} = subsref(this, s);              % calls subsref directly (single subsref level)
     end
   else % this is a compound property, such as get(this,'Data.Signal')
-    varargout{1} = get_eval(this, property); % calls inline (below)
+    out{end+1} = get_eval(this, property); % calls inline (below)
   end
 end
+
+if iscell(out) && length(out) == 1
+  out = out{1};
+end
+varargout{1} = out;
 
 if isempty(varargout)
   varargout={[]};

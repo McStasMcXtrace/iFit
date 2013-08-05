@@ -7,7 +7,12 @@ function data = read_hdf4(filename)
 %                           structure as the main branch
 
 % read file structure
-s = hdfinfo(filename);
+try
+  s = hdfinfo(filename);
+catch
+  data = [];
+  return
+end
 
 % recursive call
 [data, Attributes] = getGroup(s);
@@ -142,9 +147,8 @@ function name = getName(this, index)
   end
   % pretty-fy
   name(~isstrprop(name,'alphanum') | name == '.' | name == '-' | name == '+') = '_';
-  if ~isempty(name)
-    name = genvarname(name);
-  end
+  if ~isempty(name) && ~isletter(name(1)),  name = [ 'x' name ]; end
+
   
 function Attributes = getAttributes(this)
   % getAttributes: get the current level Attributes

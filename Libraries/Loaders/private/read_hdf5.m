@@ -24,11 +24,16 @@ if isempty(h5_present)
 end
 
 % read file structure
-if h5_present
-  data_info = h5info(filename);
-else
-  data_info = hdf5info(filename);
-  data_info = data_info.GroupHierarchy;
+try
+  if h5_present
+    data_info = h5info(filename);
+  else
+    data_info = hdf5info(filename);
+    data_info = data_info.GroupHierarchy;
+  end
+catch
+  data = []; % not an HDF file
+  return
 end
 
 % recursive call
@@ -52,7 +57,8 @@ data = getGroup(filename, data_info);
         else
           val = hdf5read(filename,[data_info.Datasets(i).Name]);
         end
-        if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+        if iscellstr(val) && length(val) == 1,  val = char(val); end
+        if strcmp(class(val), 'hdf5.h5string'), val = char(val.Data); end
         name        = getName(data_info.Datasets(i).Name);
         data.(name) = val;
         
@@ -61,11 +67,29 @@ data = getGroup(filename, data_info);
         if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
         for j=1:natts
             val = data_info.Datasets(i).Attributes(j).Value;
-            if iscell(data_info.Datasets(i).Attributes(j).Value), val = {1}; end
             if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
             aname        = getName(data_info.Datasets(i).Attributes(j).Name);
             data.Attributes.(name).(aname) = val;
         end
+    end
+    
+    % handle Links -> Data sets
+    if isfield(data_info, 'Links') && ~isempty(data_info.Links)
+      nlinks  = length(data_info.Links);
+      for i = 1: nlinks
+        name = getName(data_info.Links(i).Name);
+        val  = char(data_info.Links(i).Value);
+        % handle the HDF5 link so that it contains valid names
+        val((~isstrprop(val,'alphanum') & val ~= '/') | val == '-' | val == '+') = '_';
+        if val(1) == '/', val(1) = ''; end
+        val(val == '/') = '.';
+        data.(name) = val; % associate the link
+        % check if there are associated attributes and link them as well
+        [base, group, lastword] = getAttributePath(val);
+        % chek if exists: [ base group 'Attributes.' lastword ]
+        % or              [ base group 'Attributes' ]
+        data.Attributes.(name) = [ base group 'Attributes.' lastword ];
+      end
     end
 
     % get group attributes: group.Attributes.<attribute>
@@ -73,7 +97,6 @@ data = getGroup(filename, data_info);
     if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
     for j=1:natts
         val = data_info.Attributes(j).Value;
-        if iscell(data_info.Attributes(j).Value), val = {1}; end
         if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
         name = getName(data_info.Attributes(j).Name);
         data.Attributes.(name) = val;
@@ -91,9 +114,33 @@ data = getGroup(filename, data_info);
 
 end
 
+% ------------------------------------------------------------------------------
+
 function name = getName(location)
+% getName: get the HDF5 element Name
   [p, name, ext]   = fileparts(location);
   name = [ name ext ];
   name(~isstrprop(name,'alphanum') | name == '.' | name == '-' | name == '+') = '_';
-  end
+  if ~isempty(name) & name(1) == '_',  name = [ 'x' name ]; end  
+end
   
+function [base, group, lastword] = getAttributePath(field)
+% function to split the entry name into basename, group and dataset
+% duplicated from iData_getAttribute
+
+    % get group and field names
+    lastword_index = find(field == '.' | field == '/', 2, 'last'); % get the group and the field name
+    if isempty(lastword_index)
+      lastword = field; 
+      group    = '';
+      base     = '';                            % Attributes.<field>.
+    elseif isscalar(lastword_index)
+      lastword = field((lastword_index+1):end); 
+      group    = field(1:lastword_index);
+      base     = '';                            % <group>.Attributes.<field>
+    else 
+      lastword = field( (lastword_index(2)+1):end ); 
+      group    = field( (lastword_index(1)+1):lastword_index(2) ); 
+      base     = field(1:lastword_index(1));    % <basename>.<group>.Attributes.<field>
+    end
+  end

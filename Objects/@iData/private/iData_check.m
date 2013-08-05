@@ -53,6 +53,11 @@ if isnumeric(in.Data) && ~isempty(in.Data)
   in.Data.Signal = data;
 end
 
+% identify the Signal and axes when they have not yet been defined
+% get all numeric fields, sort them, get the biggest
+% find axes that match the Signal dimensions
+% associate 'error' and 'monitor' when they exist
+% define Signal label from Attributes, when exist
 if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
   % get numeric fields sorted in descending size order
   [fields, types, dims] = findfield(in, '', 'numeric');
@@ -127,6 +132,7 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
         in = setalias(in,'Monitor', monitor_id);
       end
     end
+    
     % look for vectors that may have the proper length as axes
     for index=1:ndims(in)
       if isempty(getaxis(in, num2str(index)))
@@ -166,8 +172,8 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
         end
       end
     end 
-  end
-end
+  end % has fields
+end % if no Signal defined
 
 % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes
 if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
