@@ -190,7 +190,15 @@ for i = 1:length(S)     % can handle multiple index levels
       if isa(c, 'iData'), b = c; end
       if i == length(S), return; end
     else
-      b = iData_getAliasValue(b,fieldname); % get alias value from iData: b.alias MAIN SPENT TIME
+      % check if the fieldname belong directly to b.Data
+      strtk = find(fieldname == '.', 1); strtk = fieldname(1:(strtk-1));
+      if isempty(strtk), strtk = fieldname; end
+      if (isstruct(b) || isa(b,'iData')) && isstruct(b.Data) && all(~strcmpi(f, strtk)) && isfield(b.Data, strtk)
+        fieldname = [ 'Data.' fieldname ];
+        b = get(b, fieldname);
+      else
+        b = iData_getAliasValue(b,fieldname); % get alias value from iData: b.<path> MAIN SPENT TIME
+      end
     end
     
     % test if the result is again an Alias or Field
@@ -199,10 +207,13 @@ for i = 1:length(S)     % can handle multiple index levels
         b = a.(b);      % fast access to static fields
       else
         % strtk = strtok(b,'.');
-        strtk = find(b == '.', 1, 'last');
-        if isempty(strtk), strtk = b; else strtk = b(1:(strtk-1)); end
-        if any(strcmpi(strtk, fields)) || any(strcmpi(strtk, a(1).Alias.Names))
-          b = get(a, b);  % try to evaluate char result
+        strtk = find(b == '.', 1);        % first word
+        if isempty(strtk), strtk = b;     % no '.' in the structure path
+        else strtk = b(1:(strtk-1)); end  % get path before the last group
+        % does the structure path starts with a registered iData property, alias or Data member ?
+        if any(strcmpi(strtk, fields)) || any(strcmpi(strtk, a(1).Alias.Names)) ...
+          || (isstruct(a.Data) && isfield(a.Data, strtk))
+          b = get(a, b);  % try to evaluate char result/link
         end
       end
     end

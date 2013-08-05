@@ -11,7 +11,7 @@ function b=iData_struct2iData(a)
     b.Data = a.Data;
   end
   for index=1:length(f)
-    if any(strcmp(f{index},fb))
+    if any(strcmp(f{index},fb)) && ~strcmp(f{index}, 'Data')
       b = set(b,f{index}, a.(f{index}));
     end
   end

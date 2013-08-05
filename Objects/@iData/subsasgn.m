@@ -197,14 +197,20 @@ else
       if ~isempty(index) % structure/class def fields: b.field
         b.(f{index}) = val;
       else
-        if strcmpi(fieldname, 'Signal') && isempty(val)
-          b = setalias(b, 'Signal', []);        % reset Signal to the biggest field
-        elseif ischar(val)
-          lab = label(b, val);
-          if isempty(lab), lab = val; end
-          b = setalias(b, fieldname, val, lab);
+        strtk = find(fieldname == '.', 1); strtk = fieldname(1:(strtk-1));
+        if isempty(strtk), strtk = fieldname; end
+        if (isstruct(b) || isa(b,'iData')) && isstruct(b.Data) && isfield(b.Data, strtk)
+          b.Data.(fieldname) = val;
         else
-          b = iData_setalias(b,fieldname, val); % set alias value from iData: b.alias
+          if strcmpi(fieldname, 'Signal') && isempty(val)
+            b = setalias(b, 'Signal', []);        % reset Signal to the biggest field
+          elseif ischar(val)
+            lab = label(b, val);
+            if isempty(lab), lab = val; end
+            b = setalias(b, fieldname, val, lab);
+          else
+            b = iData_setalias(b,fieldname, val); % set alias value from iData: b.alias
+          end
         end
       end
     end
