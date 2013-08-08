@@ -62,7 +62,10 @@ if dim
   axis tight;
 end
 % extract frame
-pause(0.1);
+
+% force figure to be 'oncreen'
+movegui(f);
 frame=getframe(f); 
+
 delete(f);
 
