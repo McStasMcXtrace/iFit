@@ -19,8 +19,10 @@ function b = subsref(a,S)
 b = a;  % will be refined during the index level loop
 
 persistent fields
+persistent method
 
 if isempty(fields), fields=fieldnames(iData); end
+if isempty(method), method=methods('iData'); end
 
 if isempty(S)
   return
@@ -151,15 +153,17 @@ for i = 1:length(S)     % can handle multiple index levels
     if length(fieldname) > 1 && iscell(fieldname)
       fieldname = fieldname{1};
     end
-    if strcmpi(fieldname, 'filename') % 'alias of alias'
-      fieldname = 'Source';
-    elseif strcmpi(fieldname, 'history')
-      fieldname = 'Command';
-    elseif strcmpi(fieldname, 'axes')
-      fieldname = 'Axis';
-    end
+    
     if isa(b, 'iData'), 
       isiData = 1; f=fields; 
+      % alias for a few iData fields
+      if strcmpi(fieldname, 'filename') % 'alias of alias'
+        fieldname = 'Source';
+      elseif strcmpi(fieldname, 'history')
+        fieldname = 'Command';
+      elseif strcmpi(fieldname, 'axes')
+        fieldname = 'Axis';
+      end
     else
       isiData = 0;
       if isstruct(b), f=fieldnames(b); else f=[]; end
@@ -176,7 +180,7 @@ for i = 1:length(S)     % can handle multiple index levels
       end
     elseif any(strcmpi(fieldname, getalias(a)))
       b = iData_getAliasValue(b,fieldname);
-    elseif any(strcmp(fieldname,methods(b))) % b.method = ismethod(b, fieldname)
+    elseif any(strcmp(fieldname,method)) % b.method = ismethod(b, fieldname)
       if i == length(S)
         if nargout(fieldname) ==0
           feval(fieldname, b);
@@ -193,8 +197,11 @@ for i = 1:length(S)     % can handle multiple index levels
       % check if the fieldname belong directly to b.Data
       strtk = find(fieldname == '.', 1); strtk = fieldname(1:(strtk-1));
       if isempty(strtk), strtk = fieldname; end
-      if (isstruct(b) || isa(b,'iData')) && isstruct(b.Data) && all(~strcmpi(f, strtk)) && isfield(b.Data, strtk)
+      if (isstruct(b) || isa(b,'iData')) && isfield(b,'Data') && isstruct(b.Data) ...
+              && all(~strcmpi(f, strtk)) && isfield(b.Data, strtk)
         fieldname = [ 'Data.' fieldname ];
+      end
+      if length(find(fieldname == '.')) >= 1
         b = get(b, fieldname);
       else
         b = iData_getAliasValue(b,fieldname); % get alias value from iData: b.<path> MAIN SPENT TIME
@@ -288,7 +295,7 @@ function val = iData_getAliasValue(this,fieldname)
     else
       s = iData_getAliasValue(this,'Signal');
       if isnumeric(s)
-        val = sqrt(abs(double(s)));
+        val = sqrt(abs(double(s))); % main time spent on large arrays
       end
     end
     if ~isempty(val) && ~isscalar(val) && ~isequal(size(val),size(this))

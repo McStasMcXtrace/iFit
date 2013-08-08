@@ -10,7 +10,7 @@ function [match, field] = findstr(s, str, option)
 %   to specifiy a case sensitive search.
 %
 % input:  s: object or array (iData)
-%         str: string to search in object, or '' (char).
+%         str: string to search in object, or '' (char or cellstr).
 %         option: 'exact' 'case' or '' (char)
 % output: match: content of iData fields that contain 'str' (cellstr)
 %         field: name of iData fields that contain 'str' (cellstr)
@@ -38,44 +38,61 @@ if numel(s) > 1
   return
 end
 
-field={}; match={};
-[fields, types] = findfield(s);  % get all fields and types
+[fields, types] = findfield(s,'','char');  % get all fields and types
 
 index=[ find(strcmp('char', types)) ; find(strcmp('cell', types)) ]; 
-if isempty(index), match=[]; return; end
+if isempty(index), field=[]; match=[]; return; end
 
-fields = fields(index); % get all field names containg char data
+clear types
+% get all field names containg char/cellstr data
+fields = fields(index); 
+% get their content
+matchs = get(s, fields);
+% convert to char using private inline function handle
+matchs = cellfun(@cell2char, matchs, 'UniformOutput', false);
 
-for index=1:length(fields)
-  strfield = get(s, fields{index});
-  if isempty(strfield), continue; end
-  if iscell(strfield) && ischar(strfield{1})
-    strfield= char(strfield);
-  end
-  if ~ischar(strfield), continue; end
-  strfield = strtrim(strfield); % get char content of field
-  if isempty(strfind(option, 'case'))
-    str = lower(str);
-    strs= lower(strfield);
-  else
-    strs= strfield;
-  end
-  if size(strs, 1)~=1, strs=transpose(strs); strs=strs(:)'; end
-  % search for the pattern
-  if isempty(str), j1=1;
-  else
-    if strfind(option, 'exact')
-      j1 = find(strcmp(str, strs));
-    else
-      j1 = [ find(strncmp(str, strs,length(str))) strfind(strs, str) ]; 
-    end
-  end
-  if ~isempty(j1)
-    match = [ match ; strfield ];
-    field = [ field ; fields{index} ];
-  end
+% handle 'case' option
+if isempty(strfind(option, 'case'))
+    matchs = lower(matchs); str=lower(str);
 end
+
+if isempty(str)
+  match = matchs;
+  field = fields;
+  return
+end
+
+if iscellstr(str)
+  match = cell(1, numel(str)); field=match;
+  for index=1:numel(str)
+    [m,f] = iData_findstr_single(str{index}, option, fields, matchs);
+    match{index}=m;
+    field{index}=f;
+  end
+  return
+end
+
+[match, field] = iData_findstr_single(str, option, fields, matchs);
+
+% -------------------------------------------------------------------------
+function [match, field] = iData_findstr_single(str, option, field, match)
+
+% search for the string
+if strfind(option, 'exact')
+  index = strcmp(match, str);
+else
+  index = ~cellfun(@isempty, strfind(match, str));
+end
+match = match(index);
+field = field(index);
 
 if numel(field) == 1, field=field{1}; end
 if numel(match) == 1, match=match{1}; end
 
+% -------------------------------------------------------------------------
+function c=cell2char(c)
+if iscell(c) && ischar(c{1})
+    c=char(c);
+elseif ~ischar(c)
+    c = '';
+end

@@ -48,6 +48,15 @@ alias_names = this.Alias.Names; % this is a cellstr of Alias names
 alias_num   = find(strcmpi(alias, alias_names));
 
 if isempty(alias_num)
+  % this is not an alias. Try to get the content as char (link)
+  try
+    value= ~ischar(get(this, alias));
+    this = struct(this);
+    link = eval([ 'this.' alias ]);
+    if value && ischar(link)
+      return
+    end
+  end    
   link=[]; label=[]; 
 else
   link = this.Alias.Values{alias_num};

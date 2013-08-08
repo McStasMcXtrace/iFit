@@ -1,9 +1,12 @@
 function b = isfield(a, field)
 % b = isfield(s, field) : check existence of field/alias in iData objects
 %
-%   @iData/isfield function which checks if a name is already defined as a field or alias in the iData object
+%   @iData/isfield function which checks if a name is already defined as a Property
+%       or Alias in the iData object.
 %     isfield(s) returns the full list of defined fields and aliases in the object.
-%     the search for field names is case insensitive.
+%     The search for field names is case insensitive.
+%   isfield scope (Properties and Aliases) is more restricted than findfield and 
+%     strfind methods.
 %
 % input:  s: object or array (iData)
 %         field: name to check for (string)
@@ -11,7 +14,7 @@ function b = isfield(a, field)
 % ex:     b=isfield(a, 'history');
 %
 % Version: $Revision$
-% See also iData, isfield
+% See also iData, isfield, iData/findfield, iData/strfind
 
 persistent fields
 

@@ -25,7 +25,7 @@ function [attribute, f] = iData_getAttribute(in, field)
              [ 'Data.Attributes.' field( (length('Data.')+1):end ) ]}
         try
           attribute = get(in, f); % Data.Headers.<field>
-          return
+          if ~isempty(attribute), return; end
         end
       end
     end
@@ -35,15 +35,16 @@ function [attribute, f] = iData_getAttribute(in, field)
   % if we use 'Attributes' from e.g. read_hdf/HDF or NetCDF/CDF
   % we e.g. relate in.Data.<group>.<field> 
   %      to label  in.Data.<group>.Attributes.<field>
-  if isfield(in.Data, 'Attributes')
+  if ~isempty(findfield(in, 'Attributes'))
     % get group and field names
     [base, group, lastword] = getAttributePath(field);
     % we prepend the last word with Attributes. and check for existence
-    for f={ [ base group 'Attributes.' lastword ] , ...
+    for f={ [ base group lastword '.Attributes' ], ...
+            [ base group 'Attributes.' lastword ] , ...
             [ base group 'Attributes' ] }
       try
         attribute = get(in, f); % evaluate to get content of link
-        return
+        if ~isempty(attribute), return; end
       end
     end
   end
