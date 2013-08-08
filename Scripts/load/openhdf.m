@@ -14,30 +14,26 @@ end
 
 if length(out(:)) > 1
   % handle input iData arrays
-  for index=1:length(out(:))
-    out(index) = feval(mfilename, out(index));
+  in = out;
+  out = [];
+  for index=1:length(in(:))
+    out = [ out feval(mfilename, in(index)) ];
+    in(index) = iData; % free memory
   end
-else
-  % convert all links to valid links in iData objects
-  
-  
-  % links from hdf5 have path with structure.
-  if ~isempty(findstr(out, 'NeXus')) || ~isempty(findstr(out, 'NX_class'))
-    % special studff for NeXus files
-    
-    % identify Signal, and search for its Attributes: axes, signal=1
-
-    % identify root Attributes
-
-    % search for a 'process' group, and build a CommandHistory from it
-
-    % get title, instrument.name
-    
-    % call other specific importers
-    % load_psi_RITA
-  end % if Nexus
+  return
 end
 
+if ~isempty(findstr(out, 'NeXus')) || ~isempty(findfield(out, 'NX_class'))
+  % special stuff for NeXus files
+  out = load_NeXus(out); % see private
+  
+  % call other specific importers
+  if ~isempty(findfield(out, 'RITA_2'))
+    out = load_psi_RITA(out); % see private
+  end
+  
+end % if Nexus
+  
 if ~nargout
   figure; subplot(out);
   
@@ -46,4 +42,6 @@ if ~nargout
     ans = out
   end
 end
+
+% ------------------------------------------------------------------------------
 
