@@ -112,7 +112,7 @@ function [p, labels] = ResLibCal_EXP2RescalPar(EXP)
   p(22:24)=[ EXP.sample.alpha EXP.sample.beta EXP.sample.gamma ];
   p(25:27)=EXP.orient1;
   p(28:30)=EXP.orient2;
-  p(31:34)=[ EXP.QH EXP.QK EXP.QL EXP.W ];
+  p(31:34)=[ mean(EXP.QH) mean(EXP.QK) mean(EXP.QL) mean(EXP.W) ];
   p(35:38)=[ 0 0 0 1 ];
   p(39:42)=[ 0 0 1 0 ];
 
