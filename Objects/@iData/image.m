@@ -118,7 +118,7 @@ end
 
 % create object to display with plot('image')
 this2D.Data.cdata = u;
-setalias(this2D, 'Signal', 'Data.cdata')
+setalias(this2D, 'Signal', 'Data.cdata');
 set(this2D,'Title', strtrim(lab));
 setaxis(this2D, 2, x);
 setaxis(this2D, 1, y);

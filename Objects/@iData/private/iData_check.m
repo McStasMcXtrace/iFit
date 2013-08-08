@@ -79,8 +79,7 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
           maxdim([ end idx]) = maxdim([ idx end] );
           continue; 
         end
-        x = diff(x(:));
-        if all(x == x(1)) || all(x > 0) ...
+        if issorted(x(:)) ...
           || ~isempty(strfind(lower(fields{index}), 'error')) ...
           || ~isempty(strfind(lower(fields{index}), 'monitor'))
           % this is a constant/monotonic value or 'error' or 'monitor'
@@ -114,7 +113,7 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
       in = setalias(in,'Signal', fields);
       
       % get potential attribute (in Data.Headers or Data.Attributes fields)
-      attribute = iData_getAttribute(in, fields);
+      attribute = fileattrib(in, fields);
       
       if isstruct(attribute)
         attribute = class2str(' ',attribute, 'no comments');
@@ -143,17 +142,17 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
         if length(ax) > 1; ax=ax(1); end
         if ~isempty(ax)
           val = get(in, fields_all{ax});
-          if isvector(val) && ~strcmp(fields_all{ax},getalias(in,'Signal'))
+          if isvector(val) && ~strcmp(fields_all{ax},getalias(in,'Signal')) && issorted(val(:))
             if length(val) == size(in, index) && min(val(:)) < max(val(:))
-              in = setaxis(in, index, [ 'Axis_' num2str(index) ], fields_all{ax});
-              found = 1;
+              % n bins
+              val = fields_all{ax};
             elseif length(val) == size(in, index)+1 && min(val(:)) < max(val(:))
+              % there are n+1 poles for n bins
               val = (val(1:(end-1)) + val(2:end))/2;
-              in = setaxis(in, index, [ 'Axis_' num2str(index) ], val);
-              found = 1;
-            else found = 0;
+            else val = [];
             end
-            if found == 1  % the axis could be found
+            if ~isempty(val)  % the axis could be found
+              in = setaxis(in, index, [ 'Axis_' num2str(index) ], val);
               % search if there is a corresponding label (in Headers)
               if isfield(in.Data, 'Headers')
                 fields=fliplr(strtok(fliplr(fields_all{ax}), '.'));

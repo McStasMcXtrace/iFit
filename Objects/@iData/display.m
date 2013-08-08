@@ -67,7 +67,7 @@ else
       d = [ d sprintf('%9s ',s.Tag) ];
     end
     d = [ d sprintf('%11s ', [ mat2str(size(s)) ]) ];  % size
-    t = cellstr(s.Title); t = strtrim(t{1}); t(~isstrprop(t,'print') | t=='\')=''; 
+    t = cellstr(s.Title); t = strtrim(t{1}); t(~isstrprop(t,'print') | t=='\' | t=='%')=''; 
     if length(t) > 31, t = [ t(1:27) '...' ]; end             % object.title
     t = [ t ' "' title(s) '"' ]; t = strtrim(t); t(~isstrprop(t,'print') | t=='\')=''; 
     if length(t) > 41, t = [ t(1:37) '..."'  ]; end           % title(Signal)

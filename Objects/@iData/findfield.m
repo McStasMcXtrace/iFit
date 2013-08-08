@@ -43,6 +43,7 @@ if numel(s) > 1
   end
   return
 end
+
 struct_s=struct(s);
 struct_s=rmfield(struct_s,'Alias');
 struct_s=rmfield(struct_s,'Command');
