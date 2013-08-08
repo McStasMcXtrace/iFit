@@ -31,7 +31,10 @@ else
   i = 1;
   angles    = out.resolution.angles*pi/180;
 end
-A1 = angles(1); A2 = angles(2); A3 = angles(3); A4 = angles(4); A5 = angles(5); A6 = angles(6);
+% the angles shown on the plot are reversed wrt the one in the computation, due 
+% to the choice of the XY frame for plotting. When angle>0 it e.g. increases X
+% on the plot whereas it decreases in reality (to the left).
+A1 = -angles(1); A2 = -angles(2); A3 = -angles(3); A4 = -angles(4); A5 = -angles(5); A6 = -angles(6);
 distances = EXP.arms(1:4);
 x = 0; y = 0; direction=0;
 
