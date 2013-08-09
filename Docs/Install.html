@@ -97,19 +97,21 @@ instructions below. Refer to the <a href="iFit.html">iFit standalone</a> help fo
 <ul>
   
   
-<li><a href="http://ifit.mccode.org/Downloads/binary/glnx32">Debian Linux 32 bits</a> (incl. Ubuntu): Should also work on <span style="font-style: italic;">Linux 64bits. </span>Select the .deb packages (MCR then iFit).</li>
+<li><a href="http://ifit.mccode.org/Downloads/binary/glnx32">Debian Linux 32 bits</a> (incl. Ubuntu): Should also work on <span style="font-style: italic;">Linux 64bits. </span>Select the .deb packages (MCR then iFit) or use <b>Debian repository</b> (see below).<br>
+</li>
 <li><a href="http://ifit.mccode.org/Downloads/binary/glnx32">Other Linux 32 bits</a>: Should also work on <span style="font-style: italic;">Linux 64bits. </span>Use the MCR bin installer and zip archives.</li>
-<li><a href="http://ifit.mccode.org/Downloads/binary/glnx64">Debian Linux 64 bits</a> (incl. Ubuntu): Select the .deb packages (MCR then iFit).</li>
-<li><a href="http://ifit.mccode.org/Downloads/binary/glnx64">Other Linux 64 bits</a>: Use the MCR bin installer and zip archives.</li><li><a href="http://ifit.mccode.org/Downloads/binary/win32">Windows 32 bits</a>: Should also work on <span style="font-style: italic;">Windows 64bits. </span>Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
+<li><a href="http://ifit.mccode.org/Downloads/binary/glnx64">Debian Linux 64 bits</a> (incl. Ubuntu): Select the .deb packages (MCR then iFit)  or use <b>Debian repository</b> (see below).</li>
+<li><a href="http://ifit.mccode.org/Downloads/binary/glnx64">Other Linux 64 bits</a>: Use the MCR bin installer and zip archives.</li><li><a href="http://ifit.mccode.org/Downloads/binary/win32">Windows 32 bits</a>: Should also work on <span style="font-style: italic;">Windows 64bits. </span>Install first the MCR installer then extract the zip archive.<span style="font-style: italic;"><br>
 </span></li>
-<li><a href="http://ifit.mccode.org/Downloads/binary/win64">Windows 64 bits</a>: <span style="font-style: italic;"></span>Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
+<li><a href="http://ifit.mccode.org/Downloads/binary/win64">Windows 64 bits</a>: <span style="font-style: italic;"></span>Use the MCR installer and the zip archive (32 bits version also works).<span style="font-style: italic;"><br>
 </span><a href="http://ifit.mccode.org/Downloads/binary/win64/MCRInstaller64.exe"></a></li>
-<li><a href="http://ifit.mccode.org/Downloads/binary/mac32">Mac OSX 32 bits</a> (Intel): Should also work on <span style="font-style: italic;">MacOSX 64bits.</span> Use the MCR installer and the zip archive.<span style="font-style: italic;"><br>
+<li><a href="http://ifit.mccode.org/Downloads/binary/mac32">Mac OSX 32 bits</a> (Intel): Should also work on <span style="font-style: italic;">MacOSX 64bits.</span> Install first the MCR installer then extract the zip archive.<span style="font-style: italic;"><br>
+</span><span style="font-style: italic;">
 </span></li>
 
 
   
-  <li><a href="http://ifit.mccode.org/Downloads/binary/mac64">Mac OSX 64 bits</a> (Intel): Use the MCR installer and the zip archive.<span style="font-style: italic;"></span><a href="http://ifit.mccode.org/Downloads/binary/mac64/MCRInstaller64.dmg"><br>
+  <li><a href="http://ifit.mccode.org/Downloads/binary/mac64">Mac OSX 64 bits</a> (Intel): Use the MCR installer and the zip archive (32 bits version also works).<a href="http://ifit.mccode.org/Downloads/binary/mac64/MCRInstaller64.dmg"><br>
 </a></li>
 </ul>
 
@@ -117,16 +119,21 @@ instructions below. Refer to the <a href="iFit.html">iFit standalone</a> help fo
 
 </ul>All releases, including old ones and release candidates, can be obtained <a href="http://ifit.mccode.org/Downloads/">here</a>.<br>
 <h3><a class="mozTocH3" name="mozTocId890374"></a>Installation - stand-alone distribution</h3>
-<p>Install the Matlab Compiler Runtime (MCR) for your system if 
-it has not be installed previously (see above for links). This is not required if you only 
-wish to upgrade iFit. Just click
- on OK all the way through. <br>
+<p>Install the Matlab Compiler Runtime (MCR 7.13 R2010a) for your system if 
+it has not been installed previously. This is not required if you only 
+wish to upgrade iFit.<br>
 </p>
 <p><span style="font-weight: bold;">On Debian Linux systems</span><span style="font-weight: bold;"></span>,
- if you use the Debian package installers (.deb), nothing else is 
+an easy way to install packages it to make use of the <a href="http://packages.mccode.org">mccode.org repository</a>.&nbsp;</p>
+<blockquote>
+  <pre>% sudo apt-add-repository 'deb http://packages.mccode.org/debian stable main'<br>% sudo apt-get update<br>% sudo apt-get install ifit MCRInstaller<br></pre>
+</blockquote>
+<p>This can also be done from e.g. <i>Synaptic</i> (menu Settings/repositories) and <i>Ubuntu Software Center</i> (menu Edit/Software Sources) ; tab Other Software/Add... Then select packages <i>ifit</i> and <i>MCRInstaller</i> and install them.<br>
+If you use the Debian package installers (.deb), nothing else is 
 required. Double click the deb packages (MCR, then iFit) and wait. Then 
 you can start iFit from the Dash or from menu <span style="font-style: italic;">Applications/Education/iFit</span>. Drag-n-drop of data files is possible on the iFit launcher, as well as on operator icons from <span style="font-weight: bold; font-style: italic;">/usr/local/ifit/</span>.
 </p>
+
 
 
 <p><span style="font-weight: bold;">On Other Linux systems</span><span style="font-weight: bold;">,</span> we recommend to install the MCR 

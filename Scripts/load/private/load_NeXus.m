@@ -11,10 +11,12 @@ f       = findfield(in, '', 'char');  % get all char paths
 c       = get(in, f);                 % get their content
 nxblock = strcmpi(c, 'NXdata') | strcmpi(c, 'NXdetector');
 field   = f(nxblock);
+clear c;
 
+out = [];
 for index=1:numel(field)
   % create an iData object with the proper Signal, Axes, ...
-  if index == 1
+  if isempty(out)
     out  = load_NeXus_NXdata(in, field{index}, 'overload');
   else
     out = [ out load_NeXus_NXdata(in, field{index}) ];
@@ -203,24 +205,33 @@ for index=1:numel(Axes)
   end
 end
 
-% get title, instrument (from the initial object)
-instrument_path = findfield_all(~cellfun(@isempty, regexp(findfield_all, '\.(instrument)$')));
-if ~isempty(instrument_path)
-  nxdata = setalias(nxdata, 'instrument', instrument_path);
+% create short-cuts to some Mantid groups (from the initial object)
+if nargin >= 3
+  for token={ 'instrument', 'logs', 'process', 'sample' }
+    this_path = findfield_all(~cellfun(@isempty, regexp(findfield_all, [ '\.(' token{1} ')$' ])));
+    if ~isempty(this_path)
+      nxdata = setalias(nxdata, token{1}, this_path{1});
+    end
+  end
 end
+  
+% get title and label
 title_path = findfield_all(~cellfun(@isempty, regexp(findfield_all, '\.(title)$')));
 if ~isempty(title_path)
-  nxdata.Title = get(out, title_path);
+  nxdata.Title = get(out, title_path{1});
 end
 nxdata.Title = [ nxdata.Title '#' group lastword ];
 expid_path = findfield_all(~cellfun(@isempty, regexp(findfield_all, '\.(experiment_identifier)$')));
 if ~isempty(expid_path)
-  nxdata.Title = [ nxdata.Title ' "' get(out, expid_path) '"' ];
+  expid_path = get(out, expid_path{1});
+  if isstruct(expid_path)
+    if isfield(expid_path, 'value'), expid_path = expid_path.value; end
+  end
+  if ischar(expid_path)
+    nxdata.Title = [ nxdata.Title ' "' expid_path '"' ];
+  end
 end
 nxdata.Label = [ group lastword ];
-
-% search for a 'process' group, and build a CommandHistory from it (from the initial object)
-
 
 % ------------------------------------------------------------------------------
 function [base, group, lastword] = load_pathparts(field)

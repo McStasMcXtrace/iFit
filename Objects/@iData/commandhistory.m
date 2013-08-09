@@ -26,11 +26,11 @@ if nargout == 0
   T   = regexprep(T,'\s+',' '); % remove duplicated spaces
   [selection, ok] = listdlg('ListString', s, 'ListSize',[400 300], ...
     'Name', T , ...
-    'PromptString', char(a), 'OKString','OK','CancelString','Save all to file...'); 
+    'PromptString', char(a), 'OKString','Save all to file...','CancelString','OK'); 
   if ~isempty(selection)
     s=s{selection};
   end
-  if ~ok
+  if ok
     % save all commands to a script file
     [filename, pathname] = uiputfile('*.m', 'Save commands to as', [ 'iFit_' a.Tag '_history' ]);
     if filename == 0, return; end % user press Cancel
