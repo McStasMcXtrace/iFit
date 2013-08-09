@@ -54,6 +54,8 @@ end
 
 a = set(a, 'Signal', smoothn(subsref(a,struct('type','.','subs','Signal'), varargin{:})));
 
+a = iData_private_history(a, mfilename, a, varargin{:});
+
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);
 end

@@ -47,7 +47,7 @@
 
 
   
-<li><b>1.5</b>: Improved <a href="Loaders.html">file importation</a> system, <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>, NetCDF/CDF/NeXus/HDF support, import of <a href="http://www.mantidproject.org">Mantid</a> workspaces (HDF/NeXus).<br>
+<li><b>1.5</b>: Improved <a href="Loaders.html">file importation</a> system, <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>, NetCDF/CDF/NeXus/HDF support, import of <a href="http://www.mantidproject.org">Mantid</a> workspaces (HDF/NeXus). New <a href="Math.html">smooth</a> iData method. <a href="Install.html">Installation</a> through Debian repository.<br>
 </li>
 <li><b>1.4</b>: <a href="Python.html">PyFit</a> Python interface. Fix in <a href="Math.html">iData integration</a> routines 
 error bar propagation (trapz, sum, ...). Fix in iData/combine when 
@@ -137,9 +137,9 @@ about 8 Mb/s, mainly limited by the hard disk speed. Some binary files
 can be imported faster (HDF initial access is nearly immediate, whatever be the
 file size). We recommend to use SSD to load files with increased efficiency.<br>
 
-<h4><a class="mozTocH4" name="mozTocId786389"></a>NetCDF files written by Matlab can not be read by other software (hdfview, ncBrowse)</h4>
+<h4><a class="mozTocH4" name="mozTocId786389"></a>CDF files written by Matlab can not be read by other software (hdfview, ncBrowse)</h4>
 
-It has been reported that the NetCDF 2.0 files written by Matlab &lt; 2010b can not be re-opened with other software (<a href="http://meteora.ucsd.edu/%7Epierce/ncview_home_page.html">ncview</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>, <a href="http://www.epic.noaa.gov/java/ncBrowse/">ncBrowse</a>). In such cases, we recommend to rather export in HDF5 format with:<br>
+The <a href="http://en.wikipedia.org/wiki/Common_Data_Format">CDF</a> format (which you can view with <a href="http://www.opendx.org/about.html">OpenDX</a>) is incompatible with the <a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a> one (which you can e.g. view with <a href="http://meteora.ucsd.edu/%7Epierce/ncview_home_page.html">ncview</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>, <a href="http://www.epic.noaa.gov/java/ncBrowse/">ncBrowse</a>, <a href="http://www.giss.nasa.gov/tools/panoply/">Panoply</a>). In such cases, we recommend to rather export in HDF5 format with:<br>
 
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(object, <span style="color: rgb(204, 51, 204);">'file.hdf5'</span>)</pre>
 
