@@ -112,7 +112,7 @@ else
       if length(v) > 32, v = [v(1:29) '...' ]; end 
     end
     if strcmp(s_in.Alias.Names{index}, 'Format') && ~isdeployed
-      if isempty(label), label='help about formats'; end
+      if isempty(label) || strcmp(label, v), label='help about formats'; end
       label=[ '<a href="matlab:doc(iData,''Load'')">' label '</a>' ];
     end
     v = strtrim(v); v(~isstrprop(v,'print') | v=='\')=''; 
