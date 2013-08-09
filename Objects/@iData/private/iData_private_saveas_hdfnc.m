@@ -4,6 +4,12 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
 
   % export all fields
   [fields, types, dims] = findfield(a);
+  
+  if strcmp(format,'cdf')
+    [p, name, ext] = fileparts(filename);
+    filename       = [ fullfile(p, name) '.cdf' ];
+    if exist(filename,'file'), delete(filename); end
+  end
 
   % this will store the list of fields to write
   towrite={};
@@ -33,42 +39,85 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
     % is the field an 'Attribute' ?
     
     % now handle different file formats: HDF5, CDF, NetCDF
-    if strcmpi(format,'cdf')         % CDF
-      % build a list of items to wite in one shot at the end of the routine
+    if strcmpi(format,'cdf')  && (isnumeric(val) || ischar(val))        % CDF
+      % we ignore Attributes (if any)
       n(n == '.') = '_'; 
-      if isempty(towrite)
-        towrite={ n, val };
-      else
-        towrite={ towrite{1:end}, n, val };
+      if ~isempty(strfind(n, '_Attributes_')), continue; end
+      try
+        if isempty(towrite) % first access: create file
+          cdfwrite(filename, {n, val}, 'WriteMode','overwrite');
+          towrite = 'append';
+        else
+          cdfwrite(filename, {n, val}, 'WriteMode','append');
+        end
+      catch
+        fprintf(1, [mfilename  ': Failed to write ' n ' ' class(val) ' ' mat2str(size(val)) '\n' ]);
       end
-      clear val
     elseif strncmpi(format,'hdf',3) % HDF5
-      n(n == '.') = filesep; 
+      n(n == '.') = '/'; % group separator 
       
-      if isempty(towrite)
+      if isempty(towrite) % first access: create file
         % initial write wipes out the file
-        if ~isempty(dir(filename)), delete(filename); end
-        hdf5write(filename, [ filesep 'iData' filesep n ], val, 'WriteMode', 'overwrite');
+        hdf5write(filename, [ '/iData/' n ], val, 'WriteMode', 'overwrite');
         towrite = 'append';
         % write root level attributes: file_name, HFD5_Version, file_time, NeXus_version
       else
         % consecutive calls are appended
         try
-          hdf5write(filename, [ filesep 'iData' filesep n ], val, 'WriteMode', 'append');
+          hdf5write(filename, [ '/iData/' n ], val, 'WriteMode', 'append');
           % when object already exists: we skip consecutive write
           % write group attributes: NXclass=NXentry or NXData
           % when encountering Signal, define its attributes: signal=1; axes={axes names}
         end
       end
+    elseif strcmpi(format,'nc')
+      if isempty(towrite) % first access: create file
+        if ~isempty(dir(filename)), delete(filename); end
+        ncid = netcdf.create(filename, 'CLOBBER');
+        towrite = 'append';
+      end
+      % create dimensions
+      if isvector(val), Dims=length(val); 
+      else              Dims=size(val); end
+      dimId = [];
+      for d=1:length(Dims)
+        dimId = [ dimId netcdf.defDim(ncid, [ n '_' num2str(d) ], Dims(d) ) ];
+      end
+      % get the variable storage class
+      c = class(val);
+      switch class(val)
+        case 'double', t='NC_DOUBLE';
+        case 'single', t='NC_FLOAT';
+        case 'int8',   t='NC_BYTE';
+        case 'char',   t='NC_CHAR';
+        case 'int16',  t='NC_SHORT';
+        case 'int32',  t='NC_INT';
+        % netCDF4 types are converted to NetCDF3
+        case 'uint8',  val=int8(val);  t='NC_BYTE';
+        case 'uint16', val=int16(val); t='NC_SHORT';
+        case 'uint32', val=int32(val); t='NC_INT';
+        case 'uint64', val=int32(val); t='NC_INT';
+        case 'int64',  val=int32(val); t='NC_INT';
+        otherwise, t = ''; continue;
+      end
+      
+      if isempty(t)
+        fprintf(1, [mfilename  ': Failed to write ' n ' ' c ' ' mat2str(size(val)) '\n' ]);
+        continue
+      end
+      % create the Variable, and set its value
+      varid = netcdf.defVar(ncid, n, t, dimId);
+      netcdf.endDef(ncid);
+      netcdf.putVar(ncid, varid, val);
+      netcdf.reDef(ncid);
     end
   end % for
   
-  % write the CDF in one shot
-  if strcmp(format,'cdf')
-    [p, name, ext] = fileparts(filename);
-    filename = fullfile(p, name);
-    cdfwrite(filename, towrite); % automatically adds .cdf
-    filename = [ filename '.cdf' ];
+  % close netCDF file
+  if strcmpi(format,'nc')
+    netcdf.close(ncid);
   end
 
 end % saveas_hdfnc
+
+
