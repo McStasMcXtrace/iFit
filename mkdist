@@ -19,7 +19,17 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+# usage:   mkdist 'dist-name'
+#
+# This command creates a distributable version of the current project.
+# It assembles a ZIP with the source code.
+# When 'mcc' is present, it triggers a stand-alone build and creates a ZIP.
+# When 'dpkg-deb' is present it creates a Debian package after 'mcc'.
+#
+# example: mkdist 1.4
+
 # requires: chroot, dpkg-deb, debootstrap
+# optional: mcc (Matlab) to create binary standalone as zip and debian
 
 # Version: $Revision$
 # define version and symbols that will be replaced in many places

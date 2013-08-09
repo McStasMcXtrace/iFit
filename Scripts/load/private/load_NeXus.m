@@ -2,7 +2,7 @@ function out = load_NeXus(in)
 % format an HDF file with NeXus structure (signal, axes, ...)
 %
 % input:
-%   in:  initial HDF/NeXus data set loaded as a raw iData
+%   in:  initial single HDF/NeXus data set loaded as a raw iData
 % returns:
 %   out: NXdata and NXdetector blocks
 
@@ -11,7 +11,24 @@ f       = findfield(in, '', 'char');  % get all char paths
 c       = get(in, f);                 % get their content
 nxblock = strcmpi(c, 'NXdata') | strcmpi(c, 'NXdetector');
 field   = f(nxblock);
-clear c;
+if isempty(strfind(in.Format, 'NeXus'))
+  in = set(in, 'Format', [ in.Format '/NeXus' ], '');
+end
+
+% find other blocks: NXinstrument, NXsample, NXprocess and create aliases
+for token={ 'instrument', 'sample', 'process'}
+  nxblock = strcmpi(c, [ 'NX' token{1} ]);
+  this_path = f(nxblock); 
+  % remove Attribute stuff
+  if ~isempty(this_path)
+    this_path=this_path{1};
+    index    =strfind(this_path,'.Attributes');
+    if ~isempty(index), this_path= this_path(1:(index-1)); end
+    if ~isempty(this_path) && ~isfield(in, token{1}) && ~isfield(in, [ 'NX' token{1} ])
+      in = setalias(in, token{1}, this_path, [ 'NX' token{1} ] );
+    end
+  end
+end
 
 out = [];
 for index=1:numel(field)
@@ -209,7 +226,7 @@ end
 if nargin >= 3
   for token={ 'instrument', 'logs', 'process', 'sample' }
     this_path = findfield_all(~cellfun(@isempty, regexp(findfield_all, [ '\.(' token{1} ')$' ])));
-    if ~isempty(this_path)
+    if ~isempty(this_path) && ~isfield(nxdata, token{1}) && ischar(this_path{1})
       nxdata = setalias(nxdata, token{1}, this_path{1});
     end
   end
@@ -218,17 +235,17 @@ end
 % get title and label
 title_path = findfield_all(~cellfun(@isempty, regexp(findfield_all, '\.(title)$')));
 if ~isempty(title_path)
-  nxdata.Title = get(out, title_path{1});
+  this = get(out, title_path{1});
+  if ischar(this), nxdata.Title = this; end
 end
-nxdata.Title = [ nxdata.Title '#' group lastword ];
-expid_path = findfield_all(~cellfun(@isempty, regexp(findfield_all, '\.(experiment_identifier)$')));
+expid_path   = findfield_all(~cellfun(@isempty, regexp(findfield_all, '\.(experiment_identifier)$')));
 if ~isempty(expid_path)
   expid_path = get(out, expid_path{1});
   if isstruct(expid_path)
     if isfield(expid_path, 'value'), expid_path = expid_path.value; end
   end
   if ischar(expid_path)
-    nxdata.Title = [ nxdata.Title ' "' expid_path '"' ];
+    nxdata.DisplayName = strtrim([ nxdata.DisplayName ' ' expid_path  ]);
   end
 end
 nxdata.Label = [ group lastword ];
