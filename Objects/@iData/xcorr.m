@@ -20,6 +20,7 @@ function c = xcorr(a,b, shape)
 %          normalize    Normalizes the 'b' filter so that the correlation does not
 %                       change the 'a' signal integral.
 %          background   Remove the background from the filter 'b' (subtracts the minimal value)
+%     Default shape is 'same center'
 %
 % output: c: object or array (iData)
 % ex:     c=xcorr(a,b); c=xcorr(a,b, 'same pad background center normalize');
@@ -29,7 +30,7 @@ function c = xcorr(a,b, shape)
 if nargin ==1
 	b = a;
 end
-if nargin < 3, shape = 'same'; end
+if nargin < 3, shape = 'same center'; end
 
-c = iData_private_binary(a, b, 'xcorr', [ shape ' correlation' ]);
+c = conv(a, b, [ shape ' correlation' ]);
 

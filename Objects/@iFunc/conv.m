@@ -24,6 +24,7 @@ function c = conv(a,b, shape)
 %          normalize    Normalizes the 'b' filter so that the convolution does not
 %                       change the 'a' signal integral.
 %          background   Remove the background from the filter 'b' (subtracts the minimal value)
+%     Default shape is 'same'
 %
 % output: c: object or array (iFunc)
 % ex:     c=conv(a,b); c=conv(a,b, 'same pad background center normalize');
