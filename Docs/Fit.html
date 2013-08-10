@@ -2,20 +2,6 @@
 <html><head>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   <meta http-equiv="content-type" content="text/html; charset=windows-1252">
   <title>iFit: fitting a model onto iData objects</title>
 </head><body>
@@ -165,7 +151,7 @@ fit parameter set for the model obtained during the optimization<br>
   </li>
   <li><span style="font-style: italic;">criteria: </span>is the
 criteria value (<span style="font-style: italic;">least square</span>
-&#967;² by default - see <a href="#mozTocId778987">below</a> on how to
+&#967; by default - see <a href="#mozTocId778987">below</a> on how to
 change this setting)</li>
   <li><span style="font-style: italic;">message: </span>is the final
 optimization routine state (converged, failed, ...)<br>
@@ -534,7 +520,7 @@ during the fit. The main advantage is that constraints can be directly
 related to the name of the model parameters.<br>
 <br>
 To set a constraint on a model parameter, define the 'constraint' input 
-argument when calling <span style="font-weight: bold; font-style: italic;">fits</span> (see <a href="file:///home/farhi/svn/Matlab/iFit/trunk/Docs/Fit.html">Fit</a>) or set the constraint directly on the model 
+argument when calling <span style="font-weight: bold; font-style: italic;">fits</span> or set the constraint directly on the model 
 parameters with:<br>
 
 
@@ -628,20 +614,20 @@ assumes the model function has syntax<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId778987"></a>Specifying the optimization criteria</h3>
 The default optimization criteria is the '<a href="http://en.wikipedia.org/wiki/Least_squares">least square error</a>':<br>
 <br>
-<div style="text-align: center;">&#967;² = &#8721; (Signal-Model)².<br>
+<div style="text-align: center;">&#967; = &#8721; (Signal-Model).<br>
 <br>
 </div>
 When the Monitor is defined (see <a href="iData.html#mozTocId243435">iData</a>
 definition), the Signal is normalized, so that<br>
 <br>
-<div style="text-align: center;">&#967;² = &#8721;
-(Signal/Monitor-Model)².<br>
+<div style="text-align: center;">&#967; = &#8721;
+(Signal/Monitor-Model).<br>
 <br>
 </div>
 When the Error on the Signal is available, the weighted criteria reads<br>
 <br>
-<div style="text-align: center;">&#967;² = &#8721;
-(Signal/Monitor-Model)²/Error².<br>
+<div style="text-align: center;">&#967; = &#8721;
+(Signal/Monitor-Model)/Error.<br>
 </div>
 <br>
 The options.criteria can be defined as the name of a criteria function
@@ -656,7 +642,7 @@ The Signal will be normalized to the Monitor prior to calling the
 criteria. The Error is used as weight.<br>
 The criteria is then normalized to the number of degrees of freedom by dividing it by<br>
 <br>
-<div style="text-align: center;">&#967;² &#8592; &#967;² /(<span style="font-style: italic;">number_of_data_points_in_the_Signal </span>- <span style="font-style: italic;">number_of_parameters</span> -1)<br>
+<div style="text-align: center;">&#967; &#8592; &#967; /(<span style="font-style: italic;">number_of_data_points_in_the_Signal </span>- <span style="font-style: italic;">number_of_parameters</span> -1)<br>
 </div>
 <br>
 The following pre-defined functions can be used as criteria:<br>
