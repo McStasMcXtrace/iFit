@@ -3,7 +3,7 @@ function y=fconv(x, h, shape)
 %   y = FCONV(x, h, shape) convolves x and h. A deconvolution mode is also possible.
 %   The correlation, instead of the convolution, can also be computed.
 %   This FFT based convolution should provide the same results as conv2 and convn.
-%   It works with x and h being of any dimensionality. When only one argument is given, 
+%   It works with x and h being of any dimensionality. When only one argument is given,
 %     the auto-convolution/correlation is computed.
 %   The accuracy of the conv and xcorr operators depends on the sampling. Peaks should
 %     be describes with at least 5 points underneath.
@@ -17,7 +17,7 @@ function y=fconv(x, h, shape)
 %                       without the zero-padded edges. Using this option, y has size
 %                       [mx-mh+1,nx-nh+1] when all(size(x) >= size(h)).
 %          deconv       Performs an FFT deconvolution.
-%          correlation  Compute the correlation instead of the convolution (one 
+%          correlation  Compute the correlation instead of the convolution (one
 %                       of the FFT's is then conjugated).
 %          pad          Pads the x signal by replicating its starting/ending values
 %                       in order to minimize the convolution side effects.
@@ -53,7 +53,7 @@ end
 % suppress background
 if (strfind(shape,'background'))
   h = h-min(h(:));
-end  
+end
 
 % center the filter
 if ~isempty(strfind(shape,'center')) ||  ~isempty(strfind(shape,'centre'))
@@ -90,18 +90,24 @@ if (strfind(shape,'norm'))
   h = h/sum(h(:));
 end
 
+if (strfind(shape,'corr'))
+  % rotate the filter by 180 deg for correlation
+  Ly=size(h);
+  S.type='()';
+  for i=1:length(Ly)
+    S.subs{i} = Ly(i):-1:1;
+  end
+  h=subsref(h,S);
+end
+
 Ly=size(x)+size(h)-1;
 Ly2=Ly;
 for i=1:length(Ly)         % Find smallest power of 2 that is > Ly
   Ly2(i)=pow2(nextpow2(Ly(i)));
 end
 
-X=fftn(x, Ly2);		         % Fast Fourier transform (pads with zeros up to the next power of 2)
+X=fftn(x, Ly2);		       % Fast Fourier transform (pads with zeros up to the next power of 2)
 H=fftn(h, Ly2);	           % Fast Fourier transform
-
-if (strfind(shape,'corr'))
-  H = conj(H);
-end
 
 if (strfind(shape,'deconv'))
   Y=X./H;      	           % FFT Division= deconvolution
@@ -142,7 +148,7 @@ if (strfind(shape,'same'))
     subs{p} = (1:sizeA(p)) + flippedKernelCenter(p) - 1;
   end
   y = y(subs{:});
-  
+
 elseif (strfind(shape,'valid'))
   sizeB = [size(h) ones(1,ndims(y)-ndims(h))];
   outSize = max([size(A) ones(1,ndims(y)-ndims(A))] - sizeB + 1, 0);
@@ -151,7 +157,7 @@ elseif (strfind(shape,'valid'))
     subs{p} = (1:outSize(p)) + sizeB(p) - 1;
   end
   y = y(subs{:});
-  
+
 end
 
 if transpose_x, y=y'; end
@@ -165,7 +171,7 @@ numDims = length(padSize);
 idx = cell(numDims,1);
 for k = 1:numDims
   M = size(a,k);
-  if padSize(k) > 0  
+  if padSize(k) > 0
     onesVector = ones(1,padSize(k));
     idx{k} = [onesVector 1:M M*onesVector];
   else
