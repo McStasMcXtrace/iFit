@@ -22,6 +22,7 @@ function c = conv(a,b, shape)
 %          normalize    Normalizes the 'b' filter so that the convolution does not
 %                       change the 'a' signal integral.
 %          background   Remove the background from the filter 'b' (subtracts the minimal value)
+%     Default shape is 'same'
 %
 % output: c: object or array (iData)
 % ex:     c=conv(a,b); c=conv(a,b, 'same pad background center normalize');
@@ -31,18 +32,18 @@ function c = conv(a,b, shape)
 if nargin ==1
 	b = a;
 end
+if nargin < 3, shape = 'same'; end
 if isscalar(b)
   b = [ 1 mean(getaxis(a,1)) double(b) 0]; % use input as a width
   b = gauss(b, getaxis(a,1));
-  c = convn(a,b);
+  c = conv(a,b,[ shape ' normalize' ]);
   return
 elseif isscalar(a)
-  a = [ 1 mean(getaxis(a,1)) double(a) 0]; % use input as a width
+  a = [ 1 mean(getaxis(b,1)) double(a) 0]; % use input as a width
   a = gauss(a, getaxis(b,1));
-  c = convn(a,b);
+  c = conv(a,b,[ shape ' normalize' ]);
   return
 end
-if nargin < 3, shape = 'same'; end
 
 c = iData_private_binary(a, b, 'conv', shape);
 

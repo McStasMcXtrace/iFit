@@ -23,6 +23,7 @@ function c = xcorr(a,b, shape)
 %                       change the 'a' signal integral.
 %          background   Remove the background from the filter 'b' (subtracts the minimal value)
 %          deconv       Performs a deconvolution/decorrelation
+%     Default shape is 'same center'
 %
 % output: c: object or array (iFunc)
 % ex:     c=xcorr(a,b); c=xcorr(a,b, 'same pad background center normalize');
@@ -32,7 +33,7 @@ function c = xcorr(a,b, shape)
 if nargin ==1
 	b = a;
 end
-if nargin < 3, shape = 'same'; end
+if nargin < 3, shape = 'same center'; end
 
 c = conv(a, b, [ shape ' correlation' ]);
 
