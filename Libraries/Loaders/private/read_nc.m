@@ -1,5 +1,5 @@
 function S = read_nc(File,varargin)
-
+  % read a NetCDF file, using 2 methods
   
   try
     % a NetCDF reader using netcdf lib (faster)
@@ -56,7 +56,7 @@ function obj = read_nc2(File)
     end
   end
 
-  % now read variables: obj.Variables(:) = struct
+  % now read variables: obj.Variables.Name
   obj.Variables = [];
   for ii=1:nvars
       [Variable.Name, Variable.Datatype, dimids, numatts] = ...
@@ -74,10 +74,20 @@ function obj = read_nc2(File)
            Variable.Attributes(end+1) = Attribute;
          end
       end
-      if isempty(obj.Variables)
-        obj.Variables = Variable;
-      else
-        obj.Variables(end+1) = Variable;
+      % store the Variable and Attribute into obj
+      flag = 0; % set when we manage to store the variable
+      if any(Variable.Name == '.') && ~any(isspace(Variable.Name))
+        try
+          eval([ 'obj.Variables.'  Variable.Name '= Variable.Data;' ]);
+          eval([ 'obj.Attributes.' Variable.Name '= Attribute;' ]);
+          flag = 2;   % assign through eval (this_field = 'blah.blah.blah')
+        end
+      end
+      if flag == 0
+        Variable.Name = genvarname(Variable.Name);
+        obj.Variables.(Variable.Name)  = Variable.Data;
+        obj.Attributes.(Variable.Name) = Attribute;
+        flag = 1;
       end
   end
   

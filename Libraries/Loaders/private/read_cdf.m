@@ -4,7 +4,7 @@ function s = read_cdf(filename)
 % turn OFF file validation to improve performance
 cdflib.setValidate('VALIDATEFILEoff');
 
-% gatehr fields and avoid creating Date objects
+% gather fields and avoid creating Date objects
 [data, info] = cdfread(filename, ...
   'CombineRecords',true, 'ConvertEpochToDatenum',true);
 
@@ -25,9 +25,20 @@ if iscell(data)
     if strncmp(this_field,'Data_',5)
       this_field = this_field(6:end);
     end
-    if isvarname(this_field)
+    flag = 0; % set when we manage to store the variable
+    if any(this_field == '.') && ~any(isspace(this_field))
+      try
+        eval([ 's.Variables.' this_field '= data{index};' ]);
+        flag = 2;   % assign through eval (this_field = 'blah.blah.blah')
+      end
+    end
+    if flag == 0
+      this_field               = genvarname(this_field);
       s.Variables.(this_field) = data{index};
-      % is there related attributes ?
+      flag = 1;     % direct assign
+    end
+    if flag
+      % are there related attributes ?
       attribute = info.VariableAttributes;
       if isstruct(attribute)
         % search for a member which is a Mx2 cell
@@ -43,10 +54,16 @@ if iscell(data)
         index = strcmp(this_field, attribute(:,1));
         if any(index)
           % use location [ base group 'Attributes.' lastword ]
-          s.Attributes.(this_field) = attribute{find(index),2};
+          if flag == 1      % direct assign
+            s.Attributes.(this_field) = attribute{find(index),2};
+          elseif flag == 2  % assign through eval (this_field = 'blah.blah.blah')
+            try
+              eval([ 's.Attributes.' this_field '= attribute{find(index),2};' ]);
+            end
+          end
         end
       end
-    end
+    end % if flag
     
   end
 
