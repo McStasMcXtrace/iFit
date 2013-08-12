@@ -2335,7 +2335,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         && (!options.use_binary || file.TargetBin)) {
     /* source file scanning process */
 
-    int  last_is     = 0; /* type of preceeding char */
+    int  last_is     = Beol; /* type of preceeding char */
     int  is          = Beol; /* current char type */
     int  need        = 0; /* what is to be expected for next char */
     int  found       = 0; /* is that char expected ? */
@@ -2400,8 +2400,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         + Bexp       * (c == 'e' && possiblenum)
         /* must be in a number field */
         + Bsign      *((c == '-' || c == '+') && (last_is & (Bexp | Bseparator | Beol)))
-        /* must be after exponent or not in
-        number because starting number */
+        /* must be after exponent or not in number because we start a number */
         + Bcomment   * (ischr(c, options.comment  ) && strlen(options.comment))
         /* comment starts if we are waiting for it */
         + Bseparator * ischr(c, options.separator);
