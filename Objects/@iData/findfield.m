@@ -77,7 +77,7 @@ end
 
 if ~isempty(field)
   if isempty(strfind(option, 'case'))
-    field= lower(field);
+    field = lower(field);
     matchs= lower(match);
   else
     matchs = match;
@@ -118,6 +118,7 @@ function [f, t, n] = iData_getfields(structure, parent)
 
 f=[]; t=[]; n=[];
 if ~isstruct(structure), return; end
+
 if numel(structure) > 1
   structure=structure(:);
   for index=1:length(structure)
@@ -154,7 +155,7 @@ catch
   n = cellfun('prodofsize', c);
 end
 
-if ~isempty(parent), f = strcat([ parent '.' ], f); end
+if ~isempty(parent) && ~isempty(f), f = strcat([ parent '.' ], f); end
 
 % find sub-structures and make a recursive call for each of them
 for index=transpose(find(cellfun('isclass', c, 'struct')))
