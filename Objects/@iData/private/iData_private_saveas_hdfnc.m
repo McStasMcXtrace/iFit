@@ -34,15 +34,16 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
     
     % make sure field name is valid
     n = fields{index};
-    n = n(isstrprop(n,'alphanum') | n == '_'| n == '.');
+    n = n(isstrprop(n,'alphanum') | n == '_' | n == '.');
     
     % is the field an 'Attribute' ?
     
     % now handle different file formats: HDF5, CDF, NetCDF
+
     if strcmpi(format,'cdf')  && (isnumeric(val) || ischar(val))        % CDF
       % we ignore Attributes (if any)
-      n(n == '.') = '_'; 
-      if ~isempty(strfind(n, '_Attributes_')), continue; end
+      % n(n == '.') = '_'; 
+      % if ~isempty(strfind(n, '.Attributes')), continue; end
       try
         if isempty(towrite) % first access: create file
           cdfwrite(filename, {n, val}, 'WriteMode','overwrite');
