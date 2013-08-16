@@ -280,6 +280,7 @@ elseif ~isempty(a.DisplayName)
   if length(g) > 23, g = [ g(1:20) '...' ]; end           % DisplayName
   d = [ d sprintf('%s', g) ];
 end
+T0 = T; % original title, full.
 
 if length(T) > 23, T=[ T(1:20) '...' ]; end
 if length(S)+length(d) < 30,
@@ -312,7 +313,7 @@ else
   if ~isempty(xlab), xlabel(xlab); end
   if ~isempty(ylab), ylabel(ylab); end
 
-  title(textwrap(cellstr(char(T)),80),'interpreter','none');
+  title(textwrap(cellstr(char(T0)),80),'interpreter','none');
 end
 
 % ============================================================================
