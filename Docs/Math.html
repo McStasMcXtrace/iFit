@@ -9,41 +9,17 @@
 <h1 style="text-align: center;">iFit: Mathematical operators</h1>
 
 <br>
-<ol id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
-  <li><a href="#mozTocId186241">A reminder on axes,
-monitors and signal errors</a></li>
-  <li><a href="#mozTocId566959">Unary operators</a>
-    <ol>
-      <li><a href="#mozTocId222123">Fourier transform</a></li>
-      <li><a href="#mozTocId52399">Derivatives</a></li>
-    </ol>
-  </li>
-  <li><a href="#mozTocId660745">Binary operators</a>
-    <ol>
-      <li><a href="#mozTocId121035">Convolution/correlation</a></li>
-      <li><a href="#mozTocId759562">Comparisons</a></li>
-    </ol>
-  </li>
-  <li><a href="#mozTocId779059">Statistics, fitting and peak
-searching</a></li>
-  <li><a href="#mozTocId439767">Projection, integration and sum</a></li>
-  <li><a href="#mozTocId703536">Cutting, Merging and combining
-data sets</a>
-    <ol>
-      <li><a href="#mozTocId258971">Cutting and selecting portions of a
-data set</a></li>
-      <li><a href="#mozTocId256645">The difference between addition
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId186241">A reminder on axes,
+monitors and signal errors</a></li><li><a href="#mozTocId566959">Unary operators</a><ol><li><a href="#mozTocId222123">Fourier transform</a></li><li><a href="#mozTocId663052">Wavelet transform </a></li><li><a href="#mozTocId52399">Derivatives</a></li></ol></li><li><a href="#mozTocId660745">Binary operators</a><ol><li><a href="#mozTocId121035">Convolution/correlation</a></li><li><a href="#mozTocId759562">Comparisons</a></li></ol></li><li><a href="#mozTocId779059">Statistics, fitting and peak
+searching</a></li><li><a href="#mozTocId439767">Projection, integration and sum</a></li><li><a href="#mozTocId703536">Cutting, Merging and
+combining
+data sets</a><ol><li><a href="#mozTocId258971">Cutting and selecting
+portions of a data set</a></li><li><a href="#mozTocId256645">The difference between addition
 and
-combination</a></li>
-    </ol>
-  </li>
-  <li><a href="#mozTocId747982">Appending and slicing
-data sets</a></li>
-  <li><a href="#mozTocId831526">Creating arrays of
-objects</a></li>
-  <li><a href="#mozTocId208686">Interpolation, intersection and union</a></li>
-</ol>
+combination</a></li></ol></li><li><a href="#mozTocId747982">Appending and slicing
+data sets</a></li><li><a href="#mozTocId831526">Creating arrays of
+objects</a></li><li><a href="#mozTocId208686">Interpolation, smoothing,
+intersection and union</a></li></ol>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">iData</span>, maths, <a href="Methods.html">methods</a><br>
@@ -201,7 +177,7 @@ Monitor<br>
       <td style="vertical-align: top;">Tangent. Signal is in [rad]</td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">cosh, sinh, tanh<br>
+      <td style="vertical-align: top; font-weight: bold;">cosh, sinh, tanh<br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
@@ -213,7 +189,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">acosh, asinh, atanh</td>
+      <td style="vertical-align: top; font-weight: bold;">acosh, asinh, atanh</td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;"><br>
@@ -389,7 +365,7 @@ Monitor<br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
-      <td style="vertical-align: top;">Fourier transform (see <a href="#mozTocId401065">below</a>)<br>
+      <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Fourier_transform">Fourier transform</a> (see <a href="#mozTocId401065">below</a>)<br>
       </td>
     </tr>
     <tr>
@@ -401,6 +377,18 @@ Monitor<br>
       <td style="vertical-align: top;">inverse Fourier transform</td>
     </tr>
     <tr>
+  <td style="vertical-align: top;"><span style="font-weight: bold;">cwt</span><br>
+  </td>
+  <td style="vertical-align: top;">Wavelet(Signal)<br>
+  </td>
+  <td style="vertical-align: top;"><br>
+  </td>
+  <td style="vertical-align: top;"><br>
+  </td>
+  <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Continuous_wavelet_transform">Continuous wavelet transform</a> (see <a href="#mozTocId663052">below</a>)<br>
+  </td>
+</tr>
+<tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">del2</span><br>
       </td>
       <td style="vertical-align: top;">&#8711;<sup>2</sup>(Signal)<br>
@@ -408,7 +396,7 @@ Monitor<br>
       <td style="vertical-align: top;">&#8711;<sup>2</sup>(Error)</td>
       <td style="vertical-align: top;"><br>
       </td>
-      <td style="vertical-align: top;">Laplacian &#8721;<sub>i</sub> &#8706;<sup>2</sup>Signal/&#8706;<sup>2</sup>X<sub>i</sub></td>
+      <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Laplacian">Laplacian</a> &#8721;<sub>i</sub> &#8706;<sup>2</sup>Signal/&#8706;<sup>2</sup>X<sub>i</sub></td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">gradient</span><br>
@@ -418,7 +406,7 @@ Monitor<br>
       <td style="vertical-align: top;">&#8711;(Error)</td>
       <td style="vertical-align: top;"><br>
       </td>
-      <td style="vertical-align: top;">Gradient (partial derivatives)<br>
+      <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Gradient">Gradient</a> (partial derivatives)<br>
       </td>
     </tr>
     <tr>
@@ -457,19 +445,30 @@ Monitor<br>
       <td style="vertical-align: top;">&#8747;(Error)</td>
       <td style="vertical-align: top;"><br>
       </td>
-      <td style="vertical-align: top;">Trapezoidal integration<br>
+      <td style="vertical-align: top;">Trapezoidal <a href="http://en.wikipedia.org/wiki/Integral">integration</a><br>
       </td>
     </tr><tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">cumsum</span><br>
       </td>
       <td style="vertical-align: top;">&#8747;<sub>0</sub><sup>x</sup>(Signal)</td>
-      <td style="vertical-align: top;">&#8747;<sub>0</sub><sup>x</sup>(Error)
+      <td style="vertical-align: top;">&#8747;<sub>0</sub><sup>x</sup>(Error
       </td>
       <td style="vertical-align: top;"><br>
       </td>
-      <td style="vertical-align: top;">Primitive<br>
+      <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Primitive_function">Primitive</a><br>
       </td>
-    </tr>
+    </tr><tr>
+  <td style="vertical-align: top;"><span style="font-weight: bold;">smooth</span><br>
+  </td>
+  <td style="vertical-align: top;">Smoothed(Signal)<br>
+  </td>
+  <td style="vertical-align: top;">Smoothed(Error)</td>
+  <td style="vertical-align: top;"><br>
+  </td>
+  <td style="vertical-align: top;">Robust spline smoothing based on cosine transform<br>
+  </td>
+</tr>
+
 
   </tbody>
 </table>
@@ -482,7 +481,7 @@ The <span style="font-weight: bold;">sqr</span> operator is a short
 cut for <span style="font-weight: bold;">power</span> 2.<br>
 <h4><a class="mozTocH4" name="mozTocId222123"></a>Fourier transform</h4>
 <a href="images/iData_fft.png"><img alt="iData/fft" title="iData/fft" src="images/iData_fft.png" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>The
-Fourier Transform operators <span style="font-weight: bold;">fft</span>
+<a href="http://en.wikipedia.org/wiki/Fourier_transform">Fourier Transform</a> operators <span style="font-weight: bold;">fft</span>
 and 'inverse' <span style="font-weight: bold;">ifft</span> perform a Discrete
 FFT computation from an N-dimensional object. The axes are converted to
 frequency/reciprocal axes.<br>
@@ -496,6 +495,22 @@ the initial signal (within the computation approximations).<br>
 <br>
 The convolution operator, which uses FFT multiplication, is detailed <a href="#mozTocId880437">below</a>. The frequency power-spectrum is the
 square of the modulus of the FFT, sqr(abs(FFT)).<br>
+<h4><a class="mozTocH4" name="mozTocId663052"></a>Wavelet transform <br>
+</h4>
+Going further than the FFT, the <span style="font-weight: bold;">cwt</span> method computes the <a href="http://en.wikipedia.org/wiki/Continuous_wavelet_transform">continuous wavelet transform</a>
+ of a data set. It corresponds to the decomposition of the signal along a
+ wavelet basis function set, that is a multi-scale analysis of the 
+signal along an axis. In the following example, we analyse a 2D powder 
+neutron diffractogram with the <span style="font-style: italic;">cwt</span> and the <span style="font-style: italic;">slice</span> methods.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/Diff_BananaPSD_1314088587.th_y'</span>);<br>&gt;&gt; w=<span style="color: rgb(51, 102, 255);">cwt</span>(a, 2);	<span style="font-style: italic;">% the cwt along the axis rank 2 (scattering angle)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot<span style="color: rgb(0, 0, 0);">(a); </span>slice</span><span style="color: rgb(51, 102, 255);"></span>(<span style="color: rgb(51, 102, 255);">log</span>(<span style="color: rgb(51, 102, 255);">abs</span>(w).^2))	% plot the initial data set and its cwt power spectrum<br></pre>
+The resulting plot shows the sharp features (peaks) for small 'periods',
+ and the broad features (background) for large periods (upper part of 
+the representation). The period axis is here shown in log10 scale of the
+ initial axis (degrees) and corresponds to the width of the wavelet.<br>
+<br>
+<div style="text-align: center;"><a href="images/iData_cwt.png"><img alt="iData:cwt" title="iData:cwt" src="images/iData_cwt.png" style="border: 0px solid; width: 451px; height: 200px;"></a><br>
+</div>
+
 <h4><a class="mozTocH4" name="mozTocId52399"></a>Derivatives</h4>
 <a href="images/iData_gradient.png"><img alt="iData/gradient" title="iData/gradient" src="images/iData_gradient.png" style="border: 0px solid ; width: 200px; height: 272px;" align="right"></a>The
 <span style="font-weight: bold;">gradient</span> operator computes the
@@ -674,7 +689,7 @@ independently (see <a href="#mozTocId97186">below</a>). Event lists objects are 
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">power <span style="font-weight: normal;">and</span> ^<br>
+      <td style="vertical-align: top; font-weight: bold;">power <span style="font-weight: normal;">and</span> .^<br>
       </td>
       <td style="vertical-align: top;">m3*(s1/m1)<sup>(s2/m2)</sup><br>
       </td>
@@ -711,7 +726,7 @@ with dimensionality expansion.<br>
       <span style="font-style: italic;"> (this may be inappropriate)</span></td>
       <td style="vertical-align: top;">m1*m2<br>
       </td>
-      <td style="vertical-align: top;">convolution (see <a href="#mozTocId880437">below)</a><br>
+      <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Convolution">convolution</a> (see <a href="#mozTocId880437">below)</a><br>
       </td>
     </tr>
     <tr>
@@ -721,7 +736,7 @@ with dimensionality expansion.<br>
       <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²]
       <span style="font-style: italic;"> (this may be inappropriate)</span></td>
       <td style="vertical-align: top;">m1*m2</td>
-      <td style="vertical-align: top;">correlation (see&nbsp;<a href="#mozTocId880437">below)</a></td>
+      <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Cross-correlation">cross correlation</a> (see&nbsp;<a href="#mozTocId880437">below)</a></td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">interp</span><br>
@@ -810,7 +825,7 @@ detailed in the section '<a href="#mozTocId97186">Merging and combining
 data sets</a>' below. In particular, the difference between the
 summation and the combination will be detailed there.<br>
 <h4><a class="mozTocH4" name="mozTocId121035"></a>Convolution/correlation</h4>
-The convolution operator uses an FFT method to compute the convolution
+The <a href="http://en.wikipedia.org/wiki/Convolution">convolution</a> operator <span style="font-weight: bold;">conv</span> uses a FFT method to compute the convolution
 of one iData with anything else. In the background it uses the <span style="font-weight: bold; font-style: italic;">fconv</span> and <span style="font-weight: bold; font-style: italic;">fconvn</span> function
 (see <a href="Models.html#mozTocId937554">Models</a>), which can be
 called directly when building fit functions.<br>
@@ -842,7 +857,7 @@ ones from <span style="font-style: italic;">'a'</span> in range
 An other example of fit function with convolution is detailed in the <a href="Models.html#mozTocId937554">Models</a> help page.<br>
 <br>
 Similarly, the <span style="font-weight: bold;">xcorr</span> operator
-computes the correlation of two signals. The auto-correlation is simply
+computes the <a href="http://en.wikipedia.org/wiki/Cross-correlation">cross correlation</a> of two signals. The auto-correlation is simply
 <span style="font-style: italic;">xcorr(a)</span>.<br>
 <br><span style="color: rgb(255, 0, 0);">
 Warning: </span>The accuracy of the <span style="font-style: italic;">conv</span> and <span style="font-style: italic;">xcorr</span>
@@ -877,7 +892,7 @@ x, z ...<br>
 <pre style="margin-left: 40px;"><a href="images/iData_plot_1d.png"><img alt="iData plot1d: std, min, max..." title="iData plot1d: std, min, max..." src="images/iData_plot_1d.png" style="border: 0px solid ; width: 300px; height: 266px;" align="right"></a></pre>
 The <span style="font-weight: bold;">std</span> method provides an
 easy way to determine Gaussian widths of Signal distributions along
-axes. It returns the half width and center of the Signal distribution.<br>
+axes. It returns the half width (2nd moment) and center (1st moment) of the Signal distribution.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>);<br>&gt;&gt; [w,x]=<span style="color: rgb(51, 102, 255);">std</span>(a)<br>w =<br>    0.0036<br>x =<br>    1.0007<br>&gt;&gt; [ min(a) max(a) median(a) mean(a) ]<br>ans =<br><br>            0         7387          119       1630.7<br></pre>
 indicates that the <span style="font-style: italic;">Signal</span> is
 distributed in 1.0007 ± 0.0036, and gives min, max, ... As a
@@ -890,7 +905,7 @@ get similar values from <span style="font-weight: bold;">fits</span>
 and <span style="font-weight: bold;">max</span> in this example.<br>
 <br>
 It is also possible to compute with the <b>corrcoef</b> method the 
-correlation between an object and something else, e.g. a vector, an 
+correlation coefficient between an object and something else, e.g. a vector, an 
 iFunc model or a single vector of same length as the object signal.<br>
 <br>
 These operators apply iteratively on object arrays. The <span style="font-style: italic;">mean</span> and <span style="font-style: italic;">median</span> then point to the <span style="font-style: italic;">combine</span> operator, the <span style="font-style: italic;">min</span> and <span style="font-style: italic;">max</span> return the minimum and maximum
@@ -949,6 +964,8 @@ In the case where a better peak estimate is required, or any other
 advanced model parameter determination, the <a href="Fit.html"><span style="font-weight: bold;">fits</span></a> method can be used. This
 latter makes use of the <span style="font-weight: bold;">eval</span>
 method, which evaluates a model function onto the object axes.<br>
+<br>
+The wavelet transform <span style="font-weight: bold;">cwt</span> may also be used to perform a peak analysis, separating sharp features from broad ones (see <a href="#mozTocId663052">above</a>).<br>
 <h3><a class="mozTocH3" name="mozTocId439767"></a><span style="font-weight: bold;">Projection, integration and sum</span></h3>
 <a href="images/iData_sum_camproj.png"><img alt="iData: sum and projection" title="iData: sum and projection" src="images/iData_sum_camproj.png" style="border: 0px solid ; width: 200px; height: 408px;" align="right"></a>There
 are
