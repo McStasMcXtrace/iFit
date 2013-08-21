@@ -31,21 +31,21 @@ function [attribute, f] = iData_getAttribute(in, field)
     end
     
   end
-  
+    
   % if we use 'Attributes' from e.g. read_hdf/HDF or NetCDF/CDF
   % we e.g. relate in.Data.<group>.<field> 
   %      to label  in.Data.<group>.Attributes.<field>
-  if ~isempty(findfield(in, 'Attributes'))
-    % get group and field names
-    [base, group, lastword] = getAttributePath(field);
-    % we prepend the last word with Attributes. and check for existence
-    for f={ [ base group lastword '.Attributes' ], ...
-            [ base group 'Attributes.' lastword ] , ...
-            [ base group 'Attributes' ] }
-      try
-        attribute = get(in, f); % evaluate to get content of link
-        if ~isempty(attribute), return; end
-      end
+
+  % get group and field names
+  [base, group, lastword] = getAttributePath(field);
+  list = { [ base group lastword '.Attributes' ], ...
+          [ base group 'Attributes.' lastword ]};
+  
+  % we prepend the last word with Attributes. and check for existence
+  for f=list
+    try
+      attribute = get(in, f{1}); % evaluate to get content of link
+      if ~isempty(attribute), return; end
     end
   end
   

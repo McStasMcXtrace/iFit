@@ -180,7 +180,7 @@ for i = 1:length(S)     % can handle multiple index levels
       end
     elseif any(strcmpi(fieldname, getalias(a)))
       b = iData_getAliasValue(b,fieldname);
-    elseif any(strcmp(fieldname,method)) % b.method = ismethod(b, fieldname)
+    elseif isiData && any(strcmp(fieldname,method)) % b.method = ismethod(b, fieldname)
       if i == length(S)
         if nargout(fieldname) ==0
           feval(fieldname, b);

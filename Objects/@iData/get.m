@@ -22,11 +22,13 @@ function [varargout] = get(this,varargin)
 % calls: subsref (mainly): get is a wrapper to subsref
 
 persistent fields
+persistent method
+
+if isempty(fields), fields=fieldnames(iData); end
+if isempty(method), method=methods('iData'); end
 
 % handle array of objects
 varargout = {};
-
-if isempty(fields), fields=fieldnames(iData); end
 
 if numel(this) > 1
   varg = cell(1, numel(this));
@@ -62,14 +64,14 @@ for index=1:length(varargin)
     iData_private_error(mfilename, [ 'PropertyName should be char strings in object ' inputname(1) ' ' this.Tag ' "' this.Title '" and not ' class(property) ]);
   end
   % test if this is a unique property, or a composed one
-  if isvarname(property) || isvalid(property) % extract iData field/alias
+  if isvalid(property) || isvarname(property) % extract iData field/alias
     if any(strcmp(property, fields))
       b = this.(property);               % direct static field
       if isnumeric(b) && any(strcmp(property, {'Date','ModificationDate'}))
         b = datestr(b);
       end
       out{end+1} = b;
-    else
+    elseif ~any(strcmp(property, method))
       % a string containing members MAIN TIME SPENT
       s = [];
       split = textscan(property,'%s','Delimiter','.'); split=split{end};
@@ -104,8 +106,8 @@ function this = get_eval(this, property)
     this = eval(property);              % this is a full expression: evaluate it...
   end
 
-  function TF = isvalid(property)
-    TF = isstrprop(property, 'alphanum') | (property == '_') | (property == '.');
-    TF = all(TF);
+function TF = isvalid(property)
+  TF = isstrprop(property, 'alphanum') | (property == '_');
+  TF = all(TF);
   
     
