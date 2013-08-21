@@ -6,10 +6,12 @@ function [filename,format] = saveas(a, varargin)
 %   saveas(iData,'formats')
 %     prints a list of supported export formats.
 %   saveas(iData,'file.ext')            determine file format from the extension
-%   saveas(iData,'file','format')       sets file format explicitly
-%   saveas(iData,'file','format clean') sets file format explicitly and remove NaN and Inf.
-%     To load back a model from an m-file, type its file name at the prompt.
-%     To load back a model from an mat-file, type 'load filename.mat' at the prompt.
+%   saveas(iData,'file','format')       set file format explicitly
+%   saveas(iData,'file','format clean') set file format explicitly and remove NaN and Inf.
+%   saveas(iData,'file','format data')  save only the 'Data' part of the object. 
+%
+%     To load back an object from a m-file, type its file name at the prompt.
+%     To load back an object from a mat-file, type 'load filename.mat' at the prompt.
 %
 %  Type <a href="matlab:doc(iData,'Save')">doc(iData,'Save')</a> to access the iFit/Save Documentation.
 %
@@ -17,6 +19,7 @@ function [filename,format] = saveas(a, varargin)
 %         filename: name of file to save to. Extension, if missing, is appended (char)
 %                   If the filename already exists, the file is overwritten.
 %                   If given as filename='gui', a file selector pops-up
+%                   If the filename is empty, the object Tag is used.
 %         format: data format to use (char), or determined from file name extension
 %           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set
@@ -54,18 +57,21 @@ function [filename,format] = saveas(a, varargin)
 % output: f: filename(s) used to save data (char)
 % ex:     b=saveas(a, 'file', 'm');
 %         b=saveas(a, 'file', 'svg', 'axis tight');
+%         b=saveas(a, 'file', 'hdf data');
 %
+% Version: $Revision$
+% See also iData, iData/load, iData/getframe, save
+
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 
-%   iData_private_saveas_hdfnc
 %   medf_write
 %   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
 %   stlwrite
 %   struct2xml
 %   yaml (in Objects)
+%   mat2json
 %
-% Version: $Revision$
-% See also iData, iData/load, iData/getframe, save
+%   iData_private_saveas_hdfnc
 
 % default options checks
 if nargin < 2, filename = ''; else filename = varargin{1}; end
@@ -152,6 +158,13 @@ if ~isempty(index)
   index=index(1);
   format(index:(index+length('clean')-1)) = '';
   a = iData_private_cleannaninf(a);
+end
+
+% search the word 'data' to only save object Data property (for HDF,CDF,NetCDF)
+if ~isempty(strfind(lower(format), 'data')) 
+  format = strrep(format, 'data', '');
+  root   = 'Data';
+else root='';
 end
 
 % format='gui' pops-up a list of available file formats, if not given from file extension
@@ -286,7 +299,7 @@ case 'mat'  % single mat-file Matlab output (binary), with the full object descr
     save(filename, a.Tag);
   end
 case {'hdf5','nc','cdf', 'nx','h5','nxs','n5'} % HDF5, CDF, NetCDF formats: converts fields to double and chars
-  filename = iData_private_saveas_hdfnc(a, filename, format); % inline function (below)
+  filename = iData_private_saveas_hdfnc(a, filename, format, root); % private function
 case 'edf'  % EDF ESRF format
   filename = medfwrite(a, filename); % in private
 case 'vtk'  % VTK volume
