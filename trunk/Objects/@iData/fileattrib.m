@@ -1,4 +1,4 @@
-function [b, link] = fileattrib(a, field)
+function [b, link] = fileattrib(a, field, allfields)
 % [attribute, link] = fileattrib(s, field) : return a field Attribute
 %
 %   @iData/fileattrib function which looks for an associated Attribute to a field.
@@ -24,20 +24,30 @@ if numel(a) > 1
   return
 end
 
+if nargin < 3
+  allfields = findfield(a);
+end
+
 if iscellstr(field)  && numel(field) > 1
   b = cell(1, numel(field)); link=b;
   for index=1:numel(field)
-    [b{index},link{index}] = feval(mfilename, a, field{index});
+    [b{index},link{index}] = feval(mfilename, a, field{index}, allfields);
   end
   return
 end
 
 field = char(field);
 
+b = []; link = '';
+
 if nargin == 1
   [status, b] = fileattrib(a.Source);
   link        = a.Source;
   if ~status, b = []; end
 else
-  [b, link] = iData_getAttribute(a, field);
+  
+  if any(strcmp(field, allfields))
+    [b, link] = iData_getAttribute(a, field);
+  end
 end
+
