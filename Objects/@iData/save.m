@@ -6,10 +6,12 @@ function [filename,format] = save(a, varargin)
 %   save(iData,'formats')
 %     prints a list of supported export formats.
 %   save(iData,'file.ext')            determine file format from the extension
-%   save(iData,'file','format')       sets file format explicitly
-%   save(iData,'file','format clean') sets file format explicitly and remove NaN and Inf.
-%     To load back a model from an m-file, type its file name at the prompt.
-%     To load back a model from an mat-file, type 'load filename.mat' at the prompt.
+%   save(iData,'file','format')       set file format explicitly
+%   save(iData,'file','format clean') set file format explicitly and remove NaN and Inf.
+%   save(iData,'file','format data')  save only the 'Data' part of the object. 
+%
+%     To load back an object from a m-file, type its file name at the prompt.
+%     To load back an object from a mat-file, type 'load filename.mat' at the prompt.
 %
 %  Type <a href="matlab:doc(iData,'Save')">doc(iData,'Save')</a> to access the iFit/Save Documentation.
 %
@@ -17,6 +19,7 @@ function [filename,format] = save(a, varargin)
 %         filename: name of file to save to. Extension, if missing, is appended (char)
 %                   If the filename already exists, the file is overwritten.
 %                   If given as filename='gui', a file selector pops-up
+%                   If the filename is empty, the object Tag is used.
 %         format: data format to use (char), or determined from file name extension
 %           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set
@@ -54,13 +57,7 @@ function [filename,format] = save(a, varargin)
 % output: f: filename(s) used to save data (char)
 % ex:     b=save(a, 'file', 'm');
 %         b=save(a, 'file', 'svg', 'axis tight');
-%
-% Contributed code (Matlab Central): 
-%   plot2svg:   Juerg Schwizer, 22-Jan-2006 
-%   iData_private_save_hdfnc
-%   pmedf_write
-%   fitswrite:  R. G. Abraham, Institute of Astronomy, Cambridge University (1999)
-%   stlwrite
+%         b=save(a, 'file', 'hdf data');
 %
 % Version: $Revision$
 % See also iData, iData/saveas, iData/load, iData/getframe, save, saveas

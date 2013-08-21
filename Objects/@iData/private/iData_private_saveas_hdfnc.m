@@ -1,6 +1,10 @@
-function filename = iData_private_saveas_hdfnc(a, filename, format)
+function filename = iData_private_saveas_hdfnc(a, filename, format, root)
 % private function to write HDF, CDF and NetCDF files
   % format='HDF','CDF','NC' (netCDF)
+  % root  ='path where to start to save hierarchy' e.g. 'Data' or '' for all
+  
+  if nargin < 3, format='hdf5'; end
+  if nargin < 4, root  =''; end
 
   % export all fields
   [fields, types, dims] = findfield(a);
@@ -13,6 +17,10 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
   
   for index=1:length(fields(:)) % scan all field names
     if isempty(fields{index}), continue; end
+    % ignore fields that do not match root level
+    if ~isempty(root) && ~strncmp(root, fields{index}, length(root))
+      continue;
+    end
     
     % get the field value
     val=get(a, fields{index});
@@ -33,13 +41,12 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
       continue;
     end
     
-    % make sure field name is valid: n = [ group '.' dataset ]
+    % split field name into: n = [ group '.' dataset ]
     n = fields{index};
-    n = n(isstrprop(n,'alphanum') | n == '_' | n == '.');
     
     % get group attributes (if any)
     p       = find(n == '.', 1, 'last');
-    group   = n(1:(p-1));
+    group   = n(1:(p-1)); % does not have a '.' at the end
     if ~isempty(p),
       group_attr = fileattrib(a, group, fields);
       dataset    = n((p+1):end);
@@ -48,7 +55,17 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
       dataset    = n;
     end
     
-    % now assemble the list of items for CDF and HDF output
+    % get rid of root levewhen specified
+    if ~isempty(root)
+      % we already have strncmp(root, fields{index}, length(root))
+      % so just move forward and skip potential '.'
+      n     = n((length(root)+1):end);
+      if n(1)     == '.', n    =n(2:end); end
+      group = group((length(root)+1):end);
+      if group(1) == '.', group=group(2:end); end
+    end
+    
+    % now assemble the list of items for CDF and HDF output (requires double memory)
     % direct write for NetCDF.
     
     % now handle different file formats: HDF5, CDF, NetCDF
