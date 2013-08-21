@@ -4,25 +4,20 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
 
   % export all fields
   [fields, types, dims] = findfield(a);
-  
-  if strcmp(format,'cdf')
-    [p, name, ext] = fileparts(filename);
-    filename       = [ fullfile(p, name) '.cdf' ];
-    if exist(filename,'file'), delete(filename); end
-  end
 
   % this will store the list of fields to write
-  towrite={};
+  mode='overwrite'; write_list={}; 
+  attr_list       ={};  % attributes for HDF
+  varAttribStruct = []; % attributes for CDF
+  globalAttributes= []; % global attributes for CDF
+  
   for index=1:length(fields(:)) % scan all field names
     if isempty(fields{index}), continue; end
     
     % get the field value
     val=get(a, fields{index});
     if strcmp(types{index}, 'hdf5.h5string'), val = char(val.Data); end
-    if isstruct(val) & length(val) > 1
-      val = val(1);
-      iData_private_warning(mfilename,[ 'Export of member ' fields{index} ' in object ' inputname(1) ' ' a.Tag ' is a structure array. Selecting only 1st element.' ]);
-    end
+    if isstruct(val), continue; end
     if iscellstr(val), 
       val=val(:);
       val(:, 2)={ ';' }; 
@@ -32,50 +27,125 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
     if ~isnumeric(val) && ~ischar(val), continue; end
     if isempty(val),                    continue; end % does not support empty values when writing CDF
     
-    % make sure field name is valid
+    % has the field some 'Attributes' ?
+    [dataset_attr, link] = fileattrib(a, fields{index}, fields);
+    if strcmp(link, fields{index}) || ~isempty(strfind(fields{index}, 'Attributes'))
+      continue;
+    end
+    
+    % make sure field name is valid: n = [ group '.' dataset ]
     n = fields{index};
     n = n(isstrprop(n,'alphanum') | n == '_' | n == '.');
     
-    % is the field an 'Attribute' ?
+    % get group attributes (if any)
+    p       = find(n == '.', 1, 'last');
+    group   = n(1:(p-1));
+    if ~isempty(p),
+      group_attr = fileattrib(a, group, fields);
+      dataset    = n((p+1):end);
+    else 
+      group_attr = [];
+      dataset    = n;
+    end
+    
+    % now assemble the list of items for CDF and HDF output
+    % direct write for NetCDF.
     
     % now handle different file formats: HDF5, CDF, NetCDF
 
-    if strcmpi(format,'cdf')  && (isnumeric(val) || ischar(val))        % CDF
-      % we ignore Attributes (if any)
-      % n(n == '.') = '_'; 
-      % if ~isempty(strfind(n, '.Attributes')), continue; end
-      try
-        if isempty(towrite) % first access: create file
-          cdfwrite(filename, {n, val}, 'WriteMode','overwrite');
-          towrite = 'append';
-        else
-          cdfwrite(filename, {n, val}, 'WriteMode','append');
-        end
-      catch
-        fprintf(1, [mfilename  ': Failed to write ' n ' ' class(val) ' ' mat2str(size(val)) '\n' ]);
-      end
-    elseif strncmpi(format,'hdf',3) % HDF5
-      n(n == '.') = '/'; % group separator 
+    % CDF ----------------------------------------------------------------------
+    if strcmpi(format,'cdf')  && (isnumeric(val) || ischar(val))
+    
+      write_list = [ write_list , n, val ]; % add Variable
       
-      if isempty(towrite) % first access: create file
-        % initial write wipes out the file
-        hdf5write(filename, [ '/iData/' n ], val, 'WriteMode', 'overwrite');
-        towrite = 'append';
-        % write root level attributes: file_name, HFD5_Version, file_time, NeXus_version
-      else
-        % consecutive calls are appended
-        try
-          hdf5write(filename, [ '/iData/' n ], val, 'WriteMode', 'append');
-          % when object already exists: we skip consecutive write
-          % write group attributes: NXclass=NXentry or NXData
-          % when encountering Signal, define its attributes: signal=1; axes={axes names}
+      % write dataset attributes
+      if isstruct(dataset_attr) && ~any(strcmp(n, attr_list))
+        for f = fieldnames(dataset_attr)' % write all attributes one-by-one
+          if ~isempty(dataset_attr.(f{1})) && ~isstruct(dataset_attr.(f{1}))
+            if ~isfield(varAttribStruct, f{1})
+              varAttribStruct.(f{1}) = { n dataset_attr.(f{1}) };
+            else
+              varAttribStruct.(f{1}) = [ varAttribStruct.(f{1}) ; ...
+                                       { n dataset_attr.(f{1}) } ];
+            end
+          end
         end
+        attr_list{end+1} = n;
       end
+      
+      % write group attributes
+      if isstruct(group_attr) && ~any(strcmp(group, attr_list))
+        for f = fieldnames(group_attr)' % write all attributes one-by-one
+          if ~isempty(group_attr.(f{1})) && ~isstruct(group_attr.(f{1})) ...
+            && ~isfield(globalAttributes, f{1})
+            globalAttributes.(f{1}) = group_attr.(f{1});
+          end
+        end
+        attr_list{end+1} = group;
+      end
+      
+      
+    % HDF5 ---------------------------------------------------------------------
+    elseif strncmpi(format,'hdf',3)
+      % the function hdf5write requires to write all (datasets+attributes) in 
+      % one single shot. We assemble the list of items to write in a cell, and
+      % then flush.
+      
+      n(n == '.')         = '/'; % handle path separator for HDF
+      if isempty(group), group = '/';
+      else               group(group == '.') = '/';
+      end
+      
+      details.Location = group;
+      details.Name     = dataset;
+      write_list       = [ write_list , details, val ];
+      
+      % write dataset attributes
+      if isstruct(dataset_attr) && ~any(strcmp(n, attr_list))
+        attr_details.AttachedTo = n;
+        attr_details.AttachType = 'dataset';
+        for f = fieldnames(dataset_attr)' % write all attributes one-by-one
+          attr_details.Name = f{1};
+          if ~isempty(dataset_attr.(f{1})) && ~isstruct(dataset_attr.(f{1}))
+            write_list       = [ write_list , attr_details, dataset_attr.(f{1}) ];
+          end
+        end
+        attr_list{end+1} = n;
+      end
+      
+      % write group attributes
+      if isstruct(group_attr) && ~any(strcmp(group, attr_list))
+        attr_details.AttachedTo = group;
+        attr_details.AttachType = 'group';
+        for f = fieldnames(group_attr)'
+          attr_details.Name = f{1}; % write all attributes one-by-one
+          if ~isempty(group_attr.(f{1})) && ~isstruct(group_attr.(f{1}))
+            write_list       = [ write_list , attr_details, group_attr.(f{1}) ];
+          end
+        end
+        attr_list{end+1} = group;
+      end
+      
+      % add root level attributes (if any, only once)
+      root_attr = fileattrib(a, 'Data', fields);
+      if isstruct(root_attr) && ~any(strcmp('/', attr_list))
+        attr_details.AttachedTo = '/';
+        attr_details.AttachType = 'group';
+        for f = fieldnames(root_attr)'
+          attr_details.Name = f{1}; % write all attributes one-by-one
+          if ~isempty(root_attr.(f{1})) && ~isstruct(root_attr.(f{1}))
+            write_list       = [ write_list , attr_details, root_attr.(f{1}) ];
+          end
+        end
+        attr_list{end+1} = '/';
+      end
+    
+    % NetCDF -------------------------------------------------------------------
     elseif strcmpi(format,'nc')
-      if isempty(towrite) % first access: create file
+      if strcmp(mode, 'overwrite') % first access: create file
         if ~isempty(dir(filename)), delete(filename); end
         ncid = netcdf.create(filename, 'CLOBBER');
-        towrite = 'append';
+        mode = 'append';
       end
       % create dimensions
       if isvector(val), Dims=length(val); 
@@ -113,12 +183,23 @@ function filename = iData_private_saveas_hdfnc(a, filename, format)
       netcdf.reDef(ncid);
     end
   end % for
-  
+
   % close netCDF file
   if strcmpi(format,'nc')
     netcdf.close(ncid);
+  elseif strcmpi(format,'cdf')
+    args = {};
+    if ~isempty(globalAttributes)
+      args = [ args, 'globalAttributes', globalAttributes ];
+    end
+    if ~isempty(varAttribStruct)
+      args = [ args, 'VariableAttributes', varAttribStruct ];
+    end
+    args = [ args, 'WriteMode','overwrite' ];
+    cdfwrite(filename, write_list, args{:}); % automatically adds .cdf
+  elseif strncmpi(format,'hdf',3)
+    hdf5write(filename, write_list{:}, 'WriteMode','overwrite');
   end
-
+ 
 end % saveas_hdfnc
-
 
