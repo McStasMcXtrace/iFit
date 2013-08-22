@@ -112,7 +112,7 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
       disp([ 'iData: Setting Signal="' fields '" with length ' num2str(dims) ' in object ' in.Tag ' "' in.Title '".' ]);
       in = setalias(in,'Signal', fields);
       
-      % get potential attribute (in Data.Headers or Data.Attributes fields)
+      % get potential attribute (in Data.Attributes fields)
       attribute = fileattrib(in, fields);
       
       if isstruct(attribute)
@@ -153,11 +153,11 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
             end
             if ~isempty(val)  % the axis could be found
               in = setaxis(in, index, [ 'Axis_' num2str(index) ], val);
-              % search if there is a corresponding label (in Headers)
-              if isfield(in.Data, 'Headers')
+              % search if there is a corresponding label (in Attributes)
+              if isfield(in.Data, 'Attributes')
                 fields=fliplr(strtok(fliplr(fields_all{ax}), '.'));
-                if isfield(in.Data.Headers, fields)
-                  in.Alias.Labels{index+1} = in.Data.Headers.(fields);
+                if isfield(in.Data.Attributes, fields) && ischar(in.Data.Attributes.(fields))
+                  in.Alias.Labels{index+1} = in.Data.Attributes.(fields);
                 end
               else
                 label(in, index, fields_all{ax});

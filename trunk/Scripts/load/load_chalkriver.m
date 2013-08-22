@@ -31,7 +31,7 @@ end
 
 a = [];
 % split the initial iData if more than one section exists
-% the initial object.Data should only contain Headers, MetaData and Run_* fields
+% the initial object.Data should only contain Attributes, MetaData and Run_* fields
 f = fieldnames(a0.Data);
 record_index=0;
 Instrument='';
@@ -44,14 +44,14 @@ for index=1:length(f)
     % % get Run Data for this block (if multiple records)
     Data = this.Data;
     Record  = Data.(f{index});
-    if isfield(Data, 'Headers')   % get Headers for this block
-      Record.Headers = Data.Headers.(f{index});
-      if isfield(Data.Headers, 'MetaData')  % get MetaData for this block
-        Record.MetaData = Data.Headers.MetaData;
-        this_f = fieldnames(Data.Headers.MetaData);
+    if isfield(Data, 'Attributes')   % get Attributes for this block
+      Record.Attributes = Data.Attributes.(f{index});
+      if isfield(Data.Attributes, 'MetaData')  % get MetaData for this block
+        Record.MetaData = Data.Attributes.MetaData;
+        this_f = fieldnames(Data.Attributes.MetaData);
         index_file   = find(strncmp(this_f, 'File', 4));  % also contains Instrument and Date
         if record_index <= length(index_file)
-          Record.File=Data.Headers.MetaData.(this_f{index_file(record_index)});
+          Record.File=Data.Attributes.MetaData.(this_f{index_file(record_index)});
           % extract the instrument name (follows 'File')
           dummy = Record.File(length('File '):end);
           if isempty(Instrument)
@@ -64,7 +64,7 @@ for index=1:length(f)
         if ~isempty(Instrument), Record.Instrument = Instrument; end
         index_signal = find(strncmp(this_f, 'Sig', 3));   % column headers
         if record_index <= length(index_signal)
-          columns=Data.Headers.MetaData.(this_f{index_signal(record_index)});
+          columns=Data.Attributes.MetaData.(this_f{index_signal(record_index)});
           % the keyword 'Sig' is always followed by a second word, separated with ' ' or '='
           % we thus need to catenate these two words, that is remove spaces after 
           % 'Sig', and change any occurence of '=' into '_'
@@ -92,7 +92,7 @@ for index=1:length(f)
       Record.columns =[];
       Record.File='';
       Record.Instrument='';
-    end % if Headers
+    end % if Attributes
     
     this.Data=Record;
     lab = '';

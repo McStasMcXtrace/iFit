@@ -153,45 +153,45 @@ end
 
 % retrieve specific information
 try
-  LOCAL = a.Headers.MetaData.LOCAL; LOCAL=strtrim(LOCAL(7:end));
+  LOCAL = a.Attributes.MetaData.LOCAL; LOCAL=strtrim(LOCAL(7:end));
 catch
   LOCAL='';
 end
 try
-  TITLE = a.Headers.MetaData.TITLE; TITLE=strtrim(TITLE(7:end));
+  TITLE = a.Attributes.MetaData.TITLE; TITLE=strtrim(TITLE(7:end));
 catch
   TITLE='';
 end
 try
-  USER  = a.Headers.MetaData.USER;  USER =strtrim(USER(7:end));
+  USER  = a.Attributes.MetaData.USER;  USER =strtrim(USER(7:end));
 catch
   USER='';
 end
 try
-  EXPNO = a.Headers.MetaData.EXPNO; EXPNO=strtrim(EXPNO(7:end));
+  EXPNO = a.Attributes.MetaData.EXPNO; EXPNO=strtrim(EXPNO(7:end));
 catch
   EXPNO='';
 end
 try
-  INSTR = a.Headers.MetaData.INSTR; INSTR=strtrim(INSTR(7:end));
+  INSTR = a.Attributes.MetaData.INSTR; INSTR=strtrim(INSTR(7:end));
 catch
   INSTR='';
 end
 try
-  DATE  = a.Headers.MetaData.DATE;  DATE =strtrim(DATE(7:end));
+  DATE  = a.Attributes.MetaData.DATE;  DATE =strtrim(DATE(7:end));
 catch
   DATE='';
 end
 try
-  COMND  = a.Headers.MetaData.COMND;  COMND =strtrim(COMND(7:end));
+  COMND  = a.Attributes.MetaData.COMND;  COMND =strtrim(COMND(7:end));
 catch
   COMND='';
 end
 
-setalias(a, 'COMND', 'this.Data.Headers.MetaData.COMND', 'TAS command');
-setalias(a, 'INSTR', 'this.Data.Headers.MetaData.INSTR', 'Instrument used');
-setalias(a, 'EXPNO', 'this.Data.Headers.MetaData.EXPNO', 'Experiment number');
-setalias(a, 'TITL',  'this.Data.Headers.MetaData.TITLE', 'Dataset title');
+setalias(a, 'COMND', 'this.Data.Attributes.MetaData.COMND', 'TAS command');
+setalias(a, 'INSTR', 'this.Data.Attributes.MetaData.INSTR', 'Instrument used');
+setalias(a, 'EXPNO', 'this.Data.Attributes.MetaData.EXPNO', 'Experiment number');
+setalias(a, 'TITL',  'this.Data.Attributes.MetaData.TITLE', 'Dataset title');
 % update object
 if ~isempty(DATE), a.Date = DATE; end
 a.User = [ EXPNO ' ' USER '/' LOCAL '@' INSTR ];
