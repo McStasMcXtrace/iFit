@@ -40,6 +40,15 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
     if strcmp(link, fields{index}) || ~isempty(strfind(fields{index}, 'Attributes'))
       continue;
     end
+    % handle case where attributes are not a struct
+    if ~isempty(dataset_attr) && ~isstruct(dataset_attr)
+      if ischar(dataset_attr)
+        new_attr.Comment = dataset_attr;
+      else
+        new_attr.Value = dataset_attr;
+      end
+      dataset_attr = new_attr;
+    end
     
     % split field name into: n = [ group '.' dataset ]
     n = fields{index};
@@ -54,15 +63,26 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
       group_attr = [];
       dataset    = n;
     end
+    % handle case where attributes are not a struct
+    if ~isempty(group_attr) && ~isstruct(group_attr)
+      if ischar(group_attr)
+        new_attr.Comment = group_attr;
+      else
+        new_attr.Value = group_attr;
+      end
+      group_attr = new_attr;
+    end
     
-    % get rid of root levewhen specified
+    % get rid of root level when specified
     if ~isempty(root)
       % we already have strncmp(root, fields{index}, length(root))
       % so just move forward and skip potential '.'
       n     = n((length(root)+1):end);
       if n(1)     == '.', n    =n(2:end); end
       group = group((length(root)+1):end);
-      if group(1) == '.', group=group(2:end); end
+      if ~isempty(group)
+        if group(1) == '.', group=group(2:end); end
+      end
     end
     
     % now assemble the list of items for CDF and HDF output (requires double memory)

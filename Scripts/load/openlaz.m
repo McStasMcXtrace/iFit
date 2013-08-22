@@ -22,10 +22,10 @@ elseif ~isempty(findstr(out,'Lazy')) || ~isempty(findstr(out,'Crystallographica'
 
   % set HKL axes and Intensity signal. No Error.
   data_definition = getalias(out, 'Signal');
-  columns_header = getfield(out.Headers, fliplr(strtok(fliplr(data_definition),'.')));
+  columns_header = getfield(out.Attributes, fliplr(strtok(fliplr(data_definition),'.')));
   this = findstr(out,'VALUE');
   if ~isempty(this), this=this{1}; end
-  % the header line may be split as it contains numerics. Prepend Headers.VALUE.
+  % the header line may be split as it contains numerics. Prepend Attributes.VALUE.
   columns_header = [ this ' ' columns_header ];
   % the Lazy format has a column named 'D VALUE': remove the space so that columns are not shifted
   columns_header = strrep(columns_header, 'D VALUE','D_VALUE');

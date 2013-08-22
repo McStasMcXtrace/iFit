@@ -29,19 +29,19 @@ end
 setalias(a0,'Datablock',['this.' getalias(a0,'Signal')]);
 
 % get the column labels
-cnames=strread(a0.Data.Headers.MetaData.variables,'%s','delimiter',' ');
+cnames=strread(a0.Data.Attributes.MetaData.variables,'%s','delimiter',' ');
 cnames=cnames(3:end);
 
 if ~isempty(findfield(a0, 'xlabel')) 
-  xlabel = deblank(a0.Data.Headers.MetaData.xlabel);
+  xlabel = deblank(a0.Data.Attributes.MetaData.xlabel);
   xlabel(1:length('# xlabel: '))='';
 else xlabel=''; end
 if ~isempty(findfield(a0, 'ylabel')) 
-  ylabel = deblank(a0.Data.Headers.MetaData.ylabel);
+  ylabel = deblank(a0.Data.Attributes.MetaData.ylabel);
   ylabel(1:length('# ylabel: '))='';
 else ylabel=''; end
 if ~isempty(findfield(a0, 'xvars')) 
-  xvars = deblank(a0.Data.Headers.MetaData.xvars);
+  xvars = deblank(a0.Data.Attributes.MetaData.xvars);
   xvars(1:length('# xvars: '))='';
 else xvars=''; end
 
