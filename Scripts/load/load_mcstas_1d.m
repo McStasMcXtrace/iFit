@@ -34,44 +34,44 @@ xlab=''; ylab='';
 d = a.Data;
 if ~isfield(d,'MetaData'), return; end
 
-if isfield(d,'Headers') && isfield(d.Headers,'MetaData') 
+if isfield(d,'Attributes') && isfield(d.Attributes,'MetaData') 
   if ~isempty(findfield(a, 'xlabel')) 
-    xlab = a.Data.Headers.MetaData.xlabel;
+    xlab = a.Data.Attributes.MetaData.xlabel;
     xlab(1:max(strfind(xlab,'xlab')+6))='';
   elseif ~isempty(findfield(a, 'x_label')) 
-    xlab = a.Data.Headers.MetaData.x_label;
+    xlab = a.Data.Attributes.MetaData.x_label;
     xlab(1:max(strfind(xlab,'x_label'))+6)='';
   else xlab='';
   end
 
   if ~isempty(findfield(a, 'ylabel')) 
-    ylab = a.Data.Headers.MetaData.ylabel;
+    ylab = a.Data.Attributes.MetaData.ylabel;
     ylab(1:max(strfind(ylab,'ylab')+6))='';
   elseif ~isempty(findfield(a, 'y_label')) 
-    ylab = a.Data.Headers.MetaData.y_label;
+    ylab = a.Data.Attributes.MetaData.y_label;
     ylab(1:max(strfind(ylab,'y_label')+6))='';
   else ylab='';
   end
   
   if ~isempty(findfield(a, 'zlabel')) 
-    zlab = a.Data.Headers.MetaData.zlabel;
+    zlab = a.Data.Attributes.MetaData.zlabel;
     zlab(1:max(strfind(zlab,'zlab')+6))='';
   elseif ~isempty(findfield(a, 'z_label')) 
-    zlab = a.Data.Headers.MetaData.z_label;
+    zlab = a.Data.Attributes.MetaData.z_label;
     zlab(1:max(strfind(zlab,'z_label')+6))='';
   else zlab='';
   end
  
   if ~isempty(findfield(a, 'component')) 
-    label = strtrim(a.Data.Headers.MetaData.component);
+    label = strtrim(a.Data.Attributes.MetaData.component);
     label(1:length('# component:'))='';
     a.Label = strtrim(label);
-    a.Data.Component = label;
+    a.Data.Component = strtrim(label);
     setalias(a, 'Component', 'Data.Component','Component name');
   end
   
   if ~isempty(findfield(a, 'Creator'))
-    creator = a.Data.Headers.MetaData.Creator;
+    creator = a.Data.Attributes.MetaData.Creator;
     creator(1:length('# Creator:'))='';
     a.Creator=creator; 
   end

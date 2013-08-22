@@ -21,8 +21,11 @@ function b=iData_struct2iData(a)
 %  else
 %    disp(['iData: warning: could not import all fields from structure.' ]);
   elseif isfield(a, 'Headers')
-    b.Data.Headers = a.Headers;
-    b=setalias(b, 'Headers', 'Data.Headers', 'Headers (text)' );
+    b.Data.Attributes = a.Headers;
+    b=setalias(b, 'Attributes', 'Data.Attributes', 'Headers (text)' );
+   elseif isfield(a, 'Attributes')
+    b.Data.Attributes = a.Attributes;
+    b=setalias(b, 'Attributes', 'Data.Attributes', 'Headers (text)' );
   end
   if isfield(a, 'Format')
     setalias(b, 'Format', a.Format);
