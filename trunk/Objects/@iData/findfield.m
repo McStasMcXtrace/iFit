@@ -13,7 +13,7 @@ function [match, types, dims] = findfield(s, field, option)
 %
 % input:  s: object or array (iData)
 %         field: field name to search, or '' (char).
-%         option: 'exact' 'case' or '' or 'numeric' (char)
+%         option: empty or 'exact' 'case' 'char' or 'numeric' (char)
 % output: match: names of iData fields (cellstr)
 %         types:  types of iData fields (cellstr), e.g. 'double', 'char', 'struct'...
 %         nelements: total number of elements in iData fields (double)
