@@ -38,6 +38,14 @@ end
 
 field = char(field);
 
+% replace alias by its link
+if any(strcmpi(field, getalias(a)))
+  alias = getalias(a, field);
+  if ischar(alias)
+    field = alias;
+  end
+end
+
 b = []; link = '';
 
 if nargin == 1

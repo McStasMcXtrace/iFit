@@ -5,6 +5,8 @@ function this = rmalias(this,names)
 %   The function works also when AliasName is given as a cell string.
 %   The command rmalias(iData,'Signal') resets the Signal to the biggest numerical field.
 %   The input iData object is updated if no output argument is specified.
+%   To automatically guess new Signal and Axes, use:
+%     s.Signal='';
 %
 % input:  s: object or array (iData)
 %         AliasName: Name of existing or new alias (char/cellstr)
@@ -35,6 +37,8 @@ if isempty(names)
   this.Alias.Names(4:end)=[];
   this.Alias.Values(4:end)=[];
   this.Alias.Labels(4:end)=[];
+  this.Alias.Values(1:3) = {'','',''}; % clean Signal, Error and Monitor
+  this.Alias.Labels(1:3) = {'','',''};
 else
   this = setalias(this, names,'');
 end
