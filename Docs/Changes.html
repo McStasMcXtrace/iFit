@@ -30,8 +30,8 @@
 
 
 <ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId919749">Releases and Changes
-</a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId434193">File path names do not support spaces</a></li><li><a href="#mozTocId482415">Data set maximum size</a></li><li><a href="#mozTocId786389">NetCDF files written by Matlab can not be read by other software (hdfview, ncBrowse)</a></li><li><a href="#mozTocId332568">Convolution brings strange results (Models/fconv)
-</a></li><li><a href="#mozTocId473369">Too many warnings displayed</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt)</a></li><li><a href="#mozTocId63182">Limitations in the standalone (binary) package</a></li><li><a href="#mozTocId267093">iFit/McStas fails with a message such as 'version `GFORTRAN_1.4' not found'</a></li><li><a href="#mozTocId383867">Import of a text file fails</a></li></ol></li></ol>
+</a></li><li><a href="#mozTocId855650">Bugs list:</a><ol><li><a href="#mozTocId434193">File path names do not support spaces</a></li><li><a href="#mozTocId482415">Data set maximum size</a></li><li><a href="#mozTocId786389">CDF files written by Matlab can not be read by other software (hdfview, ncBrowse)</a></li><li><a href="#mozTocId332568">Convolution brings strange results (Models/fconv)
+</a></li><li><a href="#mozTocId473369">Too many warnings displayed</a></li><li><a href="#mozTocId556618">Execution/compilation issue with text files importer (iLoad/iData/load, looktxt, CrysFML/cif2hkl)</a></li><li><a href="#mozTocId63182">Limitations in the standalone (binary) package</a></li><li><a href="#mozTocId267093">iFit/McStas fails with a message such as 'version `GFORTRAN_1.4' not found'</a></li><li><a href="#mozTocId383867">Import of a text file fails</a></li></ol></li></ol>
 
 
 
@@ -47,7 +47,7 @@
 
 
   
-<li><b>1.5</b>: Improved <a href="Loaders.html">file importation</a> system, <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>, NetCDF/CDF/NeXus/HDF support, import of <a href="http://www.mantidproject.org">Mantid</a> workspaces (HDF/NeXus). New <a href="Math.html">smooth</a> iData method. <a href="Install.html">Installation</a> through Debian repository.<br>
+<li><b>1.5</b>: Improved <a href="Loaders.html">file importation</a> system, <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>, NetCDF/CDF/NeXus/HDF support, import/export of <a href="http://www.mantidproject.org">Mantid</a> workspaces (HDF/NeXus). New <a href="Math.html">smooth</a> iData method. <a href="Install.html">Installation</a> through Debian repository. Much faster save to MAT files. New continuous wavelet transform method.<br>
 </li>
 <li><b>1.4</b>: <a href="Python.html">PyFit</a> Python interface. Fix in <a href="Math.html">iData integration</a> routines 
 error bar propagation (trapz, sum, ...). Fix in iData/combine when 
@@ -58,17 +58,18 @@ iFunc</a> objects with parameter names followed with comments. Support for McSta
 <span style="font-weight: bold;"></span></li>
 
 
-<li><span style="font-weight: bold;">1.3.1</span>: Support for loading CIF/CFL/ShelX structure, <a href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a>/<a href="http://en.wikipedia.org/wiki/MRC_%28file_format%29">MRC</a>/<a href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a> electron
+<li><small><span style="font-weight: bold;">1.3.1</span>: Support for loading CIF/CFL/ShelX structure, <a href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a>/<a href="http://en.wikipedia.org/wiki/MRC_%28file_format%29">MRC</a>/<a href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a> electron
  density <a href="Loaders.html">formats</a>. Load/save of <a href="http://en.wikipedia.org/wiki/YAML">YAML</a>/<a href="http://en.wikipedia.org/wiki/JSON">JSON</a>/<a href="http://en.wikipedia.org/wiki/XML">XML</a> files. New <a href="Models.html#mozTocId344379">Rietveld</a> model that uses a McStas neutron diffractometer 
 model to convolve the structure factors and fit with diffractometer 
 data. Added TAS neutron spectrometer resolution computation <a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a> as an Application. <a href="iData.html">iData</a> <span style="font-style: italic;">commandhistory</span> can be <a href="Save.html">saved</a> as a Matlab script. Added <span style="font-style: italic;">nlorz</span> and <span style="font-style: italic;">ngauss</span> <a href="Models.html">Models</a>. Fix of iData/<span style="font-style: italic;">combine</span> with scalar Monitor values. Better memory handling in <a href="Load.html">iData/load</a>. <a href="iFunc.html">iFunc</a>
  support parameter constraints fix/min/max/assign as 
-<span style="font-style: italic;">object.&lt;par&gt;=&lt;value&gt;</span>. Fix in reading text files with 
+  <span style="font-style: italic;">object.&lt;par&gt;=&lt;value&gt;</span>. Fix in reading text files with 
 changing columns number. Execution speed improvement in all object 
 operators. Allow <a href="Fit.html">fitting</a> of event data sets. <br>
-<span style="font-weight: bold;"></span></li>
 
-<li><span style="font-weight: bold;">1.3</span>: Support for <a href="Loaders.html#mozTocId361032">SIF, MarCCD, Roper SPE</a> <a href="http://www.adsc-xray.com/products.html">ADSC</a> X-ray CCD. Export to <a href="http://www.web3d.org/x3d/specifications/x3d_specification.html">X3D</a>, fix for some text file import, support for the <a href="http://www.mathworks.com/products/parallel-computing/">Parallel Computing Toolbox</a> (when available), improved interpolation, added <span style="font-style: italic;">meshgrid</span>, <span style="font-style: italic;">rotate, </span>radial integration (<a href="Math.html#mozTocId439767"><span style="font-style: italic;">cart2sph</span></a>), better support for event files, save of iFunc models to m-files. Added simple models for <a href="Models.html#mozTocId285330">small angle scattering</a> form factors and structure factors. Improved <a href="McStas.html">McStas</a>/McXtrace support. Embedded help system, array and graphics editor in <a href="iFit.html">standalone</a> version. Save object history to script file <span style="font-style: italic;">(Nov. 29th 2012)</span>.<br>
+  <span style="font-weight: bold;"></span></small></li>
+
+<li><small><span style="font-weight: bold;">1.3</span>: Support for <a href="Loaders.html#mozTocId361032">SIF, MarCCD, Roper SPE</a> <a href="http://www.adsc-xray.com/products.html">ADSC</a> X-ray CCD. Export to <a href="http://www.web3d.org/x3d/specifications/x3d_specification.html">X3D</a>, fix for some text file import, support for the <a href="http://www.mathworks.com/products/parallel-computing/">Parallel Computing Toolbox</a> (when available), improved interpolation, added <span style="font-style: italic;">meshgrid</span>, <span style="font-style: italic;">rotate, </span>radial integration (<a href="Math.html#mozTocId439767"><span style="font-style: italic;">cart2sph</span></a>), better support for event files, save of iFunc models to m-files. Added simple models for <a href="Models.html#mozTocId285330">small angle scattering</a> form factors and structure factors. Improved <a href="McStas.html">McStas</a>/McXtrace support. Embedded help system, array and graphics editor in <a href="iFit.html">standalone</a> version. Save object history to script file <span style="font-style: italic;">(Nov. 29th 2012)</span>.</small><br>
 <span style="font-weight: bold;"></span></li>
 
 <li><small><span style="font-weight: bold;">1.2</span>: Support for
@@ -139,7 +140,7 @@ file size). We recommend to use SSD to load files with increased efficiency.<br>
 
 <h4><a class="mozTocH4" name="mozTocId786389"></a>CDF files written by Matlab can not be read by other software (hdfview, ncBrowse)</h4>
 
-The <a href="http://en.wikipedia.org/wiki/Common_Data_Format">CDF</a> format (which you can view with <a href="http://www.opendx.org/about.html">OpenDX</a>) is incompatible with the <a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a> one (which you can e.g. view with <a href="http://meteora.ucsd.edu/%7Epierce/ncview_home_page.html">ncview</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>, <a href="http://www.epic.noaa.gov/java/ncBrowse/">ncBrowse</a>, <a href="http://www.giss.nasa.gov/tools/panoply/">Panoply</a>). In such cases, we recommend to rather export in HDF5 format with:<br>
+The <a href="http://en.wikipedia.org/wiki/Common_Data_Format">CDF</a> format (which you can view with <a href="http://www.opendx.org/about.html">OpenDX</a> and <a href="http://autoplot.org/">Autoplot</a>) is incompatible with the <a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a> one (which you can e.g. view with <a href="http://meteora.ucsd.edu/%7Epierce/ncview_home_page.html">ncview</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>, <a href="http://www.epic.noaa.gov/java/ncBrowse/">ncBrowse</a>, <a href="http://www.giss.nasa.gov/tools/panoply/">Panoply</a>). In such cases, we recommend to rather export in HDF5 format with:<br>
 
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(object, <span style="color: rgb(204, 51, 204);">'file.hdf5'</span>)</pre>
 
