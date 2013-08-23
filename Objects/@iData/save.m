@@ -22,8 +22,9 @@ function [filename,format] = save(a, varargin)
 %                   If the filename is empty, the object Tag is used.
 %         format: data format to use (char), or determined from file name extension
 %           'cdf'  save as CDF (not recommended)
-%           'hdf5' save as an HDF5 data set
+%           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
+%           'mantid' save as Mantid Processed Workspace, i.e. 'nxs mantid data'
 %           'mat'  save as a '.mat' binary file (same as 'save', DEFAULT)
 %           'nc'   save as NetCDF
 %         as well as other lossy formats
