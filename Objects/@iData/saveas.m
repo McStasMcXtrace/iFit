@@ -1,4 +1,4 @@
-function [filename,format] = saveas(a, varargin)
+function [filename,format] = saveas(a, filename, format, options)
 % f = saveas(s, filename, format, options) : save iData object into various data formats
 %
 %   @iData/saveas function to save data sets
@@ -25,6 +25,7 @@ function [filename,format] = saveas(a, varargin)
 %           'hdf5' save as an HDF5 data set
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
 %           'mat'  save as a '.mat' binary file (same as 'save', DEFAULT)
+%           'mantid' save as Mantid Processed Workspace, i.e. 'hdf5 mantid data'
 %           'nc'   save as NetCDF
 %         as well as other lossy formats
 %           'csv'  save as a comma separated value file
@@ -74,16 +75,16 @@ function [filename,format] = saveas(a, varargin)
 %   iData_private_saveas_hdfnc
 
 % default options checks
-if nargin < 2, filename = ''; else filename = varargin{1}; end
-if isempty(filename), filename = [ 'iFit_' a.Tag ]; end
-if nargin < 3, format=''; else format = varargin{2}; end
+if nargin < 2, filename = ''; end
+if nargin < 3, format='';     end
 % if the filename is given only as an extension, use it as the format
 if nargin == 2 && filename(1) == '.'
   format=filename(2:end);
   filename='';
 end
+if isempty(filename), filename = [ 'iFit_' a(1).Tag ]; end
 
-if nargin < 4, options=''; else options=varargin{3}; end
+if nargin < 4, options=''; end
 if isempty(options) && any(ndims(a) >= 2), options='view2 axis tight'; end
 
 % supported format list
@@ -152,6 +153,10 @@ if strcmp(filename, 'gui')
   end
 end
 
+if strcmp(format, 'mantid')
+  format = 'nxs mantid data';
+end
+
 % search for option to clean the data set from NaN's and Inf's
 index=regexp(format, '\<clean\>');  % search the word
 if ~isempty(index)
@@ -160,9 +165,19 @@ if ~isempty(index)
   a = iData_private_cleannaninf(a);
 end
 
+% convert data set as Mantid Processed Workspace when requested
+index=regexp(format, '\<mantid\>');  % search the word
+if ~isempty(index)
+  index=index(1);
+  format(index:(index+length('mantid')-1)) = '';
+  a = iData_private_2mantid(a);
+end
+
 % search the word 'data' to only save object Data property (for HDF,CDF,NetCDF)
-if ~isempty(strfind(lower(format), 'data')) 
-  format = strrep(format, 'data', '');
+index=regexp(format, '\<data\>');  % search the word
+if ~isempty(index)
+  index=index(1);
+  format(index:(index+length('data')-1)) = '';
   root   = 'Data';
 else root='';
 end
@@ -186,6 +201,8 @@ case 'netcdf'
   format='nc';
 case 'vrml'
   format='wrl';
+case 'mantid'
+  format='hdf5 mantid data';
 end
 
 % handle extensions
@@ -200,18 +217,17 @@ elseif isempty(format) & isempty(ext)
 end
 
 % handle array of objects to save iteratively
-if numel(a) > 1 & ~strcmp(lower(format),'mat')
-  if length(varargin) >= 1, filename_base = varargin{1}; 
-  else filename_base = ''; end
+if numel(a) > 1 && ~any(strcmp(lower(format),'mat'))
+  filename_base = filename;
   if strcmp(filename_base, 'gui'), filename_base=''; end
-  if isempty(filename_base), filename_base='iData'; end
+  if isempty(filename_base),       filename_base='iFit_'; end
   filename = cell(size(a));
   for index=1:numel(a)
     if numel(a) > 1
       [path, name, ext] = fileparts(filename_base);
-      varargin{1} = [ path name '_' num2str(index,'%04d') ext ];
+      this_filename = [ path name '_' num2str(index,'%04d') ext ];
     end
-    [filename{index}, format] = saveas(a(index), varargin{:});
+    [filename{index}, format] = saveas(a(index), this_filename, format, options);
   end
   return
 end
@@ -226,15 +242,13 @@ case 'ps'
   format='psc';
 case 'netcdf'
   format='nc';
-case { 'hdf', 'h5' }
-  format='hdf5';
 end
 
 % remove NaN values, which are usually not well supported by text based formats
 
 % ==============================================================================
 % handle specific format actions
-switch format
+switch strtok(format)
 case 'm'  % single m-file Matlab output (text), with the full object description
   NL = sprintf('\n');
   if ~isdeployed
@@ -298,7 +312,7 @@ case 'mat'  % single mat-file Matlab output (binary), with the full object descr
     eval([ a.Tag '= a;' ]);
     save(filename, a.Tag);
   end
-case {'hdf5','nc','cdf', 'nx','h5','nxs','n5'} % HDF5, CDF, NetCDF formats: converts fields to double and chars
+case {'hdf','hdf5','h5','nx','nxs','n5','nc','cdf'} % HDF5, CDF, NetCDF formats: converts fields to double and chars
   filename = iData_private_saveas_hdfnc(a, filename, format, root); % private function
 case 'edf'  % EDF ESRF format
   filename = medfwrite(a, filename); % in private
