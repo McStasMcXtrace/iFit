@@ -2,7 +2,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
 % private function to write HDF, CDF and NetCDF files
   % format='HDF','CDF','NC' (netCDF)
   % root  ='path where to start to save hierarchy' e.g. 'Data' or '' for all
-  
+
   if nargin < 3, format='hdf5'; end
   if nargin < 4, root  =''; end
 
@@ -91,7 +91,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
     % now handle different file formats: HDF5, CDF, NetCDF
 
     % CDF ----------------------------------------------------------------------
-    if strcmpi(format,'cdf')  && (isnumeric(val) || ischar(val))
+    if strcmpi(format,'cdf') && (isnumeric(val) || ischar(val))
     
       write_list = [ write_list , n, val ]; % add Variable
       
@@ -123,7 +123,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
       
       
     % HDF5 ---------------------------------------------------------------------
-    elseif strncmpi(format,'hdf',3)
+    elseif any(strcmpi(format,{'hdf','hdf5','h5','nx','nxs','n5'}))
       % the function hdf5write requires to write all (datasets+attributes) in 
       % one single shot. We assemble the list of items to write in a cell, and
       % then flush.
@@ -234,7 +234,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
     end
     args = [ args, 'WriteMode','overwrite' ];
     cdfwrite(filename, write_list, args{:}); % automatically adds .cdf
-  elseif strncmpi(format,'hdf',3)
+  elseif any(strcmpi(format,{'hdf','hdf5','h5','nx','nxs','n5'}))
     hdf5write(filename, write_list{:}, 'WriteMode','overwrite');
   end
  
