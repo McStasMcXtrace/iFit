@@ -61,7 +61,7 @@ b.Data.Attributes.file_time    = datestr(now);
 
 % search for an existing 'mantid_workspace' item -------------------------------
 all_fields = findfield(a);
-match = all_fields(~cellfun(@isempty, strfind(all_fields, 'mantid_workspace')));
+match      = all_fields(~cellfun(@isempty, strfind(all_fields, 'mantid_workspace')));
 
 % copy any existing 'mantid_workspace'
 if ~isempty(match)
@@ -141,9 +141,9 @@ end
 % in some cases, Mantid puts instrument_parameter_map outside 'instrument' group
 match = all_fields(~cellfun(@isempty, strfind(all_fields, 'instrument_parameter_map')));
 
-if ~isempty(match) ...
-  && ~any(strcmp(match, 'Data.mantid_workspace_1.instrument_parameter_map'))
-  if ~any(strcmp(match, 'Data.mantid_workspace_1.instrument.instrument_parameter_map')) ...
+if ~isempty(match)
+  if ~any(strcmp(match, 'Data.mantid_workspace_1.instrument_parameter_map')) ...
+    && ~any(strcmp(match, 'Data.mantid_workspace_1.instrument.instrument_parameter_map'))
     [dummy, index] = min(cellfun('length', match));   % field which path length is smallest
     dummy          = get(a, match{index});            % to avoid sub-structure
     if isstruct(dummy)  % must be a 'group' (structure)
@@ -169,9 +169,9 @@ end
 % in some cases, Mantid puts instrument_xml outside 'instrument' group
 match = all_fields(~cellfun(@isempty, strfind(all_fields, 'instrument_xml')));
 
-if ~isempty(match) ...
-  && ~any(strcmp(match, 'Data.mantid_workspace_1.instrument_xml'))
-  if ~any(strcmp(match, 'Data.mantid_workspace_1.instrument.instrument_xml'))
+if ~isempty(match)
+  if ~any(strcmp(match, 'Data.mantid_workspace_1.instrument_xml')) ...
+    && ~any(strcmp(match, 'Data.mantid_workspace_1.instrument.instrument_xml'))
     [dummy, index] = min(cellfun('length', match));   % field which path length is smallest
     dummy          = get(a, match{index});            % to avoid sub-structure
     if isstruct(dummy)  % must be a 'group' (structure)
@@ -231,37 +231,69 @@ else
      a.Command ];
 end
 
+% TRY
+if 0
+% copy any existing 'workspace'
+match = all_fields(~cellfun(@isempty, strfind(all_fields, 'workspace')));
+if ~isempty(match) 
+  if ~any(strcmp(match, 'Data.mantid_workspace_1.workspace'))
+    [dummy, index] = min(cellfun('length', match));   % get the field which path is smallest
+    dummy          = get(a, match{index});            % to avoid sub-structure
+    if isstruct(dummy)  % must be a 'group' (structure)
+      b.Data.mantid_workspace_1.workspace = dummy; 
+      clear dummy
+    else
+      match=[]; % still request creation of group
+    end
+  else
+    b.Data.mantid_workspace_1.workspace = a.Data.mantid_workspace_1.workspace;
+  end
+end
+
+return
+end
+
 % create NXdata 'workspace' in 'mantid_workspace_1' ----------------------------
 % we overwrite any existing workspace, as only one can exist, and should contain
 % the Axes+Signal+Error
 
 % Mantid may require data to be double (64 bits).
-
+b.Data.mantid_workspace_1.workspace = []; % clean previous content if any
 b.Data.mantid_workspace_1.workspace.Attributes.NX_class = 'NXdata';
 b.Data.mantid_workspace_1.workspace.errors              = get(a, 'Error');
 axes_attr = '';
+
 for index=1:ndims(a)
   % Mantid may require that axis_name be 'axisN'
   axis_name = getaxis(a, num2str(index));
-  if isempty(axis_name)
+  if 1 || isempty(axis_name)
     axis_name = [ 'axis' num2str(index) ];
   end
-  if isempty(axes_attr)
+  if index == 1
     axes_attr = axis_name;
+  elseif index == 2
+    axes_attr = [ axis_name ',' axes_attr ];
   else
     axes_attr = [ axes_attr ',' axis_name ];
   end
-  val = getaxis(a, index);
+  val = getaxis(a, index); 
   % Mantid may require N+1 bins in histogram axis 1
+  if isvector(val)
+    val=val(:);
+    val_diff = min(abs(diff(val(:))));
+    val = [ val(1)-val_diff/2 ; val+val_diff/2 ];
+  end
   b.Data.mantid_workspace_1.workspace.(axis_name) = val;
   if ~isempty(label(a, index))
     b.Data.mantid_workspace_1.workspace.Attributes.(axis_name).long_name = label(a, index);
   end
 end
 b.Data.mantid_workspace_1.workspace.values                  = getaxis(a,0);
-b.Data.mantid_workspace_1.workspace.Attributes.values.signal=1;
-b.Data.mantid_workspace_1.workspace.Attributes.values.axes  =axes_attr;
+b.Data.mantid_workspace_1.workspace.Attributes.values.signal= int32(1);
+b.Data.mantid_workspace_1.workspace.Attributes.values.axes  = axes_attr;
 if ~isempty(label(a, 0))
   b.Data.mantid_workspace_1.workspace.Attributes.values.long_name = label(a,0);
 end
+
+
 
