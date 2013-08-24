@@ -114,7 +114,11 @@ fprintf(1,'Test duration: %g [s]\n', etime(clock,t0));
 % ==============================================================================
 function fileList = getAllFiles(dirName)
 
-  dirData = dir(dirName);      %# Get the data for the current directory
+  dirData  = dir(dirName);     %# Get the data for the current directory
+  if isempty(dirData)
+    % we try to prepend the ifittest location (relative path given)
+    dirData = fullfile(fileparts(which(mfilename)), dirData);
+  end
   dirIndex = [dirData.isdir];  %# Find the index for directories
   fileList = {dirData(~dirIndex).name}';  %'# Get a list of the files
   if ~isempty(fileList)

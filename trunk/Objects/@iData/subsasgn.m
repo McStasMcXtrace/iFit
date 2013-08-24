@@ -204,7 +204,7 @@ else
         else
           if strcmpi(fieldname, 'Signal') && isempty(val)
             b = setalias(b, 'Signal', []);        % reset Signal to the biggest field
-          elseif ischar(val)
+          elseif ischar(val) && strcmp(strtk, fieldname)
             lab = label(b, val);
             if isempty(lab), lab = val; end
             b = setalias(b, fieldname, val, lab);
