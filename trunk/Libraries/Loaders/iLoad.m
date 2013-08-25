@@ -526,7 +526,7 @@ function [data, format] = iLoad(filename, loader, varargin)
       fprintf(1, 'iLoad: %s: %s. Check existence/permissions.\n', file, message );
       error([ 'Could not open file ' file ' for reading. ' message '. Check existence/permissions.' ]);
     end
-    file_start = fread(fid, 10000, 'uint8=>char')';
+    file_start = fread(fid, 100, 'uint8=>char')';
     fclose(fid);
     % loop to test each format for patterns
     formats = loaders;
@@ -535,6 +535,17 @@ function [data, format] = iLoad(filename, loader, varargin)
     % identify by extensions
     [dummy, dummy, fext] = fileparts(file);
     fext=strrep(fext,'.','');
+    % check if this is a text file
+    if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9
+      isbinary = 1; % less than 90% of printable characters
+    else
+      isbinary = 0;
+      % clean file start with spaces, remove EOL
+      fid = fopen(file, 'r');
+      file_start = fread(fid, 10000, 'uint8=>char')';
+      file_start(isspace(file_start)) = ' ';
+      fclose(fid);
+    end
     
     % identify by patterns
     for index=1:length(formats)
@@ -543,40 +554,32 @@ function [data, format] = iLoad(filename, loader, varargin)
 
       if (isfield(loader, 'exist') && loader.exist == 1) ...
         || exist(loader.method, 'file')
-        %file_start(isstrprop(file_start,'wspace')) = ' ';
-        file_start(isspace(file_start)) = ' ';
-        %for this=sprintf('\r\n\t\b\f\a\v')
-        %  file_start = strrep(file_start, this, ' ');
-          % file_start(file_start == this) = ' ';
-        %end
-        
-        if strcmp(loader.method, 'read_anytext') && ...
-                length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9
-          % fprintf(1,'iLoad: skip method %s as file %s is probably binary\n', loader.method, file);
-          patterns_found  = 0;
-          continue;  % does not use looktxt for binary data files
-        end
-        patterns_found  = 1;
         if ~isfield(loader,'patterns'), loader.patterns=''; end
-        if isempty(loader.patterns)  % no pattern to search, test extension
+        patterns_found  = 1;
+        
+        if isbinary && strcmp(loader.method, 'read_anytext')
+          % avoid calling looktxt with binary file...
+          patterns_found = 0;
+        elseif isbinary || isempty(loader.patterns)
+          % binary or no pattern to search, test extension
           if ~isfield(loader,'extension'), ext=''; 
           else ext=loader.extension; end
-          if ischar(ext) && ~isempty(ext), ext=cellstr(ext); end
+          
+          if ischar(ext) && ~isempty(ext), ext={ ext }; end
           if ~isempty(ext) && ~isempty(fext) 
             if all(~strncmpi(fext, ext, length(fext)))
               patterns_found  = 0;  % extension does not match
               % fprintf(1,'iLoad: method %s file %s: extension does not match (%s) \n', loader.name, file, fext);
             end
-          else
-            patterns_found  = 1;    % no extension, no patterns: try loader anyway
           end
-        else  % check patterns
+        elseif ~isbinary && ~isempty(loader.patterns)  
+          % check patterns in text file
           if ischar(loader.patterns), loader.patterns=cellstr(loader.patterns); end
           for index_pat=1:length(loader.patterns(:))
             if isempty(regexp(file_start, loader.patterns{index_pat}, 'once'))
               patterns_found=0;     % at least one pattern does not match
               % fprintf(1,'iLoad: method %s file %s: at least one pattern does not match (%s)\n', loader.name, file, loader.patterns{index_pat});
-              continue;
+              break;
             end
           end % for patterns
         end % if patterns
@@ -589,7 +592,7 @@ function [data, format] = iLoad(filename, loader, varargin)
         fprintf(1,'iLoad: method %s file %s: method not found ? Check the iLoad_ini configuration file.\n', loader.name, file);
       end % if exist(method)
     end % for index
-    
+
     return;
 
   end % iLoad_loader_auto
