@@ -264,13 +264,7 @@ for index=1:ndims(a)
   end
   val = getaxis(a, index); 
   
-  % Mantid requires N+1 bins in histogram axis 1
-  if isvector(val)
-    val=val(:);
-    val_diff = abs(diff(val(:)));
-    val = [ val(1)-val_diff(1)/2 ; val+val_diff(1)/2 ];
-    clear val_diff
-  end
+  
   b.Data.mantid_workspace_1.workspace.(axis_name) = val;
   if ~isempty(label(a, index))
     lab = [ lab ' ' label(a, index); ];
@@ -284,5 +278,6 @@ b.Data.mantid_workspace_1.workspace.Attributes.values.signal= int32(1);
 b.Data.mantid_workspace_1.workspace.Attributes.values.axes  = axes_attr;
 if ~isempty(label(a, 0))
   b.Data.mantid_workspace_1.workspace.Attributes.values.long_name = label(a,0);
+  b.Data.mantid_workspace_1.workspace.Attributes.values.units     = label(a,0);
 end
 
