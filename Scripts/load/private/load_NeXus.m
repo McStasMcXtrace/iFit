@@ -201,7 +201,6 @@ end
 % get dimension of Signal
 sz = size(nxdata);
 
-
 % remove unwanted Attributes
 for index=1:numel(Axes)
   Axes{index} = regexprep(Axes{index}, '\.Attributes|axes|axis\>', '');
@@ -213,7 +212,15 @@ for index=1:numel(Axes)
   ax = Axes{index};
   % clean Attributes and axis/axes
   % get size of axis
-  val = get(nxdata, ax);
+  try
+    val = get(nxdata, ax);
+  catch
+    % the axis does not exist
+    if Axes_ranks(index) == 1 && numel(Axes_ranks) > 1 && Axes_ranks(index+1) == 2
+      Axes_ranks(index+1) = 1;
+    end
+    continue;
+  end
   sa  = size(val);
   % skip empty and scalar axes
   if all(sa <= 1), continue; end
@@ -228,7 +235,7 @@ for index=1:numel(Axes)
   % skip axes which do not match signal
   if ~isempty(Axes_ranks(index)) && Axes_ranks(index) > 0
     % perhaps the axes from Attributes are swapped wrt Signal dimensions
-    % but only the first time
+    % but check only the first time
     axes_12 = find(Axes_ranks == 1 | Axes_ranks == 2);
     if index == 1 && length(axes_12) == 2
         ax1 = Axes{axes_12(1)}; val1 = get(nxdata, ax1);
@@ -237,6 +244,8 @@ for index=1:numel(Axes)
                 && (sz(axes_12(1)) == numel(val2) || sz(axes_12(1)) == numel(val2)-1)
             Axes_ranks(axes_12) = Axes_ranks(fliplr(axes_12));
         end
+    elseif index == 1 && numel(Axes) == 1
+      Axes_ranks(index) = 1;
     end
     % get the Axis label from Attribues.long_name, units, ...
     Attributes  = fileattrib(nxdata, Axes{index}, findfield_all);
@@ -250,7 +259,6 @@ for index=1:numel(Axes)
     if isfield(Attributes, 'units') && ~isempty(Attributes.units)
       lab = [ lab '[' Attributes.units ']'];
     end
-    lab = strtrim(lab);
     
     % the axis may have n+1 bins (outer bounds per bin)
     if length(sa) == 1 && any(sz == sa-1)
