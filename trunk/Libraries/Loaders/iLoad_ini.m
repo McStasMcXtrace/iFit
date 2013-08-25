@@ -260,7 +260,11 @@ function config = iLoad_ini
     
     NifTI.name          = 'NifTI-1 MRI volume data';
     NifTI.extension     = 'nii';
-    NifTI.method        ='read_nii';
+    NifTI.method        = 'read_nii';
+    
+    Igor.name           = 'Igor WaveMetrics Wave data';
+    Igor.extension      = 'ibw';
+    Igor.method         = 'read_igor';
     
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
@@ -269,7 +273,7 @@ function config = iLoad_ini
 	       nmr_jeol, nmr_bruker, nmr_varian, ...
 	       yaml, json, ...
 	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
-	       Analyze, CBF, STL_binary, MRC, NifTI, CIF };
+	       Analyze, CBF, STL_binary, MRC, NifTI, Igor, CIF };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];

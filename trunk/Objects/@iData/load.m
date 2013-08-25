@@ -13,8 +13,10 @@ function out = load(a, varargin)
 %
 %   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
 %     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
-%     HDF4, HDF5, MAT workspace, XML
-%   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF
+%     HDF4, HDF5, MAT workspace, XML, CDF, JSON, YAML
+%   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF, Mantid.
+%     SIF, MCCD/TIFF, ADSC, CBF, Analyze, NifTI, STL,PLY,OFF, CIF/CFL,
+%     EZD/CCP4, NMR formats
 %   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
 %   Distant files are supported through e.g. URLs such as 
 %     file://, ftp://, http:// and https://

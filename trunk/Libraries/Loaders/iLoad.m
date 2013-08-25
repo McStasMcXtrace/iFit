@@ -14,8 +14,10 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 %   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
 %     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
-%     HDF4, HDF5, MAT workspace, XML.
-%   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF.
+%     HDF4, HDF5, MAT workspace, XML, CDF, JSON, YAML
+%   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF, Mantid.
+%     SIF, MCCD/TIFF, ADSC, CBF, Analyze, NifTI, STL,PLY,OFF, CIF/CFL,
+%     EZD/CCP4, NMR formats
 %   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
 %
 %   Distant files are supported through e.g. URLs such as 
@@ -527,10 +529,10 @@ function [data, format] = iLoad(filename, loader, varargin)
       error([ 'Could not open file ' file ' for reading. ' message '. Check existence/permissions.' ]);
     end
     file_start = fread(fid, 100, 'uint8=>char')';
-    fclose(fid);
+    
     % loop to test each format for patterns
     formats = loaders;
-    loaders={};
+    loaders ={}; % will hold those formats which are applicable
     loaders_count=0;
     % identify by extensions
     [dummy, dummy, fext] = fileparts(file);
@@ -541,11 +543,11 @@ function [data, format] = iLoad(filename, loader, varargin)
     else
       isbinary = 0;
       % clean file start with spaces, remove EOL
-      fid = fopen(file, 'r');
+      fseek(fid, 0, 'bof');
       file_start = fread(fid, 10000, 'uint8=>char')';
       file_start(isspace(file_start)) = ' ';
-      fclose(fid);
     end
+    fclose(fid);
     
     % identify by patterns
     for index=1:length(formats)
@@ -589,7 +591,7 @@ function [data, format] = iLoad(filename, loader, varargin)
           loaders{loaders_count} = loader;
         end
       else
-        fprintf(1,'iLoad: method %s file %s: method not found ? Check the iLoad_ini configuration file.\n', loader.name, file);
+        fprintf(1,'iLoad: method %s file %s: method not found ? Check the iLoad_ini configuration file (%s).\n', loader.name, file, config.FileName);
       end % if exist(method)
     end % for index
 
