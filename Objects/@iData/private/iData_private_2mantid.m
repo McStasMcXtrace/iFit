@@ -97,6 +97,12 @@ if ~isfield(b.Data.mantid_workspace_1, 'title')
   b.Data.mantid_workspace_1.title = a.Title;
 end
 
+% Mantid does not support properly re-import of 'sample' group.
+% We remove it
+if isfield(b.Data.mantid_workspace_1, 'sample')
+  b.Data.mantid_workspace_1 = rmfield(b.Data.mantid_workspace_1, 'sample');
+end
+
 % search for an existing 'instrument' item -------------------------------------
 match = all_fields(~cellfun(@isempty, strfind(all_fields, 'instrument')));
 
@@ -216,41 +222,19 @@ end
 
 % create NXprocess 'process' in 'mantid_workspace_1'
 if isempty(match)
-  b.Data.mantid_workspace_1.process.date=datestr(now);
+  b.Data.mantid_workspace_1.process.date   = datestr(now);
   b.Data.mantid_workspace_1.process.Attributes.NX_class='NXprocess';
-  b.Data.mantid_workspace_1.process.program='iFit';
-  b.Data.mantid_workspace_1.process.version=version(iData, 'long');
+  b.Data.mantid_workspace_1.process.program= 'iFit';
+  b.Data.mantid_workspace_1.process.version= version(iData, 'long');
 end
 
 % add NXnotes 'iFitCommands' with lines of Command history
 if ~isfield(b.Data.mantid_workspace_1.process, 'iFitCommands')
-  b.Data.mantid_workspace_1.process.iFitCommands = a.Command;
+  b.Data.mantid_workspace_1.process.iFitCommands = sprintf('%s\n', a.Command{:});
 else
   b.Data.mantid_workspace_1.process.iFitCommands = ...
-   [ b.Data.mantid_workspace_1.process.iFitCommands ;
-     a.Command ];
-end
-
-% TRY
-if 0
-% copy any existing 'workspace'
-match = all_fields(~cellfun(@isempty, strfind(all_fields, 'workspace')));
-if ~isempty(match) 
-  if ~any(strcmp(match, 'Data.mantid_workspace_1.workspace'))
-    [dummy, index] = min(cellfun('length', match));   % get the field which path is smallest
-    dummy          = get(a, match{index});            % to avoid sub-structure
-    if isstruct(dummy)  % must be a 'group' (structure)
-      b.Data.mantid_workspace_1.workspace = dummy; 
-      clear dummy
-    else
-      match=[]; % still request creation of group
-    end
-  else
-    b.Data.mantid_workspace_1.workspace = a.Data.mantid_workspace_1.workspace;
-  end
-end
-
-return
+   [ b.Data.mantid_workspace_1.process.iFitCommands 
+     sprintf('%s\n', a.Command{:}) ];
 end
 
 % create NXdata 'workspace' in 'mantid_workspace_1' ----------------------------
@@ -264,11 +248,13 @@ b.Data.mantid_workspace_1.workspace.errors              = get(a, 'Error');
 axes_attr = '';
 
 for index=1:ndims(a)
-  % Mantid may require that axis_name be 'axisN'
-  axis_name = getaxis(a, num2str(index));
-  if 1 || isempty(axis_name)
-    axis_name = [ 'axis' num2str(index) ];
-  end
+  
+  lab = getaxis(a, num2str(index));
+  if ~ischar(lab), lab=''; end
+  
+  % Mantid requires that axis_name be 'axisN'
+  axis_name = [ 'axis' num2str(index) ];
+  
   if index == 1
     axes_attr = axis_name;
   elseif index == 2
@@ -277,15 +263,20 @@ for index=1:ndims(a)
     axes_attr = [ axes_attr ',' axis_name ];
   end
   val = getaxis(a, index); 
-  % Mantid may require N+1 bins in histogram axis 1
+  
+  % Mantid requires N+1 bins in histogram axis 1
   if isvector(val)
     val=val(:);
-    val_diff = min(abs(diff(val(:))));
-    val = [ val(1)-val_diff/2 ; val+val_diff/2 ];
+    val_diff = abs(diff(val(:)));
+    val = [ val(1)-val_diff(1)/2 ; val+val_diff(1)/2 ];
+    clear val_diff
   end
   b.Data.mantid_workspace_1.workspace.(axis_name) = val;
   if ~isempty(label(a, index))
-    b.Data.mantid_workspace_1.workspace.Attributes.(axis_name).long_name = label(a, index);
+    lab = [ lab ' ' label(a, index); ];
+  end
+  if ~isempty(lab)
+    b.Data.mantid_workspace_1.workspace.Attributes.(axis_name).long_name = strtrim(lab); 
   end
 end
 b.Data.mantid_workspace_1.workspace.values                  = getaxis(a,0);
@@ -294,6 +285,4 @@ b.Data.mantid_workspace_1.workspace.Attributes.values.axes  = axes_attr;
 if ~isempty(label(a, 0))
   b.Data.mantid_workspace_1.workspace.Attributes.values.long_name = label(a,0);
 end
-
-
 
