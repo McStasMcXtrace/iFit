@@ -377,12 +377,13 @@ case {'vrml','wrl'} % VRML format
   close(f);
 case {'x3d','xhtml'} % X3D/XHTML format
   f=figure('visible','off');
-  h = plot(a,options);
-  titl = strrep(char(a),'<','[');
-  titl = strrep(titl,'>',']');
+  h = plot(reducevolume(a),options); % make sure file is not too big
+  titl = char(a);
+  titl(titl=='<')='[';
+  titl(titl=='>')=']';
   desc = evalc('disp(a)');
-  desc = strrep(desc,'<','[');
-  desc = strrep(desc,'>',']');
+  desc(desc=='<')='[';
+  desc(desc=='>')=']';
   figure2xhtml(filename, f, struct('interactive',true,'output', format,'title',titl,'Description',desc));
   close(f);
 case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
