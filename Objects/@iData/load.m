@@ -77,9 +77,8 @@ for i=1:numel(files)
     end
   end
   
+  % check the returned iLoad structure
   files{i} = load_check_struct(files{i}, loaders, filename);
-
-  
   if isfield(files{i},'Data') && isstruct(files{i}.Data) && any(cellfun('isclass', struct2cell(files{i}.Data), 'iData'))
     % a structure containing an iData
     this_iData = [];
@@ -87,6 +86,9 @@ for i=1:numel(files)
     files{i} = {};  % free memory
     for index=1:length(struct_data)
       if isa(struct_data{index}, 'iData')
+        if isa(struct_data{index}.Data, 'uint8')
+          struct_data{index}.Data = hlp_deserialize(struct_data{index}.Data);
+        end
         this_iData = [ this_iData struct_data{index} ];
       end
     end
