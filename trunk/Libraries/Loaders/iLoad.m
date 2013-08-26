@@ -451,7 +451,7 @@ function [data, format] = iLoad(filename, loader, varargin)
             end
           end
           [dummy, name_short, ext] = fileparts(filename);
-          fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, this_loader.method);
+          fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, char(this_loader.method));
           data = [];
           if strcmp(l.identifier, 'MATLAB:nomem') || any(strncmpi(l.message, 'out of memory',length('out of memory')))
             fprintf(1,'iLoad: Not enough memory. Skipping import of this file.\n');
@@ -490,7 +490,9 @@ function [data, format] = iLoad(filename, loader, varargin)
     % check if the file is in Matlab search path, but not directly accessble.
     if isempty(dir(filename)) && exist(filename, 'file')
       filename = which(filename);
-%      fprintf(1, 'iLoad: %s: Accessing file %s.\n', char(loader.method), filename);
+      if index == 1
+        fprintf(1, 'iLoad: %s: Accessing file %s.\n', char(loader.method), filename);
+      end
     end
 
     % fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
@@ -508,7 +510,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     data = iLoad_loader_check(filename, data, loader);
     if isempty(data), return; end
     if isfield(loader, 'name') data.Format = loader.name; 
-    else data.Format=[ loader.method ' import' ]; end
+    else data.Format=[ char(loader.method) ' import' ]; end
     data.Loader = loader;
     return
     
@@ -528,7 +530,7 @@ function [data, format] = iLoad(filename, loader, varargin)
       fprintf(1, 'iLoad: %s: %s. Check existence/permissions.\n', file, message );
       error([ 'Could not open file ' file ' for reading. ' message '. Check existence/permissions.' ]);
     end
-    file_start = fread(fid, 100, 'uint8=>char')';
+    file_start = fread(fid, 1000, 'uint8=>char')';
     
     % loop to test each format for patterns
     formats = loaders;
@@ -543,8 +545,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     else
       isbinary = 0;
       % clean file start with spaces, remove EOL
-      fseek(fid, 0, 'bof');
-      file_start = fread(fid, 10000, 'uint8=>char')';
+      file_start = [ file_start(:) fread(fid, 9000, 'uint8=>char')' ];
       file_start(isspace(file_start)) = ' ';
     end
     fclose(fid);
@@ -613,7 +614,7 @@ function data = iLoad_loader_check(file, data, loader)
     end
     return
   elseif iscellstr(data)
-    fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Got a cell of strings. Ignoring\n', file, loader.name, loader.method);
+    fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Got a cell of strings. Ignoring\n', file, loader.name, char(loader.method));
   elseif iscell(data) & length(data)>1
     index_out=1;
     for index=1:length(data)

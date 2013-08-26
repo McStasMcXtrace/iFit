@@ -49,6 +49,10 @@ end
 % check if object.Data is numeric: make it a structure so that it is better organized
 if isnumeric(in.Data) && ~isempty(in.Data)
   data = in.Data;
+  % do we need to deserialize ?
+  if isa(data, 'uint8')
+    data = hlp_deserialize(data);
+  end
   in.Data = [];
   in.Data.Signal = data;
 end
