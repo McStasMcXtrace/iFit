@@ -57,11 +57,18 @@ and DAT<br>
 Matlab .mat (for re-use from Matlab)</li>
   <li><span style="font-weight: bold;">for printing</span>: PDF and SVG, FIG if you want to edit the plot with Matlab<br>
 </li>
-</ul>A short list of available export formats is displayed with:<br>
+</ul>The Matlab MAT workspace format can be generated in two forms:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);">''</span>,<span style="color: rgb(204, 51, 204);">'mat'</span>)             <span style="font-style: italic;">% save object as a serialized MAT (very fast)<br></span>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span> a<span style="font-style: italic;">			% save object as normal MAT file<br></span></pre>
+The first form, using the dedicated 'save'/'saveas' iData methods, generates a MAT-file containing <span style="font-style: italic;">serialized</span> data (much faster to read/write, smaller files by ~30%), but requires to re-import the file using the iData methods, e.g.<br>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">load</span>(iData,<span style="color: rgb(204, 51, 204);">'mat_file'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'mat_file'</span>)
+</pre>
+The second variant generates a normal MAT-file (slower to read/write, but portable).<br>
+<br>
+A short list of available export formats is displayed with:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">saveas</span>(iData, <span style="color: rgb(204, 51, 204);">'formats'</span>);</pre>
 Last, the <b>getframe</b> method generates a snapshot picture (thumbnail). The <span style="font-weight: bold;">class2str </span>function can more generally write any Matlab variable as a character string. And the <span style="font-weight: bold;">str2struct</span> function can read a character string and search for [<span style="font-style: italic;">name</span>{=: }<span style="font-style: italic;">value</span>] pairs in single lines, to set a return structure.<br>
 <br>
-To load back an m or mat file into memory for re-use, type the m-file name without extension, or '<span style="font-style: italic;">load filename.mat</span>' for MAT-files. Refer to the <a href="Load.html">Load</a> page for other ways to import data files and objects.<br>
+To load back an m or mat file into memory for re-use, type the m-file name without extension, or <span style="font-style: italic;">load(iData,'filename.mat</span>') for MAT-files. Refer to the <a href="Load.html">Load</a> page for other ways to import data files and objects.<br>
 <br>
 Last, you can also save the object history, that is all operations 
 performed from creation to current status, as a Matlab script, by 
@@ -271,9 +278,9 @@ workspace
 binary
 file is compact and fast to read/write. It carries the whole object
 information. Such files require Matlab (or <a href="http://www.octave.org">Octave</a>) to be installed prior to
-importation.<span style="font-weight: bold;"> </span></td>
-      <td style="vertical-align: top;">Yes. Type <span style="font-style: italic;">'load filename.mat'</span> at the prompt
-      </td>
+importation. <span style="font-style: italic;">This file contains serialized data, to be re-imported into an iData object.</span><span style="font-weight: bold;"> </span></td>
+      <td style="vertical-align: top;">Yes<br>
+</td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;"><span style="color: rgb(204, 51, 204);">'hdf5'<br>
