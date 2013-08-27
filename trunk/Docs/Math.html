@@ -559,8 +559,7 @@ signal along an axis. In the following example, we analyse a 2D powder
 neutron diffractogram with the <span style="font-style: italic;">cwt</span> and the <span style="font-style: italic;">slice</span> methods.<br>
 <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/Diff_BananaPSD_1314088587.th_y'</span>);<br>&gt;&gt; w=<span style="color: rgb(51, 102, 255);">cwt</span>(a, 2);	<span style="font-style: italic;">% the cwt along the axis rank 2 (scattering angle)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot<span style="color: rgb(0, 0, 0);">(a); </span>slice</span><span style="color: rgb(51, 102, 255);"></span>(<span style="color: rgb(51, 102, 255);">log</span>(<span style="color: rgb(51, 102, 255);">abs</span>(w).^2))	% plot the initial data set and its cwt power spectrum<br></pre>
 The resulting plot shows the sharp features (peaks) for small 'periods',
- and the broad features (background) for large periods (upper part of 
-the representation). The period axis is here shown in log10 scale of the
+ and the broad features (background) for large periods. The period axis is here shown in log10 scale of the
  initial axis (degrees) and corresponds to the width of the wavelet. <br>
 <span style="text-decoration: underline;">Reference: </span>Grinsted, 
 A., Moore, J.C., Jevrejeva, S. (2004) Application of the cross wavelet 
@@ -964,6 +963,12 @@ indeed different from the value returned by <span style="font-weight: bold;">max
 get similar values from <span style="font-weight: bold;">fits</span>
 and <span style="font-weight: bold;">max</span> in this example.<br>
 <br>
+<span style="color: rgb(255, 0, 0);">Note:</span> If you get an imaginary width from <span style="font-weight: bold;">std</span> you may use a negative dimension specification, e.g. <span style="font-style: italic;">std(a, -1)</span>, in order to subtract automatically the minimum value from the object, and get a better estimate.<br>
+<br>
+To get the <span style="font-style: italic;">width</span> and <span style="font-style: italic;">centroid</span> of a multi-dimensional object, you can use an array of dimension specification, e.g.:<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(peaks);<br>&gt;&gt; [w, x] = <span style="color: rgb(51, 102, 255);">std</span>(a, -(1:<span style="color: rgb(51, 102, 255);">ndims</span>(a))); <span style="font-style: italic;">% we subtract the minimum value (negative dimension spec.)</span><br></pre>
+
+
 It is also possible to compute with the <b>corrcoef</b> method the 
 correlation coefficient between an object and something else, e.g. a vector, an 
 iFunc model or a single vector of same length as the object signal.<br>
@@ -1028,11 +1033,11 @@ method, which evaluates a model function onto the object axes.<br>
 
 It is possible to perform a statistical analysis of a data set in order 
 to classify it into a number of categories. This is called segmentation,
- and a usual method to achieve it is the <a href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a> algorithm.<br>
-<br>
-<span style="text-decoration: underline;">Reference</span>: Otsu N., <a href="http://dx.doi.org/10.1109%2FTSMC.1979.4310076">A threshold selection method from gray-level histogram</a>, IEEE Trans. Syst. Man Cybern. 9:62-66;1979
-        <br>
-<br>
+ and a usual method to achieve it is the <a href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a> algorithm. The corresponding iData method is <span style="font-weight: bold;">kmeans</span> :<a href="images/iData_kmeans.png"><img alt="k-means segmentation" title="k-means segmentation" src="images/iData_kmeans.png" style="border: 0px solid; width: 200px; height: 178px;" align="right"></a><br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span><span style="color: rgb(0, 0, 0);">(peaks);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">kmeans</span>(a, 3);	<span style="font-style: italic;">% request segmentation in 3 groups</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a, b+5);	<span style="font-style: italic;">% overlay data set and segmentation result</span><br></span></pre>
+
+
+
 The wavelet transform <span style="font-weight: bold;">cwt</span> may also be used to perform a peak analysis, separating sharp features from broad ones (see <a href="#mozTocId663052">above</a>).<br>
 <h3><a class="mozTocH3" name="mozTocId439767"></a><span style="font-weight: bold;">Projection, integration and sum</span></h3>
 <a href="images/iData_sum_camproj.png"><img alt="iData: sum and projection" title="iData: sum and projection" src="images/iData_sum_camproj.png" style="border: 0px solid ; width: 200px; height: 408px;" align="right"></a>There
@@ -1135,8 +1140,10 @@ The <span style="font-weight: bold;">norm</span> method computes the norm-2 of t
  coupled with a more general Cartesian to spherical coordinate 
 transformation with <span style="font-weight: bold;">cart2sph</span> :<a href="images/iData_radial.png"><img alt="iData: radial integration" title="iData: radial integration" src="images/iData_radial.png" style="border: 0px solid; width: 200px; height: 279px;" align="right"></a><br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/*.cbf' ]</span>);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">camproj</span>(a,<span style="color: rgb(204, 51, 204);">'radial'</span>); <span style="font-style: italic;">% returns a distribution to be transformed into an histogram</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">cart2sph</span>(a);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(log(a), hist(b,500), log(c))<br></pre>
-To efficiently and quickly reduce the dimensionality of an object, we also recommend the <span style="font-weight: bold;">resize</span> method by specifying a new singleton dimension:<br>
-<pre style="margin-left: 40px;">&gt;&gt; b = <span style="color: rgb(51, 102, 255);">iData</span>(flow);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">resize</span>(b, [25 50 1]);	<span style="font-style: italic;">% makes a 2D object from a 3D one</span></pre>
+To efficiently and quickly reduce the dimensionality of an object, we also recommend the <span style="font-weight: bold;">resize</span> method by specifying a singleton dimension:<br>
+<pre style="margin-left: 40px;">&gt;&gt; b = <span style="color: rgb(51, 102, 255);">iData</span>(flow);		<span style="font-style: italic;">% is 3D</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">resize</span>(b, [25 50 1]);	<span style="font-style: italic;">% makes a 2D object from a 3D one</span><br></pre>Then use <span style="font-style: italic;">squeeze(b)</span> to remove any remaining singleton dimension.<br>
+<pre style="margin-left: 40px;"><span style="font-style: italic;"></span></pre>
+
 
 
 
@@ -1343,7 +1350,7 @@ elements on each dimension/rank, but preserve the data set meaning. <br>
 
 To explicitly smooth a data set, you can use the '<span style="font-weight: bold;">smooth</span>' method, which makes use of a discrete cosine transform filter:<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40).*(1+rand(40)</span></span>))<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a);<br>&gt;&gt; <font color="#3366ff">subplot</font>(a,b);<br></pre><span style="text-decoration: underline;">Reference:</span> Garcia D, Robust smoothing of gridded data in one and higher dimensions with missing values. <span style="font-style: italic;">Computational Statistics &amp; Data Analysis</span>, 2010.<br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40).*(1+0.1*randn(40)</span></span>));<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a);<br>&gt;&gt; <font color="#3366ff">subplot</font>(a,b);<br></pre><span style="text-decoration: underline;">Reference:</span> Garcia D, Robust smoothing of gridded data in one and higher dimensions with missing values. <span style="font-style: italic;">Computational Statistics &amp; Data Analysis</span>, 2010.<br>
 
 <h4><a class="mozTocH4" name="mozTocId628538"></a>Manipulating object dimensions</h4>
 It is also possible to manipulate an object Signal in the same way as a matrix with methods <span style="font-weight: bold;">reshape</span> (re-order elements in the object)<span style="font-weight: bold;">, permute</span> (permute ranks, that is a generalized transposition) and <span style="font-weight: bold;">circshift</span> (shift ranks/dimensions), which work just as their matrix equivalent.<br>
