@@ -648,9 +648,9 @@ function data = iLoad_loader_check(file, data, loader)
    & ~isfield(data, 'Command') & ~isfield(data,' Data')
     new_data.Data = data;
     % transfer some standard fields as possible
-    if isfield(data, 'Source'), new_data.Source = data.Source; end
+    if isfield(data, 'Source'), new_data.Source= data.Source; end
     if isfield(data, 'Title'),  new_data.Title = data.Title; end
-    if isfield(data, 'Date'),   new_data.Date = data.Date; end
+    if isfield(data, 'Date'),   new_data.Date  = data.Date; end
     if isfield(data, 'Label'),  new_data.Label = data.Label; end
     
     data = new_data;
@@ -666,6 +666,7 @@ function data = iLoad_loader_check(file, data, loader)
     if ~strcmp(loader, 'variable'), data.Title  = [ filename ext ' ' name  ];
     else data.Title  = [ filename ext ]; end
   end
+  data.Title(data.Title == '%') = '';
   
   if ~isfield(data, 'Date')
     if strcmp(loader, 'variable') data.Date   = clock; 
