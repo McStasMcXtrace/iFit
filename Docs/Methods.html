@@ -182,8 +182,9 @@ dimension)</li>
 dimension from iData object or array</li>
   <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/isfield">isfield: </a>check if a name is defined in the iData object as a structure field or alias</li>
 <li><i><b><a href="matlab:helpwin iData/circshift">circshift</a></b></i>: shifts an axis by a given quantify, equivalent to <i>a{n} = a{n} +delta</i>&nbsp;</li>
-<li><i><b><a href="matlab:helpwin iData/fileattrib">fileattrib</a></b></i>: gives object property attributes, extracted from initial file (text/HDF/NeXus/CDF/NetCDF)<br>
+<li><i><b><a href="matlab:helpwin iData/fileattrib">fileattrib</a></b></i>: sets/gets object property attributes, extracted from initial file (text/HDF/NeXus/CDF/NetCDF)<br>
 </li>
+
 
 
 
@@ -323,8 +324,14 @@ lower
 the
 memory
 usage</li>
-<li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/reducevolume">reducevolume: </a>rebin the object so that it contains a larger binning, or less that 1e6 elements<br>
+<li><a style="font-style: italic;" href="matlab:helpwin iData/permute"><span style="font-weight: bold;">permute:</span></a> dimensions permutation (generalized transposition)</li>
+<li><a style="font-style: italic;" href="matlab:helpwin iData/reshape"><span style="font-weight: bold;">reshape</span></a>: re-order elements of an object<br>
 </li>
+
+<li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/reducevolume">reducevolume: </a>rebin the object so that it contains a larger binning, or less that 1e6 elements</li>
+<li><a style="font-style: italic;" href="matlab:helpwin iData/resize"><span style="font-weight: bold;">resize</span></a><span style="font-style: italic;">: </span>fast rebinning of an object<br>
+</li>
+
 
   <li><a href="matlab:helpwin iData/version"><span style="font-weight: bold; font-style: italic;">version: </span></a>displays
 the
@@ -866,8 +873,10 @@ objects.<br>
   </li>
   <li><a href="matlab:helpwin iData/sort"><span style="font-weight: bold;">sort: </span></a>sorts objects axes
 and reorder the corresponding signal.</li>
-<li><b><a href="matlab:helpwin iData/smooth">smooth</a></b>: smooth a data set using a robust spline smoothing.<br>
+<li><b><a href="matlab:helpwin iData/smooth">smooth</a></b>: smooth a data set using a robust spline smoothing.</li>
+<li><a style="font-style: italic;" href="matlab:helpwin iData/resize"><span style="font-weight: bold;">resize</span></a><span style="font-style: italic;">: </span>fast rebinning of an object<br>
 </li>
+
 
 </ul>
 
@@ -980,6 +989,7 @@ back to <a href="index.html">Main
 iFit
 Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
+
 
 
 

@@ -545,7 +545,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     else
       isbinary = 0;
       % clean file start with spaces, remove EOL
-      file_start = [ file_start(:) fread(fid, 9000, 'uint8=>char')' ];
+      file_start = [ file_start fread(fid, 9000, 'uint8=>char')' ];
       file_start(isspace(file_start)) = ' ';
     end
     fclose(fid);

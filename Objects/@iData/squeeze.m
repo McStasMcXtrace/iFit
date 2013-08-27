@@ -11,9 +11,9 @@ function a = squeeze(a)
 % ex:     c=squeeze(zeros(iData,[2 1 3]));
 %
 % Version: $Revision$
-% See also iData, iData/size
+% See also iData, iData/size, iData/resize, iData/permute, iData/reshape
 
-d=size(a);
+d = size(a);
 x = find(d <= 2);
 d = d(find(d > 1));
 d = [d ones(1,2-length(d))]; % Make sure siz is at least 2-D

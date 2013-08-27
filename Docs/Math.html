@@ -9,17 +9,26 @@
 <h1 style="text-align: center;">iFit: Mathematical operators</h1>
 
 <br>
-<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId186241">A reminder on axes,
-monitors and signal errors</a></li><li><a href="#mozTocId566959">Unary operators</a><ol><li><a href="#mozTocId222123">Fourier transform</a></li><li><a href="#mozTocId663052">Wavelet transform </a></li><li><a href="#mozTocId52399">Derivatives</a></li></ol></li><li><a href="#mozTocId660745">Binary operators</a><ol><li><a href="#mozTocId121035">Convolution/correlation</a></li><li><a href="#mozTocId759562">Comparisons</a></li></ol></li><li><a href="#mozTocId779059">Statistics, fitting and peak
+<ol id="mozToc">
+<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId186241">A reminder on axes,
+monitors and signal errors</a></li><li><a href="#mozTocId566959">Unary operators</a><ol><li><a href="#mozTocId222123">Fourier transform</a></li><li><a href="#mozTocId663052">Wavelet transform 
+</a></li><li><a href="#mozTocId52399">Derivatives</a></li></ol></li><li><a href="#mozTocId660745">Binary operators</a><ol><li><a href="#mozTocId121035">Convolution/correlation</a></li><li><a href="#mozTocId759562">Comparisons</a></li></ol></li><li><a href="#mozTocId779059">Statistics, fitting and peak
 searching</a></li><li><a href="#mozTocId439767">Projection, integration and sum</a></li><li><a href="#mozTocId703536">Cutting, Merging and
 combining
 data sets</a><ol><li><a href="#mozTocId258971">Cutting and selecting
 portions of a data set</a></li><li><a href="#mozTocId256645">The difference between addition
 and
 combination</a></li></ol></li><li><a href="#mozTocId747982">Appending and slicing
-data sets</a></li><li><a href="#mozTocId831526">Creating arrays of
-objects</a></li><li><a href="#mozTocId208686">Interpolation, smoothing,
-intersection and union</a></li></ol>
+data sets</a></li>
+  <li><a href="#mozTocId831526">Creating arrays of
+objects</a></li>
+<li><a href="#mozTocId208686">Interpolation, smoothing,
+intersection and union</a><ol><li><a href="#mozTocId261708">
+Intersection and union</a></li><li><a href="#mozTocId43577">
+Interpolation</a></li><li><a href="#mozTocId447291">
+Re-binning and resizing</a></li><li><a href="#mozTocId628538">Manipulating object dimensions</a></li></ol></li>
+</ol>
+
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">iData</span>, maths, <a href="Methods.html">methods</a><br>
@@ -1067,7 +1076,10 @@ The <span style="font-weight: bold;">norm</span> method computes the norm-2 of t
  coupled with a more general Cartesian to spherical coordinate 
 transformation with <span style="font-weight: bold;">cart2sph</span> :<a href="images/iData_radial.png"><img alt="iData: radial integration" title="iData: radial integration" src="images/iData_radial.png" style="border: 0px solid; width: 200px; height: 279px;" align="right"></a><br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/*.cbf' ]</span>);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">camproj</span>(a,<span style="color: rgb(204, 51, 204);">'radial'</span>); <span style="font-style: italic;">% returns a distribution to be transformed into an histogram</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">cart2sph</span>(a);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(log(a), hist(b,500), log(c))<br></pre>
-<br>
+To efficiently and quickly reduce the dimensionality of an object, we also recommend the <span style="font-weight: bold;">resize</span> method by specifying a new singleton dimension:<br>
+<pre style="margin-left: 40px;">&gt;&gt; b = <span style="color: rgb(51, 102, 255);">iData</span>(flow);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">resize</span>(b, [25 50 1]);	<span style="font-style: italic;">% makes a 2D object from a 3D one</span></pre>
+
+
 
 
 <h3><a class="mozTocH3" name="mozTocId703536"></a>Cutting, Merging and
@@ -1217,7 +1229,8 @@ axes prior to applying the mathematical operation. The common axes may
 be obtained from intersection or union of object axes.<br>
 <br>
 The interpolation method used is based on a Delauney triangular multidimensional tessellation (using the <a href="http://www.cgal.org/">Computational Geometry Algorithms Library</a>, <acronym title="Computational Geometry Algorithms Library">CGAL</acronym>).<br>
-<br>
+<h4><a class="mozTocH4" name="mozTocId261708"></a>
+Intersection and union</h4>
 The <span style="font-weight: bold;">intersect</span> and <span style="font-weight: bold;">union</span> binary operators determine the
 minimum and maximum axes bounds, as well as a axes binning. The <span style="font-style: italic;">inner</span> and <span style="font-style: italic;">outer</span> values are returned by the
 intersect and union methods resp. Resulting objects are interpolated,
@@ -1231,6 +1244,8 @@ for union, are set to 0.<br>
 <div style="text-align: center;"><a href="images/iData_interp_union.png"><img alt="iData intersect union" title="iData intersect union" src="images/iData_interp_union.png" style="border: 0px solid ; width: 396px; height: 200px;" align="middle"></a><br>
 </div>
 <br>
+<h4><a class="mozTocH4" name="mozTocId43577"></a>
+Interpolation</h4>
 The <span style="font-weight: bold;">interp</span> operator can be
 used to interpolate one object onto an other axis coordinate frame,
 which can be given as an other object, a binning scaling factor, or a
@@ -1238,32 +1253,44 @@ set of axes. The interpolation method can be specified as an additional
 character argument amongst <span style="color: rgb(204, 51, 204);">linear</span>
 (default), <span style="color: rgb(204, 51, 204);">cubic, spline,
 nearest</span>.<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(10)</span></span>)+2<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">interp</span>(a,2)	<span style="font-style: italic;">% doubled binning</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">interp</span>(a,1:.25:15,3:.25:12)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c],[1 3],<span style="color: rgb(204, 51, 204);">'mesh tight'</span>)<br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(10)</span></span>)+2<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">interp</span>(a,2)	<span style="font-style: italic;">% doubled binning, but we rather recommend the 'resize' method (see below)</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">interp</span>(a,1:.25:15,3:.25:12)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c],[1 3],<span style="color: rgb(204, 51, 204);">'mesh tight'</span>)<br></pre>
 <div style="text-align: center;"><a href="images/iData_interp.png"><img alt="iData interp" title="iData interp" src="images/iData_interp.png" style="border: 0px solid ; width: 444px; height: 200px;" align="middle"></a><br>
 <div style="text-align: left;"><br>
+For event based data sets, the <span style="font-weight: bold;">hist</span> operator transforms the event object into an histogrammed data set.
+The histogram axes can be given as vectors (where event will be
+cumulated), or a number of bins within the [min max] of the
+distributions. The <span style="font-weight: bold;">hist</span> operator is much faster than the interpolation one, <b>interp</b> for event based data. <br>
+
+<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(204, 51, 204);">ifitpath 'Data/Monitor_GV*'</span>]);<br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">hist</span>(a);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">surf</span>(b, <span style="color: rgb(204, 51, 204);">'median'</span>);<br></pre>
+
+
+
+<h4><a class="mozTocH4" name="mozTocId447291"></a>
+Re-binning and resizing</h4>
 To compress an object and reduce its binning, that is the number of elements on each dimension, you can use the <span style="font-weight: bold;">reducevolume</span>
  method. Without argument, it reduces the number of elements to less 
 than 1e6. Additional arguments indicate the compression factor on each 
 dimension. This method is automatically used when plotting large 
-objects.<br>
+objects (except if the plot options contains a<span style="font-style: italic;"> 'full' </span>or<span style="font-style: italic;"> 'whole' </span>word).<br>
 <br>
-To explicitly smooth a data set, you can use the 'smooth' method<br>
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40).*(1+rand(40)</span></span>))<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a);<br>&gt;&gt; <font color="#3366ff">subplot</font>(a,b);<br></pre>
+In a similar manner, the <span style="font-weight: bold;">resize</span> 
+method is a very fast yet accurate algorithm to make a fast rebinning, that is change the number of 
+elements on each dimension/rank, but preserve the data set meaning. <br>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40)</span></span>)+2<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(a, <span style="color: rgb(51, 102, 255);">resize</span>(a, [20 20]), <span style="color: rgb(51, 102, 255);">resize</span>(a, 40, 40)) <span style="font-style: italic;">% resize operation</span><br></pre>This
+ allows for instance to quickly reduce the dimensionality of a data set:
+<pre style="margin-left: 40px;">&gt;&gt; b = <span style="color: rgb(51, 102, 255);">iData</span>(flow);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">resize</span>(b, [25 50 1]);	<span style="font-style: italic;">% makes a 2D object from a 3D one</span><br></pre>
+To explicitly smooth a data set, you can use the '<span style="font-weight: bold;">smooth</span>' method, which makes use of a discrete cosine transform filter:<br>
 
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40).*(1+rand(40)</span></span>))<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a);<br>&gt;&gt; <font color="#3366ff">subplot</font>(a,b);</pre>
+<h4><a class="mozTocH4" name="mozTocId628538"></a>Manipulating object dimensions</h4>
+It is also possible to manipulate an object Signal in the same way as a matrix with methods <span style="font-weight: bold;">reshape</span> (re-order elements in the object)<span style="font-weight: bold;">, permute</span> (permute ranks, that is a generalized transposition) and <span style="font-weight: bold;">circshift</span> (shift ranks/dimensions), which work just as their matrix equivalent.<br>
 <br>
 Last, the <span style="font-weight: bold;">sort</span> operator sorts
 object axes, in ascending or descending order. The corresponding
 Signal, Error, and Monitor values are also re-ordered accordingly.<br>
 <br>
-For event based data sets, the <span style="font-weight: bold;">hist</span> operator transforms the event object into an histogrammed data set.
-The histogram axes can be given as vectors (where event will be
-cumulated), or a number of bins within the [min max] of the
-distributions. The <span style="font-weight: bold;">hist</span> operator is much faster than the interpolation one, <b>interp</b> for event based data. <br>
-<pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(204, 51, 204);">ifitpath 'Data/Monitor_GV*'</span>]);<br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">hist</span>(a);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">surf</span>(b, <span style="color: rgb(204, 51, 204);">'median'</span>);<br></pre>
-</div>
-</div>
-<br>
-<hr style="width: 100%; height: 2px;">
+
+</div></div><hr style="width: 100%; height: 2px;">
 <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi - iFit/Math operators -&nbsp;</span><span style="font-style: italic;"> </span><span style="font-style: italic;">
 $Date$ $Revision$

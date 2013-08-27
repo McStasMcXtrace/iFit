@@ -5,7 +5,7 @@ function b = iData_private_unary(a, op, varargin)
 % abs acosh acos asinh asin atanh atan ceil conj cosh cos ctranspose del2 exp 
 % fliplr flipud floor full imag isfinite isfloat isinf isinteger islogical 
 % isnan isnumeric isreal isscalar issparse log10 log norm not permute 
-% real round sign sinh sin sparse sqrt tanh tan transpose uminus uplus 
+% real reshape resize round sign sinh sin sparse sqrt tanh tan transpose uminus uplus 
 %
 % present but not used here: 'double','single','logical','find'
 
@@ -139,9 +139,9 @@ case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger
 	return
 case {'uminus','abs','real','imag','uplus','not','conj'}
 	% retain error, do nothing
-case {'permute'}
-  e = feval(op, e, varargin{:});
-  m = feval(op, m, varargin{:});
+case {'permute','reshape','iData_private_resize'}
+  if ~isscalar(e) && ~isempty(e),  e = feval(op, e, varargin{:}); end
+  if ~isscalar(m) && ~isempty(m),  m = feval(op, m, varargin{:}); end
 otherwise
   iData_private_error('unary',['Can not apply operation ' op ' on object ' a.Tag ]);
 end

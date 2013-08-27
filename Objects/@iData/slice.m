@@ -13,12 +13,23 @@ function h = slice(a, method)
 % See also iData, iData/plot, sliceomatic
 
 if ndims(a) < 3
-  iData_private_error(mfilename, [ 'Slice-o-matic is only available for 3D objects, but ' a.Tag ' is ' num2str(ndims(a)) '-th dimensions. Use plot instead.' ]);
+  iData_private_warning(mfilename, [ 'Slice-o-matic is only available for 3D objects, but ' a.Tag ' ' a.Title '" is ' num2str(ndims(a)) '-th dimensions. Using plot instead.' ]);
+  h = plot(a);
+  return
 elseif  isvector(a)
-  iData_private_error(mfilename, [ 'Use hist to create a volume to display with Slice-o-matic or use plot instead.' ]);
+  iData_private_warning(mfilename, [ 'Creating an histogram data set from data ' a.Tag ' "' a.Title '" a=hist(a);' ]);
+  a = hist(a);
 end
 if nargin < 2
   method = '';
+end
+
+if ndims(a) > 3
+  % reduce dimensions
+  sz = size(a); 
+  iData_private_warning(mfilename, [ 'Reducing ' num2str(ndims(a)) '-th dimensional data ' a.Tag ' "' a.Title '" to 3D with a=resize(a, ' mat2str(sz) ')' ]);
+  sz(4:end) = 1;
+  a = resize(a, sz);
 end
 
 if prod(size(a)) > 1e6

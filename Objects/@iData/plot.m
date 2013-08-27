@@ -169,7 +169,7 @@ method = lower(method);
 % check if the object is not too large, else rebin accordingly
 if prod(size(a)) > 1e6 
   if isempty([ strfind(method,'whole') strfind(method,'full') ])
-    iData_private_warning(mfilename, [ 'Object ' a.Tag ' is large (numel=' num2str(prod(size(a))) ...
+    iData_private_warning(mfilename, [ 'Object ' a.Tag ' "' a.Title '" is large (numel=' num2str(prod(size(a))) ...
       ').\n\tNow rebinning for display purposes with e.g. a=reducevolume(a);' ...
       '\n\tUse e.g plot(a, ''whole'') to plot the whole data set and be able to zoom tiny regions.' ]);
     a=reducevolume(a);
@@ -199,12 +199,15 @@ case 1  % vector type data (1 axis + signal) -> plot
   [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin{:}); % in private
 case 2  % surface type data (2 axes+signal) -> surf or plot3
   [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin{:}); % in private
-case 3  % 3d data sets: volumes
+otherwise % 3d data sets: volumes
+  if ndims(a) > 3
+    % reduce dimensions
+    sz = size(a); 
+    iData_private_warning(mfilename, [ 'Reducing ' num2str(ndims(a)) '-th dimensional data ' a.Tag ' "' a.Title '" to 3D with a=resize(a, ' mat2str(sz) ')' ]);
+    sz(4:end) = 1;
+    a = resize(a, sz);
+  end
   [h, xlab, ylab, zlab, ret] = iData_plot_3d(a, method, this_method, varargin{:}); % in private
-otherwise
-  iData_private_warning(mfilename, [ 'plotting of ' num2str(ndims(a)) '-th dimensional data is not implemented from ' a.Tag '.\n\tUse sum or camproj to reduce dimensionality for plotting.' ]);
-  h=[];
-  ret = 1;
 end % switch
 
 if ret
