@@ -62,7 +62,11 @@ for index=1:length(tests_list)
     
     result= feval(f); % no input args, returns 0/FAILED or 1/OK
     if isnumeric(result)
-      if result, result = 'OK'; else result = 'FAILED'; end
+      if result, 
+        result = [ 'OK     ' f ]; 
+      else 
+        result = [ 'FAILED ' f ];
+      end
     end
   catch exception
     if ~isempty(exception.stack),

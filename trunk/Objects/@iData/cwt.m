@@ -3,13 +3,14 @@ function s = cwt(a,dim,scales,wname,plotit)
 %
 %   @iData/cwt function to return the Continuous wavelet transform of data sets
 %     The continuous wavelet transform performs a multi-scale component analysis
+%     It expands the data set into frequency space.
 %
 %     b = cwt(s,scales,'wname') computes the continuous wavelet coefficients 
 %       of the signal vector x at real, positive scales, using wavelet 'wname'
 %     b = cwt(..., 'plot') plots the continuous wavelet transform power spectra
 %          plot(log(abs(b).^2))
 %       You can optionally use slice-o-matic for an interactive inspection with:         
-%          slice(log(abs(b).^2))
+%          slice(log(abs(b).^2)) for initial 2D data sets (3D result)
 %
 %     The resulting object has dimension of the input plus a 'period' axis,
 %     and contains the wavelet decomposition coeficients (e.g. complex).
@@ -123,11 +124,11 @@ if dim > 1
   sz([ dim 1]) = sz([1 dim]);
 end
 sz    = [ length(scale) sz ];  % wavelet period is 1st rank
+sz(sz == 1) = []; % remove singleton dimensions (e.g. for 1D initial data sets)
 wave  = reshape(wave,  sz);
 
 % now put period axis last
-sz    = 1:length(sz);
-sz([end 1]) = sz([1 end]); % put period last
+sz=[ 2:length(sz) 1 ]; % put period last
 wave  = permute(wave,  sz);
 
 % create the final object
@@ -138,7 +139,8 @@ s=set(s, 'Signal', wave, 'Error', 0);
 s=setalias(s, [ 'Period_' num2str(dim) ], log10(period),[ 'Axis ' label(s,dim) ' rank ' label(s,dim) ' Wavelet Period (log)' ]);
 s=setaxis(s,  length(sz), [ 'Period_' num2str(dim) ]);
 
-s.Title = strvcat([ 'Wavelet power spectrum along axis ' label(s,dim) ' rank ' num2str(dim) ], s.Title);
+s.Title = sprintf('Wavelet power spectrum along axis %s rank %d\n%s', ...
+  label(s,dim), dim , s.Title);
 clear a;
 
 % if plotit, do that, add title, labels, ...
