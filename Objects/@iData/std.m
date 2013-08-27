@@ -4,10 +4,12 @@ function [s, f] = std(a, dim)
 %   @iData/std function to compute the standard deviation of objects, that is
 %     their gaussian half width (second moment). Optionally, the distribution  
 %     center (first moment) can be returned as well.
-%   std(a,dim) computes standard deviation along axis of ramk 'dim'.
+%   std(a, dim) computes standard deviation along axis of ramk 'dim'.
 %     When omitted, dim is set to 1.
+%   std(a, -dim)
 %     Using a negative dimension will subtract minimum signal value to signal
-%       before computation of std, that is remove background.
+%       before computation of std, that is remove background. This may be
+%       needed to avoid an imaginary result.
 %
 % input:  a: object or array (iData/array of)
 %         dim: dimension to use. Negative dim subtract background (int/array)
@@ -55,8 +57,11 @@ if ~isvector(a) || length(a.Alias.Axis) < ndims(a)
   a = meshgrid(a); % make it a clean grid style data set
 end
 
+iData_private_warning('enter', mfilename);
 s = get(a,'Signal'); 
 x = getaxis(a, abs(dim));
+iData_private_warning('exit', mfilename);
+
 s=s(:); x=x(:);
 if ~isfloat(s), s=double(s); end
 if ~isfloat(x), s=double(x); end
@@ -73,4 +78,5 @@ f = sum(s.*x)/sum_s; % mean value
 
 % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
 s = sqrt(sum(x.*x.*s)/sum_s - f*f);
+
 
