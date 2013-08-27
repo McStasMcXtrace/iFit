@@ -15,11 +15,12 @@ function b = interp(a, varargin)
 %     b=interp(s, {X1,X2, ... Xn}) is similar to the previous syntax
 %     b=interp(s, ..., ntimes) where 'ntimes' is an integer computes new axes for 
 %                    interpolation by sub-dividing the original axes ntimes.
+%                    we also recommend the 'resize' method (much faster).
 %     b=interp(s, ..., 'method') uses specified method for interpolation as one of
 %                    linear (default), spline, cubic, or nearest
 %     b=interp(s, ..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays
 %   Extrapolated data is set to NaN for the Signal, Error and Monitor.
-%   For Event data sets, we recommand to use the 'hist' method.which is much faster.
+%   For Event data sets, we recommend to use the 'hist' method.which is much faster.
 %
 % input:  s: object or array (iData)
 %         d: single object from which interpolation axes are extracted (iData)
@@ -31,7 +32,8 @@ function b = interp(a, varargin)
 % ex:     a=iData(peaks); b=interp(a, 'grid'); c=interp(a, 2);
 %
 % Version: $Revision$
-% See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis, iData/hist
+% See also iData, interp1, interpn, ndgrid, iData/setaxis, iData/getaxis, 
+%          iData/hist, iData/resize, iData/reshape
 
 % iData_interp and iData_meshgrid are in private
 
@@ -166,8 +168,6 @@ if isvector(b) >=2 % event data set: redirect to hist method (accumarray)
 elseif length(f_axes) > 1 && (requires_meshgrid || ntimes)
   f_axes = iData_meshgrid(f_axes, s_dims, method); % private function
 end
-
-
 
 % test if interpolation axes have changed w.r.t input object (for possible quick exit)
 has_changed = 0;

@@ -35,7 +35,7 @@ if numclass == 1
 end
 
 % avoid too many calculations
-
+if ~isreal(C), C=abs(C); end
 mins = min(C);
 maxs = max(C);
 minz = min(Z);

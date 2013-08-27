@@ -72,35 +72,43 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
     % does this looks like a Signal ?
     
     if length(dims) > 1 % when similar sizes are encoutered, get the one which is not monotonic
+      
       % list of 'biggest' fields
       maxdim=find(dims == dims(1)); maxdim2 = maxdim;
+      keep_at_start = 1:length(maxdim);
+      send_at_end   = [];
       % move 'error' and constant/monotonic down in the list
       for idx=1:length(maxdim)
         index=maxdim2(idx);
         x = get(in, fields{index});
         if ischar(x) || length(x) <= 1
           % this is a char: move to end of list
-          maxdim([ end idx]) = maxdim([ idx end] );
+          send_at_end = [ send_at_end idx ];
+          keep_at_start(keep_at_start == idx) = [];
           continue; 
         end
         if issorted(x(:)) ...
           || ~isempty(strfind(lower(fields{index}), 'error')) ...
+          || ~isempty(strfind(lower(fields{index}), 'e')) ...
           || ~isempty(strfind(lower(fields{index}), 'monitor'))
           % this is a constant/monotonic value or 'error' or 'monitor'
           % move down in fields list
-          maxdim([ end idx]) = maxdim([ idx end] );
+          send_at_end = [ send_at_end idx ];
+          keep_at_start(keep_at_start == idx) = [];
         end
       end
-      fields(maxdim2) = fields(maxdim);
+      % now reorder the fields
+      maxdim2 = maxdim([ keep_at_start send_at_end ]);
+      fields(maxdim) = fields(maxdim2);
     end
-    
     % in case we have more than one choice, get the first one and error bars
     error_id = []; monitor_id=[];
     if length(dims) > 1 || iscell(fields)
       % do we have an 'error' which has same dimension ?
       for index=find(dims(:)' == dims(1))
         if index==1, continue; end % not the signal itself
-        if ~isempty(strfind(lower(fields{index}), 'error'))
+        if ~isempty(strfind(lower(fields{index}), 'error')) || ...
+            strcmpi(fields{index}, 'e')
           error_id = fields{index};
         elseif ~isempty(strfind(lower(fields{index}), 'monitor'))
           monitor_id = fields{index};

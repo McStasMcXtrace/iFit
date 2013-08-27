@@ -1,5 +1,5 @@
 function a = permute(a, order)
-% c = permute(A) : Permute object dimensions from iData objects/arrays
+% c = permute(a, order) : Permute object dimensions from iData objects/arrays
 %
 %   @iData/permute rearranges the dimensions of object A so that they
 %     are in the order specified by the vector ORDER.  The object produced
@@ -16,7 +16,7 @@ function a = permute(a, order)
 % ex:     c=permute(iData(rand(2,3,4)),[2 3 1]);
 %
 % Version: $Revision$
-% See also iData, iData/size
+% See also iData, iData/size, iData/reshape, iData/resize
 
 % handle iData array: use built-in permute
 if nargin ==1, order=[]; end
