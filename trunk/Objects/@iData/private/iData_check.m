@@ -22,7 +22,7 @@ if ~ischar(in.Title)
   iData_private_warning(mfilename,['Title must be a char or cellstr in iData object ' in.Tag ' (' class(in.Title) '). Re-setting to empty.']);
   in.Title = '';
 end
-in.Title = strtrim(in.Title);
+in.Title = strtrim(in.Title); in.Title(in.Title == '%') = '';
 if ~ischar(in.Tag)
   iData_private_warning(mfilename,['Tag must be a char in iData object ' in.Tag ' "' in.Title '. Re-setting to a new Tad id.' ]);
   in = iData_private_newtag(in);

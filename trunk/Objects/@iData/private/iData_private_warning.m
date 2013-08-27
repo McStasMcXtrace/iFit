@@ -63,8 +63,14 @@ elseif strcmp(a, 'exit')
 elseif nargin == 2     % normal warning message ===============================
   if ~strcmp(lastwarn, warn.lastwarn)
     b = [ 'iData/' a ': ' b ];  % MSG
-    a = [ 'iData:' a ];         % ID
-    warning(a,sprintf(b));
+    if any(strcmp(a,{'setaxis','getaxis'}))
+      if length(warn.level) < 3
+        fprintf(1, [ 'Warning: ' b '\n' ]);
+      end
+    else
+      a = [ 'iData:' a ];         % ID
+      warning(a,sprintf(b));
+    end
     warn.lastwarn = lastwarn;
   end
 end
