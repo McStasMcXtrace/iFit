@@ -9,25 +9,23 @@
 <h1 style="text-align: center;">iFit: Mathematical operators</h1>
 
 <br>
-<ol id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId186241">A reminder on axes,
+<ol id="mozToc"><!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId186241">A reminder on axes,
 monitors and signal errors</a></li><li><a href="#mozTocId566959">Unary operators</a><ol><li><a href="#mozTocId222123">Fourier transform</a></li><li><a href="#mozTocId663052">Wavelet transform 
 </a></li><li><a href="#mozTocId52399">Derivatives</a></li></ol></li><li><a href="#mozTocId660745">Binary operators</a><ol><li><a href="#mozTocId121035">Convolution/correlation</a></li><li><a href="#mozTocId759562">Comparisons</a></li></ol></li><li><a href="#mozTocId779059">Statistics, fitting and peak
-searching</a></li><li><a href="#mozTocId439767">Projection, integration and sum</a></li><li><a href="#mozTocId703536">Cutting, Merging and
+searching, segmentation (k-means)
+</a><ol><li><a href="#mozTocId480132">Statistics</a></li><li><a href="#mozTocId93361">Peak searching and
+model fitting</a></li><li><a href="#mozTocId77311">Data segmentation (partitioning/clustering, k-means)</a></li></ol></li><li><a href="#mozTocId439767">Projection, integration and sum</a></li><li><a href="#mozTocId703536">Cutting, Merging and
 combining
 data sets</a><ol><li><a href="#mozTocId258971">Cutting and selecting
 portions of a data set</a></li><li><a href="#mozTocId256645">The difference between addition
 and
 combination</a></li></ol></li><li><a href="#mozTocId747982">Appending and slicing
-data sets</a></li>
-  <li><a href="#mozTocId831526">Creating arrays of
-objects</a></li>
-<li><a href="#mozTocId208686">Interpolation, smoothing,
+data sets</a></li><li><a href="#mozTocId831526">Creating arrays of
+objects</a></li><li><a href="#mozTocId208686">Interpolation, smoothing,
 intersection and union</a><ol><li><a href="#mozTocId261708">
 Intersection and union</a></li><li><a href="#mozTocId43577">
 Interpolation</a></li><li><a href="#mozTocId447291">
-Re-binning and resizing</a></li><li><a href="#mozTocId628538">Manipulating object dimensions</a></li></ol></li>
-</ol>
+Re-binning and resizing</a></li><li><a href="#mozTocId539072">Smoothing</a></li><li><a href="#mozTocId628538">Manipulating object dimensions</a></li></ol></li></ol>
 
 <br>
 <hr style="width: 100%; height: 2px;">
@@ -106,7 +104,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">abs<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">abs<br>
       </td>
       <td style="vertical-align: top;">| Signal |<br>
       </td>
@@ -118,7 +116,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">acos<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">acos<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">cos</span><sup>-1</sup>(Signal)<br>
       </td>
@@ -131,7 +129,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">asin<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">asin<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">sin</span><sup>-1</sup>(Signal)<br>
       </td>
@@ -141,7 +139,7 @@ Monitor<br>
       <td style="vertical-align: top;">Arc sine. Signal should be [-1:1]</td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">atan<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">atan<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">tan</span><sup>-1</sup>(Signal)<br>
       </td>
@@ -152,7 +150,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">cos<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">cos<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">cos</span>(Signal)<br>
       </td>
@@ -164,7 +162,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">sin<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">sin<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">sin</span>(Signal)<br>
       </td>
@@ -175,7 +173,7 @@ Monitor<br>
       <td style="vertical-align: top;">Sine. Signal is in [rad]</td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">tan<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">tan<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">tan</span>(Signal)<br>
       </td>
@@ -186,7 +184,7 @@ Monitor<br>
       <td style="vertical-align: top;">Tangent. Signal is in [rad]</td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">cosh, sinh, tanh<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">cosh, sinh, tanh<br>
       </td>
       <td style="vertical-align: top;"><br>
       </td>
@@ -198,7 +196,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">acosh, asinh, atanh</td>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">acosh, asinh, atanh</td>
       <td style="vertical-align: top;"><br>
       </td>
       <td style="vertical-align: top;"><br>
@@ -208,7 +206,7 @@ Monitor<br>
       <td style="vertical-align: top;">Inverse hyperbolic trigonometric functions</td>
     </tr>
 <tr>
-      <td style="vertical-align: top; font-weight: bold;">exp<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">exp<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">e</span><sup>Signal</sup><br>
       </td>
@@ -219,7 +217,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">log<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">log<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">ln</span>(Signal)<br>
       </td>
@@ -231,7 +229,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">log10<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">log10<br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">log</span><sub>10</sub>(Signal)<br>
       </td>
@@ -242,7 +240,7 @@ Monitor<br>
       <td style="vertical-align: top;">Logarithm (base 10)</td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">sqrt<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">sqrt<br>
       </td>
       <td style="vertical-align: top;">&#8730;Signal</td>
       <td style="vertical-align: top;">Error/(2&#8730;Signal)</td>
@@ -251,7 +249,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">ctranspose <span style="font-style: italic; font-weight: normal;">and</span> ' <br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">ctranspose <span style="font-style: italic; font-weight: normal;">and</span> ' <br>
       </td>
       <td style="vertical-align: top;">Signal'<br>
       </td>
@@ -262,7 +260,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top; font-weight: bold;">transpose <span style="font-style: italic; font-weight: normal;">and</span> .'<br>
+      <td style="vertical-align: top; font-weight: bold; background-color: rgb(255, 255, 204);">transpose <span style="font-style: italic; font-weight: normal;">and</span> .'<br>
       </td>
       <td style="vertical-align: top;">Signal.'<br>
       </td>
@@ -366,7 +364,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">fft</span><br>
+      <td style="vertical-align: top; background-color: rgb(255, 255, 204);"><a href="#mozTocId222123"><span style="font-weight: bold;">fft</span></a><br>
       </td>
       <td style="vertical-align: top;">FFT(Signal)<br>
       </td>
@@ -378,7 +376,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">ifft</span></td>
+      <td style="vertical-align: top; background-color: rgb(255, 255, 204);"><span style="font-weight: bold;">ifft</span></td>
       <td style="vertical-align: top;">FFT<sup>-1</sup>(Signal)</td>
       <td style="vertical-align: top;">FFT<sup>-1</sup>(Error)<span style="font-style: italic;"></span></td>
       <td style="vertical-align: top;"><br>
@@ -386,7 +384,7 @@ Monitor<br>
       <td style="vertical-align: top;">inverse Fourier transform</td>
     </tr>
     <tr>
-  <td style="vertical-align: top;"><span style="font-weight: bold;">cwt</span><br>
+  <td style="vertical-align: top; background-color: rgb(255, 255, 204);"><a href="#mozTocId663052"><span style="font-weight: bold;">cwt</span></a><br>
   </td>
   <td style="vertical-align: top;">Wavelet(Signal)<br>
   </td>
@@ -398,7 +396,7 @@ Monitor<br>
   </td>
 </tr>
 <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">del2</span><br>
+      <td style="vertical-align: top; background-color: rgb(255, 255, 204);"><a href="#mozTocId52399"><span style="font-weight: bold;">del2</span></a><br>
       </td>
       <td style="vertical-align: top;">&#8711;<sup>2</sup>(Signal)<br>
       </td>
@@ -408,7 +406,7 @@ Monitor<br>
       <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Laplacian">Laplacian</a> &#8721;<sub>i</sub> &#8706;<sup>2</sup>Signal/&#8706;<sup>2</sup>X<sub>i</sub></td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">gradient</span><br>
+      <td style="vertical-align: top; background-color: rgb(255, 255, 204);"><a href="#mozTocId52399"><span style="font-weight: bold;">gradient</span></a><br>
       </td>
       <td style="vertical-align: top;">&#8711;(Signal)<br>
       </td>
@@ -419,7 +417,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">diff</span><br>
+      <td style="vertical-align: top; background-color: rgb(255, 255, 204);"><a href="#mozTocId52399"><span style="font-weight: bold;">diff</span></a><br>
       </td>
       <td style="vertical-align: top;">&#8711;<sub>1</sub>(Signal)</td>
       <td style="vertical-align: top;">&#8711;<sub>1</sub>(Error)</td>
@@ -429,7 +427,7 @@ Monitor<br>
       </td>
     </tr>
 <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">sum</span><br>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204);"><span style="font-weight: bold;">sum</span><br>
       </td>
       <td style="vertical-align: top;">&#8721;(Signal)</td>
       <td style="vertical-align: top;">&#8721;(Error)</td>
@@ -439,7 +437,7 @@ Monitor<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">prod</span><br>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204);"><span style="font-weight: bold;">prod</span><br>
       </td>
       <td style="vertical-align: top;">&#8719;(Signal)</td>
       <td style="vertical-align: top;">&#8719;(Signal+Error/2)-&#8719;(Signal-Error/2)</td>
@@ -448,7 +446,7 @@ Monitor<br>
       <td style="vertical-align: top;">Product of the Signal elements</td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">trapz</span><br>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204);"><a href="#mozTocId439767"><span style="font-weight: bold;">trapz</span></a><br>
       </td>
       <td style="vertical-align: top;">&#8747;(Signal)</td>
       <td style="vertical-align: top;">&#8747;(Error)</td>
@@ -457,7 +455,7 @@ Monitor<br>
       <td style="vertical-align: top;">Trapezoidal <a href="http://en.wikipedia.org/wiki/Integral">integration</a><br>
       </td>
     </tr><tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">cumsum</span><br>
+      <td style="vertical-align: top; background-color: rgb(255, 204, 204);"><span style="font-weight: bold;">cumsum</span><br>
       </td>
       <td style="vertical-align: top;">&#8747;<sub>0</sub><sup>x</sup>(Signal)</td>
       <td style="vertical-align: top;">&#8747;<sub>0</sub><sup>x</sup>(Error
@@ -467,7 +465,7 @@ Monitor<br>
       <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Primitive_function">Primitive</a><br>
       </td>
     </tr><tr>
-  <td style="vertical-align: top;"><span style="font-weight: bold;">smooth</span><br>
+  <td style="vertical-align: top;"><a href="#mozTocId439767"><span style="font-weight: bold;">smooth</span></a><br>
   </td>
   <td style="vertical-align: top;">Smoothed(Signal)<br>
   </td>
@@ -476,7 +474,55 @@ Monitor<br>
   </td>
   <td style="vertical-align: top;">Robust spline smoothing based on cosine transform<br>
   </td>
+</tr><tr>
+  <td style="vertical-align: top;"><a href="#mozTocId77311"><span style="font-weight: bold;">kmeans</span></a><br>
+  </td>
+  <td style="vertical-align: top;">Partition indices<br>
+  </td>
+  <td style="vertical-align: top;">0<br>
+  </td>
+  <td style="vertical-align: top;"><br>
+  </td>
+  <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Image_segmentation">Data segmentation</a> (<a href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a>)<br>
+  </td>
+</tr><tr>
+  <td style="vertical-align: top;"><a href="#mozTocId447291"><span style="font-weight: bold;">resize</span></a><br>
+  </td>
+  <td style="vertical-align: top;">Resized signal<br>
+  </td>
+  <td style="vertical-align: top;">resized Error<br>
+  </td>
+  <td style="vertical-align: top;">resized Monitor<br>
+  </td>
+  <td style="vertical-align: top;">fast resize with interpolation<br>
+  </td>
 </tr>
+<tr>
+  <td style="vertical-align: top;"><a href="#mozTocId628538"><span style="font-weight: bold;">reducevolume</span></a><br>
+  </td>
+  <td style="vertical-align: top;">smaller Signal<br>
+  </td>
+  <td style="vertical-align: top;">-<br>
+  </td>
+  <td style="vertical-align: top;">-<br>
+  </td>
+  <td style="vertical-align: top;">data set reduction<br>
+  </td>
+</tr>
+<tr>
+  <td style="vertical-align: top;"><a href="#mozTocId628538"><span style="font-weight: bold;">sort</span></a><br>
+  </td>
+  <td style="vertical-align: top;">sorted Signal<br>
+  </td>
+  <td style="vertical-align: top;">-<br>
+  </td>
+  <td style="vertical-align: top;">-<br>
+  </td>
+  <td style="vertical-align: top;">sorted data set along a dimension<br>
+  </td>
+</tr>
+
+
 
 
   </tbody>
@@ -515,7 +561,11 @@ neutron diffractogram with the <span style="font-style: italic;">cwt</span> and 
 The resulting plot shows the sharp features (peaks) for small 'periods',
  and the broad features (background) for large periods (upper part of 
 the representation). The period axis is here shown in log10 scale of the
- initial axis (degrees) and corresponds to the width of the wavelet.<br>
+ initial axis (degrees) and corresponds to the width of the wavelet. <br>
+<span style="text-decoration: underline;">Reference: </span>Grinsted, 
+A., Moore, J.C., Jevrejeva, S. (2004) Application of the cross wavelet 
+transform and wavelet coherence to geophysical time series, <span style="font-style: italic;">Nonlin. Processes Geophys</span>., <span style="font-weight: bold;">11</span>, 561–566, doi:10.5194/npg-11-561-2004.<br>
+<br>
 <br>
 <div style="text-align: center;"><a href="images/iData_cwt.png"><img alt="iData:cwt" title="iData:cwt" src="images/iData_cwt.png" style="border: 0px solid; width: 451px; height: 200px;"></a><br>
 </div>
@@ -727,7 +777,7 @@ with dimensionality expansion.<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">conv</span><br>
+      <td style="vertical-align: top;"><a href="#mozTocId121035"><span style="font-weight: bold;">conv</span></a><br>
       </td>
       <td style="vertical-align: top;">FFT<sup>-1</sup>(FFT(s1)*FFT(s2))<br>
       </td>
@@ -748,7 +798,7 @@ with dimensionality expansion.<br>
       <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Cross-correlation">cross correlation</a> (see&nbsp;<a href="#mozTocId880437">below)</a></td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><span style="font-weight: bold;">interp</span><br>
+      <td style="vertical-align: top;"><a href="#mozTocId43577"><span style="font-weight: bold;">interp</span></a><br>
       </td>
       <td style="vertical-align: top;"><span style="font-style: italic;">s1</span>
 onto <span style="font-style: italic;">s2</span> axes<br>
@@ -887,13 +937,14 @@ are also implemented. They compares the Signals, taking the Monitor
 weighting into account. The associated error bar is normalized to the
 mean signal.<br>
 <h3><a class="mozTocH3" name="mozTocId779059"></a><span style="font-weight: bold;">Statistics, fitting and peak
-searching</span></h3>
+searching, segmentation (k-means)<br>
+</span></h3>
 A few methods have been written to analyze the Signal from objects.
 This includes peak searching, first and second moment distributions,
 and model fitting.<br>
-<br>
-<span style="font-weight: bold; font-style: italic;">Statistics</span><br>
-<br>
+<h4><a class="mozTocH4" name="mozTocId480132"></a><span style="font-weight: bold; font-style: italic;">Statistics</span></h4>
+
+
 The usual <span style="font-weight: bold;">min, max, mean</span>, and <span style="font-weight: bold;">median</span> methods can be applied onto
 iData objects, and return the corresponding statistics for the Signal.
 The operation is performed for one given axis/dimension, e.g. along y,
@@ -919,10 +970,10 @@ iFunc model or a single vector of same length as the object signal.<br>
 <br>
 These operators apply iteratively on object arrays. The <span style="font-style: italic;">mean</span> and <span style="font-style: italic;">median</span> then point to the <span style="font-style: italic;">combine</span> operator, the <span style="font-style: italic;">min</span> and <span style="font-style: italic;">max</span> return the minimum and maximum
 along all objects.<br>
-<br>
-<span style="font-weight: bold; font-style: italic;">Peak searching and
-model fitting</span><br>
-<br>
+<h4><a class="mozTocH4" name="mozTocId93361"></a><span style="font-weight: bold; font-style: italic;">Peak searching and
+model fitting</span></h4>
+
+
 The <span style="font-weight: bold;">peaks</span> method makes an
 automatic analysis of a vectorial Signal (that is projected along one
 given dimension) of an object, and determines the underlying baseline
@@ -973,6 +1024,14 @@ In the case where a better peak estimate is required, or any other
 advanced model parameter determination, the <a href="Fit.html"><span style="font-weight: bold;">fits</span></a> method can be used. This
 latter makes use of the <span style="font-weight: bold;">eval</span>
 method, which evaluates a model function onto the object axes.<br>
+<h4><a class="mozTocH4" name="mozTocId77311"></a>Data segmentation (partitioning/clustering, k-means)</h4>
+
+It is possible to perform a statistical analysis of a data set in order 
+to classify it into a number of categories. This is called segmentation,
+ and a usual method to achieve it is the <a href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a> algorithm.<br>
+<br>
+<span style="text-decoration: underline;">Reference</span>: Otsu N., <a href="http://dx.doi.org/10.1109%2FTSMC.1979.4310076">A threshold selection method from gray-level histogram</a>, IEEE Trans. Syst. Man Cybern. 9:62-66;1979
+        <br>
 <br>
 The wavelet transform <span style="font-weight: bold;">cwt</span> may also be used to perform a peak analysis, separating sharp features from broad ones (see <a href="#mozTocId663052">above</a>).<br>
 <h3><a class="mozTocH3" name="mozTocId439767"></a><span style="font-weight: bold;">Projection, integration and sum</span></h3>
@@ -1257,8 +1316,7 @@ nearest</span>.<br>
 <div style="text-align: center;"><a href="images/iData_interp.png"><img alt="iData interp" title="iData interp" src="images/iData_interp.png" style="border: 0px solid ; width: 444px; height: 200px;" align="middle"></a><br>
 <div style="text-align: left;"><br>
 For event based data sets, the <span style="font-weight: bold;">hist</span> operator transforms the event object into an histogrammed data set.
-The histogram axes can be given as vectors (where event will be
-cumulated), or a number of bins within the [min max] of the
+The histogram axes can be given as vectors (where event will be accumulated), or a number of bins within the [min max] of the
 distributions. The <span style="font-weight: bold;">hist</span> operator is much faster than the interpolation one, <b>interp</b> for event based data. <br>
 
 <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(204, 51, 204);">ifitpath 'Data/Monitor_GV*'</span>]);<br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">hist</span>(a);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">surf</span>(b, <span style="color: rgb(204, 51, 204);">'median'</span>);<br></pre>
@@ -1274,14 +1332,19 @@ dimension. This method is automatically used when plotting large
 objects (except if the plot options contains a<span style="font-style: italic;"> 'full' </span>or<span style="font-style: italic;"> 'whole' </span>word).<br>
 <br>
 In a similar manner, the <span style="font-weight: bold;">resize</span> 
-method is a very fast yet accurate algorithm to make a fast rebinning, that is change the number of 
+method is a very fast yet accurate algorithm (<a href="http://en.wikipedia.org/wiki/Discrete_cosine_transform">discrete cosine transform</a>) to make a fast rebinning, that is change the number of 
 elements on each dimension/rank, but preserve the data set meaning. <br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40)</span></span>)+2<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(a, <span style="color: rgb(51, 102, 255);">resize</span>(a, [20 20]), <span style="color: rgb(51, 102, 255);">resize</span>(a, 40, 40)) <span style="font-style: italic;">% resize operation</span><br></pre>This
  allows for instance to quickly reduce the dimensionality of a data set:
-<pre style="margin-left: 40px;">&gt;&gt; b = <span style="color: rgb(51, 102, 255);">iData</span>(flow);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">resize</span>(b, [25 50 1]);	<span style="font-style: italic;">% makes a 2D object from a 3D one</span><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; b = <span style="color: rgb(51, 102, 255);">iData</span>(flow);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">resize</span>(b, [25 50 1]);	<span style="font-style: italic;">% makes a 2D object from a 3D one</span><br></pre><span style="text-decoration: underline;">Reference:</span> Narasimha M. et al, <a href="http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1094144">On the computation of the discrete cosine transform</a>, IEEE Trans Comm, 26, 6, 1978, pp 934-936.
+         <br>
+<h4><a class="mozTocH4" name="mozTocId539072"></a>Smoothing</h4>
+
+
 To explicitly smooth a data set, you can use the '<span style="font-weight: bold;">smooth</span>' method, which makes use of a discrete cosine transform filter:<br>
 
-<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40).*(1+rand(40)</span></span>))<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a);<br>&gt;&gt; <font color="#3366ff">subplot</font>(a,b);</pre>
+<pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40).*(1+rand(40)</span></span>))<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a);<br>&gt;&gt; <font color="#3366ff">subplot</font>(a,b);<br></pre><span style="text-decoration: underline;">Reference:</span> Garcia D, Robust smoothing of gridded data in one and higher dimensions with missing values. <span style="font-style: italic;">Computational Statistics &amp; Data Analysis</span>, 2010.<br>
+
 <h4><a class="mozTocH4" name="mozTocId628538"></a>Manipulating object dimensions</h4>
 It is also possible to manipulate an object Signal in the same way as a matrix with methods <span style="font-weight: bold;">reshape</span> (re-order elements in the object)<span style="font-weight: bold;">, permute</span> (permute ranks, that is a generalized transposition) and <span style="font-weight: bold;">circshift</span> (shift ranks/dimensions), which work just as their matrix equivalent.<br>
 <br>
