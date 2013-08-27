@@ -46,6 +46,9 @@ Nmin = 512;
 temp = fread(fid,Nmin,'uchar=>char'); temp=temp'; header = temp;
 spos = strfind(temp,'HEADER_BYTES');
 Nbytes = sscanf(temp([spos:Nmin]),'HEADER_BYTES=%d');
+if isempty(Nbytes)
+    return
+end
 
 % Read in the whole header
 fseek(fid,0,-1);
