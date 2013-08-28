@@ -158,6 +158,18 @@ function [xmin, ...      % minimum search point of last iteration
 %       write dispcmaesdat for Matlab (and Octave)
 %       control savemodulo and plotmodulo via signals.par 
 
+% (c) Nikolaus Hansen, 2001-2007
+%     This library is free software; you can redistribute it and/or
+%     modify it under the terms of the GNU Lesser General Public
+%     License as published by the Free Software Foundation; either
+%     version 2.1 of the License, or (at your option) any later 
+%     version (see http://www.gnu.org/copyleft/lesser.html).
+%     
+%     This library is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%     Lesser General Public License for more details.
+
 
 cmaVersion = '3.51.beta'; 
 
