@@ -35,6 +35,21 @@ function [x,histout,costdata,itc] = bfgswopt(x0,f,tol,maxit,hess0, hdiff)
 %
 % At this stage all iteration parameters are hardwired in the code.
 %
+
+%  These M-files are implementations of the algorithms from the book
+%  "Iterative Methods for Optimization", to be published by SIAM,
+%  by C. T. Kelley. The book, which describes the algorithms, is available
+%  from SIAM (service@siam.org). These files can be modified for non-commercial
+%  purposes provided that the authors: 
+%
+%  C. T. Kelley for all MATLAB codes, 
+%  P. Gilmore and T. D. Choi for iffco.f
+%  J. M. Gablonsky for DIRECT
+%
+%  are acknowledged and clear comment lines are inserted
+%  that the code has been changed. The authors assume no no responsibility
+%  for any errors that may exist in these routines.
+
 blow=.1; bhigh=.5;
 numf=0; numg=0; numh=0;
 if nargin < 4
