@@ -35,6 +35,7 @@ function [x,fval,i,output]=hPSO(fitnessfun,pars,options,varargin)
 % Homepage: http://www.geocities.com/CapeCanaveral/Lab/1421
 % 
 % 17 Nov, 2004.
+
 nvars=length(pars);
 
 if size(options.space,1)==1

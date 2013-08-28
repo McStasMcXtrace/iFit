@@ -77,6 +77,31 @@ function varargout=import_stl_fast(filename,mode)
 % filename = 'file.stl'     
 % [p,t,tnorm] = import_stl_fast(filename,1)
 
+%  Copyright (c) 2011, Eric Trautmann
+%  All rights reserved.
+%
+%  Redistribution and use in source and binary forms, with or without
+%  modification, are permitted provided that the following conditions are
+%  met:
+%
+%      * Redistributions of source code must retain the above copyright
+%        notice, this list of conditions and the following disclaimer.
+%      * Redistributions in binary form must reproduce the above copyright
+%        notice, this list of conditions and the following disclaimer in
+%        the documentation and/or other materials provided with the distribution
+%
+%  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+%  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+%  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+%  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+%  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+%  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+%  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+%  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+%  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+%  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+%  POSSIBILITY OF SUCH DAMAGE.
+
 if nargin<2
     mode=1;%default value
 end
@@ -165,6 +190,32 @@ function [fout, vout, cout] = rndread(filename)
 % 
 % filename = 'hook.stl';  % Example file.
 %
+
+%  Copyright (c) 2003, Don Riley
+%  All rights reserved.
+%
+%  Redistribution and use in source and binary forms, with or without
+%  modification, are permitted provided that the following conditions are
+%  met:
+%
+%      * Redistributions of source code must retain the above copyright
+%        notice, this list of conditions and the following disclaimer.
+%      * Redistributions in binary form must reproduce the above copyright
+%        notice, this list of conditions and the following disclaimer in
+%        the documentation and/or other materials provided with the distribution
+%
+%  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+%  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+%  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+%  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+%  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+%  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+%  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+%  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+%  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+%  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+%  POSSIBILITY OF SUCH DAMAGE.
+
 fid=fopen(filename, 'r'); %Open the file, assumes STL ASCII format.
 if fid == -1 
     error('File could not be opened, check name or path.')
@@ -256,6 +307,32 @@ function [v, f, n, c, stltitle] = stlread(filename, verbose)
 %    Copyright 1999-2008 The MathWorks, Inc.
 % 
 % Re-written and optimized by Francis Esmonde-White, May 2010.
+
+%  Copyright (c) 2011, Francis Esmonde-White
+%  Copyright (c) 2011, Eric Johnson
+%  All rights reserved.
+%
+%  Redistribution and use in source and binary forms, with or without
+%  modification, are permitted provided that the following conditions are
+%  met:
+%
+%      * Redistributions of source code must retain the above copyright
+%        notice, this list of conditions and the following disclaimer.
+%      * Redistributions in binary form must reproduce the above copyright
+%        notice, this list of conditions and the following disclaimer in
+%        the documentation and/or other materials provided with the distribution
+%
+%  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+%  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+%  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+%  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+%  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+%  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+%  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+%  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+%  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+%  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+%  POSSIBILITY OF SUCH DAMAGE.
 
 use_color=(nargout>=4);
 

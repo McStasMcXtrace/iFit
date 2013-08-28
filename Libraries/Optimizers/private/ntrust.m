@@ -32,6 +32,21 @@ function [x,histout,costdata] = ntrust(x0,f,tol,maxit,resolution)
 %
 % set maxit, the resolution, and the difference increment
 %
+
+%  These M-files are implementations of the algorithms from the book
+%  "Iterative Methods for Optimization", to be published by SIAM,
+%  by C. T. Kelley. The book, which describes the algorithms, is available
+%  from SIAM (service@siam.org). These files can be modified for non-commercial
+%  purposes provided that the authors: 
+%
+%  C. T. Kelley for all MATLAB codes, 
+%  P. Gilmore and T. D. Choi for iffco.f
+%  J. M. Gablonsky for DIRECT
+%
+%  are acknowledged and clear comment lines are inserted
+%  that the code has been changed. The authors assume no no responsibility
+%  for any errors that may exist in these routines.
+
 debug=0;
 if nargin < 4
 maxit = 100;
