@@ -100,7 +100,7 @@ end
 % Mantid does not support properly re-import of 'sample' group.
 % We remove it
 if isfield(b.Data.mantid_workspace_1, 'sample')
-  b.Data.mantid_workspace_1 = rmfield(b.Data.mantid_workspace_1, 'sample');
+  % b.Data.mantid_workspace_1 = rmfield(b.Data.mantid_workspace_1, 'sample');
 end
 
 % search for an existing 'instrument' item -------------------------------------
@@ -149,7 +149,7 @@ match = all_fields(~cellfun(@isempty, strfind(all_fields, 'instrument_parameter_
 
 if ~isempty(match)
   if ~any(strcmp(match, 'Data.mantid_workspace_1.instrument_parameter_map')) ...
-    && ~any(strcmp(match, 'Data.mantid_workspace_1.instrument.instrument_parameter_map'))
+  && ~any(strcmp(match, 'Data.mantid_workspace_1.instrument.instrument_parameter_map'))
     [dummy, index] = min(cellfun('length', match));   % field which path length is smallest
     dummy          = get(a, match{index});            % to avoid sub-structure
     if isstruct(dummy)  % must be a 'group' (structure)
@@ -158,10 +158,7 @@ if ~isempty(match)
     else
       match=[]; % still request creation of group
     end
-  else
-    b.Data.mantid_workspace_1.instrument.instrument_parameter_map = ...
-      a.Data.mantid_workspace_1.instrument.instrument_parameter_map;
-  end
+  end % else it is already in the workspace copy
 end
 
 % add 'instrument_parameter_map' (fake as we can not guess it)
@@ -177,7 +174,7 @@ match = all_fields(~cellfun(@isempty, strfind(all_fields, 'instrument_xml')));
 
 if ~isempty(match)
   if ~any(strcmp(match, 'Data.mantid_workspace_1.instrument_xml')) ...
-    && ~any(strcmp(match, 'Data.mantid_workspace_1.instrument.instrument_xml'))
+  && ~any(strcmp(match, 'Data.mantid_workspace_1.instrument.instrument_xml'))
     [dummy, index] = min(cellfun('length', match));   % field which path length is smallest
     dummy          = get(a, match{index});            % to avoid sub-structure
     if isstruct(dummy)  % must be a 'group' (structure)
@@ -186,10 +183,7 @@ if ~isempty(match)
     else
       match=[]; % still request creation of group
     end
-  else
-    b.Data.mantid_workspace_1.instrument.instrument_xml = ...
-      a.Data.mantid_workspace_1.instrument.instrument_xml;
-  end
+  end % else it is already in the workspace copy
 end
 
 % add 'instrument_xml' (fake as we can not guess it)
@@ -241,10 +235,10 @@ end
 % we overwrite any existing workspace, as only one can exist, and should contain
 % the Axes+Signal+Error
 
-% Mantid may require data to be double (64 bits).
+% Mantid requires data to be double (64 bits).
 b.Data.mantid_workspace_1.workspace = []; % clean previous content if any
 b.Data.mantid_workspace_1.workspace.Attributes.NX_class = 'NXdata';
-b.Data.mantid_workspace_1.workspace.errors              = get(a, 'Error');
+b.Data.mantid_workspace_1.workspace.errors              = double(get(a, 'Error'));
 axes_attr = '';
 
 for index=1:ndims(a)
@@ -262,7 +256,7 @@ for index=1:ndims(a)
   else
     axes_attr = [ axes_attr ',' axis_name ];
   end
-  val = getaxis(a, index); 
+  val = double(getaxis(a, index)); 
   
   
   b.Data.mantid_workspace_1.workspace.(axis_name) = val;
@@ -273,7 +267,7 @@ for index=1:ndims(a)
     b.Data.mantid_workspace_1.workspace.Attributes.(axis_name).long_name = strtrim(lab); 
   end
 end
-b.Data.mantid_workspace_1.workspace.values                  = getaxis(a,0);
+b.Data.mantid_workspace_1.workspace.values                  = double(a);
 b.Data.mantid_workspace_1.workspace.Attributes.values.signal= int32(1);
 b.Data.mantid_workspace_1.workspace.Attributes.values.axes  = axes_attr;
 if ~isempty(label(a, 0))
