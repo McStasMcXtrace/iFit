@@ -429,7 +429,7 @@ class MlabWrap(object):
     def __del__(self):
         mlabraw.close(self._session)
     def _format_struct(self, varname):
-        """unactivated as it takes time top get fieldnames"""
+        """unactivated as it takes time to get fieldnames"""
         res = []
         fieldnames = self._do("fieldnames(%s)" % varname)
         size       = numpy.ravel(self._do("size(%s)" % varname))
@@ -589,6 +589,7 @@ class MlabWrap(object):
         identify_errors=identify_errors,
         print_expression=print_expression,
         on_new_output=on_new_output)
+        
     # this is really raw, no conversion of [[]] -> [], whatever
     def _get(self, name, remove=False):
         r"""Directly access a variable in matlab space. 
