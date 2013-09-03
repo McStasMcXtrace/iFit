@@ -121,15 +121,17 @@ else
 end
 
 % convert the Headers field into Attributes
-if isfield(s, 'Headers')
-  s.Attributes = s.Headers;
-  s=rmfield(s, 'Headers');
+if isstruct(s)
+  if isfield(s, 'Headers')
+    s.Attributes = s.Headers;
+    s=rmfield(s, 'Headers');
+  end
+
+  s=orderfields(s);
+
+  if isfield(s, 'Data')
+    s.Data = orderfields(s.Data);
+  end  
 end
-
-s=orderfields(s);
-
-if isfield(s, 'Data')
-  s.Data = orderfields(s.Data);
-end  
 
 

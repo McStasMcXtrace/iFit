@@ -239,8 +239,13 @@ end
 b.Data.mantid_workspace_1.workspace = []; % clean previous content if any
 b.Data.mantid_workspace_1.workspace.Attributes.NX_class = 'NXdata';
 b.Data.mantid_workspace_1.workspace.errors              = double(get(a, 'Error'));
-axes_attr = '';
 
+if ndims(a) == 1
+  % Mantid requires for 1D workspaces, with the second axis2=constant
+  axes_attr = ',axis2';
+else
+  axes_attr = '';
+end
 for index=1:ndims(a)
   
   lab = getaxis(a, num2str(index));
@@ -250,14 +255,13 @@ for index=1:ndims(a)
   axis_name = [ 'axis' num2str(index) ];
   
   if index == 1
-    axes_attr = axis_name;
+    axes_attr = [ axis_name axes_attr ]; % also valid for 1D workspaces
   elseif index == 2
     axes_attr = [ axis_name ',' axes_attr ];
   else
     axes_attr = [ axes_attr ',' axis_name ];
   end
   val = double(getaxis(a, index)); 
-  
   
   b.Data.mantid_workspace_1.workspace.(axis_name) = val;
   if ~isempty(label(a, index))
@@ -267,7 +271,19 @@ for index=1:ndims(a)
     b.Data.mantid_workspace_1.workspace.Attributes.(axis_name).long_name = strtrim(lab); 
   end
 end
-b.Data.mantid_workspace_1.workspace.values                  = double(a);
+% add a second fake axis when 1D workspace for Mantid
+if ndims(a) == 1
+  % unfortunately, a vector is always stored a a 1D vector in HDF, but mantid requires
+  % two dimensions to associate the second axis (second dimension is 1)
+  % so we duplicate the signal and make it a matrix.
+  s = double(a); s=s(:);
+  b.Data.mantid_workspace_1.workspace.axis2 = [ double(1) double(1) ];
+  b.Data.mantid_workspace_1.workspace.values                  = [ s s ]; 
+  clear s;
+else
+  b.Data.mantid_workspace_1.workspace.values                  = double(a);
+end
+
 b.Data.mantid_workspace_1.workspace.Attributes.values.signal= int32(1);
 b.Data.mantid_workspace_1.workspace.Attributes.values.axes  = axes_attr;
 if ~isempty(label(a, 0))
