@@ -101,7 +101,7 @@ if all(dim > 0)
       if ~isscalar(s)
         if numel(e) > 1, e = feval(op, x, e, 1); end
         if numel(m) > 1, m = feval(op, x, m, 1); end
-        s = feval(op, x, s, 1);
+        s = feval(op, x, double(s), 1);
         if dim(index) ~= 1  % restore initial axes
           s = permute(s,perm);
           e = permute(e,perm);
