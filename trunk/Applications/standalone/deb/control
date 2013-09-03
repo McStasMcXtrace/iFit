@@ -2,7 +2,7 @@ Package: @IFIT_TARNAME@
 Version: @IFIT_VERSION@
 Architecture: arch
 Installed-Size: 48100
-Depends: bash
+Depends: bash, MCRInstaller
 Section: Science
 Priority: optional
 Homepage: http://ifit.mccode.org
@@ -31,7 +31,7 @@ Description: @IFIT_NAME@ generic data analysis and fitting to models
  To use this software, you need to install the Matlab Compiler Runtime in /opt/MATLAB, 
  so that you should have a directory /opt/MATLAB/MATLAB_Compiler_Runtime/v713/. 
  If you install the MCR in an other location, assign the MCRROOT env variable to
- its location.
+ its location. This step can be automated by selecting the MCRInstaller package.
  .
  To start @IFIT_NAME@, use: @IFIT_TARNAME@
  .
