@@ -64,7 +64,7 @@ if ~ispc
 end
 copyfile(fullfile(p, 'README.txt'), target)
 copyfile(fullfile(p, 'COPYING'),    target)
-copyfile(fullfile(p, 'Docs'),       target)
+copyfile(fullfile(p, 'Docs'),       fullfile(target,'Docs'))
 % commented as matlabWrap with iFit is currently broken
 %mkdir(fullfile(target, 'Applications'))
 %copyfile(fullfile(p, 'Applications','Python'), fullfile(target, 'Applications', 'Python')); 
