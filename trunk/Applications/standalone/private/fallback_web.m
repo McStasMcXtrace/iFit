@@ -24,7 +24,13 @@ function fallback_web(url)
     Home = 'http://ifit.mccode.org';
   end
   if isempty(url), url = Home; end
-
+  
+  if isempty(dir(url)) && ~isempty(which(url))
+    url = which(url);
+  end
+  
+  ret=0; % return code from Browser: 0=OK, 1=error.
+  
   % use Java browser
   if usejava('jvm') 
       if ~isempty(dir(url))
@@ -72,9 +78,22 @@ function fallback_web(url)
       set(hcontainer, 'units', 'normalized', 'position', [0,0,1,.9]);
       je.setDragEnabled(true)
       je.setEditable(false);
-      setPage(url);
+      ret=setPage(url);
       set(je, 'HyperlinkUpdateCallback',@action_follow_link);
   else
+    ret=1;
+  end
+  if ret % could not open browser: try with system specific
+    if strncmp(url, 'file://', length('file://'))
+      url = url(8:end);
+    end
+    if ispc
+      system([ 'start ' url ]);
+    elseif ismac
+      system([ 'open ' url ]);
+    else
+      system([ 'gnome-open ' url ]);
+    end
     disp('Can not display Web page (Java not available). Open it manually :')
     disp(url)
   end
@@ -112,7 +131,9 @@ function fallback_web(url)
     fclose(fid);
   end
     
-  function setPage(link)         % set the JEditorPane content (URL)
+  function ret=setPage(link)         % set the JEditorPane content (URL)
+    % ret: return code from Browser: 0=OK, 1=error.
+    ret=0;
     % used to set the URL in the JEditorPane
     if any(link == '#') % is there an anchor here ?
       [link, anchor] = strtok(link, '#');
@@ -162,6 +183,7 @@ function fallback_web(url)
         je.setPage([ link anchor ]);
       catch % usually java.net.MalformedURLException from JEditorPane
         disp([ mfilename ': Can not open URL ' link ])
+        ret=1;
         return
       end
       url        = strtok(link,'#');

@@ -121,12 +121,16 @@ fi
 
   9- click Build and get the iFit.pkg installer
   
+  
 To create a Windows Installer:
 ------------------------------
-  1- install wItem install from <http://www.witemsoft.com/>
-  2- start wItem and open iFit.wip template
+  1- copy ifit-src to C:\ (required to properly mex files)
+  2- launch ifit-src/ifitdeploy
+  3- rename binary target as ifit-binary and copy it as Desktop/stabdalone/ifit-binary
+  4- install wItem install from <http://www.witemsoft.com/>
+  5- start wItem and open iFit.wip template
     from ifit-src/Applications/standalone/win32/iFit.wip
-  3- select Menu Build
+  6- select Menu Build
   
   
   

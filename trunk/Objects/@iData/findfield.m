@@ -155,7 +155,12 @@ catch
   n = cellfun('prodofsize', c);
 end
 
-if ~isempty(parent) && ~isempty(f), f = strcat([ parent '.' ], f); end
+if ~isempty(parent) && ~isempty(f), 
+  % f = strcat([ parent '.' ], f); % this is time consuming
+  for ii=1:length(f)
+    f{ii} = [ parent '.' f{ii} ]; % slightly faster
+  end
+end
 
 % find sub-structures and make a recursive call for each of them
 for index=transpose(find(cellfun('isclass', c, 'struct')))
