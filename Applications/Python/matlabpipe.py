@@ -70,9 +70,15 @@ def which(program):
 
     return None
 
-def find_matlab_process(binary='matlab'):
+def find_matlab_process(binary='guess'):
   """"Tries to guess Matlab/iFit process path."""
-  return which(binary)
+  if binary == None or binary == 'guess':
+    w = which('matlab')
+    if w is None:
+      w = which('ifit')
+    return w
+  else:    
+    return which(binary)
 
 
 def find_matlab_version(matlab_version):
@@ -156,12 +162,13 @@ class MatlabPipe(object):
         [self.matlab_process_path, '-nodesktop','-nosplash'],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     elif 'ifit' in self.matlab_process_path:
+      """currently broken as the pipe does not seem functional with ifit"""
       self.process = subprocess.Popen(
         [self.matlab_process_path],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     flags = fcntl.fcntl(self.process.stdout, fcntl.F_GETFL)
     fcntl.fcntl(self.process.stdout, fcntl.F_SETFL, flags| os.O_NONBLOCK)
-
+    
     if print_matlab_welcome:
       self._sync_output()
     else:
@@ -233,7 +240,6 @@ class MatlabPipe(object):
         temp.seek(0)
         # get the content of the buffer
         temp_str = temp.read()  
-        temp.close()
         # tell Matlab to expect data from stdin
         self.process.stdin.write('load stdio;\n')
         # Matlab then issue message 'flushed_stdout' \n 'ack load stdio'
@@ -242,6 +248,7 @@ class MatlabPipe(object):
         self.process.stdin.write(temp_str)
         # wait for actual processing acknowledgement by Matlab
         self._read_until('ack load finished\n', on_new_output=on_new_output)
+        temp.close()
         success = True
       except:
         pass
