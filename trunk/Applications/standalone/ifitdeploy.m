@@ -62,8 +62,16 @@ if ~ispc
   end
   copyfile([ m filesep 'ifit' ],       target)
 end
-copyfile([ p filesep 'README.txt' ], target)
-copyfile([ p filesep 'COPYING' ],    target)
+copyfile(fullfile(p, 'README.txt'), target)
+copyfile(fullfile(p, 'COPYING'),    target)
+copyfile(fullfile(p, 'Docs'),       target)
+% commented as matlabWrap with iFit is currently broken
+%mkdir(fullfile(target, 'Applications'))
+%copyfile(fullfile(p, 'Applications','Python'), fullfile(target, 'Applications', 'Python')); 
+delete(fullfile(target, 'ifit_main.c'))
+delete(fullfile(target, 'ifit.prj'))
+delete(fullfile(target, 'ifit_mcc_component_data.c'))
+delete(fullfile(target, 'mccExcludedFiles.log'))
 
 % restore initial state
 cd(m)

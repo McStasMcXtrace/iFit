@@ -6,11 +6,11 @@
 
 ** Purpose:
   This library aims at providing basic functionality to achieve some of the 
-  general tasks needed for scienfic data analysis:
+  general tasks needed for scientific data analysis:
     Load, Plot, Save, Fit, Math operations, define and use Models
 
 ** License: EUPL
-  Basically this is open-source. Use it if you find it usefull, and enrich it.
+  Basically this is open-source. Use it if you find it useful, and enrich it.
   If you do produce new methods, please send them back to me so that they are 
   added in the software and thus benefit to the community.
 

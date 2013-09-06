@@ -1,5 +1,5 @@
 #!/bin/sh
-# script for execution of deployed applications
+# script for execution of iFit standalone
 #
 # Sets up the MCR environment for the current $ARCH and executes 
 # the specified command.
