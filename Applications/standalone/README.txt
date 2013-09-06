@@ -1,6 +1,9 @@
 HOWTO create standalone applications for iFit:
 
 Requires to have Matlab compiler installed (mcc).
+To build the Debian packages, a Debian minimal system must be created 
+one level above the 'trunk' with
+% sudo debootstrap --arch $ARCH precise build-chroot-$ARCH
 
 Linux (Debian/Ubuntu, works on amd64 and i386):
 -----------------------------------------------
@@ -8,7 +11,7 @@ Linux (Debian/Ubuntu, works on amd64 and i386):
   2- launch: % ./mkdist <major.minor>
 will create a src.zip source, a <arch>.zip linux binary and a <arch>.deb
 
-Mac OSX (prefer i386):
+Mac OSX (prefer i386 which also work in 64 bits):
 ----------------------
   1- copy the ifit-src.zip file for the distribution to MacOSX
   2- launch matlab and navigate to ifit-src directory
@@ -18,6 +21,13 @@ will create a 'ifit-maci' binary distribution.
 
 To create a MacOSX App:
 ----------------------
+If such a package already exists, open it with 'show package content', and just 
+copy the new binary files inside 'Contents/Resources/standalone'
+
+To get Platypus:
+  <http://sveinbjorn.org/platypus>
+  <http://download.cnet.com/Platypus/3000-2247_4-40832.html>
+  
   1- launch Platypus, set app title to 'iFit'
   2- use the ifit-src/Applications/standalone/macosx/app-script.sh script
   
@@ -36,52 +46,87 @@ EOF
   3- set the icon to ifit-src/Docs/images/iFit-logo.png (drag-n-drop from iFit src directory)
   4- set output to None, version number, allow drag-n-drop, uncheck 'remain running'
   5- drag-n-drop the 'ifit-maci' binary distribution directory renamed as 'standalone'
-  6- click create
+  6- click create, and select XML plist as non-binary (easier to edit)
 an 'iFit.app' is created.
 
 To create a MacOSX installer:
 -----------------------------
   1- open /osx/Developer/Applications/Utilities/PackageMaker
-  2- in Tab configuration, enter Title 'iFit', and a description as 
-  ifit-src/Applications/standalone/macosx/description.txt
-  
-** iFit generic data analysis and fitting to models **
+  2- in left panel iFit Tab:Configuration:Description
+    Title: iFit
+    Check 'System Volume' only
+    iFit: Requirements: none (triggers JavaScript error)
+    iFit: Actions: Show File in Finder: /Applications after installation
+    iFit: Desciption
+    
+iFit generic data analysis and fitting to models
 Simple methods to be used for complex data analysis
 
-The iFit program provides a set of methods to load, analyze, plot, fit and optimize models,
- and export results. iFit is based on Matlab, but stand-alone version does not require a
- Matlab license to run. Any text file can be imported straight away, and a set of binary files are
- supported. Any data dimensionality can be handled, including event based data sets.
- .
- The spirit of the software is to include simple object definitions for Data sets and Models, with   
- a set of methods that provide all the means to perform the usual data analysis procedures.
+The iFit program provides a set of methods to load, analyze, plot, fit and optimize models, and export results. iFit is based on Matlab, but stand-alone version does not require a Matlab license to run. Any text file can be imported straight away, and a set of binary files are supported. Any data dimensionality can be handled, including event based data sets.
+
+The spirit of the software is to include simple object definitions for Data sets and Models, with a set of methods that provide all the means to perform the usual data analysis procedures.
  - iData objects to hold data sets ; Import with:          iData('filename')
  - iFunc objects to hold models ;    Create new ones with: iFunc('expression')
  - fit model to data with: fits(data, model)
  - documentation is available
  
- Main functionalities are: [ iData Load Plot Math Fit Save Optimization iFunc Models ]
+Main functionalities are: [ iData Load Plot Math Fit Save Optimization iFunc Models ]
  
- To use this software, you need to install the Matlab Compiler Runtime from the DMG available in the ifit.mccode.org website / Download binary section.
- 
- To start iFit, start it from the Applications folder.
- 
- Refer to <ifit.mccode.org> for on-line documentation.
- Matlab is a registered trademark of The Mathworks Inc.
-  
-  3- in the Requirements Tab, add a 
-    If: file exists on System: /Applications/MATLAB/MATLAB_Compiler_Runtime
-    and the failure message: 'MATLAB Compiler Runtime is not installed' 
-    'The MATLAB Compiler Runtime is not installed, but it is required for iFit to launch. 
-    get it at <http://ifit.mccode.org/Downloads/binary/mac32/MCRInstaller32.dmg>'
-    NOTE: this may lead to a JavaScript error. Then remove the requirement.
-  4- drag-n-drop the iFit.app in the Contents left panel.
-  5- in the Configuration tab, update version, check require admin, uncheck custom location (/Applications)
-  6- in Scripts tab, add path to ifit-src/Applications/standalone/macosx/pkg-postscript.sh
-  
+To use this software, you need to install the Matlab Compiler Runtime from the DMG available in the ifit.mccode.org website / Download binary section.
+
+To start iFit, start it from the Applications folder.
+
+Refer to <ifit.mccode.org> for on-line documentation.
+Matlab is a registered trademark of The Mathworks Inc.
+
+  3- Copy iFit.app inside Contents left panel.
+  4- in left panel Contents:iFit Tab:Configuration
+    Name: iFit
+    Initial State: Selected_Enabled
+    Destination: /Applications (do not allow alternate volume)
+    Tooltip: The iFit standalone Matlab(R) application
+
+  5- in left panel Contents:iFit/Applications Tab:Configuration
+    Destination: /Applications (no custom location)
+    Package ID: ill.eu.ifit.iFit.pkg
+    Version: 1.5
+    Require admin auth
+
+  6- in left panel Contents:iFit/Applications Tab:Contents
+    Click Include root in package
+    Click Apply Recommendations
+
+  7- in left panel Contents:iFit/Applications Tab:Components
+    Do NOT allow relocation
+
+  8- in left panel Contents:iFit/Applications Tab:Scripts
+    Postinstall: Relative to project: postinst-macos.sh
+      use ifit-src/Applications/standalone/macosx/postinst-macos.sh script
+
 #!/bin/sh -e
-if [ ! -f "`which matlab`"  ]; then
-  ln -s /Applications/iFit.app/Contents/MacOS/iFit /usr/bin/matlab
+
+# script: postinst-macos.sh
+
+if [ ! -f "`which ifit`"  ]; then
+echo creating shortcut /usr/bin/ifit
+echo "open -a ifit" > /usr/bin/ifit
+chmod a+x /usr/bin/ifit
 fi
- 
+
+if [ ! -f "`which matlab`"  ]; then
+echo creating shortcut /usr/bin/matlab
+echo "open -a ifit" > /usr/bin/matlab
+chmod a+x /usr/bin/matlab
+fi
+
+  9- click Build and get the iFit.pkg installer
+  
+To create a Windows Installer:
+------------------------------
+  1- install wItem install from <http://www.witemsoft.com/>
+  2- start wItem and open iFit.wip template
+    from ifit-src/Applications/standalone/win32/iFit.wip
+  3- select Menu Build
+  
+  
   
