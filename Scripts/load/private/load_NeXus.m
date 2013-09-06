@@ -80,6 +80,8 @@ for f={ field, [ base group ], base }
   end
 end
 
+field_org = field;
+
 % clean the field name with any Attribute token
 field = strrep(field, '.Attributes', '');
 
@@ -100,6 +102,10 @@ findfield_out   = findfield_all(strncmpi(findfield_all, field, length(field)));
 
 % isolate Attributes paths
 Attributes_path = findfield_out(~cellfun(@isempty, strfind(findfield_out, 'Attributes')));
+if isempty(Attributes_path)
+  % the Attributes may be stored somewhere else, e.g. Data.Attributes.<NXentry>...
+  Attributes_path = findfield_all(strncmpi(findfield_all, field_org, length(field_org)));
+end
 
 % isolate 'signal' Attributes (end with .signal)
 signal_path     = Attributes_path(~cellfun(@isempty, regexp(Attributes_path, '\.(signal)$')));
@@ -111,7 +117,14 @@ end
 
 % scan all structure members in NXdata and extract their values, to remove any 'link'
 for f=findfield_out'        % get this NXdata members in the initial object
-  nxdata = set(nxdata, f{1}, get(in, f{1}));  % make sure we resolve links
+  % f{1} is Data...<NXdata>.<member in NXdata>
+  val = get(in, f{1});
+  if strncmp(fliplr(f{1}), fliplr('.PARAMETERS'), length('.PARAMETERS')) && ischar(val)
+    % this is a PARAMETERS from LAMP
+    val = str2struct(val);
+  end
+  nxdata = set(nxdata, f{1}, val);  % make sure we resolve links
+  clear val;
 end
 
 % get a list of all 'signal' attributes (there should be only one)
@@ -300,7 +313,7 @@ if nargin >= 3
     end
   end
 end
-  
+
 % get title and label
 title_path = findfield_all(~cellfun(@isempty, regexp(findfield_all, '\.(title)$')));
 if ~isempty(title_path)
