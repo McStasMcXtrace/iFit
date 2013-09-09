@@ -11,6 +11,7 @@ if ~isa(filename,'iData')
 else
   out = filename;
 end
+clear filename;
 
 if length(out(:)) > 1
   % handle input iData arrays
