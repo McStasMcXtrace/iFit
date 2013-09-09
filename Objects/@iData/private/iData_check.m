@@ -1,5 +1,5 @@
 function out = iData_check(in)
-% iData_chec: make consistency checks on iData object
+% iData_check: make consistency checks on iData object
 
 if numel(in) > 1
   out = zeros(iData, numel(in), 1);
@@ -62,96 +62,104 @@ end
 % find axes that match the Signal dimensions
 % associate 'error' and 'monitor' when they exist
 % define Signal label from Attributes, when exist
-if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
+if ~isempty(in.Data) && (isempty(getalias(in, 'Signal')) || isempty(getaxis(in)))
   % get numeric fields sorted in descending size order
   [fields, types, dims] = findfield(in, '', 'numeric');
+  clear types
+  
   if isempty(fields), 
     iData_private_warning(mfilename,['The iData object ' in.Tag ' "' in.Title '" contains no data at all ! (double/single/logical/int/uint)']);
   else
+    
     fields_all = fields; dims_all=dims;
     % does this looks like a Signal ?
-    
-    if length(dims) > 1 % when similar sizes are encoutered, get the one which is not monotonic
       
-      % list of 'biggest' fields
-      maxdim=find(dims == dims(1)); maxdim2 = maxdim;
-      keep_at_start = 1:length(maxdim);
-      send_at_end   = [];
-      % move 'error' and constant/monotonic down in the list
-      for idx=1:length(maxdim)
-        index=maxdim2(idx);
-        x = get(in, fields{index});
-        if ischar(x) || length(x) <= 1
-          % this is a char: move to end of list
-          send_at_end = [ send_at_end idx ];
-          keep_at_start(keep_at_start == idx) = [];
-          continue; 
+    if isempty(getalias(in, 'Signal'))
+      if length(dims) > 1 % when similar sizes are encoutered, get the one which is not monotonic
+        
+        % list of 'biggest' fields
+        maxdim=find(dims == dims(1)); maxdim2 = maxdim;
+        keep_at_start = 1:length(maxdim);
+        send_at_end   = [];
+        % move 'error' and constant/monotonic down in the list
+        for idx=1:length(maxdim)
+          index=maxdim2(idx);
+          x = get(in, fields{index});
+          if ischar(x) || length(x) <= 1
+            % this is a char: move to end of list
+            send_at_end = [ send_at_end idx ];
+            keep_at_start(keep_at_start == idx) = [];
+            continue; 
+          end
+          if issorted(x(:)) ...
+            || ~isempty(strfind(lower(fields{index}), 'error')) ...
+            || ~isempty(strfind(lower(fields{index}), 'e')) ...
+            || ~isempty(strfind(lower(fields{index}), 'monitor'))
+            % this is a constant/monotonic value or 'error' or 'monitor'
+            % move down in fields list
+            send_at_end = [ send_at_end idx ];
+            keep_at_start(keep_at_start == idx) = [];
+          end
         end
-        if issorted(x(:)) ...
-          || ~isempty(strfind(lower(fields{index}), 'error')) ...
-          || ~isempty(strfind(lower(fields{index}), 'e')) ...
-          || ~isempty(strfind(lower(fields{index}), 'monitor'))
-          % this is a constant/monotonic value or 'error' or 'monitor'
-          % move down in fields list
-          send_at_end = [ send_at_end idx ];
-          keep_at_start(keep_at_start == idx) = [];
+        % now reorder the fields
+        maxdim2 = maxdim([ keep_at_start send_at_end ]);
+        fields(maxdim) = fields(maxdim2);
+      end
+      % in case we have more than one choice, get the first one and error bars
+      error_id = []; monitor_id=[];
+      if length(dims) > 1 || iscell(fields)
+        % do we have an 'error' which has same dimension ?
+        for index=find(dims(:)' == dims(1))
+          if index==1, continue; end % not the signal itself
+          if ~isempty(strfind(lower(fields{index}), 'error')) || ...
+              strcmpi(fields{index}, 'e')
+            error_id = fields{index};
+          elseif ~isempty(strfind(lower(fields{index}), 'monitor'))
+            monitor_id = fields{index};
+          end
         end
-      end
-      % now reorder the fields
-      maxdim2 = maxdim([ keep_at_start send_at_end ]);
-      fields(maxdim) = fields(maxdim2);
-    end
-    % in case we have more than one choice, get the first one and error bars
-    error_id = []; monitor_id=[];
-    if length(dims) > 1 || iscell(fields)
-      % do we have an 'error' which has same dimension ?
-      for index=find(dims(:)' == dims(1))
-        if index==1, continue; end % not the signal itself
-        if ~isempty(strfind(lower(fields{index}), 'error')) || ...
-            strcmpi(fields{index}, 'e')
-          error_id = fields{index};
-        elseif ~isempty(strfind(lower(fields{index}), 'monitor'))
-          monitor_id = fields{index};
-        end
-      end
-      
-      dims=dims(1);
-      fields=fields{1};
-    end
-
-    % index: is the field and dimension index to assign the Signal
-    if dims > 0
-      disp([ 'iData: Setting Signal="' fields '" with length ' num2str(dims) ' in object ' in.Tag ' "' in.Title '".' ]);
-      in = setalias(in,'Signal', fields);
-      
-      % get potential attribute (in Data.Attributes fields)
-      attribute = fileattrib(in, fields);
-      
-      if isstruct(attribute)
-        attribute = class2str(' ',attribute, 'no comments');
-      end
-      if ischar(attribute)
-        if numel(attribute) > 80, attribute=[ attribute(1:77) ' ...' ]; end
-        in.Alias.Labels{1} = attribute;
+        
+        dims=dims(1);
+        fields=fields{1};
       end
 
-      % assign potential 'error' bars and 'monitor'
-      if ~isempty(error_id)
-        in = setalias(in,'Error', error_id);
+      % index: is the field and dimension index to assign the Signal
+      if dims > 0
+        disp([ 'iData: Setting Signal="' fields '" with length ' num2str(dims) ' in object ' in.Tag ' "' in.Title '".' ]);
+        in = setalias(in,'Signal', fields);
+        
+        % get potential attribute (in Data.Attributes fields)
+        attribute = fileattrib(in, fields);
+        
+        if isstruct(attribute)
+          attribute = class2str(' ',attribute, 'no comments');
+        end
+        if ischar(attribute)
+          if numel(attribute) > 80, attribute=[ attribute(1:77) ' ...' ]; end
+          in.Alias.Labels{1} = attribute;
+        end
+
+        % assign potential 'error' bars and 'monitor'
+        if ~isempty(error_id)
+          in = setalias(in,'Error', error_id);
+        end
+        if ~isempty(monitor_id)
+          in = setalias(in,'Monitor', monitor_id);
+        end
       end
-      if ~isempty(monitor_id)
-        in = setalias(in,'Monitor', monitor_id);
-      end
-    end
-    
+    end % if no Signal
+   
     % look for vectors that may have the proper length as axes
+    sz = [];
     for index=1:ndims(in)
       if isempty(getaxis(in, num2str(index)))
+        if isempty(sz), sz = size(in); end
         % search for a vector of length size(in, index)
-        ax = find(dims_all == size(in, index));   % length of dim, or length(dim)+1
-        if isempty(ax), ax = find(dims_all == size(in, index)+1); end
+        ax = find(dims_all == sz(index));   % length of dim, or length(dim)+1
+        if isempty(ax), ax = find(dims_all == sz(index)+1); end
         ax = ax(~strcmp(getalias(in,'Signal'), fields_all(ax)));
         if length(ax) > 1; ax=ax(1); end
+
         if ~isempty(ax)
           val = get(in, fields_all{ax});
           if isvector(val) && ~strcmp(fields_all{ax},getalias(in,'Signal')) && issorted(val(:))
@@ -181,8 +189,8 @@ if ~isempty(in.Data) && isempty(getalias(in, 'Signal'))
         else
           break; % all previous axes must be defined. If one misses, we end the search
         end
-      end
-    end 
+      end % this axis not defined
+    end % for
   end % has fields
 end % if no Signal defined
 
