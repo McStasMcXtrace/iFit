@@ -306,7 +306,6 @@ case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLO
   fclose(fid);
 case 'mat'  % single mat-file Matlab output (binary), with the full object description
   % serialize for much faster save
-  disp saveasserializing
   a.Data = hlp_serialize(a.Data);
   if ~isempty(inputname(1))
     eval([ inputname(1) '= a;' ]);

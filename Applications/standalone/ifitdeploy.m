@@ -56,7 +56,7 @@ mcc('-m', 'ifit', '-a', p);
 
 % tuning the standalone
 if ~ispc
-  if isempty(dir('run_ifit'))
+  if isempty(dir('run_ifit')) && ~isempty(dir('ifit'))
     movefile('ifit', 'run_ifit');
     delete('run_ifit.sh');
   end
