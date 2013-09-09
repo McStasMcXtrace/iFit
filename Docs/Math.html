@@ -1348,9 +1348,14 @@ elements on each dimension/rank, but preserve the data set meaning. <br>
 <h4><a class="mozTocH4" name="mozTocId539072"></a>Smoothing</h4>
 
 
-To explicitly smooth a data set, you can use the '<span style="font-weight: bold;">smooth</span>' method, which makes use of a discrete cosine transform filter:<br>
+To explicitly smooth a data set, you can use the '<span style="font-weight: bold;">smooth</span>' method, which makes use of a discrete cosine transform filter spline smoothing (shape preserving):<br>
 
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40).*(1+0.1*randn(40)</span></span>));<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a);<br>&gt;&gt; <font color="#3366ff">subplot</font>(a,b);<br></pre><span style="text-decoration: underline;">Reference:</span> Garcia D, Robust smoothing of gridded data in one and higher dimensions with missing values. <span style="font-style: italic;">Computational Statistics &amp; Data Analysis</span>, 2010.<br>
+<br>
+The smoothing can also use a Savitsky-Golay moving average, but may lead to significant sharp features modifications.<br>
+<pre style="margin-left: 40px;">&gt;&gt; b = <font color="#3366ff">smooth</font>(a, <span style="color: rgb(204, 51, 204);">'sgolay'</span>);<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a, span, <span style="color: rgb(204, 51, 204);">'sgolay'</span>, degree); <span style="font-style: italic;">% Savitsky Golay degree and span (length) specified</span>
+</pre>
+
 
 <h4><a class="mozTocH4" name="mozTocId628538"></a>Manipulating object dimensions</h4>
 It is also possible to manipulate an object Signal in the same way as a matrix with methods <span style="font-weight: bold;">reshape</span> (re-order elements in the object)<span style="font-weight: bold;">, permute</span> (permute ranks, that is a generalized transposition) and <span style="font-weight: bold;">circshift</span> (shift ranks/dimensions), which work just as their matrix equivalent.<br>
