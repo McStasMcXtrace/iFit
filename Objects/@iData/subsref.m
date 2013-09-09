@@ -32,7 +32,9 @@ for i = 1:length(S)     % can handle multiple index levels
   s = S(i);
   switch s.type
   case '()' % ======================================================== array
-    if numel(b) > 1   % iData array
+    if ~isa(b, 'iData')
+      b = subsref(b,s);
+    elseif numel(b) > 1   % iData array
       b = b(s.subs{:});
     else                  % single iData
       % this is where specific class structure is taken into account
@@ -138,7 +140,9 @@ for i = 1:length(S)     % can handle multiple index levels
 
     end               % if single iData
   case '{}' % ======================================================== cell
-    if isnumeric(s.subs{:}) && isscalar(s.subs{:})
+    if ~isa(b, 'iData')
+      b=subsref(b, s);
+    elseif isnumeric(s.subs{:}) 
       b=getaxis(b, s.subs{:});  % b{rank} value of axis
     elseif ischar(s.subs{:}) && ~isnan(str2double(s.subs{:}))
       b=getaxis(b, s.subs{:});  % b{'rank'} definition of axis
@@ -154,8 +158,10 @@ for i = 1:length(S)     % can handle multiple index levels
       fieldname = fieldname{1};
     end
     
-    if isa(b, 'iData'), 
-      isiData = 1; f=fields; 
+    if ~isa(b, 'iData')
+      b = subsref(b, s);    
+    else
+       f=fields; 
       % alias for a few iData fields
       if strcmpi(fieldname, 'filename') % 'alias of alias'
         fieldname = 'Source';
@@ -164,47 +170,45 @@ for i = 1:length(S)     % can handle multiple index levels
       elseif strcmpi(fieldname, 'axes')
         fieldname = 'Axis';
       end
-    else
-      isiData = 0;
-      if isstruct(b), f=fieldnames(b); else f=[]; end
-    end
-    index = find(strcmpi(fieldname, f));
-    if isiData && any(strcmpi(fieldname, 'alias'))
-      b = getalias(b);
-    elseif isiData && any(strcmpi(fieldname, 'axis'))
-      b = getaxis(b);
-    elseif ~isempty(index) % structure/class def fields: b.field
-      b = b.(f{index(1)});
-      if isnumeric(b) && any(strcmpi(fieldname, {'Date','ModificationDate'}))
-        b = datestr(b);
-      end
-    elseif any(strcmpi(fieldname, a.Alias.Names))
-      b = iData_getAliasValue(b,fieldname);
-    elseif isiData && any(strcmp(fieldname,method)) % b.method = ismethod(b, fieldname)
-      if i == length(S)
-        if nargout(fieldname) ==0
-          feval(fieldname, b);
-          c = [];
-        else
-          c = feval(fieldname, b);
+      
+      index = find(strcmpi(fieldname, f));
+      if any(strcmpi(fieldname, 'alias'))
+        b = getalias(b);
+      elseif any(strcmpi(fieldname, 'axis'))
+        b = getaxis(b);
+      elseif ~isempty(index) % structure/class def fields: b.field
+        b = b.(f{index(1)});
+        if isnumeric(b) && any(strcmpi(fieldname, {'Date','ModificationDate'}))
+          b = datestr(b);
         end
+      elseif any(strcmpi(fieldname, a.Alias.Names))
+        b = iData_getAliasValue(b,fieldname);
+      elseif any(strcmp(fieldname,method)) % b.method = ismethod(b, fieldname)
+        if i == length(S)
+          if nargout(fieldname) ==0
+            feval(fieldname, b);
+            c = [];
+          else
+            c = feval(fieldname, b);
+          end
+        else
+          c = feval(fieldname, b, S(i+1).subs{:}); i=i+1;
+        end
+        if isa(c, 'iData'), b = c; end
+        if i == length(S), return; end
       else
-        c = feval(fieldname, b, S(i+1).subs{:}); i=i+1;
-      end
-      if isa(c, 'iData'), b = c; end
-      if i == length(S), return; end
-    else
-      % check if the fieldname belong directly to b.Data
-      strtk = find(fieldname == '.', 1); strtk = fieldname(1:(strtk-1));
-      if isempty(strtk), strtk = fieldname; end
-      if (isstruct(b) || isa(b,'iData')) && isfield(b,'Data') && isstruct(b.Data) ...
-              && all(~strcmpi(f, strtk)) && isfield(b.Data, strtk)
-        fieldname = [ 'Data.' fieldname ];
-      end
-      if length(find(fieldname == '.')) >= 1
-        b = get(b, fieldname);
-      else
-        b = iData_getAliasValue(b,fieldname); % get alias value from iData: b.<path> MAIN SPENT TIME
+        % check if the fieldname belongs directly to b.Data
+        strtk = find(fieldname == '.', 1); strtk = fieldname(1:(strtk-1));
+        if isempty(strtk), strtk = fieldname; end
+        if isfield(b,'Data') && isstruct(b.Data) ...
+                && all(~strcmpi(f, strtk)) && isfield(b.Data, strtk)
+          fieldname = [ 'Data.' fieldname ];
+        end
+        if length(find(fieldname == '.')) >= 1
+          b = get(b, fieldname);
+        else
+          b = iData_getAliasValue(b,fieldname); % get alias value from iData: b.<path> MAIN SPENT TIME
+        end
       end
     end
     
