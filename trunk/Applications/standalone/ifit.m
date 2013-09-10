@@ -253,8 +253,8 @@ function inline_display_banner
   disp('   Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.')
   disp('   Type ''exit'' or Ctrl-C to exit.');
   if ispc
-    disp('WARNING: under Windows platforms, file names containing spaces, such as "My Documents" ')
-    disp('         are not well supported. Rename files and move directories to other locations.')
+    disp('WARNING: Windows: file names containing spaces, such as "My Documents" ')
+    disp('         are not well supported. Rename files or move directories.')
   end
   disp(' ')
 
