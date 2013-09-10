@@ -186,6 +186,8 @@ elseif (strfind(method,'painters'))
 	set(gcf,'Renderer','painters')
 elseif (strfind(method,'zbuffer'))
 	set(gcf,'Renderer','zbuffer');
+elseif ismac
+  set(gcf,'Renderer','zbuffer'); % default for MacOS which do not support OpenGL
 end
 
 % ==============================================================================
