@@ -30,6 +30,8 @@ function a = smooth(a, varargin)
 %   Z = SMOOTH(Y,span,'sgolay',degree) uses the number of data points specified 
 %   by span in the Savitzky-Golay calculation. span must be odd and degree must 
 %   be less than span.
+%   Z = SMOOTH(Y,span,'sgolay',degree,dimensions) specifies the dimensions along
+%   which the Savitzky-Golay filter should be applied (integer or vector up to ndims).
 %
 %   Robust smoothing
 %   ----------------
@@ -66,12 +68,18 @@ if numel(a) > 1
 end
 
 % check if we request Savitzky-Golay method
-method='spline'; % default
-vargs = varargin;
+method='spline';  % default
+vargs = varargin; % varargin for calling SG
+dimensions=0;     % array of ranks to apply SG to
 for index=1:min(numel(vargs), 2)
   if strcmpi(vargs{index}, 'sgolay')
     method='sgolay';
     vargs(index) = [];
+    if length(vargs) >= 2
+      dimensions = vargs{end}; % ranks to consider are specified
+      vargs(end) = [];
+    end
+    break;
   end
 end
 
@@ -80,19 +88,15 @@ if strcmp(method, 'sgolay')
   
   % iteratively call SG 1D by putting the dimension to apply as 1st
   s = subsref(a,struct('type','.','subs','Signal'));
+  
   for index=1:ndims(a)
-    if index > 1, 
-      s  = permute(s, [ index 1 ]); 
-    end
-    if numel(vargs) == 1
-      vargs{2} = 2; % M=degree
-    end
+    if dimensions && all(dimensions ~= index), % skip this rank if not specified
+      continue; end
+    if index > 1, s  = permute(s, [ index 1 ]); end
     
     s = reshape(smoothsg1d(s(:), vargs{:}), size(s));
     
-    if index > 1, 
-      s  = permute(s, [ index 1 ]); 
-    end
+    if index > 1, s  = permute(s, [ index 1 ]); end
   end
   a = set(a, 'Signal', s);
 else
@@ -128,15 +132,11 @@ if (nargin < 1)
 	error('usage: [smoothed_y, coefs] = smooth(y,{N,M=2})');
 end
 
-if (nargin < 3)
-	M = 2;
-end
+if nargin < 3, M = []; end
+if isempty(M), M=2; end
 
-if (nargin < 2)
-	N = 5;
-end
-
-if M < 2, M=2; end
+if nargin < 2, N = []; end
+if isempty(N), N=5; end
 
 if N < M, N=M+1; end 
 
