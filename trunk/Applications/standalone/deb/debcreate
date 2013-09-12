@@ -8,19 +8,19 @@ echo Performing @IFIT_TARNAME@-@IFIT_VERSION@ install to ${BUILDDIR}/usr/local
 PW=`pwd`
 cd    ${BUILDDIR}/usr/local/bin
 rm -f ${BUILDDIR}/usr/local/bin/ifit
-rm -f ${BUILDDIR}/usr/local/bin/pyfit
+#rm -f ${BUILDDIR}/usr/local/bin/pyfit
 ln -s ../ifit/ifit .
-ln -s ../ifit/pyfit .
+#ln -s ../ifit/pyfit .
 cd $PW
 chmod a+x ${BUILDDIR}/usr/local/bin/ifit
 chmod a+x ${BUILDDIR}/usr/local/ifit/ifit
-chmod a+x ${BUILDDIR}/usr/local/bin/pyfit
-chmod a+x ${BUILDDIR}/usr/local/ifit/pyfit
+#chmod a+x ${BUILDDIR}/usr/local/bin/pyfit
+#chmod a+x ${BUILDDIR}/usr/local/ifit/pyfit
 
 echo create the DEB build directory
 sed -i "s/arch/$2/g" ${BUILDDIR}/DEBIAN/control
 sed -i "s|\`dirname \"\$0\"\`|/usr/local/ifit|g" ${BUILDDIR}/usr/local/ifit/ifit
-sed -i "s|\`dirname \"\$0\"\`|/usr/local/ifit|g" ${BUILDDIR}/usr/local/ifit/pyfit
+#sed -i "s|\`dirname \"\$0\"\`|/usr/local/ifit|g" ${BUILDDIR}/usr/local/ifit/pyfit
 
 find ${BUILDDIR} -type d -exec chmod 0755 \{\} \;
 

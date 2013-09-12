@@ -35,7 +35,7 @@ In this page, links are valid when browsed from Matlab with the command:<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">methods</span>(iData)<br></pre>
 The help windows then displays the help for each command (usage, input and output arguments, examples, ...).<br>
 <br>
-Most of these methods are also valid for <a href="iFunc.html">iFunc</a> model objects.<br>
+Most of these methods are also valid for <a href="iFunc.html">iFunc</a> model objects, and the naming corresponds with standard Matlab functions.<br>
 
 <h3><a class="mozTocH3" name="mozTocId323642"></a><span style="font-weight: bold;">data structure, aliases, signal and axes</span></h3>
 A dedicated documentation about the <a href="iData.html">iData object</a>
@@ -180,7 +180,7 @@ object
 dimension)</li>
   <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/squeeze">squeeze: </a>removes singleton
 dimension from iData object or array</li>
-  <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/isfield">isfield: </a>check if a name is defined in the iData object as a structure field or alias</li>
+  <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/isfield">isfield: </a>checks if a name is defined in the iData object as a structure field or alias</li>
 <li><i><b><a href="matlab:helpwin iData/circshift">circshift</a></b></i>: shifts an axis by a given quantify, equivalent to <i>a{n} = a{n} +delta</i>&nbsp;</li>
 <li><i><b><a href="matlab:helpwin iData/fileattrib">fileattrib</a></b></i>: sets/gets object property attributes, extracted from initial file (text/HDF/NeXus/CDF/NetCDF)<br>
 </li>
@@ -229,8 +229,8 @@ description
 of
 the
 object</li>
-  <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/edit">edit: </a>edit the Signal/Monitor
-of the object as a Table/spreadshet.<br>
+  <li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/edit">edit: </a>edits the Signal/Monitor
+of the object as a Table/spreadsheet.<br>
   </li>
   <li><a href="matlab:helpwin iData/doc"><span style="font-weight: bold; font-style: italic;">doc: </span></a>opens
 the
@@ -302,7 +302,7 @@ has
 many
 zeros)<br>
   </li>
-  <li><a href="matlab:helpwin iData/ind2sub"><span style="font-weight: bold; font-style: italic;">ind2sub: </span></a>get
+  <li><a href="matlab:helpwin iData/ind2sub"><span style="font-weight: bold; font-style: italic;">ind2sub: </span></a>gets
 indexed
 element
 in
@@ -325,10 +325,10 @@ the
 memory
 usage</li>
 <li><a style="font-style: italic;" href="matlab:helpwin iData/permute"><span style="font-weight: bold;">permute:</span></a> dimensions permutation (generalized transposition)</li>
-<li><a style="font-style: italic;" href="matlab:helpwin iData/reshape"><span style="font-weight: bold;">reshape</span></a>: re-order elements of an object<br>
+<li><a style="font-style: italic;" href="matlab:helpwin iData/reshape"><span style="font-weight: bold;">reshape</span></a>: re-orders elements of an object<br>
 </li>
 
-<li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/reducevolume">reducevolume: </a>rebin the object so that it contains a larger binning, or less that 1e6 elements</li>
+<li><a style="font-weight: bold; font-style: italic;" href="matlab:helpwin iData/reducevolume">reducevolume: </a>rebins the object so that it contains a larger binning, or less that 1e6 elements</li>
 <li><a style="font-style: italic;" href="matlab:helpwin iData/resize"><span style="font-weight: bold;">resize</span></a><span style="font-style: italic;">: </span>fast rebinning of an object<br>
 </li>
 
@@ -476,7 +476,7 @@ objects (same as ones)<br>
 </ul>
 <br>
 <h3><a class="mozTocH3" name="mozTocId616062"></a><span style="font-weight: bold;">testing/comparing</span></h3>
-A dedicated documentation about the <a href="Math.html">iData
+A dedicated documentation about the <a href="Math.html#mozTocId660745">iData
 comparison operators</a> is available.<span style="font-style: italic;"><br>
 </span><br>
 <ul>
@@ -620,7 +620,7 @@ elements<br>
 </ul>
 <br>
 <h3><a class="mozTocH3" name="mozTocId222761"></a><span style="font-weight: bold;">math</span>: common operators</h3>
-A dedicated documentation about the <a href="Math.html">iData
+A dedicated documentation about the <a href="Math.html#mozTocId566959">iData
 mathematical operators</a> is available.<span style="font-style: italic;"></span><br>
 <ul>
   <li><a href="matlab:helpwin iData/abs"><span style="font-weight: bold;">abs: </span></a>absolute value
@@ -639,12 +639,12 @@ mathematical operators</a> is available.<span style="font-style: italic;"></span
 conjugate transpose (')<br>
   </li>
   <li><a href="matlab:helpwin iData/exp"><span style="font-weight: bold;">exp: </span></a>exponent</li>
-  <li><a href="matlab:helpwin iData/floor"><span style="font-weight: bold;">floor: </span></a>lower interger</li>
+  <li><a href="matlab:helpwin iData/floor"><span style="font-weight: bold;">floor: </span></a>lower integer</li>
   <li><a href="matlab:helpwin iData/eval"><span style="font-weight: bold;">eval: </span></a>evaluates a model
 using the axes of an object (similar to <span style="font-style: italic;">eval)</span><br>
   </li>
   <li><a href="matlab:helpwin iData/imag"><span style="font-weight: bold;">imag: </span></a>imaginary part</li>
-  <li><a href="matlab:helpwin iData/ldivide"><span style="font-weight: bold;">ldivide:</span></a><span style="font-weight: bold;"> </span><span style="font-weight: bold;"></span><span style="font-style: italic;">combine</span> (.\)<br>
+  <li><a href="matlab:helpwin iData/ldivide"><span style="font-weight: bold;">ldivide:</span></a><span style="font-weight: bold;"> </span><span style="font-weight: bold;"></span>combine (.\)<br>
   </li>
   <li><a href="matlab:helpwin iData/log"><span style="font-weight: bold;">log: </span></a>log (base 2)</li>
   <li><a href="matlab:helpwin iData/log10"><span style="font-weight: bold;">log10: </span></a>log base 10</li>
@@ -679,7 +679,7 @@ transpose (.')</li>
 </ul>
 <h3><a class="mozTocH3" name="mozTocId771919"></a><span style="font-weight: bold;">math: convolution, correlation and Fourier
 transforms</span></h3>
-A dedicated documentation about the <a href="Math.html#mozTocId401065">iData
+A dedicated documentation about the <a href="Math.html#mozTocId222123">iData
 mathematical
 operators</a> is available.<span style="font-style: italic;"><br>
 </span>
@@ -692,7 +692,7 @@ use the <a href="matlab:helpwin iData/fconv">fconv</a> and <a href="matlab:helpw
   <li><a style="font-weight: bold;" href="matlab:helpwin iData/convn">convn:
     </a>same as <span style="font-style: italic;">conv, </span>with a
 normalisation and centering of the second signal (response function).</li>
-<li><a href="matlab:helpwin iData/cwt"><span style="font-weight: bold;">cwt</span></a>: the continuous wavelet transform along an axis<br>
+<li><a href="matlab:helpwin iData/cwt"><span style="font-weight: bold;">cwt</span></a>: the continuous wavelet transform along an axis.<br>
 </li>
 
   
@@ -705,11 +705,13 @@ axis.</li>
 signals (same as convolution, with one of the signals conjugated). This
 method uses the <a href="matlab:helpwin iData/fxcorr">fxcorr</a>
 function (multidimensional FFT correlation).</li>
+<li><b><a href="matlab:helpwin iData/smooth">smooth</a></b>: smooth a data set using a robust spline smoothing or a Savitsky-Golay average.</li>
+
 
 </ul>
 <h3><a class="mozTocH3" name="mozTocId179983"></a><span style="font-weight: bold;">math: statistics, fitting and peak
 searching</span></h3>
-Dedicated documentations about the <a href="Math.html#mozTocId463816">iData
+Dedicated documentations about the <a href="Math.html#mozTocId480132">iData
 analysis
 operators</a> and <a href="Fit.html">fitting</a> are available.<span style="font-style: italic;"></span><br>
 <ul>
@@ -778,19 +780,16 @@ account the axis binning.&nbsp;</li>
 elements along a given dimension. The resulting object has this
 dimension removed. This method does not take
 into account the axis binning.</li>
-  <li><a href="matlab:helpwin cumtrapz"><span style="font-weight: bold;">cumtrapz: </span></a>computes the
-cumulated integral of an object along a given dimension, that is the primitive. The result has the
+  <li><a href="matlab:helpwin cumtrapz"><span style="font-weight: bold;">cumtrapz: </span></a>computes the accumulated integral of an object along a given dimension, that is the primitive. The result has the
 same dimension as the initial object, and its last element/slice along
 the specified dimension is the result of the <span style="font-style: italic;">sum</span> method.<br>
   </li>
-  <li><a href="matlab:helpwin iData/cumsum"><span style="font-weight: bold;">cumsum: </span></a>computes the
-cumulated sum of an object along a given dimension. The result has the
+  <li><a href="matlab:helpwin iData/cumsum"><span style="font-weight: bold;">cumsum: </span></a>computes the accumulated sum of an object along a given dimension. The result has the
 same dimension as the initial object, and its last element/slice along
 the specified dimension is the result of the <span style="font-style: italic;">sum</span> method. This is the signal
-primitive, equal to <span style="font-style: italic;">cumtrapz</span> when dx=1.</li>
+primitive, equal to <span style="font-style: italic;">cumtrapz</span> when <span style="font-style: italic;">dx</span>=1.</li>
 
-  <li><a href="matlab:helpwin iData/cumprod"><span style="font-weight: bold;">cumprod: </span></a>computes the
-cumulated product of an object along a given dimension. The result has
+  <li><a href="matlab:helpwin iData/cumprod"><span style="font-weight: bold;">cumprod: </span></a>computes the accumulated product of an object along a given dimension. The result has
 the same dimension as the initial object, and its last
 element/slice along the specified dimension is the result of the <span style="font-style: italic;">prod</span>
 method.</li>
@@ -804,13 +803,13 @@ method.</li>
   <li><a style="font-weight: bold;" href="matlab:helpwin iData/jacobian">jacobian: </a>computes the
 Jacobian from the object current axes to new axes. This is to be used
 for object coordinate changes. The<span style="font-style: italic;">
-'from' </span>anf<span style="font-style: italic;"> 'to' </span>axes
+'from' </span>and<span style="font-style: italic;"> 'to' </span>axes
 should have the same dimensions. The transformed object is returned, as
 well as the Jacobian which was used for the transformation.<br>
   </li>
 </ul>
 <h3><a class="mozTocH3" name="mozTocId617915"></a><span style="font-weight: bold;">math: combination and merging/assembling</span></h3>
-A dedicated documentation about the <a href="Math.html">iData
+A dedicated documentation about the <a href="Math.html##mozTocId703536">iData
 mathematical operators</a> is available.<span style="font-style: italic;"><br>
 </span>
 <ul>
@@ -839,8 +838,9 @@ the series of slices. This is the opposite operation to <span style="font-style:
 </ul>
 
 <h3><a class="mozTocH3" name="mozTocId434222"></a><span style="font-weight: bold;">math:
-interpolation</span></h3>
-A dedicated documentation about the <a href="Math.html#mozTocId981870">these
+interpolation<br>
+</span></h3>
+A dedicated documentation about the <a href="Math.html##mozTocId208686">these
 operators</a> is available.<span style="font-style: italic;"><br>
 </span>
 <ul>
@@ -873,8 +873,8 @@ objects.<br>
   </li>
   <li><a href="matlab:helpwin iData/sort"><span style="font-weight: bold;">sort: </span></a>sorts objects axes
 and reorder the corresponding signal.</li>
-<li><b><a href="matlab:helpwin iData/smooth">smooth</a></b>: smooth a data set using a robust spline smoothing.</li>
-<li><a style="font-style: italic;" href="matlab:helpwin iData/resize"><span style="font-weight: bold;">resize</span></a><span style="font-style: italic;">: </span>fast rebinning of an object<br>
+<li><b><a href="matlab:helpwin iData/smooth">smooth</a></b>: smooth a data set using a robust spline smoothing or a Savitsky-Golay average.</li>
+<li><a href="matlab:helpwin iData/resize"><span style="font-weight: bold;">resize</span></a><span style="font-style: italic;">: </span>fast rebinning of an object<br>
 </li>
 
 
@@ -916,7 +916,7 @@ object Label, or axes/signal labels. Use <span style="font-style: italic;">title
   </li>
   <li><a href="matlab:helpwin iData/getframe"><span style="font-weight: bold;">getframe: </span></a>creates
 a
-snapshopt
+snapshot
 image
 from
 an
@@ -975,7 +975,7 @@ axis (4th rank) label</li>
 of objects as plots in the same window<br>
   </li>
   <li><a href="matlab:helpwin iData/title"><span style="font-weight: bold;">title: </span></a>sets/gets
-the object <span style="font-style: italic;">Signal</span> title. To assigne the object title, use <span style="font-style: italic;">object.Title='string'</span>.<br>
+the object <span style="font-style: italic;">Signal</span> title. To assign the object title, use <span style="font-style: italic;">object.Title='string'</span>.<br>
   </li>
 </ul>
 
@@ -989,6 +989,7 @@ back to <a href="index.html">Main
 iFit
 Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
+
 
 
 
