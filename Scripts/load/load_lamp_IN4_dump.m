@@ -12,8 +12,8 @@ function a=load_lamp_IN4_dump(a,t)
 % See also: iData/load, iLoad, save, iData/saveas
 
 % handle input iData arrays
-if length(a(:)) > 1
-  for index=1:length(a(:))
+if numel(a) > 1
+  for index=1:numel(a)
     a(index) = feval(mfilename, a(index));
   end
   return

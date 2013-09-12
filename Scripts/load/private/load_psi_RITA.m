@@ -9,7 +9,7 @@ function a=load_psi_RITA(a)
 % handle input iData arrays
 if numel(a) > 1
   b = [];
-  for index=1:length(a(:))
+  for index=1:numel(a)
     b = [ b ; feval(mfilename, a(index)) ]; 
   end
   a = b;

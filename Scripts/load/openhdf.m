@@ -13,12 +13,12 @@ else
 end
 clear filename;
 
-if length(out(:)) > 1
+if numel(out) > 1
   % handle input iData arrays
   in = out;
-  out = [];
-  for index=1:length(in(:))
-    out = [ out feval(mfilename, in(index)) ];
+  out = []; % the number of elements may change, can not simply replace
+  for index=1:numel(in)
+    out = [ out ; feval(mfilename, in(index)) ];
     in(index) = iData; % free memory
   end
   return

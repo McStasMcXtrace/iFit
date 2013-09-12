@@ -107,6 +107,9 @@ a.Data.vertex   = size(a.Data.vertices,1);
 if nf
   a.Data.faces    = faces;
   a.Data.face     = size(a.Data.faces,1);
+else
+  a.Data.faces    = [];
+  a.Data.face     = 0;
 end
 if isfield(a.Data,'MetaData')
   a.Data.MetaData.OFF = [ size(a.Data.vertices,1) size(a.Data.faces,1) ];
