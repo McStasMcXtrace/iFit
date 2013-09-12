@@ -53,7 +53,7 @@ if ischar(data)
   str = [ this ' = ''' class2str_validstr(data) ''';' NL ];
 elseif (isa(data, 'iData') | isstruct(data)) & length(data) > 1
   if ~nocomment, str = [ '% ' this ' (' class(data) ') array size ' mat2str(size(data)) NL ]; end
-  for index=1:length(data(:))
+  for index=1:numel(data)
     str = [ str class2str([ this '(' num2str(index) ')' ], data(index), options) ];
   end
   str = [ str this ' = reshape(' this ', [' num2str(size(data)) ']);' NL ];
@@ -96,9 +96,9 @@ elseif isstruct(data)
 elseif iscellstr(data)
   if ~nocomment, str = [ '% ' this ' (' class(data) 'str) size ' mat2str(size(data)) NL ]; end
   str = [ str this ' = { ...' NL ];
-  for index=1:length(data(:))
+  for index=1:numel(data)
     str = [ str '  ''' class2str_validstr(data{index}) '''' ];
-    if index < length(data(:)), str = [ str ', ' ]; end
+    if index < numel(data), str = [ str ', ' ]; end
     str = [ str ' ...' NL ];
   end
   str = [ str '}; ' NL ];
@@ -109,7 +109,7 @@ elseif iscellstr(data)
 elseif iscell(data)
   if ~nocomment, str = [ '% ' this class(data) ' size ' mat2str(size(data)) NL ]; end
   str = [ str this ' = cell(' mat2str(size(data)) ');' NL ];
-  for index=1:length(data(:))
+  for index=1:numel(data)
     str = [ str class2str([ this '{' num2str(index) '}' ], data{index}, options) ];
   end
   if prod(size(data)) > 1
@@ -141,7 +141,7 @@ if isempty(data), return; end
 if ischar(data)
   str = [ '# ' this ': ' class2str_validstr(data) NL ];
 elseif (isa(data, 'iData') | isstruct(data)) & length(data) > 1
-  for index=1:length(data(:))
+  for index=1:numel(data)
     str = [ str class2str([ this '(' num2str(index) ')' ], data(index), options) NL ];
   end
 elseif isstruct(data)
@@ -154,13 +154,13 @@ elseif isstruct(data)
 elseif iscellstr(data)
   % str = [ '# ' class(data) 'str size ' mat2str(size(data)) ': ' this NL ];
   str = '';
-  for index=1:length(data(:))
+  for index=1:numel(data)
     str = [ str class2str(this,data{index},'flat') ];
   end
 elseif iscell(data)
   % str = [ '# ' class(data) ' size ' mat2str(size(data)) ': ' this NL ];
   str = '';
-  for index=1:length(data(:))
+  for index=1:numel(data)
     str = [ str class2str([ this '{' num2str(index) '}' ], data{index}, options) NL ];
   end
 elseif isa(data, 'function_handle')

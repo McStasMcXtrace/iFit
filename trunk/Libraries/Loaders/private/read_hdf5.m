@@ -41,7 +41,7 @@ data = getGroup(filename, data_info);
 
 % return
 
-  % inline function ==============================================================
+  % inline function ============================================================
   function data = getGroup(filename, data_info)
   % getGroup: recursively traverse the HDF tree
 
@@ -60,7 +60,7 @@ data = getGroup(filename, data_info);
         if iscellstr(val) && length(val) == 1,  val = char(val); end
         if strcmp(class(val), 'hdf5.h5string'), val = char(val.Data); end
         name        = getName(data_info.Datasets(i).Name);
-        data.(name) = val;
+        data.(name) = val; clear val;
         
         % get dataset attributes: group.Attributes.<dataset>.<attribute>
         natts = length(data_info.Datasets(i).Attributes);
@@ -108,7 +108,7 @@ data = getGroup(filename, data_info);
       group = getGroup(filename, data_info.Groups(i));
       % assign the name of the group
       name = getName(data_info.Groups(i).Name);
-      data.(name) = group;
+      data.(name) = group; clear group;
     end
   end
 
@@ -128,19 +128,19 @@ function [base, group, lastword] = getAttributePath(field)
 % function to split the entry name into basename, group and dataset
 % duplicated from iData_getAttribute
 
-    % get group and field names
-    lastword_index = find(field == '.' | field == '/', 2, 'last'); % get the group and the field name
-    if isempty(lastword_index)
-      lastword = field; 
-      group    = '';
-      base     = '';                            % Attributes.<field>.
-    elseif isscalar(lastword_index)
-      lastword = field((lastword_index+1):end); 
-      group    = field(1:lastword_index);
-      base     = '';                            % <group>.Attributes.<field>
-    else 
-      lastword = field( (lastword_index(2)+1):end ); 
-      group    = field( (lastword_index(1)+1):lastword_index(2) ); 
-      base     = field(1:lastword_index(1));    % <basename>.<group>.Attributes.<field>
-    end
+  % get group and field names
+  lastword_index = find(field == '.' | field == '/', 2, 'last'); % get the group and the field name
+  if isempty(lastword_index)
+    lastword = field; 
+    group    = '';
+    base     = '';                            % Attributes.<field>.
+  elseif isscalar(lastword_index)
+    lastword = field((lastword_index+1):end); 
+    group    = field(1:lastword_index);
+    base     = '';                            % <group>.Attributes.<field>
+  else 
+    lastword = field( (lastword_index(2)+1):end ); 
+    group    = field( (lastword_index(1)+1):lastword_index(2) ); 
+    base     = field(1:lastword_index(1));    % <basename>.<group>.Attributes.<field>
   end
+end
