@@ -172,9 +172,9 @@ function [data, format] = iLoad(filename, loader, varargin)
 
   % multiple file handling
   if iscellstr(filename) & length(filename) > 1 & ~isempty(filename)
-    data  = cell(1,length(filename(:)));
+    data  = cell(1,numel(filename));
     format= data;
-    parfor index=1:length(filename(:))
+    parfor index=1:numel(filename)
       [this_data, this_format] = iLoad(filename{index}, loader, varargin{:});
       if ~iscell(this_data),   this_data  ={ this_data }; end
       if ~iscell(this_format), this_format={ this_format }; end
@@ -578,7 +578,7 @@ function [data, format] = iLoad(filename, loader, varargin)
         elseif ~isbinary && ~isempty(loader.patterns)  
           % check patterns in text file
           if ischar(loader.patterns), loader.patterns=cellstr(loader.patterns); end
-          for index_pat=1:length(loader.patterns(:))
+          for index_pat=1:numel(loader.patterns)
             if isempty(regexp(file_start, loader.patterns{index_pat}, 'once'))
               patterns_found=0;     % at least one pattern does not match
               % fprintf(1,'iLoad: method %s file %s: at least one pattern does not match (%s)\n', loader.name, file, loader.patterns{index_pat});
@@ -895,8 +895,8 @@ function match = findfield(s, field)
 % output: match: names of structure fields (cellstr)
 % ex:     findfield(s) or findfield(s,'Title')
 
-  if length(s(:)) > 1
-    match = cell(1, length(s(:)));
+  if numel(s) > 1
+    match = cell(1, numel(s));
     for index=1:length(s)
       match{index}=findfield(s(index), field);
     end
