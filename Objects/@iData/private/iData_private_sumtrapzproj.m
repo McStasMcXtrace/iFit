@@ -57,7 +57,7 @@ if all(dim > 0)
   case {'sum','cumsum'} % SUM ==================================================
     % sum on all dimensions requested
     e=e.^2;
-    for index=1:length(dim(:))
+    for index=1:numel(dim)
       if dim(index) == 1 && isvector(s)
         s = s(:); e=e(:); m=m(:);
       end
@@ -71,7 +71,7 @@ if all(dim > 0)
     
   case {'prod','cumprod'} % PROD ===============================================
     % product on all dimensions requested
-    for index=1:length(dim(:))
+    for index=1:numel(dim)
       if dim(index) == 1 && isvector(s)
         s = s(:); e=e(:); m=m(:);
       end
@@ -86,7 +86,7 @@ if all(dim > 0)
   case {'trapz','cumtrapz'} % TRAPZ ============================================
     e=e.^2;
 
-    for index=1:length(dim(:))
+    for index=1:numel(dim)
       [x, xlab]     = getaxis(a,dim(index)); x=x(:);
       if dim(index) ~= 1  % we put the dimension to integrate on as first
         perm=1:ndims(a);

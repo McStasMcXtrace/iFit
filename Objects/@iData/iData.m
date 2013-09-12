@@ -1,4 +1,4 @@
-function outarray = iData(varargin)
+function out = iData(varargin)
 % d = iData(a, ...) : iData class object constructor
 %
 % The iData objects are the containers where to import your data sets. It is then
@@ -45,7 +45,7 @@ function outarray = iData(varargin)
 %   iData_check
 %   load_clean_metadata
 
-outarray = [];
+out = [];
 
 if nargin == 0  % create empty object
   % create a new iData object
@@ -81,203 +81,107 @@ if nargin == 0  % create empty object
   a = class(a, 'iData');
   a.Command      = { [ 'iData %% create ' a.Tag ] };
   a.Creator      = version(a);     % Creator (program) name
-  outarray = [ outarray a ];
+  out = a;
   return
 else  % convert input argument into object
   if isa(varargin{1}, 'iData') && numel(varargin{1}) > 1
-  % iData(iData)
-    in = varargin{1};
-    out = zeros(iData, numel(in), 1);
-    parfor index=1:numel(in)
-      out(index) = iData(in(index));        % check all elements
+  % iData(iData array)
+    out = varargin{1};
+    parfor index=1:numel(out)
+      out(index) = iData(out(index));        % check all elements
     end
-    outarray = [ outarray out ];
     if nargout == 0 && ~isempty(inputname(1))
-      assignin('caller',inputname(1),outarray)
+      assignin('caller',inputname(1),out)
     end
     return
   elseif ~isa(varargin{1}, 'iData') && isnumeric(varargin{1}) && length(varargin) > 1  % array -> iData
     % iData(x,y,..., signal)
     index = length(varargin);
-    d = iData(varargin{index});  % last argument is the Signal
+    out   = iData(varargin{index});  % last argument is the Signal
     
     % handle axes
     for k1=1:(index-1)
       % in plotting convention, X=2nd, Y=1st axis
-      if     k1 <= 2 && ndims(d) >= 2, k2 = 3-k1; 
+      if     k1 <= 2 && ndims(out) >= 2, k2 = 3-k1; 
       else   k2 = k1; end
-      set(d,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
-      setaxis(d, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
-      label(d, k1, inputname(k2));
+      out = set(out,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
+      out = setaxis(out, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
+      label(out, k1, inputname(k2));
     end
     % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes in Signal
-    if ndims(d)>=2 && isvector(getaxis(d, 1)) && isvector(getaxis(d, 2)) ...
-                && length(getaxis(d, 1)) == size(get(d,'Signal'),2) ...
-                && length(getaxis(d, 2)) == size(get(d,'Signal'),1) ...
-                && length(getaxis(d, 1)) ~= length(getaxis(d, 2))
-      s=get(d,'Signal'); set(d, 'Signal', s');
-      disp([ 'iData: The Signal has been transposed to match the axes orientation in object ' d.Tag ' "' d.Title '".' ]);
+    if ndims(out)>=2 && isvector(getaxis(out, 1)) && isvector(getaxis(out, 2)) ...
+                && length(getaxis(out, 1)) == size(get(out,'Signal'),2) ...
+                && length(getaxis(out, 2)) == size(get(out,'Signal'),1) ...
+                && length(getaxis(out, 1)) ~= length(getaxis(out, 2))
+      s=get(out,'Signal'); out = set(out, 'Signal', s'); clear s
+      disp([ 'iData: The Signal has been transposed to match the axes orientation in object ' out.Tag ' "' out.Title '".' ]);
     end
     if ~isempty(inputname(index))
-        d.Label=[ inputname(index) ' (' class(varargin{index}) ')' ];
-        label(d, 0, inputname(index));
-        d.Title=inputname(index);
+        out.Label=[ inputname(index) ' (' class(varargin{index}) ')' ];
+        out = label(out, 0, inputname(index));
+        out.Title=inputname(index);
     end
-      
-    outarray = [ outarray d ];
+
     return
-  elseif ischar(varargin{1}) & length(varargin) > 1 % filename -> iData
+  elseif ischar(varargin{1}) % filename -> iData
   % iData('filename', ...)
-    out = load(iData, varargin{:});        % load file(s) with additional arguments
-  else
+    out = load(iData, varargin{:});        % load file(s) with additional arguments. Check included.
+    return
+  elseif isa(varargin{1}, 'iData')
+    % iData(iData single)
+    out = varargin{1};                     % just makes a check
+  elseif isstruct(varargin{1})
+    % iData(struct)
+    out = iData_struct2iData(varargin{1}); % convert struct to iData
+  elseif isscalar(varargin{1}) && ishandle(varargin{1}) && numel(varargin{1})==1 % convert single Handle Graphics Object
+    % iData(figure handle)
+    out = iData_handle2iData(varargin{1});
+    return
+  elseif isnumeric(varargin{1})
+    % iData(x)
+    out = iData_num2iData(varargin{1});    % convert single scalar/vector/matrix to iData
+    return
+  elseif iscell(varargin{1})
+    % iData(cell)
+    out = iData_cell2iData(varargin{1});   % convert cell/cellstr to cell(iData)
+    return
+  elseif isa(varargin{1}, 'iFunc')
     in = varargin{1};
-    if ischar(in)
-      % iData('filename')
-      out = load(iData, in);        % load file(s)
-      if ~isa(out, 'iData'), outarray=out; return; end
-    elseif isa(in, 'iData')
-      % iData(iData)
-      out = in;                     % just makes a check
-    elseif isstruct(in)
-      % iData(struct)
-      out = iData_struct2iData(in); % convert struct to iData
-    elseif all(ishandle(in)) & numel(in)==1 % convert Handle Graphics Object
-      % iData(figure handle)
-      try 
-        t = get(in,'DisplayName');
-        if isempty(t), t=get(get(in,'Parent'),'DisplayName'); end
-      catch
-        t=[]; end
-      if isempty(t), t=get(in,'Tag'); end
-      if isempty(t), t=num2str(in); end
-      if strcmp(get(in,'type'),'hggroup')
-        t = [ 'figure ' t ];
-        h = get(in,'Children');
-        out = iData(h(1)); % fisrt item
-        out = set(out,'Title', t);
-        out = set(out, 'Label', t);
-      elseif strcmp(get(in,'type'),'line')
-        x = get(in,'xdata'); 
-        y = get(in,'ydata'); 
-        index = find(~isnan(x) & ~isnan(y));
-        if length(index)~=numel(x), x = x(index); y=y(index); end
-        c = get(in,'color');
-        m = get(in,'marker');
-        l = get(in,'linestyle');
-        out=iData(x,y);
-        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch 
-            xl='x'; end; xlabel(out, xl);
-        try yl = get(get(in,'parent'),'YLabel'); yl=[ get(yl,'String') ' ' ]; catch 
-            yl=''; end;
-        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch 
-            tl=''; end;
-        label(out,0,yl);
-        t = [ 'line ' t ];
-        out.Title = [ tl yl t ];
-        out.DisplayName = t;
-        out.Label=[ t ' marker ' m ' color ' num2str(c) ];
-      elseif strcmp(get(in,'type'),'image')
-        x = get(in,'xdata'); 
-        y = get(in,'ydata');
-        z = get(in,'cdata');
-        t = [ 'image ' t ];
-        out=iData(x,y,z);
-        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch 
-            xl='x'; end
-        try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch 
-            yl='y'; end
-        try zl = get(get(in,'parent'),'ZLabel'); zl=[ get(zl,'String') ' ' ]; catch 
-            zl=''; end 
-        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch 
-            tl=''; end
-        xlabel(out, xl); ylabel(out, yl); label(out, tl);
-        out.Title = t;
-        out.DisplayName = t;
-        out.Label=t;
-      elseif strcmp(get(in,'type'),'surface')
-        x = get(in,'xdata'); 
-        y = get(in,'ydata'); 
-        z = get(in,'zdata'); 
-        c = get(in,'cdata'); 
-        % index=find(~isnan(x) & ~isnan(y) & ~isnan(z) & ~isnan(c)); 
-        % if length(index)~=prod(size(x)), x = x(index); y=y(index); z=z(index); c=c(index); end
-        l = get(in,'linestyle');
-        if all(z == c)
-          out=iData(x,y,z);
-        else
-          out=iData(x,y,z,c);
-        end
-        try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch 
-            xl='x'; end
-        try yl = get(get(in,'parent'),'YLabel'); yl=get(yl,'String'); catch
-            yl='y'; end
-        try zl = get(get(in,'parent'),'ZLabel'); zl=[ get(zl,'String') ' ' ]; catch 
-            zl=''; end 
-        try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch 
-            tl=''; end
-        xlabel(out, xl); ylabel(out, yl); label(out, tl);
-        if all(z == c)
-          t = [ tl zl t ];
-        else
-          if isempty(zl), zl='z'; end
-          zlabel(out, zl);
-          t = [ tl t ];
-        end
-        t = [ 'surface ' t ];
-        out.Title = t;
-        out.DisplayName = t;
-        out.Label=[ t ' line ' l ];
-      else
-        h = [ findobj(in, 'type','line') ; findobj(in, 'type','surface') ; findobj(in, 'type','image')  ];
-        out = [];
-        for index=1:length(h)
-          this_out = iData(h(index));
-          if isempty(this_out.Title) && ~isempty(t)
-            this_out.Title = t;
-            this_out.Label = t;
-            this_out.DisplayName = t;
-          end
-          if ~isempty(t), this_out.Source = t; end
-          if  ~isscalar(get(this_out,'Signal'))
-            out = [ out this_out ];
-          end
-        end
-      end
-    elseif isnumeric(in)
-      % iData(x)
-      out = iData_num2iData(in);    % convert scalar/vector/matrix to iData
-    elseif iscell(in)
-      % iData(cell)
-      out = iData_cell2iData(in);   % convert cell/cellstr to cell(iData)
-    elseif isa(in, 'iFunc')
-      [signal, ax, name] = feval(in);
-      if length(signal) == length(in.Parameters)
-        [signal, ax, name] = feval(in, signal);
-      end
-      out = iData(ax{:}, signal);
-      setalias(out, 'Error', 0);
-    else
-      iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(in) ' is not supported. Ignore.' ]);
-      out = [];
+    [signal, ax, name] = feval(in);
+    if length(signal) == length(in.Parameters)
+      [signal, ax, name] = feval(in, signal);
     end
+    out = iData(ax{:}, signal);
+    clear signal ax
+    out.Alias.Values{2} = 0;
+    return
+  else
+    iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(varargin{1}) ' is not supported. Ignore.' ]);
+    out = [];
+  end
+    
+  % check the object
+  if ~isa(varargin{1}, 'iData')
     if ~isempty(inputname(1)), in_name=[ inputname(1) ' ' ]; else in_name=''; end
     for index=1:numel(out)
       if numel(out) == 1 || ~isempty(out(index))
         if isempty(out(index).Source), out(index).Source = in_name; end
-        if isempty(out(index).Title),  out(index).Title  = [ in_name ' (' class(in) ')' ]; end
+        if isempty(out(index).Title),  out(index).Title  = [ in_name ' (' class(varargin{1}) ')' ]; end
         
         if isempty(out(index).Command)
-          out(index) = iData_private_history(out(index), mfilename, in); 
+          out(index) = iData_private_history(out(index), mfilename, varargin{1}); 
         end
       end
     end
-    out = iData_check(out); % private function
-    if isa(in, 'iData') && nargout == 0 && ~isempty(inputname(1))
-      assignin('caller',inputname(1),out);
-    end
   end
+  
+  out = iData_check(out); % private function
+  
+  if isa(varargin{1}, 'iData') && nargout == 0 && ~isempty(inputname(1))
+    assignin('caller',inputname(1),out);
+  end
+    
 end
-outarray = [ outarray out ];
 
 return
   
@@ -302,5 +206,6 @@ function b=iData_num2iData(v)
   if numel(v) > 10, v=v(1:10); end
   v = mat2str(double(v)); 
   b.Command= cellstr([ 'iData(' v ')' ]);
+  
+% ============================================================================
 
-% ------------------------------------------------------------------------------

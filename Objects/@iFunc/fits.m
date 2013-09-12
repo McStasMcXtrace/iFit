@@ -180,7 +180,7 @@ if nargin == 1 && isempty(model)
     
     % local (pwd) functions
     message = '';
-    d = dir(pwd);
+    d = dir(fullfile(pwd,'*.m'));
     for index=1:length(d)
       this = d(index);
       try
