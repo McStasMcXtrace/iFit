@@ -10,9 +10,9 @@ else
 end
 clear filename;
 
-if length(out(:)) > 1
+if numel(out) > 1
   % handle input iData arrays
-  for index=1:length(out(:))
+  for index=1:numel(out)
     out(index) = feval(mfilename, out(index));
   end
 end

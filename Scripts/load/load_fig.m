@@ -12,8 +12,8 @@ if ~isa(a0,'iData')
 end
 
 % handle input iData arrays
-if length(a0(:)) > 1
-  for index=1:length(a0(:))
+if numel(a0) > 1
+  for index=1:numel(a0)
     a(index) = feval(mfilename, a0(index));
   end
   return

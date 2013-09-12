@@ -39,9 +39,12 @@ out = [];
 for index=1:numel(field)
   % create an iData object with the proper Signal, Axes, ...
   if isempty(out)
-    out  =      load_NeXus_NXdata(in, field{index}, 'overload', allfields);
+    this = load_NeXus_NXdata(in, field{index}, 'overload', allfields);
   else
-    out = [ out load_NeXus_NXdata(in, field{index}, '',         allfields) ];
+    this = load_NeXus_NXdata(in, field{index}, '',         allfields);
+  end
+  if isequal(in, this)
+    break
   end
 end
 if length(out) == 0
@@ -130,7 +133,7 @@ end
 % get a list of all 'signal' attributes (there should be only one)
 for index=1:numel(signal_path)
   % get 'signal' attribute value
-  signal_attribute = get(nxdata, signal_path{index});
+  signal_attribute = get(in, signal_path{index});
   if ischar(signal_attribute), signal_attribute = str2double(signal_attribute); end
   % until we find 'signal=1
   if signal_attribute == 1 % when we find the signal, we set the path to a string
@@ -196,7 +199,7 @@ end
 Axis            = Attributes_path(~cellfun(@isempty, regexp(Attributes_path, '\.(axis)$')));
 % get the values for the 'axis'
 if ~isempty(Axis)
-  Axis_ranks = get(nxdata, Axis);
+  Axis_ranks = get(in, Axis);
   % make sure we have a cell with values in the end
   if ~iscell(Axis_ranks), Axis_ranks = { Axis_ranks }; end
   % we put 0 when rank is not known, will guess from dimensions
