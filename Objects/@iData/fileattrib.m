@@ -65,12 +65,13 @@ if nargin == 3
       end
     end
     return
-  elseif ~iscellstr(allfields)
+  elseif ~iscell(allfields) || ~ischar(allfields{1})
+    b = a; % attribute can not be set
     return
   end
 end
 
-if iscellstr(field)  && numel(field) > 1
+if iscell(field) && ischar(field{1}) && numel(field) > 1
   b = cell(1, numel(field)); link=b;
   for index=1:numel(field)
     [b{index},link{index}] = feval(mfilename, a, field{index}, allfields);

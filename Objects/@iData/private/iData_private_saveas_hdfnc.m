@@ -15,7 +15,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
   varAttribStruct = []; % attributes for CDF
   globalAttributes= []; % global attributes for CDF
   
-  for index=1:length(fields(:)) % scan all field names
+  for index=1:numel(fields) % scan all field names
     if isempty(fields{index}), continue; end
     % ignore fields that do not match root level
     if ~isempty(root) && ~strncmp(root, fields{index}, length(root))

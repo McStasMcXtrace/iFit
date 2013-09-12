@@ -139,7 +139,7 @@ if strcmp(filename, 'gui')
         ['Save ' t ' as...'], a.Tag);
   if ~isempty(filename) & filename ~= 0
     ext = filterspec{filterindex,1};
-    if iscellstr(ext), ext=ext{1}; end
+    if iscell(ext) && ischar(ext{1}), ext=ext{1}; end
     % check if extension was given
     [f,p,e] = fileparts(filename);
     if isempty(e), 

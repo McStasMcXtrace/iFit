@@ -19,5 +19,11 @@ if length(size(get(s,'Signal'))) < n
   iData_private_error(mfilename, ['input iData object ' inputname(1) ' ' b.Tag ' has a size [' num2str(size(s)) '] but the dimension ' n ' is requested.' ]);
 end
 
-b = size(S,k);
+if n == 1 && ndims(S) > 1
+  % special case object(end) always return the real last element
+  b = prod(size(S));
+else
+  % last element along dimension
+  b = size(S,k);
+end
   

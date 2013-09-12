@@ -87,7 +87,7 @@ for index=1:length(varargin)
   elseif ischar(c)                    % get final label
     label_arg_index = label_arg_index+1;
     if ~isempty(c) f_labels{label_arg_index} = c; end
-  elseif iscellstr(c)                 % get final label (as cellstr)
+  elseif iscell(c) && ischar(c{1})    % get final label (as cellstr)
     for j1 = 1:length(c(:))
       label_arg_index = label_arg_index+1;
       if ~isempty(c{j1}) f_labels{label_arg_index} = c{j1}; end

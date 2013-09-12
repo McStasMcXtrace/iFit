@@ -66,7 +66,9 @@ else
 end
 
 % now catenate Signal, Error and Monitor 
-lab = label(a, 0); if iscellstr(lab), lab=[ lab{1} '...' ]; end
+lab = label(a, 0); 
+
+if iscell(lab) && ischar(lab{1}), lab=[ lab{1} '...' ]; end
 s=cell(1,numel(a));
 parfor index=1:numel(a)
   s{index}=get(a(index),'Signal');
