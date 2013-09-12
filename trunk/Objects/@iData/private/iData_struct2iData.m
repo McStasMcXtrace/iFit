@@ -34,8 +34,8 @@ function b=iData_struct2iData(a)
     b.Command = a.Command;
   end
   if ~iscellstr(b.Command)
-  b.Command = { b.Command };
-end
+    b.Command = { b.Command };
+  end
   
   if isempty(b.Command), b.Command= cellstr('iData(<struct>)'); end
   

@@ -28,32 +28,33 @@ end
 
 % first handle object array for first index
 if numel(b) > 1 && any(strcmp(S(1).type,{'()','{}'}))
-  c = b(S(1).subs{:}); % get elements in the array
-  if ~isvector(c) d = c(:); else d=c; end
-  if length(d) == 1
-    d = iData(val);
+  c = b(S(1).subs{:}); % get elements in the array, to be assigned
+  sc=size(c); % store size so that we restore it at the end
+
+  if numel(c) == 1
+    c = iData(val);
   else
     if ~isempty( S(2:end) ) % array([1 2 3]).something = something
-		  for j = 1:length(d)
-		    d(j) = subsasgn(d(j),S(2:end),val);
-		  end
-		else	% single level array assigment as array([1 2 3]) = something
-			for j = 1:length(d)
-				if length(val) == 1, d(j) = iData(val);
-				elseif length(val) == length(d)
-					d = iData(val);
-				else
-					iData_private_error(mfilename, [ 'can not assign ' num2str(length(d)) ' iData array to ' num2str(length(val)) ' ' class(val) ' array for object ' inputname(1) ' ' b(1).Tag ]);
-				end
-			end
-		end
+      for j = 1:numel(c)
+        c(j) = subsasgn(c(j),S(2:end),val);
+      end
+    elseif isa(val, 'iData') && numel(val) == numel(c)
+      c = iData(val); % array([1 2 ..]) = iData_array([1 2 ..])	
+    else    % single level array assigment as array([1 2 3]) = something
+      for j = 1:numel(c)
+        try
+          c(j) = iData(val);
+        catch
+          iData_private_error(mfilename, [ 'can not assign ' num2str(length(c)) ' iData array to ' num2str(length(val)) ' ' class(val) ' array for object ' inputname(1) ' ' b(1).Tag ]);
+        end
+      end
+    end
   end
-  if prod(size(c)) ~= 0 && prod(size(c)) == prod(size(d)) && length(c) > 1
-    c = reshape(d, size(c));
-  else
-    c = d;
+
+  if prod(sc) ~= 0 && prod(sc) == prod(size(c)) && numel(c) > 1
+    c = reshape(c, size(c));
   end
-  b(S(1).subs{:}) = c;
+  b(S(1).subs{:}) = c; % update the array
 else
   % multiple level assignment: only the last subs indexing must be assigned, the previous ones must be subsref calls
   if length(S) > 1
@@ -174,7 +175,7 @@ else
     else
     % protect some fields
       fieldname = s.subs;
-      if length(fieldname) > 1 && iscellstr(fieldname)
+      if length(fieldname) > 1 && iscell(fieldname) && ischar(fieldname)
         fieldname = fieldname{1};
       end
       if strcmpi(fieldname, 'filename') % 'alias of alias'

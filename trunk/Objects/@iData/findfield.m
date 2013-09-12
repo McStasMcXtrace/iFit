@@ -90,7 +90,7 @@ if ~isempty(field)
       index = find(strcmp(field, m));
     end
   else
-    if iscellstr(field)
+    if iscell(field) && ischar(field{1})
       index = [];
       for findex=1:length(field)
         tmp = strfind(matchs, field{findex});

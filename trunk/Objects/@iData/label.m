@@ -1,8 +1,10 @@
-function labl = label(this, rank, lab)
+function labl = label(this, varargin)
 % b = label(s, alias, label) : Change iData label for a given alias/axis
 %
 %   @iData/label function to set/get labels
 %     label(s, alias) returns the current label
+%     label(s)        returns the object Label
+%     label(s, rank, label)   sets the object label
 %   The input iData object is updated if no output argument is specified.
 %
 % input:  s: object or array (iData)
@@ -14,18 +16,15 @@ function labl = label(this, rank, lab)
 % Version: $Revision$
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
 
-if nargin < 2, rank=[]; end
-if nargin < 3, lab=[]; end
-
 if numel(this) > 1
   if nargin < 3
     labl=cell(size(this));
     parfor index=1:numel(this)
-      labl{index} = label(this(index), rank, lab);
+      labl{index} = label(this(index), varargin{:});
     end
   else
     parfor index=1:numel(this)
-      this(index) = label(this(index), rank, lab);
+      this(index) = label(this(index), varargin{:});
     end
     labl=this;
     if nargout == 0 & isa(this,'iData') & ~isempty(inputname(1))
@@ -36,87 +35,74 @@ if numel(this) > 1
   return
 end
 
-% label(a)
-if isempty(rank), labl=this.Label; return;
-else              labl = '';
+% handle different call syntax
+if nargin == 1
+  % label(a) -> get object Label property
+  labl = this.Label;
+  return
 end
 
-alias = '';
-if iscellstr(rank)
-  rank = rank{1};
+% search for the axis/alias: should get an index value in the aliases/axes
+if nargin >= 2
+  index = varargin{1};
 end
-if ischar(rank)  % label(a, '1', ...)
-  if ~isnan(str2double(rank))  % e.g. alias = '1'
-    rank = str2double(rank);  % now numeric axis index
-  else            % label(a, 'X', ...)
-    % alias is an Alias reference, search for it in the Axes
-    if strcmp(rank, 'Signal'), rank = 0;
-    elseif any(strcmp(rank, this.Alias.Axis)), rank  = find(strcmp(rank, this.Alias.Axis)); % now numeric axis index or empty
-    elseif any(strcmp(rank, this.Alias.Axis)), alias = find(strcmp(rank, this.Alias.Names)); rank = -1;  % this is an alias already, NOT an axis
-    else alias = rank; rank = -1; % new alias to create
-    end
-  end
+if iscell(index) && ischar(index{1})
+  index = index{1};
 end
-
-if isempty(rank),    return; end  % axis alias not found
-if rank < 0,         return; end  % invalid rank
-%if ~isnumeric(rank), return; end
-
-% label(a, 1, ...): get the definition of the axis (alias name)
-value = '';
-if ~isempty(rank) && rank == 0
-  alias = 'Signal'; value = this.Alias.Values{1};
-elseif ~isempty(rank) && rank > 0 && rank <= length(this.Alias.Axis)
-  alias = this.Alias.Axis{rank};  % name of the alias/axis (or direct value storage)
-  if ~ischar(alias), value = alias; alias = ''; end
+if ischar(index) && ~isnan(str2double(index))
+  % label(a, '1', ...) -> label(a, 1)
+  index = str2double(index);  % now numeric axis index
 end
-% does the axis alias already exists ? if not create it so that we can set its label
-if nargin == 3 && ~isempty(lab)
-  if rank > 0
-    % create an axis
-    if isempty(value), value = getaxis(this, rank); end % probably the default axis
-    setaxis(this, rank, value);
-    alias = getaxis(this, num2str(rank));
-  else% rank=0, Signal
-    if isempty(value)
-      try
-        value = get(this, alias); 
+if isscalar(index) && isnumeric(index)
+  if index == 0
+    index = 'Signal';
+  elseif 0 < index && index <= ndims(this)
+    % find the Alias which corresponds with this axis index
+    if index <= length(this.Alias.Axis)
+      axis_alias = this.Alias.Axis{index};
+      if ischar(axis_alias)
+        index = axis_alias;
+      else
+        index = []; % axis content is numeric (not an alias link)
       end
+    else
+      % the Axis does not exist yet, but object dimensionality allows it
+      % we create the axis
+      x    = getaxis(this, index);
+      this = setaxis(this, index, x);
+      index= getaxis(this, num2str(index)); % the Alias for the Axis 'index'
     end
-    if isempty(value), value = 0; end
-    setalias(this, alias, value, lab);
   end
 end
 
-% searches the axis definition in the alias names
-alias_num   = find(strcmpi(alias, this.Alias.Names));
-if ~isempty(alias_num)
-  labl = this.Alias.Labels{alias_num};
-end
-
-if nargin == 2 || isempty(lab)  % return the current label value
-  if ischar(labl)
-    labl(~isstrprop(labl,'print'))=' ';
-  else
-    labl = class(labl);
-  end
-  labl = strtrim(labl);
-  return;
-end
-
-% now we have nargin == 3
-if ~isempty(alias_num)  % the alias already exists: store the new alias value
-  lab = regexprep(lab,'\s+',' '); % remove duplicated spaces
-  this.Alias.Labels{alias_num} = lab;
-  if ~isempty(value)
-    this.Alias.Values{alias_num} = value;
+if ischar(index)  
+   % is this an Alias ?
+  isalias = strcmp(index, this.Alias.Names);
+  if any(isalias)
+    index = find(isalias, 1);
   end
 end
 
-this = iData_private_history(this, mfilename, this, rank, lab);
-labl = this;
-
-if nargout == 0 && ~isempty(inputname(1))
-  assignin('caller',inputname(1),this);
+% check that rank exists in Alias list
+if isempty(index) || ~isnumeric(index) || index > length(this.Alias.Names) || index < 1
+    % did not find the alias...
+    if nargin == 2
+        labl = '';
+    else
+        labl = this;
+    end
+    return; 
 end
 
+if nargin == 3
+  % label(a, rank, lab) -> set Label of the rank/alias
+  this.Alias.Labels{index} = varargin{2};
+  this = iData_private_history(this, mfilename, this, index, varargin{2});
+  if nargout == 0 && ~isempty(inputname(1))
+    assignin('caller',inputname(1),this);
+  end
+  labl = this; % return value
+else % nargin == 2
+  % label(a, rank) -> get the label value
+  labl = this.Alias.Labels{index};
+end

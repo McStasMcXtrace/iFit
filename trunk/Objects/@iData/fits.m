@@ -140,7 +140,7 @@ if isempty(model)
 end
 
 % test the model: is this an iFunc, a function handle or a char ?
-if ~isa(model, 'function_handle') && ~ischar(model) && ~iscellstr(model) && ~isa(model, 'iFunc')
+if ~isa(model, 'function_handle') && ~ischar(model) && ~iscell(model) && ~isa(model, 'iFunc')
   iData_private_error(mfilename,[ 'The model argument is of class ' class(model) '. Should be a function name, expression, iFunc or function handle.' ]);
 end
 

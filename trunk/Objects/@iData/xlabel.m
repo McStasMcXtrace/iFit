@@ -15,7 +15,7 @@ function a = xlabel(a, lab)
 
 if nargin ==1
   if isvector(a) == 1
-	a = label(a, 1);
+	  a = label(a, 1);
   else
     a = label(a, 2);
   end
@@ -24,7 +24,7 @@ else
   if isvector(a) == 1
     a = label(a, 1, lab);
   else
-	a = label(a, 2, lab);
+	  a = label(a, 2, lab);
   end
 end
 

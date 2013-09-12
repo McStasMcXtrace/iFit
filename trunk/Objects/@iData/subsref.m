@@ -11,7 +11,7 @@ function b = subsref(a,S)
 
 % This implementation is very general, except for a few lines
 % EF 27/07/00 creation
-% EF 23/09/07 iData impementation
+% EF 23/09/07 iData implementation
 % ==============================================================================
 % inline: private function iData_getAliasValue (mainly used)
 % calls:  subsref (recursive), getaxis, getalias, get(Signal, Error, Monitor)
@@ -41,6 +41,7 @@ for i = 1:length(S)     % can handle multiple index levels
       b = b(s.subs{:});
     else                  % single iData
       % this is where specific class structure is taken into account
+
       if ischar(s.subs{1}) && ~strcmp(s.subs{1},':')              % b(name) -> s.(name) alias/field value
         s.type='.';
         b=subsref(b, s); return;

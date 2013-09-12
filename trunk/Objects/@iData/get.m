@@ -51,7 +51,7 @@ if nargin == 1
   return
 end
 
-if length(varargin) == 1 && iscellstr(varargin{1})
+if length(varargin) == 1 && iscell(varargin{1})
   varargin = varargin{1};
 end
 out = {};

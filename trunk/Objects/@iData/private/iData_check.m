@@ -1,10 +1,9 @@
-function out = iData_check(in)
+function in = iData_check(in)
 % iData_check: make consistency checks on iData object
 
 if numel(in) > 1
-  out = zeros(iData, numel(in), 1);
   parfor index = 1:numel(in)
-    out(index) = iData_check(in(index));
+    in(index) = iData_check(in(index));
   end
   return
 end
@@ -54,7 +53,7 @@ if isnumeric(in.Data) && ~isempty(in.Data)
     data = hlp_deserialize(data);
   end
   in.Data = [];
-  in.Data.Signal = data;
+  in.Data.Signal = data; clear data;
 end
 
 % identify the Signal and axes when they have not yet been defined
@@ -62,7 +61,7 @@ end
 % find axes that match the Signal dimensions
 % associate 'error' and 'monitor' when they exist
 % define Signal label from Attributes, when exist
-if ~isempty(in.Data) && (isempty(getalias(in, 'Signal')) || isempty(getaxis(in)))
+if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
   % get numeric fields sorted in descending size order
   [fields, types, dims] = findfield(in, '', 'numeric');
   clear types
@@ -72,9 +71,11 @@ if ~isempty(in.Data) && (isempty(getalias(in, 'Signal')) || isempty(getaxis(in))
   else
     
     fields_all = fields; dims_all=dims;
+    
     % does this looks like a Signal ?
+  
+    if isempty(in.Alias.Values{1})
       
-    if isempty(getalias(in, 'Signal'))
       if length(dims) > 1 % when similar sizes are encoutered, get the one which is not monotonic
         
         % list of 'biggest' fields
@@ -100,11 +101,13 @@ if ~isempty(in.Data) && (isempty(getalias(in, 'Signal')) || isempty(getaxis(in))
             send_at_end = [ send_at_end idx ];
             keep_at_start(keep_at_start == idx) = [];
           end
+          clear x
         end
         % now reorder the fields
         maxdim2 = maxdim([ keep_at_start send_at_end ]);
         fields(maxdim) = fields(maxdim2);
       end
+      
       % in case we have more than one choice, get the first one and error bars
       error_id = []; monitor_id=[];
       if length(dims) > 1 || iscell(fields)
@@ -126,7 +129,7 @@ if ~isempty(in.Data) && (isempty(getalias(in, 'Signal')) || isempty(getaxis(in))
       % index: is the field and dimension index to assign the Signal
       if dims > 0
         disp([ 'iData: Setting Signal="' fields '" with length ' num2str(dims) ' in object ' in.Tag ' "' in.Title '".' ]);
-        in = setalias(in,'Signal', fields);
+        in.Alias.Values{1} = fields;
         
         % get potential attribute (in Data.Attributes fields)
         attribute = fileattrib(in, fields);
@@ -141,28 +144,28 @@ if ~isempty(in.Data) && (isempty(getalias(in, 'Signal')) || isempty(getaxis(in))
 
         % assign potential 'error' bars and 'monitor'
         if ~isempty(error_id)
-          in = setalias(in,'Error', error_id);
+          in.Alias.Values{2} = error_id;
         end
         if ~isempty(monitor_id)
-          in = setalias(in,'Monitor', monitor_id);
+          in.Alias.Values{3} = monitor_id;
         end
       end
     end % if no Signal
    
     % look for vectors that may have the proper length as axes
     sz = [];
+      
     for index=1:ndims(in)
-      if isempty(getaxis(in, num2str(index)))
+      if length(in.Alias.Axis) < index || isempty(in.Alias.Axis{index})
+              
         if isempty(sz), sz = size(in); end
         % search for a vector of length size(in, index)
         ax = find(dims_all == sz(index));   % length of dim, or length(dim)+1
         if isempty(ax), ax = find(dims_all == sz(index)+1); end
-        ax = ax(~strcmp(getalias(in,'Signal'), fields_all(ax)));
         if length(ax) > 1; ax=ax(1); end
-
-        if ~isempty(ax)
+        if ~isempty(ax) && (~ischar(in.Alias.Values{1}) || ~strcmp(fields_all{ax},in.Alias.Values{1}) )
           val = get(in, fields_all{ax});
-          if isvector(val) && ~strcmp(fields_all{ax},getalias(in,'Signal')) && issorted(val(:))
+          if isvector(val) && issorted(val(:))
             if length(val) == size(in, index) && min(val(:)) < max(val(:))
               % n bins
               val = fields_all{ax};
@@ -192,6 +195,12 @@ if ~isempty(in.Data) && (isempty(getalias(in, 'Signal')) || isempty(getaxis(in))
       end % this axis not defined
     end % for
   end % has fields
+else
+  % check aliases (valid ?) by calling setalias(in)
+  in = setalias(in);
+
+  % check axis (valid ?) by calling setaxis(in)
+  in = setaxis(in);
 end % if no Signal defined
 
 % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes
@@ -207,12 +216,5 @@ if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
   clear x1 x2
   disp([ 'iData: The object has been transposed to match the axes orientation in object ' in.Tag ' "' in.Title '".' ]);
 end
-
-% check aliases (valid ?) by calling setalias(in)
-in = setalias(in);
-% check axis (valid ?) by calling setaxis(in)
-in = setaxis(in);
-
-out = in;
 
 

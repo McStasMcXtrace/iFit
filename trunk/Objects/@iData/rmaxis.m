@@ -39,7 +39,7 @@ elseif isnumeric(rank) % removes some axes from their ranks
   rank = rank(find(rank > 0 & rank <= length(this.Alias.Axis)));
   this.Alias.Axis(rank) = '';
 else                      % removes some axes from their alias definitions
-  if ~iscellstr(rank)
+  if ~iscell(rank)
     rank = { rank };
   end
   for index=1:numel(rank)

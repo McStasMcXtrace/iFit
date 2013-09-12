@@ -71,7 +71,7 @@ while index < length(varargin)    % first parse fields and values
     prop_names  = fieldnames(varargin{index});         % get PropertyNames
     prop_values = struct2cell(varargin{index});
     index = index+1;
-  elseif iscellstr(varargin{index}) && index < length(varargin) % import from 2 cells
+  elseif iscell(varargin{index}) && index < length(varargin) % import from 2 cells
     prop_names  = varargin{index};        % get PropertyNames
     prop_values = varargin{index+1};      % get PropertyValue
     index = index+2;

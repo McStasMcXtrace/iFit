@@ -62,7 +62,7 @@ if isempty(str)
   return
 end
 
-if iscellstr(str)
+if iscell(str) && ischar(str{1})
   match = cell(1, numel(str)); field=match;
   for index=1:numel(str)
     [m,f] = iData_findstr_single(str{index}, option, fields, matchs);

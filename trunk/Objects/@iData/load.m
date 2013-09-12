@@ -90,12 +90,13 @@ for i=1:numel(files)
           struct_data{index}.Data = hlp_deserialize(struct_data{index}.Data);
         end
         this_iData = [ this_iData struct_data{index} ];
+        struct_data{index} = '';
       end
     end
     clear struct_data
   else
     % usually a structure from iLoad
-    
+
     % convert file content from iLoad into iData
     this_iData = iData_struct2iData(files{i});	
     % assign default Signal and axes
@@ -114,7 +115,7 @@ for i=1:numel(files)
       if ~isempty(loaders{i}.postprocess)
         % remove warnings
         iData_private_warning('enter',mfilename);
-        if ~iscellstr(loaders{i}.postprocess)
+        if ~iscell(loaders{i}.postprocess)
           loaders{i}.postprocess = cellstr(loaders{i}.postprocess);
         end
         % apply post-load routine: this may generate more data sets

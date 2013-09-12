@@ -105,7 +105,7 @@ if isnumeric(ax) % given as a number, return a number
     end
   end;
 else % given as a char/cell, return a char/cell
-  if iscellstr(ax)
+  if iscell(ax) && ischar(ax{1})
     val = cell(1, length(ax)); lab=val;
     parfor index=1:length(ax)
       [val{index}, lab{index}] = getaxis(s, ax{index});
