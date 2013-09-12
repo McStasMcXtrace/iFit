@@ -7,7 +7,7 @@ function result=test_iData_end
   c = b(end);
   d=a{0};
   
-  if isequal(a,c) && double(c(end)) == c(end)
+  if isequal(a,c) && double(c(end)) == d(end)
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];

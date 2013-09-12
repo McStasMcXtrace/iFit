@@ -70,10 +70,10 @@ for index=1:length(tests_list)
     end
   catch exception
     if ~isempty(exception.stack),
-      result = sprintf('ERROR: %s. file %s, line %i', ...
-        exception.message, exception.stack(1).file, exception.stack(1).line);
+      result = sprintf('ERROR  %s\t\t%s in %s:%i', ...
+        f, exception.message, exception.stack(1).file, exception.stack(1).line);
     else
-      result= sprintf('ERROR: %s.', exception.message);
+      result = sprintf('ERROR  %s\t\t%s', f, exception.message);
     end
     errors{end+1} = exception;
   end
