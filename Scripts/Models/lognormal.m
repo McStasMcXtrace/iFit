@@ -1,5 +1,5 @@
 function y=lognormal(varargin)
-% y = lognormal(p, x, [y]) : Laplace distribution function. 
+% y = lognormal(p, x, [y]) : Log-Normal distribution function. 
 %
 %   iFunc/lognormal Log-Normal distribution function. 
 %     y  = p(4)+ p(1)/sqrt(2)/p(3)./x .* exp( -log(x/p(2)).^2 /2/p(3)/p(3) )

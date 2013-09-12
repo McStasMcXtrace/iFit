@@ -970,8 +970,8 @@ To get the <span style="font-style: italic;">width</span> and <span style="font-
 
 
 It is also possible to compute with the <b>corrcoef</b> method the 
-correlation coefficient between an object and something else, e.g. a vector, an 
-iFunc model or a single vector of same length as the object signal.<br>
+correlation coefficient between an object and something else, e.g. a vector, an <a href="iFunc.html">
+iFunc</a> model or a single vector of same length as the object signal.<br>
 <br>
 These operators apply iteratively on object arrays. The <span style="font-style: italic;">mean</span> and <span style="font-style: italic;">median</span> then point to the <span style="font-style: italic;">combine</span> operator, the <span style="font-style: italic;">min</span> and <span style="font-style: italic;">max</span> return the minimum and maximum
 along all objects.<br>
@@ -1115,7 +1115,7 @@ to
 <span style="font-weight: bold;">sum</span>
 when <span style="font-style: italic;">dx</span>=1.<br>
 <br>
-Last, the <span style="font-style: italic;">cumulated</span> versions
+Last, the <span style="font-style: italic;">accumulated</span> versions
 of sum, trapz and prod, <span style="font-weight: bold;"> cumsum</span>, <span style="font-weight: bold;">cumtrapz</span> and <span style="font-weight: bold;">cumprod, </span>return objects of same
 dimensionality for which the operation is performed gradually along the
 chosen axis. The last slice along the axis contains the sum and prod
@@ -1294,7 +1294,7 @@ Most binary operators require to interpolate the objects onto common
 axes prior to applying the mathematical operation. The common axes may
 be obtained from intersection or union of object axes.<br>
 <br>
-The interpolation method used is based on a Delauney triangular multidimensional tessellation (using the <a href="http://www.cgal.org/">Computational Geometry Algorithms Library</a>, <acronym title="Computational Geometry Algorithms Library">CGAL</acronym>).<br>
+The interpolation method used is based on a <a href="http://en.wikipedia.org/wiki/Delaunay_tessellation">Delaunay</a> triangular multidimensional tessellation (using the <a href="http://www.cgal.org/">Computational Geometry Algorithms Library</a>, <acronym title="Computational Geometry Algorithms Library">CGAL</acronym>).<br>
 <h4><a class="mozTocH4" name="mozTocId261708"></a>
 Intersection and union</h4>
 The <span style="font-weight: bold;">intersect</span> and <span style="font-weight: bold;">union</span> binary operators determine the
@@ -1352,7 +1352,7 @@ To explicitly smooth a data set, you can use the '<span style="font-weight: bold
 
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40).*(1+0.1*randn(40)</span></span>));<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a);<br>&gt;&gt; <font color="#3366ff">subplot</font>(a,b);<br></pre><span style="text-decoration: underline;">Reference:</span> Garcia D, Robust smoothing of gridded data in one and higher dimensions with missing values. <span style="font-style: italic;">Computational Statistics &amp; Data Analysis</span>, 2010.<br>
 <br>
-The smoothing can also use a Savitsky-Golay moving average, but may lead to significant sharp features modifications.<br>
+The smoothing can also use a <a href="http://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter_for_smoothing_and_differentiation">Savitsky-Golay</a> moving average, but may lead to significant sharp features modifications (be cautious).<br>
 <pre style="margin-left: 40px;">&gt;&gt; b = <font color="#3366ff">smooth</font>(a, <span style="color: rgb(204, 51, 204);">'sgolay'</span>);<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a, span, <span style="color: rgb(204, 51, 204);">'sgolay'</span>, degree); <span style="font-style: italic;">% Savitsky Golay degree and span (length) specified</span>
 </pre>
 
