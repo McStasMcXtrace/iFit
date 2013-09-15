@@ -156,6 +156,11 @@ function config = iLoad_ini
     STL_binary.extension={'stl','stlb'};
     STL_binary.postprocess='openstl';
     
+    OBJ.name            ='OBJ Wavefront 3D';
+    OBJ.method          ='read_obj';
+    OBJ.extension       ='obj';
+    OBJ.patterns        ={'v ', 'f '};
+    
     CFL.name     ='CFL FullProf crystallography file';
     CFL.patterns ={'Spgr','Atom'};
     CFL.method   ='read_anytext';
