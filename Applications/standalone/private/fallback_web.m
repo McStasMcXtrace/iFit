@@ -144,12 +144,13 @@ function fallback_web(url)
     % test if this is a 'matlab:' command
     if strncmp(link, 'matlab:', length('matlab:'))
       url = link; root = link;
-      if strncmp(link, 'matlab:helpwin', length('matlab:helpwin'))
-        link = [ 'matlab:web ' link(15:end) ]; % uses embedded help system
-      end
       % check if we have %20 in the URL and replace them by spaces
       if ~isempty(strfind(link, '%20'))
         link = strrep(link, '%20', ' ');
+      end
+      if strncmp(link, 'matlab:helpwin', length('matlab:helpwin')) ...
+        || strncmp(link, 'matlab:doc', length('matlab:doc'))
+        link = [ 'matlab:web ' link(15:end) ]; % uses embedded help system
       end
       % evaluate the matlab command
       try
