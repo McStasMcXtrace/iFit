@@ -95,7 +95,14 @@ while ~isempty(strfind(expr,'  '))
 end
 if isnumeric(guess), guess = mat2str(guess);
 else                 guess = char(guess); end
-constraint=char(constraint);
+
+constraint_org = [];
+if ~isstruct(constraint)
+  constraint=char(constraint);
+elseif isfield(constraint, 'eval')
+  constraint_org = constraint; constraint=[];
+  constraint=constraint_org.eval;
+end
 if iscellstr(pars)
   p = '';
   for index=1:length(pars)
@@ -161,7 +168,12 @@ f.Name        = name;
 f.Guess       = guess;
 f.Expression  = expr;
 f.Parameters  = pars;
-f.Constraint  = constraint;
+if ~isempty(constraint_org)
+  f.Constraint      = constraint_org;
+  f.Constraint.eval = constraint;
+else
+  f.Constraint      = constraint;
+end
 f.Description = descr;
 
 f = iFunc(f);

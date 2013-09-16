@@ -14,7 +14,7 @@
 
 
 
-  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <meta http-equiv="content-type" content="text/html; charset=windows-1252">
   <title>iFit: optimization methods (Optimizers)</title>
 </head><body>
 <h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: Optimizers Optimization methods</h1>
@@ -33,10 +33,10 @@ algorithms</a></li><li><a href="#mozTocId409995">Gradient methods
 simplex)
 </a></li></ol></li><li><a href="#mozTocId95530">Model
 parameter
-constraints</a><ol><li><a href="#mozTocId267246">Fixed parameters</a></li><li><a href="#mozTocId871054">Parameters varying
+constraints and additional arguments</a><ol><li><a href="#mozTocId267246">Fixed parameters</a></li><li><a href="#mozTocId871054">Parameters varying
 within limits</a></li><li><a href="#mozTocId673530">Limiting parameter
 change
-</a></li><li><a href="#mozTocId501437">Other constraints/restraints</a></li></ol></li><li><a href="#mozTocId141584">References</a></li></ol>
+</a></li><li><a href="#mozTocId501437">Other constraints/restraints</a></li><li><a href="#mozTocId289584">Additional arguments to the objective</a></li></ol></li><li><a href="#mozTocId141584">References</a></li></ol>
 <br>
 <hr style="width: 100%; height: 2px;">
 <div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">fminsearch, </span>and many other
@@ -226,14 +226,14 @@ optimizers, with a specified fit criteria.<br>
 The objective function should be a function of a single parameter <span style="font-style: italic;">p</span>.<br>
 <pre style="margin-left: 40px;">function y=<span style="color: rgb(51, 102, 255);">objective</span>(p)<br>y = ...<br></pre>
 
-In case the objective requires additional arguments, just pass them to the fits method (arguments above the 4th)<br>
+In case the objective requires additional arguments, just pass them to the fits method (5th, 6th, ... arguments)<br>
 
 
 <pre style="margin-left: 40px;">&gt;&gt; p=fminsce<span style="color: rgb(51, 102, 255);"></span>(<span style="color: rgb(51, 102, 255);">objective</span>, [ 0.5 1 0.01 0 ],options, constraints,<span style="color: rgb(255, 0, 0);"> additional_arguments</span>);</pre>
 
 
 
-assumes the objective function has syntax<br>
+assumes the objective function has syntax (see <a href="#mozTocId289584">below</a> for more details and an example)<br>
 
 
 <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">objective</span>(p, <span style="color: rgb(255, 0, 0);">additional_arguments</span>)<br></pre>Last,
@@ -264,8 +264,8 @@ extended by its <span style="font-style: italic;">'half-width'</span>)
 :<br>
 <br>
 <div style="text-align: center;">{<span style="font-style: italic;"> &#916;p</span>
-so that <span style="font-style: italic;">&#967;&sup2;(p) &lt;
-2*min(&#967;&sup2;) </span>}<br>
+so that <span style="font-style: italic;">&#967;²(p) &lt;
+2*min(&#967;²) </span>}<br>
 </div>
 <br>
 This may be obtained from the optimization history, and the result is
@@ -273,7 +273,7 @@ stored in <span style="font-style: italic; font-weight: bold;">output.parsHistor
 where we use a Gaussian weighting for the parameter sets around the
 criteria value:<br>
 <br>
-<div style="text-align: center;">exp[ - <span style="font-style: italic;">(&#967;&sup2;(p)-</span><span style="font-style: italic;">min(&#967;&sup2;)</span>)<span style="font-style: italic;">&sup2;/8/</span><span style="font-style: italic;">min(&#967;&sup2;)</span><span style="font-style: italic;">&sup2; </span>]<br>
+<div style="text-align: center;">exp[ - <span style="font-style: italic;">(&#967;²(p)-</span><span style="font-style: italic;">min(&#967;²)</span>)<span style="font-style: italic;">²/8/</span><span style="font-style: italic;">min(&#967;²)</span><span style="font-style: italic;">² </span>]<br>
 </div>
 <br>
 Alternatively, if we consider the local criteria hyper-surface to be
@@ -282,7 +282,7 @@ the Hessian matrix at the optimized solution (which is the criteria
 curvature - very sensitive to noise):<br>
 <br>
 <div style="text-align: center;"><span style="font-style: italic;">&#916;p &#8764;
-</span>&#8730;[<span style="font-style: italic;"> 2 ||&#8706;</span><span style="font-style: italic;">&sup2;</span><span style="font-style: italic;">&#967;&sup2; / </span><span style="font-style: italic;"></span><span style="font-style: italic;">&#8706;p<sub>i</sub></span><span style="font-style: italic;">&#8706;p<sub>j</sub></span> <span style="font-style: italic;">||<sup>-1</sup> </span>]<br>
+</span>&#8730;[<span style="font-style: italic;"> 2 ||&#8706;</span><span style="font-style: italic;">²</span><span style="font-style: italic;">&#967;² / </span><span style="font-style: italic;"></span><span style="font-style: italic;">&#8706;p<sub>i</sub></span><span style="font-style: italic;">&#8706;p<sub>j</sub></span> <span style="font-style: italic;">||<sup>-1</sup> </span>]<br>
 <span style="font-style: italic;"></span></div>
 <span style="font-style: italic;"><br>
 </span>This value is computed and stored in <span style="font-style: italic; font-weight: bold;">output.parsHessianUncertainty</span>, and
@@ -1141,7 +1141,8 @@ A better alternative is a mix of a simplex with a simulated annealing
 process, implemented as <span style="font-style: italic; font-weight: bold;">fminsimpsa.</span><br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId95530"></a>Model
 parameter
-constraints</h3>
+constraints and additional arguments<br>
+</h3>
 In many cases, the model parameters are to be constrained. Some optimization specialists call these <span style="font-style: italic;">restraints, </span>that is parameter values constraints. This
 includes some fixed values, or bounds within which parameters should be
 restricted. This is specified to the optimizer method by mean of a 4th
@@ -1150,11 +1151,36 @@ argument <span style="color: rgb(255, 0, 0); font-style: italic;">constraints</s
 :<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fminimfil</span>(<span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, options, <span style="color: rgb(204, 51, 204);"><span style="color: rgb(255, 0, 0);">constraints</span></span><span style="color: rgb(0, 0, 0);">)<br></span></pre>
 <pre style="margin-left: 40px;"><span style="color: rgb(0, 0, 0);"></span><span style="color: rgb(0, 0, 0);"></span></pre>
+In short, the constraints is a structure with the following members,
+which should all have the same length as the model parameter vector:<br>
+
+<ul>
+<li><span style="font-style: italic;">constraints.fixed: </span>1
+for fixed parameter, 0 for free parameters<br>
+  </li><li><span style="font-style: italic;">constraints.min: </span>the
+minimum value for each parameter.<span style="font-style: italic;"> -Inf</span>
+is supported. <span style="font-style: italic;">NaN </span>can be
+used.<br>
+  </li><li><span style="font-style: italic;">constraints.max: </span>the
+maximum value for each parameter.<span style="font-style: italic;"> +Inf</span>
+is supported. <span style="font-style: italic;">NaN </span>can be
+used.</li><li><span style="font-style: italic;">constraints.steps: </span>the
+maximum change between iterations for each parameter.<span style="font-style: italic;"> +Inf</span> is supported.</li>
+  <li><i>constraints.eval: </i>any other expression to evaluate, returning a modified parameter vector 'p'</li>
+</ul>
+All these constraints may be used simultaneously.<br>
+
+<br>
+
+The <span style="font-style: italic;">constraints</span> input argument can also be entered as a character string, like the input <span style="font-style: italic;">parameters</span> and <span style="font-style: italic;">options</span> :<br>
+<blockquote>
+constraints=<span style="color: rgb(204, 51, 204);">'min=[0 0 0 0]; max=[1 10 3 0.1]; eval=p(4)=0'</span>;</blockquote>
 <h4><a class="mozTocH4" name="mozTocId267246"></a>Fixed parameters</h4>
+
 To fix some of the model parameters to their starting value, you just
 need to define <span style="font-style: italic;">constraints</span> as
 a vector with 0 for free parameters, and 1 for fixed parameters, e.g. :<br>
-<pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fminimfil</span>(objective<span style="color: rgb(204, 51, 204);"></span>, starting, <span style="color: rgb(204, 51, 204);">options</span>, [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ])<br><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fminimfil</span>(objective<span style="color: rgb(204, 51, 204);"></span>, starting, <span style="color: rgb(204, 51, 204);">options</span>, [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ])<br></pre>
 will fix the first model parameter. A similar behavior is obtained when
 setting constraints as a structure
 with a <span style="font-style: italic;">fixed</span> member :<br>
@@ -1183,29 +1209,11 @@ absolute
 change that the corresponding parameter can vary between two optimizer
 iterations.<span style="font-style: italic;"> NaN</span>
 values can be used not to apply step constraints on specified
-parameters.<br>
-<br>
-In short, the constraints structure can have the following members,
-which all should have the same length as the model parameter vector:<br>
-<ul>
-  <li><span style="font-style: italic;">constraints.fixed: </span>1
-for fixed parameter, 0 for free parameters<br>
-  </li>
-  <li><span style="font-style: italic;">constraints.min: </span>the
-minimum value for each parameter.<span style="font-style: italic;"> -Inf</span>
-is supported. <span style="font-style: italic;">NaN </span>can be
-used.<br>
-  </li>
-  <li><span style="font-style: italic;">constraints.max: </span>the
-maximum value for each parameter.<span style="font-style: italic;"> +Inf</span>
-is supported. <span style="font-style: italic;">NaN </span>can be
-used.</li>
-  <li><span style="font-style: italic;">constraints.steps: </span>the
-maximum change between iterations for each parameter.<span style="font-style: italic;"> +Inf</span> is supported.</li>
-</ul>
+parameter.
+
 <h4><a class="mozTocH4" name="mozTocId501437"></a>Other constraints/restraints</h4>
 
-<p>The <span style="font-style: italic;">constraints.eval</span> member can be used to specify any other constraints/restraint by mean of <br>
+<p>The <span style="font-style: italic;">constraints.eval</span> member can be used to specify any other constraint/restraint by mean of <br>
 </p>
 
 <ul>
@@ -1216,14 +1224,22 @@ evaluated) ;<br>
 </ul>
 
 <p>For instance one could use <span style="font-style: italic;">constraints.eval=<span style="color: rgb(204, 51, 204);">'p(3)=p(1);'</span>.</span></p>
-All these constraints may be used simultaneously.<br>
+<h4><a class="mozTocH4" name="mozTocId289584"></a>Additional arguments to the objective</h4>
+If the objective function requires additional arguments (which are not part of the optimization, and are kept constant)<br>
+<pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">objective</span>(p, <span style="color: rgb(255, 0, 0);">additional_arguments</span>)</pre>
+the syntax for the optimization is e.g.<br>
+<pre style="margin-left: 40px;">&gt;&gt; p=fminsce<span style="color: rgb(51, 102, 255);"></span>(<span style="color: rgb(51, 102, 255);">objective</span>, [ 0.5 1 0.01 0 ],options, constraints,<span style="color: rgb(255, 0, 0);"> additional_arguments</span>);</pre>
+that is additional arguments are specified as 5th, 6th... arguments. In 
+this case, would you need to set optimizer configuration or 
+restraints/constraints, we recommend to give 'options' and 'constraints'
+ arguments 3-4th as structure, as explained <a href="#mozTocId95530">above</a>.<br>
 <br>
-The <span style="font-style: italic;">constraints</span> input argument can also be entered as a character string, like the input <span style="font-style: italic;">parameters</span> and <span style="font-style: italic;">options</span> :<br>
+The type of the additional arguments can be anything: integer, float, logical, string, structure, cell...<br>
 <br>
-<div style="margin-left: 40px;">constraints=<span style="color: rgb(204, 51, 204);">'min=[0 0 0 0]; max=[1 10 3 0.1]; eval=p(4)=0'</span>;<br>
-</div>
+For instance, we define a modified Rosenbrock 2 parameters objective which prints a string each time it is evaluated:<br>
+<pre style="margin-left: 40px;">&gt;&gt; <font color="#3366ff">banana</font> = @(x, <font color="#ff0000">cte</font>) 100*(x(2)-x(1)^2)^2+(1-x(1))^2 + 0*fprintf(1,'%s', <font color="#ff0000">cte</font>);<br>&gt;&gt; p=fminsce<span style="color: rgb(51, 102, 255);"></span>(<font color="#3366ff">banana</font>, [ 0.5 1 0.01 0 ],'', '',<span style="color: rgb(255, 0, 0);"> '.'</span>);<br>.......................<br>ans =<br><br>    0.1592         0<br></pre>
 
-<br>
+
 </div>
 </div>
 <h3><a class="mozTocH3" name="mozTocId141584"></a>References</h3>

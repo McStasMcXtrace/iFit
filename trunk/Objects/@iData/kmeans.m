@@ -10,7 +10,7 @@ function [s,c] = kmeans(a, k)
 %
 % input:  X: object or array (iData)
 %         k: number of partitions wanted (integer, default is 2)
-% output: b: object or array (iData)
+% output: b: object or array with partition indices (iData)
 %         c: centroid locations of clusters
 % ex:     b=kmeans(a);
 %
@@ -33,7 +33,7 @@ end
 
 s = []; c = [];
 
-% now call Otsu or FastCMeans depending on dimensionality
+% now call FastCMeans
 S = subsref(a,struct('type','.','subs','Signal'));
 
 X = uint8(S/max(S(:))*2^8); % this is faster and requires much less memory that uint16
