@@ -25,7 +25,7 @@ function out = iData(varargin)
 %   anchor reference using the '#' character, such as in 'http://path/file.zip#Data'.
 %
 % Type <a href="matlab:doc(iData)">doc(iData)</a> to access the iFit/iData Documentation.
-% Refer to <a href="matlab:helpwin iData/load">iData/load</a> for more information about loading data sets.
+% Refer to <a href="matlab:doc iData/load">iData/load</a> for more information about loading data sets.
 % iData is part of iFit http://ifit.mccode.org 
 %
 % examples:
