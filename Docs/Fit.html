@@ -24,6 +24,8 @@ within limits</a></li><li><a href="#mozTocId673530">Limiting parameter
 change
 </a></li><li><a href="#mozTocId364529">
 Other constraints/restraints
+</a></li><li><a href="#mozTocId345729">&nbsp;Additional arguments to the model</a></li><li><a href="#mozTocId42390">
+
 </a></li><li><a href="#mozTocId359603">Using constraints within the model</a></li></ol></li><li><a href="#mozTocId179895">Estimating the model parameter uncertainties
 and the fit quality
 </a></li><li><a href="#mozTocId855522">Building model functions</a></li><li><a href="#mozTocId778987">Specifying the optimization criteria</a></li><li><a href="#mozTocId200215">Issues when fitting</a></li></ol>
@@ -43,7 +45,7 @@ minimal }<br>
 <div style="text-align: left;"><br>
 where <span style="font-style: italic;">distance</span> is the criteria
 for the fit, which measures how far the model is from the data. There
-is a number of possible distance definitions, detailed <a href="#mozTocId778987">below</a>.<br>
+is a number of possible distance definitions, detailed <a href="#mozTocId778987">below</a>. You can refer to the <a href="http://en.wikipedia.org/wiki/Mathematical_optimization">mathematical optimization</a> definition.<br>
 </div>
 
 </div>
@@ -75,6 +77,7 @@ to
 chose explicitly
 the model function, and the starting parameter set with e.g.<br>
 <pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>);                    <span style="font-style: italic;">% specify model function to use: gauss, and use guessed parameters</span><br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(51, 102, 255);">gauss</span>, [ 0.5 1 0.01 0 ]);    <span style="font-style: italic;">% specify the starting parameters for the model function</span><br></pre>
+The two first arguments to fits are the data object (<a href="iData.html">iData</a> class) and the model object (<a href="iFunc.html">iFunc</a> class).<br>
 The result of the <span style="font-style: italic;">fits</span> method
 is the model parameter set that matches best the data. The number of
 fit parameters is not limited.<br>
@@ -86,11 +89,14 @@ available fit functions</span></a> can be obtained from the command:<a href="Mod
 Refer
 to the section <a href="#mozTocId855522">below</a> in order to learn
 how to define new fit models with the <a href="Models.html#mozTocId210092"><span style="font-weight: bold; font-style: italic;">ifitmakefunc</span></a>
-tool, or directly with the <a href="iFunc.html">iFunc</a> class. You can get information about a model by
+tool, or directly with the <a href="iFunc.html">iFunc</a> class. This 
+latter supports many operators which allow to build complex models from 
+simpler ones, and store them into model objects (variables). You can get
+ information about a model by
 inquiring its name. When a single input parameter is specified,
 starting parameters
 are guessed :<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">disp(gauss</span><span style="color: rgb(204, 51, 204);"></span>)	<span style="font-style: italic;">	% return information about the function</span><br>&gt;&gt; plot(<span style="color: rgb(51, 102, 255);">gauss</span><span style="color: rgb(204, 51, 204);"></span>)		<span style="font-style: italic;">% plot the function with a default parameter set</span> and axes<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(p, x)		<span style="font-style: italic;">% evaluate the function with parameters 'p' and axis 'x'</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(p)		% same as above with guessed axes<br><br></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">disp(gauss</span><span style="color: rgb(204, 51, 204);"></span>)	<span style="font-style: italic;">	% return information about the function</span><br>&gt;&gt; plot(<span style="color: rgb(51, 102, 255);">gauss</span><span style="color: rgb(204, 51, 204);"></span>)		<span style="font-style: italic;">% plot the function with a default parameter set</span> and axes<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(p, x)		<span style="font-style: italic;">% evaluate the function with parameters 'p' and axis 'x'</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">gauss</span>(p)		% same as above with guessed axes<br>&gt;&gt; g=<span style="color: rgb(51, 102, 255);">gauss</span>		% g is now a variable of class iFunc<br>&gt;&gt; <font color="#3366ff">disp</font>(g)<br></pre>
 A fast way to define a new model and fit it to the data is to directly
 execute, with <span style="font-style: italic;">p</span> the parameter vector, and <span style="font-style: italic;">x,y</span>,... the axes:<br>
 <pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>);</pre>
@@ -246,7 +252,7 @@ with a weighting by the success ratio and the number of function calls
 (optimization speed). Successive calls to <span style="font-style: italic; font-weight: bold;">fmin</span> with the same problem to solve may result in different optimizers and solutions.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Optimizer<br>
@@ -435,7 +441,39 @@ restricted. This is given to the <span style="font-style: italic;">fits</span>
 method by mean of a 5th input
 argument <span style="color: rgb(255, 0, 0); font-style: italic;">constraints</span>
 :<br>
-<pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, options, <span style="color: rgb(204, 51, 204);"><span style="color: rgb(255, 0, 0);">constraints</span></span><span style="color: rgb(0, 0, 0);">)<br></span></pre>
+<pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, options, <span style="color: rgb(204, 51, 204);"><span style="color: rgb(255, 0, 0);">constraints</span></span><span style="color: rgb(0, 0, 0);">)<br></span><span style="color: rgb(0, 0, 0);"></span><br></pre>In short, the constraints is a structure with the following members,
+which should all have the same length as the model parameter vector:<br>
+
+
+<ul>
+<li><span style="font-style: italic;">constraints.fixed: </span>1
+for fixed parameter, 0 for free parameters<br>
+  </li><li><span style="font-style: italic;">constraints.min: </span>the
+minimum value for each parameter.<span style="font-style: italic;"> -Inf</span>
+is supported. <span style="font-style: italic;">NaN </span>can be
+used.<br>
+  </li><li><span style="font-style: italic;">constraints.max: </span>the
+maximum value for each parameter.<span style="font-style: italic;"> +Inf</span>
+is supported. <span style="font-style: italic;">NaN </span>can be
+used.</li><li><span style="font-style: italic;">constraints.steps: </span>the
+maximum change between iterations for each parameter.<span style="font-style: italic;"> +Inf</span> is supported.</li><li><i>constraints.eval: </i>any other expression to evaluate, returning a modified parameter vector 'p'</li>
+</ul>
+
+All these constraints may be used simultaneously.<br>
+
+
+<br>
+
+
+The <span style="font-style: italic;">constraints</span> input argument can also be entered as a character string, like the input <span style="font-style: italic;">parameters</span> and <span style="font-style: italic;">options</span> :<br>
+
+<blockquote>
+constraints=<span style="color: rgb(204, 51, 204);">'min=[0 0 0 0]; max=[1 10 3 0.1]; eval=p(4)=0'</span>;<br>
+</blockquote>
+As constraints apply on the iFunc model, it is possible to manipulate 
+all constraints using the object syntax and methods, as explained <a href="#mozTocId359603">below</a><a href="iFunc.html#mozTocId579374"></a>.<br>
+<pre style="margin-left: 40px;"><span style="color: rgb(0, 0, 0);"></span></pre>
+
 <pre style="margin-left: 40px;"><span style="color: rgb(0, 0, 0);"></span><span style="color: rgb(0, 0, 0);"></span></pre>
 <h4><a class="mozTocH4" name="mozTocId267246"></a>Fixed parameters</h4>
 To fix some of the model parameters to their starting value, you just
@@ -452,6 +490,10 @@ with a <span style="font-style: italic;">fixed</span> member :<br>
 <pre style="margin-left: 40px;">&gt;&gt; constraints.fixed = [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ];<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, constraints);<br></pre>
 The <span style="font-style: italic;">constraints</span>.<span style="font-style: italic;">fixed</span> vector should
 have the same length as the model parameter vector.<br>
+<br>
+Once the iFunc model object has been instantiated, it is possible to fix/free its parameters with the <b>lock/munlock</b> methods, or more explicitly:<br>
+<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude. 'free' would free it<br>&gt;&gt; mlock(f, </span><span style="font-style: italic;"><span style="color: rgb(204, 51, 204);">'Amplitude'</span>)	% same as above. munlock would free it.<br></span></pre>
+
 <h4><a class="mozTocH4" name="mozTocId871054"></a>Parameters varying
 within limits</h4>
 If one needs to restrict the exploration range of parameters, it is
@@ -466,6 +508,12 @@ with members <span style="font-style: italic;">min</span> and <span style="font-
 <pre style="margin-left: 40px;">&gt;&gt; constraints.min = <span style="color: rgb(255, 0, 0);">[ 0.5 0.8 0 0 ]</span>;<br>&gt;&gt; constraints.max = <span style="color: rgb(255, 0, 0);">[ 1 1.2 1 1 ]</span>;<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, constraints);</pre>
 The <span style="font-style: italic;">constraints</span> <span style="font-style: italic;">min</span> and <span style="font-style: italic;">max</span> vectors
 should have the same length as the model parameter vector.<br>
+<br>
+Once the iFunc model object has been instantiated, it is possible to bound its parameters with the <b>xlim</b> method, or more explicitly:<br>
+
+<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = [ 0 10 ];	<i>% bound Amplitude between 0 and 10</i><br>&gt;&gt; <font color="#3366ff">xlim</font>(f, <font color="#cc33cc">'Amplitude'</font>, [0 10])	<i>% same as above</i><br></pre>
+
+
 <span style="font-style: italic;"></span>
 <h4><a class="mozTocH4" name="mozTocId673530"></a>Limiting parameter
 change<br>
@@ -493,7 +541,7 @@ maximum change between iterations for each parameter. +Inf is supported.</li>
 <h4><a class="mozTocH4" name="mozTocId364529"></a>
 Other constraints/restraints
 </h4>
-<p>The <span style="font-style: italic;">constraints.eval</span> member can be used to specify any other constraints/restraint by mean of <br>
+<p>The <span style="font-style: italic;">constraints.eval</span> member can be used to specify any other constraint/restraint by mean of <br>
 </p>
 
 <ul>
@@ -514,6 +562,22 @@ The <span style="font-style: italic;">constraints</span> input argument can also
 <br>
 <span style="font-style: italic;">
 NaN</span> values in these constraints are ignored (the corresponding parameters are not constrained).<br>
+<br>
+Once the iFunc model object has been instantiated, it is possible to restraint its parameters explicitly with expressions:<br>
+
+
+<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <font color="#cc33cc">'abs(p(1))'</font>;	<i>% set Amplitude as its absolute value (</i>Amplitude<i> is p(1), as listed from </i>disp(f)<i>)</i><br>&gt;&gt; f.Amplitude = <font color="#cc33cc">'abs("Amplitude")'</font>;	<i>% same as above, double-quoting requests parameter name search in model</i><br>&gt;&gt; f.Amplitude = <font color="#cc33cc">'</font><font color="#cc33cc">"Amplitude" - "Background"'</font>;	% it is possible to use any parameter in expressions<br></pre>
+<h4><a class="mozTocH4" name="mozTocId345729"></a>&nbsp;Additional arguments to the model<br>
+</h4>
+<p>When defining a model with <i>n</i> parameters and rank <i>m</i> (that is m axes), any fit process will optimize the <i>n</i> parameters by evaluating the model on the <i>m</i> axes.
+ If you need to use additional arguments to the model, which are fixed 
+during a fit/optimization, you can access them from the 'varargin' 
+variable in the Expression and Constraints. varargin{1} is the first additional argument, varargin{2} the second...<br>
+</p>
+<pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;<br>&gt;&gt; disp(f)<br>f = iFunc 1D model:<br>         Expression: signal = feval(@(p,x)p(1)*exp(-0.5*((x-p(2))/p(3)).^2)+p(4), p, x);<br>        Description: Single 1D Gaussian model<br>                Tag: 'iF457990'<br>               Date: '16-Sep-2013 10:03:45'<br>               Name: 'Gaussian (1D) [gauss]'<br>         Parameters: {'Amplitude'  'Centre'  'HalfWidth'  'Background'}<br>              Guess: @(x,s)[NaN,m1(x,s-min(s(:))),m2(x,s-min(s(:))),NaN]<br>         Constraint: [1x1 struct]<br>          Dimension: 1<br>    ParameterValues: []<br>           UserData: ''<br><br>Parameters (4):<br>  p(  1)=           Amplitude<br>  p(  2)=              Centre<br>  p(  3)=           HalfWidth<br>  p(  4)=          Background<br><br>&gt;&gt; f([1 2 3 4], 1:10)	<i>% evaluate with parameters p=[1 2 3 4] and axis x=1:10</i><br>ans =<br>    4.9460    5.0000    4.9460    4.8007    4.6065    4.4111    4.2494    4.1353    4.0657    4.0286<br>&gt;&gt; f.Constraint.eval=<font color="#cc33cc">'disp(varargin)'</font>;	% add a constraint to be evaluated, using additional arguments<br>&gt;&gt; f([1 2 3 4], 1:10, <font color="#cc33cc">'eee'</font>)	% evaluate again, with additional arguments<br> 'eee'			<font color="#ff0000">&lt;-- here is displayed 'varargin' when evaluating Constraint.eval</font><br>ans =<br>    4.9460    5.0000    4.9460    4.8007    4.6065    4.4111    4.2494    4.1353    4.0657    4.0286<br>&gt;&gt; f.Expression=@(p,x, <font color="#ff0000">varargin</font>)p(1)*exp(-0.5*((x-p(2))/p(3)).^2)+p(4)+<font color="#ff0000">varargin</font>{:}<br>&gt;&gt; f([1 2 3 4], 1:10, <font color="#cc33cc">1</font>)<br> [1]			<font color="#ff0000">&lt;-- here is displayed 'varargin' when evaluating Constraint.eval</font>
+ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified in the new Expression</font><br>     5.9460    6.0000    5.9460    5.8007    5.6065    5.4111    5.2494    5.1353    5.0657    5.0286<br></pre>
+<p><br>
+</p>
 <h4><a class="mozTocH4" name="mozTocId359603"></a>Using constraints within the model</h4>
 It may be easier to store constraints directly within the model used 
 during the fit. The main advantage is that constraints can be directly 
@@ -647,7 +711,7 @@ The criteria is then normalized to the number of degrees of freedom by dividing 
 <br>
 The following pre-defined functions can be used as criteria:<br>
 <br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">criteria(Signal, Error,
@@ -732,5 +796,6 @@ Farhi - iFit/iData fitting - </span><span style="font-style: italic;">
 $Date$ $Revision$
 </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px; height: 50px;" align="right"></a>
 </div>
+
 
 </body></html>
