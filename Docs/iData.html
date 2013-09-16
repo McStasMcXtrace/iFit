@@ -4,7 +4,7 @@
 
 <title>iFit: iData object definition</title>
 
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
 
 </head><body>
 <h1 style="text-align: center;">iFit: iData object description</h1>
@@ -58,12 +58,12 @@ methods</a></li>
 setaxis, getaxis, labels</span>, <a href="Methods.html">methods</a>
 </div>
 <br>
-The <span style="font-style: italic;">iData</span> object is a
+The <span style="font-style: italic;">iData</span> class is a
 structure which holds some imported data
 (numerical blocks), as well as additional metadata and axes
 definitions, <span style="font-style: italic;">Signal, Error bars,
 Monitors</span>,
-and user defined fields (aliases). These objects, which are used as
+and user defined fields (aliases). The instantiated objects, which are used as
 normal Matlab variables, often contain 1D, 2D, 3D, nD histograms or nD
 event lists.
 You will learn below how to customize these objects (set, get,
@@ -83,7 +83,7 @@ with<br>
 <pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[</span><span style="color: rgb(204, 51, 204);"> ifitpath '</span><span style="color: rgb(204, 51, 204);">Data/ILL_IN6.dat'</span>])	<span style="font-style: italic;">% imports a file into an object</span><br>a =  iData object:<br><br>    [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br> tp460929      [257  512] 'File ILL_IN6.dat ILL Data (n...' tp460929=load(iData,...  <br></pre>
 </div>
 which results in an <span style="font-style: italic;">iData</span>
-object. An other way to instantiate an object is to import directly
+object. An other way to create such an object is to import directly
 Matlab variables:<br>
 <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal)	% give the axes first, then the Signal<br></pre>
 
@@ -162,7 +162,7 @@ with comments<span style="font-weight: bold;"></span><br>
 <span style="font-weight: bold;"></span></div>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId443357"></a>Inquiring the iData
 object (get, disp, display)</h3>
-The main idea here is that iData object can be handled about the same
+The main idea here is that iData objects can be handled the same
 way as structures and <span style="font-style: italic;">Matlab
 Graphics Objects</span> using <span style="font-style: italic; font-weight: bold;">get</span> and <span style="font-style: italic; font-weight: bold;">set</span> methods.<br>
 <br>
@@ -181,11 +181,11 @@ But a more useful formatting of the same information is obtained using
 <pre>&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">disp</span>(a)<br></pre>
 </div>
 which both result in the following output<br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top;">
-      <pre>a = iData 2D object of size [257&nbsp; 512]:<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Title: 'File ILL_IN6.dat ILL Data (normal integers)'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Source: 'iFit/Data/ILL_IN6.dat'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Command: {'tp481575=load(iData,'iFit/Data/ILL_IN6.dat');'}<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UserData: ''<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Label: ''<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DisplayName: ''<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Creator: [1x119 char]<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; User: 'farhi on localhost'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Data: [1x1 struct]<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: '20-nov.-2007 23:11:26'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tag: 'tp481575'<br>      &nbsp;&nbsp;&nbsp; ModificationDate: '12-Oct-2010 17:48:16'<br>      <br>Object aliases:<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Value] [Description]<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Signal&nbsp; Data.IIIIIIIIIIIIIIIIIIIIIIIIIIIII_13&nbsp;&nbsp; Data Signal [0:27172]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      &nbsp; Error&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sqrt(Signal)&nbsp;&nbsp; Error on Signal<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Monitor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; Monitor (weight) '1'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Attributes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Data.Attributes&nbsp;&nbsp; Headers from ILL_IN6.dat</pre>
+      <pre>a = iData 2D object of size [257&nbsp; 512]:<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Title: 'File ILL_IN6.dat ILL Data (normal integers)'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Source: 'iFit/Data/ILL_IN6.dat'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Command: {'tp481575=load(iData,'iFit/Data/ILL_IN6.dat');'}<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UserData: ''<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Label: ''<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DisplayName: ''<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Creator: [1x119 char]<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; User: 'farhi on localhost'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Data: [1x1 struct]<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: '20-nov.-2007 23:11:26'<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tag: 'tp481575'<br>      &nbsp;&nbsp;&nbsp; ModificationDate: '12-Oct-2010 17:48:16'<br>      <br>Object aliases:<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Value] [Description]<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Signal&nbsp; Data.IIIIIIIIIIIIIIIIIIIIIIIIIIIII_13&nbsp;&nbsp; Data Signal [0:27172]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      &nbsp; Error&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sqrt(Signal)&nbsp;&nbsp; Error on Signal<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Monitor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; Monitor (weight) '1'<br>      &nbsp;&nbsp;&nbsp;&nbsp; Attributes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Data.Attributes&nbsp;&nbsp; Headers from ILL_IN6.dat</pre>
       </td>
     </tr>
   </tbody>
@@ -514,7 +514,7 @@ and Signal, and the dimensionality (except memory restrictions). The
 following table indicates the different types of <span style="font-style: italic;">Signal</span> that the iData can handle,
 and the associated requirements regarding <span style="font-style: italic;">Axes.</span><br>
 <br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">Dimensionality<br>

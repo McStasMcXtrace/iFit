@@ -128,7 +128,7 @@ end
   
   % the Expression has to return a 'signal' value in the last line
   if isa(s.Expression ,'function_handle')
-    ret{end+1} = sprintf('signal = feval(%s, p, %s);', func2str(s.Expression), ax(1:(end-1)));
+    ret{end+1} = sprintf('signal = feval(%s, p, %s, varargin{:});', func2str(s.Expression), ax(1:(end-1)));
   else
     ret{end+1} = [ '% The Expression, computing signal from ''p'' and axes ' ax(1:(end-1)) ];
     e = s.Expression; 
