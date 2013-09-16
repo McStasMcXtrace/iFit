@@ -40,8 +40,8 @@ if isa(model, 'iFunc') && numel(model) > 1
     signal=signal{1}; ax=ax{1};
   end
   signal = reshape(signal, size(model));
-  ax     = reshape(ax, size(model));
-  name   = reshape(name, size(model));
+  ax     = reshape(ax,     size(model));
+  name   = reshape(name,   size(model));
   return
 end
 
@@ -108,6 +108,8 @@ end
 % handle varargin ==============================================================
 % handle case where varargin contains itself model cell as 1st arg for axes and
 % Signal
+
+signal_in_varargin = []; % holds the index of a Signal after Axes in varargin
 if ~isempty(varargin) 
   this = varargin{1};
   if iscell(this)
@@ -116,7 +118,10 @@ if ~isempty(varargin)
       Signal = Axes{model.Dimension+1};
       Axes   = Axes(1:model.Dimension);
     end
-    if ~isempty(Signal), Axes{end+1} = Signal; end
+    if ~isempty(Signal), 
+      Axes{end+1} = Signal; 
+      signal_in_varargin = length(Axes);
+    end
     varargin=[ Axes{:} varargin(2:end) ];
   elseif (isstruct(this) && isfield(this, 'Axes')) || isa(this, 'iData')
     Signal = {};
@@ -134,7 +139,10 @@ if ~isempty(varargin)
       end
     elseif isfield(this,'Axes')    Axes    = this.Axes; 
     end
-    if ~isempty(Signal), Axes{end+1} = Signal; end
+    if ~isempty(Signal), 
+      Axes{end+1} = Signal; 
+      signal_in_varargin = length(Axes);
+    end
     varargin= [ Axes{:} varargin(2:end) ];
   end
   clear this Axes Signal
@@ -176,6 +184,7 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
       args{2} = p2(1)*exp(-0.5*((x-p2(2))/p2(3)).^2)+((p2(2)-x)*p2(1)/p2(3)/100) + p2(4);
       clear p2
       signal = args{2};
+      signal_in_varargin = 2;
     else
       [args{1},args{2}] = ndgrid(linspace(-5,5,50), linspace(-3,7,60));
       x=args{1}; y=args{2}; p2 = [ 1 mean(x(:)) mean(y(:)) std(x(:)) std(y(:)) 30 0 ];
@@ -187,6 +196,7 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
       args{3} = p2(1)*exp(-(aa*(x-x0).^2+2*bb*(x-x0).*(y-y0)+cc*(y-y0).^2)) + p2(7);
       clear aa bb cc theta x0 y0 sx sy p2
       signal = args{3};
+      signal_in_varargin = 3;
     end
   end
   
@@ -265,6 +275,11 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
   
   if ~strcmp(guessed,'full')
     % return the signal and axes
+    if ~isempty(signal_in_varargin) && length(varargin) >= signal_in_varargin
+      varargin(signal_in_varargin) = []; % remove Signal from arguments for evaluation (used in Guess)
+      signal_in_varargin = [];
+    end
+
     [signal, ax, name] = feval(model, p, varargin{:});
   else
     ax=0; name=model.Name;
@@ -355,7 +370,7 @@ for index=1:model.Dimension
 		break; % go to next axis (exit index_p loop)
       end
     end
-  end
+  end % for index in parameter names
   if isempty(varargin{index})
     varargin{index} = linspace(-5,5,50+index);
     % orient the axis along the right dimension to indicate this is not an event type
@@ -366,7 +381,7 @@ for index=1:model.Dimension
   if isempty(AxisOrientation), AxisOrientation=size(varargin{index});
   elseif length(AxisOrientation) == length(size(varargin{index})) ...
           && any(AxisOrientation ~= size(varargin{index})), ParallelAxes=0; end
-end
+end % for index in model dim
 
 % convert axes to nD arrays for operations to take place
 % check the axes and possibly use ndgrid to allow nD operations in the
@@ -394,7 +409,11 @@ end
 
 model.ParameterValues = p; % store current set of parameters
 
-% request evaluation in sandbox
+% request evaluation in sandbox, but should remove Signal after axes
+if ~isempty(signal_in_varargin) && length(varargin) >= signal_in_varargin
+  varargin(signal_in_varargin) = []; % remove Signal from arguments for evaluation (used in Guess)
+  signal_in_varargin = [];
+end
 [signal,ax,p] = iFunc_feval_expr(model, varargin{:});
 
 % model.ParameterValues = p; % store current set of parameters (updated)
@@ -434,7 +453,6 @@ varargin(1:model.Dimension) = [];
 % 
 
 p       = reshape(model.ParameterValues,1,numel(model.ParameterValues));
-
 % if we wish to have parameters usable as a structure
 %struct_p= cell2struct(num2cell(p),model.Parameters,2);
 
