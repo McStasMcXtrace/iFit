@@ -29,7 +29,7 @@ if numel(s_in) > 1
   d = [ d sprintf(' array [%s]',num2str(size(s_in))) ];
 end
 if isdeployed || ~usejava('jvm'), id='iData';
-else           id='<a href="matlab:helpwin iData">iData</a>';
+else           id='<a href="matlab:doc iData">iData</a>';
 end
 if isvector(s_in) > 1, id = [ id ' list/event']; end
 if length(s_in) == 0
