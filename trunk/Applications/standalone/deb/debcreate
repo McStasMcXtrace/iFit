@@ -10,9 +10,11 @@ cd    ${BUILDDIR}/usr/local/bin
 rm -f ${BUILDDIR}/usr/local/bin/ifit
 #rm -f ${BUILDDIR}/usr/local/bin/pyfit
 ln -s ../ifit/ifit .
+ln -s ../ifit/ResLibCal .
 #ln -s ../ifit/pyfit .
 cd $PW
 chmod a+x ${BUILDDIR}/usr/local/bin/ifit
+chmod a+x ${BUILDDIR}/usr/local/bin/ResLibCal
 chmod a+x ${BUILDDIR}/usr/local/ifit/ifit
 #chmod a+x ${BUILDDIR}/usr/local/bin/pyfit
 #chmod a+x ${BUILDDIR}/usr/local/ifit/pyfit

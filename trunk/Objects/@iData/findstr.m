@@ -51,11 +51,6 @@ matchs = get(s, fields);
 % convert to char using private inline function handle
 matchs = cellfun(@cell2char, matchs, 'UniformOutput', false);
 
-% handle 'case' option
-if isempty(strfind(option, 'case'))
-    matchs = lower(matchs); str=lower(str);
-end
-
 if isempty(str)
   match = matchs;
   field = fields;
@@ -79,9 +74,14 @@ function [match, field] = iData_findstr_single(str, option, field, match)
 
 % search for the string
 if strfind(option, 'exact')
+  % handle 'exact' option
   index = strcmp(match, str);
-else
+elseif strfind(option, 'case')
+  % handle 'case' option
   index = ~cellfun(@isempty, strfind(match, str));
+else
+  % relaxed search: non case sensitive, find token (not exact comparison)
+  index = ~cellfun(@isempty, strfind(lower(match), lower(str)));
 end
 match = match(index);
 field = field(index);
