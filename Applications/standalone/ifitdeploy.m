@@ -62,6 +62,7 @@ if ~ispc
   end
   copyfile([ m filesep 'ifit' ],       target)
 end
+copyfile([ m filesep 'ResLibCal' ],       target)
 copyfile(fullfile(p, 'README.txt'), target)
 copyfile(fullfile(p, 'COPYING'),    target)
 copyfile(fullfile(p, 'Docs'),       fullfile(target,'Docs'))

@@ -653,10 +653,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   
   if nargout ==0, return; end
   if status
-    disp([ mfilename ': ERROR: Failed to execute ' cmd ]);
-    status
-    result
-    return
+    error([ mfilename ': ERROR: Failed to execute ' cmd ]);
   end
   
   if isfield(options,'ncount') && options.ncount == 0
@@ -672,6 +669,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
       for index=1:length(options.monitors)
         [name, R] = strtok(options.monitors{index},' ,;/*+-(){}:%$.');
         sim = [ sim iData(fullfile(directory,[ '*' name '*' ])) ];
+        if isempty(sim)
+            error([ mfilename ': ERROR: no ' name ' monitor when launching ' cmd ]);
+        end
         setalias(sim, 'CriteriaExpression', R);
       end
     end

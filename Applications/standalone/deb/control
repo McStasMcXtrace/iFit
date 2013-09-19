@@ -2,7 +2,7 @@ Package: @IFIT_TARNAME@
 Version: @IFIT_VERSION@
 Architecture: arch
 Installed-Size: 48100
-Depends: bash, MCRInstaller
+Depends: bash
 Section: Science
 Priority: optional
 Homepage: http://ifit.mccode.org

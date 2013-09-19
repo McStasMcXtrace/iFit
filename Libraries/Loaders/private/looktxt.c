@@ -25,7 +25,7 @@
 *
 * Main Options are:
 * --binary   or -b    Stores numerical matrices into an additional binary
-*                     float file, which makes further import much faster.
+*                     double file, which makes further import much faster.
 * --catenate or -c    Catenates similar numerical fields
 * --catenate=0|1      Do-not (slower) or do catenate similar fields 
 * --force    or -F    Overwrites existing files
@@ -310,7 +310,7 @@ struct data_struct data_init(void);
 void               data_print(struct data_struct field)
 void               data_free(struct data_struct field);
 char              *data_get_char(struct file_struct file, long start, long end);
-double            *data_get_float(struct file_struct file, struct data_struct field);
+double            *data_get_double(struct file_struct file, struct data_struct field);
 
 struct table_struct *table_init(void);
 void                table_add(struct table_struct *table, struct data_struct data);
@@ -416,7 +416,7 @@ struct option_struct {
   int   files_to_convert_Array[MAX_LENGTH];/* index of argv[] for files to be processes */
   long  file_index; /* index of processed file (in case of a pack of files) */
   char  use_struct; /* will build struct field names */
-  char  use_binary; /* will use binary external file to hold matrices/vectors 1:float */
+  char  use_binary; /* will use binary external file to hold matrices/vectors 1:double */
   char  catenate  ; /* will catenate similar fields (name+size)   */
   char  force     ; /* force (over write) output files */
   char  out_table ; /* will output table field */
@@ -493,7 +493,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
       "  [fid,mess]=fopen(f,'rb');\n"
       "  if fid == -1, disp([ 'Error opening bin file ' f ': ' mess ]); end\n"
       "  fseek(fid,b,-1);\n"
-      "  d=fread(fid,m*n,'single'); fclose(fid);\n"
+      "  d=fread(fid,m*n,'double'); fclose(fid);\n"
       "  if m*n ~= numel(d), disp([ 'File ' f ': read ' num2str(numel(d)) ' elements but expected ' mat2str([ m n ]) ]); f=dir(f); disp(f); end\n"
       "  d=reshape(d,n,m);\n"
       "  d=d'; return\n",
@@ -537,7 +537,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
       "// in-line function to read binary blocks\n"
       "function d=bin_ref(f,b,m,n)\n"
       "  f=mopen(f,'rb'); mseek(f,b);\n"
-      "  d=mget(m*n,'f',f); mclose(f); d=matrix(d,[n m]);\n"
+      "  d=mget(m*n,'d',f); mclose(f); d=matrix(d,[n m]);\n"
       "  d=d'; return\n",
     "// Begin Section %BAS%SEC '%NAM'\n",
     "// End   Section %BAS%SEC '%NAM'\n",
@@ -551,7 +551,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
       "; To import, use idl> s=%NAM()\n\n"
       "function bin_ref,f,b,m,n\n"
       "; in-line function to read binary blocks\n"
-      "  d=read_binary(f, data_type=4, data_dims=[m,n], data_start=b)\n"
+      "  d=read_binary(f, data_type=8, data_dims=[m,n], data_start=b)\n"
       "  d=reform(d,[m,n])\n"
       "  return,transpose(d)\n"
       "end ; FUN bin_ref\n\n"
@@ -593,7 +593,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
     "<!-- End of file %TXT generated from %SRC ->\n",
     "<%SEC name=\"%NAM\">\n", "</%SEC>\n",
     "<%NAM>%VAL</%NAM>\n",
-    "<%NAM> \n","</%NAM>\n"," float(file='%FIL',offset=%BEG,m=%ROW,n=%COL) "
+    "<%NAM> \n","</%NAM>\n"," float64(file='%FIL',offset=%BEG,m=%ROW,n=%COL) "
   },
   { "YAML", "yaml",
     "%%YAML 1.1\n"
@@ -602,7 +602,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
     "%NAM:\n", "\n",
     "%SEC%NAM: %VAL\n",
     "%SEC%NAM:\n","]\n",
-    " float(file='%FIL',offset=%BEG,m=%ROW,n=%COL) \n"
+    " float64(file='%FIL',offset=%BEG,m=%ROW,n=%COL) \n"
   },
   { "HTML", "html",
     "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD %DAT//EN\"\n"
@@ -612,7 +612,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
     "End of file %TXT generated from %SRC<br></BODY></HTML>\n",
     "<h3><a name=\"%SEC\">Section %BAS %SEC</a></h3><br>\n",
     "[end of <a href=\"#%SEC\">%BAS %SEC</a>]<br>\n",
-    "<b>%BAS%SEC%NAM= </b>'%VAL'<br>\n","<b>%BAS%SEC%NAM = [ \n</b><pre>","]\n</pre><br>"," float(file='%FIL',offset=%BEG,m=%ROW,n=%COL) "
+    "<b>%BAS%SEC%NAM= </b>'%VAL'<br>\n","<b>%BAS%SEC%NAM = [ \n</b><pre>","]\n</pre><br>"," float64(file='%FIL',offset=%BEG,m=%ROW,n=%COL) "
   },
   { "Octave", "m",
     "function %NAM=%NAM()\n"
@@ -622,7 +622,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
       "%% in-line function to read binary blocks\n"
       "function d=bin_ref(f,b,m,n)\n"
       "  f=fopen(f,'rb'); fseek(f,b,-1);\n"
-      "  d=fread(f,m*n,'float'); fclose(f); d=reshape(d,n,m);\n"
+      "  d=fread(f,m*n,'double'); fclose(f); d=reshape(d,n,m);\n"
       "  d=d'; return\n"
       "endfunction\n",
     "%% Begin Section %BAS%SEC '%NAM'\n",
@@ -639,7 +639,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
     "# End   Section %BAS%SEC '%NAM'\n",
     "# %BAS%SEC%NAM = '%VAL'\n",
     "# %BAS%SEC%NAM\n","",
-    " float(file='%FIL',offset=%BEG,m=%ROW,n=%COL) \n"
+    " float64(file='%FIL',offset=%BEG,m=%ROW,n=%COL) \n"
   }
 };
 
@@ -1502,7 +1502,7 @@ struct format_struct format_init(struct format_struct formats[], char *request)
   }
   format = formats[i_format];
   if (request && strstr(request,"binary"))
-    tmp = str_cat(format.Name, " binary float data", NULL);
+    tmp = str_cat(format.Name, " binary double data", NULL);
   else tmp = str_dup(format.Name);
   /* change pointer location for new name */
   format.Name = tmp;
@@ -2044,11 +2044,11 @@ char *data_get_line(struct file_struct file, long *start)
 } /* data_get_line */
 
 /*****************************************************************************
-* data_get_float: Read in file, allocate and read 'double' part
+* data_get_double: Read in file, allocate and read 'double' part
 *****************************************************************************/
-float *data_get_float(struct file_struct file, struct data_struct field, struct option_struct options)
+double *data_get_double(struct file_struct file, struct data_struct field, struct option_struct options)
 {
-  float *data=NULL;
+  double *data=NULL;
   
 /* two hard coded methods for reading numerical values */
 /* 0: fast but requires isspace for numerical separators (sscanf) */
@@ -2057,10 +2057,10 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
   if (field.n_start > field.n_end) return (NULL);
   if (!file.SourceHandle)          return (NULL);
 
-  data = (float*)mem(field.rows*field.columns*sizeof(float));
+  data = (double*)mem(field.rows*field.columns*sizeof(double));
 
   if (!data) {
-    print_stderr( "Error: Memory exhausted during allocation of float[%ld x %ld] [looktxt:data_get_float:%d]\n",
+    print_stderr( "Error: Memory exhausted during allocation of double[%ld x %ld] [looktxt:data_get_double:%d]\n",
       field.rows, field.columns,__LINE__);
     exit(EXIT_FAILURE);
   }
@@ -2070,12 +2070,12 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
     long index=0;
     if (fseek(file.SourceHandle, field.n_start-1 > 0 ? field.n_start-1 : 0, SEEK_SET))
       if (options_warnings-- > 0)
-        print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
+        print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_double:%d]\n",
         file.Source, field.n_start-1, __LINE__);
     for (index =0; index < field.rows*field.columns; index ++) {
       long   pos = ftell(file.SourceHandle);
-      float  value=0;
-      if (!fscanf(file.SourceHandle, "%f", &value)) {
+      double value=0;
+      if (!fscanf(file.SourceHandle, "%lf", &value)) {
         if (options.verbose > 1) {
           char  *string=NULL;
           long   len=field.n_end - field.n_start;
@@ -2083,19 +2083,19 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
 
           string=data_get_char(file, pos, pos+len);
           if (options_warnings-- > 0) {
-            print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s:%ld [looktxt:data_get_float:%d]\n",
+            print_stderr( "Warning: Format error when reading double[%d of %ld] '%s' at %s:%ld [looktxt:data_get_double:%d]\n",
               index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source, (long)pos, __LINE__);
             print_stderr( "         '%s ...' (probably contains a non 'isspace' separator)\n", string);
             print_stderr( "         Do not use --fast if this value is important to you. Ignoring.\n", string);
           }
           if (fseek(file.SourceHandle, pos+1, SEEK_SET) && options_warnings-- > 0)
-            print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_float:%d]\n",
+            print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_double:%d]\n",
               file.Source, pos, __LINE__);
           
           string=str_free(string);
         }
       }
-      data[index] = (float)value;
+      data[index] = (double)value;
     } /* end for */
   } else {
     /* slower method: fread+sscanf */
@@ -2104,7 +2104,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
     long  index=0;
 
 	  if (!string) {
-		  print_stderr( "Error: can not get field %s=[%ld:%ld] in file %s [looktxt:data_get_float:%d]\n",
+		  print_stderr( "Error: can not get field %s=[%ld:%ld] in file %s [looktxt:data_get_double:%d]\n",
             field.Name, field.n_start, field.n_end, file.Source, __LINE__);
 		  exit(EXIT_FAILURE);
 	  }
@@ -2118,12 +2118,12 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
     /* iteratively read numeric values from the string */
     p=string;
     for (index =0; index < field.rows*field.columns; index ++) {
-      char fail=0;
-      float value=0;
+      char   fail=0;
+      double value=0;
       
       /* read the next number */
-      if (!sscanf(p, " %f ", &value)) fail  = 1;
-      data[index] = (float)value;
+      if (!sscanf(p, " %lf ", &value)) fail  = 1;
+      data[index] = (double)value;
       
       /* search for next separator */
       if ((p = strchr(p, ' ')) == NULL) fail = 1;
@@ -2133,7 +2133,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
 	    }
       
       if (fail && options_warnings-- > 0 && options.verbose > 1) {
-		    print_stderr( "Warning: Format error when reading float[%d of %ld] '%s' at %s [looktxt:data_get_float:%d]\n",
+		    print_stderr( "Warning: Format error when reading double[%d of %ld] '%s' at %s [looktxt:data_get_double:%d]\n",
             index, (long)(field.rows*field.columns), field.Name ? field.Name : "null", file.Source,__LINE__);
         if (!p) break;
 	    }
@@ -2144,7 +2144,7 @@ float *data_get_float(struct file_struct file, struct data_struct field, struct 
   }
   
   return(data);
-} /* data_get_float */
+} /* data_get_double */
 
 /*****************************************************************************
 * table_init: Sets a zero table_struct
@@ -2263,7 +2263,7 @@ void print_usage(char *pgmname, struct option_struct options)
   printf(
 "Main Options are:\n"
 "--binary   or -b    Stores numerical matrices into an additional binary\n"
-"                    float file, which makes further import much faster.\n"
+"                    double file, which makes further import much faster.\n"
 "--catenate or -c    Catenates similar numerical fields (default)\n"
 "--catenate=0        Do not catenate similar fields (slower)\n"
 "--force    or -F    Overwrites existing files\n"
@@ -3011,7 +3011,7 @@ int file_write_field_array_matnexus(struct file_struct file,
                           struct data_struct field, struct strlist_struct to_catenate)
 {
   long   index_field=0;
-  float *data       =NULL;
+  double *data      =NULL;
   long   num_rows   =0; /* total number of rows in array */
   long   num_index  =0; /* current number of rows in array (block by block) */
   int    ret        =0;
@@ -3025,12 +3025,12 @@ int file_write_field_array_matnexus(struct file_struct file,
   }
   
   /* get the first data block */
-  data      = data_get_float(file, field, options); /* first block */
+  data      = data_get_double(file, field, options); /* first block */
   if (field.rows < num_rows) { /* reallocate to the total size (rest is assigned below) */
-    data = (float *)realloc(data, num_rows*field.columns*sizeof(float));
+    data = (double *)realloc(data, num_rows*field.columns*sizeof(double));
     if(data == NULL) {
       print_stderr( "Error: Memory exhausted during re-allocation of size %ld for '%s' [looktxt:file_write_field_array_matnexus:%d].", 
-        num_rows*field.columns*sizeof(float), field.Name,__LINE__);
+        num_rows*field.columns*sizeof(double), field.Name,__LINE__);
       exit(EXIT_FAILURE);
     }
   }
@@ -3038,22 +3038,22 @@ int file_write_field_array_matnexus(struct file_struct file,
   
   /* and append the other 'to catenate' blocks */
   for (index_field=0; index_field < to_catenate.length; index_field++) {
-    float               *d    =NULL;
+    double              *d    =NULL;
     struct  data_struct *f    =(struct  data_struct *)(to_catenate.List[index_field]);
     
-    d = data_get_float(file, *f, options); /* consecutive block */
+    d = data_get_double(file, *f, options); /* consecutive block */
     if (!d) {
       print_stderr( "Error: Memory exhausted during re-allocation of size %ld for '%s' [looktxt:file_write_field_array_matnexus:%d].", 
-        f->rows*f->columns*sizeof(float), f->Name,__LINE__);
+        f->rows*f->columns*sizeof(double), f->Name,__LINE__);
       exit(EXIT_FAILURE);
     }
 
     /* catenate data (copy in 'data') */
-    memcpy(&(data[num_index]), d, f->rows*f->columns*sizeof(float));
+    memcpy(&(data[num_index]), d, f->rows*f->columns*sizeof(double));
     num_index += f->rows*f->columns;      /* shift to next block index */
     f->rows=0;                            /* unactivate once treated */
     
-    d=(float*)memfree(d);
+    d=(double*)memfree(d);
   }
   
   if (options.verbose >= 3)
@@ -3064,19 +3064,19 @@ int file_write_field_array_matnexus(struct file_struct file,
   if (options.ismatnexus == 1 || options.ismatnexus == 3) { /* MAT file */
     /* Matlab uses a columns-wise storage convention (Fortran like) -> transpose */
     int      i,j;
-    float   *tdata   = malloc(num_rows*field.columns*sizeof(float));
+    double  *tdata   = malloc(num_rows*field.columns*sizeof(double));
     mxArray *mxMatrix= NULL;
     
     for (i=0; i<num_rows; i++)
       for (j=0; j<field.columns; j++)
         tdata[j*num_rows+i] = data[i*field.columns+j];
-    data = (float*)memfree(data); data=tdata; tdata=NULL;
+    data = (double*)memfree(data); data=tdata; tdata=NULL;
     
     /* assign the name/value to structure, possibly as a sub-structure */
     if (!file.mxRoot || !mxIsStruct(file.mxRoot)) return(0);
     mxMatrix   =mxCreateNumericMatrix(
-        num_rows, field.columns, mxSINGLE_CLASS, mxREAL);
-    memcpy((void *)(mxGetPr(mxMatrix)), (void *)data, num_rows*field.columns*sizeof(float));
+        num_rows, field.columns, mxDOUBLE_CLASS, mxREAL);
+    memcpy((void *)(mxGetPr(mxMatrix)), (void *)data, num_rows*field.columns*sizeof(double));
     
     /* add field to 'Root'.'Data' */
     if (field.Section && strlen(field.Section)) {
@@ -3114,7 +3114,7 @@ int file_write_field_array_matnexus(struct file_struct file,
     NXMDisableErrorReporting(); /* unactivate NeXus error messages */
     NXsetcache(1024000*10);
     /* create the Data block. NXcompmakedata is buggy, uses all memory */
-    NXmakedata(file.nxHandle, field.Name, NX_FLOAT32, 2, length);
+    NXmakedata(file.nxHandle, field.Name, NX_FLOAT64, 2, length);
     NXopendata(file.nxHandle, field.Name);
     ret = NXputdata (file.nxHandle, data);
     if (ret == NX_ERROR) ret=0; else ret=1;
@@ -3122,8 +3122,8 @@ int file_write_field_array_matnexus(struct file_struct file,
     NXMEnableErrorReporting();  /* enable NeXus error messages */
   }
 #endif
-  /* free the numerical float array */
-  data = (float*)memfree(data);
+  /* free the numerical double array */
+  data = (double*)memfree(data);
   
   return(ret);
   
@@ -3138,14 +3138,14 @@ int file_write_field_array(struct file_struct file,
                           struct option_struct options,
                           struct data_struct field, char *format)
 {
-  char flag_written=0;
-  float *data=NULL;
-  long count=0;
-  long length;
+  char    flag_written=0;
+  double *data   =NULL;
+  long    count  =0;
+  long    length =0;
   
   /* handle text for nelements <= MAX_TXT4BIN */
   /*        binary for big */
-  data = data_get_float(file, field, options);
+  data = data_get_double(file, field, options);
   if (!data) {
     if (options.verbose >= 1  && options_warnings-- > 0)
     if (options.verbose >= 2 || field.n_start < field.n_end)
@@ -3168,7 +3168,7 @@ int file_write_field_array(struct file_struct file,
     size_t start, end;
     start=ftell(file.BinHandle); /* file opened previously */
     /* position at end of Bin, store that pos */
-    count = fwrite(data, sizeof(float),
+    count = fwrite(data, sizeof(double),
       field.rows*field.columns, file.BinHandle);
     if (count != field.rows*field.columns && options_warnings-- > 0) {
        print_stderr( "Warning: Could not write properly field %s in BIN file '%s'.\n"
@@ -3197,7 +3197,7 @@ int file_write_field_array(struct file_struct file,
   }
   if (!flag_written) {
     int i,j;
-    float value;
+    double value;
     /* write in TxtHandle */
     if (options.verbose >= 3)
       printf("\nDEBUG[file_write_field_array]: file '%s': Writing Data %s values (%ld x %ld) \n", 
@@ -3232,7 +3232,7 @@ int file_write_field_array(struct file_struct file,
       }
     }
   }
-  data = (float*)memfree(data);
+  data = (double*)memfree(data);
   return (count > 0);
 } /* file_write_field_array */
 
@@ -3402,7 +3402,7 @@ struct write_struct file_write_getsections(struct file_struct file,
               print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:file_write_getsections:%d]\n",
                 file.Source, field->n_start-1,__LINE__);
             if (!fscanf(file.SourceHandle, "%lf", &data0) && options_warnings-- > 0)
-              print_stderr( "Warning: Error in reading float fscanf(%s) [looktxt:file_write_getsections:%d]\n",
+              print_stderr( "Warning: Error in reading double fscanf(%s) [looktxt:file_write_getsections:%d]\n",
                 file.Source, __LINE__);
             sprintf(value, "_%ld", (long)data0);
             tmp = str_cat(section_current, value, NULL);
