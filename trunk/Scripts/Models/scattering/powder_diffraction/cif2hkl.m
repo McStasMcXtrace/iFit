@@ -45,7 +45,7 @@ if ~isdeployed && isempty(compiled)
       mex (cmd{:});
       compiled = 1;
     catch
-      error('%s: Can''t compile cif2hkl.F90 as MeX\n       in %s\n', ...
+      warning('%s: Can''t compile cif2hkl.F90 as MeX\n       in %s\n', ...
         mfilename, fullfile(this_path));
     end
     if compiled
@@ -66,8 +66,10 @@ if ~isdeployed && isempty(compiled)
     disp([ sprintf('%s ', cmd{:}) ]);
     [status, result] = system(sprintf('%s ', cmd{:}));
     if status ~= 0 % not OK, compilation failed
-      error('%s: Can''t compile cif2hkl.F90 as binary\n       in %s\n', ...
+      warning('%s: Can''t compile cif2hkl.F90 as binary\n       in %s\n', ...
         mfilename, fullfile(this_path));
+    else
+      compiled = 1;
     end
   end
 end
