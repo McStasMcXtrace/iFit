@@ -109,7 +109,7 @@ should be <span style="color: rgb(204, 51, 204);">'simulate'<span style="color: 
   <li><span style="font-weight: bold;">options.compile</span>: 0 or 1
 to force re-compilation of the instrument (boolean)</li>
 <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
-cell string of monitor names, or empty for all (cellstr)</li>
+cell string of monitor file names, or empty for all (cellstr)</li>
 <li><span style="font-weight: bold;">options.particle</span>: <span style="color: rgb(204, 51, 204);">'n' </span>for neutrons<span style="color: rgb(255, 0, 0);"> (McStas) </span>or<span style="color: rgb(204, 51, 204);"> 'x' </span>for X-rays<span style="color: rgb(255, 0, 0);"> (McXtrace). </span>Default is <span style="color: rgb(204, 51, 204);">'n'</span>.<br>
 </li>
 
@@ -130,7 +130,7 @@ The resulting McStas data has an additional <span style="font-style: italic;">Pa
 
 <pre style="margin-left: 40px;">&gt;&gt; monitors(1).Parameters<br></pre>The<span style="font-weight: bold; font-style: italic;"> 'monitors' </span>option
  can be specified to limit the number of monitor files to load after 
-each simulation. Specifying a monitor list highly speeds-up the 
+each simulation. Specifying a monitor file name list highly speeds-up the 
 importation of files after each iteration.<br>
 It should contain one token string or a cellstr {...} of tokens to 
 search for. These tokens are compared with the monitor file names, and 
@@ -228,7 +228,7 @@ following members:<br>
     <span style="color: rgb(204, 51, 204);">'minimize'</span> or<span style="color: rgb(204, 51, 204);"> 'maximize'</span>, which is the
 default (string)</li>
   <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
-cell string of monitor names, or empty for all (cellstr). This option 
+cell string of monitor file names, or empty for all (cellstr). This option 
 actually improves dramatically the file importation by selecting only 
 the relevant files.<br>
 </li>
@@ -283,8 +283,8 @@ we search for an optimal monochromator curvature
 instrument model, in order to maximize the <span style="font-style: italic;">Banana</span> monitors (as<span style="font-style: italic;"> 'monitors' </span>option):<br>
 <pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'optimizer','fminimfil'</span>));<br>parameters =<br>     RV: 0.75<br></pre>
 The monitors to use as optimization criteria (<span style="font-style: italic;">options.monitors</span>) can be part of a more
-complex expression, which still must start with the name of the
-monitor, and then refer to itself with the<span style="font-style: italic;"> 'this' </span>variable (<a href="iData.html">iData</a>  object), such as in the following example where we define the criteria as <span style="font-style: italic;">Amplitude/width&sup2;</span> (for a single peak)<br>
+complex expression, which still must start with the file name of the
+monitor, and then refer to itself with the<span style="font-style: italic;"> 'this' </span>variable (which is an <a href="iData.html">iData</a>  object), such as in the following example where we define the criteria as <span style="font-style: italic;">Amplitude/width&sup2;</span> (for a single peak)<br>
 <pre style="margin-left: 40px;"><span style="color: rgb(0, 0, 0);">options.monitors=</span><span style="color: rgb(204, 51, 204);">'Banana; this=max(this)/std(this)^2'<br></span><span style="color: rgb(0, 0, 0);">options.monitors=</span><span style="color: rgb(204, 51, 204);">'Banana/std(this)^4'</span><br></pre>
 When the monitor filter selects more than one data set (e.g. more than one file match the monitor selection name), <span style="font-style: italic;">'this'</span> is an <a href="iData.html">iData</a>  array. Specifying a monitor list highly speeds-up the importation of files after each iteration.<br>
 For simpler definitions, the <span style="font-style: italic;">options</span> can be given as a string, similarly to the starting parameters:<br>
@@ -306,7 +306,7 @@ noisy function. The stop conditions must then usually be quite relaxed
 for the optimization to end, or the number of <span style="font-style: italic;">ncounts</span> must be large
 enough to minimize the statistical uncertainty. TolFun=<span style="color: rgb(204, 51, 204);">'0.1%</span>' and
 TolX=<span style="color: rgb(204, 51, 204);">'0.1%'</span> are fair
-choices. Also, we recommend to constrain parameter ranges (<span style="color: rgb(255, 0, 0);">see <a href="#mozTocId359721">below</a></span>).<br>
+choices. Also, we recommend to constrain parameter ranges (<span style="color: rgb(255, 0, 0);">see <a href="#mozTocId359721">below</a></span>). Also, increasing the<span style="font-style: italic;"> 'ncount' </span>(which is 1e5 by default) may help the optimizer to search in a noisy criteria landscape.<br>
 <h3><a class="mozTocH3" name="mozTocId359721"></a>Optimizing instrument
 parameters with constraints</h3>
 It is quite usual the restrict the parameters search to specified

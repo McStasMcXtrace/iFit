@@ -109,20 +109,20 @@ function config = iLoad_ini
     mcstas_sim.patterns   ={'begin simulation','Format: McStas'};
     mcstas_sim.options    ='--fast --binary --headers  --comment=NULL --silent ';
     mcstas_sim.method     ='read_anytext';
-    mcstas_sim.postprocess='load_mcstas_sim';
+    mcstas_sim.postprocess='opensim';
     
     mcstas_sqw.name       ='McStas Sqw table';
     mcstas_sqw.patterns   ={'Sqw data file for Isotropic_Sqw'};
     mcstas_sqw.options    ='--fast --binary  --headers --comment=NULL --silent ';
     mcstas_sqw.method     ='read_anytext';
-    mcstas_sqw.postprocess='load_mcstas_sqw';
+    mcstas_sqw.postprocess='opensqw';
     mcstas_sqw.extension  ='sqw';
     
     mcstas_powder.name       ='McStas powder table (LAZ/LAU)';
     mcstas_powder.patterns   ={'lattice_a','column_'};
     mcstas_powder.options    ='--fast --binary  --headers --comment=NULL --silent ';
     mcstas_powder.method     ='read_anytext';
-    mcstas_powder.postprocess='load_mcstas_powder';
+    mcstas_powder.postprocess='openlaz';
     mcstas_powder.extension  ={'laz','lau'};
     
     chalkriver.name     ='ChalkRiver CNBC';
