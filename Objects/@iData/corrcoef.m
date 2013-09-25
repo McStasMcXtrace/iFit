@@ -10,7 +10,7 @@ function c = corrcoef(a, b)
 % ex:     b=corrcoef(a); c=corrcoef(a, gauss);
 %
 % Version: $Revision$
-% See also iData, iData/mean, iData/fits
+% See also corrcoef, iData, iData/mean, iData/fits
 
 % either 'a' or 'b' is an iData
 if nargin > 1 && isa(b, 'iData')
@@ -41,6 +41,11 @@ if isa(b, 'iFunc')
   b = feval(b, NaN, a);
 end
 
+% find intersection
+if isa(a, 'iData') && isa(b, 'iData')
+  [a,b] = intersect(a,b); % perform operation on intersection
+end
+% get the Signal of the two objects
 if isa(b, 'iData')
   b = getaxis(b, 0);
 end
@@ -48,7 +53,7 @@ if isa(a, 'iData')
   a = getaxis(a, 0);
 end
 
-if ~isnumeric(a) || ~isnumeric(b)
+if ~isnumeric(a) || ~isnumeric(b) || numel(a) ~= numel(b)
   c = [];
   return
 end

@@ -811,7 +811,19 @@ onto <span style="font-style: italic;">s2</span> axes<br>
       <td style="vertical-align: top;">interpolation (linear is
 default, see <a href="#mozTocId991507">below)</a><br>
       </td>
-    </tr>
+    </tr><tr>
+  <td style="vertical-align: top;"><span style="font-weight: bold;">corrcoef</span><br>
+  </td>
+  <td style="vertical-align: top;">cov(s1,s2)/&#963;(s1)&#963;(s2) in [-1:1]<br>
+  </td>
+  <td style="vertical-align: top;"><br>
+  </td>
+  <td style="vertical-align: top;"><br>
+  </td>
+  <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson correlation coefficient</a> <br>
+  </td>
+</tr>
+
   </tbody>
 </table>
 <br>
@@ -917,6 +929,8 @@ An other example of fit function with convolution is detailed in the <a href="Mo
 Similarly, the <span style="font-weight: bold;">xcorr</span> operator
 computes the <a href="http://en.wikipedia.org/wiki/Cross-correlation">cross correlation</a> of two signals. The auto-correlation is simply
 <span style="font-style: italic;">xcorr(a)</span>.<br>
+<br>
+Last, the <span style="font-weight: bold;">corrcoef</span> method returns the <a href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson product-moment correlation coefficient</a>, which measures the similarity between two data sets. It returns a measure of the similarity between data sets (1=equal, 0=non correlated, -1=anti-correlated).<br>
 <br><span style="color: rgb(255, 0, 0);">
 Warning: </span>The accuracy of the <span style="font-style: italic;">conv</span> and <span style="font-style: italic;">xcorr</span>
 operators depends on the axis sampling. A coarse axis sampling (that is
