@@ -4,15 +4,19 @@ function [s,c] = kmeans(a, k)
 %   @iData/kmeans function to partition the object X into k classes.
 %
 %   b = kmeans(a,k) partitions the points in the iData object X into k clusters.
-%   The resulting object Signal contains numbers from 1 to 'k' which are indices
-%   of segments/partitions.
-%   When no cluster can be found, the result is empty.
+%     The resulting object Signal contains numbers from 1 to 'k' which are indices
+%     of segments/partitions.
+%     When no cluster can be found, the result is empty.
+%   b = kmeans(a) assumes k=2 partitions
+%   [b,c] = kmeans(a,k) also returns the centroid of the clusters/partitions/segments.
 %
 % input:  X: object or array (iData)
 %         k: number of partitions wanted (integer, default is 2)
 % output: b: object or array with partition indices (iData)
 %         c: centroid locations of clusters
 % ex:     b=kmeans(a);
+%
+% See: http://en.wikipedia.org/wiki/K-means_clustering
 %
 % Version: $Revision: 1035 $
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus

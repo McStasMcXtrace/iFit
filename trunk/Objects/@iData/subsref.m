@@ -80,6 +80,7 @@ for i = 1:length(S)     % can handle multiple index levels
       
       iData_private_warning('enter',mfilename);
       
+      b_isvector = isvector(b);
       ds=iData_getAliasValue(b,'Signal'); 
       d=ds(s.subs{:});                          % b(indices)
       b=set(b,'Signal', d);  b=setalias(b,'Signal', d);
@@ -100,7 +101,10 @@ for i = 1:length(S)     % can handle multiple index levels
       clear dm
 
       % must also affect axis
-      for index=1:ndims(b)
+      % for event data sets, affect all axes
+      if b_isvector, sz = b_isvector; else sz = ndims(b); end
+      
+      for index=1:sz
         if index <= length(b.Alias.Axis)
           x = getaxis(b,index);
           ax= b.Alias.Axis{index};   % definition of Axis
@@ -108,11 +112,13 @@ for i = 1:length(S)     % can handle multiple index levels
           if length(size(x)) == length(size(a)) && ...
                  all(size(x) == size(a))  && all(length(nd) == length(s.subs)) % meshgrid type axes
             b = setaxis(b, index, ax, x(s.subs{:}));
+          elseif b_isvector && length(s.subs) == 1 % event data sets
+            b = setaxis(b, index, ax, x(s.subs{1}));
           elseif max(s.subs{index}) <= numel(x) % vector type axes
             b = setaxis(b, index, ax, x(s.subs{index}));
           else
             iData_private_warning(mfilename,[ 'The Axis ' num2str(size(index)) ' [' ...
-    num2str(size(x)) ' can not be resize as a [' num2str(size(s.subs{index})) ...
+    num2str(size(x)) ' can not be resized as a [' num2str(size(s.subs{index})) ...
     '] vector in iData object ' b.Tag ' "' b.Title '".\n\tTo use the default Error=sqrt(Signal) assign s.Error=[].' ]);
           end
         end
