@@ -1,4 +1,4 @@
-function a = smooth(a, varargin)
+function b = smooth(a, varargin)
 % s = smooth(a) : smooth iData objects
 %
 %   @iData/smooth function to smooth iData objects
@@ -58,11 +58,9 @@ function a = smooth(a, varargin)
 
 % handle input iData arrays
 if numel(a) > 1
+  b = zeros(iData, size(a));
   for index=1:numel(a)
-    a(index) = feval(mfilename, a(index), varargin{:});
-  end
-  if nargout == 0 & length(inputname(1))
-    assignin('caller',inputname(1),a);
+    b(index) = feval(mfilename, a(index), varargin{:});
   end
   return
 end
@@ -83,6 +81,7 @@ for index=1:min(numel(vargs), 2)
   end
 end
 
+b = copyobj(a);
 if strcmp(method, 'sgolay')
   % use Savitzky-Golay
   
@@ -98,18 +97,14 @@ if strcmp(method, 'sgolay')
     
     if index > 1, s  = permute(s, [ index 1 ]); end
   end
-  a = set(a, 'Signal', s);
+  b = set(b, 'Signal', s);
 else
   % use discrete cosine transform filter
-  a = set(a, 'Signal', smoothn(subsref(a,struct('type','.','subs','Signal'), varargin{:})));
+  b = set(b, 'Signal', smoothn(subsref(a,struct('type','.','subs','Signal'), varargin{:})));
 end
 
 
-a = iData_private_history(a, mfilename, a, varargin{:});
-
-if nargout == 0 & length(inputname(1))
-  assignin('caller',inputname(1),a);
-end
+b = iData_private_history(b, mfilename, a, varargin{:});
 
 % ------------------------------------------------------------------------------
 function [ny,c] = smoothsg1d(yd,N,M)

@@ -31,6 +31,7 @@ function s = cwt(a,dim,scales,wname,plotit)
 %            cross wavelet transform and wavelet coherence to geophysical time 
 %            series, Nonlin. Processes Geophys., 11, 561–566, doi:10.5194/npg-11-561-2004
 % http://noc.ac.uk/using-science/crosswavelet-wavelet-coherence
+% http://en.wikipedia.org/wiki/Continuous_wavelet_transform
 %
 % Version: $Revision: 1035 $
 % See also iData, iData/fft, iData/xcorr, iData/conv

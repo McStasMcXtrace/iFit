@@ -486,6 +486,18 @@ Monitor<br>
   <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Image_segmentation">Data segmentation</a> (<a href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a>)<br>
   </td>
 </tr><tr>
+  <td style="vertical-align: top;"><a href="#mozTocId77311"><span style="font-weight: bold;">pca</span></a><br>
+  </td>
+  <td style="vertical-align: top;">Principal component coordinates<br>
+  </td>
+  <td style="vertical-align: top;">0<br>
+  </td>
+  <td style="vertical-align: top;"><br>
+  </td>
+  <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Principal_component_analysis">Principal component analysis</a><br>
+  </td>
+</tr>
+<tr>
   <td style="vertical-align: top;"><a href="#mozTocId447291"><span style="font-weight: bold;">resize</span></a><br>
   </td>
   <td style="vertical-align: top;">Resized signal<br>
@@ -930,7 +942,10 @@ Similarly, the <span style="font-weight: bold;">xcorr</span> operator
 computes the <a href="http://en.wikipedia.org/wiki/Cross-correlation">cross correlation</a> of two signals. The auto-correlation is simply
 <span style="font-style: italic;">xcorr(a)</span>.<br>
 <br>
-Last, the <span style="font-weight: bold;">corrcoef</span> method returns the <a href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson product-moment correlation coefficient</a>, which measures the similarity between two data sets. It returns a measure of the similarity between data sets (1=equal, 0=non correlated, -1=anti-correlated).<br>
+Last, the <span style="font-weight: bold;">corrcoef</span> method returns the <a href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson product-moment correlation coefficient</a>,
+ which measures the similarity between two data sets. It returns a 
+measure of the similarity between data sets (1=equal, 0=non correlated, 
+-1=anti-correlated).<br>
 <br><span style="color: rgb(255, 0, 0);">
 Warning: </span>The accuracy of the <span style="font-style: italic;">conv</span> and <span style="font-style: italic;">xcorr</span>
 operators depends on the axis sampling. A coarse axis sampling (that is
@@ -1053,6 +1068,11 @@ to classify it into a number of categories. This is called segmentation,
 
 
 The wavelet transform <span style="font-weight: bold;">cwt</span> may also be used to perform a peak analysis, separating sharp features from broad ones (see <a href="#mozTocId663052">above</a>).<br>
+<br>
+The <a href="http://en.wikipedia.org/wiki/Principal_component_analysis">principal component analysis</a>
+ (PCA) methodology consists in finding similarities between data sets. 
+Groups of 'close' data sets can then be defined. The corresponding iData
+ method is <span style="font-weight: bold;">pca</span> .<br>
 <h3><a class="mozTocH3" name="mozTocId439767"></a><span style="font-weight: bold;">Projection, integration and sum</span></h3>
 <a href="images/iData_sum_camproj.png"><img alt="iData: sum and projection" title="iData: sum and projection" src="images/iData_sum_camproj.png" style="border: 0px solid ; width: 200px; height: 408px;" align="right"></a>There
 are
