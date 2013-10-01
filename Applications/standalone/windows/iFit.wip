@@ -56,7 +56,7 @@ CustomDialogImage=No
 SmallCustomDialogImage=Yes
 CustomCenterDialogImage=No
 CustomDialogBitmap_Pathname=
-CustomDialogSmallBitmap_Pathname=C:\Documents and Settings\Lambda\Bureau\make-win-setup\ifit-src\Applications\standalone\iFit-logo-large.jpg
+CustomDialogSmallBitmap_Pathname=C:\Users\Lambda\Desktop\iFit-make-setup\windows\iFit-logo-large.jpg
 CustomCenterDialogBitmap_Pathname=
 Advertisement_Pathname=
 Advertisement_BitmapPathname=
@@ -65,7 +65,7 @@ Version=Yes
 LicenseDialog=Yes
 ReadmeDialog=Yes
 UserInfoDialog=No
-TargetDirectoryDialog=No
+TargetDirectoryDialog=Yes
 SetupTypeDialog=No
 CustomSetupDialog=No
 StartDialog=No
@@ -73,10 +73,10 @@ FinishDialog=Yes
 AdvertisementDialog=No
 
 [LICENSE_DIALOG]
-License_Pathname=C:\Documents and Settings\Lambda\Bureau\make-win-setup\ifit-src\Applications\standalone\windows\License.rtf
+License_Pathname=C:\Users\Lambda\Desktop\iFit-make-setup\windows\License.rtf
 
 [README_DIALOG]
-Readme_Pathname=C:\Documents and Settings\Lambda\Bureau\make-win-setup\ifit-src\Applications\standalone\windows\ReadMe.rtf
+Readme_Pathname=C:\Users\Lambda\Desktop\iFit-make-setup\windows\ReadMe.rtf
 
 [FINISH_DIALOG]
 Show_ViewReadme_CheckBox=Yes
@@ -87,7 +87,7 @@ Readme_Pathname=%AppDir%\readme.txt
 Application_Pathname=%AppDir%\ifit.exe
 
 [CREATE_SETUP]
-OutputFolder=C:&bs;Documents and Settings&bs;Lambda&bs;Bureau
+OutputFolder=C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup
 SetupFilename=Setup.msi
 SetupExeFilename=iFit-Setup.exe
 SetupIconPathname=
@@ -96,183 +96,306 @@ IncludeMSIRuntime=Yes
 Language=English
 
 [APPLICATION_FILES]
-Folder=%AppDir%&bs;commands
-File=%AppDir%&bs;commands&bs;caxis.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;caxis.bat,1,0
-File=%AppDir%&bs;commands&bs;char.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;char.bat,1,0
-File=%AppDir%&bs;commands&bs;colormap.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;colormap.bat,1,0
-File=%AppDir%&bs;commands&bs;contour.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;contour.bat,1,0
-File=%AppDir%&bs;commands&bs;copyobj.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;copyobj.bat,1,0
-File=%AppDir%&bs;commands&bs;doc.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;doc.bat,1,0
-File=%AppDir%&bs;commands&bs;edit.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;edit.bat,1,0
-File=%AppDir%&bs;commands&bs;feval.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;feval.bat,1,0
-File=%AppDir%&bs;commands&bs;get.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;get.bat,1,0
-File=%AppDir%&bs;commands&bs;image.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;image.bat,1,0
-File=%AppDir%&bs;commands&bs;mesh.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;mesh.bat,1,0
-File=%AppDir%&bs;commands&bs;plot.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;plot.bat,1,0
-File=%AppDir%&bs;commands&bs;plot3.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;plot3.bat,1,0
-File=%AppDir%&bs;commands&bs;reducevolume.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;reducevolume.bat,1,0
-File=%AppDir%&bs;commands&bs;scatter3.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;scatter3.bat,1,0
-File=%AppDir%&bs;commands&bs;slice.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;slice.bat,1,0
-File=%AppDir%&bs;commands&bs;subplot.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;subplot.bat,1,0
-File=%AppDir%&bs;commands&bs;surf.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;surf.bat,1,0
-File=%AppDir%&bs;commands&bs;surfc.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;surfc.bat,1,0
-File=%AppDir%&bs;commands&bs;surfl.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;surfl.bat,1,0
-File=%AppDir%&bs;commands&bs;waterfall.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;commands&bs;waterfall.bat,1,0
-Folder=%AppDir%&bs;Docs
-File=%AppDir%&bs;Docs&bs;Changes.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Changes.html,1,0
-File=%AppDir%&bs;Docs&bs;Credits.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Credits.html,1,0
-File=%AppDir%&bs;Docs&bs;Fit.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Fit.html,1,0
-File=%AppDir%&bs;Docs&bs;iData.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;iData.html,1,0
-File=%AppDir%&bs;Docs&bs;iFit.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;iFit.html,1,0
-File=%AppDir%&bs;Docs&bs;iFunc.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;iFunc.html,1,0
-File=%AppDir%&bs;Docs&bs;index.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;index.html,1,0
-File=%AppDir%&bs;Docs&bs;Install.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Install.html,1,0
-File=%AppDir%&bs;Docs&bs;Load.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Load.html,1,0
-File=%AppDir%&bs;Docs&bs;Loaders.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Loaders.html,1,0
-File=%AppDir%&bs;Docs&bs;Math.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Math.html,1,0
-File=%AppDir%&bs;Docs&bs;McStas.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;McStas.html,1,0
-File=%AppDir%&bs;Docs&bs;Methods.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Methods.html,1,0
-File=%AppDir%&bs;Docs&bs;Models.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Models.html,1,0
-File=%AppDir%&bs;Docs&bs;Optimizers.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Optimizers.html,1,0
-File=%AppDir%&bs;Docs&bs;Plot.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Plot.html,1,0
-File=%AppDir%&bs;Docs&bs;Python.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Python.html,1,0
-File=%AppDir%&bs;Docs&bs;QuickStart.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;QuickStart.html,1,0
-File=%AppDir%&bs;Docs&bs;Save.html,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;Docs&bs;Save.html,1,0
-Folder=%AppDir%&bs;models
-File=%AppDir%&bs;models&bs;allometric.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;allometric.bat,1,0
-File=%AppDir%&bs;models&bs;bigauss.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;bigauss.bat,1,0
-File=%AppDir%&bs;models&bs;bilorz.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;bilorz.bat,1,0
-File=%AppDir%&bs;models&bs;bose.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;bose.bat,1,0
-File=%AppDir%&bs;models&bs;constant.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;constant.bat,1,0
-File=%AppDir%&bs;models&bs;dho.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;dho.bat,1,0
-File=%AppDir%&bs;models&bs;dirac.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;dirac.bat,1,0
-File=%AppDir%&bs;models&bs;doseresp.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;doseresp.bat,1,0
-File=%AppDir%&bs;models&bs;expon.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;expon.bat,1,0
-File=%AppDir%&bs;models&bs;expstretched.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;expstretched.bat,1,0
-File=%AppDir%&bs;models&bs;ff_core_shell.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;ff_core_shell.bat,1,0
-File=%AppDir%&bs;models&bs;ff_sphere.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;ff_sphere.bat,1,0
-File=%AppDir%&bs;models&bs;gauss.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;gauss.bat,1,0
-File=%AppDir%&bs;models&bs;gauss2d.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;gauss2d.bat,1,0
-File=%AppDir%&bs;models&bs;green.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;green.bat,1,0
-File=%AppDir%&bs;models&bs;heaviside.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;heaviside.bat,1,0
-File=%AppDir%&bs;models&bs;langevin.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;langevin.bat,1,0
-File=%AppDir%&bs;models&bs;laplace.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;laplace.bat,1,0
-File=%AppDir%&bs;models&bs;lognormal.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;lognormal.bat,1,0
-File=%AppDir%&bs;models&bs;lorz.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;lorz.bat,1,0
-File=%AppDir%&bs;models&bs;lorz2d.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;lorz2d.bat,1,0
-File=%AppDir%&bs;models&bs;Maxwell.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;Maxwell.bat,1,0
-File=%AppDir%&bs;models&bs;ngauss.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;ngauss.bat,1,0
-File=%AppDir%&bs;models&bs;nlorz.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;nlorz.bat,1,0
-File=%AppDir%&bs;models&bs;pareto.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;pareto.bat,1,0
-File=%AppDir%&bs;models&bs;plane2d.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;plane2d.bat,1,0
-File=%AppDir%&bs;models&bs;poisson.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;poisson.bat,1,0
-File=%AppDir%&bs;models&bs;powerlaw.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;powerlaw.bat,1,0
-File=%AppDir%&bs;models&bs;pseudovoigt.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;pseudovoigt.bat,1,0
-File=%AppDir%&bs;models&bs;pseudovoigt2d.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;pseudovoigt2d.bat,1,0
-File=%AppDir%&bs;models&bs;quad2d.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;quad2d.bat,1,0
-File=%AppDir%&bs;models&bs;quadline.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;quadline.bat,1,0
-File=%AppDir%&bs;models&bs;sf_hard_spheres.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;sf_hard_spheres.bat,1,0
-File=%AppDir%&bs;models&bs;sf_square_well.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;sf_square_well.bat,1,0
-File=%AppDir%&bs;models&bs;sf_sticky_hard_spheres.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;sf_sticky_hard_spheres.bat,1,0
-File=%AppDir%&bs;models&bs;sigmoid.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;sigmoid.bat,1,0
-File=%AppDir%&bs;models&bs;sine.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;sine.bat,1,0
-File=%AppDir%&bs;models&bs;sinedamp.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;sinedamp.bat,1,0
-File=%AppDir%&bs;models&bs;strline.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;strline.bat,1,0
-File=%AppDir%&bs;models&bs;tophat.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;tophat.bat,1,0
-File=%AppDir%&bs;models&bs;triangl.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;triangl.bat,1,0
-File=%AppDir%&bs;models&bs;twoexp.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;twoexp.bat,1,0
-File=%AppDir%&bs;models&bs;voigt.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;models&bs;voigt.bat,1,0
 Folder=%AppDir%&bs;operators
-File=%AppDir%&bs;operators&bs;abs.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;abs.bat,1,0
-File=%AppDir%&bs;operators&bs;acos.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;acos.bat,1,0
-File=%AppDir%&bs;operators&bs;acosh.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;acosh.bat,1,0
-File=%AppDir%&bs;operators&bs;asin.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;asin.bat,1,0
-File=%AppDir%&bs;operators&bs;asinh.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;asinh.bat,1,0
-File=%AppDir%&bs;operators&bs;atan.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;atan.bat,1,0
-File=%AppDir%&bs;operators&bs;atanh.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;atanh.bat,1,0
-File=%AppDir%&bs;operators&bs;camproj.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;camproj.bat,1,0
-File=%AppDir%&bs;operators&bs;cat.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;cat.bat,1,0
-File=%AppDir%&bs;operators&bs;ceil.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;ceil.bat,1,0
-File=%AppDir%&bs;operators&bs;combine.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;combine.bat,1,0
-File=%AppDir%&bs;operators&bs;conj.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;conj.bat,1,0
-File=%AppDir%&bs;operators&bs;conv.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;conv.bat,1,0
-File=%AppDir%&bs;operators&bs;convn.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;convn.bat,1,0
-File=%AppDir%&bs;operators&bs;cos.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;cos.bat,1,0
-File=%AppDir%&bs;operators&bs;cosh.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;cosh.bat,1,0
-File=%AppDir%&bs;operators&bs;ctranspose.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;ctranspose.bat,1,0
-File=%AppDir%&bs;operators&bs;cumsum.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;cumsum.bat,1,0
-File=%AppDir%&bs;operators&bs;cumtrapz.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;cumtrapz.bat,1,0
-File=%AppDir%&bs;operators&bs;del2.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;del2.bat,1,0
-File=%AppDir%&bs;operators&bs;diff.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;diff.bat,1,0
-File=%AppDir%&bs;operators&bs;dog.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;dog.bat,1,0
-File=%AppDir%&bs;operators&bs;eq.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;eq.bat,1,0
-File=%AppDir%&bs;operators&bs;exp.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;exp.bat,1,0
-File=%AppDir%&bs;operators&bs;fft.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;fft.bat,1,0
-File=%AppDir%&bs;operators&bs;fits.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;fits.bat,1,0
-File=%AppDir%&bs;operators&bs;fliplr.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;fliplr.bat,1,0
-File=%AppDir%&bs;operators&bs;flipud.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;flipud.bat,1,0
-File=%AppDir%&bs;operators&bs;floor.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;floor.bat,1,0
-File=%AppDir%&bs;operators&bs;full.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;full.bat,1,0
-File=%AppDir%&bs;operators&bs;ge.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;ge.bat,1,0
-File=%AppDir%&bs;operators&bs;gradient.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;gradient.bat,1,0
-File=%AppDir%&bs;operators&bs;gt.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;gt.bat,1,0
-File=%AppDir%&bs;operators&bs;hist.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;hist.bat,1,0
-File=%AppDir%&bs;operators&bs;ifft.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;ifft.bat,1,0
-File=%AppDir%&bs;operators&bs;imag.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;imag.bat,1,0
-File=%AppDir%&bs;operators&bs;interp.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;interp.bat,1,0
-File=%AppDir%&bs;operators&bs;intersect.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;intersect.bat,1,0
-File=%AppDir%&bs;operators&bs;isempty.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;isempty.bat,1,0
-File=%AppDir%&bs;operators&bs;le.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;le.bat,1,0
-File=%AppDir%&bs;operators&bs;linspace.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;linspace.bat,1,0
-File=%AppDir%&bs;operators&bs;log.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;log.bat,1,0
-File=%AppDir%&bs;operators&bs;log10.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;log10.bat,1,0
-File=%AppDir%&bs;operators&bs;logspace.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;logspace.bat,1,0
-File=%AppDir%&bs;operators&bs;lt.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;lt.bat,1,0
-File=%AppDir%&bs;operators&bs;max.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;max.bat,1,0
-File=%AppDir%&bs;operators&bs;mean.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;mean.bat,1,0
-File=%AppDir%&bs;operators&bs;median.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;median.bat,1,0
-File=%AppDir%&bs;operators&bs;minus.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;minus.bat,1,0
-File=%AppDir%&bs;operators&bs;mtimes.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;mtimes.bat,1,0
-File=%AppDir%&bs;operators&bs;ndims.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;ndims.bat,1,0
-File=%AppDir%&bs;operators&bs;ne.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;ne.bat,1,0
-File=%AppDir%&bs;operators&bs;norm.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;norm.bat,1,0
-File=%AppDir%&bs;operators&bs;not.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;not.bat,1,0
-File=%AppDir%&bs;operators&bs;peaks.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;peaks.bat,1,0
-File=%AppDir%&bs;operators&bs;permute.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;permute.bat,1,0
-File=%AppDir%&bs;operators&bs;plus.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;plus.bat,1,0
-File=%AppDir%&bs;operators&bs;power.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;power.bat,1,0
-File=%AppDir%&bs;operators&bs;prod.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;prod.bat,1,0
-File=%AppDir%&bs;operators&bs;rdivide.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;rdivide.bat,1,0
-File=%AppDir%&bs;operators&bs;real.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;real.bat,1,0
-File=%AppDir%&bs;operators&bs;round.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;round.bat,1,0
-File=%AppDir%&bs;operators&bs;sign.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;sign.bat,1,0
-File=%AppDir%&bs;operators&bs;sin.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;sin.bat,1,0
-File=%AppDir%&bs;operators&bs;sinh.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;sinh.bat,1,0
-File=%AppDir%&bs;operators&bs;sqrt.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;sqrt.bat,1,0
-File=%AppDir%&bs;operators&bs;std.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;std.bat,1,0
-File=%AppDir%&bs;operators&bs;sum.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;sum.bat,1,0
-File=%AppDir%&bs;operators&bs;tan.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;tan.bat,1,0
-File=%AppDir%&bs;operators&bs;tanh.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;tanh.bat,1,0
-File=%AppDir%&bs;operators&bs;times.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;times.bat,1,0
-File=%AppDir%&bs;operators&bs;transpose.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;transpose.bat,1,0
-File=%AppDir%&bs;operators&bs;trapz.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;trapz.bat,1,0
-File=%AppDir%&bs;operators&bs;uminus.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;uminus.bat,1,0
-File=%AppDir%&bs;operators&bs;union.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;union.bat,1,0
-File=%AppDir%&bs;operators&bs;xcorr.bat,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;operators&bs;xcorr.bat,1,0
-File=%AppDir%&bs;COPYING,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;COPYING,1,0
-File=%AppDir%&bs;ifit.exe,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;ifit.exe,0,0
-File=%AppDir%&bs;readme.txt,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-binary&bs;readme.txt,1,0
+File=%AppDir%&bs;operators&bs;abs.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;abs.bat,1,0
+File=%AppDir%&bs;operators&bs;acos.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;acos.bat,1,0
+File=%AppDir%&bs;operators&bs;acosh.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;acosh.bat,1,0
+File=%AppDir%&bs;operators&bs;asin.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;asin.bat,1,0
+File=%AppDir%&bs;operators&bs;asinh.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;asinh.bat,1,0
+File=%AppDir%&bs;operators&bs;atan.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;atan.bat,1,0
+File=%AppDir%&bs;operators&bs;atanh.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;atanh.bat,1,0
+File=%AppDir%&bs;operators&bs;camproj.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;camproj.bat,1,0
+File=%AppDir%&bs;operators&bs;cat.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;cat.bat,1,0
+File=%AppDir%&bs;operators&bs;ceil.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;ceil.bat,1,0
+File=%AppDir%&bs;operators&bs;combine.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;combine.bat,1,0
+File=%AppDir%&bs;operators&bs;conj.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;conj.bat,1,0
+File=%AppDir%&bs;operators&bs;conv.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;conv.bat,1,0
+File=%AppDir%&bs;operators&bs;convn.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;convn.bat,1,0
+File=%AppDir%&bs;operators&bs;cos.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;cos.bat,1,0
+File=%AppDir%&bs;operators&bs;cosh.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;cosh.bat,1,0
+File=%AppDir%&bs;operators&bs;ctranspose.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;ctranspose.bat,1,0
+File=%AppDir%&bs;operators&bs;cumsum.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;cumsum.bat,1,0
+File=%AppDir%&bs;operators&bs;cumtrapz.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;cumtrapz.bat,1,0
+File=%AppDir%&bs;operators&bs;del2.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;del2.bat,1,0
+File=%AppDir%&bs;operators&bs;diff.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;diff.bat,1,0
+File=%AppDir%&bs;operators&bs;dog.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;dog.bat,1,0
+File=%AppDir%&bs;operators&bs;eq.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;eq.bat,1,0
+File=%AppDir%&bs;operators&bs;exp.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;exp.bat,1,0
+File=%AppDir%&bs;operators&bs;fft.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;fft.bat,1,0
+File=%AppDir%&bs;operators&bs;fits.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;fits.bat,1,0
+File=%AppDir%&bs;operators&bs;fliplr.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;fliplr.bat,1,0
+File=%AppDir%&bs;operators&bs;flipud.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;flipud.bat,1,0
+File=%AppDir%&bs;operators&bs;floor.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;floor.bat,1,0
+File=%AppDir%&bs;operators&bs;full.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;full.bat,1,0
+File=%AppDir%&bs;operators&bs;ge.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;ge.bat,1,0
+File=%AppDir%&bs;operators&bs;gradient.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;gradient.bat,1,0
+File=%AppDir%&bs;operators&bs;gt.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;gt.bat,1,0
+File=%AppDir%&bs;operators&bs;hist.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;hist.bat,1,0
+File=%AppDir%&bs;operators&bs;ifft.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;ifft.bat,1,0
+File=%AppDir%&bs;operators&bs;imag.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;imag.bat,1,0
+File=%AppDir%&bs;operators&bs;interp.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;interp.bat,1,0
+File=%AppDir%&bs;operators&bs;intersect.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;intersect.bat,1,0
+File=%AppDir%&bs;operators&bs;isempty.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;isempty.bat,1,0
+File=%AppDir%&bs;operators&bs;le.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;le.bat,1,0
+File=%AppDir%&bs;operators&bs;linspace.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;linspace.bat,1,0
+File=%AppDir%&bs;operators&bs;log.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;log.bat,1,0
+File=%AppDir%&bs;operators&bs;log10.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;log10.bat,1,0
+File=%AppDir%&bs;operators&bs;logspace.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;logspace.bat,1,0
+File=%AppDir%&bs;operators&bs;lt.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;lt.bat,1,0
+File=%AppDir%&bs;operators&bs;max.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;max.bat,1,0
+File=%AppDir%&bs;operators&bs;mean.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;mean.bat,1,0
+File=%AppDir%&bs;operators&bs;median.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;median.bat,1,0
+File=%AppDir%&bs;operators&bs;minus.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;minus.bat,1,0
+File=%AppDir%&bs;operators&bs;mtimes.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;mtimes.bat,1,0
+File=%AppDir%&bs;operators&bs;ndims.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;ndims.bat,1,0
+File=%AppDir%&bs;operators&bs;ne.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;ne.bat,1,0
+File=%AppDir%&bs;operators&bs;norm.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;norm.bat,1,0
+File=%AppDir%&bs;operators&bs;not.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;not.bat,1,0
+File=%AppDir%&bs;operators&bs;peaks.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;peaks.bat,1,0
+File=%AppDir%&bs;operators&bs;permute.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;permute.bat,1,0
+File=%AppDir%&bs;operators&bs;plus.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;plus.bat,1,0
+File=%AppDir%&bs;operators&bs;power.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;power.bat,1,0
+File=%AppDir%&bs;operators&bs;prod.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;prod.bat,1,0
+File=%AppDir%&bs;operators&bs;rdivide.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;rdivide.bat,1,0
+File=%AppDir%&bs;operators&bs;real.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;real.bat,1,0
+File=%AppDir%&bs;operators&bs;round.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;round.bat,1,0
+File=%AppDir%&bs;operators&bs;sign.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;sign.bat,1,0
+File=%AppDir%&bs;operators&bs;sin.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;sin.bat,1,0
+File=%AppDir%&bs;operators&bs;sinh.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;sinh.bat,1,0
+File=%AppDir%&bs;operators&bs;sqrt.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;sqrt.bat,1,0
+File=%AppDir%&bs;operators&bs;std.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;std.bat,1,0
+File=%AppDir%&bs;operators&bs;sum.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;sum.bat,1,0
+File=%AppDir%&bs;operators&bs;tan.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;tan.bat,1,0
+File=%AppDir%&bs;operators&bs;tanh.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;tanh.bat,1,0
+File=%AppDir%&bs;operators&bs;times.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;times.bat,1,0
+File=%AppDir%&bs;operators&bs;transpose.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;transpose.bat,1,0
+File=%AppDir%&bs;operators&bs;trapz.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;trapz.bat,1,0
+File=%AppDir%&bs;operators&bs;uminus.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;uminus.bat,1,0
+File=%AppDir%&bs;operators&bs;union.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;union.bat,1,0
+File=%AppDir%&bs;operators&bs;xcorr.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;operators&bs;xcorr.bat,1,0
+Folder=%AppDir%&bs;commands
+File=%AppDir%&bs;commands&bs;caxis.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;caxis.bat,1,0
+File=%AppDir%&bs;commands&bs;char.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;char.bat,1,0
+File=%AppDir%&bs;commands&bs;colormap.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;colormap.bat,1,0
+File=%AppDir%&bs;commands&bs;contour.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;contour.bat,1,0
+File=%AppDir%&bs;commands&bs;copyobj.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;copyobj.bat,1,0
+File=%AppDir%&bs;commands&bs;doc.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;doc.bat,1,0
+File=%AppDir%&bs;commands&bs;edit.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;edit.bat,1,0
+File=%AppDir%&bs;commands&bs;feval.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;feval.bat,1,0
+File=%AppDir%&bs;commands&bs;get.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;get.bat,1,0
+File=%AppDir%&bs;commands&bs;image.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;image.bat,1,0
+File=%AppDir%&bs;commands&bs;mesh.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;mesh.bat,1,0
+File=%AppDir%&bs;commands&bs;plot.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;plot.bat,1,0
+File=%AppDir%&bs;commands&bs;plot3.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;plot3.bat,1,0
+File=%AppDir%&bs;commands&bs;reducevolume.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;reducevolume.bat,1,0
+File=%AppDir%&bs;commands&bs;scatter3.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;scatter3.bat,1,0
+File=%AppDir%&bs;commands&bs;slice.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;slice.bat,1,0
+File=%AppDir%&bs;commands&bs;subplot.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;subplot.bat,1,0
+File=%AppDir%&bs;commands&bs;surf.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;surf.bat,1,0
+File=%AppDir%&bs;commands&bs;surfc.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;surfc.bat,1,0
+File=%AppDir%&bs;commands&bs;surfl.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;surfl.bat,1,0
+File=%AppDir%&bs;commands&bs;waterfall.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;commands&bs;waterfall.bat,1,0
+Folder=%AppDir%&bs;Docs
+Folder=%AppDir%&bs;Docs&bs;images
+File=%AppDir%&bs;Docs&bs;images&bs;Baby-Pluto.jpg,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;Baby-Pluto.jpg,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;best.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;best.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;best_rand.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;best_rand.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;box.jpeg,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;box.jpeg,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;dim_2.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;dim_2.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;Figure_arrow.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;Figure_arrow.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;Figure_rotate.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;Figure_rotate.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;Figure_zoom.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;Figure_zoom.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;gradient.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;gradient.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;gradient_rand.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;gradient_rand.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;help.jpeg,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;help.jpeg,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_cat.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_cat.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_caxis.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_caxis.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_colormap.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_colormap.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_conv.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_conv.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_cumsum.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_cumsum.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_cwt.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_cwt.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_edit.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_edit.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_fft.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_fft.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_fits_gauss.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_fits_gauss.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_fits_plot.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_fits_plot.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_gradient.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_gradient.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_image.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_image.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_interp.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_interp.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_interp_union.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_interp_union.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_kmeans.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_kmeans.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_linlogspace.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_linlogspace.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_load_method_selector.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_load_method_selector.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_peaks.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_peaks.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_1d.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_1d.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_1d_menu.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_1d_menu.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_2d.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_2d.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_2d_mesh.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_2d_mesh.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_2d_mesh2.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_2d_mesh2.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_2d_plot3.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_2d_plot3.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_2d_scatter3.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_2d_scatter3.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_2d_surf.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_2d_surf.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_2d_surfc.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_2d_surfc.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_3d_plot3.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_3d_plot3.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_3d_scatter3.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_3d_scatter3.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_3d_surf.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_3d_surf.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_3d_surf_half.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_3d_surf_half.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_3d_waterfall.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_3d_waterfall.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_About.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_About.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_overlay.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_overlay.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_overlay_2D.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_overlay_2D.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_projection.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_projection.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_sidebyside.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_sidebyside.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plot_sidebyside_cat.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plot_sidebyside_cat.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plus_combine.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plus_combine.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_plus_extend_dims.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_plus_extend_dims.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_radial.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_radial.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_structure.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_structure.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_subplot.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_subplot.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iData_sum_camproj.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iData_sum_camproj.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit-logo.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit-logo.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;ifitmakefunc.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;ifitmakefunc.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit_Data.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit_Data.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit_McStas_Monitor_scan.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit_McStas_Monitor_scan.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit_McStas_optimize.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit_McStas_optimize.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit_McStas_scan2D_integral.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit_McStas_scan2D_integral.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit_McStas_simulate.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit_McStas_simulate.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit_Models.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit_Models.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit_quickstart_Fits.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit_quickstart_Fits.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit_quickstart_math.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit_quickstart_math.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit_quickstart_plot.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit_quickstart_plot.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFit_standalone.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFit_standalone.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFunc_operators.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFunc_operators.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFunc_plot.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFunc_plot.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;iFunc_subplot.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;iFunc_subplot.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;ILL-web-jpeg.jpg,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;ILL-web-jpeg.jpg,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;mcstas.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;mcstas.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;ml_icon.gif,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;ml_icon.gif,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;numpy_logo.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;numpy_logo.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;Optimizers_fminplot.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;Optimizers_fminplot.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;other.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;other.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;other_rand.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;other_rand.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;Peaks-mini.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;Peaks-mini.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;Peaks.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;Peaks.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;python-logo.gif,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;python-logo.gif,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;Sliceomatic.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;Sliceomatic.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;swarm_ga.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;swarm_ga.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;swarm_ga_rand.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;swarm_ga_rand.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;ubuntu.png,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;ubuntu.png,1,0
+File=%AppDir%&bs;Docs&bs;images&bs;uigetfiles.gif,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;images&bs;uigetfiles.gif,1,0
+File=%AppDir%&bs;Docs&bs;Changes.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Changes.html,1,0
+File=%AppDir%&bs;Docs&bs;Credits.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Credits.html,1,0
+File=%AppDir%&bs;Docs&bs;Fit.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Fit.html,1,0
+File=%AppDir%&bs;Docs&bs;iData.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;iData.html,1,0
+File=%AppDir%&bs;Docs&bs;iFit.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;iFit.html,1,0
+File=%AppDir%&bs;Docs&bs;iFunc.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;iFunc.html,1,0
+File=%AppDir%&bs;Docs&bs;index.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;index.html,1,0
+File=%AppDir%&bs;Docs&bs;Install.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Install.html,1,0
+File=%AppDir%&bs;Docs&bs;Load.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Load.html,1,0
+File=%AppDir%&bs;Docs&bs;Loaders.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Loaders.html,1,0
+File=%AppDir%&bs;Docs&bs;Math.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Math.html,1,0
+File=%AppDir%&bs;Docs&bs;McStas.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;McStas.html,1,0
+File=%AppDir%&bs;Docs&bs;Methods.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Methods.html,1,0
+File=%AppDir%&bs;Docs&bs;Models.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Models.html,1,0
+File=%AppDir%&bs;Docs&bs;Optimizers.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Optimizers.html,1,0
+File=%AppDir%&bs;Docs&bs;Plot.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Plot.html,1,0
+File=%AppDir%&bs;Docs&bs;Python.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Python.html,1,0
+File=%AppDir%&bs;Docs&bs;QuickStart.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;QuickStart.html,1,0
+File=%AppDir%&bs;Docs&bs;Save.html,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;Save.html,1,0
+File=%AppDir%&bs;Docs&bs;todo.txt,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;Docs&bs;todo.txt,1,0
+Folder=%AppDir%&bs;models
+File=%AppDir%&bs;models&bs;allometric.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;allometric.bat,1,0
+File=%AppDir%&bs;models&bs;bigauss.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;bigauss.bat,1,0
+File=%AppDir%&bs;models&bs;bilorz.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;bilorz.bat,1,0
+File=%AppDir%&bs;models&bs;bose.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;bose.bat,1,0
+File=%AppDir%&bs;models&bs;constant.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;constant.bat,1,0
+File=%AppDir%&bs;models&bs;dho.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;dho.bat,1,0
+File=%AppDir%&bs;models&bs;dirac.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;dirac.bat,1,0
+File=%AppDir%&bs;models&bs;doseresp.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;doseresp.bat,1,0
+File=%AppDir%&bs;models&bs;expon.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;expon.bat,1,0
+File=%AppDir%&bs;models&bs;expstretched.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;expstretched.bat,1,0
+File=%AppDir%&bs;models&bs;ff_core_shell.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;ff_core_shell.bat,1,0
+File=%AppDir%&bs;models&bs;ff_sphere.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;ff_sphere.bat,1,0
+File=%AppDir%&bs;models&bs;gauss.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;gauss.bat,1,0
+File=%AppDir%&bs;models&bs;gauss2d.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;gauss2d.bat,1,0
+File=%AppDir%&bs;models&bs;green.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;green.bat,1,0
+File=%AppDir%&bs;models&bs;heaviside.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;heaviside.bat,1,0
+File=%AppDir%&bs;models&bs;langevin.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;langevin.bat,1,0
+File=%AppDir%&bs;models&bs;laplace.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;laplace.bat,1,0
+File=%AppDir%&bs;models&bs;lognormal.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;lognormal.bat,1,0
+File=%AppDir%&bs;models&bs;lorz.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;lorz.bat,1,0
+File=%AppDir%&bs;models&bs;lorz2d.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;lorz2d.bat,1,0
+File=%AppDir%&bs;models&bs;Maxwell.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;Maxwell.bat,1,0
+File=%AppDir%&bs;models&bs;ngauss.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;ngauss.bat,1,0
+File=%AppDir%&bs;models&bs;nlorz.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;nlorz.bat,1,0
+File=%AppDir%&bs;models&bs;pareto.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;pareto.bat,1,0
+File=%AppDir%&bs;models&bs;plane2d.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;plane2d.bat,1,0
+File=%AppDir%&bs;models&bs;poisson.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;poisson.bat,1,0
+File=%AppDir%&bs;models&bs;powerlaw.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;powerlaw.bat,1,0
+File=%AppDir%&bs;models&bs;pseudovoigt.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;pseudovoigt.bat,1,0
+File=%AppDir%&bs;models&bs;pseudovoigt2d.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;pseudovoigt2d.bat,1,0
+File=%AppDir%&bs;models&bs;quad2d.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;quad2d.bat,1,0
+File=%AppDir%&bs;models&bs;quadline.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;quadline.bat,1,0
+File=%AppDir%&bs;models&bs;sf_hard_spheres.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;sf_hard_spheres.bat,1,0
+File=%AppDir%&bs;models&bs;sf_square_well.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;sf_square_well.bat,1,0
+File=%AppDir%&bs;models&bs;sf_sticky_hard_spheres.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;sf_sticky_hard_spheres.bat,1,0
+File=%AppDir%&bs;models&bs;sigmoid.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;sigmoid.bat,1,0
+File=%AppDir%&bs;models&bs;sine.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;sine.bat,1,0
+File=%AppDir%&bs;models&bs;sinedamp.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;sinedamp.bat,1,0
+File=%AppDir%&bs;models&bs;strline.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;strline.bat,1,0
+File=%AppDir%&bs;models&bs;tophat.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;tophat.bat,1,0
+File=%AppDir%&bs;models&bs;triangl.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;triangl.bat,1,0
+File=%AppDir%&bs;models&bs;twoexp.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;twoexp.bat,1,0
+File=%AppDir%&bs;models&bs;voigt.bat,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;models&bs;voigt.bat,1,0
+File=%AppDir%&bs;COPYING,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;COPYING,1,0
+File=%AppDir%&bs;ifit.exe,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;ifit.exe,1,0
+File=%AppDir%&bs;readme.txt,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;ifit-standalone&bs;readme.txt,1,0
 
 [PERMISSIONS]
 
 [SHORTCUTS]
-Shortcut=0,%AppSCFolder%&bs;iFit,%AppDir%&bs;ifit.exe,,,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-src&bs;Applications&bs;standalone&bs;windows&bs;iFit-logo.ico,0,1,%AppDir%,iFit software (Matlab prompt)
-Shortcut=0,%AppSCFolder%&bs;iFit documentation,%AppDir%&bs;Docs&bs;index.html,,,,0,1,%AppDir%&bs;Docs,iFit documentation (local)
-Shortcut=0,%Desktop%&bs;iFit,%AppDir%&bs;ifit.exe,,,C:&bs;Documents and Settings&bs;Lambda&bs;Bureau&bs;make-win-setup&bs;ifit-src&bs;Applications&bs;standalone&bs;windows&bs;iFit-logo.ico,0,1,%AppDir%,iFit software (Matlab prompt)
+Shortcut=0,%AppSCFolder%&bs;ifit,%AppDir%&bs;ifit.exe,,,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;windows&bs;iFit-logo.ico,0,1,%AppDir%,iFit standalone
+Shortcut=0,%AppSCFolder%&bs;ResLibCal,%AppDir%&bs;ifit.exe,,ResLibCal,,0,1,%AppDir%,
+Shortcut=0,%AppSCFolder%&bs;index,%AppDir%&bs;Docs&bs;index.html,,,,0,1,%AppDir%&bs;Docs,iFit Documentation
+Shortcut=0,%Desktop%&bs;ifit,%AppDir%&bs;ifit.exe,,,C:&bs;Users&bs;Lambda&bs;Desktop&bs;iFit-make-setup&bs;windows&bs;iFit-logo.ico,0,1,%AppDir%,iFit (Matlab)
 
 [REGISTRY_ENTRIES]
 
 [FILE_TYPES]
+cbf,cbf.Document,Crystallographic Binary File,%AppDir%&bs;ifit.exe,,0,0,
+cdf,cdf.Document,NetCDF file,%AppDir%&bs;ifit.exe,,0,0,
+edf,edf.Document,ESRF Data Format file,%AppDir%&bs;ifit.exe,,0,0,
+ezd,ezd.Document,EZD electronic density map,%AppDir%&bs;ifit.exe,,0,0,
+h5,hdf5.Document,HDF5 file,%AppDir%&bs;ifit.exe,,0,0,
+hdf,hdf.Document,HDF 4 or 5,%AppDir%&bs;ifit.exe,,0,0,
+hdf5,hdf5.Document,HDF5,%AppDir%&bs;ifit.exe,,0,0,
+hdr,hdr.Document,Analyze MRI Volumetric data HDR/IMG,%AppDir%&bs;ifit.exe,,0,0,
+inx,inx.Document,INX ToF data,%AppDir%&bs;ifit.exe,,0,0,
+json,json.Document,JSON,%AppDir%&bs;ifit.exe,,0,0,
+lau,lau.Document,Crystallographica LAU file,%AppDir%&bs;ifit.exe,,0,0,
+laz,laz.Document,LAZY/PULVRX ICSD data file,%AppDir%&bs;ifit.exe,,0,0,
+nc,nc.Document,NetCDF,%AppDir%&bs;ifit.exe,,0,0,
+nxs,nxs.Document,NeXus neutron/photon HDF,%AppDir%&bs;ifit.exe,,0,0,
+n5,nxs.Document,NeXus neutron/photon HDF,%AppDir%&bs;ifit.exe,,0,0,
+h4,hdf4.Document,HDF4 file,%AppDir%&bs;ifit.exe,,0,0,
+hdf4,hdf4.Document,HDF4 file,%AppDir%&bs;ifit.exe,,0,0,
+off,off.Document,Object File Format,%AppDir%&bs;ifit.exe,,0,0,
+pdb,pdb.Document,Protein Data Bank,%AppDir%&bs;ifit.exe,,0,0,
+ply,ply.Document,PLY Volume,%AppDir%&bs;ifit.exe,,0,0,
+sim,sim.Document,McStas simulation,%AppDir%&bs;ifit.exe,,0,0,
+spe,spe.Document,ISIS SPE or Roper Scientific CCD,%AppDir%&bs;ifit.exe,,0,0,
+sqw,sqw.Document,McStas SQW file,%AppDir%&bs;ifit.exe,,0,0,
+stl,stl.Document,Stereolythography file,%AppDir%&bs;ifit.exe,,0,0,
+xml,xml.Document,XML,%AppDir%&bs;ifit.exe,,0,0,
+yaml,yaml.Document,YAML file,%AppDir%&bs;ifit.exe,,0,0,
+spec,spec.Document,SPEC file (ESRF),%AppDir%&bs;ifit.exe,,0,0,
+obj,obj.Document,Wavefront 3D OBJ,%AppDir%&bs;ifit.exe,,0,0,
+mar,mar.Document,MarResearch CCD Camera,%AppDir%&bs;ifit.exe,,0,0,
+sif,sif.Document,Andor SIF CCD Camera,%AppDir%&bs;ifit.exe,,0,0,
+img,img.Document,ADSC CCD Camera,%AppDir%&bs;ifit.exe,,0,0,
+fig,fig.Document,Matlab Figure,%AppDir%&bs;ifit.exe,,0,0,
+ccp4,ccp4.Document,MRC/CCP4 electron density map,%AppDir%&bs;ifit.exe,,0,0,
+nii,nii.Document,NifTI-1 MRI volume data,%AppDir%&bs;ifit.exe,,0,0,
+ibw,ibw.Document,Igor WaveMetrics Wave data,%AppDir%&bs;ifit.exe,,0,0,
 
 [SEARCH]
 
