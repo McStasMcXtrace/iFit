@@ -48,6 +48,9 @@ find . -name svn -exec rm -rf \{\} \; 2> /dev/null
 find . -name .svn -exec rm -rf \{\} \; 2> /dev/null
 find . -name "*~" -exec rm -rf \{\} \; 2> /dev/null
 find . -name .AppleDouble -exec rm -rf \{\} \; 2> /dev/null
+find . -name .AppleDB -exec rm -rf \{\} \; 2> /dev/null
+find . -name .AppleDesktop -exec rm -rf \{\} \; 2> /dev/null
+find . -name .DS_Store -exec rm -rf \{\} \; 2> /dev/null
 rm mkdist
 # we keep the MeX files as some users may not have C compilers installed (e.g. Windows 64 bit)
 # rm Loaders/looktxt.mex*
@@ -71,7 +74,11 @@ else
   ARCH=i386
 fi
 
+# create techdoc with m2html
+matlab -nojvm -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); m2html('mFiles',{'Libraries','Objects','Scripts','Applications/McStas','Applications/Python','Applications/ResLibCal'},'htmldir','Docs/techdoc','recursive','on','source','off','ignoredDir','private'); exit"
+
 cd $TMPDIR
+
 # Create tar archive SRC
 rm $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip
 zip -r $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip $IFIT_TARNAME-$IFIT_VERSION

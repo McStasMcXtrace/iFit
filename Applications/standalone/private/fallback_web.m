@@ -19,7 +19,7 @@ function fallback_web(url)
     url = '';
   end
   if exist('ifitpath')
-    Home = [ ifitpath filesep 'Docs' filesep 'index.html' ];
+    Home = fullfile(ifitpath,'Docs','index.html');
   else
     Home = 'http://ifit.mccode.org';
   end
@@ -29,16 +29,20 @@ function fallback_web(url)
     url = which(url);
   end
   
-  ret=0; % return code from Browser: 0=OK, 1=error.
+  handles=[];
   
-  % use Java browser
-  if usejava('jvm') 
+  % return code from Browser: 0=OK, 1=error.
+  ret = open_system_browser(url);
+  
+  % when fails, we open our own browser
+  if ret && usejava('jvm') 
+      % use Java browser
       if ~isempty(dir(url))
         url = [ 'file://' url ]; % local file
       end
       root       = fileparts(url);
       if strncmp(root, 'file://',7)
-        root = root(8:end);
+        root = fileparts(url(8:end));
       end
       handles(1) = figure('menubar','none', 'Name', url);
       % button bar [ Back URL History Home ]
@@ -80,22 +84,24 @@ function fallback_web(url)
       je.setEditable(false);
       ret=setPage(url);
       set(je, 'HyperlinkUpdateCallback',@action_follow_link);
-  else
-    ret=1;
   end
-  if ret % could not open browser: try with system specific
+  if ret % could not open browser
+    disp(url)
+  end
+  
+  function ret=open_system_browser(url)
+  % opens URL with system browser. Returns non zero in case of error.
     if strncmp(url, 'file://', length('file://'))
       url = url(8:end);
     end
+    ret = 1;
     if ispc
-      system([ 'start ' url ]);
+      ret=system([ 'start ' url ]);
     elseif ismac
-      system([ 'open ' url ]);
+      ret=system([ 'open ' url ]);
     else
-      system([ 'gnome-open ' url ]);
+      ret=system([ 'xdg-open ' url ]);
     end
-    disp('Can not display Web page (Java not available). Open it manually :')
-    disp(url)
   end
 
 % ------------------------------------------------------------------------------
@@ -112,7 +118,9 @@ function fallback_web(url)
   end
   
   function exitBrowser(src,evnt) % Menu File:Quit
-    delete(handles(1));
+    if ~isempty(handles)
+      delete(handles(1));
+    end
   end
   
   function printPage(src,evnt)   % Menu File:Print
@@ -209,11 +217,13 @@ function fallback_web(url)
   end
   
   function setURL(src, evnt)     % set URL by changing the URL edit box content
-    link = get(handles(3), 'String');
-    if ~isempty(link)
-      setPage(link);
-    else
-      set(handles(3), 'String', url); % restore the previous URL
+    if ~isempty(handles)
+      link = get(handles(3), 'String');
+      if ~isempty(link)
+        setPage(link);
+      else
+        set(handles(3), 'String', url); % restore the previous URL
+      end
     end
   end
   
@@ -239,6 +249,8 @@ function fallback_web(url)
   end
   
   % protect figure from over-plotting
-  set(handles(1),'HandleVisibility','callback');
+  if ~isempty(handles)
+    set(handles(1),'HandleVisibility','callback');
+  end
   
 end
