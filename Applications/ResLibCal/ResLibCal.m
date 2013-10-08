@@ -1,4 +1,6 @@
 function out = ResLibCal(varargin)
+% ResLibCal: compute and display the neutron TAS resolution function
+%
 % To start the application and open the main GUI window, use
 %   ResLibCal
 % To compute directly the resolution function, sending an EXP ResLib-like
