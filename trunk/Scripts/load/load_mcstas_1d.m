@@ -150,6 +150,7 @@ end
 
 % build the title: 
 %   sum(I) sqrt(sum(I_err^2)) sum(N)
+
 if isfield(a, 'E'), e=a.E; else e=0; end
 if isfield(a, 'N'), n=a.N; else n=0; end
 s = a{0}; 

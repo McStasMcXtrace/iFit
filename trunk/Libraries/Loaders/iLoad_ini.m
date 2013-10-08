@@ -82,7 +82,7 @@ function config = iLoad_ini
     mcstas_scan.postprocess='load_mcstas_scan';
     
     mcstas_list.name       ='McStas list monitor';
-    mcstas_list.patterns   ={'Format: McStas with text headers','# type: array_2d','# xlabel: List of neutron events'};
+    mcstas_list.patterns   ={'Format: McStas','# type: array_2d','# xlabel: List of neutron events'};
     mcstas_list.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent --catenate ' ...
 		    '--metadata=xlabel --metadata=Creator ' ...
 		    '--metadata=ylabel --metadata=xylimits --metadata=component --metadata=Param ' ];
@@ -90,7 +90,7 @@ function config = iLoad_ini
     mcstas_list.postprocess='load_mcstas_1d';
     
     mcstas_2D.name       ='McStas 2D monitor';
-    mcstas_2D.patterns   ={'Format: McStas with text headers','# type: array_2d'};
+    mcstas_2D.patterns   ={'Format: McStas','# type: array_2d'};
     mcstas_2D.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
 		    '--metadata=Errors --metadata=Events --metadata=xlabel --metadata=Creator ' ...
 		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits --metadata=component --metadata=Param ' ];
@@ -98,7 +98,7 @@ function config = iLoad_ini
     mcstas_2D.postprocess='load_mcstas_1d';
     
     mcstas_1D.name       ='McStas 1D monitor';
-    mcstas_1D.patterns   ={'Format: McStas with text headers','# type: array_1d'};
+    mcstas_1D.patterns   ={'Format: McStas','# type: array_1d'};
     mcstas_1D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  ' ...
         '--metadata=xlabel --metadata=ylabel  --metadata=component --metadata=Param --metadata=Creator ' ];
     mcstas_1D.method     ='read_anytext';
