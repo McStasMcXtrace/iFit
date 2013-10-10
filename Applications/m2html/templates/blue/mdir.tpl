@@ -2,7 +2,7 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>Index for Directory {MDIR}</title>
+  <title>ifit.mccode.org - Index for Directory {MDIR}</title>
   <meta name="keywords" content="{MDIR}">
   <meta name="description" content="Index for Directory {MDIR}">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -15,7 +15,7 @@
 <table width="100%"><tr><td align="left"><a href="{MASTERPATH}{INDEX}"><img alt="<" border="0" src="{MASTERPATH}left.png">&nbsp;Master index</a></td>
 <td align="right"><a href="{INDEX}">Index for {MDIR}&nbsp;<img alt=">" border="0" src="{MASTERPATH}right.png"></a></td></tr></table>
 
-<h1>Index for {MDIR}</h1>
+<h1>Index for <a href="http://ifit.mccode.org">iFit</a>/{MDIR}</h1>
 
 <h2>Matlab files in this directory:</h2>
 <table>
@@ -55,6 +55,6 @@
 <li>View the <a href="{LTODOLIST}">TODO list</a>.</li>
 </ul>
 <!-- END todolist -->
-<hr><address>Generated on {DATE} by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on {DATE} by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005. <a href="http://ifit.mccode.org">iFit</a> (c) E.Farhi/<a href="http://www.ill.eu">ILL</a> EUPL 1.1</address>
 </body>
 </html>

@@ -2,7 +2,7 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>To Do List for {MDIR}</title>
+  <title>ifit.mcode.org - To Do List for {MDIR}</title>
   <meta name="keywords" content="todo, to do, list, {MDIR}">
   <meta name="description" content="To Do List for {MDIR}">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -23,6 +23,6 @@
 	<!-- END row -->
 	</ul>
 <!-- END filelist -->
-<hr><address>Generated on {DATE} by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on {DATE} by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005. <a href="http://ifit.mccode.org">iFit</a> (c) E.Farhi/<a href="http://www.ill.eu">ILL</a> EUPL 1.1</address>
 </body>
 </html>
