@@ -2,7 +2,7 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>Matlab Search Engine</title>
+  <title>ifit.mcode.org - Matlab Search Engine</title>
   <meta name="keywords" content="search, engine, matlab, documentation">
   <meta name="description" content="Matlab documentation search engine with M2HTML">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -24,6 +24,6 @@ Search for <input class="search" type="text" name="query" value="<?php echo $que
 	main('{IDXFILE}');
 ?>
 
-<hr><address>Generated on {DATE} by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on {DATE} by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005. <a href="http://ifit.mccode.org">iFit</a> (c) E.Farhi/<a href="http://www.ill.eu">ILL</a> EUPL 1.1</address>
 </body>
 </html>
