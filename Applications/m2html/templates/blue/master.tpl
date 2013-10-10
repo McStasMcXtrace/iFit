@@ -2,7 +2,7 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>Matlab Index</title>
+  <title>ifit.mccode.org - Matlab Index</title>
   <meta name="keywords" content="{DIRS}">
   <meta name="description" content="{DIRS}">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -12,7 +12,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<h1>Matlab Index</h1>
+<h1><a href="http://ifit.mccode.org">iFit</a> - Matlab Index</h1>
 <h2>Matlab Directories</h2>
 <ul style="list-style-image:url({MASTERPATH}matlabicon.gif)">
 <!-- BEGIN rowdir -->
@@ -44,6 +44,6 @@ Search for <input class="search" type="text" name="query" value="" size="20" acc
 <li>View the <a href="{LGRAPH}">Graph</a>.</li>
 </ul>
 <!-- END graph -->
-<hr><address>Generated on {DATE} by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on {DATE} by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005. <a href="http://ifit.mccode.org">iFit</a> (c) E.Farhi/<a href="http://www.ill.eu">ILL</a> EUPL 1.1</address>
 </body>
 </html>
