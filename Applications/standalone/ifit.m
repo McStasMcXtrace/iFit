@@ -191,10 +191,15 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     ifit_options.index=ifit_options.index+1;
     
     if isempty(varargin) && ~isempty(this) % last argument has just been processed
-      disp('Info: all imported arguments have been stored in cell array ''this''.');
-      disp('      access them with e.g. this{1} ... this{end}');
-      disp('      to get all models:    this(cellfun(''isclass'',this,''iFunc''))')
-      disp('      to get all data sets: this(cellfun(''isclass'',this,''iData'')).')
+      if numel(this) > 1
+        disp('Info: all imported arguments have been stored in cell array ''this''.');
+        disp('      access them with e.g. this{1} ... this{end}');
+        disp('      to get all models:    this(cellfun(''isclass'',this,''iFunc''))')
+        disp('      to get all data sets: this(cellfun(''isclass'',this,''iData'')).')
+      else
+        this = this{1};
+        disp('Info: imported argument has been stored in the array ''this''.');
+      end
       disp('''this'' is:')
       disp(this);
       clear varargin
