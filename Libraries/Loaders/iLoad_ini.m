@@ -74,51 +74,58 @@ function config = iLoad_ini
     spec.method     ='read_anytext';
     spec.extension  ={'spc','spec'};
     
-    mcstas_scan.name       ='McStas Scan DAT output';
+    mcstas_scan.name       ='McCode Scan DAT output';
     mcstas_scan.patterns   ={'# type: multiarray_1d','# variables:','# title: Scan of'};
     mcstas_scan.options    =['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
                          '--metadata=xlabel --metadata=ylabel --metadata=xvars --metadata=component --metadata=Param --metadata=Creator ' ];
     mcstas_scan.method     ='read_anytext';
     mcstas_scan.postprocess='load_mcstas_scan';
     
-    mcstas_list.name       ='McStas list monitor';
-    mcstas_list.patterns   ={'Format: McStas','# type: array_2d','# xlabel: List of neutron events'};
+    mcstas_list.name       ='McCode list monitor';
+    mcstas_list.patterns   ={'Format: ','# type: array_2d','# xlabel: List of neutron events'};
     mcstas_list.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent --catenate ' ...
 		    '--metadata=xlabel --metadata=Creator ' ...
 		    '--metadata=ylabel --metadata=xylimits --metadata=component --metadata=Param ' ];
     mcstas_list.method     ='read_anytext';
     mcstas_list.postprocess='load_mcstas_1d';
     
-    mcstas_2D.name       ='McStas 2D monitor';
-    mcstas_2D.patterns   ={'Format: McStas','# type: array_2d'};
+    mcstas_2D.name       ='McCode 2D monitor';
+    mcstas_2D.patterns   ={'Format: ','# type: array_2d'};
     mcstas_2D.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
 		    '--metadata=Errors --metadata=Events --metadata=xlabel --metadata=Creator ' ...
 		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits --metadata=component --metadata=Param ' ];
     mcstas_2D.method     ='read_anytext';
     mcstas_2D.postprocess='load_mcstas_1d';
     
-    mcstas_1D.name       ='McStas 1D monitor';
-    mcstas_1D.patterns   ={'Format: McStas','# type: array_1d'};
+    mcstas_1D.name       ='McCode 1D monitor';
+    mcstas_1D.patterns   ={'Format: ','# type: array_1d'};
     mcstas_1D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  ' ...
         '--metadata=xlabel --metadata=ylabel  --metadata=component --metadata=Param --metadata=Creator ' ];
     mcstas_1D.method     ='read_anytext';
     mcstas_1D.postprocess={'load_xyen','load_mcstas_1d'};
     
-    mcstas_sim.name       ='McStas sim file';
+    mcstas_0D.name       ='McCode 0D monitor';
+    mcstas_0D.patterns   ={'Format: ','# type: array_0d'};
+    mcstas_0D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  ' ...
+        '--metadata=xlabel --metadata=ylabel  --metadata=component --metadata=Param --metadata=Creator ' ];
+    mcstas_0D.method     ='read_anytext';
+    mcstas_0D.postprocess={'load_mcstas_1d'};
+    
+    mcstas_sim.name       ='McCode sim file';
     mcstas_sim.extension  ='sim';
-    mcstas_sim.patterns   ={'begin simulation','Format: McStas'};
+    mcstas_sim.patterns   ={'begin simulation','begin instrument','begin data'};
     mcstas_sim.options    ='--fast --binary --headers  --comment=NULL --silent ';
     mcstas_sim.method     ='read_anytext';
     mcstas_sim.postprocess='opensim';
     
-    mcstas_sqw.name       ='McStas Sqw table';
+    mcstas_sqw.name       ='McCode Sqw table';
     mcstas_sqw.patterns   ={'Sqw data file for Isotropic_Sqw'};
     mcstas_sqw.options    ='--fast --binary  --headers --comment=NULL --silent ';
     mcstas_sqw.method     ='read_anytext';
     mcstas_sqw.postprocess='opensqw';
     mcstas_sqw.extension  ='sqw';
     
-    mcstas_powder.name       ='McStas powder table (LAZ/LAU)';
+    mcstas_powder.name       ='McCode powder table (LAZ/LAU)';
     mcstas_powder.patterns   ={'lattice_a','column_'};
     mcstas_powder.options    ='--fast --binary  --headers --comment=NULL --silent ';
     mcstas_powder.method     ='read_anytext';
@@ -273,7 +280,7 @@ function config = iLoad_ini
     
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
-	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
+	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_0D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
 	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, EZD, ...
 	       nmr_jeol, nmr_bruker, nmr_varian, ...
 	       yaml, json, ...

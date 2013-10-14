@@ -1,7 +1,7 @@
 function a=load_mcstas_1d(a)
 % function a=load_mcstas_1d(a)
 %
-% Returns an iData style dataset from a McStas 1d/2d/list monitor file
+% Returns an iData style dataset from a McCode 1d/2d/list monitor file
 % as well as simple XYE files
 % Some labels are also searched.
 %
@@ -11,7 +11,7 @@ function a=load_mcstas_1d(a)
 % inline: load_mcstas_param
 
 if ~isa(a,'iData')
-  a = load(iData,a,'McStas 1D');
+  a = load(iData,a,'McCode');
   return
 end
 
@@ -25,8 +25,8 @@ end
 
 % Find proper labels for Signal and Axis
 a=iData(a);
-if isempty(findstr(a,'McStas'))
-  warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a McStas data format.' ]);
+if isempty(findstr(a,'McStas')) && isempty(findstr(a,'McCode'))
+  warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a McCode data format.' ]);
   return
 end
 
@@ -95,10 +95,18 @@ if ischar(signal) && ~isempty(strfind(signal, 'MetaData'))
 end
 
 % treat specific data formats 1D, 2D, List for McStas ==========================
-if ~isempty(strfind(a.Format,'McStas 1D monitor'))
+if ~isempty(strfind(a.Format,'McCode 0D monitor'))
+  a = setalias(a, 'Signal', 'Data.values(1)');
+  a = setalias(a, 'Error' , 'Data.values(2)');
+  a = setalias(a, 'I', 'Signal');
+  a = setalias(a, 'E', 'Error');
+  a = setalias(a, 'N', 'Data.values(3)');
+elseif ~isempty(strfind(a.Format,'McCode 1D monitor'))
   xlabel(a, xlab);
   title(a, ylab);
-elseif ~isempty(strfind(a.Format,'McStas 2D monitor'))
+  a = setalias(a, 'I', 'Signal');
+  a = setalias(a, 'E', 'Error');
+elseif ~isempty(strfind(a.Format,'McCode 2D monitor'))
   % Get sizes of x- and y- axes:
   siz = size(a.Data.MetaData.variables');
   if all(siz < size(getaxis(a,'Signal')))
@@ -126,7 +134,7 @@ elseif ~isempty(strfind(a.Format,'McStas 2D monitor'))
   end
   setaxis(a,1,'x');
   setaxis(a,2,'y');
-elseif ~isempty(strfind(a.Format,'McStas list monitor'))
+elseif ~isempty(strfind(a.Format,'McCode list monitor'))
   % the Signal should contain the List
   list = getalias(a, 'Signal');
   if ischar(list)
@@ -151,18 +159,18 @@ end
 % build the title: 
 %   sum(I) sqrt(sum(I_err^2)) sum(N)
 
-if isfield(a, 'E'), e=a.E; else e=0; end
-if isfield(a, 'N'), n=a.N; else n=0; end
-s = a{0}; 
-values = [ sum(s(:)), sqrt(sum(e(:).^2)), sum(n(:)) ];
-clear s
+
+values = [ a.Data.values ];
 t_sum = sprintf(' I=%g I_err=%g N=%g', values);
 %   X0 dX, Y0 dY ...
+
 t_XdX = '';
-if ndims(a) == 1; ax='X'; else ax = 'YXZ'; end
-for index=1:ndims(a)
-  [dx,x0]=std(a,index);
-  t_XdX = [t_XdX sprintf(' %c0=%g d%c=%g;', ax(index), x0, ax(index), dx) ];
+if ~isscalar(a)
+  if ndims(a) == 1; ax='X'; else ax = 'YXZ'; end
+  for index=1:ndims(a)
+    [dx,x0]=std(a,index);
+    t_XdX = [t_XdX sprintf(' %c0=%g d%c=%g;', ax(index), x0, ax(index), dx) ];
+  end
 end
 a.Title = [ a.Title, t_sum, t_XdX ];
 setalias(a,'statistics',  t_XdX,'Center and Gaussian half width');
