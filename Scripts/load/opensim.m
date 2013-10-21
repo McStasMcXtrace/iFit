@@ -3,7 +3,7 @@ function out = opensim(filename)
 %        and set the 'ans' variable to an iData object with its content
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'SIM'));
+  out = iData(iLoad(filename,mfilename));
 else
   out = filename;
 end
@@ -16,40 +16,52 @@ if numel(out) > 1
   end
 end
 
-if ~isempty(findstr(out,'sim file'))
-  % this is a McStas file
-  
-  % Find filename fields in sim struct:
-  filenames = findstr(out,'filename');
-  if ~iscellstr(filenames), filenames = { filenames }; end
-  dirname   = fileparts(out.Source);
-  
-  a=[];
-  if length(filenames(:)) > 0
-    % This is a McStas 'overview' plot
-    for j=1:length(filenames(:))
-      filename = filenames{j};
-      filename(~isstrprop(filename,'print')) = '';
-      filename(1:length('filename: '))='';
-      filename=strtrim(filename);
-      filename(findstr(' ',filename):length(filename))='';
-      if isempty(filename), continue; end
+if numel(out) == 1
+  if ~isempty(findstr(out,'sim file'))
+    % this is a McStas file
+    
+    % Find filename fields in sim struct:
+    filenames = findstr(out,'filename');
+    if ~iscellstr(filenames), filenames = { filenames }; end
+    dirname   = fileparts(out.Source);
+    
+    a=[];
+    if length(filenames(:)) > 0
+      % This is a McStas 'overview' plot
+      for j=1:length(filenames(:))
+        filename = filenames{j};
+        filename(~isstrprop(filename,'print')) = '';
+        filename(1:length('filename: '))='';
+        filename=strtrim(filename);
+        filename(findstr(' ',filename):length(filename))='';
+        if isempty(filename), continue; end
+        filename = fullfile(dirname,filename);
+        a = [ a iData(filename) ];
+      end
+    else
+      % This is a .sim from a scan
+      filename = 'mcstas.dat';
       filename = fullfile(dirname,filename);
-      a = [ a iData(filename) ];
+      a = iData(filename);
     end
+    out = a;
+    clear a;
+  elseif ~isempty(findstr(out,'Sqw'))
+    out = opensqw(out);
+  elseif ~isempty(findstr(out, 'multiarray_1d'))
+    out = load_mcstas_scan(out);
   else
-    % This is a .sim from a scan
-    filename = 'mcstas.dat';
-    filename = fullfile(dirname,filename);
-    a = iData(filename);
+    out = load_mcstas_1d(out); % private, below
   end
-  out = a;
-  clear a;
-elseif ~isempty(findstr(out,'Sqw'))
-  out = opensqw(out);
-else
-  out = load_mcstas_1d(out); % private, below
+  
+  if isempty(findstr(out,'McStas')) && isempty(findstr(out,'McCode'))
+    warning([ mfilename ': The loaded data set ' out.Tag ' from ' out.Source ' is not a McCode data format.' ]);
+    return
+  end
+
 end
+
+
 
 if ~nargout
   figure; subplot(out);
@@ -73,25 +85,8 @@ function a=load_mcstas_1d(a)
 
 % inline: load_mcstas_param
 
-if ~isa(a,'iData')
-  a = load(iData,a,'McCode');
-  return
-end
-
-% handle input iData arrays
-if numel(a) > 1
-  for index=1:numel(a)
-    a(index) = feval(mfilename, a(index));
-  end
-  return
-end
 
 % Find proper labels for Signal and Axis
-a=iData(a);
-if isempty(findstr(a,'McStas')) && isempty(findstr(a,'McCode'))
-  warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a McCode data format.' ]);
-  return
-end
 
 xlab=''; ylab=''; zlab='';
 d = a.Data;
@@ -246,6 +241,72 @@ a.Data.Parameters = param;
 setalias(a, 'Parameters', 'Data.Parameters', 'Instrument parameters');
 
 % end of loader
+
+% ------------------------------------------------------------------------------
+function a=load_mcstas_scan(a0)
+% function a=load_mcstas_scan(a0)
+%
+% Returns iData style datasets from a McStas scan output file
+%
+% See also: iData/load, iLoad, save, iData/saveas
+
+% Define alias for the 'raw' datablock
+setalias(a0,'Datablock',['this.' getalias(a0,'Signal')]);
+
+% get the column labels
+cnames=strread(a0.Data.Attributes.MetaData.variables,'%s','delimiter',' ');
+cnames=cnames(3:end);
+
+if ~isempty(findfield(a0, 'xlabel')) 
+  xlabel = deblank(a0.Data.Attributes.MetaData.xlabel);
+  xlabel(1:length('# xlabel: '))='';
+else xlabel=''; end
+if ~isempty(findfield(a0, 'ylabel')) 
+  ylabel = deblank(a0.Data.Attributes.MetaData.ylabel);
+  ylabel(1:length('# ylabel: '))='';
+else ylabel=''; end
+if ~isempty(findfield(a0, 'xvars')) 
+  xvars = deblank(a0.Data.Attributes.MetaData.xvars);
+  xvars(1:length('# xvars: '))='';
+else xvars=''; end
+
+if ~isempty(xvars)
+  xvars_i = find(cellfun('isempty', strfind(cnames,xvars)) == 0);
+  if ~isempty(xvars_i)
+    if length(xvars_i) > 1
+      cnames=cnames(xvars_i(end):end);
+      xvars_i=xvars_i(1);
+    end
+    setalias(a0,'x',['this.' getalias(a0,'Signal') '(:,' num2str(xvars_i) ')' ],xvars); % create an alias for xvars
+    setalias(a0,xvars,'x',xvars); % create an alias for xvars
+    % locate xvars label and column
+    xlabel=xvars;
+  end
+
+  % Define scanning variable
+  setaxis(a0,1,'x');
+end
+
+
+param = load_mcstas_param(a0, 'Param');
+a0.Data.Parameters = param;
+setalias(a0, 'Parameters', 'Data.Parameters', 'Instrument parameters');
+
+siz = size(a0.Signal);
+siz = (siz(2)-1)/2;
+
+a = [];
+for j=1:siz
+  b = copyobj(a0);
+  ylabel=cnames(2*j);
+  setalias(b,'Signal', ['this.' getalias(a0,'Signal') '(:,' num2str(2*j) ')'], ylabel);
+  if ~isempty(findfield(a0, '_ERR')) 
+    setalias(b,'Error',['this.' getalias(a0,'Signal') '(:,' num2str(1+2*j) ')']);
+  end
+  b.Title = [ char(ylabel) ': ' char(b.Title) ];
+  b.Label = [ char(ylabel) '(' xvars ')' ];
+  a = [a b];
+end
 
 % ------------------------------------------------------------------------------
 % build-up a parameter structure which holds all parameters from the simulation
