@@ -579,7 +579,7 @@ function [data, format] = iLoad(filename, loader, varargin)
           % check patterns in text file
           if ischar(loader.patterns), loader.patterns=cellstr(loader.patterns); end
           for index_pat=1:numel(loader.patterns)
-            if isempty(regexp(file_start, loader.patterns{index_pat}, 'once'))
+            if isempty(regexpi(file_start, loader.patterns{index_pat}, 'once'))
               patterns_found=0;     % at least one pattern does not match
               % fprintf(1,'iLoad: method %s file %s: at least one pattern does not match (%s)\n', loader.name, file, loader.patterns{index_pat});
               break;
