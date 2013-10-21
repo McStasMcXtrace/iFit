@@ -79,7 +79,7 @@ function config = iLoad_ini
     mcstas_scan.options    =['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
                          '--metadata=xlabel --metadata=ylabel --metadata=xvars --metadata=component --metadata=Param --metadata=Creator ' ];
     mcstas_scan.method     ='read_anytext';
-    mcstas_scan.postprocess='load_mcstas_scan';
+    mcstas_scan.postprocess='opensim';
     
     mcstas_list.name       ='McCode list monitor';
     mcstas_list.patterns   ={'Format: ','# type: array_2d','# xlabel: List of neutron events'};
