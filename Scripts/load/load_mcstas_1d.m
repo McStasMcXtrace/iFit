@@ -190,7 +190,9 @@ function param=load_mcstas_param(a, keyword)
   if nargin == 1, keyword='Param:'; end
   param = [];
 
-  par_list = findstr(a, keyword);
+  par_list = findstr(a, keyword, 'case');
+  if ischar(par_list), par_list=cellstr(par_list); end
+  
   % search strings of the form 'keyword' optional ':', name '=' value
   for index=1:length(par_list)
     line         = par_list{index};
