@@ -30,53 +30,43 @@ if isempty(findstr(a,'McStas')) && isempty(findstr(a,'McCode'))
   return
 end
 
-xlab=''; ylab='';
+xlab=''; ylab=''; zlab='';
 d = a.Data;
-if ~isfield(d,'MetaData'), return; end
 
-if isfield(d,'Attributes') && isfield(d.Attributes,'MetaData') 
-  if ~isempty(findfield(a, 'xlabel')) 
-    xlab = a.Data.Attributes.MetaData.xlabel;
-    xlab(1:max(strfind(xlab,'xlab')+6))='';
-  elseif ~isempty(findfield(a, 'x_label')) 
-    xlab = a.Data.Attributes.MetaData.x_label;
-    xlab(1:max(strfind(xlab,'x_label'))+6)='';
-  else xlab='';
-  end
-
-  if ~isempty(findfield(a, 'ylabel')) 
-    ylab = a.Data.Attributes.MetaData.ylabel;
-    ylab(1:max(strfind(ylab,'ylab')+6))='';
-  elseif ~isempty(findfield(a, 'y_label')) 
-    ylab = a.Data.Attributes.MetaData.y_label;
-    ylab(1:max(strfind(ylab,'y_label')+6))='';
-  else ylab='';
-  end
-  
-  if ~isempty(findfield(a, 'zlabel')) 
-    zlab = a.Data.Attributes.MetaData.zlabel;
-    zlab(1:max(strfind(zlab,'zlab')+6))='';
-  elseif ~isempty(findfield(a, 'z_label')) 
-    zlab = a.Data.Attributes.MetaData.z_label;
-    zlab(1:max(strfind(zlab,'z_label')+6))='';
-  else zlab='';
-  end
- 
-  if ~isempty(findfield(a, 'component')) 
-    label = strtrim(a.Data.Attributes.MetaData.component);
-    label(1:length('# component:'))='';
-    a.Label = strtrim(label);
-    a.Data.Component = strtrim(label);
-    setalias(a, 'Component', 'Data.Component','Component name');
-  end
-  
-  if ~isempty(findfield(a, 'Creator'))
-    creator = a.Data.Attributes.MetaData.Creator;
-    creator(1:length('# Creator:'))='';
-    a.Creator=creator; 
-  end
-  
+i = [ findfield(a, 'xlabel', 'char exact') findfield(a, 'x_label', 'char exact') ];
+if ~isempty(i)
+  if iscell(i) l=get(a,i{1}); else l=get(a,i); end
+  [l, xlab] = strtok(l, ':='); xlab=strtrim(xlab(2:end));
 end
+
+i = [ findfield(a, 'ylabel', 'char exact') findfield(a, 'y_label', 'char exact') ];
+if ~isempty(i)
+  if iscell(i) l=get(a,i{1}); else l=get(a,i); end
+  [l, ylab] = strtok(l, ':='); ylab=strtrim(ylab(2:end));
+end
+
+i = [ findfield(a, 'zlabel', 'char exact') findfield(a, 'z_label', 'char exact') ];
+if ~isempty(i)
+  if iscell(i) l=get(a,i{1}); else l=get(a,i); end
+  [l, zlab] = strtok(l, ':='); zlab=strtrim(zlab(2:end));
+end
+
+i = findfield(a, 'component','char exact');
+if ~isempty(i)
+  if iscell(i) l=get(a,i{1}); else l=get(a,i); end
+  [l, label] = strtok(l, ':='); label=strtrim(label(2:end));
+  a.Label = label;
+  a.Data.Component = label;
+  setalias(a, 'Component', 'Data.Component','Component name');
+end
+
+i = findfield(a, 'Creator','char exact'); % should have at least the iData.Creator property
+if iscell(i) && length(i) > 1
+  l=get(a,i{end});
+  [l, creator] = strtok(l, ':='); creator=strtrim(creator(2:end));
+  a.Creator=creator; 
+end
+
 clear d
 
 % check that guessed Signal is indeed what we look for
@@ -95,26 +85,30 @@ if ischar(signal) && ~isempty(strfind(signal, 'MetaData'))
 end
 
 % treat specific data formats 1D, 2D, List for McStas ==========================
-if ~isempty(strfind(a.Format,'McCode 0D monitor'))
+if ~isempty(strfind(a.Format,'0D monitor'))
   a = setalias(a, 'Signal', 'Data.values(1)');
   a = setalias(a, 'Error' , 'Data.values(2)');
   a = setalias(a, 'I', 'Signal');
   a = setalias(a, 'E', 'Error');
   a = setalias(a, 'N', 'Data.values(3)');
-elseif ~isempty(strfind(a.Format,'McCode 1D monitor'))
+elseif ~isempty(strfind(a.Format,'1D monitor'))
   xlabel(a, xlab);
   title(a, ylab);
   a = setalias(a, 'I', 'Signal');
   a = setalias(a, 'E', 'Error');
-elseif ~isempty(strfind(a.Format,'McCode 2D monitor'))
+elseif ~isempty(strfind(a.Format,'2D monitor'))
   % Get sizes of x- and y- axes:
-  siz = size(a.Data.MetaData.variables');
-  if all(siz < size(getaxis(a,'Signal')))
+  i = findfield(a, 'variables', 'numeric exact');
+  if iscell(i) && ~isempty(i), i = i{1}; end
+  siz = get(a, i);
+  if isempty(siz) || all(siz < size(getaxis(a,'Signal')))
     siz = size(getaxis(a,'Signal')');
   else
-    setalias(a,'Signal','Data.MetaData.variables',zlab);
+    setalias(a,'Signal',i,zlab);
   end
-  lims = a.Data.MetaData.xylimits;
+  i = findfield(a, 'xylimits', 'numeric exact');
+  if iscell(i) && ~isempty(i), i = i{1}; end
+  lims = get(a,i);
   xax = linspace(lims(1),lims(2),siz(1));
   yax = linspace(lims(3),lims(4),siz(2));
 
@@ -124,17 +118,19 @@ elseif ~isempty(strfind(a.Format,'McCode 2D monitor'))
   setalias(a,'x',yax,ylab);
 
   setalias(a,'I','Signal');
-  if ~isempty(findfield(a, 'Error'))
-    setalias(a,'Error','Data.MetaData.Errors');
+  i = findfield(a, 'Error', 'numeric exact');
+  if ~isempty(i)
+    setalias(a,'Error',i{1});
   else setalias(a,'Error',0);
   end
   setalias(a,'E','Error');
-  if ~isempty(findfield(a, 'Events')) 
-    setalias(a,'N','Data.MetaData.Events');
+  i = findfield(a, 'Events', 'numeric exact');
+  if ~isempty(i) 
+    setalias(a,'N',i{1});
   end
   setaxis(a,1,'x');
   setaxis(a,2,'y');
-elseif ~isempty(strfind(a.Format,'McCode list monitor'))
+elseif ~isempty(strfind(a.Format,'list monitor'))
   % the Signal should contain the List
   list = getalias(a, 'Signal');
   if ischar(list)
@@ -160,8 +156,13 @@ end
 %   sum(I) sqrt(sum(I_err^2)) sum(N)
 
 
-values = [ a.Data.values ];
-t_sum = sprintf(' I=%g I_err=%g N=%g', values);
+values = get(a, findfield(a, 'values'));
+if ~isempty(values)
+  if iscell(values) values=values{1}; end
+  t_sum = sprintf(' I=%g I_err=%g N=%g', values);
+else
+  t_sum = ''; 
+end
 %   X0 dX, Y0 dY ...
 
 t_XdX = '';
