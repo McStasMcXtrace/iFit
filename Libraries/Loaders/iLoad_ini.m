@@ -87,7 +87,7 @@ function config = iLoad_ini
 		    '--metadata=xlabel --metadata=Creator ' ...
 		    '--metadata=ylabel --metadata=xylimits --metadata=component --metadata=Param ' ];
     mcstas_list.method     ='read_anytext';
-    mcstas_list.postprocess='load_mcstas_1d';
+    mcstas_list.postprocess='opensim';
     
     mcstas_2D.name       ='McCode 2D monitor';
     mcstas_2D.patterns   ={'Format: ','# type: array_2d'};
@@ -95,21 +95,21 @@ function config = iLoad_ini
 		    '--metadata=Errors --metadata=Events --metadata=xlabel --metadata=Creator ' ...
 		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits --metadata=component --metadata=Param ' ];
     mcstas_2D.method     ='read_anytext';
-    mcstas_2D.postprocess='load_mcstas_1d';
+    mcstas_2D.postprocess='opensim';
     
     mcstas_1D.name       ='McCode 1D monitor';
     mcstas_1D.patterns   ={'Format: ','# type: array_1d'};
     mcstas_1D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  ' ...
         '--metadata=xlabel --metadata=ylabel  --metadata=component --metadata=Param --metadata=Creator ' ];
     mcstas_1D.method     ='read_anytext';
-    mcstas_1D.postprocess={'load_xyen','load_mcstas_1d'};
+    mcstas_1D.postprocess={'load_xyen','opensim'};
     
     mcstas_0D.name       ='McCode 0D monitor';
     mcstas_0D.patterns   ={'Format: ','# type: array_0d'};
     mcstas_0D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  ' ...
         '--metadata=xlabel --metadata=ylabel  --metadata=component --metadata=Param --metadata=Creator ' ];
     mcstas_0D.method     ='read_anytext';
-    mcstas_0D.postprocess={'load_mcstas_1d'};
+    mcstas_0D.postprocess={'opensim'};
     
     mcstas_sim.name       ='McCode sim file';
     mcstas_sim.extension  ='sim';
@@ -280,12 +280,12 @@ function config = iLoad_ini
     
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
-	       spec, mcstas_scan, mcstas_list, mcstas_2D, mcstas_1D, mcstas_0D, mcstas_sim, mcstas_sqw, mcstas_powder, ...
-	       chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, EZD, ...
-	       nmr_jeol, nmr_bruker, nmr_varian, ...
-	       yaml, json, ...
-	       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
-	       Analyze, CBF, STL_binary, MRC, NifTI, Igor, CIF };
+      mcstas_scan, mcstas_list, mcstas_sqw, mcstas_powder, mcstas_2D, mcstas_1D, mcstas_0D, mcstas_sim, ...
+      spec, chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, EZD, ...
+      nmr_jeol, nmr_bruker, nmr_varian, ...
+      yaml, json, ...
+      ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
+      Analyze, CBF, STL_binary, MRC, NifTI, Igor, CIF };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
