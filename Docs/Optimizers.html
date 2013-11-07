@@ -264,8 +264,8 @@ extended by its <span style="font-style: italic;">'half-width'</span>)
 :<br>
 <br>
 <div style="text-align: center;">{<span style="font-style: italic;"> &#916;p</span>
-so that <span style="font-style: italic;">&#967;²(p) &lt;
-2*min(&#967;²) </span>}<br>
+so that <span style="font-style: italic;">&#967;\B2(p) &lt;
+2*min(&#967;\B2) </span>}<br>
 </div>
 <br>
 This may be obtained from the optimization history, and the result is
@@ -273,7 +273,7 @@ stored in <span style="font-style: italic; font-weight: bold;">output.parsHistor
 where we use a Gaussian weighting for the parameter sets around the
 criteria value:<br>
 <br>
-<div style="text-align: center;">exp[ - <span style="font-style: italic;">(&#967;²(p)-</span><span style="font-style: italic;">min(&#967;²)</span>)<span style="font-style: italic;">²/8/</span><span style="font-style: italic;">min(&#967;²)</span><span style="font-style: italic;">² </span>]<br>
+<div style="text-align: center;">exp[ - <span style="font-style: italic;">(&#967;\B2(p)-</span><span style="font-style: italic;">min(&#967;\B2)</span>)<span style="font-style: italic;">\B2/8/</span><span style="font-style: italic;">min(&#967;\B2)</span><span style="font-style: italic;">\B2 </span>]<br>
 </div>
 <br>
 Alternatively, if we consider the local criteria hyper-surface to be
@@ -282,7 +282,7 @@ the Hessian matrix at the optimized solution (which is the criteria
 curvature - very sensitive to noise):<br>
 <br>
 <div style="text-align: center;"><span style="font-style: italic;">&#916;p &#8764;
-</span>&#8730;[<span style="font-style: italic;"> 2 ||&#8706;</span><span style="font-style: italic;">²</span><span style="font-style: italic;">&#967;² / </span><span style="font-style: italic;"></span><span style="font-style: italic;">&#8706;p<sub>i</sub></span><span style="font-style: italic;">&#8706;p<sub>j</sub></span> <span style="font-style: italic;">||<sup>-1</sup> </span>]<br>
+</span>&#8730;[<span style="font-style: italic;"> 2 ||&#8706;</span><span style="font-style: italic;">\B2</span><span style="font-style: italic;">&#967;\B2 / </span><span style="font-style: italic;"></span><span style="font-style: italic;">&#8706;p<sub>i</sub></span><span style="font-style: italic;">&#8706;p<sub>j</sub></span> <span style="font-style: italic;">||<sup>-1</sup> </span>]<br>
 <span style="font-style: italic;"></span></div>
 <span style="font-style: italic;"><br>
 </span>This value is computed and stored in <span style="font-style: italic; font-weight: bold;">output.parsHessianUncertainty</span>, and
@@ -992,7 +992,7 @@ than <span style="font-style: italic;">fminsearch</span>)<br>
       <p><span style="color: rgb(51, 255, 51); font-weight: bold;">fminswarm</span> [<a href="Optimizers.html#fminswarm">11</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
-      <p align="CENTER">Particule Swarm Optimizer (alternate
+      <p align="CENTER">particle Swarm Optimizer (alternate
 implementation than <span style="font-style: italic;">fminpso</span>)<br>
       </p>
       </td>
@@ -1014,7 +1014,7 @@ implementation than <span style="font-style: italic;">fminpso</span>)<br>
       <p>fminswarmhybrid [<a href="Optimizers.html#fminswarm">11</a>]</p>
       </td>
       <td style="color: rgb(0, 0, 0);" width="243">
-      <p align="CENTER">Hybrid Particule Swarm Optimizer</p>
+      <p align="CENTER">Hybrid particle Swarm Optimizer</p>
       </td>
       <td style="text-align: center; color: rgb(0, 0, 0);" width="83">
       <p><span style="color: rgb(51, 255, 51);">91.6</span><br>

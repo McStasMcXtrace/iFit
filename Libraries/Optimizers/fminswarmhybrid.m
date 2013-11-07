@@ -43,7 +43,7 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(varargin)
 %      o=fminswarmhybrid('defaults');
 %   options.Hybrid specifies the algorithm to use for local hybrid optimizations.
 %      It may be set to any optimization method using the @fminsearch syntax.
-%   option.PopulationSize sets the number of particules in the swarm (20-40).
+%   option.PopulationSize sets the number of particles in the swarm (20-40).
 %   option.SwarmC1 sets the local attractors strength (1-3)
 %   option.SwarmC2 sets the global attractor strength (1-3).
 %   option.SwarmW  sets inertia weight (0-1).
