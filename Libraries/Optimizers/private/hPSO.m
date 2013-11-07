@@ -64,7 +64,7 @@ funcount=0; istop=0; x=pars;
 % Initial population (random start)
 ru=rand(popul,size(space,1));
 pop=ones(popul,1)*space(:,1)'+ru.*(ones(popul,1)*(space(:,2)-space(:,1))');
-%pop(1,:)=pars(:); % force first particule to be the starting parameters
+%pop(1,:)=pars(:); % force first particle to be the starting parameters
 
 % Hill climb of each solution (bee)
 if isa(options.Hybrid, 'function_handle') | exist(options.Hybrid) == 2
