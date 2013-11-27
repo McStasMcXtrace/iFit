@@ -117,17 +117,30 @@ atoms={'H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si','P','S','
 % structure -> analyse fields and search for Spgr, cell, atoms, x,y,z,...
 for index=1:length(varargin)
   this = varargin{index};
-  if ischar(this)   % char -> struct
+  if ischar(this) % check extension (looking for instrument)
+    % search e.g. DEFINE INSTRUMENT
+    if ~isempty(dir(this))
+      fid=fopen(this); 
+      string=fread(fid, Inf); fclose(fid);
+      string=char(string');
+      if strfind(string, 'DEFINE INSTRUMENT')
+        instrument = this;
+        clear string
+        continue; % jump to next argument in the list
+      end
+      clear string
+    end
+    [p,f,e] = fileparts(this);
+    if strcmp(e, '.instr')  
+      instrument = this;
+      continue; % jump to next argument in the list
+    end
+  end
+  if ischar(this)   % char (import if this is a file) -> struct
     par = str2struct(this); 
     if isstruct(par), this = par; end
   end
   if ischar(this)                         % char -> file -> struct OR instrument
-    % check extension
-    [p,f,e] = fileparts(this);
-    if strcmp(e, '.instr')
-      instrument = this;
-      continue; % jump to next argument in the list
-    end
     % call cif2hkl
     if ~isempty(dir(this))
       result = iLoad(this,'cif');

@@ -201,6 +201,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   
   % parse parameter values for mcstas_criteria
   % syntax: mcstas(instr, 'compile mpi') -> only compile
+
   if ischar(parameters) 
     if ~isempty(strfind(parameters,'--compile')) || ~isempty(strfind(parameters,'-c'))
       options.compile = 1;
@@ -233,6 +234,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     variable_pars   = {};
   end
   constraints = []; % for optimization min/max
+
   for index=1:length(parameter_names)
     value = getfield(parameters, parameter_names{index});
     value = value(:);
@@ -606,6 +608,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
       end
     end % for index
   end
+  
   % non scanned parameters (chars, fixed)
   if isfield(options,'fixed_names')
     for index=1:length(options.fixed_names)
