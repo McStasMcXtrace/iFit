@@ -46,7 +46,7 @@ if numel(out) == 1
     end
     out = a;
     clear a;
-  elseif ~isempty(findstr(out,'Sqw'))
+  elseif ~isempty(findstr(out,'Isotropic_Sqw'))
     out = opensqw(out);
   elseif ~isempty(findstr(out, 'multiarray_1d'))
     out = load_mcstas_scan(out);
@@ -60,8 +60,6 @@ if numel(out) == 1
   end
 
 end
-
-
 
 if ~nargout
   figure; subplot(out);

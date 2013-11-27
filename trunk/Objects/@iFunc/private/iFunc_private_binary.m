@@ -63,7 +63,7 @@ if isFa
   if isa(a.Guess, 'function_handle')
     a.Guess = sprintf('[ feval(%s, %s, signal) ]', func2str(a.Guess), ax(1:(end-1)));
   elseif isnumeric(a.Guess)
-    a.Guess = num2str(a.Guess);
+    a.Guess = num2str(a.Guess(:)');
   elseif isempty(a.Guess)
     a.Guess = NaN*ones(length(a.Parameters),1);
   end
@@ -80,7 +80,7 @@ if isFb
   if isa(b.Guess, 'function_handle')
     b.Guess = sprintf('[ feval(%s, %s, signal) ]', func2str(b.Guess), ax(1:(end-1)));
   elseif isnumeric(b.Guess)
-    b.Guess = num2str(b.Guess);
+    b.Guess = num2str(b.Guess(:)');
   elseif isempty(b.Guess)
     b.Guess = NaN*ones(length(b.Parameters),1);
   end
@@ -132,14 +132,13 @@ if isFa && isFb
   c.Parameters=Parameters; clear Parameters
 
   % append parameter Guess
-  if ischar(a) && isnumeric(b)
-    b.Guess = mat2str(b.Guess);
-  elseif ischar(b) && isnumeric(a)
-    a.Guess = mat2str(a.Guess);
+  if ischar(a.Guess) && isnumeric(b.Guess)
+    b.Guess = mat2str(b.Guess(:)');
+  elseif ischar(b.Guess) && isnumeric(a.Guess)
+    a.Guess = mat2str(a.Guess(:)');
   end
-
   if ischar(a.Guess) && ischar(b.Guess)
-    Guess = [ '[ ' a.Guess ' ' b.Guess ' ]' ];
+    Guess = [ '[ ' a.Guess ' ' b.Guess ']' ];
   elseif isnumeric(a.Guess) && isnumeric(b.Guess) && ...
          length(a.Guess) == length(a.Parameters) && ...
          length(b.Guess) == length(b.Parameters)
