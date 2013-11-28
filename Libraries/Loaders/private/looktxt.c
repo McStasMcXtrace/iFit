@@ -1715,10 +1715,11 @@ struct file_struct file_close(struct file_struct file)
 *       TargetTxt    is NULL in case of target text creation error (exists)
 *       TargetBin    is NULL in case of target binary creation error (exists)
 *****************************************************************************/
-struct file_struct file_open(char *name, struct option_struct options)
+struct file_struct file_open(char *name0, struct option_struct options)
 {
   struct file_struct file;  /* will be the return value */
   char  *root=NULL;
+  char  *name = name0;
 
   file = file_init();
 
@@ -1726,6 +1727,9 @@ struct file_struct file_open(char *name, struct option_struct options)
   {
     struct fileparts_struct parts;
     struct stat stfile;
+    
+    if (!strncmp(name, "file://", 7))
+      name +=7;
 
     /* extracts source file parts */
     parts = fileparts(name);
@@ -2373,6 +2377,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
     const long needaftersep    =  Bnumber + Bpoint + Bsign + Beol + Bseparator;
 
     char c;
+    char last_c=' ';
     
     time_t StartTime       =0;
     time_t EndTime         =0;
@@ -2383,6 +2388,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
       printf("VERBOSE[file_scan]: Scanning file %s [0-%ld] ...\n", file.Source, (long)file.Size);
 
     do {
+      last_c = c;
       c = lk_tolower(getc(file.SourceHandle));
       
       last_is = is;
@@ -2401,9 +2407,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         /* must be in a number field */
         + Bsign      *((c == '-' || c == '+') && (last_is & (Bexp | Bseparator | Beol)))
         /* must be after exponent or not in number because we start a number */
-        + Bcomment   * (ischr(c, options.comment  ) && strlen(options.comment))
+        + Bcomment   * (strlen(options.comment) && ischr(c, options.comment  ))
         /* comment starts if we are waiting for it */
-        + Bseparator * ischr(c, options.separator);
+        + Bseparator * (strlen(options.separator) && ischr(c, options.separator));
 
       /* special case to handle files written by fortran routines */
       if (options.fortran && (c == '-' || c == '+') && (last_is & (Bnumber | Bpoint))) {
@@ -2434,6 +2440,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         need        = needforstartnum;
         inpoint     = 0;
         inexp       = 0;
+        if (options.verbose > 2)
+          printf("startnum:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+            __LINE__, fieldindex, last_c, c, rows, columns, pos);
       } /* if ( (!possiblecmt) ... */
 
       if (possiblenum && !(possiblecmt)) { /* in num field */
@@ -2444,16 +2453,24 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         }
           
         /* handle NaN and Inf scanning */
-        if (isNAN && isNAN <= strlen(sNAN) && c == sNAN[isNAN -1]) {
-          found = 1;
-          is |= Bnumber; 
-          isNAN++;
+        if (isNAN && isNAN <= strlen(sNAN)) {
+          if (c == sNAN[isNAN -1]) {
+            found = 1;
+            is |= Bnumber; 
+            isNAN++;
+          } else {
+            isNAN=0; is &= !Bnumber;
+          }
         }
         else isNAN=0;
-        if (isINF && isINF <= strlen(sINF) && c == sINF[isINF -1]) {
-          found = 1;
-          is |= Bnumber; 
-          isINF++;
+        if (isINF && isINF <= strlen(sINF)) {
+          if (c == sINF[isINF -1]) {
+            found = 1;
+            is |= Bnumber; 
+            isINF++;
+          } else {
+            isINF=0; is &= !Bnumber;
+          }
         }
         else isINF=0;
 
@@ -2464,12 +2481,15 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
 * end of num field : found && columns != last_columns
 */
         if ((last_is & (Bnumber | Bpoint)) && (is & (Beol | Bseparator))) {
+          if (options.verbose > 2 && 0)
+            printf("numend:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+              __LINE__, fieldindex, last_c, c, rows, columns, pos);
           columns++; /* detects num end : one more column */
           if (found && (columns <= 1)) rows++;  /* this is a new line starting */
         }
         if (is & Beol) {  /* reached end of line */
           if (!options.catenate) {
-            if ((columns != last_columns) && (startnumpos < last_eolpos)) {
+            if (last_columns && (columns != last_columns) && (startnumpos < last_eolpos)) {
               /* change in columns -> end of preceeding num field */
               endnumpos = last_eolpos > 0 ? last_eolpos - 1 : 0;
               pos       = last_eolpos;
@@ -2479,6 +2499,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
               endcharpos= startnumpos > 0 ? startnumpos - 1 : 0;
               columns   = last_columns;
               rows--; /* remove row with less/more columns than the previous */
+              if (options.verbose > 2)
+                printf("changedcol1:%i: fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i (last_columns=%i rows--)\n",
+                  __LINE__, fieldindex, last_c, c, rows, columns, pos, last_columns);
               if (startcharpos <= endcharpos) fieldend |= Balpha;
             } else {  /* still in numeric field with same num of columns: NewLine */
               last_columns = columns;
@@ -2489,6 +2512,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
               if (columns && !last_columns) {
                 last_columns = columns;  /* first line on matrix */
                 columns = 0;
+                if (options.verbose > 2)
+                  printf("1stlinematrix:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+                    __LINE__, fieldindex, last_c, c, rows, columns, pos);
               } else {
                 if (last_columns && (columns != last_columns)  && (startnumpos < last_eolpos)) {
                   /* change in columns -> end of preceeding num field */
@@ -2501,6 +2527,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                   endcharpos= startnumpos > 0 ? startnumpos - 1 : 0;
                   columns   = last_columns;
                   if (startcharpos <= endcharpos) fieldend |= Balpha;
+                  if (options.verbose > 2)
+                    printf("changedcol2:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+                      __LINE__, fieldindex, last_c, c, rows, columns, pos);
                 }
                 else columns = 0;
               } /* else */
@@ -2518,12 +2547,18 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
             fieldend  |= Bnumber;
             if (last_columns == 0)       last_columns = columns;
             if (startcharpos <= endcharpos) fieldend |= Balpha;
+            if (options.verbose > 2)
+              printf("endnum:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+                __LINE__, fieldindex, last_c, c, rows, columns, pos);
           } else { /* anomalous end of num */
             if (startnumpos >= last_seppos) {
               /* first possible number is not a number */
               columns     = last_columns;
               possiblenum = 0; /* abort and pass */
-              if (fieldend & Bnumber) fieldend -= Bnumber;
+              fieldend &= !Bnumber;
+              if (options.verbose > 2)
+                printf("anomalous1:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+                  __LINE__, fieldindex, last_c, c, rows, columns), pos;
             } else {
               if ((columns > 0) && (startnumpos >= last_eolpos)) { /* only a line */
                 endnumpos = last_seppos > 0 ? last_seppos - 1 : 0;
@@ -2539,6 +2574,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                   perror("");
                 }
                 if (startcharpos <= endcharpos) fieldend |= Balpha;
+                if (options.verbose > 2)
+                  printf("only1line:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+                    __LINE__, fieldindex, last_c, c, rows, columns, pos);
               } else { /* already passed more than one line */
                 endnumpos = last_eolpos > 0 ? last_eolpos - 1 : 0;
                 pos       = last_eolpos;
@@ -2546,14 +2584,14 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                 need      = needforstartnum;
                 fieldend |= Bnumber;
                 endcharpos= startnumpos > 0 ? startnumpos - 1 : 0;
+                if (endcharpos > pos) pos = endcharpos;
                 columns   = last_columns;
-                if (fseek(file.SourceHandle, pos, SEEK_SET) && options_warnings-- > 0) { /* reposition after EOL */
-                  print_stderr(
-                  "Error: Repositiong error at position %ld in file '%s'\n"
-                  "       Ignoring (may generate wrong results) [looktxt:file_scan:eol:%d]\n", pos, file.Source,__LINE__);
-                  perror("");
-                }
+                /* we do not reposition as it may result in infinite loops */
                 if (startcharpos <= endcharpos) fieldend |= Balpha;
+                if (options.verbose > 2)
+                  printf("alreadypassed:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i num %s char %s\n",
+                    __LINE__, fieldindex, last_c, c, rows, columns, pos,
+                    fieldend & Bnumber ? "yes":"no", fieldend & Balpha ? "yes":"no");
               } /* else */
             } /* else from if (startnumpos ... */
           } /* else from if (last_is ... */
@@ -2606,6 +2644,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
             field.n_end   = endnumpos > startnumpos ? endnumpos : startnumpos;
             field.rows    = rows;
             field.columns = columns;
+            
+            if (options.verbose > 2)
+              data_print(field);
 
             table_add(table, field);  /* STORING field, Name=Section=NULL */
             
