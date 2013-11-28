@@ -510,7 +510,7 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
   if ~isscalar(a.Error), e = a.Error(index); else e=a.Error; end
   output.corrcoef   = eval_corrcoef(a.Signal(index), e, output.modelValue(index));
   output.residuals  = a.Signal - output.modelValue;
-  output.Rfactor    = sum(e.*output.residuals(index).^2)/sum(e.*a.Signal(index));
+  output.Rfactor    = sum(e.*output.residuals(index).^2)/sum(e.*a.Signal(index))/numel(a.Signal);
   if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | ...
     (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
     fprintf(1, ' Correlation coefficient=%g (closer to 1 is better)\n',  output.corrcoef);
