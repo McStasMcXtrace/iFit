@@ -265,7 +265,7 @@ exitflag   = 0;
 iterations = 0;
 fval       = Inf;       % in case this is a vector, it should be a row
 pars       = pars(:);   % should be a column
-output     = [];  
+output     = [];
 
 % Optimizer call ===============================================================
 
@@ -580,6 +580,7 @@ output.constraints     = constraints;
 output.optimizer       = options.optimizer;
 output.duration        = etime(clock, t0);
 output.fevalDuration   = constraints.fevalDuration;
+output.parsStart       = output.parsHistory(1,:);
 
 % estimate parameter uncertainty from the search trajectory
 
