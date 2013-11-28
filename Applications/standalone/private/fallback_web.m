@@ -100,7 +100,10 @@ function fallback_web(url)
     elseif ismac
       ret=system([ 'open ' url ]);
     else
-      ret=system([ 'xdg-open ' url ]);
+      [ret, message]=system([ 'xdg-open ' url ]);
+      if ret==0 && ~isempty(strfind(message, 'error'))
+        ret=1;
+      end
     end
   end
 
