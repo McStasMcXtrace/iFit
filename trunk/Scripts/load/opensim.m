@@ -51,7 +51,7 @@ if numel(out) == 1
   elseif ~isempty(findstr(out, 'multiarray_1d'))
     out = load_mcstas_scan(out);
   else
-    out = load_mcstas_1d(out); % private, below
+    out = load_mcstas_dat(out); % private, below
   end
   
   if isempty(findstr(out,'McStas')) && isempty(findstr(out,'McCode'))
@@ -71,8 +71,8 @@ if ~nargout
 end
 
 % ------------------------------------------------------------------------------
-function a=load_mcstas_1d(a)
-% function a=load_mcstas_1d(a)
+function a=load_mcstas_dat(a)
+% function a=load_mcstas_dat(a)
 %
 % Returns an iData style dataset from a McCode 1d/2d/list monitor file
 % as well as simple XYE files
@@ -156,12 +156,10 @@ elseif ~isempty(strfind(a.Format,'2D monitor'))
   % Get sizes of x- and y- axes:
   i = findfield(a, 'variables', 'numeric exact');
   if iscell(i) && ~isempty(i), i = i{1}; end
-  siz = get(a, i);
-  if isempty(siz) || all(siz < size(getaxis(a,'Signal')))
-    siz = size(getaxis(a,'Signal')');
-  else
+  if ~isempty(get(a, i))    % e.g. i='Data.MetaData.variables'
     setalias(a,'Signal',i,zlab);
   end
+  siz = size(getaxis(a,'Signal')');
   i = findfield(a, 'xylimits', 'numeric exact');
   if iscell(i) && ~isempty(i), i = i{1}; end
   lims = get(a,i);
@@ -174,7 +172,7 @@ elseif ~isempty(strfind(a.Format,'2D monitor'))
   setalias(a,'x',yax,ylab);
 
   setalias(a,'I','Signal');
-  i = findfield(a, 'Error', 'numeric exact');
+  i = findfield(a, 'Errors', 'numeric exact');
   if ~isempty(i)
     setalias(a,'Error',i{1});
   else setalias(a,'Error',0);
