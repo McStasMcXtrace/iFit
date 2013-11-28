@@ -24,7 +24,11 @@ if ~isdeployed && (isempty(compiled) || ( length(varargin) == 1 && strcmp(vararg
   compiled = 0;
   
   % check if iLoad config allows MeX
-  config = iLoad('config');
+  if exist('iLoad')
+    config = iLoad('config');
+  else
+    config.MeX = 'yes';
+  end
   if isfield(config, 'MeX') && ...
    ((isfield(config.MeX, mfilename) && strcmp(config.MeX.(mfilename), 'yes')) ...
      || strcmp(config.MeX, 'yes'))
