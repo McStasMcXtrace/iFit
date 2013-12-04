@@ -2072,10 +2072,10 @@ double *data_get_double(struct file_struct file, struct data_struct field, struc
     /* fast method: fscanf */
     
     long index=0;
-    if (fseek(file.SourceHandle, field.n_start-1 > 0 ? field.n_start-1 : 0, SEEK_SET))
+    if (fseek(file.SourceHandle, field.n_start > 0 ? field.n_start : 0, SEEK_SET))
       if (options_warnings-- > 0)
         print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_double:%d]\n",
-        file.Source, field.n_start-1, __LINE__);
+        file.Source, field.n_start, __LINE__);
     for (index =0; index < field.rows*field.columns; index ++) {
       long   pos = ftell(file.SourceHandle);
       double value=0;
@@ -2384,6 +2384,28 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
     
     time(&StartTime); /* compute starting time */
     
+    /* check if this is a binary file */
+    if (!options.force) {
+      #define BUFFER_SIZE 32*1024
+      /* read up to 32k char */
+      char buffer[BUFFER_SIZE];
+      endcharpos = file.Size;
+      if (endcharpos > BUFFER_SIZE) endcharpos=BUFFER_SIZE;
+      startcharpos = fread(buffer, endcharpos, 1, file.SourceHandle);
+      rewind(file.SourceHandle);
+      /* count how many valid chars in the buffer */
+      for (pos=0; pos<endcharpos ; pos++)
+        if (!isprint(buffer[pos])) fieldindex++;
+      /* skip file if binary fraction > 10% */
+      if (fieldindex > endcharpos/10) {
+        if (options.verbose >= 1)
+          print_stderr("Warning: file %s is probably binary. Skipping. Use --force to override.\n", file.Source);
+        return(table);
+      }
+      startcharpos = endcharpos = pos = fieldindex = 0;
+      #undef BUFFER_SIZE
+    }
+    
     if (options.verbose >= 2)
       printf("VERBOSE[file_scan]: Scanning file %s [0-%ld] ...\n", file.Source, (long)file.Size);
 
@@ -2436,12 +2458,12 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
       if ( (!possiblecmt) && (!possiblenum) && ((is & needforstartnum) || c == 'n' || c == 'i')
         && (last_is & (Bseparator | Beol))) { /* activate num search after separator */
         possiblenum = 1;
-        startnumpos = pos;
+        startnumpos = pos = ftell(file.SourceHandle)-1;
         need        = needforstartnum;
         inpoint     = 0;
         inexp       = 0;
         if (options.verbose > 2)
-          printf("startnum:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+          printf("startnum:%i fieldindex=%li: c='%c%c' rows=%li columns=%li pos=%li\n",
             __LINE__, fieldindex, last_c, c, rows, columns, pos);
       } /* if ( (!possiblecmt) ... */
 
@@ -2459,7 +2481,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
             is |= Bnumber; 
             isNAN++;
           } else {
-            isNAN=0; is &= !Bnumber;
+            if (is & Bnumber) is -= Bnumber;
+            if (last_is & Bnumber) last_is -= Bnumber;
+            possiblenum = found = 0;
           }
         }
         else isNAN=0;
@@ -2469,7 +2493,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
             is |= Bnumber; 
             isINF++;
           } else {
-            isINF=0; is &= !Bnumber;
+            if (is & Bnumber) is -= Bnumber;
+            if (last_is & Bnumber) last_is -= Bnumber;
+            possiblenum = found = 0;
           }
         }
         else isINF=0;
@@ -2480,15 +2506,12 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
 * OK : newline : when found after EOL (can be really before -> if columns == 1)
 * end of num field : found && columns != last_columns
 */
-        if ((last_is & (Bnumber | Bpoint)) && (is & (Beol | Bseparator))) {
-          if (options.verbose > 2 && 0)
-            printf("numend:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
-              __LINE__, fieldindex, last_c, c, rows, columns, pos);
+        if (possiblenum && (last_is & (Bnumber | Bpoint)) && (is & (Beol | Bseparator))) {
           columns++; /* detects num end : one more column */
           if (found && (columns <= 1)) rows++;  /* this is a new line starting */
         }
         if (is & Beol) {  /* reached end of line */
-          if (!options.catenate) {
+          if (possiblenum && !options.catenate) {
             if (last_columns && (columns != last_columns) && (startnumpos < last_eolpos)) {
               /* change in columns -> end of preceeding num field */
               endnumpos = last_eolpos > 0 ? last_eolpos - 1 : 0;
@@ -2500,20 +2523,20 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
               columns   = last_columns;
               rows--; /* remove row with less/more columns than the previous */
               if (options.verbose > 2)
-                printf("changedcol1:%i: fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i (last_columns=%i rows--)\n",
+                printf("changedcol1:%i: fieldindex=%li: c='%c%c' rows=%li columns=%li pos=%li (last_columns=%li rows--)\n",
                   __LINE__, fieldindex, last_c, c, rows, columns, pos, last_columns);
               if (startcharpos <= endcharpos) fieldend |= Balpha;
             } else {  /* still in numeric field with same num of columns: NewLine */
               last_columns = columns;
               columns = 0;
             }
-          } else { /* when (catenate) */
-            if (columns || !last_columns) {
+          } else { /* when (catenate) is = c = EOL */
+            if (possiblenum & (columns || !last_columns)) {
               if (columns && !last_columns) {
                 last_columns = columns;  /* first line on matrix */
                 columns = 0;
                 if (options.verbose > 2)
-                  printf("1stlinematrix:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+                  printf("1stlinematrix:%i fieldindex=%li: c='%c%c' rows=%li columns=%li pos=%li\n",
                     __LINE__, fieldindex, last_c, c, rows, columns, pos);
               } else {
                 if (last_columns && (columns != last_columns)  && (startnumpos < last_eolpos)) {
@@ -2528,7 +2551,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                   columns   = last_columns;
                   if (startcharpos <= endcharpos) fieldend |= Balpha;
                   if (options.verbose > 2)
-                    printf("changedcol2:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+                    printf("changedcol2:%i fieldindex=%li: c='%c%c' rows=%li columns=%li pos=%li\n",
                       __LINE__, fieldindex, last_c, c, rows, columns, pos);
                 }
                 else columns = 0;
@@ -2542,13 +2565,14 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
           if (last_is & (Beol | Bseparator) && (need != Bnumber)) {
             /* end of num field ok, except when the num started by a
                single point, not follwed by a 0-9 number */
-            endnumpos  = pos - 2;
+            pos = ftell(file.SourceHandle) -1;
+            endnumpos  = pos - 1;
             endcharpos = startnumpos > 0 ? startnumpos - 1 : 0;
             fieldend  |= Bnumber;
             if (last_columns == 0)       last_columns = columns;
             if (startcharpos <= endcharpos) fieldend |= Balpha;
             if (options.verbose > 2)
-              printf("endnum:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+              printf("endnum:%i fieldindex=%li: c='%c%c' rows=%li columns=%li pos=%li\n",
                 __LINE__, fieldindex, last_c, c, rows, columns, pos);
           } else { /* anomalous end of num */
             if (startnumpos >= last_seppos) {
@@ -2556,9 +2580,18 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
               columns     = last_columns;
               possiblenum = 0; /* abort and pass */
               fieldend &= !Bnumber;
+
               if (options.verbose > 2)
-                printf("anomalous1:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
-                  __LINE__, fieldindex, last_c, c, rows, columns), pos;
+                printf("anomalous1:%i fieldindex=%li: c='%c%c' rows=%li columns=%li pos=%li\n",
+                  __LINE__, fieldindex, last_c, c, rows, columns, pos);
+              /* reposition just after the last 'startnum' to allow other interpretation of the Source */
+              pos = startnumpos+1;
+              if (fseek(file.SourceHandle, pos, SEEK_SET) && options_warnings-- > 0) {/* reposition after SEP */
+                  print_stderr(
+                  "Error: Repositiong error at position %ld in file '%s'\n"
+                  "       Ignoring (may generate wrong results) [looktxt:file_scan:anom:%d]\n", pos, file.Source,__LINE__);
+                  perror("");
+                }
             } else {
               if ((columns > 0) && (startnumpos >= last_eolpos)) { /* only a line */
                 endnumpos = last_seppos > 0 ? last_seppos - 1 : 0;
@@ -2575,7 +2608,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                 }
                 if (startcharpos <= endcharpos) fieldend |= Balpha;
                 if (options.verbose > 2)
-                  printf("only1line:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i\n",
+                  printf("only1line:%i fieldindex=%li: c='%c%c' rows=%li columns=%li pos=%li\n",
                     __LINE__, fieldindex, last_c, c, rows, columns, pos);
               } else { /* already passed more than one line */
                 endnumpos = last_eolpos > 0 ? last_eolpos - 1 : 0;
@@ -2589,7 +2622,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                 /* we do not reposition as it may result in infinite loops */
                 if (startcharpos <= endcharpos) fieldend |= Balpha;
                 if (options.verbose > 2)
-                  printf("alreadypassed:%i fieldindex=%i: c='%c%c' rows=%i columns=%i pos=%i num %s char %s\n",
+                  printf("alreadypassed:%i fieldindex=%li: c='%c%c' rows=%li columns=%li pos=%li num %s char %s\n",
                     __LINE__, fieldindex, last_c, c, rows, columns, pos,
                     fieldend & Bnumber ? "yes":"no", fieldend & Balpha ? "yes":"no");
               } /* else */
@@ -2684,7 +2717,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
       }
 
       if (is & Bseparator) { last_seppos = pos; }
-      pos++;
+      pos = ftell(file.SourceHandle) -1;
 
     } while (c != EOF); /* end do */
     time(&EndTime);

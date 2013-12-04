@@ -318,18 +318,20 @@ function param=load_mcstas_param(a, keyword)
     line         = par_list{index};
     reversed_line= line(end:-1:1);
     equal_sign_id= find(reversed_line == '=');
+    if isempty(equal_sign_id), continue; end % incomplete line: skip it
     name         = fliplr(strtok(reversed_line((equal_sign_id+1):end),sprintf(' \n\t\r\f;#')));
     if isempty(name)
       column_sign_id = findstr(line, keyword);
       name = strtok(line((column_sign_id+length(keyword)+1):end));
     end
-    if isfield(a.Data, name)
+    if isfield(param, name) % was set with a Previous 'Param name=value' token
+      continue;
+    elseif isfield(a.Data, name) && getfield(a.Data, name) ~= 0
       value = getfield(a.Data, name);
     else
       value = strtok(fliplr(reversed_line(1:(equal_sign_id-1))),sprintf(' \n\t\r\f;#'));
       if ~isempty(str2num(value)), value = str2num(value); end
     end
-    
     if ~isempty(value) && ~isempty(name) && ischar(name)
       param = setfield(param, name, value);
     end
