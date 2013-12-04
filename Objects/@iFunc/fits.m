@@ -667,6 +667,23 @@ end % iFunc_private_cleannaninf
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
 % plot/update OutputFcn fitting monitoring window (used in eval_criteria)
+
+  persistent best_criteria
+  persistent best_model
+  
+  sum_criteria = sum(criteria(:));
+  
+  % first iteration
+  if isempty(best_criteria) || options.funcCount <= 2
+    best_criteria = Inf; 
+    best_model    = [];
+  end
+  
+  if best_criteria > sum_criteria % we have a better match. Store it for further display
+    best_criteria = sum_criteria;
+    best_model    = ModelValue;
+  end
+  
   old_gcf = get(0, 'CurrentFigure');
   
   % is this window already opened ?
@@ -684,13 +701,28 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
   if old_gcf ~= h, set(0, 'CurrentFigure', h); end
   n1 = strtrim(a.Name);     if length(n1) > 40, n1 = [ n1(1:37) '...' ]; end
   n2 = strtrim(model.Name); if length(n2) > 40, n2 = [ n2(1:37) '...' ]; end
+  
+  % check if this iteration is similar to the best
+  if abs(best_criteria - sum_criteria) <= abs(criteria)*0.01
+    same_criteria = 1;
+  else
+    same_criteria = 0;
+  end
 
   if isvector(a.Signal)
     set(plot(a.Signal,'r-'),'DisplayName',n1);   hold on
-    set(plot(ModelValue,'b--'),'DisplayName',n2); hold off
+    set(plot(ModelValue,'b--'),'DisplayName',n2); hold on
+    if ~same_criteria
+      set(plot(best_model,'g:'),'DisplayName',[ 'Best ' n2 ]); 
+    end
+    hold off
   else
     set(surf(a.Signal),'DisplayName',n1);  hold on; 
     set(surf(ModelValue),'DisplayName',n2); hold off
+    if ~same_criteria
+      set(surf(best_model),'DisplayName',[ 'Best ' n2 ]); 
+    end
+    hold off
   end
   options.updated = clock;
   if length(p) > 20, p= p(1:20); end
