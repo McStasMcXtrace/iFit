@@ -47,14 +47,17 @@
 
 
   
-<li><b>1.5</b>: Improved <a href="Loaders.html">file importation</a> system, <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>, and NetCDF/CDF/NeXus/HDF support, import/export of <a href="http://www.mantidproject.org">Mantid</a> workspaces (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor pro</a> wave files and Wavefront <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Obj</a> 3D. <a href="Install.html">Installation</a> through Debian repository. Much faster save to MAT files. New <a href="Math.html#mozTocId539072">smooth, </a><a href="Math.html#mozTocId663052">continuous wavelet transform</a>, <a href="Math.html#mozTocId77311">k-means</a>, reshape and <a href="Math.html#mozTocId628538">resize</a> iData methods. Improvements in the iData processing speed and memory management.<br>
+<li><b>1.5.1</b>: fix for the importation of <a href="http://www.mccode.org">McStas/McXtrace</a> files. Added <a href="http://ifit.mccode.org/techdoc/">technical</a> documentation. Fix in binary iFunc operators (Guess).<br>
 </li>
-<li><b>1.4</b>: <a href="Python.html">PyFit</a> Python interface. Fix in <a href="Math.html">iData integration</a> routines 
+<li><b>1.5</b>: Improved <a href="Loaders.html">file importation</a> system, <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>, and NetCDF/CDF/NeXus/HDF support, import/export of <a href="http://www.mantidproject.org">Mantid</a> workspaces (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor pro</a> wave files and Wavefront <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Obj</a> 3D. <a href="Install.html">Installation</a> through Debian repository. Much faster save to MAT files. New <a href="Math.html#mozTocId539072">smooth, </a><a href="Math.html#mozTocId663052">continuous wavelet transform</a>, <a href="Math.html#mozTocId77311">k-means</a>, reshape and <a href="Math.html#mozTocId628538">resize</a> iData methods. Improvements in the iData processing speed and memory management. <i>(Sept 29th 2013)</i><br>
+</li>
+
+<li><small><b>1.4</b>: <a href="Python.html">PyFit</a> Python interface. Fix in <a href="Math.html">iData integration</a> routines 
 error bar propagation (trapz, sum, ...). Fix in iData/combine when 
 monitors are default (1). Better detection of duplicated data sets from 
 recursive <a href="Load.html">iData/load</a>. Fix in <a href="Loaders.html">text import</a> (supports NaN,Inf, faster by 15%). Fixed auto guess in gauss,lorz,... <a href="Models.html">Models</a>. Added 
 proper Unit/integration test infrastructure. Fixed some methods for <a href="iFunc.html">
-iFunc</a> objects with parameter names followed with comments. Support for McStas/mcdisplay as an Application. <br>
+iFunc</a> objects with parameter names followed with comments. Support for McStas/mcdisplay as an Application. </small><small><i> (June 28th 2013)</i></small><br>
 <span style="font-weight: bold;"></span></li>
 
 
@@ -65,7 +68,7 @@ data. Added TAS neutron spectrometer resolution computation <a href="../Applicat
  support parameter constraints fix/min/max/assign as 
   <span style="font-style: italic;">object.&lt;par&gt;=&lt;value&gt;</span>. Fix in reading text files with 
 changing columns number. Execution speed improvement in all object 
-operators. Allow <a href="Fit.html">fitting</a> of event data sets. <br>
+operators. Allow <a href="Fit.html">fitting</a> of event data sets.<br>
 
   <span style="font-weight: bold;"></span></small></li>
 
