@@ -119,10 +119,13 @@ for index=1:length(varargin)
   this = varargin{index};
   if ischar(this) % check extension (looking for instrument)
     % search e.g. DEFINE INSTRUMENT
-    if ~isempty(dir(this))
-      fid=fopen(this); 
-      string=fread(fid, Inf); fclose(fid);
-      string=char(string');
+    try
+      mdir = dir(this);
+    catch
+      mdir = [];
+    end
+    if ~isempty(mdir)
+      string=fileread(this);
       if strfind(string, 'DEFINE INSTRUMENT')
         instrument = this;
         clear string
