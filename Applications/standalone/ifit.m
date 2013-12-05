@@ -71,7 +71,12 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   if strncmp(ifit_options.line,'clearvars ', 10)
     ifit_options.line = [ ifit_options.line ' -except ifit_options this' ];
   end
-  if ~isempty(dir(ifit_options.line)) || ...
+  try
+    mdir = dir(ifit_options.line);
+  catch
+    mdir = [];
+  end
+  if ~isempty(mdir) || ...
     any([ strncmp(ifit_options.line, {'file://','http://'},7) ...
           strncmp(ifit_options.line,  'ftp://', 6) ...
           strncmp(ifit_options.line,  'https://',8) ])
