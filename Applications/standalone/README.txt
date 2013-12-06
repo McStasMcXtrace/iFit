@@ -11,6 +11,12 @@ Linux (Debian/Ubuntu, works on amd64 and i386):
   2- launch: % ./mkdist <major.minor>
 will create a src.zip source, a <arch>.zip linux binary and a <arch>.deb
 
+To sign the debian package:
+  gpg --gen-key
+  gpg --armor --export jon@aframe.com --output farhi@www.ill.fr.gpg.key
+  apt-get install dpkg-sig
+  dpkg-sig --sign builder <file.deb>
+
 Mac OSX (prefer i386 which also work in 64 bits):
 ----------------------
   1- copy the ifit-src.zip file for the distribution to MacOSX
