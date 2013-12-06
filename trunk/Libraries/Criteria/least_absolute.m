@@ -20,7 +20,7 @@ function c=least_absolute(Signal, Error, Model)
     %   stdE will get lower, allowing better matching of initial weight.
     normE = sum(Error(index));
     stdE  = std(residuals(index));
-    Error( Error < stdE ) = stdE; 
+    Error( Error < stdE/4 ) = stdE/4; 
     Error = Error *(normE/sum(Error(index)));
     
     if isempty(index), c=Inf;
