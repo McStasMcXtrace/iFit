@@ -10,10 +10,10 @@ function c=least_rfactor(Signal, Error, Model)
 % <http://en.wikipedia.org/wiki/R-factor_%28crystallography%29>
   if ~isnumeric(Signal) || ~isnumeric(Model), return; end
   if isempty(Error) || isscalar(Error) || all(Error == Error(end))
-    index = find(isfinite(Model) & isfinite(Signal));
+    index = find(isfinite(Model) & isfinite(Signal) & Signal);
     c = ((Signal(index)-Model(index)).^2)./(Signal(index).^2); % raw normalised least absolute
   else
-    index = find(isfinite(Error) & isfinite(Model) & isfinite(Signal));
+    index = find(isfinite(Error) & isfinite(Model) & isfinite(Signal) & Signal);
     residuals  = Signal - Model;
     % make sure weight=1/sigma does not reach unrealistic values
     %   initially, most weights will be equal, but when fit impproves, 
