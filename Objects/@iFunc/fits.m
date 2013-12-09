@@ -43,6 +43,9 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %   least_absolute         |Signal-Model|/Error         robust
 %   least_median    median(|Signal-Model|/Error)        robust, scalar
 %   least_max          max(|Signal-Model|/Error)        non-robust, scalar
+%   least_rfactor         (|Signal-Model|/Error).^2/(Signal/Error).^2 non-robust
+%   max_corrcoef           1-corrcoeff(Signal, Model)   scalar
+%   max_likelihood
 %
 %  Type <a href="matlab:doc(iData,'Fit')">doc(iData,'Fit')</a> to access the iFit/Fit Documentation.
 %
@@ -511,9 +514,10 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
   output.corrcoef   = eval_corrcoef(a.Signal(index), e, output.modelValue(index));
   output.residuals  = a.Signal - output.modelValue;
   % Rwp
-  output.Rfactor    = sum((e.*output.residuals(index)).^2)/sum((e.*a.Signal(index)).^2);
+  Rwp  = sum((output.residuals(index)./e).^2)/sum((a.Signal(index)./e).^2);
+  output.Rfactor    = Rwp;
   % Rexp
-  Rexp = sqrt((length(a.Signal(index)) - length(pars))./sum((e.*a.Signal(index)).^2));
+  Rexp = sqrt((length(a.Signal(index)) - length(pars))./sum((a.Signal(index)./e).^2));
   % Goodness of fit
   GoF  = Rwp/Rexp; 
   if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | ...
@@ -715,10 +719,15 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
   end
 
   if isvector(a.Signal)
-    set(plot(a.Signal,'r-'),'DisplayName',n1);   hold on
-    set(plot(ModelValue,'b--'),'DisplayName',n2); hold on
+    x = a.Axes{1};
+    if length(x) ~= length(a.Signal)
+      x = 1:length(a.Signal);
+    end
+    
+    set(plot(x,a.Signal,'r-'),'DisplayName',n1);   hold on
+    set(plot(x,ModelValue,'b--'),'DisplayName',n2); hold on
     if ~same_criteria
-      set(plot(best_model,'g:'),'DisplayName',[ 'Best ' n2 ]); 
+      set(plot(x, best_model,'g:'),'DisplayName',[ 'Best ' n2 ]); 
     end
     hold off
   else
