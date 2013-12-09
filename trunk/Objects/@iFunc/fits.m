@@ -726,7 +726,7 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
     
     set(plot(x,a.Signal,'r-'),'DisplayName',n1);   hold on
     set(plot(x,ModelValue,'b--'),'DisplayName',n2); hold on
-    if ~same_criteria
+    if ~same_criteria && ~isempty(best_model)
       set(plot(x, best_model,'g:'),'DisplayName',[ 'Best ' n2 ]); 
     end
     hold off
