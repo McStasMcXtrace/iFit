@@ -24,10 +24,8 @@ within limits</a></li><li><a href="#mozTocId673530">Limiting parameter
 change
 </a></li><li><a href="#mozTocId364529">
 Other constraints/restraints
-</a></li><li><a href="#mozTocId345729">&nbsp;Additional arguments to the model</a></li><li><a href="#mozTocId42390">
-
-</a><br>
-</li><li><a href="#mozTocId359603">Using constraints within the model</a></li></ol></li><li><a href="#mozTocId179895">Estimating the model parameter uncertainties
+</a></li><li><a href="#mozTocId345729">Additional arguments to the model
+</a></li><li><a href="#mozTocId359603">Using constraints within the model</a></li></ol></li><li><a href="#mozTocId179895">Estimating the model parameter uncertainties
 and the fit quality
 </a></li><li><a href="#mozTocId855522">Building model functions</a></li><li><a href="#mozTocId778987">Specifying the optimization criteria</a></li><li><a href="#mozTocId200215">Issues when fitting</a></li></ol>
 <br>
@@ -678,20 +676,20 @@ assumes the model function has syntax<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId778987"></a>Specifying the optimization criteria</h3>
 The default optimization criteria is the '<a href="http://en.wikipedia.org/wiki/Least_squares">least square error</a>':<br>
 <br>
-<div style="text-align: center;">&#967; = &#8721; (Signal-Model).<br>
+<div style="text-align: center;">&#967;² = &#8721; (Signal-Model)².<br>
 <br>
 </div>
 When the Monitor is defined (see <a href="iData.html#mozTocId243435">iData</a>
 definition), the Signal is normalized, so that<br>
 <br>
-<div style="text-align: center;">&#967; = &#8721;
-(Signal/Monitor-Model).<br>
+<div style="text-align: center;">&#967;² = &#8721;
+(Signal/Monitor-Model)².<br>
 <br>
 </div>
 When the Error on the Signal is available, the weighted criteria reads<br>
 <br>
-<div style="text-align: center;">&#967; = &#8721;
-(Signal/Monitor-Model)/Error.<br>
+<div style="text-align: center;">&#967;² = &#8721;
+[(Signal/Monitor-Model)/Error]².<br>
 </div>
 <br>
 The options.criteria can be defined as the name of a criteria function
@@ -706,7 +704,7 @@ The Signal will be normalized to the Monitor prior to calling the
 criteria. The Error is used as weight.<br>
 The criteria is then normalized to the number of degrees of freedom by dividing it by<br>
 <br>
-<div style="text-align: center;">&#967; &#8592; &#967; /(<span style="font-style: italic;">number_of_data_points_in_the_Signal </span>- <span style="font-style: italic;">number_of_parameters</span> -1)<br>
+<div style="text-align: center;">&#967;² &#8592; &#967;² /(<span style="font-style: italic;">number_of_data_points_in_the_Signal </span>- <span style="font-style: italic;">number_of_parameters</span> -1)<br>
 </div>
 <br>
 The following pre-defined functions can be used as criteria:<br>
@@ -755,7 +753,7 @@ The following pre-defined functions can be used as criteria:<br>
     </tr><tr>
   <td valign="top">least_rfactor<br>
   </td>
-  <td align="right" valign="top">(|Signal-Model|/Error).^2/(Signal/Error).^2<br>
+  <td align="right" valign="top">(|Signal-Model|/Error)²/(Signal/Error)²<br>
   </td>
   <td valign="top">non-robust. <a href="http://en.wikipedia.org/wiki/R-factor_%28crystallography%29">Ref</a>.<br>
   </td>
@@ -763,7 +761,7 @@ The following pre-defined functions can be used as criteria:<br>
 <tr>
   <td style="vertical-align: top;">max_likelihood<br>
   </td>
-  <td style="vertical-align: top; text-align: right;" align="right">(|Signal-Model|/&#963;).^2 + 1/2 log(2&#960;&#963;)</td>
+  <td style="vertical-align: top; text-align: right;" align="right">(|Signal-Model|/&#963;)² + 1/2 log(2&#960;&#963;)</td>
   <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Maximum_likelihood">Ref</a>. Minimize <span style="font-style: italic;">-log(L)</span><br>
   </td>
 </tr><tr>
