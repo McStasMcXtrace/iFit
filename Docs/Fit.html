@@ -568,7 +568,7 @@ Once the iFunc model object has been instantiated, it is possible to restraint i
 
 
 <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <font color="#cc33cc">'abs(p(1))'</font>;	<i>% set Amplitude as its absolute value (</i>Amplitude<i> is p(1), as listed from </i>disp(f)<i>)</i><br>&gt;&gt; f.Amplitude = <font color="#cc33cc">'abs("Amplitude")'</font>;	<i>% same as above, double-quoting requests parameter name search in model</i><br>&gt;&gt; f.Amplitude = <font color="#cc33cc">'</font><font color="#cc33cc">"Amplitude" - "Background"'</font>;	% it is possible to use any parameter in expressions<br></pre>
-<h4><a class="mozTocH4" name="mozTocId345729"></a>&nbsp;Additional arguments to the model<br>
+<h4><a class="mozTocH4" name="mozTocId345729"></a>Additional arguments to the model<br>
 </h4>
 <p>When defining a model with <i>n</i> parameters and rank <i>m</i> (that is m axes), any fit process will optimize the <i>n</i> parameters by evaluating the model on the <i>m</i> axes.
  If you need to use additional arguments to the model, which are fixed 
@@ -577,8 +577,7 @@ variable in the Expression and Constraints. varargin{1} is the first additional 
 </p>
 <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;<br>&gt;&gt; disp(f)<br>f = iFunc 1D model:<br>         Expression: signal = feval(@(p,x)p(1)*exp(-0.5*((x-p(2))/p(3)).^2)+p(4), p, x);<br>        Description: Single 1D Gaussian model<br>                Tag: 'iF457990'<br>               Date: '16-Sep-2013 10:03:45'<br>               Name: 'Gaussian (1D) [gauss]'<br>         Parameters: {'Amplitude'  'Centre'  'HalfWidth'  'Background'}<br>              Guess: @(x,s)[NaN,m1(x,s-min(s(:))),m2(x,s-min(s(:))),NaN]<br>         Constraint: [1x1 struct]<br>          Dimension: 1<br>    ParameterValues: []<br>           UserData: ''<br><br>Parameters (4):<br>  p(  1)=           Amplitude<br>  p(  2)=              Centre<br>  p(  3)=           HalfWidth<br>  p(  4)=          Background<br><br>&gt;&gt; f([1 2 3 4], 1:10)	<i>% evaluate with parameters p=[1 2 3 4] and axis x=1:10</i><br>ans =<br>    4.9460    5.0000    4.9460    4.8007    4.6065    4.4111    4.2494    4.1353    4.0657    4.0286<br>&gt;&gt; f.Constraint.eval=<font color="#cc33cc">'disp(varargin)'</font>;	% add a constraint to be evaluated, using additional arguments<br>&gt;&gt; f([1 2 3 4], 1:10, <font color="#cc33cc">'eee'</font>)	% evaluate again, with additional arguments<br> 'eee'			<font color="#ff0000">&lt;-- here is displayed 'varargin' when evaluating Constraint.eval</font><br>ans =<br>    4.9460    5.0000    4.9460    4.8007    4.6065    4.4111    4.2494    4.1353    4.0657    4.0286<br>&gt;&gt; f.Expression=@(p,x, <font color="#ff0000">varargin</font>)p(1)*exp(-0.5*((x-p(2))/p(3)).^2)+p(4)+<font color="#ff0000">varargin</font>{:}<br>&gt;&gt; f([1 2 3 4], 1:10, <font color="#cc33cc">1</font>)<br> [1]			<font color="#ff0000">&lt;-- here is displayed 'varargin' when evaluating Constraint.eval</font>
 ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified in the new Expression</font><br>     5.9460    6.0000    5.9460    5.8007    5.6065    5.4111    5.2494    5.1353    5.0657    5.0286<br></pre>
-<p><br>
-</p>
+
 <h4><a class="mozTocH4" name="mozTocId359603"></a>Using constraints within the model</h4>
 It may be easier to store constraints directly within the model used 
 during the fit. The main advantage is that constraints can be directly 

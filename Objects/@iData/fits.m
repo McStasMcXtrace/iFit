@@ -43,6 +43,9 @@ function [pars_out,criteria,message,output] = fits(a, model, varargin)
 %   least_absolute         |Signal-Model|/Error         robust
 %   least_median    median(|Signal-Model|/Error)        robust, scalar
 %   least_max          max(|Signal-Model|/Error)        non-robust, scalar
+%   least_rfactor         (|Signal-Model|/Error).^2/(Signal/Error).^2 non-robust
+%   max_corrcoef           1-corrcoeff(Signal, Model)   scalar
+%   max_likelihood
 %
 %  Type <a href="matlab:doc(iData,'Fit')">doc(iData,'Fit')</a> to access the iFit/Fit Documentation.
 %
