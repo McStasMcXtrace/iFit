@@ -11,9 +11,14 @@ Linux (Debian/Ubuntu, works on amd64 and i386):
   2- launch: % ./mkdist <major.minor>
 will create a src.zip source, a <arch>.zip linux binary and a <arch>.deb
 
+To build a Debian package manually
+  chroot build-chroot-amd64
+  cd build
+  dpkg-deb --build <directory with DEBIAN and usr entries>
+
 To sign the debian package:
   gpg --gen-key
-  gpg --armor --export jon@aframe.com --output farhi@www.ill.fr.gpg.key
+  gpg --armor --export farhi@ill.eu --output farhi@www.ill.fr.gpg.key
   apt-get install dpkg-sig
   dpkg-sig --sign builder <file.deb>
 

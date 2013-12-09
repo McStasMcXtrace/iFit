@@ -26,7 +26,8 @@ change
 Other constraints/restraints
 </a></li><li><a href="#mozTocId345729">&nbsp;Additional arguments to the model</a></li><li><a href="#mozTocId42390">
 
-</a></li><li><a href="#mozTocId359603">Using constraints within the model</a></li></ol></li><li><a href="#mozTocId179895">Estimating the model parameter uncertainties
+</a><br>
+</li><li><a href="#mozTocId359603">Using constraints within the model</a></li></ol></li><li><a href="#mozTocId179895">Estimating the model parameter uncertainties
 and the fit quality
 </a></li><li><a href="#mozTocId855522">Building model functions</a></li><li><a href="#mozTocId778987">Specifying the optimization criteria</a></li><li><a href="#mozTocId200215">Issues when fitting</a></li></ol>
 <br>
@@ -252,7 +253,7 @@ with a weighting by the success ratio and the number of function calls
 (optimization speed). Successive calls to <span style="font-style: italic; font-weight: bold;">fmin</span> with the same problem to solve may result in different optimizers and solutions.<br>
 <span style="font-style: italic; font-weight: bold;"><br>
 </span>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="vertical-align: top; font-weight: bold; font-style: italic; color: rgb(51, 102, 255); background-color: rgb(255, 204, 204);">Optimizer<br>
@@ -711,11 +712,11 @@ The criteria is then normalized to the number of degrees of freedom by dividing 
 <br>
 The following pre-defined functions can be used as criteria:<br>
 <br>
-<table style="text-align: left; width: 100%;" cellpadding="2" cellspacing="2" border="1">
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
-      <td style="vertical-align: top; font-weight: bold; font-style: italic;">criteria(Signal, Error,
-Model)</td>
+      <td style="vertical-align: top; font-weight: bold; font-style: italic;">criteria<br>
+(Signal,Error,Model)</td>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">Expression<br>
       </td>
       <td style="vertical-align: top; font-weight: bold; font-style: italic;">comment<br>
@@ -724,7 +725,7 @@ Model)</td>
     <tr>
       <td style="vertical-align: top;">least_square<br>
       </td>
-      <td style="vertical-align: top; text-align: right;">(|Signal-Model|/Error)<sup>2</sup><br>
+      <td style="vertical-align: top; text-align: right;" align="right">(|Signal-Model|/Error)<sup>2</sup><br>
       </td>
       <td style="vertical-align: top;">non-robust. <a href="http://en.wikipedia.org/wiki/Least_squares">Ref</a>.<br>
       </td>
@@ -732,7 +733,7 @@ Model)</td>
     <tr>
       <td style="vertical-align: top;">least_absolute<br>
       </td>
-      <td style="vertical-align: top; text-align: right;">|Signal-Model|/Error<br>
+      <td style="vertical-align: top; text-align: right;" align="right">|Signal-Model|/Error<br>
       </td>
       <td style="vertical-align: top;">robust. <a href="http://en.wikipedia.org/wiki/Least_absolute_deviation">Ref</a>.<br>
       </td>
@@ -740,7 +741,7 @@ Model)</td>
     <tr>
       <td style="vertical-align: top;">least_median<br>
       </td>
-      <td style="vertical-align: top; text-align: right;">median(|Signal-Model|/Error)<br>
+      <td style="vertical-align: top; text-align: right;" align="right">median(|Signal-Model|/Error)<br>
       </td>
       <td style="vertical-align: top;">robust, scalar. <a href="http://en.wikipedia.org/wiki/Median_absolute_deviation">Ref</a>.<br>
       </td>
@@ -748,14 +749,22 @@ Model)</td>
     <tr>
       <td style="vertical-align: top;">least_max<br>
       </td>
-      <td style="vertical-align: top; text-align: right;">max(|Signal-Model|/Error)<br>
+      <td style="vertical-align: top; text-align: right;" align="right">max(|Signal-Model|/Error)<br>
       </td>
       <td style="vertical-align: top;">non-robust, scalar. <a href="http://en.wikipedia.org/wiki/Absolute_deviation">Ref</a>. <br>
       </td>
     </tr><tr>
+  <td valign="top">least_rfactor<br>
+  </td>
+  <td align="right" valign="top">(|Signal-Model|/Error).^2/(Signal/Error).^2<br>
+  </td>
+  <td valign="top">non-robust. <a href="http://en.wikipedia.org/wiki/R-factor_%28crystallography%29">Ref</a>.<br>
+  </td>
+</tr>
+<tr>
   <td style="vertical-align: top;">max_likelihood<br>
   </td>
-  <td style="vertical-align: top; text-align: right;">(|Signal-Model|/&#963;).^2 + 1/2 log(2&#960;&#963;)</td>
+  <td style="vertical-align: top; text-align: right;" align="right">(|Signal-Model|/&#963;).^2 + 1/2 log(2&#960;&#963;)</td>
   <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Maximum_likelihood">Ref</a>. Minimize <span style="font-style: italic;">-log(L)</span><br>
   </td>
 </tr><tr>
@@ -763,7 +772,7 @@ Model)</td>
   </td>
   <td align="right" valign="top">1-corrcoef(Signal, Model)<br>
   </td>
-  <td valign="top"><br>
+  <td valign="top"><a href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Ref</a>.<br>
   </td>
 </tr>
 
