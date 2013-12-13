@@ -2586,12 +2586,13 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
                   __LINE__, fieldindex, last_c, c, rows, columns, pos);
               /* reposition just after the last 'startnum' to allow other interpretation of the Source */
               pos = startnumpos+1;
+              rows = columns = 0;
               if (fseek(file.SourceHandle, pos, SEEK_SET) && options_warnings-- > 0) {/* reposition after SEP */
                   print_stderr(
                   "Error: Repositiong error at position %ld in file '%s'\n"
                   "       Ignoring (may generate wrong results) [looktxt:file_scan:anom:%d]\n", pos, file.Source,__LINE__);
                   perror("");
-                }
+              }
             } else {
               if ((columns > 0) && (startnumpos >= last_eolpos)) { /* only a line */
                 endnumpos = last_seppos > 0 ? last_seppos - 1 : 0;
