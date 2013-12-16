@@ -514,7 +514,7 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
   output.corrcoef   = eval_corrcoef(a.Signal(index), e, output.modelValue(index));
   output.residuals  = a.Signal - output.modelValue;
   % Rwp
-  Rwp  = sum((output.residuals(index)./e).^2)/sum((a.Signal(index)./e).^2);
+  Rwp  = sqrt(sum((output.residuals(index)./e).^2)/sum((a.Signal(index)./e).^2));
   output.Rfactor    = Rwp;
   % Rexp
   Rexp = sqrt((length(a.Signal(index)) - length(pars))./sum((a.Signal(index)./e).^2));
@@ -727,7 +727,7 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
     set(plot(x,a.Signal,'r-'),'DisplayName',n1);   hold on
     set(plot(x,ModelValue,'b--'),'DisplayName',n2); hold on
     if ~same_criteria && ~isempty(best_model)
-      set(plot(x, best_model,'g:'),'DisplayName',[ 'Best ' n2 ]); 
+      set(plot(x, best_model,'g-.','LineWidth',2),'DisplayName',[ 'Best ' n2 ]); 
     end
     hold off
   else
