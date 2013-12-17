@@ -523,7 +523,8 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
   if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | ...
     (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
     fprintf(1, ' Correlation coefficient=%g (closer to 1 is better)\n',  output.corrcoef);
-    fprintf(1, ' Weighted R-factor      =%g (smaller that 1 is better)\n', output.Rfactor);
+    fprintf(1, ' Weighted R-factor      =%g (Rwp, smaller that 0.2 is better)\n', output.Rfactor);
+    fprintf(1, ' Experimental R-factor  =%g (Rexp)\n', Rexp);
   end
   if abs(output.corrcoef) < 0.6 && ~isscalar(a.Error)
     name = inputname(2);
