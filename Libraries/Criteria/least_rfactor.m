@@ -11,7 +11,7 @@ function c=least_rfactor(Signal, Error, Model)
   if ~isnumeric(Signal) || ~isnumeric(Model), return; end
   if isempty(Error) || isscalar(Error) || all(Error == Error(end))
     index = find(isfinite(Model) & isfinite(Signal) & Signal);
-    c = ((Signal(index)-Model(index)).^2)./(Signal(index).^2); % raw normalised least absolute
+    c = sqrt(((Signal(index)-Model(index)).^2)./(Signal(index).^2)); % raw normalised least absolute
   else
     index = find(isfinite(Error) & isfinite(Model) & isfinite(Signal) & Signal);
     residuals  = Signal - Model;
@@ -24,7 +24,7 @@ function c=least_rfactor(Signal, Error, Model)
     Error = Error *(normE/sum(Error(index)));
     
     if isempty(index), c=Inf;
-    else               c=((residuals(index)./Error(index)).^2)./((Signal(index)./Error(index)).^2);
+    else               c=sqrt(((residuals(index)./Error(index)).^2)./((Signal(index)./Error(index)).^2));
     end
   end
 end % least_rfactor
