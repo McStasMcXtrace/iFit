@@ -2718,9 +2718,9 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
       }
 
       if (is & Bseparator) { last_seppos = pos; }
-      pos = ftell(file.SourceHandle) -1;
+      pos = ftell(file.SourceHandle);
 
-    } while (c != EOF); /* end do */
+    } while (c != EOF && pos >= 0); /* end do */
     time(&EndTime);
     if (options.verbose >= 2)
       printf("VERBOSE[file_scan]: time elapsed %g [s]\n", difftime(EndTime,StartTime));
