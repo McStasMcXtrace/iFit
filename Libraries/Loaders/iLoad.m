@@ -490,9 +490,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     % check if the file is in Matlab search path, but not directly accessble.
     if isempty(dir(filename)) && exist(filename, 'file')
       filename = which(filename);
-      if index == 1
-        fprintf(1, 'iLoad: %s: Accessing file %s.\n', char(loader.method), filename);
-      end
+      fprintf(1, 'iLoad: %s: Accessing file %s.\n', char(loader.method), filename);
     end
 
     % fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
