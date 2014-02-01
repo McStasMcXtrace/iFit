@@ -39,6 +39,7 @@ s = []; c = [];
 
 % now call FastCMeans
 S = subsref(a,struct('type','.','subs','Signal'));
+S = S - min(S(:));
 
 X = uint8(S/max(S(:))*2^8); % this is faster and requires much less memory that uint16
 X = FastCMeans(X, k);
