@@ -43,9 +43,7 @@ if isempty(r), r=iData; end
 if isempty(g), g=iData; end
 if isempty(b), b=iData; end
 
-
 h = [];
-a = [ r g(1) b(1) ];
 
 if numel(a) > 3
   a=a(1:3);
