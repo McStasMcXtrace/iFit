@@ -111,8 +111,10 @@ while dC>1E-6 && index < 20
         C(j)=sum(IH(LUT==j))/sum(H(LUT==j));
     end
       
-    % Change in centroids 
+    % Change in centroids
+    if isempty(C), C=C0; break; end
     dC=max(abs(C-C0));
+    
     % fprintf(1, '%i iterations, total sum of distances = %g\n', index, dC);
     index = index+1;
     
@@ -136,6 +138,7 @@ for k=1:max(LUT)
     
     % Intensity range for k-th class
     i=find(LUT==k);
+    if isempty(i), continue; end
     i1=i(1);
     if numel(i)>1
         i2=i(end);
