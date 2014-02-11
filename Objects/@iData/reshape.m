@@ -36,6 +36,7 @@ if prod(sz) ~= prod(dims)
   iData_private_error(mfilename,[ 'To RESHAPE the number of elements must not change. Object ' ...
       a.Tag ' "' a.Title ' has dimension ' mat2str(size(a)) ' but requested to reshape into ' mat2str(dims) ]) ;
 end
+dims
 a  = iData_private_unary(a, 'reshape', dims(:)');
 
 % then update axes

@@ -56,7 +56,7 @@ if ~isdeployed && (isempty(compiled) || ( length(varargin) == 1 && strcmp(vararg
     end
     if compiled
       rehash
-      % rethrow cif2hkl command with new MeX
+      % rethrow command with new MeX
       clear functions
       if exist(mfilename) == 3
         result = looktxt(varargin{:});
