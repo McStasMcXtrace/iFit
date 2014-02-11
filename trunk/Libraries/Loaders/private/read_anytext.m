@@ -7,8 +7,27 @@ function s = read_anytext(varargin)
 % * import the MAT file as a structure
 
 % TODO: 
-% support replacement by fread; regexprep; fprintf (NaN, Inf, ...)
 % support option compile
+
+persistent config
+
+if isempty(config)
+  if exist('iLoad')
+    config  = iLoad('config');
+  else
+    config.MeX = 'yes';
+  end
+end
+
+if isfield(config, 'MeX')
+  use_mex = config.MeX;
+end
+if isstruct(use_mex) && isfield(use_mex, 'looktxt')
+  tmp = use_mex.looktxt;
+  use_mex = tmp;
+end
+if strcmp(use_mex, 'yes') || use_mex ~= 0, use_mex=1; 
+else use_mex=0; end
 
 % handle input arguments =======================================================
 s = [];
@@ -63,40 +82,49 @@ for index=1:length(varargin)
   end
 end
 
-% launch looktxt with MATfile format and temporary file name ===================
+% launch looktxt with MeX or MATfile format and temporary file name ===================
 
-% specify default output file name and format (if not defined by user)
+% clean-up format and outfile options
 if isnumeric(user.outfile) && user.outfile <= length(argv)
   user.outfile = argv{user.outfile}; 
 end
 if isnumeric(user.format) && user.format <= length(argv)
-  user.format = argv{user.format}; 
+  user.format = argv{user.format};
 end
-
-% line below: we do not force MAT file write, and then request MEX
-% with direct memory allocation in the Matlab workspace. faster by 15%.
-if isempty(user.outfile) && 0
-  user.outfile     = [ tempname '.mat' ];  % usually in TMP directory
-  argv{end+1} = [ '--outfile=' user.outfile ];
-  remove_tempname = 1;
-elseif strncmp(user.outfile, '--outfile=', length('--outfile='))
+if strncmp(user.outfile, '--outfile=', length('--outfile='))
   user.outfile= user.outfile((length('--outfile=')+1):end);
 end
 if strncmp(user.format, '--format=', length('--format='))
-  user.format= user.format((length('--format=')+1):end);
+  user.format = user.format((length('--format=')+1):end)
+end
+
+% when no format specified use MeX when available or MATFiles
+if isempty(user.format)
+  if use_mex, user.format = 'MeX';
+  else        user.format = 'MATFile';
+  end
+end
+
+% when MATFile and no output file, use temporary
+if strcmp(user.format, 'MATFile') && isempty(user.outfile)
+  user.outfile= [ tempname '.mat' ];  % usually in TMP directory
+  remove_tempname = 1;
+end
+
+% send options as looktxt arguments
+if ~isempty(user.format)
   argv{end+1} = [ '--format=' user.format ];
-elseif exist('looktxt') ~= 3 % use binary/executable, not MeX
-  user.format= 'MATfile';
-  argv{end+1} = [ '--format=' user.format ];
+end
+if ~isempty(user.outfile)
+  argv{end+1} = [ '--outfile=' user.outfile ];
 end
 
 % call looktxt >>>>
-if isempty(user.outfile)
-  % pure MEX call. No temporary file.
-  user.format= 'MEX';
-  argv{end+1} = [ '--format=' user.format ];
+if strcmp(user.format, 'MeX')
+  % pure MEX call. No temporary file. May cause SEGV. faster by 15%.
   s = looktxt(argv{:});
 else
+  s = [];
   looktxt(argv{:});
   
   % import the MAT file from the temporary file, into structure ==================
@@ -109,8 +137,6 @@ else
       if length(f) == 1
         s = s.(f{1});
       end
-    catch
-      s = [];
     end
   end
 
