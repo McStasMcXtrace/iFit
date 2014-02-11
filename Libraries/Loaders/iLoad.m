@@ -494,17 +494,20 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
 
     % fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
-    if isempty(loader.options)
-      data = feval(loader.method, filename, varargin{:});
-    elseif iscell(loader.options)
-      data = feval(loader.method, filename, loader.options{:}, varargin{:})
+    % we select the calling syntax which matches the number of input arguments
+    if iscell(loader.options)
+      varg = { filename, loader.options{:}, varargin{:} };
     elseif ischar(loader.options)
-      try
-      data = feval(loader.method, filename, loader.options, varargin{:});
-      catch
-      data = feval(loader.method, [ filename ' '  loader.options ], varargin{:});
-      end
+      if ~isempty(loader.options), loader.options = [ ' ' loader.options ]; end
+      varg = { [ filename loader.options ], varargin{:} };
     end
+    % reduce the number of input arguments to the one expected
+    if nargin(loader.method) > 0
+      varg = varg(1:nargin(loader.method));
+    end
+    % call the loader
+    data = feval(loader.method, varg{:});
+    
     data = iLoad_loader_check(filename, data, loader);
     if isempty(data), return; end
     if isfield(loader, 'name') data.Format = loader.name; 

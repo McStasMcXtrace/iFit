@@ -324,9 +324,10 @@ function param=load_mcstas_param(a, keyword)
       column_sign_id = findstr(line, keyword);
       name = strtok(line((column_sign_id+length(keyword)+1):end));
     end
+    
     if isfield(param, name) % was set with a Previous 'Param name=value' token
       continue;
-    elseif isfield(a.Data, name) && getfield(a.Data, name) ~= 0
+    elseif isfield(a.Data, name) && any(getfield(a.Data, name))
       value = getfield(a.Data, name);
     else
       value = strtok(fliplr(reversed_line(1:(equal_sign_id-1))),sprintf(' \n\t\r\f;#'));
