@@ -2,7 +2,7 @@
 *
 *                     Program looktxt.c
 *
-* looktxt version Looktxt 1.3 $Revision$ (14 June 2013) by Farhi E. [farhi@ill.fr]
+* looktxt version Looktxt 1.4 $Revision$ (Feb 10, 2014) by Farhi E. [farhi@ill.fr]
 *
 * Usage: looktxt [options] file1 file2 ...
 * Action: Search and export numerics in a text/ascii file.
@@ -139,9 +139,9 @@
 
 
 #define AUTHOR  "Farhi E. [farhi@ill.fr]"
-#define DATE    "14 June 2013"
+#define DATE    "10 Feb 2014"
 #ifndef VERSION
-#define VERSION "1.3 $Revision$"
+#define VERSION "1.4 $Revision$"
 #endif
 
 #ifdef __dest_os
@@ -1715,10 +1715,11 @@ struct file_struct file_close(struct file_struct file)
 *       TargetTxt    is NULL in case of target text creation error (exists)
 *       TargetBin    is NULL in case of target binary creation error (exists)
 *****************************************************************************/
-struct file_struct file_open(char *name, struct option_struct options)
+struct file_struct file_open(char *name0, struct option_struct options)
 {
   struct file_struct file;  /* will be the return value */
-  char  *root=NULL;
+  char  *root = NULL;
+  char  *name = name0;
 
   file = file_init();
 
@@ -1726,6 +1727,9 @@ struct file_struct file_open(char *name, struct option_struct options)
   {
     struct fileparts_struct parts;
     struct stat stfile;
+    
+    if (!strncmp(name, "file://", 7))
+      name +=7;
 
     /* extracts source file parts */
     parts = fileparts(name);
@@ -2068,10 +2072,10 @@ double *data_get_double(struct file_struct file, struct data_struct field, struc
     /* fast method: fscanf */
     
     long index=0;
-    if (fseek(file.SourceHandle, field.n_start-1 > 0 ? field.n_start-1 : 0, SEEK_SET))
+    if (fseek(file.SourceHandle, field.n_start > 0 ? field.n_start : 0, SEEK_SET))
       if (options_warnings-- > 0)
         print_stderr( "Warning: Error in fseek(%s,%i) [looktxt:data_get_double:%d]\n",
-        file.Source, field.n_start-1, __LINE__);
+        file.Source, field.n_start, __LINE__);
     for (index =0; index < field.rows*field.columns; index ++) {
       long   pos = ftell(file.SourceHandle);
       double value=0;
@@ -2444,23 +2448,17 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
         }
           
         /* handle NaN and Inf scanning */
-        if (isNAN && isNAN <= strlen(sNAN))
-          if (c == sNAN[isNAN -1]) {
-            found = 1;
-            is |= Bnumber; 
-            isNAN++;
-          } else {
-            isNAN=0;
-          }
+        if (isNAN && isNAN <= strlen(sNAN) && c == sNAN[isNAN -1]) {
+          found = 1;
+          is |= Bnumber; 
+          isNAN++;
+        }
         else isNAN=0;
-        if (isINF && isINF <= strlen(sINF))
-          if (c == sINF[isINF -1]) {
-            found = 1;
-            is |= Bnumber; 
-            isINF++;
-          } else {
-            isINF=0;
-          }
+        if (isINF && isINF <= strlen(sINF) && c == sINF[isINF -1]) {
+          found = 1;
+          is |= Bnumber; 
+          isINF++;
+        }
         else isINF=0;
 
 /* last column : update when found and (EOL and not groupnum)
