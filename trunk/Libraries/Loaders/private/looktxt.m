@@ -13,86 +13,46 @@ function result = looktxt(varargin)
 
 % this function is called when the MeX is not present/compiled
 
+% first time, if the mex is not present, we try to compile it
+
 persistent compiled
 
 result = [];
 
-this_path = fileparts(which(mfilename));
-
 % check if we use the looktxt executable, or need to compile the MeX (only once)
-if ~isdeployed && (isempty(compiled) || ( length(varargin) == 1 && strcmp(varargin{1}, 'compile') ) )
-  compiled = 0;
+if ~isdeployed && (isempty(compiled) || strcmp(varargin{1}, 'compile'))
+  compiled = read_anytext('compile');
   
-  % check if iLoad config allows MeX
-  if exist('iLoad')
-    config = iLoad('config');
-  else
-    config.MeX = 'yes';
-  end
-  if isfield(config, 'MeX') && ...
-   ((isfield(config.MeX, mfilename) && strcmp(config.MeX.(mfilename), 'yes')) ...
-     || strcmp(config.MeX, 'yes'))
-    % attempt to compile MeX
-    fprintf(1, '%s: compiling mex...\n', mfilename);
-    try
-      cmd={'-O','-output',fullfile(this_path,mfilename), ...
-           fullfile(this_path,'looktxt.c'),'-DUSE_MEX'};
-      disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
-      mex(cmd{:});
-      compiled = 1;
-    catch
-      try
-        cmd={'-O','-output',fullfile(this_path,mfilename),...
-             fullfile(this_path,'looktxt.c'),'-DUSE_MEX', ...
-             ['-L"' fullfile(matlabroot,'sys','lcc','lib') '"' ],'-lcrtdll'};
-        disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
-        mex (cmd{:});
-        compiled = 2;
-      catch
-        compiled = 0;
-        error('%s: Can''t compile looktxt.c mex\n       in %s\n', ...
-          mfilename, fullfile(this_path));
-      end
+  % succeed mex: rethrow looktxt call to the mex
+  if strcmp(compiled, 'mex')
+    rehash
+    % rethrow command with new MeX
+    clear functions
+    if exist(mfilename) == 3
+      result = looktxt(varargin{:});
+    elseif nargin > 0
+      error('%s: MeX compiled successfully. Rethrow command to use it.');
     end
-    if compiled
-      rehash
-      % rethrow command with new MeX
-      clear functions
-      if exist(mfilename) == 3
-        result = looktxt(varargin{:});
-      elseif nargin > 0
-        error('%s: MeX compiled successfully. Rethrow command to use it.');
-      end
-    end
+  elseif ~strcmp(compiled, 'bin')
+    % no bin, no mex : fail to compile and return
     return
-  elseif isempty(dir(fullfile(this_path,mfilename))) % no executable available
-    % attempt to compile as binary
-    fprintf(1, '%s: compiling binary...\n', mfilename);
-    try
-      cmd={'-f', fullfile(matlabroot,'bin','matopts.sh'), '-DUSE_MAT', ...
-           '-O', '-output', fullfile(this_path,mfilename), ...
-           fullfile(this_path,'looktxt.c'), '-lmat', '-lmx'};
-      disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
-      mex(cmd{:});
-    catch
-      error('%s: Can''t compile looktxt.c binary\n       in %s\n', ...
-          mfilename, fullfile(this_path));
-    end
   end
-  cd(p)
 end
-if isempty(varargin) || strcmp(varargin{1}, 'compile'), return; end
 
+% use looktxt bin when available -----------------------------------------------
+if ~strcmp(compiled, 'bin'), return; end
 % handle input arguments
 
-% assemble command line
-cmd = fullfile(this_path, mfilename);
-
-cmd = [ cmd ' ' sprintf('%s ', varargin{:}) ];
+% assemble command line for the binary call
+this_path = fileparts(which(mfilename));
+cmd       = fullfile(this_path, mfilename);
+cmd       = [ cmd ' ' sprintf('%s ', varargin{:}) ];
 disp(cmd)
 
 % launch the command
 [status, result] = system(cmd);
 
+% record if looktxt binary call works for the next time
+if status ~= 0, compiled = 'no'; end
 
 

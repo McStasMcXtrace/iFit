@@ -20,30 +20,35 @@ elseif isfield(out.Data,'Variables')
   % the Data from NC
   for index=1:length(out.Data.Variables)
     this = out.Data.Variables(index);
-    name = this.Name;
-    if ~isfield(out, name) || ...
-      (~isempty(getalias(out, name)) && numel(this.Data) > numel(get(out, name)))
-      out = setalias(out, name, [ 'Data.Variables(' num2str(index) ').Data' ]);
+    if isfield(this, 'Name')
+        name = this.Name;
+        if ~isfield(out, name) || ...
+          (~isempty(getalias(out, name)) && isfield(this, 'Data') && numel(this.Data) > numel(get(out, name)))
+          out = setalias(out, name, [ 'Data.Variables(' num2str(index) ').Data' ]);
+        end
     end
   end
 
   % additional attributes, only overritten when dimensionality is larger than the current value
   for index=1:length(out.Data.Attributes)
     this = out.Data.Attributes(index);
-    name = this.Name;
-    if ~isfield(out, name) || ...
-      (~isempty(getalias(out, name)) && numel(this.Data) > numel(get(out, name)))
-      out = setalias(out, name, [ 'Data.Attributes(' num2str(index) ').Val' ]);
+    if isfield(this, 'Name')
+        name = this.Name;
+        if ~isfield(out, name) || ...
+          (~isempty(getalias(out, name)) && isfield(this, 'Data') && numel(this.Data) > numel(get(out, name)))
+          out = setalias(out, name, [ 'Data.Attributes(' num2str(index) ').Val' ]);
+        end
     end
-    
   end
 
   for index=1:length(out.Data.Dimensions)
     this = out.Data.Dimensions(index);
-    name = this.Name;
-    if ~isfield(out, name) || ...
-      (~isempty(getalias(out, name)) && numel(this.Data) > numel(get(out, name)))
-      out = setalias(out, name, [ 'Data.Dimensions(' num2str(index) ').Dim' ]);
+    if isfield(this, 'Name')
+        name = this.Name;
+        if ~isfield(out, name) || ...
+          (~isempty(getalias(out, name)) && isfield(this, 'Data') && numel(this.Data) > numel(get(out, name)))
+          out = setalias(out, name, [ 'Data.Dimensions(' num2str(index) ').Dim' ]);
+        end
     end
   end
 
