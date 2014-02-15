@@ -5,9 +5,8 @@ function s = read_anytext(varargin)
 % * handle arguments, looking for options (possibly with "string") and filenames
 % * launch looktxt as MeX and MATfile format on temporary file
 % * import the MAT file as a structure
-
-% TODO: 
-% support option compile
+%
+% read_anytext('compile') creates looktxt MeX or binary
 
 persistent config
 
@@ -26,13 +25,20 @@ if isstruct(use_mex) && isfield(use_mex, 'looktxt')
   tmp = use_mex.looktxt;
   use_mex = tmp;
 end
-if strcmp(use_mex, 'yes') || use_mex ~= 0, use_mex=1; 
+if strcmp(use_mex, 'yes') || (isscalar(use_mex) && use_mex ~= 0), use_mex=1; 
 else use_mex=0; end
 
 % handle input arguments =======================================================
 s = [];
 if isempty(varargin)
   looktxt('--help');
+  return
+end
+
+if ~isdeployed && (length(varargin) == 1 && strcmp(varargin{1}, 'compile'))
+  if use_mex, s = read_anytext_compile_mex;
+  else        s = read_anytext_compile_binary;
+  end
   return
 end
 
@@ -160,4 +166,61 @@ if isstruct(s)
   end  
 end
 
+% ------------------------------------------------------------------------------
+function compiled = read_anytext_compile_mex
+  % compile looktxt as MeX
+  
+  compiled = '';
+  this_path = fileparts(which(mfilename));
+  % attempt to compile MeX
+  fprintf(1, '%s: compiling looktxt mex...\n', mfilename);
+  try
+    cmd={'-O','-output',fullfile(this_path,'looktxt'), ...
+         fullfile(this_path,'looktxt.c'),'-DUSE_MEX'};
+    disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
+    mex(cmd{:});
+    compiled = 'mex';
+  catch
+    try
+      % Windows/LCC compiler support
+      cmd={'-O','-output',fullfile(this_path,mfilename),...
+           fullfile(this_path,'looktxt.c'),'-DUSE_MEX', ...
+           ['-L"' fullfile(matlabroot,'sys','lcc','lib') '"' ],'-lcrtdll'};
+      disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
+      mex (cmd{:});
+      compiled = 'mex';
+    catch
+      error('%s: Can''t compile looktxt.c mex\n       in %s\n', ...
+        mfilename, fullfile(this_path));
+    end
+  end
+
+function compiled = read_anytext_compile_binary
+  % compile looktxt as binary when does not exist yet
+  
+  compiled = '';
+  this_path = fileparts(which(mfilename));
+  % attempt to compile as binary, when it does not exist yet
+  this_path = fileparts(which(mfilename));
+  cmd       = fullfile(this_path, mfilename);
+  % launch the command
+  [status, result] = system(cmd);
+  if status == 0
+    % the executable is already there. No need to make it .
+    compiled = 'bin'; 
+    return
+  end
+
+  fprintf(1, '%s: compiling looktxt binary...\n', mfilename);
+  try
+    cmd={'-f', fullfile(matlabroot,'bin','matopts.sh'), '-DUSE_MAT', ...
+         '-O', '-output', fullfile(this_path,'looktxt'), ...
+         fullfile(this_path,'looktxt.c'), '-lmat', '-lmx'};
+    disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
+    mex(cmd{:});
+    compiled = 'bin';
+  catch
+    error('%s: Can''t compile looktxt.c binary\n       in %s\n', ...
+        mfilename, fullfile(this_path));
+  end
 

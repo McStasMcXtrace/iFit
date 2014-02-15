@@ -6,6 +6,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 % These formats can be obtained using [config, configfile]=iLoad('load config').
 % The file formats cache and MeX files can be rebuilt with
 %   iLoad force
+%   iLoad compile
 % the iLoad_ini configuration file can be saved in the Preference directory
 % using 
 %   [config, configfile] = iLoad(config,'save config').
@@ -107,10 +108,18 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     return
   elseif any(strcmp(loader, {'force','force load config','compile'}))
-    % check MeX files
-    if exist('looktxt') ~= 3,        read_anytext('compile'); end
-    if exist('cbf_uncompress') ~= 3, read_cbf('compile'); end
-    if exist('cif2hkl') ~= 3,        cif2hkl('compile'); end
+    if ~strcmp(loader, 'compile')
+      % check MeX files
+      if exist('looktxt') ~= 3,        read_anytext('compile'); end
+      if exist('cbf_uncompress') ~= 3, read_cbf('compile'); end
+      if exist('cif2hkl') ~= 3,        cif2hkl('compile'); end
+    else
+      % force compile
+      read_anytext('compile');
+      read_cbf('compile');
+      cif2hkl('compile');
+    end
+       
     % display the MeX/binary files used
     disp([ mfilename ': MeX/binary importer used' ])
     disp(which('looktxt')); 
