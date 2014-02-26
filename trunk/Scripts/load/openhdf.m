@@ -24,7 +24,7 @@ if numel(out) > 1
   return
 end
 
-if ~isempty(findstr(out, 'NeXus')) || ~isempty(findfield(out, 'NX_class'))
+if ~isempty(findstr(out, 'NeXus')) || ~isempty(findfield(out, 'NX_class')) || ~isempty(findfield(out, 'class'))
   % special stuff for NeXus files
   out = load_NeXus(out); % see private
   

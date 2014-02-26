@@ -13,7 +13,7 @@ function out = load_NeXus(in)
 [allfields, alltypes] = findfield(in);
 
 f       = allfields(strcmp(alltypes, 'char'));  % get all char paths
-c       = get(in, f);                 % get their content
+c       = deblank(get(in, f));                 % get their content
 nxblock = strcmpi(c, 'NXdata') | strcmpi(c, 'NXdetector');
 field   = f(nxblock);
 if isempty(strfind(in.Format, 'NeXus'))
@@ -46,6 +46,7 @@ for index=1:numel(field)
   if isequal(in, this)
     break
   end
+  in = this;
 end
 if length(out) == 0
   out = in;
@@ -219,13 +220,16 @@ sz = size(nxdata);
 
 % remove unwanted Attributes
 for index=1:numel(Axes)
-  Axes{index} = regexprep(Axes{index}, '\.Attributes|axes|axis\>', '');
+  ax = regexprep(Axes{index}, '\.Attributes|axes|axis\>', '');
+  if ax(end) == '.', ax(end) = ''; end
+  Axes{index} = ax;
 end
 
 Axes_ranks = cell2mat(Axes_ranks);
 
 for index=1:numel(Axes)
   ax = Axes{index};
+  
   % clean Attributes and axis/axes
   % get size of axis
   try
@@ -237,6 +241,7 @@ for index=1:numel(Axes)
     end
     continue;
   end
+
   sa  = size(val);
   % skip empty and scalar axes
   if all(sa <= 1), continue; end
@@ -275,7 +280,7 @@ for index=1:numel(Axes)
     if isfield(Attributes, 'units') && ~isempty(Attributes.units)
       lab = [ lab '[' Attributes.units ']'];
     end
-    
+
     % the axis may have n+1 bins (outer bounds per bin)
     if length(sa) == 1 && any(sz == sa-1)
       val = get(nxdata, ax);
@@ -292,7 +297,7 @@ for index=1:numel(Axes)
       end
       if ~isempty(lab), nxdata = label(nxdata, Axes_ranks(index), lab); end
     % check if axis dimension matches the signal rank
-    elseif (length(sa) == 1 && sz(Axes_ranks(index)) == sa) ...
+    elseif (length(sa) == 1 && Axes_ranks(index) <= length(sz) && sz(Axes_ranks(index)) == sa) ...
             || (length(sz) == length(sa) && all(sz == sa))
       % assign this axis with rank in object, when not equal to the auto-guessed one
       if ~strcmp(getalias(nxdata,getaxis(nxdata, num2str(Axes_ranks(index)))), ax)

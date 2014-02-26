@@ -57,8 +57,8 @@ data = getGroup(filename, data_info);
         else
           val = hdf5read(filename,[data_info.Datasets(i).Name]);
         end
-        if iscellstr(val) && length(val) == 1,  val = char(val); end
         if strcmp(class(val), 'hdf5.h5string'), val = char(val.Data); end
+        if iscellstr(val) && length(val) == 1,  val = char(val); end
         name        = getName(data_info.Datasets(i).Name);
         data.(name) = val; clear val;
         
@@ -68,6 +68,7 @@ data = getGroup(filename, data_info);
         for j=1:natts
             val = data_info.Datasets(i).Attributes(j).Value;
             if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+            if iscellstr(val) && length(val) == 1,  val = char(val); end
             aname        = getName(data_info.Datasets(i).Attributes(j).Name);
             data.Attributes.(name).(aname) = val;
         end
@@ -98,6 +99,7 @@ data = getGroup(filename, data_info);
     for j=1:natts
         val = data_info.Attributes(j).Value;
         if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+        if iscellstr(val) && length(val) == 1,  val = char(val); end
         name = getName(data_info.Attributes(j).Name);
         data.Attributes.(name) = val;
     end
