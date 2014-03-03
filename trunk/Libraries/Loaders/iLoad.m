@@ -447,8 +447,8 @@ function [data, format] = iLoad(filename, loader, varargin)
         else this_loader = loader(index); end
         try
           data = iLoad_import(filename, this_loader, varargin{:});
-        catch
-          l=lasterror;
+        catch ME
+          l=ME;
           disp(l.message);
           if strncmpi(l.message, 'Invalid MEX-file', length('Invalid MEX-file')) && ~recompile
             % attempt to recompile MeX file
@@ -456,7 +456,7 @@ function [data, format] = iLoad(filename, loader, varargin)
             if exist(lo) == 3
               delete(lo)
               recompile = 1;
-              iLoad('force');
+              iLoad('compile');
             end
           end
           [dummy, name_short, ext] = fileparts(filename);
@@ -512,7 +512,8 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     % reduce the number of input arguments to the one expected
     if nargin(loader.method) > 0
-      varg = varg(1:nargin(loader.method));
+      narg = min(length(varg), nargin(loader.method));
+      varg = varg(1:narg);
     end
     % call the loader
     data = feval(loader.method, varg{:});

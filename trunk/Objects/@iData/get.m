@@ -103,7 +103,11 @@ function this = get_eval(this, property)
   try
     this = eval([ 'this.' property ]);  % calls subsref by eval (recursive subsref levels)
   catch
-    this = eval(property);              % this is a full expression: evaluate it...
+      try
+          this = eval([ 'this.Data.' property ]);
+      catch
+          this = eval(property);              % this is a full expression: evaluate it...
+      end
   end
 
 function TF = isvalid(property)

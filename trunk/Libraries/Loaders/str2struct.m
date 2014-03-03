@@ -44,7 +44,7 @@ for index=1:numel(string)
     cellstring = { cellstring{:} this_split{:} };
   end
 end
-cellstring'
+
 % interpret the line as <name> <separator> <value> <comment>
 for index=1:numel(cellstring)
   this = cellstring{index};
@@ -82,6 +82,7 @@ function [name, value] = str2struct_value_pair(this)
   else name = []; return; end
   line = line(nextline:end);
   % extract numerical value after the starting token 'name'
+  % we get rid of ():.- chars
   [value, count, errmsg, nextindex] = sscanf(line, '%f');
   comment = strtrim(line(nextindex:end)); comment(~isstrprop(comment,'print')) = ' ';
   name = strrep(name, '(', ''); name = strrep(name, ')', '');
