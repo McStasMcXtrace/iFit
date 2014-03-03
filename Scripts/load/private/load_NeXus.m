@@ -46,7 +46,9 @@ for index=1:numel(field)
   if isequal(in, this)
     break
   end
-  in = this;
+  if length(this)
+    in = this;
+  end
 end
 if length(out) == 0
   out = in;
@@ -306,8 +308,9 @@ for index=1:numel(Axes)
       if ~isempty(lab), nxdata = label(nxdata, Axes_ranks(index), lab); end
     else
       fprintf(1,['%s: Warning: NXdata axis %s with dimension %s\n' ...
-                  '  does not match signal %s dimension %s for rank %i. Skipping.\n'], ...
-        mfilename, ax, mat2str(sa), signal_path, mat2str(sz), Axes_ranks(index));
+                  '  does not match signal %s dimension %s for rank %i. Skipping.\n' ...
+                  '  file: %s\n' ], ...
+        mfilename, ax, mat2str(sa), signal_path, mat2str(sz), Axes_ranks(index), in.Source);
     end
   end
 end

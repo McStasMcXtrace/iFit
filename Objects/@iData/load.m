@@ -211,7 +211,7 @@ function this = load_eval_postprocess(this, postprocess)
     this = setalias(this, 'postprocess', postprocess);
     this = iData_private_history(this, postprocess, this);
   catch
-    warning([mfilename ': Error when calling post-process ' postprocess ]);
+    warning([mfilename ': Error when calling post-process ' postprocess '. file: ' this.Source ]);
   end
     
     
