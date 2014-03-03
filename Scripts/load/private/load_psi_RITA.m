@@ -86,4 +86,5 @@ if ~isempty(a.Data.entry1.data) && ~isempty(a.Data.entry1.RITA_2) && ~isempty(a.
   if ndims(a) == 3, label(a, 3, 'Scan step'); end
 
   a = [ a ; b ];
+  save
 end
