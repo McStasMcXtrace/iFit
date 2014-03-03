@@ -44,7 +44,7 @@ for index=1:numel(string)
     cellstring = { cellstring{:} this_split{:} };
   end
 end
-
+cellstring'
 % interpret the line as <name> <separator> <value> <comment>
 for index=1:numel(cellstring)
   this = cellstring{index};
@@ -61,13 +61,20 @@ end
 % ==============================================================================
 function [name, value] = str2struct_value_pair(this)
   % split token 'this' as name=value
-  [name, line] = strtok(this, sprintf('=: \t'));
+  [name, line] = strtok(this, sprintf('='));
+  if isempty(name)
+      [name, line] = strtok(this, sprintf(':'));
+  end
+  if isempty(name)
+      [name, line] = strtok(this, sprintf(' \t'));
+  end
   value = [];
   if isempty(name), return; end
   if name(1)=='#' || name(1)=='%' || strncmp(name, '//', 2) || name(1) == '!'
     name=[]; % skip comment lines
     return
   end
+
   nextline = min(find(isstrprop(line, 'alphanum')));
   startline=line(1:nextline);
   nextline=max(find(startline == '=' | startline == ' ' | startline == ':'));
@@ -77,8 +84,12 @@ function [name, value] = str2struct_value_pair(this)
   % extract numerical value after the starting token 'name'
   [value, count, errmsg, nextindex] = sscanf(line, '%f');
   comment = strtrim(line(nextindex:end)); comment(~isstrprop(comment,'print')) = ' ';
+  name = strrep(name, '(', ''); name = strrep(name, ')', '');
+  name = strrep(name, ':', ''); 
+  name = strtrim(name);
   name = strrep(name, '.', '_');
   name = strrep(name, '-', '_');
+  name = strrep(name, ' ', '_');
   name = genvarname(name);
   % handle case where line starts with a number not separated from
   % following text
