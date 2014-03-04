@@ -51,6 +51,7 @@ matchs = get(s, fields);
 % convert to char using private inline function handle
 matchs = cellfun(@cell2char, matchs, 'UniformOutput', false);
 
+
 if isempty(str)
   match = matchs;
   field = fields;
@@ -80,6 +81,7 @@ elseif strfind(option, 'case')
   % handle 'case' option
   index = ~cellfun(@isempty, strfind(match, str));
 else
+  
   % relaxed search: non case sensitive, find token (not exact comparison)
   index = ~cellfun(@isempty, strfind(lower(match), lower(str)));
 end
@@ -92,7 +94,8 @@ if numel(match) == 1, match=match{1}; end
 % -------------------------------------------------------------------------
 function c=cell2char(c)
 if iscell(c) && ischar(c{1})
-    c=char(c);
+    c = char(c); 
 elseif ~ischar(c)
     c = '';
 end
+c=c(:)';

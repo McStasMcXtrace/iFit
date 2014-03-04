@@ -36,7 +36,8 @@ elseif isfield(out.Data,'Variables')
         name = this.Name;
         if ~isfield(out, name) || ...
           (~isempty(getalias(out, name)) && isfield(this, 'Data') && numel(this.Data) > numel(get(out, name)))
-          out = setalias(out, name, [ 'Data.Attributes(' num2str(index) ').Val' ]);
+          % the end member is either 'Value' or 'Val' in old NetCDF loader
+          out = setalias(out, name, [ 'Data.Attributes(' num2str(index) ').Value' ]);
         end
     end
   end
@@ -47,7 +48,8 @@ elseif isfield(out.Data,'Variables')
         name = this.Name;
         if ~isfield(out, name) || ...
           (~isempty(getalias(out, name)) && isfield(this, 'Data') && numel(this.Data) > numel(get(out, name)))
-          out = setalias(out, name, [ 'Data.Dimensions(' num2str(index) ').Dim' ]);
+          % the end member is either 'Length' or 'Dim' in old NetCDF loader
+          out = setalias(out, name, [ 'Data.Dimensions(' num2str(index) ').Length' ]);
         end
     end
   end

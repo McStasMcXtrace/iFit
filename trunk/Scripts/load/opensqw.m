@@ -8,7 +8,7 @@ else
   out = filename;
 end
 clear filename;
-
+out
 if numel(out) > 1
   % handle input iData arrays
   for index=1:numel(out)
