@@ -103,9 +103,11 @@ function this = get_eval(this, property)
   try
     this = eval([ 'this.' property ]);  % calls subsref by eval (recursive subsref levels)
   catch
+    % disp([ 'Warning: failed evaluation of this.' property ' in object ' this.Tag ' "' this.Title '".' ]);
       try
           this = eval([ 'this.Data.' property ]);
       catch
+          % disp([ 'Warning: failed evaluation of this.Data.' property ' in object ' this.Tag ' "' this.Title '".' ]);
           this = eval(property);              % this is a full expression: evaluate it...
       end
   end
