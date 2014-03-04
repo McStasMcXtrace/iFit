@@ -18,8 +18,8 @@ elseif ~isempty(findstr(out,'Sqw'))
   % this is a SQW file
   
   % handle import of NetCDF files from nMoldyn
-  if isfield(out, 'Sqwtotal')
-    setaxis(out, 'Signal','Sqwtotal');
+  if isfield(out, 'Sqw_total')
+    setaxis(out, 'Signal','Sqw_total');
     if isfield(out,'q'),         setaxis(out,1,'q'); end
     if isfield(out,'frequency'), setaxis(out,2,'frequency'); end
     if isfield(out,'title_nc'),  label(out, 0, out.title_nc); end
@@ -45,10 +45,9 @@ elseif ~isempty(findstr(out,'Sqw'))
     else title(out,'Sqw');
     end
 
-    setalias(out,'Error',0);
-    out = transpose(out);
   end
-
+  setalias(out,'Error',0);
+  out = transpose(out);
 end
 
 if ~nargout

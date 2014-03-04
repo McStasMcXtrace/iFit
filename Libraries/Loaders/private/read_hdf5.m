@@ -122,8 +122,7 @@ function name = getName(location)
 % getName: get the HDF5 element Name
   [p, name, ext]   = fileparts(location);
   name = [ name ext ];
-  name(~isstrprop(name,'alphanum') | name == '.' | name == '-' | name == '+') = '_';
-  if ~isempty(name) & name(1) == '_',  name = [ 'x' name ]; end  
+  name = sanitize_name(name);
 end
   
 function [base, group, lastword] = getAttributePath(field)
@@ -144,5 +143,17 @@ function [base, group, lastword] = getAttributePath(field)
     lastword = field( (lastword_index(2)+1):end ); 
     group    = field( (lastword_index(1)+1):lastword_index(2) ); 
     base     = field(1:lastword_index(1));    % <basename>.<group>.Attributes.<field>
+  end
+end
+
+% ------------------------------------------------------------------------------
+function name = sanitize_name(name)
+  name(~isstrprop(name,'print')) = '';
+  name(~isstrprop(name,'alphanum')) = '_';
+  if name(1) == '_'
+    name = name(find(name ~= '_', 1):end);
+  end
+  if isstrprop(name(1),'digit')
+    name = [ 'x' name ];
   end
 end
