@@ -146,8 +146,7 @@ function name = getName(this, index)
     end
   end
   % pretty-fy
-  name(~isstrprop(name,'alphanum') | name == '.' | name == '-' | name == '+') = '_';
-  if ~isempty(name) && ~isletter(name(1)),  name = [ 'x' name ]; end
+  name = sanitize_name(name); % private inline (below)
 
   
 function Attributes = getAttributes(this)
@@ -181,4 +180,15 @@ function s = catStruct(s1, s2)
   f2 = fieldnames(s2);
   
   s = cell2struct([ c1 ; c2 ], [f1 ;f2 ], 1);
+  
+% ------------------------------------------------------------------------------
+function name = sanitize_name(name)
+  name(~isstrprop(name,'print')) = '';
+  name(~isstrprop(name,'alphanum')) = '_';
+  if name(1) == '_'
+    name = name(find(name ~= '_', 1):end);
+  end
+  if isstrprop(name(1),'digit')
+    name = [ 'x' name ];
+  end
   

@@ -85,13 +85,7 @@ function [name, value] = str2struct_value_pair(this)
   % we get rid of ():.- chars
   [value, count, errmsg, nextindex] = sscanf(line, '%f');
   comment = strtrim(line(nextindex:end)); comment(~isstrprop(comment,'print')) = ' ';
-  name = strrep(name, '(', ''); name = strrep(name, ')', '');
-  name = strrep(name, ':', ''); 
-  name = strtrim(name);
-  name = strrep(name, '.', '_');
-  name = strrep(name, '-', '_');
-  name = strrep(name, ' ', '_');
-  name = genvarname(name);
+  name = sanitize_name(name); % private inline (below)
   % handle case where line starts with a number not separated from
   % following text
   if nextindex <= length(line) &&  ~isspace(line(nextindex))
@@ -124,3 +118,13 @@ function [name, value] = str2struct_value_pair(this)
     end
   end
 
+% ------------------------------------------------------------------------------
+function name = sanitize_name(name)
+  name(~isstrprop(name,'print')) = '';
+  name(~isstrprop(name,'alphanum')) = '_';
+  if name(1) == '_'
+    name = name(find(name ~= '_', 1):end);
+  end
+  if isstrprop(name(1),'digit')
+    name = [ 'x' name ];
+  end
