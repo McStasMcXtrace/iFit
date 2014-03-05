@@ -33,7 +33,7 @@ if iscell(data)
       end
     end
     if flag == 0
-      this_field               = genvarname(this_field);
+      this_field               = sanitize_name(this_field);
       s.Variables.(this_field) = data{index};
       flag = 1;     % direct assign
     end
@@ -71,3 +71,13 @@ else
   s = data;
 end
 
+% ------------------------------------------------------------------------------
+function name = sanitize_name(name)
+  name(~isstrprop(name,'print')) = '';
+  name(~isstrprop(name,'alphanum')) = '_';
+  if name(1) == '_'
+    name = name(find(name ~= '_', 1):end);
+  end
+  if isstrprop(name(1),'digit')
+    name = [ 'x' name ];
+  end
