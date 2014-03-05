@@ -1,13 +1,13 @@
 function S = read_nc(File,varargin)
   % read a NetCDF file, using 2 methods
   
-  try
+  %try
     % a NetCDF reader using netcdf lib (faster)
     S = read_nc2(File);
-  catch
+  %catch
     % a basic NC reader that does not make use of the nc library, but is limited to NC1
     S = read_nc1(File);
-  end
+  %end
   
 % ______________________________________________________________________________
 
@@ -47,16 +47,16 @@ function obj = read_nc2(File)
       Attribute.Name  = netcdf.inqAttName(fid,netcdf.getConstant('NC_GLOBAL'),jj-1);
       Attribute.Value = netcdf.getAtt(fid,netcdf.getConstant('NC_GLOBAL'),Attribute.Name);
       if isempty(obj.Attributes)
-        obj.Attributes = Attribute;
+        obj.GlobalAttributes = Attribute;
       else
-        obj.Attributes(end+1) = Attribute;
+        obj.GlobalAttributes(end+1) = Attribute;
       end
       jj = jj + 1;
     catch
       break; % no more global Attribute
     end
   end
-
+  
   % now read variables: obj.Variables.Name
   obj.Variables = [];
   for ii=1:nvars
@@ -85,13 +85,13 @@ function obj = read_nc2(File)
         end
       end
       if flag == 0
-        Variable.Name = genvarname(Variable.Name);
+        Variable.Name = sanitize_name(Variable.Name);
         obj.Variables.(Variable.Name)  = Variable.Data;
         obj.Attributes.(Variable.Name) = Attribute;
         flag = 1;
       end
   end
-  
+
   % close the file
   netcdf.close(fid);
 
@@ -159,6 +159,7 @@ try
    S.Filename   = File;
    S.Group      = [];
    S.Format     = 'FORMAT_CLASSIC';
+   S.NetCDF_Version = '1';
    S.NumRecs  = fread(fp,1,'uint32=>uint32');
    S.Dimensions = DimArray(fp);
    S.Attributes = AttArray(fp);
@@ -268,3 +269,14 @@ function S = VarArray(fp)
          S(i).Begin    = fread(fp,1,'uint32=>uint32'); % Classic 32 bit format only
       end
    else fread(fp,1,'uint32=>uint32'); S = []; end
+   
+% ------------------------------------------------------------------------------
+function name = sanitize_name(name)
+  name(~isstrprop(name,'print')) = '';
+  name(~isstrprop(name,'alphanum')) = '_';
+  if name(1) == '_'
+    name = name(find(name ~= '_', 1):end);
+  end
+  if isstrprop(name(1),'digit')
+    name = [ 'x' name ];
+  end
