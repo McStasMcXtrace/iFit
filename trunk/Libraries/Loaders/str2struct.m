@@ -61,15 +61,15 @@ end
 % ==============================================================================
 function [name, value] = str2struct_value_pair(this)
   % split token 'this' as name=value
-  [name, line] = strtok(this, sprintf('='));
-  if isempty(name)
+  [name, line] = strtok(this, '=');
+  if isempty(line)
       [name, line] = strtok(this, sprintf(':'));
   end
-  if isempty(name)
+  if isempty(line)
       [name, line] = strtok(this, sprintf(' \t'));
   end
   value = [];
-  if isempty(name), return; end
+  if isempty(line), return; end
   if name(1)=='#' || name(1)=='%' || strncmp(name, '//', 2) || name(1) == '!'
     name=[]; % skip comment lines
     return
