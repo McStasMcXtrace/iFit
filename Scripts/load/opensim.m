@@ -139,6 +139,7 @@ if ischar(signal) && ~isempty(strfind(signal, 'MetaData'))
   end
   if ~isempty(signal), setalias(a, 'Signal', signal); end
 end
+siz = size(getaxis(a,'Signal')');
 
 % treat specific data formats 1D, 2D, List for McStas ==========================
 if ~isempty(strfind(a.Format,'0D monitor'))
@@ -156,7 +157,7 @@ elseif ~isempty(strfind(a.Format,'2D monitor'))
   % Get sizes of x- and y- axes:
   i = findfield(a, 'variables', 'numeric exact');
   if iscell(i) && ~isempty(i), i = i{1}; end
-  if ~isempty(get(a, i))    % e.g. i='Data.MetaData.variables'
+  if numel(get(a, i)) >= prod(siz)    % e.g. i='Data.MetaData.variables'
     setalias(a,'Signal',i,zlab);
   end
   siz = size(getaxis(a,'Signal')');
@@ -167,7 +168,6 @@ elseif ~isempty(strfind(a.Format,'2D monitor'))
   yax = linspace(lims(3),lims(4),siz(2));
 
   % set axes
-
   setalias(a,'y',xax,xlab);
   setalias(a,'x',yax,ylab);
 

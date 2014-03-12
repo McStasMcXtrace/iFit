@@ -106,8 +106,9 @@ for index=1:numel(a)
         s=s-min(s(:)); s=s/max(s(:));
       else
         i=find(s>=0 & isfinite(s));
+        if isempty(i), i=find(isfinite(s)); end
         j=find(s<0 | ~isfinite(s));
-        s(j)=min(s(j)); s=s/max(s(i));
+        if ~isempty(i) && ~isempty(j), s(j)=min(s(i)); s=s/max(s(i)); end
       end
     end
     u(:,:,index)=s;
