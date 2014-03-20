@@ -451,7 +451,7 @@ end
 function z = InitialGuess(y,I)
     %-- nearest neighbor interpolation (in case of missing values)
     if any(~I(:))
-        if license('test','image_toolbox')
+        if exist('bwdist')
             [z,L] = bwdist(I);
             z = y;
             z(~I) = y(L(~I));
