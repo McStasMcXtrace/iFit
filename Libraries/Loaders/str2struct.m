@@ -128,3 +128,5 @@ function name = sanitize_name(name)
   if isstrprop(name(1),'digit')
     name = [ 'x' name ];
   end
+  % compress all duplicated '_' 
+  name = regexprep(name, '_+','_');

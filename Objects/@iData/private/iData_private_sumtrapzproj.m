@@ -43,6 +43,11 @@ s = iData_private_cleannaninf(get(a,'Signal'));
 e = iData_private_cleannaninf(get(a,'Error')); 
 m = iData_private_cleannaninf(get(a,'Monitor'));
 
+% take into account the Monitor
+if not(all(m(:) == 0 | m(:) == 1))
+  s = genop(@rdivide, s, m); e = genop(@rdivide,e,m); 
+end
+
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;
 b  = copyobj(a);
@@ -52,7 +57,7 @@ if any(dim == 0) && ~strcmp(op, 'sum')
 end
 
 if all(dim > 0)
-  % compute new object
+  % compute new object: op(Signal/Monitor) op(Error/Monitor)
   switch op
   case {'sum','cumsum'} % SUM ==================================================
     % sum on all dimensions requested
@@ -61,12 +66,13 @@ if all(dim > 0)
       if dim(index) == 1 && isvector(s)
         s = s(:); e=e(:); m=m(:);
       end
-      if numel(e) > 1, e = feval(op, e, dim(index)); end
-      if numel(m) > 1, m = feval(op, m, dim(index)); end
-      s = feval(op, s, dim(index)); 
+      if numel(e) > 1, e = feval(op, e, dim(index)); end % sum(e2/m2)
+      if numel(m) > 1, m = feval(op, m, dim(index)); end % sum(m)
+      s = feval(op, s, dim(index));                      % sum(s/m)
     end
     % Store Signal
     s=squeeze(s); e=sqrt(squeeze(e)); m=squeeze(m);
+    if not(all(m(:) == 0 | m(:) == 1)), s=genop(@times,s,m); e=genop(@times,e,m); end
     setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
   case {'prod','cumprod'} % PROD ===============================================
@@ -81,6 +87,7 @@ if all(dim > 0)
     end
     % Store Signal
     s=squeeze(s); e=squeeze(e); m=squeeze(m);
+    if not(all(m(:) == 0 | m(:) == 1)), s=genop(@times,s,m); e=genop(@times,e,m); end
     setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
   case {'trapz','cumtrapz'} % TRAPZ ============================================
@@ -99,9 +106,10 @@ if all(dim > 0)
       end
       % make the integration
       if ~isscalar(s)
-        if numel(e) > 1, e = feval(op, x, e, 1); end
-        if numel(m) > 1, m = feval(op, x, m, 1); end
-        s = feval(op, x, double(s), 1);
+        if numel(e) > 1, e = feval(op, x, e, 1); end % trapz(x,e2/m2,1)
+        if numel(m) > 1, m = feval(op, 1:length(x), m, 1); end % sum(m)
+        s = feval(op, x, double(s), 1); % trapz(x,s,1)
+
         if dim(index) ~= 1  % restore initial axes
           s = permute(s,perm);
           e = permute(e,perm);
@@ -111,7 +119,8 @@ if all(dim > 0)
     end
     % Store Signal
     s=squeeze(s); e=sqrt(squeeze(e)); m=squeeze(m);
-    setalias(b,'Signal', s, [ op ' of ' label ' along ' xlab ]); 
+    if not(all(m(:) == 0 | m(:) == 1)), s=genop(@times,s,m); e=genop(@times,e,m); end
+    setalias(b,'Signal', s, [ op ' of ' label ' along ' xlab ]);
     
   case 'camproj' % camproj =====================================================
     % accumulates on all axes except the rank specified
@@ -133,11 +142,11 @@ if all(dim > 0)
     b = hist(b, lx); % faster than doing sum on each dimension
 
   end % switch (op, compute)
+  
+  % store new object
+  b = set(b, 'Error', abs(e), 'Monitor', m);
 	
   if any(strcmp(op, {'sum','trapz','prod'}))
-	% store new object
-	b = set(b, 'Error', abs(e), 'Monitor', m);
-
     rmaxis(b);  % remove all axes, will be rebuilt after operation
     % put back initial axes, except those integrated
     ax_index=1;
