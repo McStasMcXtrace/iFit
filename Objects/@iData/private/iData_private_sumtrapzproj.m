@@ -39,14 +39,17 @@ if any(strcmp(op, {'sum','cumsum','prod','cumprod','trapz','cumtrapz'}))
   a = meshgrid(a, 'vector');
 end
 
-s = iData_private_cleannaninf(get(a,'Signal'));
-e = iData_private_cleannaninf(get(a,'Error')); 
+s = get(a,'Signal');
+e = get(a,'Error'); 
 m = iData_private_cleannaninf(get(a,'Monitor'));
 
 % take into account the Monitor
 if not(all(m(:) == 0 | m(:) == 1))
   s = genop(@rdivide, s, m); e = genop(@rdivide,e,m); 
 end
+
+s = iData_private_cleannaninf(s);
+e = iData_private_cleannaninf(e);  
 
 [link, label] = getalias(a, 'Signal');
 cmd= a.Command;
@@ -95,6 +98,7 @@ if all(dim > 0)
 
     for index=1:numel(dim)
       [x, xlab]     = getaxis(a,dim(index)); x=x(:);
+
       if dim(index) ~= 1  % we put the dimension to integrate on as first
         perm=1:ndims(a);
         perm(dim(index))=1; perm(1)=dim(index);
@@ -117,11 +121,12 @@ if all(dim > 0)
         end
       end
     end
+
     % Store Signal
     s=squeeze(s); e=sqrt(squeeze(e)); m=squeeze(m);
     if not(all(m(:) == 0 | m(:) == 1)), s=genop(@times,s,m); e=genop(@times,e,m); end
     setalias(b,'Signal', s, [ op ' of ' label ' along ' xlab ]);
-    
+
   case 'camproj' % camproj =====================================================
     % accumulates on all axes except the rank specified
     [x, xlab]     = getaxis(a,dim);
@@ -138,13 +143,15 @@ if all(dim > 0)
     setaxis(b, 1, x(:));
     % Store Signal
     setalias(b,'Signal', s(:), [ 'projection of ' label ' on axis ' num2str(dim) ]);     % Store Signal
-    b = set(b, 'Error', abs(e(:)), 'Monitor', m(:));
+    b = setalias(b, 'Error', abs(e(:)));
+    b = setalias(b, 'Monitor', m(:));
     b = hist(b, lx); % faster than doing sum on each dimension
 
   end % switch (op, compute)
   
   % store new object
-  b = set(b, 'Error', abs(e), 'Monitor', m);
+  b = setalias(b, 'Error', abs(e));
+  b = setalias(b, 'Monitor', m);
 	
   if any(strcmp(op, {'sum','trapz','prod'}))
     rmaxis(b);  % remove all axes, will be rebuilt after operation
@@ -152,7 +159,7 @@ if all(dim > 0)
     ax_index=1;
     for index=1:ndims(a)
       if all(dim ~= index)
-        [x, xlab] = getaxis(a, num2str(index)); % get axis definition and label
+        [x, xlab] = getaxis(a, num2str(index)); % get axis definition and labelget(a
         setaxis(b, ax_index, x);
         ax_index = ax_index+1;
       end
