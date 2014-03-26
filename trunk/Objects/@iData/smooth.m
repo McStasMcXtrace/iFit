@@ -89,7 +89,7 @@ if strcmp(method, 'sgolay')
   s = subsref(a,struct('type','.','subs','Signal'));
   
   for index=1:ndims(a)
-    if dimensions && all(dimensions ~= index), % skip this rank if not specified
+    if any(dimensions>0) && all(dimensions ~= index), % skip this rank if not specified
       continue; end
     if index > 1, s  = permute(s, [ index 1 ]); end
     
@@ -100,7 +100,7 @@ if strcmp(method, 'sgolay')
   b = set(b, 'Signal', s);
 else
   % use discrete cosine transform filter
-  b = set(b, 'Signal', smoothn(subsref(a,struct('type','.','subs','Signal'), varargin{:})));
+  b = set(b, 'Signal', smoothn(subsref(a,struct('type','.','subs','Signal')), varargin{:}));
 end
 
 
