@@ -29,27 +29,37 @@ function a = iFunc(varargin)
 %                         The parameter names surrounded by "" are replaced
 %                         by the corresponing p(n)
 %
-% From a character string
-%   the Expression should make use of x,y,z,t,u to denote axes of rank 1-5,
-%   and the model Parameters are specified using 'p(n)' vector elements.
+% Creating the object:
+%   From a character string
+%     the Expression should make use of x,y,z,t,u to denote axes of rank 1-5,
+%     and the model Parameters are specified using 'p(n)' vector elements.
 %
-% From a structure, with iFunc object fields (see above) and alias fields:
-%   x0          -> Guess
-%   objective   -> Expression
-%   pars        -> Parameters
-%   function    -> Name
+%   From a structure, with iFunc object fields (see above) and alias fields:
+%     x0          -> Guess
+%     objective   -> Expression
+%     pars        -> Parameters
+%     function    -> Name
 %
-% From a function handle
-%  The function should have syntax model(p, x,y,...) and return the model value.
+%   From a function handle
+%     The function should have syntax model(p, x,y,...) and return the model value.
+%
+% Using the object:
+%   Once the object has been created,you can evaluate it with: object(p, x, y, ...)
+%   The usual mathematical operators can be used to manipulate iFunc objects.
 %
 %   The syntax iFunc(iData object) evaluates the iFunc model using the iData
-%     object axes, and returns the model valueas a numerical array.
+%     object axes, and returns the model value as a numerical array.
+%
+% Type <a href="matlab:doc(iFunc)">doc(iFunc)</a> to access the iFit/iFunc Documentation.
+% iFunc is part of iFit http://ifit.mccode.org 
 % 
 % input:  s: iFunc, string, structure, function handle
 % output: b: model object (iFunc)
 % ex:     b=iFunc(@(p,x) p(1)*x+p(2)); 
 %         b=iFunc('p(1)*x+p(2)');
 %         b=iFunc('signal=p(1)*x+p(2);');
+%         plot(x, b(p, x))
+%         b.p=p; plot(b)
 %
 % Version: $Revision$
 % See also iFunc, iFunc/feval, iFunc/plot, iFunc/fit
