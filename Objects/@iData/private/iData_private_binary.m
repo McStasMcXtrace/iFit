@@ -64,6 +64,13 @@ elseif isa(b, 'iData') & numel(b) > 1
   return
 end
 
+if ischar(a) && (exist(a, 'file') || any(strncmp(a, {'file:/','http:/','ftp://','https:'})))
+  a = iData(a); % import file    
+end
+if ischar(b) && (exist(b, 'file') || any(strncmp(b, {'file:/','http:/','ftp://','https:'})))
+  b = iData(b); % import file    
+end
+
 if isa(a,'iFunc')
   a = subsref(b, struct('type','()','subs', a) );
 elseif isa(b, 'iFunc')
@@ -153,22 +160,22 @@ case {'plus','minus','combine'}
   % if NaN's are found (from interp), use non NaN values in the other data set 
   if any(i1) && ~isscalar(y2), s3(i1) = y2(i1); end
   if any(i2) && ~isscalar(y1), s3(i2) = y1(i2); end
-  
+
   try
     e3 = sqrt(genop(@plus, d1.^2,d2.^2));
-    if any(i1), e3(i1) = e2(i1); end
-    if any(i2), e3(i2) = e1(i2); end
+    if any(i1) && numel(i1) <= numel(e2), e3(i1) = e2(i1); end
+    if any(i2) && numel(i2) <= numel(e1), e3(i2) = e1(i2); end
   catch
     e3 = [];  % set to sqrt(Signal) (default)
   end
-  
+
   if     all(m1==0), m3 = m2; 
   elseif all(m2==0), m3 = m1; 
   else
     try
       m3 = genop(@plus, m1, m2);
-      if any(i1), m3(i1) = m2(i1); end
-      if any(i2), m3(i2) = m1(i2); end
+      if any(i1) && numel(i1) <= numel(m2), m3(i1) = m2(i1); end
+      if any(i2) && numel(i2) <= numel(m1), m3(i2) = m1(i2); end
     catch
       m3 = [];  % set to 1 (default)
     end
