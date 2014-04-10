@@ -13,7 +13,7 @@ function [ret, header] = cellstr(s)
 %
 
 
-ret=[];
+ret=[]; header=[];
 if numel(s) > 1
   ret = {};
   for index=1:numel(s)
