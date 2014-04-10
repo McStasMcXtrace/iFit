@@ -59,23 +59,19 @@ thetas=s2theta/2;
 phi=atan2((-kf*sin(s2theta)), (ki-kf*cos(s2theta)));
 
 %--------DEF-DES-MATRICES:
-F = [1/etam^2 1/etam^2 1/etaa^2 1/etaa^2];
-[Dummy,dimF] = size(F);
-FF= eye(dimF);
-fff= [];
-for i=1:dimF, fff = [fff F'.*FF(:,i)];end;
-F = fff;
-clear FF;clear fff; clear dimF;
+F = diag([1/etam^2 1/etam^2 1/etaa^2 1/etaa^2]);
+
 %------matrice-C:
 C = zeros(4,8);
 C(1,1) = 0.5;
 C(1,2) = 0.5;
-C(2,3) = 1/(2*sin(thetam));
-C(3,3) = - C(2,3); 
 C(3,5) = 0.5;
 C(3,6) = 0.5;
+C(2,3) = 1/(2*sin(thetam));
+C(2,4) = - C(2,3); % was C(3,3) = - C(2,3); wrong in Popovici paper
 C(4,7) = 1/(2*sin(thetaa));
 C(4,8) = - C(4,7);
+
 %------matrice-G:
 G =[1/alf0^2 1/alf1^2 1/bet0^2 1/bet1^2 1/alf2^2 1/alf3^2 1/bet2^2 1/bet3^2];
 [Dummy,dimG] = size(G);
@@ -94,7 +90,9 @@ A(4,5) = kf/(2*tan(thetaa));
 A(4,6) = - A(4,5);
 A(5,5) = kf; 
 A(6,7) = kf; 
+
 %------matrice-B:
+B=zeros(4,6);
 B(1,1)=cos(phi);
 B(1,2)=sin(phi);
 B(1,4)=-cos(phi-s2theta);
