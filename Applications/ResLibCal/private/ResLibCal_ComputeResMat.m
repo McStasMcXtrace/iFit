@@ -84,7 +84,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     elseif ~isempty(strfind(EXP.method, 'res3ax'))
       if exist('res3ax3') == 2
         if ~isempty(strfind(EXP.method, 'cooper')), method=@res3ax3;
-        else                                        method=@res3ax5; 
+        else                                        return; % no Popovici from J Ollivier
         end
         EXProt    = ResLibCal_SampleRotateS(h,k,l,EXP);
         EXProt.QH = h; EXProt.QK=k; EXProt.QL=l; EXProt.W=w;

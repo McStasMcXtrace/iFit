@@ -160,7 +160,7 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   % Spectrometer arms
   EXP.arms=[ table(3,:) table(3,1)*0.7 ];
   
-  % limit  collimation/divergences from distances and size of elements
+  % limit  collimation/divergences from distances and size of elements (in minutes)
   EXP.hcol(1) = min(EXP.hcol(1), atan2(EXP.mono.width +EXP.beam.width,    EXP.arms(1))*180/2/pi*60);
   EXP.vcol(1) = min(EXP.vcol(1), atan2(EXP.mono.height+EXP.beam.height,   EXP.arms(1))*180/2/pi*60);
   EXP.hcol(2) = min(EXP.hcol(2), atan2(EXP.sample.width +EXP.mono.width,  EXP.arms(2))*180/2/pi*60);
@@ -169,6 +169,16 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   EXP.vcol(3) = min(EXP.vcol(3), atan2(EXP.ana.height+EXP.sample.height,  EXP.arms(3))*180/2/pi*60);
   EXP.hcol(4) = min(EXP.hcol(4), atan2(EXP.ana.width +EXP.detector.width, EXP.arms(4))*180/2/pi*60);
   EXP.vcol(4) = min(EXP.vcol(4), atan2(EXP.ana.height+EXP.detector.height,EXP.arms(4))*180/2/pi*60);
+  
+  % handle case of negative collimations : guide limited
+  index = find(EXP.hcol<0);
+  if ~isempty(index)
+      EXP.hcol(index) = EXP.hcol(index)*0.1*60*(2*pi/EXP.ki)/0.4247/sqrt(3);
+  end
+  index = find(EXP.vcol<0);
+  if ~isempty(index)
+      EXP.vcol(index) = EXP.vcol(index)*0.1*60*(2*pi/EXP.ki)/0.4247/sqrt(3);
+  end
   
   % Crystal curvatures
   EXP.mono.rv=str2double(get(findall(fig,'Tag','EXP_mono_rv'),'String'));
