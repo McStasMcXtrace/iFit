@@ -133,7 +133,7 @@ if isempty(pars)
   error([ inline_localChar(optimizer) ': starting parameters (3rd argument) must not be empty.' ] );
 end
 
-if ~ischar(fun) && ~isa(fun, 'function_handle')
+if ~ischar(fun) && ~isa(fun, 'function_handle') && ~isa(fun, 'iFunc')
   error([ inline_localChar(optimizer) ': objective function (2nd argument) must be a char or function_handle, but is a ' class(fun) '.' ] );
 end
 
@@ -281,7 +281,9 @@ case 'fmin' % automatic guess
   [optimizer, algorithm] = inline_auto_optimizer(fun, pars, varargin{:});
   options.optimizer = optimizer;
   options.algorithm = algorithm;
-  [pars,fval,exitflag,output] = feval(optimizer, fun, pars, options, constraints, varargin{:});
+  if ~isa(fun, 'iFunc') % iFunc.feval can not be called this way :-(
+    [pars,fval,exitflag,output] = feval(optimizer, fun, pars, options, constraints, varargin{:});
+  end
   return
 case {'cmaes','fmincmaes'}    
 % Evolution Strategy with Covariance Matrix Adaption ---------------------------

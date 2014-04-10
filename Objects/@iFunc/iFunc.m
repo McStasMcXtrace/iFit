@@ -43,6 +43,9 @@ function a = iFunc(varargin)
 %   From a function handle
 %     The function should have syntax model(p, x,y,...) and return the model value.
 %
+%   From a script/function 
+%     The file should use 'p' as adjustable parameters, and optionally axes 'x', 'y', ...
+%
 % Using the object:
 %   Once the object has been created,you can evaluate it with: object(p, x, y, ...)
 %   The usual mathematical operators can be used to manipulate iFunc objects.
@@ -123,13 +126,25 @@ else   % import data to create a single object
   
   if ischar(this) % ----------------------------------------------------------
     % check if this is a predefined function
-    if exist(this) == 2 
+    isfunction = 0;
+    try
+      if exist(this) == 2 && nargin(this) > 0 && nargout(this) == 1
+        isfunction = 1;
+      end
+    end
+    if isfunction
       a=iFunc(feval(this));
       a.Name = this;
     else
-      % from a string/expression: analyse the expression to get the parameter names,
+      % from a string/expression: analyse the expression to get the
       % dimension and parameter names
       a=iFunc;
+      if exist(this, 'file') || exist([ this '.m' ], 'file')
+        a.Name = this;
+        if exist([ this '.m' ], 'file'), this = [ this '.m' ]; end
+        disp([ mfilename ': building model from file ' this ' content (script/function using p,x,y,...).']);
+        this   = fileread(this);
+      end
       a.Expression = this;
     end
   
