@@ -179,8 +179,8 @@ for ind=1:len
         horifoc=EXP(ind).horifoc;
     end;
     % TODO: FIX removed as CN has no focusing, and it scrambles M
-    if horifoc==1 && 0
-        alpha(3)=alpha(3)*sqrt(8*log(2)/12); 
+    if horifoc==1
+        alpha(3)=alpha(3)*sqrt(8*log(2)/12);
     end;
     
     em=1;
@@ -218,17 +218,17 @@ for ind=1:len
     phi=atan2((-kf*sin(s2theta)), (ki-kf*cos(s2theta)));
     %---------------------------------------------------------------------------------------------
     %Calculate beam divergences defined by neutron guides
-    % TODO: FIX ? 0.427/sqrt(3) is a strange factor ? why ?
+    % TODO: FIX ? now done properly in ResLibCal_fig2EXP
+  
+    %if alpha(1)<0  alpha(1)=-alpha(1)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
+    %if alpha(2)<0  alpha(2)=-alpha(2)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
+    %if alpha(3)<0  alpha(3)=-alpha(3)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
+    %if alpha(4)<0  alpha(4)=-alpha(4)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
     
-    if alpha(1)<0  alpha(1)=-alpha(1)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    if alpha(2)<0  alpha(2)=-alpha(2)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    if alpha(3)<0  alpha(3)=-alpha(3)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    if alpha(4)<0  alpha(4)=-alpha(4)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    
-    if beta(1)<0  beta(1)=-beta(1)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    if beta(2)<0  beta(2)=-beta(2)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    if beta(3)<0  beta(3)=-beta(3)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    if beta(4)<0  beta(4)=-beta(4)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
+    %if beta(1)<0  beta(1)=-beta(1)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
+    %if beta(2)<0  beta(2)=-beta(2)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
+    %if beta(3)<0  beta(3)=-beta(3)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
+    %if beta(4)<0  beta(4)=-beta(4)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
      %---------------------------------------------------------------------------------------------
     %Redefine sample geometry
     psi=thetas-phi; %Angle from sample geometry X axis to Q
@@ -336,8 +336,7 @@ for ind=1:len
     else
         HF=A*inv(G+C'*F*C)*A';
         %Horizontally focusing analyzer if needed
-        % TODO: FIX removed as CN has no focusing, and it scrambles M
-        if horifoc>0 && 0
+        if horifoc>0
             HF=HF^(-1);
             HF(5,5)=(1/(kf*alpha(3)))^2; 
             HF(5,4)=0; 
