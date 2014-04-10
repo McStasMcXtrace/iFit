@@ -9,7 +9,7 @@ function out = ResLibCal(varargin)
 % To use ResLibCal from the command line, use:
 %   out = ReslibCal(command, arguments...);
 % where 'command' is one of:
-%   open, save, saveas, export, exit, reset, print, create, 
+%   open, save, saveas, export, exit, reset, print, create,
 %   update, compute, view2, view3, view_tas
 %
 % The application contains a main interface with:
@@ -63,7 +63,7 @@ if ~isempty(varargin)
   if ishandle(varargin{1})
     varargin = [ {'update_handle'} varargin ];
   end
-  
+
   if ischar(varargin{1})
     % check if the application window exists, else open it
 %    fig=findall(0, 'Tag','ResLibCal');
@@ -75,7 +75,7 @@ if ~isempty(varargin)
 %      fig = openfig('ResLibCal'); % open the main ResLibCal figure.
 %      feval(mfilename, 'create'); % load last configuration
 %    end
-  
+
     action = varargin{1};
     switch lower(action)
     % menu items ---------------------------------------------------------------
@@ -176,7 +176,7 @@ if ~isempty(varargin)
       msgbox(message, ...
         'About: ResLibCal', ...
         'custom',cdata,jet,CreateMode);
-    case 'view_update' 
+    case 'view_update'
       out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
       ResLibCal_ViewResolution(out,2); % if not opened, open at least the 2D view
       ResLibCal_UpdateViews(out);
@@ -203,8 +203,10 @@ if ~isempty(varargin)
       out = ResLibCal_fig2EXP(fig);
     case {'update','compute'}
       % update all opened views with new computation (widget update)
-      out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
       fig = findall(0, 'Tag','ResLibCal');
+      % update mono/crystal popup ups from values
+      out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
+
       if ~isempty(fig) && strcmp(get(findobj(fig, 'Tag','View_AutoUpdate'), 'Checked'), 'on')
         out = ResLibCal_UpdateViews(out);
       end
@@ -223,7 +225,7 @@ if ~isempty(varargin)
       if strcmp(tag,'EXP_collimators') && strcmp(get(h,'Type'), 'uitable')
         event = varargin{3};
         data  = get(h,'Data'); % NewData
-        if ~isempty(event.Error) || isnan(event.NewData) 
+        if ~isempty(event.Error) || isnan(event.NewData)
           % revert invalid to previous data
           data(event.Indices(1),event.Indices(2)) = event.PreviousData;
           set(h,'Data',data);
@@ -261,7 +263,7 @@ if ~isempty(varargin)
   % end nargin > 0
 else
   % nargin == 0
-  
+
   % open or create the main GUI
   feval(mfilename, 'create'); % load last configuration
   out = ResLibCal_Compute;
@@ -271,7 +273,7 @@ end
 
 % ==============================================================================
 % most functions in 'private'
-% 
+%
 
 % ==============================================================================
 function filename = ResLibCal_Save
@@ -302,7 +304,7 @@ function out = ResLibCal_ViewResolution(out, dim)
   else
     figure(h);
   end
-  
+
 % ==============================================================================
 function out = ResLibCal_UpdateResolution1(out)
 % ResLibCal_UpdateResolution2: update the 2D view
@@ -312,7 +314,7 @@ function out = ResLibCal_UpdateResolution1(out)
   h = findall(0, 'Tag','ResLibCal_View1');
   if isempty(h), return; end
   set(0,'CurrentFigure', h);
-  
+
   % update/show the TAS geometry
   out = ResLibCal_TASview(out);
 
@@ -325,12 +327,12 @@ function out = ResLibCal_UpdateResolution2(out)
   h = findall(0, 'Tag','ResLibCal_View2');
   if isempty(h), return; end
   set(0,'CurrentFigure', h);
-  
+
   % update/show the resolution projections
   rlu = get(findobj(out.handle,'Tag','View_ResolutionRLU'), 'Checked');
   if strcmp(rlu, 'on'), rlu='rlu'; end
   out = rc_projs(out, rlu);
-  
+
 function out = ResLibCal_UpdateResolution3(out)
 % ResLibCal_UpdateResolution3: update the 3D view
 %
@@ -339,10 +341,21 @@ function out = ResLibCal_UpdateResolution3(out)
   h = findall(0, 'Tag','ResLibCal_View3');
   if isempty(h), return; end
   set(0,'CurrentFigure', h);
-  
+
   % update/show the resolution projections
   % update/show the resolution projections
   rlu = get(findobj(out.handle,'Tag','View_ResolutionRLU'), 'Checked');
   if strcmp(rlu, 'on'), rlu='rlu'; end
   out = ResPlot3D(out, rlu);
 
+function ResLibCal_UpdateTauPopup(fig, EXP)
+
+  popup = findobj(fig,'Tag','EXP_mono_tau_popup');
+  label = GetTau(EXP.mono.tau, 'getlabel');
+  index = find(strncmpi(get(popup,'String'), label, length(label)));
+  if ~isempty(index), set(popup, 'value', index); end
+
+  popup = findobj(fig,'Tag','EXP_ana_tau_popup');
+  label = GetTau(EXP.ana.tau, 'getlabel');
+  index = find(strncmpi(get(popup,'String'), label, length(label)));
+  if ~isempty(index), set(popup, 'value', index); end

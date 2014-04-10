@@ -1,4 +1,4 @@
-function tau = GetTau(x)
+function tau = GetTau(x, getlabel)
 %===================================================================================
 %  function GetTau(tau)
 %  ResLib v.3.4
@@ -9,10 +9,7 @@ function tau = GetTau(x)
 % A. Zheludev, 1999-2006
 % Oak Ridge National Laboratory
 %====================================================================================
-if isnumeric(x)
-    tau = x;
-else
-    choices={ 'pg(002)', 1.87325;...
+choices={ 'pg(002)', 1.87325;...
       'pg(004)', 3.74650;...
       'ge(111)', 1.92366;...
       'ge(220)', 3.14131;...
@@ -28,11 +25,21 @@ else
       'Cu(002)', 2*pi/1.807;...
       'Cu(220)', 2*pi/1.278;...
       'Cu(111)', 2*pi/2.095 };
+
+if nargin > 1
+  % return the index/label of the closest monochromator
+    [dif, index] = sort(abs(cell2mat(choices(:,2))-x));
+    index=index(1);
+    tau = choices{index,1}; % the label
+elseif isnumeric(x)
+    tau = x;
+else
+
     index=find(strcmpi(x, choices(:,1)));
     if ~isempty(index)
       tau = choices{index(1), 2};
     else
       tau = [];
-    end  
+    end
 
 end;
