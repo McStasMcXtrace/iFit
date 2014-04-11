@@ -90,17 +90,14 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   EXP.hcol=table(1,:);         % Horizontal collimation: FWHM minutes of arc
   EXP.vcol=table(2,:);         % Vertical collimation: FWHM minutes of arc
   % handle negative values in HCOL/VCOL for guide coating divergence
-  for field={'hcol','vcol'}
-    col = EXP.(field{1});
-    for index=find(col < 0)  % m-coating value is e.g. m=abs(EXP.hcol(index))
-      m   = abs(col(index));
-      if index <= 2 % L1,L2 before sample
-        col(index) = 0.1*m*(2*pi/EXP.ki)*60; % arcmin
-      else          % L2,L3 after sample
-        col(index) = 0.1*m*(2*pi/EXP.kf)*60; % arcmin
-      end
-    end
-    EXP.(field{1}) = col; % update with proper divergence values
+  % handle case of negative collimations : guide limited
+  index = find(EXP.hcol<0);
+  if ~isempty(index)
+      EXP.hcol(index) = abs(EXP.hcol(index))*0.1*60*(2*pi/EXP.ki)/0.4247/sqrt(3);
+  end
+  index = find(EXP.vcol<0);
+  if ~isempty(index)
+      EXP.vcol(index) = abs(EXP.vcol(index))*0.1*60*(2*pi/EXP.ki)/0.4247/sqrt(3);
   end
 
   %-------------------------   Experimental geometry    ------------------------
@@ -169,16 +166,6 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   EXP.vcol(3) = min(EXP.vcol(3), atan2(EXP.ana.height+EXP.sample.height,  EXP.arms(3))*180/2/pi*60);
   EXP.hcol(4) = min(EXP.hcol(4), atan2(EXP.ana.width +EXP.detector.width, EXP.arms(4))*180/2/pi*60);
   EXP.vcol(4) = min(EXP.vcol(4), atan2(EXP.ana.height+EXP.detector.height,EXP.arms(4))*180/2/pi*60);
-  
-  % handle case of negative collimations : guide limited
-  index = find(EXP.hcol<0);
-  if ~isempty(index)
-      EXP.hcol(index) = EXP.hcol(index)*0.1*60*(2*pi/EXP.ki)/0.4247/sqrt(3);
-  end
-  index = find(EXP.vcol<0);
-  if ~isempty(index)
-      EXP.vcol(index) = EXP.vcol(index)*0.1*60*(2*pi/EXP.ki)/0.4247/sqrt(3);
-  end
   
   % Crystal curvatures
   EXP.mono.rv=str2double(get(findall(fig,'Tag','EXP_mono_rv'),'String'));
