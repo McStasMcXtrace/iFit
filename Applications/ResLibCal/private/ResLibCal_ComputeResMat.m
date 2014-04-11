@@ -93,7 +93,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
       else
         disp([mfilename ': res3ax (JO) is not available' ]);
       end
-    elseif ~isempty(strfind(EXP.method, 'AFILL'))
+    elseif ~isempty(strfind(EXP.method, 'afill'))
       if exist('Rescal_AFILL') == 2
         % This method is 100% equivalent to ResCal5/Cooper-Nathans
         method    = @Rescal_AFILL; 
