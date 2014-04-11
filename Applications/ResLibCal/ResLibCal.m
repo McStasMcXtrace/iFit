@@ -55,6 +55,7 @@ function out = ResLibCal(varargin)
 % out      = ResLibCal_ViewResolution(out, dim)
 % out      = ResLibCal_UpdateResolution2(out)
 % out      = ResLibCal_UpdateResolution3(out)
+% ResLibCal_UpdateTauPopup(handle, EXP)
 
 ResLibCal_version = [ mfilename ' $Revision$ ($Date$)' ];
 

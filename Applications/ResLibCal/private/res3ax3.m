@@ -59,7 +59,7 @@ thetas=s2theta/2;
 phi=atan2((-kf*sin(s2theta)), (ki-kf*cos(s2theta)));
 
 %--------DEF-DES-MATRICES:
-F = diag([1/etam^2 1/etam^2 1/etaa^2 1/etaa^2]);
+F = diag([1./[etam etam etaa etaa].^2);
 
 %------matrice-C:
 C = zeros(4,8);
@@ -73,13 +73,8 @@ C(4,7) = 1/(2*sin(thetaa));
 C(4,8) = - C(4,7);
 
 %------matrice-G:
-G =[1/alf0^2 1/alf1^2 1/bet0^2 1/bet1^2 1/alf2^2 1/alf3^2 1/bet2^2 1/bet3^2];
-[Dummy,dimG] = size(G);
-gg = eye(dimG);
-ggg= [];
-for i=1:dimG, ggg = [ggg G'.*gg(:,i)];end;
-G = ggg;
-clear GG; clear ggg; clear dimG;
+G =diag(1./[alf0 alf1 bet0 bet1 alf2 alf3 bet2 bet3].^2);
+    
 %------matrice-A:
 A = zeros(6,8);
 A(1,1) = ki/(2*tan(thetam)); 
@@ -105,6 +100,7 @@ B(3,3)=1;
 B(3,6)=-1;
 B(4,1)=2*ki/f;
 B(4,4)=-2*kf/f;
+
 
 H = C'*F*C+G;
 Hinv = inv(H);

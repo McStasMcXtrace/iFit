@@ -32,6 +32,12 @@ C=zeros(4,8);
 B=zeros(4,6);
 for ind=1:len
     %---------------------------------------------------------------------------------------------
+    % the method to use
+    method=0;
+    if isfield(EXP(ind),'method')
+        method=EXP(ind).method;
+    end;
+    
     %Assign default values and decode parameters
     moncor=1;
     if isfield(EXP(ind),'moncor')
@@ -42,7 +48,7 @@ for ind=1:len
     mono=EXP(ind).mono;
     etam = mono.mosaic*CONVERT1;
     etamv=etam;
-    if isfield(mono,'vmosaic')
+    if isfield(mono,'vmosaic') && (method==1 || strcmpi(method, 'Popovici'))
         etamv = mono.vmosaic*CONVERT1;
     end;
     ana=EXP(ind).ana;
@@ -166,10 +172,6 @@ for ind=1:len
     if isfield(ana,'rh')
         anarh=ana.rh;
     end;
-    method=0;
-    if isfield(EXP(ind),'method')
-        method=EXP(ind).method;
-    end;
     
     taum=GetTau(mono.tau);
     taua=GetTau(ana.tau);
@@ -178,7 +180,7 @@ for ind=1:len
     if isfield(EXP(ind),'horifoc')
         horifoc=EXP(ind).horifoc;
     end;
-    % TODO: FIX removed as CN has no focusing, and it scrambles M
+
     if horifoc==1
         alpha(3)=alpha(3)*sqrt(8*log(2)/12);
     end;
@@ -244,10 +246,11 @@ for ind=1:len
     %Definition of matrix G    
     G=1./([alpha(1),alpha(2),beta(1),beta(2),alpha(3),alpha(4),beta(3),beta(4)]).^2;
     G=diag(G);
-    %---------------------------------------------------------------------------------------------
+ %---------------------------------------------------------------------------------------------
     %Definition of matrix F    
     F=1./([etam,etamv,etaa,etaav]).^2;
     F=diag(F);
+
     %---------------------------------------------------------------------------------------------
     %Definition of matrix A
     A(1,1)=ki/2/tan(thetam);
@@ -258,6 +261,7 @@ for ind=1:len
     A(3,4)=ki;
     A(5,5)=kf;
     A(6,7)=kf;
+
     %---------------------------------------------------------------------------------------------
     %Definition of matrix C
     C(1,1)=1/2;
@@ -268,6 +272,7 @@ for ind=1:len
     C(2,4)=-C(2,3); %mistake in paper
     C(4,7)=1/(2*sin(thetaa));
     C(4,8)=-C(4,7);
+    
     %---------------------------------------------------------------------------------------------
     %Definition of matrix B
     B(1,1)=cos(phi);
@@ -282,6 +287,7 @@ for ind=1:len
     B(3,6)=-1;
     B(4,1)=2*CONVERT2*ki;
     B(4,4)=-2*CONVERT2*kf;
+    
     %---------------------------------------------------------------------------------------------
     %Definition of matrix S
     Sinv=blkdiag(bshape,mshape,sshape,ashape,dshape); %S-1 matrix        
@@ -373,7 +379,7 @@ for ind=1:len
     %Calculation of prefactor, normalized to source
     Rm=ki^3/tan(thetam); 
     Ra=kf^3/tan(thetaa);
-    if method==1
+    if method==1 || strcmpi(method, 'Popovici')
         R0_=Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)/det( (D*(S+T'*F*T)^(-1)*D')^(-1)+G)); %Popovici
     else
         R0_=Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)/det(G+C'*F*C)); %Cooper-Nathans
@@ -402,7 +408,7 @@ for ind=1:len
         d(2,6)=0;
         d(2,7)=1/L1mon;
         d(4,5)=-1/L1mon;
-        if method==1
+        if method==1 || strcmpi(method, 'Popovici')
             Rmon=Rm*(2*pi)^2/(8*pi*sin(thetam))*sqrt( det(f)/det((d*(s+t'*f*t)^(-1)*d')^(-1)+g)); %Popovici
         else
             Rmon=Rm*(2*pi)^2/(8*pi*sin(thetam))*sqrt( det(f)/det(g+c'*f*c)); %Cooper-Nathans
