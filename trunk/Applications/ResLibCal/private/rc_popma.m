@@ -97,10 +97,10 @@ L3=p(23+offset);                 % distance between analyser and detector (cm).
 
 % TODO: FIX removed /100 so that all distances are in [cm]. 
 %       Was converted to [m-1] whereas all other distances are in [cm-1] !!
-romh=sm*abs(p(24+offset)); % horizontal curvature of monochromator 1/radius (cm-1).
-romv=sm*abs(p(25+offset));    % vertical curvature of monochromator (cm-1).
-roah=sa*abs(p(26+offset)); % horizontal curvature of analyser (cm-1).
-roav=sa*abs(p(27+offset));    % vertical curvature of analyser (cm-1).
+romh=p(24+offset); % horizontal curvature of monochromator 1/radius (cm-1).
+romv=p(25+offset);    % vertical curvature of monochromator (cm-1).
+roah=p(26+offset); % horizontal curvature of analyser (cm-1).
+roav=p(27+offset);    % vertical curvature of analyser (cm-1).
 
 f16=1/16.;
 f12=1/12.;
@@ -267,7 +267,8 @@ D(8,13)=D(6,12);
 % Construction of the resolution matrix
 
 % Popovici inverse matrix
-MI=B*A*(inv(inv(D*(inv(S+T'*F*T))*D')+G))*A'*B'; % including spatial effects.
+K = S+T'*F*T;
+MI= B*A*( inv( inv(D*inv(K)*D')+G ) )*A'*B'; % including spatial effects.
 
 % Cooper and Nathans inverse matrix
 %MI=B*A*(inv(G+C'*F*C))*A'*B'
@@ -275,31 +276,23 @@ MI=B*A*(inv(inv(D*(inv(S+T'*F*T))*D')+G))*A'*B'; % including spatial effects.
 % take mosaic into account 
 MI(2,2)=MI(2,2)+q0^2*etas^2;
 MI(3,3)=MI(3,3)+q0^2*etasp^2;
-M=5.545*inv(MI);  % Correction factor 8*log(2) as input parameters
+M=8*log(2)*inv(MI);  % Correction factor 8*log(2) as input parameters
                   % are expressed as FWHM. 
 
 %----- Normalisation factor
+Rm  = ki^3/tan(thetam); 
+Ra  = kf^3/tan(thetaa);
+P0 = Rm*Ra*(2*pi)^4/sqrt(det(G+inv(D*inv(S)*D')));                      % Popovici Eq (13a)
+R0 = P0/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt(det(S)*det(F)/det(K));   % Popovici Eq (16)
+    
+%Transform prefactor to Chesser-Axe normalization
+R0 = R0/(2*pi)^2*sqrt(det(M));
+%---------------------------------------------------------------------------
+%Include kf/ki part of cross section
+R0 = R0*kf/ki;
 
-mon=1;          % monochromator reflectivity
-ana=1;          % detector and analyser crystal efficiency function. (const.)
-
-if mon_flag==1 
-   vi=1;     
-else
-   vi=mon*ki^3*cot(thetam)*15.75*bet0*bet1*etam*alf0*alf1;
-   vi=vi/sqrt((2*sin(thetam)*etam)^2+bet0^2+bet1^2);
-   vi=abs(vi/sqrt(alf0^2+alf1^2+4*etam^2));             
-end
-
-vf=ana*kf^3*cot(thetaa)*15.75*bet2*bet3*etaa*alf2*alf3;
-vf=vf/sqrt((2*sin(thetaa)*etaa)^2+bet2^2+bet3^2);
-vf=abs(vf/sqrt(alf2^2+alf3^2+4*etaa^2));
-                            
-R0=vi*vf*sqrt(det(M))/(2*pi)^2;  % Dorner form of resolution normalisation
-                                  % see Mitchell, Cowley and Higgins. 
-% TODO: FIX added *M(3,3) to 1/etas^2 term
-R0=abs(R0/(etas*sqrt(1/etas^2+q0^2*M(2,2))));  % Werner and Pynn correction
-                                          % for mosaic spread of crystal.
+% Werner and Pynn correction for mosaic spread of crystal.
+R0 =R0/sqrt((1+(q0*etasp)^2*M(3,3))*(1+(q0*etas)^2*M(2,2)));
 
 %----- Final error check
 

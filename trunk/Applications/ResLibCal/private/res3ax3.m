@@ -41,7 +41,7 @@ l    = EXP.QL;    c = EXP.sample.c;
   [ EXP.sample.alpha EXP.sample.beta EXP.sample.gamma ] , ...
   [ h k l ] );  
 q0x = q0(1); q0y = q0(2); q0z = q0(3);
-q0   = sqrt(q0x^2+q0y^2+q0z^2);
+q0   = Qmag; % sqrt(q0x^2+q0y^2+q0z^2);
 %------Calculate-ki-and-kf,-thetam-and-thetaa
 ki=sqrt(kfix^2+(fx-1)*f*w); 
 kf=sqrt(kfix^2-(2-fx)*f*w);
@@ -59,7 +59,7 @@ thetas=s2theta/2;
 phi=atan2((-kf*sin(s2theta)), (ki-kf*cos(s2theta)));
 
 %--------DEF-DES-MATRICES:
-F = diag([1./[etam etam etaa etaa].^2);
+F = diag(1./[etam etam etaa etaa].^2);
 
 %------matrice-C:
 C = zeros(4,8);
@@ -101,17 +101,26 @@ B(3,6)=-1;
 B(4,1)=2*ki/f;
 B(4,4)=-2*kf/f;
 
-
+% Cooper-Nathans matrices
 H = C'*F*C+G;
 Hinv = inv(H);
 Ninv = A*Hinv*A';
 N =inv(Ninv);
 Minv = B*Ninv*B';
-M    = 5.545*inv(Minv);
+M    = 8*log(2)*inv(Minv);
 
 RMS=M;
 
+% Calculation of prefactor, normalized to source (Cooper-Nathans)
 Rm=ki^3/tan(thetam); 
 Ra=kf^3/tan(thetaa);
-R0=Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)/det(G+C'*F*C));
+P0=Rm*Ra*(2*pi)^4;           % the det(G) term is simplified          % Popovici Eq 5
+R0=P0/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)/det(G+C'*F*C) ); % Popovici Eq 9
+
+% Transform prefactor to Chesser-Axe normalization
+R0=R0/(2*pi)^2*sqrt(det(M));
+% Include kf/ki part of cross section
+R0=R0*kf/ki;
+% sample mosaic S. A. Werner & R. Pynn, J. Appl. Phys. 42, 4736, (1971), eq 19
+R0=R0/sqrt((1+(q*etas)^2*M(3,3))*(1+(q0*etas)^2*M(2,2)));
 

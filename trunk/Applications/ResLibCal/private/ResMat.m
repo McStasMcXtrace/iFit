@@ -193,12 +193,6 @@ for ind=1:len
     sm =EXP.mono.dir;
     ss =EXP.sample.dir;
     sa =EXP.ana.dir;
-    % TODO: FIX: direction of curvature was missing
-    monorh = sm*abs(monorh);
-    monorv = sm*abs(monorv);
-    anarh  = sa*abs(anarh);
-    anarv  = sa*abs(anarv);
-
     %---------------------------------------------------------------------------------------------
     %Calculate angles and energies
     w=W(ind);
@@ -287,8 +281,7 @@ for ind=1:len
     B(3,6)=-1;
     B(4,1)=2*CONVERT2*ki;
     B(4,4)=-2*CONVERT2*kf;
-    
-    %---------------------------------------------------------------------------------------------
+ %---------------------------------------------------------------------------------------------
     %Definition of matrix S
     Sinv=blkdiag(bshape,mshape,sshape,ashape,dshape); %S-1 matrix        
     S=Sinv^(-1);
@@ -312,7 +305,7 @@ for ind=1:len
     T(4,13)=-1/(2*L3*sin(thetaa));
     %---------------------------------------------------------------------------------------------
     %Definition of matrix D
-    % Lots of index mistakes in paper for matix D
+    % Lots of index mistakes in paper for matrix D
     D(1,1)=-1/L0;
     D(1,3)=-cos(thetam)/L0;
     D(1,4)=sin(thetam)/L0;
@@ -335,26 +328,31 @@ for ind=1:len
     D(6,12)=1/L3;
     D(8,11)=-D(6,12);
     D(8,13)=D(6,12);
+    
+    
  %---------------------------------------------------------------------------------------------
     %Definition of resolution matrix M
     if method==1 || strcmpi(method, 'Popovici')
-        Minv=B*A*inv(inv(D*inv(S+T'*F*T)*D')+G)*A'*B'; %Popovici
+        K = S+T'*F*T;
+        H = inv(D*inv(K)*D');
+        Ninv = A*inv(H+G)*A'; % Popovici Eq 20
     else
-        HF=A*inv(G+C'*F*C)*A';
+        H = G+C'*F*C;                       % Popovici Eq 8
+        Ninv= A*inv(H)*A';                  % Cooper-Nathans (in Popovici Eq 10)
         %Horizontally focusing analyzer if needed
         if horifoc>0
-            HF=HF^(-1);
-            HF(5,5)=(1/(kf*alpha(3)))^2; 
-            HF(5,4)=0; 
-            HF(4,5)=0; 
-            HF(4,4)=(tan(thetaa)/(etaa*kf))^2;
-            HF=inv(HF);
+            Ninv=inv(Ninv);
+            Ninv(5,5)=(1/(kf*alpha(3)))^2; 
+            Ninv(5,4)=0; 
+            Ninv(4,5)=0; 
+            Ninv(4,4)=(tan(thetaa)/(etaa*kf))^2;
+            Ninv=inv(Ninv);
         end
-        Minv=B*HF*B'; %Cooper-Nathans
     end;
+    Minv=B*Ninv*B'; % Popovici Eq 3
 
     % TODO: FIX added factor 5.545 from ResCal5
-    M=5.545*inv(Minv);  % Correction factor 8*log(2) as input parameters
+    M=8*log(2)*inv(Minv);  % Correction factor 8*log(2) as input parameters
                         % are expressed as FWHM.
 
     % TODO: rows-columns 3-4 swapped for ResPlot to work. 
@@ -375,18 +373,30 @@ for ind=1:len
 %    RM_(4,4)=M(3,3);
 %    RM_(4,2)=M(3,2);
 %    RM_(2,4)=M(2,3);
-    %---------------------------------------------------------------------------------------------
+    %---------------------------------------------------------------------------
     %Calculation of prefactor, normalized to source
-    Rm=ki^3/tan(thetam); 
-    Ra=kf^3/tan(thetaa);
+    Rm  = ki^3/tan(thetam); 
+    Ra  = kf^3/tan(thetaa);
+    R0_ = Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa));
     if method==1 || strcmpi(method, 'Popovici')
-        R0_=Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)/det( (D*(S+T'*F*T)^(-1)*D')^(-1)+G)); %Popovici
+        R0_=R0_ *sqrt(det(F)/det( inv(D*inv(S+T'*F*T)*D')+G )); %Popovici
     else
-        R0_=Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)/det(G+C'*F*C)); %Cooper-Nathans
+        R0_=R0_ *sqrt(det(F)/det( G+C'*F*C )); %Cooper-Nathans (popovici Eq 5 and 9)
     end;
-    %---------------------------------------------------------------------------------------------
+    %---------------------------------------------------------------------------
+    
+    % Popovici normalisation factor
+    %K = S+T'*F*T;
+    %P0 = Rm*Ra*(2*pi)^4/sqrt(det(G+inv(D*inv(S)*D')));                      % Popovici Eq (13a)
+    %R02 = P0/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt(det(S)*det(F)/det(K));  % Popovici Eq (16)
+    %R02
+    
+    %R02 = Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)*det(S)/det(S+T'*F*T)/det(inv(D*inv(S)       *D')+G));
+    %R0_ = Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)                     /det(inv(D*inv(S+T'*F*T)*D')+G));
+    
+    
     %Normalization to flux on monitor
-    if moncor==1
+    if moncor==1 && 0
         g=G(1:4,1:4);
         f=F(1:2,1:2);
         c=C(1:2,1:4);
@@ -416,13 +426,13 @@ for ind=1:len
         R0_=R0_/Rmon;
         R0_=R0_*ki; %1/ki monitor efficiency
     end;
-    %---------------------------------------------------------------------------------------------
+    %---------------------------------------------------------------------------
     %Transform prefactor to Chesser-Axe normalization
     R0_=R0_/(2*pi)^2*sqrt(det(M));
-    %---------------------------------------------------------------------------------------------
+    %---------------------------------------------------------------------------
     %Include kf/ki part of cross section
     R0_=R0_*kf/ki;
-    %---------------------------------------------------------------------------------------------
+    %---------------------------------------------------------------------------
     % Take care of sample mosaic if needed 
     % [S. A. Werner & R. Pynn, J. Appl. Phys. 42, 4736, (1971), eq 19]
     if isfield(sample,'mosaic')
@@ -432,16 +442,16 @@ for ind=1:len
             etasv = sample.vmosaic*CONVERT1;
         end;
         % TODO: FIX changed RM_(4,4) and M(4,4) to M(3,3)
-        R0_=R0_/sqrt((1+(q*etas)^2*M(3,3))*(1+(q*etasv)^2*M(2,2)));
+        R0_=R0_/sqrt((1+(q*etasv)^2*M(3,3))*(1+(q*etas)^2*M(2,2)));
         %Minv=RM_^(-1);
         Minv(2,2)=Minv(2,2)+q^2*etas^2;
         Minv(3,3)=Minv(3,3)+q^2*etasv^2;
         % TODO: FIX add 8*log(2) factor for mosaicities in FWHM
-        M=5.545*inv(Minv);
+        M=8*log(2)*inv(Minv);
     end;
-    %---------------------------------------------------------------------------------------------
+    %---------------------------------------------------------------------------
     %Take care of analyzer reflectivity if needed [I. Zaliznyak, BNL]
-    if isfield(ana,'thickness')&isfield(ana,'Q')            
+    if isfield(ana,'thickness') && isfield(ana,'Q')            
         KQ = ana.Q;
         KT = ana.thickness;
         toa=(taua/2)/sqrt(kf^2-(taua/2)^2);
@@ -455,7 +465,8 @@ for ind=1:len
         reflec=sum(rdth)/sum(wdth);
         R0_=R0_*reflec;
     end;
-    %---------------------------------------------------------------------------------------------
+    
+    %---------------------------------------------------------------------------
     R0(ind)=R0_;
     RM(:,:,ind)=M(:,:);
 end;%for
