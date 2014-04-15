@@ -30,7 +30,11 @@ if nargin > 1
   % return the index/label of the closest monochromator
     [dif, index] = sort(abs(cell2mat(choices(:,2))-x));
     index=index(1);
-    tau = choices{index,1}; % the label
+    if dif(index) < 5e-5
+      tau = choices{index,1}; % the label
+    else
+      tau = '';
+    end
 elseif isnumeric(x)
     tau = x;
 else

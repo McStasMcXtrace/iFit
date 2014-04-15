@@ -76,7 +76,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
         EXProt.QH = h; EXProt.QK=k; EXProt.QL=l; EXProt.W=w;
         p         = ResLibCal_EXP2RescalPar(EXProt);
         [Q2c,Qmag]= rc_re2rc( p(19:21), p(22:24), p(31:33) ); 
-        [R0,RM,vi,vf,Error]=feval(method,f,Qmag,p,0);
+        [R0,RM]   = feval(method,f,Qmag,p,0);
         RMS       = ResLibCal_RM2RMS(h,k,l,w,EXProt,RM);
       else
         disp([mfilename ': Rescal5/rc_cnmat is not available' ]);

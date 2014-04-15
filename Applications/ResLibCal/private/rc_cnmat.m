@@ -128,30 +128,23 @@ dummy=1;
 [dummy,N]=rc_int(5,dummy,N);        % integrate over kix giving a 4x4 matrix
 NP=N-N(1:4,2)*N(1:4,2)'/(1/((etas*q0)^2)+N(2,2));
 NP(3,3)=N(3,3);
-NP=5.545*NP;                        % Correction factor 8*log(2) as input parameters
+NP=8*log(2)*NP;                     % Correction factor 8*log(2) as input parameters
                                     % are expressed as FWHM.
 
 %----- Normalisation factor
 
-mon=1;          % monochromator reflectivity
-ana=1;          % detector and analyser crystal efficiency function. (const.)
+% Calculation of prefactor, normalized to source (Cooper-Nathans)
+Rm=ki^3/tan(thetam); 
+Ra=kf^3/tan(thetaa);
+P0=Rm*Ra*(2*pi)^4;
+R0=P0/(64*pi^2*sin(thetam)*sin(thetaa));
 
-if mon_flag==1 
-   vi=1;     
-else
-   vi=mon*ki^3*cot(thetam)*15.75*bet0*bet1*etam*alf0*alf1;
-   vi=vi/sqrt((2*sin(thetam)*etam)^2+bet0^2+bet1^2);
-   vi=vi/sqrt(alf0^2+alf1^2+4*etam^2);             
-end
-
-vf=ana*kf^3*cot(thetaa)*15.75*bet2*bet3*etaa*alf2*alf3;
-vf=vf/sqrt((2*sin(thetaa)*etaa)^2+bet2^2+bet3^2);
-vf=vf/sqrt(alf2^2+alf3^2+4*etaa^2);
-                            
-R0=vi*vf*sqrt(det(NP))/(2*pi)^2;          % Dorner form of resolution normalisation
-                                          % see Mitchell, Cowley and Higgins. 
-R0=R0/(etas*sqrt(1/etas^2+q0^2*N(2,2)));  % Werner and Pynn correction
-                                          % for mosaic spread of crystal.
+% Transform prefactor to Chesser-Axe normalization
+R0=R0/(2*pi)^2*sqrt(det(NP));
+% Include kf/ki part of cross section
+R0=R0*kf/ki;
+% sample mosaic S. A. Werner & R. Pynn, J. Appl. Phys. 42, 4736, (1971), eq 19
+R0=R0/sqrt((1+(q0*etas)^2*M(3,3))*(1+(q0*etas)^2*M(2,2)));
 
 %----- Final error check
 

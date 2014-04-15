@@ -1,4 +1,4 @@
-function [R0, RMS] = vTAS_AFILL(H,K,L,W,EXP)  
+function [R0, RMS] = Rescal_AFILL(H,K,L,W,EXP)  
 % from vTAS_view/AFILL A. Bouvet 
 %
 %      THIS GENERATES COOPER-NATHANS RESOLUTION MATRIX.
@@ -148,5 +148,18 @@ function [R0, RMS] = vTAS_AFILL(H,K,L,W,EXP)
 	  RMS(I,2)=-RMS(I,2)*EXP.mono.dir;
 	  RMS(2,I)=-RMS(2,I)*EXP.mono.dir;
   end
+
+  % intensity pre-factor
   
-  R0 = 1;
+  thetaa=asin(pi/(EXP.ana.d*AKF));      % theta angles for analyser
+  thetam=asin(pi/(EXP.mono.d*AKI));     % and monochromator.
+  
+  Rm  = AKI^3/tan(thetam); 
+  Ra  = AKF^3/tan(thetaa);
+  R0  = Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa));
+  %Transform prefactor to Chesser-Axe normalization
+  R0  = R0/(2*pi)^2*sqrt(det(RMS));
+  %---------------------------------------------------------------------------
+  %Include kf/ki part of cross section
+  R0  = R0*AKF/AKI;
+  

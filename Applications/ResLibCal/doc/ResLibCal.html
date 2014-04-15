@@ -53,6 +53,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans
     and Popovici methods are proposed [<a href="#mozTocId811100">1-5</a>],
 
+
+
+
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -154,8 +158,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <p>The resolution matrix is then shown either in <span
         style="font-style: italic;">reciprocal lattice units</span>
       (rlu) [Q1,Q2,E] depending on the lattice parameters and the
-      vectors <span style="font-style: italic;">D1</span> and <span
-        style="font-style: italic;">D2</span> which define the
+      vectors <span style="font-style: italic;">D1</span> (along Ki)
+      and <span style="font-style: italic;">D2</span> which define the
       orientation of the crystal. Un-checking this option in the <span
         style="font-style: italic;">View</span> menu will switch to the
       [Qx,Qy,E] space along longitudinal momentum exchange Q.</p>
@@ -167,12 +171,51 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         style="font-style: italic;"> menu item is checked, any change in
         the interface triggers a re-computation of the resolution, and
         an update of opened plots.</span><br>
-      <br>
+      <div align="left"><br>
+        <br>
+        <br>
+        <br>
+        The following computational methods are available:<br>
+        <ul>
+          <li><b>Cooper-Nathans/Res3Ax</b> [res3ax3]: simple
+            Cooper-Nathans based on notes from B. Hennion [1].</li>
+          <li><b>Cooper-Nathans/AFILL</b> [AFILL]: the original
+            Cooper-Nathans [1] code <a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
+            from Brookhaven 'AFILL'.</li>
+          <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
+            Cooper-Nathans method from the <a
+href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>
+            Matlab application. The sample mosaic spread is also taken
+            into account.</li>
+          <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
+            Cooper-Nathans method from the <a
+              href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
+            Matlab application, that also supports analyzer horizontal
+            focusing correction (RAH). To compare with the 3 previous
+            Cooper-Nathans methods above, you should set RAH=0. The
+            analyzer reflectivity is also taken into account, as well as
+            a correction for the sample orientation w.r.t. the incoming
+            beam. The sample mosaic spread is also taken into account.</li>
+        </ul>
+        In all methods, the alpha/beta collimation parameters support
+        guide <i>m-</i>coating specification (negative values e.g. -2)
+        which are then converted to equivalent critical angles <i>0.1 </i><i>m
+          &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are also
+        limited by the effective divergence set from the geometry, e.g.
+        <i>atan(width or height/distance) </i>[rad]. <br>
+        <ul>
+        </ul>
+      </div>
     </div>
     <h4><a class="mozTocH4" name="mozTocId444562"></a>Usage: plotting
       the TAS resolution function</h4>
     <div style="text-align: left;"> To compute and plot the resolution
       function, select the <span style="font-style: italic;">View/Resolution
+
+
+
+
 
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
@@ -237,10 +280,15 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     You can further edit this file and change manually values in the
     'EXP' ResLib-compatible structure.<br>
     <br>
+    <i><b>Rescal format: </b></i><br>
+    If the output file name you specify has a 'res', 'par' or 'cfg'
+    extension, the generated configuration uses the ResCal legacy
+    format, which consists in entries 'NAME = value'.<br>
+    <br>
     The main ResLibCal GUI can also be exported as graphics image in a
     set of formats, including PDF, EPS, PNG, TIFF, BMP, and Matlab Fig.
-    Plot windows can be exported using the <span style="font-style:
-      italic;">File/Saveas</span> menu item.<br>
+    Plot windows can be exported using their <span style="font-style:
+      italic;">File/Saveas</span> menu item, and printed.<br>
     <br>
     When exiting the application, the current configuration is saved in
     the Matlab preferences directory.<br>
@@ -330,21 +378,30 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <span style="font-weight: bold;">References:</span><br>
     <div style="margin-left: 40px;">[1] M. J. Cooper and R. Nathans, <span
         style="font-style: italic;">Acta Cryst. </span><span
-        style="font-weight: bold;">23</span>, 357, (1967).<br>
+        style="font-weight: bold;">23</span>, 357, (1967) [<a
+        href="http://dx.doi.org/10.1107/S0365110X67002816">doi:10.1107/S0365110X67002816</a>].<br>
       [2] N. J. Chesser and J. D. Axe, <span style="font-style:
         italic;">Acta Cryst.</span> <span style="font-weight: bold;">A29</span>,
-      160, (1972).<br>
+      160, (1972) [<a href="http://dx.doi.org/10.1107/S0567739473000422">doi:10.1107/S0567739473000422</a>].<br>
       [3] M. Popovici, <span style="font-style: italic;">Acta Cryst</span>
-      <span style="font-weight: bold;">A31</span>, 507 (1975).<br>
+      <span style="font-weight: bold;">A31</span>, 507 (1975) [<a
+        href="http://dx.doi.org/10.1107/S0567739475001088">doi:10.1107/S0567739475001088</a>].<br>
       [4] G. E. Bacon and R. D. Lowde, <span style="font-style:
-        italic;">Acta Cryst.</span> (1948).<br>
+        italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
+        href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
 
+
+
+
+
         Appl. Phys.</span> <span style="font-weight: bold;">42</span>,
-      4736, (1971).<br>
+      4736, (1971) [<a href="http://dx.doi.org/10.1063/1.1659848">doi:10.1063/1.1659848</a>].<br>
       [6] Gen Shirane, Stephen M. Shapiro, John M. Tranquada, Neutron
       Scattering with a Triple-Axis Spectrometer: Basic Techniques,
       Cambridge University Press (2006).<br>
+      [7] S. A. Werner R. Pynn, J. Appl. Phys. 42, 4736, (1971) [<a
+        href="http://dx.doi.org/10.1063/1.1659848">doi:10.1063/1.1659848</a>]<br>
     </div>
     <br>
     <span style="color: rgb(255, 0, 0); font-weight: bold;">Disclaimer:</span><br>
@@ -360,8 +417,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">&nbsp;<span style="font-style:
         italic;">E. Farhi - ResLibCal - </span><span style="font-style:
-        italic;">$Date$
-        $Revision$</span> <a href="http://www.ill.eu"><img
+        italic;">$Date: 2014-04-10 21:33:06 +0200 (jeu., 10 avril 2014)
+        $ $Revision$</span> <a href="http://www.ill.eu"><img
           alt="The ILL web site" title="The ILL web site"
           src="ILL-web-jpeg.jpg" style="border: 0px solid; border: 0px
           solid; width: 64px; height: 60px;" align="middle"></a><br>
