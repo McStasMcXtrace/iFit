@@ -128,7 +128,7 @@ else   % import data to create a single object
     % check if this is a predefined function
     isfunction = 0;
     try
-      if exist(this) == 2 && nargin(this) > 0 && nargout(this) == 1
+      if exist(this) == 2 && abs(nargin(this)) > 0 && nargout(this) == 1
         isfunction = 1;
       end
     end
