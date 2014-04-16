@@ -23,7 +23,7 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   %-------------------------   Computation type    -----------------------------
   EXP.method=get(findall(fig,'Tag','EXP_method'),'String');
   EXP.method=EXP.method{get(findall(fig,'Tag','EXP_method'),'Value')};
-  EXP.moncor=1; % Intensity normalized to flux on monitor by default...
+  EXP.moncor=0; % Intensity NOT normalized to flux on monitor by default...
 
   %-------------------------   Monochromator and analyzer    -------------------
   EXP.mono.d       =str2double(get(findall(fig,'Tag','EXP_mono_d'),'String'));

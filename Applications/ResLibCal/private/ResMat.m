@@ -39,7 +39,7 @@ for ind=1:len
     end;
     
     %Assign default values and decode parameters
-    moncor=1;
+    moncor=0;
     if isfield(EXP(ind),'moncor')
         moncor = EXP(ind).moncor;
     end;
@@ -396,7 +396,7 @@ for ind=1:len
     
     
     %Normalization to flux on monitor
-    if moncor==1 && 0
+    if moncor==1
         g=G(1:4,1:4);
         f=F(1:2,1:2);
         c=C(1:2,1:4);
