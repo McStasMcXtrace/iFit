@@ -27,8 +27,11 @@ function filename = ResLibCal_Saveas(filename, EXP)
     % do we reduce output to ResCal only ? based on extension match
     [p,f,e] = fileparts(filename);
     if any(strcmp(e,{'.res','.cfg','.par'})) && isfield(EXP,'ResCal')
-      str = class2str(' ', EXP.ResCal, 'no comment');
-      str = strrep(str, ';', ''); % remove trailing ';'
+      % str = class2str(' ', EXP.ResCal, 'no comment');
+      str = struct2cell(EXP.ResCal);
+      if length(str) > 42, str=str(1:42); end
+      str = sprintf('%g\n', str{:});
+      % str = strrep(str, ';', ''); % remove trailing ';'
     else
       str = [ '% ResLibCal configuration script file ' sprintf('\n') ...
             '%' sprintf('\n') ...
