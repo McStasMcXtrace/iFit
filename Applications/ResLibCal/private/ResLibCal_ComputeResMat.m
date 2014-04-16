@@ -122,13 +122,12 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     if ~all(isreal(RMS)) RMS=[]; end
     if ~isempty(RMS)
       % compute some widths in [Q1,Q2,Qz,E]
-      bragg = 2.35./sqrt(diag(RMS)); % overridden by rc_projs in rlu/Q frame when plotted
+      res.Bragg = rc_bragg(RMS); % dQ1,dQ2,dQz,V,dE in [Q1,Q2,Qz,E] frame
     end
     % resolution volume and matrices
     res.R0    = R0;
     res.RM    = RM;  % M in [Qx,Qy,Qz,E] frame
     res.RMS   = RMS; % M in [Q1,Q2,Qz,E] frame
-    res.Bragg = bragg;
     res.HKLE  = [ h k l w ];
     res.method= method_orig;
     [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP);

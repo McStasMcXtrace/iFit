@@ -14,5 +14,5 @@ MP=S'*M*S;
 [rp,MP]=rc_int(1,r0,MP);
 [rp,MP]=rc_int(1,rp,MP);
 [rp,MP]=rc_int(1,rp,MP);
-fwhm=2.35482/sqrt(MP(1,1));
+fwhm=sqrt(8*log(2))/sqrt(MP(1,1));
 
