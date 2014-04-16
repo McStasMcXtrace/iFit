@@ -57,6 +57,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -217,6 +218,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -273,17 +275,25 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       the results, saving the configuration</h4>
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
-      style="font-style: italic;">'.m'</span> filename, and the full
-    ResLibCal configuration (instrument, sample, position, method) is
-    saved as a Matlab script. An example of such configuration file is
-    available <a href="ResLibCal.ini">here</a>.<br>
+      style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+    and the full ResLibCal configuration (instrument, sample, position,
+    method) is saved as a Matlab script. An example of such
+    configuration file is available <a href="ResLibCal.ini">here</a>.<br>
     You can further edit this file and change manually values in the
     'EXP' ResLib-compatible structure.<br>
     <br>
-    <i><b>Rescal format: </b></i><br>
-    If the output file name you specify has a 'res', 'par' or 'cfg'
-    extension, the generated configuration uses the ResCal legacy
-    format, which consists in entries 'NAME = value'.<br>
+    Other file formats are available<br>
+    <blockquote><i><b>Rescal legacy format (*.par):</b></i><br>
+      If the output file name you specify has a 'par' extension, the
+      generated configuration uses the ResCal legacy format, which
+      consists 42 numbers. Comments are added for easier parameter
+      identification.<br>
+      <br>
+      <i><b>Rescal5 format (*.res): </b></i><br>
+      If the output file name you specify has a 'res', or 'cfg'
+      extension, the generated configuration uses a simple 'NAME =
+      value' list of parameters.<br>
+    </blockquote>
     <br>
     The main ResLibCal GUI can also be exported as graphics image in a
     set of formats, including PDF, EPS, PNG, TIFF, BMP, and Matlab Fig.
@@ -390,6 +400,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 

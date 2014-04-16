@@ -268,6 +268,7 @@ else
   % open or create the main GUI
   feval(mfilename, 'create'); % load last configuration
   out = ResLibCal_Compute;
+  out = ResLibCal_ViewResolution(out,2);  % open/raise View Res2
   out = ResLibCal_UpdateViews(out); % when they exist
 end
 % end ResLibCal main
@@ -308,7 +309,7 @@ function out = ResLibCal_ViewResolution(out, dim)
 
 % ==============================================================================
 function out = ResLibCal_UpdateResolution1(out)
-% ResLibCal_UpdateResolution2: update the 2D view
+% ResLibCal_UpdateResolution1: update the TAS geometry view
 %
   if nargin == 0, out = ''; end
   if ~isstruct(out), out = ResLibCal_Compute; end

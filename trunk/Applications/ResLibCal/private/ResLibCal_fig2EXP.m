@@ -167,7 +167,7 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   EXP.hcol(4) = min(EXP.hcol(4), atan2(EXP.ana.width +EXP.detector.width, EXP.arms(4))*180/2/pi*60);
   EXP.vcol(4) = min(EXP.vcol(4), atan2(EXP.ana.height+EXP.detector.height,EXP.arms(4))*180/2/pi*60);
   
-  % Crystal curvatures
+  % Crystal curvatures [cm-1]
   EXP.mono.rv=str2double(get(findall(fig,'Tag','EXP_mono_rv'),'String'));
   EXP.mono.rh=str2double(get(findall(fig,'Tag','EXP_mono_rh'),'String'));
   EXP.ana.rv =str2double(get(findall(fig,'Tag','EXP_ana_rv'),'String'));
