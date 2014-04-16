@@ -146,10 +146,10 @@ function [p, labels] = ResLibCal_EXP2RescalPar(EXP)
   p(21)=EXP.arms(2);       % distance between monochromator and sample (cm)
   p(22)=EXP.arms(3);       % distance between sample and analyser (cm)
   p(23)=EXP.arms(4);       % distance between analyser and detector (cm)
-  p(24)=1/EXP.mono.rh;       % horizontal curvature of monochromator 1/radius (m-1)
-  p(25)=1/EXP.mono.rv;       % vertical curvature of monochromator (m-1)
-  p(26)=1/EXP.ana.rh;        % horizontal curvature of analyser (m-1)
-  p(27)=1/EXP.ana.rv;        % vertical curvature of analyser (m-1)
+  p(24)=100/EXP.mono.rh;       % horizontal curvature of monochromator 1/radius (m-1)
+  p(25)=100/EXP.mono.rv;       % vertical curvature of monochromator (m-1)
+  p(26)=100/EXP.ana.rh;        % horizontal curvature of analyser (m-1)
+  p(27)=100/EXP.ana.rv;        % vertical curvature of analyser (m-1)
   pinst = p;               % Popovici
 
   p=[pres pinst];

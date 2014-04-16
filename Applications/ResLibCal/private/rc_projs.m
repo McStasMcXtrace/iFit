@@ -192,6 +192,7 @@ else
 end
 ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
 xlim(x2); ylim(xe);
+title([ 'ResLibCal ' datestr(now) ])
 
 %---------------- Add slice through Qy,W plane ----------------------
 
