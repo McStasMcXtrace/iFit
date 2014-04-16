@@ -60,13 +60,13 @@ end
   if isnumeric(str) && isvector(str)
     
     if numel(str) == 42 % legacy ResCal5 .par file
-      labels=labels(1:42);
+      labs=labels(1:42);
       str = mat2cell(str(:),ones(1,length(str)));
-      str = cell2struct(str(:),labels(:),1);  % make a structure
+      str = cell2struct(str(:),labs(:),1);  % make a structure
     elseif numel(str) == 27
-      labels=labels(42+(1:27));
+      labs=labels(42+(1:27));
       str = mat2cell(str(:),ones(1,length(str)));
-      str = cell2struct(str(:),labels(:),1);  % make a structure
+      str = cell2struct(str(:),labs(:),1);  % make a structure
     end
   end
   
@@ -151,10 +151,11 @@ end
   if isfield(p,'L1') && isfield(p,'L2') && isfield(p,'L3') && isfield(p,'L4')
     EXP.arms=[p.L1 p.L2 p.L3 p.L4];
   end
-  if isfield(p,'RMH'), EXP.mono.rh=1/p.RMH; end
-  if isfield(p,'RMV'), EXP.mono.rv=1/p.RMV; end
-  if isfield(p,'RAH'), EXP.mono.ah=1/p.RAH; end
-  if isfield(p,'RAV'), EXP.mono.av=1/p.RAV; end
+  % curvatures from ResCal are in [m-1] -> [cm]
+  if isfield(p,'RMH'), EXP.mono.rh=100/p.RMH; end
+  if isfield(p,'RMV'), EXP.mono.rv=100/p.RMV; end
+  if isfield(p,'RAH'), EXP.ana.rh=100/p.RAH; end
+  if isfield(p,'RAV'), EXP.ana.rv=100/p.RAV; end
 
 % end ResLibCal_RescalPar2EXP
 

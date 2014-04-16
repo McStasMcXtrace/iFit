@@ -60,12 +60,12 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   popup = findobj(fig,'Tag','EXP_mono_tau_popup');
   label = GetTau(EXP.mono.tau, 'getlabel');
   index = find(strncmpi(get(popup,'String'), label, length(label)));
-  if ~isempty(index), set(popup, 'value', index); end
+  if ~isempty(label) && ~isempty(index), set(popup, 'value', index); end
 
   popup = findobj(fig,'Tag','EXP_ana_tau_popup');
   label = GetTau(EXP.ana.tau, 'getlabel');
   index = find(strncmpi(get(popup,'String'), label, length(label)));
-  if ~isempty(index), set(popup, 'value', index); end
+  if ~isempty(label) && ~isempty(index), set(popup, 'value', index); end
 
   %-------------------------   Sample ------------------------------------------
   if isfield(EXP, 'sample')
