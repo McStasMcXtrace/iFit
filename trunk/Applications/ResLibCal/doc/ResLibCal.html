@@ -58,6 +58,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -219,6 +220,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -276,6 +278,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
     and the full ResLibCal configuration (instrument, sample, position,
     method) is saved as a Matlab script. An example of such
     configuration file is available <a href="ResLibCal.ini">here</a>.<br>
@@ -330,6 +333,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     You can change any configuration parameter, including the method for
     the computation:<br>
     <pre style="margin-left: 40px;">&gt;&gt; out.EXP.method = <span style="color: rgb(204, 51, 204);">'Cooper-Nathans ResCal'</span></pre>
+    Then re-compute the resolution function with<br>
+    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(out);</pre>
     The method should mention '<span style="font-style: italic;">Cooper-Nathans</span>'
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>
@@ -400,6 +405,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
