@@ -84,6 +84,7 @@ function [R0, RMS] = Rescal_AFILL(H,K,L,W,EXP)
   B2=A4*A4+A6*A6+A10*A10;
   B3=A5*A5+A9*A9;
   B4=A5*A6+A9*A10;
+  B5=A1*A1+A7*A7;
   C=-1.*(ALAM-BE)/AL;
   E=-1.*(BE*ALAM-1.)/AL;
   AP=A1*A1+2.*B0*C+B1*C*C+B2*E*E+B3*ALAM*ALAM+2.*B4*ALAM*E+A7*A7;
@@ -154,12 +155,19 @@ function [R0, RMS] = Rescal_AFILL(H,K,L,W,EXP)
   thetaa=asin(pi/(EXP.ana.d*AKF));      % theta angles for analyser
   thetam=asin(pi/(EXP.mono.d*AKI));     % and monochromator.
   
-  Rm  = AKI^3/tan(thetam); 
-  Ra  = AKF^3/tan(thetaa);
-  R0  = Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa));
+  % intensity from Chesser/Axe 1972
+  R0 = 2*pi/(AKI^2*AKF^3*AL) ...
+		/sqrt(AP*(A112+A122)) ...
+		*sqrt( ...
+		   BET0^2/(BET0^2+(2*ETAM*sin(thetam))^2) ...
+		  *BET3^2/(BET3^2+(2*ETAA*sin(thetaa))^2));
+  R0 = abs(R0);
+  
   %Transform prefactor to Chesser-Axe normalization
   R0  = R0/(2*pi)^2*sqrt(det(RMS));
   %---------------------------------------------------------------------------
   %Include kf/ki part of cross section
   R0  = R0*AKF/AKI;
+  % sample mosaic S. A. Werner & R. Pynn, J. Appl. Phys. 42, 4736, (1971), eq 19
+  R0  = R0/sqrt((1+(Q*ETAS)^2*RMS(3,3))*(1+(Q*ETAS)^2*RMS(2,2)));
   
