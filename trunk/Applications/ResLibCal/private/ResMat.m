@@ -15,7 +15,7 @@ function [R0,RM]=ResMat(Q,W,EXP)
 
 % 0.424660900144 = FWHM2RMS
 % CONVERT1=0.4246609*pi/60/180;
-CONVERT1=pi/60/180; % TODO: FIX constant from from CN. 0.4246
+CONVERT1=pi/60/180; % TODO: FIX constant from CN. 0.4246
 CONVERT2=2.072;
 
 [len,Q,W,EXP]=CleanArgs(Q,W,EXP);
@@ -207,25 +207,9 @@ for ind=1:len
     thetaa=asin(taua/(2*kf))*sa; 
     s2theta=acos( (ki^2+kf^2-q^2)/(2*ki*kf))*ss; %2theta sample
 
-
     thetas=s2theta/2;
-%   phi=atan2(-kf*sin(s2theta), ki-kf*cos(s2theta)); %Angle from ki to Q
-%   The following correction was suggested by Sibel Bayracki
-    phi=atan2((-kf*sin(s2theta)), (ki-kf*cos(s2theta)));
-    %---------------------------------------------------------------------------------------------
-    %Calculate beam divergences defined by neutron guides
-    % TODO: FIX ? now done properly in ResLibCal_fig2EXP
-  
-    %if alpha(1)<0  alpha(1)=-alpha(1)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    %if alpha(2)<0  alpha(2)=-alpha(2)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    %if alpha(3)<0  alpha(3)=-alpha(3)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    %if alpha(4)<0  alpha(4)=-alpha(4)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    
-    %if beta(1)<0  beta(1)=-beta(1)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    %if beta(2)<0  beta(2)=-beta(2)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    %if beta(3)<0  beta(3)=-beta(3)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-    %if beta(4)<0  beta(4)=-beta(4)*0.1*60*(2*pi/ki)/0.427/sqrt(3); end
-     %---------------------------------------------------------------------------------------------
+    phi=atan2(-kf*sin(s2theta), ki-kf*cos(s2theta));
+     %------------------------------------------------------------------
     %Redefine sample geometry
     psi=thetas-phi; %Angle from sample geometry X axis to Q
     rot=zeros(3,3);
@@ -236,16 +220,16 @@ for ind=1:len
     rot(3,3)=1;
 %    sshape=rot'*sshape*rot;
     sshape=rot*sshape*rot';
-    %---------------------------------------------------------------------------------------------
+    %-------------------------------------------------------------------
     %Definition of matrix G    
     G=1./([alpha(1),alpha(2),beta(1),beta(2),alpha(3),alpha(4),beta(3),beta(4)]).^2;
     G=diag(G);
- %---------------------------------------------------------------------------------------------
+ %----------------------------------------------------------------------
     %Definition of matrix F    
     F=1./([etam,etamv,etaa,etaav]).^2;
     F=diag(F);
 
-    %---------------------------------------------------------------------------------------------
+    %-------------------------------------------------------------------
     %Definition of matrix A
     A(1,1)=ki/2/tan(thetam);
     A(1,2)=-A(1,1);
@@ -256,7 +240,7 @@ for ind=1:len
     A(5,5)=kf;
     A(6,7)=kf;
 
-    %---------------------------------------------------------------------------------------------
+    %-------------------------------------------------------------------
     %Definition of matrix C
     C(1,1)=1/2;
     C(1,2)=1/2;
@@ -267,7 +251,7 @@ for ind=1:len
     C(4,7)=1/(2*sin(thetaa));
     C(4,8)=-C(4,7);
     
-    %---------------------------------------------------------------------------------------------
+    %-------------------------------------------------------------------
     %Definition of matrix B
     B(1,1)=cos(phi);
     B(1,2)=sin(phi);
@@ -281,7 +265,7 @@ for ind=1:len
     B(3,6)=-1;
     B(4,1)=2*CONVERT2*ki;
     B(4,4)=-2*CONVERT2*kf;
- %---------------------------------------------------------------------------------------------
+ %----------------------------------------------------------------------
     %Definition of matrix S
     Sinv=blkdiag(bshape,mshape,sshape,ashape,dshape); %S-1 matrix        
     S=Sinv^(-1);
@@ -303,7 +287,7 @@ for ind=1:len
     T(4,8)=-1/(2*L2*sin(thetaa));
     T(4,11)=(1/L2+1/L3-2*sin(thetaa)/anarv)/(2*sin(thetaa));
     T(4,13)=-1/(2*L3*sin(thetaa));
-    %---------------------------------------------------------------------------------------------
+    %-------------------------------------------------------------------
     %Definition of matrix D
     % Lots of index mistakes in paper for matrix D
     D(1,1)=-1/L0;
@@ -330,7 +314,7 @@ for ind=1:len
     D(8,13)=D(6,12);
     
     
- %---------------------------------------------------------------------------------------------
+ %----------------------------------------------------------------------
     %Definition of resolution matrix M
     if method==1 || strcmpi(method, 'Popovici')
         K = S+T'*F*T;
@@ -373,7 +357,7 @@ for ind=1:len
 %    RM_(4,4)=M(3,3);
 %    RM_(4,2)=M(3,2);
 %    RM_(2,4)=M(2,3);
-    %---------------------------------------------------------------------------
+    %-------------------------------------------------------------------
     %Calculation of prefactor, normalized to source
     Rm  = ki^3/tan(thetam); 
     Ra  = kf^3/tan(thetaa);
@@ -383,7 +367,7 @@ for ind=1:len
     else
         R0_=R0_ *sqrt(det(F)/det( G+C'*F*C )); %Cooper-Nathans (popovici Eq 5 and 9)
     end;
-    %---------------------------------------------------------------------------
+    %-------------------------------------------------------------------
     
     % Popovici normalisation factor
     %K = S+T'*F*T;
