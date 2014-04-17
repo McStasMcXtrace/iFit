@@ -1,4 +1,4 @@
-function [R0,NP,vi,vf,Error]=rc_cnmat(f,q0,p,mon_flag)
+function [R0,RMS,vi,vf,Error]=rc_cnmat(f,q0,p,mon_flag)
 %
 % RESCAL  function to calculate the resolution matrix NP in terms of 
 % (DQX,DQY,DQZ,DW) defined along the wavevector transfer Q direction 
@@ -71,31 +71,31 @@ end
 
 thetaa=asin(pi/(da*kf));      % theta angles for analyser
 thetam=asin(pi/(dm*ki));      % and monochromator.
+thetas=acos(cos_2theta)*ss/2;
 
-M=zeros(6,6);
-U=M;
+N=zeros(6,6);	% this is matrix N = inv(A*Hinv*A') with Hinv=inv(C'*F*C+G) in Popovici nomenclature
+B=N;
 
 % Fill up the horizontal components first.
 
-pm=1/(ki*etam)*[sm*tan(thetam) 1];
-palf0=1/(ki*alf0)*[2*sm*tan(thetam) 1];
-palf1=1/(ki*alf1)*[0 1];
+pm=1/(ki*etam)   *[sm*tan(thetam)    1]; % [ a1 a2 ]
+palf0=1/(ki*alf0)*[2*sm*tan(thetam)  1]; % [ a7 a8 ]
+palf1=1/(ki*alf1)*[0                 1]; % [ 0  a3 ]
 
-pa=1/(kf*etaa)*[-sa*tan(thetaa) 1];
-palf3=1/(kf*alf3)*[-2*sa*tan(thetaa) 1];
-palf2=1/(kf*alf2)*[0 1];
+pa=1/(kf*etaa)   *[-sa*tan(thetaa)   1]; % [ -a5 -a6 ]
+palf3=1/(kf*alf3)*[-2*sa*tan(thetaa) 1]; % [ -a9  a10 ]
+palf2=1/(kf*alf2)*[0                 1]; % [ 0    a4 ]
 
-
-M(1:2,1:2)=pm'*pm+palf0'*palf0+palf1'*palf1;
-M(4:5,4:5)=pa'*pa+palf3'*palf3+palf2'*palf2;
+N(1:2,1:2)=pm'*pm+palf0'*palf0+palf1'*palf1;
+N(4:5,4:5)=pa'*pa+palf3'*palf3+palf2'*palf2;
 
 % Now fill up the vertical components.
 
 b1=1/(bet1^2)+1/((2*sin(thetam)*etam)^2+bet0^2);  % these are Dorner's 
 b2=1/(bet2^2)+1/((2*sin(thetaa)*etaa)^2+bet3^2);  % corrected formulae.
 
-M(3,3)=1/(ki^2)*b1;
-M(6,6)=1/(kf^2)*b2;
+N(3,3)=1/(ki^2)*b1;
+N(6,6)=1/(kf^2)*b2;
 
 % The resolution matrix in terms of the incident and scattered
 % momentum 3-vectors has been constructed.
@@ -103,51 +103,83 @@ M(6,6)=1/(kf^2)*b2;
 % Now calculate the transformation matrix.
 %
 
-ang1=acos(-(kf^2-q0^2-ki^2)/(2*q0*ki));    % angle between ki and q0
+ang1=acos(-(kf^2-q0^2-ki^2)/(2*q0*ki));       % angle between ki and q0
 ang2=pi-acos(-(ki*ki-q0*q0-kf*kf)/(2*q0*kf)); % angle between kf and q0
 
 TI=[ cos(ang1) -ss*sin(ang1) ; ss*sin(ang1) cos(ang1) ]; % transform kix,kiy
                                                          % to DQX and DQY.
 TF=[ cos(ang2) -ss*sin(ang2) ; ss*sin(ang2) cos(ang2) ]; % transform Kfx,kfy
                                                          % to DQX and DQY.
+% this is kind of matrix 'B'
+B(1:2,1:2)=TI;
+B(1:2,4:5)=-TF;
+B(3,3)=1;
+B(3,6)=-1;
+B(4,1)=2*ki/f;
+B(4,4)=-2*kf/f;
+B(5,1)=1;
+B(6,3)=1;
 
-U(1:2,1:2)=TI;
-U(1:2,4:5)=-TF;
-U(3,3)=1;
-U(3,6)=-1;
-U(4,1)=2*ki/f;
-U(4,4)=-2*kf/f;
-U(5,1)=1;
-U(6,3)=1;
-V=inv(U);
+B = B(1:4,:);
 
-N=V'*M*V;                           % put into coordinates DQ(3),DW,kix,kiz
-dummy=1;
-
-[dummy,N]=rc_int(6,dummy,N);        % integrate over kiz giving a 5x5 matrix
-[dummy,N]=rc_int(5,dummy,N);        % integrate over kix giving a 4x4 matrix
-NP=N-N(1:4,2)*N(1:4,2)'/(1/((etas*q0)^2)+N(2,2));
-NP(3,3)=N(3,3);
-NP=8*log(2)*NP;                     % Correction factor 8*log(2) as input parameters
-                                    % are expressed as FWHM.
+% matrix M in Popovici paper
+Ninv = inv(N);                    % Ninv = A*inv(H)*A'
+M    = inv(B*Ninv*B');
+RMS=8*log(2)*M;                   % Correction factor 8*log(2) as input parameters
+                                  % are expressed as FWHM.
 
 %----- Normalisation factor
 
 % Calculation of prefactor, normalized to source (Cooper-Nathans)
+
 Rm=ki^3/tan(thetam); 
-Ra=kf^3/tan(thetaa);
+Ra=kf^3/tan(thetaa);	% det(A*A') = (Rm*Ra)^2/16
 P0=Rm*Ra*(2*pi)^4;
 R0=P0/(64*pi^2*sin(thetam)*sin(thetaa));
+% missing term: R0*sqrt( det(F)/det(G+C'*F*C) )=R0*sqrt( det(F)/det(H) )
+F = diag(1./[etam etam etaa etaa].^2); 
+% det(H) = det(A*A')/det(Ninv) = (Rm*Ra)^2/16*det(N) as 1/det(N)=det(A/H*A')
+detH = (Rm*Ra)^2/16*det(N);	% this is not fully true. det(AB)=det(A)*det(B) only for sq matrices
+R0=R0*sqrt( det(F) / detH );% still better than nothing...
+
+% computation from Chesser and Axe Acta Cryst 1972
+a11 = b1/ki^2;
+a12 = b2/kf^2;
+
+a1= pm(1); a2=pm(2);  a3=palf1(2); a4= palf2(2);
+a5=-pa(1); a6=-pa(2); a7=palf0(1); a8= palf0(2);
+a9=-palf3(1); a10=-palf3(2);
+
+b0=a1*a2+a7*a8;
+b1=a2*a2+a3*a3+a8*a8;
+b2=a4*a4+a6*a6+a10*a10;
+b3=a5*a5+a9*a9;
+b4=a5*a6+a9*a10;
+b5=a1*a1+a7*a7;
+
+ALAM=ki/kf;
+AL=sin(2*thetas)*ss*sm; BE=cos(2*thetas);
+
+C=-1.*(ALAM-BE)/AL;
+E=-1.*(BE*ALAM-1.)/AL;
+AP=2.*b0*C+b1*C*C+b2*E*E+b3*ALAM*ALAM+2.*b4*ALAM*E+b5; % A' in CN paper
+
+R0 = 2*pi/(ki^2*kf^3*AL) ...
+		/sqrt(AP*(a11+a12)) ...
+		*sqrt( ...
+		   bet0^2/(bet0^2+(2*etam*sin(thetam))^2) ...
+		  *bet3^2/(bet3^2+(2*etaa*sin(thetaa))^2));
+R0 = abs(R0);
 
 % Transform prefactor to Chesser-Axe normalization
-R0=R0/(2*pi)^2*sqrt(det(NP));
+R0=R0/(2*pi)^2*sqrt(det(RMS));
 % Include kf/ki part of cross section
 R0=R0*kf/ki;
 % sample mosaic S. A. Werner & R. Pynn, J. Appl. Phys. 42, 4736, (1971), eq 19
-R0=R0/sqrt((1+(q0*etas)^2*M(3,3))*(1+(q0*etas)^2*M(2,2)));
+R0=R0/sqrt((1+(q0*etas)^2*RMS(3,3))*(1+(q0*etas)^2*RMS(2,2)));
 
 %----- Final error check
 
-if imag(NP) == 0; Error=0; else; Error=1; end
+if imag(RMS) == 0; Error=0; else; Error=1; end
 
 return

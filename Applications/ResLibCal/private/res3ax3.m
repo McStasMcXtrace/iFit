@@ -8,7 +8,7 @@ method = 'Stoica/Popovici method in the C. & N. approximation by JO';
 % transfer in ang-1, are passed over. 
 f  = 0.4826;
 CONVERT2=2.072;
-pit= 0.0002908882; % This is a conversion from minutes of arc to radians.
+pit= pi/60/180; % This is a conversion from minutes of arc to radians.
 
 %----- INPUT SPECTROMETER PARAMETERS.
 
@@ -102,25 +102,26 @@ B(4,1)=2*ki/f;
 B(4,4)=-2*kf/f;
 
 % Cooper-Nathans matrices
-H = C'*F*C+G;
+H    = C'*F*C+G;
 Hinv = inv(H);
 Ninv = A*Hinv*A';
-N =inv(Ninv);
+N    = inv(Ninv);
 Minv = B*Ninv*B';
-M    = 8*log(2)*inv(Minv);
+M    = inv(Minv);
 
-RMS=M;
+RMS=8*log(2)*M;
 
 % Calculation of prefactor, normalized to source (Cooper-Nathans)
-Rm=ki^3/tan(thetam); 
+Rm=ki^3/tan(thetam);
 Ra=kf^3/tan(thetaa);
 P0=Rm*Ra*(2*pi)^4;           % the det(G) term is simplified          % Popovici Eq 5
-R0=P0/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)/det(G+C'*F*C) ); % Popovici Eq 9
+R0=P0/(64*pi^2*sin(thetam)*sin(thetaa));
+R0=R0*sqrt( det(F)/det(H) ); % Popovici Eq 9
 
 % Transform prefactor to Chesser-Axe normalization
-R0=R0/(2*pi)^2*sqrt(det(M));
+R0=R0/(2*pi)^2*sqrt(det(RMS));
 % Include kf/ki part of cross section
 R0=R0*kf/ki;
 % sample mosaic S. A. Werner & R. Pynn, J. Appl. Phys. 42, 4736, (1971), eq 19
-R0=R0/sqrt((1+(q*etas)^2*M(3,3))*(1+(q0*etas)^2*M(2,2)));
+R0=R0/sqrt((1+(q*etas)^2*RMS(3,3))*(1+(q*etas)^2*RMS(2,2)));
 

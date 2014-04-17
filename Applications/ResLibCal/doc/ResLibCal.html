@@ -51,7 +51,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     methods to estimate the resolution function of a triple-axis neutron
     spectrometer (TAS). ResLibCal is based on <a
       href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans
-    and Popovici methods are proposed [<a href="#mozTocId811100">1-5</a>],
+    and Popovici methods are proposed [<a href="#mozTocId811100">1-7</a>],
+
+
 
 
 
@@ -80,12 +82,20 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     </ul>
     <h3><a class="mozTocH3" name="mozTocId789429"></a>Obtaining the
       package</h3>
-    The package can be obtained <a
-      href="http://ifit.mccode.org/Downloads/ResLibCal.zip">here</a>
-    [ZIP 220 ko]. You can also browse the source code <a
-      href="http://ifit.mccode.org/Applications/ResLibCal/">here</a>. <br>
-    It does not depend on any other toolbox/library.<br>
-    Simply extract the application archive. <br>
+    <blockquote> <i><b>Source code</b></i><br>
+      The package can be obtained <a
+        href="http://ifit.mccode.org/Downloads/ResLibCal.zip">here</a>
+      [ZIP 220 ko]. You can also browse the source code <a
+        href="http://ifit.mccode.org/Applications/ResLibCal/">here</a>
+      or get a copy <br>
+      It does not depend on any other toolbox/library, except Matlab.
+      Simply extract the application archive. <br>
+      <br>
+      <i><b>Binary pre-compiled (no need for matlab)</b></i><br>
+      It comes pre-installed in the iFit <a
+        href="http://ifit.mccode.org/Install.html">standalone</a>
+      distribution.<br>
+    </blockquote>
     <h3><a class="mozTocH3" name="mozTocId173490"></a>Installation -
       starting</h3>
     Just launch ResLibCal with:<br>
@@ -100,7 +110,6 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <pre style="margin-left: 40px;">% ifit ResLibCal</pre>
     from iFit standalone: <br>
     <pre style="margin-left: 40px;">&gt;&gt; ResLibCal</pre>
-    <br>
     <h3><a class="mozTocH3" name="mozTocId637458"></a>Usage</h3>
     The normal use of the application is through its GUI, which is a
     single window.<br>
@@ -179,10 +188,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         <br>
         The following computational methods are available:<br>
         <ul>
-          <li><b>Cooper-Nathans/Res3Ax</b> [res3ax3]: simple
-            Cooper-Nathans based on notes from B. Hennion [1].</li>
-          <li><b>Cooper-Nathans/AFILL</b> [AFILL]: the original
-            Cooper-Nathans [1] code <a
+          <li><b>Cooper-Nathans/Res3Ax</b>: simple Cooper-Nathans based
+            on notes from B. Hennion [1].</li>
+          <li><b>Cooper-Nathans/AFILL</b>: the original Cooper-Nathans
+            [1] code <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
             from Brookhaven 'AFILL'.</li>
           <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
@@ -198,14 +207,16 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
             Cooper-Nathans methods above, you should set RAH=0. The
             analyzer reflectivity is also taken into account, as well as
             a correction for the sample orientation w.r.t. the incoming
-            beam. The sample mosaic spread is also taken into account.</li>
+            beam. <br>
+          </li>
         </ul>
         In all methods, the alpha/beta collimation parameters support
         guide <i>m-</i>coating specification (negative values e.g. -2)
         which are then converted to equivalent critical angles <i>0.1 </i><i>m
           &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are also
         limited by the effective divergence set from the geometry, e.g.
-        <i>atan(width or height/distance) </i>[rad]. <br>
+        <i>atan(width or height/distance) </i>[rad]. The sample mosaic
+        spread is also taken into account.
         <ul>
         </ul>
       </div>
@@ -214,6 +225,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       the TAS resolution function</h4>
     <div style="text-align: left;"> To compute and plot the resolution
       function, select the <span style="font-style: italic;">View/Resolution
+
+
 
 
 
@@ -279,6 +292,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
 
+
+
     and the full ResLibCal configuration (instrument, sample, position,
     method) is saved as a Matlab script. An example of such
     configuration file is available <a href="ResLibCal.ini">here</a>.<br>
@@ -332,15 +347,14 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     <pre style="margin-left: 40px;">&gt;&gt; out.ResCal<br>ans = <br><br>                DM: 3.3542<br>                DA: 3.3542<br>              ETAM: 30<br>              ETAA: 25<br>              ETAS: 5<br>                SM: -1<br>                SS: 1<br>                SA: -1<br>              KFIX: 2.6620<br>                FX: 2<br>              ALF1: 40<br>              ALF2: 40<br>              ALF3: 40<br>              ALF4: 40<br>              BET1: 120<br>              BET2: 159.9648<br>              BET3: 120<br>              BET4: 120<br>                AS: 6.2800<br>                BS: 6.2800<br>                CS: 6.2800<br>                AA: 90<br>                BB: 90<br>                CC: 90<br>                AX: 1<br>                AY: 0<br>                AZ: 0<br>                BX: 0<br>                BY: 1<br>                BZ: 0<br>                QH: 2<br>                QK: 0<br>                QL: 0<br>                EN: 0<br>               DQH: 0<br>               DQK: 0<br>               DQL: 0<br>               DEN: 1<br>                GH: 0<br>                GK: 0<br>                GL: 1<br>              GMOD: 0<br>         BeamShape: 1<br>                WB: 10<br>                HB: 10<br>             Guide: 0<br>               GDH: 0<br>               GDV: 0<br>       SampleShape: 1<br>                WS: 1<br>                TS: 1<br>                HS: 4<br>    DetecteorShape: 1<br>                WD: 2.5400<br>                HD: 5<br>                TM: 0.2000<br>                WM: 10<br>                HM: 10<br>                TA: 0.2000<br>                WA: 10<br>                HA: 10<br>                L1: 150<br>                L2: 150<br>                L3: 150<br>                L4: 150<br>               RMH: 0.0067<br>               RMV: 0.0067<br>               RAH: 0.0067<br>               RAV: 0.0067<br></pre>
     You can change any configuration parameter, including the method for
     the computation:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; out.EXP.method = <span style="color: rgb(204, 51, 204);">'Cooper-Nathans ResCal'</span></pre>
-    Then re-compute the resolution function with<br>
-    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(out);</pre>
+    <pre style="margin-left: 40px;">&gt;&gt; out.EXP.method = <span style="color: rgb(204, 51, 204);">'Cooper-Nathans ResCal'</span><br></pre>
     The method should mention '<span style="font-style: italic;">Cooper-Nathans</span>'
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>
     or<span style="font-style: italic;"> 'Res3Ax' </span>as free text.
-    The position of the measurement is:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; [ out.EXP.QH out.EXP.QK out.EXP.QL out.EXP.W ]<br>ans =<br>     2     0     0     0<br>&gt;&gt; out.EXP.W = 1;<br>&gt;&gt; out = ResLibCal(out);	<span style="font-style: italic;">% request a new computation with modified choices</span><br></pre>
+    <br>
+    The position of the measurement is [ QH QK QL W ]:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; [ out.EXP.QH out.EXP.QK out.EXP.QL out.EXP.W ]<br>ans =<br>     2     0     0     0<br>&gt;&gt; out.EXP.W = 1;		<i>% change the position in reciprocal space</i><br>&gt;&gt; out = ResLibCal(out);	<span style="font-style: italic;">% request a new computation with modified choices</span><br></pre>
     The full list of ResLib parameters are described in the <a
       href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
     package documentation.<br>
@@ -405,6 +419,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
+
 
 
 
