@@ -57,15 +57,7 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   ResLibCal_field2fig(EXP, 'EXP_ana_vmosaic', fig);
 
   % update the popup mono/ana crystals
-  popup = findobj(fig,'Tag','EXP_mono_tau_popup');
-  label = GetTau(EXP.mono.tau, 'getlabel');
-  index = find(strncmpi(get(popup,'String'), label, length(label)));
-  if ~isempty(label) && ~isempty(index), set(popup, 'value', index); end
-
-  popup = findobj(fig,'Tag','EXP_ana_tau_popup');
-  label = GetTau(EXP.ana.tau, 'getlabel');
-  index = find(strncmpi(get(popup,'String'), label, length(label)));
-  if ~isempty(label) && ~isempty(index), set(popup, 'value', index); end
+  ResLibCal('update_d_tau_popup');
 
   %-------------------------   Sample ------------------------------------------
   if isfield(EXP, 'sample')

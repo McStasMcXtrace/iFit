@@ -64,6 +64,8 @@ function EXP = ResLibCal_Open(filename, EXP)
     % send it to the figure
     try
       ResLibCal_EXP2fig(EXP); % open figure if not yet done
+      % force full update of all fields
+      ResLibCal('update_d_tau_popup');
       disp([ '% Loaded ResLibCal configuration from ' filename ]);
     catch
       warning([ '% Could not load ResLibCal configuration ' filename ]);
