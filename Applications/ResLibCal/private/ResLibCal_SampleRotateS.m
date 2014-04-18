@@ -41,7 +41,7 @@ for i=1:len
         EXProt(i).sample.shape=rot*sample.shape*rot';
     end;
 end
-EXProt.sample.depth = 12*EXProt.sample.shape(1,1)^2;
-EXProt.sample.width = 12*EXProt.sample.shape(2,2)^2;
+%EXProt.sample.depth = 12*EXProt.sample.shape(1,1)^2;
+%EXProt.sample.width = 12*EXProt.sample.shape(2,2)^2;
 EXP = EXProt;
 

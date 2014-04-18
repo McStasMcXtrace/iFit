@@ -151,11 +151,18 @@ end
   if isfield(p,'L1') && isfield(p,'L2') && isfield(p,'L3') && isfield(p,'L4')
     EXP.arms=[p.L1 p.L2 p.L3 p.L4];
   end
+  
+  % radius of curvature [m] -> [cm]
+  if isfield(p,'RMH'), EXP.mono.rh=100*p.RMH; end
+  if isfield(p,'RMV'), EXP.mono.rv=100*p.RMV; end
+  if isfield(p,'RAH'), EXP.ana.rh=100*p.RAH; end
+  if isfield(p,'RAV'), EXP.ana.rv=100*p.RAV; end
+  
   % curvatures from ResCal are in [m-1] -> [cm]
-  if isfield(p,'RMH'), EXP.mono.rh=100/p.RMH; end
-  if isfield(p,'RMV'), EXP.mono.rv=100/p.RMV; end
-  if isfield(p,'RAH'), EXP.ana.rh=100/p.RAH; end
-  if isfield(p,'RAV'), EXP.ana.rv=100/p.RAV; end
+  if isfield(p,'ROMH'), EXP.mono.rh=100/p.ROMH; end
+  if isfield(p,'ROMV'), EXP.mono.rv=100/p.ROMV; end
+  if isfield(p,'ROAH'), EXP.ana.rh=100/p.ROAH; end
+  if isfield(p,'ROAV'), EXP.ana.rv=100/p.ROAV; end
 
 % end ResLibCal_RescalPar2EXP
 
