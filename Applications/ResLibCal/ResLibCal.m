@@ -317,8 +317,7 @@ function out = ResLibCal_UpdateViews(out)
   out = ResLibCal_UpdateResolution3(out); % 3D
   % if no view exists, send result to the console 
   % here unactivated in case we use it as a model for e.g. fitting
-  if isempty([ findall(0, 'Tag','ResLibCal_View1') ...
-    findall(0, 'Tag','ResLibCal_View2') ...
+  if isempty([ findall(0, 'Tag','ResLibCal_View2') ...
     findall(0, 'Tag','ResLibCal_View3') ])
 		% display result in the console
 		[res, inst] = ResLibCal_FormatString(out);
