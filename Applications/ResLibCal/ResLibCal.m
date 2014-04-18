@@ -210,10 +210,17 @@ if ~isempty(varargin)
 
       if ~isempty(fig) && strcmp(get(findobj(fig, 'Tag','View_AutoUpdate'), 'Checked'), 'on')
         out = ResLibCal_UpdateViews(out);
+      elseif isempth(fig)
+        % display result in the console
+        disp(ResLibCal_FormatString(out));
       end
     case 'update_d_tau'
       % update d-spacing from a popup item
       ResLibCal_UpdateDTau(varargin{2:end});      % arg is popup handle
+    case 'update_d_tau_popup'
+      % update the mono-ana popup from the DM/DA when value is close
+      fig = findall(0, 'Tag','ResLibCal');
+      ResLibCal_UpdateTauPopup(fig)
     case 'update_ekl'
       % update E, K, lambda
       ResLibCal_UpdateEKLfixed(varargin{2:end});  % arg is edit box handle
@@ -241,6 +248,8 @@ if ~isempty(varargin)
         end
       elseif strcmp(get(h,'Type'), 'uimenu')
         ResLibCal(get(h,'Tag'));
+      elseif any(strcmp(tag,{'EXP_mono_d','EXP_ana_d'}))
+        ResLibCal_UpdateTauPopup(h);
       end
       % update computation and plots
       feval(mfilename, 'update');
@@ -350,14 +359,16 @@ function out = ResLibCal_UpdateResolution3(out)
   if strcmp(rlu, 'on'), rlu='rlu'; end
   out = ResPlot3D(out, rlu);
 
-function ResLibCal_UpdateTauPopup(fig, EXP)
-
+function ResLibCal_UpdateTauPopup(fig)
+% update the popup menu from the editable mono/ana value when d is close
+%
+  [EXP,fig] = ResLibCal_fig2EXP;
   popup = findobj(fig,'Tag','EXP_mono_tau_popup');
   label = GetTau(EXP.mono.tau, 'getlabel');
   index = find(strncmpi(get(popup,'String'), label, length(label)));
-  if ~isempty(index), set(popup, 'value', index); end
+  if ~isempty(index) && ~isempty(label), set(popup, 'value', index); end
 
   popup = findobj(fig,'Tag','EXP_ana_tau_popup');
   label = GetTau(EXP.ana.tau, 'getlabel');
   index = find(strncmpi(get(popup,'String'), label, length(label)));
-  if ~isempty(index), set(popup, 'value', index); end
+  if ~isempty(index) && ~isempty(label), set(popup, 'value', index); end

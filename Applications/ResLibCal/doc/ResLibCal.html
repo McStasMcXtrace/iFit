@@ -61,6 +61,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -188,19 +189,19 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         <br>
         The following computational methods are available:<br>
         <ul>
-          <li><b>Cooper-Nathans/Res3Ax</b>: simple Cooper-Nathans based
-            on notes from B. Hennion [1].</li>
           <li><b>Cooper-Nathans/AFILL</b>: the original Cooper-Nathans
             [1] code <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
             from Brookhaven 'AFILL'.</li>
           <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
-            Cooper-Nathans method from the <a
+            Cooper-Nathans method [1] from the <a
 href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>
             Matlab application. The sample mosaic spread is also taken
             into account.</li>
+          <li><b>Cooper-Nathans/Res3Ax</b>: simple Cooper-Nathans based
+            on notes from B. Hennion in the Popovici formulation [3].</li>
           <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
-            Cooper-Nathans method from the <a
+            Cooper-Nathans method [3] from the <a
               href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
             Matlab application, that also supports analyzer horizontal
             focusing correction (RAH). To compare with the 3 previous
@@ -210,6 +211,9 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
             beam. <br>
           </li>
         </ul>
+        The AFILL and CN/Rescal5 methods use the Chesser and Axe
+        intensity estimate [2], whereas the other methods use the
+        Popovici formulation [3].<br>
         In all methods, the alpha/beta collimation parameters support
         guide <i>m-</i>coating specification (negative values e.g. -2)
         which are then converted to equivalent critical angles <i>0.1 </i><i>m
@@ -225,6 +229,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       the TAS resolution function</h4>
     <div style="text-align: left;"> To compute and plot the resolution
       function, select the <span style="font-style: italic;">View/Resolution
+
 
 
 
@@ -291,6 +296,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -419,6 +425,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
