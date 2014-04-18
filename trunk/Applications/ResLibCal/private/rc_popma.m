@@ -195,6 +195,7 @@ if nsam==0, factor=f16; else, factor=f12; end
 S2I(1,1)=factor*xsam^2;
 S2I(2,2)=factor*ysam^2;
 S2I(3,3)=f12*zsam^2;
+
 % --- analyser spatial covariances ---------
 factor=f12;
 S3I=zeros(3,3);
@@ -219,7 +220,7 @@ SI(9:11,9:11)=S3I;
 if ndet==0, factor=f16; else, factor=f12; end 
 SI(12,12)=factor*ydet^2;
 SI(13,13)=factor*zdet^2;
-SI;
+
 S=inv(SI); % was 5.545*SI
 
 T=zeros(4,13);
@@ -268,7 +269,8 @@ D(8,13)=D(6,12);
 
 % Popovici inverse matrix
 K = S+T'*F*T;
-MI= B*A*( inv( inv(D*inv(K)*D')+G ) )*A'*B'; % including spatial effects.
+H = inv(D*inv(K)*D');
+MI= B*A*( inv( H+G ) )*A'*B'; % including spatial effects.
 
 % Cooper and Nathans inverse matrix
 %MI=B*A*(inv(G+C'*F*C))*A'*B'
@@ -282,8 +284,8 @@ M=8*log(2)*inv(MI);  % Correction factor 8*log(2) as input parameters
 %----- Normalisation factor
 Rm  = ki^3/tan(thetam); 
 Ra  = kf^3/tan(thetaa);
-P0 = Rm*Ra*(2*pi)^4/sqrt(det(G+inv(D*inv(S)*D')));                      % Popovici Eq (13a)
-R0 = P0/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt(det(S)*det(F)/det(K));   % Popovici Eq (16)
+P0 = Rm*Ra*(2*pi)^4/sqrt(det(G+H));                      % Popovici Eq (13a)
+R0 = P0/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt(det(F));   % Popovici Eq (16)
     
 %Transform prefactor to Chesser-Axe normalization
 R0 = R0/(2*pi)^2*sqrt(det(M));

@@ -206,6 +206,9 @@ for ind=1:len
     thetam=asin(taum/(2*ki))*sm; % added sign(em) K.P.
     thetaa=asin(taua/(2*kf))*sa; 
     s2theta=acos( (ki^2+kf^2-q^2)/(2*ki*kf))*ss; %2theta sample
+    if ~isreal(s2theta) 
+        error([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+    end
 
     thetas=s2theta/2;
     phi=atan2(-kf*sin(s2theta), ki-kf*cos(s2theta));
@@ -220,6 +223,7 @@ for ind=1:len
     rot(3,3)=1;
 %    sshape=rot'*sshape*rot;
     sshape=rot*sshape*rot';
+
     %-------------------------------------------------------------------
     %Definition of matrix G    
     G=1./([alpha(1),alpha(2),beta(1),beta(2),alpha(3),alpha(4),beta(3),beta(4)]).^2;
@@ -267,7 +271,7 @@ for ind=1:len
     B(4,4)=-2*CONVERT2*kf;
  %----------------------------------------------------------------------
     %Definition of matrix S
-    Sinv=blkdiag(bshape,mshape,sshape,ashape,dshape); %S-1 matrix        
+    Sinv=blkdiag(bshape,mshape,sshape,ashape,dshape); %S-1 matrix     
     S=Sinv^(-1);
     %---------------------------------------------------------------------------------------------
     %Definition of matrix T
@@ -312,7 +316,6 @@ for ind=1:len
     D(6,12)=1/L3;
     D(8,11)=-D(6,12);
     D(8,13)=D(6,12);
-    
     
  %----------------------------------------------------------------------
     %Definition of resolution matrix M
@@ -362,23 +365,14 @@ for ind=1:len
     Rm  = ki^3/tan(thetam); 
     Ra  = kf^3/tan(thetaa);
     R0_ = Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa));
+    
     if method==1 || strcmpi(method, 'Popovici')
-        R0_=R0_ *sqrt(det(F)/det( inv(D*inv(S+T'*F*T)*D')+G )); %Popovici
+        R0_=R0_ *sqrt(det(F)/det( H+G ));      %Popovici
     else
-        R0_=R0_ *sqrt(det(F)/det( G+C'*F*C )); %Cooper-Nathans (popovici Eq 5 and 9)
+        R0_=R0_ *sqrt(det(F)/det( H )); %Cooper-Nathans (popovici Eq 5 and 9)
     end;
     %-------------------------------------------------------------------
-    
-    % Popovici normalisation factor
-    %K = S+T'*F*T;
-    %P0 = Rm*Ra*(2*pi)^4/sqrt(det(G+inv(D*inv(S)*D')));                      % Popovici Eq (13a)
-    %R02 = P0/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt(det(S)*det(F)/det(K));  % Popovici Eq (16)
-    %R02
-    
-    %R02 = Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)*det(S)/det(S+T'*F*T)/det(inv(D*inv(S)       *D')+G));
-    %R0_ = Rm*Ra*(2*pi)^4/(64*pi^2*sin(thetam)*sin(thetaa))*sqrt( det(F)                     /det(inv(D*inv(S+T'*F*T)*D')+G));
-    
-    
+
     %Normalization to flux on monitor
     if moncor==1
         g=G(1:4,1:4);

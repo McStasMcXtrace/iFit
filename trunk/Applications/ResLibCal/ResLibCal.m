@@ -10,7 +10,7 @@ function out = ResLibCal(varargin)
 %   out = ReslibCal(command, arguments...);
 % where 'command' is one of:
 %   open, save, saveas, export, exit, reset, print, create,
-%   update, compute, view2, view3, view_tas
+%   compute, update (=compute+show), view2, view3, view_tas
 %
 % The application contains a main interface with:
 % * Menu, Method, Scan and Instrument parameters (main)
@@ -56,6 +56,8 @@ function out = ResLibCal(varargin)
 % out      = ResLibCal_UpdateResolution2(out)
 % out      = ResLibCal_UpdateResolution3(out)
 % ResLibCal_UpdateTauPopup(handle, EXP)
+
+out = [];
 
 ResLibCal_version = [ mfilename ' $Revision$ ($Date$)' ];
 
@@ -146,13 +148,16 @@ if ~isempty(varargin)
         if ishandle(fig), delete(fig); end
       end
     case {'view_resolution2','view2'}
-      out = ResLibCal_ViewResolution('',2);  % open/raise View Res2
+      if length(varargin) > 1, v=varargin{2:end}; else v=[]; end
+      out = ResLibCal_ViewResolution(v,2);  % open/raise View Res2
       out = ResLibCal_UpdateViews(out);
     case {'view_resolution3','view3'}
-      out = ResLibCal_ViewResolution('',3);  % open/raise View Res2
+      if length(varargin) > 1, v=varargin{2:end}; else v=[]; end
+      out = ResLibCal_ViewResolution(v,3);  % open/raise View Res2
       out = ResLibCal_UpdateViews(out);
     case 'view_tas'
-      out = ResLibCal_ViewResolution('',1);  % open/raise View TAS
+      if length(varargin) > 1, v=varargin{2:end}; else v=[]; end
+      out = ResLibCal_ViewResolution(v,1);  % open/raise View TAS
       out = ResLibCal_UpdateViews(out);
     case 'help_content'
       link = fullfile(fileparts(which(mfilename)), 'doc', [ mfilename '.html' ]);
@@ -202,25 +207,36 @@ if ~isempty(varargin)
         delete(fig(2:end)); % remove duplicated windows
       end
       out = ResLibCal_fig2EXP(fig);
-    case {'update','compute'}
+    case 'update'
       % update all opened views with new computation (widget update)
       fig = findall(0, 'Tag','ResLibCal');
-      % update mono/crystal popup ups from values
-      out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
-
+      
+      out = feval(mfilename, 'compute');
+      
       if ~isempty(fig) && strcmp(get(findobj(fig, 'Tag','View_AutoUpdate'), 'Checked'), 'on')
         out = ResLibCal_UpdateViews(out);
-      elseif isempth(fig)
-        % display result in the console
-        disp(ResLibCal_FormatString(out));
+      elseif isempty(fig)
+        out = ResLibCal_UpdateViews(out);
       end
+    case 'compute'
+      % only compute. No output except in varargout
+      fig = findall(0, 'Tag','ResLibCal');
+      % if no interface exists, load the last saved configuration before computing
+      if isempty(fig)
+        filename = fullfile(prefdir, 'ResLibCal.ini');
+        out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
+        out = ResLibCal_Compute(out);
+      else
+        out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
+      end
+      
+      
     case 'update_d_tau'
       % update d-spacing from a popup item
       ResLibCal_UpdateDTau(varargin{2:end});      % arg is popup handle
     case 'update_d_tau_popup'
       % update the mono-ana popup from the DM/DA when value is close
-      fig = findall(0, 'Tag','ResLibCal');
-      ResLibCal_UpdateTauPopup(fig)
+      ResLibCal_UpdateTauPopup;
     case 'update_ekl'
       % update E, K, lambda
       ResLibCal_UpdateEKLfixed(varargin{2:end});  % arg is edit box handle
@@ -249,7 +265,7 @@ if ~isempty(varargin)
       elseif strcmp(get(h,'Type'), 'uimenu')
         ResLibCal(get(h,'Tag'));
       elseif any(strcmp(tag,{'EXP_mono_d','EXP_ana_d'}))
-        ResLibCal_UpdateTauPopup(h);
+        ResLibCal_UpdateTauPopup;
       end
       % update computation and plots
       feval(mfilename, 'update');
@@ -299,6 +315,16 @@ function out = ResLibCal_UpdateViews(out)
   out = ResLibCal_UpdateResolution1(out); % TAS geometry
   out = ResLibCal_UpdateResolution2(out); % 2D, also shows matrix
   out = ResLibCal_UpdateResolution3(out); % 3D
+  % if no view exists, send result to the console 
+  % here unactivated in case we use it as a model for e.g. fitting
+  if isempty([ findall(0, 'Tag','ResLibCal_View1') ...
+    findall(0, 'Tag','ResLibCal_View2') ...
+    findall(0, 'Tag','ResLibCal_View3') ])
+		% display result in the console
+		[res, inst] = ResLibCal_FormatString(out);
+		disp(char(res));
+		disp(char(inst));
+  end
 
 % ==============================================================================
 function out = ResLibCal_ViewResolution(out, dim)
@@ -359,10 +385,11 @@ function out = ResLibCal_UpdateResolution3(out)
   if strcmp(rlu, 'on'), rlu='rlu'; end
   out = ResPlot3D(out, rlu);
 
-function ResLibCal_UpdateTauPopup(fig)
+function ResLibCal_UpdateTauPopup
 % update the popup menu from the editable mono/ana value when d is close
 %
   [EXP,fig] = ResLibCal_fig2EXP;
+  if isempty(fig), return; end
   popup = findobj(fig,'Tag','EXP_mono_tau_popup');
   label = GetTau(EXP.mono.tau, 'getlabel');
   index = find(strncmpi(get(popup,'String'), label, length(label)));
