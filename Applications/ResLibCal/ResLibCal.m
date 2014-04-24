@@ -11,6 +11,7 @@ function out = ResLibCal(varargin)
 % where 'command' is one of:
 %   open, save, saveas, export, exit, reset, print, create,
 %   compute, update (=compute+show), view2, view3, view_tas
+%   default, quit
 %
 % The application contains a main interface with:
 % * Menu, Method, Scan and Instrument parameters (main)
@@ -135,9 +136,11 @@ if ~isempty(varargin)
       fig = findall(0, 'Tag','ResLibCal');
       saveas(fig, filename);
       disp([ '% Exported ' ResLibCal_version ' window to file ' filename ]);
-    case {'file_exit','exit'}
-      % save configuration so that it is re-opened at next re-start
-      ResLibCal_Save;
+    case {'file_exit','exit','quit'}
+      if ~strcmp(action, 'quit')
+        % save configuration so that it is re-opened at next re-start
+        ResLibCal_Save;
+      end
       % close windows
       hObjects={'ResLibCal',...
                 'ResLibCal_View2',...
@@ -155,7 +158,7 @@ if ~isempty(varargin)
       if length(varargin) > 1, v=varargin{2:end}; else v=[]; end
       out = ResLibCal_ViewResolution(v,3);  % open/raise View Res2
       out = ResLibCal_UpdateViews(out);
-    case 'view_tas'
+    case {'view_tas','geometry','tas'}
       if length(varargin) > 1, v=varargin{2:end}; else v=[]; end
       out = ResLibCal_ViewResolution(v,1);  % open/raise View TAS
       out = ResLibCal_UpdateViews(out);
@@ -196,13 +199,15 @@ if ~isempty(varargin)
       set(gcbo, 'Checked', status);
       ResLibCal_UpdateViews;
     % other actions (not menu items) -------------------------------------------
-    case 'create'
+    case {'create','default'}
       fig = findall(0, 'Tag','ResLibCal');
       if isempty(fig) || ~ishandle(fig)
         disp([ 'Welcome to ' ResLibCal_version ]);
         openfig('ResLibCal'); % open the main ResLibCal figure.
-        filename = fullfile(prefdir, 'ResLibCal.ini');
-        out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
+        if strcmp(action, 'create')
+          filename = fullfile(prefdir, 'ResLibCal.ini');
+          out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
+        end
       elseif length(fig) > 1
         delete(fig(2:end)); % remove duplicated windows
       end
