@@ -422,7 +422,7 @@ p    = sprintf('%g ', p(:)'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
 
 % ==============================================================================
-function [signal,iFunc_ax,p] = iFunc_feval_expr(model, varargin)
+function [signal,iFunc_ax,p] = iFunc_feval_expr(this, varargin)
 % private function to evaluate an expression in a reduced environment so that 
 % internal function variables do not affect the result.
 
@@ -430,56 +430,56 @@ signal = [];
 % assign parameters and axes for the evaluation of the expression, in case this is model char
 % p already exists, we assign axes, re-assign varargin if needed
 iFunc_ax = 'x y z t u ';
-if model.Dimension
-  eval([ '[' iFunc_ax(1:(2*model.Dimension)) ']=deal(varargin{' mat2str(1:model.Dimension) '});' ]);
+if this.Dimension
+  eval([ '[' iFunc_ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
 end
 
 if nargout > 1
-  iFunc_ax = varargin(1:model.Dimension);
+  iFunc_ax = varargin(1:this.Dimension);
 else
   iFunc_ax = [];
 end
 clear index
 
 % remove axes from varargin -> leaves additional optional arguments to the function
-varargin(1:model.Dimension) = []; 
+varargin(1:this.Dimension) = []; 
 
 % EVALUATE now ...
 % in the evaluation:
-% * x,y,z,...        hold the axes
+% * x,y,z,...        hold  the axes
 % * p                holds the numerical values of the parameters (row)
 % * struct_p         holds the parameters as a structure (inactivated for now)
-% * model.Parameters holds the names of these parameters
+% * this.Parameters holds the names of these parameters
 % 
 
-p       = reshape(model.ParameterValues,1,numel(model.ParameterValues));
+p       = reshape(this.ParameterValues,1,numel(this.ParameterValues));
 % if we wish to have parameters usable as a structure
-%struct_p= cell2struct(num2cell(p),model.Parameters,2);
+%struct_p= cell2struct(num2cell(p),this.Parameters,2);
 
 try
-  model.Eval = cellstr(model.Eval);
-  model.Eval = model.Eval(~strncmp('%', model.Eval, 1)); % remove comment lines
-  eval(sprintf('%s\n', model.Eval{:}));
+  this.Eval = cellstr(this.Eval);
+  this.Eval = this.Eval(~strncmp('%', this.Eval, 1)); % remove comment lines
+  eval(sprintf('%s\n', this.Eval{:}));
 catch
-  disp([ 'Error: Could not evaluate Expression in model ' model.Name ' ' model.Tag ]);
-  disp(model)
-  model.Eval
+  disp([ 'Error: Could not evaluate Expression in model ' this.Name ' ' this.Tag ]);
+  disp(this)
+  this.Eval
   lasterr
   error([ 'iFunc:' mfilename ], 'Failed model evaluation.');
 end
 
 % ==============================================================================
-function p = iFunc_feval_guess(model, varargin)
+function p = iFunc_feval_guess(this, varargin)
 % private function to evaluate a guess in a reduced environment so that 
 % internal function variables do not affect the result. 
 % Guess=char as fhandle are handled directly in the core function
   ax = 'x y z t u ';
   p  = [];
-  if model.Dimension
-    eval([ '[' ax(1:(2*model.Dimension)) ']=deal(varargin{' mat2str(1:model.Dimension) '});' ]);
+  if this.Dimension
+    eval([ '[' ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
   end
-  if length(varargin) > model.Dimension && ~isempty(varargin{model.Dimension+1}) && isnumeric(varargin{model.Dimension+1})
-    signal = varargin{model.Dimension+1};
+  if length(varargin) > this.Dimension && ~isempty(varargin{this.Dimension+1}) && isnumeric(varargin{this.Dimension+1})
+    signal = varargin{this.Dimension+1};
   else
     signal = 1;
   end
@@ -488,30 +488,30 @@ function p = iFunc_feval_guess(model, varargin)
   m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
   m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
   try
-    p = eval(model.Guess);     % returns model vector
+    p = eval(this.Guess);     % returns model vector
   end
   if isempty(p)
     try
-      eval(model.Guess);       % returns model vector and redefines 'p'
+      eval(this.Guess);       % returns model vector and redefines 'p'
     catch
       p = [];
     end
   end
 
 % ==============================================================================
-function p = iFunc_feval_set(model, p, varargin)
+function p = iFunc_feval_set(this, p, varargin)
 % private function to evaluate a parameter set expression in a reduced environment so that 
 % internal function variables do not affect the result.
 
-  i = find(~cellfun('isempty', model.Constraint.set)); i=i(:)';
+  i = find(~cellfun('isempty', this.Constraint.set)); i=i(:)';
   if ~isempty(i)
 
     ax = 'x y z t u ';
-    if model.Dimension
-      eval([ '[' ax(1:(2*model.Dimension)) ']=deal(varargin{' mat2str(1:model.Dimension) '});' ]);
+    if this.Dimension
+      eval([ '[' ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
     end
-    if length(varargin) > model.Dimension && ~isempty(varargin{model.Dimension+1}) && isnumeric(varargin{model.Dimension+1})
-      signal = varargin{model.Dimension+1};
+    if length(varargin) > this.Dimension && ~isempty(varargin{this.Dimension+1}) && isnumeric(varargin{this.Dimension+1})
+      signal = varargin{this.Dimension+1};
     else
       signal = 1;
     end
@@ -519,20 +519,20 @@ function p = iFunc_feval_set(model, p, varargin)
 
     for index=i
       try
-        if isa(model.Constraint.set{index}, 'function_handle') && ...
-           nargout(model.Constraint.set{index}) == 1
-          n = nargin(model.Constraint.set{index});
+        if isa(this.Constraint.set{index}, 'function_handle') && ...
+           nargout(this.Constraint.set{index}) == 1
+          n = nargin(this.Constraint.set{index});
           if n > 0 && length(varargin) >= n
-            p(index) = feval(model.Constraint.set{index}, p, varargin{1:n});
+            p(index) = feval(this.Constraint.set{index}, p, varargin{1:n});
           else
-            p(index) = feval(model.Constraint.set{index}, p, varargin);
+            p(index) = feval(this.Constraint.set{index}, p, varargin);
           end
-        elseif ischar(model.Constraint.set{index})
-          p(index) = eval(model.Constraint.set{index});
+        elseif ischar(this.Constraint.set{index})
+          p(index) = eval(this.Constraint.set{index});
         end
       catch
         warning([ 'iFunc:' mfilename ], 'Could not evaluate model.Constraint.set on p(%i):', index);
-        disp(model.Constraint.set{index})
+        disp(this.Constraint.set{index})
       end % try
       
     end
