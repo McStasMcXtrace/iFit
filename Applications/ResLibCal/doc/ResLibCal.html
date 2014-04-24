@@ -67,6 +67,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -258,6 +259,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -265,7 +267,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       ResCal parameters. The 3D view also shows the ellipsoid
       projections. The corresponding full width values are indicated.<br>
       <br>
-      If no resolution view is shown, the results are sent to the
+      If no resolution view is active, the results are sent to the
       console.<br>
       <br>
     </div>
@@ -334,6 +336,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
     and the full ResLibCal configuration (instrument, sample, position,
     method) is saved as a Matlab script. An example of such
     configuration file is available <a href="ResLibCal.ini">here</a>.<br>
@@ -384,7 +387,14 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       style="font-style: italic;">out</span>, use:<br>
     <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'ResCal: DA=3.355; DM=3.355; ...'</span>, out or EXP structure)<br>&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'file'</span>, out or EXP structure)<br></pre>
     The result is then available in 'out.resolution'<br>
-    <pre>&gt;&gt; out.resolution<br>   &nbsp;method: 'Popovici (ResLib)'<br>        R0: 357.5551<br>        RM: [4x4 double]	<span style="font-style: italic;">% resolution matrix in [Qx,Qy,E]</span><br>       RMS: [4x4 double]	<span style="font-style: italic;">% resolution matrix in [Q1,Q2,E] using D1 and D2</span></pre>
+    <pre>&gt;&gt; out.resolution<br>     <b>Bragg: </b>[0.0065 0.0018 0.0399 0.5095 0.0211]<br>   &nbsp;method: 'Popovici (ResLib)'<br>        R0: 357.5551<br>        RM: [4x4 double]	<span style="font-style: italic;">% resolution matrix in [Qx,Qy,Qz,E]</span><br>       <b>RMS: </b>[4x4 double]	<span style="font-style: italic;">% resolution matrix in [Q1,Q2,Qz,E] using D1 and D2</span></pre>
+    The resolution matrix is 'RMS' in the sample reciprocal space
+    (Q1,Q2,Qz,<i>w</i>), and the 'Bragg' member shows the Bragg width
+    along Q1,Q2,Qz, as well as the Vanadium width (4-th value) and the
+    Bragg energy width (5-th value).<br>
+    In practice, the Vanadium energy width <i>out.resolution.Bragg(4)</i>
+    is a good measure of the instrumental energy resolution.<br>
+    <br>
     The parameters used for the computation are listed in the 'out.EXP'
     structure (ResLib-like), but are also shown in the Rescal
     terminology in 'out.ResCal'.<br>
@@ -562,6 +572,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
