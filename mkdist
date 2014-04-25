@@ -29,10 +29,13 @@ else
 fi
 IFIT_STRING="$IFIT_NAME $IFIT_VERSION - $MONTH. $DAY, $YEAR"
 
+MATLAB=/opt/MATLAB/R2010a/bin/matlab
+
 # Create temporary workdir:
 PW=`pwd`
 TMPDIR=$PWD/..
 DIST=$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION
+echo "Creating the temporary $DIST"
 
 # Copy current PW checkout to DIST
 rm -rf $DIST
@@ -67,7 +70,7 @@ done
 
 # detect architecture
 arch=`uname -m`
-if [ "$arch" == "x86_64" ]
+if [ "A$arch" == "Ax86_64" ]
 then
   ARCH=amd64
 else
@@ -75,7 +78,7 @@ else
 fi
 
 # create techdoc with m2html
-matlab -nojvm -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); m2html('mFiles',{'Libraries','Objects/@iData','Objects/@iFunc','Scripts','Applications/McStas','Applications/Python','Applications/ResLibCal'},'htmldir','Docs/techdoc','recursive','on','source','off','ignoredDir','private','graph','off'); exit"
+$MATLAB -nojvm -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); m2html('mFiles',{'Libraries','Objects/@iData','Objects/@iFunc','Scripts','Applications/McStas','Applications/Python','Applications/ResLibCal'},'htmldir','Docs/techdoc','recursive','on','source','off','ignoredDir','private','graph','off'); exit"
 
 cd $TMPDIR
 
@@ -86,7 +89,7 @@ zip -r $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip $IFIT_TARNAME-$IFIT_VERSION
 if [ -x `which mcc` ]
 then
   echo create the standalone version into $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-$ARCH
-  matlab -nojvm -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); ifitdeploy('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-$ARCH'); exit"
+  $MATLAB -nojvm -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); ifitdeploy('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-$ARCH'); exit"
   cd $TMPDIR
   zip -r $IFIT_TARNAME-$IFIT_VERSION-$ARCH.zip $IFIT_TARNAME-$IFIT_VERSION-$ARCH
 fi
