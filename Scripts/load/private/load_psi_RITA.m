@@ -80,6 +80,7 @@ if ~isempty(a.Data.entry1.data) && ~isempty(a.Data.entry1.RITA_2) && ~isempty(a.
   b{1}=index_axis;  % scan axis
   b{2}=transpose(ones(size(m,1),1)*(1:9)); % blade/window axis
   label(b, 2, 'Window index');
+  
   b.Label = [ 'Windows ' b.Label ];
 
   label(a, 1,'Pixels index X'); label(a, 2,'Pixels index Y');
