@@ -274,6 +274,7 @@ function S = VarArray(fp)
 function name = sanitize_name(name)
   name(~isstrprop(name,'print')) = '';
   name(~isstrprop(name,'alphanum')) = '_';
+  if isempty(name), return; end
   if name(1) == '_'
     name = name(find(name ~= '_', 1):end);
   end
