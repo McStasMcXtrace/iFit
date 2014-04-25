@@ -1,13 +1,13 @@
 function S = read_nc(File,varargin)
   % read a NetCDF file, using 2 methods
   
-  %try
+  try
     % a NetCDF reader using netcdf lib (faster)
     S = read_nc2(File);
-  %catch
+  catch
     % a basic NC reader that does not make use of the nc library, but is limited to NC1
     S = read_nc1(File);
-  %end
+  end
   
 % ______________________________________________________________________________
 

@@ -70,8 +70,7 @@ done
 
 # detect architecture
 arch=`uname -m`
-if [ "A$arch" == "Ax86_64" ]
-then
+if [ "$arch" = 'x86_64' ]; then
   ARCH=amd64
 else
   ARCH=i386
