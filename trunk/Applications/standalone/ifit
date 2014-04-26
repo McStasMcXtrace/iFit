@@ -53,7 +53,6 @@ else
   export XAPPLRESDIR;
 
   "${exe_dir}"/run_ifit $*
-  reset
 fi
 exit
 
