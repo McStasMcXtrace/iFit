@@ -180,7 +180,7 @@ case 'm'  % single m-file Matlab output (text), with the full object description
           NL ];
   [fid, message]=fopen(filename,'w+');
   if fid == -1
-    iFunc_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
+    warning([ mfilename ': Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
     disp(message)
     return
   end
