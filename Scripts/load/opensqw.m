@@ -14,7 +14,7 @@ if numel(out) > 1
   for index=1:numel(out)
     out(index) = feval(mfilename, out(index));
   end
-elseif ~isempty(findstr(out,'Sqw'))
+elseif ~isempty(findstr(out,'Sqw')) ||  ~isempty(findfield(out,'Sqw'))
   % this is a SQW file
   
   % handle import of NetCDF files from nMoldyn
@@ -29,6 +29,7 @@ elseif ~isempty(findstr(out,'Sqw'))
     end
     if isfield(out,'frequency'), setaxis(out,2,'frequency'); end
     if isfield(out,'title_nc'),  label(out, 0, out.title_nc); end
+    
   else
 
     % Find proper axes and Signal
@@ -50,10 +51,14 @@ elseif ~isempty(findstr(out,'Sqw'))
     elseif ~isempty(findstr(out, 'coherent part')) title(out,'Sqw (coh)');
     else title(out,'Sqw');
     end
+    out = transpose(out);
 
   end
+  
+  out = iData(out); % check
+  
   setalias(out,'Error',0);
-  out = transpose(out);
+  
 end
 
 if ~nargout
