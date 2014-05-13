@@ -15,17 +15,28 @@ if numel(out) > 1
     out(index) = feval(mfilename, out(index));
   end
 elseif isfield(out.Data,'Variables')
-  % creat aliases to Data.Variables
+  % create aliases to Data.Variables
+  %   Data.Variables can be an array, or a structure
 
   % the Data from NC
   for index=1:length(out.Data.Variables)
     this = out.Data.Variables(index);
-    if isfield(this, 'Name')
+    if isfield(this, 'Name') && length(out.Data.Variables) > 1
         name = sanitize_name(this.Name); % private inline (below)
         if ~isfield(out, name) || ...
           (~isempty(getalias(out, name)) && isfield(this, 'Data') && numel(this.Data) > numel(get(out, name)))
           out = setalias(out, name, [ 'Data.Variables(' num2str(index) ').Data' ]);
         end
+    else
+      % create aliases for Variable members
+      f = fieldnames(this);
+      for field=f(:)'
+        name = sanitize_name(field{1}); % private inline (below)
+        if ~isfield(out, name) || ...
+          (~isempty(getalias(out, name)) && isfield(this, 'Data') && numel(this.Data) > numel(get(out, name)))
+            out = setalias(out, name, [ 'Data.Variables.' field{1} ]);
+        end
+      end
     end
   end
 
