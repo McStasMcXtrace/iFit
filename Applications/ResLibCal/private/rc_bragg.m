@@ -16,3 +16,4 @@ bragg(3)=sqrt(8*log(2))/sqrt(M(3,3));
 [r,bragg(4)]=rc_phon(1,M,[0 0 0 1]); % Vanadium width: flat dispersion
 bragg(5)=sqrt(8*log(2))/sqrt(M(4,4));
 
+bragg = bragg*2; % from hwhm to fwhm
