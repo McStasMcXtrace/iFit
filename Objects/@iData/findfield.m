@@ -48,8 +48,27 @@ struct_s=struct(s);
 struct_s=rmfield(struct_s,'Alias');
 struct_s=rmfield(struct_s,'Command');
 struct_s=rmfield(struct_s,'Tag');
+
+% find all fields in object structure
 [match, types, dims] = iData_getfields(struct_s, '');
 
+% add fields from Alias content (when numeric/structure)
+for index=getalias(s)'
+  this = getalias(s,index{1}); % alias def or value
+  if isstruct(this)
+    [sf, st, sn] = iData_getfields(this, index{1});
+    match = [match(:) ; sf(:)];
+    types = [types(:) ; st(:)];
+    dims  = [dims(:) ;  sn(:)];
+    clear sf st sn
+  elseif isnumeric(this)
+    match{end+1} = index{1};
+    types{end+1} = class(this);
+    dims(end+1)  = numel(this);
+  end
+end
+
+% filter fields: numeric and char types
 if ~isempty(strfind(option, 'numeric')) || ~isempty(strfind(option, 'char'))
   % remove fields that we do not want as Signal
   index=[ find(strcmp('Date', match)) find(strcmp('ModificationDate', match)) ] ;
@@ -75,6 +94,7 @@ if ~isempty(strfind(option, 'numeric')) || ~isempty(strfind(option, 'char'))
   types  = types(index);
 end
 
+% restrict search to a given token 
 if ~isempty(field)
   if isempty(strfind(option, 'case'))
     field = lower(field);
@@ -177,4 +197,3 @@ function m = find_last_word(matchs)
 % m=strtrim(cellstr(fliplr(char(strtok(cellstr(fliplr(char(matchs))),'. ')))));
   m = cellfun(@(s)s((find(s == '.', 1, 'last')+1):end), matchs, 'UniformOutput', false);
   index = cellfun(@isempty, m); m(index) = matchs(index);
-
