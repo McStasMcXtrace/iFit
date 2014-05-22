@@ -108,7 +108,7 @@ function this = get_eval(this, property)
           this = eval([ 'this.Data.' property ]);
       catch
           % disp([ 'Warning: failed evaluation of this.Data.' property ' in object ' this.Tag ' "' this.Title '".' ]);
-          %this = eval(property);              % this is a full expression: evaluate it...
+          this = eval(property);              % this is a full expression: evaluate it...
       end
   end
 
