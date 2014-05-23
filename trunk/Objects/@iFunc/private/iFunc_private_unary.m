@@ -39,6 +39,10 @@ else
   if length(u) > 20, u = [ u(1:17) '...' ]; end
   a.Name       = [ op '(' u ')' ];
 end
-a.Expression = [ a.Expression sprintf('\nsignal=%s(signal);', op) ];
+if iscell(a.Expression)
+  a.Expression = [ a.Expression ; sprintf('\nsignal=%s(signal);', op) ];
+else
+  a.Expression = [ a.Expression sprintf('\nsignal=%s(signal);', op) ];
+end
 
 b = copyobj(a);
