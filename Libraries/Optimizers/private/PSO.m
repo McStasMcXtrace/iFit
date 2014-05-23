@@ -211,7 +211,7 @@ for i = 1:OPTIONS.MaxIter,
         
     % update the VELOCITIES
     
-    VELOCITIES(:,:,i+1) = OPTIONS.ConstrictionFactor.*(VELOCITIES(:,:,i) + OPTIONS.SwarmC1.*rand(OPTIONS.PopulationSize,NDIM).*(PBEST(:,:,i)-SWARM(:,:,i)) + OPTIONS.SwarmC2.*rand(OPTIONS.PopulationSize,NDIM).*(repmat(GBEST(i,:),[OPTIONS.PopulationSize 1 1],1)-SWARM(:,:,i)));
+    VELOCITIES(:,:,i+1) = OPTIONS.ConstrictionFactor.*(VELOCITIES(:,:,i) + OPTIONS.SwarmC1.*rand(OPTIONS.PopulationSize,NDIM).*(PBEST(:,:,i)-SWARM(:,:,i)) + OPTIONS.SwarmC2.*rand(OPTIONS.PopulationSize,NDIM).*(repmat(GBEST(i,:),[OPTIONS.PopulationSize 1 1 1])-SWARM(:,:,i)));
     
     % update particle positions
     
