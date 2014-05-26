@@ -86,3 +86,4 @@ function name = sanitize_name(name)
   if isstrprop(name(1),'digit')
     name = [ 'x' name ];
   end
+  name = regexprep(name ,'_{2,}','_'); % shorten multiple _
