@@ -14,16 +14,15 @@ if numel(out) > 1
   for index=1:numel(out)
     out(index) = feval(mfilename, out(index));
   end
-elseif ~isempty(findstr(out,'Sqw')) ||  ~isempty(findfield(out,'Sqw'))
+elseif ~isempty(findstr(out,'Sqw')) || ~isempty(findfield(out,{'Sqw','s_q_','s_k_'}))
   % this is a SQW file
-  
+  Sqw_aliases = {'Sqw_total', 's_k_f_total', 's_q_f_total'};
+  index       = isfield(out, Sqw_aliases); 
+
   % handle import of NetCDF files from nMoldyn
-  if isfield(out, 'Sqw_total') || isfield(out, 'S_k_f_total')
-    if isfield(out, 'S_k_f_total')
-      setaxis(out, 'Signal','S_k_f_total');
-    else
-      setaxis(out, 'Signal','Sqw_total');
-    end
+  if any(index)
+    index = find(index, 1, 'first');
+    setalias(out,'Signal', Sqw_aliases{index});
     if isfield(out,'q'),         setaxis(out,1,'q'); 
     elseif isfield(out,'k'),     setaxis(out,1,'k');
     end
