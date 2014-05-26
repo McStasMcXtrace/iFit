@@ -245,6 +245,9 @@ function [ConvertedData,ConvertVer,ChanNames,GroupNames,ci]=convertTDMS(varargin
 %Added information to help documentation on how to deal with DAQmxRaw Data.
 %-------------------------------------------------------------------------
 
+% TDMS Reader  Jim Hokanson 13 Jan 2011 (Updated 30 Jul 2012) 
+% <http://www.mathworks.com/matlabcentral/fileexchange/30023-tdms-reader>
+%
 %Copyright (c) 2014, Brad Humphreys
 %Copyright (c) 2010, Robert
 %Copyright (c) 2010, Grant Lohsen
