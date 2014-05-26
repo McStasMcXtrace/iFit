@@ -97,10 +97,11 @@ L3=p(23+offset);                 % distance between analyser and detector (cm).
 
 % TODO: FIX removed /100 so that all distances are in [cm]. 
 %       Was converted to [m-1] whereas all other distances are in [cm-1] !!
-romh=p(24+offset); % horizontal curvature of monochromator 1/radius (cm-1).
-romv=p(25+offset);    % vertical curvature of monochromator (cm-1).
-roah=p(26+offset); % horizontal curvature of analyser (cm-1).
-roav=p(27+offset);    % vertical curvature of analyser (cm-1).
+% sm and sa introduced to compensate the signs of thetaa and thetam in some Popovici matrices
+romh=sm*p(24+offset); % horizontal curvature of monochromator 1/radius (cm-1).
+romv=sm*p(25+offset);    % vertical curvature of monochromator (cm-1).
+roah=sa*p(26+offset); % horizontal curvature of analyser (cm-1).
+roav=sa*p(27+offset);    % vertical curvature of analyser (cm-1).
 
 f16=1/16.;
 f12=1/12.;
