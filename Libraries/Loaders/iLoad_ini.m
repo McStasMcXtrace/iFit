@@ -283,6 +283,10 @@ function config = iLoad_ini
     Igor.extension      = 'ibw';
     Igor.method         = 'read_igor';
     
+    lv_tdms.name        = 'LabView TDMS';
+    lv_tdms.extension   = 'tdms';
+    lv_tdms.method      = 'read_tdms';
+    
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
       mcstas_scan, mcstas_list, mcstas_sqw, mcstas_powder, mcstas_2D, mcstas_1D, mcstas_0D, mcstas_sim, ...
@@ -290,7 +294,7 @@ function config = iLoad_ini
       labview, yaml, json, ...
       nmr_jeol, nmr_bruker, nmr_varian, ...
       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
-      Analyze, CBF, STL_binary, MRC, NifTI, Igor, CIF };
+      Analyze, CBF, STL_binary, MRC, NifTI, Igor, CIF, lv_tdms };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
