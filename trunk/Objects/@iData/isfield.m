@@ -22,6 +22,14 @@ if isempty(fields), fields=fieldnames(iData); end
 
 if nargin == 1, field=[]; end
 
+if iscell(field) && numel(field) > 1
+  b = zeros(size(field));
+  for index=1:numel(field)
+    b(index) = feval(mfilename, a, field{index});
+  end
+  return
+end
+
 if numel(a) > 1
   if isempty(field), b = cell(size(a));
   else               b = zeros(size(a)); end
