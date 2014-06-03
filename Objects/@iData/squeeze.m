@@ -28,5 +28,8 @@ if numel(a) == 1
 else
   % this is an iData array
   a = reshape(a, d);
+  for index=1:numel(a)
+      a(index) = squeeze(a(index));
+  end
 end
 
