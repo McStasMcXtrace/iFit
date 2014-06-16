@@ -21,6 +21,7 @@ function [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin)
   x=real(double(x));
   y=real(double(y));
   z=real(double(z));
+  z(isinf(z)) = nan;
   if a_is_vector % plot3/fscatter3
     if (strfind(method,'scatter'))
       h=fscatter3(x(:),y(:),z(:),z(:),this_method); view(3);
