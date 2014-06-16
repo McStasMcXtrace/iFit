@@ -15,6 +15,7 @@ if size(a,1) ==1 && size(a,2) > 1
     e=genop(@rdivide,e,m); ylab = [ylab ' per monitor' ];
   end
   y=real(y);
+  y(isinf(y)) = nan;
   
   if isempty(method), method='b-'; end
   % handle side-by-side 1D plots

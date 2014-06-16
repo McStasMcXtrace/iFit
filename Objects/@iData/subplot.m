@@ -21,6 +21,7 @@ a = squeeze(a); % remove singleton dimensions
 m=[]; n=[]; dim=[];
 % handle optional arguments
 method = '';
+varg = {};
 for index=1:length(varargin)
   if ischar(varargin{index}),        method = varargin{index};
   elseif isa(varargin{index},'iData') 
@@ -29,12 +30,15 @@ for index=1:length(varargin)
     else
       a = [a(:) ; varargin{index} ];
     end
-  elseif isnumeric(varargin{index}), dim    = varargin{index};
+    varargin{index} = [];
+  elseif isempty(dim) && isnumeric(varargin{index}) && numel(varargin{index}) == 2
+    dim    = varargin{index};
+  else varg{end+1} = varargin{index};
   end
 end
 clear varargin
 if numel(a) == 1
-  h=plot(a, method);
+  h=plot(a, method, varg{:});
   return
 end
 
@@ -66,7 +70,7 @@ for index=1:numel(a)
     end
     subplot(m,n,index);
      
-    this_h = plot(a(index), method);
+    this_h = plot(a(index), method, varg{:});
     
     h = [ h ; this_h(:) ];
   else h = [ h ; nan ];

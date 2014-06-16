@@ -511,7 +511,7 @@ function [data, format] = iLoad(filename, loader, varargin)
       varg = { [ filename loader.options ], varargin{:} };
     end
     % reduce the number of input arguments to the one expected
-    if nargin(loader.method) > 0
+    if ~any(strcmp(loader.method, {'text','read_anytext','looktxt'})) && nargin(loader.method) > 0
       narg = min(length(varg), nargin(loader.method));
       varg = varg(1:narg);
     end
