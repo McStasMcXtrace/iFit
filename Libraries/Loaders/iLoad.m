@@ -450,6 +450,7 @@ function [data, format] = iLoad(filename, loader, varargin)
         catch ME
           l=ME;
           disp(l.message);
+          % disp(getReport(ME))
           if strncmpi(l.message, 'Invalid MEX-file', length('Invalid MEX-file')) && ~recompile
             % attempt to recompile MeX file
             lo = which('looktxt');
@@ -517,12 +518,12 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     % call the loader
     data = feval(loader.method, varg{:});
+    if isempty(data), return; end
     
     data = iLoad_loader_check(filename, data, loader);
-    if isempty(data), return; end
-    if isfield(loader, 'name') data.Format = loader.name; 
-    else data.Format=[ char(loader.method) ' import' ]; end
-    data.Loader = loader;
+    
+    % in case this import returns an array of struct, make it a cell array
+    
     return
     
   end % iLoad_import
@@ -704,6 +705,11 @@ function data = iLoad_loader_check(file, data, loader)
       data.User    = [ 'User running on ' computer ' from ' pwd ];
     end
   end
+  
+  if isfield(loader, 'name') data.Format = loader.name; 
+  else data.Format=[ char(loader.method) ' import' ]; end
+  data.Loader = loader;
+  
   return
   
 end % Load_loader_check

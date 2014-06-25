@@ -61,6 +61,16 @@ if isstruct(files) && length(files) == 1 && isfield(files,'loaders')
     out=files;
     return;
 end
+if isstruct(files) && numel(files) > 1 && numel(loaders) == 1
+  new_files = cell(1,numel(files));
+  new_loaders = new_files;
+  for index=1:numel(files)
+    new_files{index} = files(index);
+    new_loaders{index} = loaders;
+  end
+  files = new_files; new_files = [];
+  loaders = new_loaders; new_loaders = [];
+end
 if ~iscell(files),   files   = { files }; end
 if ~iscell(loaders), loaders = { loaders }; end
 out = [];
@@ -178,7 +188,7 @@ function s=load_check_struct(data, loaders, filename)
   if nargin < 3, filename=''; end
   if isempty(filename), filename=pwd; end
   if iscell(filename),  filename=filename{1}; end
-  
+
   % transfer some standard fields as possible
   if ~isstruct(data)          s.Data = data; else s=data; end
   if isfield(data, 'Source'), s.Source = data.Source; 
