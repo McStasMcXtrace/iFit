@@ -4,6 +4,15 @@ function b=iData_struct2iData(a)
   persistent fb
 
   if isempty(fb), fb=fieldnames(iData); end
+  
+  if ~isstruct(a), b=[]; return; end
+  if numel(a) > 1
+    b = [];
+    for index=1:numel(a)
+      b = [ b ; iData_struct2iData(a(index)) ];
+    end
+    return
+  end
 
   f  = fieldnames(a);
   b  = iData; 

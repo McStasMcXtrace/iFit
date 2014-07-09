@@ -5,8 +5,10 @@ function result = test_Loaders_dir_Data
   toc
   failed = 0;
   for index=1:length(a)
-    if isempty(a{index}),          failed = failed + 1;
-    elseif isempty(a{index}.Data), failed = failed + 1;
+    this = a{1};
+    if numel(this) > 1, this=this(1); end
+    if isempty(this),          failed = failed + 1;
+    elseif isfield(this,'Data') && isempty(this.Data), failed = failed + 1;
     end
   end
   if failed
