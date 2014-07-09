@@ -8,7 +8,7 @@ function result=test_ResLibCal_compute
 
   ResLibCal('quit');
 
-  if abs(out.resolution.Bragg(4) - 0.5095*2) < 1e-3
+  if abs(out.resolution.Bragg(4) - 0.5095*2) < 1e-2
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];

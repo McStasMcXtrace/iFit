@@ -61,6 +61,7 @@ if isstruct(files) && length(files) == 1 && isfield(files,'loaders')
     out=files;
     return;
 end
+% convert struct array to cell array, if true
 if isstruct(files) && numel(files) > 1 && numel(loaders) == 1
   new_files = cell(1,numel(files));
   new_loaders = new_files;
@@ -79,69 +80,9 @@ for i=1:numel(files)
   filename = '';
   if isempty(files{i}), continue; end
   if length(varargin) >= 1 && ischar(varargin{1}), filename = varargin{1}; end
-  if isstruct(files{i}) && isempty(filename)
-    f = fieldnames(files{i});
-    index = [ find(strcmpi(f,'filename'),1) ;find(strcmpi(f,'file_name'),1) ;find(strcmpi(f,'source'),1) ];
-    if ~isempty(index)
-      filename = files{i}.(f{index(1)}); 
-    end
-  end
   
-  % check the returned iLoad structure
-  files{i} = load_check_struct(files{i}, loaders, filename);
-  if isfield(files{i},'Data') && isstruct(files{i}.Data) && any(cellfun('isclass', struct2cell(files{i}.Data), 'iData'))
-    % a structure containing an iData
-    this_iData = [];
-    struct_data = struct2cell(files{i}.Data);
-    files{i} = {};  % free memory
-    for index=1:length(struct_data)
-      if isa(struct_data{index}, 'iData')
-        if isa(struct_data{index}.Data, 'uint8')
-          struct_data{index}.Data = hlp_deserialize(struct_data{index}.Data);
-        end
-        this_iData = [ this_iData struct_data{index} ];
-        struct_data{index} = '';
-      end
-    end
-    clear struct_data
-  else
-    % usually a structure from iLoad
-
-    % convert file content from iLoad into iData
-    this_iData = iData_struct2iData(files{i});	
-    % assign default Signal and axes
-    this_iData = iData_check(this_iData);
-    % post-processing
-    if ~isempty(this_iData)
-      if isempty(loaders) || ~isfield(loaders{i}, 'postprocess')
-        loaders{i}.postprocess='';
-      end
-      if isempty(loaders{i}.postprocess) && isfield(files{i},'Loader')
-        if isfield(files{i}.Loader, 'postprocess')
-          loaders{i}.postprocess = files{i}.Loader.postprocess;
-        end
-      end
-      files{i} = {};  % free memory
-      if ~isempty(loaders{i}.postprocess)
-        % remove warnings
-        iData_private_warning('enter',mfilename);
-        if ~iscell(loaders{i}.postprocess)
-          loaders{i}.postprocess = cellstr(loaders{i}.postprocess);
-        end
-        % apply post-load routine: this may generate more data sets
-        for j=1:length(loaders{i}.postprocess)
-          if ~isempty(loaders{i}.postprocess{j})
-            % call private method (see below)
-            this_iData = load_eval_postprocess(this_iData, loaders{i}.postprocess{j});
-          end
-        end
-        % reset warnings
-        iData_private_warning('exit',mfilename);
-      elseif ~isempty(loaders{i}.postprocess)
-        iData_private_warning(mfilename,['Can not find post-process function ' loaders{i}.postprocess ' for data format ' loaders{i}.name ]);
-      end
-    end
-  end
+  this_iData = load_single_file(files{i}, loaders{i}, filename);
+  
   % transpose to make columns
   if numel(out) > 1 && size(out,2) > 1 && size(out,1) == 1, out=out'; end
   if numel(this_iData) > 1 && size(this_iData,2) > 1 && size(this_iData,1) == 1, this_iData=this_iData'; end
@@ -182,12 +123,20 @@ if nargout == 0 && ~isempty(inputname(1))
   assignin('caller',inputname(1),out);
 end
 
-% ------------------------------------------------------------------------------
+% ----------------------------------------------------------------------
 function s=load_check_struct(data, loaders, filename)
 % check final structure and add missing fields
   if nargin < 3, filename=''; end
   if isempty(filename), filename=pwd; end
   if iscell(filename),  filename=filename{1}; end
+  
+  if isstruct(data) && numel(data) > 1
+      s = [];
+      for index=1:numel(data)
+          s = [ s ; load_check_struct(data(index), loaders, filename) ];
+      end
+      return
+  end
 
   % transfer some standard fields as possible
   if ~isstruct(data)          s.Data = data; else s=data; end
@@ -205,7 +154,7 @@ function s=load_check_struct(data, loaders, filename)
     s.Format  = loaders{1}.name; 
   end
 
-% ------------------------------------------------------------------------------
+% ----------------------------------------------------------------------
 function this = load_eval_postprocess(this, postprocess)
 % evaluate the postprocess in a reduced environment, with only 'this'
   try
@@ -224,5 +173,84 @@ function this = load_eval_postprocess(this, postprocess)
     disp(getReport(ME));
     warning([mfilename ': Error when calling post-process ' postprocess '. file: ' this.Source ]);
   end
+  
+% ------------------------------------------------------------------------------
+function this_iData = load_single_file(file, loader, filename)
     
-    
+  this_iData = [];
+  
+  % handle array of struct
+  if numel(file) > 1
+    for index=1:numel(file)
+      if isstruct(file)
+        this_iData = [ this_iData ; load_single_file(file(index), loader, filename) ];
+      elseif iscell(file)
+        this_iData = [ this_iData ; load_single_file(file{index}, loader, filename) ];
+      end
+    end
+    return
+  end
+  
+  if isstruct(file) && isempty(filename)
+    f = fieldnames(file);
+    index = [ find(strcmpi(f,'filename'),1) ;find(strcmpi(f,'file_name'),1) ;find(strcmpi(f,'source'),1) ];
+    if ~isempty(index)
+      filename = file.(f{index(1)}); 
+    end
+  end
+  
+  % check the returned iLoad structure
+  file = load_check_struct(file, loader, filename);
+  if isfield(file,'Data') && isstruct(file.Data) && any(cellfun('isclass', struct2cell(file.Data), 'iData'))
+    % a structure containing an iData
+    this_iData = [];
+    struct_data = struct2cell(file.Data);
+    file = {};  % free memory
+    for index=1:length(struct_data)
+      if isa(struct_data{index}, 'iData')
+        if isa(struct_data{index}.Data, 'uint8')
+          struct_data{index}.Data = hlp_deserialize(struct_data{index}.Data);
+        end
+        this_iData = [ this_iData struct_data{index} ];
+        struct_data{index} = '';
+      end
+    end
+    clear struct_data
+  else
+    % usually a structure from iLoad
+
+    % convert file content from iLoad into iData
+    this_iData = iData_struct2iData(file);	
+    % assign default Signal and axes
+    this_iData = iData_check(this_iData);
+    % post-processing
+    if ~isempty(this_iData)
+      if isempty(loader) || ~isfield(loader, 'postprocess')
+        loaders{i}.postprocess='';
+      end
+      if isempty(loader.postprocess) && isfield(file,'Loader')
+        if isfield(file.Loader, 'postprocess')
+          loader.postprocess = file.Loader.postprocess;
+        end
+      end
+      file = {};  % free memory
+      if ~isempty(loader.postprocess)
+        % remove warnings
+        iData_private_warning('enter',mfilename);
+        if ~iscell(loader.postprocess)
+          loader.postprocess = cellstr(loader.postprocess);
+        end
+        % apply post-load routine: this may generate more data sets
+        for j=1:length(loader.postprocess)
+          if ~isempty(loader.postprocess{j})
+            % call private method (see below)
+            this_iData = load_eval_postprocess(this_iData, loader.postprocess{j});
+          end
+        end
+        % reset warnings
+        iData_private_warning('exit',mfilename);
+      elseif ~isempty(loader.postprocess)
+        iData_private_warning(mfilename,['Can not find post-process function ' loader.postprocess ' for data format ' loaders{i}.name ]);
+      end
+    end
+  end

@@ -340,148 +340,151 @@ else
   pid=fopen(FileName,'r','ieee-be');
 end  
 if (pid ~= -1),
-   if (strcmp(All,'yes')),
+  if (strcmp(All,'yes')),
+    if (pre == 8),
+      if (OutputDataFormat == 1)
+               img=fread(pid,'uint8');
+      else
+               img=fread(pid,'uint8=>uint8');
+      end  
+    elseif (pre == 16)
+      if (lim(1) > 32767)
+        if (OutputDataFormat == 1)
+                img=fread(pid,'uint16');
+        else
+                img=fread(pid,'uint16=>uint16');
+        end  
+      else
+        if (OutputDataFormat == 1)
+          img=fread(pid,'int16');
+        else
+          img=fread(pid,'int16=>int16');
+        end  
+      end;
+    elseif (pre == 32)
+      if (OutputDataFormat == 1)
+              img=fread(pid,'float32');
+      else
+              img=fread(pid,'float32=>float32');
+      end  
+    elseif (pre == 64)
+      if (OutputDataFormat == 1)
+              img=fread(pid,'float64');
+      else
+              img=fread(pid,'float64=>float64');
+      end  
+    else
+      fclose(pid);
+      error('ReadAnalyzeImg, Precision argument not legal')
+    end; 
+ else
+    if (MaxSlice > dim(3)) | (MaxFrame > dim(4))
+      fprintf('Specified slice or frame out of range\n');
+    end; 
+    img=zeros(dim(1)*dim(2)*NoOfImages,1);
+    if (OutputDataFormat ~= 1)  % Not double
       if (pre == 8),
-	if (OutputDataFormat == 1)
-           img=fread(pid,'uint8');
-	else
-           img=fread(pid,'uint8=>uint8');
-	end  
+        img=uint8(img);
       elseif (pre == 16)
         if (lim(1) > 32767)
-  	  if (OutputDataFormat == 1)
-            img=fread(pid,'uint16');
-	  else
-            img=fread(pid,'uint16=>uint16');
-	  end  
+          img=uint16(img);
         else
-  	  if (OutputDataFormat == 1)
-            img=fread(pid,'int16');
-          else
-            img=fread(pid,'int16=>int16');
-	  end  
-	end;
-      elseif (pre == 32)
-  	if (OutputDataFormat == 1)
-          img=fread(pid,'float32');
-	else
-          img=fread(pid,'float32=>float32');
-	end  
-      elseif (pre == 64)
-  	if (OutputDataFormat == 1)
-          img=fread(pid,'float64');
-	else
-          img=fread(pid,'float64=>float64');
-	end  
-      else
-	error('ReadAnalyzeImg, Precision argument not legal')
-      end; 
-   else
-      if (MaxSlice > dim(3)) | (MaxFrame > dim(4))
-	 fprintf('Specified slice or frame out of range\n');
-      end; 
-      img=zeros(dim(1)*dim(2)*NoOfImages,1);
-      if (OutputDataFormat ~= 1)  % Not double
-        if (pre == 8),
-	  img=uint8(img);
-        elseif (pre == 16)
-          if (lim(1) > 32767)
-	    img=uint16(img);
-  	  else
-	    img=int16(img);
-	  end
-        elseif (pre == 32)
-	  img=double(img);
-        elseif (pre == 64)
-	  img=double(img);
-        else
-	  error('Unknow precision argument');
+          img=int16(img);
         end
-      end	
-      hdr.dim(3)=MaxSlice-MinSlice+1;
-      hdr.dim(4)=MaxFrame-MinFrame+1;
-      k=0;
-      for i=MinFrame:MaxFrame,
-	 for j=MinSlice:MaxSlice,
-            if (pre == 8),
-               status=fseek(pid,(j-1)*dim(1)*dim(2)+(i-1)*dim(1)*dim(2)*dim(3),'bof');
-               if (status ~= 0)
-                  fprintf('ReadAnalyzeImg, fseek error\n');
-	          img=[];
-               else   
-        	  if (OutputDataFormat == 1)
-                    img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
-		      fread(pid,dim(1)*dim(2),'uint8');
-		  else
-                    img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
-		      fread(pid,dim(1)*dim(2),'uint8=>uint8');
-		  end  
-	       end;	  
-            elseif (pre == 16)
-               status=fseek(pid,(j-1)*dim(1)*dim(2)*2+(i-1)*dim(1)*dim(2)*dim(3)*2,'bof');
-               if (status ~= 0)
-                  fprintf('ReadAnalyzeImg, fseek error\n');
-	          img=[];
-               else   
-                  if (lim(1) > 32767)
-        	    if (OutputDataFormat == 1)
-                      img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
-                         fread(pid,dim(1)*dim(2),'uint16');
-		    else
-                      img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
-                         fread(pid,dim(1)*dim(2),'uint16=>uint16');
-		    end  
-                  else
-        	    if (OutputDataFormat == 1)
-                      img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
-                         fread(pid,dim(1)*dim(2),'int16');
-		    else
-                      img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
-                         fread(pid,dim(1)*dim(2),'int16=>int16');
-		    end  
-	          end;       
-               end;
-	    elseif (pre == 32)
-               status=fseek(pid,(j-1)*dim(1)*dim(2)*4+(i-1)*dim(1)*dim(2)*dim(3)*4,'bof');
-               if (status ~= 0)
-                  fprintf('ReadAnalyzeImg, fseek error\n');
-	          img=[];
-               else   
-        	  if (OutputDataFormat == 1)
-                    img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
-                         fread(pid,dim(1)*dim(2),'float32');
-		  else
-                    img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
-                         fread(pid,dim(1)*dim(2),'float32=>float32');
-		  end  
-	       end;	     
-	    elseif (pre == 64)
-               status=fseek(pid,(j-1)*dim(1)*dim(2)*8+(i-1)*dim(1)*dim(2)*dim(3)*8,'bof');
-               if (status ~= 0)
-                  fprintf('ReadAnalyzeImg, fseek error\n');
-	          img=[];
-               else   
-        	  if (OutputDataFormat == 1)
-                    img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
-                         fread(pid,dim(1)*dim(2),'float64');
-		  else   
-                    img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
-                         fread(pid,dim(1)*dim(2),'float64=>float64');
-		  end
-	       end;
-	    else
-	      error('Unknown precision');
-	    end;	
-	    k=k+1;
-         end;
-      end; 
-   end; 	 
-   if ((~isempty(img)) & (NoOfImages == 1))
-      img=reshape(img,dim(1),dim(2));
-   end;      
-   fclose(pid);
+      elseif (pre == 32)
+        img=double(img);
+      elseif (pre == 64)
+        img=double(img);
+      else
+        fclose(pid);
+        error('Unknow precision argument');
+      end
+    end	
+    hdr.dim(3)=MaxSlice-MinSlice+1;
+    hdr.dim(4)=MaxFrame-MinFrame+1;
+    k=0;
+    for i=MinFrame:MaxFrame,
+      for j=MinSlice:MaxSlice,
+        if (pre == 8),
+          status=fseek(pid,(j-1)*dim(1)*dim(2)+(i-1)*dim(1)*dim(2)*dim(3),'bof');
+          if (status ~= 0)
+            fprintf('ReadAnalyzeImg, fseek error\n');
+            img=[];
+          else   
+            if (OutputDataFormat == 1)
+                img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
+                  fread(pid,dim(1)*dim(2),'uint8');
+            else
+                img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
+                  fread(pid,dim(1)*dim(2),'uint8=>uint8');
+            end  
+          end;	  
+        elseif (pre == 16)
+          status=fseek(pid,(j-1)*dim(1)*dim(2)*2+(i-1)*dim(1)*dim(2)*dim(3)*2,'bof');
+          if (status ~= 0)
+            fprintf('ReadAnalyzeImg, fseek error\n');
+            img=[];
+          else   
+            if (lim(1) > 32767)
+              if (OutputDataFormat == 1)
+                img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
+                   fread(pid,dim(1)*dim(2),'uint16');
+              else
+                img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
+                   fread(pid,dim(1)*dim(2),'uint16=>uint16');
+              end  
+            else
+              if (OutputDataFormat == 1)
+                img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
+                   fread(pid,dim(1)*dim(2),'int16');
+              else
+                img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
+                   fread(pid,dim(1)*dim(2),'int16=>int16');
+              end  
+            end;       
+          end;
+        elseif (pre == 32)
+          status=fseek(pid,(j-1)*dim(1)*dim(2)*4+(i-1)*dim(1)*dim(2)*dim(3)*4,'bof');
+          if (status ~= 0)
+                fprintf('ReadAnalyzeImg, fseek error\n');
+                img=[];
+          else   
+            if (OutputDataFormat == 1)
+                  img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
+                       fread(pid,dim(1)*dim(2),'float32');
+            else
+                  img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
+                       fread(pid,dim(1)*dim(2),'float32=>float32');
+            end  
+          end;	     
+        elseif (pre == 64)
+            status=fseek(pid,(j-1)*dim(1)*dim(2)*8+(i-1)*dim(1)*dim(2)*dim(3)*8,'bof');
+            if (status ~= 0)
+              fprintf('ReadAnalyzeImg, fseek error\n');
+              img=[];
+            else   
+              if (OutputDataFormat == 1)
+                  img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
+                       fread(pid,dim(1)*dim(2),'float64');
+              else   
+                  img(k*dim(1)*dim(2)+1:(k+1)*dim(1)*dim(2),:)=...
+                       fread(pid,dim(1)*dim(2),'float64=>float64');
+              end
+            end;
+        else
+          fclose(pid);
+          error('Unknown precision');
+        end;	
+        k=k+1;
+      end;
+    end; 
+  end; 	 
+  if ((~isempty(img)) & (NoOfImages == 1))
+    img=reshape(img,dim(1),dim(2));
+  end;      
+  fclose(pid);
 else
-   img=[];
+  img=[];
 end;      
 
 
