@@ -4,14 +4,16 @@ function data = read_opus(filename)
   data = {};
   
   index = 1;
-  while index > 0
+  while index > 0 && index < 6
       try
-          data{index}=opus_read(filename, index);
-          index = index +1;
-      catch
-          index = 0;
-          return
-      end
+        this=opus_read(filename, index);
+        if isempty(this), return;
+        else data{index}=this; end
+     
+        index = index +1;
+    catch
+        break;
+    end
   end
   
   
@@ -62,18 +64,18 @@ frewind(fid);
 tmpint=fread(fid,ntotal/4,'int32'); % whole file in one array
 
 hfl = strfind(tmpstr, 'HFL');
-if isempty(hfl), return; end
+if isempty(hfl), fclose(fid); return; end
 fseek(fid, hfl+7, 'bof');
 HighFold = fread(fid, 1, 'float64');
 lfl = strfind(tmpstr, 'LFL');
-if isempty(lfl), return; end
+if isempty(lfl), fclose(fid); return; end
 fseek(fid, lfl+7, 'bof');
 LowFold = fread(fid, 1, 'float64');
 
 fxv = strfind(tmpstr, 'FXV'); % first X point
 lxv = strfind(tmpstr, 'LXV'); % last X point
 npts = strfind(tmpstr, 'NPT'); % Number of data points 
-if isempty(fxv) || isempty(lxv) || isempty(npts), return; end
+if isempty(fxv) || isempty(lxv) || isempty(npts), fclose(fid); return; end
 ndatas = min([length(fxv), length(lxv)]);
 for ii = 1:ndatas
         fseek(fid, fxv(ii)+7, 'bof');    
