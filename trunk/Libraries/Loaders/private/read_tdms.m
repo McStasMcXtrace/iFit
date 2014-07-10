@@ -1,4 +1,7 @@
 function data=read_tdms(filename)
+% read a LabView TDMS file
+% http://www.mathworks.com/matlabcentral/fileexchange/30023-tdms-reader
+% Jim Hokanson (2011) BSD
 
   data = convertTDMS(0,filename);
 

@@ -44,6 +44,9 @@ function data = read_lvm(filename,verbose)
 % The LVM file specification is available at:
 %   http://zone.ni.com/devzone/cda/tut/p/id/4139
 %
+% Contrib from:
+% http://www.mathworks.com/matlabcentral/fileexchange/19913-lvm-file-import
+%
 %
 % Example:
 %
