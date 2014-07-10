@@ -16,7 +16,7 @@ function out = load(a, varargin)
 %     HDF4, HDF5, MAT workspace, XML, CDF, JSON, YAML
 %   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF, Mantid.
 %     SIF, MCCD/TIFF, ADSC, CBF, Analyze, NifTI, STL,PLY,OFF, CIF/CFL,
-%     EZD/CCP4, NMR formats
+%     EZD/CCP4, Bruker Varian and JEOL NMR formats, Bruker OPUS, LabView LVM and TDMS
 %   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
 %   Distant files are supported through e.g. URLs such as 
 %     file://, ftp://, http:// and https://
