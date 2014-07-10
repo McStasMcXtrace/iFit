@@ -64,8 +64,8 @@
     <br>
     These commands result in the following output, which produce an
     iData object:<br>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top;">
@@ -143,15 +143,28 @@
     The file name may end with an anchor reference using the '#'
     character, such as in <br>
     <br>
-    <div style="margin-left: 40px;">[ ifitpath '<span style="color:
-        rgb(204, 51, 204);">/Data/sv1850.scn#Data'</span> ]<br
-        style="color: rgb(204, 51, 204);">
-      <span style="color: rgb(204, 51, 204);">'http://path/file.zip#Data'</span><br>
+    <div style="margin-left: 40px;">[ <span style="color: rgb(204, 51,
+        204);">'file#Data'</span> ]&nbsp;&nbsp;&nbsp; <i>&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp; // import only parts which mention Data in
+        file </i><br style="color: rgb(204, 51, 204);">
+      <span style="color: rgb(204, 51, 204);">'http://path/file.zip#Data'</span>&nbsp;&nbsp;&nbsp;&nbsp;
+      <i>// import only Data in the extracted archive</i><br>
     </div>
     <br>
     In this case, the anchor is searched in the imported data, and only
     the corresponding matching elements are returned. The resulting
     objects are thus smaller in size.<br>
+    <br>
+    In the case a directory is given, the anchor can be used to restrict
+    the recursive import of files, using a token to search in file
+    names, such as <br>
+    <blockquote> [ directory '<span style="color: rgb(204, 51, 204);">ILL'</span>
+      ]&nbsp;&nbsp;&nbsp; <i>// import only files which contain 'ILL'
+        in their names, with recursive search</i><br>
+    </blockquote>
+    If only one level exists in the directory, then this is equivalent
+    to importing<font color="#cc33cc"> 'directory/*ILL*'</font>.<br>
     <h4><a class="mozTocH4" name="mozTocId889584"></a>Setting Signal and
       Axes when they are not set properly</h4>
     There may be cases for which the reading of the file is done
@@ -249,6 +262,7 @@
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/tofhr/inx/">processed
 
 
+
           TOF</a>)<br>
       </li>
       <li>ESRF data format (*.edf)</li>
@@ -256,9 +270,11 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           href="http://www.esrf.fr/computing/Forum/imgCIF/cbf_definition.html">Crystallographic
 
 
+
           binary file</a> (*.cbf)</li>
       <li><a
           href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">MRI
+
 
 
           3D volume</a> Analyze 7.5 (*.hdr with associated *.img)</li>
@@ -440,8 +456,10 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
         format. Open the<span style="font-style: italic;"> 'hdr' </span>file.
 
 
+
         See <a
           href="http://www.mathworks.com/matlabcentral/fileexchange/3760">ReadAnalyze</a>&nbsp;
+
 
 
         [binary]</li>
@@ -570,6 +588,7 @@ to
 identify
 
 
+
     the proper importation method to use.<br>
     <br>
     The text files are processed with the <a
@@ -606,6 +625,7 @@ identify
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
         - iFit/iData loading data - </span><span style="font-style:
