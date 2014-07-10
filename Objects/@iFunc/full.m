@@ -1,8 +1,7 @@
 function a = full(a)
 % b = full(s) : Convert iFunc object storage to full matrix
 %
-%   @iFunc/full function to use full matrix storage, which stores
-%   all elements in Signal, Error and Monitor. 
+%   @iFunc/full function to use full matrix storage.
 %
 % input:  s: object or array (iFunc)
 % output: b: object or array (iFunc)
