@@ -165,7 +165,7 @@ elseif isnumeric(p) && length(p) < length(model.Parameters) % fill NaN's from p+
 end
 
 % when there are NaN values in parameter values, we replace them by guessed values
-if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
+if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
   % call private method to guess parameters from axes, signal and parameter names
   if isempty(guessed), guessed = 'partial'; end
   
@@ -211,8 +211,11 @@ if (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
   end
 
   % automatic guessed parameter values -> signal
-  p1 = iFunc_private_guess(varargin(1:(model.Dimension+1)), model.Parameters); % call private here -> auto guess
-
+  if model.Dimension
+    p1 = iFunc_private_guess(varargin(1:(model.Dimension+1)), model.Parameters); % call private here -> auto guess
+  else
+    p1 = [];
+  end
   % check for NaN guessed values and null amplitude
   n=find(isnan(p1) | p1 == 0); n=transpose(n(:));
   for j=n
