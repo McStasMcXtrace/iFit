@@ -1,5 +1,5 @@
 function b = smooth(a, varargin)
-% s = smooth(a) : smooth iData objects
+% Z = smooth(Y) : smooth iData objects
 %
 %   @iData/smooth function to smooth iData objects
 %     The smooth method uses a Robust spline smoothing or Savitzky-Golay algorithm
@@ -32,6 +32,8 @@ function b = smooth(a, varargin)
 %   be less than span.
 %   Z = SMOOTH(Y,span,'sgolay',degree,dimensions) specifies the dimensions along
 %   which the Savitzky-Golay filter should be applied (integer or vector up to ndims).
+%
+%   Z = SMOOTH(Y, 'gauss', [ widths ]) uses a nD gaussian convolution
 %
 %   Robust smoothing
 %   ----------------
@@ -78,6 +80,14 @@ for index=1:min(numel(vargs), 2)
       vargs(end) = [];
     end
     break;
+  elseif strcmpi(vargs{index}, 'gauss')
+    method='gauss';
+    if length(vargs) > index
+      dimensions = vargs{index+1}; % width to consider are specified
+    else
+      dimensions = 1;
+    end
+    break
   end
 end
 
@@ -98,6 +108,8 @@ if strcmp(method, 'sgolay')
     if index > 1, s  = permute(s, [ index 1 ]); end
   end
   b = set(b, 'Signal', s);
+elseif strcmp(method, 'gauss')
+  b = convn(a, dimensions);
 else
   % use discrete cosine transform filter
   b = set(b, 'Signal', smoothn(subsref(a,struct('type','.','subs','Signal')), varargin{:}));

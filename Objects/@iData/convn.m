@@ -5,7 +5,9 @@ function c = convn(a,b)
 %     and normalization of the filter. This is a shortucut for
 %       conv(a,b, 'same pad background center normalize')
 %     When used with a single scalar value, it is used as a width to build a 
-%       gaussian function.
+%       gaussian function, with same width along aall dimensions
+%     When used with a vector of same length as the object dimension, a nD
+%       gaussian function with width as vector elements along each diemsions
 %
 % input:  a: object or array, signal (iData or numeric)
 %         b: object or array, filter (iData or numeric)
@@ -23,6 +25,16 @@ if isscalar(b)
 elseif isscalar(a)
   a = [ 1 mean(getaxis(a,1)) double(a) 0]; % use input as a width
   a = gauss(a, getaxis(b,1));
+elseif isa(b,'double') && numel(b) == ndims(a)
+  p = [];
+  g = gauss^(ndims(a));
+  ax = {};
+  for index=1:ndims(a)
+    p = [ p 1 mean(getaxis(a,1)) double(b(index)) 0 ];
+    ax{end+1} = getaxis(a, index);
+  end
+  g = g(p, ax{:});
+  b = g;
 end
 c = iData_private_binary(a, b, 'conv', 'same pad background center normalize');
 
