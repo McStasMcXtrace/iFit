@@ -96,7 +96,7 @@ end
 
 if nargin == 3
   % label(a, rank, lab) -> set Label of the rank/alias
-  this.Alias.Labels{index} = varargin{2};
+  this.Alias.Labels{index} = validstr(varargin{2});
   this = iData_private_history(this, mfilename, this, index, varargin{2});
   if nargout == 0 && ~isempty(inputname(1))
     assignin('caller',inputname(1),this);
@@ -106,3 +106,12 @@ else % nargin == 2
   % label(a, rank) -> get the label value
   labl = this.Alias.Labels{index};
 end
+
+function str=validstr(str)
+  % validate a string as a single line
+  str=strrep(str(:)', sprintf('\n'), ';');
+  index = find(str < 32 | str > 127);
+  str(index) = ' ';
+  str=strrep(str, '''', '''''');
+  str=strrep(str,'\','/');
+  if isempty(str), str=''; end

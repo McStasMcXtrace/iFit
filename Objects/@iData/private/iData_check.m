@@ -21,7 +21,7 @@ if ~ischar(in.Title)
   iData_private_warning(mfilename,['Title must be a char or cellstr in iData object ' in.Tag ' (' class(in.Title) '). Re-setting to empty.']);
   in.Title = '';
 end
-in.Title = strtrim(in.Title); in.Title(in.Title == '%') = '';
+in.Title = validstr(strtrim(in.Title)); in.Title(in.Title == '%') = '';
 if ~ischar(in.Tag)
   iData_private_warning(mfilename,['Tag must be a char in iData object ' in.Tag ' "' in.Title '. Re-setting to a new Tad id.' ]);
   in = iData_private_newtag(in);
@@ -139,7 +139,7 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
         end
         if ischar(attribute)
           if numel(attribute) > 80, attribute=[ attribute(1:77) ' ...' ]; end
-          in.Alias.Labels{1} = attribute;
+          in.Alias.Labels{1} = validstr(attribute);
         end
 
         % assign potential 'error' bars and 'monitor'
@@ -180,7 +180,7 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
               if isfield(in.Data, 'Attributes')
                 fields=fliplr(strtok(fliplr(fields_all{ax}), '.'));
                 if isfield(in.Data.Attributes, fields) && ischar(in.Data.Attributes.(fields))
-                  in.Alias.Labels{index+1} = in.Data.Attributes.(fields);
+                  in.Alias.Labels{index+1} = validstr(in.Data.Attributes.(fields));
                 end
               else
                 label(in, index, fields_all{ax});
@@ -217,4 +217,11 @@ if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
   disp([ 'iData: The object has been transposed to match the axes orientation in object ' in.Tag ' "' in.Title '".' ]);
 end
 
-
+function str=validstr(str)
+  % validate a string as a single line
+  str=strrep(str(:)', sprintf('\n'), ';');
+  index = find(str < 32 | str > 127);
+  str(index) = ' ';
+  str=strrep(str, '''', '''''');
+  str=strrep(str,'\','/');
+  if isempty(str), str=''; end
