@@ -88,6 +88,7 @@
     Additional arguments (above the model dimensionality) are usable in
     the Expression as<span style="font-style: italic;"> 'varargin' </span>cell.
 
+
     <br>
     The name of the parameters can be changed by accessing the <span
       style="font-weight: bold;">Parameters</span> property (this is a
@@ -100,6 +101,7 @@
     return a vector of parameter values<span style="font-style: italic;">
       'p' </span>as a function of the axes <span style="font-style:
       italic;">x,y,z...</span> and a <span style="font-style: italic;">signal.
+
 
     </span>This is a character string, vector or a function handle <span
       style="font-style: italic;">p=@Guess(x,y,z, ..., signal)</span>.
@@ -118,6 +120,14 @@
     To print out the <i>equivalent function</i> <i>f(p, x, ...)</i>
     from an object, convert it to a <i>char</i> or <i>cellstr</i>:<br>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iFunc</span>(<span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>)<br>&gt;&gt; char(a)<br>&gt;&gt; cellstr(a)<br></pre>
+    Last, it is possible to define an empty iFunc object, and fill it
+    with Parameters and any Expression, even without actually any
+    mathematical model:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iFunc</span>;<br>&gt;&gt; a.Parameters={<font color="#cc33cc">'Amplitude'</font>,<font color="#cc33cc">'Width'</font>}<br>&gt;&gt; a.Expression=[ <font color="#cc33cc">'[ varargin{:} ]'</font> ];<br></pre>
+    This way, it is possible to define any Matlab function inside an
+    iFunc object. The cell 'varargin' then contains the arguments 2-end,
+    while 'p' contains the first argument.<br>
+    <pre style="margin-left: 40px;">&gt;&gt; a(1,2,3)<br>ans =<br>     2     3<br><br></pre>
     <h4><a class="mozTocH4" name="mozTocId780038"></a> Accessing or
       modifying parameter values</h4>
     <p>Parameters from a model can be accessed in many equivalent ways.
@@ -204,6 +214,7 @@
     <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude</span><br>&gt;&gt; f.Background = [0 1e-4];	<span style="font-style: italic;">% bound its background</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'p(1)/1000'</span>;	<span style="font-style: italic;">% use an expression referring to </span>p(1)=Amplitude<span style="font-style: italic;"> value</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'"Amplitude"/1000'</span>;	<span style="font-style: italic;">% same as above with direct naming of parameters using ""</span><br></pre>
     Alternatively, you can use the <span style="font-weight: bold;">mlock,
 
+
       munlock </span>and <span style="font-weight: bold;">xlim</span>
     methods:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, {<span style="color: rgb(204, 51, 204);">'Amplitude','Background'</span>})	<span style="font-style: italic;">% fix these 2 parameters</span>, same as setting parameters to 'fix' <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f, <span style="color: rgb(204, 51, 204);">'Background'</span>)		<span style="font-style: italic;">% unlock that parameter</span>, same as f.Background='clear'<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f, <span style="color: rgb(204, 51, 204);">   'Background'</span>, [0 1e-3])	<span style="font-style: italic;">% force parameter within range</span>, same as f.Background=[min max]<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f,  <span style="color: rgb(204, 51, 204);">  'Background'</span>, [])		<span style="font-style: italic;">% remove limits constraint</span><br></pre>
@@ -255,8 +266,8 @@
     achieved simply with <span style="font-weight: bold;">unary</span>
     and <span style="font-weight: bold;">binary</span> operators:<br>
     <br>
-    <table style=" text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+    <table style=" text-align: left; width: 100%;" cellpadding="2"
+      cellspacing="2" border="1">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">Unary
@@ -323,6 +334,7 @@
       rgb(255, 0, 0);">';'</span><span style="color: rgb(255, 0, 0);"> </span>character
 
 
+
     catenates the string before/after the Expression of the model. For
     instance the following example does the same as above, explicitly
     setting the new signal value, and the next one displays a text
@@ -360,10 +372,12 @@
     a vector/matrix, <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data=[
 
+
         .... ]</span><br>
     </div>
     a structure with members <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data.Signal
+
 
       </span><br style="font-style: italic;">
       <span style="font-style: italic;">data.Error </span><br
@@ -374,6 +388,7 @@
     </div>
     or a cell <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data={
+
 
         x,y, ... , Signal }</span><br>
       <br>
@@ -406,6 +421,7 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
         - iFit/iFunc objects - $Date: 2013-09-16 10:19:18 +0200 (Lun, 16
         sep 2013) $ $Revision:1.7 $ </span> - back to <a
