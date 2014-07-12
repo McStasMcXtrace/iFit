@@ -64,21 +64,22 @@ end
   p = cellstr(s.Parameters);
   for index=1:length(p)
     line = sprintf('%%      p(%2d)=%s', index, p{index});
-
-    if length(s.Constraint.min) >=index && isfinite(s.Constraint.min(index))
-      this_min = s.Constraint.min(index);
-    else
-      this_min = -Inf;
-    end
-    if length(s.Constraint.max) >=index && isfinite(s.Constraint.max(index))
-      this_max = s.Constraint.max(index);
-    else
-      this_max = Inf;
-    end
-    if length(s.Constraint.fixed) >=index && s.Constraint.fixed(index) ~= 0
-      line = [ line ' (fixed)' ];
-    elseif any(isfinite([this_min this_max]))
-      line = [ line ' in ' mat2str([this_min this_max]) ];
+    if isstruct(s.Constraint)
+        if length(s.Constraint.min) >=index && isfinite(s.Constraint.min(index))
+          this_min = s.Constraint.min(index);
+        else
+          this_min = -Inf;
+        end
+        if length(s.Constraint.max) >=index && isfinite(s.Constraint.max(index))
+          this_max = s.Constraint.max(index);
+        else
+          this_max = Inf;
+        end
+        if length(s.Constraint.fixed) >=index && s.Constraint.fixed(index) ~= 0
+          line = [ line ' (fixed)' ];
+        elseif any(isfinite([this_min this_max]))
+          line = [ line ' in ' mat2str([this_min this_max]) ];
+        end
     end
     ret{end+1} = line;
 
@@ -132,7 +133,7 @@ end
   else
     ret{end+1} = [ '% The Expression, computing signal from ''p'' and axes ' ax(1:(end-1)) ];
     e = s.Expression; 
-    if ischar(e) % split char into lines
+    if ~isempty(e) && ischar(e) % split char into lines
       e = textscan(e,'%s','Delimiter',sprintf('\n\r\f'),'MultipleDelimsAsOne',1); e=e{1};
     end
     has_signal = 0;

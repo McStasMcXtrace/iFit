@@ -112,6 +112,7 @@ for index=1:length(names) % loop on alias names
   name = names{index};
   if length(links) == length(names), link = links{index}; else link=''; end
   if length(labels)== length(names), label= labels{index}; else label=''; end
+  label=validstr(label);
   
   % check that name is not a class member
   if strcmpi(name, fields)
@@ -164,3 +165,11 @@ this = iData_private_history(this, mfilename, this, name, link, label);
 if nargout == 0 && ~isempty(inputname(1))
   assignin('caller',inputname(1),this);
 end
+
+function str=validstr(str)
+  % validate a string as a single line
+  str=strrep(str(:)', sprintf('\n'), ';');
+  index = find(str < 32 | str > 127);
+  str(index) = ' ';
+  str=strrep(str, '''', '''''');
+  str=strrep(str,'\','/');
