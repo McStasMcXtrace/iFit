@@ -7,7 +7,7 @@ if nargin < 2
 end
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,format));
+  out = iData(iLoad(filename,format));   % no post-processing
 else
   out = filename;
 end

@@ -9,8 +9,7 @@ function a=load_vitess_2d(a)
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')
-  a = load(iData,a,mfilename);
-  return
+  a = iData(iLoad(a,mfilename));  % no post-processing
 end
 
 % handle input iData arrays
@@ -20,8 +19,6 @@ if numel(a) > 1
   end
   return
 end
-
-a=iData(a);
 
 % Vitess 2D have:
 % * at least 2 numerical blocks, and we use the last two

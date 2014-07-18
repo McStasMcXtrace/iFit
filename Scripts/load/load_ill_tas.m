@@ -8,8 +8,7 @@ function a=load_ill_tas(a)
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')
-  a = load(iData,a,'ILL TAS');
-  return
+  a = iData(iLoad(a,'ILL TAS'));  % no post-processing
 end
 
 % handle input iData arrays
