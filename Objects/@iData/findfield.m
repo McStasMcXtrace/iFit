@@ -103,12 +103,18 @@ if ~isempty(field)
     matchs = match;
   end
   if strfind(option, 'exact')
-    index = find(strcmp(field, matchs));
-    if isempty(index)
-      % extract last words of 'matchs'
-      m     = find_last_word(matchs);
-      index = find(strcmp(field, m));
+    field = cellstr(field);
+    index = [];
+    for findex=1:length(field)
+      this_index = find(strcmp(field{findex}, matchs));
+      if isempty(this_index)
+        % extract last words of 'matchs'
+        m     = find_last_word(matchs);
+        this_index = find(strcmp(field{findex}, m));
+      end
+      index = [ index this_index ];
     end
+    index = unique(index);
   else
     if iscell(field) && ischar(field{1})
       index = [];
@@ -119,7 +125,7 @@ if ~isempty(field)
       end
       index = unique(index);
     else
-      index = strfind(matchs, field);
+      index = strfind(matchs, field);   % faster
     end
   end
   if ~isempty(index) && iscell(index), index = find(cellfun('isempty', index) == 0); end

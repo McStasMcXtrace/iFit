@@ -3,7 +3,7 @@ function out = opensim(filename)
 %        and set the 'ans' variable to an iData object with its content
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,mfilename));
+  out = iData(iLoad(filename,mfilename)); % no post-processing
 else
   out = filename;
 end

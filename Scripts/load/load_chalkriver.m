@@ -8,8 +8,7 @@ function a=load_chalkriver(a0)
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a0,'iData')
-  a = load(iData,a0,'ChalkRiver');
-  return
+  a0 = iData(iLoad(a0,'ChalkRiver'));  % no post-processing
 end
 
 % handle input iData arrays

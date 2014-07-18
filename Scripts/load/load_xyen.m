@@ -7,8 +7,7 @@ function a = load_xyen(a)
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')
-  a = load(iData,a,mfilename);
-  return
+  a = iData(iLoad(a)); % no post-processing
 end
 
 % handle input iData arrays

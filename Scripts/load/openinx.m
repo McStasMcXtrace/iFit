@@ -3,7 +3,7 @@ function out = openinx(filename)
 %        and set the 'ans' variable to an iData object with its content
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'ILL INX'));
+  out = iData(iLoad(filename,'ILL INX')); % no post-processing
 else
   out = filename;
 end
@@ -14,7 +14,7 @@ if numel(out) > 1
   for index=1:numel(out)
     out(index) = feval(mfilename, out(index));
   end
-elseif isfield(out, 'header') && isfield(out, 'Par') && isfield(out, 'Mat')
+elseif isfield(out.Data, 'header') && isfield(out.Data, 'Par') && isfield(out.Data, 'Mat')
   % the data read with read_inx comes as:
   % s.Data.header: char
   % s.Data.Par:    double with parameters after the header/comment line
@@ -47,7 +47,8 @@ elseif isfield(out, 'header') && isfield(out, 'Par') && isfield(out, 'Mat')
     setaxis(out, 2, 'Angle');
   end
   out.Title   =[ out.Data.header(2,:,1) ' ' out.Title ];
-
+else
+  warning([ mfilename ': The loaded data set ' out.Tag ' from ' out.Source ' is not an ILL INX data format.' ]);
 end
 
 if ~nargout

@@ -3,7 +3,7 @@ function out = openjson(filename)
 %        and set the 'ans' variable to an iData object with its content
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'JSON'));
+  out = iData(filename,'JSON');  % with post-processing
 else
   out = filename;
 end

@@ -44,7 +44,9 @@ end
 if nargin < 3
   allfields = findfield(a);
 end
-if nargin == 3
+if nargin == 1
+  field='';
+elseif nargin == 3
   if isstruct(allfields)
     % we set the field attributes (add to existing ones if any)
     [b, link] = fileattrib(a, field); % get any existing attributes

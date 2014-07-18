@@ -8,7 +8,7 @@ if nargin < 2
 end
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,format));
+  out = iData(iLoad(filename,format));  % no post-processing
 else
   out = filename;
 end
@@ -59,6 +59,8 @@ elseif ~isempty(findstr(out,'Lazy')) || ~isempty(findstr(out,'Crystallographica'
 
   setalias(out,'Error',0);
   out = transpose(out);
+else
+  warning([ mfilename ': The loaded data set ' out.Tag ' from ' out.Source ' is not an McCode LAZ/LAU data format.' ]);
 end
 
 if ~nargout
