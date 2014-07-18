@@ -3,7 +3,7 @@ function out = openpdb(filename)
 %        and set the 'ans' variable to an iData object with its content
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'PDB'));
+  out = iData(filename,'PDB');  % with post-processing
 else
   out = filename;
 end

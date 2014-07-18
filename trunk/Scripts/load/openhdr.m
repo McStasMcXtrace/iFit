@@ -3,7 +3,7 @@ function out = openhdr(filename)
 %        and set the 'ans' variable to an iData object with its content
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'Analyze'));
+  out = iData(iLoad(filename,'Analyze')); % no post-processing
 else
   out = filename;
 end
@@ -29,6 +29,8 @@ elseif isfield(out.Data,'hdr')
   setaxis(out,1,'x');
   setaxis(out,2,'y');
   setaxis(out,3,'z');
+else
+  warning([ mfilename ': The loaded data set ' out.Tag ' from ' out.Source ' is not an HDR/IMG Analyze Mayo Clinic data format.' ]);
 end
 
 if ~nargout

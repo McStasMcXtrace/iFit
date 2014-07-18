@@ -3,7 +3,8 @@ function out = opencdf(filename)
 %        and set the 'ans' variable to an iData object with its content
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'NetCDF'));
+  out = iData(filename,'NetCDF');  % with post-processing
+  return
 else
   out = filename;
 end
@@ -87,3 +88,4 @@ function name = sanitize_name(name)
     name = [ 'x' name ];
   end
   name = regexprep(name ,'_{2,}','_'); % shorten multiple _
+

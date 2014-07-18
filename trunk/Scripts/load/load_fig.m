@@ -7,8 +7,7 @@ function a=load_fig(a0)
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a0,'iData')
-  a = load(iData,a0,'fig');
-  return
+  a =iData(iLoad(a0,'fig')); % no post-processing
 end
 
 % handle input iData arrays

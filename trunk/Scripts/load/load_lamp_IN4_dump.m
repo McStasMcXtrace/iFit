@@ -11,6 +11,10 @@ function a=load_lamp_IN4_dump(a,t)
 % Version: $Revision$
 % See also: iData/load, iLoad, save, iData/saveas
 
+if ~isa(a,'iData')
+  a = iData(iLoad(a));  % no post-processing
+end
+
 % handle input iData arrays
 if numel(a) > 1
   for index=1:numel(a)
@@ -23,6 +27,8 @@ a=iData(a);
 % Find proper labels for Signal and Axis
 
 axes_fields=findfield(a,'Axes_');
+if isempty(axes_fields), return; end
+
 setalias(a,'RAW',axes_fields{1});
 siz=size(a.RAW);
 tof=a.RAW(:,1);

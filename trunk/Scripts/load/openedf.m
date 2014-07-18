@@ -4,7 +4,7 @@ function out = openedf(filename)
 
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'EDF'));
+  out = iData(filename,'EDF');
 else
   out = filename;
 end
