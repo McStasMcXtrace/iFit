@@ -165,8 +165,8 @@
       formats (text, NetCDF, HDF, FITS, images, XML, CSV, ...)<br>
     </h4>
     <span style="font-weight: bold;"> </span>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -502,8 +502,8 @@
     <h4><a class="mozTocH4" name="mozTocId361032"></a>More specific data
       formats (neutrons and X-ray, ...)</h4>
     <span style="font-weight: bold;"> </span>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -648,6 +648,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 href="http://www.ill.eu/instruments-support/instruments-groups/groups/tof/software/inx/">example</a>).
 
 
+
+
+
             This data can also be imported/generated with <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">Lamp</a>.</td>
           <td style="vertical-align: top;"><br>
@@ -700,6 +703,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           </td>
           <td style="vertical-align: top;"><a
               href="http://www.princetoninstruments.com/products/software/#1">Princeton/Roper
+
+
+
 
 
               Scientific WinView</a> / PI Acton image file<br>
@@ -800,6 +806,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
               href="http://www.esrf.fr/computing/Forum/imgCIF/cbf_definition.html">format
 
 
+
+
+
               definition</a>. This format gathers <span
               style="font-style: italic;">CIF</span> and <span
               style="font-style: italic;">imgCIF</span> standards. These
@@ -821,6 +830,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             'hdr' file requires an ssociated 'img' file. <a
               href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Format</a>
             from the Analyze <a href="http://www.analyzedirect.com/">Biomedical
+
+
+
 
 
               Imaging Resource of the Mayo Clinic</a>. </td>
@@ -999,6 +1011,9 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           <td valign="top">LabView <a
               href="http://www.ni.com/white-paper/3727/en/">TDMS </a>hierarchical
 
+
+
+
             technical data file<br>
           </td>
           <td valign="top"><br>
@@ -1009,13 +1024,14 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     <span style="font-weight: bold;"></span> <br>
     <h4><a class="mozTocH4" name="mozTocId149630"></a>Unsupported data
       formats: how to import them anyway ?</h4>
+    <b><i>Text files (ascii)</i></b><br>
     In principle, any <span style="font-weight: bold;">text</span>
     based data format will be imported, whatever be the internal
     organization of the data and comments. The text is read and parsed
-    by the <a href="../Loaders/doc/looktxt.html">looktxt</a> tool, and
-    all numerical blocks are named automatically from the character
-    strings/comments that precede these blocks. The result is a single
-    structure which holds a <span style="font-style: italic;">Data</span>
+    by the <a href="../Libraries/Loaders/doc/looktxt.html">looktxt</a>
+    tool, and all numerical blocks are named automatically from the
+    character strings/comments that precede these blocks. The result is
+    a single structure which holds a <span style="font-style: italic;">Data</span>
     and a <span style="font-style: italic;">Header</span> field, plus
     additional identification information. The structure can be
     converted transparently to an <a href="iData.html">iData</a>
@@ -1033,21 +1049,100 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
       href="Changes.html#mozTocId556618">Changes/Bugs</a> and <a
       href="Install.html#mozTocId359173">Install</a> pages.<br>
     <br>
-    <span style="font-weight: bold;">Binary</span> formats require more
-    work. In principle, if <span style="font-style: italic;">iLoad</span>
-    does not know the structure of the file, there is no way to import
-    an unknown data format file. However, <span style="font-style:
-      italic;">iLoad</span> allows a rapid prototyping of new import
-    filters by mean of a simple routine that should take as input a file
-    name, and return a structure or numerical block. Additionally, a
-    post-process script can be attached to the new format, and executed
-    when the file content is converted into an <span style="font-style:
-      italic;">iData</span> object. The specifications of the new data
-    format will then be inserted inside the <span style="font-style:
-      italic;">iLoad_ini</span> configuration (locally or globally)
-    together with e.g. file extension and other identification info.
-    These steps are detailed in the <a href="#mozTocId519997">section
-      below</a>.<br>
+    You can tune the way a text file is read with the syntax (each
+    option is an argument in its own):<br>
+    <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iLoad</span>(<i>filename</i>, <font color="#cc33cc">'text'</font>, <font color="#cc33cc">'--catenate'</font>,<font color="#cc33cc">'--fast'</font>,<font color="#cc33cc">'--headers'</font>,<font color="#cc33cc">'--wrapped'</font>, <i>... other options</i>);<span style="color: rgb(204, 51, 204);"></span></pre>
+    where 'text' indicates that you explicitly indicate that the file is
+    not binary encoded, and any following options is forwarded to the
+    text reader. The possible options are:<br>
+    <br>
+    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+      <tbody>
+        <tr>
+          <td align="center" valign="top"><i>Text import option</i><i><br>
+            </i></td>
+          <td align="center" valign="top"><i>Description</i><i><br>
+            </i></td>
+        </tr>
+        <tr>
+          <td valign="top"><b><font color="#cc33cc">'--catenate' </font></b></td>
+          <td valign="top">Catenates similar numerical fields (which
+            have similar dimensions and names. <b>Recommended.</b> </td>
+        </tr>
+        <tr>
+          <td valign="top"><b><font color="#cc33cc">'--fast'<br>
+              </font></b></td>
+          <td valign="top">When numerical data blocks only use <a
+              href="file:///cgi-bin/man/man2html?3+isspace">isspace</a>(3)
+            separators (\n \r \f \t \v and space), the reading can be
+            made faster with even lower memory requirements. <b>Recommended.</b></td>
+        </tr>
+        <tr>
+          <td valign="top"><b><font color="#cc33cc">'--headers'<br>
+              </font></b></td>
+          <td valign="top">Extracts <i>headers</i>
+            for each numerical field. <b>Recommended.</b></td>
+        </tr>
+        <tr>
+          <td valign="top"><b><font color="#cc33cc">'--wrapped'<br>
+              </font></b></td>
+          <td valign="top">Catenates single wrapped output lines with
+            previous matrices (e.g. caused by the 80 chars per line
+            limit in old data formats written by fortran codes). <b>Recommended.</b><br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><font color="#cc33cc">'--section=SEC'<br>
+            </font></td>
+          <td valign="top">Classifies fields into <i>sections</i>
+            matching word SEC. This option can be repeated with
+            different SEC words.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><font color="#cc33cc">'--metadata=META'</font><br>
+          </td>
+          <td valign="top">Extracts lines containing word META as user <i>metadata.</i>
+            This option can be repeated with different META items.</td>
+        </tr>
+        <tr>
+          <td valign="top"><font color="#cc33cc">'--makerows=NAME'</font></td>
+          <td valign="top">When a numerical data block label matching
+            NAME is found, it is transformed into a row vector. This may
+            be used for wrapped files (<i>--wrapped</i> option). This
+            option can be repeatedwith as different NAME tokens.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><font color="#cc33cc"><b>'--help'</b></font><br>
+          </td>
+          <td valign="top">Lists all possible options.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    These options can be specified in the 'options' field of an iLoad
+    configuration entry (see below). The same options can also be used
+    when importing directly into an iData object (replace 'iLoad' by
+    'iData' in the example above).<br>
+    <br>
+    <br>
+    <i><b> </b></i><i><b>Binary files</b></i><br>
+    Binary formats require more work. In principle, if <span
+      style="font-style: italic;">iLoad</span> does not know the
+    structure of the file, there is no way to import an unknown data
+    format file. However, <span style="font-style: italic;">iLoad</span>
+    allows a rapid prototyping of new import filters by mean of a simple
+    routine that should take as input a file name, and return a
+    structure or numerical block. Additionally, a post-process script
+    can be attached to the new format, and executed when the file
+    content is converted into an <span style="font-style: italic;">iData</span>
+    object. The specifications of the new data format will then be
+    inserted inside the <span style="font-style: italic;">iLoad_ini</span>
+    configuration (locally or globally) together with e.g. file
+    extension and other identification info. These steps are detailed in
+    the <a href="#mozTocId519997">section below</a>.<br>
     <br>
     The <span style="font-weight: bold;">class2str </span>function can
     more generally write any Matlab variable as a character string. And
@@ -1117,12 +1212,12 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     Let's details one of the <a href="../Loaders/iLoad_ini.m">iLoad_ini</a><span
       style="font-weight: bold;"></span> entry for INX files.<br>
     <br>
-    <table style="text-align: left; width: 70%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 70%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top;">
-            <pre><span style="color: rgb(204, 51, 204);">format14</span>.name       ='INX tof data';<br><span style="color: rgb(204, 51, 204);">format14</span>.extension  ='inx';<br><span style="color: rgb(204, 51, 204);">format14</span>.patterns   ={'INX'};<br><span style="color: rgb(204, 51, 204);">format14</span>.method     ='looktxt';<br><span style="color: rgb(204, 51, 204);">format14</span>.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL';<br><span style="color: rgb(204, 51, 204);">format14</span>.postprocess='load_ill_inx';<span style="color: rgb(204, 51, 204);"></span><br><span style="color: rgb(204, 51, 204);"></span><br><br>(...)<br><br>config.loaders =  { format1, format2, format3, format4, format5, format6, ...<br>	       format7, format8, format9, format10, format11, format12, format13, <span style="color: rgb(204, 51, 204);">format14, </span>format15 };<br></pre>
+            <pre><span style="color: rgb(204, 51, 204);">format14</span>.name       ='INX tof data';<br><span style="color: rgb(204, 51, 204);">format14</span>.extension  ='inx';<br><span style="color: rgb(204, 51, 204);">format14</span>.patterns   ={'INX'};<br><span style="color: rgb(204, 51, 204);">format14</span>.method     ='looktxt';<br><span style="color: rgb(204, 51, 204);">format14</span>.options    ='--headers --fortran  --catenate --fast --comment=NULL';<br><span style="color: rgb(204, 51, 204);">format14</span>.postprocess='load_ill_inx';<span style="color: rgb(204, 51, 204);"></span><br><span style="color: rgb(204, 51, 204);"></span><br><br>(...)<br><br>config.loaders =  { format1, format2, format3, format4, format5, format6, ...<br>	       format7, format8, format9, format10, format11, format12, format13, <span style="color: rgb(204, 51, 204);">format14, </span>format15 };<br></pre>
           </td>
         </tr>
       </tbody>
@@ -1195,6 +1290,9 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
       <li>Edit the <span style="font-style: italic;">iLoad_ini </span>file
 
 
+
+
+
         from <span style="color: rgb(51, 102, 255);">prefdir</span> or
         <span style="color: rgb(51, 102, 255);">ifitpath/Loaders</span>.</li>
       <li>Create a new structure (which you may name as you wish) and
@@ -1220,6 +1318,9 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
+
 
 
           - iFit/Loaders - </span><span style="font-style: italic;">
