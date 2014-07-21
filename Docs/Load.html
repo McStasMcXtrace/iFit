@@ -64,8 +64,8 @@
     <br>
     These commands result in the following output, which produce an
     iData object:<br>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top;">
@@ -146,10 +146,12 @@
     <div style="margin-left: 40px;">[ <span style="color: rgb(204, 51,
         204);">'file#Data'</span> ]&nbsp;&nbsp;&nbsp; <i>&nbsp;&nbsp;&nbsp;
 
+
         &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
         &nbsp;&nbsp;&nbsp; // import only parts which mention Data in
         file </i><br style="color: rgb(204, 51, 204);">
       <span style="color: rgb(204, 51, 204);">'http://path/file.zip#Data'</span>&nbsp;&nbsp;&nbsp;&nbsp;
+
 
       <i>// import only Data in the extracted archive</i><br>
     </div>
@@ -266,6 +268,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           TOF</a>)<br>
       </li>
       <li>ESRF data format (*.edf)</li>
@@ -275,9 +278,11 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           binary file</a> (*.cbf)</li>
       <li><a
           href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">MRI
+
 
 
 
@@ -379,7 +384,14 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     in memory. You will probably need to assign manually some of the
     Signal and Axes (see <a href="iData.html">iData</a> object help).<br>
     <br>
-    It may be that the <span style="font-style: italic;">looktxt</span>
+    If you want to tune the way a text file is read, read the '<a
+      href="Loaders.html#mozTocId149630">Unsupported data formats</a>'
+    section in the Loaders page. You can for instance handle wrapped
+    lines, specific tokens to search for, automatic append mode, ...<br>
+    A typical, usage would be:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(filename, <font color="#cc33cc">'text'</font>,<font color="#cc33cc">'--catenate'</font>,<font color="#cc33cc">'--fast'</font>,<font color="#cc33cc">'--headers'</font>,<font color="#cc33cc">'--wrapped'</font>, <i>... other options</i>);</pre>
+    <br>
+    It may also be that the <span style="font-style: italic;">looktxt</span>
     MeX file is corrupted. Refer to the <a
       href="Changes.html#mozTocId556618">Changes/Bugs</a> and <a
       href="Install.html#mozTocId359173">Install</a> pages.<br>
@@ -463,8 +475,10 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
         See <a
           href="http://www.mathworks.com/matlabcentral/fileexchange/3760">ReadAnalyze</a>&nbsp;
+
 
 
 
@@ -599,6 +613,7 @@ identify
 
 
 
+
     the proper importation method to use.<br>
     <br>
     The text files are processed with the <a
@@ -635,6 +650,7 @@ identify
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
