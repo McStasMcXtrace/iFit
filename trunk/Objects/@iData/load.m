@@ -226,7 +226,7 @@ function this_iData = load_single_file(file, loader, filename)
     % post-processing
     if ~isempty(this_iData)
       if isempty(loader) || ~isfield(loader, 'postprocess')
-        loaders{i}.postprocess='';
+        loader.postprocess='';
       end
       if isempty(loader.postprocess) && isfield(file,'Loader')
         if isfield(file.Loader, 'postprocess')
