@@ -199,8 +199,9 @@ function stop = fminplot(pars, optimValues, state)
   
   updatePlot=clock;
   drawnow
-  
-  set(0, 'CurrentFigure', old_gcf);
+  try
+    set(0, 'CurrentFigure', old_gcf);
+  end % figure may have been closed in the mean time, so be tolerant...
 
 end
 
