@@ -77,7 +77,7 @@ function [name, value] = str2struct_value_pair(this)
 
   nextline = min(find(isstrprop(line, 'alphanum')));
   startline=line(1:nextline);
-  nextline=max(find(startline == '=' | startline == ' ' | startline == ':'));
+  nextline=max(find(startline == '=' | startline == ' ' | startline == ':' | startline == '['));
   if   nextline >= 1, nextline=nextline+1; 
   else name = []; return; end
   line = line(nextline:end);
@@ -88,7 +88,7 @@ function [name, value] = str2struct_value_pair(this)
   name = sanitize_name(name); % private inline (below)
   % handle case where line starts with a number not separated from
   % following text
-  if nextindex <= length(line) &&  ~isspace(line(nextindex))
+  if nextindex <= length(line) &&  ~isspace(line(nextindex)) && line(nextindex) ~= ']'
     value = line; % then a char
   end
   % when value can not be obtained, try with num2str (for expressions)
