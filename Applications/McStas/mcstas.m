@@ -729,8 +729,13 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     % add quick overview of shown monitors
     sim_abstract = 'Monitors:';
     for index=1:numel(sim)
+      try
+          statistics = get(sim(index),'statistics');
+      catch
+          statistics = '';
+      end
       sim_abstract=[ sim_abstract sprintf('\n') '* ' get( sim(index),'Label') ...
-        sprintf(' [I I_err N]=[%g %g %g] %s', get(sim(index),'values'), get(sim(index),'statistics')) ] ;
+        sprintf(' [I I_err N]=[%g %g %g] %s', get(sim(index),'values'), statistics) ] ;
     end
     ud.Parameters = get(sim(1),'Parameters');
     ud.Execute=cmd;
