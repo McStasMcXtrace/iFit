@@ -31,6 +31,11 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   if isfield(EXP,'method')
     if ischar(EXP.method),
       methods = get(findobj(fig, 'Tag','EXP_method'),'String');
+      index   = find(~cellfun('isempty', strfind(methods, EXP.method)));
+      if ~isempty(index)
+          index=index(1);
+          EXP.method = methods(index);
+      end
       EXP.method = find(strcmp(EXP.method, methods));
       if ~isempty(EXP.method), EXP.method = EXP.method-1;
       else EXP.method=0; end
@@ -87,29 +92,36 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   if isfield(EXP,'fx')
     set(findobj(fig,'Tag','EXP_Kf_button'),'Value', (EXP.fx == 2));
     set(findobj(fig,'Tag','EXP_Ki_button'),'Value', (EXP.fx == 1));
-  else
+  elseif isfield(EXP,'infin')
     set(findobj(fig,'Tag','EXP_Kf_button'),'Value', (EXP.infin == -1));
     set(findobj(fig,'Tag','EXP_Ki_button'),'Value', (EXP.infin ==  1));
   end
 
   %-------------------------   Experimental geometry    ------------------------
   % value sm,sa,ss: +1:left, -1=right
-  if     isfield(EXP.mono,  'dir') sm=EXP.mono.dir;
+  sm=[]; sa=[]; ss=[];
+  if     isfield(EXP,'mono') && isfield(EXP.mono,  'dir') sm=EXP.mono.dir;
   elseif isfield(EXP,'mondir')     sm=EXP.mondir;
   else                             sm=1;
   end
   % EXP.dir1/dir2: 1=opposite to previous element, -1=same as previous
-  if isfield(EXP.sample,'dir') ss= EXP.sample.dir;
+  if isfield(EXP,'sample') && isfield(EXP.sample,'dir') ss= EXP.sample.dir;
   elseif isfield(EXP,'dir1')   ss=-sm*EXP.dir1;
   end
-  if isfield(EXP.ana,'dir')    sa= EXP.ana.dir;
+  if isfield(EXP,'ana') && isfield(EXP.ana,'dir')    sa= EXP.ana.dir;
   elseif isfield(EXP,'dir2')   sa=-ss*EXP.dir2;
   end
   % transfer to popup
   % Value Popup: 1=right -> -1 (clock) : 2=left -> +1
-  set(findobj(fig,'Tag','EXP_mono_dir'),  'Value',(sm==-1)+2*(sm==1));
-  set(findobj(fig,'Tag','EXP_sample_dir'),'Value',(ss==-1)+2*(ss==1));
-  set(findobj(fig,'Tag','EXP_ana_dir'),   'Value',(sa==-1)+2*(sa==1));
+  if ~isempty(sm)
+    set(findobj(fig,'Tag','EXP_mono_dir'),  'Value',(sm==-1)+2*(sm==1));
+  end
+  if ~isempty(ss)
+    set(findobj(fig,'Tag','EXP_sample_dir'),'Value',(ss==-1)+2*(ss==1));
+  end
+  if ~isempty(sa)
+    set(findobj(fig,'Tag','EXP_ana_dir'),   'Value',(sa==-1)+2*(sa==1));
+  end
 
   ResLibCal_field2fig(EXP, 'EXP_orient1', fig);
   ResLibCal_field2fig(EXP, 'EXP_orient2', fig);
