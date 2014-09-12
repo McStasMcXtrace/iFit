@@ -53,9 +53,9 @@ function stop = fminplot(pars, optimValues, state)
     % check if user has closed the figure to end the optimization
     h = findall(0, 'Tag', 'fminplot'); d = findall(0, 'Tag', 'fminplot:stop');
     if ((isempty(h) || strncmp(get(d,'String'), 'END', 3)) ...
-      && ~isempty(optimValues) && optimValues.funcount > 5) || strcmp(state, 'abort')
+      && ~isempty(optimValues) && optimValues.funcount > 2) || strcmp(state, 'abort')
       if ~isempty(d)
-        set(d, 'String','ENDING','BackgroundColor','green');
+        set(d, 'String','ENDING','BackgroundColor',[1 .5 0]);
       end
       stop = true;  % figure was closed: abort optimization by user
       return
