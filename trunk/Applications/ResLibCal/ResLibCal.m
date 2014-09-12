@@ -276,10 +276,11 @@ if ~isempty(varargin)
       feval(mfilename, 'update');
     otherwise
       try
+        ResLibCal;
         out = ResLibCal_Open(action, varargin{2:end});
         ResLibCal_EXP2fig(out);
-        out = ResLibCal_Compute(out);
-        ResLibCal_UpdateViews(out); % when they exist
+        out = ResLibCal('compute');
+        ResLibCal_UpdateViews; % when they exist
       catch
         disp([ mfilename ': Unknown action ' action ]);
         out = [];
@@ -288,7 +289,7 @@ if ~isempty(varargin)
     % end if varargin is char
   elseif isstruct(varargin{1}) % an EXP structure ?
     ResLibCal_EXP2fig(varargin{1});
-    out = ResLibCal_Compute(varargin{1});
+    out = ResLibCal_Compute;
     ResLibCal_UpdateViews(out); % when they exist
   end
   % end nargin > 0
