@@ -4,7 +4,7 @@ function [s, f] = std(a, dim)
 %   @iData/std function to compute the standard deviation of objects, that is
 %     their gaussian half width (second moment). Optionally, the distribution  
 %     center (first moment) can be returned as well.
-%   std(a, dim) computes standard deviation along axis of ramk 'dim'.
+%   std(a, dim) computes standard deviation along axis of rank 'dim'.
 %     When omitted, dim is set to 1.
 %   std(a, -dim)
 %     Using a negative dimension will subtract minimum signal value to signal
