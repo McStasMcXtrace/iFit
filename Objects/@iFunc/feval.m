@@ -101,9 +101,10 @@ if ~isempty(p) && ischar(p)
     disp([ mfilename ': Unknown parameter value ' p '. Using "guess" instead.'])
     p=[];
   end
-elseif ~isvector(p) && ~isempty(p)
-  error([ 'iFunc:' mfilename ], [ 'Starting parameters "p" should be given as a vector, structure, character or empty, not ' class(p) ]);
+elseif ~isnumeric(p) && ~isempty(p)
+  error([ 'iFunc:' mfilename ], [ 'Starting parameters "p" should be given as a vector, structure, character or empty, not ' class(p) ' length ' num2str(numel(p))]);
 end
+p = p(:);
 
 % handle varargin ==============================================================
 % handle case where varargin contains itself model cell as 1st arg for axes and

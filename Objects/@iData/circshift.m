@@ -2,7 +2,7 @@ function a=circshift(a, dim, shift)
 % b=circshift(a, rank, shift): shifts the axis of specified rank by a value
 %
 %   @iData/circshift function to shift iData object axes
-%     This is euivalent to a{rank} = a{rank}+shift;
+%     This is equivalent to a{rank} = a{rank}+shift;
 %
 % input:  a:     object or array (iData)
 %         rank:  axis rank (scalar)

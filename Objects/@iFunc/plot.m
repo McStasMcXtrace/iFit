@@ -115,6 +115,7 @@ elseif ndims(signal) == 2
   view(3)
   set(h,'EdgeColor','None');
 elseif ndims(signal) == 3
+  if all(cellfun(@isvector, ax)), [ax{:}]=meshgrid(ax{:}); end
   h =patch(isosurface(ax{2}, ax{1}, ax{3}, signal, mean(signal(:))));
   set(h,'EdgeColor','None','FaceColor','green'); alpha(0.7);
   light
