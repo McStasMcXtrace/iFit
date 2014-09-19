@@ -164,6 +164,8 @@ else   % import data to create a single object
     elseif isfield(this, 'Name'),        a.Name=this.Name; end
     if isfield(this, 'Description'),     a.Description=this.Description; end
     if isfield(this, 'Constraint'),      a.Constraint=this.Constraint; end
+    if isfield(this, 'Dimension'),       a.Dimension=this.Dimension; end
+    if isfield(this, 'ParameterValues'), a.ParameterValues=this.ParameterValues; end
     
   elseif isa(this, 'function_handle') % --------------------------------------
     a = iFunc;  % empty object
@@ -308,7 +310,7 @@ function a = iFunc_private_check(a)
     NL = sprintf('\n');
     if ~isempty(pars)
       % check if the number of parameters used in the expression matches the parameter names
-      if length(pars) ~= nb_pars
+      if nb_pars && length(pars) ~= nb_pars
         fprintf(1, [ '%s: Warning: iFit model ''%s''' NL ...
                      '    ''%s''' NL ...
                      '  The apparent number of parameters %d used in the expression p(1:%d) is not' NL ...
@@ -317,16 +319,17 @@ function a = iFunc_private_check(a)
 
         % pars = []; % will guess parameter names
       end
+      nb_pars = length(pars);
     end
     
     if ~isempty(a.Guess) && ~isa(a.Guess, 'function_handle')
       % check if the number of parameters used in the expression matches the parameter default values
-      if ~ischar(a.Guess) && length(a.Guess) ~= nb_pars
+      if ~ischar(a.Guess) && numel(a.Guess) ~= nb_pars
         fprintf(1, [ '%s: Warning: iFit model ''%s''' NL ...
                      '    ''%s''' NL ...
                      '  The number of parameters %d used in the expression' NL ...
                      '  may not be the same as the number of default parameter values %d\n' ], ...
-                     mfilename, a.Tag, expr, nb_pars, length(a.Guess));
+                     mfilename, a.Tag, expr, nb_pars, numel(a.Guess));
       end
     end
     
@@ -381,7 +384,8 @@ function a = iFunc_private_check(a)
     e = strrep(e, ';;','; ');
     a.Expression = cellstr(e);
   end % else keep function handle value
-  a.Dimension  = dim;
+
+  if (~a.Dimension) && dim > 0, a.Dimension  = dim; end
 
   % default parameter names
   % try to be clever by an analysis of the expression...
@@ -439,8 +443,8 @@ function a = iFunc_private_check(a)
   end
   a.Parameters      = pars;
   if ~isempty(val)
-    if length(pars) ~= length(val)
-      fprintf(1,'%s: model %s: the number of model parameter values %d does not match the number of parameter names %d.\n', mfilename, a.Tag, length(val), length(pars));
+    if numel(pars) ~= numel(val)
+      fprintf(1,'%s: model %s: the number of model parameter values %d does not match the number of parameter names %d.\n', mfilename, a.Tag, numel(val), length(pars));
       val = zeros(size(pars));
     end
     a.ParameterValues = val;
