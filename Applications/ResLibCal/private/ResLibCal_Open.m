@@ -14,12 +14,12 @@ function EXP = ResLibCal_Open(filename, EXP)
 
   if nargin < 1, filename = ''; end
   if nargin < 2, EXP = []; end
-  if isempty(filename)
+  if isempty(filename) || isdir(filename)
     [filename, pathname] = uigetfile( ...
        {'*.m;*.ini',  'ResLibCal configuration M-file (*.m;*.ini)'; ...
         '*.cfg;*.par;*.res','ResCal5 configuration (*.par;*.cfg;*.res)' ; ...
         '*.*',  'All Files, including ILL TAS Data (*.*)'}, ...
-        'Open configuration as ResLibCal, ResCal, ILL TAS Data, ...');
+        'Open configuration as ResLibCal, ResCal, ILL TAS Data, ...', filename);
     if isempty(filename) || all(filename == 0), return; end
     filename = fullfile(pathname, filename);
   end
@@ -61,12 +61,17 @@ function EXP = ResLibCal_Open(filename, EXP)
 
   % evaluate it to get 'EXP'
   if isstruct(EXP)
+    if isstruct(config) && isfield(config, 'Title')
+      titl = config.Title;
+    else
+      titl = 'ResLibCal';
+    end
     % send it to the figure
     try
       ResLibCal_EXP2fig(EXP); % open figure if not yet done
       % force full update of all fields
       ResLibCal('update_d_tau_popup');
-      disp([ '% Loaded ResLibCal configuration from ' filename ]);
+      disp([ '% Loaded ' titl ' configuration from ' filename ]);
     catch
       warning([ '% Could not load ResLibCal configuration ' filename ]);
       rethrow(lasterror)

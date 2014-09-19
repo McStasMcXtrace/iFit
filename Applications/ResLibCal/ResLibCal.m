@@ -89,6 +89,10 @@ if ~isempty(varargin)
       if length(varargin) < 1, varargin{2} = ''; end
       if length(varargin) < 2, varargin{3} = EXP; end
       out = ResLibCal_Open(varargin{2:end});  % (filename, EXP)
+      out = ResLibCal('update');
+    case 'file_open_instr'
+      p = fileparts(which(mfilename));
+      ResLibCal('open',[ p filesep 'instruments' ]);
     case {'file_reset','reset'}
       filename = fullfile(prefdir, 'ResLibCal.ini');
       if ~exist(filename, 'file')
@@ -207,6 +211,7 @@ if ~isempty(varargin)
         if strcmp(action, 'create')
           filename = fullfile(prefdir, 'ResLibCal.ini');
           out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
+          out = ResLibCal('compute');
         end
       elseif length(fig) > 1
         delete(fig(2:end)); % remove duplicated windows
@@ -230,7 +235,7 @@ if ~isempty(varargin)
       if isempty(fig)
         filename = fullfile(prefdir, 'ResLibCal.ini');
         out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
-        out = ResLibCal_Compute(out);
+        ResLibCal_UpdateViews; % when they exist
       else
         out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
       end
