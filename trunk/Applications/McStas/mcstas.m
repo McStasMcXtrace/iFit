@@ -87,8 +87,10 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %           options.optimizer: function name of the optimizer to use (string or function handle)
 %           options.OutputFcn: monitors the scan/optimization process on a plot (string)
 %         as well as other optimizer options such as
-%           options.TolFun ='0.1%'   stop when criteria changes are smaller that 0.1%
-%           options.Display='final'
+%           options.TolFun ='0.1%'  stop when criteria changes are smaller that 0.1%
+%           options.Display='final' set the verbosity level during optimization
+%           options.mcrun:          set the executable path to 'mcrun' or 'mxrun'
+%           options.mcdisplay:      set the executable path to 'mcdisplay' or 'mxdisplay'
 %
 % output:  OPTIMUM is the parameter set that maximizes the instrument output, or
 %            the integral monitor values for the simulation (as iData object)
@@ -187,6 +189,22 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
       options.ncount    = 1e6;
     end
   end
+  
+  % set executables
+  if ispc % special case for windows
+    ext = '.pl';
+  else
+    ext = '';
+  end
+  
+  if ~isfield(options,'mcrun')
+    options.mcrun = [ prefix 'run' ext ];
+  end
+  if ~isfield(options,'mcdisplay')
+    options.mcdisplay = [ prefix 'display' ext ];
+  end
+  
+  
   % force compile before going further ?
   if  isfield(options,'compile') & (options.compile | strcmp(options.compile,'yes'))
     ncount         = options.ncount;
@@ -465,9 +483,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   
   % launch simulation with mcrun/mxrun or mcdisplay/mxdisplay
   if any(strcmpi(options.mode,{'optimize','simulate','info'}))
-    cmd = [ prefix 'run ' options.instrument ];
+    cmd = [ options.mcrun ' ' options.instrument ];
   elseif any(strcmpi(options.mode,{'display','trace'}))
-    cmd = [ prefix 'display -pMatlab --save ' options.instrument ];
+    cmd = [ options.mcdisplay ' -pMatlab --save ' options.instrument ];
     options.ncount=0;
   end
   
