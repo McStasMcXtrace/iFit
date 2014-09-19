@@ -13,7 +13,7 @@ function out = ResLibCal_Compute(EXP)
 
   if nargin == 0, EXP = ''; end
   
-  out.Title  = 'ResLibCal configuration';
+  out.Title  = 'ResLibCal';
   
   if ~isstruct(EXP)
     % extracts configuration

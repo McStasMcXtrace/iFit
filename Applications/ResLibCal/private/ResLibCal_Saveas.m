@@ -118,7 +118,8 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
 		  str = sprintf('%s\n', str{:});
 			description = 'ResTrax legacy';
 			disp('WARNING: the generated ResTrax file does not contain the full configuration');
-    else
+    else % INI configuration file
+      
       NL = sprintf('\n');
       str = [ '% ResLibCal configuration script file ' NL ...
             '%' NL ...
@@ -129,6 +130,7 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
             '% If you ever edit this file manually, please modify "config" rather than "config.ResCal".' NL ...
             class2str('config', EXP) ];
       description = 'ResLibCal (Cooper-Nathans+Popovici)';
+
     end
     
     [fid, message]=fopen(filename,'w+');
