@@ -197,6 +197,12 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     ext = '';
   end
   
+  if options.particle == 'x'
+    prefix = 'mx';
+  else
+    prefix = 'mc';
+  end
+  
   if ~isfield(options,'mcrun')
     options.mcrun = [ prefix 'run' ext ];
   end
@@ -474,12 +480,6 @@ end % system_wait
 
 function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, ind)
 % inline function to compute a single simulation, or a vector of simulations (recursive calls)
-
-  if options.particle == 'x'
-    prefix = 'mx';
-  else
-    prefix = 'mc';
-  end
   
   % launch simulation with mcrun/mxrun or mcdisplay/mxdisplay
   if any(strcmpi(options.mode,{'optimize','simulate','info'}))
