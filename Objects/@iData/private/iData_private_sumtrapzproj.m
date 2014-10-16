@@ -39,8 +39,8 @@ if any(strcmp(op, {'sum','cumsum','prod','cumprod','trapz','cumtrapz'}))
   a = meshgrid(a, 'vector');
 end
 
-s = get(a,'Signal');
-e = get(a,'Error'); 
+s = get(a,'Signal');  % raw Signal (no Monitor weight)
+e = get(a,'Error');   % raw Error  (no Monitor weight)
 m = iData_private_cleannaninf(get(a,'Monitor'));
 
 % take into account the Monitor
@@ -59,12 +59,16 @@ if any(dim == 0) && ~strcmp(op, 'sum')
   dim=1:ndims(a);
 end
 
+% in the following, we have e.g. e=e/m; s=s/m;
 if all(dim > 0)
   % compute new object: op(Signal/Monitor) op(Error/Monitor)
   switch op
   case {'sum','cumsum'} % SUM ==================================================
-    % sum on all dimensions requested
-    e=e.^2;
+    % sum on all requesteddimensions 
+
+    % integral is: sum(Signal/Monitor)              =sum(s)
+    % error bar:   sigma=sqrt(sum(Error2/Monitor2)) =sqrt(sum(e2))
+    e=e.^2; 
     for index=1:numel(dim)
       if dim(index) == 1 && isvector(s)
         s = s(:); e=e(:); m=m(:);
@@ -79,7 +83,7 @@ if all(dim > 0)
     setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
   case {'prod','cumprod'} % PROD ===============================================
-    % product on all dimensions requested
+    % product on all requested dimensions 
     for index=1:numel(dim)
       if dim(index) == 1 && isvector(s)
         s = s(:); e=e(:); m=m(:);
@@ -94,6 +98,10 @@ if all(dim > 0)
     setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
     
   case {'trapz','cumtrapz'} % TRAPZ ============================================
+
+    % integral is: trapz(Signal/Monitor)              =trapz(s)
+    % error bar:   sigma=sqrt(trapz(Error2/Monitor2)) =sqrt(trapz(e2))
+    
     e=e.^2;
 
     for index=1:numel(dim)
