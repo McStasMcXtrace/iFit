@@ -182,7 +182,7 @@ function [A,Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP)
     c     = sqrt(sum(vv.*vv));
 
     vv    = vv./repmat(c,[3 1]);
-    s     = vv'*bb;
+    s     = vv*bb;
     qt    = [h k l ]*s';
     qs    = sum(qt.*qt); Q=sqrt(qs);
     
@@ -196,8 +196,7 @@ function [A,Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP)
     thetas=ss*0.5*acos((ki^2+kf^2-Q^2)/(2*ki*kf)); % scattering angle from sample.
 
     A3 = -atan2(qt(2),qt(1)) ...
-         -acos( (kf*kf-Q*Q-ki*ki)/(-2*Q*ki) );
-    A3 = ss*A3;
+         -ss*acos( (kf*kf-Q*Q-ki*ki)/(-2*Q*ki) );
   
     A1=thetam; A2=2*A1; A4=2*thetas; A5=thetaa; A6=2*A5;
     
