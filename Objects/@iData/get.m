@@ -5,8 +5,11 @@ function [varargout] = get(this,varargin)
 %   get(s) displays all property names and their current values for
 %     the iData object 's'.
 %   get(s,'PropertyName',...) returns only particular properties.
-%     the PropertyName may also be an object Alias or an Axis
-%   Input 's' can be a single iData or a iData array
+%     the PropertyName may also be an object Alias or an Axis.
+%   Input 's' can be a single iData or a iData array.
+%
+%   To get the Signal/Monitor, rather use getaxis(s, 'Signal') or s{0}
+%              Error/Monitor              getaxis(s, 'Error')
 %
 % input:  s: object or array (iData)
 %         PropertyName: name of Property to search (char)

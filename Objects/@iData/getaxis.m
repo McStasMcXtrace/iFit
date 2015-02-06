@@ -8,9 +8,11 @@ function [val, lab] = getaxis(s,ax)
 %     the value of the axis is returned.
 %   when the axis input parameter is given as a string/name (e.g. '1' or 'x') 
 %     the corresponding axis definition is returned.
+%
 %   The Signal/Monitor corresponds to axis rank 0, and can also be accessed with
 %     getaxis(a, 'Signal') and a{0}.
 %   The Error/Monitor can also be accessed with getaxis(a, 'Error').
+%
 %   Axis 1 is often labelled as 'y' (rows, vertical), 2 as 'x' (columns, horizontal).
 %   The special syntax s{0} gets the signal/monitor only (same as double(s)), 
 %     and s{n} gets the axis of rank n.
