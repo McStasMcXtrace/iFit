@@ -101,8 +101,10 @@
           href="http://en.wikipedia.org/wiki/Propagation_of_error">propagate
 
 
+
           the <span style="font-style: italic;">Error</span></a>
         together with the <span style="font-style: italic;">Signal, </span>assuming
+
 
 
         Error distributions are Gaussian. The sections below detail the
@@ -112,6 +114,7 @@
         operation. The <span style="font-style: italic;">Monitor</span>
         value is also affected by Mathematical operations that
         renormalize the <span style="font-style: italic;">Signal. </span>The
+
 
         <span style="font-style: italic;">Monitor</span> is usually a
         value larger than 1.<span style="font-style: italic;"><br>
@@ -133,6 +136,7 @@
     <div style="margin-left: 40px;"><span style="font-style: italic;">new
 
 
+
         Error = Error.f'(Signal)</span>. <br>
       <br>
     </div>
@@ -140,6 +144,7 @@
     approximation is obtained using<br>
     <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">new
+
 
 
         Error = f(Signal + ½Error) - f(Signal - </span><span
@@ -490,6 +495,7 @@
               href="http://en.wikipedia.org/wiki/Fourier_transform">Fourier
 
 
+
               transform</a> (see <a href="#mozTocId401065">below</a>)<br>
           </td>
         </tr>
@@ -516,6 +522,7 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Continuous_wavelet_transform">Continuous
+
 
 
               wavelet transform</a> (see <a href="#mozTocId663052">below</a>)<br>
@@ -604,6 +611,7 @@
           </td>
           <td style="vertical-align: top;">&#8747;<sub>0</sub><sup>x</sup>(Signal)</td>
           <td style="vertical-align: top;">&#8730;&#8747;<sub>0</sub><sup>x</sup>(Error²)
+
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -638,6 +646,7 @@
               href="http://en.wikipedia.org/wiki/Image_segmentation">Data
 
 
+
               segmentation</a> (<a
               href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a>)<br>
           </td>
@@ -655,6 +664,7 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Principal_component_analysis">Principal
+
 
 
               component analysis</a><br>
@@ -726,6 +736,7 @@
     The plot on the side shows that the two sine components are
     identified (the FFT is shown in modulus), and the FFT<sup>-1</sup>(FFT)
 
+
     is indeed the initial signal (within the computation
     approximations).<br>
     <br>
@@ -740,6 +751,7 @@
       href="http://en.wikipedia.org/wiki/Continuous_wavelet_transform">continuous
 
 
+
       wavelet transform</a> of a data set. It corresponds to the
     decomposition of the signal along a wavelet basis function set, that
     is a multi-scale analysis of the signal along an axis. In the
@@ -752,6 +764,7 @@
     The period axis is here shown in log10 scale of the initial axis
     (degrees) and corresponds to the width of the wavelet. <br>
     <span style="text-decoration: underline;">Reference: </span>Grinsted,
+
 
 
     A., Moore, J.C., Jevrejeva, S. (2004) Application of the cross
@@ -807,11 +820,13 @@
 In
 
 
+
     case the axis sampling/binning is not regular, a rebinning is
     automatically performed.<br>
     <br>
     Finally the <span style="font-weight: bold;">jacobian</span>
     operator (see <a href="http://en.wikipedia.org/wiki/Jacobian">Jacobian
+
 
 
       definition</a>) enables to perform a variable change in the
@@ -831,6 +846,7 @@ In
 X,
 
 
+
         Y) = [ dY</span><sub style="font-style: italic;">i</sub><span
         style="font-style: italic;">/dX</span><sub style="font-style:
         italic;">i</sub><span style="font-style: italic;"> ]</span><sub
@@ -843,6 +859,7 @@ X,
     <br>
     <div style="text-align: center;"><span style="font-style: italic;">b&nbsp;
 =
+
 
 
         a | dY/dX |</span><br>
@@ -862,14 +879,17 @@ X,
       <li>s1, e1 and m1 are the <span style="font-style: italic;">Signal,
 
 
+
           Error</span> and <span style="font-style: italic;">Monitor</span>
         of the 1st object, resp.</li>
       <li>s2, e2 and m2 are the <span style="font-style: italic;">Signal,
 
 
+
           Error</span> and <span style="font-style: italic;">Monitor</span>
         of the 2nd object, resp.</li>
       <li>s3, e3 and m3 are the <span style="font-style: italic;">Signal,
+
 
 
           Error</span> and <span style="font-style: italic;">Monitor</span>
@@ -1057,6 +1077,7 @@ X,
               href="http://en.wikipedia.org/wiki/Cross-correlation">cross
 
 
+
               correlation</a> (see&nbsp;<a href="#mozTocId880437">below)</a></td>
         </tr>
         <tr>
@@ -1092,6 +1113,7 @@ X,
           </td>
           <td style="vertical-align: top;"><a
 href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson
+
 
 
               correlation coefficient</a> <br>
@@ -1143,6 +1165,7 @@ operations,
 otherwise
 the
 intersection
+
 
 
     may be empty, or the corresponding <span style="font-style:
@@ -1209,6 +1232,7 @@ intersection
 href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson
 
 
+
       product-moment correlation coefficient</a>, which measures the
     similarity between two data sets. It returns a measure of the
     similarity between data sets (1=equal, 0=non correlated,
@@ -1220,6 +1244,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     axis sampling. A coarse axis sampling (that is a reduced number of
     points under a peak, e.g. less than 5) must be avoided. A rebinning
     of the objects using e.g. <span style="font-style: italic;">interp(objects,
+
 
 
       5)</span> may solve such issue.<br>
@@ -1357,6 +1382,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
       href="http://en.wikipedia.org/wiki/Principal_component_analysis">principal
 
 
+
       component analysis</a> (PCA) methodology consists in finding
     similarities between data sets. Groups of 'close' data sets can then
     be defined. The corresponding iData method is <span
@@ -1407,6 +1433,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     <br>
     <div style="margin-left: 40px;"><span style="color: rgb(51, 102,
         255);">trapz</span>(a) = &#8747; <span style="font-style: italic;">Signal</span>(rank
+
 
       axis) <span style="font-style: italic;">dx</span><br>
     </div>
@@ -1486,6 +1513,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     ...). This means that combining two data sets is usually more
     complex than just adding the two <span style="font-style: italic;">Signals,
 
+
     </span>especially when axes are not exactly the same and <span
       style="font-style: italic;">Monitors</span> are not equivalent.<br>
     <br>
@@ -1539,6 +1567,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     a shortcut for <span style="font-style: italic;">combine, </span>so
 
 
+
     that <span style="font-style: italic;">combine(a,b)</span> is the
     same as <span style="font-style: italic;">a\b</span>.<br>
     <h4>Gluing an object content inside an other one</h4>
@@ -1552,7 +1581,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
       slicing data sets</h3>
     An other way to make use of a set of data from a series of
     acquisitions is to append them one after the other. This operation,
-    also referred as <span style="font-style: italic;">catenation</span>,
+    also referred as <span style="font-style: italic;">concatenation</span>,
     may be performed along an existing dimension (one after the other),
     or along a new dimension (side by side), which then increases the
     object dimensionality. The operator used here is <span
@@ -1562,14 +1591,14 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
         title="iData cat (append)" src="images/iData_cat.png"
         style="border: 0px solid ; width: 164px; height: 300px;"
         align="right"></a>In the following example, the object <span
-      style="font-style: italic;">d</span> is the catenation of 4
+      style="font-style: italic;">d</span> is the concatenation of 4
     objects<span style="font-style: italic;"> [a b c d]</span>,
-    sequentially. The catenation of the 4 axes in '<span
+    sequentially. The concatenation of the 4 axes in '<span
       style="font-style: italic;">d</span>' is the repetition of the
     initial axis. We then create an '<span style="font-style: italic;">f</span>'
     object for which the axis is reset to the default, showing indeed
-    the catenation of objects. Last, we assemble the same data set side
-    by side onto a new dimension, creating a surface '<span
+    the concatenation of objects. Last, we assemble the same data set
+    side by side onto a new dimension, creating a surface '<span
       style="font-style: italic;">g</span>'.<br>
     <pre style="margin-left: 40px;">&gt;&gt; x=-pi:0.01:pi; a=<span style="color: rgb(51, 102, 255);">iData</span>(x,x); <br>&gt;&gt; a.Error=0;                         <span style="font-style: italic;">% replace default Error=sqrt(Signal) by no-error.</span><br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">sin</span>(a); c=<span style="color: rgb(51, 102, 255);">cos</span>(a); d=<span style="color: rgb(51, 102, 255);">exp</span>(-a.*a);  <span style="font-style: italic;">% create new objects by applying operator on the initial linear one</span><br>&gt;&gt; e=<span style="color: rgb(51, 102, 255);">cat</span>(1, [a b c d ]);              <span style="font-style: italic;">% catenate along all X axes, result is a single vector</span><br>&gt;&gt; f=<span style="color: rgb(51, 102, 255);">copyobj</span>(e);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">rmaxis</span>(f,1);                       <span style="font-style: italic;">% reset object axis to the default</span><br>&gt;&gt; g=<span style="color: rgb(51, 102, 255);">cat</span>(2, [a b c d]);               <span style="font-style: italic;">% append objects side-by-side onto new dimension</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([e f g],<span style="color: rgb(204, 51, 204);">'tight'</span>)           <span style="font-style: italic;">% plot all</span><br>&gt;&gt; h=<span style="color: rgb(51, 102, 255);">dog</span>(2, g);                       <span style="font-style: italic;">% back to [a b c d] with 'dog'</span><br></pre>
     <a href="images/Baby-Pluto.jpg"><img alt="iData: cat and dog"
@@ -1581,6 +1610,11 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     array with as many elements as the length of this dimension. This is
     the opposite to the <span style="font-style: italic;">cat</span>
     (of course !).<br>
+    <br>
+    To extract a slice out of an object, the usual array indices
+    selection is effective:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = a(10, :);	<i>	</i><i>% row 10</i><br>&gt;&gt; c = a([ 5 7 ], 1:2:end);	<i>% rows 5 and 7, one every 2 columns</i><br></pre>
+    <br>
     <br>
     <h3><a class="mozTocH3" name="mozTocId831526"></a>Creating arrays of
       objects</h3>
@@ -1684,6 +1718,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
           href="http://en.wikipedia.org/wiki/Discrete_cosine_transform">discrete
 
 
+
           cosine transform</a>) to make a fast rebinning, that is change
         the number of elements on each dimension/rank, but preserve the
         data set meaning. <br>
@@ -1694,6 +1729,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
         <span style="text-decoration: underline;">Reference:</span>
         Narasimha M. et al, <a
           href="http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1094144">On
+
 
 
           the computation of the discrete cosine transform</a>, IEEE
@@ -1740,6 +1776,7 @@ href="http://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter_for_smoothing_a
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
         - iFit/Math operators -&nbsp;</span><span style="font-style:
