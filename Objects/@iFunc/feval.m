@@ -104,7 +104,9 @@ if ~isempty(p) && ischar(p)
 elseif ~isnumeric(p) && ~isempty(p)
   error([ 'iFunc:' mfilename ], [ 'Starting parameters "p" should be given as a vector, structure, character or empty, not ' class(p) ' length ' num2str(numel(p))]);
 end
-p = p(:);
+if ~ischar(p)
+  p = p(:);
+end
 
 % handle varargin ==============================================================
 % handle case where varargin contains itself model cell as 1st arg for axes and

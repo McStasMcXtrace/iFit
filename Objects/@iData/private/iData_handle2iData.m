@@ -6,7 +6,9 @@ function out=iData_handle2iData(in)
   catch
     t=[]; end
   if isempty(t), t=get(in,'Tag'); end
-  if isempty(t), t=num2str(in); end
+  if isempty(t), 
+      t=num2str(double(in)); 
+  end
   if strcmp(get(in,'type'),'hggroup')
     t = [ 'figure ' t ];
     h = get(in,'Children');
