@@ -47,7 +47,7 @@ failed      = 0;
 % for each file, evaluate it, and get result 'OK','FAILED' 
 % or last error with line nb and file
 for index=1:length(tests_list)
-  
+
   [p,f,e] = fileparts(tests_list{index});
   if exist(f) ~= 2 || strcmp(f, mfilename) || ~strcmp(e, '.m')
     continue; % only for valid M-files
@@ -80,12 +80,11 @@ for index=1:length(tests_list)
   
   % store result and update wait bar
   status{index} = result;
-  close all
+
   if length(tests_list) > 1
     if ~ishandle(h), break; end % user closed the wait bar -> abort tests
     waitbar(index/length(tests_list), h, ...
-        [ 'iFit test: ' tests_list{index} ' (close to Abort)' ],...
-        'Name','iFit: test running...');
+        [ 'iFit test: ' tests_list{index} ' (close to Abort)' ]);
     if any(strncmp(status{index},{'FAILE','ERROR'},5))
       if ishandle(h)
         set(h, 'Color','magenta');

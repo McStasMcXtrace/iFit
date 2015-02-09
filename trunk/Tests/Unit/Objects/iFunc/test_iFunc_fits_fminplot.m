@@ -7,7 +7,7 @@ function result = test_iFunc_fits_fminplot
   % p=[ 0.6263    1.0008   -0.0037    0.0002 ]
   b = a(gauss, p);
   figure; plot([ a b ]);
-  
+  close(gcf);
   if max(a-b)/mean(get(a,'Monitor')) < 0.1
     result = [ 'OK     ' mfilename ];
   else

@@ -113,7 +113,7 @@ for i=1:nargin
     val=varargin{i};
     if(ischar(val)),
         filename=val;
-    elseif(isnumeric(val)),
+    elseif(isnumeric(val) || ishandle(val)),
         haxis=val;
     elseif(isstruct(val)), 
         options=val;
