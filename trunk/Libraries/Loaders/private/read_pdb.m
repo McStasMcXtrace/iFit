@@ -173,7 +173,11 @@ while not(feof(FID))  % read and store PDB co-ordinates line by line
 end
 
 fclose(FID);
+if number_of_residues == 0
+  error([ mfilename ': ' name ': not a PDB file format.' ])
+end
 fprintf(1, '%s: %s: Read %i Residues\n', mfilename, name, number_of_residues);
+
 if ~isempty(unknown_residues)
   fprintf(1,'  Unknown residues found in PDB file:\n')
   disp(unique(unknown_residues))

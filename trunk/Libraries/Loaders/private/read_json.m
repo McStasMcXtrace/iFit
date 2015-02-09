@@ -1,8 +1,11 @@
 function M=read_json(J)
   M = json2mat(J);
+  if ~isstruct(M) && ~isnumeric(M)
+    M = [];
+  end
 
-function json2mat(J, tag)
-%JSON2MAT converts a javscript data object (JSON) into a Matlab structure
+function M = json2mat(J, tag)
+%JSON2MAT converts a javascript data object (JSON) into a Matlab structure
 %         using s recursive approach. J can also be a file name.
 %
 %Example: lala=json2mat('{lele:2,lili:4,lolo:[1,2,{lulu:5,bubu:[[1,2],[3,4],[5,6]]}]}')
