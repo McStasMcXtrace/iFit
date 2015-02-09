@@ -6,14 +6,9 @@ function iData_plot_contextmenu(a, h, xlab, ylab, zlab,  T, S, d, cmd)
 % internal functions must be avoided as it uses LOTS of memory
 uicm = uicontextmenu; 
 % menu About
-if isfloat(gcf)
-  num = gcf;
-else
-  num = get(gcf,'Number');
-end
 uimenu(uicm, 'Label', [ 'About ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ' ...' ], ...
   'Callback', [ 'msgbox(getfield(get(get(gco,''UIContextMenu''),''UserData''),''properties''),' ...
-                '''About: Figure ' num2str(num) ' ' T ' <' S '>'',' ...
+                '''About: Figure ' num2str(double(gcf)) ' ' T ' <' S '>'',' ...
                 '''custom'',getfield(getframe(gcf),''cdata''), get(gcf,''Colormap''));' ] );
 
 % menu Toggle error bars (1D object)

@@ -1,77 +1,75 @@
-function vrml(h,filename)
-% VRML Save graphics to VRML 2.0 file.
-%   VRML(H,FILENAME) saves a VRML 2.0 file containing the object
+function vrml(h, filename, opts)
+% VRML Save graphics to VRML 97 file.
+%
+%   VRML(H, FILENAME) saves a VRML 97 file containing the object
 %   with handle H and its descendants.
 %   If the FILENAME does not include an extension, ".wrl" is
 %   appended.  If a file with the name FILENAME exists, it is
-%   overwritten. 
+%   overwritten.
+%
 %   VRML(H) saves H and its descendants to the file "matlab.wrl".
 %
-%   VRML files can be viewed using a VRML 2.0 plug-in in a browser.
-%   There are several plug-ins available.  A web search for "vrml client"
-%   will bring up several options.
+%   VRML(H, FILENAME, 'noedgelines') saves the object so that any edge lines 
+%   of Patch objects are not saved in the resulting VRML file.
 %
-%   IMPORTANT NOTICE:
-%   If you have a VRML 1.0 plugin it will read a VRML 2.0 file 
-%   without a problem but it will NOT display anything. Please make
-%   sure you have a VRML 2.0 plugin
-%   
 %   Note that there are rendering differences between MATLAB and the
-%   plug-ins. Some of these differences are due to VRML 2.0 spec
-%   features that are not implemented by the plug-ins.  Others are due
+%   VRML viewers. Some of these differences are due to VRML 97 spec
+%   features that are not implemented by the viewers.  Others are due
 %   to features not implemented by vrml.m. In some cases some features
-%   provided by MATLAB are not part of the VRML 2.0 spec. For details on
-%   features supported by different plug-ins, please refer to the vendors' 
+%   provided by MATLAB are not part of the VRML 97 spec. For details on
+%   features supported by different viewers, please refer to the vendors'
 %   release notes.
 %
-%   Some of the most notable features NOT supported by CosmoPlayer:
-%      Color interpolation.
-%      Text.
-%      
 %   The following MATLAB features are not supported by vrml.m
 %      Texturemapping.
 %      Axes tickmarks.
-%      'Box' property.  (It is always set to on).
+%      Axes 'Box' property.  (It is always set to on).
 %      X,Y,Z Dir property of axes.
 %      Markers.
 %      Transparent NaN's.
-%      Truecolor CData
 %
-%   These MATLAB features are not in the VRML2.0 spec.
-%      linestyles in VRML 2.0.
-%      orthographic projections.
+%   These MATLAB features are not in the VRML 97 spec.
+%      Linestyles.
+%      Orthographic projections.
 %      Phong and Gouraud lighting.
 %      'Stitching' of edgelines on patch and surface objects.
 
-%   Copyright 2012 The MathWorks, Inc.
+%   Copyright 1997-2014 HUMUSOFT s.r.o. and The MathWorks, Inc.
+% <http://fr.mathworks.com/matlabcentral/fileexchange/48242-vrml-h--filename--opts->
+%  by Jan, 24 Oct 2014 
 
 global VRML_OUTPUT_FILE;
 
-switch nargin
-    case 0
-        error(message('MATLAB:vrml:minrhs'));
-    case 1
-        filename = 'matlab.wrl';
-    case 2
-        if ischar(filename)
-            [pathstr,name,ext] = fileparts(filename);
-            if isempty(ext)
-                ext = '.wrl';
-            end
-            filename = fullfile(pathstr,[name,ext]);
-        else
-            error(message('MATLAB:vrml:InvalidFileName'));
+if nargin==0
+    error('Not enough input arguments');
+elseif nargin==1
+    filename = 'matlab.wrl';
+    opts = [];
+elseif nargin==2
+    if ischar(filename)
+        [pathstr,name,ext] = fileparts(filename);
+        if isempty(ext)
+            ext = '.wrl';
         end
+        filename = fullfile(pathstr,[name,ext]);
+    else
+        error('Filename argument is not a string');
+    end
+    opts=[];
+elseif nargin>=3
+    if ~ischar(opts) || ~strcmp(opts, 'noedgelines')
+        error('Only ''noedgelines'' option string is supported at the moment');
+    end
 end
 
 if ~any(ishghandle(h))
-    error(message('MATLAB:vrml:InvalidObjectHandle'));
+    error('First argument must be a valid object handle');
 end
 
 VRML_OUTPUT_FILE = fopen(filename,'w');
 try
     WriteFileHeaderAndInfo;
-    ProcessObject(h);
+    ProcessObject(h, opts);
     fclose(VRML_OUTPUT_FILE);
     clear global VRML_OUTPUT_FILE
 catch err
@@ -83,36 +81,36 @@ end
 
 function WriteFileHeaderAndInfo()
 sendStr(0,'#VRML V2.0 utf8\n');
-sendStr(0,'WorldInfo {title "Matlab-VRML"}\n');
+sendStr(0,'WorldInfo {title "MATLAB-VRML"}\n');
 sendStr(0,'NavigationInfo {\n');
-sendStr(1,'headlight FALSE\n');
+sendStr(1,'headlight TRUE\n');
 sendStr(1,'type "EXAMINE"\n');
 sendStr(0,'}\n');
 
-function ProcessObject(obj_handle)
+function ProcessObject(obj_handle, opts)
 obj = get(obj_handle);
 switch obj.Type
-    case 'figure',  HandleFigure( obj);
-    case 'axes',    HandleAxes(   obj_handle);
+    case 'figure',  HandleFigure( obj, opts);
+    case 'axes',    HandleAxes(   obj_handle, opts);
     case 'light',   HandleLight(  obj);
-    case 'patch',   HandlePatch(  obj_handle);
-    case 'surface', HandleSurface(obj_handle);
+    case 'patch',   HandlePatch(  obj_handle, opts);
+    case 'surface', HandleSurface(obj_handle, opts);
     case 'line',    HandleLine(   obj);
     case 'image',   HandleImage(  obj);
     case 'text',    HandleText(   obj);
 end
 
-function HandleFigure(obj)
+function HandleFigure(obj,opts)
 if(strcmp(obj.Visible,'on'))
     sendStr(0,'Background {\n');
     sendStr(1,sprintf('skyColor [%f %f %f]\n',obj.Color));
     sendStr(0,'}\n');
     for i=1:length(obj.Children)
-        ProcessObject(obj.Children(i));
+        ProcessObject(obj.Children(i),opts);
     end
 end
 
-function HandleAxes(obj_handle)
+function HandleAxes(obj_handle, opts)
 obj = get(obj_handle);
 global VRML_USE_MATERIAL_PROPS;
 sendStr(0,'Transform {\n');
@@ -124,10 +122,17 @@ sendStr(3,'children [\n');
 sendStr(2,'Viewpoint {\n');
 sendStr(3,sprintf('position %f %f %f\n',obj.CameraPosition));
 sendStr(3,sprintf('fieldOfView %f\n',obj.CameraViewAngle*pi/180));
-if ~exist('graphicsversion') || graphicsversion(obj_handle,'handlegraphics')
+if graphicsversion(obj_handle,'handlegraphics')
     axesXForm = get(obj_handle, 'XForm');
 else
-    axesXForm = getAxesTransformationMatrix(obj_handle);
+    axesXForm = [1.0      0.0    0.0     0.0
+                 0.0      1.0    0.0     0.0
+                 0.0      0.0   -1.0     0.0
+                 0.0      0.0    0.0     1.0];
+    hCamera = get(obj_handle, 'Camera');
+    if ~isempty(hCamera)
+      axesXForm = axesXForm * hCamera.GetViewMatrix();
+    end
 end
 sendStr(3,sprintf('orientation %f %f %f %f\n',computeOrientation(axesXForm)));
 sendStr(3,'description "Original"\n');
@@ -146,7 +151,7 @@ if ~isempty(findobj(obj_handle,'Type','light','Visible','on'))
     VRML_USE_MATERIAL_PROPS = 1;
 end
 for i=1:length(obj.Children)
-    ProcessObject(obj.Children(i));
+    ProcessObject(obj.Children(i), opts);
 end
 
 sendStr(3,']\n');
@@ -166,7 +171,7 @@ if(strcmp(obj.Visible,'on'))
             sendStr(2,'PointLight {\n');
             sendStr(3,sprintf('location %f %f %f\n',obj.Position));
         otherwise
-            error(message('MATLAB:vrml:InvalidLightMode'));
+            error('Unknown light mode in HandleLight');
     end
     % Define the intensity of the ambient light as 0.3, determined
     % empirically.
@@ -199,7 +204,6 @@ else
     sendStr(3,sprintf('translation %f %f %f\n',obj.Position));
     sendStr(3,'children [\n');
     BeginShape('Text');
-    if iscellstr(obj.String), obj.String=char(obj.String); end
     sendStr(5,sprintf('string ["%s"]\n',obj.String));
     sendStr(5,'fontStyle FontStyle {size 0.07}\n');
     EndShape;
@@ -207,21 +211,21 @@ else
     sendStr(2,'}\n');
 end
 
-function HandlePatch(obj_handle)
+function HandlePatch(obj_handle,opts)
 handler.coord      = 'patchCoord';
 handler.coordIndex = 'patchCoordIndex';
 handler.color      = 'patchColor';
 handler.colorIndex = 'patchColorIndex';
-HandlePatch_SurfaceObjs(obj_handle, handler);
+HandlePatch_SurfaceObjs(obj_handle, handler, opts);
 
-function HandleSurface(obj_handle)
+function HandleSurface(obj_handle, opts)
 handler.coord      = 'surfCoord';
 handler.coordIndex = 'surfCoordIndex';
 handler.color      = 'surfColor';
 handler.colorIndex = 'surfColorIndex';
-HandlePatch_SurfaceObjs(obj_handle, handler);
+HandlePatch_SurfaceObjs(obj_handle, handler, opts);
 
-function HandlePatch_SurfaceObjs(obj_handle,info)
+function HandlePatch_SurfaceObjs(obj_handle,info,opts)
 obj = get(obj_handle);
 handle_str = sprintf('%s%g',deblank(obj.Type),double(obj_handle));
 handle_str = abs(handle_str);
@@ -251,13 +255,13 @@ if(strcmp(obj.Visible,'on'))
                     colorIndex(obj,info.colorIndex,'interp');
                 case 'texturemap'
                 otherwise
-                    error(message('MATLAB:vrml:InvalidFaceColor'));
+                    error('Unknown FaceColor type in Handle Patch');
             end
         end
         EndShape;
     end
     % Handle EdgeColor mode
-    if ~strcmp(obj.EdgeColor,'none')
+    if isempty(opts) && ~strcmp(opts,'noedgelines') && ~strcmp(obj.EdgeColor,'none')
         BeginShape('IndexedLineSet');
         if DEFINED_OBJ_COORD == 1
             coord(obj,info.coord,handle_str,'use');
@@ -277,7 +281,7 @@ if(strcmp(obj.Visible,'on'))
                     sendStr(3,'colorPerVertex TRUE\n');
                     colorIndex(obj,info.colorIndex,'interp');
                 otherwise
-                    error(message('MATLAB:vrml:InvalidEdgeColor'));
+                    error('Unknown EdgeColor type in Handle Surface');
             end
         end
         EndShape;
@@ -300,7 +304,7 @@ if(strcmp(obj.Visible,'on'))
     sendStr(3,'appearance Appearance {\n');
     texture(obj);
     sendStr(2,'}\n');
-    
+
     sendStr(3,'geometry IndexedFaceSet {\n');
     sendStr(4,'coord Coordinate { \n');
     sendStr(5,'point [\n');
@@ -404,7 +408,7 @@ if ismatrix(hgObj.CData)
     cdata = round(cdata' + 1);
     sendStr(6,sprintf('0x%.2x%.2x%.2x ',cmap(cdata,:)'));
 else
-    error(message('MATLAB:vrml:RGBTexturesNotSupported'));
+    error('RGB Textures not supported yet');
 end
 sendStr(0,'\n');
 sendStr(3,'}\n');
@@ -414,17 +418,22 @@ sendStr(3,'}\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function surfColor(obj) %#ok<*DEFNU>
-if all(size(obj.CData) > 0)
+if ismatrix(obj.CData)
     outputColormap(get(get(obj.Parent,'Parent'),'Colormap'));
 else
-    error(message('MATLAB:vrml:RGBTexturesNotSupported'));
+    error('RGB Textures not supported yet');
 end
 
 function patchColor(obj) %#ok<*DEFNU>
 if ndims(obj.FaceVertexCData) < 3 %#ok<ISMAT>
-    outputColormap(get(get(obj.Parent,'Parent'),'Colormap'));
+    [~,n] = size(obj.FaceVertexCData);
+    if n==1
+        outputColormap(get(get(obj.Parent,'Parent'),'Colormap'));
+    else
+        sendStr(5,sprintf('%d,\n', obj.FaceVertexCData'));
+    end
 else
-    error(message('MATLAB:vrml:RGBTexturesNotSupported'));
+    error('RGB Textures not supported yet');
 end
 
 function surfCoordIndex(obj)
@@ -444,16 +453,23 @@ nstr = [char(nstr(:)') '-1\n'];
 sendStr(5,sprintf(nstr,obj.Faces'-1));
 
 function patchColorIndex(obj,type)
-len = length(get(get(obj.Parent,'Parent'),'Colormap'));
-cdat = colorMapping(obj.FaceVertexCData, get(obj.Parent,'Clim'), len, obj.CDataMapping);
-
-switch type
-    case 'flat'
-        sendStr(5,sprintf('%d,\n',cdat));
-    case 'interp'
-        error(message('MATLAB:vrml:InterpolatedColorsNotSupported'));
-    otherwise
-        error(message('MATLAB:vrml:InvalidColorType'));
+% n determines index/true coloring
+[~,n] = size(obj.FaceVertexCData);
+if n==1
+    cdat = colorMapping(obj.FaceVertexCData, get(obj.Parent,'Clim'), length(get(get(obj.Parent,'Parent'),'Colormap')), obj.CDataMapping);
+    switch type
+        case 'flat'
+            sendStr(5,sprintf('%d,\n',cdat));
+        case 'interp'
+            nvert = size(obj.Faces,2);
+            str = '%d,';
+            nstr = abs(str)'*ones(1,nvert);
+            nstr = [char(nstr(:)') '-1\n'];
+            cdat = cdat(obj.Faces);
+            sendStr(5,sprintf(nstr,cdat'));
+        otherwise
+            error('Unknown color type in patchColorIndex');
+    end
 end
 
 function surfColorIndex(obj,type)
@@ -478,7 +494,7 @@ switch type
             end
         end
     otherwise
-        error(message('MATLAB:vrml:InvalidColorIndexType'));
+        error('Unknown colorIndex type in surfColorIndex');
 end
 
 function lineCoord(obj)
@@ -631,7 +647,7 @@ switch mapping_type
         h = find(data > clim(2)); data(h) = clim(2); %#ok
         rdata = floor(((data - clim(1))/(clim(2) - clim(1)))*(colormap_length - 1));
     otherwise
-        error(message('MATLAB:vrml:InvalidMappingType'));
+        error('Unknown mapping type in function colorMapping');
 end
 
 % Send a string to the VRLM file
@@ -671,10 +687,9 @@ else
     o(2) = q(2)/s;
     o(3) = q(3)/s;
     o(4) = q(4)/s;
-    
+
     o(1) = o(1)*pi/180;
     o(2:end) = -o(2:end);
     no = [o(2) o(3) o(4) o(1)];
     o = no;
 end
-

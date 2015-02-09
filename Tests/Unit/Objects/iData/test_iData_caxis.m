@@ -8,3 +8,4 @@ function result=test_iData_caxis
   else
     result = [ 'FAILED ' mfilename ];
   end
+  close(gcf);

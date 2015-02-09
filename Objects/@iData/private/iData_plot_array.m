@@ -47,15 +47,12 @@ sum_max = 0;
   end % for
   
   % re-arrange if this is a 2D overlay (shifted)
-  if all(cellfun('length',h) <= 1)
-    h = cell2mat(h);
-  end
   for index=1:numel(h)
-    if length(h(index)) == 1 && ~isempty(strfind(method, 'shifted'))
+    if length(h{index}) == 1 && ~isempty(strfind(method, 'shifted'))
       if ndims(a(index)) ~= 1
         try
-          z= get(h(index),'ZData'); 
-          c= get(h(index),'CData');
+          z= get(h{index},'ZData'); 
+          c= get(h{index},'CData');
           if all(z(:) == 0)
                use_cdata=1; z= c;
           else use_cdata=0; 
@@ -64,16 +61,16 @@ sum_max = 0;
           z = z-min(z(:));
           z = z+sum_max*index/numel(a);
           if use_cdata==0, 
-               set(h(index),'ZData',z);
-          else set(h(index),'CData',z); 
+               set(h{index},'ZData',z);
+          else set(h{index},'CData',z); 
           end
         end
       else
         try
-          z= get(h(index),'YData');
+          z= get(h{index},'YData');
           z = z-min(z(:));
           z = z+sum_max*index/length(a(:));
-          set(h(index),'YData',z); 
+          set(h{index},'YData',z); 
         end
       end
     end
