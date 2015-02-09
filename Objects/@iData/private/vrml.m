@@ -122,16 +122,18 @@ sendStr(3,'children [\n');
 sendStr(2,'Viewpoint {\n');
 sendStr(3,sprintf('position %f %f %f\n',obj.CameraPosition));
 sendStr(3,sprintf('fieldOfView %f\n',obj.CameraViewAngle*pi/180));
-if graphicsversion(obj_handle,'handlegraphics')
+if exist('graphicsversion') && graphicsversion(obj_handle,'handlegraphics')
     axesXForm = get(obj_handle, 'XForm');
 else
     axesXForm = [1.0      0.0    0.0     0.0
                  0.0      1.0    0.0     0.0
                  0.0      0.0   -1.0     0.0
                  0.0      0.0    0.0     1.0];
-    hCamera = get(obj_handle, 'Camera');
-    if ~isempty(hCamera)
-      axesXForm = axesXForm * hCamera.GetViewMatrix();
+    try
+        hCamera = get(obj_handle, 'Camera'); % Matlab >= R2014b
+        if ~isempty(hCamera)
+          axesXForm = axesXForm * hCamera.GetViewMatrix();
+        end
     end
 end
 sendStr(3,sprintf('orientation %f %f %f %f\n',computeOrientation(axesXForm)));
@@ -418,7 +420,7 @@ sendStr(3,'}\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function surfColor(obj) %#ok<*DEFNU>
-if ismatrix(obj.CData)
+if all(size(obj.CData) > 0)
     outputColormap(get(get(obj.Parent,'Parent'),'Colormap'));
 else
     error('RGB Textures not supported yet');
