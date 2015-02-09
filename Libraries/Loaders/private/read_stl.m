@@ -11,10 +11,10 @@ function data=read_stl(file, option)
 % stlread(file) Francis Esmonde-White, May 2010 : read STL binary 
 %  <http://www.mathworks.com/matlabcentral/fileexchange/29906-binary-stl-file-reader>
 %  [v, f, n, c, stltitle] = stlread('MyModel.stl');
-
 data=[];
 if isempty(file), return; end
-if nargin == 1, option=''; end
+[file, remain] = strtok(file);
+if nargin == 1, option=remain; end
 if isempty(option)
   % try all importers
   try
@@ -244,6 +244,7 @@ CAD_object_name = sscanf(fgetl(fid), '%*s %s');  %CAD object name, if needed.
 %                                                %Some STLs have it, some don't.   
 vnum=0;       %Vertex number counter.
 VColor = 0;
+v = []; c=[];
 %
 while feof(fid) == 0                    % test for end of file, if not then do stuff
     tline = fgetl(fid);                 % reads a line of data from file.
@@ -347,6 +348,10 @@ end
 
 ftitle=fread(fid,80,'uchar=>schar'); % Read file title
 numFaces=fread(fid,1,'int32'); % Read number of Faces
+if ~all(isstrprop(ftitle,'print'))
+  v=[]; f=[]; n=[]; c=[]; stltitle=[];
+  return
+end
 
 T = fread(fid,inf,'uint8=>uint8'); % read the remaining values
 fclose(fid);
