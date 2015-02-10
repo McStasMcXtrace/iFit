@@ -4,6 +4,7 @@ function data=read_tdms(filename)
 % Jim Hokanson (2011) BSD
 
   data = convertTDMS(0,filename);
+end
 
 function [ConvertedData,ConvertVer,ChanNames,GroupNames,ci]=convertTDMS(varargin)
 %Function to load LabView TDMS data file(s) into variables in the MATLAB workspace.
@@ -248,38 +249,33 @@ function [ConvertedData,ConvertVer,ChanNames,GroupNames,ci]=convertTDMS(varargin
 %Added information to help documentation on how to deal with DAQmxRaw Data.
 %-------------------------------------------------------------------------
 
-% TDMS Reader  Jim Hokanson 13 Jan 2011 (Updated 30 Jul 2012) 
-% <http://www.mathworks.com/matlabcentral/fileexchange/30023-tdms-reader>
-%
-%Copyright (c) 2014, Brad Humphreys
-%Copyright (c) 2010, Robert
-%Copyright (c) 2010, Grant Lohsen
-%All rights reserved.
-%
-%Redistribution and use in source and binary forms, with or without
-%modification, are permitted provided that the following conditions are
-%met:
-%
-%* Redistributions of source code must retain the above copyright
-%  notice, this list of conditions and the following disclaimer.
-%* Redistributions in binary form must reproduce the above copyright
-%  notice, this list of conditions and the following disclaimer in
-%  the documentation and/or other materials provided with the distribution
-%
-%THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-%AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-%IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-%ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-%LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-%CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-%SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-%INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-%CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-%ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-%POSSIBILITY OF SUCH DAMAGE.
+
+%-------------------------------------------------------------------------
+%Brad Humphreys - v1.98 2014-5-27
+%Per G. Lohsen's suggestion, added check to verify that first caharters are
+% TDMs.  If not, errors out and lets user know that the selected file is
+% not a TDMS file.
+%-------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------
+%Sebastian Schwarzendahl (alias Haench) - v1.99 2014-10-23
+% Added support for complex data types 
+% CSG - tdsTypeComplexSingleFloat=0x08000c 
+% CDB - tdsTypeComplexDoubleFloat=0x10000d)
+% This feature was added in LV2013 (I believ) and produced an error in 
+% the previous version of this code.
+%-------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------
+%Brad Humphreys - v1.991 2014-12-1
+%Corrected issue where when properties, but not raw data was updated in a
+%later segment (rawDataIndex=FFFFFFFF), the channel index was still
+%appended with a copy of the previous entries data.
+%-------------------------------------------------------------------------
+
 
 %Initialize outputs
-ConvertVer='1.96';    %Version number of this conversion function
+ConvertVer='1.991';    %Version number of this conversion function
 ConvertedData=[];
 
 p=inputParser();
@@ -394,8 +390,10 @@ function [SegInfo,NumOfSeg]=getSegInfo(fid)
 %         SegInfo.DataLength: Number of bytes of Data in segment
 %         SegInfo.vernum: LV version number (4712 is v1.0, 4713 is v2.0)
 %         SegInfo.NumChan: number of channels in this segement.  This is
-%           only instatated in this function to 0.  The addChanCount function
-%           updates this to the actual value later.
+%           only instatated in this function to 0.  This is later updated
+%           to show the number of channels in the segment (note that this
+%           is not the number of raw data channels in the segment, as a
+%           segment can just have property data).
 %
 %         SegInfo.SegHasMetaData:  There is Meta Data in the Segement
 %         SegInfo.SegHasRawData: There is Raw Data in the Segment
@@ -461,6 +459,10 @@ while (ftell(fid) ~= eoff)
             warning('file glitch');
             break;
         end
+    else  %TDSm should be the first charaters in a tdms file.  If not there, error out to stop hunting.
+        fclose(fid);
+        error('Unable to find TDSm tag. This may not be a tdms file, or you forgot to add the .tdms extension to the filename and are reading the wrong file');
+        
     end
     
 end
@@ -738,7 +740,7 @@ for segCnt=1:NumOfSeg
             rawdataindex=fread(fid,1,'uint32',kTocEndian);
             
             if rawdataindex==0
-                if segCnt==0
+                if segCnt==0    %Unclear why this is here, segCnt should always be >=1, unless there is a significant error 
                     e=errordlg(sprintf('Seqment %.0f within ''%s'' has ''rawdataindex'' value of 0 (%s.m).',segCnt,...
                         TDMSFileNameShort,mfilename),'Incorrect ''rawdataindex''');
                     uiwait(e)
@@ -749,6 +751,7 @@ for segCnt=1:NumOfSeg
                     else
                         ccnt=index.(obname).rawdatacount;
                     end
+                    %Copy the previous segments raw data info
                     index.(obname).rawdatacount=ccnt;
                     index.(obname).datastartindex(ccnt)=SegInfo.DataStartPosn(segCnt);
                     index.(obname).arrayDim(ccnt)=index.(obname).arrayDim(ccnt-1);
@@ -774,12 +777,24 @@ for segCnt=1:NumOfSeg
                             else
                                 ccnt=index.(obname).rawdatacount;
                             end
+% Modified by BTH 7-7-14.  This caused an issue with files where properties
+% were updated in later segments but no raw data was in that segment (it
+% was copying the previous segments info instead of just setting it to default values).
+%                             index.(obname).rawdatacount=ccnt;
+%                             index.(obname).datastartindex(ccnt)=SegInfo.DataStartPosn(segCnt);
+%                             index.(obname).arrayDim(ccnt)=index.(obname).arrayDim(ccnt-1);
+%                             index.(obname).nValues(ccnt)=index.(obname).nValues(ccnt-1);
+%                             index.(obname).byteSize(ccnt)=index.(obname).byteSize(ccnt-1);
+%                             index.(obname).index(ccnt)=segCnt;
                             index.(obname).rawdatacount=ccnt;
-                            index.(obname).datastartindex(ccnt)=SegInfo.DataStartPosn(segCnt);
-                            index.(obname).arrayDim(ccnt)=index.(obname).arrayDim(ccnt-1);
-                            index.(obname).nValues(ccnt)=index.(obname).nValues(ccnt-1);
-                            index.(obname).byteSize(ccnt)=index.(obname).byteSize(ccnt-1);
+                            index.(obname).datastartindex(ccnt)=0;
+                            index.(obname).arrayDim(ccnt)=0;
+                            index.(obname).nValues(ccnt)=0;
+                            index.(obname).byteSize(ccnt)=0;
                             index.(obname).index(ccnt)=segCnt;
+
+
+
                             SegInfo.NumChan(segCnt)=SegInfo.NumChan(segCnt)+1;
                         end
                     end
@@ -1091,7 +1106,7 @@ for segCnt=1:NumOfSeg
 %             
 %         end
         
-        aa=1;
+        
 %         %Now adjust multiplier and skip if the data is interleaved
 %         if kTocInterleavedData
 %             if muliplier>0  %Muliple raw data segements appened
@@ -1234,8 +1249,17 @@ for kk=1:length(fnm)    %Loop through objects
                             if strcmp(matType,'uint8=>char')                              
                                 data=convertToText(data);
                             end
-                        else
-                            [data,cnt]=fread(fid,nvals*id.multiplier(rr),matType,kTocEndian);
+                        else 
+                             % Added by Haench start
+                            if  (id.dataType == 524300) || (id.dataType == 1048589) % complex CDB data
+                                [data,cnt]=fread(fid,2*nvals*id.multiplier(rr),matType,kTocEndian);                               
+                                data= data(1:2:end)+1i*data(2:2:end);
+                                cnt = cnt/2;
+                            else                                
+                                [data,cnt]=fread(fid,nvals*id.multiplier(rr),matType,kTocEndian);
+                            end
+                            % Haench end
+                            % Original: [data,cnt]=fread(fid,nvals*id.multiplier(rr),matType,kTocEndian);   
                         end
                 end
                 
@@ -1393,9 +1417,9 @@ for i=1:numel(obFieldNames)
                             Value=cell(index.(cname).(cfield).cnt,1);
                             for c=1:index.(cname).(cfield).cnt
                                 if iscell(index.(cname).(cfield).value)
-                                    Value(c)=index.(cname).(cfield).value;
+                                    Value(c)=index.(cname).(cfield).value(c);
                                 else
-                                    Value(c)={index.(cname).(cfield).value};
+                                    Value(c)={index.(cname).(cfield).value(c)};
                                 end
                             end
                         end
@@ -1519,6 +1543,12 @@ switch(LVType)
         sz=NaN;
     case 11
         sz=10;
+    % Added by Haench for tdsTypeComplexSingleFloat=0x08000c,tdsTypeComplexDoubleFloat=0x10000d,
+    case 524300
+        sz=8;
+    case 1048589
+        sz=16;
+    % end add haench
     otherwise
         error('LVData type %d is not defined',LVType)
 end
@@ -1565,7 +1595,13 @@ switch LVType
     case 33  %tdsTypeBoolean
         matType='bit1';
     case 68  %tdsTypeTimeStamp
-        matType='2*int64';
+        matType='2*int64';  
+   % Added by Haench for tdsTypeComplexSingleFloat=0x08000c,tdsTypeComplexDoubleFloat=0x10000d,
+   case 524300
+        matType='single';
+    case 1048589
+        matType='double';
+    % end add haench
     otherwise
         matType='Undefined';
 end
