@@ -6,7 +6,7 @@ function str=class2str(this, data, options)
 %   class2str(this, data, 'no comments') removes comments from the output file
 %
 % input arguments:
-%   this: string containg the name of the object to describe
+%   this: string containing the name of the object to describe
 %   data: any data set (struct, array, cell, iData, char)
 %   options: optinal argument which may contain 'flat' and 'no comments'
 %
