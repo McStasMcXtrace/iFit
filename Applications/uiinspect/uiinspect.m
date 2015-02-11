@@ -108,7 +108,7 @@ function hFig = uiinspect(obj, fig)
           myError('YMA:uiinspect:notAHandle','Input to uiinspect must be a valid object as defined by ISHANDLE');
       elseif ~ischar(obj) && (numel(obj) ~= 1)
           myError('YMA:uiinspect:notASingleton','Input to uiinspect must be a single object handle');
-      elseif isnumeric(obj) && ishandle(obj)
+      elseif ishandle(obj)
           obj = handle(obj);
       end
       if nargin < 2
