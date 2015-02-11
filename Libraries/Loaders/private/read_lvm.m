@@ -166,7 +166,7 @@ function data = read_lvm(filename,verbose)
 %#ok<*ASGLU>
 
 % message level
-if nargin < 2, verbose = 1; end
+if nargin < 2, verbose = 0; end
 if verbose >= 1, fprintf(1,'\nlvm_import v2.2\n'); end
 
 % ask for filename if not provided already
@@ -207,7 +207,7 @@ if ~strcmp(sscanf(linein,'%s'),'LabVIEWMeasurement')
         if verbose >= 1, fprintf(1,'Data was copied, but no other information is available.\n'); end
         return
     catch fileEx
-        error('This does not appear to be a text-format LVM file (no header).');
+        error([ mfilename ': This does not appear to be a text-format LVM file (no header).' ]);
     end
 end
 
