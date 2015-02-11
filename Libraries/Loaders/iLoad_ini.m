@@ -235,7 +235,7 @@ function config = iLoad_ini
     nmr_bruker.name     = 'Bruker NMR data set';
     nmr_bruker.method   = 'read_bruker';
 
-    llb_tas.name        = 'LLB/TAS';
+    llb_tas.name        = 'LLB/TAS binary';
     llb_tas.method      = 'read_llb_tas';
     
     ESRF_edf.name       ='EDF ESRF Data Format';
