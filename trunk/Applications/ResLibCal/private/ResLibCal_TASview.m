@@ -147,5 +147,6 @@ if isempty(findall(gcf,'Tag','ResLibCal_TASView_Context'))
       '[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end;' ...
       'clear tmp_a tmp_e;' ]);
   set(gca, 'UIContextMenu', uicm, 'Tag','ResLibCal_TASView_Context');
-    uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
+    uimenu(uicm, 'Label','Toggle Perspective','Callback', ...
+      'if strcmp(get(gca,''Projection''),''orthographic'') set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
 end

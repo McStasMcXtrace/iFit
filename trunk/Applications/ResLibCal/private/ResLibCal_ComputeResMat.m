@@ -179,13 +179,12 @@ function [A,Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP)
             - circshift(vv,[1 2]).*circshift(vv, [2 1]);
       vv(m,:) = vt(m,:);
     end
-    c     = sqrt(sum(vv.*vv));
-
-    vv    = vv./repmat(c,[3 1]);
+    c     = sqrt(sum(vv'.^2));
+    vv    = vv./repmat(c,[3 1])';
     s     = vv*bb;
     qt    = [h k l ]*s';
     qs    = sum(qt.*qt); Q=sqrt(qs);
-    
+    [ qt qs ]
     sm =EXP.mono.dir;
     ss =EXP.sample.dir;
     sa =EXP.ana.dir;
