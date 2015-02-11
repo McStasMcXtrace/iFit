@@ -651,6 +651,7 @@ href="http://www.ill.eu/instruments-support/instruments-groups/groups/tof/softwa
 
 
 
+
             This data can also be imported/generated with <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">Lamp</a>.</td>
           <td style="vertical-align: top;"><br>
@@ -703,6 +704,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           </td>
           <td style="vertical-align: top;"><a
               href="http://www.princetoninstruments.com/products/software/#1">Princeton/Roper
+
 
 
 
@@ -809,6 +811,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               definition</a>. This format gathers <span
               style="font-style: italic;">CIF</span> and <span
               style="font-style: italic;">imgCIF</span> standards. These
@@ -830,6 +833,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             'hdr' file requires an ssociated 'img' file. <a
               href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Format</a>
             from the Analyze <a href="http://www.analyzedirect.com/">Biomedical
+
 
 
 
@@ -1014,7 +1018,22 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
             technical data file<br>
+          </td>
+          <td valign="top"><br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><b><font color="#cc33cc">'R*' and 'C*'<br>
+                LLB TAS</font></b><br>
+          </td>
+          <td valign="top">binary<br>
+          </td>
+          <td valign="top">LLB TAS (1T, 2T, 4F1, 4F2, G43). <i><font
+                color="#ff0000">Experimental</font>. May not be properly
+              imported</i>. Users are advised to use B. Hennion
+            conversion tools (convasc, convdat from 'wf').<br>
           </td>
           <td valign="top"><br>
           </td>
@@ -1074,14 +1093,15 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
               </font></b></td>
           <td valign="top">When numerical data blocks only use <a
               href="file:///cgi-bin/man/man2html?3+isspace">isspace</a>(3)
+
             separators (\n \r \f \t \v and space), the reading can be
             made faster with even lower memory requirements. <b>Recommended.</b></td>
         </tr>
         <tr>
           <td valign="top"><b><font color="#cc33cc">'--headers'<br>
               </font></b></td>
-          <td valign="top">Extracts <i>headers</i>
-            for each numerical field. <b>Recommended.</b></td>
+          <td valign="top">Extracts <i>headers</i> for each numerical
+            field. <b>Recommended.</b></td>
         </tr>
         <tr>
           <td valign="top"><b><font color="#cc33cc">'--wrapped'<br>
@@ -1293,12 +1313,13 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
         from <span style="color: rgb(51, 102, 255);">prefdir</span> or
         <span style="color: rgb(51, 102, 255);">ifitpath/Loaders</span>.</li>
       <li>Create a new structure (which you may name as you wish) and
         set the name (description), method, and extension fields.</li>
       <li>Optionally define some <span style="font-weight: bold;">patterns</span>
-        to search, to complement the extension.</li>
+        to search, to complement the extension (as a list of words).</li>
       <li>Optionally write a post-process script and preferably place it
         in the <span style="color: rgb(51, 102, 255);">ifitpath/Loaders/postprocess</span>.
       </li>
@@ -1318,6 +1339,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
