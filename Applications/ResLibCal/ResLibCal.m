@@ -361,6 +361,7 @@ function out = ResLibCal_UpdateResolution1(out)
   h = findall(0, 'Tag','ResLibCal_View1');
   if isempty(h), return; end
   set(0,'CurrentFigure', h);
+  set(h, 'Name','ResLibCal: View TAS geometry');
 
   % update/show the TAS geometry
   out = ResLibCal_TASview(out);
