@@ -184,7 +184,6 @@ function [A,Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP)
     s     = vv*bb;
     qt    = [h k l ]*s';
     qs    = sum(qt.*qt); Q=sqrt(qs);
-    [ qt qs ]
     sm =EXP.mono.dir;
     ss =EXP.sample.dir;
     sa =EXP.ana.dir;
