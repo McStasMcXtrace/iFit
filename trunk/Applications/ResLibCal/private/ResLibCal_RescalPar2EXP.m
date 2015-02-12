@@ -59,7 +59,12 @@ end
   % handle input as a numerical vector: ResCal file
   if isnumeric(str) && isvector(str)
     
-    if numel(str) == 42 % legacy ResCal5 .par file
+    if numel(str) >= 42 % legacy ResCal5 .par file
+      if  numel(str) > 42
+          disp([ mfilename ': initial parameter file contains ' ...
+              num2str(numel(str)) '. Only using up to 42.']);
+          str = str(1:42);
+      end
       labs=labels(1:42);
       str = mat2cell(str(:),ones(1,length(str)));
       str = cell2struct(str(:),labs(:),1);  % make a structure
