@@ -38,6 +38,7 @@ function EXP = ResLibCal_Open(filename, EXP)
   else
     content = filename;
   end
+
   if ischar(content) && ~isempty(content)  % content of a file, or string to evaluate
     try
       evalc(content);% this should make an 'EXP' or 'config' variable
@@ -58,10 +59,10 @@ function EXP = ResLibCal_Open(filename, EXP)
       EXP = ResLibCal_RescalPar2EXP(EXP.ResCal, EXP);
     end
   end
-
+  
   % evaluate it to get 'EXP'
   if isstruct(EXP)
-    if isstruct(config) && isfield(config, 'Title')
+    if exist('config','var') && isstruct(config) && isfield(config, 'Title')
       titl = config.Title;
     else
       titl = 'ResLibCal';
