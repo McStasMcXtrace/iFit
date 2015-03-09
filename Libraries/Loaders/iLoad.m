@@ -216,7 +216,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     f=find(filename == '#');
     if length(f) == 1 && f > 1  % the filename contains an internal link (HTML anchor)
       [fileroot,filesub]=strtok(filename, '#');
-      if isdir(fileroot) % directory with token to search
+      if length(find(fileroot == '*')) || isdir(fileroot) % directory with token to search
         % get full recursive listing
         filerec=getAllFiles(fileroot);
         % find items that match the token
@@ -226,8 +226,9 @@ function [data, format] = iLoad(filename, loader, varargin)
       else
         [data, format]=iLoad(fileroot, loader, varargin{:});
       end
+      
       % now search pattern in the file names or fields
-      if iscell(data) && isdir(fileroot)
+      if iscell(data) && (length(find(fileroot == '*')) || isdir(fileroot))
         this_data = {}; this_format = {};
         % name is a directory. We search for the pattern in file names
         f = [];
@@ -1019,6 +1020,13 @@ function fileList = getAllFiles(dirName)
   subDirs = {dirData(dirIndex).name};  % Get a list of the subdirectories
   validIndex = ~ismember(subDirs,{'.','..'});  % Find index of subdirectories
                                                %   that are not '.' or '..'
+  if length(find(dirName == '*')),
+    if length(find(dirName == filesep))
+      dirName = fileparts(dirName);
+    else
+      dirName = '.';
+    end
+  end
   for iDir = find(validIndex)                  % Loop over valid subdirectories
     nextDir = fullfile(dirName,subDirs{iDir});    % Get the subdirectory path
     fileList = [fileList; getAllFiles(nextDir)];  % Recursively call getAllFiles
