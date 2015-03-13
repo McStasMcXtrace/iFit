@@ -272,8 +272,9 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
       clear p2
     end
   end
+
   if all(p1 == 0) && ~isempty(model.ParameterValues) ...
-   && ~all(model.ParameterValues == 0)
+   && ~all(model.ParameterValues(:) == 0)
     p1 = model.ParameterValues;
   end
   signal = p1;  % auto-guess overridden by 'Guess' definition

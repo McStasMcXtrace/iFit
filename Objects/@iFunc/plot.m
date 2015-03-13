@@ -60,7 +60,7 @@ if nargin < 2,
   p=a.ParameterValues;
 end
 
-if ndims(a) > 3
+if 0 && ndims(a) > 3
   error([ 'iFunc:' mfilename ], 'Can only plot dimensionality <= 3. Failed to plot ndims=%d model %s\n', ndims(a), a.Name);
 end
 if strcmp(p, 'guess'), p=[]; end
@@ -123,7 +123,12 @@ elseif ndims(signal) == 3
   light
   view(3)
 else
-  error([ 'iFunc:' mfilename ], 'Failed to plot model %s\n', name);
+  % we use iData plotting
+  iD = iData(ax{:}, signal); sz = size(iD); sz(4:end) = 1;
+  disp([ 'iFunc.plot: Reducing ' num2str(ndims(iD)) '-th dimensional data to 3D ' mat2str(sz) ]);
+  iD = resize(iD, sz);
+  h=plot(iD);
+  % error([ 'iFunc:' mfilename ], 'Failed to plot model %s\n', name);
 end
 
 set(h, 'DisplayName', name);
