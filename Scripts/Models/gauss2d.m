@@ -8,6 +8,9 @@ function signal=gauss2d(varargin)
 %     c = sin(theta)^2/2/sx/sx + cos(theta)^2/2/sy/sy;
 %     signal = p(1)*exp(-(a*(x-x0).^2+2*b*(x-x0).*(y-y0)+c*(y-y0).^2)) + p(7);
 %
+% gauss2d([w1 w2])        creates a model with a specified widths
+% gauss2d([ parameters ]) creates a model with specified model parameters
+%
 % Reference: http://en.wikipedia.org/wiki/Gaussian_function
 %
 % input:  p: gauss2d model parameters (double)
@@ -28,6 +31,8 @@ signal.Name           = [ 'Gaussian-2D function with tilt angle (2D) [' mfilenam
 signal.Description    = '2D Gaussian function with tilt angle. http://en.wikipedia.org/wiki/Gaussian_function';
 signal.Parameters     = {  'Amplitude' 'Centre_X' 'Center_Y' 'HalfWidth_X' 'HalfWidth_Y' 'Angle tilt [deg]' 'Background' };
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
+m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
+m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
 signal.Guess          = @(x,y,signal)[ max(signal(:))-min(signal(:)) m1(x,signal) m1(y, signal) m2(x,signal) m2(y,signal) 20*randn min(signal(:)) ];        % default parameters
 signal.Expression     = {'x0=p(2); y0=p(3); sx=p(4); sy=p(5);', ...
   'theta = p(6)*pi/180;', ...
@@ -37,6 +42,14 @@ signal.Expression     = {'x0=p(2); y0=p(3); sx=p(4); sy=p(5);', ...
   'signal = p(1)*exp(-(aa*(x-x0).^2+2*bb*(x-x0).*(y-y0)+cc*(y-y0).^2)) + p(7);' };
 
 signal=iFunc(signal);
+
+%if nargin == 1 && isnumeric(varargin{1})
+  %if length(varargin{1}) == 2
+    %varargin = {[ 1 0 0 varargin{:} 20*randn 0]};
+  %end
+  %signal.ParameterValues = varargin{1};
+  %return
+%end
 
 if length(varargin)
   signal = signal(varargin{:});
