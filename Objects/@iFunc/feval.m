@@ -85,7 +85,7 @@ if ~isempty(p) && ischar(p)
     disp([ mfilename ': Unknown parameter value ' p '. Using "guess" instead.'])
     p=[];
   end
-elseif ~isnumeric(p) && ~isempty(p)
+elseif ~isnumeric(p) && ~isempty(p) && ~isstruct(p)
   error([ 'iFunc:' mfilename ], [ 'Starting parameters "p" should be given as a vector, structure, character or empty, not ' class(p) ' length ' num2str(numel(p))]);
 end
 
@@ -101,6 +101,9 @@ if isstruct(p)
   if length(new) == length(model.Parameters)
     p = new;
   else
+    p
+    disp([ 'Model ' model.Name ' parameters:' ])
+    model.Parameters
     error([ 'iFunc:' mfilename ], 'Fields of the parameters "p" given as a structure do not match the model Parameters.');
   end
 end

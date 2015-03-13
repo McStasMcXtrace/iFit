@@ -178,7 +178,7 @@ if ~isempty(varargin)
       message = {...
         [ '{\fontsize{14}{\color{blue}' ResLibCal_version '} EUPL license} ' ], ...
         'ResLibCal is a graphical user interface to compute and display' , ...
-        'the {\bf triple-axis resolution function} obtained from e.g. Copper-Nathans and Popovici analytical approximations. The GUI allows to select among a set of computation kernels.' , ...
+        'the {\bf triple-axis resolution function} obtained from e.g. Cooper-Nathans and Popovici analytical approximations. The GUI allows to select among a set of computation kernels.' , ...
         'This application was written by E. Farhi {\copyright}ILL/DS/CS <farhi@ill.eu> using' , ...
         '\bullet ResLib 3.4 (A. Zheludev)' , ...
         '\bullet ResCal (A. Tennant and D. Mc Morrow)' , ...
@@ -200,6 +200,16 @@ if ~isempty(varargin)
     case 'view_resolutionrlu'
       status = get(gcbo, 'Checked');
       if strcmp(status,'on'), status = 'off'; else status = 'on'; end
+      set(gcbo, 'Checked', status);
+      ResLibCal_UpdateViews;
+    case 'view_resolutionxyz'
+      status = get(gcbo, 'Checked');
+      if strcmp(status,'on'), status = 'off'; else status = 'on'; end
+      if strcmp(status,'on')
+        set(gcbo, 'Label','Resolution in [Qx,Qy,Qz]');
+      else
+        set(gcbo, 'Label','Resolution in [Qx,Qy,E]');
+      end
       set(gcbo, 'Checked', status);
       ResLibCal_UpdateViews;
     % other actions (not menu items) -------------------------------------------
@@ -319,7 +329,7 @@ function filename = ResLibCal_Save
 
 % ==============================================================================
 function out = ResLibCal_UpdateViews(out)
-% ResLibCal_ViewResolution2: update all views (only when already visible)
+% ResLibCal_UpdateViews: update all views (only when already visible)
 %
   if nargin == 0, out = ''; end
   if ~isstruct(out), out = ResLibCal_Compute; end
@@ -378,8 +388,10 @@ function out = ResLibCal_UpdateResolution2(out)
 
   % update/show the resolution projections
   rlu = get(findobj(out.handle,'Tag','View_ResolutionRLU'), 'Checked');
+  qz  = get(findobj(out.handle,'Tag','View_ResolutionXYZ'), 'Checked');
   if strcmp(rlu, 'on'), rlu='rlu'; end
-  out = rc_projs(out, rlu);
+  if strcmp(qz, 'on'),  qz='qz'; end
+  out = rc_projs(out, [ rlu ' ' qz ]);
 
 function out = ResLibCal_UpdateResolution3(out)
 % ResLibCal_UpdateResolution3: update the 3D view
@@ -393,8 +405,10 @@ function out = ResLibCal_UpdateResolution3(out)
   % update/show the resolution projections
   % update/show the resolution projections
   rlu = get(findobj(out.handle,'Tag','View_ResolutionRLU'), 'Checked');
+  qz  = get(findobj(out.handle,'Tag','View_ResolutionXYZ'), 'Checked');
   if strcmp(rlu, 'on'), rlu='rlu'; end
-  out = ResPlot3D(out, rlu);
+  if strcmp(qz, 'on'),  qz='qz'; end
+  out = ResPlot3D(out, [ rlu ' ' qz ]);
 
 function ResLibCal_UpdateTauPopup
 % update the popup menu from the editable mono/ana value when d is close

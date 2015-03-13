@@ -74,18 +74,25 @@ if ~isempty(strfind(mode,'rlu'))
   if abs(o1(1))<1e-5, o1(1)=0; end;
   if abs(o1(2))<1e-5, o1(2)=0; end;
   if abs(o1(3))<1e-5, o1(3)=0; end;
-  frame = '[Q1,Q2,E]';
+  frame = '[Q1,Q2,';
 else
   NP = out.resolution.RM;
-  frame = '[Qx,Qy,E]';
+  frame = '[Qx,Qy,';
 end
+if isempty(strfind(mode,'qz')), frame = [ frame 'E]' ];
+else frame = [ frame 'Qz]' ]; end
 if isempty(NP) || ~all(isreal(NP)), return; end
 A=NP;
 const=1.17741; % half width factor
 
 %----- Remove the vertical component from the matrix.
-
-B=[A(1,1:2),A(1,4);A(2,1:2),A(2,4);A(4,1:2),A(4,4)];
+B = A;
+if isempty(strfind(mode,'qz'))
+  B(3,:)=[]; B(:,3)=[];
+else
+  B(4,:)=[]; B(:,4)=[];
+end
+% B=[A(1,1:2),A(1,4);A(2,1:2),A(2,4);A(4,1:2),A(4,4)];
 
 %----- Work out projections for different cuts through the ellipse
 
@@ -152,12 +159,25 @@ if ~isempty(strfind(mode,'rlu'))
 else
   xlabel([ 'Q_x [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
 end
-ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
+
+if isempty(strfind(mode,'qz'))
+  ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
+else
+  if ~isempty(strfind(mode,'rlu'))
+    ylabel([ 'Qz [rlu] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+  else
+    ylabel([ 'Qz [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+  end
+end
 xlim(x1); xe=ylim;
 
 %---------------- Add slice through Qx,W plane ----------------------
 
-MP=[A(1,1) A(1,4);A(4,1) A(4,4)];
+if isempty(strfind(mode,'qz'))
+  MP=[A(1,1) A(1,4);A(4,1) A(4,4)];
+else
+  MP=[A(1,1) A(1,3);A(3,1) A(3,3)];
+end
 
 theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
 S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
@@ -168,7 +188,12 @@ hwhm_xp=const/sqrt(MP(1,1));
 hwhm_yp=const/sqrt(MP(2,2));
 [x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta); de=max(y)-min(y);
 set(line(x,y),'LineStyle','--')
-title('Energy resolution')
+
+if isempty(strfind(mode,'qz'))
+  title('Energy resolution')
+else
+  title('Vertical Qz resolution')
+end
 
 %----- 3. Qy, W plane
 
@@ -190,13 +215,26 @@ if ~isempty(strfind(mode,'rlu'))
 else
   xlabel([ 'Q_y [A^{-1}] {\delta}Q_y=' num2str(max(x)-min(x)) ])
 end
-ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
+
+if isempty(strfind(mode,'qz'))
+  ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
+else
+  if ~isempty(strfind(mode,'rlu'))
+    ylabel([ 'Qz [rlu] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+  else
+    ylabel([ 'Qz [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+  end
+end
+
 xlim(x2); ylim(xe);
 title([ 'ResLibCal ' datestr(now) ])
 
 %---------------- Add slice through Qy,W plane ----------------------
-
-MP=[A(2,2) A(2,4);A(4,2) A(4,4)];
+if isempty(strfind(mode,'qz'))
+  MP=[A(2,2) A(2,4);A(4,2) A(4,4)];
+else
+  MP=[A(2,2) A(2,3);A(3,2) A(3,3)];
+end
 
 theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
 S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
