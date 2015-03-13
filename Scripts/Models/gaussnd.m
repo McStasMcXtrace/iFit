@@ -124,7 +124,7 @@ y.Guess     = y.ParameterValues(:);
 
 y = iFunc(y);
 
-if length(varargin)
+if length(varargin) > 1
   y = y(varargin{:});
 end
 

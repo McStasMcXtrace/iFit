@@ -4,6 +4,18 @@ function data = read_llb_tas( filename )
 
 % built from B. Nennion wfal/read_fich.f
 data = [];
+[p,f,e]= fileparts(filename);
+
+% the type of LLB TAS data depends on the first letter of the file name
+if ~any(upper(f(1)) == 'RCSDP')
+  % error([ mfilename ': ' filename ': ERROR: the filename 1st letter must be any of RCSDP.' ])
+  return;
+end
+
+if ~isempty(e)
+  % the file name must not have extension
+  return
+end
 
 fid = fopen(filename);
 if fid == -1, return; end
@@ -21,8 +33,6 @@ if any(~isstrprop(data.title,'print'))
   fclose(fid);
   error([ mfilename ': ' filename ': ERROR: the title format is not valid. Probably not an LLB/TAS file format.' ])
 end
-
-[p,f,e]= fileparts(filename);
 
 % the first letter of the filename indicates its type:
 switch(upper(f(1)))
@@ -170,12 +180,6 @@ D = date0(1); M=date0(2); Y=date0(3); H=date0(4); m=date0(5);
 if any([ D M Y H m ] <= 0) || D > 31 || M > 12 || m > 60
   data.date = date;
   disp([ 'WARNING: ' mfilename ': ' f e ': the date format is not valid. Using today.' ])
-end
-
-% the type of LLB TAS data depends on the first letter of the file name
-if ~any(upper(f(1)) == 'RCSDP')
-  error([ mfilename ': ' filename ': ERROR: the filename 1st letter must be any of RCSDP.' ])
-  return;
 end
 
 % close the file
