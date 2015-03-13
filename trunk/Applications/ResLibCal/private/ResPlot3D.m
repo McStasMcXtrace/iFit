@@ -44,6 +44,7 @@ if  numel(out.resolution) > 1
     end
     if index > 1, this_mode = [ mode ' scan' ]; else this_mode=mode; end
     feval(mfilename, this, this_mode);
+    hold on
   end
   hold off
   return
@@ -185,6 +186,8 @@ else
   end
 end
 title([ 'Resolution in ' frame ' - ' out.EXP.method ])
+
+hold on
 
 %========================================================================================================
 %========================================================================================================

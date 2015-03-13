@@ -12,6 +12,9 @@ function out = ResLibCal(varargin)
 %   open, save, saveas, export, exit, reset, print, create,
 %   compute, update (=compute+show), view2, view3, view_tas
 %   default, quit
+% To compute the resolution at a given HKLW location, using the current settings
+%   resolution = ResLibCal(QH,QK,QL,W)
+% where QH,QK,QL,W can be vectors, or empty to use current settings
 %
 % The application contains a main interface with:
 % * Menu, Method, Scan and Instrument parameters (main)
@@ -302,10 +305,50 @@ if ~isempty(varargin)
       end
     end
     % end if varargin is char
-  elseif isstruct(varargin{1}) % an EXP structure ?
-    ResLibCal_EXP2fig(varargin{1});
-    out = ResLibCal_Compute;
-    ResLibCal_UpdateViews(out); % when they exist
+
+  elseif nargin >=1
+    if isstruct(varargin{1})  % an EXP structure ?
+      EXP = varargin{1};
+      varargin(1)=[];
+      fig = [];
+    else
+      [EXP, fig] = ResLibCal_fig2EXP;
+    end
+    if isfield(EXP,'EXP'),
+      out = EXP; EXP=out.EXP;
+    end
+    if isempty(EXP) || ~isstruct(EXP), return; end
+
+    if ~isempty(varargin) && isnumeric(varargin{1}) 
+      if ~isempty(varargin{1}),
+        EXP.QH = varargin{1};
+        set(findall(fig,'Tag','EXP_QH'),'String', mat2str(EXP.QH));
+      end
+      varargin(1)=[];
+    end
+    if ~isempty(varargin) && isnumeric(varargin{1}) 
+      if ~isempty(varargin{1}),
+        EXP.QK = varargin{1};
+        set(findall(fig,'Tag','EXP_QK'),'String', mat2str(EXP.QK));
+      end
+      varargin(1)=[];
+    end
+    if ~isempty(varargin) && isnumeric(varargin{1}) 
+      if ~isempty(varargin{1}),
+        EXP.QL = varargin{1};
+        set(findall(fig,'Tag','EXP_QL'),'String', mat2str(EXP.QL));
+      end
+      varargin(1)=[];
+    end
+    if ~isempty(varargin) && isnumeric(varargin{1}) 
+      if ~isempty(varargin{1}),
+        EXP.W = varargin{1};
+        set(findall(fig,'Tag','EXP_W'),'String', mat2str(EXP.W));
+      end
+      varargin(1)=[];
+    end
+    out = ResLibCal_ComputeResMat(EXP);
+    if ~isempty(fig), ResLibCal_UpdateViews(out); end % when they exist
   end
   % end nargin > 0
 else
