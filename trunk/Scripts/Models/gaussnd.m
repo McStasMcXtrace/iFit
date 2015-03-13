@@ -1,5 +1,5 @@
 function y=gaussnd(varargin)
-% y = gauss4d(p, x, y, ..., signal) : nD Gaussian
+% y = gaussnd(p, x, y, ..., signal) : nD Gaussian
 %
 %   iFunc/gaussnd nD Gaussian fitting function
 
@@ -12,7 +12,7 @@ function y=gaussnd(varargin)
 % The only parameters correspond to widths.
 %
 % gaussnd([w1 w2 ... wn ])
-%   builds a 'n' Dimensional orthogonal Guassian with widths [w1 w2 ...]
+%   builds a 'n' Dimensional orthogonal Gaussian with widths [w1 w2 ...]
 % gaussnd(M)
 %   where M is a square matrix [n x n] builds a 'n' Dimensional.
 %   if M is non symmetric, it is made so from (M+M')/2
@@ -32,13 +32,12 @@ function y=gaussnd(varargin)
 
 y=[];
 
-if length(varargin) == 1
+if nargin == 1
   v = varargin{1}; 
   if isstruct(v) % check if this is a ResLibCal configuration
     if isfield(v, 'resolution')
       G = v.resolution;
       y = gaussnd(G);
-      return
     elseif isfield(v, 'RMS')
       y = gaussnd(v.RMS);
     end
@@ -47,12 +46,12 @@ if length(varargin) == 1
     % assume we have a Gaussian matrix
     if isvector(v)
       % if given as vector -> turned into a diagonal matrix
-      v = diag(v);
+      v = diag(1./v);
     end
-    
+
     if size(v,1) == size(v,2)
       % test if this is a symmetric matrix
-      if ~isequal(v, v')
+      if ~issymmetric(v)
         warning([ mfilename ': The matrix given is not symmetric. Making it so as (x+x'')/2.']);
         v = (v+v')/2;
       end
@@ -91,7 +90,7 @@ else
 end
 
 y.Name      = [ 'Gaussian (' num2str(y.Dimension) 'D) [' mfilename ']' ];
-y.Description='Single nD Gaussian model';
+y.Description='nD Gaussian model';
 
 
 % axes are first put on a meshgrid if they are not same length
@@ -104,7 +103,7 @@ y.Description='Single nD Gaussian model';
 % then compute y=x'*sqrtm(p)  and y = y'*y
 % then compute the final result y = sum((sqrtm(p)*x).^2)
 
-ax = 'x y z t u ';
+ax = 'y x z t u ';
 
 
 y.Expression= { [ 'xyz = { ' ax(1:(2*y.Dimension)) ' };' ], ...
@@ -126,6 +125,6 @@ y.Guess     = y.ParameterValues(:);
 y = iFunc(y);
 
 if length(varargin)
-  % y = y(varargin{:});
+  y = y(varargin{:});
 end
 

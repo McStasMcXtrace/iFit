@@ -8,6 +8,9 @@ function signal=lorz2d(varargin)
 %     c = sin(theta)^2/2/sx/sx + cos(theta)^2/2/sy/sy;
 %     signal = p(1) ./ (1+ (a*(x-x0).^2+2*b*(x-x0).*(y-y0)+c*(y-y0).^2) ) + p(7);
 %
+% lorz2d([w1 w2])        creates a model with a specified widths
+% lorz2d([ parameters ]) creates a model with a specified model parameters
+%
 % Reference: http://en.wikipedia.org/wiki/Lorenztian_function
 %
 % input:  p: lorz2d model parameters (double)
@@ -38,6 +41,14 @@ signal.Expression     = {'x0=p(2); y0=p(3); sx=p(4); sy=p(5);', ...
   'signal = p(1) ./ (1+ signal ) + p(7);' };
 
 signal=iFunc(signal);
+
+%~ if nargin == 1 && isnumeric(varargin{1})
+  %~ if length(varargin{1}) == 2
+    %~ varargin = {[ 1 0 0 varargin{:} 20*randn 0]};
+  %~ end
+  %~ signal.ParameterValues = varargin{1};
+  %~ return
+%~ end
 
 if length(varargin)
   signal = signal(varargin{:});
