@@ -82,13 +82,15 @@ if ~isempty(strfind(mode,'rlu'))
   if abs(o1(2))<1e-5, o1(2)=0; end;
   if abs(o1(3))<1e-5, o1(3)=0; end;
   
-  frame = '[Q1,Q2,E]';
+  frame = '[Q1,Q2,';
 else
   qx = 0; qy=0; qw=W;
   RMS  = out.resolution.RM;
   
-  frame = '[Qx,Qy,E]';
+  frame = '[Qx,Qy,';
 end
+if isempty(strfind(mode,'qz')), frame = [ frame 'E]' ];
+else frame = [ frame 'Qz]' ]; end
 if isempty(RMS) || ~all(isreal(RMS)), return; end
 SMAGridPoints      =40;
 EllipsoidGridPoints=40;
@@ -97,8 +99,13 @@ len=1;
 center=1;
 
 % for this plot to work, we need to remove row-column 3 of RMS
-RMS(:,3) = [];
-RMS(3,:) = [];
+if isempty(strfind(mode,'qz')) % plot(Q1,Q2,W), remove Qz=3
+  RMS(:,3) = [];
+  RMS(3,:) = [];
+else                           % plot(Q1,Q2,Qz), remove E=4
+  RMS(:,4) = [];
+  RMS(4,:) = [];
+end
 
 hold on
 
@@ -168,7 +175,15 @@ else
   ylabel([ 'Q_y [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y)) ])
   
 end
-zlabel([ 'E (meV) - {\delta}E=' num2str(max(z)-min(z)) ]);
+if isempty(strfind(mode,'qz'))
+  zlabel([ 'E (meV) - {\delta}E=' num2str(max(z)-min(z)) ]);
+else
+  if ~isempty(strfind(mode,'rlu'))
+    zlabel([ 'Qz [rlu] - {\delta}Qz=' num2str(max(z)-min(z)) ]);
+  else
+    zlabel([ 'Qz [A^{-1}] - {\delta}Qz=' num2str(max(z)-min(z)) ]);
+  end
+end
 title([ 'Resolution in ' frame ' - ' out.EXP.method ])
 
 %========================================================================================================
