@@ -204,9 +204,8 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
 otherwise % 3d data sets: volumes
   if ndims(a) > 3
     % reduce dimensions
-    sz = size(a); 
+    sz = size(a); sz(4:end) = 1;
     iData_private_warning(mfilename, [ 'Reducing ' num2str(ndims(a)) '-th dimensional data ' a.Tag ' "' a.Title '" to 3D with a=resize(a, ' mat2str(sz) ')' ]);
-    sz(4:end) = 1;
     a = resize(a, sz);
   end
   [h, xlab, ylab, zlab, ret] = iData_plot_3d(a, method, this_method, varargin{:}); % in private
