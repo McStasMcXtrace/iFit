@@ -462,7 +462,7 @@ function [data, format] = iLoad(filename, loader, varargin)
             end
           end
           [dummy, name_short, ext] = fileparts(filename);
-          fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, char(this_loader.method));
+          % fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, char(this_loader.method));
           data = [];
           if strcmp(l.identifier, 'MATLAB:nomem') || any(strncmpi(l.message, 'out of memory',length('out of memory')))
             fprintf(1,'iLoad: Not enough memory. Skipping import of this file.\n');
