@@ -207,7 +207,9 @@ if ~strcmp(sscanf(linein,'%s'),'LabVIEWMeasurement')
         if verbose >= 1, fprintf(1,'Data was copied, but no other information is available.\n'); end
         return
     catch fileEx
-        error([ mfilename ': This does not appear to be a text-format LVM file (no header).' ]);
+        % error([ mfilename ': This does not appear to be a text-format LVM file (no header).' ]);
+        data = [];
+        return
     end
 end
 
