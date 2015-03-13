@@ -220,23 +220,7 @@ function config = iLoad_ini
     json.method         = 'read_json';
     json.extension      = 'json';
     
-    ftir_bruker.name    = 'Bruker FTIR OPUS';
-    ftir_bruker.method  = 'read_opus';
-    
 % binary formats ===============================================================
-
-    nmr_jeol.name       = 'JEOL NMR data set';
-    nmr_jeol.method     = 'read_jeol';
-    nmr_jeol.extension  = {'hdr','bin','asc','jdf'};
-    
-    nmr_varian.name     = 'Varian NMR data set';
-    nmr_varian.method   = 'read_varian';
-
-    nmr_bruker.name     = 'Bruker NMR data set';
-    nmr_bruker.method   = 'read_bruker';
-
-    llb_tas.name        = 'LLB/TAS binary';
-    llb_tas.method      = 'read_llb_tas';
     
     ESRF_edf.name       ='EDF ESRF Data Format';
     ESRF_edf.options    ='';
@@ -292,15 +276,33 @@ function config = iLoad_ini
     lv_tdms.name        = 'LabView TDMS';
     lv_tdms.extension   = 'tdms';
     lv_tdms.method      = 'read_tdms';
+
+    nmr_jeol.name       = 'JEOL NMR data set';
+    nmr_jeol.method     = 'read_jeol';
+    nmr_jeol.extension  = {'hdr','bin','asc','jdf'};
+
+% data formats without extension
+
+    ftir_bruker.name    = 'Bruker FTIR OPUS';
+    ftir_bruker.method  = 'read_opus';
+    
+    nmr_varian.name     = 'Varian NMR data set';
+    nmr_varian.method   = 'read_varian';
+
+    nmr_bruker.name     = 'Bruker NMR data set';
+    nmr_bruker.method   = 'read_bruker';
+
+    llb_tas.name        = 'LLB/TAS binary';
+    llb_tas.method      = 'read_llb_tas';
     
 % definition of configuration
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS, ...
       mcstas_scan, mcstas_list, mcstas_sqw, mcstas_powder, mcstas_2D, mcstas_1D, mcstas_0D, mcstas_sim, ...
       spec, chalkriver, ISIS_spe, ILL_inx, STL_ascii, PDB, OFF_ascii, PLY_ascii, CFL, EZD, ...
       labview, yaml, json, ...
-      nmr_jeol, nmr_bruker, nmr_varian, ftir_bruker, llb_tas, ...
       ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
-      Analyze, CBF, STL_binary, MRC, NifTI, Igor, CIF, lv_tdms };
+      Analyze, CBF, STL_binary, MRC, NifTI, Igor, CIF, lv_tdms, nmr_jeol, ...
+      nmr_bruker, nmr_varian, ftir_bruker, llb_tas };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
