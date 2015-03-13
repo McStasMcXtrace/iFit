@@ -174,7 +174,9 @@ end
 
 fclose(FID);
 if number_of_residues == 0
-  error([ mfilename ': ' name ': not a PDB file format.' ])
+  result = [];
+  % error([ mfilename ': ' name ': not a PDB file format.' ])
+  return
 end
 fprintf(1, '%s: %s: Read %i Residues\n', mfilename, name, number_of_residues);
 

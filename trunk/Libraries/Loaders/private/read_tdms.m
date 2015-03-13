@@ -319,10 +319,6 @@ for fnum=1:numel(infilename)
     FileNameNoExt=name;
     FileFolder=pathstr;
     
-    if fnum==1
-        fprintf('\n\n')
-    end
-    fprintf('Converting ''%s''...',FileNameShort)
     
     fid=fopen(FileNameLong);
     
@@ -370,7 +366,7 @@ for fnum=1:numel(infilename)
                 exception.message)
         end
     else
-        fprintf('\n\nConversion complete.\n\n')
+        % fprintf('\n\nConversion complete.\n\n')
     end
 end
 ci=channelinfo;

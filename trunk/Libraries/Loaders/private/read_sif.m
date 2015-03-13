@@ -31,6 +31,7 @@
 
 function info=read_sif(filename, framenumber)
 
+info = [];
 file = filename;
 if nargin==1
   currentFrameNumber = 0;
@@ -43,7 +44,8 @@ if f < 0
 end
 if ~isequal(fgetl(f),'Andor Technology Multi-Channel File')
   fclose(f);
-  error('Not an Andor SIF image file.');
+  % error('Not an Andor SIF image file.');
+  return
 end
 skipLines(f,1);
 [info]=readSection(f, currentFrameNumber);

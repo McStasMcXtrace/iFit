@@ -78,6 +78,8 @@ s.Signal = data;
 
 function [header, data] = pmedf_read ( f )
 
+header=[];  data=[];
+
 if nargin ~= 1
     fprintf('Usage:\n');
     fprintf('  [header {, image}] = pmedf_read.m(edf_filename)\n');
@@ -134,7 +136,8 @@ end
 % check if this an EDF file
 if isempty(strfind(header,'DataType')) || isempty(strfind(header,'ByteOrder')) ...
 || isempty(strfind(header, 'Size')) || isempty(strfind(header, 'Dim_1'))
-  error([ mfilename ': ' f ' is probably not an EDF file.' ])
+  %error([ mfilename ': ' f ' is probably not an EDF file.' ])
+  return
 end
 
 while ~strcmp(header(length(header)-length(closing)+1:length(header)), closing)
@@ -213,7 +216,7 @@ end
 
 % Note: dim1 == sizex, dim2 == sizey
 
-fprintf('Reading %i x %i x %s from file \"%s\"\n',edf.dim1,edf.dim2,dt,f);
+fprintf('%s: Reading %i x %i x %s from file \"%s\"\n',mfilename, edf.dim1,edf.dim2,dt,f);
 
 switch edf.byteorder
     case 'HighByteFirst', arch='ieee-be';
