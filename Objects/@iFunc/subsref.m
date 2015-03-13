@@ -3,6 +3,7 @@ function b = subsref(a,S)
 %
 %   @iFunc/subsref: function returns subset indexed references
 %     such as a(1:2) or a.field.
+%             a{n} returns the guessed axis of rank 'n' (similar to iData).
 %
 % Version: $Revision$
 % See also iFunc, iFunc/subsasgn
@@ -26,8 +27,15 @@ for i = 1:length(S)     % can handle multiple index levels
     if numel(b) > 1           % iFunc array: b(index)
       b = b(s.subs{:});
     else                      % syntax iFunc(p, axes{:}, varargin) -> evaluate
-      b = feval(b, s.subs{:});
+      [b, ax, name, model] = feval(b, s.subs{:});
+      % update object
+      if nargout == 0 && ~isempty(inputname(1))
+        assignin('caller',inputname(1),model);
+      end
     end
+  case '{}' % ======================================================== axes (guessed)
+    [dummy,ax] = feval(b);
+    b = ax{s.subs{:}};
   case '.'  % ======================================================== structure
     % protect some fields     % iFunc Property
     fieldname = s.subs;
