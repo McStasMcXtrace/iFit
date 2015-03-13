@@ -1,4 +1,4 @@
-function [signal, ax, name] = feval(model, p, varargin)
+function [signal, ax, name, model] = feval(model, p, varargin)
 % [signal, axes] = feval(model, parameters, x,y, ...) evaluate a function
 %
 %   @iFunc/feval applies the function 'model' using the specified parameters and axes
@@ -73,6 +73,22 @@ if iscell(p) && ~isempty(p) % as model cell (iterative function evaluation)
   return
 end
 
+% some usual commands 
+if ~isempty(p) && ischar(p)
+  if strcmp(p, 'plot')
+    signal=plot(model);
+    return
+  elseif strcmp(p, 'identify')
+    signal=model;
+    return
+  elseif ~strcmp(p, 'guess')
+    disp([ mfilename ': Unknown parameter value ' p '. Using "guess" instead.'])
+    p=[];
+  end
+elseif ~isnumeric(p) && ~isempty(p)
+  error([ 'iFunc:' mfilename ], [ 'Starting parameters "p" should be given as a vector, structure, character or empty, not ' class(p) ' length ' num2str(numel(p))]);
+end
+
 % convert a structure of parameters into an array matching model parameter
 % names.
 if isstruct(p)
@@ -89,21 +105,6 @@ if isstruct(p)
   end
 end
 
-% some usual commands 
-if ~isempty(p) && ischar(p)
-  if strcmp(p, 'plot')
-    signal=plot(model);
-    return
-  elseif strcmp(p, 'identify')
-    signal=model;
-    return
-  elseif ~strcmp(p, 'guess')
-    disp([ mfilename ': Unknown parameter value ' p '. Using "guess" instead.'])
-    p=[];
-  end
-elseif ~isnumeric(p) && ~isempty(p)
-  error([ 'iFunc:' mfilename ], [ 'Starting parameters "p" should be given as a vector, structure, character or empty, not ' class(p) ' length ' num2str(numel(p))]);
-end
 if ~ischar(p)
   p = p(:);
 end
@@ -164,7 +165,11 @@ if strcmp(p, 'guess') || isempty(p)
   p = NaN*ones(1, numel(model.Parameters));
   guessed = 'full';
 elseif isnumeric(p) && length(p) < length(model.Parameters) % fill NaN's from p+1 to model.Parameters
-  p((length(p)+1):length(model.Parameters)) = NaN;
+  if length(model.ParameterValues) == numel(model.Parameters)
+    p((length(p)+1):length(model.Parameters)) = model.ParameterValues((length(p)+1):length(model.Parameters));
+  else
+    p((length(p)+1):length(model.Parameters)) = NaN;
+  end
 end
 
 % when there are NaN values in parameter values, we replace them by guessed values
@@ -238,7 +243,6 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
         % moments of distributions
         m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
         m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
-        
         if n > 0 && length(varargin) >= n
           p2 = feval(model.Guess, varargin{1:n}); % returns model vector
         else
@@ -422,10 +426,15 @@ if ~isempty(signal_in_varargin) && length(varargin) >= signal_in_varargin
 end
 [signal,ax,p] = iFunc_feval_expr(model, varargin{:});
 
-% model.ParameterValues = p; % store current set of parameters (updated)
+%model.ParameterValues = p; % store current set of parameters (updated)
 
 p    = sprintf('%g ', p(:)'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
+
+% update object
+if nargout == 0 && ~isempty(inputname(1))
+  assignin('caller',inputname(1),model);
+end
 
 % ==============================================================================
 function [signal,iFunc_ax,p] = iFunc_feval_expr(this, varargin)
