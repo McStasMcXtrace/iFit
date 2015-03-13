@@ -53,14 +53,15 @@ function resolution = ResLibCal_ComputeResMat(EXP)
   
   % prepare potential scan in HKLE
   QH  = EXP.QH; QK = EXP.QK; QL = EXP.QL; W =EXP.W;
-  len = max([ numel(QH) numel(QK) numel(QL) numel(W) ]);
-  
-  for index=1:len 
+  len = prod([ numel(QH) numel(QK) numel(QL) numel(W) ]);
+
+  index=1;
+  for iqh=1:numel(QH), h = QH(iqh);
+  for iqk=1:numel(QK), k = QK(iqk);
+  for iql=1:numel(QL), l = QL(iql);
+  for ien=1:numel(W),  w = W(ien);
     % loop on scan steps
-    if numel(QH) < index, h=QH(end); else h=QH(index); end
-    if numel(QK) < index, k=QK(end); else k=QK(index); end
-    if numel(QL) < index, l=QL(end); else l=QL(index); end
-    if numel(W ) < index, w=W(end);  else w=W(index);  end
+    
     % initiate empty values
     R0=1; RM=[]; RMS=[]; bragg = [];
     
@@ -138,7 +139,11 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     else
       resolution{index} = res;
     end
+    index = index+1;
   end % for HKLE
+  end
+  end
+  end
 % end ResLibCal_ComputeResMat
 
 % ------------------------------------------------------------------------------
