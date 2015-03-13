@@ -4,6 +4,8 @@ function h = plot(a, p, varargin)
 %   @iFunc/plot applies the function 'model' using the specified parameters and axes
 %     and function parameters 'pars' with optional additional parameters. A plot of
 %     the model is then produced.
+%     The axis rank '1' corresponds to axis usually labelled as 'y'
+%     The axis rank '2' corresponds to axis usually labelled as 'x'
 %
 % input:  model: model function (iFunc, single or array)
 %         parameters: model parameters (vector, cell or vectors) or 'guess'
