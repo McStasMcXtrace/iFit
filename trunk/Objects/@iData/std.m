@@ -72,7 +72,7 @@ if (dim < 0)
   s = s - min(s);
 end
 
-sum_s = sum(s); 
+sum_s = sum(s);
 % first moment (mean)
 f = sum(s.*x)/sum_s; % mean value
 
