@@ -4,6 +4,9 @@ function y=voigt(varargin)
 %   iFunc/voigt Voigt fitting function, including Bose factor.
 %     The Width parameters of the Gaussian and Lorentzian are the Half Widths.
 %
+% voigt(width)          creates a model with a specified width
+% voigt([ parameters ]) creates a model with specified model parameters
+%
 % Reference: http://en.wikipedia.org/wiki/Voigt_profile
 %
 % input:  p: Voigt model parameters (double)
@@ -42,7 +45,14 @@ y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) m2(x, s-min(s(:
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 0 varargin{1} varargin{1} 0]};
+  elseif length(varargin{1}) == 2
+    varargin = {[ 1 0 varargin{1} 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

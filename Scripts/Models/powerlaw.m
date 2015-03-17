@@ -4,6 +4,9 @@ function y=powerlaw(varargin)
 %   iFunc/powerlaw power law fitting function
 %     y = p(1)*(x - p(2))^p(3) + p(4);
 %
+% poisson(centre)         creates a model with a specified centre
+% poisson([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: power law model parameters (double)
 %            p = [ Amplitude Centre Exponent BackGround ]
 %          or 'guess'
@@ -29,7 +32,12 @@ y.Guess     = @(x,y) [ ...
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 varargin{1} 2 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif length(varargin) > 1
   y = y(varargin{:});
 end
 

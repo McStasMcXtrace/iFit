@@ -4,6 +4,9 @@ function y=pareto(varargin)
 %   iFunc/pareto Pareto distribution function. 
 %     y  = p(4)+ p(1)*(p(3)./x).^p(2);
 %
+% pareto(width)          creates a model with a specified width
+% pareto([ parameters ]) creates a model with specified model parameters
+%
 % Reference: http://en.wikipedia.org/wiki/Pareto_distribution
 %
 % input:  p: Pareto model parameters (double)
@@ -22,10 +25,16 @@ y.Parameters={'Amplitude','Exponent','Width','Background'};
 y.Description='Pareto distribution distribution function. http://en.wikipedia.org/wiki/Pareto_distribution';
 y.Expression= @(p,x) p(4)+ p(1)*(p(3)./abs(x)).^p(2);
 y.Guess     = @(x,y) [ (max(y(:))-min(y(:)))/2 mean(abs(x(:))) std(x(:)) min(y(:)) ];
+y.Dimension =1;
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 1 varargin{1} 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif length(varargin) > 1
   y = y(varargin{:});
 end
 

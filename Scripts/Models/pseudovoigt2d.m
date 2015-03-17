@@ -9,6 +9,9 @@ function signal=pseudovoigt2d(varargin)
 %     signal = (a*(x-x0).^2+2*b*(x-x0).*(y-y0)+c*(y-y0).^2);
 %     signal = p(1) * (p(8) * (1./(1+signal)) + (1-p(8)) * exp(-0.5 * signal)) + p(7);
 %
+% pseudovoigt2d([w1 w2])        creates a model with specified widths
+% pseudovoigt2d([ parameters ]) creates a model with specified model parameters
+%
 % Reference: http://en.wikipedia.org/wiki/Voigt_profile
 %            P. Thompson, D.E. Cox, J.B. Hastings, J. Appl. Cryst. 1987, 20, 79.
 %
@@ -42,7 +45,14 @@ signal.Expression     = {'x0=p(2); y0=p(3); sx=p(4); sy=p(5);', ...
 
 signal=iFunc(signal);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 0 0 varargin{1} varargin{1} 20*randn 0 0.5]};
+  elseif length(varargin{1}) == 2
+    varargin = {[ 1 0 0 varargin{:} 20*randn 0 0.5]};
+  end
+  signal.ParameterValues = varargin{1};
+elseif nargin > 1
   signal = signal(varargin{:});
 end
 

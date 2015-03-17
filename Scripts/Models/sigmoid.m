@@ -5,6 +5,9 @@ function y=sigmoid(varargin)
 %     y  = A0+(A1-A0)./(1+exp(-(x-x0)/w))
 %   This is a sigmoid S-shaped curve, aka logistic.
 %
+% sigmoid(threshold)      creates a model with specified threshold
+% sigmoid([ parameters ]) creates a model with specified model parameters
+%
 % Ref: http://en.wikipedia.org/wiki/Sigmoid_function
 %
 % input:  p: Sigmoidal model parameters (double)
@@ -26,7 +29,12 @@ y.Dimension      = 1;
 y.Guess          =  @(x,y) [ max(y(:))-min(y(:)) mean(x(:)) std(x(:))/3 min(y(:)) ];
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 varargin{1} varargin{1}/4 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 
