@@ -5,6 +5,9 @@ function y=expstretched(varargin)
 %     Tau is the expeonential decay parameter, in inverse 'x' units.
 %     y=p(4)+p(1)*exp(-(x/p(2)).^p(3));
 %
+% expstretched(decay)          creates a model with specified decay constant
+% expstretched([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: Stretched exponential decay model parameters (double)
 %            p = [ Amplitude Tau Exponent BackGround ]
 %          or 'guess'
@@ -27,11 +30,17 @@ y.Expression     = @(p,x) p(4)+p(1)*exp(-(x/p(2)).^p(3));
 y.Dimension      = 1;         % dimensionality of input space (axes) and result
 y.Guess          = @(x,y)[ ...
    exp(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{2}}))) ...
-    -1/(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{1}}))-(abs(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{1}}))) < 1e-2)*.1) ...
+    -1/(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{1}}))- ...
+       (abs(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{1}}))) < 1e-2)*.1) ...
     1 min(y(:)) ];
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 varargin{1} 1 0 ]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

@@ -4,6 +4,9 @@ function y=langevin(varargin)
 %   iFunc/langevin Langevin function for magnetic polarization
 %     x = (x-p(2))/p(3); y  = p(4)+ p(1) .* ( coth(x) - 1./x );
 %
+% langevin(centre)         creates a model with a specified centre/threshold
+% langevin([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: Langevin model parameters (double)
 %            p = [ Amplitude Center Width BackGround ]
 %          or 'guess'
@@ -23,7 +26,12 @@ y.Guess     = @(x,y) [ (max(y(:))-min(y(:)))/2 mean(x(:)) std(x(:)) min(y(:)) ];
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 varargin{1} varargin{1}/4 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

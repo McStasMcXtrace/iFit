@@ -3,8 +3,9 @@ function y=dirac(varargin)
 %
 %   iFunc/dirac Dirac fitting function
 %      y(x==p(2)) = p(1)
-%   The function called with a char argument performs specific actions.
-%   You may create new fit functions with the 'ifitmakefunc' tool.
+%
+% dirac(centre)         creates a model with a line at centre
+% dirac([ parameters ]) creates a model with specified model parameters
 %
 % input:  p: Dirac model parameters (double)
 %            p = [ Amplitude Centre ]
@@ -29,7 +30,12 @@ y.Guess      = @(x,signal) [ NaN m1(x, signal-min(signal(:))) ];
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 varargin{1} ]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

@@ -5,6 +5,9 @@ function y=expon(varargin)
 %     p(2)=Tau is the exponential decay parameter, in inverse 'x' units.
 %     y=p(3)+p(1)*exp(-x/p(2));
 %
+% expon(decay)          creates a model with specified decay constant
+% expon([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: Exponential decay model parameters (double)
 %            p = [ Amplitude Tau BackGround ]
 %          or 'guess'
@@ -27,7 +30,12 @@ y.Guess          = @(x,y)[ ...
     min(y(:)) ];
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 varargin{1} 0 ]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

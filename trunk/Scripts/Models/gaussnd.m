@@ -64,9 +64,9 @@ if nargin == 1
           y.Parameters{end+1} = [ 'p_' num2str(index) ];
       end
     else
-      error([ mfilename ': To define a multi-dimensional Gaussian, you should provide a single symmetric n x n matrix.'])
+      error([ mfilename ': To define a multi-dimensional Gaussian, you should provide a single symmetric n x n matrix or n vector.'])
     end
-  elseif ischar(v) && exist('ResLibCal') == 2
+  elseif ischar(v) && ~strcmp(v, 'identify') && exist('ResLibCal') == 2
      % may be ResLibCal or a ResLibCal configuration file
      if any(strcmpi(v, {'ResLibCal','ResLib','ResCal'}))
        y = gaussnd(ResLibCal('compute'));

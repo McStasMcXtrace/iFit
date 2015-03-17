@@ -31,14 +31,12 @@ y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ];
 
 y = iFunc(y);
 
-%if nargin == 1 && isnumeric(varargin{1})
-  %if length(varargin{1}) == 1
-    %varargin = {[ 1 0 varargin{1} 0]};
-  %end
-  %y.ParameterValues = varargin{1};
-%end
-
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 0 varargin{1} 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

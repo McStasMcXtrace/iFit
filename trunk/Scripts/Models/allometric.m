@@ -5,6 +5,9 @@ function y=allometric(varargin)
 %                    to describe power and asymptotic laws
 %     y = p(1)*(x-p(2)).^p(3) + p(4);
 %
+% allometric(decay)          creates a model with specified decay constant
+% allometric([ parameters ]) creates a model with specified model parameters
+%
 % Reference: Ratkowksy, David A. 1990. Handbook of Nonlinear Regression Models. Marcel Dekker, Inc. 4.3.1 
 %
 % input:  p: Power model parameters (double)
@@ -26,6 +29,11 @@ y.Guess     = @(x,signal) [ max(signal(:))-min(signal(:)) min(x(:))-mean(x(:))/1
  
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 0 varargin{1} 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end

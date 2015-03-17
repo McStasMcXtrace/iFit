@@ -3,7 +3,10 @@ function y=pseudovoigt(varargin)
 %
 %   iFunc/pseudovoigt Pseudo Voigt fitting function
 %     approximation of the convolution of gauss and lorz
-%     	y = a * (d * (1/(1+((x-b)/c)^2)) + (1-d) * exp(-0.5 * ((x-b)/c)^2)) 
+%     	y = a * (d * (1/(1+((x-b)/c)^2)) + (1-d) * exp(-0.5 * ((x-b)/c)^2))
+%
+% pseudovoigt(width)          creates a model with a specified width
+% pseudovoigt([ parameters ]) creates a model with specified model parameters
 %
 % Reference: http://en.wikipedia.org/wiki/Voigt_profile
 %            P. Thompson, D.E. Cox, J.B. Hastings, J. Appl. Cryst. 1987, 20, 79.
@@ -31,7 +34,12 @@ y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN 0.5 ];
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 0 varargin{1} 0 0.5]};
+  end
+  y.ParameterValues = varargin{1};
+elseif length(varargin) > 1
   y = y(varargin{:});
 end
 

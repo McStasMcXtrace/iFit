@@ -4,6 +4,9 @@ function y=twoexp(varargin)
 %   iFunc/twoexp two exponential decay functions (fit 1D function/model)
 %     y=p(1)*exp(-x/p(2))+p(3)*exp(-x/p(4)) + p(5);
 %
+% twoexp([tau1 tau2])    creates a model with specified decay constants
+% twoexp([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: twoexp model parameters (double)
 %            p = [   'Amplitude1' 'Tau1' 'Amplitude2' 'Tau2' 'Background' ] as a numerical array
 %          or 'guess'
@@ -28,7 +31,16 @@ y.Guess          = @(x,y)[ ...
     min(y(:)) ];
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    tau = varargin{1};
+    varargin = {[ 1 tau 1 tau 0]};
+  elseif length(varargin{1}) == 2
+    tau = varargin{1};
+    varargin = {[ 1 tau(1) 1 tau(2) 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

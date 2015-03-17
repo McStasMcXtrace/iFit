@@ -4,6 +4,9 @@ function y=sine(varargin)
 %   iFunc/sine Sine function. 
 %     y  = p(4) + p(1)*sin((x - p(2))/p(3))
 %
+% sine(period)         creates a model with specified period
+% sine([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: Sine model parameters (double)
 %            p = [ Amplitude Phase_Shift Period BackGround ]
 %          or 'guess'
@@ -23,7 +26,12 @@ y.Expression     = @(p,x) p(4) + p(1)*sin((x - p(2))/p(3));
 y.Guess          =  @(x,y) [ max(y(:))-min(y(:)) mean(x(:)) std(x(:))/4 min(y(:)) ];
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 0 varargin{1} 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

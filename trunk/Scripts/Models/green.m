@@ -4,6 +4,9 @@ function y=green(varargin)
 %   iFunc/green Green fitting function
 %     y = (p(1)*p(3)*p(2)^2 ) ./ ( (p(2)^2 - x.^2).^2 + (x*p(3)).^2) + p(4);
 %
+% green(energy)         creates a model with a line at specified energy (centre)
+% green([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: Green model parameters (double)
 %            p = [ Amplitude Center HalfWidth BackGround ]
 %          or 'guess'
@@ -28,7 +31,12 @@ y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ];
 y = iFunc(y);
 
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 varargin{1} varargin{1}/4 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 
