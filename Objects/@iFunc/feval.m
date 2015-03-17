@@ -251,7 +251,7 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
         else
           p2 = feval(model.Guess, varargin{:}); % returns model vector
         end
-      catch
+      catch ME
         p2 = [];
       end
       clear n
