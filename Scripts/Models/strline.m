@@ -5,6 +5,9 @@ function y=strline(varargin)
 %     y=p(2)+p(1)*x;
 %     The p(1)=Gradient parameter is the slope of the straight line.
 %
+% strline(slope)          creates a model with specified slope/gradient
+% strline([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: Straight line model parameters (double)
 %            p = [ Gradient BackGround ]
 %          or 'guess'
@@ -24,7 +27,12 @@ y.Expression= @(p,x) p(2)+p(1)*x;
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ varargin{1} 0 ]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

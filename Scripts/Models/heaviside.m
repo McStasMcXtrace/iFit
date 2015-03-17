@@ -6,6 +6,9 @@ function y=heaviside(varargin)
 %   The Width parameter sign indicates if this is a raising (positive) or 
 %   falling (negative) Heaviside.
 %
+% heaviside(threshold)      creates a model with a specified threshold
+% heaviside([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: Heaviside model parameters (double)
 %            p = [ Amplitude Centre FullWidth BackGround ]
 %          or 'guess'
@@ -32,8 +35,12 @@ y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ];
 
 y = iFunc(y);
 
-
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 varargin{1} varargin{1}/4 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

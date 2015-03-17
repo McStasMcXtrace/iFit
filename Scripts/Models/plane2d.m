@@ -4,6 +4,9 @@ function signal=plane2d(varargin)
 %   iFunc/plane2d Planar function (fit 2D function/model)
 %       signal = p(1)*x+p(2)*y+p(3)
 %
+% plane2d([s1 s2])        creates a model with specified slopes
+% plane2d([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: plane2d model parameters (double array)
 %            p = [  'Slope_X' 'Slope_Y' 'Background' ]
 %          or 'guess'
@@ -25,7 +28,14 @@ signal.Expression     = @(p,x,y) p(1)*x+p(2)*y+p(3);
 
 signal=iFunc(signal);
 
-if length(varargin)
-  signal = signal(varargin{:});
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ varargin{1} varargin{1} 0]};
+  elseif length(varargin{1}) == 2
+    varargin = {[ varargin{1} 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif length(varargin) > 1
+  y = y(varargin{:});
 end
 

@@ -4,6 +4,9 @@ function y=lognormal(varargin)
 %   iFunc/lognormal Log-Normal distribution function. 
 %     y  = p(4)+ p(1)/sqrt(2)/p(3)./x .* exp( -log(x/p(2)).^2 /2/p(3)/p(3) )
 %
+% lognormal(centre)         creates a model with a specified centre
+% lognormal([ parameters ]) creates a model with specified model parameters
+%
 % Reference: http://en.wikipedia.org/wiki/Log_normal
 %
 % input:  p: Log-Normal model parameters (double)
@@ -25,7 +28,12 @@ y.Guess     = @(x,y) [ (max(y(:))-min(y(:)))/2 mean(abs(x(:))) std(x(:))/2 min(y
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 varargin{1} varargin{1}/4 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

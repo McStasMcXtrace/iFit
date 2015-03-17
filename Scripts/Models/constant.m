@@ -4,6 +4,8 @@ function y=constant(varargin)
 %   iFunc/constant a constant/background/single value
 %     y=p(1);
 %
+% constant(cte)          creates a model with specified constant
+%
 % input:  p: Constant parameter (double)
 %            p = [ Value ]
 %          or 'guess' 
@@ -30,7 +32,9 @@ y.Expression= @(p,x) p(1);
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  y.ParameterValues = varargin{1};
+else
   y = y(varargin{:});
 end
 

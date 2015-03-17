@@ -5,6 +5,9 @@ function y=tophat(varargin)
 %     y=0*x+p(4); y(find(p(2)-p(3) < x & x < p(2)+p(3))) = p(1);
 %     and y is set to the background outside the full width.
 %
+% tophat(width)          creates a model with a specified width
+% tophat([ parameters ]) creates a model with specified model parameters
+%
 % input:  p: Top-Hat rectangular model parameters (double)
 %            p = [ Amplitude Centre HalfWidth BackGround ]
 %          or 'guess'
@@ -28,7 +31,12 @@ y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ];
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  if length(varargin{1}) == 1
+    varargin = {[ 1 0 varargin{1} 0]};
+  end
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 
