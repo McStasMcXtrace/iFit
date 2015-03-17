@@ -444,7 +444,7 @@ function a = iFunc_private_check(a)
   a.Parameters      = pars;
   if ~isempty(val)
     if numel(pars) ~= numel(val)
-      fprintf(1,'%s: model %s: the number of model parameter values %d does not match the number of parameter names %d.\n', mfilename, a.Tag, numel(val), length(pars));
+      fprintf(1,'%s: model %s "%s": the number of model parameter values %d does not match the number of parameter names %d.\n', mfilename, a.Tag, a.Name, numel(val), length(pars));
       val = zeros(size(pars));
     end
     a.ParameterValues = val;
