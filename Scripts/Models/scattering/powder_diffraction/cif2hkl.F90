@@ -51351,7 +51351,7 @@ subroutine CFML_cif2hkl(file_in, file_out, lambda, powxtal, verbose, message, mo
     do i=1,hkl%Nref
       F    = hkl%ref(i)%Fc
       if ((F+1.0) .ne. F) then ! except for NaN's
-        write(unit=lun,fmt="(3(i3,1x),i5,1x,2(f13.5,1x),f25.5)") &
+        write(unit=lun,fmt="(3(i4,1x),i5,1x,2(f13.5,1x),f25.5)") &
         hkl%ref(i)%h, hkl%ref(i)%mult, &
         0.5/hkl%ref(i)%S, F*F
       end if
