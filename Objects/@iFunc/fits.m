@@ -231,7 +231,8 @@ if nargin < 3, pars = [];        end % will use guessed values
 if nargin < 4, options=[];       end
 if nargin < 5, constraints = []; end
 
-% check for vectorized input of data sets
+% check for vectorized input ==============================================
+
 % handle array of model functions
 if numel(model) > 1
   pars_out={} ; criteria={}; message={}; output={};
@@ -244,13 +245,32 @@ end
 % handle array of data sets
 if (iscellstr(a) || isstruct(a) || isa(a,'iData')) && numel(a) > 1
   pars_out={} ; criteria={}; message={}; output={};
-  for index=1:numel(model)
+  for index=1:numel(a)
     [pars_out{end+1},criteria{end+1},message{end+1},output{end+1}]= ...
-      fits(model, a(1), pars, options, constraints, varargin{:});
+      fits(model, a(index), pars, options, constraints, varargin{:});
+  end
+  return
+end
+% handle array of parameters
+if iscell(pars) && numel(pars) > 1
+  pars_out={} ; criteria={}; message={}; output={};
+  for index=1:numel(pars)
+    [pars_out{end+1},criteria{end+1},message{end+1},output{end+1}]= ...
+      fits(model, a, pars{index}, options, constraints, varargin{:});
+  end
+  return
+end
+% handle array of optimisers/options
+if iscell(options) && numel(options) > 1
+  pars_out={} ; criteria={}; message={}; output={};
+  for index=1:numel(options)
+    [pars_out{end+1},criteria{end+1},message{end+1},output{end+1}]= ...
+      fits(model, a, pars, options{index}, constraints, varargin{:});
   end
   return
 end
 
+% =========================================================================
 % extract Signal from input argument, as well as a Data identifier
 % default values
 Monitor=1; Error=1; Axes={}; Signal=[]; Name = ''; is_idata=[];
