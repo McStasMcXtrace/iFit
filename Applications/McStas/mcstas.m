@@ -66,6 +66,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %             For 2 and 4+ vectors, the parameter starting value is the mean of the vector.
 %           parameters.name = string (simulation, optimization and display)
 %             defines a fixed parameter, that can not be optimized.
+%           when PARAMETERS is given as a string with 'name=val; ...', it is
+%           converted into a structure.
 %         OPTIONS: a structure or string that indicates what to do (structure)
 %           options.dir:    directory where to store results (string)
 %           options.overwrite: 0 or 1 to either keep or force output
@@ -309,6 +311,10 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   options.fixed_pars     = fixed_pars;
   options.scan_size      = scan_size;
   pars                   = variable_pars;
+
+  if isempty(pars) && ~strcmp(options.mode,'info') && (~isfield(options,'compile') || options.compile==0)
+    error([ mfilename ': no parameter name/value has been specified. Use a structure or char as 2nd argument.']);
+  end
   
 % Launch optimize and simulate mode ============================================
 
@@ -359,7 +365,6 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     end
     pars = pars_struct;
   elseif strcmpi(options.mode,'simulate') % ============== SINGLE simulation/scan
-
     [p, fval] = mcstas_criteria(pars, options);   % may fail at execution
     
     fval = squeeze(fval);
@@ -671,15 +676,17 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     criteria = str2struct(result);
     return
   end
+
+  if isfield(options,'ncount') && options.ncount == 0
+    return
+  end
   
   if nargout ==0, return; end
   if status
     error([ mfilename ': ERROR: Failed to execute ' cmd ]);
   end
   
-  if isfield(options,'ncount') && options.ncount == 0
-    return
-  end
+  
   directory = options.dir;
 
   % import McStas simulation result
