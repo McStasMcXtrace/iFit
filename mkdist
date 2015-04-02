@@ -46,6 +46,7 @@ cd $DIST
 echo "Clean up CVS/SVN info and temporary files"
 find . -name CVS -exec rm -rf \{\} \; 2> /dev/null
 find . -name .CVS -exec rm -rf \{\} \; 2> /dev/null
+find . -name .git -exec rm -rf \{\} \; 2> /dev/null
 find . -name CVSROOT -exec rm -rf \{\} \; 2> /dev/null
 find . -name svn -exec rm -rf \{\} \; 2> /dev/null
 find . -name .svn -exec rm -rf \{\} \; 2> /dev/null
