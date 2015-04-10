@@ -23,14 +23,13 @@ choices={ 'pg(002)', 1.87325;...
       'Si(111)', 2*pi/3.135;...
       'Cu(111)', 2*pi/2.087;...
       'Cu(002)', 2*pi/1.807;...
-      'Cu(220)', 2*pi/1.278;...
-      'Cu(111)', 2*pi/2.095 };
+      'Cu(220)', 2*pi/1.278};
 
 if nargin > 1
   % return the index/label of the closest monochromator
     [dif, index] = sort(abs(cell2mat(choices(:,2))-x));
     index=index(1);
-    if dif(1) < 1e-2
+    if dif(1) < 5e-2
       tau = choices{index,1}; % the label
     else
       tau = '';

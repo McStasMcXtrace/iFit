@@ -461,9 +461,9 @@ function ResLibCal_UpdateTauPopup
   popup = findobj(fig,'Tag','EXP_mono_tau_popup');
   label = GetTau(EXP.mono.tau, 'getlabel');
   index = find(strncmpi(get(popup,'String'), label, length(label)));
-  if ~isempty(index) && ~isempty(label), set(popup, 'value', index); end
+  if ~isempty(index) && ~isempty(label), set(popup, 'value', index(1)); end
 
   popup = findobj(fig,'Tag','EXP_ana_tau_popup');
   label = GetTau(EXP.ana.tau, 'getlabel');
   index = find(strncmpi(get(popup,'String'), label, length(label)));
-  if ~isempty(index) && ~isempty(label), set(popup, 'value', index); end
+  if ~isempty(index) && ~isempty(label), set(popup, 'value', index(1)); end
