@@ -57,7 +57,6 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
                 errorbar(x,y,e,this_method, varargin{:}, 'Parent',hg) ];
         catch
           delete(h)
-          disp arg1
           this_method=[]; % indicate we failed so that we try without line option
         end
       end
@@ -67,14 +66,28 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
                 errorbar(x,y,e,varargin{:}, 'Parent',hg) ];
         catch ME
           delete(h)
-          disp arg2
           h = errorbar(x,y,e, varargin{:});
         end
       end
       
+      % make sure the linespec of the single plot and errorbar coincide
+      if numel(h) > 1 
+        l = findobj(h,'Type','line');
+        er = findobj(h,'Type','errorbar');
+        specs = {'LineStyle','','LineWidth','','Color', '', ...
+          'MarkerEdgeColor','','MarkerFaceColor','','MarkerSize','' };
+        specs_values = specs;
+        for index=1:numel(specs)
+          if ~isempty(specs{index})
+            specs_values{index+1} = get(l(1), specs{index});
+          end
+        end
+        set(er, specs_values{:});
+      end
+      
       % option to hide errorbar
-      if (~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0)) && length(h) > 1
-        % set(h(2:end), 'Visible','off'); end
+      if (~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0)) && numel(h) > 1
+        set(findobj(h,'Type','errorbar'), 'Visible','off');
       end
     end
   end
