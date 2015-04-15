@@ -64,7 +64,7 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
         try
           h = [ plot(x,y,varargin{:}, 'Parent',hg) ...
                 errorbar(x,y,e,varargin{:}, 'Parent',hg) ];
-        catch ME
+        catch
           delete(h)
           h = errorbar(x,y,e, varargin{:});
         end
