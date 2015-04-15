@@ -98,6 +98,9 @@ else  % convert input argument into object
     % iData(x,y,..., signal)
     index = length(varargin);
     out   = iData(varargin{index});  % last argument is the Signal
+    if ~isempty(inputname(index)) && ~isfield(out, inputname(index))
+      out = setalias(out, inputname(index), 'Signal');
+    end
     
     % handle axes
     for k1=1:(index-1)
@@ -106,7 +109,12 @@ else  % convert input argument into object
       else   k2 = k1; end
       out = set(out,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
       out = setaxis(out, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
-      label(out, k1, inputname(k2));
+      if ~isempty(inputname(k2))
+        label(out, k1, inputname(k2));
+        if ~isfield(out, inputname(k2))
+          out = setalias(out, inputname(k2), [ 'Data.Axis_' num2str(k1) ]);
+        end
+      end
     end
     % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes in Signal
     if ndims(out)>=2 && isvector(getaxis(out, 1)) && isvector(getaxis(out, 2)) ...
