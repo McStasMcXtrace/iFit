@@ -2,9 +2,9 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
 % iData_plot_1d: plot a 1D iData object
 % used in iData/plot
 
-ret = 0;
+  ret = 0;
 
-if size(a,1) ==1 && size(a,2) > 1
+  if size(a,1) ==1 && size(a,2) > 1
     a = transpose(a);
   end
   [x, xlab] = getaxis(a,1); x=double(x(:));
@@ -34,8 +34,9 @@ if size(a,1) ==1 && size(a,2) > 1
     setaxis(a, 2, 'Axis_2');
     h = plot(a, method, varargin{:});
     ret = 1;
-  else 
-    if all(e == 0) || length(x) ~= length(e)
+  else
+    if all(e == 0 | ~isfinite(e)) || length(x) ~= length(e)
+      % no errorbar -> single line
       if length(this_method)
         try
           h = plot(x,y, this_method, varargin{:});
@@ -45,22 +46,35 @@ if size(a,1) ==1 && size(a,2) > 1
       end
       if ~length(this_method) h = plot(x,y, varargin{:}); end
     else
-      if length(this_method), 
+      % with errorbar -> plot both with and without errorbar so that we can
+      % hide the errorbar, retaining the data set only
+
+      % the returned handle is the plot, and then any errorbar stuff (hidable)
+      hg = hggroup; h=[];
+      if length(this_method)
         try
-          h = errorbar(x,y,e,this_method, varargin{:});          
+          h = [ plot(x,y,this_method, varargin{:}, 'Parent',hg) ...
+                errorbar(x,y,e,this_method, varargin{:}, 'Parent',hg) ];
         catch
-          this_method=[];
+          delete(h)
+          disp arg1
+          this_method=[]; % indicate we failed so that we try without line option
         end
       end
-      if ~length(this_method) 
-        h = errorbar(x,y,e, varargin{:}); 
-      end
-      if ~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0)
-        if length(h) == 1 && length(get(h,'Children') == 2)
-          eh = get(h,'Children');
-        else eh = h; 
+      if ~length(this_method)
+        try
+          h = [ plot(x,y,varargin{:}, 'Parent',hg) ...
+                errorbar(x,y,e,varargin{:}, 'Parent',hg) ];
+        catch ME
+          delete(h)
+          disp arg2
+          h = errorbar(x,y,e, varargin{:});
         end
-        if length(eh) > 1, set(eh(2), 'Visible','off'); end
+      end
+      
+      % option to hide errorbar
+      if (~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0)) && length(h) > 1
+        % set(h(2:end), 'Visible','off'); end
       end
     end
   end
