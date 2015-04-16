@@ -48,13 +48,18 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
     else
       % with errorbar -> plot both with and without errorbar so that we can
       % hide the errorbar, retaining the data set only
+      
+      % with new HandleGraphics, errorbars are single objects, not two separate
+      % lines. To be able to hide the errorbar, we also plot the line alone.
 
       % the returned handle is the plot, and then any errorbar stuff (hidable)
       hg = hggroup; h=[];
       if length(this_method)
         try
-          h = [ plot(x,y,this_method, varargin{:}, 'Parent',hg) ...
-                errorbar(x,y,e,this_method, varargin{:}, 'Parent',hg) ];
+          h = errorbar(x,y,e,this_method, varargin{:}, 'Parent',hg);
+          if ~strcmpi(get(h, 'Type'),'hggroup')
+            h = [ plot(x,y,this_method, varargin{:}, 'Parent',hg) h ];
+          end
         catch
           delete(h)
           this_method=[]; % indicate we failed so that we try without line option
@@ -62,8 +67,10 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
       end
       if ~length(this_method)
         try
-          h = [ plot(x,y,varargin{:}, 'Parent',hg) ...
-                errorbar(x,y,e,varargin{:}, 'Parent',hg) ];
+          h = errorbar(x,y,e,varargin{:}, 'Parent',hg);
+          if ~strcmpi(get(h, 'Type'),'hggroup')
+            h = [ plot(x,y,varargin{:}, 'Parent',hg) h ];
+          end
         catch
           delete(h)
           h = errorbar(x,y,e, varargin{:});
@@ -72,22 +79,26 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
       
       % make sure the linespec of the single plot and errorbar coincide
       if numel(h) > 1 
-        l = findobj(h,'Type','line');
+        l  = findobj(h,'Type','line');
         er = findobj(h,'Type','errorbar');
-        specs = {'LineStyle','','LineWidth','','Color', '', ...
-          'MarkerEdgeColor','','MarkerFaceColor','','MarkerSize','' };
-        specs_values = specs;
-        for index=1:numel(specs)
-          if ~isempty(specs{index})
-            specs_values{index+1} = get(l(1), specs{index});
+        if ~isempty(er)
+          specs = {'LineStyle','','LineWidth','','Color', '', ...
+            'MarkerEdgeColor','','MarkerFaceColor','','MarkerSize','' };
+          specs_values = specs;
+          for index=1:numel(specs)
+            if ~isempty(specs{index})
+              specs_values{index+1} = get(l(1), specs{index});
+            end
           end
+          set(er, specs_values{:});
         end
-        set(er, specs_values{:});
       end
       
       % option to hide errorbar
       if (~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0)) && numel(h) > 1
-        set(findobj(h,'Type','errorbar'), 'Visible','off');
+        eh = findobj(h,'Type','errorbar');
+        if isempty(eh), eh = h(2); end
+        set(eh, 'Visible','off');
       end
     end
   end
