@@ -132,6 +132,8 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
       ans = this{end};
       ifit_options.line = '';
     % some startup arguments known as commands
+    elseif strcmp(ifit_options.line, '-nodesktop') || strcmp(ifit_options.line, '-nosplash')
+      ifit_options.line = ''; % ignore these which are Matlab-desktop specific
     elseif strcmp(ifit_options.line, '--save') || strcmp(ifit_options.line, '-s')
       ifit_options.save='ifit.mat'; ifit_options.line = '';
     elseif strncmp(ifit_options.line, '--save=', 7)
