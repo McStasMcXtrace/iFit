@@ -80,11 +80,11 @@ end
     % readLine(bufferReader)
     
     % we use a for loop to read all bytes, one by one (sadly).
+    out = zeros(1, available);
     for index=1:available
-      this      = read(stream);
-      out       = [ out this ];
+      out(index) = read(stream);
     end
     
-    out = char(out);
+    out = strrep(char(out), sprintf('\n\r'), sprintf('\n'));
 
       
