@@ -55,11 +55,12 @@ else
       d = [ d sprintf('%30s ', s.command) ];                   % cmd;
 
       if s.isActive
-        d = [ d 'Run    ' ];
+        d = [ d 'Run ' ];
       else
-        d = [ d 'Stop   ' ];
+        d = [ d 'STP ' ];
       end
-      d = [ d sprintf('%s\n', Process_display_out(s.stdin)) ];
+      if ~isempty(s.stderr), d=[ d 'ERR' ]; else d=[ d '   ' ]; end
+      d = [ d sprintf(' %s\n', Process_display_out(s.stdout)) ];
     end
 end
 
@@ -74,4 +75,5 @@ function out = Process_display_out(str)
   lines = strread(str,'%s','delimiter','\n\r');
   out = sprintf('%s', lines{end});
   if numel(out) > 40, out = [ out(1:40) '...' ]; end
+  out = deblank(out);
   

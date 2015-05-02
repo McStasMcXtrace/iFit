@@ -41,7 +41,7 @@ catch
 end
 
 % then retrieve any stdout/stderr content (possibly in Buffer after end of process)
-pid.stdin  = strcat(pid.stdin,  process_get_output(pid.stdinStream));
+pid.stdout = strcat(pid.stdout, process_get_output(pid.stdinStream));
 pid.stderr = strcat(pid.stderr, process_get_output(pid.stderrStream));
   
 if isa(pid, 'Process') && nargout == 0 && ~isempty(inputname(1))
