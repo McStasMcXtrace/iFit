@@ -28,13 +28,13 @@ else
   fprintf(1,'%s = %s object [%s]:\n',iname, id, state);
 
   s=struct(pid);
-  stdout = s.stdin;
+  stdout = s.stdout;
   stderr = s.stderr;
   % cleanup
   s=rmfield(s, 'process');
   s=rmfield(s, 'stdinStream');
   s=rmfield(s, 'stderrStream');
-  s=rmfield(s, 'stdin');
+  s=rmfield(s, 'stdout');
   s=rmfield(s, 'stderr');
   
   if isnumeric(s.creationDate),    s.creationDate=datestr(s.creationDate); end

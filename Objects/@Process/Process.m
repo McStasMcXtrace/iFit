@@ -48,7 +48,7 @@ if nargin == 0
   pid.creationDate  = now;  % Creation date
   pid.terminationDate  = []; % end date
   pid.stdinStream   ='';
-  pid.stdin = [];   % stores the stdout (yes!) from the process
+  pid.stdout = [];   % stores the stdout (yes!) from the process
 
   pid.stderrStream   = '';
   pid.stderr = [];   % stores the stderr from the process
