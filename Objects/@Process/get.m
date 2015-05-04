@@ -35,6 +35,9 @@ end
 
 if nargin == 1
   disp(this, inputname(1));
+  if ~isempty(inputname(1))
+    assignin('caller', inputname(1), this);
+  end
   varargout{1} = display(this, inputname(1));
   return
 end

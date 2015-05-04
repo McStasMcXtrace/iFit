@@ -1,6 +1,6 @@
 % pid=Process(command): spawn external processes
 %
-% The Process class allows to launch an external command asynchronously,
+% The Process class allows to launch an external command in background,
 % inquire its output and state during execution, and terminate it.
 %
 % The command to launch can be given as a single string, or as a cellstr.
@@ -9,7 +9,7 @@
 % This cellstr calling syntax allows to pass arguments containing space
 % delimiters.
 %
-%   start an external command asynchronously
+%   start an external command asynchronously (in background)
 %     pid = Process(command)
 %
 %   determine if process is still running (active) and update
