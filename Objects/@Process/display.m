@@ -55,12 +55,12 @@ else
       d = [ d sprintf('%30s ', s.command) ];                   % cmd;
 
       if s.isActive
-        d = [ d 'Run ' ];
+        d = [ d 'Run    ' ];
       else
-        d = [ d 'STP ' ];
+        d = [ d 'STP    ' ];
       end
-      if ~isempty(s.stderr), d=[ d 'ERR' ]; else d=[ d '   ' ]; end
-      d = [ d sprintf(' %s\n', Process_display_out(s.stdout)) ];
+      if ~isempty(s.stderr), d=[ d '[ERR]' ]; end
+      d = [ d sprintf('%s\n', Process_display_out(s.stdout)) ];
     end
 end
 

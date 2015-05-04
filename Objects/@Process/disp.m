@@ -21,6 +21,10 @@ if numel(pid) > 1
   eval([ iname ' = pid;' ])
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
 else
+  if ~isempty(inputname(1))
+    pid = refresh(pid);
+    assignin('caller', inputname(1), pid);
+  end
   if isdeployed || ~usejava('jvm'), id='Process';
   else           id='<a href="matlab:doc Process">Process</a> (<a href="matlab:methods Process">methods</a>,<a href="matlab:doc(Process,''Process'')">doc</a>)';
   end
