@@ -31,11 +31,11 @@ end
 if length(s_in) == 0
     d = [ d sprintf(' %s: empty\n',id) ];
 else
-    if numel(s_in) == 1
-      d = [ d sprintf(' %s:\n\n', id) ];
-    else
-      d = [ d sprintf(' %s:\n\n', id) ];
+    if numel(s_in) == 1 && ~isempty(inputname(1))
+      s_in = refresh(s_in);
+      assignin('caller', inputname(1), s_in);
     end
+    d = [ d sprintf(' %s:\n\n', id) ];
     if numel(s_in) > 1
       d = [ d sprintf('Index ') ];
     end
@@ -57,7 +57,7 @@ else
       if s.isActive
         d = [ d 'Run    ' ];
       else
-        d = [ d 'STP    ' ];
+        d = [ d 'Stop   ' ];
       end
       if ~isempty(s.stderr), d=[ d '[ERR]' ]; end
       d = [ d sprintf('%s\n', Process_display_out(s.stdout)) ];
