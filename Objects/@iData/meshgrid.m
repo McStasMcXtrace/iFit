@@ -6,6 +6,8 @@ function b = meshgrid(a, method)
 %     perpendicular/regular, the object Signal is interpolated on the new grid.
 %   meshgrid(a, 'vector...') forces all axes as vectors
 %
+%   A meshgrid histogram can be converted into an event list with the 'event' method.
+%
 % input:  a: object or array (iData)
 %         method: 'linear','cubic','spline','nearest'
 %                 'vector' to get only vector axes
@@ -13,7 +15,7 @@ function b = meshgrid(a, method)
 % ex:     c=meshgrid(a); c=meshgrid(a, 'vector linear')
 %
 % Version: $Revision$
-% See also iData, iData/interp, iData/hist
+% See also iData, iData/interp, iData/hist, iData/event
 
 if nargin < 2
   method = 'linear';
