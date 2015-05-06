@@ -47,7 +47,7 @@ use_accumdata=0;
 for index=1:length(varargin)
   if ischar(varargin{index})
     if strcmpi(varargin{index}, 'AccumData')
-      use_accumdata=index;
+      use_accumdata=index+1;
       break
     end
   end
@@ -67,7 +67,7 @@ if length(varargin) && length(varargin{1}) == ndims(a)
 end
 
 % is the Signal already specified in options (should not)
-signal = get(a, 'Signal'); signal=signal(:);
+signal = get(a, 'Signal'); signal=signal(:); M = numel(signal);
 if ~use_accumdata
   varargin{end+1} = 'AccumData';
   varargin{end+1} = signal;
@@ -88,7 +88,15 @@ clear ax signal
 if isempty(use_axes), c=a; return; end
 
 % now call the magic function (private)
+[count_s edges] = histcn(axes, varargin{:});
+
+% count the accumulated events (so that we divide results by it to get mean value)
+varargin{use_accumdata} = ones(M,1);
 [count edges] = histcn(axes, varargin{:});
+
+% normalise to the number of accumulated events per bin
+index = find(count);
+count_s(index) = count_s(index)./count(index);
 
 % compute the Error and Monitor
 e = subsref(a,struct('type','.','subs','Error'));
@@ -96,6 +104,7 @@ if  ~isempty(e) && not(all(e(:) == 0 | e(:) == 1))
   varargin{use_accumdata} = e.^2;
   count_e = histcn(axes, varargin{:});
   count_e = sqrt(count_e);
+  count_e(index) = count_e(index)./count(index);
 else
   count_e = e;
 end
@@ -104,14 +113,16 @@ m = subsref(a,struct('type','.','subs','Monitor'));
 if  ~isempty(m) && not(all(m(:) == 0 | m(:) == 1))
   varargin{use_accumdata} = m;
   count_m = histcn(axes, varargin{:});
+  count_m(index) = count_m(index)./count(index);
 else
   count_m = m;
 end
 
+
 % assemble final new object
 c = copyobj(a);
 c.Data=[];
-c.Data.signal=count;
+c.Data.signal=count_s;
 rmaxis(c); rmalias(c);
 
 c = setalias(c, 'Signal','Data.signal');
