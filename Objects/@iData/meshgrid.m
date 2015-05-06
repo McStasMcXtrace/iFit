@@ -1,4 +1,4 @@
-function b = meshgrid(a, method)
+function b = meshgrid(a, varargin)
 % s = meshgrid(a) : transforms an iData object so that its axes are grids
 %
 %   @iData/meshgrid function to transform iData object axes so that they are
@@ -17,24 +17,36 @@ function b = meshgrid(a, method)
 % Version: $Revision$
 % See also iData, iData/interp, iData/hist, iData/event
 
-if nargin < 2
-  method = 'linear';
-end
-
 % handle input iData arrays
 if numel(a) > 1
   b = zeros(iData, numel(a), 1);
   parfor index=1:numel(a)
-    b(index) = meshgrid(a(index),method);
+    b(index) = meshgrid(a(index),varargin{:});
   end
   b = reshape(b, size(a));
   return
 end
 
-% check axes dimensions
+method = '';
+n_dims = [];
+if nargin > 1
+  for index=1:numel(varargin)
+    if ischar(varargin{index})
+      method = [ method ' ' varargin{index} ];
+    elseif isnumeric(varargin{index})
+      n_dims = varargin{index};
+    end
+  end
+end
+
 s_dims = size(a); % Signal/object dimensions
 
-parfor index=1:ndims(a)
+if isscalar(n_dims)
+  n_dims = n_dims*ones(1,ndims(a));
+end
+
+% check axes dimensions
+for index=1:ndims(a)
   v = getaxis(a, index);
 
   % compute the initial axis length
@@ -45,20 +57,22 @@ parfor index=1:ndims(a)
     a_len = ceil(prod(size(a))^(1/ndims(a))*2);
   end
   if a_len == 1, a_len = 2; end
-  s_dims(index) = a_len;
-
+  if numel(n_dims) < index
+    n_dims(index) = a_len;
+  end
 end
+clear v
 if ndims(a) == 1
-  s_dims = [ max(s_dims) 1 ];
+  n_dims = [ max(n_dims) 1 ];
 end
 
 if isvector(a) > 2
-  b = hist(a, s_dims);
+  b = hist(a, n_dims);
   return;
 end
 
 % create a regular grid
-[f_axes, changed] = iData_meshgrid(a, s_dims, method);
+[f_axes, changed] = iData_meshgrid(a, n_dims, method);
 method            = strtrim(strrep(method, 'vector', ''));
 
 b = copyobj(a);
