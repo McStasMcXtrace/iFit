@@ -12,7 +12,7 @@ function a = reshape(a, varargin)
 % input:  a:   object or array (iData)
 %         m,n,p...: dimensions (integers)
 % output: c: object or array (iData)
-% ex:     a=iData(peaks); b=reshape(a, 10,90);
+% ex:     a=iData(peaks(60)); b=reshape(a, 75, 48);
 %
 % Version: $Revision: 1035 $
 % See also iData, iData/squeeze, iData/size, iData/permute, iData/resize
@@ -34,7 +34,7 @@ end
 sz = size(a);
 if prod(sz) ~= prod(dims)
   iData_private_error(mfilename,[ 'To RESHAPE the number of elements must not change. Object ' ...
-      a.Tag ' "' a.Title ' has dimension ' mat2str(size(a)) ' but requested to reshape into ' mat2str(dims) ]) ;
+      a.Tag ' "' a.Title ' has dimension ' mat2str(size(a)) ' but requested to reshape into ' mat2str(dims) '. You can rather try the resize method.' ]) ;
 end
 
 a  = iData_private_unary(a, 'reshape', dims(:)');
@@ -59,3 +59,6 @@ for index=1:length(dims)
   end
 end
 
+if nargout == 0 && ~isempty(inputname(1))
+  assignin('caller',inputname(1),a);
+end
