@@ -4,7 +4,9 @@ function b = meshgrid(a, varargin)
 %   @iData/meshgrid function to transform iData object axes so that they are
 %     on a regular grid, as obtained from ndgrid. When the initial axes are not
 %     perpendicular/regular, the object Signal is interpolated on the new grid.
-%   meshgrid(a, 'vector...') forces all axes as vectors
+%   meshgrid(a, 'vector' ...) forces all axes as vectors
+%   meshgrid(a, dims, ...)    specifies the size of the histogram
+%   meshgrid(a, 'fill' ...)   when converting from an event list, removes NaN's
 %
 %   A meshgrid histogram can be converted into an event list with the 'event' method.
 %
@@ -13,6 +15,7 @@ function b = meshgrid(a, varargin)
 %                 'vector' to get only vector axes
 % output: s: object (iData)
 % ex:     c=meshgrid(a); c=meshgrid(a, 'vector linear')
+%         c=meshgrid(a, 100, 'fill')
 %
 % Version: $Revision$
 % See also iData, iData/interp, iData/hist, iData/event
@@ -67,7 +70,7 @@ if ndims(a) == 1
 end
 
 if isvector(a) > 2
-  b = hist(a, n_dims);
+  b = hist(a, n_dims, method);
   return;
 end
 
@@ -85,6 +88,3 @@ else
     b = setaxis(b, index, f_axes{index});
   end
 end
-
-
-

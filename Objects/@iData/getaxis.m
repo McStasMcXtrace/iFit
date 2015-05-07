@@ -85,7 +85,7 @@ if isnumeric(ax) % given as a number, return a number
     if ~isfloat(m), m=double(m); end
     m=real(m);
     link='Signal';
-    if not(all(m == 1 | m == 0))
+    if not(all(m(:) == 1 | m(:) == 0))
       val = genop(@rdivide,val,m);
     end
   else

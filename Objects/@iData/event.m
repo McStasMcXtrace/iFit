@@ -16,7 +16,7 @@ function b = event(a, dim, signal, err, monitor)
 %       has to be used as Error and Monitor.
 %
 %     An event list object can be converted back into a mesh-type histogram
-%     with the meshgrid method, e.g.
+%     with the meshgrid or hist method, e.g.
 %       b=event(a); c=meshgrid(b);
 %     then a and c are close.
 %
@@ -26,7 +26,7 @@ function b = event(a, dim, signal, err, monitor)
 % ex:     a=iData(peaks(60)); b=reshape(a, 75, 48);
 %
 % Version: $Revision: 1035 $
-% See also iData, iData/squeeze, iData/size, iData/permute, iData/resize, iData/meshgrid
+% See also iData, iData/squeeze, iData/size, iData/permute, iData/resize, iData/meshgrid, iData/hist
 
 % first get dimensions from varargin
 if nargin < 2, dim=[]; end
