@@ -19,13 +19,18 @@ function c=hist(a, varargin)
 %     as the values returned by FUN.  FUN is @SUM by default.  Specify FUN as []
 %     for the default behavior.
 %
+%   hist(a, ..., 'fill')
+%     performs an interpolation between the events to fill unset histogram bins.
+%
+% The histogram can be converted back to an event list using the 'event' method.
+%
 % input:  a: object or array (iData)
 %         axis1, axis2, ...: bins or number of bins  (vector or scalar)
 % output: c: histogrammed object (iData)
 % ex:     a=iData([ ifitpath 'Data/Monitor_GV*']); b=hist(a);
 %
 % Version: $Revision$
-% See also iData, accumarray, hist, histc, iData/plot, sum, iData/interp
+% See also iData, accumarray, hist, histc, iData/plot, sum, iData/interp, iData/event
 
 % private: histcn from % Bruno Luong: <brunoluong@yahoo.com> 25/August/2011
 
@@ -40,6 +45,7 @@ if numel(a) > 1
 end
 
 if ~isvector(a), c=a; return; end
+fill = 0;
 
 % scan varargin and search for AccumData
 % add it if not specified
@@ -48,6 +54,9 @@ for index=1:length(varargin)
   if ischar(varargin{index})
     if strcmpi(varargin{index}, 'AccumData')
       use_accumdata=index+1;
+      break
+    elseif ~isempty(strfind(varargin{index}, 'fill'))
+      fill=1;
       break
     end
   end
@@ -66,7 +75,7 @@ if length(varargin) && length(varargin{1}) == ndims(a)
   varargin = arg;
 end
 
-% is the Signal already specified in options (should not)
+% is the Signal already specified in options (should not), without monitor weighting
 signal = get(a, 'Signal'); signal=signal(:); M = numel(signal);
 if ~use_accumdata
   varargin{end+1} = 'AccumData';
@@ -87,7 +96,7 @@ end
 clear ax signal
 if isempty(use_axes), c=a; return; end
 
-% now call the magic function (private)
+% now call the magic function (private, below)
 [count_s edges] = histcn(axes, varargin{:});
 
 % count the accumulated events (so that we divide results by it to get mean value)
@@ -96,7 +105,7 @@ varargin{use_accumdata} = ones(M,1);
 
 % normalise to the number of accumulated events per bin
 index = find(count);
-count_s(index) = count_s(index)./count(index);
+index0= find(~count);
 
 % compute the Error and Monitor
 e = subsref(a,struct('type','.','subs','Error'));
@@ -104,7 +113,6 @@ if  ~isempty(e) && not(all(e(:) == 0 | e(:) == 1))
   varargin{use_accumdata} = e.^2;
   count_e = histcn(axes, varargin{:});
   count_e = sqrt(count_e);
-  count_e(index) = count_e(index)./count(index);
 else
   count_e = e;
 end
@@ -113,11 +121,21 @@ m = subsref(a,struct('type','.','subs','Monitor'));
 if  ~isempty(m) && not(all(m(:) == 0 | m(:) == 1))
   varargin{use_accumdata} = m;
   count_m = histcn(axes, varargin{:});
-  count_m(index) = count_m(index)./count(index);
 else
   count_m = m;
 end
 
+% the monitor is multiplied by the nb of occurencies in the accumulated data
+count_m = count_m.*count;
+
+% fill values NaN values in bins without accumulated data
+if (fill)
+  count_s(index0) = NaN;
+  count_e(index0) = NaN;
+  count_m(index0) = 1;
+  count_s = inpaintn(count_s, 10);
+  count_e = inpaintn(count_e, 10);
+end
 
 % assemble final new object
 c = copyobj(a);
@@ -245,6 +263,8 @@ while k <= length(varargin)
     elseif strcmpi(varargin{k},'Fun')
         Fun = varargin(k+1); % 1x1 cell
         varargin(k:(k+1))=[];
+    elseif ~isnumeric(varargin{k})
+        varargin(k)=[];
     else
       k=k+1;
     end
@@ -259,6 +279,8 @@ if nd<length(edges)
 else
     edges((end+1):nd) = {DEFAULT_NBINS};
 end
+
+edges = edges(cellfun('isreal',edges) & ~cellfun('isempty',edges));
 
 % Allocation of array loc: index location of X in the bins
 loc = zeros(size(X));
