@@ -42,6 +42,8 @@
               of a data set</a></li>
           <li><a href="#mozTocId256645">The difference between addition
               and combination</a></li>
+          <li><a href="#mozTocId872121">Gluing an object content inside
+              an other one</a></li>
         </ol>
       </li>
       <li><a href="#mozTocId747982">Appending and slicing data sets</a></li>
@@ -51,6 +53,7 @@
         <ol>
           <li><a href="#mozTocId261708"> Intersection and union</a></li>
           <li><a href="#mozTocId43577"> Interpolation</a></li>
+          <li><a href="#mozTocId621133"> Event data sets</a></li>
           <li><a href="#mozTocId447291"> Re-binning and resizing</a></li>
           <li><a href="#mozTocId539072">Smoothing</a></li>
           <li><a href="#mozTocId628538">Manipulating object dimensions</a></li>
@@ -102,8 +105,10 @@
 
 
 
+
           the <span style="font-style: italic;">Error</span></a>
         together with the <span style="font-style: italic;">Signal, </span>assuming
+
 
 
 
@@ -114,6 +119,7 @@
         operation. The <span style="font-style: italic;">Monitor</span>
         value is also affected by Mathematical operations that
         renormalize the <span style="font-style: italic;">Signal. </span>The
+
 
 
         <span style="font-style: italic;">Monitor</span> is usually a
@@ -137,6 +143,7 @@
 
 
 
+
         Error = Error.f'(Signal)</span>. <br>
       <br>
     </div>
@@ -144,6 +151,7 @@
     approximation is obtained using<br>
     <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">new
+
 
 
 
@@ -496,6 +504,7 @@
 
 
 
+
               transform</a> (see <a href="#mozTocId401065">below</a>)<br>
           </td>
         </tr>
@@ -522,6 +531,7 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Continuous_wavelet_transform">Continuous
+
 
 
 
@@ -612,6 +622,7 @@
           <td style="vertical-align: top;">&#8747;<sub>0</sub><sup>x</sup>(Signal)</td>
           <td style="vertical-align: top;">&#8730;&#8747;<sub>0</sub><sup>x</sup>(Error²)
 
+
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -647,6 +658,7 @@
 
 
 
+
               segmentation</a> (<a
               href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a>)<br>
           </td>
@@ -664,6 +676,7 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Principal_component_analysis">Principal
+
 
 
 
@@ -737,6 +750,7 @@
     identified (the FFT is shown in modulus), and the FFT<sup>-1</sup>(FFT)
 
 
+
     is indeed the initial signal (within the computation
     approximations).<br>
     <br>
@@ -752,6 +766,7 @@
 
 
 
+
       wavelet transform</a> of a data set. It corresponds to the
     decomposition of the signal along a wavelet basis function set, that
     is a multi-scale analysis of the signal along an axis. In the
@@ -764,6 +779,7 @@
     The period axis is here shown in log10 scale of the initial axis
     (degrees) and corresponds to the width of the wavelet. <br>
     <span style="text-decoration: underline;">Reference: </span>Grinsted,
+
 
 
 
@@ -821,11 +837,13 @@ In
 
 
 
+
     case the axis sampling/binning is not regular, a rebinning is
     automatically performed.<br>
     <br>
     Finally the <span style="font-weight: bold;">jacobian</span>
     operator (see <a href="http://en.wikipedia.org/wiki/Jacobian">Jacobian
+
 
 
 
@@ -847,6 +865,7 @@ X,
 
 
 
+
         Y) = [ dY</span><sub style="font-style: italic;">i</sub><span
         style="font-style: italic;">/dX</span><sub style="font-style:
         italic;">i</sub><span style="font-style: italic;"> ]</span><sub
@@ -859,6 +878,7 @@ X,
     <br>
     <div style="text-align: center;"><span style="font-style: italic;">b&nbsp;
 =
+
 
 
 
@@ -880,15 +900,18 @@ X,
 
 
 
+
           Error</span> and <span style="font-style: italic;">Monitor</span>
         of the 1st object, resp.</li>
       <li>s2, e2 and m2 are the <span style="font-style: italic;">Signal,
 
 
 
+
           Error</span> and <span style="font-style: italic;">Monitor</span>
         of the 2nd object, resp.</li>
       <li>s3, e3 and m3 are the <span style="font-style: italic;">Signal,
+
 
 
 
@@ -1078,6 +1101,7 @@ X,
 
 
 
+
               correlation</a> (see&nbsp;<a href="#mozTocId880437">below)</a></td>
         </tr>
         <tr>
@@ -1113,6 +1137,7 @@ X,
           </td>
           <td style="vertical-align: top;"><a
 href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson
+
 
 
 
@@ -1165,6 +1190,7 @@ operations,
 otherwise
 the
 intersection
+
 
 
 
@@ -1233,6 +1259,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
 
 
 
+
       product-moment correlation coefficient</a>, which measures the
     similarity between two data sets. It returns a measure of the
     similarity between data sets (1=equal, 0=non correlated,
@@ -1244,6 +1271,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     axis sampling. A coarse axis sampling (that is a reduced number of
     points under a peak, e.g. less than 5) must be avoided. A rebinning
     of the objects using e.g. <span style="font-style: italic;">interp(objects,
+
 
 
 
@@ -1383,6 +1411,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
 
 
 
+
       component analysis</a> (PCA) methodology consists in finding
     similarities between data sets. Groups of 'close' data sets can then
     be defined. The corresponding iData method is <span
@@ -1433,6 +1462,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     <br>
     <div style="margin-left: 40px;"><span style="color: rgb(51, 102,
         255);">trapz</span>(a) = &#8747; <span style="font-style: italic;">Signal</span>(rank
+
 
 
       axis) <span style="font-style: italic;">dx</span><br>
@@ -1514,6 +1544,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     complex than just adding the two <span style="font-style: italic;">Signals,
 
 
+
     </span>especially when axes are not exactly the same and <span
       style="font-style: italic;">Monitors</span> are not equivalent.<br>
     <br>
@@ -1568,9 +1599,11 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
 
 
 
+
     that <span style="font-style: italic;">combine(a,b)</span> is the
     same as <span style="font-style: italic;">a\b</span>.<br>
-    <h4>Gluing an object content inside an other one</h4>
+    <h4><a class="mozTocH4" name="mozTocId872121"></a>Gluing an object
+      content inside an other one</h4>
     As a complement to addition and merging, it is also possible to glue
     an object 'a' content inside an other one 'b'. In this case, the
     overlapping region from 'b' is fully replaced by the corresponding
@@ -1693,6 +1726,14 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
           src="images/iData_interp.png" style="border: 0px solid ;
           width: 444px; height: 200px;" align="middle"></a><br>
       <div style="text-align: left;"><br>
+        <h4><a class="mozTocH4" name="mozTocId621133"></a> Event data
+          sets</h4>
+        It is possible to create an event data set from a column-type
+        object (that is a matrix which columns are axes/data) by means
+        of the '<b>event</b>' method (which creates a cloud of points)
+        or the '<b>hist</b>' method (which creates an histogram out of
+        an event list).<br>
+        <br>
         For event based data sets, the <span style="font-weight: bold;">hist</span>
         operator transforms the event object into an histogrammed data
         set. The histogram axes can be given as vectors (where event
@@ -1701,6 +1742,12 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
         operator is much faster than the interpolation one, <b>interp</b>
         for event based data. <br>
         <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(204, 51, 204);">ifitpath 'Data/Monitor_GV*'</span>]);<br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">hist</span>(a);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">surf</span>(b, <span style="color: rgb(204, 51, 204);">'median'</span>);<br></pre>
+        If the number of events is limited compared to the number of
+        bins in the histogram, some areas of the histogram can remain
+        empty when filling it with the events. It is then possible to '<b>fill</b>'
+        the empty slots with a fast neighboring algorithm, using a
+        discrete cosine transform.<br>
+        <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>([ <span style="color: rgb(204, 51, 204);">ifitpath 'Data/Monitor_GV*'</span>]);<br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">hist</span>(a); <br>&gt;&gt; c=<font color="#3366ff">fill</font>(b);<br>&gt;&gt; <font color="#3366ff">subplot</font>(a,b,c);<br></pre>
         <h4><a class="mozTocH4" name="mozTocId447291"></a> Re-binning
           and resizing</h4>
         To compress an object and reduce its binning, that is the number
@@ -1719,6 +1766,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
 
 
 
+
           cosine transform</a>) to make a fast rebinning, that is change
         the number of elements on each dimension/rank, but preserve the
         data set meaning. <br>
@@ -1729,6 +1777,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
         <span style="text-decoration: underline;">Reference:</span>
         Narasimha M. et al, <a
           href="http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1094144">On
+
 
 
 
@@ -1779,10 +1828,11 @@ Farhi
 
 
 
+
         - iFit/Math operators -&nbsp;</span><span style="font-style:
         italic;"> </span><span style="font-style: italic;"> $Date:
-        2014-04-07 11:36:51 +0200 (Mon, 07 Apr 2014) $ $Revision$
-      </span><span style="font-style: italic;"> </span>- back to <a
+        2014-04-07 11:36:51 +0200 (Mon, 07 Apr 2014) $ $Revision$ </span><span
+        style="font-style: italic;"> </span>- back to <a
         href="index.html">Main iFit Page </a><a
         href="http://www.ill.eu/"><img title="ILL, Grenoble, France
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
