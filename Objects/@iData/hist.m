@@ -45,7 +45,7 @@ if numel(a) > 1
 end
 
 if ~isvector(a), c=a; return; end
-fill = 0;
+fillme = 0;
 
 % scan varargin and search for AccumData
 % add it if not specified
@@ -56,7 +56,7 @@ for index=1:length(varargin)
       use_accumdata=index+1;
       break
     elseif ~isempty(strfind(varargin{index}, 'fill'))
-      fill=1;
+      fillme=1;
       break
     end
   end
@@ -128,14 +128,9 @@ end
 % the monitor is multiplied by the nb of occurencies in the accumulated data
 count_m = count_m.*count;
 
-% fill values NaN values in bins without accumulated data
-if (fill)
-  count_s(index0) = NaN;
-  count_e(index0) = NaN;
-  count_m(index0) = 1;
-  count_s = inpaintn(count_s, 10);
-  count_e = inpaintn(count_e, 10);
-end
+count_s(index0) = 0;
+count_e(index0) = 0;
+count_m(index0) = 0;
 
 % assemble final new object
 c = copyobj(a);
@@ -156,7 +151,10 @@ for index=1:length(edges)
   c=setaxis(c, index, link);
 end
 
-
+% fill values NaN values in bins without accumulated data
+if (fillme)
+  c = fill(c,10);
+end
 % ------------------------------------------------------------------------------
 
 function [count edges mid loc] = histcn(X, varargin)

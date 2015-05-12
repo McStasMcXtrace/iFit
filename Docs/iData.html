@@ -124,6 +124,7 @@ to
 
 
 
+
           <span style="font-style: italic;">Aliases</span> or other <span
             style="font-style: italic;">Data</span> parts. These Axes
           indicate how to interpret the <span style="font-style:
@@ -158,14 +159,15 @@ to
       In the following, we shall present how to manipulate iData
       objects, enrich them with additional information, define relations
       between the object parts as <span style="font-style: italic;">Aliases,
-      </span>define
-      the object <span style="font-style: italic;">Signal</span> and
-      its associated <span style="font-style: italic;">Axes.</span><br>
+
+      </span>define the object <span style="font-style: italic;">Signal</span>
+      and its associated <span style="font-style: italic;">Axes.</span><br>
       <br>
       Any object dimensionality can be handled. A more limited support
       exists for event based data sets.<br>
       <br>
       <div style="text-align: right;"><span style="font-weight: bold;">To
+
 
           get more help</span>: list of most iData <a
           href="Methods.html">methods</a> with comments<span
@@ -234,6 +236,7 @@ to
       Accessing subfields requires a case sensitive name match, that is
       a<span style="font-style: italic;"> a(3).data</span> works (single
       field accessed), but <span style="font-style: italic;">a(3).data.varia.a1
+
 
       </span>does not (requires fully qualified path to the data).<br>
       <br>
@@ -389,6 +392,7 @@ to
       <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>,<span style="color: rgb(204, 51, 204);">'Data.ZEROS'</span>)		<span style="font-style: italic;">% a link to the whole ZEROS subfield structure</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>,<span style="color: rgb(204, 51, 204);">'Data.ZEROS.A1'</span>)	<span style="font-style: italic;">% a link to the A1 value in the ZEROS subfield</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'AnotherNewField'</span>, <span style="color: rgb(204, 51, 204);">'NewField'</span>);	<span style="font-style: italic;">% creates a link to a link to a Data part (follow me !)</span><br>&gt;&gt; a.AnotherNewField<br>ans =<br><br> -115.7500<br></pre>
       The <span style="font-style: italic;">AnotherNewField</span>
       points to <span style="font-style: italic;">NewField, </span>which
+
       was defined as<span style="font-style: italic;"> Data.ZEROS.A1</span>.<br>
       <br>
       This brings the ability to enrich the Data area of the object with
@@ -406,8 +410,10 @@ to
         style="font-style: italic;">NewField</span> definition, which
       immediately affects <span style="font-style: italic;">AnotherNewField
 
+
       </span>(defined above)<span style="font-style: italic;">.</span><br>
       The links are evaluated <span style="font-weight: bold;">dynamically,
+
 
       </span>so that their value follow the target one.<br>
       <h5>Links to external resources</h5>
@@ -510,8 +516,7 @@ to
         <li>The <span style="font-weight: bold;">get</span> function
           always return the value of a field, and <span
             style="font-style: italic;">a.field</span> returns the same
-          result as <span style="font-style: italic;">get(a,
-            field) </span></li>
+          result as <span style="font-style: italic;">get(a, field) </span></li>
         <li>The <span style="font-weight: bold;">set</span> function
           always defines the final value of a field, and we shall see
           that it may sometimes follow a series of definitions in the
@@ -555,6 +560,7 @@ to
       assigned a global Title and Label as well. The title is shown as
       the plot title and the object text display (see <a
         href="iData.html#mozTocId443357">Inquiring the iData object</a>).
+
       <br>
       <br>
       It is also possible to extract a portion of the signal from an
@@ -688,6 +694,7 @@ to
       The Error defaults to <span style="font-style: italic;">sqrt(Signal)</span>
       when not set (that is <span style="font-style: italic;">a.Error=[]</span>).
 
+
       A constant <span style="font-style: italic;">Error</span> can be
       set, an expression (including using <span style="font-style:
         italic;">Data</span> or <span style="font-style: italic;">this</span>)
@@ -700,6 +707,7 @@ to
       attached to the <span style="font-style: italic;">Signal. </span>It
 represents
 
+
       e.g. a counting time or any statistical weight w=1/Monitor that is
       to be taken into account when performing <a href="Math.html">mathematical</a>
       operations such as combine and most binary operators (+-/*)
@@ -711,6 +719,7 @@ represents
       <br>
       The <span style="font-style: italic;">Monitor</span> defaults to
       1 when not set (that is <span style="font-style: italic;">a.Monitor=[]</span>).
+
 
       A constant Monitor can be set, an expression (including using <span
         style="font-style: italic;">Data</span> or <span
@@ -766,6 +775,7 @@ represents
           style="font-weight: bold;">getting an axis</span><span
           style="font-weight: bold;"></span></h4>
       &nbsp; As they are basically <span style="font-style: italic;">Aliases,
+
 
         Axes</span> are accessed in two ways, either through their
       definition, that is their link, or through their value. This is
@@ -845,7 +855,39 @@ represents
       merging.<br>
       <br>
       To create an iData vector, just use the bracket [ ... ] symbol<br>
-      <pre style="margin-left: 40px;">&gt;&gt; b = [ a 2*a ];</pre>
+      <pre style="margin-left: 40px;">&gt;&gt; b = [ a 2*a ];<br></pre>
+    </ul>
+    <h3 align="center">Handling event lists</h3>
+    <blockquote>
+      <p>Some data sets contain lists of 'events', that is a set of
+        coordinates for a set of signal values. These events are then
+        collections of 'rows', which each has structure:</p>
+      <p align="center"><i>[ x y z ... sx, sy, sz ...]</i></p>
+      <p>where x,y,z,... are the coordinates, and sx,sy,sz,... are
+        signal values (for instance a magnetic field vector at given
+        location in space).<br>
+        On import, these data sets result in a matrix which rows are
+        events, and columns are the coordinate/values, as above.<br>
+      </p>
+      <p>It is possible to format the data set into a formal event list,
+        using the '<b>event</b>' method after loading. The 'event'
+        method can either make a guess on the dimensionality of space
+        and signal, or specify the number of columns which are affected
+        to the coordinates x,y,z,... (dimensionality of space), and the
+        columns which is to be used for the 'signal'. When more that one
+        'signal' column is given, the norm of the given columns, per
+        event, is used.<br>
+      </p>
+      <p>Event data sets can further be converted into histograms using
+        the '<b>hist</b>' or '<b>meshgrid</b>' methods. The histograms
+        can be prettified using the '<b>fill</b>' method, which makes
+        sure that empty spaces in the histogram are interpolated with
+        neighboring values. More information available in the <a
+          href="Math.html#mozTocId621133">Math</a> page.<br>
+      </p>
+    </blockquote>
+    <h3> </h3>
+    <ul id="mozToc">
       <h3 style="text-align: center;"><a class="mozTocH3"
           name="mozTocId393725"></a>Going further - some other useful
         methods<br>
@@ -924,6 +966,7 @@ represents
       <hr style="width: 100%; height: 2px;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
           - iFit/iData objects - $Date: 2013-09-16 10:19:18 +0200 (Lun,
           16 sep 2013) $ $Revision:1.7 $ </span> - back to <a

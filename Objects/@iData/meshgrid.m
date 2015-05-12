@@ -6,7 +6,7 @@ function b = meshgrid(a, varargin)
 %     perpendicular/regular, the object Signal is interpolated on the new grid.
 %   meshgrid(a, 'vector' ...) forces all axes as vectors
 %   meshgrid(a, dims, ...)    specifies the size of the histogram
-%   meshgrid(a, 'fill' ...)   when converting from an event list, removes NaN's
+%   meshgrid(a, 'fill' ...)   fills empty histogram bins when converting from an event list
 %
 %   A meshgrid histogram can be converted into an event list with the 'event' method.
 %
