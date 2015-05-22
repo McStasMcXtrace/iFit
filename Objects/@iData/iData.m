@@ -198,7 +198,10 @@ return
 function b=iData_cell2iData(a)
   b = [];
   for k=1:numel(a)
-    b = [ b iData(a{k}) ];
+    if numel(b) > 1, b=b(:); end
+    c = iData(a{k});
+    if numel(c) > 1, c=c(:); end
+    b = [ b ; c ];
   end
   try
     b = reshape(b,size(a));
