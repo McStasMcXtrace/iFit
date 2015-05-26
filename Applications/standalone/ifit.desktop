@@ -11,15 +11,10 @@ Icon=iFit-logo.png
 Categories=Education;Applications;
 MimeType=text/plain;application/x-netcdf;application/cdf;application/x-cdf;application/x-hdf;application/excel;application/vnd.ms-excel;application/x-excel;application/x-msexcel;image/gif;image/bmp;image/x-windows-bmp;image/png;image/tiff;image/x-tiff;image/jpeg;image/pjpeg;image/x-icon;image/x-portable-pixmap;image/x-portable-graymap;image/x-portable-greymap;image/x-portable-bitmap;image/x-xfig;application/xml;text/xml;audio/basic;audio/x-au;audio/wav;audio/x-wav;application/x-troff-msvideo;video/avi;video/msvideo;video/x-msvideo;application/x-yaml;chemical/x-pdb;application/octet-stream;
 # logo obtained with font URW Palladio L, italic, bold, blue
-Actions=Help;ResLibCal;
+Actions=Help;
 
 [Desktop Action Help]
-Name=Open iFit Help
+Name=Open iFit Help (on-line)
 Exec=xdg-open http://ifit.mccode.org
 OnlyShowIn=Unity;Gnome;
 
-[Desktop Action ResLibCal]
-Name=Open ResLibCal (neutron TAS resolution function)
-Exec=ifit ResLibCal
-Terminal=true
-OnlyShowIn=Unity;Gnome;
