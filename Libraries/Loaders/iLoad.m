@@ -3,7 +3,8 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % imports any data into Matlab. 
 % The definition of specific formats can be set in the iLoad_ini.m file.
-% These formats can be obtained using [config, configfile]=iLoad('load config').
+% These formats can be obtained using [config, configfile]=iLoad('load
+% config').
 % The file formats cache and MeX files can be rebuilt with
 %   iLoad force
 %   iLoad compile
@@ -316,8 +317,9 @@ function [data, format] = iLoad(filename, loader, varargin)
         % write to temporary file
         filename = urlwrite(filename, tempname);
         url = true;
-      catch
+      catch ME
         fprintf(1, 'iLoad: Can''t read URL "%s".\n', filename);
+        disp(ME.mesage)
         return
       end
     end
@@ -337,24 +339,27 @@ function [data, format] = iLoad(filename, loader, varargin)
           system(['uncompress ' tempdir filesep name ext ]);
           filename = [ tempdir filesep name ];
           url = true;
-        catch
+        catch ME
           fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
+          disp(ME.message)
           return
         end
       elseif exist(cmd)
         % extract to temporary dir
         try
           filenames = feval(cmd, filename, tempdir);
-        catch
+        catch ME
           fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
+          disp(ME.message)
           return
         end
         [data, format] = iLoad(filenames, loader, varargin{:}); % is now local
         for index=1:length(filenames)
           try
             delete(filenames{index});
-          catch
+          catch ME
             fprintf(1,'iLoad: Can''t delete temporary file "%s" (%s).\n', filename{index},cmd);
+            disp(ME.message)
           end
         end
         return
@@ -369,7 +374,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     try
       [data, format] = iLoad_import(filename, loader, varargin{:});
     catch ME
-      fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n  %s', filename, getReport(ME));
+      fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n  %s', filename, ME.message);
       data=[];
     end
     
@@ -404,8 +409,9 @@ function [data, format] = iLoad(filename, loader, varargin)
   if (url)
     try
     delete(filename);
-    catch
+    catch ME
     fprintf(1,'iLoad: Can''t delete temporary file "%s".\n', filename);
+    disp(ME.message);
     end
   end
   
