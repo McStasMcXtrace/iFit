@@ -9,3 +9,9 @@ Name=ResLibCal
 Comment=Neutron TAS Resolution function
 Icon=ResLibCal-logo.png
 Categories=Education;Applications;
+Actions=Help;
+
+[Desktop Action Help]
+Name=Open ResLibCal Help (on-line)
+Exec=xdg-open http://ifit.mccode.org/Applications/ResLibCal/doc/ResLibCal.html
+OnlyShowIn=Unity;Gnome;
