@@ -39,6 +39,8 @@ function ifit(varargin)
 % mcc -m ifit -a /home/farhi/svn/Matlab/iFit/trunk
 % buildmcr('.')
 
+%TODO: concatenate arguments starting with " or ' until find one ending with " or '
+
 inline_display_banner; % see inline below
 
 ifit_options.line     ='';     % the current line to execute

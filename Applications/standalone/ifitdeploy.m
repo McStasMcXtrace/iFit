@@ -92,7 +92,7 @@ disp('DONE');
 
 % create the help strings, to store as .txt files available for 'help' and 'doc'
 function create_help(pw)
-  to_parse = {'Objects/@iData','Objects/@iFunc',...
+  to_parse = {'Objects/@iData','Objects/@iFunc', 'Objects/@Process', ...
   'Libraries/Loaders','Scripts/Models','Scripts/Models/scattering/structure_factors',...
   'Scripts/Models/scattering/form_factors','Libraries/Optimizers','Scripts/load',...
   'Applications/standalone','Applications/McStas', 'Applications/sliceomatic', ...
@@ -148,7 +148,7 @@ function create_launchers_operators(target)
   % save the final object 'ans'
   mkdir(target);
   
-  d = { 'abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh', 'camproj', 'cat', 'ceil', 'combine', 'conj', 'conv', 'convn', 'cos', 'cosh', 'ctranspose', 'cumsum', 'cumtrapz', 'del2', 'diff', 'dog', 'eq', 'exp', 'fft', 'fits', 'fliplr', 'flipud', 'floor', 'full', 'ge', 'gradient', 'gt', 'hist', 'ifft', 'imag', 'interp', 'intersect', 'isempty', 'le', 'linspace', 'log', 'log10', 'logspace', 'lt', 'max', 'mean', 'median', 'minus', 'mtimes', 'ndims', 'ne', 'norm', 'not', 'peaks', 'permute', 'plus', 'power', 'prod', 'rdivide', 'real', 'round', 'sign', 'sin', 'sinh', 'sqrt', 'std', 'sum', 'tan', 'tanh', 'times', 'transpose', 'trapz', 'uminus', 'union', 'xcorr' };
+  d = { 'abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh', 'camproj', 'cat', 'ceil', 'combine', 'conj', 'conv', 'convn', 'cos', 'cosh', 'ctranspose', 'cumsum', 'cumtrapz', 'del2', 'diff', 'dog', 'eq', 'exp', 'fft', 'fill', 'fits', 'fliplr', 'flipud', 'floor', 'full', 'ge', 'gradient', 'gt', 'hist', 'ifft', 'imag', 'interp', 'intersect', 'isempty', 'le', 'linspace', 'log', 'log10', 'logspace', 'lt', 'max', 'mean', 'median', 'minus', 'mtimes', 'ndims', 'ne', 'norm', 'not', 'peaks', 'permute', 'plus', 'power', 'prod', 'rdivide', 'real', 'round', 'sign', 'sin', 'sinh', 'smooth', 'sqrt', 'std', 'sum', 'tan', 'tanh', 'times', 'transpose', 'trapz', 'uminus', 'union', 'xcorr' };
   for index=1:length(d)
     launcher_write(target, d{index});
   end

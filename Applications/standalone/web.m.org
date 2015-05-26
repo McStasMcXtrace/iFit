@@ -19,6 +19,10 @@ else
   url = '';
 end
 
+if isempty(url)
+  url = fullfile(ifitpath,'Docs','index.html');
+end
+
 if ~isempty(private_help(url))
   return
 end
@@ -48,6 +52,24 @@ function h=private_help(varargin)
 %
 % example: help iData/cos; help iFunc
 
+persistent allfiles
+
+if isempty(allfiles)
+  allfiles = getAllFiles(ifitpath);
+  docfiles = cell(size(allfiles));
+  doccount = 0;
+  % keep only HTML and TXT files
+  for index=1:numel(allfiles)
+    [p,f,e] = fileparts(allfiles{index});
+    if strcmp(lower(e),'.html') || strcmp(lower(e),'.txt')
+      doccount=doccount+1;
+      docfiles(doccount) = allfiles(index);
+    end
+  end
+  allfiles = docfiles(1:doccount); % store only HTML/TXT files
+  clear doccount;
+end
+
 h = '';
 if length(varargin)
   url = varargin{1};
@@ -58,36 +80,42 @@ if isempty(url), return; end
 if ~isdeployed
   builtin('help',varargin{:});
 else
-  % attempts to guess what to display
-  [p,f,e] = fileparts(url);
-  h = fullfile(p , [f '.txt' ]); 
+  % attempts to guess what to display. Is there a match with words (file + last path token) ?
+  [p,f,e]   = fileparts(url);
+  [dummy,p] = fileparts(p); % f=filename; p=last path name.
   
-  % is the url a path to an iFit function ?
-  if ~isempty(dir(h))
-    fid = fopen(h, 'r');
-    h   = fread(fid, Inf, 'uint8=>char')';
-    fclose(fid);
-  elseif any(strcmp(strtok(url, '.'), {'iData','iFunc'}))
-  % is the url an iFit class.method or class
-    [c, m] = strtok(url, '.');
-    if isempty(m), m = c; else m=m(2:end); end
-    url    = fullfile('Objects', [ '@' c ], m);
-    feval(mfilename, url);
-    return
-  else
-  % is the url an iFit function ?
-    if ~isempty(dir(which(url))) && ~strcmp(url, which(url))
-      feval(mfilename, which(url));
-    else 
-      h=[]; 
-      disp([ 'help: ' url ' documentation can not be found in the standalone help system.' ]);
-      disp('Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.');
-    end
-    return
-  end
-  % get the help string from the corresponding file (must have been generated at deploy stage)
+  % build a token search count
+  tok_file = strfind(lower(allfiles),lower(f));
+  tok_path = strfind(lower(allfiles),lower(p));
+  criteria = cellfun('prodofsize',tok_file) + cellfun('prodofsize',tok_path);
   
-  % display the help
-  fprintf(1, '%s', h);
+  % get the best criteria (max number of occurrences)
+  [criteria, index] = max(criteria);
+  
+  % the URL to display
+  h = allfiles{index};
+  
+  % display the help URL
+  fallback_web(h);
 end
 
+% ------------------------------------------------------------------------------
+
+function fileList = getAllFiles(dirName)
+
+  dirData = dir(dirName);      % Get the data for the current directory
+  dirIndex = [dirData.isdir];  % Find the index for directories
+  fileList = {dirData(~dirIndex).name}';  %'# Get a list of the files
+  if ~isempty(fileList)
+    fileList = cellfun(@(x) fullfile(dirName,x),...  % Prepend path to files
+                       fileList,'UniformOutput',false);
+  end
+  subDirs = {dirData(dirIndex).name};  % Get a list of the subdirectories
+  validIndex = ~ismember(subDirs,{'.','..'});  % Find index of subdirectories
+                                               %   that are not '.' or '..'
+  for iDir = find(validIndex)                  % Loop over valid subdirectories
+    nextDir = fullfile(dirName,subDirs{iDir});    % Get the subdirectory path
+    fileList = [fileList; getAllFiles(nextDir)];  % Recursively call getAllFiles
+  end
+  
+% end getAllFiles

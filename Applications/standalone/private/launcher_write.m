@@ -118,6 +118,7 @@ function [operator, comment] = launcher_write_opendesktop(launcher)
   fprintf(fid, 'GenericName=iFit Data Analysis\n');
   fprintf(fid, 'Terminal=true\n');
   fprintf(fid, 'Categories=Education;Applications;Science;NumericalAnalysis;Physics\n');
+  fprintf(fid, 'MimeType=text/plain;application/x-netcdf;application/cdf;application/x-cdf;application/x-hdf;application/excel;application/vnd.ms-excel;application/x-excel;application/x-msexcel;image/gif;image/bmp;image/x-windows-bmp;image/png;image/tiff;image/x-tiff;image/jpeg;image/pjpeg;image/x-icon;image/x-portable-pixmap;image/x-portable-graymap;image/x-portable-greymap;image/x-portable-bitmap;image/x-xfig;application/xml;text/xml;audio/basic;audio/x-au;audio/wav;audio/x-wav;application/x-troff-msvideo;video/avi;video/msvideo;video/x-msvideo;application/x-yaml;chemical/x-pdb;application/octet-stream;');
   fclose(fid);
   fileattrib(launcher.filename, '+x','a');
 
