@@ -27,7 +27,7 @@
 % history:
 %
 % May 9th 2008, Oliver Bunk: 1st version
-%
+% <http://www.psi.ch/sls/csaxs/software>
 
 % example CBF at files at <http://www.bernstein-plus-sons.com/software/CBF/>
 % original Matlab source code from SLS/cSAXS <http://www.psi.ch/sls/csaxs/software>
