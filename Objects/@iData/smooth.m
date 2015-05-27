@@ -125,7 +125,7 @@ function [ny,c] = smoothsg1d(yd,N,M)
 %
 % Smoothes the y signal by M-th order Savitzky-Golay method with N points.
 % This algorithm assumes that corresponding x axis is evenly spaced.
-
+%
 % Author:  EF <farhi@ill.fr>
 % Description:  data smoothing by Savitzky-Golay method
 

@@ -25,7 +25,7 @@
 % history:
 %
 % July 17th 2008, Oliver Bunk: 1st version
-%
+% <http://www.psi.ch/sls/csaxs/software>
 
 function [frame,vararg_remain] = read_mar(filename,varargin)
 

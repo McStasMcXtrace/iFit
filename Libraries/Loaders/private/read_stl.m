@@ -11,6 +11,8 @@ function data=read_stl(file, option)
 % stlread(file) Francis Esmonde-White, May 2010 : read STL binary 
 %  <http://www.mathworks.com/matlabcentral/fileexchange/29906-binary-stl-file-reader>
 %  [v, f, n, c, stltitle] = stlread('MyModel.stl');
+%
+
 data=[];
 if isempty(file), return; end
 [file, remain] = strtok(file);

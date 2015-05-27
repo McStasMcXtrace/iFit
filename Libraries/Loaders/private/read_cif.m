@@ -1,5 +1,5 @@
 function data = read_cif(file)
-% mstlread Wrapper to read ascii and binary STL files
+% cif2hkl Wrapper to read CIF files
   data = [];
   if exist('cif2hkl') == 3 || exist('cif2hkl') == 7 || exist('cif2hkl') == 2
     % use MeX in verbose and no-output-files mode ('-')
