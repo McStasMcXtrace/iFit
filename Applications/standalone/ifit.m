@@ -39,8 +39,6 @@ function ifit(varargin)
 % mcc -m ifit -a /home/farhi/svn/Matlab/iFit/trunk
 % buildmcr('.')
 
-%TODO: concatenate arguments starting with " or ' until find one ending with " or '
-
 inline_display_banner; % see inline below
 
 ifit_options.line     ='';     % the current line to execute
@@ -73,6 +71,8 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   if strncmp(ifit_options.line,'clearvars ', 10)
     ifit_options.line = [ ifit_options.line ' -except ifit_options this' ];
   end
+
+  % argument is a file name/URL ?
   try
     mdir = dir(ifit_options.line);
   catch
@@ -82,8 +82,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     any([ strncmp(ifit_options.line, {'file://','http://'},7) ...
           strncmp(ifit_options.line,  'ftp://', 6) ...
           strncmp(ifit_options.line,  'https://',8) ])
-    ifit_options.line = textscan(ifit_options.line, '%s', 'Delimiter',' ');
-    if ~isempty(ifit_options.line)  % filenames have been droped in the terminal
+    if ~isempty(ifit_options.line)  % filenames have been dropped in the terminal
       ifit_options.line = ifit_options.line{1};
       this{end+1} = iData(ifit_options.line); % import them
       ifit_options.line = '';
@@ -107,32 +106,41 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   end
   
   % collect next command to execute: from input arguments, or prompt
-  
   if exist('varargin') == 1 && ~isempty(varargin) % from command line ----------
     % we clear the argument from the command line after reading it
-    ifit_options.line = varargin{1}; varargin(1) = []; 
+    varargin = inline_cat_strings(varargin{:});
+    ifit_options.line = varargin{1}; varargin(1) = [];
+
+    % evaluate a char argument: can be a command, a "string", an 'expression'
+    if isempty(ifit_options.line) || ~ischar(ifit_options.line), continue; end
     disp([ 'iFit:' num2str(ifit_options.index) '>> argument ' ifit_options.line ]);
+    
     % specific case of imported arguments from the command line
     if (ifit_options.line(1)=='"' && ifit_options.line(end)=='"')
       % a "string" explicitly indicated as such
       ifit_options.line=ifit_options.line(2:(end-1));
       this{end+1} = ifit_options.line;
-      ans = this{end};
+      ans = this{end}
       ifit_options.line = '';
     elseif (ifit_options.line(1)=='''' && ifit_options.line(end)=='''')
       % an 'expression' explicitly indicated as such
-      ifit_options.line=ifit_options.line(2:(end-1));
+      ifit_options.line = ifit_options.line(2:(end-1));
       try
-        ifit_options.line = eval(ifit_options.line);
+        ifit_options.line = eval(ifit_options.line); % try to evaluate with a return argument
+        this{end+1} = ifit_options.line;
+        ans = this{end};
       catch
-        disp('Error when evaluating expression argument:')
-        disp(ifit_options.line)
-        disp(lasterr)
-        ifit_options.line = '';
+        try
+          eval(ifit_options.line) % evaluate without return argument
+        catch ME
+          disp('Error when evaluating expression argument:')
+          disp(ifit_options.line)
+          disp(ME.message)
+          ifit_options.line = '';
+        end
       end
-      this{end+1} = ifit_options.line;
-      ans = this{end};
       ifit_options.line = '';
+    
     % some startup arguments known as commands
     elseif strcmp(ifit_options.line, '-nodesktop') || strcmp(ifit_options.line, '-nosplash')
       ifit_options.line = ''; % ignore these which are Matlab-desktop specific
@@ -151,6 +159,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     elseif strcmp(ifit_options.line, '--help') || strcmp(ifit_options.line, '-h')
       inline_display_usage; % see below
       ifit_options.line = '';
+      
     elseif strncmp(fliplr(ifit_options.line), fliplr('.m'), 2)
       % a script is given as argument : execute it
       ifit_options.line=[ 'run ' ifit_options.line ];
@@ -217,10 +226,16 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
         if 0 < length(this(cellfun('isclass',this,'iData'))) && length(this(cellfun('isclass',this,'iData'))) <= 20
           figure('Name','iFit: imported data sets'); 
           subplot(this{cellfun('isclass',this,'iData')});
+        elseif isa(this, 'iData') && numel(this) < 20
+          figure('Name','iFit: imported data sets');
+          subplot(this);
         end
         if 0 < length(this(cellfun('isclass',this,'iFunc'))) && length(this(cellfun('isclass',this,'iFunc'))) <= 20
           figure('Name','iFit: imported models'); 
           subplot(this{cellfun('isclass',this,'iFunc')});
+        elseif isa(this, 'iFunc') && numel(this) < 20
+          figure('Name','iFit: imported models');
+          subplot(this);
         end
       end
     end
@@ -328,17 +343,23 @@ function inline_display_usage
   disp('  Examples:')
   disp('    ifit --save file1.*  subplot ')
   exit; % exit the application
-  
+
 function line = inline_display_helpcommand(line)
+% handle 'help' and 'doc' commands.
   [t, line] = strtok(line); % remove first command 'help'
   line      = strtrim(line);
-  if ~isempty(line), 
-    disp([ 'web(' line ')' ]);
-    web(line); 
+  if ~isempty(line)
+    if isdeployed
+      disp([ 'web(' line ')' ]);
+      web(line);
+    else
+      help(line);
+    end
     line = '';
   end  
 
 function line = inline_runscript(line)
+% load a script to execute
   line = strtrim(line(5:end)); % get script name
   if ~exist(line) && exist([ line '.m' ])
     line = [ line '.m' ];
@@ -351,4 +372,25 @@ function line = inline_runscript(line)
     line=fileread(line);
   else
     disp([ 'Error: iFit: Can not open script ' line ]);
+  end
+
+function varargin = inline_cat_strings(varargin)
+  % test for arguments that start by " or ' and group them until we find similar ending char.
+  if isempty(varargin), return; end
+  v1 = varargin{1};
+  if ~ischar(v1) || isempty(v1), return; end
+  c = v1(1);
+  if c == '"' || c == ''''
+    for index=1:numel(varargin)
+      % search for next argument which ends with " or '
+      v2 = varargin{index};
+      % concatenate to v1 if this is a string
+      if index > 1 && ischar(v2)
+        v1 = [ v1 ' ' v2 ];
+        varargin{index} = ''; % this one has been moved into the 1st string 'v1'.
+      end
+      if ischar(v2) && v2(end) == c, break; end % we found the ending string token
+    end
+    % update string argument. Now contains {1:index}
+    varargin{1} = v1;
   end
