@@ -72,13 +72,14 @@ function s = Sqw_Bosify(s, T)
     s = transpose(s);
   end
   
-  T2E       = (1/11.605);            % Kelvin to meV = 1000*K_B/e
+  T2E       = (1/11.6045);           % Kelvin to meV = 1000*K_B/e
   kT        = T*T2E;
   hw_kT     = s{1}/kT;               % hbar omega / kT
   
   % apply sqrt(Bose) factor to get experimental-like
   %n         = exp(hw_kT/2);          % detailed balance (raw)
-  n         = hw_kT./(1-exp(-hw_kT));  % Bose factor (true), also satisfies detailed balance
+  n         = hw_kT./(1-exp(-hw_kT));  % Bose factor (true), also satisfies detailed balance = w*(1+n(w))
+  n(find(s{1}==0) = 1;
   s         = s .* n;  % apply detailed balance with Bose
   s.Temperature = T;
   s.classical   = 0;
