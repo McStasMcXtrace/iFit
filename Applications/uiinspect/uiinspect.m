@@ -49,6 +49,9 @@ function hFig = uiinspect(obj, fig)
 %    uiinspect('meta.class')                      % a Matlab class name
 %    uiinspect(System.Diagnostics.Process.GetCurrentProcess)   % a .Net object
 %
+% Technical explanation & details:
+%    http://undocumentedmatlab.com/blog/uiinspect/
+%
 % Known issues/limitations:
 %    - Fix: some fields generate a Java Exception, or a Matlab warning
 %    - other future enhancements may be found in the TODO list below
@@ -61,6 +64,16 @@ function hFig = uiinspect(obj, fig)
 %    Please send to Yair Altman (altmany at gmail dot com)
 %
 % Change log:
+%    2015-03-02: Fix for R2014a and older Matlab releases
+%    2014-11-21: Additional fixes for R2014b (HG2)
+%    2014-10-24: Fixed properties panel for .Net objects
+%    2014-10-24: Fixed a reported "invalid object handle" bug
+%    2014-10-20: Fixes for multiple edge cases
+%    2014-10-13: Fixes for R2014a, R2014b
+%    2013-06-30: Fixes for the upcoming HG2
+%    2013-01-25: Added context-menu option to export handle to workspace
+%    2013-01-23: Prevented intermittent crash reported for uiinspect(0); auto-expanded callbacks table if only one category; added hidden properties to the properties tooltip; updated FEX link in help; updated javadoc hyperlinks; fixed callbacks table
+%    2012-01-16: Fixes for R2012a
 %    2011-12-09: Fixed Matlab R2011b crash when inspecting COM object
 %    2011-06-14: Fixed problems with the Value field of the "Other properties" table for static fields
 %    2011-03-22: Fixed display of non-static Java class fields; fixed display of some cases of Java class names; minor fixes for Matlab class properties
@@ -85,7 +98,7 @@ function hFig = uiinspect(obj, fig)
 %    2009-03-14: Fixed string property value displayed; fixed display of Java classes added to the dynamic classpath; fixed display of classname static fields value; updated list of standard callbacks
 %    2009-03-05: Fixed single property edge-case; fixed prop name case sensitivity problem; fixed properties tooltip; accept class names; added display of class interfaces & static fields
 %    2008-01-25: Fixes for many edge-cases
-%    2007-12-08: First version posted on <a href="http://www.mathworks.com/matlabcentral/fileexchange/loadAuthor.do?objectType=author&mfx=1&objectId=1096533#">MathWorks File Exchange</a>
+%    2007-12-08: First version posted on <a href="http://www.mathworks.com/matlabcentral/fileexchange/17935-uiinspect">MathWorks File Exchange</a>
 %
 % See also:
 %    ishandle, iscom, inspect, methodsview, FindJObj (on the File Exchange)
@@ -94,7 +107,7 @@ function hFig = uiinspect(obj, fig)
 % referenced and attributed as such. The original author maintains the right to be solely associated with this work.
 
 % Programmed by Yair M. Altman: altmany(at)gmail.com
-% $Revision$  $Date$
+% $Revision: 1.32 $  $Date: 2015/03/02 10:12:52 $
 
   try
       % Arg check
@@ -108,12 +121,12 @@ function hFig = uiinspect(obj, fig)
           myError('YMA:uiinspect:notAHandle','Input to uiinspect must be a valid object as defined by ISHANDLE');
       elseif ~ischar(obj) && (numel(obj) ~= 1)
           myError('YMA:uiinspect:notASingleton','Input to uiinspect must be a single object handle');
-      elseif ishandle(obj)
+      elseif isnumeric(obj) && ishandle(obj)
           obj = handle(obj);
       end
       if nargin < 2
           fig = [];
-      elseif ~ishandle(fig) | ~ishghandle(fig) | ~isa(handle(fig),'figure')
+      elseif ~ishandle(fig) || ~ishghandle(fig) || (~isa(handle(fig),'figure') && ~isa(handle(fig),'matlab.ui.Figure'))
           myError('YMA:uiinspect:notAFigure','Second input to uiinspect must be a valid figure handle');
       end
 
@@ -317,8 +330,36 @@ function objChildren = getObjChildren(obj)
 %% Display object data
 function hFig = displayObj(obj, objMethods, objProps, objCallbacks, objChildren, objName, hFig)
 
+      % Set the figure title
+      if isempty(objName)
+          objName = 'object of ';
+      else
+          objName = [objName ' of '];
+      end
+      if ischar(obj)
+          className = obj;
+          objName = '';
+      else
+          className = builtin('class', obj);
+      end
+      title = ['uiinspect: ' objName 'class ' className];
+
+      % If no figure handle for reuse was specified
+      if isempty(hFig)
+          % Try to reuse figure with the same title
+          hFig = findall(0, '-depth',1, 'type','figure', 'name',title);
+      end
+      % If no valid figure was found, create a new one - otherwise clear and reuse
+      if isempty(hFig)
+          hFig = figure('visible','off');   % existing uiinspector for this object not found - create a new figure (invisible at first)
+      else
+          hFig = hFig(1);  % just in case there's more than one such figure
+          clf(hFig);
+      end
+      set(hFig, 'Name',title, 'NumberTitle','off', 'units','pixel', 'toolbar','none', 'menubar','none');
+
       % Prepare the data panes
-      [methodsPane, hgFlag] = getMethodsPane(objMethods, obj);
+      [methodsPane, hgFlag] = getMethodsPane(objMethods, obj, hFig);
       [callbacksPanel, cbTable] = getCbsPane(objCallbacks, false);
       [propsPane, inspectorTable] = getPropsPane(objProps);
       [childrenPane, propsNum] = getChildrenPane(objChildren, inspectorTable, propsPane);
@@ -344,7 +385,7 @@ function hFig = displayObj(obj, objMethods, objProps, objCallbacks, objChildren,
 
       % blog link at bottom
       blogLabel = JLabel('<html><center>More undocumented stuff at: <b><a href="">UndocumentedMatlab.com</a></center></html>');
-      set(handle(blogLabel,'CallbackProperties'), 'MouseClickedCallback', 'web(''http://UndocumentedMatlab.com'')');
+      set(handle(blogLabel,'CallbackProperties'), 'MouseClickedCallback', 'web(''http://UndocumentedMatlab.com'',''-browser'')');
       blogLabel.setCursor(java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
       lowerPanel = JPanel(FlowLayout);
       lowerPanel.add(blogLabel);
@@ -357,34 +398,8 @@ function hFig = displayObj(obj, objMethods, objProps, objCallbacks, objChildren,
       else
           globalPanel.add(hsplitPane, BorderLayout.CENTER);
       end
-
-      % Set the figure title
-      if isempty(objName)
-          objName = 'object of ';
-      else
-          objName = [objName ' of '];
-      end
-      if ischar(obj)
-          className = obj;
-          objName = '';
-      else
-          className = builtin('class', obj);
-      end
-      title = ['uiinspect: ' objName 'class ' className];
-
-      % If no figure handle for reuse was specified
-      if isempty(hFig)
-          % Try to reuse figure with the same title
-          hFig = findall(0, '-depth',1, 'type','figure', 'name',title);
-      end
-      % If no valid figure was found, create a new one - otherwise clear and reuse
-      if isempty(hFig)
-          hFig = figure;   % existing uiinspector for this object not found - create a new figure
-      else
-          hFig = hFig(1);  % just in case there's more than one such figure
-          clf(hFig);
-      end
-      set(hFig, 'Name',title, 'NumberTitle','off', 'units','pixel', 'toolbar','none', 'menubar','none');
+      
+      set(hFig, 'visible','on');
       pos = get(hFig,'position');
       [obj, hcontainer] = javacomponent(globalPanel, [0,0,pos(3:4)], hFig);
       set(hcontainer,'units','normalized');
@@ -451,7 +466,11 @@ function [propsPane, inspectorTable] = getPropsPane(obj)
       objProps = updateObjTooltip(obj, classNameLabel);  %#ok unused
       propsPane = JPanel(BorderLayout);
       oldWarn = warning('off','MATLAB:hg:JavaSetHGProperty');
-      set(propsPane, 'UserData',classNameLabel);
+      try
+          set(propsPane, 'userdata',classNameLabel);
+      catch
+          setappdata(propsPane, 'userdata',classNameLabel);
+      end
       warning(oldWarn);
       propsPane.add(classNameLabel, BorderLayout.NORTH);
       % TODO: Maybe uncomment the following - in the meantime it's unused (java properties are un-groupable)
@@ -530,14 +549,28 @@ function [cbData, cbHeaders, cbTableEnabled] = getCbsData(obj, stripStdCbsFlag)
       cbData = {'(no callbacks)'};
       cbHeaders = {'Callback name'};
       cbTableEnabled = false;
+      cbNames = {};
 
       try
-          classHdl = classhandle(handle(obj));
-          cbNames = get(classHdl.Events,'Name');
-          if ~isempty(cbNames) && ~iscom(obj)  %only java-based please...
-              cbNames = strcat(cbNames,'Callback');
+          try
+              classHdl = classhandle(handle(obj));
+              cbNames = get(classHdl.Events,'Name');
+              if ~isempty(cbNames) && ~iscom(obj)  %only java-based please...
+                  cbNames = strcat(cbNames,'Callback');
+              end
+              propNames = get(classHdl.Properties,'Name');
+          catch
+              % Try to interpret as an MCOS class object
+              try
+                  oldWarn = warning('off','MATLAB:structOnObject');
+                  warning off MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame
+                  dataFields = struct(obj);
+                  warning(oldWarn);
+              catch
+                  dataFields = get(obj);
+              end
+              propNames = fieldnames(dataFields);
           end
-          propNames = get(classHdl.Properties,'Name');
           propCbIdx = [];
           if ischar(propNames),  propNames={propNames};  end
           if ~isempty(propNames)
@@ -551,7 +584,7 @@ function [cbData, cbHeaders, cbTableEnabled] = getCbsData(obj, stripStdCbsFlag)
               if iscell(cbNames)
                   cbNames = sort(cbNames);
               end
-              hgHandleFlag = 0;  try hgHandleFlag = ishghandle(obj); catch end
+              hgHandleFlag = 0;  try hgHandleFlag = ishghandle(obj); catch, end
               try
                   obj = handle(obj,'CallbackProperties');
               catch
@@ -636,7 +669,6 @@ function loadedClass = loadClass(className)
   end
 %end  % loadClass
 
-
 %% Get properties table data
 function [propsData, propsHeaders, propTableEnabled, propsNum] = getPropsData(obj, showMetaData, showInspectedPropsFlag, inspectorTable, cbInspected)
       try
@@ -673,8 +705,11 @@ function [propsData, propsHeaders, propTableEnabled, propsNum] = getPropsData(ob
           catch
               % never mind...
           end
+
+          % Sort properties alphabetically
+          % Note: sorting is already a side-effect of setdiff, but setdiff is not called when showInspectedPropsFlag=1
           if iscell(propNames)
-              propNames = unique(propNames);
+              propNames = sort(unique(propNames));
           end
 
           %propsData = cell(0,7);
@@ -709,12 +744,6 @@ function [propsData, propsHeaders, propTableEnabled, propsNum] = getPropsData(ob
                   end
               end
 
-              % Sort properties alphabetically
-              % Note: sorting is already a side-effect of setdiff, but setdiff is not called when showInspectedPropsFlag=1
-              if iscell(propNames)
-                  propNames = sort(propNames);
-              end
-
               % Strip callback properties
               if ischar(propNames),  propNames = {propNames};  end
               propNames(~cellfun(@isempty,regexp(propNames,'(Fcn|Callback)$'))') = [];
@@ -736,23 +765,23 @@ function [propsData, propsHeaders, propTableEnabled, propsNum] = getPropsData(ob
                       
                       % Fade non-settable properties (gray italic font)
                       prefix = '';
-                      if strcmpi(sp.AccessFlags.PublicSet,'off')
-                          prefix = unsettablePrefix;
-                      end
+                      try if strcmpi(sp.AccessFlags.PublicSet,'off'), prefix = unsettablePrefix; end, catch, end
+                      try if ~isequal(sp.SetAccess,'public'),         prefix = unsettablePrefix; end, catch, end
 
                       % Get the property's meta-data
                       propsData{idx,1} = [prefix propName];
                       propsData{idx,2} = '';
                       if ~isempty(sp)
-                          propsData{idx,2} = [prefix sp.DataType];
-                          propsData{idx,4} = [prefix sp.AccessFlags.PublicGet];
-                          propsData{idx,5} = [prefix sp.AccessFlags.PublicSet];
-                          propsData{idx,6} = [prefix sp.Visible];
-                          if ~strcmp(propName,'FactoryValue')
-                              %propsData{idx,7} = [prefix charizeData(get(sp,'FactoryValue'))];  % sp.FactoryValue fails...
+                          try
+                              % UDD
+                              dataType  = sp.DataType;
+                              publicGet = sp.AccessFlags.PublicGet;
+                              publicSet = sp.AccessFlags.PublicSet;
+                              isVisible = sp.Visible;
                               try
                                   factoryValue = '';
                                   factoryValue = charizeData(sp.FactoryValue);
+                                  %factoryValue = charizeData(get(sp,'FactoryValue'));  % sp.FactoryValue fails...
                               catch
                                   % Prevent a Matlab crash on R2011b
                                   V = sscanf(version, '%d.', 2);
@@ -760,25 +789,62 @@ function [propsData, propsHeaders, propTableEnabled, propsNum] = getPropsData(ob
                                       factoryValue = charizeData(get(sp,'FactoryValue'));
                                   end
                               end
-                              propsData{idx,7} = [prefix factoryValue];
+                              extraStr = factoryValue;
+                          catch
+                              % MCOS/HG2
+                              publicGet = sp.GetAccess;
+                              publicSet = sp.SetAccess;
+                              isVisible = 'on'; if sp.Hidden, isVisible = 'off'; end
+                              try
+                                  factoryValue = charizeData(sp.DefaultValue);
+                                  dataType = class(factoryValue);
+                              catch  % no default value defined - TODO: how do we get the data type?
+                                  factoryValue = '';
+                                  dataType = strrep(sp.Description,' PropInfo','');
+                                  if strcmp(dataType,propName),  dataType='?';  end
+                              end
+							  extraStr = strtrim([factoryValue ...
+                                                  charizeBoolData(sp.Sealed,   ' Sealed') ...
+                                                  charizeBoolData(sp.Dependent,' Dependent') ...
+                                                  charizeBoolData(sp.Constant, ' Constant') ...
+                                                  charizeBoolData(sp.Abstract, ' Abstract') ...
+                                                  charizeBoolData(sp.Transient,' Transient')]);
+                          end
+                          propsData{idx,2} = [prefix charizeData(dataType)];
+                          propsData{idx,4} = [prefix charizeData(publicGet)];
+                          propsData{idx,5} = [prefix charizeData(publicSet)];
+                          propsData{idx,6} = [prefix charizeData(isVisible)];
+                          if ~isempty(extraStr) % && ~strcmp(propName,'FactoryValue')
+                              propsData{idx,7} = [prefix extraStr];
                           else
                               propsData{idx,7} = '';  % otherwise Matlab crashes...
                           end
                           %propsData{idx,8} = [prefix sp.Description];
                       end
                       % TODO: some fields (see EOL comment below) generate a Java Exception from: com.mathworks.mlwidgets.inspector.PropertyRootNode$PropertyListener$1$1.run
-                      if strcmpi(sp.AccessFlags.PublicGet,'on') % && ~any(strcmpi(sp.Name,{'FixedColors','ListboxTop','Extent'}))
+                      try
+                          isGettable = strcmpi(sp.AccessFlags.PublicGet,'on'); % && ~any(strcmpi(sp.Name,{'FixedColors','ListboxTop','Extent'}))
+                      catch
+                          isGettable = isequal(sp.GetAccess,'public');
+                      end
+                      if isGettable
                           try
                               % Trap warning about unused/deprecated properties
                               s = warning('off','all');
                               lastwarn('');
                               try
-                                  value = javaMethod(['get' sp.Name],obj);
+                                  value = javaMethod(['get' sp.Name],obj);  % Java object
                               catch
-                                  value = get(obj, sp.Name);
+                                  try
+                                      value = get(obj, sp.Name);  % standard MCOS object
+                                  catch
+                                      value = obj.(sp.Name);  % .Net object
+                                  end
                               end
-                              strToIgnore = 'Possible deprecated use of get on a Java object';
-                              if ~strncmpi(strToIgnore,lastwarn,length(strToIgnore))
+                              strToIgnore1 = 'Possible deprecated use of get on a Java object';
+                              strToIgnore2 = 'figure JavaFrame property will be obsoleted in a future release.';
+                              if ~strncmpi(strToIgnore1,lastwarn,length(strToIgnore1)) && ...
+                                 ~strncmpi(strToIgnore2,lastwarn,length(strToIgnore2))
                                   disp(lastwarn);
                               end
                               warning(s);
@@ -789,7 +855,7 @@ function [propsData, propsHeaders, propTableEnabled, propsNum] = getPropsData(ob
                                   propsData{idx,3} = value;
                               end
                           catch
-                              errMsg = regexprep(lasterr, {char(10),'Error using ==> get.Java exception occurred:..'}, {' ',''});
+                              errMsg = regexprep(lasterr, {char(10),'Error using ==> get.Java exception occurred:..','Error using .* Message: ',' Source:.*'}, {' ','','',''});
                               propsData{idx,3} = [errorPrefix errMsg];
                               propsData{idx,1} = strrep(propsData{idx,1},propName,[errorPrefix propName]);
                           end
@@ -876,7 +942,7 @@ function [propsData, propsHeaders, propTableEnabled, propsNum] = getPropsData(ob
 										  propsData{idx,2} = [unsettablePrefix  propsData{idx,2}];
 										  propsData{idx,4} = [unsettablePrefix 'on'];
 										  [propsData{idx,5:6}] = deal([unsettablePrefix 'off']);
-										  propsData{idx,7} = [unsettablePrefix propsData{idx,3}];
+										  %propsData{idx,7} = [unsettablePrefix propsData{idx,3}];
 										  propsData{idx,3} = [staticFinalPrefix propsData{idx,3}];
 									  end
 								  end
@@ -980,8 +1046,8 @@ function list = getTreeData(data)
         names = regexprep(data,'([A-Z][a-z]+).*','$1');
         %hash = java.util.Hashtable;
         others = {};
-        for propIdx = 1 : length(data)
-            if (propIdx < length(data) && strcmp(names{propIdx},names{propIdx+1})) || ...
+        for propIdx = 1 : size(data,1)
+            if (propIdx < size(data,1) && strcmp(names{propIdx},names{propIdx+1})) || ...
                (propIdx > 1            && strcmp(names{propIdx},names{propIdx-1}))
                 % Child callback property
                 setProp(list,data{propIdx,1},data{propIdx,2},names{propIdx});
@@ -1010,6 +1076,12 @@ function [callbacksPanel, callbacksTable] = getCbsPane(obj, stripStdCbsFlag)
           try
               list = getTreeData(cbData);  %#ok
               model = eval('com.jidesoft.grid.PropertyTableModel(list);');  %#ok prevent JIDE alert by run-time (not load-time) evaluation
+
+              % Auto-expand if only one category
+              if model.getRowCount==1   % length(model.getCategories)==1 fails for some unknown reason...
+                  model.expandFirstLevel;
+              end
+
               %callbacksTable = eval('com.jidesoft.grid.TreeTable(model);');  %#ok prevent JIDE alert by run-time (not load-time) evaluation
               callbacksTable = eval('com.jidesoft.grid.PropertyTable(model);');  %#ok prevent JIDE alert by run-time (not load-time) evaluation
 
@@ -1037,7 +1109,7 @@ function [callbacksPanel, callbacksTable] = getCbsPane(obj, stripStdCbsFlag)
           callbacksTopPanel.setLayout(BoxLayout(callbacksTopPanel, BoxLayout.LINE_AXIS));
           callbacksTopPanel.add(callbacksLabel);
           hgHandleFlag = 0;  try  hgHandleFlag = ishghandle(obj);  catch,  end  %#ok
-          %{
+          % {
           if ~hgHandleFlag && ~iscom(obj)
               jcb = JCheckBox('Hide standard callbacks', stripStdCbsFlag);
               set(handle(jcb,'CallbackProperties'), 'ActionPerformedCallback',@cbHideStdCbs_Callback);
@@ -1045,13 +1117,17 @@ function [callbacksPanel, callbacksTable] = getCbsPane(obj, stripStdCbsFlag)
               callbacksTopPanel.add(Box.createHorizontalGlue);
               callbacksTopPanel.add(jcb);
           end
-          %}
+          % }
           callbacksPanel.add(callbacksTopPanel, BorderLayout.NORTH);
       catch
           % Otherwise, use a standard Swing JTable (keep the headers to enable resizing)
           callbacksTable = JTable(cbData,cbHeaders);
       end
-      set(callbacksTable, 'userdata',obj);
+      try
+          set(callbacksTable, 'userdata',obj);
+      catch
+          setappdata(callbacksTable, 'userdata',obj);
+      end
       if iscom(obj)
           cbToolTipText = 'Callbacks may be ''string'' or @funcHandle';
       else
@@ -1068,12 +1144,17 @@ function [callbacksPanel, callbacksTable] = getCbsPane(obj, stripStdCbsFlag)
       if ~cbTableEnabled && callbacksTable.getColumnModel.getColumnCount>1
           callbacksTable.getColumnModel.getColumn(1).setCellEditor(cbNameCellEditor);
       end
-      hModel = handle(callbacksTable.getModel, 'CallbackProperties');
-      set(hModel, 'TableChangedCallback',@tbCallbacksChanged);
       try
-          set(callbacksTable.getModel,'UserData',obj);
+          pause(0.05);  % prevent intermittent crash reported for uiinspect(0)
+          hModel = handle(callbacksTable.getModel, 'CallbackProperties');
+          set(hModel, 'TableChangedCallback',@tbCallbacksChanged);
+          try
+              set(callbacksTable.getModel,'userdata',obj);  % set(hModel,'userdata',obj) croacks for some unknown reason...
+          catch
+              setappdata(hModel,'userdata',obj);
+          end
       catch
-          setappdata(hModel,'UserData',obj);
+          % ignore - odd...
       end
       try
           cbScrollPane = callbacksPane; %JScrollPane(callbacksPane);
@@ -1099,7 +1180,7 @@ function modifiers = getClassModifiers(thisClass)
 %end  % getClassModifiers
 
 %% Prepare the methods pane
-function [methodsPane, hgFlag] = getMethodsPane(methodsObj, obj)
+function [methodsPane, hgFlag] = getMethodsPane(methodsObj, obj, hFig)
       import java.awt.*
       import javax.swing.*
       methodsPane = JPanel(BorderLayout);
@@ -1192,15 +1273,15 @@ function [methodsPane, hgFlag] = getMethodsPane(methodsObj, obj)
 			  else
 				  switch com.mathworks.util.PlatformInfo.getVersion  % JVM version
 					  case com.mathworks.util.PlatformInfo.VERSION_13
-						  prefix = 'j2se/1.3';
+						  prefix = 'javase/1.3';    % old: 'j2se/1.3';
 					  case com.mathworks.util.PlatformInfo.VERSION_14
-						  prefix = 'j2se/1.4.2';
+						  prefix = 'javase/1.4.2';  % old: 'j2se/1.4.2';
 					  case com.mathworks.util.PlatformInfo.VERSION_15
-						  prefix = 'j2se/1.5.0';
+						  prefix = 'javase/1.5.0';  % old: 'j2se/1.5.0';
 					  otherwise %case com.mathworks.util.PlatformInfo.VERSION_16
 						  prefix = 'javase/6';
-                  end
-                  domain = 'http://java.sun.com'; %download.oracle.com';  % old: java.sun.com
+				  end
+                  domain = 'http://docs.oracle.com'; %download.oracle.com';  % old: java.sun.com
 				  url = [domain '/' prefix '/docs/api/' strrep(hyperlink,'.','/') '.html']; % TODO: treat classNames with internal '.'
 				  targetStr = ['web(''' url ''')'];
 			  end
@@ -1232,7 +1313,7 @@ function [methodsPane, hgFlag] = getMethodsPane(methodsObj, obj)
 
       % If this is an HG handle, display hierarchy tree instead of methods
       if hgFlag
-          paneContents = getHandleTree(obj);
+          paneContents = getHandleTree(obj, hFig);
       else
           % Otherwise simply display the object's methods
           paneContents = getMethodsTable(methodsObj, methodsPanel);
@@ -1244,12 +1325,16 @@ function [methodsPane, hgFlag] = getMethodsPane(methodsObj, obj)
 %end  % getMethodsPane
 
 %% Display HG handle hiererchy in a tree
-function handleTree = getHandleTree(obj)
+function handleTree = getHandleTree(obj, hFig)
       import java.awt.*
       import javax.swing.*
 
       %handleTree = uitree.
-      tree_h = handle(com.mathworks.hg.peer.UITreePeer,'CallbackProperties');
+      tree_h = com.mathworks.hg.peer.UITreePeer;
+      tree_hh = handle(tree_h,'CallbackProperties');
+      try tree_h = javaObjectEDT(tree_h); catch, end  % auto-delegate on EDT
+      %tree_h = handle(com.mathworks.hg.peer.UITreePeer,'CallbackProperties');
+      try setappdata(tree_h, 'userdata',[]); catch, end  % required to prevent an "invalid object" error downstream
       
       % Use the parent handle as root, unless there is none
       hRoot = handle(get(obj,'parent'));
@@ -1295,14 +1380,19 @@ function handleTree = getHandleTree(obj)
       userdata.inInit = true;
       userdata.jTree = jTreeObj;
       try
-          set(tree_h.java, 'userdata',userdata);
+          set(tree_h, 'userdata',userdata);
       catch
-          setappdata(tree_h, 'userdata',userdata);
+          try
+              setappdata(tree_h, 'userdata',userdata);
+          catch
+              tree_h = handle(tree_h, 'CallbackProperties');
+              setappdata(tree_h, 'userdata',userdata);
+          end
       end
 
       % Set the callback functions
-      set(tree_h, 'NodeExpandedCallback', {@nodeExpanded, tree_h});
-      set(tree_h, 'NodeSelectedCallback', @nodeSelected);
+      set(tree_hh, 'NodeExpandedCallback', {@nodeExpanded, tree_h});
+      set(tree_hh, 'NodeSelectedCallback', {@nodeSelected, tree_h, hFig});
 
       % Set the tree mouse-click callback
 % Note: default actions (expand/collapse) will still be performed?
@@ -1319,7 +1409,7 @@ function handleTree = getHandleTree(obj)
       % Update userdata
       userdata.inInit = false;
       try
-          set(tree_h.java, 'userdata',userdata);
+          set(tree_h, 'userdata',userdata);
       catch
           setappdata(tree_h, 'userdata',userdata);
       end
@@ -1334,20 +1424,30 @@ function jmenu = setTreeContextMenu(obj,node)
       menuItem0 = JMenuItem(titleStr);
       menuItem0.setEnabled(0);
       menuItem0.setArmed(0);
-      menuItem1 = JMenuItem('Inspect in this window');
-      menuItem2 = JMenuItem('Inspect in a new window');
-      menuItem3 = JMenuItem('Copy handle value to clipboard');
+      menuItem1 = JMenuItem('Copy handle value to clipboard');
+      if isjava(obj), prefix = 'j';  else,  prefix = 'h';  end  %#ok<NOCOM>
+      varname = char(node.getName);
+      varname = regexprep(varname,'<[^>]*>','');  % strip HTML
+      varname = strrep([prefix strtok(varname)], '$','_');
+      varname = genvarname(varname);
+      varname(2) = upper(varname(2));  % ensure lowerCamelCase
+      menuItem2 = JMenuItem(['Export handle to ' varname]);
+      menuItem3 = JMenuItem('Export handle to...');
       menuItem4 = JMenuItem('Request focus (bring to front)');
-      menuItem5 = JMenuItem('Inspect underlying Java object');
-      menuItem6 = JMenuItem('View object in Java hierarchy');
+      menuItem5 = JMenuItem('Inspect in this window');
+      menuItem6 = JMenuItem('Inspect in a new window');
+      menuItem7 = JMenuItem('Inspect underlying Java object');
+      menuItem8 = JMenuItem('View object in Java hierarchy');
 
       % Set the menu items' callbacks
-      set(handle(menuItem1,'CallbackProperties'),'ActionPerformedCallback',{@inspectHandle,obj,0});
-      set(handle(menuItem2,'CallbackProperties'),'ActionPerformedCallback',{@inspectHandle,obj,1});
-      set(handle(menuItem3,'CallbackProperties'),'ActionPerformedCallback',sprintf('clipboard(''copy'',''%.99g'')',handleValue));
+      set(handle(menuItem1,'CallbackProperties'),'ActionPerformedCallback',sprintf('clipboard(''copy'',''%.99g'')',handleValue));
+      set(handle(menuItem2,'CallbackProperties'),'ActionPerformedCallback',{@btExport_Callback,{obj,varname}});
+      set(handle(menuItem3,'CallbackProperties'),'ActionPerformedCallback',{@btExport_Callback,{obj,[]}});
       set(handle(menuItem4,'CallbackProperties'),'ActionPerformedCallback',{@requestFocus,obj});
-      set(handle(menuItem5,'CallbackProperties'),'ActionPerformedCallback',{@inspectJavaObj,obj,0});
-      set(handle(menuItem6,'CallbackProperties'),'ActionPerformedCallback',{@inspectJavaObj,obj,1});
+      set(handle(menuItem5,'CallbackProperties'),'ActionPerformedCallback',{@inspectHandle,obj,0});
+      set(handle(menuItem6,'CallbackProperties'),'ActionPerformedCallback',{@inspectHandle,obj,1});
+      set(handle(menuItem7,'CallbackProperties'),'ActionPerformedCallback',{@inspectJavaObj,obj,0});
+      set(handle(menuItem8,'CallbackProperties'),'ActionPerformedCallback',{@inspectJavaObj,obj,1});
 
       % Add all menu items to the context menu (with internal separator)
       jmenu = JPopupMenu;
@@ -1355,13 +1455,38 @@ function jmenu = setTreeContextMenu(obj,node)
       jmenu.addSeparator;
       jmenu.add(menuItem1);
       jmenu.add(menuItem2);
-      jmenu.addSeparator;
       jmenu.add(menuItem3);
+      jmenu.addSeparator;
       jmenu.add(menuItem4);
       jmenu.addSeparator;
       jmenu.add(menuItem5);
       jmenu.add(menuItem6);
+      jmenu.addSeparator;
+      jmenu.add(menuItem7);
+      jmenu.add(menuItem8);
 %end  % setTreeContextMenu
+
+%% Callback function for context-menu <Export handle> item
+function btExport_Callback(src, evd, varargin)  %#ok
+    try
+        data = varargin{1};
+        obj = data{1};
+        varName = data{2};
+        if isempty(varName)
+            varName = inputdlg('Enter workspace variable name',mfilename);
+            if isempty(varName),  return;  end  % bail out on <Cancel>
+            varName = varName{1};
+            if isempty(varName) || ~ischar(varName),  return;  end  % bail out on empty/null
+            varName = genvarname(varName);
+        end
+        assignin('base',varName,handle(obj,'CallbackProperties'));
+        msg = ['Exported object to base workspace variable ' varName];
+        msgbox(msg,mfilename,'help');
+    catch
+        % Never mind...
+        dispError
+    end
+%end  % btExport_Callback
 
 %% Inspect a specified handle
 function inspectHandle(hTree, eventData, obj, newFigureFlag)  %#ok hTree & eventData are unused
@@ -1620,14 +1745,18 @@ function [nodeName, nodeTitle] = getNodeName(hndl)
 
         % Initialize (just in case one of the succeding lines croaks)
         nodeName = '';
-        if ~ismethod(hndl,'getClass')
-            try
-                nodeName = hndl.class;
-            catch
-                nodeName = hndl.type;  % last-ditch try...
+        try
+            nodeName = class(hndl);
+        catch
+            if ~ismethod(hndl,'getClass')
+                try
+                    nodeName = hndl.class;
+                catch
+                    nodeName = hndl.type;  % last-ditch try...
+                end
+            else
+                nodeName = hndl.getClass.getSimpleName;
             end
-        else
-            nodeName = hndl.getClass.getSimpleName;
         end
         nodeType = nodeName;
 
@@ -1881,17 +2010,18 @@ function nodes = getChildrenNodes(tree, parentNode)  %#ok tree is unused
 %end  % getChildrenNodes
 
 %% Select tree node
-function nodeSelected(src, evd, hFig)
+function nodeSelected(src, evd, tree_h, hFig)
     try
         rescanFlag = 0;
         %nodeHandle = evd.getCurrentNode.getUserObject;
         nodedata = get(evd.getCurrentNode,'userdata');
         nodeHandle = nodedata.obj;
         try
-            userdata = get(src,'userdata');
+            userdata = get(tree_h,'userdata');
         catch
-            userdata = getappdata(src,'userdata');
+            userdata = getappdata(tree_h,'userdata');
         end
+        if nargin<4,  hFig = gcf;  end
 
         if ~isempty(nodeHandle) && ~isempty(userdata) && ~userdata.inInit
 
@@ -1903,15 +2033,15 @@ function nodeSelected(src, evd, hFig)
             end
 
             % Get the current uiinspect figure handle
-            hFig = [];
-            try
-                hFig = ancestor(src,'figure');   % TODO - this fails: need to find a way to pass hFig...
-                if isempty(hFig)
-                    hFig = gcf;
-                end
-            catch
-                hFig = gcf;
-            end
+            %hFig = [];
+            %try
+            %    hFig = ancestor(src,'figure');   % TODO - this fails: need to find a way to pass hFig...
+            %    if isempty(hFig)
+            %        hFig = gcf;
+            %    end
+            %catch
+            %    hFig = gcf;
+            %end
 
             % Temoprarily modify the curpor pointer to an hourglass
             rescanFlag = 1;
@@ -2036,13 +2166,8 @@ function methodsTable = getMethodsTable(methodsObj, methodsPanel)
 
       % Set meta-data for the Extra checkbox callback
       methodsObj.tableObj = b;
-      set(hcbExtra, 'ActionPerformedCallback',@updateMethodsTable);
+      set(hcbExtra, 'ActionPerformedCallback',{@updateMethodsTable,methodsObj});
       set(cbExtra,  'tooltip','Also show qualifiers, interrupts & inheritance');
-      try
-          set(cbExtra, 'userdata',methodsObj);
-      catch
-          setappdata(hcbExtra,'userdata',methodsObj);
-      end
       
       % Return the scrollpane
       methodsTable = scroll;
@@ -2064,7 +2189,7 @@ function [othersPane, propsNum] = getChildrenPane(obj, inspectorTable, propsPane
       else
           try
               oldWarn = warning('off','MATLAB:hg:JavaSetHGProperty');
-              classNameLabel = get(propsPane, 'UserData');
+              classNameLabel = get(propsPane, 'userdata');
               othersLabel.setToolTipText(classNameLabel.getToolTipText);
           catch
               % never mind...
@@ -2131,9 +2256,9 @@ function [othersPane, propsNum] = getChildrenPane(obj, inspectorTable, propsPane
       hModel = handle(propsTable.getModel, 'CallbackProperties');
       set(hModel, 'TableChangedCallback',@tbPropChanged);
       try
-          set(propsTable.getModel, 'UserData',ud);
+          set(propsTable.getModel, 'userdata',ud);
       catch
-          setappdata(hModel,'UserData',ud);
+          setappdata(hModel,'userdata',ud);
       end
       scrollPane = JScrollPane(propsTable);
       scrollPane.setVerticalScrollBarPolicy(scrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -2143,25 +2268,19 @@ function [othersPane, propsNum] = getChildrenPane(obj, inspectorTable, propsPane
       % Preserve persistent info in the propsTable's userdata
       if ~isempty(cbMetaData)
           hcbMetaData = handle(cbMetaData,'CallbackProperties');
-          set(hcbMetaData, 'ActionPerformedCallback',@updatePropsTable);
+          set(hcbMetaData, 'ActionPerformedCallback',{@updatePropsTable,propsTable});
           set(cbMetaData,  'tooltip','Also show property meta-data (type, visibility, get/set availability, etc.)');
-          try
-              set(cbMetaData,'userdata',propsTable);
-          catch
-              setappdata(hcbMetaData,'userdata',propsTable);
-          end
       end
       if ~isempty(cbInspectable)
           hcbInspectable = handle(cbInspectable,'CallbackProperties');
-          set(hcbInspectable, 'ActionPerformedCallback',@updatePropsTable);
+          set(hcbInspectable, 'ActionPerformedCallback',{@updatePropsTable,propsTable});
           set(cbInspectable,  'tooltip','Also show inspectable properties (displayed in the table above)');
-          try
-              set(cbInspectable, 'userdata',propsTable);
-          catch
-              setappdata(hcbInspectable,'userdata',propsTable);
-          end
       end
-      set(propsTable, 'userdata',ud);
+      try
+          set(propsTable, 'userdata',ud);
+      catch
+          setappdata(propsTable, 'userdata',ud);
+      end
 %end  % getChildrenPane
 
 %% "dbstop if error" causes inspect.m to croak due to a bug - so workaround by temporarily disabling this dbstop
@@ -2169,7 +2288,8 @@ function identifiers = disableDbstopError
     dbStat = dbstatus;
     idx = find(strcmp({dbStat.cond},'error'));
     identifiers = [dbStat(idx).identifier];
-    if ~isempty(idx)
+    v = version;
+    if ~isempty(idx) && v(1) < '8';
         dbclear if error;
         msgbox('''dbstop if error'' had to be disabled due to a Matlab bug that would have caused Matlab to crash.', mfilename, 'warn');
     end
@@ -2193,7 +2313,8 @@ function evNames = stripStdCbs(evNames)
                      'MouseClicked',   'MouseDragged',     'MouseEntered',  'MouseExited', ...
                      'MouseMoved',     'MousePressed',     'MouseReleased', 'MouseWheelMoved', ...
                      'PropertyChange', 'VetoableChange',   ...
-                     'CaretPositionChanged', 'InputMethodTextChanged'};
+                     'CaretPositionChanged',               'InputMethodTextChanged', ...
+                     'ButtonDown',     'Create',           'Delete'};
         evNames = setdiff(evNames,strcat(stdEvents,'Callback'))';
     catch
         % Never mind...
@@ -2208,9 +2329,19 @@ function cbHideStdCbs_Callback(src, evd, varargin)
         callbacksTable = get(src,'userdata');
         obj = get(callbacksTable, 'userdata');
         [cbData, cbHeaders] = getCbsData(obj, evd.getSource.isSelected);
-        callbacksTableModel = javax.swing.table.DefaultTableModel(cbData,cbHeaders);
+        try
+              list = getTreeData(cbData);  %#ok
+              callbacksTableModel = eval('com.jidesoft.grid.PropertyTableModel(list);');  %#ok prevent JIDE alert by run-time (not load-time) evaluation
+
+              % Auto-expand if only one category
+              if callbacksTableModel.getRowCount==1   % length(callbacksTableModel.getCategories)==1 fails for some unknown reason...
+                  callbacksTableModel.expandFirstLevel;
+              end
+        catch
+            callbacksTableModel = javax.swing.table.DefaultTableModel(cbData,cbHeaders);
+        end
         set(handle(callbacksTableModel,'CallbackProperties'), 'TableChangedCallback',@tbCallbacksChanged);
-        set(callbacksTableModel, 'UserData',handle(obj,'CallbackProperties'));
+        set(callbacksTableModel, 'userdata',handle(obj,'CallbackProperties'));
         callbacksTable.setModel(callbacksTableModel)
         try
             % Try to auto-resize the columns
@@ -2227,13 +2358,15 @@ function cbHideStdCbs_Callback(src, evd, varargin)
 %end  % cbHideStdCbs_Callback
 
 %% Update the methods table following a checkbox modification
-function updateMethodsTable(src, evd, varargin)  %#ok partially unused
+function updateMethodsTable(src, evd, methodsObj, varargin)  %#ok partially unused
     try
         % Update callbacks table data according to the modified checkbox state
-        try
-            methodsObj = get(src,'userdata');
-        catch
-            methodsObj = getappdata(src,'userdata');
+        if nargin < 3
+            try
+                methodsObj = get(src,'userdata');
+            catch
+                methodsObj = getappdata(src,'userdata');
+            end
         end
         data = methodsObj.methods(methodsObj.sortIdx,:);
         headers = methodsObj.headers;
@@ -2269,15 +2402,21 @@ function updateMethodsTable(src, evd, varargin)  %#ok partially unused
 %end  % updateMethodsTable
 
 %% Update the properties table following a checkbox modification
-function updatePropsTable(src, evd, varargin)  %#ok partially unused
+function updatePropsTable(src, evd, propsTable, varargin)  %#ok partially unused
     try
         % Update callbacks table data according to the modified checkbox state
-        try
-            propsTable = get(src,'userdata');
-        catch
-            propsTable = getappdata(src,'userdata');
+        if nargin < 3
+            try
+                propsTable = get(src,'userdata');
+            catch
+                propsTable = getappdata(src,'userdata');
+            end
         end
-        ud = get(propsTable, 'userdata');
+        try
+            ud = get(propsTable, 'userdata');
+        catch
+            ud = getappdata(propsTable, 'userdata');
+        end
         obj = ud.obj;
         inspectorTable = ud.inspectorTable;
         oldData = {};
@@ -2308,9 +2447,9 @@ function updatePropsTable(src, evd, varargin)  %#ok partially unused
             hpropsTableModel = handle(propsTableModel,'CallbackProperties');
             set(hpropsTableModel, 'TableChangedCallback',@tbPropChanged);
             try
-                set(propsTableModel, 'UserData',ud);
+                set(propsTableModel, 'userdata',ud);
             catch
-                setappdata(hpropsTableModel, 'UserData',ud);
+                setappdata(hpropsTableModel, 'userdata',ud);
             end
             propsTable.setModel(propsTableModel)
             try
@@ -2372,7 +2511,7 @@ function tbCallbacksChanged(src, evd)
             try
                 object = get(src,'userdata');
             catch
-                object = getappdata(src,'UserData');
+                object = getappdata(src,'userdata');
             end
             cbName = strtrim(table.getValueAt(modifiedRowIdx,0));
             try
@@ -2380,7 +2519,7 @@ function tbCallbacksChanged(src, evd)
                 if ~isempty(cbValue) && ismember(cbValue(1),'{[@''')
                     cbValue = eval(cbValue);
                 end
-                if (~ischar(cbValue) && ~isa(cbValue, 'function_handle') && (iscom(object(1)) || iscell(cbValue)))
+                if (~ischar(cbValue) && ~isa(cbValue, 'function_handle') && (~iscell(cbValue) || iscom(object(1))))
                     revertCbTableModification(table, modifiedRowIdx, modifiedColIdx, cbName, object, '');
                 else
                     for objIdx = 1 : length(object)
@@ -2467,6 +2606,9 @@ function tbMousePressed(src, evd)
         tableObj = evd.getComponent;  % =src.java
         selectedRowIdx    = tableObj.getSelectedRow;
         selectedColumnIdx = tableObj.getSelectedColumn;
+        if selectedRowIdx<0 || selectedColumnIdx<0
+            return;  % sanity check - prevents error message in case of right-click on unselected table
+        end
         cellData = char(tableObj.getValueAt(selectedRowIdx,selectedColumnIdx));
         [a,b,c,d,e] = regexp(cellData,'">([^<]*)</a>');  %#ok a-d are unused
         classes = unique([e{:}]);
@@ -2569,16 +2711,38 @@ function dataFieldsStr = getPropsHtml(obj, dataFields)
     try
         % Get a text representation of the fieldnames & values
         undefinedStr = '';
+        hiddenStr = '';
         dataFieldsStr = '';  % just in case the following croaks...
         if isempty(dataFields)
             return;
         end
+        %oldVal = get(0,'HideUndocumented');
+        %set(0,'HideUndocumented','off');
         dataFieldsStr = evalc('disp(dataFields)');
+        %set(0,'HideUndocumented',oldVal);
         if dataFieldsStr(end)==char(10),  dataFieldsStr=dataFieldsStr(1:end-1);  end
 
         % Strip out callbacks
         dataFieldsStr = regexprep(dataFieldsStr,'^\s*\w*Callback(Data)?:[^\n]*$','','lineanchors');
+
+        % Strip out internal HG2 mirror properties
+        dataFieldsStr = regexprep(dataFieldsStr,'^\s*\w*_I:[^\n]*$','','lineanchors');
         dataFieldsStr = regexprep(dataFieldsStr,'\n\n','\n');
+
+        % Sort the fieldnames
+        try
+            [a,b,c,d] = regexp(dataFieldsStr,'(\w*): ');
+            fieldNames = strrep(d,': ','');
+        catch
+            fieldNames = fieldnames(dataFields);
+        end
+        try
+            [fieldNames, sortedIdx] = sort(fieldNames);
+            s = strsplit(dataFieldsStr, sprintf('\n'))';
+            dataFieldsStr = strjoin(s(sortedIdx), sprintf('\n'));
+        catch
+            % never mind... - ignore, leave unsorted
+        end
 
         % HTMLize tooltip data
         % First, set the fields' font based on its read-write status
@@ -2593,24 +2757,34 @@ function dataFieldsStr = getPropsHtml(obj, dataFields)
                 % Some Matlab class objects simply cannot be converted into a handle()
             end
         end
-        fieldNames = fieldnames(dataFields);
         for fieldIdx = 1 : length(fieldNames)
             thisFieldName = fieldNames{fieldIdx};
             try
-                accessFlags = get(findprop(obj,thisFieldName),'AccessFlags');
+                hProp = findprop(obj,thisFieldName);
+                accessFlags = get(hProp,'AccessFlags');
+                visible = get(hProp,'Visible');
             catch
                 accessFlags = [];
+                visible = 'on';
+                try if hProp.Hidden, visible='off'; end, catch, end
             end
-            if isfield(accessFlags,'PublicSet') && strcmp(accessFlags.PublicSet,'on')
+            if (~isempty(hProp) && isprop(hProp,'SetAccess') && isequal(hProp.SetAccess,'public')) || ...  % isequal(...'public') and not strcmpi(...) because might be a cell array of classes
+               (~isempty(accessFlags) && isfield(accessFlags,'PublicSet') && strcmpi(accessFlags.PublicSet,'on'))
                 % Bolden read/write fields
-                thisFieldFormat = ['<b>' thisFieldName '<b>:$2'];
-            elseif ~isfield(accessFlags,'PublicSet')
+                thisFieldFormat = ['<b>' thisFieldName '</b>:$2'];
+            elseif (isempty(hProp) || ~isprop(hProp,'SetAccess')) && ...
+                   (isempty(accessFlags) || ~isfield(accessFlags,'PublicSet'))
                 % Undefined - probably a Matlab-defined field of com.mathworks.hg.peer.FigureFrameProxy...
                 thisFieldFormat = ['<font color="blue">' thisFieldName '</font>:$2'];
                 undefinedStr = ', <font color="blue">undefined</font>';
             else % PublicSet=='off'
                 % Gray-out & italicize any read-only fields
-                thisFieldFormat = ['<font color="#C0C0C0"><i>' thisFieldName '</i></font>:<font color="#C0C0C0"><i>$2<i></font>'];
+                thisFieldFormat = ['<font color="#C0C0C0">' thisFieldName '</font>:<font color="#C0C0C0">$2</font>'];
+            end
+            if strcmpi(visible,'off')
+                %thisFieldFormat = ['<i>' thisFieldFormat '</i>']; %#ok<AGROW>
+                thisFieldFormat = regexprep(thisFieldFormat, {'(.*):(.*)','<.?b>'}, {'<i>$1:<i>$2',''}); %'(.*):(.*)', '<i>$1:<i>$2');
+                hiddenStr = ', <i>hidden</i>';
             end
             dataFieldsStr = regexprep(dataFieldsStr, ['([\s\n])' thisFieldName ':([^\n]*)'], ['$1' thisFieldFormat]);
         end
@@ -2626,7 +2800,7 @@ function dataFieldsStr = getPropsHtml(obj, dataFields)
         % Method 2: 2x2-column <table>
         dataFieldsStr = regexprep(dataFieldsStr, '^\s*([^:]+:)([^\n]*)\n^\s*([^:]+:)([^\n]*)$', '<tr><td>&nbsp;$1</td><td>&nbsp;$2</td><td>&nbsp;&nbsp;&nbsp;&nbsp;$3</td><td>&nbsp;$4&nbsp;</td></tr>', 'lineanchors');
         dataFieldsStr = regexprep(dataFieldsStr, '^[^<]\s*([^:]+:)([^\n]*)$', '<tr><td>&nbsp;$1</td><td>&nbsp;$2</td><td>&nbsp;</td><td>&nbsp;</td></tr>', 'lineanchors');
-        dataFieldsStr = ['(<b>modifiable</b>' undefinedStr ' &amp; <font color="#C0C0C0"><i>read-only</i></font> fields)<p>&nbsp;&nbsp;<table cellpadding="0" cellspacing="0">' dataFieldsStr '</table>'];
+        dataFieldsStr = ['(<b>documented</b>' undefinedStr hiddenStr ' &amp; <font color="#C0C0C0">read-only</font> fields)<p>&nbsp;&nbsp;<table cellpadding="0" cellspacing="0">' dataFieldsStr '</table>'];
     catch
         % never mind - bail out (Maybe matlab 6 that does not support regexprep?)
         disp(lasterr);  rethrow(lasterror)
@@ -2677,7 +2851,14 @@ function dataFields = updateObjTooltip(obj, uiObject)
         % Probably a non-HG java object
         try
             % Note: the bulk-get approach enables access to user-defined schema-props, but not to some original classhandle Properties...
-            dataFields = get(obj);
+            try
+                oldWarn3 = warning('off','MATLAB:structOnObject');
+                warning off MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame
+                dataFields = struct(obj);
+                warning(oldWarn3);
+            catch
+                dataFields = get(obj);
+            end
             dataFieldsStr = getPropsHtml(obj, dataFields);
         catch
             % Probably a missing property getter implementation
@@ -2815,5 +2996,7 @@ function dispError
 % - Enh: link property objects to another uiinspect window for these objects
 % - Enh: display object children (& link to them) - COM/Java
 % - Enh: find a way to merge the other-properties table into the inspector table
+% - Enh: find a way to use the inspector without disabling dbstop if error
 % - Fix: some fields generate a Java Exception from: com.mathworks.mlwidgets.inspector.PropertyRootNode$PropertyListener$1$1.run
-% - Fix: In HG tree view, sometimes the currently-inspected handle is not selected
+% - Fix: using the "Hide standard callbacks" checkbox sometimes issues Java Exceptions on the console
+% - Fix: In HG tree view, sometimes the currently-inspected handle is not automatically selected
