@@ -206,11 +206,16 @@ function h=iFunc_plot_menu(h, a, name)
     uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
     uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
     uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
-    uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
+    uimenu(uicm, 'Label',[ 'Linear/Log ' strtok(a.Name) ],'Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
+    uimenu(uicm, 'Label','Linear/Log X axis', ...
+    'Callback', 'if strcmp(get(gca,''xscale''),''linear'')  set(gca,''xscale'',''log''); else set(gca,''xscale'',''linear''); end');
+    uimenu(uicm, 'Label','Linear/Log Y axis', ...
+    'Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
     uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
   else
     uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight;rotate3d off;');
-    uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
+    uimenu(uicm, 'Label',[ 'Linear/Log ' strtok(a.Name) ],'Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
+    uimenu(uicm, 'Label', 'Linear/Log axis','Callback', 'if strcmp(get(gca,''xscale''),''linear'')  set(gca,''xscale'',''log''); else set(gca,''xscale'',''linear''); end');
   end
 
   uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', ...
