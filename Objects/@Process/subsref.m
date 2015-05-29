@@ -53,7 +53,7 @@ for i = 1:length(S)     % can handle multiple index levels
       end
       if isa(c, 'Process'), b = c; end
     else
-      error([ mfilename ': can not get Process object Property ''' fieldname ''' in Process model ' b.Tag '.' ]);
+      error([ mfilename ': can not get Process object Property ''' fieldname ''' in Process model ' char(b.process) '.' ]);
     end
   end   % switch s.type
 end % for s index level 
