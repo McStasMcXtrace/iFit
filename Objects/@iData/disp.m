@@ -28,7 +28,7 @@ if numel(s_in) > 1
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
 else
   if isdeployed || ~usejava('jvm'), id='iData';
-  else           id='<a href="matlab:doc iData">iData</a> (<a href="matlab:methods iData">methods</a>,<a href="matlab:doc(iData,''iData'')">doc</a>)';
+  else           id=[ '<a href="matlab:doc iData">iData</a> (<a href="matlab:methods iData">methods</a>,<a href="matlab:doc(iData,''iData'')">doc</a>,<a href="matlab:figure;plot(' iname ');">plot</a>)' ];
   end
   if isvector(s_in) > 1, id = [ id ' list/event']; end
   fprintf(1,'%s = %s %iD object of size [%s]:\n',iname, id, ndims(s_in), num2str(size(s_in)));
