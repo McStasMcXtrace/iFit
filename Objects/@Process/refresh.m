@@ -37,7 +37,11 @@ try
   end
   pid.isActive  = 0;
 catch
-  pid.isActive  = 1;
+  if isempty(pid.process) || isempty(pid.command)
+    pid.isActive  = 0;
+  else
+    pid.isActive  = 1;
+  end
 end
 
 % then retrieve any stdout/stderr content (possibly in Buffer after end of process)
