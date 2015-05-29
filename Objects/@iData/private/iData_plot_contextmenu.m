@@ -112,6 +112,8 @@ if ndims(a) == 1 && ~isfield(ud,'contextual_1d')
   ud.contextual_1d = 1;
 end
 % menu Toggle all error bars (axis)
+% we handle 'old' (Matlab < 2014b) errorbars (hggroup) by hidding the 2nd line
+% we handle tne 'new' Matlab >= 2014b by toggling between the errorbar and the single line
 if isfield(ud,'contextual_1d') && ud.contextual_1d==1
   uimenu(uicm, 'Label','Toggle All Error Bars', 'Callback', [ ... 
     'tmp_h = findobj(gca,''type'',''errorbar''); ' ...
@@ -130,6 +132,7 @@ uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
 if ndims(a) >= 2 && ~isfield(ud,'contextual_2d')
   ud.contextual_2d = 1;
 end
+% menus entries for lin/log and appearence
 if isfield(ud,'contextual_2d') && ud.contextual_2d==1
   uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback', [ ...
     '[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end;' ...
@@ -137,11 +140,17 @@ if isfield(ud,'contextual_2d') && ud.contextual_2d==1
   uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
   uimenu(uicm, 'Label','Transparency','Callback', 'for tmp_h=get(gca, ''children'')''; try; alpha(tmp_h,0.7*get(tmp_h, ''facealpha'')); end; end');
-  uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
+  uimenu(uicm, 'Label',[ 'Linear/Log signal ' strtok(title(a)) ],...
+    'Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
+  uimenu(uicm, 'Label',[ 'Linear/Log X axis ' strtok(xlabel(a)) ], ...
+    'Callback', 'if strcmp(get(gca,''xscale''),''linear'')  set(gca,''xscale'',''log''); else set(gca,''xscale'',''linear''); end');
+  uimenu(uicm, 'Label',[ 'Linear/Log Y axis ' strtok(ylabel(a)) ], ...
+    'Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
   uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
 else
   uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight;rotate3d off;');
-  uimenu(uicm, 'Label','Linear/Log scale','Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
+  uimenu(uicm, 'Label',[ 'Linear/Log signal ' strtok(title(a)) ],'Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
+  uimenu(uicm, 'Label',[ 'Linear/Log axis ' strtok(xlabel(a)) ],'Callback', 'if strcmp(get(gca,''xscale''),''linear'')  set(gca,''xscale'',''log''); else set(gca,''xscale'',''linear''); end');
 end
 
 uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', ...
