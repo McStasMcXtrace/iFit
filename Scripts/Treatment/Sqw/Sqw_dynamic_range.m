@@ -113,7 +113,7 @@ function sqw = Sqw_dynamic_range(s, Ei, angles)
   fprintf(1, '%s: incoming: Ei=%g [meV] Ki=%g [Angs-1] lambda=%g [Angs] Vi=%g [m/s]\n', ...
     mfilename, Ei, Ki, lambda, Vi);
 
-  % find: cos theta = (ki2 + kf2 - q2)/(2ki kf) is NOT between -1 and 1
+  % find: cos theta = (ki2 + kf2 - q2)/(2ki kf) is NOT between -1 and 1. theta=diffusion angle
   costheta = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf);
   if isempty(angles)
     index= find(abs(costheta) > 1 | Ef <= 0);

@@ -6,9 +6,9 @@ function y=bose(varargin)
 %     y = n(x)+1 for x > 0
 %     y = n(x)   for x < 0
 %         
-% when 'x' is an energy in meV, the parameter p should be T/11.605
+% When 'x' is an energy in meV, the parameter p should be T/11.6045
 %
-% Reference: http://en.wikipedia.org/wiki/Bose%E2%80%93Einstein_statistics
+% Reference: http://en.wikipedia.org/wiki/Bose-Einstein_statistics
 %
 % input:  p: Bose model parameters (double)
 %            p = [ Kb.T/hbar   in 'x' units ]

@@ -13,7 +13,7 @@ function s=Sqw_symmetrize(s)
 % i.e. material gains energy, and neutrons loose energy when scattered.
 %
 % input:
-%   s:  Sqw data set (classical)
+%   s:  Sqw data set (classical, often labelled as S*)
 %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
 % output:
 %   s:  S(|q|,w) symmetrised in energy
