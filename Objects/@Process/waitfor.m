@@ -1,4 +1,4 @@
-% waitfor(pid): wait or the end of a running process
+% waitfor(pid): wait for the end of a running process
 %
 % @Process/waitfor: wait or the end of a running Process. Its status
 % output and error print-out are updated.

@@ -26,7 +26,7 @@ if numel(s_in) > 1
   d = [ d sprintf(' array [%s]',num2str(size(s_in))) ];
 end
 if isdeployed || ~usejava('jvm'), id='Process';
-else           id='<a href="matlab:doc Process">Process</a> (<a href="matlab:methods Process">show methods</a>,<a href="matlab:doc(Process)">doc</a>)';
+else           id=[ '<a href="matlab:doc Process">Process</a> (<a href="matlab:methods Process">methods</a>,<a href="matlab:doc(Process)">doc</a>,<a href="matlab:disp(' iname ');">more...</a>)' ];
 end
 if length(s_in) == 0
     d = [ d sprintf(' %s: empty\n',id) ];
