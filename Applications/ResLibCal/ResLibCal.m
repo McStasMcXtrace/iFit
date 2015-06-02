@@ -11,10 +11,14 @@ function out = ResLibCal(varargin)
 % where 'command' is one of:
 %   open, save, saveas, export, exit, reset, print, create,
 %   compute, update (=compute+show), view2, view3, view_tas
-%   default, quit
+%   default, quit, close
 % To compute the resolution at a given HKLW location, using the current settings
 %   resolution = ResLibCal(QH,QK,QL,W)
-% where QH,QK,QL,W can be vectors, or empty to use current settings
+% where QH,QK,QL,W can be vectors, or empty to use current settings.
+% To only compute the resolution function, use:
+%   ResLibCal('close'); out=ResLibCal('compute');
+% which will close the 2D,3D and TAS views, then compute the resolution
+% function, returned in out.resolution
 %
 % The application contains a main interface with:
 % * Menu, Method, Scan and Instrument parameters (main)
@@ -118,6 +122,14 @@ if ~isempty(varargin)
           delete(fig);
           openfig('ResLibCal');
         end
+        % make sure the QH,QK,QL,EN are all scalars
+        EXP = ResLibCal_fig2EXP;
+        EXP.QH=EXP.QH(1);
+        EXP.QK=EXP.QK(1);
+        EXP.QL=EXP.QL(1);
+        EXP.W =EXP.W (1);
+        ResLibCal_EXP2fig(EXP);
+        out = ResLibCal('update');
       end
     case {'file_save','save'}
       % save configuration so that it is re-opened at next re-start
@@ -184,7 +196,7 @@ if ~isempty(varargin)
         'the {\bf triple-axis resolution function} obtained from e.g. Cooper-Nathans and Popovici analytical approximations. The GUI allows to select among a set of computation kernels.' , ...
         'This application was written by E. Farhi {\copyright}ILL/DS/CS <farhi@ill.eu> using' , ...
         '\bullet ResLib 3.4 (A. Zheludev)' , ...
-        '\bullet ResCal (A. Tennant and D. Mc Morrow)' , ...
+        '\bullet ResCal5 (A. Tennant and D. Mc Morrow)' , ...
         '\bullet Res3ax (J. Ollivier)' , ...
         '\bullet Rescal/AFILL (Hargreave, Hullah) and vTAS view (A. Bouvet/A. Filhol)' };
       CreateMode.WindowStyle = 'modal';
@@ -241,7 +253,7 @@ if ~isempty(varargin)
       elseif isempty(fig)
         out = ResLibCal_UpdateViews(out);
       end
-    case 'compute'
+    case {'compute','resolution'}
       % only compute. No output except in varargout
       fig = findall(0, 'Tag','ResLibCal');
       % if no interface exists, load the last saved configuration before computing
@@ -252,8 +264,10 @@ if ~isempty(varargin)
       else
         out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
       end
-      
-      
+    case {'view_close','close'}
+      delete(findall(0, 'Tag', 'ResLibCal_View1'));
+      delete(findall(0, 'Tag', 'ResLibCal_View2'));
+      delete(findall(0, 'Tag', 'ResLibCal_View3'));
     case 'update_d_tau'
       % update d-spacing from a popup item
       ResLibCal_UpdateDTau(varargin{2:end});      % arg is popup handle
@@ -347,7 +361,7 @@ if ~isempty(varargin)
       end
       varargin(1)=[];
     end
-    out = ResLibCal_ComputeResMat(EXP);
+    out = ResLibCal_Compute(EXP);
     if ~isempty(fig), ResLibCal_UpdateViews(out); end % when they exist
   end
   % end nargin > 0

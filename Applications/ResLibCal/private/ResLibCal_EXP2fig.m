@@ -180,7 +180,7 @@ function ResLibCal_field2fig(EXP, field, fig)
     try
       value = num2str(eval(field));
     catch
-      warning([ mfilename ': Can not get field ' field ]);
+      % warning([ mfilename ': Can not get field ' field ]);
       value = '';
     end
     if isempty(value), return; end

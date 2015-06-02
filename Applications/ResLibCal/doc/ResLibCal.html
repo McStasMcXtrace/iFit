@@ -70,6 +70,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -129,9 +130,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <li>The <span style="font-weight: bold;">View menu</span> allows
         to select the representation of the resolution matrix, as 2D or
         3D view, select if you wish to compute it in the lattice frame
-        (rlu) or in the instrument frame (Q axis), force a
-        re-computation manually, or allow an automatic re-computation of
-        the resolution when any change is made in the GUI.</li>
+        (rlu), show the vertical Qz component or the energy, or in the
+        instrument frame (Q axis), force a re-computation manually, or
+        allow an automatic re-computation of the resolution when any
+        change is made in the GUI.</li>
       <li>The <span style="font-weight: bold;">Help menu</span> mainly
         bring you here.<br>
       </li>
@@ -139,7 +141,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     It is also possible to use the application from a Matlab script or
     prompt, without starting the GUI (see <a href="#mozTocId281751">below</a>).<br>
     The computation of the resolution is carried-out in about 11 ms, but
-    the display can be slightly longer when using the GUI.<br>
+    the display can be slightly longer when using the GUI (few 100 ms).<br>
     <h4><a class="mozTocH4" name="mozTocId744097"></a>Usage: the main
       interface</h4>
     <p>The main interface present all parameters required to configure a
@@ -180,9 +182,15 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       (rlu) [Q1,Q2,E] depending on the lattice parameters and the
       vectors <span style="font-style: italic;">D1</span> (along Ki)
       and <span style="font-style: italic;">D2</span> which define the
-      orientation of the crystal. Un-checking this option in the <span
-        style="font-style: italic;">View</span> menu will switch to the
-      [Qx,Qy,E] space along longitudinal momentum exchange Q.</p>
+      orientation of the crystal. Un-checking the <i>Resolution in
+        reciprocal lattice units</i> option in the <span
+        style="font-style: italic;">View</span> menu will switch
+      toe.g.&nbsp; the [Qx,Qy,E] space along longitudinal momentum
+      exchange Q. It is also possible to plot the resolution function
+      projections in the vertical Qz axis instead of the energy E axis
+      by toggling the <i>View</i> menu, e.g. <i>Resolution in [Qx,Qy,</i><i>E]</i>
+      item. <br>
+    </p>
     <div style="text-align: center;"> <img style=" width: 570px;
         height: 643px;" alt="The ResLibCal main interface" title="The
         ResLibCal main interface" src="ResLibCal.png"><br>
@@ -246,6 +254,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       the TAS resolution function</h4>
     <div style="text-align: left;"> To compute and plot the resolution
       function, select the <span style="font-style: italic;">View/Resolution
+
 
 
 
@@ -338,6 +347,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in20/description/layout-of-the-instrument/">IN20</a>
         <a
 href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in22/description/instrument-layout/">IN22</a>&nbsp;
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>). You
         may add files in this location with your preferred
         configurations by just copying and renaming any <span
@@ -352,6 +362,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -522,6 +533,12 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
           </td>
         </tr>
         <tr>
+          <td valign="top"><i>close</i><br>
+          </td>
+          <td valign="top">close the 2D, 3D and TAS view windows<br>
+          </td>
+        </tr>
+        <tr>
           <td valign="top"><i>default</i><i><br>
             </i></td>
           <td valign="top">same as <i>create</i>, but does not read
@@ -618,6 +635,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
         Appl. Phys.</span> <span style="font-weight: bold;">42</span>,
       4736, (1971) [<a href="http://dx.doi.org/10.1063/1.1659848">doi:10.1063/1.1659848</a>].<br>
       [6] Gen Shirane, Stephen M. Shapiro, John M. Tranquada, Neutron
@@ -641,10 +659,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <div style="text-align: center;">&nbsp;<span style="font-style:
         italic;">E. Farhi - ResLibCal - </span><span style="font-style:
         italic;">$Date: 2014-04-10 21:33:06 +0200 (jeu., 10 avril 2014)
-        $ $Revision$</span> <a href="http://www.ill.eu"><img
-          alt="The ILL web site" title="The ILL web site"
-          src="ILL-web-jpeg.jpg" style="border: 0px solid; border: 0px
-          solid; width: 64px; height: 60px;" align="middle"></a><br>
+        $ $Revision$</span> <a href="http://www.ill.eu"><img alt="The
+          ILL web site" title="The ILL web site" src="ILL-web-jpeg.jpg"
+          style="border: 0px solid; border: 0px solid; width: 64px;
+          height: 60px;" align="middle"></a><br>
     </div>
   </body>
 </html>
