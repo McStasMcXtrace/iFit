@@ -138,6 +138,7 @@ end
   if isfield(p,'QK'), EXP.QK=p.QK; end
   if isfield(p,'QL'), EXP.QL=p.QL; end
   if isfield(p,'EN'), EXP.W =p.EN; end
+  if isfield(p,'W'),  EXP.W =p.W; end
   
 % Popovici parameters (pinst: 27)
   if isfield(p,'WB'), EXP.beam.width     =p.WB; end

@@ -54,17 +54,16 @@ end
 if isfield(out.resolution,'HKLE')
   H=out.resolution.HKLE(1); K=out.resolution.HKLE(2); 
   L=out.resolution.HKLE(3); W=out.resolution.HKLE(4);
-  EXP.QH=H; EXP.QK=K; EXP.QL=L; EXP.W=W; % update single scan step
 else
-  EXP.QH=EXP.QH(1); EXP.QK=EXP.QK(1); EXP.QL=EXP.QL(1); EXP.W=EXP.W(1); 
+  H=EXP.QH(1); K=EXP.QK(1); L=EXP.QL(1); W=EXP.W(1);
 end
+EXP.QH=H; EXP.QK=K; EXP.QL=L; EXP.W=W; % update single scan step
 
 if ~isempty(strfind(mode,'rlu'))
   RMS  = out.resolution.RMS;
   [xvec,yvec,zvec,sample,rsample]=StandardSystem(EXP);
   qx=scalar(xvec(1,:),xvec(2,:),xvec(3,:),H,K,L,rsample);
   qy=scalar(yvec(1,:),yvec(2,:),yvec(3,:),H,K,L,rsample);
-  qw=W;
 
   % Q vectors on figure axes
   o1=EXP.orient1;
@@ -85,13 +84,18 @@ if ~isempty(strfind(mode,'rlu'))
   
   frame = '[Q1,Q2,';
 else
-  qx = 0; qy=0; qw=W;
+  qx = 0; qy=0;
   RMS  = out.resolution.RM;
   
   frame = '[Qx,Qy,';
 end
-if isempty(strfind(mode,'qz')), frame = [ frame 'E]' ];
-else frame = [ frame 'Qz]' ]; end
+if isempty(strfind(mode,'qz')),
+  frame = [ frame 'E]' ];
+  qw=W;
+else
+  frame = [ frame 'Qz]' ];
+  qw=L;
+end
 if isempty(RMS) || ~all(isreal(RMS)), return; end
 SMAGridPoints      =40;
 EllipsoidGridPoints=40;
@@ -132,22 +136,24 @@ end;
 %daspect([da(2) da(2) da(3)]);
 RANGE = [ xlim ylim zlim ];
 
-%plot projections
-[proj3,sec]=project(RMS,3);
-[proj2,sec]=project(RMS,2);
-[proj1,sec]=project(RMS,1);
-phi=0.1:2*pi/3000:2*pi+0.1;
-for i=1:len
-   r3=sqrt(2*log(2)./(proj3(1,1,i)*cos(phi).^2+proj3(2,2,i)*sin(phi).^2+2*proj3(1,2,i)*cos(phi).*sin(phi)));
-   r2=sqrt(2*log(2)./(proj2(1,1,i)*cos(phi).^2+proj2(2,2,i)*sin(phi).^2+2*proj2(1,2,i)*cos(phi).*sin(phi)));
-   r1=sqrt(2*log(2)./(proj1(1,1,i)*cos(phi).^2+proj1(2,2,i)*sin(phi).^2+2*proj1(1,2,i)*cos(phi).*sin(phi)));
-   xproj3=r3.*cos(phi)+qx(i);   yproj3=r3.*sin(phi)+qy(i);   zproj3=ones(size(xproj3))*RANGE(5);
-   xproj2=r2.*cos(phi)+qx(i);   zproj2=r2.*sin(phi)+qw(i);   yproj2=ones(size(xproj2))*RANGE(4);
-   yproj1=r1.*cos(phi)+qy(i);   zproj1=r1.*sin(phi)+qw(i);   xproj1=ones(size(yproj1))*RANGE(2);
-   h=plot3(xproj1,yproj1,zproj1); set(h,'Tag','ResLibCal_View3_Proj1');
-   h=plot3(xproj2,yproj2,zproj2); set(h,'Tag','ResLibCal_View3_Proj2');
-   h=plot3(xproj3,yproj3,zproj3); set(h,'Tag','ResLibCal_View3_Proj3');
-end;
+%plot projections (not for scans as it makes plot crowded)
+if isempty(strfind(mode,'scan'))
+  [proj3,sec]=project(RMS,3);
+  [proj2,sec]=project(RMS,2);
+  [proj1,sec]=project(RMS,1);
+  phi=0.1:2*pi/3000:2*pi+0.1;
+  for i=1:len
+     r3=sqrt(2*log(2)./(proj3(1,1,i)*cos(phi).^2+proj3(2,2,i)*sin(phi).^2+2*proj3(1,2,i)*cos(phi).*sin(phi)));
+     r2=sqrt(2*log(2)./(proj2(1,1,i)*cos(phi).^2+proj2(2,2,i)*sin(phi).^2+2*proj2(1,2,i)*cos(phi).*sin(phi)));
+     r1=sqrt(2*log(2)./(proj1(1,1,i)*cos(phi).^2+proj1(2,2,i)*sin(phi).^2+2*proj1(1,2,i)*cos(phi).*sin(phi)));
+     xproj3=r3.*cos(phi)+qx(i);   yproj3=r3.*sin(phi)+qy(i);   zproj3=ones(size(xproj3))*RANGE(5);
+     xproj2=r2.*cos(phi)+qx(i);   zproj2=r2.*sin(phi)+qw(i);   yproj2=ones(size(xproj2))*RANGE(4);
+     yproj1=r1.*cos(phi)+qy(i);   zproj1=r1.*sin(phi)+qw(i);   xproj1=ones(size(yproj1))*RANGE(2);
+     h=plot3(xproj1,yproj1,zproj1); set(h,'Tag','ResLibCal_View3_Proj1');
+     h=plot3(xproj2,yproj2,zproj2); set(h,'Tag','ResLibCal_View3_Proj2');
+     h=plot3(xproj3,yproj3,zproj3); set(h,'Tag','ResLibCal_View3_Proj3');
+  end;
+end
 
 da=daspect; da(1:2) = max(da(1:2)); daspect(da);
 

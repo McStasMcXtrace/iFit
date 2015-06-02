@@ -58,6 +58,7 @@ function EXP = ResLibCal_Open(filename, EXP)
     if isfield(EXP,'ResCal') && ~isfield(EXP, 'mono') && ~isfield(EXP, 'sample') && ~isfield(EXP, 'ana')
       EXP = ResLibCal_RescalPar2EXP(EXP.ResCal, EXP);
     end
+    EXP
   end
   
   % evaluate it to get 'EXP'
