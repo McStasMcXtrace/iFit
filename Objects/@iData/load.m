@@ -98,9 +98,10 @@ if 1 < length(out) && length(i1) < length(out)
   sources = get(out, 'Source');
   titls   = get(out, 'Title');
   labs    = get(out, 'Label');
+  sums    = sum(out, 0); % total signal
   i       = 1:length(out);
   for index=1:length(out)
-    j = find(strcmp(sources{index}, sources) & strcmp(titls{index}, titls) & strcmp(labs{index}, labs));
+    j = find(strcmp(sources{index}, sources(:)) & strcmp(titls{index}, titls(:)) & strcmp(labs{index}, labs(:)) & sums(index) == sums(:));
     if length(j) > 1, i(j(2:end)) = 0; end
   end
   i = unique(i(i>0));

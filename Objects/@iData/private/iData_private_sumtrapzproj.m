@@ -35,7 +35,7 @@ iData_private_warning('enter',mfilename);
 
 % in all cases except projection, resample the data set on a grid
 % make axes single vectors for sum/trapz/... to work
-if any(strcmp(op, {'sum','cumsum','prod','cumprod','trapz','cumtrapz'}))
+if all(dim > 0) & any(strcmp(op, {'sum','cumsum','prod','cumprod','trapz','cumtrapz'}))
   a = meshgrid(a, 'vector');
 end
 
