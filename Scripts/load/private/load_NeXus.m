@@ -47,7 +47,7 @@ for index=1:numel(field)
     break
   end
   if length(this)
-    in = this;
+    out = [ out this ];
   end
 end
 if length(out) == 0

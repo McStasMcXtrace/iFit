@@ -37,6 +37,9 @@ if nargin == 1
   if isstruct(v) % check if this is a ResLibCal configuration
     if isfield(v, 'resolution')
       G = v.resolution;
+      if iscell(G)  % we have a vector of configurations
+        G = G{1};
+      end
       y = gaussnd(G);
     elseif isfield(v, 'RMS')
       y = gaussnd(v.RMS);
@@ -52,7 +55,9 @@ if nargin == 1
     if size(v,1) == size(v,2)
       % test if this is a symmetric matrix
       if ~issymmetric(v)
-        warning([ mfilename ': The matrix given is not symmetric. Making it so as (x+x'')/2.']);
+        if norm(v - v') > 1e-6
+          warning([ mfilename ': The matrix given is not symmetric. Making it so as (x+x'')/2.']);
+        end
         v = (v+v')/2;
       end
       
