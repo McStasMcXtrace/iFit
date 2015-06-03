@@ -49,6 +49,7 @@ kf=sqrt(kfix^2-(2-fx)*f*w);
 cos_2theta=(ki^2+kf^2-q0^2)/(2*ki*kf);
 if abs(cos_2theta) > 1, 
   disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  disp([ h k l w ]);
   R0=0; RMS=[];
   return
 end
