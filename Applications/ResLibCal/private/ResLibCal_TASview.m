@@ -25,12 +25,14 @@ end
 cla;
 
 if iscell(out.resolution)
-  i = ceil(length(out.resolution)/2);
+  i = ceil(length(out.resolution)/2); % plot the middle configuration
   angles    = out.resolution{i}.angles*pi/180;
 else
   i = 1;
   angles    = out.resolution.angles*pi/180;
 end
+angles = real(angles); % in case the configuration is not possible (angles are imaginary)
+
 % the angles shown on the plot are reversed wrt the one in the computation, due 
 % to the choice of the XY frame for plotting. When angle>0 it e.g. increases X
 % on the plot whereas it decreases in reality (to the left).

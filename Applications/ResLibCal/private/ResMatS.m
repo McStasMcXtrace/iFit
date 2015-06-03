@@ -52,6 +52,7 @@ for i=1:len
 end
 
 [R0,RM]= ResMat(Q,W,EXProt);
+if isempty(RM), RMS=[]; return; end
 
 for i=1:len
    RMS(:,:,i)=(tmat(:,:,i))'*RM(:,:,i)*tmat(:,:,i);

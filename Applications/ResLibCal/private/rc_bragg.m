@@ -10,6 +10,8 @@ function [bragg]=rc_bragg(M)
 % 
 % ResCal5/A.T.
 %
+if isempty(M), bragg=[]; return; end
+
 bragg(1)=sqrt(8*log(2))/sqrt(M(1,1));
 bragg(2)=sqrt(8*log(2))/sqrt(M(2,2));
 bragg(3)=sqrt(8*log(2))/sqrt(M(3,3));

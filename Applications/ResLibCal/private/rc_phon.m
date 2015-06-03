@@ -6,7 +6,7 @@ function [rp,fwhm]=rc_phon(r0,M,C)
 % M is the resolution matrix.
 %
 % A.T.
-
+if isempty(M), rp=0; fwhm=0; return; end
 T=diag(ones(4,1),0);
 T(4,1:4)=C;
 S=inv(T);

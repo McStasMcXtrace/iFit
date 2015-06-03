@@ -6,6 +6,9 @@ function [r,mp]=rc_int(index,r0,m)
 %
 % ResCal5/A.T.
 
+r=0; mp=[];
+if isempty(m), return; end
+
 r=sqrt(2*pi/m(index,index))*r0;
 
 % remove columns and rows from m

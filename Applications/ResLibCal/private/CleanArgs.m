@@ -25,4 +25,4 @@ for ind=1:length(bad)
     varargout{bad(ind)}=repmat(varargout{bad(ind)}(1),1,len);
     lengths(bad(ind))=len;
 end
-if ~isempty(find(lengths<len)), error('Fatal error: All input vectors must have the same lengths.'); end;
+if ~isempty(find(lengths<len)), error([ mfilename ': Fatal error: All input vectors must have the same lengths.' ]); end;

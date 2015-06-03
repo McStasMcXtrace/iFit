@@ -49,7 +49,8 @@ function EXP = ResLibCal_Open(filename, EXP)
     end
   end
 
-  if ischar(content) || isstruct(content) || isnumeric(content) % converted from a string or read from a file
+  % converted from a string or read from a file
+  if ischar(content) || isstruct(content) || isnumeric(content) 
     % read content as a structure, ResCal par/cfg, ...
     if isfield(EXP,'EXP'), EXP=EXP.EXP; end
     EXP = ResLibCal_RescalPar2EXP(content, EXP);
@@ -58,7 +59,6 @@ function EXP = ResLibCal_Open(filename, EXP)
     if isfield(EXP,'ResCal') && ~isfield(EXP, 'mono') && ~isfield(EXP, 'sample') && ~isfield(EXP, 'ana')
       EXP = ResLibCal_RescalPar2EXP(EXP.ResCal, EXP);
     end
-    EXP
   end
   
   % evaluate it to get 'EXP'

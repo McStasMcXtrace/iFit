@@ -65,8 +65,11 @@ kf=sqrt(kfix^2-(2-fx)*f*w);
 % Test if scattering triangle is closed
 
 cos_2theta=(ki^2+kf^2-q0^2)/(2*ki*kf);
-if cos_2theta <= 1, Error=0; else
-  error([ mfilename ': Can not close triangle (kinematical equations).' ]);
+if abs(cos_2theta) <= 1, Error=0; else
+  disp([ mfilename ': Can not close triangle (kinematical equations).' ]);
+  disp([ q0 w ]):
+  R0=0; RMS=[];
+  return
 end
 
 thetaa=asin(pi/(da*kf));      % theta angles for analyser
