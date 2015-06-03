@@ -26,9 +26,12 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <li><a href="#mozTocId771790">Purpose</a></li>
       <li><a href="#mozTocId789429">Obtaining the package</a></li>
       <li><a href="#mozTocId173490">Installation - starting</a></li>
+      <li><a href="#mozTocId121795"> Available computational methods</a></li>
       <li><a href="#mozTocId637458">Usage</a>
         <ol>
           <li><a href="#mozTocId744097">Usage: the main interface</a></li>
+          <li><a href="#mozTocId44543"> Usage: ResCal standard
+              nomenclature for configurations</a></li>
           <li><a href="#mozTocId444562">Usage: plotting the TAS
               resolution function</a></li>
           <li><a href="#mozTocId244259">Usage: handling computation
@@ -52,6 +55,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     spectrometer (TAS). ResLibCal is based on <a
       href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans
     and Popovici methods are proposed [<a href="#mozTocId811100">1-7</a>],
+
 
 
 
@@ -119,7 +123,72 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     from the terminal: <br>
     <pre style="margin-left: 40px;">% ifit ResLibCal</pre>
     from iFit standalone: <br>
-    <pre style="margin-left: 40px;">&gt;&gt; ResLibCal</pre>
+    <pre style="margin-left: 40px;">&gt;&gt; ResLibCal<br></pre>
+    <br>
+    <h3><a class="mozTocH3" name="mozTocId121795"></a> Available
+      computational methods</h3>
+    The following computational methods are available:<br>
+    <ul>
+      <li><b>Cooper-Nathans/AFILL</b>: the original Cooper-Nathans [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">1</a>]
+        code <a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
+        from Brookhaven 'AFILL'.</li>
+      <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
+        Cooper-Nathans method [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">1</a>]
+        from the <a
+href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>
+        Matlab application. The sample mosaic spread is also taken into
+        account [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>]
+        with isotropic mosaic.</li>
+      <li><b>Cooper-Nathans/Res3Ax</b>: simple Cooper-Nathans based on
+        notes from B. Hennion in the Popovici formulation [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
+        The sample mosaic spread is also taken into account [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>]
+        with isotropic mosaic.</li>
+      <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
+        Cooper-Nathans method [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>]
+        from the <a
+          href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
+        Matlab application, that also supports analyzer horizontal
+        focusing correction (RAH). To compare with the 3 previous
+        Cooper-Nathans methods above, you should set RAH=0. The analyzer
+        reflectivity is also taken into account (with analyzer thickness
+        'WA').</li>
+      <li><b>Popovici/ResLib</b>: the Popovici formulation of the
+        resolution [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
+        supports analyzer horizontal focusing correction (RAH). All
+        mosaicity are taken into account (vertical and horizontal). The
+        analyzer reflectivity is also taken into account (with analyzer
+        thickness 'WA').</li>
+      <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
+        resolution [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
+        with vertical sample mosaicity , but homogeneous mosaicity for
+        monochromator and analyzer [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>].<br>
+      </li>
+    </ul>
+    The CN/AFILL and CN/Rescal5 methods use the Chesser and Axe
+    intensity estimate [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">2</a>],
+    whereas the other methods use the Popovici formulation [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100%5C">3</a>].<br>
+    In all methods, the alpha/beta collimation parameters support guide
+    <i>m-</i>coating specification (negative values e.g. -2) which are
+    then converted to equivalent critical angles <i>0.1 </i><i>m &#955;<sub>i</sub></i>
+    [deg]. The alpha/beta collimations are also limited by the effective
+    divergence set from the geometry, e.g. <i>atan(width or
+      height/distance) </i>[rad]. The sample mosaic spread is also
+    taken into account, as well as a correction for the sample
+    orientation w.r.t. the incoming beam.<br>
+    Each computation takes a few 10ms, whatever be the analytical method
+    used.
     <h3><a class="mozTocH3" name="mozTocId637458"></a>Usage</h3>
     The normal use of the application is through its GUI, which is a
     single window.<br>
@@ -200,52 +269,17 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         the interface triggers a re-computation of the resolution, and
         an update of opened plots.</span><br>
       <div align="left"><br>
-        <br>
-        The meaning of the configuration parameters is the following<br>
+        <h4><a class="mozTocH4" name="mozTocId44543"></a> Usage: ResCal
+          standard nomenclature for configurations<br>
+        </h4>
+        The user interface and configuration files lists parameters with
+        the legacy <a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
+        naming. The meaning of the configuration parameters is the
+        following<br>
         <blockquote>
           <pre><b>DM</b> Monochromator d-spacing<br><b>DA</b> Analyzer d-spacing<br><b>ETAM</b> Monochromator mosaic<br><b>ETAA</b> Analyzer mosaic<br><b>ETAS</b> Sample mosaic<br><b>SM</b> scattering sense from monochromator +1=right, -1=left<br><b>SS </b>scattering sense from sample +1=right, -1=left<br><b>SA</b> scattering sense from analyzer +1=right, -1=left<br><b>KFIX</b> fixed neutron wavevector in Ang.-1<br><b>FX</b> index for fixed wavevector 1=incident 2=final (10)<br><b>ALF1</b> horizontal source-mono. collimation in min<br><b>ALF2</b> horizontal mono.-sample collimation in min<br><b>ALF3</b> horizontal sample-analyser collimation in min<br><b>ALF4</b> horizontal analyser-detector collimation in min<br><b>BET1</b> vertical source-mono.  collimation in min<br><b>BET2</b> vertical mono.-sample collimation in min<br><b>BET3</b> vertical sample-analyser collimation in min<br><b>BET4</b> vertical analyser-detector collimation in min<br><b>AS</b> sample lattice parameter A in Ang.<br><b>BS</b> sample lattice parameter B in Ang.<br><b>CS</b> sample lattice parameter C in Ang.<br><b>AA</b> (alpha) angle in deg. between axis B and C<br><b>BB</b> (beta) angle in deg. between axis A and C<br><b>CC</b> (gamma) angle in deg. between axis A and B<br><b>AX</b> First wavevector in scattering plane coordinate H (rlu), along KI<br><b>AY</b> First wavevector in scattering plane coordinate K (rlu)<br><b>AZ</b> First wavevector in scattering plane coordinate L (rlu)<br><b>BX</b> Second wavevector in scattering plane coordinate H (rlu)<br><b>BY</b> Second wavevector in scattering plane coordinate K (rlu)<br><b>BZ</b> Second wavevector inou scattering plane coordinate L (rlu)<br><b>QH</b> Position of resolution wavevector (center of measurement) H (rlu)<br><b>QK</b> Position of resolution wavevector (center of measurement) K (rlu)<br><b>QL</b> Position of resolution wavevector (center of measurement) L (rlu)<br><b>EN</b> (W) Position of resolution wavevector (center of measurement) W (meV)<br><b>DQH</b> Increment of Q,E defining general scan step along QH (rlu)<br><b>DQK</b> Increment of Q,E defining general scan step along QK (rlu)<br><b>DQL</b> Increment of Q,E defining general scan step along QL (rlu)<br><b>DEN</b> Increment of Q,E defining general scan step along EN (meV)<br><b>GH</b> Gradient of the dispersion (planar) direction along QH (rlu)<br><b>GK</b> Gradient of the dispersion (planar) direction along QK (rlu)<br><b>GL</b> Gradient of the dispersion (planar) direction along QL (rlu)<br><b>GMOD</b>  Gradient of the dispersion (planar) direction along EN (meV)<br><b>BeamShape</b> =0 for circular source, =1 for rectangular source<br><b>WB</b> width/diameter of the source (cm)<br><b>HB</b> height/diameter of the source (cm)<br><b>Guide</b> =0 No Guide, =1 for Guide<br><b>GDH</b> horizontal guide divergence (minutes/Angs)<br><b>GDV</b> vertical guide divergence (minutes/Angs)<br><b>SampleShape</b> =0 for cylindrical sample, =1 for cuboid sample<br><b>WS</b> sample width/diameter perp. to Q (cm)<br><b>TS</b> sample width/diameter along Q (cm)<br><b>HS</b> sample height (cm) (10)<br><b>DetecteorShape</b> =0 for circular detector, =1 for rectangular detector<br><b>WD</b> width/diameter of the detector (cm)<br><b>HD</b> height/diameter of the detector (cm)<br><b>TM</b> thickness of monochromator (cm)<br><b>WM</b> width of monochromator (cm)<br><b>HM</b> height of monochromator (cm)<br><b>TA</b> thickness of analyser (cm)<br><b>WA</b> width of analyser (cm)<br><b>HA</b> height of analyser (cm)<br><b>L1</b> distance between source and monochromator (cm)<br><b>L2</b> distance between monochromator and sample (cm)<br><b>L3</b> distance between sample and analyser (cm)<br><b>L4</b> distance between analyser and detector (cm)<br><b>RMH</b> horizontal radius of curvature of monochromator (cm)<br><b>RMV</b> vertical radius of curvature of monochromator (cm)<br><b>RAH</b> horizontal radius of curvature of analyser (cm)<br><b>RAV</b> vertical radius of curvature of analyser (cm)<br></pre>
         </blockquote>
-        The following computational methods are available:<br>
-        <ul>
-          <li><b>Cooper-Nathans/AFILL</b>: the original Cooper-Nathans
-            [1] code <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
-            from Brookhaven 'AFILL'.</li>
-          <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
-            Cooper-Nathans method [1] from the <a
-href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>
-            Matlab application. The sample mosaic spread is also taken
-            into account.</li>
-          <li><b>Cooper-Nathans/Res3Ax</b>: simple Cooper-Nathans based
-            on notes from B. Hennion in the Popovici formulation [3].</li>
-          <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
-            Cooper-Nathans method [3] from the <a
-              href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
-            Matlab application, that also supports analyzer horizontal
-            focusing correction (RAH). To compare with the 3 previous
-            Cooper-Nathans methods above, you should set RAH=0. The
-            analyzer reflectivity is also taken into account.</li>
-          <li><b>Popovici/ResLib</b>: the Popovici formulation of the
-            resolution [3]</li>
-          <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
-            resolution [3], without vertical mosaicity components
-            (mosaicity is homogeneous for monochromator, analyser and
-            sample)<br>
-          </li>
-        </ul>
-        The CN/AFILL and CN/Rescal5 methods use the Chesser and Axe
-        intensity estimate [2], whereas the other methods use the
-        Popovici formulation [3].<br>
-        In all methods, the alpha/beta collimation parameters support
-        guide <i>m-</i>coating specification (negative values e.g. -2)
-        which are then converted to equivalent critical angles <i>0.1 </i><i>m
-          &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are also
-        limited by the effective divergence set from the geometry, e.g.
-        <i>atan(width or height/distance) </i>[rad]. The sample mosaic
-        spread is also taken into account, as well as a correction for
-        the sample orientation w.r.t. the incoming beam.<br>
-        Each computation takes a few 10ms, whatever be the analytical
-        method used.<br>
         <ul>
         </ul>
       </div>
@@ -254,6 +288,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       the TAS resolution function</h4>
     <div style="text-align: left;"> To compute and plot the resolution
       function, select the <span style="font-style: italic;">View/Resolution
+
 
 
 
@@ -348,6 +383,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
         <a
 href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in22/description/instrument-layout/">IN22</a>&nbsp;
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>). You
         may add files in this location with your preferred
         configurations by just copying and renaming any <span
@@ -362,6 +398,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -417,14 +454,18 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     configuration (42 or 27 numbers), or any file with named Rescal
     parameters, such as in an ILL TAS data ascii file. Alternatively, an
     EXP ResLib or full ResLibCal configuration structure can be sent, as
-    well as a ResCal parameter list with keyword <span style="color:
-      rgb(204, 51, 204);">'Rescal:'</span>.<br>
-    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'ResCal: DA=3.355; DM=3.355; ...'</span>)</pre>
+    well as a ResCal parameter list.<br>
+    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'DA=3.355; DM=3.355; ...'</span>)	<i>% change the configuration and recompute resolution</i></pre>
     In order to modify an existing configuration ResLib <span
       style="font-style: italic;">EXP</span> or full ResLibCal <span
       style="font-style: italic;">out</span>, use:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'ResCal: DA=3.355; DM=3.355; ...'</span>, out or EXP structure)<br>&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'file'</span>, out or EXP structure)<br></pre>
-    The resolution result is then available in 'out.resolution'<br>
+    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'DA=3.355; DM=3.355; ...'</span>, out or EXP structure)<br>&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'file'</span>, out or EXP structure)<br></pre>
+    For a given configuration (from file, or GUI), the resolution can be
+    computed in the reciprocal space with e.g. :<br>
+    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(2,0,0,5) 	<i>% computes at HKLE=[2 0 0 5] coordinates in r.l.u</i><br>&gt;&gt; out = ResLibCal(<font color="#cc33cc">'QH=2 W=5'</font>)  <i>% same as above but giving configuration as a string with named parameters</i><br></pre>
+    The resolution result is then available in '<b>out.resolution</b>'
+    and more specifically in its <i><b>Bragg</b></i> and <b><i>RMS</i></b>
+    fields:<br>
     <pre>&gt;&gt; out.resolution<br>     <b>Bragg: </b>[0.0065 0.0018 0.0399 0.5095 0.0211]<br>   &nbsp;method: 'Popovici (ResLib)'<br>        R0: 357.5551<br>        RM: [4x4 double]	<span style="font-style: italic;">% resolution matrix in [Qx,Qy,Qz,E]</span><br>       <b>RMS: </b>[4x4 double]	<span style="font-style: italic;">% resolution matrix in [Q1,Q2,Qz,E] using D1 and D2</span></pre>
     The resolution matrix is 'RMS' in the sample reciprocal space
     (Q1,Q2,Qz,<i>w</i>), and the 'Bragg' member shows the Bragg width
@@ -617,6 +658,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 

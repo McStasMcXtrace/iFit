@@ -47,8 +47,10 @@ ki=sqrt(kfix^2+(fx-1)*f*w);
 kf=sqrt(kfix^2-(2-fx)*f*w);
 %------Test-if-scattering-triangle-is-closed
 cos_2theta=(ki^2+kf^2-q0^2)/(2*ki*kf);
-if cos_2theta > 1, 
-  error([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+if abs(cos_2theta) > 1, 
+  disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  R0=0; RMS=[];
+  return
 end
 %----------------------------------------
 taum=2*pi/da; taua=2*pi/da; q=q0;

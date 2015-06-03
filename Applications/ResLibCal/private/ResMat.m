@@ -207,7 +207,10 @@ for ind=1:len
     thetaa=asin(taua/(2*kf))*sa; 
     s2theta=acos( (ki^2+kf^2-q^2)/(2*ki*kf))*ss; %2theta sample
     if ~isreal(s2theta) 
-        error([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+        disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+        disp([Q W])
+        R0=0; RM=[];
+        return
     end
 
     thetas=s2theta/2;

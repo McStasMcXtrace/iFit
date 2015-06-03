@@ -121,15 +121,19 @@ kf=sqrt(kfix^2-(2-fx)*f*w);
 cos_2theta=(ki^2+kf^2-q0^2)/(2*ki*kf);
 if cos_2theta <= 1, Error=0; else, Error=1; end
 
+R0=0; M=[];
+
 thetaa=sa*asin(pi/(da*kf));      % theta angles for analyser
 thetam=sm*asin(pi/(dm*ki));      % and monochromator.
 thetas=ss*0.5*acos((ki^2+kf^2-q0^2)/(2*ki*kf)); % scattering angle from sample.
 if ~isreal(thetas)
-  error([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  return
 end
 phi=atan2(-kf*sin(2*thetas),ki-kf*cos(2*thetas));
 if ~isreal(phi)
-  error([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  return
 end
 
 % Make up the matrices in appendix 1 of M.Popovici (1975).

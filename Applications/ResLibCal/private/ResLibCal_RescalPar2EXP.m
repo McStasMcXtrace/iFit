@@ -13,6 +13,10 @@ persistent labels
 if nargin < 1, return; end
 if nargin < 2, EXP = []; end
 if ischar(str)
+  % remove any 'ResCal:' keyword
+  index = strfind(lower(str), 'rescal');
+  str(index:(index+5))=[];
+  str(str == ':') = [];
   content = str2struct(str);  % do we directly import an EXP from char ?
 else 
   content = str;
@@ -31,6 +35,11 @@ end
   if isempty(labels) % only the first time, then stored as persistent
     [p, labels] = ResLibCal_EXP2RescalPar([]); % get ResCal5 field names
     labels = strtok(labels);
+    % add some aliases
+    labels{end+1} = 'H';
+    labels{end+1} = 'K';
+    labels{end+1} = 'L';
+    labels{end+1} = 'W';
   end
   
   % is this a ResCal structure ?
@@ -138,6 +147,9 @@ end
   if isfield(p,'QK'), EXP.QK=p.QK; end
   if isfield(p,'QL'), EXP.QL=p.QL; end
   if isfield(p,'EN'), EXP.W =p.EN; end
+  if isfield(p,'H'),  EXP.QH=p.H; end
+  if isfield(p,'K'),  EXP.QK=p.K; end
+  if isfield(p,'L'),  EXP.QL=p.L; end
   if isfield(p,'W'),  EXP.W =p.W; end
   
 % Popovici parameters (pinst: 27)

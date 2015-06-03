@@ -185,6 +185,7 @@ if ~isempty(varargin)
       link = fullfile(fileparts(which(mfilename)), 'doc', [ mfilename '.html' ]);
       disp([ mfilename ': opening help from ' link ])
       web(link);
+      out = link;
     case 'help_about'
       % get the ILL logo from object
       fig = findall(0, 'Tag','ResLibCal');
@@ -241,7 +242,7 @@ if ~isempty(varargin)
       elseif length(fig) > 1
         delete(fig(2:end)); % remove duplicated windows
       end
-      out = ResLibCal_fig2EXP(fig);
+      if nargout, out = ResLibCal_fig2EXP(fig); end
     case 'update'
       % update all opened views with new computation (widget update)
       fig = findall(0, 'Tag','ResLibCal');
@@ -308,11 +309,11 @@ if ~isempty(varargin)
       feval(mfilename, 'update');
     otherwise
       try
-        ResLibCal;
-        out = ResLibCal_Open(action, varargin{2:end});
-        ResLibCal_EXP2fig(out);
-        out = ResLibCal('compute');
-        ResLibCal_UpdateViews; % when they exist
+        ResLibCal('create');
+        out = ResLibCal_Open(action, varargin{2:end}); % load info
+        ResLibCal_EXP2fig(out);                        % put it into the main GUI
+        out = ResLibCal('compute');                    % compute the resolution
+        ResLibCal_UpdateViews; % update views when they exist
       catch
         disp([ mfilename ': Unknown action ' action ]);
         out = [];
