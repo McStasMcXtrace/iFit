@@ -1,7 +1,7 @@
 function y=heaviside(varargin)
-% y = heaviside(p, x, [y]) : Heaviside function
+% y = heaviside(p, x, [y]) : Heaviside step function
 %
-%   iFunc/heaviside Heaviside fitting function
+%   iFunc/heaviside Heaviside step fitting function
 %     y = 0*x+p(4); y(find(x >= p(2))) = p(1);
 %   The Width parameter sign indicates if this is a raising (positive) or 
 %   falling (negative) Heaviside.

@@ -38,9 +38,12 @@ if nargin == 1
     if isfield(v, 'resolution')
       G = v.resolution;
       if iscell(G)  % we have a vector of configurations
-        G = G{1};
+        for index=1:numel(G)
+          y = [ y gaussnd(G{index}) ];
+        end
+      else
+        y = gaussnd(G);
       end
-      y = gaussnd(G);
     elseif isfield(v, 'RMS')
       y = gaussnd(v.RMS);
     end
