@@ -24,7 +24,14 @@ function [R0, RMS] = Rescal_AFILL(H,K,L,W,EXP)
   % call rc_re2rc from ResCal to get the reciprocal Q vector
   [q0,Qmag]= rc_re2rc( [ EXP.sample.a EXP.sample.b EXP.sample.c ], ...
     [ EXP.sample.alpha EXP.sample.beta EXP.sample.gamma ] , ...
-    [ H K L ] ); 
+    [ H K L ] );
+
+  % compute Ki, Kf, Ei, Ef (standard method)
+  fx = 2*(EXP.infin==-1)+(EXP.infin==1);
+  kfix = EXP.Kfixed;
+  f=0.4826; % f converts from energy units into k^2, f=0.4826 for meV
+  EXP.ki=sqrt(kfix^2+(fx-1)*f*W);  % kinematical equations.
+  EXP.kf=sqrt(kfix^2-(2-fx)*f*W);
 
   Q=Qmag; % norm
   ENF = 0.4826;

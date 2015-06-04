@@ -1,4 +1,4 @@
-function [R0, RMS, method] = res3ax3(H,K,L,W,EXP)
+function [R0, RMS, method] = res3ax3(h,k,l,w,EXP)
 % JO 2003 Stoica/Popovici in the Cooper & Nathan approximation
 
 method = 'Stoica/Popovici method in the C. & N. approximation by JO';
@@ -30,11 +30,10 @@ bet0 = EXP.vcol(1)*pit;       % vertical pre-monochromator collimation.
 bet1 = EXP.vcol(2)*pit;       % vertical pre-sample collimation.
 bet2 = EXP.vcol(3)*pit;       % vertical post-sample collimation.
 bet3 = EXP.vcol(4)*pit;       % vertical post-analyser collimation.
-w    = EXP.W;                 % energy transfer.
-%-------q0-definition:
-h    = EXP.QH;    a = EXP.sample.a;
-k    = EXP.QK;    b = EXP.sample.b;
-l    = EXP.QL;    c = EXP.sample.c;
+%-------q0-definition: q=[hkl] w
+a = EXP.sample.a;
+b = EXP.sample.b;
+c = EXP.sample.c;
 
 % a,b,c,alpha,beta,gamma, QH,QK,QL (from ResCal5/rc_re2rc)
 [q0,Qmag]= rc_re2rc( [ a b c ], ...
@@ -119,6 +118,7 @@ Rm=ki^3/tan(thetam);
 Ra=kf^3/tan(thetaa);
 P0=Rm*Ra*(2*pi)^4;           % the det(G) term is simplified          % Popovici Eq 5
 R0=P0/(64*pi^2*sin(thetam)*sin(thetaa));
+
 R0=R0*sqrt( det(F)/det(H) ); % Popovici Eq 9
 
 % Transform prefactor to Chesser-Axe normalization

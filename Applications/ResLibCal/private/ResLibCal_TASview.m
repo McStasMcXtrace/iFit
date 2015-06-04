@@ -136,7 +136,7 @@ t = { sprintf('%s=%g [Angs^{-1}] QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]'
       sprintf('A1=%5.3g A2=%5.3g A3=%5.3g A4=%5.3g A5=%5.3g A6=%5.3g [deg]', angles*180/pi) };
 title(t);
 
-if isempty(findall(gcf,'Tag','ResLibCal_TASView_Context'))
+if isempty(findobj(gcf,'Tag','ResLibCal_TASView_Context'))
   %finalize 3D plot
   box on; grid on;
   view(3); 

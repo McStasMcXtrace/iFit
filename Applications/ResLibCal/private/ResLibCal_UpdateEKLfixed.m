@@ -20,7 +20,7 @@ function ResLibCal_UpdateEKLfixed(handle)
       return
     end
     % update uicontrols/edit box
-    set(findall(gcbf, 'Tag', 'EXP_efixed'), 'String', num2str(E));
-    set(findall(gcbf, 'Tag', 'EXP_Kfixed'), 'String', num2str(K));
-    set(findall(gcbf, 'Tag', 'EXP_Lfixed'), 'String', num2str(L));
+    set(findobj(gcbf, 'Tag', 'EXP_efixed'), 'String', num2str(E));
+    set(findobj(gcbf, 'Tag', 'EXP_Kfixed'), 'String', num2str(K));
+    set(findobj(gcbf, 'Tag', 'EXP_Lfixed'), 'String', num2str(L));
   end

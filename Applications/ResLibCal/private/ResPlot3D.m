@@ -28,7 +28,7 @@ else
 end
 
 % clean up current axis if redraw
-if isempty(strfind(mode,'scan')) && ~isempty(findall(gcf,'Tag','ResLibCal_View3_Context'))
+if isempty(strfind(mode,'scan')) && ~isempty(findobj(gcf,'Tag','ResLibCal_View3_Context'))
   delete(findobj(gcf,'Tag','ResLibCal_View3_Proj1'));
   delete(findobj(gcf,'Tag','ResLibCal_View3_Proj2'));
   delete(findobj(gcf,'Tag','ResLibCal_View3_Proj3'));
@@ -158,7 +158,7 @@ end
 da=daspect; da(1:2) = max(da(1:2)); daspect(da);
 
 % add contextual menu
-if isempty(findall(gcf,'Tag','ResLibCal_View3_Context'))
+if isempty(findobj(gcf,'Tag','ResLibCal_View3_Context'))
   %finalize 3D plot
   box on; grid on;
   view(3);
