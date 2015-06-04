@@ -65,13 +65,16 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     R0=1; RM=[]; RMS=[]; bragg = [];
 
     % compute Ki, Kf, Ei, Ef
-    % compute angles
-    fx = 2*(EXP.infin==-1)+(EXP.infin==1);
-    kfix = EXP.Kfixed;
-    f=0.4826; % f converts from energy units into k^2, f=0.4826 for meV
-    EXP.ki=sqrt(kfix^2+(fx-1)*f*w);  % kinematical equations.
-    EXP.kf=sqrt(kfix^2-(2-fx)*f*w);
-    res.ki=EXP.ki; res.kf=EXP.kf;
+    EXP.QH = h; EXP.QK=k; EXP.QL=l; EXP.W=w;
+    
+    % variabe focusing for each steps
+    if any([ EXP.mono.rv EXP.mono.rh EXP.ana.rv EXP.ana.rh ] <= 0)
+      [rho,EXP.ki,EXP.kf] = rc_focus(EXP);  % in 'private', from ResCal5
+      if EXP.mono.rv < 0, EXP.mono.rv=rho.mv; elseif EXP.mono.rv==0, EXP.mono.rv=Inf; end
+      if EXP.mono.rh < 0, EXP.mono.rh=rho.mh; elseif EXP.mono.rh==0, EXP.mono.rh=Inf; end
+      if EXP.ana.rv  < 0, EXP.ana.rv =rho.av; elseif EXP.ana.rv==0,  EXP.ana.rv=Inf; end
+      if EXP.ana.rh  < 0, EXP.ana.rh =rho.ah; elseif EXP.ana.rh==0,  EXP.ana.rh=Inf; end
+    end
     
     % choice of method
     if ~isempty(strfind(EXP.method, 'rescal5'))
