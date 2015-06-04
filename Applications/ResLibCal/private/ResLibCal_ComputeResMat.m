@@ -44,7 +44,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
   end
 
   if isnumeric(EXP.method)
-    methods = get(findall(fig, 'Tag','EXP_method'),'String');
+    methods = get(ResLibCal_fig('EXP_method'),'String');
     EXP.method=methods{EXP.method+1};
   end
   
@@ -55,7 +55,6 @@ function resolution = ResLibCal_ComputeResMat(EXP)
   QH  = EXP.QH; QK = EXP.QK; QL = EXP.QL; W =EXP.W;
   len = prod([ numel(QH) numel(QK) numel(QL) numel(W) ]);
 
-  index=1;
   for iqh=1:numel(QH), h = QH(iqh);
   for iqk=1:numel(QK), k = QK(iqk);
   for iql=1:numel(QL), l = QL(iql);
@@ -64,6 +63,15 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     
     % initiate empty values
     R0=1; RM=[]; RMS=[]; bragg = [];
+
+    % compute Ki, Kf, Ei, Ef
+    % compute angles
+    fx = 2*(EXP.infin==-1)+(EXP.infin==1);
+    kfix = EXP.Kfixed;
+    f=0.4826; % f converts from energy units into k^2, f=0.4826 for meV
+    EXP.ki=sqrt(kfix^2+(fx-1)*f*w);  % kinematical equations.
+    EXP.kf=sqrt(kfix^2-(2-fx)*f*w);
+    res.ki=EXP.ki; res.kf=EXP.kf;
     
     % choice of method
     if ~isempty(strfind(EXP.method, 'rescal5'))
@@ -106,9 +114,6 @@ function resolution = ResLibCal_ComputeResMat(EXP)
         disp([mfilename ': rescal/AFILL is not available' ]);
       end
     else % default is 'reslib'
-      if ~isempty(strfind(EXP.method, 'cooper')) EXP.method=0; 
-      else                                       EXP.method=1; 
-      end
       % calls ResLib/ResMatS
       % depends: ResMatS, CleanArgs, StandardSystem
       %          modvec, scalar, ResMat, GetLattice, star, GetTau
@@ -137,9 +142,8 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     if len == 1
       resolution = res;
     else
-      resolution{index} = res;
+      resolution{end+1} = res;
     end
-    index = index+1;
   end % for HKLE
   end
   end

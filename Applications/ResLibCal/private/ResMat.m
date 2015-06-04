@@ -30,6 +30,13 @@ t=zeros(2,7);
 A=zeros(6,8);
 C=zeros(4,8);
 B=zeros(4,6);
+
+if ischar(EXP.method)
+  if ~isempty(strfind(EXP.method, 'cooper')) EXP.method=0; 
+  else                                       EXP.method=1; 
+  end
+end
+
 for ind=1:len
     %---------------------------------------------------------------------------------------------
     % the method to use
@@ -186,8 +193,7 @@ for ind=1:len
     end;
     
     em=1;
-        if isfield(EXP(ind),'mondir')
-
+    if isfield(EXP(ind),'mondir')
         em= EXP(ind).mondir;
     end;
     sm =EXP.mono.dir;
@@ -326,7 +332,7 @@ for ind=1:len
         K = S+T'*F*T;
         H = inv(D*inv(K)*D');
         Ninv = A*inv(H+G)*A'; % Popovici Eq 20
-    else
+    else                      % method=0: Cooper-Nathans in Popovici formulation
         H = G+C'*F*C;                       % Popovici Eq 8
         Ninv= A*inv(H)*A';                  % Cooper-Nathans (in Popovici Eq 10)
         %Horizontally focusing analyzer if needed
@@ -373,7 +379,8 @@ for ind=1:len
         R0_=R0_ *sqrt(det(F)/det( H+G ));      %Popovici
     else
         R0_=R0_ *sqrt(det(F)/det( H )); %Cooper-Nathans (popovici Eq 5 and 9)
-    end;
+    end
+
     %-------------------------------------------------------------------
 
     %Normalization to flux on monitor
@@ -381,28 +388,28 @@ for ind=1:len
         g=G(1:4,1:4);
         f=F(1:2,1:2);
         c=C(1:2,1:4);
-        t(1,1)=-1/(2*L0);  %mistake in paper
-        t(1,3)=cos(thetam)*(1/L1mon-1/L0)/2;
-        t(1,4)=sin(thetam)*(1/L0+1/L1mon-2/(monorh*sin(thetam)))/2;
-        t(1,7)=1/(2*L1mon);
-        t(2,2)=-1/(2*L0*sin(thetam));
-        t(2,5)=(1/L0+1/L1mon-2*sin(thetam)/monorv)/(2*sin(thetam));
-        sinv=blkdiag(bshape,mshape,monitorshape); %S-1 matrix        
-        s=sinv^(-1);
-        d(1,1)=-1/L0;
-        d(1,3)=-cos(thetam)/L0;
-        d(1,4)=sin(thetam)/L0;
-        d(3,2)=D(1,1);
-        d(3,5)=-D(1,1);
-        d(2,3)=cos(thetam)/L1mon;
-        d(2,4)=sin(thetam)/L1mon;
-        d(2,6)=0;
-        d(2,7)=1/L1mon;
-        d(4,5)=-1/L1mon;
         if method==1 || strcmpi(method, 'Popovici')
-            Rmon=Rm*(2*pi)^2/(8*pi*sin(thetam))*sqrt( det(f)/det((d*(s+t'*f*t)^(-1)*d')^(-1)+g)); %Popovici
+          t(1,1)=-1/(2*L0);  %mistake in paper
+          t(1,3)=cos(thetam)*(1/L1mon-1/L0)/2;
+          t(1,4)=sin(thetam)*(1/L0+1/L1mon-2/(monorh*sin(thetam)))/2;
+          t(1,7)=1/(2*L1mon);
+          t(2,2)=-1/(2*L0*sin(thetam));
+          t(2,5)=(1/L0+1/L1mon-2*sin(thetam)/monorv)/(2*sin(thetam));
+          sinv=blkdiag(bshape,mshape,monitorshape); %S-1 matrix        
+          s=sinv^(-1);
+          d(1,1)=-1/L0;
+          d(1,3)=-cos(thetam)/L0;
+          d(1,4)=sin(thetam)/L0;
+          d(3,2)=D(1,1);
+          d(3,5)=-D(1,1);
+          d(2,3)=cos(thetam)/L1mon;
+          d(2,4)=sin(thetam)/L1mon;
+          d(2,6)=0;
+          d(2,7)=1/L1mon;
+          d(4,5)=-1/L1mon;
+          Rmon=Rm*(2*pi)^2/(8*pi*sin(thetam))*sqrt( det(f)/det((d*(s+t'*f*t)^(-1)*d')^(-1)+g)); %Popovici
         else
-            Rmon=Rm*(2*pi)^2/(8*pi*sin(thetam))*sqrt( det(f)/det(g+c'*f*c)); %Cooper-Nathans
+          Rmon=Rm*(2*pi)^2/(8*pi*sin(thetam))*sqrt( det(f)/det(g+c'*f*c)); %Cooper-Nathans
         end;
         R0_=R0_/Rmon;
         R0_=R0_*ki; %1/ki monitor efficiency
@@ -432,7 +439,7 @@ for ind=1:len
     end;
     %---------------------------------------------------------------------------
     %Take care of analyzer reflectivity if needed [I. Zaliznyak, BNL]
-    if isfield(ana,'thickness') && isfield(ana,'Q')            
+    if isfield(ana,'thickness') && isfield(ana,'Q') && 0           
         KQ = ana.Q;
         KT = ana.thickness;
         toa=(taua/2)/sqrt(kf^2-(taua/2)^2);

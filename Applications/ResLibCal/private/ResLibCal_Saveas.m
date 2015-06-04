@@ -120,7 +120,7 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
 			disp('WARNING: the generated ResTrax file does not contain the full configuration');
     else % INI configuration file
       % first clean the 'handles'
-      EXP.handle = double(EXP.handle);
+      EXP = rmfield(EXP,'handle');
       NL = sprintf('\n');
       str = [ '% ResLibCal configuration script file ' NL ...
             '%' NL ...

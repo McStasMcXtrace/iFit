@@ -17,7 +17,8 @@ function out = ResLibCal_Compute(EXP)
   
   if ~isstruct(EXP)
     % extracts configuration
-    [EXP, fig] = ResLibCal_fig2EXP(get(0,'CurrentFigure'));
+    fig = ResLibCal_fig;
+    [EXP] = ResLibCal_fig2EXP(fig);
     out.handle = fig;
   else
     out.handle = [];

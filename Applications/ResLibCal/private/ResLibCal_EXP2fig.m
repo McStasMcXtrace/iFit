@@ -17,7 +17,7 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
     if ~strcmp(get(fig, 'Tag'),'ResLibCal'), fig = ''; end
   else fig = '';
   end
-  if isempty(fig), fig=findall(0, 'Tag','ResLibCal'); end
+  if isempty(fig), fig=ResLibCal_fig; end
   if isempty(fig), return; end
 
   % check EXP structure. Perhaps it is a full ResLibCal structure
@@ -30,7 +30,7 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   %-------------------------   Computation type    -----------------------------
   if isfield(EXP,'method')
     if ischar(EXP.method),
-      methods = get(findobj(fig, 'Tag','EXP_method'),'String');
+      methods = get(ResLibCal_fig('EXP_method'),'String');
       index   = find(~cellfun('isempty', strfind(methods, EXP.method)));
       if ~isempty(index)
           index=index(1);
@@ -41,7 +41,7 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
       else EXP.method=0; end
     end
     if isempty(EXP.method), EXP.method=0; end
-    set(findobj(fig,'Tag','EXP_method'),'Value', EXP.method+1);
+    set(ResLibCal_fig('EXP_method'),'Value', EXP.method+1);
   end
 
   if isfield(EXP,'mono')
@@ -67,11 +67,11 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   %-------------------------   Sample ------------------------------------------
   if isfield(EXP, 'sample')
     if isfield(EXP.sample,'a') && isfield(EXP.sample,'b') && isfield(EXP.sample,'c')
-      set(findobj(fig,'Tag','EXP_sample_abc'),'String', ...
+      set(ResLibCal_fig('EXP_sample_abc'),'String', ...
         sprintf('%g ', [ EXP.sample.a EXP.sample.b EXP.sample.c ]));
     end
     if isfield(EXP.sample,'alpha') && isfield(EXP.sample,'beta') && isfield(EXP.sample,'gamma')
-      set(findobj(fig,'Tag','EXP_sample_alphabetagamma'),'String', ...
+      set(ResLibCal_fig('EXP_sample_alphabetagamma'),'String', ...
         sprintf('%g ', [ EXP.sample.alpha EXP.sample.beta EXP.sample.gamma ]));
     end
     ResLibCal_field2fig(EXP, 'EXP_sample_mosaic', fig);
@@ -79,22 +79,22 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   end
 
   %-------------------------   Soller and neutron guide collimation    ---------
-  table = get(findobj(fig,'Tag','EXP_collimators'),'Data');
+  table = get(ResLibCal_fig('EXP_collimators'),'Data');
   if isfield(EXP,'hcol'), table(1,:) = EXP.hcol; end
   if isfield(EXP,'vcol'), table(2,:) = EXP.vcol; end
   if isfield(EXP,'arms'), table(3,:) = EXP.arms(1:4); end
-  set(findobj(fig,'Tag','EXP_collimators'),'Data', table);
+  set(ResLibCal_fig('EXP_collimators'),'Data', table);
 
   %-------------------------   Fixed neutron energy    -------------------------
   ResLibCal_field2fig(EXP, 'EXP_efixed', fig);
   ResLibCal_field2fig(EXP, 'EXP_Kfixed', fig);
   ResLibCal_field2fig(EXP, 'EXP_Lfixed', fig);
   if isfield(EXP,'fx')
-    set(findobj(fig,'Tag','EXP_Kf_button'),'Value', (EXP.fx == 2));
-    set(findobj(fig,'Tag','EXP_Ki_button'),'Value', (EXP.fx == 1));
+    set(ResLibCal_fig('EXP_Kf_button'),'Value', (EXP.fx == 2));
+    set(ResLibCal_fig('EXP_Ki_button'),'Value', (EXP.fx == 1));
   elseif isfield(EXP,'infin')
-    set(findobj(fig,'Tag','EXP_Kf_button'),'Value', (EXP.infin == -1));
-    set(findobj(fig,'Tag','EXP_Ki_button'),'Value', (EXP.infin ==  1));
+    set(ResLibCal_fig('EXP_Kf_button'),'Value', (EXP.infin == -1));
+    set(ResLibCal_fig('EXP_Ki_button'),'Value', (EXP.infin ==  1));
   end
 
   %-------------------------   Experimental geometry    ------------------------
@@ -114,13 +114,13 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   % transfer to popup
   % Value Popup: 1=right -> -1 (clock) : 2=left -> +1
   if ~isempty(sm)
-    set(findobj(fig,'Tag','EXP_mono_dir'),  'Value',(sm==-1)+2*(sm==1));
+    set(ResLibCal_fig('EXP_mono_dir'),  'Value',(sm==-1)+2*(sm==1));
   end
   if ~isempty(ss)
-    set(findobj(fig,'Tag','EXP_sample_dir'),'Value',(ss==-1)+2*(ss==1));
+    set(ResLibCal_fig('EXP_sample_dir'),'Value',(ss==-1)+2*(ss==1));
   end
   if ~isempty(sa)
-    set(findobj(fig,'Tag','EXP_ana_dir'),   'Value',(sa==-1)+2*(sa==1));
+    set(ResLibCal_fig('EXP_ana_dir'),   'Value',(sa==-1)+2*(sa==1));
   end
 
   ResLibCal_field2fig(EXP, 'EXP_orient1', fig);
@@ -148,7 +148,7 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   ResLibCal_field2fig(EXP, 'EXP_ana_rh', fig);
   %-------------------------   Horizontally focusing analyzer  -----------------
   if isfield(EXP, 'horifoc') && EXP.horifoc==-1
-    set(findobj(fig,'Tag','EXP_ana_rh'),'String','0');
+    set(ResLibCal_fig('EXP_ana_rh'),'String','0');
   end
 
   % current HKLW position
@@ -175,7 +175,7 @@ function ResLibCal_field2fig(EXP, field, fig)
     end
   end
   % check that both tag and field exist
-  hObject = findobj(fig, 'Tag', tag);
+  hObject = ResLibCal_fig(tag);
   if ~isempty(hObject)
     try
       value = num2str(eval(field));

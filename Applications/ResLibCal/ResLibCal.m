@@ -66,8 +66,9 @@ function out = ResLibCal(varargin)
 % ResLibCal_UpdateTauPopup(handle, EXP)
 
 out = [];
-
 ResLibCal_version = [ mfilename ' $Revision$ ($Date$)' ];
+
+persistent fig
 
 % menu actions:
 if ~isempty(varargin)
@@ -91,7 +92,7 @@ if ~isempty(varargin)
     switch lower(action)
     % menu items ---------------------------------------------------------------
     case {'file_open','open'}
-      EXP = ResLibCal_fig2EXP(get(0,'CurrentFigure'));
+      [EXP, fig] = ResLibCal_fig2EXP;
       if isfield(EXP,'EXP'), EXP = EXP.EXP; end
       if length(varargin) < 1, varargin{2} = ''; end
       if length(varargin) < 2, varargin{3} = EXP; end
@@ -118,12 +119,12 @@ if ~isempty(varargin)
         if exist(filename,'file')
           feval(mfilename, 'create');
         else
-          fig = findall(0, 'Tag','ResLibCal');
+          fig = ResLibCal_fig;
           delete(fig);
           openfig('ResLibCal');
         end
         % make sure the QH,QK,QL,EN are all scalars
-        EXP = ResLibCal_fig2EXP;
+        [EXP, fig] = ResLibCal_fig2EXP;
         EXP.QH=EXP.QH(1);
         EXP.QK=EXP.QK(1);
         EXP.QL=EXP.QL(1);
@@ -138,7 +139,7 @@ if ~isempty(varargin)
       % save configuration
       ResLibCal_Saveas(varargin{2:end}); % (filename, EXP)
     case {'file_print','print'}
-      fig = findall(0, 'Tag','ResLibCal');
+      fig = ResLibCal_fig;
       printdlg(fig);
     case {'file_export','export'}
       [filename, pathname] = uiputfile( ...
@@ -152,7 +153,7 @@ if ~isempty(varargin)
           'Export configuration window as...');
       if isempty(filename) || all(filename == 0), return; end
       filename = fullfile(pathname, filename);
-      fig = findall(0, 'Tag','ResLibCal');
+      fig = ResLibCal_fig;
       saveas(fig, filename);
       disp([ '% Exported ' ResLibCal_version ' window to file ' filename ]);
     case {'file_exit','exit','quit'}
@@ -188,9 +189,9 @@ if ~isempty(varargin)
       out = link;
     case 'help_about'
       % get the ILL logo from object
-      fig = findall(0, 'Tag','ResLibCal');
+      fig = ResLibCal_fig;
       if isempty(fig), return; end
-      cdata = get(findall(fig, 'Tag', 'ILL_logo'), 'CData');
+      cdata = get(ResLibCal_fig('ILL_logo'), 'CData');
       message = {...
         [ '{\fontsize{14}{\color{blue}' ResLibCal_version '} EUPL license} ' ], ...
         'ResLibCal is a graphical user interface to compute and display' , ...
@@ -230,7 +231,7 @@ if ~isempty(varargin)
       ResLibCal_UpdateViews;
     % other actions (not menu items) -------------------------------------------
     case {'create','default'}
-      fig = findall(0, 'Tag','ResLibCal');
+      fig = ResLibCal_fig;
       if isempty(fig) || ~ishandle(fig)
         disp([ 'Welcome to ' ResLibCal_version ]);
         openfig('ResLibCal'); % open the main ResLibCal figure.
@@ -245,18 +246,18 @@ if ~isempty(varargin)
       if nargout, out = ResLibCal_fig2EXP(fig); end
     case 'update' % (this is called when changing the computational method in the GUI)
       % update all opened views with new computation (widget update)
-      fig = findall(0, 'Tag','ResLibCal');
+      fig = ResLibCal_fig;
       
       out = feval(mfilename, 'compute');
       
-      if ~isempty(fig) && strcmp(get(findobj(fig, 'Tag','View_AutoUpdate'), 'Checked'), 'on')
+      if ~isempty(fig) && strcmp(get(ResLibCal_fig('View_AutoUpdate'), 'Checked'), 'on')
         out = ResLibCal_UpdateViews(out);
       elseif isempty(fig)
         out = ResLibCal_UpdateViews(out);
       end
     case {'compute','resolution'}
       % only compute. No output except in varargout
-      fig = findall(0, 'Tag','ResLibCal');
+      fig = ResLibCal_fig;
       % if no interface exists, load the last saved configuration before computing
       if isempty(fig)
         filename = fullfile(prefdir, 'ResLibCal.ini');
@@ -327,7 +328,8 @@ if ~isempty(varargin)
       varargin(1)=[];
       fig = [];
     else
-      [EXP, fig] = ResLibCal_fig2EXP;
+      fig = ResLibCal_fig;
+      [EXP] = ResLibCal_fig2EXP(fig);
     end
     if isfield(EXP,'EXP'),
       out = EXP; EXP=out.EXP;
@@ -337,28 +339,28 @@ if ~isempty(varargin)
     if ~isempty(varargin) && isnumeric(varargin{1}) 
       if ~isempty(varargin{1}),
         EXP.QH = varargin{1};
-        set(findall(fig,'Tag','EXP_QH'),'String', mat2str(EXP.QH));
+        set(ResLibCal_fig('EXP_QH'),'String', mat2str(EXP.QH));
       end
       varargin(1)=[];
     end
     if ~isempty(varargin) && isnumeric(varargin{1}) 
       if ~isempty(varargin{1}),
         EXP.QK = varargin{1};
-        set(findall(fig,'Tag','EXP_QK'),'String', mat2str(EXP.QK));
+        set(ResLibCal_fig('EXP_QK'),'String', mat2str(EXP.QK));
       end
       varargin(1)=[];
     end
     if ~isempty(varargin) && isnumeric(varargin{1}) 
       if ~isempty(varargin{1}),
         EXP.QL = varargin{1};
-        set(findall(fig,'Tag','EXP_QL'),'String', mat2str(EXP.QL));
+        set(ResLibCal_fig('EXP_QL'),'String', mat2str(EXP.QL));
       end
       varargin(1)=[];
     end
     if ~isempty(varargin) && isnumeric(varargin{1}) 
       if ~isempty(varargin{1}),
         EXP.W = varargin{1};
-        set(findall(fig,'Tag','EXP_W'),'String', mat2str(EXP.W));
+        set(ResLibCal_fig('EXP_W'),'String', mat2str(EXP.W));
       end
       varargin(1)=[];
     end
@@ -445,8 +447,8 @@ function out = ResLibCal_UpdateResolution2(out)
   set(0,'CurrentFigure', h);
 
   % update/show the resolution projections
-  rlu = get(findobj(out.handle,'Tag','View_ResolutionRLU'), 'Checked');
-  qz  = get(findobj(out.handle,'Tag','View_ResolutionXYZ'), 'Checked');
+  rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
+  qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
   if strcmp(rlu, 'on'), rlu='rlu'; end
   if strcmp(qz, 'on'),  qz='qz'; end
   out = rc_projs(out, [ rlu ' ' qz ]);
@@ -462,8 +464,8 @@ function out = ResLibCal_UpdateResolution3(out)
 
   % update/show the resolution projections
   % update/show the resolution projections
-  rlu = get(findobj(out.handle,'Tag','View_ResolutionRLU'), 'Checked');
-  qz  = get(findobj(out.handle,'Tag','View_ResolutionXYZ'), 'Checked');
+  rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
+  qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
   if strcmp(rlu, 'on'), rlu='rlu'; end
   if strcmp(qz, 'on'),  qz='qz'; end
   out = ResPlot3D(out, [ rlu ' ' qz ]);
@@ -473,12 +475,14 @@ function ResLibCal_UpdateTauPopup
 %
   [EXP,fig] = ResLibCal_fig2EXP;
   if isempty(fig), return; end
-  popup = findobj(fig,'Tag','EXP_mono_tau_popup');
+  popup = ResLibCal_fig('EXP_mono_tau_popup');
   label = GetTau(EXP.mono.tau, 'getlabel');
   index = find(strncmpi(get(popup,'String'), label, length(label)));
   if ~isempty(index) && ~isempty(label), set(popup, 'value', index(1)); end
 
-  popup = findobj(fig,'Tag','EXP_ana_tau_popup');
+  popup = ResLibCal_fig('EXP_ana_tau_popup');
   label = GetTau(EXP.ana.tau, 'getlabel');
   index = find(strncmpi(get(popup,'String'), label, length(label)));
   if ~isempty(index) && ~isempty(label), set(popup, 'value', index(1)); end
+
+  

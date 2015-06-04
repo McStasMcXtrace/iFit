@@ -18,7 +18,7 @@ function ResLibCal_UpdateDTau(handle)
         disp([ mfilename ': can not find tau for "' strtok(choices{index},'" ') ])
         return; 
       end
-      handle = findall(gcbf, 'Tag', tag);
+      handle = findobj(gcbf, 'Tag', tag);
       set(handle,'String', num2str(2*pi/tau));
     else
       disp([mfilename ': ResLib 3.4/GetTau is not available' ]);

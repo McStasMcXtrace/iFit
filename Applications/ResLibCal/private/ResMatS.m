@@ -50,6 +50,7 @@ for i=1:len
         EXProt(i).sample.shape=rot*sample.shape*rot';
     end;
 end
+EXProt.QH=H; EXProt.QK=K; EXProt.QL=L; EXProt.W=W;
 
 [R0,RM]= ResMat(Q,W,EXProt);
 if isempty(RM), RMS=[]; return; end
