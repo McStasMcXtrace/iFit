@@ -42,10 +42,10 @@ if ~R0 || isempty(resolution.RM) || isempty(resolution.RMS)
 end
 if ~isempty(strfind(mode,'rlu'))
   NP = resolution.RMS;
-  frame = '[Q1,Q2,Qz,E]';
+  frame = '[Q1,Q2,E,Qz]';
 else
   NP = resolution.RM;
-  frame = '[Qx,Qy,Qz,E]';
+  frame = '[Qx,Qy,E,Qz]';
 end
 
 ResVol=(2*pi)^2/sqrt(det(NP));

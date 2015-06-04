@@ -200,6 +200,9 @@ hold on
 %========================================================================================================
 
 function hwhm=fproject (mat,i)
+
+
+
 if (i==1) v=3;j=2;end;
 if (i==2) v=1;j=3;end;
 if (i==3) v=1;j=2;end;
@@ -209,6 +212,7 @@ proj(1,1,:)=mat(i,i,:)-mat(i,v,:).^2./mat(v,v,:);
 proj(1,2,:)=mat(i,j,:)-mat(i,v,:).*mat(j,v,:)./mat(v,v,:);
 proj(2,1,:)=mat(j,i,:)-mat(j,v,:).*mat(i,v,:)./mat(v,v,:);
 proj(2,2,:)=mat(j,j,:)-mat(j,v,:).^2./mat(v,v,:);
+
 hwhm=proj(1,1,:)-proj(1,2,:).^2./proj(2,2,:);
 hwhm=sqrt(2*log(2))./sqrt(hwhm);
 

@@ -128,11 +128,13 @@ thetam=sm*asin(pi/(dm*ki));      % and monochromator.
 thetas=ss*0.5*acos((ki^2+kf^2-q0^2)/(2*ki*kf)); % scattering angle from sample.
 if ~isreal(thetas)
   disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  disp(p(31:34))
   return
 end
 phi=atan2(-kf*sin(2*thetas),ki-kf*cos(2*thetas));
 if ~isreal(phi)
   disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  disp(p(31:34))
   return
 end
 
