@@ -243,7 +243,7 @@ if ~isempty(varargin)
         delete(fig(2:end)); % remove duplicated windows
       end
       if nargout, out = ResLibCal_fig2EXP(fig); end
-    case 'update'
+    case 'update' % (this is called when changing the computational method in the GUI)
       % update all opened views with new computation (widget update)
       fig = findall(0, 'Tag','ResLibCal');
       
