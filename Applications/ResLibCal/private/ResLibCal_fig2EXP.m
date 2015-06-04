@@ -172,34 +172,34 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   EXP.mono.rh=str2double(strtok(get(ResLibCal_fig('EXP_mono_rh'),'String')));
   EXP.ana.rv =str2double(strtok(get(ResLibCal_fig('EXP_ana_rv'),'String')));
   EXP.ana.rh =str2double(strtok(get(ResLibCal_fig('EXP_ana_rh'),'String')));
-  % handle flat mono/ana
-  if EXP.mono.rv == 0, EXP.mono.rv=Inf; end
-  if EXP.mono.rh == 0, EXP.mono.rh=Inf; end
-  if EXP.ana.rv  == 0, EXP.ana.rv=Inf; end
-  if EXP.ana.rh  == 0, EXP.ana.rh=Inf; end
-  % handle automatic mono/ana curvatures
-  if any([ EXP.mono.rv EXP.mono.rh EXP.ana.rv EXP.ana.rh ] < 0)
+  
+  % handle automatic mono/ana curvatures (just display. setting in Compute)
+  if any([ EXP.mono.rv EXP.mono.rh EXP.ana.rv EXP.ana.rh ] <= 0)
     rho = rc_focus(EXP);  % in 'private', from ResCal5
     t='';
     if EXP.mono.rv < 0,
-      EXP.mono.rv=rho.mh;
-      t=[t sprintf('RMV=%g [cm] ', EXP.mono.rv) ];
-      set(ResLibCal_fig('EXP_mono_rv'),'String', sprintf('-1 (%g)', EXP.mono.rv));
+      t=[t sprintf('RMV=%g [cm] ', rho.mv) ];
+      set(ResLibCal_fig('EXP_mono_rv'),'String', sprintf('-1 (%g)', rho.mv));
+    elseif EXP.mono.rv == 0
+      set(ResLibCal_fig('EXP_mono_rv'),'String', '0 (flat)'));
     end
     if EXP.mono.rh < 0,
-      EXP.mono.rh=rho.mv;
-      t=[t sprintf('RMH=%g [cm] ', EXP.mono.rh) ];
-      set(ResLibCal_fig('EXP_mono_rh'),'String', sprintf('-1 (%g)', EXP.mono.rh));
+      t=[t sprintf('RMH=%g [cm] ', rho.mh) ];
+      set(ResLibCal_fig('EXP_mono_rh'),'String', sprintf('-1 (%g)', rho.mh));
+    elseif EXP.mono.rh == 0
+      set(ResLibCal_fig('EXP_mono_rh'),'String', '0 (flat)'));
     end
     if EXP.ana.rv  < 0,
-      EXP.ana.rv =rho.ah;
-      t=[t sprintf('RAV=%g [cm] ', EXP.ana.rv) ];
-      set(ResLibCal_fig('EXP_ana_rv'),'String', sprintf('-1 (%g)', EXP.ana.rh));
+      t=[t sprintf('RAV=%g [cm] ', rho.avv) ];
+      set(ResLibCal_fig('EXP_ana_rv'),'String', sprintf('-1 (%g)', rho.av));
+    elseif EXP.ana.rv == 0
+      set(ResLibCal_fig('EXP_ana_rv'),'String', '0 (flat)'));
     end
     if EXP.ana.rh  < 0,
-      EXP.ana.rh =rho.av;
-      t=[t sprintf('RAH=%g [cm] ', EXP.ana.rh) ];
-      set(ResLibCal_fig('EXP_ana_rh'),'String', sprintf('-1 (%g)', EXP.ana.rv));
+      t=[t sprintf('RAH=%g [cm] ', rho.ah) ];
+      set(ResLibCal_fig('EXP_ana_rh'),'String', sprintf('-1 (%g)', rho.ah));
+    elseif EXP.ana.rh == 0
+      set(ResLibCal_fig('EXP_ana_rh'),'String', '0 (flat)'));
     end
     if ~isempty(t)
       disp([ 'Auto focus: ' t]);

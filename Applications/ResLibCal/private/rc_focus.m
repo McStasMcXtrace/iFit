@@ -1,4 +1,4 @@
-function [rho]=rc_focus(EXP)
+function [rho,ki,kf]=rc_focus(EXP)
 %
 % MATLAB function to calculate the optimum setting of the
 % curvatures for the monochromator and analyser.
