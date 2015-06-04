@@ -54,6 +54,8 @@ function resolution = ResLibCal_ComputeResMat(EXP)
   % prepare potential scan in HKLE
   QH  = EXP.QH; QK = EXP.QK; QL = EXP.QL; W =EXP.W;
   len = prod([ numel(QH) numel(QK) numel(QL) numel(W) ]);
+  
+  EXPorg = EXP;
 
   for iqh=1:numel(QH), h = QH(iqh);
   for iqk=1:numel(QK), k = QK(iqk);
@@ -65,6 +67,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     R0=1; RM=[]; RMS=[]; bragg = [];
 
     % compute Ki, Kf, Ei, Ef
+    EXP=EXPorg;
     EXP.QH = h; EXP.QK=k; EXP.QL=l; EXP.W=w;
     
     % variabe focusing for each steps
@@ -75,6 +78,10 @@ function resolution = ResLibCal_ComputeResMat(EXP)
       if EXP.ana.rv  < 0, EXP.ana.rv =rho.av; elseif EXP.ana.rv==0,  EXP.ana.rv=Inf; end
       if EXP.ana.rh  < 0, EXP.ana.rh =rho.ah; elseif EXP.ana.rh==0,  EXP.ana.rh=Inf; end
     end
+    res.RMV=EXP.mono.rv;
+    res.RMH=EXP.mono.rh;
+    res.RAV=EXP.ana.rv;
+    res.RAH=EXP.ana.rh;
     
     % choice of method
     if ~isempty(strfind(EXP.method, 'rescal5'))
