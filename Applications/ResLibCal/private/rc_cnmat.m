@@ -66,8 +66,8 @@ kf=sqrt(kfix^2-(2-fx)*f*w);
 
 cos_2theta=(ki^2+kf^2-q0^2)/(2*ki*kf);
 if abs(cos_2theta) <= 1, Error=0; else
-  disp([ mfilename ': Can not close triangle (kinematical equations).' ]);
-  disp([ q0 w ]):
+  disp([ mfilename ': Can not close triangle (kinematical equations). ' ]);
+  disp(p(31:34));
   R0=0; RMS=[];
   return
 end
