@@ -219,6 +219,12 @@ for ind=1:len
         R0=0; RM=[];
         return
     end
+    
+    % correct sign of curvature
+    monorh = monorh*sm;
+    monorv = monorv*sm;
+    anarh  = anarh*sa;
+    anarv  = anarv*sa;
 
     thetas=s2theta/2;
     phi=atan2(-kf*sin(s2theta), ki-kf*cos(s2theta));
