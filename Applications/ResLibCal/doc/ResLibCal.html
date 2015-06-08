@@ -77,6 +77,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -170,6 +171,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
         Matlab application, in the Popovici formalism [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
 
+
         The analyzer reflectivity is taken into account (with analyzer
         thickness 'WA'). Supports sample vertical <i>and</i> horizontal
         mosaic spreads.</li>
@@ -177,11 +179,13 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
         resolution [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
 
+
         The analyzer reflectivity is also taken into account (with
         analyzer thickness 'WA').</li>
       <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
         resolution [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
+
 
 
         with vertical sample mosaicity , but <i>homogeneous</i>
@@ -195,8 +199,10 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">2</a>],
 
 
+
       whereas all the other methods use the Popovici formulation [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100%5C">3</a>].
+
 
       The intensity estimate is given w.r.t the source, and is given in
       [a.u.]. The monochromator and analyzer reflectivity is assumed to
@@ -206,6 +212,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
     <blockquote> In all methods, the alpha/beta collimation parameters
       support guide <i>m-</i>coating specification (negative values
       e.g. -2) which are then converted to equivalent critical angles <i>0.1
+
 
       </i><i>m &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are
       also limited by the effective divergence set from the geometry,
@@ -218,6 +225,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
       In the Cooper-Nathans formalism, all mosaic spreads are isotropic
       (monochromator, analyzer, sample), including correction [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>],
+
 
       <i>except</i> in the ResLib implementation which supports sample
       vertical and horizontal mosaic spreads.<br>
@@ -351,6 +359,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -432,6 +441,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>). You
         may add files in this location with your preferred
         configurations by just copying and renaming any <span
@@ -446,6 +456,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -514,13 +525,15 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     computed in the reciprocal space with e.g. :<br>
     <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(2,0,0,5) 	<i>% computes at HKLE=[2 0 0 5] coordinates in r.l.u</i><br>&gt;&gt; out = ResLibCal(<font color="#cc33cc">'QH=2 W=5'</font>)  <i>% same as above but giving configuration as a string with named parameters</i><br></pre>
     The resolution result is then available in '<b>out.resolution</b>'
-    and more specifically in its <i><b>Bragg</b></i> and <b><i>RMS</i></b>
+    and more specifically in its <i><b>BraggS</b></i> and <b><i>RMS</i></b>
     fields:<br>
-    <pre>&gt;&gt; out.resolution<br>     <b>Bragg: </b>[0.0065 0.0018 0.0399 0.5095 0.0211]<br>   &nbsp;method: 'Popovici (ResLib)'<br>        R0: 357.5551<br>        RM: [4x4 double]	<span style="font-style: italic;">% resolution matrix in [Qx,Qy,Qz,E]</span><br>       <b>RMS: </b>[4x4 double]	<span style="font-style: italic;">% resolution matrix in [Q1,Q2,Qz,E] using D1 and D2</span></pre>
+    <pre>&gt;&gt; out.resolution<br>    <b>BraggS: </b>[0.0065 0.0018 0.0399 0.5095 0.0211]<br>     Bragg: [1x4 double]<br>  &nbsp; method: 'Popovici (ResLib)'<br>        R0: 357.5551<br>        RM: [4x4 double]	<span style="font-style: italic;">% resolution matrix in [Qx,Qy,Qz,E]</span><br>       <b>RMS: </b>[4x4 double]	<span style="font-style: italic;">% resolution matrix in [Q1,Q2,Qz,E] using D1 and D2</span></pre>
     The resolution matrix is '<b>RMS</b>' in the sample reciprocal space
-    (Q1,Q2,Qz,<i>w</i>), and the '<b>Bragg</b>' member shows the Bragg
+    (Q1,Q2,Qz,<i>w</i>), and the '<b>BraggS</b>' member shows the Bragg
     width along Q1,Q2,Qz, as well as the Vanadium width (4-th value) and
-    the Bragg energy width (5-th value).<br>
+    the Bragg energy width (5-th value). The 'RM' and 'Bragg' fields are
+    similar, but in the [x,y,z] incoming beam coordinate frame (that is
+    not in rlu).<br>
     In practice, the Vanadium energy width <i>out.resolution.Bragg(4)</i>
     is a good measure of the instrumental energy resolution.<br>
     <br>
@@ -535,6 +548,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3Ax' </span>as
+
     free text. <br>
     The position of the measurement is [ QH QK QL W ]:<br>
     <pre style="margin-left: 40px;">&gt;&gt; [ out.EXP.QH out.EXP.QK out.EXP.QL out.EXP.W ]<br>ans =<br>     2     0     0     0<br>&gt;&gt; out.EXP.W = 1;		<i>% change the position in reciprocal space</i><br>&gt;&gt; out = ResLibCal(out);	<span style="font-style: italic;">% request a new computation with modified choices</span><br></pre>
@@ -684,7 +698,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         (Hargreave,Hullah,1979), ported into <span style="font-weight:
           bold;"><a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/vtas/">vTAS</a>_view</span>
-        (Y. Raoul/A. Bouvet/A. Filhol)</li>
+        (Y. Raoul/A. Bouvet/A. Filhol) and <a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/">PKFit</a>.<br>
+      </li>
     </ul>
     Some bugs have been corrected in ResLib, ResCal5/rc_popma, and
     Res3ax by cross comparing codes and independent benchmarking. The
@@ -709,6 +725,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
