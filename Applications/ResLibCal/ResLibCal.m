@@ -411,7 +411,9 @@ function out = ResLibCal_UpdateViews(out)
   if isempty([ findall(0, 'Tag','ResLibCal_View2') ...
     findall(0, 'Tag','ResLibCal_View3') ])
 		% display result in the console
-		[res, inst] = ResLibCal_FormatString(out);
+		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
+		if ~strcmp(rlu, 'on'), mode=''; else mode='rlu'; end
+		[res, inst] = ResLibCal_FormatString(out, mode);
 		disp(char(res));
 		disp(char(inst));
   end
