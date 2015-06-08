@@ -47,7 +47,7 @@ kf=sqrt(kfix^2-(2-fx)*f*w);
 %------Test-if-scattering-triangle-is-closed
 cos_2theta=(ki^2+kf^2-q0^2)/(2*ki*kf);
 if abs(cos_2theta) > 1, 
-  disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
   disp([ h k l w ]);
   R0=0; RMS=[];
   return
@@ -109,6 +109,9 @@ Hinv = inv(H);
 Ninv = A*Hinv*A';
 N    = inv(Ninv);
 Minv = B*Ninv*B';
+% correction for sample mosaic
+Minv(2,2)=Minv(2,2)+q^2*etas^2;
+Minv(3,3)=Minv(3,3)+q^2*etas^2;
 M    = inv(Minv);
 
 RMS=8*log(2)*M;
@@ -116,8 +119,8 @@ RMS=8*log(2)*M;
 % Calculation of prefactor, normalized to source (Cooper-Nathans)
 Rm=ki^3/tan(thetam);
 Ra=kf^3/tan(thetaa);
-P0=Rm*Ra*(2*pi)^4;           % the det(G) term is simplified          % Popovici Eq 5
-R0=P0/(64*pi^2*sin(thetam)*sin(thetaa));
+P0=Rm*Ra*(2*pi)^4;           % the det(G) term gets simplified          % Popovici Eq 5
+R0=P0/(64*pi^2*sin(thetam)*sin(thetaa));  % Popovici Eq 9
 
 R0=R0*sqrt( det(F)/det(H) ); % Popovici Eq 9
 

@@ -34,13 +34,13 @@ function out = ResLibCal_Compute(EXP)
     [p, labels]= ResLibCal_EXP2RescalPar(out.EXP); % get ResCal vector and fields
   end
   if any(isnan(p))
-    warning([ mfilename ': Computation can not be completed. Some parameters are NaN''s:']);
+    warning([ datestr(now) ': ' mfilename ': Computation can not be completed. Some parameters are NaN''s:']);
     disp(labels(isnan(p)))
   else
     try
       resolution = ResLibCal_ComputeResMat(out.EXP);
     catch
-      warning([ mfilename ': Computation can not be completed.']);
+      warning([ datestr(now) ': ' mfilename ': Computation can not be completed.']);
       rethrow(lasterror)
       resolution = [];
     end

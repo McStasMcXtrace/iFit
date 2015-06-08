@@ -175,20 +175,20 @@ if isempty(findobj(gcf,'Tag','ResLibCal_View3_Context'))
 end
 % add labels
 if ~isempty(strfind(mode,'rlu'))
-  xlabel([ 'Q_1 ( along [' num2str(o1(1)) ' ' num2str(o1(2)) ' ' num2str(o1(3)) '] ) [rlu] {\delta}Q_1=' num2str(max(x)-min(x)) ])
-  ylabel([ 'Q_2 ( along [' num2str(o2(1)) ' ' num2str(o2(2)) ' ' num2str(o2(3)) '] ) [rlu] {\delta}Q_2=' num2str(max(y)-min(y)) ])
+  xlabel({[ '{\bf Q_1} ( along [' num2str(o1(1)) ' ' num2str(o1(2)) ' ' num2str(o1(3)) '] ) [rlu]'],[ '{\delta}Q_1=' num2str(max(x)-min(x)) ]})
+  ylabel({[ '{\bf Q_2} ( along [' num2str(o2(1)) ' ' num2str(o2(2)) ' ' num2str(o2(3)) '] ) [rlu]'],[ '{\delta}Q_2=' num2str(max(y)-min(y)) ]})
 else
-  xlabel([ 'Q_x [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
-  ylabel([ 'Q_y [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y)) ])
+  xlabel([ '{\bf Q_x} [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
+  ylabel([ '{\bf Q_y} [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y)) ])
   
 end
 if isempty(strfind(mode,'qz'))
-  zlabel([ 'E (meV) - {\delta}E=' num2str(max(z)-min(z)) ]);
+  zlabel([ '{\bf \omega} (meV) - {\delta}\omega=' num2str(max(z)-min(z)) ]);
 else
   if ~isempty(strfind(mode,'rlu'))
-    zlabel([ 'Qz [rlu] - {\delta}Qz=' num2str(max(z)-min(z)) ]);
+    zlabel([ '{\bf Qz} [rlu] - {\delta}Qz=' num2str(max(z)-min(z)) ]);
   else
-    zlabel([ 'Qz [A^{-1}] - {\delta}Qz=' num2str(max(z)-min(z)) ]);
+    zlabel([ '{\bf Qz} [A^{-1}] - {\delta}Qz=' num2str(max(z)-min(z)) ]);
   end
 end
 title([ 'Resolution in ' frame ' - ' out.EXP.method ])

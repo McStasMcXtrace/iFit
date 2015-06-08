@@ -66,7 +66,7 @@ kf=sqrt(kfix^2-(2-fx)*f*w);
 
 cos_2theta=(ki^2+kf^2-q0^2)/(2*ki*kf);
 if abs(cos_2theta) <= 1, Error=0; else
-  disp([ mfilename ': Can not close triangle (kinematical equations). ' ]);
+  disp([ datestr(now) ': ' mfilename ': Can not close triangle (kinematical equations). ' ]);
   disp(p(31:34));
   R0=0; RMS=[];
   return
@@ -123,56 +123,71 @@ B(4,4)=-2*kf/f;
 B(5,1)=1;
 B(6,3)=1;
 
-B = B(1:4,:);
+% estimate from old ResCal5 code only (pure ResCal)
+Uold = B;
+Vold = inv(Uold);
+Mold = N; % N = inv(A*Hinv*A')
+Nold = Vold'*Mold*Vold;
 
-% matrix M in Popovici paper
-Ninv = inv(N);                    % Ninv = A*inv(H)*A'
-M    = inv(B*Ninv*B');
-RMS=8*log(2)*M;                   % Correction factor 8*log(2) as input parameters
-                                  % are expressed as FWHM.
+[dummy,Nold]=rc_int(6,1,Nold);        % integrate over kiz giving a 5x5 matrix
+[dummy,Nold]=rc_int(5,1,Nold);        % integrate over kix giving a 4x4 matrix
+NP=Nold-Nold(1:4,2)*Nold(1:4,2)'/(1/((etas*q0)^2)+Nold(2,2));
+NP(3,3)=Nold(3,3);
+NP=8*log(2)*NP;                        % Correction factor as input parameters
+                                       % are expressed as FWHM.
+
+RMS = NP;
 
 %----- Normalisation factor
 
+
 % Calculation of prefactor, normalized to source (Cooper-Nathans)
+% we provide below a set of estimation methods
 
-Rm=ki^3/tan(thetam); 
-Ra=kf^3/tan(thetaa);	% det(A*A') = (Rm*Ra)^2/16
-P0=Rm*Ra*(2*pi)^4;
-R0=P0/(64*pi^2*sin(thetam)*sin(thetaa));
-% missing term: R0*sqrt( det(F)/det(G+C'*F*C) )=R0*sqrt( det(F)/det(H) )
-F = diag(1./[etam etam etaa etaa].^2); 
-% det(H) = det(A*A')/det(Ninv) = (Rm*Ra)^2/16*det(N) as 1/det(N)=det(A/H*A')
-detH = (Rm*Ra)^2/16*det(N);	% this is not fully true. det(AB)=det(A)*det(B) only for sq matrices
-R0=R0*sqrt( det(F) / detH );% still better than nothing...
+%% the original ResCal5/cn_mat intensity estimate
+if 1
+  vi=ki^3*cot(thetam);
+  vi=vi/sqrt((2*sin(thetam)*etam)^2+bet0^2+bet1^2);
+  vf=kf^3*cot(thetaa);
+  vf=vf/sqrt((2*sin(thetaa)*etaa)^2+bet2^2+bet3^2);
+  R0=vi*vf*(2*pi)^4;
 
-% computation from Chesser and Axe Acta Cryst 1972
-a11 = b1/ki^2;
-a12 = b2/kf^2;
+  sqrt_detF_over_detH = (15.75*bet0*bet1*etam*alf0*alf1)/sqrt(alf0^2+alf1^2+4*etam^2) ...
+                      * (15.75*bet2*bet3*etaa*alf2*alf3)/sqrt(alf2^2+alf3^2+4*etaa^2);
 
-a1= pm(1); a2=pm(2);  a3=palf1(2); a4= palf2(2);
-a5=-pa(1); a6=-pa(2); a7=palf0(1); a8= palf0(2);
-a9=-palf3(1); a10=-palf3(2);
+  R0 = R0 * sqrt_detF_over_detH;
+end
 
-b0=a1*a2+a7*a8;
-b1=a2*a2+a3*a3+a8*a8;
-b2=a4*a4+a6*a6+a10*a10;
-b3=a5*a5+a9*a9;
-b4=a5*a6+a9*a10;
-b5=a1*a1+a7*a7;
+%% legacy computation from Chesser and Axe Acta Cryst 1972 (provides same result as AFILL)
+if 0
+  a11 = b1/ki^2;
+  a12 = b2/kf^2;
 
-ALAM=ki/kf;
-AL=sin(2*thetas)*ss*sm; BE=cos(2*thetas);
+  a1= pm(1); a2=pm(2);  a3=palf1(2); a4= palf2(2);
+  a5=-pa(1); a6=-pa(2); a7=palf0(1); a8= palf0(2);
+  a9=-palf3(1); a10=-palf3(2);
 
-C=-1.*(ALAM-BE)/AL;
-E=-1.*(BE*ALAM-1.)/AL;
-AP=2.*b0*C+b1*C*C+b2*E*E+b3*ALAM*ALAM+2.*b4*ALAM*E+b5; % A' in CN paper
+  b0=a1*a2+a7*a8;
+  b1=a2*a2+a3*a3+a8*a8;
+  b2=a4*a4+a6*a6+a10*a10;
+  b3=a5*a5+a9*a9;
+  b4=a5*a6+a9*a10;
+  b5=a1*a1+a7*a7;
 
-R0 = 2*pi/(ki^2*kf^3*AL) ...
-		/sqrt(AP*(a11+a12)) ...
-		*sqrt( ...
-		   bet0^2/(bet0^2+(2*etam*sin(thetam))^2) ...
-		  *bet3^2/(bet3^2+(2*etaa*sin(thetaa))^2));
-R0 = abs(R0);
+  ALAM=ki/kf;
+  AL=sin(2*thetas)*ss*sm; BE=cos(2*thetas);
+
+  C=-1.*(ALAM-BE)/AL;
+  E=-1.*(BE*ALAM-1.)/AL;
+  AP=2.*b0*C+b1*C*C+b2*E*E+b3*ALAM*ALAM+2.*b4*ALAM*E+b5; % A' in CN paper
+
+  R0 = 2*pi/(ki^2*kf^3*AL) ...
+		  /sqrt(AP*(a11+a12)) ...
+		  *sqrt( ...
+		     bet0^2/(bet0^2+(2*etam*sin(thetam))^2) ...
+		    *bet3^2/(bet3^2+(2*etaa*sin(thetaa))^2));
+  R0 = abs(R0);
+end
 
 % Transform prefactor to Chesser-Axe normalization
 R0=R0/(2*pi)^2*sqrt(det(RMS));

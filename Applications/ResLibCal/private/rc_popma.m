@@ -95,13 +95,13 @@ L1=p(21+offset);                 % distance between monochromator and sample (cm
 L2=p(22+offset);                 % distance between sample and analyser (cm).
 L3=p(23+offset);                 % distance between analyser and detector (cm).
 
-% TODO: FIX removed /100 so that all distances are in [cm]. 
+% TODO: FIX all distances are in [cm]. radius in p in ResCal in [m] -> 1/100
 %       Was converted to [m-1] whereas all other distances are in [cm-1] !!
 % sm and sa introduced to compensate the signs of thetaa and thetam in some Popovici matrices
-romh=sm*p(24+offset); % horizontal curvature of monochromator 1/radius (cm-1).
-romv=sm*p(25+offset);    % vertical curvature of monochromator (cm-1).
-roah=sa*p(26+offset); % horizontal curvature of analyser (cm-1).
-roav=sa*p(27+offset);    % vertical curvature of analyser (cm-1).
+romh=sm*p(24+offset)/100; % horizontal curvature of monochromator 1/radius (cm-1).
+romv=sm*p(25+offset)/100;    % vertical curvature of monochromator (cm-1).
+roah=sa*p(26+offset)/100; % horizontal curvature of analyser (cm-1).
+roav=sa*p(27+offset)/100;    % vertical curvature of analyser (cm-1).
 
 f16=1/16.;
 f12=1/12.;
@@ -127,13 +127,13 @@ thetaa=sa*asin(pi/(da*kf));      % theta angles for analyser
 thetam=sm*asin(pi/(dm*ki));      % and monochromator.
 thetas=ss*0.5*acos((ki^2+kf^2-q0^2)/(2*ki*kf)); % scattering angle from sample.
 if ~isreal(thetas)
-  disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
   disp(p(31:34))
   return
 end
 phi=atan2(-kf*sin(2*thetas),ki-kf*cos(2*thetas));
 if ~isreal(phi)
-  disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+  disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
   disp(p(31:34))
   return
 end
@@ -307,7 +307,7 @@ R0 = R0/(2*pi)^2*sqrt(det(M));
 R0 = R0*kf/ki;
 
 % Werner and Pynn correction for mosaic spread of crystal.
-R0 =R0/sqrt((1+(q0*etasp)^2*M(3,3))*(1+(q0*etas)^2*M(2,2)));
+R0 =R0/sqrt((1+(q0*etasp)^2*M(4,4))*(1+(q0*etas)^2*M(2,2)));
 
 %----- Final error check
 

@@ -75,6 +75,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -127,66 +129,103 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <br>
     <h3><a class="mozTocH3" name="mozTocId121795"></a> Available
       computational methods</h3>
+    There are basically two analytical methods to compute the resolution
+    function of a TAS instrument:<br>
+    <blockquote>The <b>Cooper-Nathans</b> [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">1</a>]
+      method handles a conventional description of the instrument, with
+      collimations and homogeneous mosaic spread.<br>
+      The <b>Popovici</b> method [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>]
+      handles similarly collimations and mosaic spreads (but here with
+      separate horizontal and vertical components), but also much more
+      geometrical details, including the optical elements size, and the
+      radius of curvature of the monochromator and analyzer. Modern TAS
+      machines mostly use optics focusing so that this method is
+      probably more suited to model today's spectrometers.<br>
+    </blockquote>
     The following computational methods are available:<br>
     <ul>
       <li><b>Cooper-Nathans/AFILL</b>: the original Cooper-Nathans [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">1</a>]
         code <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
-        from Brookhaven 'AFILL'.</li>
+        from Brookhaven 'AFILL'. <br>
+      </li>
       <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
         Cooper-Nathans method [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">1</a>]
         from the <a
 href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>
-        Matlab application. The sample mosaic spread is also taken into
-        account [<a
-href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>]
-        with isotropic mosaic.</li>
+        Matlab application.<br>
+      </li>
       <li><b>Cooper-Nathans/Res3Ax</b>: simple Cooper-Nathans based on
-        notes from B. Hennion in the Popovici formulation [<a
-href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
-        The sample mosaic spread is also taken into account [<a
-href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>]
-        with isotropic mosaic.</li>
+        notes from B. Hennion in the Popovici formalism [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].&nbsp;</li>
       <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
         Cooper-Nathans method [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>]
         from the <a
           href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
-        Matlab application, that also supports analyzer horizontal
-        focusing correction (RAH). To compare with the 3 previous
-        Cooper-Nathans methods above, you should set RAH=0. The analyzer
-        reflectivity is also taken into account (with analyzer thickness
-        'WA').</li>
+        Matlab application, in the Popovici formalism [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
+
+        The analyzer reflectivity is taken into account (with analyzer
+        thickness 'WA'). Supports sample vertical <i>and</i> horizontal
+        mosaic spreads.</li>
       <li><b>Popovici/ResLib</b>: the Popovici formulation of the
         resolution [<a
-href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
-        supports analyzer horizontal focusing correction (RAH). All
-        mosaicity are taken into account (vertical and horizontal). The
-        analyzer reflectivity is also taken into account (with analyzer
-        thickness 'WA').</li>
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
+
+        The analyzer reflectivity is also taken into account (with
+        analyzer thickness 'WA').</li>
       <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
         resolution [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
-        with vertical sample mosaicity , but homogeneous mosaicity for
-        monochromator and analyzer [<a
+
+
+        with vertical sample mosaicity , but <i>homogeneous</i>
+        mosaicity for monochromator and analyzer [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>].<br>
       </li>
     </ul>
-    The CN/AFILL and CN/Rescal5 methods use the Chesser and Axe
-    intensity estimate [<a
+    <u>Intensity</u>: <br>
+    <blockquote>The Cooper-Nathans/AFILL method uses the Chesser and Axe
+      intensity estimate [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">2</a>],
-    whereas the other methods use the Popovici formulation [<a
-href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100%5C">3</a>].<br>
-    In all methods, the alpha/beta collimation parameters support guide
-    <i>m-</i>coating specification (negative values e.g. -2) which are
-    then converted to equivalent critical angles <i>0.1 </i><i>m &#955;<sub>i</sub></i>
-    [deg]. The alpha/beta collimations are also limited by the effective
-    divergence set from the geometry, e.g. <i>atan(width or
-      height/distance) </i>[rad]. The sample mosaic spread is also
-    taken into account, as well as a correction for the sample
-    orientation w.r.t. the incoming beam.<br>
+
+
+      whereas all the other methods use the Popovici formulation [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100%5C">3</a>].
+
+      The intensity estimate is given w.r.t the source, and is given in
+      [a.u.]. The monochromator and analyzer reflectivity is assumed to
+      be ideal (1).<br>
+    </blockquote>
+    <u>Collimation:</u><br>
+    <blockquote> In all methods, the alpha/beta collimation parameters
+      support guide <i>m-</i>coating specification (negative values
+      e.g. -2) which are then converted to equivalent critical angles <i>0.1
+
+      </i><i>m &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are
+      also limited by the effective divergence set from the geometry,
+      e.g. <i>atan(width or height/distance) </i>[rad]. <br>
+    </blockquote>
+    <u>Mosaic spread:</u><br>
+    <blockquote>The sample mosaic spread is also taken into account, as
+      well as a correction for the sample orientation w.r.t. the
+      incoming beam. <br>
+      In the Cooper-Nathans formalism, all mosaic spreads are isotropic
+      (monochromator, analyzer, sample), including correction [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>],
+
+      <i>except</i> in the ResLib implementation which supports sample
+      vertical and horizontal mosaic spreads.<br>
+      In the Popovici formalism, all mosaicity are taken into account
+      with separate vertical and horizontal components (monochromator,
+      analyzer, sample).<br>
+    </blockquote>
+    <br>
     Each computation takes a few 10ms, whatever be the analytical method
     used.
     <h3><a class="mozTocH3" name="mozTocId637458"></a>Usage</h3>
@@ -259,6 +298,8 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
       projections in the vertical Qz axis instead of the energy E axis
       by toggling the <i>View</i> menu, e.g. <i>Resolution in [Qx,Qy,</i><i>E]</i>
       item. <br>
+      The resolution matrix is always computed in [Angs^-3.meV], but it
+      can be shown in [rlu^3.meV] in the 2D and 3D views.<br>
     </p>
     <div style="text-align: center;"> <img style=" width: 570px;
         height: 643px;" alt="The ResLibCal main interface" title="The
@@ -288,6 +329,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       the TAS resolution function</h4>
     <div style="text-align: left;"> To compute and plot the resolution
       function, select the <span style="font-style: italic;">View/Resolution
+
+
 
 
 
@@ -367,6 +410,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           The *.par and *.cfg files can be generated by <a
 href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>.<br>
           The *.par files can be generated by the legacy ResCal code.<br>
+          <a href="http://neutron.ujf.cas.cz/restrax/">ResTrax</a> can
+          also generate *.cfg files (different format than ResCal5),
+          which only specify a reduced set of parameters.<br>
         </blockquote>
         In addition, the <span style="font-style: italic;">'File/Open
           Instrument...'</span> menu item allows to read a predefined
@@ -384,6 +430,8 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in22/description/instrument-layout/">IN22</a>&nbsp;
 
 
+
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>). You
         may add files in this location with your preferred
         configurations by just copying and renaming any <span
@@ -398,6 +446,8 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
+
 
 
 
@@ -467,10 +517,10 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     and more specifically in its <i><b>Bragg</b></i> and <b><i>RMS</i></b>
     fields:<br>
     <pre>&gt;&gt; out.resolution<br>     <b>Bragg: </b>[0.0065 0.0018 0.0399 0.5095 0.0211]<br>   &nbsp;method: 'Popovici (ResLib)'<br>        R0: 357.5551<br>        RM: [4x4 double]	<span style="font-style: italic;">% resolution matrix in [Qx,Qy,Qz,E]</span><br>       <b>RMS: </b>[4x4 double]	<span style="font-style: italic;">% resolution matrix in [Q1,Q2,Qz,E] using D1 and D2</span></pre>
-    The resolution matrix is 'RMS' in the sample reciprocal space
-    (Q1,Q2,Qz,<i>w</i>), and the 'Bragg' member shows the Bragg width
-    along Q1,Q2,Qz, as well as the Vanadium width (4-th value) and the
-    Bragg energy width (5-th value).<br>
+    The resolution matrix is '<b>RMS</b>' in the sample reciprocal space
+    (Q1,Q2,Qz,<i>w</i>), and the '<b>Bragg</b>' member shows the Bragg
+    width along Q1,Q2,Qz, as well as the Vanadium width (4-th value) and
+    the Bragg energy width (5-th value).<br>
     In practice, the Vanadium energy width <i>out.resolution.Bragg(4)</i>
     is a good measure of the instrumental energy resolution.<br>
     <br>
@@ -483,9 +533,9 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     <pre style="margin-left: 40px;">&gt;&gt; out.EXP.method = <span style="color: rgb(204, 51, 204);">'Cooper-Nathans ResCal'</span><br></pre>
     The method should mention '<span style="font-style: italic;">Cooper-Nathans</span>'
     or<span style="font-style: italic;"> 'Popovici', </span>with a
-    flavour <span style="font-style: italic;">'ResLib','ResCal'</span>
-    or<span style="font-style: italic;"> 'Res3Ax' </span>as free text.
-    <br>
+    flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
+    <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3Ax' </span>as
+    free text. <br>
     The position of the measurement is [ QH QK QL W ]:<br>
     <pre style="margin-left: 40px;">&gt;&gt; [ out.EXP.QH out.EXP.QK out.EXP.QL out.EXP.W ]<br>ans =<br>     2     0     0     0<br>&gt;&gt; out.EXP.W = 1;		<i>% change the position in reciprocal space</i><br>&gt;&gt; out = ResLibCal(out);	<span style="font-style: italic;">% request a new computation with modified choices</span><br></pre>
     The full list of ResLib parameters are described in the <a
@@ -637,7 +687,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         (Y. Raoul/A. Bouvet/A. Filhol)</li>
     </ul>
     Some bugs have been corrected in ResLib, ResCal5/rc_popma, and
-    Res3ax by cross comparing codes and independent benchmarking.<br>
+    Res3ax by cross comparing codes and independent benchmarking. The
+    results from ResTrax are in good agreement with ResLibCal.<br>
     <br>
     The application is distributed with an <a href="COPYING">EUPL</a>
     license (GPL compatible).<br>
@@ -658,6 +709,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
+
 
 
 

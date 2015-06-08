@@ -73,10 +73,14 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     % variabe focusing for each steps
     if any([ EXP.mono.rv EXP.mono.rh EXP.ana.rv EXP.ana.rh ] <= 0)
       [rho,EXP.ki,EXP.kf] = rc_focus(EXP);  % in 'private', from ResCal5
-      if EXP.mono.rv < 0, EXP.mono.rv=rho.mv; elseif EXP.mono.rv==0, EXP.mono.rv=Inf; end
-      if EXP.mono.rh < 0, EXP.mono.rh=rho.mh; elseif EXP.mono.rh==0, EXP.mono.rh=Inf; end
-      if EXP.ana.rv  < 0, EXP.ana.rv =rho.av; elseif EXP.ana.rv==0,  EXP.ana.rv=Inf; end
-      if EXP.ana.rh  < 0, EXP.ana.rh =rho.ah; elseif EXP.ana.rh==0,  EXP.ana.rh=Inf; end
+      if EXP.mono.rv < 0, EXP.mono.rv=rho.mv; end 
+      if EXP.mono.rh < 0, EXP.mono.rh=rho.mh; end 
+      if EXP.ana.rv  < 0, EXP.ana.rv =rho.av; end
+      if EXP.ana.rh  < 0, EXP.ana.rh =rho.ah; end
+      if EXP.mono.rv==0 || ~isfinite(EXP.mono.rv), EXP.mono.rv=Inf; end
+      if EXP.mono.rh==0 || ~isfinite(EXP.mono.rh), EXP.mono.rh=Inf; end
+      if EXP.ana.rv==0  || ~isfinite(EXP.ana.rv),  EXP.ana.rv=Inf; end
+      if EXP.ana.rh==0  || ~isfinite(EXP.ana.rh),  EXP.ana.rh=Inf; end
     end
     res.RMV=EXP.mono.rv;
     res.RMH=EXP.mono.rh;
@@ -91,12 +95,11 @@ function resolution = ResLibCal_ComputeResMat(EXP)
         if ~isempty(strfind(EXP.method, 'cooper')), method=@rc_cnmat;
         else                                        method=@rc_popma; 
         end
-        EXProt    = ResLibCal_SampleRotateS(h,k,l,EXP);
-        EXProt.QH = h; EXProt.QK=k; EXProt.QL=l; EXProt.W=w;
-        p         = ResLibCal_EXP2RescalPar(EXProt);
+        EXP    = ResLibCal_SampleRotateS(h,k,l,EXP);
+        p         = ResLibCal_EXP2RescalPar(EXP);
         [Q2c,Qmag]= rc_re2rc( p(19:21), p(22:24), p(31:33) ); 
         [R0,RM]   = feval(method,f,Qmag,p,0);
-        RMS       = ResLibCal_RM2RMS(h,k,l,w,EXProt,RM);
+        RMS       = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
       else
         disp([mfilename ': Rescal5/rc_cnmat is not available' ]);
       end
@@ -105,10 +108,9 @@ function resolution = ResLibCal_ComputeResMat(EXP)
         if ~isempty(strfind(EXP.method, 'cooper')), method=@res3ax3;
         else                                        return; % no Popovici from J Ollivier
         end
-        EXProt    = ResLibCal_SampleRotateS(h,k,l,EXP);
-        EXProt.QH = h; EXProt.QK=k; EXProt.QL=l; EXProt.W=w;
-        [R0,RM]   = feval(method,h,k,l,w, EXProt);
-        RMS       = ResLibCal_RM2RMS(h,k,l,w,EXProt,RM);
+        EXP    = ResLibCal_SampleRotateS(h,k,l,EXP);
+        [R0,RM]   = feval(method,h,k,l,w, EXP);
+        RMS       = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
       else
         disp([mfilename ': res3ax (JO) is not available' ]);
       end
@@ -116,10 +118,9 @@ function resolution = ResLibCal_ComputeResMat(EXP)
       if exist('Rescal_AFILL') == 2
         % This method is 100% equivalent to ResCal5/Cooper-Nathans
         method    = @Rescal_AFILL; 
-        EXProt    = ResLibCal_SampleRotateS(h,k,l,EXP);
-        EXProt.QH = h; EXProt.QK=k; EXProt.QL=l; EXProt.W=w;
-        [R0,RM]   = feval(method,h,k,l,w, EXProt);
-        RMS       = ResLibCal_RM2RMS(h,k,l,w,EXProt,RM);
+        EXP    = ResLibCal_SampleRotateS(h,k,l,EXP);
+        [R0,RM]   = feval(method,h,k,l,w, EXP);
+        RMS       = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
       else
         disp([mfilename ': rescal/AFILL is not available' ]);
       end
