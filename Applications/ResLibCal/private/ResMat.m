@@ -184,8 +184,9 @@ for ind=1:len
     taua=GetTau(ana.tau);
 
     horifoc=-1;
+    % this following correction introduces a discontinuity: we thus ignore it.
     if isfield(EXP(ind),'horifoc')
-        horifoc=EXP(ind).horifoc;
+        % horifoc=EXP(ind).horifoc;
     end;
 
     if horifoc==1
@@ -213,7 +214,7 @@ for ind=1:len
     thetaa=asin(taua/(2*kf))*sa; 
     s2theta=acos( (ki^2+kf^2-q^2)/(2*ki*kf))*ss; %2theta sample
     if ~isreal(s2theta) 
-        disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+        disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
         disp([EXP.QH EXP.QK EXP.QL W])
         R0=0; RM=[];
         return
@@ -335,7 +336,7 @@ for ind=1:len
     else                      % method=0: Cooper-Nathans in Popovici formulation
         H = G+C'*F*C;                       % Popovici Eq 8
         Ninv= A*inv(H)*A';                  % Cooper-Nathans (in Popovici Eq 10)
-        %Horizontally focusing analyzer if needed
+        %Horizontally focusing analyzer if needed. Does not depend on RAH, so we ignore it.
         if horifoc>0
             Ninv=inv(Ninv);
             Ninv(5,5)=(1/(kf*alpha(3)))^2; 
@@ -379,6 +380,7 @@ for ind=1:len
         R0_=R0_ *sqrt(det(F)/det( H+G ));      %Popovici
     else
         R0_=R0_ *sqrt(det(F)/det( H )); %Cooper-Nathans (popovici Eq 5 and 9)
+        % difference in R0 comes from the horifoc correction on alpha(3)
     end
 
     %-------------------------------------------------------------------
@@ -439,7 +441,7 @@ for ind=1:len
     end;
     %---------------------------------------------------------------------------
     %Take care of analyzer reflectivity if needed [I. Zaliznyak, BNL]
-    if isfield(ana,'thickness') && isfield(ana,'Q') && 0           
+    if isfield(ana,'thickness') && isfield(ana,'Q')         
         KQ = ana.Q;
         KT = ana.thickness;
         toa=(taua/2)/sqrt(kf^2-(taua/2)^2);

@@ -88,9 +88,9 @@ const=1.17741; % half width factor
 %----- Remove the vertical component from the matrix.
 B = A;
 if isempty(strfind(mode,'qz'))
-  B(3,:)=[]; B(:,3)=[];
+  B(3,:)=[]; B(:,3)=[]; % remove Qz component
 else
-  B(4,:)=[]; B(:,4)=[];
+  B(4,:)=[]; B(:,4)=[]; % remove E component
 end
 % B=[A(1,1:2),A(1,4);A(2,1:2),A(2,4);A(4,1:2),A(4,4)];
 
@@ -114,16 +114,17 @@ subplot(2,2,1);
 set(line(x,y),'Color','k')
 if isempty(strfind(mode, 'scan')), fill(x,y,'r'); end
 if ~isempty(strfind(mode,'rlu'))
-  xlabel([ 'Q_1 ( along [' num2str(o1(1)) ' ' num2str(o1(2)) ' ' num2str(o1(3)) '] ) [rlu] {\delta}Q_1=' num2str(max(x)-min(x)) ])
-  ylabel([ 'Q_2 ( along [' num2str(o2(1)) ' ' num2str(o2(2)) ' ' num2str(o2(3)) '] ) [rlu] {\delta}Q_2=' num2str(max(y)-min(y)) ])
+  xlabel({[ '{\bf Q_1} ( along [' num2str(o1(1)) ' ' num2str(o1(2)) ' ' num2str(o1(3)) '] ) [rlu]' ],[ '{\delta}Q_1=' num2str(max(x)-min(x)) ]})
+  ylabel({[ '{\bf Q_2} ( along [' num2str(o2(1)) ' ' num2str(o2(2)) ' ' num2str(o2(3)) '] ) [rlu]' ],[ '{\delta}Q_2=' num2str(max(y)-min(y)) ]})
 else
-  xlabel([ 'Q_x [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
-  ylabel([ 'Q_y [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y)) ])
+  xlabel([ '{\bf Q_x} [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
+  ylabel([ '{\bf Q_y} [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y)) ])
 end
-title(EXP.method);
+title(EXP.method); 
 da=daspect; da(1:2) = max(da(1:2)); daspect(da);
 pb=pbaspect; pb(1:2)=da(1); pbaspect(pb);
 x1=xlim; x2=ylim;
+grid on
 
 %---------------- Add slice through Qx,Qy plane ----------------------
 
@@ -155,21 +156,22 @@ subplot(2,2,2);
 set(line(x,y),'Color','k')
 if isempty(strfind(mode, 'scan')), fill(x,y,'r'); end
 if ~isempty(strfind(mode,'rlu'))
-  xlabel([ 'Q_1 [A^{-1}] ( along [' num2str(o1(1)) ' ' num2str(o1(2)) ' ' num2str(o1(3)) '] ) [rlu] {\delta}Q_1=' num2str(max(x)-min(x)) ])
+  xlabel({[ '{\bf Q_1} [A^{-1}] ( along [' num2str(o1(1)) ' ' num2str(o1(2)) ' ' num2str(o1(3)) '] ) [rlu]' ],[ '{\delta}Q_1=' num2str(max(x)-min(x)) ]})
 else
-  xlabel([ 'Q_x [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
+  xlabel([ '{\bf Q_x} [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
 end
 
 if isempty(strfind(mode,'qz'))
-  ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
+  ylabel([ '{\bf \omega} [meV]  {\delta}\omega=' num2str(max(y)-min(y)) ])
 else
   if ~isempty(strfind(mode,'rlu'))
-    ylabel([ 'Qz [rlu] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+    ylabel([ '{\bf Qz} [rlu] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
   else
-    ylabel([ 'Qz [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+    ylabel([ '{\bf Qz} [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
   end
 end
 xlim(x1); xe=ylim;
+grid on
 
 %---------------- Add slice through Qx,W plane ----------------------
 
@@ -211,23 +213,24 @@ subplot(2,2,3);
 set(line(x,y),'Color','k')
 if isempty(strfind(mode, 'scan')), fill(x,y,'r'); end
 if ~isempty(strfind(mode,'rlu'))
-  xlabel([ 'Q_2 ( along [' num2str(o2(1)) ' ' num2str(o2(2)) ' ' num2str(o2(3)) '] ) [rlu] {\delta}Q_2=' num2str(max(x)-min(x)) ])
+  xlabel({[ '{\bf Q_2} ( along [' num2str(o2(1)) ' ' num2str(o2(2)) ' ' num2str(o2(3)) '] ) [rlu]' ],[ '{\delta}Q_2=' num2str(max(x)-min(x)) ]})
 else
-  xlabel([ 'Q_y [A^{-1}] {\delta}Q_y=' num2str(max(x)-min(x)) ])
+  xlabel([ '{\bf Q_y} [A^{-1}] {\delta}Q_y=' num2str(max(x)-min(x)) ])
 end
 
 if isempty(strfind(mode,'qz'))
-  ylabel([ 'Energy [meV]  {\delta}E=' num2str(max(y)-min(y)) ])
+  ylabel([ '{\bf \omega} [meV]  {\delta}\omega=' num2str(max(y)-min(y)) ])
 else
   if ~isempty(strfind(mode,'rlu'))
-    ylabel([ 'Qz [rlu] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+    ylabel([ '{\bf Qz} [rlu] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
   else
-    ylabel([ 'Qz [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+    ylabel([ '{\bf Qz} [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
   end
 end
 
 xlim(x2); ylim(xe);
 title([ 'ResLibCal ' datestr(now) ])
+grid on
 
 %---------------- Add slice through Qy,W plane ----------------------
 if isempty(strfind(mode,'qz'))

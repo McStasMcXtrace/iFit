@@ -201,9 +201,6 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
     elseif EXP.ana.rh == 0
       set(ResLibCal_fig('EXP_ana_rh'),'String', '0 (flat)');
     end
-    if ~isempty(t)
-      disp([ 'Auto focus: ' t]);
-    end
   end
 
 % end ResLibCal_fig2EXP

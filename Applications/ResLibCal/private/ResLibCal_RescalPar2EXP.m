@@ -1,4 +1,4 @@
-function EXP = ResLibCal_RescalPar2EXP(str, EXP)
+function [EXP, titl] = ResLibCal_RescalPar2EXP(str, EXP)
 % [EXP = ResLibCal_RescalPar2EXP(str): Convert a structure into a ResLib EXP
 % 
 % searches for ResCal parameter fields from structrue 'str', and fill in a ResLib EXP
@@ -21,6 +21,7 @@ if ischar(str)
 else 
   content = str;
 end
+titl = [];
 
 if isfield(content, 'EXP')    % imported a full ResLibCal structure
   EXP = content.EXP;
@@ -65,9 +66,37 @@ end
     end
   end
 
+  if ischar(str) && strfind(str, 'Title (max.60 characters)')
+    % legacy ResTrax configuration file. Very partil set of parameters.
+    lines = textscan(str, '%s', 'delimiter', '\n'); % split all lines
+    lines = lines{1};
+    ResTrax.Source = str2double(regexp(lines{4}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    ResTrax.Monok  = str2double(regexp(lines{8}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    ResTrax.Ana    = str2double(regexp(lines{10}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    ResTrax.Det    = str2double(regexp(lines{12}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    ResTrax.Dist   = str2double(regexp(lines{14}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    ResTrax.C1     = str2double(regexp(lines{16}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    ResTrax.C2     = str2double(regexp(lines{18}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    ResTrax.C3     = str2double(regexp(lines{20}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    ResTrax.C4     = str2double(regexp(lines{22}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    ResTrax.Collimators = str2double(regexp(lines{23}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    % now import data specifically as a ResCal structure
+    if ResTrax.Source(1) == 0
+      ResTrax.Source(3:4) = ResTrax.Source(2)*1.41;
+    end
+    p.WB=ResTrax.Source(3); p.HB=ResTrax.Source(4);
+    p.TM=ResTrax.Monok(4);  p.WM=ResTrax.Monok(5); p.HM=ResTrax.Monok(6);
+    p.TA=ResTrax.Ana(4);    p.WA=ResTrax.Ana(5);   p.HA=ResTrax.Ana(6);
+    if ResTrax.Det(1) == 0
+      ResTrax.Det(3:4) = ResTrax.Det(2)*1.41;
+    end
+    p.WD=ResTrax.Det(3); p.HD=ResTrax.Det(4);
+    p.L1=ResTrax.Dist(1); p.L2=ResTrax.Dist(2); p.L3=ResTrax.Dist(3); p.L4=ResTrax.Dist(4);
+    titl = [ 'ResTrax legacy configuration: ' strtrim(lines{2}) ];
+  end
+
   % handle input as a numerical vector: ResCal file
   if isnumeric(str) && isvector(str)
-    
     if numel(str) >= 42 % legacy ResCal5 .par file
       if  numel(str) > 42
           disp([ mfilename ': initial parameter file contains ' ...
@@ -77,10 +106,12 @@ end
       labs=labels(1:42);
       str = mat2cell(str(:),ones(1,length(str)));
       str = cell2struct(str(:),labs(:),1);  % make a structure
+      titl = 'ResCal Cooper-Nathans parameters';
     elseif numel(str) == 27
       labs=labels(42+(1:27));
       str = mat2cell(str(:),ones(1,length(str)));
       str = cell2struct(str(:),labs(:),1);  % make a structure
+      titl = 'ResCal Popovici parameters (Rescal5)';
     end
   end
   
@@ -105,6 +136,7 @@ end
       elseif isempty(found), continue; end
       p.(labels{found}) = str.(fields{index});
     end
+    if isempty(titl), titl = 'Restrax/Rescal parameters'; end
   end
   % now convert ResCal clean 'p' structure to ResLib EXP
 

@@ -45,14 +45,14 @@ function [R0, RMS] = Rescal_AFILL(H,K,L,W,EXP)
   ALAM=AKI/AKF;
   BE=-(Q*Q-2.*AKI*AKI+AOM)/(2.*AKI*AKF);
   if (abs(BE) > 1.0)
-	  disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+	  disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
     disp([ H K L W ]);
     return
   end
   AL=sqrt(1.-BE*BE)*FOC;
   B =-1.*(Q*Q-AOM)/(2.*Q*AKF);
   if (abs(B) > 1.0)
-	  disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+	  disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
   end
 
   ALP(1)=-B/AL;
@@ -60,7 +60,7 @@ function [R0, RMS] = Rescal_AFILL(H,K,L,W,EXP)
   ALP(3)=1./(AL*2.*AKF);
   SB=(Q*Q+AOM)/(2.*Q*AKI);
   if (abs(SB) > 1.0) 
-    disp([ mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+    disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
     disp([ H K L W ]);
     return
   end

@@ -48,34 +48,32 @@ function EXP = ResLibCal_Open(filename, EXP)
       end
     end
   end
-
+  titl = 'ResLibCal configuration';
   % converted from a string or read from a file
   if ischar(content) || isstruct(content) || isnumeric(content) 
     % read content as a structure, ResCal par/cfg, ...
     if isfield(EXP,'EXP'), EXP=EXP.EXP; end
-    EXP = ResLibCal_RescalPar2EXP(content, EXP);
+    [EXP,titl] = ResLibCal_RescalPar2EXP(content, EXP);
     % overload EXP with ResCal structure if EXP is incomplete and ResCal is
     % there
     if isfield(EXP,'ResCal') && ~isfield(EXP, 'mono') && ~isfield(EXP, 'sample') && ~isfield(EXP, 'ana')
       EXP = ResLibCal_RescalPar2EXP(EXP.ResCal, EXP);
     end
   end
-  
+
   % evaluate it to get 'EXP'
   if isstruct(EXP)
     if exist('config','var') && isstruct(config) && isfield(config, 'Title')
       titl = config.Title;
-    else
-      titl = 'ResLibCal';
     end
     % send it to the figure
     try
       ResLibCal_EXP2fig(EXP); % open figure if not yet done
       % force full update of all fields
       ResLibCal('update_d_tau_popup');
-      disp([ '% Loaded ' titl ' configuration from ' filename ]);
+      disp([ datestr(now) ': Loaded ' titl ' from ' filename ]);
     catch
-      warning([ '% Could not load ResLibCal configuration ' filename ]);
+      warning([ datestr(now) ': Could not load ResLibCal configuration ' filename ]);
       rethrow(lasterror)
     end
   end

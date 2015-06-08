@@ -101,36 +101,29 @@ if ~isempty(varargin)
     case 'file_open_instr'
       p = fileparts(which(mfilename));
       ResLibCal('open',[ p filesep 'instruments' ]);
-    case {'file_reset','reset'}
+    case 'file_reset'
       filename = fullfile(prefdir, 'ResLibCal.ini');
       if ~exist(filename, 'file')
         source = 'the factory defaults.';
       else
         source = [ 'the file ' filename ' (delete it to return to factory defaults)' ];
       end
-      options.Default     = 'No';
+      options.Default     = 'Cancel';
       options.Interpreter = 'tex';
       ButtonName = questdlg({ ...
         '{\fontsize{14}{\color{blue}Reload default configuration ?}}', ...
         'This will reset all fields of the ResLibCal window from ', ...
         source, ...
-        '{\bf Reset now ?}'}, 'ResLibCal: Reset ?', 'Yes', 'No', options);
-      if strcmp(ButtonName, 'Yes')
-        if exist(filename,'file')
-          feval(mfilename, 'create');
+        '{\bf Reset now ?}'}, 'ResLibCal: Reset ?', ...
+        'Reset', 'Cancel', 'Factory settings', ...
+        options);
+      if ~strcmp(ButtonName, 'Cancel')
+        if strcmp(ButtonName, 'Reset')
+          out = ResLibCal('reset');
         else
-          fig = ResLibCal_fig;
-          delete(fig);
-          openfig('ResLibCal');
+          out = ResLibCal('default');
         end
-        % make sure the QH,QK,QL,EN are all scalars
-        [EXP, fig] = ResLibCal_fig2EXP;
-        EXP.QH=EXP.QH(1);
-        EXP.QK=EXP.QK(1);
-        EXP.QL=EXP.QL(1);
-        EXP.W =EXP.W (1);
-        ResLibCal_EXP2fig(EXP);
-        out = ResLibCal('update');
+        out = ResLibCal('update'); % compute and update plots plot
       end
     case {'file_save','save'}
       % save configuration so that it is re-opened at next re-start
@@ -229,21 +222,42 @@ if ~isempty(varargin)
       end
       set(gcbo, 'Checked', status);
       ResLibCal_UpdateViews;
+    case {'view_close','close'}
+      delete(findall(0, 'Tag', 'ResLibCal_View1'));
+      delete(findall(0, 'Tag', 'ResLibCal_View2'));
+      delete(findall(0, 'Tag', 'ResLibCal_View3'));
+      
     % other actions (not menu items) -------------------------------------------
-    case {'create','default'}
+    case 'default'  % factory default
+      fig = ResLibCal_fig;
+      if ~isempty(fig) && ishandle(fig)
+        delete(fig);
+      end
+      f=openfig('ResLibCal');
+      out = ResLibCal('compute');
+      % close figure again if it was not there (pure batch mode)
+      if isempty(fig), delete(f); end
+    case 'reset'    % restore settings from ini file (when exists) or default
+      filename = fullfile(prefdir, 'ResLibCal.ini');
+      if exist(filename, 'file')
+        out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
+        out = ResLibCal('compute');
+      else
+        out = ResLibCal('default');
+      end
+    case 'create' % open GUI if not there yet with config file
       fig = ResLibCal_fig;
       if isempty(fig) || ~ishandle(fig)
         disp([ 'Welcome to ' ResLibCal_version ]);
         openfig('ResLibCal'); % open the main ResLibCal figure.
-        if strcmp(action, 'create')
+        if strcmp(action, 'create') % default: ignore config file
           filename = fullfile(prefdir, 'ResLibCal.ini');
           out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
-          out = ResLibCal('compute');
         end
       elseif length(fig) > 1
         delete(fig(2:end)); % remove duplicated windows
       end
-      if nargout, out = ResLibCal_fig2EXP(fig); end
+      out = ResLibCal('compute');
     case 'update' % (this is called when changing the computational method in the GUI)
       % update all opened views with new computation (widget update)
       fig = ResLibCal_fig;
@@ -266,10 +280,6 @@ if ~isempty(varargin)
       else
         out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
       end
-    case {'view_close','close'}
-      delete(findall(0, 'Tag', 'ResLibCal_View1'));
-      delete(findall(0, 'Tag', 'ResLibCal_View2'));
-      delete(findall(0, 'Tag', 'ResLibCal_View3'));
     case 'update_d_tau'
       % update d-spacing from a popup item
       ResLibCal_UpdateDTau(varargin{2:end});      % arg is popup handle

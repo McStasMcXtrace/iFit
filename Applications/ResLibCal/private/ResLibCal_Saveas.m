@@ -127,7 +127,7 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
             '% Matlab ' version ' m-file ' filename NL ...
             '% generated automatically on ' datestr(now) ' with ifit.mccode.org ResLibCal' NL...
             '% The Resolution function is indicated as the "resolution.RMS" field ' NL ...
-            '% (in lattice rlu), "resolution.RM" is in [Angs-1] in [QxQyQzE].' NL ...
+            '% (in lattice frame), "resolution.RM" is in [Angs-1] in [QxQyQzE].' NL ...
             '% If you ever edit this file manually, please modify "config" rather than "config.ResCal".' NL ...
             class2str('config', EXP) ];
       description = 'ResLibCal (Cooper-Nathans+Popovici)';
@@ -136,12 +136,12 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
     
     [fid, message]=fopen(filename,'w+');
     if fid == -1
-      warning(['Error opening file ' filename ' to save ' description ' configuration.' ]);
+      warning([ datestr(now) ': Error opening file ' filename ' to save ' description ' configuration.' ]);
       filename = [];
     else
       fprintf(fid, '%s', str);
       fclose(fid);
-      disp([ '% Saved ' description ' configuration into ' filename ]);
+      disp([ datestr(now) ': Saved ' description ' configuration into ' filename ]);
       
       % for .par and .cfg files, we must also save the other complementary file
       if nargin < 3
