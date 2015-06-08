@@ -139,7 +139,11 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     if ~all(isreal(RMS)) RMS=[]; end
     if ~isempty(RMS)
       % compute some widths in [Q1,Q2,Qz,E]
-      res.Bragg = rc_bragg(RMS); % dQ1,dQ2,dQz,V,dE in [Q1,Q2,Qz,E] frame
+      res.BraggS = rc_bragg(RMS); % dQ1,dQ2,dQz,V,dE in [Q1,Q2,Qz,E] frame
+    end
+    if ~isempty(RM)
+      % compute some widths in [Qx,Qy,Qz,E]
+      res.Bragg = rc_bragg(RM); % dQx,dQy,dQz,V,dE in [Qx,Qy,Qz,E] frame
     end
     % resolution volume and matrices
     res.R0    = R0;
