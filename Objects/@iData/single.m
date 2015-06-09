@@ -7,7 +7,7 @@ function a=single(a)
 % output: v: value of the iData Signal/Monitor (single)
 % ex:     'single(iData(rand(10)))'
 %
-% Version: $Revision$
+% Version: $Date$
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 

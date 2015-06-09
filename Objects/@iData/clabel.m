@@ -10,7 +10,7 @@ function a = clabel(a, lab)
 % output: b: object or array (iData)
 % ex:     b=clabel(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iData/label
 
 if nargin ==1

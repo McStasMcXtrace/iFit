@@ -19,7 +19,7 @@ function y=pseudovoigt(varargin)
 % output: y: model value
 % ex:     y=pseudovoigt([1 0 1 1], -10:10); or plot(pseudovoigt);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Pseudo-Voigt (1D) [' mfilename ']' ];

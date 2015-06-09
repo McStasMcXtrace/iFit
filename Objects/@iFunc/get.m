@@ -16,7 +16,7 @@ function [varargout] = get(this,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(iFunc) or get(iFunc,'Title')
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/set
 
 % EF 27/07/00 creation

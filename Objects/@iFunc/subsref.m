@@ -5,7 +5,7 @@ function b = subsref(a,S)
 %     such as a(1:2) or a.field.
 %             a{n} returns the guessed axis of rank 'n' (similar to iData).
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/subsasgn
 
 % This implementation is very general, except for a few lines

@@ -18,7 +18,7 @@ function y=bose(varargin)
 % output: y: model value
 % ex:     y=bose(300/11.605, -10:10); or y=plot(bose);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot
 
 y.Name       = [ 'Bose (1D) [' mfilename ']' ];

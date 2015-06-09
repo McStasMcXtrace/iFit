@@ -7,7 +7,7 @@ function a = exp(a)
 % output: b: object or array (iFunc)
 % ex:     b=exp(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/exp, iFunc/log, iFunc/log10, iFunc/sqrt
 
 a = iFunc_private_unary(a, 'exp');

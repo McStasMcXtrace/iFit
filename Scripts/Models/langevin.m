@@ -15,7 +15,7 @@ function y=langevin(varargin)
 % output: y: model value
 % ex:     y=langevin([1 0 1 1], -10:10); or plot(langevin);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Langevin function for magnetic polarization (1D) [' mfilename ']' ];

@@ -26,7 +26,7 @@ function [signal, ax, name, model] = feval(model, p, varargin)
 % ex:     b=feval(gauss,[1 2 3 4]); feval(gauss*lorz, [1 2 3 4, 5 6 7 8]);
 %           feval(gauss,'guess', -5:5, -abs(-5:5))
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/fit, iFunc/plot
 
 % handle input iFunc arrays

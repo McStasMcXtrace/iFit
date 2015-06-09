@@ -4,7 +4,7 @@ function b = subsasgn(a,S,val)
 %   @iFunc/subsasgn: function defines indexed assignement
 %   such as a(1:2,3) = b
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/subsref
 
 % This implementation is very general, except for a few lines

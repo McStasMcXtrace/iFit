@@ -8,7 +8,7 @@ function [ret, header] = cellstr(s)
 % input:  s: object or array (iFunc) 
 % output: ret: iFunc identification (cellstr)
 %
-% Version: $Revision$
+% Version: $Date$
 % See also  iFunc/struct, iFunc/char
 %
 

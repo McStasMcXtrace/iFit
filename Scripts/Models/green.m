@@ -15,7 +15,7 @@ function y=green(varargin)
 % output: y: model value
 % ex:     y=green([1 0 1 1], -10:10); or plot(green);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Green function (1D) [' mfilename ']' ];

@@ -8,7 +8,7 @@ function a = uplus(a)
 % output: b: object or array (iData)
 % ex:     b=uplus(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
 a = iData_private_unary(a, 'uplus');

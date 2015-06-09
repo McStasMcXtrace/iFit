@@ -16,7 +16,7 @@ function y=doseresp(varargin)
 % output: y: model value
 % ex:     y=doseresp([1 0 1 1], -10:10); or plot(doseresp)
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, sigmoid
 
 y.Name           = [ 'Dose-response (sigmoid) (1D) [' mfilename ']' ];

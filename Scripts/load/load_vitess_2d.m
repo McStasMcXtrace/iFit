@@ -5,7 +5,7 @@ function a=load_vitess_2d(a)
 % These files have 1st row and 1st column defining the axes.
 % The element (1.1) is missing (row 1 has length shorter by 1 ele
 %
-% Version: $Revision$
+% Version: $Date$
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')

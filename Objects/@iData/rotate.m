@@ -15,7 +15,7 @@ function s = rotate(a, theta)
 % output: s: rotated object (iData)
 % ex:     c=rotate(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/camproj
 
   if nargin < 2,      theta = []; end

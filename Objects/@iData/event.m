@@ -25,7 +25,7 @@ function b = event(a, dim, signal, err, monitor)
 % output: c: object or array (iData)
 % ex:     a=iData(peaks(60)); b=reshape(a, 75, 48);
 %
-% Version: $Revision: 1035 $
+% Version: $Date$
 % See also iData, iData/squeeze, iData/size, iData/permute, iData/resize, iData/meshgrid, iData/hist
 
 % first get dimensions from varargin

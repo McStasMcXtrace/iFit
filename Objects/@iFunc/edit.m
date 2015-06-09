@@ -7,7 +7,7 @@ function s = edit(s)
 % input:  s: object or array (iFunc) 
 % output: s: object or array (iFunc) 
 %
-% Version: $Revision$
+% Version: $Date$
 % See also  iFunc/struct, iFunc/char
 %
 

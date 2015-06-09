@@ -1,7 +1,7 @@
 %
 % Filename: $RCSfile: marread.m,v $
 %
-% $Revision$  $Date$
+% $Date$  $Date$
 % $Author$
 % $Tag: $
 %

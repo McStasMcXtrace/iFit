@@ -17,7 +17,7 @@ function y=voigt(varargin)
 % output: y: model value
 % ex:     y=voigt([1 0 1 1], -10:10); or plot(voigt);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Voigt (1D) [' mfilename ']' ];

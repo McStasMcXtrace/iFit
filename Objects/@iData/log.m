@@ -8,7 +8,7 @@ function a = log(a)
 % output: b: object or array (iData)
 % ex:     b=log(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/exp, iData/log, iData/log10, iData/sqrt
 
 a = iData_private_unary(a, 'log');

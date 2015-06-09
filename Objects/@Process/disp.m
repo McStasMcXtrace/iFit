@@ -6,7 +6,7 @@ function disp(pid, name)
 % input:  s: object or array (Process) 
 % ex:     'disp(Process)'
 %
-% Version: $Revision$
+% Version: $Date$
 % See also Process, Process/refresh
 
 if nargin == 2 && ~isempty(name)

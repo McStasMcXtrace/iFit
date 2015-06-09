@@ -7,7 +7,7 @@ function a = conj(a)
 % output: b: object or array (iData)
 % ex:     b=conj(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/transpose, iData/ctranspose, iData?imag, iData/real
 
 a = iData_private_unary(a, 'conj');

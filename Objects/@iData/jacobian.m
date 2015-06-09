@@ -36,7 +36,7 @@ function [b, j] = jacobian(a, varargin)
 % ex:     a=iData(peaks); x=linspace(1,2,size(a,1));
 %         g=jacobian(a, x, [],'half X');
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/del2, diff, iData/gradient, iData/interp, iData/setaxis, gradient
 
 if nargin <= 1,

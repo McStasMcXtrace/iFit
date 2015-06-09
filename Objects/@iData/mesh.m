@@ -13,7 +13,7 @@ function a = mesh(a, option)
 % output: h: graphics object handles (cell)
 % ex:     mesh(iData(peaks)); mesh(iData(flow));
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/plot
 
 if nargin ==1

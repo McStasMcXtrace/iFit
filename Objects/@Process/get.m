@@ -14,7 +14,7 @@ function [varargout] = get(this,varargin)
 % output: property: property value in 's' (cell)
 % ex :    get(Process) or get(Process,'command')
 %
-% Version: $Revision$
+% Version: $Date$
 % See also Process, Process/disp, Process/refresh, Process/exit
 
 persistent fields

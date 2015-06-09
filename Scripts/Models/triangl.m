@@ -16,7 +16,7 @@ function y=triangl(varargin)
 % output: y: model value
 % ex:     y=triangl([1 0 1 1], -10:10); or plot(triangl);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, heavisde, tophat
 
 y.Name      = [ 'Triangular function (1D) [' mfilename ']' ];

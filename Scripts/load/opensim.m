@@ -78,7 +78,7 @@ function a=load_mcstas_dat(a)
 % as well as simple XYE files
 % Some labels are also searched.
 %
-% Version: $Revision$
+% Version: $Date$
 % See also: iData/load, iLoad, save, iData/saveas
 
 % inline: load_mcstas_param

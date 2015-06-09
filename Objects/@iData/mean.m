@@ -14,7 +14,7 @@ function b = mean(a, dim)
 % output: s: mean of elements (iData/scalar)
 % ex:     c=mean(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/std, iData/combine, iData/mean
 
 if nargin < 2, dim=1; end

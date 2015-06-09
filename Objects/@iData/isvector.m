@@ -9,7 +9,7 @@ function v = isvector(s)
 % output: b: object or array (iData)
 % ex:     b=isvector(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
 %          iData/isnumeric, iData/islogical, iData/isscalar, 

@@ -16,7 +16,7 @@ function s = trapz(a,dim, varargin)
 % output: s: integral of elements (iData/scalar)
 % ex:     c=trapz(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/cumsum, iData/camproj, iData/sum
 
 if ~isa(a, 'iData')

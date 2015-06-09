@@ -19,7 +19,7 @@ function y=ff_core_shell(varargin)
 % output: y: model value (intensity)
 % ex:     y=ff_core_shell([14 11 0.1 0.1], 0:0.01:1); or plot(ff_core_shell,[14 11 0.1 0.],0:0.01:1)
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, ff_sphere
 
 y.Name      = [ 'Spherical/core shell P(q) (1D) [' mfilename ']' ];

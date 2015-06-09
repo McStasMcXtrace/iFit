@@ -8,7 +8,7 @@ function a = full(a)
 % output: b: object or array (iData)
 % ex:     b=full(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/full, iData/sparse
 
 a = iData_private_unary(a, 'full');

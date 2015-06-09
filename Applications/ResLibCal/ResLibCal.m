@@ -33,7 +33,7 @@ function out = ResLibCal(varargin)
 % The 2D and 3D views can be closed without ending the application.
 % When the main window is closed, or Exit is selected all views are closed
 %
-% Version: $Revision$ $Date$
+% Version: $Date$
 
 % Contributions:
 % ResCal5: rc_cnmat rc_popma rc_int rc_focus rc_bragg rc_bragghklz
@@ -66,7 +66,7 @@ function out = ResLibCal(varargin)
 % ResLibCal_UpdateTauPopup(handle, EXP)
 
 out = [];
-ResLibCal_version = [ mfilename ' $Revision$ ($Date$)' ];
+ResLibCal_version = [ mfilename ' ($Date$)' ];
 
 persistent fig
 

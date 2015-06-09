@@ -9,7 +9,7 @@ function a=circshift(a, dim, shift)
 %         shift: value to shift the axis with (scalar)
 % output: b: object or array (iData)
 %
-% Version: $Revision$
+% Version: $Date$
 % See also  iData/getaxis, iData/setaxis
 
 if nargin < 3

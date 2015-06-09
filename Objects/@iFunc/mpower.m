@@ -12,7 +12,7 @@ function c = mpower(a,b)
 % output: c: object or array (iFunc)
 % ex:     c=lorz^gauss; c=gauss^3
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/minus, iFunc/plus, iFunc/times, iFunc/rdivide
 
 if nargin ==1

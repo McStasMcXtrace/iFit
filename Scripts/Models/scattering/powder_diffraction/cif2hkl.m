@@ -13,6 +13,8 @@ function result = cif2hkl(varargin)
 % Output:
 %   result:    command result (char)
 %   file_out is written when mode is not '-'
+%
+% Revision: $date$
 
 % this function is called when the MeX is not present/compiled
 
