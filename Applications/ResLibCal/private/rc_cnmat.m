@@ -29,29 +29,60 @@ function [R0,RMS,vi,vf,Error]=rc_cnmat(f,q0,p,mon_flag)
 % ResCal5/AT and DFM, 29.11.95
 %
 
+% specificity: original CN only takes isotropic mosaicity
+
 pit=0.0002908882; % This is a conversion from minutes of arc to radians.
 
 %----- INPUT SPECTROMETER PARAMETERS.
 
-dm=p(1);            % monochromator d-spacing in Angs.
-da=p(2);            % analyser d-spacing in Angs.
-etam=p(3)*pit;      % monochromator mosaic (converted from mins->rads)
-etaa=p(4)*pit;      % analyser mosaic.
-etas=p(5)*pit;      % sample mosaic.
-sm=p(6);            % scattering sense of monochromator (left=+1,right=-1)
-ss=p(7);            % scattering sense of sample (left=+1,right=-1)
-sa=p(8);            % scattering sense of analyser (left=+1,right=-1)
-kfix=p(9);          % fixed momentum component in ang-1.
-fx=p(10);           % fx=1 for fixed incident and 2 for scattered wavevector.
-alf0=p(11)*pit;     % horizontal pre-monochromator collimation.
-alf1=p(12)*pit;     % horizontal pre-sample collimation.
-alf2=p(13)*pit;     % horizontal post-sample collimation.
-alf3=p(14)*pit;     % horizontal post-analyser collimation.
-bet0=p(15)*pit;     % vertical pre-monochromator collimation.
-bet1=p(16)*pit;     % vertical pre-sample collimation.
-bet2=p(17)*pit;     % vertical post-sample collimation.
-bet3=p(18)*pit;     % vertical post-analyser collimation.
-w=p(34);            % energy transfer.
+if isstruct(p)
+  EXP=p;
+  % Cooper-Nathans parameters
+  dm   = EXP.mono.d;            % monochromator d-spacing in Angs.
+  da   = EXP.ana.d;             % analyser d-spacing in Angs.
+  etam = EXP.mono.mosaic*pit;   % monochromator mosaic (converted from mins->rads)
+  etaa = EXP.ana.mosaic*pit;    % analyser mosaic.
+  etas = EXP.sample.mosaic*pit; % sample mosaic.
+  sm   = EXP.mono.dir;          % scattering sense of monochromator (left=+1,right=-1)
+  ss   = EXP.sample.dir;        % scattering sense of sample (left=+1,right=-1)
+  sa   = EXP.ana.dir;           % scattering sense of analyser (left=+1,right=-1)
+  kfix = EXP.Kfixed;            % fixed momentum component in ang-1.
+  fx   = 2*(EXP.infin==-1)+(EXP.infin==1);             % fx=1 for fixed incident and 2 for scattered wavevector.
+  alf0 = EXP.hcol(1)*pit;       % horizontal pre-monochromator collimation.
+  alf1 = EXP.hcol(2)*pit;       % horizontal pre-sample collimation.
+  alf2 = EXP.hcol(3)*pit;       % horizontal post-sample collimation.
+  alf3 = EXP.hcol(4)*pit;       % horizontal post-analyser collimation.
+  bet0 = EXP.vcol(1)*pit;       % vertical pre-monochromator collimation.
+  bet1 = EXP.vcol(2)*pit;       % vertical pre-sample collimation.
+  bet2 = EXP.vcol(3)*pit;       % vertical post-sample collimation.
+  bet3 = EXP.vcol(4)*pit;       % vertical post-analyser collimation.
+  w    = EXP.W;
+  
+  % a,b,c,alpha,beta,gamma, QH,QK,QL (from ResCal5/rc_re2rc)
+  [q2c,q0]= rc_re2rc( [ EXP.sample.a EXP.sample.b EXP.sample.c ], ...
+    [ EXP.sample.alpha EXP.sample.beta EXP.sample.gamma ] , ...
+    [ EXP.QH EXP.QK EXP.QL ] );  
+elseif isvector(p)
+  dm=p(1);            % monochromator d-spacing in Angs.
+  da=p(2);            % analyser d-spacing in Angs.
+  etam=p(3)*pit;      % monochromator mosaic (converted from mins->rads)
+  etaa=p(4)*pit;      % analyser mosaic.
+  etas=p(5)*pit;      % sample mosaic.
+  sm=p(6);            % scattering sense of monochromator (left=+1,right=-1)
+  ss=p(7);            % scattering sense of sample (left=+1,right=-1)
+  sa=p(8);            % scattering sense of analyser (left=+1,right=-1)
+  kfix=p(9);          % fixed momentum component in ang-1.
+  fx=p(10);           % fx=1 for fixed incident and 2 for scattered wavevector.
+  alf0=p(11)*pit;     % horizontal pre-monochromator collimation.
+  alf1=p(12)*pit;     % horizontal pre-sample collimation.
+  alf2=p(13)*pit;     % horizontal post-sample collimation.
+  alf3=p(14)*pit;     % horizontal post-analyser collimation.
+  bet0=p(15)*pit;     % vertical pre-monochromator collimation.
+  bet1=p(16)*pit;     % vertical pre-sample collimation.
+  bet2=p(17)*pit;     % vertical post-sample collimation.
+  bet3=p(18)*pit;     % vertical post-analyser collimation.
+  w=p(34);            % energy transfer.
+end
 
 % In addition the parameters f, energy pre-multiplier-f*w
 % where f=0.48 for meV to ang-2 - and q0 which is the wavevector

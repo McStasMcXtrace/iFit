@@ -38,70 +38,124 @@ function [R0,M,vi,vf,Error]=rc_popma(f,q0,p,mon_flag)
 pit=2*pi/(360*60); % convert arcmin -> radians=2*pi/(360*60)
 
 %----- INPUT SPECTROMETER PARAMETERS.
+if isstruct(p)
+  EXP=p;
+  % Cooper-Nathans parameters
+  dm   = EXP.mono.d;            % monochromator d-spacing in Angs.
+  da   = EXP.ana.d;             % analyser d-spacing in Angs.
+  etam = EXP.mono.mosaic*pit;   % monochromator mosaic (converted from mins->rads)
+  etamp= EXP.mono.vmosaic*pit;
+  etaa = EXP.ana.mosaic*pit;    % analyser mosaic.
+  etaap= EXP.ana.vmosaic*pit;
+  etas = EXP.sample.mosaic*pit; % sample mosaic.
+  etasp= EXP.sample.vmosaic*pit;
+  sm   = EXP.mono.dir;          % scattering sense of monochromator (left=+1,right=-1)
+  ss   = EXP.sample.dir;        % scattering sense of sample (left=+1,right=-1)
+  sa   = EXP.ana.dir;           % scattering sense of analyser (left=+1,right=-1)
+  kfix = EXP.Kfixed;            % fixed momentum component in ang-1.
+  fx   = 2*(EXP.infin==-1)+(EXP.infin==1);             % fx=1 for fixed incident and 2 for scattered wavevector.
+  alf0 = EXP.hcol(1)*pit;       % horizontal pre-monochromator collimation.
+  alf1 = EXP.hcol(2)*pit;       % horizontal pre-sample collimation.
+  alf2 = EXP.hcol(3)*pit;       % horizontal post-sample collimation.
+  alf3 = EXP.hcol(4)*pit;       % horizontal post-analyser collimation.
+  bet0 = EXP.vcol(1)*pit;       % vertical pre-monochromator collimation.
+  bet1 = EXP.vcol(2)*pit;       % vertical pre-sample collimation.
+  bet2 = EXP.vcol(3)*pit;       % vertical post-sample collimation.
+  bet3 = EXP.vcol(4)*pit;       % vertical post-analyser collimation.
+  w    = EXP.W;
+  % geometry (Popovici)
+  flag_guide=0;
+  nsou=1;                        ysrc=EXP.beam.width;     zsrc=EXP.beam.height; guide_h=0; guide_v=0;
+  nsam=1; xsam=EXP.sample.depth; ysam=EXP.sample.width;   zsam=EXP.sample.height;
+  ndet=1;                        ydet=EXP.detector.width; zdet=EXP.detector.height;
+          xmon=EXP.mono.depth;   ymon=EXP.mono.width;     zmon=EXP.mono.height;
+          xana=EXP.ana.depth;    yana=EXP.ana.width;      zana=EXP.ana.height;
+  L0=EXP.arms(1);
+  L1=EXP.arms(2);
+  L2=EXP.arms(3);
+  L3=EXP.arms(4);
+  
+  romh=1/EXP.mono.rh;
+  romv=1/EXP.mono.rv;
+  roah=1/EXP.ana.rh;
+  roav=1/EXP.ana.rv;
+  
+  % a,b,c,alpha,beta,gamma, QH,QK,QL (from ResCal5/rc_re2rc)
+  [q2c,q0]= rc_re2rc( [ EXP.sample.a EXP.sample.b EXP.sample.c ], ...
+    [ EXP.sample.alpha EXP.sample.beta EXP.sample.gamma ] , ...
+    [ EXP.QH EXP.QK EXP.QL ] );  
+elseif isvector(p)
 
-dm=p(1);            % monochromator d-spacing in Angs.
-da=p(2);            % analyser d-spacing in Angs.
-etam=p(3)*pit;      % monochromator mosaic (converted from mins->rads)
-etamp=etam;         % vertical mosaic of the monochromator.
-etaa=p(4)*pit;      % analyser mosaic.
-etaap=etaa;         % vertical mosaic spread of the analyser.
-etas=p(5)*pit;      % sample mosaic.
-etasp=etas;	    % vertical mosaic spread of the sample.
-sm=p(6);            % scattering sense of monochromator (left=+1,right=-1)
-ss=p(7);            % scattering sense of sample (left=+1,right=-1)
-sa=p(8);            % scattering sense of analyser (left=+1,right=-1)
-kfix=p(9);          % fixed momentum component in ang-1.
-fx=p(10);           % fx=1 for fixed incident and 2 for scattered wavevector.
-alf0=p(11)*pit;     % horizontal pre-monochromator collimation.
-alf1=p(12)*pit;     % horizontal pre-sample collimation.
-alf2=p(13)*pit;     % horizontal post-sample collimation.
-alf3=p(14)*pit;     % horizontal post-analyser collimation.
-bet0=p(15)*pit;     % vertical pre-monochromator collimation.
-bet1=p(16)*pit;     % vertical pre-sample collimation.
-bet2=p(17)*pit;     % vertical post-sample collimation.
-bet3=p(18)*pit;     % vertical post-analyser collimation.
-w=p(34);            % energy transfer.
+  dm=p(1);            % monochromator d-spacing in Angs.
+  da=p(2);            % analyser d-spacing in Angs.
+  etam=p(3)*pit;      % monochromator mosaic (converted from mins->rads)
+  etamp=etam;         % vertical mosaic of the monochromator.
+  etaa=p(4)*pit;      % analyser mosaic.
+  etaap=etaa;         % vertical mosaic spread of the analyser.
+  etas=p(5)*pit;      % sample mosaic.
+  etasp=etas;	    % vertical mosaic spread of the sample.
+  sm=p(6);            % scattering sense of monochromator (left=+1,right=-1)
+  ss=p(7);            % scattering sense of sample (left=+1,right=-1)
+  sa=p(8);            % scattering sense of analyser (left=+1,right=-1)
+  kfix=p(9);          % fixed momentum component in ang-1.
+  fx=p(10);           % fx=1 for fixed incident and 2 for scattered wavevector.
+  alf0=p(11)*pit;     % horizontal pre-monochromator collimation.
+  alf1=p(12)*pit;     % horizontal pre-sample collimation.
+  alf2=p(13)*pit;     % horizontal post-sample collimation.
+  alf3=p(14)*pit;     % horizontal post-analyser collimation.
+  bet0=p(15)*pit;     % vertical pre-monochromator collimation.
+  bet1=p(16)*pit;     % vertical pre-sample collimation.
+  bet2=p(17)*pit;     % vertical post-sample collimation.
+  bet3=p(18)*pit;     % vertical post-analyser collimation.
+  w=p(34);            % energy transfer.
 
-% _____________________Extra Parameters________________________________________
-offset=42;
+  % _____________________Extra Parameters________________________________________
+  offset=42;
 
-nsou=p(1+offset);                % =0 for circular source, =1 for rectangular source.
-ysrc=p(2+offset);                % width/diameter of the source (cm).
-zsrc=p(3+offset);                % height/diameter of the source (cm).
+  nsou=p(1+offset);                % =0 for circular source, =1 for rectangular source.
+  ysrc=p(2+offset);                % width/diameter of the source (cm).
+  zsrc=p(3+offset);                % height/diameter of the source (cm).
 
-flag_guide=p(4+offset);          % =0 for no guide, =1 for guide.
-guide_h=p(5+offset);             % horizontal guide divergence (mins/Angs)
-guide_v=p(6+offset);             % vertical guide divergence (mins/Angs)
+  flag_guide=p(4+offset);          % =0 for no guide, =1 for guide.
+  guide_h=p(5+offset);             % horizontal guide divergence (mins/Angs)
+  guide_v=p(6+offset);             % vertical guide divergence (mins/Angs)
 
-nsam=p(7+offset);                % =0 for cylindrical sample, =1 for cuboid sample.
-xsam=p(8+offset);                % sample depth/diameter perp. to Q (cm).
-ysam=p(9+offset);                % sample width/diameter along Q (cm). 
-zsam=p(10+offset);               % sample height (cm).
+  nsam=p(7+offset);                % =0 for cylindrical sample, =1 for cuboid sample.
+  xsam=p(8+offset);                % sample depth/diameter perp. to Q (cm).
+  ysam=p(9+offset);                % sample width/diameter along Q (cm). 
+  zsam=p(10+offset);               % sample height (cm).
 
-ndet=p(11+offset);               % =0 for circular detector, =1 for rectangular detector.
-ydet=p(12+offset);               % width/diameter of the detector (cm).
-zdet=p(13+offset);               % height/diameter of the detector (cm).
+  ndet=p(11+offset);               % =0 for circular detector, =1 for rectangular detector.
+  ydet=p(12+offset);               % width/diameter of the detector (cm).
+  zdet=p(13+offset);               % height/diameter of the detector (cm).
 
-xmon=p(14+offset);               % thickness of monochromator (cm).
-ymon=p(15+offset);               % width of monochromator (cm).
-zmon=p(16+offset);               % height of monochromator (cm).
+  xmon=p(14+offset);               % thickness of monochromator (cm).
+  ymon=p(15+offset);               % width of monochromator (cm).
+  zmon=p(16+offset);               % height of monochromator (cm).
 
-xana=p(17+offset);               % thickness of analyser (cm).
-yana=p(18+offset);               % width of analyser (cm).
-zana=p(19+offset);               % height of analyser (cm).
+  xana=p(17+offset);               % thickness of analyser (cm).
+  yana=p(18+offset);               % width of analyser (cm).
+  zana=p(19+offset);               % height of analyser (cm).
 
-L0=p(20+offset);                 % distance between source and monochromator (cm).
-L1=p(21+offset);                 % distance between monochromator and sample (cm).
-L2=p(22+offset);                 % distance between sample and analyser (cm).
-L3=p(23+offset);                 % distance between analyser and detector (cm).
+  L0=p(20+offset);                 % distance between source and monochromator (cm).
+  L1=p(21+offset);                 % distance between monochromator and sample (cm).
+  L2=p(22+offset);                 % distance between sample and analyser (cm).
+  L3=p(23+offset);                 % distance between analyser and detector (cm).
 
-% TODO: FIX all distances are in [cm]. radius in p in ResCal in [m] -> 1/100
-%       Was converted to [m-1] whereas all other distances are in [cm-1] !!
-% sm and sa introduced to compensate the signs of thetaa and thetam in some Popovici matrices
-romh=sm*p(24+offset)/100; % horizontal curvature of monochromator 1/radius (cm-1).
-romv=sm*p(25+offset)/100;    % vertical curvature of monochromator (cm-1).
-roah=sa*p(26+offset)/100; % horizontal curvature of analyser (cm-1).
-roav=sa*p(27+offset)/100;    % vertical curvature of analyser (cm-1).
+  % TODO: FIX all distances are in [cm]. radius in p in ResCal in [m] -> 1/100
+  %       Was converted to [m-1] whereas all other distances are in [cm-1] !!
+  % sm and sa introduced to compensate the signs of thetaa and thetam in some Popovici matrices
+  romh=p(24+offset)/100; % horizontal curvature of monochromator 1/radius (cm-1).
+  romv=p(25+offset)/100;    % vertical curvature of monochromator (cm-1).
+  roah=p(26+offset)/100; % horizontal curvature of analyser (cm-1).
+  roav=p(27+offset)/100;    % vertical curvature of analyser (cm-1).
+end
+
+% correct sign of curvature
+romh = romh*sm;
+romv = romv*sm;
+roah = roah*sa;
+roav = roav*sa;
 
 f16=1/16.;
 f12=1/12.;

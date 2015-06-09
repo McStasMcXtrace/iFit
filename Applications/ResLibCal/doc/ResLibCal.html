@@ -78,6 +78,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -151,18 +152,21 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">1</a>]
         code <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
-        from Brookhaven 'AFILL'. <br>
+        from Brookhaven 'AFILL'. Mosaicities are isotropic (horizontal
+        equals vertical).<br>
       </li>
       <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
         Cooper-Nathans method [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">1</a>]
         from the <a
 href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>
-        Matlab application.<br>
-      </li>
+        Matlab application. Mosaicities are isotropic (horizontal equals
+        vertical). </li>
       <li><b>Cooper-Nathans/Res3Ax</b>: simple Cooper-Nathans based on
         notes from B. Hennion in the Popovici formalism [<a
-href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].&nbsp;</li>
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
+        with correction [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>].</li>
       <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
         Cooper-Nathans method [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>]
@@ -172,19 +176,24 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
 
 
+
         The analyzer reflectivity is taken into account (with analyzer
-        thickness 'WA'). Supports sample vertical <i>and</i> horizontal
-        mosaic spreads.</li>
+        thickness 'WA'). Supports vertical <i>and</i> horizontal mosaic
+        spreads, with correction [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>].</li>
       <li><b>Popovici/ResLib</b>: the Popovici formulation of the
         resolution [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
 
 
+
         The analyzer reflectivity is also taken into account (with
-        analyzer thickness 'WA').</li>
+        analyzer thickness 'WA') and correction [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>]..</li>
       <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
         resolution [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
+
 
 
 
@@ -200,8 +209,10 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
       whereas all the other methods use the Popovici formulation [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100%5C">3</a>].
+
 
 
       The intensity estimate is given w.r.t the source, and is given in
@@ -214,6 +225,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
       e.g. -2) which are then converted to equivalent critical angles <i>0.1
 
 
+
       </i><i>m &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are
       also limited by the effective divergence set from the geometry,
       e.g. <i>atan(width or height/distance) </i>[rad]. <br>
@@ -222,19 +234,17 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
     <blockquote>The sample mosaic spread is also taken into account, as
       well as a correction for the sample orientation w.r.t. the
       incoming beam. <br>
-      In the Cooper-Nathans formalism, all mosaic spreads are isotropic
-      (monochromator, analyzer, sample), including correction [<a
-href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>],
-
-
-      <i>except</i> in the ResLib implementation which supports sample
-      vertical and horizontal mosaic spreads.<br>
+      In the legacy Cooper-Nathans formalism, all mosaic spreads are
+      isotropic (monochromator, analyzer, sample). In the
+      Cooper-Nathans/Popovici formalism, mosaicity supports separate
+      vertical and horizontal components, including correction [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>].<br>
       In the Popovici formalism, all mosaicity are taken into account
       with separate vertical and horizontal components (monochromator,
       analyzer, sample).<br>
     </blockquote>
     <br>
-    Each computation takes a few 10ms, whatever be the analytical method
+    Computation takes a few 10ms, whatever be the analytical method
     used.
     <h3><a class="mozTocH3" name="mozTocId637458"></a>Usage</h3>
     The normal use of the application is through its GUI, which is a
@@ -360,6 +370,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -442,6 +453,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>). You
         may add files in this location with your preferred
         configurations by just copying and renaming any <span
@@ -456,6 +468,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -548,6 +561,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3Ax' </span>as
+
 
     free text. <br>
     The position of the measurement is [ QH QK QL W ]:<br>
@@ -725,6 +739,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
