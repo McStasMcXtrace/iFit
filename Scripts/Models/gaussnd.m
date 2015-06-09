@@ -16,6 +16,7 @@ function y=gaussnd(varargin)
 % gaussnd(M)
 %   where M is a square matrix [n x n] builds a 'n' Dimensional.
 %   if M is non symmetric, it is made so from (M+M')/2
+% gaussnd('ResLibCal') extracts a 4D TAS resolution function from ResLibCal
 % gaussnd
 %   builds a 2D Gaussian
 %
@@ -27,8 +28,8 @@ function y=gaussnd(varargin)
 % output: y: model value
 % ex:     y=gaussnd([1 0 1 1], -10:10, -10:10); or plot(gaussnd)
 %
-% Version: $Revision: 1035 $
-% See also iFunc, iFunc/fits, iFunc/plot
+% Version: $Date$
+% See also iFunc, iFunc/fits, iFunc/plot, gauss2d, gauss
 
 y=[];
 
