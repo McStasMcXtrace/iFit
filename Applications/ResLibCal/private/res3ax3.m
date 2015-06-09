@@ -15,8 +15,11 @@ pit= pi/60/180; % This is a conversion from minutes of arc to radians.
 dm   = EXP.mono.d;            % monochromator d-spacing in Angs.
 da   = EXP.ana.d;             % analyser d-spacing in Angs.
 etam = EXP.mono.mosaic*pit;   % monochromator mosaic (converted from mins->rads)
+etamp= EXP.mono.vmosaic*pit;
 etaa = EXP.ana.mosaic*pit;    % analyser mosaic.
+etaap= EXP.ana.vmosaic*pit;
 etas = EXP.sample.mosaic*pit; % sample mosaic.
+etasp= EXP.sample.vmosaic*pit;
 sm   = EXP.mono.dir;          % scattering sense of monochromator (left=+1,right=-1)
 ss   = EXP.sample.dir;        % scattering sense of sample (left=+1,right=-1)
 sa   = EXP.ana.dir;           % scattering sense of analyser (left=+1,right=-1)
@@ -61,7 +64,7 @@ thetas=s2theta/2;
 phi=atan2((-kf*sin(s2theta)), (ki-kf*cos(s2theta)));
 
 %--------DEF-DES-MATRICES:
-F = diag(1./[etam etam etaa etaa].^2);
+F = diag(1./[etam etamp etaa etaap].^2);
 
 %------matrice-C:
 C = zeros(4,8);
@@ -111,7 +114,7 @@ N    = inv(Ninv);
 Minv = B*Ninv*B';
 % correction for sample mosaic
 Minv(2,2)=Minv(2,2)+q^2*etas^2;
-Minv(3,3)=Minv(3,3)+q^2*etas^2;
+Minv(3,3)=Minv(3,3)+q^2*etasp^2;
 M    = inv(Minv);
 
 RMS=8*log(2)*M;
@@ -129,5 +132,5 @@ R0=R0/(2*pi)^2*sqrt(det(RMS));
 % Include kf/ki part of cross section
 R0=R0*kf/ki;
 % sample mosaic S. A. Werner & R. Pynn, J. Appl. Phys. 42, 4736, (1971), eq 19
-R0=R0/sqrt((1+(q*etas)^2*RMS(3,3))*(1+(q*etas)^2*RMS(2,2)));
+R0=R0/sqrt((1+(q*etasp)^2*RMS(3,3))*(1+(q*etas)^2*RMS(2,2)));
 

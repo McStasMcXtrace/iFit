@@ -32,8 +32,8 @@ C=zeros(4,8);
 B=zeros(4,6);
 
 if ischar(EXP.method)
-  if ~isempty(strfind(EXP.method, 'cooper')) EXP.method=0; 
-  else                                       EXP.method=1; 
+  if ~isempty(strfind(lower(EXP.method), 'cooper')) EXP.method=0; 
+  else                                              EXP.method=1; 
   end
 end
 
@@ -55,7 +55,7 @@ for ind=1:len
     mono=EXP(ind).mono;
     etam = mono.mosaic*CONVERT1;
     etamv=etam;
-    if isfield(mono,'vmosaic') && (method==1 || strcmpi(method, 'Popovici'))
+    if isfield(mono,'vmosaic')
         etamv = mono.vmosaic*CONVERT1;
     end;
     ana=EXP(ind).ana;
@@ -433,10 +433,9 @@ for ind=1:len
     % [S. A. Werner & R. Pynn, J. Appl. Phys. 42, 4736, (1971), eq 19]
     if isfield(sample,'mosaic')
         etas = sample.mosaic*CONVERT1;
-        etasv= etas;
         if isfield(sample,'vmosaic')
             etasv = sample.vmosaic*CONVERT1;
-        end;
+        end
         % TODO: FIX changed RM_(4,4) and M(4,4) to M(3,3)
         R0_=R0_/sqrt((1+(q*etasv)^2*M(3,3))*(1+(q*etas)^2*M(2,2)));
         %Minv=RM_^(-1);
