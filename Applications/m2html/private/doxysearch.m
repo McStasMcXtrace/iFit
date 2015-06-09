@@ -7,7 +7,7 @@ function result = doxysearch(query,filename)
 %  See also DOXYREAD, DOXYWRITE
 
 %  Copyright (C) 2004 Guillaume Flandin <Guillaume@artefact.tk>
-%  $Revision: 1.1 $Date: 2004/05/05 14:33:55 $
+%  $Date$Date: 2004/05/05 14:33:55 $
 
 %  This program is free software; you can redistribute it and/or
 %  modify it under the terms of the GNU General Public License

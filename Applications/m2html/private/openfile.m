@@ -5,7 +5,7 @@ function fid = openfile(filename,permission)
 %  File is opened in text mode: no effect on Unix but useful on Windows.
 
 %  Copyright (C) 2004 Guillaume Flandin <Guillaume@artefact.tk>
-%  $Revision: 1.1 $Date: 2004/05/05 17:14:09 $
+%  $Date$Date: 2004/05/05 17:14:09 $
 
 [fid, errmsg] = fopen(filename,[permission 't']);
 if ~isempty(errmsg)

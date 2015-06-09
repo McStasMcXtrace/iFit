@@ -9,7 +9,7 @@ function [statlist, docinfo] = doxyread(filename)
 %  See also DOXYSEARCH, DOXYWRITE
 
 %  Copyright (C) 2003 Guillaume Flandin <Guillaume@artefact.tk>
-%  $Revision: 1.0 $Date: 2003/05/10 17:41:21 $
+%  $Date$Date: 2003/05/10 17:41:21 $
 
 %  This program is free software; you can redistribute it and/or
 %  modify it under the terms of the GNU General Public License
