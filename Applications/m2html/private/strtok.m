@@ -14,7 +14,7 @@ function [token, remainder, quotient] = strtok(string, delimiters)
 %   is same as S. 
 %
 %   Copyright 1984-2002 The MathWorks, Inc. 
-%   $Revision: 5.14 $  $Date: 2002/04/09 00:33:38 $
+%   $Date$  $Date: 2002/04/09 00:33:38 $
 
 token = []; remainder = []; quotient = string;
 

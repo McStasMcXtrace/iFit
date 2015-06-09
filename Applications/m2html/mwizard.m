@@ -11,7 +11,7 @@ function mwizard(file)
 %  See also M2HTML
 
 %  Copyright (C) 2003-2005 Guillaume Flandin <Guillaume@artefact.tk>
-%  $Revision: 0.5 $Date: 2004/05/24 20:12:17 $
+%  $Date$Date: 2004/05/24 20:12:17 $
 
 %  This program is free software; you can redistribute it and/or
 %  modify it under the terms of the GNU General Public License

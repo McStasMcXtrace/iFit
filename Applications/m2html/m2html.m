@@ -50,7 +50,7 @@ function m2html(varargin)
 %  See also MWIZARD, MDOT, TEMPLATE.
 
 %  Copyright (C) 2005 Guillaume Flandin <Guillaume@artefact.tk>
-%  $Revision: 1.5 $Date: 2005/05/01 16:15:30 $
+%  $Date$Date: 2005/05/01 16:15:30 $
 
 %  This program is free software; you can redistribute it and/or
 %  modify it under the terms of the GNU General Public License
@@ -665,7 +665,7 @@ if options.helptocxml
 	end
 	fid = openfile(curfile,'w');
 	fprintf(fid,'<?xml version=''1.0'' encoding=''ISO-8859-1'' ?>\n');
-	fprintf(fid,'<!-- $Date: %s $ -->\n\n', datestr(now,31));
+	fprintf(fid,'<!-- $Date$ -->\n\n', datestr(now,31));
 	fprintf(fid,'<toc version="1.0">\n\n');
 	fprintf(fid,['<tocitem target="%s" ',...
 		'image="$toolbox/matlab/icons/book_mat.gif">%s\n'], ...

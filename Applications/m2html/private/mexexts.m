@@ -7,7 +7,7 @@ function [ext, platform] = mexexts
 %  See also MEX, MEXEXT
 
 %  Copyright (C) 2003 Guillaume Flandin <Guillaume@artefact.tk>
-%  $Revision: 1.0 $Date: 2003/29/04 17:33:43 $
+%  $Date$Date: 2003/29/04 17:33:43 $
 
 ext = {'.mexsol' '.mexhpux' '.mexhp7' '.mexglx' '.mexa64' '.mexi64' '.mexmac' '.dll' '.mexw32' '.mexw64'};
 

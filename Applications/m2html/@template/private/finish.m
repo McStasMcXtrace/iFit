@@ -11,7 +11,7 @@ function str = finish(str,unknowns)
 %  only apply the 'keep' strategy.
 
 %  Copyright (C) 2003 Guillaume Flandin <Guillaume@artefact.tk>
-%  $Revision: 1.0 $Date: 2003/05/05 22:19:51 $
+%  $Date$Date: 2003/05/05 22:19:51 $
 
 error(nargchk(2,2,nargin));
 

@@ -10,7 +10,7 @@ function doxywrite(filename, kw, statinfo, docinfo)
 %  See also DOXYREAD
 
 %  Copyright (C) 2003 Guillaume Flandin <Guillaume@artefact.tk>
-%  $Revision: 1.0 $Date: 2003/23/10 15:52:56 $
+%  $Date$Date: 2003/23/10 15:52:56 $
 
 %  This program is free software; you can redistribute it and/or
 %  modify it under the terms of the GNU General Public License
