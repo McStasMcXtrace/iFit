@@ -8,7 +8,7 @@ function a = copyobj(a)
 % output: b: object or array (iData)
 % ex:     b=copyobj(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/uplus, iData/findobj
 
 % handle input iData arrays

@@ -19,7 +19,7 @@ function a = xlim(a, varargin)
 % output: b: object or array (iFunc)
 % ex:     b=xlim(a,'Intensity',[0 1]);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/unlock, iFunc/lock
 
 % calls subsasgn with [min max] for each parameter given

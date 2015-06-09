@@ -18,7 +18,7 @@ function str=class2str(this, data, options)
 % See also: mat2str, num2str, eval, sprintf
 %
 % Part of: Loaders utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. $Revision$
+% Author:  E. Farhi <farhi@ill.fr>. $Date$
 
 if nargin == 1
   data = this;

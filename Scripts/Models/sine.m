@@ -15,7 +15,7 @@ function y=sine(varargin)
 % output: y: model value
 % ex:     y=sine([1 0 1 1], -10:10); or plot(sine);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot
 
 y.Name           = [ 'Sine function (1D) [' mfilename ']' ];

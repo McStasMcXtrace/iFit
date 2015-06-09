@@ -10,7 +10,7 @@ function a = squeeze(a)
 % output: c: object or array (iData)
 % ex:     c=squeeze(zeros(iData,[2 1 3]));
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/size, iData/resize, iData/permute, iData/reshape
 
 d = size(a);

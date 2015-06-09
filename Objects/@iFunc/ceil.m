@@ -8,7 +8,7 @@ function a = ceil(a)
 % output: b: object or array (iFunc)
 % ex:     b=ceil(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/floor, iFunc/ceil, iFunc/round
 
 a = iFunc_private_unary(a, 'ceil');

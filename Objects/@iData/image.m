@@ -19,7 +19,7 @@ function h = image(r, g, b, option)
 % output: h: graphics object handle
 % ex:     image(iData(peaks),[],[], 'hide axes');
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/plot
 
 if nargin < 4, option = ''; end

@@ -7,7 +7,7 @@ function a = atanh(a)
 % output: b: object or array (iFunc)
 % ex:     b=atanh(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/cos, iFunc/acos, iFunc/sin, iFunc/asin, iFunc/tan, iFunc/atan
 
 a = iFunc_private_unary(a, 'atanh');

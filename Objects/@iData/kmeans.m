@@ -18,7 +18,7 @@ function [s,c] = kmeans(a, k)
 %
 % See: http://en.wikipedia.org/wiki/K-means_clustering
 %
-% Version: $Revision: 1035 $
+% Version: $Date$
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
 if nargin < 2

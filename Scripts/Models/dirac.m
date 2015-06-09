@@ -15,7 +15,7 @@ function y=dirac(varargin)
 % output: y: model value
 % ex:     y=dirac([1 0 1 1], -10:10); or plot(dirac)
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot
 
 y.Name       = [ 'Dirac (1D) [' mfilename ']' ];

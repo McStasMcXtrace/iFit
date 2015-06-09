@@ -15,7 +15,7 @@ function y=gauss(varargin)
 % output: y: model value
 % ex:     y=gauss([1 0 1 1], -10:10); or plot(gauss)
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
 
 y.Name      = [ 'Gaussian (1D) [' mfilename ']' ];

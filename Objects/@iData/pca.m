@@ -33,7 +33,7 @@ function b = pca(a, varargin)
 %
 % See: http://en.wikipedia.org/wiki/Principal_component_analysis
 %
-% Version: $Revision: 1035 $
+% Version: $Date$
 % See also iData, iData/kmeans, iData/cwt, iData/corrcoef
 
 % handle input iData arrays

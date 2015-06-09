@@ -10,7 +10,7 @@ function a = clim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=clim(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/plot, iData/ylabel
 
 % handle input iData arrays

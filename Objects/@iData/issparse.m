@@ -8,7 +8,7 @@ function a = issparse(a)
 % output: b: object or array (iData)
 % ex:     b=issparse(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
 %          iData/isnumeric, iData/islogical, iData/isscalar, 

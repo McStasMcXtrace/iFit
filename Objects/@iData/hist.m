@@ -29,7 +29,7 @@ function c=hist(a, varargin)
 % output: c: histogrammed object (iData)
 % ex:     a=iData([ ifitpath 'Data/Monitor_GV*']); b=hist(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, accumarray, hist, histc, iData/plot, sum, iData/interp, iData/event
 
 % private: histcn from % Bruno Luong: <brunoluong@yahoo.com> 25/August/2011

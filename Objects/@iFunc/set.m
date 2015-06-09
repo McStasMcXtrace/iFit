@@ -26,7 +26,7 @@ function this = set(this,varargin)
 %
 % ex      : set(iFunc,'Title','A nice Title')
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/get, iFunc/setalias, iFunc/setaxis
 
 % EF 27/07/00 creation

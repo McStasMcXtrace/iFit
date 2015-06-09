@@ -53,7 +53,7 @@ function b = smooth(a, varargin)
 % output: s: smoothed data set (iData)
 % ex:     c=smooth(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/interp
 
 % smoothn is in private

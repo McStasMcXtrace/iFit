@@ -16,7 +16,7 @@ function y=strline(varargin)
 % output: y: model value
 % ex:     y=strline([1 1], -10:10); or plot(strline);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, quadline, plane2d
 
 y.Guess     = @(x,y) [ polyfit(x(:), y(:), 1) ];

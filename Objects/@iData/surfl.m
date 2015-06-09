@@ -15,7 +15,7 @@ function h = surfl(a, option)
 % output: h: graphics object handles (cell)
 % ex:     surfl(iData(peaks)); surfl(iData(flow));
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/plot
 
 if nargin ==1

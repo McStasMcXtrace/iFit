@@ -8,7 +8,7 @@ function a = transpose(a)
 % output: b: object or array (iFunc)
 % ex:     b=transpose(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/transpose, iFunc/ctranspose, iFunc/setaxis, iFunc/getaxis
 
 if numel(a) > 1

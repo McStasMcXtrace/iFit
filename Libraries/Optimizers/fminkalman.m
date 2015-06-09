@@ -70,7 +70,7 @@ function [pars,fval,exitflag,output] = fminkalman(varargin)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008 [ukfopt, ukf]
 %
-% Version: $Revision$
+% Version: $Date$
 % See also: fminsearch, optimset
 
 % default options for optimset

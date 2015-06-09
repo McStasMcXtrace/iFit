@@ -10,7 +10,7 @@ function a = xlim(a, lims)
 % output: b: object or array (iData)
 % ex:     b=xlim(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/plot, iData/xlabel
 
 % handle input iData arrays

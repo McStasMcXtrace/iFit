@@ -15,7 +15,7 @@ function a = permute(a, order)
 % output: c: object or array (iData)
 % ex:     c=permute(iData(rand(2,3,4)),[2 3 1]);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/size, iData/reshape, iData/resize
 
 % handle iData array: use built-in permute

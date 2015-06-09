@@ -112,7 +112,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   fig = mcstas('templateDIFF','RV=0','mode=display');
 % Type <a href="matlab:doc(iData,'McStas')">doc(iData,'McStas')</a> to access the iFit/McStas Documentation.
 %
-% Version: $Revision$
+% Version: $Date$
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria

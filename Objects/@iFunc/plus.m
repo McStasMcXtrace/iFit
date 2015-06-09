@@ -18,7 +18,7 @@ function c = plus(a,b)
 % output: c: object or array (iFunc)
 % ex:     c=a+1;
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/minus, iFunc/plus, iFunc/times, iFunc/rdivide
 
 if nargin ==1

@@ -64,7 +64,7 @@ function a = iFunc(varargin)
 %         plot(x, b(p, x))
 %         b.p=p; plot(b)
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iFunc, iFunc/feval, iFunc/plot, iFunc/fit
 
 

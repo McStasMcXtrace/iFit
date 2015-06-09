@@ -91,7 +91,7 @@ function [minimum,fval,total,exitflag] = anneal(loss, parent, options)
 %    Simulated Annealing. _Science, 220_, 671-680.
 
 %   joachim.vandekerckhove@psy.kuleuven.be
-%   $Revision$  $Date$
+%   $Date$  $Date$
 
 %  Copyright (c) 2006, Joachim Vandekerckhove
 %  All rights reserved.

@@ -60,7 +60,7 @@ function [filename,format] = save(a, varargin)
 %         b=save(a, 'file', 'svg', 'axis tight');
 %         b=save(a, 'file', 'hdf data');
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/saveas, iData/load, iData/getframe, save, saveas
 
 [filename,format] = saveas(a, varargin{:});

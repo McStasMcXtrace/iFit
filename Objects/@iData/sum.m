@@ -13,7 +13,7 @@ function s = sum(a,dim)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean,
 % iData/camproj, iData/trapz, iData/cart2sph
 

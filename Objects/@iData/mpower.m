@@ -8,7 +8,7 @@ function c = mpower(a,b)
 % output: c: object or array (iData)
 % ex:     c=a^2;
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/times, iData/rdivide, iData/power
 
 if nargin == 1,

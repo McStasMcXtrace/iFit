@@ -9,7 +9,7 @@ function s = isequal(a,b)
 % output: c: logical array indicating equal objects (iData)
 % ex:     d=isequal(a,b);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/find, iData/gt, iData/lt, iData/ge, iData/le, iData/ne, iData/eq
 
 if nargin ==1

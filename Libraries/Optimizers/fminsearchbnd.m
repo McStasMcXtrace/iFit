@@ -63,7 +63,7 @@ function [pars,fval,exitflag,output] = fminsearchbnd(varargin)
 %   Method in Low Dimensions", SIAM Journal of Optimization, 9(1):
 %   p.112-147, 1998.
 %
-% Version: $Revision$
+% Version: $Date$
 % See also: fminsearch, optimset
 
 % default options for optimset

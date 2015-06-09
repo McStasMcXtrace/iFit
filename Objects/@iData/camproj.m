@@ -23,7 +23,7 @@ function s = camproj(a,dim, center)
 % output: s: projection of elements (iData 1D/scalar)
 % ex:     c=camproj(a); hist(c, 100);
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/rotate, iData/sum, iData/trapz, iData/cart2sph
 
 if ~isa(a, 'iData')

@@ -15,7 +15,7 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
 %
 % References: Slavic, NIM 112 (1973) 253 ; M. Morhac, NIM A 600 (2009) 478 
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/median, iData/mean, iData/std
 
 % inline functions: BaseLine, PeakWidth

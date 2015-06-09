@@ -13,7 +13,7 @@ function h = contour(a, option, varargin)
 % output: h: graphics object handles (cell)
 % ex:     contour(iData(peaks)); contour(iData(flow));
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/plot
 
 if nargin <=1

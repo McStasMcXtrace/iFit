@@ -27,7 +27,7 @@ function [val, lab] = getaxis(s,ax)
 %         lab: axis label (char)
 % ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'y')
 %
-% Version: $Revision$
+% Version: $Date$
 % See also iData, iData/set, iData/get, iData/getalias
 
 % EF 23/09/07 iData implementation

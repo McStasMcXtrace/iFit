@@ -8,7 +8,7 @@ function a=load_lamp_IN4_dump(a,t)
 %
 % (Quick'n'Dirty writup for IN4 data, 20080408 PW)
 %
-% Version: $Revision$
+% Version: $Date$
 % See also: iData/load, iLoad, save, iData/saveas
 
 if ~isa(a,'iData')
