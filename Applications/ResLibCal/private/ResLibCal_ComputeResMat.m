@@ -82,10 +82,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
       if EXP.ana.rv==0  || ~isfinite(EXP.ana.rv),  EXP.ana.rv=Inf; end
       if EXP.ana.rh==0  || ~isfinite(EXP.ana.rh),  EXP.ana.rh=Inf; end
     end
-    res.RMV=EXP.mono.rv;
-    res.RMH=EXP.mono.rh;
-    res.RAV=EXP.ana.rv;
-    res.RAH=EXP.ana.rh;
+    res.focus = [ EXP.mono.rv EXP.mono.rh EXP.ana.rv EXP.ana.rh ];
     
     % choice of method
     if ~isempty(strfind(EXP.method, 'rescal5'))
@@ -95,7 +92,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
         if ~isempty(strfind(EXP.method, 'cooper')), method=@rc_cnmat;
         else                                        method=@rc_popma; 
         end
-        EXP    = ResLibCal_SampleRotateS(h,k,l,EXP);
+        [EXP,x,y,z]       = ResLibCal_SampleRotateS(h,k,l,EXP);
         % p         = ResLibCal_EXP2RescalPar(EXP);
         % [Q2c,Qmag]= rc_re2rc( p(19:21), p(22:24), p(31:33) ); 
         [R0,RM]   = feval(method,f,0,EXP,0);
@@ -108,7 +105,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
         if ~isempty(strfind(EXP.method, 'cooper')), method=@res3ax3;
         else                                        return; % no Popovici from J Ollivier
         end
-        EXP    = ResLibCal_SampleRotateS(h,k,l,EXP);
+        [EXP,x,y,z]       = ResLibCal_SampleRotateS(h,k,l,EXP);
         [R0,RM]   = feval(method,h,k,l,w, EXP);
         RMS       = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
       else
@@ -118,7 +115,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
       if exist('Rescal_AFILL') == 2
         % This method is 100% equivalent to ResCal5/Cooper-Nathans
         method    = @Rescal_AFILL; 
-        EXP    = ResLibCal_SampleRotateS(h,k,l,EXP);
+        [EXP,x,y,z]       = ResLibCal_SampleRotateS(h,k,l,EXP);
         [R0,RM]   = feval(method,h,k,l,w, EXP);
         RMS       = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
       else
@@ -129,7 +126,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
       % depends: ResMatS, CleanArgs, StandardSystem
       %          modvec, scalar, ResMat, GetLattice, star, GetTau
       if exist('ResMatS') == 2
-        [R0, RMS, RM] = ResMatS(h,k,l,w, EXP);
+        [R0, RMS, RM,x,y,z] = ResMatS(h,k,l,w, EXP);
       else
         disp([mfilename ': ResLib 3.4/ResMatS is not available' ]);
       end
@@ -150,6 +147,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     res.RM    = RM;  % M in [Qx,Qy,Qz,E] frame
     res.RMS   = RMS; % M in [Q1,Q2,Qz,E] frame
     res.HKLE  = [ h k l w ];
+    res.vectors=[ x y z ];
     res.method= method_orig;
     [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP);
     

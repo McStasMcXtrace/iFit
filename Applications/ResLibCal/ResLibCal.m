@@ -70,12 +70,20 @@ ResLibCal_version = [ mfilename ' ($Date$)' ];
 
 persistent fig
 
+if nargin == 0
+  % nargin == 0
+
+  % open or create the main GUI
+  feval(mfilename, 'create'); % load last configuration
+  out = ResLibCal_Compute;
+  out = ResLibCal_ViewResolution(out,2);  % open/raise View Res2
+  out = ResLibCal_UpdateViews(out); % when they exist
+end
 % menu actions:
-if ~isempty(varargin)
+while numel(varargin) > 0
   if ishandle(varargin{1})
     varargin = [ {'update_handle'} varargin ];
   end
-
   if ischar(varargin{1})
     % check if the application window exists, else open it
 %    fig=findall(0, 'Tag','ResLibCal');
@@ -94,10 +102,11 @@ if ~isempty(varargin)
     case {'file_open','open'}
       [EXP, fig] = ResLibCal_fig2EXP;
       if isfield(EXP,'EXP'), EXP = EXP.EXP; end
-      if length(varargin) < 1, varargin{2} = ''; end
-      if length(varargin) < 2, varargin{3} = EXP; end
-      out = ResLibCal_Open(varargin{2:end});  % (filename, EXP)
+      if length(varargin) <= 1, varargin{2} = ''; end
+      if length(varargin) <= 2, varargin{3} = EXP; end
+      out = ResLibCal_Open(varargin{2:3});  % (filename, EXP)
       out = ResLibCal('update');
+      varargin(2:3) = [];
     case 'file_open_instr'
       p = fileparts(which(mfilename));
       ResLibCal('open',[ p filesep 'instruments' ]);
@@ -130,7 +139,7 @@ if ~isempty(varargin)
       ResLibCal_Save; % (filename=prefdir)
     case {'file_saveas','saveas'}
       % save configuration
-      ResLibCal_Saveas(varargin{2:end}); % (filename, EXP)
+      ResLibCal_Saveas(out); % (filename, EXP)
     case {'file_print','print'}
       fig = ResLibCal_fig;
       printdlg(fig);
@@ -164,15 +173,15 @@ if ~isempty(varargin)
         if ishandle(fig), delete(fig); end
       end
     case {'view_resolution2','view2'}
-      if length(varargin) > 1, v=varargin{2:end}; else v=[]; end
+      if length(varargin) > 1, v=varargin{2}; varargin(2) = []; else v=[]; end
       out = ResLibCal_ViewResolution(v,2);  % open/raise View Res2
       out = ResLibCal_UpdateViews(out);
     case {'view_resolution3','view3'}
-      if length(varargin) > 1, v=varargin{2:end}; else v=[]; end
+      if length(varargin) > 1, v=varargin{2}; varargin(2) = []; else v=[]; end
       out = ResLibCal_ViewResolution(v,3);  % open/raise View Res2
       out = ResLibCal_UpdateViews(out);
     case {'view_tas','geometry','tas'}
-      if length(varargin) > 1, v=varargin{2:end}; else v=[]; end
+      if length(varargin) > 1, v=varargin{2}; varargin(2) = []; else v=[]; end
       out = ResLibCal_ViewResolution(v,1);  % open/raise View TAS
       out = ResLibCal_UpdateViews(out);
     case 'help_content'
@@ -200,7 +209,12 @@ if ~isempty(varargin)
         'About: ResLibCal', ...
         'custom',cdata,jet,CreateMode);
     case 'view_update'
-      out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
+      if numel(varargin) > 1 && isstruct(varargin{2})
+        out = ResLibCal_Compute(varargin{2}); % arg can be an EXP
+        varargin(2) = [];
+      else
+        out = ResLibCal_Compute;
+      end
       ResLibCal_ViewResolution(out,2); % if not opened, open at least the 2D view
       ResLibCal_UpdateViews(out);
     case 'view_autoupdate'
@@ -279,17 +293,24 @@ if ~isempty(varargin)
         out = ResLibCal_Compute(out);
         ResLibCal_UpdateViews(out); % when they exist
       else
-        out = ResLibCal_Compute(varargin{2:end}); % arg can be an EXP
+        if numel(varargin) > 1 && isstruct(varargin{2})
+          out = ResLibCal_Compute(varargin{2}); % arg can be an EXP
+          varargin(2) = [];
+        else
+          out = ResLibCal_Compute;
+        end
       end
     case 'update_d_tau'
       % update d-spacing from a popup item
-      ResLibCal_UpdateDTau(varargin{2:end});      % arg is popup handle
+      ResLibCal_UpdateDTau(varargin{2});      % arg is popup handle
+      varargin(2) = [];
     case 'update_d_tau_popup'
       % update the mono-ana popup from the DM/DA when value is close
       ResLibCal_UpdateTauPopup;
     case 'update_ekl'
       % update E, K, lambda
-      ResLibCal_UpdateEKLfixed(varargin{2:end});  % arg is edit box handle
+      ResLibCal_UpdateEKLfixed(varargin{2});  % arg is edit box handle
+      varargin(2) = [];
     case 'update_handle'
       % handle uitable/popup/menu and other updates from widget CallBack
       if length(varargin) < 2, return; end % requires handle as arg
@@ -306,6 +327,7 @@ if ~isempty(varargin)
         else
           out = feval(mfilename, 'update');
         end
+        varargin(3)=[];
       elseif strcmp(get(h,'Type'), 'uitable')
         if any(strcmp(tag,{'EXP_mono_tau_popup','EXP_ana_tau_popup'}))
           ResLibCal_UpdateDTau(h);
@@ -317,31 +339,36 @@ if ~isempty(varargin)
       elseif any(strcmp(tag,{'EXP_mono_d','EXP_ana_d'}))
         ResLibCal_UpdateTauPopup;
       end
+      varargin(2)=[];
       % update computation and plots
       feval(mfilename, 'update');
     otherwise
-      try
-        ResLibCal('create');
-        out = ResLibCal_Open(action, varargin{2:end}); % load info
-        ResLibCal_EXP2fig(out);                        % put it into the main GUI
-        out = ResLibCal('compute');                    % compute the resolution
-        ResLibCal_UpdateViews; % update views when they exist
-      catch
-        disp([ mfilename ': Unknown action ' action ]);
-        out = [];
+      if numel(varargin) > 1 && isstruct(varargin{2})
+        out = varargin{2};
+        varargin(2)=[];
       end
-    end
+      out = ResLibCal_Open(action, out); % update 'out/EXP' from file
+      ResLibCal_EXP2fig(out);                        % put it into the main GUI
+      out = ResLibCal_Compute(out);                    % compute the resolution
+      ResLibCal_UpdateViews(out); % update views when they exist
+    end % switch (action)
+    varargin(1) = [];
     % end if varargin is char
-
-  elseif nargin >=1
-    if isstruct(varargin{1})  % an EXP structure ?
-      EXP = varargin{1};
-      varargin(1)=[];
-      fig = [];
-    else
-      fig = ResLibCal_fig;
-      [EXP] = ResLibCal_fig2EXP(fig);
+  elseif isstruct(varagin{1})
+    EXP = varargin{1};
+    if isfield(EXP,'EXP'),
+      out = EXP; EXP=out.EXP;
     end
+    varargin(1) = [];
+  elseif numel(varargin) >= 4 && isnumeric(varargin{1}) && isnumeric(varargin{2}) ...
+    && isnumeric(varargin{3}) && isnumeric(varargin{4}) 
+    
+    % get current config
+    fig = ResLibCal_fig;
+    if ~isempty(fig)
+      EXP = ResLibCal_fig2EXP(fig);
+    end
+
     if isfield(EXP,'EXP'),
       out = EXP; EXP=out.EXP;
     end
@@ -378,15 +405,8 @@ if ~isempty(varargin)
     out = ResLibCal_Compute(EXP);
     if ~isempty(fig), ResLibCal_UpdateViews(out); end % when they exist
   end
-  % end nargin > 0
-else
-  % nargin == 0
-
-  % open or create the main GUI
-  feval(mfilename, 'create'); % load last configuration
-  out = ResLibCal_Compute;
-  out = ResLibCal_ViewResolution(out,2);  % open/raise View Res2
-  out = ResLibCal_UpdateViews(out); % when they exist
+  % end while nargin > 0
+  
 end
 % end ResLibCal main
 
