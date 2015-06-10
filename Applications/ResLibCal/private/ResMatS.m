@@ -1,4 +1,4 @@
-function [R0,RMS, RM]=ResMatS(H,K,L,W,EXP)
+function [R0,RMS, RM, x, y, z]=ResMatS(H,K,L,W,EXP)
 %===================================================================================
 %  function [R0,RMS]=ResMatS(H,K,L,W,EXP)
 %  ResLib v.3.4

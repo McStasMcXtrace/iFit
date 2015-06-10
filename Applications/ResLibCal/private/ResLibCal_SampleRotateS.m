@@ -1,4 +1,4 @@
-function EXP=ResLibCal_SampleRotateS(H,K,L,EXP)
+function [EXP,x,y,z]=ResLibCal_SampleRotateS(H,K,L,EXP)
 % EXP=ResLibCal_SampleRotateS(H,K,L,EXP): rotate the sample.shape in Q1 Q2 frame
 %
 

@@ -49,7 +49,7 @@ else
   unit ='Angs'; Q1='Qx'; Q2='Qy';
   Bragg = resolution.Bragg;
 end
-frame = [ '[' Q1 ',' Q2 ',Qy,Qz,E]' ]; 
+frame = [ '[' Q1 ',' Q2 ',Qz,E]' ]; 
 
 ResVol=(2*pi)^2/sqrt(det(NP));
 
