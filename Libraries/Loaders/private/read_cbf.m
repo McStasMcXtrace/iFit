@@ -145,6 +145,7 @@ end_of_header_pos = ...
   
 if (length(end_of_header_pos) < 1)
     cbf_error(filename,'no header end signature found');
+    frame = [];
     return;
 end
 if (debug_level >= 2)
@@ -318,7 +319,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Date$  $Date$
+% $Date$  $Date: Tue Jun 9 16:10:28 2015 +0200$
 % $Author$
 % $Tag: $
 %
@@ -393,7 +394,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Date$  $Date$
+% $Date$  $Date: Tue Jun 9 16:10:28 2015 +0200$
 % $Author$
 % $Tag: $
 %
@@ -567,7 +568,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Date$  $Date$
+% $Date$  $Date: Tue Jun 9 16:10:28 2015 +0200$
 % $Author$
 % $Tag: $
 %

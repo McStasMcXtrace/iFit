@@ -82,6 +82,12 @@ while(test)
     info.Dimensions=fread(fid,7,'uint16')'; % dim = [ number of dimensions x,y,z,t,c1,c2,c3];
 	
     if(swaptemp(1)<1||swaptemp(1)>7), bswap=true; fclose(fid); else test=false; end
+    
+    if info.SizeofHdr > info.Filesize || info.Extents > info.Filesize
+      fprintf([ mfilename ': wrong file hdr extent %i %i\n' ], info.SizeofHdr, info.Extents);
+      info = [];
+      return
+    end
 end
 info.headerbswap=bswap;
 info.IntentP1=fread(fid,1,'float');

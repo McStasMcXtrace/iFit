@@ -21,7 +21,11 @@ for index=1:length(header)
   end
 end
 
-s.Signal = data;
+if ~isempty(data)
+  s.Signal = data;
+else 
+  s = [];
+end
 
 %% Reading ESRF header files: .ehf / .edf files.
 %%
