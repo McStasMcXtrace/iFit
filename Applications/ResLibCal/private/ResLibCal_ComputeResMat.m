@@ -94,7 +94,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
         end
         [EXP,x,y,z]       = ResLibCal_SampleRotateS(h,k,l,EXP);
         % p         = ResLibCal_EXP2RescalPar(EXP);
-        % [Q2c,Qmag]= rc_re2rc( p(19:21), p(22:24), p(31:33) ); 
+        % [Q2c,Qmag]= rc_re2rc( p(19:21), p(22:24), p(31:33) ); ([abc],[alpha beta gamma], [hklw]) 
         [R0,RM]   = feval(method,f,0,EXP,0);
         RMS       = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
       else
