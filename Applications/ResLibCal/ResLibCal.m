@@ -354,7 +354,7 @@ while numel(varargin) > 0
     end % switch (action)
     varargin(1) = [];
     % end if varargin is char
-  elseif isstruct(varagin{1})
+  elseif isstruct(varargin{1})
     EXP = varargin{1};
     if isfield(EXP,'EXP'),
       out = EXP; EXP=out.EXP;
