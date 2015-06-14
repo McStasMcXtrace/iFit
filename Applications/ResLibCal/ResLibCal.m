@@ -80,7 +80,7 @@ if nargin == 0
   out = ResLibCal_UpdateViews(out); % when they exist
 end
 % menu actions:
-while numel(varargin) > 0
+while ~isempty(varargin)
   if ishandle(varargin{1})
     varargin = [ {'update_handle'} varargin ];
   end
@@ -248,14 +248,14 @@ while numel(varargin) > 0
         delete(fig);
       end
       f=openfig('ResLibCal');
-      out = ResLibCal('compute');
+      out = ResLibCal_Compute;
       % close figure again if it was not there (pure batch mode)
       if isempty(fig), delete(f); end
     case 'reset'    % restore settings from ini file (when exists) or default
       filename = fullfile(prefdir, 'ResLibCal.ini');
       if exist(filename, 'file')
         out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
-        out = ResLibCal('compute');
+        out = ResLibCal_Compute;
       else
         out = ResLibCal('default');
       end
@@ -271,7 +271,7 @@ while numel(varargin) > 0
       elseif length(fig) > 1
         delete(fig(2:end)); % remove duplicated windows
       end
-      out = ResLibCal('compute');
+      out = ResLibCal_Compute;
     case 'update' % (this is called when changing the computational method in the GUI)
       % update all opened views with new computation (widget update)
       fig = ResLibCal_fig;
@@ -300,6 +300,8 @@ while numel(varargin) > 0
           out = ResLibCal_Compute;
         end
       end
+    case 'cloud'
+      out = ResLibCal_AxesResMat;
     case 'update_d_tau'
       % update d-spacing from a popup item
       ResLibCal_UpdateDTau(varargin{2});      % arg is popup handle
@@ -402,12 +404,14 @@ while numel(varargin) > 0
       end
       varargin(1)=[];
     end
-    out = ResLibCal_Compute(EXP);
+    if isempty(varargin)
+      out = ResLibCal_Compute(EXP);
+    end
     if ~isempty(fig), ResLibCal_UpdateViews(out); end % when they exist
-  end
-  % end while nargin > 0
+  end % if type(varargin)
   
-end
+  
+end % end while nargin > 0
 % end ResLibCal main
 
 % ==============================================================================
