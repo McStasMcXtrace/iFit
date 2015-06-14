@@ -1,4 +1,4 @@
-function ax = ResLibCal_AxesResMat(out)
+function out = ResLibCal_AxesResMat
 % ResLibCal_AxesResMat: creates an axis system of Monte-Carlo points
 %   which represent the resolution function
 %
@@ -6,25 +6,39 @@ function ax = ResLibCal_AxesResMat(out)
 %        it from the main window.
 %
 % Returns:
-%   ax: 4D axes as { H,K,L,W }
+%   out: full output from ResLibCal, with resolution 
+%        and 4D axes as { H,K,L,W } Monte-Carlo cloud in out.resolution
 
 % insprired from ResCal5/mc_conv
 
 ax=[];
-out=ResLibCal(H,K,L,W); % <<< we enter here, and specify the coordinate for scan points
-
-EXP = out.EXP;
+out        = ResLibCal_Compute;
+EXP        = out.EXP;
 resolution = out.resolution;
+
+% handle case with vector of HKLE locations
+if iscell(out.resolution)
+  for index=1:numel(out.resolution)
+    out.resolution{index}.cloud = ResLibCal_AxesResMatSingle(out, EXP, out.resolution{index});
+  end
+else
+  out.resolution.cloud = ResLibCal_AxesResMatSingle(out, EXP, resolution);
+end
+
+% ==============================================================================
+function ax = ResLibCal_AxesResMatSingle(out, EXP, resolution)
+% compute a Monte-Carlo cloud for a single HKLE location, using the resolution function
+
 % resolution.HKLE is the location of the scan step where the convolution must be evaluated
 
 %----- Calculate Q2c matrix
 [Q2c,Qmag]= rc_re2rc( [ EXP.sample.a EXP.sample.b EXP.sample.c ], ...
   [ EXP.sample.alpha EXP.sample.beta EXP.sample.gamma ] , ...
-  resolution.HKLE(1:3) );
+  resolution.HKLE(1:3)' );
 
 %----- Now work out transformations
-A1=EXP.orient1;
-A2=EXP.orient2;
+A1=EXP.orient1(:);
+A2=EXP.orient2(:);
 
 V1=Q2c*A1;
 V2=Q2c*A2;
@@ -43,7 +57,7 @@ U=[V1';V2';V3'];
 S=U*Q2c;  % This is used to bring the CN matrix into a defined frame.
 
 %----- Q vector in cartesian coordinates
-Qcart=Q2c*resolution.HKLE(1:3);
+Qcart=Q2c*resolution.HKLE(1:3)';
 Qmag=sqrt(sum(Qcart.*Qcart));
 
 %----- Work out angle of Q wrt to V1, V2
