@@ -86,7 +86,39 @@ else
       % this is where specific class structure is taken into account
       cmd=b.Command;
       d = get(b, 'Signal');
-      d(s.subs{:}) = val;
+      sm=getalias(b,'Monitor');
+      if ~isnumeric(sm), sm=1; else sm=sm(end); end
+      d(s.subs{:}) = val*sm;
+      % extend axes and monitor if any index is larger than 'end'
+      if isvector(b) == 1
+        % extend 'x'
+        x = getaxis(b,1);
+        step = mean(diff(x));
+        new  = length(d) - length(x);
+        if new > 0
+          x = [ x x(end)+step*(1:new) ];
+        end
+        setaxis(b, 1, x);
+        % extend Error
+        if ~strcmp(getalias(b,'Error'), 'sqrt(this.Signal)')
+           se = getalias(b,'Error');
+           if ~isnumeric(se) || ~isscalar(se)
+             se = get(b,'Error');
+           end
+           se = [ se se(end).*ones(1,new) ];
+           iData_setalias(b,'Error',se);
+        end
+        % extend Monitor
+        if ~isnumeric(sm) || length(sm) > 1
+          sm = getalias(b,'Monitor');
+          if ~isnumeric(sm) || ~isscalar(sm)
+            sm = get(b,'Monitor');
+          end
+          sm = [ sm sm(end).*ones(1,new) ];
+          iData_setalias(b,'Monitor',sm);
+        end
+
+      end
       b = iData_setalias(b, 'Signal', d);
       if isempty(val) % remove columns/rows in data: Update Error, Monitor and Axes
         for index=1:ndims(b)
