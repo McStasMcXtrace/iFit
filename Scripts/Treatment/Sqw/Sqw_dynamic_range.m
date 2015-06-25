@@ -2,6 +2,8 @@ function sqw = Sqw_dynamic_range(s, Ei, angles)
 % Sqw_dynamic_range(s,Ei): crop the S(|q|,w) to the available dynamic range
 %   for given incident neutron energy.
 %
+%  The S(q,w) is a dynamic structure factor aka scattering function.
+%
 % The dynamic range is defined from the momwntum and energy conservation laws:
 %  Ef         = Ei - w                                is positive
 %  cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)  is within [-1:1]

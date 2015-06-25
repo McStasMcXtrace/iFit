@@ -1,27 +1,33 @@
 function sigma = Sqw_total_xs(s, Ei)
   % Sqw_total_xs(s,Ei): compute the total scattering cross section for
   %   incoming neutron energy. The S(|q|,w) should be the non-classical
-  %   dynamic structure factor. Such data sets are obtained from e.g.
-  %   xray and neutron scattering experiments on isotropic density materials
-  %   (liquids, powders, amorphous systems). Data sets from analytical models
-  %   and molecular dynamics simulations must be symmetrised in energy,
-  %   and the detailed balance must be applied to take into account the
-  %   material temperature on the inelastic part.
+  %   dynamic structure factor. 
+  %
+  %   Such data sets are obtained from e.g. xray and neutron scattering 
+  %   experiments on isotropic density materials (liquids, powders, amorphous
+  %   systems). 
+  %
+  %   Data sets from analytical models and molecular dynamics simulations must 
+  %   be symmetrised in energy, and the detailed balance must be applied to 
+  %   take into account the material temperature on the inelastic part.
+  %
+  %   The S(q,w) is a dynamic structure factor aka scattering function.
   %
   %   The incident neutron energy is given in [meV], and may be computed:
-  %     Ei = 2.0721*Ki^2 = 81.8042/lambda^2
+  %     Ei = 2.0721*Ki^2 = 81.8042/lambda^2 with Ki in [Angs-1] and lambda in [Angs]
   %     
   %   The S(|q|,w) is first restricted to the achievable dynamic range:
   %     Ef         = Ei - w                                is positive
   %     cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)  is within [-1:1]
   %   and then integrated as XS = 1/2Ki^2 \int q S(q,w) dq dw
   %
-  %   This value must then be multiplied by the tabulated cross-section
+  %   The computed value must then be multiplied by the tabulated cross-section
   %   from e.g. Sears, Neut. News 3 (1992) 26.
   %
   % A classical S(|q|,w) obeys S(|q|,w) = S(|q|,-w) and is usually given
   % on the positive energy side (w>0).
-  % The non classical S(q,w), needed by this function, can be obtained from e.g:
+  % The non classical S(q,w), needed by this function, can be obtained from a 
+  % classical S(q,w) (which is symmetric in energy) with e.g.:
   %   extend to +/- energy range
   %     s = Sqw_symmetrize(s); 
   %   apply detailed balance (Bose factor). Omit T if you do not know it.

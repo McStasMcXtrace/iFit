@@ -2,6 +2,8 @@ function s = Sqw_Bosify(s, T)
 % Sqw_Bosify: apply Bose factor (detailed balance) to a classical data set.
 %   The initial data set should obey S(q,w) = S(q,-w), i.e. be 'classical'.
 %
+%  The S(q,w) is a dynamic structure factor aka scattering function.
+%
 % input:
 %   s: Sqw data set (classical, symmetric in energy, no T Bose factor)
 %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
@@ -81,5 +83,5 @@ function s = Sqw_Bosify(s, T)
   n         = hw_kT./(1-exp(-hw_kT));  % Bose factor (true), also satisfies detailed balance = w*(1+n(w))
   n(find(s{1}==0) = 1;
   s         = s .* n;  % apply detailed balance with Bose
-  s.Temperature = T;
-  s.classical   = 0;
+  setalias(s, 'Temperature', T);
+  setalias(s, 'classical', 0);

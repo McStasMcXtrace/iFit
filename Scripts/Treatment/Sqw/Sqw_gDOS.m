@@ -1,6 +1,7 @@
-function s = Sqw_deBosify(s, T)
-% Sqw_deBosify: remove Bose factor (detailed balance) from an 'experimental' data set.
-%  In principle the resulting data set is 'classical' that is S(q,w) = S(q,-w)
+function g = Sqw_gDOS(s,T)
+% Sqw_gDOS: compute the generalised density of states (gDOS)
+%  The gDOS is an approximation of the vibrational spectra (DOS).
+%  This routine should be applied on an incoherent dynamic S(q,w) data set.
 %
 %  The S(q,w) is a dynamic structure factor aka scattering function.
 %
@@ -15,25 +16,24 @@ function s = Sqw_deBosify(s, T)
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    omega < 0, neutron gains energy, anti-Stokes
 %
-%  Bose factor: n(w) = 1./(exp(w*11.605/T) -1) ~ exp(-w*11.605/T)
-%               w in [meV], T in [K]
+% references: Price J. et al, Non Cryst Sol 92 (1987) 153
+%             Bellisent-Funel et al, J. Mol. Struct. 250 (1991) 213
 %
-% Example: s = Sqw_deBosify(s, 300);
-%
-% See also: Sqw_Bosify, Sqw_symmetrize, Sqw_dynamic_range, Sqw_total_xs
+% Example: s = Sqw_gDOS(s);
+
 
   if nargin == 1, T = []; end
+  g = [];
 
   % handle array of objects
   if numel(s) > 1
-    sqw = [];
+    g = [];
     for index=1:numel(s)
-      sqw = [ sqw feval(mfilename, s(index), T) ];
+      g = [ g feval(mfilename, s(index), T) ];
     end
-    s = sqw;
     return
   end
-
+  
   % check if the data set is Sqw (2D)
   w_present=0;
   q_present=0;
@@ -57,17 +57,34 @@ function s = Sqw_deBosify(s, T)
   % test if classical
   if ~isempty(findfield(s, 'classical'))
     if s.classical == 1
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to already be classical. The detailed balance removal may be wrong.' ]);
+      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical. The gDOS computation may be wrong. Apply Sqw_Bosify first.' ]);
     end
   end
-
+  
   % check if we need to transpose the S(q,w)
   if w_present==2 && q_present==1
     s = transpose(s);
   end
   
-  % get symmetric from experimental data
-  s = Sqw_Bosify(s, -T);
-  setalias(s, 'Temperature', T);
-  setalias(s, 'classical', 1);
+  w = s{1};
+  q = s{2};
+  kT= T/11.6045;
+
+  g = s.*(w.*(1 - exp(-w/kT)))./q.^2;  % from Price 1987
   
+  % reset axes
+  g{1}=w; g{2}=q;
+  xlabel(g, xlabel(s));
+  ylabel(g, ylabel(s));
+  title(g,'gDOS');
+  if isempty(g.Label), g.Label='gDOS'; end
+  
+  % this is the weighting for valid data
+  g(g <= 0) = 0; g(~isfinite(g)) = 0;
+
+  % compute integral
+  %g = trapz(g,2); % on energy
+  %g = g./trapz(g);
+  setalias(g, 'Temperature', T);
+  
+
