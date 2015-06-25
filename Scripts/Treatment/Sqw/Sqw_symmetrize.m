@@ -4,6 +4,8 @@ function s=Sqw_symmetrize(s)
 %  is thus symmetric in energy:
 %     S(q,w) = S(q,-w)
 %
+%  The S(q,w) is a dynamic structure factor aka scattering function.
+%
 %  The incoming data set should NOT contain the Bose factor, that is it
 %    should be 'classical'.
 %  To obtain a 'classical' S(q,w) from an experiment, use first:
