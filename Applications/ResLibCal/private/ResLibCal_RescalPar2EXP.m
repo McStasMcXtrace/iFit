@@ -14,9 +14,10 @@ if nargin < 1, return; end
 if nargin < 2, EXP = []; end
 if ischar(str)
   % remove any 'ResCal:' keyword
+  index = strfind(lower(str), 'rescal:');
+  str(index:(index+6))=[];
   index = strfind(lower(str), 'rescal');
   str(index:(index+5))=[];
-  str(str == ':') = [];
   content = str2struct(str);  % do we directly import an EXP from char ?
 else 
   content = str;
@@ -46,7 +47,7 @@ end
   % is this a ResCal structure ?
   if any(isfield(content, labels)), str = content; end
   if isempty(str), return; end
-  
+
   % convert string to structure
   if ischar(str)
     % we search for <tokens>=<value> in the string
@@ -66,7 +67,7 @@ end
     end
   end
 
-  if ischar(str) && strfind(str, 'Title (max.60 characters)')
+  if ischar(str) && ~isempty(strfind(str, 'Title (max.60 characters)'))
     % legacy ResTrax configuration file. Very partil set of parameters.
     lines = textscan(str, '%s', 'delimiter', '\n'); % split all lines
     lines = lines{1};
