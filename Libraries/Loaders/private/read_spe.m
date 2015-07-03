@@ -1,7 +1,7 @@
 %
 % Filename: $RCSfile: speread.m,v $
 %
-% $Date$  $Date$
+% $Date$  $Date: Tue Jun 9 16:10:28 2015 +0200$
 % $Author$
 % $Tag: $
 %
@@ -98,8 +98,8 @@ end
 
 % some sanity checks
 if (fdat(4099:4100) ~= [ 85; 85 ])
-    error('%s: no header end signature found',filename);
-    return;
+    fprintf(1, '%s:%s: WARNING: no header end signature found\n', mfilename,filename);
+    % return;
 end
 
 
@@ -165,11 +165,13 @@ frame.header{end+1} = sprintf('NumFrames %.0f',num_frames);
 file_header_ver = double(typecast(fdat(1993:1996),'single'));
 frame.header{end+1} = sprintf('file_header_ver %.2f',file_header_ver);
 
+frame.header = str2struct(frame.header);
+
 
 % extract the data frames
 data_bytes = bytes_per_pixel * xdim * ydim * num_frames;
 if (fcount-4100 ~= data_bytes)
-    error('%d bytes expected, %d found',data_bytes,fcount-4100);
+    fprintf(1, '%s:%s: WARNING: %d bytes expected, %d found',mfilename, filename, data_bytes,fcount-4100);
 end
 frame.data = reshape(typecast(fdat(4101:end),cast_type),...
     xdim, ydim, num_frames );
