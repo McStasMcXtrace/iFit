@@ -20,10 +20,10 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
     [filename, pathname] = uiputfile( ...
          {'*.m',  'M-files (*.m)'; ...
           '*.ini','ResLibCal configuration (*.ini)' ; ...
-          '*.dat','ResCal legacy Cooper-Nathans (only numbers, *.dat)' ; ...
+          '*.dat','ResCal  legacy Cooper-Nathans (only numbers, *.dat)' ; ...
           '*.par','ResCal5 Cooper-Nathans (with comments, *.par)' ; ...
           '*.cfg','ResCal5 Popovici configuration (with comments, *.cfg)' ; ...
-          '*.res','Cooper-Nathans+Popovici named list (*.res)' ; ...
+          '*.res','ResTrax Cooper-Nathans+Popovici named list (*.res)' ; ...
           '*.rtx','ResTrax legacy (*.rtx)' ; ...
           '*.*',  'All Files (*.*)'}, ...
           'Save ResLibCal configuration as ...');
@@ -34,16 +34,19 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
   if isempty(EXP)
     EXP = ResLibCal_Compute; % collect current settings and compute
   end
+  NL = sprintf('\n');
+  
   if ~isempty(EXP)
     % do we reduce output to ResCal only ? based on extension match
     [p,f,e] = fileparts(filename);
     if any(strcmp(e,'.res')) && isfield(EXP,'ResCal')
       % 'NAME = value' list file
-      EXP.Rescal.version=5.06; % for ResTrax compatibility
+      description = 'ResTrax named list (Cooper-Nathans and Popovici)';
       str = class2str(' ', EXP.ResCal, 'no comment');
-      str = [ '% generated automatically on ' datestr(now) ' with ifit.mccode.org ResLibCal' sprintf('\n') ...
+      str = [ 'version=5.06' NL ... % for ResTrax compatibility
+        '% ' description '. ' datestr(now) ' with ifit.mccode.org ResLibCal' NL ...
         strrep(str, ';', '')] ; % remove trailing ';'
-      description = 'named list (Cooper-Nathans+Popovici)';
+      
     elseif any(strcmp(e,'.dat')) && isfield(EXP,'ResCal')
       % Rescal instrument parameters for Cooper-Nathans
       
@@ -52,7 +55,7 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
       % format the parameter values into a list of numbers in a string, with labels following
       str = struct2cell(EXP.ResCal);
       
-      % the legacy Rescal format only saves for Copper-Nathans, i.e. 42 parameters
+      % the legacy Rescal format only saves for Cooper-Nathans, i.e. 42 parameters
       if length(str) > 42, str=str(1:42); labels = labels(1:42); end
 
       str = sprintf('%15.5f\n', str{:});
@@ -65,14 +68,15 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
       % format the parameter values into a list of numbers in a string, with labels following
       str = struct2cell(EXP.ResCal);
       
-      % the legacy Rescal format only saves for Copper-Nathans, i.e. 42 parameters
+      % the legacy Rescal format only saves for Cooper-Nathans, i.e. 42 parameters
       if length(str) > 42, str=str(1:42); labels = labels(1:42); end
       
       % assemble values and labels in a unique cell
       s=cell(1,2*length(str)); s(1:2:end) = str; s(2:2:end) = labels;
+      description = 'ResCal (Cooper-Nathans) with comments';
       str = [ sprintf('%-15g %% %s\n', s{:}) ...
-         '% ResCal parameters for Cooper-Nathans. ' datestr(now) ' ifit.mccode.org ResLibCal' sprintf('\n') ];
-      description = 'ResCal (Cooper-Nathans)';
+         '% ' description '. ' datestr(now) ' ifit.mccode.org ResLibCal' NL ];
+      
     elseif any(strcmp(e,'.cfg')) && isfield(EXP,'ResCal')
       % Rescal instrument parameters for Popovici
       
@@ -86,10 +90,11 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
       
       % assemble values and labels in a unique cell
       s=cell(1,2*length(str)); s(1:2:end) = str; s(2:2:end) = labels;
+      description = 'ResCal5 (Popovici) with comments';
       str = [ sprintf('%-15g %% %s\n', s{:}) ...
-         '% ResCal parameters for Popovici. ' datestr(now) ' ifit.mccode.org ResLibCal' sprintf('\n') ];
+         '% ' description '. ' datestr(now) ' ifit.mccode.org ResLibCal' NL ];
       
-      description = 'ResCal5 (Popovici)';
+      
     elseif any(strcmp(e,'.rtx')) && isfield(EXP,'ResCal')
       ResCal = EXP.ResCal;
       str={ 'Title (max.60 characters): ' ,... 
@@ -117,20 +122,20 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
 					'COLLIMATORS  1  1  1  1' };
 		  str = sprintf('%s\n', str{:});
 			description = 'ResTrax legacy';
-			disp('WARNING: the generated ResTrax file does not contain the full configuration');
+			disp('WARNING: the generated ResTrax file does not contain the full configuration.');
     else % INI configuration file
       % first clean the 'handles'
       EXP = rmfield(EXP,'handle');
-      NL = sprintf('\n');
-      str = [ '% ResLibCal configuration script file ' NL ...
+      
+      description = 'ResLibCal (Cooper-Nathans and Popovici)';
+      str = [ '% ResLibCal configuration script file: ' description NL ...
             '%' NL ...
             '% Matlab ' version ' m-file ' filename NL ...
             '% generated automatically on ' datestr(now) ' with ifit.mccode.org ResLibCal' NL...
             '% The Resolution function is indicated as the "resolution.RMS" field ' NL ...
-            '% (in lattice frame), "resolution.RM" is in [Angs-1] in [QxQyQzE].' NL ...
+            '% (in lattice frame [Q1Q2QzE]), "resolution.RM" is in [Angs-1] in [QxQyQzE].' NL ...
             '% If you ever edit this file manually, please modify "config" rather than "config.ResCal".' NL ...
             class2str('config', EXP) ];
-      description = 'ResLibCal (Cooper-Nathans+Popovici)';
 
     end
     

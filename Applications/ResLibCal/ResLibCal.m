@@ -11,7 +11,7 @@ function out = ResLibCal(varargin)
 % where 'command' is one of:
 %   open, save, saveas, export, exit, reset, print, create,
 %   compute, update (=compute+show), view2, view3, view_tas
-%   default, quit, close
+%   default, quit, close, cloud
 % To compute the resolution at a given HKLW location, using the current settings
 %   resolution = ResLibCal(QH,QK,QL,W)
 % where QH,QK,QL,W can be vectors, or empty to use current settings.
@@ -276,7 +276,7 @@ while ~isempty(varargin)
       % update all opened views with new computation (widget update)
       fig = ResLibCal_fig;
       
-      out = feval(mfilename, 'compute');
+      out = ResLibCal_Compute;
       
       if ~isempty(fig) && strcmp(get(ResLibCal_fig('View_AutoUpdate'), 'Checked'), 'on')
         out = ResLibCal_UpdateViews(out);
@@ -288,8 +288,10 @@ while ~isempty(varargin)
       fig = ResLibCal_fig;
       % if no interface exists, load the last saved configuration before computing
       if isempty(fig)
-        filename = fullfile(prefdir, 'ResLibCal.ini');
-        out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
+        if isempty(out)
+          filename = fullfile(prefdir, 'ResLibCal.ini');
+          out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
+        end
         out = ResLibCal_Compute(out);
         ResLibCal_UpdateViews(out); % when they exist
       else
@@ -301,7 +303,7 @@ while ~isempty(varargin)
         end
       end
     case 'cloud'
-      out = ResLibCal_AxesResMat;
+      out = ResLibCal_AxesResMat(out);
     case 'update_d_tau'
       % update d-spacing from a popup item
       ResLibCal_UpdateDTau(varargin{2});      % arg is popup handle
@@ -351,8 +353,11 @@ while ~isempty(varargin)
       end
       out = ResLibCal_Open(action, out); % update 'out/EXP' from file
       ResLibCal_EXP2fig(out);                        % put it into the main GUI
-      out = ResLibCal_Compute(out);                    % compute the resolution
-      ResLibCal_UpdateViews(out); % update views when they exist
+      if numel(varargin) == 0
+        out = ResLibCal_Compute(out);                    % compute the resolution
+        ResLibCal_UpdateViews(out); % update views when they exist
+      end
+      
     end % switch (action)
     varargin(1) = [];
     % end if varargin is char
@@ -499,8 +504,10 @@ function out = ResLibCal_UpdateResolution3(out)
   h = findall(0, 'Tag','ResLibCal_View3');
   if isempty(h), return; end
   set(0,'CurrentFigure', h);
+  
+  % add cloud of point to 'out'
+  out = ResLibCal_AxesResMat(out);
 
-  % update/show the resolution projections
   % update/show the resolution projections
   rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');

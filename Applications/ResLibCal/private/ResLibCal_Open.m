@@ -23,6 +23,7 @@ function EXP = ResLibCal_Open(filename, EXP)
     if isempty(filename) || all(filename == 0), return; end
     filename = fullfile(pathname, filename);
   end
+
   if exist(filename,'file') % a file exists: read it
     % handle case of ResCal5 .par .cfg file (numerical vector)
     try

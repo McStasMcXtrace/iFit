@@ -33,6 +33,7 @@ if isempty(strfind(mode,'scan')) && ~isempty(findobj(gcf,'Tag','ResLibCal_View3_
   delete(findobj(gcf,'Tag','ResLibCal_View3_Proj2'));
   delete(findobj(gcf,'Tag','ResLibCal_View3_Proj3'));
   delete(findobj(gcf,'Tag','ResLibCal_View3_Volume'));
+  delete(findobj(gcf,'Tag','ResLibCal_View3_Cloud'));
 end
 
 % handle resolution for scans
@@ -129,7 +130,7 @@ for point=1:len
    isonormals(xg,yg,zg,ee,p)
    set(p, 'FaceColor', 'red', ...
           'EdgeColor', 'none','BackFaceLighting','reverselit', ...
-          'Tag','ResLibCal_View3_Volume');
+          'Tag','ResLibCal_View3_Volume','DisplayName','ellipsoid');
 end;
 
 %da=daspect;
@@ -149,10 +150,20 @@ if isempty(strfind(mode,'scan'))
      xproj3=r3.*cos(phi)+qx(i);   yproj3=r3.*sin(phi)+qy(i);   zproj3=ones(size(xproj3))*RANGE(5);
      xproj2=r2.*cos(phi)+qx(i);   zproj2=r2.*sin(phi)+qw(i);   yproj2=ones(size(xproj2))*RANGE(4);
      yproj1=r1.*cos(phi)+qy(i);   zproj1=r1.*sin(phi)+qw(i);   xproj1=ones(size(yproj1))*RANGE(2);
-     h=plot3(xproj1,yproj1,zproj1); set(h,'Tag','ResLibCal_View3_Proj1');
-     h=plot3(xproj2,yproj2,zproj2); set(h,'Tag','ResLibCal_View3_Proj2');
-     h=plot3(xproj3,yproj3,zproj3); set(h,'Tag','ResLibCal_View3_Proj3');
+     h=plot3(xproj1,yproj1,zproj1); 
+     set(h,'Tag','ResLibCal_View3_Proj1','DisplayName','proj_x');
+     h=plot3(xproj2,yproj2,zproj2); 
+     set(h,'Tag','ResLibCal_View3_Proj2','DisplayName','proj_y');
+     h=plot3(xproj3,yproj3,zproj3); 
+     set(h,'Tag','ResLibCal_View3_Proj3','DisplayName','proj_z');
   end;
+end
+
+% plot cloud of points if available
+if ~isempty(strfind(mode,'rlu')) && isfield(out.resolution, 'cloud')
+  if isempty(strfind(mode,'qz')), ax=[1 2 4]; else ax=[1 2 3]; end
+  h=plot3(out.resolution.cloud{ax},'.');
+  set(h,'Tag','ResLibCal_View3_Cloud','DisplayName','cloud','MarkerSize',0.5);
 end
 
 da=daspect; da(1:2) = max(da(1:2)); daspect(da);
@@ -193,7 +204,7 @@ else
 end
 title([ 'Resolution in ' frame ' - ' out.EXP.method ])
 
-hold on
+hold off
 
 %========================================================================================================
 %========================================================================================================
