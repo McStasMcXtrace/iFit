@@ -860,7 +860,7 @@ char *str_valid_struct(char *string, char char_struct)
 
 /* convert non valid following chars in name into _ */
   for (i=0; i < strlen(tmp2); i++) {
-    if (!lk_isalnum(tmp2[i]) && tmp2[i] != '_') tmp2[i] = '_';
+    if (!lk_isalnum(tmp2[i]) && tmp2[i] != '_')     tmp2[i] = '_';
     else if (char_struct && tmp2[i] == char_struct) tmp2[i] = '_';
   }
 
@@ -3464,7 +3464,7 @@ struct write_struct file_write_getsections(struct file_struct file,
 
     /* set field section to current section */
     if (!field->Section)
-      field->Section = str_dup(section_current); /* was NULL before except from MetaData */
+      field->Section = str_valid(section_current, 0); /* was NULL before except from MetaData */
       
   } /* for index 1st PASS */
   section_current=str_free(section_current);
