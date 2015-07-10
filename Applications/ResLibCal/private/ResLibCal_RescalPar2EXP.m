@@ -12,7 +12,7 @@ persistent labels
 
 if nargin < 1, return; end
 if nargin < 2, EXP = []; end
-if ischar(str)
+if ischar(str) && isempty(strfind(str, 'Title (max.60 characters)')) && isempty(strfind(str, 'SPEC')) && isempty(strfind(str, 'ETAE'))
   % remove any 'ResCal:' keyword
   index = strfind(lower(str), 'rescal:');
   str(index:(index+6))=[];
@@ -71,20 +71,22 @@ end
     % legacy ResTrax configuration file. Very partil set of parameters.
     lines = textscan(str, '%s', 'delimiter', '\n'); % split all lines
     lines = lines{1};
-    ResTrax.Source = str2double(regexp(lines{4}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
-    ResTrax.Monok  = str2double(regexp(lines{8}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
-    ResTrax.Ana    = str2double(regexp(lines{10}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
-    ResTrax.Det    = str2double(regexp(lines{12}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
-    ResTrax.Dist   = str2double(regexp(lines{14}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
-    ResTrax.C1     = str2double(regexp(lines{16}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
-    ResTrax.C2     = str2double(regexp(lines{18}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
-    ResTrax.C3     = str2double(regexp(lines{20}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
-    ResTrax.C4     = str2double(regexp(lines{22}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
-    ResTrax.Collimators = str2double(regexp(lines{23}, '[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?', 'match'));
+    digit = '\<[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\>'; % [+-] 0-9 . 0-9 eE +- 0-9 as a word
+    ResTrax.Source      = str2double(regexp(lines{4},  digit, 'match'));
+    ResTrax.Monok       = str2double(regexp(lines{8},  digit, 'match'));
+    ResTrax.Ana         = str2double(regexp(lines{10}, digit, 'match'));
+    ResTrax.Det         = str2double(regexp(lines{12}, digit, 'match'));
+    ResTrax.Dist        = str2double(regexp(lines{14}, digit, 'match'));
+    ResTrax.C1          = str2double(regexp(lines{16}, digit, 'match'));
+    ResTrax.C2          = str2double(regexp(lines{18}, digit, 'match'));
+    ResTrax.C3          = str2double(regexp(lines{20}, digit, 'match'));
+    ResTrax.C4          = str2double(regexp(lines{22}, digit, 'match'));
+    ResTrax.Collimators = str2double(regexp(lines{23}, digit, 'match'));
     % now import data specifically as a ResCal structure
     if ResTrax.Source(1) == 0
       ResTrax.Source(3:4) = ResTrax.Source(2)*1.41;
     end
+    % convert to ResCal parameters
     p.WB=ResTrax.Source(3); p.HB=ResTrax.Source(4);
     p.TM=ResTrax.Monok(4);  p.WM=ResTrax.Monok(5); p.HM=ResTrax.Monok(6);
     p.TA=ResTrax.Ana(4);    p.WA=ResTrax.Ana(5);   p.HA=ResTrax.Ana(6);
@@ -94,6 +96,38 @@ end
     p.WD=ResTrax.Det(3); p.HD=ResTrax.Det(4);
     p.L1=ResTrax.Dist(1); p.L2=ResTrax.Dist(2); p.L3=ResTrax.Dist(3); p.L4=ResTrax.Dist(4);
     titl = [ 'ResTrax legacy configuration: ' strtrim(lines{2}) ];
+  end
+  if ischar(str) && ~isempty(strfind(str, 'SPEC')) && ~isempty(strfind(str, 'ETAE'))
+    % AFit (Hennion/LLB) spectrometer configuration
+    digit = '\<[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\>'; % [+-] 0-9 . 0-9 eE +- 0-9 as a word
+    nums  = str2double(regexp(str,'\<[-+]?\d*\.?\d+([eE][-+]?\d+)?\>','match'));
+    % shuld be 46 values
+    if numel(nums) > 46
+      disp([ mfilename ': initial parameter file contains ' ...
+              num2str(numel(nums)) '. Only using up to 46.']);
+      nums = nums((end-45):end)
+    end
+    % get spectrometer ID
+    lines = textscan(str, '%s', 'delimiter', '\n'); % split all lines
+    lines = lines{1};
+    % convert to ResCal parameters
+    to_read = {'WB',1,'HB',2,'L1',3,...
+	    'ALF1',9,'ALF2',10,'ALF3',11,'ALF4',12,...
+	    'BET1',13,'BET2',14,'BET3',15,'BET4',16,'SM',17,'SS',18,'SA',19,...
+	    'DM',20,'ETAM',21,'RMH',22,'RMV',23,'WM',24,'HM',25,'L2',26,'ETAMV',27,...
+	    'DA',28,'ETAA',29,'RAH',30,'RAV',31,'WA',32,'HA',33,'L3',34,...
+	    'WD',35,'HD',36,'L4',37,...
+	    'WS',44,'HS',45,'ETAS',46};
+    for index=1:2:numel(to_read)
+      name = to_read{index};
+      value= nums(to_read{index+1});
+      p.(name) = value;
+    end
+    if (p.RMV > 0) p.RMV=-1; end % set to automatic curvatures
+    if (p.RMH > 0) p.RMH=-1; end
+    if (p.RAV > 0) p.RAV=-1; end
+    if (p.RAH > 0) p.RAH=-1; end
+    titl = [ 'AFIT/LLB SPEC configuration: ' strtok(lines{2}) ];
   end
 
   % handle input as a numerical vector: ResCal file
@@ -146,7 +180,10 @@ end
   if isfield(p,'DA'),   EXP.ana.d      = p.DA; end
   if isfield(p,'ETAM'), EXP.mono.mosaic= p.ETAM; end
   if isfield(p,'ETAA'), EXP.ana.mosaic = p.ETAA; end
-  if isfield(p,'ETAS'), EXP.sample.mosaic = p.ETAS; end
+  if isfield(p,'ETAS'), EXP.sample.vmosaic = p.ETAS; end
+  if isfield(p,'ETAMV'), EXP.mono.vmosaic= p.ETAM; end
+  if isfield(p,'ETAAV'), EXP.ana.vmosaic = p.ETAA; end
+  if isfield(p,'ETASV'), EXP.sample.vmosaic = p.ETAS; end
   if isfield(p,'SM'),   EXP.mono.dir = p.SM; end
   if isfield(p,'SS'),   EXP.sample.dir = p.SS; end
   if isfield(p,'SA'),   EXP.ana.dir = p.SA; end

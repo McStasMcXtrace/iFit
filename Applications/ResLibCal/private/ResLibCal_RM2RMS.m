@@ -7,8 +7,8 @@ if isempty(RM), RMS=RM; return; end
 % code extracted from ResLib/ResMatS
 % Calls: CleanArgs, StandardSystem, modvec, scalar
 
-if 1
-  
+if 0
+  % disp('Using ResLib RM2RMS')
   [len,H,K,L,W,EXP]=CleanArgs(H,K,L,W,EXP);
   [x,y,z,sample,rsample]=StandardSystem(EXP);
 
@@ -45,8 +45,8 @@ if 1
   RMS(:, [3 4]) = RMS_swapped(:, [4 3]);
 end
 
-% method2: ResCal5
-if 0
+% method2: ResCal5 which is the same as legacu RESCAL
+if 1
   HKL = [H K L ]';
   %----- Calculate Q2c matrix
   [Q2c,Qmag]= rc_re2rc( [ EXP.sample.a EXP.sample.b EXP.sample.c ], ...
