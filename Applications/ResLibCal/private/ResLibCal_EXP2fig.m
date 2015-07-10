@@ -1,8 +1,9 @@
-function fig = ResLibCal_EXP2fig(EXP, fig)
+function [fig, out] = ResLibCal_EXP2fig(EXP, fig)
 % fig=ResLibCal_EXP2fig(EXP): send EXP to main ResLibCal window
 %
 % sends the content of a ResLib EXP structure into the ResLibCal figure.
 %  when the figure does not exist, it is opened.
+% Also makes a check of some EXP values.
 %
 % Return:
 %  fig: handle of the ResLibCal interface
@@ -18,12 +19,48 @@ function fig = ResLibCal_EXP2fig(EXP, fig)
   else fig = '';
   end
   if isempty(fig), fig=ResLibCal_fig; end
-  if isempty(fig), return; end
+  
 
   % check EXP structure. Perhaps it is a full ResLibCal structure
   if isfield(EXP,'EXP')
-    EXP = EXP.EXP;
+    out = EXP;
+    EXP = out.EXP;
+  else
+    out = [];
   end
+  
+  % check some values
+    
+  % check ALF and BET 0->666
+  EXP.hcol(EXP.hcol <= 0) = 666;
+  EXP.vcol(EXP.vcol <= 0) = 666;
+  % check ETA 0-1 -> multiply from rad to arcmin
+  if isfield(EXP,'sample')
+    if isfield(EXP.sample,'mosaic') && EXP.sample.mosaic < 1
+      EXP.sample.mosaic =EXP.sample.mosaic*180/pi*60; end
+    if isfield(EXP.sample,'vmosaic') && EXP.sample.vmosaic < 1
+      EXP.sample.vmosaic=EXP.sample.vmosaic*180/pi*60; end
+  end
+  if isfield(EXP,'sample')
+    if isfield(EXP.mono,'mosaic') && EXP.mono.mosaic < 1
+      EXP.mono.mosaic   =EXP.mono.mosaic*180/pi*60; end
+    if isfield(EXP.mono,'vmosaic') && EXP.mono.vmosaic < 1
+      EXP.mono.vmosaic  =EXP.mono.vmosaic*180/pi*60; end
+  end
+  if isfield(EXP,'sample')
+    if isfield(EXP.ana,'mosaic') && EXP.ana.mosaic < 1
+      EXP.ana.mosaic    =EXP.ana.mosaic*180/pi*60; end
+    if isfield(EXP.ana,'vmosaic') && EXP.ana.vmosaic < 1
+      EXP.ana.vmosaic   =EXP.ana.vmosaic*180/pi*60; end
+  end
+  
+  if ~isempty(out)
+    out.EXP = EXP;
+  else
+    out = EXP;
+  end
+  
+  if isempty(fig), return; end
 
   % from ResLib/MakeExp A. Zheludev, 1999-2006 ---------------------------------
 

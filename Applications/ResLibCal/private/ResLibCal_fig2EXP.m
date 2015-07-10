@@ -16,6 +16,7 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   else fig = ''; 
   end
   if isempty(fig), fig=ResLibCal_fig; end
+  
   if isempty(fig), return; end
 
   % from ResLib/MakeExp A. Zheludev, 1999-2006 ---------------------------------
