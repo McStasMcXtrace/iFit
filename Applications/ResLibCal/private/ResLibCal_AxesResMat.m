@@ -33,7 +33,7 @@ function ax = ResLibCal_AxesResMatSingle(out, EXP, resolution)
 % resolution.HKLE is the location of the scan step where the convolution must be evaluated
 
 %----- Resolution ellipsoid in terms of H,K,L,EN ([Rlu] & [meV]) 
-M=out.resolution.RMS;
+M=resolution.RMS;
 
 [V,E]=eig(M);
 sigma=1./sqrt(diag(E)); % length along principal axes of gaussian
@@ -43,7 +43,7 @@ NMC  = 10000;
 xp   = bsxfun(@times,sigma,randn(4,NMC));
 XMC  = inv(V)'*xp; % this is delta(HKLW) as a gaussian distribution
 clear xp
-HKLW = bsxfun(@plus,out.resolution.HKLE',XMC); % add HKLE location to delta
+HKLW = bsxfun(@plus,resolution.HKLE',XMC); % add HKLE location to delta
 
 ax   = [ mat2cell(HKLW,[1 1 1 1]) ]; % get 1D arrays per axis
 
