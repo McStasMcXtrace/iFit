@@ -11,7 +11,7 @@ function out = ResLibCal(varargin)
 % where 'command' is one of:
 %   open, save, saveas, export, exit, reset, print, create,
 %   compute, update (=compute+show), view2, view3, view_tas
-%   default, quit, close, cloud
+%   default, quit, close, cloud, resol, bragg
 % To compute the resolution at a given HKLW location, using the current settings
 %   resolution = ResLibCal(QH,QK,QL,W)
 % where QH,QK,QL,W can be vectors, or empty to use current settings.
@@ -99,7 +99,7 @@ while ~isempty(varargin)
     action = varargin{1};
     switch lower(action)
     % menu items ---------------------------------------------------------------
-    case {'file_open','open'}
+    case {'file_open','open','load'}
       [EXP, fig] = ResLibCal_fig2EXP;
       if isfield(EXP,'EXP'), EXP = EXP.EXP; end
       if length(varargin) <= 1, varargin{2} = ''; end
@@ -195,14 +195,14 @@ while ~isempty(varargin)
       if isempty(fig), return; end
       cdata = get(ResLibCal_fig('ILL_logo'), 'CData');
       message = {...
-        [ '{\fontsize{14}{\color{blue}' ResLibCal_version '} EUPL license} ' ], ...
+        [ '{\fontsize{14}{\color{blue}' ResLibCal_version '}}' ], ...
         'ResLibCal is a graphical user interface to compute and display' , ...
         'the {\bf triple-axis resolution function} obtained from e.g. Cooper-Nathans and Popovici analytical approximations. The GUI allows to select among a set of computation kernels.' , ...
-        'This application was written by E. Farhi {\copyright}ILL/DS/CS <farhi@ill.eu> using' , ...
+        'This application was written by E. Farhi {\copyright}ILL/DS/CS <farhi@ill.eu> (EUPL license) using' , ...
         '\bullet ResLib 3.4 (A. Zheludev)' , ...
         '\bullet ResCal5 (A. Tennant and D. Mc Morrow)' , ...
         '\bullet Res3ax (J. Ollivier)' , ...
-        '\bullet Rescal/AFILL (Hargreave, Hullah) and vTAS view (A. Bouvet/A. Filhol)' };
+        '\bullet Rescal/AFILL (Hargreave, Hullah) and vTAS/PKFIT view (A. Bouvet/A. Filhol)' };
       CreateMode.WindowStyle = 'modal';
       CreateMode.Interpreter='tex';
       msgbox(message, ...
@@ -240,6 +240,31 @@ while ~isempty(varargin)
       delete(findall(0, 'Tag', 'ResLibCal_View1'));
       delete(findall(0, 'Tag', 'ResLibCal_View2'));
       delete(findall(0, 'Tag', 'ResLibCal_View3'));
+      
+    % RESCAL actions
+    case 'list'
+      out = ResLibCal_Compute(out);
+      disp('RESCAL parameters')
+      disp(out.ResCal);
+    case 'bragg'
+      out = ResLibCal_Compute(out);
+      disp('BRAGG Widths, Radial,tangential, Vertical (HWHM) [ANG-1]');
+      fprintf(1, 'DQR=%g DQT=%g DQV=%g\n', out.resolution.Bragg(1:3)/2);
+      disp('Energy Widths (HWHM) [meV]');
+      fprintf(1, 'DVN=%g DEE=%g\n', out.resolution.Bragg([ 5 4 ])/2);
+    case 'resol'
+      out = ResLibCal_Compute(out);
+      disp('Resolution Matrix, X-AXIS Along Q [ANGS-1] & [meV]')
+      disp('  X=along Q; Y transversal, in plane; Z vertical.');
+      disp('----------------------------------')
+      disp('    X        Y        Z        W')
+      disp(num2str(out.resolution.RM,'%.1f '));
+      disp(' ');
+      disp('Resolution Matrix, Axes WRT Recip. Lattice [R.l.u.] & [meV]')
+      disp('  X=along A, Y=in plane perp to X; Z=perp to (X,Y).')
+      disp('----------------------------------')
+      disp('    X        Y        Z        W')
+      disp(num2str(out.resolution.RM,'%.1f '));
       
     % other actions (not menu items) -------------------------------------------
     case 'default'  % factory default

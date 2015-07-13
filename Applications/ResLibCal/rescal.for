@@ -78,8 +78,8 @@ C***********************************************************************
 	COMMON/EXTRA/XXC,YYC,F,W,WI,WF
 	
 	! variables which are used
-	CHARACTER*255 LINE
-	CHARACTER*255 KEYWORD,VALUE
+	CHARACTER*1024 LINE
+	CHARACTER*1024 KEYWORD,VALUE
 	CHARACTER*8   NAM(42)
 	COMMON/CHNM/NAM
 	
@@ -103,7 +103,7 @@ C INITIALISE ===================================================================
       write (*,*)'                                                    '
       write (*,*)'                    RESCAL                          '
       write (*,*)'PROGRAMME  TO CALCULATE  COOPER-NATHANS  RESOLUTION '
-	write (*,*)'MATRIX AND/OR RISO  METHOD  CONTRIBUTIONS TO PHONON '
+	write (*,*)'MATRIX AND/OR RIS0  METHOD  CONTRIBUTIONS TO PHONON '
 	write (*,*)'WIDTH. THE WIDTHS  OF BRAGG  SCANS ARE  CALCULATED, '
 	write (*,*)'AND THE VANADIUM  WIDTH, FOR A TRIPLE-AXIS SPECTRO- '
 	write (*,*)'METER. THE PARAMETERS ARE ENTERED INTERACTIVELY.'
@@ -160,13 +160,18 @@ c	HELP
 	
 	END IF 
 c	EXIT
-	IF ( KEYWORD(1:2) == 'EX' .OR. KEYWORD(1:4) == 'ex') STOP
+	IF ( KEYWORD(1:2) == 'EX' .OR. KEYWORD(1:2) == 'ex') STOP
 c	SAVE <FILE>
-	IF ( KEYWORD(1:3) == 'SAV' .OR. KEYWORD(1:4) == 'sav') THEN
+	IF ( KEYWORD(1:3) == 'SAV' .OR. KEYWORD(1:3) == 'sav') THEN
 	  IF (VALUE .EQ. char(0)) THEN
+	    status = getcwd( line )
+      if ( status .eq. 0 ) then
+        write(*,*) 'Current directory is: '
+        write(*,*) trim(line)
+      end if
 	    WRITE(*,*) 'Enter filename to write (space to abort): '
 	    READ(*,'(A)') VALUE
-	  END IF
+	    END IF
 	  IF (len_trim(VALUE) .GT. 0) THEN
 	    OPEN(UNIT=24,FILE=trim(value),ERR=601)
 	    DO I=1,NVARS
@@ -183,6 +188,11 @@ c	LOAD <FILE>
 	  IF (VALUE .EQ. char(0)) THEN
 	    WRITE(*,*) 'The file should contains 42 values (F10.5),'
 	    WRITE(*,*) '  one per line, possibly followed by comments.'
+	    status = getcwd( line )
+      if ( status .eq. 0 ) then
+        write(*,*) 'Current directory is: '
+        write(*,*) trim(line)
+      end if
 	    WRITE(*,*) 'Enter filename to read (space to abort): '
 	    READ(*,'(A)') VALUE
 	  END IF
@@ -196,7 +206,7 @@ c	LOAD <FILE>
 	  END IF
 	END IF
 c	LIST
-	IF ( KEYWORD(1:24) == 'LI' .OR. KEYWORD(1:2) == 'li') THEN
+	IF ( KEYWORD(1:2) == 'LI' .OR. KEYWORD(1:2) == 'li') THEN
 	  DO I=1,NVARS
 	    WRITE(*,*) NAM(I),'=',PARS(I) ! display current or new assignment
 	  END DO
@@ -277,7 +287,7 @@ C =====================================================================
 	1	' TRNVCT: Q Not In Scattering Plane',
 	2	' TRNVCT: Scan Not In Scattering Plane',
 	3	' TRNVCT: check  scaterring triangle',
-	4	' TRNVCT: Gradient  too small',
+	4	' TRNVCT: Gradient too small (GH,GK)',
 	5	' TRNVCT: Gradient Has Component In Z-DIR'/
 C---------------------------------------------------------------------------
 C   TRANSFORM AND CHECK Q, D & G VECTORS.
@@ -388,9 +398,9 @@ C   ENERGY AND VANADIUM WIDTHS.
      1	-A(1,2)**2))
 	DVN=SQRT(HUITLOG2/(A(4,4)-A(1,4)**2/A(1,1)-DVN))
 	WRITE(*,5)DQX,DQY,DQZ,CUNIT,DVN,CUNIT,DEE,CUNIT
-    5	FORMAT(' BRAGG Widths, Radial,tangential, Vertical ANG-1'/
+    5	FORMAT(' BRAGG Widths, Radial,tangential, Vertical (HWHM) [ANG-1]'/
 	1 ' DQR=',F9.5,' DQT=',F9.5,' DQV=',F9.5/
-	2 ' Energy Widths, ',A5/
+	2 ' Energy Widths (HWHM) ',A5/
 	3 ' DVN=',F9.5,' ',A5,' DEE=',F9.6,' ',A5/)
 	RETURN
 C---------------------------------------------------------------------------
@@ -473,7 +483,7 @@ C =====================================================================
 	DATA MESOR/
 C                123456789012345678901234567890123456789012345678901234
 	1	' ********  Resolution Volumes,   Units Are   [ANGS-3]',
-	2	' ********  Resolution Matrix, X-AXIS Along Q ANGS-1 &',
+	2	' ******  Resolution Matrix, X-AXIS Along Q [ANGS-1] &',
 	3	' Resolution Matrix, Axes WRT Recip. Lattice R.l.u. & ',
 	4	' ******** Diagonalised Resolution Matrix In R.l.u. & ',
 	5	'  Direction Cosines Of Axes W.r.t. Reciprocal Lattice'/
