@@ -482,7 +482,7 @@ while (ftell(fid) ~= eoff)
         end
     else  %TDSm should be the first charaters in a tdms file.  If not there, error out to stop hunting.
         fclose(fid);
-        error('Unable to find TDSm tag. This may not be a tdms file, or you forgot to add the .tdms extension to the filename and are reading the wrong file');
+        error([ mfilename ': Unable to find TDSm tag. This may not be a tdms file, or you forgot to add the .tdms extension to the filename and are reading the wrong file' ]);
         
     end
     

@@ -197,7 +197,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [] = cbf_error(filename,text)
 
-fprintf('cbfread of %s:\n %s\n',filename,text);
+fprintf('%s: cbfread of %s: %s\n',mfilename, filename,text);
 return;
 
 
@@ -319,7 +319,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Date$  $Date: Tue Jun 9 16:10:28 2015 +0200$
+% $Date: Tue Jun 9 16:10:28 2015 +0200$  $Date: Tue Jun 9 16:10:28 2015 +0200$
 % $Author$
 % $Tag: $
 %
@@ -394,7 +394,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Date$  $Date: Tue Jun 9 16:10:28 2015 +0200$
+% $Date: Tue Jun 9 16:10:28 2015 +0200$  $Date: Tue Jun 9 16:10:28 2015 +0200$
 % $Author$
 % $Tag: $
 %
@@ -568,7 +568,7 @@ end
 %
 % Filename: $RCSfile: cbfread.m,v $
 %
-% $Date$  $Date: Tue Jun 9 16:10:28 2015 +0200$
+% $Date: Tue Jun 9 16:10:28 2015 +0200$  $Date: Tue Jun 9 16:10:28 2015 +0200$
 % $Author$
 % $Tag: $
 %
