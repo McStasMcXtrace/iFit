@@ -11,7 +11,7 @@ function b = resize(a, varargin)
 % output: c: object or array (iData)
 % ex:     a=iData(peaks); b=resize(a, 10,90);
 %
-% Version: $Date$
+% Version: $Date: Tue Jun 9 16:10:28 2015 +0200$
 % See also iData, iData/squeeze, iData/size, iData/permute, iData/reshape
 
 % first get dimensions from varargin
@@ -29,11 +29,19 @@ end
 
 % use reshape on Signal, Error, Monitor
 sz = size(a);
-b  = iData_private_unary(copyobj(a), 'iData_private_resize', dims);
+
+% special case of 1D objects resized with higher dimensionality
+if ndims(a) == 1 && length(dims) > 1
+  b=copyobj(a);
+  dims(1:2) = ceil(dims(1:2) ./ size(a)); % new dimension for replication
+  set(b, 'Signal', repmat(subsref(a,struct('type','.','subs','Signal')), dims));
+else
+  b  = iData_private_unary(copyobj(a), 'iData_private_resize', dims);
+end
 
 % then update axes
 for index=1:length(dims)
-  if length(sz) >= index && sz(index) ~= dims(index)
+  if length(sz) >= index && sz(index) ~= dims(index) && ndims(a) > 1
     x  = getaxis(a, index);
     if isvector(x), x=x(:); sa = [length(x) 1]; else sa = size(x); end
     
