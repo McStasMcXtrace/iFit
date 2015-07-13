@@ -1,7 +1,7 @@
 %
 % Filename: $RCSfile: marread.m,v $
 %
-% $Date$  $Date$
+% $Date: Tue Jun 9 16:10:28 2015 +0200$  $Date: Tue Jun 9 16:10:28 2015 +0200$
 % $Author$
 % $Tag: $
 %
@@ -41,7 +41,7 @@ frame = struct('header',[], 'data',[]);
 % check minimum number of input arguments
 if (nargin < 1)
     % image_read_sub_help(mfilename,'mar');
-    error('At least the filename has to be specified as input parameter.');
+    error([mfilename ': At least the filename has to be specified as input parameter.' ]);
 end
 
 % accept cell array with name/value pairs as well
@@ -61,7 +61,7 @@ end
 
 % check number of input arguments
 if (rem(no_of_in_arg,2) ~= 1)
-    error('The optional parameters have to be specified as ''name'',value pairs');
+    error([mfilename ': The optional parameters have to be specified as ''name'',value pairs' ]);
 end
     
 % set default values for the variable input arguments and parse the named
@@ -103,12 +103,12 @@ end
 end_of_header_pos = 4096;
 
 if (length(fdat) < end_of_header_pos)
-    error([ num2str(length(fdat)) ' bytes read, which is less than the constant header length' ]);
+    error([ mfilename ': Not a MAR CCD file: ' num2str(length(fdat)) ' bytes read, which is less than the constant header length.' ]);
 end
 
 % check little/big endian, also to recognize MAR files
 if (typecast(fdat(1025+32:1025+35),'uint32') ~= 1234)
-    error([ filename ' is not a MAR file or has big endian byte order' ]);
+    error([ mfilename ': ' filename ' is not a MAR file or has big endian byte order' ]);
 end
 
 % get image dimensions
@@ -117,7 +117,7 @@ nslow = typecast(fdat(1025+84:1025+87),'uint32');
 bytes_per_pixel = typecast(fdat(1025+88:1025+91),'uint32');
 
 if ((bytes_per_pixel ~= 2) && (bytes_per_pixel ~= 4))
-    error( [ 'unforseen no. of bytes per pixel of ' num2str(bytes_per_pixel) ] );
+    error( [ mfilename ': unforseen no. of bytes per pixel of ' num2str(bytes_per_pixel) ] );
 end
 bytes_expected = end_of_header_pos + nfast*nslow*bytes_per_pixel;
 if (bytes_expected ~= length(fdat))
@@ -146,7 +146,7 @@ switch bytes_per_pixel
     case 4
         frame.data = typecast(fdat(4097:end),'uint32');
     otherwise
-        error( [ 'unforseen no. of bytes per pixel of ' num2str(bytes_per_pixel) ] );
+        error( [ mfilename ': unforseen no. of bytes per pixel of ' num2str(bytes_per_pixel) ] );
 end
 frame.data = reshape(frame.data,nfast,nslow);
 

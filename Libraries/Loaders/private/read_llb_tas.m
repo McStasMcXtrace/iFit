@@ -74,6 +74,13 @@ switch(upper(f(1)))
               fseek(fid, (7+data.np-1)*recl, 'bof');
               data.subtitle = deblank(fread(fid, 80, '*char')');
           end
+        else % R files
+          fseek(fid, (7-1)*recl, 'bof'); % 7-th line of record
+          data.ns     = fread(fid, 1, 'int16');
+          data.angles = fread(fid, 20, 'float32');
+          % nang = data.nb;
+          % data.angles = fread(fid, 2*data.nb, 'float32');
+          % data.angles = data.angles(2:2:end);
         end
         
         % each data line:
@@ -103,7 +110,7 @@ switch(upper(f(1)))
                    % the proper ID
                    
         % configurations
-        switch nspec
+        switch data.spec
         case 1
           % 1T/2T
           vars = {'M1 ','M2 ','E1 ','E2 ','A1 ','A2 ','A7 ', ...

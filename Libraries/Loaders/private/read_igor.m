@@ -71,7 +71,7 @@ switch datatype,
     case 64+8, prec = 'uint8';
     case 64+16, prec = 'uint16';
     case 64+32, prec = 'uint32';
-    otherwise, error('Invalid numerical datatype.');
+    otherwise, error([ mfilename ': Invalid numerical datatype.' ]);
 end
 
 D.bname = D.waveHeader.bname;
@@ -165,7 +165,7 @@ HR = floor(it/60^2); it = it-HR*60^2;
 MIN = floor(it/60); SEC = it-MIN*60;
 DV = [YR, MNTH, DAY, HR, MIN, SEC];
 if ~isequal(last_it, etime(DV, [1988+4*M4 1 1 0 0 0])),
-    error('date error');
+    error([ mfilename ': date error' ]);
 end
 
 function Nts = local_readNotes(fid, B);
@@ -493,7 +493,7 @@ end % switch H.Version
 fclose(fid);
 
 if ~ismember(H.version,[2 5]),
-    error(['Cannot read version ' num2str(H.version) ' IBW files - only versions 2,5 are okay.']);
+    error([mfilename ': Cannot read version ' num2str(H.version) ' IBW files - only versions 2 and 5 are okay.']);
 end
 %==FROM IgorBin.h =====================
 %  #define MAXDIMS 4
