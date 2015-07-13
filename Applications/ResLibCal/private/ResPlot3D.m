@@ -70,18 +70,33 @@ if ~isempty(strfind(mode,'rlu'))
   o1=EXP.orient1;
   o2=EXP.orient2;
   pr=scalar(o2(1),o2(2),o2(3),yvec(1),yvec(2),yvec(3),rsample);
+  o2 = yvec*pr;
 
-  o2(1)=yvec(1)*pr; 
-  o2(2)=yvec(2)*pr; 
-  o2(3)=yvec(3)*pr; 
+  o1 = o1(:)';
+  o2 = o2(:)';
+  o3 = cross(o1,o2);
+  
+  % convert o1 and o2 to normalised strings
+  if all(abs(o1 - round(o1)) < 1e-5)
+    o1 = round(o1);
+    if sum(o1.*o1) > 1,  o1=[ '[' sprintf('%i ', o1) ']/\surd' num2str(sum(o1.*o1)) ];
+    else                 o1=[ '[' sprintf('%i ', o1) ']' ];
+    end
+  else o1 = [ '[' sprintf('%.3f ', o1) ']' ]; end
 
-  if abs(o2(1))<1e-5, o2(1)=0; end;
-  if abs(o2(2))<1e-5, o2(2)=0; end;
-  if abs(o2(3))<1e-5, o2(3)=0; end;
-
-  if abs(o1(1))<1e-5, o1(1)=0; end;
-  if abs(o1(2))<1e-5, o1(2)=0; end;
-  if abs(o1(3))<1e-5, o1(3)=0; end;
+  if all(abs(o2 - round(o2)) < 1e-5)
+    o2 = round(o2);
+    if sum(o2.*o2) > 1,  o2=[ '[' sprintf('%i ', o2) ']/\surd' num2str(sum(o2.*o2)) ];
+    else                 o2=[ '[' sprintf('%i ', o2) ']' ];
+    end
+  else o2 = [ '[' sprintf('%.3f ', o2) ']' ]; end
+  
+  if all(abs(o3 - round(o3)) < 1e-5)
+    o3 = round(o3);
+    if sum(o3.*o3) > 1,  o3=[ '[' sprintf('%i ', o3) ']/\surd' num2str(sum(o3.*o3)) ];
+    else                 o3=[ '[' sprintf('%i ', o3) ']' ];
+    end
+  else o3 = [ '[' sprintf('%.3f ', o3) ']' ]; end
   
   frame = '[Q1,Q2,';
 else
@@ -159,13 +174,6 @@ if isempty(strfind(mode,'scan'))
   end;
 end
 
-% plot cloud of points if available
-if ~isempty(strfind(mode,'rlu')) && isfield(out.resolution, 'cloud')
-  if isempty(strfind(mode,'qz')), ax=[1 2 4]; else ax=[1 2 3]; end
-  h=plot3(out.resolution.cloud{ax},'.');
-  set(h,'Tag','ResLibCal_View3_Cloud','DisplayName','cloud','MarkerSize',0.5);
-end
-
 da=daspect; da(1:2) = max(da(1:2)); daspect(da);
 
 % add contextual menu
@@ -186,23 +194,30 @@ if isempty(findobj(gcf,'Tag','ResLibCal_View3_Context'))
 end
 % add labels
 if ~isempty(strfind(mode,'rlu'))
-  xlabel({[ '{\bf Q_1} ( along [' num2str(o1(1)) ' ' num2str(o1(2)) ' ' num2str(o1(3)) '] ) [rlu]'],[ '{\delta}Q_1=' num2str(max(x)-min(x)) ]})
-  ylabel({[ '{\bf Q_2} ( along [' num2str(o2(1)) ' ' num2str(o2(2)) ' ' num2str(o2(3)) '] ) [rlu]'],[ '{\delta}Q_2=' num2str(max(y)-min(y)) ]})
+  xlabel({[ '{\bf Q_1} (' o1 ') [rlu]'],[ '{\delta}Q_1=' num2str(max(x)-min(x)) ]})
+  ylabel({[ '{\bf Q_2} (' o2 ') [rlu]'],[ '{\delta}Q_2=' num2str(max(y)-min(y)) ]})
 else
   xlabel([ '{\bf Q_x} [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
   ylabel([ '{\bf Q_y} [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y)) ])
-  
 end
 if isempty(strfind(mode,'qz'))
   zlabel([ '{\bf \omega} (meV) - {\delta}\omega=' num2str(max(z)-min(z)) ]);
 else
   if ~isempty(strfind(mode,'rlu'))
-    zlabel([ '{\bf Qz} [rlu] - {\delta}Qz=' num2str(max(z)-min(z)) ]);
+    zlabel([ '{\bf Qz} (' o3 ') [rlu] - {\delta}Qz=' num2str(max(z)-min(z)) ]);
   else
     zlabel([ '{\bf Qz} [A^{-1}] - {\delta}Qz=' num2str(max(z)-min(z)) ]);
   end
 end
 title([ 'Resolution in ' frame ' - ' out.EXP.method ])
+
+% plot cloud of points if available
+if ~isempty(strfind(mode,'rlu')) && isfield(out.resolution, 'cloud')
+  if isempty(strfind(mode,'qz')), ax=[1 2 4]; else ax=[1 2 3]; end
+  h=plot3(out.resolution.cloud{ax},'.');
+  set(h,'Tag','ResLibCal_View3_Cloud','DisplayName','cloud','MarkerSize',0.5);
+end
+
 
 hold off
 
