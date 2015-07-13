@@ -80,6 +80,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
+
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -97,7 +100,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         (Hargreave,Hullah,1979), ported into <span style="font-weight:
           bold;"><a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/vtas/">vTAS</a>_view</span>
-        (Y.Raoul/A. Bouvet/A. Filhol)</li>
+        (Y.Raoul/A. Bouvet/A. Filhol) [<a href="../rescal.for">Fortran
+          code</a>]<br>
+      </li>
     </ul>
     <h3><a class="mozTocH3" name="mozTocId789429"></a>Obtaining the
       package</h3>
@@ -109,6 +114,11 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       or get a copy.<br>
       It does not depend on any other toolbox/library, except Matlab.
       Simply extract the application archive. <br>
+      In addition, the legacy RESCAL code is also made available as [<a
+href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
+
+
+        code</a>].<br>
       <br>
       <i><b>Binary pre-compiled (no need for Matlab)</b></i><br>
       It comes pre-installed in the iFit <a
@@ -151,11 +161,12 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
     <ul>
       <li><b>Cooper-Nathans/AFILL</b>: the original Cooper-Nathans [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">1</a>]
-        code <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
-        from Brookhaven 'AFILL'. Mosaicities are isotropic (horizontal
-        equals vertical).<br>
-      </li>
+        code RESCAL from Brookhaven 'AFILL'. Mosaicities are isotropic
+        (horizontal equals vertical). [<a
+          href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
+
+
+          code</a>]. </li>
       <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
         Cooper-Nathans method [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">1</a>]
@@ -167,6 +178,9 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
         notes from B. Hennion in the Popovici formalism [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
 
+
+
+
         with correction [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>].</li>
       <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
@@ -176,6 +190,9 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
           href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
         Matlab application, in the Popovici formalism [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
+
+
+
 
 
 
@@ -191,12 +208,18 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
+
+
         The analyzer reflectivity is also taken into account (with
         analyzer thickness 'WA') and correction [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>]..</li>
       <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
         resolution [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
+
+
+
 
 
 
@@ -216,8 +239,14 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
+
+
       whereas all the other methods use the Popovici formulation [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100%5C">3</a>].
+
+
+
 
 
 
@@ -230,6 +259,9 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
     <blockquote> In all methods, the alpha/beta collimation parameters
       support guide <i>m-</i>coating specification (negative values
       e.g. -2) which are then converted to equivalent critical angles <i>0.1
+
+
+
 
 
 
@@ -345,8 +377,14 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         naming. The meaning of the configuration parameters is the
         following<br>
         <blockquote>
-          <pre><b>DM</b> Monochromator d-spacing<br><b>DA</b> Analyzer d-spacing<br><b>ETAM</b> Monochromator mosaic<br><b>ETAA</b> Analyzer mosaic<br><b>ETAS</b> Sample mosaic<br><b>SM</b> scattering sense from monochromator +1=right, -1=left<br><b>SS </b>scattering sense from sample +1=right, -1=left<br><b>SA</b> scattering sense from analyzer +1=right, -1=left<br><b>KFIX</b> fixed neutron wavevector in Ang.-1<br><b>FX</b> index for fixed wavevector 1=incident 2=final (10)<br><b>ALF1</b> horizontal source-mono. collimation in min<br><b>ALF2</b> horizontal mono.-sample collimation in min<br><b>ALF3</b> horizontal sample-analyser collimation in min<br><b>ALF4</b> horizontal analyser-detector collimation in min<br><b>BET1</b> vertical source-mono.  collimation in min<br><b>BET2</b> vertical mono.-sample collimation in min<br><b>BET3</b> vertical sample-analyser collimation in min<br><b>BET4</b> vertical analyser-detector collimation in min<br><b>AS</b> sample lattice parameter A in Ang.<br><b>BS</b> sample lattice parameter B in Ang.<br><b>CS</b> sample lattice parameter C in Ang.<br><b>AA</b> (alpha) angle in deg. between axis B and C<br><b>BB</b> (beta) angle in deg. between axis A and C<br><b>CC</b> (gamma) angle in deg. between axis A and B<br><b>AX</b> First wavevector in scattering plane coordinate H (rlu), along KI<br><b>AY</b> First wavevector in scattering plane coordinate K (rlu)<br><b>AZ</b> First wavevector in scattering plane coordinate L (rlu)<br><b>BX</b> Second wavevector in scattering plane coordinate H (rlu)<br><b>BY</b> Second wavevector in scattering plane coordinate K (rlu)<br><b>BZ</b> Second wavevector inou scattering plane coordinate L (rlu)<br><b>QH</b> Position of resolution wavevector (center of measurement) H (rlu)<br><b>QK</b> Position of resolution wavevector (center of measurement) K (rlu)<br><b>QL</b> Position of resolution wavevector (center of measurement) L (rlu)<br><b>EN</b> (W) Position of resolution wavevector (center of measurement) W (meV)<br><b>DQH</b> Increment of Q,E defining general scan step along QH (rlu)<br><b>DQK</b> Increment of Q,E defining general scan step along QK (rlu)<br><b>DQL</b> Increment of Q,E defining general scan step along QL (rlu)<br><b>DEN</b> Increment of Q,E defining general scan step along EN (meV)<br><b>GH</b> Gradient of the dispersion (planar) direction along QH (rlu)<br><b>GK</b> Gradient of the dispersion (planar) direction along QK (rlu)<br><b>GL</b> Gradient of the dispersion (planar) direction along QL (rlu)<br><b>GMOD</b>  Gradient of the dispersion (planar) direction along EN (meV)<br><b>BeamShape</b> =0 for circular source, =1 for rectangular source<br><b>WB</b> width/diameter of the source (cm)<br><b>HB</b> height/diameter of the source (cm)<br><b>Guide</b> =0 No Guide, =1 for Guide<br><b>GDH</b> horizontal guide divergence (minutes/Angs)<br><b>GDV</b> vertical guide divergence (minutes/Angs)<br><b>SampleShape</b> =0 for cylindrical sample, =1 for cuboid sample<br><b>WS</b> sample width/diameter perp. to Q (cm)<br><b>TS</b> sample width/diameter along Q (cm)<br><b>HS</b> sample height (cm) (10)<br><b>DetecteorShape</b> =0 for circular detector, =1 for rectangular detector<br><b>WD</b> width/diameter of the detector (cm)<br><b>HD</b> height/diameter of the detector (cm)<br><b>TM</b> thickness of monochromator (cm)<br><b>WM</b> width of monochromator (cm)<br><b>HM</b> height of monochromator (cm)<br><b>TA</b> thickness of analyser (cm)<br><b>WA</b> width of analyser (cm)<br><b>HA</b> height of analyser (cm)<br><b>L1</b> distance between source and monochromator (cm)<br><b>L2</b> distance between monochromator and sample (cm)<br><b>L3</b> distance between sample and analyser (cm)<br><b>L4</b> distance between analyser and detector (cm)<br><b>RMH</b> horizontal radius of curvature of monochromator (cm)<br><b>RMV</b> vertical radius of curvature of monochromator (cm)<br><b>RAH</b> horizontal radius of curvature of analyser (cm)<br><b>RAV</b> vertical radius of curvature of analyser (cm)<br></pre>
+          <pre><b>DM</b> Monochromator d-spacing<br><b>DA</b> Analyzer d-spacing<br><b>ETAM</b> Monochromator mosaic<br><b>ETAA</b> Analyzer mosaic<br><b>ETAS</b> Sample mosaic<br><b>SM</b> scattering sense frocdm monochromator +1=right, -1=left<br><b>SS </b>scattering sense from sample +1=right, -1=left<br><b>SA</b> scattering sense from analyzer +1=right, -1=left<br><b>KFIX</b> fixed neutron wavevector in Ang.-1<br><b>FX</b> index for fixed wavevector 1=incident 2=final (10)<br><b>ALF1</b> horizontal source-mono. collimation in min<br><b>ALF2</b> horizontal mono.-sample collimation in min<br><b>ALF3</b> horizontal sample-analyser collimation in min<br><b>ALF4</b> horizontal analyser-detector collimation in min<br><b>BET1</b> vertical source-mono.  collimation in min<br><b>BET2</b> vertical mono.-sample collimation in min<br><b>BET3</b> vertical sample-analyser collimation in min<br><b>BET4</b> vertical analyser-detector collimation in min<br><b>AS</b> sample lattice parameter A in Ang.<br><b>BS</b> sample lattice parameter B in Ang.<br><b>CS</b> sample lattice parameter C in Ang.<br><b>AA</b> (alpha) angle in deg. between axis B and C<br><b>BB</b> (beta) angle in deg. between axis A and C<br><b>CC</b> (gamma) angle in deg. between axis A and B<br><b>AX</b> First wavevector in scattering plane coordinate H (rlu), <b>along Q</b><br><b>AY</b> First wavevector in scattering plane coordinate K (rlu)<br><b>AZ</b> First wavevector in scattering plane coordinate L (rlu)<br><b>BX</b> Second wavevector in scattering plane coordinate H (rlu)<br><b>BY</b> Second wavevector in scattering plane coordinate K (rlu)<br><b>BZ</b> Second wavevector inou scattering plane coordinate L (rlu)<br><b>QH</b> Position of resolution wavevector (center of measurement) H (rlu)<br><b>QK</b> Position of resolution wavevector (center of measurement) K (rlu)<br><b>QL</b> Position of resolution wavevector (center of measurement) L (rlu)<br><b>EN</b> (W) Position of resolution wavevector (center of measurement) W (meV)<br><b>DQH</b> Increment of Q,E defining general scan step along QH (rlu)<br><b>DQK</b> Increment of Q,E defining general scan step along QK (rlu)<br><b>DQL</b> Increment of Q,E defining general scan step along QL (rlu)<br><b>DEN</b> Increment of Q,E defining general scan step along EN (meV)<br><b>GH</b> Gradient of the dispersion (planar) direction along QH (rlu)<br><b>GK</b> Gradient of the dispersion (planar) direction along QK (rlu)<br><b>GL</b> Gradient of the dispersion (planar) direction along QL (rlu)<br><b>GMOD</b>  Gradient of the dispersion (planar) direction along EN (meV)<br><b>BeamShape</b> =0 for circular source, =1 for rectangular source<br><b>WB</b> width/diameter of the source (cm)<br><b>HB</b> height/diameter of the source (cm)<br><b>Guide</b> =0 No Guide, =1 for Guide<br><b>GDH</b> horizontal guide divergence (minutes/Angs)<br><b>GDV</b> vertical guide divergence (minutes/Angs)<br><b>SampleShape</b> =0 for cylindrical sample, =1 for cuboid sample<br><b>WS</b> sample width/diameter perp. to Q (cm)<br><b>TS</b> sample width/diameter along Q (cm)<br><b>HS</b> sample height (cm) (10)<br><b>DetecteorShape</b> =0 for circular detector, =1 for rectangular detector<br><b>WD</b> width/diameter of the detector (cm)<br><b>HD</b> height/diameter of the detector (cm)<br><b>TM</b> thickness of monochromator (cm)<br><b>WM</b> width of monochromator (cm)<br><b>HM</b> height of monochromator (cm)<br><b>TA</b> thickness of analyser (cm)<br><b>WA</b> width of analyser (cm)<br><b>HA</b> height of analyser (cm)<br><b>L1</b> distance between source and monochromator (cm)<br><b>L2</b> distance between monochromator and sample (cm)<br><b>L3</b> distance between sample and analyser (cm)<br><b>L4</b> distance between analyser and detector (cm)<br><b>RMH</b> horizontal radius of curvature of monochromator (cm)<br><b>RMV</b> vertical radius of curvature of monochromator (cm)<br><b>RAH</b> horizontal radius of curvature of analyser (cm)<br><b>RAV</b> vertical radius of curvature of analyser (cm)<br></pre>
         </blockquote>
+        The usual definition of the sample reciprocal lattice
+        orientation vectors <b>A</b> and <b>B</b>, are so that the
+        spectrometer angle <b>A3</b> is the angle between <b>KI</b>
+        and <b>A</b>=(<b>AX,AY,AZ</b>). The <b>B</b>=(<b>BX,BY,BZ</b>)
+        vector defines a second lattice vector in the scattering plane.<br>
+        <br>
         <ul>
         </ul>
       </div>
@@ -380,6 +418,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
+
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -387,8 +428,20 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       ResCal parameters. The 3D view also shows the ellipsoid
       projections. The corresponding full width values are indicated.<br>
       <br>
+      The <i><b>Qx</b></i> axis is along the longitudinal (radial)
+      direction, <i><b>Qy</b></i> is the transverse (tangential)
+      direction, and <i><b>Qz</b></i> is vertical, in the laboratory
+      coordinate frame.<br>
+      In the sample coordinate frame, <i><b>Q1</b></i> is along the <i>A</i>
+      direction, <i><b>Q2</b></i> is perpendicular to <i><b>Q1</b></i>,
+      in plane, and <i><b>Qx</b></i> is perpendicular to (<i>Q1,Q2</i>)<br>
+      <br>
       If no resolution view is active, the results are sent to the
-      console.<br>
+      console. <br>
+      These view can also be displayed with:<br>
+      <blockquote>
+        <pre>&gt;&gt; ResLibCal('<font color="#cc33cc">view2</font>')<br>&gt;&gt; ResLibCal('<font color="#cc33cc">view3</font>')<br>&gt;&gt; ResLibCal('<font color="#cc33cc">geometry</font>')<br></pre>
+      </blockquote>
       <br>
     </div>
     <div style="text-align: center;"><img style=" width: 652px; height:
@@ -406,6 +459,24 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <span style="font-style: italic;">The 3D plot of the TAS
         resolution function. The axis has a contextual menu allowing to
         change the plot rendering.</span><br>
+      <div align="left"><br>
+        A geometric representation of the TAS can be shown in real
+        space, using the instrument configuration parameters. This view
+        is generated from the <span style="font-style: italic;">View/Instrument
+          geometry</span> menu item. It is automatically updated upon
+        change of instrument parameters, as the other views.<br>
+        The signification of the angles shown is as follows:<br>
+        <blockquote>
+          <pre><b>A1</b>  rotation angle of the monochromator. A1=0 means the crystal is in grazing incidence.<br><b>A2</b>  scattering angle (take-off) from the monochromator, usually A2=2*A1 in scattering condition.<br><b>A3</b>  orientation angle of the crystal lattice in real space. This is the angle between KI and vector A=(AX,AY,AZ)<br><b>A4</b>  scattering angle (take-off) from the sample. Usually A4 is NOT 2*A3.<br><b>A5</b>  rotation angle of the analyser. A5=0 means the crystal is in grazing incidence.<br><b>A6</b>  scattering angle (take-off) from the analyser, usually A6=2*A5 in scattering condition.
+&nbsp;<br></pre>
+        </blockquote>
+        <br>
+      </div>
+      <img alt="The TAS geometry view" title="The TAS geometry view"
+        src="ResLibCal_Geometry.png" width="642" height="564"><br>
+      <span style="font-style: italic;">The 3D plot of the TAS geometry.</span>
+      <span style="font-style: italic;">The axis has a contextual menu
+        allowing to change the plot rendering.</span>
       <div style="text-align: left;">
         <h4><a class="mozTocH4" name="mozTocId244259"></a>Usage:
           handling computation along a scan (measurement sequences)</h4>
@@ -432,22 +503,28 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         below), a <span style="font-style: italic;">ResCal5</span>
         configuration (*.par, *.cfg, 42 or 27 numbers), or any file with
         named Rescal parameters, such as in an ILL TAS data ascii file
-        (*.res). <br>
+        and from ResTrax (*.res). SPEC (AFIT) files from LLB can also be
+        read (do not contain sample information).
         <blockquote><b><i>Getting configuration from other packages:</i></b><br>
           The *.res files can be generated by <a
-            href="http://neutron.ujf.cas.cz/restrax/">ResTrax</a>.<br>
+            href="http://neutron.ujf.cas.cz/restrax/">ResTrax</a>. This
+          is a list of NAME=VALUE pairs.<br>
           The *.par and *.cfg files can be generated by <a
 href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>.<br>
-          The *.par files can be generated by the legacy ResCal code.<br>
+          The *.par files can be generated by the legacy ResCal code (42
+          values in a column).<br>
           <a href="http://neutron.ujf.cas.cz/restrax/">ResTrax</a> can
           also generate *.cfg files (different format than ResCal5),
-          which only specify a reduced set of parameters.<br>
+          which only specify a reduced set of parameters (we refer to
+          these as 'rtx' files when exporting to avoid confusion).<br>
         </blockquote>
         In addition, the <span style="font-style: italic;">'File/Open
           Instrument...'</span> menu item allows to read a predefined
         TAS instrument configuration. These instruments are stored in
-        the <i>ResLibCal/instrume</i><i>nts</i> directory, and are
-        '.ini' files (<a
+        the <i>ResLibCal/instrume</i><i>nts</i> directory. Such files
+        should preferably be '.ini' files, but any other supported
+        configuration format also works. We currently provide such files
+        for <a
 href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in1-taslagrange/description/instrument-layout/">IN1</a>
         <a
 href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in8/description/instrument-layout/">IN8</a>
@@ -464,9 +541,12 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
-        <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>). You
+
+
+
+        <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
-        configurations by just copying and renaming any <span
+        configurations by just copying and renaming e.g. any <span
           style="font-style: italic;">ResLibCal.ini</span> file.<span
           style="font-style: italic;"><br>
         </span>
@@ -497,27 +577,41 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
+
+
     and the full ResLibCal configuration (instrument, sample, position,
     method) is saved as a Matlab script. An example of such
     configuration file is available <a href="ResLibCal.ini">here</a>.<br>
     You can further edit this file and change manually values in the
     'EXP' ResLib-compatible structure.<br>
     <br>
-    Other file formats are available<br>
-    <blockquote><i><b>Rescal legacy format (*.par):</b></i><br>
-      If the output file name you specify has a 'par' extension, the
-      generated configuration uses the ResCal legacy format, which
-      consists 42 numbers. Comments are added for easier parameter
-      identification. A complementary CFG files with Popovici parameters
-      will also be written. These files can be read by the legacy ResCal
-      and <a
+    Other file formats are available, which can all be read back into
+    ResLibCal:<br>
+    <blockquote><i><b>Rescal legacy format (*.dat):</b></i><br>
+      If the output file name you specify has a '<b>dat</b>' extension,
+      the generated configuration uses the ResCal legacy format, which
+      consists in 42 numbers.</blockquote>
+    <blockquote><i><b>Rescal legacy format (*.par and *.cfg) with
+          comments:</b></i><br>
+      If the output file name you specify has a '<b>par</b>' or '<b>cfg</b>'
+      extension, the generated configuration uses the ResCal legacy
+      format, which consists in 42 numbers. Comments are added for
+      easier parameter identification. An additional <b>cfg</b> file
+      with Popovici parameters will also be written. These files can be
+      read by the legacy ResCal and <a
 href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>.<br>
       <br>
       <i><b>ResTrax/ResCal format (*.res): </b></i><br>
-      If the output file name you specify has a 'res' extension, the
-      generated configuration uses a simple 'NAME = value' list of
-      parameters. Such files can be, possibly with small changes, read
-      by <a href="http://neutron.ujf.cas.cz/restrax/">ResTrax</a>.<br>
+      If the output file name you specify has a '<b>res</b>' extension,
+      the generated configuration uses a simple 'NAME = value' list of
+      parameters. Such files can be read by <a
+        href="http://neutron.ujf.cas.cz/restrax/">ResTrax</a>.<br>
+      <br>
+      <i><b>ResTrax legacy format (*.rtx):</b></i><br>
+      If the output file name you specify has a '<b>rtx</b>' extension,
+      the generated configuration uses the ResTrax legacy format. This
+      type of file only exports a reduced number of parameters.<br>
     </blockquote>
     The main ResLibCal GUI can also be exported as graphics image in a
     set of formats (<i>File/Export</i> menu item), including PDF, EPS,
@@ -572,6 +666,9 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3Ax' </span>as
+
+
+
 
 
 
@@ -725,8 +822,12 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           bold;"><a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/vtas/">vTAS</a>_view</span>
         (Y. Raoul/A. Bouvet/A. Filhol) and <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/">PKFit</a>.<br>
-      </li>
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/">PKFit</a>.
+        [<a
+          href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
+
+
+          code</a>] </li>
     </ul>
     Some bugs have been corrected in ResLib, ResCal5/rc_popma, and
     Res3ax by cross comparing codes and independent benchmarking. The
@@ -740,7 +841,14 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <div style="margin-left: 40px;">[1] M. J. Cooper and R. Nathans, <span
         style="font-style: italic;">Acta Cryst. </span><span
         style="font-weight: bold;">23</span>, 357, (1967) [<a
-        href="http://dx.doi.org/10.1107/S0365110X67002816">doi:10.1107/S0365110X67002816</a>].<br>
+        href="http://dx.doi.org/10.1107/S0365110X67002816">doi:10.1107/S0365110X67002816</a>].
+
+
+      See [<a
+        href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
+
+
+        code</a>].<br>
       [2] N. J. Chesser and J. D. Axe, <span style="font-style:
         italic;">Acta Cryst.</span> <span style="font-weight: bold;">A29</span>,
       160, (1972) [<a href="http://dx.doi.org/10.1107/S0567739473000422">doi:10.1107/S0567739473000422</a>].<br>
@@ -751,6 +859,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
+
+
 
 
 
