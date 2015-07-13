@@ -15,7 +15,7 @@ C*                             (TEL 01-486 5811 EXT 6384)      *
 C*                                                JULY 1979    *
 C*                                       UPDATED APRIL 1980    *
 C*  Modernised code (GFORTRAN) by E. FARHI , ILL/CS (2015)     *
-C*  Version: $Date$                                          *
+C*  Version $Date$
 C***************************************************************
 C
 C Compile with: ifort    -o rescal rescal.for
@@ -109,7 +109,7 @@ C INITIALISE ===================================================================
 	write (*,*)'METER. THE PARAMETERS ARE ENTERED INTERACTIVELY.'
       write (*,*)''
       write (*,*)'(c) M. HARGREAVE & P. HULLAH (1980). E. FARHI (2015)'
-      write(*,*)'% Version: $Date$'
+      write (*,*)'    Version $Date$'
       write (*,*)'****************************************************'
 	WRITE(*,*) 'Type HELP at prompt for help. EXIT to kindly end.'
 
