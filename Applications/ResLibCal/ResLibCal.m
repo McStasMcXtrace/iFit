@@ -248,24 +248,38 @@ while ~isempty(varargin)
       disp(out.ResCal);
     case 'bragg'
       out = ResLibCal_Compute(out);
-      disp('BRAGG Widths, Radial,tangential, Vertical (HWHM) [ANG-1]');
-      fprintf(1, 'DQR=%g DQT=%g DQV=%g\n', out.resolution.Bragg(1:3)/2);
-      disp('Energy Widths (HWHM) [meV]');
-      fprintf(1, 'DVN=%g DEE=%g\n', out.resolution.Bragg([ 5 4 ])/2);
+      resolution = out.resolution;
+      if isstruct(resolution), resolution = { resolution }; end
+      for index=1:numel(resolution)
+        H   = resolution{index}.HKLE(1); K=resolution{index}.HKLE(2); 
+        L   = resolution{index}.HKLE(3); W=resolution{index}.HKLE(4);
+        fprintf(1,'QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]\n', H,K,L,W);
+        disp('  BRAGG Widths, Radial,tangential, Vertical (HWHM) [ANG-1]');
+        fprintf(1, '  DQR=%g DQT=%g DQV=%g\n', resolution{index}.Bragg(1:3)/2);
+        disp('  Energy Widths (HWHM) [meV]');
+        fprintf(1, '  DVN=%g DEE=%g\n', resolution{index}.Bragg([ 5 4 ])/2);
+        disp('----------------------------------------------------------');
+      end
     case 'resol'
       out = ResLibCal_Compute(out);
-      disp('Resolution Matrix, X-AXIS Along Q [ANGS-1] & [meV]')
-      disp('  X=along Q; Y transversal, in plane; Z vertical.');
-      disp('----------------------------------')
-      disp('    X        Y        Z        W')
-      disp(num2str(out.resolution.RM,'%.1f '));
-      disp(' ');
-      disp('Resolution Matrix, Axes WRT Recip. Lattice [R.l.u.] & [meV]')
-      disp('  X=along A, Y=in plane perp to X; Z=perp to (X,Y).')
-      disp('----------------------------------')
-      disp('    X        Y        Z        W')
-      disp(num2str(out.resolution.RM,'%.1f '));
-      
+      resolution = out.resolution;
+      for index=1:numel(resolution)
+        H   = resolution{index}.HKLE(1); K=resolution{index}.HKLE(2); 
+        L   = resolution{index}.HKLE(3); W=resolution{index}.HKLE(4);
+        fprintf(1,'QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]\n', H,K,L,W);
+        disp('  Resolution Matrix, X-AXIS Along Q [ANGS-1] & [meV]')
+        disp('  X=along Q; Y transversal in plane; Z vertical.');
+        disp(' ')
+        disp('    X        Y        Z        W')
+        disp(num2str(resolution{index}.RM,'%.1f '));
+        disp(' ');
+        disp('  Resolution Matrix, Axes WRT Recip. Lattice [R.l.u.] & [meV]')
+        disp('  X=along A, Y=perp. to X in plane ; Z=perp to (X,Y).')
+        disp(' ')
+        disp('    X        Y        Z        W')
+        disp(num2str(resolution{index}.RM,'%.1f '));
+        disp('----------------------------------------------------------');
+      end
     % other actions (not menu items) -------------------------------------------
     case 'default'  % factory default
       fig = ResLibCal_fig;
