@@ -63,17 +63,34 @@ if ~isempty(strfind(mode,'rlu'))
   o1=EXP.orient1;
   o2=EXP.orient2;
   pr=scalar(o2(1),o2(2),o2(3),yvec(1),yvec(2),yvec(3),rsample);
-  o2(1)=yvec(1)*pr; 
-  o2(2)=yvec(2)*pr; 
-  o2(3)=yvec(3)*pr; 
+  o2 = yvec*pr;
 
-  if abs(o2(1))<1e-5, o2(1)=0; end;
-  if abs(o2(2))<1e-5, o2(2)=0; end;
-  if abs(o2(3))<1e-5, o2(3)=0; end;
+  o1 = o1(:)';
+  o2 = o2(:)';
+  o3 = cross(o1,o2);
+  
+  % convert o1 and o2 to normalised strings
+  if all(abs(o1 - round(o1)) < 1e-5)
+    o1 = round(o1);
+    if sum(o1.*o1) > 1,  o1=[ '[' sprintf('%i ', o1) ']/\surd' num2str(sum(o1.*o1)) ];
+    else                 o1=[ '[' sprintf('%i ', o1) ']' ];
+    end
+  else o1 = [ '[' sprintf('%.3f ', o1) ']' ]; end
 
-  if abs(o1(1))<1e-5, o1(1)=0; end;
-  if abs(o1(2))<1e-5, o1(2)=0; end;
-  if abs(o1(3))<1e-5, o1(3)=0; end;
+  if all(abs(o2 - round(o2)) < 1e-5)
+    o2 = round(o2);
+    if sum(o2.*o2) > 1,  o2=[ '[' sprintf('%i ', o2) ']/\surd' num2str(sum(o2.*o2)) ];
+    else                 o2=[ '[' sprintf('%i ', o2) ']' ];
+    end
+  else o2 = [ '[' sprintf('%.3f ', o2) ']' ]; end
+  
+  if all(abs(o3 - round(o3)) < 1e-5)
+    o3 = round(o3);
+    if sum(o3.*o3) > 1,  o3=[ '[' sprintf('%i ', o3) ']/\surd' num2str(sum(o3.*o3)) ];
+    else                 o3=[ '[' sprintf('%i ', o3) ']' ];
+    end
+  else o3 = [ '[' sprintf('%.3f ', o3) ']' ]; end
+  
   frame = '[Q1,Q2,';
 else
   NP = out.resolution.RM;
@@ -114,11 +131,13 @@ subplot(2,2,1);
 set(line(x,y),'Color','k')
 if isempty(strfind(mode, 'scan')), fill(x,y,'r'); end
 if ~isempty(strfind(mode,'rlu'))
-  xlabel({[ '{\bf Q_1} ( along [' num2str(o1(1)) ' ' num2str(o1(2)) ' ' num2str(o1(3)) '] ) [rlu]' ],[ '{\delta}Q_1=' num2str(max(x)-min(x)) ]})
-  ylabel({[ '{\bf Q_2} ( along [' num2str(o2(1)) ' ' num2str(o2(2)) ' ' num2str(o2(3)) '] ) [rlu]' ],[ '{\delta}Q_2=' num2str(max(y)-min(y)) ]})
+  xlabel({[ '{\bf Q_1} (' o1 ') [rlu]' ], ...
+    [ '{\delta}Q_1=' num2str(max(x)-min(x), 3) ]})
+  ylabel({[ '{\bf Q_2} (' o2 ') [rlu]' ], ...
+    [ '{\delta}Q_2=' num2str(max(y)-min(y), 3) ]})
 else
-  xlabel([ '{\bf Q_x} [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
-  ylabel([ '{\bf Q_y} [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y)) ])
+  xlabel([ '{\bf Q_x} (long.) [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x),3) ] )
+  ylabel([ '{\bf Q_y} (trans.) [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y),3) ] )
 end
 title(EXP.method); 
 da=daspect; da(1:2) = max(da(1:2)); daspect(da);
@@ -156,18 +175,19 @@ subplot(2,2,2);
 set(line(x,y),'Color','k')
 if isempty(strfind(mode, 'scan')), fill(x,y,'r'); end
 if ~isempty(strfind(mode,'rlu'))
-  xlabel({[ '{\bf Q_1} [A^{-1}] ( along [' num2str(o1(1)) ' ' num2str(o1(2)) ' ' num2str(o1(3)) '] ) [rlu]' ],[ '{\delta}Q_1=' num2str(max(x)-min(x)) ]})
+  xlabel({[ '{\bf Q_1} (' o1 ') [rlu]' ], ...
+    [ '{\delta}Q_1=' num2str(max(x)-min(x),3) ]})
 else
-  xlabel([ '{\bf Q_x} [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x)) ])
+  xlabel([ '{\bf Q_x} (long.) [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x),3) ])
 end
 
 if isempty(strfind(mode,'qz'))
-  ylabel([ '{\bf \omega} [meV]  {\delta}\omega=' num2str(max(y)-min(y)) ])
+  ylabel([ '{\bf \omega} [meV]  {\delta}\omega=' num2str(max(y)-min(y),2) ])
 else
   if ~isempty(strfind(mode,'rlu'))
-    ylabel([ '{\bf Qz} [rlu] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+    ylabel([ '{\bf Qz} (' o3 ') [rlu] - {\delta}Qz=' num2str(max(y)-min(y),3) ]);
   else
-    ylabel([ '{\bf Qz} [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+    ylabel([ '{\bf Qz} (vert.) [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y),3) ]);
   end
 end
 xlim(x1); xe=ylim;
@@ -213,18 +233,19 @@ subplot(2,2,3);
 set(line(x,y),'Color','k')
 if isempty(strfind(mode, 'scan')), fill(x,y,'r'); end
 if ~isempty(strfind(mode,'rlu'))
-  xlabel({[ '{\bf Q_2} ( along [' num2str(o2(1)) ' ' num2str(o2(2)) ' ' num2str(o2(3)) '] ) [rlu]' ],[ '{\delta}Q_2=' num2str(max(x)-min(x)) ]})
+  xlabel({[ '{\bf Q_2} (' o2 ') [rlu]' ], ...
+    [ '{\delta}Q_2=' num2str(max(x)-min(x),3) ]})
 else
-  xlabel([ '{\bf Q_y} [A^{-1}] {\delta}Q_y=' num2str(max(x)-min(x)) ])
+  xlabel([ '{\bf Q_y} (trans.) [A^{-1}] {\delta}Q_y=' num2str(max(x)-min(x)) ])
 end
 
 if isempty(strfind(mode,'qz'))
-  ylabel([ '{\bf \omega} [meV]  {\delta}\omega=' num2str(max(y)-min(y)) ])
+  ylabel([ '{\bf \omega} [meV]  {\delta}\omega=' num2str(max(y)-min(y),2) ])
 else
   if ~isempty(strfind(mode,'rlu'))
-    ylabel([ '{\bf Qz} [rlu] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+    ylabel([ '{\bf Qz} (' o3 ') [rlu] - {\delta}Qz=' num2str(max(y)-min(y),3) ]);
   else
-    ylabel([ '{\bf Qz} [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y)) ]);
+    ylabel([ '{\bf Qz} (vert.) [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y),3) ]);
   end
 end
 

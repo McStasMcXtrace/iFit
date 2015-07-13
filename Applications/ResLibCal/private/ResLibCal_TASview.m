@@ -64,9 +64,9 @@ y = y+translate*cos(direction);
 l=line([ x x0 ], [y y0], [ 0 0 ]); set(l,'Color','cyan', 'LineStyle','--');
 
 % create a square Monochromator
-X = [ -EXP.mono.width/2  -EXP.mono.width/2   EXP.mono.width/2   EXP.mono.width/2  -EXP.mono.width/2]*sin(A1);
+X = [ -EXP.mono.width/2  -EXP.mono.width/2   EXP.mono.width/2   EXP.mono.width/2  -EXP.mono.width/2];
 Z = [  EXP.mono.height/2 -EXP.mono.height/2 -EXP.mono.height/2  EXP.mono.height/2  EXP.mono.height/2];
-Y = X*cos(A1);
+Y = X*cos(direction+A1); X=X*sin(direction+A1);
 l=line(X+x,Y+y,Z); 
 t=text(X(1)+x,Y(1)+y,Z(1),'Monochromator'); 
 set([ l t ],'Color','red');
@@ -80,14 +80,14 @@ y = y+translate*cos(direction);
 l=line([ x x0 ], [y y0], [ 0 0 ]); set(l,'Color','cyan', 'LineStyle','--');
 
 % create a rotated square Sample
-X = [ -EXP.sample.width/2  -EXP.sample.width/2   EXP.sample.width/2  EXP.sample.width/2  -EXP.sample.width/2]*sin(A3);
+X = [ -EXP.sample.width/2  -EXP.sample.width/2   EXP.sample.width/2  EXP.sample.width/2  -EXP.sample.width/2];
 Z = [  EXP.sample.height/2 -EXP.sample.height/2 -EXP.sample.height/2 EXP.sample.height/2  EXP.sample.height/2];
-Y = X*cos(A3);
+Y = X*cos(direction+A3); X=X*sin(direction+A3);
 l1=line(X+x,Y+y,Z); 
 t=text(X(1)+x,Y(1)+y,Z(1),'Sample');
-X = [ -EXP.sample.depth/2  -EXP.sample.depth/2   EXP.sample.depth/2  EXP.sample.depth/2  -EXP.sample.depth/2]*sin(A3+pi/2);
+X = [ -EXP.sample.depth/2  -EXP.sample.depth/2   EXP.sample.depth/2  EXP.sample.depth/2  -EXP.sample.depth/2]*sin(direction+A3+pi/2);
 Z = [  EXP.sample.height/2 -EXP.sample.height/2 -EXP.sample.height/2 EXP.sample.height/2  EXP.sample.height/2];
-Y = X*cos(A3+pi/2);
+Y = X*cos(direction+A3+pi/2);
 l2=line(X+x,Y+y,Z);
 set([ l1 l2 t ],'Color','green');
 
@@ -100,9 +100,9 @@ y = y+translate*cos(direction);
 l=line([ x x0 ], [y y0], [ 0 0 ]); set(l,'Color','cyan', 'LineStyle','--');
 
 % create a square
-X = [ -EXP.ana.width/2  -EXP.ana.width/2   EXP.ana.width/2  EXP.ana.width/2  -EXP.ana.width/2]*sin(A5);
+X = [ -EXP.ana.width/2  -EXP.ana.width/2   EXP.ana.width/2  EXP.ana.width/2  -EXP.ana.width/2];
 Z = [  EXP.ana.height/2 -EXP.ana.height/2 -EXP.ana.height/2 EXP.ana.height/2  EXP.ana.height/2];
-Y = X*cos(A5);
+Y = X*cos(direction+A5); X=X*sin(direction+A5);
 l=line(X+x,Y+y,Z);
 t=text(X(1)+x,Y(1)+y,Z(1),'Analyzer');
 set([ l t ],'Color','magenta');
