@@ -195,24 +195,26 @@ end
   if isfield(p,'FX')
     if p.FX==2, EXP.infin=-1; else EXP.infin=1; end
   end
-  if isfield(p,'ALF1') && isfield(p,'ALF2') && isfield(p,'ALF3') && isfield(p,'ALF4')
-    EXP.hcol = [ p.ALF1 p.ALF2 p.ALF3 p.ALF4 ];
-  end
-  if isfield(p,'BET1') && isfield(p,'BET2') && isfield(p,'BET3') && isfield(p,'BET4')
-    EXP.vcol = [ p.BET1 p.BET2 p.BET3 p.BET4 ];
-  end
+  if isfield(p,'ALF1'), EXP.hcol(1) = p.ALF1; end
+  if isfield(p,'ALF2'), EXP.hcol(2) = p.ALF2; end
+  if isfield(p,'ALF3'), EXP.hcol(3) = p.ALF3; end
+  if isfield(p,'ALF4'), EXP.hcol(4) = p.ALF4; end
+  if isfield(p,'BET1'), EXP.vcol(1) = p.BET1; end
+  if isfield(p,'BET2'), EXP.vcol(2) = p.BET2; end
+  if isfield(p,'BET3'), EXP.vcol(3) = p.BET3; end
+  if isfield(p,'BET4'), EXP.vcol(4) = p.BET4; end
   if isfield(p,'AS'), EXP.sample.a=p.AS; end
   if isfield(p,'BS'), EXP.sample.b=p.BS; end
   if isfield(p,'CS'), EXP.sample.c=p.CS; end
   if isfield(p,'AA'), EXP.sample.alpha=p.AA; end
   if isfield(p,'BB'), EXP.sample.beta= p.BB; end
   if isfield(p,'CC'), EXP.sample.gamma=p.CC; end
-  if isfield(p,'AX') && isfield(p,'AY') && isfield(p,'AZ')
-    EXP.orient1=[p.AX p.AY p.AZ];
-  end
-  if isfield(p,'BX') && isfield(p,'BY') && isfield(p,'BZ')
-    EXP.orient2=[p.BX p.BY p.BZ];
-  end
+  if isfield(p,'AX'), EXP.orient1(1)=p.AX; end
+  if isfield(p,'AY'), EXP.orient1(2)=p.AY; end
+  if isfield(p,'AZ'), EXP.orient1(3)=p.AZ; end
+  if isfield(p,'BX'), EXP.orient2(1)=p.BX; end
+  if isfield(p,'BY'), EXP.orient2(2)=p.BY; end
+  if isfield(p,'BZ'), EXP.orient2(3)=p.BZ; end
   if isfield(p,'QH'), EXP.QH=p.QH; end
   if isfield(p,'QK'), EXP.QK=p.QK; end
   if isfield(p,'QL'), EXP.QL=p.QL; end
@@ -236,9 +238,10 @@ end
   if isfield(p,'WA'), EXP.ana.width     =p.WA; end
   if isfield(p,'HA'), EXP.ana.height    =p.HA; end
   if isfield(p,'TA'), EXP.ana.depth     =p.TA; end
-  if isfield(p,'L1') && isfield(p,'L2') && isfield(p,'L3') && isfield(p,'L4')
-    EXP.arms=[p.L1 p.L2 p.L3 p.L4];
-  end
+  if isfield(p,'L1'), EXP.arms(1)=p.L1; end
+  if isfield(p,'L2'), EXP.arms(2)=p.L2; end
+  if isfield(p,'L3'), EXP.arms(3)=p.L3; end
+  if isfield(p,'L4'), EXP.arms(4)=p.L4; end
   
   % radius of curvature [m] -> [cm]
   if isfield(p,'RMH'), EXP.mono.rh=100*p.RMH; end
