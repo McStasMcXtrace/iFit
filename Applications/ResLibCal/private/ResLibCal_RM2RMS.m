@@ -1,4 +1,4 @@
-function [RMS, S]=ResLibCal_RM2RMS(H,K,L,W,EXP,RM)
+function [RMS, S, U]=ResLibCal_RM2RMS(H,K,L,W,EXP,RM)
 % RMS=ResLibCal_RM2RMS(H,K,L,W,EXP,RM) rotate Resolution matrix in [Q1 Q2] frame
 % [RMS,S]=ResLibCal_RM2RMS(H,K,L,W,EXP,RM)
 %   also returns the tranformation matrix in the lattice coordinates

@@ -24,11 +24,13 @@ else
 end
 cla;
 
-if ~iscell(out.resolution)
-  out.resolution = { out.resolution };
+resolution = out.resolution;
+
+if ~iscell(resolution)
+  resolution = { resolution };
 end
-for index=1:numel(out.resolution)
-  angles    = out.resolution{index}.angles*pi/180;
+for index=1:numel(resolution)
+  angles    = resolution{index}.angles*pi/180;
 
   angles = real(angles); % in case the configuration is not possible (angles are imaginary)
 
@@ -50,8 +52,8 @@ for index=1:numel(out.resolution)
   X = [ -EXP.beam.width/2  -EXP.beam.width/2   EXP.beam.width/2  EXP.beam.width/2  -EXP.beam.width/2];
   Z = [  EXP.beam.height/2 -EXP.beam.height/2 -EXP.beam.height/2 EXP.beam.height/2  EXP.beam.height/2];
   Y = zeros(1,5)+0;
-  l=line(X+x,Y+y,Z); 
-  t=text(X(1)+x,Y(1)+y,Z(1),'Beam/Source'); 
+  l=line(X+x,Y+y,Z); t = [];
+  if index==1, t=text(X(1)+x,Y(1)+y,Z(1),'Beam/Source'); end
   set([ l t ],'Color','blue');
 
   x0=x; y0=y;
@@ -66,8 +68,8 @@ for index=1:numel(out.resolution)
   X = [ -EXP.mono.width/2  -EXP.mono.width/2   EXP.mono.width/2   EXP.mono.width/2  -EXP.mono.width/2];
   Z = [  EXP.mono.height/2 -EXP.mono.height/2 -EXP.mono.height/2  EXP.mono.height/2  EXP.mono.height/2];
   Y = X*cos(direction+A1); X=X*sin(direction+A1);
-  l=line(X+x,Y+y,Z); 
-  t=text(X(1)+x,Y(1)+y,Z(1),'Monochromator'); 
+  l=line(X+x,Y+y,Z); t = [];
+  if index==1, t=text(X(1)+x,Y(1)+y,Z(1),'Monochromator'); end
   set([ l t ],'Color','red');
 
   x0=x; y0=y;
@@ -82,8 +84,8 @@ for index=1:numel(out.resolution)
   X = [ -EXP.sample.width/2  -EXP.sample.width/2   EXP.sample.width/2  EXP.sample.width/2  -EXP.sample.width/2];
   Z = [  EXP.sample.height/2 -EXP.sample.height/2 -EXP.sample.height/2 EXP.sample.height/2  EXP.sample.height/2];
   Y = X*cos(direction+A3); X=X*sin(direction+A3);
-  l1=line(X+x,Y+y,Z); 
-  t=text(X(1)+x,Y(1)+y,Z(1),'Sample');
+  l1=line(X+x,Y+y,Z); t = [];
+  if index==1, t=text(X(1)+x,Y(1)+y,Z(1),'Sample'); end
   X = [ -EXP.sample.depth/2  -EXP.sample.depth/2   EXP.sample.depth/2  EXP.sample.depth/2  -EXP.sample.depth/2]*sin(direction+A3+pi/2);
   Z = [  EXP.sample.height/2 -EXP.sample.height/2 -EXP.sample.height/2 EXP.sample.height/2  EXP.sample.height/2];
   Y = X*cos(direction+A3+pi/2);
@@ -102,8 +104,8 @@ for index=1:numel(out.resolution)
   X = [ -EXP.ana.width/2  -EXP.ana.width/2   EXP.ana.width/2  EXP.ana.width/2  -EXP.ana.width/2];
   Z = [  EXP.ana.height/2 -EXP.ana.height/2 -EXP.ana.height/2 EXP.ana.height/2  EXP.ana.height/2];
   Y = X*cos(direction+A5); X=X*sin(direction+A5);
-  l=line(X+x,Y+y,Z);
-  t=text(X(1)+x,Y(1)+y,Z(1),'Analyzer');
+  l=line(X+x,Y+y,Z); t = [];
+  if index==1, t=text(X(1)+x,Y(1)+y,Z(1),'Analyzer'); end
   set([ l t ],'Color','magenta');
 
   x0=x; y0=y;
@@ -118,8 +120,8 @@ for index=1:numel(out.resolution)
   X = [ -EXP.detector.width/2  -EXP.detector.width/2   EXP.detector.width/2  EXP.detector.width/2  -EXP.detector.width/2];
   Z = [  EXP.detector.height/2 -EXP.detector.height/2 -EXP.detector.height/2 EXP.detector.height/2  EXP.detector.height/2];
   Y = zeros(1,5)+0;
-  l=line(X+x,Y+y,Z);
-  t=text(X(1)+x,Y(1)+y,Z(1),'Detector');
+  l=line(X+x,Y+y,Z); t = [];
+  if index==1, t=text(X(1)+x,Y(1)+y,Z(1),'Detector'); end
   set([ l t ],'Color','black');
 
   % add contextual menu ----------------------------------------------------------
@@ -148,11 +150,24 @@ if isempty(findobj(gcf,'Tag','ResLibCal_TASView_Context'))
   daspect([ 1 1 1]);
   
   uicm = uicontextmenu;
+  % menu Duplicate (axis frame/window)
+  uimenu(uicm, 'Label', 'ResLibCal: Triple-Axis Spectrometer geometry') ;
+  uimenu(uicm, 'Separator','on', 'Label', 'Duplicate View...', 'Callback', ...
+     [ 'tmp_cb.g=gca;' ...
+       'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
+       'set(tmp_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+       'set(gcf,''Name'',''Copy of ResLibCal: TAS view''); ' ...
+       'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
+       'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
+       'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
   uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
   uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback', [ ...
       '[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end;' ...
       'clear tmp_a tmp_e;' ]);
-  set(gca, 'UIContextMenu', uicm, 'Tag','ResLibCal_TASView_Context');
-    uimenu(uicm, 'Label','Toggle Perspective','Callback', ...
+  uimenu(uicm, 'Label','Toggle Perspective','Callback', ...
       'if strcmp(get(gca,''Projection''),''orthographic'') set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
+  uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
+    'Callback',[ 'msgbox(''' ResLibCal('version') ''',''About ResLibCal'',''help'')' ]);
+  set(gca, 'UIContextMenu', uicm, 'Tag','ResLibCal_TASView_Context');
 end
+
