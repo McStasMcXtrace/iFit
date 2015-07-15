@@ -8,8 +8,9 @@ function resolution = ResLibCal_ComputeResMat(EXP)
 %  resolution.RM:  Resolution matrix with x-axis along Q
 %  resolution.RMS: Resolution matrix wrt reciprocal lattice units
 
-% Calls: ResLibCal_fig2EXP, ResMatS, ResLibCal_SampleRotateS, rc_re2rc
+% Calls: ResLibCal_fig2EXP, ResMat, 
 %        rc_cnmat, rc_popma, res3ax5, vTAS_AFILL, rc_bragg
+%        rc_re2rc called in ResLibCal_RM2RMS
 
   resolution = [];
   if nargin == 0,  EXP=''; end
@@ -84,6 +85,9 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     end
     res.focus = [ EXP.mono.rv EXP.mono.rh EXP.ana.rv EXP.ana.rh ];
     
+    % sample rotation. We ignore it in this implementation.
+    % [EXP,x,y,z]       = ResLibCal_SampleRotateS(h,k,l,EXP);
+    
     % choice of method
     if ~isempty(strfind(EXP.method, 'rescal5'))
       if exist('rc_cnmat') == 2
@@ -92,11 +96,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
         if ~isempty(strfind(EXP.method, 'cooper')), method=@rc_cnmat;
         else                                        method=@rc_popma; 
         end
-        [EXP,x,y,z]       = ResLibCal_SampleRotateS(h,k,l,EXP);
-        % p         = ResLibCal_EXP2RescalPar(EXP);
-        % [Q2c,Qmag]= rc_re2rc( p(19:21), p(22:24), p(31:33) ); ([abc],[alpha beta gamma], [hklw]) 
         [R0,RM]   = feval(method,f,0,EXP,0);
-        RMS       = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
       else
         disp([mfilename ': Rescal5/rc_cnmat is not available' ]);
       end
@@ -105,9 +105,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
         if ~isempty(strfind(EXP.method, 'cooper')), method=@res3ax3;
         else                                        return; % no Popovici from J Ollivier
         end
-        [EXP,x,y,z]       = ResLibCal_SampleRotateS(h,k,l,EXP);
         [R0,RM]   = feval(method,h,k,l,w, EXP);
-        RMS       = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
       else
         disp([mfilename ': res3ax (JO) is not available' ]);
       end
@@ -115,28 +113,33 @@ function resolution = ResLibCal_ComputeResMat(EXP)
       if exist('Rescal_AFILL') == 2
         % This method is 100% equivalent to ResCal5/Cooper-Nathans
         method    = @Rescal_AFILL; 
-        [EXP,x,y,z]       = ResLibCal_SampleRotateS(h,k,l,EXP);
         [R0,RM]   = feval(method,h,k,l,w, EXP);
-        RMS       = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
       else
         disp([mfilename ': rescal/AFILL is not available' ]);
       end
     else % default is 'reslib'
-      % calls ResLib/ResMatS
-      % depends: ResMatS, CleanArgs, StandardSystem
-      %          modvec, scalar, ResMat, GetLattice, star, GetTau
-      if exist('ResMatS') == 2
-        [R0, RMS, RM,x,y,z] = ResMatS(h,k,l,w, EXP);
+      % calls ResLib/ResMat
+      if exist('ResMat') == 2
+        [sample,rsample]=GetLattice(EXP);
+        Q=modvec(h,k,l,rsample);
+        [R0,RM]= ResMat(Q,w,EXP);
+        % [R0, RMS, RM,x,y,z] = ResMatS(h,k,l,w, EXP);
+        
       else
-        disp([mfilename ': ResLib 3.4/ResMatS is not available' ]);
+        disp([mfilename ': ResLib 3.4/ResMat is not available' ]);
       end
     end
+    % resolution matrix in rlu and transformation [HKL] -> [ABC] frame
+    % S = inv([x y z]) when [x y z ] = StandardSystem(EXP);
+    % S = matrix 's' in inline (below) ResLibCal_ComputeResMat_Angles
+    [RMS,S]   = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
+    
     % assemble 'resolution' step
     if ~all(isreal(RM))  RM=[]; end
     if ~all(isreal(RMS)) RMS=[]; end
     if ~isempty(RMS)
-      % compute some widths in [Q1,Q2,Qz,E]
-      res.BraggS = rc_bragg(RMS); % dQ1,dQ2,dQz,V,dE in [Q1,Q2,Qz,E] frame
+      % compute some widths in [Q1,Q2,Q3,E]
+      res.BraggS = rc_bragg(RMS); % dQ1,dQ2,dQz,V,dE in [Q1,Q2,Q3,E] frame
     end
     if ~isempty(RM)
       % compute some widths in [Qx,Qy,Qz,E]
@@ -144,12 +147,14 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     end
     % resolution volume and matrices
     res.R0    = R0;
-    res.RM    = RM;  % M in [Qx,Qy,Qz,E] frame
-    res.RMS   = RMS; % M in [Q1,Q2,Qz,E] frame
+    res.RM    = RM;  % M in [Qx,Qy,Qz,E] frame Qx // Q
+    res.RMS   = RMS; % M in [QA,QB,QC,E] frame
     res.HKLE  = [ h k l w ];
-    res.vectors=[ x y z ];
-    res.method= method_orig;
-    [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP);
+    % res.vectors=[ x y z ];
+    % vectors = inv(hkl2ABC)
+    res.hkl2ABC= S; % [hkl in ABC frame] = (res.hkl2ABC)*[ h k l ]'
+    res.method = method_orig;
+    [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP, S);
     
     % store resolution
     if len == 1
@@ -164,8 +169,9 @@ function resolution = ResLibCal_ComputeResMat(EXP)
 % end ResLibCal_ComputeResMat
 
 % ------------------------------------------------------------------------------
-function [A,Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP)
+function [A,Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP, s)
 % compute all TAS angles (in plane)
+% code extracted from TAS MAD/ILL and McStas/templateTAS.instr
 
     % compute angles
     fx = 2*(EXP.infin==-1)+(EXP.infin==1);
@@ -175,36 +181,41 @@ function [A,Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP)
     kf=sqrt(kfix^2-(2-fx)*f*w);
 
     % compute the transversal Q component, and A3 (sample rotation)
-    % from McStas templateTAS.instr and TAS MAD ILL
-    a     = [ EXP.sample.a     EXP.sample.b    EXP.sample.c ]/2/pi;
-    alpha = [ EXP.sample.alpha EXP.sample.beta EXP.sample.gamma ]*pi/180;
-    cosa  = cos(alpha); sina = sin(alpha);
-    cc    = sum(cosa.*cosa);
-    cc    = 1+2*prod(cosa) - cc;
-    cc    = sqrt(cc);
-    b     = sina./(a*cc);
-    c1    = circshift(cosa',-1); c2    = circshift(c1,-1); 
-    s1    = circshift(sina',-1); s2    = circshift(s1,-1); 
-    cosb  = (c1.*c2 - cosa')./(s1.*s2);
-    sinb  = sqrt(1 - cosb.*cosb);
+    % from McStas/templateTAS.instr and TAS MAD ILL
+    if nargin < 6
+      a     = [ EXP.sample.a     EXP.sample.b    EXP.sample.c ]/2/pi;
+      alpha = [ EXP.sample.alpha EXP.sample.beta EXP.sample.gamma ]*pi/180;
+      cosa  = cos(alpha); sina = sin(alpha);
+      cc    = sum(cosa.*cosa);
+      cc    = 1+2*prod(cosa) - cc;
+      cc    = sqrt(cc);
+      b     = sina./(a*cc);
+      c1    = circshift(cosa',-1); c2    = circshift(c1,-1); 
+      s1    = circshift(sina',-1); s2    = circshift(s1,-1); 
+      cosb  = (c1.*c2 - cosa')./(s1.*s2);
+      sinb  = sqrt(1 - cosb.*cosb);
 
-    bb    = [b(1)          0                    0 
-             b(2)*cosb(3)  b(2)*sinb(3)         0
-             b(3)*cosb(2) -b(3)*sinb(2)*cosa(1) 1/a(3)];
-    bb = bb';
-             
-    aspv  = [ EXP.orient1' EXP.orient2' ];
-    vv = zeros(3,3);
-    vv(1:2,:)  = transpose(bb*aspv);
-    for m=3:-1:2
-      vt    = circshift(vv,[1 1]).*circshift(vv, [2 2]) ...
-            - circshift(vv,[1 2]).*circshift(vv, [2 1]);
-      vv(m,:) = vt(m,:);
+      bb    = [b(1)          0                    0 
+               b(2)*cosb(3)  b(2)*sinb(3)         0
+               b(3)*cosb(2) -b(3)*sinb(2)*cosa(1) 1/a(3)];
+      bb = bb';
+               
+      aspv  = [ EXP.orient1' EXP.orient2' ];
+      vv = zeros(3,3);
+      vv(1:2,:)  = transpose(bb*aspv);
+      for m=3:-1:2
+        vt    = circshift(vv,[1 1]).*circshift(vv, [2 2]) ...
+              - circshift(vv,[1 2]).*circshift(vv, [2 1]);
+        vv(m,:) = vt(m,:);
+      end
+      c     = sqrt(sum(vv'.^2));
+      vv    = vv./repmat(c,[3 1])';
+      s     = vv*bb;
+      % the matrix 's' is the same as 'S' from ResLibCal_RM2RMS, and its inverse 
+      % is the same as [x,y,z]=StandardSystem(EXP)
     end
-    c     = sqrt(sum(vv'.^2));
-    vv    = vv./repmat(c,[3 1])';
-    s     = vv*bb;
-    qt    = [h k l ]*s';
+    
+    qt    = [h k l ]*s'; % from [HKL] to [A B C] frame.
     qs    = sum(qt.*qt); Q=sqrt(qs);
     sm =EXP.mono.dir;
     ss =EXP.sample.dir;
