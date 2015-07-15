@@ -83,6 +83,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -116,6 +117,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       Simply extract the application archive. <br>
       In addition, the legacy RESCAL code is also made available as [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
+
 
 
         code</a>].<br>
@@ -166,6 +168,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
           href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
 
 
+
           code</a>]. </li>
       <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
         Cooper-Nathans method [<a
@@ -181,6 +184,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
         with correction [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>].</li>
       <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
@@ -190,6 +194,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
           href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
         Matlab application, in the Popovici formalism [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
+
 
 
 
@@ -211,12 +216,14 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
         The analyzer reflectivity is also taken into account (with
         analyzer thickness 'WA') and correction [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>]..</li>
       <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
         resolution [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
+
 
 
 
@@ -242,8 +249,10 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
       whereas all the other methods use the Popovici formulation [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100%5C">3</a>].
+
 
 
 
@@ -259,6 +268,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
     <blockquote> In all methods, the alpha/beta collimation parameters
       support guide <i>m-</i>coating specification (negative values
       e.g. -2) which are then converted to equivalent critical angles <i>0.1
+
 
 
 
@@ -421,6 +431,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -463,6 +474,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         A geometric representation of the TAS can be shown in real
         space, using the instrument configuration parameters. This view
         is generated from the <span style="font-style: italic;">View/Instrument
+
           geometry</span> menu item. It is automatically updated upon
         change of instrument parameters, as the other views.<br>
         The signification of the angles shown is as follows:<br>
@@ -544,6 +556,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
         configurations by just copying and renaming e.g. any <span
@@ -558,6 +571,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -672,6 +686,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
     free text. <br>
     The position of the measurement is [ QH QK QL W ]:<br>
     <pre style="margin-left: 40px;">&gt;&gt; [ out.EXP.QH out.EXP.QK out.EXP.QL out.EXP.W ]<br>ans =<br>     2     0     0     0<br>&gt;&gt; out.EXP.W = 1;		<i>% change the position in reciprocal space</i><br>&gt;&gt; out = ResLibCal(out);	<span style="font-style: italic;">% request a new computation with modified choices</span><br></pre>
@@ -755,7 +770,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
           </td>
         </tr>
         <tr>
-          <td valign="top"><i>geometry</i><i><br>
+          <td valign="top"><i>geometry</i><i> </i>or<i> tas<br>
             </i></td>
           <td valign="top">display the spectrometer geometry<br>
           </td>
@@ -774,8 +789,51 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
           </td>
         </tr>
         <tr>
-          <td valign="top"><i>quit</i><i><br>
+          <td valign="top"><i>cloud</i><i><br>
             </i></td>
+          <td valign="top">compute a Monte-Carlo cloud of points to
+            model the 4D Gaussian resolution<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><i>resol</i><i><br>
+            </i></td>
+          <td valign="top">print-out the resolution matrix <i>a la</i>
+            RESCAL<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><i>bragg</i><i><br>
+            </i></td>
+          <td valign="top">print-out the Bragg widths <i>a la</i>
+            RESCAL</td>
+        </tr>
+        <tr>
+          <td valign="top"><i>list</i><i><br>
+            </i></td>
+          <td valign="top">print-out the list of parameters <i>a la</i>
+            RESCAL</td>
+        </tr>
+        <tr>
+          <td valign="top"><i>version</i><i><br>
+            </i></td>
+          <td valign="top">print-out the ResLibCal version<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><i>export</i><i><br>
+            </i></td>
+          <td valign="top">dump the main ResLibCal window into a file<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><i>print</i><i><br>
+            </i></td>
+          <td valign="top">print the main ResLibCal window</td>
+        </tr>
+        <tr>
+          <td valign="top"><i>quit</i><i><br>
+            </i> </td>
           <td valign="top">same as <i>exit</i>, but does not save the
             configuration<br>
           </td>
@@ -827,6 +885,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
 
 
+
           code</a>] </li>
     </ul>
     Some bugs have been corrected in ResLib, ResCal5/rc_popma, and
@@ -844,8 +903,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         href="http://dx.doi.org/10.1107/S0365110X67002816">doi:10.1107/S0365110X67002816</a>].
 
 
+
       See [<a
         href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
+
 
 
         code</a>].<br>
@@ -859,6 +920,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
