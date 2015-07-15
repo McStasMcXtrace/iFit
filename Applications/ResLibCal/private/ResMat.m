@@ -18,7 +18,8 @@ function [R0,RM]=ResMat(Q,W,EXP)
 CONVERT1=pi/60/180; % TODO: FIX constant from CN. 0.4246
 CONVERT2=2.072;
 
-[len,Q,W,EXP]=CleanArgs(Q,W,EXP);
+len = 1; % vectors are treated in ResLibCal_ComputeResMat. We get rid of CleanArgs.
+% [len,Q,W,EXP]=CleanArgs(Q,W,EXP);
 
 RM=zeros(4,4,len);
 R0=zeros(1,len);
