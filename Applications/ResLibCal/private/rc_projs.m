@@ -9,6 +9,8 @@ function out=rc_projs(out, mode)
 %
 % DFM 10.11.95
 
+% Calls: StandardSystem, GetLattice, scalar, modvec
+
 % input parameters
 if nargin < 1, out = []; end
 if nargin < 2, mode=''; end
@@ -26,267 +28,293 @@ else
 end
 
 % handle resolution for scans
-if  numel(out.resolution) > 1
-  for index=1:numel(out.resolution)
-    this = out; 
-    if iscell(this.resolution), this.resolution=this.resolution{index};
-    else                        this.resolution=this.resolution(index); 
-    end
-    if index > 1, 
-      this_mode = [ mode ' scan' ]; hold on
-    else 
-      this_mode=mode; hold off; 
-    end
-    feval(mfilename, this, this_mode);
-  end
-  hold off
-  return
+if numel(out.resolution) == 1
+  resolutions = { out.resolution };
+else
+  resolutions = out.resolution;
 end
 
-if isfield(out.resolution,'HKLE')
-  H=out.resolution.HKLE(1); K=out.resolution.HKLE(2); 
-  L=out.resolution.HKLE(3); W=out.resolution.HKLE(4);
-  EXP.QH=H; EXP.QK=K; EXP.QL=L; EXP.W=W; % update single scan step
-else
-  EXP.QH=EXP.QH(1); EXP.QK=EXP.QK(1); EXP.QL=EXP.QL(1); EXP.W=EXP.W(1); 
-end
+for index=1:numel(resolutions)
+  resolution = resolutions{index};
 
-R0  = out.resolution.R0;
-
-if ~isempty(strfind(mode,'rlu'))
-  NP  = out.resolution.RMS;
-
-  [xvec,yvec,zvec,sample,rsample]=StandardSystem(EXP);
-
-  %find reciprocal-space directions of X and Y axes
-
-  o1=EXP.orient1;
-  o2=EXP.orient2;
-  pr=scalar(o2(1),o2(2),o2(3),yvec(1),yvec(2),yvec(3),rsample);
-  o2 = yvec*pr;
-
-  o1 = o1(:)';
-  o2 = o2(:)';
-  o3 = cross(o1,o2);
-  
-  % convert o1 and o2 to normalised strings
-  if all(abs(o1 - round(o1)) < 1e-5)
-    o1 = round(o1);
-    if sum(o1.*o1) > 1,  o1=[ '[' sprintf('%i ', o1) ']/\surd' num2str(sum(o1.*o1)) ];
-    else                 o1=[ '[' sprintf('%i ', o1) ']' ];
-    end
-  else o1 = [ '[' sprintf('%.3f ', o1) ']' ]; end
-
-  if all(abs(o2 - round(o2)) < 1e-5)
-    o2 = round(o2);
-    if sum(o2.*o2) > 1,  o2=[ '[' sprintf('%i ', o2) ']/\surd' num2str(sum(o2.*o2)) ];
-    else                 o2=[ '[' sprintf('%i ', o2) ']' ];
-    end
-  else o2 = [ '[' sprintf('%.3f ', o2) ']' ]; end
-  
-  if all(abs(o3 - round(o3)) < 1e-5)
-    o3 = round(o3);
-    if sum(o3.*o3) > 1,  o3=[ '[' sprintf('%i ', o3) ']/\surd' num2str(sum(o3.*o3)) ];
-    else                 o3=[ '[' sprintf('%i ', o3) ']' ];
-    end
-  else o3 = [ '[' sprintf('%.3f ', o3) ']' ]; end
-  
-  frame = '[Q1,Q2,';
-else
-  NP = out.resolution.RM;
-  frame = '[Qx,Qy,';
-end
-if isempty(strfind(mode,'qz')), frame = [ frame 'E]' ];
-else frame = [ frame 'Qz]' ]; end
-if isempty(NP) || ~all(isreal(NP)), return; end
-A=NP;
-const=1.17741; % half width factor
-
-%----- Remove the vertical component from the matrix.
-B = A;
-if isempty(strfind(mode,'qz'))
-  B(3,:)=[]; B(:,3)=[]; % remove Qz component
-else
-  B(4,:)=[]; B(:,4)=[]; % remove E component
-end
-% B=[A(1,1:2),A(1,4);A(2,1:2),A(2,4);A(4,1:2),A(4,4)];
-
-%----- Work out projections for different cuts through the ellipse
-
-%----- S is the rotation matrix that diagonalises the projected ellipse
-
-%----- 1. Qx, Qy plane
-
-[R0P,MP]=rc_int(3,R0,B);
-
-theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
-S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
-
-MP=S*MP*S';
-
-hwhm_xp=const/sqrt(MP(1,1));
-hwhm_yp=const/sqrt(MP(2,2));
-[x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta); pqx=max(x)-min(x); pqy=max(y)-min(y);
-subplot(2,2,1);
-set(line(x,y),'Color','k')
-if isempty(strfind(mode, 'scan')), fill(x,y,'r'); end
-if ~isempty(strfind(mode,'rlu'))
-  xlabel({[ '{\bf Q_1} (' o1 ') [rlu]' ], ...
-    [ '{\delta}Q_1=' num2str(max(x)-min(x), 3) ]})
-  ylabel({[ '{\bf Q_2} (' o2 ') [rlu]' ], ...
-    [ '{\delta}Q_2=' num2str(max(y)-min(y), 3) ]})
-else
-  xlabel([ '{\bf Q_x} (long.) [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x),3) ] )
-  ylabel([ '{\bf Q_y} (trans.) [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y),3) ] )
-end
-title(EXP.method); 
-da=daspect; da(1:2) = max(da(1:2)); daspect(da);
-pb=pbaspect; pb(1:2)=da(1); pbaspect(pb);
-x1=xlim; x2=ylim;
-grid on
-
-%---------------- Add slice through Qx,Qy plane ----------------------
-
-MP=A(1:2,1:2);
-
-theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
-S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
-
-MP=S*MP*S';
-
-hwhm_xp=const/sqrt(MP(1,1));
-hwhm_yp=const/sqrt(MP(2,2));
-[x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta); dqx = max(x)-min(x); dqy=max(y)-min(y);
-set(line(x,y),'LineStyle','--')
-
-%----- 2. Qx, W plane
-
-[R0P,MP]=rc_int(2,R0,B);
-
-theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
-S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
-
-MP=S*MP*S';
-
-hwhm_xp=const/sqrt(MP(1,1));
-hwhm_yp=const/sqrt(MP(2,2)); 
-[x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta); pe=max(y)-min(y);
-subplot(2,2,2);
-set(line(x,y),'Color','k')
-if isempty(strfind(mode, 'scan')), fill(x,y,'r'); end
-if ~isempty(strfind(mode,'rlu'))
-  xlabel({[ '{\bf Q_1} (' o1 ') [rlu]' ], ...
-    [ '{\delta}Q_1=' num2str(max(x)-min(x),3) ]})
-else
-  xlabel([ '{\bf Q_x} (long.) [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x),3) ])
-end
-
-if isempty(strfind(mode,'qz'))
-  ylabel([ '{\bf \omega} [meV]  {\delta}\omega=' num2str(max(y)-min(y),2) ])
-else
-  if ~isempty(strfind(mode,'rlu'))
-    ylabel([ '{\bf Qz} (' o3 ') [rlu] - {\delta}Qz=' num2str(max(y)-min(y),3) ]);
+  if isfield(resolution,'HKLE')
+    H=resolution.HKLE(1); K=resolution.HKLE(2); 
+    L=resolution.HKLE(3); W=resolution.HKLE(4);
+    EXP.QH=H; EXP.QK=K; EXP.QL=L; EXP.W=W; % update single scan step
   else
-    ylabel([ '{\bf Qz} (vert.) [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y),3) ]);
+    EXP.QH=EXP.QH(1); EXP.QK=EXP.QK(1); EXP.QL=EXP.QL(1); EXP.W=EXP.W(1); 
   end
-end
-xlim(x1); xe=ylim;
-grid on
 
-%---------------- Add slice through Qx,W plane ----------------------
+  R0  = resolution.R0;
 
-if isempty(strfind(mode,'qz'))
-  MP=[A(1,1) A(1,4);A(4,1) A(4,4)];
-else
-  MP=[A(1,1) A(1,3);A(3,1) A(3,3)];
-end
-
-theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
-S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
-
-MP=S*MP*S';
-
-hwhm_xp=const/sqrt(MP(1,1));
-hwhm_yp=const/sqrt(MP(2,2));
-[x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta); de=max(y)-min(y);
-set(line(x,y),'LineStyle','--')
-
-if isempty(strfind(mode,'qz'))
-  title('Energy resolution')
-else
-  title('Vertical Qz resolution')
-end
-
-%----- 3. Qy, W plane
-
-[R0P,MP]=rc_int(1,R0,B);
-
-theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
-S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
-
-MP=S*MP*S';
-
-hwhm_xp=const/sqrt(MP(1,1));
-hwhm_yp=const/sqrt(MP(2,2));
-[x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta);
-subplot(2,2,3);
-set(line(x,y),'Color','k')
-if isempty(strfind(mode, 'scan')), fill(x,y,'r'); end
-if ~isempty(strfind(mode,'rlu'))
-  xlabel({[ '{\bf Q_2} (' o2 ') [rlu]' ], ...
-    [ '{\delta}Q_2=' num2str(max(x)-min(x),3) ]})
-else
-  xlabel([ '{\bf Q_y} (trans.) [A^{-1}] {\delta}Q_y=' num2str(max(x)-min(x)) ])
-end
-
-if isempty(strfind(mode,'qz'))
-  ylabel([ '{\bf \omega} [meV]  {\delta}\omega=' num2str(max(y)-min(y),2) ])
-else
   if ~isempty(strfind(mode,'rlu'))
-    ylabel([ '{\bf Qz} (' o3 ') [rlu] - {\delta}Qz=' num2str(max(y)-min(y),3) ]);
+    NP  = resolution.RMS;
+
+    o1 = resolution.rluFrameStr{1};
+    o2 = resolution.rluFrameStr{2};
+    o3 = resolution.rluFrameStr{3};
   else
-    ylabel([ '{\bf Qz} (vert.) [A^{-1}] - {\delta}Qz=' num2str(max(y)-min(y),3) ]);
+    NP = resolution.RM;
   end
-end
 
-xlim(x2); ylim(xe);
-title([ 'ResLibCal ' datestr(now) ])
-grid on
+  if isempty(NP) || ~all(isreal(NP)), return; end
+  A=NP;
+  const=1.17741; % half width factor
 
-%---------------- Add slice through Qy,W plane ----------------------
-if isempty(strfind(mode,'qz'))
-  MP=[A(2,2) A(2,4);A(4,2) A(4,4)];
-else
-  MP=[A(2,2) A(2,3);A(3,2) A(3,3)];
-end
+  %----- Remove the vertical component from the matrix.
+  B = A;
+  if isempty(strfind(mode,'qz'))
+    B(3,:)=[]; B(:,3)=[]; % remove Qz component
+  else
+    B(4,:)=[]; B(:,4)=[]; % remove E component
+  end
+  % B=[A(1,1:2),A(1,4);A(2,1:2),A(2,4);A(4,1:2),A(4,4)];
 
-theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
-S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
+  %----- Work out projections for different cuts through the ellipse
 
-MP=S*MP*S';
+  %----- S is the rotation matrix that diagonalises the projected ellipse
 
-hwhm_xp=const/sqrt(MP(1,1));
-hwhm_yp=const/sqrt(MP(2,2));
-[x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta);
-set(line(x,y),'LineStyle','--')
+  %----- 1. Qx, Qy plane
 
-% display a text edit uicontrol so that users can select/copy/paste
+  [R0P,MP]=rc_int(3,R0,B);
 
-[res, inst] = ResLibCal_FormatString(out, mode);
+  theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
+  S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
 
-message = [ res, inst ];
+  MP=S*MP*S';
 
-% fill 4th sub-panel with uicontrol
-p(1) = 0.5; p(2) = 0.01; p(3) = 0.49; p(4) = 0.49;
-h = findobj(gcf, 'Tag','ResLibCal_View2_Edit');
-if isempty(h)
-  h = uicontrol('Tag','ResLibCal_View2_Edit', ...
-    'Style','edit','Units','normalized',...
-    'Position',p, 'Max',2,'Min',0, ...
-    'String', message, 'FontName', 'FixedWidth', ...
-    'FontSize',8,'BackgroundColor','white','HorizontalAlignment','left');
-else
-  set(h, 'String',message);
+  hwhm_xp=const/sqrt(MP(1,1));
+  hwhm_yp=const/sqrt(MP(2,2));
+  [x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta);
+  subplot(2,2,1);
+  set(line(x,y),'Color','k')
+  if index==1, fill(x,y,'r'); end
+  if ~isempty(strfind(mode,'rlu'))
+    xlabel({[ '{\bf Q_1} (' o1 ') [rlu]' ], ...
+      [ '{\delta}Q_1=' num2str(max(x)-min(x), 3) ]})
+    ylabel({[ '{\bf Q_2} (' o2 ') [rlu]' ], ...
+      [ '{\delta}Q_2=' num2str(max(y)-min(y), 3) ]})
+  else
+    xlabel([ '{\bf Q_x} (long.) [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x),3) ] )
+    ylabel([ '{\bf Q_y} (trans.) [A^{-1}] {\delta}Q_y=' num2str(max(y)-min(y),3) ] )
+  end
+  title(EXP.method); 
+  da=daspect; da(1:2) = max(da(1:2)); daspect(da);
+  pb=pbaspect; pb(1:2)=da(1); pbaspect(pb);
+  x1=xlim; x2=ylim;
+  grid on
+  alpha(0.5)
+
+  % contextual menu
+  if isempty(findobj(gca, 'Tag','ResLibCal_Proj_Context_xy'))
+    uicm = uicontextmenu;
+    uimenu(uicm, 'Label', 'ResLibCal: Resolution: QxQy projection') ;
+    uimenu(uicm, 'Separator','on', 'Label', 'Duplicate View...', 'Callback', ...
+       [ 'tmp_cb.g=gca;' ...
+         'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
+         'set(tmp_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+         'set(gcf,''Name'',''Copy of ResLibCal: TAS view''); ' ...
+         'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
+         'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
+         'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
+    uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+    uimenu(uicm, 'Label','Reset View', 'Callback','view(2);alpha(0.5);axis tight;rotate3d off;');
+    uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
+      'Callback',[ 'msgbox(''' ResLibCal('version') ''',''About ResLibCal'',''help'')' ]);
+    set(gca, 'UIContextMenu', uicm, 'Tag','ResLibCal_Proj_Context_xy');
+  end
+
+  %---------------- Add slice through Qx,Qy plane ----------------------
+
+  MP=A(1:2,1:2);
+
+  theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
+  S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
+
+  MP=S*MP*S';
+
+  hwhm_xp=const/sqrt(MP(1,1));
+  hwhm_yp=const/sqrt(MP(2,2));
+  [x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta);
+  set(line(x,y),'LineStyle','--')
+
+  %----- 2. Qx, W plane
+
+  [R0P,MP]=rc_int(2,R0,B);
+
+  theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
+  S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
+
+  MP=S*MP*S';
+
+  hwhm_xp=const/sqrt(MP(1,1));
+  hwhm_yp=const/sqrt(MP(2,2)); 
+  [x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta);
+  subplot(2,2,2);
+  set(line(x,y),'Color','k')
+  if index==1, fill(x,y,'r'); end
+  if ~isempty(strfind(mode,'rlu'))
+    xlabel({[ '{\bf Q_1} (' o1 ') [rlu]' ], ...
+      [ '{\delta}Q_1=' num2str(max(x)-min(x),3) ]})
+  else
+    xlabel([ '{\bf Q_x} (long.) [A^{-1}] {\delta}Q_x=' num2str(max(x)-min(x),3) ])
+  end
+
+  if isempty(strfind(mode,'qz'))
+    ylabel([ '{\bf \omega} [meV]  {\delta}\omega=' num2str(max(y)-min(y),3) ])
+  else
+    if ~isempty(strfind(mode,'rlu'))
+      ylabel([ '{\bf Q_3} (' o3 ') [rlu] - {\delta}Q_3=' num2str(max(y)-min(y),3) ]);
+    else
+      ylabel([ '{\bf Q_z} (vert.) [A^{-1}] - {\delta}Q_z=' num2str(max(y)-min(y),3) ]);
+    end
+  end
+  xlim(x1); xe=ylim;
+  grid on
+  alpha(0.5)
+
+  % contextual menu
+  if isempty(findobj(gca, 'Tag','ResLibCal_Proj_Context_xz'))
+    uicm = uicontextmenu;
+    uimenu(uicm, 'Label', 'ResLibCal: Resolution: QxQz projection') ;
+    uimenu(uicm, 'Separator','on', 'Label', 'Duplicate View...', 'Callback', ...
+       [ 'tmp_cb.g=gca;' ...
+         'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
+         'set(tmp_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+         'set(gcf,''Name'',''Copy of ResLibCal: TAS view''); ' ...
+         'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
+         'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
+         'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
+    uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+    uimenu(uicm, 'Label','Reset View', 'Callback','view(2);alpha(0.5);axis tight;rotate3d off;');
+    uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
+      'Callback',[ 'msgbox(''' ResLibCal('version') ''',''About ResLibCal'',''help'')' ]);
+    set(gca, 'UIContextMenu', uicm, 'Tag','ResLibCal_Proj_Context_xz');
+  end
+
+  %---------------- Add slice through Qx,W plane ----------------------
+
+  if isempty(strfind(mode,'qz'))
+    MP=[A(1,1) A(1,4);A(4,1) A(4,4)];
+  else
+    MP=[A(1,1) A(1,3);A(3,1) A(3,3)];
+  end
+
+  theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
+  S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
+
+  MP=S*MP*S';
+
+  hwhm_xp=const/sqrt(MP(1,1));
+  hwhm_yp=const/sqrt(MP(2,2));
+  [x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta);
+  set(line(x,y),'LineStyle','--')
+
+  if isempty(strfind(mode,'qz'))
+    title('Energy resolution')
+  else
+    title('Vertical Qz resolution')
+  end
+
+  %----- 3. Qy, W plane
+
+  [R0P,MP]=rc_int(1,R0,B);
+
+  theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
+  S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
+
+  MP=S*MP*S';
+
+  hwhm_xp=const/sqrt(MP(1,1));
+  hwhm_yp=const/sqrt(MP(2,2));
+  [x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta);
+  subplot(2,2,3);
+  set(line(x,y),'Color','k')
+  if index==1, fill(x,y,'r'); end
+  if ~isempty(strfind(mode,'rlu'))
+    xlabel({[ '{\bf Q_2} (' o2 ') [rlu]' ], ...
+      [ '{\delta}Q_2=' num2str(max(x)-min(x),3) ]})
+  else
+    xlabel([ '{\bf Q_y} (trans.) [A^{-1}] {\delta}Q_y=' num2str(max(x)-min(x),3) ])
+  end
+
+  if isempty(strfind(mode,'qz'))
+    ylabel([ '{\bf \omega} [meV]  {\delta}\omega=' num2str(max(y)-min(y),3) ])
+  else
+    if ~isempty(strfind(mode,'rlu'))
+      ylabel([ '{\bf Q_3} (' o3 ') [rlu] - {\delta}Q_3=' num2str(max(y)-min(y),3) ]);
+    else
+      ylabel([ '{\bf Q_z} (vert.) [A^{-1}] - {\delta}Q_z=' num2str(max(y)-min(y),3) ]);
+    end
+  end
+
+  xlim(x2); ylim(xe);
+  title([ 'ResLibCal ' datestr(now) ])
+  grid on
+  alpha(0.5)
+
+  % contextual menu
+  if isempty(findobj(gca, 'Tag','ResLibCal_Proj_Context_yz'))
+    uicm = uicontextmenu;
+    uimenu(uicm, 'Label', 'ResLibCal: Resolution: QyQz projection') ;
+    uimenu(uicm, 'Separator','on', 'Label', 'Duplicate View...', 'Callback', ...
+       [ 'tmp_cb.g=gca;' ...
+         'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
+         'set(tmp_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+         'set(gcf,''Name'',''Copy of ResLibCal: TAS view''); ' ...
+         'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
+         'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
+         'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
+    uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+    uimenu(uicm, 'Label','Reset View', 'Callback','view(2);alpha(0.5);axis tight;rotate3d off;');
+    uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
+      'Callback',[ 'msgbox(''' ResLibCal('version') ''',''About ResLibCal'',''help'')' ]);
+    set(gca, 'UIContextMenu', uicm, 'Tag','ResLibCal_Proj_Context_yz');
+  end
+
+  %---------------- Add slice through Qy,W plane ----------------------
+  if isempty(strfind(mode,'qz'))
+    MP=[A(2,2) A(2,4);A(4,2) A(4,4)];
+  else
+    MP=[A(2,2) A(2,3);A(3,2) A(3,3)];
+  end
+
+  theta=0.5*atan2(2*MP(1,2),(MP(1,1)-MP(2,2)));
+  S=[cos(theta) sin(theta); -sin(theta) cos(theta)];
+
+  MP=S*MP*S';
+
+  hwhm_xp=const/sqrt(MP(1,1));
+  hwhm_yp=const/sqrt(MP(2,2));
+  [x,y]=rc_ellip(hwhm_xp,hwhm_yp,theta);
+  set(line(x,y),'LineStyle','--')
+
+  % display a text edit uicontrol so that users can select/copy/paste
+
+  [res, inst] = ResLibCal_FormatString(out, mode);
+
+  message = [ res, inst ];
+
+  % fill 4th sub-panel with uicontrol
+  p(1) = 0.5; p(2) = 0.01; p(3) = 0.49; p(4) = 0.49;
+  h = findobj(gcf, 'Tag','ResLibCal_View2_Edit');
+  if isempty(h)
+    h = uicontrol('Tag','ResLibCal_View2_Edit', ...
+      'Style','edit','Units','normalized',...
+      'Position',p, 'Max',2,'Min',0, ...
+      'String', message, 'FontName', 'FixedWidth', ...
+      'FontSize',8,'BackgroundColor','white','HorizontalAlignment','left');
+    % contextual menu
+    uicm = uicontextmenu;
+    uimenu(uicm, 'Label', 'ResLibCal: Resolution: results') ;
+    uimenu(uicm, 'Label', 'Copy to clipboard', ...
+      'Callback', 'tmp_s=get(gco,''String''); clipboard(''copy'', sprintf(''%s\n'', tmp_s{:})); clear tmp_s;');
+    set(h, 'UIContextMenu', uicm, 'Tag','ResLibCal_Proj_Context_text');
+  else
+    set(h, 'String',message);
+  end
+
+  hold on
 end
 
 hold off
