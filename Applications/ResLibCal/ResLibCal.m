@@ -9,9 +9,29 @@ function out = ResLibCal(varargin)
 % To use ResLibCal from the command line, use:
 %   out = ReslibCal(command, arguments...);
 % where 'command' is one of:
-%   open, save, saveas, export, exit, reset, print, create,
-%   compute, update (=compute+show), view2, view3, view_tas
-%   default, quit, close, cloud, resol, bragg
+%
+%   open    open a configuration file (par, cfg, res, ini, m): ResLibCal('open','file')
+%   save    save the configuration in the Preference directory (ini format)
+%   saveas  save the configuration into a specified file/format: ResLibCal('saveas','file')
+%   export  dump the main ResLibCal window into a file
+%   exit    close all active views, and save current configuration
+%   reset   re-load the default configuration
+%   print   print the main ResLibCal window
+%   create  open the main GUI (start interface), and read last saved configuration
+%   compute only compute the matrix (no plotting/printing)
+%   update  compute, and then update open views, or send result to the console
+%   view2   display the 2D view (resolution projections)
+%   view3   display the 3D view (resolution)
+%   tas     display the spectrometer geometry
+%   default same as create, but does not read last configuration (using reset configuration)
+%   quit    same as exit, but does not save the configuration
+%   close   close the 2D, 3D and TAS view windows
+%   cloud   compute a Monte-Carlo cloud of points to model the 4D Gaussian resolution
+%   resol   print-out the resolution matrix a la RESCAL
+%   bragg   print-out the Bragg widths a la RESCAL
+%   list    print-out the RESCAL parameter list
+%   <PAR>=<VALUE> sets a parameter value, e.g. 'DM=3.355'
+%
 % To compute the resolution at a given HKLW location, using the current settings
 %   resolution = ResLibCal(QH,QK,QL,W)
 % where QH,QK,QL,W can be vectors, or empty to use current settings.
@@ -184,12 +204,19 @@ while ~isempty(varargin)
       if length(varargin) > 1, v=varargin{2}; varargin(2) = []; else v=[]; end
       out = ResLibCal_ViewResolution(v,1);  % open/raise View TAS
       out = ResLibCal_UpdateViews(out);
-    case 'help_content'
+    case {'help_content','help'}
       link = fullfile(fileparts(which(mfilename)), 'doc', [ mfilename '.html' ]);
       disp([ mfilename ': opening help from ' link ])
       web(link);
       out = link;
-    case 'help_about'
+    case 'version'
+      message = [ ResLibCal_version ' compute and display the triple-axis ' ...
+        'resolution function obtained from e.g. Cooper-Nathans and Popovici ' ...
+        'analytical approximations. Part of <ifit.mccode.org>.' ...
+        'E. Farhi, ILL/Computing for Science.' ];
+
+      out = message;
+    case {'help_about'}
       % get the ILL logo from object
       fig = ResLibCal_fig;
       if isempty(fig), return; end
@@ -263,18 +290,19 @@ while ~isempty(varargin)
     case 'resol'
       out = ResLibCal_Compute(out);
       resolution = out.resolution;
+      if numel(out.resolution) == 1, resolution={ out.resolution }; end
       for index=1:numel(resolution)
         H   = resolution{index}.HKLE(1); K=resolution{index}.HKLE(2); 
         L   = resolution{index}.HKLE(3); W=resolution{index}.HKLE(4);
         fprintf(1,'QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]\n', H,K,L,W);
         disp('  Resolution Matrix, X-AXIS Along Q [ANGS-1] & [meV]')
-        disp('  X=along Q; Y transversal in plane; Z vertical.');
+        disp('  X=along Q; Y=transversal in plane(right); Z=vertical.');
         disp(' ')
         disp('    X        Y        Z        W')
         disp(num2str(resolution{index}.RM,'%.1f '));
         disp(' ');
         disp('  Resolution Matrix, Axes WRT Recip. Lattice [R.l.u.] & [meV]')
-        disp('  X=along A, Y=perp. to X in plane ; Z=perp to (X,Y).')
+        disp('  X=along A; Y=perp. to X in plane(right); Z=perp to (X,Y).')
         disp(' ')
         disp('    X        Y        Z        W')
         disp(num2str(resolution{index}.RM,'%.1f '));
