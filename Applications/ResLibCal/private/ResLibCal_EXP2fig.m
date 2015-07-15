@@ -32,8 +32,8 @@ function [fig, out] = ResLibCal_EXP2fig(EXP, fig)
   % check some values
     
   % check ALF and BET 0->666
-  EXP.hcol(EXP.hcol <= 0) = 666;
-  EXP.vcol(EXP.vcol <= 0) = 666;
+  if isfield(EXP,'hcol'), EXP.hcol(EXP.hcol <= 0) = 666; end
+  if isfield(EXP,'vcol'), EXP.vcol(EXP.vcol <= 0) = 666; end
   % check ETA 0-1 -> multiply from rad to arcmin
   if isfield(EXP,'sample')
     if isfield(EXP.sample,'mosaic') && EXP.sample.mosaic < 1
@@ -41,13 +41,13 @@ function [fig, out] = ResLibCal_EXP2fig(EXP, fig)
     if isfield(EXP.sample,'vmosaic') && EXP.sample.vmosaic < 1
       EXP.sample.vmosaic=EXP.sample.vmosaic*180/pi*60; end
   end
-  if isfield(EXP,'sample')
+  if isfield(EXP,'mono')
     if isfield(EXP.mono,'mosaic') && EXP.mono.mosaic < 1
       EXP.mono.mosaic   =EXP.mono.mosaic*180/pi*60; end
     if isfield(EXP.mono,'vmosaic') && EXP.mono.vmosaic < 1
       EXP.mono.vmosaic  =EXP.mono.vmosaic*180/pi*60; end
   end
-  if isfield(EXP,'sample')
+  if isfield(EXP,'ana')
     if isfield(EXP.ana,'mosaic') && EXP.ana.mosaic < 1
       EXP.ana.mosaic    =EXP.ana.mosaic*180/pi*60; end
     if isfield(EXP.ana,'vmosaic') && EXP.ana.vmosaic < 1
