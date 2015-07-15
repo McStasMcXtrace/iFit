@@ -132,7 +132,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     % resolution matrix in rlu and transformation [HKL] -> [ABC] frame
     % S = inv([x y z]) when [x y z ] = StandardSystem(EXP);
     % S = matrix 's' in inline (below) ResLibCal_ComputeResMat_Angles
-    [RMS,S]   = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
+    [RMS,S, U]   = ResLibCal_RM2RMS(h,k,l,w,EXP,RM);
     
     % assemble 'resolution' step
     if ~all(isreal(RM))  RM=[]; end
@@ -153,8 +153,11 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     % res.vectors=[ x y z ];
     % vectors = inv(hkl2ABC)
     res.hkl2ABC= S; % [hkl in ABC frame] = (res.hkl2ABC)*[ h k l ]'
+    res.U      = U; % ortho-normal ABC frame
     res.method = method_orig;
     [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP, S);
+    
+    [EXP, res] = ResLibCal_ComputeResMat_Frame(EXP, res);
     
     % store resolution
     if len == 1
@@ -232,4 +235,53 @@ function [A,Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP, s)
     A1=thetam; A2=2*A1; A4=2*thetas; A5=thetaa; A6=2*A5;
     
     A = [A1 A2 A3 A4 A5 A6]*180/pi;
+
+% ------------------------------------------------------------------------------
+function [EXP, resolution] = ResLibCal_ComputeResMat_Frame(EXP, resolution)
+  
+  % the xvec,yvec,zvec computation is redundent with resolution.hkl2ABC
+  % [xvec,yvec,zvec,sample,rsample]=StandardSystem(EXP);
+
+  [sample,rsample]=GetLattice(EXP);
+  xyz = inv(resolution.hkl2ABC);
+  xvec = xyz(:,1);
+  yvec = xyz(:,2);
+  zvec = xyz(:,3);
+  
+  % normalised, orthonormal ABC
+  o1=EXP.orient1;
+  o2=EXP.orient2;
+  pr=scalar(o2(1),o2(2),o2(3),yvec(1),yvec(2),yvec(3),rsample);
+  o2 = yvec*pr; % o2 // yvec ortho normal
+
+  o1 = o1(:)';
+  o2 = o2(:)';
+  o3 = cross(o1,o2);
+
+  resolution.rluFrame = [ o1 ; o2 ; o3 ]'; % Base vectors are columns
+  
+  % now get labels
+  % convert o1 and o2 to normalised strings
+  if all(abs(o1 - round(o1)) < 1e-5)
+    o1 = round(o1);
+    if sum(o1.*o1) > 1,  o1=[ '[' sprintf('%i ', o1) ']/\surd' num2str(sum(o1.*o1)) ];
+    else                 o1=[ '[' sprintf('%i ', o1) ']' ];
+    end
+  else o1 = [ '[' sprintf('%.2f ', o1) ']' ]; end
+
+  if all(abs(o2 - round(o2)) < 1e-2)
+    o2 = round(o2);
+    if sum(o2.*o2) > 1,  o2=[ '[' sprintf('%i ', o2) ']/\surd' num2str(sum(o2.*o2)) ];
+    else                 o2=[ '[' sprintf('%i ', o2) ']' ];
+    end
+  else o2 = [ '[' sprintf('%.2f ', o2) ']' ]; end
+  
+  if all(abs(o3 - round(o3)) < 1e-5)
+    o3 = round(o3);
+    if sum(o3.*o3) > 1,  o3=[ '[' sprintf('%i ', o3) ']/\surd' num2str(sum(o3.*o3)) ];
+    else                 o3=[ '[' sprintf('%i ', o3) ']' ];
+    end
+  else o3 = [ '[' sprintf('%.2f ', o3) ']' ]; end
+  
+  resolution.rluFrameStr = { o1, o2, o3 };
 
