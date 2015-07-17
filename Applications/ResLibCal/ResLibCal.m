@@ -282,9 +282,11 @@ while ~isempty(varargin)
         L   = resolution{index}.HKLE(3); W=resolution{index}.HKLE(4);
         fprintf(1,'QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]\n', H,K,L,W);
         disp('  BRAGG Widths, Radial,tangential, Vertical (HWHM) [ANG-1]');
-        fprintf(1, '  DQR=%g DQT=%g DQV=%g\n', resolution{index}.Bragg(1:3)/2);
+        FrameStr = strrep(resolution{index}.xyz.FrameStr,'\surd', 'sqrt');
+        disp(['  Rad:along A=' FrameStr{1} '; Tang:along ' FrameStr{2} '; Vert:along ' FrameStr{3} ])
+        fprintf(1, '  DQR=%g DQT=%g DQV=%g\n', resolution{index}.xyz.Bragg(1:3)/2);
         disp('  Energy Widths (HWHM) [meV]');
-        fprintf(1, '  DVN=%g DEE=%g\n', resolution{index}.Bragg([ 5 4 ])/2);
+        fprintf(1, '  DVN=%g DEE=%g\n', resolution{index}.xyz.Bragg([ 5 4 ])/2);
         disp('----------------------------------------------------------');
       end
     case 'resol'
@@ -296,16 +298,18 @@ while ~isempty(varargin)
         L   = resolution{index}.HKLE(3); W=resolution{index}.HKLE(4);
         fprintf(1,'QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]\n', H,K,L,W);
         disp('  Resolution Matrix, X-AXIS Along Q [ANGS-1] & [meV]')
-        disp('  X=along Q; Y=transversal in plane(right); Z=vertical.');
+        FrameStr = strrep(resolution{index}.xyz.FrameStr,'\surd', 'sqrt');
+        disp(['  X:along A=' FrameStr{1} '; Y:along ' FrameStr{2} '; Z:along ' FrameStr{3} ])
         disp(' ')
         disp('    X        Y        Z        W')
-        disp(num2str(resolution{index}.RM,'%.1f '));
+        disp(num2str(resolution{index}.xyz.RM,'%.1f '));
         disp(' ');
         disp('  Resolution Matrix, Axes WRT Recip. Lattice [R.l.u.] & [meV]')
-        disp('  X=along A; Y=perp. to X in plane(right); Z=perp to (X,Y).')
+        FrameStr = strrep(resolution{index}.abc.FrameStr,'\surd', 'sqrt');
+        disp(['  X:along A=' FrameStr{1} '; Y:along ' FrameStr{2} '; Z:along ' FrameStr{3} ])
         disp(' ')
         disp('    X        Y        Z        W')
-        disp(num2str(resolution{index}.RM,'%.1f '));
+        disp(num2str(resolution{index}.abc.RM,'%.1f '));
         disp('----------------------------------------------------------');
       end
     % other actions (not menu items) -------------------------------------------
