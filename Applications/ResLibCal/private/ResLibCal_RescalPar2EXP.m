@@ -180,7 +180,7 @@ end
   if isfield(p,'DA'),   EXP.ana.d      = p.DA; end
   if isfield(p,'ETAM'), EXP.mono.mosaic= p.ETAM; end
   if isfield(p,'ETAA'), EXP.ana.mosaic = p.ETAA; end
-  if isfield(p,'ETAS'), EXP.sample.vmosaic = p.ETAS; end
+  if isfield(p,'ETAS'), EXP.sample.mosaic = p.ETAS; end
   if isfield(p,'ETAMV'), EXP.mono.vmosaic= p.ETAM; end
   if isfield(p,'ETAAV'), EXP.ana.vmosaic = p.ETAA; end
   if isfield(p,'ETASV'), EXP.sample.vmosaic = p.ETAS; end
