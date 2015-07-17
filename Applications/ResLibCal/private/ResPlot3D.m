@@ -45,6 +45,8 @@ else
   resolutions = out.resolution;
 end
 
+cla;
+
 for index=1:numel(resolutions)
   resolution = resolutions{index};
 
@@ -58,20 +60,22 @@ for index=1:numel(resolutions)
   EXP.QH=H; EXP.QK=K; EXP.QL=L; EXP.W=W; % update single scan step
 
   if ~isempty(strfind(mode,'rlu'))
-    RMS  = resolution.RMS;
+    RMS  = resolution.abc.RM;
     [xvec,yvec,zvec,sample,rsample]=StandardSystem(EXP);
     qx=scalar(xvec(1,:),xvec(2,:),xvec(3,:),H,K,L,rsample);
     qy=scalar(yvec(1,:),yvec(2,:),yvec(3,:),H,K,L,rsample);
+    % In principle, if scattering vector is in plane, qw(=qz) should be 0.
+    % TODO: indicate out-of-plane angle
     qw=scalar(zvec(1,:),zvec(2,:),zvec(3,:),H,K,L,rsample);
 
-    o1 = resolution.rluFrameStr{1};
-    o2 = resolution.rluFrameStr{2};
-    o3 = resolution.rluFrameStr{3};
+    o1 = resolution.abc.FrameStr{1};
+    o2 = resolution.abc.FrameStr{2};
+    o3 = resolution.abc.FrameStr{3};
 
     frame = '[Q1,Q2,';
   else
     qx = 0; qy=0; qw=0;
-    RMS  = resolution.RM;
+    RMS  = resolution.xyz.RM;
     
     frame = '[Qx,Qy,';
   end
@@ -196,13 +200,19 @@ for index=1:numel(resolutions)
   title([ 'Resolution in ' frame ' - ' out.EXP.method ])
 
   % plot cloud of points if available
-  if ~isempty(strfind(mode,'rlu')) && isfield(resolution, 'cloud') && 0
-    if isempty(strfind(mode,'qz')), ax=[1 2 4]; else ax=[1 2 3]; end
+  if ~isempty(strfind(mode,'rlu')) && isfield(resolution, 'cloud')
+    % compute cloud in the ABC frame
     x = resolution.cloud{1};
     y = resolution.cloud{2};
     z = resolution.cloud{3};
+    % XYZ = resolution.hkl2ABC*[ x' y' z' ]';
     % compute representation in [o1,o2,o3] vector frame
-    h=plot3(X,Y,Z,'.');
+    % [hkl in ABC frame] = (res.hkl2ABC)*[ h k l ]'
+    if ~isempty(strfind(mode,'qz')), 
+      h=plot3(x,y,z,'.');
+    else 
+      h=plot3(x,y,resolution.cloud{4},'.');
+    end
     set(h,'Tag','ResLibCal_View3_Cloud','DisplayName','cloud','MarkerSize',0.5);
   end
   hold on
