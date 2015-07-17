@@ -1,4 +1,4 @@
-function [Q2c,Qmag]=rc_re2rc(latt_pars, angles, Qrlu)
+function [Q2c,Qmag, Qcart]=rc_re2rc(latt_pars, angles, Qrlu)
 %
 % RESCAL function to calculate the transformation matrix Q2c
 % which allows calculation of coordinates of point in 

@@ -157,9 +157,13 @@ B(5,1)=1;
 B(6,3)=1;
 
 % estimate from old ResCal5 code only (pure ResCal)
+% Uold = U in rescal5/rc_cnmat = B here
+% Vold = V in rescal5/rc_cnmat = inv(B) here
+% Mold = M in rescal5/rc_cnmat = N here
+% old: N=V'*M*V -> Nold = inv(B)'*N*inv(B)
 Uold = B;
 Vold = inv(Uold);
-Mold = N; % N = inv(A*Hinv*A')
+Mold = N; % N = inv(A*Hinv*A') in Popovici normalism
 Nold = Vold'*Mold*Vold;
 
 [dummy,Nold]=rc_int(6,1,Nold);        % integrate over kiz giving a 5x5 matrix
