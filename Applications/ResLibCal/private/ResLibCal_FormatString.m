@@ -38,30 +38,31 @@ function [res, inst] = ResLibCal_FormatString_Resolution(resolution, EXP, mode)
 H   = resolution.HKLE(1); K=resolution.HKLE(2); L=resolution.HKLE(3); W=resolution.HKLE(4);
 
 R0  = resolution.R0;
-if isempty(resolution.RM) || isempty(resolution.RMS)
+if isempty(resolution.xyz.RM) || isempty(resolution.abc.RM)
   res=[]; inst=[];
   return
 end
 if ~isempty(strfind(mode,'rlu'))
-  NP    = resolution.RMS;
+  NP    = resolution.abc.RM;
   unit  ='rlu'; QA='Q1'; QB='Q2'; QC='Q3';
-  Bragg = resolution.BraggS;
+  Bragg = resolution.abc.Bragg;
   frame = '[Q1,Q2,Q3,E]';
-  o123 = strrep(resolution.rluFrameStr,'\surd', 'sqrt');
-  frame_descr = [ 'Q1=' o123{1} '; Q2=' o123{2} '; Q3=' o123{3} ];
+  o123 = strrep(resolution.abc.FrameStr,'\surd', 'sqrt');
+  frame_descr = [ 'Q1=' o123{1} '; Q2=' o123{2} '; Q3=' o123{3} '' ];
 else
-  NP = resolution.RM;
+  NP = resolution.xyz.RM;
   unit ='Angs'; QA='Qx'; QB='Qy'; QC='Qz';
-  Bragg = resolution.Bragg;
+  Bragg = resolution.xyz.Bragg;
   frame = '[Qx,Qy,Qz,E]';
-  frame_descr = 'Qx//Q; Qy on the right; Qz vertical';
+  o123 = strrep(resolution.xyz.FrameStr,'\surd', 'sqrt');
+  frame_descr = [ 'Qx=' o123{1} '; Qy=' o123{2} '; Qz=' o123{3} ];
 end
 
 ResVol=(2*pi)^2/sqrt(det(NP));
 
 res = { ...
           ['Method: ' EXP.method  ], ...
-          [ 'Position HKLE [' datestr(now) ']' ], ...
+          [ 'Position Q=HKLE [' datestr(now) ']' ], ...
   sprintf(' QH=%5.3g QK=%5.3g QL=%5.3g E=%5.3g [meV]', H,K,L,W), ...
          ['Resolution Matrix M in ' frame ' [' unit '^-3.meV]'], ...
           num2str(NP,'%.1f '), frame_descr, ...
