@@ -48,13 +48,13 @@ for index=1:numel(resolutions)
   R0  = resolution.R0;
 
   if ~isempty(strfind(mode,'rlu'))
-    NP  = resolution.RMS;
+    NP  = resolution.abc.RM;
 
-    o1 = resolution.rluFrameStr{1};
-    o2 = resolution.rluFrameStr{2};
-    o3 = resolution.rluFrameStr{3};
+    o1 = resolution.abc.FrameStr{1};
+    o2 = resolution.abc.FrameStr{2};
+    o3 = resolution.abc.FrameStr{3};
   else
-    NP = resolution.RM;
+    NP = resolution.xyz.RM;
   end
 
   if isempty(NP) || ~all(isreal(NP)), return; end
