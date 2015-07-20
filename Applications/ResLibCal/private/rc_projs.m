@@ -293,7 +293,7 @@ for index=1:numel(resolutions)
 
   [res, inst] = ResLibCal_FormatString(out, mode);
 
-  message = [ res, inst ];
+  message = [ res; inst ];
 
   % fill 4th sub-panel with uicontrol
   p(1) = 0.5; p(2) = 0.01; p(3) = 0.49; p(4) = 0.49;
