@@ -125,7 +125,8 @@ while ~isempty(varargin)
       if length(varargin) <= 1, varargin{2} = ''; end
       if length(varargin) <= 2, varargin{3} = EXP; end
       out = ResLibCal_Open(varargin{2:3});  % (filename, EXP)
-      out = ResLibCal('update');
+      out = ResLibCal_Compute(out);
+      out = ResLibCal_UpdateViews(out);
       varargin(2:3) = [];
     case 'file_open_instr'
       p = fileparts(which(mfilename));
@@ -326,10 +327,11 @@ while ~isempty(varargin)
       filename = fullfile(prefdir, 'ResLibCal.ini');
       if exist(filename, 'file')
         out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
-        out = ResLibCal_Compute;
+        out = ResLibCal_Compute(out);
       else
         out = ResLibCal('default');
       end
+      out = ResLibCal_UpdateViews(out);
     case 'create' % open GUI if not there yet with config file
       fig = ResLibCal_fig;
       if isempty(fig) || ~ishandle(fig)
@@ -352,7 +354,7 @@ while ~isempty(varargin)
       if ~isempty(fig) && strcmp(get(ResLibCal_fig('View_AutoUpdate'), 'Checked'), 'on')
         out = ResLibCal_UpdateViews(out);
       elseif isempty(fig)
-        out = ResLibCal_UpdateViews(out);
+        out = ResLibCal_UpdateViews(out); % display result to stdout
       end
     case {'compute','resolution'}
       % only compute. No output except in varargout
@@ -364,16 +366,26 @@ while ~isempty(varargin)
           out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
         end
         out = ResLibCal_Compute(out);
-        ResLibCal_UpdateViews(out); % when they exist
       else
-        if numel(varargin) > 1 && isstruct(varargin{2})
-          out = ResLibCal_Compute(varargin{2}); % arg can be an EXP
-          varargin(2) = [];
-        else
-          out = ResLibCal_Compute;
-        end
+        out = ResLibCal_Compute;  % get config from main GUI
+
+        ResLibCal_UpdateViews(out); % when they exist
       end
     case 'cloud'
+      % only compute + cloud. No output except in varargout
+      fig = ResLibCal_fig;
+      % if no interface exists, load the last saved configuration before computing
+      if isempty(fig)
+        if isempty(out)
+          filename = fullfile(prefdir, 'ResLibCal.ini');
+          out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
+        end
+        out = ResLibCal_Compute(out);
+      else
+        out = ResLibCal_Compute;  % get config from main GUI
+
+        ResLibCal_UpdateViews(out); % when they exist
+      end
       out = ResLibCal_AxesResMat(out);
     case 'update_d_tau'
       % update d-spacing from a popup item
@@ -418,6 +430,7 @@ while ~isempty(varargin)
       % update computation and plots
       feval(mfilename, 'update');
     otherwise
+      % open file name or list of parameters given as 'VAR=VAL; ...'  
       if numel(varargin) > 1 && isstruct(varargin{2})
         out = varargin{2};
         varargin(2)=[];
@@ -433,6 +446,7 @@ while ~isempty(varargin)
     varargin(1) = [];
     % end if varargin is char
   elseif isstruct(varargin{1})
+    % read an out or EXP structure
     EXP = varargin{1};
     if isfield(EXP,'EXP'),
       out = EXP; EXP=out.EXP;
@@ -440,15 +454,23 @@ while ~isempty(varargin)
     varargin(1) = [];
   elseif numel(varargin) >= 4 && isnumeric(varargin{1}) && isnumeric(varargin{2}) ...
     && isnumeric(varargin{3}) && isnumeric(varargin{4}) 
-    
+    % read HKLE coordinates and compute resolution there
     % get current config
     fig = ResLibCal_fig;
     if ~isempty(fig)
       EXP = ResLibCal_fig2EXP(fig);
+      if isfield(EXP,'EXP'),
+        out = EXP; EXP=out.EXP;
+      end
     end
-
-    if isfield(EXP,'EXP'),
-      out = EXP; EXP=out.EXP;
+    if isempty(out)
+      filename = fullfile(prefdir, 'ResLibCal.ini');
+      out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
+      if isfield(out,'EXP'),
+        out = EXP; EXP=out.EXP;
+      else
+        EXP=out;
+      end
     end
     if isempty(EXP) || ~isstruct(EXP), return; end
 
@@ -504,13 +526,18 @@ function out = ResLibCal_UpdateViews(out)
 %
   if nargin == 0, out = ''; end
   if ~isstruct(out), out = ResLibCal_Compute; end
-  out = ResLibCal_UpdateResolution1(out); % TAS geometry
-  out = ResLibCal_UpdateResolution2(out); % 2D, also shows matrix
-  out = ResLibCal_UpdateResolution3(out); % 3D
-  ResLibCal_MethodEnableControls(out);    % enable/disable widgtes depending on the chosen method
+  fig = ResLibCal_fig;
+  if ~isempty(fig) 
+    if strcmp(get(ResLibCal_fig('View_AutoUpdate'), 'Checked'), 'on')
+      out = ResLibCal_UpdateResolution1(out); % TAS geometry
+      out = ResLibCal_UpdateResolution2(out); % 2D, also shows matrix
+      out = ResLibCal_UpdateResolution3(out); % 3D
+    end
+    ResLibCal_MethodEnableControls(out);    % enable/disable widgtes depending on the chosen method
+  end
   % if no view exists, send result to the console 
   % here unactivated in case we use it as a model for e.g. fitting
-  if isempty([ findall(0, 'Tag','ResLibCal_View2') ...
+  if isempty(fig) || isempty([ findall(0, 'Tag','ResLibCal_View2') ...
     findall(0, 'Tag','ResLibCal_View3') ])
 		% display result in the console
 		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
