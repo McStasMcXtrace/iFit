@@ -88,6 +88,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -121,6 +122,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       Simply extract the application archive. <br>
       In addition, the legacy RESCAL code is also made available as [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
+
 
 
 
@@ -181,6 +183,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
           code</a>]. </li>
       <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
         Cooper-Nathans method [<a
@@ -201,6 +204,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
         with correction [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>].</li>
       <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
@@ -210,6 +214,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
           href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
         Matlab application, in the Popovici formalism [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
+
 
 
 
@@ -241,12 +246,14 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
         The analyzer reflectivity is also taken into account (with
         analyzer thickness 'WA') and correction [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>]..</li>
       <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
         resolution [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
+
 
 
 
@@ -282,8 +289,10 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
       whereas all the other methods use the Popovici formulation [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100%5C">3</a>].
+
 
 
 
@@ -304,6 +313,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
     <blockquote> In all methods, the alpha/beta collimation parameters
       support guide <i>m-</i>coating specification (negative values
       e.g. -2) which are then converted to equivalent critical angles <i>0.1
+
 
 
 
@@ -494,6 +504,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -536,6 +547,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         A geometric representation of the TAS can be shown in real
         space, using the instrument configuration parameters. This view
         is generated from the <span style="font-style: italic;">View/Instrument
+
 
 
 
@@ -627,6 +639,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
         configurations by just copying and renaming e.g. any <span
@@ -641,6 +654,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -726,7 +740,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     In order to modify an existing configuration ResLib <span
       style="font-style: italic;">EXP</span> or full ResLibCal <span
       style="font-style: italic;">out</span>, use:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'DA=3.355; DM=3.355; ...'</span>, out or EXP structure)<br>&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'file'</span>, out or EXP structure)<br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(out or EXP structure, <span style="color: rgb(204, 51, 204);">'DA=3.355; DM=3.355; ...'</span>)<br>&gt;&gt; out = ResLibCal(out or EXP structure, <span style="color: rgb(204, 51, 204);">'file'</span>)<br></pre>
     For a given configuration (from file, or GUI), the resolution can be
     computed in the reciprocal space with e.g. :<br>
     <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(2,0,0,5) 	<i>% computes at HKLE=[2 0 0 5] coordinates in r.l.u</i><br>&gt;&gt; out = ResLibCal(<font color="#cc33cc">'QH=2 W=5'</font>)  <i>% same as above but giving configuration as a string with named parameters</i><br></pre>
@@ -755,6 +769,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3' </span>as
+
 
 
 
@@ -969,6 +984,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           code</a>] </li>
     </ul>
     Some bugs have been corrected in ResLib, ResCal5/rc_popma, and Res3
@@ -991,8 +1007,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
       See [<a
         href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
+
 
 
 
@@ -1004,6 +1022,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       [2] N. J. Chesser and J. D. e, <span style="font-style: italic;">Acta
 
 
+
         Cryst.</span> <span style="font-weight: bold;">A29</span>, 160,
       (1972) [<a href="http://dx.doi.org/10.1107/S0567739473000422">doi:10.1107/S0567739473000422</a>].<br>
       [3] M. Popovici, <span style="font-style: italic;">Acta Cryst</span>
@@ -1013,6 +1032,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
