@@ -26,7 +26,6 @@ function out = ResLibCal(varargin)
 %   default same as create, but does not read last configuration (using reset configuration)
 %   quit    same as exit, but does not save the configuration
 %   close   close the 2D, 3D and TAS view windows
-%   cloud   compute a Monte-Carlo cloud of points to model the 4D Gaussian resolution
 %   resol   print-out the resolution matrix a la RESCAL
 %   bragg   print-out the Bragg widths a la RESCAL
 %   list    print-out the RESCAL parameter list
@@ -265,9 +264,9 @@ while ~isempty(varargin)
       set(gcbo, 'Checked', status);
       ResLibCal_UpdateViews;
     case {'view_close','close'}
-      delete(findall(0, 'Tag', 'ResLibCal_View1'));
-      delete(findall(0, 'Tag', 'ResLibCal_View2'));
-      delete(findall(0, 'Tag', 'ResLibCal_View3'));
+      delete(findobj(0, 'Tag', 'ResLibCal_View1'));
+      delete(findobj(0, 'Tag', 'ResLibCal_View2'));
+      delete(findobj(0, 'Tag', 'ResLibCal_View3'));
       
     % RESCAL actions
     case 'list'
@@ -371,22 +370,6 @@ while ~isempty(varargin)
 
         ResLibCal_UpdateViews(out); % when they exist
       end
-    case 'cloud'
-      % only compute + cloud. No output except in varargout
-      fig = ResLibCal_fig;
-      % if no interface exists, load the last saved configuration before computing
-      if isempty(fig)
-        if isempty(out)
-          filename = fullfile(prefdir, 'ResLibCal.ini');
-          out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
-        end
-        out = ResLibCal_Compute(out);
-      else
-        out = ResLibCal_Compute;  % get config from main GUI
-
-        ResLibCal_UpdateViews(out); % when they exist
-      end
-      out = ResLibCal_AxesResMat(out);
     case 'update_d_tau'
       % update d-spacing from a popup item
       ResLibCal_UpdateDTau(varargin{2});      % arg is popup handle
@@ -537,8 +520,8 @@ function out = ResLibCal_UpdateViews(out)
   end
   % if no view exists, send result to the console 
   % here unactivated in case we use it as a model for e.g. fitting
-  if isempty(fig) || isempty([ findall(0, 'Tag','ResLibCal_View2') ...
-    findall(0, 'Tag','ResLibCal_View3') ])
+  if isempty(fig) || isempty([ findobj(0, 'Tag','ResLibCal_View2') ...
+    findobj(0, 'Tag','ResLibCal_View3') ])
 		% display result in the console
 		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
 		if ~strcmp(rlu, 'on'), mode=''; else mode='rlu'; end
@@ -553,7 +536,7 @@ function out = ResLibCal_ViewResolution(out, dim)
 %
   if nargin == 0, out = ''; end
   if ~isstruct(out), out = ResLibCal_Compute; end
-  h = findall(0, 'Tag',[ 'ResLibCal_View' num2str(dim)]);
+  h = findobj(0, 'Tag',[ 'ResLibCal_View' num2str(dim)]);
   if isempty(h)
     if dim~=1, name=sprintf('(%iD)', dim); else name='Matrix'; end
     h = figure('Name',[ 'ResLibCal: View Resolution ' name ], ...
@@ -569,7 +552,7 @@ function out = ResLibCal_UpdateResolution1(out)
 %
   if nargin == 0, out = ''; end
   if ~isstruct(out), out = ResLibCal_Compute; end
-  h = findall(0, 'Tag','ResLibCal_View1');
+  h = findobj(0, 'Tag','ResLibCal_View1');
   if isempty(h), return; end
   set(0,'CurrentFigure', h);
   set(h, 'Name','ResLibCal: View TAS geometry');
@@ -583,7 +566,7 @@ function out = ResLibCal_UpdateResolution2(out)
 %
   if nargin == 0, out = ''; end
   if ~isstruct(out), out = ResLibCal_Compute; end
-  h = findall(0, 'Tag','ResLibCal_View2');
+  h = findobj(0, 'Tag','ResLibCal_View2');
   if isempty(h), return; end
   set(0,'CurrentFigure', h);
 
@@ -592,26 +575,23 @@ function out = ResLibCal_UpdateResolution2(out)
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
   if strcmp(rlu, 'on'), rlu='rlu'; end
   if strcmp(qz, 'on'),  qz='qz'; end
-  out = rc_projs(out, [ rlu ' ' qz ]);
+  out = ResLibCal_Plot2D(out, [ rlu ' ' qz ]);
 
 function out = ResLibCal_UpdateResolution3(out)
 % ResLibCal_UpdateResolution3: update the 3D view
 %
   if nargin == 0, out = ''; end
   if ~isstruct(out), out = ResLibCal_Compute; end
-  h = findall(0, 'Tag','ResLibCal_View3');
+  h = findobj(0, 'Tag','ResLibCal_View3');
   if isempty(h), return; end
   set(0,'CurrentFigure', h);
-  
-  % add cloud of point to 'out'
-  out = ResLibCal_AxesResMat(out);
 
   % update/show the resolution projections
   rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
   if strcmp(rlu, 'on'), rlu='rlu'; end
   if strcmp(qz, 'on'),  qz='qz'; end
-  out = ResPlot3D(out, [ rlu ' ' qz ]);
+  out = ResLibCal_Plot3D(out, [ rlu ' ' qz ]);
 
 function ResLibCal_UpdateTauPopup
 % update the popup menu from the editable mono/ana value when d is close

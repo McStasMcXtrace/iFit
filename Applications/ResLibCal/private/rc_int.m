@@ -1,5 +1,9 @@
 function [r,mp]=rc_int(index,r0,m)
 %
+% this function strips out the row=col=index, and corrects determinant
+% using the cofactor rule.
+% see: https://en.wikipedia.org/wiki/Determinant Laplace Formula (cofactors, adjugate matrix)
+%
 % MATLAB function that takes a matrix and performs a Gaussian integral
 % over the row and column specified by index and returns
 % a new matrix. Tested against maple integration.
