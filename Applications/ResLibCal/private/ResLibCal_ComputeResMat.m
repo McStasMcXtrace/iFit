@@ -154,6 +154,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     res = ResLibCal_RM2RMS(EXP, res);
 
     [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP, res.abc.hkl2Frame);
+    res                     = ResLibCal_RM2clouds(EXP, res); % res.abc.cloud and res.xyz.cloud
     
     % store resolution
     if len == 1
