@@ -172,3 +172,23 @@ bragg=sqrt(8*log(2))./sqrt(diag(M));
 [r,bragg(5)]=rc_phon(1,M,[0 0 0 1]); % Vanadium width: flat dispersion
 
 bragg = bragg*2; % from hwhm to fwhm
+
+% ------------------------------------------------------------------------------
+function [rp,fwhm]=rc_phon(r0,M,C)
+
+%
+% MATLAB  routine to calculate the phonon width of a scan along a 
+% vector s, and a plane defined by C.X=w. r0 is the resolution constant and
+% M is the resolution matrix.
+%
+% A.T.
+if isempty(M), rp=0; fwhm=0; return; end
+T=diag(ones(4,1),0);
+T(4,1:4)=C;
+S=inv(T);
+MP=S'*M*S;
+[rp,MP]=rc_int(1,r0,MP);
+[rp,MP]=rc_int(1,rp,MP);
+[rp,MP]=rc_int(1,rp,MP);
+fwhm=sqrt(8*log(2))/sqrt(MP(1,1));
+
