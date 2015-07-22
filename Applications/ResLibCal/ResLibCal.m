@@ -372,8 +372,6 @@ while ~isempty(varargin)
         out = ResLibCal_Compute(out);
       else
         out = ResLibCal_Compute;  % get config from main GUI
-
-        ResLibCal_UpdateViews(out); % when they exist
       end
     case 'update_d_tau'
       % update d-spacing from a popup item
