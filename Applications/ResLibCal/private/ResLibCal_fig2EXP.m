@@ -159,14 +159,14 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   EXP.arms=[ table(3,:) table(3,1)*0.7 ];
   
   % limit  collimation/divergences from distances and size of elements (in minutes)
-  EXP.hcol(1) = min(EXP.hcol(1), atan2(EXP.mono.width +EXP.beam.width,    EXP.arms(1))*180/2/pi*60);
-  EXP.vcol(1) = min(EXP.vcol(1), atan2(EXP.mono.height+EXP.beam.height,   EXP.arms(1))*180/2/pi*60);
-  EXP.hcol(2) = min(EXP.hcol(2), atan2(EXP.sample.width +EXP.mono.width,  EXP.arms(2))*180/2/pi*60);
-  EXP.vcol(2) = min(EXP.vcol(2), atan2(EXP.sample.height+EXP.mono.height, EXP.arms(2))*180/2/pi*60);
-  EXP.hcol(3) = min(EXP.hcol(3), atan2(EXP.ana.width +EXP.sample.width,   EXP.arms(3))*180/2/pi*60);
-  EXP.vcol(3) = min(EXP.vcol(3), atan2(EXP.ana.height+EXP.sample.height,  EXP.arms(3))*180/2/pi*60);
-  EXP.hcol(4) = min(EXP.hcol(4), atan2(EXP.ana.width +EXP.detector.width, EXP.arms(4))*180/2/pi*60);
-  EXP.vcol(4) = min(EXP.vcol(4), atan2(EXP.ana.height+EXP.detector.height,EXP.arms(4))*180/2/pi*60);
+  EXP.hcol(1) = min(EXP.hcol(1), atan2(EXP.mono.width +EXP.beam.width,    EXP.arms(1))*180/pi*60);
+  EXP.vcol(1) = min(EXP.vcol(1), atan2(EXP.mono.height+EXP.beam.height,   EXP.arms(1))*180/pi*60);
+  EXP.hcol(2) = min(EXP.hcol(2), atan2(EXP.sample.width +EXP.mono.width,  EXP.arms(2))*180/pi*60);
+  EXP.vcol(2) = min(EXP.vcol(2), atan2(EXP.sample.height+EXP.mono.height, EXP.arms(2))*180/pi*60);
+  EXP.hcol(3) = min(EXP.hcol(3), atan2(EXP.ana.width +EXP.sample.width,   EXP.arms(3))*180/pi*60);
+  EXP.vcol(3) = min(EXP.vcol(3), atan2(EXP.ana.height+EXP.sample.height,  EXP.arms(3))*180/pi*60);
+  EXP.hcol(4) = min(EXP.hcol(4), atan2(EXP.ana.width +EXP.detector.width, EXP.arms(4))*180/pi*60);
+  EXP.vcol(4) = min(EXP.vcol(4), atan2(EXP.ana.height+EXP.detector.height,EXP.arms(4))*180/pi*60);
   
   % Crystal curvatures [cm-1]
   EXP.mono.rv=str2double(strtok(get(ResLibCal_fig('EXP_mono_rv'),'String')));
