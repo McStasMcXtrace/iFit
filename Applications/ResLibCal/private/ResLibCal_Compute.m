@@ -16,18 +16,7 @@ function out = ResLibCal_Compute(EXP)
   out.Title  = 'ResLibCal';
   
   if isempty(EXP) || ~isstruct(EXP)
-    % extracts configuration
-    fig = ResLibCal_fig;
-    if isempty(fig)
-      filename = fullfile(prefdir, 'ResLibCal.ini');
-      out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
-      EXP = out.EXP;
-    else
-     EXP = ResLibCal_fig2EXP(fig);
-    end
-    out.handle = fig;
-  else
-    out.handle = [];
+    EXP = ResLibCal_GetConfig;
   end
   % check EXP structure. Perhaps it is a full ResLibCal structure
   if ~isstruct(EXP), return; end

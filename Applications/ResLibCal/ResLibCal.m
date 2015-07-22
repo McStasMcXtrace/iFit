@@ -29,6 +29,7 @@ function out = ResLibCal(varargin)
 %   resol   print-out the resolution matrix a la RESCAL
 %   bragg   print-out the Bragg widths a la RESCAL
 %   list    print-out the RESCAL parameter list
+%   config  return the current configuration (ResLib EXP)
 %   <PAR>=<VALUE> sets a parameter value, e.g. 'DM=3.355'
 %
 % To compute the resolution at a given HKLW location, using the current settings
@@ -129,7 +130,7 @@ while ~isempty(varargin)
       varargin(2:3) = [];
     case 'file_open_instr'
       p = fileparts(which(mfilename));
-      ResLibCal('open',[ p filesep 'instruments' ]);
+      out = ResLibCal('open',[ p filesep 'instruments' ]);
     case 'file_reset'
       filename = fullfile(prefdir, 'ResLibCal.ini');
       if ~exist(filename, 'file')
@@ -366,15 +367,7 @@ while ~isempty(varargin)
       % only compute. No output except in varargout
       fig = ResLibCal_fig;
       % if no interface exists, load the last saved configuration before computing
-      if isempty(fig)
-        if isempty(out)
-          filename = fullfile(prefdir, 'ResLibCal.ini');
-          out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
-        end
-        out = ResLibCal_Compute(out);
-      else
-        out = ResLibCal_Compute;  % get config from main GUI
-      end
+      out = ResLibCal_Compute(out);
     case 'update_d_tau'
       % update d-spacing from a popup item
       ResLibCal_UpdateDTau(varargin{2});      % arg is popup handle
@@ -417,6 +410,8 @@ while ~isempty(varargin)
       varargin(2)=[];
       % update computation and plots
       feval(mfilename, 'update');
+    case {'config','EXP'}
+      out = ResLibCal_GetConfig;
     otherwise
       % open file name or list of parameters given as 'VAR=VAL; ...'  
       if numel(varargin) > 1 && isstruct(varargin{2})
@@ -431,6 +426,7 @@ while ~isempty(varargin)
       end
       
     end % switch (action)
+    
     varargin(1) = [];
     % end if varargin is char
   elseif isstruct(varargin{1})
@@ -440,26 +436,34 @@ while ~isempty(varargin)
       out = EXP; EXP=out.EXP;
     end
     varargin(1) = [];
+  elseif isnumeric(varargin{1}) && numel(varargin{1}) == 4
+    % read HKLE coordinates and compute resolution there
+    % get current config
+    out = ResLibCal_GetConfig;
+    if isfield(out,'EXP') EXP = out.EXP; else EXP=[]; end
+    if isempty(EXP) || ~isstruct(EXP), return; end
+    HKLE = varargin{1}; varargin(1)=[];
+    EXP.QH =HKLE(1);
+    EXP.QK =HKLE(2);
+    EXP.QL =HKLE(3);
+    EXP.W  =HKLE(4);
+    set(ResLibCal_fig('EXP_QH'),'String', mat2str(EXP.QH));
+    set(ResLibCal_fig('EXP_QK'),'String', mat2str(EXP.QK));
+    set(ResLibCal_fig('EXP_QL'),'String', mat2str(EXP.QL));
+    set(ResLibCal_fig('EXP_W'), 'String', mat2str(EXP.W));
+    out.EXP=EXP;
+    % compute
+    if isempty(varargin)
+      out = ResLibCal_Compute(EXP);
+      if ~isempty(fig), ResLibCal_UpdateViews(out); end % when they exist
+    end
+    
   elseif numel(varargin) >= 4 && isnumeric(varargin{1}) && isnumeric(varargin{2}) ...
     && isnumeric(varargin{3}) && isnumeric(varargin{4}) 
     % read HKLE coordinates and compute resolution there
     % get current config
-    fig = ResLibCal_fig;
-    if ~isempty(fig)
-      EXP = ResLibCal_fig2EXP(fig);
-      if isfield(EXP,'EXP'),
-        out = EXP; EXP=out.EXP;
-      end
-    end
-    if isempty(out)
-      filename = fullfile(prefdir, 'ResLibCal.ini');
-      out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
-      if isfield(out,'EXP'),
-        out = EXP; EXP=out.EXP;
-      else
-        EXP=out;
-      end
-    end
+    out = ResLibCal_GetConfig;
+    if isfield(out,'EXP') EXP = out.EXP; else EXP=[]; end
     if isempty(EXP) || ~isstruct(EXP), return; end
 
     if ~isempty(varargin) && isnumeric(varargin{1}) 
@@ -490,12 +494,16 @@ while ~isempty(varargin)
       end
       varargin(1)=[];
     end
+    out.EXP=EXP;
     if isempty(varargin)
       out = ResLibCal_Compute(EXP);
+      if ~isempty(fig), ResLibCal_UpdateViews(out); end % when they exist
     end
-    if ~isempty(fig), ResLibCal_UpdateViews(out); end % when they exist
+  elseif numel(varargin) == 1 && isempty(varargin{1})
+    out = ResLibCal_GetConfig;
+    varargin(1)=[];
+    
   end % if type(varargin)
-  
   
 end % end while nargin > 0
 % end ResLibCal main
@@ -584,6 +592,7 @@ function out = ResLibCal_UpdateResolution2(out)
   if strcmp(MC, 'on'),  MC='cloud'; end
   out = ResLibCal_Plot2D(out, [ rlu ' ' qz ' ' MC ]);
 
+% ==============================================================================
 function out = ResLibCal_UpdateResolution3(out)
 % ResLibCal_UpdateResolution3: update the 3D view
 %
@@ -602,6 +611,7 @@ function out = ResLibCal_UpdateResolution3(out)
   if strcmp(MC, 'on'),  MC='cloud'; end
   out = ResLibCal_Plot3D(out, [ rlu ' ' qz ' ' MC ]);
 
+% ==============================================================================
 function ResLibCal_UpdateTauPopup
 % update the popup menu from the editable mono/ana value when d is close
 %
@@ -617,6 +627,7 @@ function ResLibCal_UpdateTauPopup
   index = find(strncmpi(get(popup,'String'), label, length(label)));
   if ~isempty(index) && ~isempty(label), set(popup, 'value', index(1)); end
 
+% ==============================================================================
 function ResLibCal_MethodEnableControls(out)
 % ResLibCal_MethodEnableControls: activates/disactivates controls from CN to Popovici
 %
@@ -651,4 +662,5 @@ function ResLibCal_MethodEnableControls(out)
     set(ResLibCal_fig('EXP_sample_vmosaic'), 'Enable','on');
   end
   
+  % ==============================================================================
   
