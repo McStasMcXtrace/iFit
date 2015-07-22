@@ -31,7 +31,7 @@ function a = iFunc(varargin)
 %
 % Creating the object:
 %   From a character string
-%     the Expression should make use of x,y,z,t,u to denote axes of rank 1-5,
+%     the Expression should make use of x,y,z,t,u,v,w to denote axes of rank 1-7,
 %     and the model Parameters are specified using 'p(n)' vector elements.
 %
 %   From a structure, with iFunc object fields (see above) and alias fields:
@@ -344,6 +344,12 @@ function a = iFunc_private_check(a)
             dim = 4;
             if length(regexp(expr, '\<u\>'))
               dim = 5;
+              if length(regexp(expr, '\<v\>'))
+                dim = 6;
+                if length(regexp(expr, '\<w\>'))
+                  dim = 7;
+                end
+              end
             end
           end
         end

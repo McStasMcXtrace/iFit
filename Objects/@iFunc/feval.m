@@ -448,7 +448,7 @@ function [signal,iFunc_ax,p] = iFunc_feval_expr(this, varargin)
 signal = [];
 % assign parameters and axes for the evaluation of the expression, in case this is model char
 % p already exists, we assign axes, re-assign varargin if needed
-iFunc_ax = 'x y z t u ';
+iFunc_ax = 'x y z t u v w ';
 if this.Dimension
   eval([ '[' iFunc_ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
 end
@@ -525,7 +525,7 @@ function p = iFunc_feval_set(this, p, varargin)
   i = find(~cellfun('isempty', this.Constraint.set)); i=i(:)';
   if ~isempty(i)
 
-    ax = 'x y z t u ';
+    ax = 'x y z t u v w';
     if this.Dimension
       eval([ '[' ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
     end

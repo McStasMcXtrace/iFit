@@ -53,7 +53,7 @@ end
 
 % make sure we have chars only (get rid of function handles)
 if isFa 
-  ax = 'x,y,z,t,u,'; ax = ax(1:(a.Dimension*2));
+  ax = 'x,y,z,t,u,v,w,'; ax = ax(1:(a.Dimension*2));
   if isa(a.Expression, 'function_handle')
     a.Expression = { sprintf('signal = feval(%s, p, %s);', func2str(a.Expression), ax(1:(end-1))) };
   end
@@ -195,7 +195,7 @@ if isFa && isFb
       
     % handle dimensionality expansion
     if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
-      ax = 'xyztu';
+      ax = 'xyztuvw';
       % store inital axes definitions
       for index=1:c.Dimension
         c.Constraint.eval = [ c.Constraint.eval, sprintf('%s_%s = %s; %% store initial axes\n', tmp_a, ax(index), ax(index)) ];
@@ -254,7 +254,7 @@ if isFa && isFb
     end
     % handle dimensionality expansion
     if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
-      ax = 'xyztu';
+      ax = 'xyztuvw';
       % store inital axes definitions
       for index=1:c.Dimension
         c.Guess = [ c.Guess, sprintf('%s_%s = %s; %% store initial axes\n', tmp_a, ax(index), ax(index)) ];
@@ -291,7 +291,7 @@ if isFa && isFb
   
   % handle dimensionality expansion
   if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
-    ax = 'xyztu';
+    ax = 'xyztuvw';
     % store inital axes definitions
     for index=1:c.Dimension
       c.Expression{end+1} = sprintf('%s_%s = %s; %% store initial axes\n', tmp_a, ax(index), ax(index));

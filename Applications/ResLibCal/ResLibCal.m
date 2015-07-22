@@ -212,13 +212,15 @@ while ~isempty(varargin)
     case 'version'
       message = [ ResLibCal_version ' compute and display the triple-axis ' ...
         'resolution function obtained from e.g. Cooper-Nathans and Popovici ' ...
-        'analytical approximations. Part of <ifit.mccode.org>.' ...
-        'E. Farhi, ILL/Computing for Science.' ];
+        'analytical approximations. Part of <ifit.mccode.org>. ' ...
+        '(c) E. Farhi, ILL/Computing for Science. EUPL. ' ...
+        'Contributions from: A. Zheludev, A. Tennant, D. Mc Morrow, J. Ollivier, B. Hennion, Hargreave,Hullah, N. Moshtagh' ];
 
       out = message;
     case {'help_about'}
       % get the ILL logo from object
       fig = ResLibCal_fig;
+      
       if isempty(fig), return; end
       cdata = get(ResLibCal_fig('ILL_logo'), 'CData');
       message = {...
@@ -234,7 +236,7 @@ while ~isempty(varargin)
       CreateMode.Interpreter='tex';
       msgbox(message, ...
         'About: ResLibCal', ...
-        'custom',cdata,jet,CreateMode);
+        'custom',cdata,jet(64),CreateMode);
     case 'view_update'
       if numel(varargin) > 1 && isstruct(varargin{2})
         out = ResLibCal_Compute(varargin{2}); % arg can be an EXP
