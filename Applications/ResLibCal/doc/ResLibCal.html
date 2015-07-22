@@ -92,6 +92,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -125,6 +126,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       Simply extract the application archive. <br>
       In addition, the legacy RESCAL code is also made available as [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
+
 
 
 
@@ -193,6 +195,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
           code</a>]. </li>
       <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
         Cooper-Nathans method [<a
@@ -217,6 +220,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
         with correction [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>].</li>
       <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
@@ -226,6 +230,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
           href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
         Matlab application, in the Popovici formalism [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>].
+
 
 
 
@@ -265,12 +270,14 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
         The analyzer reflectivity is also taken into account (with
         analyzer thickness 'WA') and correction [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">7</a>]..</li>
       <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
         resolution [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>],
+
 
 
 
@@ -314,8 +321,10 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
 
 
 
+
       whereas all the other methods use the Popovici formulation [<a
 href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100%5C">3</a>].
+
 
 
 
@@ -340,6 +349,7 @@ href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozT
     <blockquote> In all methods, the alpha/beta collimation parameters
       support guide <i>m-</i>coating specification (negative values
       e.g. -2) which are then converted to equivalent critical angles <i>0.1
+
 
 
 
@@ -466,14 +476,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         naming. The meaning of the configuration parameters is the
         following<br>
         <blockquote>
-          <pre><b>DM</b> Monochromator d-spacing<br><b>DA</b> Analyzer d-spacing<br><b>ETAM</b> Monochromator mosaic<br><b>ETAA</b> Analyzer mosaic<br><b>ETAS</b> Sample mosaic<br><b>SM</b> scattering sense frocdm monochromator +1=right, -1=left<br><b>SS </b>scattering sense from sample +1=right, -1=left<br><b>SA</b> scattering sense from analyzer +1=right, -1=left<br><b>KFIX</b> fixed neutron wavevector in Ang.-1<br><b>FX</b> index for fixed wavevector 1=incident 2=final (10)<br><b>ALF1</b> horizontal source-mono. collimation in min<br><b>ALF2</b> horizontal mono.-sample collimation in min<br><b>ALF3</b> horizontal sample-analyser collimation in min<br><b>ALF4</b> horizontal analyser-detector collimation in min<br><b>BET1</b> vertical source-mono.  collimation in min<br><b>BET2</b> vertical mono.-sample collimation in min<br><b>BET3</b> vertical sample-analyser collimation in min<br><b>BET4</b> vertical analyser-detector collimation in min<br><b>AS</b> sample lattice parameter A in Ang.<br><b>BS</b> sample lattice parameter B in Ang.<br><b>CS</b> sample lattice parameter C in Ang.<br><b>AA</b> (alpha) angle in deg. between is B and C<br><b>BB</b> (beta) angle in deg. between is A and C<br><b>CC</b> (gamma) angle in deg. between is A and B<br><b>AX</b> First wavevector in scattering plane coordinate H (rlu)<br><b>AY</b> First wavevector in scattering plane coordinate K (rlu)<br><b>AZ</b> First wavevector in scattering plane coordinate L (rlu)<br><b>BX</b> Second wavevector in scattering plane coordinate H (rlu)<br><b>BY</b> Second wavevector in scattering plane coordinate K (rlu)<br><b>BZ</b> Second wavevector inou scattering plane coordinate L (rlu)<br><b>QH</b> Position of resolution wavevector (center of measurement) H (rlu)<br><b>QK</b> Position of resolution wavevector (center of measurement) K (rlu)<br><b>QL</b> Position of resolution wavevector (center of measurement) L (rlu)<br><b>EN</b> (W) Position of resolution wavevector (center of measurement) W (meV)<br><b>DQH</b> Increment of Q,E defining general scan step along QH (rlu)<br><b>DQK</b> Increment of Q,E defining general scan step along QK (rlu)<br><b>DQL</b> Increment of Q,E defining general scan step along QL (rlu)<br><b>DEN</b> Increment of Q,E defining general scan step along EN (meV)<br><b>GH</b> Gradient of the dispersion (planar) direction along QH (rlu)<br><b>GK</b> Gradient of the dispersion (planar) direction along QK (rlu)<br><b>GL</b> Gradient of the dispersion (planar) direction along QL (rlu)<br><b>GMOD</b>  Gradient of the dispersion (planar) direction along EN (meV)<br><b>BeamShape</b> =0 for circular source, =1 for rectangular source<br><b>WB</b> width/diameter of the source (cm)<br><b>HB</b> height/diameter of the source (cm)<br><b>Guide</b> =0 No Guide, =1 for Guide<br><b>GDH</b> horizontal guide divergence (minutes/Angs)<br><b>GDV</b> vertical guide divergence (minutes/Angs)<br><b>SampleShape</b> =0 for cylindrical sample, =1 for cuboid sample<br><b>WS</b> sample width/diameter perp. to Q (cm)<br><b>TS</b> sample width/diameter along Q (cm)<br><b>HS</b> sample height (cm) (10)<br><b>DetecteorShape</b> =0 for circular detector, =1 for rectangular detector<br><b>WD</b> width/diameter of the detector (cm)<br><b>HD</b> height/diameter of the detector (cm)<br><b>TM</b> thickness of monochromator (cm)<br><b>WM</b> width of monochromator (cm)<br><b>HM</b> height of monochromator (cm)<br><b>TA</b> thickness of analyser (cm)<br><b>WA</b> width of analyser (cm)<br><b>HA</b> height of analyser (cm)<br><b>L1</b> distance between source and monochromator (cm)<br><b>L2</b> distance between monochromator and sample (cm)<br><b>L3</b> distance between sample and analyser (cm)<br><b>L4</b> distance between analyser and detector (cm)<br><b>RMH</b> horizontal radius of curvature of monochromator (cm)<br><b>RMV</b> vertical radius of curvature of monochromator (cm)<br><b>RAH</b> horizontal radius of curvature of analyser (cm)<br><b>RAV</b> vertical radius of curvature of analyser (cm)<br></pre>
+          <pre><b>DM</b> Monochromator d-spacing<br><b>DA</b> Analyzer d-spacing<br><b>ETAM</b> Monochromator mosaic<br><b>ETAA</b> Analyzer mosaic<br><b>ETAS</b> Sample mosaic<br><b>SM</b> scattering sense frocdm monochromator +1=right, -1=left<br><b>SS </b>scattering sense from sample +1=right, -1=left<br><b>SA</b> scattering sense from analyzer +1=right, -1=left<br><b>KFIX</b> fixed neutron wavevector in Ang.-1<br><b>FX</b> index for fixed wavevector 1=incident 2=final (10)<br><b>ALF1</b> horizontal source-mono. collimation in min (FWHM)<br><b>ALF2</b> horizontal mono.-sample collimation in min (FWHM)<br><b>ALF3</b> horizontal sample-analyser collimation in min (FWHM)<br><b>ALF4</b> horizontal analyser-detector collimation in min (FWHM)<b><br>BET1</b> vertical source-mono.  collimation in min (FWHM)<b><br>BET2</b> vertical mono.-sample collimation in min (FWHM)<b><br>BET3</b> vertical sample-analyser collimation in min (FWHM)<b><br>BET4</b> vertical analyser-detector collimation in min (FWHM)<b><br>AS</b> sample lattice parameter A in Ang.<br><b>BS</b> sample lattice parameter B in Ang.<br><b>CS</b> sample lattice parameter C in Ang.<br><b>AA</b> (alpha) angle in deg. between is B and C<br><b>BB</b> (beta) angle in deg. between is A and C<br><b>CC</b> (gamma) angle in deg. between is A and B<br><b>AX</b> First wavevector in scattering plane coordinate H (rlu). angle &lt;KI,A&gt;=A3<br><b>AY</b> First wavevector in scattering plane coordinate K (rlu)<br><b>AZ</b> First wavevector in scattering plane coordinate L (rlu)<br><b>BX</b> Second wavevector in scattering plane coordinate H (rlu)<br><b>BY</b> Second wavevector in scattering plane coordinate K (rlu)<br><b>BZ</b> Second wavevector inou scattering plane coordinate L (rlu)<br><b>QH</b> Position of resolution wavevector (center of measurement) H (rlu)<br><b>QK</b> Position of resolution wavevector (center of measurement) K (rlu)<br><b>QL</b> Position of resolution wavevector (center of measurement) L (rlu)<br><b>EN</b> (W) Position of resolution wavevector (center of measurement) W (meV)<br><b>DQH</b> Increment of Q,E defining general scan step along QH (rlu)<br><b>DQK</b> Increment of Q,E defining general scan step along QK (rlu)<br><b>DQL</b> Increment of Q,E defining general scan step along QL (rlu)<br><b>DEN</b> Increment of Q,E defining general scan step along EN (meV)<br><b>GH</b> Gradient of the dispersion (planar) direction along QH (rlu)<br><b>GK</b> Gradient of the dispersion (planar) direction along QK (rlu)<br><b>GL</b> Gradient of the dispersion (planar) direction along QL (rlu)<br><b>GMOD</b>  Gradient of the dispersion (planar) direction along EN (meV)<br><b>BeamShape</b> =0 for circular source, =1 for rectangular source<br><b>WB</b> width/diameter of the source (cm)<br><b>HB</b> height/diameter of the source (cm)<br><b>Guide</b> =0 No Guide, =1 for Guide<br><b>GDH</b> horizontal guide divergence (minutes/Angs)<br><b>GDV</b> vertical guide divergence (minutes/Angs)<br><b>SampleShape</b> =0 for cylindrical sample, =1 for cuboid sample<br><b>WS</b> sample width/diameter perp. to Q (cm)<br><b>TS</b> sample width/diameter along Q (cm)<br><b>HS</b> sample height (cm) (10)<br><b>DetecteorShape</b> =0 for circular detector, =1 for rectangular detector<br><b>WD</b> width/diameter of the detector (cm)<br><b>HD</b> height/diameter of the detector (cm)<br><b>TM</b> thickness of monochromator (cm)<br><b>WM</b> width of monochromator (cm)<br><b>HM</b> height of monochromator (cm)<br><b>TA</b> thickness of analyser (cm)<br><b>WA</b> width of analyser (cm)<br><b>HA</b> height of analyser (cm)<br><b>L1</b> distance between source and monochromator (cm)<br><b>L2</b> distance between monochromator and sample (cm)<br><b>L3</b> distance between sample and analyser (cm)<br><b>L4</b> distance between analyser and detector (cm)<br><b>RMH</b> horizontal radius of curvature of monochromator (cm)<br><b>RMV</b> vertical radius of curvature of monochromator (cm)<br><b>RAH</b> horizontal radius of curvature of analyser (cm)<br><b>RAV</b> vertical radius of curvature of analyser (cm)</pre>
         </blockquote>
-        The usual definition of the sample reciprocal lattice
-        orientation vectors <b>A</b> and <b>B</b> (defined by the
-        user), are so that the spectrometer angle <b>A3</b> is the
-        angle between <b>KI</b> and <b>A</b>=(<b>AX,AY,AZ</b>). The <b>B</b>=(<b>BX,BY,BZ</b>)
-        vector defines a second lattice vector in the scattering plane.<br>
-        <br>
         The resolution can be obtained and displayed in 2 coordinate
         frames:<br>
         <ul>
@@ -491,6 +495,18 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             corresponding resolution matrix is 'RM' given in
             [Angs-3.meV].</li>
         </ul>
+        The usual definition of the sample reciprocal lattice
+        orientation vectors <b>A</b> and <b>B</b> (defined by the
+        user), are so that the spectrometer angle <b>A3</b> is the
+        angle between <b>KI</b> and <b>A</b>=(<b>AX,AY,AZ</b>). The <b>B</b>=(<b>BX,BY,BZ</b>)
+        vector defines a second lattice vector in the scattering plane.
+        This is why, in order to properly define the [A,B] basis, an
+        initial measurement is done in practice on a Bragg signal with
+        Q=[QH,QK,QL]=[AX,AY,AZ]. For such a measurement, the [ABC] and
+        [xyz] frames are equivalent. Then the A3 angle offset is set to
+        the signal maximum.<br>
+        <ul>
+        </ul>
         <ul>
         </ul>
         <ul>
@@ -501,6 +517,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       the TAS resolution function</h4>
     <div style="text-align: left;"> To compute and plot the resolution
       function, select the <span style="font-style: italic;">View/Resolution
+
 
 
 
@@ -580,6 +597,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         A geometric representation of the TAS can be shown in real
         space, using the instrument configuration parameters. This view
         is generated from the <span style="font-style: italic;">View/Instrument
+
 
 
 
@@ -679,6 +697,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
         configurations by just copying and renaming e.g. any <span
@@ -693,6 +712,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -811,6 +831,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3' </span>as
+
 
 
 
@@ -1026,6 +1047,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           code</a>] </li>
     </ul>
     Some bugs have been corrected in ResLib, ResCal5/rc_popma, and Res3
@@ -1055,8 +1077,10 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
 
 
 
+
       See [<a
         href="file:///home/farhi/dev/iFit/Applications/ResLibCal/rescal.for">Fortran
+
 
 
 
@@ -1076,6 +1100,7 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
 
 
 
+
         Cryst.</span> <span style="font-weight: bold;">A29</span>, 160,
       (1972) [<a href="http://dx.doi.org/10.1107/S0567739473000422">doi:10.1107/S0567739473000422</a>].<br>
       [3] M. Popovici, <span style="font-style: italic;">Acta Cryst</span>
@@ -1085,6 +1110,7 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
