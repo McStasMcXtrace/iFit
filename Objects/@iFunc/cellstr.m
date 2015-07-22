@@ -25,7 +25,7 @@ end
 % single object to char
   if isempty(s), ret={'[]'}; return; end
 
-  ax = 'x,y,z,t,u,'; ax = ax(1:(s.Dimension*2));
+  ax = 'x,y,z,t,u,v,w,'; ax = ax(1:(s.Dimension*2));
   
   if isempty(s.Name) || strcmp(s.Name, char(s.Expression)), n  = s.Tag; else n=s.Name; end
   if strcmp(s.Expression, s.Description),             d = '';     else d = s.Description; end

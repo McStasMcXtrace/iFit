@@ -125,7 +125,7 @@ elseif ndims(signal) == 3
 else
   % we use iData plotting
   iD = iData(ax{:}, signal); sz = size(iD); sz(4:end) = 1;
-  disp([ 'iFunc.plot: Reducing ' num2str(ndims(iD)) '-th dimensional data to 3D ' mat2str(sz) ]);
+  disp([ 'iFunc.plot: ' name ': Reducing ' num2str(ndims(iD)) '-th dimensional data to 3D ' mat2str(sz) ]);
   iD = resize(iD, sz);
   h=plot(iD);
   % error([ 'iFunc:' mfilename ], 'Failed to plot model %s\n', name);

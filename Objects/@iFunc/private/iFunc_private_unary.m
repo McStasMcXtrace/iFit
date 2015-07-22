@@ -21,7 +21,7 @@ if numel(a) > 1
   return
 end
 
-ax = 'x,y,z,t,u,'; ax = ax(1:(a.Dimension*2));
+ax = 'x,y,z,t,u,v,w,'; ax = ax(1:(a.Dimension*2));
 if isa(a.Expression, 'function_handle')
   a.Expression = sprintf('signal = feval(%s, p, %s);', func2str(a.Expression), ax(1:(end-1)));
 end

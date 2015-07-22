@@ -71,3 +71,10 @@ resolution.xyz.cloud = { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' HKLE(4,:)' }; % get 1D
 
 % and now we can evaluate the function onto the axes.... and sum all values
 % sum(feval(model, parameters, ax{:}))*resolution.R0/NMC
+
+% the opposite operation (cloud -> RM) is computed from:
+% <http://stackoverflow.com/questions/3417028/ellipse-around-the-data-in-matlab>
+% B as columns
+% Center = mean(B,1);
+% X0 = bsxfun(@minus,B,Center);
+% RM=X0'*X0 ./ (size(X0,1)-1);
