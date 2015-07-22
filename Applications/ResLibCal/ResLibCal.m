@@ -263,6 +263,11 @@ while ~isempty(varargin)
       end
       set(gcbo, 'Checked', status);
       ResLibCal_UpdateViews;
+    case 'view_resolution_cloud'
+      status = get(gcbo, 'Checked');
+      if strcmp(status,'on'), status = 'off'; else status = 'on'; end
+      set(gcbo, 'Checked', status);
+      ResLibCal_UpdateViews;
     case {'view_close','close'}
       delete(findobj(0, 'Tag', 'ResLibCal_View1'));
       delete(findobj(0, 'Tag', 'ResLibCal_View2'));
@@ -573,9 +578,11 @@ function out = ResLibCal_UpdateResolution2(out)
   % update/show the resolution projections
   rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
+  MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
   if strcmp(rlu, 'on'), rlu='rlu'; end
   if strcmp(qz, 'on'),  qz='qz'; end
-  out = ResLibCal_Plot2D(out, [ rlu ' ' qz ]);
+  if strcmp(MC, 'on'),  MC='cloud'; end
+  out = ResLibCal_Plot2D(out, [ rlu ' ' qz ' ' MC ]);
 
 function out = ResLibCal_UpdateResolution3(out)
 % ResLibCal_UpdateResolution3: update the 3D view
@@ -589,9 +596,11 @@ function out = ResLibCal_UpdateResolution3(out)
   % update/show the resolution projections
   rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
+  MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
   if strcmp(rlu, 'on'), rlu='rlu'; end
   if strcmp(qz, 'on'),  qz='qz'; end
-  out = ResLibCal_Plot3D(out, [ rlu ' ' qz ]);
+  if strcmp(MC, 'on'),  MC='cloud'; end
+  out = ResLibCal_Plot3D(out, [ rlu ' ' qz ' ' MC ]);
 
 function ResLibCal_UpdateTauPopup
 % update the popup menu from the editable mono/ana value when d is close

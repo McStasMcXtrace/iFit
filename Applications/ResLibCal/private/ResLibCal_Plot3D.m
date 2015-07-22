@@ -68,9 +68,9 @@ for index=1:numel(resolutions)
 
   if isempty(NP) || ~all(isreal(NP)), return; end
   
+  if isempty(strfind(mode,'cloud')), cloud=[]; end
+  
   % reduce dimensionality of the resolution mtrix
-  
-  
   if ~isempty(strfind(mode,'qz'))
     [dummy, NP] = rc_int(4,1, NP); % this function strips out the row=col=4, and corrects determinant
                                    % using the cofactor rule.
@@ -98,7 +98,7 @@ function h=ResLibCal_Proj_plot3D(index, NP, FrameStr, Labels, Units, cloud, cent
     if numel(y) > 200, y=y(1:200); end
     if numel(z) > 200, z=z(1:200); end
     if numel(e) > 200, e=e(1:200); end
-    h=scatter3(x,y,z,2,e);
+    h=scatter3(x,y,z,3,e);
     set(h,'DisplayName',[ Labels{index} ' (cloud)' ], 'Tag', 'ResLibCal_View3_Cloud');
     hold on
   end
