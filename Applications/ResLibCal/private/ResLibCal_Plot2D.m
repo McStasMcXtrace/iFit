@@ -55,6 +55,8 @@ for index=1:numel(resolutions)
 
   if isempty(NP) || ~all(isreal(NP)), return; end
   
+  if isempty(strfind(mode,'cloud')), cloud=[]; end
+  
   % plot the 3 subplots for projections
   % each plot is shown as a gauss2d, contour.
   % add context menus accordingly
@@ -134,7 +136,7 @@ function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, FrameStr, Labels, Units, panel_
     if numel(x) > 200, x=x(1:200); end
     if numel(y) > 200, y=y(1:200); end
     if numel(e) > 200, e=e(1:200); end
-    h=scatter(x,y,2, e,'.');
+    h=scatter(x,y,3, e);
     set(h,'DisplayName','cloud');
     hold on
   end
