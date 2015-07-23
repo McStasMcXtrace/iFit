@@ -10,7 +10,7 @@
       neutron spectrometer resolution</h1>
     <br>
     <div style="text-align: center;">E. Farhi, <span style="font-style:
-        italic;">ILL/DS/CS - Version 1.1 Sept 2014</span><br>
+        italic;">ILL/DS/CS - Version 1.2 Jul 2015</span><br>
       <br>
     </div>
     <div style="text-align: center;"> using parts from <a
@@ -55,6 +55,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     spectrometer (TAS). ResLibCal is based on <a
       href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans
     and Popovici methods are proposed [<a href="#mozTocId811100">1-7</a>],
+
 
     in different implementations from:<br>
     <ul>
@@ -114,12 +115,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       computational methods</h3>
     There are basically two analytical methods to compute the resolution
     function of a TAS instrument:<br>
-    <blockquote>The <b>Cooper-Nathans</b> [<a
-href="#mozTocId811100">1</a>]
+    <blockquote>The <b>Cooper-Nathans</b> [<a href="#mozTocId811100">1</a>]
       method handles a conventional description of the instrument, with
       collimations and homogeneous mosaic spread.<br>
-      The <b>Popovici</b> method [<a
-href="#mozTocId811100">3</a>]
+      The <b>Popovici</b> method [<a href="#mozTocId811100">3</a>]
       handles similarly collimations and mosaic spreads (but here with
       separate horizontal and vertical components), but also much more
       geometrical details, including the optical elements size, and the
@@ -130,71 +129,50 @@ href="#mozTocId811100">3</a>]
     The following computational methods are available:<br>
     <ul>
       <li><b>Cooper-Nathans/AFILL</b>: the original Cooper-Nathans [<a
-href="#mozTocId811100">1</a>]
-        code RESCAL from Brookhaven 'AFILL'. Mosaicities are isotropic
-        (horizontal equals vertical). [<a
-          href="../rescal.for">Fortran
-
-          code</a>]. </li>
+          href="#mozTocId811100">1</a>] code RESCAL from Brookhaven
+        'AFILL'. Mosaicities are isotropic (horizontal equals vertical).
+        [<a href="../rescal.for">Fortran code</a>]. </li>
       <li><b>Cooper-Nathans/ResCal5</b>: a simple re-write of the
-        Cooper-Nathans method [<a
-href="#mozTocId811100">1</a>]
-        from the <a
+        Cooper-Nathans method [<a href="#mozTocId811100">1</a>] from the
+        <a
 href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>
         Matlab application. Mosaicities are isotropic (horizontal equals
         vertical). </li>
       <li><b>Cooper-Nathans/Res3</b>: simple Cooper-Nathans based on
         notes from B. Hennion in the Popovici formalism [<a
-href="#mozTocId811100">3</a>],
-
-
-        with correction [<a
-href="#mozTocId811100">7</a>].</li>
+          href="#mozTocId811100">3</a>], with correction [<a
+          href="#mozTocId811100">7</a>].</li>
       <li><b>Cooper-Nathans/ResLib</b>: an enhanced version of the
-        Cooper-Nathans method [<a
-href="#mozTocId811100">3</a>]
-        from the <a
-          href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
+        Cooper-Nathans method [<a href="#mozTocId811100">3</a>] from the
+        <a href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>
         Matlab application, in the Popovici formalism [<a
-href="#mozTocId811100">3</a>].
-
-        The analyzer reflectivity is taken into account (with analyzer
-        thickness 'WA'). Supports vertical <i>and</i> horizontal mosaic
-        spreads, with correction [<a
-href="#mozTocId811100">7</a>].</li>
+          href="#mozTocId811100">3</a>]. The analyzer reflectivity is
+        taken into account (with analyzer thickness 'WA'). Supports
+        vertical <i>and</i> horizontal mosaic spreads, with correction
+        [<a href="#mozTocId811100">7</a>].</li>
       <li><b>Popovici/ResLib</b>: the Popovici formulation of the
-        resolution [<a
-href="#mozTocId811100">3</a>].
-
-
-        The analyzer reflectivity is also taken into account (with
-        analyzer thickness 'WA') and correction [<a
-href="#mozTocId811100">7</a>]..</li>
+        resolution [<a href="#mozTocId811100">3</a>]. The analyzer
+        reflectivity is also taken into account (with analyzer thickness
+        'WA') and correction [<a href="#mozTocId811100">7</a>]..</li>
       <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
-        resolution [<a
-href="#mozTocId811100">3</a>],
-
-        with vertical sample mosaicity , but <i>homogeneous</i>
-        mosaicity for monochromator and analyzer [<a
-href="#mozTocId811100">7</a>].<br>
+        resolution [<a href="#mozTocId811100">3</a>], with vertical
+        sample mosaicity , but <i>homogeneous</i> mosaicity for
+        monochromator and analyzer [<a href="#mozTocId811100">7</a>].<br>
       </li>
     </ul>
     <u>Intensity</u>: <br>
     <blockquote>The Cooper-Nathans/AFILL method uses the Chesser and e
-      intensity estimate [<a
-href="#mozTocId811100">2</a>],
-
-      whereas all the other methods use the Popovici formulation [<a
-href="#mozTocId811100%5C">3</a>].
-
-      The intensity estimate is given w.r.t the source, and is given in
-      [a.u.]. The monochromator and analyzer reflectivity is assumed to
-      be ideal (1).<br>
+      intensity estimate [<a href="#mozTocId811100">2</a>], whereas all
+      the other methods use the Popovici formulation [<a
+        href="#mozTocId811100%5C">3</a>]. The intensity estimate is
+      given w.r.t the source, and is given in [a.u.]. The monochromator
+      and analyzer reflectivity is assumed to be ideal (1).<br>
     </blockquote>
     <u>Collimation:</u><br>
     <blockquote> In all methods, the alpha/beta collimation parameters
       support guide <i>m-</i>coating specification (negative values
       e.g. -2) which are then converted to equivalent critical angles <i>0.1
+
 
       </i><i>m &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are
       also limited by the effective divergence set from the geometry,
@@ -208,7 +186,7 @@ href="#mozTocId811100%5C">3</a>].
       isotropic (monochromator, analyzer, sample). In the
       Cooper-Nathans/Popovici formalism, mosaicity supports separate
       vertical and horizontal components, including correction [<a
-href="#mozTocId811100">7</a>].<br>
+        href="#mozTocId811100">7</a>].<br>
       In the Popovici formalism, all mosaicities are taken into account
       with separate vertical and horizontal components (monochromator,
       analyzer, sample).<br>
@@ -348,6 +326,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <div style="text-align: left;"> To compute and plot the resolution
       function, select the <span style="font-style: italic;">View/Resolution
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -390,6 +369,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         A geometric representation of the TAS can be shown in real
         space, using the instrument configuration parameters. This view
         is generated from the <span style="font-style: italic;">View/Instrument
+
 
           geometry</span> menu item. It is automatically updated upon
         change of instrument parameters, as the other views.<br>
@@ -464,6 +444,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
         <a
 href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in22/description/instrument-layout/">IN22</a>&nbsp;
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
         configurations by just copying and renaming e.g. any <span
@@ -478,6 +459,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Saveas...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
     and the full ResLibCal configuration (instrument, sample, position,
     method) is saved as a Matlab script. An example of such
@@ -566,6 +548,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3' </span>as
+
 
     free text. <br>
     The position of the measurement is [ QH QK QL W ]:<br>
@@ -754,10 +737,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/vtas/">vTAS</a>_view</span>
         (Y. Raoul/A. Bouvet/A. Filhol) and <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/">PKFit</a>.
-        [<a
-          href="../rescal.for">Fortran
-
-          code</a>] </li>
+        [<a href="../rescal.for">Fortran code</a>] </li>
     </ul>
     Some bugs have been corrected in ResLib, ResCal5/rc_popma, and Res3
     by cross comparing codes and independent benchmarking. The results
@@ -776,11 +756,10 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
         style="font-weight: bold;">23</span>, 357, (1967) [<a
         href="http://dx.doi.org/10.1107/S0365110X67002816">doi:10.1107/S0365110X67002816</a>].
 
-      See [<a
-        href="../rescal.for">Fortran
 
-        code</a>].<br>
+      See [<a href="../rescal.for">Fortran code</a>].<br>
       [2] N. J. Chesser and J. D. e, <span style="font-style: italic;">Acta
+
 
         Cryst.</span> <span style="font-weight: bold;">A29</span>, 160,
       (1972) [<a href="http://dx.doi.org/10.1107/S0567739473000422">doi:10.1107/S0567739473000422</a>].<br>
@@ -791,6 +770,7 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
         Appl. Phys.</span> <span style="font-weight: bold;">42</span>,
       4736, (1971) [<a href="http://dx.doi.org/10.1063/1.1659848">doi:10.1063/1.1659848</a>].<br>
