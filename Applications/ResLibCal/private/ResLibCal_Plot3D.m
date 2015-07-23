@@ -98,8 +98,8 @@ function h=ResLibCal_Proj_plot3D(index, NP, FrameStr, Labels, Units, cloud, cent
     if numel(y) > 200, y=y(1:200); end
     if numel(z) > 200, z=z(1:200); end
     if numel(e) > 200, e=e(1:200); end
-    % h=scatter3(x,y,z,3,e,'filled');
-    h=plot3(x,y,z,'o');
+    h=scatter3(x,y,z,3,e,'MarkerFaceColor','b');
+    % plot3(x,y,z,'o');
     set(h,'DisplayName',[ Labels{index} ' (cloud)' ], 'Tag', 'ResLibCal_View3_Cloud');
     hold on
   end
@@ -140,8 +140,9 @@ function h=ResLibCal_Proj_plot3D(index, NP, FrameStr, Labels, Units, cloud, cent
     uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
     uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback', [ ...
         '[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end;' ...
-        'clear tmp_a tmp_e; lighting none;' ]);
+        'clear tmp_a tmp_e; lighting none; shading flat;' ]);
     uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
+    uimenu(uicm, 'Label','Smooth','Callback', 'shading interp;');
     uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.5);');
     uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
     uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
