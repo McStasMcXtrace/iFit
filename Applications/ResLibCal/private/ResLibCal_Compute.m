@@ -16,12 +16,13 @@ function out = ResLibCal_Compute(EXP)
   out.Title  = 'ResLibCal';
   
   if isempty(EXP) || ~isstruct(EXP)
-    EXP = ResLibCal_GetConfig;
+    [EXP, fig] = ResLibCal_GetConfig;
   end
   % check EXP structure. Perhaps it is a full ResLibCal structure
   if ~isstruct(EXP), return; end
   if isfield(EXP,'EXP')
-    EXP = EXP.EXP;
+    out = EXP;
+    EXP = out.EXP;
   end
   
   out.EXP    = EXP; p = [];

@@ -114,7 +114,7 @@ if strcmp(Type,'2D'),
     % plot(C(1),C(2),'r*');
     % axis equal, grid
 else
-    h=mesh(XX,YY,ZZ);
+    h=surfl(XX,YY,ZZ);
     % axis equal
     hidden off
 end

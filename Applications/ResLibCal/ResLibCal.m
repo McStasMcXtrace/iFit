@@ -232,7 +232,8 @@ while ~isempty(varargin)
         '\bullet ResLib 3.4 (A. Zheludev)' , ...
         '\bullet ResCal5 (A. Tennant and D. Mc Morrow)' , ...
         '\bullet Res3ax (J. Ollivier)' , ...
-        '\bullet Rescal/AFILL (Hargreave, Hullah) and vTAS/PKFIT view (A. Bouvet/A. Filhol)' };
+        '\bullet Rescal/AFILL (Hargreave, Hullah) and vTAS/PKFIT view (A. Bouvet/A. Filhol)', ...
+        'Additional contributions from: B. Hennion, N. Moshtagh' };
       CreateMode.WindowStyle = 'modal';
       CreateMode.Interpreter='tex';
       msgbox(message, ...
@@ -247,29 +248,42 @@ while ~isempty(varargin)
       end
       ResLibCal_ViewResolution(out,2); % if not opened, open at least the 2D view
       ResLibCal_UpdateViews(out);
-    case 'view_autoupdate'
-      status = get(gcbo, 'Checked');
-      if strcmp(status,'on'), status = 'off'; else status = 'on'; end
-      set(gcbo, 'Checked', status);
-    case 'view_resolutionrlu'
-      status = get(gcbo, 'Checked');
-      if strcmp(status,'on'), status = 'off'; else status = 'on'; end
-      set(gcbo, 'Checked', status);
-      ResLibCal_UpdateViews;
-    case 'view_resolutionxyz'
-      status = get(gcbo, 'Checked');
-      if strcmp(status,'on'), status = 'off'; else status = 'on'; end
-      if strcmp(status,'on')
-        set(gcbo, 'Label','Resolution in [Qx,Qy,Qz]');
-      else
-        set(gcbo, 'Label','Resolution in [Qx,Qy,E]');
+    case {'view_autoupdate','autoupdate'}
+      status = '';
+      if numel(varargin) > 1 && ischar(varargin{2})
+        status = varargin{2};
+        if strcmp(status,'on') || strcmp(status,'off')
+          varargin(2) = [];
+        else
+          status = ''; % use current setting and toggle
+        end
       end
-      set(gcbo, 'Checked', status);
+      if isempty(status)  % toggle
+        status = get(ResLibCal_fig('View_AutoUpdate'), 'Checked');
+        if strcmp(status,'off'), status = 'on'; end
+      end
+      if ~strcmp(status, 'on'), status = 'off'; end % make sure we get on or off
+      set(ResLibCal_fig('View_AutoUpdate'), 'Checked', status);
+    case {'view_resolutionrlu','rlu'}
+      status = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
+      if strcmp(status,'on'), status = 'off'; else status = 'on'; end
+      set(ResLibCal_fig('View_ResolutionRLU'), 'Checked', status);
+      ResLibCal_UpdateViews;
+    case {'view_resolutionxyz','zw'}
+      status = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
+      if strcmp(status,'on'), 
+        status = 'off'; 
+        set(ResLibCal_fig('View_ResolutionXYZ'), 'Label','Resolution in [Qx,Qy,E]');
+      else 
+        status = 'on'; 
+        set(ResLibCal_fig('View_ResolutionXYZ'), 'Label','Resolution in [Qx,Qy,Qz]');
+      end
+      set(ResLibCal_fig('View_ResolutionXYZ'), 'Checked', status);
       ResLibCal_UpdateViews;
     case 'view_resolution_cloud'
-      status = get(gcbo, 'Checked');
+      status = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
       if strcmp(status,'on'), status = 'off'; else status = 'on'; end
-      set(gcbo, 'Checked', status);
+      set(ResLibCal_fig('View_Resolution_Cloud'), 'Checked', status);
       ResLibCal_UpdateViews;
     case {'view_close','close'}
       delete(findobj(0, 'Tag', 'ResLibCal_View1'));
@@ -418,8 +432,12 @@ while ~isempty(varargin)
         out = varargin{2};
         varargin(2)=[];
       end
-      out = ResLibCal_Open(action, out); % update 'out/EXP' from file
-      ResLibCal_EXP2fig(out);                        % put it into the main GUI
+      if ~isempty(action)
+        out = ResLibCal_Open(action, out); % update 'out/EXP' from file
+        ResLibCal_EXP2fig(out);                        % put it into the main GUI
+      else
+        out = ResLibCal_GetConfig;
+      end
       if numel(varargin) == 0
         out = ResLibCal_Compute(out);                    % compute the resolution
         ResLibCal_UpdateViews(out); % update views when they exist
@@ -431,9 +449,10 @@ while ~isempty(varargin)
     % end if varargin is char
   elseif isstruct(varargin{1})
     % read an out or EXP structure
-    EXP = varargin{1};
-    if isfield(EXP,'EXP'),
-      out = EXP; EXP=out.EXP;
+    out = varargin{1};
+    if ~isfield(EXP,'EXP')
+      EXP=out; out=[];
+      out.EXP = EXP; 
     end
     varargin(1) = [];
   elseif isnumeric(varargin{1}) && numel(varargin{1}) == 4
@@ -499,7 +518,7 @@ while ~isempty(varargin)
       out = ResLibCal_Compute(EXP);
       if ~isempty(fig), ResLibCal_UpdateViews(out); end % when they exist
     end
-  elseif numel(varargin) == 1 && isempty(varargin{1})
+  elseif numel(varargin) >= 1 && isempty(varargin{1})
     out = ResLibCal_GetConfig;
     varargin(1)=[];
     
