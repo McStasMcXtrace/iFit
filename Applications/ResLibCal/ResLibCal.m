@@ -196,15 +196,15 @@ while ~isempty(varargin)
     case {'view_resolution2','view2'}
       if length(varargin) > 1, v=varargin{2}; varargin(2) = []; else v=[]; end
       out = ResLibCal_ViewResolution(v,2);  % open/raise View Res2
-      out = ResLibCal_UpdateViews(out);
+      out = ResLibCal_UpdateViews(out, 'force');
     case {'view_resolution3','view3'}
       if length(varargin) > 1, v=varargin{2}; varargin(2) = []; else v=[]; end
       out = ResLibCal_ViewResolution(v,3);  % open/raise View Res2
-      out = ResLibCal_UpdateViews(out);
+      out = ResLibCal_UpdateViews(out, 'force');
     case {'view_tas','geometry','tas'}
       if length(varargin) > 1, v=varargin{2}; varargin(2) = []; else v=[]; end
       out = ResLibCal_ViewResolution(v,1);  % open/raise View TAS
-      out = ResLibCal_UpdateViews(out);
+      out = ResLibCal_UpdateViews(out, 'force');
     case {'help_content','help'}
       link = fullfile(fileparts(which(mfilename)), 'doc', [ mfilename '.html' ]);
       disp([ mfilename ': opening help from ' link ])
@@ -247,7 +247,7 @@ while ~isempty(varargin)
         out = ResLibCal_Compute;
       end
       ResLibCal_ViewResolution(out,2); % if not opened, open at least the 2D view
-      ResLibCal_UpdateViews(out);
+      ResLibCal_UpdateViews(out, 'force');
     case {'view_autoupdate','autoupdate'}
       status = '';
       if numel(varargin) > 1 && ischar(varargin{2})
@@ -268,7 +268,7 @@ while ~isempty(varargin)
       status = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
       if strcmp(status,'on'), status = 'off'; else status = 'on'; end
       set(ResLibCal_fig('View_ResolutionRLU'), 'Checked', status);
-      ResLibCal_UpdateViews;
+      ResLibCal_UpdateViews([],'force');
     case {'view_resolutionxyz','zw'}
       status = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
       if strcmp(status,'on'), 
@@ -279,12 +279,12 @@ while ~isempty(varargin)
         set(ResLibCal_fig('View_ResolutionXYZ'), 'Label','Resolution in [Qx,Qy,Qz]');
       end
       set(ResLibCal_fig('View_ResolutionXYZ'), 'Checked', status);
-      ResLibCal_UpdateViews;
+      ResLibCal_UpdateViews([],'force');
     case 'view_resolution_cloud'
       status = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
       if strcmp(status,'on'), status = 'off'; else status = 'on'; end
       set(ResLibCal_fig('View_Resolution_Cloud'), 'Checked', status);
-      ResLibCal_UpdateViews;
+      ResLibCal_UpdateViews([],'force');
     case {'view_close','close'}
       delete(findobj(0, 'Tag', 'ResLibCal_View1'));
       delete(findobj(0, 'Tag', 'ResLibCal_View2'));
@@ -372,10 +372,10 @@ while ~isempty(varargin)
       
       out = ResLibCal_Compute;
       
-      if ~isempty(fig) && strcmp(get(ResLibCal_fig('View_AutoUpdate'), 'Checked'), 'on')
+      if ~isempty(fig)
         out = ResLibCal_UpdateViews(out);
-      elseif isempty(fig)
-        out = ResLibCal_UpdateViews(out); % display result to stdout
+      else
+        out = ResLibCal_UpdateViews(out, 'stdout'); % display result to stdout
       end
     case {'compute','resolution'}
       % only compute. No output except in varargout
@@ -536,24 +536,32 @@ function filename = ResLibCal_Save
   filename = ResLibCal_Saveas(fullfile(prefdir, 'ResLibCal.ini'));
 
 % ==============================================================================
-function out = ResLibCal_UpdateViews(out)
+function out = ResLibCal_UpdateViews(out, mode)
 % ResLibCal_UpdateViews: update all views (only when already visible)
+% mode can be: 'force' (update all views) or 'stdout'
 %
   if nargin == 0, out = ''; end
+  if nargin < 2, mode=''; end
   if ~isstruct(out), out = ResLibCal_Compute; end
   fig = ResLibCal_fig;
-  if ~isempty(fig) 
-    if strcmp(get(ResLibCal_fig('View_AutoUpdate'), 'Checked'), 'on')
+  if ~isempty(fig) || strcmp(mode, 'force')
+    if strcmp(get(ResLibCal_fig('View_AutoUpdate'), 'Checked'), 'on') || strcmp(mode, 'force')
+      t=clock;
       out = ResLibCal_UpdateResolution1(out); % TAS geometry
       out = ResLibCal_UpdateResolution2(out); % 2D, also shows matrix
       out = ResLibCal_UpdateResolution3(out); % 3D
+      if ~strcmp(mode, 'force') && etime(clock, t) > 2
+        disp([ mfilename ': the time required to update all plots gets long.' ])
+        disp('INFO          Setting View/AutoUpdate to off.')
+        set(ResLibCal_fig('View_AutoUpdate'), 'Checked', 'off');
+      end
     end
     ResLibCal_MethodEnableControls(out);    % enable/disable widgtes depending on the chosen method
   end
   % if no view exists, send result to the console 
   % here unactivated in case we use it as a model for e.g. fitting
-  if isempty(fig) || isempty([ findobj(0, 'Tag','ResLibCal_View2') ...
-    findobj(0, 'Tag','ResLibCal_View3') ])
+  if isempty(fig) || strcmp(mode, 'stdout') ...
+  || isempty([ findobj(0, 'Tag','ResLibCal_View2') findobj(0, 'Tag','ResLibCal_View3') ])
 		% display result in the console
 		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
 		if ~strcmp(rlu, 'on'), mode=''; else mode='rlu'; end
