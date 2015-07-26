@@ -41,11 +41,13 @@ end
 
 % then update axes
 for index=1:length(dims)
-  if length(sz) >= index && sz(index) ~= dims(index) && ndims(a) > 1
-    x  = getaxis(a, index);
-    if isvector(x), x=x(:); sa = [length(x) 1]; else sa = size(x); end
-    
-    if ~isvector(x), new_sa = dims; 
+  x  = getaxis(a, index);
+  sz = size(x);
+  if length(sz) >= index && ndims(a) > 1
+    myisvector=@(c)max(size(c)) == numel(c);
+    if myisvector(x), x=x(:); sa = [length(x) 1]; else sa = size(x); end
+
+    if ~myisvector(x), new_sa = dims; 
     else             new_sa = [ dims(index) 1]; end
 
     % resize axis if changed
