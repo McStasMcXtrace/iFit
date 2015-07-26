@@ -188,15 +188,15 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
   p0 = p; % save initial 'p' values
   
   % all args are empty, we generate model fake 1D/2D axes/signal
-  if model.Dimension <= 2 && all(cellfun('isempty',args))
-    if model.Dimension == 1
+  if all(cellfun('isempty',args))
+    if model.Dimension == 1 % we use a Gaussian
       args{1} = linspace(-5,5,50); 
       x=args{1}; p2 = [1 mean(x) std(x)/2 .1]; 
       args{2} = p2(1)*exp(-0.5*((x-p2(2))/p2(3)).^2)+((p2(2)-x)*p2(1)/p2(3)/100) + p2(4);
       clear p2
       signal = args{2};
       signal_in_varargin = 2;
-    else
+    elseif model.Dimension == 2 % we use a 2D Gaussian
       [args{1},args{2}] = ndgrid(linspace(-5,5,50), linspace(-3,7,60));
       x=args{1}; y=args{2}; p2 = [ 1 mean(x(:)) mean(y(:)) std(x(:)) std(y(:)) 30 0 ];
       x0=p2(2); y0=p2(3); sx=p2(4); sy=p2(5);
@@ -208,6 +208,14 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
       clear aa bb cc theta x0 y0 sx sy p2
       signal = args{3};
       signal_in_varargin = 3;
+    else % use an event style representation
+      for index=1:(model.Dimension+1)
+        x1 = -10*rand-1;
+        x2 = 10*rand+1;
+        args{index} = linspace(x1, x2, 10);
+      end
+      signal_in_varargin = model.Dimension+1;
+      signal = args{end};
     end
   end
   
@@ -217,7 +225,10 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
   % convert axes to nD arrays for operations to take place
   % check the axes and possibly use ndgrid to allow nD operations in the
   % Expression/Constraint
-  if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension)))
+  % Not for event style axes+signal (all 1D)
+  myisvector=@(c)max(size(c)) == numel(c);
+  if model.Dimension > 1 && all(cellfun(myisvector, varargin(1:model.Dimension))) ...
+    && ~isvector(varargin{model.Dimension+1})
     [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
   end
 
@@ -358,7 +369,8 @@ for index=1:model.Dimension
   for index_p=1:length(parameter_names)
     if  ~isempty(strfind(parameter_names{index_p}, 'width')) ...
       | ~isempty(strfind(parameter_names{index_p}, 'tau')) ...
-      | ~isempty(strfind(parameter_names{index_p}, 'damping'))
+      | ~isempty(strfind(parameter_names{index_p}, 'damping')) ...
+      | ~isempty(strfind(parameter_names{index_p}, 'gamma'))
       if isnan(width)
         width = abs(p(index_p)); 
         % this parameter name is removed from the search for the further axes
@@ -380,8 +392,8 @@ for index=1:model.Dimension
 		    % orient the axis along the right dimension to indicate this is not an event type
         d = ones(1,max(2,model.Dimension)); d(index) = numel(varargin{index});
         varargin{index} = reshape(varargin{index}, d);
-		width = NaN; position = NaN;
-		break; % go to next axis (exit index_p loop)
+        width = NaN; position = NaN;
+        break  % go to next axis (exit index_p loop)
       end
     end
   end % for index in parameter names
@@ -394,13 +406,15 @@ for index=1:model.Dimension
   % check if axes are vectors of same length and orientation (event type model)
   if isempty(AxisOrientation), AxisOrientation=size(varargin{index});
   elseif length(AxisOrientation) == length(size(varargin{index})) ...
-          && any(AxisOrientation ~= size(varargin{index})), ParallelAxes=0; end
+          && any(AxisOrientation ~= size(varargin{index})), ParallelAxes=0;
+  end
 end % for index in model dim
 
 % convert axes to nD arrays for operations to take place
 % check the axes and possibly use ndgrid to allow nD operations in the
 % Expression/Constraint. Only for non event style axes.
-if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension))) && ~ParallelAxes
+myisvector=@(c)max(size(c)) == numel(c);
+if model.Dimension > 1 && all(cellfun(myisvector, varargin(1:model.Dimension))) && ~ParallelAxes
   [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
 end
 

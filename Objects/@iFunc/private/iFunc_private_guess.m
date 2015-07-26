@@ -36,7 +36,7 @@ function pars=iFunc_private_guess(x, signal, parameter_names)
     if ~isvector(signal) && ~isempty(signal) && length(x) ~= ndims(signal)
       whos x signal
       error([ mfilename ': x cell must contain all the axes for the signal.']); end
-    if ~isempty(signal)
+    if ~isempty(signal) && ~isvector(signal) && length(x) > 1 && ~isvector(x{1})
       for dim=1:sum(size(signal)>1)
         signal1d=signal;
         x1d     =x{dim};
