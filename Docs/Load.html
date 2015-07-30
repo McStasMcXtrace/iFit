@@ -149,10 +149,12 @@
 
 
 
+
         &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
         &nbsp;&nbsp;&nbsp; // import only parts which mention Data in
         file </i><br style="color: rgb(204, 51, 204);">
       <span style="color: rgb(204, 51, 204);">'http://path/file.zip#Data'</span>&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -275,6 +277,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           TOF</a>)<br>
       </li>
       <li>ESRF data format (*.edf)</li>
@@ -287,9 +290,11 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           binary file</a> (*.cbf)</li>
       <li><a
           href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">MRI
+
 
 
 
@@ -489,8 +494,10 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
         See <a
           href="http://www.mathworks.com/matlabcentral/fileexchange/3760">ReadAnalyze</a>&nbsp;
+
 
 
 
@@ -564,6 +571,9 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     This works for basically any input object (structure, numeric array,
     cell, ...).<br>
     <br>
+    In addition, it is possible to evaluate an <a href="iFunc.html">iFunc</a>
+    model, and create an iData of it:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; g = gauss(5); 		<i>% an iFunc Gaussian with initial width=5</i><br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(g, g.p, -5:5);	% evaluate the model</pre>
     A special syntax is available to import Signal and Axis definitions
     with e.g.<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,...c);</pre>
@@ -635,6 +645,7 @@ identify
 
 
 
+
     the proper importation method to use.<br>
     <br>
     The text files are processed with the <a
@@ -678,10 +689,11 @@ Farhi
 
 
 
+
         - iFit/iData loading data - </span><span style="font-style:
-        italic;"> $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
-      back to <a href="index.html">Main iFit Page </a><a
-        href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+        italic;"> $Date$ $Revision$ </span><span style="font-style:
+        italic;"> </span>- back to <a href="index.html">Main iFit Page
+      </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>

@@ -90,6 +90,7 @@
 
 
 
+
     <br>
     The name of the parameters can be changed by accessing the <span
       style="font-weight: bold;">Parameters</span> property (this is a
@@ -102,6 +103,7 @@
     return a vector of parameter values<span style="font-style: italic;">
       'p' </span>as a function of the axes <span style="font-style:
       italic;">x,y,z...</span> and a <span style="font-style: italic;">signal.
+
 
 
 
@@ -197,6 +199,12 @@
       href="iData.html">iData</a> object which axes are used.<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )
 &gt;&gt; gauss([ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )		<span style="font-style: italic;">% same as above: evaluate model</span><br></pre>
+    When used together with <a
+      href="file:///home/farhi/dev/iFit/Docs/iData.html">iData</a>
+    objects, the iFunc models can either return their evaluation
+    (array), or be converted into an iData object for easier further
+    handling.<br>
+    <pre style="margin-left: 40px;">&gt;&gt; iD = iData(<span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100), <font color="#3366ff">zeros</font>(1,100));	<i>% define a zero iData object with some axes</i><br>&gt;&gt; g  = gauss; 						% a Gaussian model<br>&gt;&gt; g([ 1 0 .1 0], iD)					<i>% evaluate model with axes in the iData object</i><br>&gt;&gt; iD(g, [1 0 .1 0])					<i>% evaluate model into a new iData object</i></pre>
     <h3><a class="mozTocH3" name="mozTocId579374"></a>Setting and
       removing constraints on models</h3>
     Models are often used for fitting purposes (refer to the <a
@@ -215,6 +223,7 @@
     (cross-constraints). For instance<br>
     <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude</span><br>&gt;&gt; f.Background = [0 1e-4];	<span style="font-style: italic;">% bound its background</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'p(1)/1000'</span>;	<span style="font-style: italic;">% use an expression referring to </span>p(1)=Amplitude<span style="font-style: italic;"> value</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'"Amplitude"/1000'</span>;	<span style="font-style: italic;">% same as above with direct naming of parameters using ""</span><br></pre>
     Alternatively, you can use the <span style="font-weight: bold;">mlock,
+
 
 
 
@@ -339,6 +348,7 @@
 
 
 
+
     catenates the string before/after the Expression of the model. For
     instance the following example does the same as above, explicitly
     setting the new signal value, and the next one displays a text
@@ -378,10 +388,12 @@
 
 
 
+
         .... ]</span><br>
     </div>
     a structure with members <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data.Signal
+
 
 
 
@@ -394,6 +406,7 @@
     </div>
     or a cell <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data={
+
 
 
 
@@ -431,12 +444,12 @@ Farhi
 
 
 
-        - iFit/iFunc objects - $Date$
-        $Revision:1.7 $ </span> - back to <a href="index.html">Main
-        iFit Page </a><a href="http://www.ill.eu/"><img title="ILL,
-          Grenoble, France &lt;www.ill.eu&gt;"
-          src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France
-          &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px;
-          height: 50px;" align="right"></a> </div>
+
+        - iFit/iFunc objects - $Date$ $Revision:1.7 $ </span> - back to
+      <a href="index.html">Main iFit Page </a><a
+        href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+          &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
+          Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
+          ; width: 53px; height: 50px;" align="right"></a> </div>
   </body>
 </html>

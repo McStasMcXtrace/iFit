@@ -87,7 +87,7 @@
       which results in an <span style="font-style: italic;">iData</span>
       object. An other way to create such an object is to import
       directly Matlab variables:<br>
-      <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal)	% give the axes first, then the Signal<br></pre>
+      <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">rand</span>(10))<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(x,y,signal)	<i>% give the axes first, then the Signal</i><br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(gauss, 5, -5:5)	<i>% a gaussian with width=5, evaluated along axis -5:5</i></pre>
       These objects, which internal structure can be obtained with the <span
         style="font-style: italic;">struct(a)</span> method, hold a
       number of important items:<br>
@@ -118,6 +118,7 @@ defined
 as
 links
 to
+
 
 
 
@@ -160,6 +161,7 @@ to
       objects, enrich them with additional information, define relations
       between the object parts as <span style="font-style: italic;">Aliases,
 
+
       </span>define the object <span style="font-style: italic;">Signal</span>
       and its associated <span style="font-style: italic;">Axes.</span><br>
       <br>
@@ -167,6 +169,7 @@ to
       exists for event based data sets.<br>
       <br>
       <div style="text-align: right;"><span style="font-weight: bold;">To
+
 
 
           get more help</span>: list of most iData <a
@@ -236,6 +239,7 @@ to
       Accessing subfields requires a case sensitive name match, that is
       a<span style="font-style: italic;"> a(3).data</span> works (single
       field accessed), but <span style="font-style: italic;">a(3).data.varia.a1
+
 
 
       </span>does not (requires fully qualified path to the data).<br>
@@ -393,6 +397,7 @@ to
       The <span style="font-style: italic;">AnotherNewField</span>
       points to <span style="font-style: italic;">NewField, </span>which
 
+
       was defined as<span style="font-style: italic;"> Data.ZEROS.A1</span>.<br>
       <br>
       This brings the ability to enrich the Data area of the object with
@@ -411,8 +416,10 @@ to
       immediately affects <span style="font-style: italic;">AnotherNewField
 
 
+
       </span>(defined above)<span style="font-style: italic;">.</span><br>
       The links are evaluated <span style="font-weight: bold;">dynamically,
+
 
 
       </span>so that their value follow the target one.<br>
@@ -561,6 +568,7 @@ to
       the plot title and the object text display (see <a
         href="iData.html#mozTocId443357">Inquiring the iData object</a>).
 
+
       <br>
       <br>
       It is also possible to extract a portion of the signal from an
@@ -695,6 +703,7 @@ to
       when not set (that is <span style="font-style: italic;">a.Error=[]</span>).
 
 
+
       A constant <span style="font-style: italic;">Error</span> can be
       set, an expression (including using <span style="font-style:
         italic;">Data</span> or <span style="font-style: italic;">this</span>)
@@ -708,6 +717,7 @@ to
 represents
 
 
+
       e.g. a counting time or any statistical weight w=1/Monitor that is
       to be taken into account when performing <a href="Math.html">mathematical</a>
       operations such as combine and most binary operators (+-/*)
@@ -719,6 +729,7 @@ represents
       <br>
       The <span style="font-style: italic;">Monitor</span> defaults to
       1 when not set (that is <span style="font-style: italic;">a.Monitor=[]</span>).
+
 
 
       A constant Monitor can be set, an expression (including using <span
@@ -775,6 +786,7 @@ represents
           style="font-weight: bold;">getting an axis</span><span
           style="font-weight: bold;"></span></h4>
       &nbsp; As they are basically <span style="font-style: italic;">Aliases,
+
 
 
         Axes</span> are accessed in two ways, either through their
@@ -968,8 +980,9 @@ represents
 Farhi
 
 
-          - iFit/iData objects - $Date$ $Revision:1.7 $ </span> - back to <a
-          href="index.html">Main iFit Page </a><a
+
+          - iFit/iData objects - $Date$ $Revision:1.7 $ </span> - back
+        to <a href="index.html">Main iFit Page </a><a
           href="http://www.ill.eu/"><img title="ILL, Grenoble, France
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
