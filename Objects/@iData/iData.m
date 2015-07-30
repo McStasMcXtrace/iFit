@@ -141,7 +141,7 @@ else  % convert input argument into object
   elseif isstruct(varargin{1})
     % iData(struct)
     out = iData_struct2iData(varargin{1}); % convert struct to iData
-  elseif isscalar(varargin{1}) && ishandle(varargin{1}) && numel(varargin{1})==1 % convert single Handle Graphics Object
+  elseif numel(varargin{1})==1i && shandle(varargin{1}) % convert single Handle Graphics Object
     % iData(figure handle)
     out = iData_handle2iData(varargin{1});
     return
@@ -155,13 +155,29 @@ else  % convert input argument into object
     return
   elseif isa(varargin{1}, 'iFunc')
     in = varargin{1};
-    [signal, ax, name] = feval(in);
+    [signal, ax, name] = feval(in, varargin{2:end});
     if length(signal) == length(in.Parameters)
       [signal, ax, name] = feval(in, signal);
     end
+    % assign axes values
     out = iData(ax{:}, signal);
+
+    % assign axes names
+    if nargin > 2
+      for index=1:numel(ax)
+        if ~isempty(inputname(index+2)), out=label(out,index,inputname(index+2)); end
+      end
+    end
+    out.Title = name;
+    out.Label = out.Title;
+    b.DisplayName = out.Title;
+    setalias(out,'Error', 0);
+    if ~isempty(in.ParameterValues)
+      pars_out = cell2struct(num2cell(in.ParameterValues(:)'), strtok(in.Parameters(:)'), 2);
+      setalias(out,'Parameters', pars_out, [ name ' model parameters' ]);
+    end
+    setalias(out,'Model', in, in.Name);
     clear signal ax
-    out.Alias.Values{2} = 0;
     return
   else
     iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(varargin{1}) ' is not supported. Ignore.' ]);

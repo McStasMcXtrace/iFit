@@ -3,6 +3,8 @@ function [signal, ax, name, model] = feval(model, p, varargin)
 %
 %   @iFunc/feval applies the function 'model' using the specified parameters and axes
 %     and function parameters 'pars' with optional additional parameters.
+%     a fast notation is to pass arguments directly to the model:
+%       model(p, x,y,z,...)
 %
 %   parameters = feval(model, 'guess', x,y, ..., signal...)
 %     makes a quick parameter guess. This usually requires to specify the signal
@@ -15,10 +17,12 @@ function [signal, ax, name, model] = feval(model, p, varargin)
 %     values are then replaced by guessed ones, and the model value is returned.
 %   signal = feval(model, parameters, x,y, ...)
 %     evaluates the model with given parameters and axes
+%   signal = model(p, iData object)
+%     evaluates the model on the given iData object axes
 %
 % input:  model: model function (iFunc, single or array)
 %         parameters: model parameters (vector, cell or vectors, structure, iData) or 'guess'
-%         x,y,..:  axes values to be used for the computation (vector,matrix)
+%         x,y,..:  axes values to be used for the computation (vector,matrix,iData)
 %         ...: additional parameters may be passed, which are then forwarded to the model
 % output: signal: result of the evaluation (vector/matrix/cell) or guessed parameters (vector)
 %         axes:   returns the axes used for evaluation (cell of vector/matrix)
@@ -75,11 +79,12 @@ end
 
 % some usual commands 
 if ~isempty(p) && ischar(p)
+  ax=[]; name=model.Name;
   if strcmp(p, 'plot')
     signal=plot(model);
     return
   elseif strcmp(p, 'identify')
-    signal=model;
+    signal=evalc('disp(model)');
     return
   elseif ~strcmp(p, 'guess')
     disp([ mfilename ': Unknown parameter value ' p '. Using "guess" instead.'])
@@ -463,6 +468,7 @@ signal = [];
 % assign parameters and axes for the evaluation of the expression, in case this is model char
 % p already exists, we assign axes, re-assign varargin if needed
 iFunc_ax = 'x y z t u v w ';
+
 if this.Dimension
   eval([ '[' iFunc_ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
 end
@@ -506,7 +512,7 @@ function p = iFunc_feval_guess(this, varargin)
 % private function to evaluate a guess in a reduced environment so that 
 % internal function variables do not affect the result. 
 % Guess=char as fhandle are handled directly in the core function
-  ax = 'x y z t u ';
+  ax = 'x y z t u v w';
   p  = [];
   if this.Dimension
     eval([ '[' ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);

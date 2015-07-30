@@ -21,9 +21,16 @@ d = [d ones(1,2-length(d))]; % Make sure siz is at least 2-D
 if numel(a) == 1
   % this is a single iData object
   if ndims(a) <= 2 && length(size(a)) ==2, return; end
-  set(a,'Signal',squeeze(get(a,'Signal')));
+  s = get(a,'Signal');
+  sq= squeeze(s);
+  [dummy, sl] = getaxis(a, '0');  % signal definition/label
+  a = set(a,'Signal',sq, [  'squeeze(' sl ')' ]);
+  % check if we could update object
+  if ~isequal(subsref(a,struct('type','.','subs','Signal')), sq)
+    a = setalias(a, 'Signal', sq, [  'squeeze(' sl ')' ]);
+  end
   for index=1:length(x)
-    rmaxis(a, x(index));
+    a=rmaxis(a, x(index));
   end
 else
   % this is an iData array

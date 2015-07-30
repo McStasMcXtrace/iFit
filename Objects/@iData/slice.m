@@ -26,9 +26,8 @@ end
 
 if ndims(a) > 3
   % reduce dimensions
-  sz = size(a); 
+  sz = size(a);  sz(4:end) = 1;
   iData_private_warning(mfilename, [ 'Reducing ' num2str(ndims(a)) '-th dimensional data ' a.Tag ' "' a.Title '" to 3D with a=resize(a, ' mat2str(sz) ')' ]);
-  sz(4:end) = 1;
   a = resize(a, sz);
 end
 

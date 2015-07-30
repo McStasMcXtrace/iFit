@@ -51,7 +51,7 @@ elseif ischar(cmap)
   cmap='';
 end
 if isempty(cmap)
-  cmap = hsv(256);
+  cmap = jet(256);
 end
 numclass = max(size(cmap));
 if numclass == 1

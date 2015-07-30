@@ -5,6 +5,9 @@ function b = subsref(a,S)
 %     such as a(1:2) or a.field.
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
+%   When given an iFunc model, the iData axes are used to evaluate the model
+%     iData(model)
+%     iData(mode, p)  uses given parameters
 %
 % Version: $Date$
 % See also iData, iData/subsasgn
@@ -81,32 +84,33 @@ for i = 1:length(S)     % can handle multiple index levels
       iData_private_warning('enter',mfilename);
       
       b_isvector = isvector(b);
+      if b_isvector, sz = b_isvector; else sz = ndims(b); end
       ds=iData_getAliasValue(b,'Signal'); 
-      d=ds(s.subs{:});                          % b(indices)
+      d=squeeze(ds(s.subs{:}));                          % b(indices)
       b=set(b,'Signal', d);  b=setalias(b,'Signal', d);
       clear ds
       
       de=iData_getAliasValue(b,'Error'); 
       if numel(de) > 1 && isnumeric(de) 
         try % in case Error=sqrt(Signal), the Error is automatically changed when Signal is -> fail
-          d=de(s.subs{:}); b=set(b,'Error', d); b = setalias(b, 'Error', d);
+          d=squeeze(de(s.subs{:})); b=set(b,'Error', d); b = setalias(b, 'Error', d);
         end
       end
       clear de
 
       dm=iData_getAliasValue(b,'Monitor');
       if numel(dm) > 1 && isnumeric(dm)
-        d=dm(s.subs{:}); b=set(b,'Monitor', d);  b = setalias(b, 'Monitor', d);
+        d=squeeze(dm(s.subs{:})); b=set(b,'Monitor', d);  b = setalias(b, 'Monitor', d);
       end
       clear dm
 
       % must also affect axis
       % for event data sets, affect all axes
-      if b_isvector, sz = b_isvector; else sz = ndims(b); end
       
       for index=1:sz
         if index <= length(b.Alias.Axis)
           x = getaxis(b,index);
+          if isempty(x), continue; end
           ax= b.Alias.Axis{index};   % definition of Axis
           nd = size(x); nd=nd(nd>1);
           if length(size(x)) == length(size(a)) && ...
@@ -122,7 +126,15 @@ for i = 1:length(S)     % can handle multiple index levels
     '] vector in iData object ' b.Tag ' "' b.Title '".\n\tTo use the default Error=sqrt(Signal) assign s.Error=[].' ]);
           end
         end
-      end 
+      end
+      % check if the sub indices supress an axis: move it further
+      for index=1:(sz-1)
+        if index <= length(b.Alias.Axis)
+          if numel(s.subs{index}) == 1 && isnumeric(s.subs{index}) 
+            b.Alias.Axis([index index+1])   = b.Alias.Axis([index+1 index]); 
+          end
+        end
+      end
       
       b = setaxis(copyobj(b));
       
