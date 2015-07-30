@@ -234,9 +234,10 @@ if (ind==2 | is3DTexture)
   end
 end
 
+try
 xlim(model.xdata)
 ylim(model.ydata)
 zlim(model.zdata)
-
+end
 model.handles = h;
 

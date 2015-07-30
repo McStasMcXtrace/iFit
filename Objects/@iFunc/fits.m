@@ -591,7 +591,7 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
 end
 if ~isempty(pars_isstruct)
   % first rebuild the model parameter structure
-  pars_out = cell2struct(num2cell(pars_out), strtok(model.Parameters), 2);
+  pars_out = cell2struct(num2cell(pars_out(:)'), strtok(model.Parameters(:)'), 2);
   % then add initial additional fields
   if isstruct(pars_isstruct)
     f = fieldnames(pars_isstruct);

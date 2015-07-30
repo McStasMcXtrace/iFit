@@ -178,12 +178,12 @@ for index=1:ndims(b)
     % length changed ?
     if length(this_i) ~= length(this_f)
       % not same length
-      has_changed=1; 
+      has_changed=1;
     elseif prod(size(this_i)) ~= prod(size(this_f)) % nb of elements has changed, including matrix axes ?
-      has_changed=1; 
+      has_changed=2; 
     elseif all(abs(this_i(:) - this_f(:)) > 1e-4*abs(this_i(:) + this_f(:))/2)
       % or axis variation bigger than 0.01 percent anywhere
-      has_changed=1;
+      has_changed=3;
     end
   end
   clear this_i this_f
@@ -215,7 +215,7 @@ if ~isempty(i_error),
   end
   i_error    = double(i_error);
 end
-  
+
 i_monitor = getalias(b, 'Monitor');
 if ~isempty(i_monitor),   
   % check if Monitor is 1 or a constant
