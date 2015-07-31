@@ -19,6 +19,7 @@
               x-rays)</a></li>
           <li><a href="#mozTocId344379"> Powder structure refinement
               (Rietveld)</a></li>
+          <li><a href="#mozTocId677670">Phonon/spin-wave dispersion</a></li>
         </ol>
       </li>
       <li><a href="#mozTocId810939">Model builder: defining a new model
@@ -40,10 +41,13 @@
 
 
 
+
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
-    <h3><a class="mozTocH3" name="mozTocId147615"></a>How to use models</h3>
+    <h3><a class="mozTocH3" name="mozTocId147615"></a>How to use models<br>
+    </h3>
     Models are numerical functions, that take input axes and a parameter
     set, and return a function evaluation. <br>
     <br>
@@ -69,6 +73,8 @@
     <h3><a class="mozTocH3" name="mozTocId96090"></a><span
         style="font-weight: bold;">List of default fit models</span></h3>
     The 1D functions are <span style="font-style: italic;">signal=f(parameters,
+
+
 
 
 
@@ -150,6 +156,8 @@
 
 
 
+
+
               "x" unit)</span><br>
           </td>
         </tr>
@@ -196,6 +204,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Plot-exponential-
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Stretched_exponential_function">Exponential
+
+
 
 
 
@@ -268,6 +278,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/7/74/Normal_Distribution_PDF
 
 
 
+
+
               distribution function</a> <img alt="Laplace"
               title="Laplace"
 src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
@@ -283,6 +295,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Log-normal_distribution">Log-Normal
+
+
 
 
 
@@ -420,6 +434,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Sine_one_period.svg"
 
 
 
+
+
               Sine function</a> (exponential decay) <img alt="sine_exp"
               title="sine_exp"
               src="https://upload.wikimedia.org/wikipedia/commons/2/25/DampedSine.png"
@@ -464,6 +480,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Triangular_function.svg
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rectangular_function">Top-Hat
+
+
 
 
 
@@ -571,6 +589,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
               Gaussian</a><br>
           </td>
           <td valign="top"><font color="#cc33cc">nD</font><br>
@@ -613,6 +633,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
         = P(q).S(q)</span><br>
     </p>
     <p style="text-align: left;">where <span style="font-style:
@@ -625,11 +647,15 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
           Kohlbrecher</a> and <a
           href="mailto:ingo%28at%29cs.tu-berlin.de">Ingo Bressler</a>
         PSI (2006-2011)</li>
       <li>CrysFML by <a href="mailto:jrc@ill.eu">Juan
           Rodriguez-Carvajal</a> and <a href="mailto:jplatas@ull.es">Javier
+
+
 
 
 
@@ -672,6 +698,8 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">sf_square_well
+
+
 
 
 
@@ -733,6 +761,8 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">ff_sphere&nbsp;
+
+
 
 
 
@@ -856,6 +886,121 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     constraints seen above).<br>
     Remember to bound most or all of the model parameters for a faster
     and more reliable convergence of the optimization.<br>
+    <h4><a class="mozTocH4" name="mozTocId677670"></a>Phonon/spin-wave
+      dispersion</h4>
+    <p>The <b>sqw_sine3d</b> model provides a simple way to model most
+      <a href="https://en.wikipedia.org/wiki/Phonon">phonon-type</a>
+      dispersions, including <a
+        href="https://en.wikipedia.org/wiki/Spin_wave">spin-waves</a>,
+      acoustic and optical modes, incomensurate dispersions.<br>
+    </p>
+    <table style="text-align: left; width: 1016px; height: 59px;"
+      border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Powder diffraction<br>
+          </td>
+          <td style="vertical-align: top; background-color: rgb(255,
+            204, 204);"><span style="font-style: italic; font-weight:
+              bold; color: rgb(51, 102, 255);">Description</span><br>
+          </td>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Dimensionality<br>
+          </td>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Parameters<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top; font-weight: bold;"><b>sqw_sine3d</b>
+          </td>
+          <td style="vertical-align: top;">Phonon dispersions as sine
+            wave in HKL (3D) with a damped harmonic oscillator energy
+            dispersion<br>
+          </td>
+          <td style="vertical-align: top; color: rgb(51, 204, 0);">4D<br>
+          </td>
+          <td style="vertical-align: top;">zone center, energy gaps,
+            periodicity<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <pre style="margin-left: 40px;"><span style="font-style: italic;"></span><span style="font-style: italic;"></span></pre>
+    <p>Each dispersion is a sine wave which goes continuously from
+      energy E0 to E1, along 3 principal lattice directions (HKL). The
+      dispersion has an energy width (DHO). Schematically, the
+      dispersion relation is:<br>
+    </p>
+    <p>&nbsp;&nbsp;&nbsp; <i>w(Q) = E0 + (E1-E0)*sin(Q_freq*pi*(Q-Q0));</i><br>
+    </p>
+    <p>where the wave-vector/momentum Q is expressed in reciprocal
+      lattice units [r.l.u]. The parameters of this model allow extended
+      flexibility in the description of the mode. The <i>Q_freq</i>
+      parameter indicates how many dispersion sine 'arches' there are
+      between the <i>Q0 </i>location and the <i>Q0+1</i>. A <i>Q_freq</i>
+      of 1/2 means the dispersion extends from e.g. Q=0 to Q=2. A <i>Q_freq</i>
+      of 1 means it extends from Q=0 to Q=1, and a <i>Q_freq</i> of 2
+      means there are two arches between Q=0 and Q=1 (all these with
+      Q0=0).</p>
+    <p>A <b>spin-wave </b>could for instance mostly use Q0=0,
+      Q_freq=1,&nbsp; E0=0, E1&gt;0 (2 arches from Q=0 to 1 rlu)<br>
+    </p>
+    <pre>  &gt;&gt; sw = <font color="#3366ff">sqw_sine3d</font>([ E0 E1 Q_freq ])	<i>% creates a dispersion from E0 to E1 with given Q frequency, e.g. .5, 1 or 2</i></pre>
+    <p></p>
+    <p>A <b>phonon acoustic branc</b>h could use Q0=0, Q_freq=.5, E0=0
+      (1 arch from Q=0 to 1 rlu).<br>
+    </p>
+    <pre>  &gt;&gt; acoustic = <font color="#3366ff">sqw_sine3d</font>(Emax)	<i>% creates an acoustic dispersion up to Emax </i><br></pre>
+    <p>An <b>phonon optical branch</b> could use Q0=0, Q_freq=.2,
+      E0&gt;E1 E1&gt;0 (1 arch from Q=0 to 1 rlu with Q=0 energy - Raman
+      frequency). </p>
+    <pre>  &gt;&gt; optical = <font color="#3366ff">sqw_sine3d</font>([ E0 E1 ])	<i>% creates an optical dispersion from E0 to E1</i></pre>
+    <p></p>
+    <p>The model parameters allow to tune the dispersion:<br>
+    </p>
+    <ul>
+      <li>To shift the minimum/maximum Q of the dispersion, move
+        QH0,QK0,QL0 parameters.</li>
+      <li> To change the extent of the dispersion in Q, vary
+        QH_freq,QK_freq,QL_freq parameters.</li>
+      <li> To change to minimum and maximum energy, move E0 and
+        E1_qh,E1_qk,E1_ql parameters. </li>
+      <li> To model an incomensurate dispersion, move both QH0,QK0,QL0
+        and the QH_freq,QL_freq,QK_freq parameters to incomensurate (non
+        rational) values.</li>
+      <li>An anisotropic model can be obtained by having different E1
+        and Q_freq parameters along axes.<br>
+      </li>
+    </ul>
+    <p></p>
+    <p>A usage example is as follows:<a
+        href="images/Models_sqw_sine3d.png"><img alt="sqw_sine3d"
+          title="sqw_sine3d" src="images/Models_sqw_sine3d.png"
+          border="0" height="146" width="200" align="right"></a><br>
+    </p>
+    <pre style="margin-left: 40px;">&gt;&gt; ac=<font color="#3366ff">sqw_sine3d</font>(5); 		<i>% an acoustic branch up to 5 meV</i><br>&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,1,50);qk=qh; ql=qh'; w=<font color="#3366ff">linspace</font>(0.01,10,50);	<i>% the axes for evaluation</i><br>&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w);	<i>% evaluate the model onto given axes</i><br>&gt;&gt; <font color="#3366ff">plot3</font>(log(f(:,:,1,:))); 	<i>% plot as volume</i> in [QH,QK,w, QL=0]. You can also use surf and scatter3 for other rendering<br></pre>
+    <p>The axes are given as vectors, but the second is made
+      non-parallel to the others, to indicate we wish to build a volume
+      out of this. Without transposing the vector, as all axes are the
+      same length, they would be interpreted as event data, and the
+      resulting evaluation would only contain 50 values.<br>
+    </p>
+    <p>It is possible to stack as many modes as possible, in different
+      flavors. In this case it is advisable to link e.g. the
+      Temperatures and background parameters:<a
+        href="images/Models_sqw_sine3d_add.png"><img
+          alt="sqw_sine3d_3disp" title="sqw_sine3d_3disp"
+          src="images/Models_sqw_sine3d_add.png" border="0" height="143"
+          width="200" align="right"></a><br>
+    </p>
+    <pre style="margin-left: 40px;">&gt;&gt; acoustic = <font color="#3366ff">sqw_sine3d</font>(5); optical = <font color="#3366ff">sqw_sine3d</font>([ 10 8 ]); sw = <font color="#3366ff">sqw_sine3d</font>([ 2 4 1 ]);<br>&gt;&gt; disp3 = acoustic + optical + sw;<br>&gt;&gt; disp3.Temperature_2 = <font color="#cc33cc">'"Temperature"'</font>;		% Temperature_2 = Temperature<br>&gt;&gt; disp3.Temperature_3 = <font color="#cc33cc">'"Temperature"'</font>;		% Temperature_3 = Temperature<br>&gt;&gt; disp3.Name=<font color="#cc33cc">'sqw_sine3d: acousitc+optical+sw'</font>;<br>&gt;&gt; <font color="#3366ff">mlock</font>(disp3, {<font color="#cc33cc">'Background_2','Background_3'</font>});	% keep them as 0 (default)<br>&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,1,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,10,51);	<i>% the axes for evaluation<br></i>&gt;&gt; f=<font color="#3366ff">iData</font>(disp3,[],qh,qk,ql,w);	<i>		% evaluate using initial model parameters</i><br>&gt;&gt; <font color="#3366ff">plot3</font>(log(f(:,:,1,:))); 				<i>% plot as volume</i> in [QH,QK,w, QL=0].<br></pre>
+    <p><br>
+    </p>
     <h3><a class="mozTocH3" name="mozTocId810939"></a><span
         style="font-weight: bold;">Model builder: defining a new model
         easy<br>
@@ -959,6 +1104,8 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
         (calls fconv in correlation mode)<br>
       </li>
     </ul>
@@ -997,6 +1144,8 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 

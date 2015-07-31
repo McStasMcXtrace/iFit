@@ -13,7 +13,7 @@ function signal=sqw_sine3d(varargin)
 % The sound velocity in acoustic branches is:
 %       c=E1*Q_freq*pi*1.519e2*a/2 [in m/s, with a=lattice parameter]
 %
-% A magnon could for instance mostly use Q0=0, Q_freq=1,  E0=0, E1>0
+% A spin wave could for instance mostly use Q0=0, Q_freq=1,  E0=0, E1>0
 % An acoustic branch could use           Q0=0, Q_freq=.5, E0=0, E1>0
 % An optical branch could use            Q0=0, Q_freq=.2, E0>E1 E1>0
 %
@@ -24,7 +24,7 @@ function signal=sqw_sine3d(varargin)
 %   QH_freq,QL_freq,QK_freq to incomensurate (non rational) values.
 %
 % To quickly create predefined models, use:
-%   model=sqw_sine3d(Emax)      creates an acoustic disperion up to Emax
+%   model=sqw_sine3d(Emax)      creates an acoustic dispersion up to Emax
 %   model=sqw_sine3d([ E0 E1 ]) creates an optical dispersion from E0 to E1
 %   model=sqw_sine3d([ E0 E1 Q_freq ])    creates a dispersion from E0 to E1
 %                                      with given Q frequency, e.g. .5, 1 or 2
@@ -32,10 +32,7 @@ function signal=sqw_sine3d(varargin)
 %
 % To model more than one branch, just add these models together, e.g.:
 %     disp3 = sqw_sine3d(5) + sqw_sine3d([ 10 8 ]) + sqw_sine3d([ 2 4 1 ])
-% which is an acoustic plus optical branch, and a magnon with gap.
-%
-% The meaning of the parameters is as follows:
-
+% which is an acoustic plus optical branch, and a spin wave with 2 meV gap.
 %
 % Example:
 % s=sqw_sine3d(5); qh=linspace(0,1,50);qk=qh; ql=qh'; w=linspace(0.01,10,50);
