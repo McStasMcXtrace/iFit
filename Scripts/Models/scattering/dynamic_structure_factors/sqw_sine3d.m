@@ -8,8 +8,10 @@ function signal=sqw_sine3d(varargin)
 % Along a principal Q axis, the dispersion has the form:
 %       w = E0 + (E1-E0)*sin(Q_freq*pi*(Q-Q0));
 % This is a sine wave which goes from w=E0 at Q=Q0, up to w=E1 at 1/2Q_freq.
-% The inter-atomic distance between the scattering units (atoms) is thus
-%       a=Q_freq*pi
+% The inter-atomic distance between the scattering units (atoms) is thus:
+%       d=a*Q_freq/2 [in Angs, with a=lattice parameter]
+% The sound velocity in acoustic branches is:
+%       c=E1*Q_freq*pi*1.519e2*a/2 [in m/s, with a=lattice parameter]
 %
 % A magnon could for instance mostly use Q0=0, Q_freq=1,  E0=0, E1>0
 % An acoustic branch could use           Q0=0, Q_freq=.5, E0=0, E1>0
@@ -96,6 +98,7 @@ signal.Guess          = @(x,y,z,t,signal)[ ...
   1 1 1 std(t(:))/100 50 1 0 ];        % default parameters
 
 signal.Expression     = { ...
+'% x=qh; y=qk; z=ql; t=w', ...
 'wqx = (p(1)^2-p(4)^2)*sin(p(8) *pi*(x-p(5))).^2;', ...
 'wqy = (p(2)^2-p(4)^2)*sin(p(9) *pi*(y-p(6))).^2;', ...
 'wqz = (p(3)^2-p(4)^2)*sin(p(10)*pi*(z-p(7))).^2;', ...
