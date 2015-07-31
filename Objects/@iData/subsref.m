@@ -115,11 +115,11 @@ for i = 1:length(S)     % can handle multiple index levels
           nd = size(x); nd=nd(nd>1);
           if length(size(x)) == length(size(a)) && ...
                  all(size(x) == size(a))  && all(length(nd) == length(s.subs)) % meshgrid type axes
-            b = setaxis(b, index, ax, x(s.subs{:}));
+            b = setaxis(b, index, ax, squeeze(x(s.subs{:})));
           elseif b_isvector && length(s.subs) == 1 % event data sets
-            b = setaxis(b, index, ax, x(s.subs{1}));
+            b = setaxis(b, index, ax, squeeze(x(s.subs{1})));
           elseif max(s.subs{index}) <= numel(x) % vector type axes
-            b = setaxis(b, index, ax, x(s.subs{index}));
+            b = setaxis(b, index, ax, squeeze(x(s.subs{index})));
           else
             iData_private_warning(mfilename,[ 'The Axis ' num2str(size(index)) ' [' ...
     num2str(size(x)) ' can not be resized as a [' num2str(size(s.subs{index})) ...

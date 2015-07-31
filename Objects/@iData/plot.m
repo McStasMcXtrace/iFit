@@ -130,8 +130,7 @@ if ~isempty(funcs)
   h = [ h hline ];
 end
 
-if ih == 1, hold on; else hold off; end
-
+if ~ih, hold off; end
 
 % =========================================================================
 function h = iData_plot(a, method, varargin)

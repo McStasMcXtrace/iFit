@@ -16,7 +16,7 @@ ret = 0;
     [x, xlab] = getaxis(a,2); x=double(x);
     [y, ylab] = getaxis(a,1); y=double(y);
     [z, zlab] = getaxis(a,3); z=double(z);
-    [c, clab] = getaxis(a,0); c=double(c); c(isinf(c)) = nan;
+    [c, clab] = getaxis(a,0); c=double(c); % c(isinf(c)) = nan;
     m         = get(a,'Monitor');
     if not(all(m(:) == 1 | m(:) == 0)), clab = [clab ' per monitor' ]; end
     if isvector(a) >= 3 || ~isempty(strfind(method, 'scatter')) % plot3-like
@@ -62,11 +62,8 @@ ret = 0;
           else 
             isosurface(x,y,z, c, varargin{:}); 
           end
-          h = findobj(gca,'type','patch');
-        catch
-          h = plot(a, 'scatter3', varargin{:});
-          ret = 1;
         end
+        h = findobj(gca,'type','patch');
       end
     end
     zlabel(zlab);
