@@ -71,11 +71,14 @@ else
       
       
       if ~strcmp(s.Expression, u)
-        u = s.Expression; u(~isstrprop(u,'print'))=' '; if ~isvector(u), u=u'; end
-        if length(u) > 20, u = [ u(1:18) '..' ]; end
+        u=cellstr(s_in); u = u(~strncmp('%', u, 1)); % remove comment lines 
+        u=[ u{:} ];
+        u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
+        if length(u) > 20, u = [ u(1:18) '...' ];  end
         t = [ t ' ' u ];
       end
       if length(t) > 40, t = [ t(1:37) '...'  ]; end
+      t = strrep(t, '%','%%');
       d = [ d sprintf('%40s ', t) ];
       
       % now display parameters in compact form

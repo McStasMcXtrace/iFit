@@ -10,11 +10,13 @@ function signal=sqw_sine3d(varargin)
 % This is a sine wave which goes from w=E0 at Q=Q0, up to w=E1 at 1/2Q_freq.
 % The inter-atomic distance between the scattering units (atoms) is thus:
 %       d=a*Q_freq/2 [in Angs, with a=lattice parameter]
-% The sound velocity in acoustic branches is:
-%       c=E1*Q_freq*pi*1.519e2*a/2 [in m/s, with a=lattice parameter]
 %
 % A spin wave could for instance mostly use Q0=0, Q_freq=1,  E0=0, E1>0
+%   For a simple ferromagnetic magnon the gap width is E1-E0=4JS 
+%     with J=exchange energy and S=magnetic moment of spins.
 % An acoustic branch could use           Q0=0, Q_freq=.5, E0=0, E1>0
+%   The sound velocity in acoustic branches is:
+%       c=E1*Q_freq*pi*1.519e2*a/2 [in m/s, with a=lattice parameter]
 % An optical branch could use            Q0=0, Q_freq=.2, E0>E1 E1>0
 %
 % To shift the minimum/maximum Q of the dispersion, move QH0,QK0,QL0
@@ -52,14 +54,14 @@ function signal=sqw_sine3d(varargin)
 %             p(9)= QK_freq QK frequency [multiples of pi]
 %             p(10)=QL_freq QL frequency [multiples of pi]
 %             p(11)=Gamma   dispersion DHO width in energy [meV]
-%             p(12)=Amplitude
-%             p(13)=Temperature of the material [K}
+%             p(12)=Temperature of the material [K]
+%             p(13)=Amplitude
 %             p(14)=Background (constant)
 %          or p='guess'
-%         qh: axis along QH (row,double)
-%         qk: axis along QK (column,double)
-%         ql: axis along QL (page,double)
-%         w:  axis along energy (double)
+%         qh: axis along QH in rlu (row,double)
+%         qk: axis along QK in rlu (column,double)
+%         ql: axis along QL in rlu (page,double)
+%         w:  axis along energy in meV (double)
 %    signal: when values are given, a guess of the parameters is performed (double)
 % output: signal: model value
 %

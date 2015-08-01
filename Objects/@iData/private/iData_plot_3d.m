@@ -25,7 +25,6 @@ ret = 0;
       else
         h=plot3(x(:),y(:),z(:), this_method, varargin{:});
       end
-      view(3);
     else
       if ~isempty(strfind(method, 'plot3')) % vol3d: does not require meshgrid
         h = vol3d('cdata',c,'texture','3D','xdata',x,'ydata',y,'zdata',z);
@@ -45,7 +44,7 @@ ret = 0;
         end
       elseif ~isempty(strfind(method, 'slice')) % sliceomatic
         slice(a); h=[];
-      else
+      else % method='surf'
         % isosurface: require meshgrid
         if ~isempty(strfind(method, 'mean'))
           iso = mean(c(:));
@@ -66,5 +65,6 @@ ret = 0;
         h = findobj(gca,'type','patch');
       end
     end
+    view(3);
     zlabel(zlab);
   end
