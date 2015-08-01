@@ -43,6 +43,7 @@
 
 
 
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -73,6 +74,7 @@
     <h3><a class="mozTocH3" name="mozTocId96090"></a><span
         style="font-weight: bold;">List of default fit models</span></h3>
     The 1D functions are <span style="font-style: italic;">signal=f(parameters,
+
 
 
 
@@ -158,6 +160,7 @@
 
 
 
+
               "x" unit)</span><br>
           </td>
         </tr>
@@ -204,6 +207,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Plot-exponential-
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Stretched_exponential_function">Exponential
+
 
 
 
@@ -280,6 +284,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/7/74/Normal_Distribution_PDF
 
 
 
+
               distribution function</a> <img alt="Laplace"
               title="Laplace"
 src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
@@ -295,6 +300,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Log-normal_distribution">Log-Normal
+
 
 
 
@@ -436,6 +442,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Sine_one_period.svg"
 
 
 
+
               Sine function</a> (exponential decay) <img alt="sine_exp"
               title="sine_exp"
               src="https://upload.wikimedia.org/wikipedia/commons/2/25/DampedSine.png"
@@ -480,6 +487,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Triangular_function.svg
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rectangular_function">Top-Hat
+
 
 
 
@@ -591,6 +599,7 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
               Gaussian</a><br>
           </td>
           <td valign="top"><font color="#cc33cc">nD</font><br>
@@ -635,6 +644,7 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
         = P(q).S(q)</span><br>
     </p>
     <p style="text-align: left;">where <span style="font-style:
@@ -649,11 +659,13 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
           Kohlbrecher</a> and <a
           href="mailto:ingo%28at%29cs.tu-berlin.de">Ingo Bressler</a>
         PSI (2006-2011)</li>
       <li>CrysFML by <a href="mailto:jrc@ill.eu">Juan
           Rodriguez-Carvajal</a> and <a href="mailto:jplatas@ull.es">Javier
+
 
 
 
@@ -698,6 +710,7 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">sf_square_well
+
 
 
 
@@ -761,6 +774,7 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">ff_sphere&nbsp;
+
 
 
 
@@ -940,15 +954,17 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     </p>
     <p>where the wave-vector/momentum Q is expressed in reciprocal
       lattice units [r.l.u]. The parameters of this model allow extended
-      flexibility in the description of the mode. The <i>Q_freq</i>
-      parameter indicates how many dispersion sine 'arches' there are
-      between the <i>Q0 </i>location and the <i>Q0+1</i>. A <i>Q_freq</i>
-      of 1/2 means the dispersion extends from e.g. Q=0 to Q=2. A <i>Q_freq</i>
-      of 1 means it extends from Q=0 to Q=1, and a <i>Q_freq</i> of 2
-      means there are two arches between Q=0 and Q=1 (all these with
-      Q0=0).</p>
+      flexibility in the description of the mode. <br>
+      The <i>Q_freq</i> parameter indicates how many dispersion sine
+      'arches' there are per reciprocal lattice unit [rlu]. A <i>Q_freq</i>
+      of 1/2 means the dispersion extends from e.g. Q=0 to Q=2 rlu. A <i>Q_freq</i>
+      of 1 means it extends from Q=0 to Q=1 rlu, and a <i>Q_freq</i> of
+      2 means there are two arches between Q=0 and Q=1 rlu (all these
+      with Q0=0).</p>
     <p>A <b>spin-wave </b>could for instance mostly use Q0=0,
-      Q_freq=1,&nbsp; E0=0, E1&gt;0 (2 arches from Q=0 to 1 rlu)<br>
+      Q_freq=1,&nbsp; E0=0, E1&gt;0 (2 arches from Q=0 to 1 rlu). In a
+      simple ferromagnet, the gap width is <i>E1-E0=4J.S</i> with
+      J=exchange energy and S=magnetic moment of spins.<br>
     </p>
     <pre>  &gt;&gt; sw = <font color="#3366ff">sqw_sine3d</font>([ E0 E1 Q_freq ])	<i>% creates a dispersion from E0 to E1 with given Q frequency, e.g. .5, 1 or 2</i></pre>
     <p></p>
@@ -964,17 +980,17 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     <p>The model parameters allow to tune the dispersion:<br>
     </p>
     <ul>
-      <li>To shift the minimum/maximum Q of the dispersion, move
-        QH0,QK0,QL0 parameters.</li>
-      <li> To change the extent of the dispersion in Q, vary
-        QH_freq,QK_freq,QL_freq parameters.</li>
-      <li> To change to minimum and maximum energy, move E0 and
-        E1_qh,E1_qk,E1_ql parameters. </li>
-      <li> To model an incomensurate dispersion, move both QH0,QK0,QL0
-        and the QH_freq,QL_freq,QK_freq parameters to incomensurate (non
-        rational) values.</li>
-      <li>An anisotropic model can be obtained by having different E1
-        and Q_freq parameters along axes.<br>
+      <li>To shift the minimum/maximum Q of the dispersion, move <i>QH0,QK0,QL0</i>
+        parameters.</li>
+      <li> To change the extent of the dispersion in Q, vary <i>QH_freq,QK_freq,QL_freq</i>
+        parameters.</li>
+      <li> To change to minimum and maximum energy, move <i>E0</i> and
+        <i>E1_qh,E1_qk,E1_ql</i> parameters. </li>
+      <li> To model an incomensurate dispersion, move both <i>QH0,QK0,QL0</i>
+        and the <i>QH_freq,QL_freq,QK_freq </i>parameters to
+        incomensurate (non rational) values.</li>
+      <li>An anisotropic model can be obtained by having different <i>E1
+        </i> and <i>Q_freq</i> parameters along axes.<br>
       </li>
     </ul>
     <p></p>
@@ -999,7 +1015,8 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
           width="200" align="right"></a><br>
     </p>
     <pre style="margin-left: 40px;">&gt;&gt; acoustic = <font color="#3366ff">sqw_sine3d</font>(5); optical = <font color="#3366ff">sqw_sine3d</font>([ 10 8 ]); sw = <font color="#3366ff">sqw_sine3d</font>([ 2 4 1 ]);<br>&gt;&gt; disp3 = acoustic + optical + sw;<br>&gt;&gt; disp3.Temperature_2 = <font color="#cc33cc">'"Temperature"'</font>;		% Temperature_2 = Temperature<br>&gt;&gt; disp3.Temperature_3 = <font color="#cc33cc">'"Temperature"'</font>;		% Temperature_3 = Temperature<br>&gt;&gt; disp3.Name=<font color="#cc33cc">'sqw_sine3d: acousitc+optical+sw'</font>;<br>&gt;&gt; <font color="#3366ff">mlock</font>(disp3, {<font color="#cc33cc">'Background_2','Background_3'</font>});	% keep them as 0 (default)<br>&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,1,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,10,51);	<i>% the axes for evaluation<br></i>&gt;&gt; f=<font color="#3366ff">iData</font>(disp3,[],qh,qk,ql,w);	<i>		% evaluate using initial model parameters</i><br>&gt;&gt; <font color="#3366ff">plot3</font>(log(f(:,:,1,:))); 				<i>% plot as volume</i> in [QH,QK,w, QL=0].<br></pre>
-    <p><br>
+    <p>However, this model only handles simple sine dispersions, and can
+      not treat mode exchange (interferences).<br>
     </p>
     <h3><a class="mozTocH3" name="mozTocId810939"></a><span
         style="font-weight: bold;">Model builder: defining a new model
@@ -1106,6 +1123,7 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
         (calls fconv in correlation mode)<br>
       </li>
     </ul>
@@ -1144,6 +1162,7 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
