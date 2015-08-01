@@ -44,6 +44,8 @@
 
 
 
+
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -74,6 +76,8 @@
     <h3><a class="mozTocH3" name="mozTocId96090"></a><span
         style="font-weight: bold;">List of default fit models</span></h3>
     The 1D functions are <span style="font-style: italic;">signal=f(parameters,
+
+
 
 
 
@@ -161,6 +165,8 @@
 
 
 
+
+
               "x" unit)</span><br>
           </td>
         </tr>
@@ -207,6 +213,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Plot-exponential-
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Stretched_exponential_function">Exponential
+
+
 
 
 
@@ -285,6 +293,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/7/74/Normal_Distribution_PDF
 
 
 
+
+
               distribution function</a> <img alt="Laplace"
               title="Laplace"
 src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
@@ -300,6 +310,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Log-normal_distribution">Log-Normal
+
+
 
 
 
@@ -443,6 +455,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Sine_one_period.svg"
 
 
 
+
+
               Sine function</a> (exponential decay) <img alt="sine_exp"
               title="sine_exp"
               src="https://upload.wikimedia.org/wikipedia/commons/2/25/DampedSine.png"
@@ -487,6 +501,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Triangular_function.svg
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rectangular_function">Top-Hat
+
+
 
 
 
@@ -600,6 +616,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
               Gaussian</a><br>
           </td>
           <td valign="top"><font color="#cc33cc">nD</font><br>
@@ -645,6 +663,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
         = P(q).S(q)</span><br>
     </p>
     <p style="text-align: left;">where <span style="font-style:
@@ -660,11 +680,15 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
           Kohlbrecher</a> and <a
           href="mailto:ingo%28at%29cs.tu-berlin.de">Ingo Bressler</a>
         PSI (2006-2011)</li>
       <li>CrysFML by <a href="mailto:jrc@ill.eu">Juan
           Rodriguez-Carvajal</a> and <a href="mailto:jplatas@ull.es">Javier
+
+
 
 
 
@@ -710,6 +734,8 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">sf_square_well
+
+
 
 
 
@@ -774,6 +800,8 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">ff_sphere&nbsp;
+
+
 
 
 
@@ -914,7 +942,7 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
             italic; color: rgb(51, 102, 255); background-color: rgb(255,
-            204, 204);">Powder diffraction<br>
+            204, 204);">S(q,w)<br>
           </td>
           <td style="vertical-align: top; background-color: rgb(255,
             204, 204);"><span style="font-style: italic; font-weight:
@@ -990,6 +1018,8 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
         and the <i>QH_freq,QL_freq,QK_freq </i>parameters to
         incomensurate (non rational) values.</li>
       <li>An anisotropic model can be obtained by having different <i>E1
+
+
         </i> and <i>Q_freq</i> parameters along axes.<br>
       </li>
     </ul>
@@ -1018,10 +1048,64 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     <p>However, this model only handles simple sine dispersions, and can
       not treat mode exchange (interferences).<br>
     </p>
+    <h4>Phonon dispersion in perovskites</h4>
+    <p>The sqw_vaks model computes the dispersion of the 5 lowest phonon
+      dispersions in perovskite cubic crystals. It is based on the Vaks
+      parameterisation. The TA1,TA2,LA,TO1 and TO2 dispersions are
+      obtained from 8 parameters, and a DHO line shape is added.<br>
+    </p>
+    <table style="text-align: left; width: 1016px; height: 59px;"
+      border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">S(q,w)<br>
+          </td>
+          <td style="vertical-align: top; background-color: rgb(255,
+            204, 204);"><span style="font-style: italic; font-weight:
+              bold; color: rgb(51, 102, 255);">Description</span><br>
+          </td>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Dimensionality<br>
+          </td>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Parameters<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><b>sqw_vaks</b></td>
+          <td valign="top">Phonon dispersions in perovskite cubic
+            crystals using the Vaks parameterisation<br>
+          </td>
+          <td valign="top"><font color="#33cc00">4D</font></td>
+          <td valign="top">acoustic and optical slopes, coupling
+            parameters, soft mode frequency<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    A usage example is:<a href="images/Models_sqw_vaks.png"><img
+        alt="sqw_vaks" title="sqw_vaks" src="images/Models_sqw_vaks.png"
+        border="0" height="151" width="200" align="right"></a><br>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_vaks</font>('KTaO3'); 		<i>% create model, with KTaO3 parameters</i><br>	&gt;&gt; qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,10,51);<br> 	&gt;&gt; f=iData(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; scatter3(log(f(:,:,1,:)),'filled');	<i>% plot</i><br></pre>
+    <br>
+    References:<br>
+    <ul>
+      <li>E. Farhi et al, EPJB, 15 (2000) pp 615-623. DOI:
+        10.1007/s100510051164 </li>
+      <li> A.K. Tagantsev et al, Nature Comm, 4 (2013) 2229. DOI:
+        10.1038/ncomms3229</li>
+      <li> V.G. Vaks, Introduction to the Microscopic Theory of
+        Ferroelectrics (Nauka, Moscow, 1973)</li>
+    </ul>
+    <br>
     <h3><a class="mozTocH3" name="mozTocId810939"></a><span
         style="font-weight: bold;">Model builder: defining a new model
-        easy<br>
-      </span></h3>
+        easy</span></h3>
     The <span style="font-style: italic;">ifitmakefunc</span> tool
     enables to define a new fit function/model from a simple dialog, by
     entering its <a href="images/ifitmakefunc.png"><img
@@ -1124,6 +1208,8 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
         (calls fconv in correlation mode)<br>
       </li>
     </ul>
@@ -1162,6 +1248,8 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 
