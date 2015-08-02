@@ -5,6 +5,8 @@ function signal=sqw_sine3d(varargin)
 %      shape. The sine dispersion can be tuned with energy gaps at zone centre
 %      and boundary, as well as a periodicity of the sine wave.
 %
+% WARNING: Single intensity and line width parameters are used here.
+%
 % Along a principal Q axis, the dispersion has the form:
 %       w = E0 + (E1-E0)*sin(Q_freq*pi*(Q-Q0));
 % This is a sine wave which goes from w=E0 at Q=Q0, up to w=E1 at 1/2Q_freq.
@@ -53,7 +55,7 @@ function signal=sqw_sine3d(varargin)
 %             p(8)= QH_freq QH frequency [multiples of pi]
 %             p(9)= QK_freq QK frequency [multiples of pi]
 %             p(10)=QL_freq QL frequency [multiples of pi]
-%             p(11)=Gamma   dispersion DHO width in energy [meV]
+%             p(11)=Gamma   dispersion DHO half-width in energy [meV]
 %             p(12)=Temperature of the material [K]
 %             p(13)=Amplitude
 %             p(14)=Background (constant)
