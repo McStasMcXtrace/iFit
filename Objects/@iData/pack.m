@@ -5,13 +5,14 @@ function b = pack(a)
 %   This includes to compare sparse/full storage for large matrices, and
 %   reduce the Command history. Only the Signal, aliases and Axes are kept
 %   so that unused Data items are removed.
+%   In addition, to further 'clean' an object, use: fill(a)
 %
 % input:  s: object or array (iData)
 % output: f: compressed object or array (iData)
 % ex:     b=pack(a);
 %
 % Version: $Date$
-% See also iData, iData/sparse, iData/full, iData/saveas
+% See also iData, iData/sparse, iData/full, iData/saveas, iData/fill
 
 if numel(a) > 1
   b = zeros(iData, numel(a), 1);

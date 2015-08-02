@@ -4,7 +4,7 @@ function c=fill(a, n)
 %   the non-missing elements. The non finite values (NaN or Inf) in X are
 %   considered as missing data.
 %
-%   INPAINTN uses an iterative process that converges toward the solution.
+%   FILL uses an iterative process that converges toward the solution.
 %   Y = FILL(X,N) uses N iterations. By default, N = 100. If you
 %   estimate that FILL did not totally converge, increase N:
 %   Y = FILL(X,1000);
