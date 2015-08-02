@@ -55,12 +55,14 @@ if isempty(cmap)
 end
 numclass = max(size(cmap));
 if numclass == 1
-  cmap = hsv(256);
+  cmap = jet(256);
   numclass = 256;
 end
 
 % avoid too many calculations
 if ~isreal(C), C=abs(C); end
+index=find(~isfinite(C(:)));
+C(index)=nan;
 mins = min(C);
 maxs = max(C);
 minz = min(Z);
