@@ -11,7 +11,7 @@
     <br>
     <ol id="mozToc">
       <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
-      <li><a href="#mozTocId147615">How to use models</a></li>
+      <li><a href="#mozTocId147615">How to use models </a></li>
       <li><a href="#mozTocId96090">List of default fit models</a></li>
       <li><a href="#mozTocId285330">Specialized models</a>
         <ol>
@@ -20,10 +20,11 @@
           <li><a href="#mozTocId344379"> Powder structure refinement
               (Rietveld)</a></li>
           <li><a href="#mozTocId677670">Phonon/spin-wave dispersion</a></li>
+          <li><a href="#mozTocId226848">Phonon dispersion in perovskites</a></li>
         </ol>
       </li>
       <li><a href="#mozTocId810939">Model builder: defining a new model
-          easy </a>
+          easy</a>
         <ol>
           <li><a href="#mozTocId775891">Creating complex functions from
               simple functions</a></li>
@@ -38,6 +39,7 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">Commands we use in this page: <span
         style="font-style: italic;">fits, <a href="#mozTocId775891">ifitmakefunc,
+
 
 
 
@@ -76,6 +78,7 @@
     <h3><a class="mozTocH3" name="mozTocId96090"></a><span
         style="font-weight: bold;">List of default fit models</span></h3>
     The 1D functions are <span style="font-style: italic;">signal=f(parameters,
+
 
 
 
@@ -167,6 +170,7 @@
 
 
 
+
               "x" unit)</span><br>
           </td>
         </tr>
@@ -213,6 +217,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Plot-exponential-
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Stretched_exponential_function">Exponential
+
 
 
 
@@ -295,6 +300,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/7/74/Normal_Distribution_PDF
 
 
 
+
               distribution function</a> <img alt="Laplace"
               title="Laplace"
 src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
@@ -310,6 +316,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Log-normal_distribution">Log-Normal
+
 
 
 
@@ -457,6 +464,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Sine_one_period.svg"
 
 
 
+
               Sine function</a> (exponential decay) <img alt="sine_exp"
               title="sine_exp"
               src="https://upload.wikimedia.org/wikipedia/commons/2/25/DampedSine.png"
@@ -501,6 +509,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Triangular_function.svg
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rectangular_function">Top-Hat
+
 
 
 
@@ -618,6 +627,7 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
               Gaussian</a><br>
           </td>
           <td valign="top"><font color="#cc33cc">nD</font><br>
@@ -665,6 +675,7 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
         = P(q).S(q)</span><br>
     </p>
     <p style="text-align: left;">where <span style="font-style:
@@ -682,11 +693,13 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
           Kohlbrecher</a> and <a
           href="mailto:ingo%28at%29cs.tu-berlin.de">Ingo Bressler</a>
         PSI (2006-2011)</li>
       <li>CrysFML by <a href="mailto:jrc@ill.eu">Juan
           Rodriguez-Carvajal</a> and <a href="mailto:jplatas@ull.es">Javier
+
 
 
 
@@ -734,6 +747,7 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">sf_square_well
+
 
 
 
@@ -800,6 +814,7 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">ff_sphere&nbsp;
+
 
 
 
@@ -934,7 +949,7 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
       <a href="https://en.wikipedia.org/wiki/Phonon">phonon-type</a>
       dispersions, including <a
         href="https://en.wikipedia.org/wiki/Spin_wave">spin-waves</a>,
-      acoustic and optical modes, incomensurate dispersions.<br>
+      acoustic and optical modes, incommensurate dispersions.<br>
     </p>
     <table style="text-align: left; width: 1016px; height: 59px;"
       border="1" cellpadding="2" cellspacing="2">
@@ -962,9 +977,11 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
           </td>
           <td style="vertical-align: top;">Phonon dispersions as sine
             wave in HKL (3D) with a damped harmonic oscillator energy
-            dispersion<br>
-          </td>
-          <td style="vertical-align: top; color: rgb(51, 204, 0);">4D<br>
+            dispersion <img alt="sqw_sine3d" title="sqw_sine3d"
+              src="images/Models_sqw_sine3d.png"
+              border="0" height="73" width="100" align="middle"> </td>
+          <td style="vertical-align: top; color: rgb(51, 204, 0);">4D
+            (HKLw)<br>
           </td>
           <td style="vertical-align: top;">zone center, energy gaps,
             periodicity<br>
@@ -982,13 +999,15 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     </p>
     <p>where the wave-vector/momentum Q is expressed in reciprocal
       lattice units [r.l.u]. The parameters of this model allow extended
-      flexibility in the description of the mode. <br>
+      flexibility in the description of the mode. Along the 3D HKL
+      volume, a dispersion is described with 10 parameters.<br>
       The <i>Q_freq</i> parameter indicates how many dispersion sine
       'arches' there are per reciprocal lattice unit [rlu]. A <i>Q_freq</i>
       of 1/2 means the dispersion extends from e.g. Q=0 to Q=2 rlu. A <i>Q_freq</i>
       of 1 means it extends from Q=0 to Q=1 rlu, and a <i>Q_freq</i> of
       2 means there are two arches between Q=0 and Q=1 rlu (all these
-      with Q0=0).</p>
+      with Q0=0). A Q_freq of 0 sets a flat dispersion.<br>
+    </p>
     <p>A <b>spin-wave </b>could for instance mostly use Q0=0,
       Q_freq=1,&nbsp; E0=0, E1&gt;0 (2 arches from Q=0 to 1 rlu). In a
       simple ferromagnet, the gap width is <i>E1-E0=4J.S</i> with
@@ -1014,16 +1033,65 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
         parameters.</li>
       <li> To change to minimum and maximum energy, move <i>E0</i> and
         <i>E1_qh,E1_qk,E1_ql</i> parameters. </li>
-      <li> To model an incomensurate dispersion, move both <i>QH0,QK0,QL0</i>
+      <li> To model an incommensurate dispersion, move both <i>QH0,QK0,QL0</i>
         and the <i>QH_freq,QL_freq,QK_freq </i>parameters to
-        incomensurate (non rational) values.</li>
+        incommensurate (non rational) values.</li>
       <li>An anisotropic model can be obtained by having different <i>E1
 
 
-        </i> and <i>Q_freq</i> parameters along axes.<br>
+
+        </i> and <i>Q_freq</i> parameters along axes.</li>
+      <li>A 1D or 2D dispersion can be obtained when setting the
+        frequencies (e.g. <i>QK_freq QL_freq</i>) to 0<br>
       </li>
     </ul>
     <p></p>
+    <p>The model parameters are:</p>
+    <blockquote>
+      <p>&nbsp; p(&nbsp;
+        1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>E1_qh</b> energy at QH half period [meV]<br>
+        &nbsp; p(&nbsp;
+        2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>E1_qk</b> energy at QK half period [meV]<br>
+        &nbsp; p(&nbsp;
+        3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>E1_ql</b> energy at QL half period [meV]<br>
+        &nbsp; p(&nbsp;
+        4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>E0</b> zone-centre energy gap [meV]<br>
+        &nbsp; p(&nbsp;
+        5)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>QH0</b> QH zone-centre [rlu]<br>
+        &nbsp; p(&nbsp;
+        6)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>QK0</b> QK zone-centre [rlu]<br>
+        &nbsp; p(&nbsp;
+        7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>QL0</b> QL zone-centre [rlu]<br>
+        &nbsp; p(&nbsp;
+        8)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>QH_freq</b> QH frequency [multiples of pi]<br>
+        &nbsp; p(&nbsp;
+        9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>QK_freq</b> QK frequency [multiples of pi]<br>
+        &nbsp; p(
+        10)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>QL_freq</b> QL frequency [multiples of pi]<br>
+        &nbsp; p(
+        11)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>Gamma</b> Damped Harmonic Oscillator width in energy [meV]<br>
+        &nbsp; p( 12)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Temperature</b>
+        [K]<br>
+        &nbsp; p(
+        13)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>Amplitude</b><br>
+        &nbsp; p(
+        14)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
+      </p>
+    </blockquote>
+    <p>The axes needed for the evaluation are expressed in rlu for
+      QH,QK,QL and in meV for the energy.</p>
     <p>A usage example is as follows:<a
         href="images/Models_sqw_sine3d.png"><img alt="sqw_sine3d"
           title="sqw_sine3d" src="images/Models_sqw_sine3d.png"
@@ -1048,11 +1116,16 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     <p>However, this model only handles simple sine dispersions, and can
       not treat mode exchange (interferences).<br>
     </p>
-    <h4>Phonon dispersion in perovskites</h4>
-    <p>The sqw_vaks model computes the dispersion of the 5 lowest phonon
-      dispersions in perovskite cubic crystals. It is based on the Vaks
-      parameterisation. The TA1,TA2,LA,TO1 and TO2 dispersions are
-      obtained from 8 parameters, and a DHO line shape is added.<br>
+    <h4><a class="mozTocH4" name="mozTocId226848"></a>Phonon dispersion
+      in perovskites</h4>
+    <p>The <b>sqw_vaks </b>model computes the dispersion of the 5
+      lowest phonon dispersions in perovskite cubic crystals. It is
+      based on the Vaks parametrization (see references below). The
+      TA1,TA2,LA,TO1 and TO2 dispersions are obtained from 8 parameters,
+      and a DHO line shape is added. The dispersions are anisotropic,
+      with 'valley' and soft mode. However, even though this is model
+      uses few parameters, the dynamic range is limited to e.g.<b> |q|</b>
+      &lt; 0.3-0.5 rlu and |w| &lt; 100 meV.<br>
     </p>
     <table style="text-align: left; width: 1016px; height: 59px;"
       border="1" cellpadding="2" cellspacing="2">
@@ -1078,27 +1151,76 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
         <tr>
           <td valign="top"><b>sqw_vaks</b></td>
           <td valign="top">Phonon dispersions in perovskite cubic
-            crystals using the Vaks parameterisation<br>
-          </td>
-          <td valign="top"><font color="#33cc00">4D</font></td>
-          <td valign="top">acoustic and optical slopes, coupling
-            parameters, soft mode frequency<br>
+            crystals using the Vaks parameterisation <a
+              href="images/Models_sqw_vaks.png"><img
+                alt="sqw_vaks" title="sqw_vaks"
+                src="images/Models_sqw_vaks.png" border="0" height="75"
+                width="100" align="middle"></a> </td>
+          <td valign="top"><font color="#33cc00">4D (HKLw)<br>
+            </font></td>
+          <td valign="top">acoustic and optical , coupling parameters,
+            soft mode frequency<br>
           </td>
         </tr>
       </tbody>
     </table>
     <br>
+    The model parameters are the following:<br>
+    <blockquote>&nbsp; p(&nbsp;
+      1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <b>At</b> transverse acoustic [meV2/rlu2]<br>
+      &nbsp; p(&nbsp;
+      2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <b>Al</b> longitudinal acoustic [meV2/rlu2]<br>
+      &nbsp; p(&nbsp;
+      3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <b>Aa</b> anisotropic acoustic [meV2/rlu2]<br>
+      &nbsp; p(&nbsp;
+      4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <b>St</b> soft mode&nbsp; transverse soft optical [meV2/rlu2]<br>
+      &nbsp; p(&nbsp;
+      5)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <b>Sa</b> soft mode&nbsp; anisotropic soft optical [meV2/rlu2]<br>
+      &nbsp; p(&nbsp;
+      6)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <b>Vt</b> transverse acoustic-optical coupling [meV2/rlu2]<br>
+      &nbsp; p(&nbsp;
+      7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <b>Va</b> entered as: anisotropic acoustic-optical coupling
+      [meV2/rlu2]<br>
+      &nbsp; p(&nbsp;
+      8)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <b>w0</b> soft mode frequency at q=0, depends on temperature [meV]<br>
+      &nbsp; p(&nbsp;
+      9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <b>Gamma</b> Damped Harmonic Oscillator width in energy [meV]<br>
+      &nbsp; p( 10)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Temperature</b>
+      [K]<br>
+      &nbsp; p(
+      11)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Amplitude</b><br>
+      &nbsp; p(
+      12)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
+    </blockquote>
+    The axes needed for the evaluation are expressed in rlu for QH,QK,QL
+    and in meV for the energy.<br>
+    <br>
+    There are predefined parameter settings for KTaO3, SrTiO3 and BaTiO3
+    crystals.<br>
     A usage example is:<a href="images/Models_sqw_vaks.png"><img
         alt="sqw_vaks" title="sqw_vaks" src="images/Models_sqw_vaks.png"
         border="0" height="151" width="200" align="right"></a><br>
-    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_vaks</font>('KTaO3'); 		<i>% create model, with KTaO3 parameters</i><br>	&gt;&gt; qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,10,51);<br> 	&gt;&gt; f=iData(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; scatter3(log(f(:,:,1,:)),'filled');	<i>% plot</i><br></pre>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_vaks</font>(<font color="#cc33cc">'KTaO3'</font>); 		<i>% create model, with KTaO3 parameters</i><br>	&gt;&gt; qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,10,51);<br> 	&gt;&gt; f=iData(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; scatter3(log(f(:,:,1,:)),'filled');	<i>% plot</i><br></pre>
     <br>
     References:<br>
     <ul>
-      <li>E. Farhi et al, EPJB, 15 (2000) pp 615-623. DOI:
-        10.1007/s100510051164 </li>
-      <li> A.K. Tagantsev et al, Nature Comm, 4 (2013) 2229. DOI:
-        10.1038/ncomms3229</li>
+      <li>E. Farhi et al, EPJB, 15 (2000) pp 615-623. <a
+href="https://www.google.fr/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=1&amp;cad=rja&amp;uact=8&amp;ved=0CCIQFjAAahUKEwjVzfP69InHAhVFuBQKHRw2Da4&amp;url=http%3A%2F%2Fepjb.epj.org%2Farticles%2Fepjb%2Fabs%2F2000%2F12%2Fcontents%2Fcontents.html&amp;ei=08u9VZWYAsXwUpzstPAK&amp;usg=AFQjCNEU5zWW66fSudDTwYfsP7OHMvJ2lA&amp;sig2=ufCosM5KrOKdfetSTwa10Q&amp;bvm=bv.99261572,d.d24">DOI:
+
+          10.1007/s100510051164</a> </li>
+      <li> A.K. Tagantsev et al, Nature Comm, 4 (2013) 2229. <a
+href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">DOI:
+
+          10.1038/ncomms3229</a></li>
       <li> V.G. Vaks, Introduction to the Microscopic Theory of
         Ferroelectrics (Nauka, Moscow, 1973)</li>
     </ul>
@@ -1210,6 +1332,7 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
         (calls fconv in correlation mode)<br>
       </li>
     </ul>
@@ -1248,6 +1371,7 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
