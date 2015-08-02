@@ -8,6 +8,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 % The file formats cache and MeX files can be rebuilt with
 %   iLoad force
 %   iLoad compile
+%   iLoad 'force load config'
 % the iLoad_ini configuration file can be saved in the Preference directory
 % using 
 %   [config, configfile] = iLoad(config,'save config').
@@ -114,7 +115,7 @@ function [data, format] = iLoad(filename, loader, varargin)
       if exist('looktxt') ~= 3,        read_anytext('compile'); end
       if exist('cbf_uncompress') ~= 3, read_cbf('compile'); end
       if exist('cif2hkl') ~= 3,        cif2hkl('compile'); end
-    else
+    elseif ~strcmp(loader, 'force load config')
       % force compile
       read_anytext('compile');
       read_cbf('compile');
@@ -135,7 +136,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     disp([ '% Loaded iLoad format descriptions from ' config.FileName ]);
     return
-  elseif strcmp(loader, 'formats') || strcmp(loader, 'display config')
+  elseif strcmp(loader, 'formats') || strcmp(loader, 'display config')  || strcmp(loader, 'list')
     data = iLoad('','load config');
     fprintf(1, ' EXT                    READER  DESCRIPTION [%s]\n', mfilename);
     fprintf(1, '-----------------------------------------------------------------\n');  
