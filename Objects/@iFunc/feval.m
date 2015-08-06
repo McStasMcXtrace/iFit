@@ -504,7 +504,8 @@ catch
   disp(this)
   this.Eval
   lasterr
-  error([ 'iFunc:' mfilename ], 'Failed model evaluation.');
+  save iFunc_feval_error
+  error([ 'iFunc:' mfilename ], 'Failed model evaluation. Saved state in iFunc_feval_error');
 end
 
 % ==============================================================================
