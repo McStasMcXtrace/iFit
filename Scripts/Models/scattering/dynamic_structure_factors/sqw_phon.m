@@ -26,8 +26,10 @@ function signal=sqw_phon(varargin)
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
 %   options.disp   =[dx dy dz]             initial displacement direction
 %     the initial displacement can e.g. be [ 1 -1 1 ]
-%     
 %
+% Once the model has been created, its use requires that axes are given on a 
+% regular qx,qy,qz grid.
+%     
 % Example:
 %   s=sqw_phon('POSCAR','metal','random');
 %
@@ -86,13 +88,146 @@ function signal=sqw_phon(varargin)
 % could be the PP to use, cutoff
 
 signal = [];
-poscar = [];
-options.NDIM   =2;
-options.potentials ={};
-options.kpoints=2;
-options.disp   =[];
 
-for index=1:numel(varargin)
+% ********* handle input arguments *********
+[poscar, options]=sqw_phon_argin(varargin{:});
+
+
+% ********* look for potentials *********
+
+options = sqw_phon_potentials(poscar, options);
+
+% check for installation of PHON and QE
+[options.phon, options.pwscf, options.vasp] = sqw_phon_requirements;
+if isempty(options.phon) || isempty(options.pwscf)
+  return
+end
+
+% ********* compute the forces *********
+
+% check/create supercell
+geom = sqw_phon_supercell(poscar, options); % 2x2x2 supercell
+
+% check for FORCES
+forces = sqw_phon_forces(geom, options);
+
+% ************** BUILD THE MODEL **************
+signal.Name           = [ 'S(q,w) 3D dispersion PHON/QuantumEspresso with DHO line shape [' mfilename ']' ];
+signal.Description    = 'A 3D HKL dispersion obtained from the dynamical matrix. The forces are computed using QuantumEspresso and PHON. DHO line shape.';
+
+signal.Parameters     = {  ...
+  'Gamma Damped Harmonic Oscillator width in energy [meV]' ...
+  'Temperature [K]' ...
+  'Amplitude' 'Background' };
+  
+signal.Dimension      = 4;         % dimensionality of input space (axes) and result
+
+signal.Guess = [ .1 10 1 0 ];
+
+p = fileparts(poscar);
+mass = [];
+for index=1:numel(geom.symbols)
+  mass(index) = molweight(geom.symbols{index});
+end
+mass = num2str(mass);
+signal.Expression     = { ...
+  '% check if FORCES and POSCAR are here', ...
+[ '  if isempty(dir(''' poscar ''')) || isempty(dir(''' fullfile(p,'FORCES') '''))' ], ...
+[ '    error([ ''model '' this.Name '' '' this.Tag '' requires POSCAR and FORCES to reside in ' p ''' ])' ], ...
+  '  end', ...
+  '% write INPHON for FREQ generation', ...
+[ '  pw = pwd; cd(''' p '''); save sqw_phon_enter;' ], ...
+  '  % write the INPHON', ...
+[ '  fid=fopen(''INPHON'',''w'');' ], ...
+[ '  fprintf(fid, ''# Control file for PHON to compute the modes from POSCAR and FORCES in ' p '\n'');' ], ...
+  '  fprintf(fid, ''#   PHON: <http://chianti.geol.ucl.ac.uk/~dario>\n'');', ...
+  '  fprintf(fid, ''#   D. Alfe, Computer Physics Communications 180,2622-2633 (2009)\n'');', ...
+  '  fprintf(fid, ''  LSYMM=.TRUE.\n'');', ...
+  '  fprintf(fid, ''  LSUPER=.F.\n'');', ...
+[ '  fprintf(fid, ''# number of ion types and masses\n  NTYPES = ' num2str(numel(geom.symbols)) '\n  MASS = ' mass '\n'');' ], ...  
+  '  fprintf(fid, ''# q points section\n  LRECIP = .T.\n'');', ...
+  '  if ndims(x) == 4, x=squeeze(x(:,:,:,1)); y=squeeze(y(:,:,:,1)); z=squeeze(z(:,:,:,1)); end',...
+  '  if max(size(x)) == numel(x) && max(size(y)) == numel(y) && max(size(z)) == numel(z)', ...
+  '    fprintf(fid, ''  ND=1\n'');', ...
+  '    fprintf(fid, ''  NPOINTS=%i\n'', numel(x));', ...
+  '    fprintf(fid, ''  QI= %f %f %f\n'', min(x(:)),min(y(:)),min(z(:)));', ...
+  '    fprintf(fid, ''  QF= %f %f %f\n'', max(x(:)),max(y(:)),max(z(:)));', ...
+  '  else', ...
+  '    x=unique(x(:)); y=unique(y(:)); z=unique(z(:));', ...
+  '    sz = [ numel(x) numel(y) numel(z) ];', ...
+  '    [dummy,L_id] = max(sz);             % the dimension which will be a line ND', ...
+  '    G_id = find(L_id ~= 1:length(sz));  % the other 2 smaller sizes in grid', ...
+  '    fprintf(fid, ''  ND=%i\n'', prod(sz(G_id)));', ...
+  '    fprintf(fid, ''  NPOINTS = %i\n'', sz(L_id));', ...
+  '    % first write the min locations', ...
+  '    fprintf(fid, ''  QI ='');', ...
+  '    for i1=1:sz(G_id(1))', ...
+  '      for i2=1:sz(G_id(2))', ...
+  '        if L_id == 1, X=min(x); Y=y(i1); Z=z(i2);', ...
+  '        elseif L_id == 2, Y=min(y); X=x(i1); Z=z(i2);', ...
+  '        else Z=min(z); X=x(i1); Y=y(i2); end', ...
+  '        fprintf(fid, ''    %f %f %f'', X,Y,Z);', ...
+  '        if i1*i2~=prod(sz(G_id)), fprintf(fid,'' \\\n'');', ...
+  '        else fprintf(fid,''\n''); end', ...
+  '      end', ...
+  '    end % for QI', ...
+  '    % then write the max locations', ...
+  '    fprintf(fid, ''  QF ='');', ...
+  '    for i1=1:sz(G_id(1))', ...
+  '      for i2=1:sz(G_id(2))', ...
+  '        if L_id == 1, X=max(x); Y=y(i1); Z=z(i2);', ...
+  '        elseif L_id == 2, Y=max(y); X=x(i1); Z=z(i2);', ...
+  '        else Z=max(z); X=x(i1); Y=y(i2); end', ...
+  '        fprintf(fid, ''    %f %f %f'', X,Y,Z);', ...
+  '        if i1*i2~=prod(sz(G_id)), fprintf(fid,'' \\\n'');', ...
+  '        else fprintf(fid,''\n''); end', ...
+  '      end', ...
+  '    end % for QF', ...
+  '  end % 3D grid', ...
+  '  fclose(fid);', ...
+  '  % call PHON', ...
+  'try', ...
+[ '  [status,result] = system(''' options.phon ''');' ], ...
+  '  % import FREQ', ...
+  '  signal=load(''FREQ'',''-ascii''); % in THz', ...
+  'end', ...
+  '  cd(pw);', ...
+  '  % multiply all frequencies(columns, THz) by a DHO/meV'
+};
+
+signal=iFunc(signal);
+
+% at model evaluation:
+
+
+% call PHON
+
+% read FREQ (THz)
+
+% apply DHO to all energies
+
+% when model is successfully built, display citations for PHON and QE
+disp('Model built using: (please cite)')
+disp('   PHON: D. Alfe, Computer Physics Communications 180,2622-2633 (2009)')
+disp('     <http://chianti.geol.ucl.ac.uk/~dario>. BSD license.')
+disp('   Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009)')
+disp('     needed, as the PWSCF (pw.x)  program is used to estimate the FORCES.')
+disp('     <http://www.quantum-espresso.org/>. GPL2 license.')
+disp('   iFit: E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
+disp('     <http://ifit.mccode.org>');
+
+% ------------------------------------------------------------------------------
+
+function [poscar, options]=sqw_phon_argin(varargin)
+
+  poscar = [];
+  options.NDIM   =2;
+  options.potentials ={};
+  options.kpoints=2;
+  options.disp   =[];
+
+  % read input arguments
+  for index=1:numel(varargin)
   if ischar(varargin{index}) && isempty(dir(varargin{index}))
     % first try to build a structure from the string
     this = str2struct(varargin{index});
@@ -133,10 +268,16 @@ end
 % random displacement
 if strcmp(options.disp,'random')
   % the DISP initial vector is set with a random set of [-1 0 1]
-  options.disp=round(randn(1,3));
-  options.disp(abs(options.disp) > 1) = sign(options.disp(abs(options.disp) > 1));
+  options.disp = round(randn(1,3));
+  
+  options.disp(abs(options.disp) > 3) = sign(options.disp(abs(options.disp) > 3));
   this = find(~options.disp); if numel(this) == 2, options.disp=sign(randn); end
+  options.disp = options.disp/norm(options.disp);
 end
+
+% ------------------------------------------------------------------------------
+
+function options = sqw_phon_potentials(poscar, options)
 
 % empty potential list: use QE default location
 if isempty(options.potentials)
@@ -171,29 +312,6 @@ for index=1:numel(options.potentials)
 end
 options.potentials      = potentials;
 options.potentials_full = potentials_full;
-
-% check for installation of PHON and QE
-[options.phon, options.pwscf, options.vasp] = sqw_phon_requirements;
-if isempty(options.phon) || isempty(options.pwscf)
-  return
-end
-
-% check/create supercell
-geom = sqw_phon_supercell(poscar, options); % 2x2x2 supercell
-
-% check for FORCES
-forces = sqw_phon_forces(geom, options);
-
-% when model is successfully built, display citations for PHON and QE
-
-% at model evaluation:
-% write INPHON for FREQ generation
-
-% call PHON
-
-% read FREQ (THz)
-
-% apply DHO to all energies
 
 % ------------------------------------------------------------------------------
 
@@ -263,6 +381,7 @@ if isempty(geom1.symbols)
 else
   % build the structure holding all elements with counts
   geom1.elements = [];
+  symbols = {};
   for index=1:numel(geom1.symbols)
     this   = parse_formula(geom1.symbols{index});
     fields = fieldnames(this);
@@ -335,7 +454,7 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
     copyfile(poscar, [ poscar '_' datestr(now,30) ]);
   end
   % copy supercell into POSCAR
-  export_poscar(fullfile(p,'POSCAR'), geom2);
+  export_poscar(fullfile(p,'POSCAR'), geom2, 'nosymbols');
   geom1 = geom2;
   geom1.filename = poscar;
 else
@@ -403,7 +522,7 @@ if isempty(dir(fullfile(p,'FORCES')))
     
     % now use either QE or VASP
     if ~isempty(options.pwscf)
-      this.displacement = [ index displaced.coords(index,:) ];
+      this.displacement = [ index displacements(move,:) ];
       this.forces       = sqw_phon_forces_pwscf(displaced, options);
     elseif ~isempty(options.vasp)
       error([ mfilename ': support for VASP is not yet implemented' ])
@@ -430,7 +549,7 @@ if isempty(dir(fullfile(p,'FORCES')))
   end
   fprintf(fid, '%i\n', numel(forces));  % nb of displacements
   for index=1:numel(forces)
-    fprintf(fid, '%s\n', num2str(forces{index}.displacement));
+    fprintf(fid, '%s\n', num2str(displacements(index,:)));
     this = cellstr(num2str(forces{index}.forces));
     fprintf(fid, '    %s\n', this{:});
   end

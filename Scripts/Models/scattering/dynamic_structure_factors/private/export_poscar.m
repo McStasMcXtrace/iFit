@@ -1,7 +1,10 @@
-function [ status ] = export_poscar( filename, geometry )
+function [ status ] = export_poscar( filename, geometry, option )
 %EXPORT_POSCAR Export a geometry struct as a VASP POSCAR file.
 %   status = EXPORT_POSCAR(filename,geometry) exports the geometry as a 
 %   VASP POSCAR file. 
+%
+%   EXPORT_POSCAR(filename,geometry,'nosymbols') does not write the elements 
+%     line before the coordinates
 %
 %   See also IMPORT_POSCAR.
 %
@@ -14,13 +17,14 @@ function [ status ] = export_poscar( filename, geometry )
     if fid==-1
         error([mfilename ': Error opening ' filename]); 
     end
+    if nargin < 3, option=''; end
     
     fprintf(fid,[geometry.comment '\n']);
     fprintf(fid,'1.0\n'); % scale factor
     fprintf(fid, '%19.16f %19.16f %19.16f\n', geometry.lattice'); % lattice vectors
     
     % this block is unactvated to stay 100% compatible with VASP and PHON
-    if ~isempty(geometry.symbols)
+    if ~isempty(geometry.symbols) && (isempty(option) || ~strcmp(option, 'nosymbols'))
         cellfun(@(x) fprintf(fid, '%s ', x), geometry.symbols);
         fprintf(fid, '\n');
     end
