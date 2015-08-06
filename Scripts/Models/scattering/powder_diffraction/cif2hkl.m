@@ -50,6 +50,8 @@ if ~isdeployed && isempty(compiled)
       warning('%s: Can''t compile cif2hkl.F90 as MeX\n       in %s\n', ...
         mfilename, fullfile(this_path));
     end
+    delete('*.mod');  % remove temprary files
+    delete('*.o');
     if compiled
       rehash
       % rethrow cif2hkl command with new MeX
