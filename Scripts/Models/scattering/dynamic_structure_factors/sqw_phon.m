@@ -101,7 +101,7 @@ signal.Expression     = { ...
   '  fprintf(fid, ''  LSYMM=.TRUE.\n'');', ...
   '  fprintf(fid, ''  LSUPER=.F.\n'');', ...
 [ '  fprintf(fid, ''# number of ion types and masses\n  NTYPES = ' num2str(numel(geom.symbols)) '\n  MASS = ' mass '\n'');' ], ...  
-  '  fprintf(fid, ''# q points section\n  LRECIP = .F.\n'');', ...
+  '  fprintf(fid, ''# q points section\n  LRECIP = .T.\n'');', ...
   '  sz0 = size(t);', ...
   '  if ndims(x) == 4, x=squeeze(x(:,:,:,1)); y=squeeze(y(:,:,:,1)); z=squeeze(z(:,:,:,1)); t=squeeze(t(1,1,1,:)); end',...
   'if max(size(x)) == numel(x) && max(size(y)) == numel(y) && max(size(z)) == numel(z)', ...
@@ -147,7 +147,7 @@ signal.Expression     = { ...
 [ '  [status,result] = system(''' options.phon ''');' ], ...
   '  % import FREQ', ...
   '  FREQ=load(''FREQ'',''-ascii'')/.24180; % THz -> meV', ...
-  '  delete(''FREQ''); delete(''FREQ.cm'');', ...
+  '  delete(''FREQ.cm'');', ...
   'end', ...
   '  cd(pw);', ...
   '  % multiply all frequencies(columns, meV) by a DHO/meV', ...
@@ -251,6 +251,24 @@ if strcmp(options.disp,'random')
   this = find(~options.disp); if numel(this) == 2, options.disp=sign(randn); end
 end
 
+if isempty(poscar)
+  poscar = 'POSCAR';
+end
+
+options.target = tempname; % everything will go there
+mkdir(options.target);
+% copy the POSCAR into the target directory
+d = dir(poscar);
+copyfile(poscar, options.target);
+% copy any additional potential
+try
+copyfile(fullfile(fileparts(poscar),'*.UPF'),options.target);
+end
+
+poscar = fullfile(options.target, d.name);
+disp([ mfilename ': copying initial ' d.name ' into ' options.target ]);
+
+
 % ------------------------------------------------------------------------------
 
 function options = sqw_phon_potentials(poscar, options)
@@ -276,8 +294,11 @@ for index=1:numel(options.potentials)
     d = dir(options.potentials{index});
     for i=1:numel(d)
       if ~d(i).isdir && ~any(strcmp(d(i).name, potentials))
-        potentials_full{end+1} = fullfile(options.potentials{index},d(i).name);
-        potentials{end+1}      = d(i).name; 
+        [p,f,e] = fileparts(fullfile(options.potentials{index},d(i).name));
+        if strcmp(lower(e),'.upf')
+          potentials_full{end+1} = fullfile(options.potentials{index},d(i).name);
+          potentials{end+1}      = d(i).name; 
+        end
       end
     end
   else
@@ -299,6 +320,7 @@ function [phon, pwscf]  = sqw_phon_requirements
 % check for PHON
 cmd = 'phon';
 if ispc, cmd=[ cmd '.exe' ]; end
+if ~isempty(dir('INPHON')), delete('INPHON'); end
 [status, result] = system(cmd);
 if isempty(strfind(upper(result),'PHON, VERSION'))
   phon = [];
@@ -345,9 +367,6 @@ function geom1 = sqw_phon_supercell(poscar, options)
 
 if isempty(options.NDIM),  options.NDIM=2; end
 if isscalar(options.NDIM), options.NDIM=[ options.NDIM options.NDIM options.NDIM ]; end
-if isempty(poscar)
-  poscar = 'POSCAR';
-end
 
 geom1 = import_poscar(poscar);
 
@@ -442,8 +461,6 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   geom2.comment = [ strtrim(geom1.comment) ' supercell ' mat2str(options.NDIM) ];
   geom2.symbols = geom1.symbols;
   geom2.elements= geom1.elements;
-  % clean up SPOSCAR
-  delete(fullfile(p,'SPOSCAR'))
   
   if strcmp(f,'POSCAR') % make a copy before over-writing
     copyfile(poscar, [ poscar '_' datestr(now,30) ]);
@@ -476,8 +493,6 @@ if isempty(dir(fullfile(p,'FORCES')))
   end
   displacements(displacements == '"' | displacements == '\') = '';
   displacements = str2num(displacements);
-  % clean up DISP
-  delete(fullfile(p,'DISP'));
   
   % find suitable potentials
   if ~isempty(options.pwscf)
@@ -660,12 +675,6 @@ function force = sqw_phon_forces_pwscf(displaced, options)
       else force = [ force ; V(3:5) ]; end
     end
     if size(force, 1) >= natoms, break; end % exit when we have one per atom in supercell
-  end
-  
-  if ~isempty(force)
-    % clean up
-    delete(fullfile(p, 'pw.out'));
-    delete(fullfile(p, 'pw.d'));
   end
 
   force = force *25.711; % from Ry/a.u to eV/Angs
