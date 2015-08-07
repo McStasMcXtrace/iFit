@@ -157,15 +157,17 @@ else  % convert input argument into object
     in = varargin{1};
     [signal, ax, name] = feval(in, varargin{2:end});
     if length(signal) == length(in.Parameters)
-      [signal, ax, name] = feval(in, signal);
+      [signal, ax, name] = feval(in, signal, varargin{3:end});
     end
     % assign axes values
     out = iData(ax{:}, signal);
 
     % assign axes names
-    if nargin > 2
+    if nargin > 2 % iData(iFunc,p,axes...)
       for index=1:numel(ax)
-        if ~isempty(inputname(index+2)), out=label(out,index,inputname(index+2)); end
+        if index+2 <= nargin && ~isempty(inputname(index+2))
+          out=label(out,index,inputname(index+2)); 
+        end
       end
     end
     out.Title = name;

@@ -236,7 +236,6 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
     && ~isvector(varargin{model.Dimension+1})
     [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
   end
-
   % automatic guessed parameter values -> signal
   if model.Dimension
     p1 = iFunc_private_guess(varargin(1:(model.Dimension+1)), model.Parameters); % call private here -> auto guess
@@ -291,7 +290,6 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
       clear p2
     end
   end
-
   if all(p1 == 0) && ~isempty(model.ParameterValues) ...
    && ~all(model.ParameterValues(:) == 0)
     p1 = model.ParameterValues;
@@ -309,13 +307,11 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
       varargin(signal_in_varargin) = []; % remove Signal from arguments for evaluation (used in Guess)
       signal_in_varargin = [];
     end
-
     [signal, ax, name] = feval(model, p, varargin{:});
   else
     ax=0; name=model.Name;
   end
   % Parameters are stored in the updated model (see assignin below)
-
 end % 'guess'
 
 % format parameters as columns
@@ -336,7 +332,7 @@ if ~isempty(i)
 end
 
 % apply 'set' Constraints (with char)
-p = iFunc_feval_set(model, p, varargin);
+p = iFunc_feval_set(model, p, varargin{:});
 
 model.ParameterValues = p;
 
@@ -348,6 +344,7 @@ end
 % feval(model) when model.ParameterValues is empty
 % feval(model, 'guess')
 if ~isempty(guessed)
+  ax = varargin(1:model.Dimension);
   return
 end
 
