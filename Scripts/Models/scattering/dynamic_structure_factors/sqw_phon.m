@@ -3,7 +3,7 @@ function signal=sqw_phon(varargin)
 %
 % The arguments can be any set of:
 % POSCAR: file name to an existing POSCAR
-%   a VASP complient file providing initial system structure, with lattice
+%   a VASP compliant file providing initial system structure, with lattice
 %   and position of atoms in a stable, equilibrated configuration.
 %   The first line MUST start with the chemical formula of the system, as a 
 %   single word, which can be followed by any other comment.
@@ -28,7 +28,7 @@ function signal=sqw_phon(varargin)
 %     the initial displacement can e.g. be [ 1 -1 1 ]
 %
 % Once the model has been created, its use requires that axes are given on a 
-% regular qx,qy,qz grid.
+% regular qx,qy,qz grids.
 %     
 % Example:
 %   s=sqw_phon('POSCAR','metal','random');
@@ -36,56 +36,9 @@ function signal=sqw_phon(varargin)
 % References: 
 %   PHON: D. Alfe, Computer Physics Communications 180,2622-2633 (2009) 
 %     <http://chianti.geol.ucl.ac.uk/~dario>. BSD license.
-%   VASP: G. Kresse and J. Furthmuller. Phys. Rev. B 54 (1996), 11169. 
-%     <https://www.vasp.at/>. Commercial (not needed).
 %   Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009)
 %     needed, as the PWSCF (pw.x)  program is used to estimate the FORCES.
 %     <http://www.quantum-espresso.org/>. GPL2 license.
-
-% use PHON to compute the phonon spectra at given hkl locations
-
-% step1: read POSCAR
-% parameters: lattice vectors (lines 3:5)
-% parameters: atom coordinates
-
-% step2: write INPHON to generate super-cell SPOSCAR and displacement guess DISP
-%  copy SPOSCAR into POSCAR
-
-% step3: write input file pw.d for quantum espresso pw.x
-%   use template
-%   set lines 1:2 as Name and crystal type
-%
-%   in CONTROL
-%   set prefix=    lower(compound_name)
-%
-%   in SYSTEM
-%   set nat=       nb of lines after 'Direct' line in POSCAR
-%   set ntyp=      nb of different atoms in compound
-%                  =nb of numbers before 'Direct'
-%   set celldm(1)= lattice 'a' parameter value in Bohr [a.u]. 
-%                  1 Angs=1.889725989 [a.u]
-%   set ecutwfc=ntyp*15
-%   set ecutrho=10*ecutwfc when using ultra soft PP
-%   set occupations='smearing', smearing='methfessel-paxton', degauss=0.04
-%       for metallic compounds (optional)
-%
-%   in ATOMIC SPECIES
-%       set name, mass and pseudo potential. (ntyp lines)
-%       This implies a search for available PP, and select one. 
-%       <http://theossrv1.epfl.ch/Main/Pseudopotentials>
-%       <https://www.materialsproject.org/wiki/index.php/Pseudopotentials_Choice>
-%       use PAW-PBE (kjpaw)
-%
-%   in ATOMIC POSITIONS
-%       set type, then copy line after POSCAR:'Direct'
-%
-% step4: launch pw.x < pw.d. Waint for end of external @Process
-% step5: read DYNMAT. Convert from Ry to eV (see runphon.pw). Generate FORCES
-% step6: generate INPHON for FREQ. Set (QI,QF)=(QH,QK,-QL) -> (QH,QK,+QL)
-% step7: launch phon. Wait for end of external @Process
-
-% the parameters of the model may be the force constants, but this is large...
-% could be the PP to use, cutoff
 
 signal = [];
 
@@ -98,7 +51,7 @@ signal = [];
 options = sqw_phon_potentials(poscar, options);
 
 % check for installation of PHON and QE
-[options.phon, options.pwscf, options.vasp] = sqw_phon_requirements;
+[options.phon, options.pwscf] = sqw_phon_requirements;
 if isempty(options.phon) || isempty(options.pwscf)
   return
 end
@@ -189,7 +142,8 @@ signal.Expression     = { ...
   'try', ...
 [ '  [status,result] = system(''' options.phon ''');' ], ...
   '  % import FREQ', ...
-  '  signal=load(''FREQ'',''-ascii''); % in THz', ...
+  '  signal=load(''FREQ'',''-ascii'')/.24180; % THz -> meV', ...
+  '  delete(''FREQ''); delete(''FREQ.cm'');', ...
   'end', ...
   '  cd(pw);', ...
   '  % multiply all frequencies(columns, THz) by a DHO/meV'
@@ -208,12 +162,11 @@ signal=iFunc(signal);
 
 % when model is successfully built, display citations for PHON and QE
 disp('Model built using: (please cite)')
-disp('   PHON: D. Alfe, Computer Physics Communications 180,2622-2633 (2009)')
+disp(' * PHON: D. Alfe, Computer Physics Communications 180,2622-2633 (2009)')
 disp('     <http://chianti.geol.ucl.ac.uk/~dario>. BSD license.')
-disp('   Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009)')
-disp('     needed, as the PWSCF (pw.x)  program is used to estimate the FORCES.')
+disp(' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009)')
 disp('     <http://www.quantum-espresso.org/>. GPL2 license.')
-disp('   iFit: E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
+disp(' * iFit: E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
 disp('     <http://ifit.mccode.org>');
 
 % ------------------------------------------------------------------------------
@@ -269,10 +222,8 @@ end
 if strcmp(options.disp,'random')
   % the DISP initial vector is set with a random set of [-1 0 1]
   options.disp = round(randn(1,3));
-  
   options.disp(abs(options.disp) > 3) = sign(options.disp(abs(options.disp) > 3));
   this = find(~options.disp); if numel(this) == 2, options.disp=sign(randn); end
-  options.disp = options.disp/norm(options.disp);
 end
 
 % ------------------------------------------------------------------------------
@@ -283,10 +234,12 @@ function options = sqw_phon_potentials(poscar, options)
 if isempty(options.potentials)
   options.potentials{end+1} = fullfile(getenv('HOME'),'espresso','pseudo');
   options.potentials{end+1} = getenv('PSEUDO_DIR');
+  options.potentials{end+1} = getenv('ESPRESSO_PSEUDO');
   options.potentials{end+1} = pwd;
   options.potentials{end+1} = fileparts(poscar);
   if isunix
-    options.potentials = {'/usr/share/espresso/pseudo','/usr/local/espresso/pseudo', };
+    options.potentials{end+1} = '/usr/share/espresso/pseudo';
+    options.potentials{end+1} = '/usr/local/espresso/pseudo';
   end
 end
 
@@ -297,7 +250,7 @@ for index=1:numel(options.potentials)
     % add the full content of the directory
     d = dir(options.potentials{index});
     for i=1:numel(d)
-      if ~d(i).isdir && isempty(strcmp(d(i).name, potentials))
+      if ~d(i).isdir && ~any(strcmp(d(i).name, potentials))
         potentials_full{end+1} = fullfile(options.potentials{index},d(i).name);
         potentials{end+1}      = d(i).name; 
       end
@@ -315,7 +268,7 @@ options.potentials_full = potentials_full;
 
 % ------------------------------------------------------------------------------
 
-function [phon, pwscf, vasp]  = sqw_phon_requirements
+function [phon, pwscf]  = sqw_phon_requirements
 % check if PHON and QuantumExpresso are installed
 
 % check for PHON
@@ -357,8 +310,6 @@ else
   pwscf = cmd;
   delete('CRASH'); % this is created when nothing is done in QE/PWSCF
 end
-% we can also check for e.g. VASP
-vasp = []; % currently not implemented
 
 % ------------------------------------------------------------------------------
 function geom1 = sqw_phon_supercell(poscar, options)
@@ -419,9 +370,16 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   fprintf(fid, 'LSUPER =.TRUE.\n');
   fprintf(fid, 'NDIM   = %i %i %i\n', options.NDIM);
   fprintf(fid, 'NTYPES = %i\n', numel(geom1.atomcount));
-  if isfield(options,'disp') && numel(options.disp) == 3
-    fprintf(fid, 'DXSTART = %f %f %f\n', options.disp);
+
+  if isfield(options,'disp')
+  if sum(abs(options.disp)) >= 3
+    fprintf(fid, 'DISP   = %i\n', round(50.0/sum(abs(options.disp))));
+  end
+  if numel(options.disp) == 3
+    options.disp = options.disp/norm(options.disp);
+    fprintf(fid, 'DXSTART= %f %f %f\n', options.disp);
     disp([ mfilename ': using initial displacement [ ' num2str(options.disp(:)') ' ]' ]);
+  end
   end
   fclose(fid);
   
@@ -468,10 +426,10 @@ function forces = sqw_phon_forces(geom, options)
 
 forces = [];
 % check if FORCES are here
-[p,f] = fileparts(geom.filename);
+[p,f.e] = fileparts(geom.filename);
 if isempty(p), p=pwd; end
 if isempty(dir(fullfile(p,'FORCES')))
-  disp([ mfilename ': generating FORCES from ' geom.filename ]);
+  disp([ mfilename ': generating Hellmann-Feynman FORCES from ' f e ]);
   % we read the DISP file
   % rows: [ n_at delta_x delta_y delta_z ]
   try
@@ -524,16 +482,11 @@ if isempty(dir(fullfile(p,'FORCES')))
     if ~isempty(options.pwscf)
       this.displacement = [ index displacements(move,:) ];
       this.forces       = sqw_phon_forces_pwscf(displaced, options);
-    elseif ~isempty(options.vasp)
-      error([ mfilename ': support for VASP is not yet implemented' ])
-      % we modify POSCAR
-      
-      % we write simple INCAR KPOINTS and add POTCAR
-      
-      % launch VASP
+    else
+      this.forces = [];
     end
     if isempty(this.forces)
-      disp([ mfilename ': aborting FORCES computation' ]);
+      disp([ mfilename ': aborting FORCES computation.' ]);
       return
     end
   
@@ -556,7 +509,7 @@ if isempty(dir(fullfile(p,'FORCES')))
   
 else
   disp([ mfilename ': re-using ' fullfile(p,'FORCES') ]);
-  disp('  Delete this file if you want to re-generate FORCES');
+  disp('  Delete this file if you want to re-generate Hellman-Feynman FORCES e.g. with other pseudo-potentials.');
 end
 
 % ------------------------------------------------------------------------------
@@ -615,7 +568,9 @@ function force = sqw_phon_forces_pwscf(displaced, options)
     fprintf(fid,'%3s %5f %s\n', displaced.symbols{index}, ...
       molweight(displaced.symbols{index}), displaced.potentials{index});
     % the potentials must be copied locally to be visible by PWSCF
+    try
     copyfile(displaced.potentials_full{index}, pwd);
+    end
   end
   fprintf(fid, 'ATOMIC_POSITIONS { crystal }\n');
   for index=1:size(displaced.coords,1)
@@ -673,6 +628,8 @@ function force = sqw_phon_forces_pwscf(displaced, options)
 
   force = force *25.711; % from Ry/a.u to eV/Angs
   
+% ------------------------------------------------------------------------------
+  
 function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displaced, options)
 
   % search for a suitable potential
@@ -697,20 +654,25 @@ function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displa
       error([ mfilename ': pseudo-potential missing for atom ' displaced.symbols{index} ]);
     elseif numel(match) > 1
       % more than one match: select PBE-PAW if possible
-      pbe = cellfun('isreal', strfind(lower(match), 'pbe'));
-      paw = cellfun('isreal', strfind(lower(match), 'paw'));
-      if ~isempty(find(pbe & paw))
-        match = match(find(pbe & paw)); match_full = match_full(find(pbe & paw));
-      elseif ~isempty(find(pbe | paw))
-        match = match(find(pbe | paw)); match_full = match_full(find(pbe | paw));
+      pbe = find(~cellfun('isempty', strfind(lower(match), 'pbe')));
+      paw = find(~cellfun('isempty', strfind(lower(match), 'paw')));
+      if ~isempty(pbe)
+        select = pbe(1);
+      elseif ~isempty(paw)
+        select = paw(1)
+      else select=1;
       end
       % if still more than one choice, pop-up list selector
       if numel(match) > 1
         [select,OK] = listdlg('ListString', match, ...
             'ListSize', [400 200], ...
             'Name', [ 'Pseudo-potential for ' displaced.symbols{index} ], ...
+            'InitialValue', select, ...
             'PromptString', { [ mfilename ': Select the pseudo-potential', ...
-                              'to use for atom ' displaced.symbols{index} ] });
+                              'to use for atom ' displaced.symbols{index} ], ...
+                              'The PBE-PAW potentials are recommended.', ...
+                              'Get more pseudo-potentials at:', ...
+                              'http://www.quantum-espresso.org/pseudopotentials/' });
         if isempty(select), return; end
         match = match(select); match_full = match_full(select);
       end
