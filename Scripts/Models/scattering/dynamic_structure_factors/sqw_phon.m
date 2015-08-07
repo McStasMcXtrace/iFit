@@ -26,6 +26,7 @@ function signal=sqw_phon(varargin)
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
 %   options.disp   =[dx dy dz]             initial displacement direction
 %     the initial displacement can e.g. be [ 1 -1 1 ]
+%   options.mpi    =scalar                 number of CPUs to use for PWSCF
 %
 % Once the model has been created, its use requires that axes are given on a 
 % regular qx,qy,qz grids.
@@ -91,7 +92,7 @@ signal.Expression     = { ...
 [ '  error([ ''model '' this.Name '' '' this.Tag '' requires POSCAR and FORCES to reside in ' p ''' ])' ], ...
   'end', ...
   '% write INPHON for FREQ generation', ...
-[ '  pw = pwd; cd(''' p '''); save sqw_phon_enter;' ], ...
+[ '  pw = pwd; cd(''' p ''');' ], ...
   '  % write the INPHON', ...
 [ '  fid=fopen(''INPHON'',''w'');' ], ...
 [ '  fprintf(fid, ''# Control file for PHON to compute the modes from POSCAR and FORCES in ' p '\n'');' ], ...
@@ -100,7 +101,7 @@ signal.Expression     = { ...
   '  fprintf(fid, ''  LSYMM=.TRUE.\n'');', ...
   '  fprintf(fid, ''  LSUPER=.F.\n'');', ...
 [ '  fprintf(fid, ''# number of ion types and masses\n  NTYPES = ' num2str(numel(geom.symbols)) '\n  MASS = ' mass '\n'');' ], ...  
-  '  fprintf(fid, ''# q points section\n  LRECIP = .T.\n'');', ...
+  '  fprintf(fid, ''# q points section\n  LRECIP = .F.\n'');', ...
   '  sz0 = size(t);', ...
   '  if ndims(x) == 4, x=squeeze(x(:,:,:,1)); y=squeeze(y(:,:,:,1)); z=squeeze(z(:,:,:,1)); t=squeeze(t(1,1,1,:)); end',...
   'if max(size(x)) == numel(x) && max(size(y)) == numel(y) && max(size(z)) == numel(z)', ...
@@ -357,7 +358,11 @@ else
   geom1.elements = [];
   symbols = {};
   for index=1:numel(geom1.symbols)
-    this   = parse_formula(geom1.symbols{index});
+    try
+      this   = parse_formula(geom1.symbols{index});
+    catch
+      continue
+    end
     fields = fieldnames(this);
     for i=1:numel(fieldnames(this))
       if isfield(geom1.elements, fields{i})
@@ -365,8 +370,13 @@ else
       else
         geom1.elements.(fields{i}) = this.(fields{i});
       end
+      if ~any(strcmp(fields{i}, symbols))
+        symbols{end+1} = fields{i};
+      end
     end
+    
   end
+  geom1.symbols = symbols;
   % the number of fields in elements should match the number of atom types
   if numel(fieldnames(geom1.elements)) ~= numel(geom1.atomcount)
     disp([ mfilename ': WARNING: the number of elements in the formula (' ...
@@ -395,14 +405,17 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   fprintf(fid, 'NTYPES = %i\n', numel(geom1.atomcount));
 
   if isfield(options,'disp')
-  if sum(abs(options.disp)) >= 3
-    fprintf(fid, 'DISP   = %i\n', round(50.0/sum(abs(options.disp))));
-  end
-  if numel(options.disp) == 3
-    options.disp = options.disp/norm(options.disp);
-    fprintf(fid, 'DXSTART= %f %f %f\n', options.disp);
-    disp([ mfilename ': using initial displacement [ ' num2str(options.disp(:)') ' ]' ]);
-  end
+    if sum(abs(options.disp)) >= 1
+      fprintf(fid, 'DISP   = %i\n', round(25.0*sum(abs(options.disp))));  
+    else
+      fprintf(fid, 'DISP   = %i\n', 100);  
+    end
+    
+    if numel(options.disp) == 3
+      fprintf(fid, 'DXSTART= %f %f %f\n', options.disp);
+      disp([ mfilename ': using initial displacement [ ' num2str(options.disp(:)') ' ]' ]);
+      options.disp = options.disp/norm(options.disp);
+    end
   end
   fclose(fid);
   
@@ -425,7 +438,7 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   end
   % modify 1st line so that the initial system name is retained
   geom2 = import_poscar(fullfile(p,'SPOSCAR'));
-  geom2.comment = [ geom1.comment ' supercell ' mat2str(options.NDIM) ];
+  geom2.comment = [ strtrim(geom1.comment) ' supercell ' mat2str(options.NDIM) ];
   geom2.symbols = geom1.symbols;
   geom2.elements= geom1.elements;
   % clean up SPOSCAR
@@ -449,7 +462,7 @@ function forces = sqw_phon_forces(geom, options)
 
 forces = [];
 % check if FORCES are here
-[p,f.e] = fileparts(geom.filename);
+[p,f,e] = fileparts(geom.filename);
 if isempty(p), p=pwd; end
 if isempty(dir(fullfile(p,'FORCES')))
   disp([ mfilename ': generating Hellmann-Feynman FORCES from ' f e ]);
@@ -488,8 +501,9 @@ if isempty(dir(fullfile(p,'FORCES')))
     % determine the type of the atoms
     displaced.type = [];
     atomcount_id=1;
+    atomcount = cumsum(geom.atomcount);
     for index=1:size(geom.coords,1)
-      if index > geom.atomcount(atomcount_id), atomcount_id=atomcount_id+1; end
+      if index > atomcount(atomcount_id), atomcount_id=atomcount_id+1; end
       displaced.type(index)=atomcount_id;
     end
     if ~displaced.type
@@ -615,7 +629,11 @@ function force = sqw_phon_forces_pwscf(displaced, options)
 
   % EXEC: we run QE/pw.x and collect stdout
   disp([ options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
-  [status, result] = system([ options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
+  if isfield(options, 'mpi')
+    [status, result] = system([ 'mpirun -np ' num2str(options.mpi) ' ' options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
+  else
+    [status, result] = system([ options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
+  end
 
   % READ the QE/PWSCF output file and search for string 'Forces acting'
   L = fileread(fullfile(p, 'pw.out'));
@@ -656,7 +674,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
 function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displaced, options)
 
   % search for a suitable potential
-  potentials = {}; pot_dir = {};
+  potentials = {}; potentials_full = {};
   for index=1:numel(displaced.symbols)
     % identify element in the list of potentials
     match = strcmpi(displaced.symbols{index}, strtok(options.potentials,'.'));
