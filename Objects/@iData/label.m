@@ -62,8 +62,6 @@ if isscalar(index) && isnumeric(index)
       axis_alias = this.Alias.Axis{index};
       if ischar(axis_alias)
         index = axis_alias;
-      else
-        index = []; % axis content is numeric (not an alias link)
       end
     else
       % the Axis does not exist yet, but object dimensionality allows it
@@ -72,9 +70,10 @@ if isscalar(index) && isnumeric(index)
       this = setaxis(this, index, x);
       index= getaxis(this, num2str(index)); % the Alias for the Axis 'index'
     end
+  else
+    index=index+3;
   end
 end
-
 if ischar(index)  
    % is this an Alias ?
   isalias = strcmp(index, this.Alias.Names);

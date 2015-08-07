@@ -62,6 +62,7 @@ function pars=iFunc_private_guess(x, signal, parameter_names)
             if ~isvector(x{dim}), x1d=sum(x1d, index)/sz(index); end 
           end
         end
+        pars(isnan(pars)) = 0;
         zero_pars =find(~pars);  % will set those parameters which have not been set
         pars(zero_pars) = iFunc_private_guess(x1d, [], parameter_names(zero_pars));
         if isempty(x1d), pars(zero_pars) = pars(zero_pars)/dim; end
