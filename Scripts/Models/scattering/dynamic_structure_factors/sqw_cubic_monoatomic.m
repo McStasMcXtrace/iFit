@@ -5,7 +5,7 @@ function signal=sqw_cubic_monoatomic(varargin)
 %      shape, for a simple monoatomic system on a cubic lattice. Only the 3 
 %      acoustic modes are computed.
 %
-% WARNING: this model is slow to evaluate.
+% WARNING:
 %      Single intensity and line width parameters are used here.
 %      The HKL position is relative to the closest Bragg peak. 
 %

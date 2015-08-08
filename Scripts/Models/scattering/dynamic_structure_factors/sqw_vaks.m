@@ -7,7 +7,7 @@ function signal=sqw_vaks(varargin)
 %      Hamiltonian, valid for e.g. |k|<.3 rlu in a cubic 
 %      crystal and provides energies of TA1,TA2,LA,TO1 and TO2 modes.
 %
-% WARNING: this model is slow to evaluate.
+% WARNING:
 %      Single intensity and line width parameters are used here.
 %      The HKL position is relative to the closest Bragg peak. 
 %
