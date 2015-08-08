@@ -1508,7 +1508,13 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
         (<i>sudo apt-get install gfortran</i>). Extract the PHON
         archive, then compile with: <i>./configure; make</i> . Once
         done, copy the <i>PHON/src/phon</i> executable to a system-wide
-        location such as /usr/local/bin or /usr/bin.</li>
+        location such as /usr/local/bin or /usr/bin. <b>NOTE:</b> We
+        provide a <a
+          href="http://ifit.mccode.org/Downloads/phon.1.39-large-qiqf.zip">patched
+          PHON</a> version 1.39 which corrects a limitation in the
+        number of Q locations where to compute the dispersions. Bare
+        version 1.39 will not work.<br>
+      </li>
       <li><a href="http://www.quantum-espresso.org/">Quantum Espresso</a>
         must be installed. Installers exist for Linux and Windows
         systems. Install it e.g. with <i>sudo apt-get install
