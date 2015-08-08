@@ -1,5 +1,17 @@
 function signal=sqw_phon(varargin)
-% model=sqw_phon(poscar, pseudo, ..., options)
+% model=sqw_phon(poscar, pseudo, ..., options)  
+%
+%   iFunc/sqw_phon: computes phonon dispersions from Ab-Initio.
+%   A model which compute phonon dispersions from the forces acting between
+%     atoms. The input arguments is a VASP-type POSCAR file providing the
+%     geometry of the cell (lattice and atom positions). 
+%     It is recommended to specify if the system is a metal or an insulator.
+%     Additional arguments can be given to control the procedure used to
+%     compute a supercell and the forces using QuantumEspresso (ab-initio).
+%
+% WARNING: Single intensity and line width parameters are used here.
+%   This model is only suitable to compute phonon dispersions for e.g solid-
+%   state materials.
 %
 % The arguments can be any set of:
 % POSCAR: file name to an existing POSCAR
@@ -15,39 +27,53 @@ function signal=sqw_phon(varargin)
 %   QE location, in PSEUDO_DIR environment variable (when set) and locally. 
 %   You can specify as many of these UPF and directories.
 %
+% 'metal' or 'insulator': indicates the type of occupation for electronic states.
+%
+% 'random': indicates that the initial displacement should be chosen randomly.
+%
 % options: a structure with optional settings:
+%   options.target =path                   where to store all files and FORCES
+%     a temporary directory is created when not specified.
 %   options.NDIM   =scalar or [nx ny nz]   supercell size
-%   options.potentials={ cell of strings } list of potentials to use
+%   options.disp   =[dx dy dz]             initial displacement direction
+%     the initial displacement can e.g. be [ 1 -1 1 ]
+%   options.potentials={ cell of strings } list of UPF potentials to use
 %     if not given a PBE-PAW potential will be used (when available)
 %     these can also be directories, which content is then added to the list.
 %   options.occupations='metal'            for metals
 %                       'insulator'        for insulators
-%   options.cutoff =scalar                 default is 15*ntyp
+%   options.cutoff =scalar                 default is 15*ntyp in [Ry]
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
-%   options.disp   =[dx dy dz]             initial displacement direction
-%     the initial displacement can e.g. be [ 1 -1 1 ]
 %   options.mpi    =scalar                 number of CPUs to use for PWSCF
+% The options can also be entered as a single string with 'field=value; ...'.
 %
-% Once the model has been created, its use requires that axes are given on a 
+% Once the model has been created, its use requires that axes are given on
 % regular qx,qy,qz grids.
 %     
 % Example:
-%   s=sqw_phon('POSCAR','metal','random');
+%   s=sqw_phon([ ifitpath 'Data/POSCAR_Al'],'metal','mpi=4');
+%   qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,100,51);
+%   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
 %
-% References: 
+% References: https://en.wikipedia.org/wiki/Phonon
 %   PHON: D. Alfe, Computer Physics Communications 180,2622-2633 (2009) 
 %     <http://chianti.geol.ucl.ac.uk/~dario>. BSD license.
 %   Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009)
 %     needed, as the PWSCF (pw.x)  program is used to estimate the FORCES.
 %     <http://www.quantum-espresso.org/>. GPL2 license.
-
-% TODO: PHON/src/reader.f: QI and QF should be read 'normally':
-% read full content of file
-% lookfor QI keyword with INDEX
-% set the string to start after
-% VERIFY with SET=digit+'\'+' '
-% limit QI string within.
-% Read ND*3 values into dyn%qi
+%
+% input:  p: sqw_phon model parameters (double)
+%             p(1)=Amplitude
+%             p(2)=Gamma   dispersion DHO half-width in energy [meV]
+%             p(3)=Background (constant)
+%             p(4)=Temperature of the material [K]
+%          or p='guess'
+%         qh: axis along QH in rlu (row,double)
+%         qk: axis along QK in rlu (column,double)
+%         ql: axis along QL in rlu (page,double)
+%         w:  axis along energy in meV (double)
+%    signal: when values are given, a guess of the parameters is performed (double)
+% output: signal: model value
 
 signal = [];
 
@@ -71,11 +97,21 @@ end
 geom = sqw_phon_supercell(poscar, options); % 2x2x2 supercell
 
 % check for FORCES
-forces = sqw_phon_forces(geom, options);
+[forces, geom] = sqw_phon_forces(geom, options);
+
+mass = [];
+compound = ''; potentials = '';
+for index=1:numel(geom.symbols)
+  mass(index) = molweight(geom.symbols{index});
+  compound    = [ compound geom.symbols{index} num2str(geom.atomcount(index)) ' ' ];
+  potentials  = [ potentials geom.potentials{index} ' ' ];
+end
+mass = num2str(mass);
 
 % ************** BUILD THE MODEL **************
-signal.Name           = [ 'S(q,w) 3D dispersion PHON/QuantumEspresso with DHO line shape [' mfilename ']' ];
-signal.Description    = 'A 3D HKL dispersion obtained from the dynamical matrix. The forces are computed using QuantumEspresso and PHON. DHO line shape.';
+signal.Name           = [ compound 'S(q,w) 3D dispersion PHON/QuantumEspresso with DHO line shape [' mfilename ']' ];
+
+signal.Description    = [ compound 'S(q,w) 3D dispersion PHON/QuantumEspresso with DHO line shape. Pseudo-Potentials: ' potentials ];
 
 signal.Parameters     = {  ...
   'Amplitude' ...
@@ -89,11 +125,7 @@ signal.Dimension      = 4;         % dimensionality of input space (axes) and re
 signal.Guess = [ 1 .1 0 10 ];
 
 p = fileparts(poscar);
-mass = [];
-for index=1:numel(geom.symbols)
-  mass(index) = molweight(geom.symbols{index});
-end
-mass = num2str(mass);
+
 signal.Expression     = { ...
   '% check if FORCES and POSCAR are here', ...
 [ 'if isempty(dir(''' poscar ''')) || isempty(dir(''' fullfile(p,'FORCES') '''))' ], ...
@@ -194,7 +226,7 @@ signal=iFunc(signal);
 % apply DHO to all energies
 
 % when model is successfully built, display citations for PHON and QE
-disp('Model built using: (please cite)')
+disp([ 'Model ' compound ' built using: (please cite)' ])
 disp(' * PHON: D. Alfe, Computer Physics Communications 180,2622-2633 (2009)')
 disp('     <http://chianti.geol.ucl.ac.uk/~dario>. BSD license.')
 disp(' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009)')
@@ -263,8 +295,11 @@ if isempty(poscar)
   poscar = 'POSCAR';
 end
 
-options.target = tempname; % everything will go there
-mkdir(options.target);
+if ~isfield(options,'target')
+  options.target = tempname; % everything will go there
+  mkdir(options.target)
+end
+;
 % copy the POSCAR into the target directory
 d = dir(poscar);
 copyfile(poscar, options.target);
@@ -348,6 +383,9 @@ else
   cmd = 'pw.x';
 end
 [status, result] = system([ 'echo 0 | ' cmd ]);
+try
+delete('input_tmp.in')
+end
 if isempty(strfind(upper(result),'PWSCF'))
   pwscf = [];
   disp([ mfilename ': ERROR: requires Quantum ESPRESSO to be installed.' ])
@@ -456,7 +494,7 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   if ~isempty(options.phon)
     pw = pwd;
     cd(p);
-    disp([ 'cd(' p '); ' options.phon ]);
+    disp([ 'cd(''' p '''); ' options.phon ]);
     [status, result] = system(options.phon);
     cd(pw);
   end
@@ -483,7 +521,7 @@ end
 disp([ mfilename ': system: ' geom1.comment ]);
 
 % ------------------------------------------------------------------------------
-function forces = sqw_phon_forces(geom, options)
+function [forces, geom] = sqw_phon_forces(geom, options)
 % sqw_phon_forces: generate forces using QE
 
 forces = [];
@@ -615,6 +653,8 @@ function force = sqw_phon_forces_pwscf(displaced, options)
     fprintf(fid, '  occupations=''smearing'', smearing=''methfessel-paxton'', degauss=0.04\n');
     case {'fixed','insulator'}
     fprintf(fid, '  occupations=''fixed''\n');
+    otherwise
+    fprintf(fid, '  occupations=''%s''\n', options.occupations);
     end
   end
   fprintf(fid, '/\n');
@@ -630,7 +670,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
       molweight(displaced.symbols{index}), displaced.potentials{index});
     % the potentials must be copied locally to be visible by PWSCF
     try
-    copyfile(displaced.potentials_full{index}, pwd);
+    copyfile(displaced.potentials_full{index}, p);
     end
   end
   fprintf(fid, 'ATOMIC_POSITIONS { crystal }\n');
@@ -653,11 +693,16 @@ function force = sqw_phon_forces_pwscf(displaced, options)
 
   % EXEC: we run QE/pw.x and collect stdout
   disp([ options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
-  if isfield(options, 'mpi')
-    [status, result] = system([ 'mpirun -np ' num2str(options.mpi) ' ' options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
-  else
-    [status, result] = system([ options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
+  pw = pwd;
+  cd(p)
+  try
+    if isfield(options, 'mpi')
+      [status, result] = system([ 'mpirun -np ' num2str(options.mpi) ' ' options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
+    else
+      [status, result] = system([ options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
+    end
   end
+  cd(pw);
 
   % READ the QE/PWSCF output file and search for string 'Forces acting'
   L = fileread(fullfile(p, 'pw.out'));

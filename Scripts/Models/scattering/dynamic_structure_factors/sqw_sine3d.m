@@ -39,8 +39,8 @@ function signal=sqw_sine3d(varargin)
 % which is an acoustic plus optical branch, and a spin wave with 2 meV gap.
 %
 % Example:
-% s=sqw_sine3d(5); qh=linspace(0,1,50);qk=qh; ql=qh'; w=linspace(0.01,10,50);
-% f=iData(s,s.p,qh,qk,ql,w); plot(log(f(:,:,1,:)));
+%   s=sqw_sine3d(5); qh=linspace(0,1,50);qk=qh; ql=qh'; w=linspace(0.01,10,50);
+%   f=iData(s,s.p,qh,qk,ql,w); plot(log(f(:,:,1,:)));
 %
 % Reference: https://en.wikipedia.org/wiki/Phonon
 %
