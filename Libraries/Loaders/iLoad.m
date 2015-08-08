@@ -800,9 +800,7 @@ function config = iLoad_config_load
   if exist(fullfile(prefdir, 'iLoad.ini'), 'file')
     % there is an iLoad_ini in the Matlab preferences directory: read it
     configfile = fullfile(prefdir, 'iLoad.ini');
-    fid = fopen(configfile, 'r');
-    content = fread(fid, Inf, 'uint8=>char');
-    fclose(fid);
+    content = fileread(configfile);
     % evaluate content of file
     config=[]; eval(content(:)'); % this makes a 'config' variable
     if iscell(config)

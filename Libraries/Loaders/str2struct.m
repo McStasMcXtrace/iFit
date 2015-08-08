@@ -23,9 +23,7 @@ if nargin ==0, return; end
 if isempty(string), return; end
 
 if ischar(string) && exist(string, 'file')
-  fid=fopen(string); 
-  string=fread(fid, Inf); fclose(fid);
-  string=char(string');
+  string=fileread(string);
   string(find(string=='$' | string=='#')) = '';
 end
 if ~ischar(string) && ~iscell(string), return; end

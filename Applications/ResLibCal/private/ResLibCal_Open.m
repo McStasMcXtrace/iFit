@@ -31,10 +31,7 @@ function EXP = ResLibCal_Open(filename, EXP)
                                 % can also be a .mat file for EXP/out
     catch
       % if not ResCal vector, read the file content (char)
-      fid = fopen(filename, 'r');
-      content = fread(fid, Inf, 'uint8=>char');
-      content = content(:)';
-      fclose(fid);
+      content = fileread(filename);
     end
   else
     content = filename;
