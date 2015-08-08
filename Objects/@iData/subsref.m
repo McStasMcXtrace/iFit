@@ -115,7 +115,12 @@ for i = 1:length(S)     % can handle multiple index levels
           nd = size(x); nd=nd(nd>1);
           if length(size(x)) == length(size(a)) && ...
                  all(size(x) == size(a))  && all(length(nd) == length(s.subs)) % meshgrid type axes
-            b = setaxis(b, index, ax, squeeze(x(s.subs{:})));
+            nx = squeeze(x(s.subs{:}));
+            if max(nx(:)) ~= min(nx(:))
+              b = setaxis(b, index, ax, nx);
+            else
+              b = setaxis(b, index, ax, max(nx(:)));
+            end
           elseif b_isvector && length(s.subs) == 1 % event data sets
             b = setaxis(b, index, ax, squeeze(x(s.subs{1})));
           elseif max(s.subs{index}) <= numel(x) % vector type axes
