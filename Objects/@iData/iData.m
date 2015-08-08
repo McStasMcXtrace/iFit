@@ -159,6 +159,8 @@ else  % convert input argument into object
     if length(signal) == length(in.Parameters)
       [signal, ax, name] = feval(in, signal, varargin{3:end});
     end
+    % swap xy to cope with iData(x,y,z) syntax
+    if numel(ax) >=2, ax(1:2) = ax([ 2 1]); end
     % assign axes values
     out = iData(ax{:}, signal);
 
