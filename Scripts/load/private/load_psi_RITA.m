@@ -23,8 +23,8 @@ end
 % RITA2 file identified...
 
 % Alias a.Data.entry1.data members
-
-if ~isempty(a.Data.entry1.data) && ~isempty(a.Data.entry1.RITA_2) && ~isempty(a.Data.entry1.control)
+if isfield(a.Data.entry1,'data') && ~isempty(a.Data.entry1.data) ...
+        && ~isempty(a.Data.entry1.RITA_2) && ~isempty(a.Data.entry1.control)
   data_alias = fieldnames(a.Data.entry1.data);
   for index=1:length(data_alias)
     setalias(a, data_alias{index}, [ 'Data.entry1.data.' data_alias{index} ]);

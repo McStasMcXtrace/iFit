@@ -141,7 +141,7 @@ else  % convert input argument into object
   elseif isstruct(varargin{1})
     % iData(struct)
     out = iData_struct2iData(varargin{1}); % convert struct to iData
-  elseif numel(varargin{1})==1i && shandle(varargin{1}) % convert single Handle Graphics Object
+  elseif ishandle(varargin{1}) % convert single Handle Graphics Object
     % iData(figure handle)
     out = iData_handle2iData(varargin{1});
     return
