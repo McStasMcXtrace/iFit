@@ -1,6 +1,9 @@
 function data = read_obj(filename)
 % read_obj Wrapper to read ascii OBJ
 
+  [p,f,e] = fileparts(filename);
+  data = [];
+  if ~strcmpi(e, '.obj'), return; end
   OBJ = read_wobj(filename);
 
   % faces are stored in OBJ.objects(i).type='f'

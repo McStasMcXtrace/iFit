@@ -69,18 +69,16 @@ if ~isa(op,'function_handle') & ischar(op)
   op = str2func(op);
 	%error('genop:incorrectOperator','Operator must be a function handle.')
 end
-
+x=double(x); y=double(y);
 if exist('bsxfun','builtin')
   try % this may fail. The legacy genop takes over in case of error
     z = bsxfun(op, x, y); % faster implementation avaialble from Matlab >= R2007a
     return;
-  catch
+  catch ME
     disp([ mfilename ':' char(op) ': failed bsxfun. Using slower genop function' ]);
     whos x y
   end
 end
-
-x=double(x); y=double(y);
 
 % Compute sizes of x and y, possibly extended with ones so they match
 % in length.

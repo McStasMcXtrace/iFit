@@ -22,12 +22,11 @@ function result=test_iData_plot
   h3 = plot(c);
   
   h4 = colormap(c);
-
-  close(gcf);
   
-  if numel(h1) == 3 && numel(h2) == 4 && numel(h3) == 10 ...
+  if numel(h1) >= 3 && numel(h2) >= 4 && numel(h3) >= 10 ...
     && numel(h4) == 10 && numel(h6) == 4 && numel(h7) == 1
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];
   end
+  close(gcf);
