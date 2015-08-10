@@ -504,12 +504,6 @@ function [data, format] = iLoad(filename, loader, varargin)
       loader = [];
       return
     end
-    
-    % check if the file is in Matlab search path, but not directly accessble.
-    if isempty(dir(filename)) && exist(filename, 'file')
-      filename = which(filename);
-      fprintf(1, 'iLoad: %s: Accessing file %s.\n', char(loader.method), filename);
-    end
 
     % fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
     % we select the calling syntax which matches the number of input arguments
@@ -558,7 +552,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     loaders_count=0;
     % identify by extensions
     [dummy, dummy, fext] = fileparts(file);
-    fext=strrep(fext,'.','');
+    if ~isempty(fext) && fext(1)=='.', fext(1)=[]; end
     % check if this is a text file
     if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9
       isbinary = 1; % less than 90% of printable characters
@@ -578,34 +572,40 @@ function [data, format] = iLoad(filename, loader, varargin)
       if (isfield(loader, 'exist') && loader.exist == 1) ...
         || exist(loader.method, 'file')
         if ~isfield(loader,'patterns'), loader.patterns=''; end
-        patterns_found  = 1;
         
-        if isbinary && strcmp(loader.method, 'read_anytext')
-          % avoid calling looktxt with binary file...
-          patterns_found = 0;
-        elseif isbinary || isempty(loader.patterns)
-          % binary or no pattern to search, test extension
+        patterns_found = 0;
+        
+        % the loader is selected if: 
+        %   loader has extension and extension matches
+        if ~patterns_found
           if ~isfield(loader,'extension'), ext=''; 
           else ext=loader.extension; end
-          
           if ischar(ext) && ~isempty(ext), ext={ ext }; end
           if ~isempty(ext) && ~isempty(fext) 
-            if all(~strncmpi(fext, ext, length(fext)))
-              patterns_found  = 0;  % extension does not match
-              % fprintf(1,'iLoad: method %s file %s: extension does not match (%s) \n', loader.name, file, fext);
+            if any(strncmpi(fext, ext, length(fext)))
+              patterns_found  = 1;  % extension does not match
             end
           end
-        elseif ~isbinary && ~isempty(loader.patterns)  
-          % check patterns in text file
+        end
+        
+        %   loader has patterns and not binary and patterns match file_start
+        if ~patterns_found && ~isbinary && ~isempty(loader.patterns)
+          % check all patterns in text file
           if ischar(loader.patterns), loader.patterns=cellstr(loader.patterns); end
-          for index_pat=1:numel(loader.patterns)
+          all_match = 1;
+          for index_pat=1:numel(loader.patterns) % all patterns must match
             if isempty(regexpi(file_start, loader.patterns{index_pat}, 'once'))
-              patterns_found=0;     % at least one pattern does not match
+              all_match=0;     % at least one pattern does not match
               % fprintf(1,'iLoad: method %s file %s: at least one pattern does not match (%s)\n', loader.name, file, loader.patterns{index_pat});
               break;
             end
           end % for patterns
-        end % if patterns
+          if all_match, patterns_found=1; end
+        end
+        %   loader has no extension and no patterns
+        if ~patterns_found && isempty(ext) && isempty(loader.patterns)
+          patterns_found = 1; % we will try all non selective loaders
+        end
         
         if patterns_found
           loaders_count = loaders_count+1;
