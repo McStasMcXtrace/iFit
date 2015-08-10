@@ -312,7 +312,7 @@ function config = iLoad_ini
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
-	  config.MeX.looktxt      = 'yes'; % no: use binary version, yes: use MeX
+	  config.MeX.looktxt      = 'no'; % no: use binary version, yes: use MeX (unstable)
 	  config.MeX.cif2hkl      = 'no';
 	  
     
