@@ -23,7 +23,7 @@ function [ status ] = export_poscar( filename, geometry, option )
     fprintf(fid,'1.0\n'); % scale factor
     fprintf(fid, '%19.16f %19.16f %19.16f\n', geometry.lattice'); % lattice vectors
     
-    % this block is unactvated to stay 100% compatible with VASP and PHON
+    % this block can be unactvated to stay 100% compatible with VASP and PHON
     if ~isempty(geometry.symbols) && (isempty(option) || ~strcmp(option, 'nosymbols'))
         cellfun(@(x) fprintf(fid, '%s ', x), geometry.symbols);
         fprintf(fid, '\n');
