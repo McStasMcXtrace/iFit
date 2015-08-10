@@ -258,6 +258,7 @@ function a = iFunc_private_check(a)
   n_expr = '';
   for index=1:size(expr, 1)
     d = strtrim(expr(index,:));
+    if isempty(d), continue; end
     if d(end) ~= ';', d = [ d ';' ]; end
     if index == size(expr, 1)
       n_expr = [ n_expr d ];

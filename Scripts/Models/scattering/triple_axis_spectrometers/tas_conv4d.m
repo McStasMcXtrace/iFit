@@ -2,7 +2,7 @@ function y = tas_conv4d(dispersion, config, frame)
 % model=tas_conv4d(dispersion_model, tas_config) 4D convolution function for 
 %   neutron Triple-Axis Spectrometers.
 %
-% This function buildsa fit model from:
+% This function builds a fit model from:
 %   * a dispersion model (iFunc or expression)
 %     the dispersion should follow the syntax: dispersion(p, H,K,L,E) where
 %     p holds the dispersion model parameters, and H,K,L,E are the 4D coordinates
@@ -37,6 +37,9 @@ if nargin < 3
 end
 if isempty(frame), frame='abc'; end
 frame = lower(frame);
+if isempty(dispersion)
+  error([ mfilename ': no dispersion given for convolution' ]);
+end
 
 % config usage:
 % if ResLibCal is opened, we send the 'config' to it and prepare for further evaluations.
@@ -54,68 +57,76 @@ frame = lower(frame);
 % or
 %    model(p, iData_with_scan_axis)
 
+% CHECKS and information before building the model =============================
+
+% configuration is empty, or ResLibcal: will use current config
+if strcmp(config,'ResLibcal'), config=''; end
+if isdir(config), config=''; end
+if isstruct(config) && isfield(config,'EXP')
+  ResLibCal(config);
+  config='';
+end
 % the configuration is a file: we get the configuration and load it into ResLibCal GUI.
-if ~isempty(dir(config))
-  config=ResLibCal(config);
-end
-
-% create the Expression...
-
-% store the config, hard coded.
-% TODO: the configuration could also be stored as a GLOBAL variable, together with
-% the cloud as cache.
-
-% check if config is given as additional argument during evaluation of model'
-'if numel(varargin) >= 1 && isstruct(varargin{1})'
-'  config = varargin{1};'
-'else'
-if ~isempty(config) && isstruct(config)
-if isfield(config,'EXP'), EXP=config.EXP; else EXP=config; end
-disp('Using given static configuration as default.')
-[ class2str('config', EXP) ]; % store the ResLib config
-else
-disp('Using current ResLibCal configuration as default.')
-'config='''';';
-end
-'end'
-
-% display message about [abc] or [xyz] cloud usage, and axes used ?
-disp([ 'Using reference frame: ' frame ])
-if isstruct(config) && isfield(config, 'resolution')
-  if ~iscell(config.resolution), resolution={ config.resolution }; 
-  else resolution = config.resolution; end
-  end
-  disp('Frame axes:')
-  resolution{1}.(frame).FrameStr
+if ~isempty(dir(config)) && ~isdir(config)
+  ResLibCal(config);
 end
 
 % when starting, auto-update is set to off to avoid long computation+display
 ResLibCal('autoupdate','off');
 
-% store the dispersion
-% it may have a zone-center HKL location
-% the built model parameters will be that of the model
+% display message about [abc] or [xyz] cloud usage, and axes used ?
+disp([ 'tas_conv4d: Using reference frame: ' frame ])
+if isstruct(config) && isfield(config, 'resolution')
+  if ~iscell(config.resolution), resolution={ config.resolution }; 
+  else resolution = config.resolution; end
+  disp('Frame axes:')
+  resolution{1}.(frame).FrameStr
+end
 
-% compute the resolution, using either given config, or default/GUI
-'out=ResLibCal(config, x,y,z,t);'
+% assemble the convoluted model ================================================
+
+% the built model parameters will be that of the model
+y.Parameters = dispersion.Parameters;
+if ~isempty(config)
+  y.Name       = [ 'conv(' dispersion.Name ', ResLibCal(''' config ''')) [' mfilename ']' ];
+  y.Description= [ '(' dispersion.Description ') convoluted by (TAS 4D resolution function)' ];
+else
+  y.Name       = [ 'conv(' dispersion.Name ', ResLibCal)' ];
+    y.Description= [ '(' dispersion.Description ') convoluted by (TAS 4D resolution function with configuration ' config ')' ];
+end
+y.Dimension = dispersion.Dimension;
+y.Guess     = dispersion.Guess;
+
+% create the Expression...
 % TODO: in a fit procedure, as the coordinates xyzt (HKLE) do not change, the clouds 
 % may only be computed once. If cached, the subsequent fit steps will be faster.
-% the the function should be able to send its clouds out side, e.g. p='cloud'.
+% then the function should be able to send its clouds out side, e.g. p='cloud'.
 % Then the fit function can send this cache as additional argument during the
 % fit.
 % TODO: integration can be achieved using a Gauss-Hermite estimate, which is much
 % faster
 
-% get the [abc] reference cloud
-'if ~iscell(out.resolution), resolution={ out.resolution }; else resolution = out.resolution; end'
-'signal=zeros(size(resolution));'
-'for index=1:numel(resolution)'
-'cloud=resolution{index}.' frame '.cloud;'
 % if dispersion.Dimension == 2 (liquid,powder,gas,glass,polymer...), then use |q|,w as axes
 if dispersion.Dimension == 2
-'cloud{1} = sqrt(cloud{1}.^2+cloud{2}.^2+cloud{3}.^2); cloud(2:3)=[];'
+  liq = 'cloud{1} = sqrt(cloud{1}.^2+cloud{2}.^2+cloud{3}.^2); cloud(2:3)=[];';
+else liq='';
 end
-'signal(end+1)=sum(feval(dispersion, p, cloud{:}))*resolution{index}.R0/numel(cloud{1})'
-'end'
-
-
+y.Expression = { ...
+  '% check if config is given as additional argument during evaluation of model', ...
+  'if numel(varargin) >= 1 && (isstruct(varargin{1}) || ~isempty(dir(varargin{1})))', ...
+  '  config = varargin{1};', ...
+  'else config=[]; end', ...
+  '% compute the resolution, using either given config, or default/GUI', ...
+  'if isempty(config), out=ResLibCal(x,y,z,t);', ...
+  'else out=ResLibCal(config, x,y,z,t); end', ...
+  '% get the [abc] reference cloud', ...
+  'if ~iscell(out.resolution), resolution={ out.resolution };', ...
+  'else resolution = out.resolution; end', ...
+  'signal=zeros(size(resolution));', ...
+  'for index=1:numel(resolution)', ...
+[ 'cloud=resolution{index}.' frame '.cloud;' ], ...
+liq, ...
+'signal(index)=sum(feval(dispersion, p, cloud{:}))*resolution{index}.R0/numel(cloud{1})', ...
+'end' };
+y
+y = iFunc(y);
