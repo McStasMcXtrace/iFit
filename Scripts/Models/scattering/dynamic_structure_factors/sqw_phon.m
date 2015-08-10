@@ -512,7 +512,7 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
     copyfile(poscar, [ poscar '_' datestr(now,30) ]);
   end
   % copy supercell into POSCAR
-  export_poscar(fullfile(p,'POSCAR'), geom2, 'nosymbols');
+  export_poscar(fullfile(p,'POSCAR'), geom2);
   geom1 = geom2;
   geom1.filename = poscar;
 else
@@ -697,9 +697,9 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   cd(p)
   try
     if isfield(options, 'mpi')
-      [status, result] = system([ 'mpirun -np ' num2str(options.mpi) ' ' options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
+      [status, result] = system([ 'mpirun -np ' num2str(options.mpi) ' ' options.pwscf ' < pw.d > pw.out' ]);
     else
-      [status, result] = system([ options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
+      [status, result] = system([ options.pwscf ' < pw.d > pw.out' ]);
     end
   end
   cd(pw);
