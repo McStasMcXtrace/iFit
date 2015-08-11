@@ -444,7 +444,7 @@ if ~isempty(signal_in_varargin) && length(varargin) >= signal_in_varargin
   varargin(signal_in_varargin) = []; % remove Signal from arguments for evaluation (used in Guess)
   signal_in_varargin = [];
 end
-[signal,ax,p] = iFunc_feval_expr(model, varargin{:});
+[signal,ax,p,model] = iFunc_feval_expr(model, varargin{:});
 
 %model.ParameterValues = p; % store current set of parameters (updated)
 
@@ -457,7 +457,7 @@ if nargout == 0 && ~isempty(inputname(1))
 end
 
 % ==============================================================================
-function [signal,iFunc_ax,p] = iFunc_feval_expr(this, varargin)
+function [signal,iFunc_ax,p,this] = iFunc_feval_expr(this, varargin)
 % private function to evaluate an expression in a reduced environment so that 
 % internal function variables do not affect the result.
 
