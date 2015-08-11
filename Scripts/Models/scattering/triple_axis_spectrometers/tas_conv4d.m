@@ -1,4 +1,4 @@
-function y = tas_conv4d(dispersion, config, frame) 
+function y = tas_conv4d(dispersion, config, frame)
 % model=tas_conv4d(dispersion_model, tas_config) 4D convolution function for 
 %   neutron Triple-Axis Spectrometers.
 %
@@ -97,6 +97,9 @@ end
 y.Dimension = dispersion.Dimension;
 y.Guess     = dispersion.Guess;
 
+% we store the dispersion into UserData so that we can evaluate it at feval
+y.UserData.dispersion = dispersion;
+
 % create the Expression...
 % TODO: in a fit procedure, as the coordinates xyzt (HKLE) do not change, the clouds 
 % may only be computed once. If cached, the subsequent fit steps will be faster.
@@ -126,6 +129,7 @@ y.Expression = { ...
   'for index=1:numel(resolution)', ...
 [ 'cloud=resolution{index}.' frame '.cloud;' ], ...
 liq, ...
+'dispersion=this.UserData.dispersion;', ...
 'signal(index)=sum(feval(dispersion, p, cloud{:}))*resolution{index}.R0/numel(cloud{1})', ...
 'end' };
 y
