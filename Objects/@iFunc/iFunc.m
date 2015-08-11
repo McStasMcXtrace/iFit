@@ -166,6 +166,7 @@ else   % import data to create a single object
     if isfield(this, 'Constraint'),      a.Constraint=this.Constraint; end
     if isfield(this, 'Dimension'),       a.Dimension=this.Dimension; end
     if isfield(this, 'ParameterValues'), a.ParameterValues=this.ParameterValues; end
+    if isfield(this, 'UserData'),        a.UserData=this.UserData; end
     
   elseif isa(this, 'function_handle') % --------------------------------------
     a = iFunc;  % empty object
