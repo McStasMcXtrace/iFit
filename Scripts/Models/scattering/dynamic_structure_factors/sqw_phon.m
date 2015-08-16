@@ -364,7 +364,7 @@ for index=1:numel(options.potentials)
     end
   else
     this = dir(options.potentials{index});
-    if ~isempty(this) && isempty(strcmp(this.name, potentials)) % must exist
+    if ~isempty(this) && ~any(strcmp(this.name, potentials)) % must exist
       potentials_full{end+1} = options.potentials{index};
       potentials{end+1}      = this.name; 
     end
