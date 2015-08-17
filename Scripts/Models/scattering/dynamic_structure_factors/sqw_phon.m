@@ -27,6 +27,10 @@ function signal=sqw_phon(varargin)
 %   QE location, in PSEUDO_DIR environment variable (when set) and locally. 
 %   You can specify as many of these UPF and directories.
 %
+% FORCES: a previously computed FORCES file can be given after the corresponding
+%   supercell POSCAR. In this case, the ab-initio step is not processed, and the
+%   object is built immediately.
+%
 % 'metal' or 'insulator': indicates the type of occupation for electronic states.
 %
 % 'random': indicates that the initial displacement should be chosen randomly.
@@ -97,18 +101,54 @@ function signal=sqw_phon(varargin)
 %    signal: when values are given, a guess of the parameters is performed (double)
 % output: signal: model value
 
-% TODO: 
-%   Write POSCAR/FORCES in tempname at eval from UserData if not available.
+% Private functions (inline)
+%       [poscar, options]=sqw_phon_argin(varargin)
+%       [forces, geom] = sqw_phon_forces(geom, options)
+%       force = sqw_phon_forces_pwscf(displaced, options)
+%       [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displaced, options)
+%       options = sqw_phon_potentials(geom, options)
+%       [phon, pwscf]  = sqw_phon_requirements
+%       geom1 = sqw_phon_supercell(poscar, options)
+%       forces = sqw_phon_forceset(forces)
+%
+% Private function (in private)
+%       import_poscar
+%       export_poscar
+%       parse_formula
+%       molweight
 
 signal = [];
 
 % ********* handle input arguments *********
 [poscar, options]=sqw_phon_argin(varargin{:});
+p = fileparts(poscar);
+if isempty(p), p=pwd; end
 
 % check for installation of PHON and QE
 [options.phon, options.pwscf] = sqw_phon_requirements;
 if isempty(options.phon) || isempty(options.pwscf)
   return
+end
+
+% check if we use a pre-computed POSCAR (supercell)/FORCES
+if isfield(options,'force_file')
+  % FORCES format:
+  % 1st line: scalar (=<nb_displacements>)
+  % 2nd line: vector4
+  % FORCE_SET format:
+  % 1st line: scalar (=nb atoms in super cell)
+  % 2nd line: scalar (=<nb_displacements>)
+  forces = fileread(options.force_file);
+  lines  = textscan(forces,'%s','delimiter','\n','whitespace',''); % read all lines
+  lines=lines{1}; l1 = str2num(lines{1}); l2 = str2num(lines{2}); 
+  % identify if this is a FORCE_SET (PhonoPy) and convert it to FORCES for PHON
+  % the number of atoms(1st line) in FORCE_SET must match size(geom.coords,2)
+  if isscalar(l1) && isscalar(l2)
+    % supposingly FORCE_SET: we convert it to FORCES/PHON
+    forces = sqw_phon_forceset(lines);
+  end
+  % supposingly FORCES, we just store it as is
+  signal.UserData.FORCES = forces;
 end
 
 % ********* compute the forces *********
@@ -117,11 +157,16 @@ end
 geom = sqw_phon_supercell(poscar, options); % 2x2x2 supercell
 
 % ********* look for potentials *********
+if ~isfield(options, 'force_file')
+  options = sqw_phon_potentials(geom, options);
 
-options = sqw_phon_potentials(geom, options);
-
-% check for FORCES
-[forces, geom] = sqw_phon_forces(geom, options);
+  % compute and write FORCES
+  [forces, geom] = sqw_phon_forces(geom, options);
+  
+  signal.UserData.FORCES = fileread(fullfile(p,'FORCES'));
+else
+  geom.potentials = cell(numel(geom.symbols),1);
+end
 
 mass = [];
 compound = ''; potentials = '';
@@ -148,13 +193,11 @@ signal.Dimension      = 4;         % dimensionality of input space (axes) and re
 
 signal.Guess = [ 1 .1 0 10 ];
 
-p = fileparts(poscar);
-
-signal.UserData.POSCAR = fileread(poscar);
-signal.UserData.FORCES = fileread(fullfile(p,'FORCES'));
-signal.UserData.dir    = p;
-signal.UserData.options= options;
-signal.UserData.potentials=potentials;
+signal.UserData.POSCAR    = fileread(poscar);
+signal.UserData.dir       = p;
+signal.UserData.geometry  = geom;
+signal.UserData.options   = options;
+signal.UserData.potentials= potentials;
 
 signal.Expression     = { ...
   '% check if FORCES and POSCAR are here', ...
@@ -321,6 +364,8 @@ function [poscar, options]=sqw_phon_argin(varargin)
       % found an existing file, not a pseudo potential
       if isempty(poscar)
         poscar = varargin{index};
+      elseif ~isfield(options,'forces') % POSCAR already identified. This new file could be a FORCES or FORCE_SET
+        options.force_file = varargin{index};
       end
     elseif strcmp(lower(e),'.upf') || isdir(varargin{index})
       % found a '.upf' file or directory: pseudo-potential
@@ -507,9 +552,14 @@ else
   end
 end
 
+% if the FORCES file was given at start, we use the POSCAR as a supercell
+if isfield(options,'force_file')
+  return
+end
+
 [p,f] = fileparts(poscar);
 if isempty(p), p=pwd; end
-% check if this is already a super cell
+% check if this is already a super cell or FORCES are here
 if isempty(strfind(lower(geom1.comment),'supercell'))
   disp([ mfilename ': generating supercell and initial displacement guess from ' poscar ]);
   % generate INPHON for supercell generation
@@ -599,6 +649,12 @@ if isempty(dir(fullfile(p,'FORCES')))
     [geom.potentials,geom.potentials_full] = sqw_phon_forces_pwscf_potentials(geom, options);
   end
   
+  % determine the type of the atoms
+  geom.type = [];
+  for j=1:numel(geom.atomcount)
+    geom.type = [ geom.type ones(1,geom.atomcount(j)) ];
+  end
+  
   % now for each displacement line, we move the atom in geom.coords
   % and then call QE or VASP
   
@@ -612,39 +668,24 @@ if isempty(dir(fullfile(p,'FORCES')))
       continue;
     end
     
+    % move the atom
     displaced.coords(index,:) = displaced.coords(index,:) ...
                               + displacements(move, 2:4); % move XYZ
-    % determine the type of the atoms
-    displaced.type = [];
-    atomcount_id=1;
-    atomcount = cumsum(geom.atomcount);
-    for index=1:size(geom.coords,1)
-      if index > atomcount(atomcount_id), atomcount_id=atomcount_id+1; end
-      displaced.type(index)=atomcount_id;
-    end
-    if ~displaced.type
-      disp([ mfilename ': can not determine the type of atom moved. Skipping.' ]);
-      continue;
-    end
     
     disp([ mfilename ': step ' num2str(move) '/' num2str(size(displacements,1)) ...
         ' moving atom ' displaced.symbols{displaced.type(displacements(move, 1))} ...
         ' by ' num2str(displacements(move, 2:4)) ]);
     
-    % now use either QE or VASP
+    % compute FORCES, then add the result to the 'forces' cell
     if ~isempty(options.pwscf)
-      this.displacement = [ index displacements(move,:) ];
-      this.forces       = sqw_phon_forces_pwscf(displaced, options);
+      forces{move}= sqw_phon_forces_pwscf(displaced, options);
     else
-      this.forces = [];
+      forces{move} = [];
     end
-    if isempty(this.forces)
+    if isempty(forces{move})
       disp([ mfilename ': aborting FORCES computation.' ]);
       return
     end
-  
-    % add the result to the 'forces' matrix
-    forces{move}      = this;
 
   end %for index
 
@@ -656,7 +697,7 @@ if isempty(dir(fullfile(p,'FORCES')))
   fprintf(fid, '%i\n', numel(forces));  % nb of displacements
   for index=1:numel(forces)
     fprintf(fid, '%s\n', num2str(displacements(index,:)));
-    this = cellstr(num2str(forces{index}.forces));
+    this = cellstr(num2str(forces{index}));
     fprintf(fid, '    %s\n', this{:});
   end
   
@@ -867,3 +908,59 @@ function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displa
   
 
 % ------------------------------------------------------------------------------
+function [FORCES, natoms] = sqw_phon_forceset(lines)
+% convert a FORCE_SET file into a FORCES/PHON file
+
+% remove all empty lines
+index = cellfun('isempty', lines);
+lines(index) = [];
+
+% read the number of atoms in the supercell
+natoms = str2double(lines{1});
+if ~isscalar(natoms), forces = []; return; end
+
+% read the number of displacements
+ndisp  = str2num(lines{2});
+if ~isscalar(ndisp), forces = []; return; end
+
+displacements= zeros(ndisp, 4);
+forces       = cell(ndisp,1);
+
+% skip empty lines and read
+next_line_disp = 0; disp_index=0; next_line_force=0; force_index=0;
+for index=3:numel(lines)
+  nb = str2num(lines{index}); % current line
+  
+  if next_line_force  % when reading the fores after a displacement vector
+    force_cat(next_line_force, :) = nb;
+    next_line_force = next_line_force +1;
+    if next_line_force==natoms,
+      next_line_force=0; % stop reading this displacement forces
+      forces{force_index} = force_cat;
+    end
+  end
+  
+  if next_line_disp % when reading a displacement vector, then activate forces read
+    disp_index     = disp_index + 1;
+    next_line_disp = 0;
+    displacements(disp_index, :) = [ atom_moved nb ];
+    next_line_force= 1;
+  end
+  
+  if isscalar(nb) % single value: index of atom which is moved
+    atom_moved = nb; % the atom id which is moved
+    % next line should contain the displacement vector
+    next_line_disp = 1;
+    force_index = force_index+1;
+    force_cat = zeros(natoms, 3);
+  end
+  
+end
+
+% now write the FORCES file(string)
+  FORCES = sprintf('%i\n', numel(forces));  % nb of displacements
+  for index=1:numel(forces)
+    FORCES = [ FORCES sprintf('%s\n', num2str(displacements(index,:))) ];
+    this = cellstr(num2str(forces{index}));
+    FORCES = [ FORCES sprintf('    %s\n', this{:}) ];
+  end
