@@ -141,13 +141,13 @@ else  % convert input argument into object
   elseif isstruct(varargin{1})
     % iData(struct)
     out = iData_struct2iData(varargin{1}); % convert struct to iData
+  elseif isnumeric(varargin{1}) && (numel(varargin{1}) > 1 || ~ishandle(varargin{1}))
+    % iData(x)
+    out = iData_num2iData(varargin{1});    % convert single scalar/vector/matrix to iData
+    return
   elseif ishandle(varargin{1}) % convert single Handle Graphics Object
     % iData(figure handle)
     out = iData_handle2iData(varargin{1});
-    return
-  elseif isnumeric(varargin{1})
-    % iData(x)
-    out = iData_num2iData(varargin{1});    % convert single scalar/vector/matrix to iData
     return
   elseif iscell(varargin{1})
     % iData(cell)
@@ -182,6 +182,10 @@ else  % convert input argument into object
     end
     setalias(out,'Model', in, in.Name);
     clear signal ax
+    % update initial iFunc, if possible
+    if ~isempty(inputname(1))
+       assignin('caller',inputname(1),in);
+    end
     return
   else
     iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(varargin{1}) ' is not supported. Ignore.' ]);
