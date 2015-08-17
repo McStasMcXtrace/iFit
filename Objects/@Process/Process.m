@@ -14,10 +14,14 @@
 %
 %   determine if process is still running (active) and update
 %   stdout/stderr 
-%     refresh(pid)
+%     refresh(pid); status = pid.isActive;
+%   or
+%     status = isreal(pid);
 %
 %   wait for the end of the process (synchronous mode)
 %     waitfor(pid)
+%   or
+%     while any(isreal(pid)); pause(1); display(pid); end
 %
 %   force process to end (kill)
 %     exit(pid)
