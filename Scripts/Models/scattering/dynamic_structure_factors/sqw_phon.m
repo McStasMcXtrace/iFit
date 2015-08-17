@@ -40,11 +40,33 @@ function signal=sqw_phon(varargin)
 %   options.potentials={ cell of strings } list of UPF potentials to use
 %     if not given a PBE-PAW potential will be used (when available)
 %     these can also be directories, which content is then added to the list.
-%   options.occupations='metal'            for metals
-%                       'insulator'        for insulators
-%   options.cutoff =scalar                 default is 15*ntyp in [Ry]
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
 %   options.mpi    =scalar                 number of CPUs to use for PWSCF
+%     this option requires MPI to be installed (e.g. openmpi).
+%
+% options affecting memory usage:
+%   options.diagonalization='david' or 'cg'
+%     The Davidson method is faster than the conjugate-gradient but uses more
+%     memory.
+%   options.mixing_ndim=scalar             number of iterations used in mixing
+%     default=8. If you are tight with memory, you may reduce it to 4. A larger
+%     value will improve the SCF convergence, and use more memory.
+%
+% options affecting SCF convergence:
+%   options.mixing_beta=scalar             mixing factor for self-consistency
+%     default=0.7. use 0.3 to improve convergence
+%   options.ecutrho=scalar                 kinetic energy cutoff (Ry) for charge
+%     density and potential. Default=4*ecutwfc, suitable for PAW. Larger value
+%     improves convergence, especially for ultra-soft PP (use 8-12*ecutwfc).
+%   options.occupations='metal'            for metals ('smearing') help converge
+%                       'insulator'        for insulators
+%   options.ecutwfc=scalar                 kinetic energy cutoff (Ry) for
+%     wavefunctions. default is 15*ntyp in [Ry]. Larger value improves convergence.
+%   options.electron_maxstep=scalar        max number of iterations for SCF.
+%     default=100. Larger value improves convergence.
+%   options.conv_thr=scalar                Convergence threshold for 
+%     selfconsistency. default=1e-6.
+%
 % The options can also be entered as a single string with 'field=value; ...'.
 %
 % Once the model has been created, its use requires that axes are given on
@@ -83,11 +105,6 @@ signal = [];
 % ********* handle input arguments *********
 [poscar, options]=sqw_phon_argin(varargin{:});
 
-
-% ********* look for potentials *********
-
-options = sqw_phon_potentials(poscar, options);
-
 % check for installation of PHON and QE
 [options.phon, options.pwscf] = sqw_phon_requirements;
 if isempty(options.phon) || isempty(options.pwscf)
@@ -98,6 +115,10 @@ end
 
 % check/create supercell
 geom = sqw_phon_supercell(poscar, options); % 2x2x2 supercell
+
+% ********* look for potentials *********
+
+options = sqw_phon_potentials(geom, options);
 
 % check for FORCES
 [forces, geom] = sqw_phon_forces(geom, options);
@@ -131,6 +152,9 @@ p = fileparts(poscar);
 
 signal.UserData.POSCAR = fileread(poscar);
 signal.UserData.FORCES = fileread(fullfile(p,'FORCES'));
+signal.UserData.dir    = p;
+signal.UserData.options= options;
+signal.UserData.potentials=potentials;
 
 signal.Expression     = { ...
   '% check if FORCES and POSCAR are here', ...
@@ -281,12 +305,12 @@ function [poscar, options]=sqw_phon_argin(varargin)
     elseif strcmp(varargin{index},'random')
       options.disp='random';
     elseif ~isempty(dir(varargin{index})) && ~isdir(varargin{index}) ...
-        && (isempty(e) || ~strcmp(lower(e),'upf'))
+        && (isempty(e) || ~strcmp(lower(e),'.upf'))
       % found an existing file, not a pseudo potential
       if isempty(poscar)
         poscar = varargin{index};
       end
-    elseif strcmp(lower(e),'upf') || isdir(varargin{index})
+    elseif strcmp(lower(e),'.upf') || isdir(varargin{index})
       % found a '.upf' file or directory: pseudo-potential
       options.potentials{end+1} = varargin{index};
     end
@@ -332,15 +356,15 @@ disp([ mfilename ': copying initial ' d.name ' into ' options.target ]);
 
 % ------------------------------------------------------------------------------
 
-function options = sqw_phon_potentials(poscar, options)
+function options = sqw_phon_potentials(geom, options)
 
-% empty potential list: use QE default location
-if isempty(options.potentials)
+% missing potentials: use QE default location
+if numel(options.potentials) < numel(geom.atomcount)
   options.potentials{end+1} = fullfile(getenv('HOME'),'espresso','pseudo');
   options.potentials{end+1} = getenv('PSEUDO_DIR');
   options.potentials{end+1} = getenv('ESPRESSO_PSEUDO');
   options.potentials{end+1} = pwd;
-  options.potentials{end+1} = fileparts(poscar);
+  options.potentials{end+1} = fileparts(geom.filename);
   if isunix
     options.potentials{end+1} = '/usr/share/espresso/pseudo';
     options.potentials{end+1} = '/usr/local/espresso/pseudo';
@@ -649,10 +673,14 @@ function force = sqw_phon_forces_pwscf(displaced, options)
     kpoints = options.kpoints; else kpoints   = 2; 
   end
   if isscalar(kpoints), kpoints=[ kpoints kpoints kpoints ]; end
-  if isfield(options,'cutoff') && options.cutoff > 0
-    ecut = options.cutoff; else ecut   = ntyp*15; 
+  if isfield(options,'ecutwfc') && options.ecutwfc > 0
+    ecut = options.ecutwfc; else ecut   = ntyp*15; 
   end
-  fprintf(fid, '%s\n', strtok(displaced.comment)); % chemical formula/system
+  if isfield(options,'mixing_beta') && options.mixing_beta > 0
+    mixing_beta = options.mixing_beta; else mixing_beta = 0.7; 
+  end
+  
+  fprintf(fid, '%s\n', displaced.comment); % chemical formula/system
   fprintf(fid, 'crystal\n');
   fprintf(fid, '&control\n');
   fprintf(fid, '  calculation=''scf''\n');
@@ -665,6 +693,9 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   fprintf(fid, '  ibrav = 0, celldm(1) = %f\n', alat);
   fprintf(fid, '  nat= %i, ntyp= %i,\n', natoms, ntyp);
   fprintf(fid, '  ecutwfc = %f\n', ecut);
+  if isfield(options,'ecutrho')
+    fprintf(fid, '  ecutrho = %f\n', options.ecutrho);
+  end
   if isfield(options,'occupations')
     switch lower(options.occupations)
     case {'smearing','metal'}
@@ -677,9 +708,20 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   end
   fprintf(fid, '/\n');
   fprintf(fid, '&electrons\n');
-  fprintf(fid, '    conv_thr = 1.0e-8\n');
-  fprintf(fid, '    mixing_beta = 0.7\n');
+  if isfield(options, 'conv_thr')
+    fprintf(fid, '    conv_thr = %f\n', options.conv_thr);
+  end
+  fprintf(fid, '    mixing_beta = %f\n', mixing_beta);
   fprintf(fid, '    mixing_mode = ''plain''\n');
+  if isfield(options,'mixing_ndim')
+    fprintf(fid, '    mixing_ndim = %i\n', options.mixing_ndim);
+  end
+  if isfield(options, 'electron_maxstep')
+    fprintf(fid, '    electron_maxstep = %i\n', options.electron_maxstep);
+  end
+  if isfield(options, 'diagonalization')
+    fprintf(fid, '    diagonalization = ''%s''\n', options.diagonalization);
+  end
   fprintf(fid, '/\n');
   fprintf(fid, 'ATOMIC_SPECIES\n');
   for index=1:numel(displaced.symbols)
@@ -724,10 +766,17 @@ function force = sqw_phon_forces_pwscf(displaced, options)
 
   % READ the QE/PWSCF output file and search for string 'Forces acting'
   L = fileread(fullfile(p, 'pw.out'));
+  
+  ismetallic = strfind(L, 'the system is metallic');
+  if ~isempty(ismetallic)
+    error([ mfilename ': The system is metallic but you have used occupations=''fixed''. Rebuild model with occupations=''smearing''.' ])
+  end
 
   forces_acting = strfind(L, 'Forces acting');
   if isempty(forces_acting)
-    error([ mfilename ': can not find "Forces acting" in ' fullfile(p, 'pw.out') '. The computation may have NOT converged. Check occupations, potential, kpoints.' ])
+    disp([ mfilename ': convergence NOT achieved.' ]);
+    disp([ 'TRY: sqw_phon(..., ''miximg_beta=0.3; electron_maxstep=200; conv_thr=1e-6; occupations=smearing; ecutwfc=' num2str(round(ecut*1.5)) ''')' ])
+    error([ mfilename ': PWSCF convergence NOT achieved.' ])
   end
   L = L(forces_acting:end);
   % then read next natoms lines starting with 'atom', e.g.:
