@@ -2,7 +2,7 @@ function signal=sqw_phon(varargin)
 % model=sqw_phon(poscar, pseudo, ..., options)  
 %
 %   iFunc/sqw_phon: computes phonon dispersions from Ab-Initio.
-%   A model which compute phonon dispersions from the forces acting between
+%   A model which computes phonon dispersions from the forces acting between
 %     atoms. The input arguments is a VASP-type POSCAR file providing the
 %     geometry of the cell (lattice and atom positions). 
 %     It is recommended to specify if the system is a metal or an insulator.
@@ -181,7 +181,7 @@ mass = num2str(mass);
 % ************** BUILD THE MODEL **************
 signal.Name           = [ compound 'S(q,w) 3D dispersion PHON/QuantumEspresso with DHO line shape [' mfilename ']' ];
 
-signal.Description    = [ compound 'S(q,w) 3D dispersion PHON/QuantumEspresso with DHO line shape. Pseudo-Potentials: ' potentials ];
+signal.Description    = [ compound 'S(q,w) 3D dispersion PHON/QuantumEspresso with DHO line shape. Pseudo-Potentials: ' potentials '. Configuration: ' poscar ];
 
 signal.Parameters     = {  ...
   'Amplitude' ...
@@ -199,6 +199,7 @@ signal.UserData.dir       = p;
 signal.UserData.geometry  = geom;
 signal.UserData.options   = options;
 signal.UserData.potentials= potentials;
+signal.UserData.DOS       = [];
 
 signal.Expression     = { ...
   '% check if FORCES and POSCAR are here', ...
@@ -284,6 +285,7 @@ signal.Expression     = { ...
 [ '  [status,result] = system(''' options.phon ' > phon.log'');' ], ...
   '  % import FREQ', ...
   '  FREQ=load(''FREQ'',''-ascii'')/.24180; % THz -> meV', ...
+  '  this.UserData.DOS = load(''DOS'',''-ascii'');', ...
   '  delete(''FREQ.cm'');', ...
   'catch; disp(fileread(''phon.log'')); disp([ ''model '' this.Name '' '' this.Tag '' could not run PHON from '' target ]);', ...
   'end', ...
@@ -304,33 +306,14 @@ signal.Expression     = { ...
 
 signal=iFunc(signal);
 
-%  '  if T<=0, T=300; end', ...
-%  '  %p=ones(size(FREQ,2),1) * [ p(1) 0 p(2) p(3) p(4)/11.609 ];',...
-%  '  %signal=zeros(size(p));', ...
-%  '  %w=reshape(t,size(signal));', ...
-%  '  %for index=1:size(FREQ,2)', ...
-%  '  %  p(:,2) = FREQ(:,index);', ...
-%  '  %  signal = signal+ p(3) *p(2)^2.*(1+1./(exp(abs(w)/p(4))-1))./((w.^2-p(2)^2).^2+(p(3)*t).^2);
-%  '  %end', ...
-%  '  %signal = signal*p(1);',...
-
-% at model evaluation:
-
-
-% call PHON
-
-% read FREQ (THz)
-
-% apply DHO to all energies
-
 % when model is successfully built, display citations for PHON and QE
-disp([ 'Model ' compound ' built using: (please cite)' ])
+disp([ mfilename ': Model ' compound ' built using: (please cite) from ' poscar ])
 disp(' * PHON: D. Alfe, Computer Physics Communications 180,2622-2633 (2009)')
 disp('     <http://chianti.geol.ucl.ac.uk/~dario>. BSD license.')
 disp(' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009)')
 disp('     <http://www.quantum-espresso.org/>. GPL2 license.')
 disp(' * iFit: E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
-disp('     <http://ifit.mccode.org>');
+disp('     <http://ifit.mccode.org>. EUPL license.');
 
 % ------------------------------------------------------------------------------
 
