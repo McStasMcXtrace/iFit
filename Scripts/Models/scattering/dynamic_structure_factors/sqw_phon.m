@@ -41,7 +41,7 @@ function signal=sqw_phon(varargin)
 % options: a structure with optional settings:
 %   options.target =path                   where to store all files and FORCES
 %     a temporary directory is created when not specified.
-%   options.NDIM   =scalar or [nx ny nz]   supercell size
+%   options.supercell=scalar or [nx ny nz] supercell size
 %   options.disp   =[dx dy dz]             initial displacement direction
 %     the initial displacement can e.g. be [ 1 -1 1 ]
 %   options.potentials={ cell of strings } list of UPF potentials to use
@@ -82,7 +82,7 @@ function signal=sqw_phon(varargin)
 %     
 % Example:
 %   s=sqw_phon([ ifitpath 'Data/POSCAR_Al'],'metal','mpi=4');
-%   qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,100,51);
+%   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
 %   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
 %
 % References: https://en.wikipedia.org/wiki/Phonon
@@ -324,7 +324,7 @@ disp('     <http://ifit.mccode.org>. EUPL license.');
 function [poscar, options]=sqw_phon_argin(varargin)
 
   poscar = [];
-  options.NDIM   =2;
+  options.supercell  =2;
   options.potentials ={};
   options.kpoints=2;
   options.disp   =[];
@@ -391,7 +391,7 @@ if ~isfield(options,'target')
   options.target = tempname; % everything will go there
   mkdir(options.target)
 end
-;
+
 % copy the POSCAR into the target directory
 d = dir(poscar);
 copyfile(poscar, options.target);
@@ -503,8 +503,8 @@ function geom1 = sqw_phon_supercell(poscar, options)
 %
 % http://www.mathworks.com/matlabcentral/fileexchange/36836-vasplab/content//vasplab/import_poscar.m then supercell then export_poscar
 
-if isempty(options.NDIM),  options.NDIM=2; end
-if isscalar(options.NDIM), options.NDIM=[ options.NDIM options.NDIM options.NDIM ]; end
+if isempty(options.supercell),  options.supercell=2; end
+if isscalar(options.supercell), options.supercell=[ options.supercell options.supercell options.supercell ]; end
 
 geom1 = import_poscar(poscar);
 
@@ -564,7 +564,7 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   fprintf(fid, '#   PHON: <http://chianti.geol.ucl.ac.uk/~dario>\n');
   fprintf(fid, '#   D. Alfe, Computer Physics Communications 180,2622-2633 (2009)\n');
   fprintf(fid, 'LSUPER =.TRUE.\n');
-  fprintf(fid, 'NDIM   = %i %i %i\n', options.NDIM);
+  fprintf(fid, 'supercell   = %i %i %i\n', options.supercell);
   fprintf(fid, 'NTYPES = %i\n', numel(geom1.atomcount));
 
   if isfield(options,'disp')
@@ -602,7 +602,7 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   end
   % modify 1st line so that the initial system name is retained
   geom2 = import_poscar(fullfile(p,'SPOSCAR'));
-  geom2.comment = [ strtrim(geom1.comment) ' supercell ' mat2str(options.NDIM) ];
+  geom2.comment = [ strtrim(geom1.comment) ' supercell ' mat2str(options.supercell) ];
   geom2.symbols = geom1.symbols;
   geom2.elements= geom1.elements;
   
