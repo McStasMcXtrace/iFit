@@ -26,7 +26,7 @@ else
     assignin('caller', inputname(1), pid);
   end
   if isdeployed || ~usejava('jvm'), id='Process';
-  else           id='<a href="matlab:doc Process">Process</a> (<a href="matlab:methods Process">methods</a>,<a href="matlab:doc(Process,''Process'')">doc</a>)';
+  else           id='<a href="matlab:doc Process">Process</a> (<a href="matlab:methods Process">methods</a>,<a href="matlab:help Process">doc</a>)';
   end
   if pid.isActive, state='RUNNING'; else state='STOPPED'; end
   fprintf(1,'%s = %s object [%s]:\n',iname, id, state);
