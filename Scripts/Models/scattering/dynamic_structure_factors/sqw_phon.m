@@ -47,6 +47,7 @@ function signal=sqw_phon(varargin)
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
 %   options.mpi    =scalar                 number of CPUs to use for PWSCF
 %     this option requires MPI to be installed (e.g. openmpi).
+%   options.potential_auto=0 or 1          automatic setting of the best PP
 %
 % options affecting memory usage:
 %   options.diagonalization='david' or 'cg'
@@ -284,7 +285,7 @@ signal.Expression     = { ...
   '  % import FREQ', ...
   '  FREQ=load(''FREQ'',''-ascii'')/.24180; % THz -> meV', ...
   '  delete(''FREQ.cm'');', ...
-  'catch; disp([ ''model '' this.Name '' '' this.Tag '' could not run PHON from '' target ]);', ...
+  'catch; disp(fileread(''phon.log'')); disp([ ''model '' this.Name '' '' this.Tag '' could not run PHON from '' target ]);', ...
   'end', ...
   '  cd(pw);', ...
   '  % multiply all frequencies(columns, meV) by a DHO/meV', ...
@@ -392,6 +393,11 @@ end
 
 if isempty(poscar)
   poscar = 'POSCAR';
+  if isempty(dir(poscar))
+    poscar = fullfile(ifitpath,'Data','POSCAR_Al');
+    options.occupations   = 'smearing';
+    options.potential_auto= 1;
+  end
 end
 
 if ~isfield(options,'target')
@@ -599,12 +605,13 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
     pw = pwd;
     cd(p);
     disp([ 'cd(''' p '''); ' options.phon ]);
-    [status, result] = system(options.phon);
+    [status, result] = system([ options.phon ' > phon.log' ]);
     cd(pw);
   end
   % check if the expected files have been created
   if isempty(dir(fullfile(p,'SPOSCAR'))) || isempty(dir(fullfile(p,'DISP')))
-    error([ mfilename ': Error executing PHON: could not create SPOSCAR and DISP file ' ]);
+    try; disp(fileread(fullfile(p,'phon.log'))); end
+    error([ mfilename ': Error executing PHON: could not create SPOSCAR and DISP file.' ]);
   end
   % modify 1st line so that the initial system name is retained
   geom2 = import_poscar(fullfile(p,'SPOSCAR'));
@@ -828,6 +835,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
 
   forces_acting = strfind(L, 'Forces acting');
   if isempty(forces_acting)
+    disp(L);
     disp([ mfilename ': convergence NOT achieved.' ]);
     disp([ 'TRY: sqw_phon(..., ''miximg_beta=0.3; electron_maxstep=200; conv_thr=1e-6; occupations=smearing; ecutwfc=' num2str(round(ecut*1.5)) ''')' ])
     error([ mfilename ': PWSCF convergence NOT achieved.' ])
@@ -888,7 +896,7 @@ function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displa
       else select=1;
       end
       % if still more than one choice, pop-up list selector
-      if numel(match) > 1
+      if numel(match) > 1 && ~isfield(options,'potential_auto')
         [select,OK] = listdlg('ListString', match, ...
             'ListSize', [400 200], ...
             'Name', [ 'Pseudo-potential for ' displaced.symbols{index} ], ...
@@ -909,7 +917,7 @@ function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displa
 
 % ------------------------------------------------------------------------------
 function [FORCES, natoms] = sqw_phon_forceset(lines)
-% convert a FORCE_SET file into a FORCES/PHON file
+% convert a FORCE_SET/PhonoPy file into a FORCES/PHON file
 
 % remove all empty lines
 index = cellfun('isempty', lines);
@@ -957,7 +965,7 @@ for index=3:numel(lines)
   
 end
 
-% now write the FORCES file(string)
+% now write the FORCES as a string
   FORCES = sprintf('%i\n', numel(forces));  % nb of displacements
   for index=1:numel(forces)
     FORCES = [ FORCES sprintf('%s\n', num2str(displacements(index,:))) ];
