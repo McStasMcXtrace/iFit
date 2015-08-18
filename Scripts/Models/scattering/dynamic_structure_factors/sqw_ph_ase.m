@@ -1,5 +1,5 @@
-function signal=sqw_ph_ase(configuration)
-% model=sqw_ph_ase(configuration)
+function signal=sqw_ph_ase(configuration, varargin)
+% model=sqw_ph_ase(configuration, options)
 %
 %   iFunc/sqw_ph_ase: computes phonon dispersions using the ASE.
 %   A model which computes phonon dispersions from the forces acting between
@@ -9,6 +9,14 @@ function signal=sqw_ph_ase(configuration)
 %   Atomic Simulation Environment (ASE) <https://wiki.fysik.dtu.dk/ase>.
 %   When performing a model evaluation, the DOS is also computed and stored
 %   in model.UserData.DOS as an iData object.
+%
+% options: an optional structure with optional settings:
+%   options.target =path                   where to store all files and FORCES
+%     a temporary directory is created when not specified.
+%   options.supercell=scalar or [nx ny nz] supercell size. Default is 2.
+%   options.calculator=string              calculator to use. default=EMT
+%
+% The options can also be entered as a single string with 'field=value; ...'.
 %
 % WARNING: Single intensity and line width parameters are used here.
 %   This model is only suitable to compute phonon dispersions for e.g solid-
@@ -24,7 +32,7 @@ function signal=sqw_ph_ase(configuration)
 %     
 % Example:
 %   s=sqw_ph_ase([ ifitpath 'Data/POSCAR_Al']);
-%   qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,100,51);
+%   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
 %   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
 %
 % References: https://en.wikipedia.org/wiki/Phonon
@@ -50,6 +58,8 @@ if nargin == 0
   configuration = fullfile(ifitpath,'Data','POSCAR_Al');
 end
 
+options=sqw_ph_ase_argin(varargin{:});
+
 status = sqw_ph_ase_requirements;
 
 % BUILD stage: we call ASE to build the model
@@ -59,7 +69,7 @@ status = sqw_ph_ase_requirements;
 % from gpaw import GPAW
 % from ase.calculators.dacapo import Dacapo
 
-pw = pwd; target = tempname; mkdir(target);
+pw = pwd; target = options.target;
 
 % start python --------------------------
 script = { ...
@@ -72,7 +82,7 @@ script = { ...
   'atoms = ase.io.read(configuration)', ...
   'calc  = EMT()', ...
   '# Phonon calculator', ...
-  'N = 7', ...
+[ 'N = ' num2str(options.supercell) ], ...
   'ph = Phonons(atoms, calc, supercell=(N, N, N), delta=0.05)', ...
   'ph.run()', ...
   '# Read forces and assemble the dynamical matrix', ...
@@ -210,6 +220,57 @@ if status ~= 0
   disp([ mfilename ': ERROR: requires ASE to be installed.' ])
   disp('  Get it at <https://wiki.fysik.dtu.dk/ase>.');clear all
   error([ mfilename ': ASE not installed' ]);
+else
+  disp([ mfilename ': using ASE ' result ]);
+  % should display available calculators...
+  %  gromacs (but they say it is slow)
+  %  lammps
+  %  lj (lenard-jones)
+  %  morse
+  %  mopac
+  %  nwchem
+  %  abinit
+  %  gaussian
+  %  GPAW (from ASE team, but as a separate code)
+  %  jacapo (from ASE team, but as a separate code)
+  %  QuantumEspresso: available for ASE at https://github.com/vossjo/ase-espresso
 end
 
+% ------------------------------------------------------------------------------
+
+function options=sqw_ph_ase_argin(varargin)
+
+options.supercell  =2;
+options.calculator = 'EMT';
+
+% read input arguments
+  for index=1:numel(varargin)
+  if ischar(varargin{index}) && isempty(dir(varargin{index}))
+    % first try to build a structure from the string
+    this = str2struct(varargin{index});
+    if isstruct(this)
+      varargin{index} = this;
+    end
+  end
+  if ischar(varargin{index})
+    [p,f,e] = fileparts(varargin{index});
+    % handle static options: metal,insulator, random
+    if strcmp(varargin{index},'smearing') || strcmp(varargin{index},'metal')
+      options.occupations = 'smearing';
+    elseif strcmp(varargin{index},'fixed') || strcmp(varargin{index},'insulator')
+      options.occupations = 'fixed';
+    end
+  elseif isstruct(varargin{index})
+    % a structure: we copy the fields into options.
+    this = varargin{index};
+    f    =fieldnames(this);
+    for i=1:numel(fieldnames(this))
+      options.(f{i}) = this.(f{i});
+    end
+  end
+end
+if ~isfield(options,'target')
+  options.target = tempname; % everything will go there
+  mkdir(options.target)
+end
 
