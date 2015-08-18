@@ -452,7 +452,7 @@ p    = sprintf('%g ', p(:)'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
 
 % update object
-if nargout == 0 && ~isempty(inputname(1))
+if ~isempty(inputname(1))
   assignin('caller',inputname(1),model);
 end
 
