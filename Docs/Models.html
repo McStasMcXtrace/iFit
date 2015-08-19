@@ -24,7 +24,10 @@
           <li><a href="#mozTocId885605">Acoustic phonon dispersion in
               mono-atomic cubic crystal</a></li>
           <li><a href="#mozTocId881911"> Phonon dispersion from
-              ab-initio force estimate and dynamical matrix</a></li>
+              ab-initio force estimate and dynamical matrix using
+              PHON/QuantumEspresso </a></li>
+          <li><a href="#mozTocId990577">Phonon dispersion from ab-initio
+              force estimate and dynamical matrix using ASE</a></li>
         </ol>
       </li>
       <li><a href="#mozTocId810939">Model builder: defining a new model
@@ -43,6 +46,8 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">Commands we use in this page: <span
         style="font-style: italic;">fits, <a href="#mozTocId775891">ifitmakefunc,
+
+
 
 
 
@@ -90,6 +95,8 @@
     <h3><a class="mozTocH3" name="mozTocId96090"></a><span
         style="font-weight: bold;">List of default fit models</span></h3>
     The 1D functions are <span style="font-style: italic;">signal=f(parameters,
+
+
 
 
 
@@ -199,6 +206,8 @@
 
 
 
+
+
               "x" unit)</span><br>
           </td>
         </tr>
@@ -245,6 +254,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Plot-exponential-
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Stretched_exponential_function">Exponential
+
+
 
 
 
@@ -345,6 +356,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/7/74/Normal_Distribution_PDF
 
 
 
+
+
               distribution function</a> <img alt="Laplace"
               title="Laplace"
 src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
@@ -360,6 +373,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Log-normal_distribution">Log-Normal
+
+
 
 
 
@@ -525,6 +540,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Sine_one_period.svg"
 
 
 
+
+
               Sine function</a> (exponential decay) <img alt="sine_exp"
               title="sine_exp"
               src="https://upload.wikimedia.org/wikipedia/commons/2/25/DampedSine.png"
@@ -569,6 +586,8 @@ src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Triangular_function.svg
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rectangular_function">Top-Hat
+
+
 
 
 
@@ -704,6 +723,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
               Gaussian</a><br>
           </td>
           <td valign="top"><font color="#cc33cc">nD</font><br>
@@ -760,6 +781,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
         = P(q).S(q)</span><br>
     </p>
     <p style="text-align: left;">where <span style="font-style:
@@ -786,11 +809,15 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
           Kohlbrecher</a> and <a
           href="mailto:ingo%28at%29cs.tu-berlin.de">Ingo Bressler</a>
         PSI (2006-2011)</li>
       <li>CrysFML by <a href="mailto:jrc@ill.eu">Juan
           Rodriguez-Carvajal</a> and <a href="mailto:jplatas@ull.es">Javier
+
+
 
 
 
@@ -847,6 +874,8 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">sf_square_well
+
+
 
 
 
@@ -922,6 +951,8 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">ff_sphere&nbsp;
+
+
 
 
 
@@ -1180,6 +1211,8 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
         </i> and <i>Q_freq</i> parameters along axes.</li>
       <li>A 1D or 2D dispersion can be obtained when setting the
         frequencies (e.g. <i>QK_freq QL_freq</i>) to 0<br>
@@ -1190,6 +1223,8 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     <blockquote>
       <p>&nbsp; p(&nbsp;
         1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1209,9 +1244,13 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
         <b>E1_qk</b> energy at QK half period [meV]<br>
         &nbsp; p(&nbsp;
         3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1231,9 +1270,13 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
         <b>E0</b> zone-centre energy gap [meV]<br>
         &nbsp; p(&nbsp;
         5)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1253,9 +1296,13 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
         <b>QK0</b> QK zone-centre [rlu]<br>
         &nbsp; p(&nbsp;
         7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1275,9 +1322,13 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
         <b>QH_freq</b> QH frequency [multiples of pi]<br>
         &nbsp; p(&nbsp;
         9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1297,9 +1348,13 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
         <b>QL_freq</b> QL frequency [multiples of pi]<br>
         &nbsp; p(
         11)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1420,9 +1475,13 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
       <b>At</b> transverse acoustic [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1442,9 +1501,13 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
       <b>Aa</b> anisotropic acoustic [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1464,6 +1527,8 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
       <b>Sa</b> soft mode&nbsp; anisotropic soft optical [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       6)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1475,9 +1540,13 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
       <b>Vt</b> transverse acoustic-optical coupling [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1498,9 +1567,13 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
+
       <b>w0</b> soft mode frequency at q=0, depends on temperature [meV]<br>
       &nbsp; p(&nbsp;
       9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1546,10 +1619,14 @@ href="https://www.google.fr/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&
 
 
 
+
+
           10.1007/s100510051164</a> </li>
       <li> A.K. Tagantsev et al, <i>Nature Comm</i>, <b>4</b> (2013)
         2229. <a
 href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">DOI:
+
+
 
 
 
@@ -1622,6 +1699,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
       <b>C_ratio</b> C1/C2 force constant ratio first/second neighbours<a
 href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
           alt="sqw_cubic_mono" title="sqw_cubic_mono"
@@ -1636,9 +1715,13 @@ href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
 
 
 
+
+
       <b>E0</b> sqrt(C1/m) energy [meV]<br>
       &nbsp; p(&nbsp;
       3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1705,6 +1788,8 @@ href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
                 alt="sqw_phon" title="sqw_phon"
                 src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_phon.png"
                 align="right" border="0" width="100" height="76"></a>forces
+
+
             estimated by <i>ab-initio</i>, using PHON/QE<i>.&nbsp;</i>
           </td>
           <td valign="top"><font color="#33cc00">4D (HKLw)<br>
@@ -1724,6 +1809,8 @@ href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
     <br>
     The general syntax for creating&nbsp; the S(q,w) model is:<br>
     <blockquote>s = <font color="#3366ff">sqw_phon</font>;&nbsp;&nbsp;&nbsp;
+
+
 
       &nbsp;&nbsp;&nbsp; creates a simple fcc Al model<br>
     </blockquote>
@@ -1767,6 +1854,8 @@ href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
 
 
 
+
+
       PP selector</a>.<br>
     <br>
     Other options, given as strings, or a structure, allow to customise
@@ -1788,6 +1877,8 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
       <li><b>supercell</b>: The <i>dimension of the supercell</i> can
         be given using e.g. the <font color="#cc33cc">'supercell=2'</font>
         (for a 2x2x2 supercell) argument, or <font color="#cc33cc">'supercell=[2
+
+
 
           3 2]'</font>.</li>
       <li><b>mpi</b>: The number of CPU's to use for Quantum Espresso
@@ -1813,6 +1904,8 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
       </u></i>
     <ul>
       <li><b> occupations</b>: For metallic and insulator systems, the <i>electron
+
+
 
 
           state occupations</i> should be set by using argument <font
@@ -1856,12 +1949,16 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
 
 
 
+
+
       <b>Gamma</b>&nbsp; Damped Harmonic Oscillator width in energy
       [meV]<br>
       &nbsp; p(&nbsp;
       3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Temperature</b>&nbsp;
+
+
 
 
 
@@ -1877,7 +1974,11 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
         alt="sqw_phon Al fcc" title="sqw_phon Al fcc"
         src="images/Models_sqw_phon.png" align="right" border="0"
         width="200" height="153"></a><br>
-    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phon</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal'</font>,<font color="#cc33cc">'mpi=4;potential_auto=1'</font>); 	<i>% create model from given POSCAR</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">plot3</font>(log(f(:,:,1,:)));	<i>	% plot ql(1)=0 plane<br></i><br></pre>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phon</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal'</font>,<font color="#cc33cc">'mpi=4;potential_auto=1'</font>); 	<i>% create model from given POSCAR</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">plot3</font>(log(f(:,:,1,:)));	<i>	% plot ql(1)=0 plane</i><br></pre>
+    When re-using existing POSCAR ad FORCES files, the model creation is
+    immediate (no ab-initio step is done with Quantum Espresso).<br>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phon</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_MgOl'</font>],<font color="#cc33cc">[ ifitpath 'Data/FORCES_MgO'</font>]<font color="#cc33cc"></font>); 	<i>% create model from given POSCAR</i> and FORCES<br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,100,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)),<font color="#cc33cc">'filled'</font>);	<i>% plot ql(1)=0 plane, which then shows acoustic and optical modes.</i></pre>
+    <br>
     The <b>plot (surf), plot3, scatter3</b>, and <b>slice</b> methods
     for plotting all provide nice looking rendering of volume data. See
     <a href="file:///home/farhi/dev/iFit/Docs/Plot.html#mozTocId734523">Plot/3D</a>
@@ -1893,7 +1994,11 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
 
 
 
+
+
         (2009). &lt;<a href="http://chianti.geol.ucl.ac.uk/%7Edario">http://chianti.geol.ucl.ac.uk/~dario</a>&gt;.
+
+
 
 
 
@@ -1910,6 +2015,8 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
 
 
 
+
+
         GPL2 license.</li>
     </ul>
     <b>Requirements/installation:</b><br>
@@ -1919,11 +2026,28 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
         (<i>sudo apt-get install gfortran</i>). Extract the PHON
         archive, then compile with: <i>./configure; make</i> . Once
         done, copy the <i>PHON/src/phon</i> executable to a system-wide
-        location such as /usr/local/bin or /usr/bin. We provide a <a
+        location such as /usr/local/bin or /usr/bin. <br>
+      </li>
+    </ul>
+    <blockquote>We provide a <a
 href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/phon-1.40-amd64.deb">PHON
 
-          Debian package</a> at <a href="http://packages.mccode.org/">packages.mccode.org</a>.<br>
-      </li>
+
+
+        Debian package</a> at <a href="http://packages.mccode.org/">packages.mccode.org</a>.
+      Type (Ubuntu/Mint/Debian):<br>
+    </blockquote>
+    <ul>
+    </ul>
+    <blockquote>
+      <blockquote>
+        <pre>sudo apt-add-repository 'deb http://packages.mccode.org/debian stable main;&nbsp;
+sudo apt-get update
+sudo apt-get install phon
+</pre>
+      </blockquote>
+    </blockquote>
+    <ul>
       <li><a href="http://www.quantum-espresso.org/">Quantum Espresso</a>
         (we use pw.x/pwscf) must be installed. Installers exist for
         Linux and Windows systems. Install it e.g. with <i>sudo apt-get
@@ -1933,10 +2057,21 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/phon-1.40
 
 
 
-          yum install quantum-espresso</i> (RedHat class systems).</li>
+
+
+          yum install quantum-espresso</i> (RedHat class systems). Type
+        (Ubuntu/Mint/Debian):</li>
     </ul>
-    <h4>Phonon dispersion from <i>ab-initio</i> force estimate and
-      dynamical matrix using ASE</h4>
+    <blockquote>
+      <blockquote>
+        <pre>sudo apt-get install quantum-espresso</pre>
+      </blockquote>
+    </blockquote>
+    <ul>
+    </ul>
+    <h4><a class="mozTocH4" name="mozTocId990577"></a>Phonon dispersion
+      from <i>ab-initio</i> force estimate and dynamical matrix using
+      ASE</h4>
     <p>The <b>sqw_ph_ase</b> (i.e. <i>'phase'</i>) model computes
       phonon dispersions using the <a
         href="https://wiki.fysik.dtu.dk/ase/">Atomic Simulation
@@ -1944,6 +2079,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/phon-1.40
       run is the name of a configuration file describing the material
       lattice and atom positions. This file can be in any <a
         href="https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io">ASE
+
+
         supported format</a>, e.g. POSCAR, CIF, PDB, ...<br>
     </p>
     <table style="text-align: left; width: 1016px; height: 59px;"
@@ -1994,6 +2131,8 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
     The general syntax for creating&nbsp; the S(q,w) model is:<br>
     <blockquote>s = <font color="#3366ff">sqw_ph_ase</font>;&nbsp;&nbsp;&nbsp;
 
+
+
       &nbsp;&nbsp;&nbsp; creates a simple fcc Al model<br>
     </blockquote>
     or<br>
@@ -2001,6 +2140,8 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
     </blockquote>
     or<br>
     <blockquote>s = <font color="#3366ff">sqw_ph_ase</font>(configuration,
+
+
       options, ...);<br>
     </blockquote>
     where <i>configuration</i> is the location of any file format
@@ -2020,18 +2161,24 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
         be given using e.g. the <font color="#cc33cc">'supercell=2'</font>
         (for a 2x2x2 supercell) argument, or <font color="#cc33cc">'supercell=[2
 
+
+
           3 2]'</font>.</li>
     </ul>
     <p>Currently, this model uses the default ASE computational
       calculator '<a
-href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculators.emt">EMT</a>'.<br>
-    </p>
+href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculators.emt">EMT</a>'.
+
+      This calculator can currently handle H, C, N, O, Al, Ni, Cu, Pd,
+      Ag, Pt and Au elements. It is relatively slow. </p>
     <p>The model parameters, once built, are the following:<br>
     </p>
     <blockquote>&nbsp; p(&nbsp;
       1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Amplitude</b><br>
       &nbsp; p(&nbsp;
       2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2050,6 +2197,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculat
 
 
 
+
+
       [K]<br>
     </blockquote>
     The axes needed for the evaluation are expressed in rlu for QH,QK,QL
@@ -2059,11 +2208,30 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculat
         alt="sqw_ph_ase Al fcc" title="sqw_ph_ase Al fcc"
         src="images/Models_sqw_ph_ase.png" align="right" border="0"
         width="200" height="153"></a><br>
-    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_ph_ase</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_Al'</font>]); 	<i>% create model from given POSCAR</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)));	<i>	% plot ql(1)=0 plane<br></i><br></pre>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_ph_ase</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_Al'</font>]); 	<i>% create model from given POSCAR</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)));	<i>	% plot ql(1)=0 plane<br></i></pre>
+    To get a system with acoustic and optical modes:<br>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_ph_ase</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_AlN'</font>]); 	<i>% create model from given POSCAR</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)));	<i>	% plot ql(1)=0 plane</i></pre>
     The <b>plot (surf), plot3, scatter3</b>, and <b>slice</b> methods
     for plotting all provide nice looking rendering of volume data. See
     <a href="file:///home/farhi/dev/iFit/Docs/Plot.html#mozTocId734523">Plot/3D</a>
-    page.
+    page.<br>
+    <br>
+    <b>References:</b><br>
+    <a href="https://wiki.fysik.dtu.dk/ase">Atomic Simulation
+      Environment</a><br>
+    S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66,
+    2002.<br>
+    <br>
+    <b>Requirements:</b><br>
+    The <a href="https://wiki.fysik.dtu.dk/ase">ASE</a> must be
+    installed. Packages exist for Ubuntu/Mint/Debian, RedHat/Fedora,
+    OpenSUSE, MacOSX (brew), and Windows (experimental). Type
+    (Ubuntu/Mint/Debian):
+    <blockquote>
+      <blockquote>
+        <pre>sudo apt-get install python-ase</pre>
+      </blockquote>
+    </blockquote>
     <h3><a class="mozTocH3" name="mozTocId810939"></a><span
         style="font-weight: bold;">Model builder: defining a new model
         easy</span></h3>
@@ -2180,6 +2348,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculat
 
 
 
+
+
         (calls fconv in correlation mode)<br>
       </li>
     </ul>
@@ -2218,6 +2388,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculat
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 
