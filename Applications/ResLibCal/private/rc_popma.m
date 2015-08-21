@@ -83,7 +83,8 @@ if isstruct(p)
   % a,b,c,alpha,beta,gamma, QH,QK,QL (from ResCal5/rc_re2rc)
   [q2c,q0]= rc_re2rc( [ EXP.sample.a EXP.sample.b EXP.sample.c ], ...
     [ EXP.sample.alpha EXP.sample.beta EXP.sample.gamma ] , ...
-    [ EXP.QH EXP.QK EXP.QL ] );  
+    [ EXP.QH EXP.QK EXP.QL ] );
+  QH=EXP.QH; QK=EXP.QK; QL=EXP.QL;
 elseif isvector(p)
 
   dm=p(1);            % monochromator d-spacing in Angs.
@@ -108,6 +109,8 @@ elseif isvector(p)
   bet2=p(17)*pit;     % vertical post-sample collimation.
   bet3=p(18)*pit;     % vertical post-analyser collimation.
   w=p(34);            % energy transfer.
+  
+  QH=p(31); QK=p(32); QL=p(33);
 
   % _____________________Extra Parameters________________________________________
   offset=42;
@@ -182,13 +185,13 @@ thetam=sm*asin(pi/(dm*ki));      % and monochromator.
 thetas=ss*0.5*acos((ki^2+kf^2-q0^2)/(2*ki*kf)); % scattering angle from sample.
 if ~isreal(thetas)
   disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
-  disp(p(31:34))
+  disp([ QH QK QL w])
   return
 end
 phi=atan2(-kf*sin(2*thetas),ki-kf*cos(2*thetas));
 if ~isreal(phi)
   disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
-  disp(p(31:34))
+  disp([ QH QK QL w])
   return
 end
 

@@ -101,7 +101,7 @@ if nargin == 0
 end
 % menu actions:
 while ~isempty(varargin)
-  if ishandle(varargin{1})
+  if numel(varargin) == 1 && isscalar(varargin{1}) && ishandle(varargin{1})
     varargin = [ {'update_handle'} varargin ];
   end
   if ischar(varargin{1})
@@ -374,7 +374,7 @@ while ~isempty(varargin)
       
       if ~isempty(fig)
         out = ResLibCal_UpdateViews(out);
-      else
+      elseif nargout == 0
         out = ResLibCal_UpdateViews(out, 'stdout'); % display result to stdout
       end
     case {'compute','resolution'}
@@ -399,6 +399,7 @@ while ~isempty(varargin)
       h     = varargin{2};
       tag   = get(h, 'Tag');
       % handle case of uitable collimators/distances
+      whos h tag
       if strcmp(tag,'EXP_collimators') && strcmp(get(h,'Type'), 'uitable')
         event = varargin{3};
         data  = get(h,'Data'); % NewData
@@ -456,6 +457,7 @@ while ~isempty(varargin)
     end
     varargin(1) = [];
   elseif isnumeric(varargin{1}) && numel(varargin{1}) == 4
+    % ResLibCal([qh qk ql w])
     % read HKLE coordinates and compute resolution there
     % get current config
     out = ResLibCal_GetConfig;
@@ -478,7 +480,8 @@ while ~isempty(varargin)
     end
     
   elseif numel(varargin) >= 4 && isnumeric(varargin{1}) && isnumeric(varargin{2}) ...
-    && isnumeric(varargin{3}) && isnumeric(varargin{4}) 
+    && isnumeric(varargin{3}) && isnumeric(varargin{4})
+    % ResLibCal(qh, qk, ql, w)
     % read HKLE coordinates and compute resolution there
     % get current config
     out = ResLibCal_GetConfig;
@@ -516,7 +519,8 @@ while ~isempty(varargin)
     out.EXP=EXP;
     if isempty(varargin)
       out = ResLibCal_Compute(EXP);
-      if ~isempty(fig), ResLibCal_UpdateViews(out); end % when they exist
+      if ~isempty(fig), ResLibCal_UpdateViews(out); % when they exist
+      elseif nargout==0, ResLibCal_UpdateViews(out,'stdout'); end
     end
   elseif numel(varargin) >= 1 && isempty(varargin{1})
     out = ResLibCal_GetConfig;
@@ -550,7 +554,7 @@ function out = ResLibCal_UpdateViews(out, mode)
       out = ResLibCal_UpdateResolution1(out); % TAS geometry
       out = ResLibCal_UpdateResolution2(out); % 2D, also shows matrix
       out = ResLibCal_UpdateResolution3(out); % 3D
-      if ~strcmp(mode, 'force') && etime(clock, t) > 2
+      if ~strcmp(mode, 'force') && etime(clock, t) > 5
         disp([ mfilename ': the time required to update all plots gets long.' ])
         disp('INFO          Setting View/AutoUpdate to off.')
         set(ResLibCal_fig('View_AutoUpdate'), 'Checked', 'off');
