@@ -409,8 +409,10 @@ for index=1:model.Dimension
     varargin{index} = reshape(varargin{index}, d);
   end
   % check if axes are vectors of same length and orientation (event type model)
-  if isempty(AxisOrientation), AxisOrientation=size(varargin{index});
-  elseif length(AxisOrientation) == length(size(varargin{index})) ...
+  if ~isscalar(varargin{index}) && isempty(AxisOrientation)
+    AxisOrientation=size(varargin{index});
+  elseif ~isscalar(varargin{index}) ...
+          && length(AxisOrientation) == length(size(varargin{index})) ...
           && any(AxisOrientation ~= size(varargin{index})), ParallelAxes=0;
   end
 end % for index in model dim
@@ -421,6 +423,23 @@ end % for index in model dim
 myisvector=@(c)max(size(c)) == numel(c);
 if model.Dimension > 1 && all(cellfun(myisvector, varargin(1:model.Dimension))) && ~ParallelAxes
   [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
+elseif model.Dimension > 1 && ParallelAxes
+  % make sure all axes will be 'event' style, ie vectors same orientation
+  sz = [];
+  % first get the size of the event/cloud (first non scalar axis)
+  for index=1:model.Dimension
+    if ~isscalar(varargin{index}), sz = size(varargin{index}); break; end
+  end
+  if ~isempty(sz)
+    % then convert all scalar stuff into same length vectors (constant)
+    for index=1:model.Dimension
+      if isscalar(varargin{index})
+        varargin{index} = varargin{index}*ones(sz);
+      else
+        varargin{index} = reshape(varargin{index}, sz);
+      end
+    end
+  end
 end
 
 % evaluate expression ==========================================================
