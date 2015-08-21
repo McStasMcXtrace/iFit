@@ -34,7 +34,7 @@ end
   % now we build up the header
   ret = { sprintf('%% signal=%s(p,%s ...) iFunc object %s', n, ax, s.Tag), '%' };
   if ~isempty(d) 
-    d = textwrap(cellstr(d),80); 
+    d = deblank(cellstr(d)); 
     for index=1:length(d)
       ret{end+1} = sprintf('%% %s', d{index});
     end

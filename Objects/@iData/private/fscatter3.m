@@ -62,15 +62,17 @@ end
 % avoid too many calculations
 if ~isreal(C), C=abs(C); end
 index=find(~isfinite(C(:)));
-C(index)=nan;
+C(index)=0;
 mins = min(C);
 maxs = max(C);
+if mins == maxs, h=[]; return; end
 minz = min(Z);
 maxz = max(Z);
 minx = min(X);
 maxx = max(X);
 miny = min(Y);
 maxy = max(Y);
+C(index)=nan;
 
 % construct colormap :
 

@@ -155,33 +155,41 @@ else  % convert input argument into object
     return
   elseif isa(varargin{1}, 'iFunc')
     in = varargin{1};
-    [signal, ax, name] = feval(in, varargin{2:end});
-    if length(signal) == length(in.Parameters)
-      [signal, ax, name] = feval(in, signal, varargin{3:end});
-    end
-    % swap xy to cope with iData(x,y,z) syntax
-    if numel(ax) >=2, ax(1:2) = ax([ 2 1]); end
-    % assign axes values
-    out = iData(ax{:}, signal);
+    
+    for n_in = 1:numel(in)  % handle array of iFunc
+      if numel(in) == 1, this_in = in;
+      else               this_in = in(n_in); end
+      [signal, ax, name] = feval(this_in, varargin{2:end});
+      if length(signal) == length(this_in.Parameters)
+        [signal, ax, name] = feval(this_in, signal, varargin{3:end});
+      end
+      % swap xy to cope with iData(x,y,z) syntax
+      if numel(ax) >=2, ax(1:2) = ax([ 2 1]); end
+      % assign axes values
+      this_out = iData(ax{:}, signal);
 
-    % assign axes names
-    if nargin > 2 % iData(iFunc,p,axes...)
-      for index=1:numel(ax)
-        if index+2 <= nargin && ~isempty(inputname(index+2))
-          out=label(out,index,inputname(index+2)); 
+      % assign axes names
+      if nargin > 2 % iData(iFunc,p,axes...)
+        for index=1:numel(ax)
+          if index+2 <= nargin && ~isempty(inputname(index+2))
+            this_out=label(this_out,index,inputname(index+2)); 
+          end
         end
       end
-    end
-    out.Title = name;
-    out.Label = out.Title;
-    b.DisplayName = out.Title;
-    setalias(out,'Error', 0);
-    if ~isempty(in.ParameterValues)
-      pars_out = cell2struct(num2cell(in.ParameterValues(:)'), strtok(in.Parameters(:)'), 2);
-      setalias(out,'Parameters', pars_out, [ name ' model parameters' ]);
-    end
-    setalias(out,'Model', in, in.Name);
-    clear signal ax
+      this_out.Title = name;
+      this_out.Label = name;
+      this_out.DisplayName = name;
+      setalias(this_out,'Error', 0);
+      if ~isempty(this_in.ParameterValues)
+        pars_out = cell2struct(num2cell(this_in.ParameterValues(:)'), strtok(this_in.Parameters(:)'), 2);
+        setalias(this_out,'Parameters', pars_out, [ name ' model parameters' ]);
+      end
+      setalias(this_out,'Model', this_in, this_in.Name);
+      clear signal ax
+      
+      if numel(in) == 1, in = this_in; else; in(n_in) = this_in; end
+      out = [ out this_out ];
+    end % for n_in
     % update initial iFunc, if possible
     if ~isempty(inputname(1))
        assignin('caller',inputname(1),in);
