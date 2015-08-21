@@ -60,9 +60,6 @@ if nargin < 2,
   p=a.ParameterValues;
 end
 
-if 0 && ndims(a) > 3
-  error([ 'iFunc:' mfilename ], 'Can only plot dimensionality <= 3. Failed to plot ndims=%d model %s\n', ndims(a), a.Name);
-end
 if strcmp(p, 'guess'), p=[]; end
 
 % evaluate the model value, and axes
@@ -119,6 +116,17 @@ elseif ndims(signal) == 2
 elseif ndims(signal) == 3
   if all(cellfun(@isvector, ax)), [ax{:}]=meshgrid(ax{:}); end
   h =patch(isosurface(ax{2}, ax{1}, ax{3}, signal, mean(signal(:))));
+  set(h,'EdgeColor','None','FaceColor','green'); alpha(0.7);
+  light
+  view(3)
+elseif ndims(signal) == 4
+  signal=squeeze(signal(:,:,1,:));
+  if all(cellfun(@isvector, ax)), [ax{:}]=meshgrid(ax{:}); end
+  x=ax{1}; y=ax{2}; z=ax{3}; t=ax{4};
+  x=squeeze(x(:,:,1,:));
+  y=squeeze(y(:,:,1,:));
+  t=squeeze(t(:,:,1,:));
+  h =patch(isosurface(y,x,t, signal, mean(signal(:))));
   set(h,'EdgeColor','None','FaceColor','green'); alpha(0.7);
   light
   view(3)

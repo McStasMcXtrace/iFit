@@ -14,6 +14,7 @@ function signal=sqw_cubic_monoatomic(varargin)
 % f=iData(s,[],qh,qk,ql,w); scatter3(log(f(:,:,1,:)),'filled');
 %
 % References: https://en.wikipedia.org/wiki/Phonon
+%  E. Meisterhofer <http://lampx.tugraz.at/~hadley/ss1/phonons/scdos/sc.pdf> 2013
 %
 % input:  p: sqw_cubic_monoatomic model parameters (double)
 %           p(1)=C_ratio C1/C2 force constant ratio first/second neighbours.

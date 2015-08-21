@@ -231,6 +231,9 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
   % check the axes and possibly use ndgrid to allow nD operations in the
   % Expression/Constraint
   % Not for event style axes+signal (all 1D)
+  
+  % TODO: better check for event style: 
+  %   all(isrow(axes)) || all(iscolumns(axes)) && all(numel(axes) == numel(axes{1}) || isvector(signal)
   myisvector=@(c)max(size(c)) == numel(c);
   if model.Dimension > 1 && all(cellfun(myisvector, varargin(1:model.Dimension))) ...
     && ~isvector(varargin{model.Dimension+1})
