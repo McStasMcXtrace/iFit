@@ -68,9 +68,10 @@ function signal=sqw_sine3d(varargin)
 % output: signal: model value
 %
 % Version: $Date$
-% See also iData, iFunc/fits, iFunc/plot, gauss
+% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phon, sqw_ph_ase, sqw_cubic_monoatomic, sqw_vaks
+%   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 
-signal.Name           = [ 'S(q,w) 3D sine dispersion with DHO line shape [' mfilename ']' ];
+signal.Name           = [ 'Sqw_sine3d 3D sine dispersion with DHO line shape [' mfilename ']' ];
 signal.Description    = 'A 3D HKL sine wave dispersion with tunable energy gap at zone centre and boundary, and DHO line shape';
 
 signal.Parameters     = {  ...
@@ -110,7 +111,9 @@ signal.Expression     = { ...
 
 signal=iFunc(signal);
 
-if nargin == 1 && isnumeric(varargin{1})
+if nargin == 0
+  signal.ParameterValues=[ 4 6 8 0  0 0 0  .5 .5 .5  0.04  50  1 0 ];
+elseif nargin == 1 && isnumeric(varargin{1})
   if length(varargin{1}) == 1 % [ Emax ]
     p = [varargin{1} varargin{1} varargin{1} 0  0 0 0  .5 .5 .5  0.04  50  1 0];
   elseif length(varargin{1}) == 2 % [ Emin Emax ]
