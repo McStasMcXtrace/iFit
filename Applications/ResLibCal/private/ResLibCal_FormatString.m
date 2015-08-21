@@ -42,7 +42,8 @@ function [res, inst] = ResLibCal_FormatString_Resolution(resolution, EXP, mode)
 H   = resolution.HKLE(1); K=resolution.HKLE(2); L=resolution.HKLE(3); W=resolution.HKLE(4);
 
 R0  = resolution.R0;
-if isempty(resolution.xyz.RM) || isempty(resolution.abc.RM)
+if ~resolution.R0 || isempty(resolution.xyz) || isempty(resolution.abc) ...
+        || isempty(resolution.xyz.RM) || isempty(resolution.abc.RM)
   res=[]; inst=[];
   return
 end

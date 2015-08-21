@@ -12,7 +12,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
 %        rc_cnmat, rc_popma, res3ax5, vTAS_AFILL, rc_bragg
 %        rc_re2rc called in ResLibCal_RM2RMS
 
-  resolution = [];
+  resolution = {};
   if nargin == 0,  EXP=''; end
   if isempty(EXP), EXP=ResLibCal_fig2EXP(get(0,'CurrentFigure')); end
   if ~isstruct(EXP), return; end
@@ -49,27 +49,54 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     EXP.method=methods{EXP.method+1};
   end
   
-  method_orig = EXP.method;
-  EXP.method = lower(EXP.method);
-  
   % prepare potential scan in HKLE
   QH  = EXP.QH; QK = EXP.QK; QL = EXP.QL; W =EXP.W;
-  len = prod([ numel(QH) numel(QK) numel(QL) numel(W) ]);
   
-  EXPorg = EXP;
+  % handle case where all HKLE are vectors of same length
+  myisvector=@(c)max(size(c)) == numel(c);
+  sz = [ numel(QH) numel(QK) numel(QL) numel(W) ];
+  
+  if sz(1) > 1 && myisvector(QH) && myisvector(QK) && myisvector(QL) && myisvector(W) && all(sz == sz(1))
+    % all are vectors of same length: line
+    for index=1:sz(1)
+      resolution{end+1} = ResLibCal_ComputeResMat_Single(EXP, QH(index), QK(index), QL(index), W(index));
+    end
+  else
+    % 4D case or single scalars
+  
+    len = prod([ numel(QH) numel(QK) numel(QL) numel(W) ]);
 
-  for iqh=1:numel(QH), h = QH(iqh);
-  for iqk=1:numel(QK), k = QK(iqk);
-  for iql=1:numel(QL), l = QL(iql);
-  for ien=1:numel(W),  w = W(ien);
-    % loop on scan steps
-    
+    for iqh=1:numel(QH), 
+    for iqk=1:numel(QK), 
+    for iql=1:numel(QL), 
+    for ien=1:numel(W),  
+      % loop on scan steps
+      res = ResLibCal_ComputeResMat_Single(EXP, QH(iqh), QK(iqk), QL(iql), W(ien));
+      
+      % store resolution
+      if len == 1
+        resolution = res;
+      else
+        resolution{end+1} = res;
+      end
+    end % for HKLE
+    end
+    end
+    end
+  end % test for vector or 4D [QH,QK,QL,W] locations
+% end ResLibCal_ComputeResMat
+
+% ------------------------------------------------------------------------------
+function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
+% compute a single resolution at HKLE
     % initiate empty values
     R0=1; RM=[]; RMS=[]; bragg = [];
 
     % compute Ki, Kf, Ei, Ef
-    EXP=EXPorg;
     EXP.QH = h; EXP.QK=k; EXP.QL=l; EXP.W=w;
+    
+    method_orig = EXP.method;
+    EXP.method = lower(EXP.method);
     
     % variabe focusing for each steps
     if any([ EXP.mono.rv EXP.mono.rh EXP.ana.rv EXP.ana.rh ] <= 0)
@@ -142,32 +169,26 @@ function resolution = ResLibCal_ComputeResMat(EXP)
     res.R0    = R0;
     res.HKLE  = [ h k l w ];  % evaluation location
     res.method= method_orig;
-    res.README={ ...
-      '[xyz] is the resolution matrix information in the [Qx,Qy,Qz,E] frame Qx // Q, Qz vertical'
-      '[abc] is the resolution matrix information in the [QA,QB,QC,E] frame (ortho-normal)' };
-    res.xyz.RM= RM;
-    res.abc   = [];
+    
+    
 
     % resolution matrix in [abc] and transformation [HKL] -> [ABC] frame
     % S = inv([x y z]) when [x y z ] = StandardSystem(EXP);
     % S = matrix 's' in inline (below) ResLibCal_ComputeResMat_Angles
-    res = ResLibCal_RM2RMS(EXP, res);
-
-    [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP, res.abc.hkl2Frame);
-    res                     = ResLibCal_RM2clouds(EXP, res); % res.abc.cloud and res.xyz.cloud
+    if ~isempty(RM)
+      res.xyz.RM= RM;
+      res.abc   = [];
+      res = ResLibCal_RM2RMS(EXP, res);
     
-    % store resolution
-    if len == 1
-      resolution = res;
+      [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP, res.abc.hkl2Frame);
+      res                     = ResLibCal_RM2clouds(EXP, res); % res.abc.cloud and res.xyz.cloud
+      res.README={ ...
+      '[xyz] is the resolution matrix information in the [Qx,Qy,Qz,E] frame Qx // Q, Qz vertical'
+      '[abc] is the resolution matrix information in the [QA,QB,QC,E] frame (ortho-normal)' };
     else
-      resolution{end+1} = res;
+      res.README='Could not compute the resolution';
     end
-  end % for HKLE
-  end
-  end
-  end
-% end ResLibCal_ComputeResMat
-
+    
 % ------------------------------------------------------------------------------
 function [A,Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP, s)
 % compute all TAS angles (in plane)

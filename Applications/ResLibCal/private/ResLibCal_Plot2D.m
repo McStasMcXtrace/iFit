@@ -33,6 +33,8 @@ end
 
 for index=1:numel(resolutions)
   resolution = resolutions{index};
+  
+  if ~resolution.R0, continue; end
   H=resolution.HKLE(1); K=resolution.HKLE(2); 
   L=resolution.HKLE(3); W=resolution.HKLE(4);
 
