@@ -1,4 +1,4 @@
-function y = tas_conv4d(dispersion, config, frame)
+function signal = tas_conv4d(dispersion, config, frame)
 % model=tas_conv4d(dispersion_model, tas_config) 4D convolution function for 
 %   neutron Triple-Axis Spectrometers.
 %
@@ -22,9 +22,12 @@ function y = tas_conv4d(dispersion, config, frame)
 %     the axis 'A' defined for the lattice orientation, the 'K' axis is orthogonal
 %     in plane, and 'L' is vertical.
 %
-%
 % The model can then be used for refinement as a usual fit model:
 %   fits(model, data_set, parameters, options, constraints)
+%
+% Example:
+%   s=sqw_vaks('KTaO3');  % create a 4D S(q,w) perovskite model
+%   t=tas_conv(s);        % convolute it with a TAS resolution, and open ResLibCal.
 
 if nargin < 1
   dispersion = '';
@@ -35,7 +38,7 @@ end
 if nargin < 3
   frame = '';
 end
-if isempty(frame), frame='abc'; end
+
 frame = lower(frame);
 if isempty(dispersion)
   error([ mfilename ': no dispersion given for convolution' ]);
@@ -59,23 +62,36 @@ end
 
 % CHECKS and information before building the model =============================
 
+% open ResLibCal;
+ResLibCal;
+
 % configuration is empty, or ResLibcal: will use current config
-if strcmp(config,'ResLibcal'), config=''; end
 if isdir(config), config=''; end
-if isstruct(config) && isfield(config,'EXP')
-  ResLibCal(config);
-  config='';
-end
-% the configuration is a file: we get the configuration and load it into ResLibCal GUI.
-if ~isempty(dir(config)) && ~isdir(config)
-  ResLibCal(config);
+
+if ischar(config) && any(strcmp(lower(config),{'tas','rescal','reslib','reslibcal'}))
+  % get the current configuration
+  config = ResLibCal;
+elseif isstruct(config) && (isfield(config,'EXP') || isfield(config, 'method'))
+  % load ResLibCal (structure) configuration
+  try
+    config = ResLibCal(config);
+  end
+elseif ~isempty(dir(config)) && ~isdir(config)
+  % the configuration is a file: we get the configuration and load it into ResLibCal GUI.
+  config=ResLibCal(config);
 end
 
 % when starting, auto-update is set to off to avoid long computation+display
+disp([ mfilename ': setting ResLibCal:autoupdate to OFF for efficiency in computations.' ]);
 ResLibCal('autoupdate','off');
 
-% display message about [abc] or [xyz] cloud usage, and axes used ?
-disp([ 'tas_conv4d: Using reference frame: ' frame ])
+if isempty(frame), 
+  if dispersion.Dimension == 4, frame='abc'; 
+  else frame='xyz'; end
+end
+
+% display message about [abc] or [xyz] cloud usage, and axes used
+disp([ mfilename ': Using reference frame: ' frame ])
 if isstruct(config) && isfield(config, 'resolution')
   if ~iscell(config.resolution), resolution={ config.resolution }; 
   else resolution = config.resolution; end
@@ -86,19 +102,20 @@ end
 % assemble the convoluted model ================================================
 
 % the built model parameters will be that of the model
-y.Parameters = dispersion.Parameters;
+signal.Parameters = dispersion.Parameters;
 if ~isempty(config)
-  y.Name       = [ 'conv(' dispersion.Name ', ResLibCal(''' config ''')) [' mfilename ']' ];
-  y.Description= [ '(' dispersion.Description ') convoluted by (TAS 4D resolution function)' ];
+  signal.Name       = [ 'conv(' dispersion.Name ', ResLibCal(''' config ''')) [' mfilename ']' ];
+  signal.Description= [ '(' dispersion.Description ') convoluted by (TAS 4D resolution function)' ];
 else
-  y.Name       = [ 'conv(' dispersion.Name ', ResLibCal)' ];
-    y.Description= [ '(' dispersion.Description ') convoluted by (TAS 4D resolution function with configuration ' config ')' ];
+  signal.Name       = [ 'conv(' dispersion.Name ', ResLibCal)' ];
+    signal.Description= [ '(' dispersion.Description ') convoluted by (TAS 4D resolution function with configuration ' config ')' ];
 end
-y.Dimension = dispersion.Dimension;
-y.Guess     = dispersion.Guess;
+signal.Dimension = dispersion.Dimension;
+signal.Guess     = dispersion.Guess;
 
 % we store the dispersion into UserData so that we can evaluate it at feval
-y.UserData.dispersion = dispersion;
+signal.UserData.dispersion = dispersion;
+signal.UserData.config     = config;
 
 % create the Expression...
 % TODO: in a fit procedure, as the coordinates xyzt (HKLE) do not change, the clouds 
@@ -109,12 +126,12 @@ y.UserData.dispersion = dispersion;
 % TODO: integration can be achieved using a Gauss-Hermite estimate, which is much
 % faster
 
-% if dispersion.Dimension == 2 (liquid,powder,gas,glass,polymer...), then use |q|,w as axes
+% if dispersion.Dimension == 2 (liquid,powder,gas,glass,polymer...), then use |q|,w as axes. Should use xyz frame
 if dispersion.Dimension == 2
   liq = 'cloud{1} = sqrt(cloud{1}.^2+cloud{2}.^2+cloud{3}.^2); cloud(2:3)=[];';
 else liq='';
 end
-y.Expression = { ...
+signal.Expression = { ...
   '% check if config is given as additional argument during evaluation of model', ...
   'if numel(varargin) >= 1 && (isstruct(varargin{1}) || ~isempty(dir(varargin{1})))', ...
   '  config = varargin{1};', ...
@@ -127,10 +144,12 @@ y.Expression = { ...
   'else resolution = out.resolution; end', ...
   'signal=zeros(size(resolution));', ...
   'for index=1:numel(resolution)', ...
-[ 'cloud=resolution{index}.' frame '.cloud;' ], ...
+  '  if ~resolution{index}.R0, continue; end', ...
+[ '  cloud=resolution{index}.' frame '.cloud;' ], ...
 liq, ...
-'dispersion=this.UserData.dispersion;', ...
-'signal(index)=sum(feval(dispersion, p, cloud{:}))*resolution{index}.R0/numel(cloud{1})', ...
-'end' };
-y
-y = iFunc(y);
+  '  dispersion=this.UserData.dispersion;', ...
+  '  this_signal=feval(dispersion, p, cloud{:});', ...
+  '  signal(index) = sum(this_signal(:))*resolution{index}.R0/numel(cloud{1})', ...
+  'end' };
+
+signal = iFunc(signal);
