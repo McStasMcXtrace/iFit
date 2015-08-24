@@ -15,8 +15,8 @@
       <li><a href="#mozTocId96090">List of default fit models</a></li>
       <li><a href="#mozTocId285330">Specialized models</a>
         <ol>
-          <li><a href="#mozTocId597620">Scattering models (neutrons,
-              x-rays)</a></li>
+          <li><a href="#mozTocId597620">Small Angle Scattering models
+              (neutrons, x-rays)</a></li>
           <li><a href="#mozTocId344379"> Powder structure refinement
               (Rietveld)</a></li>
           <li><a href="#mozTocId677670">Phonon/spin-wave dispersion</a></li>
@@ -46,6 +46,7 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">Commands we use in this page: <span
         style="font-style: italic;">fits, <a href="#mozTocId775891">ifitmakefunc,
+
 
 
 
@@ -100,6 +101,7 @@
     <h3><a class="mozTocH3" name="mozTocId96090"></a><span
         style="font-weight: bold;">List of default fit models</span></h3>
     The 1D functions are <span style="font-style: italic;">signal=f(parameters,
+
 
 
 
@@ -223,6 +225,7 @@
 
 
 
+
               "x" unit)</span><br>
           </td>
         </tr>
@@ -269,6 +272,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Plot-exponential-
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Stretched_exponential_function">Exponential
+
 
 
 
@@ -383,6 +387,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/7/74/Normal_Distribution_PDF
 
 
 
+
               distribution function</a> <img alt="Laplace"
               title="Laplace"
 src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
@@ -398,6 +403,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Laplace_pdf_mod.svg"
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Log-normal_distribution">Log-Normal
+
 
 
 
@@ -577,6 +583,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Sine_one_period.svg"
 
 
 
+
               Sine function</a> (exponential decay) <img alt="sine_exp"
               title="sine_exp"
               src="https://upload.wikimedia.org/wikipedia/commons/2/25/DampedSine.png"
@@ -621,6 +628,7 @@ src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Triangular_function.svg
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rectangular_function">Top-Hat
+
 
 
 
@@ -770,6 +778,7 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
               Gaussian</a><br>
           </td>
           <td valign="top"><font color="#cc33cc">nD</font><br>
@@ -798,8 +807,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">iData);<br></span></pre>
     which also produces the plot above.<br>
     <h3><a class="mozTocH3" name="mozTocId285330"></a>Specialized models</h3>
-    <h4><a class="mozTocH4" name="mozTocId597620"></a>Scattering models
-      (neutrons, x-rays)</h4>
+    <h4><a class="mozTocH4" name="mozTocId597620"></a>Small Angle
+      Scattering models (neutrons, x-rays)</h4>
     <p>We list below a number of models used to describe neutron and
       x-ray scattering from matter. The structure factor S(q) accounts
       for the structure of matter at the atomistic/molecular level,
@@ -833,11 +842,12 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
         = P(q).S(q)</span><br>
     </p>
     <p style="text-align: left;">where <span style="font-style:
         italic;">q</span> is the momentum exchange in the material.
-      These models have been extracted from the following sources:<br>
+      These models have been extracted from:<br>
     </p>
     <ul>
       <li><a href="http://kur.web.psi.ch/sans1/SANSSoft/sasfit.html">SASfit</a>,
@@ -866,37 +876,10 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
           Kohlbrecher</a> and <a
           href="mailto:ingo%28at%29cs.tu-berlin.de">Ingo Bressler</a>
         PSI (2006-2011)</li>
-      <li>CrysFML by <a href="mailto:jrc@ill.eu">Juan
-          Rodriguez-Carvajal</a> and <a href="mailto:jplatas@ull.es">Javier
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          Gonzalez-Platas</a>, ILL and <span class="st">ULL, Tenerife,
-          <em>Spain</em></span></li>
     </ul>
     <p style="text-align: left;"></p>
     <table style="text-align: left; width: 1016px; height: 13px;"
@@ -934,6 +917,7 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">sf_square_well
+
 
 
 
@@ -1040,6 +1024,7 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
 
 
 
+
             <br>
           </td>
           <td style="vertical-align: top;">Sphere form factor [Guinier]<br>
@@ -1081,8 +1066,8 @@ src="http://www.ee.washington.edu/research/laceo/emwave/discrete/pair2.gif"
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rietveld_refinement">Rietveld</a>
             refinement of powder sample <br>
-            with full McStas instrument model <img alt="rietveld"
-              title="rietveld"
+            with full <a href="http://www.mcstas.org">McStas</a>
+            instrument model <img alt="rietveld" title="rietveld"
 src="http://d32ogoqmya1dw8.cloudfront.net/images/research_education/geochemsheets/techniques/xrayplot-usgs2.gif"
               align="middle" width="100" height="59"><br>
           </td>
@@ -1098,6 +1083,25 @@ src="http://d32ogoqmya1dw8.cloudfront.net/images/research_education/geochemsheet
     <pre style="margin-left: 40px;"><span style="font-style: italic;"></span><span style="font-style: italic;"></span></pre>
     The '<b>rietveld</b>' model allows to prepare a sample+instrument
     model in order to fit a diffraction/structure data set.<br>
+    It is obtained by making use of the CrysFML library:<br>
+    <ul>
+      <li><a href="https://forge.epn-campus.eu/projects/crysfml">CrysFML</a>
+        by <a href="mailto:jrc@ill.eu">Juan Rodriguez-Carvajal</a> and
+        <a href="mailto:jplatas@ull.es">Javier Gonzalez-Platas</a>, ILL
+        and <span class="st">ULL, Tenerife, <em>Spain </em>(LGPL 3.0<em>)</em></span></li>
+      <li><span class="st">Commission on Crystallographic Computing,
+          IUCr Newsletter No.1, pp 50-58,&nbsp; January 2003 [<a
+href="http://www.iucr.org/resources/commissions/crystallographic-computing/newsletters/1/crysfml">link</a>]<br>
+        </span></li>
+    </ul>
+    The procedure is to import a crystal structure (CIF, ShellX, CFL
+    format) then compute the HKL <i>d-F</i><sup>2</sup> list of
+    reflections (for crystal or powder), and insert this powder model
+    into a diffractometer simulated using <a
+      href="http://www.mcstas.org">McStas</a>. The detector image, which
+    is the convolution of the sample structure with the instrument
+    resolution, is then compared with a given diffractogram, and
+    optimised to refine the crystal parameters.<br>
     <br>
     The syntax to build the model, and then perform the refinement is:<br>
     <div style="margin-left: 40px;">
@@ -1161,6 +1165,30 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     constraints seen above).<br>
     Remember to bound most or all of the model parameters for a faster
     and more reliable convergence of the optimization.<br>
+    <br>
+    <i><b>References:</b></i><br>
+    <span class="st">CrysFML, Commission on Crystallographic Computing,
+      IUCr Newsletter No.1, pp 50-58,&nbsp; January 2003 [<a
+href="http://www.iucr.org/resources/commissions/crystallographic-computing/newsletters/1/crysfml">link</a>]</span>.<br>
+    McStas: K. Lefmann and K. Nielsen, Neutron News 10, 20, (1999) ; P.
+    Willendrup, E. Farhi and K. Lefmann, Physica B, 350 (2004) 735.<br>
+    <br>
+    <i><b>Requirements/installation:</b></i><br>
+    <a href="http://www.mcstas.org">McStas</a> must be installed.
+    Packages exist for all major systems (Linux as RedHat and Debian
+    flavours, Windows, Mac OSX). For Debian-class systems:<br>
+    <blockquote>
+      <pre>cd /etc/apt/sources.list.d
+sudo wget http://packages.mccode.org/debian/mccode.list
+sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</font></b><br></pre>
+    </blockquote>
+    The CrysFML does not need to be installed, as the used bits are
+    assembled in the <a
+      href="http://ifit.mccode.org/Downloads/cif2hkl.F90">cif2hkl
+      fortran</a> programme, which generates HKL d-F2 reflection lists
+    suitable for the PowderN and Isotropic_Sqw McStas components. The
+    cif2hkl programme is part of the iFit distribution, and is compiled
+    by calling the local fortran compiler (gfortran) on demand.<br>
     <h4><a class="mozTocH4" name="mozTocId677670"></a>Phonon/spin-wave
       dispersion</h4>
     <p>The <b>sqw_sine3d</b> model provides a simple way to model most
@@ -1169,8 +1197,9 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
         href="https://en.wikipedia.org/wiki/Spin_wave">spin-waves</a>,
       acoustic and optical modes, incommensurate dispersions.<br>
     </p>
-    <p><u>Limitation</u>: this model only handles simple sine
-      dispersions, and can not treat mode exchange (interferences). </p>
+    <p><i><u>Limitation</u></i><i>:</i> this model only handles simple
+      sine dispersions, and can not treat mode exchange (interferences).
+    </p>
     <table style="text-align: left; width: 1016px; height: 59px;"
       border="1" cellpadding="2" cellspacing="2">
       <tbody>
@@ -1288,6 +1317,7 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
         </i> and <i>Q_freq</i> parameters along axes.</li>
       <li>A 1D or 2D dispersion can be obtained when setting the
         frequencies (e.g. <i>QK_freq QL_freq</i>) to 0<br>
@@ -1298,6 +1328,7 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
     <blockquote>
       <p>&nbsp; p(&nbsp;
         1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1331,9 +1362,11 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
         <b>E1_qk</b> energy at QK half period [meV]<br>
         &nbsp; p(&nbsp;
         3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1367,9 +1400,11 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
         <b>E0</b> zone-centre energy gap [meV]<br>
         &nbsp; p(&nbsp;
         5)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1403,9 +1438,11 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
         <b>QK0</b> QK zone-centre [rlu]<br>
         &nbsp; p(&nbsp;
         7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1439,9 +1476,11 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
         <b>QH_freq</b> QH frequency [multiples of pi]<br>
         &nbsp; p(&nbsp;
         9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1475,9 +1514,11 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
         <b>QL_freq</b> QL frequency [multiples of pi]<br>
         &nbsp; p(
         11)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1542,9 +1583,9 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
       The dynamical matrix is 5x5 and its eigenvalues are the mode
       frequencies.<br>
     </p>
-    <p><u>Limitation</u>: even though this is model uses few parameters,
-      the dynamic range is limited to e.g.<b> |q|</b> &lt; 0.3-0.5 rlu
-      and |w| &lt; 100 meV.<br>
+    <p><i><u>Limitation</u></i><i>:</i> even though this is model uses
+      few parameters, the dynamic range is limited to e.g.<b> |q|</b>
+      &lt; 0.3-0.5 rlu and |w| &lt; 100 meV.<br>
     </p>
     <table style="text-align: left; width: 1016px; height: 59px;"
       border="1" cellpadding="2" cellspacing="2">
@@ -1614,9 +1655,11 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
       <b>At</b> transverse acoustic [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1650,9 +1693,11 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
       <b>Aa</b> anisotropic acoustic [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1686,6 +1731,7 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
       <b>Sa</b> soft mode&nbsp; anisotropic soft optical [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       6)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1704,9 +1750,11 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
       <b>Vt</b> transverse acoustic-optical coupling [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1741,9 +1789,11 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
 
 
 
+
       <b>w0</b> soft mode frequency at q=0, depends on temperature [meV]<br>
       &nbsp; p(&nbsp;
       9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1782,11 +1832,12 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
         alt="sqw_vaks" title="sqw_vaks" src="images/Models_sqw_vaks.png"
         align="right" border="0" width="200" height="151"></a><br>
     <pre>	&gt;&gt; s=<font color="#3366ff">sqw_vaks</font>(<font color="#cc33cc">'KTaO3'</font>); 		<i>% create model, with KTaO3 parameters</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,10,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)),'filled');	<i>% plot</i> ql(1)=0 plane<br></pre>
-    <br>
-    <b>References:</b><br>
+    <i><br>
+    </i><i> </i><i><b>References:</b></i><br>
     <ul>
       <li>E. Farhi et al, <i>EPJB</i>, <b>15</b> (2000) pp 615-623. <a
 href="https://www.google.fr/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=1&amp;cad=rja&amp;uact=8&amp;ved=0CCIQFjAAahUKEwjVzfP69InHAhVFuBQKHRw2Da4&amp;url=http%3A%2F%2Fepjb.epj.org%2Farticles%2Fepjb%2Fabs%2F2000%2F12%2Fcontents%2Fcontents.html&amp;ei=08u9VZWYAsXwUpzstPAK&amp;usg=AFQjCNEU5zWW66fSudDTwYfsP7OHMvJ2lA&amp;sig2=ufCosM5KrOKdfetSTwa10Q&amp;bvm=bv.99261572,d.d24">DOI:
+
 
 
 
@@ -1807,6 +1858,7 @@ href="https://www.google.fr/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&
       <li> A.K. Tagantsev et al, <i>Nature Comm</i>, <b>4</b> (2013)
         2229. <a
 href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">DOI:
+
 
 
 
@@ -1895,6 +1947,7 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
       <b>C_ratio</b> C1/C2 force constant ratio first/second neighbours<a
 href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
           alt="sqw_cubic_mono" title="sqw_cubic_mono"
@@ -1916,9 +1969,11 @@ href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
 
 
 
+
       <b>E0</b> sqrt(C1/m) energy [meV]<br>
       &nbsp; p(&nbsp;
       3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -1952,9 +2007,10 @@ href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
     <a href="file:///home/farhi/dev/iFit/Docs/Plot.html#mozTocId734523">Plot/3D</a>
     page.<br>
     <br>
-    <b>References:</b><br>
+    <i> </i><i><b>References:</b></i><br>
     <blockquote>E. Meisterhofer &lt;<a
         href="http://lampx.tugraz.at/%7Ehadley/ss1/phonons/scdos/sc.pdf">http://lampx.tugraz.at/~hadley/ss1/phonons/scdos/sc.pdf</a>&gt;
+
 
 
       2013<br>
@@ -1985,6 +2041,7 @@ href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
         = - &#8721; D</i><i><sub>&#945;</sub></i><i><sub>&#946;</sub></i><i>.u</i><i><sub>&#946;</sub></i></blockquote>
     In order to simplify this expression, we assume a periodic motion:<br>
     <blockquote><i>u</i><i><sub>&#945;</sub></i><i>=U</i><i><sub>&#945;</sub></i><i>(k)
+
         e </i><i><sup>i(<b>k.r</b> - &#969;t</sup></i><i><sup>)</sup></i><br>
     </blockquote>
     where <b><i>r</i></b> is the position of the atom in a so-called <i>super-cell</i>,
@@ -2048,6 +2105,7 @@ href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
 
 
 
+
             estimated by <i>ab-initio</i>, using <a
               href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/phon/">PHON</a>/<a
               href="http://www.quantum-espresso.org/">QE</a><i>.&nbsp;</i>
@@ -2069,6 +2127,7 @@ href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
     <br>
     The general syntax for creating&nbsp; the S(q,w) model is:<br>
     <blockquote>s = <font color="#3366ff">sqw_phon</font>;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -2127,6 +2186,7 @@ href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
 
 
 
+
       PP selector</a>.<br>
     <br>
     Other options, given as strings, or a structure, allow to customise
@@ -2148,6 +2208,7 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
       <li><b>supercell</b>: The <i>dimension of the supercell</i> can
         be given using e.g. the <font color="#cc33cc">'supercell=2'</font>
         (for a 2x2x2 supercell) argument, or <font color="#cc33cc">'supercell=[2
+
 
 
 
@@ -2180,6 +2241,7 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
       </u></i>
     <ul>
       <li><b> occupations</b>: For metallic and insulator systems, the <i>electron
+
 
 
 
@@ -2236,12 +2298,14 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
 
 
 
+
       <b>Gamma</b>&nbsp; Damped Harmonic Oscillator width in energy
       [meV]<br>
       &nbsp; p(&nbsp;
       3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Temperature</b>&nbsp;
+
 
 
 
@@ -2287,7 +2351,7 @@ href="http://www.quantum-espresso.org/wp-content/uploads/upf_files/O.pbe-kjpaw.U
     <a href="file:///home/farhi/dev/iFit/Docs/Plot.html#mozTocId734523">Plot/3D</a>
     page.<br>
     <br>
-    <b>References:</b><br>
+    <i><b>References:</b></i><br>
     <ul>
       <li><a href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a>: D.
         Alfe, <i>Computer Physics Communications</i> <b>180</b>,2622-2633
@@ -2304,7 +2368,9 @@ href="http://www.quantum-espresso.org/wp-content/uploads/upf_files/O.pbe-kjpaw.U
 
 
 
+
         (2009). &lt;<a href="http://chianti.geol.ucl.ac.uk/%7Edario">http://chianti.geol.ucl.ac.uk/~dario</a>&gt;.
+
 
 
 
@@ -2335,9 +2401,10 @@ href="http://www.quantum-espresso.org/wp-content/uploads/upf_files/O.pbe-kjpaw.U
 
 
 
+
         GPL2 license.</li>
     </ul>
-    <b>Requirements/installation:</b><br>
+    <i><b>Requirements/installation:</b></i><br>
     <ul>
       <li><a href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a> must
         be installed. It requires a Fortran 90 compiler, e.g. <b>gfortran</b>
@@ -2349,6 +2416,7 @@ href="http://www.quantum-espresso.org/wp-content/uploads/upf_files/O.pbe-kjpaw.U
     </ul>
     <blockquote>We provide a <a
 href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/phon-1.40-amd64.deb">PHON
+
 
 
 
@@ -2387,6 +2455,7 @@ sudo apt-get install phon
 
 
 
+
           yum install quantum-espresso</i> (RedHat class systems). Type
         (Ubuntu/Mint/Debian):</li>
     </ul>
@@ -2407,6 +2476,7 @@ sudo apt-get install phon
       run is the name of a configuration file describing the material
       lattice and atom positions. This file can be in any <a
         href="https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io">ASE
+
 
 
 
@@ -2471,6 +2541,7 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
 
 
 
+
       &nbsp;&nbsp;&nbsp; creates a simple fcc Al model<br>
     </blockquote>
     or<br>
@@ -2478,6 +2549,7 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
     </blockquote>
     or<br>
     <blockquote>s = <font color="#3366ff">sqw_ph_ase</font>(configuration,
+
 
 
 
@@ -2511,11 +2583,13 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
 
 
 
+
           3 2]'</font>.</li>
     </ul>
     <p>Currently, this model uses the default ASE computational
       calculator '<a
 href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculators.emt">EMT</a>'.
+
 
 
 
@@ -2543,12 +2617,14 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculat
 
 
 
+
       <b>Gamma</b>&nbsp; Damped Harmonic Oscillator width in energy
       [meV]<br>
       &nbsp; p(&nbsp;
       3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Temperature</b>&nbsp;
+
 
 
 
@@ -2589,13 +2665,13 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculat
     <a href="file:///home/farhi/dev/iFit/Docs/Plot.html#mozTocId734523">Plot/3D</a>
     page.<br>
     <br>
-    <b>References:</b><br>
+    <i><b>References:</b></i><br>
     <a href="https://wiki.fysik.dtu.dk/ase">Atomic Simulation
       Environment</a><br>
     S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66,
     2002.<br>
     <br>
-    <b>Requirements:</b><br>
+    <i><b>Requirements:</b></i><br>
     The <a href="https://wiki.fysik.dtu.dk/ase">ASE</a> must be
     installed. Packages exist for Ubuntu/Mint/Debian, RedHat/Fedora,
     OpenSUSE, MacOSX (brew), and Windows (experimental). Type
@@ -2728,6 +2804,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculat
 
 
 
+
         (calls fconv in correlation mode)<br>
       </li>
     </ul>
@@ -2766,6 +2843,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculat
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
