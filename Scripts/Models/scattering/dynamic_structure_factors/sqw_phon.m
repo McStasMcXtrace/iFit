@@ -17,7 +17,7 @@ function signal=sqw_phon(varargin)
 % WARNING: Single intensity and line width parameters are used here.
 %   This model is only suitable to compute phonon dispersions for e.g solid-
 %   state materials.
-%   PHON and QuantumEspresso must be installed.
+%   PHON('phon') and QuantumEspresso('pw') must be installed.
 %   The temporary directories (UserData.dir) are not removed.
 %
 % The arguments can be any set of:
@@ -56,6 +56,10 @@ function signal=sqw_phon(varargin)
 %   options.mpi    =scalar                 number of CPUs to use for PWSCF
 %     this option requires MPI to be installed (e.g. openmpi).
 %   options.potential_auto=0 or 1          automatic setting of the best PP
+%   options.phon   =string                 path to PHON executable, e.g. 'phon'
+%     if not given, 'phon' is assumed to be available from PATH.
+%   options.pwscf  =string                 path to QW/PWSCF executable, e.g. 'pw.x' or 'pw.exe'
+%     if not given, 'pw' is assumed to be available from PATH.
 %
 % options affecting memory usage:
 %   options.diagonalization='david' or 'cg'
@@ -145,7 +149,7 @@ p = fileparts(poscar);
 if isempty(p), p=pwd; end
 
 % check for installation of PHON and QE
-[options.phon, options.pwscf] = sqw_phon_requirements;
+[options.phon, options.pwscf] = sqw_phon_requirements(options);
 if isempty(options.phon) || isempty(options.pwscf)
   return
 end
@@ -348,6 +352,8 @@ function [poscar, options]=sqw_phon_argin(varargin)
   options.potentials ={};
   options.kpoints=2;
   options.disp   =[];
+  options.phon   =''; % path to PHON
+  options.pwscf  =''; % path to QE/PWSCF
 
   % read input arguments
   for index=1:numel(varargin)
@@ -471,17 +477,22 @@ options.potentials_full = potentials_full;
 
 % ------------------------------------------------------------------------------
 
-function [phon, pwscf]  = sqw_phon_requirements
+function [phon, pwscf]  = sqw_phon_requirements(options)
 % check if PHON and QuantumExpresso are installed
 
 % check for PHON
-cmd = 'phon';
-if ispc, cmd=[ cmd '.exe' ]; end
+if isempty(options.phon)
+  cmd = 'phon';
+  if ispc, cmd=[ cmd '.exe' ]; end
+else
+  cmd = options.phon;
+end
+
 if ~isempty(dir('INPHON')), delete('INPHON'); end
 [status, result] = system(cmd);
 if isempty(strfind(upper(result),'PHON, VERSION'))
   phon = [];
-  disp([ mfilename ': ERROR: requires PHON to be installed.' ])
+  disp([ mfilename ': ERROR: requires PHON to be installed: ' cmd ])
   disp('  1- Get it at <http://chianti.geol.ucl.ac.uk/~dario>.');
   disp('  2- Extract, go in directory, compile with: ./configure; make;')
   disp('  3- copy executable src/phon into e.g. /usr/local/bin or /usr/bin')
@@ -491,10 +502,14 @@ else
 end
 
 % check for Quantum ESPRESSO Plane Wave Self Consistent Field
-if ispc
-  cmd = 'pw.exe';
+if isempty(options.pwscf)
+  if ispc
+    cmd = 'pw.exe';
+  else
+    cmd = 'pw.x';
+  end
 else
-  cmd = 'pw.x';
+  cmd = options.pwscf;
 end
 [status, result] = system([ 'echo 0 | ' cmd ]);
 try
@@ -502,7 +517,7 @@ delete('input_tmp.in')
 end
 if isempty(strfind(upper(result),'PWSCF'))
   pwscf = [];
-  disp([ mfilename ': ERROR: requires Quantum ESPRESSO to be installed.' ])
+  disp([ mfilename ': ERROR: requires Quantum ESPRESSO to be installed: ' cmd ])
   disp('  1- Get it at <http://www.quantum-espresso.org>.');
   disp('  2- Install with e.g.:')
   if ~ispc
