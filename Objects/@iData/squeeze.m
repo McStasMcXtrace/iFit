@@ -5,13 +5,14 @@ function a = squeeze(a)
 %    A but with all the singleton dimensions removed.  A singleton
 %    is a dimension such that size(A,dim)==1.  2-D arrays are
 %    unaffected by squeeze so that row vectors remain rows.
+%   In addition, to further 'clean' an object, use: fill(a) and pack(a)
 %
 % input:  a: object or array (iData)
 % output: c: object or array (iData)
 % ex:     c=squeeze(zeros(iData,[2 1 3]));
 %
 % Version: $Date$
-% See also iData, iData/size, iData/resize, iData/permute, iData/reshape
+% See also iData, iData/size, iData/resize, iData/permute, iData/reshape, iData/fill
 
 d = size(a);
 d = d(find(d > 1));
@@ -57,6 +58,8 @@ if numel(a) == 1
         % axis is constant, or scalar
         a.Alias.Axis([index index+1])   = a.Alias.Axis([index+1 index]);
         x = getaxis(a, index+1); a=setaxis(a, index+1,x(1));
+      else
+        a=setaxis(a, index,squeeze(x));
       end
     end
   end
