@@ -42,26 +42,22 @@ function [res, inst] = ResLibCal_FormatString_Resolution(resolution, EXP, mode)
 H   = resolution.HKLE(1); K=resolution.HKLE(2); L=resolution.HKLE(3); W=resolution.HKLE(4);
 
 R0  = resolution.R0;
-if ~resolution.R0 || isempty(resolution.xyz) || isempty(resolution.abc) ...
-        || isempty(resolution.xyz.RM) || isempty(resolution.abc.RM)
+if ~resolution.R0 || isempty(resolution.spec) || isempty(resolution.rlu) ...
+        || isempty(resolution.spec.RM) || isempty(resolution.rlu.RM)
   res=[]; inst=[];
   return
 end
 if ~isempty(strfind(mode,'rlu'))
-  NP    = resolution.abc.RM;
-  unit  ='rlu'; QA='Q1'; QB='Q2'; QC='Q3';
-  Bragg = resolution.abc.Bragg;
-  frame = '[Q1,Q2,Q3,E]';
-  o123 = strrep(resolution.abc.FrameStr,'\surd', 'sqrt');
-  frame_descr = [ 'Q1=' o123{1} '; Q2=' o123{2} '; Q3=' o123{3} '' ];
+  frame = resolution.rlu;
 else
-  NP = resolution.xyz.RM;
-  unit ='Angs'; QA='Qx'; QB='Qy'; QC='Qz';
-  Bragg = resolution.xyz.Bragg;
-  frame = '[Qx,Qy,Qz,E]';
-  o123 = strrep(resolution.xyz.FrameStr,'\surd', 'sqrt');
-  frame_descr = [ 'Qx=' o123{1} '; Qy=' o123{2} '; Qz=' o123{3} ];
+  frame = resolution.spec;
 end
+
+NP = frame.RM;
+unit =frame.frameUnit; QA='Qx'; QB='Qy'; QC='Qz';
+Bragg = frame.Bragg;
+o123 = frame.frameStr;
+frame_descr = [ 'Qx=' o123{1} '; Qy=' o123{2} '; Qz=' o123{3} ];
 
 ResVol=(2*pi)^2/sqrt(det(NP));
 
@@ -69,11 +65,11 @@ res = { ...
           ['Method: ' EXP.method  ], ...
           [ 'Position Q=HKLE [' datestr(now) ']' ], ...
   sprintf('QH=%5.3g QK=%5.3g QL=%5.3g E=%5.3g [meV]', H,K,L,W), ...
-         ['Resolution Matrix M in ' frame ' [' unit '^-3.meV]'], ...
+         ['Resolution Matrix M in ' frame.README ' [' unit '³.meV]'], ...
           num2str(NP,'%.1f '), frame_descr, ...
-  sprintf([' Resolution volume:   V0=%7.3g meV/' unit '^3'], ResVol*2), ...
+  sprintf([' Resolution volume:   V0=%7.3g meV/' unit '³'], ResVol*2), ...
   sprintf(' Intensity prefactor: R0=%7.3g [a.u.]',R0), ...
-  ['Bragg width in ' frame ' (FWHM):'], ...
+  ['Bragg width in ' frame.README ' (FWHM):'], ...
     sprintf([' d' QA '=%7.3g d' QB '=%7.3g d' QC '=%7.3g [' unit ']' ], Bragg(1:3)), ...
     sprintf( ' dE=%7.3g  V=%7.3g (Vanadium width) [meV]', Bragg(4:5)) };
     

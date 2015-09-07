@@ -94,14 +94,13 @@ if nargin == 0
   % nargin == 0
 
   % open or create the main GUI
-  feval(mfilename, 'create'); % load last configuration
-  out = ResLibCal_Compute;
+  out = feval(mfilename, 'create'); % load last configuration, and Compute
   out = ResLibCal_ViewResolution(out,2);  % open/raise View Res2
   out = ResLibCal_UpdateViews(out); % when they exist
 end
 % menu actions:
 while ~isempty(varargin)
-  if numel(varargin) == 1 && isscalar(varargin{1}) && ishandle(varargin{1})
+  if isscalar(varargin{1}) && ishandle(varargin{1})
     varargin = [ {'update_handle'} varargin ];
   end
   if ischar(varargin{1})
@@ -124,7 +123,15 @@ while ~isempty(varargin)
       if isfield(EXP,'EXP'), EXP = EXP.EXP; end
       if length(varargin) <= 1, varargin{2} = ''; end
       if length(varargin) <= 2, varargin{3} = EXP; end
-      out = ResLibCal_Open(varargin{2:3});  % (filename, EXP)
+      EXP = ResLibCal_Open(varargin{2:3});  % (filename, EXP)
+      out=ResLibCal_GetConfig;
+      if ~isfield(EXP,'EXP')
+        % add current EXP to out.EXP;
+        out.EXP=mergestruct(out.EXP, EXP);
+      else
+        % add current EXP to out
+        out=mergestruct(out,EXP); 
+      end
       out = ResLibCal_Compute(out);
       out = ResLibCal_UpdateViews(out);
       varargin(2:3) = [];
@@ -319,19 +326,16 @@ while ~isempty(varargin)
         H   = resolution{index}.HKLE(1); K=resolution{index}.HKLE(2); 
         L   = resolution{index}.HKLE(3); W=resolution{index}.HKLE(4);
         fprintf(1,'QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]\n', H,K,L,W);
-        disp('  Resolution Matrix, X-AXIS Along Q [ANGS-1] & [meV]')
-        FrameStr = strrep(resolution{index}.xyz.FrameStr,'\surd', 'sqrt');
-        disp(['  X:along A=' FrameStr{1} '; Y:along ' FrameStr{2} '; Z:along ' FrameStr{3} ])
-        disp(' ')
-        disp('    X        Y        Z        W')
-        disp(num2str(resolution{index}.xyz.RM,'%.1f '));
-        disp(' ');
-        disp('  Resolution Matrix, Axes WRT Recip. Lattice [R.l.u.] & [meV]')
-        FrameStr = strrep(resolution{index}.abc.FrameStr,'\surd', 'sqrt');
-        disp(['  X:along A=' FrameStr{1} '; Y:along ' FrameStr{2} '; Z:along ' FrameStr{3} ])
-        disp(' ')
-        disp('    X        Y        Z        W')
-        disp(num2str(resolution{index}.abc.RM,'%.1f '));
+        disp('----------------------------------------------------------');
+        % display the resolution matrix in all available frames
+        for frames={'rlu','spec'}  % others: 'cart','rlu_ABC','ABC'
+          frame = resolution{index}.(frames{1});
+          disp(' ');
+          disp([ 'Resolution Matrix [' frames{1} '] ' frame.README ]);
+          disp([ 'X:' frame.frameStr{1} '; Y:' frame.frameStr{2} '; Z:' frame.frameStr{3} ]);
+          disp('    X        Y        Z        W')
+          disp(num2str(frame.RM,'%.1f '));
+        end
         disp('----------------------------------------------------------');
       end
     % other actions (not menu items) -------------------------------------------
@@ -399,7 +403,6 @@ while ~isempty(varargin)
       h     = varargin{2};
       tag   = get(h, 'Tag');
       % handle case of uitable collimators/distances
-      whos h tag
       if strcmp(tag,'EXP_collimators') && strcmp(get(h,'Type'), 'uitable')
         event = varargin{3};
         data  = get(h,'Data'); % NewData
@@ -407,8 +410,6 @@ while ~isempty(varargin)
           % revert invalid to previous data
           data(event.Indices(1),event.Indices(2)) = event.PreviousData;
           set(h,'Data',data);
-        else
-          out = feval(mfilename, 'update');
         end
         varargin(3)=[];
       elseif strcmp(get(h,'Type'), 'uitable')
@@ -695,3 +696,45 @@ function ResLibCal_MethodEnableControls(out)
   
   % ==============================================================================
   
+function Res = mergestruct(A,B)
+%% Recursively merges fields and subfields of structures A and B to result structure Res
+% Simple recursive algorithm merges fields and subfields of two structures
+%   Example:
+%   A.field1=1;
+%   A.field2.subfield1=1;
+%   A.field2.subfield2=2;
+% 
+%   B.field1=1;
+%   B.field2.subfield1=10;
+%   B.field2.subfield3=30;
+%   B.field3.subfield1=1;
+% 
+%   C=mergestruct(A,B);
+%
+%  by Igor Kaufman, 02 Dec 2011, BSD
+% <http://www.mathworks.com/matlabcentral/fileexchange/34054-merge-structures>
+
+Res=[];
+if nargin>0
+    Res=A;
+end;
+if nargin==1 || isstruct(B)==0
+    return;
+end;    
+  fnb=fieldnames(B);
+  
+  for i=1:length(fnb)
+     s=char(fnb(i));
+     oldfield=[];
+     if (isfield(A,s))
+         oldfield=getfield(A,s);
+     end    
+     newfield=getfield(B,s);
+     if isempty(oldfield) || isstruct(newfield)==0
+       Res=setfield(Res,s,newfield);     
+     else
+       Res=setfield(Res,s,mergestruct(oldfield, newfield));  
+     end    
+  end    
+
+

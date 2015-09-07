@@ -90,7 +90,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
 function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
 % compute a single resolution at HKLE
     % initiate empty values
-    R0=1; RM=[]; RMS=[]; bragg = [];
+    R0=0; RM=[]; RMS=[]; bragg = [];
 
     % compute Ki, Kf, Ei, Ef
     EXP.QH = h; EXP.QK=k; EXP.QL=l; EXP.W=w;
@@ -176,15 +176,12 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
     % S = inv([x y z]) when [x y z ] = StandardSystem(EXP);
     % S = matrix 's' in inline (below) ResLibCal_ComputeResMat_Angles
     if ~isempty(RM)
-      res.xyz.RM= RM;
-      res.abc   = [];
+      res.spec.RM= RM;
       res = ResLibCal_RM2RMS(EXP, res);
     
-      [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w,EXP, res.abc.hkl2Frame);
-      res                     = ResLibCal_RM2clouds(EXP, res); % res.abc.cloud and res.xyz.cloud
-      res.README={ ...
-      '[xyz] is the resolution matrix information in the [Qx,Qy,Qz,E] frame Qx // Q, Qz vertical'
-      '[abc] is the resolution matrix information in the [QA,QB,QC,E] frame (ortho-normal)' };
+      [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w, ...
+                                  EXP, res.ABC.rlu2frame);
+      res                     = ResLibCal_RM2clouds(EXP, res); % generate MC clouds
     else
       res.README='Could not compute the resolution';
     end

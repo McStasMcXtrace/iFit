@@ -266,8 +266,11 @@ else
   %  QuantumEspresso: available for ASE at https://github.com/vossjo/ase-espresso
   %  eam
   %  elk <https://launchpad.net/ubuntu/trusty/amd64/elk-lapw/2.2.5-1>
+  %  VASP
   %
   % gpaw, gpaw-setups, jacapo, elk-lapw: put debian packages in mccode.org ?
+  
+  % support phonopy with: abinit, qe/pwscf, elk, VASP
 end
 
 % ------------------------------------------------------------------------------
