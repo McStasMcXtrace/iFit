@@ -44,6 +44,8 @@ end
 
 cla;
 
+max_points = max(100, 1000/numel(resolutions)); % nb of MC points per cloud
+
 for index=1:numel(resolutions)
   resolution = resolutions{index};
   
@@ -52,20 +54,16 @@ for index=1:numel(resolutions)
   L=resolution.HKLE(3); W=resolution.HKLE(4);
 
   if ~isempty(strfind(mode,'rlu'))
-    NP       = resolution.abc.RM;
-    FrameStr = resolution.abc.FrameStr;
-    cloud    = resolution.abc.cloud;
-    Labels   = {'Q_1','Q_2','Q_3','\omega'};
-    Units    = 'rlu';
-    centre   = resolution.abc.hkl2Frame*[ H K L ]'; centre(4) = W;
+    frame = resolution.rlu;
   else
-    NP       = resolution.xyz.RM;
-    FrameStr = resolution.xyz.FrameStr;
-    cloud    = resolution.xyz.cloud;
-    Labels   = {'Q_x','Q_y','Q_z','\omega'};
-    Units    = 'Angs-1';
-    centre   = resolution.xyz.hkl2Frame*[ H K L ]'; centre(4) = W;
+    frame = resolution.spec;
   end
+  NP       = frame.RM;
+  FrameStr = {frame.frameStr{:},'\omega meV'};
+  [Labels, FrameStr] = strtok(FrameStr);
+  cloud    = frame.cloud;
+  Units    = frame.unit;
+  centre   = frame.Q; centre(4) = W;
   FrameStr{end+1} = ''; % no specific axis for energy (4)
 
   if isempty(NP) || ~all(isreal(NP)), return; end
@@ -76,12 +74,12 @@ for index=1:numel(resolutions)
   if ~isempty(strfind(mode,'qz'))
     [dummy, NP] = rc_int(4,1, NP); % this function strips out the row=col=4, and corrects determinant
                                    % using the cofactor rule.
-    ResLibCal_Proj_plot3D([1 2 3], NP, FrameStr, Labels, Units, cloud, centre);  % xyz
+    ResLibCal_Proj_plot3D([1 2 3], NP, Labels, FrameStr, Units, cloud, centre, max_points);  % xyz
     title([ 'Resolution in ' Labels{1:3} ' - ' out.EXP.method ])
     if index < numel(resolutions), hold on; else hold off; end
   else
     [dummy, NP] = rc_int(3,1, NP);
-    ResLibCal_Proj_plot3D([1 2 4], NP, FrameStr, Labels, Units, cloud, centre);  % xye
+    ResLibCal_Proj_plot3D([1 2 4], NP, Labels, FrameStr, Units, cloud, centre, max_points);  % xye
     title([ 'Resolution in ' Labels{[1 2 4]} ' - ' out.EXP.method ])
     if index < numel(resolutions), hold on; else hold off; end
   end
@@ -89,17 +87,17 @@ for index=1:numel(resolutions)
 end % for
 
 % ------------------------------------------------------------------------------
-function h=ResLibCal_Proj_plot3D(index, NP, FrameStr, Labels, Units, cloud, centre)
+function h=ResLibCal_Proj_plot3D(index, NP, Labels, FrameStr, Units, cloud, centre, max_points)
 
   % plot the cloud projection if any
   if ~isempty(cloud)
     x=cloud{index(1)}; y=cloud{index(2)}; z=cloud{index(3)};
     if isempty(find(index == 4)), e = cloud{4};
     else e = cloud{3}; end
-    if numel(x) > 200, x=x(1:200); end
-    if numel(y) > 200, y=y(1:200); end
-    if numel(z) > 200, z=z(1:200); end
-    if numel(e) > 200, e=e(1:200); end
+    if numel(x) > max_points, x=x(1:max_points); end
+    if numel(y) > max_points, y=y(1:max_points); end
+    if numel(z) > max_points, z=z(1:max_points); end
+    if numel(e) > max_points, e=e(1:max_points); end
     h=scatter3(x,y,z,3,e,'MarkerFaceColor','b');
     % plot3(x,y,z,'o');
     set(h,'DisplayName',[ Labels{index} ' (cloud)' ], 'Tag', 'ResLibCal_View3_Cloud');

@@ -89,9 +89,9 @@ c set default values for parameters (PARS)
 	COMMON PARS(42)
 	DATA PARS/
      1	3.35500, 3.35500, 30.00000, 35.00000, 10.00000, 1.00000, 
-     1	1.00000, -1.00000, 1.55000, 2.00000, 148.59772, 60.00000,
-     1	169.71212, 524.53282, 171.3177, 249.91610, 72.92725, 
-     1	339.29797, 6.28320, 6.28320, 4.00000,90.00000, 90.00000, 
+     1	1.00000, -1.00000, 2.662, 2.00000, 60.0, 60.00000,
+     1	60.0, 60.0, 60.0, 60.0, 60.0, 
+     1	60.0, 6.28320, 6.28320, 6.28,90.00000, 90.00000, 
      1	90.00000, 1.00000, 0.00000, 0.00000, 0.00000, 0.00000, 
      1	1.00000, 1.00000, 0.00000, 0.00000, 0.00000,  0.00000, 
      1	0.00000, 0.00000, 1.00000, 0.00000, 0.00000, 1.00000, 
@@ -156,7 +156,7 @@ c	HELP
 	WRITE(*,*)'<N> <V> - set parameter <N> value to <V>, e.g. DM 3.3'
 	WRITE(*,*)'          Variable names are case sensitive (UPPER)'
 	WRITE(*,*)''
-	WRITE(*,*)'Comands can be shortened (LIST->LI), case insensitive'
+	WRITE(*,*)'Commands can be shortened (LIST->LI), case insensitive'
 	
 	END IF 
 c	EXIT
@@ -286,7 +286,7 @@ C =====================================================================
 	DATA MATER/
 	1	' TRNVCT: Q Not In Scattering Plane',
 	2	' TRNVCT: Scan Not In Scattering Plane',
-	3	' TRNVCT: check  scaterring triangle',
+	3	' TRNVCT: check  scattering triangle',
 	4	' TRNVCT: Gradient too small (GH,GK)',
 	5	' TRNVCT: Gradient Has Component In Z-DIR'/
 C---------------------------------------------------------------------------

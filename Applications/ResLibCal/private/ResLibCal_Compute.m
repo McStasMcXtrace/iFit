@@ -42,6 +42,7 @@ function out = ResLibCal_Compute(EXP)
     end
     out.resolution = resolution;
     if ~isempty(p)
+      % update equivalent RESCAL parameters from EXP
       p = mat2cell(p(:),ones(1,length(p)));
       if isempty(labels_c), labels_c=strtok(labels); end
       out.ResCal = cell2struct(p(:),labels_c(:),1);
