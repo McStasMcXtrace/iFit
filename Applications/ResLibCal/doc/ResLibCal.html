@@ -10,14 +10,14 @@
       neutron spectrometer resolution</h1>
     <br>
     <div style="text-align: center;">E. Farhi, <span style="font-style:
-        italic;">ILL/DS/CS - Version 1.2 Jul 2015</span><br>
+        italic;">ILL/DS/CS - Version 1.2.1 Sept 2015</span><br>
       <br>
     </div>
     <div style="text-align: center;"> using parts from <a
         href="http://www.neutron.ethz.ch/research/resources/reslib">ResLib</a>,
       <a
 href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/rescal-for-matlab/">ResCal5</a>,
-      Res3 and <a
+      Res3ax and <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/pkfit-and-filing/macos9-vms-linux/pkfitvmstutorial/">ResCal</a>
     </div>
     <hr style="width: 100%; height: 2px;"><br>
@@ -32,6 +32,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           <li><a href="#mozTocId744097">Usage: the main interface</a></li>
           <li><a href="#mozTocId44543"> Usage: ResCal standard
               nomenclature for configurations </a></li>
+          <li><a href="#mozTocId3394"> Usage: the lattice and
+              spectrometer coordinate frames</a></li>
           <li><a href="#mozTocId444562">Usage: plotting the TAS
               resolution function</a></li>
           <li><a href="#mozTocId244259">Usage: handling computation
@@ -55,6 +57,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     spectrometer (TAS). ResLibCal is based on <a
       href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans
     and Popovici methods are proposed [<a href="#mozTocId811100">1-7</a>],
+
 
 
 
@@ -105,8 +108,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     type:<br>
     <pre style="margin-left: 40px;">&gt;&gt; addpath(genpath(<span style="color: rgb(204, 51, 204);">'/path/to/ResLibCal</span>'))<br></pre>
     If you use the <a href="http://ifit.mccode.org/Install.html">standalone</a>
-    (binary compiled) application, launch the application from <a
-      href="http://ifit.mccode.org/iFit.html">iFit</a> by starting:<br>
+    (binary compiled, no need for a Matlab license) application, launch
+    the application from <a href="http://ifit.mccode.org/iFit.html">iFit</a>
+    by starting:<br>
     from the terminal: <br>
     <pre style="margin-left: 40px;">% ifit ResLibCal</pre>
     from iFit standalone: <br>
@@ -173,6 +177,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     <blockquote> In all methods, the alpha/beta collimation parameters
       support guide <i>m-</i>coating specification (negative values
       e.g. -2) which are then converted to equivalent critical angles <i>0.1
+
 
 
 
@@ -253,20 +258,18 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
         href="#mozTocId444562"><span style="font-style: italic;">View</span></a>
       menu in 2D and 3D, as well as the instrument geometry.<br>
     </p>
-    <p>The resolution matrix is then shown either in <span
-        style="font-style: italic;">reciprocal lattice units</span>
-      (rlu) [Q1,Q2,E] depending on the lattice parameters and the
-      vectors <span style="font-style: italic;">A</span> and <i>B</i>
-      which define the user orientation of the crystal. Un-checking the
-      <i>Resolution in reciprocal lattice units</i> option in the <span
-        style="font-style: italic;">View</span> menu will switch to
-      e.g.&nbsp; the [Qx,Qy,E] space along longitudinal momentum
-      exchange Q. It is also possible to plot the resolution function
-      projections in the vertical Qz axis instead of the energy E axis
-      by toggling the <i>View</i> menu, e.g. <i>Resolution in [Qx,Qy,</i><i>E]</i>
-      item. <br>
-      The resolution matrix is always computed in [Angs^-3.meV], but it
-      can be shown in [rlu^3.meV] in the 2D and 3D views.<br>
+    <p>The resolution matrix is then shown in <span style="font-style:
+        italic;">reciprocal lattice units</span> (rlu) [a*,b*,E].
+      Un-checking the <i>Resolution in reciprocal lattice units</i>
+      option in the <span style="font-style: italic;">View</span> menu
+      will switch to e.g.&nbsp; the [Qx,Qy,E] space along longitudinal
+      momentum exchange Q. It is also possible to plot the resolution
+      function projections in the vertical Qz axis instead of the energy
+      E axis by toggling the <i>View</i> menu, e.g. <i>Resolution in
+        [Qx,Qy,</i><i>E]</i> item. <br>
+      The resolution matrix is always computed in [Angs<sup>-3</sup>.meV],
+      but it can be shown in [rlu<sup>3</sup>.meV] in the 2D and 3D
+      views.<br>
     </p>
     <div style="text-align: center;"> <img style=" width: 570px;
         height: 643px;" alt="The ResLibCal main interface" title="The
@@ -286,24 +289,26 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         naming. The meaning of the configuration parameters is the
         following<br>
         <blockquote>
-          <pre><b>DM</b> Monochromator d-spacing<br><b>DA</b> Analyzer d-spacing<br><b>ETAM</b> Monochromator mosaic<br><b>ETAA</b> Analyzer mosaic<br><b>ETAS</b> Sample mosaic<br><b>SM</b> scattering sense frocdm monochromator +1=right, -1=left<br><b>SS </b>scattering sense from sample +1=right, -1=left<br><b>SA</b> scattering sense from analyzer +1=right, -1=left<br><b>KFIX</b> fixed neutron wavevector in Ang.-1<br><b>FX</b> index for fixed wavevector 1=incident 2=final (10)<br><b>ALF1</b> horizontal source-mono. collimation in min (FWHM)<br><b>ALF2</b> horizontal mono.-sample collimation in min (FWHM)<br><b>ALF3</b> horizontal sample-analyser collimation in min (FWHM)<br><b>ALF4</b> horizontal analyser-detector collimation in min (FWHM)<b><br>BET1</b> vertical source-mono.  collimation in min (FWHM)<b><br>BET2</b> vertical mono.-sample collimation in min (FWHM)<b><br>BET3</b> vertical sample-analyser collimation in min (FWHM)<b><br>BET4</b> vertical analyser-detector collimation in min (FWHM)<b><br>AS</b> sample lattice parameter A in Ang.<br><b>BS</b> sample lattice parameter B in Ang.<br><b>CS</b> sample lattice parameter C in Ang.<br><b>AA</b> (alpha) angle in deg. between axis B and C<br><b>BB</b> (beta) angle in deg. between axis A and C<br><b>CC</b> (gamma) angle in deg. between axis A and B<br><b>AX</b> First wavevector in scattering plane coordinate H (rlu). angle &lt;KI,A&gt;=A3<br><b>AY</b> First wavevector in scattering plane coordinate K (rlu)<br><b>AZ</b> First wavevector in scattering plane coordinate L (rlu)<br><b>BX</b> Second wavevector in scattering plane coordinate H (rlu)<br><b>BY</b> Second wavevector in scattering plane coordinate K (rlu)<br><b>BZ</b> Second wavevector inou scattering plane coordinate L (rlu)<br><b>QH</b> Position of resolution wavevector (center of measurement) H (rlu)<br><b>QK</b> Position of resolution wavevector (center of measurement) K (rlu)<br><b>QL</b> Position of resolution wavevector (center of measurement) L (rlu)<br><b>EN</b> (W) Position of resolution wavevector (center of measurement) W (meV)<br><b>DQH</b> Increment of Q,E defining general scan step along QH (rlu)<br><b>DQK</b> Increment of Q,E defining general scan step along QK (rlu)<br><b>DQL</b> Increment of Q,E defining general scan step along QL (rlu)<br><b>DEN</b> Increment of Q,E defining general scan step along EN (meV)<br><b>GH</b> Gradient of the dispersion (planar) direction along QH (rlu)<br><b>GK</b> Gradient of the dispersion (planar) direction along QK (rlu)<br><b>GL</b> Gradient of the dispersion (planar) direction along QL (rlu)<br><b>GMOD</b>  Gradient of the dispersion (planar) direction along EN (meV)<br><b>BeamShape</b> =0 for circular source, =1 for rectangular source<br><b>WB</b> width/diameter of the source (cm)<br><b>HB</b> height/diameter of the source (cm)<br><b>Guide</b> =0 No Guide, =1 for Guide<br><b>GDH</b> horizontal guide divergence (minutes/Angs)<br><b>GDV</b> vertical guide divergence (minutes/Angs)<br><b>SampleShape</b> =0 for cylindrical sample, =1 for cuboid sample<br><b>WS</b> sample width/diameter perp. to Q (cm)<br><b>TS</b> sample width/diameter along Q (cm)<br><b>HS</b> sample height (cm) (10)<br><b>DetecteorShape</b> =0 for circular detector, =1 for rectangular detector<br><b>WD</b> width/diameter of the detector (cm)<br><b>HD</b> height/diameter of the detector (cm)<br><b>TM</b> thickness of monochromator (cm)<br><b>WM</b> width of monochromator (cm)<br><b>HM</b> height of monochromator (cm)<br><b>TA</b> thickness of analyser (cm)<br><b>WA</b> width of analyser (cm)<br><b>HA</b> height of analyser (cm)<br><b>L1</b> distance between source and monochromator (cm)<br><b>L2</b> distance between monochromator and sample (cm)<br><b>L3</b> distance between sample and analyser (cm)<br><b>L4</b> distance between analyser and detector (cm)<br><b>RMH</b> horizontal radius of curvature of monochromator (cm)<br><b>RMV</b> vertical radius of curvature of monochromator (cm)<br><b>RAH</b> horizontal radius of curvature of analyser (cm)<br><b>RAV</b> vertical radius of curvature of analyser (cm)</pre>
+          <pre><b>DM</b> Monochromator d-spacing<br><b>DA</b> Analyzer d-spacing<br><b>ETAM</b> Monochromator mosaic<br><b>ETAA</b> Analyzer mosaic<br><b>ETAS</b> Sample mosaic<br><b>SM</b> scattering sense frocdm monochromator +1=right, -1=left<br><b>SS </b>scattering sense from sample +1=right, -1=left<br><b>SA</b> scattering sense from analyzer +1=right, -1=left<br><b>KFIX</b> fixed neutron wavevector in Ang.-1<br><b>FX</b> index for fixed wavevector 1=incident 2=final (10)<br><b>ALF1</b> horizontal source-mono. collimation in min (FWHM)<br><b>ALF2</b> horizontal mono.-sample collimation in min (FWHM)<br><b>ALF3</b> horizontal sample-analyser collimation in min (FWHM)<br><b>ALF4</b> horizontal analyser-detector collimation in min (FWHM)<b><br>BET1</b> vertical source-mono.  collimation in min (FWHM)<b><br>BET2</b> vertical mono.-sample collimation in min (FWHM)<b><br>BET3</b> vertical sample-analyser collimation in min (FWHM)<b><br>BET4</b> vertical analyser-detector collimation in min (FWHM)<b><br>AS</b> sample lattice parameter <b><i>a</i></b> in Angs.<br><b>BS</b> sample lattice parameter <b><i>b</i></b> in Angs.<br><b>CS</b> sample lattice parameter <b><i>c</i></b> in Angs.<br><b>AA</b> (alpha) angle in deg. between axes b and c<br><b>BB</b> (beta)  angle in deg. between axes a and c<br><b>CC</b> (gamma) angle in deg. between axes a and b<br><b>AX</b> First wavevector in scattering plane coordinate H (rlu). angle &lt;KI,A&gt;=A3<br><b>AY</b> First wavevector in scattering plane coordinate K (rlu)<br><b>AZ</b> First wavevector in scattering plane coordinate L (rlu)<br><b>BX</b> Second wavevector in scattering plane coordinate H (rlu)<br><b>BY</b> Second wavevector in scattering plane coordinate K (rlu)<br><b>BZ</b> Second wavevector inou scattering plane coordinate L (rlu)<br><b>QH</b> Position of resolution wavevector (center of measurement) H (rlu)<br><b>QK</b> Position of resolution wavevector (center of measurement) K (rlu)<br><b>QL</b> Position of resolution wavevector (center of measurement) L (rlu)<br><b>EN</b> (W) Position of resolution wavevector (center of measurement) W (meV)<br><b>DQH</b> Increment of Q,E defining general scan step along QH (rlu)<br><b>DQK</b> Increment of Q,E defining general scan step along QK (rlu)<br><b>DQL</b> Increment of Q,E defining general scan step along QL (rlu)<br><b>DEN</b> Increment of Q,E defining general scan step along EN (meV)<br><b>GH</b> Gradient of the dispersion (planar) direction along QH (rlu)<br><b>GK</b> Gradient of the dispersion (planar) direction along QK (rlu)<br><b>GL</b> Gradient of the dispersion (planar) direction along QL (rlu)<br><b>GMOD</b>  Gradient of the dispersion (planar) direction along EN (meV)<br><b>BeamShape</b> =0 for circular source, =1 for rectangular source<br><b>WB</b> width/diameter of the source (cm)<br><b>HB</b> height/diameter of the source (cm)<br><b>Guide</b> =0 No Guide, =1 for Guide<br><b>GDH</b> horizontal guide divergence (minutes/Angs)<br><b>GDV</b> vertical guide divergence (minutes/Angs)<br><b>SampleShape</b> =0 for cylindrical sample, =1 for cuboid sample<br><b>WS</b> sample width/diameter perp. to Q (cm)<br><b>TS</b> sample width/diameter along Q (cm)<br><b>HS</b> sample height (cm) (10)<br><b>DetecteorShape</b> =0 for circular detector, =1 for rectangular detector<br><b>WD</b> width/diameter of the detector (cm)<br><b>HD</b> height/diameter of the detector (cm)<br><b>TM</b> thickness of monochromator (cm)<br><b>WM</b> width of monochromator (cm)<br><b>HM</b> height of monochromator (cm)<br><b>TA</b> thickness of analyser (cm)<br><b>WA</b> width of analyser (cm)<br><b>HA</b> height of analyser (cm)<br><b>L1</b> distance between source and monochromator (cm)<br><b>L2</b> distance between monochromator and sample (cm)<br><b>L3</b> distance between sample and analyser (cm)<br><b>L4</b> distance between analyser and detector (cm)<br><b>RMH</b> horizontal radius of curvature of monochromator (cm)<br><b>RMV</b> vertical radius of curvature of monochromator (cm)<br><b>RAH</b> horizontal radius of curvature of analyser (cm)<br><b>RAV</b> vertical radius of curvature of analyser (cm)</pre>
         </blockquote>
+        <h4><a class="mozTocH4" name="mozTocId3394"></a> Usage: the
+          lattice and spectrometer coordinate frames</h4>
         The resolution can be obtained and displayed in 2 coordinate
         frames:<br>
         <ul>
-          <li><i>[ABC</i><i>]</i> is relative to the [A,B] vectors
-            (sample lattice frame). These vectors should then be chosen
-            according to the measurements that will be carried-out. The
-            [ABC] coordinate frame is direct ortho-normal (cartesian),
-            keeping <i>A</i> as is, C perpendicular to <i>[A,B]</i>.
-            The corresponding resolution matrix is 'abc.RM', given in
-            [rlu^3.meV].<br>
+          <li><i>[rlu</i><i>]</i> is relative to the sample lattice
+            frame. The coordinate frame is defined by the a*, b* and c*
+            lattice vectors, as spceified by the AS,BS,CS lattice
+            parameters, and angles AA,BB,CC (aka &#945;, &#946;, &#947;). The
+            corresponding resolution matrix is 'rlu.RM', given in [rlu<sup>3</sup>.meV].<br>
           </li>
-          <li><i>[xyz</i><i>] </i>is relative to Q, and vertical axis
-            (spectrometer frame). The [xyz] coordinate frame is direct
-            ortho-normal (cartesian), with <i>x // Q</i> and <i>z</i>
-            vertical. The corresponding resolution matrix is 'xyz.RM'
-            given in [Angs-3.meV].</li>
+          <li><i>[spec</i><i>] </i>is relative to Q, and vertical axis
+            (spectrometer frame). The<i> [spec]</i> coordinate frame is
+            direct ortho-normal (cartesian), with <i>x // Q</i> and <i>z</i>
+            vertical. The corresponding resolution matrix is 'spec.RM'
+            given in [Angs<sup>-3</sup>.meV]. It is especially suitable
+            for powders and liquids.<br>
+          </li>
         </ul>
         The usual definition of the sample reciprocal lattice
         orientation vectors <b>A</b> and <b>B</b> (defined by the
@@ -312,8 +317,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         vector defines a second lattice vector in the scattering plane.
         This is why, in order to properly define the [A,B] basis, an
         initial measurement is done in practice on a Bragg signal with
-        Q=[QH,QK,QL]=[AX,AY,AZ]. For such a measurement, the [ABC] and
-        [xyz] frames are equivalent. Then the A3 angle offset is set to
+        Q=[QH,QK,QL]=[AX,AY,AZ]. For such a measurement, the [rlu] and
+        [spec] frames are equivalent. Then the A3 angle offset is set to
         the signal maximum.<br>
         <ul>
         </ul>
@@ -330,6 +335,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -337,13 +343,13 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       ResCal parameters. The 3D view also shows the ellipsoid
       projections. The corresponding full width values are indicated.<br>
       <br>
-      The <i><b>Qx</b></i> axis is along the longitudinal (radial)
-      direction Q=[HKL], <i><b>Qy</b></i> is the transverse
-      (tangential) direction in the scattering plane, and <i><b>Qz</b></i>
-      is vertical, in the laboratory coordinate frame.<br>
-      In the sample coordinate frame, <i><b>Q1</b></i> is along the <i>A</i>
-      direction, <i><b>Q2</b></i> is perpendicular to <i><b>Q1</b></i>,
-      in plane, and <i><b>Q3</b></i> is perpendicular to (<i>Q1,Q2</i>)<br>
+      The <i><b>Q//</b></i> (parallel to Q) axis is along the
+      longitudinal (radial) direction Q=[HKL], <i><b>Q&#8869;</b></i> is the
+      transverse (tangential) direction in the scattering plane, and <i><b>Q&#8593;</b></i>
+      is vertical, w.r.t the scattering plane, in the laboratory
+      coordinate frame.<br>
+      In the sample coordinate frame, <i><b>a*, b* </b>and<b> c* </b>and
+        the reciprocal lattice vectors.</i><br>
       <br>
       If no resolution view is active, the results are sent to the
       console. <br>
@@ -375,6 +381,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           geometry</span> menu item. It is automatically updated upon
         change of instrument parameters, as the other views.<br>
         The signification of the angles shown is as follows:<br>
@@ -385,7 +392,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         <br>
       </div>
       <img alt="The TAS geometry view" title="The TAS geometry view"
-        src="ResLibCal_Geometry.png" height="564" width="642"><br>
+        src="ResLibCal_Geometry.png" width="642" height="564"><br>
       <span style="font-style: italic;">The 3D plot of the TAS geometry.</span>
       <span style="font-style: italic;">The axis has a contextual menu
         allowing to change the plot rendering.</span>
@@ -450,6 +457,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
         configurations by just copying and renaming e.g. any <span
@@ -462,14 +470,15 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     <h4><a class="mozTocH4" name="mozTocId927463"></a>Usage: exporting
       the results, saving the configuration</h4>
     The results can be saved using the <span style="font-style:
-      italic;">'File/Saveas...'</span> menu item. Enter a <span
+      italic;">'File/Save as...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
     and the full ResLibCal configuration (instrument, sample, position,
     method) is saved as a Matlab script. An example of such
-    configuration file is available <a href="ResLibCal.ini">here</a>.<br>
+    a&nbsp; configuration file is available <a href="ResLibCal.ini">here</a>.<br>
     You can further edit this file and change manually values in the
     'EXP' ResLib-compatible structure.<br>
     <br>
@@ -531,16 +540,17 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(2,0,0,5) 	<i>% computes at HKLE=[2 0 0 5] coordinates in r.l.u</i><br>&gt;&gt; out = ResLibCal(<font color="#cc33cc">'QH=2 W=5'</font>)  <i>% same as above but giving configuration as a string with named parameters</i><br></pre>
     The resolution result is then available in '<b>out.resolution</b>'
     and more specifically in its <i><b>Bragg</b></i> and <b><i>RM</i></b>
-    fields of the <b>xyz</b> and <b>abc</b> sub-structures, depending
-    on the reference frame used (see <a href="#mozTocId44543">above</a>):<br>
-    <pre>&gt;&gt; out.resolution<br>     focus: [80.0088 439.4046 49.7513 136.3181]<br>        R0: 16.5334<br>      HKLE: [2 1 0 5]<br>    method: 'Popovici (ResLib)'<br>    README: {2x1 cell}<br>       <b>xyz: </b>[1x1 struct]	<i>% spectrometer frame</i><br>       <b>abc: </b>[1x1 struct]	<i>% lattice frame</i><br>    angles: [25.2592 50.5184 14.3768 -70.9737 37.1658 74.3316]<br>         Q: 2.2361<br><br>&gt;&gt; out.resolution.abc<br>           <b>RM: </b>[4x4 double]<br>       README: {6x1 cell}<br>    hkl2Frame: [3x3 double]<br>            Q: [3x1 double]<br>     FrameStr: {'[1 0 0]'  '[0 2 0]/\surd4'  '[0 0 2]/\surd4'}<br>        Frame: [3x3 double]<br>         unit: 'rlu'<br>        <b>Bragg: </b>[5x1 double]<br><span style="font-style: italic;"></span></pre>
-    The resolution matrix is computed in the laboratory frame x//Q [xyz]
-    and the lattice frame x//A [ABC]. These two computations are stored
-    in the [xyz] and the [abc] fields. In these fields, such as <i>out.resolution.abc</i>
-    above, '<b>RM</b>' is the resolution matrix, and the '<b>Bragg</b>'
-    holds the width along frame axes as well as the the Bragg energy
-    width (4-th value) and Vanadium width (5-th value).<br>
-    In practice, the Vanadium energy width <i>out.resolution.xyz.Bragg(5)</i>
+    fields of the <b>[rlu]</b> and <b>[spec]</b> sub-structures,
+    depending on the reference frame used (see <a href="#mozTocId44543">above</a>):<br>
+    <pre>&gt;&gt; out.resolution<br>     focus: [80.0088 439.4046 49.7513 136.3181]<br>        R0: 16.5334		<i>% the intensity</i><br>      HKLE: [2 1 0 5]		<i>% the HKLE rlu.meV coordinate of this point</i><br>    method: 'Popovici (ResLib)'<br>    README: {2x1 cell}<br>      <b>spec: </b>[1x1 struct]	<i>% spectrometer frame</i><br>       <b>rlu: </b>[1x1 struct]	<i>% lattice frame</i> [a*, b*, c*]<br>      cart: [1x1 struct]<br>   rlu_ABC: [1x1 struct]<br>       ABC: [1x1 struct]<br>    angles: [25.2592 50.5184 14.3768 -70.9737 37.1658 74.3316]	% A1-6 angles in a TAS machine<br>         Q: 2.2361<br><br>&gt;&gt; out.resolution.rlu<br>    cart2frame: [3x3 double]<br>     rlu2frame: [3x3 double]<br>             Q: [3x1 double]<br>            <b>RM</b>: [4x4 double]<br>        README: '[R] rlu lattice frame, xyz=[a* b* c*]'<br>          unit: 'rlu'<br>         frame: [3x3 double]<br>     frameUnit: '1/Å'<br>      frameStr: {1x3 cell}<br>         <b>Bragg</b>: [5x1 double]<br>         cloud: {[2000x1 double]  [2000x1 double]  [2000x1 double]  [2000x1 double]}<br><span style="font-style: italic;"></span></pre>
+    The resolution matrix is computed in the laboratory frame x//Q
+    [spec] and the lattice frame x//a* [rlu]. These two computations are
+    stored in the [spec] and the [rlu] fields. In these fields, such as
+    <i>out.resolution.rlu</i> above, '<b>RM</b>' is the resolution
+    matrix, and the '<b>Bragg</b>' holds the width along frame axes as
+    well as the the Bragg energy width (4-th value) and Vanadium width
+    (5-th value).<br>
+    In practice, the Vanadium energy width <i>out.resolution.spec.Bragg(5)</i>
     is a good measure of the instrumental energy resolution.<br>
     <br>
     The parameters used for the computation are listed in the 'out.EXP'
@@ -557,6 +567,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
     free text. <br>
     The position of the measurement is [ QH QK QL W ]:<br>
     <pre style="margin-left: 40px;">&gt;&gt; [ out.EXP.QH out.EXP.QK out.EXP.QL out.EXP.W ]<br>ans =<br>     2     0     0     0<br>&gt;&gt; out.EXP.W = 1;		<i>% change the position in reciprocal space</i><br>&gt;&gt; out = ResLibCal(out);	<span style="font-style: italic;">% request a new computation with modified choices</span><br></pre>
@@ -568,9 +579,9 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     <table border="1" cellpadding="2" cellspacing="2" width="100%">
       <tbody>
         <tr>
-          <td valign="top" align="center"><i><b>ResLibCal('action')</b></i><i><b><br>
+          <td align="center" valign="top"><i><b>ResLibCal('action')</b></i><i><b><br>
               </b></i></td>
-          <td valign="top" align="center"><i><b>Description</b></i><i><b><br>
+          <td align="center" valign="top"><i><b>Description</b></i><i><b><br>
               </b></i></td>
         </tr>
         <tr>
@@ -756,6 +767,13 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
     The application is distributed with an <a href="COPYING">EUPL</a>
     license (GPL compatible).<br>
     <br>
+    If you use this application, we would appreciate that you cite in
+    your work:<br>
+    <blockquote>E. Farhi, Y. Debab and P. Willendrup, <span
+        style="font-style: italic;">J. Neut. Res</span>., <span
+        style="font-weight: bold;">17</span> (2013) 5. DOI:
+      10.3233/JNR-130001 <br>
+    </blockquote>
     <span style="font-weight: bold;">References:</span><br>
     <br>
     <div style="margin-left: 40px;">[1] M. J. Cooper and R. Nathans, <span
@@ -765,8 +783,10 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
 
 
 
+
       See [<a href="../rescal.for">Fortran code</a>].<br>
       [2] N. J. Chesser and J. D. e, <span style="font-style: italic;">Acta
+
 
 
 
@@ -779,6 +799,7 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
