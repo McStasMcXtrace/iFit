@@ -86,7 +86,7 @@ function out = ResLibCal(varargin)
 % ResLibCal_UpdateTauPopup(handle, EXP)
 
 out = [];
-ResLibCal_version = [ mfilename ' 1.2 ($Date$)' ];
+ResLibCal_version = [ mfilename ' 1.2.1 ($Date$)' ];
 
 persistent fig
 
