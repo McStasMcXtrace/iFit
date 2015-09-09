@@ -8,6 +8,11 @@ function c = conv(a,b, shape)
 %     when one of the argument is a character string, it is used as-is in the 
 %     operator expression. 
 %
+%     conv(a, 'tas') convolves the 'a' model with the TAS resolution function
+%       computed from ResLibCal. The dispersion is either a 2D model S(|q|,w)
+%       or a 4D model S(qh,qk,ql,w). The returned model can then further be used
+%       to fit its parameters to match a measurement scan.
+%
 % input:  a: object or array (iFunc or numeric)
 %         b: object or array (iFunc or numeric)
 %     shape: optional shape of the return value
@@ -30,7 +35,7 @@ function c = conv(a,b, shape)
 % ex:     c=conv(a,b); c=conv(a,b, 'same pad background center normalize');
 %
 % Version: $Date$
-% See also iFunc, iFunc/convn, iFunc/xcorr, fconv, fconvn, fxcorr
+% See also iFunc, iFunc/convn, iFunc/xcorr, fconv, fconvn, fxcorr, ResLibCal
 if nargin ==1
 	b = a;
 end
@@ -45,6 +50,12 @@ elseif isnumeric(a) && isscalar(a)
   a = gauss;
   a.Guess = [ 1 0 double(g) 0]; % use input as a width
   c = convn(a,b);
+  return
+elseif ischar(b) && strcmpi(b, 'tas')
+  c = ResLibCal(a);
+  return
+elseif ischar(a) && strcmpi(a, 'tas')
+  c = ResLibCal(b);
   return
 end
 if nargin < 3, shape = 'same'; end

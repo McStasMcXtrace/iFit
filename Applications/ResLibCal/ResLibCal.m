@@ -6,6 +6,8 @@ function out = ResLibCal(varargin)
 % To compute directly the resolution function, sending an EXP ResLib-like
 %   configuration structure, use:
 %   out = ResLibCal(EXP);
+% To convolve an iFunc model with a 4D resolution function, use:
+%   out = ResLibCal(model);
 % To use ResLibCal from the command line, use:
 %   out = ReslibCal(command, arguments...);
 % where 'command' is one of:
@@ -31,6 +33,7 @@ function out = ResLibCal(varargin)
 %   list    print-out the RESCAL parameter list
 %   config  return the current configuration (ResLib EXP)
 %   hkle    return the current HKLE location. Set it back with ResLibCal(hkle{:});
+%   silent  use silent computation (no plot/display) for further arguments
 %   <PAR>=<VALUE> sets a parameter value, e.g. 'DM=3.355'
 %
 % To compute the resolution at a given HKLW location, using the current settings
@@ -49,12 +52,46 @@ function out = ResLibCal(varargin)
 %
 % when changing any value in the main GUI:
 % * Method and Scan parameters, Instrument parameters
-% any opened view is updated after a recomputation of the resolution
+% any opened view is updated after a re-computation of the resolution.
 %
 % The 2D and 3D views can be closed without ending the application.
 % When the main window is closed, or Exit is selected all views are closed
 %
+% Convolution in 4D for TAS ----------------------------------------------------
+%
+%   The 4D convolution syntax allow to simulate a TAS scan from a parametrised 
+% dispersion. In the following example, we simulate a scan through a cubic crystal
+% dispersion, and show the ideal S(q,w) as well as the measured, broadened 
+% measurement. Then, the simulated scan is inserted in a representation of the 
+% S(q,w), to visualise the scan trajectory and simulated signal.
+% To use this tool, you need to input a 2D or 4D dispersion model (iFunc).
+% The dispersion is either a 2D model S(|q|,w) or a 4D model S(qh,qk,ql,w).
+% The axes of the dispersion are in the lattice reciprocal space, in r.l.u.
+%
+%   s=sqw_cubic_monoatomic; % create a 4D S(q,w) for a cubic pure material
+%   t=ResLibcal(s);         % convolute it with a TAS resolution, and open ResLibCal.
+%   w=linspace(0.01,20,50); qh=0.3*ones(size(w)); qk=0*qh; ql=qk; % a scan
+%   signal1=iData(t, [], qh,qk,ql,w);
+%   signal0=iData(s, [], qh,qk,ql,w);
+%   figure; plot(squeeze([signal1 signal0*100])); % plot the dispersion and simulated measurement
+%   % now plot the 4D dispersion with the scan in it, for fun
+%   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,10,51); % a 4D grid
+%   f=iData(s,[],qh,qk,ql,w); % evaluate the model on the 4D grid
+%   figure; surf(log(f(:,:,1,:)),'half'); hold on;  % plot dispersion, and scan
+%   scatter3(log(signal1(:,:,1,:)),'filled');
+%
+% input: any combination of:
+%   command: string among those listed above, which can be followed by any other
+%            allowed parameter.
+%   qh,qk,ql,w: 4 vectors or 4D matrices which delimit a region in the reciprocal
+%            space where the TAS resolution function should be computed.
+%   model:   an iFunc model which is to be convolved with the TAS response.
+%   EXP:     a structure holding a ResLibCal, ResCal or ResLib configuration.
+% output:
+%   a ResLibCal configuration with e.g. 'resolution' field, or a 4D convoluted model.
+%
 % Version: $Date$
+% See also iFunc/conv
 
 % Contributions:
 % ResCal5: rc_cnmat rc_popma rc_int rc_focus rc_bragg rc_bragghklz
@@ -87,6 +124,7 @@ function out = ResLibCal(varargin)
 % ResLibCal_UpdateTauPopup(handle, EXP)
 
 out = [];
+silent_mode = 0;
 ResLibCal_version = [ mfilename ' 1.2.1 ($Date$)' ];
 
 persistent fig
@@ -98,6 +136,9 @@ if nargin == 0
   out = feval(mfilename, 'create'); % load last configuration, and Compute
   out = ResLibCal_ViewResolution(out,2);  % open/raise View Res2
   out = ResLibCal_UpdateViews(out); % when they exist
+elseif nargin == 1 && isa(varargin{1}, 'iFunc')
+  out = tas_conv4d(varargin{1});
+  return
 end
 % menu actions:
 while ~isempty(varargin)
@@ -105,17 +146,6 @@ while ~isempty(varargin)
     varargin = [ {'update_handle'} varargin ];
   end
   if ischar(varargin{1})
-    % check if the application window exists, else open it
-%    fig=findall(0, 'Tag','ResLibCal');
-%    if length(fig) > 1
-%      delete(fig(2:end)); % remove duplicated windows
-%      fig=fig(1);
-%    end
-%    if isempty(fig) || ~ishandle(fig)
-%      fig = openfig('ResLibCal'); % open the main ResLibCal figure.
-%      feval(mfilename, 'create'); % load last configuration
-%    end
-
     action = varargin{1};
     switch lower(action)
     % menu items ---------------------------------------------------------------
@@ -134,7 +164,7 @@ while ~isempty(varargin)
         out=mergestruct(out,EXP); 
       end
       out = ResLibCal_Compute(out);
-      out = ResLibCal_UpdateViews(out);
+      if ~silent_mode, out = ResLibCal_UpdateViews(out); end
       varargin(2:3) = [];
     case 'file_open_instr'
       p = fileparts(which(mfilename));
@@ -298,7 +328,7 @@ while ~isempty(varargin)
       delete(findobj(0, 'Tag', 'ResLibCal_View2'));
       delete(findobj(0, 'Tag', 'ResLibCal_View3'));
       
-    % RESCAL actions
+    % RESCAL actions -----------------------------------------------------------
     case 'list'
       out = ResLibCal_Compute(out);
       disp('RESCAL parameters')
@@ -340,6 +370,8 @@ while ~isempty(varargin)
         disp('----------------------------------------------------------');
       end
     % other actions (not menu items) -------------------------------------------
+    case 'silent'
+      silent_mode = 1;
     case 'default'  % factory default
       fig = ResLibCal_fig;
       if ~isempty(fig) && ishandle(fig)
@@ -377,10 +409,12 @@ while ~isempty(varargin)
       
       out = ResLibCal_Compute;
       
-      if ~isempty(fig)
-        out = ResLibCal_UpdateViews(out);
-      elseif nargout == 0
-        out = ResLibCal_UpdateViews(out, 'stdout'); % display result to stdout
+      if ~silent_mode
+        if ~isempty(fig)
+          out = ResLibCal_UpdateViews(out);
+        elseif nargout == 0
+          out = ResLibCal_UpdateViews(out, 'stdout'); % display result to stdout
+        end
       end
     case {'compute','resolution'}
       % only compute. No output except in varargout
@@ -448,8 +482,10 @@ while ~isempty(varargin)
         out = ResLibCal_GetConfig;
       end
       if numel(varargin) == 0
-        out = ResLibCal_Compute(out);                    % compute the resolution
-        ResLibCal_UpdateViews(out); % update views when they exist
+        out = ResLibCal_Compute(out); % compute the resolution
+        if ~silent_mode, 
+          ResLibCal_UpdateViews(out); % update views when they exist
+        end
       end
       
     end % switch (action)
@@ -484,7 +520,7 @@ while ~isempty(varargin)
     % compute
     if isempty(varargin)
       out = ResLibCal_Compute(EXP);
-      if ~isempty(fig), ResLibCal_UpdateViews(out); end % when they exist
+      if ~isempty(fig) && ~silent_mode, ResLibCal_UpdateViews(out); end % when they exist
     end
     
   elseif numel(varargin) >= 4 && isnumeric(varargin{1}) && isnumeric(varargin{2}) ...
@@ -527,8 +563,10 @@ while ~isempty(varargin)
     out.EXP=EXP;
     if isempty(varargin)
       out = ResLibCal_Compute(EXP);
-      if ~isempty(fig), ResLibCal_UpdateViews(out); % when they exist
-      elseif nargout==0, ResLibCal_UpdateViews(out,'stdout'); end
+      if ~silent_mode, 
+        if ~isempty(fig), ResLibCal_UpdateViews(out); % when they exist
+        elseif nargout==0, ResLibCal_UpdateViews(out,'stdout'); end
+      end
     end
   elseif numel(varargin) >= 1 && isempty(varargin{1})
     out = ResLibCal_GetConfig;
