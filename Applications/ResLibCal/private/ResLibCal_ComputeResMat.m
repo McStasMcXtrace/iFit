@@ -117,44 +117,27 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
     
     % choice of method
     if ~isempty(strfind(EXP.method, 'rescal5'))
-      if exist('rc_cnmat') == 2
-        % a,b,c,alpha,beta,gamma, QH,QK,QL
-        f=0.4826; % f converts from energy units into k^2, f=0.4826 for meV
-        if ~isempty(strfind(EXP.method, 'cooper')), method=@rc_cnmat;
-        else                                        method=@rc_popma; 
-        end
-        [R0,RM]   = feval(method,f,0,EXP,0);
-      else
-        disp([mfilename ': Rescal5/rc_cnmat is not available' ]);
+      % a,b,c,alpha,beta,gamma, QH,QK,QL
+      f=0.4826; % f converts from energy units into k^2, f=0.4826 for meV
+      if ~isempty(strfind(EXP.method, 'cooper')), method=@rc_cnmat;
+      else                                        method=@rc_popma; 
       end
+      [R0,RM]   = feval(method,f,0,EXP,0);
     elseif ~isempty(strfind(EXP.method, 'res3ax'))
-      if exist('res3ax3') == 2
-        if ~isempty(strfind(EXP.method, 'cooper')), method=@res3ax3;
-        else                                        return; % no Popovici from J Ollivier
-        end
-        [R0,RM]   = feval(method,h,k,l,w, EXP);
-      else
-        disp([mfilename ': res3ax (JO) is not available' ]);
+      if ~isempty(strfind(EXP.method, 'cooper')), method=@res3ax3;
+      else                                        return; % no Popovici from J Ollivier
       end
+      [R0,RM]   = feval(method,h,k,l,w, EXP);
     elseif ~isempty(strfind(EXP.method, 'afill'))
-      if exist('Rescal_AFILL') == 2
-        % This method is 100% equivalent to ResCal5/Cooper-Nathans
-        method    = @Rescal_AFILL; 
-        [R0,RM]   = feval(method,h,k,l,w, EXP);
-      else
-        disp([mfilename ': rescal/AFILL is not available' ]);
-      end
+      % This method is 100% equivalent to ResCal5/Cooper-Nathans
+      method    = @Rescal_AFILL; 
+      [R0,RM]   = feval(method,h,k,l,w, EXP);
     else % default is 'reslib'
       % calls ResLib/ResMat
-      if exist('ResMat') == 2
-        [sample,rsample]=GetLattice(EXP);
-        Q=modvec(h,k,l,rsample);
-        [R0,RM]= ResMat(Q,w,EXP);
-        % [R0, RMS, RM,x,y,z] = ResMatS(h,k,l,w, EXP);
-        
-      else
-        disp([mfilename ': ResLib 3.4/ResMat is not available' ]);
-      end
+      [sample,rsample]=GetLattice(EXP);
+      Q=modvec(h,k,l,rsample);
+      [R0,RM]= ResMat(Q,w,EXP);
+      % [R0, RMS, RM,x,y,z] = ResMatS(h,k,l,w, EXP);
     end
     % resolution volume and matrices -------------------------------------------
     %
@@ -177,11 +160,10 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
     % S = matrix 's' in inline (below) ResLibCal_ComputeResMat_Angles
     if ~isempty(RM)
       res.spec.RM= RM;
-      res = ResLibCal_RM2RMS(EXP, res);
-    
-      [res.angles, res.Q]     = ResLibCal_ComputeResMat_Angles(h,k,l,w, ...
-                                  EXP, res.ABC.rlu2frame);
-      res                     = ResLibCal_RM2clouds(EXP, res); % generate MC clouds
+      res                 = ResLibCal_RM2RMS(EXP, res);    % RM is other coordinate frames
+      [res.angles, res.Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w, ...
+                                  EXP, res.ABC.rlu2frame); % spectrometer angles
+      res                 = ResLibCal_RM2clouds(EXP, res); % generate MC clouds (spec, rlu)
     else
       res.README='Could not compute the resolution';
     end

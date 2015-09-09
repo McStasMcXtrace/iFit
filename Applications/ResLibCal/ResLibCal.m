@@ -30,6 +30,7 @@ function out = ResLibCal(varargin)
 %   bragg   print-out the Bragg widths a la RESCAL
 %   list    print-out the RESCAL parameter list
 %   config  return the current configuration (ResLib EXP)
+%   hkle    return the current HKLE location. Set it back with ResLibCal(hkle{:});
 %   <PAR>=<VALUE> sets a parameter value, e.g. 'DM=3.355'
 %
 % To compute the resolution at a given HKLW location, using the current settings
@@ -428,6 +429,12 @@ while ~isempty(varargin)
       feval(mfilename, 'update');
     case {'config','EXP'}
       out = ResLibCal_GetConfig;
+    case 'hkle'
+      out = { str2num(get(ResLibCal_fig('EXP_QH'),'String'))
+        str2num(get(ResLibCal_fig('EXP_QK'),'String'))
+        str2num(get(ResLibCal_fig('EXP_QL'),'String'))
+        str2num(get(ResLibCal_fig('EXP_W'),'String')) };
+      return;
     otherwise
       % open file name or list of parameters given as 'VAR=VAL; ...'  
       if numel(varargin) > 1 && isstruct(varargin{2})

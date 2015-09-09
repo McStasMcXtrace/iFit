@@ -149,7 +149,7 @@ function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, Labels, FrameStr, Units, panel_
   Y=XX(2,:); sy=max(Y(:)) - min(Y(:));
 
   xlabel({ [ '{\bf ' Labels{ix} '} ' FrameStr{ix} ' [' Units ']' ], [ '{\delta}' Labels{ix} '=' num2str(sx, 3) ]})
-  ylabel({ [ '{\bf ' Labels{iy} '} ' FrameStr{iy} ' [' Units ']' ], [ '{\delta}' Labels{ix} '=' num2str(sy, 3) ]})
+  ylabel({ [ '{\bf ' Labels{iy} '} ' FrameStr{iy} ' [' Units ']' ], [ '{\delta}' Labels{iy} '=' num2str(sy, 3) ]})
 
   grid on
 

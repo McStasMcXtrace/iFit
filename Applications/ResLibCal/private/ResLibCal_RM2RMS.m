@@ -239,7 +239,10 @@ function str = ResLibCal_RM2RMS_Labels(str, v, unit)
   % get labels for given vectors
   
   for index=1:size(v,2)
-    str{index} = strtrim([ str{index} ' =[' strtrim(sprintf('%.2f ', v(:,index))) ' ' unit ']' ]);
+    v1 = v(:,index);
+    if all(v1 -round(v1) < 0.01), v1 = strtrim(sprintf('%i ', round(v1))); 
+    else v1 = strtrim(sprintf('%.2f ', v1)); end
+    str{index} = strtrim([ str{index} ' =[' v1 ' ' unit ']' ]);
   end
 
 % ------------------------------------------------------------------------------
