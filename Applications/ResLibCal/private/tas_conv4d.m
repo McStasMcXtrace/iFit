@@ -12,15 +12,14 @@ function signal = tas_conv4d(dispersion, config, frame)
 %       file (ResLibCal, ResCal, ResTrax, ResCal5, aFIT/SPEC). If config is left 
 %       as empty ('') or not given,  the current ResLibCal configuration will be used.
 %
-%   * the reference frame to use for the dispersion, as the 'xyz' spectrometer 
-%     one (x //Q) or the lattice one 'abc' with A defined for the lattice orientation.
+%   * the reference frame to use for the dispersion, as the 'spec' spectrometer 
+%     one (x //Q) or the lattice one 'rlu' with a* defined for the lattice orientation.
 %
 %   IMPORTANT: the H,K,L axes are those defined by the reference frame.
-%   When the frame is set as the spectrometer frame 'xyz', the 'H' direction is 
-%     the Q longitudinal, 'L' is vertical, and 'K' closes the direct frame.
-%   When the frame is set as the lattice frame 'abc', the 'H' direction is along
-%     the axis 'A' defined for the lattice orientation, the 'K' axis is orthogonal
-%     in plane, and 'L' is vertical.
+%   When the frame is set as the spectrometer frame 'spec', the 'H' direction is 
+%     the Q longitudinal, 'L' is vertical, and 'K' is transverse.
+%   When the frame is set as the lattice frame 'rlu', the 'H' direction is along
+%     the axis 'a*', the 'K' axis is along b*, and 'H' is along c*.
 %
 % The model can then be used for refinement as a usual fit model:
 %   fits(model, data_set, parameters, options, constraints)
