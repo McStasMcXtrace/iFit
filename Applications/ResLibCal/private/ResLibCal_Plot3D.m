@@ -117,7 +117,7 @@ function h=ResLibCal_Proj_plot3D(index, NP, Labels, FrameStr, Units, cloud, cent
   ylabel({[ '{\bf ' Labels{iy} '} ' FrameStr{iy} ' [' Units ']' ], ...
        [ '{\delta}' Labels{iy} '=' num2str(sy, 3) ]})
   zlabel({[ '{\bf ' Labels{iz} '} ' FrameStr{iz} ' [' Units ']' ], ...
-       [ '{\delta}' Labels{iz} '=' num2str(sy, 3) ]})
+       [ '{\delta}' Labels{iz} '=' num2str(sz, 3) ]})
        
   grid on
   
