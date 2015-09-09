@@ -26,8 +26,17 @@ function signal = tas_conv4d(dispersion, config, frame)
 %   fits(model, data_set, parameters, options, constraints)
 %
 % Example:
-%   s=sqw_vaks('KTaO3');  % create a 4D S(q,w) perovskite model
-%   t=tas_conv(s);        % convolute it with a TAS resolution, and open ResLibCal.
+% s=sqw_vaks('KTaO3');    % create a 4D S(q,w) perovskite model
+% t=tas_conv4d(s);        % convolute it with a TAS resolution, and open ResLibCal.
+% w=linspace(0.01,20,50); qh=0.6*ones(size(w)); qk=0*qh; ql=qk; 
+% signal =iData(t, [], qh,qk,ql,w);
+% signal2=iData(s, [], qh,qk,ql,w);
+% figure; plot(squeeze([signal signal2*100])); % plot the dispersion and simulated measurement
+% % now plot the 4D dispersion with the scan in it
+% qh=linspace(0.01,.7,50);qk=qh; ql=qh; w=linspace(0.01,10,51);
+% f=iData(s,[],qh,qk,ql,w);
+% figure; surf(log(f(:,:,1,:)),'half'); hold on; scatter3(log(signal(:,:,1,:)),'filled');
+
 
 if nargin < 1
   dispersion = '';
@@ -86,8 +95,8 @@ disp([ mfilename ': setting ResLibCal:autoupdate to OFF for efficiency in comput
 ResLibCal('autoupdate','off');
 
 if isempty(frame), 
-  if dispersion.Dimension == 4, frame='abc'; 
-  else frame='xyz'; end
+  if dispersion.Dimension == 4, frame='rlu'; 
+  else frame='spec'; end
 end
 
 % display message about [abc] or [xyz] cloud usage, and axes used
@@ -95,20 +104,21 @@ disp([ mfilename ': Using reference frame: ' frame ])
 if isstruct(config) && isfield(config, 'resolution')
   if ~iscell(config.resolution), resolution={ config.resolution }; 
   else resolution = config.resolution; end
-  disp('Frame axes:')
-  resolution{1}.(frame).FrameStr
+  disp(resolution{1}.(frame).README);
 end
 
 % assemble the convoluted model ================================================
 
 % the built model parameters will be that of the model
 signal.Parameters = dispersion.Parameters;
+signal.ParameterValues = dispersion.ParameterValues;
+
 if ~isempty(config)
   signal.Name       = [ 'conv(' dispersion.Name ', ResLibCal(''' config ''')) [' mfilename ']' ];
   signal.Description= [ '(' dispersion.Description ') convoluted by (TAS 4D resolution function)' ];
 else
   signal.Name       = [ 'conv(' dispersion.Name ', ResLibCal)' ];
-    signal.Description= [ '(' dispersion.Description ') convoluted by (TAS 4D resolution function with configuration ' config ')' ];
+  signal.Description= [ '(' dispersion.Description ') convoluted by (TAS 4D resolution function with configuration ' config ')' ];
 end
 signal.Dimension = dispersion.Dimension;
 signal.Guess     = dispersion.Guess;
@@ -126,7 +136,7 @@ signal.UserData.config     = config;
 % TODO: integration can be achieved using a Gauss-Hermite estimate, which is much
 % faster
 
-% if dispersion.Dimension == 2 (liquid,powder,gas,glass,polymer...), then use |q|,w as axes. Should use xyz frame
+% if dispersion.Dimension == 2 (liquid,powder,gas,glass,polymer...), then use |q|,w as axes. Should use spec frame
 if dispersion.Dimension == 2
   liq = 'cloud{1} = sqrt(cloud{1}.^2+cloud{2}.^2+cloud{3}.^2); cloud(2:3)=[];';
 else liq='';
@@ -136,20 +146,28 @@ signal.Expression = { ...
   'if numel(varargin) >= 1 && (isstruct(varargin{1}) || ~isempty(dir(varargin{1})))', ...
   '  config = varargin{1};', ...
   'else config=[]; end', ...
+  'if isempty(config) && ~isempty(this.UserData.config), config = this.UserData.config; end', ...
+  '% save current HKLE location', ...
+  'hkle = ResLibCal(''hkle'');', ...
+  '% put it in a try catch so that we always restore the HKLE location', ...
+  'try', ...
   '% compute the resolution, using either given config, or default/GUI', ...
   'if isempty(config), out=ResLibCal(x,y,z,t);', ...
   'else out=ResLibCal(config, x,y,z,t); end', ...
-  '% get the [abc] reference cloud', ...
+  '% get the MC cloud', ...
   'if ~iscell(out.resolution), resolution={ out.resolution };', ...
   'else resolution = out.resolution; end', ...
   'signal=zeros(size(resolution));', ...
   'for index=1:numel(resolution)', ...
   '  if ~resolution{index}.R0, continue; end', ...
 [ '  cloud=resolution{index}.' frame '.cloud;' ], ...
-liq, ...
+     liq, ...
   '  dispersion=this.UserData.dispersion;', ...
   '  this_signal=feval(dispersion, p, cloud{:});', ...
   '  signal(index) = sum(this_signal(:))*resolution{index}.R0/numel(cloud{1})', ...
-  'end' };
-
+  'end % for', ...
+  'end % try', ...
+  '% restore previous HKLE location', ...
+  'ResLibCal(hkle{:});'};
+  
 signal = iFunc(signal);
