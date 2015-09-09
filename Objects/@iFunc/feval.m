@@ -66,7 +66,7 @@ if isa(p, 'iData')
   p = NaN;
 end
 
-if iscell(p) && ~isempty(p) % as model cell (iterative function evaluation)
+if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
   signal = {}; ax={}; name={};
   for index=1:numel(model)
     [signal{end+1}, ax{end+1}, name{end+1}] = feval(model, p{index}, varargin{:});
@@ -169,7 +169,10 @@ if isempty(p) && length(model.ParameterValues) == numel(model.Parameters)
   p = model.ParameterValues;
 end
 % when length(p) < Parameters, we fill NaN's ; when p=[] we guess them all
-if strcmp(p, 'guess') || isempty(p)
+if isempty(p) % should guess parameters, but also evaluate model
+  guessed = 'full and eval';
+  p = NaN*ones(1, numel(model.Parameters));
+elseif strcmp(p, 'guess') % explicitely return guessed parameters
   p = NaN*ones(1, numel(model.Parameters));
   guessed = 'full';
 elseif isnumeric(p) && length(p) < length(model.Parameters) % fill NaN's from p+1 to model.Parameters
@@ -181,7 +184,8 @@ elseif isnumeric(p) && length(p) < length(model.Parameters) % fill NaN's from p+
 end
 
 % when there are NaN values in parameter values, we replace them by guessed values
-if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed)
+if model.Dimension && ...
+  ((any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed))
   % call private method to guess parameters from axes, signal and parameter names
   if isempty(guessed), guessed = 'partial'; end
   
@@ -310,7 +314,8 @@ if model.Dimension && (any(isnan(p)) && length(p) == length(model.Parameters)) |
       varargin(signal_in_varargin) = []; % remove Signal from arguments for evaluation (used in Guess)
       signal_in_varargin = [];
     end
-    [signal, ax, name] = feval(model, p, varargin{:});
+    % [signal, ax, name] = feval(model, p, varargin{:});
+    guessed = ''; % proceed with eval
   else
     ax=0; name=model.Name;
   end
