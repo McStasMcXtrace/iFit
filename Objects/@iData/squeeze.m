@@ -49,9 +49,8 @@ if numel(a) == 1
   % move the un-used/scalar axes to the end (code from subsref)
   
   % check if the sub indices supress an axis: move it further
-  for index=1:(sz-1)
+  for index=(sz-1):-1:1
     if index <= length(a.Alias.Axis)
-    index
       % axes to be moved: scalar, or all unique
       x = getaxis(a, index);
       if isscalar(x) || isempty(find(x ~= x(1), 1))
