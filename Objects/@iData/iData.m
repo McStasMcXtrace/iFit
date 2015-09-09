@@ -141,7 +141,7 @@ else  % convert input argument into object
   elseif isstruct(varargin{1})
     % iData(struct)
     out = iData_struct2iData(varargin{1}); % convert struct to iData
-  elseif isnumeric(varargin{1}) && (numel(varargin{1}) > 1 || ~ishandle(varargin{1}))
+  elseif ~isempty(varargin{1}) && isnumeric(varargin{1}) && (numel(varargin{1}) > 1 || ~ishandle(varargin{1}))
     % iData(x)
     out = iData_num2iData(varargin{1});    % convert single scalar/vector/matrix to iData
     return
@@ -162,6 +162,10 @@ else  % convert input argument into object
       [signal, ax, name] = feval(this_in, varargin{2:end});
       if length(signal) == length(this_in.Parameters)
         [signal, ax, name] = feval(this_in, signal, varargin{3:end});
+      end
+      if isempty(signal), 
+          iData_private_warning(mfilename, [ ': iFunc evaluation failed (empty value). Check axes and parameters.' ]);
+          return; 
       end
       % swap xy to cope with iData(x,y,z) syntax
       if numel(ax) >=2, ax(1:2) = ax([ 2 1]); end
@@ -196,7 +200,7 @@ else  % convert input argument into object
     end
     return
   else
-    iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(varargin{1}) ' is not supported. Ignore.' ]);
+    iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(varargin{1}) ' length ' mat2str(size(varargin{1})) ' is not supported. Ignore.' ]);
     out = [];
   end
     
