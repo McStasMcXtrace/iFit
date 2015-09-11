@@ -916,7 +916,7 @@ function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displa
       if ~isempty(pbe)
         select = pbe(1);
       elseif ~isempty(paw)
-        select = paw(1)
+        select = paw(1);
       else select=1;
       end
       % if still more than one choice, pop-up list selector

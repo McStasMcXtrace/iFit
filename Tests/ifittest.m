@@ -117,24 +117,24 @@ fprintf(1,'Test duration: %g [s]\n', etime(clock,t0));
 % ==============================================================================
 function fileList = getAllFiles(dirName)
 
-  dirData  = dir(dirName);     %# Get the data for the current directory
+  dirData  = dir(dirName);     % Get the data for the current directory
   if isempty(dirData)
     % we try to prepend the ifittest location (relative path given)
     dirData = fullfile(fileparts(which(mfilename)), dirData);
   end
-  dirIndex = [dirData.isdir];  %# Find the index for directories
-  fileList = {dirData(~dirIndex).name}';  %'# Get a list of the files
+  dirIndex = [dirData.isdir];  % Find the index for directories
+  fileList = {dirData(~dirIndex).name}';  %' Get a list of the files
   if ~isempty(fileList)
-    fileList = cellfun(@(x) fullfile(dirName,x),...  %# Prepend path to files
+    fileList = cellfun(@(x) fullfile(dirName,x),...  % Prepend path to files
                        fileList,'UniformOutput',false);
     fileList = fileList(~strcmp(fileList, mfilename)); % skip main test proc
   end
-  subDirs = {dirData(dirIndex).name};  %# Get a list of the subdirectories
-  validIndex = ~ismember(subDirs,{'.','..'});  %# Find index of subdirectories
-                                               %#   that are not '.' or '..'
-  for iDir = find(validIndex)                  %# Loop over valid subdirectories
-    nextDir = fullfile(dirName,subDirs{iDir});    %# Get the subdirectory path
-    fileList = [fileList; getAllFiles(nextDir)];  %# Recursively call getAllFiles
+  subDirs = {dirData(dirIndex).name};  % Get a list of the subdirectories
+  validIndex = ~ismember(subDirs,{'.','..'});  % Find index of subdirectories
+                                               %   that are not '.' or '..'
+  for iDir = find(validIndex)                  % Loop over valid subdirectories
+    nextDir = fullfile(dirName,subDirs{iDir});    % Get the subdirectory path
+    fileList = [fileList; getAllFiles(nextDir)];  % Recursively call getAllFiles
   end
   
 
