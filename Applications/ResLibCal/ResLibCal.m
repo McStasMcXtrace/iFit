@@ -142,7 +142,9 @@ elseif nargin == 1 && isa(varargin{1}, 'iFunc')
 end
 % menu actions:
 while ~isempty(varargin)
-  if isscalar(varargin{1}) && ishandle(varargin{1})
+  if isscalar(varargin{1}) && ishandle(varargin{1}) ...
+    && (numel(varargin) == 2 && ~isnumeric(varargin{2}))
+    % used to update the Table 'collimators'
     varargin = [ {'update_handle'} varargin ];
   end
   if ischar(varargin{1})
@@ -199,9 +201,11 @@ while ~isempty(varargin)
     case {'file_saveas','saveas'}
       % save configuration
       ResLibCal_Saveas(out); % (filename, EXP)
+      return;
     case {'file_print','print'}
       fig = ResLibCal_fig;
       printdlg(fig);
+      return;
     case {'file_export','export'}
       [filename, pathname] = uiputfile( ...
          {'*.pdf',  'Portable Document Format (*.pdf)'; ...
@@ -248,6 +252,7 @@ while ~isempty(varargin)
       disp([ mfilename ': opening help from ' link ])
       web(link);
       out = link;
+      return;
     case 'version'
       message = [ ResLibCal_version ' compute and display the triple-axis ' ...
         'resolution function obtained from e.g. Cooper-Nathans and Popovici ' ...
@@ -256,6 +261,7 @@ while ~isempty(varargin)
         'Contributions from: A. Zheludev, A. Tennant, D. Mc Morrow, J. Ollivier, B. Hennion, Hargreave,Hullah, N. Moshtagh' ];
 
       out = message;
+      return;
     case {'help_about'}
       % get the ILL logo from object
       fig = ResLibCal_fig;
@@ -463,16 +469,6 @@ while ~isempty(varargin)
           set(h,'Data',data);
         end
         varargin(3)=[];
-      elseif strcmp(get(h,'Type'), 'uitable')
-        if any(strcmp(tag,{'EXP_mono_tau_popup','EXP_ana_tau_popup'}))
-          ResLibCal_UpdateDTau(h);
-        elseif any(strcmp(tag,{'EXP_efixed','EXP_Kfixed','EXP_Lfixed'}))
-          ResLibCal_UpdateEKLfixed(h);
-        end
-      elseif strcmp(get(h,'Type'), 'uimenu')
-        ResLibCal(get(h,'Tag'));
-      elseif any(strcmp(tag,{'EXP_mono_d','EXP_ana_d'}))
-        ResLibCal_UpdateTauPopup;
       end
       varargin(2)=[];
       % update computation and plots
@@ -504,7 +500,7 @@ while ~isempty(varargin)
         end
       end
       
-    end % switch (action)
+    end % switch (action as a char command)
     
     varargin(1) = [];
     % end if varargin is char
@@ -518,26 +514,8 @@ while ~isempty(varargin)
     varargin(1) = [];
   elseif isnumeric(varargin{1}) && numel(varargin{1}) == 4
     % ResLibCal([qh qk ql w])
-    % read HKLE coordinates and compute resolution there
-    % get current config
-    out = ResLibCal_GetConfig;
-    if isfield(out,'EXP') EXP = out.EXP; else EXP=[]; end
-    if isempty(EXP) || ~isstruct(EXP), return; end
-    HKLE = varargin{1}; varargin(1)=[];
-    EXP.QH =HKLE(1);
-    EXP.QK =HKLE(2);
-    EXP.QL =HKLE(3);
-    EXP.W  =HKLE(4);
-    set(ResLibCal_fig('EXP_QH'),'String', mat2str(EXP.QH));
-    set(ResLibCal_fig('EXP_QK'),'String', mat2str(EXP.QK));
-    set(ResLibCal_fig('EXP_QL'),'String', mat2str(EXP.QL));
-    set(ResLibCal_fig('EXP_W'), 'String', mat2str(EXP.W));
-    out.EXP=EXP;
-    % compute
-    if isempty(varargin)
-      out = ResLibCal_Compute(EXP);
-      if ~isempty(fig) && ~silent_mode, ResLibCal_UpdateViews(out); end % when they exist
-    end
+    hkle = varargin{1};
+    varargin = { hkle(1) hkle(2) hkle(3) hkle(4) };
     
   elseif numel(varargin) >= 4 && isnumeric(varargin{1}) && isnumeric(varargin{2}) ...
     && isnumeric(varargin{3}) && isnumeric(varargin{4})
@@ -557,7 +535,7 @@ while ~isempty(varargin)
     end
     if ~isempty(varargin) && isnumeric(varargin{1}) 
       if ~isempty(varargin{1}),
-        EXP.QK = varargin{1};
+        EXP.QK = varargin{1};;
         set(ResLibCal_fig('EXP_QK'),'String', mat2str(EXP.QK));
       end
       varargin(1)=[];
@@ -585,6 +563,7 @@ while ~isempty(varargin)
       end
     end
   elseif numel(varargin) >= 1 && isempty(varargin{1})
+    disp('ResLibCal([]) Config')
     out = ResLibCal_GetConfig;
     varargin(1)=[];
   else
