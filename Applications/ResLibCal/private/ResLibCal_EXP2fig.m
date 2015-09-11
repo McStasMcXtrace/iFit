@@ -80,6 +80,9 @@ function [fig, out] = ResLibCal_EXP2fig(EXP, fig)
     if isempty(EXP.method), EXP.method=0; end
     set(ResLibCal_fig('EXP_method'),'Value', EXP.method+1);
   end
+  if isfield(EXP, 'NMC') && EXP.NMC > 0
+    set(ResLibCal_fig('View_NMC'), 'UserData', EXP.NMC);
+  end
 
   if isfield(EXP,'mono')
     if     isfield(EXP.mono,'d')   EXP.mono.tau = 2*pi/EXP.mono.d;

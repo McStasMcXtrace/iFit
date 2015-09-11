@@ -69,7 +69,7 @@ function out = ResLibCal(varargin)
 % The axes of the dispersion are in the lattice reciprocal space, in r.l.u.
 %
 %   s=sqw_cubic_monoatomic; % create a 4D S(q,w) for a cubic pure material
-%   t=ResLibcal(s);         % convolute it with a TAS resolution, and open ResLibCal.
+%   t=ResLibCal(s);         % convolute it with a TAS resolution, and open ResLibCal.
 %   w=linspace(0.01,20,50); qh=0.3*ones(size(w)); qk=0*qh; ql=qk; % a scan
 %   signal1=iData(t, [], qh,qk,ql,w);
 %   signal0=iData(s, [], qh,qk,ql,w);
@@ -323,6 +323,22 @@ while ~isempty(varargin)
       if strcmp(status,'on'), status = 'off'; else status = 'on'; end
       set(ResLibCal_fig('View_Resolution_Cloud'), 'Checked', status);
       ResLibCal_UpdateViews([],'force');
+    case {'view_nmc','nmc','monte-carlo'}
+      if isfield(out,'EXP'), EXP=out.EXP; else EXP=out; end
+      if     isfield(EXP, 'NMC'),         NMC=EXP.NMC;
+      else
+        NMC=get(ResLibCal_fig('View_NMC'), 'UserData');
+      end
+      if isempty(NMC) || ~isnumeric(NMC), NMC  = 2000; end
+      NMC = inputdlg('Enter the number of Monte-Carlo iterations', ...
+        'ResLibCal: Monte-Carlo iterations ?',1,{ num2str(NMC) });
+      if ~isempty(NMC)
+        NMC=str2double(NMC{1});
+        if NMC > 0
+          if isfield(out,'EXP'), out.EXP.NMC=NMC; else EXP.NMC=NMC; end
+          set(ResLibCal_fig('View_NMC'), 'UserData', NMC);
+        end
+      end
     case {'view_close','close'}
       delete(findobj(0, 'Tag', 'ResLibCal_View1'));
       delete(findobj(0, 'Tag', 'ResLibCal_View2'));
@@ -380,7 +396,7 @@ while ~isempty(varargin)
       f=openfig('ResLibCal');
       out = ResLibCal_Compute;
       % close figure again if it was not there (pure batch mode)
-      if isempty(fig), delete(f); end
+      if isempty(fig) && numel(varargin) == 0, delete(f); end
     case 'reset'    % restore settings from ini file (when exists) or default
       filename = fullfile(prefdir, 'ResLibCal.ini');
       if exist(filename, 'file')
@@ -571,7 +587,10 @@ while ~isempty(varargin)
   elseif numel(varargin) >= 1 && isempty(varargin{1})
     out = ResLibCal_GetConfig;
     varargin(1)=[];
-    
+  else
+    disp([ mfilename ': unknown parameter of class ' class(varargin{1}) ' . Skipping.' ]);
+    disp(varargin{1});
+    varargin(1)=[];
   end % if type(varargin)
   
 end % end while nargin > 0

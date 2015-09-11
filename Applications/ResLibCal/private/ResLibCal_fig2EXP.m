@@ -25,6 +25,7 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   EXP.method=get(ResLibCal_fig('EXP_method'),'String');
   EXP.method=EXP.method{get(ResLibCal_fig('EXP_method'),'Value')};
   EXP.moncor=0; % Intensity NOT normalized to flux on monitor by default...
+  EXP.NMC=get(ResLibCal_fig('View_NMC'), 'UserData');
 
   %-------------------------   Monochromator and analyzer    -------------------
   EXP.mono.d       =str2double(get(ResLibCal_fig('EXP_mono_d'),'String'));
