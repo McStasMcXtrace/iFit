@@ -6,6 +6,10 @@ function out=ResLibCal_TASview(out)
 % Returns:
 %   out: full output from ResLibCal, with resolution
 
+persistent ResLibCal_version
+  
+  if isempty(ResLibCal_version), ResLibCal_version = ResLibCal('version'); end
+
 if nargin < 1, out = ''; end
 
 if isempty(out)
@@ -132,11 +136,12 @@ for index=1:numel(resolution)
   if length(L) > 1, L=L(ceil(length(L)/2)); end
   if length(W) > 1, W=W(ceil(length(W)/2)); end
 
-  if EXP.infin==-1, l = 'KI'; else l='KF'; end
-
-  t = { sprintf('%s=%g [Angs^{-1}] QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]', l, EXP.Kfixed, H,K,L,W), ...
-        sprintf('A1=%5.3g A2=%5.3g A3=%5.3g A4=%5.3g A5=%5.3g A6=%5.3g [deg]', angles*180/pi) };
-  title(t);
+  if index == 1,
+    t = { sprintf('Ki=%g Kf=%g [Angs^{-1}]', EXP.ki, EXP.kf), ...
+          sprintf('QH=%5.3g QK=%5.3g QL=%5.3g [rlu] \\omega=%5.3g [meV]', H,K,L,W), ...
+          sprintf('A1=%5.3g A2=%5.3g A3=%5.3g A4=%5.3g A5=%5.3g A6=%5.3g [deg]', angles*180/pi) };
+    title(t);
+  end
   
   hold on
 end
@@ -168,7 +173,7 @@ if isempty(findobj(gcf,'Tag','ResLibCal_TASView_Context'))
   uimenu(uicm, 'Label','Toggle Perspective','Callback', ...
       'if strcmp(get(gca,''Projection''),''orthographic'') set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
   uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
-    'Callback',[ 'msgbox(''' ResLibCal('version') ''',''About ResLibCal'',''help'')' ]);
+    'Callback',[ 'msgbox(''' ResLibCal_version ''',''About ResLibCal'',''help'')' ]);
   set(gca, 'UIContextMenu', uicm, 'Tag','ResLibCal_TASView_Context');
 end
 

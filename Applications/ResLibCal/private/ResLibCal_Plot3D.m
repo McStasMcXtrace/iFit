@@ -90,6 +90,10 @@ end % for
 % ------------------------------------------------------------------------------
 function h=ResLibCal_Proj_plot3D(index, NP, Labels, FrameStr, Units, cloud, centre, max_points)
 
+  persistent ResLibCal_version
+  
+  if isempty(ResLibCal_version), ResLibCal_version = ResLibCal('version'); end
+  
   if ~isempty(Labels), cla; end
   % plot the cloud projection if any
   if ~isempty(cloud)
@@ -151,7 +155,7 @@ function h=ResLibCal_Proj_plot3D(index, NP, Labels, FrameStr, Units, cloud, cent
       uimenu(uicm, 'Label','Add Transparency','Callback', 'alphamap(''decrease''); for tmp_h=get(gca, ''children'')''; try; alpha(tmp_h,0.7*get(tmp_h, ''facealpha'')); end; end;');
       uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
       uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
-        'Callback',[ 'msgbox(''' ResLibCal('version') ''',''About ResLibCal'',''help'')' ]);
+        'Callback',[ 'msgbox(''' ResLibCal_version ''',''About ResLibCal'',''help'')' ]);
       set(gca, 'UIContextMenu', uicm, 'Tag','ResLibCal_View3_Context');
     end
   end

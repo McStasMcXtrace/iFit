@@ -133,6 +133,7 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
       method    = @Rescal_AFILL; 
       [R0,RM]   = feval(method,h,k,l,w, EXP);
     else % default is 'reslib'
+      method = @ResMat;
       % calls ResLib/ResMat
       [sample,rsample]=GetLattice(EXP);
       Q=modvec(h,k,l,rsample);
@@ -152,8 +153,6 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
     res.R0    = R0;
     res.HKLE  = [ h k l w ];  % evaluation location
     res.method= method_orig;
-    
-    
 
     % resolution matrix in [abc] and transformation [HKL] -> [ABC] frame
     % S = inv([x y z]) when [x y z ] = StandardSystem(EXP);
@@ -166,6 +165,14 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
       res                 = ResLibCal_RM2clouds(EXP, res); % generate MC clouds (spec, rlu)
     else
       res.README='Could not compute the resolution';
+      [sample,rsample]=GetLattice(EXP);
+      res.Q=modvec(h,k,l,rsample);
+      disp([ datestr(now) ': ' mfilename ': ' func2str(method) ': KI,KF,Q triangle will not close (kinematic equations). ' ]);
+      disp('  Change the value of KFIX,FX,QH,QK,QL or W.');
+      if (res.Q < .5)
+        disp('  Try an other equivalent Bragg peak further in the reciprocal lattice.');
+      end
+      disp([ h k l w])
     end
     
 % ------------------------------------------------------------------------------

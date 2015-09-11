@@ -127,6 +127,10 @@ function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, Labels, FrameStr, Units, panel_
 % plot the subpanel isub, with resolution projection(ix,iy)
 % each plot is a gaussian 2D, with axes FrameStr{ix|iy}
 % expressed in Units, and short indices name as 'panel_name'
+
+  persistent ResLibCal_version
+  
+  if isempty(ResLibCal_version), ResLibCal_version = ResLibCal('version'); end
   
   % reduce resolution matrix to (ix,iy)
   % and plot
@@ -172,7 +176,7 @@ function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, Labels, FrameStr, Units, panel_
       uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
       uimenu(uicm, 'Label','Reset View', 'Callback','view(2);alpha(0.5);axis tight;rotate3d off;');
       uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
-        'Callback',[ 'msgbox(''' ResLibCal('version') ''',''About ResLibCal'',''help'')' ]);
+        'Callback',[ 'msgbox(''' ResLibCal_version ''',''About ResLibCal'',''help'')' ]);
       set(gca, 'UIContextMenu', uicm, 'Tag',[ 'ResLibCal_Proj_Context_' panel_name ]);
     end
   end
