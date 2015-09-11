@@ -53,6 +53,7 @@ for index=1:numel(resolutions)
   Units    = frame.unit;
   centre   = frame.Q; centre(4) = W;
   FrameStr{end+1} = ''; % no specific axis for energy (4)
+  if index > 1, Labels = []; end
 
   if isempty(NP) || ~all(isreal(NP)), return; end
   
@@ -66,7 +67,7 @@ for index=1:numel(resolutions)
                                   % using the cofactor rule.
   [dummy, NP2] = rc_int(3,1, NP2);
   ResLibCal_Proj_plot2D(1, 1,2, NP2, Labels, FrameStr, Units, 'xy', cloud, centre, max_points);  % xy
-  title([ 'ResLibCal ' datestr(now) ])
+  if index == 1, title([ 'ResLibCal ' datestr(now) ]); end
   if index < numel(resolutions), hold on; else hold off; end
   % if numel(resolutions) > 1 && index==1, colorbar('North'); end
   
@@ -74,7 +75,7 @@ for index=1:numel(resolutions)
     [dummy, NP2] = rc_int(4,1, NP);
     [dummy, NP2] = rc_int(2,1, NP2);
     ResLibCal_Proj_plot2D(2, 1,3, NP2, Labels, FrameStr, Units, 'xz', cloud, centre, max_points);  % xe
-    title('Vertical Q_z resolution')
+    if index == 1, title('Vertical Q_z resolution'); end
     if index < numel(resolutions), hold on; else hold off; end
     
     [dummy, NP2] = rc_int(4,1, NP);
@@ -84,41 +85,42 @@ for index=1:numel(resolutions)
     [dummy, NP2] = rc_int(3,1, NP);
     [dummy, NP2] = rc_int(2,1, NP2);
     ResLibCal_Proj_plot2D(2, 1,4, NP2, Labels, FrameStr, Units, 'xz', cloud, centre, max_points);  % xe
-    title('Energy resolution')
+    if index == 1, title('Energy resolution'); end
     if index < numel(resolutions), hold on; else hold off; end
     
     [dummy, NP2] = rc_int(3,1, NP);
     [dummy, NP2] = rc_int(1,1, NP2);
     ResLibCal_Proj_plot2D(3, 2,4, NP2, Labels, FrameStr, Units, 'yz', cloud, centre, max_points);  % ye
   end
-  title(EXP.method);
+  if index == 1, title(EXP.method); end
   if index < numel(resolutions), hold on; else hold off; end
-  
-  % now add the text box
-  % display a text edit uicontrol so that users can select/copy/paste
-  [res, inst] = ResLibCal_FormatString(out, mode);
-  message = [ res; inst ];
-
-  % fill 4th sub-panel with uicontrol
-  p(1) = 0.5; p(2) = 0.01; p(3) = 0.49; p(4) = 0.49;
-  h = findobj(gcf, 'Tag','ResLibCal_View2_Edit');
-  if isempty(h)
-    h = uicontrol('Tag','ResLibCal_View2_Edit', ...
-      'Style','edit','Units','normalized',...
-      'Position',p, 'Max',2,'Min',0, ...
-      'String', message, 'FontName', 'FixedWidth', ...
-      'FontSize',8,'BackgroundColor','white','HorizontalAlignment','left');
-    % contextual menu
-    uicm = uicontextmenu;
-    uimenu(uicm, 'Label', 'ResLibCal: Resolution: results') ;
-    uimenu(uicm, 'Label', 'Copy to clipboard', ...
-      'Callback', 'tmp_s=get(gco,''String''); clipboard(''copy'', sprintf(''%s\n'', tmp_s{:})); clear tmp_s;');
-    set(h, 'UIContextMenu', uicm, 'Tag','ResLibCal_Proj_Context_text');
-  else
-    set(h, 'String',message);
-  end
 
 end % for
+hold off;
+
+% now add the text box
+% display a text edit uicontrol so that users can select/copy/paste
+[res, inst] = ResLibCal_FormatString(out, mode);
+message = [ res; inst ];
+
+% fill 4th sub-panel with uicontrol
+p(1) = 0.5; p(2) = 0.01; p(3) = 0.49; p(4) = 0.49;
+h = findobj(gcf, 'Tag','ResLibCal_View2_Edit');
+if isempty(h)
+  h = uicontrol('Tag','ResLibCal_View2_Edit', ...
+    'Style','edit','Units','normalized',...
+    'Position',p, 'Max',2,'Min',0, ...
+    'String', message, 'FontName', 'FixedWidth', ...
+    'FontSize',8,'BackgroundColor','white','HorizontalAlignment','left');
+  % contextual menu
+  uicm = uicontextmenu;
+  uimenu(uicm, 'Label', 'ResLibCal: Resolution: results') ;
+  uimenu(uicm, 'Label', 'Copy to clipboard', ...
+    'Callback', 'tmp_s=get(gco,''String''); clipboard(''copy'', sprintf(''%s\n'', tmp_s{:})); clear tmp_s;');
+  set(h, 'UIContextMenu', uicm, 'Tag','ResLibCal_Proj_Context_text');
+else
+  set(h, 'String',message);
+end
 
 % ------------------------------------------------------------------------------
 function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, Labels, FrameStr, Units, panel_name, cloud, centre, max_points)
@@ -129,6 +131,7 @@ function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, Labels, FrameStr, Units, panel_
   % reduce resolution matrix to (ix,iy)
   % and plot
   subplot(2,2,isub);
+  if ~isempty(Labels); cla; end
   % plot the cloud projection if any
   if ~isempty(cloud)
     x=cloud{ix}; y=cloud{iy};
@@ -144,32 +147,34 @@ function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, Labels, FrameStr, Units, panel_
   % plot the ellipse on top.
   [h, XX] = Ellipse_plot(NP, centre([ix iy]));
   set(h,'DisplayName',panel_name);
+  if ~isempty(Labels)
   
-  X=XX(1,:); sx=max(X(:)) - min(X(:));
-  Y=XX(2,:); sy=max(Y(:)) - min(Y(:));
+    X=XX(1,:); sx=max(X(:)) - min(X(:));
+    Y=XX(2,:); sy=max(Y(:)) - min(Y(:));
 
-  xlabel({ [ '{\bf ' Labels{ix} '} ' FrameStr{ix} ' [' Units ']' ], [ '{\delta}' Labels{ix} '=' num2str(sx, 3) ]})
-  ylabel({ [ '{\bf ' Labels{iy} '} ' FrameStr{iy} ' [' Units ']' ], [ '{\delta}' Labels{iy} '=' num2str(sy, 3) ]})
+    xlabel({ [ '{\bf ' Labels{ix} '} ' FrameStr{ix} ' [' Units ']' ], [ '{\delta}' Labels{ix} '=' num2str(sx, 3) ]})
+    ylabel({ [ '{\bf ' Labels{iy} '} ' FrameStr{iy} ' [' Units ']' ], [ '{\delta}' Labels{iy} '=' num2str(sy, 3) ]})
 
-  grid on
+    grid on
 
-  % contextual menu
-  if isempty(findobj(gca, 'Tag',[ 'ResLibCal_Proj_Context_' panel_name ]))
-    uicm = uicontextmenu;
-    uimenu(uicm, 'Label', [ 'ResLibCal: Resolution: Q' panel_name(1) 'Q' panel_name(2) ' projection' ]) ;
-    uimenu(uicm, 'Separator','on', 'Label', 'Duplicate View...', 'Callback', ...
-       [ 'tmp_cb.g=gca;' ...
-         'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
-         'set(tmp_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
-         'set(gcf,''Name'',''Copy of ResLibCal: ' panel_name ' Resolution ' Units '''); ' ...
-         'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
-         'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
-         'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
-    uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
-    uimenu(uicm, 'Label','Reset View', 'Callback','view(2);alpha(0.5);axis tight;rotate3d off;');
-    uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
-      'Callback',[ 'msgbox(''' ResLibCal('version') ''',''About ResLibCal'',''help'')' ]);
-    set(gca, 'UIContextMenu', uicm, 'Tag',[ 'ResLibCal_Proj_Context_' panel_name ]);
+    % contextual menu
+    if isempty(findobj(gca, 'Tag',[ 'ResLibCal_Proj_Context_' panel_name ]))
+      uicm = uicontextmenu;
+      uimenu(uicm, 'Label', [ 'ResLibCal: Resolution: Q' panel_name(1) 'Q' panel_name(2) ' projection' ]) ;
+      uimenu(uicm, 'Separator','on', 'Label', 'Duplicate View...', 'Callback', ...
+         [ 'tmp_cb.g=gca;' ...
+           'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
+           'set(tmp_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+           'set(gcf,''Name'',''Copy of ResLibCal: ' panel_name ' Resolution ' Units '''); ' ...
+           'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
+           'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
+           'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
+      uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+      uimenu(uicm, 'Label','Reset View', 'Callback','view(2);alpha(0.5);axis tight;rotate3d off;');
+      uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
+        'Callback',[ 'msgbox(''' ResLibCal('version') ''',''About ResLibCal'',''help'')' ]);
+      set(gca, 'UIContextMenu', uicm, 'Tag',[ 'ResLibCal_Proj_Context_' panel_name ]);
+    end
   end
   
   
