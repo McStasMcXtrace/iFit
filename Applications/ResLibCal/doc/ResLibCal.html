@@ -6,8 +6,8 @@
   </head>
   <body>
     <h1 style=" text-align: center;"><a class="mozTocH1"
-        name="mozTocId841636"></a>ResLibCal: a tool to compute triple-is
-      neutron spectrometer resolution</h1>
+        name="mozTocId841636"></a>ResLibCal: a tool to compute
+      triple-axis neutron spectrometer resolution</h1>
     <br>
     <div style="text-align: center;">E. Farhi, <span style="font-style:
         italic;">ILL/DS/CS - Version 1.2.1 Sept 2015</span><br>
@@ -27,17 +27,18 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <li><a href="#mozTocId789429">Obtaining the package</a></li>
       <li><a href="#mozTocId173490">Installation - starting</a></li>
       <li><a href="#mozTocId121795"> Available computational methods</a></li>
-      <li><a href="#mozTocId637458">Usage</a>
+      <li><a href="#mozTocId637458">Usage to compute the TAS resolution
+          function (with plots)</a>
         <ol>
-          <li><a href="#mozTocId744097">Usage: the main interface</a></li>
-          <li><a href="#mozTocId44543"> Usage: ResCal standard
-              nomenclature for configurations </a></li>
-          <li><a href="#mozTocId3394"> Usage: the lattice and
-              spectrometer coordinate frames</a></li>
-          <li><a href="#mozTocId444562">Usage: plotting the TAS
-              resolution function</a></li>
-          <li><a href="#mozTocId244259">Usage: handling computation
-              along a scan (measurement sequences)</a></li>
+          <li><a href="#mozTocId744097">ResLibCal: the main interface</a></li>
+          <li><a href="#mozTocId44543"> ResCal standard nomenclature for
+              configurations </a></li>
+          <li><a href="#mozTocId3394"> The lattice and spectrometer
+              coordinate frames</a></li>
+          <li><a href="#mozTocId444562">Plotting the TAS resolution
+              function</a></li>
+          <li><a href="#mozTocId244259">Handling computation along a
+              scan (measurement sequences)</a></li>
           <li><a href="#mozTocId807901">Usage: loading configurations </a></li>
           <li><a href="#mozTocId927463">Usage: exporting the results,
               saving the configuration</a></li>
@@ -53,10 +54,11 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <h3><a class="mozTocH3" name="mozTocId771790"></a><span
         style="font-weight: bold;">Purpose</span></h3>
     This ResLibCal application gathers a set of analytical computation
-    methods to estimate the resolution function of a triple-is neutron
+    methods to estimate the resolution function of a triple-axis neutron
     spectrometer (TAS). ResLibCal is based on <a
       href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans
     and Popovici methods are proposed [<a href="#mozTocId811100">1-7</a>],
+
 
 
 
@@ -101,6 +103,11 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         href="http://ifit.mccode.org/Install.html">standalone</a>
       distribution.<br>
     </blockquote>
+    ResLibCal does not require iFit to be installed, and be used as a
+    separate application. However, to benefit from the 4D convolution
+    feature, it is advised to install iFit, which includes then
+    ResLibCal.<br>
+    <blockquote> </blockquote>
     <h3><a class="mozTocH3" name="mozTocId173490"></a>Installation -
       starting</h3>
     Just launch ResLibCal with:<br>
@@ -183,6 +190,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
       </i><i>m &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are
       also limited by the effective divergence set from the geometry,
       e.g. <i>atan(width or height/distance) </i>[rad]. <br>
@@ -203,7 +211,9 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     <br>
     Computation takes a few 10ms, whatever be the analytical method
     used.
-    <h3><a class="mozTocH3" name="mozTocId637458"></a>Usage</h3>
+    <h3><a class="mozTocH3" name="mozTocId637458"></a>Usage to compute
+      the TAS resolution function (with plots)<br>
+    </h3>
     The normal use of the application is through its GUI, which is a
     single window.<br>
     <ul>
@@ -214,7 +224,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
         to select the representation of the resolution matrix, as 2D or
         3D view, select if you wish to compute it in the lattice frame
         (rlu), show the vertical Qz component or the energy, or in the
-        instrument frame (Q is), force a re-computation manually, or
+        instrument frame (Q axis), force a re-computation manually, or
         allow an automatic re-computation of the resolution when any
         change is made in the GUI.</li>
       <li>The <span style="font-weight: bold;">Help menu</span> mainly
@@ -225,8 +235,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     prompt, without starting the GUI (see <a href="#mozTocId281751">below</a>).<br>
     The computation of the resolution is carried-out in about 11 ms, but
     the display can be slightly longer when using the GUI (few 100 ms).<br>
-    <h4><a class="mozTocH4" name="mozTocId744097"></a>Usage: the main
-      interface</h4>
+    <h4><a class="mozTocH4" name="mozTocId744097"></a>ResLibCal: the
+      main interface</h4>
     <p>The main interface present all parameters required to configure a
       Cooper-Nathans or Popovici computation. All items have a
       contextual help (bring the mouse pointer over to display a short
@@ -271,6 +281,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
         [Qx,Qy,</i><i>E]</i> item. <br>
       The resolution matrix is always computed in [Angs<sup>-3</sup>.meV],
 
+
       but it can be shown in [rlu<sup>3</sup>.meV] in the 2D and 3D
       views.<br>
     </p>
@@ -283,7 +294,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
         the interface triggers a re-computation of the resolution, and
         an update of opened plots.</span><br>
       <div align="left"><br>
-        <h4><a class="mozTocH4" name="mozTocId44543"></a> Usage: ResCal
+        <h4><a class="mozTocH4" name="mozTocId44543"></a> ResCal
           standard nomenclature for configurations<br>
         </h4>
         The user interface and configuration files lists parameters with
@@ -294,8 +305,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         <blockquote>
           <pre><b>DM</b> Monochromator d-spacing<br><b>DA</b> Analyzer d-spacing<br><b>ETAM</b> Monochromator mosaic<br><b>ETAA</b> Analyzer mosaic<br><b>ETAS</b> Sample mosaic<br><b>SM</b> scattering sense frocdm monochromator +1=right, -1=left<br><b>SS </b>scattering sense from sample +1=right, -1=left<br><b>SA</b> scattering sense from analyzer +1=right, -1=left<br><b>KFIX</b> fixed neutron wavevector in Ang.-1<br><b>FX</b> index for fixed wavevector 1=incident 2=final (10)<br><b>ALF1</b> horizontal source-mono. collimation in min (FWHM)<br><b>ALF2</b> horizontal mono.-sample collimation in min (FWHM)<br><b>ALF3</b> horizontal sample-analyser collimation in min (FWHM)<br><b>ALF4</b> horizontal analyser-detector collimation in min (FWHM)<b><br>BET1</b> vertical source-mono.  collimation in min (FWHM)<b><br>BET2</b> vertical mono.-sample collimation in min (FWHM)<b><br>BET3</b> vertical sample-analyser collimation in min (FWHM)<b><br>BET4</b> vertical analyser-detector collimation in min (FWHM)<b><br>AS</b> sample lattice parameter <b><i>a</i></b> in Angs.<br><b>BS</b> sample lattice parameter <b><i>b</i></b> in Angs.<br><b>CS</b> sample lattice parameter <b><i>c</i></b> in Angs.<br><b>AA</b> (alpha) angle in deg. between axes b and c<br><b>BB</b> (beta)  angle in deg. between axes a and c<br><b>CC</b> (gamma) angle in deg. between axes a and b<br><b>AX</b> First wavevector in scattering plane coordinate H (rlu). angle &lt;KI,A&gt;=A3<br><b>AY</b> First wavevector in scattering plane coordinate K (rlu)<br><b>AZ</b> First wavevector in scattering plane coordinate L (rlu)<br><b>BX</b> Second wavevector in scattering plane coordinate H (rlu)<br><b>BY</b> Second wavevector in scattering plane coordinate K (rlu)<br><b>BZ</b> Second wavevector inou scattering plane coordinate L (rlu)<br><b>QH</b> Position of resolution wavevector (center of measurement) H (rlu)<br><b>QK</b> Position of resolution wavevector (center of measurement) K (rlu)<br><b>QL</b> Position of resolution wavevector (center of measurement) L (rlu)<br><b>EN</b> (W) Position of resolution wavevector (center of measurement) W (meV)<br><b>DQH</b> Increment of Q,E defining general scan step along QH (rlu)<br><b>DQK</b> Increment of Q,E defining general scan step along QK (rlu)<br><b>DQL</b> Increment of Q,E defining general scan step along QL (rlu)<br><b>DEN</b> Increment of Q,E defining general scan step along EN (meV)<br><b>GH</b> Gradient of the dispersion (planar) direction along QH (rlu)<br><b>GK</b> Gradient of the dispersion (planar) direction along QK (rlu)<br><b>GL</b> Gradient of the dispersion (planar) direction along QL (rlu)<br><b>GMOD</b>  Gradient of the dispersion (planar) direction along EN (meV)<br><b>BeamShape</b> =0 for circular source, =1 for rectangular source<br><b>WB</b> width/diameter of the source (cm)<br><b>HB</b> height/diameter of the source (cm)<br><b>Guide</b> =0 No Guide, =1 for Guide<br><b>GDH</b> horizontal guide divergence (minutes/Angs)<br><b>GDV</b> vertical guide divergence (minutes/Angs)<br><b>SampleShape</b> =0 for cylindrical sample, =1 for cuboid sample<br><b>WS</b> sample width/diameter perp. to Q (cm)<br><b>TS</b> sample width/diameter along Q (cm)<br><b>HS</b> sample height (cm) (10)<br><b>DetecteorShape</b> =0 for circular detector, =1 for rectangular detector<br><b>WD</b> width/diameter of the detector (cm)<br><b>HD</b> height/diameter of the detector (cm)<br><b>TM</b> thickness of monochromator (cm)<br><b>WM</b> width of monochromator (cm)<br><b>HM</b> height of monochromator (cm)<br><b>TA</b> thickness of analyser (cm)<br><b>WA</b> width of analyser (cm)<br><b>HA</b> height of analyser (cm)<br><b>L1</b> distance between source and monochromator (cm)<br><b>L2</b> distance between monochromator and sample (cm)<br><b>L3</b> distance between sample and analyser (cm)<br><b>L4</b> distance between analyser and detector (cm)<br><b>RMH</b> horizontal radius of curvature of monochromator (cm)<br><b>RMV</b> vertical radius of curvature of monochromator (cm)<br><b>RAH</b> horizontal radius of curvature of analyser (cm)<br><b>RAV</b> vertical radius of curvature of analyser (cm)</pre>
         </blockquote>
-        <h4><a class="mozTocH4" name="mozTocId3394"></a> Usage: the
-          lattice and spectrometer coordinate frames</h4>
+        <h4><a class="mozTocH4" name="mozTocId3394"></a> The lattice and
+          spectrometer coordinate frames</h4>
         The resolution can be obtained and displayed in 2 coordinate
         frames:<br>
         <ul>
@@ -331,10 +342,11 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         </ul>
       </div>
     </div>
-    <h4><a class="mozTocH4" name="mozTocId444562"></a>Usage: plotting
-      the TAS resolution function</h4>
+    <h4><a class="mozTocH4" name="mozTocId444562"></a>Plotting the TAS
+      resolution function</h4>
     <div style="text-align: left;"> To compute and plot the resolution
       function, select the <span style="font-style: italic;">View/Resolution
+
 
 
 
@@ -353,6 +365,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       is vertical, w.r.t the scattering plane, in the laboratory
       coordinate frame.<br>
       In the sample coordinate frame, <i><b>a*, b* </b>and<b> c* </b>and
+
 
         the reciprocal lattice vectors.</i><br>
       <br>
@@ -388,6 +401,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           geometry</span> menu item. It is automatically updated upon
         change of instrument parameters, as the other views.<br>
         The signification of the angles shown is as follows:<br>
@@ -403,14 +417,14 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <span style="font-style: italic;">The axis has a contextual menu
         allowing to change the plot rendering.</span>
       <div style="text-align: left;">
-        <h4><a class="mozTocH4" name="mozTocId244259"></a>Usage:
-          handling computation along a scan (measurement sequences)</h4>
+        <h4><a class="mozTocH4" name="mozTocId244259"></a>Handling
+          computation along a scan (measurement sequences)</h4>
         <a href="ResLibCal_View3_scan.png"><img alt="A computation along
             an energy scan" title="A computation along an energy scan"
             src="ResLibCal_View3_scan.png" style="border: 0px solid;
             width: 200px; height: 175px;" align="right"></a>Any HKLE
         setting can be assign a vector, so that the resolution will be
-        computed, and potted in GUI mode for all measurements. The
+        computed, and plotted in GUI mode for all measurements. The
         vector should be set as values separated by spaces.<br>
         An example is for instance<br>
         <div style="margin-left: 40px;"><span style="font-style: italic;
@@ -418,9 +432,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             style="font-style: italic; font-weight: bold;">
           <span style="font-style: italic; font-weight: bold;">W=-5 0 5</span><br>
         </div>
-        which shows a 3 steps scan along the energy is.<br>
-        <h4><a class="mozTocH4" name="mozTocId807901"></a>Usage: loading
-          configurations<br>
+        which shows a 3 steps scan along the energy axis.<br>
+        <h4><a class="mozTocH4" name="mozTocId807901"></a>Loading
+          previous configurations<br>
         </h4>
         The <span style="font-style: italic;">'File/Open...'</span>
         menu item allows to read a saved <span style="font-style:
@@ -465,6 +479,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
         configurations by just copying and renaming e.g. any <span
@@ -474,11 +489,12 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
         <blockquote> </blockquote>
       </div>
     </div>
-    <h4><a class="mozTocH4" name="mozTocId927463"></a>Usage: exporting
-      the results, saving the configuration</h4>
+    <h4><a class="mozTocH4" name="mozTocId927463"></a>Exporting the
+      results, saving the configuration</h4>
     The results can be saved using the <span style="font-style:
       italic;">'File/Save as...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -525,8 +541,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     <br>
     When exiting the application, the current configuration is saved in
     the Matlab preferences directory.<br>
-    <h4><a class="mozTocH4" name="mozTocId281751"></a>Usage: non
-      interactive mode (compute only)</h4>
+    <h4><a class="mozTocH4" name="mozTocId281751"></a>Non interactive
+      mode (compute only)</h4>
     It is possible to compute the resolution without launching the GUI,
     which is then very fast. <br>
     For this, send the configuration file from which the computation is
@@ -572,6 +588,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3' </span>as
+
 
 
 
@@ -721,9 +738,210 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
             configuration<br>
           </td>
         </tr>
+        <tr>
+          <td valign="top"><i>silent</i><br>
+          </td>
+          <td valign="top">Consecutive commands (in the same call) are
+            executed in silent mode, with only computation of the
+            resolution, and no plot nor text display. <br>
+          </td>
+        </tr>
       </tbody>
     </table>
     <br>
+    <h3>Convolution of the TAS resolution function with a model, in 4D</h3>
+    Once ResLibCal can properly describe a TAS setting, it is possible
+    to use the computed resolution to convolve a model dispersion in
+    materials. The methodology is (for each QH,QK,QL,W location in the
+    reciprocal space):<br>
+    <ol>
+      <li>compute the resolution function</li>
+      <li>build a Monte-Carlo cloud of points which is a random
+        statistical description of the TAS response</li>
+      <li>multiply this cloud of points with the dispersion, and sum it
+        to get an estimate of the integrated counts on the detector
+        arising from the 'capture' of the dispersion by the TAS
+        resolution function.</li>
+    </ol>
+    All these steps are automated, and the use of<a
+      href="http://ifit.mccode.org/iFunc.html"> iFunc</a> objects allow
+    to build a 'symbolic' representation of an ideal <i>S(q,w)</i>
+    dispersion with the TAS resolution, in 4D (QH,QK,QL,W).<br>
+    <br>
+    If we assume we have a dispersion model 's' in 4D, the syntax to
+    convolve this model with the current ResLibCal TAS configuration is
+    any of:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; s_tas = <font color="#3366ff">conv</font>(s, <font color="#cc33cc">'tas'</font>)<br>&gt;&gt; s_tas = <font color="#3366ff">ResLibCal</font>(s);<br></pre>
+    The convolved model 's_tas' has the same parameters as the initial
+    model 's', but includes the 4D convolution. When typing this
+    command, ResLibCal is started if not already opened. To properly use
+    this feature, you need iFit to be fully installed (that is the
+    ResLibCal application alone is not enough).<br>
+    <h4>Dispersion model: 4D dynamic structure factors S(q,w)</h4>
+    As we have seen the 4D convolution procedure seems straight-forward,
+    as long as we have a reasonable description of the dynamic structure
+    factor <i>S(q,w)</i> to model the excitations in the sample
+    crystal. This is clearly not an easy task, as it highly depends on
+    the physics taking place.<br>
+    <br>
+    To demonstrate what can be done, we here list a few available 4D
+    S(q,w) as part of <a href="http://ifit.mccode.org/">iFit</a>, and
+    building<a href="http://ifit.mccode.org/iFunc.html"> iFunc</a>
+    models. More information about these models can be found in the <a
+      href="http://ifit.mccode.org/Models.html#mozTocId677670">iFit/Models</a>
+    page.<br>
+    <br>
+    <table style="text-align: left;" border="1" cellpadding="2"
+      cellspacing="2" width="1016" height="316">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">S(q,w)<br>
+          </td>
+          <td style="vertical-align: top; background-color: rgb(255,
+            204, 204);"><span style="font-style: italic; font-weight:
+              bold; color: rgb(51, 102, 255);">Description</span><br>
+          </td>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Dimensionality<br>
+          </td>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Parameters<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top; font-weight: bold;"><a
+              href="file:///home/farhi/dev/iFit/Docs/Models.html#mozTocId677670"><b>sqw_sine3d</b></a>
+          </td>
+          <td style="vertical-align: top;">Phonon dispersions as sine
+            wave in HKL (3D) with a damped harmonic oscillator energy
+            dispersion&nbsp; </td>
+          <td style="vertical-align: top;"><font color="#33cc00">4D (HKL<i>w</i>)</font><br>
+            <img alt="sqw_sine3d" title="sqw_sine3d"
+              src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_sine3d.png"
+              align="middle" border="0" width="100" height="73"> </td>
+          <td valign="top">zone center, energy gaps, periodicity</td>
+        </tr>
+        <tr>
+          <td valign="top"><a
+              href="file:///home/farhi/dev/iFit/Docs/Models.html#mozTocId226848"><b>sqw_vaks</b></a></td>
+          <td valign="top">Phonon dispersions in perovskite cubic
+            crystals using the Vaks parameterisation&nbsp; </td>
+          <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
+            <a
+              href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_vaks.png"><img
+                alt="sqw_vaks" title="sqw_vaks"
+                src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_vaks.png"
+                align="middle" border="0" width="100" height="75"></a></td>
+          <td valign="top">acoustic and optical , coupling parameters,
+            soft mode frequency<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><a
+              href="file:///home/farhi/dev/iFit/Docs/Models.html#mozTocId885605"><b>sqw_</b><b>cubic_monoatomic</b></a></td>
+          <td valign="top">Phonon dispersions in a monoatomic cubic
+            crystal using the Dynamical matrix. </td>
+          <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
+            <a
+              href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
+                alt="sqw_cubic_mono" title="sqw_cubic_mono"
+                src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"
+                align="middle" border="0" width="100" height="76"></a></td>
+          <td valign="top">acoustic force constant ratio and scaling
+            energy<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><a
+              href="file:///home/farhi/dev/iFit/Docs/Models.html#mozTocId881911"><b>sqw_phon</b></a></td>
+          <td valign="top">Phonon dispersions from the Dynamical matrix,
+            using forces estimated by <i>ab-initio</i>, using <a
+              href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/phon/">PHON</a>/<a
+              href="http://www.quantum-espresso.org/">QE</a><i>.&nbsp;</i>
+          </td>
+          <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
+            <div align="left"><a
+                href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_phon.png"><img
+                  alt="sqw_phon" title="sqw_phon"
+                  src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_phon.png"
+                  align="left" border="0" width="100" height="76"></a></div>
+          </td>
+          <td valign="top">Creation: <a
+              href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR.</a><br>
+            Then, only the DHO line shape. <i>ab-initio</i> implies no
+            (few) tunable parameter. </td>
+        </tr>
+        <tr>
+          <td valign="top"><a
+              href="file:///home/farhi/dev/iFit/Docs/Models.html#mozTocId990577"><b>sqw_ph_ase</b></a></td>
+          <td valign="top">Phonon dispersions from the Dynamical matrix,
+            using forces estimated by <i>ab-initio </i>using <a
+              href="https://wiki.fysik.dtu.dk/ase">ASE</a>.<i>&nbsp;</i>
+          </td>
+          <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
+            <a
+              href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"><img
+src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
+                title="sqw_ph_ase Al fcc" alt="sqw_ph_ase Al fcc"
+                align="left" border="0" width="100" height="74"></a></td>
+          <td valign="top">Creation: <a
+              href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR</a>,
+            <a
+              href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>,
+            or <a href="http://www.rcsb.org/pdb/">PDB</a>, ...<br>
+            Then, only the DHO line shape. <i>ab-initio</i> implies no
+            (few) tunable parameter. </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    In the following example, we wish to estimate the excitation
+    spectrum along a line at QH=0.3 rlu, varying the energy from 0 to 20
+    meV.<br>
+    <pre>    s=<font color="#3366ff">sqw_sine3d</font>; <i>% create a 4D S(q,w) for a cubic pure material</i>, using default parameters<br>    t=<font color="#3366ff">ResLibCal</font>(s);         <i>% convolute it with a TAS resolution, and open ResLibCal.</i><br></pre>
+    Then we evaluate both the ideal S(q,w) and its convolution with the
+    4D TAS resolution function, along the trajectory:<br>
+    <pre>    w=<font color="#3366ff">linspace</font>(0.01,10,50); qh=1.1*ones(size(w)); qk=0*qh; ql=0*qh; <i>% an E-scan around the [1 0 0] Bragg</i><br>    signal0=<font color="#3366ff">iData</font>(s, [], qh,qk,ql,w);	<i>% the ideal model evaluated along the HKLE line</i><br>    signal1=<font color="#3366ff">iData</font>(t, [], qh,qk,ql,w);   <i>% the convoluted model evaluated along the HKLE line</i>
+</pre>
+    The resulting signals are along the QH,QK,QL,W line, which is in 4D.
+    To <font color="#3366ff"><i>squeeze</i></font> the singleton
+    dimensions (which are constant) and generate 1D data sets along the
+    energy axis, we use:<a href="ResLibCal_conv4D_sine3d.png"><img
+        alt="ResLibCal 4D convolution" title="ResLibCal 4D convolution"
+        src="ResLibCal_conv4D_sine3d.png" align="right" border="0"
+        width="300" height="218"></a><br>
+    <pre>    figure; <font color="#3366ff">plot</font>(<font color="#3366ff">squeeze</font>([signal0 signal1/100])); <i>% plot the dispersion and simulated measurement</i></pre>
+    Then we can plot the whole dispersion curve and the simulated signal
+    along the given scan trajectory.<br>
+    <pre>    QH=<font color="#3366ff">linspace</font>(0.5,1.5,50); QK=<font color="#3366ff">linspace</font>(-.25,.25,50);; QL=QK; W=<font color="#3366ff">linspace</font>(0.01,10,51);<i>	</i><i>% a 4D grid</i><br>    f=<font color="#3366ff">iData</font>(s,[],QH,QK,QL,W);<i>						</i><i>% evaluate the model on the 4D grid</i><br>    figure; <font color="#3366ff">plot3</font>(log(f(:,:,1,:)));  					<i>% plot dispersion</i><br>    hold on; <font color="#3366ff">scatter3</font>(log(signal1(:,:,1,:)),<font color="#cc33cc">'filled'</font>);			<i>% overlay the simulated scan</i></pre>
+    <br>
+    <h4>Planned in the future</h4>
+    We wish to go further in the development of ResLibCal, and in
+    particular its 4D convolution feature. The following features are
+    envisaged:<br>
+    <ul>
+      <li>Support polarisation analysis in the models.</li>
+      <li>Support PhonoPy FORCE_SET input.</li>
+      <li>Provide more <i>S(q,w)</i> phonons with the small
+        displacement method (<a href="https://wiki.fysik.dtu.dk/ase/">ASE</a>,
+        LJ, Morse, LAMMPS, VASP, GPAW, AbInit)</li>
+      <li>Provide more <i>S(q,w) </i>models, e.g. molecular dynamics
+        trajectories (<a href="https://wiki.fysik.dtu.dk/ase/">ASE</a>,
+        NAMD, Moldy, GROMACS, ...), using <i>nMoldyn</i> for FFT.</li>
+      <li>Handle <i>S(</i>|<i>q</i>|<i>,w)</i> 2D dispersions for e.g.
+        powders, liquids, disordered systems.</li>
+      <li>Provide 2D <i>S(</i>|<i>q</i>|<i>,w)</i> models from e.g. <a
+          href="https://t2.lanl.gov/nis/publications/thermal.pdf">NJOY/LEAPR</a>.</li>
+      <li> Properly handle mode polarisation and line-width/amplitude
+        per branch.</li>
+      <li>extend the methodology to diffraction and time-of-flight
+        neutron scattering instruments.<br>
+      </li>
+    </ul>
     <h3><a class="mozTocH3" name="mozTocId393985"></a>Help</h3>
     If you find bugs please send them to me <span style="font-weight:
       bold;">[farhi (at) ill.fr]</span> with:<br>
@@ -797,8 +1015,10 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
 
 
 
+
       See [<a href="../rescal.for">Fortran code</a>].<br>
       [2] N. J. Chesser and J. D. e, <span style="font-style: italic;">Acta
+
 
 
 
@@ -818,10 +1038,11 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
 
 
 
+
         Appl. Phys.</span> <span style="font-weight: bold;">42</span>,
       4736, (1971) [<a href="http://dx.doi.org/10.1063/1.1659848">doi:10.1063/1.1659848</a>].<br>
       [6] Gen Shirane, Stephen M. Shapiro, John M. Tranquada, Neutron
-      Scattering with a Triple-is Spectrometer: Basic Techniques,
+      Scattering with a Triple-axis Spectrometer: Basic Techniques,
       Cambridge University Press (2006).<br>
       [7] S. A. Werner R. Pynn, J. Appl. Phys. 42, 4736, (1971) [<a
         href="http://dx.doi.org/10.1063/1.1659848">doi:10.1063/1.1659848</a>]<br>
