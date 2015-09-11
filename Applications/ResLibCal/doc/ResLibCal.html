@@ -75,6 +75,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -204,6 +205,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
       </i><i>m &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are
       also limited by the effective divergence set from the geometry,
       e.g. <i>atan(width or height/distance) </i>[rad]. <br>
@@ -297,6 +299,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
       but it can be shown in [rlu<sup>3</sup>.meV] in the 2D and 3D
       views.<br>
     </p>
@@ -369,6 +372,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -382,6 +386,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       is vertical, w.r.t the scattering plane, in the laboratory
       coordinate frame.<br>
       In the sample coordinate frame, <i><b>a*, b* </b>and<b> c* </b>and
+
 
 
 
@@ -423,6 +428,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           geometry</span> menu item. It is automatically updated upon
         change of instrument parameters, as the other views.<br>
         The signification of the angles shown is as follows:<br>
@@ -433,7 +439,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         <br>
       </div>
       <img alt="The TAS geometry view" title="The TAS geometry view"
-        src="ResLibCal_Geometry.png" width="642" height="564"><br>
+        src="ResLibCal_Geometry.png" height="564" width="642"><br>
       <span style="font-style: italic;">The 3D plot of the TAS geometry.</span>
       <span style="font-style: italic;">The axis has a contextual menu
         allowing to change the plot rendering.</span>
@@ -503,6 +509,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
         configurations by just copying and renaming e.g. any <span
@@ -517,6 +524,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Save as...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -572,7 +580,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     which is then very fast. <br>
     For this, send the configuration file from which the computation is
     defined as an argument to ResLibCal:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'config_file'</span>)<br>ans =<br>         Title: 'ResLibCal configuration'<br>        handle: 173.0160<br>           EXP: [1x1 struct]<br>    <span style="color: rgb(255, 0, 0);">resolution: </span>[1x1 struct]<br>        ResCal: [1x1 struct]<br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; out = ResLibCal(<span style="color: rgb(204, 51, 204);">'config_file'</span>)<br>ans =<br>         Title: 'ResLibCal configuration'<br>        handle: 173.0160<br>           <font color="#ff0000">EXP:</font> [1x1 struct]<br>    <span style="color: rgb(255, 0, 0);">resolution: </span>[1x1 struct]<br>        ResCal: [1x1 struct]<br></pre>
     The file can be a saved <span style="font-style: italic;">ResLibCal</span>
     configuration (see below), a <span style="font-style: italic;">ResCal5</span>
     configuration (42 or 27 numbers), or any file with named Rescal
@@ -608,11 +616,12 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     <pre style="margin-left: 40px;">&gt;&gt; out.ResCal<br>ans = <br><br>                DM: 3.3542<br>                DA: 3.3542<br>              ETAM: 30<br>              ETAA: 25<br>              ETAS: 5<br>                SM: -1<br>                SS: 1<br>                SA: -1<br>              KFIX: 2.6620<br>                FX: 2<br>              ALF1: 40<br>              ALF2: 40<br>              ALF3: 40<br>              ALF4: 40<br>              BET1: 120<br>              BET2: 159.9648<br>              BET3: 120<br>              BET4: 120<br>                AS: 6.2800<br>                BS: 6.2800<br>                CS: 6.2800<br>                AA: 90<br>                BB: 90<br>                CC: 90<br>                : 1<br>                AY: 0<br>                AZ: 0<br>                BX: 0<br>                BY: 1<br>                BZ: 0<br>                QH: 2<br>                QK: 0<br>                QL: 0<br>                EN: 0<br>               DQH: 0<br>               DQK: 0<br>               DQL: 0<br>               DEN: 1<br>                GH: 0<br>                GK: 0<br>                GL: 1<br>              GMOD: 0<br>         BeamShape: 1<br>                WB: 10<br>                HB: 10<br>             Guide: 0<br>               GDH: 0<br>               GDV: 0<br>       SampleShape: 1<br>                WS: 1<br>                TS: 1<br>                HS: 4<br>    DetecteorShape: 1<br>                WD: 2.5400<br>                HD: 5<br>                TM: 0.2000<br>                WM: 10<br>                HM: 10<br>                TA: 0.2000<br>                WA: 10<br>                HA: 10<br>                L1: 150<br>                L2: 150<br>                L3: 150<br>                L4: 150<br>               RMH: 0.0067<br>               RMV: 0.0067<br>               RAH: 0.0067<br>               RAV: 0.0067<br></pre>
     You can change any configuration parameter, including the method for
     the computation:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; out.EXP.method = <span style="color: rgb(204, 51, 204);">'Cooper-Nathans ResCal'</span><br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; out=ResLibCal;	<i>% contains the ResLib structure as out.EXP</i><br>&gt;&gt; out.EXP.method = <span style="color: rgb(204, 51, 204);">'Cooper-Nathans ResCal'</span><br></pre>
     The method should mention '<span style="font-style: italic;">Cooper-Nathans</span>'
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3' </span>as
+
 
 
 
@@ -629,12 +638,12 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     package documentation.<br>
     <br>
     The following ResLibCal actions are available:<br>
-    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+    <table width="100%" border="1" cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
-          <td align="center" valign="top"><i><b>ResLibCal('action')</b></i><i><b><br>
+          <td valign="top" align="center"><i><b>ResLibCal('action')</b></i><i><b><br>
               </b></i></td>
-          <td align="center" valign="top"><i><b>Description</b></i><i><b><br>
+          <td valign="top" align="center"><i><b>Description</b></i><i><b><br>
               </b></i></td>
         </tr>
         <tr>
@@ -803,8 +812,15 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     The convolved model 's_tas' has the same parameters as the initial
     model 's', but includes the 4D convolution. When typing this
     command, ResLibCal is started if not already opened. To properly use
-    this feature, you need iFit to be fully installed (that is the
-    ResLibCal application alone is not enough).<br>
+    this feature, you need iFit to be fully installed (the ResLibCal
+    application alone is not enough).<br>
+    <br>
+    The number of Monte-Carlo points used for each convolution step is
+    by default 2000. This can be changed, e.g. to speed-up the
+    computation at the cost of a coarser results (more noisy), by
+    changing it from the menu item '<i>View/</i><i>Set Monte-Carlo
+      iterations...</i>', or from the EXP.NMC ResLib structure
+    (out.EXP.NMC when returned from ResLibCal).<br>
     <h4><a class="mozTocH4" name="mozTocId280415"></a>Dispersion model:
       4D dynamic structure factors S(q,w)</h4>
     As we have seen the 4D convolution procedure seems straight-forward,
@@ -820,8 +836,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       href="http://ifit.mccode.org/Models.html#mozTocId677670">iFit/Models</a>
     page.<br>
     <br>
-    <table style="text-align: left;" border="1" cellpadding="2"
-      cellspacing="2" width="1016" height="316">
+    <table style="text-align: left;" height="316" width="1016"
+      border="1" cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
@@ -851,7 +867,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
           <td style="vertical-align: top;"><font color="#33cc00">4D (HKL<i>w</i>)</font><br>
             <img alt="sqw_sine3d" title="sqw_sine3d"
               src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_sine3d.png"
-              align="middle" border="0" width="100" height="73"> </td>
+              height="73" width="100" align="middle" border="0"> </td>
           <td valign="top">zone center, energy gaps, periodicity</td>
         </tr>
         <tr>
@@ -864,7 +880,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
               href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_vaks.png"><img
                 alt="sqw_vaks" title="sqw_vaks"
                 src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_vaks.png"
-                align="middle" border="0" width="100" height="75"></a></td>
+                height="75" width="100" align="middle" border="0"></a></td>
           <td valign="top">acoustic and optical , coupling parameters,
             soft mode frequency<br>
           </td>
@@ -879,7 +895,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
               href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"><img
                 alt="sqw_cubic_mono" title="sqw_cubic_mono"
                 src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_cubic_mono.png"
-                align="middle" border="0" width="100" height="76"></a></td>
+                height="76" width="100" align="middle" border="0"></a></td>
           <td valign="top">acoustic force constant ratio and scaling
             energy<br>
           </td>
@@ -897,7 +913,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
                 href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_phon.png"><img
                   alt="sqw_phon" title="sqw_phon"
                   src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_phon.png"
-                  align="left" border="0" width="100" height="76"></a></div>
+                  height="76" width="100" align="left" border="0"></a></div>
           </td>
           <td valign="top">Creation: <a
               href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR.</a><br>
@@ -916,7 +932,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
               href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"><img
 src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
                 title="sqw_ph_ase Al fcc" alt="sqw_ph_ase Al fcc"
-                align="left" border="0" width="100" height="74"></a></td>
+                height="74" width="100" align="left" border="0"></a></td>
           <td valign="top">Creation: <a
               href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR</a>,
             <a
@@ -941,8 +957,8 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
     dimensions (which are constant) and generate 1D data sets along the
     energy axis, we use:<a href="ResLibCal_conv4D_sine3d.png"><img
         alt="ResLibCal 4D convolution" title="ResLibCal 4D convolution"
-        src="ResLibCal_conv4D_sine3d.png" align="right" border="0"
-        width="300" height="218"></a><br>
+        src="ResLibCal_conv4D_sine3d.png" height="218" width="300"
+        align="right" border="0"></a><br>
     <pre>    figure; <font color="#3366ff">plot</font>(<font color="#3366ff">squeeze</font>([signal0 signal1/100])); <i>% plot the dispersion and simulated measurement</i></pre>
     Then we can plot the whole dispersion curve and the simulated signal
     along the given scan trajectory.<br>
@@ -955,7 +971,10 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
     envisaged:<br>
     <ul>
       <li>Support polarisation analysis in the models.</li>
-      <li>Support PhonoPy FORCE_SET input.</li>
+      <li>Support <a href="http://phonopy.sourceforge.net/">PhonoPy</a>
+        <i>FORCE_SET </i>input and <a
+          href="http://www.computingformaterials.com/">PHONON/VASP</a>
+        HFFILE.</li>
       <li>Provide more <i>S(q,w)</i> phonons with the small
         displacement method (<a href="https://wiki.fysik.dtu.dk/ase/">ASE</a>,
         LJ, Morse, LAMMPS, VASP, GPAW, AbInit)</li>
@@ -967,11 +986,11 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
       <li>Provide 2D <i>S(</i>|<i>q</i>|<i>,w)</i> models from e.g. <a
           href="https://t2.lanl.gov/nis/publications/thermal.pdf">NJOY/LEAPR</a>.</li>
       <li> Properly handle mode polarisation and line-width/amplitude
-        per branch.</li>
-      <li>extend the methodology to diffraction and time-of-flight
+        per branch in supplied models.</li>
+      <li>Extend the methodology to diffraction and time-of-flight
         neutron scattering instruments.</li>
       <li>Faster 4D convolution using Gaussian integrals.</li>
-      <li>Integrate S(q,w) for spin-waves from <a
+      <li>Provide <i>S(q,w)</i> for spin-waves from <a
           href="http://www.psi.ch/spinw/">SpinW</a>.<br>
       </li>
     </ul>
@@ -1051,8 +1070,10 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
 
 
 
+
       See [<a href="../rescal.for">Fortran code</a>].<br>
       [2] N. J. Chesser and J. D. e, <span style="font-style: italic;">Acta
+
 
 
 
@@ -1070,6 +1091,7 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
