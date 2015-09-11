@@ -21,27 +21,32 @@ ret = 0;
     if not(all(m(:) == 1 | m(:) == 0)), clab = [clab ' per monitor' ]; end
     if isvector(a) >= 3 || ~isempty(strfind(method, 'scatter')) % plot3-like
       if ~isempty(strfind(method, 'scatter'))
-        h=fscatter3(x(:),y(:),z(:),c(:), this_method);     % scatter3: may require meshgrid
+        h = hggroup;
+        h3=fscatter3(x(:),y(:),z(:),c(:), this_method);     % scatter3: may require meshgrid
+        set(h3,'Parent',h);
       else
         h=plot3(x(:),y(:),z(:), this_method, varargin{:});
       end
     else
       if ~isempty(strfind(method, 'plot3')) % vol3d: does not require meshgrid
-        h = vol3d('cdata',c,'texture','3D','xdata',x,'ydata',y,'zdata',z);
+        h = hggroup;
+        h3 = vol3d('cdata',c,'texture','3D','xdata',x,'ydata',y,'zdata',z);
         alphamap('vdown'); % make object transparent on borders and solid in center
-        h = vol3d(h);
-        h = h.handles;
+        h3 = vol3d(h3);
+        set(h3.handles,'Parent',h);
       elseif ~isempty(strfind(method, 'waterfall')) || ~isempty(strfind(method, 'contour'))
+        h = hggroup;
         if ~isempty(strfind(method, ' y '))
           iy = linspace(min(y(:)), max(y(:)), 10);
-          h = contourslice(x,y,z,c,[],iy,[], varargin{:});
+          hc = contourslice(x,y,z,c,[],iy,[], varargin{:});
         elseif ~isempty(strfind(method, ' x '))
           ix = linspace(min(x(:)), max(x(:)), 10);
-          h = contourslice(x,y,z,c,ix,[],[], varargin{:});
+          hc = contourslice(x,y,z,c,ix,[],[], varargin{:});
         else
           iz = linspace(min(z(:)), max(z(:)), 10);
-          h = contourslice(x,y,z,c,[],[],iz, varargin{:});
+          hc = contourslice(x,y,z,c,[],[],iz, varargin{:});
         end
+        set(hc,'Parent',h);
       elseif ~isempty(strfind(method, 'slice')) % sliceomatic
         slice(a); h=[];
       else % method='surf'

@@ -40,7 +40,9 @@ sum_max = 0;
       if isempty(this_method) && isempty(strfind(method,'scatter'))
         % change color of line
         colors = 'bgrcmk';
-        set(h{index}, 'color', colors(1+mod(index, length(colors))));
+        try
+          set(h{index}, 'color', colors(1+mod(index, length(colors))));
+        end
       end
     end
     hold on
