@@ -28,7 +28,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <li><a href="#mozTocId173490">Installation - starting</a></li>
       <li><a href="#mozTocId121795"> Available computational methods</a></li>
       <li><a href="#mozTocId637458">Usage to compute the TAS resolution
-          function (with plots)</a>
+          function (with plots) </a>
         <ol>
           <li><a href="#mozTocId744097">ResLibCal: the main interface</a></li>
           <li><a href="#mozTocId44543"> ResCal standard nomenclature for
@@ -39,11 +39,20 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
               function</a></li>
           <li><a href="#mozTocId244259">Handling computation along a
               scan (measurement sequences)</a></li>
-          <li><a href="#mozTocId807901">Usage: loading configurations </a></li>
-          <li><a href="#mozTocId927463">Usage: exporting the results,
-              saving the configuration</a></li>
-          <li><a href="#mozTocId281751">Usage: non interactive mode
-              (compute only)</a></li>
+          <li><a href="#mozTocId807901">Loading previous configurations
+            </a></li>
+          <li><a href="#mozTocId927463">Exporting the results, saving
+              the configuration</a></li>
+          <li><a href="#mozTocId281751">Non interactive mode (compute
+              only)</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId368787">Convolution of the TAS resolution
+          function with a model, in 4D</a>
+        <ol>
+          <li><a href="#mozTocId280415">Dispersion model: 4D dynamic
+              structure factors S(q,w)</a></li>
+          <li><a href="#mozTocId608430">Planned in the future</a></li>
         </ol>
       </li>
       <li><a href="#mozTocId393985">Help</a></li>
@@ -58,6 +67,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     spectrometer (TAS). ResLibCal is based on <a
       href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans
     and Popovici methods are proposed [<a href="#mozTocId811100">1-7</a>],
+
+
 
 
 
@@ -191,6 +202,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
+
       </i><i>m &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are
       also limited by the effective divergence set from the geometry,
       e.g. <i>atan(width or height/distance) </i>[rad]. <br>
@@ -282,6 +295,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       The resolution matrix is always computed in [Angs<sup>-3</sup>.meV],
 
 
+
+
       but it can be shown in [rlu<sup>3</sup>.meV] in the 2D and 3D
       views.<br>
     </p>
@@ -352,6 +367,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -365,6 +382,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       is vertical, w.r.t the scattering plane, in the laboratory
       coordinate frame.<br>
       In the sample coordinate frame, <i><b>a*, b* </b>and<b> c* </b>and
+
+
 
 
         the reciprocal lattice vectors.</i><br>
@@ -396,6 +415,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         A geometric representation of the TAS can be shown in real
         space, using the instrument configuration parameters. This view
         is generated from the <span style="font-style: italic;">View/Instrument
+
+
 
 
 
@@ -480,6 +501,8 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
         configurations by just copying and renaming e.g. any <span
@@ -494,6 +517,8 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Save as...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
+
 
 
 
@@ -588,6 +613,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3' </span>as
+
+
 
 
 
@@ -749,7 +776,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       </tbody>
     </table>
     <br>
-    <h3>Convolution of the TAS resolution function with a model, in 4D</h3>
+    <h3><a class="mozTocH3" name="mozTocId368787"></a>Convolution of the
+      TAS resolution function with a model, in 4D</h3>
     Once ResLibCal can properly describe a TAS setting, it is possible
     to use the computed resolution to convolve a model dispersion in
     materials. The methodology is (for each QH,QK,QL,W location in the
@@ -777,7 +805,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     command, ResLibCal is started if not already opened. To properly use
     this feature, you need iFit to be fully installed (that is the
     ResLibCal application alone is not enough).<br>
-    <h4>Dispersion model: 4D dynamic structure factors S(q,w)</h4>
+    <h4><a class="mozTocH4" name="mozTocId280415"></a>Dispersion model:
+      4D dynamic structure factors S(q,w)</h4>
     As we have seen the 4D convolution procedure seems straight-forward,
     as long as we have a reasonable description of the dynamic structure
     factor <i>S(q,w)</i> to model the excitations in the sample
@@ -919,7 +948,8 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
     along the given scan trajectory.<br>
     <pre>    QH=<font color="#3366ff">linspace</font>(0.5,1.5,50); QK=<font color="#3366ff">linspace</font>(-.25,.25,50);; QL=QK; W=<font color="#3366ff">linspace</font>(0.01,10,51);<i>	</i><i>% a 4D grid</i><br>    f=<font color="#3366ff">iData</font>(s,[],QH,QK,QL,W);<i>						</i><i>% evaluate the model on the 4D grid</i><br>    figure; <font color="#3366ff">plot3</font>(log(f(:,:,1,:)));  					<i>% plot dispersion</i><br>    hold on; <font color="#3366ff">scatter3</font>(log(signal1(:,:,1,:)),<font color="#cc33cc">'filled'</font>);			<i>% overlay the simulated scan</i></pre>
     <br>
-    <h4>Planned in the future</h4>
+    <h4><a class="mozTocH4" name="mozTocId608430"></a>Planned in the
+      future</h4>
     We wish to go further in the development of ResLibCal, and in
     particular its 4D convolution feature. The following features are
     envisaged:<br>
@@ -939,7 +969,10 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
       <li> Properly handle mode polarisation and line-width/amplitude
         per branch.</li>
       <li>extend the methodology to diffraction and time-of-flight
-        neutron scattering instruments.<br>
+        neutron scattering instruments.</li>
+      <li>Faster 4D convolution using Gaussian integrals.</li>
+      <li>Integrate S(q,w) for spin-waves from <a
+          href="http://www.psi.ch/spinw/">SpinW</a>.<br>
       </li>
     </ul>
     <h3><a class="mozTocH3" name="mozTocId393985"></a>Help</h3>
@@ -1016,8 +1049,12 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
 
 
 
+
+
       See [<a href="../rescal.for">Fortran code</a>].<br>
       [2] N. J. Chesser and J. D. e, <span style="font-style: italic;">Acta
+
+
 
 
 
@@ -1033,6 +1070,8 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
+
 
 
 
