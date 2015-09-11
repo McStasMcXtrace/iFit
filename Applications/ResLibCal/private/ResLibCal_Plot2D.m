@@ -32,7 +32,7 @@ else
   resolutions = out.resolution;
 end
 
-max_points = max(100, 300/numel(resolutions)); % nb of MC points per cloud in 3 panes
+max_points = ceil(max(100, 300/numel(resolutions))); % nb of MC points per cloud in 3 panes
 
 for index=1:numel(resolutions)
   resolution = resolutions{index};

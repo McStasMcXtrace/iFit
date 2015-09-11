@@ -44,7 +44,7 @@ end
 
 cla;
 
-max_points = max(100, 1000/numel(resolutions)); % nb of MC points per cloud
+max_points = ceil(max(100, 1000/numel(resolutions))); % nb of MC points per cloud
 
 for index=1:numel(resolutions)
   resolution = resolutions{index};
