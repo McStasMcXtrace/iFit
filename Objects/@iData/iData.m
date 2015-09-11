@@ -14,8 +14,7 @@ function out = iData(varargin)
 %     a cell array which elements are imported separately
 %     a iData object (updated if no output argument is specified).
 %   The special syntax iData(x,y, .., c) creates an iData with
-%     signal c and axes x,y, ... where these are all numerics with 'x'
-%     for the columns (2nd axis rank), 'y' for the rows (1st axis rank), ...
+%     signal c and axes x,y, ...
 %   The syntax iData(iFunc object) evaluates the iFunc model using the iData
 %     object axes, and returns the model value as an iData object.
 %   The output argument is a single object or array of iData.
@@ -105,8 +104,9 @@ else  % convert input argument into object
     % handle axes
     for k1=1:(index-1)
       % in plotting convention, X=2nd, Y=1st axis
-      if     k1 <= 2 && ndims(out) >= 2, k2 = 3-k1; 
-      else   k2 = k1; end
+      % if     k1 <= 2 && ndims(out) >= 2, k2 = 3-k1; 
+      % else   k2 = k1; end
+      k2 = k1;
       out = set(out,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
       out = setaxis(out, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
       if ~isempty(inputname(k2))
@@ -168,7 +168,7 @@ else  % convert input argument into object
           return; 
       end
       % swap xy to cope with iData(x,y,z) syntax
-      if numel(ax) >=2, ax(1:2) = ax([ 2 1]); end
+      % if numel(ax) >=2, ax(1:2) = ax([ 2 1]); end
       % assign axes values
       this_out = iData(ax{:}, signal);
 
@@ -176,7 +176,13 @@ else  % convert input argument into object
       if nargin > 2 % iData(iFunc,p,axes...)
         for index=1:numel(ax)
           if index+2 <= nargin && ~isempty(inputname(index+2))
-            this_out=label(this_out,index,inputname(index+2)); 
+            if numel(ax)>= 2 && index==1 && 0
+              this_out=label(this_out,2,inputname(index+2)); 
+            elseif numel(ax)>= 2 && index==2 && 0
+              this_out=label(this_out,1,inputname(index+2));
+            else
+              this_out=label(this_out,index,inputname(index+2)); 
+            end
           end
         end
       end
