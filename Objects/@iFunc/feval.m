@@ -236,11 +236,12 @@ if model.Dimension && ...
   % Expression/Constraint
   % Not for event style axes+signal (all 1D)
   
-  % TODO: better check for event style: 
-  %   all(isrow(axes)) || all(iscolumns(axes)) && all(numel(axes) == numel(axes{1}) || isvector(signal)
-  myisvector=@(c)max(size(c)) == numel(c);
-  if model.Dimension > 1 && all(cellfun(myisvector, varargin(1:model.Dimension))) ...
-    && ~isvector(varargin{model.Dimension+1})
+  % event:  all vectors, including signal (if any), same length
+  % regrid: all vectors, not same length, signal is not a vector
+  axes_numel = cellfun(@numel, varargin(1:model.Dimension));
+  if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension))) ...
+    && ~isvector(varargin{model.Dimension+1}) ...
+    && any(axes_numel ~= axes_numel(1))
     [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
   end
   % automatic guessed parameter values -> signal
@@ -417,16 +418,15 @@ for index=1:model.Dimension
   if ~isscalar(varargin{index}) && isempty(AxisOrientation)
     AxisOrientation=size(varargin{index});
   elseif ~isscalar(varargin{index}) ...
-          && length(AxisOrientation) == length(size(varargin{index})) ...
-          && any(AxisOrientation ~= size(varargin{index})), ParallelAxes=0;
+          && (length(AxisOrientation) ~= length(size(varargin{index})) ...
+          || any(AxisOrientation ~= size(varargin{index}))), ParallelAxes=0;
   end
 end % for index in model dim
 
 % convert axes to nD arrays for operations to take place
 % check the axes and possibly use ndgrid to allow nD operations in the
 % Expression/Constraint. Only for non event style axes.
-myisvector=@(c)max(size(c)) == numel(c);
-if model.Dimension > 1 && all(cellfun(myisvector, varargin(1:model.Dimension))) && ~ParallelAxes
+if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension))) && ~ParallelAxes
   [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
 elseif model.Dimension > 1 && ParallelAxes
   % make sure all axes will be 'event' style, ie vectors same orientation
