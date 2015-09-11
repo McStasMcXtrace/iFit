@@ -24,7 +24,9 @@ function [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin)
   z(isinf(z)) = nan;
   if a_is_vector % plot3/fscatter3
     if (strfind(method,'scatter'))
-      h=fscatter3(x(:),y(:),z(:),z(:),this_method); view(3);
+      h = hggroup;
+      h3=fscatter3(x(:),y(:),z(:),z(:),this_method); view(3);
+      set(h3,'Parent',h);
     else
       if length(method), h = plot3(x,y,z, this_method, varargin{:});
       else h = plot3(x,y,z, varargin{:}); end
@@ -68,7 +70,9 @@ function [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin)
       if length(method), h = plot3(x(:),y(:),z(:), this_method);
       else h = plot3(x,y,z); end
     elseif (strfind(method,'scatter'))
-      h=fscatter3(x(:),y(:),z(:),z(:),this_method);
+      h = hggroup;
+      h3=fscatter3(x(:),y(:),z(:),z(:),this_method);
+      set(h3,'Parent',h);
     elseif (strfind(method,'waterfall'))
       h=waterfall(x,y,z);
     else

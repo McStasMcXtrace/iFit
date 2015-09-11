@@ -139,7 +139,7 @@ if isfield(ud,'contextual_2d') && ud.contextual_2d==1
     'clear tmp_a tmp_e; lighting none;alpha(1);shading flat;rotate3d off;axis tight;' ]);
   uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
   uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
-  uimenu(uicm, 'Label','Transparency','Callback', 'for tmp_h=get(gca, ''children'')''; try; alpha(tmp_h,0.7*get(tmp_h, ''facealpha'')); end; end');
+  uimenu(uicm, 'Label','Add Transparency','Callback', 'alphamap(''decrease''); for tmp_h=get(gca, ''children'')''; try; alpha(tmp_h,0.7*get(tmp_h, ''facealpha'')); end; end;');
   uimenu(uicm, 'Label',[ 'Linear/Log signal ' strtok(title(a)) ],...
     'Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
   uimenu(uicm, 'Label',[ 'Linear/Log X axis ' strtok(xlabel(a)) ], ...
