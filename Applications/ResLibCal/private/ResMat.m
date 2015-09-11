@@ -215,8 +215,8 @@ for ind=1:len
     thetaa=asin(taua/(2*kf))*sa; 
     s2theta=acos( (ki^2+kf^2-q^2)/(2*ki*kf))*ss; %2theta sample
     if ~isreal(s2theta) 
-        disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
-        disp([EXP.QH EXP.QK EXP.QL W])
+        % disp([ datestr(now) ': ' mfilename ': KI,KF,Q triangle will not close (kinematic equations). Change the value of KFIX,FX,QH,QK or QL.' ]);
+        % disp([EXP.QH EXP.QK EXP.QL W])
         R0=0; RM=[];
         return
     end
