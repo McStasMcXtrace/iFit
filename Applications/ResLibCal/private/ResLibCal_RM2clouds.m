@@ -17,7 +17,10 @@ function resolution = ResLibCal_RM2clouds(EXP, resolution)
 % accuracy obtrained from McStas estimates:
 % NMC=1000  -> 10%
 % NMC=10000 -> 2.5%
-NMC  = 2000;
+NMC=get(ResLibCal_fig('View_NMC'), 'UserData');
+if     isfield(EXP, 'NMC'),         NMC=EXP.NMC;
+elseif isfield(resolution, 'NMC'),  NMC=resolution.NMC; end
+if isempty(NMC), NMC  = 2000; end
 
 %----- 
 
