@@ -97,10 +97,10 @@ kf=sqrt(kfix^2-(2-fx)*f*w);
 
 cos_2theta=(ki^2+kf^2-q0^2)/(2*ki*kf);
 if abs(cos_2theta) <= 1, Error=0; else
-  disp([ datestr(now) ': ' mfilename ': Can not close triangle (kinematical equations). ' ])
-  if isstruct(p), disp([ EXP.QH EXP.QK EXP.QL EXP.W ]);
-  else            disp(p(31:34));
-  end
+  % disp([ datestr(now) ': ' mfilename ': Can not close triangle (kinematical equations). ' ])
+  % if isstruct(p), disp([ EXP.QH EXP.QK EXP.QL EXP.W ]);
+  % else            disp(p(31:34));
+  % end
   R0=0; RMS=[];
   return
 end
