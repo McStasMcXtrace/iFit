@@ -427,11 +427,11 @@ while ~isempty(varargin)
       out = ResLibCal_Compute;
     case 'update' % (this is called when changing the computational method in the GUI)
       % update all opened views with new computation (widget update)
-      fig = ResLibCal_fig;
       
       out = ResLibCal_Compute;
       
       if ~silent_mode
+        fig = ResLibCal_fig;
         if ~isempty(fig)
           out = ResLibCal_UpdateViews(out);
         elseif nargout == 0
@@ -440,7 +440,7 @@ while ~isempty(varargin)
       end
     case {'compute','resolution'}
       % only compute. No output except in varargout
-      fig = ResLibCal_fig;
+      % fig = ResLibCal_fig;
       % if no interface exists, load the last saved configuration before computing
       out = ResLibCal_Compute(out);
     case 'update_d_tau'
