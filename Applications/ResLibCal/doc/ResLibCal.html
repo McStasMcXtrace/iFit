@@ -599,7 +599,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     and more specifically in its <i><b>Bragg</b></i> and <b><i>RM</i></b>
     fields of the <b>[rlu]</b> and <b>[spec]</b> sub-structures,
     depending on the reference frame used (see <a href="#mozTocId44543">above</a>):<br>
-    <pre>&gt;&gt; out.resolution<br>     focus: [80.0088 439.4046 49.7513 136.3181]<br>        R0: 16.5334		<i>% the intensity</i><br>      HKLE: [2 1 0 5]		<i>% the HKLE rlu.meV coordinate of this point</i><br>    method: 'Popovici (ResLib)'<br>    README: {2x1 cell}<br>      <b>spec: </b>[1x1 struct]	<i>% spectrometer frame</i><br>       <b>rlu: </b>[1x1 struct]	<i>% lattice frame</i> [a*, b*, c*]<br>      cart: [1x1 struct]<br>   rlu_ABC: [1x1 struct]<br>       ABC: [1x1 struct]<br>    angles: [25.2592 50.5184 14.3768 -70.9737 37.1658 74.3316]	% A1-6 angles in a TAS machine<br>         Q: 2.2361<br><br>&gt;&gt; out.resolution.rlu<br>    cart2frame: [3x3 double]<br>     rlu2frame: [3x3 double]<br>             Q: [3x1 double]<br>            <b>RM</b>: [4x4 double]<br>        README: '[R] rlu lattice frame, xyz=[a* b* c*]'<br>          unit: 'rlu'<br>         frame: [3x3 double]<br>     frameUnit: '1/Å'<br>      frameStr: {1x3 cell}<br>         <b>Bragg</b>: [5x1 double]<br>         cloud: {[2000x1 double]  [2000x1 double]  [2000x1 double]  [2000x1 double]}<br><span style="font-style: italic;"></span></pre>
+    <pre>&gt;&gt; out.resolution<br>     focus: [80.0088 439.4046 49.7513 136.3181]<br>        R0: 16.5334		<i>% the intensity</i><br>      HKLE: [2 1 0 5]		<i>% the HKLE rlu.meV coordinate of this point</i><br>    method: 'Popovici (ResLib)'<br>    README: {2x1 cell}<br>      <b>spec: </b>[1x1 struct]	<i>% spectrometer frame</i><br>       <b>rlu: </b>[1x1 struct]	<i>% lattice frame</i> [a*, b*, c*]<br>      cart: [1x1 struct]<br>   rlu_ABC: [1x1 struct]<br>       ABC: [1x1 struct]<br>    angles: [25.2592 50.5184 14.3768 -70.9737 37.1658 74.3316]	% A1-6 angles in a TAS machine<br>         Q: 2.2361<br><br>&gt;&gt; out.resolution.rlu<br>    cart2frame: [3x3 double]<br>     rlu2frame: [3x3 double]<br>             Q: [3x1 double]<br>            <b>RM</b>: [4x4 double]<br>        README: '[R] rlu lattice frame, xyz=[a* b* c*]'<br>          unit: 'rlu'<br>         frame: [3x3 double]<br>     frameUnit: '1/\C5'<br>      frameStr: {1x3 cell}<br>         <b>Bragg</b>: [5x1 double]<br>         cloud: {[2000x1 double]  [2000x1 double]  [2000x1 double]  [2000x1 double]}<br><span style="font-style: italic;"></span></pre>
     The resolution matrix is computed in the laboratory frame x//Q
     [spec] and the lattice frame x//a* [rlu]. These two computations are
     stored in the [spec] and the [rlu] fields. In these fields, such as
@@ -990,8 +990,9 @@ src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase.png"
       <li>Extend the methodology to diffraction and time-of-flight
         neutron scattering instruments.</li>
       <li>Faster 4D convolution using Gaussian integrals.</li>
-      <li>Provide <i>S(q,w)</i> for spin-waves from <a
-          href="http://www.psi.ch/spinw/">SpinW</a>.<br>
+      <li>Integrate <i>S(q,w)</i> for spin-waves from <a
+          href="http://www.psi.ch/spinw/">SpinW</a>.
+      <li>Support the resolution function/matrix estimate from <a href="http://www.mcstas.org">McStas</a> and <a href="http://neutron.ujf.cas.cz/restrax/">ResTrax</a>.
       </li>
     </ul>
     <h3><a class="mozTocH3" name="mozTocId393985"></a>Help</h3>

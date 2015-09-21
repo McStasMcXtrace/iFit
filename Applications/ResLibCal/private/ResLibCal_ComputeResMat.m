@@ -157,7 +157,7 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
     % resolution matrix in [abc] and transformation [HKL] -> [ABC] frame
     % S = inv([x y z]) when [x y z ] = StandardSystem(EXP);
     % S = matrix 's' in inline (below) ResLibCal_ComputeResMat_Angles
-    if ~isempty(RM)
+    if ~isempty(RM) && isreal(R0)
       res.spec.RM= RM;
       res                 = ResLibCal_RM2RMS(EXP, res);    % RM is other coordinate frames
       [res.angles, res.Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w, ...

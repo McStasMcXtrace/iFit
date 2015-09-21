@@ -364,12 +364,13 @@ while ~isempty(varargin)
         L   = resolution{index}.HKLE(3); W=resolution{index}.HKLE(4);
         fprintf(1,'QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]\n', H,K,L,W);
         disp('  BRAGG Widths, Radial,tangential, Vertical (HWHM) [ANG-1]');
-        FrameStr = strrep(resolution{index}.xyz.FrameStr,'\surd', 'sqrt');
+        FrameStr = resolution{index}.spec.frameStr;
         disp(['  Rad:along A=' FrameStr{1} '; Tang:along ' FrameStr{2} '; Vert:along ' FrameStr{3} ])
-        fprintf(1, '  DQR=%g DQT=%g DQV=%g\n', resolution{index}.xyz.Bragg(1:3)/2);
+        fprintf(1, '  DQR=%g DQT=%g DQV=%g\n', resolution{index}.spec.Bragg(1:3)/2);
         disp('  Energy Widths (HWHM) [meV]');
-        fprintf(1, '  DVN=%g DEE=%g\n', resolution{index}.xyz.Bragg([ 5 4 ])/2);
+        fprintf(1, '  DVN=%g DEE=%g\n', resolution{index}.spec.Bragg([ 5 4 ])/2);
         disp('----------------------------------------------------------');
+        out = resolution{index}.spec.Bragg;
       end
     case 'resol'
       out = ResLibCal_Compute(out);
@@ -469,6 +470,12 @@ while ~isempty(varargin)
           set(h,'Data',data);
         end
         varargin(3)=[];
+      elseif any(strcmp(tag,{'EXP_mono_tau_popup','EXP_ana_tau_popup'}))
+        ResLibCal_UpdateDTau(h);
+      elseif any(strcmp(tag,{'EXP_efixed','EXP_Kfixed','EXP_Lfixed'}))
+        ResLibCal_UpdateEKLfixed(h);
+      elseif any(strcmp(tag,{'EXP_mono_d','EXP_ana_d'}))
+        ResLibCal_UpdateTauPopup;
       end
       varargin(2)=[];
       % update computation and plots
@@ -507,7 +514,7 @@ while ~isempty(varargin)
   elseif isstruct(varargin{1})
     % read an out or EXP structure
     out = varargin{1};
-    if ~isfield(EXP,'EXP')
+    if ~isfield(out,'EXP')
       EXP=out; out=[];
       out.EXP = EXP; 
     end
