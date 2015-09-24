@@ -494,6 +494,7 @@ while ~isempty(varargin)
         out = varargin{2};
         varargin(2)=[];
       end
+      if isempty(out), out = ResLibCal_GetConfig; end
       if ~isempty(action)
         out = ResLibCal_Open(action, out); % update 'out/EXP' from file
         ResLibCal_EXP2fig(out);                        % put it into the main GUI
