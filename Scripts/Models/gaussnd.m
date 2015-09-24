@@ -2,9 +2,9 @@ function y=gaussnd(varargin)
 % y = gaussnd(p, x, y, ..., signal) : nD Gaussian
 %
 %   iFunc/gaussnd nD Gaussian fitting function
-
+%
 %     y = R0 * exp(-[x,y,...]' * G * [x,y,...]) 
-
+%
 % a multi-dimensional Gaussian profile
 % <http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_function>
 %
