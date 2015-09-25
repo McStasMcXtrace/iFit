@@ -51,12 +51,16 @@ elseif isnumeric(a) && isscalar(a)
   a.Guess = [ 1 0 double(g) 0]; % use input as a width
   c = convn(a,b);
   return
-elseif ischar(b) && strcmpi(b, 'tas')
+elseif ischar(b) && any(strcmpi(b, {'tas','reslibcal','rescal','reslib'}))
   c = ResLibCal(a);
   return
-elseif ischar(a) && strcmpi(a, 'tas')
+elseif ischar(a) && any(strcmpi(a, {'tas','reslibcal','rescal','reslib'}))
   c = ResLibCal(b);
   return
+elseif isstruct(b) && isfield(b,'EXP')
+  c = ResLibCal(a);
+elseif isstruct(a) && isfield(a,'EXP')
+  c = ResLibCal(b);
 end
 if nargin < 3, shape = 'same'; end
 
