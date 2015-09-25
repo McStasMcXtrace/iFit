@@ -59,8 +59,10 @@ elseif ischar(a) && any(strcmpi(a, {'tas','reslibcal','rescal','reslib'}))
   return
 elseif isstruct(b) && isfield(b,'EXP')
   c = ResLibCal(a);
+  return
 elseif isstruct(a) && isfield(a,'EXP')
   c = ResLibCal(b);
+  return
 end
 if nargin < 3, shape = 'same'; end
 
