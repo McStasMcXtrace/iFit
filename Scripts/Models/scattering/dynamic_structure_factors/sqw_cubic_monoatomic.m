@@ -15,6 +15,7 @@ function signal=sqw_cubic_monoatomic(varargin)
 %
 % References: https://en.wikipedia.org/wiki/Phonon
 %  E. Meisterhofer <http://lampx.tugraz.at/~hadley/ss1/phonons/scdos/sc.pdf> 2013
+%  Kittel, Solid State Physics, Wiley, New York, 7th ed. (1996), pp 99-103.
 %
 % input:  p: sqw_cubic_monoatomic model parameters (double)
 %           p(1)=C_ratio C1/C2 force constant ratio first/second neighbours.
