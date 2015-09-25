@@ -185,7 +185,7 @@ res.spec.README       = '[Q] spectrometer frame, ortho-normal, x=Q/|Q|';
 res.spec.unit         = Angs;
 res.spec.frame        = Q;      % in Angs-1 along axes, in the lattice frame
 res.spec.frameUnit    = Angs;
-res.spec.frameStr     = {'Q//', 'Q⊥', 'Q↑'};
+res.spec.frameStr     = {'Ql', 'Qt', 'Qv'};
 res.spec.Bragg        = rc_bragg(res.spec.RM);
 
 % [V] basis
