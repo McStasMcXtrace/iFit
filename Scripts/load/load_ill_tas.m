@@ -13,9 +13,14 @@ end
 
 % handle input iData arrays
 if numel(a) > 1
+  b = [];
   for index=1:numel(a)
-    a(index) = feval(mfilename, a(index));
+  index
+    this = feval(mfilename, a(index));
+    if numel(this) > 1 && size(this, 1) ~= 1, this = this'; end
+    b = [ b this ];
   end
+  a = b;
   return
 end
 
@@ -35,8 +40,12 @@ try
 catch
   STEPS=[];
 end
-% get the main data block header
-[columns_header, data]   = findstr(a, 'DATA_:','case');
+% get the main data block header: MetaData.PNT or DATA_
+try
+  columns_header = a.Data.Attributes.MetaData.PNT;
+catch
+  [columns_header, data]   = findstr(a, 'DATA_:','case');
+end
 if iscell(columns_header)
   [dummy, sorti] = sort(cellfun('prodofsize', columns_header)); 
   
@@ -61,9 +70,10 @@ end
 
 % Find spaces and determine proper aliases for the columns
 columns = strread(columns_header,'%s','delimiter',' ;');
+% remove invalid names
 % restrict to the number of columns in DataBlock
 c       = size(a, 2);
-columns = columns(~cellfun('isempty', columns));
+columns = columns(~cellfun('isempty', columns) & cellfun(@(c) isstrprop(c(1),'alphanum'), columns));
 columns = columns((end-c+1):end);
 
 % check if a scan step exists
@@ -81,6 +91,7 @@ end
 % compute the normalized variance of each column
 index_hkle=[]; % index of QH QK QL EN columns
 index_m12 =[]; % index of M1 M2 monitors
+index_ti  =[]; % index of TIME
 index_temp=[]; % index for temperatures
 index_pal =[]; % index for polarization analysis
 Variance  = zeros(1,length(columns));
@@ -98,6 +109,9 @@ for j=1:length(columns)
   if any(strcmpi(columns{j}, {'M1','M2'}))
     index_m12 = [ index_m12 j ];
   end
+  if any(strcmpi(columns{j}, {'TI','TIME'}))
+    index_ti = [ index_ti j ];
+  end
   if any(strcmpi(columns{j}, {'TT','TRT'}))
     index_temp= [ index_temp j ];
   end
@@ -108,7 +122,7 @@ for j=1:length(columns)
     index_pal= [ index_pal j ];
     is_pal='ROI';
   end
-  if ~any(strcmpi(columns{j},{'PNT','CNTS','TI'}))
+  if ~any(strcmpi(columns{j},{'PNT','CNTS','TI','TIME'}))
     if length(a.Signal(:,j))
       Variance(j) = sum( abs(a.Signal(:,j)-mean(a.Signal(:,j)) )) /length(a.Signal(:,j));
     end
@@ -129,12 +143,23 @@ FX = []; KFIX = [];
 index_fx  =findfield(a, 'FX', 'case'); 
 if ~isempty(index_fx), FX = get(a, index_fx{1}); end
 index_kfix=findfield(a, 'KFIX', 'case');
-if ~isempty(index_fx), KFIX = get(a, index_kfix{1}); end
+if ~isempty(index_kfix), KFIX = get(a, index_kfix{1}); end
 
 % get the monitor
+if isfield(a.Data, 'PARAM') && isfield(a.Data.PARAM, 'TI') && ~isempty(index_ti)
+  mon_is_time = index_ti;
+else
+  mon_is_time = 0;
+end
 if ~isempty(index_m12)
   [dummy, index]=max(sum(a.Signal(:,index_m12)));
   index_m12 = index_m12(index);
+end
+if ~isempty(index_m12) || mon_is_time
+  if (~isempty(index_m12) && any(columns{index_m12} <= 0)) || mon_is_time % invalid monitor, use TIME
+    [dummy, index]=max(sum(a.Signal(:,index_ti)));
+    index_m12 = index_ti(index);
+  end
   setalias(a,'Monitor',columns{index_m12},[ 'Monitor ' columns{index_m12} ]);
 end
 % try with usual scanned variables 'QH','QK','QL','EN'
@@ -200,12 +225,13 @@ a.Title=regexprep(a.Title,'\s+',' ');
 
 
 % set Signal and default axis
-
+l = 'Data CNTS';
+if ~isempty(index_m12), l = [ l ' / ' columns{index_m12} ]; end
 if isempty(MULTI)
-  setalias(a,'Signal','CNTS',[ 'Data CNTS' ]);  % has been defined in DATA_ columns
+  setalias(a,'Signal','CNTS',l);  % has been defined in DATA_ columns
   setaxis(a,1,columns{index});
 else
-  setalias(a,'Signal', 'MULTI',[ 'Data CNTS' ]);  % has been defined from MULTI_
+  setalias(a,'Signal', 'MULTI',l);  % has been defined from MULTI_
   setalias(a,'Channel',1:size(MULTI,2), 'Detector channel');
   setaxis(a,1,columns{index});
   setaxis(a,2,'Channel');
