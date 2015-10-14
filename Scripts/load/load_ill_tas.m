@@ -146,17 +146,20 @@ index_kfix=findfield(a, 'KFIX', 'case');
 if ~isempty(index_kfix), KFIX = get(a, index_kfix{1}); end
 
 % get the monitor
-if isfield(a.Data, 'PARAM') && isfield(a.Data.PARAM, 'TI') && ~isempty(index_ti)
+if isfield(a.Data, 'PARAM') && isfield(a.Data.PARAM, 'TI') ...
+  && isempty(index_m12) && ~isempty(index_ti)
   mon_is_time = index_ti;
 else
   mon_is_time = 0;
 end
+
 if ~isempty(index_m12)
   [dummy, index]=max(sum(a.Signal(:,index_m12)));
   index_m12 = index_m12(index);
 end
+
 if ~isempty(index_m12) || mon_is_time
-  if (~isempty(index_m12) && any(columns{index_m12} <= 0)) || mon_is_time % invalid monitor, use TIME
+  if (~isempty(index_m12) && any(index_m12 <= 0)) || mon_is_time % invalid monitor, use TIME
     [dummy, index]=max(sum(a.Signal(:,index_ti)));
     index_m12 = index_ti(index);
   end
