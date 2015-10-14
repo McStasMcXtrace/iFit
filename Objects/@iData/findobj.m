@@ -139,6 +139,7 @@ function [index, propvalues]=findprop(array, propname, propvalue)
 
   if isempty(propvalue), return; end
   if ~iscell(propvalue) && ~ischar(propvalue), propvalue={ propvalue }; end
+  if ~iscell(propvalues), propvalues  ={ propvalues }; end
   for j = 1:numel(array)
     prop = propvalues{j}; % property value for iData 'j' in caller workspace
     if iscell(prop)
