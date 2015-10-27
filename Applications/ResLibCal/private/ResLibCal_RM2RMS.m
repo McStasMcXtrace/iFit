@@ -151,7 +151,7 @@ T=diag([0 0 0 1]); T(1:3,1:3)=R2Q*V2R;  RM_V = T'*RM_Q*T;
 T=diag([0 0 0 1]); T(1:3,1:3)=Q'*U;     RM_U = T'*RM_Q*T;
 
 % assemble results into a comprehensive structure
-Angs = [ '1/' char(197) ];
+Angs = '1/A';
 % [R] basis
 res.rlu.cart2frame    = inv(B); % B2R
 res.rlu.rlu2frame     = eye(3); % R2R
@@ -170,7 +170,7 @@ res.cart.rlu2frame    = B;      % R2B
 res.cart.Q            = Q_B;    % Qcart = B*HKL
 res.cart.RM           = RM_B;   % this matrix is the resolution in the lattice frame, expressed in Angs-1
 res.cart.README       = '[B] cartesian lattice frame, ortho-normal, x=a*/|a*|';
-res.cart.unit         = [ '1/' char(197) ];
+res.cart.unit         = '1/A';
 res.cart.frame        = eye(3); % in Angs-1 along axes
 res.cart.frameUnit    = Angs;
 res.cart.frameStr     = {'a*/|a*|', [],[]};
