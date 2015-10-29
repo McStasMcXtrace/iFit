@@ -33,11 +33,11 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'edf'  EDF ESRF format for 1D and 2D data sets
 %           'fig'  save as a Matlab figure
 %           'fits' save as FITS binary image (only for 2D objects)
-%           'gif','bmp' save as an image (no axes, only for 2D data sets)
+%           'gif','bmp','png','tiff','jpeg' save as an image (no axes, only for 2D data sets)
 %           'hdf4' save as an HDF4 image
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D)
 %           'json' save as JSON JavaScript Object Notation, ascii
-%           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
+%           'ps','pdf','ill','eps' save as an image (with axes)
 %           'ppm','pgm','pbm'
 %           'off'  save as Object File Format (geometry), ascii
 %           'ply'  save as PLY (geometry), ascii
@@ -349,32 +349,29 @@ case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
 case 'csv'  % Spreadsheet comma separated values file format
   csvwrite(filename, double(a));
-case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4'}  % bitmap images
+case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','jpeg','jpeg2000','png'}  % bitmap images
   if ndims(a) == 2 
     b=getaxis(a,0); % Signal/Monitor
-    if abs(log10(size(b,1)) - log10(size(b,2))) > 1
-      x = round(linspace(1, size(b,1), max(size(b,1), 1024)));
-      y = round(linspace(1, size(b,2), max(size(b,2), 1024)));
-      b = b(x,y);
-    end
-    b=(b-min(b(:)))/(max(b(:))-min(b(:)))*64;
+    b=(b-min(b(:)))/(max(b(:))-min(b(:)))*256;
   else
     f=getframe(a);
     b = f.cdata;
   end
   switch format
-  case 'gif'
-    imwrite(b, jet(64), filename, format, 'Comment',char(a));
+  case {'png','jpeg2000','jpeg'}
+    imwrite(b, jet(256), filename, format, 'Comment',char(a),'Mode','lossless');
+  case 'tiff'
+    imwrite(b, jet(256), filename, format, 'Description',char(a));
   otherwise
     if strcmp(format,'hdf4'), format='hdf'; end
-    imwrite(b, jet(64), filename, format);
+    imwrite(b, jet(256), filename, format);
   end
 case 'epsc' % color encapsulated postscript file format, with TIFF preview
   f=figure('visible','off');
   plot(a,options);
   print(f, '-depsc', '-tiff', filename);
   close(f);
-case {'png','tiff','jpeg','psc','pdf','ill'}  % other bitmap and vector graphics formats (PDF, ...)
+case {'psc','pdf','ill'}  % other bitmap and vector graphics formats (PDF, ...)
   f=figure('visible','off');
   plot(a,options);
   print(f, [ '-d' format ], filename);
