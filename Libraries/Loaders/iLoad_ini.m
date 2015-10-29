@@ -233,6 +233,10 @@ function config = iLoad_ini
     ESRF_edf.method     ='read_edf';
     ESRF_edf.extension  ='edf';
     
+    ILL_HBIN.name       ='ILL Cyclops Laue camera';
+    ILL_HBIN.method     ='read_hbin';
+    ILL_HBIN.extension  ='hbin';
+    
     Roper_SPE.name      ='SPE CCD by WinView from Roper Scientific / PI Acton';
     Roper_SPE.method    ='read_spe';
     Roper_SPE.extension ='spe';
@@ -306,7 +310,7 @@ function config = iLoad_ini
       mcstas_scan, mcstas_list, mcstas_sqw, mcstas_powder, mcstas_2D, mcstas_1D, mcstas_0D, mcstas_sim, ...
       spec, chalkriver, ISIS_spe, ILL_inx, STL_ascii, OBJ, PDB, OFF_ascii, PLY_ascii, CFL, EZD, CIF, ...
       labview, qd_vms, yaml, json, ...
-      ESRF_edf, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
+      ESRF_edf, ILL_HBIN, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
       Analyze, CBF, STL_binary, MRC, NifTI, Igor, lv_tdms, nmr_jeol, ...
       nmr_bruker, nmr_varian, ftir_bruker, llb_tas };
 	       
