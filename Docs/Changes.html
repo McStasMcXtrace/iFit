@@ -41,6 +41,8 @@
     </h3>
     <span style="font-weight: bold;"></span>
     <ul>
+      <li><b>1.8</b>: read ILL Cyclops HBIN files.<br>
+      </li>
       <li><b>1.7</b>: <a
 href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectroscopy/opus-software/overview.html">OPUS</a>
         FT-IR, LLB TAS, LabView <a
@@ -48,6 +50,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           href="http://www.ni.com/white-paper/3727/en/">TDMS</a> file
         format import. Fixed curvature in <a
           href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>/Rescal5/Popovici
+
 
 
 
@@ -64,28 +67,31 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
         handling of arguments to standalone <a href="iFit.html">iFit</a>.
         Added <a href="Math.html">fill</a> method to remove NaN's in
         iData objects. iFunc <a href="Models.html#mozTocId285330">4D
-          S(q,w) models</a> from either analytical or ab-initio methods.<br>
+          S(q,w) models</a> from either analytical or ab-initio methods
+        (Oct 14th 2015).<br>
       </li>
-      <li><b>1.6</b>: Fix to text loader (looktxt). Sanitized HDF and
-        NetCDF, McStas <a href="Loaders.html">import</a>. Cross-checked
-        and validated <a
-          href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>.
-        iFunc models can now be used as objective function in <a
-          href="Optimizers.html">optimization</a>. Fixed <a
-          href="Math.html">iData/trapz</a> style operators. fix <a
-          href="Fit.html">R-factor estimate</a>. (April 24 2014)<br>
+      <li><small><b>1.6</b>: Fix to text loader (looktxt). Sanitized HDF
+          and NetCDF, McStas <a href="Loaders.html">import</a>.
+          Cross-checked and validated <a
+            href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>.
+          iFunc models can now be used as objective function in <a
+            href="Optimizers.html">optimization</a>. Fixed <a
+            href="Math.html">iData/trapz</a> style operators. fix <a
+            href="Fit.html">R-factor estimate</a>. (April 24 2014)</small><br>
       </li>
-      <li><b>1.5.1</b>: fix for the importation of <a
-          href="http://www.mccode.org">McStas/McXtrace</a> files. Added
-        <a href="http://ifit.mccode.org/techdoc/">technical</a>
-        documentation. Fix in binary iFunc operators (Guess). Fix for
-        the R-factor determination. Fix in text importer (looktxt).<br>
-      </li>
-      <li><b>1.5</b>: Improved <a href="Loaders.html">file importation</a>
-        system, <a href="http://en.wikipedia.org/wiki/JSON">JSON</a>,
-        and NetCDF/CDF/NeXus/HDF support, import/export of <a
-          href="http://www.mantidproject.org">Mantid</a> workspaces
-        (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+      <li><small><b>1.5.1</b>: fix for the importation of <a
+            href="http://www.mccode.org">McStas/McXtrace</a> files.
+          Added <a href="http://ifit.mccode.org/techdoc/">technical</a>
+          documentation. Fix in binary iFunc operators (Guess). Fix for
+          the R-factor determination. Fix in text importer (looktxt).<br>
+        </small></li>
+      <small> </small>
+      <li><small><b>1.5</b>: Improved <a href="Loaders.html">file
+            importation</a> system, <a
+            href="http://en.wikipedia.org/wiki/JSON">JSON</a>, and
+          NetCDF/CDF/NeXus/HDF support, import/export of <a
+            href="http://www.mantidproject.org">Mantid</a> workspaces
+          (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
 
 
 
@@ -94,16 +100,17 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
-          pro</a> wave files and Wavefront <a
-          href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Obj</a>
-        3D. <a href="Install.html">Installation</a> through Debian
-        repository. Much faster save to MAT files. New <a
-          href="Math.html#mozTocId539072">smooth, </a><a
-          href="Math.html#mozTocId663052">continuous wavelet transform</a>,
-        <a href="Math.html#mozTocId77311">k-means</a>, reshape and <a
-          href="Math.html#mozTocId628538">resize</a> iData methods.
-        Improvements in the iData processing speed and memory
-        management. <i>(Sept 29th 2013)</i><br>
+
+            pro</a> wave files and Wavefront <a
+            href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Obj</a>
+          3D. <a href="Install.html">Installation</a> through Debian
+          repository. Much faster save to MAT files. New <a
+            href="Math.html#mozTocId539072">smooth, </a><a
+            href="Math.html#mozTocId663052">continuous wavelet transform</a>,
+          <a href="Math.html#mozTocId77311">k-means</a>, reshape and <a
+            href="Math.html#mozTocId628538">resize</a> iData methods.
+          Improvements in the iData processing speed and memory
+          management. <i>(Sept 29th 2013)</i></small><br>
       </li>
       <li><small><b>1.4</b>: <a href="Python.html">PyFit</a> Python
           interface. Fix in <a href="Math.html">iData integration</a>
@@ -161,6 +168,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -168,6 +176,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
 
 
 
@@ -208,6 +217,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -217,6 +227,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
 
 
 
@@ -247,6 +258,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -254,6 +266,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
 
 
 
@@ -328,6 +341,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       3)</span> to triple the number of points along axes.<br>
     <h4><a class="mozTocH4" name="mozTocId473369"></a>Too many warnings
       displayed</h4>
@@ -335,6 +349,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     reduce the level of verbosity with:<br>
     <pre style="margin-left: 80px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">warning off backtrace	<span style="font-style: italic; color: rgb(0, 0, 0);">% reduce the warning message length</span><br><span style="color: rgb(0, 0, 0);">&gt;&gt; </span>warning off			<span style="color: rgb(0, 0, 0); font-style: italic;">% suppress all warnings (not recommended)</span><br></span></pre>
     <h4><a class="mozTocH4" name="mozTocId556618"></a>Execution/compilation
+
 
 
 
@@ -405,6 +420,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       web</span> and <span style="font-style: italic;">edit</span>
     commands are limited, and may not work properly, depending on the
     system.<br>
@@ -439,6 +455,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       -v</span> and look where <span style="font-style: italic;">libgfortran</span>
     appears in the long list...)<br>
     <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"># locate libgfortran.so</span>
@@ -465,10 +482,11 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     Signal and Axes (see <a href="iData.html">iData</a> object help).<br>
     <br>
     Text files containing <span style="font-weight: bold;">NaN's inside
-      matrices</span> are not imported properly (NaN is read as a text
-    inside a matrix, and thus breaks the matrix into bits). One way is
-    to replace all NaN's by 0 values. This also stands for <b>Inf's</b>
-    and other text embedded inside numerical blocks.<br>
+      matrices</span> are not imported properly in iFit version &lt;=
+    1.6 (NaN is read as a text inside a matrix, and thus breaks the
+    matrix into bits). One way is to replace all NaN's by 0 values. This
+    also stands for <b>Inf's</b> and other text embedded inside
+    numerical blocks.<br>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
@@ -481,9 +499,11 @@ Farhi
 
 
 
+
           - iFit/Changes - </span><span style="font-style: italic;">
-          $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
-        back to <a href="index.html">Main iFit Page </a><a
+          $Date$ $Revision$ </span><span
+          style="font-style: italic;"> </span>- back to <a
+          href="index.html">Main iFit Page </a><a
           href="http://www.ill.eu/"><img title="ILL, Grenoble, France
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
