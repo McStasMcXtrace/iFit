@@ -533,6 +533,8 @@ function [data, format] = iLoad(filename, loader, varargin)
   % -----------------------------------------------------------
   % private/nested function to determine which parser to use to analyze content
   function loaders = iLoad_loader_auto(file)
+  
+    verbose = 0;  % set it to 1 to display Loader auto-selection from extension/pattern
 
     % get the configuration
     % config  = iLoad('','load config');
@@ -582,8 +584,9 @@ function [data, format] = iLoad(filename, loader, varargin)
           else ext=loader.extension; end
           if ischar(ext) && ~isempty(ext), ext={ ext }; end
           if ~isempty(ext) && ~isempty(fext) 
-            if any(strncmpi(fext, ext, length(fext)))
-              patterns_found  = 1;  % extension does not match
+            if any(strcmpi(fext, ext))
+              patterns_found  = 1;  % extension does match
+              if verbose, disp([ 'iLoad: method ' loader.name ': ' file ': extension ' ext{1} ' matches' ]); end
             end
           end
         end
@@ -596,15 +599,18 @@ function [data, format] = iLoad(filename, loader, varargin)
           for index_pat=1:numel(loader.patterns) % all patterns must match
             if isempty(regexpi(file_start, loader.patterns{index_pat}, 'once'))
               all_match=0;     % at least one pattern does not match
-              % fprintf(1,'iLoad: method %s file %s: at least one pattern does not match (%s)\n', loader.name, file, loader.patterns{index_pat});
+              if verbose, fprintf(1,'iLoad: method %s: file %s: at least one pattern does not match (%s)\n', loader.name, file, loader.patterns{index_pat}); end
               break;
             end
           end % for patterns
-          if all_match, patterns_found=1; end
+          if all_match, patterns_found=1; 
+            if verbose, disp([ 'iLoad: method ' loader.name ': ' file ': patterns match' ]); end
+          end
         end
         %   loader has no extension and no patterns
         if ~patterns_found && isempty(ext) && isempty(loader.patterns)
           patterns_found = 1; % we will try all non selective loaders
+          if verbose, disp([ 'iLoad: method ' loader.name ': ' file ': no patterns nor extension: select by default' ]); end
         end
         
         if patterns_found
