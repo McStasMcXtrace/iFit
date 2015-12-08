@@ -22,6 +22,7 @@ function stop = fminplot(pars, optimValues, state)
   persistent fvalHistory;
   persistent updatePlot
   stop = false;
+  flag_input_is_struct = 0;
   
   old_gcf = get(0, 'CurrentFigure');
   
@@ -39,6 +40,7 @@ function stop = fminplot(pars, optimValues, state)
     
     [dummy, best] = sort(fvalHistory); % sort in ascending order
     best= best(1);
+    flag_input_is_struct = 1;
     
   else              % normal execution during optimization =====================
     
@@ -98,7 +100,7 @@ function stop = fminplot(pars, optimValues, state)
   % handle figure
   % only retain one instance of fminplot
   if length(h) > 1, delete(h(2:end)); h=h(1); end
-  if isempty(h) & optimValues.funcount <=2 % create it
+  if isempty(h) && (optimValues.funcount <=2 || flag_input_is_struct) % create it
     h = figure('Tag','fminplot', 'Unit','pixels','MenuBar','figure', 'ToolBar', 'figure');
     ishidden = 0;
     tmp = get(h, 'Position'); tmp(3:4) = [500 400];
@@ -108,7 +110,7 @@ function stop = fminplot(pars, optimValues, state)
       'Tag','fminplot:stop','ToolTip','Click here to abort optimization');
     set(h, 'ToolBar','figure','menubar','figure');
   end
-  
+
   try
     % raise existing figure (or keep it hidden)
     if old_gcf ~= h, set(0, 'CurrentFigure', h); end
