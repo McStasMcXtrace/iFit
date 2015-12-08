@@ -7,12 +7,11 @@ if nargin < 2
   format = 'LAZ';
 end
 
-if ~isa(filename,'iData')
-  out = iData(iLoad(filename,format));  % no post-processing
+if ~isa(a,'iData')
+  out = iData(iLoad(a,format));  % no post-processing
 else
-  out = filename;
+  out = a;
 end
-clear filename;
 
 if numel(out) > 1
   % handle input iData arrays
