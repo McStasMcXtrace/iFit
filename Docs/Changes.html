@@ -29,6 +29,8 @@
               CrysFML/cif2hkl)</a></li>
           <li><a href="#mozTocId63182">Limitations in the standalone
               (binary) package</a></li>
+          <li><a href="#mozTocId853369">McStas executables can not be
+              found from Matlab/iFit</a></li>
           <li><a href="#mozTocId267093">iFit/McStas fails with a message
               such as 'version `GFORTRAN_1.4' not found'</a></li>
           <li><a href="#mozTocId383867">Import of a text file fails</a></li>
@@ -50,6 +52,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           href="http://www.ni.com/white-paper/3727/en/">TDMS</a> file
         format import. Fixed curvature in <a
           href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>/Rescal5/Popovici
+
 
 
 
@@ -92,6 +95,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           NetCDF/CDF/NeXus/HDF support, import/export of <a
             href="http://www.mantidproject.org">Mantid</a> workspaces
           (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+
 
 
 
@@ -169,6 +173,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -176,6 +181,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
 
 
 
@@ -218,6 +224,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -227,6 +234,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
 
 
 
@@ -259,6 +267,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -266,6 +275,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
 
 
 
@@ -342,6 +352,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       3)</span> to triple the number of points along axes.<br>
     <h4><a class="mozTocH4" name="mozTocId473369"></a>Too many warnings
       displayed</h4>
@@ -349,6 +360,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     reduce the level of verbosity with:<br>
     <pre style="margin-left: 80px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">warning off backtrace	<span style="font-style: italic; color: rgb(0, 0, 0);">% reduce the warning message length</span><br><span style="color: rgb(0, 0, 0);">&gt;&gt; </span>warning off			<span style="color: rgb(0, 0, 0); font-style: italic;">% suppress all warnings (not recommended)</span><br></span></pre>
     <h4><a class="mozTocH4" name="mozTocId556618"></a>Execution/compilation
+
 
 
 
@@ -421,32 +433,85 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       web</span> and <span style="font-style: italic;">edit</span>
     commands are limited, and may not work properly, depending on the
     system.<br>
-    <h4><a class="mozTocH4" name="mozTocId267093"></a>iFit/McStas fails
-      with a message such as '<font color="#800000">version</font><font
-        color="#800000"> `GFORTRAN_1.4' not found'</font></h4>
+    <h4><a class="mozTocH4" name="mozTocId853369"></a>McStas executables
+      can not be found from Matlab/iFit</h4>
+    The location of executable programs available from the system are
+    stored in the PATH environment variable. But on some systems (e.g.
+    MacOSX), this variable is not fully initialised when used from
+    Matlab/iFit.<br>
+    <br>
+    The following issue may show-up for any external program launched
+    from Matlab/iFit, e.g. <a href="http://www.mcstas.org">McStas</a>,
+    <a href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/phon/">PHON</a>,
+    <a href="http://www.quantum-espresso.org/">Quantum Espress</a>, <a
+      href="https://wiki.fysik.dtu.dk/ase/">ASE</a>.<br>
+    <br>
+    To diagnose this issue, open a Terminal, and test if e.g. 'mcstas'
+    is properly installed (the example below if for MacOSX/Linux):<br>
+    <blockquote>
+      <pre><b>% mcstas -v</b><br>mcstas-2.3-rc2 version 2.3-rc2 (Nov. 16, 2015)<br>Copyright (C) DTU Physics and Risoe National Laboratory, 1997-2015<br>Additions (C) Institut Laue Langevin, 2003-2015<br>All rights reserved<br><b>% which</b><b> mcstas</b><br>/usr/bin/mcstas<br></pre>
+    </blockquote>
+    Then you need to add the path to 'mcstas' executables inside the
+    PATH variable seen from Matlab. <br>
+    Type, from Matlab/iFit prompt:<br>
+    <blockquote>
+      <pre>&gt;&gt; <font color="#3366ff">setenv</font>(<font color="#cc33cc">'PATH'</font>, [getenv('PATH') <font color="#cc33cc">':/usr/local/bin' ':/usr/bin' ':/usr/share/bin'</font> ]);	<i>% under MacOSX and Linux</i><br>&gt;&gt; <font color="#3366ff">setenv</font>(<font color="#cc33cc">'PATH'</font>, [getenv('PATH') <font color="#cc33cc">'C:\mcstas\bin'</font> ]);	<i>% under Windows</i><br></pre>
+    </blockquote>
+    Once done, e.g. <a href="http://www.mcstas.org">McStas</a> and
+    other programs will be immediately reachable from Matlab/iFit. <br>
+    This procedure may have to be repeated whenever Matlab/iFit is
+    (re)started.<br>
+    <h4><a class="mozTocH4" name="mozTocId267093"></a>iFit fails with a
+      message such as '<font color="#800000">version</font><font
+        color="#800000"> `GFORTRAN_1.4' not found'<font color="#000000">
+          or</font> 'version `GCC_4.3.0' not found'<br>
+      </font></h4>
     Matlab comes with its own C and Fortran libraries (e.g. in
     MATLABROOT/<font color="#800000"><span style="color: rgb(0, 0, 0);">sys/os/&lt;arch&gt;/)</span><span
         style="color: rgb(51, 102, 255);"></span></font>. Some of these
-    may not match those those from the running system (seen on Linux
-    systems). In this case, as McStas runs from a Matlab environment
-    that overloads libraries on top of the normal libraries from the
-    system - used by McStas - you may get a message such as (here <span
+    may not match those from the running system (seen on Linux systems).
+    <br>
+    <br>
+    The following issue may show-up for any external program launched
+    from Matlab/iFit, e.g. <a href="http://www.mcstas.org">McStas</a>,
+    <a href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/phon/">PHON</a>,
+    <a href="http://www.quantum-espresso.org/">Quantum Espress</a>, <a
+      href="https://wiki.fysik.dtu.dk/ase/">ASE</a>.<br>
+    In this case, as e.g. McStas runs from a Matlab environment that
+    overloads libraries on top of the normal libraries from the system -
+    used by external programs - you may get a message such as (here <span
       style="font-style: italic; color: rgb(51, 102, 255);">libgfortran.so</span>
     is faulty) :<br>
     <pre style="margin-left: 40px;"><font color="#800000">Can't load '/usr/local/lib/perl/5.12.4/auto/PGPLOT/PGPLOT.so' for module</font> <font color="#800000">PGPLOT: <br>/usr/local/MATLAB/R2012a/sys/os/glnxa64/<span style="color: rgb(51, 102, 255);">libgfortran.so.3</span>: version</font> <font color="#800000">`GFORTRAN_1.4' not found <br>(required by /usr/lib/libpgplot.so.5) at</font> <font color="#800000">/usr/lib/perl/5.12/DynaLoader.pm line 192.</font> <br><font color="#800000">at /usr/local/lib/mcstas/tools/perl/mcstas_config.perl line 123</font></pre>
-    In order to solve this, you need to update the faulty Matlab
-    libraries with the one from the system. The following procedure is
-    valid for Linux systems (where it was identified), assuming Matlab
-    has been installed in e.g. MATLABROOT = /usr/local/MATLAB/R2012a -
-    but it may also be in e.g. /opt/MATLAB/R2012a.<br>
+    A similar message has also been reported for the <font
+      color="#3366ff">libgcc_s.so</font> library with error e.g. '<font
+      color="#cc0000">version&nbsp;`GCC_4.3.0'&nbsp;not&nbsp;found</font>'.<br>
     <br>
-    We first look for locations of the faulty library in the system
-    (requires package <span style="font-style: italic;">locate</span>
-    or <span style="font-style: italic;">mlocate</span> to be installed
-    - alternatively you can use <span style="font-style: italic;">ldconfig
+    In order to solve this, you need to either remove or update the
+    faulty Matlab libraries with the one from the system. The following
+    procedure is valid for Linux systems (where it was identified),
+    assuming Matlab has been installed in e.g. MATLABROOT =
+    /usr/local/MATLAB/R2012a - but it may also be in e.g.
+    /opt/MATLAB/R2012a.<br>
+    <br>
+    <b>The first attempt</b> is to simply rename the faulty library
+    shipped with Matlab, e.g. (you may also remove it):<br>
+    <pre style="margin-left: 40px;"><font color="#800000"># sudo mv /usr/local/MATLAB/R2012a/sys/os/glnxa64/<span style="color: rgb(51, 102, 255);">libgfortran.so.<font color="#800000">3</font></span></font> <br><font color="#800000">/usr/local/MATLAB/R2012a/sys/os/glnxa64/<span style="color: rgb(51, 102, 255);">libgfortran.so.<font color="#800000">3</font></span></font>.org</pre>
+    or<br>
+    <pre style="margin-left: 40px;"><font color="#800000"># sudo mv /usr/local/MATLAB/R2012a/sys/os/glnxa64/<span style="color: rgb(51, 102, 255);">l</span></font><font color="#3366ff">ibgcc_s.so.1 </font><font color="#800000">/usr/local/MATLAB/R2012a/sys/os/glnxa64/<span style="color: rgb(51, 102, 255);">l</span></font><font color="#3366ff">ibgcc_s.so.1</font>.org</pre>
+    <pre style="margin-left: 40px;"><font color="#800000"><span style="color: rgb(51, 102, 255);"></span></font></pre>
+    Then restart Matlab/iFit to check if the issue is solved.<br>
+    <br>
+    <b>If this is still not solved</b>, we then look for locations of
+    the faulty library in the system (requires package <span
+      style="font-style: italic;">locate</span> or <span
+      style="font-style: italic;">mlocate</span> to be installed -
+    alternatively you can use <span style="font-style: italic;">ldconfig
+
 
 
 
@@ -491,6 +556,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
