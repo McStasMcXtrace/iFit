@@ -53,7 +53,7 @@ xa = (xa-1); xa=xa/max(xa);
 v = zeros(iData, n, 1);
 for index=1:n
   this = a.*xa(index) + b.*(1-xa(index));
-  this = setalias(this,'logspace',[ xa(index) 1-xa(index) ]);
+  this = setalias(this,'ratio',[ xa(index) 1-xa(index) ]);
   v(index) = this;
 end
 
