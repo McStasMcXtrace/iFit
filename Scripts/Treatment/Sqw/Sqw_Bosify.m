@@ -81,7 +81,7 @@ function s = Sqw_Bosify(s, T)
   % apply sqrt(Bose) factor to get experimental-like
   %n         = exp(hw_kT/2);          % detailed balance (raw)
   n         = hw_kT./(1-exp(-hw_kT));  % Bose factor (true), also satisfies detailed balance = w*(1+n(w))
-  n(find(s{1}==0) = 1;
+  n(find(s{1}==0)) = 1;
   s         = s .* n;  % apply detailed balance with Bose
   setalias(s, 'Temperature', T);
   setalias(s, 'classical', 0);
