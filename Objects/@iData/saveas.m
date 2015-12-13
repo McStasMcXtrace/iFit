@@ -25,6 +25,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
 %           'mantid' save as Mantid Processed Workspace, i.e. 'nxs mantid data'
+%           'lamp' save as LAMP Processed Workspace, i.e. 'nxs lamp data'
 %           'mat'  save as a serialized '.mat' binary file (fast 'save', DEFAULT)
 %           'nc'   save as NetCDF
 %         as well as other lossy formats
@@ -158,6 +159,9 @@ end
 if strcmp(format, 'mantid')
   format = 'nxs mantid data';
 end
+if strcmp(format, 'lamp')
+  format = 'nxs lamp data';
+end
 
 % search for option to clean the data set from NaN's and Inf's
 index=regexp(format, '\<clean\>');  % search the word
@@ -173,6 +177,14 @@ if ~isempty(index)
   index=index(1);
   format(index:(index+length('mantid')-1)) = '';
   a = iData_private_2mantid(a);
+end
+
+% convert data set as LAMP Processed Workspace when requested
+index=regexp(format, '\<lamp\>');  % search the word
+if ~isempty(index)
+  index=index(1);
+  format(index:(index+length('lamp')-1)) = '';
+  a = iData_private_2lamp(a);
 end
 
 % search the word 'data' to only save object Data property (for HDF,CDF,NetCDF)
