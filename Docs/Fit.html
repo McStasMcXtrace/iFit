@@ -64,6 +64,7 @@
         style="font-style: italic;">p </span>&#8712; <span
         style="font-style: italic;">&#8476;</span><sup style="font-style:
         italic;">d</sup> so that <span style="font-style: italic;">distance(Signal,
+
         Model)</span> is minimal }<br>
       <div style="text-align: left;"><br>
         where <span style="font-style: italic;">distance</span> is the
@@ -72,6 +73,7 @@
         detailed <a href="#mozTocId778987">below</a>. You can refer to
         the <a
           href="http://en.wikipedia.org/wiki/Mathematical_optimization">mathematical
+
 
           optimization</a> definition.<br>
       </div>
@@ -119,6 +121,7 @@
     directly execute, with <span style="font-style: italic;">p</span>
     the parameter vector, and <span style="font-style: italic;">x,y</span>,...
 
+
     the axes:<br>
     <pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>);<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, @(p,x)<span style="color: rgb(204, 51, 204);">p(1)*x+p(2)</span>); <i>% same with a function handle</i></pre>
     which will transparently create the model function, and then use it
@@ -143,6 +146,7 @@
     <br>
     <font color="#ff0000">Warning:</font>&nbsp;if you do not specify the
     optimization method to use (see <a href="#mozTocId842297">below</a>),
+
     an automatic guess is made, based on the number of parameters to fit
     and the level of noise in the data and the model. As this choice is
     made among a list of applicable optimizers, two consecutive fits may
@@ -199,6 +203,7 @@
       <li><span style="font-style: italic;">output.parsBest: </span>best
 fit
 
+
         parameter set for the model</li>
       <li><span style="font-style: italic;">output.criteriaBest</span>:
         best criteria value for the model</li>
@@ -210,9 +215,11 @@ fit
         </span></li>
       <li><span style="font-style: italic;">output.algorithm: </span>Algorithm/solver
 
+
         used (char)</li>
       <li><span style="font-style: italic;">output.message: </span>Message
 which
+
 
         details the final state of the optimizer (char)<br>
       </li>
@@ -230,9 +237,11 @@ which
         history during optimization (double vector/array)</li>
       <li><span style="font-style: italic;">output.parsHistoryUncertainty:
 
+
         </span>uncertainty on fit parameters (half-width) obtained from
         the optimization history (vector)</li>
       <li><span style="font-style: italic;">output.parsHessianUncertainty:
+
 
         </span>uncertainty on fit parameters (half-width) obtained from
         the Hessian matrix, which is extremely sensitive to noise.
@@ -240,6 +249,7 @@ which
         value (vector)</li>
       <li><span style="font-style: italic;">output.corrcoef</span>: fit
         <a href="http://en.wikipedia.org/wiki/Correlation_coefficient">correlation
+
 
           coefficient</a> (closer to 1 indicates a good fit), as
         obtained from Matlab <a href="matlab:help%20corrcoeff">corrcoef</a>.<br>
@@ -249,6 +259,7 @@ which
       </li>
       <li><span style="font-style: italic;">output.modelInfo: </span>model
 information
+
 
         (structure)<br>
       </li>
@@ -297,8 +308,8 @@ information
     solutions.<br>
     <span style="font-style: italic; font-weight: bold;"><br>
     </span>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
@@ -377,6 +388,7 @@ information
         <tr>
           <td style="vertical-align: top; color: rgb(0, 0, 0);">fminpowell
 
+
           </td>
           <td style="vertical-align: top;">Powell with Coggins line
             search<br>
@@ -387,6 +399,7 @@ information
       </tbody>
     </table>
     <div style="text-align: center;"><span style="font-style: italic;">Table
+
 
         1: A selection among the most efficient and fast optimization
         methods</span><span style="font-style: italic; font-weight:
@@ -430,6 +443,9 @@ information
     is a structure which members enable to tune the behavior of the
     optimization process. Each of the fields can be changed, e.g.<br>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; <span style="color: rgb(255, 0, 0);">options</span>=<span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);">fminimfil</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>)<br>&gt;&gt; options.TolFun=0.01;<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, <span style="color: rgb(0, 0, 0);">[]</span></span>, <span style="color: rgb(255, 0, 0);">options</span>);	<span style="font-style: italic;">% fit with the customized options, and guessed starting parameters</span><br></pre>
+    The options specify the internal optimiser configuration, as
+    returned by <i>optimset</i>:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; optimset<br>                Display: [ off | iter | notify | final ]<br>            MaxFunEvals: [ positive scalar ]<br>                MaxIter: [ positive scalar ]<br>                 TolFun: [ positive scalar ]<br>                   TolX: [ positive scalar ]<br>            FunValCheck: [ on | {off} ]<br>              OutputFcn: [ function | {[]} ]<br>               PlotFcns: [ function | {[]} ]<br>            Diagnostics: [ on | {off} ]<br></pre>
     In addition to the default <span style="font-style: italic;">optimset</span>
     structure fields, the iData <span style="font-style: italic;">fits</span>
     and the <span style="font-style: italic;">Optimizers</span>
@@ -437,6 +453,7 @@ information
     <ul>
       <li><span style="font-style: italic;">options.Display: </span>Level
 of
+
 
         display [ off | iter | notify | final ]. Default is <span
           style="color: rgb(204, 51, 204);">'off'</span></li>
@@ -462,6 +479,7 @@ of
         output function (see <a href="#mozTocId684694">below</a>). You
         may use<span style="color: rgb(204, 51, 204);"> 'fminplot', </span>which
 
+
         is provided in <a href="Optimizers.html"><span
             style="font-style: italic;">Optimizers</span></a>. This
         function should have the syntax <span style="font-style:
@@ -483,11 +501,14 @@ of
         criteria to use with syntax <span style="font-style: italic;">criteria(Signal,
 Error,
 
+
           Model)</span>. The default is least-square error (see <a
           href="#mozTocId778987">below</a>).</li>
       <li><span style="font-style: italic;">options.Diagnostics</span>:
         when set to <span style="color: rgb(204, 51, 204);">'on'</span>
-        or 1, returns the correlation coefficient and Hessian matrix<br>
+        or 1, returns the correlation coefficient and Hessian matrix</li>
+      <li><i>options.MinFunEvals</i>: when set, waits for a given number
+        of iterations before testing for convergence<br>
       </li>
       <li>and more, depending on the optimizer method and implementation</li>
     </ul>
@@ -515,6 +536,7 @@ Error,
             width: 330px; height: 292px;"></a></span><br>
       <span style="font-style: italic; font-weight: bold;">Left: </span>The
 
+
       <span style="font-style: italic;">options.OutputFcn='fminplot' </span>window
 on
 the
@@ -531,11 +553,11 @@ and
 up
 to
 
+
       the 3 first fit parameters. The <span style="color: rgb(255, 0,
         0);">red</span> dot indicates the current/final parameter set
       and criteria. <span style="font-style: italic; font-weight:
-        bold;">Right: </span>The
-      final fit result on the left.<br>
+        bold;">Right: </span>The final fit result on the left.<br>
       <div style="text-align: left;"><br>
         Also, as explained <a href="#mozTocId888705">above</a>, it is
         possible to obtain, on optimization completion, the whole
@@ -575,6 +597,7 @@ to
       <li><span style="font-style: italic;">constraints.steps: </span>the
 maximum
 
+
         change between iterations for each parameter.<span
           style="font-style: italic;"> +Inf</span> is supported.</li>
       <li><i>constraints.eval: </i>any other expression to evaluate,
@@ -587,6 +610,7 @@ maximum
       style="font-style: italic;">parameters</span> and <span
       style="font-style: italic;">options</span> :<br>
     <blockquote> constraints=<span style="color: rgb(204, 51, 204);">'min=[0
+
         0 0 0]; max=[1 10 3 0.1]; eval=p(4)=0'</span>;<br>
     </blockquote>
     As constraints apply on the iFunc model, it is possible to
@@ -664,6 +688,7 @@ maximum
       <li><span style="font-style: italic;">constraints.steps: </span>the
 maximum
 
+
         change between iterations for each parameter. +Inf is supported.</li>
     </ul>
     <h4><a class="mozTocH4" name="mozTocId364529"></a> Other
@@ -733,6 +758,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
 </pre>
     Alternatively, you can use the <span style="font-weight: bold;">mlock,
 
+
       munlock </span>and <span style="font-weight: bold;">xlim</span>
     methods:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, {<span style="color: rgb(204, 51, 204);">'Amplitude','Background'</span>})	<span style="font-style: italic;">% fix these 2 parameters</span>, same as setting parameters to 'fix' <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f, <span style="color: rgb(204, 51, 204);">'Background'</span>)		<span style="font-style: italic;">% unlock that parameter</span>, same as f.Background='clear'<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f, <span style="color: rgb(204, 51, 204);">   'Background'</span>, [0 1e-3])	<span style="font-style: italic;">% force parameter within range</span>, same as f.Background=[min max]<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f,  <span style="color: rgb(204, 51, 204);">  'Background'</span>, [])		<span style="font-style: italic;">% remove limits constraint</span><br></pre>
@@ -755,6 +781,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
       style="font-style: italic;"> output.parsHistoryUncertainty</span>
     and <span style="font-style: italic;">output.parsHessianUncertainty.&nbsp;</span>Additionally,
 the
+
 
     <span style="font-style: italic;">output.parsHessianCorrelation</span>
     indicates the cross-correlations between parameters (off-diagonal
@@ -844,6 +871,7 @@ the
     The options.criteria can be defined as the name of a criteria
     function with syntax <span style="font-style: italic;">criteria(Signal,
 
+
       Error, Model)</span> where all arguments should have the same
     dimension, and the default criteria is:<br>
     <br>
@@ -860,14 +888,15 @@ the
         <div style="text-align: center;">&#967;² &#8592; &#967;² /(<span
             style="font-style: italic;">number_of_data_points_in_the_Signal
 
+
           </span>- <span style="font-style: italic;">number_of_parameters</span>
           -1)<br>
         </div>
         <br>
         The following pre-defined functions can be used as criteria:<br>
         <br>
-        <table style="text-align: left; width: 100%;" cellpadding="2"
-          cellspacing="2" border="1">
+        <table style="text-align: left; width: 100%;" border="1"
+          cellpadding="2" cellspacing="2">
           <tbody>
             <tr>
               <td style="vertical-align: top; font-weight: bold;
@@ -991,11 +1020,11 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
 
+
         - iFit/iData fitting - </span><span style="font-style: italic;">
-        $Date$ $Revision:
-        1229 $ </span><span style="font-style: italic;"> </span>- back
-      to <a href="index.html">Main iFit Page </a><a
-        href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+        $Date$ $Revision: 1229 $ </span><span style="font-style:
+        italic;"> </span>- back to <a href="index.html">Main iFit Page
+      </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>

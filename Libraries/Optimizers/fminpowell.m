@@ -41,6 +41,7 @@ function [pars,fval,exitflag,output] = fminpowell(varargin)
 %      o=fminpowell('defaults')
 %   options.Hybrid specifies the algorithm to use for line search optimizations
 %      valid choices are 'Coggins' (default) and 'Golden rule'
+%   options.MinFunEvals sets the minimum number of function evaluations to reach
 %  An empty OPTIONS sets the default configuration.
 %
 %  CONSTRAINTS may be specified as a structure

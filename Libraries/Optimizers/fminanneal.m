@@ -41,6 +41,7 @@ function [pars,fval,exitflag,output] = fminanneal(varargin)
 %     o=fminanneal('defaults')
 %  options.TEMP_START sets the starting temperature
 %  options.TEMP_END   sets the end temperature
+%  options.MinFunEvals sets the minimum number of function evaluations to reach
 %  An empty OPTIONS sets the default configuration.
 %
 %  CONSTRAINTS may be specified as a structure

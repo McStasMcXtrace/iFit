@@ -41,6 +41,7 @@ function [pars,fval,exitflag,output] = fminimfil(varargin)
 %     o=fminimfil('defaults')
 %  options.Hybrid specifies the algorithm to use for local hybrid optimizations.
 %   This is a string with possible values 'sr1','bfgs' (default),'none'.
+%  options.MinFunEvals sets the minimum number of function evaluations to reach
 %  An empty OPTIONS sets the default configuration.
 %
 %  CONSTRAINTS may be specified as a structure
