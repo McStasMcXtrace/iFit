@@ -35,6 +35,8 @@ function a=mcplot(varargin)
     if ~ischar(this), continue; end
     if this(1) == '-'
       options{end+1} = strrep(this, '-', '');
+    elseif isdir(this) && ~isempty(dir(fullfile(this,'mccode.sim')))
+      varargin{index} = fullfile(this,'mccode.sim');
     end
   end
 

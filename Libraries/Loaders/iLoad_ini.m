@@ -290,6 +290,10 @@ function config = iLoad_ini
     nmr_jeol.name       = 'JEOL NMR data set';
     nmr_jeol.method     = 'read_jeol';
     nmr_jeol.extension  = {'hdr','bin','asc','jdf'};
+    
+    idl_sav.name        = 'IDL SAV';
+    idl_sav.method      = 'read_idl';
+    idl_sav.extension   = 'sav';
 
 % data formats without extension
 
@@ -311,7 +315,7 @@ function config = iLoad_ini
       spec, chalkriver, ISIS_spe, ILL_inx, STL_ascii, OBJ, PDB, OFF_ascii, PLY_ascii, CFL, EZD, CIF, ...
       labview, qd_vms, yaml, json, ...
       ESRF_edf, ILL_HBIN, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
-      Analyze, CBF, STL_binary, MRC, NifTI, Igor, lv_tdms, nmr_jeol, ...
+      Analyze, CBF, STL_binary, MRC, NifTI, Igor, lv_tdms, nmr_jeol, idl_sav, ...
       nmr_bruker, nmr_varian, ftir_bruker, llb_tas };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
