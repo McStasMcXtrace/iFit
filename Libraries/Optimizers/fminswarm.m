@@ -42,6 +42,7 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 %   option.SwarmC1 sets the local attractors strength (1-3)
 %   option.SwarmC2 sets the global attractor strength (1-3).
 %   option.SwarmW  sets inertia weight (0-1).
+%   options.MinFunEvals sets the minimum number of function evaluations to reach
 %  An empty OPTIONS sets the default configuration.
 %
 %  CONSTRAINTS may be specified as a structure

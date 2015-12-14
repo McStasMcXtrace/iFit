@@ -227,6 +227,9 @@ numberofvariables = n;
 if ischar(options.MaxFunEvals), 
   options.MaxFunEvals = eval(options.MaxFunEvals); 
 end
+if ischar(options.MinFunEvals), 
+  options.MinFunEvals = eval(options.MinFunEvals); 
+end
 if ischar(options.MaxIter), 
   options.MaxIter = eval(options.MaxIter); 
 end
@@ -827,12 +830,13 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
   % check of option members
   if nargin<=2
     options=pars;
+    if ~isfield(options,'MinFunEvals'), options.MinFunEvals=0; end
     if nargin ==2, 
       default=fval; 
       checks=fieldnames(default);
     else 
       fval=[]; 
-      checks={'TolFun','TolX','Display','MaxIter','MaxFunEvals','FunValCheck','OutputFcn','algorithm'};
+      checks={'TolFun','TolX','Display','MaxIter','MaxFunEvals','FunValCheck','OutputFcn','algorithm','MinFunEvals'};
     end
     
     for index=1:length(checks)
@@ -878,6 +882,7 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
   end
 
   % normal terminations: function tolerance reached
+  if isempty(options.MinFunEvals) || funccount >= options.MinFunEvals
   if ~isempty(options.TolFun) && options.TolFun ~= 0 && funccount >= 5*length(pars)
     if (all(0 < fval) && all(fval <= options.TolFun)) % stop on lower threshold
       istop=-1;
@@ -894,6 +899,7 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
                 num2str(options.TolFun) ')' ];
       end
     end
+  end
   end
   
   % normal terminations: parameter variation tolerance reached, when function termination is also true

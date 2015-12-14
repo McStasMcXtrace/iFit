@@ -37,6 +37,7 @@ function [pars,fval,exitflag,output] = fminsearchbnd(varargin)
 %  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
 %     o=fminnewton('defaults')
+%  options.MinFunEvals sets the minimum number of function evaluations to reach
 %  An empty OPTIONS sets the default configuration.
 %
 %  CONSTRAINTS may be specified as a structure

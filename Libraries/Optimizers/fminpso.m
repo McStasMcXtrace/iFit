@@ -47,6 +47,7 @@ function [pars,fval,exitflag,output] = fminpso(varargin)
 %   option.PopulationSize sets the number of particles in the swarm (20-40).
 %   option.SwarmC1 sets the local attractors strength (1-3)
 %   option.SwarmC2 sets the global attractor strength (1-3).
+%   options.MinFunEvals sets the minimum number of function evaluations to reach
 %  An empty OPTIONS sets the default configuration.
 %
 %  CONSTRAINTS may be specified as a structure
