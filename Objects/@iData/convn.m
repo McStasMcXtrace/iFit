@@ -2,10 +2,10 @@ function c = convn(a,b)
 % c = convn(a,b) : computes the convolution of an iData object with a response function 
 %
 %   @iData/convn function to compute the convolution of data sets with automatic centering
-%     and normalization of the filter. This is a shortucut for
+%     and normalization of the filter. This is a shortcut for
 %       conv(a,b, 'same pad background center normalize')
 %     When used with a single scalar value, it is used as a width to build a 
-%       gaussian function, with same width along aall dimensions
+%       gaussian function, with same width along all dimensions
 %     When used with a vector of same length as the object dimension, a nD
 %       gaussian function with width as vector elements along each diemsions
 %

@@ -13,7 +13,7 @@ function c = iData_private_binary(a, b, op, varargin)
 %
 % operator may be: 'plus','minus','combine'
 %                  'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide', 'conv', 'xcorr'
-%                  'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'
+%                  'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal', 'deconv'
 %
 % Contributed code (Matlab Central): 
 %   genop: Douglas M. Schwarz, 13 March 2006
@@ -64,10 +64,10 @@ elseif isa(b, 'iData') & numel(b) > 1
   return
 end
 
-if ischar(a) && (exist(a, 'file') || any(strncmp(a, {'file:/','http:/','ftp://','https:'})))
+if ischar(a) && (exist(a, 'file') || any(strncmp(a, {'file:/','http:/','ftp://','https:'},6)))
   a = iData(a); % import file    
 end
-if ischar(b) && (exist(b, 'file') || any(strncmp(b, {'file:/','http:/','ftp://','https:'})))
+if ischar(b) && (exist(b, 'file') || any(strncmp(b, {'file:/','http:/','ftp://','https:'},6)))
   b = iData(b); % import file    
 end
 
@@ -181,8 +181,8 @@ case {'plus','minus','combine'}
     end
   end
   
-case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv','xcorr'}
-  if strcmp(op, 'conv') || strcmp(op, 'xcorr')
+case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv','xcorr','deconv'}
+  if strcmp(op, 'conv') || strcmp(op, 'deconv') || strcmp(op, 'xcorr')
     s3 = fconv(y1, y2, varargin{:});  % pass additional arguments to fconv
     if nargin == 4
       if strfind(varargin{1}, 'norm')

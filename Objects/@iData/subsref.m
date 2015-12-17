@@ -244,7 +244,7 @@ for i = 1:length(S)     % can handle multiple index levels
         else strtk = b(1:(strtk-1)); end  % get path before the last group
         % does the structure path starts with a registered iData property, alias or Data member ?
         if any(strcmpi(strtk, fields)) || any(strcmpi(strtk, a(1).Alias.Names)) ...
-          || (isstruct(a.Data) && isfield(a.Data, strtk))
+          || (isstruct(a(1).Data) && isfield(a(1).Data, strtk))
           try
             b = get(a, b);  % try to evaluate char result/link
           end

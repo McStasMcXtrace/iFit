@@ -1,9 +1,10 @@
 function c = xcorr(a,b, shape)
-% c = xcorr(a,b) : computes the correlation of iData objects
+% c = xcorr(a,b,shape) : computes the correlation of iData objects
 %
 %   @iData/xcorr function to compute the correlation of data sets (FFT based).
-%     A decorrelation mode is also possible. When only one argument is given, 
-%     the auto-correlation is computed.
+%     A decorrelation mode is also possible with e.g. 
+%       shape='same center deconv' or shape='same center iter'. 
+%     When only one argument is given, the auto-correlation is computed.
 %
 % input:  a: object or array (iData or numeric)
 %         b: object or array (iData or numeric)
@@ -13,6 +14,8 @@ function c = xcorr(a,b, shape)
 %          valid        Returns only those parts of the correlation that are computed
 %                       without the zero-padded edges. Using this option, y has size
 %                       [ma-mb+1,na-nb+1] when all(size(a) >= size(b)).
+%          deconv       Performs an FFT deconvolution.
+%          deconv_iter  Performs an iterative deconvolution.
 %          pad          Pads the 'a' signal by replicating its starting/ending values
 %                       in order to minimize the correlation side effects
 %          center       Centers the 'b' filter so that correlation does not shift

@@ -8,8 +8,11 @@ function stop = fminplot(pars, optimValues, state)
 % prior to the optimization/fit.
 %
 % To plot this monitoring window after the optimization/fit completion, use:
-% [pars,fval,exitflag,output]=fmin(@objective, [], 'OutputFcn=fminplot')
-% fminplot(output);
+%   [pars,fval,exitflag,output]=fmin(@objective, [], 'OutputFcn=fminplot')
+%   fminplot(output);
+%
+% To retrieve the optimisation history from the fminplot window, use:
+%   h = fminplot;
 %
 % example: 
 %   fmin(@objective, [], 'OutputFcn=fminplot')
@@ -23,6 +26,18 @@ function stop = fminplot(pars, optimValues, state)
   persistent updatePlot
   stop = false;
   flag_input_is_struct = 0;
+  
+  if nargin == 0
+    % retrieve the information stored in the plot
+    h = findall(0, 'Tag', 'fminplot'); 
+    if ~isempty(h)
+      stop = get(h,'UserData');
+    else
+        stop.parsHistory = parsHistory;
+        stop.fvalHistory = fvalHistory;
+    end
+    return
+  end
   
   old_gcf = get(0, 'CurrentFigure');
   

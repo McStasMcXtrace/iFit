@@ -9,7 +9,7 @@ function y=gaussnd(varargin)
 % <http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_function>
 %
 % This model has no background, is centered, and has maximum intensity set to 1.
-% The only parameters correspond to widths.
+% The parameters correspond to widths.
 %
 % gaussnd([w1 w2 ... wn ])
 %   builds a 'n' Dimensional orthogonal Gaussian with widths [w1 w2 ...]
@@ -58,7 +58,7 @@ if nargin == 1
 
     if size(v,1) == size(v,2)
       % test if this is a symmetric matrix
-      if ~issymmetric(v)
+      if ~issym(v)
         if norm(v - v') > 1e-6
           warning([ mfilename ': The matrix given is not symmetric. Making it so as (x+x'')/2.']);
         end
@@ -136,4 +136,15 @@ y = iFunc(y);
 if length(varargin) > 1
   y = y(varargin{:});
 end
+
+% extracted from octave issymmetric
+function retval = issym (x, tol)
+
+  retval = isnumeric (x) && (size(x,1) == size(x,2));
+  if (retval)
+    retval = (x == x.');
+    retval = all (retval(:));
+  end
+
+
 
