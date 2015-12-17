@@ -15,7 +15,6 @@ end
 if numel(a) > 1
   b = [];
   for index=1:numel(a)
-  index
     this = feval(mfilename, a(index));
     if numel(this) > 1 && size(this, 1) ~= 1, this = this'; end
     b = [ b this ];

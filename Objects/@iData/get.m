@@ -70,7 +70,7 @@ for index=1:length(varargin)
   if isvalid(property) || isvarname(property) % extract iData field/alias
     if any(strcmp(property, fields))
       b = this.(property);               % direct static field
-      if isnumeric(b) && any(strcmp(property, {'Date','ModificationDate'}))
+      if isnumeric(b) && ~isempty(b) && any(strcmp(property, {'Date','ModificationDate'}))
         b = datestr(b);
       end
       out{end+1} = b;
