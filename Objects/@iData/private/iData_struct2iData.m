@@ -47,11 +47,12 @@ function b=iData_struct2iData(a)
   end
   
   if isempty(b.Command), b.Command= cellstr('iData(<struct>)'); end
-  
-  [pathname,filename,ext] = fileparts(b.Source);
-  if isfield(b.Data, 'MetaData')
-    b=setalias(b, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
-    b=load_clean_metadata(b);
+  try
+      [pathname,filename,ext] = fileparts(b.Source);
+      if isfield(b.Data, 'MetaData')
+        b=setalias(b, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
+        b=load_clean_metadata(b);
+      end
   end
   
   % ------------------------------------------------------------------------------

@@ -86,7 +86,7 @@ else  % convert input argument into object
   if isa(varargin{1}, 'iData') && numel(varargin{1}) > 1
   % iData(iData array)
     out = varargin{1};
-    parfor index=1:numel(out)
+    for index=1:numel(out)
       out(index) = iData(out(index));        % check all elements
     end
     if nargout == 0 && ~isempty(inputname(1))

@@ -8,37 +8,103 @@ function s = read_anytext(varargin)
 %
 % read_anytext('compile') creates looktxt MeX or binary
 
-persistent config
+% different modes for execution:
+%  The configuration is extracted from iLoad('config')
+% Executable      Output
+%   MeX             Mem               direct memory allocation
+%   Mex             Matlab (m+bin)    a Matlab script+binary file
+%   MeX             MATFile           a MAT file
+%   Bin             Matlab (m+bin)
+%   Bin             MATFile
 
+persistent config
+persistent compiled
+
+% get configuration to use for 'looktxt'
 if isempty(config)
   if exist('iLoad')
     config  = iLoad('config');
   else
-    config.MeX = 'yes';
+    config.MeX = 'default';
+  end
+end
+if isfield(config, 'MeX')
+  tmp = config.MeX; config=[]; % to avoid warning when erasing structure
+  config = tmp;
+end
+
+% *** determine executable (MeX/binary) and output format (mem/mat/matlab) =====
+if isstruct(config) 
+  if isfield(config, 'looktxt')
+    tmp = config.looktxt;
+  elseif isfield(config, 'read_anytext')
+    tmp = config.read_anytext;
+  end
+  config = tmp;
+end
+
+if isempty(config) || ~ischar(config)
+  disp([ mfilename ': WARNING: invalid text importer configuration. Using ''default''.' ]); 
+  disp(config);
+  config = 'default'; 
+end
+
+% the configuration must now be a string: derive executable and output format
+config = lower(config);
+executable = '';
+output     = '';
+
+% we interpret the requested configuration
+if ~isempty(strfind(config, 'mex')) || ~isempty(strfind(config, 'mem')), executable = 'MeX'; output='MeX'; end
+if ~isempty(strfind(config, 'bin')),     executable = 'Binary'; output='Matlab'; end
+if ~isempty(strfind(config, 'matlab')),  output='Matlab'; 
+elseif ~isempty(strfind(config, 'mat')), output='MATFile'; end
+
+if ~isempty(strfind(config, 'default')) || ~isempty(strfind(config, 'auto')) ...
+  || isempty(executable) || isempty(output) % default/auto choices
+  % default mex/bin choice set by the system type: same as config.MeX='default'
+  if isempty(executable), executable = 'mex'; end
+  if isempty(output)
+    if ispc || ismac, output = 'MeX';         % in memory
+    else              output = 'MATFile'; end % Linux: avoid MeX/mem which may be unstable (SEGV)
+  end  
+end
+
+% *** test executable ==========================================================
+if ~isempty(varargin) && strcmp(varargin{1}, 'compile'), compiled = 0; end
+executable = lower(executable);
+
+% test if mex is requested and exists. When fails -> try bin.
+if isempty(compiled) || ~compiled % only the first time it starts or when explicitly requested
+  if ~isempty(strfind(executable, 'mex'))
+    if ~isempty(varargin) && strcmp(varargin{1}, 'compile')
+      s = read_anytext_compile_mex('compile'); % force
+    else s = read_anytext_compile_mex; end
+    if isempty(s), executable = 'bin'; % will try bin
+    end
+  end
+  
+  % test if bin is requested and exists, else compiles
+  if ~isempty(strfind(executable, 'bin'))
+    if ~isempty(varargin) && strcmp(varargin{1}, 'compile')
+      s = read_anytext_compile_binary('compile'); % force
+    else s = read_anytext_compile_binary; end
+    if isempty(s), 
+      error('%s: ERROR: Can''t compile looktxt executable (MeX nor Binary).', ...
+          mfilename); 
+    end
+  end
+  compiled=1;
+  
+  if ~isempty(varargin) && strcmp(varargin{1}, 'compile')
+    varargin(1) = [];
   end
 end
 
-if isfield(config, 'MeX')
-  use_mex = config.MeX;
-end
-if isstruct(use_mex) && isfield(use_mex, 'looktxt')
-  tmp = use_mex.looktxt;
-  use_mex = tmp;
-end
-if strcmp(use_mex, 'yes') || (isscalar(use_mex) && use_mex ~= 0), use_mex=1; 
-else use_mex=0; end
-
-% handle input arguments =======================================================
+% *** handle input arguments ===================================================
 s = [];
 if isempty(varargin)
-  looktxt('--help');
-  return
-end
-
-if ~isdeployed && (length(varargin) == 1 && strcmp(varargin{1}, 'compile'))
-  if use_mex, s = read_anytext_compile_mex;
-  else        s = read_anytext_compile_binary;
-  end
+  s = looktxt('--help');
   return
 end
 
@@ -52,8 +118,8 @@ remove_tempname = 0;
 for index=1:length(varargin)
   arg = varargin{index};
   if ~ischar(arg)
-    fprintf(1, 'read_anytext: argument is of class %s. Only char allowed. Ignoring\n', ...
-      class(arg));
+    fprintf(1, '%s: WARNING: argument %i is of class %s. Only char allowed. Ignoring\n', ...
+      mfilename, index, class(arg));
   else
     split = strread(arg,'%s','delimiter',' ;'); % split argument with common delimiters
     i_split = 1;
@@ -88,8 +154,6 @@ for index=1:length(varargin)
   end
 end
 
-% launch looktxt with MeX or MATfile format and temporary file name ===================
-
 % clean-up format and outfile options
 if isnumeric(user.outfile) && user.outfile <= length(argv)
   user.outfile = argv{user.outfile}; 
@@ -101,19 +165,33 @@ if strncmp(user.outfile, '--outfile=', length('--outfile='))
   user.outfile= user.outfile((length('--outfile=')+1):end);
 end
 if strncmp(user.format, '--format=', length('--format='))
-  user.format = user.format((length('--format=')+1):end)
+  user.format = user.format((length('--format=')+1):end);
 end
 
-% when no format specified use MeX when available or MATFiles
+% when no format specified use config
 if isempty(user.format)
-  if use_mex, user.format = 'MeX';
-  else        user.format = 'MATFile';
+  switch lower(output)
+  case 'mex'
+    user.format = 'MeX';
+  case {'mat','matfile'}
+    if exist('looktxt') == 3 % we make sure the MATFile is used with the MeX
+      user.format = 'MATFile';
+    else
+      user.format = 'Matlab';
+    end
+  otherwise
+    user.format = 'Matlab';
   end
 end
 
-% when MATFile and no output file, use temporary
-if strcmp(user.format, 'MATFile') && isempty(user.outfile)
-  user.outfile= [ tempname '.mat' ];  % usually in TMP directory
+% when MATFile or Matlab and no output file set, use temporary
+if isempty(user.outfile)
+  if strcmp(user.format, 'MATFile')
+    user.outfile= [ tempname '.mat' ];  % usually in TMP directory
+  elseif strcmp(user.format, 'Matlab')
+    user.outfile= [ tempname '.m' ];  % usually in TMP directory
+    argv{end+1} = '--binary';
+  end
   remove_tempname = 1;
 end
 
@@ -125,15 +203,18 @@ if ~isempty(user.outfile)
   argv{end+1} = [ '--outfile=' user.outfile ];
 end
 
-% call looktxt >>>>
-if strcmp(user.format, 'MeX')
+% *** call looktxt =============================================================
+if strcmp(executable, 'mex')
   % pure MEX call. No temporary file. May cause SEGV. faster by 15%.
   s = looktxt(argv{:});
-else
+elseif strcmp(executable, 'bin')
   s = [];
-  looktxt(argv{:});
-  
-  % import the MAT file from the temporary file, into structure ==================
+  looktxt(argv{:}); % send to looktxt.m to launch bin
+end
+
+% *** import the data (user.format) ============================================
+if strcmp(user.format, 'MATFile')
+  % import the MAT file from the temporary file, into structure 
   if ~isempty(user.outfile) && ischar(user.outfile) && ~isempty(dir(user.outfile))
     try
       s = load(user.outfile); % must be a MAT-file
@@ -145,11 +226,27 @@ else
       end
     end
   end
-
-  % delete temporary file ========================================================
-  if remove_tempname && ~isempty(dir(user.outfile))
-    delete(user.outfile);
+elseif strcmp(user.format, 'Matlab')
+   % import the Matlab script file from the temporary file, into structure 
+  if ~isempty(user.outfile) && ischar(user.outfile) && ~isempty(dir(user.outfile))
+    try
+      run(user.outfile);
+      s=ans;
+      % check if there is only one struct field at first level then access it (probably
+      % the temporary variable name).
+      f = fieldnames(s);
+      if length(f) == 1
+        s = s.(f{1});
+      end
+    end
   end
+end
+
+% delete temporary file
+if remove_tempname && ~isempty(dir(user.outfile))
+  % delete any [user.outfile].* file
+  [p,f] = fileparts(user.outfile);
+  delete(fullfile(p,[ f '.*' ]));
 end
 
 % convert the Headers field into Attributes
@@ -161,16 +258,30 @@ if isstruct(s)
 
   s=orderfields(s);
 
-  if isfield(s, 'Data')
+  if isfield(s, 'Data') && isstruct(s.Data)
     s.Data = orderfields(s.Data);
-  end  
+  end
+  if isstruct(s.Data) && ~isfield(s.Data,'read_anytext')
+    s.Data.read_anytext = { executable, output, [ 'looktxt ' sprintf('%s ', argv{:}) ] };
+  end
 end
 
 % ------------------------------------------------------------------------------
-function compiled = read_anytext_compile_mex
+function compiled = read_anytext_compile_mex(compile)
   % compile looktxt as MeX
   
   compiled = '';
+  if isdeployed, return; end
+  
+  % check if it exists and is valid
+  if exist(which('looktxt')) == 3
+    try
+      compiled = looktxt('--version');
+      compiled = which('looktxt');
+    end
+  end
+  if ~isempty(compiled) && nargin == 0, return; end
+  
   this_path = fileparts(which(mfilename));
   % attempt to compile MeX
   fprintf(1, '%s: compiling looktxt mex...\n', mfilename);
@@ -195,30 +306,33 @@ function compiled = read_anytext_compile_mex
     end
   end
 
-function compiled = read_anytext_compile_binary
+function compiled = read_anytext_compile_binary(compile)
   % compile looktxt as binary when does not exist yet
   
   compiled = '';
+  
+  if isdeployed, return; end
+  if ispc, ext='.exe'; else ext=''; end
   this_path = fileparts(which(mfilename));
   % attempt to compile as binary, when it does not exist yet
   this_path = fileparts(which(mfilename));
-  cmd       = fullfile(this_path, mfilename);
+  target    = fullfile(this_path, 'looktxt', ext);
   % launch the command
-  [status, result] = system(cmd);
-  if status == 0
+  [status, result] = system(target);
+  if status == 0 && nargin == 0
     % the executable is already there. No need to make it .
-    compiled = 'bin'; 
+    compiled = target; 
     return
   end
 
   fprintf(1, '%s: compiling looktxt binary...\n', mfilename);
   try
     cmd={'-f', fullfile(matlabroot,'bin','matopts.sh'), '-DUSE_MAT', ...
-         '-O', '-output', fullfile(this_path,'looktxt'), ...
+         '-O', '-output', target, ...
          fullfile(this_path,'looktxt.c'), '-lmat', '-lmx'};
     disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
     mex(cmd{:});
-    compiled = 'bin';
+    compiled = target;
   catch
     error('%s: Can''t compile looktxt.c binary\n       in %s\n', ...
         mfilename, fullfile(this_path));

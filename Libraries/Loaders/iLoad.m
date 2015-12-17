@@ -110,12 +110,8 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     return
   elseif any(strcmp(loader, {'force','force load config','compile'}))
-    if ~strcmp(loader, 'compile')
-      % check MeX files
-      if exist('looktxt') ~= 3,        read_anytext('compile'); end
-      if exist('cbf_uncompress') ~= 3, read_cbf('compile'); end
-      if exist('cif2hkl') ~= 3,        cif2hkl('compile'); end
-    elseif ~strcmp(loader, 'force load config')
+
+    if strcmp(loader, 'compile')
       % force compile
       read_anytext('compile');
       read_cbf('compile');
@@ -458,16 +454,7 @@ function [data, format] = iLoad(filename, loader, varargin)
         catch ME
           l=ME;
           disp(l.message);
-          % disp(getReport(ME))
-          if strncmpi(l.message, 'Invalid MEX-file', length('Invalid MEX-file')) && ~recompile
-            % attempt to recompile MeX file
-            lo = which('looktxt');
-            if exist(lo) == 3
-              delete(lo)
-              recompile = 1;
-              iLoad('compile');
-            end
-          end
+          disp(getReport(ME))
           [dummy, name_short, ext] = fileparts(filename);
           % fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, char(this_loader.method));
           data = [];
@@ -618,7 +605,7 @@ function [data, format] = iLoad(filename, loader, varargin)
           loaders{loaders_count} = loader;
         end
       else
-        fprintf(1,'iLoad: method %s file %s: method not found ? Check the iLoad_ini configuration file (%s).\n', loader.name, file, config.FileName);
+        fprintf(1,'iLoad: WARNING: method %s "%s": method not found ? Check the iLoad_ini configuration file (%s).\n', loader.name, loader.method, config.FileName);
       end % if exist(method)
     end % for index
 
@@ -824,7 +811,10 @@ function config = iLoad_config_load
   if ~isfield(config, 'FileName'),         config.FileName = ''; end
   if ~isfield(config, 'MeX'), config.MeX = []; end
   if ~ischar(config.MeX) && ~isempty(config.MeX)
-    if ~isfield(config.MeX, 'looktxt'),      config.MeX.looktxt = 'yes'; end
+    if ~isfield(config.MeX, 'looktxt')
+      if ispc || ismac, config.MeX.looktxt = 'yes'; 
+      else              config.MeX.looktxt = 'no'; end % Linux: avoid MeX which may be unstable (SEGV)
+    end
     if ~isfield(config.MeX, 'cif2hkl'),      config.MeX.cif2hkl = 'yes'; end
   end
   
@@ -840,7 +830,6 @@ function config = iLoad_config_load
     { 'xmlread', 'xml', 'XML','','','opennxs'}, ...
     { 'auread',  'au',  'NeXT/SUN (.au) sound',''}, ...
     { 'wavread', 'wav'  'Microsoft WAVE (.wav) sound',''}, ...
-    { 'aviread', 'avi', 'Audio/Video Interleaved (AVI) ',''}, ...
     { 'read_cdf', {'cdf'}, 'CDF (.cdf)','','',{'opencdf','load_nmoldyn'}}, ...
     { 'read_nc', {'nc','cdf'}, 'NetCDF (.nc)','','',{'opencdf','load_nmoldyn'}}, ...
     { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)',''}, ...
