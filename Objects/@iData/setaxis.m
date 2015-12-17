@@ -46,14 +46,16 @@ if nargin < 4
   value=[];
 end
 
+n = nargin;
+
 % handle array of objects
 if numel(this) > 1
   parfor index=1:numel(this)
-    if nargin == 1
+    if n == 1
       this(index) = iData_checkaxes(this(index));
-    elseif nargin == 3
+    elseif n == 3
       this(index) = setaxis(this(index), rank, alias);
-    elseif nargin == 4
+    elseif n == 4
       this(index) = setaxis(this(index), rank, alias, value);
     end
   end

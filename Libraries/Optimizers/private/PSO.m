@@ -271,6 +271,7 @@ for i = 1:OPTIONS.MaxIter,
     %% 2. maximum difference between the coordinates of the vertices in simplex is less than TolX
     %% 3. no convergence,but maximum number of iterations has been reached
     
+    if isempty(OPTIONS.MinFunEvals) || nFUN_EVALS >= OPTIONS.MinFunEvals
     if OPTIONS.TolX >0 & max(max(abs(diff(SWARM(:,:,i),1,1)))) < OPTIONS.TolX,
         message='Change in X less than the specified tolerance (TolX).';
         EXITFLAG = -5;
@@ -280,6 +281,7 @@ for i = 1:OPTIONS.MaxIter,
       EXITFLAG=-12;
       message = [ 'Termination function change tolerance criteria reached (options.TolFun=' ...
                 num2str(OPTIONS.TolFun) ')' ];
+    end
     end
     
     if EXITFLAG

@@ -4,7 +4,9 @@ function c = conv(a,b, shape)
 %   @iData/conv function to compute the convolution of data sets (FFT based).
 %     A deconvolution mode is also possible.
 %     When used with a single scalar value, it is used as a width to build a 
-%       gaussian function.
+%       gaussian function, with same width along all dimensions
+%     When used with a vector of same length as the object dimension, a nD
+%       gaussian function with width as vector elements along each diemsions
 %
 % input:  a: object or array (iData or numeric)
 %         b: object or array (iData or numeric or scalar)
@@ -15,8 +17,9 @@ function c = conv(a,b, shape)
 %                       without the zero-padded edges. Using this option, y has size
 %                       [ma-mb+1,na-nb+1] when all(size(a) >= size(b)).
 %          deconv       Performs an FFT deconvolution.
+%          deconv_iter  Performs an iterative deconvolution.
 %          pad          Pads the 'a' signal by replicating its starting/ending values
-%                       in order to minimize the convolution side effects
+%                       in order to minimize the convolution side effects.
 %          center       Centers the 'b' filter so that convolution does not shift
 %                       the 'a' signal.
 %          normalize    Normalizes the 'b' filter so that the convolution does not
@@ -28,7 +31,7 @@ function c = conv(a,b, shape)
 % ex:     c=conv(a,b); c=conv(a,b, 'same pad background center normalize');
 %
 % Version: $Date$
-% See also iData, iData/times, iData/convn, iData/fft, iData/xcorr, fconv, fconvn, fxcorr
+% See also iData, iData/times, iData/convn, iData/fft, iData/xcorr, fconv, fconvn, fxcorr, conv, deconv
 if nargin ==1
 	b = a;
 end
@@ -36,13 +39,22 @@ if nargin < 3, shape = 'same'; end
 if isscalar(b)
   b = [ 1 mean(getaxis(a,1)) double(b) 0]; % use input as a width
   b = gauss(b, getaxis(a,1));
-  c = conv(a,b,[ shape ' normalize' ]);
-  return
+  shape = [ shape ' normalize' ];
 elseif isscalar(a)
   a = [ 1 mean(getaxis(b,1)) double(a) 0]; % use input as a width
   a = gauss(a, getaxis(b,1));
-  c = conv(a,b,[ shape ' normalize' ]);
-  return
+  shape = [ shape ' normalize' ];
+elseif isa(b,'double') && numel(b) == ndims(a)
+  p = [];
+  g = gauss^(ndims(a));
+  ax = {};
+  for index=1:ndims(a)
+    p = [ p 1 mean(getaxis(a,1)) double(b(index)) 0 ];
+    ax{end+1} = getaxis(a, index);
+  end
+  g = g(p, ax{:});
+  b = g;
+  shape = [ shape ' normalize' ];
 end
 
 c = iData_private_binary(a, b, 'conv', shape);
