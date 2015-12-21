@@ -144,8 +144,13 @@ for i = 1:length(S)     % can handle multiple index levels
       b = setaxis(copyobj(b));
       
       % add command to history
-      if ~isempty(inputname(2))
-        toadd =   inputname(2);
+      try
+          in=inputname(2);
+      catch
+          in='';
+      end
+      if ~isempty(in)
+        toadd =   in;
       elseif length(s.subs) == 1
         toadd =    mat2str(double(s.subs{1}));
       elseif length(s.subs) == 2

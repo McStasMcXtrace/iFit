@@ -32,6 +32,7 @@
     <br>
     Once you have managed to actually <span style="font-style: italic;">do
 
+
       something,</span> it is desirable to save your work for future use
     and communication (print, edit, send to friends...). We thus provide
     a general interface to save the <a href="iData.html">iData</a>
@@ -88,6 +89,7 @@
     Last, the <b>getframe</b> method generates a snapshot picture
     (thumbnail). The <span style="font-weight: bold;">class2str </span>function
 
+
     can more generally write any Matlab variable as a character string.
     And the <span style="font-weight: bold;">str2struct</span> function
     can read a character string and search for [<span style="font-style:
@@ -96,6 +98,7 @@
     <br>
     To load back an m or mat file into memory for re-use, type the
     m-file name without extension, or <span style="font-style: italic;">load(iData,'filename.mat</span>')
+
 
     for MAT-files. Refer to the <a href="Load.html">Load</a> page for
     other ways to import data files and objects.<br>
@@ -360,8 +363,10 @@
               href="iFit.html">iFit standalone</a> or <a
               href="http://www.octave.org">Octave</a>) to be installed
             prior to importation. <span style="font-style: italic;">This
-              file contains serialized data, to be re-imported into an
-              iData object.</span><span style="font-weight: bold;"> </span></td>
+
+              file format contains serialized data, to be re-imported
+              into an iData object.</span><span style="font-weight:
+              bold;"> </span></td>
           <td style="vertical-align: top;">Yes<br>
           </td>
         </tr>
@@ -401,7 +406,7 @@
               href="http://www.mantidproject.org">Mantid</a> and <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">LAMP</a>
             workspaces by using the <span style="font-weight: bold;">'lamp'</span>
-            and <b>'mantid'</b> format.<br>
+            and <b>'mantid'</b> lossy format (see below).<br>
           </td>
           <td valign="top">Yes<br>
           </td>
@@ -552,6 +557,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             files can be edited/viewed with e.g <a
               href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.
             Such files can of course also be <a href="Load.html">imported
+
 
               into iData</a> objects. IDL and Matlab also have dedicated
             HDF 4 browsers (see <a href="matlab:doc%20hdftool">hdftool</a>).</td>
@@ -848,6 +854,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
               href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Format</a>
             from the Analyze <a href="http://www.analyzedirect.com/">Biomedical
 
+
               Imaging Resource of the Mayo Clinic</a>. </td>
           <td style="vertical-align: top;">Yes<br>
           </td>
@@ -890,10 +897,12 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
 
+
         - iFit/iData saving data -&nbsp;</span><span style="font-style:
-        italic;"> </span><span style="font-style: italic;"> $Date$
-        $Revision$ </span><span style="font-style: italic;"> </span>-
-      back to <a href="index.html">Main iFit Page </a><a
+        italic;"> </span><span style="font-style: italic;"> $Date: Mon
+        Dec 14 14:00:27 2015 +0100$ $Revision$ </span><span
+        style="font-style: italic;"> </span>- back to <a
+        href="index.html">Main iFit Page </a><a
         href="http://www.ill.eu/"><img title="ILL, Grenoble, France
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid

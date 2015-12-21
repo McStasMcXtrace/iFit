@@ -565,8 +565,8 @@ function [data, format] = iLoad(filename, loader, varargin)
         patterns_found = 0;
         
         % the loader is selected if: 
-        %   loader has extension and extension matches
-        if ~patterns_found
+        %   loader has extension and extension matches, no patterns to search
+        if ~patterns_found && isempty(loader.patterns)
           if ~isfield(loader,'extension'), ext=''; 
           else ext=loader.extension; end
           if ischar(ext) && ~isempty(ext), ext={ ext }; end
@@ -578,7 +578,8 @@ function [data, format] = iLoad(filename, loader, varargin)
           end
         end
         
-        %   loader has patterns and not binary and patterns match file_start
+        %   loader has patterns and not binary and patterns match file_start, 
+        %   whatever be the extension
         if ~patterns_found && ~isbinary && ~isempty(loader.patterns)
           % check all patterns in text file
           if ischar(loader.patterns), loader.patterns=cellstr(loader.patterns); end
@@ -594,6 +595,7 @@ function [data, format] = iLoad(filename, loader, varargin)
             if verbose, disp([ 'iLoad: method ' loader.name ': ' file ': patterns match' ]); end
           end
         end
+        
         %   loader has no extension and no patterns
         if ~patterns_found && isempty(ext) && isempty(loader.patterns)
           patterns_found = 1; % we will try all non selective loaders
