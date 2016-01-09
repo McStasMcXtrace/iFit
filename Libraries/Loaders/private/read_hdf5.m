@@ -79,7 +79,14 @@ data = getGroup(filename, data_info);
       nlinks  = length(data_info.Links);
       for i = 1: nlinks
         name = getName(data_info.Links(i).Name);
-        val  = char(data_info.Links(i).Value);
+        if isfield(data_info.Links(i),'Value')
+          val  = char(data_info.Links(i).Value);
+        elseif isfield(data_info.Links(i),'Target')
+          val  = char(data_info.Links(i).Target);
+        else
+            disp([ mfilename ': ' filename ': ignoring link ' name ]);
+            continue; 
+        end
         % handle the HDF5 link so that it contains valid names
         val((~isstrprop(val,'alphanum') & val ~= '/') | val == '-' | val == '+') = '_';
         if val(1) == '/', val(1) = ''; end
@@ -110,7 +117,10 @@ data = getGroup(filename, data_info);
       group = getGroup(filename, data_info.Groups(i));
       % assign the name of the group
       name = getName(data_info.Groups(i).Name);
-      data.(name) = group; clear group;
+      if ~isempty(name)
+        data.(name) = group; 
+      end
+      clear group;
     end
   end
 
@@ -120,6 +130,9 @@ end
 
 function name = getName(location)
 % getName: get the HDF5 element Name
+  if ~ischar(location) || isempty(location)
+    name=[]; return
+  end
   [p, name, ext]   = fileparts(location);
   name = [ name ext ];
   name = sanitize_name(name);
