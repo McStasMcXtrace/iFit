@@ -42,6 +42,7 @@ function a=mcplot(varargin)
 
   % import and display
   a = iData(varargin{:});
+  figure;
   subplot(a, 'view2 tight');
 
   if ~isempty(options)
