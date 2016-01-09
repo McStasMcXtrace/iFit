@@ -8,8 +8,8 @@ function y=fconv(x, h, shape)
 %   The accuracy of the conv and xcorr operators depends on the sampling. Peaks should
 %     be describes with at least 5 points underneath.
 %
-%      x = input vector (signal)
-%      h = input vector (filter)
+%  x     = input vector (signal)
+%  h     = input vector (filter)
 %  shape = optional shape of the return value
 %          full         Returns the full two-dimensional convolution.
 %          same         Returns the central part of the convolution of the same size as x.
@@ -17,6 +17,7 @@ function y=fconv(x, h, shape)
 %                       without the zero-padded edges. Using this option, y has size
 %                       [mx-mh+1,nx-nh+1] when all(size(x) >= size(h)).
 %          deconv       Performs an FFT deconvolution.
+%          deconv_iter  Performs an iterative deconvolution.
 %          correlation  Compute the correlation instead of the convolution (one
 %                       of the FFT's is then conjugated).
 %          pad          Pads the x signal by replicating its starting/ending values
@@ -106,15 +107,46 @@ for i=1:length(Ly)         % Find smallest power of 2 that is > Ly
   Ly2(i)=pow2(nextpow2(Ly(i)));
 end
 
-X=fftn(x, Ly2);		       % Fast Fourier transform (pads with zeros up to the next power of 2)
-H=fftn(h, Ly2);	           % Fast Fourier transform
+% check if we perform iterative deconvolution
+if ~isempty(strfind(shape,'iter'))
 
-if (strfind(shape,'deconv'))
-  Y=X./H;      	           % FFT Division= deconvolution
+  % we search y so that y*h = x
+  accuracy      = 1e-2;        % criteria for stopping
+  max_iterations= 100;
+  
+  % initiate process
+  y          = x;
+  iterations = 0;
+  
+  while iterations < max_iterations
+  
+    % evaluate the convolution product
+    y_broad = fconv(y,h,'same');
+    
+    % evaluate the difference with our expected result 'a'
+    delta_y = y_broad - x; % effect of broadening
+    
+    % we remove that effect from the deconvolved 'c'
+    y = y - delta_y;
+    
+    % test if we are close enough to stop
+    if all(abs(delta_y) <= abs(accuracy*y))
+      break; 
+    end
+    iterations = iterations+1;
+  end
 else
-  Y=X.*H;      	           % FFT Product = convolution
+
+  X=fftn(x, Ly2);		       % Fast Fourier transform (pads with zeros up to the next power of 2)
+  H=fftn(h, Ly2);	           % Fast Fourier transform
+
+  if (strfind(shape,'deconv'))
+    Y=X./H;      	           % FFT Division= deconvolution
+  else
+    Y=X.*H;      	           % FFT Product = convolution
+  end
+  y=ifftn(Y, Ly2);           % Inverse fast Fourier transform
 end
-y=ifftn(Y, Ly2);           % Inverse fast Fourier transform
 
 % Final cleanups:  if both x and b are real respectively integer, y
 % should also be
