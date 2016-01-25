@@ -1,11 +1,14 @@
 function sigma=Sqw_moments(data, classical)
-% get_width: compute harmonic frequencies
+% Sqw_moments: compute harmonic frequencies
 %
 % input:
 %   data: iData object for S(q,w)
 %   classical: 0 for non symmetric S(q,w) [with Bose], 1 for symmetric (from MD)
 
-  kT      = data.Data.Temperature/11.604;   % kbT in meV;
+  data = Sqw_check(data);
+  if isempty(data), sigma=[]; return; end
+
+  kT      = Sqw_getT(data)/11.604;   % kbT in meV;
   M       = data.Data.weight;               % mass
   
   q       = data{2};

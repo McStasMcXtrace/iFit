@@ -33,45 +33,25 @@ function sqw = Sqw_dynamic_range(s, Ei, angles)
   if nargin < 3
     angles = [];
   end
+  sqw = [];
 
   % handle array of objects
   if numel(s) > 1
-    sqw = [];
     for index=1:numel(s)
       sqw = [ sqw feval(mfilename, s(index), Ei, angles) ];
     end
     return
   end
 
-  % check if the data set is Sqw (2D)
-  w_present=0;
-  q_present=0;
-  if isa(s, 'iData') && ndims(s) == 2
-    for index=1:2
-      lab = lower(label(s,index));
-      if any(strfind(lab, 'wavevector')) || any(strfind(lab, 'q')) || any(strfind(lab, 'Angs'))
-        q_present=index;
-      elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'w')) || any(strfind(lab, 'meV'))
-        w_present=index;
-      end
-    end
-  end
-  if ~w_present || ~q_present
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be an isotropic S(|q|,w) 2D object. Ignoring.' ]);
-    return
-  end
-
-  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
-  sqw = meshgrid(s);
+  s = Sqw_check(s); % in private
+  if isempty(s), return; end
   
-  % check if we need to transpose the S(q,w)
-  if w_present==2 && q_present==1
-    s = transpose(s);
-  end
+  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
+  s = meshgrid(s);
   
   % get axes
-  w = sqw{1};
-  q = sqw{2};
+  w = s{1};
+  q = s{2};
 
   % compute Ei, Ef, Ki, Kf
   % constants
@@ -100,7 +80,7 @@ function sqw = Sqw_dynamic_range(s, Ei, angles)
   % handle a vector of incoming Ki
   if numel(Ki) > 1
     for index=1:numel(Ki)
-      sqw = [ sqw feval(mfilename, s(index), Ei, angles) ];
+      sqw = [ sqw feval(mfilename, s, Ei(index), angles) ];
     end
     return
   end
@@ -109,11 +89,16 @@ function sqw = Sqw_dynamic_range(s, Ei, angles)
   lambda = 2*pi./Ki;
 
   Ef = Ei-w;
+  if any(Ef < 0)
+      % the definition of the energy is reverted: Ef = Ei+w
+      Ef = Ei+w;
+  end
   Vf = SE2V*sqrt(Ef);
   Kf = V2K*Vf;
 
   fprintf(1, '%s: incoming: Ei=%g [meV] Ki=%g [Angs-1] lambda=%g [Angs] Vi=%g [m/s]\n', ...
     mfilename, Ei, Ki, lambda, Vi);
+  fprintf(1, '  q=[%g:%g] w=[%g:%g]\n', min(q(:)), max(q(:)), min(w(:)), max(w(:)));
 
   % find: cos theta = (ki2 + kf2 - q2)/(2ki kf) is NOT between -1 and 1. theta=diffusion angle
   costheta = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf);
@@ -123,7 +108,7 @@ function sqw = Sqw_dynamic_range(s, Ei, angles)
     cost = cosd(angles);
     index= find(costheta < min(cost(:)) | costheta > max(cost(:)) | Ef <= 0);
   end
-  
+  sqw = s;
   sqw(index)=0;
   sqw.DisplayName = strtrim([ sqw.DisplayName ' Ei=' num2str(Ei) ]);
   sqw = title(sqw, strtrim([ sqw.Title ' Ei=' num2str(Ei) ]));

@@ -34,36 +34,14 @@ function s = Sqw_deBosify(s, T)
     return
   end
 
-  % check if the data set is Sqw (2D)
-  w_present=0;
-  q_present=0;
-  if isa(s, 'iData') && ndims(s) == 2
-    for index=1:2
-      lab = lower(label(s,index));
-      if any(strfind(lab, 'wavevector')) || any(strfind(lab, 'q')) || any(strfind(lab, 'Angs'))
-        q_present=index;
-      elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'w')) || any(strfind(lab, 'meV'))
-        w_present=index;
-      end
-    end
-  end
-  if ~w_present || ~q_present
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be an isotropic S(|q|,w) 2D object. Ignoring.' ]);
-    return
-  end
-
-  if isempty(T),  T = Sqw_getT(s); end
+  s = Sqw_check(s);
+  if isempty(s), return; end
 
   % test if classical
-  if ~isempty(findfield(s, 'classical'))
+  if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     if s.classical == 1
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to already be classical. The detailed balance removal may be wrong.' ]);
     end
-  end
-
-  % check if we need to transpose the S(q,w)
-  if w_present==2 && q_present==1
-    s = transpose(s);
   end
   
   % get symmetric from experimental data
