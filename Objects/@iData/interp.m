@@ -244,9 +244,9 @@ end
 % make sure input axes are monotonic. output axes should be OK ------------
 i_nonmonotonic=0;
 for index=1:ndims(b)
-  if ~isempty(find(diff(i_axes{index},1,index) <= 0,1))
-    i_nonmonotonic=index; break;
-  end
+  dif = diff(i_axes{index},1,index);
+  if all(dif < 0) || all(dif >= 0), continue; end
+  i_nonmonotonic=index; break;
 end
 
 if i_nonmonotonic && length(i_axes) > 1 
