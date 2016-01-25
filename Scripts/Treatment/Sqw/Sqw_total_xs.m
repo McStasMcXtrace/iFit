@@ -63,29 +63,11 @@ function sigma = Sqw_total_xs(s, Ei)
     return
   end
 
-  % check if the data set is Sqw (2D)
-  w_present=0;
-  q_present=0;
-  if isa(s, 'iData') && ndims(s) == 2
-    for index=1:2
-      lab = lower(label(s,index));
-      if any(strfind(lab, 'wavevector')) || any(strfind(lab, 'q')) || any(strfind(lab, 'Angs'))
-        q_present=index;
-      elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'w')) || any(strfind(lab, 'meV'))
-        w_present=index;
-      end
-    end
-  end
-  if ~w_present || ~q_present
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be an isotropic S(|q|,w) 2D object. Ignoring.' ]);
-    return
-  end
-    
+  s = Sqw_check(s);
+  if isempty(s), return; end
   
-  % check if we need to transpose the S(q,w)
-  if w_present==2 && q_present==1
-    s = transpose(s);
-  end
+  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
+  s = meshgrid(s);
 
   if numel(Ei) > 1
     sigma = [];

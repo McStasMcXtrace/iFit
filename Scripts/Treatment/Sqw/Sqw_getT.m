@@ -5,16 +5,26 @@ function  T = Sqw_getT(s)
 %   s: any iData object, including S(q,w) ones.
   
   T = [];
-  if isfield(s,'temperature'), T=getfield(s,'temperature'); return; end
+  if isfield(s,'temperature'), T=getfield(s,'temperature'); end
   
-  f = findfield(s,'Temperature','exact numeric');
-  if ~isempty(f), T = s.(f{1}); return; end
+  if isempty(T)
+    f = findfield(s,'Temperature','exact numeric');
+    if ~isempty(f), T = s.(f{1}); end
+  end
   
-  f = findfield(s,'T','exact numeric');
-  if ~isempty(f), T = s.(f{1}); return; end
+  if isempty(T)
+    f = findfield(s,'T','exact numeric');
+    if ~isempty(f), T = s.(f{1}); end
+  end
 
-  f = findfield(s,'Temperature','numeric');
-  if ~isempty(f), T = s.(f{1}); return; end
+  if isempty(T)
+    f = findfield(s,'Temperature','numeric');
+    if ~isempty(f), T = s.(f{1}); end
+  end
   
-  f = findfield(s,'T','numeric');
-  if ~isempty(f), T = s.(f{1}); return; end
+  if isempty(T)
+    f = findfield(s,'T','numeric');
+    if ~isempty(f), T = s.(f{1}); end
+  end
+  
+  if isvector(T), T = mean(T(:)); else T=[]; end
