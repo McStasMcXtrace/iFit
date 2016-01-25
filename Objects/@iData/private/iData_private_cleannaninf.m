@@ -32,6 +32,5 @@ if isnumeric(s)
     if maxs>0, S(find(S == +Inf)) = maxs*100;
     else       S(find(S == +Inf)) = maxs/100; end
   end
-
   s = double(reshape(S, size(s)));
 end

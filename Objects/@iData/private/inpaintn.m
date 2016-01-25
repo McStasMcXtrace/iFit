@@ -197,7 +197,7 @@ end
 %% Initial Guess
 function [z,s0] = InitialGuess(y,I)
 
-if license('test','image_toolbox')
+if exist('bwdist')
     %-- nearest neighbor interpolation
     [~,L] = bwdist(I);
     z = y;
