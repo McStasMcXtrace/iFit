@@ -68,13 +68,14 @@ function [data, format] = iLoad(filename, loader, varargin)
   data = []; format = [];
   if nargin == 0, filename=''; end
   if nargin < 2,  loader = ''; end
-  if nargin ==1 && ischar(filename)
+  if nargin ==1 && (ischar(filename) || isstruct(filename))
     if any(strcmp(filename, {'load config','config','force','force load config','formats','display config','load','save','compile'}))
       [data, format] = iLoad('', filename);
       return
     elseif  isstruct(filename)
       config = filename;
       loader = 'save';
+      read_anytext('config');
     end
   end
   % is the loader in fact an option ?
@@ -125,6 +126,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     disp(which('cif2hkl'));
     
     config  = iLoad_config_load;
+    read_anytext('config');
     if ~isempty(filename)
       data    = iLoad(filename, 'load config');
     else
