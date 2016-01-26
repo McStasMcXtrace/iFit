@@ -121,7 +121,7 @@ if ~isempty(strfind(shape,'iter'))
   while iterations < max_iterations
   
     % evaluate the convolution product
-    y_broad = fconv(y,h,'same');
+    y_broad = fconv(y,h,'same pad');
     
     % evaluate the difference with our expected result 'a'
     delta_y = y_broad - x; % effect of broadening

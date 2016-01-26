@@ -83,6 +83,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
           strncmp(ifit_options.line,  'ftp://', 6) ...
           strncmp(ifit_options.line,  'https://',8) ])
     if ~isempty(ifit_options.line)  % filenames have been dropped in the terminal
+      if ~iscell(ifit_options.line), ifit_options.line = { ifit_options.line }; end
       ifit_options.line = ifit_options.line{1};
       this{end+1} = iData(ifit_options.line); % import them
       ifit_options.line = '';

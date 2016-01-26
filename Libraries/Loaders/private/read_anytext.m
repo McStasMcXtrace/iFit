@@ -7,6 +7,7 @@ function s = read_anytext(varargin)
 % * import the MAT file as a structure
 %
 % read_anytext('compile') creates looktxt MeX or binary
+% read_anytext('config')  update  iLoad config
 
 % different modes for execution:
 %  The configuration is extracted from iLoad('config')
@@ -20,10 +21,17 @@ function s = read_anytext(varargin)
 persistent config
 persistent compiled
 
+if nargin == 1 && ischar(varargin{1}) && strcmp(varargin{1},'config')
+  config = [];
+end
+
 % get configuration to use for 'looktxt'
 if isempty(config)
   if exist('iLoad')
     config  = iLoad('config');
+    if nargin == 1 && ischar(varargin{1}) && strcmp(varargin{1},'config')
+      return
+    end
   else
     config.MeX = 'default';
   end
@@ -224,6 +232,10 @@ if strcmp(user.format, 'MATFile')
       if length(f) == 1
         s = s.(f{1});
       end
+    catch
+      fprintf(1, [ '%s: ERROR: looktxt ' argv{:} ], mfilename);
+
+
     end
   end
 elseif strcmp(user.format, 'Matlab')
