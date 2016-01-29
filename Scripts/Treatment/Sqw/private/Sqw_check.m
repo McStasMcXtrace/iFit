@@ -11,9 +11,9 @@ function s = Sqw_check(s)
     for index=1:2
       lab = lower(label(s,index));
       if isempty(lab), lab=lower(getaxis(s, num2str(index))); end
-      if any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(lab, 'q') || any(strfind(lab, 'Angs'))
+      if any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(strtok(lab), 'q') || any(strfind(lab, 'Angs'))
         q_present=index;
-      elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'frequency')) || strcmp(lab, 'w') || any(strfind(lab, 'meV'))
+      elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'frequency')) || strcmp(strtok(lab), 'w') || any(strfind(lab, 'meV'))
         w_present=index;
       end
     end
@@ -32,11 +32,20 @@ function s = Sqw_check(s)
   % this is the weighting for valid data
   s(s <= 0) = 0; s(~isfinite(s)) = 0;
   
+  % check 'classical'
+  if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
+    classical0 = s.classical;
+    if numel(classical0) > 1
+      s.classical = classical0(1);
+    end
+  end
+  
   % can we guess if this is classical data ? get temperature ?
   w = s{1};
-  if any(w < 0) && any(w > 0)
+  
+  if any(w(:) < 0) && any(w(:) > 0)
     % restrict the energy axis to the common +/- range
-    w1 = max(w); w2 = max(-w); w_max = min([w1 w2]);
+    w1 = max(w(:)); w2 = max(-w(:)); w_max = min([w1 w2]);
     
     s_res  = fill(ylim(s, [-w_max w_max])); % restricted to [-w:w] range
     % get axes
@@ -60,10 +69,20 @@ function s = Sqw_check(s)
     T         = w./log_s_ratio*11.6045; % 1 meV = 11.6045 K
     T         = mean(T,0);
     
+    if isfinite(T) && T < 0
+      % energy axis is reverted
+      s{1} = -s{1};
+      T    = -T;
+    end
+    
     % temperature stored ?
     T0        = Sqw_getT(s);
     if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
       classical0 = s.classical;
+      if numel(classical0) > 1
+        classical0 = classical0(1);
+        s.classical = classical0;
+      end
     else
       classical0 = [];
     end
@@ -71,7 +90,8 @@ function s = Sqw_check(s)
     % log_s_ratio should be about 0 if S(q,w) is symmetric
     if isnan(T) || ~isfinite(T) || T <= 0 || T > 3000
       classical = 1;
-      T         = Sqw_getT(s);
+      T
+      T         = Sqw_getT(s)
     else
       classical = 0;
     end

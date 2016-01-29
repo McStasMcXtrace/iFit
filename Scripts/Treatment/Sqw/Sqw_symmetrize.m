@@ -52,13 +52,11 @@ function s=Sqw_symmetrize(s)
     [w,index]=unique([ w ; -w ]);
     s{1}=w;
     s = set(s, 'Signal', signal(index,:));
-    s = sort(s, 1);
     return
   end
   
   % create a new object with an opposite energy axis
   s_opp = setaxis(s, 1, -s{1});
-  s_opp = sort(s_opp, 1);
 
   % final object (and merge common area)
   s     = combine(s, s_opp);
