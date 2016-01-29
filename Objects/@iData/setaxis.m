@@ -176,6 +176,11 @@ end
 % assign the value to the alias
 if ~isempty(value)
   setalias(this, alias, value);
+  % check if the axis is reverted
+  if numel(value) > 1 && value(1) > value(end)
+    this = set(this, alias, -value);
+    this = sort(this, rank);
+  end
 end
 
 this = iData_private_history(this, mfilename, this, rank, alias, value);
@@ -188,8 +193,7 @@ end
 % ==============================================================================
 % private function iData_checkaxes
 function this = iData_checkaxes(this)
-
-% makes a check of axes and Signal, notice invalid ones, move unused singleton to end.
+  % makes a check of axes and Signal, notice invalid ones, move unused singleton to end.
   axis_1D=[];
   size_this=size(this);
   for index=1:length(this.Alias.Axis) % scan axis definitions and values
@@ -207,6 +211,11 @@ function this = iData_checkaxes(this)
         iData_private_warning(mfilename, [ 'the Axis ' link ' ' num2str(index) ...
           '-th rank length [' num2str(size(val)) '] does not match the Signal dimension [' ...
           num2str(size_this) '] in object ' inputname(1) ' ' this.Tag '.' ]);
+      end
+      % check if the axis is reverted
+      if numel(val) > 1 && val(1) > val(end)
+        this = set(this, link, -val);
+        this = sort(this, index);
       end
     catch
       % the axis value is invalid.
