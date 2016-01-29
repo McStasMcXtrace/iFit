@@ -5,6 +5,9 @@ function g = Sqw_gDOS(s,T)
 %
 %  The S(q,w) is a dynamic structure factor aka scattering function.
 %
+%  The gDOS(w) is obtained by computing its integral onto the 'q' axis
+%    trapz(Sqw_gDOS(s),2)
+%
 % input:
 %   s: Sqw data set (non classical, including T Bose factor e.g from experiment)
 %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
@@ -44,11 +47,6 @@ function g = Sqw_gDOS(s,T)
     if s.classical == 1
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical. The gDOS computation may be wrong. Apply Sqw_Bosify first.' ]);
     end
-  end
-  
-  % check if we need to transpose the S(q,w)
-  if w_present==2 && q_present==1
-    s = transpose(s);
   end
   
   w = s{1};

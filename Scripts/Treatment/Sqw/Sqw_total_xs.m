@@ -62,7 +62,7 @@ function sigma = Sqw_total_xs(s, Ei)
     end
     return
   end
-
+  
   s = Sqw_check(s);
   if isempty(s), return; end
   
@@ -71,6 +71,7 @@ function sigma = Sqw_total_xs(s, Ei)
 
   if numel(Ei) > 1
     sigma = [];
+    if numel(Ei) == 2, Ei=linspace(Ei(1),Ei(2),20); end
     % loop for each incoming neutron energy
     for ie=1:numel(Ei)
       sigma = [ sigma Sqw_total_xs(s, Ei(ie)) ];
