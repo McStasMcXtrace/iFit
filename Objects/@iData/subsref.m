@@ -123,6 +123,8 @@ for i = 1:length(S)     % can handle multiple index levels
             end
           elseif b_isvector && length(s.subs) == 1 % event data sets
             b = setaxis(b, index, ax, squeeze(x(s.subs{1})));
+          elseif numel(s.subs) == 1 && index > 1 && max(s.subs{1}) <= numel(x)
+            b = setaxis(b, index, ax, squeeze(x(s.subs{1})));
           elseif max(s.subs{index}) <= numel(x) % vector type axes
             b = setaxis(b, index, ax, squeeze(x(s.subs{index})));
           else

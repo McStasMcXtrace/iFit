@@ -40,11 +40,12 @@ end
 
 index=find(lims(1) <= axisvalues & axisvalues <= lims(2));
 s.type='()';
-if ndims(a) > 1
+if ndims(a) > 1 && numel(axisvalues) == max(size(axisvalues))
   s.subs={ index, ':' };
 else
   s.subs={ index };
 end
+
 cmd=a.Command;
 a = subsref(a,s);
 a.Command=cmd;
