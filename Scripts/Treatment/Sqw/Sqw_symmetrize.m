@@ -42,6 +42,8 @@ function s=Sqw_symmetrize(s)
     if s.classical == 0
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical. It may already contain the Bose factor in which case the symmetrisation may be wrong.' ]);
     end
+  else
+    s     = setalias(s,'classical', 1);
   end
 
   % test if the data set has single energy side: much faster to symmetrise
@@ -60,3 +62,4 @@ function s=Sqw_symmetrize(s)
 
   % final object (and merge common area)
   s     = combine(s, s_opp);
+  

@@ -42,6 +42,13 @@ function sqw = Sqw_dynamic_range(s, Ei, angles)
     end
     return
   end
+  
+  if numel(Ei) > 1
+    for index=1:numel(Ei)
+      sqw = [ sqw feval(mfilename, s, Ei(index), angles) ];
+    end
+    return
+  end
 
   s = Sqw_check(s); % in private
   if isempty(s), return; end

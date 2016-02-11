@@ -47,7 +47,11 @@ function s = Sqw_check(s)
     % restrict the energy axis to the common +/- range
     w1 = max(w(:)); w2 = max(-w(:)); w_max = min([w1 w2]);
     
-    s_res  = fill(ylim(s, [-w_max w_max])); % restricted to [-w:w] range
+    if w1 ~= w_max || w2 ~= w_max
+      s_res  = ylim(s, [-w_max w_max]); % restricted to [-w:w] range
+    else
+      s_res = s;
+    end
     % get axes
     w = s_res{1};
     
@@ -67,7 +71,10 @@ function s = Sqw_check(s)
     % log_s_ratio should be a constant if S(q,w) contains Bose
     % then kT = w./log_s_ratio
     T         = w./log_s_ratio*11.6045; % 1 meV = 11.6045 K
-    T         = mean(T,0);
+    if any(isfinite(T))
+      T         = mean(T,0);
+    else T=NaN;
+    end
     
     if isfinite(T) && T < 0
       % energy axis is reverted
@@ -90,8 +97,7 @@ function s = Sqw_check(s)
     % log_s_ratio should be about 0 if S(q,w) is symmetric
     if isnan(T) || ~isfinite(T) || T <= 0 || T > 3000
       classical = 1;
-      T
-      T         = Sqw_getT(s)
+      T         = Sqw_getT(s);
     else
       classical = 0;
     end
