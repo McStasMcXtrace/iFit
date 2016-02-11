@@ -1,5 +1,5 @@
 function signal=sqw_ph_ase(configuration, varargin)
-% model=sqw_ph_ase(configuration, options)
+% model=sqw_ph_ase(configuration, ..., options)
 %
 %   iFunc/sqw_ph_ase: computes phonon dispersions using the ASE.
 %   A model which computes phonon dispersions from the forces acting between
@@ -15,16 +15,40 @@ function signal=sqw_ph_ase(configuration, varargin)
 %
 % The argument for model creation should be:
 % configuration: file name to an existing material configuration
-%   Any A.S.E supported format can be used. 
+%   Any A.S.E supported format can be used (POSCAR, CIF, SHELX, ...). 
 %   See <https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io>
+%
+% 'metal' or 'insulator': indicates the type of occupation for electronic states.
 %
 % options: an optional structure with optional settings:
 %   options.target =path                   where to store all files and FORCES
 %     a temporary directory is created when not specified.
 %   options.supercell=scalar or [nx ny nz] supercell size. Default is 2.
-%   options.calculator=string              calculator to use. default=EMT
+%   options.calculator=string              calculator to use, EMT, GPAW, Dacapo, NWCHEM
+%     Default=GPAW
 %   options.dos=1                          options to compute the vibrational
 %     density of states (vDOS) in UserData.DOS
+%   options.potentials=string              type of PAW datasets or pseudopotentials.
+%     Default is 'paw'
+%   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
+%   options.xc=string                      type of Exchange-Correlation functional to use
+%     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP' for GPAW
+%     'PZ','VWN','PW91','PBE','RPBE',’revPBE’    for Dacapo/Jacapo
+%     'LDA','B3LYP'                              for NWChem
+%     Default is 'PBE'.
+%   options.mode='pw','fd', or 'lcao'      computation mode as Plane-Wave, 
+%     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'fd'.
+%
+% options affecting memory usage:
+%   options.diagonalization='dav' or 'cg' or 'rmm-diis'
+%     The Davidson method is faster than the conjugate-gradient but uses more
+%     memory. The RMM-DIIS method allows parallelization.
+%
+% options affecting convergence:
+%   options.occupations='metal'            for metals ('smearing') help converge
+%                       'insulator'        for insulators
+%   options.ecutwfc=scalar                 kinetic energy cutoff (eV) for
+%     wavefunctions. Default is 340. Larger value improves convergence.
 %
 % The options can also be entered as a single string with 'field=value; ...'.
 %
@@ -38,7 +62,7 @@ function signal=sqw_ph_ase(configuration, varargin)
 % regular qx,qy,qz grids.
 %     
 % Example:
-%   s=sqw_ph_ase([ ifitpath 'Data/POSCAR_Al'],'dos');
+%   s=sqw_ph_ase([ ifitpath 'Data/POSCAR_Al'],'dos','metal');
 %   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
 %   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
 %   figure; plot(s.UserData.DOS); % plot the DOS, as indicated during model creation
@@ -83,16 +107,57 @@ status = sqw_ph_ase_requirements;
 
 pw = pwd; target = options.target;
 
+switch upper(options.calculator)
+case 'EMT'
+  str1 = 'from ase.calculators.emt import EMT';
+  str2 = 'calc  = EMT()';
+case 'GPAW'
+  str1 = 'from gpaw import GPAW, PW, FermiDirac';
+  if strcmp(options.occupations, 'smearing')  % metals
+    options.occupations=0.1;
+  elseif strcmp(options.occupations, 'fixed') % insulators
+    options.occupations=0;
+  end
+  if isscalar(options.occupations) && options.occupations>0 % smearing
+    str4=sprintf(', occupations=FermiDirac(%g)', options.occupations);
+  else str4 = ''; end
+  if all(options.kpoints > 0)
+    str5 = sprintf(', kpts=(%i,%i,%i)', options.kpoints);
+  else str5=''; end
+  if (options.ecutwfc > 0)
+    options.mode=sprintf('PW(%g)', options.ecutwfc);
+  end
+  str2 = sprintf('calc = GPAW(mode=''%s'', xc=''%s'', eigensolver=''%s'', setups=''%s'' %s)', ...
+    options.mode, options.xc, ...
+    options.diagonalization, options.potentials, [ str4 str5 ]);
+case 'JACAPO'
+  str1 = 'from ase.calculators.jacapo import Jacapo';
+  if (options.ecutwfc <= 0)
+    options.ecutwfc = 340;
+  end
+  if all(options.kpoints > 0)
+    str5 = sprintf(', kpts=(%i,%i,%i)', options.kpoints);
+  else str5=''; end
+  str2 = sprintf('calc = Jacapo(xc=''%s'', pw=%g %s, symmetry=True)', ...
+    options.xc, options.ecutwfc, [ str5 ]);
+case 'NWCHEM'
+  str1 = 'from ase.calculators.nwchem import NWChem';
+  str2 = sprintf('calc = NWChem(xc=''%s'')', ...
+    options.xc);
+otherwise
+  error([ mfilename ': Unknown ASE calculator ' options.calculator ]);
+end
+
 % start python --------------------------
 script = { ...
-  'from ase.calculators.emt import EMT', ...
+  str1, ...
   'from ase.phonons import Phonons', ...
   'import ase.io', ...
   'import pickle', ...
   '# Setup crystal and calculator', ...
 [ 'configuration = ''' configuration '''' ], ...
   'atoms = ase.io.read(configuration)', ...
-  'calc  = EMT()', ...
+  str2, ...
   '# Phonon calculator', ...
 sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=0.05)',options.supercell), ...
   'ph.run()', ...
@@ -114,6 +179,7 @@ copyfile(configuration, target);
 % call python script
 cd(target)
 disp([ mfilename ': creating Phonon/ASE model from ' target ]);
+disp([ '  ' str2 ]);
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 result = '';
 try
@@ -277,8 +343,16 @@ end
 
 function options=sqw_ph_ase_argin(varargin)
 
-options.supercell  = 3;
-options.calculator = 'EMT';
+% defaults
+options.supercell  = 2;
+options.calculator = 'GPAW';
+options.kpoints    = 2;
+options.xc         = 'PBE';
+options.mode       = 'fd';
+options.potentials = 'paw';
+options.diagonalization = 'rmm-diis';
+options.occupations= '';
+options.ecutwfc    = 0;
 
 % read input arguments
   for index=1:numel(varargin)
@@ -298,6 +372,15 @@ options.calculator = 'EMT';
       options.occupations = 'fixed';
     elseif strcmp(lower(varargin{index}),'dos')
       options.dos = 1;
+    elseif strcmp(lower(varargin{index}),'emt')
+      options.calculator = 'EMT';
+    elseif strcmp(lower(varargin{index}),'gpaw')
+      options.calculator = 'GPAW';
+    elseif strcmp(lower(varargin{index}),'jacapo') || strcmp(lower(varargin{index}),'dacapo')
+      options.calculator = 'JACAPO';
+    elseif strcmp(lower(varargin{index}),'nwchem')
+      options.calculator = 'NWChem';
+      options.xc         = 'LDA'; % or B3LYP
     end
   elseif isstruct(varargin{index})
     % a structure: we copy the fields into options.
@@ -313,4 +396,11 @@ if ~isfield(options,'target')
   mkdir(options.target)
 end
 
-if isscalar(options.supercell), options.supercell=[ options.supercell options.supercell options.supercell ]; end
+if isscalar(options.supercell)
+  options.supercell=[ options.supercell options.supercell options.supercell ]; 
+end
+if isscalar(options.kpoints)
+  options.kpoints=[ options.kpoints options.kpoints options.kpoints ]; 
+end
+
+
