@@ -86,25 +86,32 @@ fseek(fid, 0, 'eof');
 ntotal = ftell(fid);
 
 frewind(fid);
-tmpstr=char(fread(fid,ntotal,'schar')).'; % whole file in one string
-frewind(fid);
-tmpdat=fread(fid,ntotal/4,'float32'); % whole file in one array
-frewind(fid);
-tmpint=fread(fid,ntotal/4,'int32'); % whole file in one array
+if ntotal < 10e6
+  tmpstr=char(fread(fid,ntotal,'schar')).'; % whole file in one string
+else
+  tmpstr=char(fread(fid,10e6,'schar')).'; % whole file in one string
+end
 
+% test if this is an OPUS file
 hfl = strfind(tmpstr, 'HFL');
 if isempty(hfl), fclose(fid); return; end
-fseek(fid, hfl+7, 'bof');
-HighFold = fread(fid, 1, 'float64');
 lfl = strfind(tmpstr, 'LFL');
 if isempty(lfl), fclose(fid); return; end
-fseek(fid, lfl+7, 'bof');
-LowFold = fread(fid, 1, 'float64');
-
 fxv = strfind(tmpstr, 'FXV'); % first X point
 lxv = strfind(tmpstr, 'LXV'); % last X point
 npts = strfind(tmpstr, 'NPT'); % Number of data points 
 if isempty(fxv) || isempty(lxv) || isempty(npts), fclose(fid); return; end
+
+frewind(fid);
+tmpdat=fread(fid,ntotal/4,'float32'); % whole file in one array
+
+fseek(fid, hfl+7, 'bof');
+HighFold = fread(fid, 1, 'float64');
+
+fseek(fid, lfl+7, 'bof');
+LowFold = fread(fid, 1, 'float64');
+
+
 ndatas = min([length(fxv), length(lxv)]);
 for ii = 1:ndatas
         fseek(fid, fxv(ii)+7, 'bof');    
