@@ -38,7 +38,7 @@ else
 end
 if isempty(axisvalues), a=[nan nan]; return; end
 if isempty(lims)
-  a=[ min(axisvalues) max(axisvalues) ]; 
+  a=[ min(axisvalues(:)) max(axisvalues(:)) ]; 
   return
 end
 

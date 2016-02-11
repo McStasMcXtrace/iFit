@@ -120,6 +120,14 @@ if all(dim > 0)
       if ~isscalar(s)
         if numel(e) > 1, e = feval(op, x, e, 1); end % trapz(x,e2/m2,1)
         if numel(m) > 1, m = feval(op, 1:length(x), m, 1); end % sum(m)
+        % check length(x) == size(s,1)
+        if numel(x) ~= size(s,1)
+           x0 = unique(x);
+           if numel(x0) == size(s,1)
+               x = x0;
+               a = setaxis(a, dim(index), x);
+           end
+        end
         s = feval(op, x, double(s), 1); % trapz(x,s,1)
 
         if dim(index) ~= 1  % restore initial axes
@@ -167,8 +175,8 @@ if all(dim > 0)
     ax_index=1;
     for index=1:ndims(a)
       if all(dim ~= index)
-        [x, xlab] = getaxis(a, num2str(index)); % get axis definition and labelget(a
-        setaxis(b, ax_index, x);
+        [x, xlab] = getaxis(a, num2str(index)); % get axis definition and label
+        setaxis(b, ax_index, unique(x));
         ax_index = ax_index+1;
       end
     end

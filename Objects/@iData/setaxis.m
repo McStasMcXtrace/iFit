@@ -178,7 +178,6 @@ if ~isempty(value)
   setalias(this, alias, value);
   % check if the axis is reverted
   if numel(value) > 1 && value(1) > value(end)
-    this = set(this, alias, -value);
     this = sort(this, rank);
   end
 end
@@ -214,7 +213,6 @@ function this = iData_checkaxes(this)
       end
       % check if the axis is reverted
       if numel(val) > 1 && val(1) > val(end)
-        this = set(this, link, -val);
         this = sort(this, index);
       end
     catch
