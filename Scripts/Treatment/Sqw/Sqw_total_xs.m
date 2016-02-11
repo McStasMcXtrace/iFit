@@ -65,9 +65,6 @@ function sigma = Sqw_total_xs(s, Ei)
   
   s = Sqw_check(s);
   if isempty(s), return; end
-  
-  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
-  s = meshgrid(s);
 
   if numel(Ei) > 1
     sigma = [];
@@ -78,6 +75,9 @@ function sigma = Sqw_total_xs(s, Ei)
     end
     return
   end
+  
+  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
+  s = meshgrid(s);
 
   % restrict to dynamic range
   s = Sqw_dynamic_range(s, Ei);
@@ -90,8 +90,8 @@ function sigma = Sqw_total_xs(s, Ei)
   VS2E = 5.22703725e-6;     % Convert (v[m/s])**2 to E[meV]
 
   % compute int q.S(q)*2/Ki^2
-  Ki = SE2V*V2K*sqrt(Ei);
-  q = sq{1};
+  Ki    = SE2V*V2K*sqrt(Ei);
+  q     = sq{1};
   sigma = trapz(q.*sq)/2/Ki^2; % integrate over q {1}
   
  
