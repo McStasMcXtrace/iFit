@@ -79,6 +79,16 @@ function a = load_nmoldyn_signal_axes(a, signal, ax1, ax2)
   [a,s] = load_nmoldyn_search_token(a, ax2);
   if isempty(s), return; end
   a = setaxis(a, 2, s);
+  
+  % check if axes are to be swaped, looking at sizes
+  x = getaxis(a,1);
+  y = getaxis(a,2);
+  if isvector(x) && numel(x) == size(a,2) && isvector(y) && numel(y) == size(a,1)
+    x = getaxis(a, '1');
+    y = getaxis(a, '2');
+    a = setaxis(a, 2, x);
+    a = setaxis(a, 1, y);
+  end
 
 function [a,alias] = load_nmoldyn_search_token(a, token)
   % searches for a token, and if found checks that a corresponding alias
