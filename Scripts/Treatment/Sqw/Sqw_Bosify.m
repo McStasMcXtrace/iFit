@@ -1,5 +1,5 @@
-function s = Sqw_Bosify(s, T)
-% Sqw_Bosify: apply Bose factor (detailed balance) to a classical data set.
+function s = Sqw_Bosify(s, T, type)
+% Sqw_Bosify: apply the 'Bose' factor (detailed balance) to a classical data set.
 %   The initial data set should obey S(q,w) = S(q,-w), i.e. be 'classical'.
 %
 %  The S(q,w) is a dynamic structure factor aka scattering function.
@@ -8,7 +8,8 @@ function s = Sqw_Bosify(s, T)
 %   s: Sqw data set (classical, symmetric in energy, no T Bose factor)
 %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
 %   T: when given, Temperature to use for Bose. When not given, the Temperature
-%      is searched in the object.
+%      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
+%   type: 'Schofield' or 'harmonic' (default) or 'standard'
 %
 % conventions:
 % omega = Ei-Ef = energy lost by the neutron
@@ -17,23 +18,44 @@ function s = Sqw_Bosify(s, T)
 % Egelstaff, Eq (9.25) p189
 %    S(q,-w) = exp(-hw/kT) S(q,w)
 %    S(q,w)  = exp( hw/kT) S(q,-w)
-%    S(q,w)  = exp(hw/2kT) S*(q,w) with S*=classical limit
+%    S(q,w)  = Q(w) S*(q,w) with S*=classical limit
 % for omega > 0, S(q,w) > S(q,-w)
+%               
+% The semi-classical correction, Q, aka 'quantum' correction factor, 
+% can be selected from the optional   'type' argument:
+%    Q = exp(hw_kT/2)                 'Schofield' or 'Boltzmann'
+%    Q = hw_kT./(1-exp(-hw_kT))       'harmonic'  or 'Bader' (default)
+%    Q = 2./(1+exp(-hw_kT))           'standard'  or 'Frommhold'
+%
+% The 'Boltzmann' correction leads to a divergence of the S(q,w) for e.g. w above 
+% few 100 meV. The 'harmonic' correction provides a reasonable correction but does
+% not fully avoid the divergence at large energies.
 %
 %  Bose factor: n(w) = 1./(exp(w*11.605/T) -1) ~ exp(-w*11.605/T)
 %               w in [meV], T in [K]
+%
+% References:
+%  B. Hehr, http://www.lib.ncsu.edu/resolver/1840.16/7422 PhD manuscript (2010).
+%  S. A. Egorov, K. F. Everitt and J. L. Skinner. J. Phys. Chem., 103, 9494 (1999).
+%  P. Schofield. Phys. Rev. Lett., 4, 239 (1960).
+%  J. S. Bader and B. J. Berne. J. Chem. Phys., 100, 8359 (1994).
+%  T. D. Hone and G. A. Voth. J. Chem. Phys., 121, 6412 (2004).
+%  L. Frommhold. Collision-induced absorption in gases, 1 st ed., Cambridge
+%    Monographs on Atomic, Molecular, and Chemical Physics, Vol. 2,
+%    Cambridge Univ. Press: London (1993).
 %
 % Example: s = Sqw_Bosify(s, 300);
 %
 % See also: Sqw_deBosify, Sqw_symmetrize, Sqw_dynamic_range, Sqw_total_xs
 
   if nargin == 1, T = []; end
+  if nargin < 3, type=''; end
 
   % handle array of objects
   if numel(s) > 1
     sqw = [];
     for index=1:numel(s)
-      sqw = [ sqw feval(mfilename, s(index), T) ];
+      sqw = [ sqw feval(mfilename, s(index), T, type) ];
     end
     s = sqw;
     return
@@ -46,6 +68,7 @@ function s = Sqw_Bosify(s, T)
   if isempty(T) || T == 0
     return
   end
+  if isempty(type), type='harmonic'; end
 
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
@@ -59,9 +82,25 @@ function s = Sqw_Bosify(s, T)
   hw_kT     = s{1}/kT;               % hbar omega / kT
   
   % apply sqrt(Bose) factor to get experimental-like
-  %n         = exp(hw_kT/2);          % detailed balance (raw)
-  n         = hw_kT./(1-exp(-hw_kT));  % Bose factor (true), also satisfies detailed balance = w*(1+n(w))
-  n(find(s{1}==0)) = 1;
-  s         = s .* n;  % apply detailed balance with Bose
+  % semi-classical corrections, aka quantum correction factor
+  
+  if strcmpi(type, 'Schofield') || strcmpi(type, 'exp') || strcmpi(type, 'Boltzmann') 
+    % P. Schofield. Phys. Rev. Lett., 4, 239 (1960).
+    Q  = exp(hw_kT/2);          
+  elseif strcmpi(type, 'harmonic') || strcmpi(type, 'Bader')
+    % J. S. Bader and B. J. Berne. J. Chem. Phys., 100, 8359 (1994).
+    % T. D. Hone and G. A. Voth. J. Chem. Phys., 121, 6412 (2004).
+    Q  = hw_kT./(1-exp(-hw_kT));  % w*(1+n(w))
+  elseif strcmpi(type, 'standard') || strcmpi(type, 'Frommhold')
+    % L. Frommhold. Collision-induced absorption in gases, 1 st ed., Cambridge
+    %   Monographs on Atomic, Molecular, and Chemical Physics, Vol. 2,
+    %   Cambridge Univ. Press: London (1993).
+    Q = 2./(1+exp(-hw_kT));
+  else
+    error([ mfilename 'Unknown semi-classical correction ' type ]);
+  end
+  Q(find(s{1}==0)) = 1;
+  s         = s .* Q;  % apply detailed balance with the selected correction
+  
   setalias(s, 'Temperature', T);
   setalias(s, 'classical', 0);
