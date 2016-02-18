@@ -135,48 +135,22 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
       
       details.Location = group;
       details.Name     = dataset;
+      if ischar(val), val=val(:)'; end
       write_list       = [ write_list , details, val ];
       
       % write dataset attributes
-      if isstruct(dataset_attr) && ~any(strcmp(n, attr_list))
-        attr_details.AttachedTo = n;
-        attr_details.AttachType = 'dataset';
-        for f = fieldnames(dataset_attr)' % write all attributes one-by-one
-          attr_details.Name = f{1};
-          if ~isempty(dataset_attr.(f{1})) && ~isstruct(dataset_attr.(f{1}))
-            write_list       = [ write_list , attr_details, dataset_attr.(f{1}) ];
-          end
-        end
-        attr_list{end+1} = n;
-      end
+      [attr_list, write_list] = saveas_hdfnc_attr(n, 'dataset', dataset_attr, ...
+       attr_list, write_list);
       
       % write group attributes
-      if isstruct(group_attr) && ~any(strcmp(group, attr_list))
-        attr_details.AttachedTo = group;
-        attr_details.AttachType = 'group';
-        for f = fieldnames(group_attr)'
-          attr_details.Name = f{1}; % write all attributes one-by-one
-          if ~isempty(group_attr.(f{1})) && ~isstruct(group_attr.(f{1}))
-            write_list       = [ write_list , attr_details, group_attr.(f{1}) ];
-          end
-        end
-        attr_list{end+1} = group;
-      end
+      [attr_list, write_list] = saveas_hdfnc_attr(group, 'group', group_attr, ...
+       attr_list, write_list);
       
       % add root level attributes (if any, only once)
       root_attr = fileattrib(a, 'Data', fields);
-      if isstruct(root_attr) && ~any(strcmp('/', attr_list))
-        attr_details.AttachedTo = '/';
-        attr_details.AttachType = 'group';
-        for f = fieldnames(root_attr)'
-          attr_details.Name = f{1}; % write all attributes one-by-one
-          if ~isempty(root_attr.(f{1})) && ~isstruct(root_attr.(f{1}))
-            write_list       = [ write_list , attr_details, root_attr.(f{1}) ];
-          end
-        end
-        attr_list{end+1} = '/';
-      end
-    
+      [attr_list, write_list] = saveas_hdfnc_attr('/', 'group', root_attr, ...
+       attr_list, write_list);
+
     % NetCDF -------------------------------------------------------------------
     elseif strcmpi(format,'nc')
       if strcmp(mode, 'overwrite') % first access: create file
@@ -240,3 +214,35 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
  
 end % saveas_hdfnc
 
+% ------------------------------------------------------------------------------
+function [attr_list, write_list] = saveas_hdfnc_attr(AttachedTo,AttachType,attr, ...
+          attr_list, write_list)
+
+  if isstruct(attr) && ~any(strcmp(AttachedTo, attr_list))
+    attr_details.AttachedTo = AttachedTo;
+    attr_details.AttachType = AttachType;
+    for index=1:numel(attr)
+      F = fieldnames(attr(index)); value = [];
+      if numel(F) == 2 && numel(attr) > 1
+        attr_details.Name = genvarname(attr.(F{1}));
+        value             = attr.(F{2});
+        if ischar(value), value=value(:)'; end
+        if ~isempty(value) && ~isstruct(value)
+          write_list       = [ write_list , attr_details, value ];
+        end
+      else
+        for f = F' % write all attributes one-by-one
+          attr_details.Name = f{1};
+          value             = attr.(f{1});
+          if ischar(value), value=value(:)'; end
+          if ~isempty(value) && ~isstruct(value)
+            write_list       = [ write_list , attr_details, value ];
+          end
+        end
+      end
+      
+    end
+    attr_list{end+1} = AttachedTo;
+  end
+
+end
