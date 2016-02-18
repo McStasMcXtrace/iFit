@@ -13,17 +13,23 @@ function signal=sqw_ph_ase(configuration, varargin)
 %     NWChem        a versatile calculator, creates LARGE temporary files.
 %     Jacapo        may fail
 %   The calculators can be specified by just giving their name as a parameter, 
-%   or using e.g. options.calculator='GPAW'
+%   or using e.g. options.calculator='GPAW'. Except for EMT, other calculators must
+%   be installed separately. 
+%     See https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html
 %
 %   When performing a model evaluation, the DOS is also computed and stored
 %     when the options 'dos' is specified during the creation. The DOS is only 
 %     computed during the first evaluation, and is stored in model.UserData.DOS 
 %     as an iData object. Subsequent evaluations are faster.
 %
-% The argument for model creation should be:
+% The arguments for the model creation should be:
+%
 % configuration: file name to an existing material configuration
-%   Any A.S.E supported format can be used (POSCAR, CIF, SHELX, ...). 
-%   See <https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io>
+%   Any A.S.E supported format can be used (POSCAR, CIF, SHELX, PDB, ...). 
+%     See <https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io>
+%   Alternatively, the 'bulk','molecule', and 'nanotube' ASE constructors can be
+%   used, using the Python syntax, e.g. 'bulk("Si", "diamond", a=5.4)'.
+%     See <https://wiki.fysik.dtu.dk/ase/ase/structure.html>
 %
 % 'metal' or 'insulator': indicates the type of occupation for electronic states,
 %    which sets smearing.
@@ -36,8 +42,9 @@ function signal=sqw_ph_ase(configuration, varargin)
 %     Default=GPAW
 %   options.dos=1                          options to compute the vibrational
 %     density of states (vDOS) in UserData.DOS
-%   options.potentials=string              type of PAW datasets or pseudopotentials.
-%     Default is 'paw'
+%   options.potentials=string              type of basis datasets or pseudopotentials.
+%     GPAW: see https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-setups
+%     NWChem: see http://www.nwchem-sw.org/index.php/Release64:AvailableBasisSets
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
 %   options.xc=string                      type of Exchange-Correlation functional to use
 %     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP' for GPAW
@@ -56,14 +63,15 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   options.occupations='metal'            for metals ('smearing') help converge
 %                       'insulator'        for insulators
 %                       or 0 for semi-conductors
-%                       or a value in eV for a FermiDirac distribution.
+%                       or a value in eV for a FermiDirac distribution (GPAW)
+%                                     Hartree (NWChem)
 %   options.ecutwfc=scalar                 kinetic energy cutoff (eV) for
 %     wavefunctions. Default is 340. Larger value improves convergence.
 %
 % The options can also be entered as a single string with 'field=value; ...'.
 %
 % WARNING: Single intensity and line width parameters are used here.
-%   This model is only suitable to compute phonon dispersions for e.g solid-
+%   This model is suitable to compute phonon dispersions for e.g solid-
 %   state materials.
 %   The Atomic Simulation Environment must be installed.
 %   The temporary directories (UserData.dir) are not removed.
@@ -76,6 +84,8 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
 %   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
 %   figure; plot(s.UserData.DOS); % plot the DOS, as indicated during model creation
+%
+%   s=sqw_ph_ase('bulk("Si", "diamond", a=5.4)');
 %
 % References: https://en.wikipedia.org/wiki/Phonon
 % Atomic Simulation Environment
@@ -104,7 +114,7 @@ if nargin == 0
   configuration = fullfile(ifitpath,'Data','POSCAR_Al');
 end
 
-options=sqw_ph_ase_argin(varargin{:});
+options= sqw_ph_ase_argin(varargin{:});
 
 status = sqw_ph_ase_requirements;
 
@@ -117,15 +127,18 @@ status = sqw_ph_ase_requirements;
 
 pw = pwd; target = options.target;
 
+% handle supported calculators
 switch upper(options.calculator)
 case 'EMT'
   decl = 'from ase.calculators.emt import EMT';
   calc = 'calc  = EMT()';
-case 'GPAW'
+case 'GPAW' % ==================================================================
   decl = 'from gpaw import GPAW, PW, FermiDirac';
   calc = 'calc = GPAW(usesymm=False'; % because small displacement breaks symmetry
   if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
     options.occupations=0.1;
+  elseif strcmp(options.occupations, 'semiconductor')
+    options.occupations=0;
   elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
     options.occupations=-1;
   end
@@ -152,7 +165,7 @@ case 'GPAW'
     calc = [ calc sprintf(', setups=''%s''', options.potentials) ];
   end
   calc = [ calc ')' ];
-case 'JACAPO'
+case 'JACAPO' % ================================================================
   decl = 'from ase.calculators.jacapo import Jacapo';
   if (options.ecutwfc <= 0)
     options.ecutwfc = 340;
@@ -162,27 +175,64 @@ case 'JACAPO'
   else str5=''; end
   calc = sprintf('calc = Jacapo(xc=''%s'', pw=%g %s, symmetry=True)', ...
     options.xc, options.ecutwfc, [ str5 ]);
-case 'MOPAC'
-  % uses command=run_mopac7 as default
 case 'ABINIT'
   % 
-case 'NWCHEM'
+case 'NWCHEM' % ================================================================
   decl = 'from ase.calculators.nwchem import NWChem';
-  calc = sprintf('calc = NWChem(xc=''%s'')', ...
+  calc = sprintf('calc = NWChem(xc=''%s''', ...
     options.xc);
+  % check if we use KPTS
+  if all(options.kpoints > 0)
+    calc = [ calc sprintf(', raw="nwpw\n  monkhorst-pack %i %i %i\nend"', options.kpoints) ];
+  end
+  if ~isempty(options.potentials)
+    calc = [ calc sprintf(', basis=''%s''', options.potentials) ];
+  end
+  % smearing is in Hartree
+  if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
+    options.occupations=0.001;
+  elseif strcmp(options.occupations, 'semiconductor')
+    options.occupations=0;
+  elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
+    options.occupations=-1;
+  end
+  if isscalar(options.occupations) && options.occupations>=0 % smearing
+    calc=[ calc sprintf(', smearing=%g', options.occupations) ]; % in Hartree
+  end
+
 otherwise
   error([ mfilename ': Unknown ASE calculator ' options.calculator ]);
 end
 
+% handle input configuration
+if exist(configuration)
+  read = sprintf('import ase.io\nconfiguration = ''%s''\natoms = ase.io.read(configuration)\n', ...
+    configuration);
+elseif ischar(configuration)
+  read = configuration;
+  switch strtok(configuration, ' (')
+  case 'bulk'
+    read = sprintf('from ase.lattice import bulk\natoms = %s\n', configuration);
+  case 'molecule'
+    read = sprintf('from ase.structure import molecule\natoms = %s\n', configuration);
+  case 'nanotube'
+    read = sprintf('from ase.structure import nanotube\natoms = %s\n', configuration);
+  end
+end
+
+if strcmp(upper(options.calculator), 'GPAW')
+  % GPAW Bug: gpaw.aseinterface.GPAW does not support pickle export for 'input_parameters'
+  sav = sprintf('ph.calc.input_parameters=None\npickle.dump(ph, fid)');
+else
+  sav = 'pickle.dump(ph, fid)';
+end
 % start python --------------------------
 script = { ...
   decl, ...
   'from ase.phonons import Phonons', ...
-  'import ase.io', ...
   'import pickle', ...
   '# Setup crystal and calculator', ...
-[ 'configuration = ''' configuration '''' ], ...
-  'atoms = ase.io.read(configuration)', ...
+  read, ...
   calc, ...
   '# Phonon calculator', ...
 sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=0.05)',options.supercell), ...
@@ -191,7 +241,7 @@ sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=0.05)',options.
   'ph.read(acoustic=True)', ...
   '# save ph', ...
 [ 'fid = open(''' target '/ph.pkl'',''wb'')' ], ...
-  'pickle.dump(ph, fid)', ...
+  sav, ...
   'fid.close()' };
 % end   python --------------------------
 
@@ -200,12 +250,16 @@ fid = fopen(fullfile(target,'sqw_ph_ase_build.py'),'w');
 fprintf(fid, '%s\n', script{:});
 fclose(fid);
 % copy the configuration into the target
-copyfile(configuration, target);
+if exist(configuration)
+  copyfile(configuration, target);
+end
 
 % call python script
 cd(target)
 disp([ mfilename ': creating Phonon/ASE model from ' target ]);
+disp([ '  ' configuration ]);
 disp([ '  ' calc ]);
+
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 result = '';
 try
@@ -237,7 +291,11 @@ signal.Dimension      = 4;         % dimensionality of input space (axes) and re
 
 signal.Guess = [ 1 .1 0 10 ];
 
-signal.UserData.configuration = fileread(configuration);
+if exist(configuration)
+  signal.UserData.configuration = fileread(configuration);
+else
+  signal.UserData.configuration = configuration;
+end
 if isfield(options,'dos'), signal.UserData.DOS=[]; end
 signal.UserData.dir           = target;
 signal.UserData.options       = options;
@@ -321,10 +379,11 @@ signal = iFunc(signal);
 
 % when model is successfully built, display citations for ASE
 disp([ mfilename ': Model ' configuration ' built using: (please cite)' ])
+disp([ '  in ' target ]);
 if isfield(options, 'dos')
-  disp('The vibrational density of states (vDOS) will be computed af first model evaluation.');
+  disp('INFO: The vibrational density of states (vDOS) will be computed at first model evaluation.');
 end
-disp(' *Atomic Simulation Environment')
+disp(' * Atomic Simulation Environment')
 disp('     S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002')
 disp('     <https://wiki.fysik.dtu.dk/ase>. LGPL license.')
 disp(' * iFit: E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
@@ -344,21 +403,32 @@ if status ~= 0
   error([ mfilename ': ASE not installed' ]);
 else
   disp([ mfilename ': using ASE ' result ]);
-  % should display available calculators...
-  %  gromacs (but they say it is slow)
-  %  lammps
+  disp('calculators:');
+  disp('  EMT           only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
+  % test for GPAW
+  [status, result] = system([ precmd 'python -c "from gpaw import GPAW"' ]);
+  if status == 0
+    disp('  GPAW (http://wiki.fysik.dtu.dk/gpaw). Exists as Deb package.');
+  end
+  % test for NWChem
+  [status, result] = system([ precmd 'python -c "from ase.calculators.nwchem import NWChem"' ]);
+  if status == 0
+    disp('  NWChem (check that it is actually installed: http://www.nwchem-sw.org/). Exists as Deb package.');
+  end
+  % test for Jacapo
+  [status, result] = system([ precmd 'python -c "from ase.calculators.jacapo import Jacapo"' ]);
+  if status == 0
+    disp('  Jacapo (check that Dacapo is actually installed: http://wiki.fysik.dtu.dk/dacapo). Exists as Deb package.');
+  end
+  % test for Elk
+  [status, result] = system([ precmd 'python -c "from ase.calculators.elk import ELK"' ]);
+  if status == 0
+    disp('  Elk (check that it is actually installed: http://elk.sourceforge.net). Exists as Deb package.');
+  end
   %  lj (lenard-jones)
   %  morse
-  %  mopac
-  %  nwchem
   %  abinit
-  %  gaussian
-  %  GPAW (from ASE team, but as a separate code)
-  %  jacapo (from ASE team, but as a separate code)
-  %  QuantumEspresso: available for ASE at https://github.com/vossjo/ase-espresso
   %  eam
-  %  elk <https://launchpad.net/ubuntu/trusty/amd64/elk-lapw/2.2.5-1>
-  %  VASP
   %
   % gpaw, gpaw-setups, jacapo, elk-lapw: put debian packages in mccode.org ?
   
@@ -375,7 +445,7 @@ options.calculator = 'GPAW';
 options.kpoints    = 1;
 options.xc         = 'PBE';
 options.mode       = 'fd';            % GPAW
-options.potentials = 'paw';
+options.potentials = '';
 options.diagonalization = 'rmm-diis'; % GPAW
 options.occupations= '';
 options.ecutwfc    = 0;
@@ -396,6 +466,8 @@ options.ecutwfc    = 0;
       options.occupations = 'smearing';
     elseif strcmp(varargin{index},'fixed') || strcmp(varargin{index},'insulator')
       options.occupations = 'fixed';
+    elseif strcmp(varargin{index},'semiconductor')
+      options.occupations = 'semiconductor';
     elseif strcmp(lower(varargin{index}),'dos')
       options.dos = 1;
     elseif strcmp(lower(varargin{index}),'emt')
