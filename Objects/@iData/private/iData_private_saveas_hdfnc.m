@@ -222,13 +222,15 @@ function [attr_list, write_list] = saveas_hdfnc_attr(AttachedTo,AttachType,attr,
     attr_details.AttachedTo = AttachedTo;
     attr_details.AttachType = AttachType;
     for index=1:numel(attr)
-      F = fieldnames(attr(index)); value = [];
-      if numel(F) == 2 && numel(attr) > 1
-        attr_details.Name = genvarname(attr.(F{1}));
-        value             = attr.(F{2});
-        if ischar(value), value=value(:)'; end
-        if ~isempty(value) && ~isstruct(value)
-          write_list       = [ write_list , attr_details, value ];
+      F = fieldnames(attr(index)); value = []; 
+      if numel(F) == 2 && numel(attr) > 1 
+        if ischar(attr(index).(F{1}))
+          attr_details.Name = genvarname(strtrim(attr(index).(F{1})));
+          value             = attr(index).(F{2});
+          if ischar(value), value=value(:)'; end
+          if ~isempty(value) && ~isstruct(value)
+            write_list       = [ write_list , attr_details, value ];
+          end
         end
       else
         for f = F' % write all attributes one-by-one
