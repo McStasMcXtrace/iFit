@@ -144,6 +144,7 @@ else
     end
     if length(l) > 20, l = [l(1:18) '...' ]; end 
     X      = getaxis(s_in, index); x=X(:);
+    if issparse(x), x=full(x); end
     if length(x) == 1
       minmaxstd = sprintf('[%g]', x);
     elseif isvector(X)

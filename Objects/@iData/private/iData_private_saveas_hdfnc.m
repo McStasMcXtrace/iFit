@@ -56,6 +56,8 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
     % get group attributes (if any)
     p       = find(n == '.', 1, 'last');
     group   = n(1:(p-1)); % does not have a '.' at the end
+    % the group name from NetCDF can be Blah{..} containing Name/Value
+    % in this case we should use group Blah.Name=Value
     if ~isempty(p),
       group_attr = fileattrib(a, group, fields);
       dataset    = n((p+1):end);
@@ -132,7 +134,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
       if isempty(group), group = '/';
       else               group(group == '.') = '/';
       end
-      
+
       details.Location = group;
       details.Name     = dataset;
       if ischar(val), val=val(:)'; end
@@ -217,7 +219,8 @@ end % saveas_hdfnc
 % ------------------------------------------------------------------------------
 function [attr_list, write_list] = saveas_hdfnc_attr(AttachedTo,AttachType,attr, ...
           attr_list, write_list)
-
+          
+  if isempty(attr), return; end
   if isstruct(attr) && ~any(strcmp(AttachedTo, attr_list))
     attr_details.AttachedTo = AttachedTo;
     attr_details.AttachType = AttachType;

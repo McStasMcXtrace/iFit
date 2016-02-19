@@ -54,6 +54,23 @@ function s=Sqw_symmetrize(s)
     [w,index]=unique([ w ; -w ]);
     s{1}=w;
     s = set(s, 'Signal', signal(index,:));
+    
+    if ~isempty(getalias(s,'Error'))
+      err = get(s, 'Error');
+      err=[ err ; err ];
+      [w,index]=unique([ w ; -w ]);
+      s{1}=w;
+      s = set(s, 'Error', signal(index,:));
+    end
+    
+    if ~isempty(getalias(s,'Monitor'))
+      m = get(s, 'Monitor');
+      m=[ m ; m ];
+      [w,index]=unique([ w ; -w ]);
+      s{1}=w;
+      s = set(s, 'Monitor', signal(index,:));
+    end
+    
     return
   end
   
