@@ -8,10 +8,12 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   The phonon spectra is computed using the one of the calculator supported by the
 %   Atomic Simulation Environment (ASE) <https://wiki.fysik.dtu.dk/ase>.
 %   Supported calculators are:
-%     EMT           only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O
-%     GPAW          requires a LOT of memory
-%     NWChem        a versatile calculator, creates LARGE temporary files.
-%     Jacapo        may fail
+%     EMT       Effective Medium Theory calculator (Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O)
+%     GPAW      Real-space/plane-wave/LCAO PAW code
+%     NWChem    Gaussian based electronic structure code
+%     Dacapo    Plane-wave ultra-soft pseudopotential code
+%     ELK       Full Potential LAPW code
+%                 You may have to alias the 'elk-lapw' executable as 'elk' (Debian)
 %   The calculators can be specified by just giving their name as a parameter, 
 %   or using e.g. options.calculator='GPAW'. Except for EMT, other calculators must
 %   be installed separately. 
@@ -38,7 +40,7 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   options.target =path                   where to store all files and FORCES
 %     a temporary directory is created when not specified.
 %   options.supercell=scalar or [nx ny nz] supercell size. Default is 2.
-%   options.calculator=string              calculator to use, EMT, GPAW, Dacapo, NWCHEM
+%   options.calculator=string              calculator to use, EMT, GPAW, Elk, NWCHEM
 %     Default=GPAW
 %   options.dos=1                          options to compute the vibrational
 %     density of states (vDOS) in UserData.DOS
@@ -47,9 +49,10 @@ function signal=sqw_ph_ase(configuration, varargin)
 %     NWChem: see http://www.nwchem-sw.org/index.php/Release64:AvailableBasisSets
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
 %   options.xc=string                      type of Exchange-Correlation functional to use
-%     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP' for GPAW
-%     'PZ','VWN','PW91','PBE','RPBE',’revPBE’    for Dacapo/Jacapo
-%     'LDA','B3LYP','PBE','RHF','MP2'            for NWChem
+%     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'            for GPAW
+%     'LDA','B3LYP','PBE','RHF','MP2'                       for NWChem
+%     'LDA','PBE','REVPBE','PBESOL','WC06','AM05'           for ELK
+%     ‘PZ’,’VWN’,’PW91’,’PBE’,’RPBE’,’revPBE’               for Dacapo/Jacapo
 %     Default is 'PBE'.
 %   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
 %     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'fd'.
@@ -62,9 +65,10 @@ function signal=sqw_ph_ase(configuration, varargin)
 % options affecting convergence:
 %   options.occupations='metal'            for metals ('smearing') help converge
 %                       'insulator'        for insulators
+%                       'auto'             for Elk (automatic smearing)
 %                       or 0 for semi-conductors
 %                       or a value in eV for a FermiDirac distribution (GPAW)
-%                                     Hartree (NWChem)
+%                                  in Hartree (NWChem,Elk)
 %   options.ecutwfc=scalar                 kinetic energy cutoff (eV) for
 %     wavefunctions. Default is 340. Larger value improves convergence.
 %
@@ -80,7 +84,7 @@ function signal=sqw_ph_ase(configuration, varargin)
 % regular qx,qy,qz grids.
 %     
 % Example:
-%   s=sqw_ph_ase([ ifitpath 'Data/POSCAR_Al'],'dos','metal');
+%   s=sqw_ph_ase([ ifitpath 'Data/POSCAR_Al'],'dos','metal','EMT');
 %   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
 %   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
 %   figure; plot(s.UserData.DOS); % plot the DOS, as indicated during model creation
@@ -90,7 +94,14 @@ function signal=sqw_ph_ase(configuration, varargin)
 % References: https://en.wikipedia.org/wiki/Phonon
 % Atomic Simulation Environment
 %   S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002
-%   <https://wiki.fysik.dtu.dk/ase>
+%   <https://wiki.fysik.dtu.dk/ase>. Exists as Debian package 'python-ase'.
+%   Repository: http://download.opensuse.org/repositories/home:/dtufys/
+% GPAW J. J. Mortensen et al, Phys Rev B, Vol. 71, 035109 (2005). 
+%   <http://wiki.fysik.dtu.dk/gpaw>. Exists as Debian package 'gpaw' and 'gpaw-data'.
+% NWChem M. Valiev et al, Comput. Phys. Commun. 181, 1477 (2010).
+%   <http://www.nwchem-sw.org/>. Exists as Debian package 'nwchem' and 'nwchem-data'.
+% Elk <http://elk.sourceforge.net>. Exists as Debian package 'elk-lapw'.
+% DACAPO https://wiki.fysik.dtu.dk/dacapo/. Exists as Debian package 'dacapo' and 'dacapo-psp'
 %
 % input:  p: sqw_ph_ase model parameters (double)
 %             p(1)=Amplitude
@@ -119,11 +130,6 @@ options= sqw_ph_ase_argin(varargin{:});
 status = sqw_ph_ase_requirements;
 
 % BUILD stage: we call ASE to build the model
-% calculator: can use EMT, EAM, lj, morse
-%   or GPAW,abinit,gromacs,jacapo,nwchem,siesta,vasp,dacapo (when installed)
-%
-% from gpaw import GPAW
-% from ase.calculators.dacapo import Dacapo
 
 pw = pwd; target = options.target;
 
@@ -166,40 +172,91 @@ case 'GPAW' % ==================================================================
   end
   calc = [ calc ')' ];
 case 'JACAPO' % ================================================================
+  % Requires to define variables under Ubuntu
+  if isunix
+    if isempty(options.potentials), options.potentials='/usr/share/dacapo-psp'; end
+    if isempty(options.command),    options.command   ='/usr/bin/dacapo_serial.run'; end
+  end
   decl = 'from ase.calculators.jacapo import Jacapo';
+  calc = 'calc = Jacapo(symmetry=False';
+  if ~isempty(options.xc)
+    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+  end
   if (options.ecutwfc <= 0)
     options.ecutwfc = 340;
   end
   if all(options.kpoints > 0)
-    str5 = sprintf(', kpts=(%i,%i,%i)', options.kpoints);
-  else str5=''; end
-  calc = sprintf('calc = Jacapo(xc=''%s'', pw=%g %s, symmetry=True)', ...
-    options.xc, options.ecutwfc, [ str5 ]);
-case 'ABINIT'
-  % 
+    calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
+  end
+  if (options.ecutwfc > 0)
+    calc = [ calc sprintf(', pw=%g', options.ecutwfc) ];
+  end
+  if ~isempty(options.potentials)
+    setenv('DACAPOPATH', options.potentials);
+  end
+  if ~isempty(options.command)
+    setenv('DACAPOEXE_SERIAL', options.command);
+  end
+  calc = [ calc ')' ];
+case 'ELK' % ===================================================================
+  decl = 'from ase.calculators.elk import ELK';
+  calc = 'ELK(tforce=True, tasks=0';
+  if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
+    options.occupations=0.1;
+  elseif strcmp(options.occupations, 'semiconductor')
+    options.occupations=0;
+  elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
+    options.occupations=-1;
+  end
+  if strcmp(options.occupations, 'auto')
+    % other distribution: MethfesselPaxton
+    calc=[ calc sprintf(', stype=3, autoswidth=True') ];
+  elseif isscalar(options.occupations) && options.occupations >=0
+    calc=[ calc sprintf(', stype=3, swidth=%g', options.occupations) ];
+  end
+  if all(options.kpoints > 0)
+    calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
+  end
+  if ~isempty(options.xc)
+    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+  end
+  % location of ELF pseudo-potentials
+  if isempty(options.potentials) && isempty(getenv('ELK_SPECIES_PATH'))
+    if isunix, options.potentials = '/usr/share/elk-lapw/species/';
+      disp([ mfilename ': ' options.calculator ': assuming atom species are in' ])
+      disp(options.potentials)
+      disp('  WARNING: this is not the right location, use options.potentials=<location>');
+    else
+      error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location>.' ])
+    end
+  end
+  if ~isempty(options.potentials)
+    calc = [ calc sprintf(', species_dir=''%s%s''', options.potentials, filesep) ];
+  end
+  calc = [ calc ')' ];
 case 'NWCHEM' % ================================================================
   decl = 'from ase.calculators.nwchem import NWChem';
   calc = sprintf('calc = NWChem(xc=''%s''', ...
     options.xc);
   % check if we use KPTS
   if all(options.kpoints > 0)
-    calc = [ calc sprintf(', raw="nwpw\n  monkhorst-pack %i %i %i\nend"', options.kpoints) ];
+    calc = [ calc sprintf(', raw="nwpw\\n  monkhorst-pack %i %i %i\\nend"', options.kpoints) ];
   end
   if ~isempty(options.potentials)
     calc = [ calc sprintf(', basis=''%s''', options.potentials) ];
   end
   % smearing is in Hartree
   if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
-    options.occupations=0.001;
+    options.occupations=0.1;
   elseif strcmp(options.occupations, 'semiconductor')
     options.occupations=0;
   elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
     options.occupations=-1;
   end
   if isscalar(options.occupations) && options.occupations>=0 % smearing
-    calc=[ calc sprintf(', smearing=%g', options.occupations) ]; % in Hartree
+    calc=[ calc sprintf(', smearing=("gaussian",%g)', options.occupations) ]; % in Hartree
   end
-
+  calc = [ calc ')' ];
 otherwise
   error([ mfilename ': Unknown ASE calculator ' options.calculator ]);
 end
@@ -222,7 +279,7 @@ end
 
 if strcmp(upper(options.calculator), 'GPAW')
   % GPAW Bug: gpaw.aseinterface.GPAW does not support pickle export for 'input_parameters'
-  sav = sprintf('ph.calc.input_parameters=None\npickle.dump(ph, fid)');
+  sav = sprintf('ph.calc=None\npickle.dump(ph, fid)');
 else
   sav = 'pickle.dump(ph, fid)';
 end
@@ -384,10 +441,20 @@ if isfield(options, 'dos')
   disp('INFO: The vibrational density of states (vDOS) will be computed at first model evaluation.');
 end
 disp(' * Atomic Simulation Environment')
-disp('     S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002')
-disp('     <https://wiki.fysik.dtu.dk/ase>. LGPL license.')
+disp('     S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002.')
+disp('     <https://wiki.fysik.dtu.dk/ase>. ')
 disp(' * iFit: E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
-disp('     <http://ifit.mccode.org>. EUPL license.')
+disp('     <http://ifit.mccode.org>.')
+switch upper(options.calculator)
+case 'GPAW'
+disp(' * GPAW:   J. J. Mortensen et al, Phys Rev B, Vol. 71, 035109 (2005).');
+case 'NWCHEM'
+disp(' * NWChem: M. Valiev et al, Comput. Phys. Commun. 181, 1477 (2010).');
+case 'ELK'
+disp(' * ELK:    http://elk.sourceforge.net');
+case {'DACAPO','JACAPO'}
+disp(' * DACAPO: https://wiki.fysik.dtu.dk/dacapo')
+end
 
 
 % ------------------------------------------------------------------------------
@@ -424,13 +491,12 @@ else
   [status, result] = system([ precmd 'python -c "from ase.calculators.elk import ELK"' ]);
   if status == 0
     disp('  Elk (check that it is actually installed: http://elk.sourceforge.net). Exists as Deb package.');
+    disp('    You may have to alias the ''elk-lapw'' executable as ''elk'' (Debian)');
   end
   %  lj (lenard-jones)
   %  morse
   %  abinit
   %  eam
-  %
-  % gpaw, gpaw-setups, jacapo, elk-lapw: put debian packages in mccode.org ?
   
   % support phonopy with: abinit, qe/pwscf, elk, VASP
 end
@@ -449,10 +515,11 @@ options.potentials = '';
 options.diagonalization = 'rmm-diis'; % GPAW
 options.occupations= '';
 options.ecutwfc    = 0;
+options.command    = '';
 
 % read input arguments
   for index=1:numel(varargin)
-  if ischar(varargin{index}) && isempty(dir(varargin{index}))
+  if ischar(varargin{index}) && isempty(dir(varargin{index})) && ~isempty(find(varargin{index} == '='))
     % first try to build a structure from the string
     this = str2struct(varargin{index});
     if isstruct(this)
