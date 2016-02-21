@@ -40,13 +40,14 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   options.target =path                   where to store all files and FORCES
 %     a temporary directory is created when not specified.
 %   options.supercell=scalar or [nx ny nz] supercell size. Default is 2.
-%   options.calculator=string              calculator to use, EMT, GPAW, Elk, NWCHEM
+%   options.calculator=string              EMT, GPAW, Elk, NWChem, Dacapo
 %     Default=GPAW
 %   options.dos=1                          options to compute the vibrational
 %     density of states (vDOS) in UserData.DOS
-%   options.potentials=string              type of basis datasets or pseudopotentials.
+%   options.potentials=string              basis datasets or pseudopotentials.
 %     GPAW: see https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-setups
 %     NWChem: see http://www.nwchem-sw.org/index.php/Release64:AvailableBasisSets
+%     Dacapo, Elk: path to potentials
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
 %   options.xc=string                      type of Exchange-Correlation functional to use
 %     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'            for GPAW
@@ -56,6 +57,7 @@ function signal=sqw_ph_ase(configuration, varargin)
 %     Default is 'PBE'.
 %   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
 %     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'fd'.
+%   options.command='exe'                  Path to executable (for Dacapo)
 %
 % options affecting memory usage:
 %   options.diagonalization='dav' or 'cg' or 'rmm-diis' for GPAW
@@ -135,10 +137,56 @@ pw = pwd; target = options.target;
 
 % handle supported calculators
 switch upper(options.calculator)
+case 'ELK' % ===================================================================
+  % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
+  if ~status.(lower(options.calculator))
+    error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+  end
+  
+  decl = 'from ase.calculators.elk import ELK';
+  calc = 'calc = ELK(tforce=True, tasks=0, rgkmax=4.0, mixtype=3';
+  if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
+    options.occupations=0.1;
+  elseif strcmp(options.occupations, 'semiconductor')
+    options.occupations=0;
+  elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
+    options.occupations=-1;
+  end
+  if strcmp(options.occupations, 'auto')
+    % other distribution: MethfesselPaxton
+    calc=[ calc sprintf(', stype=3, autoswidth=True') ];
+  elseif isscalar(options.occupations) && options.occupations >=0
+    calc=[ calc sprintf(', stype=3, swidth=%g', options.occupations) ];
+  end
+  if all(options.kpoints > 0)
+    calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
+  end
+  if ~isempty(options.xc)
+    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+  end
+  % location of ELF pseudo-potentials
+  if isempty(options.potentials) && isempty(getenv('ELK_SPECIES_PATH'))
+    if isunix, options.potentials = '/usr/share/elk-lapw/species';
+      disp([ mfilename ': ' options.calculator ': assuming atom species are in' ])
+      disp([ '  ' options.potentials ])
+      disp('  WARNING: if this is not the right location, use options.potentials=<location>');
+    else
+      error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location>.' ])
+    end
+  end
+  if ~isempty(options.potentials)
+    setenv('ELK_SPECIES_PATH', [ options.potentials, filesep ]);
+  end
+  calc = [ calc ')' ];
+  
 case 'EMT'
   decl = 'from ase.calculators.emt import EMT';
   calc = 'calc  = EMT()';
 case 'GPAW' % ==================================================================
+  if ~status.(lower(options.calculator))
+    error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+  end
+  
   decl = 'from gpaw import GPAW, PW, FermiDirac';
   calc = 'calc = GPAW(usesymm=False'; % because small displacement breaks symmetry
   if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
@@ -171,11 +219,16 @@ case 'GPAW' % ==================================================================
     calc = [ calc sprintf(', setups=''%s''', options.potentials) ];
   end
   calc = [ calc ')' ];
+  
 case 'JACAPO' % ================================================================
+  if ~status.(lower(options.calculator))
+    error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+  end
+  
   % Requires to define variables under Ubuntu
   if isunix
     if isempty(options.potentials), options.potentials='/usr/share/dacapo-psp'; end
-    if isempty(options.command),    options.command   ='/usr/bin/dacapo_serial.run'; end
+    if isempty(options.command),    options.command   ='dacapo_serial.run'; end
   end
   decl = 'from ase.calculators.jacapo import Jacapo';
   calc = 'calc = Jacapo(symmetry=False';
@@ -197,44 +250,13 @@ case 'JACAPO' % ================================================================
   if ~isempty(options.command)
     setenv('DACAPOEXE_SERIAL', options.command);
   end
-  calc = [ calc ')' ];
-case 'ELK' % ===================================================================
-  decl = 'from ase.calculators.elk import ELK';
-  calc = 'ELK(tforce=True, tasks=0';
-  if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
-    options.occupations=0.1;
-  elseif strcmp(options.occupations, 'semiconductor')
-    options.occupations=0;
-  elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
-    options.occupations=-1;
-  end
-  if strcmp(options.occupations, 'auto')
-    % other distribution: MethfesselPaxton
-    calc=[ calc sprintf(', stype=3, autoswidth=True') ];
-  elseif isscalar(options.occupations) && options.occupations >=0
-    calc=[ calc sprintf(', stype=3, swidth=%g', options.occupations) ];
-  end
-  if all(options.kpoints > 0)
-    calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
-  end
-  if ~isempty(options.xc)
-    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
-  end
-  % location of ELF pseudo-potentials
-  if isempty(options.potentials) && isempty(getenv('ELK_SPECIES_PATH'))
-    if isunix, options.potentials = '/usr/share/elk-lapw/species/';
-      disp([ mfilename ': ' options.calculator ': assuming atom species are in' ])
-      disp(options.potentials)
-      disp('  WARNING: this is not the right location, use options.potentials=<location>');
-    else
-      error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location>.' ])
-    end
-  end
-  if ~isempty(options.potentials)
-    calc = [ calc sprintf(', species_dir=''%s%s''', options.potentials, filesep) ];
-  end
-  calc = [ calc ')' ];
+  calc = [ calc ')' ];  
+  
 case 'NWCHEM' % ================================================================
+  if ~status.(lower(options.calculator))
+    error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+  end
+  
   decl = 'from ase.calculators.nwchem import NWChem';
   calc = sprintf('calc = NWChem(xc=''%s''', ...
     options.xc);
@@ -257,6 +279,7 @@ case 'NWCHEM' % ================================================================
     calc=[ calc sprintf(', smearing=("gaussian",%g)', options.occupations) ]; % in Hartree
   end
   calc = [ calc ')' ];
+
 otherwise
   error([ mfilename ': Unknown ASE calculator ' options.calculator ]);
 end
@@ -330,8 +353,15 @@ end
 cd(pw)
 
 % then read the pickle file to store it into the model
-signal.UserData.ph_ase = fileread(fullfile(target, 'ph.pkl')); % binary
-[dummy, signal.UserData.input]= fileparts(configuration);
+try
+  signal.UserData.ph_ase = fileread(fullfile(target, 'ph.pkl')); % binary
+catch
+  
+  error([ mfilename ': ' options.calculator ' failed. May be a convergence issue. Temporary files are in ' target ])
+end
+if exist(configuration)
+  [dummy, signal.UserData.input]= fileparts(configuration);
+end
 
 signal.Name           = [ 'Sqw_ASE_' signal.UserData.input ' Phonon/ASE DHO [' mfilename ']' ];
 
@@ -458,41 +488,77 @@ end
 
 
 % ------------------------------------------------------------------------------
-function status = sqw_ph_ase_requirements
+function stat = sqw_ph_ase_requirements
+
+persistent status
+if ~exist('status'), status = []; end
+if ~isempty(status), stat = status; return; end
 
 % test for ASE in Python
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
-[status, result] = system([ precmd 'python -c "import ase.version; print ase.version.version"' ]);
-if status ~= 0
+[status.ase, result] = system([ precmd 'python -c "import ase.version; print ase.version.version"' ]);
+if status.ase ~= 0
   disp([ mfilename ': ERROR: requires ASE to be installed.' ])
   disp('  Get it at <https://wiki.fysik.dtu.dk/ase>.');
   disp('  Packages exist for Debian/Mint/Ubuntu, RedHat/Fedora/SuSE, MacOSX and Windows.');, 
   error([ mfilename ': ASE not installed' ]);
 else
   disp([ mfilename ': using ASE ' result ]);
-  disp('calculators:');
+  disp('Available calculators:');
+  status.emt=1;
   disp('  EMT           only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
   % test for GPAW
-  [status, result] = system([ precmd 'python -c "from gpaw import GPAW"' ]);
-  if status == 0
-    disp('  GPAW (http://wiki.fysik.dtu.dk/gpaw). Exists as Deb package.');
+  [st, result] = system([ precmd 'python -c "from gpaw import GPAW"' ]);
+  if st == 0
+    status.gpaw=1;
+    disp('  GPAW (http://wiki.fysik.dtu.dk/gpaw)');
+  else
+    status.gpaw=0;
   end
   % test for NWChem
-  [status, result] = system([ precmd 'python -c "from ase.calculators.nwchem import NWChem"' ]);
-  if status == 0
-    disp('  NWChem (check that it is actually installed: http://www.nwchem-sw.org/). Exists as Deb package.');
+  [st, result] = system([ precmd 'python -c "from ase.calculators.nwchem import NWChem"' ]);
+  status.nwchem=0;
+  if st == 0
+    % now test executable
+    [st,result]=system([ precmd 'nwchem' ]);
+    if st==0 || st==139
+      status.nwchem=1;
+      disp('  NWChem (http://www.nwchem-sw.org/)');
+    end
   end
+  
   % test for Jacapo
-  [status, result] = system([ precmd 'python -c "from ase.calculators.jacapo import Jacapo"' ]);
-  if status == 0
-    disp('  Jacapo (check that Dacapo is actually installed: http://wiki.fysik.dtu.dk/dacapo). Exists as Deb package.');
+  [st, result] = system([ precmd 'python -c "from ase.calculators.jacapo import Jacapo"' ]);
+  status.jacapo=0;
+  if st == 0
+    % now test executable
+    [st,result]=system([ precmd 'dacapo_serial.run' ]);
+    if st == 0
+      status.jacapo=1;
+      disp('  Dacapo (http://wiki.fysik.dtu.dk/dacapo)');
+    end
   end
   % test for Elk
-  [status, result] = system([ precmd 'python -c "from ase.calculators.elk import ELK"' ]);
-  if status == 0
-    disp('  Elk (check that it is actually installed: http://elk.sourceforge.net). Exists as Deb package.');
-    disp('    You may have to alias the ''elk-lapw'' executable as ''elk'' (Debian)');
+  [st, result] = system([ precmd 'python -c "from ase.calculators.elk import ELK"' ]);
+  status.elk=0;
+  if st == 0
+    % now test executable
+    [st,result]=system([ precmd 'elk' ]);
+    if st ~= 0
+      % try elk-lapw
+      [st,result]=system([ precmd 'elk-lapw' ]);
+      if st == 0
+        disp([ mfilename ': Elk: the executable is found as "elk-lapw" but should be named as "elk". ' ])
+        disp('  Please rename it or create an alias/shortcut.');
+      end
+    else
+      status.elk=1;
+      disp('  Elk (http://elk.sourceforge.net)');
+    end
   end
+  
+  stat = status;
+  
   %  lj (lenard-jones)
   %  morse
   %  abinit
@@ -545,6 +611,8 @@ options.command    = '';
       options.calculator = 'Jacapo';
     elseif strcmp(lower(varargin{index}),'nwchem')
       options.calculator = 'NWChem';
+    elseif strcmp(lower(varargin{index}),'elk')
+      options.calculator = 'Elk';
     end
   elseif isstruct(varargin{index})
     % a structure: we copy the fields into options.
