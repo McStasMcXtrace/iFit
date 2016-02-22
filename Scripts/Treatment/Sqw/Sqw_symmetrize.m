@@ -48,6 +48,7 @@ function s=Sqw_symmetrize(s)
 
   % test if the data set has single energy side: much faster to symmetrise
   w = s{1}; % should be a row vector
+  w0= w;
   if isvector(w) && (all(w(:) >= 0) || all(w(:) <= 0))
     signal = get(s, 'Signal');
     signal=[ signal ; signal ];
@@ -55,20 +56,18 @@ function s=Sqw_symmetrize(s)
     s{1}=w;
     s = set(s, 'Signal', signal(index,:));
     
-    if ~isempty(getalias(s,'Error'))
-      err = get(s, 'Error');
-      err=[ err ; err ];
-      [w,index]=unique([ w ; -w ]);
-      s{1}=w;
-      s = set(s, 'Error', signal(index,:));
+    if ~isempty(getalias(s,'Error')) && ~strcmp(getalias(s,'Error'),'sqrt(this.Signal)')
+     err = get(s, 'Error');
+     err=[ err ; err ];
+     [w,index]=unique([ w0 ; -w0 ]);
+     s = set(s, 'Error', err(index,:));
     end
-    
-    if ~isempty(getalias(s,'Monitor'))
-      m = get(s, 'Monitor');
-      m=[ m ; m ];
-      [w,index]=unique([ w ; -w ]);
-      s{1}=w;
-      s = set(s, 'Monitor', signal(index,:));
+
+    if ~isempty(getalias(s,'Monitor')) && ~isscalar(get(s, 'Monitor'))
+     m = get(s, 'Monitor');
+     m=[ m ; m ];
+     [w,index]=unique([ w0 ; -w0 ]);
+     s = set(s, 'Monitor', m(index,:));
     end
     
     return
