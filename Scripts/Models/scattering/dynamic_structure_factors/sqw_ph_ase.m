@@ -57,7 +57,7 @@ function signal=sqw_ph_ase(configuration, varargin)
 %     Default is 'PBE'.
 %   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
 %     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'fd'.
-%   options.command='exe'                  Path to executable (for Dacapo)
+%   options.command='exe'                  Path to executable
 %
 % options affecting memory usage:
 %   options.diagonalization='dav' or 'cg' or 'rmm-diis' for GPAW
@@ -94,6 +94,7 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   s=sqw_ph_ase('bulk("Si", "diamond", a=5.4)');
 %
 % References: https://en.wikipedia.org/wiki/Phonon
+%
 % Atomic Simulation Environment
 %   S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002
 %   <https://wiki.fysik.dtu.dk/ase>. Exists as Debian package 'python-ase'.
@@ -103,7 +104,10 @@ function signal=sqw_ph_ase(configuration, varargin)
 % NWChem M. Valiev et al, Comput. Phys. Commun. 181, 1477 (2010).
 %   <http://www.nwchem-sw.org/>. Exists as Debian package 'nwchem' and 'nwchem-data'.
 % Elk <http://elk.sourceforge.net>. Exists as Debian package 'elk-lapw'.
-% DACAPO https://wiki.fysik.dtu.dk/dacapo/. Exists as Debian package 'dacapo' and 'dacapo-psp'
+% DACAPO https://wiki.fysik.dtu.dk/dacapo/. Exists as Debian package 'dacapo' and 'dacapo-psp'.
+% ABINIT http://www.abinit.org/. Exists as Debian package 'abinit' and 'abinit-doc'.
+%   Install potentials from http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz
+%   into e.g. /usr/share/abinit
 %
 % input:  p: sqw_ph_ase model parameters (double)
 %             p(1)=Amplitude
@@ -137,10 +141,57 @@ pw = pwd; target = options.target;
 
 % handle supported calculators
 switch upper(options.calculator)
+case 'ABINIT'
+  if ~status.(lower(options.calculator))
+    error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+  end
+  if ~isempty(options.command)
+    cmd = options.command;
+    if isempty(strfind(cmd, 'PREFIX.files'))
+      cmd = [ cmd ' < PREFIX.files > PREFIX.log' ];
+    end
+    setenv('ASE_ABINIT_COMMAND', cmd);
+  end
+  if ~isempty(options.potentials)
+    setenv('ABINIT_PP_PATH', options.potentials)
+  end
+  
+  calc = 'calc = Abinit(chksymbreak=0, toldfe=1.0e-5';
+  if options.ecutwfc <= 0, options.ecutwfc=200; end % no default in ABINIT
+  if (options.ecutwfc > 0)
+    calc = [ calc sprintf(', ecut=%g', options.ecutwfc) ];
+  end
+  if all(options.kpoints > 0)
+    calc = [ calc sprintf(', kpts=[%i,%i,%i]', options.kpoints) ];
+  end
+  if ~isempty(options.xc)
+    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+  end
+  calc = [ calc ')' ];
 case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
   if ~status.(lower(options.calculator))
     error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+  end
+  % location of ELF pseudo-potentials is mandatory
+  if isempty(options.potentials) && isempty(getenv('ELK_SPECIES_PATH'))
+    if isunix, options.potentials = '/usr/share/elk-lapw/species';
+      disp([ mfilename ': ' options.calculator ': assuming atom species are in' ])
+      disp([ '  ' options.potentials ])
+      disp('  WARNING: if this is not the right location, use options.potentials=<location>');
+    else
+      error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location of elk/species>.' ])
+    end
+  end
+  if ~isempty(options.potentials)
+    setenv('ELK_SPECIES_PATH', [ options.potentials, filesep ]);
+  end
+  if ~isempty(options.command)
+    cmd = options.command;
+    if isempty(strfind(cmd, 'elk.out'))
+      cmd = [ cmd ' > elk.out' ];
+    end
+    setenv('ASE_ELK_COMMAND', cmd);
   end
   
   decl = 'from ase.calculators.elk import ELK';
@@ -163,19 +214,6 @@ case 'ELK' % ===================================================================
   end
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
-  end
-  % location of ELF pseudo-potentials
-  if isempty(options.potentials) && isempty(getenv('ELK_SPECIES_PATH'))
-    if isunix, options.potentials = '/usr/share/elk-lapw/species';
-      disp([ mfilename ': ' options.calculator ': assuming atom species are in' ])
-      disp([ '  ' options.potentials ])
-      disp('  WARNING: if this is not the right location, use options.potentials=<location>');
-    else
-      error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location>.' ])
-    end
-  end
-  if ~isempty(options.potentials)
-    setenv('ELK_SPECIES_PATH', [ options.potentials, filesep ]);
   end
   calc = [ calc ')' ];
   
@@ -230,6 +268,13 @@ case 'JACAPO' % ================================================================
     if isempty(options.potentials), options.potentials='/usr/share/dacapo-psp'; end
     if isempty(options.command),    options.command   ='dacapo_serial.run'; end
   end
+  if ~isempty(options.potentials)
+    setenv('DACAPOPATH', options.potentials);
+  end
+  if ~isempty(options.command)
+    setenv('DACAPOEXE_SERIAL', options.command);
+  end
+  
   decl = 'from ase.calculators.jacapo import Jacapo';
   calc = 'calc = Jacapo(symmetry=False';
   if ~isempty(options.xc)
@@ -244,17 +289,18 @@ case 'JACAPO' % ================================================================
   if (options.ecutwfc > 0)
     calc = [ calc sprintf(', pw=%g', options.ecutwfc) ];
   end
-  if ~isempty(options.potentials)
-    setenv('DACAPOPATH', options.potentials);
-  end
-  if ~isempty(options.command)
-    setenv('DACAPOEXE_SERIAL', options.command);
-  end
   calc = [ calc ')' ];  
   
 case 'NWCHEM' % ================================================================
   if ~status.(lower(options.calculator))
     error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+  end
+  if ~isempty(options.command)
+    cmd = options.command;
+    if isempty(strfind(cmd, 'PREFIX.nw'))
+      cmd = [ cmd ' PREFIX.nw > PREFIX.out' ];
+    end
+    setenv('ASE_NWCHEM_COMMAND', cmd);
   end
   
   decl = 'from ase.calculators.nwchem import NWChem';
@@ -500,7 +546,7 @@ if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 if status.ase ~= 0
   disp([ mfilename ': ERROR: requires ASE to be installed.' ])
   disp('  Get it at <https://wiki.fysik.dtu.dk/ase>.');
-  disp('  Packages exist for Debian/Mint/Ubuntu, RedHat/Fedora/SuSE, MacOSX and Windows.');, 
+  disp('  Packages exist for Debian/Mint/Ubuntu, RedHat/Fedora/SuSE, MacOSX and Windows.');
   error([ mfilename ': ASE not installed' ]);
 else
   disp([ mfilename ': using ASE ' result ]);
@@ -554,6 +600,13 @@ else
     else
       status.elk=1;
       disp('  Elk (http://elk.sourceforge.net)');
+    end
+    % test for ABINIT
+    [st, result] = system([ precmd 'python -c "from ase.calculators.abinit import Abinit"' ]);
+    status.abinit=0;
+    if st == 0
+      status.abinit=1;
+      disp('  ABINIT (http://www.abinit.org/). Check if ABINIT is really installed.');
     end
   end
   
