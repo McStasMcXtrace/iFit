@@ -112,14 +112,16 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   <https://wiki.fysik.dtu.dk/ase>. Exists as Debian package 'python-ase'.
 %   Repository: http://download.opensuse.org/repositories/home:/dtufys/
 % GPAW J. J. Mortensen et al, Phys Rev B, Vol. 71, 035109 (2005). 
-%   <http://wiki.fysik.dtu.dk/gpaw>. Exists as Debian package 'gpaw' and 'gpaw-data'.
+%   <http://wiki.fysik.dtu.dk/gpaw>. Exists as Debian package 'gpaw' and 'gpaw-setups' (gpaw-data).
 % NWChem M. Valiev et al, Comput. Phys. Commun. 181, 1477 (2010).
 %   <http://www.nwchem-sw.org/>. Exists as Debian package 'nwchem' and 'nwchem-data'.
 % Elk <http://elk.sourceforge.net>. Exists as Debian package 'elk-lapw'. 
 %   The Elk executable should be compiled with e.g. 
 %     elk/src/modmain.f90:289 maxsymcrys=1024 or larger
-% DACAPO https://wiki.fysik.dtu.dk/dacapo/. Exists as Debian package 'dacapo' and 'dacapo-psp'.
-% ABINIT http://www.abinit.org/. Exists as Debian package 'abinit' and 'abinit-doc'.
+% DACAPO B. Hammer et al, Phys.Rev. B 59, 7413 (1999) 
+%   <https://wiki.fysik.dtu.dk/dacapo/>. Exists as Debian package 'dacapo' and 'dacapo-psp'.
+% ABINIT  X. Gonze et al, Computer Physics Communications 180, 2582-2615 (2009).
+%   <http://www.abinit.org/>. Exists as Debian package 'abinit' and 'abinit-doc' (abinit-data).
 %   Install potentials from http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz
 %   into e.g. /usr/share/abinit
 %
@@ -149,7 +151,7 @@ end
 
 options= sqw_ph_ase_argin(varargin{:});
 
-if ~exist('status') || isempty(status)
+if ~exist('status') || isempty(status) || status == 0 || ~isstruct(status)
   status = sqw_ph_ase_requirements;
 end
 
@@ -158,6 +160,7 @@ end
 pw = pwd; target = options.target;
 
 % handle supported calculators
+if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 switch upper(options.calculator)
 case 'ABINIT'
   if ~status.(lower(options.calculator)) && isempty(options.command)
@@ -209,8 +212,8 @@ case 'ELK' % ===================================================================
   end
   % test if ELK executable is named elk-lapw
   [st,result]=system([ precmd 'elk-lapw' ]);
-  if isempty(options.commands) && st == 0
-    options.commands = 'elk-lapw';
+  if isempty(options.command) && st == 0
+    options.command = 'elk-lapw';
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -428,7 +431,6 @@ disp([ mfilename ': creating Phonon/ASE model from ' target ]);
 disp([ '  ' configuration ]);
 disp([ '  ' calc ]);
 
-if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 result = '';
 try
   [status, result] = system([ precmd 'python sqw_ph_ase_build.py' ]);
@@ -563,7 +565,7 @@ end
 disp(' * Atomic Simulation Environment')
 disp('     S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002.')
 disp('     <https://wiki.fysik.dtu.dk/ase>. ')
-disp(' * iFit: E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
+disp(' * iFit:   E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
 disp('     <http://ifit.mccode.org>.')
 switch upper(options.calculator)
 case 'GPAW'
@@ -573,7 +575,11 @@ disp(' * NWChem: M. Valiev et al, Comput. Phys. Commun. 181, 1477 (2010).');
 case 'ELK'
 disp(' * ELK:    http://elk.sourceforge.net');
 case {'DACAPO','JACAPO'}
-disp(' * DACAPO: https://wiki.fysik.dtu.dk/dacapo')
+disp(' * DACAPO: B. Hammer et al, Phys. Rev. B 59, 7413 (1999).');
+case 'ABINIT'
+disp(' * ABINIT: X. Gonze et al, Computer Physics Communications 180, 2582-2615 (2009).');
+case 'EMT'
+disp(' * EMT:    K.W. Jacobsen et al, Surf. Sci. 366, 394–402 (1996).');
 end
 
 
