@@ -5,7 +5,7 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   A model which computes phonon dispersions from the forces acting between
 %     atoms. The input argument is any configuration file describing the
 %     material, e.g. CIF, PDB, POSCAR, ... supported by ASE.
-%   The phonon spectra is computed using the one of the calculator supported by the
+%   The phonon spectra is computed using one of the calculator supported by the
 %   Atomic Simulation Environment (ASE) <https://wiki.fysik.dtu.dk/ase>.
 %   Supported calculators are:
 %     EMT       Effective Medium Theory calculator (Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O)
@@ -13,10 +13,11 @@ function signal=sqw_ph_ase(configuration, varargin)
 %     NWChem    Gaussian based electronic structure code
 %     Dacapo    Plane-wave ultra-soft pseudopotential code
 %     ELK       Full Potential LAPW code
-%                 You may have to alias the 'elk-lapw' executable as 'elk' (Debian)
+%     ABINIT    Plane-wave pseudopotential code
+%     
 %   The calculators can be specified by just giving their name as a parameter, 
 %   or using e.g. options.calculator='GPAW'. Except for EMT, other calculators must
-%   be installed separately. 
+%   be installed separately, and optionally specific pseudo-potentials. 
 %     See https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html
 %
 %   When performing a model evaluation, the DOS is also computed and stored
@@ -30,34 +31,41 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   Any A.S.E supported format can be used (POSCAR, CIF, SHELX, PDB, ...). 
 %     See <https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io>
 %   Alternatively, the 'bulk','molecule', and 'nanotube' ASE constructors can be
-%   used, using the Python syntax, e.g. 'bulk("Si", "diamond", a=5.4)'.
+%   used, using the Python syntax, e.g. 
+%       'bulk("Si", "diamond", a=5.4)'
+%       'bulk("Cu", "fcc", a=3.6, cubic=True)'
+%       'molecule("H2O")'
+%       'nanotube(6, 0, length=4)'
 %     See <https://wiki.fysik.dtu.dk/ase/ase/structure.html>
 %
-% 'metal' or 'insulator': indicates the type of occupation for electronic states,
-%    which sets smearing.
+% 'metal','insulator','semiconductor': indicates the type of occupation for 
+%    electronic states, which sets smearing.
 %
 % options: an optional structure with optional settings:
 %   options.target =path                   where to store all files and FORCES
 %     a temporary directory is created when not specified.
 %   options.supercell=scalar or [nx ny nz] supercell size. Default is 2.
-%   options.calculator=string              EMT, GPAW, Elk, NWChem, Dacapo
+%   options.calculator=string              EMT,GPAW,Elk,NWChem, Dacapo,ABINIT
 %     Default=GPAW
 %   options.dos=1                          options to compute the vibrational
 %     density of states (vDOS) in UserData.DOS
 %   options.potentials=string              basis datasets or pseudopotentials.
 %     GPAW: see https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-setups
 %     NWChem: see http://www.nwchem-sw.org/index.php/Release64:AvailableBasisSets
-%     Dacapo, Elk: path to potentials
+%     Dacapo, Elk, ABINIT: path to potentials
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
 %   options.xc=string                      type of Exchange-Correlation functional to use
 %     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'            for GPAW
 %     'LDA','B3LYP','PBE','RHF','MP2'                       for NWChem
 %     'LDA','PBE','REVPBE','PBESOL','WC06','AM05'           for ELK
-%     ‘PZ’,’VWN’,’PW91’,’PBE’,’RPBE’,’revPBE’               for Dacapo/Jacapo
+%     'PZ','VWN','PW91','PBE','RPBE','revPBE'               for Dacapo/Jacapo
+%     'LDA', 'PBE', 'revPBE', 'RPBE'                        for ABINIT
 %     Default is 'PBE'.
 %   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
 %     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'fd'.
-%   options.command='exe'                  Path to executable
+%   options.command='exe'                  Path to calculator executable
+%   options.raw='name=value, ...'          Additional arguments passed to the ASE
+%                                          using the Python syntax.
 %
 % options affecting memory usage:
 %   options.diagonalization='dav' or 'cg' or 'rmm-diis' for GPAW
@@ -67,14 +75,16 @@ function signal=sqw_ph_ase(configuration, varargin)
 % options affecting convergence:
 %   options.occupations='metal'            for metals ('smearing') help converge
 %                       'insulator'        for insulators
+%                       'semiconductor'    sets 0 eV FermiDirac smearing
 %                       'auto'             for Elk (automatic smearing)
 %                       or 0 for semi-conductors
-%                       or a value in eV for a FermiDirac distribution (GPAW)
+%                       or a value in eV for a FermiDirac distribution (GPAW,ABINIT)
 %                                  in Hartree (NWChem,Elk)
+%
 %   options.ecutwfc=scalar                 kinetic energy cutoff (eV) for
 %     wavefunctions. Default is 340. Larger value improves convergence.
 %
-% The options can also be entered as a single string with 'field=value; ...'.
+% The options can also be entered as a strings with 'field=value; ...'.
 %
 % WARNING: Single intensity and line width parameters are used here.
 %   This model is suitable to compute phonon dispersions for e.g solid-
@@ -86,12 +96,14 @@ function signal=sqw_ph_ase(configuration, varargin)
 % regular qx,qy,qz grids.
 %     
 % Example:
-%   s=sqw_ph_ase([ ifitpath 'Data/POSCAR_Al'],'dos','metal','EMT');
+%   s=sqw_ph_ase('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT');
 %   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
 %   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
 %   figure; plot(s.UserData.DOS); % plot the DOS, as indicated during model creation
 %
-%   s=sqw_ph_ase('bulk("Si", "diamond", a=5.4)');
+%   s=sqw_ph_ase('bulk("Si", "diamond", a=5.4, cubic=True)');
+%
+%   s=sqw_ph_ase([ ifitpath 'Data/POSCAR_Al'],'dos','metal','EMT');
 %
 % References: https://en.wikipedia.org/wiki/Phonon
 %
@@ -103,7 +115,9 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   <http://wiki.fysik.dtu.dk/gpaw>. Exists as Debian package 'gpaw' and 'gpaw-data'.
 % NWChem M. Valiev et al, Comput. Phys. Commun. 181, 1477 (2010).
 %   <http://www.nwchem-sw.org/>. Exists as Debian package 'nwchem' and 'nwchem-data'.
-% Elk <http://elk.sourceforge.net>. Exists as Debian package 'elk-lapw'.
+% Elk <http://elk.sourceforge.net>. Exists as Debian package 'elk-lapw'. 
+%   The Elk executable should be compiled with e.g. 
+%     elk/src/modmain.f90:289 maxsymcrys=1024 or larger
 % DACAPO https://wiki.fysik.dtu.dk/dacapo/. Exists as Debian package 'dacapo' and 'dacapo-psp'.
 % ABINIT http://www.abinit.org/. Exists as Debian package 'abinit' and 'abinit-doc'.
 %   Install potentials from http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz
@@ -126,6 +140,8 @@ function signal=sqw_ph_ase(configuration, varargin)
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phon, sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 
+persistent status
+
 signal = [];
 if nargin == 0
   configuration = fullfile(ifitpath,'Data','POSCAR_Al');
@@ -133,7 +149,9 @@ end
 
 options= sqw_ph_ase_argin(varargin{:});
 
-status = sqw_ph_ase_requirements;
+if ~exist('status') || isempty(status)
+  status = sqw_ph_ase_requirements;
+end
 
 % BUILD stage: we call ASE to build the model
 
@@ -142,7 +160,7 @@ pw = pwd; target = options.target;
 % handle supported calculators
 switch upper(options.calculator)
 case 'ABINIT'
-  if ~status.(lower(options.calculator))
+  if ~status.(lower(options.calculator)) && isempty(options.command)
     error([ mfilename ': ' options.calculator ' not available. Check installation' ])
   end
   if ~isempty(options.command)
@@ -167,10 +185,13 @@ case 'ABINIT'
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
+  if ~isempty(options.raw)
+    calc = [ calc sprintf(', %s', options.raw) ];
+  end
   calc = [ calc ')' ];
 case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
-  if ~status.(lower(options.calculator))
+  if ~status.(lower(options.calculator)) && isempty(options.command)
     error([ mfilename ': ' options.calculator ' not available. Check installation' ])
   end
   % location of ELF pseudo-potentials is mandatory
@@ -185,6 +206,11 @@ case 'ELK' % ===================================================================
   end
   if ~isempty(options.potentials)
     setenv('ELK_SPECIES_PATH', [ options.potentials, filesep ]);
+  end
+  % test if ELK executable is named elk-lapw
+  [st,result]=system([ precmd 'elk-lapw' ]);
+  if isempty(options.commands) && st == 0
+    options.commands = 'elk-lapw';
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -215,13 +241,16 @@ case 'ELK' % ===================================================================
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
+  if ~isempty(options.raw)
+    calc = [ calc sprintf(', %s', options.raw) ];
+  end
   calc = [ calc ')' ];
   
 case 'EMT'
   decl = 'from ase.calculators.emt import EMT';
   calc = 'calc  = EMT()';
 case 'GPAW' % ==================================================================
-  if ~status.(lower(options.calculator))
+  if ~status.(lower(options.calculator)) && isempty(options.command)
     error([ mfilename ': ' options.calculator ' not available. Check installation' ])
   end
   
@@ -256,10 +285,13 @@ case 'GPAW' % ==================================================================
   if ~isempty(options.potentials)
     calc = [ calc sprintf(', setups=''%s''', options.potentials) ];
   end
+  if ~isempty(options.raw)
+    calc = [ calc sprintf(', %s', options.raw) ];
+  end
   calc = [ calc ')' ];
   
 case 'JACAPO' % ================================================================
-  if ~status.(lower(options.calculator))
+  if ~status.(lower(options.calculator)) && isempty(options.command)
     error([ mfilename ': ' options.calculator ' not available. Check installation' ])
   end
   
@@ -289,10 +321,13 @@ case 'JACAPO' % ================================================================
   if (options.ecutwfc > 0)
     calc = [ calc sprintf(', pw=%g', options.ecutwfc) ];
   end
+  if ~isempty(options.raw)
+    calc = [ calc sprintf(', %s', options.raw) ];
+  end
   calc = [ calc ')' ];  
   
 case 'NWCHEM' % ================================================================
-  if ~status.(lower(options.calculator))
+  if ~status.(lower(options.calculator)) && isempty(options.command)
     error([ mfilename ': ' options.calculator ' not available. Check installation' ])
   end
   if ~isempty(options.command)
@@ -323,6 +358,9 @@ case 'NWCHEM' % ================================================================
   end
   if isscalar(options.occupations) && options.occupations>=0 % smearing
     calc=[ calc sprintf(', smearing=("gaussian",%g)', options.occupations) ]; % in Hartree
+  end
+  if ~isempty(options.raw)
+    calc = [ calc sprintf(', %s', options.raw) ];
   end
   calc = [ calc ')' ];
 
@@ -359,6 +397,10 @@ script = { ...
   'import pickle', ...
   '# Setup crystal and calculator', ...
   read, ...
+  'from ase.io import write', ...
+  'write("configuration.png", atoms)', ...
+  'write("configuration.eps", atoms)', ...
+  'write("configuration.pov", atoms)', ...
   calc, ...
   '# Phonon calculator', ...
 sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=0.05)',options.supercell), ...
@@ -407,6 +449,8 @@ catch
 end
 if exist(configuration)
   [dummy, signal.UserData.input]= fileparts(configuration);
+else
+  signal.UserData.input = configuration;
 end
 
 signal.Name           = [ 'Sqw_ASE_' signal.UserData.input ' Phonon/ASE DHO [' mfilename ']' ];
@@ -534,11 +578,11 @@ end
 
 
 % ------------------------------------------------------------------------------
-function stat = sqw_ph_ase_requirements
-
-persistent status
-if ~exist('status'), status = []; end
-if ~isempty(status), stat = status; return; end
+function status = sqw_ph_ase_requirements
+% sqw_ph_ase_requirements: check for availability of ASE and MD codes
+%
+% returns a structure with a field for each MD software being 1 when available.
+status = [];
 
 % test for ASE in Python
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
@@ -566,11 +610,17 @@ else
   status.nwchem=0;
   if st == 0
     % now test executable
-    [st,result]=system([ precmd 'nwchem' ]);
+    % create a fake nwchem.nw
+    f = tempname;
+    dlmwrite([ f '.nw' ], '');
+    [st,result]=system([ precmd 'nwchem ' f '.nw' ]);
     if st==0 || st==139
       status.nwchem=1;
-      disp('  NWChem (http://www.nwchem-sw.org/)');
+      disp('  NWChem (http://www.nwchem-sw.org/) as "nwchem"');
     end
+    delete([ f '.*' ])
+    [p,f] = fileparts(f);
+    delete([ f '.db' ])
   end
   
   % test for Jacapo
@@ -581,7 +631,7 @@ else
     [st,result]=system([ precmd 'dacapo_serial.run' ]);
     if st == 0
       status.jacapo=1;
-      disp('  Dacapo (http://wiki.fysik.dtu.dk/dacapo)');
+      disp('  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "dacapo_serial.run"');
     end
   end
   % test for Elk
@@ -594,35 +644,38 @@ else
       % try elk-lapw
       [st,result]=system([ precmd 'elk-lapw' ]);
       if st == 0
-        disp([ mfilename ': Elk: the executable is found as "elk-lapw" but should be named as "elk". ' ])
-        disp('  Please rename it or create an alias/shortcut.');
+        status.elk=1;
+        disp('  Elk (http://elk.sourceforge.net) as "elk-lapw"');
       end
     else
       status.elk=1;
-      disp('  Elk (http://elk.sourceforge.net)');
+      disp('  Elk (http://elk.sourceforge.net) as "elk"');
     end
     % test for ABINIT
     [st, result] = system([ precmd 'python -c "from ase.calculators.abinit import Abinit"' ]);
     status.abinit=0;
     if st == 0
-      status.abinit=1;
-      disp('  ABINIT (http://www.abinit.org/). Check if ABINIT is really installed.');
+      % now test executable
+      [st,result]=system([ precmd 'echo "0" | abinis' ]);
+      if st == 0 || st == 2
+        status.abinit=1;
+        disp('  ABINIT (http://www.abinit.org/) as "abinis"');
+      end
     end
   end
-  
-  stat = status;
+  disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
   
   %  lj (lenard-jones)
   %  morse
-  %  abinit
   %  eam
-  
-  % support phonopy with: abinit, qe/pwscf, elk, VASP
+
 end
 
 % ------------------------------------------------------------------------------
-
 function options=sqw_ph_ase_argin(varargin)
+% sqw_ph_ase_argin: extracts options from the arguments
+%
+% returns an 'options' structure.
 
 % defaults
 options.supercell  = 2;
@@ -635,6 +688,7 @@ options.diagonalization = 'rmm-diis'; % GPAW
 options.occupations= '';
 options.ecutwfc    = 0;
 options.command    = '';
+options.raw        = '';
 
 % read input arguments
   for index=1:numel(varargin)
@@ -666,6 +720,8 @@ options.command    = '';
       options.calculator = 'NWChem';
     elseif strcmp(lower(varargin{index}),'elk')
       options.calculator = 'Elk';
+    elseif strcmp(lower(varargin{index}),'abinit')
+      options.calculator = 'ABINIT';
     end
   elseif isstruct(varargin{index})
     % a structure: we copy the fields into options.
