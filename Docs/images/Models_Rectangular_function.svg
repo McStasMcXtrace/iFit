@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"  standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="840" height="580px" viewBox="0 0 840 580"
+    xmlns="http://www.w3.org/2000/svg" version="1.1"
+    xmlns:xlink="http://www.w3.org/1999/xlink" id="s1">
+  <title>Plot of rectangular function </title>
+  <desc>Manually edited</desc>
+<!-- <rect x="0" y="0" height="600" width="860" stroke="none" fill="#CFA"/> -->
+<g id="g1" transform="translate(80,520)scale(1,-1)" fill="none"
+    stroke="#000" stroke-width="3.0" stroke-linecap="butt">
+  <rect x="0" y="0" height="480" width="720" stroke="none" fill="#FFF"/>
+  <g style="stroke:#C3C3C3; stroke-width:2.00; stroke-dasharray:2 1">
+    <path d="M0,120 h720 M0,240 h720 M0,360 h720
+      M120,0 v480 M240,0 v480 M360,0 v480 M480,0 v480 M600,0 v480" />
+  </g>
+  <g>
+    <g id="atv">
+      <path id="tpv" d="M30,0 v8 M60,0 v8 M90,0 v8 M120,0 v16" />
+      <use xlink:href="#tpv" x="120" />
+      <use xlink:href="#tpv" x="240" />
+      <use xlink:href="#tpv" x="360" />
+      <use xlink:href="#tpv" x="480" />
+      <use xlink:href="#tpv" x="600" />
+    </g>
+    <g id="ath">
+      <path id="tph" d="M0,30 h8 M0,60 h8 M0,90 h8 M0,120 h16" />
+      <use xlink:href="#tph" y="120" />
+      <use xlink:href="#tph" y="240" />
+      <use xlink:href="#tph" y="360" />
+    </g>
+    <use xlink:href="#atv" transform="translate(0,480)scale(1,-1)" />
+    <use xlink:href="#ath" transform="translate(720,0)scale(-1,1)" />
+  </g>
+  <g style="fill:#000; stroke-width:0.3; font-family:Helvetica; font-size:18pt">
+   <g text-anchor="end" transform="scale(1,-1)translate(-14,8)">
+    <text y="0">-0.5</text>
+    <text y="-120">0.0</text>
+    <text y="-240">0.5</text>
+    <text y="-360">1.0</text>
+    <text y="-480">1.5</text>
+   </g>
+   <g text-anchor="middle" transform="scale(1,-1)translate(0,31)">
+    <text x="0">-1.5</text>
+    <text x="120">-1.0</text>
+    <text x="240">-0.5</text>
+    <text x="360">0.0</text>
+    <text x="480">0.5</text>
+    <text x="600">1.0</text>
+    <text x="720">1.5</text>
+   </g>
+  </g>
+  <g stroke="#4B4BD2">
+    <path d="M0,120 h240 M240,360 h240 M480,120 h240" />
+    <path stroke-dasharray="10 10" stroke-dashoffset="4" d="M240,120 v240 M480,120 v240" />
+    <circle cx="240" cy="120" r="7" fill="#FFF" />
+    <circle cx="480" cy="120" r="7" fill="#FFF" />
+    <circle cx="240" cy="360" r="7" fill="#FFF" />
+    <circle cx="480" cy="360" r="7" fill="#FFF" />
+    <circle cx="240" cy="240" r="7" fill="#4B4BD2" />
+    <circle cx="480" cy="240" r="7" fill="#4B4BD2" />
+  </g>
+  <rect x="-1" y="-1" height="481" width="721" />
+</g>
+<!-- vim:nowrap:sw=2:so=2:et:ai -->
+</svg>

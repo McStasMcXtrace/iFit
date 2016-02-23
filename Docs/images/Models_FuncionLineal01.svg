@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+	version="1.1" viewBox="-200 -200 400 400">
+<title>Linear functions</title>
+<defs>
+	<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+		<path d="M0,40v-40h40v40h-40" fill="none" stroke="#555" stroke-width=".5"/>
+	</pattern>
+	<marker id="EA" viewBox="0 0 10 10" refX="10" refY="5"
+		orient="auto" markerWidth="12" markerHeight="12">
+		<path d="M0,0L10,5L0,10A2,5 0 0,0 0,0" fill="black"/>
+	</marker>
+</defs>
+<rect x="-200" y="-200" width="400" height="400" fill="url(#grid)"/>
+<g fill="none">
+	<path d="M0,0h200 M0,0h-200 M0,0v200 M0,0v-200" stroke="#000" marker-end="url(#EA)"/>
+	<g font-size="15" fill="#000" font-family="times" text-anchor="middle">
+	<text y="16"><tspan x="-160">−4</tspan><tspan x="-120">−3</tspan><tspan x="-80">−2</tspan>
+	<tspan x="-40">−1</tspan><tspan x="5">0</tspan><tspan x="160">4</tspan>
+	<tspan x="120">3</tspan><tspan x="80">2</tspan><tspan x="40">1</tspan>
+	</text>
+	<g transform="translate(-2,0)" text-anchor="end"><text y="-37">1</text><text y="-77">2</text>
+	<text y="-117">3</text><text y="-157">4</text><text y="43">−1</text>
+	<text y="83">−2</text><text y="123">−3</text><text y="163">−4</text>
+	</g><g font-style="italic" font-size="22" text-anchor="start">
+	<text x="6" y="-188">y</text><text y="-6" x="188">x</text>
+	<text x="80" y="80" fill="#0a0">y=2.0x+1</text>
+	<text x="80" y="110" fill="#00f">y=0.5x−1</text>
+	<text x="80" y="140" fill="#f00">y=0.5x+1</text>
+	</g></g>
+	<g stroke-width="2">
+	<path d="M-200,60L200,-140" stroke="#f00"/><path d="M-120,200L80,-200" stroke="#0a0"/>
+	<path d="M-200,140L200,-60" stroke="#00f"/>
+	</g>
+</g>
+</svg>
