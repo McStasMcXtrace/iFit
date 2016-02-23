@@ -433,7 +433,7 @@ disp([ '  ' calc ]);
 
 result = '';
 try
-  [status, result] = system([ precmd 'python sqw_ph_ase_build.py' ]);
+  [st, result] = system([ precmd 'python sqw_ph_ase_build.py' ]);
   disp(result)
 catch
   disp(result)
