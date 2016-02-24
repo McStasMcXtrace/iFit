@@ -1,7 +1,7 @@
 function signal=sqw_phon(varargin)
 % model=sqw_phon(poscar, pseudo, ..., options)  
 %
-%   iFunc/sqw_phon: computes phonon dispersions from Ab-Initio.
+%   iFunc/sqw_phon: computes phonon dispersions from Ab-Initio with QuantumEspresso.
 %   A model which computes phonon dispersions from the forces acting between
 %     atoms. The input arguments is a VASP-type POSCAR file providing the
 %     geometry of the cell (lattice and atom positions). 
@@ -9,16 +9,13 @@ function signal=sqw_phon(varargin)
 %     Additional arguments can be given to control the procedure used to
 %     compute a supercell and the forces using QuantumEspresso (ab-initio).
 %
+%   The simplest usage is to call: sqw_phon('gui') which displays an entry dialog box
+%   and proceeds with a fully automatic computation, and plots final results.
+%
 %   When performing a model evaluation, the DOS is also computed on the same HKL
 %     grid and stored in model.UserData.DOS as an iData object. For the evaluation
 %     to be correct, the HKL grid should thus be broad, e.g. from 0 to 0.5 
 %     on QH,QK and QL, with a rather fine gridding (see example below).
-%
-% WARNING: Single intensity and line width parameters are used here.
-%   This model is only suitable to compute phonon dispersions for e.g solid-
-%   state materials.
-%   PHON('phon') and QuantumEspresso('pw') must be installed.
-%   The temporary directories (UserData.dir) are not removed.
 %
 % The arguments can be any set of:
 % POSCAR: file name to an existing POSCAR
@@ -101,6 +98,12 @@ function signal=sqw_phon(varargin)
 %   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
 %   figure; plot(s.UserData.DOS); % plot the DOS
 %
+% WARNING: Single intensity and line width parameters are used here.
+%   This model is only suitable to compute phonon dispersions for e.g solid-
+%   state materials.
+%   PHON(executable 'phon') and QuantumEspresso(executable 'pw') must be installed.
+%   The temporary directories (UserData.dir) are not removed.
+%
 % References: https://en.wikipedia.org/wiki/Phonon
 %   PHON: D. Alfe, Computer Physics Communications 180,2622-2633 (2009) 
 %     <http://chianti.geol.ucl.ac.uk/~dario>. BSD license.
@@ -144,6 +147,7 @@ function signal=sqw_phon(varargin)
 signal = [];
 
 % ********* handle input arguments *********
+
 [poscar, options]=sqw_phon_argin(varargin{:});
 p = fileparts(poscar);
 if isempty(p), p=pwd; end
@@ -153,6 +157,41 @@ if isempty(p), p=pwd; end
 if isempty(options.phon) || isempty(options.pwscf)
   return
 end
+
+if options.gui
+  % pop-up a simple dialog requesting for:
+  %  * configuration
+  %  * metal, insulator, semiconductor
+  %  * supercell
+  %  * kpoints
+  % and will select autoplot, 'dos'
+  NL = sprintf('\n');
+  prompt = { [ '{\bf Atom/molecule/system configuration}' NL 'a VASP/POSCAR file' ], ...
+  [ '{\bf Smearing}' NL 'metal, semiconductor, insulator or left empty' ], ...
+  [ '{\bf Supercell}' NL 'the size of the repeated model = system*supercell (scalar or 3-vector)' ], ...
+  [ '{\bf K-Points}' NL 'Monkhorst-Pack grid which determines the K sampling (scalar or 3-vector)' ] };
+  dlg_title = 'iFit: Model: phonons from PHON/QuantumEspresso';
+  defAns    = {poscar, options.occupations, ...
+    num2str(options.supercell), num2str(options.kpoints)};
+  num_lines = [ 1 1 1 1 ]';
+  op.Resize      = 'on';
+  op.WindowStyle = 'normal';   
+  op.Interpreter = 'tex';
+  answer = inputdlg(prompt, dlg_title, num_lines, defAns, op);
+  if isempty(answer), 
+    return; 
+  end
+  % extract results
+  poscar             = answer{1};
+  options.occupations= answer{2};
+  options.supercell  = str2num(answer{3});
+  options.kpoints    = str2num(answer{4});
+  options.autoplot   = 1;
+  options.potential_auto=1;
+  options.gui        = waitbar(0, [ mfilename ': starting' ], 'Name', [ 'iFit: ' mfilename ' ' poscar ]);
+end
+
+options.configuration = poscar;
 
 % check if we use a pre-computed POSCAR (supercell)/FORCES
 if isfield(options,'force_file')
@@ -178,13 +217,17 @@ end
 % ********* compute the forces *********
 
 % check/create supercell
+if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': computing supercell' ]); end
 geom = sqw_phon_supercell(poscar, options); % 2x2x2 supercell
 
 % ********* look for potentials *********
 if ~isfield(options, 'force_file')
+  if options.gui && ishandle(options.gui), waitbar(0.10, options.gui, [ mfilename ': fetching potentials' ]); end
+  
   options = sqw_phon_potentials(geom, options);
 
   % compute and write FORCES
+  if options.gui && ishandle(options.gui), waitbar(0.15, options.gui, [ mfilename ': compute DynMatrix PHON/QuantumEspresso (be patient)' ]); end
   [forces, geom] = sqw_phon_forces(geom, options);
   
   signal.UserData.FORCES = fileread(fullfile(p,'FORCES'));
@@ -200,6 +243,9 @@ for index=1:numel(geom.symbols)
   potentials  = [ potentials geom.potentials{index} ' ' ];
 end
 mass = num2str(mass);
+
+if options.gui && ishandle(options.gui), waitbar(0.7, options.gui, [ mfilename ': building model' ]); end
+
 
 % ************** BUILD THE MODEL **************
 signal.Name           = [ 'Sqw_phon_' compound ' PHON/QuantumEspresso DHO [' mfilename ']' ];
@@ -336,12 +382,28 @@ signal=iFunc(signal);
 
 % when model is successfully built, display citations for PHON and QE
 disp([ mfilename ': Model ' compound ' built using: (please cite) from ' poscar ])
+disp([ '  in ' options.target ]);
 disp(' * PHON: D. Alfe, Computer Physics Communications 180,2622-2633 (2009)')
 disp('     <http://chianti.geol.ucl.ac.uk/~dario>. BSD license.')
 disp(' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009)')
 disp('     <http://www.quantum-espresso.org/>. GPL2 license.')
 disp(' * iFit: E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
 disp('     <http://ifit.mccode.org>. EUPL license.');
+
+% handle autoplot option
+if options.autoplot
+  if options.gui && ishandle(options.gui), waitbar(0.75, options.gui, [ mfilename ': plotting phonons and DOS' ]); end
+  disp([ mfilename ': Model ' poscar ' plotting phonons.' ])
+  qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,150,151);
+  figure; 
+  subplot(1,2,1);
+  f=iData(signal,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled'); axis tight;
+  view([38 26]);
+  subplot(1,2,2);
+  plot(signal.UserData.DOS); % plot the DOS, as indicated during model creation
+  drawnow
+  if options.gui && ishandle(options.gui), delete(options.gui); end
+end
 
 % ------------------------------------------------------------------------------
 
@@ -354,6 +416,9 @@ function [poscar, options]=sqw_phon_argin(varargin)
   options.disp   =[];
   options.phon   =''; % path to PHON
   options.pwscf  =''; % path to QE/PWSCF
+  options.autoplot=0;
+  options.gui    =0;
+  options.calculator = 'QuantumEspresso';
 
   % read input arguments
   for index=1:numel(varargin)
@@ -373,6 +438,8 @@ function [poscar, options]=sqw_phon_argin(varargin)
         options.occupations = 'fixed';
       elseif strcmp(varargin{index},'random')
         options.disp='random';
+      elseif strcmp(varargin{index},'gui')
+        options.gui=1;
       elseif ~isempty(dir(varargin{index})) && ~isdir(varargin{index}) ...
           && (isempty(e) || ~strcmp(lower(e),'.upf'))
         % found an existing file, not a pseudo potential
@@ -496,6 +563,7 @@ if isempty(strfind(upper(result),'PHON, VERSION'))
   disp('  1- Get it at <http://chianti.geol.ucl.ac.uk/~dario>.');
   disp('  2- Extract, go in directory, compile with: ./configure; make;')
   disp('  3- copy executable src/phon into e.g. /usr/local/bin or /usr/bin')
+  disp('You can lso get a Debian package at packages.mccode.org');
   status = 'error: PHON not installed';
 else
   phon = cmd;
@@ -547,7 +615,7 @@ geom1 = import_poscar(poscar);
 
 % analyse chemical formula
 if isempty(geom1.symbols)
-  error([ mfilename ': the file ' poscar ' MUST contain the chemical formula of the compound (1st line or before number of atoms line).' ]);
+  sqw_phon_error([ mfilename ': the file ' poscar ' MUST contain the chemical formula of the compound (1st line or before number of atoms line).' ], options);
 else
   % build the structure holding all elements with counts
   geom1.elements = [];
@@ -595,7 +663,7 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   % generate INPHON for supercell generation
   fid = fopen(fullfile(p,'INPHON'),'w');
   if fid < 0
-    error([ mfilename ': could not create file ' fullfile(p,'INPHON') ]);
+    sqw_phon_error([ mfilename ': could not create file ' fullfile(p,'INPHON') ], options);
   end
   fprintf(fid, '# Control file for PHON to generate a supercell from %s\n', poscar);
   fprintf(fid, '#   PHON: <http://chianti.geol.ucl.ac.uk/~dario>\n');
@@ -635,7 +703,7 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   % check if the expected files have been created
   if isempty(dir(fullfile(p,'SPOSCAR'))) || isempty(dir(fullfile(p,'DISP')))
     try; disp(fileread(fullfile(p,'phon.log'))); end
-    error([ mfilename ': Error executing PHON: could not create SPOSCAR and DISP file.' ]);
+    sqw_phon_error([ mfilename ': Error executing PHON: could not create SPOSCAR and DISP file.' ], options);
   end
   % modify 1st line so that the initial system name is retained
   geom2 = import_poscar(fullfile(p,'SPOSCAR'));
@@ -670,7 +738,7 @@ if isempty(dir(fullfile(p,'FORCES')))
   try
     displacements = fileread(fullfile(p,'DISP'));
   catch
-    error([ mfilename ': the displacement file ' fullfile(p,'DISP') ' is missing. Reset initial POSCAR file and re-run (not a supercell).' ]);
+    sqw_phon_error([ mfilename ': the displacement file ' fullfile(p,'DISP') ' is missing. Reset initial POSCAR file and re-run (not a supercell).' ], options);
   end
   displacements(displacements == '"' | displacements == '\') = '';
   displacements = str2num(displacements);
@@ -703,6 +771,7 @@ if isempty(dir(fullfile(p,'FORCES')))
     displaced.coords(index,:) = displaced.coords(index,:) ...
                               + displacements(move, 2:4); % move XYZ
     
+    if options.gui && ishandle(options.gui), waitbar(0.15+((move-1)/size(displacements,1)*.6), options.gui, [ mfilename ': plotting phonons and DOS' ]); end
     disp([ mfilename ': step ' num2str(move) '/' num2str(size(displacements,1)) ...
         ' moving atom ' displaced.symbols{displaced.type(displacements(move, 1))} ...
         ' by ' num2str(displacements(move, 2:4)) ]);
@@ -723,7 +792,7 @@ if isempty(dir(fullfile(p,'FORCES')))
   % WRITE the FORCES file
   fid = fopen(fullfile(p,'FORCES'), 'w');
   if fid < 0
-    error([ mfilename ': could not create file ' fullfile(p,'FORCES') ]);
+    sqw_phon_error([ mfilename ': could not create file ' fullfile(p,'FORCES') ], options);
   end
   fprintf(fid, '%i\n', numel(forces));  % nb of displacements
   for index=1:numel(forces)
@@ -748,7 +817,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   % CONTROL: we write the control file for Quantum ESPRESSO 'pw.d'
   fid = fopen(fullfile(p,'pw.d'), 'w');
   if fid < 0
-    error([ mfilename ': could not create file ' fullfile(p,'pw.d') ]);
+    sqw_phon_error([ mfilename ': could not create file ' fullfile(p,'pw.d') ], options);
   end
   natoms = size(displaced.coords,1);
   ntyp   = numel(displaced.atomcount);
@@ -854,7 +923,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   
   ismetallic = strfind(L, 'the system is metallic');
   if ~isempty(ismetallic)
-    error([ mfilename ': The system is metallic but you have used occupations=''fixed''. Rebuild model with occupations=''smearing''.' ])
+    sqw_phon_error([ mfilename ': The system is metallic but you have used occupations=''fixed''. Rebuild model with occupations=''smearing''.' ], options)
   end
 
   forces_acting = strfind(L, 'Forces acting');
@@ -862,7 +931,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
     disp(L);
     disp([ mfilename ': convergence NOT achieved.' ]);
     disp([ 'TRY: sqw_phon(..., ''miximg_beta=0.3; electron_maxstep=200; conv_thr=1e-6; occupations=smearing; ecutwfc=' num2str(round(ecut*1.5)) ''')' ])
-    error([ mfilename ': PWSCF convergence NOT achieved.' ])
+    sqw_phon_error([ mfilename ': PWSCF convergence NOT achieved.' ], options)
   end
   L = L(forces_acting:end);
   % then read next natoms lines starting with 'atom', e.g.:
@@ -908,7 +977,7 @@ function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displa
         disp('Available potentials are:')
         disp(options.potentials_full(:));
       end
-      error([ mfilename ': pseudo-potential missing for atom ' displaced.symbols{index} ]);
+      sqw_phon_error([ mfilename ': pseudo-potential missing for atom ' displaced.symbols{index} ], options);
     elseif numel(match) > 1
       % more than one match: select PBE-PAW if possible
       pbe = find(~cellfun('isempty', strfind(lower(match), 'pbe')));
@@ -996,3 +1065,13 @@ end
     this = cellstr(num2str(forces{index}));
     FORCES = [ FORCES sprintf('    %s\n', this{:}) ];
   end
+  
+% ------------------------------------------------------------------------------
+
+function sqw_phon_sqw_phon_error(message, options)
+
+if options.gui && ishandle(options.gui)
+  delete(options.gui);
+  errordlg(message, [ 'iFit: ' mfilename ' ' options.configuration ' FAILED' ]);
+end
+sqw_phon_error(message);
