@@ -14,6 +14,9 @@ function signal=sqw_ph_ase(configuration, varargin)
 %     Dacapo    Plane-wave ultra-soft pseudopotential code
 %     ELK       Full Potential LAPW code
 %     ABINIT    Plane-wave pseudopotential code
+%
+%   The simplest usage is to call: sqw_ph_ase('gui') which displays an entry dialog box
+%   and proceeds with a fully automatic computation, and plots final results.
 %     
 %   The calculators can be specified by just giving their name as a parameter, 
 %   or using e.g. options.calculator='GPAW'. Except for EMT, other calculators must
@@ -52,7 +55,7 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   options.potentials=string              basis datasets or pseudopotentials.
 %     GPAW: see https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-setups
 %     NWChem: see http://www.nwchem-sw.org/index.php/Release64:AvailableBasisSets
-%     Dacapo, Elk, ABINIT: path to potentials
+%     Dacapo, Elk, ABINIT: path to potentials.
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
 %   options.xc=string                      type of Exchange-Correlation functional to use
 %     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'            for GPAW
@@ -82,28 +85,28 @@ function signal=sqw_ph_ase(configuration, varargin)
 %                                  in Hartree (NWChem,Elk)
 %
 %   options.ecutwfc=scalar                 kinetic energy cutoff (eV) for
-%     wavefunctions. Default is 340. Larger value improves convergence.
+%     wavefunctions. Default is 340 eV. Larger value improves convergence.
 %
 % The options can also be entered as a strings with 'field=value; ...'.
+%
+% Once the model has been created, its use requires that axes are given on
+% regular qx,qy,qz grids.
+%     
+% Example:
+%   s=sqw_ph_ase('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal');
+%   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
+%   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
+%   figure; plot(s.UserData.DOS); % plot the DOS, as indicated during model creation
+%
+%   s=sqw_ph_ase('bulk("Si", "diamond", a=5.4, cubic=True)','semiconductor');
+%
+%   s=sqw_ph_ase([ ifitpath 'Data/POSCAR_Al'],'dos','metal','EMT');
 %
 % WARNING: Single intensity and line width parameters are used here.
 %   This model is suitable to compute phonon dispersions for e.g solid-
 %   state materials.
 %   The Atomic Simulation Environment must be installed.
 %   The temporary directories (UserData.dir) are not removed.
-%
-% Once the model has been created, its use requires that axes are given on
-% regular qx,qy,qz grids.
-%     
-% Example:
-%   s=sqw_ph_ase('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT');
-%   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
-%   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
-%   figure; plot(s.UserData.DOS); % plot the DOS, as indicated during model creation
-%
-%   s=sqw_ph_ase('bulk("Si", "diamond", a=5.4, cubic=True)');
-%
-%   s=sqw_ph_ase([ ifitpath 'Data/POSCAR_Al'],'dos','metal','EMT');
 %
 % References: https://en.wikipedia.org/wiki/Phonon
 %
@@ -145,26 +148,79 @@ function signal=sqw_ph_ase(configuration, varargin)
 persistent status
 
 signal = [];
-if nargin == 0
-  configuration = fullfile(ifitpath,'Data','POSCAR_Al');
-end
 
 options= sqw_ph_ase_argin(varargin{:});
 
-if ~exist('status') || isempty(status) || status == 0 || ~isstruct(status)
+if nargin == 1 && strcmp(configuration,'gui')
+  options.gui=1;
+  configuration=[];
+end
+
+if nargin == 0 || isempty(configuration)
+  configuration = 'bulk("Al", "fcc", a=4.05)';
+end
+
+if ~exist('status') || isempty(status) || ~isstruct(status)
   status = sqw_ph_ase_requirements;
 end
+
+if options.gui
+  % pop-up a simple dialog requesting for:
+  %  * configuration
+  %  * calculator
+  %  * metal, insulator, semiconductor
+  %  * supercell
+  %  * kpoints
+  % and will select autoplot, 'dos'
+  calcs = 'EMT';
+  for index={'gpaw','elk','jacapo','nwchem','abinit'};
+    if status.(index{1}), calcs = [ calcs ', ' upper(index{1}) ]; end
+  end
+  calcs = [ calcs ', QuantumEspresso' ];
+  NL = sprintf('\n');
+  prompt = { [ '{\bf Atom/molecule/system configuration}' NL 'a CIF/PDB/POSCAR/... name or e.g. bulk("Cu", "fcc", a=3.6, cubic=True),' NL  'molecule("H2O"), or nanotube(6, 0, length=4)' ], ...
+  [ '{\bf Calculator}' NL 'one of ' calcs ], ...
+  [ '{\bf Smearing}' NL 'metal, semiconductor, insulator or left empty' ], ...
+  [ '{\bf Supercell}' NL 'the size of the repeated model = system*supercell (3-vector)' ], ...
+  [ '{\bf K-Points}' NL 'Monkhorst-Pack grid which determines the K sampling (3-vector)' ] };
+  dlg_title = 'iFit: Model: phonons from ASE';
+  defAns    = {configuration, options.calculator, options.occupations, ...
+    num2str(options.supercell), num2str(options.kpoints)};
+  num_lines = [ 1 1 1 1 1 ]';
+  op.Resize      = 'on';
+  op.WindowStyle = 'normal';   
+  op.Interpreter = 'tex';
+  answer = inputdlg(prompt, dlg_title, num_lines, defAns, op);
+  if isempty(answer), 
+    return; 
+  end
+  % extract results
+  configuration      = answer{1};
+  options.calculator = answer{2};
+  options.occupations= answer{3};
+  options.supercell  = str2num(answer{4});
+  options.kpoints    = str2num(answer{5});
+  options.autoplot   = 1;
+  options.dos        = 1;
+  options.gui        = waitbar(0, [ mfilename ': starting' ], 'Name', [ 'iFit: ' mfilename ' ' configuration ]);
+end
+
+options.configuration = configuration;
 
 % BUILD stage: we call ASE to build the model
 
 pw = pwd; target = options.target;
 
 % handle supported calculators
+if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': configuring ' options.calculator ]); end
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 switch upper(options.calculator)
+case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO'}
+  signal=sqw_phon(configuration, options);
+  return
 case 'ABINIT'
   if ~status.(lower(options.calculator)) && isempty(options.command)
-    error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+    sqw_ph_ase_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -176,7 +232,7 @@ case 'ABINIT'
   if ~isempty(options.potentials)
     setenv('ABINIT_PP_PATH', options.potentials)
   end
-  
+  decl = 'from ase.calculators.abinit import Abinit';
   calc = 'calc = Abinit(chksymbreak=0, toldfe=1.0e-5';
   if options.ecutwfc <= 0, options.ecutwfc=200; end % no default in ABINIT
   if (options.ecutwfc > 0)
@@ -195,7 +251,7 @@ case 'ABINIT'
 case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
   if ~status.(lower(options.calculator)) && isempty(options.command)
-    error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+    sqw_ph_ase_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   % location of ELF pseudo-potentials is mandatory
   if isempty(options.potentials) && isempty(getenv('ELK_SPECIES_PATH'))
@@ -204,7 +260,7 @@ case 'ELK' % ===================================================================
       disp([ '  ' options.potentials ])
       disp('  WARNING: if this is not the right location, use options.potentials=<location>');
     else
-      error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location of elk/species>.' ])
+      sqw_ph_ase_error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location of elk/species>.' ], options)
     end
   end
   if ~isempty(options.potentials)
@@ -254,7 +310,7 @@ case 'EMT'
   calc = 'calc  = EMT()';
 case 'GPAW' % ==================================================================
   if ~status.(lower(options.calculator)) && isempty(options.command)
-    error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+    sqw_ph_ase_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   
   decl = 'from gpaw import GPAW, PW, FermiDirac';
@@ -295,7 +351,7 @@ case 'GPAW' % ==================================================================
   
 case 'JACAPO' % ================================================================
   if ~status.(lower(options.calculator)) && isempty(options.command)
-    error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+    sqw_ph_ase_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   
   % Requires to define variables under Ubuntu
@@ -331,7 +387,7 @@ case 'JACAPO' % ================================================================
   
 case 'NWCHEM' % ================================================================
   if ~status.(lower(options.calculator)) && isempty(options.command)
-    error([ mfilename ': ' options.calculator ' not available. Check installation' ])
+    sqw_ph_ase_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -368,10 +424,11 @@ case 'NWCHEM' % ================================================================
   calc = [ calc ')' ];
 
 otherwise
-  error([ mfilename ': Unknown ASE calculator ' options.calculator ]);
+  sqw_ph_ase_error([ mfilename ': Unknown ASE calculator ' options.calculator ], options);
 end
 
 % handle input configuration
+if options.gui && ishandle(options.gui), waitbar(0.10, options.gui, [ mfilename ': writing python script ASE/' options.calculator ]); end
 if exist(configuration)
   read = sprintf('import ase.io\nconfiguration = ''%s''\natoms = ase.io.read(configuration)\n', ...
     configuration);
@@ -431,23 +488,26 @@ disp([ mfilename ': creating Phonon/ASE model from ' target ]);
 disp([ '  ' configuration ]);
 disp([ '  ' calc ]);
 
+if options.gui && ishandle(options.gui), waitbar(0.15, options.gui, [ mfilename ': computing DynMatrix ASE/' options.calculator ' (be patient)' ]); end
+
 result = '';
 try
   [st, result] = system([ precmd 'python sqw_ph_ase_build.py' ]);
   disp(result)
 catch
   disp(result)
-  error([ mfilename ': failed calling ASE with script ' ...
-    fullfile(target,'sqw_ph_ase_build.py') ]);
+  sqw_ph_ase_error([ mfilename ': failed calling ASE with script ' ...
+    fullfile(target,'sqw_ph_ase_build.py') ], options);
 end
 cd(pw)
 
 % then read the pickle file to store it into the model
+if options.gui && ishandle(options.gui), waitbar(0.7, options.gui, [ mfilename ': building model' ]); end
 try
   signal.UserData.ph_ase = fileread(fullfile(target, 'ph.pkl')); % binary
 catch
   
-  error([ mfilename ': ' options.calculator ' failed. May be a convergence issue. Temporary files are in ' target ])
+  sqw_ph_ase_error([ mfilename ': ' options.calculator ' failed. May be a convergence issue. Temporary files are in ' target ], options)
 end
 if exist(configuration)
   [dummy, signal.UserData.input]= fileparts(configuration);
@@ -558,7 +618,7 @@ signal = iFunc(signal);
 
 % when model is successfully built, display citations for ASE
 disp([ mfilename ': Model ' configuration ' built using: (please cite)' ])
-disp([ '  in ' target ]);
+disp([ '  in ' options.target ]);
 if isfield(options, 'dos')
   disp('INFO: The vibrational density of states (vDOS) will be computed at first model evaluation.');
 end
@@ -582,6 +642,31 @@ case 'EMT'
 disp(' * EMT:    K.W. Jacobsen et al, Surf. Sci. 366, 394–402 (1996).');
 end
 
+% handle autoplot option
+if options.autoplot
+  if options.gui && ishandle(options.gui), waitbar(0.75, options.gui, [ mfilename ': plotting phonons and DOS' ]); end
+  disp([ mfilename ': Model ' configuration ' plotting phonons.' ])
+  qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,150,151);
+  figure; 
+  if options.dos, subplot(1,2,1); end
+  f=iData(signal,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled'); axis tight;
+  view([38 26]);
+  if options.dos
+    subplot(1,2,2);
+    plot(signal.UserData.DOS); % plot the DOS, as indicated during model creation
+  end
+  drawnow
+  if options.gui && ishandle(options.gui), delete(options.gui); end
+end
+
+
+
+
+
+
+
+
+
 
 % ------------------------------------------------------------------------------
 function status = sqw_ph_ase_requirements
@@ -594,7 +679,7 @@ status = [];
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 [status.ase, result] = system([ precmd 'python -c "import ase.version; print ase.version.version"' ]);
 if status.ase ~= 0
-  disp([ mfilename ': ERROR: requires ASE to be installed.' ])
+  disp([ mfilename ': error: requires ASE to be installed.' ])
   disp('  Get it at <https://wiki.fysik.dtu.dk/ase>.');
   disp('  Packages exist for Debian/Mint/Ubuntu, RedHat/Fedora/SuSE, MacOSX and Windows.');
   error([ mfilename ': ASE not installed' ]);
@@ -695,6 +780,8 @@ options.occupations= '';
 options.ecutwfc    = 0;
 options.command    = '';
 options.raw        = '';
+options.autoplot   = 0;
+options.gui        = 0;
 
 % read input arguments
   for index=1:numel(varargin)
@@ -728,6 +815,10 @@ options.raw        = '';
       options.calculator = 'Elk';
     elseif strcmp(lower(varargin{index}),'abinit')
       options.calculator = 'ABINIT';
+    elseif strcmp(lower(varargin{index}),'autoplot')
+      options.autoplot = 1;
+    elseif strcmp(lower(varargin{index}),'gui')
+      options.gui = 1;
     end
   elseif isstruct(varargin{index})
     % a structure: we copy the fields into options.
@@ -750,4 +841,12 @@ if isscalar(options.kpoints)
   options.kpoints=[ options.kpoints options.kpoints options.kpoints ]; 
 end
 
+% ------------------------------------------------------------------------------
 
+function sqw_ph_ase_error(message, options)
+
+if options.gui && ishandle(options.gui)
+  delete(options.gui);
+  errordlg(message, [ 'iFit: ' mfilename ' ' options.configuration ' FAILED' ]);
+end
+error(message);
