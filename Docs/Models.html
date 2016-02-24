@@ -10,7 +10,7 @@
         name="mozTocId294096"></a>iFit: Models (fit models)</h1>
     <br>
     <ol id="mozToc">
-      <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
+      <!--mozToc h3 1 h4 2 h5 3 h4 4 h5 5 h6 6-->
       <li><a href="#mozTocId147615">How to use models </a></li>
       <li><a href="#mozTocId96090">List of default fit models</a></li>
       <li><a href="#mozTocId285330">Specialized models</a>
@@ -25,9 +25,30 @@
               mono-atomic cubic crystal</a></li>
           <li><a href="#mozTocId881911"> Phonon dispersion from
               ab-initio force estimate and dynamical matrix using
-              PHON/QuantumEspresso </a></li>
+              PHON/QuantumEspresso </a>
+            <ol>
+              <li><a href="#mozTocId716147"> A few words about the
+                  theory</a></li>
+              <li><a href="#mozTocId475701"> The sqw_phon model</a></li>
+              <li><a href="#mozTocId902505"> General options</a></li>
+              <li><a href="#mozTocId494449"> References</a></li>
+              <li><a href="#mozTocId108183"> Requirements/installation</a></li>
+            </ol>
+          </li>
           <li><a href="#mozTocId990577">Phonon dispersion from ab-initio
-              force estimate and dynamical matrix using ASE</a></li>
+              force estimate and dynamical matrix using ASE (ABINIT,
+              GPAW, Elk, NWChem, Dacapo, EMT) </a>
+            <ol>
+              <li><a href="#mozTocId891630">Syntax</a></li>
+              <li><a href="#mozTocId880915"> The system configuration
+                  (atoms, unit cell)</a></li>
+              <li><a href="#mozTocId912608"> General options </a></li>
+              <li><a href="#mozTocId134538">Examples</a></li>
+              <li><a href="#mozTocId168620"> References</a></li>
+              <li><a href="#mozTocId183326"> Requirements and
+                  installation</a></li>
+            </ol>
+          </li>
         </ol>
       </li>
       <li><a href="#mozTocId810939">Model builder: defining a new model
@@ -46,6 +67,9 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">Commands we use in this page: <span
         style="font-style: italic;">fits, <a href="#mozTocId775891">ifitmakefunc,
+
+
+
 
 
 
@@ -109,6 +133,9 @@
     <h3><a class="mozTocH3" name="mozTocId96090"></a><span
         style="font-weight: bold;">List of default fit models</span></h3>
     The 1D functions are <span style="font-style: italic;">signal=f(parameters,
+
+
+
 
 
 
@@ -250,6 +277,9 @@
 
 
 
+
+
+
               "x" unit)</span><br>
           </td>
         </tr>
@@ -296,6 +326,9 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Stretched_exponential_function">Exponential
+
+
+
 
 
 
@@ -428,6 +461,9 @@
 
 
 
+
+
+
               distribution function</a> <br>
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<img
@@ -442,6 +478,9 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Log-normal_distribution">Log-Normal
+
+
+
 
 
 
@@ -493,8 +532,9 @@
             (aka Cauchy)&nbsp; <br>
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<img
-              alt="lorz" title="lorz" src="images/Models_Cauchy_pdf.svg.png"
-              align="middle" width="100" height="80"></td>
+              alt="lorz" title="lorz"
+              src="images/Models_Cauchy_pdf.svg.png" align="middle"
+              width="100" height="80"></td>
           <td style="vertical-align: top;">Amplitude Centre HalfWidth
             Background</td>
         </tr>
@@ -566,8 +606,8 @@
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<img
               alt="quad" title="quad"
-              src="images/Models_Parts_of_Parabola.svg.png" align="middle"
-              width="100" height="82"> </td>
+              src="images/Models_Parts_of_Parabola.svg.png"
+              align="middle" width="100" height="82"> </td>
           <td style="vertical-align: top;">Quadratic Linear Constant<br>
           </td>
         </tr>
@@ -639,6 +679,9 @@
 
 
 
+
+
+
               Sine function</a> (exponential decay) <br>
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<img
@@ -672,8 +715,8 @@
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<img
               alt="triangle" title="triangle"
-              src="images/Models_Triangular_function.svg.png" align="middle"
-              width="100" height="70"></td>
+              src="images/Models_Triangular_function.svg.png"
+              align="middle" width="100" height="70"></td>
           <td style="vertical-align: top;">Amplitude Centre HalfWidth
             Background</td>
         </tr>
@@ -683,6 +726,9 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rectangular_function">Top-Hat
+
+
+
 
 
 
@@ -816,6 +862,9 @@
           </td>
           <td valign="top"><a
 href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_function">n-dimensional
+
+
+
 
 
 
@@ -1027,6 +1076,9 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
+
         = P(q).S(q)</span><br>
     </p>
     <p style="text-align: left;">where <span style="font-style:
@@ -1036,6 +1088,9 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
     <ul>
       <li><a href="http://kur.web.psi.ch/sans1/SANSSoft/sasfit.html">SASfit</a>,
         by <a href="http://kur.web.psi.ch/sans1/SANSSoft/KJ33.html">Joachim
+
+
+
 
 
 
@@ -1141,6 +1196,9 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
+
             <br>
           </td>
           <td style="vertical-align: top;">structure factor of particles
@@ -1199,6 +1257,9 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">ff_sphere&nbsp;
+
+
+
 
 
 
@@ -1540,6 +1601,9 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
         </i> and <i>Q_freq</i> parameters along axes.</li>
       <li>A 1D or 2D dispersion can be obtained when setting the
         frequencies (e.g. <i>QK_freq QL_freq</i>) to 0<br>
@@ -1549,6 +1613,9 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     <blockquote>
       <p>&nbsp; p(&nbsp;
         1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -1600,9 +1667,15 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
         <b>E1_qk</b> energy at QK half period [meV]<br>
         &nbsp; p(&nbsp;
         3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -1654,9 +1727,15 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
         <b>E0</b> zone-centre energy gap [meV]<br>
         &nbsp; p(&nbsp;
         5)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -1708,9 +1787,15 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
         <b>QK0</b> QK zone-centre [rlu]<br>
         &nbsp; p(&nbsp;
         7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -1762,9 +1847,15 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
         <b>QH_freq</b> QH frequency [multiples of pi]<br>
         &nbsp; p(&nbsp;
         9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -1816,9 +1907,15 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
         <b>QL_freq</b> QL frequency [multiples of pi]<br>
         &nbsp; p(
         11)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -1972,9 +2069,15 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
       <b>At</b> transverse acoustic [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -2026,9 +2129,15 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
       <b>Aa</b> anisotropic acoustic [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -2080,6 +2189,9 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
       <b>Sa</b> soft mode&nbsp; anisotropic soft optical [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       6)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2107,9 +2219,15 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
       <b>Vt</b> transverse acoustic-optical coupling [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -2162,9 +2280,15 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
+
       <b>w0</b> soft mode frequency at q=0, depends on temperature [meV]<br>
       &nbsp; p(&nbsp;
       9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -2241,10 +2365,16 @@ href="https://www.google.fr/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&
 
 
 
+
+
+
           10.1007/s100510051164</a> </li>
       <li> A.K. Tagantsev et al, <i>Nature Comm</i>, <b>4</b> (2013)
         2229. <a
 href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">DOI:
+
+
+
 
 
 
@@ -2350,6 +2480,9 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
+
       <b>C_ratio</b> C1/C2 force constant ratio first/second neighbours<a
         href="images/Models_sqw_cubic_mono.png"><img
           alt="sqw_cubic_mono" title="sqw_cubic_mono"
@@ -2380,9 +2513,15 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
+
       <b>E0</b> sqrt(C1/m) energy [meV]<br>
       &nbsp; p(&nbsp;
       3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -2438,6 +2577,9 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
+
       2013<br>
       Kittel, Solid State Physics, Wiley, New York, 7th ed. (1996), pp
       99-103.<br>
@@ -2454,9 +2596,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
       DFT</a>, using <a href="http://www.quantum-espresso.org/">Quantum
       Espresso</a>. This model requires to install external software on
     the computer. See <i>Requirements</i> below.<br>
-    <br>
-    <i><u>A few words about the theory</u></i><br>
-    <br>
+    <h5><a class="mozTocH5" name="mozTocId716147"></a> <i><u>A few
+          words about the theory</u></i></h5>
     The dynamical matrix <i>D</i> is defined as:<br>
     <blockquote><i>D</i><i><sub>&#945;</sub></i><i><sub>&#946;</sub></i><i>=1/&#8730;(M</i><i><sub>&#945;</sub></i><i>M</i><i><sub>&#946;</sub></i><i>)
         &#8706;</i><i><sup>2</sup></i><i>V/(&#8706;u</i><i><sub>&#945;</sub></i><i>&#8706;u</i><i><sub>&#946;</sub></i><i>)
@@ -2469,6 +2610,9 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
         = - &#8721; D</i><i><sub>&#945;</sub></i><i><sub>&#946;</sub></i><i>.u</i><i><sub>&#946;</sub></i></blockquote>
     In order to simplify this expression, we assume a periodic motion:<br>
     <blockquote><i>u</i><i><sub>&#945;</sub></i><i>=U</i><i><sub>&#945;</sub></i><i>(k)
+
+
+
 
 
 
@@ -2502,9 +2646,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
       href="http://wolf.ifj.edu.pl/phonon/">PHONON</a>, <a
       href="https://wiki.fysik.dtu.dk/ase">ASE</a> and <a
       href="http://phonopy.sourceforge.net/">PhonoPy</a>.<br>
-    <br>
-    <i><u>The sqw_phon model</u></i><br>
-    <br>
+    <h5><a class="mozTocH5" name="mozTocId475701"></a> <i><u>The
+          sqw_phon model</u></i></h5>
     <table style="text-align: left; width: 1016px; height: 59px;"
       border="1" cellpadding="2" cellspacing="2">
       <tbody>
@@ -2527,7 +2670,10 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
           </td>
         </tr>
         <tr>
-          <td valign="top"><b>sqw_phon</b></td>
+          <td valign="top"><b>sqw_phon<br>
+              <img alt="qe" title="qe" src="images/logo_qe.jpg"
+                align="middle" width="160" height="69"><br>
+            </b></td>
           <td valign="top">Phonon dispersions from the Dynamical matrix,
             using forces estimated by <i>ab-initio</i>, using <a
               href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/phon/">PHON</a>/<a
@@ -2554,7 +2700,17 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
     differentiation of a set of atom displacements. Temporary data files
     are created (POSCAR supercell, FORCES, INPHON, ...).<br>
     <br>
-    The general syntax for creating&nbsp; the S(q,w) model is:<br>
+    The simplest syntax is to call:<br>
+    <blockquote><img alt="sqw_phon_gui" title="sqw_phon_gui"
+        src="images/Models_sqw_phon_gui.png" align="right" width="200"
+        height="131">s = <font color="#3366ff">sqw_phon</font>('gui');
+      &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <i>% displays an entry dialog box</i><i>
+        and proceeds with a fully automatic computation, and plots final
+        results.</i><br>
+    </blockquote>
+    <br>
+    Alternatively, the general syntax for creating&nbsp; the S(q,w)
+    model is:<br>
     <blockquote>s = <font color="#3366ff">sqw_phon</font>;&nbsp;&nbsp;&nbsp;
 
 
@@ -2573,12 +2729,15 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
-      &nbsp;&nbsp;&nbsp; % creates a simple fcc Al model<br>
+
+
+
+      &nbsp;&nbsp;&nbsp; <i>% creates a simple fcc Al model</i><br>
     </blockquote>
     or<br>
     <blockquote>s = <font color="#3366ff">sqw_phon</font>(POSCAR,
-      FORCES);&nbsp;&nbsp;&nbsp; % re-use a previous computation of
-      FORCES<br>
+      FORCES);&nbsp;&nbsp;&nbsp; <i>% re-use a previous computation of
+        FORCES</i><br>
     </blockquote>
     or<br>
     <blockquote>s = <font color="#3366ff">sqw_phon</font>(POSCAR,
@@ -2632,6 +2791,9 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
+
       PP selector</a>.<br>
     <br>
     Other options, given as strings, or a structure, allow to customise
@@ -2639,7 +2801,10 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
     parameters to control the forces estimate using <a
 href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">QuantumEspresso/PWSCF</a>.<br>
     <br>
-    <u><i> </i></u><u><i>General options:</i></u><br>
+    <h5><a class="mozTocH5" name="mozTocId902505"></a> <u><i> </i></u><u><i>General
+
+
+          options</i></u></h5>
     <ul>
       <li><b>target</b>: The <font color="#cc33cc">'target=LOCATION'</font>
         argument can be set to save these files to a defined directory,
@@ -2670,17 +2835,25 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
 
 
 
+
+
+
           3 2]'</font>.</li>
       <li><b>mpi</b>: The number of CPU's to use for Quantum Espresso
         can be set with option e.g <font color="#cc33cc">'mpi=4'</font>.
         This option requires e.g. <a href="http://www.open-mpi.org/">OpenMPI</a>
         to be installed, and is only validated on Linux systems (<i>sudo
           apt-get install openmpi-bin</i>).</li>
-      <li><b>potential_auto</b>: when set to 1, the best
-        pseudo-potential will automatically be chosen (e.g. PBE/PAW).<br>
+      <li><b>potential_auto</b>: when set to 1, a 'good'
+        pseudo-potential will automatically be chosen (e.g. PBE/PAW).</li>
+      <li><b>potentials</b>: a list (cell) of UPF potential files to
+        use. You may also specify a directory. If not specified, the
+        user will be prompted for a list of sensible potentials, to
+        select one per atom. The <b>potential_auto=1</b> skips this
+        dialog, and selects a 'good' potential.<br>
       </li>
     </ul>
-    <i><u>Options for QuantumEspresso/PWSCF affecting memory usage:</u></i><br>
+    <i><u>Options for QuantumEspresso/PWSCF affecting memory usage</u></i><br>
     <ul>
       <li><b>diagonalization</b>: <font color="#cc33cc">'david'</font>
         or <font color="#cc33cc">'cg'</font>. The Davidson method is
@@ -2690,10 +2863,13 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
         A larger value will improve the SCF convergence, and use more
         memory.</li>
     </ul>
-    <i><u>Options for QuantumEspresso/PWSCF affecting convergence:<br>
+    <i><u>Options for QuantumEspresso/PWSCF affecting convergence<br>
       </u></i>
     <ul>
       <li><b> occupations</b>: For metallic and insulator systems, the <i>electron
+
+
+
 
 
 
@@ -2768,12 +2944,18 @@ href="http://www.quantum-espresso.org/wp-content/uploads/Doc/INPUT_PW.html">Quan
 
 
 
+
+
+
       <b>Gamma</b>&nbsp; Damped Harmonic Oscillator width in energy
       [meV]<br>
       &nbsp; p(&nbsp;
       3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Temperature</b>&nbsp;
+
+
+
 
 
 
@@ -2827,7 +3009,7 @@ href="http://www.quantum-espresso.org/wp-content/uploads/upf_files/O.pbe-kjpaw.U
     for plotting all provide nice looking rendering of volume data. See
     <a href="Plot.html#mozTocId734523">Plot/3D</a> page.<br>
     <br>
-    <i><b>References:</b></i><br>
+    <h5><a class="mozTocH5" name="mozTocId494449"></a> <i><b>References</b></i></h5>
     <ul>
       <li><a href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a>: D.
         Alfe, <i>Computer Physics Communications</i> <b>180</b>,2622-2633
@@ -2853,7 +3035,13 @@ href="http://www.quantum-espresso.org/wp-content/uploads/upf_files/O.pbe-kjpaw.U
 
 
 
+
+
+
         (2009). &lt;<a href="http://chianti.geol.ucl.ac.uk/%7Edario">http://chianti.geol.ucl.ac.uk/~dario</a>&gt;.
+
+
+
 
 
 
@@ -2902,9 +3090,12 @@ href="http://www.quantum-espresso.org/wp-content/uploads/upf_files/O.pbe-kjpaw.U
 
 
 
+
+
+
         GPL2 license.</li>
     </ul>
-    <i><b>Requirements/installation:</b></i><br>
+    <h5><a class="mozTocH5" name="mozTocId108183"></a> <i><b>Requirements/installation</b></i></h5>
     <ul>
       <li><a href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a> must
         be installed. It requires a Fortran 90 compiler, e.g. <b>gfortran</b>
@@ -2916,6 +3107,9 @@ href="http://www.quantum-espresso.org/wp-content/uploads/upf_files/O.pbe-kjpaw.U
     </ul>
     <blockquote>We provide a <a
 href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/phon-1.40-amd64.deb">PHON
+
+
+
 
 
 
@@ -2951,6 +3145,9 @@ sudo apt-get install phon
         (we use pw.x/pwscf) must be installed. Installers exist for
         Linux and Windows systems. Install it e.g. with <i>sudo apt-get
           install quantum-espresso</i> (Debian class systems) and <i>sudo
+
+
+
 
 
 
@@ -3009,13 +3206,16 @@ sudo apt-get install phon
 
 
 
+
+
+
         supported format</a>, e.g. <a
         href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR</a>,
       <a
         href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>,
       <a href="http://www.rcsb.org/pdb/">PDB</a>, ... This model
-      requires to install external software on the computer. See <i>Requirements</i>
-      below. </p>
+      requires to install external software on the computer. See <a
+        href="#mozTocId183326"><i>Requirements</i></a> below. </p>
     <table style="text-align: left; width: 1016px; height: 59px;"
       border="1" cellpadding="2" cellspacing="2">
       <tbody>
@@ -3038,11 +3238,14 @@ sudo apt-get install phon
           </td>
         </tr>
         <tr>
-          <td valign="top"><b>sqw_ph_ase</b></td>
+          <td valign="top"><b>sqw_ph_ase<br>
+              <img alt="ase" title="ase" src="images/ase256.png"
+                align="middle" width="80" height="80"><br>
+            </b></td>
           <td valign="top">Phonon dispersions from the Dynamical matrix,
             using forces estimated by <i>ab-initio </i>using <a
-              href="https://wiki.fysik.dtu.dk/ase">ASE</a>.<i>&nbsp;</i>
-          </td>
+              href="https://wiki.fysik.dtu.dk/ase">ASE</a> and a
+            selection of DFT codes. </td>
           <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
             <a href="images/Models_sqw_ph_ase.png"><img
                 src="images/Models_sqw_ph_ase.png" title="sqw_ph_ase Al
@@ -3063,7 +3266,16 @@ sudo apt-get install phon
     The procedure is entirely automatic. A supercell is automatically
     generated, then forces are estimated by differentiation of a set of
     atom displacements. Temporary data files are created.<br>
-    <br>
+    <h5><a class="mozTocH5" name="mozTocId891630"></a><b><i><u>Syntax</u></i></b></h5>
+    The simplest syntax is to call:<br>
+    <blockquote><img alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui"
+        src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_ph_ase_gui.png"
+        align="right" width="200" height="168">s = <font
+        color="#3366ff">sqw_ph_ase</font>('gui'); &nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; <i>% displays an entry dialog box</i><i> and
+        proceeds with a fully automatic computation, and plots final
+        results.</i><br>
+    </blockquote>
     The general syntax for creating&nbsp; the S(q,w) model is:<br>
     <blockquote>s = <font color="#3366ff">sqw_ph_ase</font>;&nbsp;&nbsp;&nbsp;
 
@@ -3083,7 +3295,10 @@ sudo apt-get install phon
 
 
 
-      &nbsp;&nbsp;&nbsp; creates a simple fcc Al model<br>
+
+
+
+      &nbsp;&nbsp;&nbsp; <i>% creates a simple fcc Al model</i><br>
     </blockquote>
     or<br>
     <blockquote>s = <font color="#3366ff">sqw_ph_ase</font>(configuration);<br>
@@ -3106,9 +3321,14 @@ sudo apt-get install phon
 
 
 
+
+
+
       options, ...);<br>
     </blockquote>
-    where <i>configuration</i> is the location of any file format
+    <h5><a class="mozTocH5" name="mozTocId880915"></a> <u><i>The system
+          configuration (atoms, unit cell)</i></u></h5>
+    The <i>configuration</i> is the location of any file format
     supported by ASE, which describes the system geometry (atom types
     and position in the cell). In addition, the system configuration can
     be given as a bulk, molecule of nano-tube constructors.<br>
@@ -3129,31 +3349,38 @@ sudo apt-get install phon
             CIF, ETSF, Gromacs, LAMMPS, PDB, SHELX, VASP/POSCAR,
             MaterialStudio, XYZ. See <a
               href="https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io">full
+
+
+
               list</a>. <br>
           </td>
         </tr>
         <tr>
           <td valign="top"><font color="#cc33cc">'bulk("Cu", "fcc",
               a=3.6, cubic=True)'</font><br>
-            <img alt="bulk" title="bulk" src="images/Models_Cubic.png"
-              width="77" height="77"><br>
+            <div align="center"><img alt="bulk" title="bulk"
+                src="images/Models_Cubic.png" width="77" height="77"><br>
+            </div>
           </td>
           <td valign="top">A bulk material, with formula (Cu, MgO,
             NaCl), lattice constant and structure (sc, fcc, bcc, hcp,
-            diamond, zincblende,
-            rocksalt, cesiumchloride, fluorite or wurtzite). See
-            description of <a
+            diamond, zincblende, rocksalt, cesiumchloride, fluorite or
+            wurtzite). See description of <a
 href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bulk</a>.<br>
           </td>
         </tr>
         <tr>
           <td valign="top"><font color="#cc33cc">'molecule("isobutane")'</font><br>
-            <img alt="molecule" title="molecule"
-              src="images/Models_Molecule_butane.png" width="84"
-              height="73"><br>
+            <div align="center"><img alt="molecule" title="molecule"
+                src="images/Models_Molecule_butane.png" width="84"
+                height="73"><br>
+            </div>
           </td>
           <td valign="top">Any <a
               href="https://wiki.fysik.dtu.dk/ase/ase/structure.html">molecule
+
+
+
               known to ASE</a>, e.g.<small><small> 'isobutene',
                 'CH3CH2OH', 'CH3COOH', 'COF2', 'CH3NO2', 'CF3CN',
                 'CH3OH', 'CCH', 'CH3CH2NH2', 'PH3', 'Si2H6', 'O3', 'O2',
@@ -3187,8 +3414,9 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bul
         <tr>
           <td valign="top"><font color="#cc33cc">'nanotube(6, 0,
               length=4)'</font><br>
-            <img alt="nanotube" title="nanotube"
-              src="images/Models_Nanotube.png" width="136" height="71"><br>
+            <div align="center"><img alt="nanotube" title="nanotube"
+                src="images/Models_Nanotube.png" width="136" height="71"><br>
+            </div>
             <br>
           </td>
           <td valign="top">A carbon (or other material) nanotube. See
@@ -3202,9 +3430,11 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bul
     <br>
     Other options, given as strings, or a structure, allow to customise
     how to create the supercell and other computational tuning stuff.<br>
-    <br>
-    <u><i> </i></u><u><i>General options:</i></u> (more options can be
-    obtained from '<i>help sw_ph_ase</i>')<br>
+    <h5><a class="mozTocH5" name="mozTocId912608"></a> <u><i> </i></u><u><i>General
+
+
+          options</i></u> </h5>
+    more options can be obtained from '<i>help sw_ph_ase</i>'<br>
     <ul>
       <li><b>target</b>: The <font color="#cc33cc">'target=LOCATION'</font>
         argument can be set to save these files to a defined directory,
@@ -3213,6 +3443,9 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bul
       <li><b>supercell</b>: The <i>dimension of the supercell</i> can
         be given using e.g. the <font color="#cc33cc">'supercell=2'</font>
         (for a 2x2x2 supercell) argument, or <font color="#cc33cc">'supercell=[2
+
+
+
 
 
 
@@ -3254,6 +3487,9 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bul
 
 
 
+
+
+
           state occupations</i> should be set by using argument <font
           color="#cc33cc">'metal'</font> or <font color="#cc33cc">'insulator'</font>,
         or <font color="#cc33cc">'occupations=smearing'</font> or<font
@@ -3270,7 +3506,12 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bul
         can be set using e.g. <font color="#cc33cc">'kpoints=2'</font>
         or <font color="#cc33cc">'kpoints=[3 4 3]'</font>.</li>
       <li><b>xc</b>: type of Exchange-Correlation functional to use,
-        e.g. <font color="#cc33cc">'xc=PBE'</font>.<br>
+        e.g. <font color="#cc33cc">'xc=PBE'</font>. Other choices<font
+          color="#cc33cc"> 'LDA','revPBR','RPBE'</font>,...<br>
+      </li>
+      <li><b>potentials</b>: pseudo potential directory to use, e.g. <font
+          color="#cc33cc">'/usr/share/elk-lapw/species'</font>, <font
+          color="#cc33cc">'/usr/share/abinit/psp'</font>.<br>
       </li>
     </ul>
     <p>This model may use any calculator as listed below:<br>
@@ -3284,40 +3525,66 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bul
           </td>
         </tr>
         <tr>
-          <td valign="top">EMT</td>
+          <td valign="top"><img alt="emt" title="emt"
+              src="images/emt.png" align="middle" width="71" height="50">&nbsp;<a
+href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
           <td valign="top">Effective Medium Theory calculator (only for
             Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O). Rather fast, but limited.<br>
           </td>
         </tr>
         <tr>
-          <td valign="top"><a href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a></td>
+          <td valign="top"><a href="http://wiki.fysik.dtu.dk/gpaw"><img
+                alt="GPAW" title="GPAW"
+                src="file:///home/farhi/dev/iFit/Docs/images/logo-gpaw.png"
+                align="middle" border="0" width="80" height="39"> </a><a
+              href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a><a
+              href="http://wiki.fysik.dtu.dk/gpaw"><br>
+            </a></td>
           <td valign="top">Real-space/plane-wave/LCAO PAW code</td>
         </tr>
         <tr>
-          <td valign="top"><a href="http://www.nwchem-sw.org/">NWChem</a></td>
+          <td valign="top"><a href="http://www.nwchem-sw.org/"><img
+                alt="nwchem" title="nwchem" src="images/nwchem.png"
+                align="middle" border="0" width="80" height="22"></a><a
+              href="http://www.nwchem-sw.org/">&nbsp;NWChem</a></td>
           <td valign="top">Gaussian based electronic structure code</td>
         </tr>
         <tr>
-          <td valign="top"><a href="https://wiki.fysik.dtu.dk/dacapo/">Dacapo</a></td>
+          <td valign="top"><a href="https://wiki.fysik.dtu.dk/dacapo/"><img
+                alt="jacapo" title="jacapo" src="images/jacapo.png"
+                align="middle" border="0" width="80" height="29"></a><a
+              href="https://wiki.fysik.dtu.dk/dacapo/">&nbsp;Dacapo</a></td>
           <td valign="top">Plane-wave ultra-soft pseudopotential code</td>
         </tr>
         <tr>
-          <td valign="top"><a href="Elk">ELK</a></td>
+          <td valign="top"><a href="Elk"><img alt="elk" title="elk"
+                src="images/elk.png" align="middle" border="0"
+                width="81" height="47"></a><a href="Elk">&nbsp;ELK</a></td>
           <td valign="top">Full Potential LAPW code</td>
         </tr>
         <tr>
-          <td valign="top"><a href="http://www.abinit.org/">ABINIT</a></td>
+          <td valign="top"><a href="http://www.abinit.org/"><img
+                alt="abinit" title="abinit" src="images/abinit.png"
+                align="middle" border="0" width="80" height="34"></a><a
+              href="http://www.abinit.org/">&nbsp;ABINIT</a></td>
           <td valign="top">Plane-wave pseudopotential code the default</td>
         </tr>
       </tbody>
     </table>
     <br>
+    Alternatively, you may use the <a href="#mozTocId881911">sqw_phon</a>
+    model above, which makes use of <a
+      href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a> and <a
+      href="http://www.quantum-espresso.org/">Quantum Espresso</a>.<br>
     <p>The model parameters, once built, are the following:<br>
     </p>
     <blockquote>&nbsp; p(&nbsp;
       1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Amplitude</b><br>
       &nbsp; p(&nbsp;
       2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+
 
 
 
@@ -3368,11 +3635,14 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bul
 
 
 
+
+
+
       [K]<br>
     </blockquote>
     The axes needed for the evaluation are expressed in <i>rlu</i> for
     QH,QK,QL and in meV for the energy.<br>
-    <br>
+    <h5><a class="mozTocH5" name="mozTocId134538"></a><i><u>Examples</u></i></h5>
     A usage example is:<a href="images/Models_sqw_ph_ase.png"><img
         alt="sqw_ph_ase Al fcc" title="sqw_ph_ase Al fcc"
         src="images/Models_sqw_ph_ase.png" align="right" border="0"
@@ -3393,28 +3663,35 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bul
     The <b>plot (surf), plot3, scatter3</b>, and <b>slice</b> methods
     for plotting all provide nice looking rendering of volume data. See
     <a href="Plot.html#mozTocId734523">Plot/3D</a> page.<br>
-    <br>
-    <i><b>References:</b></i><br>
+    <h5><a class="mozTocH5" name="mozTocId168620"></a> <u><i><b>References</b></i></u></h5>
     <a href="https://wiki.fysik.dtu.dk/ase">Atomic Simulation
       Environment</a> S. R. Bahn and K. W. Jacobsen, <i>Comput. Sci.
       Eng.</i>, Vol. <b>4</b>, 56-66, 2002.<br>
     <a href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a>&nbsp; J. J.
     Mortensen et al, <i>Phys Rev B</i>, Vol. <b>71</b>, 035109 (2005).
-    <br>
+    <a href="https://wiki.fysik.dtu.dk/gpaw/setups/setups.html">Pseudo-potentials</a>.<br>
     <a href="http://www.nwchem-sw.org/">NWChem</a>&nbsp; M. Valiev et
     al, <i>Comput. Phys. Commun.</i> <b>181</b>, 1477 (2010).<br>
-    <a href="http://elk.sourceforge.net">Elk</a> NOTE: The Elk
-    executable should be compiled with e.g. elk/src/modmain.f90:289
-    maxsymcrys=1024 or larger. We provide <a
+    <a href="http://elk.sourceforge.net">Elk</a> cite
+    &lt;http://elk.sourceforge.net&gt;. NOTE: The Elk executable should
+    be compiled with e.g. elk/src/modmain.f90:289 maxsymcrys=1024 or
+    larger to handle supercells. We provide an <a
 href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/elk-lapw_3.3.17-1_amd64.deb">Elk-3.3.17</a>
-    compiled with this setting.<br>
-    <a href="https://wiki.fysik.dtu.dk/dacapo/">DACAPO</a>&nbsp; B.
-    Hammer et al, <i>Phys.Rev.</i><i> B</i> <b>59</b>, 7413 (1999) <br>
-    <a href="http://www.abinit.org/">ABINIT</a><cite> X. Gonze et al, </cite><cite>Computer
-      Physics Communications <b>180</b>, 2582-2615 (2009). </cite><br>
+    Debian package compiled with this setting.<br>
+    <a href="https://wiki.fysik.dtu.dk/dacapo/">DACAPO</a> B. Hammer et
+    al, <i>Phys.Rev.</i><i> B</i> <b>59</b>, 7413 (1999). <a
+      href="https://wiki.fysik.dtu.dk/dacapo/Pseudopotential_Library">Pseudo-potentials</a>.<br>
+    <a href="http://www.abinit.org/">ABINIT</a> X. Gonze et al, <i>Computer
+
+
+
+      Physics Communications</i> <b>180</b>, 2582-2615 (2009). <a
+      href="http://www.abinit.org/downloads/psp-links/pseudopotentials">Pseudo-potentials.</a><br>
     <br>
-    <br>
-    <i><b>Requirements:</b></i><br>
+    <h5><a class="mozTocH5" name="mozTocId183326"></a> <u><i><b>Requirements
+
+
+            and installation</b></i></u></h5>
     The <a href="https://wiki.fysik.dtu.dk/ase">ASE</a> must be
     installed. Packages exist for Ubuntu/Mint/Debian, RedHat/Fedora,
     OpenSUSE, MacOSX (brew), and Windows (experimental). Type
@@ -3423,21 +3700,28 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/elk-lapw_
       <blockquote> </blockquote>
       <pre>% sudo apt-get install python-ase<br></pre>
     </blockquote>
-    And for external calculators<br>
+    External calculators should be installed separately. For Debian
+    systems, we suggest:<br>
     <blockquote>
-      <pre>% sudo apt-add-repository 'deb http://packages.mccode.org/debian stable main'<br>% sudo apt-get update<br>% sudo apt-get install elk-lapw dacapo dacapo-psp gpaw gpaw-setups nwchem nwchem-data abinit abinit-doc<br></pre>
+      <pre>% sudo apt-add-repository 'deb http://packages.mccode.org/debian stable main'<br>% sudo apt-get update<br>% sudo apt-get install elk-lapw dacapo dacapo-psp gpaw gpaw-setups nwchem nwchem-data abinit abinit-doc abinit-psp<br></pre>
     </blockquote>
-    <blockquote><i><b>Note:</b></i> The <i>gpaw-setups</i> is named <a
-        href="http://packages.ubuntu.com/wily/gpaw-data"><i>gpaw-data</i></a>
+    <blockquote><i><b>Note:</b></i> The <i>gpaw-setups</i> package is
+      named <a href="http://packages.ubuntu.com/wily/gpaw-data"><i>gpaw-data</i></a>
       in Ubuntu distributions &gt;= 15.10.<br>
     </blockquote>
     The ABINIT code requires to install an additional library of pseudo
     potentials. We recommand to get it <a
 href="http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz"><i>here
-        (ASE)</i></a> and extract it in <i>/usr/share/abinit/</i>. You
-    may alternatively install for ABINIT the package <a
+
+
+
+        (ASE)</i></a> and extract it in <i>/usr/share/abinit/</i>. We
+    provide the <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
+    package for Debian. You may alternatively install for ABINIT the
+    package <a
       href="http://packages.ubuntu.com/vivid/all/abinit-data/download">abinit-data</a>
-    (which provides a set of pseudo-potentials).<br>
+    (which provides a limited set of pseudo-potentials).<br>
     <br>
     <h3><a class="mozTocH3" name="mozTocId810939"></a><span
         style="font-weight: bold;">Model builder: defining a new model
@@ -3571,6 +3855,9 @@ href="http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz"><i
 
 
 
+
+
+
         (calls fconv in correlation mode)<br>
       </li>
     </ul>
@@ -3609,6 +3896,9 @@ href="http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz"><i
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
+
 
 
 
