@@ -61,7 +61,8 @@ function [filename,format] = save(a, varargin)
 %         b=save(a, 'file', 'hdf data');
 %
 % Version: $Date$
-% See also iData, iData/saveas, iData/load, iData/getframe, save, saveas
+% See also iData, iData/saveas, iData/load, iData/getframe, save, saveas,
+% iData/plot
 
 [filename,format] = saveas(a, varargin{:});
 
