@@ -425,7 +425,7 @@ function [poscar, options]=sqw_phon_argin(varargin)
   % read input arguments
   for index=1:numel(varargin)
    
-    if ischar(varargin{index}) && isempty(dir(varargin{index}))
+    if ischar(varargin{index}) && isempty(dir(varargin{index})) && ~isempty(find(varargin{index} == '='))
       % first try to build a structure from the string
       this = str2struct(varargin{index});
       if isstruct(this)

@@ -55,7 +55,9 @@ function signal=sqw_ph_ase(configuration, varargin)
 %   options.potentials=string              basis datasets or pseudopotentials.
 %     GPAW: see https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-setups
 %     NWChem: see http://www.nwchem-sw.org/index.php/Release64:AvailableBasisSets
-%     Dacapo, Elk, ABINIT: path to potentials.
+%     Dacapo: path to potentials, e.g. /usr/share/dacapo-psp
+%     Elk:    path to potentials, e.g. /usr/share/elk-lapw/species
+%     ABINIT: path to potentials, e.g. /usr/share/abinit/psp/
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
 %   options.xc=string                      type of Exchange-Correlation functional to use
 %     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'            for GPAW
@@ -149,9 +151,9 @@ persistent status
 
 signal = [];
 
-options= sqw_ph_ase_argin(varargin{:});
+options= sqw_ph_ase_argin(configuration, varargin{:});
 
-if nargin == 1 && strcmp(configuration,'gui')
+if strcmp(configuration,'gui')
   options.gui=1;
   configuration=[];
 end
@@ -174,7 +176,7 @@ if options.gui
   % and will select autoplot, 'dos'
   calcs = 'EMT';
   for index={'gpaw','elk','jacapo','nwchem','abinit'};
-    if status.(index{1}), calcs = [ calcs ', ' upper(index{1}) ]; end
+    if isempty(status.(index{1})), calcs = [ calcs ', ' upper(index{1}) ]; end
   end
   calcs = [ calcs ', QuantumEspresso' ];
   NL = sprintf('\n');
@@ -252,7 +254,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   signal=sqw_phon(poscar, options);
   return
 case 'ABINIT'
-  if ~status.(lower(options.calculator)) && isempty(options.command)
+  if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_ph_ase_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   if ~isempty(options.command)
@@ -263,7 +265,11 @@ case 'ABINIT'
     setenv('ASE_ABINIT_COMMAND', cmd);
   end
   if ~isempty(options.potentials)
-    setenv('ABINIT_PP_PATH', options.potentials)
+    setenv('ABINIT_PP_PATH', options.potentials);
+    d = [ dir(fullfile(options.potentials,'LDA_*')) ; dir(fullfile(options.potentials,'GGA_*')) ];
+    for index=d'
+      if index.isdir, setenv('ABINIT_PP_PATH', [ getenv('ABINIT_PP_PATH') pathsep fullfile(options.potentials, index.name) ]); end
+    end
   end
   decl = 'from ase.calculators.abinit import Abinit';
   calc = 'calc = Abinit(chksymbreak=0, toldfe=1.0e-5';
@@ -283,7 +289,7 @@ case 'ABINIT'
   calc = [ calc ')' ];
 case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
-  if ~status.(lower(options.calculator)) && isempty(options.command)
+  if ~isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_ph_ase_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   % location of ELF pseudo-potentials is mandatory
@@ -342,7 +348,7 @@ case 'EMT'
   decl = 'from ase.calculators.emt import EMT';
   calc = 'calc  = EMT()';
 case 'GPAW' % ==================================================================
-  if ~status.(lower(options.calculator)) && isempty(options.command)
+  if ~isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_ph_ase_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   
@@ -383,7 +389,7 @@ case 'GPAW' % ==================================================================
   calc = [ calc ')' ];
   
 case 'JACAPO' % ================================================================
-  if ~status.(lower(options.calculator)) && isempty(options.command)
+  if ~isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_ph_ase_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   
@@ -419,7 +425,7 @@ case 'JACAPO' % ================================================================
   calc = [ calc ')' ];  
   
 case 'NWCHEM' % ================================================================
-  if ~status.(lower(options.calculator)) && isempty(options.command)
+  if ~isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_ph_ase_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   if ~isempty(options.command)
@@ -712,11 +718,11 @@ else
     status.gpaw='gpaw-python';
     disp('  GPAW (http://wiki.fysik.dtu.dk/gpaw)');
   else
-    status.gpaw=0;
+    status.gpaw='';
   end
   % test for NWChem
   [st, result] = system([ precmd 'python -c "from ase.calculators.nwchem import NWChem"' ]);
-  status.nwchem=0;
+  status.nwchem='';
   if st == 0
     % now test executable
     % create a fake nwchem.nw
@@ -734,7 +740,7 @@ else
   
   % test for Jacapo
   [st, result] = system([ precmd 'python -c "from ase.calculators.jacapo import Jacapo"' ]);
-  status.jacapo=0;
+  status.jacapo='';
   if st == 0
     % now test executable
     [st,result]=system([ precmd 'dacapo_serial.run' ]);
@@ -745,7 +751,7 @@ else
   end
   % test for Elk
   [st, result] = system([ precmd 'python -c "from ase.calculators.elk import ELK"' ]);
-  status.elk=0;
+  status.elk='';
   if st == 0
     % now test executable
     [st,result]=system([ precmd 'elk' ]);
@@ -762,7 +768,7 @@ else
     end
     % test for ABINIT
     [st, result] = system([ precmd 'python -c "from ase.calculators.abinit import Abinit"' ]);
-    status.abinit=0;
+    status.abinit='';
     if st == 0
       % now test executable
       [st,result]=system([ precmd 'echo "0" | abinis' ]);
@@ -802,7 +808,7 @@ options.autoplot   = 0;
 options.gui        = 0;
 
 % read input arguments
-  for index=1:numel(varargin)
+for index=1:numel(varargin)
   if ischar(varargin{index}) && isempty(dir(varargin{index})) && ~isempty(find(varargin{index} == '='))
     % first try to build a structure from the string
     this = str2struct(varargin{index});
@@ -836,7 +842,7 @@ options.gui        = 0;
     elseif strcmp(lower(varargin{index}),'autoplot')
       options.autoplot = 1;
     elseif strcmp(lower(varargin{index}),'gui')
-      options.gui = 1;
+      options.gui = 1
     end
   end
   if isstruct(varargin{index})
