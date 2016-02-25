@@ -31,7 +31,7 @@ function signal=sqw_phon(varargin)
 %   choice will be made from existing UPF files from Quantum Espresso, with
 %   a preference for PBE-PAW pseudo-potentials. Potentials are searched in the
 %   QE location, in PSEUDO_DIR environment variable (when set) and locally. 
-%   You can specify as many of these UPF and directories.
+%   You can specify as many of these UPF and directories (/usr/share/espresso/pseudo).
 %   More PP/UPF at <http://www.quantum-espresso.org/pseudopotentials/>
 %
 % FORCES: a previously computed FORCES file can be given after the corresponding
