@@ -211,12 +211,45 @@ options.configuration = configuration;
 
 pw = pwd; target = options.target;
 
-% handle supported calculators
+% handle input configuration: read
+if exist(configuration)
+  read = sprintf('import ase.io; configuration = "%s"; atoms = ase.io.read(configuration); ', ...
+    configuration);
+elseif ischar(configuration)
+  read = configuration;
+  switch strtok(configuration, ' (')
+  case 'bulk'
+    read = sprintf('from ase.lattice import bulk; atoms = %s; ', configuration);
+  case 'molecule'
+    read = sprintf('from ase.structure import molecule; atoms = %s; ', configuration);
+  case 'nanotube'
+    read = sprintf('from ase.structure import nanotube; atoms = %s; ', configuration);
+  end
+end
+
+% handle supported calculators: decl and calc
 if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': configuring ' options.calculator ]); end
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 switch upper(options.calculator)
-case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO'}
-  signal=sqw_phon(configuration, options);
+case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
+  % ASE is installed. We use it to create a proper POSCAR file, then we call sqw_phon (QE)
+  poscar = fullfile(options.target,'POSCAR_ASE');
+  read = [ read 'from ase.io import write; write("' poscar '",atoms, format="vasp")' ];
+  try
+    [st, result] = system([ precmd 'python -c ''' read '''' ]);
+  catch
+    st = 127;
+  end
+  if st ~= 0
+    sqw_ph_ase_error([ mfilename ': failed calling sqw_phon with ' ...
+      poscar ], options);
+  end
+  if options.gui && ishandle(options.gui), 
+    delete(options.gui);
+  end
+  options.gui = 0;
+  disp([ mfilename ': calling sqw_phon(' poscar ') with PHON/Quantum Espresso' ]);
+  signal=sqw_phon(poscar, options);
   return
 case 'ABINIT'
   if ~status.(lower(options.calculator)) && isempty(options.command)
@@ -427,22 +460,7 @@ otherwise
   sqw_ph_ase_error([ mfilename ': Unknown ASE calculator ' options.calculator ], options);
 end
 
-% handle input configuration
 if options.gui && ishandle(options.gui), waitbar(0.10, options.gui, [ mfilename ': writing python script ASE/' options.calculator ]); end
-if exist(configuration)
-  read = sprintf('import ase.io\nconfiguration = ''%s''\natoms = ase.io.read(configuration)\n', ...
-    configuration);
-elseif ischar(configuration)
-  read = configuration;
-  switch strtok(configuration, ' (')
-  case 'bulk'
-    read = sprintf('from ase.lattice import bulk\natoms = %s\n', configuration);
-  case 'molecule'
-    read = sprintf('from ase.structure import molecule\natoms = %s\n', configuration);
-  case 'nanotube'
-    read = sprintf('from ase.structure import nanotube\natoms = %s\n', configuration);
-  end
-end
 
 if strcmp(upper(options.calculator), 'GPAW')
   % GPAW Bug: gpaw.aseinterface.GPAW does not support pickle export for 'input_parameters'
@@ -775,7 +793,7 @@ options.kpoints    = 1;
 options.xc         = 'PBE';
 options.mode       = 'fd';            % GPAW
 options.potentials = '';
-options.diagonalization = 'rmm-diis'; % GPAW
+options.diagonalization = ''; % GPAW would prefer rmm-diis
 options.occupations= '';
 options.ecutwfc    = 0;
 options.command    = '';
