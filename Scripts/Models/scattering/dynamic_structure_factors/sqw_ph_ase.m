@@ -264,6 +264,9 @@ case 'ABINIT'
     end
     setenv('ASE_ABINIT_COMMAND', cmd);
   end
+  if isunix
+    if isempty(options.potentials), options.potentials='/usr/share/abinit/psp/'; end
+  end
   if ~isempty(options.potentials)
     setenv('ABINIT_PP_PATH', options.potentials);
     d = [ dir(fullfile(options.potentials,'LDA_*')) ; dir(fullfile(options.potentials,'GGA_*')) ];
