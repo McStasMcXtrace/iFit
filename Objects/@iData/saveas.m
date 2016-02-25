@@ -63,7 +63,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %         b=saveas(a, 'file', 'hdf data');
 %
 % Version: $Date$
-% See also iData, iData/load, iData/getframe, save
+% See also iData, iData/load, iData/getframe, save, iData/plot
 
 % Contributed code (Matlab Central): 
 %   plot2svg:   Juerg Schwizer, 22-Jan-2006 

@@ -64,8 +64,8 @@ function WriteToVTK(matrix, filename, str)
 % Get the matrix dimensions.
 [N M O] = size(matrix);
 
-if M*N*O > 1e5  % if big data set, we save in binary
-  fmt = 'BINARY'
+if M*N*O > 1e5 % if big data set, we save in binary
+  fmt = 'BINARY';
 else
   fmt = 'ASCII';
 end
@@ -93,7 +93,7 @@ fwrite(fid, ['# vtk DataFile Version 2.0' nl ...
     'POINT_DATA '  num2str(N*M*O) nl ...
     'SCALARS volume_scalars char 1' nl ] );
 
-if strcmp(fmp, 'ASCII')
+if strcmp(fmt, 'ASCII')
   fwrite(fid, [ 'LOOKUP_TABLE default' nl ]);
   for z = 1:O
       % Get this layer.

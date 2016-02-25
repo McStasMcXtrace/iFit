@@ -245,7 +245,7 @@ end
 i_nonmonotonic=0;
 for index=1:ndims(b)
   dif = diff(i_axes{index},1,index);
-  if all(dif < 0) || all(dif >= 0), continue; end
+  if all(dif(:) < 0) || all(dif(:) >= 0), continue; end
   i_nonmonotonic=index; break;
 end
 
