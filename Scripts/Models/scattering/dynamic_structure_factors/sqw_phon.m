@@ -20,10 +20,12 @@ function signal=sqw_phon(varargin)
 % The arguments can be any set of:
 % POSCAR: file name to an existing POSCAR
 %   a VASP compliant file providing initial system structure, with lattice
-%   and position of atoms in a stable, equilibrated configuration.
+%     and position of atoms in a stable, equilibrated configuration.
 %   The first line MUST start with the chemical formula of the system, as a 
-%   single word, which can be followed by any other comment.
+%     single word, which can be followed by any other comment.
 %   The specified file name can be different than POSCAR.
+%   If you wish to specify the initial system structure with an other file format
+%     and have installed ASE, you should use sqw_ph_ase(file, ...)
 %
 % pseudo: file name of pseudo-potential to use. If not set, a reasonable 
 %   choice will be made from existing UPF files from Quantum Espresso, with
@@ -428,8 +430,7 @@ function [poscar, options]=sqw_phon_argin(varargin)
       if isstruct(this)
         varargin{index} = this;
       end
-    end
-    if ischar(varargin{index})
+    elseif ischar(varargin{index})
       [p,f,e] = fileparts(varargin{index});
       % handle static options: metal,insulator, random
       if strcmp(varargin{index},'smearing') || strcmp(varargin{index},'metal')
@@ -454,7 +455,8 @@ function [poscar, options]=sqw_phon_argin(varargin)
       else
         disp([ mfilename ': WARNING: unkown option/argument: ' varargin{index} ]);
       end
-    elseif isstruct(varargin{index})
+    end
+    if isstruct(varargin{index})
       % a structure: we copy the fields into options.
       this = varargin{index};
       f    =fieldnames(this);
@@ -477,6 +479,7 @@ function [poscar, options]=sqw_phon_argin(varargin)
     poscar = 'POSCAR';
     if isempty(dir(poscar))
       poscar = fullfile(ifitpath,'Data','POSCAR_Al');
+      disp([ mfilename ': using default ' poscar ]);
       options.occupations   = 'smearing';
       options.potential_auto= 1;
     end
@@ -489,10 +492,12 @@ function [poscar, options]=sqw_phon_argin(varargin)
 
   % copy the POSCAR into the target directory
   d = dir(poscar);
-  copyfile(poscar, options.target);
+  try
+    copyfile(poscar, options.target);
+  end
   % copy any additional potential
   try
-  copyfile(fullfile(fileparts(poscar),'*.UPF'),options.target);
+    copyfile(fullfile(fileparts(poscar),'*.UPF'),options.target);
   end
 
   poscar = fullfile(options.target, d.name);
@@ -822,15 +827,18 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   natoms = size(displaced.coords,1);
   ntyp   = numel(displaced.atomcount);
   alat   = norm(displaced.lattice(1,:))/0.529; % in Bohr [a.u] unit
-  if isfield(options,'kpoints') && options.kpoints > 0
-    kpoints = options.kpoints; else kpoints   = 2; 
+  if isfield(options,'kpoints') && ~isempty(options.kpoints) && all(options.kpoints > 0)
+    kpoints = options.kpoints; 
+  else kpoints   = 2; 
   end
   if isscalar(kpoints), kpoints=[ kpoints kpoints kpoints ]; end
-  if isfield(options,'ecutwfc') && options.ecutwfc > 0
-    ecut = options.ecutwfc; else ecut   = ntyp*15; 
+  if isfield(options,'ecutwfc') && ~isempty(options.ecutwfc) && options.ecutwfc > 0
+    ecut = options.ecutwfc; 
+  else ecut   = ntyp*15; 
   end
-  if isfield(options,'mixing_beta') && options.mixing_beta > 0
-    mixing_beta = options.mixing_beta; else mixing_beta = 0.7; 
+  if isfield(options,'mixing_beta') && ~isempty(options.mixing_beta) && options.mixing_beta > 0
+    mixing_beta = options.mixing_beta; 
+  else mixing_beta = 0.7; 
   end
   
   fprintf(fid, '%s\n', displaced.comment); % chemical formula/system
@@ -849,7 +857,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   if isfield(options,'ecutrho')
     fprintf(fid, '  ecutrho = %f\n', options.ecutrho);
   end
-  if isfield(options,'occupations')
+  if isfield(options,'occupations') && ~isempty(options.occupations)
     switch lower(options.occupations)
     case {'smearing','metal'}
     fprintf(fid, '  occupations=''smearing'', smearing=''methfessel-paxton'', degauss=0.04\n');
@@ -861,18 +869,18 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   end
   fprintf(fid, '/\n');
   fprintf(fid, '&electrons\n');
-  if isfield(options, 'conv_thr')
+  if isfield(options, 'conv_thr') && ~isempty(options.conv_thr)
     fprintf(fid, '    conv_thr = %f\n', options.conv_thr);
   end
   fprintf(fid, '    mixing_beta = %f\n', mixing_beta);
   fprintf(fid, '    mixing_mode = ''plain''\n');
-  if isfield(options,'mixing_ndim')
+  if isfield(options,'mixing_ndim') && ~isempty(options.mixing_ndim)
     fprintf(fid, '    mixing_ndim = %i\n', options.mixing_ndim);
   end
-  if isfield(options, 'electron_maxstep')
+  if isfield(options, 'electron_maxstep') && ~isempty(options.electron_maxstep)
     fprintf(fid, '    electron_maxstep = %i\n', options.electron_maxstep);
   end
-  if isfield(options, 'diagonalization')
+  if isfield(options, 'diagonalization') && ~isempty(options.diagonalization)
     fprintf(fid, '    diagonalization = ''%s''\n', options.diagonalization);
   end
   fprintf(fid, '/\n');
@@ -1068,10 +1076,10 @@ end
   
 % ------------------------------------------------------------------------------
 
-function sqw_phon_sqw_phon_error(message, options)
+function sqw_phon_error(message, options)
 
 if options.gui && ishandle(options.gui)
   delete(options.gui);
   errordlg(message, [ 'iFit: ' mfilename ' ' options.configuration ' FAILED' ]);
 end
-sqw_phon_error(message);
+error(message);
