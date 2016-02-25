@@ -681,16 +681,24 @@ if options.autoplot
   if options.gui && ishandle(options.gui), waitbar(0.75, options.gui, [ mfilename ': plotting phonons and DOS' ]); end
   disp([ mfilename ': Model ' configuration ' plotting phonons.' ])
   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,150,151);
-  figure; 
+  fig=figure; 
   if options.dos, subplot(1,2,1); end
-  f=iData(signal,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled'); axis tight;
+  f=iData(signal,[],qh,qk,ql,w); 
+  f=log(f(1,:, :,:)); scatter3(f,'filled'); axis tight;
+  % export plot
+  save(f, fullfile(options.target, 'phonons.vtk'), 'vtk');
+  save(f, fullfile(options.target, 'phonons.png'),'png','view3 tight');
   view([38 26]);
   if options.dos
     subplot(1,2,2);
     plot(signal.UserData.DOS); % plot the DOS, as indicated during model creation
+    save(signal.UserData.DOS, fullfile(options.target, 'DOS.svg'), 'svg');
   end
   drawnow
+  saveas(fig, fullfile(options.target, 'phonons.pdf'), 'pdf');
+
   if options.gui && ishandle(options.gui), delete(options.gui); end
+  
 end
 
 

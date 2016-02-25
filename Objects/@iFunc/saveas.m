@@ -241,7 +241,7 @@ case 'json'
 case {'yaml','yml'}
   YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
 otherwise
-  iFunc_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
+  warning([ mfilename ': Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
   filename = [];
 end
 
