@@ -704,12 +704,12 @@ if status.ase ~= 0
 else
   disp([ mfilename ': using ASE ' result ]);
   disp('Available calculators:');
-  status.emt=1;
+  status.emt='ase-run';
   disp('  EMT           only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
   % test for GPAW
   [st, result] = system([ precmd 'python -c "from gpaw import GPAW"' ]);
   if st == 0
-    status.gpaw=1;
+    status.gpaw='gpaw-python';
     disp('  GPAW (http://wiki.fysik.dtu.dk/gpaw)');
   else
     status.gpaw=0;
@@ -724,7 +724,7 @@ else
     dlmwrite([ f '.nw' ], '');
     [st,result]=system([ precmd 'nwchem ' f '.nw' ]);
     if st==0 || st==139
-      status.nwchem=1;
+      status.nwchem='nwchem';
       disp('  NWChem (http://www.nwchem-sw.org/) as "nwchem"');
     end
     delete([ f '.*' ])
@@ -739,7 +739,7 @@ else
     % now test executable
     [st,result]=system([ precmd 'dacapo_serial.run' ]);
     if st == 0
-      status.jacapo=1;
+      status.jacapo='dacapo_serial.run';
       disp('  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "dacapo_serial.run"');
     end
   end
@@ -753,11 +753,11 @@ else
       % try elk-lapw
       [st,result]=system([ precmd 'elk-lapw' ]);
       if st == 0
-        status.elk=1;
+        status.elk='elk-lapw';
         disp('  Elk (http://elk.sourceforge.net) as "elk-lapw"');
       end
     else
-      status.elk=1;
+      status.elk='elk';
       disp('  Elk (http://elk.sourceforge.net) as "elk"');
     end
     % test for ABINIT
@@ -767,7 +767,7 @@ else
       % now test executable
       [st,result]=system([ precmd 'echo "0" | abinis' ]);
       if st == 0 || st == 2
-        status.abinit=1;
+        status.abinit='abinis';
         disp('  ABINIT (http://www.abinit.org/) as "abinis"');
       end
     end
@@ -838,7 +838,8 @@ options.gui        = 0;
     elseif strcmp(lower(varargin{index}),'gui')
       options.gui = 1;
     end
-  elseif isstruct(varargin{index})
+  end
+  if isstruct(varargin{index})
     % a structure: we copy the fields into options.
     this = varargin{index};
     f    =fieldnames(this);

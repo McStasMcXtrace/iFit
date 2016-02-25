@@ -424,13 +424,15 @@ function [poscar, options]=sqw_phon_argin(varargin)
 
   % read input arguments
   for index=1:numel(varargin)
+   
     if ischar(varargin{index}) && isempty(dir(varargin{index}))
       % first try to build a structure from the string
       this = str2struct(varargin{index});
       if isstruct(this)
         varargin{index} = this;
       end
-    elseif ischar(varargin{index})
+    end
+    if ischar(varargin{index})
       [p,f,e] = fileparts(varargin{index});
       % handle static options: metal,insulator, random
       if strcmp(varargin{index},'smearing') || strcmp(varargin{index},'metal')
@@ -459,12 +461,11 @@ function [poscar, options]=sqw_phon_argin(varargin)
     if isstruct(varargin{index})
       % a structure: we copy the fields into options.
       this = varargin{index};
-      f    =fieldnames(this);
-      for i=1:numel(fieldnames(this))
+      f    = fieldnames(this);
+      for i=1:numel(f)
         options.(f{i}) = this.(f{i});
       end
     end
-  
   end % for
 
   % random displacement
