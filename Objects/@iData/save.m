@@ -37,6 +37,7 @@ function [filename,format] = save(a, varargin)
 %           'hdf4' save as an HDF4 image
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D)
 %           'json' save as JSON JavaScript Object Notation, ascii
+%           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative (3/4D)
 %           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
 %           'off'  save as Object File Format (geometry), ascii
 %           'ply'  save as PLY (geometry), ascii

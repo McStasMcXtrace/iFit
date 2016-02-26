@@ -38,7 +38,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'hdf4' save as an HDF4 image
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D)
 %           'json' save as JSON JavaScript Object Notation, ascii
-%           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative volume (3D)
+%           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative (3/4D)
 %           'ps','pdf','ill','eps' save as an image (with axes)
 %           'ppm','pgm','pbm'
 %           'off'  save as Object File Format (geometry), ascii
