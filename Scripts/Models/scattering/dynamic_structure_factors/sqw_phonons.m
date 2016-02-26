@@ -133,6 +133,10 @@ function signal=sqw_phonons(configuration, varargin)
 %   <http://www.abinit.org/>. Exists as Debian package 'abinit' and 'abinit-doc' (abinit-data).
 %   Install potentials from http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz
 %   into e.g. /usr/share/abinit
+% PHON D. Alfe, Computer Physics Communications 180,2622-2633 (2009). 
+%   <http://chianti.geol.ucl.ac.uk/~dario>.
+% Quantum Espresso P. Giannozzi, et al, J.Phys.:Condens.Matter, 21, 395502 (2009).
+%   <http://www.quantum-espresso.org/>. 
 %
 % input:  p: sqw_phonons model parameters (double)
 %             p(1)=Amplitude
@@ -148,7 +152,7 @@ function signal=sqw_phonons(configuration, varargin)
 % output: signal: model value
 %
 % Version: $Date$
-% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phon, sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks
+% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 
 persistent status
@@ -179,10 +183,9 @@ if options.gui
   %  * kpoints
   % and will select autoplot, 'dos'
   calcs = 'EMT';
-  for index={'gpaw','elk','jacapo','nwchem','abinit'};
-    if isempty(status.(index{1})), calcs = [ calcs ', ' upper(index{1}) ]; end
+  for index={'gpaw','elk','jacapo','nwchem','abinit','quantumespresso','phon'};
+    if ~isempty(status.(index{1})), calcs = [ calcs ', ' upper(index{1}) ]; end
   end
-  calcs = [ calcs ', QuantumEspresso' ];
   NL = sprintf('\n');
   prompt = { [ '{\bf Atom/molecule/system configuration}' NL 'a CIF/PDB/POSCAR/... name or e.g. bulk("Cu", "fcc", a=3.6, cubic=True),' NL  'molecule("H2O"), or nanotube(6, 0, length=4). Documentation at ifit.mccode.org/Models.html' ], ...
   [ '{\bf Calculator}' NL 'one of ' calcs ], ...
@@ -238,6 +241,9 @@ if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename 
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 switch upper(options.calculator)
 case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
+  if isempty(status.(lower(options.calculator))) && isempty(options.command)
+    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+  end
   % ASE is installed. We use it to create a proper POSCAR file, then we call sqw_phon (QE)
   poscar = fullfile(options.target,'POSCAR_ASE');
   read = [ read 'from ase.io import write; write("' poscar '",atoms, format="vasp")' ];
@@ -294,7 +300,7 @@ case 'ABINIT'
   calc = [ calc ')' ];
 case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
-  if ~isempty(status.(lower(options.calculator))) && isempty(options.command)
+  if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   % location of ELF pseudo-potentials is mandatory
@@ -353,7 +359,7 @@ case 'EMT'
   decl = 'from ase.calculators.emt import EMT';
   calc = 'calc  = EMT()';
 case 'GPAW' % ==================================================================
-  if ~isempty(status.(lower(options.calculator))) && isempty(options.command)
+  if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   
@@ -394,7 +400,7 @@ case 'GPAW' % ==================================================================
   calc = [ calc ')' ];
   
 case 'JACAPO' % ================================================================
-  if ~isempty(status.(lower(options.calculator))) && isempty(options.command)
+  if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   
@@ -430,7 +436,7 @@ case 'JACAPO' % ================================================================
   calc = [ calc ')' ];  
   
 case 'NWCHEM' % ================================================================
-  if ~isempty(status.(lower(options.calculator))) && isempty(options.command)
+  if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
   if ~isempty(options.command)
@@ -679,7 +685,7 @@ case 'EMT'
 disp(' * EMT:    K.W. Jacobsen et al, Surf. Sci. 366, 394–402 (1996).');
 case 'QUANTUMESPRESSO'
 disp(' * PHON:   D. Alfe, Computer Physics Communications 180,2622-2633 (2009).')
-disp('* Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).')
+disp(' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).')
 end
 
 % handle autoplot option
@@ -698,7 +704,7 @@ end
 
 % ------------------------------------------------------------------------------
 function sqw_phonons_plot(signal)
-  if ~isempty(signal) || ~isfield(signal.UserData, 'options') , return; end
+  if isempty(signal) || ~isfield(signal.UserData, 'options') , return; end
   
   options = signal.UserData.options;
   disp([ mfilename ': Model ' options.configuration ' plotting phonons.' ])
@@ -804,6 +810,26 @@ else
         disp('  ABINIT (http://www.abinit.org/) as "abinis"');
       end
     end
+    % test for QuantumEspresso
+    [st, result] = system([ precmd 'echo 0 | pw.x' ]);
+    if st == 0
+      status.quantumespresso = 'pw.x';
+      disp('  QuantumEspresso (http://www.quantum-espresso.org/) as "pw.x"');
+    else
+      status.quantumespresso = '';
+    end
+    % test for PHON
+    [st, result] = system([ precmd 'phon' ]);
+    try
+      delete('CRASH');
+      delete('input_tmp.in');
+    end
+    if st == 0 || st == 2
+      status.phon = 'phon';
+      disp('  PHON (http://chianti.geol.ucl.ac.uk/~dario) as "phon"');
+    else
+      status.phon = '';
+    end
   end
   disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
   
@@ -866,10 +892,12 @@ for index=1:numel(varargin)
       options.calculator = 'Elk';
     elseif strcmp(lower(varargin{index}),'abinit')
       options.calculator = 'ABINIT';
+    elseif strcmp(lower(varargin{index}),'qe') || strcmp(lower(varargin{index}),'espresso') || strcmp(lower(varargin{index}),'quantumespresso')
+      options.calculator = 'quantumespresso';
     elseif strcmp(lower(varargin{index}),'autoplot')
       options.autoplot = 1;
     elseif strcmp(lower(varargin{index}),'gui')
-      options.gui = 1
+      options.gui = 1;
     end
   end
   if isstruct(varargin{index})

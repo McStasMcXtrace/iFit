@@ -154,10 +154,12 @@ signal = [];
 p = fileparts(poscar);
 if isempty(p), p=pwd; end
 
-% check for installation of PHON and QE
-[options.phon, options.command] = sqw_phon_requirements(options);
-if isempty(options.phon) || isempty(options.command)
-  return
+if ~isfield(options,'phon') || isempty(options.phon)
+  options.phon = 'phon';
+  if ispc, options.phon=[ options.phon '.exe' ]; end
+end
+if ~isfield(options,'command') || isempty(options.command)
+  options.command = 'pw.x';
 end
 
 options.configuration = poscar;
@@ -492,63 +494,6 @@ options.potentials_full = potentials_full;
 
 % ------------------------------------------------------------------------------
 
-function [phon, pwscf]  = sqw_phon_requirements(options)
-% check if PHON and QuantumEspresso are installed
-
-% check for PHON
-if isempty(options.phon)
-  cmd = 'phon';
-  if ispc, cmd=[ cmd '.exe' ]; end
-else
-  cmd = options.phon;
-end
-
-if ~isempty(dir('INPHON')), delete('INPHON'); end
-[status, result] = system(cmd);
-if isempty(strfind(upper(result),'PHON, VERSION'))
-  phon = [];
-  disp([ mfilename ': ERROR: requires PHON to be installed: ' cmd ])
-  disp('  1- Get it at <http://chianti.geol.ucl.ac.uk/~dario>.');
-  disp('  2- Extract, go in directory, compile with: ./configure; make;')
-  disp('  3- copy executable src/phon into e.g. /usr/local/bin or /usr/bin')
-  disp('You can lso get a Debian package at packages.mccode.org');
-  status = 'error: PHON not installed';
-else
-  phon = cmd;
-end
-
-% check for Quantum ESPRESSO Plane Wave Self Consistent Field
-if isempty(options.command)
-  if ispc
-    cmd = 'pw.exe';
-  else
-    cmd = 'pw.x';
-  end
-else
-  cmd = options.command;
-end
-[status, result] = system([ 'echo 0 | ' cmd ]);
-try
-delete('input_tmp.in')
-end
-if isempty(strfind(upper(result),'PWSCF'))
-  pwscf = [];
-  disp([ mfilename ': ERROR: requires Quantum ESPRESSO to be installed: ' cmd ])
-  disp('  1- Get it at <http://www.quantum-espresso.org>.');
-  disp('  2- Install with e.g.:')
-  if ~ispc
-  disp('       * sudo apt-get install quantum-espresso (Debian class systems)')
-  disp('       * sudo yum install quantum-espresso (RedHat class systems)')
-  disp('       * compile from .tar.gz (other Linux/unix, MacOSX): ./configure; make pw; make install');
-  else
-  disp('       * double click e.g. qe-5.2.0-64bit-serial.exe')
-  end
-  status = 'error: Quantum ESPRESSO not installed';
-else
-  pwscf = cmd;
-  delete('CRASH'); % this is created when nothing is done in QE/PWSCF
-end
-
 % ------------------------------------------------------------------------------
 function geom1 = sqw_phon_supercell(poscar, options)
 % sqw_phon_supercell: create a INPHON file for PHON to create a supercell POSCAR
@@ -639,13 +584,14 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   if ~strcmp(f,'POSCAR')
     copyfile(poscar, fullfile(p,'POSCAR'),'f');
   end
+  if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
   
   % call phon in path 'p'. It also provides DISP
   if ~isempty(options.phon)
     pw = pwd;
     cd(p);
     disp([ 'cd(''' p '''); ' options.phon ]);
-    [status, result] = system([ options.phon ' > phon.log' ]);
+    [status, result] = system([ precmd options.phon ' > phon.log' ]);
     cd(pw);
   end
   % check if the expected files have been created
