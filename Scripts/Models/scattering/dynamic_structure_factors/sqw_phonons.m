@@ -174,6 +174,8 @@ if ~exist('status') || isempty(status) || ~isstruct(status)
   status = sqw_phonons_requirements;
 end
 
+t=clock();
+
 if options.gui
   % pop-up a simple dialog requesting for:
   %  * configuration
@@ -559,9 +561,9 @@ if ~strcmp(upper(options.calculator), 'QUANTUMESPRESSO')
     signal.UserData.input = configuration;
   end
 
-  signal.Name           = [ 'Sqw_ASE_' signal.UserData.input ' Phonon/ASE DHO [' mfilename ']' ];
+  signal.Name           = [ 'Sqw_ASE_' signal.UserData.input ' Phonon/ASE/' options.calculator ' DHO [' mfilename ']' ];
 
-  signal.Description    = [ 'S(q,w) 3D dispersion Phonon/ASE with DHO line shape. ' configuration ];
+  signal.Description    = [ 'S(q,w) 3D dispersion Phonon/ASE/' options.calculator ' with DHO line shape. ' configuration ];
 
   signal.Parameters     = {  ...
     'Amplitude' ...
@@ -661,12 +663,16 @@ if ~strcmp(upper(options.calculator), 'QUANTUMESPRESSO')
   signal = iFunc(signal);
 end % other calculators than QE
 
+signal.UserData.duration = etime(clock, t);
+
 % when model is successfully built, display citations
-disp([ mfilename ': Model ' configuration ' built using: (please cite)' ])
+disp([ mfilename ': Model ' configuration ' built.'  ])
 disp([ '  in ' options.target ]);
+
 if isfield(options, 'dos') && ~strcmp(upper(options.calculator), 'QUANTUMESPRESSO')
   disp('INFO: The vibrational density of states (vDOS) will be computed at first model evaluation.');
 end
+disp([ 'Time elapsed=' num2str(signal.UserData.duration) ' [s]. Please cite:' ])
 disp(' * Atomic Simulation Environment')
 disp('           S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002.')
 disp(' * iFit:   E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
