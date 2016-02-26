@@ -68,7 +68,7 @@ function signal=sqw_sine3d(varargin)
 % output: signal: model value
 %
 % Version: $Date$
-% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phon, sqw_ph_ase, sqw_cubic_monoatomic, sqw_vaks
+% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 
 signal.Name           = [ 'Sqw_sine3d 3D sine dispersion with DHO line shape [' mfilename ']' ];

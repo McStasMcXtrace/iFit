@@ -32,7 +32,7 @@ function signal=sqw_cubic_monoatomic(varargin)
 % output: signal: model value
 %
 % Version: $Date$
-% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phon, sqw_ph_ase, sqw_sine3d, sqw_vaks
+% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_sine3d, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 
 signal.Name           = [ 'Sqw_cubic 3D dispersion(HKL) for cubic monoatomic crystal [' mfilename ']' ];

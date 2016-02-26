@@ -57,7 +57,7 @@ function signal=sqw_phon(varargin)
 %   options.potential_auto=0 or 1          automatic setting of the best PP
 %   options.phon   =string                 path to PHON executable, e.g. 'phon'
 %     if not given, 'phon' is assumed to be available from PATH.
-%   options.pwscf  =string                 path to QW/PWSCF executable, e.g. 'pw.x' or 'pw.exe'
+%   options.command=string                 path to QW/PWSCF executable, e.g. 'pw.x' or 'pw.exe'
 %     if not given, 'pw' is assumed to be available from PATH.
 %
 % options affecting memory usage:
@@ -155,42 +155,9 @@ p = fileparts(poscar);
 if isempty(p), p=pwd; end
 
 % check for installation of PHON and QE
-[options.phon, options.pwscf] = sqw_phon_requirements(options);
-if isempty(options.phon) || isempty(options.pwscf)
+[options.phon, options.command] = sqw_phon_requirements(options);
+if isempty(options.phon) || isempty(options.command)
   return
-end
-
-if options.gui
-  % pop-up a simple dialog requesting for:
-  %  * configuration
-  %  * metal, insulator, semiconductor
-  %  * supercell
-  %  * kpoints
-  % and will select autoplot, 'dos'
-  NL = sprintf('\n');
-  prompt = { [ '{\bf Atom/molecule/system configuration}' NL 'a VASP/POSCAR file. Documentation at ifit.mccode.org/Models.html' ], ...
-  [ '{\bf Smearing}' NL 'metal, semiconductor, insulator or left empty' ], ...
-  [ '{\bf Supercell}' NL 'the size of the repeated model = system*supercell (scalar or 3-vector)' ], ...
-  [ '{\bf K-Points}' NL 'Monkhorst-Pack grid which determines the K sampling (scalar or 3-vector)' ] };
-  dlg_title = 'iFit: Model: phonons from PHON/QuantumEspresso';
-  defAns    = {poscar, options.occupations, ...
-    num2str(options.supercell), num2str(options.kpoints)};
-  num_lines = [ 1 1 1 1 ]';
-  op.Resize      = 'on';
-  op.WindowStyle = 'normal';   
-  op.Interpreter = 'tex';
-  answer = inputdlg(prompt, dlg_title, num_lines, defAns, op);
-  if isempty(answer), 
-    return; 
-  end
-  % extract results
-  poscar             = answer{1};
-  options.occupations= answer{2};
-  options.supercell  = str2num(answer{3});
-  options.kpoints    = str2num(answer{4});
-  options.autoplot   = 1;
-  options.potential_auto=1;
-  options.gui        = waitbar(0, [ mfilename ': starting' ], 'Name', [ 'iFit: ' mfilename ' ' poscar ]);
 end
 
 options.configuration = poscar;
@@ -382,36 +349,6 @@ signal.Expression     = { ...
 
 signal=iFunc(signal);
 
-% when model is successfully built, display citations for PHON and QE
-disp([ mfilename ': Model ' compound ' built using: (please cite) from ' poscar ])
-disp([ '  in ' options.target ]);
-disp(' * PHON: D. Alfe, Computer Physics Communications 180,2622-2633 (2009)')
-disp('     <http://chianti.geol.ucl.ac.uk/~dario>. BSD license.')
-disp(' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009)')
-disp('     <http://www.quantum-espresso.org/>. GPL2 license.')
-disp(' * iFit: E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
-disp('     <http://ifit.mccode.org>. EUPL license.');
-
-% handle autoplot option
-if options.autoplot
-  if options.gui && ishandle(options.gui), waitbar(0.75, options.gui, [ mfilename ': plotting phonons and DOS' ]); end
-  disp([ mfilename ': Model ' poscar ' plotting phonons.' ])
-  qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,150,151);
-  fig=figure; 
-  subplot(1,2,1);
-  f=iData(signal,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled'); axis tight;
-  % export plot
-  save(f, fullfile(options.target, 'phonons.vtk'), 'vtk');
-  save(f, fullfile(options.target, 'phonons.png'),'png','view3 tight');
-  view([38 26]);
-  subplot(1,2,2);
-  plot(signal.UserData.DOS); % plot the DOS, as indicated during model creation
-  save(signal.UserData.DOS, fullfile(options.target, 'DOS.svg'), 'svg');
-  drawnow
-  saveas(fig, fullfile(options.target, 'phonons.pdf'), 'pdf');
-  if options.gui && ishandle(options.gui), delete(options.gui); end
-end
-
 % ------------------------------------------------------------------------------
 
 function [poscar, options]=sqw_phon_argin(varargin)
@@ -422,7 +359,7 @@ function [poscar, options]=sqw_phon_argin(varargin)
   options.kpoints=2;
   options.disp   =[];
   options.phon   =''; % path to PHON
-  options.pwscf  =''; % path to QE/PWSCF
+  options.command  =''; % path to QE/PWSCF
   options.autoplot=0;
   options.gui    =0;
   options.calculator = 'QuantumEspresso';
@@ -556,7 +493,7 @@ options.potentials_full = potentials_full;
 % ------------------------------------------------------------------------------
 
 function [phon, pwscf]  = sqw_phon_requirements(options)
-% check if PHON and QuantumExpresso are installed
+% check if PHON and QuantumEspresso are installed
 
 % check for PHON
 if isempty(options.phon)
@@ -581,14 +518,14 @@ else
 end
 
 % check for Quantum ESPRESSO Plane Wave Self Consistent Field
-if isempty(options.pwscf)
+if isempty(options.command)
   if ispc
     cmd = 'pw.exe';
   else
     cmd = 'pw.x';
   end
 else
-  cmd = options.pwscf;
+  cmd = options.command;
 end
 [status, result] = system([ 'echo 0 | ' cmd ]);
 try
@@ -755,7 +692,7 @@ if isempty(dir(fullfile(p,'FORCES')))
   displacements = str2num(displacements);
   
   % find suitable potentials
-  if ~isempty(options.pwscf)
+  if ~isempty(options.command)
     [geom.potentials,geom.potentials_full] = sqw_phon_forces_pwscf_potentials(geom, options);
   end
   
@@ -788,7 +725,7 @@ if isempty(dir(fullfile(p,'FORCES')))
         ' by ' num2str(displacements(move, 2:4)) ]);
     
     % compute FORCES, then add the result to the 'forces' cell
-    if ~isempty(options.pwscf)
+    if ~isempty(options.command)
       forces{move}= sqw_phon_forces_pwscf(displaced, options);
     else
       forces{move} = [];
@@ -887,6 +824,11 @@ function force = sqw_phon_forces_pwscf(displaced, options)
     fprintf(fid, '    electron_maxstep = %i\n', options.electron_maxstep);
   end
   if isfield(options, 'diagonalization') && ~isempty(options.diagonalization)
+    if strncmp(options.diagonalization, 'dav',3)
+      options.diagonalization = 'david';
+    elseif ~strcmp(option.diagonalization,'cg',2)
+      options.diagonalization
+    end
     fprintf(fid, '    diagonalization = ''%s''\n', options.diagonalization);
   end
   fprintf(fid, '/\n');
@@ -920,14 +862,14 @@ function force = sqw_phon_forces_pwscf(displaced, options)
 
   % EXEC: we run QE/pw.x and collect stdout
   if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
-  disp([ options.pwscf ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
+  disp([ options.command ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
   pw = pwd;
   cd(p);
   try
     if isfield(options, 'mpi')
-      [status, result] = system([ precmd 'mpirun -np ' num2str(options.mpi) ' ' options.pwscf ' < pw.d > pw.out' ]);
+      [status, result] = system([ precmd 'mpirun -np ' num2str(options.mpi) ' ' options.command ' < pw.d > pw.out' ]);
     else
-      [status, result] = system([ precmd options.pwscf ' < pw.d > pw.out' ]);
+      [status, result] = system([ precmd options.command ' < pw.d > pw.out' ]);
     end
   end
   cd(pw);
