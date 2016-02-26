@@ -33,6 +33,7 @@
     Once you have managed to actually <span style="font-style: italic;">do
 
 
+
       something,</span> it is desirable to save your work for future use
     and communication (print, edit, send to friends...). We thus provide
     a general interface to save the <a href="iData.html">iData</a>
@@ -90,6 +91,7 @@
     (thumbnail). The <span style="font-weight: bold;">class2str </span>function
 
 
+
     can more generally write any Matlab variable as a character string.
     And the <span style="font-weight: bold;">str2struct</span> function
     can read a character string and search for [<span style="font-style:
@@ -98,6 +100,7 @@
     <br>
     To load back an m or mat file into memory for re-use, type the
     m-file name without extension, or <span style="font-style: italic;">load(iData,'filename.mat</span>')
+
 
 
     for MAT-files. Refer to the <a href="Load.html">Load</a> page for
@@ -123,8 +126,8 @@
         style="font-style: italic;">Matlab</span> types<br>
     </h3>
     <br>
-    <table style="text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+    <table style="text-align: left; width: 100%;" cellpadding="2"
+      cellspacing="2" border="1">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -211,8 +214,8 @@
     page).<br>
     <span style="font-weight: bold;"><br>
     </span>
-    <table style="text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+    <table style="text-align: left; width: 100%;" cellpadding="2"
+      cellspacing="2" border="1">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -322,8 +325,8 @@
     <p>These file formats are usually fast to read/write.<br>
     </p>
     <span style="font-weight: bold;"> </span>
-    <table style="text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+    <table style="text-align: left; width: 100%;" cellpadding="2"
+      cellspacing="2" border="1">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -363,6 +366,7 @@
               href="iFit.html">iFit standalone</a> or <a
               href="http://www.octave.org">Octave</a>) to be installed
             prior to importation. <span style="font-style: italic;">This
+
 
               file format contains serialized data, to be re-imported
               into an iData object.</span><span style="font-weight:
@@ -475,8 +479,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     needed to generate them is smaller.<br>
     <br>
     <span style="font-weight: bold;"> </span>
-    <table style="text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+    <table style="text-align: left; width: 100%;" cellpadding="2"
+      cellspacing="2" border="1">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -557,6 +561,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             files can be edited/viewed with e.g <a
               href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.
             Such files can of course also be <a href="Load.html">imported
+
 
 
               into iData</a> objects. IDL and Matlab also have dedicated
@@ -855,8 +860,34 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             from the Analyze <a href="http://www.analyzedirect.com/">Biomedical
 
 
+
               Imaging Resource of the Mayo Clinic</a>. </td>
           <td style="vertical-align: top;">Yes<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><span style="color: rgb(204, 51, 204);
+              font-weight: bold;">'nii'</span><br style="color: rgb(204,
+              51, 204);">
+            <span style="color: rgb(204, 51, 204); font-weight: bold;">NifTI</span>
+            <span style="color: rgb(204, 51, 204); font-weight: bold;"></span><span
+              style="color: rgb(204, 51, 204);">MRI volume</span></td>
+          <td valign="top">binary</td>
+          <td valign="top">signal/monitor, with some metadata</td>
+          <td valign="top">A <a href="http://nifti.nimh.nih.gov/">NifTI</a>
+            medical imaging volume data format (MRI). Such files can be
+            obtained from <a href="http://en.wikipedia.org/wiki/DICOM">DICOM</a>
+            files using e.g. <a
+              href="http://cbi.nyu.edu/software/dinifti.php">DicomNifti</a>,
+            <a href="http://od1n.sourceforge.net/">MiTools</a>, <a
+              href="http://lcni.uoregon.edu/%7Ejolinda/MRIConvert/">MRIconvert</a>,
+            or the Matlab tool <a
+href="http://www.mathworks.com/matlabcentral/fileexchange/42997-dicom-to-nifti-converter">dicm2nii</a>.
+            You can view with MiView (<a
+              href="http://od1n.sourceforge.net/">MiTools</a>), <a
+              href="http://cnl.web.arizona.edu/mricro.htm">MRICron</a>.
+          </td>
+          <td valign="top">Yes<br>
           </td>
         </tr>
         <tr>
@@ -896,6 +927,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
         - iFit/iData saving data -&nbsp;</span><span style="font-style:
