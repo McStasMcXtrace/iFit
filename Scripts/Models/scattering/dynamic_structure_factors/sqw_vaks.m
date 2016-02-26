@@ -47,7 +47,7 @@ function signal=sqw_vaks(varargin)
 % output: signal: model value
 %
 % Version: $Date$
-% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phon, sqw_ph_ase, sqw_sine3d
+% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_sine3d
 %   sqw_cubic_monoatomic, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 
 signal.Name           = [ 'Sqw_Vaks 3D dispersion(HKL) for perovskites ABX3 [' mfilename ']' ];
