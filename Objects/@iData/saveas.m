@@ -38,6 +38,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'hdf4' save as an HDF4 image
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D)
 %           'json' save as JSON JavaScript Object Notation, ascii
+%           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative volume (3D)
 %           'ps','pdf','ill','eps' save as an image (with axes)
 %           'ppm','pgm','pbm'
 %           'off'  save as Object File Format (geometry), ascii
@@ -121,6 +122,7 @@ filterspec = { ...
       '*.xhtml', 'embedded HTML/X3D file (*.html using Flash plugin for rendering)';
       '*.xls', 'Excel format (requires Excel to be installed, *.xls)'; ...
       '*.xml','XML file (*.xml)'; ...
+      '*.nii','NiFti volume (*.nii)';
       '*.yaml;*.yml','YAML interchange format (*.yaml)' };
 if strcmp(filename, 'formats')
   fprintf(1, '       EXT  DESCRIPTION [%s(iData)]\n', mfilename);
@@ -350,6 +352,8 @@ case 'edf'  % EDF ESRF format
   filename = medfwrite(a, filename); % in private
 case 'vtk'  % VTK volume
   filename = iData_private_saveas_vtk(a, filename);
+case 'nii'  % NifTi volume
+  filename = iData_private_saveas_nii(a, filename);
 case 'hdr'  % Analyze volume
   filename = iData_private_saveas_analyze(a, filename);
 case {'fits','fit','fts'} % FITS image
