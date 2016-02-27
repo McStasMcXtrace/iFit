@@ -52,6 +52,7 @@ function sigma = Sqw_total_xs(s, Ei)
   if nargin < 2
     Ei = [];
   end
+  if isempty(Ei), Ei=10; end
 
   sigma = [];
 
