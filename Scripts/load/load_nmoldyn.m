@@ -31,7 +31,7 @@ end
 f = {'GlobalAttributes.Value','jobinfo','header'};
 s = findfield(a, f);
 for index=f
-  if isfield(a, index), s{end+1} = index; end
+  if isfield(a, index{1}), s{end+1} = get(a,index{1}); end
 end
 
 % add any other 'fields' as aliases
