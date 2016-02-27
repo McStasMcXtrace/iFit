@@ -1,9 +1,13 @@
 function filename=iData_private_saveas_nii(a, filename)
 % private function to write NifTi files
+%
+% http://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image
+% Jimmy Shen 23 Oct 2005 (Updated 22 Jan 2014)
+% make_nii, save_nii
 
 
-  nii = make_nii(getaxis(a, 0));
-  nii.hdr.hist.descrip = char(a);
+  nii = make_nii(getaxis(a, 0),[], [], [], char(a));
+  % nii.hdr.hist.descrip = char(a);
   save_nii(nii, filename);
 
 
@@ -31,6 +35,7 @@ function filename=iData_private_saveas_nii(a, filename)
 %CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 %ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 %POSSIBILITY OF SUCH DAMAGE.
+%
 
 
 %  Make NIfTI structure specified by an N-D matrix. Usually, N is 3 for 
@@ -289,6 +294,7 @@ function hist = data_history(origin, descrip)
    
    return;					% data_history
 
+% ------------------------------------------------------------------------------
 
 %  Save NIFTI dataset. Support both *.nii and *.hdr/*.img file extension.
 %  If file extension is not provided, *.hdr/*.img will be used as default.
