@@ -42,6 +42,8 @@ end
 s = get(a,'Signal');  % raw Signal (no Monitor weight)
 e = get(a,'Error');   % raw Error  (no Monitor weight)
 m = iData_private_cleannaninf(get(a,'Monitor'));
+if numel(e) > 1 && all(e(:) == e(1)), e=e(1); end
+if numel(m) > 1 && all(m(:) == m(1)), m=m(1); end
 
 % take into account the Monitor
 if not(all(m(:) == 0 | m(:) == 1))
@@ -105,7 +107,7 @@ if all(dim > 0)
     e=e.^2;
 
     for index=1:numel(dim)
-      [x, xlab]     = getaxis(a,dim(index)); x=x(:);
+      [x, xlab]     = getaxis(a,dim(index));
 
       if dim(index) ~= 1  % we put the dimension to integrate on as first
         perm=1:ndims(a);
@@ -118,6 +120,8 @@ if all(dim > 0)
       end
       % make the integration
       if ~isscalar(s)
+        % check dimension of axis x
+        if numel(x) ~= size(s, 1), x=x(:,1); end
         if numel(e) > 1, e = feval(op, x, e, 1); end % trapz(x,e2/m2,1)
         if numel(m) > 1, m = feval(op, 1:length(x), m, 1); end % sum(m)
         % check length(x) == size(s,1)

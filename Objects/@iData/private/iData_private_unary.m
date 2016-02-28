@@ -34,6 +34,8 @@ s = subsref(b,struct('type','.','subs','Signal'));
 [dummy, sl] = getaxis(b, '0');  % signal definition/label
 e = subsref(b,struct('type','.','subs','Error'));
 m = subsref(b,struct('type','.','subs','Monitor'));
+if numel(e) > 1 && all(e(:) == e(1)), e=e(1); end
+if numel(m) > 1 && all(m(:) == m(1)), m=m(1); end
 
 % make sure sparse is done with 'double' type
 if strcmp(op, 'sparse')
@@ -145,6 +147,7 @@ case {'permute','reshape','iData_private_resize'}
 otherwise
   iData_private_error('unary',['Can not apply operation ' op ' on object ' a.Tag ]);
 end
+clear s
 
 % operate with Signal/Monitor and Error/Monitor (back to Monitor data)
 if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
@@ -161,12 +164,15 @@ b = set(b, 'Signal', new_s, 'Error', e, 'Monitor', m);
 if ~isequal(subsref(b,struct('type','.','subs','Signal')), new_s)
   b = setalias(b, 'Signal', new_s, [  op '(' sl ')' ]);
 end
+clear new_s
 if ~isequal(subsref(b,struct('type','.','subs','Error')), e)
   b = setalias(b, 'Error', e);
 end
+clear e
 if ~isequal(subsref(b,struct('type','.','subs','Monitor')), m)
   b = setalias(b, 'Monitor', m);
 end
+clear m
 b.Command=cmd;
 b = iData_private_history(b, op, a);  
 
