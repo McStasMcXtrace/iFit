@@ -58,11 +58,16 @@ function s = Sqw_check(s)
     % we compare the s(q,w) and s(q,-w)
     s_opp = setaxis(s_res, 1, -w);
     s_opp = sum(s_opp,2); s_opp = sort(s_opp, 1);
+    s_opp = -log(s_opp);
+    
     s_res = sum(s_res,2); s_res = sort(s_res, 1);
+    log_s_ratio = log(s_res);
+    clear s_res;
 
     % the ratio should be S(q,w)/S(q,-w) = exp(hw/kT)
     % so log(S(q,w)) - log(S(q,-w)) = hw/kT
-    log_s_ratio = log(s_res) - log(s_opp);
+    log_s_ratio = log_s_ratio - log(s_opp);
+    clear s_opp
     
     % mean_log_ratio = mean(log_s_ratio,0);
     % std_log_ratio  = std(log_s_ratio,0);

@@ -52,7 +52,7 @@ function sigma = Sqw_total_xs(s, Ei)
   if nargin < 2
     Ei = [];
   end
-  if isempty(Ei), Ei=10; end
+  if isempty(Ei), Ei=14; end
 
   sigma = [];
 
@@ -60,21 +60,35 @@ function sigma = Sqw_total_xs(s, Ei)
   if numel(s) > 1
     for index=1:numel(s)
       sigma = [ sigma feval(mfilename, s(index), Ei) ];
+      s(index) = iData;
+    end
+    return
+  end
+  
+  if numel(Ei) > 1
+    sigma = [];
+    if numel(Ei) == 2, Ei=logspace(log10(Ei(1)),log10(Ei(2)),20); end
+    % loop for each incoming neutron energy
+    for ie=1:numel(Ei)
+      sigma = [ sigma Sqw_total_xs(s, Ei(ie)) ];
     end
     return
   end
   
   s = Sqw_check(s);
   if isempty(s), return; end
-
-  if numel(Ei) > 1
-    sigma = [];
-    if numel(Ei) == 2, Ei=linspace(Ei(1),Ei(2),20); end
-    % loop for each incoming neutron energy
-    for ie=1:numel(Ei)
-      sigma = [ sigma Sqw_total_xs(s, Ei(ie)) ];
-    end
-    return
+  if isfield(s, 'classical') && s.classical == 1
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be "classical". You should apply s=Sqw_Bosify(s, temperature) before.' ]);
+  end
+  
+  if isempty(Sqw_getT(s))
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seems to have a Temperature defined. You may apply s=Sqw_Bosify(s, temperature) before.' ]);
+  end
+  
+  w = s{1};
+  
+  if min(w(:)) * max(w(:)) > 0
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to only be defined on w<0 or w>0. You should apply  and then s=Sqw_Bosify(Sqw_symmetrize(s), temperature) before.' ]);
   end
   
   % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
@@ -94,6 +108,4 @@ function sigma = Sqw_total_xs(s, Ei)
   Ki    = SE2V*V2K*sqrt(Ei);
   q     = sq{1};
   sigma = trapz(q.*sq)/2/Ki^2; % integrate over q {1}
-  
- 
   

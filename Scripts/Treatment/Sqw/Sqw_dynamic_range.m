@@ -1,4 +1,4 @@
-function sqw = Sqw_dynamic_range(s, Ei, angles)
+function s = Sqw_dynamic_range(s, Ei, angles)
 % Sqw_dynamic_range(s,Ei): crop the S(|q|,w) to the available dynamic range
 %   for given incident neutron energy.
 %
@@ -39,27 +39,12 @@ function sqw = Sqw_dynamic_range(s, Ei, angles)
   if numel(s) > 1
     for index=1:numel(s)
       sqw = [ sqw feval(mfilename, s(index), Ei, angles) ];
+      s(index)=iData; % clear memory
     end
+    s = sqw;
     return
   end
   
-  if numel(Ei) > 1
-    for index=1:numel(Ei)
-      sqw = [ sqw feval(mfilename, s, Ei(index), angles) ];
-    end
-    return
-  end
-
-  s = Sqw_check(s); % in private
-  if isempty(s), return; end
-  
-  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
-  s = meshgrid(s);
-  
-  % get axes
-  w = s{1};
-  q = s{2};
-
   % compute Ei, Ef, Ki, Kf
   % constants
   SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
@@ -78,19 +63,29 @@ function sqw = Sqw_dynamic_range(s, Ei, angles)
       Ki = SE2V*V2K*sqrt(Ei);
     end
   end
-
-  % compute Ei
-  if isempty(Ki), return; end
-  Vi = K2V*Ki;
-  Ei = VS2E*Vi.^2;
-
-  % handle a vector of incoming Ki
-  if numel(Ki) > 1
-    for index=1:numel(Ki)
+  
+  if numel(Ei) > 1
+    for index=1:numel(Ei)
       sqw = [ sqw feval(mfilename, s, Ei(index), angles) ];
     end
+    s = sqw;
     return
   end
+
+  s = Sqw_check(s); % in private
+  if isempty(s), return; end
+  
+  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
+  s = meshgrid(s);
+  
+  % get axes
+  w = s{1};
+  q = s{2};
+
+  % compute Vi
+  if isempty(Ki), return; end
+  Vi = K2V*Ki;
+  % Ei = VS2E*Vi.^2;
 
   % compute Kf,Ef,Vf,Vi,Ei,lambda for the dynamic range computation
   lambda = 2*pi./Ki;
@@ -115,8 +110,7 @@ function sqw = Sqw_dynamic_range(s, Ei, angles)
     cost = cosd(angles);
     index= find(costheta < min(cost(:)) | costheta > max(cost(:)) | Ef <= 0);
   end
-  sqw = s;
-  sqw(index)=0;
-  sqw.DisplayName = strtrim([ sqw.DisplayName ' Ei=' num2str(Ei) ]);
-  sqw = title(sqw, strtrim([ sqw.Title ' Ei=' num2str(Ei) ]));
+  s(index)=0;
+  s.DisplayName = strtrim([ s.DisplayName ' Ei=' num2str(Ei) ]);
+  s = title(s, strtrim([ s.Title ' Ei=' num2str(Ei) ]));
   

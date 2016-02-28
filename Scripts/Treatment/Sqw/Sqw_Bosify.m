@@ -57,6 +57,7 @@ function s = Sqw_Bosify(s, T, type)
     for index=1:numel(s)
       sqw = [ sqw feval(mfilename, s(index), T, type) ];
     end
+    s(index)=iData; % free memory
     s = sqw;
     return
   end
