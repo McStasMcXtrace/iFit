@@ -47,51 +47,61 @@ function signal=sqw_phonons(configuration, varargin)
 % 'metal','insulator','semiconductor': indicates the type of occupation for 
 %    electronic states, which sets smearing.
 %
-% options: an optional structure with optional settings:
-%   options.target =path                   where to store all files and FORCES
+% options: an optional structure with optional settings
+%
+% General options
+%   options.target =path                   Where to store all files and FORCES
 %     a temporary directory is created when not specified.
 %   options.supercell=scalar or [nx ny nz] supercell size. Default is 2.
-%   options.calculator=string              EMT,GPAW,Elk,NWChem, Dacapo,ABINIT
+%   options.calculator=string              EMT,GPAW,Elk,NWChem,Dacapo,ABINIT,Quantum
 %     Default=GPAW
-%   options.dos=1                          options to compute the vibrational
+%   options.dos=1                          Option to compute the vibrational
 %     density of states (vDOS) in UserData.DOS
-%   options.potentials=string              basis datasets or pseudopotentials.
-%     GPAW: see https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-setups
+%   options.potentials=string              Basis datasets or pseudopotentials.
 %     NWChem: see http://www.nwchem-sw.org/index.php/Release64:AvailableBasisSets
-%     Dacapo: path to potentials, e.g. /usr/share/dacapo-psp
-%     Elk:    path to potentials, e.g. /usr/share/elk-lapw/species
-%     ABINIT: path to potentials, e.g. /usr/share/abinit/psp/
+%     Dacapo: path to potentials, e.g. /usr/share/dacapo-psp       (DACAPOPATH)
+%     Elk:    path to potentials, e.g. /usr/share/elk-lapw/species (ELK_SPECIES_PATH)
+%     ABINIT: path to potentials, e.g. /usr/share/abinit/psp/      (ABINIT_PP_PATH)
+%       or 'NC' or 'PAW'.
 %     QuantumEspresso: path to potentials, e.g. /usr/share/espresso/pseudo
-%   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
-%   options.xc=string                      type of Exchange-Correlation functional to use
-%     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'            for GPAW
-%     'LDA','B3LYP','PBE','RHF','MP2'                       for NWChem
-%     'LDA','PBE','REVPBE','PBESOL','WC06','AM05'           for ELK
-%     'PZ','VWN','PW91','PBE','RPBE','revPBE'               for Dacapo/Jacapo
-%     'LDA', 'PBE', 'revPBE', 'RPBE'                        for ABINIT
-%     Default is 'PBE'.
-%   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
-%     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'fd'.
 %   options.command='exe'                  Path to calculator executable
+%
+% DFT specific options
+%   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
+%   options.xc=string                      Type of Exchange-Correlation functional to use
+%     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'   for GPAW
+%     'LDA','B3LYP','PBE','RHF','MP2'              for NWChem
+%     'LDA','PBE','REVPBE','PBESOL','WC06','AM05'  for ELK
+%     'PZ','VWN','PW91','PBE','RPBE','revPBE'      for Dacapo/Jacapo
+%     'LDA', 'PBE', 'revPBE', 'RPBE'               for ABINIT
+%     for QuantumEspresso, this choice is made through a dialog.
+%     Default is 'PBE'.
 %   options.raw='name=value, ...'          Additional arguments passed to the ASE
 %                                          using the Python syntax.
-%
-% options affecting memory usage:
-%   options.diagonalization='dav' or 'cg' or 'rmm-diis' for GPAW
+%   options.nbands=int                     Number of valence bands for which 
+%     wavefunctions are being computed. (= # of electrons /2); for a metal, 20% more
+%     (minimum 4 more).
+%   options.ecut=scalar                    Kinetic energy cutoff for wavefunctions. 
+%     Large value improves convergence. Estimate is 200*n_typ_atoms in [eV].
+%     Usually one runs at calculations at various ecut to investigate convergence
+%   options.diagonalization='dav' or 'cg' or 'rmm-diis'
 %     The Davidson method is faster than the conjugate-gradient but uses more
 %     memory. The RMM-DIIS method allows parallelization.
-%
-% options affecting convergence:
 %   options.occupations='metal'            for metals ('smearing') help converge
 %                       'insulator'        for insulators
 %                       'semiconductor'    sets 0 eV FermiDirac smearing
 %                       'auto'             for Elk (automatic smearing)
 %                       or 0 for semi-conductors
-%                       or a value in eV for a FermiDirac distribution (GPAW,ABINIT)
-%                                  in Hartree (NWChem,Elk)
+%                       or a value in eV for a FermiDirac distribution
+%   options.nsteps=scalar                   Max number of iterations for SCF.
+%     Typical: 30. Large value improve convergence.
+%   options.toldfe=scalar                  Convergence threshold on the energy for 
+%     selfconsistency [eV].
 %
-%   options.ecutwfc=scalar                 kinetic energy cutoff (eV) for
-%     wavefunctions. Default is 340 eV. Larger value improves convergence.
+% Options specific per calculator
+%   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
+%     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'fd'.
+%   options.iscf='NC','PAW'                Type of SCF cycles (ABINIT) 
 %
 % The options can also be entered as a strings with 'field=value; ...'.
 %
@@ -155,6 +165,9 @@ function signal=sqw_phonons(configuration, varargin)
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 
+% Units: 1 Ry        = 13.6 eV
+%        1 Ha = 2 Ry = 27.2 eV
+
 persistent status
 
 signal = [];
@@ -216,6 +229,18 @@ if options.gui
   options.gui        = waitbar(0, [ mfilename ': starting' ], 'Name', [ 'iFit: ' mfilename ' ' configuration ]);
 end
 
+% handle compatibility fields
+if isfield(options,'conv_thr') && ~isfield(options,'toldfe')
+    options.toldfe = options.conv_thr; end
+    
+if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
+    options.occupations=0.1;
+  elseif strcmp(options.occupations, 'semiconductor')
+    options.occupations=0;
+  elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
+    options.occupations=-1;
+  end
+
 options.configuration = configuration;
 
 % BUILD stage: we call ASE to build the model
@@ -238,47 +263,17 @@ elseif ischar(configuration)
   end
 end
 
+Ha = 27.2; Ry=13.6;
+
+
+
+
+
+% ------------------------------------------------------------------------------
 % handle supported calculators: decl and calc
 if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': configuring ' options.calculator ]); end
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 switch upper(options.calculator)
-case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
-  if isempty(status.(lower(options.calculator))) && isempty(options.command)
-    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
-  end
-  % ASE is installed. We use it to create a proper POSCAR file, then we call sqw_phon (QE)
-  poscar = fullfile(options.target,'POSCAR_ASE');
-  read = [ read 'from ase.io import write; write("' poscar '",atoms, format="vasp")' ];
-  try
-    [st, result] = system([ precmd 'python -c ''' read '''' ]);
-  catch
-    st = 127;
-  end
-  if st ~= 0
-    sqw_phonons_error([ mfilename ': failed converting input to POSCAR ' ...
-      poscar ], options);
-  end
-% QE specific options:
-%   options.mixing_ndim=scalar             number of iterations used in mixing
-%     default=8. If you are tight with memory, you may reduce it to 4. A larger
-%     value will improve the SCF convergence, and use more memory.
-%   options.mixing_beta=scalar             mixing factor for self-consistency
-%     default=0.7. use 0.3 to improve convergence
-%   options.ecutrho=scalar                 kinetic energy cutoff (Ry) for charge
-%     density and potential. Default=4*ecutwfc, suitable for PAW. Larger value
-%     improves convergence, especially for ultra-soft PP (use 8-12*ecutwfc).
-%   options.electron_maxstep=scalar        max number of iterations for SCF.
-%     default=100. Larger value improves convergence.
-%   options.conv_thr=scalar                Convergence threshold for 
-%     selfconsistency. default=1e-6.
-%   options.mpi    =scalar                 number of CPUs to use for PWSCF
-%     this option requires MPI to be installed (e.g. openmpi).
-%
-% options.nbands -> nbnd
-
-  disp([ mfilename ': calling sqw_phon(' poscar ') with PHON/Quantum Espresso' ]);
-  options.dos = 1;
-  signal=sqw_phon(poscar, options);
 
 case 'ABINIT'
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
@@ -295,17 +290,41 @@ case 'ABINIT'
     if isempty(options.potentials), options.potentials='/usr/share/abinit/psp/'; end
   end
   if ~isempty(options.potentials)
-    setenv('ABINIT_PP_PATH', options.potentials);
-    d = [ dir(fullfile(options.potentials,'LDA_*')) ; dir(fullfile(options.potentials,'GGA_*')) ];
-    for index=d'
-      if index.isdir, setenv('ABINIT_PP_PATH', [ getenv('ABINIT_PP_PATH') pathsep fullfile(options.potentials, index.name) ]); end
+    if strcmp(upper(options.potentials),'NC')
+      options.potentials='';
+      options.iscf=7;
+    elseif strcmp(upper(options.potentials),'PAW')
+      options.potentials='';
+      options.iscf=17;
+    else
+      setenv('ABINIT_PP_PATH', options.potentials);
+      d = [ dir(fullfile(options.potentials,'LDA_*')) ; ...
+            dir(fullfile(options.potentials,'GGA_*')) ];
+      for index=d'
+        if index.isdir
+          setenv('ABINIT_PP_PATH', ...
+            [ getenv('ABINIT_PP_PATH') pathsep fullfile(options.potentials, index.name) ]); 
+        end
+      end
     end
   end
   decl = 'from ase.calculators.abinit import Abinit';
-  calc = 'calc = Abinit(chksymbreak=0, toldfe=1.0e-5'; % options.conv_thr
-  if options.ecutwfc <= 0, options.ecutwfc=200; end % no default in ABINIT
-  if (options.ecutwfc > 0)
-    calc = [ calc sprintf(', ecut=%g', options.ecutwfc) ];
+  calc = 'calc = Abinit(chksymbreak=0, chkprim=0';
+  if options.ecut <= 0, options.ecut=340; end % no default in ABINIT (eV)
+  if (options.ecut > 0)
+    calc = [ calc sprintf(', ecut=%g', options.ecut) ];
+  end
+  if options.toldfe <= 0, options.toldfe=1e-5; end % in eV, necessary
+  if (options.toldfe > 0)
+    calc = [ calc sprintf(', toldfe=%g', options.toldfe) ];
+  end
+  if isfield(options,'iscf')
+    % iscf=7 default (NC), 17 (PAW) 
+    % <http://www.abinit.org/doc/helpfiles/for-v7.0/input_variables/varbas.html#iscf>
+    if options.iscf < 0, options.iscf=7; end 
+    if (options.iscf > 0)
+      calc = [ calc sprintf(', iscf=%i', options.iscf) ];
+    end
   end
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', kpts=[%i,%i,%i]', options.kpoints) ];
@@ -313,15 +332,20 @@ case 'ABINIT'
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
+  if isfield(options,'mpi') && options.mpi > 1
+    calc = [ calc sprintf(', nbdblock=%i', options.mpi) ];
+  end
+  if options.nbands > 0
+    calc = [ calc sprintf(', nband=%i', options.nbands) ];
+  end
+  if options.nbands > 0
+    calc = [ calc sprintf(', nstep=%i', options.nsteps) ];
+  end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
   end
   calc = [ calc ')' ];
-  % options for ABINIT
-  % iscf=7 default (NC), 17 (PAW) <http://www.abinit.org/doc/helpfiles/for-v7.0/input_variables/varbas.html#iscf>
-  % nbdblock = mpi (number of bands in the block is then nband/nbdblock)
-  % nstep == options.electron_maxstep
-  % nbands
+
 case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
@@ -355,24 +379,30 @@ case 'ELK' % ===================================================================
   
   decl = 'from ase.calculators.elk import ELK';
   calc = 'calc = ELK(tforce=True, tasks=0, rgkmax=4.0, mixtype=3';
-  if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
-    options.occupations=0.1;
-  elseif strcmp(options.occupations, 'semiconductor')
-    options.occupations=0;
-  elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
-    options.occupations=-1;
-  end
+
   if strcmp(options.occupations, 'auto')
     % other distribution: MethfesselPaxton
     calc=[ calc sprintf(', stype=3, autoswidth=True') ];
   elseif isscalar(options.occupations) && options.occupations >=0
-    calc=[ calc sprintf(', stype=3, swidth=%g', options.occupations) ];
+    calc=[ calc sprintf(', stype=3, swidth=%g', options.occupations/Ha) ];
   end
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
   end
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+  end
+  if ~isempty(options.nbands)
+    calc = [ calc sprintf(', nvbse=%i', options.nbands) ];
+  end
+  if ~isempty(options.nsteps)
+    calc = [ calc sprintf(', maxscl=%i', options.nsteps) ];
+  end
+  if ~isempty(options.toldfe)
+    calc = [ calc sprintf(', epsengy=%g', options.toldfe) ];
+  end
+  if ~isempty(options.ecut)
+    calc = [ calc sprintf(', emaxrf=%g', options.ecut) ];
   end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
@@ -389,22 +419,16 @@ case 'GPAW' % ==================================================================
   
   decl = 'from gpaw import GPAW, PW, FermiDirac';
   calc = 'calc = GPAW(usesymm=False'; % because small displacement breaks symmetry
-  if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
-    options.occupations=0.1;
-  elseif strcmp(options.occupations, 'semiconductor')
-    options.occupations=0;
-  elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
-    options.occupations=-1;
-  end
-  if isscalar(options.occupations) && options.occupations>=0 % smearing
+
+  if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations=FermiDirac(%g)', options.occupations) ];
     % other distribution: MethfesselPaxton
   end
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
   end
-  if (options.ecutwfc > 0)
-    options.mode=sprintf('PW(%g)', options.ecutwfc);
+  if options.ecut > 0
+    options.mode=sprintf('PW(%g)', options.ecut);
   end
   if ~isempty(options.mode)
     calc = [ calc sprintf(', mode=''%s''', options.mode) ];
@@ -413,11 +437,25 @@ case 'GPAW' % ==================================================================
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
   if ~isempty(options.diagonalization)
+    if strncmp(lower(options.diagonalization), 'dav', 3) options.diagonalization='dav'; end
     calc = [ calc sprintf(', eigensolver=''%s''', options.diagonalization) ];
   end
   if ~isempty(options.potentials)
     calc = [ calc sprintf(', setups=''%s''', options.potentials) ];
   end
+  if options.nbands > 0
+    calc = [ calc sprintf(', nbands=%i', options.nbands) ];
+  end
+  if options.nsteps > 0
+    calc = [ calc sprintf(', maxiter=%i', options.nsteps) ];
+  end
+  if isfield(options,'mpi') && options.mpi > 0
+    calc = [ calc sprintf(', parallel={''kpt'':%i, ''band'':%i}', options.mpi, options.mpi) ];
+  end
+  if options.toldfe > 0
+    calc = [ calc sprintf(', convergence={''energy'':%g}', options.toldfe) ];
+  end
+  % to add:  toldfe
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
   end
@@ -445,26 +483,37 @@ case 'JACAPO' % ================================================================
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
-  if (options.ecutwfc <= 0)
-    options.ecutwfc = 340;
+  if options.ecut < 0
+    options.ecut = 340;
   end
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
   end
-  if (options.ecutwfc > 0)
-    calc = [ calc sprintf(', pw=%g', options.ecutwfc) ];
+  if options.ecut > 0
+    calc = [ calc sprintf(', pw=%g', options.ecut) ];
+  end
+  if options.nbands > 0
+    calc = [ calc sprintf(', nbands=%i', options.nbands) ];
   end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
   end
   calc = [ calc ')' ];  
-  % options
-  % calc.SetPlaneWaveCutoff(options.ecutwfc)  in eV
-  % calc.SetDensityCutoff(options.ecutrho)  
+  % other options
+  if isfield(options,'ecutrho')  && optins.ecutrho > 0
+    calc = [ calc sprintf('; calc.SetDensityCutoff(%g) ', options.ecutrho) ];
+  end
+  if optins.toldfe > 0
+    calc = [ calc sprintf('; calc.SetConvergenceParameters(%g) ', options.toldfe) ];
+  end
+  if optins.nbands > 0
+    calc = [ calc sprintf('; calc.SetNumberOfBands(%g) ', options.nbands) ];
+  end
+  if optins.occupations > 0
+    calc = [ calc sprintf('; calc.SetElectronicTemperature(%g) ', options.occupations) ];
+  end
   % calc.SetEigenvalueSolver(options.diagonalization) 'eigsolve'==david | 'rmm-diis'
-  % calc.SetConvergenceParameters(energy=options.conv_thr)
-  % calc.SetNumberOfBands(nbands)
-  % calc.SetElectronicTemperature(options.occupations) FermiDirac
+
 case 'NWCHEM' % ================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
@@ -496,16 +545,84 @@ case 'NWCHEM' % ================================================================
     options.occupations=-1;
   end
   if isscalar(options.occupations) && options.occupations>=0 % smearing
-    calc=[ calc sprintf(', smearing=("gaussian",%g)', options.occupations) ]; % in Hartree
+    calc=[ calc sprintf(', smearing=("gaussian",%g)', options.occupations/Ha) ]; % in Hartree
+  end
+  if options.nbands > 0
+    calc = [ calc sprintf(', nbands=%i', options.nbands) ];
+  end
+  if options.toldfe > 0
+    calc = [ calc sprintf(', convergence={''energy'':%g}', options.toldfe) ];
+  end
+  if options.nsteps > 0
+    calc = [ calc sprintf(', iterations=%i', options.nsteps) ];
   end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
   end
   calc = [ calc ')' ];
+  % to add: nbands, toldfe, nsteps, diagonalization
+  
+case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
+  if isempty(status.(lower(options.calculator))) && isempty(options.command)
+    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+  end
+  % ASE is installed. We use it to create a proper POSCAR file, then we call sqw_phon (QE)
+  poscar = fullfile(options.target,'POSCAR_ASE');
+  read = [ read 'from ase.io import write; write("' poscar '",atoms, format="vasp")' ];
+  try
+    [st, result] = system([ precmd 'python -c ''' read '''' ]);
+  catch
+    st = 127;
+  end
+  if st ~= 0
+    sqw_phonons_error([ mfilename ': failed converting input to POSCAR ' ...
+      poscar ], options);
+  end
+% QE specific options:
+%   options.mixing_ndim=scalar             number of iterations used in mixing
+%     default=8. If you are tight with memory, you may reduce it to 4. A larger
+%     value will improve the SCF convergence, and use more memory.
+%   options.mixing_beta=scalar             mixing factor for self-consistency
+%     default=0.7. use 0.3 to improve convergence
+%   options.ecutrho=scalar                 kinetic energy cutoff (Ry) for charge
+%     density and potential. Default=4*ecutwfc, suitable for PAW. Larger value
+%     improves convergence, especially for ultra-soft PP (use 8-12*ecutwfc).
+%   options.electron_maxstep=scalar        max number of iterations for SCF.
+%     default=100. Larger value improves convergence.
+%   options.conv_thr=scalar                Convergence threshold for 
+%     selfconsistency. default=1e-6.
+%   options.mpi    =scalar                 number of CPUs to use for PWSCF
+%     this option requires MPI to be installed (e.g. openmpi).
+%
+  if isfield(options,'nbands') && ~isfield(options,'nbnd')
+    options.nbnd=options.nbands; end
+  if isfield(options,'ecut') && ~isfield(options,'ecutwfc')
+    options.ecutwfc=options.ecut; end
+  if isfield(options,'nsteps'), options.electron_maxstep=options.nsteps; end
+
+  disp([ mfilename ': calling sqw_phon(' poscar ') with PHON/Quantum Espresso' ]);
+  options.dos = 1;
+  signal=sqw_phon(poscar, options);
+
 
 otherwise
   sqw_phonons_error([ mfilename ': Unknown calculator ' options.calculator ], options);
 end
+% ------------------------------------------------------------------------------
+% end of specific parts for calculators
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if ~strcmp(upper(options.calculator), 'QUANTUMESPRESSO')
 
@@ -888,7 +1005,10 @@ options.mode       = 'fd';            % GPAW
 options.potentials = '';
 options.diagonalization = ''; % GPAW would prefer rmm-diis
 options.occupations= '';
-options.ecutwfc    = 0;
+options.ecut       = 0;
+options.nbands     = 0;
+options.nsteps     = 0;
+options.toldfe     = 0;
 options.command    = '';
 options.raw        = '';
 options.autoplot   = 0;

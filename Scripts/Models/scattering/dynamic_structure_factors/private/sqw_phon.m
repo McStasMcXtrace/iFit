@@ -77,7 +77,7 @@ function signal=sqw_phon(varargin)
 %   options.occupations='metal'            for metals ('smearing') help converge
 %                       'insulator'        for insulators
 %   options.ecutwfc=scalar                 kinetic energy cutoff (Ry) for
-%     wavefunctions. default is 15*ntyp in [Ry]. Larger value improves convergence.
+%     wavefunctions. default is 15*natoms in [Ry]. Larger value improves convergence.
 %   options.electron_maxstep=scalar        max number of iterations for SCF.
 %     default=100. Larger value improves convergence.
 %   options.conv_thr=scalar                Convergence threshold for 
@@ -747,6 +747,9 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   fprintf(fid, '  ecutwfc = %f\n', ecut);
   if isfield(options,'ecutrho')
     fprintf(fid, '  ecutrho = %f\n', options.ecutrho);
+  end
+  if isfield(options,'nbnd')
+    fprintf(fid, '  nbnd = %i\n', options.nbnd);
   end
   if isfield(options,'occupations') && ~isempty(options.occupations)
     switch lower(options.occupations)
