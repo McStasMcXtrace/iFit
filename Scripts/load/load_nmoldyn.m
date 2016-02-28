@@ -51,6 +51,7 @@ a = load_nmoldyn_signal_axes(a, 'eisf_total', {'q','k'});
 a = load_nmoldyn_signal_axes(a, {'Sq_total','ssf_total'}, {'q','k'});
 a = load_nmoldyn_signal_axes(a, {'Fqt_total','f_q_t_total'},{'q','k'}, {'times','time'});
 a = load_nmoldyn_signal_axes(a, {'Sqw_total','s_q_f_total'}, {'q','k'}, 'frequency');
+a.classical = 1;
 
 % ==============================================================================
 

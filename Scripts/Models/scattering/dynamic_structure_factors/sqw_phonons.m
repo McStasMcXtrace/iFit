@@ -258,6 +258,23 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
     sqw_phonons_error([ mfilename ': failed converting input to POSCAR ' ...
       poscar ], options);
   end
+% QE specific options:
+%   options.mixing_ndim=scalar             number of iterations used in mixing
+%     default=8. If you are tight with memory, you may reduce it to 4. A larger
+%     value will improve the SCF convergence, and use more memory.
+%   options.mixing_beta=scalar             mixing factor for self-consistency
+%     default=0.7. use 0.3 to improve convergence
+%   options.ecutrho=scalar                 kinetic energy cutoff (Ry) for charge
+%     density and potential. Default=4*ecutwfc, suitable for PAW. Larger value
+%     improves convergence, especially for ultra-soft PP (use 8-12*ecutwfc).
+%   options.electron_maxstep=scalar        max number of iterations for SCF.
+%     default=100. Larger value improves convergence.
+%   options.conv_thr=scalar                Convergence threshold for 
+%     selfconsistency. default=1e-6.
+%   options.mpi    =scalar                 number of CPUs to use for PWSCF
+%     this option requires MPI to be installed (e.g. openmpi).
+%
+% options.nbands -> nbnd
 
   disp([ mfilename ': calling sqw_phon(' poscar ') with PHON/Quantum Espresso' ]);
   options.dos = 1;
@@ -285,7 +302,7 @@ case 'ABINIT'
     end
   end
   decl = 'from ase.calculators.abinit import Abinit';
-  calc = 'calc = Abinit(chksymbreak=0, toldfe=1.0e-5';
+  calc = 'calc = Abinit(chksymbreak=0, toldfe=1.0e-5'; % options.conv_thr
   if options.ecutwfc <= 0, options.ecutwfc=200; end % no default in ABINIT
   if (options.ecutwfc > 0)
     calc = [ calc sprintf(', ecut=%g', options.ecutwfc) ];
@@ -300,6 +317,11 @@ case 'ABINIT'
     calc = [ calc sprintf(', %s', options.raw) ];
   end
   calc = [ calc ')' ];
+  % options for ABINIT
+  % iscf=7 default (NC), 17 (PAW) <http://www.abinit.org/doc/helpfiles/for-v7.0/input_variables/varbas.html#iscf>
+  % nbdblock = mpi (number of bands in the block is then nband/nbdblock)
+  % nstep == options.electron_maxstep
+  % nbands
 case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
@@ -436,7 +458,13 @@ case 'JACAPO' % ================================================================
     calc = [ calc sprintf(', %s', options.raw) ];
   end
   calc = [ calc ')' ];  
-  
+  % options
+  % calc.SetPlaneWaveCutoff(options.ecutwfc)  in eV
+  % calc.SetDensityCutoff(options.ecutrho)  
+  % calc.SetEigenvalueSolver(options.diagonalization) 'eigsolve'==david | 'rmm-diis'
+  % calc.SetConvergenceParameters(energy=options.conv_thr)
+  % calc.SetNumberOfBands(nbands)
+  % calc.SetElectronicTemperature(options.occupations) FermiDirac
 case 'NWCHEM' % ================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)

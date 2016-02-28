@@ -29,6 +29,7 @@ function s=Sqw_symmetrize(s)
     sqw = [];
     for index=1:numel(s)
       sqw = [ sqw feval(mfilename, s(index)) ];
+      s(index) = iData;
     end
     s = sqw;
     return
@@ -55,27 +56,33 @@ function s=Sqw_symmetrize(s)
     [w,index]=unique([ w ; -w ]);
     s{1}=w;
     s = set(s, 'Signal', signal(index,:));
+    clear signal
     
     if ~isempty(getalias(s,'Error')) && ~strcmp(getalias(s,'Error'),'sqrt(this.Signal)')
-     err = get(s, 'Error');
-     err=[ err ; err ];
-     [w,index]=unique([ w0 ; -w0 ]);
-     s = set(s, 'Error', err(index,:));
+       err = get(s, 'Error');
+       if all(err(:) > 0 )
+         err=[ err ; err ];
+         [w,index]=unique([ w0 ; -w0 ]);
+         s = set(s, 'Error', err(index,:));
+       end
     end
+    clear err
 
     if ~isempty(getalias(s,'Monitor')) && ~isscalar(get(s, 'Monitor'))
-     m = get(s, 'Monitor');
-     m=[ m ; m ];
-     [w,index]=unique([ w0 ; -w0 ]);
-     s = set(s, 'Monitor', m(index,:));
+      m = get(s, 'Monitor');
+      if all(m(:) > 0 )
+        m=[ m ; m ];
+        [w,index]=unique([ w0 ; -w0 ]);
+        s = set(s, 'Monitor', m(index,:));
+      end
     end
+    clear m
     
     return
   end
   
   % create a new object with an opposite energy axis
-  s_opp = setaxis(s, 1, -s{1});
 
   % final object (and merge common area)
-  s     = combine(s, s_opp);
+  s     = combine(s, setaxis(s, 1, -s{1}));
   
