@@ -77,7 +77,7 @@ function s = Sqw_check(s)
     % then kT = w./log_s_ratio
     T         = w./log_s_ratio*11.6045; % 1 meV = 11.6045 K
     if any(isfinite(T))
-      T         = mean(T,0);
+      T         = mean(real(T),0);
     else T=NaN;
     end
     

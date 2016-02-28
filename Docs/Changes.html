@@ -29,10 +29,13 @@
               CrysFML/cif2hkl)</a></li>
           <li><a href="#mozTocId63182">Limitations in the standalone
               (binary) package</a></li>
-          <li><a href="#mozTocId853369">McStas executables can not be
-              found from Matlab/iFit</a></li>
-          <li><a href="#mozTocId267093">iFit/McStas fails with a message
-              such as 'version `GFORTRAN_1.4' not found'</a></li>
+          <li><a href="#mozTocId853369">McStas and external programs can
+              not be found from Matlab/iFit</a></li>
+          <li><a href="#mozTocId309480">iFit standalone can not be
+              launched</a></li>
+          <li><a href="#mozTocId267093">iFit fails with a message such
+              as 'version `GFORTRAN_1.4' not found' or 'version
+              `GCC_4.3.0' not found' </a></li>
           <li><a href="#mozTocId383867">Import of a text file fails</a></li>
         </ol>
       </li>
@@ -45,6 +48,7 @@
     <ul>
       <li><b>1.8</b>: read <a
 href="https://www.ill.eu/instruments-support/instruments-groups/instruments/cyclops/description/instrument-layout/">ILL
+
           Cyclops</a> HBIN and <a
           href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
         SAV files. Iterative deconvolution as <i>deconv</i> method.<br>
@@ -56,6 +60,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           href="http://www.ni.com/white-paper/3727/en/">TDMS</a> file
         format import. Fixed curvature in <a
           href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>/Rescal5/Popovici
+
 
 
 
@@ -101,6 +106,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           NetCDF/CDF/NeXus/HDF support, import/export of <a
             href="http://www.mantidproject.org">Mantid</a> workspaces
           (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+
 
 
 
@@ -184,6 +190,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -191,6 +198,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
 
 
 
@@ -239,6 +247,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -248,6 +257,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
 
 
 
@@ -286,6 +296,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -293,6 +304,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
 
 
 
@@ -375,6 +387,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       3)</span> to triple the number of points along axes.<br>
     <h4><a class="mozTocH4" name="mozTocId473369"></a>Too many warnings
       displayed</h4>
@@ -382,6 +395,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     reduce the level of verbosity with:<br>
     <pre style="margin-left: 80px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">warning off backtrace	<span style="font-style: italic; color: rgb(0, 0, 0);">% reduce the warning message length</span><br><span style="color: rgb(0, 0, 0);">&gt;&gt; </span>warning off			<span style="color: rgb(0, 0, 0); font-style: italic;">% suppress all warnings (not recommended)</span><br></span></pre>
     <h4><a class="mozTocH4" name="mozTocId556618"></a>Execution/compilation
+
 
 
 
@@ -460,6 +474,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       web</span> and <span style="font-style: italic;">edit</span>
     commands are limited, and may not work properly, depending on the
     system.<br>
@@ -492,6 +507,17 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     other programs will be immediately reachable from Matlab/iFit. <br>
     This procedure may have to be repeated whenever Matlab/iFit is
     (re)started.<br>
+    <br>
+    <h4><a class="mozTocH4" name="mozTocId309480"></a>iFit standalone
+      can not be launched (libmwmclmcrrt.so)<br>
+    </h4>
+    <p>When starting iFit standalone, you get a message such as:<br>
+    </p>
+    <pre>./run_ifit: error while loading shared libraries: libmwmclmcrrt.so: cannot open shared object file: No such file or directory</pre>
+    <p>This message indicates that the Matlab Runtime Library has not
+      been found. Instal the MCR as indicated in the <a
+        href="Install.html">Install</a> page.<br>
+    </p>
     <h4><a class="mozTocH4" name="mozTocId267093"></a>iFit fails with a
       message such as '<font color="#800000">version</font><font
         color="#800000"> `GFORTRAN_1.4' not found'<font color="#000000">
@@ -538,6 +564,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
       style="font-style: italic;">locate</span> or <span
       style="font-style: italic;">mlocate</span> to be installed -
     alternatively you can use <span style="font-style: italic;">ldconfig
+
 
 
 
@@ -597,10 +624,10 @@ Farhi
 
 
 
+
           - iFit/Changes - </span><span style="font-style: italic;">
-          $Date$ $Revision$ </span><span
-          style="font-style: italic;"> </span>- back to <a
-          href="index.html">Main iFit Page </a><a
+          $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
+        back to <a href="index.html">Main iFit Page </a><a
           href="http://www.ill.eu/"><img title="ILL, Grenoble, France
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
