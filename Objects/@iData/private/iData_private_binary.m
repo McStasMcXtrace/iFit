@@ -130,6 +130,10 @@ else
   e2 = subsref(b,struct('type','.','subs','Error'));
   m2 = subsref(b,struct('type','.','subs','Monitor'));
 end
+if numel(e1) > 1 && all(e1(:) == e1(1)), e1=e1(1); end
+if numel(m1) > 1 && all(m1(:) == m1(1)), m1=m1(1); end
+if numel(e2) > 1 && all(e2(:) == e2(1)), e2=e2(1); end
+if numel(m2) > 1 && all(m2(:) == m2(1)), m2=m2(1); end
 if all(m1(:)==0) && all(m2(:)==0), m1=0; m2=0; end
 
 % do test on dimensionality for a vector/matrix input
@@ -180,6 +184,7 @@ case {'plus','minus','combine'}
       m3 = [];  % set to 1 (default)
     end
   end
+  clear i1 i2
   
 case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv','xcorr','deconv'}
   if strcmp(op, 'conv') || strcmp(op, 'deconv') || strcmp(op, 'xcorr')
@@ -247,6 +252,23 @@ otherwise
   iData_private_error('binary',['Can not apply operation ' op ' on objects ' al ' and ' bl '.' ]);
 end
 
+clear e1 e2 m1 m2 y1 y2
+
+% set Signal label
+s1=s1(1:min(10, numel(s1)));
+if isa(a, 'iData'), [dummy, al] = getaxis(a,'0'); 
+else 
+  al=num2str(s1(:)'); if length(al) > 10, al=[ al(1:10) '...' ]; end 
+end
+s2=s1(1:min(10, numel(s2)));
+if isa(b, 'iData'), [dummy, bl] = getaxis(b,'0'); 
+else 
+  bl=num2str(s2(:)');
+  if length(bl) > 10, bl=[ bl(1:10) '...' ]; end 
+end
+
+clear s1 s2
+
 % ensure that Monitor and Error have the right dimensions
 if numel(e3) > 1 && numel(e3) ~= numel(s3)
   e3 = genop(@times, e3, ones(size(s3)));
@@ -262,17 +284,6 @@ if transpose_ab==1
   m3 = permute(m3,[ 2 1 3:length(size(m3)) ]);
 end
 
-% set Signal label
-if isa(a, 'iData'), [dummy, al] = getaxis(a,'0'); 
-else 
-  al=num2str(a(:)'); if length(al) > 10, al=[ al(1:10) '...' ]; end 
-end
-if isa(b, 'iData'), [dummy, bl] = getaxis(b,'0'); 
-else 
-  bl=num2str(b(:)');
-  if length(bl) > 10, bl=[ bl(1:10) '...' ]; end 
-end
-
 % operate with Signal/Monitor and Error/Monitor (back to Monitor data)
 if not(all(m3(:) == 0 | m3(:) == 1)) & p1, 
   s3 = genop(@times, s3, m3); e3 = genop(@times,e3,m3); 
@@ -285,6 +296,7 @@ y3 = get(c, 'Signal');
 if sum(s3(~isnan(s3))) ~= sum(y3(~isnan(y3)))
   c = setalias(c, 'Signal', s3, [  op '(' al ',' bl ')' ]);
 end
+clear s3
 % for Error and Monitor, we do the same, except that these are set to scalars
 % in setalias, so we directly set them in c.Alias.Values{2|3}
 e3=abs(e3);
@@ -293,11 +305,13 @@ y3 = get(c, 'Error');
 if sum(e3(~isnan(e3))) ~= sum(y3(~isnan(y3)))
   c.Alias.Values{2} = e3;
 end
+clear e3
 c  = set(c, 'Monitor', m3);
 y3 = get(c, 'Monitor');
 if sum(m3(~isnan(m3))) ~= sum(y3(~isnan(y3)))
   c.Alias.Values{3} = m3;
 end
+clear m3 y3
 
 c.Command=cmd;
 c = iData_private_history(c, op, a,b);
