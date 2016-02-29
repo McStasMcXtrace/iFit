@@ -172,6 +172,17 @@ function signal=sqw_phonons(configuration, varargin)
 % Units: 1 Ry        = 13.6 eV
 %        1 Ha = 2 Ry = 27.2 eV
 
+% best codes: basis https://molmod.ugent.be/deltacodesdft
+% code    basis
+% QE      SSSP Accuracy     http://materialscloud.org/sssp/
+% Elk     PAW+lo
+% VASP    PAW 2015 GW
+% QE      SSSP Efficiency
+% ABINIT  PAW JTH           http://www.abinit.org/downloads/PAW2 req v7.6
+
+% compile Elk         with openmpi
+%         ABINIT 7.10 with openmpi
+
 persistent status
 
 signal = [];
@@ -302,7 +313,7 @@ case 'ABINIT'
       options.iscf=7;
     elseif strcmpi(options.potentials,'PAW')
       options.potentials='';
-      options.iscf=17;
+      options.iscf=17; % sems best. JTH is even better see https://www.nsc.liu.se/~pla/blog/2014/02/21/deltacodes/
     else
       setenv('ABINIT_PP_PATH', options.potentials);
       d = [ dir(fullfile(options.potentials,'LDA_*')) ; ...
@@ -315,6 +326,7 @@ case 'ABINIT'
       end
     end
   end
+  % parallelisation: npbands npftt https://www.nsc.liu.se/~pla/blog/2012/04/18/abinitvasp-part2/
   decl = 'from ase.calculators.abinit import Abinit';
   calc = 'calc = Abinit(chksymbreak=0 ';
   if options.ecut <= 0, options.ecut=340; end % no default in ABINIT (eV)
@@ -576,6 +588,7 @@ case 'NWCHEM' % ================================================================
   % to add: diagonalization
   
 case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
+  % best potentials for QE: SSSP http://materialscloud.org/sssp/
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
@@ -689,7 +702,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
 
   % call python script
   cd(target)
-  disp([ mfilename ': creating Phonon/ASE model from ' target ]);
+  disp([ mfilename ': creating Phonon/ASE model in ' target ]);
   disp([ '  ' configuration ]);
   disp([ '  ' calc ]);
 
@@ -825,7 +838,7 @@ end % other calculators than QE
 signal.UserData.duration = etime(clock, t);
 
 % when model is successfully built, display citations
-disp([ mfilename ': Model ' configuration ' built.'  ])
+disp([ mfilename ': Model ' configuration ' built using ' options.calculator ])
 disp([ '  in ' options.target ]);
 
 if isfield(options, 'dos') && ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
