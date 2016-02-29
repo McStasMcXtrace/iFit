@@ -752,13 +752,18 @@ function force = sqw_phon_forces_pwscf(displaced, options)
     fprintf(fid, '  nbnd = %i\n', options.nbnd);
   end
   if isfield(options,'occupations') && ~isempty(options.occupations)
-    switch lower(options.occupations)
-    case {'smearing','metal'}
-    fprintf(fid, '  occupations=''smearing'', smearing=''methfessel-paxton'', degauss=0.04\n');
-    case {'fixed','insulator'}
-    fprintf(fid, '  occupations=''fixed''\n');
-    otherwise
-    fprintf(fid, '  occupations=''%s''\n', options.occupations);
+    if ischar(options.occupations)
+      switch lower(options.occupations)
+      case {'smearing','metal'}
+      fprintf(fid, '  occupations=''smearing'', smearing=''methfessel-paxton'', degauss=0.04\n');
+      case {'fixed','insulator'}
+      fprintf(fid, '  occupations=''fixed''\n');
+      otherwise
+      fprintf(fid, '  occupations=''%s''\n', options.occupations);
+      end
+    elseif isscalar(options.occupations)
+      fprintf(fid, '  occupations=''smearing'', smearing=''methfessel-paxton'', degauss=%g\n', ...
+        options.occupations);
     end
   end
   fprintf(fid, '/\n');
@@ -837,7 +842,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   if isempty(forces_acting)
     disp(L);
     disp([ mfilename ': convergence NOT achieved.' ]);
-    disp([ 'TRY: sqw_phon(..., ''miximg_beta=0.3; electron_maxstep=200; conv_thr=1e-6; occupations=smearing; ecutwfc=' num2str(round(ecut*1.5)) ''')' ])
+    disp([ 'TRY: sqw_phonons(..., ''miximg_beta=0.3; nsteps=200; toldfe=1e-6; occupations=smearing; ecut=' num2str(round(ecut*1.5*13.6)) ''')' ])
     sqw_phon_error([ mfilename ': PWSCF convergence NOT achieved.' ], options)
   end
   L = L(forces_acting:end);
@@ -980,5 +985,8 @@ function sqw_phon_error(message, options)
 if options.gui && ishandle(options.gui)
   delete(options.gui);
   errordlg(message, [ 'iFit: ' mfilename ' ' options.configuration ' FAILED' ]);
+end
+if ~isdeployed && usejava('jvm') && usejava('desktop')
+  disp([ '<a href="matlab:doc(''sqw_phonons'')">sqw_phonons help</a>' ])
 end
 error(message);
