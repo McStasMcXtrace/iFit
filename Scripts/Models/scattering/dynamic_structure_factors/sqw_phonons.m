@@ -283,6 +283,9 @@ case 'ABINIT'
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
+  if isempty(strfind(status.(lower(options.calculator)),'abinis')) && isempty(options.command)
+    options.command = status.(lower(options.calculator));
+  end
   if ~isempty(options.command)
     cmd = options.command;
     if isempty(strfind(cmd, 'PREFIX.files'))
