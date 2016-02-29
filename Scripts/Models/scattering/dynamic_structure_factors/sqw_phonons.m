@@ -59,12 +59,16 @@ function signal=sqw_phonons(configuration, varargin)
 %     density of states (vDOS) in UserData.DOS
 %   options.potentials=string              Basis datasets or pseudopotentials.
 %     NWChem: see http://www.nwchem-sw.org/index.php/Release64:AvailableBasisSets
+%       e.g. 'ANO-RCC' 'ANO-RCC' 
 %     Dacapo: path to potentials, e.g. /usr/share/dacapo-psp       (DACAPOPATH)
 %     Elk:    path to potentials, e.g. /usr/share/elk-lapw/species (ELK_SPECIES_PATH)
 %     ABINIT: path to potentials, e.g. /usr/share/abinit/psp/      (ABINIT_PP_PATH)
 %       or 'NC' or 'PAW'.
 %     QuantumEspresso: path to potentials, e.g. /usr/share/espresso/pseudo
-%   options.command='exe'                  Path to calculator executable
+%   options.command='exe'                  Path to calculator executable, which may
+%     include e.g. "mpirun -np N" when applicable.
+%   options.mpi=scalar                     use multi-cpu, for NWChem,QuantumEspresso
+%     which requires e.g. OpenMPI to be installed.
 %
 % DFT specific options
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
@@ -198,7 +202,7 @@ if options.gui
   %  * kpoints
   % and will select autoplot, 'dos'
   calcs = 'EMT';
-  for index={'gpaw','elk','jacapo','nwchem','abinit','quantumespresso','phon'};
+  for index={'gpaw','elk','jacapo','nwchem','abinit','quantumespresso'};
     if ~isempty(status.(index{1})), calcs = [ calcs ', ' upper(index{1}) ]; end
   end
   NL = sprintf('\n');
@@ -290,10 +294,10 @@ case 'ABINIT'
     if isempty(options.potentials), options.potentials='/usr/share/abinit/psp/'; end
   end
   if ~isempty(options.potentials)
-    if strcmp(upper(options.potentials),'NC')
+    if strcmpi(options.potentials,'NC')
       options.potentials='';
       options.iscf=7;
-    elseif strcmp(upper(options.potentials),'PAW')
+    elseif strcmpi(options.potentials,'PAW')
       options.potentials='';
       options.iscf=17;
     else
@@ -309,7 +313,7 @@ case 'ABINIT'
     end
   end
   decl = 'from ase.calculators.abinit import Abinit';
-  calc = 'calc = Abinit(chksymbreak=0, chkprim=0';
+  calc = 'calc = Abinit(chksymbreak=0 ';
   if options.ecut <= 0, options.ecut=340; end % no default in ABINIT (eV)
   if (options.ecut > 0)
     calc = [ calc sprintf(', ecut=%g', options.ecut) ];
@@ -364,11 +368,7 @@ case 'ELK' % ===================================================================
   if ~isempty(options.potentials)
     setenv('ELK_SPECIES_PATH', [ options.potentials, filesep ]);
   end
-  % test if ELK executable is named elk-lapw
-  [st,result]=system([ precmd 'elk-lapw' ]);
-  if isempty(options.command) && st == 0
-    options.command = 'elk-lapw';
-  end
+  
   if ~isempty(options.command)
     cmd = options.command;
     if isempty(strfind(cmd, 'elk.out'))
@@ -378,7 +378,7 @@ case 'ELK' % ===================================================================
   end
   
   decl = 'from ase.calculators.elk import ELK';
-  calc = 'calc = ELK(tforce=True, tasks=0, rgkmax=4.0, mixtype=3';
+  calc = 'calc = ELK(tforce=True, tasks=0, rgkmax=4.0, mixtype=3'; % Pulay mixing
 
   if strcmp(options.occupations, 'auto')
     % other distribution: MethfesselPaxton
@@ -428,16 +428,15 @@ case 'GPAW' % ==================================================================
     calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
   end
   if options.ecut > 0
-    options.mode=sprintf('PW(%g)', options.ecut);
-  end
-  if ~isempty(options.mode)
+    calc = [ calc sprintf(', mode=PW(%g)', options.ecut) ];
+  elseif ~isempty(options.mode)
     calc = [ calc sprintf(', mode=''%s''', options.mode) ];
   end
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
   if ~isempty(options.diagonalization)
-    if strncmp(lower(options.diagonalization), 'dav', 3) options.diagonalization='dav'; end
+    if strncmpi(options.diagonalization, 'dav', 3) options.diagonalization='dav'; end
     calc = [ calc sprintf(', eigensolver=''%s''', options.diagonalization) ];
   end
   if ~isempty(options.potentials)
@@ -449,13 +448,9 @@ case 'GPAW' % ==================================================================
   if options.nsteps > 0
     calc = [ calc sprintf(', maxiter=%i', options.nsteps) ];
   end
-  if isfield(options,'mpi') && options.mpi > 0
-    calc = [ calc sprintf(', parallel={''kpt'':%i, ''band'':%i}', options.mpi, options.mpi) ];
-  end
   if options.toldfe > 0
     calc = [ calc sprintf(', convergence={''energy'':%g}', options.toldfe) ];
   end
-  % to add:  toldfe
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
   end
@@ -469,13 +464,13 @@ case 'JACAPO' % ================================================================
   % Requires to define variables under Ubuntu
   if isunix
     if isempty(options.potentials), options.potentials='/usr/share/dacapo-psp'; end
-    if isempty(options.command),    options.command   ='dacapo_serial.run'; end
+    if isempty(options.command),    options.command   =status.(lower(options.calculator)); end
   end
   if ~isempty(options.potentials)
     setenv('DACAPOPATH', options.potentials);
   end
   if ~isempty(options.command)
-    setenv('DACAPOEXE_SERIAL', options.command);
+    setenv('DACAPOEXE_SERIAL', options.command); % DACAPOEXE_PARALLEL
   end
   
   decl = 'from ase.calculators.jacapo import Jacapo';
@@ -484,7 +479,7 @@ case 'JACAPO' % ================================================================
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
   if options.ecut < 0
-    options.ecut = 340;
+    % options.ecut = 340;
   end
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
@@ -495,28 +490,37 @@ case 'JACAPO' % ================================================================
   if options.nbands > 0
     calc = [ calc sprintf(', nbands=%i', options.nbands) ];
   end
+  if options.occupations > 0
+    calc = [ calc sprintf(', ft=%g', options.occupations) ];
+  end
+  if isfield(options,'ecutrho') && optins.ecutrho > 0
+    calc = [ calc sprintf(', dw=%g', options.ecutrho) ];
+  end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
   end
   calc = [ calc ')' ];  
   % other options
-  if isfield(options,'ecutrho')  && optins.ecutrho > 0
-    calc = [ calc sprintf('; calc.SetDensityCutoff(%g) ', options.ecutrho) ];
-  end
   if optins.toldfe > 0
     calc = [ calc sprintf('; calc.SetConvergenceParameters(%g) ', options.toldfe) ];
   end
-  if optins.nbands > 0
-    calc = [ calc sprintf('; calc.SetNumberOfBands(%g) ', options.nbands) ];
+  if ~isempty(options.diagonalization)
+    if strncmp(options.diagonalization, 'dav',3), options.diagonalization='eigsolve';
+    elseif strcmp(options.diagonalization, 'cg'), options.diagonalization='resmin';
+    else options.diagonalization='rmm-diis'; end
+    calc = [ calc sprintf('; calc.SetEigenvalueSolver(%s)', ...
+      options.diagonalization) ];
   end
-  if optins.occupations > 0
-    calc = [ calc sprintf('; calc.SetElectronicTemperature(%g) ', options.occupations) ];
-  end
-  % calc.SetEigenvalueSolver(options.diagonalization) 'eigsolve'==david | 'rmm-diis'
 
 case 'NWCHEM' % ================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+  end
+  if isfield(options,'mpi') && ~isempty(options.mpi)
+    if isempty(options.command) options.command=status.(lower(options.calculator)); end
+    if isscalar(options.mpi) 
+      options.command = [ 'mpirun -np ' num2str(options.mpi) ' ' options.command ]; 
+    end
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -525,6 +529,8 @@ case 'NWCHEM' % ================================================================
     end
     setenv('ASE_NWCHEM_COMMAND', cmd);
   end
+  
+  
   
   decl = 'from ase.calculators.nwchem import NWChem';
   calc = sprintf('calc = NWChem(xc=''%s''', ...
@@ -548,7 +554,8 @@ case 'NWCHEM' % ================================================================
     calc=[ calc sprintf(', smearing=("gaussian",%g)', options.occupations/Ha) ]; % in Hartree
   end
   if options.nbands > 0
-    calc = [ calc sprintf(', nbands=%i', options.nbands) ];
+    % could not find it in NWChem
+    % calc = [ calc sprintf(', nbands=%i', options.nbands) ];
   end
   if options.toldfe > 0
     calc = [ calc sprintf(', convergence={''energy'':%g}', options.toldfe) ];
@@ -560,7 +567,7 @@ case 'NWCHEM' % ================================================================
     calc = [ calc sprintf(', %s', options.raw) ];
   end
   calc = [ calc ')' ];
-  % to add: nbands, toldfe, nsteps, diagonalization
+  % to add: diagonalization
   
 case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
@@ -594,11 +601,12 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
 %   options.mpi    =scalar                 number of CPUs to use for PWSCF
 %     this option requires MPI to be installed (e.g. openmpi).
 %
-  if isfield(options,'nbands') && ~isfield(options,'nbnd')
+  if options.nbands && ~isfield(options,'nbnd')
     options.nbnd=options.nbands; end
-  if isfield(options,'ecut') && ~isfield(options,'ecutwfc')
-    options.ecutwfc=options.ecut; end
-  if isfield(options,'nsteps'), options.electron_maxstep=options.nsteps; end
+  if options.ecut > 0 && ~isfield(options,'ecutwfc')
+    options.ecutwfc=options.ecut/Ry; end % in Ry
+  if options.nsteps, options.electron_maxstep=options.nsteps; end
+  if isscalar(options.occupations), options.occupations=options.occupations/Ry; end
 
   disp([ mfilename ': calling sqw_phon(' poscar ') with PHON/Quantum Espresso' ]);
   options.dos = 1;
@@ -624,11 +632,11 @@ end
 
 
 
-if ~strcmp(upper(options.calculator), 'QUANTUMESPRESSO')
+if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
 
   if options.gui && ishandle(options.gui), waitbar(0.10, options.gui, [ mfilename ': writing python script ASE/' options.calculator ]); end
 
-  if strcmp(upper(options.calculator), 'GPAW')
+  if strcmpi(options.calculator, 'GPAW')
     % GPAW Bug: gpaw.aseinterface.GPAW does not support pickle export for 'input_parameters'
     sav = sprintf('ph.calc=None\npickle.dump(ph, fid)');
   else
@@ -814,7 +822,7 @@ signal.UserData.duration = etime(clock, t);
 disp([ mfilename ': Model ' configuration ' built.'  ])
 disp([ '  in ' options.target ]);
 
-if isfield(options, 'dos') && ~strcmp(upper(options.calculator), 'QUANTUMESPRESSO')
+if isfield(options, 'dos') && ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   disp('INFO: The vibrational density of states (vDOS) will be computed at first model evaluation.');
 end
 disp([ 'Time elapsed=' num2str(signal.UserData.duration) ' [s]. Please cite:' ])
@@ -954,12 +962,18 @@ else
     [st, result] = system([ precmd 'python -c "from ase.calculators.abinit import Abinit"' ]);
     status.abinit='';
     if st == 0
-      % now test executable
-      [st,result]=system([ precmd 'echo "0" | abinis' ]);
-      if st == 0 || st == 2
-        status.abinit='abinis';
-        disp('  ABINIT (http://www.abinit.org/) as "abinis"');
+      for calc={'abinit','abinis','abinip'}
+        % now test executable
+        [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
+        if st == 0 || st == 2
+            status.abinit=calc{1};
+            st = 0;
+            break;
+        end
       end
+    end
+    if st == 0
+      disp([ '  ABINIT (http://www.abinit.org/) as "' status.abinit '"' ]);
     end
     % test for QuantumEspresso
     [st, result] = system([ precmd 'echo 0 | pw.x' ]);
@@ -980,9 +994,11 @@ else
       disp('  PHON (http://chianti.geol.ucl.ac.uk/~dario) as "phon"');
     else
       status.phon = '';
+      status.quantumespresso = '';
     end
   end
   disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
+  disp('  This can include e.g. "mpirun -n N exe" when applicable.');
   
   %  lj (lenard-jones)
   %  morse
@@ -1026,31 +1042,31 @@ for index=1:numel(varargin)
   if ischar(varargin{index})
     [p,f,e] = fileparts(varargin{index});
     % handle static options: metal,insulator, random
-    if strcmp(varargin{index},'smearing') || strcmp(varargin{index},'metal')
+    if strcmpi(varargin{index},'smearing') || strcmpi(varargin{index},'metal')
       options.occupations = 'smearing';
-    elseif strcmp(varargin{index},'fixed') || strcmp(varargin{index},'insulator')
+    elseif strcmpi(varargin{index},'fixed') || strcmpi(varargin{index},'insulator')
       options.occupations = 'fixed';
-    elseif strcmp(varargin{index},'semiconductor')
+    elseif strcmpi(varargin{index},'semiconductor')
       options.occupations = 'semiconductor';
-    elseif strcmp(lower(varargin{index}),'dos')
+    elseif strcmpi(varargin{index},'dos')
       options.dos = 1;
-    elseif strcmp(lower(varargin{index}),'emt')
+    elseif strcmpi(varargin{index},'emt')
       options.calculator = 'EMT';
-    elseif strcmp(lower(varargin{index}),'gpaw')
+    elseif strcmpi(varargin{index},'gpaw')
       options.calculator = 'GPAW';
-    elseif strcmp(lower(varargin{index}),'jacapo') || strcmp(lower(varargin{index}),'dacapo')
+    elseif strcmpi(varargin{index},'jacapo') || strcmpi(varargin{index},'dacapo')
       options.calculator = 'Jacapo';
-    elseif strcmp(lower(varargin{index}),'nwchem')
+    elseif strcmpi(varargin{index},'nwchem')
       options.calculator = 'NWChem';
-    elseif strcmp(lower(varargin{index}),'elk')
+    elseif strcmpi(varargin{index},'elk')
       options.calculator = 'Elk';
-    elseif strcmp(lower(varargin{index}),'abinit')
+    elseif strcmpi(varargin{index},'abinit')
       options.calculator = 'ABINIT';
-    elseif strcmp(lower(varargin{index}),'qe') || strcmp(lower(varargin{index}),'espresso') || strcmp(lower(varargin{index}),'quantumespresso')
+    elseif strcmpi(varargin{index},'qe') || strcmpi(varargin{index},'espresso') || strcmpi(varargin{index},'quantumespresso')
       options.calculator = 'quantumespresso';
-    elseif strcmp(lower(varargin{index}),'autoplot')
+    elseif strcmpi(varargin{index},'autoplot')
       options.autoplot = 1;
-    elseif strcmp(lower(varargin{index}),'gui')
+    elseif strcmpi(varargin{index},'gui')
       options.gui = 1;
     end
   end
@@ -1082,5 +1098,8 @@ function sqw_phonons_error(message, options)
 if options.gui && ishandle(options.gui)
   delete(options.gui);
   errordlg(message, [ 'iFit: ' mfilename ' ' options.configuration ' FAILED' ]);
+end
+if ~isdeployed && usejava('jvm') && usejava('desktop')
+  disp([ '<a href="matlab:doc(''' mfilename ''')">' mfilename ' help</a>' ])
 end
 error(message);
