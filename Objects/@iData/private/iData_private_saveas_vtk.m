@@ -6,7 +6,7 @@ function filename=iData_private_saveas_vtk(a, filename)
 
 if ndims(a) ~= 2 & ndims(a) ~= 3
   filename=[];
-  iData_private_warning(mfilename,[ 'Can only export 2D and 3D objects to VTK format.\n\tObject ' a.Tag ' has ndims=' num2str(ndims(a)) ]);
+  warning([ mfilename, ': Can only export 2D and 3D objects to VTK format.\n\tObject ' a.Tag ' has ndims=' num2str(ndims(a)) ]);
   return
 end
 
