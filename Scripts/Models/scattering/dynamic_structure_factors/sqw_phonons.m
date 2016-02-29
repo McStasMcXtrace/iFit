@@ -240,7 +240,7 @@ if isfield(options,'conv_thr') && ~isfield(options,'toldfe')
 if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
     options.occupations=0.1;
   elseif strcmp(options.occupations, 'semiconductor')
-    options.occupations=0;
+    options.occupations=0.0001;
   elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
     options.occupations=-1;
   end
@@ -345,8 +345,11 @@ case 'ABINIT'
   if options.nbands > 0
     calc = [ calc sprintf(', nband=%i', options.nbands) ];
   end
-  if options.nbands > 0
+  if options.nsteps > 0
     calc = [ calc sprintf(', nstep=%i', options.nsteps) ];
+  end
+  if isscalar(options.occupations) && options.occupations >=0
+    calc=[ calc sprintf(', tsmear=%g, occopt=3', options.occupations/Ha) ];
   end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
