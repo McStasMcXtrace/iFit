@@ -386,7 +386,9 @@ case 'ELK' % ===================================================================
   if ~isempty(options.potentials)
     setenv('ELK_SPECIES_PATH', [ options.potentials, filesep ]);
   end
-  
+  if ~strcmp(status.(lower(options.calculator)),'elk') && isempty(options.command)
+    options.command = status.(lower(options.calculator));
+  end
   if ~isempty(options.command)
     cmd = options.command;
     if isempty(strfind(cmd, 'elk.out'))
@@ -923,14 +925,16 @@ else
   disp('Available calculators:');
   status.emt='ase-run';
   disp('  EMT           only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
+  
   % test for GPAW
   [st, result] = system([ precmd 'python -c "from gpaw import GPAW"' ]);
   if st == 0
     status.gpaw='gpaw-python';
-    disp('  GPAW (http://wiki.fysik.dtu.dk/gpaw)');
+    disp([ '  GPAW (http://wiki.fysik.dtu.dk/gpaw) as "' status.gpaw '"' ]);
   else
     status.gpaw='';
   end
+  
   % test for NWChem
   [st, result] = system([ precmd 'python -c "from ase.calculators.nwchem import NWChem"' ]);
   status.nwchem='';
@@ -942,11 +946,13 @@ else
     [st,result]=system([ precmd 'nwchem ' f '.nw' ]);
     if st==0 || st==139
       status.nwchem='nwchem';
-      disp('  NWChem (http://www.nwchem-sw.org/) as "nwchem"');
     end
     delete([ f '.*' ])
     [p,f] = fileparts(f);
     delete([ f '.db' ])
+  end
+  if ~isempty(status.nwchem)
+    disp(['  NWChem (http://www.nwchem-sw.org/) as "' status.nwchem '"' ]);
   end
   
   % test for Jacapo
@@ -954,76 +960,91 @@ else
   status.jacapo='';
   if st == 0
     % now test executable
-    [st,result]=system([ precmd 'dacapo_serial.run' ]);
-    if st == 0
-      status.jacapo='dacapo_serial.run';
-      disp('  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "dacapo_serial.run"');
+    for calc={'dacapo_serial.run','dacapo.run','dacapo_mpi.run','dacapo'}
+      [st,result]=system([ precmd calc{1} ]);
+      if st == 0 || st == 2
+          status.jacapo=calc{1};
+          st = 0;
+          break;
+      end
     end
   end
+  if ~isempty(status.jacapo)
+    disp([ '  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '' ]);
+  end
+  
   % test for Elk
   [st, result] = system([ precmd 'python -c "from ase.calculators.elk import ELK"' ]);
   status.elk='';
   if st == 0
     % now test executable
-    [st,result]=system([ precmd 'elk' ]);
-    if st ~= 0
-      % try elk-lapw
-      [st,result]=system([ precmd 'elk-lapw' ]);
-      if st == 0
-        status.elk='elk-lapw';
-        disp('  Elk (http://elk.sourceforge.net) as "elk-lapw"');
+    for calc={'elk','elk-lapw'}
+      [st,result]=system([ precmd calc{1} ]);
+      if st == 0 || st == 2
+          status.elk=calc{1};
+          st = 0;
+          break;
       end
-    else
-      status.elk='elk';
-      disp('  Elk (http://elk.sourceforge.net) as "elk"');
-    end
-    % test for ABINIT
-    [st, result] = system([ precmd 'python -c "from ase.calculators.abinit import Abinit"' ]);
-    status.abinit='';
-    if st == 0
-      for calc={'abinit','abinis','abinip'}
-        % now test executable
-        [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-        if st == 0 || st == 2
-            status.abinit=calc{1};
-            st = 0;
-            break;
-        end
-      end
-    end
-    if st == 0
-      disp([ '  ABINIT (http://www.abinit.org/) as "' status.abinit '"' ]);
-    end
-    % test for QuantumEspresso
-    [st, result] = system([ precmd 'echo 0 | pw.x' ]);
-    if st == 0
-      status.quantumespresso = 'pw.x';
-      disp('  QuantumEspresso (http://www.quantum-espresso.org/) as "pw.x"');
-    else
-      status.quantumespresso = '';
-    end
-    % test for PHON
-    [st, result] = system([ precmd 'phon' ]);
-    try
-      delete('CRASH');
-      delete('input_tmp.in');
-    end
-    if st == 0 || st == 2
-      status.phon = 'phon';
-      disp('  PHON (http://chianti.geol.ucl.ac.uk/~dario) as "phon"');
-    else
-      status.phon = '';
-      status.quantumespresso = '';
     end
   end
-  disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
-  disp('  This can include e.g. "mpirun -n N exe" when applicable.');
+  if ~isempty(status.elk)
+    disp([ '  Elk (http://elk.sourceforge.net) as "' status.elk '"' ]);
+  end
   
-  %  lj (lenard-jones)
-  %  morse
-  %  eam
-
+  % test for ABINIT
+  [st, result] = system([ precmd 'python -c "from ase.calculators.abinit import Abinit"' ]);
+  status.abinit='';
+  if st == 0
+    for calc={'abinit','abinis','abinip'}
+      % now test executable
+      [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
+      if st == 0 || st == 2
+          status.abinit=calc{1};
+          st = 0;
+          break;
+      end
+    end
+  end
+  if ~isempty(status.abinit)
+    disp([ '  ABINIT (http://www.abinit.org/) as "' status.abinit '"' ]);
+  end
+  
+  % test for QuantumEspresso
+  status.quantumespresso = '';
+  for calc={'pw.x','pw.exe','pw'}
+    % now test executable
+    [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
+    if st == 0 || st == 2
+        status.quantumespresso=calc{1};
+        st = 0;
+        break;
+    end
+  end
+  
+  
+  % test for PHON
+  [st, result] = system([ precmd 'phon' ]);
+  try
+    delete('CRASH');
+    delete('input_tmp.in');
+  end
+  if st == 0 || st == 2
+    status.phon = 'phon';
+  else
+    status.phon = '';
+    status.quantumespresso = '';
+  end
+  if ~isempty(status.quantumespresso)
+    disp([ '  QuantumEspresso (http://www.quantum-espresso.org/) as "' status.quantumespresso '"' ]);
+  end
 end
+disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
+disp('  This can include e.g. "mpirun -n N exe" when applicable.');
+
+%  lj (lenard-jones)
+%  morse
+%  eam
+
 
 % ------------------------------------------------------------------------------
 function options=sqw_phonons_argin(varargin)
