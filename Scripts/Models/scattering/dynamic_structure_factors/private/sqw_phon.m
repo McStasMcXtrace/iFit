@@ -823,7 +823,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   cd(p);
   try
     if isfield(options, 'mpi')
-      [status, result] = system([ precmd 'mpirun -np ' num2str(options.mpi) ' ' options.command ' < pw.d > pw.out' ]);
+      [status, result] = system([ precmd options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ' < pw.d > pw.out' ]);
     else
       [status, result] = system([ precmd options.command ' < pw.d > pw.out' ]);
     end
