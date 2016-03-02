@@ -301,7 +301,7 @@ case 'ABINIT'
   if isfield(options,'mpi') && ~isempty(options.mpi)
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
     if isscalar(options.mpi) 
-      options.command = [ options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+      options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
     end
   end
   if ~isempty(options.command)
@@ -310,6 +310,7 @@ case 'ABINIT'
       cmd = [ cmd ' < PREFIX.files > PREFIX.log' ];
     end
     setenv('ASE_ABINIT_COMMAND', cmd);
+    cmd
   end
   if isunix
     if isempty(options.potentials), options.potentials='/usr/share/abinit/psp/'; end
@@ -399,7 +400,7 @@ case 'ELK' % ===================================================================
   if isfield(options,'mpi') && ~isempty(options.mpi)
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
     if isscalar(options.mpi) 
-      options.command = [ options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+      options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
     end
   end
   if ~isempty(options.command)
@@ -505,7 +506,7 @@ case 'JACAPO' % ================================================================
   if isfield(options,'mpi') && ~isempty(options.mpi)
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
     if isscalar(options.mpi) 
-      options.command = [ options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+      options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
     end
   end
   if ~isempty(options.command)
@@ -558,7 +559,7 @@ case 'NWCHEM' % ================================================================
   if isfield(options,'mpi') && ~isempty(options.mpi)
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
     if isscalar(options.mpi) 
-      options.command = [ options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+      options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
     end
   end
   if ~isempty(options.command)
