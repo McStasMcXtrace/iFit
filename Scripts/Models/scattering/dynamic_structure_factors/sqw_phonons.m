@@ -290,6 +290,7 @@ if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename 
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 switch upper(options.calculator)
 
+% ==============================================================================
 case 'ABINIT'
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
@@ -412,16 +413,16 @@ case 'ELK' % ===================================================================
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
-  if ~isempty(options.nbands)
+  if options.nbands > 0
     calc = [ calc sprintf(', nvbse=%i', options.nbands) ];
   end
-  if ~isempty(options.nsteps)
+  if options.nsteps > 0
     calc = [ calc sprintf(', maxscl=%i', options.nsteps) ];
   end
-  if ~isempty(options.toldfe)
+  if options.toldfe > 0
     calc = [ calc sprintf(', epsengy=%g', options.toldfe) ];
   end
-  if ~isempty(options.ecut)
+  if options.ecut > 0
     calc = [ calc sprintf(', emaxrf=%g', options.ecut) ];
   end
   if ~isempty(options.raw)
@@ -840,7 +841,11 @@ end % other calculators than QE
 signal.UserData.duration = etime(clock, t);
 
 % when model is successfully built, display citations
-disp([ mfilename ': Model ' configuration ' built using ' options.calculator ])
+if ~isdeployed && usejava('jvm') && usejava('desktop')
+  disp([ '<a href="matlab:doc(''' mfilename ''')">' mfilename '</a>: Model ' configuration ' built using ' options.calculator ])
+else
+  disp([ mfilename ': Model ' configuration ' built using ' options.calculator ])
+end
 disp([ '  in ' options.target ]);
 
 if isfield(options, 'dos') && ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
