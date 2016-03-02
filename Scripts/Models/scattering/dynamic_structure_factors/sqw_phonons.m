@@ -298,6 +298,12 @@ case 'ABINIT'
   if isempty(strfind(status.(lower(options.calculator)),'abinis')) && isempty(options.command)
     options.command = status.(lower(options.calculator));
   end
+  if isfield(options,'mpi') && ~isempty(options.mpi)
+    if isempty(options.command) options.command=status.(lower(options.calculator)); end
+    if isscalar(options.mpi) 
+      options.command = [ options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+    end
+  end
   if ~isempty(options.command)
     cmd = options.command;
     if isempty(strfind(cmd, 'PREFIX.files'))
@@ -389,6 +395,12 @@ case 'ELK' % ===================================================================
   end
   if ~strcmp(status.(lower(options.calculator)),'elk') && isempty(options.command)
     options.command = status.(lower(options.calculator));
+  end
+  if isfield(options,'mpi') && ~isempty(options.mpi)
+    if isempty(options.command) options.command=status.(lower(options.calculator)); end
+    if isscalar(options.mpi) 
+      options.command = [ options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+    end
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -490,6 +502,12 @@ case 'JACAPO' % ================================================================
   if ~isempty(options.potentials)
     setenv('DACAPOPATH', options.potentials);
   end
+  if isfield(options,'mpi') && ~isempty(options.mpi)
+    if isempty(options.command) options.command=status.(lower(options.calculator)); end
+    if isscalar(options.mpi) 
+      options.command = [ options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+    end
+  end
   if ~isempty(options.command)
     setenv('DACAPOEXE_SERIAL', options.command); % DACAPOEXE_PARALLEL
   end
@@ -540,7 +558,7 @@ case 'NWCHEM' % ================================================================
   if isfield(options,'mpi') && ~isempty(options.mpi)
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
     if isscalar(options.mpi) 
-      options.command = [ 'mpirun -np ' num2str(options.mpi) ' ' options.command ]; 
+      options.command = [ options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
     end
   end
   if ~isempty(options.command)
@@ -965,7 +983,7 @@ else
   status.jacapo='';
   if st == 0
     % now test executable
-    for calc={'dacapo_serial.run','dacapo.run','dacapo_mpi.run','dacapo'}
+    for calc={'dacapo_mpi.run','dacapo_serial.run','dacapo.run','dacapo'}
       [st,result]=system([ precmd calc{1} ]);
       if st == 0 || st == 2
           status.jacapo=calc{1};
@@ -1041,6 +1059,18 @@ else
   end
   if ~isempty(status.quantumespresso)
     disp([ '  QuantumEspresso (http://www.quantum-espresso.org/) as "' status.quantumespresso '"' ]);
+  end
+  
+  % test for mpirun
+  status.mpirun = '';
+  for calc={'mpirun','mpiexec'}
+    % now test executable
+    [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
+    if st == 0
+        status.mpirun=calc{1};
+        st = 0;
+        break;
+    end
   end
 end
 disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
@@ -1128,7 +1158,9 @@ if ~isfield(options,'target')
   options.target = tempname; % everything will go there
   mkdir(options.target)
 end
-
+if isfield(options, 'smearing') && isempty(options.occupations)
+  options.occupations = options.smearing;
+end
 if isscalar(options.supercell)
   options.supercell=[ options.supercell options.supercell options.supercell ]; 
 end
