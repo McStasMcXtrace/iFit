@@ -1,4 +1,4 @@
-function s = sort(a,dim,mode)
+function a = sort(a,dim,mode)
 % s = sort(a,dim) : Sort iData objects axes in ascending or descending order
 %
 %   @iData/sort function to sort the data set on its axes
@@ -26,17 +26,20 @@ if numel(a) > 1
   s = zeros(iData, numel(a), 1);
   for index=1:numel(a)
     s(index) = sort(a(index), dim, mode);
+    a(index)=iData;
   end
   s = reshape(s, size(a));
   return
 end
 cmd=a.Command;
-s = copyobj(a);
+a = copyobj(a);
 
-[sn, sl] = getaxis(a, '0');   % label
-sd = get(s,'Signal');         % data
-se = get(s,'Error');
-sm = get(s,'Monitor');
+sd = subsref(a,struct('type','.','subs','Signal'));
+[dummy, sl] = getaxis(a, '0');  % signal definition/label
+se = subsref(a,struct('type','.','subs','Error'));
+sm = subsref(a,struct('type','.','subs','Monitor'));
+if numel(se) > 1 && all(se(:) == se(1)), se=se(1); end
+if numel(sm) > 1 && all(sm(:) == sm(1)), sm=sm(1); end
 
 if dim > 0
   tosort=dim;
@@ -49,7 +52,6 @@ for index=tosort
   x = getaxis(a, index);
   [x, sorti] = sort(x, index, mode);
   if ~isequal(sorti, 1:size(a, index))
-    toeval='';
     S.type = '()';
     S.subs = {};
     for j=1:ndims(a), 
@@ -57,28 +59,28 @@ for index=tosort
       else           S.subs{j}=sorti; end
     end
     try
-      sd =subsref(sd, S);
+      sd =subsref(sd, a);
     catch
     end
     try
-      se =subsref(se, S);
+      se =subsref(se, a);
     catch
       se=[];
     end
     try
-      sm =subsref(sm, S);
+      sm =subsref(sm, a);
     catch
       sm=[];
     end
-    setaxis(s, index, x);
+    setaxis(a, index, x);
     was_sorted=1;
   end
 end
 if was_sorted
-  s = setalias(s, 'Signal', sd, [ 'sort(' sl ')' ]);
-  s = setalias(s, 'Error',  se);
-  s = setalias(s, 'Monitor',sm);
-  s.Command=cmd;
-  s = iData_private_history(s, mfilename, a, dim, mode);
+  a = setalias(a, 'Signal', sd, [ 'sort(' sl ')' ]); clear sd
+  a = setalias(a, 'Error',  se);
+  a = setalias(a, 'Monitor',sm);
+  a.Command=cmd;
+  a = iData_private_history(a, mfilename, a, dim, mode);
 end
 
