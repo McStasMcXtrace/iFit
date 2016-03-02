@@ -30,7 +30,7 @@ function s = Sqw_check(s)
   end
   
   % this is the weighting for valid data
-  s(s <= 0) = 0; s(~isfinite(s)) = 0;
+  s(~isfinite(s)) = 0;
   
   % check 'classical'
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
