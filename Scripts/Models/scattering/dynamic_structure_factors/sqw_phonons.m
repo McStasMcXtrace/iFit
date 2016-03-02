@@ -63,7 +63,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     Dacapo: path to potentials, e.g. /usr/share/dacapo-psp       (DACAPOPATH)
 %     Elk:    path to potentials, e.g. /usr/share/elk-lapw/species (ELK_SPECIES_PATH)
 %     ABINIT: path to potentials, e.g. /usr/share/abinit/psp/      (ABINIT_PP_PATH)
-%       or 'NC' or 'PAW'.
+%       or any of 'NC' 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw'
 %     QuantumEspresso: path to potentials, e.g. /usr/share/espresso/pseudo
 %   options.command='exe'                  Path to calculator executable, which may
 %     include e.g. "mpirun -np N" when applicable.
@@ -312,25 +312,29 @@ case 'ABINIT'
     setenv('ASE_ABINIT_COMMAND', cmd);
     cmd
   end
-  if isunix
-    if isempty(options.potentials), options.potentials='/usr/share/abinit/psp/'; end
-  end
   if ~isempty(options.potentials)
     if strcmpi(options.potentials,'NC')
       options.potentials='';
       options.iscf=7;
-    elseif strcmpi(options.potentials,'PAW')
-      options.potentials='';
-      options.iscf=17; % sems best. JTH is even better see https://www.nsc.liu.se/~pla/blog/2014/02/21/deltacodes/
-    else
-      setenv('ABINIT_PP_PATH', options.potentials);
-      d = [ dir(fullfile(options.potentials,'LDA_*')) ; ...
-            dir(fullfile(options.potentials,'GGA_*')) ];
-      for index=d'
-        if index.isdir
-          setenv('ABINIT_PP_PATH', ...
-            [ getenv('ABINIT_PP_PATH') pathsep fullfile(options.potentials, index.name) ]); 
-        end
+    elseif any(strcmpi(options.potentials, {'fhi', 'hgh', 'hgh.sc', 'hgh.k', 'tm', 'paw'}))
+      if strcmpi(options.potentials, 'paw')
+        options.iscf=17; % seems best. see https://www.nsc.liu.se/~pla/blog/2014/02/21/deltacodes/
+      end
+      options.pps = lower(options.potentials);
+      options.potentials = '';
+    end
+  end
+  if isunix
+    if isempty(options.potentials), options.potentials='/usr/share/abinit/psp/'; end
+  end
+  if ~isempty(options.potentials) && isdir(options.potentials)
+    setenv('ABINIT_PP_PATH', options.potentials);
+    d = [ dir(fullfile(options.potentials,'LDA_*')) ; ...
+          dir(fullfile(options.potentials,'GGA_*')) ];
+    for index=d'
+      if index.isdir
+        setenv('ABINIT_PP_PATH', ...
+          [ getenv('ABINIT_PP_PATH') pathsep fullfile(options.potentials, index.name) ]); 
       end
     end
   end
@@ -361,6 +365,9 @@ case 'ABINIT'
   end
   if isfield(options,'mpi') && options.mpi > 1
     calc = [ calc sprintf(', nbdblock=%i', options.mpi) ];
+  end
+  if isfield(options, 'pps') && ~isempty(options.pps)
+    calc = [ calc sprintf(', pps=''%s''', options.pps) ];
   end
   if options.nbands > 0
     calc = [ calc sprintf(', nband=%i', options.nbands) ];
