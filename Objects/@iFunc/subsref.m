@@ -49,7 +49,7 @@ for i = 1:length(S)     % can handle multiple index levels
       if isnumeric(b) && strcmpi(fieldname, 'Date')
         b = datestr(b);
       end
-    elseif any(strcmp(fieldname, strtok(b.Parameters))) % b.<parameter name>
+    elseif isfield(b, 'Parameters') && any(strcmp(fieldname, strtok(b.Parameters))) % b.<parameter name>
       index=find(strcmp(fieldname, strtok(b.Parameters)));
       if index <= length(b.ParameterValues) % last parameter value used
         b = b.ParameterValues;
@@ -76,7 +76,11 @@ for i = 1:length(S)     % can handle multiple index levels
       end
       if isa(c, 'iFunc'), b = c; end
     else
-      error([ mfilename ': can not get iFunc object Property ''' fieldname ''' in iFunc model ' b.Tag '.' ]);
+      if isa(b, 'iFunc')
+        error([ mfilename ': can not get iFunc object Property ''' fieldname ''' in iFunc model ' b.Tag '.' ]);
+      else
+        error([ mfilename ': can not get Property ''' fieldname ''' in ' class(b) '.' ]);
+      end
     end
   end   % switch s.type
 end % for s index level 
