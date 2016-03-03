@@ -19,21 +19,19 @@
 % See also: Process/refresh, Process/exit
 % Process is part of iFit http://ifit.mccode.org 
 
-function status=refresh(pid)
+function status=isreal(pid)
 
 % handle array of processes
 if numel(pid) > 1
+  status = zeros(size(pid))
   for index=1:numel(pid)
-    pid(index) = feval(mfilename, pid(index));
+    status(index) = feval(mfilename, pid(index));
   end
-  if nargout == 0 && ~isempty(inputname(1))
-    assignin('caller', inputname(1), pid);
-  end
-  return
-end
+else
 
-pid    = refresh(pid);
-status = pid.isActive;
+  pid    = refresh(pid);
+  status = pid.isActive;
+end
 
 % update the calling object
 if ~isempty(inputname(1))
