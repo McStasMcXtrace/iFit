@@ -470,6 +470,7 @@ end
 
 % potential elements given as path: we get all potentials there in
 potentials = {}; potentials_full = {};
+if ischar(options.potentials), options.potentials = { options.potentials }; end
 for index=1:numel(options.potentials)
   if isdir(options.potentials{index})
     % add the full content of the directory
@@ -821,13 +822,13 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   disp([ options.command ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
   pw = pwd;
   cd(p);
-  try
+
     if isfield(options, 'mpi')
       [status, result] = system([ precmd options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ' < pw.d > pw.out' ]);
     else
       [status, result] = system([ precmd options.command ' < pw.d > pw.out' ]);
     end
-  end
+
   cd(pw);
 
   % READ the QE/PWSCF output file and search for string 'Forces acting'
@@ -874,7 +875,7 @@ function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displa
   potentials = {}; potentials_full = {};
   for index=1:numel(displaced.symbols)
     % identify element in the list of potentials
-    match = strcmpi(displaced.symbols{index}, strtok(options.potentials,'.'));
+    match = strcmpi(displaced.symbols{index}, strtok(options.potentials,'._'));
     match_full = options.potentials_full(match); match = options.potentials(match);
     if isempty(match)
       disp([ mfilename ': no suitable pseudo-potential found for atom ' displaced.symbols{index} ])
@@ -901,7 +902,7 @@ function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displa
       else select=1;
       end
       % if still more than one choice, pop-up list selector
-      if numel(match) > 1 && ~isfield(options,'potential_auto')
+      if numel(match) > 1 && ~isempty(options.gui) && options.gui
         [select,OK] = listdlg('ListString', match, ...
             'ListSize', [400 200], ...
             'Name', [ 'Pseudo-potential for ' displaced.symbols{index} ], ...
