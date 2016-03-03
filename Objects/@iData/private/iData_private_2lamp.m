@@ -48,7 +48,20 @@ b.Data.Attributes.HISTORY      = sprintf('%s\n', a.Command{:});
 b.Data.Attributes.MIN_MAX_VALUES=[ 'w 1: Float dim=[' num2str(size(a)) '] min=' min(a) ' max=' max(a) ];
 b.Data.Attributes.OTHER=char(a);
 dummy = findfield(a,'PARAMETERS','exact numeric');
-b.Data.Attributes.PARAMETERS   = get(a,dummy{end});
+if isempty(dummy)
+  dummy = findfield(a,'PARAMETERS');
+  dummy = get(a,dummy);
+  index = find(cellfun(@isstruct, dummy));
+  if numel(index) == 1
+    dummy = dummy{index};
+  else
+    dummy = dummy{1};
+  end
+  b.Data.Attributes.PARAMETERS = class2str(' ', dummy);
+else
+  b.Data.Attributes.PARAMETERS   = get(a,dummy{end});
+end
+
 b.Data.Attributes.SOURCE       = a.User;
 b.Data.Attributes.TITLES       = [ a.Title '; ' title(a) ];
 b.Data.Attributes.Written_by_LAMP=version(iData);
@@ -133,6 +146,8 @@ if iscell(dummy)
 end
 
 % add the snapshot (getframe)
-dummy = getframe(a, [ 192 ]);
-b.Data.entry1.data1.SNAPSHOT = floor(mean(dummy.cdata, 3));
+try
+  dummy = getframe(a, [ 192 ]);
+  b.Data.entry1.data1.SNAPSHOT = floor(mean(dummy.cdata, 3));
+end
 
