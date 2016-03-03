@@ -12,11 +12,11 @@ function signal=sqw_phonons(configuration, varargin)
 %   Supported calculators are:
 %     EMT       Effective Medium Theory calculator (Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O)
 %     GPAW      Real-space/plane-wave/LCAO PAW code
-%     NWChem    Gaussian based electronic structure code
+%     NWChem    Gaussian based electronic structure code (with MPI)
 %     Dacapo    Plane-wave ultra-soft pseudopotential code
-%     ELK       Full Potential LAPW code
-%     ABINIT    Plane-wave pseudopotential code
-%     QuantumEspresso Plane-wave pseudopotential code
+%     ELK       Full Potential LAPW code (with MPI)
+%     ABINIT    Plane-wave pseudopotential code (with MPI)
+%     QuantumEspresso Plane-wave pseudopotential code (with MPI)
 %
 %   The simplest usage is to call: sqw_phonons('gui') which displays an entry dialog box
 %   and proceeds with a fully automatic computation, and plots final results.
@@ -54,7 +54,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     a temporary directory is created when not specified.
 %   options.supercell=scalar or [nx ny nz] supercell size. Default is 2.
 %   options.calculator=string              EMT,GPAW,Elk,NWChem,Dacapo,ABINIT,Quantum
-%     Default=GPAW
+%     We recommend ABINIT,QE and Elk. Default set from installed software.
 %   options.dos=1                          Option to compute the vibrational
 %     density of states (vDOS) in UserData.DOS
 %   options.potentials=string              Basis datasets or pseudopotentials.
@@ -180,14 +180,30 @@ function signal=sqw_phonons(configuration, varargin)
 % QE      SSSP Efficiency
 % ABINIT  PAW JTH           http://www.abinit.org/downloads/PAW2 req v7.6
 
-% compile Elk         with openmpi
-%         ABINIT 7.10 with openmpi
+persistent status ld_library_path
 
-persistent status
+if ~exist('ld_library_path') || isempty(ld_library_path) || ~ischar(ld_library_path)
+  ld_library_path = getenv('LD_LIBRARY_PATH');
+else
+  if isunix
+    setenv('LD_LIBRARY_PATH',''); % make sure we do not use Matlab libs for system commands.
+  end
+end
+
+if ~exist('status') || isempty(status) || ~isstruct(status)
+  status = sqw_phonons_requirements;
+end
 
 signal = [];
 
 options= sqw_phonons_argin(configuration, varargin{:});
+
+if isempty(options.calculator)
+  % select default calculator according to those installed
+  for index={'abinit','quantumespresso','gpaw','elk','jacapo','nwchem',};
+    if ~isempty(status.(index{1})), options.calculator=index{1}; break; end
+  end
+end
 
 if strcmp(configuration,'gui')
   options.gui=1;
@@ -196,10 +212,6 @@ end
 
 if nargin == 0 || isempty(configuration)
   configuration = 'bulk("Al", "fcc", a=4.05)';
-end
-
-if ~exist('status') || isempty(status) || ~isstruct(status)
-  status = sqw_phonons_requirements;
 end
 
 t=clock();
@@ -310,7 +322,6 @@ case 'ABINIT'
       cmd = [ cmd ' < PREFIX.files > PREFIX.log' ];
     end
     setenv('ASE_ABINIT_COMMAND', cmd);
-    cmd
   end
   if ~isempty(options.potentials)
     if strcmpi(options.potentials,'NC')
@@ -364,7 +375,12 @@ case 'ABINIT'
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
   if isfield(options,'mpi') && options.mpi > 1
-    calc = [ calc sprintf(', nbdblock=%i', options.mpi) ];
+    % nbdblock, npband, AUTOPARAL=1
+    % calc = [ calc sprintf(', nbdblock=%i', options.mpi) ];
+    calc = [ calc sprintf(', autoparal=1') ];
+  end
+  if ~isfield(options, 'pps') || isempty(options.pps)
+    options.iscf=17;
   end
   if isfield(options, 'pps') && ~isempty(options.pps)
     calc = [ calc sprintf(', pps=''%s''', options.pps) ];
@@ -655,6 +671,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
     options.ecutwfc=options.ecut/Ry; end % in Ry
   if options.nsteps, options.electron_maxstep=options.nsteps; end
   if isscalar(options.occupations), options.occupations=options.occupations/Ry; end
+  options.mpirun = status.mpirun;
 
   disp([ mfilename ': calling sqw_phon(' poscar ') with PHON/Quantum Espresso' ]);
   options.dos = 1;
@@ -662,6 +679,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
 
 
 otherwise
+  setenv('LD_LIBRARY_PATH',ld_library_path);
   sqw_phonons_error([ mfilename ': Unknown calculator ' options.calculator ], options);
 end
 % ------------------------------------------------------------------------------
@@ -743,6 +761,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     disp(result)
   catch
     disp(result)
+    setenv('LD_LIBRARY_PATH',ld_library_path);
     sqw_phonons_error([ mfilename ': failed calling ASE with script ' ...
       fullfile(target,'sqw_phonons_build.py') ], options);
   end
@@ -753,7 +772,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   try
     signal.UserData.ph_ase = fileread(fullfile(target, 'ph.pkl')); % binary
   catch
-    
+    setenv('LD_LIBRARY_PATH',ld_library_path);
     sqw_phonons_error([ mfilename ': ' options.calculator ' failed. May be a convergence issue. Temporary files are in ' target ], options)
   end
   if exist(configuration)
@@ -865,6 +884,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
 end % other calculators than QE
 
 signal.UserData.duration = etime(clock, t);
+setenv('LD_LIBRARY_PATH',ld_library_path);
 
 % when model is successfully built, display citations
 if ~isdeployed && usejava('jvm') && usejava('desktop')
@@ -956,6 +976,18 @@ else
   disp('Available calculators:');
   status.emt='ase-run';
   disp('  EMT           only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
+  
+  % test for mpirun
+  status.mpirun = '';
+  for calc={'mpirun','mpiexec'}
+    % now test executable
+    [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
+    if st == 0
+        status.mpirun=calc{1};
+        st = 0;
+        break;
+    end
+  end
   
   % test for GPAW
   [st, result] = system([ precmd 'python -c "from gpaw import GPAW"' ]);
@@ -1069,20 +1101,8 @@ else
     disp([ '  QuantumEspresso (http://www.quantum-espresso.org/) as "' status.quantumespresso '"' ]);
   end
   
-  % test for mpirun
-  status.mpirun = '';
-  for calc={'mpirun','mpiexec'}
-    % now test executable
-    [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-    if st == 0
-        status.mpirun=calc{1};
-        st = 0;
-        break;
-    end
-  end
 end
 disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
-disp('  This can include e.g. "mpirun -n N exe" when applicable.');
 
 %  lj (lenard-jones)
 %  morse
@@ -1097,7 +1117,7 @@ function options=sqw_phonons_argin(varargin)
 
 % defaults
 options.supercell  = 2;
-options.calculator = 'GPAW';
+options.calculator = '';
 options.kpoints    = 1;
 options.xc         = 'PBE';
 options.mode       = 'fd';            % GPAW
