@@ -68,9 +68,10 @@ end
 
 if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
   signal = {}; ax={}; name={};
-  for index=1:numel(model)
+  for index=1:numel(p)
     [signal{end+1}, ax{end+1}, name{end+1}] = feval(model, p{index}, varargin{:});
   end
+  signal
   if numel(signal) == 1, 
     signal=signal{1}; ax=ax{1}; name=name{1};
   end
