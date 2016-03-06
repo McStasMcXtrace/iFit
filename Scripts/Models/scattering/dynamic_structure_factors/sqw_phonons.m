@@ -96,16 +96,22 @@ function signal=sqw_phonons(configuration, varargin)
 %                       'semiconductor'    sets 0 eV FermiDirac smearing
 %                       'auto'             for Elk (automatic smearing)
 %                       or 0 for semi-conductors
-%                       or a value in eV for a FermiDirac distribution
+%                       or a value in eV for the distribution width e.g. 0.3
 %   options.nsteps=scalar                   Max number of iterations for SCF.
 %     Typical: 30. Large value improve convergence.
 %   options.toldfe=scalar                  Convergence threshold on the energy for 
-%     selfconsistency [eV].
+%     selfconsistency, e.g. 1e-5 [eV].
 %
 % Options specific per calculator
 %   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
 %     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'fd'.
 %   options.iscf='NC','PAW'                Type of SCF cycles (ABINIT) 
+%   options.pps = 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw' Type of database (ABINIT)
+%   options.mixing_beta=scalar             mixing factor for self-consistency
+%     default=0.7. use 0.3 to improve convergence (QuantumEspresso)
+%   options.mixing_ndim=scalar             number of iterations used in mixing
+%     default=8. If you are tight with memory, you may reduce it to 4. A larger
+%     value will improve the SCF convergence, and use more memory (QuantumEspresso)
 %
 % The options can also be entered as a strings with 'field=value; ...'.
 %
@@ -200,7 +206,7 @@ options= sqw_phonons_argin(configuration, varargin{:});
 
 if isempty(options.calculator)
   % select default calculator according to those installed
-  for index={'abinit','quantumespresso','gpaw','elk','jacapo','nwchem',};
+  for index={'quantumespresso','abinit','gpaw','elk','jacapo','nwchem',};
     if ~isempty(status.(index{1})), options.calculator=index{1}; break; end
   end
 end
@@ -229,15 +235,17 @@ if options.gui
     if ~isempty(status.(index{1})), calcs = [ calcs ', ' upper(index{1}) ]; end
   end
   NL = sprintf('\n');
-  prompt = { [ '{\bf Atom/molecule/system configuration}' NL 'a CIF/PDB/POSCAR/... name or e.g. bulk("Cu", "fcc", a=3.6, cubic=True),' NL  'molecule("H2O"), or nanotube(6, 0, length=4). Documentation at ifit.mccode.org/Models.html' ], ...
-  [ '{\bf Calculator}' NL 'one of ' calcs ], ...
-  [ '{\bf Smearing}' NL 'metal, semiconductor, insulator or left empty' ], ...
-  [ '{\bf Supercell}' NL 'the size of the repeated model = system*supercell (3-vector)' ], ...
-  [ '{\bf K-Points}' NL 'Monkhorst-Pack grid which determines the K sampling (3-vector)' ] };
+  prompt = { [ '{\bf Atom/molecule/system configuration}' NL 'a CIF/PDB/POSCAR/... name or e.g. bulk("Cu", "fcc", a=3.6, cubic=True),' NL  'molecule("H2O"), or nanotube(6, 0, length=4). ' NL 'Documentation at {\color{blue}http://ifit.mccode.org/Models.html}' ], ...
+  [ '{\bf Calculator}' NL 'One of ' calcs ], ...
+  [ '{\bf Smearing}' NL 'metal, semiconductor, insulator or left empty. Use e.g. 0.3 eV for conductors, or a small value such as 0.01 to help SCF convergence. You may use "auto" with Elk. ' ], ...
+  [ '{\bf Cut-off energy for wave-functions}' NL 'Leave as 0 for the default, or specify a cut-off in eV, e.g. 500 eV for fast estimate, 1500 or 2000 eV for accurate results.' ], ...
+  [ '{\bf K-Points}' NL 'Monkhorst-Pack grid which determines the K sampling (3-vector). 4 is the minimum for accurate computations, 6 is best. Use 1 or 2 for testing only (faster).' ], ...
+   [ '{\bf Supercell}' NL 'The size of the repeated model = system*supercell (3-vector). Should be larger than k-points.' ], ...
+   [ '{\bf Other options}' NL 'Such as mpi, nbands, nsteps, xc (default PBE), toldfe, raw' NL 'example: "mpi=4; nsteps=50"' NL 'Documentation at {\color{blue}http://ifit.mccode.org/Models.html}' ] };
   dlg_title = 'iFit: Model: phonons';
-  defAns    = {configuration, options.calculator, options.occupations, ...
-    num2str(options.supercell), num2str(options.kpoints)};
-  num_lines = [ 1 1 1 1 1 ]';
+  defAns    = {configuration, options.calculator, options.occupations, num2str(options.ecut), ...
+    num2str(options.kpoints), num2str(options.supercell), ''};
+  num_lines = [ 1 1 1 1 1 1 1 ]';
   op.Resize      = 'on';
   op.WindowStyle = 'normal';   
   op.Interpreter = 'tex';
@@ -249,11 +257,26 @@ if options.gui
   configuration      = answer{1};
   options.calculator = answer{2};
   options.occupations= answer{3};
-  options.supercell  = str2num(answer{4});
+  if ~isnan(str2double(options.occupations))
+    options.occupations = str2double(options.occupations);
+  end
+  options.ecut       = str2num(answer{4});
+  
   options.kpoints    = str2num(answer{5});
+  options.supercell  = str2num(answer{6});
+  % other options transfered to 'options'
+  others             = str2struct(answer{7});
+  if ~isempty(others)
+    for f=fieldnames(others)
+      if ~isfield(options, f{1}) || isempty(options.(f{1}))
+        options.(f{1}) = others.(f{1});
+      end
+    end
+  end
   options.autoplot   = 1;
   options.dos        = 1;
   options.gui        = waitbar(0, [ mfilename ': starting' ], 'Name', [ 'iFit: ' mfilename ' ' configuration ]);
+  if strcmpi(options.calculator,'qe') options.calculator='quantumespresso'; end
 end
 
 % handle compatibility fields
@@ -261,7 +284,7 @@ if isfield(options,'conv_thr') && ~isfield(options,'toldfe')
     options.toldfe = options.conv_thr; end
     
 if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
-    options.occupations=0.1;
+    options.occupations=0.27; % recommended by SSSP
   elseif strcmp(options.occupations, 'semiconductor')
     options.occupations=0.0001;
   elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
@@ -639,7 +662,17 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   end
   % ASE is installed. We use it to create a proper POSCAR file, then we call sqw_phon (QE)
   poscar = fullfile(options.target,'POSCAR_ASE');
-  read = [ read 'from ase.io import write; write("' poscar '",atoms, format="vasp")' ];
+  read = [ read 'from ase.io import write; ' ...
+    'write("' poscar '",atoms, format="vasp");' ...
+    'write("configuration.png", atoms); ' ...
+    'write("configuration.eps", atoms); ' ...
+    'write("configuration.pov", atoms); ' ...
+    'write("configuration.cif", atoms, "cif"); ' ...
+    'write("configuration.x3d", atoms, "x3d"); ' ...
+    'write("configuration.pdb", atoms, "pdb"); ' ...
+    'write("configuration.html", atoms, "html"); ' ...
+    'write("configuration.etsf", atoms, "etsf"); ' ...
+    'write("configuration_SHELX.res", atoms, "res"); ' ];
   try
     [st, result] = system([ precmd 'python -c ''' read '''' ]);
   catch
@@ -722,10 +755,17 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     'import pickle', ...
     '# Setup crystal and calculator', ...
     read, ...
-    '# from ase.io import write', ...
-    '# write("configuration.png", atoms)', ...
-    '# write("configuration.eps", atoms)', ...
-    '# write("configuration.pov", atoms)', ...
+    'from ase.io import write', ...
+    'write("configuration.png", atoms)', ...
+    'write("configuration.eps", atoms)', ...
+    'write("configuration.pov", atoms)', ...
+    'write("configuration.cif", atoms, "cif")', ...
+    'write("configuration.x3d", atoms, "x3d")', ...
+    'write("configuration.pdb", atoms, "pdb")', ...
+    'write("configuration.html", atoms, "html")', ...
+    'write("configuration.etsf", atoms, "etsf")', ...
+    'write("configuration_SHELX.res", atoms, "res")', ...
+    'write("configuration_VASP", atoms,"vasp")', ...
     calc, ...
     '# Phonon calculator', ...
   sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=0.05)',options.supercell), ...
@@ -918,6 +958,9 @@ case 'QUANTUMESPRESSO'
 disp(' * PHON:   D. Alfe, Computer Physics Communications 180,2622-2633 (2009).')
 disp(' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).')
 end
+disp('You can now evaluate the model using e.g.:')
+disp('    qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);');
+disp('    f=iData(s,[],qh,qk,ql,w); plot3(log(f(1,:, :,:)));');
 
 % handle autoplot option
 if options.autoplot
@@ -950,8 +993,10 @@ function sqw_phonons_plot(signal)
   view([38 26]);
   if options.dos
     subplot(1,2,2);
+    try
     plot(signal.UserData.DOS); % plot the DOS, as indicated during model creation
     save(signal.UserData.DOS, fullfile(options.target, 'DOS.svg'), 'svg');
+    end
   end
   drawnow
   saveas(fig, fullfile(options.target, 'phonons.pdf'), 'pdf');
@@ -1033,7 +1078,7 @@ else
     end
   end
   if ~isempty(status.jacapo)
-    disp([ '  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '' ]);
+    disp([ '  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '"' ]);
   end
   
   % test for Elk
@@ -1074,7 +1119,7 @@ else
   
   % test for QuantumEspresso
   status.quantumespresso = '';
-  for calc={'pw.x','pw.exe','pw'}
+  for calc={'pw.x','pw.exe','pw','pwscf'}
     % now test executable
     [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
     if st == 0 || st == 2
@@ -1116,9 +1161,9 @@ function options=sqw_phonons_argin(varargin)
 % returns an 'options' structure.
 
 % defaults
-options.supercell  = 2;
+options.supercell  = 4;
 options.calculator = '';
-options.kpoints    = 1;
+options.kpoints    = 4;
 options.xc         = 'PBE';
 options.mode       = 'fd';            % GPAW
 options.potentials = '';
