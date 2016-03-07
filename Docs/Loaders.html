@@ -165,8 +165,8 @@
       formats (text, NetCDF, HDF, FITS, images, XML, CSV, ...)<br>
     </h4>
     <span style="font-weight: bold;"> </span>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -323,11 +323,16 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           </td>
           <td style="vertical-align: top;">binary<br>
           </td>
-          <td style="vertical-align: top;">The Matlab workspace binary
-            file is compact and fast to read/write. It carries the whole
-            object information. Such files require Matlab (or <a
-              href="http://www.octave.org/">Octave</a>) to be installed
-            prior to importation.</td>
+          <td style="vertical-align: top;">The Matlab workspace
+            serialized binary file is compact and fast to read/write. It
+            carries the whole object information. Such files require
+            Matlab/iFit (or <a href="http://www.octave.org/">Octave</a>)
+            to be installed prior to importation. To save a file use: <span
+              style="color: rgb(51, 102, 255);">save</span>(a,<span
+              style="color: rgb(204, 51, 204);">'mat_file'</span>,<span
+              style="color: rgb(204, 51, 204);">'mat'</span>). To load
+            it use <span style="color: rgb(51, 102, 255);">load</span>(iData,<span
+              style="color: rgb(204, 51, 204);">'mat_file'</span>).</td>
           <td style="vertical-align: top;">Yes<br>
           </td>
         </tr>
@@ -518,6 +523,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
             You can also read and write such files using <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">LAMP</a>.</td>
           <td valign="top"><br>
@@ -529,8 +535,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <h4><a class="mozTocH4" name="mozTocId361032"></a>More specific data
       formats (neutrons and X-ray, ...)</h4>
     <span style="font-weight: bold;"> </span>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -701,6 +707,7 @@ href="http://www.ill.eu/instruments-support/instruments-groups/groups/tof/softwa
 
 
 
+
             This data can also be imported/generated with <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">Lamp</a>.</td>
           <td style="vertical-align: top;"><br>
@@ -753,6 +760,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           </td>
           <td style="vertical-align: top;"><a
               href="http://www.princetoninstruments.com/products/software/#1">Princeton/Roper
+
 
 
 
@@ -879,6 +887,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               definition</a>. This format gathers <span
               style="font-style: italic;">CIF</span> and <span
               style="font-style: italic;">imgCIF</span> standards. These
@@ -900,6 +909,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             'hdr' file requires an ssociated 'img' file. <a
               href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Format</a>
             from the Analyze <a href="http://www.analyzedirect.com/">Biomedical
+
 
 
 
@@ -1039,7 +1049,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               href="http://www.yasara.org">Yasara</a>, <a
               href="http://mem.ibs.fr/VEDA/">VEDA</a>.<br>
           </td>
-          <td style="vertical-align: top;"><br>
+          <td style="vertical-align: top;">Yes<br>
           </td>
         </tr>
         <tr>
@@ -1154,7 +1164,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     not binary encoded, and any following options is forwarded to the
     text reader. The possible options are:<br>
     <br>
-    <table cellpadding="2" cellspacing="2" border="1" width="100%">
+    <table border="1" cellpadding="2" cellspacing="2" width="100%">
       <tbody>
         <tr>
           <td align="center" valign="top"><i>Text import option</i><i><br>
@@ -1172,6 +1182,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
               </font></b></td>
           <td valign="top">When numerical data blocks only use <a
               href="file:///cgi-bin/man/man2html?3+isspace">isspace</a>(3)
+
 
 
 
@@ -1321,8 +1332,8 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     Let's details one of the <a href="../Loaders/iLoad_ini.m">iLoad_ini</a><span
       style="font-weight: bold;"></span> entry for INX files.<br>
     <br>
-    <table style="text-align: left; width: 70%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 70%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top;">
@@ -1411,6 +1422,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
         from <span style="color: rgb(51, 102, 255);">prefdir</span> or
         <span style="color: rgb(51, 102, 255);">ifitpath/Loaders</span>.</li>
       <li>Create a new structure (which you may name as you wish) and
@@ -1450,9 +1462,11 @@ Farhi
 
 
 
+
           - iFit/Loaders - </span><span style="font-style: italic;">
-          $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
-        back to <a href="index.html">Main iFit Page </a><a
+          $Date$ $Revision$ </span><span
+          style="font-style: italic;"> </span>- back to <a
+          href="index.html">Main iFit Page </a><a
           href="http://www.ill.eu/"><img title="ILL, Grenoble, France
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px

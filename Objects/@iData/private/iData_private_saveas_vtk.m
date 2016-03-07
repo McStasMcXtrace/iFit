@@ -331,6 +331,8 @@ fclose(fid);
 %CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 %ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 %POSSIBILITY OF SUCH DAMAGE.
+%
+% <http://www.mathworks.com/matlabcentral/fileexchange/47814-export-3d-data-to-paraview-in-vtk-legacy-file-format>
 
 function vtkwrite( filename,dataType,varargin )
 % VTKWRITE Writes 3D Matlab array into VTK file format.
