@@ -15,7 +15,7 @@ function a = reshape(a, varargin)
 % ex:     a=iData(peaks(60)); b=reshape(a, 75, 48);
 %
 % Version: $Date$
-% See also iData, iData/squeeze, iData/size, iData/permute, iData/resize
+% See also iData, iData/squeeze, iData/size, iData/permute, iData/resize, iData/reducevolume
 
 % first get dimensions from varargin
 dims = [];

@@ -21,6 +21,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %                   If given as filename='gui', a file selector pops-up
 %                   If the filename is empty, the object Tag is used.
 %         format: data format to use (char), or determined from file name extension
+%           'art'  save as ASCII art
 %           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
@@ -359,7 +360,7 @@ case 'nii'  % NifTi volume
 case 'hdr'  % Analyze volume
   filename = iData_private_saveas_analyze(a, filename);
 case 'mrc'  % MRC map file
-  WriteMRC(getaxis(a,0),1,filename);
+  WriteMRC(getaxis(a,0),1,filename);  % in private
 case {'fits','fit','fts'} % FITS image
   if ndims(a) == 2
     a = double(a);
@@ -369,7 +370,7 @@ case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
 case 'csv'  % Spreadsheet comma separated values file format
   csvwrite(filename, double(a));
-case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','jpeg','jpeg2000','png'}  % bitmap images
+case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','jpeg','jpeg2000','png','art'}  % bitmap images
   if ndims(a) == 2 
     b=getaxis(a,0); % Signal/Monitor
     b=(b-min(b(:)))/(max(b(:))-min(b(:)))*256;
@@ -382,6 +383,8 @@ case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','jpeg'
     imwrite(b, jet(256), filename, format, 'Comment',char(a),'Mode','lossless');
   case 'tiff'
     imwrite(b, jet(256), filename, format, 'Description',char(a));
+  case 'art'
+    textart(b, filename); % in private
   otherwise
     if strcmp(format,'hdf4'), format='hdf'; end
     imwrite(b, jet(256), filename, format);

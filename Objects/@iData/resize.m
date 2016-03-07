@@ -11,8 +11,8 @@ function b = resize(a, varargin)
 % output: c: object or array (iData)
 % ex:     a=iData(peaks); b=resize(a, 10,90);
 %
-% Version: $Date: Tue Jun 9 16:10:28 2015 +0200$
-% See also iData, iData/squeeze, iData/size, iData/permute, iData/reshape
+% Version: $Date$
+% See also iData, iData/squeeze, iData/size, iData/permute, iData/reshape, iData/reducevolume
 
 % first get dimensions from varargin
 dims = [];
