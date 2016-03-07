@@ -222,6 +222,8 @@ case 'vrml'
   format='wrl';
 case 'mantid'
   format='hdf5 mantid data';
+case 'html'
+  format='xhtml';
 end
 
 % handle extensions
@@ -416,16 +418,27 @@ case {'vrml','wrl'} % VRML format
   vrml(g,filename);
   close(f);
 case {'x3d','xhtml'} % X3D/XHTML format
-  f=figure('visible','off');
-  h = plot(reducevolume(a),options); % make sure file is not too big
+  
   titl = char(a);
   titl(titl=='<')='[';
   titl(titl=='>')=']';
   desc = evalc('disp(a)');
   desc(desc=='<')='[';
   desc(desc=='>')=']';
-  figure2xhtml(filename, f, struct('interactive',true,'output', format,'title',titl,'Description',desc));
-  close(f);
+  if ndims(a) <= 3
+    f=figure('visible','off');
+    h = plot(reducevolume(a),options); % make sure file is not too big
+    figure2xhtml(filename, f, struct('interactive',true, ...
+      'output', format,'title',titl,'Description',desc));
+    close(f);
+  else
+    [x, xlab] = getaxis(a,2); x=double(x);
+    [y, ylab] = getaxis(a,1); y=double(y);
+    [z, zlab] = getaxis(a,3); z=double(z);
+    [c, clab] = getaxis(a,0); c=double(c);
+    fv=isosurface(x,y,z,c,mean(c(:)));
+    x3mesh(fv.faces, fv.vertices, 'name', filename, 'subheading', desc, 'rotation', 1);
+  end
 case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
   if ndims(a) == 1    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
     return
