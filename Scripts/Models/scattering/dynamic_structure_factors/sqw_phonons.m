@@ -707,11 +707,11 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
 
   disp([ mfilename ': calling sqw_phon(' poscar ') with PHON/Quantum Espresso' ]);
   options.dos = 1;
+  sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso wrapper' ]);
   signal=sqw_phon(poscar, options);
 
 
 otherwise
-  setenv('LD_LIBRARY_PATH',ld_library_path);
   sqw_phonons_error([ mfilename ': Unknown calculator ' options.calculator ], options);
 end
 % ------------------------------------------------------------------------------
@@ -785,8 +785,34 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   if exist(configuration)
     copyfile(configuration, target);
   end
+  
+  % call python script with configuration
+  read0 = [ read 'from ase.io import write; ' ...
+    'write("' fullfile(target, 'configuration.png') '", atoms);' ...
+    'write("' fullfile(target, 'configuration.eps') '", atoms);' ...
+    'write("' fullfile(target, 'configuration.pov') '", atoms);' ...
+    'write("' fullfile(target, 'configuration.cif') '", atoms, "cif");' ...
+    'write("' fullfile(target, 'configuration.x3d') '", atoms, "x3d");' ...
+    'write("' fullfile(target, 'configuration.pdb') '", atoms, "pdb");' ...
+    'write("' fullfile(target, 'configuration.html') '", atoms, "html");' ...
+    'write("' fullfile(target, 'configuration.etsf') '", atoms, "etsf");' ...
+    'write("' fullfile(target, 'configuration_SHELX.res') '", atoms, "res");' ...
+    'write("' fullfile(target, 'configuration_VASP') '", atoms, "vasp");' ];
+  
+  if isunix, setenv('LD_LIBRARY_PATH',''); end
+  try
+    [st, result] = system([ precmd 'python -c ''' read0 '''' ]);
+  catch
+    st = 127;
+  end
+  if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
+  if st ~= 0
+    disp([ mfilename ': failed read input ' ...
+      configuration ], options);
+  end
+  sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, calc);
 
-  % call python script
+  % call python script with calculator
   cd(target)
   disp([ mfilename ': creating Phonon/ASE model in ' target ]);
   disp([ '  ' configuration ]);
@@ -924,6 +950,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
 end % other calculators than QE
 
 signal.UserData.duration = etime(clock, t);
+options.duration = signal.UserData.duration;
 setenv('LD_LIBRARY_PATH',ld_library_path);
 
 % when model is successfully built, display citations
@@ -938,46 +965,46 @@ if isfield(options, 'dos') && ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   disp('INFO: The vibrational density of states (vDOS) will be computed at first model evaluation.');
 end
 disp([ 'Time elapsed=' num2str(signal.UserData.duration) ' [s]. Please cite:' ])
-disp(' * Atomic Simulation Environment')
-disp('           S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002.')
-disp(' * iFit:   E. Farhi et al, J. Neut. Res., 17 (2013) 5.')
+cite = { ' * Atomic Simulation Environment', ...
+  '           S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002.', ...
+  ' * iFit:   E. Farhi et al, J. Neut. Res., 17 (2013) 5.' };
 switch upper(options.calculator)
 case 'GPAW'
-disp(' * GPAW:   J. J. Mortensen et al, Phys Rev B, Vol. 71, 035109 (2005).');
+cite{end+1} = ' * GPAW:   J. J. Mortensen et al, Phys Rev B, Vol. 71, 035109 (2005).';
 case 'NWCHEM'
-disp(' * NWChem: M. Valiev et al, Comput. Phys. Commun. 181, 1477 (2010).');
+cite{end+1} = ' * NWChem: M. Valiev et al, Comput. Phys. Commun. 181, 1477 (2010).';
 case 'ELK'
-disp(' * ELK:    http://elk.sourceforge.net');
+cite{end+1} = ' * ELK:    http://elk.sourceforge.net';
 case {'DACAPO','JACAPO'}
-disp(' * DACAPO: B. Hammer et al, Phys. Rev. B 59, 7413 (1999).');
+cite{end+1} = ' * DACAPO: B. Hammer et al, Phys. Rev. B 59, 7413 (1999).';
 case 'ABINIT'
-disp(' * ABINIT: X. Gonze et al, Computer Physics Communications 180, 2582-2615 (2009).');
+cite{end+1} = ' * ABINIT: X. Gonze et al, Computer Physics Communications 180, 2582-2615 (2009).';
 case 'EMT'
-disp(' * EMT:    K.W. Jacobsen et al, Surf. Sci. 366, 394–402 (1996).');
+cite{end+1} = ' * EMT:    K.W. Jacobsen et al, Surf. Sci. 366, 394–402 (1996).';
 case 'QUANTUMESPRESSO'
-disp(' * PHON:   D. Alfe, Computer Physics Communications 180,2622-2633 (2009).')
-disp(' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).')
+cite{end+1} = ' * PHON:   D. Alfe, Computer Physics Communications 180,2622-2633 (2009).';
+cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).';
 end
+fprintf(1, '%s\n', cite{:});
 disp('You can now evaluate the model using e.g.:')
 disp('    qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);');
 disp('    f=iData(s,[],qh,qk,ql,w); plot3(log(f(1,:, :,:)));');
 
+sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'done', options, cite);
+
 % handle autoplot option
 if options.autoplot
   if options.gui && ishandle(options.gui), waitbar(0.75, options.gui, [ mfilename ': plotting phonons and DOS' ]); end
-  sqw_phonons_plot(signal);
+  f = sqw_phonons_plot(signal);
   if options.gui && ishandle(options.gui), delete(options.gui); end
-  
+else
+  f = [];
 end
 
-
-
-
-
-
+sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'plot', options, f, signal);
 
 % ------------------------------------------------------------------------------
-function sqw_phonons_plot(signal)
+function f = sqw_phonons_plot(signal)
   if isempty(signal) || ~isfield(signal.UserData, 'options') , return; end
   
   options = signal.UserData.options;
@@ -985,21 +1012,16 @@ function sqw_phonons_plot(signal)
   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,150,151);
   fig=figure; 
   if options.dos, subplot(1,2,1); end
-  f=iData(signal,[],qh,qk,ql,w); 
-  f=log(f(1,:, :,:)); scatter3(f,'filled'); axis tight;
-  % export plot
-  save(f, fullfile(options.target, 'phonons.vtk'), 'vtk');
-  save(f, fullfile(options.target, 'phonons.png'),'png','view3 tight');
+  f=iData(signal,[],qh,qk,ql,w);
+  g=log(-f(1,:, :,:)); scatter3(g,'filled'); axis tight;
   view([38 26]);
   if options.dos
     subplot(1,2,2);
     try
     plot(signal.UserData.DOS); % plot the DOS, as indicated during model creation
-    save(signal.UserData.DOS, fullfile(options.target, 'DOS.svg'), 'svg');
     end
   end
   drawnow
-  saveas(fig, fullfile(options.target, 'phonons.pdf'), 'pdf');
 
 % ------------------------------------------------------------------------------
 function status = sqw_phonons_requirements
@@ -1253,16 +1275,15 @@ end
 if ~isdeployed && usejava('jvm') && usejava('desktop')
   disp([ '<a href="matlab:doc(''' mfilename ''')">' mfilename ' help</a>' ])
 end
-if options.htmlreport
-  sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'error', options, message)
-end
+sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'error', options, message);
 error(message);
 
 % ------------------------------------------------------------------------------
 
-function sqw_phonons_htmlreport(filename, step, options, data)
+function sqw_phonons_htmlreport(filename, step, options, data, object)
 
 if isempty(filename), return; end
+if ~options.htmlreport, return; end
 
 if strcmp(step, 'init')
   fid = fopen(filename, 'w');
@@ -1307,15 +1328,36 @@ case 'init'
   % append calculator configuration
   fprintf(fid, '<h2>Calculator configuration</h2>\n');
   fprintf(fid, 'We are using %s.<br>\n', upper(options.calculator));
-  fprintf(fid, 'with configuration:<br><p><pre>%s</pre></p>\n', class2str(options));
+  fprintf(fid, '  %s<br>\n', data);
+  fprintf(fid, 'Calculator configuration:<br><p><pre>%s</pre></p>\n', class2str(options));
   % indicate that we are computing
   fprintf(fid, '<h2>Now computing... (be patient)</h2>\n');
   fprintf(fid, '<p><blink>This page will be refreshed when the computation ends (success or failed)</blink></p>\n');
-case 'evaluating'
-  % indicate that we evaluate the model, and print grid used
+case 'done'
+  % indicate evaluated model, and print grid used
   fprintf(fid, '<h2>Computation completed</h2>\n');
-case 'plotting'
+  fprintf(fid, 'Time elapsed: %g [s]<br>\n', options.duration);
+  fprintf(fid, 'Please cite:<br><pre>');
+  fprintf(fid, '%s\n', data{:});
+  fprintf(fid, '</pre>\n');
+case 'plot'
   % append evaluated plots and link to data sets (VTK, MCR, images, ...)
+  fprintf(fid, '<h2>Results</h2>\n');
+  save(object, fullfile(options.target, 'iFunc_Phonons.mat'));
+  fprintf(fid, 'iFunc object containing the dynamical matrix and phonons: <a href="%s">%s</a><br>\n', ...
+    fullfile(options.target, 'iFunc_Phonons.mat'), 'iFunc_Phonons.mat');
+  fprintf(fid, 'Load it under Matlab/iFit with: load(''iFunc_Phonons.mat'')<br>\n');
+  fprintf(fid, 'Evaluate it under Matlab/iFit with: iData(object, [], qh, qk, ql, w)<br>\n');
+  if isempty(data)
+    qh=linspace(0.01,.5,10);qk=qh; ql=qh; w=linspace(0.01,150,11);
+    data=iData(object,[],qh,qk,ql,w);
+  end
+  g=log(-data(1,:, :,:));
+  saveas(g, fullfile(options.target, 'Phonons.png'));
+  saveas(g, fullfile(options.target, 'Phonons.xhtml'));
+  saveas(g, fullfile(options.target, 'Phonons.vtk'));
+  fprintf(fid, '<img src="%s"><br>\n', fullfile(options.target, 'Phonons.png'));
+  
 case 'error'
   fprintf(fid, '<h2>ERROR: %s</h2>\n', data);
   fprintf(fid, [ mfilename ' ' options.configuration ' ' options.calculator ' FAILED<br>' ]);
