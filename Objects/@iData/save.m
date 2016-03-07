@@ -21,6 +21,7 @@ function [filename,format] = save(a, varargin)
 %                   If given as filename='gui', a file selector pops-up
 %                   If the filename is empty, the object Tag is used.
 %         format: data format to use (char), or determined from file name extension
+%           'art'  save as ASCII art
 %           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
