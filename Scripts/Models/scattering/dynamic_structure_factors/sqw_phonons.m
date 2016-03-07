@@ -113,7 +113,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     default=8. If you are tight with memory, you may reduce it to 4. A larger
 %     value will improve the SCF convergence, and use more memory (QuantumEspresso)
 %
-% The options can also be entered as a strings with 'field=value; ...'.
+% The options can also be entered as strings with 'field=value; ...'.
 %
 % Once the model has been created, its use requires that axes are given on
 % regular qx,qy,qz grids.
@@ -190,10 +190,6 @@ persistent status ld_library_path
 
 if ~exist('ld_library_path') || isempty(ld_library_path) || ~ischar(ld_library_path)
   ld_library_path = getenv('LD_LIBRARY_PATH');
-else
-  if isunix
-    setenv('LD_LIBRARY_PATH',''); % make sure we do not use Matlab libs for system commands.
-  end
 end
 
 if ~exist('status') || isempty(status) || ~isstruct(status)
@@ -674,11 +670,13 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
     'write("' fullfile(target, 'configuration.etsf') '", atoms, "etsf");' ...
     'write("' fullfile(target, 'configuration_SHELX.res') '", atoms, "res");' ...
     'write("' fullfile(target, 'configuration_VASP') '", atoms, "vasp");' ];
+  if isunix, setenv('LD_LIBRARY_PATH',''); end
   try
     [st, result] = system([ precmd 'python -c ''' read '''' ]);
   catch
     st = 127;
   end
+  if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
   if st ~= 0
     sqw_phonons_error([ mfilename ': failed converting input to POSCAR ' ...
       poscar ], options);
@@ -757,16 +755,16 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     '# Setup crystal and calculator', ...
     read, ...
     'from ase.io import write', ...
-    'write("' fullfile(target, 'configuration.png') '", atoms)', ...
-    'write("' fullfile(target, 'configuration.eps') '", atoms)', ...
-    'write("' fullfile(target, 'configuration.pov') '", atoms)', ...
-    'write("' fullfile(target, 'configuration.cif') '", atoms, "cif")', ...
-    'write("' fullfile(target, 'configuration.x3d') '", atoms, "x3d")', ...
-    'write("' fullfile(target, 'configuration.pdb') '", atoms, "pdb")', ...
-    'write("' fullfile(target, 'configuration.html') '", atoms, "html")', ...
-    'write("' fullfile(target, 'configuration.etsf') '", atoms, "etsf")', ...
-    'write("' fullfile(target, 'configuration_SHELX.res') '", atoms, "res")', ...
-    'write("' fullfile(target, 'configuration_VASP') '", atoms,"vasp")', ...
+  [ 'write("' fullfile(target, 'configuration.png') '", atoms)' ], ...
+  [ 'write("' fullfile(target, 'configuration.eps') '", atoms)' ], ...
+  [ 'write("' fullfile(target, 'configuration.pov') '", atoms)' ], ...
+  [ 'write("' fullfile(target, 'configuration.cif') '", atoms, "cif")' ], ...
+  [ 'write("' fullfile(target, 'configuration.x3d') '", atoms, "x3d")' ], ...
+  [ 'write("' fullfile(target, 'configuration.pdb') '", atoms, "pdb")' ], ...
+  [ 'write("' fullfile(target, 'configuration.html') '", atoms, "html")' ], ...
+  [ 'write("' fullfile(target, 'configuration.etsf') '", atoms, "etsf")' ], ...
+  [ 'write("' fullfile(target, 'configuration_SHELX.res') '", atoms, "res")' ], ...
+  [ 'write("' fullfile(target, 'configuration_VASP') '", atoms,"vasp")' ], ...
     calc, ...
     '# Phonon calculator', ...
   sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=0.05)',options.supercell), ...
@@ -797,12 +795,13 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   if options.gui && ishandle(options.gui), waitbar(0.15, options.gui, [ mfilename ': computing DynMatrix ASE/' options.calculator ' (be patient)' ]); end
 
   result = '';
+  if isunix, setenv('LD_LIBRARY_PATH',''); end
   try
     [st, result] = system([ precmd 'python sqw_phonons_build.py' ]);
     disp(result)
   catch
     disp(result)
-    setenv('LD_LIBRARY_PATH',ld_library_path);
+    if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
     sqw_phonons_error([ mfilename ': failed calling ASE with script ' ...
       fullfile(target,'sqw_phonons_build.py') ], options);
   end
@@ -1178,6 +1177,7 @@ options.command    = '';
 options.raw        = '';
 options.autoplot   = 0;
 options.gui        = 0;
+options.htmlreport = 0;
 
 % read input arguments
 for index=1:numel(varargin)
@@ -1253,4 +1253,79 @@ end
 if ~isdeployed && usejava('jvm') && usejava('desktop')
   disp([ '<a href="matlab:doc(''' mfilename ''')">' mfilename ' help</a>' ])
 end
+if options.htmlreport
+  sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'error', options, message)
+end
 error(message);
+
+% ------------------------------------------------------------------------------
+
+function sqw_phonons_htmlreport(filename, step, options, data)
+
+if isempty(filename), return; end
+
+if strcmp(step, 'init')
+  fid = fopen(filename, 'w');
+else
+  fid = fopen(filename, 'a');
+end
+
+if fid < 0, return; end
+
+switch step
+case 'init'
+  % open the report HTML page and write header, title, date, ...
+  fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
+  fprintf(fid, '<html>\n<head>\n<title>%s: %s with %s</title>\n</head>\n', ...
+    mfilename, options.configuration, options.calculator);
+  fprintf(fid, '<body>\n');
+  fprintf(fid, '<h1>%s: %s with %s</h1>\n', mfilename, options.configuration, options.calculator);
+  fprintf(fid, 'Date: %s.<br>\nComputer: %s.<br>\n', datestr(now), computer);
+  fprintf(fid, 'Stored in: %s<br>\n', options.target);
+
+  % append system configuration
+  fprintf(fid, '<h2>Atom/molecule configuration</h2>\n');
+  fprintf(fid, 'Initial description: %s<br>\n', options.configuration);
+  fprintf('<p>\n');
+  % append links to configuration files and images
+  for index={ 'configuration.png', 'configuration.eps', 'configuration.pov', ...
+              'configuration.cif', 'configuration.x3d', 'configuration.pdb', ...
+              'configuration.html', 'configuration.etsf', ...
+              'configuration_SHELX.res', 'configuration_VASP' }
+    this = fullfile(options.target, index{1});
+    if ~isempty(dir(this))
+      if strcmp(index{1}, 'configuration.png')
+        fprintf(fid, '[ <a href="%s">%s</a> ]<img src="%s"><br>\n', index{1}, index{1}, index{1});
+      elseif strcmp(index{1}, 'configuration.html')
+        fprintf(fid, '<iframe src="%s" onload="this.style.height=this.contentDocument.body.scrollHeight +''px'';"></iframe><br>\n', index{1});
+      else
+        fprintf(fid, '[ <a href="%s">%s</a> ]<br>\n', index{1}, index{1});
+      end
+    end
+  end
+  fprintf('</p>\n');
+  % append calculator configuration
+  fprintf(fid, '<h2>Calculator configuration</h2>\n');
+  fprintf(fid, 'We are using %s.<br>\n', upper(options.calculator));
+  fprintf(fid, 'with configuration:<br><p><pre>%s</pre></p>\n', class2str(options));
+  % indicate that we are computing
+  fprintf(fid, '<h2>Now computing... (be patient)</h2>\n');
+  fprintf(fid, '<p><blink>This page will be refreshed when the computation ends (success or failed)</blink></p>\n');
+case 'evaluating'
+  % indicate that we evaluate the model, and print grid used
+  fprintf(fid, '<h2>Computation completed</h2>\n');
+case 'plotting'
+  % append evaluated plots and link to data sets (VTK, MCR, images, ...)
+case 'error'
+  fprintf(fid, '<h2>ERROR: %s</h2>\n', data);
+  fprintf(fid, [ mfilename ' ' options.configuration ' ' options.calculator ' FAILED<br>' ]);
+  sqw_phonons_htmlreport(filename, 'end');
+case 'end'
+  % close HTML document
+  fprintf(fid, 'Date: %s.<br>\n', datestr(now));
+  fprintf(fid, '<hr>\nPowdered by <a href="http://ifit.mccode.org>iFit</a> E. farhi (c) 2016.\n');
+  fclose(fid)
+end
+
+fclose(fid);
+
