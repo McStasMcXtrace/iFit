@@ -25,7 +25,7 @@ function [filename,format] = save(a, varargin)
 %           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
 %           'mantid' save as Mantid Processed Workspace, i.e. 'nxs mantid data'
-%           'mat'  save as a '.mat' binary file (same as 'save', DEFAULT)
+%           'mat'  save as a serialized '.mat' binary file (fast 'save', DEFAULT)
 %           'nc'   save as NetCDF
 %         as well as other lossy formats
 %           'csv'  save as a comma separated value file
@@ -35,8 +35,9 @@ function [filename,format] = save(a, varargin)
 %           'fits' save as FITS binary image (only for 2D objects)
 %           'gif','bmp' save as an image (no axes, only for 2D data sets)
 %           'hdf4' save as an HDF4 image
-%           'hdr'  save as HDR/IMG Analyze MRI volume (3D)
+%           'hdr'  save as HDR/IMG Analyze MRI volume (3/4D)
 %           'json' save as JSON JavaScript Object Notation, ascii
+%           'mrc'  save as MRC map file (3/4D)
 %           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative (3/4D)
 %           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
 %           'off'  save as Object File Format (geometry), ascii
@@ -44,7 +45,7 @@ function [filename,format] = save(a, varargin)
 %           'stl'  save as STL stereolithography (geometry), binary
 %           'stla' save as STL stereolithography (geometry), ascii
 %           'svg'  save as Scalable Vector Graphics (SVG) format
-%           'vtk'  save as VTK ascii (<1e5 elements) or binary
+%           'vtk'  save as VTK ascii (<1e5 elements) or binary (3/4D)
 %           'wrl'  save as Virtual Reality VRML 2.0 file
 %           'x3d'  save as X3D (geometry) file, ascii
 %           'xhtml' save as embedded HTML/X3D file (using Flash plugin for rendering)

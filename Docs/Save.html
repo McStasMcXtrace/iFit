@@ -34,6 +34,7 @@
 
 
 
+
       something,</span> it is desirable to save your work for future use
     and communication (print, edit, send to friends...). We thus provide
     a general interface to save the <a href="iData.html">iData</a>
@@ -92,6 +93,7 @@
 
 
 
+
     can more generally write any Matlab variable as a character string.
     And the <span style="font-weight: bold;">str2struct</span> function
     can read a character string and search for [<span style="font-style:
@@ -100,6 +102,7 @@
     <br>
     To load back an m or mat file into memory for re-use, type the
     m-file name without extension, or <span style="font-style: italic;">load(iData,'filename.mat</span>')
+
 
 
 
@@ -126,8 +129,8 @@
         style="font-style: italic;">Matlab</span> types<br>
     </h3>
     <br>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -214,8 +217,8 @@
     page).<br>
     <span style="font-weight: bold;"><br>
     </span>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -325,8 +328,8 @@
     <p>These file formats are usually fast to read/write.<br>
     </p>
     <span style="font-weight: bold;"> </span>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -368,9 +371,16 @@
             prior to importation. <span style="font-style: italic;">This
 
 
+
               file format contains serialized data, to be re-imported
-              into an iData object.</span><span style="font-weight:
-              bold;"> </span></td>
+              into an iData object.<br>
+            </span>To save a file use: <span style="color: rgb(51, 102,
+              255);">save</span>(a,<span style="color: rgb(204, 51,
+              204);">'mat_file'</span>,<span style="color: rgb(204, 51,
+              204);">'mat'</span>). To load it use <span style="color:
+              rgb(51, 102, 255);">load</span>(iData,<span style="color:
+              rgb(204, 51, 204);">'mat_file'</span>).<br>
+            <span style="font-weight: bold;"> </span></td>
           <td style="vertical-align: top;">Yes<br>
           </td>
         </tr>
@@ -479,8 +489,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     needed to generate them is smaller.<br>
     <br>
     <span style="font-weight: bold;"> </span>
-    <table style="text-align: left; width: 100%;" cellpadding="2"
-      cellspacing="2" border="1">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -561,6 +571,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             files can be edited/viewed with e.g <a
               href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.
             Such files can of course also be <a href="Load.html">imported
+
 
 
 
@@ -801,7 +812,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             representation of 1D/2D/3D objects. Can be viewed with <a
               href="http://www.paraview.org/">ParaView</a> and <a
               class="reference external"
-              href="https://svn.enthought.com/enthought/wiki/MayaVi">Mayavi2</a>.</td>
+              href="https://svn.enthought.com/enthought/wiki/MayaVi">Mayavi2</a>.
+            Suitable for 3/4D data (volume).</td>
           <td style="vertical-align: top;"><br>
           </td>
         </tr>
@@ -861,7 +873,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
-              Imaging Resource of the Mayo Clinic</a>. </td>
+
+              Imaging Resource of the Mayo Clinic</a>. For 3/4D data
+            (volume).<br>
+          </td>
           <td style="vertical-align: top;">Yes<br>
           </td>
         </tr>
@@ -886,7 +901,27 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/42997-dicom-to-nifti-c
             You can view with MiView (<a
               href="http://od1n.sourceforge.net/">MiTools</a>), <a
               href="http://cnl.web.arizona.edu/mricro.htm">MRICron</a>.
+            For 3/4D data (volume).</td>
+          <td valign="top">Yes<br>
           </td>
+        </tr>
+        <tr>
+          <td valign="top"><span style="color: rgb(204, 51, 204);
+              font-weight: bold;">'mrc' MRC</span><br style="color:
+              rgb(204, 51, 204);">
+            <span style="color: rgb(204, 51, 204);">electron density map</span></td>
+          <td valign="top">binary<br>
+          </td>
+          <td valign="top">signal/monitor</td>
+          <td valign="top">Electron density maps in <a
+              href="http://en.wikipedia.org/wiki/MRC_%28file_format%29">MRC</a>
+            formats. Can be visualized with <a
+              href="http://www.pymol.org/">PyMol</a>, <a
+              href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a
+              href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a
+              href="http://www.yasara.org">Yasara</a>, <a
+              href="http://mem.ibs.fr/VEDA/">VEDA</a>. For 3/4D data
+            (volume).</td>
           <td valign="top">Yes<br>
           </td>
         </tr>
@@ -927,6 +962,7 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/42997-dicom-to-nifti-c
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 

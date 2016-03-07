@@ -36,8 +36,9 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'fits' save as FITS binary image (only for 2D objects)
 %           'gif','bmp','png','tiff','jpeg' save as an image (no axes, only for 2D data sets)
 %           'hdf4' save as an HDF4 image
-%           'hdr'  save as HDR/IMG Analyze MRI volume (3D)
+%           'hdr'  save as HDR/IMG Analyze MRI volume (3D/4D)
 %           'json' save as JSON JavaScript Object Notation, ascii
+%           'mrc'  save as MRC map file (3/4D)
 %           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative (3/4D)
 %           'ps','pdf','ill','eps' save as an image (with axes)
 %           'ppm','pgm','pbm'
@@ -46,7 +47,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'stl'  save as STL stereolithography (geometry), binary
 %           'stla' save as STL stereolithography (geometry), ascii
 %           'svg'  save as Scalable Vector Graphics (SVG) format
-%           'vtk'  save as VTK ascii (<1e5 elements) or binary
+%           'vtk'  save as VTK ascii (<1e5 elements) or binary (3/4D)
 %           'wrl'  save as Virtual Reality VRML 2.0 file
 %           'x3d'  save as X3D (geometry) file, ascii
 %           'xhtml' save as embedded HTML/X3D file (using Flash plugin for rendering)
@@ -105,6 +106,7 @@ filterspec = { ...
       '*.json', 'JSON JavaScript Object Notation (*.json)'; ...
       '*.m',   'Matlab script/function (*.m)'; ...
       '*.mat', 'Matlab binary file (*.mat, serialized)'; ...
+      '*.mrc', 'MRC map file (*.mrc)'; ...
       '*.nc;*.cdf',  'NetCDF (*.nc, *.cdf)'; ...
       '*.nii','NiFti volume (*.nii)'; ...
       '*.cdf',  'CDF (*.cdf)'; ...
@@ -356,6 +358,8 @@ case 'nii'  % NifTi volume
   filename = iData_private_saveas_nii(a, filename);
 case 'hdr'  % Analyze volume
   filename = iData_private_saveas_analyze(a, filename);
+case 'mrc'  % MRC map file
+  WriteMRC(getaxis(a,0),1,filename);
 case {'fits','fit','fts'} % FITS image
   if ndims(a) == 2
     a = double(a);
