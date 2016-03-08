@@ -11,7 +11,7 @@ load('x3dom.mat')
 folder=[folder 'x3dom'];
 if(~isdir(folder)), mkdir(folder); end
 for i=1:length(data)
-    fid = fopen([folder '/' data(i).filename], 'w','ieee-le');
+    fid = fopen(fullfile(folder, data(i).filename), 'w','ieee-le');
     fwrite(fid,data(i).filedata,'uint8');
     fclose(fid);
 end

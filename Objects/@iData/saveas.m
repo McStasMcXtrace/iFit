@@ -377,7 +377,7 @@ case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','jpeg'
     b=getaxis(a,0); % Signal/Monitor
     b=(b-min(b(:)))/(max(b(:))-min(b(:)))*256;
   else
-    f=getframe(a);
+    f = getframe(a);
     b = f.cdata;
   end
   switch format
@@ -425,7 +425,7 @@ case {'x3d','xhtml'} % X3D/XHTML format
   desc = evalc('disp(a)');
   desc(desc=='<')='[';
   desc(desc=='>')=']';
-  if ndims(a) <= 3
+  if ndims(a) <= 2
     f=figure('visible','off');
     h = plot(reducevolume(a),options); % make sure file is not too big
     figure2xhtml(filename, f, struct('interactive',true, ...
@@ -438,9 +438,19 @@ case {'x3d','xhtml'} % X3D/XHTML format
     [c, clab] = getaxis(a,0); c=double(c);
     fv=isosurface(x,y,z,c,mean(c(:)));
     x3mesh(fv.faces, fv.vertices, 'name', filename, 'subheading', desc, 'rotation', 1);
+    % Create the supporting X3DOM  files
+    folder = fileparts(filename);
+    load(fullfile(fileparts(which('figure2xhtml')), 'functions', 'x3dom.mat'))
+    folder=fullfile(folder, 'x3dom');
+    if(~isdir(folder)), mkdir(folder); end
+    for i=1:length(data)
+        fid = fopen(fullfile(folder, data(i).filename), 'w','ieee-le');
+        fwrite(fid,data(i).filedata,'uint8');
+        fclose(fid);
+    end
   end
 case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
-  if ndims(a) == 1    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
+  if ndims(a) == 1    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' 1D does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
     return
   else
     if ndims(a) == 2
