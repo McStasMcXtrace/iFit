@@ -15,8 +15,8 @@ function out = iData(varargin)
 %     a iData object (updated if no output argument is specified).
 %   The special syntax iData(x,y, .., c) creates an iData with
 %     signal c and axes x,y, ...
-%   The syntax iData(iFunc object) evaluates the iFunc model using the iData
-%     object axes, and returns the model value as an iData object.
+%   The syntax iData(iFunc object, pars, axes) evaluates the iFunc model using the 
+%     iData object axes, and returns the model value as an iData object.
 %   The output argument is a single object or array of iData.
 %   Input arguments may be more than one, or given as cells.
 %
@@ -155,13 +155,14 @@ else  % convert input argument into object
     return
   elseif isa(varargin{1}, 'iFunc')
     in = varargin{1};
+    axes_in = varargin(3:end);
     
     for n_in = 1:numel(in)  % handle array of iFunc
       if numel(in) == 1, this_in = in;
       else               this_in = in(n_in); end
-      [signal, ax, name] = feval(this_in, varargin{2:end});
+      [signal, ax, name] = feval(this_in, varargin{2}, axes_in{:});
       if length(signal) == length(this_in.Parameters)
-        [signal, ax, name] = feval(this_in, signal, varargin{3:end});
+        [signal, ax, name] = feval(this_in, signal, axes_in{:});
       end
       if isempty(signal), 
           iData_private_warning(mfilename, [ ': iFunc evaluation failed (empty value). Check axes and parameters.' ]);
@@ -170,7 +171,7 @@ else  % convert input argument into object
       % swap xy to cope with iData(x,y,z) syntax
       % if numel(ax) >=2, ax(1:2) = ax([ 2 1]); end
       % assign axes values
-      this_out = iData(ax{:}, signal);
+      this_out = iData(axes_in{:}, signal); % make it an iData
 
       % assign axes names
       if nargin > 2 % iData(iFunc,p,axes...)
