@@ -24,7 +24,7 @@ if numel(a) > 1
   return
 end
 
-f=figure('menubar','none','toolbar','none');
+f=figure('menubar','none','toolbar','none','visible','off');
 % put window out of sight
 p=get(f,'Position'); p(1:2) = [-1000 -1000];
 set(f,'Position',p);
@@ -63,9 +63,25 @@ if dim
 end
 % extract frame
 
-% force figure to be 'oncreen'
-movegui(f);
-frame=getframe(f); 
+filename = [ tempname '.avi' ];
+if exist('avifile')
+  % to record the frame without showing the image, we use addframe 
+  % on a temporary file
+  aviobj = avifile(filename);
+  aviobj = addframe(aviobj,f);
+  aviobj = close(aviobj);
+  % read the frame
+  readerobj = mmreader(filename);
+  vidFrames = read(readerobj,1);
+  frame.cdata    = vidFrames(:,:,:,1);
+  frame.colormap = [];
+  clear mmreader aviobj vidFrames
+  delete(filename);
+else
+  % force figure to be 'onscreen'
+  movegui(f);
+  frame=getframe(f);
+end
 
 delete(f);
 
