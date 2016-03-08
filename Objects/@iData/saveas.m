@@ -436,8 +436,9 @@ case {'x3d','xhtml'} % X3D/XHTML format
     [y, ylab] = getaxis(a,1); y=double(y);
     [z, zlab] = getaxis(a,3); z=double(z);
     [c, clab] = getaxis(a,0); c=double(c);
-    fv=isosurface(x,y,z,c,mean(c(:)));
-    x3mesh(fv.faces, fv.vertices, 'name', filename, 'subheading', desc, 'rotation', 1);
+    iso = (min(c(:))+max(c(:)))/2;
+    fv=isosurface(x,y,z,c,iso);
+    x3mesh(fv.faces, fv.vertices, 'name', filename, 'subheading', desc, 'rotation', 0, 'axes', 1);
     % Create the supporting X3DOM  files
     folder = fileparts(filename);
     load(fullfile(fileparts(which('figure2xhtml')), 'functions', 'x3dom.mat'))
