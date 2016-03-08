@@ -14,39 +14,39 @@ if fid < 0, return; end
 switch step
 case 'init'
   % retrieve a few external resources
-  copyfile(fullfile(ifitpath,'Models','images','iFit-logo.png'), options.target);
+  copyfile(fullfile(ifitpath,'Docs','images','iFit-logo.png'), options.target);
   % http://ifit.mccode.org
-  copyfile(fullfile(ifitpath,'Models','images','ase256.png'), options.target);
+  copyfile(fullfile(ifitpath,'Docs','images','ase256.png'), options.target);
   % https://wiki.fysik.dtu.dk/ase
   switch options.calculator
   case 'GPAW'
   logo='logo-gpaw.png';
   link='http://wiki.fysik.dtu.dk/gpaw';
-  copyfile(fullfile(ifitpath,'Models','images',logo), options.target);
+  copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
   case 'NWCHEM'
   logo='nwchem.png';
   link='http://www.nwchem-sw.org/';
-  copyfile(fullfile(ifitpath,'Models','images',logo), options.target);
+  copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
   case 'ELK'
   logo='elk.png';
   link='http://elk.sourceforge.net';
-  copyfile(fullfile(ifitpath,'Models','images',logo), options.target);
+  copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
   case {'DACAPO','JACAPO'}
   logo='jacapo.png';
   link='http://wiki.fysik.dtu.dk/dacapo';
-  copyfile(fullfile(ifitpath,'Models','images',logo), options.target);
+  copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
   case 'ABINIT'
   logo='abinit.png';
   link='http://www.abinit.org/';
-  copyfile(fullfile(ifitpath,'Models','images',logo), options.target);
+  copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
   case 'EMT'
   logo='emt.png';
   link='https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html';
-  copyfile(fullfile(ifitpath,'Models','images',logo), options.target);
+  copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
   case 'QUANTUMESPRESSO'
   logo='logo_qe.jpg';
   link='http://www.quantum-espresso.org/';
-  copyfile(fullfile(ifitpath,'Models','images',logo), options.target);
+  copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
   otherwise
   logo=''; link='';
   end
@@ -73,7 +73,7 @@ case 'init'
     this = fullfile(options.target, index{1});
     if ~isempty(dir(this))
       if strcmp(index{1}, 'configuration.png')
-        fprintf(fid, '<img src="%s" align="middle"><br>\n', index{1}, index{1}, index{1});
+        fprintf(fid, '<img src="%s" align="middle"><br>\n', index{1});
       elseif strcmp(index{1}, 'configuration.html')
         fprintf(fid, '<iframe src="%s" onload="this.style.height=this.contentDocument.body.scrollHeight +''px'';" align="middle"></iframe><br>\n', index{1});
       else
@@ -85,20 +85,21 @@ case 'init'
   % append calculator configuration
   fprintf(fid, '<h2>Calculator configuration</h2>\n');
   if ~isempty(logo)
-    fprintf(fid, 'We are using <a href="%s"><img src="%s" height="80"><b>%s</b></a> (<a href="%s">%s</a>).<br>\n', ...
+    fprintf(fid, 'We are using <a href="%s"><img src="%s" height="80" align="middle"><b>%s</b></a> (<a href="%s">%s</a>).<br>\n', ...
       link, logo, upper(options.calculator), link, link);
   else
     fprintf(fid, 'We are using <b>%s</b>.<br>\n', upper(options.calculator));
   end
-  fprintf(fid, '  %s<br>\n', data); % 'calc'
+  fprintf(fid, '  <p><code>%s</code><br></p>\n', data); % 'calc'
   % clean 'options' from empty and 0 members
-  op = options;
-  for f=fieldnames(op)
-    if isempty(op.(f{1})) || op.(f{1}) == 0
+  op           = options;
+  op.htmlreport= 0;
+  for f=fieldnames(op)'
+    if isempty(op.(f{1})) || (isscalar(op.(f{1})) && op.(f{1}) == 0)
       op = rmfield(op, f{1});
     end
   end
-  fprintf(fid, 'Calculator configuration:<br><p><pre>%s</pre></p>\n', class2str(op));
+  fprintf(fid, 'Calculator configuration:<br><p><pre>%s</pre></p>\n', class2str(' ',op));
   % indicate that we are computing
   fprintf(fid, '<b>Computing... (be patient)</b>\n');
   
@@ -115,7 +116,7 @@ case 'plot'
   % present the final object
   fprintf(fid, '<h2>Results</h2>\n');
   Phonons = object;
-  builtin('save', fullfile(options.target, 'iFunc_Phonons.mat'), Phonons);
+  builtin('save', fullfile(options.target, 'iFunc_Phonons.mat'), 'Phonons');
   fprintf(fid, '<p>The results are stored into an <a href="http://ifit.mccode.org?iFunc.html">iFunc</a> object containing the dynamical matrix.');
   fprintf(fid, '<ul><li><a href="%s">%s</a></li></ul>\n', ...
     'iFunc_Phonons.mat', 'iFunc_Phonons.mat');
@@ -125,27 +126,32 @@ case 'plot'
   
   % append evaluated plots and link to data sets (VTK, MCR, images, ...)
   if isempty(data)
-    qh=linspace(0.01,.5,10);qk=qh; ql=qh; w=linspace(0.01,150,11);
+    qh=linspace(0.01,.5,20);qk=qh; ql=qh; w=linspace(0.01,100,51);
     data=iData(object,[],qh,qk,ql,w);
   end
-  Phonons_HKLE = data; clear data;
+  Phonons_HKLE = data;
+  builtin('save', fullfile(options.target, 'iData_Phonons.mat'), 'Phonons_HKLE');
+  clear Phonons_HKLE
   fprintf(fid, '<p>This Model has been evaluated on grid:<br>\n');
   fprintf(fid, '<ul><li>QH=[%g:%g]</li>\n', ylim(data)); % axis1
   fprintf(fid, '<li>QK=[%g:%g]</li>\n', xlim(data));     % axis2
   fprintf(fid, '<li>QL=[%g:%g]</li></ul>\n', zlim(data));
-  builtin('save', fullfile(options.target, 'iData_Phonons.mat'), Phonons_HKLE);
-  clear Phonons_HKLE
+  fprintf(fid, '<li>EN=[%g:%g]</li></ul>\n', clim(data));
+  
   fprintf(fid, 'Load the HKLE Data set under <a href="http://ifit.mccode.org">Matlab/iFit</a> with:<br>\n');
   fprintf(fid, '<ul><li>Phonons_HKLE=load(''<a href="%s">%s</a>'')</li></ul></p>\n', 'iData_Phonons.mat', 'iData_Phonons.mat');
   fprintf(fid, '<p>In order to view this 4D data set, we represent it on the QH=0 plane.<br>\n');
   data=-log(data(1, :,:,:));
   saveas(data, fullfile(options.target, 'Phonons.png'));
-  saveas(data, fullfile(options.target, 'Phonons.pdf'), '', 'plot3 view3');
-  saveas(data, fullfile(options.target, 'Phonons.xhtml'));
   saveas(data, fullfile(options.target, 'Phonons.vtk'));
+  % modify aspect ratio to fit in a cube
+  data{1}=linspace(0,1,size(data,1));
+  data{2}=linspace(0,1,size(data,2));
+  data{3}=linspace(0,1,size(data,3));
+  
+  saveas(data, fullfile(options.target, 'Phonons.xhtml'));
   fprintf(fid, '<img src="%s" align="middle"><br>\n', 'Phonons.png');
-  fprintf(fid, '<iframe src="%s" onload="this.style.height=this.contentDocument.body.scrollHeight +''px'';" align="middle"></iframe><br>\n', 'Phonons.xhtml');
-  fprintf(fid, '[ <a href="%s">%s</a> ]<br>\n', 'Phonons.pdf', 'Phonons.pdf');
+  fprintf(fid, '<iframe src="%s" align="middle" width="700" height="1000"></iframe><br>\n', 'Phonons.xhtml');
   fprintf(fid, '[ <a href="%s">%s</a> ]<br>\n', 'Phonons.vtk', 'Phonons.vtk');
   fprintf(fid, '</p>\n');
 case 'error'
@@ -154,9 +160,13 @@ case 'error'
   sqw_phonons_htmlreport(filename, 'end');
 case 'end'
   % close HTML document
-  fprintf(fid, 'End Date: %s.<br>\n', datestr(now));
-  fprintf(fid, '<hr>\nPowdered by <a href="http://ifit.mccode.org>iFit</a> E. farhi (c) 2016.\n');
-  fclose(fid)
+  fprintf(fid, '<hr>Date: %s.<br>\n', datestr(now));
+  fprintf(fid, 'Powdered by <a href="http://ifit.mccode.org>iFit</a> E. farhi (c) 2016.\n');
+  if isdeployed || ~usejava('jvm') || ~usejava('desktop')
+    disp([ 'HTML report created in ' options.target ]);
+  else
+    disp([ 'HTML report created in <a href="' fullfile(options.target,'index.html') '">' options.target '</a>' ]);
+  end
 end
 
 fclose(fid);

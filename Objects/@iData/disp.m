@@ -27,7 +27,7 @@ if numel(s_in) > 1
   eval([ iname ' = s_in;' ])
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
 else
-  if isdeployed || ~usejava('jvm'), id='iData';
+  if isdeployed || ~usejava('jvm') || ~usejava('desktop'), id='iData';
   else           id=[ '<a href="matlab:doc iData">iData</a> (<a href="matlab:methods iData">methods</a>,<a href="matlab:doc(iData,''iData'')">doc</a>,<a href="matlab:figure;subplot(' iname ');">plot</a>)' ];
   end
   if isvector(s_in) > 1, id = [ id ' list/event']; end
@@ -40,7 +40,10 @@ else
   s=rmfield(s,'Source');
   if exist(T,'file')
     if length(T) > 70, Ts=[ T(1:60) '...' T((end-8):end) ]; else Ts=T; end
-    T =[ '<a href="' T '">' Ts '</a>' ];
+    if isdeployed || ~usejava('jvm') || ~usejava('desktop')
+    else
+      T =[ '<a href="' T '">' Ts '</a>' ];
+    end
   end
   fprintf(1,'              Source: %s\n', T)
   

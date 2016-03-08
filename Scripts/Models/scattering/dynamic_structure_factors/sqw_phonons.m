@@ -948,7 +948,12 @@ if ~isdeployed && usejava('jvm') && usejava('desktop')
 else
   disp([ mfilename ': Model ' configuration ' built using ' options.calculator ])
 end
-disp([ '  in ' options.target ]);
+if isdeployed || ~usejava('jvm') || ~usejava('desktop')
+  disp([ '  in ' options.target ]);
+else
+  disp([ '  in <a href="' options.target '">' options.target '</a>' ]);
+end
+
 
 if isfield(options, 'dos') && ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   disp('INFO: The vibrational density of states (vDOS) will be computed at first model evaluation.');
@@ -991,6 +996,7 @@ else
 end
 
 sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'plot', options, f, signal);
+sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'end', options, f, signal);
 
 % ------------------------------------------------------------------------------
 function f = sqw_phonons_plot(signal)
