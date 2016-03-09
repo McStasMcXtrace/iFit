@@ -1,20 +1,21 @@
-function m = min(a,b, dim)
-% m = min(a,b,dim) : computes the minimum value of iData object(s)
+function [m,id] = min(a,b, dim)
+% [m,id] = min(a,b, dim) : computes the maximum value of iData object(s)
 %
-%   @iData/min function to compute the minimum value of data sets.
-%     min(iData) returns a single value as the minimum value of the iData signal
-%     min(a,b)   returns an object which signal is the lowest of a and b.
-%     min (a,[], dim) returns max value along dimension 'dim'
+%   @iData/min function to compute the maximum value of data sets.
+%     min(iData) returns a single value as the maximum value of the iData signal
+%     min(a,b)   returns an object which signal is the highest of a and b.
+%     min(a,[], dim) returns min value along dimension 'dim'
 %
 % input:  a: object or array (iData)
 %         b: object or array (iData/double)
 %         dim: dimension on which to operate
 %
-% output: m: minimum value (double/iData)
-% ex:     b=min(a); or min(a,1)
+% output: m:  maximum value (double/iData)
+%         id: returns the indices of the maximum value (integer)
+% ex:     b=min(a);
 %
 % Version: $Date$
-% See also iData, iData/min, iData/max
+% See also iData, min, iData/max
 
 if nargin == 1
   b = [];
@@ -22,26 +23,26 @@ end
 if nargin <= 2
   dim = [];
 end
+id=[];
 
 % handle input iData arrays
 if numel(a) > 1 & isa(a,'iData')
-  m = [];
+  m = zeros(size(a)); id= m;
   for index=1:numel(a)
-    m = [ m min(a(index), b, dim) ];
+    [m(index), id(index)] = min(a(index), b, dim);
   end
-  m = reshape(m, size(a));
   return
 end
 
 if ~isa(a, 'iData')
-  m = min(b, a, dim);
+  [m,id] = min(b, a, dim);
   return
 end
 
 % return a scalar for min(a)
 if isempty(b) && isempty(dim)
   m = get(a, 'Signal');
-  m = min(m(:));
+  [m,id] = min(m(:));
   return
 end
 
@@ -56,7 +57,9 @@ else
 % handle iData and scalar/vector/matrix min/min
   m = copyobj(a);
   if isempty(dim) || ~isempty(b)
-    set(m, 'Signal', min(get(a,'Signal'), b));
+    y = min(get(a,'Signal'), b);
+    id=[];
+    set(m, 'Signal', y);
   else
     rmaxis(m); % delete all axes
     % copy all axes except the one on which operation runs
@@ -67,7 +70,8 @@ else
         ax_index = ax_index+1;
       end
     end
-    set(m, 'Signal', min(get(a,'Signal'), [], dim), [mfilename ' of ' label(a) ]);     % Store Signal
+    [y,id] = min(get(a,'Signal'), [], dim);
+    set(m, 'Signal', y, [mfilename ' of ' label(a) ]);     % Store Signal
   end
 end
 m.Command=cmd;

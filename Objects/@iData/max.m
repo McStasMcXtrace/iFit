@@ -15,7 +15,7 @@ function [m,id] = max(a,b, dim)
 % ex:     b=max(a);
 %
 % Version: $Date$
-% See also iData, iData/max, iData/min
+% See also iData, max, iData/min
 
 if nargin == 1
   b = [];
@@ -27,13 +27,10 @@ id=[];
 
 % handle input iData arrays
 if numel(a) > 1 & isa(a,'iData')
-  m = [];
+  m = zeros(size(a)); id= m;
   for index=1:numel(a)
-    [y,i] = max(a(index), b, dim);
-    m  = [ m  y ];
-    id = [ id i ]; 
+    [m(index), id(index)] = max(a(index), b, dim);
   end
-  m = reshape(m, size(a));
   return
 end
 
@@ -60,7 +57,8 @@ else
 % handle iData and scalar/vector/matrix min/max
   m = copyobj(a);
   if isempty(dim) || ~isempty(b)
-    [y,id] = max(get(a,'Signal'), b);
+    y = max(get(a,'Signal'), b);
+    id=[];
     set(m, 'Signal', y);
   else
     rmaxis(m); % delete all axes

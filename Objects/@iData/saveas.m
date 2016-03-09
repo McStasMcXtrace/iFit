@@ -59,6 +59,8 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
+%           For XHTML export, the additional argument can be a string with the isosurface
+%           level and options 'axes' to display aaxes, 'auto' to rescale as a cube.
 %
 % output: f: filename(s) used to save data (char)
 % ex:     b=saveas(a, 'file', 'm');
@@ -418,7 +420,6 @@ case {'vrml','wrl'} % VRML format
   vrml(g,filename);
   close(f);
 case {'x3d','xhtml'} % X3D/XHTML format
-  
   titl = char(a);
   titl(titl=='<')='[';
   titl(titl=='>')=']';
@@ -440,20 +441,22 @@ case {'x3d','xhtml'} % X3D/XHTML format
     [y, ylab] = getaxis(a,1); y=double(y);
     [z, zlab] = getaxis(a,3); z=double(z);
     [c, clab] = getaxis(a,0); c=double(c);
-    ax=0;
+    ax = 0; iso = [];
     if ischar(options), 
-      iso = strtok(options);
+      iso = str2double(strtok(options));
       if strfind(options, 'axes'), ax=1; end
       if strfind(options, 'auto')
         x=linspace(0,1,size(a,1));
         y=linspace(0,1,size(a,2));
         z=linspace(0,1,size(a,3));
       end
-    else iso=[]; end
-    if isempty(iso) && isnumeric(options) && isscalar(options)
-      iso = options;
-    else
-      iso = (min(c(:))+max(c(:)))/2;
+    end
+    if (isempty(iso) || ~isfinite(iso))  
+      if isnumeric(options) && isscalar(options)
+        iso = options;
+      else
+        iso = (min(c(:))+max(c(:)))/2;
+      end
     end
     fv=isosurface(x,y,z,c,iso);
     x3mesh(fv.faces, fv.vertices, 'name', filename, 'subheading', desc, 'rotation', 0, 'axes', ax);

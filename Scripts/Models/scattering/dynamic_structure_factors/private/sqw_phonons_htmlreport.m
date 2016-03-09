@@ -52,8 +52,10 @@ case 'init'
   end
   % open the report HTML page and write header, title, date, ...
   fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
-  fprintf(fid, '<html>\n<head>\n<title>%s: %s with %s</title>\n</head>\n', ...
+  fprintf(fid, '<html>\n<head>\n<title>%s: %s with %s</title>\n', ...
     'sqw_phonons', options.configuration, options.calculator);
+  fprintf(fid, '<script type="text/javascript">\nfunction update_Phonons3D_frame(options) {\n');
+  fprintf(fid, 'document.getElementById("Phonons3D_frame").contentWindow.document.location.href=options;\n}\n</script>\n</head>\n');
   fprintf(fid, '<body><div style="text-align: center;">\n');
   fprintf(fid, '<a href="http://ifit.mccode.org"><img title="ifit.mccode.org" src="iFit-logo.png" align="middle" height=100></a>\n');
   fprintf(fid, '<a href="https://wiki.fysik.dtu.dk/ase" title="wiki.fysik.dtu.dk/ase"><img src="ase256.png" align="middle" height=100></a></br>\n');
@@ -167,7 +169,7 @@ case 'plot'
   fprintf(fid, '<li>w=[%g:%g] with %i values (energy in meV, vertical)</li></ul></p>\n', clim(data), size(data,4));
   % TODO: add details on axes and isosurface
   % TODO: add DOS
-  data=-log(data(1, :,:,:));
+  data=log10(data(1, :,:,:));
   saveas(data, fullfile(options.target, 'Phonons.png'));
   saveas(data, fullfile(options.target, 'Phonons.vtk'));
   saveas(data, fullfile(options.target, 'Phonons.mrc'));
@@ -178,7 +180,7 @@ case 'plot'
   data{2}=linspace(0,1,size(data,2));
   data{3}=linspace(0,1,size(data,3));
   
-  fprintf(fid, '<p>The QH=0 data set is available in the folowing formats:<br>\n');
+  fprintf(fid, '<p>The QH=%g data set is available in the folowing formats (log10 of the data set):<br>\n', x(1));
   fprintf(fid, '<ul><li>[ <a href="%s">%s</a> ] Visualization Toolkit (VTK) file which can be viewed with <a href="http://www.paraview.org/">ParaView</a>, <a href="http://code.enthought.com/projects/mayavi/">Mayavi2</a>, <a href="https://wci.llnl.gov/simulation/computer-codes/visit/executables">VisIt</a> and <a href="https://www.slicer.org/">Slicer4</a>.</li>\n', 'Phonons.vtk', 'Phonons.vtk');
   
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] electron density map format (MRC) which can be viewed with PyMol, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>.</li>\n', 'Phonons.mrc', 'Phonons.mrc');
@@ -186,11 +188,23 @@ case 'plot'
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.</li></ul>\n', 'Phonons3D.h5', 'Phonons3D.h5');
   fprintf(fid, '</p>\n');
   
-  fprintf(fid, 'Now, here are a few representations of the 3D data set<br>\n');
-  saveas(data, fullfile(options.target, 'Phonons.xhtml'));
+  fprintf(fid, 'Here are a few representations of the 3D data set<br>\n');
+  saveas(data, fullfile(options.target, 'Phonons.xhtml'), 'xhtml','axes auto');
   
   fprintf(fid, '<img src="%s" title="%s" align="middle"><br>\n', 'Phonons.png', 'Phonons.png');
-  fprintf(fid, '<iframe src="%s" align="middle" width="700" height="1000"></iframe><br>The blue axis is the Energy (meV), the red axis is the QK (rlu), the green axis is QL (rlu).<br>\nYou can rotate the model (left mouse button), zoom (right mouse button), and translate (middle mouse button). <br>(<a href="%s" target=_blank>open in external window</a>)<br>\n', 'Phonons.xhtml', 'Phonons.xhtml');
+  fprintf(fid, '<iframe ID=Phonons3D_frame src="%s" align="middle" width="700" height="1000"></iframe><br>The blue axis is the Energy (meV), the red axis is QK (rlu), the green axis is QL (rlu).<br>\nYou can rotate the model (left mouse button), zoom (right mouse button), and translate (middle mouse button). <br>(<a href="%s" target=_blank>open in external window</a>)<br>\n', 'Phonons.xhtml', 'Phonons.xhtml');
+  % create a simple 'slider' made of clickable elements to change the src
+  s1=min(data); s2=max(data);
+  scale = linspace(s1,s2,12);
+  fprintf(fid, '<p>Select the iso-surface level in the scale below to display other views</p><br>\n');
+  fprintf(fid, '<p>[');
+  for index=2:11
+    saveas(data, fullfile(options.target, sprintf('Phonons_%i.xhtml', index)), ...
+      'xhtml', sprintf('%g axes auto', scale(index)));
+    fprintf(fid, ' <a onclick=update_Phonons3D_frame("Phonons_%i.xhtml")>%i</a>', index, index, index);
+    % href="Phonons_%i.xhtml" target=_blank 
+  end
+  fprintf(fid, ']</p><br>\n');
   
 case 'error'
   fprintf(fid, '<h2>ERROR: %s</h2>\n', data);
