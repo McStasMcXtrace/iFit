@@ -289,7 +289,7 @@ case 'm'  % single m-file Matlab output (text), with the full object description
           '% To use/import data, type ''' name ''' at the matlab prompt.' NL ...
           '% You will obtain an iData object (if you have iData installed) or a structure.' NL ...
           '%' NL ...
-          class2str('this', a) ];
+          class2str('this', a, options) ];
   [fid, message]=fopen(filename,'w+');
   if fid == -1
     iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
@@ -427,7 +427,11 @@ case {'x3d','xhtml'} % X3D/XHTML format
   desc(desc=='>')=']';
   if ndims(a) <= 2
     f=figure('visible','off');
-    h = plot(reducevolume(a),options); % make sure file is not too big
+    if ischar(options)
+      h = plot(reducevolume(a),options); % make sure file is not too big
+    else
+      h = plot(reducevolume(a));
+    end
     figure2xhtml(filename, f, struct('interactive',true, ...
       'output', format,'title',titl,'Description',desc));
     close(f);
@@ -436,9 +440,23 @@ case {'x3d','xhtml'} % X3D/XHTML format
     [y, ylab] = getaxis(a,1); y=double(y);
     [z, zlab] = getaxis(a,3); z=double(z);
     [c, clab] = getaxis(a,0); c=double(c);
-    iso = (min(c(:))+max(c(:)))/2;
+    ax=0;
+    if ischar(options), 
+      iso = strtok(options);
+      if strfind(options, 'axes'), ax=1; end
+      if strfind(options, 'auto')
+        x=linspace(0,1,size(a,1));
+        y=linspace(0,1,size(a,2));
+        z=linspace(0,1,size(a,3));
+      end
+    else iso=[]; end
+    if isempty(iso) && isnumeric(options) && isscalar(options)
+      iso = options;
+    else
+      iso = (min(c(:))+max(c(:)))/2;
+    end
     fv=isosurface(x,y,z,c,iso);
-    x3mesh(fv.faces, fv.vertices, 'name', filename, 'subheading', desc, 'rotation', 0, 'axes', 1);
+    x3mesh(fv.faces, fv.vertices, 'name', filename, 'subheading', desc, 'rotation', 0, 'axes', ax);
     % Create the supporting X3DOM  files
     folder = fileparts(filename);
     load(fullfile(fileparts(which('figure2xhtml')), 'functions', 'x3dom.mat'))
