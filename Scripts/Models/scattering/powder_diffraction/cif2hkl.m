@@ -29,6 +29,9 @@ this_path = fileparts(which(mfilename));
 if ~isdeployed && isempty(compiled)
   compiled = '';
   
+  % get list of modules
+  modules = fullfile(this_path,'CFML*.f90');
+  
   % check if iLoad config allows MeX
   config = iLoad('config');
   if isfield(config, 'MeX') && ...
@@ -38,11 +41,12 @@ if ~isdeployed && isempty(compiled)
     fprintf(1, '%s: compiling mex...\n', mfilename);
     try
       cmd={'-c', '-O', '-output',fullfile(this_path,'cif2hkl.o'), ...
-           fullfile(this_path,'cif2hkl.F90')};
+           modules, fullfile(this_path,'cif2hkl.F90')};
       disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
       mex (cmd{:});
       cmd={'-O', '-output', fullfile(this_path,mfilename), ...
         fullfile(this_path,'cif2hkl_mex.c'), fullfile(this_path,'cif2hkl.o'), ...
+        fullfile(this_path,'CFML*.o'), ...
         '-lgfortran'};
       disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
       mex (cmd{:});
@@ -79,6 +83,7 @@ if ~isdeployed && isempty(compiled)
         if isempty(dir(fullfile(this_path,mfilename))) % no executable available
           fprintf(1, '%s: compiling binary...\n', mfilename);
           cmd = {'gfortran', '-O2', '-o', fullfile(this_path,mfilename), ...
+             fullfile(this_path, 'CFML*.f90'), ...
              fullfile(this_path,'cif2hkl.F90'), '-lm'}; 
           disp([ sprintf('%s ', cmd{:}) ]);
           [status, result] = system(sprintf('%s ', cmd{:}));
@@ -86,7 +91,7 @@ if ~isdeployed && isempty(compiled)
             warning('%s: Can''t compile cif2hkl.F90 as binary\n       in %s\n', ...
               mfilename, fullfile(this_path));
           else
-            compiled = 1;
+            compiled = fullfile(this_path,mfilename);
           end
         end
       end
@@ -141,7 +146,11 @@ if isempty(verbose) || ~isnumeric(verbose)
 end
 
 % assemble command line
-cmd = fullfile(this_path, mfilename);
+if ~isempty(compiled)
+  cmd = compiled;
+else
+  cmd = mfilename;
+end
 if ~any(strcmp(file_in, {'-h','--help','--version'}))
   
   if verbose
@@ -168,7 +177,7 @@ disp(cmd)
 [status, result] = system(cmd);
 if status ~= 0
   disp(result)
-  error([ mfilename ' executable not available. Compile it with: "gfortran -O2 -o cif2hkl cif2hkl.F90 -lm" in ' fullfile(fileparts(which(mfilename))) ]);
+  error([ mfilename ' executable not available. Compile it with: "gfortran -O2 -o cif2hkl CFML_*.f90 cif2hkl.F90 -lm" in ' fullfile(fileparts(which(mfilename))) ]);
 end
 
 

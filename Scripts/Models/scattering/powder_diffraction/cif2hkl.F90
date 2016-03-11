@@ -33,7 +33,7 @@
 ! Example: ./cif2hkl -o CaF2.laz CaF2.cfl
 
 ! Compile with:
-!   gfortran CFML_GlobalDeps_Linux.f90 CFML_Math_Gen.f90 CFML_String_Util_gf.f90 CFML_Math_3D.f90 CFML_Sym_Table.f90 CFML_Chem_Scatt.f90 CFML_Symmetry.f90 CFML_Cryst_Types.f90 CFML_Reflct_Util.f90 CFML_Atom_Mod.f90 CFML_Geom_Calc.f90 CFML_Molecules.f90 CFML_Form_CIF.f90 CFML_Sfac.f90 -o cif2hkl cif2hkl.F90 -lm
+!   gfortran -O2 CFML_GlobalDeps_Linux.f90 CFML_Math_Gen.f90 CFML_String_Util_gf.f90 CFML_Math_3D.f90 CFML_Sym_Table.f90 CFML_Chem_Scatt.f90 CFML_Symmetry.f90 CFML_Cryst_Types.f90 CFML_Reflct_Util.f90 CFML_Atom_Mod.f90 CFML_Geom_Calc.f90 CFML_Molecules.f90 CFML_Form_CIF.f90 CFML_Sfac.f90 -o cif2hkl cif2hkl.F90 -lm
 !   rm *.mod
 !   ./cif2hkl ../CIF/CaF2.cfl
 ! 
@@ -882,8 +882,8 @@ subroutine print_version(pgmname,message)
   eol=char(13)//char(10)
   
   AUTHOR ="Farhi E. [farhi@ill.fr] using crysFML <http://forge.ill.fr/projects/crysfml>"
-  DATE   ="18 Dec 2012"
-  VERSION="1.1"
+  DATE   ="11 Mar 2016"
+  VERSION="1.2"
   
   
   message = trim(pgmname)//" "//trim(VERSION)//" ("//trim(DATE)//") by "//trim(AUTHOR)//eol//&
