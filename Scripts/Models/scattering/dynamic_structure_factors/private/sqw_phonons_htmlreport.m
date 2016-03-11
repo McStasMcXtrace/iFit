@@ -55,7 +55,9 @@ case 'init'
   fprintf(fid, '<html>\n<head>\n<title>%s: %s with %s</title>\n', ...
     'sqw_phonons', options.configuration, options.calculator);
   fprintf(fid, '<script type="text/javascript">\nfunction update_Phonons3D_frame(options) {\n');
-  fprintf(fid, 'document.getElementById("Phonons3D_frame").contentWindow.document.location.href=options;\n}\n</script>\n</head>\n');
+  fprintf(fid, 'document.getElementById("Phonons3D_frame").contentWindow.document.location.href=options;\n');
+  fprintf(fid, 'document.getElementById("Phonons3D_ext").href=options;\n');
+  fprintf(fid, '}\n</script>\n</head>\n');
   fprintf(fid, '<body><div style="text-align: center;">\n');
   fprintf(fid, '<a href="http://ifit.mccode.org"><img title="ifit.mccode.org" src="iFit-logo.png" align="middle" height=100></a>\n');
   fprintf(fid, '<a href="https://wiki.fysik.dtu.dk/ase" title="wiki.fysik.dtu.dk/ase"><img src="ase256.png" align="middle" height=100></a></br>\n');
@@ -63,12 +65,20 @@ case 'init'
   % general introduction
   fprintf(fid, 'Start Date: %s.<br>\nComputer: %s.<br>\n', datestr(now), computer);
   fprintf(fid, 'Stored in: <a href="%s">%s</a><br>\n', options.target, options.target);
+  
+  % table of contents
+  fprintf(fid, '<ul><li><a href="#atom">Crystallographic information</a></li>\n');
+  fprintf(fid, '<li><a href="#calc">Calculator configuration</a></li>\n');
+  fprintf(fid, '<li><a href="#results">Results</a></li></ul><hr>\n');
+  
+  % introduction
   fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions in a single crystal, using a DFT code (the "calculator") in the background. From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
   fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <b>sqw_phonon</b> Model, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomistic Simulation Environment (ASE)</a>.\n');
   fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends succesfully, the lower part presents the dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic vibrational modes.</p>\n');
+  fprintf(fid, '<p><b>Limitations:</b> These results only display the vibrational mode energies, and does not compute the actual intensity. The accuracy of the model depends on the parameters used for the computation, e.g. energy cut-off, k-points grid, smearing, ...</p>\n');
 
   % append system configuration
-  fprintf(fid, '<h2>Atom/molecule configuration</h2>\n');
+  fprintf(fid, '<h2><a name="atom"></a>Atom/molecule configuration</h2>\n');
   fprintf(fid, '<p>In this section, we present the crystallographic lattice cell used for the computation, both as plots and structure files for use with other software.</p>\n');
   fprintf(fid, 'Initial description: %s<br>\n', options.configuration);
   fprintf(fid, '<p>\n');
@@ -95,7 +105,7 @@ case 'init'
   end
   fprintf(fid, '</p>\n');
   % append calculator configuration
-  fprintf(fid, '<h2>Calculator configuration</h2>\n');
+  fprintf(fid, '<h2><a name="calc"></a>Calculator configuration</h2>\n');
   % general introduction
   fprintf(fid, 'This is a quick desription of the calculator used to compute the lattice energy and forces.<br>\n');
   if ~isempty(logo)
@@ -120,7 +130,7 @@ case 'init'
 case 'done'
   % indicate evaluated model, and print grid used
   fprintf(fid, '<h2>Computation completed</h2>\n');
-  fprintf(fid, '<b>WELL DONE</b><br><p>The computation has performed correctly. The forces and dynamical matrix of the lattice vibrations has been determined.</p><br>\n');
+  fprintf(fid, '<div style="text-align: center;"><b>WELL DONE</b></div><br><p>The computation has performed correctly. The forces and dynamical matrix of the lattice vibrations has been determined.</p>\n');
   fprintf(fid, 'End Date: %s.<br>\n', datestr(now));
   fprintf(fid, 'Time elapsed: %g [s]<br>\n', options.duration);
   fprintf(fid, 'Please cite:<br><pre>');
@@ -129,16 +139,16 @@ case 'done'
   
 case 'plot'
   % present the final object
-  fprintf(fid, '<h2>Results</h2>\n');
+  fprintf(fid, '<h2><a name="results"></a>Results</h2>\n');
   fprintf(fid, '<h3>The Phonon dispersion Model</h3>\n');
   Phonons = object;
   builtin('save', fullfile(options.target, 'iFunc_Phonons.mat'), 'Phonons');
-  fprintf(fid, '<p>The results are stored into a 4D <a href="http://ifit.mccode.org?iFunc.html">iFunc</a> object containing the dynamical matrix. This is a Matlab workspace (MAT-file).');
+  fprintf(fid, '<p>The results are stored into a 4D <a href="http://ifit.mccode.org/iFunc.html">iFunc</a> object containing the dynamical matrix. This is a Matlab workspace (MAT-file).');
   fprintf(fid, '<ul><li><a href="%s">%s</a></li></ul>\n', ...
     'iFunc_Phonons.mat', 'iFunc_Phonons.mat');
   fprintf(fid, 'Load the Model under <a href="http://ifit.mccode.org">Matlab/iFit</a> with (this also works with the <a href="http://ifit.mccode.org/Install.html">standalone version of iFit</a> which does <b>not</b> require any Matlab license and installs on most systems): <ul><li>load(''<a href="%s">%s</a>'') <i>%% creates a "Phonons" iFunc Model</i></li></ul>\n', 'iFunc_Phonons.mat', 'iFunc_Phonons.mat');
   fprintf(fid, 'Define axes for the evaluation grid in 4D, for instance:<ul><li>qh=linspace(0.01,.5,50); qk=qh; ql=qh; w=linspace(0.01,50,51);</li></ul>\n');
-  fprintf(fid, 'Evaluate the Phonons under Matlab/iFit with: <ul><li>iData(Phonons, [], qh, qk, ql, w) <i>%% evaluates the "Phonons" onto the grid, with default parameters, and return an iData object</i></li></ul></p>\n');
+  fprintf(fid, 'Evaluate the Phonons as an <a href="http://ifit.mccode.org/iData.html">iData</a> object under Matlab/iFit with: <ul><li>iData(Phonons, [], qh, qk, ql, w) <i>%% evaluates the "Phonons" onto the grid, with default parameters, and return an iData object</i></li></ul></p>\n');
   
   % append evaluated plots and link to data sets (VTK, MCR, images, ...)
   fprintf(fid, '<h3>Evaluating the Phonon dispersion Model onto a grid</h3>\n');
@@ -160,14 +170,13 @@ case 'plot'
   fprintf(fid, 'Load the HKLE Data set under <a href="http://ifit.mccode.org">Matlab/iFit</a> with:<br>\n');
   fprintf(fid, '<ul><li>load(''<a href="%s">%s</a>'') <i>%% loads the 4D Phonons_HKLE iData object</i></li>\n', 'iData_Phonons.mat', 'iData_Phonons.mat');
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] is a flat text file which contains axes and the 4D data set. You will have to reshape the matrix after reading the contents.</li>\n', 'Phonons_HKLE.dat', 'Phonons_HKLE.dat');
-  fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.</li></ul></p>\n', 'Phonons_HKLE.h5', 'Phonons_HKLE.h5');
-  fprintf(fid, '<p>In order to view this 4D data set, we represent it on the QH~0 plane as a 3D volume data set.<br>\n');
+  fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>.</li></ul></p>\n', 'Phonons_HKLE.h5', 'Phonons_HKLE.h5');
+  fprintf(fid, '<p>In order to view this 4D data set, we represent it on the QH~0 plane as a 3D volume data set. The intensity level is set as log10[S(QH,QK,QL,w)].<br>\n');
   x=data{1};
   fprintf(fid, '<ul><li>qh=%g (QH in rlu)</li>\n', x(1)); % axis1
   fprintf(fid, '<li>qk=[%g:%g] with %i values (QK in rlu)</li>\n', xlim(data), size(data,2));     % axis2
   fprintf(fid, '<li>ql=[%g:%g] with %i values (QL in rlu)</li>\n', zlim(data), size(data,3));
   fprintf(fid, '<li>w=[%g:%g] with %i values (energy in meV, vertical)</li></ul></p>\n', clim(data), size(data,4));
-  % TODO: add details on axes and isosurface
   % TODO: add DOS
   data=log10(data(1, :,:,:));
   saveas(data, fullfile(options.target, 'Phonons.png'));
@@ -185,35 +194,42 @@ case 'plot'
   
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] electron density map format (MRC) which can be viewed with PyMol, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>.</li>\n', 'Phonons.mrc', 'Phonons.mrc');
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] a flat text file which contains axes and the 3D data set. You will have to reshape the matrix after reading the contents.</li>\n', 'Phonons3D.dat', 'Phonons3D.dat');
-  fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.</li></ul>\n', 'Phonons3D.h5', 'Phonons3D.h5');
+  fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>  or <a href="http://ifit.mccode.org">iFit</a>".</li></ul>\n', 'Phonons3D.h5', 'Phonons3D.h5');
   fprintf(fid, '</p>\n');
   
-  fprintf(fid, 'Here are a few representations of the 3D data set<br>\n');
-  saveas(data, fullfile(options.target, 'Phonons.xhtml'), 'xhtml','axes auto');
-  
+  fprintf(fid, 'Here is a representations of the 3D data set<br>\n');
+  fprintf(fid, '<div style="text-align: center;">\n');
   fprintf(fid, '<img src="%s" title="%s" align="middle"><br>\n', 'Phonons.png', 'Phonons.png');
-  fprintf(fid, '<iframe ID=Phonons3D_frame src="%s" align="middle" width="700" height="1000"></iframe><br>The blue axis is the Energy (meV), the red axis is QK (rlu), the green axis is QL (rlu).<br>\nYou can rotate the model (left mouse button), zoom (right mouse button), and translate (middle mouse button). <br>(<a href="%s" target=_blank>open in external window</a>)<br>\n', 'Phonons.xhtml', 'Phonons.xhtml');
-  % create a simple 'slider' made of clickable elements to change the src
+  
+  % generate the X3D views
   s1=min(data); s2=max(data);
-  scale = linspace(s1,s2,12);
-  fprintf(fid, '<p>Select the iso-surface level in the scale below to display other views</p><br>\n');
-  fprintf(fid, '<p>[');
-  for index=2:11
+  scale = linspace(s1,s2,15);
+  for index=2:(numel(scale)-1)
     saveas(data, fullfile(options.target, sprintf('Phonons_%i.xhtml', index)), ...
       'xhtml', sprintf('%g axes auto', scale(index)));
-    fprintf(fid, ' <a onclick=update_Phonons3D_frame("Phonons_%i.xhtml")>%i</a>', index, index, index);
-    % href="Phonons_%i.xhtml" target=_blank 
   end
-  fprintf(fid, ']</p><br>\n');
+  % display the middle one at start
+  fprintf(fid, '<iframe ID=Phonons3D_frame src="Phonons_%i.xhtml" align="middle" width="700" height="850"></iframe><br>(<a ID=Phonons3D_ext href="Phonons_%i.xhtml" target=_blank>open in external window</a>)<br>\n', ceil(numel(scale)/2), ceil(numel(scale)/2));
+  
+  % create a simple 'slider' made of clickable elements to change the src
+  fprintf(fid, '</div><p>Select the iso-surface level (1/%i, log scale) in the scale below:</p>\n', numel(scale)-2);
+  fprintf(fid, '<div style="background:#F9EECF;border:1px dotted black;text-align:center"><form>[ ');
+  for index=2:(numel(scale)-1)
+    if ~isempty(dir(fullfile(options.target, sprintf('Phonons_%i.xhtml', index))))
+      fprintf(fid, ' <input type="radio" name="isosurface" onclick=update_Phonons3D_frame("Phonons_%i.xhtml")>%i', index, index-1);
+    end
+  end
+  fprintf(fid, ' ]</form></div><br>\n');
+  fprintf(fid, 'The blue axis is the Energy (meV), the red axis is QK (rlu), the green axis is QL (rlu).<br>\nYou can rotate the model (left mouse button), zoom (right mouse button), and translate (middle mouse button).<br>\n');
   
 case 'error'
-  fprintf(fid, '<h2>ERROR: %s</h2>\n', data);
+  fprintf(fid, '<h2><a name="results">ERROR: %s</h2>\n', data);
   fprintf(fid, [ mfilename ' ' options.configuration ' ' options.calculator ' <b>FAILED</b><br>' ]);
   sqw_phonons_htmlreport(filename, 'end');
 case 'end'
   % close HTML document
   fprintf(fid, '<hr>Date: %s.<br>\n', datestr(now));
-  fprintf(fid, 'Powdered by <a href="http://ifit.mccode.org>iFit</a> E. Farhi (c) 2016.\n');
+  fprintf(fid, 'Powdered by <a href="http://ifit.mccode.org">iFit</a> E. Farhi (c) 2016.\n');
   if isdeployed || ~usejava('jvm') || ~usejava('desktop')
     disp([ 'HTML report created in ' options.target ]);
   else
