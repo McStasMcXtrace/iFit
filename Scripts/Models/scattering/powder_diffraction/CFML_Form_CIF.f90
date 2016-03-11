@@ -783,11 +783,12 @@
 
        integer                         :: i, j, nc, nct, nline, iv
        !integer, dimension(1)           :: ivet
-       integer, dimension( 7)          :: lugar   !   1 -> label
+       integer, dimension( 8)          :: lugar   !   1 -> label
                                                   !   2 -> Symbol
                                                   ! 3-5 -> coordinates
                                                   !   6 -> occupancy
                                                   !   7 -> Uequi
+                                                  !   8 -> Biso
        real(kind=cp), dimension(1)     :: vet1,vet2
        type(atom_list_type)            :: Atm
 
@@ -834,6 +835,11 @@
           if ("_atom_site_U_iso_or_equiv" == string(1:25)) then
              j=j+1
              lugar(7)=j
+             cycle
+          end if
+          if ("_atom_site_B_iso_or_equiv" == string(1:25)) then
+             j=j+1
+             lugar(8)=j
              cycle
           end if
           if ("_atom_site_" == string(1:11)) then
@@ -923,13 +929,20 @@
           atm%atom(n_atom)%occ_std=vet2(1)
 
           if (lugar(7) /= 0) then
-             call getnum_std(label(lugar(7)),vet1,vet2,iv)    ! _atom_site_Uiso_or_equiv
+             call getnum_std(label(lugar(7)),vet1,vet2,iv)    ! _atom_site_U_iso_or_equiv
+             atm%atom(n_atom)%ueq=vet1(1)
+             atm%atom(n_atom)%Biso=vet1(1)*78.95683521     !If anisotropic they
+             atm%atom(n_atom)%Biso_std=vet2(1)*78.95683521 !will be put to zero
+          else if (lugar(8) /= 0) then
+             call getnum_std(label(lugar(8)),vet1,vet2,iv)    ! _atom_site_B_iso_or_equiv
+             atm%atom(n_atom)%ueq=vet1(1)/78.95683521
+             atm%atom(n_atom)%Biso=vet1(1)     !If anisotropic they
+             atm%atom(n_atom)%Biso_std=vet2(1) !will be put to zero
           else
-             vet1=0.0
+             atm%atom(n_atom)%ueq=0.0
+             atm%atom(n_atom)%Biso=0.0     !If anisotropic they
+             atm%atom(n_atom)%Biso_std=0.0 !will be put to zero
           end if
-          atm%atom(n_atom)%ueq=vet1(1)
-          atm%atom(n_atom)%Biso=vet1(1)*78.95683521     !If anisotropic they
-          atm%atom(n_atom)%Biso_std=vet2(1)*78.95683521 !will be put to zero
 
           atm%atom(n_atom)%utype="u_ij"
           string=" "
