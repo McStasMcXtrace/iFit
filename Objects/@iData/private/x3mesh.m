@@ -97,6 +97,7 @@ m2.vertices=inps.v;
 m2=reducepatch(m2, inps.reduction);
 
 %centre mesh
+if size(m2.vertices, 1) <= 1, return; end
 m2.vertices=m2.vertices-repmat(mean(m2.vertices),size(m2.vertices, 1), 1);
 
 %convert from matlab to numbering starting at 0
