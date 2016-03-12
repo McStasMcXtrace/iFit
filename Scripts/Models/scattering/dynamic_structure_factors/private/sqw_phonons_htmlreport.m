@@ -140,15 +140,34 @@ case 'done'
 case 'plot'
   % present the final object
   fprintf(fid, '<h2><a name="results"></a>Results</h2>\n');
+ 
   fprintf(fid, '<h3>The Phonon dispersion Model</h3>\n');
-  Phonons = object;
-  builtin('save', fullfile(options.target, 'iFunc_Phonons.mat'), 'Phonons');
+  Phonons_Model = object;
+  builtin('save', fullfile(options.target, 'Phonons_Model.mat'), 'Phonons_Model');
   fprintf(fid, '<p>The results are stored into a 4D <a href="http://ifit.mccode.org/iFunc.html">iFunc</a> object containing the dynamical matrix. This is a Matlab workspace (MAT-file).');
   fprintf(fid, '<ul><li><a href="%s">%s</a></li></ul>\n', ...
-    'iFunc_Phonons.mat', 'iFunc_Phonons.mat');
-  fprintf(fid, 'Load the Model under <a href="http://ifit.mccode.org">Matlab/iFit</a> with (this also works with the <a href="http://ifit.mccode.org/Install.html">standalone version of iFit</a> which does <b>not</b> require any Matlab license and installs on most systems): <ul><li>load(''<a href="%s">%s</a>'') <i>%% creates a "Phonons" iFunc Model</i></li></ul>\n', 'iFunc_Phonons.mat', 'iFunc_Phonons.mat');
+    'Phonons_Model.mat', 'Phonons_Model.mat');
+  fprintf(fid, 'Load the Model under <a href="http://ifit.mccode.org">Matlab/iFit</a> with (this also works with the <a href="http://ifit.mccode.org/Install.html">standalone version of iFit</a> which does <b>not</b> require any Matlab license and installs on most systems): <ul><li>load(''<a href="%s">%s</a>'') <i>%% creates a "Phonons" iFunc Model</i></li></ul>\n', 'Phonons_Model.mat', 'Phonons_Model.mat');
   fprintf(fid, 'Define axes for the evaluation grid in 4D, for instance:<ul><li>qh=linspace(0.01,.5,50); qk=qh; ql=qh; w=linspace(0.01,50,51);</li></ul>\n');
-  fprintf(fid, 'Evaluate the Phonons as an <a href="http://ifit.mccode.org/iData.html">iData</a> object under Matlab/iFit with: <ul><li>iData(Phonons, [], qh, qk, ql, w) <i>%% evaluates the "Phonons" onto the grid, with default parameters, and return an iData object</i></li></ul></p>\n');
+  fprintf(fid, 'Evaluate the Phonons as an <a href="http://ifit.mccode.org/iData.html">iData</a> object under Matlab/iFit with: <ul><li>iData(Phonons_Model, [], qh, qk, ql, w) <i>%% evaluates the "Phonons" onto the grid, with default parameters, and return an iData object</i></li></ul></p>\n');
+  
+  % DOS
+  if isfield(options, 'dos') && options.dos && isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
+    fprintf(fid, '<h3>The vibrational density of states (vDOS)</h3>\n');
+    fprintf(fid, 'The phonon spectrum is shown below:<br>\n');
+    save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.png'), 'png');
+    save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.dat'));
+    save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.fig'));
+    save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.h5'));
+    fprintf(fid, '<div style="text-align: center;">\n');
+    fprintf(fid, '<img src="%s" title="%s" align="middle"></div><br>\n', 'Phonons_DOS.png', 'Phonons_DOS.png');
+    fprintf(fid, '<p>and is available as:<br><ul>\n');
+    fprintf(fid, '<li>[ <a href="%s">%s</a> ] is a flat text file which contains axes and the 4D data set. You will have to reshape the matrix after reading the contents.</li>\n', 'Phonons_DOS.dat', 'Phonons_DOS.dat');
+    fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons_DOS.h5', 'Phonons_DOS.h5');
+    fprintf(fid, '<li>[ <a href="%s">%s</a> ] a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons_DOS.fig', 'Phonons_DOS.fig');
+    fprintf(fid, '</ul></p>\n');
+  end
+  
   
   % append evaluated plots and link to data sets (VTK, MCR, images, ...)
   fprintf(fid, '<h3>Evaluating the Phonon dispersion Model onto a grid</h3>\n');
@@ -157,7 +176,7 @@ case 'plot'
     data=iData(object,[],qh,qk,ql,w);
   end
   Phonons_HKLE = data;
-  builtin('save', fullfile(options.target, 'iData_Phonons.mat'), 'Phonons_HKLE');
+  builtin('save', fullfile(options.target, 'Phonons_HKLE.mat'), 'Phonons_HKLE');
   saveas(Phonons_HKLE, fullfile(options.target, 'Phonons_HKLE.dat'));
   saveas(Phonons_HKLE, fullfile(options.target, 'Phonons_HKLE.h5'), 'mantid');
   clear Phonons_HKLE
@@ -168,7 +187,7 @@ case 'plot'
   fprintf(fid, '<li>w=[%g:%g] with %i values (energy in meV)</li></ul>\n', clim(data), size(data,4));
   
   fprintf(fid, 'Load the HKLE Data set under <a href="http://ifit.mccode.org">Matlab/iFit</a> with:<br>\n');
-  fprintf(fid, '<ul><li>load(''<a href="%s">%s</a>'') <i>%% loads the 4D Phonons_HKLE iData object</i></li>\n', 'iData_Phonons.mat', 'iData_Phonons.mat');
+  fprintf(fid, '<ul><li>load(''<a href="%s">%s</a>'') <i>%% loads the 4D Phonons_HKLE iData object</i></li>\n', 'Phonons_HKLE.mat', 'Phonons_HKLE.mat');
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] is a flat text file which contains axes and the 4D data set. You will have to reshape the matrix after reading the contents.</li>\n', 'Phonons_HKLE.dat', 'Phonons_HKLE.dat');
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>.</li></ul></p>\n', 'Phonons_HKLE.h5', 'Phonons_HKLE.h5');
   fprintf(fid, '<p>In order to view this 4D data set, we represent it on the QH~0 plane as a 3D volume data set. The intensity level is set as log10[S(QH,QK,QL,w)].<br>\n');
@@ -177,11 +196,12 @@ case 'plot'
   fprintf(fid, '<li>qk=[%g:%g] with %i values (QK in rlu)</li>\n', xlim(data), size(data,2));     % axis2
   fprintf(fid, '<li>ql=[%g:%g] with %i values (QL in rlu)</li>\n', zlim(data), size(data,3));
   fprintf(fid, '<li>w=[%g:%g] with %i values (energy in meV, vertical)</li></ul></p>\n', clim(data), size(data,4));
-  % TODO: add DOS
+
   data=log10(data(1, :,:,:));
-  saveas(data, fullfile(options.target, 'Phonons.png'));
-  saveas(data, fullfile(options.target, 'Phonons.vtk'));
-  saveas(data, fullfile(options.target, 'Phonons.mrc'));
+  saveas(data, fullfile(options.target, 'Phonons3D.png'), 'png', 'plot3 tight');
+  saveas(data, fullfile(options.target, 'Phonons3D.fig'), 'fig', 'plot3 tight');
+  saveas(data, fullfile(options.target, 'Phonons3D.vtk'));
+  saveas(data, fullfile(options.target, 'Phonons3D.mrc'));
   saveas(data, fullfile(options.target, 'Phonons3D.dat'));
   saveas(data, fullfile(options.target, 'Phonons3D.h5'), 'mantid');
   % modify aspect ratio to fit in a cube
@@ -190,16 +210,17 @@ case 'plot'
   data{3}=linspace(0,1,size(data,3));
   
   fprintf(fid, '<p>The QH=%g data set is available in the folowing formats (log10 of the data set):<br>\n', x(1));
-  fprintf(fid, '<ul><li>[ <a href="%s">%s</a> ] Visualization Toolkit (VTK) file which can be viewed with <a href="http://www.paraview.org/">ParaView</a>, <a href="http://code.enthought.com/projects/mayavi/">Mayavi2</a>, <a href="https://wci.llnl.gov/simulation/computer-codes/visit/executables">VisIt</a> and <a href="https://www.slicer.org/">Slicer4</a>.</li>\n', 'Phonons.vtk', 'Phonons.vtk');
+  fprintf(fid, '<ul><li>[ <a href="%s">%s</a> ] Visualization Toolkit (VTK) file which can be viewed with <a href="http://www.paraview.org/">ParaView</a>, <a href="http://code.enthought.com/projects/mayavi/">Mayavi2</a>, <a href="https://wci.llnl.gov/simulation/computer-codes/visit/executables">VisIt</a> and <a href="https://www.slicer.org/">Slicer4</a>.</li>\n', 'Phonons3D.vtk', 'Phonons3D.vtk');
   
-  fprintf(fid, '<li>[ <a href="%s">%s</a> ] electron density map format (MRC) which can be viewed with PyMol, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>.</li>\n', 'Phonons.mrc', 'Phonons.mrc');
+  fprintf(fid, '<li>[ <a href="%s">%s</a> ] electron density map format (MRC) which can be viewed with PyMol, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>.</li>\n', 'Phonons3D.mrc', 'Phonons3D.mrc');
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] a flat text file which contains axes and the 3D data set. You will have to reshape the matrix after reading the contents.</li>\n', 'Phonons3D.dat', 'Phonons3D.dat');
-  fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>  or <a href="http://ifit.mccode.org">iFit</a>".</li></ul>\n', 'Phonons3D.h5', 'Phonons3D.h5');
-  fprintf(fid, '</p>\n');
+  fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>  or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons3D.h5', 'Phonons3D.h5');
+  fprintf(fid, '<li>[ <a href="%s">%s</a> ] a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons3D.fig', 'Phonons3D.fig');
+  fprintf(fid, '</ul></p>\n');
   
   fprintf(fid, 'Here is a representations of the 3D data set<br>\n');
   fprintf(fid, '<div style="text-align: center;">\n');
-  fprintf(fid, '<img src="%s" title="%s" align="middle"><br>\n', 'Phonons.png', 'Phonons.png');
+  fprintf(fid, '<img src="%s" title="%s" align="middle"><br>\n', 'Phonons3D.png', 'Phonons3D.png');
   
   % generate the X3D views
   s1=min(data); s2=max(data);

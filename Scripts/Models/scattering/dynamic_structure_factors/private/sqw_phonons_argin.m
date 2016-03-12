@@ -21,6 +21,7 @@ options.raw        = '';
 options.autoplot   = 0;
 options.gui        = 0;
 options.htmlreport = 0;
+options.dos        = 0;
 
 % read input arguments
 for index=1:numel(varargin)
@@ -54,6 +55,8 @@ for index=1:numel(varargin)
       options.calculator = 'Elk';
     elseif strcmpi(varargin{index},'abinit')
       options.calculator = 'ABINIT';
+    elseif strcmpi(varargin{index},'vasp')
+      options.calculator = 'VASP';
     elseif strcmpi(varargin{index},'qe') || strcmpi(varargin{index},'espresso') || strcmpi(varargin{index},'quantumespresso')
       options.calculator = 'quantumespresso';
     elseif strcmpi(varargin{index},'autoplot')
