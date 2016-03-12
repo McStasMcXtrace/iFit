@@ -142,6 +142,20 @@ else
     disp([ '  QuantumEspresso (http://www.quantum-espresso.org/) as "' status.quantumespresso '"' ]);
   end
   
+  % test for VASP
+  [st, result] = system([ precmd 'vasp' ]);
+  if st == 0 || st == 2
+    status.vasp = 'vasp';
+  else
+    status.vasp = '';
+  end
+  if ~isempty(status.vasp)
+    disp([ '  VASP (http://www.vasp.at/) as "' status.vasp '"' ]);
+  end
+  % must set:
+  % VASP_COMMAND=vasp
+  % VASP_PP_PATH=/usr/share/vasp/pseudo
+  
 end
 disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
 

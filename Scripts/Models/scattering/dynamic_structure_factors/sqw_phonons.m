@@ -17,6 +17,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     ELK       Full Potential LAPW code (with MPI)
 %     ABINIT    Plane-wave pseudopotential code (with MPI)
 %     QuantumEspresso Plane-wave pseudopotential code (with MPI)
+%     VASP      Plane-wave PAW code (with MPI, when installed)
 %
 %   The simplest usage is to call: sqw_phonons('gui') which displays an entry dialog box
 %   and proceeds with a fully automatic computation, and plots final results.
@@ -107,6 +108,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'fd'.
 %   options.iscf='NC','PAW'                Type of SCF cycles (ABINIT) 
 %   options.pps = 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw' Type of database (ABINIT)
+%                 'sv','pv', ... (VASP)
 %   options.mixing_beta=scalar             mixing factor for self-consistency
 %     default=0.7. use 0.3 to improve convergence (QuantumEspresso)
 %   options.mixing_ndim=scalar             number of iterations used in mixing
@@ -119,7 +121,7 @@ function signal=sqw_phonons(configuration, varargin)
 % regular qx,qy,qz grids.
 %     
 % Example:
-%   s=sqw_phonons('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal');
+%   s=sqw_phonons('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal','dos');
 %   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
 %   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
 %   figure; plot(s.UserData.DOS); % plot the DOS, as indicated during model creation
@@ -157,6 +159,8 @@ function signal=sqw_phonons(configuration, varargin)
 %   <http://chianti.geol.ucl.ac.uk/~dario>.
 % Quantum Espresso P. Giannozzi, et al, J.Phys.:Condens.Matter, 21, 395502 (2009).
 %   <http://www.quantum-espresso.org/>. 
+% VASP G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.
+%   <https://www.vasp.at/> Requires a license.
 %
 % input:  p: sqw_phonons model parameters (double)
 %             p(1)=Amplitude
@@ -218,6 +222,9 @@ end
 
 t=clock();
 
+% ==============================================================================
+%                               GUI (dialog)
+% ==============================================================================
 if options.gui
   % pop-up a simple dialog requesting for:
   %  * configuration
@@ -709,6 +716,69 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   options.dos = 1;
   sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ]);
   signal=sqw_phon(poscar, options);
+  
+case 'VASP'
+  if isempty(status.(lower(options.calculator))) && isempty(options.command)
+    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+  end
+  if isfield(options,'mpi') && ~isempty(options.mpi)
+    if isempty(options.command) options.command=status.(lower(options.calculator)); end
+    if isscalar(options.mpi) 
+      options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+    end
+  end
+  if isempty(options.command), options.command=status.(lower(options.calculator)); end
+  if ~isempty(options.command)
+    setenv('VASP_COMMAND', options.command);
+  end
+  if isunix
+    if isempty(options.potentials), options.potentials='/usr/share/vasp/pseudo/'; end
+  end
+  if ~isempty(options.potentials) && isdir(options.potentials)
+    setenv('VASP_PP_PATH', options.potentials);
+  end
+
+  decl = 'from ase.calculators.vasp import Vasp';
+  calc = 'calc = Vasp(isym=0, prec="Normal", algo="Very_Fast", lreal="A" ';
+  % prec: Low, Normal, Accurate
+  % algo: Normal (Davidson) | Fast | Very_Fast (RMM-DIIS)
+  % ibrion
+  % ismear: -5 Blochl -4-tet -1-fermi 0-gaus >0 MP
+  % setups: pv, sv 
+  if options.ecut <= 0, options.ecut=340; end % no default in ABINIT (eV)
+  if (options.ecut > 0)
+    calc = [ calc sprintf(', encut=%g', options.ecut) ];
+  end
+  if options.toldfe <= 0, options.toldfe=1e-5; end % in eV, necessary
+  if (options.toldfe > 0)
+    calc = [ calc sprintf(', ediff=%g', options.toldfe) ];
+  end
+  if all(options.kpoints > 0)
+    calc = [ calc sprintf(', kpts=[%i,%i,%i]', options.kpoints) ];
+    if all(options.kpoints <= 1)
+      calc = [ calc sprintf(', gamma=True') ];
+    end
+  end
+  
+  if ~isempty(options.xc)
+    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+  end
+  if isfield(options, 'pps') && ~isempty(options.pps)
+    calc = [ calc sprintf(', setups=''%s''', options.pps) ];
+  end
+  if options.nbands > 0
+    calc = [ calc sprintf(', nbands=%i', options.nbands) ];
+  end
+  if options.nsteps > 0
+    calc = [ calc sprintf(', nelm=%i', options.nsteps) ];
+  end
+  if isscalar(options.occupations) && options.occupations >=0
+    calc=[ calc sprintf(', sigma=%g, ismear=0', options.occupations) ];
+  end
+  if ~isempty(options.raw)
+    calc = [ calc sprintf(', %s', options.raw) ];
+  end
+  calc = [ calc ')' ];
 
 
 otherwise
@@ -856,7 +926,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   else
     signal.UserData.configuration = configuration;
   end
-  if isfield(options,'dos'), signal.UserData.DOS=[]; end
+  if isfield(options,'dos') && options.dos, signal.UserData.DOS=[]; end
   signal.UserData.dir           = target;
   signal.UserData.options       = options;
 
@@ -955,7 +1025,7 @@ else
 end
 
 
-if isfield(options, 'dos') && ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
+if isfield(options, 'dos') && options.dos && ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   disp('INFO: The vibrational density of states (vDOS) will be computed at first model evaluation.');
 end
 disp([ 'Time elapsed=' num2str(signal.UserData.duration) ' [s]. Please cite:' ])
@@ -978,6 +1048,8 @@ cite{end+1} = ' * EMT:    K.W. Jacobsen et al, Surf. Sci. 366, 394-402 (1996).';
 case 'QUANTUMESPRESSO'
 cite{end+1} = ' * PHON:   D. Alfe, Computer Physics Communications 180,2622-2633 (2009).';
 cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).';
+case 'VASP'
+cite{end+1} = ' * VASP:   G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.';
 end
 fprintf(1, '%s\n', cite{:});
 disp('You can now evaluate the model using e.g.:')
@@ -1006,11 +1078,11 @@ function f = sqw_phonons_plot(signal)
   disp([ mfilename ': Model ' options.configuration ' plotting phonons.' ])
   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,150,151);
   fig=figure; 
-  if options.dos, subplot(1,2,1); end
+  if isfield(options, 'dos') && options.dos && ~isempty(signal.UserData.DOS), subplot(1,2,1); end
   f=iData(signal,[],qh,qk,ql,w);
   g=log(-f(1,:, :,:)); scatter3(g,'filled'); axis tight;
   view([38 26]);
-  if options.dos
+  if isfield(options, 'dos') && options.dos && ~isempty(signal.UserData.DOS)
     subplot(1,2,2);
     try
     plot(signal.UserData.DOS); % plot the DOS, as indicated during model creation
