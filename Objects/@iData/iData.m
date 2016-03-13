@@ -141,7 +141,7 @@ else  % convert input argument into object
   elseif isstruct(varargin{1})
     % iData(struct)
     out = iData_struct2iData(varargin{1}); % convert struct to iData
-  elseif ~isempty(varargin{1}) && isnumeric(varargin{1}) && (numel(varargin{1}) > 1 || ~ishandle(varargin{1}))
+  elseif ~all(isempty(varargin{1})) && isnumeric(varargin{1}) && (numel(varargin{1}) > 1 || ~all(ishandle(varargin{1})))
     % iData(x)
     out = iData_num2iData(varargin{1});    % convert single scalar/vector/matrix to iData
     return

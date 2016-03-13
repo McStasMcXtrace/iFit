@@ -54,6 +54,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.target =path                   Where to store all files and FORCES
 %     a temporary directory is created when not specified.
 %   options.supercell=scalar or [nx ny nz] supercell size. Default is 2.
+%     Some codes have a limitation: ABINIT=2, Elk=6
 %   options.calculator=string              EMT,GPAW,Elk,NWChem,Dacapo,ABINIT,Quantum
 %     We recommend ABINIT,QE and Elk. Default set from installed software.
 %   options.dos=1                          Option to compute the vibrational
@@ -72,7 +73,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     which requires e.g. OpenMPI to be installed.
 %
 % DFT specific options
-%   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid
+%   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid, default 3.
 %   options.xc=string                      Type of Exchange-Correlation functional to use
 %     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'   for GPAW
 %     'LDA','B3LYP','PBE','RHF','MP2'              for NWChem
@@ -206,7 +207,7 @@ options= sqw_phonons_argin(configuration, varargin{:});
 
 if isempty(options.calculator)
   % select default calculator according to those installed
-  for index={'quantumespresso','abinit','gpaw','elk','jacapo','nwchem',};
+  for index={'quantumespresso','abinit','vasp','gpaw','elk','jacapo','nwchem',};
     if ~isempty(status.(index{1})), options.calculator=index{1}; break; end
   end
 end
@@ -234,7 +235,7 @@ if options.gui
   %  * kpoints
   % and will select autoplot, 'dos'
   calcs = 'EMT';
-  for index={'gpaw','elk','jacapo','nwchem','abinit','quantumespresso'};
+  for index={'gpaw','elk','jacapo','nwchem','abinit','quantumespresso','vasp'};
     if ~isempty(status.(index{1})), calcs = [ calcs ', ' upper(index{1}) ]; end
   end
   NL = sprintf('\n');
@@ -519,7 +520,9 @@ case 'GPAW' % ==================================================================
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
   if ~isempty(options.diagonalization)
-    if strncmpi(options.diagonalization, 'dav', 3) options.diagonalization='dav'; end
+    if strncmpi(options.diagonalization, 'dav', 3) options.diagonalization='dav'; 
+    elseif strcmpi(options.diagonalization, 'cg')  options.diagonalization='cg';
+    else options.diagonalization='rmm-diis'; end
     calc = [ calc sprintf(', eigensolver=''%s''', options.diagonalization) ];
   end
   if ~isempty(options.potentials)
@@ -567,9 +570,6 @@ case 'JACAPO' % ================================================================
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
-  if options.ecut < 0
-    % options.ecut = 340;
-  end
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
   end
@@ -585,21 +585,22 @@ case 'JACAPO' % ================================================================
   if isfield(options,'ecutrho') && optins.ecutrho > 0
     calc = [ calc sprintf(', dw=%g', options.ecutrho) ];
   end
+  if ~isempty(options.diagonalization)
+    if strncmp(options.diagonalization, 'dav',3), options.diagonalization='eigsolve';
+    elseif strcmpi(options.diagonalization, 'cg'), options.diagonalization='resmin';
+    else options.diagonalization='rmm-diis'; end
+    calc = [ calc sprintf(', electronic_minimization={"method":"%s"}', ...
+             options.diagonalization) ];
+  end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
   end
   calc = [ calc ')' ];  
   % other options
-  if optins.toldfe > 0
+  if options.toldfe > 0
     calc = [ calc sprintf('; calc.SetConvergenceParameters(%g) ', options.toldfe) ];
   end
-  if ~isempty(options.diagonalization)
-    if strncmp(options.diagonalization, 'dav',3), options.diagonalization='eigsolve';
-    elseif strcmp(options.diagonalization, 'cg'), options.diagonalization='resmin';
-    else options.diagonalization='rmm-diis'; end
-    calc = [ calc sprintf('; calc.SetEigenvalueSolver(%s)', ...
-      options.diagonalization) ];
-  end
+  
 
 case 'NWCHEM' % ================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
@@ -641,6 +642,10 @@ case 'NWCHEM' % ================================================================
   end
   if isscalar(options.occupations) && options.occupations>=0 % smearing
     calc=[ calc sprintf(', smearing=("gaussian",%g)', options.occupations/Ha) ]; % in Hartree
+  end
+  if (options.ecut > 0)
+    % seems to be un-supported
+    % calc = [ calc sprintf(', cutoff=%g', options.ecut) ];
   end
   if options.nbands > 0
     % could not find it in NWChem
@@ -739,7 +744,7 @@ case 'VASP'
   end
 
   decl = 'from ase.calculators.vasp import Vasp';
-  calc = 'calc = Vasp(isym=0, prec="Normal", algo="Very_Fast", lreal="A" ';
+  calc = 'calc = Vasp(isym=0, prec="Normal", lreal="A" ';
   % prec: Low, Normal, Accurate
   % algo: Normal (Davidson) | Fast | Very_Fast (RMM-DIIS)
   % ibrion
@@ -759,7 +764,13 @@ case 'VASP'
       calc = [ calc sprintf(', gamma=True') ];
     end
   end
-  
+  if ~isempty(options.diagonalization)
+    if strncmp(options.diagonalization, 'dav',3), options.diagonalization='Normal';
+    elseif strcmpi(options.diagonalization, 'cg'), options.diagonalization='Fast';
+    else options.diagonalization='Very_Fast'; end
+    calc = [ calc sprintf(', algo="%s"', options.diagonalization) ];
+  end
+    
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
@@ -1055,6 +1066,7 @@ fprintf(1, '%s\n', cite{:});
 disp('You can now evaluate the model using e.g.:')
 disp('    qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);');
 disp('    f=iData(s,[],qh,qk,ql,w); plot3(log(f(1,:, :,:)));');
+disp(' ');
 
 sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'done', options, cite);
 

@@ -34,6 +34,7 @@ function [signal, ax, name, model] = feval(model, p, varargin)
 % See also iFunc, iFunc/fit, iFunc/plot
 
 % handle input iFunc arrays
+signal=[]; ax=[]; name='';
 
 if isa(model, 'iFunc') && numel(model) > 1
   signal = {}; ax={}; name={};
@@ -71,7 +72,6 @@ if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
   for index=1:numel(p)
     [signal{end+1}, ax{end+1}, name{end+1}] = feval(model, p{index}, varargin{:});
   end
-  signal
   if numel(signal) == 1, 
     signal=signal{1}; ax=ax{1}; name=name{1};
   end
@@ -326,19 +326,31 @@ end % 'guess'
 
 % format parameters as columns
 p = p(:);
-model.Constraint.min  =model.Constraint.min(:);
-model.Constraint.max  =model.Constraint.max(:);
-model.Constraint.fixed=model.Constraint.fixed(:);
-model.Constraint.set  =model.Constraint.set(:);
+if isfield(model.Constraint,'min')
+  model.Constraint.min  =model.Constraint.min(:);
+end
+if isfield(model.Constraint,'max')
+  model.Constraint.max  =model.Constraint.max(:);
+end
+if isfield(model.Constraint,'fixed')
+  model.Constraint.fixed=model.Constraint.fixed(:);
+end
+if isfield(model.Constraint,'set')
+  model.Constraint.set  =model.Constraint.set(:);
+end
 
 % apply constraints (fixed are handled in 'fits' -> forwarded to the optimizer)
-i = find(isfinite(model.Constraint.min));
-if ~isempty(i)
-  p(i) = max(p(i), model.Constraint.min(i));
+if isfield(model.Constraint,'min')
+  i = find(isfinite(model.Constraint.min));
+  if ~isempty(i)
+    p(i) = max(p(i), model.Constraint.min(i));
+  end
 end
-i = find(isfinite(model.Constraint.max));
-if ~isempty(i)
-  p(i) = min(p(i), model.Constraint.max(i));
+if isfield(model.Constraint,'max')
+  i = find(isfinite(model.Constraint.max));
+  if ~isempty(i)
+    p(i) = min(p(i), model.Constraint.max(i));
+  end
 end
 
 % apply 'set' Constraints (with char)
@@ -530,8 +542,8 @@ catch
   this.Eval
   lasterr
   save iFunc_feval_error
-  error([ 'iFunc:' mfilename ], 'Failed model evaluation. Saved state in iFunc_feval_error');
-end
+  error([ 'iFunc:' mfilename ], [ 'Failed model evaluation. Saved state in ' fullfile(pwd,'iFunc_feval_error') ]);
+end 
 
 % ==============================================================================
 function p = iFunc_feval_guess(this, varargin)
@@ -567,8 +579,9 @@ function p = iFunc_feval_guess(this, varargin)
 function p = iFunc_feval_set(this, p, varargin)
 % private function to evaluate a parameter set expression in a reduced environment so that 
 % internal function variables do not affect the result.
-
-  i = find(~cellfun('isempty', this.Constraint.set)); i=i(:)';
+  if isfield(this.Constraint, 'set')
+    i = find(~cellfun('isempty', this.Constraint.set)); i=i(:)';
+  else i=[]; end
   if ~isempty(i)
 
     ax = 'x y z t u v w';

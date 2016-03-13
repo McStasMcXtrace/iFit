@@ -4,13 +4,13 @@ function options=sqw_phonons_argin(varargin)
 % returns an 'options' structure.
 
 % defaults
-options.supercell  = 4;
+options.supercell  = 2;
 options.calculator = '';
-options.kpoints    = 4;
+options.kpoints    = 3;
 options.xc         = 'PBE';
 options.mode       = 'fd';            % GPAW
 options.potentials = '';
-options.diagonalization = ''; % GPAW would prefer rmm-diis
+options.diagonalization = 'rmm-diis'; % GPAW would prefer rmm-diis
 options.occupations= '';
 options.ecut       = 0;
 options.nbands     = 0;
@@ -80,6 +80,9 @@ if ~isfield(options,'target')
 end
 if isfield(options, 'smearing') && isempty(options.occupations)
   options.occupations = options.smearing;
+end
+if isfield(options, 'kpts')
+  options.kpoints=options.kpts;
 end
 if isscalar(options.supercell)
   options.supercell=[ options.supercell options.supercell options.supercell ]; 

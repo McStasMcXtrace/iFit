@@ -783,8 +783,8 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   if isfield(options, 'diagonalization') && ~isempty(options.diagonalization)
     if strncmp(options.diagonalization, 'dav',3)
       options.diagonalization = 'david';
-    elseif ~strcmp(option.diagonalization,'cg',2)
-      options.diagonalization
+    elseif ~strncmp(options.diagonalization,'cg',2)
+      options.diagonalization = 'cg';
     end
     fprintf(fid, '    diagonalization = ''%s''\n', options.diagonalization);
   end
