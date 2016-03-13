@@ -86,7 +86,9 @@ for i = 1:length(S)     % can handle multiple index levels
       b_isvector = isvector(b);
       if b_isvector, sz = b_isvector; else sz = ndims(b); end
       ds=iData_getAliasValue(b,'Signal'); 
-      d=squeeze(ds(s.subs{:}));                          % b(indices)
+      if isempty(ds), d=ds; else
+        d=squeeze(ds(s.subs{:}));                          % b(indices)
+      end
       b=set(b,'Signal', d);  b=setalias(b,'Signal', d);
       clear ds
       
