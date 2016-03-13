@@ -63,8 +63,8 @@ else
   [st, result] = system([ precmd 'python -c "from ase.calculators.jacapo import Jacapo"' ]);
   status.jacapo='';
   if st == 0
-    % now test executable
-    for calc={'dacapo_mpi.run','dacapo_serial.run','dacapo.run','dacapo'}
+    % now test executable: serial
+    for calc={'dacapo_serial.run','dacapo.run','dacapo'}
       [st,result]=system([ precmd calc{1} ]);
       if st == 0 || st == 2
           status.jacapo=calc{1};
@@ -72,9 +72,20 @@ else
           break;
       end
     end
+    % now test executable: mpi
+    [st,result]=system([ precmd 'dacapo_mpi.run' ]);
+    if st == 0 || st == 2
+      status.jacapo_mpi='dacapo_mpi.run';
+    else
+      status.jacapo_mpi='';
+    end
   end
   if ~isempty(status.jacapo)
-    disp([ '  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '"' ]);
+    if ~isempty(status.jacapo_mpi)
+      disp([ '  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '" and "' status.jacapo_mpi '"' ]);
+    else
+      disp([ '  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '"' ]);
+    end
   end
   
   % test for Elk

@@ -550,13 +550,15 @@ case 'JACAPO' % ================================================================
   % Requires to define variables under Ubuntu
   if isunix
     if isempty(options.potentials), options.potentials='/usr/share/dacapo-psp'; end
-    if isempty(options.command),    options.command   =status.(lower(options.calculator)); end
+    if isempty(options.command) && (~isfield(options,'mpi') || isempty(options.mpi) || options.mpi <= 1)
+      options.command   =status.(lower(options.calculator)); 
+    end
   end
   if ~isempty(options.potentials)
     setenv('DACAPOPATH', options.potentials);
   end
   if isfield(options,'mpi') && ~isempty(options.mpi)
-    if isempty(options.command) options.command=status.(lower(options.calculator)); end
+    if isempty(options.command) options.command=status.jacapo_mpi; end
     if isscalar(options.mpi) 
       options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
     end
