@@ -60,7 +60,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %         options: specific format options, which are usually plot options
 %           default is 'view2 axis tight'
 %           For XHTML export, the additional argument can be a string with the isosurface
-%           level and options 'axes' to display aaxes, 'auto' to rescale as a cube.
+%           level and options 'axes' to display axes, 'auto' to rescale as a cube.
 %
 % output: f: filename(s) used to save data (char)
 % ex:     b=saveas(a, 'file', 'm');
@@ -379,7 +379,7 @@ case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','jpeg'
     b=getaxis(a,0); % Signal/Monitor
     b=(b-min(b(:)))/(max(b(:))-min(b(:)))*256;
   else
-    f = getframe(a);
+    f = getframe(a,[],options);
     b = f.cdata;
   end
   switch format
