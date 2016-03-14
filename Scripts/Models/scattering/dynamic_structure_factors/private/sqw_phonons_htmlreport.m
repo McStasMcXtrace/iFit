@@ -266,13 +266,14 @@ case 'plot'
 case 'error'
   fprintf(fid, '<h2><a name="results">ERROR: %s</h2>\n', data);
   fprintf(fid, [ mfilename ' ' options.configuration ' ' options.calculator ' <b>FAILED</b><br>' ]);
-  sqw_phonons_htmlreport(filename, 'end');
+  sqw_phonons_htmlreport(filename, 'end', options);
 case 'end'
   % create ZIP of document
   zip(options.target, options.target);
   fprintf(fid, '<h2><a name="zip">Download</h2>\n');
   fprintf(fid, 'You can download the whole content of this report (data, plots, ...) from<br>\n');
   fprintf(fid, '<ul><li><a href="%s">%s</a></li></ul>', [ options.target '.zip' ], [ options.target '.zip' ]);
+  fprintf(fid, 'You should then open the "index.html" file therein with a browser (Firefox, Chrome...)<br>\n');
   
   % close HTML document
   fprintf(fid, '<hr>Date: %s.<br>\n', datestr(now));
