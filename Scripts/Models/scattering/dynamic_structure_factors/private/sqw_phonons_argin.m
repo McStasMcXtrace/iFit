@@ -43,6 +43,10 @@ for index=1:numel(varargin)
       options.occupations = 'semiconductor';
     elseif strcmpi(varargin{index},'dos')
       options.dos = 1;
+    elseif strcmpi(varargin{index},'plot') || strcmpi(varargin{index},'autoplot')
+      options.autoplot = 1;
+    elseif strcmpi(varargin{index},'html') || strcmpi(varargin{index},'htmlreport')
+      options.htmlreport = 1;
     elseif strcmpi(varargin{index},'emt')
       options.calculator = 'EMT';
     elseif strcmpi(varargin{index},'gpaw')
@@ -83,6 +87,12 @@ if isfield(options, 'smearing') && isempty(options.occupations)
 end
 if isfield(options, 'kpts')
   options.kpoints=options.kpts;
+end
+if isfield(options, 'plot')
+  options.autoplot=options.plot;
+end
+if isfield(options, 'html')
+  options.htmlreport=options.html;
 end
 if isscalar(options.supercell)
   options.supercell=[ options.supercell options.supercell options.supercell ]; 
