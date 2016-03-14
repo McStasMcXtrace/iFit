@@ -22,6 +22,7 @@ options.autoplot   = 0;
 options.gui        = 0;
 options.htmlreport = 0;
 options.dos        = 0;
+options.email      = '';
 
 % read input arguments
 for index=1:numel(varargin)
@@ -45,7 +46,7 @@ for index=1:numel(varargin)
       options.dos = 1;
     elseif strcmpi(varargin{index},'plot') || strcmpi(varargin{index},'autoplot')
       options.autoplot = 1;
-    elseif strcmpi(varargin{index},'html') || strcmpi(varargin{index},'htmlreport')
+    elseif strcmpi(varargin{index},'html') || strcmpi(varargin{index},'htmlreport') || strcmpi(varargin{index},'report')
       options.htmlreport = 1;
     elseif strcmpi(varargin{index},'emt')
       options.calculator = 'EMT';
