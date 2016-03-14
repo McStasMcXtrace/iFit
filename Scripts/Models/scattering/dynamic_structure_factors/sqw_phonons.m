@@ -75,6 +75,8 @@ function signal=sqw_phonons(configuration, varargin)
 %     and plot results.
 %   options.htmlreport=0|1                 when set, automatically generates a full
 %     report on the computation results.
+%   options.email=<email>                  when set, sends an email at start and end
+%     of computation.
 %
 % DFT specific options
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid, default 3.
@@ -848,7 +850,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   fprintf(fid, '%s\n', script{:});
   fclose(fid);
   % copy the configuration into the target
-  if exist(configuration)
+  if ~isempty(dir(configuration))
     copyfile(configuration, target);
   end
   
@@ -907,7 +909,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     setenv('LD_LIBRARY_PATH',ld_library_path);
     sqw_phonons_error([ mfilename ': ' options.calculator ' failed. May be a convergence issue. Temporary files are in ' target ], options)
   end
-  if exist(configuration)
+  if ~isempty(dir(configuration))
     [dummy, signal.UserData.input]= fileparts(configuration);
   else
     signal.UserData.input = configuration;
@@ -928,7 +930,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
 
   signal.Guess = [ 1 .1 0 10 ];
 
-  if exist(configuration)
+  if ~isempty(dir(configuration))
     signal.UserData.configuration = fileread(configuration);
   else
     signal.UserData.configuration = configuration;
