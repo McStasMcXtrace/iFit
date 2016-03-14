@@ -341,11 +341,9 @@ case 'ABINIT'
   if isempty(strfind(status.(lower(options.calculator)),'abinis')) && isempty(options.command)
     options.command = status.(lower(options.calculator));
   end
-  if isfield(options,'mpi') && ~isempty(options.mpi)
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
-    if isscalar(options.mpi) 
-      options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
-    end
+    options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -405,7 +403,7 @@ case 'ABINIT'
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc=''%s''', options.xc) ];
   end
-  if isfield(options,'mpi') && options.mpi > 1
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     % nbdblock, npband, AUTOPARAL=1
     % calc = [ calc sprintf(', nbdblock=%i', options.mpi) ];
     calc = [ calc sprintf(', autoparal=1') ];
@@ -451,11 +449,9 @@ case 'ELK' % ===================================================================
   if ~strcmp(status.(lower(options.calculator)),'elk') && isempty(options.command)
     options.command = status.(lower(options.calculator));
   end
-  if isfield(options,'mpi') && ~isempty(options.mpi)
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
-    if isscalar(options.mpi) 
-      options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
-    end
+    options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -561,11 +557,9 @@ case 'JACAPO' % ================================================================
   if ~isempty(options.potentials)
     setenv('DACAPOPATH', options.potentials);
   end
-  if isfield(options,'mpi') && ~isempty(options.mpi)
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.jacapo_mpi; end
-    if isscalar(options.mpi) 
-      options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
-    end
+    options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
   end
   if ~isempty(options.command)
     setenv('DACAPOEXE_SERIAL', options.command); % DACAPOEXE_PARALLEL
@@ -612,11 +606,9 @@ case 'NWCHEM' % ================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
-  if isfield(options,'mpi') && ~isempty(options.mpi)
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
-    if isscalar(options.mpi) 
-      options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
-    end
+    options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -732,11 +724,9 @@ case 'VASP'
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   end
-  if isfield(options,'mpi') && ~isempty(options.mpi)
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
-    if isscalar(options.mpi) 
-      options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
-    end
+    options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
   end
   if isempty(options.command), options.command=status.(lower(options.calculator)); end
   if ~isempty(options.command)
