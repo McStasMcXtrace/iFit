@@ -17,7 +17,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     ELK       Full Potential LAPW code (with MPI)
 %     ABINIT    Plane-wave pseudopotential code (with MPI)
 %     QuantumEspresso Plane-wave pseudopotential code (with MPI)
-%     VASP      Plane-wave PAW code (with MPI, when installed)
+%     VASP      Plane-wave PAW code (with MPI, when installed and licensed)
 %
 %   The simplest usage is to call: sqw_phonons('gui') which displays an entry dialog box
 %   and proceeds with a fully automatic computation, and plots final results.
@@ -71,16 +71,20 @@ function signal=sqw_phonons(configuration, varargin)
 %     include e.g. "mpirun -np N" when applicable.
 %   options.mpi=scalar                     use multi-cpu, for NWChem,QuantumEspresso
 %     which requires e.g. OpenMPI to be installed.
+%   options.autoplot=0|1                   when set, automatically evaluates the Model
+%     and plot results.
+%   options.htmlreport=0|1                 when set, automatically generates a full
+%     report on the computation results.
 %
 % DFT specific options
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid, default 3.
 %   options.xc=string                      Type of Exchange-Correlation functional to use
 %     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'   for GPAW
-%     'LDA','B3LYP','PBE','RHF','MP2'              for NWChem
+%     'PZ', 'PBE','revPBE','RPBE','PW91','VWN'     for Dacapo/Jacapo
+%     'LDA','PBE','revPBE','RPBE'                  for ABINIT
 %     'LDA','PBE','REVPBE','PBESOL','WC06','AM05'  for ELK
-%     'PZ','VWN','PW91','PBE','RPBE','revPBE'      for Dacapo/Jacapo
-%     'LDA', 'PBE', 'revPBE', 'RPBE'               for ABINIT
-%     for QuantumEspresso, this choice is made through a dialog.
+%     'LDA','PBE','RHF','MP2','B3LYP'              for NWChem
+%     'LDA','PBE','PW91'                           for VASP
 %     Default is 'PBE'.
 %   options.raw='name=value, ...'          Additional arguments passed to the ASE
 %                                          using the Python syntax.

@@ -47,6 +47,10 @@ case 'init'
   logo='logo_qe.jpg';
   link='http://www.quantum-espresso.org/';
   copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
+  case 'VASP'
+  logo='vasp.png';
+  link='https://www.vasp.at/';
+  copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
   otherwise
   logo=''; link='';
   end
@@ -69,7 +73,13 @@ case 'init'
   % table of contents
   fprintf(fid, '<ul><li><a href="#atom">Crystallographic information</a></li>\n');
   fprintf(fid, '<li><a href="#calc">Calculator configuration</a></li>\n');
-  fprintf(fid, '<li><a href="#results">Results</a></li></ul><hr>\n');
+  fprintf(fid, '<li><a href="#results">Results</a><ul>\n');
+  fprintf(fid, '<li><a href="#model">The Phonon Model</a></li>\n');
+  fprintf(fid, '<li><a href="#dos">The phonon spectrum (vDOS)</a></li>\n');
+  fprintf(fid, '<li><a href="#grid4d">The Model evaluated onto a 4D grid</a></li>\n');
+  fprintf(fid, '<li><a href="#grid3d">The Model evaluated onto a 3D grid (QH~0)</a></li></ul></li>\n');
+  fprintf(fid, '<li><a href="#zip">Download</a></li>\n');
+  fprintf(fid, '</ul><hr>\n');
   
   % introduction
   fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions in a single crystal, using a DFT code (the "calculator") in the background. From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
@@ -95,15 +105,15 @@ case 'init'
               'configuration.x3d Scene for <a href="http://castle-engine.sourceforge.net/view3dscene.php">view3dscene</a>, <a href="http://www.instantreality.org/">InstantPlayer</a>, <a href="http://freewrl.sourceforge.net/">FreeWRL</a>'  }
     [index1, index2] = strtok(index{1});
     if strcmp(index1, 'configuration.png')
-      fprintf(fid, '<div style="text-align:center"><img src="%s" align="middle" title="%s"></div><br>\n', index1, index1);
+      fprintf(fid, '<div style="text-align:center"><img src="%s" align="middle" title="%s"></div><br>In addition we provide the atoms/molecule configuration as:<br><ul>\n', index1, index1);
     elseif strcmp(index1, 'configuration.html')
       fprintf(fid, '<div style="text-align:center"><iframe src="%s" onload="this.style.height=this.contentDocument.body.scrollHeight +''px'';" align="middle"></iframe><br>%s (<a href="%s" target=_blank>open in external window</a>)<br></div><br>\n', index1, index2, index1);
     else
-      fprintf(fid, '[ <a href="%s">%s</a> ] %s<br>\n', index1, index1, index2);
+      fprintf(fid, '<li>[ <a href="%s">%s</a> ] %s</li>\n', index1, index1, index2);
     end
 
   end
-  fprintf(fid, '</p>\n');
+  fprintf(fid, '</ul></p>\n');
   % append calculator configuration
   fprintf(fid, '<h2><a name="calc"></a>Calculator configuration</h2>\n');
   % general introduction
@@ -141,7 +151,7 @@ case 'plot'
   % present the final object
   fprintf(fid, '<h2><a name="results"></a>Results</h2>\n');
  
-  fprintf(fid, '<h3>The Phonon dispersion Model</h3>\n');
+  fprintf(fid, '<h3><a name="model"></a>The Phonon dispersion Model</h3>\n');
   Phonons_Model = object;
   builtin('save', fullfile(options.target, 'Phonons_Model.mat'), 'Phonons_Model');
   fprintf(fid, '<p>The results are stored into a 4D <a href="http://ifit.mccode.org/iFunc.html">iFunc</a> object containing the dynamical matrix. This is a Matlab workspace (MAT-file).');
@@ -151,30 +161,35 @@ case 'plot'
   fprintf(fid, 'Define axes for the evaluation grid in 4D, for instance:<ul><li>qh=linspace(0.01,.5,50); qk=qh; ql=qh; w=linspace(0.01,50,51);</li></ul>\n');
   fprintf(fid, 'Evaluate the Phonons as an <a href="http://ifit.mccode.org/iData.html">iData</a> object under Matlab/iFit with: <ul><li>iData(Phonons_Model, [], qh, qk, ql, w) <i>%% evaluates the "Phonons" onto the grid, with default parameters, and return an iData object</i></li></ul></p>\n');
   
+  % evaluate model
+  if isempty(data)
+    qh=linspace(0.01,.5,20);qk=qh; ql=qh; w=linspace(0.01,100,51);
+    data=iData(object,[],qh,qk,ql,w);
+  end
+  
   % DOS
   if isfield(options, 'dos') && options.dos && isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
-    fprintf(fid, '<h3>The vibrational density of states (vDOS)</h3>\n');
+    fprintf(fid, '<h3><a name="dos"></a>The vibrational density of states (vDOS)</h3>\n');
     fprintf(fid, 'The phonon spectrum is shown below:<br>\n');
     save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.png'), 'png');
     save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.dat'));
+    save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.svg'));
+    save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.pdf'));
     save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.fig'));
     save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.h5'));
     fprintf(fid, '<div style="text-align: center;">\n');
     fprintf(fid, '<img src="%s" title="%s" align="middle"></div><br>\n', 'Phonons_DOS.png', 'Phonons_DOS.png');
     fprintf(fid, '<p>and is available as:<br><ul>\n');
-    fprintf(fid, '<li>[ <a href="%s">%s</a> ] is a flat text file which contains axes and the 4D data set. You will have to reshape the matrix after reading the contents.</li>\n', 'Phonons_DOS.dat', 'Phonons_DOS.dat');
+    fprintf(fid, '<li>[ <a href="%s">%s</a> ] is a flat text file which contains the vDOS data set.</li>\n', 'Phonons_DOS.dat', 'Phonons_DOS.dat');
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons_DOS.h5', 'Phonons_DOS.h5');
-    fprintf(fid, '<li>[ <a href="%s">%s</a> ] a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons_DOS.fig', 'Phonons_DOS.fig');
+    fprintf(fid, '<li>[ <a href="%s">%s</a> ] a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>. Use </i>set(gcf,''visible'',''on'')</i> after loading.</li>\n', 'Phonons_DOS.fig', 'Phonons_DOS.fig');
+    fprintf(fid, '<li>[ <a href="%s">%s</a> ] an Adobe PDF, to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>.</li>\n', 'Phonons_DOS.pdf', 'Phonons_DOS.pdf');
+    fprintf(fid, '<li>[ <a href="%s">%s</a> ] a Scalable Vector Graphics figure, to be viewed with <a href="http://inkscape.org/">InkScape</a> or <a href="http://www.gimp.org/">GIMP</a>.</li>\n', 'Phonons_DOS.svg', 'Phonons_DOS.svg');
     fprintf(fid, '</ul></p>\n');
   end
   
-  
   % append evaluated plots and link to data sets (VTK, MCR, images, ...)
-  fprintf(fid, '<h3>Evaluating the Phonon dispersion Model onto a grid</h3>\n');
-  if isempty(data)
-    qh=linspace(0.01,.5,20);qk=qh; ql=qh; w=linspace(0.01,100,51);
-    data=iData(object,[],qh,qk,ql,w);
-  end
+  fprintf(fid, '<h3><a name="grid4d"></a>Evaluated Phonon dispersion Model onto a grid (4D)</h3>\n');
   Phonons_HKLE = data;
   builtin('save', fullfile(options.target, 'Phonons_HKLE.mat'), 'Phonons_HKLE');
   saveas(Phonons_HKLE, fullfile(options.target, 'Phonons_HKLE.dat'));
@@ -190,8 +205,11 @@ case 'plot'
   fprintf(fid, '<ul><li>load(''<a href="%s">%s</a>'') <i>%% loads the 4D Phonons_HKLE iData object</i></li>\n', 'Phonons_HKLE.mat', 'Phonons_HKLE.mat');
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] is a flat text file which contains axes and the 4D data set. You will have to reshape the matrix after reading the contents.</li>\n', 'Phonons_HKLE.dat', 'Phonons_HKLE.dat');
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>.</li></ul></p>\n', 'Phonons_HKLE.h5', 'Phonons_HKLE.h5');
-  fprintf(fid, '<p>In order to view this 4D data set, we represent it on the QH~0 plane as a 3D volume data set. The intensity level is set as log10[S(QH,QK,QL,w)].<br>\n');
+  
   x=data{1};
+  fprintf(fid, '<h3><a name="grid3d"></a>Evaluated Phonon dispersion Model onto a grid (3D, QH=%g)</h3>\n', x(1));
+  fprintf(fid, '<p>In order to view this 4D data set, we represent it on the QH~0 plane as a 3D volume data set. The intensity level is set as log10[S(QH=%g,QK,QL,w)].<br>\n', x(1));
+  
   fprintf(fid, '<ul><li>qh=%g (QH in rlu)</li>\n', x(1)); % axis1
   fprintf(fid, '<li>qk=[%g:%g] with %i values (QK in rlu)</li>\n', xlim(data), size(data,2));     % axis2
   fprintf(fid, '<li>ql=[%g:%g] with %i values (QL in rlu)</li>\n', zlim(data), size(data,3));
@@ -203,6 +221,7 @@ case 'plot'
   saveas(data, fullfile(options.target, 'Phonons3D.vtk'));
   saveas(data, fullfile(options.target, 'Phonons3D.mrc'));
   saveas(data, fullfile(options.target, 'Phonons3D.dat'));
+  saveas(data, fullfile(options.target, 'Phonons3D.pdf'), 'pdf', 'plot3 tight');
   saveas(data, fullfile(options.target, 'Phonons3D.h5'), 'mantid');
   % modify aspect ratio to fit in a cube
   data{1}=linspace(0,1,size(data,1));
@@ -215,7 +234,8 @@ case 'plot'
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] electron density map format (MRC) which can be viewed with PyMol, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>.</li>\n', 'Phonons3D.mrc', 'Phonons3D.mrc');
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] a flat text file which contains axes and the 3D data set. You will have to reshape the matrix after reading the contents.</li>\n', 'Phonons3D.dat', 'Phonons3D.dat');
   fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>  or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons3D.h5', 'Phonons3D.h5');
-  fprintf(fid, '<li>[ <a href="%s">%s</a> ] a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons3D.fig', 'Phonons3D.fig');
+  fprintf(fid, '<li>[ <a href="%s">%s</a> ] a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>. Use </i>set(gcf,''visible'',''on'')</i> after loading.</li>\n', 'Phonons3D.fig', 'Phonons3D.fig');
+  fprintf(fid, '<li>[ <a href="%s">%s</a> ] an Adobe PDF, to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>.</li>\n', 'Phonons3D.pdf', 'Phonons3D.pdf');
   fprintf(fid, '</ul></p>\n');
   
   fprintf(fid, 'Here is a representations of the 3D data set<br>\n');
@@ -248,13 +268,23 @@ case 'error'
   fprintf(fid, [ mfilename ' ' options.configuration ' ' options.calculator ' <b>FAILED</b><br>' ]);
   sqw_phonons_htmlreport(filename, 'end');
 case 'end'
+  % create ZIP of document
+  zip(options.target, options.target);
+  fprintf(fid, '<h2><a name="zip">Download</h2>\n');
+  fprintf(fid, 'You can download the whole content of this report (data, plots, ...) from<br>\n');
+  fprintf(fid, '<ul><li><a href="%s">%s</a></li></ul>', [ options.target '.zip' ], [ options.target '.zip' ]);
+  
   % close HTML document
   fprintf(fid, '<hr>Date: %s.<br>\n', datestr(now));
   fprintf(fid, 'Powdered by <a href="http://ifit.mccode.org">iFit</a> E. Farhi (c) 2016.\n');
+  
+  % create ZIP of document
+  zip(options.target, options.target);
+  
   if isdeployed || ~usejava('jvm') || ~usejava('desktop')
     disp([ 'HTML report created in ' options.target ]);
   else
-    disp([ 'HTML report created in <a href="' fullfile(options.target,'index.html') '">' options.target '</a>' ]);
+    disp([ 'HTML report created as <a href="' fullfile(options.target,'index.html') '">' fullfile(options.target,'index.html') '</a>' ]);
   end
 end
 
