@@ -1,5 +1,5 @@
-function frame = getframe(a, dim)
-% frame = getframe(s, dim) : create an iData object thumbnail/frame matrix
+function frame = getframe(a, dim, options)
+% frame = getframe(s, dim, options) : create an iData object thumbnail/frame matrix
 %
 %   @iData/getframe function to create iData frames/thumbnails.
 %   Such thumbnails may be used to create icons on GUIs
@@ -8,6 +8,7 @@ function frame = getframe(a, dim)
 % input:  s:   object or array (iData)
 %         dim: dimension of the thumbnail. When specified, the frame has no labels, ticks, ...
 %              to serve as a thumbnail
+%         options: specific plot options, default is 'axis tight'
 %
 % output: frame: frame/thumbnail
 % ex:     f=getframe(a); image(f.cdata);
@@ -16,6 +17,7 @@ function frame = getframe(a, dim)
 % See also iData, iData/plot, getframe, image, imwrite
 
 if nargin < 2, dim=0; end
+if nargin < 3, options=''; end
 if numel(a) > 1
   frame = cell(size(a));
   parfor index=1:numel(a)
@@ -50,7 +52,7 @@ if dim
 end
 
 % plot the data
-plot(a); 
+plot(a, options); 
 if ndims(a) <= 2, view(2); end
 drawnow
 if dim
