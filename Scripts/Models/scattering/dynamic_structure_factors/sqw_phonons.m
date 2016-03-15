@@ -32,6 +32,15 @@ function signal=sqw_phonons(configuration, varargin)
 %     computed during the first evaluation, and is stored in model.UserData.DOS 
 %     as an iData object. Subsequent evaluations are faster.
 %
+%   Benchmarks indicate that, for phonon dispersions:
+%   * QuantumEspresso is the fastest, with excellent parallelization and accuracy.
+%   * ABINIT, VASP are also fast codes.
+%   * Using k-points=3 is both fast and ensures a reasonable accuracy in phonons
+%   * Phonon dispersions are not too sensitive on the energy cut-off. 340 eV is good.
+%   * Elk and ABINIT can not handle large supercells without recompiling.
+%   * NWChem and Elk are not sensitive to the energy cut-off.
+%   * The all-electrons Elk code is about 10 times slower than QuantumEspresso.
+%
 % The arguments for the model creation should be:
 %
 % configuration: file name to an existing material configuration
@@ -61,7 +70,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     density of states (vDOS) in UserData.DOS
 %   options.potentials=string              Basis datasets or pseudopotentials.
 %     NWChem: see http://www.nwchem-sw.org/index.php/Release64:AvailableBasisSets
-%       e.g. 'ANO-RCC' 'ANO-RCC' 
+%       e.g. 'ANO-RCC'
 %     Dacapo: path to potentials, e.g. /usr/share/dacapo-psp       (DACAPOPATH)
 %     Elk:    path to potentials, e.g. /usr/share/elk-lapw/species (ELK_SPECIES_PATH)
 %     ABINIT: path to potentials, e.g. /usr/share/abinit/psp/      (ABINIT_PP_PATH)
@@ -742,7 +751,7 @@ case 'VASP'
   end
 
   decl = 'from ase.calculators.vasp import Vasp';
-  calc = 'calc = Vasp(isym=0, prec="Normal", lreal="A" ';
+  calc = 'calc = Vasp(isym=0, prec="Accurate", lreal="A", ibrion=2, nsw=5 ';
   % prec: Low, Normal, Accurate
   % algo: Normal (Davidson) | Fast | Very_Fast (RMM-DIIS)
   % ibrion
@@ -882,7 +891,11 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
 
   % call python script with calculator
   cd(target)
-  disp([ mfilename ': creating Phonon/ASE model in ' target ]);
+  if ~isdeployed && usejava('jvm') && usejava('desktop')
+    disp([ mfilename ': creating Phonon/ASE model in <a href="' target '">' target '</a>' ]);
+  else
+    disp([ mfilename ': creating Phonon/ASE model in ' target ]);
+  end
   disp([ '  ' configuration ]);
   disp([ '  ' calc ]);
 
@@ -938,6 +951,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   if isfield(options,'dos') && options.dos, signal.UserData.DOS=[]; end
   signal.UserData.dir           = target;
   signal.UserData.options       = options;
+  signal.UserData.calc          = calc;
 
   % EVAL stage: we call ASE to build the model. ASE does not support single HKL location. 
   % For this case we duplicate xyz and then get only the 1st FREQ line
