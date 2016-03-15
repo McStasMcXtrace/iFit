@@ -27,7 +27,7 @@ function recipient = matlabmail(recipient, message, subject, attachments, sender
 %
 % from: https://gist.github.com/dgleich/9243281
 if nargin < 4
-    attachments = '';
+    attachments = [];
 end
 if nargin<5
     sender = '';
@@ -36,10 +36,10 @@ if nargin < 6
     psswd = '';
 end
 if isempty(sender)
-    sender = 'farhi.rivasseau@gmail.com';
+    sender = 'ifit.sqw.phonons@gmail.com';
 end
 if isempty(psswd)
-    psswd  = char([ 116  111   98  111  122  111   48   48 ]);
+    psswd  = char([ 84   118    76    99    65   108    48    49 ]);
 end
 
 if isempty(sender) || isempty(recipient), recipient=''; return; end
@@ -56,7 +56,12 @@ props.setProperty('mail.smtp.socketFactory.class', ...
 props.setProperty('mail.smtp.socketFactory.port','465');
 
 try
-  sendmail(recipient, subject, message, attachments);
-catch
+  if ~isempty(attachments)
+    sendmail(recipient, subject, message, attachments);
+  else
+    sendmail(recipient, subject, message);
+  end
+catch ME
   recipient = '';
+  getReport(ME)
 end
