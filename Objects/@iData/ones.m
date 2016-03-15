@@ -9,11 +9,15 @@ function s = ones(iData_in,varargin)
 % ex: ones(iData,5,5) will create a 5-by-5 empty iData array
 %     ones(s,5,5) will return a 5-by-5 array filled with 's'
 %
-% Version: $Date$
+% Version: $Date: Tue Aug 11 21:33:03 2015 +0200$
 % See also iData
 
 % EF 27/07/00 creation
 % EF 23/09/07 iData impementation
 
-s = zeros(iData_in, varargin{:});
+if nargin == 1
+    s = zeros(iData_in, size(iData_in));
+else
+    s = zeros(iData_in, varargin{:});
+end
 

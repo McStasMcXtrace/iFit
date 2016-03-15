@@ -8,7 +8,6 @@ if numel(in) > 1
   return
 end
 
-if isempty(in), in=iData; return; end
 if iscell(in), in = in{1}; end
 
 % update ModifDate

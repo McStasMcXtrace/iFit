@@ -57,12 +57,14 @@ for i = 1:length(S)     % can handle multiple index levels
       else
         b = [];
       end
-    elseif strcmp(fieldname, 'p')               % b.p
+    elseif strcmpi(fieldname, 'p')               % b.p
       if ~isempty(b.ParameterValues)
         b = b.ParameterValues;
       else
         b = [];
       end
+    elseif strcmpi(fieldname, 'Title')           % b.Name
+      b = b.Name;
     elseif ismethod(b, fieldname)
       if i == length(S)
         if nargout(fieldname) ==0
