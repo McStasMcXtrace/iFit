@@ -1,7 +1,8 @@
 function sqw_phonons_htmlreport(filename, step, options, data, object)
 
 
-% set global stuff for the HTML report and email services
+% set global stuff and compute for the HTML report and email services
+
 % ================================ SETTINGS ====================================
 if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
   switch step
@@ -141,13 +142,14 @@ if ~isempty(options.email)
     [ 'Time elapsed: ' num2str(options.duration) '[s]' ], ...
     [ 'Location:     ' options.target ], ...
     [ 'Atom/molecule configuration: ' options.configuration ], ...
-    [ 'Calculator configuration:    ' options.calculator ] };
+    [ 'Calculator configuration:    ' options.calculator ], ...
+      '', 'The results are contained in the attached .zip file' };
     
     toadd = { options.configuration, ...
       fullfile(options.target, 'Phonons_Model.mat'), ...
-      fullfile(options.target, 'Phonons_DOS.h5'), fullfile(options.target, 'Phonons_DOS.png'), ...
-      fullfile(options.target, 'Phonons_HKLE.h5'), ...
-      fullfile(options.target, 'Phonons3D.png') };
+      fullfile(options.target, 'Phonons_DOS.svg'), fullfile(options.target, 'Phonons_DOS.png'), ...
+      fullfile(options.target, 'Phonons3D.png'),
+      [ options.target '.zip' ] };
     attachments = {};
     for index=1:numel(toadd)
       if ~isempty(dir(toadd{index})), attachments{end+1} = toadd{index}; end
@@ -370,13 +372,18 @@ if options.htmlreport && ~isempty(filename)
     % create ZIP of document
     zip(options.target, options.target);
     fprintf(fid, '<h2><a name="zip">Download</h2>\n');
-    fprintf(fid, 'You can download the whole content of this report (data, plots, ...) from<br>\n');
+    fprintf(fid, 'You can download the whole content of this report (data, plots, logs, ...) from<br>\n');
     fprintf(fid, '<ul><li><a href="%s">%s</a></li></ul>', [ options.target '.zip' ], [ options.target '.zip' ]);
     fprintf(fid, 'You should then open the "index.html" file therein with a browser (Firefox, Chrome...)<br>\n');
     
     % close HTML document
     fprintf(fid, '<hr>Date: %s.<br>\n', datestr(now));
     fprintf(fid, 'Powdered by <a href="http://ifit.mccode.org">iFit</a> E. Farhi (c) 2016.\n');
+    
+    % create a simple README file
+    freadme = fopen(fullfile(options.target,'README.txt'),'w');
+    fprintf(freadme, 'Open the index.html file in this directory. It contains all you need.\n');
+    fclose(freadme);
     
     % create ZIP of document
     zip(options.target, options.target);
