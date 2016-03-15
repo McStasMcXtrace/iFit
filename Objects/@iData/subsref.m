@@ -9,7 +9,7 @@ function b = subsref(a,S)
 %     iData(model)
 %     iData(mode, p)  uses given parameters
 %
-% Version: $Date$
+% Version: $Date: Fri Mar 11 18:23:19 2016 +0100$
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines
@@ -207,6 +207,8 @@ for i = 1:length(S)     % can handle multiple index levels
       b = getalias(b);
     elseif any(strcmpi(fieldname, 'axis'))
       b = getaxis(b);
+    elseif any(strcmpi(fieldname, 'name'))
+      b = char(b);
     elseif ~isempty(index) % structure/class def fields: b.field
       b = b.(f{index(1)});
       if isnumeric(b) && any(strcmpi(fieldname, {'Date','ModificationDate'}))
