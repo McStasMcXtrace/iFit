@@ -59,6 +59,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     end
     
   case 'plot'
+    disp([ 'sqw_phonons: Evaluating phonon dispersions and generating plots in ' options.target ]);
     Phonons_Model = object;
     builtin('save', fullfile(options.target, 'Phonons_Model.mat'), 'Phonons_Model');
     
@@ -93,91 +94,21 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     saveas(data1, fullfile(options.target, 'Phonons3D.dat'));
     saveas(data1, fullfile(options.target, 'Phonons3D.pdf'), 'pdf', 'plot3 tight');
     saveas(data1, fullfile(options.target, 'Phonons3D.h5'), 'mantid');
-    % modify aspect ratio to fit in a cube
+    
+    % determines is the phonons have negative values.
+    data2=data(1, :,:,1); % w=0
+    xlim(data2, [0 0.5]);
+    ylim(data2, [0 0.5]);
+    
+    % modify aspect ratio to fit in a cube for X3D
     data1{1}=linspace(0,1,size(data1,1));
     data1{2}=linspace(0,1,size(data1,2));
     data1{3}=linspace(0,1,size(data1,3));
-    
+  case 'end'
+    % create ZIP of document
+    zip(options.target, options.target);
   end
 end
-
-% ================================ EMAIL ========================================
-if ~isempty(options.email)
-  switch step
-  case 'init'
-    if ~isempty(dir(options.configuration))
-      file = fileread(options.configuration);
-    else
-      file = options.configuration;
-    end
-    % send configuration, calculator configuration, date, location of data
-    subject = [ 'iFit:sqw_phonon: started ' options.calculator ' ' options.configuration ];
-    
-    message = { [ 'Hello ' options.email ], ...
-      'You receive this message to indicate that you have launched a phonon dispersion computation', ...
-      'using the iFit sqw_phonons Model.', ' ', ...
-      'Status:     STARTED', ...
-    [ 'Start Date: ' datestr(now) ], ...
-    [ 'Location:   ' options.target ], ...
-    [ 'Atom/molecule configuration: ' options.configuration ], ...
-    [ 'Calculator configuration:    ' options.calculator ' ' link ], ...
-      data };
-      
-    toadd = { fullfile(options.target,'configuration.png'), options.configuration };
-    attachments = {};
-    for index=1:numel(toadd)
-      if ~isempty(dir(toadd{index})), attachments{end+1} = toadd{index}; end
-    end
-      
-    matlabmail(options.email, message, subject, attachments);
-  case 'plot'
-    % send final results (success, error)
-    subject = [ 'iFit:sqw_phonon: ended ' options.calculator ' ' options.configuration ];
-    
-    message = { [ 'Hello ' options.email ], ...
-      'You receive this message to indicate that a phonon dispersion computation', ...
-      'using the iFit sqw_phonons Model has just ended successfully.', ' ', ...
-      'Status:       SUCCESS', ...
-    [ 'End Date:     ' datestr(now) ], ...
-    [ 'Time elapsed: ' num2str(options.duration) '[s]' ], ...
-    [ 'Location:     ' options.target ], ...
-    [ 'Atom/molecule configuration: ' options.configuration ], ...
-    [ 'Calculator configuration:    ' options.calculator ], ...
-      '', 'The results are contained in the attached .zip file' };
-    
-    toadd = { options.configuration, ...
-      fullfile(options.target, 'Phonons_Model.mat'), ...
-      fullfile(options.target, 'Phonons_DOS.svg'), fullfile(options.target, 'Phonons_DOS.png'), ...
-      fullfile(options.target, 'Phonons3D.png'),
-      [ options.target '.zip' ] };
-    attachments = {};
-    for index=1:numel(toadd)
-      if ~isempty(dir(toadd{index})), attachments{end+1} = toadd{index}; end
-    end
-    
-    
-    matlabmail(options.email, message, subject, attachments);
-  case 'error'
-    subject = [ 'iFit:sqw_phonon: FAILED ' options.calculator ' ' options.configuration ];
-    
-    message = { [ 'Hello ' options.email ], ...
-      'You receive this message to indicate that a phonon dispersion computation', ...
-      'using the iFit sqw_phonons Model has failed.', ' ', ...
-      'Status:       FAILED', ...
-    [ 'End Date:     ' datestr(now) ], ...
-    [ 'Location:   ' options.target ], ...
-    [ 'Atom/molecule configuration: ' options.configuration ], ...
-    [ 'Calculator configuration:    ' options.calculator ], ' ', data };
-    
-    toadd = { fullfile(options.target,'configuration.png'), options.configuration };
-    attachments = {};
-    for index=1:numel(toadd)
-      if ~isempty(dir(toadd{index})), attachments{end+1} = toadd{index}; end
-    end
-    
-    matlabmail(options.email, message, subject);
-  end
-end % EMAIL
 
 
 
@@ -222,7 +153,7 @@ if options.htmlreport && ~isempty(filename)
     
     % introduction
     fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions in a single crystal, using a DFT code (the "calculator") in the background. From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
-    fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <b>sqw_phonon</b> Model, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomistic Simulation Environment (ASE)</a>.\n');
+    fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <a href="http://ifit.mccmode.org/Models.html#mozTocId990577"<b>sqw_phonon</b> Model</a>, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomistic Simulation Environment (ASE)</a>.\n');
     fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends successfully, the lower part presents the dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic vibrational modes.</p>\n');
     fprintf(fid, '<p><b>Limitations:</b> These results only display the vibrational mode energies, and does not compute the actual intensity. The accuracy of the model depends on the parameters used for the computation, e.g. energy cut-off, k-points grid, smearing, ...</p>\n');
 
@@ -272,7 +203,7 @@ if options.htmlreport && ~isempty(filename)
   case 'done'
     % indicate evaluated model, and print grid used
     fprintf(fid, '<h2>Computation completed</h2>\n');
-    fprintf(fid, '<div style="text-align: center;"><b>WELL DONE</b></div><br><p>The computation has performed correctly. The forces and dynamical matrix of the lattice vibrations has been determined.</p>\n');
+    fprintf(fid, '<div style="text-align: center; color:#0000FF"><b>WELL DONE</b></div><br><p>The computation has performed correctly. The forces and dynamical matrix of the lattice vibrations have been determined.</p>\n');
     fprintf(fid, 'End Date: %s.<br>\n', datestr(now));
     fprintf(fid, 'Time elapsed: %g [s]<br>\n', options.duration);
     fprintf(fid, 'Please cite:<br><pre>');
@@ -282,6 +213,10 @@ if options.htmlreport && ~isempty(filename)
   case 'plot'
     % present the final object
     fprintf(fid, '<h2><a name="results"></a>Results</h2>\n');
+    if std(data2, 1) > 0.05 || std(data2, 2) > 0.05
+      fprintf(fid, '<div style="color:#FF0000"><b>WARNING: The phonon dispersions seem to present unstable modes outside Bragg peaks. Be cautious when using this data.</b></div></br>\n');
+      fprintf(fid, 'You may increase the k-points mesh, the supercell size, the energy cut-off, change the pseudo-potentials. Expect longer computation times.</br>\n');
+    end
    
     fprintf(fid, '<h3><a name="model"></a>The Phonon dispersion Model</h3>\n');
     fprintf(fid, '<p>The results are stored into a 4D <a href="http://ifit.mccode.org/iFunc.html">iFunc</a> object containing the dynamical matrix. This is a Matlab workspace (MAT-file).');
@@ -290,9 +225,7 @@ if options.htmlreport && ~isempty(filename)
     fprintf(fid, 'Load the Model under <a href="http://ifit.mccode.org">Matlab/iFit</a> with (this also works with the <a href="http://ifit.mccode.org/Install.html">standalone version of iFit</a> which does <b>not</b> require any Matlab license and installs on most systems): <ul><li>load(''<a href="%s">%s</a>'') <i>%% creates a "Phonons" iFunc Model</i></li></ul>\n', 'Phonons_Model.mat', 'Phonons_Model.mat');
     fprintf(fid, 'Define axes for the evaluation grid in 4D, for instance:<ul><li>qh=linspace(0.01,.5,50); qk=qh; ql=qh; w=linspace(0.01,50,51);</li></ul>\n');
     fprintf(fid, 'Evaluate the Phonons as an <a href="http://ifit.mccode.org/iData.html">iData</a> object under Matlab/iFit with: <ul><li>iData(Phonons_Model, [], qh, qk, ql, w) <i>%% evaluates the "Phonons" onto the grid, with default parameters, and return an iData object</i></li></ul></p>\n');
-    
-    
-    
+
     % DOS
     if isfield(options, 'dos') && options.dos && isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
       fprintf(fid, '<h3><a name="dos"></a>The vibrational density of states (vDOS)</h3>\n');
@@ -369,8 +302,7 @@ if options.htmlreport && ~isempty(filename)
     fprintf(fid, [ mfilename ' ' options.configuration ' ' options.calculator ' <b>FAILED</b><br>' ]);
     sqw_phonons_htmlreport(filename, 'end', options);
   case 'end'
-    % create ZIP of document
-    zip(options.target, options.target);
+    
     fprintf(fid, '<h2><a name="zip">Download</h2>\n');
     fprintf(fid, 'You can download the whole content of this report (data, plots, logs, ...) from<br>\n');
     fprintf(fid, '<ul><li><a href="%s">%s</a></li></ul>', [ options.target '.zip' ], [ options.target '.zip' ]);
@@ -378,23 +310,108 @@ if options.htmlreport && ~isempty(filename)
     
     % close HTML document
     fprintf(fid, '<hr>Date: %s.<br>\n', datestr(now));
-    fprintf(fid, 'Powdered by <a href="http://ifit.mccode.org">iFit</a> E. Farhi (c) 2016.\n');
+    fprintf(fid, 'Powdered by <a href="http://ifit.mccode.org">iFit</a> E. Farhi (c) 2016.\n</body></html>');
     
     % create a simple README file
     freadme = fopen(fullfile(options.target,'README.txt'),'w');
     fprintf(freadme, 'Open the index.html file in this directory. It contains all you need.\n');
     fclose(freadme);
     
-    % create ZIP of document
-    zip(options.target, options.target);
-    
     if isdeployed || ~usejava('jvm') || ~usejava('desktop')
-      disp([ 'HTML report created in ' options.target ]);
+      disp([ 'sqw_phonons: HTML report created as ' fullfile(options.target,'index.html') ]);
     else
-      disp([ 'HTML report created as <a href="' fullfile(options.target,'index.html') '">' fullfile(options.target,'index.html') '</a>' ]);
+      disp([ 'sqw_phonons: HTML report created as <a href="' fullfile(options.target,'index.html') '">' fullfile(options.target,'index.html') '</a>' ]);
     end
   end
 
   fclose(fid);
 end % HTML report
+
+% ================================ EMAIL ========================================
+if ~isempty(options.email)
+  switch step
+  case 'init'
+    if ~isempty(dir(options.configuration))
+      file = fileread(options.configuration);
+    else
+      file = options.configuration;
+    end
+    % send configuration, calculator configuration, date, location of data
+    subject = [ 'iFit:sqw_phonon: started ' options.calculator ' ' options.configuration ];
+    
+    message = { [ 'Hello ' options.email ], ...
+      'You receive this message to indicate that you have launched a phonon dispersion computation', ...
+      'using the iFit sqw_phonons Model.', ' ', ...
+      'Status:     STARTED', ...
+    [ 'Start Date: ' datestr(now) ], ...
+    [ 'Location:   ' options.target ], ...
+    [ 'Atom/molecule configuration: ' options.configuration ], ...
+    [ 'Calculator configuration:    ' options.calculator ' ' link ], ...
+      data };
+      
+    toadd = { fullfile(options.target,'configuration.png'), options.configuration };
+    attachments = {};
+    for index=1:numel(toadd)
+      if ~isempty(dir(toadd{index})), attachments{end+1} = toadd{index}; end
+    end
+      
+    matlabmail(options.email, message, subject, attachments);
+  case 'end'
+    
+    % send final results (success, error)
+    subject = [ 'iFit:sqw_phonon: ended ' options.calculator ' ' options.configuration ];
+    
+    if std(data2, 1) > 0.05 || std(data2, 2) > 0.05
+      warn = 'WARNING: The phonon dispersions seem to present unstable modes outside Bragg peaks. Be cautious when using this data. You may increase the k-points mesh, the supercell size, the energy cut-off, change the pseudo-potentials. Expect longer computation times.';
+    else
+      warn = 'The phonon dispersions seem OK.';
+    end
+    
+    message = { [ 'Hello ' options.email ], ...
+      'You receive this message to indicate that a phonon dispersion computation', ...
+      'using the iFit sqw_phonons Model has just ended successfully.', ' ', ...
+      'Status:       SUCCESS', ...
+    [ 'End Date:     ' datestr(now) ], ...
+    [ 'Time elapsed: ' num2str(options.duration) '[s]' ], ...
+    [ 'Location:     ' options.target ], ...
+    [ 'Atom/molecule configuration: ' options.configuration ], ...
+    [ 'Calculator configuration:    ' options.calculator ], ...
+      '', warn, '', 'The results are contained in the attached .zip file.' };
+    
+    toadd = { options.configuration, ...
+      fullfile(options.target, 'Phonons_Model.mat'), ...
+      fullfile(options.target, 'Phonons_DOS.svg'), fullfile(options.target, 'Phonons_DOS.png'), ...
+      fullfile(options.target, 'Phonons3D.png'), ...
+      [ options.target '.zip' ] };
+    attachments = {};
+    for index=1:numel(toadd)
+      if ~isempty(dir(toadd{index})), attachments{end+1} = toadd{index}; end
+    end
+    
+    
+    res = matlabmail(options.email, message, subject, attachments);
+    if ~isempty(res)
+      disp([ 'sqw_phonons: Message sent to ' options.email ]);
+    end
+  case 'error'
+    subject = [ 'iFit:sqw_phonon: FAILED ' options.calculator ' ' options.configuration ];
+    
+    message = { [ 'Hello ' options.email ], ...
+      'You receive this message to indicate that a phonon dispersion computation', ...
+      'using the iFit sqw_phonons Model has failed.', ' ', ...
+      'Status:       FAILED', ...
+    [ 'End Date:     ' datestr(now) ], ...
+    [ 'Location:   ' options.target ], ...
+    [ 'Atom/molecule configuration: ' options.configuration ], ...
+    [ 'Calculator configuration:    ' options.calculator ], ' ', data };
+    
+    toadd = { fullfile(options.target,'configuration.png'), options.configuration };
+    attachments = {};
+    for index=1:numel(toadd)
+      if ~isempty(dir(toadd{index})), attachments{end+1} = toadd{index}; end
+    end
+    
+    matlabmail(options.email, message, subject);
+  end
+end % EMAIL
 
