@@ -884,7 +884,8 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   end
   if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
   if st ~= 0
-    disp([ mfilename ': failed read input ' ...
+    disp(read0)
+    sqw_phonons_error([ mfilename ': failed read input ' ...
       configuration ], options);
   end
   sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, calc);
