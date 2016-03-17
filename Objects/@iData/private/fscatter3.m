@@ -100,7 +100,7 @@ for j = 1:numclass
     if filled == 2
       h(k) = plot3(X(jj),Y(jj),Z(jj),'o','color',col(j,:), ...
 		 'markersize',marker/2);
-	  else
+    else
       h(k) = plot3(X(jj),Y(jj),Z(jj),'.','color',col(j,:), ...
 		 'markersize',marker);
 	  end
