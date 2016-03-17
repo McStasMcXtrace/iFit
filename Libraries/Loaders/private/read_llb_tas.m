@@ -31,7 +31,8 @@ data.title = deblank(fread(fid, 80, '*char')');
 
 if any(~isstrprop(data.title,'print'))
   fclose(fid);
-  error([ mfilename ': ' filename ': ERROR: the title format is not valid. Probably not an LLB/TAS file format.' ])
+  disp([ mfilename ': ' filename ': ERROR: the title format is not valid. Probably not an LLB/TAS file format.' ])
+  return
 end
 
 % the first letter of the filename indicates its type:

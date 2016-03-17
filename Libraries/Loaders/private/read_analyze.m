@@ -9,7 +9,13 @@ function Analyze = read_analyze(filename)
 % Adapted from ReadAnalyzeHdr and ReadAnalyzeImg by Claus Svarer <csvarer@nru.dk>
 %
 
-hdr = ReadAnalyzeHdr(filename);
+Analyze = [];
+
+try
+  hdr = ReadAnalyzeHdr(filename);
+catch
+  return
+end
 img = reshape(ReadAnalyzeImg([hdr.name '.img']),hdr.dim');
 
 Analyze.hdr=hdr;
