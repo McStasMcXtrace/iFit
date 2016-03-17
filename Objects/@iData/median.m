@@ -23,7 +23,7 @@ if numel(a) > 1
   return
 end
 
-s=iData_private_cleannaninf(get(a,'Signal'));
+s=iData_private_cleannaninf(getaxis(a,'Signal'));
 [link, label]          = getalias(a, 'Signal');
 cmd=a.Command;
 b=copyobj(a);

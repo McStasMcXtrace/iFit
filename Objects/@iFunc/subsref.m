@@ -49,7 +49,7 @@ for i = 1:length(S)     % can handle multiple index levels
       if isnumeric(b) && strcmpi(fieldname, 'Date')
         b = datestr(b);
       end
-    elseif isfield(b, 'Parameters') && any(strcmp(fieldname, strtok(b.Parameters))) % b.<parameter name>
+    elseif (isa(b,'iFunc') || isfield(b, 'Parameters')) && any(strcmp(fieldname, strtok(b.Parameters))) % b.<parameter name>
       index=find(strcmp(fieldname, strtok(b.Parameters)));
       if index <= length(b.ParameterValues) % last parameter value used
         b = b.ParameterValues;

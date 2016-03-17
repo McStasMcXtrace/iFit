@@ -116,6 +116,7 @@ else  % convert input argument into object
         end
       end
     end
+
     % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes in Signal
     if ndims(out)>=2 && isvector(getaxis(out, 1)) && isvector(getaxis(out, 2)) ...
                 && length(getaxis(out, 1)) == size(get(out,'Signal'),2) ...
@@ -124,6 +125,7 @@ else  % convert input argument into object
       s=get(out,'Signal'); out = set(out, 'Signal', s'); clear s
       disp([ 'iData: The Signal has been transposed to match the axes orientation in object ' out.Tag ' "' out.Title '".' ]);
     end
+    
     if ~isempty(inputname(index))
         out.Label=[ inputname(index) ' (' class(varargin{index}) ')' ];
         out = label(out, 0, inputname(index));
@@ -160,7 +162,7 @@ else  % convert input argument into object
     for n_in = 1:numel(in)  % handle array of iFunc
       if numel(in) == 1, this_in = in;
       else               this_in = in(n_in); end
-      [signal, ax, name] = feval(this_in, varargin{2}, axes_in{:});
+      [signal, ax, name] = feval(this_in, varargin{2:end});
       if length(signal) == length(this_in.Parameters)
         [signal, ax, name] = feval(this_in, signal, axes_in{:});
       end
@@ -168,9 +170,9 @@ else  % convert input argument into object
           iData_private_warning(mfilename, [ ': iFunc evaluation failed (empty value). Check axes and parameters.' ]);
           return; 
       end
-      % swap xy to cope with iData(x,y,z) syntax
-      % if numel(ax) >=2, ax(1:2) = ax([ 2 1]); end
-      % assign axes values
+      
+      % create iData object from signal and axes
+      if isempty(axes_in) && ~isempty(ax), axes_in=ax; end
       this_out = iData(axes_in{:}, signal); % make it an iData
 
       % assign axes names

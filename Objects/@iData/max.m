@@ -41,7 +41,7 @@ end
 
 % return a scalar for max(a)
 if isempty(b) && isempty(dim)
-  m = get(a, 'Signal');
+  m = getaxis(a, 'Signal');
   [m,id] = max(m(:));
   return
 end
@@ -57,7 +57,7 @@ else
 % handle iData and scalar/vector/matrix min/max
   m = copyobj(a);
   if isempty(dim) || ~isempty(b)
-    y = max(get(a,'Signal'), b);
+    y = max(getaxis(a,'Signal'), b);
     id=[];
     set(m, 'Signal', y);
   else
@@ -70,7 +70,7 @@ else
         ax_index = ax_index+1;
       end
     end
-    [y,id] = max(get(a,'Signal'), [], dim);
+    [y,id] = max(getaxis(a,'Signal'), [], dim);
     set(m, 'Signal', y, [mfilename ' of ' label(a) ]);     % Store Signal
   end
 end

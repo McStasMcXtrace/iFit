@@ -127,6 +127,7 @@ for index=1:length(names) % loop on alias names
      (~isempty(name) && name(1) == '#') )
     continue;
   end
+
   alias_num   = find(strcmpi(name, this.Alias.Names)); % usually a single match
   if isempty(link) && any(alias_num <= 3) 
     % set Signal, Error, Monitor to empty (default)
@@ -165,6 +166,8 @@ this = iData_private_history(this, mfilename, this, name, link, label);
 if nargout == 0 && ~isempty(inputname(1))
   assignin('caller',inputname(1),this);
 end
+
+% -------------------------------------------------------------------------
 
 function str=validstr(str)
   % validate a string as a single line
