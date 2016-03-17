@@ -46,13 +46,16 @@ function signal=sqw_phonons(configuration, varargin)
 % configuration: file name to an existing material configuration
 %   Any A.S.E supported format can be used (POSCAR, CIF, SHELX, PDB, ...). 
 %     See <https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io>
-%   Alternatively, the 'bulk','molecule', and 'nanotube' ASE constructors can be
+%   Alternatively, the 'bulk','molecule', 'crystal', and 'nanotube' ASE constructors can be
 %   used, using the Python syntax, e.g. 
 %       'bulk("Si", "diamond", a=5.4)'
 %       'bulk("Cu", "fcc", a=3.6, cubic=True)'
 %       'molecule("H2O")'
 %       'nanotube(6, 0, length=4)'
+%       'crystal(["Na", "Cl"], [(0, 0, 0), (0.5, 0.5, 0.5)], spacegroup=225,
+%          cellpar=[5.64, 5.64, 5.64, 90, 90, 90])'
 %     See <https://wiki.fysik.dtu.dk/ase/ase/structure.html>
+%         <https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html>
 %
 % 'metal','insulator','semiconductor': indicates the type of occupation for 
 %    electronic states, which sets smearing.
@@ -329,6 +332,8 @@ elseif ischar(configuration)
     read = sprintf('from ase.structure import molecule; atoms = %s; ', configuration);
   case 'nanotube'
     read = sprintf('from ase.structure import nanotube; atoms = %s; ', configuration);
+  case 'crystal'
+    read = sprintf('from ase.lattice.spacegroup import crystal; atoms = %s; ', configuration);
   end
 end
 
