@@ -12,12 +12,12 @@ function signal=sqw_phonons(configuration, varargin)
 %   Supported calculators are:
 %     EMT       Effective Medium Theory calculator (Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O)
 %     GPAW      Real-space/plane-wave/LCAO PAW code
-%     NWChem    Gaussian based electronic structure code (with MPI)
+%     NWChem    Gaussian based electronic structure code
 %     Dacapo    Plane-wave ultra-soft pseudopotential code
-%     ELK       Full Potential LAPW code (with MPI)
-%     ABINIT    Plane-wave pseudopotential code (with MPI)
-%     QuantumEspresso Plane-wave pseudopotential code (with MPI)
-%     VASP      Plane-wave PAW code (with MPI, when installed and licensed)
+%     ELK       Full Potential LAPW code
+%     ABINIT    Plane-wave pseudopotential code
+%     QuantumEspresso Plane-wave pseudopotential code
+%     VASP      Plane-wave PAW code (when installed and licensed)
 %
 %   The simplest usage is to call: sqw_phonons('gui') which displays an entry dialog box
 %   and proceeds with a fully automatic computation, and plots final results.
@@ -79,10 +79,8 @@ function signal=sqw_phonons(configuration, varargin)
 %     ABINIT: path to potentials, e.g. /usr/share/abinit/psp/      (ABINIT_PP_PATH)
 %       or any of 'NC' 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw'
 %     QuantumEspresso: path to potentials, e.g. /usr/share/espresso/pseudo
-%   options.command='exe'                  Path to calculator executable, which may
-%     include e.g. "mpirun -np N" when applicable.
-%   options.mpi=scalar                     use multi-cpu, for NWChem,QuantumEspresso
-%     which requires e.g. OpenMPI to be installed.
+%   options.command='exe'                  Path to calculator executable.
+%   options.mpi=scalar                     use multi-cpu, requires e.g. OpenMPI to be installed.
 %   options.autoplot=0|1                   when set, automatically evaluates the Model
 %     and plot results.
 %   options.htmlreport=0|1                 when set, automatically generates a full
@@ -222,6 +220,10 @@ end
 signal = [];
 
 options= sqw_phonons_argin(configuration, varargin{:});
+if isempty(status.mpirun) && isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
+  options.mpi=1;
+  disp([ mfilename ': MPI parallelization is not available. Install OpenMPI first' ]);
+end
 
 if isempty(options.calculator)
   % select default calculator according to those installed
@@ -263,7 +265,7 @@ if options.gui
   [ '{\bf Cut-off energy for wave-functions}' NL 'Leave as 0 for the default, or specify a cut-off in eV, e.g. 500 eV for fast estimate, 1500 or 2000 eV for accurate results.' ], ...
   [ '{\bf K-Points}' NL 'Monkhorst-Pack grid which determines the K sampling (3-vector). 4 is the minimum for accurate computations, 6 is best. Use 1 or 2 for testing only (faster).' ], ...
    [ '{\bf Supercell}' NL 'The size of the repeated model = system*supercell (3-vector). Should be larger than k-points.' ], ...
-   [ '{\bf Other options}' NL 'Such as mpi, nbands, nsteps, xc (default PBE), toldfe, raw' NL 'example: "mpi=4; nsteps=50"' NL 'Documentation at {\color{blue}http://ifit.mccode.org/Models.html}' ] };
+   [ '{\bf Other options}' NL 'Such as mpi, nbands, nsteps, xc (default PBE), toldfe, raw' NL 'example: "mpi=4; nsteps=100"' NL 'Documentation at {\color{blue}http://ifit.mccode.org/Models.html}' ] };
   dlg_title = 'iFit: Model: phonons';
   defAns    = {configuration, options.calculator, options.occupations, num2str(options.ecut), ...
     num2str(options.kpoints), num2str(options.supercell), ''};
@@ -910,7 +912,12 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   result = '';
   if isunix, setenv('LD_LIBRARY_PATH',''); end
   try
-    [st, result] = system([ precmd 'python sqw_phonons_build.py' ]);
+    if strcmpi(options.calculator, 'GPAW') && isfield(options,'mpi') ...
+      && ~isempty(options.mpi) && options.mpi > 1
+      [st, result] = system([ precmd status.mpirun ' -np ' num2str(options.mpi) ' '  status.gpaw ' sqw_phonons_build.py' ]);
+    else
+      [st, result] = system([ precmd 'python sqw_phonons_build.py' ]);
+    end
     disp(result)
   catch
     disp(result)
