@@ -58,7 +58,7 @@ if ~isvector(a) || length(a.Alias.Axis) < ndims(a)
 end
 
 iData_private_warning('enter', mfilename);
-s = get(a,'Signal'); 
+s = getaxis(a,'Signal'); 
 x = getaxis(a, abs(dim));
 iData_private_warning('exit', mfilename);
 

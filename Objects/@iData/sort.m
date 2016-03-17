@@ -59,16 +59,16 @@ for index=tosort
       else           S.subs{j}=sorti; end
     end
     try
-      sd =subsref(sd, a);
+      sd =subsref(sd, S);
     catch
     end
     try
-      se =subsref(se, a);
+      se =subsref(se, S);
     catch
       se=[];
     end
     try
-      sm =subsref(sm, a);
+      sm =subsref(sm, S);
     catch
       sm=[];
     end

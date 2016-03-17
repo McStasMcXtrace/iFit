@@ -152,6 +152,7 @@ if isempty(find(strcmpi(alias, this.Alias.Names))) % the alias does not exist ye
     end
   end
 end
+
 % try again
 if isempty(find(strcmpi(alias, this.Alias.Names)))
   if isempty(value)
@@ -177,7 +178,7 @@ end
 if ~isempty(value)
   setalias(this, alias, value);
   % check if the axis is reverted
-  if numel(value) > 1 && value(1) > value(end)
+  if numel(value) > 1 && rank > 0 && isnumeric(value) && isvector(value) && value(1) > value(end)
     this = sort(this, rank);
   end
 end
