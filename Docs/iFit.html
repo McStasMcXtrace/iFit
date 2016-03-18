@@ -15,23 +15,18 @@
       <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
       <li><a href="#mozTocId889413">Starting</a>
         <ol>
-          <li><a href="#mozTocId441758">
-              Command options/arguments
-            </a></li>
+          <li><a href="#mozTocId441758"> Command options/arguments </a></li>
         </ol>
       </li>
       <li><a href="#mozTocId80479">Limitations</a></li>
       <li><a href="#mozTocId711798">Short introduction to Matlab syntax</a>
         <ol>
           <li><a href="#mozTocId315210">Variables and data type</a></li>
-          <li><a href="#mozTocId495160">
-              Control statements</a></li>
-          <li><a href="#mozTocId782746">
-              Scripts and lists of statements
+          <li><a href="#mozTocId495160"> Control statements</a></li>
+          <li><a href="#mozTocId782746"> Scripts and lists of statements
             </a></li>
           <li><a href="#mozTocId887543">Functions</a></li>
-          <li><a href="#mozTocId873567">
-              Importing data files</a></li>
+          <li><a href="#mozTocId873567"> Importing data files</a></li>
         </ol>
       </li>
     </ol>
@@ -53,6 +48,8 @@
     procedure.<br>
     <br>
     The official iFit web site is &lt;<a href="http://ifit.mccode.org">ifit.mccode.org</a>&gt;.
+
+
     You can get iFit there, as well as extensive documentation.<br>
     <br>
     If you do not know about Matlab, refer to the quick tutorial <a
@@ -69,8 +66,8 @@
           style="font-style: italic;">)</span><br>
       </li>
       <li>organize the data files contents, and in particular define
-        their
-        axes if needed [<a href="iData.html">iData axes and aliases</a>]<br>
+        their axes if needed [<a href="iData.html">iData axes and
+          aliases</a>]<br>
       </li>
       <li>display/plot the data [<a href="Plot.html">Plot</a>]<br>
       </li>
@@ -91,8 +88,7 @@
       </li>
     </ul>
     Each of these tasks has dedicated, detailed, documentation, as shown
-    in
-    links above.<br>
+    in links above.<br>
     <br>
     <span style="font-style: italic;">If you are a regular iFit
       standalone user and get used to </span><a style="font-style:
@@ -121,8 +117,40 @@
         '<span style="font-style: italic;">ans</span>' variable. When
         only one data file/directory is imported, it is automatically
         plotted.<br>
-        <h4><a class="mozTocH4" name="mozTocId441758"></a>
-          Command options/arguments<br>
+        <h3>Applications with User Interface<br>
+        </h3>
+        <p>iFit is a very general infrastructure, which is mostly used
+          through commands and scripts. However, there exist a few
+          dedicated Applications which provide a User Interface.<br>
+        </p>
+        <table width="100%" border="1" cellpadding="2" cellspacing="2">
+          <tbody>
+            <tr>
+              <td valign="top"><a
+                  href="file:///home/farhi/iFit/Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a></td>
+              <td valign="top">Triple-Axis neutron spectrometer
+                simulator<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a
+                  href="file:///home/farhi/iFit/Docs/Models.html#mozTocId990577">Sqw_Phonons</a><a
+href="file:///home/farhi/iFit/Applications/ResLibCal/doc/ResLibCal.html"><img
+                    alt="Sqw_Phonons" title="Sqw_Phonons"
+                    src="images/Models_sqw_ph_ase.png" height="50"
+                    width="67" align="middle" border="0"></a></td>
+              <td valign="top">Phonon dispersion computations using DFT
+                and dynamical matrix<br>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p>When using the Debian installer, these Applications can be
+          launched directly from the 'Dash' by searching their name.<br>
+        </p>
+        <h3> </h3>
+        <h4><a class="mozTocH4" name="mozTocId441758"></a> Command
+          options/arguments<br>
         </h4>
       </div>
       <div style="text-align: left;">You can start the iFit program with
@@ -207,6 +235,8 @@
                 double quote string is interpreted as a static string,
                 stored in '<span style="font-style: italic;">this</span>',
 
+
+
                 and can be passed to further commands. Be cautious
                 regarding the use of special characters such as ()[]{}
                 and even the space which may require escape backslash (
@@ -231,10 +261,10 @@
             font-weight: bold;">ifit Data/Ag_3_a.edf Data/ILL_IN6.dat
             --save --exit</span><br>
         </div>
-        <div style="margin-left: 80px;">
-          imports two data files, exports them in a single MAT file (HDF
-          based), and exit. The list of all available file formats for
-          import is available in the <a href="Load.html">Load</a> page.<br>
+        <div style="margin-left: 80px;"> imports two data files, exports
+          them in a single MAT file (HDF based), and exit. The list of
+          all available file formats for import is available in the <a
+            href="Load.html">Load</a> page.<br>
           This is the same as <span style="color: rgb(51, 102, 255);">save</span>(<span
             style="color: rgb(51, 102, 255);">iData</span>({<span
             style="color: rgb(204, 51, 204);">'Data/Ag_3_a.edf','Data/ILL_IN6.dat'</span>}),<span
@@ -245,14 +275,13 @@
             font-weight: bold;">ifit Data/Ag_3_a.edf Data/ILL_IN6.dat
             subplot</span><br>
         </div>
-        <div style="margin-left: 80px;">
-          imports two data files, display them with subplot (from <a
-            href="iData.html">iData</a>/<a href="Plot.html">Plot</a>)
-          and waits for further commands (switch to interactive mode).
-          The two files are stored in the<span style="font-weight:
-            bold;"> '</span><span style="font-style: italic;
-            font-weight: bold;">this</span><span style="font-weight:
-            bold;">' </span>cell array.<br>
+        <div style="margin-left: 80px;"> imports two data files, display
+          them with subplot (from <a href="iData.html">iData</a>/<a
+            href="Plot.html">Plot</a>) and waits for further commands
+          (switch to interactive mode). The two files are stored in the<span
+            style="font-weight: bold;"> '</span><span style="font-style:
+            italic; font-weight: bold;">this</span><span
+            style="font-weight: bold;">' </span>cell array.<br>
           This is the same as <span style="color: rgb(51, 102, 255);">subplot</span>(<span
             style="color: rgb(51, 102, 255);">iData</span>({<span
             style="color: rgb(204, 51, 204);">'Data/Ag_3_a.edf','Data/ILL_IN6.dat'</span>}))<br>
@@ -263,19 +292,19 @@
             rgb(51, 102, 255); font-weight: bold;">'save(this{:},'mydata','HDF')'</span><span
             style="font-weight: bold;">"</span><br>
         </div>
-        <div style="margin-left: 80px;">
-          imports two data files, then evaluates the iData/save command
-          to save in HDF5 format. The list of all available file formats
-          for export is available in the <a href="iData.html">iData</a>/<a
-            href="Save.html">Save</a> page.<br>
+        <div style="margin-left: 80px;"> imports two data files, then
+          evaluates the iData/save command to save in HDF5 format. The
+          list of all available file formats for export is available in
+          the <a href="iData.html">iData</a>/<a href="Save.html">Save</a>
+          page.<br>
         </div>
         <div style="margin-left: 40px;"><span style="font-style: italic;
             font-weight: bold;">ifit Data/ILL_IN20.dat fits</span><br>
         </div>
-        <div style="margin-left: 80px;">
-          imports a data file, and fit it to a Gaussian model (default).
-          The list of all available fit models is available in the <a
-            href="Models.html">Models</a> page.<br>
+        <div style="margin-left: 80px;"> imports a data file, and fit it
+          to a Gaussian model (default). The list of all available fit
+          models is available in the <a href="Models.html">Models</a>
+          page.<br>
           This is the same as <span style="color: rgb(51, 102, 255);">fits</span>(<span
             style="font-style: italic;">gauss</span>, <span
             style="color: rgb(51, 102, 255);">iData</span>(<span
@@ -285,8 +314,8 @@
             font-weight: bold;">ifit Data/ILL_IN20.dat '<span
               style="color: rgb(204, 51, 204);">"lorz"</span>'fits</span><br>
         </div>
-        <div style="margin-left: 80px;">
-          imports a data file, and fit it to a Lorentzian model.<br>
+        <div style="margin-left: 80px;"> imports a data file, and fit it
+          to a Lorentzian model.<br>
           This is the same as <span style="color: rgb(51, 102, 255);">fits</span>(<span
             style="font-style: italic;">lorz</span>, <span
             style="color: rgb(51, 102, 255);">iData</span>(<span
@@ -296,10 +325,10 @@
             font-weight: bold;">ifit Data/ILL_IN*.dat --run=SCRIPT</span><span
             style="font-weight: bold;"> --exit</span><br>
         </div>
-        <div style="margin-left: 80px;">
-          imports a set of data files, and then run the Matlab SCRIPT,
-          which can use the <span style="font-style: italic;">'this'</span>
-          cell array in the further processing, and finally exits.<br>
+        <div style="margin-left: 80px;"> imports a set of data files,
+          and then run the Matlab SCRIPT, which can use the <span
+            style="font-style: italic;">'this'</span> cell array in the
+          further processing, and finally exits.<br>
         </div>
         <h3><a class="mozTocH3" name="mozTocId80479"></a>Limitations</h3>
         The iFit stand-alone distribution provides a fully functional
@@ -373,8 +402,8 @@
         indicates a range.<br>
         <pre style="margin-left: 40px;">&gt;&gt; 1+2<br><span style="font-weight: bold;">ans</span> =<br>     3<br>&gt;&gt; a=1+2;<br>&gt;&gt; a = [ 1 2 3 4 ];			<span style="font-style: italic;">% a vector of numbers</span><br>&gt;&gt; b=<span style="color: rgb(204, 51, 204);">'a string'</span>;<br>&gt;&gt; c.first=1;	<span style="font-style: italic;">			% a structure with two fields</span><br>&gt;&gt; c.second=<span style="color: rgb(204, 51, 204);">'string in a structure'</span>;<br>&gt;&gt; d={a,b,c};	<span style="font-style: italic;">			% a cell array (list) containing the 3 variables a,b,c</span> values<br>&gt;&gt; d{2}<br>ans =<br>    <span style="color: rgb(204, 51, 204);">a string</span>
 </pre>
-        <h4><a class="mozTocH4" name="mozTocId495160"></a>
-          Control statements</h4>
+        <h4><a class="mozTocH4" name="mozTocId495160"></a> Control
+          statements</h4>
         <p>Matlab supports a set of control statements:</p>
         <table style=" text-align: left; width: 100%;" border="1"
           cellpadding="2" cellspacing="2">
@@ -412,8 +441,8 @@
             style="font-style: italic;">disp</span> to display a value.<br>
         </p>
         <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">for</span> index=1:10; disp(index); <span style="color: rgb(51, 102, 255);">end</span></pre>
-        <h4><a class="mozTocH4" name="mozTocId782746"></a>
-          Scripts and lists of statements<br>
+        <h4><a class="mozTocH4" name="mozTocId782746"></a> Scripts and
+          lists of statements<br>
         </h4>
         Matlab scripts are text files containing a list of statements
         and control keywords as listed above. To execute them, use <span
@@ -440,6 +469,8 @@
         Matlab (and iFit) contain a very large set of functions. <br>
         <span style="font-weight: bold; font-style: italic;">iFit
           stand-alone does not allow to define new user functions. </span>You
+
+
         are bound to use existing ones, or anonymous functions.<br>
         <br>
         Within iFit, the <a href="iFunc.html">iFunc</a> objects provide
@@ -452,8 +483,8 @@
         as numbers, and you can create more complex models by assembling
         simpler ones. Ifunc objects support additional parameters, which
         in principle allow for storing any function there-in.<br>
-        <h4><a class="mozTocH4" name="mozTocId873567"></a>
-          Importing data files</h4>
+        <h4><a class="mozTocH4" name="mozTocId873567"></a> Importing
+          data files</h4>
         The simplest way to import data in Matlab and iFit is to use the
         <a href="iData.html">iData</a> objects. <br>
         <pre style="margin-left: 40px;">&gt;&gt; d = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(d)<br>&gt;&gt; fits(d, gauss)<br></pre>
@@ -479,16 +510,15 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
         - iFit/executable - </span><span style="font-style: italic;"></span><span
-        style="font-style: italic;">
-        $Date$ $Revision$
-      </span><span style="font-style: italic;"> </span>-
-      back to <a href="index.html">Main
-        iFit Page </a><a href="http://www.ill.eu/"><img title="ILL,
-          Grenoble, France &lt;www.ill.eu&gt;"
-          src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France
-          &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px;
-          height: 50px;" align="right"></a>
-    </div>
+        style="font-style: italic;"> $Date$ $Revision$ </span><span
+        style="font-style: italic;"> </span>- back to <a
+        href="index.html">Main iFit Page </a><a
+        href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+          &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
+          Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
+          ; width: 53px; height: 50px;" align="right"></a> </div>
   </body>
 </html>

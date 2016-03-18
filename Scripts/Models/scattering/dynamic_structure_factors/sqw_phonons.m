@@ -35,11 +35,11 @@ function signal=sqw_phonons(configuration, varargin)
 %   Benchmarks indicate that, for phonon dispersions:
 %   * QuantumEspresso is the fastest, with excellent parallelization and accuracy.
 %   * ABINIT, VASP are also fast codes.
+%   * The all-electrons Elk code is about 10 times slower than QuantumEspresso.
 %   * Using k-points=3 is both fast and ensures a reasonable accuracy in phonons
 %   * Phonon dispersions are not too sensitive on the energy cut-off. 340 eV is good.
 %   * Elk and ABINIT can not handle large supercells without recompiling.
 %   * NWChem and Elk are not sensitive to the energy cut-off.
-%   * The all-electrons Elk code is about 10 times slower than QuantumEspresso.
 %
 % The arguments for the model creation should be:
 %
@@ -145,6 +145,11 @@ function signal=sqw_phonons(configuration, varargin)
 %   s=sqw_phonons('bulk("Si", "diamond", a=5.4, cubic=True)','semiconductor');
 %
 %   s=sqw_phonons([ ifitpath 'Data/POSCAR_Al'],'dos','metal','EMT');
+%
+% You may look at the following resources to get material structure files:
+%   <http://phonondb.mtl.kyoto-u.ac.jp/>
+%   <https://www.materialsproject.org/>
+%   <http://nomad-repository.eu/cms/>
 %
 % WARNING: Single intensity and line width parameters are used here.
 %   This model is suitable to compute phonon dispersions for e.g solid-
