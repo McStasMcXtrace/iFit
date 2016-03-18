@@ -1092,6 +1092,10 @@ disp('    qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);');
 disp('    f=iData(s,[],qh,qk,ql,w); plot3(log(f(1,:, :,:)));');
 disp(' ');
 
+% save the Model as a Matlab object
+Phonons_Model = signal;
+builtin('save', fullfile(options.target, 'Phonons_Model.mat'), 'Phonons_Model');
+
 sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'done', options, cite);
 
 % handle autoplot option

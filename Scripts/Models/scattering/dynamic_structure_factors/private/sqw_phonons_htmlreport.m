@@ -60,8 +60,6 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     
   case 'plot'
     disp([ 'sqw_phonons: Evaluating phonon dispersions and generating plots in ' options.target ]);
-    Phonons_Model = object;
-    builtin('save', fullfile(options.target, 'Phonons_Model.mat'), 'Phonons_Model');
     
     % evaluate model
     if isempty(data)
@@ -213,7 +211,8 @@ if options.htmlreport && ~isempty(filename)
   case 'plot'
     % present the final object
     fprintf(fid, '<h2><a name="results"></a>Results</h2>\n');
-    if std(data2, 1) > 0.05 || std(data2, 2) > 0.05
+    [w1,c1] = std(data2, 1); [w2,c2] = std(data2, 2);
+    if c1 > 0.15 || c2 > 0.15
       fprintf(fid, '<div style="color:#FF0000"><b>WARNING: The phonon dispersions seem to present unstable modes outside Bragg peaks. Be cautious when using this data.</b></div></br>\n');
       fprintf(fid, 'You may increase the k-points mesh, the supercell size, the energy cut-off, change the pseudo-potentials. Expect longer computation times.</br>\n');
     end
@@ -310,11 +309,11 @@ if options.htmlreport && ~isempty(filename)
     
     % close HTML document
     fprintf(fid, '<hr>Date: %s.<br>\n', datestr(now));
-    fprintf(fid, 'Powdered by <a href="http://ifit.mccode.org">iFit</a> E. Farhi (c) 2016.\n</body></html>');
+    fprintf(fid, 'Powered by <a href="http://ifit.mccode.org">iFit</a> E. Farhi (c) 2016.\n</body></html>');
     
     % create a simple README file
     freadme = fopen(fullfile(options.target,'README.txt'),'w');
-    fprintf(freadme, 'Open the index.html file in this directory. It contains all you need.\n');
+    fprintf(freadme, 'Open the index.html file in this directory. It contains all you need. The Phonon Model (iFunc) is in the Phonons_Model.mat file.\n');
     fclose(freadme);
     
     if isdeployed || ~usejava('jvm') || ~usejava('desktop')
@@ -360,8 +359,8 @@ if ~isempty(options.email)
     
     % send final results (success, error)
     subject = [ 'iFit:sqw_phonon: ended ' options.calculator ' ' options.configuration ];
-    
-    if std(data2, 1) > 0.05 || std(data2, 2) > 0.05
+    [w1,c1] = std(data2, 1); [w2,c2] = std(data2, 2);
+    if c1 > 0.15 || c2 > 0.15
       warn = 'WARNING: The phonon dispersions seem to present unstable modes outside Bragg peaks. Be cautious when using this data. You may increase the k-points mesh, the supercell size, the energy cut-off, change the pseudo-potentials. Expect longer computation times.';
     else
       warn = 'The phonon dispersions seem OK.';
@@ -376,7 +375,9 @@ if ~isempty(options.email)
     [ 'Location:     ' options.target ], ...
     [ 'Atom/molecule configuration: ' options.configuration ], ...
     [ 'Calculator configuration:    ' options.calculator ], ...
-      '', warn, '', 'The results are contained in the attached .zip file.' };
+      '', warn, '', 'The results are contained in the attached .zip file.', ...
+      'The Phonons_Model.mat file contains the Model as an iFunc object.', ...
+      'You can evaluate it without recomputing the forces, using iFit <ifit.mccode.org>.' };
     
     toadd = { options.configuration, ...
       fullfile(options.target, 'Phonons_Model.mat'), ...
