@@ -65,8 +65,7 @@ function signal=sqw_phonons(configuration, varargin)
 % General options
 %   options.target =path                   Where to store all files and FORCES
 %     a temporary directory is created when not specified.
-%   options.supercell=scalar or [nx ny nz] supercell size. Default is 2.
-%     Some codes have a limitation: ABINIT=2, Elk=6
+%   options.supercell=scalar or [nx ny nz] supercell size. Default is 3.
 %   options.calculator=string              EMT,GPAW,Elk,NWChem,Dacapo,ABINIT,Quantum
 %     We recommend ABINIT,QE and Elk. Default set from installed software.
 %   options.dos=1                          Option to compute the vibrational
@@ -93,7 +92,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.xc=string                      Type of Exchange-Correlation functional to use
 %     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'   for GPAW
 %     'PZ', 'PBE','revPBE','RPBE','PW91','VWN'     for Dacapo/Jacapo
-%     'LDA','PBE','revPBE','RPBE'                  for ABINIT
+%     'LDA','PBE','revPBE','RPBE','GGA'            for ABINIT
 %     'LDA','PBE','REVPBE','PBESOL','WC06','AM05'  for ELK
 %     'LDA','PBE','RHF','MP2','B3LYP'              for NWChem
 %     'LDA','PBE','PW91'                           for VASP
@@ -933,7 +932,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     signal.UserData.ph_ase = fileread(fullfile(target, 'ph.pkl')); % binary
   catch
     setenv('LD_LIBRARY_PATH',ld_library_path);
-    sqw_phonons_error([ mfilename ': ' options.calculator ' failed. May be a convergence issue. Temporary files are in ' target ], options)
+    sqw_phonons_error([ mfilename ': ' options.calculator ' failed. Temporary files and Log are in ' target ], options)
   end
   if ~isempty(dir(configuration))
     [dummy, signal.UserData.input]= fileparts(configuration);
