@@ -55,6 +55,7 @@ disp([ 'mcc -m ifit -a ', p ])
 mcc('-m', 'ifit', '-a', p);
 
 % tuning the standalone
+% executables
 if ~ispc
   if isempty(dir('run_ifit')) && ~isempty(dir('ifit'))
     movefile('ifit', 'run_ifit');
@@ -63,6 +64,9 @@ if ~ispc
   copyfile([ m filesep 'ifit' ],       target)
 end
 copyfile([ m filesep 'ResLibCal' ],       target)
+copyfile([ m filesep 'sqw_phonons' ],       target)
+
+% documentation
 copyfile(fullfile(p, 'README.txt'), target)
 copyfile(fullfile(p, 'COPYING'),    target)
 copyfile(fullfile(p, 'Docs'),       fullfile(target,'Docs'))

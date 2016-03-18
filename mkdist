@@ -125,9 +125,13 @@ then
                                                         ${BUILDDIR}/usr/share/applications/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/ResLibCal.desktop \
                                                         ${BUILDDIR}/usr/share/applications/
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/sqw_phonons.desktop \
+                                                        ${BUILDDIR}/usr/share/applications/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/iFit-logo.png \
                                                         ${BUILDDIR}/usr/share/pixmaps/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/ResLibCal-logo.png \
+                                                        ${BUILDDIR}/usr/share/pixmaps/
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/SqwPhonons-logo.png \
                                                         ${BUILDDIR}/usr/share/pixmaps/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/deb/* \
                                                         ${BUILDDIR}/DEBIAN
