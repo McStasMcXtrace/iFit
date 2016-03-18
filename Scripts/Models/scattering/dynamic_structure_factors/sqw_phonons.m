@@ -218,6 +218,8 @@ end
 
 signal = [];
 
+if nargin == 0, configuration = 'gui'; end
+
 options= sqw_phonons_argin(configuration, varargin{:});
 if isempty(status.mpirun) && isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
   options.mpi=1;
@@ -239,8 +241,6 @@ end
 if nargin == 0 || isempty(configuration)
   configuration = 'bulk("Al", "fcc", a=4.05)';
 end
-
-t=clock();
 
 % ==============================================================================
 %                               GUI (dialog)
@@ -300,7 +300,9 @@ if options.gui
   options.dos        = 1;
   options.gui        = waitbar(0, [ mfilename ': starting' ], 'Name', [ 'iFit: ' mfilename ' ' configuration ]);
   if strcmpi(options.calculator,'qe') options.calculator='quantumespresso'; end
-end
+end % GUI
+
+t=clock();
 
 % handle compatibility fields
 if isfield(options,'conv_thr') && ~isfield(options,'toldfe')
@@ -705,6 +707,8 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   end
   if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
   if st ~= 0
+      disp(read)
+      disp(result)
     sqw_phonons_error([ mfilename ': failed converting input to POSCAR ' ...
       poscar ], options);
   end
@@ -891,6 +895,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
   if st ~= 0
     disp(read0)
+    disp(result)
     sqw_phonons_error([ mfilename ': failed read input ' ...
       configuration ], options);
   end
@@ -1015,12 +1020,15 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   [ '  [status,result] = system(''' precmd 'python sqw_phonons_eval.py'');' ], ...
     '  % import FREQ', ...
     '  FREQ=load(''FREQ'',''-ascii''); % in meV', ...
+    'catch ME; disp([ ''model '' this.Name '' '' this.Tag '' could not run Python/ASE from '' target ]); disp(getReport(ME))', ...
+    'end', ...
+    'try', ...
     'if isfield(this.UserData, ''DOS'') && isempty(this.UserData.DOS)', ...
     '  DOS = load(''DOS'',''-ascii''); DOS_w = load(''DOS_w'',''-ascii''); DOS=iData(DOS_w,DOS./sum(DOS));', ...
     '  DOS.Title = [ ''DOS '' strtok(this.Name) ]; xlabel(DOS,''DOS Energy [meV]'');', ...
     '  DOS.Error=0; this.UserData.DOS=DOS;', ...
     'end', ...
-    'catch; disp([ ''model '' this.Name '' '' this.Tag '' could not run Python/ASE from '' target ]);', ...
+    'catch ME; disp([ ''model '' this.Name '' '' this.Tag '' could not get vDOS Python/ASE from '' target ]); disp(getReport(ME));', ...
     'end', ...
     '  cd(pw);', ...
     '  % multiply all frequencies(columns, meV) by a DHO/meV', ...
@@ -1101,7 +1109,7 @@ sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'done', options, 
 % handle autoplot option
 if options.autoplot
   if options.gui && ishandle(options.gui), waitbar(0.75, options.gui, [ mfilename ': plotting phonons and DOS' ]); end
-  f = sqw_phonons_plot(signal);
+  [f, signal] = sqw_phonons_plot(signal);
   if options.gui && ishandle(options.gui), delete(options.gui); end
 else
   f = [];
@@ -1111,21 +1119,24 @@ sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'plot', options, 
 sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'end', options, f, signal);
 
 % ------------------------------------------------------------------------------
-function f = sqw_phonons_plot(signal)
+function [f, signal] = sqw_phonons_plot(signal)
   if isempty(signal) || ~isfield(signal.UserData, 'options') , return; end
   
   options = signal.UserData.options;
   disp([ mfilename ': Model ' options.configuration ' plotting phonons.' ])
   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,150,151);
-  fig=figure; 
-  if isfield(options, 'dos') && options.dos && ~isempty(signal.UserData.DOS), subplot(1,2,1); end
   f=iData(signal,[],qh,qk,ql,w);
-  g=log(-f(1,:, :,:)); scatter3(g,'filled'); axis tight;
+  g=log(f(1,:, :,:)); 
+  
+  fig1=figure; 
+  plot3(g); axis tight;
   view([38 26]);
   if isfield(options, 'dos') && options.dos && ~isempty(signal.UserData.DOS)
-    subplot(1,2,2);
+    fig2=figure;
     try
     plot(signal.UserData.DOS); % plot the DOS, as indicated during model creation
+    catch
+    close(fig2)
     end
   end
   drawnow
