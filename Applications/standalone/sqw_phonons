@@ -1,0 +1,2 @@
+#\!/bin/sh
+ifit -r "Phonons=sqw_phonons"

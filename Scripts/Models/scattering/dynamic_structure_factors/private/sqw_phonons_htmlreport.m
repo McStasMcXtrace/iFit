@@ -85,12 +85,12 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     x=data{1};
     
     data1=log10(data(1, :,:,:));
-    saveas(data1, fullfile(options.target, 'Phonons3D.png'), 'png', 'plot3 tight');
+    saveas(data1, fullfile(options.target, 'Phonons3D.png'), 'png', 'tight');
     saveas(data1, fullfile(options.target, 'Phonons3D.fig'), 'fig', 'plot3 tight');
     saveas(data1, fullfile(options.target, 'Phonons3D.vtk'));
     saveas(data1, fullfile(options.target, 'Phonons3D.mrc'));
     saveas(data1, fullfile(options.target, 'Phonons3D.dat'));
-    saveas(data1, fullfile(options.target, 'Phonons3D.pdf'), 'pdf', 'plot3 tight');
+    saveas(data1, fullfile(options.target, 'Phonons3D.pdf'), 'pdf', 'tight');
     saveas(data1, fullfile(options.target, 'Phonons3D.h5'), 'mantid');
     
     % determines is the phonons have negative values.

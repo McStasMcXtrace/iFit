@@ -1,4 +1,4 @@
-function s = Sqw_deBosify(s, T)
+function s = Sqw_deBosify(s, T, type)
 % Sqw_deBosify: remove Bose factor (detailed balance) from an 'experimental' data set.
 %  In principle the resulting data set is 'classical' that is S(q,w) = S(q,-w)
 %
@@ -9,11 +9,27 @@ function s = Sqw_deBosify(s, T)
 %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
 %   T: when given, Temperature to use for Bose. When not given, the Temperature
 %      is searched in the object.
+%   type: 'Schofield' or 'harmonic' (default) or 'standard'
 %
 % conventions:
 % omega = Ei-Ef = energy lost by the neutron
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    omega < 0, neutron gains energy, anti-Stokes
+% Egelstaff, Eq (9.25) p189
+%    S(q,-w) = exp(-hw/kT) S(q,w)
+%    S(q,w)  = exp( hw/kT) S(q,-w)
+%    S(q,w)  = Q(w) S*(q,w) with S*=classical limit
+% for omega > 0, S(q,w) > S(q,-w)
+%               
+% The semi-classical correction, Q, aka 'quantum' correction factor, 
+% can be selected from the optional   'type' argument:
+%    Q = exp(hw_kT/2)                 'Schofield' or 'Boltzmann'
+%    Q = hw_kT./(1-exp(-hw_kT))       'harmonic'  or 'Bader' (default)
+%    Q = 2./(1+exp(-hw_kT))           'standard'  or 'Frommhold'
+%
+% The 'Boltzmann' correction leads to a divergence of the S(q,w) for e.g. w above 
+% few 100 meV. The 'harmonic' correction provides a reasonable correction but does
+% not fully avoid the divergence at large energies.
 %
 %  Bose factor: n(w) = 1./(exp(w*11.605/T) -1) ~ exp(-w*11.605/T)
 %               w in [meV], T in [K]
@@ -23,6 +39,7 @@ function s = Sqw_deBosify(s, T)
 % See also: Sqw_Bosify, Sqw_symmetrize, Sqw_dynamic_range, Sqw_total_xs
 
   if nargin == 1, T = []; end
+  if nargin < 3, type=''; end
 
   % handle array of objects
   if numel(s) > 1
@@ -45,7 +62,7 @@ function s = Sqw_deBosify(s, T)
   end
   
   % get symmetric from experimental data
-  s = Sqw_Bosify(s, -T);
+  s = Sqw_Bosify(s, -T, type);
   setalias(s, 'Temperature', T);
   setalias(s, 'classical', 1);
   
