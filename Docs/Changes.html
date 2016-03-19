@@ -52,9 +52,16 @@
 href="https://www.ill.eu/instruments-support/instruments-groups/instruments/cyclops/description/instrument-layout/">ILL
 
 
+
           Cyclops</a> HBIN and <a
           href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
-        SAV files. Iterative deconvolution as <i>deconv</i> method.<br>
+        SAV files. Iterative deconvolution as <i>deconv</i> method.
+        Major upgrade of <a href="Models.html#mozTocId990577"><i>ab-initio</i>
+          DFT phonon dispersion</a> Model, which now supports EMT, GPAW,
+        ABINIT, Elk, Dacapo, NWChem, QuantumEspresso and VASP when
+        installed. Initial S(q,w) treatment scripts to compare MD and
+        measured dynamic structure factor, compute dynamic range and
+        total scattering cross sections.<br>
       </li>
       <li><b>1.7</b>: <a
 href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectroscopy/opus-software/overview.html">OPUS</a>
@@ -76,6 +83,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
         method. Added predefined TAS configurations in <a
           href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
         and cross-checked computation methods. Fix TAS angles in 3D
@@ -84,7 +92,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
         Compatibility with Matlab new graphic objects (R2014b). Better
         handling of arguments to standalone <a href="iFit.html">iFit</a>.
         Added <a href="Math.html">fill</a> method to remove NaN's in
-        iData objects. iFunc <a href="Models.html#mozTocId285330">4D
+        iData objects. iFunc <a href="Models.html#mozTocId990577">4D
           S(q,w) models</a> from either analytical or ab-initio methods
         (Oct 14th 2015).<br>
       </li>
@@ -110,6 +118,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           NetCDF/CDF/NeXus/HDF support, import/export of <a
             href="http://www.mantidproject.org">Mantid</a> workspaces
           (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+
 
 
 
@@ -197,6 +206,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -204,6 +214,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
 
 
 
@@ -256,6 +267,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -265,6 +277,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
 
 
 
@@ -307,6 +320,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -314,6 +328,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
 
 
 
@@ -400,6 +415,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       3)</span> to triple the number of points along axes.<br>
     <h4><a class="mozTocH4" name="mozTocId473369"></a>Too many warnings
       displayed</h4>
@@ -407,6 +423,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     reduce the level of verbosity with:<br>
     <pre style="margin-left: 80px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">warning off backtrace	<span style="font-style: italic; color: rgb(0, 0, 0);">% reduce the warning message length</span><br><span style="color: rgb(0, 0, 0);">&gt;&gt; </span>warning off			<span style="color: rgb(0, 0, 0); font-style: italic;">% suppress all warnings (not recommended)</span><br></span></pre>
     <h4><a class="mozTocH4" name="mozTocId556618"></a>Execution/compilation
+
 
 
 
@@ -475,6 +492,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     can <span style="font-weight: bold; font-style: italic;">not</span>
     be defined, except anonymous functions (inline). You may use iFunc
     models as a substitute. Also, the <span style="font-style: italic;">doc,
+
 
 
 
@@ -592,6 +610,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       -v</span> and look where <span style="font-style: italic;">libgfortran</span>
     appears in the long list...)<br>
     <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"># locate libgfortran.so</span>
@@ -643,6 +662,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 

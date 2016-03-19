@@ -1,0 +1,17 @@
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=true
+Exec=ifit "sqw_phonons('gui')"
+Name=Sqw_Phonons
+Comment=Compute phonon dispersions
+Icon=SqwPhonons-logo.png
+Categories=Education;Applications;
+Actions=Help;
+
+[Desktop Action Help]
+Name=Open Sqw_Phonons Help (on-line)
+Exec=xdg-open http://ifit.mccode.org/Models.html
+OnlyShowIn=Unity;Gnome;
