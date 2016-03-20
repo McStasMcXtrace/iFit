@@ -1,5 +1,5 @@
-function sigma = Sqw_total_xs(s, Ei)
-  % Sqw_total_xs(s,Ei): compute the total scattering cross section for
+function sigma = Sqw_scatt_xs(s, Ei)
+  % Sqw_scatt_xs(s,Ei): compute the total scattering cross section for
   %   incoming neutron energy. The S(|q|,w) should be the non-classical
   %   dynamic structure factor. 
   %
@@ -41,10 +41,10 @@ function sigma = Sqw_total_xs(s, Ei)
   %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
   %   Ei: incoming neutron energy [meV]
   % output:
-  %   sigma: cross section per scattering unit
+  %   sigma: cross section per scattering unit (scalar or iData)
   %          to be multiplied afterwards by the bound cross section
   %
-  % Example: sigma = Sqw_total_xs(s, 14.6)
+  % Example: sigma = Sqw_scatt_xs(s, 14.6)
   %
   % See also: Sqw_Bosify, Sqw_deBosify, Sqw_symmetrize, Sqw_dynamic_range
 
@@ -65,16 +65,8 @@ function sigma = Sqw_total_xs(s, Ei)
     return
   end
   
-  if numel(Ei) > 1
-    sigma = [];
-    if numel(Ei) == 2, Ei=logspace(log10(Ei(1)),log10(Ei(2)),20); end
-    % loop for each incoming neutron energy
-    for ie=1:numel(Ei)
-      sigma = [ sigma Sqw_total_xs(s, Ei(ie)) ];
-    end
-    return
-  end
-  
+  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
+  s = meshgrid(s);
   s = Sqw_check(s);
   if isempty(s), return; end
   if isfield(s, 'classical') && s.classical == 1
@@ -90,9 +82,23 @@ function sigma = Sqw_total_xs(s, Ei)
   if min(w(:)) * max(w(:)) > 0
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to only be defined on w<0 or w>0. You should apply  and then s=Sqw_Bosify(Sqw_symmetrize(s), temperature) before.' ]);
   end
+
+  if numel(Ei) > 1
+    sigma = [];
+    if numel(Ei) == 2, Ei=logspace(log10(Ei(1)),log10(Ei(2)),20); end
+    % loop for each incoming neutron energy
+    for ie=1:numel(Ei)
+      sigma = [ sigma Sqw_scatt_xs_single(s, Ei(ie)) ];
+    end
+    sigma = iData(Ei, sigma);
+    label(sigma, 'Signal', [ 'Total scattering cross section(' s.Title ')' ]);
+    return
+  else
+    sigma = Sqw_scatt_xs_single(s, Ei);
+  end
   
-  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
-  s = meshgrid(s);
+% ----------------------------------------------------------------------------
+function sigma = Sqw_scatt_xs_single(s, Ei)
 
   % restrict to dynamic range
   s = Sqw_dynamic_range(s, Ei);

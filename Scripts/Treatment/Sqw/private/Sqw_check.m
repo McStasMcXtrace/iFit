@@ -23,7 +23,7 @@ function s = Sqw_check(s)
     s = [];
     return
   end
-  
+
   % check if we need to transpose the S(q,w)
   if w_present==2 && q_present==1
     s = transpose(s);
@@ -39,10 +39,10 @@ function s = Sqw_check(s)
       s.classical = classical0(1);
     end
   end
-  
+
   % can we guess if this is classical data ? get temperature ?
   w = s{1};
-  
+
   if any(w(:) < 0) && any(w(:) > 0)
     % restrict the energy axis to the common +/- range
     w1 = max(w(:)); w2 = max(-w(:)); w_max = min([w1 w2]);
@@ -58,16 +58,13 @@ function s = Sqw_check(s)
     % we compare the s(q,w) and s(q,-w)
     s_opp = setaxis(s_res, 1, -w);
     s_opp = sum(s_opp,2); s_opp = sort(s_opp, 1);
-    s_opp = -log(s_opp);
     
     s_res = sum(s_res,2); s_res = sort(s_res, 1);
-    log_s_ratio = log(s_res);
-    clear s_res;
 
     % the ratio should be S(q,w)/S(q,-w) = exp(hw/kT)
     % so log(S(q,w)) - log(S(q,-w)) = hw/kT
-    log_s_ratio = log_s_ratio - log(s_opp);
-    clear s_opp
+    log_s_ratio = log(s_res) - log(s_opp);
+    clear s_res s_opp
     
     % mean_log_ratio = mean(log_s_ratio,0);
     % std_log_ratio  = std(log_s_ratio,0);
@@ -80,13 +77,13 @@ function s = Sqw_check(s)
       T         = mean(real(T),0);
     else T=NaN;
     end
-    
-    if isfinite(T) && T < 0
+
+    if isfinite(T) && T < -0.1
       % energy axis is reverted
       s{1} = -s{1};
       T    = -T;
     end
-    
+
     % temperature stored ?
     T0        = Sqw_getT(s);
     if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
@@ -98,15 +95,15 @@ function s = Sqw_check(s)
     else
       classical0 = [];
     end
-    
+
     % log_s_ratio should be about 0 if S(q,w) is symmetric
-    if isnan(T) || ~isfinite(T) || T <= 0 || T > 3000
+    if isnan(T) || ~isfinite(T) || T <= 0.1 || T > 3000
       classical = 1;
       T         = Sqw_getT(s);
     else
       classical = 0;
     end
-    
+
     % display warnings when mismatch is found
     if ~isempty(classical0) && ~isempty(classical) && classical0 ~= classical
       if   classical0, classical_str='classical/symmetric';
@@ -121,11 +118,11 @@ function s = Sqw_check(s)
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' S(|q|,w) 2D object from ' s.Source ]);
       disp(['    indicates a Temperature T=' num2str(T0) ' [K], but the analysis of the data provides T=' num2str(T) ' [K].' ]);
     end
-    if isempty(T0) && ~isempty(T) && T > 0 && T < 3000
+    if isempty(T0) && ~isempty(T) && T > 0.1 && T < 3000
       disp([ mfilename ': INFO: Setting temperature T=' num2str(T) ' [K] for data set ' s.Tag ' ' s.Title ' S(|q|,w) 2D object from ' s.Source ]);
       s.Temperature = T;
     end
     
   end % energy axis has +/- 
-  
+
   

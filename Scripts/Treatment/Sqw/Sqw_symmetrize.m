@@ -22,7 +22,7 @@ function s=Sqw_symmetrize(s)
 %
 % Example: Sqw_symmetrize(s, 300)
 %
-% See also: Sqw_Bosify, deBosify, Sqw_dynamic_range, Sqw_total_xs
+% See also: Sqw_Bosify, deBosify, Sqw_dynamic_range, Sqw_scatt_xs
 
   % handle array of objects
   if numel(s) > 1

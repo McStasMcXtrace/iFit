@@ -24,7 +24,7 @@ function s = Sqw_dynamic_range(s, Ei, angles)
 %
 % Example: Sqw_dynamic_range(s, 14.8, [-20 135])
 %
-% See also: Sqw_Bosify, Sqw_deBosify, Sqw_symmetrize, Sqw_total_xs
+% See also: Sqw_Bosify, Sqw_deBosify, Sqw_symmetrize, Sqw_scatt_xs
 
   % first look at the given arguments
   if nargin < 2
