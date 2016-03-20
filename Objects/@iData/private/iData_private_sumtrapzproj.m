@@ -32,7 +32,6 @@ iData_private_warning('enter',mfilename);
 
 % some cases:
 % signal is vector nD -> 
-
 % in all cases except projection, resample the data set on a grid
 % make axes single vectors for sum/trapz/... to work
 if all(dim > 0) & any(strcmp(op, {'sum','cumsum','prod','cumprod','trapz','cumtrapz'}))
@@ -53,7 +52,7 @@ end
 s = iData_private_cleannaninf(s);
 e = iData_private_cleannaninf(e);  
 
-[link, label] = getalias(a, 'Signal');
+[link, lab] = getalias(a, 'Signal');
 cmd= a.Command;
 b  = copyobj(a);
 
@@ -82,7 +81,7 @@ if all(dim > 0)
     % Store Signal
     s=squeeze(s); e=sqrt(squeeze(e)); m=squeeze(m);
     if not(all(m(:) == 0 | m(:) == 1)), s=genop(@times,s,m); e=genop(@times,e,m); end
-    setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
+    setalias(b,'Signal', s, [op ' of ' lab ' along axis ' num2str(dim) ]);
     
   case {'prod','cumprod'} % PROD ===============================================
     % product on all requested dimensions 
@@ -97,7 +96,7 @@ if all(dim > 0)
     % Store Signal
     s=squeeze(s); e=squeeze(e); m=squeeze(m);
     if not(all(m(:) == 0 | m(:) == 1)), s=genop(@times,s,m); e=genop(@times,e,m); end
-    setalias(b,'Signal', s, [op ' of ' label ' along axis ' num2str(dim) ]);
+    setalias(b,'Signal', s, [op ' of ' lab ' along axis ' num2str(dim) ]);
     
   case {'trapz','cumtrapz'} % TRAPZ ============================================
 
@@ -145,7 +144,7 @@ if all(dim > 0)
     % Store Signal
     s=squeeze(s); e=sqrt(squeeze(e)); m=squeeze(m);
     if not(all(m(:) == 0 | m(:) == 1)), s=genop(@times,s,m); e=genop(@times,e,m); end
-    setalias(b,'Signal', s, [ op ' of ' label ' along ' xlab ]);
+    setalias(b,'Signal', s, [ op ' of ' lab ' along ' xlab ]);
 
   case 'camproj' % camproj =====================================================
     % accumulates on all axes except the rank specified
@@ -162,7 +161,7 @@ if all(dim > 0)
     rmaxis(b);
     setaxis(b, 1, x(:));
     % Store Signal
-    setalias(b,'Signal', s(:), [ 'projection of ' label ' on axis ' num2str(dim) ]);     % Store Signal
+    setalias(b,'Signal', s(:), [ 'projection of ' lab ' on axis ' num2str(dim) ]);     % Store Signal
     b = setalias(b, 'Error', abs(e(:)));
     b = setalias(b, 'Monitor', m(:));
     b = hist(b, lx); % faster than doing sum on each dimension
@@ -179,8 +178,22 @@ if all(dim > 0)
     ax_index=1;
     for index=1:ndims(a)
       if all(dim ~= index)
+        % x = getaxis(a, index); 
         [x, xlab] = getaxis(a, num2str(index)); % get axis definition and label
-        setaxis(b, ax_index, unique(x));
+        if ~isnumeric(x), x = getaxis(a, index); end
+        S.type = '()';
+        S.subs = {};
+        if ndims(b) == ndims(x)
+          S.subs={ ':' };
+        else
+          for j=1:ndims(a), 
+            if j ~= index, S.subs{j}='1';
+            else           S.subs{j}=':'; end
+          end
+        end
+        if ~isvector(x),  x = subsref(x,S); end
+        setaxis(b, ax_index, x);
+        label(  b, ax_index, xlab);
         ax_index = ax_index+1;
       end
     end

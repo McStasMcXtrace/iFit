@@ -687,7 +687,11 @@ function data = iLoad_loader_check(file, data, loader)
   
   if ~isfield(data, 'Date')
     if strcmp(loader, 'variable') data.Date   = clock; 
-    else d=dir(file); data.Date=d.date; end
+    else
+        try
+            d=dir(file); data.Date=d.date; 
+        end
+    end
   end
 
   if ~isfield(data, 'Format'),

@@ -54,14 +54,19 @@ for index=tosort
   if ~isequal(sorti, 1:size(a, index))
     S.type = '()';
     S.subs = {};
-    for j=1:ndims(a), 
-      if j ~= index, S.subs{j}=':';
-      else           S.subs{j}=sorti; end
+    nx = ndims(x);
+    if isvector(x), nx=1; end
+    if ndims(a) == nx
+      S.subs={ sorti };
+    else
+      for j=1:ndims(a), 
+        if j ~= index, S.subs{j}=':';
+        else           S.subs{j}=sorti; end
+      end
     end
-    try
-      sd =subsref(sd, S);
-    catch
-    end
+
+    sd =subsref(sd, S);
+
     try
       se =subsref(se, S);
     catch
