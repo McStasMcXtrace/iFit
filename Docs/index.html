@@ -15,6 +15,7 @@
 
 
 
+
           - @IFIT_DATE@</span></span><br>
       <img alt="iFit" title="iFit" src="images/iFit-logo.png"
         height="64" width="116"><br>
@@ -72,6 +73,7 @@
 
 
 
+
         is a set of methods to load, analyze, plot, fit and optimize
         models, and export results. <span style="font-style: italic;">iFit</span>
         is based on <a href="http://www.mathworks.com">Matlab</a>, but
@@ -81,6 +83,7 @@
             solid ; width: 45px; height: 38px;" align="right"></a> It
         does not currently include advanced graphical user interfaces
         (GUI), and rather focuses on <span style="font-style: italic;">doing
+
 
 
 
@@ -139,14 +142,18 @@
             to run [ <a
               href="http://ifit.mccode.org/Downloads/iFit.zip">zip</a>,
             29 Mb, <a href="Changes.html">Changes</a> and <font
-              color="#ff0000">Bugs</font>]. <a
-              href="http://ifit.mccode.org/Downloads/iFit.zip"><img
-                alt="matlab" title="matlab" src="images/ml_icon.gif"
-                style="border: 2px solid; width: 45px; height: 38px;
-                border: 2px solid;" align="middle"></a> </li>
+              color="#ff0000">Bugs</font>].</li>
+        </ul>
+        <div align="center">&nbsp;<a
+            href="http://ifit.mccode.org/Downloads/iFit.zip"><img
+              alt="matlab" title="matlab" src="images/ml_icon.gif"
+              style="border: 2px solid; width: 45px; height: 38px;
+              border: 2px solid;" align="middle"></a></div>
+        <ul>
         </ul>
         <ul>
           <li><a href="Install.html"><span style="font-weight: bold;">standalone
+
 
 
 
@@ -158,7 +165,11 @@
             page. You will then use the <a href="iFit.html">iFit</a><a
               href="iFit.html"> standalone</a> interface to the package
             (a terminal/command window providing Matlab/iFit
-            capabilities). <a
+            capabilities). <br>
+          </li>
+        </ul>
+        <div align="center">
+          <blockquote><a
               href="http://ifit.mccode.org/Downloads/binary/glnx64"><img
                 alt="linux" title="linux" src="images/linux.png"
                 style="border: 2px solid; border: 2px solid; width:
@@ -170,14 +181,18 @@
               href="http://ifit.mccode.org/Downloads/binary/win64"><img
                 alt="windows" title="windows" src="images/windows.png"
                 style="border: 2px solid; border: 2px solid; width:
-                50px; height: 50px;" align="middle"></a></li>
+                50px; height: 50px;" align="middle"></a></blockquote>
+        </div>
+        <ul>
           <li>[&nbsp; <a href="https://github.com/McStasMcXtrace/iFit">McCode
 
 
 
 
 
+
               Git</a> ][ <a href="http://ifit.mccode.org/Downloads/">older
+
 
 
 
@@ -233,7 +248,10 @@
         formats</li>
     </ul>
     <div style="margin-left: 40px;">An extended list of iData methods is
-      available in the <a href="Methods.html">Methods</a> page.<br>
+      available in the <a href="Methods.html">Methods</a> page. In
+      addition, a few dedicated applications of these methods is
+      presented in the <a href="Treatment.html">Treatment</a> page, for
+      instance for neutron scattering.<br>
       <h4><a class="mozTocH4" name="mozTocId419212"></a>The <a
           href="iFunc.html">iFunc</a> objects (iFit/@<a
           href="iFunc.html">iFunc</a>): the core model</h4>
@@ -262,7 +280,10 @@
       imported data and find best parameter sets which describe it.
       These functions may be used by the <a href="Fit.html">fits</a>
       method. All these models are <a href="iFunc.html">iFunc</a>
-      objects.<br>
+      objects. There are very advanced Models to compute for instance <a
+        href="Models.html#mozTocId990577">4D phonon dispersions</a>
+      using <i>ab-initio</i> codes, and other simpler analytical
+      methods.<br>
     </div>
     <h4 style="margin-left: 40px;"><a class="mozTocH4"
         name="mozTocId897464"></a>The lower level import routines (iFit/<a
@@ -270,10 +291,10 @@
     </h4>
     <div style="margin-left: 40px;">The file import method used by iData
       is performed on a lower level by the <a href="Loaders.html">Loaders</a>
-      part of iFit. Its purpose is to import any text file, without
-      knowing its format. A number of post-import wrappers exist in
-      order to reshape the imported data to match specific needs. These
-      wrappers are very short to write.<br>
+      part of iFit. Its purpose is to import any binary or text file,
+      without knowing its format. A number of post-import wrappers exist
+      in order to reshape the imported data to match specific needs.
+      These wrappers are very short to write.<br>
       If needed, other importation methods should be added there, to be
       able to handle more formats. This library is used transparently by
       the iData <a href="Load.html">load</a> method, but it may also be
@@ -290,6 +311,7 @@
       The documentation currently contains the following pages:<br>
       <ul>
         <li><a href="Changes.html">Changes</a>: Version releases, <b>Changes
+
 
             and Bugs</b> list.</li>
         <li><a href="Credits.html">Credits</a>: Credits, Licensing and
@@ -333,6 +355,10 @@
           start (a quick tutorial).</li>
         <li><a href="Save.html">Save</a>: Saving iData objects into many
           file formats.</li>
+        <li><a href="Treatment.html">Treatment</a>: a set of
+          methodologies applied to specific cases, for instance neutron
+          scattering.<br>
+        </li>
         <li><a href="Python.html">PyFit</a>: an interface which exposes
           transparently all iFit methods and objects into Python/NumPy.</li>
         <li><a href="techdoc/index.html">Technical documentation</a><br>
@@ -477,6 +503,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanue
 
 
 
+
       Farhi</a> and took many years to come to you. <br>
     Substantial contributions from <span style="font-style: italic;">Y.
       Debab</span> and <span style="font-style: italic;">P. Willendrup</span>.<br>
@@ -498,7 +525,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanue
 
 
 
+
       for Science</a> group at the <a href="http://www.ill.fr/">Institut
+
 
 
 
@@ -528,6 +557,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanue
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
