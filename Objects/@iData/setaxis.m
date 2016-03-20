@@ -213,7 +213,7 @@ function this = iData_checkaxes(this)
           num2str(size_this) '] in object ' inputname(1) ' ' this.Tag '.' ]);
       end
       % check if the axis is reverted
-      if numel(val) > 1 && val(1) > val(end)
+      if numel(value) > 1 && rank > 0 && isnumeric(value) && isvector(value) && value(1) > value(end)
         this = sort(this, index);
       end
     catch

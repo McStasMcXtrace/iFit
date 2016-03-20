@@ -23,7 +23,8 @@ end
 
 % ======================================================================
 % searches for some 'known' nMoldyn symbols after import
-if isempty(findstr(a, 'nmoldyn')), 
+if isempty(findstr(a, 'nmoldyn')) && isempty(findstr(a, 'mdanse')) && isempty(findstr(a, 'dsf')) ...
+   && isempty(findstr(a, 'frequency'))
   return; 
 end
 
@@ -37,8 +38,6 @@ end
 % add any other 'fields' as aliases
 if ~isempty(s), 
   a=setalias(a, 'jobinfo',s{1},'nMoldyn configuration');
-else 
-  return;  % no nMoldyn JobInfo stuff
 end
 
 % nMoldyn results: last search defines the Signal and Axes: we prefer S(q,w)
@@ -50,7 +49,19 @@ a = load_nmoldyn_signal_axes(a, 'temperature', {'times','time'});
 a = load_nmoldyn_signal_axes(a, 'eisf_total', {'q','k'});
 a = load_nmoldyn_signal_axes(a, {'Sq_total','ssf_total'}, {'q','k'});
 a = load_nmoldyn_signal_axes(a, {'Fqt_total','f_q_t_total'},{'q','k'}, {'times','time'});
-a = load_nmoldyn_signal_axes(a, {'Sqw_total','s_q_f_total'}, {'q','k'}, 'frequency');
+a = load_nmoldyn_signal_axes(a, {'Sqw_total','s_q_f_total','dsf'}, {'q','k'}, 'frequency');
+
+% check if the 'q' axis is in Angs-1 or nm-1
+if isfield(a, 'q')
+  q = get(a,'q');
+  if max(q(:)) > 50
+    % probably in nm-1
+    set(a, 'q', q/10);
+    disp([ mfilename ': changing q axis from nm-1 to Angs-1. If this is wrong, multiply it back by 10.' ])
+    label(a,'q', 'Wavevector [Angs-1]');
+  end
+end
+
 a.classical = 1;
 
 % ==============================================================================
