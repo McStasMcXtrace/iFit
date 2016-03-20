@@ -24,8 +24,8 @@ function s = Sqw_deBosify(s, T, type)
 % The semi-classical correction, Q, aka 'quantum' correction factor, 
 % can be selected from the optional   'type' argument:
 %    Q = exp(hw_kT/2)                 'Schofield' or 'Boltzmann'
-%    Q = hw_kT./(1-exp(-hw_kT))       'harmonic'  or 'Bader' (default)
-%    Q = 2./(1+exp(-hw_kT))           'standard'  or 'Frommhold'
+%    Q = hw_kT./(1-exp(-hw_kT))       'harmonic'  or 'Bader'
+%    Q = 2./(1+exp(-hw_kT))           'standard'  or 'Frommhold' (default)
 %
 % The 'Boltzmann' correction leads to a divergence of the S(q,w) for e.g. w above 
 % few 100 meV. The 'harmonic' correction provides a reasonable correction but does
@@ -36,7 +36,7 @@ function s = Sqw_deBosify(s, T, type)
 %
 % Example: s = Sqw_deBosify(s, 300);
 %
-% See also: Sqw_Bosify, Sqw_symmetrize, Sqw_dynamic_range, Sqw_total_xs
+% See also: Sqw_Bosify, Sqw_symmetrize, Sqw_dynamic_range, Sqw_scatt_xs
 
   if nargin == 1, T = []; end
   if nargin < 3, type=''; end
