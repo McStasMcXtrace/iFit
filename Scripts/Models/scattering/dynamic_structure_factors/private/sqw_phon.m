@@ -25,7 +25,7 @@ function signal=sqw_phon(varargin)
 %     single word, which can be followed by any other comment.
 %   The specified file name can be different than POSCAR.
 %   If you wish to specify the initial system structure with an other file format
-%     and have installed ASE, you should use sqw_ph_ase(file, ...)
+%     and have installed ASE, you should use sqw_phonons(file, ...)
 %
 % pseudo: file name of pseudo-potential to use. If not set, a reasonable 
 %   choice will be made from existing UPF files from Quantum Espresso, with
@@ -127,7 +127,7 @@ function signal=sqw_phon(varargin)
 % output: signal: model value
 %
 % Version: $Date$
-% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_cubic_monoatomic, sqw_ph_ase, sqw_sine3d, sqw_vaks
+% See also iData, iFunc/fits, iFunc/plot, gauss, sqw_cubic_monoatomic, sqw_phonons, sqw_sine3d, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 
 % Private functions (inline)
