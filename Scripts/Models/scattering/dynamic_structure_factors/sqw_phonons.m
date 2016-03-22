@@ -645,7 +645,7 @@ case 'NWCHEM' % ================================================================
   
   
   decl = 'from ase.calculators.nwchem import NWChem';
-  calc = sprintf('calc = NWChem(xc=''%s''', ...
+  calc = sprintf('calc = NWChem(xc=''%s'', odft=True', ...
     options.xc);
   % check if we use KPTS
   if all(options.kpoints > 0)
