@@ -101,7 +101,7 @@ function sigma = Sqw_scatt_xs(s, Ei)
 function sigma = Sqw_scatt_xs_single(s, Ei)
 
   % restrict to dynamic range
-  s = Sqw_dynamic_range(s, Ei);
+  s = Sqw_dynamic_range(s, Ei, [], 'checked');
   sq= trapz(s); % integrate over energy w {1} in the 2D Sqw
 
   % constants

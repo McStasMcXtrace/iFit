@@ -1,4 +1,4 @@
-function s = Sqw_Bosify(s, T, type)
+function s = Sqw_Bosify(s, T, type, options)
 % Sqw_Bosify: apply the 'Bose' factor (detailed balance) to a classical data set.
 %   The initial data set should obey S(q,w) = S(q,-w), i.e. be 'classical'.
 %
@@ -50,6 +50,7 @@ function s = Sqw_Bosify(s, T, type)
 
   if nargin == 1, T = []; end
   if nargin < 3, type=''; end
+  if nargin < 4, options=''; end
 
   % handle array of objects
   if numel(s) > 1
@@ -62,14 +63,13 @@ function s = Sqw_Bosify(s, T, type)
     return
   end
 
-  s = Sqw_check(s); % in private
+  if ~strcmp(options, 'checked')
+    s = Sqw_check(s); % in private
+  end
 
   if isempty(s), return; end
   
   if isempty(T),  T = Sqw_getT(s); end
-  if isempty(T) || T == 0
-    return
-  end
   if isempty(type), type='standard'; end
 
   % test if classical
@@ -79,9 +79,23 @@ function s = Sqw_Bosify(s, T, type)
     end
   end
   
+  % handle different temperatures
+  if numel(T) > 1
+    sqw = [];
+    for index=1:numel(T)
+      sqw = [ sqw feval(mfilename, s, T(index), type, 'checked') ];
+    end
+    s = sqw;
+    return
+  end
+
+  if isempty(T) || T == 0
+    return
+  end
+  
   T2E       = (1/11.6045);           % Kelvin to meV = 1000*K_B/e
   kT        = T*T2E;
-  hw_kT     = s{1}/kT;               % hbar omega / kT
+  hw_kT     = s{1}./kT;               % hbar omega / kT
   
   % apply sqrt(Bose) factor to get experimental-like
   % semi-classical corrections, aka quantum correction factor

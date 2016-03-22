@@ -1,4 +1,4 @@
-function s = Sqw_dynamic_range(s, Ei, angles)
+function s = Sqw_dynamic_range(s, Ei, angles, options)
 % Sqw_dynamic_range(s,Ei): crop the S(|q|,w) to the available dynamic range
 %   for given incident neutron energy.
 %
@@ -33,12 +33,13 @@ function s = Sqw_dynamic_range(s, Ei, angles)
   if nargin < 3
     angles = [];
   end
+  if nargin < 4, options=''; end
   sqw = [];
 
   % handle array of objects
   if numel(s) > 1
     for index=1:numel(s)
-      sqw = [ sqw feval(mfilename, s(index), Ei, angles) ];
+      sqw = [ sqw feval(mfilename, s(index), Ei, angles, options) ];
       s(index)=iData; % clear memory
     end
     s = sqw;
@@ -57,26 +58,28 @@ function s = Sqw_dynamic_range(s, Ei, angles)
     Ki = SE2V*V2K*sqrt(Ei);
   else
     % get dynamic limits from the given S(q,w)
-    Ki = max(max(q))/2;
-    Ei = max(max(abs(w)));
+    Ki = max(q(:))/2;
+    Ei = max(abs(w(:)));
     if SE2V*V2K*sqrt(Ei) < Ki % check which of q,w limits the range
       Ki = SE2V*V2K*sqrt(Ei);
     end
   end
   
+  if ~strcmp(options,'checked')
+    s = Sqw_check(s); % in private
+    if isempty(s), return; end
+    
+    % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
+    s = meshgrid(s);
+  end
+  
   if numel(Ei) > 1
     for index=1:numel(Ei)
-      sqw = [ sqw feval(mfilename, s, Ei(index), angles) ];
+      sqw = [ sqw feval(mfilename, s, Ei(index), angles, 'checked') ];
     end
     s = sqw;
     return
   end
-
-  s = Sqw_check(s); % in private
-  if isempty(s), return; end
-  
-  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
-  s = meshgrid(s);
   
   % get axes
   w = s{1};
