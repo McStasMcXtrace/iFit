@@ -29,7 +29,7 @@ cmd=a.Command;
 b=copyobj(a);
 rmaxis(b); % delete all axes
 if dim==1 & ndims(a)==1
-  b = mean(s, dim);
+  b = mean(s);
   return
 elseif dim > 0
   s = mean(s, dim);

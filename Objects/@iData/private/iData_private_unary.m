@@ -111,14 +111,6 @@ case 'tanh'
 case { 'transpose', 'ctranspose'}; % .' and ' respectively
 	e = feval(op, e);
 	m = feval(op, m);
-	if ndims(b) > 1
-  	x1 = getaxis(b, '1'); % axis names
-  	x2 = getaxis(b, '2');
-  	v1 = getaxis(b, 1);   % axis values
-  	v2 = getaxis(b, 2);
-  	if ~isempty(x2), b= setaxis(b, 1, x2, transpose(v2)); end
-  	if ~isempty(x1), b= setaxis(b, 2, x1, transpose(v1)); end
-  end
 case {'sparse','full','flipud','fliplr'}
   % apply same operator on error and Monitor
 	e = feval(op, e);
@@ -173,6 +165,17 @@ if ~isequal(subsref(b,struct('type','.','subs','Monitor')), m)
   b = setalias(b, 'Monitor', m);
 end
 clear m
+switch op
+    case { 'transpose', 'ctranspose'}; % .' and ' respectively
+	if ndims(b) > 1
+  	x1 = getaxis(b, '1'); % axis names
+  	x2 = getaxis(b, '2');
+  	v1 = getaxis(b, 1);   % axis values
+  	v2 = getaxis(b, 2);
+  	if ~isempty(x2), b= setaxis(b, 1, x2, transpose(v2)); end
+  	if ~isempty(x1), b= setaxis(b, 2, x1, transpose(v1)); end
+    end
+end
 b.Command=cmd;
 b = iData_private_history(b, op, a);  
 
