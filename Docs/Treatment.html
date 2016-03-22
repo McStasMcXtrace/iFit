@@ -19,12 +19,11 @@
               factors S(|q|,w) in liquids, powders, gas, polymers and
               other amorphous materials</a>
             <ol>
-              <li><a href="#mozTocId550398">Example: import and treat
-                  the coherent dynamic structure factor from liquid
-                  germanium molecular dynamics</a></li>
-              <li><a href="#mozTocId633075">Example: import and treat
-                  the coherent dynamic structure factor from a neutron
-                  scattering experiment </a></li>
+              <li><a href="#mozTocId550398">Example: dynamic structure
+                  factor from molecular dynamics</a></li>
+              <li><a href="#mozTocId633075">Example: dynamic structure
+                  factor from a neutron scattering experiment </a></li>
+              <li><a href="#mozTocId986651">References</a></li>
             </ol>
           </li>
         </ol>
@@ -38,11 +37,13 @@
         href="Methods.html">methods</a>
       <div style="text-align: left;"><br>
         <h2><a class="mozTocH3" name="mozTocId664163"></a>Neutron
-          scattering Dynamic structure factor</h2>
+          scattering Dynamic structure factor<br>
+        </h2>
         The iFit infrastructure comes with a set of dedicated procedures
         to read and analyze S(q,w) dynamic structure factors, aka
         scattering law, in the case of <a
           href="https://en.wikipedia.org/wiki/Inelastic_neutron_scattering">neutron
+
 
 
 
@@ -66,7 +67,7 @@
           1 Angs<sup>-1</sup> = 10 nm<sup>-1</sup><br>
         </div>
         <br>
-        <table width="100%" border="1" cellpadding="2" cellspacing="2">
+        <table border="1" cellpadding="2" cellspacing="2" width="100%">
           <tbody>
             <tr>
               <td valign="top"><i><b>Procedure</b></i><i><b><br>
@@ -92,11 +93,12 @@
             <tr>
               <td valign="top"><b>Sqw_symmetrize</b><b>(Sqw)</b><b><br>
                 </b></td>
-              <td valign="top">S(|q|,w)<br>
+              <td valign="top">S*(|q|,w&gt;0)<br>
               </td>
               <td valign="top">S*(|q|,w)=S*(|q|,-w)<i><br>
                 </i></td>
-              <td valign="top">extend the S(|q|,w) in both energy sides<br>
+              <td valign="top">extend the S(|q|,w) in both energy sides.
+                The initial data set should better be 'classical'.<br>
               </td>
             </tr>
             <tr>
@@ -122,13 +124,12 @@
               </td>
             </tr>
             <tr>
-              <td valign="top"><b>Sqw_Sq(Sqw)</b><b><br>
+              <td valign="top"><b>trapz(Sqw)</b><b><br>
                 </b></td>
               <td valign="top">S(|q|,w)</td>
               <td valign="top">S(|q|)<br>
               </td>
-              <td valign="top">compute the static structure factor. This
-                is equivalent to <b>trapz(Sqw,1)</b>.<br>
+              <td valign="top">compute the static structure factor.<br>
               </td>
             </tr>
             <tr>
@@ -157,10 +158,13 @@
         <br>
         Conventions:<br>
         <ul>
-          <li>w = Ei-Ef = energy lost by the neutron</li>
+          <li>w = Ei-Ef = energy lost by the neutron in meV.<br>
+          </li>
           <li>w &gt; 0, neutron looses energy, can not be higher than
             the incident neutron energy (Stokes)</li>
           <li>w &lt; 0, neutron gains energy, anti-Stokes</li>
+          <li>q is the momentum in Angs-1.<br>
+          </li>
         </ul>
         <h4><a class="mozTocH4" name="mozTocId550398"></a>Example:
           dynamic structure factor from molecular dynamics</h4>
@@ -169,6 +173,7 @@
         Dynamics (AIMD) with VASP, for 200 Ge atoms (GGA-PW91 potential)
         at T=1350K, from [7]. The data set is part of iFit, as well as <a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Ge_liq_coh.sqw">in
+
 
 
 
@@ -190,6 +195,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
           ensemble</a>. The integrator used along the trajectory is the
         <a href="https://en.wikipedia.org/wiki/Verlet_integration">Verlet</a>,
         which is a central difference, energy conserving integrator. As
@@ -200,9 +206,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         symmetric in time, and as a consequence <i>S(q,w)</i> is also
         real, symmetric in energy. We denote this scattering law S* to
         label it as symmetric.<img alt="Treatment_Sqw_load"
-          title="Treatment_Sqw_load"
-          src="images/Treatment_Sqw_load.png"
-          height="180" width="200" align="right"> It is often named
+          title="Treatment_Sqw_load" src="images/Treatment_Sqw_load.png"
+          align="right" width="200" height="180"> It is often named
         'classical'.<br>
         <br>
         We plot the scattering law S*:<br>
@@ -216,14 +221,14 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         extends on both energy sides, you can skip this step (e.g.
         nMoldyn4/MDANSE).<br>
         <ul>
-          <li>Sqw2=<font color="#3366ff">Sqw_symmetrize</font>(Sqw);</li>
+          <li>Sqw2=<font color="#3366ff">Sqw_symmetrize</font>(Sqw)</li>
         </ul>
         Then we can plot the symmetrized scattering law, which extends
         equally in both w&lt;0 and w&gt;0.<img
           alt="Treatment_Sqw_symmetrize"
           title="Treatment_Sqw_symmetrize"
-          src="images/Treatment_Sqw_symmetrize.png" height="180"
-          width="200" align="right"><br>
+          src="images/Treatment_Sqw_symmetrize.png" align="right"
+          width="200" height="180"><br>
         <ul>
           <li><font color="#3366ff">plot</font>(log10(Sqw2), <font
               color="#cc33cc">'view3'</font>);</li>
@@ -236,7 +241,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         symmetrized S*(q,w). So, having obtained S* from Molecular
         Dynamics, we have to choose <i>how</i> to 'desymmetrize' it in
         order to obey the so-called 'detailed balance' accounting for
-        the population of vibrational modes.<br>
+        the population of vibrational modes [5,6]:<br>
         <br>
         <div align="center">S(q,w)&nbsp; = exp(hw/kT) S(q,-w)<br>
         </div>
@@ -253,7 +258,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         The semi-classical correction, Q, aka 'quantum' correction
         factor,&nbsp; can be selected as [4]:<br>
         <br>
-        <table width="100%" border="1" cellpadding="2" cellspacing="2">
+        <table border="1" cellpadding="2" cellspacing="2" width="100%">
           <tbody>
             <tr>
               <td valign="top"><i>Q = exp(hw/kT/2)</i></td>
@@ -281,14 +286,15 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         balance, it is not recommended as it leads to a divergence of
         the S(q,w) for large energies e.g. above few 100 meV. The <i>'harmonic'</i>
         correction is weaker but does not fully avoid the divergence at
-        large energies. The <i>standard</i> correction is probably the
-        best when dealing with large neutron energies. In the
+        large energies. The <i>'standard</i>' correction is probably
+        the best when dealing with large neutron energies. In the
         'classical' limit where hw &lt;&lt; kT (and kT ~ 30 meV a 300K),
         all corrections are equivalent. All these corrections satisfy
         the detailed balance equally.<br>
         <br>
         So, from the symmetric 'classical' S* we can now determine the
-        'true' S(q,w) scattering law, at a given temperature.<br>
+        'true' S(q,w) scattering law, at a given temperature, using the
+        'standard' quantum correction.<br>
         <ul>
           <li>SqwT = <font color="#3366ff">Sqw_Bosify</font>(Sqw2,
             1250)</li>
@@ -296,11 +302,11 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         </ul>
         <img alt="Treatment_Sqw_dynrange.png"
           title="Treatment_Sqw_dynrange.png"
-          src="images/Treatment_Sqw_dynrange.png"
-          height="180" width="200" align="right">When not given, the
-        temperature will be searched in the Sqw data set. A 3rd argument
-        allows to specify the quantum correction to apply (<i>'standard'</i>
-        is default). Of course, in this example, for such a high
+          src="images/Treatment_Sqw_dynrange.png" align="right"
+          width="200" height="180">When not given, the temperature will
+        be searched in the Sqw data set. A 3rd argument allows to
+        specify the quantum correction to apply (<i>'standard'</i> is
+        default). Of course, in this example, for such a high
         temperature, the up- and down-scattering are about the same (the
         quantum correction remains close to 1). For materials at low
         temperatures, the two sides are highly disymmetric.<br>
@@ -312,30 +318,28 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
-            25);</li>
-          <li> <font color="#3366ff">plot</font>(log10(Sqw25))</li>
+
+            25)</li>
+          <li> <font color="#3366ff">plot</font>(log10(Sqw25));</li>
         </ul>
         It is here possible to compare the structure factor as measured
-        with Ei=25 meV <br>
-        <br>
-        The scattering cross section is computed as the integral of the
-        dynamic range vs. the incident energy:<br>
-        <br>
-        <div align="center">&#963;(Ei) = &#963;&#8747;&#8747;S(q,w)q dq dw /2Ki² <br>
-        </div>
-        <br>
-        <img alt="Treatment_Sqw_XS.png" title="Treatment_Sqw_XS.png"
-          src="images/Treatment_Sqw_XS.png" height="180" width="200"
-          align="right">The integral can be computed with the <font
-          color="#3366ff">Sqw_scatt_xs</font> procedure, for a given
-        energy range, which should then be mutliplied by the bound
-        scattering cross section &#963;:<br>
+        with Ei=25 meV (i.e. restricted to the corresponding dynamic
+        range) to the ideal one. The ratio is called the "inelasticity
+        correction".<br>
         <ul>
-          <li>Ei = <font color="#3366ff">logspace</font>(-3,2,50);%
-            from Ei=10<sup>-3</sup> to 10<sup>2</sup> meV.<br>
-          </li>
-          <li>XS = <font color="#3366ff">Sqw_scatt_xs</font>(SqwT,Ei);</li>
-          <li>plot(XS)<br>
+          <li><font color="#3366ff">plot</font>(SqwT, <font
+              color="#3366ff">trapz</font>(Sqw25));</li>
+        </ul>
+        <img alt="Treatment_Sqw_moments" title="Treatment_Sqw_moments"
+          src="images/Treatment_Sqw_moments.png" align="right"
+          width="200" height="150">From the dynamic structure factor,
+        one can compute the energy moments, which provide some of the
+        characteristic frequencies, specifying the molar weight of the
+        scattering units (here 72.64 g/mol for Ge):<br>
+        <ul>
+          <li>moments=<font color="#3366ff">Sqw_moments</font>(SqwT,
+            72.64)</li>
+          <li><font color="#3366ff">plot</font>(moments)<br>
           </li>
         </ul>
         <br>
@@ -357,13 +361,15 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
         a symmetric data set which extends in both w&gt;0and w&lt;0. The
         data close to the elastic w=0 line, which can be measured in up-
         and down- scattering, is computed as the mean of both sides.<br>
-        <h4>References</h4>
+        <br>
+        Then, the rest of the data treatment is the same as above.<br>
+        <h4><a class="mozTocH4" name="mozTocId986651"></a>References</h4>
         <ol>
           <li>P. Schofield. <i>Phys. Rev. Lett</i>., 4, 239 (1960).<br>
           </li>
           <li>J. S. Bader and B. J. Berne. <i>J. Chem. Phys.,</i> 100,
-            8359 (1994) ; see also T. D. Hone and G. A. Voth. J. Chem.
-            Phys., 121, 6412 (2004).<br>
+            8359 (1994) ; see also T. D. Hone and G. A. Voth.<i> J.
+              Chem. Phys.</i>, 121, 6412 (2004).<br>
           </li>
           <li>L. Frommhold. Collision-induced absorption in gases, 1 st
             ed., Cambridge Monographs on Atomic, Molecular, and Chemical
@@ -383,17 +389,40 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
               of Computational Physics</i><b> 228</b> (2009) 5251<br>
           </li>
           <li>E. Farhi et al, <i>J. Nucl. Sci. Tech. </i><b>52</b>
-            (2015) 844; DOI: 10.1080/00223131.2014.984002<br>
+            (2015) 844; DOI: 10.1080/00223131.2014.984002</li>
+          <li>NIST Neutron scattering lengths and cross sections &lt;<a
+              href="https://www.ncnr.nist.gov/resources/n-lengths/">https://www.ncnr.nist.gov/resources/n-lengths/</a>&gt;<br>
           </li>
         </ol>
-        <h4> </h4>
         <h2><a class="mozTocH3" name="mozTocId415079"></a>Neutron
           scattering cross section </h2>
+        <p>The energy dependent scattering cross section is computed as
+          the integral of the dynamic range vs. the incident energy:<br>
+          <br>
+        </p>
+        <div align="center">&#963;(Ei) = &#963;&#8747;&#8747;S(q,w)q dq dw /2Ki² <br>
+        </div>
+        <br>
+        <img alt="Treatment_Sqw_XS.png" title="Treatment_Sqw_XS.png"
+          src="file:///home/farhi/dev/iFit/Docs/images/Treatment_Sqw_XS.png"
+          align="right" width="200" height="180">The integral can be
+        computed with the <font color="#3366ff">Sqw_scatt_xs</font>
+        procedure, for a given energy range, which should then be
+        multiplied by the bound thermal scattering cross section &#963;,
+        which is 8.42 barns for the coherent scattering in Ge [10]:<br>
+        <ul>
+          <li>Ei = <font color="#3366ff">logspace</font>(-3,2,50);%
+            from Ei=10<sup>-3</sup> to 10<sup>2</sup> meV.<br>
+          </li>
+          <li>XS = <font color="#3366ff"><font color="#330033">8.42*</font>Sqw_scatt_xs</font>(SqwT,Ei);</li>
+          <li>plot(XS); set(gca, <font color="#cc33cc">'YScale','log','XScale','log'</font>);</li>
+        </ul>
       </div>
     </div>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
