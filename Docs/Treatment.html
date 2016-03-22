@@ -49,6 +49,7 @@
 
 
 
+
           scattering</a> [5,6].<br>
         <br>
         <h3><a class="mozTocH3" name="mozTocId424180"></a>Isotropic
@@ -179,6 +180,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Ge_
 
 
 
+
           McStas</a>. You can also try liquid Rubidium from <a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Rb_liq_coh.sqw">here</a>
         [8] and heavy water from <a
@@ -190,6 +192,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         </ul>
         Molecular Dynamics trajectories are usually computed in the NVE
         <a href="https://en.wikipedia.org/wiki/Microcanonical_ensemble">micro-canonical
+
 
 
 
@@ -235,13 +238,16 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         </ul>
         We can check here that S*(q,-w) = S*(q,w).<br>
         <br>
+        <b>From classical to quantum scattering law</b><br>
         The next step is to get the temperature in. <font
-          color="#ff0000">A warning is in place here</font>. There is
-        only one S(q,w), but there are infinite ways to derive a
-        symmetrized S*(q,w). So, having obtained S* from Molecular
-        Dynamics, we have to choose <i>how</i> to 'desymmetrize' it in
-        order to obey the so-called 'detailed balance' accounting for
-        the population of vibrational modes [5,6]:<br>
+          color="#ff0000"><br>
+          <br>
+          A warning is in place here</font>. There is only one S(q,w),
+        but there are infinite ways to derive a symmetrized S*(q,w). So,
+        having obtained S* from Molecular Dynamics, we have to choose <i>how</i>
+        to 'desymmetrize' it in order to obey the so-called 'detailed
+        balance' accounting for the population of vibrational modes
+        [5,6]:<br>
         <br>
         <div align="center">S(q,w)&nbsp; = exp(hw/kT) S(q,-w)<br>
         </div>
@@ -311,10 +317,13 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         quantum correction remains close to 1). For materials at low
         temperatures, the two sides are highly disymmetric.<br>
         <br>
+        <b>Dynamic range accessible for a given neutron incident energy,
+          structure factor, inelasticity correction</b><br>
         Then, we can determine the dynamic range accessible to neutrons
         with a given incident energy, say Ei=25 meV.<br>
         <ul>
           <li>Sqw25 = <font color="#3366ff">Sqw_dynamic_range</font>(SqwT,
+
 
 
 
@@ -330,19 +339,71 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
           <li><font color="#3366ff">plot</font>(SqwT, <font
               color="#3366ff">trapz</font>(Sqw25));</li>
         </ul>
-        <img alt="Treatment_Sqw_moments" title="Treatment_Sqw_moments"
-          src="images/Treatment_Sqw_moments.png" align="right"
-          width="200" height="150">From the dynamic structure factor,
-        one can compute the energy moments, which provide some of the
-        characteristic frequencies, specifying the molar weight of the
-        scattering units (here 72.64 g/mol for Ge):<br>
+        <b><img alt="Treatment_Sqw_moments"
+            title="Treatment_Sqw_moments"
+            src="images/Treatment_Sqw_moments.png" align="right"
+            width="200" height="150"></b><b>Characteristic frequencies</b><br>
+        From the dynamic structure factor, one can compute the energy
+        moments, which provide some of the characteristic frequencies
+        [5,6], specifying the molar weight of the scattering units (here
+        72.64 g/mol for Ge):<br>
         <ul>
           <li>moments=<font color="#3366ff">Sqw_moments</font>(SqwT,
             72.64)</li>
           <li><font color="#3366ff">plot</font>(moments)<br>
           </li>
         </ul>
+        <b>The density of states (aka phonon or frequency spectrum)</b><br>
+        The scattering law, from its definition [5,6], is a correlation
+        function of the density operator, which itself depends on the <i>position</i>
+        of the particles. <br>
+        The vibrational density of states is defined as the <i>velocity</i>
+        auto-correlation function (VACF) of the particles. It is not a
+        function of the positions. So, in principle, it is NOT possible
+        to compute the vibrational density of states from the scattering
+        law.<br>
         <br>
+        However, a few attempts have been made to estimate the density
+        of states from e.g. a neutron scattering time-of-flight
+        experiment (such as done on IN4, IN5 and IN6 at the ILL). The
+        concept of the <i>generalised density of states</i> has been
+        defined as:<br>
+        <div align="center">gDOS(q,w) = S(q,w) w/q<sup>2</sup> [1 -
+          exp(-hw/kT)]<br>
+        </div>
+        <br>
+        which is exact in the case of an incoherent scatterer. As such,
+        it should only be considered as an approximation of the density
+        of states, especially for most materials which have coherent
+        scattering. The hydrogenated materials and e.g Vanadium are good
+        examples of materials which are mostly incoherent, and the
+        approximation is then good. For other materials, great care
+        should be taken.<br>
+        <br>
+        We import the heavy water from <a
+href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">here</a>
+        [9]. <br>
+        <ul>
+          <li>Sqw=<font color="#3366ff">iData</font>(<font
+              color="#cc33cc">'D2O_liq_290_coh.sqw'</font>);</li>
+        </ul>
+        <img alt="Treatment_Sqw_gDOS" title="Treatment_Sqw_gDOS"
+          src="images/Treatment_Sqw_gDOS.png" align="right" width="200"
+          height="151">Then we can compute the generalised density of
+        states with the <font color="#3366ff">Sqw_gDOS</font>
+        procedure, from either the raw, or the symmetrised, 'Bosified'
+        (with quantum correction) data set.<br>
+        <ul>
+          <li>SqwT = <font color="#3366ff">Sqw_Bosify</font>(<font
+              color="#3366ff">Sqw_symmetrize</font>(Sqw), 290);</li>
+          <li>g=[ <font color="#3366ff">Sqw_gDOS</font>(Sqw) <font
+              color="#3366ff">Sqw_gDOS</font>(SqwT) ];</li>
+        </ul>
+        This is a function of (q,w), and should then be integrated along
+        the wavevector axis (2) to derive the frequency spectrum.<br>
+        <ul>
+          <li><font color="#3366ff">plot</font>(<font color="#3366ff">trapz</font>(g,2))</li>
+        </ul>
         <h4><a class="mozTocH4" name="mozTocId633075"></a>Example:
           dynamic structure factor from a neutron scattering experiment<br>
         </h4>
@@ -391,8 +452,9 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
           <li>E. Farhi et al, <i>J. Nucl. Sci. Tech. </i><b>52</b>
             (2015) 844; DOI: 10.1080/00223131.2014.984002</li>
           <li>NIST Neutron scattering lengths and cross sections &lt;<a
-              href="https://www.ncnr.nist.gov/resources/n-lengths/">https://www.ncnr.nist.gov/resources/n-lengths/</a>&gt;<br>
-          </li>
+              href="https://www.ncnr.nist.gov/resources/n-lengths/">https://www.ncnr.nist.gov/resources/n-lengths/</a>&gt;</li>
+          <li>Price J. et al, Non Cryst Sol 92 (1987) 153</li>
+          <li>Bellisent-Funel et al, J. Mol. Struct. 250 (1991) 213</li>
         </ol>
         <h2><a class="mozTocH3" name="mozTocId415079"></a>Neutron
           scattering cross section </h2>
@@ -422,6 +484,7 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
