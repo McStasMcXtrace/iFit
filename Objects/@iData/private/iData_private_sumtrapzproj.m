@@ -187,7 +187,7 @@ if all(dim > 0)
           S.subs={ ':' };
         else
           for j=1:ndims(a), 
-            if j ~= index, S.subs{j}='1';
+            if j ~= index, S.subs{j}= 1;
             else           S.subs{j}=':'; end
           end
         end

@@ -260,7 +260,7 @@ if isa(a, 'iData'), [dummy, al] = getaxis(a,'0');
 else 
   al=num2str(s1(:)'); if length(al) > 10, al=[ al(1:10) '...' ]; end 
 end
-s2=s1(1:min(10, numel(s2)));
+s2=s2(1:min(10, numel(s2)));
 if isa(b, 'iData'), [dummy, bl] = getaxis(b,'0'); 
 else 
   bl=num2str(s2(:)');
