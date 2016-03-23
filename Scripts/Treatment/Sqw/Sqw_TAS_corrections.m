@@ -1,6 +1,12 @@
 function [data,V, eff] = Sqw_TAS_corrections(data)
   % extract the q,w axes and compute kf, lambda_f, theta_A for corrections
   
+  if nargin == 0, return; end
+  if ~isa(data, 'iData')
+    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(data) ]);
+    return; 
+  end
+  
   q       = data{2};
   w       = data{1};
   

@@ -1,18 +1,23 @@
-function g = Sqw_gDOS(s,T)
+function [gDOS, g] = Sqw_gDOS(s)
 % Sqw_gDOS: compute the generalised density of states (gDOS)
 %  The gDOS is an approximation of the vibrational spectra (DOS).
 %  This routine should be applied on an incoherent dynamic S(q,w) data set.
-%
 %  The S(q,w) is a dynamic structure factor aka scattering function.
 %
-%  The gDOS(w) is obtained by computing its integral onto the 'q' axis
-%    trapz(Sqw_gDOS(s),2)
+%               gDOS(q,w) = S(q,w) w/q2 [1 - exp(-hw/kT)]
+%
+%  The applicability to a coherent dynamic structure factor S(q,w) should be
+%    taken with great care, as this formalism then does not hold.
+%
+%  The gDOS(w) is obtained by extracting the low momentum values out of gDOS(q,w).
+%  The syntax is:
+%                 [g(w), g(q,w)]=Sqw_gDOS(Sqw)
 %
 % input:
-%   s: Sqw data set (non classical, including T Bose factor e.g from experiment)
-%        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
-%   T: when given, Temperature to use for Bose. When not given, the Temperature
-%      is searched in the object.
+%   s: Sqw data set e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
+% output:
+%   g:   gDOS(w)   (1D iData versus energy)
+%   g2D: gDOS(q,w) (2D iData)
 %
 % conventions:
 % omega = Ei-Ef = energy lost by the neutron
@@ -22,17 +27,21 @@ function g = Sqw_gDOS(s,T)
 % references: Price J. et al, Non Cryst Sol 92 (1987) 153
 %             Bellisent-Funel et al, J. Mol. Struct. 250 (1991) 213
 %
-% Example: s = Sqw_gDOS(s);
+% Example: g = Sqw_gDOS(s); plot(g);
 
-
-  if nargin == 1, T = []; end
-  g = [];
+  g = []; gDOS=[];
+  if nargin == 0, return; end
+  if ~isa(s, 'iData')
+    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
+    return; 
+  end
+  
 
   % handle array of objects
   if numel(s) > 1
     g = [];
     for index=1:numel(s)
-      g = [ g feval(mfilename, s(index), T) ];
+      g = [ g feval(mfilename, s(index)) ];
     end
     return
   end
@@ -40,34 +49,48 @@ function g = Sqw_gDOS(s,T)
   s = Sqw_check(s);
   if isempty(s), return; end
 
-  if isempty(T),  T = Sqw_getT(s); end
-
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     if s.classical == 1
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical. The gDOS computation may be wrong. Apply Sqw_Bosify first.' ]);
+      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical.' ])
+      disp('  The gDOS computation may be wrong. Apply Sqw_Bosify first.');
     end
   end
   
-  w = s{1};
-  q = s{2};
-  kT= T/11.6045;
+  w = s{1}; yl=getaxis(s, '1');
+  q = s{2}; xl=getaxis(s, '2');
 
-  g = s.*(w.*(1 - exp(-w/kT)))./q.^2;  % from Price 1987
+  g = s.*w.^2./q.^2;  % from Price 1987
+  if ischar(xl), setaxis(g,2, xl); end
+  if ischar(yl), setaxis(g,1, yl); end
   
   % reset axes
-  g{1}=w; g{2}=q;
-  xlabel(g, xlabel(s));
-  ylabel(g, ylabel(s));
-  title(g,'gDOS');
+  % g{1}=w; g{2}=q;
+
+  title(g,[ 'gDOS 2D(' s.Title ')' ]);
   if isempty(g.Label), g.Label='gDOS'; end
   
   % this is the weighting for valid data
   g(g <= 0) = 0; g(~isfinite(g)) = 0;
-
-  % compute integral
-  %g = trapz(g,2); % on energy
-  %g = g./trapz(g);
-  setalias(g, 'Temperature', T);
   
+  % determine the low-momentum limit
+  s0 = subsref(g,struct('type','.','subs','Signal'));
+  gDOS = zeros(size(s0,1),1);  % column of g(w) DOS for q->0
+  nc = min(10,size(s0,2)); % get the first 10 values for each energy transfer
+  for i=1:size(s0,1)
+    nz = find(s0(i,:) > 0, nc, 'first');
+    if ~isempty(nz)
+      gDOS(i) = sum(s0(i,nz));
+    end
+  end
+  gDOS=gDOS./sum(gDOS);
+  if isvector(w)
+    gDOS=iData(w,gDOS);
+  else
+    gDOS=iData(w(1,:),gDOS);
+  end
+  gDOS.Error=0;
+  gDOS.Title = [ 'gDOS(' s.Title ')' ];
+  title(gDOS,[ 'gDOS(' s.Title ')' ]);
+  xlabel(gDOS, 'Energy');
 

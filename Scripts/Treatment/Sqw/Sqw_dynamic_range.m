@@ -8,8 +8,10 @@ function s = Sqw_dynamic_range(s, Ei, angles, options)
 %  Ef         = Ei - w                                is positive
 %  cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)  is within [-1:1]
 %
-% The positive energy values in the S(q,w) map correspond to Stokes processes, 
-% i.e. material gains energy, and neutrons loose energy when scattered.
+% conventions:
+% omega = Ei-Ef = energy lost by the neutron
+%    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
+%    omega < 0, neutron gains energy, anti-Stokes
 %
 % The scattering angle theta can be restricted to match a detection area
 % with the syntax:
@@ -25,6 +27,12 @@ function s = Sqw_dynamic_range(s, Ei, angles, options)
 % Example: Sqw_dynamic_range(s, 14.8, [-20 135])
 %
 % See also: Sqw_Bosify, Sqw_deBosify, Sqw_symmetrize, Sqw_scatt_xs
+
+  if nargin == 0, return; end
+  if ~isa(s, 'iData')
+    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
+    return; 
+  end
 
   % first look at the given arguments
   if nargin < 2
@@ -46,6 +54,12 @@ function s = Sqw_dynamic_range(s, Ei, angles, options)
     return
   end
   
+  % check if the energy range is limited
+  w = s{1};
+  if all(w(:) >= 0) || all(w(:) <= 0)
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side. Perhaps you should apply Sqw_symmetrize and Sqw_Bosify ?' ]);
+  end
+  
   % compute Ei, Ef, Ki, Kf
   % constants
   SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
@@ -58,6 +72,7 @@ function s = Sqw_dynamic_range(s, Ei, angles, options)
     Ki = SE2V*V2K*sqrt(Ei);
   else
     % get dynamic limits from the given S(q,w)
+    q = s{2};
     Ki = max(q(:))/2;
     Ei = max(abs(w(:)));
     if SE2V*V2K*sqrt(Ei) < Ki % check which of q,w limits the range
@@ -94,10 +109,7 @@ function s = Sqw_dynamic_range(s, Ei, angles, options)
   lambda = 2*pi./Ki;
 
   Ef = Ei-w;
-  if any(Ef < 0)
-      % the definition of the energy is reverted: Ef = Ei+w
-      Ef = Ei+w;
-  end
+  
   Vf = SE2V*sqrt(Ef);
   Kf = V2K*Vf;
 

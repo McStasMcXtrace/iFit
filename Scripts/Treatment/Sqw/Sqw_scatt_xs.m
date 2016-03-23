@@ -47,6 +47,13 @@ function sigma = Sqw_scatt_xs(s, Ei)
   % Example: sigma = Sqw_scatt_xs(s, 14.6)
   %
   % See also: Sqw_Bosify, Sqw_deBosify, Sqw_symmetrize, Sqw_dynamic_range
+  
+  sigma = [];
+  if nargin == 0, return; end
+  if ~isa(s, 'iData')
+    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
+    return; 
+  end
 
   % first look at the given arguments
   if nargin < 2

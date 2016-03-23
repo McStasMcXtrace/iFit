@@ -52,9 +52,14 @@ if ischar(this),
     this=iData(this);
   end
 elseif isempty(this), this=iData(''); end
+
 if nargin < 2, parameters=[]; end
 
 if isempty(this), return; end
+if ~isa(this, 'iData')
+  disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(this) ]);
+  return; 
+end
 
 filename = [ this.Source '.sqw' ];
 
@@ -91,7 +96,6 @@ else
   fields{end+1} = 'Wavelength [Angs] measurement neutron wavelength';
   fields{end+1} = 'Instrument neutron spectrometer used for measurement';
   fields{end+1} = 'Comment';
-  fields{end+1} = 'density [g/cm3] Material density ';
   fields{end+1} = 'C_s [J/mol/K]   heat capacity';
   fields{end+1} = 'Sigma [N/m] surface tension';
   fields{end+1} = 'Eta [Pa s] viscosity';

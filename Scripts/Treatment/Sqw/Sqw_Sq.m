@@ -14,7 +14,11 @@ function s = Sqw_Sq(s)
 %
 % Example: s = Sqw_Sq(s);
 
-
+  if nargin == 0, return; end
+  if ~isa(s, 'iData')
+    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
+    return; 
+  end
   if nargin == 1, T = []; end
 
   % handle array of objects
