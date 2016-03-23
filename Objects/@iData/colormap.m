@@ -64,6 +64,15 @@ for index=1:length(varargin)
 end
 clear varargin
 
+if prod(size(z(1))) > 1e6 
+  if isempty([ strfind(options,'whole') strfind(options,'full') ])
+    iData_private_warning(mfilename, [ 'Object ' z(1).Tag ' "' z(1).Title '" is large (numel=' num2str(prod(size(z(1)))) ...
+      ').\n\tNow rebinning for display purposes with e.g. z=reducevolume(z);' ...
+      '\n\tUse e.g colormap(z, ''whole'') to plot the whole data set and be able to zoom tiny regions.' ]);
+    z=reducevolume(z);
+  end
+end
+
 % default colormaps at the end in case too few are defined
 if length(cm) < numel(z)
   cm_list={'hsv' 'jet' 'hot' 'cool' 'autumn' 'spring' 'winter' 'summer' 'copper' 'pink' 'gray' 'bone'  };

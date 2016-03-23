@@ -24,6 +24,12 @@ function s=Sqw_symmetrize(s)
 %
 % See also: Sqw_Bosify, deBosify, Sqw_dynamic_range, Sqw_scatt_xs
 
+  if nargin == 0, return; end
+  if ~isa(s, 'iData')
+    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
+    return; 
+  end
+
   % handle array of objects
   if numel(s) > 1
     sqw = [];

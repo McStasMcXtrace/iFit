@@ -38,6 +38,12 @@ function s = Sqw_deBosify(s, T, type)
 %
 % See also: Sqw_Bosify, Sqw_symmetrize, Sqw_dynamic_range, Sqw_scatt_xs
 
+  if nargin == 0, return; end
+  if ~isa(s, 'iData')
+    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
+    return; 
+  end
+  
   if nargin == 1, T = []; end
   if nargin < 3, type=''; end
 
