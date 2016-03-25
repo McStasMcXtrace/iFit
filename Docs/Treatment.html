@@ -13,8 +13,17 @@
     <ol id="mozToc">
       <!--mozToc h2 1 h3 2 h4 3 h5 4 h5 5 h6 6-->
       <li><a href="#mozTocId664163">Neutron scattering Dynamic structure
-          factor</a>
+          factor </a>
         <ol>
+          <li><a href="#mozTocId301478">Loading/generating S(q,w) data
+              sets</a>
+            <ol>
+              <li><a href="#mozTocId169189">From an experiment </a></li>
+              <li><a href="#mozTocId825623">From Matlab variables</a></li>
+              <li><a href="#mozTocId748534">From a Model (iFunc)</a></li>
+              <li><a href="#mozTocId86093">Shaping the Sqw data set</a></li>
+            </ol>
+          </li>
           <li><a href="#mozTocId424180">Isotropic dynamic structure
               factors S(|q|,w) in liquids, powders, gas, polymers and
               other amorphous materials</a>
@@ -52,8 +61,102 @@
 
 
 
+
+
           scattering</a> [5,6].<br>
+        <h3><a class="mozTocH3" name="mozTocId301478"></a>Loading/generating
+
+          S(q,w) data sets</h3>
+        <p>In this section, we describe how one can load existing data
+          sets, or generate ones.<br>
+        </p>
+        <p>A 2D S(|q|,w) consists in a momentum axis <i>q</i>
+          (wavevector, usually in Angs-1), an energy axis <i>w</i>
+          (usually in meV), and a dynamic structure factor 2D matrix
+          S(q,w). <br>
+        </p>
+        <h4><a class="mozTocH4" name="mozTocId169189"></a>From an
+          experiment<br>
+        </h4>
+        <p>Such data sets can be measured on neutron scattering
+          spectrometers (time-of-flight or triple-axis). Once the raw
+          data has been reduced, using e.g. LAMP at the ILL:<br>
+        </p>
+        <ol>
+          <li>apply scripts <i>normalise, vnorm, corr_tof, t2e</i>, and
+            finally <i>sqw_rebin</i>) ;</li>
+          <li>you get a S(q,w) data set as a workspace ;</li>
+          <li>export it into an HDF/NeXus file or as text (<i>write_lamp,
+
+              format='hdf'</i>).</li>
+        </ol>
+        <p></p>
+        <p>Similar data sets can be measured using X-ray spectrometers.</p>
+        <p>The file can then be read by iFit, using any of<i><br>
+          </i></p>
+        <ul>
+          <li>Sqw=load(iData, 'file') </li>
+          <li>Sqw=iData'file')</li>
+        </ul>
+        <p>which can read HDF, text, NetCDF, and many other formats (see
+          <a href="Loaders.html">Loaders</a> for a full description).<br>
+        </p>
+        <h4><a class="mozTocH4" name="mozTocId825623"></a>From Matlab
+          variables</h4>
+        If you managed to get a matrix <i>S</i> and two vectors <i>q,w</i>
+        as Matlab variables, create an S(q,w) data set with:<br>
+        <ul>
+          <li>Sqw=iData(q,w,S)<br>
+          </li>
+        </ul>
+        <h4><a class="mozTocH4" name="mozTocId748534"></a>From a Model
+          (iFunc)</h4>
+        <p>If S is an iFunc Model (analytical, such as obtained from the
+          <a href="Models.html#mozTocId990577">sqw_phonons</a>), then
+          simply evaluate the model into an iData object, with default
+          Model parameters:</p>
+        <ul>
+          <li>Sqw=iData(S, parameters, axis1, axis2, ...)</li>
+        </ul>
+        <h4><a class="mozTocH4" name="mozTocId86093"></a>Shaping the Sqw
+          data set</h4>
+        The data set may extend on both negative and positive energy
+        transfers, or only on one side. <br>
         <br>
+        If it has only positive or negative energy values, then create
+        the other side using the <b><i>Sqw_symmetrize</i></b> method,
+        as detailed below. <br>
+        <br>
+        You may as well apply the following iData operators:<br>
+        <ul>
+          <li><a style="font-style: italic;"
+href="file:///home/farhi/dev/iFit/Docs/techdoc/Objects/@iData/resize.html"><span
+                style="font-weight: bold;">resize</span></a><span
+              style="font-style: italic;">:&nbsp; </span>change binning
+            in q,w, fast rebin.<br>
+          </li>
+          <li><a style="font-style: italic;"
+href="file:///home/farhi/dev/iFit/Docs/techdoc/Objects/@iData/reshape.html"><span
+                style="font-weight: bold;">reshape</span></a>: change
+            the dimensions of the Sqw data set, the number of elements
+            must not change.</li>
+          <li><i><span style="font-weight: bold;"><a
+                  href="file:///home/farhi/dev/iFit/Docs/techdoc/Objects/@iData/fill.html">fill:</a></span></i>
+            replaces missing data (NaN's, gaps) by interpolating</li>
+          <li><b><a
+href="file:///home/farhi/dev/iFit/Docs/techdoc/Objects/@iData/smooth.html">smooth</a></b>:
+            smooth the data set</li>
+          <li><a style="font-weight: bold;"
+href="file:///home/farhi/dev/iFit/Docs/techdoc/Objects/@iData/meshgrid.html">meshgrid:</a>
+            creates a square 2D distribution, using interpolation if
+            necessary.</li>
+        </ul>
+        and you should of course plot it, e.g. with:<br>
+        <ul>
+          <li><font color="#3366ff">plot</font>(log(Sqw))</li>
+        </ul>
+        <ul>
+        </ul>
         <h3><a class="mozTocH3" name="mozTocId424180"></a>Isotropic
           dynamic structure factors S(|q|,w) in liquids, powders, gas,
           polymers and other amorphous materials</h3>
@@ -70,7 +173,7 @@
           1 Angs<sup>-1</sup> = 10 nm<sup>-1</sup><br>
         </div>
         <br>
-        <table border="1" cellpadding="2" cellspacing="2" width="100%">
+        <table border="1" width="100%" cellpadding="2" cellspacing="2">
           <tbody>
             <tr>
               <td valign="top"><i><b>Procedure</b></i><i><b><br>
@@ -173,15 +276,16 @@
           </tbody>
         </table>
         <br>
-        Conventions:<br>
+        <b>Conventions:</b><br>
         <ul>
           <li>w = Ei-Ef = energy lost by the neutron in meV.<br>
           </li>
           <li>w &gt; 0, neutron looses energy, can not be higher than
             the incident neutron energy (Stokes)</li>
           <li>w &lt; 0, neutron gains energy, anti-Stokes</li>
-          <li>q is the momentum (or wavevector) in Angs-1.<br>
-          </li>
+          <li>q is the momentum (or wavevector) in Angs-1.</li>
+        </ul>
+        <ul>
         </ul>
         <h4><a class="mozTocH4" name="mozTocId550398"></a>Example:
           dynamic structure factor from molecular dynamics</h4>
@@ -190,6 +294,8 @@
         Dynamics (AIMD) with VASP, for 200 Ge atoms (GGA-PW91 potential)
         at T=1350K, from [7]. The data set is part of iFit, as well as <a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Ge_liq_coh.sqw">in
+
+
 
 
 
@@ -219,6 +325,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
+
           ensemble</a>. The integrator used along the trajectory is the
         <a href="https://en.wikipedia.org/wiki/Verlet_integration">Verlet</a>,
         which is a central difference, energy conserving integrator. As
@@ -230,7 +338,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         real, symmetric in energy. We denote this scattering law S* to
         label it as symmetric.<img alt="Treatment_Sqw_load"
           title="Treatment_Sqw_load" src="images/Treatment_Sqw_load.png"
-          align="right" width="200" height="180"> It is often named
+          align="right" height="180" width="200"> It is often named
         'classical'.<br>
         <br>
         We plot the scattering law S*:<br>
@@ -251,7 +359,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
           alt="Treatment_Sqw_symmetrize"
           title="Treatment_Sqw_symmetrize"
           src="images/Treatment_Sqw_symmetrize.png" align="right"
-          width="200" height="180"><br>
+          height="180" width="200"><br>
         <ul>
           <li><font color="#3366ff">plot</font>(log10(Sqw2), <font
               color="#cc33cc">'view3'</font>);</li>
@@ -286,7 +394,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         The semi-classical correction, Q, aka 'quantum' correction
         factor,&nbsp; can be selected as [1,2,34]:<br>
         <br>
-        <table border="1" cellpadding="2" cellspacing="2" width="100%">
+        <table border="1" width="100%" cellpadding="2" cellspacing="2">
           <tbody>
             <tr>
               <td valign="top"><i>Q = exp(hw/kT/2)</i></td>
@@ -301,6 +409,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
               <td valign="top"><i>Q = 2./(1+exp(-hw/kT))</i> <br>
               </td>
               <td valign="top">'standard'&nbsp; or 'Frommhold' [3]. <b><i>This
+
+
 
 
                     is the default.</i></b></td>
@@ -333,7 +443,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         <img alt="Treatment_Sqw_dynrange.png"
           title="Treatment_Sqw_dynrange.png"
           src="images/Treatment_Sqw_dynrange.png" align="right"
-          width="200" height="180">When not given, the temperature will
+          height="180" width="200">When not given, the temperature will
         be searched in the Sqw data set. A 3rd argument allows to
         specify the quantum correction to apply (<i>'standard'</i> is
         default). Of course, in this example, for such a high
@@ -344,6 +454,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         The Sqw_deBosify procedure performs the opposite operation, that
         is compute a symmetric S*(q,w) from e.g. a 'quantum'
         experimental S(q,w). It corresponds with <font color="#3366ff">Sqw_Bosify</font>(Sqw,
+
+
 
         <i><b>-T</b></i>).<br>
         <br>
@@ -370,6 +482,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         given incident energy, say Ei=25 meV.<br>
         <ul>
           <li>Sqw25 = <font color="#3366ff">Sqw_dynamic_range</font>(SqwT,
+
+
 
 
 
@@ -413,13 +527,15 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         <b><img alt="Treatment_Sqw_moments"
             title="Treatment_Sqw_moments"
             src="images/Treatment_Sqw_moments.png" align="right"
-            width="200" height="150"></b><b>Characteristic frequencies</b><br>
+            height="150" width="200"></b><b>Characteristic frequencies</b><br>
         From the dynamic structure factor, one can compute the energy
         moments, which provide some of the characteristic frequencies
         [5,6,10], specifying the molar weight <i>m</i> of the
         scattering units (here 72.64 g/mol for Ge). <br>
         <br>
         Using the 'quantum' scattering law S(q,w), we can define <i>n</i>-th
+
+
 
         order frequency moment as:<br>
         <br>
@@ -498,9 +614,9 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
           <li>Sqw=<font color="#3366ff">iData</font>(<font
               color="#cc33cc">'D2O_liq_290_coh.sqw'</font>);</li>
         </ul>
-        <img alt="Treatment_Sqw_gDOS" title="Treatment_Sqw_gDOS"
-          src="images/Treatment_Sqw_gDOS.png" align="right" width="200"
-          height="151">Then we can compute the generalised density of
+        <img alt="Treatment_Sqw_gdos.png" title="Treatment_Sqw_gdos.png"
+          src="images/Treatment_Sqw_gDOS.png" align="right" height="180"
+          width="200">Then we can compute the generalised density of
         states with the <font color="#3366ff">Sqw_gDOS</font>
         procedure, from both the raw, and the symmetrised, 'Bosified'
         (with quantum correction) data set.<br>
@@ -566,6 +682,8 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
           <li>NIST Neutron scattering lengths and cross sections &lt;<a
               href="https://www.ncnr.nist.gov/resources/n-lengths/">https://www.ncnr.nist.gov/resources/n-lengths/</a>&gt;;
 
+
+
             See also Sears, <i>Neut. News</i> 3 (1992) 26.<br>
           </li>
           <li>Price J. et al, Non Cryst Sol 92 (1987) 153</li>
@@ -581,15 +699,16 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
         </div>
         <br>
         <img alt="Treatment_Sqw_XS.png" title="Treatment_Sqw_XS.png"
-          src="file:///home/farhi/dev/iFit/Docs/images/Treatment_Sqw_XS.png"
-          align="right" width="200" height="180">The integral can be
-        computed with the <font color="#3366ff">Sqw_scatt_xs</font>
-        procedure, for a given energy range, which should then be
-        multiplied by the bound thermal scattering cross section &#963;.<br>
+          src="images/Treatment_Sqw_XS.png" align="right" height="180"
+          width="200">The integral can be computed with the <font
+          color="#3366ff">Sqw_scatt_xs</font> procedure, for a given
+        energy range, which should then be multiplied by the bound
+        thermal scattering cross section &#963;.<br>
         <br>
         In the following example, we compute the coherent scattering
         cross section, with the bound cross section as 15.4 barns for
-        the coherent scattering in D2O [10]:<br>
+        the coherent scattering in D2O [10] (data <a
+href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">here</a>):<br>
         <ul>
           <li>Sqw=<font color="#3366ff">iData</font>(<font
               color="#cc33cc">'D2O_liq_290_coh.sqw'</font>);</li>
@@ -611,6 +730,8 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 
