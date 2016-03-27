@@ -19,6 +19,9 @@ function signal=sqw_phonons(configuration, varargin)
 %     QuantumEspresso Plane-wave pseudopotential code
 %     VASP      Plane-wave PAW code (when installed and licensed)
 %
+%   We recommend QuantumEspresso, GPAW, ABINIT and Elk.
+%   Refer to https://molmod.ugent.be/deltacodesdft for codes comparison.
+%
 %   The simplest usage is to call: sqw_phonons('gui') which displays an entry dialog box
 %   and proceeds with a fully automatic computation, and plots final results.
 %     
@@ -134,7 +137,7 @@ function signal=sqw_phonons(configuration, varargin)
 % The options can also be entered as strings with 'field=value; ...'.
 %
 % Once the model has been created, its use requires that axes are given on
-% regular qx,qy,qz grids.
+% regular qx,qy,qz grids (in rlu along reciprocal axes).
 %     
 % Example:
 %   s=sqw_phonons('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal','dos');
@@ -156,6 +159,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   state materials.
 %   The Atomic Simulation Environment must be installed.
 %   The temporary directories (UserData.dir) are not removed.
+%   The intensity is currently not computed.
 %
 % References: https://en.wikipedia.org/wiki/Phonon
 %
@@ -344,6 +348,30 @@ elseif ischar(configuration)
     read = sprintf('from ase.lattice.spacegroup import crystal; atoms = %s; ', configuration);
   end
 end
+
+% used for export of structure to usual files+additional information
+% the Mat file should be loaded as: atoms=load(fullfile(target, 'atoms.mat'))
+read1 = [ ...
+    'write("' fullfile(target, 'configuration.png') '", atoms);' ...
+    'write("' fullfile(target, 'configuration.eps') '", atoms);' ...
+    'write("' fullfile(target, 'configuration.pov') '", atoms);' ...
+    'write("' fullfile(target, 'configuration.cif') '", atoms, "cif");' ...
+    'write("' fullfile(target, 'configuration.x3d') '", atoms, "x3d");' ...
+    'write("' fullfile(target, 'configuration.pdb') '", atoms, "pdb");' ...
+    'write("' fullfile(target, 'configuration.html') '", atoms, "html");' ...
+    'write("' fullfile(target, 'configuration.etsf') '", atoms, "etsf");' ...
+    'write("' fullfile(target, 'configuration_SHELX.res') '", atoms, "res");' ...
+    'write("' fullfile(target, 'configuration_VASP') '", atoms, "vasp");' ... 
+    'import scipy.io as sio; ' ...
+    'sio.savemat("' fullfile(target, 'atoms.mat') '", {' ...
+    '"reciprocal_cell": atoms.get_reciprocal_cell(), ' ...
+    '"cell": atoms.get_cell(), ' ...
+    '"volume": atoms.get_volume(), ' ...
+    '"chemical_formula": atoms.get_chemical_formula(), ' ...
+    '"masses": atoms.get_masses(), ' ...
+    '"positions": atoms.get_positions(), ' ...
+    '"atomic_numbers": atoms.get_atomic_numbers() });  ' ...
+    ];
 
 Ha = 27.2; Ry=13.6;
 
@@ -685,6 +713,7 @@ case 'NWCHEM' % ================================================================
   calc = [ calc ')' ];
   % to add: diagonalization
   
+% ==============================================================================
 case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   % best potentials for QE: SSSP http://materialscloud.org/sssp/
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
@@ -693,17 +722,8 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   % ASE is installed. We use it to create a proper POSCAR file, then we call sqw_phon (QE)
   poscar = fullfile(options.target,'POSCAR_ASE');
   read = [ read 'from ase.io import write; ' ...
-    'write("' poscar '",atoms, "vasp");' ...
-    'write("' fullfile(target, 'configuration.png') '", atoms);' ...
-    'write("' fullfile(target, 'configuration.eps') '", atoms);' ...
-    'write("' fullfile(target, 'configuration.pov') '", atoms);' ...
-    'write("' fullfile(target, 'configuration.cif') '", atoms, "cif");' ...
-    'write("' fullfile(target, 'configuration.x3d') '", atoms, "x3d");' ...
-    'write("' fullfile(target, 'configuration.pdb') '", atoms, "pdb");' ...
-    'write("' fullfile(target, 'configuration.html') '", atoms, "html");' ...
-    'write("' fullfile(target, 'configuration.etsf') '", atoms, "etsf");' ...
-    'write("' fullfile(target, 'configuration_SHELX.res') '", atoms, "res");' ...
-    'write("' fullfile(target, 'configuration_VASP') '", atoms, "vasp");' ];
+     'write("' poscar '",atoms, "vasp"); ' ...
+     read1 ];
   if isunix, setenv('LD_LIBRARY_PATH',''); end
   try
     [st, result] = system([ precmd 'python -c ''' read '''' ]);
@@ -746,6 +766,16 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ]);
   signal=sqw_phon(poscar, options);
   
+  % get 'atoms' back from python
+  if ~isempty(fullfile(target, 'atoms.mat'))
+    signal.UserData.atoms = load(fullfile(target, 'atoms.mat'));
+  else
+    signal.UserData.atoms = [];
+  end
+  signal.UserData.calc = 'quantumespresso';
+  signal.UserData.configuration = fileread(poscar);
+  
+% ==============================================================================
 case 'VASP'
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
@@ -880,16 +910,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   
   % call python script with configuration
   read0 = [ read 'from ase.io import write; ' ...
-    'write("' fullfile(target, 'configuration.png') '", atoms);' ...
-    'write("' fullfile(target, 'configuration.eps') '", atoms);' ...
-    'write("' fullfile(target, 'configuration.pov') '", atoms);' ...
-    'write("' fullfile(target, 'configuration.cif') '", atoms, "cif");' ...
-    'write("' fullfile(target, 'configuration.x3d') '", atoms, "x3d");' ...
-    'write("' fullfile(target, 'configuration.pdb') '", atoms, "pdb");' ...
-    'write("' fullfile(target, 'configuration.html') '", atoms, "html");' ...
-    'write("' fullfile(target, 'configuration.etsf') '", atoms, "etsf");' ...
-    'write("' fullfile(target, 'configuration_SHELX.res') '", atoms, "res");' ...
-    'write("' fullfile(target, 'configuration_VASP') '", atoms, "vasp");' ];
+    read1 ];
   
   if isunix, setenv('LD_LIBRARY_PATH',''); end
   try
@@ -905,6 +926,12 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
       configuration ], options);
   end
   sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, calc);
+  % get 'atoms' back from python
+  if ~isempty(fullfile(target, 'atoms.mat'))
+    atoms = load(fullfile(target, 'atoms.mat'));
+  else
+    atoms = [];
+  end
 
   % call python script with calculator
   cd(target)
@@ -974,6 +1001,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   signal.UserData.dir           = target;
   signal.UserData.options       = options;
   signal.UserData.calc          = calc;
+  signal.UserData.atoms         = atoms;
 
   % EVAL stage: we call ASE to build the model. ASE does not support single HKL location. 
   % For this case we duplicate xyz and then get only the 1st FREQ line

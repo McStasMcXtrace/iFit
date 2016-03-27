@@ -1,5 +1,5 @@
 function r=sqw_powder(a)
-% model = sqw_powder(model,n) : geta S(|q|,w) out of S(hkl,w)
+% model = sqw_powder(model,n) : convert a 4D S(hkl,w) into a 2D S(|q|,w) for e.g. powders
 %
 %   iFunc/sqw_powder:
 % output: signal: model value
@@ -8,17 +8,15 @@ function r=sqw_powder(a)
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 
-% the single x axis is assumed to be in a cubic system (for a start)
+% input argument can be:
+% an iFunc: evaluate on x=1:3 rlu. The iFunc must be ndims(a) == 4
 
-% reciprocal vectors from ASE
+% an iData: check ndims(a) == 4, and then get axes
+% vector axes: create a grid, then use hist
 
-from atoms:
-atoms.get_reciprocal_cell()
-atoms.get_volume()
-atoms.get_chemical_formula()
-atoms.get_masses()
-atoms.get_cell()
-save all this to a file to be read by matlab
+% ndgrid axes: use hist
+
+% get UserData.atoms to access reciprocal_cell vectors (as rows)
 
 % create a 4D hklw space grid
 qh=x; qk=x; ql=x; 
