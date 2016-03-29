@@ -64,6 +64,7 @@ function s = Sqw_check(s)
     % the ratio should be S(q,w)/S(q,-w) = exp(hw/kT)
     % so log(S(q,w)) - log(S(q,-w)) = hw/kT
     log_s_ratio = log(s_res) - log(s_opp);
+    w = log_s_ratio{1};
     clear s_res s_opp
     
     % mean_log_ratio = mean(log_s_ratio,0);
