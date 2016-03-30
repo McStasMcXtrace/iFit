@@ -48,6 +48,16 @@ struct_s=struct(s);
 struct_s=rmfield(struct_s,'Alias');
 struct_s=rmfield(struct_s,'Command');
 struct_s=rmfield(struct_s,'Tag');
+% add the Aliases
+aliases=getalias(s);
+for index=1:numel(aliases)
+    alias=aliases{index};
+    value = get(s,alias);
+    if isa(value, 'iData') || isa(value, 'iFunc')
+      value = struct(value);
+    end
+    struct_s.(alias) = value;
+end
 
 % find all fields in object structure
 [match, types, dims] = iData_getfields(struct_s, '');
