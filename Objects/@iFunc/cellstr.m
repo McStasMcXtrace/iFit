@@ -17,7 +17,7 @@ ret=[]; header=[];
 if numel(s) > 1
   ret = {};
   for index=1:numel(s)
-    ret{index} = char(s(index));
+    ret{index} = cellstr(s(index));
   end
   return
 end

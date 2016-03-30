@@ -46,6 +46,7 @@ function signal=sqw_phonons(configuration, varargin)
 %
 % The arguments for the model creation should be:
 %
+% input (model creation):
 % configuration: file name to an existing material configuration
 %   Any A.S.E supported format can be used (POSCAR, CIF, SHELX, PDB, ...). 
 %     See <https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io>
@@ -136,10 +137,14 @@ function signal=sqw_phonons(configuration, varargin)
 %
 % The options can also be entered as strings with 'field=value; ...'.
 %
+% output (model creation):
+%   model: iFunc 4D model S(qh,qk,ql,w) with parameters p.
+%
 % Once the model has been created, its use requires that axes are given on
-% regular qx,qy,qz grids (in rlu along reciprocal axes).
+% regular qx,qy,qz grids (in rlu along reciprocal axes). The model evaluations
+% does not require to recompute the forces, and is very fast.
 %     
-% Example:
+% Example (model creation and evaluation):
 %   s=sqw_phonons('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal','dos');
 %   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
 %   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
@@ -159,7 +164,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   state materials.
 %   The Atomic Simulation Environment must be installed.
 %   The temporary directories (UserData.dir) are not removed.
-%   The intensity is currently not computed.
+%   The intensity is currently not computed, only the dispersions.
 %
 % References: https://en.wikipedia.org/wiki/Phonon
 %
@@ -187,6 +192,7 @@ function signal=sqw_phonons(configuration, varargin)
 % VASP G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.
 %   <https://www.vasp.at/> Requires a license.
 %
+% Once the model has been created:
 % input:  p: sqw_phonons model parameters (double)
 %             p(1)=Amplitude
 %             p(2)=Gamma   dispersion DHO half-width in energy [meV]
@@ -1051,8 +1057,11 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     '  else HKL = [ x(:) y(:) z(:) ]; end', ...
     '  save -ascii HKL.txt HKL', ...
   [ '  [status,result] = system(''' precmd 'python sqw_phonons_eval.py'');' ], ...
+    '  clear HKL', ...
+    '  delete(''HKL.txt'')', ...
     '  % import FREQ', ...
     '  FREQ=load(''FREQ'',''-ascii''); % in meV', ...
+    '  delete(''FREQ'')', ...
     'catch ME; disp([ ''model '' this.Name '' '' this.Tag '' could not run Python/ASE from '' target ]); disp(getReport(ME))', ...
     'end', ...
     'try', ...
