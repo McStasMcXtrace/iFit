@@ -142,7 +142,8 @@ function signal=sqw_phonons(configuration, varargin)
 %
 % Once the model has been created, its use requires that axes are given on
 % regular qx,qy,qz grids (in rlu along reciprocal axes). The model evaluations
-% does not require to recompute the forces, and is very fast.
+% does not require to recompute the forces, and is very fast. To generate a
+% powder 2D S(q,w) you may use: sqw_powder(model)
 %     
 % Example (model creation and evaluation):
 %   s=sqw_phonons('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal','dos');
@@ -208,7 +209,7 @@ function signal=sqw_phonons(configuration, varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks
-%   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
+%   sqw_powder, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 
 % Units: 1 Ry        = 13.6 eV
 %        1 Ha = 2 Ry = 27.2 eV
