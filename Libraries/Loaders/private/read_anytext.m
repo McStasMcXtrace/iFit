@@ -233,7 +233,7 @@ if strcmp(user.format, 'MATFile')
         s = s.(f{1});
       end
     catch
-      fprintf(1, [ '%s: ERROR: looktxt ' argv{:} ], mfilename);
+      fprintf(1, [ '%s: ERROR: looktxt ' argv{:} '\n' ], mfilename);
 
 
     end
