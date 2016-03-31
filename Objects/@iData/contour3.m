@@ -3,6 +3,7 @@ function h = contour3(a, option, varargin)
 %
 %   @iData/contour3 function to plot a 2D or 3D object
 %     2D objects are shown as a 3D contour
+%   contour3(a, option, levels) specifies the number of coutour lines to plot.
 %
 % input:  s: object or array (iData)
 %         option: global option for 2D and 3D plots: 
@@ -14,7 +15,7 @@ function h = contour3(a, option, varargin)
 % ex:     contour3(iData(peaks)); contour3(iData(flow));
 %
 % Version: $Date$
-% See also iData, iData/plot
+% See also iData, iData/plot, iData/contour, iData/contourf
 
 if nargin <=1
 	option='';

@@ -14,6 +14,8 @@ function h = surfc(a, option)
 %
 % Version: $Date$
 % See also iData, iData/plot
+%          iData/slice, iData/contour3, iData/contourf, iData/mesh
+%          iData/contour, iData/slice, iData/plot3, iData/surfl, iData/surf
 
 if nargin ==1
 	option='';

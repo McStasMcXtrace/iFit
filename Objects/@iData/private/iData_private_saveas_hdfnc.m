@@ -87,6 +87,18 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
       end
     end
     
+    % make sure the field has not been stored yet, to avoid name clash
+    % (must be unique)
+    if any(strcmpi(format,{'hdf','hdf5','h5','nx','nxs','n5'}))
+      names = {};
+      for index=1:2:numel(write_list), names{end+1} = getfield(write_list{index}, 'Name'); end
+    else
+      names = write_list(1:2:end);
+    end
+    if ~isempty(names) 
+       if any(strcmp(names, n)), continue; end
+    end
+    
     % now assemble the list of items for CDF and HDF output (requires double memory)
     % direct write for NetCDF.
     
@@ -155,6 +167,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
 
     % NetCDF -------------------------------------------------------------------
     elseif strcmpi(format,'nc')
+      write_list = [ write_list , n, val ]; % add Variable
       if strcmp(mode, 'overwrite') % first access: create file
         if ~isempty(dir(filename)), delete(filename); end
         ncid = netcdf.create(filename, 'CLOBBER');

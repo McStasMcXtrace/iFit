@@ -16,7 +16,9 @@ function h = surf(a, option)
 % ex:     surf(iData(peaks)); surf(iData(flow));
 %
 % Version: $Date$
-% See also iData, iData/plot, iData/colormap, iData/caxis
+% See also iData, iData/plot, iData/colormap, iData/caxis, iData/mesh
+%          iData/slice, iData/contour3, iData/contourf, iData/mesh
+%          iData/contour, iData/slice, iData/plot3, iData/surfl, iData/surfc
 
 if nargin ==1
 	option='';
