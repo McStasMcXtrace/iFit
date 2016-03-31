@@ -3,6 +3,7 @@ function h = contourf(a, option, varargin)
 %
 %   @iData/contourf function to plot a 2D or 3D object
 %     2D objects are shown as a filled contour
+%   contourf(a, option, levels) specifies the number of coutour lines to plot.
 %
 % input:  s: object or array (iData)
 %         option: global option for 2D and 3D plots: 
@@ -14,7 +15,7 @@ function h = contourf(a, option, varargin)
 % ex:     contourf(iData(peaks)); contourf(iData(flow));
 %
 % Version: $Date$
-% See also iData, iData/plot
+% See also iData, iData/plot, iData/contour3, iData/contour
 
 if nargin <=1
 	option='';

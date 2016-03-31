@@ -15,6 +15,8 @@ function a = mesh(a, option)
 %
 % Version: $Date$
 % See also iData, iData/plot
+%          iData/slice, iData/contour3, iData/contourf
+%          iData/contour, iData/slice, iData/plot3, iData/surfl, iData/surfc
 
 if nargin ==1
 	option='';

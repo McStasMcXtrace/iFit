@@ -16,7 +16,8 @@ function h = plot3(a, option)
 % ex:     plot3(iData(peaks)); plot3(iData(flow));
 %
 % Version: $Date$
-% See also iData, iData/plot
+% See also iData, iData/plot, iData/slice, iData/contour3, iData/contourf
+%          iData/contour, iData/surf, iData/slice, iData/surfl, iData/surfc, iData/mesh
 
 if nargin ==1
 	option='';

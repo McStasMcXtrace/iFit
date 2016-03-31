@@ -59,7 +59,9 @@ function h=plot(a, varargin)
 % Version: $Date$
 % See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
 %          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
-%          shading, lighting, surf, iData/slice
+%          shading, lighting, surf, iData/slice, iData/contour3, iData/contourf
+%          iData/contour, iData/surf, iData/slice, iData/plot3, iData/surfl, 
+%          iData/surfc, iData/mesh
 
 % private functions:
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
