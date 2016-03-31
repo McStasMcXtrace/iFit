@@ -25,7 +25,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
-%           'mantid' save as Mantid Processed Workspace, i.e. 'nxs mantid data'
+%           'mantid' save as Mantid Processed Workspace, i.e. 'nxs mantid data' (HDF5)
 %           'lamp' save as LAMP Processed Workspace, i.e. 'nxs lamp data'
 %           'mat'  save as a serialized '.mat' binary file (fast 'save', DEFAULT)
 %           'nc'   save as NetCDF
@@ -58,6 +58,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
+%           tight, hide_axes, interp, view2, view3, transparent, light, clabel, colorbar, whole
 %           default is 'view2 axis tight'
 %           For XHTML export, the additional argument can be a string with the isosurface
 %           level and options 'axes' to display axes, 'auto' to rescale as a cube.
@@ -375,7 +376,7 @@ case 'xls'  % Excel file format
 case 'csv'  % Spreadsheet comma separated values file format
   csvwrite(filename, double(a));
 case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','jpeg','jpeg2000','png','art'}  % bitmap images
-  if ndims(a) == 2 
+  if ndims(a) == 2 && any(regexp(options, '\<hide_axes\>'))
     b=getaxis(a,0); % Signal/Monitor
     b=(b-min(b(:)))/(max(b(:))-min(b(:)))*256;
   else
