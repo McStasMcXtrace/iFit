@@ -25,7 +25,7 @@ function r=sqw_powder(a, p, x,y)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 r=[];
 if nargin == 0
-  disp([ mfilename ': requires a 4D iFunc or iData object as argument.' ]);
+  disp([ mfilename ': requires a 4D iFunc or iData object as argument. You may use sqw_phonons to generate a Model.' ]);
   return
 end
 
@@ -51,6 +51,9 @@ end
 
 % get UserData.atoms to access reciprocal_cell vectors (as rows)
 % [B] == rlu2cartesian = R2B (from ResLibCal_RM2RMS)
+%
+% according to ASE https://wiki.fysik.dtu.dk/ase/ase/atoms.html#list-of-all-methods
+% the atoms.reciprocal_cell does not include the 2*pi. We multiply B by that.
 UD = a.UserData;
 if isfield(UD, 'atoms') && isfield(UD.atoms, 'reciprocal_cell')
   B = UD.atoms.reciprocal_cell*2*pi;
@@ -61,7 +64,7 @@ else
 end
 
 if isa(a, 'iFunc')
-  if isempty(x), x=linspace(0.01, 2,  70); end  % default q
+  if isempty(x), x=linspace(0.01, 4,  70); end  % default q
   if isempty(y), y=linspace(0,    50, 51); end  % default w
 
   if ~isvector(x), x=linspace( min(x(:)), max(x(:)), max(size(x))); end
@@ -88,16 +91,18 @@ if isa(a, 'iFunc')
   
 elseif isa(a, 'iData')
   qx=a{1}; qy=a{2}; qz=a{3};  w=a{4}; % in rlu
-  if any(~cellfun(@isvector,{qx qy qz w}))
+  
+  % make sure we always have a grid for q
+  if any(~cellfun(@(c)max(size(c)) == numel(c),{qx qy qz w}))
     qx=unique(qx(:)); qy=unique(qy(:)); qz=unique(qz(:)); w=unique(w(:));
-    [qx,qy,qz,w]=ndgrid(qx,qy,qz,w);
   end
+  [qx,qy,qz,w]=ndgrid(qx,qy,qz,w);
   % back to cartesian
   q_cart = B*[ qx(:)' ; qy(:)' ; qz(:)' ]; sz=size(qx);
   qx=reshape(q_cart(1,:), sz); qy=reshape(q_cart(2,:), sz); qz=reshape(q_cart(3,:), sz);
   clear q_cart
   q=sqrt(qx.*qx+qy.*qy+qz.*qz);
-  sz=[ ceil(numel(unique(qx))*sqrt(3)) numel(unique(w)) ];
+  sz=[ ceil(numel(unique(a{1}))*sqrt(3)) numel(unique(a{4})) ];
   clear qx qy qz
   f=a{0}; f=f(:);
   r=iData(q(:),w(:),f);

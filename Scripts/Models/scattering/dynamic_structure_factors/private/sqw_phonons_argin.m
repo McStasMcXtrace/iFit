@@ -64,8 +64,6 @@ for index=1:numel(varargin)
       options.calculator = 'VASP';
     elseif strcmpi(varargin{index},'qe') || strcmpi(varargin{index},'espresso') || strcmpi(varargin{index},'quantumespresso')
       options.calculator = 'quantumespresso';
-    elseif strcmpi(varargin{index},'autoplot')
-      options.autoplot = 1;
     elseif strcmpi(varargin{index},'gui')
       options.gui = 1;
     end
@@ -93,7 +91,7 @@ if isfield(options, 'plot')
   options.autoplot=options.plot;
 end
 if isfield(options, 'html')
-  options.htmlreport=options.html;
+  options.htmlreport=options.html; options.dos=1;
 end
 if isscalar(options.supercell)
   options.supercell=[ options.supercell options.supercell options.supercell ]; 
