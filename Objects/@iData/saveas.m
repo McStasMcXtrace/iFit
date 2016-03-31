@@ -375,16 +375,19 @@ case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
 case 'csv'  % Spreadsheet comma separated values file format
   csvwrite(filename, double(a));
-case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','jpeg','jpeg2000','png','art'}  % bitmap images
-  if ndims(a) == 2 && any(regexp(options, '\<hide_axes\>'))
+case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','png','art'}  % bitmap images
+  if ndims(a) == 2 && (any(regexp(options, '\<hide_axes\>')))
     b=getaxis(a,0); % Signal/Monitor
-    b=(b-min(b(:)))/(max(b(:))-min(b(:)))*256;
+    b=round((b-min(b(:)))/(max(b(:))-min(b(:)))*256);
   else
     f = getframe(a,[],options);
     b = f.cdata;
+    if  strcmp(format(1:3),'jpe')
+        b=sum(b,3);
+    end
   end
   switch format
-  case {'png','jpeg2000','jpeg'}
+  case {'png'}
     imwrite(b, jet(256), filename, format, 'Comment',char(a),'Mode','lossless');
   case 'tiff'
     imwrite(b, jet(256), filename, format, 'Description',char(a));
@@ -399,7 +402,7 @@ case 'epsc' % color encapsulated postscript file format, with TIFF preview
   plot(a,options);
   print(f, '-depsc', '-tiff', filename);
   close(f);
-case {'psc','pdf','ill'}  % other bitmap and vector graphics formats (PDF, ...)
+case {'psc','pdf','ill','jpeg'}  % other bitmap and vector graphics formats (PDF, ...)
   f=figure('visible','off');
   plot(a,options);
   print(f, [ '-d' format ], filename);

@@ -373,7 +373,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     try
       [data, format] = iLoad_import(filename, loader, varargin{:});
     catch ME
-      fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n  %s', filename, ME.message);
+      % fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n  %s\n', filename, ME.message);
       data=[];
     end
     
@@ -545,7 +545,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     [dummy, dummy, fext] = fileparts(file);
     if ~isempty(fext) && fext(1)=='.', fext(1)=[]; end
     % check if this is a text file
-    if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.9
+    if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.4
       isbinary = 1; % less than 90% of printable characters
     else
       isbinary = 0;
@@ -582,7 +582,9 @@ function [data, format] = iLoad(filename, loader, varargin)
         
         %   loader has patterns and not binary and patterns match file_start, 
         %   whatever be the extension
-        if ~patterns_found && ~isbinary && ~isempty(loader.patterns)
+        % ~isbinary may be removed in case it suppresses e.g. text/binary formats such as EDF, ADSC, ...
+        if ~patterns_found && ~isempty(loader.patterns) && ~isbinary 
+        
           % check all patterns in text file
           if ischar(loader.patterns), loader.patterns=cellstr(loader.patterns); end
           all_match = 1;
