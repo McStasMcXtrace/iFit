@@ -64,6 +64,10 @@ function signal=sqw_phonons(configuration, varargin)
 % 'metal','insulator','semiconductor': indicates the type of occupation for 
 %    electronic states, which sets smearing.
 %
+% 'dos': will compute the vibrational density of states.
+% 'html' or 'report':   generate a full report of the simulation and export data.
+% 'plot' or 'autoplot': plot the results after building the model.
+%
 % options: an optional structure with optional settings
 %
 % General options
@@ -87,7 +91,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.autoplot=0|1                   when set, automatically evaluates the Model
 %     and plot results.
 %   options.htmlreport=0|1                 when set, automatically generates a full
-%     report on the computation results.
+%     report on the computation results. Also requests vDOS computation (options.dos=1).
 %   options.email=<email>                  when set, sends an email at start and end
 %     of computation.
 %
@@ -1167,7 +1171,7 @@ function [f, signal] = sqw_phonons_plot(signal)
   
   options = signal.UserData.options;
   disp([ mfilename ': Model ' options.configuration ' plotting phonons.' ])
-  qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,150,151);
+  qh=linspace(0.01,1.5,70);qk=qh; ql=qh; w=linspace(0.01,150,151);
   f=iData(signal,[],qh,qk,ql,w);
   g=log(f(1,:, :,:)); 
   
