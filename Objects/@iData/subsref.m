@@ -245,7 +245,7 @@ for i = 1:length(S)     % can handle multiple index levels
     end
     
     % test if the result is again an Alias or Field
-    if ischar(b) && size(b,1) == 1
+    if ischar(b) && size(b,1) == 1 && ~strcmp(fieldname, b)
       if any(strcmpi(b, fields))
         b = a.(b);      % fast access to static fields
       else
@@ -315,6 +315,7 @@ function val = iData_getAliasValue(this,fieldname)
         % in case this is an other alias/link: this is were we propagate in the object
         val2 = '';
         while ischar(val) && ~strcmp(val2, val) % search until we resolve the Alias/link
+          val2 = val;   % avoid infinite calls
           val = get(this,val); % gets this.(val)                    MAIN SPENT TIME
         end
       catch

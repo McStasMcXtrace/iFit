@@ -6,8 +6,8 @@ function data = read_llb_tas( filename )
 data = [];
 [p,f,e]= fileparts(filename);
 
-% the type of LLB TAS data depends on the first letter of the file name
-if ~any(upper(f(1)) == 'RCSDP')
+% the type of LLB TAS data depends on the first letter of the file name, + number
+if ~any(upper(f(1)) == 'RCSDP') || ~isfinite(str2double(f(2:end)))
   % error([ mfilename ': ' filename ': ERROR: the filename 1st letter must be any of RCSDP.' ])
   return;
 end
