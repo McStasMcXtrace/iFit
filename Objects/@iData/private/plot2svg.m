@@ -1300,7 +1300,9 @@ if strcmp(get(ax,'Visible'),'on')
             line2svg(fid,grouplabel,axpos,[x(z_axis_point_index) x(edge_neighbours(z_axis_point_index,3))],[y(z_axis_point_index) y(edge_neighbours(z_axis_point_index,3))],scolorname,'-',linewidth)
             if ~isempty(axlabelz) && ~(iscell(axlabelz) && all(cellfun(@isempty,axlabelz)))
                 for i = 1:length(axzindex)
-                    label2svg(fid,grouplabel,axpos,ax,xg_label_end(i),yg_label_end(i),convertString(axlabelz(axzindex(i),:)),'Right',0,'middle',1,paperpos,scolorname,exponent);
+                    try
+                    label2svg(fid,grouplabel,axpos,ax,xg_label_end(i),yg_label_end(i),convertString(this_axlab),'Right',0,'middle',1,paperpos,scolorname,exponent);
+                    end
                 end
             end
         end
@@ -2463,10 +2465,12 @@ if strcmp(get(ax,'ZTickLabelMode'),'auto') && strcmp(get(ax,'ZScale'),'linear')
     labelpos = labelpos(:);
     indexnz = find(labelpos ~= 0);
     if (~isempty(indexnz) && ~isempty(numlabels))
+        try
         ratio = numlabels(indexnz)./labelpos(indexnz);
         if round(log10(ratio(1))) ~= 0
             exptext = sprintf('&#215; 10<tspan font-size="%0.1fpt" dy="%0.1fpt">%g</tspan>',0.7*fontsize,-0.7*fontsize,-log10(ratio(1)));
             label2svg(fid,group,axpos,ax,axpos(1)*paperpos(3),(1-(axpos(2)+axpos(4)))*paperpos(4)-0.5*fontsize,exptext,'left',0,'top',1,paperpos,font_color,0)           
+        end
         end
     end
 end
