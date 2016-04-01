@@ -4,7 +4,7 @@ function slicecontrols(fig,onoff,xmesh,ymesh,zmesh,xdir,ydir,zdir)
 % Copyright 2000, 2001, 2002, 2003, 2004, 2005 The MathWorks Inc
 
 % Check variables
-  error(nargchk(2,8,nargin))
+%  error(nargchk(2,8,nargin))
 
   d = getappdata(fig, 'sliceomatic');
   

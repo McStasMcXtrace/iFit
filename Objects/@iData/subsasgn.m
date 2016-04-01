@@ -26,6 +26,14 @@ if isempty(S)
   return
 end
 
+try
+  inputname1 = inputname(1);
+  inputname2 = inputname(2);
+  inputname3 = inputname(3);
+catch
+  inputname1 = ''; inputname2 = ''; inputname3 = '';
+end
+
 % first handle object array for first index
 if numel(b) > 1 && any(strcmp(S(1).type,{'()','{}'}))
   c = b(S(1).subs{:}); % get elements in the array, to be assigned
@@ -45,7 +53,7 @@ if numel(b) > 1 && any(strcmp(S(1).type,{'()','{}'}))
         try
           c(j) = iData(val);
         catch
-          iData_private_error(mfilename, [ 'can not assign ' num2str(length(c)) ' iData array to ' num2str(length(val)) ' ' class(val) ' array for object ' inputname(1) ' ' b(1).Tag ]);
+          iData_private_error(mfilename, [ 'can not assign ' num2str(length(c)) ' iData array to ' num2str(length(val)) ' ' class(val) ' array for object ' inputname1 ' ' b(1).Tag ]);
         end
       end
     end
@@ -81,7 +89,7 @@ else
         st = num2str(s.subs{1}); 
         if length(st) > 10,    st=[ st(1:10) '...' ]; end
         if length(s.subs) > 1, st = [ st ', ...' ]; end
-        iData_private_error(mfilename, [ 'object(' st ') = ' class(val) ' but expects a numerical value or iData object to assign Signal in object ' inputname(1) ' ' b.Tag ]);
+        iData_private_error(mfilename, [ 'object(' st ') = ' class(val) ' but expects a numerical value or iData object to assign Signal in object ' inputname1 ' ' b.Tag ]);
       end
       % this is where specific class structure is taken into account
       cmd=b.Command;
@@ -134,22 +142,25 @@ else
       
       % add command to history
       toadd = '(';              % indices
-      if ~isempty(inputname(2))
-        toadd = [ toadd inputname(2) ];
+      if ~isempty(inputname2)
+        toadd = [ toadd inputname2 ];
       else
         toadd = [ toadd iData_mat2str(s.subs{:}) ];
       end
       toadd = [ toadd ') = ' ]; % values
-      if ~isempty(inputname(3))
-        toadd = [ toadd inputname(3) ];
+      if ~isempty(inputname3)
+        toadd = [ toadd inputname3 ];
       else
         toadd = [ toadd iData_mat2str(val) ];
       end
-      if ~isempty(inputname(1))
-        toadd = [ inputname(1) toadd ';' ];
+      if ~isempty(inputname1)
+        toadd = [ inputname1 toadd ';' ];
       else
         toadd = [ a.Tag toadd ';' ];
       end
+
+      toadd = [ toadd iData_mat2str(val) ];
+      toadd = [ a.Tag toadd ';' ];
       b.Command=cmd;
       b = iData_private_history(b, toadd);
       % final check
@@ -171,7 +182,7 @@ else
         b = subsasgn(a, s, double(val));
       end
     else 
-      iData_private_warning(mfilename, [ 'I can only allocate a sub-object with syntax ' b.Tag ' ' inputname(1) '(1) = ' val.Tag ' which asssigns unweighted Signal. Ignoring and leaving target object unchanged.' ]);
+      iData_private_warning(mfilename, [ 'I can only allocate a sub-object with syntax ' b.Tag ' ' inputname1 '(1) = ' val.Tag ' which asssigns unweighted Signal. Ignoring and leaving target object unchanged.' ]);
     end                 % if single object
   case '{}'
     if numel(b) > 1   % object array -> deal on all elements
@@ -223,7 +234,7 @@ else
         val = T;
       end
       if any(strcmpi(fieldname, {'alias','axis'}))
-        iData_private_warning(mfilename, [ 'redefine ' fieldname ' in object ' inputname(1) ' ' b.Tag ]);
+        iData_private_warning(mfilename, [ 'redefine ' fieldname ' in object ' inputname1 ' ' b.Tag ]);
       end
       if isa(b, 'iData'), f=fields; else f=fieldnames(b); end
       index = find(strcmpi(fieldname, f));
@@ -251,8 +262,8 @@ else
   
 end
 
-if nargout == 0 && ~isempty(inputname(1))
-  assignin('caller',inputname(1),b);
+if nargout == 0 && ~isempty(inputname1)
+  assignin('caller',inputname1,b);
 end
 
 % ==============================================================================

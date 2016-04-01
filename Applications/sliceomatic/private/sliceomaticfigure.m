@@ -7,7 +7,7 @@ function appdata=sliceomaticfigure(d,xmesh,ymesh,zmesh)
 % Copyright 2000, 2001, 2002, 2003, 2004, 2005 The MathWorks Inc
 
 % Check variables
-error(nargchk(1,4,nargin))
+% error(nargchk(1,4,nargin))
 
 % Init sliceomatic
   figure('name','Sliceomatic','toolbar','none');
@@ -167,4 +167,4 @@ error(nargchk(1,4,nargin))
   appdata = d;
 
   set(gcf,'nextplot','new');
-  set(gca,'nextplot','new');
+  set(gca,'nextplot','replace');

@@ -39,10 +39,12 @@ if all(dim > 0) & any(strcmp(op, {'sum','cumsum','prod','cumprod','trapz','cumtr
 end
 
 s = get(a,'Signal');  % raw Signal (no Monitor weight)
+if isempty(s) || ~isnumeric(s), s=iData; return; end
 e = get(a,'Error');   % raw Error  (no Monitor weight)
 m = iData_private_cleannaninf(get(a,'Monitor'));
 if numel(e) > 1 && all(e(:) == e(1)), e=e(1); end
 if numel(m) > 1 && all(m(:) == m(1)), m=m(1); end
+if isempty(m), m=1; end
 
 % take into account the Monitor
 if not(all(m(:) == 0 | m(:) == 1))
