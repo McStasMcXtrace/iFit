@@ -75,7 +75,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
       save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.svg'));
       save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.pdf'));
       save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.fig'));
-      save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.h5'), 'hdf5', 'mantid');
+      save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.h5'), 'mantid');
     end
     
     % these are the biggest files
@@ -92,7 +92,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     saveas(Phonons_powder, fullfile(options.target, 'Phonons_powder.dat'));
     saveas(log_Phonons_powder, fullfile(options.target, 'Phonons_powder.pdf'), 'pdf', 'tight');
     saveas(log_Phonons_powder, fullfile(options.target, 'Phonons_powder.svg'));
-    saveas(Phonons_powder, fullfile(options.target, 'Phonons_powder.h5'), 'hdf5', 'mantid');
+    saveas(Phonons_powder, fullfile(options.target, 'Phonons_powder.h5'), 'mantid');
     clear Phonons_powder
     
     x=data{1};
