@@ -211,13 +211,23 @@ if ~isempty(user.outfile)
   argv{end+1} = [ '--outfile=' user.outfile ];
 end
 
+% the filename should be the first argument
+[fid,message] = fopen(argv{1}, 'r');
+if fid ~= -1
+  file_start = fread(fid, 1000, 'uint8=>char')';
+  if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.4,
+    return  % this is a binary file. Skip.
+  end
+end
+
 % *** call looktxt =============================================================
 if strcmp(executable, 'mex')
   % pure MEX call. No temporary file. May cause SEGV. faster by 15%.
   s = looktxt(argv{:});
+  result = ''; status=0;
 elseif strcmp(executable, 'bin')
   s = [];
-  looktxt(argv{:}); % send to looktxt.m to launch bin
+  [status,result] = looktxt(argv{:}); % send to looktxt.m to launch bin
 end
 
 % *** import the data (user.format) ============================================
@@ -234,8 +244,6 @@ if strcmp(user.format, 'MATFile')
       end
     catch
       fprintf(1, [ '%s: ERROR: looktxt ' argv{:} '\n' ], mfilename);
-
-
     end
   end
 elseif strcmp(user.format, 'Matlab')

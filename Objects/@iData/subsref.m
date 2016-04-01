@@ -31,6 +31,12 @@ if isempty(S)
   return
 end
 
+try
+  inputname1 = inputname(1);
+catch
+  inputname1 = '';
+end
+
 for i = 1:length(S)     % can handle multiple index levels
   s = S(i);
   
@@ -162,8 +168,8 @@ for i = 1:length(S)     % can handle multiple index levels
       else
         toadd =   '<not listable>';  
       end
-      if ~isempty(inputname(1))
-        toadd = [  b.Tag ' = ' inputname(1) '(' toadd ');' ];
+      if ~isempty(inputname1)
+        toadd = [  b.Tag ' = ' inputname1 '(' toadd ');' ];
       else
         toadd = [ b.Tag ' = ' a.Tag '(' toadd ');' ];
       end
@@ -183,7 +189,7 @@ for i = 1:length(S)     % can handle multiple index levels
     elseif ischar(s.sub{:})
       b=getalias(b, s.subs{:}); % b{'alias'} same as b.'alias' definition
     else
-      iData_private_error(mfilename, [ 'do not know how to extract cell index in ' inputname(1)  ' ' b.Tag '.' ]);
+      iData_private_error(mfilename, [ 'do not know how to extract cell index in ' inputname1  ' ' b.Tag '.' ]);
     end
   case '.'  % ======================================================== structure
     % protect some fields

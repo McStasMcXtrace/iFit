@@ -100,6 +100,7 @@ function a = load_nmoldyn_signal_axes(a, signal, ax1, ax2)
     y = getaxis(a, '2');
     a = setaxis(a, 2, x);
     a = setaxis(a, 1, y);
+    a = transpose(a);
   end
 
 function [a,alias] = load_nmoldyn_search_token(a, token)

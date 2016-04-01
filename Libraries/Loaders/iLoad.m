@@ -418,15 +418,15 @@ function [data, format] = iLoad(filename, loader, varargin)
   % ----------------------------------------------------------------------------
   % private/nested function to import single data with given method(s)
   function [data, loader] = iLoad_import(filename, loader, varargin)
-    data = [];
+    data = []; isbinary=0;
     
     if isempty(loader), loader='auto'; end
     if strcmp(loader, 'auto')
-      loader = iLoad_loader_auto(filename);
+      [loader, isbinary] = iLoad_loader_auto(filename);
     elseif strcmp(loader, 'gui')
       [dummy, filename_short, ext] = fileparts(filename);
       filename_short = [ filename_short ext];
-      loader = iLoad_loader_auto(filename);
+      [loader, isbinary] = iLoad_loader_auto(filename);
       loader_names=[loader{:}];
       tmp         = cell(size(loader_names)); tmp(:)={' - '};
       loader_names= strcat({loader_names.name}, tmp,{loader_names.method});
@@ -507,9 +507,14 @@ function [data, format] = iLoad(filename, loader, varargin)
       narg = min(length(varg), nargin(loader.method));
       varg = varg(1:narg);
     end
+    % avoid calling text importer with binary
+    if any(strcmp(loader.method, {'text','read_anytext','looktxt'})) && isbinary, return; end
+    
     % call the loader
     data = feval(loader.method, varg{:});
     if isempty(data), return; end
+    
+    % special test to avoid reading binary file with read_anytext
     
     data = iLoad_loader_check(filename, data, loader);
     
@@ -521,7 +526,7 @@ function [data, format] = iLoad(filename, loader, varargin)
   
   % -----------------------------------------------------------
   % private/nested function to determine which parser to use to analyze content
-  function loaders = iLoad_loader_auto(file)
+  function [loaders, isbinary] = iLoad_loader_auto(file)
   
     verbose = 0;  % set it to 1 to display Loader auto-selection from extension/pattern
 
@@ -529,6 +534,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     % config  = iLoad('','load config');
     
     loaders = config.loaders;
+    isbinary= 0;
     % read start of file
     [fid,message] = fopen(file, 'r');
     if fid == -1
@@ -548,7 +554,6 @@ function [data, format] = iLoad(filename, loader, varargin)
     if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.4
       isbinary = 1; % less than 90% of printable characters
     else
-      isbinary = 0;
       % clean file start with spaces, remove EOL
       file_start = [ file_start fread(fid, 9000, 'uint8=>char')' ];
       file_start(isspace(file_start)) = ' ';
@@ -838,8 +843,6 @@ function config = iLoad_config_load
     { 'csvread', 'csv', 'Comma Separated Values (.csv)',''}, ...
     { 'dlmread', 'dlm', 'Numerical single block',''}, ...
     { 'xmlread', 'xml', 'XML','','','opennxs'}, ...
-    { 'auread',  'au',  'NeXT/SUN (.au) sound',''}, ...
-    { 'wavread', 'wav'  'Microsoft WAVE (.wav) sound',''}, ...
     { 'read_cdf', {'cdf'}, 'CDF (.cdf)','','',{'opencdf','load_nmoldyn'}}, ...
     { 'read_nc', {'nc','cdf'}, 'NetCDF (.nc)','','',{'opencdf','load_nmoldyn'}}, ...
     { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)',''}, ...

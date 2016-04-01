@@ -75,7 +75,7 @@ function [y,w] = dctn(y,DIM,w)
 %ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 %POSSIBILITY OF SUCH DAMAGE.
 
-error(nargchk(1,3,nargin))
+% error(nargchk(1,3,nargin))
 
 y = double(y);
 sizy = size(y);

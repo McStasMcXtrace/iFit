@@ -546,7 +546,11 @@ case {'yaml','yml'}
 case 'json'
   mat2json(struct(a), filename );    % in private
 case {'xml'}
-  struct2xml(struct(a), filename);   % in private
+  try
+      struct2xml(struct(a), filename);   % in private
+  catch
+      filename = [];
+  end
 otherwise
   iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
   filename = [];

@@ -5,7 +5,7 @@ function appdata = sliceomaticsetdata(d,xmesh,ymesh,zmesh)
 % Copyright 2000, 2001, 2002, 2003, 2004, 2005 The MathWorks Inc
 
 % Check variables
-  error(nargchk(1,4,nargin))
+%  error(nargchk(1,4,nargin))
 
   % Simplify the isonormals
   %as smooth3 is taking the most time for large volumes

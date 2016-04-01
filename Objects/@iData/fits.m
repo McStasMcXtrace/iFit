@@ -165,7 +165,6 @@ if numel(a) > 1
     [pars_out{index}, criteria(index), message{index}, output{index}] = ...
       fits(model, a(index), varargin{:});
   end
-  pars = pars_out;
   return
 end
 

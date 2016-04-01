@@ -35,8 +35,10 @@ function sliceomaticmotion(fig,action)
                              'clipping','off');
     setappdata(fig,'sliceomatic',d);
   end
-
-  showarrowtip(obj);
+  
+  try
+    showarrowtip(obj);
+  end
   
   if isempty(obj) || (obj ~= d.axx && obj ~= d.axy && obj ~= d.axz)
     set(d.motionmetaslice,'visible','off');

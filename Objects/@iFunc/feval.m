@@ -357,9 +357,10 @@ end
 p = iFunc_feval_set(model, p, varargin{:});
 
 model.ParameterValues = p;
-
-if ~isempty(inputname(1))
-  assignin('caller',inputname(1),model); % update in original object
+try
+    if ~isempty(inputname(1))
+      assignin('caller',inputname(1),model); % update in original object
+    end
 end
 
 % return here with syntax:
@@ -492,8 +493,10 @@ p    = sprintf('%g ', p(:)'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
 
 % update object
-if ~isempty(inputname(1))
-  assignin('caller',inputname(1),model);
+try
+    if ~isempty(inputname(1))
+      assignin('caller',inputname(1),model);
+    end
 end
 
 % ==============================================================================

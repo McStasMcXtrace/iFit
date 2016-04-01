@@ -5,7 +5,7 @@ function isocontrols(fig, onoff)
 % Copyright 2000, 2001, 2002, 2003, 2004, 2005 The MathWorks Inc
 
 % Check variables
-  error(nargchk(2,2,nargin))
+%  error(nargchk(2,2,nargin))
 
   d = getappdata(fig, 'sliceomatic');
   

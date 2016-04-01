@@ -400,8 +400,9 @@ if isstruct(pars)
     pars = p;
   end
 elseif strcmp(pars,'guess') || (isnumeric(pars) && length(pars) < length(model.Parameters))
-  pars = feval(model, pars, a.Axes{:}, a.Signal); % guess missing starting parameters
-  pars = model.ParameterValues;
+  if isempty(pars), pars='guess'; end
+  pars = feval(model, 'guess', a.Axes{:}, a.Signal); % guess missing starting parameters
+  model.ParameterValues = pars;
 end
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
 
@@ -523,12 +524,13 @@ pars_out = reshape(pars_out, [ 1 numel(pars_out) ]); % row vector
 model.ParameterValues = pars_out;
 if ~isempty(inputname(1))  
     try
-  assignin('caller',inputname(1),model); % update in original object
+      assignin('caller',inputname(1),model); % update in original object
     end
 end
 
 if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
-  output.modelValue = feval(model, pars_out, a.Axes{:});
+  pars2 = pars_out;
+  output.modelValue = feval(model, pars2, a.Axes{:});    % this also changed pars_out into iFunc
   index=find(~isnan(a.Signal) & ~isnan(output.modelValue));
   if ~isscalar(a.Error), e = a.Error(index); else e=a.Error; end
   output.corrcoef   = eval_corrcoef(a.Signal(index), e, output.modelValue(index));
@@ -567,7 +569,7 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
     b.Label = b.Title;
     b.DisplayName = b.Title;
     setalias(b,'Error', 0);
-    setalias(b,'Parameters', pars_out, [ model.Name ' model parameters for ' a.Name ]);
+    setalias(b,'Parameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);
     setalias(b,'Model', model, model.Name);
     output.modelValue = b;
   else
@@ -587,8 +589,9 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
   end
   output.parsNames  = model.Parameters;
   % final plot when in OutputFcn mode
-  eval_criteria(model, pars_out, options.criteria, a, varargin{:});
+  eval_criteria(model, [], options.criteria, a, varargin{:});
 end
+
 if ~isempty(pars_isstruct)
   % first rebuild the model parameter structure
   pars_out = cell2struct(num2cell(pars_out(:)'), strtok(model.Parameters(:)'), 2);
