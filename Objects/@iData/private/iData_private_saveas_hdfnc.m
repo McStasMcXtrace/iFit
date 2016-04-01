@@ -10,7 +10,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
   [fields, types, dims] = findfield(a);
 
   % this will store the list of fields to write
-  mode='overwrite'; write_list={}; 
+  mode='overwrite'; write_list={}; names = {};
   attr_list       ={};  % attributes for HDF
   varAttribStruct = []; % attributes for CDF
   globalAttributes= []; % global attributes for CDF
@@ -89,12 +89,6 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
     
     % make sure the field has not been stored yet, to avoid name clash
     % (must be unique)
-    if any(strcmpi(format,{'hdf','hdf5','h5','nx','nxs','n5'}))
-      names = {};
-      for index=1:2:numel(write_list), names{end+1} = getfield(write_list{index}, 'Name'); end
-    else
-      names = write_list(1:2:end);
-    end
     if ~isempty(names) 
        if any(strcmp(names, n)), continue; end
     end
@@ -108,6 +102,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
     if strcmpi(format,'cdf') && (isnumeric(val) || ischar(val))
     
       write_list = [ write_list , n, val ]; % add Variable
+      names{end+1}=n;
       
       % write dataset attributes
       if isstruct(dataset_attr) && ~any(strcmp(n, attr_list))
@@ -149,6 +144,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
 
       details.Location = group;
       details.Name     = dataset;
+      names{end+1}=dataset;
       if ischar(val), val=val(:)'; end
       write_list       = [ write_list , details, val ];
       
@@ -168,6 +164,7 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
     % NetCDF -------------------------------------------------------------------
     elseif strcmpi(format,'nc')
       write_list = [ write_list , n, val ]; % add Variable
+      names{end+1}=n;
       if strcmp(mode, 'overwrite') % first access: create file
         if ~isempty(dir(filename)), delete(filename); end
         ncid = netcdf.create(filename, 'CLOBBER');
