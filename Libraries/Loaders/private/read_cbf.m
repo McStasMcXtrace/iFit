@@ -98,7 +98,7 @@ cbf_signature = '###CBF: VERSION';
 % See the header of cbf_uncompress.c for information on how to compile the
 % C file using mex in Matlab. 
 c_routine = (length(which('cbf_uncompress')) > 0);
-if ~c_routine
+if ~c_routine || strcmp(filename, 'compile')
   mexfile = which('cbf_uncompress.c');
   mexpath = fileparts(mexfile);
   exec = [ 'mex -O -output ' mexpath filesep 'cbf_uncompress ' mexfile ];
@@ -229,9 +229,12 @@ if (c_routine)
     if (debug_level >= 2)
         fprintf('C routine called.\n');
     end
-    [frame] = ...
+    % if the mex is invalid will go for pure matlab version
+    try
+      [frame] = ...
         cbf_uncompress(dat_in,dim1,dim2,no_of_in_bytes,compression_type);
-    return;
+      return;
+    end
 end
 
 if (debug_level >= 2)

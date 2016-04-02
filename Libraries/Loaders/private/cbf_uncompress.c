@@ -50,7 +50,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     for (ind = 0; ind < nrhs; ind++) {
       if(mxGetNumberOfDimensions(prhs[ind]) != 2) {
         printf("The %d. input argument must have two dimensions.",ind+1);
-        mxErrMsgTxt("wrong number of dimensions");
+        mexErrMsgTxt("wrong number of dimensions");
       }
     }
   }
