@@ -114,6 +114,9 @@ s = [];
 if isempty(varargin)
   s = looktxt('--help');
   return
+elseif strcmp(varargin{1}, 'compile')
+  s = executable;
+  return
 end
 
 argv={};
