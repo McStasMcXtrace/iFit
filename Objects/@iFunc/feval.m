@@ -26,6 +26,8 @@ function [signal, ax, name, model] = feval(model, p, varargin)
 %         ...: additional parameters may be passed, which are then forwarded to the model
 % output: signal: result of the evaluation (vector/matrix/cell) or guessed parameters (vector)
 %         axes:   returns the axes used for evaluation (cell of vector/matrix)
+%         name:   return model name (char)
+%         model:  return updated object with stored parameter values
 %
 % ex:     b=feval(gauss,[1 2 3 4]); feval(gauss*lorz, [1 2 3 4, 5 6 7 8]);
 %           feval(gauss,'guess', -5:5, -abs(-5:5))
@@ -91,6 +93,8 @@ if ~isempty(p) && ischar(p)
     disp([ mfilename ': Unknown parameter value ' p '. Using "guess" instead.'])
     p=[];
   end
+elseif isa(p, 'iFunc')
+  p=p.ParameterValues;
 elseif ~isnumeric(p) && ~isempty(p) && ~isstruct(p)
   error([ 'iFunc:' mfilename ], [ 'Starting parameters "p" should be given as a vector, structure, character or empty, not ' class(p) ' length ' num2str(numel(p))]);
 end
@@ -357,11 +361,6 @@ end
 p = iFunc_feval_set(model, p, varargin{:});
 
 model.ParameterValues = p;
-try
-    if ~isempty(inputname(1))
-      assignin('caller',inputname(1),model); % update in original object
-    end
-end
 
 % return here with syntax:
 % feval(model) when model.ParameterValues is empty
@@ -467,9 +466,6 @@ end
 % in case the evaluation is empty, we compute it (this should better have been done before)
 if isempty(model.Eval) 
   model.Eval=cellstr(model);
-  if ~isempty(inputname(1))
-    assignin('caller',inputname(1),model);
-  end
 end
 
 % make sure we have enough parameter values wrt parameter names, else
@@ -492,12 +488,6 @@ end
 p    = sprintf('%g ', p(:)'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
 
-% update object
-try
-    if ~isempty(inputname(1))
-      assignin('caller',inputname(1),model);
-    end
-end
 
 % ==============================================================================
 function [signal,iFunc_ax,p,this] = iFunc_feval_expr(this, varargin)
