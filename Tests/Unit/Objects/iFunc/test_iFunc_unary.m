@@ -24,7 +24,7 @@ function result = test_iFunc_unary
   
   for index=1:length(op)
     
-    % operator on iData
+    % operator on iFunc
     try
       d1 = feval(op{index}, a);
       % evaluate resulting function on axis
