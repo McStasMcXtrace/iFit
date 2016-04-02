@@ -1,10 +1,10 @@
 function errors=ifittest(varargin)
-% errors=ifittest(test) : performs a self-test procedure of the iFit/iData package
+% errors=ifittest(test) : performs a self-test procedure of the iFit package
 %
 % The test procedure includes:
 % * unit   tests of Objects and Libraries
 % * system tests of Applications and Scripts
-% * doc    tets  from the Documentation/tutorials
+% * doc    tests from the Documentation/tutorials
 %
 %   A report of all test is displayed at the end, with a list of failures.
 %
