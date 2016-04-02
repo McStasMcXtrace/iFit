@@ -122,9 +122,9 @@ sendStr(3,'children [\n');
 sendStr(2,'Viewpoint {\n');
 sendStr(3,sprintf('position %f %f %f\n',obj.CameraPosition));
 sendStr(3,sprintf('fieldOfView %f\n',obj.CameraViewAngle*pi/180));
-if exist('graphicsversion') && graphicsversion(obj_handle,'handlegraphics')
-    axesXForm = get(obj_handle, 'XForm');
-else
+try
+    axesXForm = get(obj_handle, 'XForm');   % R2014b or later
+catch
     axesXForm = [1.0      0.0    0.0     0.0
                  0.0      1.0    0.0     0.0
                  0.0      0.0   -1.0     0.0

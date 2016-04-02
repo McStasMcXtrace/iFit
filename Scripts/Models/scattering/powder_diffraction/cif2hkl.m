@@ -26,7 +26,7 @@ if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 this_path = fileparts(which(mfilename));
 
 % check if we use the cif2hkl executable, or need to compile the MeX (only once)
-if ~isdeployed && isempty(compiled)
+if ~isdeployed && (isempty(compiled) || (nargin >0 && strcmp(varargin{1}, 'compile')))
   compiled = '';
   
   % get list of modules
@@ -99,7 +99,17 @@ if ~isdeployed && isempty(compiled)
   end
 end
 
-if isempty(varargin) || strcmp(varargin{1}, 'compile'), return; end
+% assemble command line
+if ~isempty(compiled)
+  cmd = compiled;
+else
+  cmd = mfilename;
+end
+
+if isempty(varargin) || strcmp(varargin{1}, 'compile'), 
+  result = cmd;
+  return;
+end
 
 % handle input arguments
 % varargin = file_in, file_out, lambda, mode, verbose
@@ -145,12 +155,6 @@ if isempty(verbose) || ~isnumeric(verbose)
   verbose=0;
 end
 
-% assemble command line
-if ~isempty(compiled)
-  cmd = compiled;
-else
-  cmd = mfilename;
-end
 if ~any(strcmp(file_in, {'-h','--help','--version'}))
   
   if verbose
