@@ -4,8 +4,9 @@ function result = test_Models_phonons
   ac=sqw_sine3d(5);
   qh=linspace(0,1,50);qk=qh; ql=qh'; w=linspace(0.01,10,50);	
   
+  
   f=iData(ac,[],qh,qk,ql,w);
-  plot3(log(f(:,:,1,:)));
+  fig=figure; plot3(log(f(:,:,1,:)));
   [w1,c1]=std(f(1,:,:,:));
   
   % perovskite
@@ -19,6 +20,7 @@ function result = test_Models_phonons
   qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,10,51);
   f=iData(s,[],qh,qk,ql,w); 	
   [w3,c3]=std(f(1,:,:,:));
+  close(fig);
   
   if c1 < 0.01 && w1 < 0.1 && abs(c2 - 0.15) < .05 && abs(w2 - 0.15) < .05 ...
     && abs(c3 - 0.15) < .05 && abs(w3 - 0.15) < .05
