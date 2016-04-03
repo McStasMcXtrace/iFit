@@ -1,5 +1,5 @@
-function [signal, ax, name, model] = feval(model, p, varargin)
-% [signal, axes, name, model] = feval(model, parameters, x,y, ...) evaluate a function
+function [signal, model, ax, name] = feval(model, p, varargin)
+% [signal, model, axes, name] = feval(model, parameters, x,y, ...) evaluate a function
 %
 %   @iFunc/feval applies the function 'model' using the specified parameters and axes
 %     and function parameters 'pars' with optional additional parameters.
@@ -25,9 +25,9 @@ function [signal, ax, name, model] = feval(model, p, varargin)
 %         x,y,..:  axes values to be used for the computation (vector,matrix,iData)
 %         ...: additional parameters may be passed, which are then forwarded to the model
 % output: signal: result of the evaluation (vector/matrix/cell) or guessed parameters (vector)
-%         axes:   returns the axes used for evaluation (cell of vector/matrix)
+%         model:  return updated object with stored parameter values (iFunc)
+%         axes:   return the axes used for evaluation (cell of vector/matrix)
 %         name:   return model name (char)
-%         model:  return updated object with stored parameter values
 %
 % ex:     b=feval(gauss,[1 2 3 4]); feval(gauss*lorz, [1 2 3 4, 5 6 7 8]);
 %           feval(gauss,'guess', -5:5, -abs(-5:5))
@@ -51,7 +51,7 @@ end
 if isa(model, 'iFunc') && numel(model) > 1
   signal = {}; ax={}; name={};
   for index=1:numel(model)
-    [signal{end+1}, ax{end+1}, name{end+1}, model(index)] = feval(model(index), p, varargin{:});
+    [signal{end+1}, model(index), ax{end+1}, name{end+1}] = feval(model(index), p, varargin{:});
   end
   if numel(signal) == 1, 
     signal=signal{1}; ax=ax{1};
@@ -82,7 +82,7 @@ end
 if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
   signal = {}; ax={}; name={};
   for index=1:numel(p)
-    [signal{end+1}, ax{end+1}, name{end+1}, model] = feval(model, p{index}, varargin{:});
+    [signal{end+1}, model, ax{end+1}, name{end+1}] = feval(model, p{index}, varargin{:});
   end
   if numel(signal) == 1, 
     signal=signal{1}; ax=ax{1}; name=name{1};

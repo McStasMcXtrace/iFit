@@ -6,8 +6,8 @@ function b = subsref(a,S)
 %   The special syntax a{0} where a is a single iData returns the 
 %     Signal/Monitor, and a{n} returns the axis of rank n.
 %   When given an iFunc model, the iData axes are used to evaluate the model
-%     iData(model)
-%     iData(mode, p)  uses given parameters
+%     signal = iData(model)
+%     signal = iData(model, p)  uses given parameters
 %
 % Version: $Date: Fri Mar 11 18:23:19 2016 +0100$
 % See also iData, iData/subsasgn
@@ -66,9 +66,9 @@ for i = 1:length(S)     % can handle multiple index levels
           pars = '';
         end
         if isempty(pars), pars='guess'; end
-        modelValue = feval(model, pars, b, s.subs{2:end});
+        [modelValue, model, ax, name] = feval(model, pars, b, s.subs{2:end});
         if strcmp(pars,'guess')
-          modelValue = feval(model, modelValue, b, s.subs{2:end});
+          [modelValue, model, ax, name] = feval(model, modelValue, b, s.subs{2:end});
         end
         dm=iData_getAliasValue(b,'Monitor');
         if not(all(dm == 1 | dm == 0)) % fit(signal/monitor) 

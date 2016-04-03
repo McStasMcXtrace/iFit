@@ -14,11 +14,11 @@ function result = test_iFunc_binary
   for index=1:length(op)
     % perform op on iFunc
     c  = feval(op{index}, a, b);
-    [d1,~,~,c] = feval(c); % evaluate function
+    [d1,c] = feval(c); % evaluate function
     
     % perform op on feval(iFunc)
-    [fa,~,~,a] = feval(a);
-    [fb,~,~,b] = feval(b);
+    [fa,a] = feval(a);
+    [fb,b] = feval(b);
     
     switch op{index}
     case 'xcorr'
