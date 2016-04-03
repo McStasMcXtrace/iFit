@@ -162,9 +162,9 @@ else  % convert input argument into object
     for n_in = 1:numel(in)  % handle array of iFunc
       if numel(in) == 1, this_in = in;
       else               this_in = in(n_in); end
-      [signal, ax, name] = feval(this_in, varargin{2:end});
+      [signal, this_in, ax, name] = feval(this_in, varargin{2:end});
       if length(signal) == length(this_in.Parameters)
-        [signal, ax, name] = feval(this_in, signal, axes_in{:});
+        [signal, this_in, ax, name] = feval(this_in, signal, axes_in{:});
       end
       if isempty(signal), 
           iData_private_warning(mfilename, [ ': iFunc evaluation failed (empty value). Check axes and parameters.' ]);
