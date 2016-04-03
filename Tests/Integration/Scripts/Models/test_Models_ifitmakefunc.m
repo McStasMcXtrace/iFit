@@ -13,7 +13,7 @@ function result = test_Models_ifitmakefunc
     'p(1)*sin((x-p(2))/p(3)).*exp(-x/p(4))+p(5)','automatic');
   % perform the fit
   [p1, e, m, o]=fits(a,sinexp,[1.15 0.4 0.15 1.7 0.2],'fminralg');
-  plot(a, o.modelValue);
+  fig=figure; plot(a, o.modelValue); close(fig)
   
   if all(abs(abs(p1(:))-p(:)) < 0.4)
     result = [ 'OK     ' mfilename ];
