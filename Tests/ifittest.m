@@ -12,7 +12,7 @@ function errors=ifittest(varargin)
 %  output: errors:   list of errors, or empty when all is fine (MException).
 %
 % ex:     ifittest;
-%         ifittest('Objects/iData')
+%         ifittest('Unit/Objects/iData')
 %
 % Version: $Date$
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
@@ -120,7 +120,8 @@ function fileList = getAllFiles(dirName)
   dirData  = dir(dirName);     % Get the data for the current directory
   if isempty(dirData)
     % we try to prepend the ifittest location (relative path given)
-    dirData = fullfile(fileparts(which(mfilename)), dirData);
+    dirData = fullfile(fileparts(which(mfilename)), dirName);
+    dirData = dir(dirData);
   end
   dirIndex = [dirData.isdir];  % Find the index for directories
   fileList = {dirData(~dirIndex).name}';  %' Get a list of the files

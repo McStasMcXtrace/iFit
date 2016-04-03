@@ -1,5 +1,5 @@
 function [signal, ax, name, model] = feval(model, p, varargin)
-% [signal, axes] = feval(model, parameters, x,y, ...) evaluate a function
+% [signal, axes, name, model] = feval(model, parameters, x,y, ...) evaluate a function
 %
 %   @iFunc/feval applies the function 'model' using the specified parameters and axes
 %     and function parameters 'pars' with optional additional parameters.
@@ -38,10 +38,20 @@ function [signal, ax, name, model] = feval(model, p, varargin)
 % handle input iFunc arrays
 signal=[]; ax=[]; name='';
 
+try
+  inputname1=inputname(1);
+  % handle bug in Matlab R2015-2016 for inputname shifted in feval
+  % make sure argument is indeed what we expect
+  if ~isa(evalin('caller', inputname1), 'iFunc') inputname1=''; end
+catch
+  inputname1 = '';
+end
+
+
 if isa(model, 'iFunc') && numel(model) > 1
   signal = {}; ax={}; name={};
   for index=1:numel(model)
-    [signal{end+1}, ax{end+1}, name{end+1}] = feval(model(index), p, varargin{:});
+    [signal{end+1}, ax{end+1}, name{end+1}, model(index)] = feval(model(index), p, varargin{:});
   end
   if numel(signal) == 1, 
     signal=signal{1}; ax=ax{1};
@@ -72,7 +82,7 @@ end
 if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
   signal = {}; ax={}; name={};
   for index=1:numel(p)
-    [signal{end+1}, ax{end+1}, name{end+1}] = feval(model, p{index}, varargin{:});
+    [signal{end+1}, ax{end+1}, name{end+1}, model] = feval(model, p{index}, varargin{:});
   end
   if numel(signal) == 1, 
     signal=signal{1}; ax=ax{1}; name=name{1};
@@ -362,6 +372,10 @@ p = iFunc_feval_set(model, p, varargin{:});
 
 model.ParameterValues = p;
 
+if ~isempty(inputname1)
+  assignin('caller',inputname1,model); % update in original object
+end
+
 % return here with syntax:
 % feval(model) when model.ParameterValues is empty
 % feval(model, 'guess')
@@ -466,6 +480,9 @@ end
 % in case the evaluation is empty, we compute it (this should better have been done before)
 if isempty(model.Eval) 
   model.Eval=cellstr(model);
+  if ~isempty(inputname1)
+    assignin('caller',inputname1,model); % update in original object
+  end
 end
 
 % make sure we have enough parameter values wrt parameter names, else
@@ -487,6 +504,10 @@ end
 
 p    = sprintf('%g ', p(:)'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
+
+if ~isempty(inputname1)
+  assignin('caller',inputname1,model); % update in original object
+end
 
 
 % ==============================================================================

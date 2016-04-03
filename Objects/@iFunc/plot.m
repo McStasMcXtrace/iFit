@@ -63,9 +63,9 @@ end
 if strcmp(p, 'guess'), p=[]; end
 
 % evaluate the model value, and axes
-[signal, ax, name] = feval(a, p, varargin{:});
+[signal, ax, name, a] = feval(a, p, varargin{:});
 if isempty(p) && length(signal) == length([ a.Parameters ])
-  [signal, ax, name] = feval(a, signal, varargin{:});
+  [signal, ax, name, a] = feval(a, signal, varargin{:});
 end
 
 % Parameters are stored in the updated model
