@@ -1,4 +1,4 @@
-function [gDOS, g] = Sqw_gDOS(s)
+function [gDOS, g] = Sqw_gDOS(s, n)
 % Sqw_gDOS: compute the generalised density of states (gDOS)
 %  The gDOS is an approximation of the vibrational spectra (DOS).
 %  This routine should be applied on an incoherent dynamic S(q,w) data set.
@@ -11,10 +11,12 @@ function [gDOS, g] = Sqw_gDOS(s)
 %
 %  The gDOS(w) is obtained by extracting the low momentum values out of gDOS(q,w).
 %  The syntax is:
-%                 [g(w), g(q,w)]=Sqw_gDOS(Sqw)
+%                 [g(w), g(q,w)]=Sqw_gDOS(Sqw, n)
 %
 % input:
-%   s: Sqw data set e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
+%   s: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%   n: number of low-angle values to integrate (integer). Default is 10 when omitted.
+%
 % output:
 %   g:   gDOS(w)   (1D iData versus energy)
 %   g2D: gDOS(q,w) (2D iData)
@@ -36,12 +38,15 @@ function [gDOS, g] = Sqw_gDOS(s)
     return; 
   end
   
-
+  if nargin == 1, n=[]; end
+  if isempty(n) || n <= 0, n=10; end
+  
   % handle array of objects
   if numel(s) > 1
-    g = [];
     for index=1:numel(s)
-      g = [ g feval(mfilename, s(index)) ];
+      [gDOS1, g1] = feval(mfilename, s(index), n);
+      gDOS = [ gDOS gDOS1 ];
+      g    = [ g g1 ];
     end
     return
   end
@@ -71,12 +76,12 @@ function [gDOS, g] = Sqw_gDOS(s)
   if isempty(g.Label), g.Label='gDOS'; end
   
   % this is the weighting for valid data
-  g(g <= 0) = 0; g(~isfinite(g)) = 0;
+  g(~isfinite(g)) = 0;
   
   % determine the low-momentum limit
   s0 = subsref(g,struct('type','.','subs','Signal'));
   gDOS = zeros(size(s0,1),1);  % column of g(w) DOS for q->0
-  nc = min(10,size(s0,2)); % get the first 10 values for each energy transfer
+  nc = min(n,size(s0,2)); % get the first n=10 values for each energy transfer
   for i=1:size(s0,1)
     nz = find(s0(i,:) > 0, nc, 'first');
     if ~isempty(nz)

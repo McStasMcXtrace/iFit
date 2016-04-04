@@ -18,7 +18,7 @@ function s = Sqw_dynamic_range(s, Ei, angles, options)
 %   Sqw_dynamic_range(s, Ei, [angles])
 %
 % input:
-%   s:  Sqw data set, with q as 1st axis, w as 2nd axis
+%   s:  Sqw data set, e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %   Ei: incoming neutron energy [meV]
 %   angles: detection range in [deg] as a vector. Min and Max values are used.
 % output:

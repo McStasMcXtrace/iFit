@@ -7,8 +7,7 @@ function s = Sqw_Sq(s)
 %  The S(q,w) is a dynamic structure factor aka scattering function.
 %
 % input:
-%   s: Sqw data set (non classical, including T Bose factor e.g from experiment)
-%        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
+%   s: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %
 % References: Fischer, Barnes and Salmon, Rev Prog Phys 69 (2006) 233
 %
@@ -19,27 +18,17 @@ function s = Sqw_Sq(s)
     disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
     return; 
   end
-  if nargin == 1, T = []; end
 
   % handle array of objects
   if numel(s) > 1
-    g = [];
     for index=1:numel(s)
-      g = [ g feval(mfilename, s(index)) ];
+      s(index) = feval(mfilename, s(index));
     end
-    s = g;
     return
   end
   
   s = Sqw_check(s);
   if isempty(s), return; end
-
-  % test if classical
-  if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    if s.classical == 1
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical. The S(q) computation may be wrong. Apply Sqw_Bosify first.' ]);
-    end
-  end
 
   % compute integral
   s = trapz(s,1); % on q

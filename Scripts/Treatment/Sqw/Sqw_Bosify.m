@@ -4,9 +4,11 @@ function s = Sqw_Bosify(s, T, type, options)
 %
 %  The S(q,w) is a dynamic structure factor aka scattering function.
 %
+%  Sqw_Bosify(Sqw, 0) makes a check of the input data set and returns.
+%
 % input:
 %   s: Sqw data set (classical, symmetric in energy, no T Bose factor)
-%        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
+%        e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %   T: when given, Temperature to use for Bose. When not given, the Temperature
 %      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
 %   type: 'Schofield' or 'harmonic' (default) or 'standard'

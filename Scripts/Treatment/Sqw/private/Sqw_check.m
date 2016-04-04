@@ -1,5 +1,11 @@
 function s = Sqw_check(s)
 % Sqw_check: check if a 2D iData is aa S(q,w).
+%
+% conventions:
+% omega = Ei-Ef = energy lost by the neutron
+%    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
+%    omega < 0, neutron gains energy, anti-Stokes
+%
 % input:
 %   s: Sqw data set
 %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
@@ -34,9 +40,30 @@ function s = Sqw_check(s)
   
   % check 'classical'
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    classical0 = s.classical;
+    if isfield(s,'classical') classical0 = s.classical;
+    else 
+      classical0 = findfield(s, 'classical');
+      if iscell(classical0), classical0=classical0{1}; end
+      classical0 = get(s, classical0);
+    end
     if numel(classical0) > 1
-      s.classical = classical0(1);
+      classical0  = classical0(1);
+      s.classical = classical0;
+    end
+  end
+  
+  w  = s{1};
+  % checks that we have 0<w<Ei for Stokes, and w<0 can be lower (anti-Stokes)
+  if any(w(:) < 0) && any(w(:) > 0)
+    % for experimental data we should get w1=max(w) < Ei and w2 can be as low as
+    % measured (neutron gains energy from sample).
+    
+    
+    w1 = max(w(:)); w2 = max(-w(:)); % should have w1 < w2
+    if w1 > w2*2
+      % we assume the measurement range is at least [-2*Ei:Ei]
+      % revert energy axis
+      setaxis(s, 1, -w);
     end
   end
 
@@ -74,8 +101,9 @@ function s = Sqw_check(s)
     % log_s_ratio should be a constant if S(q,w) contains Bose
     % then kT = w./log_s_ratio
     T         = w./log_s_ratio*11.6045; % 1 meV = 11.6045 K
-    if any(isfinite(T))
-      T         = mean(real(T),0);
+    T         = T{0};
+    if any(isfinite(T)) && (all(T(~isnan(T))>0.1) || all(T(~isnan(T))<0.1))
+      T         = mean(real(T(~isnan(T))));
     else T=NaN;
     end
 

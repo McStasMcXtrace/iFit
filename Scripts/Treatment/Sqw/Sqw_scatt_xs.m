@@ -38,7 +38,7 @@ function sigma = Sqw_scatt_xs(s, Ei)
   %
   % input:
   %   s: Sqw data set (non classical, with T Bose factor e.g from experiment)
-  %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
+  %        e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
   %   Ei: incoming neutron energy [meV]
   % output:
   %   sigma: cross section per scattering unit (scalar or iData)
@@ -86,7 +86,7 @@ function sigma = Sqw_scatt_xs(s, Ei)
   
   w = s{1};
   
-  if min(w(:)) * max(w(:)) > 0
+  if min(w(:)) * max(w(:)) >= 0
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to only be defined on w<0 or w>0. You should apply  and then s=Sqw_Bosify(Sqw_symmetrize(s), temperature) before.' ]);
   end
 
