@@ -26,14 +26,9 @@
           </li>
           <li><a href="#mozTocId424180">Isotropic dynamic structure
               factors S(|q|,w) in liquids, powders, gas, polymers and
-              other amorphous materials</a>
+              other amorphous materials</a><br>
             <ol>
-              <li>
-                <ol>
-                  <li><a href="#mozTocId561339"></a></li>
-                </ol>
-              </li>
-              <li><a href="#mozTocId550398">Example: dynamic structure
+              <li><a href="#mozTocId715002"> Example: dynamic structure
                   factor from molecular dynamics</a>
                 <ol>
                   <li><a href="#mozTocId906474"> From classical to
@@ -60,7 +55,7 @@
           for nuclear engineering </a>
         <ol>
           <li><a href="#mozTocId189382">Total scattering cross section,
-              energy dependent</a></li>
+              energy dependent </a></li>
           <li><a href="#mozTocId642387">Dynamic structure factor
               S(alpha, beta) for e.g. ENDF MF7 and ACE files</a></li>
         </ol>
@@ -94,6 +89,7 @@
 
 
 
+
           scattering</a> [5,6].<br>
         <br>
         You may as well generate 4D S(q,w) models using e.g. the <a
@@ -101,6 +97,7 @@
         specialized <a href="Models.html">models</a>. Then you can
         compute the 2D powder average, as shown below.<br>
         <h3><a class="mozTocH3" name="mozTocId301478"></a>Loading/generating
+
 
 
 
@@ -132,6 +129,7 @@
 
 
 
+
               format='hdf'</i>).</li>
         </ol>
         <p></p>
@@ -139,8 +137,8 @@
         <p>The file can then be read by iFit, using any of<i><br>
           </i></p>
         <ul>
-          <li>Sqw=load(iData, 'file') </li>
-          <li>Sqw=iData'file')</li>
+          <li>Sqw=<font color="#3366ff">load</font>(iData, 'file') </li>
+          <li>Sqw=<font color="#3366ff">iData</font>('file')</li>
         </ul>
         <p>which can read HDF, text, NetCDF, and many other formats (see
           <a href="Loaders.html">Loaders</a> for a full description).<br>
@@ -150,7 +148,7 @@
         If you managed to get a matrix <i>S</i> and two vectors <i>q,w</i>
         as Matlab variables, create an S(q,w) data set with:<br>
         <ul>
-          <li>Sqw=iData(q,w,S)<br>
+          <li>Sqw=<font color="#3366ff">iData</font>(q,w,S)<br>
           </li>
         </ul>
         <h4><a class="mozTocH4" name="mozTocId748534"></a>From a Model
@@ -160,7 +158,8 @@
           simply evaluate the model into an iData object, with default
           Model parameters:</p>
         <ul>
-          <li>Sqw=iData(S, parameters, axis1, axis2, ...)</li>
+          <li>Sqw=<font color="#3366ff">iData</font>(S, parameters,
+            axis1, axis2, ...)</li>
         </ul>
         <h4><a class="mozTocH4" name="mozTocId86093"></a>Shaping the Sqw
           data set</h4>
@@ -256,6 +255,7 @@
 
 
 
+
                 the S(|q|,w) in both energy sides. The initial data set
                 should better be 'classical'.<br>
               </td>
@@ -319,6 +319,7 @@
 
 
 
+
                 the dynamic structure factor to the measurable one for
                 an incoming energy Ei [meV]. The detection angular range
                 can be set as 3rd argument.<br>
@@ -332,8 +333,7 @@
               <td valign="top">S(q), Er, characteristic frequencies<br>
               </td>
               <td valign="top">
-                <h5><a class="mozTocH5" name="mozTocId561339"></a><a
-                    href="images/Treatment_Sqw_moments.png"><b><img
+                <h5><a href="images/Treatment_Sqw_moments.png"><b><img
                         alt="Treatment_Sqw_moments"
                         title="Treatment_Sqw_moments"
                         src="images/Treatment_Sqw_moments.png"
@@ -373,9 +373,24 @@
 
 
 
+
                 the total scattering cross section which is the integral
                 of S(q,w) over the dynamic range vs. incident neutron
                 energy.<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><b><font color="#3366ff">Sqw_Sab(Sqw, M)</font></b><br>
+              </td>
+              <td valign="top">S(|q|,w)</td>
+              <td valign="top">S(alpha,beta)<br>
+              </td>
+              <td valign="top"><a href="images/Treatment_Sqw_Sab.png"><img
+                    alt="Treatment_Sqw_Sab" title="Treatment_Sqw_Sab"
+                    src="images/Treatment_Sqw_Sab.png" align="right"
+                    border="0" width="87" height="60"></a>Convert a
+                dynamic structure factor to its unit-less representation
+                S(a,b)<br>
               </td>
             </tr>
             <tr>
@@ -405,11 +420,12 @@
           <li>w &gt; 0, neutron looses energy, can not be higher than
             the incident neutron energy (Stokes)</li>
           <li>w &lt; 0, neutron gains energy, anti-Stokes</li>
-          <li>q is the momentum (or wavevector) in Angs-1.</li>
+          <li>q is the momentum (or wavevector) in Angs-1.<br>
+          </li>
         </ul>
         <ul>
         </ul>
-        <h4><a class="mozTocH4" name="mozTocId550398"></a>Example:
+        <h4><a class="mozTocH4" name="mozTocId715002"></a> Example:
           dynamic structure factor from molecular dynamics</h4>
         In the following, we demonstrate the different treatment
         procedures, starting from an example data set obtained from a
@@ -419,6 +435,7 @@
         Dynamics (AIMD) with VASP, for 200 Ge atoms (GGA-PW91 potential)
         at T=1350K, from [7]. The data set is part of iFit, as well as <a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Ge_liq_coh.sqw">in
+
 
 
 
@@ -445,6 +462,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         </ul>
         Molecular Dynamics trajectories are usually computed in the NVE
         <a href="https://en.wikipedia.org/wiki/Microcanonical_ensemble">micro-canonical
+
 
 
 
@@ -558,6 +576,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
                     is the default.</i></b></td>
             </tr>
           </tbody>
@@ -640,6 +659,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             25)</li>
           <li> <font color="#3366ff">plot</font>(log10(Sqw25));</li>
         </ul>
@@ -678,6 +698,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             Sqw25]));</li>
         </ul>
         <h5><a class="mozTocH5" name="mozTocId566610"></a> <a
@@ -689,6 +710,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             frequencies</b></h5>
         From the dynamic structure factor, one can compute the energy
         moments, which provide some of the characteristic frequencies
@@ -696,6 +718,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         scattering units (here 72.64 g/mol for Ge). <br>
         <br>
         Using the 'quantum' scattering law S(q,w), we can define <i>n</i>-th
+
 
 
 
@@ -889,6 +912,7 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
 
 
 
+
             See also Sears, <i>Neut. News</i> <b>3</b> (1992) 26.<br>
           </li>
           <li>Price J. et al, <i>Non Cryst Sol </i><b>92</b> (1987)
@@ -956,8 +980,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
           [Ei+Ef-2\B5&#8730;(Ei*Ef)]/A.kT<br>
           beta = -hw/kT&nbsp;&nbsp;&nbsp; = (Ef-Ei)/kT<br>
           A&nbsp;&nbsp;&nbsp; = M/m<br>
-          \B5&nbsp;&nbsp; = cos(theta) = cos(theta) = (Ki<sup>2</sup> + Kf<sup>2</sup>
-          - q<sup>2</sup>) ./ (2Ki.Kf)<br>
+          \B5&nbsp;&nbsp; = cos(theta) = cos(theta) = (Ki<sup>2</sup> +
+          Kf<sup>2</sup> - q<sup>2</sup>) ./ (2Ki.Kf)<br>
         </div>
         <br>
         <a href="images/Treatment_Sqw_Sab.png"><img
@@ -976,6 +1000,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">D2O_liq_290_coh.sqw</a>'</font>);</li>
           <li>Sab = <font color="#3366ff">Sqw_Sab</font>(<font
               color="#3366ff">Sqw_Bosify</font>(<font color="#3366ff">Sqw_symmetrize</font>(Sqw),
+
             290), 20);</li>
           <li><font color="#3366ff">plot</font>(log(Sab))<br>
           </li>
@@ -996,6 +1021,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
