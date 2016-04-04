@@ -169,7 +169,7 @@ if options.htmlreport && ~isempty(filename)
     fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions in a single crystal, using a DFT code (the "calculator") in the background. From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
     fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <a href="http://ifit.mccmode.org/Models.html#mozTocId990577"<b>sqw_phonon</b> Model</a>, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomistic Simulation Environment (ASE)</a>.\n');
     fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends successfully, the lower part presents the S(hkl,w) dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic part of the dynamic structure factor S(hkl,w), for vibrational modes.</p>\n');
-    fprintf(fid, '<p><b>Limitations:</b> These results only display the vibrational mode energies, and does not compute the actual intensity. The accuracy of the model depends on the parameters used for the computation, e.g. energy cut-off, k-points grid, smearing, ...</p>\n');
+    fprintf(fid, '<p><b>Limitations:</b> These results only display the vibrational mode energies, and do not compute the actual intensity. The accuracy of the model depends on the parameters used for the computation, e.g. energy cut-off, k-points grid, smearing, ...</p>\n');
 
     % append system configuration
     fprintf(fid, '<h2><a name="atom"></a>Atom/molecule configuration</h2>\n');
@@ -177,7 +177,7 @@ if options.htmlreport && ~isempty(filename)
     fprintf(fid, 'Initial description: %s<br>\n', options.configuration);
     fprintf(fid, '<p>\n');
     % append links to configuration files and images
-    for index={ 'configuration.html You can rotate the model (left mouse button), zoom (right mouse button), and translate (middle mouse button).', ...
+    for index={ 'configuration.html You can rotate the model (left mouse button), zoom (right mouse button), and pan (middle mouse button).', ...
                 'configuration.png', ...
                 'configuration.cif Crystallographic Information File (<a href="https://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>) which you can view with <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/"VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://rasmol.org/">RasMol</a>, ...', ...
                 'configuration.pdb Protein Data Bank (<a href="http://www.rcsb.org/pdb/">PDB</a>) which you can view with <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/"VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://rasmol.org/">RasMol</a>, ...', ...
@@ -189,7 +189,7 @@ if options.htmlreport && ~isempty(filename)
                 'configuration.x3d Scene for <a href="http://castle-engine.sourceforge.net/view3dscene.php">view3dscene</a>, <a href="http://www.instantreality.org/">InstantPlayer</a>, <a href="http://freewrl.sourceforge.net/">FreeWRL</a>'  }
       [index1, index2] = strtok(index{1});
       if strcmp(index1, 'configuration.png')
-        fprintf(fid, '<div style="text-align:center"><img src="%s" align="middle" title="%s"></div><br>In addition we provide the atoms/molecule configuration as:<br><ul>\n', index1, index1);
+        fprintf(fid, '<div style="text-align:center"><a href="%s"><img src="%s" align="middle" title="%s"></a></div><br>In addition we provide the atoms/molecule configuration as:<br><ul>\n', index1, index1, index1);
       elseif strcmp(index1, 'configuration.html')
         fprintf(fid, '<div style="text-align:center"><iframe src="%s" onload="this.style.height=this.contentDocument.body.scrollHeight +''px'';" align="middle"></iframe><br>%s (<a href="%s" target=_blank>open in external window</a>)<br></div><br>\n', index1, index2, index1);
       else
@@ -248,7 +248,7 @@ if options.htmlreport && ~isempty(filename)
       fprintf(fid, '<h3><a name="dos"></a>The vibrational density of states (vDOS)</h3>\n');
       fprintf(fid, 'The phonon spectrum is shown below:<br>\n');
       fprintf(fid, '<div style="text-align: center;">\n');
-      fprintf(fid, '<img src="%s" title="%s" align="middle"></div><br>\n', 'Phonons_DOS.png', 'Phonons_DOS.png');
+      fprintf(fid, '<a href="%s"><img src="%s" title="%s" align="middle"></a></div><br>\n', 'Phonons_DOS.png', 'Phonons_DOS.png', 'Phonons_DOS.png');
       fprintf(fid, '<p>and is available as:<br><ul>\n');
       fprintf(fid, '<li>[ <a href="%s">%s</a> ] is a flat text file which contains the vDOS data set.</li>\n', 'Phonons_DOS.dat', 'Phonons_DOS.dat');
       fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons_DOS.h5', 'Phonons_DOS.h5');
@@ -293,7 +293,7 @@ if options.htmlreport && ~isempty(filename)
     
     fprintf(fid, 'Here is a representations of the 3D data set<br>\n');
     fprintf(fid, '<div style="text-align: center;">\n');
-    fprintf(fid, '<img src="%s" title="%s" align="middle"><br>\n', 'Phonons3D.png', 'Phonons3D.png');
+    fprintf(fid, '<a href="%s"><img src="%s" title="%s" align="middle"></a><br>\n', 'Phonons3D.png', 'Phonons3D.png', 'Phonons3D.png');
     
     % generate the X3D views
     s1=min(data1); s2=max(data1);
@@ -314,13 +314,13 @@ if options.htmlreport && ~isempty(filename)
       end
     end
     fprintf(fid, ' ]</form></div><br>\n');
-    fprintf(fid, 'The blue axis is the Energy (meV), the red axis is QK (rlu), the green axis is QL (rlu).<br>\nYou can rotate the model (left mouse button), zoom (right mouse button), and translate (middle mouse button).<br>\n');
+    fprintf(fid, 'The blue axis is the Energy (meV), the red axis is QK (rlu), the green axis is QL (rlu).<br>\nYou can rotate the model (left mouse button), zoom (right mouse button), and pan (middle mouse button).<br>\n');
     
     % tag=powder
     fprintf(fid, '<h3><a name="powder"></a>The powder average S(q,w)</h3>\n');
     fprintf(fid, 'The powder average S(q,w) is shown below:<br>\n');
     fprintf(fid, '<div style="text-align: center;">\n');
-    fprintf(fid, '<img src="%s" title="%s" align="middle"></div><br>\n', 'Phonons_powder.png', 'Phonons_powder.png');
+    fprintf(fid, '<a href="%s"><img src="%s" title="%s" align="middle"></a></div><br>\n', 'Phonons_powder.png', 'Phonons_powder.png', 'Phonons_powder.png');
     fprintf(fid, '<p>and is available as:<br><ul>\n');
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] is a flat text file which contains the vDOS data set.</li>\n', 'Phonons_powder.dat', 'Phonons_powder.dat');
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons_powder.h5', 'Phonons_powder.h5');

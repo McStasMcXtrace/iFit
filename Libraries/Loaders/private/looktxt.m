@@ -18,6 +18,7 @@ function result = looktxt(varargin)
 result = [];
 
 % use looktxt bin when available -----------------------------------------------
+if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 
 % handle input arguments
 
@@ -29,6 +30,6 @@ cmd       = [ cmd ' ' sprintf('%s ', varargin{:}) ];
 disp(cmd)
 
 % launch the command
-[status, result] = system(cmd);
+[status, result] = system([ precmd cmd ]);
 
 
