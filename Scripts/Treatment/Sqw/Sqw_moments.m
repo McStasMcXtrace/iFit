@@ -1,5 +1,5 @@
-function sigma=Sqw_moments(data, M, classical, T)
-% moments=Sqw_moments(sqw, M, classical, T): compute Sqw moments (harmonic frequencies)
+function sigma=Sqw_moments(data, M, T, classical)
+% moments=Sqw_moments(sqw, M, T, classical): compute Sqw moments (harmonic frequencies)
 %
 %   Compute the structure factor (moment 0), recoil energy (moment 1) and the
 %     collective, harmonic and mean energy transfer dispersions.
@@ -15,21 +15,23 @@ function sigma=Sqw_moments(data, M, classical, T)
 %   M4   = <w4S(q,w)>                                                 [moment 4]
 %
 % input:
-%   data: iData object for S(q,w)
+%   data: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %   M: molar weight of the atom/molecule in [g/mol].
-%     when omitted, it is searched 'weight' is the object.
-%   classical: 0 for non symmetric S(q,w) [with Bose, from exp.], 1 for symmetric (from MD)
-%     when omitted, this is guessed from the data set when possible
-%   T: when given, Temperature to use. When not given, the Temperature
+%     when omitted or empty, it is searched 'weight' is the object.
+%   T: when given, Temperature to use. When not given or empty, the Temperature
 %      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
+%   classical: 0 for non symmetric S(q,w) [with Bose, from exp.], 1 for symmetric (from MD)
+%     when omitted or empty, this is guessed from the data set when possible
 %
 % output:
-%   moments=[ sq M1 wc wl wq M2 M3 M4 ]
+%   moments=[ sq M1 wc wl wq M2 M3 M4 ] as iData array
 %
 % Reference: 
 %   Helmut Schober, Journal of Neutron Research 17 (2014) pp. 109
 %   Lovesey, Theory of Neutron Scattering from Condensed Matter, Vol 1, p180 eq. 5.38 (w0)
 %   J-P.Hansen and I.R.McDonald, Theory of simple liquids Academic Press New York 2006.
+%
+% Example: moments = sqw_moments(iData(fullfile(ifitpath,'Data','SQW_coh_lGe.nc')))
 
   sigma = [];
   if nargin == 0, return; end
@@ -60,15 +62,15 @@ function sigma=Sqw_moments(data, M, classical, T)
   
   % check input parameters
   if isempty(M)
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not provide information about the molar weight. Use Sqw_moments(data, M). The Wq frequency will be empty.' ]);
+    disp([ mfilename ': WARNING: The data set ' data.Tag ' ' data.Title ' from ' data.Source ' does not provide information about the molar weight. Use Sqw_moments(data, M). The Wq frequency will be empty.' ]);
   end
   if isempty(classical)
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not provide information about classical/quantum data set. Use Sqw_moments(data, M, classical=0 or 1)' ]);
+    disp([ mfilename ': ERROR: The data set ' data.Tag ' ' data.Title ' from ' data.Source ' does not provide information about classical/quantum data set. Use Sqw_moments(data, M, T, classical=0 or 1)' ]);
     return
   end
   
   if isempty(T) || T<=0
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not have any temperature defined. Use Sqw_moments(data, M, classical, T).' ]);
+    disp([ mfilename ': ERROR: The data set ' data.Tag ' ' data.Title ' from ' data.Source ' does not have any temperature defined. Use Sqw_moments(data, M, T, classical).' ]);
     return
   end
   

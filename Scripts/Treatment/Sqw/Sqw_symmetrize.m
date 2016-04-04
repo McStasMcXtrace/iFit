@@ -16,7 +16,7 @@ function s=Sqw_symmetrize(s)
 %
 % input:
 %   s:  Sqw data set (classical, often labelled as S*)
-%        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
+%        2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 % output:
 %   s:  S(|q|,w) symmetrised in energy
 %
