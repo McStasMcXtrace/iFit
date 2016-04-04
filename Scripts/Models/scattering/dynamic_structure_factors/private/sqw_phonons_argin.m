@@ -99,3 +99,4 @@ end
 if isscalar(options.kpoints)
   options.kpoints=[ options.kpoints options.kpoints options.kpoints ]; 
 end
+if options.htmlreport == 1, options.dos=1; end

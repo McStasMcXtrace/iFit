@@ -178,7 +178,7 @@ cmd = [ cmd ' ' file_in ];
 disp(cmd)
 
 % launch the command
-[status, result] = system(cmd);
+[status, result] = system([ precmd cmd ]);
 if status ~= 0
   disp(result)
   error([ mfilename ' executable not available. Compile it with: "gfortran -O2 -o cif2hkl CFML_*.f90 cif2hkl.F90 -lm" in ' fullfile(fileparts(which(mfilename))) ]);
