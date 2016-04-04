@@ -31,6 +31,9 @@ if numel(a) > 1
   return
 end
 
+inputname1 = inputname(1);
+if isempty(inputname1), inputname1 = 'iData'; end
+
 if length(dim) > 1
   s = []; f = [];
   for index=1:length(dim)
@@ -78,5 +81,7 @@ f = sum(s.*x)/sum_s; % mean value
 
 % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
 s = sqrt(sum(x.*x.*s)/sum_s - f*f);
-
+if ~isreal(s) && dim > 0
+  disp([ mfilename ': WARNING: the computed standard deviation is imaginary. You should use std(' inputname1 ', ' num2str(-dim) ')' ])
+end
 

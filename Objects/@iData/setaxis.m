@@ -207,7 +207,7 @@ function this = iData_checkaxes(this)
       % the axis value is valid, but does not have the right dimension
       % test: val is a vector and matches the length of numel(Signal)
       % OR numel(val) == numel(Signal)
-      if ( numel(val) ~= prod(size_this) )
+      if ( numel(val) ~= prod(size_this) && all(numel(val)~=size_this) )
         iData_private_warning(mfilename, [ 'the Axis ' link ' ' num2str(index) ...
           '-th rank length [' num2str(size(val)) '] does not match the Signal dimension [' ...
           num2str(size_this) '] in object ' inputname(1) ' ' this.Tag '.' ]);
