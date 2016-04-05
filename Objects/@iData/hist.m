@@ -109,7 +109,7 @@ index0= find(~count);
 
 % compute the Error and Monitor
 e = subsref(a,struct('type','.','subs','Error'));
-if  ~isempty(e) && not(all(e(:) == 0 | e(:) == 1))
+if  ~isempty(e) && not(all(e(:) == 0 | e(:) == 1)) && numel(e) == M
   varargin{use_accumdata} = e.^2;
   count_e = histcn(axes, varargin{:});
   count_e = sqrt(count_e);
@@ -118,7 +118,7 @@ else
 end
 
 m = subsref(a,struct('type','.','subs','Monitor'));
-if  ~isempty(m) && not(all(m(:) == 0 | m(:) == 1))
+if  ~isempty(m) && not(all(m(:) == 0 | m(:) == 1)) && numel(m) == M
   varargin{use_accumdata} = m;
   count_m = histcn(axes, varargin{:});
 else

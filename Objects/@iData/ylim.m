@@ -43,7 +43,7 @@ s.type='()';
 if ndims(a) > 1 && numel(axisvalues) == max(size(axisvalues))
   s.subs={ index, ':' };
 else
-  s.subs={ index };
+  s.subs={ index }; % this creates an 'event' object
 end
 
 cmd=a.Command;

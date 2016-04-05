@@ -73,7 +73,7 @@ function s = Sqw_check(s)
   if any(w(:) < 0) && any(w(:) > 0)
     % restrict the energy axis to the common +/- range
     w1 = max(w(:)); w2 = max(-w(:)); w_max = min([w1 w2]);
-    
+
     if w1 ~= w_max || w2 ~= w_max
       s_res  = ylim(s, [-w_max w_max]); % restricted to [-w:w] range
     else
@@ -85,7 +85,7 @@ function s = Sqw_check(s)
     % we compare the s(q,w) and s(q,-w)
     s_opp = setaxis(s_res, 1, -w);
     s_opp = sum(s_opp,2); s_opp = sort(s_opp, 1);
-    
+
     s_res = sum(s_res,2); s_res = sort(s_res, 1);
 
     % the ratio should be S(q,w)/S(q,-w) = exp(hw/kT)
