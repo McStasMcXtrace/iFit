@@ -65,21 +65,29 @@ if dim
 end
 % extract frame
 
-filename = [ tempname '.avi' ];
+filename = [ tempname '.avi' ]; 
+usegetframe = 0;
 if exist('avifile')
-  % to record the frame without showing the image, we use addframe 
-  % on a temporary file
-  aviobj = avifile(filename);
-  aviobj = addframe(aviobj,f);
-  aviobj = close(aviobj);
-  % read the frame
-  readerobj = mmreader(filename);
-  vidFrames = read(readerobj,1);
-  frame.cdata    = vidFrames(:,:,:,1);
-  frame.colormap = [];
-  clear mmreader aviobj vidFrames
-  delete(filename);
+  try
+    % to record the frame without showing the image, we use addframe 
+    % on a temporary file
+    aviobj = avifile(filename);
+    aviobj = addframe(aviobj,f);
+    aviobj = close(aviobj);
+    % read the frame
+    readerobj = mmreader(filename);
+    vidFrames = read(readerobj,1);
+    frame.cdata    = vidFrames(:,:,:,1);
+    frame.colormap = [];
+    clear mmreader aviobj vidFrames
+    delete(filename);
+  catch
+    usegetframe = 1;  % did not work: will use getframe
+  end
 else
+  usegetframe = 1;  % avifile not available
+end 
+if usegetframe
   % force figure to be 'onscreen'
   movegui(f);
   frame=getframe(f);
