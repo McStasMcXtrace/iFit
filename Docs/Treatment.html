@@ -26,7 +26,7 @@
           </li>
           <li><a href="#mozTocId424180">Isotropic dynamic structure
               factors S(|q|,w) in liquids, powders, gas, polymers and
-              other amorphous materials</a><br>
+              other amorphous materials</a>
             <ol>
               <li><a href="#mozTocId715002"> Example: dynamic structure
                   factor from molecular dynamics</a>
@@ -58,14 +58,16 @@
               energy dependent </a></li>
           <li><a href="#mozTocId642387">Dynamic structure factor
               S(alpha, beta) for e.g. ENDF MF7 and ACE files</a></li>
+          <li><a href="#mozTocId600198">Double differential cross
+              section at a given angle</a></li>
         </ol>
       </li>
     </ol>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">Commands we use in this page: <span
         style="font-style: italic;">iData, <a href="Load.html">load</a>,
-        <a href="Save.html">save</a>, <a href="Math.html">Math</a>, </span><a
-        href="Methods.html">methods</a>
+        <a href="Save.html">save</a>, <a href="Math.html">Math</a>, <a
+          href="Models.html">Models</a>, </span><a href="Methods.html">methods</a>
       <div style="text-align: left;"><br>
         <h2><a class="mozTocH3" name="mozTocId664163"></a>Neutron
           scattering Dynamic structure factor<br>
@@ -90,6 +92,8 @@
 
 
 
+
+
           scattering</a> [5,6].<br>
         <br>
         You may as well generate 4D S(q,w) models using e.g. the <a
@@ -97,6 +101,8 @@
         specialized <a href="Models.html">models</a>. Then you can
         compute the 2D powder average, as shown below.<br>
         <h3><a class="mozTocH3" name="mozTocId301478"></a>Loading/generating
+
+
 
 
 
@@ -130,9 +136,10 @@
 
 
 
+
+
               format='hdf'</i>).</li>
         </ol>
-        <p></p>
         <p>Similar data sets can be measured using X-ray spectrometers.</p>
         <p>The file can then be read by iFit, using any of<i><br>
           </i></p>
@@ -192,6 +199,9 @@
               href="techdoc/Objects/@iData/meshgrid.html">meshgrid:</a>
             creates a square 2D distribution, using interpolation if
             necessary.</li>
+          <li>sqw_powder: converts a 4D S(hkl,w) data set into a 2D
+            S(q,w) one (see below).<br>
+          </li>
         </ul>
         and you should of course plot it, e.g. with:<br>
         <ul>
@@ -205,11 +215,13 @@
         The following procedures apply to 2D S(q,w), i.e. those that are
         obtained by averaging the S(q,w) over |q| in isotropic density
         materials.<br>
-        In the following, S* is a symmetric dynamic structure factor,
-        whereas S(q,w) denotes the non-symmetric dynamic structure
-        factor which contains the population factor (e.g. Bose for
-        phonons). All routines assume the wavevector 'q' is given in
-        [Angs<sup>-1</sup>] and the energy is given in [meV].<br>
+        In the following, <b>S*(q,w)</b> is a symmetric (<font
+          color="#33cc00">classical</font>) dynamic structure factor,
+        whereas <b>S(q,w)</b> denotes the non-symmetric (<font
+          color="#33cc00">quantum</font>) dynamic structure factor which
+        contains the population factor (e.g. Bose for phonons). <br>
+        All routines assume the wavevector 'q' is given in [Angs<sup>-1</sup>]
+        and the energy is given in [meV].<br>
         <br>
         <div align="center">1 meV = 241.8 GHz = 11.604 K = 0.0965 kJ/mol<br>
           1 Angs<sup>-1</sup> = 10 nm<sup>-1</sup><br>
@@ -256,7 +268,9 @@
 
 
 
-                the S(|q|,w) in both energy sides. The initial data set
+
+
+                the S*(|q|,w) in both energy sides. The initial data set
                 should better be 'classical'.<br>
               </td>
             </tr>
@@ -307,7 +321,7 @@
             <tr>
               <td valign="top"><font color="#3366ff"><b>Sqw_dynamic_range</b><b>(Sqw,Ei)</b><b><br>
                   </b></font></td>
-              <td valign="top">S(|q|,w)</td>
+              <td valign="top">S(|q|,w) or S*(|q|,w)</td>
               <td valign="top">measurable S(|q|,w) for Ei<br>
               </td>
               <td valign="top"><a
@@ -320,6 +334,8 @@
 
 
 
+
+
                 the dynamic structure factor to the measurable one for
                 an incoming energy Ei [meV]. The detection angular range
                 can be set as 3rd argument.<br>
@@ -328,17 +344,17 @@
             <tr>
               <td valign="top"><font color="#3366ff"><b>Sqw_moments(Sqw,M)</b><br>
                 </font></td>
-              <td valign="top">S(|q|,w)<br>
-              </td>
+              <td valign="top">S(|q|,w) or S*(|q|,w) </td>
               <td valign="top">S(q), Er, characteristic frequencies<br>
               </td>
-              <td valign="top">
-                <h5><a href="images/Treatment_Sqw_moments.png"><b><img
-                        alt="Treatment_Sqw_moments"
-                        title="Treatment_Sqw_moments"
-                        src="images/Treatment_Sqw_moments.png"
-                        align="right" border="0" width="80" height="60"></b></a></h5>
-                Compute the energy moments, and provide some of the
+              <td valign="top"> <a
+                  href="images/Treatment_Sqw_moments.png"><b><img
+                      alt="Treatment_Sqw_moments"
+                      title="Treatment_Sqw_moments"
+                      src="images/Treatment_Sqw_moments.png"
+                      align="right" border="0" width="80" height="60"></b></a>Compute
+
+                the energy moments, and provide some of the
                 characteristic frequencies (recoil, isothermal,
                 longitudinal/harmonic, mean energy transfer)<br>
               </td>
@@ -346,8 +362,7 @@
             <tr>
               <td valign="top"><b><font color="#3366ff">Sqw_gDOS(Sqw)</font></b><br>
               </td>
-              <td valign="top">S(|q|,w)<br>
-              </td>
+              <td valign="top">S(|q|,w) or S*(|q|,w) </td>
               <td valign="top">g(w)<br>
               </td>
               <td valign="top">Compute the generalized density of states
@@ -374,6 +389,8 @@
 
 
 
+
+
                 the total scattering cross section which is the integral
                 of S(q,w) over the dynamic range vs. incident neutron
                 energy.<br>
@@ -382,16 +399,15 @@
             <tr>
               <td valign="top"><b><font color="#3366ff">Sqw_Sab(Sqw, M)</font></b><br>
               </td>
-              <td valign="top">S(|q|,w)</td>
-              <td valign="top">S(alpha,beta)<br>
+              <td valign="top">S*(|q|,w)</td>
+              <td valign="top">S*(alpha,beta)<br>
               </td>
               <td valign="top"><a href="images/Treatment_Sqw_Sab.png"><img
                     alt="Treatment_Sqw_Sab" title="Treatment_Sqw_Sab"
                     src="images/Treatment_Sqw_Sab.png" align="right"
                     border="0" width="87" height="60"></a>Convert a
                 dynamic structure factor to its unit-less representation
-                S(a,b)<br>
-              </td>
+                <i>S(</i><i>&#945;,&#946;)</i> </td>
             </tr>
             <tr>
               <td valign="top"><font color="#3366ff"><b>sqw_powder(Sqw)</b></font><br>
@@ -451,6 +467,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Ge_
 
 
 
+
+
           McStas</a>. You can also try liquid Rubidium from <a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Rb_liq_coh.sqw">here</a>
         [8] and heavy water from <a
@@ -462,6 +480,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         </ul>
         Molecular Dynamics trajectories are usually computed in the NVE
         <a href="https://en.wikipedia.org/wiki/Microcanonical_ensemble">micro-canonical
+
+
 
 
 
@@ -577,6 +597,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
+
                     is the default.</i></b></td>
             </tr>
           </tbody>
@@ -628,24 +650,24 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         energy conservation rules to the S(q,w):<br>
         <br>
         <div align="center">Ef = Ei - w <i>is positive</i><br>
-          cos(theta) = (Ki<sup>2</sup> + Kf<sup>2</sup> - q<sup>2</sup>)
-          / (2 Ki.Kf)&nbsp; <i>is within [-1:1]</i><br>
+          cos(&#952;) = (Ki<sup>2</sup> + Kf<sup>2</sup> - q<sup>2</sup>) /
+          (2 Ki.Kf)&nbsp; <i>is within [-1:1]</i><br>
           <br>
         </div>
         where <i>Ei</i> and <i>Ef</i> are the incident and final
-        neutron energies, <i>theta</i> is the scattering angle, <i>Ki</i>
-        and <i>Kf</i> are the incident and final neutron wavevectors,
-        defined as:<br>
+        neutron energies, &#952; is the scattering angle, <i>Ki</i> and <i>Kf</i>
+        are the incident and final neutron wavevectors, defined as:<br>
         <br>
         <div align="center"><i>Ei</i> = 2.0721*Ki<sup>2</sup> =
-          81.8042/lambda<sup>2</sup> <i>with Ki in [Angs-1] and lambda
-            in [Angs]</i><br>
+          81.8042/&#955;<sup>2</sup> <i>with Ki in [Angs-1] and &#955; in [Angs]</i><br>
         </div>
         <br>
         We can determine the dynamic range accessible to neutrons with a
         given incident energy, say Ei=25 meV.<br>
         <ul>
           <li>Sqw25 = <font color="#3366ff">Sqw_dynamic_range</font>(SqwT,
+
+
 
 
 
@@ -699,6 +721,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
+
             Sqw25]));</li>
         </ul>
         <h5><a class="mozTocH5" name="mozTocId566610"></a> <a
@@ -711,6 +735,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
+
             frequencies</b></h5>
         From the dynamic structure factor, one can compute the energy
         moments, which provide some of the characteristic frequencies
@@ -718,6 +744,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         scattering units (here 72.64 g/mol for Ge). <br>
         <br>
         Using the 'quantum' scattering law S(q,w), we can define <i>n</i>-th
+
+
 
 
 
@@ -775,7 +803,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         <div align="center">gDOS(q,w) ~ S(q,w) w<sup>2</sup>/q<sup>2</sup><br>
         </div>
         <br>
-        which is exact in the case of an incoherent scatterer. Then, the
+        which is valid in the case of an incoherent scatterer. Then, the
         energy dependent density of states is the low-wavevector limit
         of the <i>generalised density of states</i>, which is a
         normalized quantity:<br>
@@ -841,15 +869,26 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
           href="Models.html#mozTocId990577">sqw_phonons</a> and other
         specialized <a href="Models.html">models</a>, one&nbsp; can
         compute the 2D powder average, which is the projection of the 4D
-        data set onto the (|q|,w). space. However, this projection must
-        take care of the crystal structure. When the reciprocal lattice
-        information is found in the object (matrix B=[a* b* c*]), the
-        conversion from 'rlu' (e.g. 2pi/a units) to 'Angs<sup>-1</sup>'
-        (cartesian) is automatically done (and this information is
-        stored in the Model upon creation):<br>
+        data set onto the (|q|,w). space. <br>
+        <br>
+        However, this projection must take care of the crystal
+        structure. When the reciprocal lattice information is found in
+        the object (matrix B=[a* b* c*]), the conversion from 'rlu'
+        (e.g. 2pi/a units) to 'Angs<sup>-1</sup>' (cartesian) is
+        automatically done (and this information is stored in the Model
+        upon creation):<br>
+        <br>
         <div align="center">Q<sub>cart</sub> = B*Q<sub>rlu</sub><br>
         </div>
         <br>
+        The the average is obtained using e.g. <br>
+        <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>([ ifitpath <font color="#cc33cc">'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal','EMT'</font>); <br>	&gt;&gt; pow=<font color="#3366ff">sqw_powder</font>(s); <font color="#3366ff">plot</font>(log(pow));</pre>
+        Here we have generated a 4D data set from the <a
+          href="Models.html#mozTocId990577">sqw_phonons</a> <a
+          href="iFunc.html">iFunc</a> Model, and then reduced it to 2D.
+        <br>
+        The same procedure can be applied on an evaluated <a
+          href="iData.html"><i>iData</i></a> object out of the model.
         <ul>
         </ul>
         <ul>
@@ -913,6 +952,8 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
 
 
 
+
+
             See also Sears, <i>Neut. News</i> <b>3</b> (1992) 26.<br>
           </li>
           <li>Price J. et al, <i>Non Cryst Sol </i><b>92</b> (1987)
@@ -966,22 +1007,21 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         (q,w) space, and then the dynamical features are not highly
         sensitive to the temperature, except close to phase transitions.
         However, for historical reasons, most neutron transport codes
-        such as MCNP, use so-called S(alpha, beta) which are stored in
-        section MF=7 of e.g. ENDF and related neutron data bases. These
-        data sets are highly sensitive to the temperature, as the axes
-        alpha and beta are.<br>
+        such as MCNP, use so-called symmetric S*(&#945;,&#946;) which are stored
+        in section MF=7 of e.g. ENDF and related neutron data bases.
+        These data sets are highly sensitive to the temperature, as the
+        axes alpha and beta are.<br>
         <br>
-        The <i>S(alpha,beta)</i> is a representation of the dynamic
+        The <i>S*</i>(&#945;,&#946;<i>)</i> is a representation of the dynamic
         structure factor using unit-less momentum and energy variables
         defined as:<br>
-        <div align="center">S(alpha, beta) = kT S*(q,w) = kT exp(beta/2)
-          S(q,w)<br>
-          alpha= h<sup>2</sup>q<sup>2</sup>/2MkT =
-          [Ei+Ef-2\B5&#8730;(Ei*Ef)]/A.kT<br>
-          beta = -hw/kT&nbsp;&nbsp;&nbsp; = (Ef-Ei)/kT<br>
+        <br>
+        <div align="center">S*(&#945;,&#946;) = kT S*(q,w) = kT exp(beta/2) S(q,w)<br>
+          &#945;= h<sup>2</sup>q<sup>2</sup>/2MkT = [Ei+Ef-2 &#956; &#8730;(Ei*Ef)]/A.kT<br>
+          &#946; = -hw/kT&nbsp;&nbsp;&nbsp; = (Ef-Ei)/kT<br>
           A&nbsp;&nbsp;&nbsp; = M/m<br>
-          \B5&nbsp;&nbsp; = cos(theta) = cos(theta) = (Ki<sup>2</sup> +
-          Kf<sup>2</sup> - q<sup>2</sup>) ./ (2Ki.Kf)<br>
+          &#956; &nbsp; = cos(&#952;) = (Ki<sup>2</sup> + Kf<sup>2</sup> - q<sup>2</sup>)
+          / (2Ki.Kf)<br>
         </div>
         <br>
         <a href="images/Treatment_Sqw_Sab.png"><img
@@ -991,27 +1031,102 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         (alpha,beta) is done with the <font color="#3366ff">Sqw_Sab</font>
         procedure, which takes as input the mass of the scatterer A and
         the Temperature, when not available in the original data set.
-        The input data set must be 'quantum' that is either obtained
-        from an experiment, or symmetrized and 'Bosified' as in the
-        example below:<br>
+        The input data S*(q,w) set must be 'classical' that is either
+        obtained from a molecular dynamics (may have to symmetrize it),
+        or from an experiment after
+        <i> deBosify</i> and <i>symmetrization</i>:<br>
         <ul>
           <li>Sqw=<font color="#3366ff">iData</font>(<font
               color="#cc33cc">'<a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">D2O_liq_290_coh.sqw</a>'</font>);</li>
           <li>Sab = <font color="#3366ff">Sqw_Sab</font>(<font
-              color="#3366ff">Sqw_Bosify</font>(<font color="#3366ff">Sqw_symmetrize</font>(Sqw),
-
-            290), 20);</li>
+              color="#3366ff">Sqw_symmetrize</font>(Sqw), 20);</li>
           <li><font color="#3366ff">plot</font>(log(Sab))<br>
           </li>
         </ul>
-        The <i>S(alpha, beta)</i> can then be exported to e.g. ENDF and
-        ACE files.<br>
+        The <i>S*(</i><i>&#945;,&#946;)</i> can then be exported to e.g. ENDF and
+        ACE files. A scaling factor may be needed, depending on how the
+        S(q,w) data set is normalised.<br>
         <br>
         <b>References: </b><br>
         <ul>
-          <li>M. Mattes and J. Keinert, IAEA INDC(NDS)-0470, 2005.</li>
-          <li>R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994.</li>
+          <li>M. Mattes and J. Keinert, IAEA INDC(NDS)-0470, 2005. [<a
+              href="https://www-nds.iaea.org/publications/indc/indc-nds-0470/">link</a>]<br>
+          </li>
+          <li>R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994. [<a
+href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/26027423.pdf">link</a>]<br>
+          </li>
+        </ul>
+        <h3><a class="mozTocH3" name="mozTocId600198"></a>Double
+          differential cross section at a given angle and incident
+          neutron energy<br>
+        </h3>
+        It is usual, in the neutron cross section data bases, to compare
+        evaluated a double differential cross section (measured
+        intensity) at a given angle, with an actual measurement.<br>
+        <br>
+        This procedure is trivial once the S(q,w) has been obtained, by
+        applying the <font color="#3366ff">Sqw_dynamic_range</font>
+        procedure for the selected angle. A scaling factor may be
+        needed, depending on how the S(q,w) data set is normalised.<br>
+        <br>
+        <a href="images/Treatment_Sqw_DDCS.png"><img
+            alt="Treatment_Sqw_DDCS" title="Treatment_Sqw_DDCS"
+            src="images/Treatment_Sqw_DDCS.png" align="right" border="0"
+            width="200" height="150"></a>In the following example, we
+        use Molecular Dynamics data, symmetrize it, then apply the
+        detailed balance to go from the 'classical' to the 'quantum'
+        S(q,w). Finally, we extract the S(q,w) for a given incident
+        energy Ei=54 meV and 10 deg detector angle. And we plot the
+        integral along momentum (axis 1) to show a spectrum.<br>
+        <ul>
+          <li>Sqw=<font color="#3366ff">iData</font>(<font
+              color="#cc33cc">'<a
+href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">D2O_liq_290_coh.sqw</a>'</font>);</li>
+          <li>SqwT = <font color="#3366ff">Sqw_Bosify</font>(<font
+              color="#3366ff">Sqw_symmetrize</font>(Sqw), 290);</li>
+          <li>DDCS = <font color="#3366ff">Sqw_dynamic_range</font>(SqwT,
+
+            154, [5 15])</li>
+          <li><font color="#3366ff">plot</font>(trapz(DDCS,2));<br>
+          </li>
+        </ul>
+        <b>References for water data:</b><br>
+        <ul>
+          <li>O. K. Harling, “Slow Neutron Inelastic Scattering and the
+            Dynamics of Heavy Water”,<br>
+            NSE, 33, 41 (1968). Provides heavy water data at Beta=1.5,
+            Ei=38.6, meV T=299 K, and Ei=101 meV theta=60 deg. [<a
+              href="http://www.ans.org/pubs/journals/nse/a_20916">link</a>]<br>
+          </li>
+          <li>F.G. Bischoff, M.L. Yeater, W.E. Moore, <i>Nucl. Sci.
+              Eng.</i> <b>48</b> (1972) 266. Provides heavy water ToF
+            data Ei=233 meV at &#952;=25 deg. [<a
+              href="http://www.ans.org/pubs/journals/nse/a_22485">link</a>]<br>
+          </li>
+          <li>F.G. Bischoff et al., “Low Energy Neutron Inelastic
+            Scattering”, RPI-328-87 (1967). Provides light water data
+            Ei=154, 231, 631 meV at &#952;=60 deg.</li>
+          <li>R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994. [<a
+href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/26027423.pdf">link</a>].
+
+            Indicates light water rotational vibrations at 205 and 408
+            meV</li>
+          <li>E. Liu (RPI) &lt;<a
+href="http://homepages.rpi.edu/%7Edanony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf">http://homepages.rpi.edu/~danony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf</a>&gt;
+
+            presents light water data at Ei=600 and Ei=154 meV, and
+            compares to older data from Bischoff and Esch.</li>
+          <li>J. I. Márquez Damian et al, <i>Annals of Nuclear Energy</i>
+            <b>65</b> (2014) 280–289. [<a
+href="http://www.sciencedirect.com/science/article/pii/S0306454913005987">link</a>]
+            Gathers most of this data.<br>
+          </li>
+          <li>Esch et al, <i>Nuclear Science and Engineering</i>: <b>46</b>,
+            223-235, 1971. Provides light water data Ei=632 meV and 154
+            meV theta=10 14 25 40 60 150 deg. [<a
+              href="http://www.ans.org/pubs/journals/nse/a_22356">link</a>]<br>
+          </li>
         </ul>
         <br>
         <ul>
@@ -1021,6 +1136,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 
