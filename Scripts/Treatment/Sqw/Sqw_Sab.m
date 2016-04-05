@@ -4,15 +4,14 @@ function Sab = Sqw_Sab(s, M, T)
 %
 %  The S(alpha,beta) is a representation of the dynamic structure factor 
 %  using unitless momentum and energy variables defined as:
-%     alpha= h2q2/2MkT = (Ei+Ef-2*mu*sqrt(Ei*Ef))/AkT
-%     beta = -hw/kT    = (Ef-Ei)/kT
+%     alpha= h2q2/2MkT  = (Ei+Ef-2*mu*sqrt(Ei*Ef))/AkT
+%     beta = -hw/kT     = (Ef-Ei)/kT
 %     A    = M/m
-%     mu   = cos(theta) = cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)
+%     mu   = cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)
 %  
-%
 % input:
 %   s:  Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
-%         the data set should better be 'quantum' (i.e. non symmetric)
+%         the data set should better be 'classical' (i.e. symmetric).
 %   M:  molar weight of the atom/molecule in [g/mol].
 %     when omitted or empty, it is searched 'weight' is the object.
 %   T: when given, Temperature to use. When not given or empty, the Temperature
@@ -51,6 +50,13 @@ function Sab = Sqw_Sab(s, M, T)
   
   s = Sqw_check(s);
   if isempty(s), return; end
+  
+  % test if classical
+  if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
+    if s.classical == 0
+      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical. Make it classical by applying Sqw_deBosify and/or Sqw_symmetrize first.' ]);
+    end
+  end
   
   if isempty(M) && isfield(s.Data, 'weight')
     M       = s.Data.weight;               % mass
