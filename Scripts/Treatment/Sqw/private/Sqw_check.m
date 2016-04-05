@@ -62,8 +62,10 @@ function s = Sqw_check(s)
     w1 = max(w(:)); w2 = max(-w(:)); % should have w1 < w2
     if w1 > w2*2
       % we assume the measurement range is at least [-2*Ei:Ei]
-      % revert energy axis
-      setaxis(s, 1, -w);
+      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+      disp('    indicates mostly that the energy range is in the positive side.')
+      disp('    Check that it corresponds with the neutron loss/sample gain Stokes side');
+      disp('    and if not, revert energy axis with e.g. setaxis(s, 1, -s{1})');
     end
   end
 
@@ -108,9 +110,10 @@ function s = Sqw_check(s)
     end
 
     if isfinite(T) && T < -0.1
-      % energy axis is reverted
-      s{1} = -s{1};
-      T    = -T;
+      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+      disp([ '    indicates a negative temperature T=' num2str(T) ' K. ' ]);
+      disp(  '    Check the definition of the energy: Stokes=neutron losses energy=positive energy side');
+      T = Sqw_getT(s);
     end
 
     % temperature stored ?

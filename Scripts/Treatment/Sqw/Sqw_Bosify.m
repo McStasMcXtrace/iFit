@@ -79,6 +79,10 @@ function s = Sqw_Bosify(s, T, type, options)
   
   if isempty(T),  T = Sqw_getT(s); end
   if isempty(type), type='standard'; end
+  
+  if isempty(T) || T == 0
+    return
+  end
 
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
@@ -94,10 +98,6 @@ function s = Sqw_Bosify(s, T, type, options)
       sqw = [ sqw feval(mfilename, s, T(index), type, 'checked') ];
     end
     s = sqw;
-    return
-  end
-
-  if isempty(T) || T == 0
     return
   end
   

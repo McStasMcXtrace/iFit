@@ -59,6 +59,10 @@ function s = Sqw_deBosify(s, T, type)
 
   s = Sqw_check(s);
   if isempty(s), return; end
+  
+  if isempty(T) || T == 0
+    return
+  end
 
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
