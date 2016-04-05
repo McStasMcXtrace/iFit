@@ -129,11 +129,15 @@ function s = Sqw_check(s)
     end
 
     % log_s_ratio should be about 0 if S(q,w) is symmetric
-    if isnan(T) || ~isfinite(T) || T <= 0.1 || T > 3000
+    classical = [];
+    if ~isfinite(T) && ~isnan(T)
       classical = 1;
       T         = Sqw_getT(s);
-    else
+    elseif T <= 0.1
       classical = 0;
+    elseif T > 3000
+      classical = 1;
+    else 
     end
 
     % display warnings when mismatch is found
@@ -142,15 +146,15 @@ function s = Sqw_check(s)
       else             classical_str='experimental/Bose/quantum'; end
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
       disp(['    indicates a ' classical_str ' S(|q|,w) 2D object, but the analysis of the data shows it is not.' ]);
-    elseif isempty(classical0)
+    elseif isempty(classical0) && ~isempty(classical)
       setalias(s,'classical', classical);
     end
 
-    if ~isempty(T0) && ~isempty(T) && ~(0.9 < T/T0 & T/T0 < 1.1)
+    if ~isempty(T0) && ~isempty(T) && ~isnan(T) && ~(0.9 < T/T0 & T/T0 < 1.1)
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' S(|q|,w) 2D object from ' s.Source ]);
       disp(['    indicates a Temperature T=' num2str(T0) ' [K], but the analysis of the data provides T=' num2str(T) ' [K].' ]);
     end
-    if isempty(T0) && ~isempty(T) && T > 0.1 && T < 3000
+    if isempty(T0) && ~isempty(T) && ~isnan(T) && T > 0.1 && T < 3000
       disp([ mfilename ': INFO: Setting temperature T=' num2str(T) ' [K] for data set ' s.Tag ' ' s.Title ' S(|q|,w) 2D object from ' s.Source ]);
       s.Temperature = T;
     end
