@@ -48,8 +48,11 @@ out = in;
 
 % test if all axes are same size, and multi-dimensional (i.e. allready ndgrid)
 for index=2:length(in)
-  x = in{index}; 
+  x = in{index};
   if numel(size(x)) == numel(size(in{1})) && any(size(x) ~= size(in{1})),  changed=1; end
+  if ~isempty(strfind(method, 'vector')) && (numel(x) == prod(Signal) || numel(x) ~= Signal(index))
+    changed = 1;
+  end
 end 
 if changed == 0, return; end
 
