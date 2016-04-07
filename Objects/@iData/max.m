@@ -39,10 +39,11 @@ if ~isa(a, 'iData')
   return
 end
 
-% return a scalar for max(a)
-if isempty(b) && isempty(dim)
+% return a scalar for min(a)
+if isempty(b)
   m = getaxis(a, 'Signal');
-  [m,id] = max(m(:));
+  if isempty(dim), dim=1; end
+  [m,id] = max(m(:),[],dim);
   return
 end
 

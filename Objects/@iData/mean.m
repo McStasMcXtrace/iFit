@@ -15,11 +15,17 @@ function b = mean(a, dim)
 % ex:     c=mean(a);
 %
 % Version: $Date$
-% See also iData, iData/std, iData/combine, iData/mean
+% See also iData, iData/std, iData/combine, iData/median
 
 if nargin < 2, dim=1; end
-if numel(a) > 1
-  b = combine(a);
+if numel(a) > 1 && dim
+  a = combine(a);
+  return
+elseif numel(a) > 1
+  b = zeros(size(a));
+  for index=1:numel(a)
+    b(index) = mean(a(index), 0);
+  end
   return
 end
 
