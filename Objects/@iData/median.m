@@ -15,11 +15,17 @@ function b = median(a, dim)
 % ex:     c=median(a);
 %
 % Version: $Date$
-% See also iData, iData/std, iData/combine, iData/median
+% See also iData, iData/std, iData/combine, iData/mean
 
 if nargin < 2, dim=1; end
-if numel(a) > 1
+if numel(a) > 1 && dim
   a = combine(a);
+  return
+elseif numel(a) > 1
+  b = zeros(size(a));
+  for index=1:numel(a)
+    b(index) = median(a(index), 0);
+  end
   return
 end
 
