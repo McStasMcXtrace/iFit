@@ -40,9 +40,10 @@ if ~isa(a, 'iData')
 end
 
 % return a scalar for min(a)
-if isempty(b) && isempty(dim)
+if isempty(b)
   m = getaxis(a, 'Signal');
-  [m,id] = min(m(:));
+  if isempty(dim), dim=1; end
+  [m,id] = min(m(:),[],dim);
   return
 end
 

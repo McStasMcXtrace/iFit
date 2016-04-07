@@ -10,6 +10,7 @@ function [s, f] = std(a, dim)
 %     Using a negative dimension will subtract minimum signal value to signal
 %       before computation of std, that is remove background. This may be
 %       needed to avoid an imaginary result.
+%   std(a, 0) computes std(Signal) and mean(Signal).
 %
 % input:  a: object or array (iData/array of)
 %         dim: dimension to use. Negative dim subtract background (int/array)
