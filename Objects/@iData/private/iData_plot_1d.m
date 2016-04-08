@@ -93,11 +93,14 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
           set(er, specs_values{:});
         end
       end
-      
       % option to hide errorbar
-      if (~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0)) && numel(h) > 1
+      if ~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0) % && numel(h) > 1
         eh = findobj(h,'Type','errorbar');
-        if isempty(eh), eh = h(2); end
+        if isempty(eh) && numel(h) > 1, eh = h(2);
+        elseif isempty(eh) && strcmp(get(h,'Type'),'hggroup')
+          eh = get(h, 'Children');
+          if numel(eh) > 1, eh = eh(2); end
+        end
         set(eh, 'Visible','off');
       end
     end

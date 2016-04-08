@@ -163,7 +163,7 @@ else
     end
     if prod(size(s_in)) < 1e4
       try
-        [s, f] = std(s_in, index);
+        [s, f] = std(s_in, -index);
         minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', f,s) ];
       end
     end

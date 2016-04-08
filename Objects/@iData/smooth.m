@@ -94,15 +94,15 @@ end
 b = copyobj(a);
 if strcmp(method, 'sgolay')
   % use Savitzky-Golay
-  
+
   % iteratively call SG 1D by putting the dimension to apply as 1st
   s = subsref(a,struct('type','.','subs','Signal'));
-  
+
   for index=1:ndims(a)
     if any(dimensions>0) && all(dimensions ~= index), % skip this rank if not specified
       continue; end
     if index > 1, s  = permute(s, [ index 1 ]); end
-    
+
     s = reshape(smoothsg1d(s(:), vargs{:}), size(s));
     
     if index > 1, s  = permute(s, [ index 1 ]); end
