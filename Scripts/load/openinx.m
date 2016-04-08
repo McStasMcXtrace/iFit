@@ -26,22 +26,42 @@ elseif isfield(out.Data, 'header') && isfield(out.Data, 'Par') && isfield(out.Da
   Data.temperature = Data.Par(:,4);
   Data.signal      = squeeze(Data.Mat(:,2,:));
   Data.error       = squeeze(Data.Mat(:,3,:));
-  Data.energy      = squeeze(Data.Mat(:,1,:));
-  Data.energy      = Data.energy(:,1);
+  if ~Data.angle  % this is an Angle data set, not Energy
+    isAngleData = 1;
+    Data.angle     = squeeze(Data.Mat(:,1,:));
+    Data.angle     = Data.angle(:,1);
+    Data.energy    = 81.81/Data.wavelength/Data.wavelength;
+  else
+    isAngleData = 0;
+    Data.energy      = squeeze(Data.Mat(:,1,:));
+    Data.energy      = Data.energy(:,1);
+  end
   out.Data = Data; 
   clear Data
 
   setalias(out,'Signal', 'Data.signal', out.Data.header(2,:,1));
   setalias(out,'Error',  'Data.error');
-  setalias(out,'Energy', 'Data.energy', ...
-    [ 'Energy [meV] T=' num2str(mean(out.Data.temperature)) ' lambda=' num2str(mean(out.Data.wavelength)) ]);
-  setalias(out,'Angle',       'Data.angle','Angle [deg]');
+  if isAngleData
+    setalias(out,'Angle', 'Data.angle', ...
+      [ 'Angle [deg] T=' num2str(mean(out.Data.temperature)) ' lambda=' num2str(mean(out.Data.wavelength)) ]);
+    setalias(out,'Energy', 'Data.energy', 'Energy [meV]');
+    
+  else
+    setalias(out,'Energy', 'Data.energy', ...
+      [ 'Energy [meV] T=' num2str(mean(out.Data.temperature)) ' lambda=' num2str(mean(out.Data.wavelength)) ]);
+    setalias(out,'Angle',       'Data.angle','Angle [deg]');
+  end
+  
   setalias(out,'Wavelength',  'Data.wavelength','Wavelength [Angs]');
-  setalias(out,'Wavevector',  'Data.wavevector','Wavevector [Angs]');
+  setalias(out,'Wavevector',  'Data.wavevector','Wavevector [Angs-1]');
   setalias(out,'Temperature', 'Data.temperature','Sample Temperature [K]');
 
   if ndims(out) == 1
-    setaxis(out, 1, 'Energy');
+    if isAngleData
+      setaxis(out, 1, 'Angle');
+    else
+      setaxis(out, 1, 'Energy');
+    end
   elseif ndims(out) == 2
     setaxis(out, 1, 'Energy');
     setaxis(out, 2, 'Angle');
