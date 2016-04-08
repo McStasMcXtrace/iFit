@@ -126,7 +126,8 @@ function Sab = Sqw_Sab(s, M, T)
   Sab.Title = [ 'Sab(' s.Title ')' ];
   Sab.Temperature=T;
   Sab.weight     =M;
-  title(Sab, title(s));
+  Sab.Label='Sab';
+  title(Sab, 'S(\alpha,\beta)help subplot');
   ylabel(Sab,'alpha [h2q2/2MkT]');
   xlabel(Sab,'beta [-hw/kT]');
   Sab = transpose(Sab);

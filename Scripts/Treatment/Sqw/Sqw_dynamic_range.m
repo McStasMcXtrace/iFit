@@ -122,10 +122,22 @@ function s = Sqw_dynamic_range(s, Ei, angles, options)
   if isempty(angles)
     index= find(abs(costheta) > 1 | Ef <= 0);
   else
+    if isscalar(angles), angles = [ angles-1 angles+1 ]; end
     cost = cosd(angles);
     index= find(costheta < min(cost(:)) | costheta > max(cost(:)) | Ef <= 0);
   end
   s(index)=0;
-  s.DisplayName = strtrim([ s.DisplayName ' Ei=' num2str(Ei) ]);
-  s = title(s, strtrim([ s.Title ' Ei=' num2str(Ei) ]));
+  
+  if isempty(angles)
+    tt = sprintf(' Ei=%g meV', num2str(Ei));
+  else
+    tt = sprintf(' Ei=%g meV [%g:%g deg]', Ei, min(angles), max(angles));
+  end
+  s.DisplayName = strtrim([ s.DisplayName tt ]);
+  s = setalias(s, 'IncidentEnergy', Ei, 'Incident Energy [meV]');
+  if ~isempty(angles)
+    s = setalias(s, 'DetectionAngles', angles, 'Detection Angles [deg]');
+  end
+  s = title(s, strtrim([ s.Title tt ]));
+  s.Label = strtrim(tt);
   
