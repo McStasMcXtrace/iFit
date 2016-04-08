@@ -18,6 +18,13 @@
 %
 %--------------------------------------------------------------------------
 
+% format spec:
+% line 1: Nb tot channels, -, -, -, -, nb channels actually used
+% line 2: 'title'
+% line 3: Angle, incident energy, transfered wave-vector (Q), mean temperature, -, -
+% line 4: -, channel width (musec), -
+% [ Energy, Intensity (a.u.), intensity errors ]
+
 %--------------------------------------------------------------------------
 %
 %  Written by:  JO ~ 2003 for use with plotdata
