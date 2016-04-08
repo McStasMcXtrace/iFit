@@ -21,7 +21,7 @@ function sigma = Sqw_scatt_xs(s, Ei)
   %     cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)  is within [-1:1]
   %   and then integrated as XS = 1/2Ki^2 \int q S(q,w) dq dw
   %
-  %   The computed value must then be multiplied by the tabulated cross-section
+  %   The computed value must then be multiplied by the tabulated bound cross-section
   %   from e.g. Sears, Neut. News 3 (1992) 26.
   %
   % A classical S(|q|,w) obeys S(|q|,w) = S(|q|,-w) and is usually given
@@ -42,7 +42,7 @@ function sigma = Sqw_scatt_xs(s, Ei)
   %   Ei: incoming neutron energy [meV]
   % output:
   %   sigma: cross section per scattering unit (scalar or iData)
-  %          to be multiplied afterwards by the bound cross section
+  %          to be multiplied afterwards by the bound cross section [barn]
   %
   % Example: sigma = Sqw_scatt_xs(s, 14.6)
   %
@@ -98,7 +98,10 @@ function sigma = Sqw_scatt_xs(s, Ei)
       sigma = [ sigma Sqw_scatt_xs_single(s, Ei(ie)) ];
     end
     sigma = iData(Ei, sigma);
-    label(sigma, 'Signal', [ 'Total scattering cross section(' s.Title ')' ]);
+    signa.Title = [ 'XS(' s.Title ')' ];
+    title(sigma, 'XS [/barn/scatterer]');
+    label(sigma, 'Signal', [ 'Total XS(' s.Title ')' ]);
+    sigma.Label='XS';
     return
   else
     sigma = Sqw_scatt_xs_single(s, Ei);
