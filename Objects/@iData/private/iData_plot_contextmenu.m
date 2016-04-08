@@ -66,7 +66,7 @@ for index=0:length(getaxis(a))
   end
   if prod(size(a)) < 1e4
     try
-      [s, f] = std(a, index);
+      [s, f] = std(a, -index);
       minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', f,s) ];
     end
   end

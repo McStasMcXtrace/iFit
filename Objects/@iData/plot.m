@@ -146,7 +146,7 @@ if isempty(method), method='plot'; end
 
 % clean method string from the plot type and supported options not to be passed to matlab plot commands
 if ischar(method)
-  toremove='plot3 stem3 scatter3 scatter stem plot mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full';
+  toremove='plot3 stem3 scatter3 scatter stem plot mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err hide_errorbars hide_error contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full';
   toremove=strread(toremove,'%s','delimiter',' ');
   this_method = method;
   for index=1:length(toremove)
@@ -155,6 +155,7 @@ if ischar(method)
 else
   this_method = method;
 end
+this_method = strtrim(this_method);
 
 % plot an array of objects =====================================================
 if numel(a) > 1
@@ -309,7 +310,7 @@ end
 set(gcf, 'Name', char(a));
 
 % labels
-if (strfind(method,'hide_ax'))
+if ~isempty(strfind(method,'hide_ax'))
   % set(gca,'visible','off'); 
   % set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[])
   xlabel(' '); ylabel(' '); zlabel(' ');
