@@ -465,15 +465,15 @@ case {'x3d','xhtml'} % X3D/XHTML format
     fv=isosurface(x,y,z,c,iso);
     x3mesh(fv.faces, fv.vertices, 'name', filename, 'subheading', desc, 'rotation', 0, 'axes', ax);
     % Create the supporting X3DOM  files
-    folder = fileparts(filename);
-    load(fullfile(fileparts(which('figure2xhtml')), 'functions', 'x3dom.mat'))
-    folder=fullfile(folder, 'x3dom');
-    if(~isdir(folder)), mkdir(folder); end
-    for i=1:length(data)
-        fid = fopen(fullfile(folder, data(i).filename), 'w','ieee-le');
-        fwrite(fid,data(i).filedata,'uint8');
-        fclose(fid);
-    end
+%    folder = fileparts(filename);
+%    load(fullfile(fileparts(which('figure2xhtml')), 'functions', 'x3dom.mat'))
+%    folder=fullfile(folder, 'x3dom');
+%    if(~isdir(folder)), mkdir(folder); end
+%    for i=1:length(data)
+%        fid = fopen(fullfile(folder, data(i).filename), 'w','ieee-le');
+%        fwrite(fid,data(i).filedata,'uint8');
+%        fclose(fid);
+%    end
   end
 case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
   if ndims(a) == 1    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' 1D does not seem to be exportatble as a ' format ' file. Ignoring.' ]);

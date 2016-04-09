@@ -104,7 +104,9 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     saveas(data1, fullfile(options.target, 'Phonons3D.mrc'));
     saveas(data1, fullfile(options.target, 'Phonons3D.dat'), 'dat data');
     % the PDF export may crash in deployed version
-    % saveas(data1, fullfile(options.target, 'Phonons3D.pdf'), 'pdf', 'tight');
+    if ~isdeployed
+      saveas(data1, fullfile(options.target, 'Phonons3D.pdf'), 'pdf', 'tight');
+    end
     saveas(data1, fullfile(options.target, 'Phonons3D.h5'), 'mantid');
     
     % determines if the phonons have negative values.
@@ -243,7 +245,7 @@ if options.htmlreport && ~isempty(filename)
     fprintf(fid, 'Load the Model under <a href="http://ifit.mccode.org">Matlab/iFit</a> with (this also works with the <a href="http://ifit.mccode.org/Install.html">standalone version of iFit</a> which does <b>not</b> require any Matlab license and installs on most systems): <ul><li>load(''<a href="%s">%s</a>'') <i>%% creates a "Phonons" iFunc Model</i></li></ul>\n', 'Phonons_Model.mat', 'Phonons_Model.mat');
     fprintf(fid, 'Define axes for the evaluation grid in 4D, for instance:<ul><li>qh=linspace(0.01,.5,50); qk=qh; ql=qh; w=linspace(0.01,50,51);</li></ul>\n');
     fprintf(fid, 'Evaluate the Phonons as an <a href="http://ifit.mccode.org/iData.html">iData</a> object under Matlab/iFit with: <ul><li>s=iData(Phonons_Model, [], qh, qk, ql, w) <i>%% evaluates the "Phonons" onto the grid, with default parameters, and return an iData object</i></li>\n');
-    fprintf(fid,'<li>plot3(s(1,:,:,:)) <i>%% <a href="http://ifit.mccode.org/Plot.html">plot</a> the data set for QH=0.01 rlu</li>\n');
+    fprintf(fid,'<li>plot3(log(s(1,:,:,:))) <i>%% <a href="http://ifit.mccode.org/Plot.html">plot</a> the data set for QH=0.01 rlu in log scale</i></li>\n');
     fprintf(fid, '</ul></p>\n');
 
     % tag=dos:  DOS
@@ -291,7 +293,9 @@ if options.htmlreport && ~isempty(filename)
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] a flat text file which contains axes and the 3D data set. You will have to reshape the matrix after reading the contents.</li>\n', 'Phonons3D.dat', 'Phonons3D.dat');
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>  or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons3D.h5', 'Phonons3D.h5');
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>. Use </i>set(gcf,''visible'',''on'')</i> after loading.</li>\n', 'Phonons3D.fig', 'Phonons3D.fig');
-    %fprintf(fid, '<li>[ <a href="%s">%s</a> ] an Adobe PDF, to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>.</li>\n', 'Phonons3D.pdf', 'Phonons3D.pdf');
+    if ~isdeployed
+      fprintf(fid, '<li>[ <a href="%s">%s</a> ] an Adobe PDF, to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>.</li>\n', 'Phonons3D.pdf', 'Phonons3D.pdf');
+    end
     fprintf(fid, '</ul></p>\n');
     
     fprintf(fid, 'Here is a representations of the 3D data set<br>\n');
