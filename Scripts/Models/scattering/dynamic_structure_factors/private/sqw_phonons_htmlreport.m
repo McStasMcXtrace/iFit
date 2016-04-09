@@ -71,7 +71,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     
     if isfield(options, 'dos') && options.dos && isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
       save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.png'), 'png', 'tight');
-      save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.dat'));
+      save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.dat'), 'dat data');
       save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.svg'));
       save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.pdf'));
       save(object.UserData.DOS, fullfile(options.target, 'Phonons_DOS.fig'));
@@ -81,7 +81,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     % these are the biggest files
     Phonons_HKLE = data;
     builtin('save', fullfile(options.target, 'Phonons_HKLE.mat'), 'Phonons_HKLE');
-    saveas(Phonons_HKLE, fullfile(options.target, 'Phonons_HKLE.dat'));
+    saveas(Phonons_HKLE, fullfile(options.target, 'Phonons_HKLE.dat'), 'dat data');
     saveas(Phonons_HKLE, fullfile(options.target, 'Phonons_HKLE.h5'), 'mantid');
     clear Phonons_HKLE
     
@@ -89,7 +89,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     builtin('save', fullfile(options.target, 'Phonons_powder.mat'), 'Phonons_powder');
     saveas(log_Phonons_powder, fullfile(options.target, 'Phonons_powder.png'),'png','tight');
     saveas(log_Phonons_powder, fullfile(options.target, 'Phonons_powder.fig'), 'fig', 'tight');
-    saveas(Phonons_powder, fullfile(options.target, 'Phonons_powder.dat'));
+    saveas(Phonons_powder, fullfile(options.target, 'Phonons_powder.dat'), 'dat data');
     saveas(log_Phonons_powder, fullfile(options.target, 'Phonons_powder.pdf'), 'pdf', 'tight');
     saveas(log_Phonons_powder, fullfile(options.target, 'Phonons_powder.svg'));
     saveas(Phonons_powder, fullfile(options.target, 'Phonons_powder.h5'), 'mantid');
@@ -102,8 +102,9 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     saveas(data1, fullfile(options.target, 'Phonons3D.fig'), 'fig', 'plot3 tight');
     saveas(data1, fullfile(options.target, 'Phonons3D.vtk'));
     saveas(data1, fullfile(options.target, 'Phonons3D.mrc'));
-    saveas(data1, fullfile(options.target, 'Phonons3D.dat'));
-    saveas(data1, fullfile(options.target, 'Phonons3D.pdf'), 'pdf', 'tight');
+    saveas(data1, fullfile(options.target, 'Phonons3D.dat'), 'dat data');
+    % the PDF export may crash in deployed version
+    % saveas(data1, fullfile(options.target, 'Phonons3D.pdf'), 'pdf', 'tight');
     saveas(data1, fullfile(options.target, 'Phonons3D.h5'), 'mantid');
     
     % determines if the phonons have negative values.
@@ -241,7 +242,9 @@ if options.htmlreport && ~isempty(filename)
       'Phonons_Model.mat', 'Phonons_Model.mat');
     fprintf(fid, 'Load the Model under <a href="http://ifit.mccode.org">Matlab/iFit</a> with (this also works with the <a href="http://ifit.mccode.org/Install.html">standalone version of iFit</a> which does <b>not</b> require any Matlab license and installs on most systems): <ul><li>load(''<a href="%s">%s</a>'') <i>%% creates a "Phonons" iFunc Model</i></li></ul>\n', 'Phonons_Model.mat', 'Phonons_Model.mat');
     fprintf(fid, 'Define axes for the evaluation grid in 4D, for instance:<ul><li>qh=linspace(0.01,.5,50); qk=qh; ql=qh; w=linspace(0.01,50,51);</li></ul>\n');
-    fprintf(fid, 'Evaluate the Phonons as an <a href="http://ifit.mccode.org/iData.html">iData</a> object under Matlab/iFit with: <ul><li>iData(Phonons_Model, [], qh, qk, ql, w) <i>%% evaluates the "Phonons" onto the grid, with default parameters, and return an iData object</i></li></ul></p>\n');
+    fprintf(fid, 'Evaluate the Phonons as an <a href="http://ifit.mccode.org/iData.html">iData</a> object under Matlab/iFit with: <ul><li>s=iData(Phonons_Model, [], qh, qk, ql, w) <i>%% evaluates the "Phonons" onto the grid, with default parameters, and return an iData object</i></li>\n');
+    fprintf(fid,'<li>plot3(s(1,:,:,:)) <i>%% <a href="http://ifit.mccode.org/Plot.html">plot</a> the data set for QH=0.01 rlu</li>\n');
+    fprintf(fid, '</ul></p>\n');
 
     % tag=dos:  DOS
     if isfield(options, 'dos') && options.dos && isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
@@ -288,33 +291,36 @@ if options.htmlreport && ~isempty(filename)
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] a flat text file which contains axes and the 3D data set. You will have to reshape the matrix after reading the contents.</li>\n', 'Phonons3D.dat', 'Phonons3D.dat');
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>  or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons3D.h5', 'Phonons3D.h5');
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>. Use </i>set(gcf,''visible'',''on'')</i> after loading.</li>\n', 'Phonons3D.fig', 'Phonons3D.fig');
-    fprintf(fid, '<li>[ <a href="%s">%s</a> ] an Adobe PDF, to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>.</li>\n', 'Phonons3D.pdf', 'Phonons3D.pdf');
+    %fprintf(fid, '<li>[ <a href="%s">%s</a> ] an Adobe PDF, to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>.</li>\n', 'Phonons3D.pdf', 'Phonons3D.pdf');
     fprintf(fid, '</ul></p>\n');
     
     fprintf(fid, 'Here is a representations of the 3D data set<br>\n');
     fprintf(fid, '<div style="text-align: center;">\n');
-    fprintf(fid, '<a href="%s"><img src="%s" title="%s" align="middle"></a><br>\n', 'Phonons3D.png', 'Phonons3D.png', 'Phonons3D.png');
+    fprintf(fid, '<a href="%s"><img src="%s" title="%s" align="middle"></a></div><br>\n', 'Phonons3D.png', 'Phonons3D.png', 'Phonons3D.png');
     
     % generate the X3D views
-    s1=min(data1); s2=max(data1);
-    scale = linspace(s1,s2,15);
-    for index=2:(numel(scale)-1)
-      saveas(data1, fullfile(options.target, sprintf('Phonons_%i.xhtml', index)), ...
-        'xhtml', sprintf('%g axes auto', scale(index)));
-    end
-    % display the middle one at start
-    fprintf(fid, '<iframe ID=Phonons3D_frame src="Phonons_%i.xhtml" align="middle" width="700" height="850"></iframe><br>(<a ID=Phonons3D_ext href="Phonons_%i.xhtml" target=_blank>open in external window</a>)<br>\n', ceil(numel(scale)/2), ceil(numel(scale)/2));
-    
-    % create a simple 'slider' made of clickable elements to change the src
-    fprintf(fid, '</div><p>Select the iso-surface level (1/%i, log scale) in the scale below:</p>\n', numel(scale)-2);
-    fprintf(fid, '<div style="background:#F9EECF;border:1px dotted black;text-align:center"><form>[ ');
-    for index=2:(numel(scale)-1)
-      if ~isempty(dir(fullfile(options.target, sprintf('Phonons_%i.xhtml', index))))
-        fprintf(fid, ' <input type="radio" name="isosurface" onclick=update_Phonons3D_frame("Phonons_%i.xhtml")>%i', index, index-1);
+    try
+      s1=min(data1); s2=max(data1);
+      scale = linspace(s1,s2,15);
+      for index=2:(numel(scale)-1)
+        saveas(data1, fullfile(options.target, sprintf('Phonons_%i.xhtml', index)), ...
+          'xhtml', sprintf('%g axes auto', scale(index)));
       end
+      % display the middle one at start
+      fprintf(fid, '<div style="text-align: center;">\n');
+      fprintf(fid, '<iframe ID=Phonons3D_frame src="Phonons_%i.xhtml" align="middle" width="700" height="850"></iframe><br>(<a ID=Phonons3D_ext href="Phonons_%i.xhtml" target=_blank>open in external window</a>)<br>\n', ceil(numel(scale)/2), ceil(numel(scale)/2));
+      
+      % create a simple 'slider' made of clickable elements to change the src
+      fprintf(fid, '</div><p>Select the iso-surface level (1/%i, log scale) in the scale below:</p>\n', numel(scale)-2);
+      fprintf(fid, '<div style="background:#F9EECF;border:1px dotted black;text-align:center"><form>[ ');
+      for index=2:(numel(scale)-1)
+        if ~isempty(dir(fullfile(options.target, sprintf('Phonons_%i.xhtml', index))))
+          fprintf(fid, ' <input type="radio" name="isosurface" onclick=update_Phonons3D_frame("Phonons_%i.xhtml")>%i', index, index-1);
+        end
+      end
+      fprintf(fid, ' ]</form></div><br>\n');
+      fprintf(fid, 'The blue axis is the Energy (meV), the red axis is QK (rlu), the green axis is QL (rlu).<br>\nYou can rotate the model (left mouse button), zoom (right mouse button), and pan (middle mouse button).<br>\n');
     end
-    fprintf(fid, ' ]</form></div><br>\n');
-    fprintf(fid, 'The blue axis is the Energy (meV), the red axis is QK (rlu), the green axis is QL (rlu).<br>\nYou can rotate the model (left mouse button), zoom (right mouse button), and pan (middle mouse button).<br>\n');
     
     % tag=powder
     fprintf(fid, '<h3><a name="powder"></a>The powder average S(q,w)</h3>\n');
@@ -337,7 +343,8 @@ if options.htmlreport && ~isempty(filename)
     
     fprintf(fid, '<h2><a name="zip">Download</h2>\n');
     fprintf(fid, 'You can download the whole content of this report (data, plots, logs, ...) from<br>\n');
-    fprintf(fid, '<ul><li><a href="%s">%s</a></li></ul>', [ options.target '.zip' ], [ options.target '.zip' ]);
+    [~,short_path] = fileparts(options.target);
+    fprintf(fid, '<ul><li><a href="%s">%s</a></li></ul>', fullfile('..',[ short_path '.zip' ]), [ short_path '.zip' ]);
     fprintf(fid, 'You should then open the "index.html" file therein with a browser (Firefox, Chrome...)<br>\n');
     
     % close HTML document
