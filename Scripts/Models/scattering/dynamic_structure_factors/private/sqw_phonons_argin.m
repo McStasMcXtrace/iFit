@@ -77,9 +77,11 @@ for index=1:numel(varargin)
     end
   end
 end
+if isfield(options,'dir') && ~isfield(options,'target')
+  options.target = options.dir;
+end
 if ~isfield(options,'target')
   options.target = tempname; % everything will go there
-  mkdir(options.target)
 end
 if isfield(options, 'smearing') && isempty(options.occupations)
   options.occupations = options.smearing;
@@ -100,3 +102,12 @@ if isscalar(options.kpoints)
   options.kpoints=[ options.kpoints options.kpoints options.kpoints ]; 
 end
 if options.htmlreport == 1, options.dos=1; end
+
+% make sure target is a fully qualified path
+if options.target(1) ~= filesep
+  options.target = fullfile(pwd, options.target);
+end
+if ~isdir(options.target)
+  mkdir(options.target);
+end
+

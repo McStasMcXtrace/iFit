@@ -87,7 +87,7 @@ function sigma=Sqw_moments(data, M, T, classical)
   % w2R = 2 kT M1
   % w2R 1/2/kT = wS = M1 and w0^2 = 1/S(q) w2R = 1/S(q) 2 kT M1 = q2 kT/M/M0
   M1      = abs(trapz(abs(w).*data));    % = h2q2/2/M recoil when non-classical, 0 for classical symmetrized
-  if ~classical
+  if ~classical && isempty(M)
     % try to extract a mass from the recoil
     mn      = 1.675E-027;      % neutron mass [kg]
     e       = 1.602E-019;      % [C]
