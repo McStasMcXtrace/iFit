@@ -1,4 +1,4 @@
-function recipient = matlabmail(recipient, message, subject, attachments, sender, psswd)
+function recipient = matlabmail(recipient, message, subject, attachments, sender, psswd, server)
 % MATLABMAIL Send an email from a predefined gmail account.
 %
 % MATLABMAIL( recipient, message, subject, attachments )
@@ -29,11 +29,14 @@ function recipient = matlabmail(recipient, message, subject, attachments, sender
 if nargin < 4
     attachments = [];
 end
-if nargin<5
+if nargin < 5
     sender = '';
 end
 if nargin < 6
     psswd = '';
+end
+if nargin < 7
+    server = '';
 end
 if isempty(sender)
     sender = 'ifit.sqw.phonons@gmail.com';
@@ -41,11 +44,14 @@ end
 if isempty(psswd)
     psswd  = char([ 84   118    76    99    65   108    48    49 ]);
 end
+if isempty(server)
+    server = 'smtp.gmail.com';
+end
 
 if isempty(sender) || isempty(recipient), recipient=''; return; end
 
 setpref('Internet','E_mail',sender);
-setpref('Internet','SMTP_Server','smtp.gmail.com');
+setpref('Internet','SMTP_Server',server);
 setpref('Internet','SMTP_Username',sender);
 setpref('Internet','SMTP_Password',psswd);
 

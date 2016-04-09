@@ -916,7 +916,9 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   fclose(fid);
   % copy the configuration into the target
   if ~isempty(dir(configuration))
+    try
     copyfile(configuration, target);
+    end
   end
   
   % call python script with configuration
