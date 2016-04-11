@@ -98,4 +98,23 @@ function [gDOS, g] = Sqw_gDOS(s, n)
   gDOS.Title = [ 'gDOS(' s.Title ')' ];
   title(gDOS,[ 'gDOS(' s.Title ')' ]);
   xlabel(gDOS, 'Energy');
+  gDOS.Label='gDOS';
+  setalias(gDOS,'Pab', Sqw_pab(s));
+
+  
+function Pab = Sqw_pab(s)
+  % compute the P(q,hw)
+  hw= s{1}; 
+  q = s{2};
+  y = s{0};
+  yerr = get(s,'Error');
+  T = Sqw_getT(s);
+  if isempty(T)
+    T = 293;
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
+    disp(['    has no temperature defined. Using T=' num2str(T) ' K' ])
+  end
+  alpha = 2.0721*q.^2/T;
+  beta  = 11.605*hw/T;
+  Pab     = beta.*(exp(beta) - 1).*s./alpha;
 

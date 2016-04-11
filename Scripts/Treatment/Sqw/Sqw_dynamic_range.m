@@ -1,5 +1,5 @@
-function s = Sqw_dynamic_range(s, Ei, angles, options)
-% Sqw_dynamic_range(s,Ei): crop the S(|q|,w) to the available dynamic range
+function [s, sphi] = Sqw_dynamic_range(s, Ei, angles, options)
+% [sqw,sphiw]=Sqw_dynamic_range(s,Ei): crop the S(|q|,w) to the available dynamic range
 %   for given incident neutron energy.
 %
 %  The S(q,w) is a dynamic structure factor aka scattering function.
@@ -13,16 +13,22 @@ function s = Sqw_dynamic_range(s, Ei, angles, options)
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    omega < 0, neutron gains energy, anti-Stokes
 %
-% The scattering angle theta can be restricted to match a detection area
+% The scattering angle phi can be restricted to match a detection area
 % with the syntax:
-%   Sqw_dynamic_range(s, Ei, [angles])
+%   s_Ei=Sqw_dynamic_range(s, Ei, [angles])
+%
+% The syntax:
+%   [s, sphiw] = Sqw_dynamic_range(s,...)
+% also returns the S(phi,w) data set, which shows the detected signal vs scattering 
+% angle and energy transfer.
 %
 % input:
 %   s:  Sqw data set, e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %   Ei: incoming neutron energy [meV]
 %   angles: detection range in [deg] as a vector. Min and Max values are used.
 % output:
-%   sqw: S(q,w) cropped to dynamic range
+%   sqw:   S(q,w)   cropped to dynamic range for incident energy Ei.
+%   sphiw: S(phi,w) angular dynamic structure factor for incident energy Ei.
 %
 % Example: Sqw_dynamic_range(s, 14.8, [-20 135])
 %
@@ -57,7 +63,9 @@ function s = Sqw_dynamic_range(s, Ei, angles, options)
   % check if the energy range is limited
   w = s{1};
   if all(w(:) >= 0) || all(w(:) <= 0)
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side. Perhaps you should apply Sqw_symmetrize and Sqw_Bosify ?' ]);
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
+    disp([ '    seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side.' ])
+    disp('    Perhaps you should apply Sqw_symmetrize and Sqw_Bosify ?');
   end
   
   % compute Ei, Ef, Ki, Kf
@@ -133,11 +141,19 @@ function s = Sqw_dynamic_range(s, Ei, angles, options)
   else
     tt = sprintf(' Ei=%g meV [%g:%g deg]', Ei, min(angles), max(angles));
   end
+  
   s.DisplayName = strtrim([ s.DisplayName tt ]);
   s = setalias(s, 'IncidentEnergy', Ei, 'Incident Energy [meV]');
   if ~isempty(angles)
     s = setalias(s, 'DetectionAngles', angles, 'Detection Angles [deg]');
   end
+  % compute the angles from 'q' values, and create an Angle alias
+  if nargout > 1
+    angles = real(acos(costheta))*180/pi; % this is e.g. a 2D array
+    sphi = setalias(s, 'Angle', angles, 'Radial Angle [deg]');
+    sphi = setaxis(sphi, 2, 'Angle');
+  end
+  
   s = title(s, strtrim([ s.Title tt ]));
   s.Label = strtrim(tt);
   
