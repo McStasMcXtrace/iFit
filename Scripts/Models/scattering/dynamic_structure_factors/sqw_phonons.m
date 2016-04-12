@@ -94,6 +94,10 @@ function signal=sqw_phonons(configuration, varargin)
 %     report on the computation results. Also requests vDOS computation (options.dos=1).
 %   options.email=<email>                  when set, sends an email at start and end
 %     of computation.
+%   options.optimizer                      when set, performs a geometry optimization
+%     before computing the forces. This option can be set to 
+%       'BFGS' or 'LBFGS' (low memory BFGS)
+%       'MDMin' or 'FIRE'
 %
 % DFT specific options
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid, default 3.
@@ -129,7 +133,7 @@ function signal=sqw_phonons(configuration, varargin)
 %
 % Options specific per calculator
 %   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
-%     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'fd'.
+%     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'pw'.
 %   options.iscf='NC','PAW'                Type of SCF cycles (ABINIT) 
 %   options.pps = 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw' Type of database (ABINIT)
 %                 'sv','pv', ... (VASP)
