@@ -23,6 +23,7 @@ options.gui        = 0;
 options.htmlreport = 0;
 options.dos        = 0;
 options.email      = '';
+options.optimizer  = '';
 
 % read input arguments
 for index=1:numel(varargin)
@@ -66,6 +67,8 @@ for index=1:numel(varargin)
       options.calculator = 'quantumespresso';
     elseif strcmpi(varargin{index},'gui')
       options.gui = 1;
+    elseif strcmpi(varargin{index},'optimize') || strcmpi(varargin{index},'minimize')
+      options.optimizer = 'BFGS';
     end
   end
   if isstruct(varargin{index})
