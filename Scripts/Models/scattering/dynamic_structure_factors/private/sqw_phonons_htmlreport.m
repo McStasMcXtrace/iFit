@@ -221,12 +221,23 @@ if options.htmlreport && ~isempty(filename)
   case 'done'
     % indicate evaluated model, and print grid used
     fprintf(fid, '<h2>Computation completed</h2>\n');
-    fprintf(fid, '<div style="text-align: center; color:#0000FF"><b>WELL DONE</b></div><br><p>The computation has performed correctly. The forces and dynamical matrix of the lattice vibrations have been determined.</p>\n');
-    fprintf(fid, 'End Date: %s.<br>\n', datestr(now));
+    fprintf(fid, '<div style="text-align: center; color:#0000FF"><b>WELL DONE</b></div><br><p>The computation has performed correctly. The forces and dynamical matrix of the lattice vibrations have been determined.</p>\n<ul>');
+    
+    fprintf(fid, '<li><a href="%s">%s</a> is the iFunc model object, to be used within iFit.</li>\n', ...
+      'Phonons_Model.mat', 'Phonons_Model.mat');
+    toadd = { 'optimized.cif', 'optimized.pdb', 'optimized_POSCAR' };
+    for index=1:numel(toadd)
+      if ~isempty(dir(fullfile(options.target, toadd{index})))
+        fprintf(fid, '<li><a href="%s">%s</a> optimized structure used for the phonon calculation.</li>\n', ...
+        toadd{index}, toadd{index});
+      end
+    end
+    fprintf(fid, '</ul>End Date: %s.<br>\n', datestr(now));
     fprintf(fid, 'Time elapsed: %g [s]<br>\n', options.duration);
     fprintf(fid, 'Please cite:<br><pre>');
     fprintf(fid, '%s\n', data{:});
     fprintf(fid, '</pre>\n');
+    
     
   case 'plot'
     % tag=results:  present the final object
