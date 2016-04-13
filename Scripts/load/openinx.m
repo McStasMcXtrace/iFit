@@ -36,6 +36,9 @@ elseif isfield(out.Data, 'header') && isfield(out.Data, 'Par') && isfield(out.Da
     Data.energy      = squeeze(Data.Mat(:,1,:));
     Data.energy      = Data.energy(:,1);
   end
+  if numel(unique(Data.temperature)) == 1, Data.temperature=Data.temperature(1); end
+  if numel(unique(Data.wavelength))  == 1, Data.wavelength =Data.wavelength(1); end
+  if numel(unique(Data.wavevector))  == 1, Data.wavevector =Data.wavevector(1); end
   out.Data = Data; 
   clear Data
 
@@ -44,7 +47,7 @@ elseif isfield(out.Data, 'header') && isfield(out.Data, 'Par') && isfield(out.Da
   if isAngleData
     setalias(out,'Angle', 'Data.angle', ...
       [ 'Angle [deg] T=' num2str(mean(out.Data.temperature)) ' lambda=' num2str(mean(out.Data.wavelength)) ]);
-    setalias(out,'Energy', 'Data.energy', 'Energy [meV]');
+    setalias(out,'IncidentEnergy', 'Data.energy', 'Incident Energy [meV]');
     
   else
     setalias(out,'Energy', 'Data.energy', ...
@@ -52,8 +55,8 @@ elseif isfield(out.Data, 'header') && isfield(out.Data, 'Par') && isfield(out.Da
     setalias(out,'Angle',       'Data.angle','Angle [deg]');
   end
   
-  setalias(out,'Wavelength',  'Data.wavelength','Wavelength [Angs]');
-  setalias(out,'Wavevector',  'Data.wavevector','Wavevector [Angs-1]');
+  setalias(out,'Wavelength',  'Data.wavelength','Incident Wavelength [Angs]');
+  setalias(out,'IncidentWavevector',  'Data.wavevector','Incident Wavevector [Angs-1]');
   setalias(out,'Temperature', 'Data.temperature','Sample Temperature [K]');
 
   if ndims(out) == 1
