@@ -1,5 +1,5 @@
 function [s, sphi] = Sqw_dynamic_range(s, Ei, angles, options)
-% [sqw,sphiw]=Sqw_dynamic_range(s,Ei): crop the S(|q|,w) to the available dynamic range
+% [sqw_Ei,sphiw]=Sqw_dynamic_range(s,Ei): crop the S(|q|,w) to the available dynamic range
 %   for given incident neutron energy.
 %
 %  The S(q,w) is a dynamic structure factor aka scattering function.
@@ -8,6 +8,9 @@ function [s, sphi] = Sqw_dynamic_range(s, Ei, angles, options)
 %  Ef         = Ei - w                                is positive
 %  cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)  is within [-1:1]
 %
+% The incident neutron energy can be computed using:
+%  Ei = 2.0721*Ki^2 = 81.8042/lambda^2 with Ki in [Angs-1] and lambda in [Angs]
+%
 % conventions:
 % omega = Ei-Ef = energy lost by the neutron
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
@@ -15,10 +18,10 @@ function [s, sphi] = Sqw_dynamic_range(s, Ei, angles, options)
 %
 % The scattering angle phi can be restricted to match a detection area
 % with the syntax:
-%   s_Ei=Sqw_dynamic_range(s, Ei, [angles])
+%   sqw_Ei=Sqw_dynamic_range(s, Ei, [angles])
 %
 % The syntax:
-%   [s, sphiw] = Sqw_dynamic_range(s,...)
+%   [sqw_Ei, sphiw] = Sqw_dynamic_range(s,...)
 % also returns the S(phi,w) data set, which shows the detected signal vs scattering 
 % angle and energy transfer.
 %
@@ -65,7 +68,7 @@ function [s, sphi] = Sqw_dynamic_range(s, Ei, angles, options)
   if all(w(:) >= 0) || all(w(:) <= 0)
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
     disp([ '    seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side.' ])
-    disp('    Perhaps you should apply Sqw_symmetrize and Sqw_Bosify ?');
+    disp('    Perhaps you should apply Sqw_symmetrize and Sqw_Bosify first ?');
   end
   
   % compute Ei, Ef, Ki, Kf

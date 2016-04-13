@@ -1,5 +1,9 @@
 function s = Sqw_check(s)
-% Sqw_check: check if a 2D iData is aa S(q,w).
+% Sqw_check: check if a 2D iData is a S(q,w).
+%
+% This routine can also convert automatically an input 
+%         S(phi,t)  into S(phi,w)
+%   and   S(phi,w)  into S(q,  w).
 %
 % conventions:
 % omega = Ei-Ef = energy lost by the neutron
@@ -190,47 +194,100 @@ function s = Sqw_phi2q(s)
   if isempty(s), return; end
   
   disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis 2: angle [deg] to wavevector [Angs-1].' ]);
-  ei    = 81.805/lambda^2;
+  Ei    = 81.805/lambda^2;
   phi   = s{2}; % angle
   hw    = s{1};
-  q     = sqrt(2*(2*pi/lambda)^2*(1 + 0.5*hw/ei - sqrt(1 + hw/ei).*cos(phi*pi/180)));
-  s{2}  = q;
+  if isvector(hw) && isvector(phi)
+    s = meshgrid(s);
+    phi   = s{2}; % angle
+    hw    = s{1};
+  end
+  % we use: cos(phi) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf);
+  Ei = 81.805/lambda^2; Ki = 2*pi./lambda; 
+  Ef = Ei - hw;         Kf = sqrt(Ef/2.0721);
+  q  = sqrt(Ki.^2 + Kf.^2 - 2*cos(phi*pi/180).*Ki.*Kf);
+
+  s = setalias(s, 'q', q, 'Wavevector [Angs-1]');
+  s = setaxis(s, 2, 'q');
   
 % ------------------------------------------------------------------------------
-function s=Sqw_t2e(s, L2)
+function s=Sqw_t2e(s)
+% convert S(xx,t) to S(xx,w). From lamp t2e and in5_t2e.
 
-  [s,lambda] = Sqw_search_lambda(s);
+  [s,lambda,distance,chwidth] = Sqw_search_lambda(s);
   if isempty(s), return; end
 
   disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis 1: time [sec] to energy [meV].' ]);
   t = s{1};
+  
+  % check if the tof is given in channels
+  if unique(diff(t)) == 1
+    % use ChannelWidth
+    if ~isempty(chwidth) && chwidth
+      t = t*chwidth;
+    else
+      disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 is given in time channels.' ])
+      disp('    This is probably NOT what you want. A will still try to use it as it is...')
+      disp('    Define e.g. s.ChannelWidth=<channel width in time unit>');
+    end
+  end
+  
   if  all(t> 0 & t < .1)
     % probably in seconds (usually in the range 0 - 1e-2)
     % NOP: time is already OK
   elseif all(t > 0 & t < 100)
     % probably in milli-seconds
     t = t/1000;
+    disp('    Assuming time is in [ms].');
   elseif all(t > 0 & t < 100000)
     % probably in micro-seconds
     t = t/1e6;
+    disp('    Assuming time is in [us].');
   else
     disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 seems odd.' ])
-    disp('    Check that the time-of-flight is defined as the time from the sample to the detector, in seconds.')
+    disp('    Check that the time-of-flight is defined as the time from the sample to the detector, in [s].')
+    s = [];
+    return;
   end
   
-  % we search for the elastic peak position (EPP)
-  if ~isfield(s, 'Distance')
-    disp([ mfilename ': ' s.Tag ' ' s.Title ' undefined sample-detector distance.' ]);
+  % we compute the elastic peak position (EPP)
+  telast = [];
+  if isempty(lambda) || isempty(distance)
+    s{2}   = t; % update time in [s]
+    s_time = trapz(s, 2);
+    [~,s_time_max]            = max(s_time, [],1);
+    [s_time_std,s_time_centre]= std(s_time,1);
+    if abs(t(s_time_max) - s_time_centre) < s_time_std && abs(t(s_time_max) - s_time_centre) < 1e-3
+      telast = mean([t(s_time_max) s_time_centre]);
+    else
+      disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 elastic peak position seems odd.' ])
+      disp('    Check that the time-of-flight is defined as the time from the sample to the detector, in [s].')
+      disp('    Define e.g. s.Distance=<sample-detector distance in m>');
+      disp('    Define e.g. s.Wavelength=<lambda in Angs> or s.IncidentEnergy=<energy in meV>');
+      s = [];
+      return;
+    end
+  end
+
+  % search for the elastic peak position when lambda is not given
+  if isempty(lambda) && ~isempty(distance)
+    lambda   = telast./distance*3956.035;
+  elseif ~isempty(lambda) && isempty(distance)
+    distance = telast./lambda*3956.035;
+  else
+    % we compute the elastic peak position (EPP)
+    telast = distance .* lambda/3956.035;  % time from sample to detector elastic signal
+  end
+  
+  if isempty(telast) || telast<= 0
+    disp([ mfilename ': ' s.Tag ' ' s.Title ' undefined sample-detector distance or wavelength.' ]);
     disp('    Define e.g. s.Distance=<sample-detector distance in m>');
     s = [];
     return;
   end
   
-  L2=get(s, 'Distance');
-  telast = L2 * lambda/3956.035;  % time from sample to detector elastic signal
-  
-  Ei = 81.805/lambda^2;
-  Ef = Ei*(telast./t).^2;
+  Ei = 81.805./lambda^2;
+  Ef = Ei.*(telast./t).^2;
   dtdE    = t./(2.*Ef)*1e6; % to be consistent with vnorm abs. calc.
   kikf    = sqrt(Ei./Ef);            % all times above calculated in sec.
   hw = Ei - Ef;
@@ -242,11 +299,10 @@ function s=Sqw_t2e(s, L2)
   s{1} = hw0;
   
 % ------------------------------------------------------------------------------ 
-function [s,lambda] = Sqw_search_lambda(s, lambda)
+function [s,lambda,distance,chwidth] = Sqw_search_lambda(s)
   % search for the wavelength in the object
-  if nargin < 2
-    lambda=[];
-  end
+  
+  lambda = []; distance = [];
 
   % no wavelength defined: search in object
   if isempty(lambda)
@@ -258,16 +314,7 @@ function [s,lambda] = Sqw_search_lambda(s, lambda)
     end
   end
   if isempty(lambda)
-    momentum_field=[ findfield(s, 'wavevector') findfield(s, 'momentum') ];
-    if ~isempty(momentum_field), 
-      if iscell(momentum_field), momentum_field=momentum_field{1}; end
-      momentum = mean(get(s, momentum_field));
-      lambda=2*pi/momentum;
-      disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident wavevector=' num2str(momentum) ' [Angs-1] from ' momentum_field ]);
-    end
-  end
-  if isempty(lambda)
-    energy_field = [ findfield(s, 'energy') findfield(s, 'meV')  ];
+    energy_field = [ findfield(s, 'IncidentEnergy') ];
     if ~isempty(energy_field)
       if iscell(energy_field), energy_field=energy_field{1}; end
       energy = mean(get(s, energy_field));
@@ -277,10 +324,17 @@ function [s,lambda] = Sqw_search_lambda(s, lambda)
     end
   end
   if isempty(lambda)
+    momentum_field=[ findfield(s, 'IncidentWavevector') ];
+    if ~isempty(momentum_field), 
+      if iscell(momentum_field), momentum_field=momentum_field{1}; end
+      momentum = mean(get(s, momentum_field));
+      lambda=2*pi/momentum;
+      disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident wavevector=' num2str(momentum) ' [Angs-1] from ' momentum_field ]);
+    end
+  end
+  if isempty(lambda)
     disp([ mfilename ': ' s.Tag ' ' s.Title ' undefined incident neutron wavelength/energy.' ]);
     disp('    Define e.g. s.Wavelength=<lambda in Angs> or s.IncidentEnergy=<energy in meV>');
-    s = [];
-    return
   end
   
   if ~isfield(s, 'Wavelength')
@@ -295,6 +349,17 @@ function [s,lambda] = Sqw_search_lambda(s, lambda)
     disp([ mfilename ': ' s.Tag ' ' s.Title ' using <sample-detector distance> =' num2str(mean(distance(:))) ' [m] from ' distance_field ]);
     if ~isfield(s, 'Distance')
       setalias(s, 'Distance', distance, 'Sample-Detector distance [m]');
+    end
+  end
+  
+  % search for the Channel Width
+  chwidth_field = [ findfield(s, 'ChannelWidth') ];
+  if ~isempty(chwidth_field), 
+    if iscell(chwidth_field), chwidth_field=chwidth_field{1}; end
+    chwidth = get(s, chwidth_field);
+    disp([ mfilename ': ' s.Tag ' ' s.Title ' using <channel width> =' num2str(mean(chwidth(:))) ' [time unit] from ' chwidth_field ]);
+    if ~isfield(s, 'ChannelWidth')
+      setalias(s, 'ChannelWidth', chwidth, 'ToF Channel Width [time unit]');
     end
   end
     
