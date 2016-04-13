@@ -148,7 +148,7 @@ function config = iLoad_ini
     ILL_inx.options    ='';
     ILL_inx.method     ='read_inx';
     ILL_inx.postprocess='openinx';
-    ILL_inx.extension  ='inx';
+    ILL_inx.extension  ={'inx','ino'};
     
     STL_ascii.name     ='STL/SLP 3D ascii';
     STL_ascii.method   ='read_stl';
