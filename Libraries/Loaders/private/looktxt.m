@@ -1,4 +1,4 @@
-function result = looktxt(varargin)
+function [status, result] = looktxt(varargin)
 % result = looktxt(file, options, ...)
 %
 % Action: Search and export numerics in a text/ascii file.
@@ -15,7 +15,7 @@ function result = looktxt(varargin)
 % the result is not interpreted, i.e. the actual data is usually written to
 % an external file that should be read afterwards.
 
-result = [];
+result = []; status = 127;
 
 % use looktxt bin when available -----------------------------------------------
 if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
@@ -23,10 +23,27 @@ if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 % handle input arguments
 
 % assemble command line for the binary call
+
+% identify if we use a local or global (system) looktxt 
+
+% local looktxt
 this_path = fileparts(which(mfilename));
 cmd       = fullfile(this_path, mfilename);
-if ispc, cmd=[ cmd '.exe' ]; end
-cmd       = [ cmd ' ' sprintf('%s ', varargin{:}) ];
+if ispc, ext = '.exe'; else ext = ''; end
+target='';
+
+% we test if the executable files exist
+% test in order: global(system), local, local_arch
+for try_target = { [ 'looktxt' ext ], [ cmd ext ], [ cmd '_' computer('arch') ext ]}
+    if ~isempty(dir(try_target{1}))
+        target = try_target{1};
+    end
+end
+if isempty(target)
+    error([ mfilename ': no valid executable file found.' ])
+    return
+end
+cmd       = [ target ' ' sprintf('%s ', varargin{:}) ];
 disp(cmd)
 
 % launch the command
