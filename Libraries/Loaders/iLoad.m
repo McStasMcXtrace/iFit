@@ -419,6 +419,7 @@ function [data, format] = iLoad(filename, loader, varargin)
   % private/nested function to import single data with given method(s)
   function [data, loader] = iLoad_import(filename, loader, varargin)
     data = []; isbinary=0;
+    verbose = 0; % set this to 1 to get more output for debugging
     
     if isempty(loader), loader='auto'; end
     if strcmp(loader, 'auto')
@@ -458,7 +459,9 @@ function [data, format] = iLoad(filename, loader, varargin)
           disp(l.message);
           disp(getReport(ME))
           [dummy, name_short, ext] = fileparts(filename);
-          % fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, char(this_loader.method));
+          if verbose
+            fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, char(this_loader.method));
+          end
           data = [];
           if strcmp(l.identifier, 'MATLAB:nomem') || any(strncmpi(l.message, 'out of memory',length('out of memory')))
             fprintf(1,'iLoad: Not enough memory. Skipping import of this file.\n');
@@ -494,7 +497,9 @@ function [data, format] = iLoad(filename, loader, varargin)
       return
     end
 
-    % fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
+    if verbose
+      fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
+    end
     % we select the calling syntax which matches the number of input arguments
     if iscell(loader.options)
       varg = { filename, loader.options{:}, varargin{:} };
@@ -570,6 +575,7 @@ function [data, format] = iLoad(filename, loader, varargin)
         if ~isfield(loader,'patterns'), loader.patterns=''; end
         
         patterns_found = 0;
+        if verbose, fprintf(1,'iLoad: method %s: file %s: analyzing\n', loader.name, file); end
         
         % the loader is selected if: 
         %   loader has extension and extension matches, no patterns to search
