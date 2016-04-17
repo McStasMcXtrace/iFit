@@ -5,7 +5,10 @@ function data = read_llb_tas( filename )
 % built from B. Nennion wfal/read_fich.f
 data = [];
 [p,f,e]= fileparts(filename);
-
+if isempty(f)
+    % this is a dot file (hidden)
+    return
+end
 % the type of LLB TAS data depends on the first letter of the file name, + number
 if ~any(upper(f(1)) == 'RCSDP') || ~isfinite(str2double(f(2:end)))
   % error([ mfilename ': ' filename ': ERROR: the filename 1st letter must be any of RCSDP.' ])

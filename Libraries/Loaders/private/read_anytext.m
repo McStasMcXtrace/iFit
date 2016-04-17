@@ -353,6 +353,9 @@ function compiled = read_anytext_compile_binary(compile)
   
   compiled = '';
   if nargin == 0, compile = ''; end
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  else precmd=''; end
   
   if isdeployed, return; end
   if ispc, ext='.exe'; else ext=''; end
@@ -363,7 +366,7 @@ function compiled = read_anytext_compile_binary(compile)
           fullfile(this_path, [ 'looktxt' ext ]), ...
           fullfile(this_path, [ 'looktxt_' computer('arch') ext ])}
       
-    [status, result] = system(try_target{1});
+    [status, result] = system([ precmd try_target{1} ]);
     if status == 0 && nargin == 0
         % the executable is already there. No need to make it .
         target = try_target{1};
@@ -389,7 +392,7 @@ function compiled = read_anytext_compile_binary(compile)
       cc = '';
       for try_cc={getenv('CC'),'cc','gcc','ifc','pgcc','clang','tcc'}
         if ~isempty(try_cc{1})
-          [status, result] = system(try_cc{1});
+          [status, result] = system([ precmd try_cc{1} ]);
           if status == 4 || ~isempty(strfind(result,'no input file'))
             cc = try_cc{1};
             break;
@@ -405,7 +408,7 @@ function compiled = read_anytext_compile_binary(compile)
           cmd={cc,'-o',target,fullfile(this_path,'looktxt.c'),'-lm'};
           cmd = sprintf('%s ',cmd{:});
           disp(cmd)
-          [status, result] = system(cmd);
+          [status, result] = system([ precmd cmd ]);
           if status == 0
               compiled = target;
           end

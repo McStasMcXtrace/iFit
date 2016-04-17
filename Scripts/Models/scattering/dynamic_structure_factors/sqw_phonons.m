@@ -508,7 +508,9 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   end
   
   % call python script with configuration
-  if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  else precmd=''; end
   read = [ read 'from ase.io import write; ' ...
     read1 ];
   result = '';
