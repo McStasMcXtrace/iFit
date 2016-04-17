@@ -14,6 +14,7 @@ function [status, result] = looktxt(varargin)
 % this function is called when the MeX is not present/compiled -> use Binary
 % the result is not interpreted, i.e. the actual data is usually written to
 % an external file that should be read afterwards.
+persistent target
 
 result = []; status = 127;
 
@@ -30,18 +31,22 @@ if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
 this_path = fileparts(which(mfilename));
 cmd       = fullfile(this_path, mfilename);
 if ispc, ext = '.exe'; else ext = ''; end
-target='';
 
-% we test if the executable files exist
-% test in order: global(system), local, local_arch
-for try_target = { [ 'looktxt' ext ], [ cmd ext ], [ cmd '_' computer('arch') ext ]}
-    if ~isempty(dir(try_target{1}))
-        target = try_target{1};
-    end
-end
 if isempty(target)
-    error([ mfilename ': no valid executable file found.' ])
-    return
+  % we test if the executable files exist
+  % test in order: global(system), local, local_arch
+  for try_target = { [ 'looktxt' ext ], [ cmd ext ], [ cmd '_' computer('arch') ext ]}
+      [status, result] = system(try_target{1});
+      if status == 0
+          target = try_target{1};
+          disp([ mfilename ': Bin is valid from ' target ]);
+          break
+      end
+  end
+  if isempty(target)
+      error([ mfilename ': no valid executable file found.' ])
+      return
+  end
 end
 cmd       = [ target ' ' sprintf('%s ', varargin{:}) ];
 disp(cmd)
