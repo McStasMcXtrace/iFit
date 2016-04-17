@@ -320,7 +320,7 @@ function config = iLoad_ini
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
-	  config.MeX.looktxt      = 'default'; % Unset will also choose default (Linux=matlab, other=mex)
+	  config.MeX.looktxt      = 'default'; % Unset will also choose default (bin/matlab)
 	  % other choices:
 	  %  'mex/mat': use mex version and generate temporary .mat file 
 	  %  'mex/mem' and 'mex': use MeX (unstable) in memory, 
