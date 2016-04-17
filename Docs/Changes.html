@@ -55,6 +55,7 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/cycl
 
 
 
+
           Cyclops</a> HBIN and <a
           href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
         SAV files. Iterative deconvolution as <i>deconv</i> method.
@@ -75,6 +76,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
             href="http://www.ni.com/white-paper/3727/en/">TDMS</a> file
           format import. Fixed curvature in <a
             href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>/Rescal5/Popovici
+
 
 
 
@@ -125,6 +127,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           NetCDF/CDF/NeXus/HDF support, import/export of <a
             href="http://www.mantidproject.org">Mantid</a> workspaces
           (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+
 
 
 
@@ -218,6 +221,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -225,6 +229,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
 
 
 
@@ -283,6 +288,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -292,6 +298,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
 
 
 
@@ -340,6 +347,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -347,6 +355,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
 
 
 
@@ -439,6 +448,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       3)</span> to triple the number of points along axes.<br>
     <h4><a class="mozTocH4" name="mozTocId473369"></a>Too many warnings
       displayed</h4>
@@ -446,6 +456,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     reduce the level of verbosity with:<br>
     <pre style="margin-left: 80px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">warning off backtrace	<span style="font-style: italic; color: rgb(0, 0, 0);">% reduce the warning message length</span><br><span style="color: rgb(0, 0, 0);">&gt;&gt; </span>warning off			<span style="color: rgb(0, 0, 0); font-style: italic;">% suppress all warnings (not recommended)</span><br></span></pre>
     <h4><a class="mozTocH4" name="mozTocId556618"></a>Execution/compilation
+
 
 
 
@@ -534,6 +545,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       web</span> and <span style="font-style: italic;">edit</span>
     commands are limited, and may not work properly, depending on the
     system.<br>
@@ -592,7 +604,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     from Matlab/iFit, e.g. <a href="http://www.mcstas.org">McStas</a>,
     <a href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/phon/">PHON</a>,
     <a href="http://www.quantum-espresso.org/">Quantum Espress</a>, <a
-      href="https://wiki.fysik.dtu.dk/ase/">ASE</a>.<br>
+      href="https://wiki.fysik.dtu.dk/ase/">ASE</a>, looktxt, cif2hkl.<br>
     In this case, as e.g. McStas runs from a Matlab environment that
     overloads libraries on top of the normal libraries from the system -
     used by external programs - you may get a message such as (here <span
@@ -603,6 +615,9 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
       color="#3366ff">libgcc_s.so</font> library with error e.g. '<font
       color="#cc0000">version&nbsp;`GCC_4.3.0'&nbsp;not&nbsp;found</font>'.<br>
     <br>
+    On an Apple Mac OS X system, the faulty library is e.g.<br>
+    <blockquote>/Applications/MATLAB_R2010a.app/sys/os/maci64/libgfortran.3.dylib<br>
+    </blockquote>
     In order to solve this, you need to either remove or update the
     faulty Matlab libraries with the one from the system. The following
     procedure is valid for Linux systems (where it was identified),
@@ -623,6 +638,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
       style="font-style: italic;">locate</span> or <span
       style="font-style: italic;">mlocate</span> to be installed -
     alternatively you can use <span style="font-style: italic;">ldconfig
+
 
 
 
@@ -691,6 +707,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
