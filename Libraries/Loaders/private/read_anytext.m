@@ -71,11 +71,8 @@ elseif ~isempty(strfind(config, 'mat')), output='MATFile'; end
 if ~isempty(strfind(config, 'default')) || ~isempty(strfind(config, 'auto')) ...
   || isempty(executable) || isempty(output) % default/auto choices
   % default mex/bin choice set by the system type: same as config.MeX='default'
-  if isempty(executable), executable = 'mex'; end
-  if isempty(output)
-    if ispc || ismac, output = 'MeX';         % in memory
-    else              output = 'MATFile'; end % Linux: avoid MeX/mem which may be unstable (SEGV)
-  end  
+  if isempty(executable), executable = 'bin'; end
+  if isempty(output),     output     = 'Matlab'; end 
 end
 
 % *** test executable ==========================================================
@@ -232,7 +229,7 @@ if strcmp(executable, 'mex')
   result = ''; status=0;
 elseif strncmp(executable, 'bin',3)
   s = [];
-  [status,result] = looktxt(argv{:}); % send to looktxt.m to launch bin
+  [status] = looktxt(argv{:}); % send to looktxt.m to launch bin
 end
 
 % *** import the data (user.format) ============================================
