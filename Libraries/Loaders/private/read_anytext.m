@@ -362,16 +362,15 @@ function compiled = read_anytext_compile_binary(compile)
   for try_target={[ 'looktxt' ext ], ...
           fullfile(this_path, [ 'looktxt' ext ]), ...
           fullfile(this_path, [ 'looktxt_' computer('arch') ext ])}
-      if ~isempty(dir(try_target{1}))
-          [status, result] = system(try_target{1});
-          if status == 0 && nargin == 0
-              % the executable is already there. No need to make it .
-              target = try_target{1};
-              disp([ mfilename ': Bin is valid from ' target ]);
-              compiled = target; 
-              return
-          end
-      end
+      
+    [status, result] = system(try_target{1});
+    if status == 0 && nargin == 0
+        % the executable is already there. No need to make it .
+        target = try_target{1};
+        disp([ mfilename ': Bin is valid from ' target ]);
+        compiled = target; 
+        return
+    end
   end
   % when we get there, compile looktxt_arch, not existing yet
   target = fullfile(this_path, [ 'looktxt_' computer('arch') ext ]);
