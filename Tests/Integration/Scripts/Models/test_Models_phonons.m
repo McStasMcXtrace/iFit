@@ -2,7 +2,7 @@ function result = test_Models_phonons
 
   % spin wave
   ac=sqw_sine3d(5);
-  qh=linspace(0,1,50);qk=qh; ql=qh'; w=linspace(0.01,10,50);	
+  qh=linspace(0,1,20);qk=qh; ql=qh'; w=linspace(0.01,10,21);	
   
   
   f=iData(ac,[],qh,qk,ql,w);
@@ -11,13 +11,13 @@ function result = test_Models_phonons
   
   % perovskite
   s=sqw_vaks('KTaO3'); 
-  qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,10,51);
+  qh=linspace(0,.5,20);qk=qh; ql=qh; w=linspace(0.01,10,21);
   f=iData(s,[],qh,qk,ql,w); 
   [w2,c2]=std(f(1,:,:,:));
   
   % cubic
   s=sqw_cubic_monoatomic([ 3 3 ]);
-  qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,10,51);
+  qh=linspace(0,.5,20);qk=qh; ql=qh; w=linspace(0.01,10,21);
   f=iData(s,[],qh,qk,ql,w); 	
   [w3,c3]=std(f(1,:,:,:));
   close(fig);
