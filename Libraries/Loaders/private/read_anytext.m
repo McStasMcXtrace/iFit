@@ -64,7 +64,7 @@ output     = '';
 
 % we interpret the requested configuration
 if ~isempty(strfind(config, 'mex')) || ~isempty(strfind(config, 'mem')), executable = 'MeX'; output='MeX'; end
-if ~isempty(strfind(config, 'bin')),     executable = 'Binary'; output='Matlab'; end
+if ~isempty(strfind(config, 'bin')),     executable = 'bin'; output='Matlab'; end
 if ~isempty(strfind(config, 'matlab')),  output='Matlab'; 
 elseif ~isempty(strfind(config, 'mat')), output='MATFile'; end
 
@@ -89,6 +89,7 @@ if isempty(compiled) || ~compiled % only the first time it starts or when explic
       s = read_anytext_compile_mex('compile'); % force
     else s = read_anytext_compile_mex; end
     if isempty(s), executable = 'bin'; % will try bin
+    else config='mex';
     end
   end
   
@@ -99,7 +100,8 @@ if isempty(compiled) || ~compiled % only the first time it starts or when explic
     else s = read_anytext_compile_binary; end
     if isempty(s), 
       error('%s: ERROR: Can''t compile looktxt executable (MeX nor Binary).', ...
-          mfilename); 
+          mfilename);
+    else config='bin'; output='Matlab';
     end
   end
   compiled=1;
@@ -228,7 +230,7 @@ if strcmp(executable, 'mex')
   % pure MEX call. No temporary file. May cause SEGV. faster by 15%.
   s = looktxt(argv{:});
   result = ''; status=0;
-elseif strcmp(executable, 'bin')
+elseif strncmp(executable, 'bin',3)
   s = [];
   [status,result] = looktxt(argv{:}); % send to looktxt.m to launch bin
 end
@@ -246,7 +248,7 @@ if strcmp(user.format, 'MATFile')
         s = s.(f{1});
       end
     catch
-      fprintf(1, [ '%s: ERROR: looktxt ' argv{:} '\n' ], mfilename);
+      fprintf(1, [ '%s: ERROR: looktxt %s\n' ], mfilename, sprintf('%s ', argv{:}));
     end
   end
 elseif strcmp(user.format, 'Matlab')
@@ -289,11 +291,12 @@ if isstruct(s)
   end
 end
 
-% ------------------------------------------------------------------------------
+% -------------------------------------------------------------------------
 function compiled = read_anytext_compile_mex(compile)
   % compile looktxt as MeX
   
   compiled = '';
+  if nargin == 0, compile = ''; end
   if isdeployed, return; end
   
   % check if it exists and is valid
@@ -301,9 +304,16 @@ function compiled = read_anytext_compile_mex(compile)
     try
       compiled = looktxt('--version');
       compiled = which('looktxt');
+    catch
+      compiled = '';
+      % the MeX file is invalid: we remove it
+      delete(which('looktxt'));
     end
   end
-  if ~isempty(compiled) && nargin == 0, return; end
+  if ~isempty(compiled) && nargin == 0
+      disp([ mfilename ': MeX is valid from ' which('looktxt') ]);
+      return; 
+  end
   
   this_path = fileparts(which(mfilename));
   % attempt to compile MeX
@@ -314,50 +324,100 @@ function compiled = read_anytext_compile_mex(compile)
     disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
     mex(cmd{:});
     compiled = 'mex';
-  catch
+  end
+  if isempty(compiled)
+    disp('Failed compiling MeX...');
     try
-      % Windows/LCC compiler support
-      cmd={'-O','-output',fullfile(this_path,mfilename),...
-           fullfile(this_path,'looktxt.c'),'-DUSE_MEX', ...
-           ['-L"' fullfile(matlabroot,'sys','lcc','lib') '"' ],'-lcrtdll'};
-      disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
-      mex (cmd{:});
-      compiled = 'mex';
-    catch
-      error('%s: Can''t compile looktxt.c mex\n       in %s\n', ...
-        mfilename, fullfile(this_path));
+      if ispc
+        % Windows/LCC compiler support
+        cmd={'-O','-output',fullfile(this_path,'looktxt'),...
+             fullfile(this_path,'looktxt.c'),'-DUSE_MEX', ...
+             ['-L"' fullfile(matlabroot,'sys','lcc','lib') '"' ],'-lcrtdll'};
+        disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
+        mex (cmd{:});
+        compiled = 'mex';
+      end
     end
   end
+  if isempty(compiled) && ~isempty(compile)
+      error('%s: Can''t compile looktxt.c as MeX\n       in %s\n', ...
+        mfilename, fullfile(this_path));
+  end
+  if ~isempty(compiled)
+    rehash
+    warning('%s: SUCCESS but need to try again.\n    Compiled looktxt.c as MeX\n       in %s\n    You need to import the file again to use the new MeX.', ...
+        mfilename, fullfile(this_path));
+  end
 
+
+% -------------------------------------------------------------------------
 function compiled = read_anytext_compile_binary(compile)
   % compile looktxt as binary when does not exist yet
   
   compiled = '';
+  if nargin == 0, compile = ''; end
   
   if isdeployed, return; end
   if ispc, ext='.exe'; else ext=''; end
   this_path = fileparts(which(mfilename));
-  % attempt to compile as binary, when it does not exist yet
-  this_path = fileparts(which(mfilename));
-  target    = fullfile(this_path, 'looktxt', ext);
-  % launch the command
-  [status, result] = system(target);
-  if status == 0 && nargin == 0
-    % the executable is already there. No need to make it .
-    compiled = target; 
-    return
+  
+  % try in order: global(system), local, local_arch
+  for try_target={[ 'looktxt' ext ], ...
+          fullfile(this_path, [ 'looktxt' ext ]), ...
+          fullfile(this_path, [ 'looktxt_' computer('arch') ext ])}
+      if ~isempty(dir(try_target{1}))
+          [status, result] = system(try_target{1});
+          if status == 0 && nargin == 0
+              % the executable is already there. No need to make it .
+              target = try_target{1};
+              disp([ mfilename ': Bin is valid from ' target ]);
+              compiled = target; 
+              return
+          end
+      end
   end
-
-  fprintf(1, '%s: compiling looktxt binary...\n', mfilename);
+  % when we get there, compile looktxt_arch, not existing yet
+  target = fullfile(this_path, [ 'looktxt_' computer('arch') ext ]);
+  
   try
+    fprintf(1, '%s: compiling looktxt binary (using mex)...\n', mfilename);
     cmd={'-f', fullfile(matlabroot,'bin','matopts.sh'), '-DUSE_MAT', ...
          '-O', '-output', target, ...
          fullfile(this_path,'looktxt.c'), '-lmat', '-lmx'};
     disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
     mex(cmd{:});
     compiled = target;
-  catch
+  end
+  if isempty(compiled)
+      % search for a C compiler
+      cc = '';
+      for try_cc={getenv('CC'),'cc','gcc','ifc','pgcc','clang','tcc'}
+        if ~isempty(try_cc{1})
+          [status, result] = system(try_cc{1});
+          if status == 4 || ~isempty(strfind(result,'no input file'))
+            cc = try_cc{1};
+            break;
+          end
+        end
+      end
+      if isempty(cc)
+        error('%s: Can''t find a valid C compiler. Install any of: gcc, ifc, pgcc, clang, tcc\n', ...
+        mfilename);
+      end
+      try
+          fprintf(1, '%s: compiling looktxt binary (using %s)...\n', mfilename, cc);
+          cmd={cc,'-o',target,fullfile(this_path,'looktxt.c'),'-lm'};
+          cmd = sprintf('%s ',cmd{:});
+          disp(cmd)
+          [status, result] = system(cmd);
+          if status == 0
+              compiled = target;
+          end
+      end
+  end
+  if isempty(compiled) && ~isempty(compile)
     error('%s: Can''t compile looktxt.c binary\n       in %s\n', ...
         mfilename, fullfile(this_path));
   end
-
+  
+        
