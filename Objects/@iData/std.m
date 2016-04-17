@@ -83,6 +83,6 @@ f = sum(s.*x)/sum_s; % mean value
 % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
 s = sqrt(sum(x.*x.*s)/sum_s - f*f);
 if ~isreal(s) && dim > 0
-  disp([ mfilename ': WARNING: the computed standard deviation is imaginary. You should use std(' inputname1 ', ' num2str(-dim) ')' ])
+  warning([ mfilename ': WARNING: the computed standard deviation is imaginary. You should use std(' inputname1 ', ' num2str(-dim) ')' ])
 end
 

@@ -241,7 +241,9 @@ signal.UserData.options   = options;
 signal.UserData.potentials= potentials;
 signal.UserData.DOS       = [];
 
-if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
+if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+else precmd=''; end
 
 signal.Expression     = { ...
   '% check if FORCES and POSCAR are here', ...
@@ -590,7 +592,9 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   if ~strcmp(f,'POSCAR')
     copyfile(poscar, fullfile(p,'POSCAR'),'f');
   end
-  if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+else precmd=''; end
   
   % call phon in path 'p'. It also provides DISP
   if ~isempty(options.phon)
@@ -821,7 +825,9 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   fclose(fid);
 
   % EXEC: we run QE/pw.x and collect stdout
-  if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  else precmd=''; end
   disp([ options.command ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
   pw = pwd;
   cd(p);

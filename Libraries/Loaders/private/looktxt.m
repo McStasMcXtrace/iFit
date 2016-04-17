@@ -19,7 +19,9 @@ persistent target
 result = []; status = 127;
 
 % use looktxt bin when available -----------------------------------------------
-if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
+if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+else precmd=''; end
 
 % handle input arguments
 

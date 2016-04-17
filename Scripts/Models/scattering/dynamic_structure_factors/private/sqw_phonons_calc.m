@@ -345,7 +345,9 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   end
   
   poscar = fullfile(options.target,'POSCAR_ASE');
-  if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  else precmd=''; end
   try
     [st, result] = system([ precmd 'python -c ''' read '''' ]);
   catch

@@ -21,7 +21,9 @@ function result = cif2hkl(varargin)
 persistent compiled
 
 result = [];
-if isunix, precmd = 'LD_LIBRARY_PATH= ; '; else precmd=''; end
+if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+else precmd=''; end
 
 % check if we use the cif2hkl executable, or need to compile the MeX (only once)
 if ~isdeployed && (isempty(compiled) || (nargin >0 && strcmp(varargin{1}, 'compile')))
@@ -118,7 +120,10 @@ function compiled=cif2hkl_check_compile
 
   compiled = '';
   this_path = fileparts(which(mfilename));
-  
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  else precmd=''; end
+    
   % get list of modules
   modules = fullfile(this_path,'CFML*.f90');
   
@@ -167,7 +172,7 @@ function compiled=cif2hkl_check_compile
             fullfile(this_path, [ 'cif2hkl' ext ]), ...
             fullfile(this_path, [ 'cif2hkl_' computer('arch') ext ])}
         
-            [status, result] = system(try_target{1});
+            [status, result] = system([ precmd try_target{1} ]);
             if status == 0 && nargin == 0
                 % the executable is already there. No need to make it .
                 target = try_target{1};
@@ -184,7 +189,7 @@ function compiled=cif2hkl_check_compile
     fc = '';
     for try_fc={getenv('FC'),'gfortran','g95','pgfc','ifort'}
       if ~isempty(try_fc{1})
-        [status, result] = system(try_fc{1});
+        [status, result] = system([ precmd try_fc{1} ]);
         if status == 4 || ~isempty(strfind(result,'no input file'))
           fc = try_fc{1};
           break;
@@ -202,7 +207,7 @@ function compiled=cif2hkl_check_compile
       cmd = {fc, '-o', target, ...
          fullfile(this_path,'cif2hkl.F90'), '-lm'}; 
       disp([ sprintf('%s ', cmd{:}) ]);
-      [status, result] = system(sprintf('%s ', cmd{:}));
+      [status, result] = system([ precmd sprintf('%s ', cmd{:}) ]);
       if status ~= 0 % not OK, compilation failed
         warning('%s: Can''t compile cif2hkl.F90 as binary\n       in %s\n', ...
           mfilename, fullfile(this_path));

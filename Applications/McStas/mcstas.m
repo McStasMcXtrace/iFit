@@ -47,6 +47,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %   mcstas(instrument,'--compile mpi') same with MPI support
 %   mcstas(instrument,'--info')        returns instrument information
 %
+% The MCSTAS and MCXTRACE environment variables can be specified to indicate which
+%   McCode library to use, else default locations are used.
+%
 % input:  INSTRUMENT: name of the instrument description to run (string)
 %           when the instrument is not found, it is searched in the McStas 
 %           examples, and copied locally.
@@ -93,7 +96,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %           options.Display='final' set the verbosity level during optimization
 %           options.mcrun:          set the executable path to 'mcrun' or 'mxrun'
 %           options.mcdisplay:      set the executable path to 'mcdisplay' or 'mxdisplay'
-%
+% 
 % output:  OPTIMUM is the parameter set that maximizes the instrument output, or
 %            the integral monitor values for the simulation (as iData object)
 %          MONITORS contains the instrument output as iData objects. Each object has an
@@ -145,7 +148,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   
   % check for instrument in McStas/McXtrace libraries
   search_dir = { getenv('MCSTAS'), getenv('MCXTRACE'), ...
-    '/usr/local/lib/mc*', 'C:\mc*'};
+    '/usr/local/lib/mc*', 'C:\mc*', '/usr/share/mcstas/'};
   if isempty(index)
     % search the instrument recursively in all existing directories in this list
     index = getAllFiles(search_dir, instrument);
