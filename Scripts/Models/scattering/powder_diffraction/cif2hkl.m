@@ -26,7 +26,7 @@ elseif isunix, precmd = 'LD_LIBRARY_PATH= ; ';
 else precmd=''; end
 
 % check if we use the cif2hkl executable, or need to compile the MeX (only once)
-if ~isdeployed && (isempty(compiled) || (nargin >0 && strcmp(varargin{1}, 'compile')))
+if isempty(compiled) || (nargin >0 && (strcmp(varargin{1}, 'compile') || strcmp(varargin{1}, 'check')))
   compiled=cif2hkl_check_compile;
 end
 
@@ -37,7 +37,7 @@ else
   cmd = mfilename;
 end
 
-if isempty(varargin) || strcmp(varargin{1}, 'compile'), 
+if isempty(varargin) || strcmp(varargin{1}, 'compile') || strcmp(varargin{1}, 'check')
   result = cmd;
   return;
 end
@@ -176,7 +176,6 @@ function compiled=cif2hkl_check_compile
             if status == 0 && nargin == 0
                 % the executable is already there. No need to make it .
                 target = try_target{1};
-                disp([ mfilename ': Bin is valid from ' target ]);
                 compiled = target; 
                 return
             end
@@ -197,6 +196,12 @@ function compiled=cif2hkl_check_compile
       end
     end
     if isempty(fc)
+      if ~ispc
+        disp('PATH is:')
+        disp(getenv('PATH'))
+        disp([ mfilename ': You may have to extend the PATH with e.g.' ])
+        disp('setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
+      end
       error('%s: Can''t find a valid Fortran compiler. Install any of: gfortran, g95, pgfc, ifort\n', ...
       mfilename);
     end

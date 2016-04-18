@@ -49,6 +49,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %
 % The MCSTAS and MCXTRACE environment variables can be specified to indicate which
 %   McCode library to use, else default locations are used.
+% If McStas executables (e.g. 'mcrun') are not found, you may have to extend the PATH
+%   setenv('PATH', [getenv('PATH') ':/usr/local/bin' ':/usr/bin' ':/usr/share/bin' ]);	
 %
 % input:  INSTRUMENT: name of the instrument description to run (string)
 %           when the instrument is not found, it is searched in the McStas 

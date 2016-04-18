@@ -2,22 +2,22 @@ function [data, format] = iLoad(filename, loader, varargin)
 % [data, loader] = iLoad(file, loader, ...)
 %
 % imports any data into Matlab. 
-% The definition of specific formats can be set in the iLoad_ini.m file.
-% These formats can be obtained using [config, configfile]=iLoad('load
-% config').
-% The file formats cache and MeX files can be rebuilt with
-%   iLoad force
-%   iLoad compile
-%   iLoad 'force load config'
-% the iLoad_ini configuration file can be saved in the Preference directory
-% using 
-%   [config, configfile] = iLoad(config,'save config').
-% A list of all supported formats is shown with 
-%   iLoad('formats');
+%
+% The file formats cache and MeX files can be rebuilt/checked with
+%   iLoad force         update loaders cache and check importers
+%   iLoad compile       force compilation of external importers (MeX)
+%   iLoad save          save the cache to the user Preferences
+%   iLoad config        get the loaders list as a configuration structure
+%   iLoad formats       list of all supported file formats
+%
+% The iLoad_ini configuration file can be loaded and saved in the Preference 
+% directory using 
+%   [config, configfile] = iLoad('load config').
+%   [config, configfile] = iLoad(config,'save config')
 %
 %   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
 %     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
-%     HDF4, HDF5, MAT workspace, XML, CDF, JSON, YAML
+%     HDF4, HDF5, MAT workspace, XML, CDF, JSON, YAML, IDL,
 %   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF, Mantid.
 %     SIF, MCCD/TIFF, ADSC, CBF, Analyze, NifTI, STL,PLY,OFF, CIF/CFL,
 %     EZD/CCP4, Bruker Varian and JEOL NMR formats, Bruker OPUS, LabView LVM and TDMS
@@ -69,7 +69,7 @@ function [data, format] = iLoad(filename, loader, varargin)
   if nargin == 0, filename=''; end
   if nargin < 2,  loader = ''; end
   if nargin ==1 && (ischar(filename) || isstruct(filename))
-    if any(strcmp(filename, {'load config','config','force','force load config','formats','display config','load','save','compile'}))
+    if any(strcmp(filename, {'load config','config','force','force load config','formats','display config','load','save','compile','check'}))
       [data, format] = iLoad('', filename);
       return
     elseif  isstruct(filename)
@@ -110,13 +110,34 @@ function [data, format] = iLoad(filename, loader, varargin)
       data = config;
     end
     return
-  elseif any(strcmp(loader, {'force','force load config','compile'}))
+  elseif any(strcmp(loader, {'force','force load config','compile','check'}))
 
     if strcmp(loader, 'compile')
       % force compile
       read_anytext('compile');
       read_cbf('compile');
       cif2hkl('compile');
+    else
+      % make a check of installed MeX/binaries
+      try
+        s = read_cbf('check');
+        disp([ mfilename ': CBF     importer is functional as ' s ]);
+      catch
+        disp([ mfilename ': CBF     importer is functional as read_cbf (failed mex)' ]);
+      end
+      try
+        s = read_anytext('check');
+        disp([ mfilename ': Text    importer is functional as ' s ])
+      catch
+        warning([ mfilename ': Text    importer is NOT functional' ]);
+      end
+      try
+        s = cif2hkl('check');
+        disp([ mfilename ': CIF2HKL converter is functional as ' s ])
+      catch
+        warning([ mfilename ': CIF2HKL converter is NOT functional' ]);
+      end
+        
     end
        
     % display the MeX/binary files used
