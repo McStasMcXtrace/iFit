@@ -302,7 +302,6 @@ function compiled = read_anytext_compile_mex(compile)
   
   compiled = '';
   if nargin == 0, compile = ''; end
-  if isdeployed, return; end
   
   % check if it exists and is valid
   if exist(which('looktxt')) == 3
@@ -318,6 +317,8 @@ function compiled = read_anytext_compile_mex(compile)
   if ~isempty(compiled) && nargin == 0
       return; 
   end
+  
+  if isdeployed, return; end
   
   this_path = fileparts(which(mfilename));
   % attempt to compile MeX
@@ -364,7 +365,6 @@ function compiled = read_anytext_compile_binary(compile)
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
   else precmd=''; end
   
-  if isdeployed, return; end
   if ispc, ext='.exe'; else ext=''; end
   this_path = fileparts(which(mfilename));
   
@@ -380,17 +380,20 @@ function compiled = read_anytext_compile_binary(compile)
         return
     end
   end
+  
   % when we get there, compile looktxt_arch, not existing yet
   target = fullfile(this_path, [ 'looktxt_' computer('arch') ext ]);
   
   try
-    fprintf(1, '%s: compiling looktxt binary (using mex)...\n', mfilename);
-    cmd={'-f', fullfile(matlabroot,'bin','matopts.sh'), '-DUSE_MAT', ...
-         '-O', '-output', target, ...
-         fullfile(this_path,'looktxt.c'), '-lmat', '-lmx'};
-    disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
-    mex(cmd{:});
-    compiled = target;
+    if ~isdeployed
+      fprintf(1, '%s: compiling looktxt binary (using mex)...\n', mfilename);
+      cmd={'-f', fullfile(matlabroot,'bin','matopts.sh'), '-DUSE_MAT', ...
+           '-O', '-output', target, ...
+           fullfile(this_path,'looktxt.c'), '-lmat', '-lmx'};
+      disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
+      mex(cmd{:});
+      compiled = target;
+    end
   end
   if isempty(compiled)
       % search for a C compiler

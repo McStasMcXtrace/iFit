@@ -122,29 +122,24 @@ function [data, format] = iLoad(filename, loader, varargin)
       try
         s = read_cbf('check');
         disp([ mfilename ': CBF     importer is functional as ' s ]);
-      catch
+      catch ME
         disp([ mfilename ': CBF     importer is functional as read_cbf (failed mex)' ]);
       end
       try
         s = read_anytext('check');
         disp([ mfilename ': Text    importer is functional as ' s ])
-      catch
+      catch ME
+        
         warning([ mfilename ': Text    importer is NOT functional' ]);
       end
       try
         s = cif2hkl('check');
         disp([ mfilename ': CIF2HKL converter is functional as ' s ])
-      catch
+      catch ME
         warning([ mfilename ': CIF2HKL converter is NOT functional' ]);
       end
         
     end
-       
-    % display the MeX/binary files used
-    disp([ mfilename ': MeX/binary importer used' ])
-    disp(which('looktxt')); 
-    disp(which('cbf_uncompress')); 
-    disp(which('cif2hkl'));
     
     config  = iLoad_config_load;
     read_anytext('config');
