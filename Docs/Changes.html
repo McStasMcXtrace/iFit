@@ -56,6 +56,7 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/cycl
 
 
 
+
           Cyclops</a> HBIN and <a
           href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
         SAV files. Iterative deconvolution as <i>deconv</i> method.
@@ -76,6 +77,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
             href="http://www.ni.com/white-paper/3727/en/">TDMS</a> file
           format import. Fixed curvature in <a
             href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>/Rescal5/Popovici
+
 
 
 
@@ -127,6 +129,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           NetCDF/CDF/NeXus/HDF support, import/export of <a
             href="http://www.mantidproject.org">Mantid</a> workspaces
           (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+
 
 
 
@@ -222,6 +225,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -229,6 +233,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
 
 
 
@@ -289,6 +294,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -298,6 +304,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
 
 
 
@@ -348,6 +355,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -355,6 +363,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
 
 
 
@@ -402,8 +411,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
       size</h4>
     The iFit package may currently handle routinely data sets up to few
     100 Mb. Larger data sets can still be loaded, but are restricted by
-    the disk access and the available memory. Currently, files can be
-    read at about 8 Mb/s, mainly limited by the hard disk speed. Some
+    the disk access and the available memory. Currently, text files can
+    be read at about 8 Mb/s, mainly limited by the hard disk speed. Some
     binary files can be imported faster (HDF initial access is nearly
     immediate, whatever be the file size). We recommend to use SSD to
     load files with increased efficiency.<br>
@@ -449,6 +458,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       3)</span> to triple the number of points along axes.<br>
     <h4><a class="mozTocH4" name="mozTocId473369"></a>Too many warnings
       displayed</h4>
@@ -474,8 +484,11 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       issue with text files importer (iLoad/iData/load, looktxt,
       CrysFML/cif2hkl)</h4>
+    You should first try the automatic fix procedure:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'force'<font color="#000000">)	% checks and possibly re-compiles text and CBF importers<br></font></span>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'compile'<font color="#000000">)	% fully re-compiles text and CBF importers</font></span><br></pre>
     In some cases, the provided iFit/Loaders/private/looktxt.mex* may
     fail to execute (wrong architecture, missing library). <br>
     Under Windows 64bit systems, you may need the Visual C++ runtime
@@ -484,8 +497,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     directory.<br>
     <br>
     In case this is not a problem of library, <span style="color:
-      rgb(255, 0, 0);">remove</span> the invalid mex file (in <i>iFit/Libraries/Loaders/private</i>)
-    , and relaunch the importation process. A brand new MeX file will
+      rgb(255, 0, 0);">remove</span> the invalid mex file (in <i>iFit/Libraries/Loaders/private</i>),
+    and relaunch the importation process. A brand new MeX file will
     automatically be generated, using the system C compiler. For manual
     compilation, navigate to the <span style="font-style: italic;">iFit/Libraries/Loaders/private</span>
     directory and issue:<br>
@@ -493,8 +506,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     Most systems provide a default C compiler. <br>
     <ul>
       <li>Linux systems usually ship with gcc.</li>
-      <li>MacOSX systems require to install the Xcode development tools.
-      </li>
+      <li>MacOSX systems require to install the Xcode development tools,
+        or the HPC GCC suite. </li>
       <li>Windows 32 systems may use the LCC compiler shipped with
         Matlab. </li>
       <li>Windows 64 systems must have Microsoft Visual C++ installed
@@ -528,6 +541,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     can <span style="font-weight: bold; font-style: italic;">not</span>
     be defined, except anonymous functions (inline). You may use iFunc
     models as a substitute. Also, the <span style="font-style: italic;">doc,
+
 
 
 
@@ -587,8 +601,13 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <pre>./run_ifit: error while loading shared libraries: libmwmclmcrrt.so: cannot open shared object file: No such file or directory</pre>
     <p>This message indicates that the Matlab Runtime Library has not
       been found. Instal the MCR as indicated in the <a
-        href="Install.html">Install</a> page.<br>
+        href="Install.html">Install</a> page. You may have to edit the
+      'ifit' command and set the location of the MCR. Alternatively, you
+      can set the MCRROOT environment variable to point to it, e.g.:<br>
     </p>
+    <ul>
+      <li>export MCRROOT="/opt/MATLAB/MATLAB_Compiler_Runtime/v713"</li>
+    </ul>
     <h4><a class="mozTocH4" name="mozTocId267093"></a>iFit fails with a
       message such as '<font color="#800000">version</font><font
         color="#800000"> `GFORTRAN_1.4' not found'<font color="#000000">
@@ -656,6 +675,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       -v</span> and look where <span style="font-style: italic;">libgfortran</span>
     appears in the long list...)<br>
     <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"># locate libgfortran.so</span>
@@ -668,10 +688,12 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     fixed.<br>
     <h4><a class="mozTocH4" name="mozTocId383867"></a>Import of a text
       file fails</h4>
-    First check that the looktxt MeX file is working (this will appear
-    in the error message). If not, remove the invalid one (in
-    iFit/Libraries/Loaders/private) and restart the importation. A new
-    MeX file will be compiled from the source (requires a valid
+    You can try the automatic fix procedure:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'force'<font color="#000000">)	% checks and possibly re-compiles text and CBF importers<br></font></span>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'compile'<font color="#000000">)	% fully re-compiles text and CBF importers</font></span><br></pre>
+    If this fails, then first check that the looktxt MeX file is working
+    (this will appear in the error message). If not, remove the invalid
+    one (in iFit/Libraries/Loaders/private) and restart the importation.
+    A new MeX file will be compiled from the source (requires a valid
     compiler, see <a href="#mozTocId556618">above</a>).<br>
     <br>
     If you can not import a reluctant <span style="font-weight: bold;">text</span>
@@ -707,6 +729,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 

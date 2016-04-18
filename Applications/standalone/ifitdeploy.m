@@ -25,16 +25,7 @@ cd (target); target = pwd;  % get fully qualified path for target
 % create the help pages (private)d.dir = dir(d.path);
 create_help(ifitpath);
 
-% force to recompile the MeX files
-clear functions % clear MeX
-% find MeX files used by the system
-d.path= fullfile(p, 'Libraries','Loaders','private', [ '*.' mexext ]);
-d.dir = dir(d.path);
-for index=1:length(d.dir)
-  x = d.dir(index);
-  delete(fullfile(p, 'Libraries','Loaders','private', x.name));
-end
-% recompile all MeX files
+% test MeX/binary external calls
 iLoad force
 
 % activate some standalone only scripts (which are in principle forbidden by Matlab Compiler)

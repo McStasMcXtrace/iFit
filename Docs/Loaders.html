@@ -524,6 +524,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
             You can also read and write such files using <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">LAMP</a>.</td>
           <td valign="top"><br>
@@ -708,6 +709,7 @@ href="http://www.ill.eu/instruments-support/instruments-groups/groups/tof/softwa
 
 
 
+
             This data can also be imported/generated with <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">Lamp</a>.</td>
           <td style="vertical-align: top;"><br>
@@ -760,6 +762,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           </td>
           <td style="vertical-align: top;"><a
               href="http://www.princetoninstruments.com/products/software/#1">Princeton/Roper
+
 
 
 
@@ -888,6 +891,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               definition</a>. This format gathers <span
               style="font-style: italic;">CIF</span> and <span
               style="font-style: italic;">imgCIF</span> standards. These
@@ -909,6 +913,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             'hdr' file requires an ssociated 'img' file. <a
               href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Format</a>
             from the Analyze <a href="http://www.analyzedirect.com/">Biomedical
+
 
 
 
@@ -1160,16 +1165,16 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     You can tune the way a text file is read with the syntax (each
     option is an argument in its own):<br>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iLoad</span>(<i>filename</i>, <font color="#cc33cc">'text'</font>, <font color="#cc33cc">'--catenate'</font>,<font color="#cc33cc">'--fast'</font>,<font color="#cc33cc">'--headers'</font>,<font color="#cc33cc">'--wrapped'</font>, <i>... other options</i>);<span style="color: rgb(204, 51, 204);"></span></pre>
-    where 'text' indicates that you explicitly indicate that the file is
-    not binary encoded, and any following options is forwarded to the
-    text reader. The possible options are:<br>
+    where 'text' indicates that the file is not binary encoded, and any
+    following options is forwarded to the text reader. The possible
+    options are:<br>
     <br>
     <table border="1" cellpadding="2" cellspacing="2" width="100%">
       <tbody>
         <tr>
-          <td align="center" valign="top"><i>Text import option</i><i><br>
+          <td valign="top" align="center"><i>Text import option</i><i><br>
             </i></td>
-          <td align="center" valign="top"><i>Description</i><i><br>
+          <td valign="top" align="center"><i>Description</i><i><br>
             </i></td>
         </tr>
         <tr>
@@ -1182,6 +1187,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
               </font></b></td>
           <td valign="top">When numerical data blocks only use <a
               href="file:///cgi-bin/man/man2html?3+isspace">isspace</a>(3)
+
 
 
 
@@ -1277,14 +1283,14 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
       the iLoad configuration</h4>
     The full list of supported file formats supported by iLoad and iData
     can be obtained from command<br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'formats'</span>);	          <span style="font-style: italic;">% display the list of supported formats</span><br>&gt;&gt; config = <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'load config'</span>); <span style="font-style: italic;">% retrieve the iLoad configuration and file loaders</span> (from cache)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'force load config'</span>);    <span style="font-style: italic;">% force re-read of the configuration file</span><br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'formats'</span>);	<span style="font-style: italic;">% display the list of supported formats</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'force'</span>);	<span style="font-style: italic;">% force re-read of the configuration file</span> and check importers<br></pre>
     The configuration file <a href="../Loaders/iLoad_ini.m">iLoad_ini</a><span
       style="font-weight: bold;"></span> is stored by default in the <br>
     <pre style="margin-left: 40px;">[ <span style="color: rgb(51, 102, 255);">ifitpath</span> <span style="color: rgb(204, 51, 204);">'Libraries' </span>filesep <span style="color: rgb(204, 51, 204);">'Loaders'</span> filesep <span style="color: rgb(204, 51, 204);">'iLoad_ini'</span> ]</pre>
     and a local copy (which overrides the default) is stored in<br>
     <pre style="margin-left: 40px; color: rgb(51, 102, 255);">prefdir</pre>
     when executing<br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>, config);<br><span style="font-style: italic;">% Saved iLoad configuration into /home/farhi/.matlab/R2015a/iLoad.ini</span> <span style="color: rgb(255, 0, 0);">&lt;- this is prefdir</span><br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save'</span>);<br><span style="font-style: italic;">% Saved iLoad configuration into /home/farhi/.matlab/R2015a/iLoad.ini</span> <span style="color: rgb(255, 0, 0);">&lt;- this is prefdir</span><br></pre>
     This is where you may add your own customized format definitions.
     Deleting this file will revert to the default configuration.<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span>([ <span style="color: rgb(51, 102, 255);">prefdir </span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">filesep</span> 'iLoad_ini.m'<span style="color: rgb(0, 0, 0);"> ]</span></span>);<br></pre>
@@ -1299,8 +1305,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     files.<br>
     <br>
     To update a configuration, send it to iLoad:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save config'</span>, config);</pre>
-    <br>
+    <pre style="margin-left: 40px;">&gt;&gt; config = <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'config'</span>); <span style="font-style: italic;">% retrieve the iLoad configuration and file loaders</span> (from cache)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'save'</span>, config);</pre>
     <h4><a class="mozTocH4" name="mozTocId968211"></a>iLoad
       configuration structure</h4>
     Each format <span style="font-style: italic;">'loaders'</span>
@@ -1423,6 +1428,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
         from <span style="color: rgb(51, 102, 255);">prefdir</span> or
         <span style="color: rgb(51, 102, 255);">ifitpath/Loaders</span>.</li>
       <li>Create a new structure (which you may name as you wish) and
@@ -1463,10 +1469,10 @@ Farhi
 
 
 
+
           - iFit/Loaders - </span><span style="font-style: italic;">
-          $Date$ $Revision$ </span><span
-          style="font-style: italic;"> </span>- back to <a
-          href="index.html">Main iFit Page </a><a
+          $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
+        back to <a href="index.html">Main iFit Page </a><a
           href="http://www.ill.eu/"><img title="ILL, Grenoble, France
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px

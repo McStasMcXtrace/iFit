@@ -34,6 +34,8 @@
 
 function [frame,vararg_remain] = read_cbf(filename,varargin)
 
+persistent compiled
+
 % 0: no debug information
 % 1: some feedback
 % 2: a lot of information
@@ -98,26 +100,34 @@ cbf_signature = '###CBF: VERSION';
 % See the header of cbf_uncompress.c for information on how to compile the
 % C file using mex in Matlab. 
 c_routine = (length(which('cbf_uncompress')) > 0);
-if ~c_routine || strcmp(filename, 'compile')
+if isempty(compiled) && (~c_routine || strcmp(filename, 'compile'))
   mexfile = which('cbf_uncompress.c');
   mexpath = fileparts(mexfile);
   exec = [ 'mex -O -output ' mexpath filesep 'cbf_uncompress ' mexfile ];
   disp(exec);
   try
     eval(exec);
+    compiled = 'mex';
   catch
     if ispc
       % assume we use LCC
       exec=['mex -O -v -output ' mexpath filesep 'cbf_uncompress ' mexfile ' -L"' fullfile(matlabroot,'sys','lcc','lib') '" -lcrtdll' ];
       disp(exec);
       eval(exec);
+      compiled = 'cbf_uncompress';
     else
       warning([ mfilename ': MeX compilation failed. Using the pure Matlab version.' ]);
+      compiled = mfilename;
     end
   end
   rehash
+elseif isempty(compiled) && c_routine
+  compiled = which('cbf_uncompress');
 end
-if strcmp(filename, 'compile'), return; end
+if strcmp(filename, 'compile') || strcmp(filename, 'check'), 
+  frame = compiled;
+  return; 
+end
 
 % try to open the data file
 if (debug_level >= 1)

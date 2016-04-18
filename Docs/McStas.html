@@ -59,6 +59,7 @@
       solution is to install our <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
 
+
         Live DVD</a> ready-to-run system with <span style="font-style:
         italic;">McStas</span> pre-installed, and then put on top <a
         href="http://www.mathworks.com">Matlab</a> (requires a valid
@@ -86,10 +87,18 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         <pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <span style="color: rgb(204, 51, 204);">'RV=1; lambda=2.36; powder=Na2Ca3Al2F14.laz'</span>);</pre>
       </div>
       When the instrument is not found in the current directory, it is
-      searched in the Mcstas library (may be specified with the MCSTAS
-      environment variable), and eventually copied locally, which
-      triggers its compilation.<br>
+      searched in the McStas library (may be specified with the MCSTAS
+      and MCXTRACE environment variables), and eventually copied
+      locally, which triggers its compilation.<br>
       <br>
+      If McStas/McXtrace executables (e.g. 'mcrun') are not found, you
+      may have to extend the PATH with e.g.:<br>
+      <ul>
+        <li><font color="#3366ff">setenv</font>(<font color="#cc33cc">'PATH'</font>,
+          [<font color="#3366ff">getenv</font>('PATH') <font
+            color="#cc33cc">':/usr/local/bin' ':/usr/bin'
+            ':/usr/share/bin'</font> ]);</li>
+      </ul>
       The last argument <span style="font-style: italic;">options</span>
       controls simulation configuration.<br>
       <ul>
@@ -98,6 +107,7 @@ directory
 where
 to
 store
+
 
           results. When not defined, a temporary location is created,
           and removed after the simulation (string).<span style="color:
@@ -111,11 +121,13 @@ number
 of
 processors
 
+
           to use with MPI (integer. The simulation should be re-compiled
           accordingly with <span style="font-style: italic;">options.compile='yes'</span>
         </li>
         <li><span style="font-weight: bold;">options.seed</span>:&nbsp;&nbsp;
 random
+
 
           number seed to use for each iteration (double)</li>
         <li><span style="font-weight: bold;">options.gravitation</span>:
@@ -123,6 +135,7 @@ random
           (boolean)</li>
         <li><span style="font-weight: bold;">options.mode</span>:&nbsp;&nbsp;
 should
+
 
           be <span style="color: rgb(204, 51, 204);">'simulate'<span
               style="color: rgb(0, 0, 0);">. This is automatically set
@@ -132,6 +145,7 @@ should
           or 1 to force re-compilation of the instrument (boolean)</li>
         <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
 cell
+
 
           string of monitor file names, or empty for all (cellstr)</li>
         <li><span style="font-weight: bold;">options.particle</span>: <span
@@ -146,17 +160,8 @@ cell
         </li>
         <li><b>options.mcdisplay</b>: set the executable path for
           viewing the simulation geometry. You can specify a full path
-          to a specific 'mcdisplay' or 'mxdisplay' command.<br>
-        </li>
+          to a specific 'mcdisplay' or 'mxdisplay' command.</li>
       </ul>
-      <a href="images/iFit_McStas_simulate.png"><img
-          src="images/iFit_McStas_simulate.png" alt="iFit: McStas
-          simulation run from Matlab/iFit and displayed" style="border:
-          0px solid ; width: 200px; height: 186px;" align="right"></a>The
-      location to a specific McStas or McXtrace release can be specified
-      in order to search components and instruments there in, with the
-      MCSTAS and MCXTRACE environment variabels.<br>
-      <br>
       In the following examples, we define required structures on the
       fly, run the <span style="font-style: italic;">templateDIFF</span>
       instrument (the file must be accessible from Matlab current path)
@@ -254,6 +259,7 @@ cell
         style="font-style: italic; font-weight: bold;">slice, </span>or
       <span style="font-style: italic; font-weight: bold;">plot</span>&nbsp;
 
+
       or <span style="font-weight: bold; font-style: italic;">plot3</span>.
       <br>
       <br>
@@ -263,6 +269,7 @@ of
 the
 number
 of
+
 
       iterations required to scan large dimensionality spaces. In
       practice you should avoid spaces above 2 or 3 scanned parameters.
@@ -295,11 +302,13 @@ of
         <li><span style="font-weight: bold;">options.type</span>:&nbsp;&nbsp;
 
 
+
           <span style="color: rgb(204, 51, 204);">'minimize'</span> or<span
             style="color: rgb(204, 51, 204);"> 'maximize'</span>, which
           is the default (string)</li>
         <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
 cell
+
 
           string of monitor file names, or empty for all (cellstr). This
           option actually improves dramatically the file importation by
@@ -313,12 +322,12 @@ cell
         <li><span style="font-weight: bold;">options.mode</span>:&nbsp;&nbsp;
 should
 
+
           be <span style="color: rgb(204, 51, 204);">'optimize'</span>.
           This is automatically set whenever an 'optimization'
           configuration field is set, such as <span style="font-style:
-            italic;">monitors,
-            optimizer, TolFun, ...</span><span style="color: rgb(204,
-            51, 204);"> </span></li>
+            italic;">monitors, optimizer, TolFun, ...</span><span
+            style="color: rgb(204, 51, 204);"> </span></li>
       </ul>
       as well as any other optimizer configuration fields such as<br>
       <ul>
@@ -336,6 +345,7 @@ should
             style="color: rgb(204, 51, 204);">'final';</span></li>
         <li><span style="color: rgb(204, 51, 204);"><span style="color:
               rgb(0, 0, 0);"><span style="font-weight: bold;">options.OutputFcn</span>=</span>'fminplot';
+
 
 
 
@@ -358,12 +368,14 @@ should
     monitor value for this solution.<br>
     In addition, similarly with other iFit <a href="Optimizers.html">optimization
 
+
       methods</a>, the optimizer final status and optional returned
     information can be obtained with e.g. <br>
     <pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'mode','optimize','optimizer','fminimfil'</span>));</pre>
     where <span style="font-style: italic;">output</span> stores most
     of the optimization process data, including uncertainty on the best
     parameter values, <span style="font-style: italic;">output.parsHistoryUncertainty
+
     </span>and<span style="font-style: italic;"> </span><span
       style="font-style: italic;">output.parsHessianUncertainty</span>.<br>
     <br>
@@ -404,10 +416,12 @@ should
     <br>
     To abort the optimization, just <span style="font-weight: bold;">close
 
+
       the optimization plot</span> window. The actual end occurs after a
     few more iterations.<br>
     <br>
     <span style="color: rgb(255, 0, 0); font-weight: bold;">Warning: </span>as
+
 
     <a href="http://www.mcstas.org">McStas</a> uses a Monte-Carlo
     technique (which means 'random'), the criteria is a noisy function.
@@ -462,6 +476,7 @@ should
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
           - iFit/McStas - </span><span style="font-style: italic;">
           $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-

@@ -8,6 +8,7 @@ function s = read_anytext(varargin)
 %
 % read_anytext('compile') creates looktxt MeX or binary
 % read_anytext('config')  update  iLoad config
+% read_anytext('check')   check looktxt and recompiles if needed
 
 % different modes for execution:
 %  The configuration is extracted from iLoad('config')
@@ -20,6 +21,8 @@ function s = read_anytext(varargin)
 
 persistent config
 persistent compiled
+
+s = [];
 
 if nargin == 1 && ischar(varargin{1}) && strcmp(varargin{1},'config')
   config = [];
@@ -81,27 +84,32 @@ executable = lower(executable);
 
 % test if mex is requested and exists. When fails -> try bin.
 if isempty(compiled) || ~compiled % only the first time it starts or when explicitly requested
+  try_mex = 0;
   if ~isempty(strfind(executable, 'mex'))
+    try_mex = 1;
     if ~isempty(varargin) && strcmp(varargin{1}, 'compile')
-      s = read_anytext_compile_mex('compile'); % force
-    else s = read_anytext_compile_mex; end
-    if isempty(s), executable = 'bin'; % will try bin
-    else config='mex';
+      compiled = read_anytext_compile_mex('compile'); % force
+    else compiled = read_anytext_compile_mex; end
+    if ~isempty(compiled), config='mex';
+    else executable = 'bin'; % will try bin
     end
   end
   
   % test if bin is requested and exists, else compiles
   if ~isempty(strfind(executable, 'bin'))
     if ~isempty(varargin) && strcmp(varargin{1}, 'compile')
-      s = read_anytext_compile_binary('compile'); % force
-    else s = read_anytext_compile_binary; end
-    if isempty(s), 
+      compiled = read_anytext_compile_binary('compile'); % force
+    else compiled = read_anytext_compile_binary; end
+    if ~isempty(compiled), config='bin'; output='Matlab';
+    elseif ~try_mex
+        compiled = read_anytext_compile_mex;
+        if ~isempty(compiled), config='mex'; output='Matlab'; executable = 'mex'; end
+    end
+    if isempty(compiled)
       error('%s: ERROR: Can''t compile looktxt executable (MeX nor Binary).', ...
-          mfilename);
-    else config='bin'; output='Matlab';
+            mfilename);
     end
   end
-  compiled=1;
   
   if ~isempty(varargin) && strcmp(varargin{1}, 'compile')
     varargin(1) = [];
@@ -109,12 +117,12 @@ if isempty(compiled) || ~compiled % only the first time it starts or when explic
 end
 
 % *** handle input arguments ===================================================
-s = [];
+
 if isempty(varargin)
   s = looktxt('--help');
   return
-elseif strcmp(varargin{1}, 'compile')
-  s = executable;
+elseif strcmp(varargin{1}, 'compile') || strcmp(varargin{1}, 'check')
+  s = compiled;
   return
 end
 
@@ -308,7 +316,6 @@ function compiled = read_anytext_compile_mex(compile)
     end
   end
   if ~isempty(compiled) && nargin == 0
-      disp([ mfilename ': MeX is valid from ' which('looktxt') ]);
       return; 
   end
   
@@ -369,9 +376,7 @@ function compiled = read_anytext_compile_binary(compile)
     [status, result] = system([ precmd try_target{1} ]);
     if status == 0 && nargin == 0
         % the executable is already there. No need to make it .
-        target = try_target{1};
-        disp([ mfilename ': Bin is valid from ' target ]);
-        compiled = target; 
+        compiled = try_target{1};
         return
     end
   end
@@ -400,6 +405,12 @@ function compiled = read_anytext_compile_binary(compile)
         end
       end
       if isempty(cc)
+        if ~ispc
+          disp('PATH is:')
+          disp(getenv('PATH'))
+          disp([ mfilename ': You may have to extend the PATH with e.g.' ])
+          disp('setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
+        end
         error('%s: Can''t find a valid C compiler. Install any of: gcc, ifc, pgcc, clang, tcc\n', ...
         mfilename);
       end

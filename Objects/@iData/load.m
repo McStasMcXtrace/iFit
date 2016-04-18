@@ -6,14 +6,14 @@ function out = load(a, varargin)
 %     or any Matlab variable, or empty (then popup a file selector).
 %   The choice of the data file importer is set by default to automatic, so
 %     that most common data importers are tested until one works. User may configure
-%     a list of prefered loader definitions in a file called iData_load_ini.
+%     a list of prefered loader definitions in a file called iLoad_ini.
 %   The optional 3rd argument can be set to use a specific loader list (see below)
 %     load(iData, filename, loader)
 %   The input iData object is updated if no output argument is specified.
 %
 %   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
 %     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
-%     HDF4, HDF5, MAT workspace, XML, CDF, JSON, YAML
+%     HDF4, HDF5, MAT workspace, XML, CDF, JSON, YAML, IDL
 %   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF, Mantid.
 %     SIF, MCCD/TIFF, ADSC, CBF, Analyze, NifTI, STL,PLY,OFF, CIF/CFL,
 %     EZD/CCP4, Bruker Varian and JEOL NMR formats, Bruker OPUS, LabView LVM and TDMS
