@@ -62,6 +62,7 @@
 
 
 
+
         release of iFit</a><span style="font-weight: bold; font-style:
         italic;"><span style="font-weight: bold;"> </span>page for more
         information on the features and limitations.</span><br>
@@ -78,15 +79,14 @@
       the required source package. </div>
     <h4><a class="mozTocH4" name="mozTocId467589"></a>C compiler
       (optional)</h4>
-    <div style="margin-left: 40px;">In principle, the pre-compiled MeX
-      files are shipped with the package (for e.g. <span
-        style="font-style: italic;">looktxt</span>), so that the
-      software is ready to run. However, in the event of a
-      re-compilation of MeX files, a <span style="font-style: italic;">C</span>
-      compiler is often shipped with Matlab (and installed
-      automatically). The <a href="Loaders.html">Loaders</a> library
-      may use it sporadically. This is not required for stand-alone
-      versions. Refer to the <a href="Changes.html">Changes/Bugs</a>
+    <div style="margin-left: 40px;">In principle, the external
+      executable files (looktxt, cbf_uncompress) are shipped with the
+      package, so that the software is ready to run. However, in the
+      event of a required re-compilation, a <span style="font-style:
+        italic;">C</span> compiler is often shipped with Matlab (and
+      installed automatically). The <a href="Loaders.html">Loaders</a>
+      library may use it sporadically. This is not required for
+      stand-alone versions. Refer to the <a href="Changes.html">Changes/Bugs</a>
       page in case of troubles.<br>
     </div>
     <h4><a class="mozTocH4" name="mozTocId22836"></a> Fortran compiler
@@ -95,10 +95,12 @@
       is available when the <span style="font-style: italic;">cif2hkl </span>program
 
 
+
       can be compiled (usually this is done automatically). We supply
       these executable files in the Download/binary section of the iFit
       web site. We recommend to install <a
         href="http://gcc.gnu.org/wiki/GFortranBinaries">gfortran, </a>which
+
 
 
 
@@ -118,6 +120,7 @@
 
 
 
+
         Canopy</a> for all systems. Refer to our <a href="Python.html">PyFit</a>
       help pages.<br>
     </blockquote>
@@ -130,6 +133,7 @@
     fully use multi-core systems (e.g. though threads and MPI). You may
     use our <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
+
 
 
 
@@ -185,10 +189,12 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                   bits</a>:</span></i><i> </i><i>Not supported anymore.</i></td>
           <td style="vertical-align: top;"><span style="font-weight:
               bold;"><span style="color: rgb(204, 51, 204);"><a
                   href="http://ifit.mccode.org/Downloads/binary/glnx64">64
+
 
 
 
@@ -201,9 +207,11 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/mcrinstaller-7.13-2010a-amd
 
 
 
+
                 repository</b></a> (see below).<br>
             <span style="font-style: italic;">Other: </span>Use the <a
 href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
+
 
 
 
@@ -222,11 +230,13 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
 
 
 
+
                   bits</a>:</span></i><i> </i><i>Not supported anymore.</i>
           </td>
           <td style="vertical-align: top;"><span style="font-weight:
               bold;"><span style="color: rgb(204, 51, 204);"><a
                   href="http://ifit.mccode.org/Downloads/binary/win64">64
+
 
 
 
@@ -251,11 +261,13 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
 
 
 
+
                   bits</a>:</span></i><i> </i><i><br>
             </i><i>Not supported anymore.</i></td>
           <td style="vertical-align: top;"><span style="font-weight:
               bold;"><span style="color: rgb(204, 51, 204);"><a
                   href="http://ifit.mccode.org/Downloads/binary/mac64">64
+
 
 
 
@@ -391,21 +403,25 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
 
 
 
+
       all !</span><br>
     <br>
     A list of fixed bugs and release history is recorded in the <a
       href="Changes.html">Changes</a> page.<br>
     <h4><a class="mozTocH4" name="mozTocId359173"></a>Note for Windows
-      64bits users: recompiling looktxt MeX files - source distribution<br>
+      64bits users: recompiling external commands<br>
     </h4>
     <h5><a class="mozTocH5" name="mozTocId960709"></a><span
         style="font-weight: bold;">Windows 64 (XP, Vista, 7, 8)</span></h5>
-    The <a href="Loaders.html">Loaders</a> sub library makes use of a
-    MeX file '<span style="font-style: italic;">looktxt.mexw64</span>'.
-    A pre-compiled version for Windows systems is shipped with the
-    package but this binary may fail with some Matlab releases. In that
-    case, it is required to <a
+    The <a href="Loaders.html">Loaders</a> sub library and cif2hkl make
+    use of MeX/external commands. Pre-compiled versions for Windows
+    systems are shipped with the package but this binary may fail with
+    some Matlab releases. <br>
+    <br>
+    It is possible for re-compilation to use the Matlab compilation
+    infrastructure 'mex'. In that case, it is required to <a
       href="http://www.mathworks.com/support/solutions/en/data/1-ECUGQX/">install
+
 
 
 
@@ -415,10 +431,10 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
 
 
 
+
       Express</a> then the <a
 href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&amp;displaylang=en">SDK</a>
-    (for Matlab &gt;= 2010).<br>
-    Older Microsoft Visual C++ 2008 [<a
+    (for Matlab &gt;= 2010). Older Microsoft Visual C++ 2008 [<a
 href="http://download.microsoft.com/download/8/b/5/8b5804ad-4990-40d0-a6aa-ce894cbbb3dc/VS2008ExpressENUX1397868.iso">ISO</a>]
     can also be used together with the SDK for Windows 7 + NET 3.5
     [amd64 <a
@@ -427,17 +443,23 @@ Just
 
 
 
+
     use the default installation settings, then use<br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mex</span> -setup							<span style="font-style: italic;">% select compiler</span><br>[1] Microsoft Windows VS2008<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/location/to/iFit'</span>))			<span style="font-style: italic;">% install iFit</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">delete</span> ([ ifitpath <span style="color: rgb(204, 51, 204);">'Libraries/Loaders/private/looktxt.mexw64'</span> ])	<span style="font-style: italic;">% delete old looktxt MeX</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span> <span style="color: rgb(204, 51, 204);">force</span><span style="font-style: italic;">							% reload importer methods and recompile looktxt<br></span></pre>
-    An other solution, somewhat more complex to tune, is to use <span
-      style="font-style: italic;">gcc</span> (from e.g. <a
-      href="http://www.mingw.org/">MingW) </a>and the <a
-      href="http://gnumex.sourceforge.net/">gnumex</a> tool. The <a
-      href="http://www.bloodshed.net/devcpp.html">Dev-Cpp</a> compiler
-    (which includes gcc) may also be used.<br>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mex</span> -setup							<span style="font-style: italic;">% select compiler</span><br>[1] Microsoft Windows VS2008<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/location/to/iFit'</span>))			<span style="font-style: italic;">% install iFit</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span> compile<span style="font-style: italic;">							% reload importer methods and recompile looktxt, cbf_uncompress and cif2hkl<br></span></pre>
+    When <i>mex</i> is not configured, you may install any C compiler
+    of: <a href="http://www.mingw.org/">gcc</a>, <a
+      href="https://software.intel.com/en-us/fortran-compilers">ifc</a>,
+    <a href="https://www.pgroup.com/products/winpgi.htm">pgcc</a>, <a
+      href="http://clang.llvm.org/get_started.html">clang/llvm</a>, <a
+      href="http://bellard.org/tcc/">tcc</a>.<br>
+    To compile <i>cif2hkl</i>, you should install a Fortran compiler
+    such as: <a href="https://gcc.gnu.org/wiki/GFortranBinariesWindows">gfortran</a>,
+    <a href="http://www.g95.org/">g95</a>, <a
+      href="http://www.pgroup.com/">pgfc</a>, <a
+      href="https://software.intel.com/en-us/fortran-compilers">ifort</a>.<br>
     <br>
-    Then force the recompilation of <span style="font-style: italic;">looktxt</span>
-    with the procedure below.<br>
+    Then force the recompilation of external commands with:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span> compile</pre>
     <h5><a class="mozTocH5" name="mozTocId279829"></a>Other systems
       (Windows 32, Linux, MacOSX)</h5>
     All <span style="font-weight: bold;">other platforms</span> provide
@@ -450,12 +472,11 @@ Just
         including gcc)</li>
     </ul>
     In order to<span style="font-weight: bold;"> check and force the
-      recompilation of looktxt</span> MeX, <span style="color: rgb(255,
-      0, 0);">remove</span> the <span style="font-style: italic;">iFit/Libraries/Loaders/private/looktxt.mex*</span>
-    files, and launch<br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span><span style="color: rgb(204, 51, 204);"> force</span></pre>
+      recompilation of external commands,</span> launch<br>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span><span style="color: rgb(204, 51, 204);"> compile</span></pre>
     from the Matlab prompt. The C compiler to use may have to be
     specified with the command '<span style="font-style: italic;">&gt;&gt;
+
 
 
 
@@ -490,6 +511,7 @@ Just
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
