@@ -57,6 +57,7 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/cycl
 
 
 
+
           Cyclops</a> HBIN and <a
           href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
         SAV files. Iterative deconvolution as <i>deconv</i> method.
@@ -68,7 +69,8 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/cycl
         compute dynamic range, generalized density of states, total
         scattering cross sections, characteristic frequencies, powder
         average from 4D S(hkl,w). Full compatibility with Matlab
-        releases &gt;= R2014b.<br>
+        releases &gt;= R2014b. Fix <i>read_anytext</i> to only use
+        external 'looktxt': no more MeX.<br>
       </li>
       <li><small><b>1.7</b>: <a
 href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectroscopy/opus-software/overview.html">OPUS</a>
@@ -77,6 +79,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
             href="http://www.ni.com/white-paper/3727/en/">TDMS</a> file
           format import. Fixed curvature in <a
             href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>/Rescal5/Popovici
+
 
 
 
@@ -129,6 +132,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           NetCDF/CDF/NeXus/HDF support, import/export of <a
             href="http://www.mantidproject.org">Mantid</a> workspaces
           (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+
 
 
 
@@ -226,6 +230,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -233,6 +238,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
 
 
 
@@ -295,6 +301,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -304,6 +311,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
 
 
 
@@ -356,6 +364,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -363,6 +372,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
 
 
 
@@ -459,6 +469,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       3)</span> to triple the number of points along axes.<br>
     <h4><a class="mozTocH4" name="mozTocId473369"></a>Too many warnings
       displayed</h4>
@@ -485,24 +496,28 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       issue with text files importer (iLoad/iData/load, looktxt,
       CrysFML/cif2hkl)</h4>
     You should first try the automatic fix procedure:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'force'<font color="#000000">)	% checks and possibly re-compiles text and CBF importers<br></font></span>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'compile'<font color="#000000">)	% fully re-compiles text and CBF importers</font></span><br></pre>
-    In some cases, the provided iFit/Loaders/private/looktxt.mex* may
-    fail to execute (wrong architecture, missing library). <br>
-    Under Windows 64bit systems, you may need the Visual C++ runtime
-    libraries e.g. <i>msvc[mpr]90.dll</i> which are provided with the
-    Visual C++ installation (see below), to put in the Windows system
-    directory.<br>
-    <br>
-    In case this is not a problem of library, <span style="color:
-      rgb(255, 0, 0);">remove</span> the invalid mex file (in <i>iFit/Libraries/Loaders/private</i>),
-    and relaunch the importation process. A brand new MeX file will
-    automatically be generated, using the system C compiler. For manual
-    compilation, navigate to the <span style="font-style: italic;">iFit/Libraries/Loaders/private</span>
-    directory and issue:<br>
-    <pre style="margin-left: 40px;">mex -O looktxt.c -DUSE_MEX<br>mex -O cbf_uncompress<br></pre>
+    The recompilation tries to:<br>
+    <ol>
+      <li>use the matlab <i>mex</i> command (requires a valid C
+        compiler supported by Matlab) ;<br>
+      </li>
+      <li>use of any other C compiler such as <a
+          href="https://gcc.gnu.org/">gcc</a>, <a
+          href="https://software.intel.com/en-us/intel-compilers">ifc</a>,
+        <a href="http://www.pgroup.com/">pgcc</a>, <a
+          href="http://clang.llvm.org/">clang/llvm</a>, <a
+          href="http://bellard.org/tcc/">tcc</a>;</li>
+      <li>use any Fortran compiler such as <a
+          href="https://gcc.gnu.org/fortran/">gfortran</a>, <a
+          href="http://www.g95.org/">g95</a>, <a
+          href="http://www.pgroup.com/">pgfc</a>, <a
+          href="https://software.intel.com/en-us/fortran-compilers">ifort</a>.</li>
+    </ol>
     Most systems provide a default C compiler. <br>
     <ul>
       <li>Linux systems usually ship with gcc.</li>
@@ -511,11 +526,20 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
       <li>Windows 32 systems may use the LCC compiler shipped with
         Matlab. </li>
       <li>Windows 64 systems must have Microsoft Visual C++ installed
-        (refer to the <a href="Install.html#mozTocId359173">Install</a>
+        (refer to the <a
+          href="file:///home/farhi/dev/iFit/Docs/Install.html#mozTocId359173">Install</a>
         page for the procedure).</li>
     </ul>
     You may need to select the compiler with the <i>mex -setup</i>
-    command from Matlab.<br>
+    command from Matlab, but as said above, any other compiler can be
+    used.<br>
+    <br>
+    In some cases, the provided iFit/Loaders/private/looktxt commands
+    may fail to execute (wrong architecture, missing library). <br>
+    Under Windows 64bit systems, you may need the Visual C++ runtime
+    libraries e.g. <i>msvc[mpr]90.dll</i> which are provided with the
+    Visual C++ installation (see below), to put in the Windows system
+    directory.<br>
     <div style="margin-left: 40px;"> <br>
     </div>
     It has been reported that MeX compilation may fail when spaces are
@@ -525,14 +549,27 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <span style="font-style: italic;">My Documents</span>) for
     compilation.<br>
     <br>
+    <i><b>Manual compilation</b></i><br>
+    <br>
+    If all this fails, you can try a manual compilation as follows.<br>
+    <br>
+    A C compiler is required to make use of the generic text importer <i>looktxt</i>.
+    Navigate to the <span style="font-style: italic;">iFit/Libraries/Loaders/private
+    </span>directory, and issue:<br>
+    <blockquote>
+      <pre># gcc -O2 -o looktxt looktxt.c -lm</pre>
+    </blockquote>
     A Fortran compiler is required when using <span style="font-style:
       italic;">cif2hkl</span> (CIF,CFL,PCR,ShelX files), especially for
-    the Rietveld model function. For manual compilation, navigate to the
-    <span style="font-style: italic;">iFit/Scripts/Models/scattering/powder_diffraction</span>
+    the Rietveld model function. Navigate to the <span
+      style="font-style: italic;">iFit/Scripts/Models/scattering/powder_diffraction</span>
     directory and issue:<br>
     <pre style="margin-left: 40px;"># gfortran -O2 -o cif2hkl cif2hkl.F90 -lm<br></pre>
-    which creates the cif2hkl executable file, used by iFit.<br>
+    which creates a <i>cif2hkl</i> executable file, used by iFit.
+    Remove the collateral *.mod files.<br>
     <br>
+    Once done, check from iFit:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'force'<font color="#000000">)	% checks and possibly re-compiles text and CBF importers</font></span></pre>
     Refer to the related item in the <a
       href="Install.html#mozTocId359173">Install</a> page.<br>
     <h4><a class="mozTocH4" name="mozTocId63182"></a>Limitations in the
@@ -541,6 +578,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     can <span style="font-weight: bold; font-style: italic;">not</span>
     be defined, except anonymous functions (inline). You may use iFunc
     models as a substitute. Also, the <span style="font-style: italic;">doc,
+
 
 
 
@@ -603,7 +641,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
       been found. Instal the MCR as indicated in the <a
         href="Install.html">Install</a> page. You may have to edit the
       'ifit' command and set the location of the MCR. Alternatively, you
-      can set the MCRROOT environment variable to point to it, e.g.:<br>
+      can set the MCRROOT environment variable to point to it, e.g.
+      under <i>bash</i> (Linux/Mac OSX):<br>
     </p>
     <ul>
       <li>export MCRROOT="/opt/MATLAB/MATLAB_Compiler_Runtime/v713"</li>
@@ -676,6 +715,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       -v</span> and look where <span style="font-style: italic;">libgfortran</span>
     appears in the long list...)<br>
     <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);"># locate libgfortran.so</span>
@@ -690,14 +730,15 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
       file fails</h4>
     You can try the automatic fix procedure:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'force'<font color="#000000">)	% checks and possibly re-compiles text and CBF importers<br></font></span>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'compile'<font color="#000000">)	% fully re-compiles text and CBF importers</font></span><br></pre>
-    If this fails, then first check that the looktxt MeX file is working
-    (this will appear in the error message). If not, remove the invalid
-    one (in iFit/Libraries/Loaders/private) and restart the importation.
-    A new MeX file will be compiled from the source (requires a valid
-    compiler, see <a href="#mozTocId556618">above</a>).<br>
+    If this fails, then first check that the <i>looktxt</i> command is
+    working (this will appear in the error message). If not, remove the
+    invalid one (in iFit/Libraries/Loaders/private) and restart the
+    importation. A new external command will be compiled from the source
+    (requires a valid compiler, see <a href="#mozTocId556618">above</a>).<br>
     <br>
-    If you can not import a reluctant <span style="font-weight: bold;">text</span>
-    file, try the most tolerant text reader configurations:<br>
+    If the executable <i>looktxt</i> is valid, but you can not import a
+    reluctant <span style="font-weight: bold;">text</span> file, try
+    the most tolerant text reader configurations:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','text format with fast import method'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','Data (text format)'</span>)</pre>
     will import the raw content, without post formatting of the object
     in memory. You will probably need to assign manually some of the
@@ -729,6 +770,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
