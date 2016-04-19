@@ -104,9 +104,11 @@ if 1 < length(out) && length(i1) < length(out)
     j = find(strcmp(sources{index}, sources(:)) & strcmp(titls{index}, titls(:)) & strcmp(labs{index}, labs(:)) & sums(index) == sums(:));
     if length(j) > 1, i(j(2:end)) = 0; end
   end
-  i = unique(i(i>0));
+  removed = find(i == 0);
+  i       = unique(i(i>0));
   if length(out) > length(i)
-    disp(sprintf('Removing duplicated data sets %i -> %i', length(out), length(i)))
+    disp(sprintf('%s: Removing duplicated data sets %i -> %i', mfilename, length(out), length(i)))
+    disp(char(out(removed)))
     out = out(i);
   end
 end
