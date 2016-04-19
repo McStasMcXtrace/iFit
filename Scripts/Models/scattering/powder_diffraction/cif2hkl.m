@@ -16,7 +16,7 @@ function result = cif2hkl(varargin)
 %
 % Revision: $date$
 
-% this function is called when the MeX is not present/compiled
+% we choose NOT to use the cif2hkl mex file due to allocation errors under Matlab.
 
 persistent compiled
 
@@ -25,9 +25,13 @@ if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
 else precmd=''; end
 
-% check if we use the cif2hkl executable, or need to compile the MeX (only once)
+% check if we use the cif2hkl executable, or need to compile
 if isempty(compiled) || (nargin >0 && (strcmp(varargin{1}, 'compile') || strcmp(varargin{1}, 'check')))
-  compiled=cif2hkl_check_compile;
+  if nargin>0 && strcmp(varargin{1}, 'compile')
+    compiled=cif2hkl_check_compile('compile');
+  else
+    compiled=cif2hkl_check_compile;
+  end
 end
 
 % assemble command line
@@ -115,109 +119,70 @@ if status ~= 0
   error([ mfilename ' executable not available. Compile it with: "gfortran -O2 -o cif2hkl cif2hkl.F90 -lm" in ' fullfile(fileparts(which(mfilename))) ]);
 end
 
-
-function compiled=cif2hkl_check_compile
+% ------------------------------------------------------------------------------
+function compiled=cif2hkl_check_compile(compile)
 
   compiled = '';
   this_path = fileparts(which(mfilename));
   if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
   else precmd=''; end
-    
-  % get list of modules
-  modules = fullfile(this_path,'CFML*.f90');
   
-  % check if iLoad config allows MeX
-  config = iLoad('config');
-  if isfield(config, 'MeX') && ...
-   ((isfield(config.MeX, mfilename) && strcmp(config.MeX.(mfilename), 'yes')) ...
-     || strcmp(config.MeX, 'yes'))
-    % attempt to compile MeX
-    fprintf(1, '%s: compiling mex...\n', mfilename);
-    try
-      cmd={'-c', '-O', '-output',fullfile(this_path,'cif2hkl.o'), ...
-           modules, fullfile(this_path,'cif2hkl.F90')};
-      disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
-      mex (cmd{:});
-      cmd={'-O', '-output', fullfile(this_path,mfilename), ...
-        fullfile(this_path,'cif2hkl_mex.c'), fullfile(this_path,'cif2hkl.o'), ...
-        fullfile(this_path,'CFML*.o'), ...
-        '-lgfortran'};
-      disp([ 'mex ' sprintf('%s ', cmd{:}) ]);
-      mex (cmd{:});
-      compiled = 'mex';
-    catch
-      warning('%s: Can''t compile cif2hkl.F90 as MeX\n       in %s\n', ...
-        mfilename, fullfile(this_path));
-    end
-    delete('*.mod');  % remove temprary files
-    delete('*.o');
-    if ~isempty(compiled)
-      rehash
-      % rethrow cif2hkl command with new MeX
-      if exist(mfilename) == 3
-        result = cif2hkl(varargin{:})
-      elseif nargin > 0
-        error('%s: MeX compiled successfully. Rethrow command to use it.');
-      end
-    end
-    return
-  else
-    % binary external
-    if ispc, ext='.exe'; else ext=''; end
-    
-    % look for executable, global and local
-    % try in order: global(system), local, local_arch
-    for try_target={[ 'cif2hkl' ext ], ...
-            fullfile(this_path, [ 'cif2hkl' ext ]), ...
-            fullfile(this_path, [ 'cif2hkl_' computer('arch') ext ])}
-        
-            [status, result] = system([ precmd try_target{1} ]);
-            if status == 0 && nargin == 0
-                % the executable is already there. No need to make it .
-                target = try_target{1};
-                compiled = target; 
-                return
-            end
+  
+  % binary external
+  if ispc, ext='.exe'; else ext=''; end
+  
+  % look for executable, global and local
+  % try in order: global(system), local, local_arch
+  for try_target={fullfile(this_path, [ 'cif2hkl_' computer('arch') ext ]), ...
+          fullfile(this_path, [ 'cif2hkl' ext ]), ...
+          [ 'cif2hkl' ext ]}
+      
+          [status, result] = system([ precmd try_target{1} ]);
+          if status == 0 && nargin == 0
+              % the executable is already there. No need to make it .
+              target = try_target{1};
+              compiled = target; 
+              return
+          end
 
-    end
-    % when we get there, target is cif2hkl_arch, not existing yet
-    target = fullfile(this_path, [ 'cif2hkl_' computer('arch') ext ]);
-    
-    % search for a fortran compiler
-    fc = '';
-    for try_fc={getenv('FC'),'gfortran','g95','pgfc','ifort'}
-      if ~isempty(try_fc{1})
-        [status, result] = system([ precmd try_fc{1} ]);
-        if status == 4 || ~isempty(strfind(result,'no input file'))
-          fc = try_fc{1};
-          break;
-        end
+  end
+  % when we get there, target is cif2hkl_arch, not existing yet
+  target = fullfile(this_path, [ 'cif2hkl_' computer('arch') ext ]);
+  
+  % search for a fortran compiler
+  fc = '';
+  for try_fc={getenv('FC'),'gfortran','g95','pgfc','ifort'}
+    if ~isempty(try_fc{1})
+      [status, result] = system([ precmd try_fc{1} ]);
+      if status == 4 || ~isempty(strfind(result,'no input file'))
+        fc = try_fc{1};
+        break;
       end
     end
-    if isempty(fc)
-      if ~ispc
-        disp('PATH is:')
-        disp(getenv('PATH'))
-        disp([ mfilename ': You may have to extend the PATH with e.g.' ])
-        disp('setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
-      end
-      error('%s: Can''t find a valid Fortran compiler. Install any of: gfortran, g95, pgfc, ifort\n', ...
-      mfilename);
+  end
+  if isempty(fc)
+    if ~ispc
+      disp([ mfilename ': ERROR: FORTRAN compiler is not available from PATH:' ])
+      disp(getenv('PATH'))
+      disp([ mfilename ': You may have to extend the PATH with e.g.' ])
+      disp('setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
     end
-     
-    % attempt to compile as local binary
-    if isempty(dir(fullfile(this_path,mfilename))) % no executable available
-      fprintf(1, '%s: compiling binary...\n', mfilename);
-      cmd = {fc, '-o', target, ...
-         fullfile(this_path,'cif2hkl.F90'), '-lm'}; 
-      disp([ sprintf('%s ', cmd{:}) ]);
-      [status, result] = system([ precmd sprintf('%s ', cmd{:}) ]);
-      if status ~= 0 % not OK, compilation failed
-        warning('%s: Can''t compile cif2hkl.F90 as binary\n       in %s\n', ...
-          mfilename, fullfile(this_path));
-      else
-        compiled = target;
-      end
+    error('%s: Can''t find a valid Fortran compiler. Install any of: gfortran, g95, pgfc, ifort\n', ...
+    mfilename);
+  end
+   
+  % attempt to compile as local binary
+  if isempty(dir(fullfile(this_path,mfilename))) % no executable available
+    fprintf(1, '%s: compiling binary...\n', mfilename);
+    cmd = {fc, '-o', target, ...
+       fullfile(this_path,'cif2hkl.F90'), '-lm'}; 
+    disp([ sprintf('%s ', cmd{:}) ]);
+    [status, result] = system([ precmd sprintf('%s ', cmd{:}) ]);
+    if status ~= 0 % not OK, compilation failed
+      warning('%s: Can''t compile cif2hkl.F90 as binary\n       in %s\n', ...
+        mfilename, fullfile(this_path));
+    else
+      compiled = target;
     end
   end
