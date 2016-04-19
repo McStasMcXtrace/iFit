@@ -111,6 +111,8 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     return
   elseif any(strcmp(loader, {'force','force load config','compile','check'}))
+  
+    config  = iLoad_config_load;
 
     if strcmp(loader, 'compile')
       % force compile
@@ -120,29 +122,29 @@ function [data, format] = iLoad(filename, loader, varargin)
     else
       % make a check of installed MeX/binaries
       try
-        s = read_cbf('check');
-        disp([ mfilename ': CBF     importer is functional as ' s ]);
+        config.external.cbf = read_cbf('check');
+        disp([ mfilename ': CBF     importer  is functional as ' config.external.cbf ]);
       catch ME
-        disp([ mfilename ': CBF     importer is functional as read_cbf (failed mex)' ]);
+        disp([ mfilename ': CBF     importer  is functional as read_cbf (failed mex)' ]);
+        disp(getReport(ME))
       end
       try
-        s = read_anytext('check');
-        disp([ mfilename ': Text    importer is functional as ' s ])
+        config.external.looktxt = read_anytext('check');
+        disp([ mfilename ': Text    importer  is functional as ' config.external.looktxt ])
       catch ME
-        
-        warning([ mfilename ': Text    importer is NOT functional' ]);
+        warning([ mfilename ': Text    importer  is NOT functional' ]);
+        disp(getReport(ME))
       end
       try
-        s = cif2hkl('check');
-        disp([ mfilename ': CIF2HKL converter is functional as ' s ])
+        config.external.cif2hkl = cif2hkl('check');
+        disp([ mfilename ': CIF2HKL converter is functional as ' config.external.cif2hkl ])
       catch ME
         warning([ mfilename ': CIF2HKL converter is NOT functional' ]);
+        disp(getReport(ME))
       end
         
     end
     
-    config  = iLoad_config_load;
-    read_anytext('config');
     if ~isempty(filename)
       data    = iLoad(filename, 'load config');
     else
@@ -389,10 +391,9 @@ function [data, format] = iLoad(filename, loader, varargin)
     try
       [data, format] = iLoad_import(filename, loader, varargin{:});
     catch ME
-      % fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n  %s\n', filename, ME.message);
+      fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n  %s\n', filename, ME.message);
       data=[];
     end
-    
   elseif isempty(filename)
     config = iLoad('','load config');
     if exist('uigetfiles') && (strcmp(config.UseSystemDialogs, 'no') || isdeployed || ~usejava('jvm'))
