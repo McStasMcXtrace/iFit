@@ -16,7 +16,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 if numel(a) > 1
   s = [];
   for index=1:numel(a)
-    s = [ s feval(op, a(index), dim) ];
+    s = [ s feval(mfilename, a(index), dim, op) ];
   end
   s = reshape(s, size(a));
   return
@@ -39,7 +39,7 @@ if all(dim > 0) & any(strcmp(op, {'sum','cumsum','prod','cumprod','trapz','cumtr
 end
 
 s = get(a,'Signal');  % raw Signal (no Monitor weight)
-if isempty(s) || ~isnumeric(s), s=iData; return; end
+if isempty(s) || ~isnumeric(s), if dim, s=iData; else s=0; end; return; end
 e = get(a,'Error');   % raw Error  (no Monitor weight)
 m = iData_private_cleannaninf(get(a,'Monitor'));
 if numel(e) > 1 && all(e(:) == e(1)), e=e(1); end
