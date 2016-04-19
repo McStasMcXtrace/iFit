@@ -1,4 +1,4 @@
-function [status, result] = looktxt(varargin)
+function [result,status] = looktxt(varargin)
 % result = looktxt(file, options, ...)
 %
 % Action: Search and export numerics in a text/ascii file.
@@ -19,9 +19,6 @@ persistent target
 result = []; status = 127;
 
 % use looktxt bin when available -----------------------------------------------
-if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
-elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
-else precmd=''; end
 
 % handle input arguments
 
@@ -37,7 +34,7 @@ if ispc, ext = '.exe'; else ext = ''; end
 if isempty(target)
   % we test if the executable files exist
   % test in order: global(system), local, local_arch
-  for try_target = { [ 'looktxt' ext ], [ cmd ext ], [ cmd '_' computer('arch') ext ]}
+  for try_target = { [ cmd '_' computer('arch') ext ], [ cmd ext ], [ 'looktxt' ext ]}
       [status, result] = system(try_target{1});
       if status == 0
           target = try_target{1};
@@ -54,6 +51,6 @@ cmd       = [ target ' ' sprintf('%s ', varargin{:}) ];
 disp(cmd)
 
 % launch the command
-[status, result] = system([ precmd cmd ]);
+[status, result] = system([ cmd ]);
 
 
