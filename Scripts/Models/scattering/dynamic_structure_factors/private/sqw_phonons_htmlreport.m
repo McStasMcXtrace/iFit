@@ -63,7 +63,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     
     % evaluate model (low memory requirements for smaller data files)
     if isempty(data)
-      qh=linspace(0.01,.5,20);qk=qh; ql=qh; w=linspace(0.01,100,51);
+      qh=linspace(0.01,1.5,30);qk=qh; ql=qh; w=linspace(0.01,100,51);
       data=iData(object,[],qh,qk,ql,w);
     end
     
@@ -85,7 +85,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     saveas(Phonons_HKLE, fullfile(options.target, 'Phonons_HKLE.h5'), 'mantid');
     clear Phonons_HKLE
     
-    Phonons_powder = sqw_powder(object); log_Phonons_powder=log(Phonons_powder);
+    Phonons_powder = sqw_powder(data); log_Phonons_powder=log(Phonons_powder);
     builtin('save', fullfile(options.target, 'Phonons_powder.mat'), 'Phonons_powder');
     saveas(log_Phonons_powder, fullfile(options.target, 'Phonons_powder.png'),'png','tight');
     saveas(log_Phonons_powder, fullfile(options.target, 'Phonons_powder.fig'), 'fig', 'tight');
