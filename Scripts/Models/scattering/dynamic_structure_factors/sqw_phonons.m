@@ -426,34 +426,57 @@ end
 if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': configuring ' options.calculator ]); end
 
 if strcmpi(options.calculator, 'QUANTUMESPRESSO') 
+  read_optim = '';
   if ~isempty(options.optimizer)
     % specific case for QE. As it is not directly supported by ASE, the miniasation
-    % must use an other ASE-compliant code. We try ABINIT, then GPAW.
-    if ~isempty(status.abinit)
-      [decl, calc] = sqw_phonons_calc(options, status, 'ABINIT');
-    elseif ~isempty(status.gpaw)
+    % must use an other ASE-compliant code. We try ABINIT, and GPAW.
+    if ~isempty(status.gpaw)
       [decl, calc] = sqw_phonons_calc(options, status, 'GPAW');
+    elseif ~isempty(status.abinit)
+      [decl, calc] = sqw_phonons_calc(options, status, 'ABINIT');
     else
       disp([ mfilename ': WARNING: can not perform optimization with QuantumEspresso.' ])
       disp('    This step requires to use an other DFT code. Install either ABINIT or GPAW.');
       disp('    Skipping.');
+      decl = [];
     end
-    if isempty(decl) return; end
-    read = [ read optim ];
+    if ~isempty(decl) 
+      read_optim = [ read decl '; ' calc '; ' optim ];
+    end
   end
   % create the POSCAR input file for PHON
   % ASE is installed. We use it to create a proper POSCAR file, then we call sqw_phon (QE)
   poscar = fullfile(options.target,'POSCAR_ASE');
-  read = [ read 'from ase.io import write; ' ...
-     'write("' poscar '",atoms, "vasp"); ' ...
-     read1 ];
+     
+  % try the optimisation. If fails, falls back to no-optim with message and go on.
+  if ~isempty(read_optim)
+    try
+      if isunix, setenv('LD_LIBRARY_PATH',''); end
+      disp([ mfilename ': The initial structure will first be optimized using ' options.optimizer ]);
+      disp(calc)
+      disp(optim)
+      disp(' ')
+      [decl, calc,signal] = sqw_phonons_calc(options, status, options.calculator, ...
+         [ read_optim  'from ase.io import write; ' ...
+                       'write("' poscar '",atoms, "vasp"); ' ...
+                       read1 ]);
+      if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
+    catch
+      disp([ mfilename ': optimization failed. Could be a missing pseudo-potential for elements. Proceeding with phonons.' ])
+      read_optim = '';
+    end
+  end
+  if isempty(read_optim)
+    if isunix, setenv('LD_LIBRARY_PATH',''); end
+    [decl, calc,signal] = sqw_phonons_calc(options, status, options.calculator, ...
+       [ read  'from ase.io import write; ' ...
+               'write("' poscar '",atoms, "vasp"); ' ...
+               read1 ]);
+    if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
+  end
 end
 
-% init calculator, do the work in the QE case
-if isunix, setenv('LD_LIBRARY_PATH',''); end
-[decl, calc,signal] = sqw_phonons_calc(options, status, options.calculator, read);
-if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
-if isempty(decl) && isempty(signal), return; end
+
 
 
 
@@ -462,6 +485,12 @@ if isempty(decl) && isempty(signal), return; end
 
 
 if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
+
+  % init calculator
+  if isunix, setenv('LD_LIBRARY_PATH',''); end
+  [decl, calc,signal] = sqw_phonons_calc(options, status, options.calculator, read);
+  if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
+  if isempty(decl) && isempty(signal), return; end
 
   if options.gui && ishandle(options.gui), waitbar(0.10, options.gui, [ mfilename ': writing python script ASE/' options.calculator ]); end
 
