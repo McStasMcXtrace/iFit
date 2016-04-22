@@ -694,6 +694,7 @@ if isempty(dir(fullfile(p,'FORCES')))
     end
     if isempty(forces{move})
       disp([ mfilename ': aborting FORCES computation.' ]);
+      forces = [];
       return
     end
 
