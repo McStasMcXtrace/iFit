@@ -101,14 +101,20 @@ for i = 1:length(S)     % can handle multiple index levels
       de=iData_getAliasValue(b,'Error'); 
       if numel(de) > 1 && isnumeric(de) 
         try % in case Error=sqrt(Signal), the Error is automatically changed when Signal is -> fail
-          d=squeeze(de(s.subs{:})); b=set(b,'Error', d); b = setalias(b, 'Error', d);
+          d=squeeze(de(s.subs{:})); 
+          b=set(b,'Error', d); 
+          b = setalias(b, 'Error', d);
         end
       end
       clear de
 
       dm=iData_getAliasValue(b,'Monitor');
       if numel(dm) > 1 && isnumeric(dm)
-        d=squeeze(dm(s.subs{:})); b=set(b,'Monitor', d);  b = setalias(b, 'Monitor', d);
+        try
+            d=squeeze(dm(s.subs{:})); 
+            b=set(b,'Monitor', d);  
+            b = setalias(b, 'Monitor', d);
+        end
       end
       clear dm
 
@@ -245,6 +251,8 @@ for i = 1:length(S)     % can handle multiple index levels
       end
       if length(find(fieldname == '.')) >= 1
         b = get(b, fieldname);
+      elseif strcmp(fieldname,'this')
+            % this = myself
       else
         b = iData_getAliasValue(b,fieldname); % get alias value from iData: b.<path> MAIN SPENT TIME
       end

@@ -25,41 +25,52 @@ end
 
 a=iData(a);
 
-% re-assign DATA in case the file has more than one data block (MULTI, ...)
-try
-  DATA  = a.MetaData.DATA;
-catch
-  DATA  = [];
-end
-if isempty(DATA), DATA=a.Signal; end
-setalias(a,'Signal',DATA,[ 'Data CNTS' ]);
-
-try
-  STEPS = a.Data.STEPS;
-catch
-  STEPS=[];
-end
 % get the main data block header: MetaData.PNT or DATA_
 try
   columns_header = a.Data.Attributes.MetaData.PNT;
 catch
-  [columns_header, data]   = findstr(a, 'DATA_:','case');
+  columns_header = findstr(a, 'DATA_:','case');
 end
 if iscell(columns_header)
   [dummy, sorti] = sort(cellfun('prodofsize', columns_header)); 
   
   columns_header = columns_header{sorti(end)};
-  data           = data{sorti(end)};
+end
+% Find spaces and determine proper aliases for the columns
+columns = strread(columns_header,'%s','delimiter',' ;');
+% remove invalid names
+% restrict to the number of columns in DataBlock
+c       = size(a, 2);
+
+columns = columns(~cellfun('isempty', columns) & cellfun(@(c) isstrprop(c(1),'alphanum'), columns));
+if c < numel(columns)
+    columns = columns((end-c+1):end);
 end
 
-if isempty(columns_header), 
+% determine if this is a standard TAS or MULTI-detector file
+MULTI = findfield(a,'MULTI'); % this is where we store MULTI-detector scans
+if ~isempty(MULTI) && iscell(MULTI)
+  MULTI = get(a, MULTI{1});
+end
+
+if isempty(columns_header) || isempty(columns)
   warning([ mfilename ': The loaded data set ' a.Tag ' is not an ILL TAS data format.' ]);
   return; 
 end
-if iscell(columns_header)
-  columns_header   = columns_header{1};
+
+% get the normal TAS data: stored as the last column name (looktxt)
+DATA  = [];                   % this is where we store TAS scans
+try
+  DATA = get(a, [ 'Data.DATA.' columns{end} ]);
 end
-% detect if this is a MULTI detector file
+if isempty(DATA)
+  try
+    DATA  = a.MetaData.DATA;
+  end
+end
+if isempty(DATA), DATA=a.Signal; end % when all fails...
+
+% detect if this is a MULTI detector file and get that block
 try
   MULTI  = a.MetaData.MULTI; 
   setalias(a, 'MULTI', 'this.Data.MetaData.MULTI', 'Multidetector');
@@ -67,15 +78,13 @@ catch
   MULTI = [];
 end
 
-% Find spaces and determine proper aliases for the columns
-columns = strread(columns_header,'%s','delimiter',' ;');
-% remove invalid names
-% restrict to the number of columns in DataBlock
-c       = size(a, 2);
-columns = columns(~cellfun('isempty', columns) & cellfun(@(c) isstrprop(c(1),'alphanum'), columns));
-columns = columns((end-c+1):end);
-
 % check if a scan step exists
+try
+  STEPS = a.Data.STEPS;
+catch
+  STEPS=[];
+end
+
 if ~isempty(STEPS)
   steps_val=struct2cell(STEPS);
   steps_lab=fieldnames(STEPS);
@@ -87,6 +96,7 @@ if ~isempty(STEPS)
     end
   end
 end
+
 % compute the normalized variance of each column
 index_hkle=[]; % index of QH QK QL EN columns
 index_m12 =[]; % index of M1 M2 monitors
@@ -97,7 +107,7 @@ Variance  = zeros(1,length(columns));
 is_pal    = '';
 
 for j=1:length(columns)
-  setalias(a,columns{j},a.Signal(:,j)); % create an alias for each column
+  setalias(a,columns{j},DATA(:,j)); % create an alias for each column
   % use STEPS
   if any(strcmpi(columns{j}, {'QH','QK','QL','EN'}))  || ...
     (~isempty(STEPS) && any(strcmpi(columns{j}, STEPS))) || ...
@@ -122,8 +132,8 @@ for j=1:length(columns)
     is_pal='ROI';
   end
   if ~any(strcmpi(columns{j},{'PNT','CNTS','TI','TIME'}))
-    if length(a.Signal(:,j))
-      Variance(j) = sum( abs(a.Signal(:,j)-mean(a.Signal(:,j)) )) /length(a.Signal(:,j));
+    if length(DATA(:,j))
+      Variance(j) = sum( abs(DATA(:,j)-mean(DATA(:,j)) )) /length(DATA(:,j));
     end
   end
 end
@@ -132,7 +142,7 @@ end
 % remaining greatest variance
 TT = [];
 if ~isempty(index_temp)
-  TT = mean(a.Signal(:,index_temp(1)));
+  TT = mean(DATA(:,index_temp(1)));
 else
   index_temp=findfield(a, {'TT','TRT'}, 'case');
   if ~isempty(index_temp), TT = getfield(a, index_temp); end
@@ -153,13 +163,13 @@ else
 end
 
 if ~isempty(index_m12)
-  [dummy, index]=max(sum(a.Signal(:,index_m12)));
+  [dummy, index]=max(sum(DATA(:,index_m12)));
   index_m12 = index_m12(index);
 end
 
 if ~isempty(index_m12) || mon_is_time
   if (~isempty(index_m12) && any(index_m12 <= 0)) || mon_is_time % invalid monitor, use TIME
-    [dummy, index]=max(sum(a.Signal(:,index_ti)));
+    [dummy, index]=max(sum(DATA(:,index_ti)));
     index_m12 = index_ti(index);
   end
   setalias(a,'Monitor',columns{index_m12},[ 'Monitor ' columns{index_m12} ]);
