@@ -438,6 +438,7 @@ if strcmpi(options.calculator, 'QUANTUMESPRESSO')
       disp('    This step requires to use an other DFT code. Install either ABINIT or GPAW.');
       disp('    Skipping.');
     end
+    if isempty(decl) return; end
     read = [ read optim ];
   end
   % create the POSCAR input file for PHON
@@ -448,10 +449,11 @@ if strcmpi(options.calculator, 'QUANTUMESPRESSO')
      read1 ];
 end
 
+% init calculator, do the work in the QE case
 if isunix, setenv('LD_LIBRARY_PATH',''); end
-[decl, calc] = sqw_phonons_calc(options, status, options.calculator, read);
+[decl, calc,signal] = sqw_phonons_calc(options, status, options.calculator, read);
 if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
-  
+if isempty(decl) && isempty(signal), return; end
 
 
 
@@ -526,6 +528,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     disp(result)
     sqw_phonons_error([ mfilename ': failed read input ' ...
       configuration ], options);
+    return
   end
   sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, calc);
   % get 'atoms' back from python
@@ -565,6 +568,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
     sqw_phonons_error([ mfilename ': failed calling ASE with script ' ...
       fullfile(target,'sqw_phonons_build.py') ], options);
+    return
   end
   cd(pw)
 
@@ -575,6 +579,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   catch
     setenv('LD_LIBRARY_PATH',ld_library_path);
     sqw_phonons_error([ mfilename ': ' options.calculator ' failed. Temporary files and Log are in ' target ], options)
+    return
   end
   if ~isempty(dir(configuration))
     [dummy, signal.UserData.input]= fileparts(configuration);

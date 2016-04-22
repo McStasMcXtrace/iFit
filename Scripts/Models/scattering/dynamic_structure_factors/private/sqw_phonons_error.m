@@ -8,4 +8,4 @@ if ~isdeployed && usejava('jvm') && usejava('desktop')
   disp([ '<a href="matlab:doc(''' mfilename ''')">help ' mfilename '</a> (click here to get help)' ])
 end
 sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'error', options, message);
-error(message);
+disp(message);

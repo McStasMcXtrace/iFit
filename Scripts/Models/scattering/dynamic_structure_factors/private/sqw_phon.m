@@ -190,6 +190,7 @@ end
 % check/create supercell
 if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': computing supercell' ]); end
 geom = sqw_phon_supercell(poscar, options); % 2x2x2 supercell
+if isempty(geom) return; end
 
 % ********* look for potentials *********
 if ~isfield(options, 'force_file')
@@ -200,6 +201,7 @@ if ~isfield(options, 'force_file')
   % compute and write FORCES
   if options.gui && ishandle(options.gui), waitbar(0.15, options.gui, [ mfilename ': compute DynMatrix PHON/QuantumEspresso (be patient)' ]); end
   [forces, geom] = sqw_phon_forces(geom, options);
+  if isempty(forces) return; end
   
   signal.UserData.FORCES = fileread(fullfile(p,'FORCES'));
 else
@@ -517,6 +519,7 @@ geom1 = import_poscar(poscar);
 % analyse chemical formula
 if isempty(geom1.symbols)
   sqw_phon_error([ mfilename ': the file ' poscar ' MUST contain the chemical formula of the compound (1st line or before number of atoms line).' ], options);
+  geom1=[]; return
 else
   % build the structure holding all elements with counts
   geom1.elements = [];
@@ -565,6 +568,7 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   fid = fopen(fullfile(p,'INPHON'),'w');
   if fid < 0
     sqw_phon_error([ mfilename ': could not create file ' fullfile(p,'INPHON') ], options);
+    geom1=[]; return
   end
   fprintf(fid, '# Control file for PHON to generate a supercell from %s\n', poscar);
   fprintf(fid, '#   PHON: <http://chianti.geol.ucl.ac.uk/~dario>\n');
@@ -608,6 +612,7 @@ else precmd=''; end
   if isempty(dir(fullfile(p,'SPOSCAR'))) || isempty(dir(fullfile(p,'DISP')))
     try; disp(fileread(fullfile(p,'phon.log'))); end
     sqw_phon_error([ mfilename ': Error executing PHON: could not create SPOSCAR and DISP file.' ], options);
+    geom1=[]; return
   end
   % modify 1st line so that the initial system name is retained
   geom2 = import_poscar(fullfile(p,'SPOSCAR'));
@@ -643,6 +648,7 @@ if isempty(dir(fullfile(p,'FORCES')))
     displacements = fileread(fullfile(p,'DISP'));
   catch
     sqw_phon_error([ mfilename ': the displacement file ' fullfile(p,'DISP') ' is missing. Reset initial POSCAR file and re-run (not a supercell).' ], options);
+    return
   end
   displacements(displacements == '"' | displacements == '\') = '';
   displacements = str2num(displacements);
@@ -697,6 +703,7 @@ if isempty(dir(fullfile(p,'FORCES')))
   fid = fopen(fullfile(p,'FORCES'), 'w');
   if fid < 0
     sqw_phon_error([ mfilename ': could not create file ' fullfile(p,'FORCES') ], options);
+    return
   end
   fprintf(fid, '%i\n', numel(forces));  % nb of displacements
   for index=1:numel(forces)
@@ -722,6 +729,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   fid = fopen(fullfile(p,'pw.d'), 'w');
   if fid < 0
     sqw_phon_error([ mfilename ': could not create file ' fullfile(p,'pw.d') ], options);
+    return
   end
   natoms = size(displaced.coords,1);
   ntyp   = numel(displaced.atomcount);
@@ -846,6 +854,9 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   ismetallic = strfind(L, 'the system is metallic');
   if ~isempty(ismetallic)
     sqw_phon_error([ mfilename ': The system is metallic but you have used occupations=''fixed''. Rebuild model with occupations=''smearing''.' ], options)
+    disp('occupations=')
+    disp(options.occupations);
+    return
   end
 
   forces_acting = strfind(L, 'Forces acting');
@@ -854,6 +865,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
     disp([ mfilename ': convergence NOT achieved.' ]);
     disp([ 'TRY: sqw_phonons(..., ''miximg_beta=0.3; nsteps=200; toldfe=1e-6; occupations=smearing; ecut=' num2str(round(ecut*1.5*13.6)) ''')' ])
     sqw_phon_error([ mfilename ': PWSCF convergence NOT achieved.' ], options)
+    return
   end
   L = L(forces_acting:end);
   % then read next natoms lines starting with 'atom', e.g.:
@@ -900,6 +912,7 @@ function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displa
         disp(options.potentials_full(:));
       end
       sqw_phon_error([ mfilename ': pseudo-potential missing for atom ' displaced.symbols{index} ], options);
+      return
     elseif numel(match) > 1
       % more than one match: select PBE-PAW if possible
       pbe = find(~cellfun('isempty', strfind(lower(match), 'pbe')));
@@ -999,4 +1012,4 @@ end
 if ~isdeployed && usejava('jvm') && usejava('desktop')
   disp([ '<a href="matlab:doc(''sqw_phonons'')">sqw_phonons help</a>' ])
 end
-error(message);
+disp(message);

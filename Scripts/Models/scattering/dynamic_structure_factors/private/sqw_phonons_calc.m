@@ -1,6 +1,6 @@
-function [decl,calc] = sqw_phonons_calc(options, status, calc_choice, read)
+function [decl,calc,signal] = sqw_phonons_calc(options, status, calc_choice, read)
 
-calc = ''; decl = '';
+calc = ''; decl = ''; signal=[];
 if nargin < 3, calc_choice = ''; end
 if nargin < 4, read = ''; end
 
@@ -13,6 +13,7 @@ switch upper(calc_choice)
 case 'ABINIT'
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   if isempty(strfind(status.(lower(options.calculator)),'abinis')) && isempty(options.command)
     options.command = status.(lower(options.calculator));
@@ -108,6 +109,7 @@ case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   % location of ELF pseudo-potentials is mandatory
   if isempty(options.potentials) && isempty(getenv('ELK_SPECIES_PATH'))
@@ -117,6 +119,7 @@ case 'ELK' % ===================================================================
       disp('  WARNING: if this is not the right location, use options.potentials=<location>');
     else
       sqw_phonons_error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location of elk/species>.' ], options)
+      return
     end
   end
   if ~isempty(options.potentials)
@@ -175,6 +178,7 @@ case 'EMT'
 case 'GPAW' % ==================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   
   decl = 'from gpaw import GPAW, PW, FermiDirac';
@@ -221,6 +225,7 @@ case 'GPAW' % ==================================================================
 case 'JACAPO' % ================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   
   % Requires to define variables under Ubuntu
@@ -281,6 +286,7 @@ case 'JACAPO' % ================================================================
 case 'NWCHEM' % ================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
@@ -342,6 +348,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   % best potentials for QE: SSSP http://materialscloud.org/sssp/
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   
   poscar = fullfile(options.target,'POSCAR_ASE');
@@ -354,10 +361,11 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
     st = 127;
   end
   if st ~= 0
-      disp(read)
-      disp(result)
+    disp(read)
+    disp(result)
     sqw_phonons_error([ mfilename ': failed converting input to POSCAR ' ...
       poscar ], options);
+    return
   end
 % QE specific options:
 %   options.mixing_ndim=scalar             number of iterations used in mixing
@@ -385,13 +393,15 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
 
   disp([ mfilename ': calling sqw_phon(' poscar ') with PHON/Quantum Espresso' ]);
   options.dos = 1;
-  sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ]);
+  decl = [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ];
+  sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, decl);
   
   signal=sqw_phon(poscar, options);
+  if isempty(signal), decl=[]; return; end
   
   % get 'atoms' back from python
-  if ~isempty(fullfile(target, 'atoms.mat'))
-    signal.UserData.atoms = load(fullfile(target, 'atoms.mat'));
+  if ~isempty(fullfile(options.target, 'atoms.mat'))
+    signal.UserData.atoms = load(fullfile(options.target, 'atoms.mat'));
   else
     signal.UserData.atoms = [];
   end
@@ -402,6 +412,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
 case 'VASP'
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
@@ -469,6 +480,7 @@ case 'VASP'
 
 otherwise
   sqw_phonons_error([ mfilename ': Unknown calculator ' options.calculator ], options);
+  return
 end
 % ------------------------------------------------------------------------------
 % end of specific parts for calculators
