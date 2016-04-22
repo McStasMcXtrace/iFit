@@ -443,7 +443,7 @@ if strcmpi(options.calculator, 'QUANTUMESPRESSO')
   % create the POSCAR input file for PHON
   % ASE is installed. We use it to create a proper POSCAR file, then we call sqw_phon (QE)
   poscar = fullfile(options.target,'POSCAR_ASE');
-  read = [ read '; from ase.io import write; ' ...
+  read = [ read 'from ase.io import write; ' ...
      'write("' poscar '",atoms, "vasp"); ' ...
      read1 ];
 end
@@ -783,18 +783,4 @@ function [f, signal] = sqw_phonons_plot(signal)
   drawnow
 
 % ------------------------------------------------------------------------------
-function sqw_phonons_error(message, options)
-
-if options.gui && ishandle(options.gui)
-  delete(options.gui);
-  errordlg(message, [ 'iFit: ' mfilename ' ' options.configuration ' FAILED' ]);
-end
-if ~isdeployed && usejava('jvm') && usejava('desktop')
-  disp([ '<a href="matlab:doc(''' mfilename ''')">help ' mfilename '</a> (click here to get help)' ])
-end
-sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'error', options, message);
-error(message);
-
-% ------------------------------------------------------------------------------
-
 
