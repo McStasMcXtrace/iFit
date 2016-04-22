@@ -5,7 +5,7 @@ if options.gui && ishandle(options.gui)
   errordlg(message, [ 'iFit: ' mfilename ' ' options.configuration ' FAILED' ]);
 end
 if ~isdeployed && usejava('jvm') && usejava('desktop')
-  disp([ '<a href="matlab:doc(''' mfilename ''')">help ' mfilename '</a> (click here to get help)' ])
+  disp([ '<a href="matlab:doc(''sqw_phonons'')">help sqw_phonons</a> (click here to get help)' ])
 end
 sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'error', options, message);
 disp(message);
