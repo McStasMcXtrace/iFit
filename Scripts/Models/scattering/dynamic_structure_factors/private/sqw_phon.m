@@ -864,7 +864,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   if isempty(forces_acting)
     disp(L);
     disp([ mfilename ': convergence NOT achieved.' ]);
-    disp([ 'TRY: sqw_phonons(..., ''miximg_beta=0.3; nsteps=200; toldfe=1e-6; occupations=smearing; ecut=' num2str(round(ecut*1.5*13.6)) ''')' ])
+    disp([ 'TRY: sqw_phonons(..., ''mixing_beta=0.3; nsteps=200; toldfe=1e-6; occupations=smearing; ecut=' num2str(round(ecut*1.5*13.6)) ''')' ])
     sqw_phon_error([ mfilename ': PWSCF convergence NOT achieved.' ], options)
     return
   end
