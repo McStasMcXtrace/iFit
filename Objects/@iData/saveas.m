@@ -323,7 +323,7 @@ case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLO
     n = [ n ' data set ' mat2str(size(a)) ];
     str = [ str n NL class2str('', a, 'flat') ];
   else            % event list
-    dat = zeros(size(a,1), ndims(a)+1);
+    dat = zeros(prod(size(a)), ndims(a)+1);
     lab = '# Data:';
     for index=1:ndims(a)
       dat(:,index) = getaxis(a, index); % store axes first
