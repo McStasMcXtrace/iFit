@@ -3,11 +3,12 @@ function s=iData_private_cleannaninf(s)
 %
 
 if isa(s,'iData')
-  if numel(a) > 1
-    s = [];
-    for index=1:numel(a)
-      s = [ s ; feval(mfilename, a(index)) ];
+  if numel(s) > 1
+    a = [];
+    for index=1:numel(s)
+      a = [ a ; feval(mfilename, s(index)) ];
     end
+    s = a;
   else
     s=set(s,'Signal',iData_private_cleannaninf(get(s,'Signal')));
     s=set(s,'Error', iData_private_cleannaninf(get(s,'Error')));
