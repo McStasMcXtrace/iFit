@@ -841,13 +841,15 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   pw = pwd;
   cd(p);
 
-    if isfield(options, 'mpi') && ~isempty(options.mpi) && options.mpi > 1
-      [status, result] = system([ precmd options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ' < pw.d > pw.out' ]);
-    else
-      [status, result] = system([ precmd options.command ' < pw.d > pw.out' ]);
-    end
+  if isfield(options, 'mpi') && ~isempty(options.mpi) && options.mpi > 1
+    [status, result] = system([ precmd options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ' < pw.d > pw.out' ]);
+  else
+    [status, result] = system([ precmd options.command ' < pw.d > pw.out' ]);
+  end
 
   cd(pw);
+  % clear wavefunctions, which can be very large
+  delete(fullfile(p, '*.wfc*'));
 
   % READ the QE/PWSCF output file and search for string 'Forces acting'
   L = fileread(fullfile(p, 'pw.out'));
