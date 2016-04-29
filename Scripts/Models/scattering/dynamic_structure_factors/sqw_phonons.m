@@ -326,6 +326,11 @@ if options.gui
   if strcmpi(options.calculator,'qe') options.calculator='quantumespresso'; end
 end % GUI
 
+% make sure we find ther 'configuration' also from ifitpath
+if isempty(dir(configuration)) && ~isempty(dir(fullfile(ifitpath,'Data',configuration)))
+  configuration = fullfile(ifitpath,'Data',configuration);
+ end
+
 % ==============================================================================
 %                               BUILD MODEL
 % ==============================================================================
@@ -337,12 +342,12 @@ if isfield(options,'conv_thr') && ~isfield(options,'toldfe')
     options.toldfe = options.conv_thr; end
     
 if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
-    options.occupations=0.27; % recommended by SSSP
-  elseif strcmp(options.occupations, 'semiconductor')
-    options.occupations=0.0001;
-  elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
-    options.occupations=-1;
-  end
+  options.occupations=0.27; % recommended by SSSP
+elseif strcmp(options.occupations, 'semiconductor')
+  options.occupations=0.0001;
+elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
+  options.occupations=-1;
+end
 
 options.configuration = configuration;
 
