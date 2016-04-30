@@ -83,7 +83,6 @@ for index=1:length(varargin)
         s(end+1).type='.';
         s(end).subs=k{1};
       end
-      
       out{end+1} = subsref(this, s);              % calls subsref directly (single subsref level)
     end
   else % this is a compound property, such as get(this,'Data.Signal')

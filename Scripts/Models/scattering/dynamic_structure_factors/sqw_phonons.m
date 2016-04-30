@@ -326,6 +326,11 @@ if options.gui
   if strcmpi(options.calculator,'qe') options.calculator='quantumespresso'; end
 end % GUI
 
+% make sure we find ther 'configuration' also from ifitpath
+if isempty(dir(configuration)) && ~isempty(dir(fullfile(ifitpath,'Data',configuration)))
+  configuration = fullfile(ifitpath,'Data',configuration);
+ end
+
 % ==============================================================================
 %                               BUILD MODEL
 % ==============================================================================
@@ -337,12 +342,12 @@ if isfield(options,'conv_thr') && ~isfield(options,'toldfe')
     options.toldfe = options.conv_thr; end
     
 if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
-    options.occupations=0.27; % recommended by SSSP
-  elseif strcmp(options.occupations, 'semiconductor')
-    options.occupations=0.0001;
-  elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
-    options.occupations=-1;
-  end
+  options.occupations=0.27; % recommended by SSSP
+elseif strcmp(options.occupations, 'semiconductor')
+  options.occupations=0.0001;
+elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
+  options.occupations=-1;
+end
 
 options.configuration = configuration;
 
@@ -426,32 +431,57 @@ end
 if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': configuring ' options.calculator ]); end
 
 if strcmpi(options.calculator, 'QUANTUMESPRESSO') 
+  read_optim = '';
   if ~isempty(options.optimizer)
     % specific case for QE. As it is not directly supported by ASE, the miniasation
-    % must use an other ASE-compliant code. We try ABINIT, then GPAW.
-    if ~isempty(status.abinit)
-      [decl, calc] = sqw_phonons_calc(options, status, 'ABINIT');
-    elseif ~isempty(status.gpaw)
+    % must use an other ASE-compliant code. We try ABINIT, and GPAW.
+    if ~isempty(status.gpaw)
       [decl, calc] = sqw_phonons_calc(options, status, 'GPAW');
+    elseif ~isempty(status.abinit)
+      [decl, calc] = sqw_phonons_calc(options, status, 'ABINIT');
     else
       disp([ mfilename ': WARNING: can not perform optimization with QuantumEspresso.' ])
       disp('    This step requires to use an other DFT code. Install either ABINIT or GPAW.');
       disp('    Skipping.');
+      decl = [];
     end
-    read = [ read optim ];
+    if ~isempty(decl) 
+      read_optim = [ read decl '; ' calc '; ' optim ];
+    end
   end
   % create the POSCAR input file for PHON
   % ASE is installed. We use it to create a proper POSCAR file, then we call sqw_phon (QE)
   poscar = fullfile(options.target,'POSCAR_ASE');
-  read = [ read '; from ase.io import write; ' ...
-     'write("' poscar '",atoms, "vasp"); ' ...
-     read1 ];
+     
+  % try the optimisation. If fails, falls back to no-optim with message and go on.
+  if ~isempty(read_optim)
+    try
+      if isunix, setenv('LD_LIBRARY_PATH',''); end
+      disp([ mfilename ': The initial structure will first be optimized using ' options.optimizer ]);
+      disp(calc)
+      disp(optim)
+      disp(' ')
+      [decl, calc,signal] = sqw_phonons_calc(options, status, options.calculator, ...
+         [ read_optim  'from ase.io import write; ' ...
+                       'write("' poscar '",atoms, "vasp"); ' ...
+                       read1 ]);
+      if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
+    catch
+      disp([ mfilename ': optimization failed. Could be a missing pseudo-potential for elements. Proceeding with phonons.' ])
+      read_optim = '';
+    end
+  end
+  if isempty(read_optim)
+    if isunix, setenv('LD_LIBRARY_PATH',''); end
+    [decl, calc,signal] = sqw_phonons_calc(options, status, options.calculator, ...
+       [ read  'from ase.io import write; ' ...
+               'write("' poscar '",atoms, "vasp"); ' ...
+               read1 ]);
+    if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
+  end
 end
 
-if isunix, setenv('LD_LIBRARY_PATH',''); end
-[decl, calc] = sqw_phonons_calc(options, status, options.calculator, read);
-if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
-  
+
 
 
 
@@ -460,6 +490,12 @@ if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
 
 
 if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
+
+  % init calculator
+  if isunix, setenv('LD_LIBRARY_PATH',''); end
+  [decl, calc,signal] = sqw_phonons_calc(options, status, options.calculator, read);
+  if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
+  if isempty(decl) && isempty(signal), return; end
 
   if options.gui && ishandle(options.gui), waitbar(0.10, options.gui, [ mfilename ': writing python script ASE/' options.calculator ]); end
 
@@ -526,6 +562,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     disp(result)
     sqw_phonons_error([ mfilename ': failed read input ' ...
       configuration ], options);
+    return
   end
   sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, calc);
   % get 'atoms' back from python
@@ -565,6 +602,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
     sqw_phonons_error([ mfilename ': failed calling ASE with script ' ...
       fullfile(target,'sqw_phonons_build.py') ], options);
+    return
   end
   cd(pw)
 
@@ -575,6 +613,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   catch
     setenv('LD_LIBRARY_PATH',ld_library_path);
     sqw_phonons_error([ mfilename ': ' options.calculator ' failed. Temporary files and Log are in ' target ], options)
+    return
   end
   if ~isempty(dir(configuration))
     [dummy, signal.UserData.input]= fileparts(configuration);
@@ -783,18 +822,4 @@ function [f, signal] = sqw_phonons_plot(signal)
   drawnow
 
 % ------------------------------------------------------------------------------
-function sqw_phonons_error(message, options)
-
-if options.gui && ishandle(options.gui)
-  delete(options.gui);
-  errordlg(message, [ 'iFit: ' mfilename ' ' options.configuration ' FAILED' ]);
-end
-if ~isdeployed && usejava('jvm') && usejava('desktop')
-  disp([ '<a href="matlab:doc(''' mfilename ''')">help ' mfilename '</a> (click here to get help)' ])
-end
-sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'error', options, message);
-error(message);
-
-% ------------------------------------------------------------------------------
-
 

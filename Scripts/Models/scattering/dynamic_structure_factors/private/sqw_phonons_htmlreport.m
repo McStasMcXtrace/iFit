@@ -63,7 +63,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     
     % evaluate model (low memory requirements for smaller data files)
     if isempty(data)
-      qh=linspace(0.01,.5,20);qk=qh; ql=qh; w=linspace(0.01,100,51);
+      qh=linspace(0.01,1.5,30);qk=qh; ql=qh; w=linspace(0.01,100,51);
       data=iData(object,[],qh,qk,ql,w);
     end
     
@@ -85,7 +85,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     saveas(Phonons_HKLE, fullfile(options.target, 'Phonons_HKLE.h5'), 'mantid');
     clear Phonons_HKLE
     
-    Phonons_powder = sqw_powder(object); log_Phonons_powder=log(Phonons_powder);
+    Phonons_powder = sqw_powder(data); log_Phonons_powder=log(Phonons_powder);
     builtin('save', fullfile(options.target, 'Phonons_powder.mat'), 'Phonons_powder');
     saveas(log_Phonons_powder, fullfile(options.target, 'Phonons_powder.png'),'png','tight');
     saveas(log_Phonons_powder, fullfile(options.target, 'Phonons_powder.fig'), 'fig', 'tight');
@@ -343,7 +343,7 @@ if options.htmlreport && ~isempty(filename)
     fprintf(fid, '<div style="text-align: center;">\n');
     fprintf(fid, '<a href="%s"><img src="%s" title="%s" align="middle"></a></div><br>\n', 'Phonons_powder.png', 'Phonons_powder.png', 'Phonons_powder.png');
     fprintf(fid, '<p>and is available as:<br><ul>\n');
-    fprintf(fid, '<li>[ <a href="%s">%s</a> ] is a flat text file which contains the vDOS data set.</li>\n', 'Phonons_powder.dat', 'Phonons_powder.dat');
+    fprintf(fid, '<li>[ <a href="%s">%s</a> ] is a flat text file which contains the powder average data set.</li>\n', 'Phonons_powder.dat', 'Phonons_powder.dat');
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>.</li>\n', 'Phonons_powder.h5', 'Phonons_powder.h5');
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>. Use </i>set(gcf,''visible'',''on'')</i> after loading.</li>\n', 'Phonons_powder.fig', 'Phonons_powder.fig');
     fprintf(fid, '<li>[ <a href="%s">%s</a> ] an Adobe PDF, to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>.</li>\n', 'Phonons_powder.pdf', 'Phonons_powder.pdf');
