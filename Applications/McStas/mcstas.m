@@ -545,7 +545,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   if isfield(options,'variable_names')
     if nargin < 3, 
       ind = cell(1,length(options.variable_names)); ind{1}=1; 
-      if ~exist('criteria')
+      if ~exist('criteria','var')
         criteria = [];
         sim      = {};
       end

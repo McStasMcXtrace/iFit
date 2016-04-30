@@ -221,13 +221,13 @@ function s=Sqw_t2e(s)
   t = s{1};
   
   % check if the tof is given in channels
-  if unique(diff(t)) == 1
+  if all(unique(diff(t(:))) == 1)
     % use ChannelWidth
     if ~isempty(chwidth) && chwidth
       t = t*chwidth;
     else
       disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 is given in time channels.' ])
-      disp('    This is probably NOT what you want. A will still try to use it as it is...')
+      disp('    This is probably NOT what you want. I will still try to use it as it is...')
       disp('    Define e.g. s.ChannelWidth=<channel width in time unit>');
     end
   end
@@ -306,27 +306,57 @@ function [s,lambda,distance,chwidth] = Sqw_search_lambda(s)
 
   % no wavelength defined: search in object
   if isempty(lambda)
-    lambda_field=[ findfield(s, 'wavelength') findfield(s, 'lambda')  ];
+    lambda_field=[ findfield(s, 'wavelength','numeric') ...
+                   findfield(s, 'lambda','numeric')  ];
     if ~isempty(lambda_field), 
-      if iscell(lambda_field), lambda_field=lambda_field{1}; end
+      if iscell(lambda_field)
+        for index=1:numel(lambda_field)
+          if isscalar(get(s, lambda_field{index})) 
+            lambda_field=lambda_field{index};
+            break;
+          end
+        end
+      end
       lambda = mean(get(s, lambda_field));
       disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident wavelength=' num2str(lambda) ' [Angs] from ' lambda_field ]);
     end
   end
+  % search incident energy
   if isempty(lambda)
-    energy_field = [ findfield(s, 'IncidentEnergy') ];
+    energy_field = [ findfield(s, 'IncidentEnergy','numeric') ...
+                     findfield(s, 'fixed_energy','numeric') ...
+                     findfield(s, 'energy','numeric') ...
+                     findfield(s, 'ei','exact numeric') ...
+                     findfield(s, 'Ei','exact numeric') ];
     if ~isempty(energy_field)
-      if iscell(energy_field), energy_field=energy_field{1}; end
+      if iscell(energy_field)
+        for index=1:numel(energy_field)
+          if isscalar(get(s, energy_field{index})) 
+            energy_field=energy_field{index};
+            break;
+          end
+        end
+      end
       energy = mean(get(s, energy_field));
       disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident energy=' num2str(energy) ' [meV] from ' energy_field ]);
       lambda = sqrt(81.805/energy);
       setalias(s, 'IncidentEnergy', energy, 'Incident Energy [meV]');
     end
   end
+  % search incident wavevector
   if isempty(lambda)
-    momentum_field=[ findfield(s, 'IncidentWavevector') ];
+    momentum_field=[ findfield(s, 'IncidentWavevector','numeric') ...
+                     findfield(s, 'ki','exact numeric') ...
+                     findfield(s, 'Ki','exact numeric') ];
     if ~isempty(momentum_field), 
-      if iscell(momentum_field), momentum_field=momentum_field{1}; end
+      if iscell(momentum_field)
+        for index=1:numel(momentum_field)
+          if isscalar(get(s, momentum_field{index})) 
+            momentum_field=momentum_field{index};
+            break;
+          end
+        end
+      end
       momentum = mean(get(s, momentum_field));
       lambda=2*pi/momentum;
       disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident wavevector=' num2str(momentum) ' [Angs-1] from ' momentum_field ]);

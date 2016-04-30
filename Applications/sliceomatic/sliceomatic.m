@@ -249,6 +249,7 @@ function sliceomatic(p1,p2,xmesh,ymesh,zmesh)
           dragprep(newa(2));
           setpointer(gcf,'SOM leftright');
           set(d.motionmetaslice,'visible','off');
+          
         end
        case 'Ynew'
         if strcmp(get(gcf,'selectiontype'),'normal')
@@ -256,7 +257,7 @@ function sliceomatic(p1,p2,xmesh,ymesh,zmesh)
           Y=pt(1,2);
           newa=arrow(gcbo,'right',[0 Y]);
           set(gcf,'currentaxes',d.axmain);
-          new=localslice(d.data, [], Y, []);
+          new=localslice(d.data, [], Y, [])
           setappdata(new,'controlarrow',newa);
           setappdata(newa(2),'arrowslice',new);
           set(new,'alphadata',get(new,'cdata'),'alphadatamapping','scaled');
@@ -1161,8 +1162,12 @@ function s=localslice(data, X, Y, Z, oldslice)
   ds=size(data);
 
   if ~isempty(X)
-    xi=round(X);
-    if isnan(d.xmesh) == 1
+    if isvector(d.xmesh)
+      [~,xi]=min(abs(X -d.xmesh));
+    else
+      xi=round(X);
+    end
+    if all(isnan(d.xmesh) == 1)
       if xi > 0 && xi <= ds(2)
         cdata=reshape(data(:,xi,:),ds(1),ds(3));
         [xdata ydata zdata]=meshgrid(xi,1:ds(1),1:ds(3));
@@ -1179,6 +1184,7 @@ function s=localslice(data, X, Y, Z, oldslice)
         locate_xi=histc(xi,d.xmesh);
         slice_number=find(locate_xi);
       end
+      if isempty(slice_number) && xi > 0 && xi <= ds(2), slice_number=xi; end
       if ~isempty(slice_number) && slice_number > 0 && slice_number <= ds(2)
         cdata=reshape(data(:,slice_number,:),ds(1),ds(3));
         [xdata ydata zdata]=meshgrid(X,d.ymesh,d.zmesh);
@@ -1189,8 +1195,12 @@ function s=localslice(data, X, Y, Z, oldslice)
     end
     
   elseif ~isempty(Y)
-    yi=round(Y);
-    if isnan(d.ymesh) == 1
+    if isvector(d.ymesh)
+      [~,yi]=min(abs(Y -d.ymesh));
+    else
+      yi=round(Y);
+    end
+    if all(isnan(d.ymesh) == 1)
       if yi > 0 && yi <= ds(1)
         cdata=reshape(data(yi,:,:),ds(2),ds(3));
         [xdata ydata zdata]=meshgrid(1:ds(2),yi,1:ds(3));
@@ -1207,6 +1217,7 @@ function s=localslice(data, X, Y, Z, oldslice)
         locate_yi=histc(yi,d.ymesh);
         slice_number=find(locate_yi);
       end
+      if isempty(slice_number) && yi > 0 && yi <= ds(1), slice_number=yi; end
       if ~isempty(slice_number) && slice_number > 0 && slice_number <= ds(1)
         cdata=reshape(data(slice_number,:,:),ds(2),ds(3));
         [xdata ydata zdata]=meshgrid(d.xmesh,Y,d.zmesh);
@@ -1217,7 +1228,11 @@ function s=localslice(data, X, Y, Z, oldslice)
     end
     
   elseif ~isempty(Z)
-    zi=round(Z);
+    if isvector(d.zmesh)
+      [~,zi]=min(abs(Z -d.zmesh));
+    else
+      zi=round(Z);
+    end
     if isnan(d.zmesh) == 1
       if zi > 0 && zi <= ds(3)
         cdata=reshape(data(:,:,zi),ds(1),ds(2));
@@ -1235,6 +1250,7 @@ function s=localslice(data, X, Y, Z, oldslice)
         locate_zi=histc(zi,d.zmesh);
         slice_number=find(locate_zi);
       end
+      if isempty(slice_number) && zi > 0 && zi <= ds(3), slice_number=zi; end
       if ~isempty(slice_number) && slice_number > 0 && slice_number <= ds(3)
         cdata=reshape(data(:,:,slice_number),ds(1),ds(2));
         [xdata ydata zdata]=meshgrid(d.xmesh,d.ymesh,Z);

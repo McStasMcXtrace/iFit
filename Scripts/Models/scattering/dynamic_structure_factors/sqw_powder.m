@@ -64,7 +64,7 @@ else
 end
 
 if isa(a, 'iFunc')
-  if isempty(x), x=linspace(0.01, 4,  70); end  % default q
+  if isempty(x), x=linspace(0.01, 4,  30); end  % default q
   if isempty(y), y=linspace(0,    50, 51); end  % default w
 
   if ~isvector(x), x=linspace( min(x(:)), max(x(:)), max(size(x))); end

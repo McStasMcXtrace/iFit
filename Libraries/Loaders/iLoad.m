@@ -301,6 +301,10 @@ function [data, format] = iLoad(filename, loader, varargin)
       end
     end
     
+    if isempty(dir(filename)) && ~isempty(dir(fullfile(ifitpath,'Data',filename)))
+          filename = fullfile(ifitpath,'Data',filename);
+    end
+    
     if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
     
     % handle single file name (possibibly with wildcard)
@@ -387,7 +391,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
     % handle the '%20' character replacement as space
     filename = strrep(filename, '%20',' ');
-    if filename(end) == ';', filename(end)=''; end % in case there is a leading ';' in place of \n
+    while filename(end) == ';', filename(end)=''; end % in case there is a leading ';' in place of \n
     try
       [data, format] = iLoad_import(filename, loader, varargin{:});
     catch ME

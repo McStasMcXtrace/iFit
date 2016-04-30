@@ -1,6 +1,6 @@
-function [decl,calc] = sqw_phonons_calc(options, status, calc_choice, read)
+function [decl,calc,signal] = sqw_phonons_calc(options, status, calc_choice, read)
 
-calc = ''; decl = '';
+calc = ''; decl = ''; signal=[];
 if nargin < 3, calc_choice = ''; end
 if nargin < 4, read = ''; end
 
@@ -13,6 +13,7 @@ switch upper(calc_choice)
 case 'ABINIT'
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   if isempty(strfind(status.(lower(options.calculator)),'abinis')) && isempty(options.command)
     options.command = status.(lower(options.calculator));
@@ -77,7 +78,7 @@ case 'ABINIT'
     calc = [ calc sprintf(', kpts=[%i,%i,%i]', options.kpoints) ];
   end
   if ~isempty(options.xc)
-    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+    calc = [ calc sprintf(', xc="%s"', options.xc) ];
   end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     % nbdblock, npband, AUTOPARAL=1
@@ -88,7 +89,7 @@ case 'ABINIT'
     options.iscf=17;
   end
   if isfield(options, 'pps') && ~isempty(options.pps)
-    calc = [ calc sprintf(', pps=''%s''', options.pps) ];
+    calc = [ calc sprintf(', pps="%s"', options.pps) ];
   end
   if options.nbands > 0
     calc = [ calc sprintf(', nband=%i', options.nbands) ];
@@ -108,6 +109,7 @@ case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   % location of ELF pseudo-potentials is mandatory
   if isempty(options.potentials) && isempty(getenv('ELK_SPECIES_PATH'))
@@ -117,6 +119,7 @@ case 'ELK' % ===================================================================
       disp('  WARNING: if this is not the right location, use options.potentials=<location>');
     else
       sqw_phonons_error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location of elk/species>.' ], options)
+      return
     end
   end
   if ~isempty(options.potentials)
@@ -150,7 +153,7 @@ case 'ELK' % ===================================================================
     calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
   end
   if ~isempty(options.xc)
-    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+    calc = [ calc sprintf(', xc="%s"', options.xc) ];
   end
   if options.nbands > 0
     calc = [ calc sprintf(', nvbse=%i', options.nbands) ];
@@ -175,6 +178,7 @@ case 'EMT'
 case 'GPAW' % ==================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   
   decl = 'from gpaw import GPAW, PW, FermiDirac';
@@ -190,19 +194,19 @@ case 'GPAW' % ==================================================================
   if options.ecut > 0
     calc = [ calc sprintf(', mode=PW(%g)', options.ecut) ];
   elseif ~isempty(options.mode)
-    calc = [ calc sprintf(', mode=''%s''', options.mode) ];
+    calc = [ calc sprintf(', mode="%s"', options.mode) ];
   end
   if ~isempty(options.xc)
-    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+    calc = [ calc sprintf(', xc="%s"', options.xc) ];
   end
   if ~isempty(options.diagonalization)
     if strncmpi(options.diagonalization, 'dav', 3) options.diagonalization='dav'; 
     elseif strcmpi(options.diagonalization, 'cg')  options.diagonalization='cg';
     else options.diagonalization='rmm-diis'; end
-    calc = [ calc sprintf(', eigensolver=''%s''', options.diagonalization) ];
+    calc = [ calc sprintf(', eigensolver="%s"', options.diagonalization) ];
   end
   if ~isempty(options.potentials)
-    calc = [ calc sprintf(', setups=''%s''', options.potentials) ];
+    calc = [ calc sprintf(', setups="%s"', options.potentials) ];
   end
   if options.nbands > 0
     calc = [ calc sprintf(', nbands=%i', options.nbands) ];
@@ -211,7 +215,7 @@ case 'GPAW' % ==================================================================
     calc = [ calc sprintf(', maxiter=%i', options.nsteps) ];
   end
   if options.toldfe > 0
-    calc = [ calc sprintf(', convergence={''energy'':%g}', options.toldfe) ];
+    calc = [ calc sprintf(', convergence={"energy":%g}', options.toldfe) ];
   end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
@@ -221,6 +225,7 @@ case 'GPAW' % ==================================================================
 case 'JACAPO' % ================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   
   % Requires to define variables under Ubuntu
@@ -244,7 +249,7 @@ case 'JACAPO' % ================================================================
   decl = 'from ase.calculators.jacapo import Jacapo';
   calc = 'calc = Jacapo(symmetry=False';
   if ~isempty(options.xc)
-    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+    calc = [ calc sprintf(', xc="%s"', options.xc) ];
   end
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
@@ -281,6 +286,7 @@ case 'JACAPO' % ================================================================
 case 'NWCHEM' % ================================================================
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
@@ -297,14 +303,14 @@ case 'NWCHEM' % ================================================================
   
   
   decl = 'from ase.calculators.nwchem import NWChem';
-  calc = sprintf('calc = NWChem(xc=''%s'', odft=True', ...
+  calc = sprintf('calc = NWChem(xc="%s", odft=True', ...
     options.xc);
   % check if we use KPTS
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', raw="nwpw\\n  monkhorst-pack %i %i %i\\nend"', options.kpoints) ];
   end
   if ~isempty(options.potentials)
-    calc = [ calc sprintf(', basis=''%s''', options.potentials) ];
+    calc = [ calc sprintf(', basis="%s"', options.potentials) ];
   end
   % smearing is in Hartree
   if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
@@ -326,7 +332,7 @@ case 'NWCHEM' % ================================================================
     % calc = [ calc sprintf(', nbands=%i', options.nbands) ];
   end
   if options.toldfe > 0
-    calc = [ calc sprintf(', convergence={''energy'':%g}', options.toldfe) ];
+    calc = [ calc sprintf(', convergence={"energy":%g}', options.toldfe) ];
   end
   if options.nsteps > 0
     calc = [ calc sprintf(', iterations=%i', options.nsteps) ];
@@ -342,6 +348,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   % best potentials for QE: SSSP http://materialscloud.org/sssp/
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   
   poscar = fullfile(options.target,'POSCAR_ASE');
@@ -354,10 +361,11 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
     st = 127;
   end
   if st ~= 0
-      disp(read)
-      disp(result)
+    disp(read)
+    disp(result)
     sqw_phonons_error([ mfilename ': failed converting input to POSCAR ' ...
       poscar ], options);
+    return
   end
 % QE specific options:
 %   options.mixing_ndim=scalar             number of iterations used in mixing
@@ -383,15 +391,17 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   if isscalar(options.occupations), options.occupations=options.occupations/Ry; end
   options.mpirun = status.mpirun;
 
-  disp([ mfilename ': calling sqw_phon(' poscar ') with PHON/Quantum Espresso' ]);
+  disp([ mfilename ': calling sqw_phon(''' poscar ''') with PHON/Quantum Espresso' ]);
   options.dos = 1;
-  sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ]);
+  decl = [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ];
+  sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, decl);
   
   signal=sqw_phon(poscar, options);
+  if isempty(signal), decl=[]; return; end
   
   % get 'atoms' back from python
-  if ~isempty(fullfile(target, 'atoms.mat'))
-    signal.UserData.atoms = load(fullfile(target, 'atoms.mat'));
+  if ~isempty(fullfile(options.target, 'atoms.mat'))
+    signal.UserData.atoms = load(fullfile(options.target, 'atoms.mat'));
   else
     signal.UserData.atoms = [];
   end
@@ -402,6 +412,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
 case 'VASP'
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
   end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
@@ -447,10 +458,10 @@ case 'VASP'
   end
     
   if ~isempty(options.xc)
-    calc = [ calc sprintf(', xc=''%s''', options.xc) ];
+    calc = [ calc sprintf(', xc="%s"', options.xc) ];
   end
   if isfield(options, 'pps') && ~isempty(options.pps)
-    calc = [ calc sprintf(', setups=''%s''', options.pps) ];
+    calc = [ calc sprintf(', setups="%s"', options.pps) ];
   end
   if options.nbands > 0
     calc = [ calc sprintf(', nbands=%i', options.nbands) ];
@@ -469,6 +480,7 @@ case 'VASP'
 
 otherwise
   sqw_phonons_error([ mfilename ': Unknown calculator ' options.calculator ], options);
+  return
 end
 % ------------------------------------------------------------------------------
 % end of specific parts for calculators
