@@ -258,7 +258,7 @@ if isempty(options.calculator)
 end
 
 if strcmp(configuration,'gui')
-  options.gui=1;
+  options.gui='init';
   configuration=[];
 end
 
@@ -269,7 +269,7 @@ end
 % ==============================================================================
 %                               GUI (dialog)
 % ==============================================================================
-if options.gui
+if ~isempty(options.gui) && ~isnan(options.gui)
   % pop-up a simple dialog requesting for:
   %  * configuration
   %  * calculator
@@ -428,7 +428,7 @@ end
 
 % ------------------------------------------------------------------------------
 % handle supported calculators: decl and calc
-if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': configuring ' options.calculator ]); end
+if ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': configuring ' options.calculator ]); end
 
 if strcmpi(options.calculator, 'QUANTUMESPRESSO') 
   read_optim = '';
@@ -497,7 +497,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   if isunix, setenv('LD_LIBRARY_PATH',ld_library_path); end
   if isempty(decl) && isempty(signal), return; end
 
-  if options.gui && ishandle(options.gui), waitbar(0.10, options.gui, [ mfilename ': writing python script ASE/' options.calculator ]); end
+  if ishandle(options.gui), waitbar(0.10, options.gui, [ mfilename ': writing python script ASE/' options.calculator ]); end
 
   if strcmpi(options.calculator, 'GPAW')
     % GPAW Bug: gpaw.aseinterface.GPAW does not support pickle export for 'input_parameters'
@@ -517,19 +517,54 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     decl, ...
     'from ase.phonons import Phonons', ...
     'import pickle', ...
+    'import numpy', ...
+    'import scipy.io as sio', ...
     '# Setup crystal and calculator', ...
     read, ...
     calc, ...
     optim, ...
     '# Phonon calculator', ...
-  sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=0.05)',options.supercell), ...
+    sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=0.05)',options.supercell), ...
     'ph.run()', ...
+    'print "Computing Forces\n"', ...
     '# Read forces and assemble the dynamical matrix', ...
     'ph.read(acoustic=True)', ...
-    '# save ph', ...
+    '# save FORCES and phonon object', ...
+  [ 'sio.savemat("' fullfile(target, 'FORCES.mat') '", { "FORCES": ph.C_N })' ], ...
   [ 'fid = open(''' fullfile(target, 'ph.pkl') ''',''wb'')' ], ...
     sav, ...
-    'fid.close()' };
+    'fid.close()', ...
+    '# additional information', ...
+    'atoms.set_calculator(calc)', ...
+    'print "Computing atoms properties\n"', ...
+    'try: magnetic_moment    = atoms.get_magnetic_moment()', ...
+    'except: magnetic_moment=0', ...
+    'try: kinetic_energy     = atoms.get_kinetic_energy()', ... 
+    'except: kinetic_energy=0', ...
+    'try: potential_energy   = atoms.get_potential_energy()',... 
+    'except: potential_energy=0', ...
+    'try: stress             = atoms.get_stress()', ... 
+    'except: stress=0', ...
+    'try: total_energy       = atoms.get_total_energy()', ...
+    'except: total_energy=0', ...
+    'try: angular_momentum   = atoms.get_angular_momentum()', ... '
+    'except: angular_momentum=0', ...
+    'try: charges            = atoms.get_charges();', ...
+    'except: charges=0', ...
+    'try: dipole_moment      = atoms.get_dipole_moment()', ... 
+    'except: dipole_moment=0', ...
+    'try: moments_of_inertia = atoms.get_moments_of_inertia()', ...
+    'except: moments_of_inertia=0', ...
+  [ 'sio.savemat("' fullfile(target, 'atoms_properties.mat') '", {' ...
+    '"magnetic_moment": magnetic_moment, ' ...
+    '"kinetic_energy": kinetic_energy, ' ...
+    '"potential_energy": potential_energy, ' ...
+    '"stress": stress, ' ...
+    '"total_energy": total_energy, ' ...
+    '"angular_momentum": angular_momentum, ' ...
+    '"charges": charges, ' ...
+    '"dipole_moment": dipole_moment, ' ...
+    '"moments_of_inertia": moments_of_inertia })' ] };
   % end   python --------------------------
 
   % write the script in the target directory
@@ -565,13 +600,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     return
   end
   sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, calc);
-  % get 'atoms' back from python
-  if ~isempty(fullfile(target, 'atoms.mat'))
-    atoms = load(fullfile(target, 'atoms.mat'));
-  else
-    atoms = [];
-  end
-
+  
   % call python script with calculator
   cd(target)
   if ~isdeployed && usejava('jvm') && usejava('desktop')
@@ -585,7 +614,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     disp([ '  The initial structure will first be optimized using ' options.optimizer ]);
   end
 
-  if options.gui && ishandle(options.gui), waitbar(0.15, options.gui, [ mfilename ': computing DynMatrix ASE/' options.calculator ' (be patient)' ]); end
+  if ishandle(options.gui), waitbar(0.15, options.gui, [ mfilename ': computing DynMatrix ASE/' options.calculator ' (be patient)' ]); end
 
   result = '';
   if isunix, setenv('LD_LIBRARY_PATH',''); end
@@ -607,9 +636,9 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   cd(pw)
 
   % then read the pickle file to store it into the model
-  if options.gui && ishandle(options.gui), waitbar(0.7, options.gui, [ mfilename ': building model' ]); end
+  if ishandle(options.gui), waitbar(0.7, options.gui, [ mfilename ': building model' ]); end
   try
-    signal.UserData.ph_ase = fileread(fullfile(target, 'ph.pkl')); % binary
+    signal.UserData.phonons = fileread(fullfile(target, 'ph.pkl')); % binary
   catch
     setenv('LD_LIBRARY_PATH',ld_library_path);
     sqw_phonons_error([ mfilename ': ' options.calculator ' failed. Temporary files and Log are in ' target ], options)
@@ -620,7 +649,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   else
     signal.UserData.input = configuration;
   end
-
+  
   signal.Name           = [ 'Sqw_ASE_' signal.UserData.input ' Phonon/ASE/' options.calculator ' DHO [' mfilename ']' ];
 
   signal.Description    = [ 'S(q,w) 3D dispersion Phonon/ASE/' options.calculator ' with DHO line shape. ' configuration ];
@@ -635,6 +664,31 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   signal.Dimension      = 4;         % dimensionality of input space (axes) and result
 
   signal.Guess = [ 1 .1 0 10 ];
+  
+  if ~isempty(fullfile(target, 'FORCES.mat'))
+    signal.UserData.FORCES = load(fullfile(target, 'FORCES.mat'));
+  end
+  
+  % get 'atoms' back from python
+  if ~isempty(fullfile(target, 'atoms.mat'))
+    atoms = load(fullfile(target, 'atoms.mat'));
+  else
+    atoms = [];
+  end
+  % get 'atoms' properties back from python
+  if ~isempty(fullfile(target, 'atoms_properties.mat'))
+    properties = load(fullfile(target, 'atoms_properties.mat'));
+  else
+    properties = [];
+  end
+  
+  % merge atoms and the properties
+  if isstruct(atoms) && isstruct(properties)
+    pairs = [fieldnames(atoms), struct2cell(atoms); fieldnames(properties), struct2cell(properties)].';
+    atoms = struct(pairs{:});
+  elseif isstruct(properties)
+    atoms = properties;
+  end
 
   if ~isempty(dir(configuration))
     signal.UserData.configuration = fileread(configuration);
@@ -657,7 +711,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
   [ 'if isempty(dir(fullfile(target, ''ph.pkl'')))' ], ...
     '  fid=fopen(fullfile(target, ''ph.pkl''), ''w'');', ...
     '  if fid==-1, error([ ''model '' this.Name '' '' this.Tag '' could not write ph.pkl into '' target ]); end', ...
-    '  fprintf(fid, ''%s\n'', this.UserData.ph_ase);', ...
+    '  fprintf(fid, ''%s\n'', this.UserData.phonons);', ...
     '  fclose(fid);', ...
     'end', ...
   [ '  fid=fopen(fullfile(target,''sqw_phonons_eval.py''),''w'');' ], ...
@@ -788,9 +842,9 @@ sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'done', options, 
 
 % handle autoplot option
 if options.autoplot
-  if options.gui && ishandle(options.gui), waitbar(0.75, options.gui, [ mfilename ': plotting phonons and DOS' ]); end
+  if ishandle(options.gui), waitbar(0.75, options.gui, [ mfilename ': plotting phonons and DOS' ]); end
   [f, signal] = sqw_phonons_plot(signal);
-  if options.gui && ishandle(options.gui), delete(options.gui); end
+  if ishandle(options.gui), delete(options.gui); end
 else
   f = [];
 end
@@ -804,13 +858,14 @@ function [f, signal] = sqw_phonons_plot(signal)
   
   options = signal.UserData.options;
   disp([ mfilename ': Model ' options.configuration ' plotting phonons.' ])
-  qh=linspace(0.01,1.5,70);qk=qh; ql=qh; w=linspace(0.01,150,151);
+  qh=linspace(0.01,1.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
   f=iData(signal,[],qh,qk,ql,w);
   g=log(f(1,:, :,:)); 
   
   fig1=figure; 
   plot3(g); axis tight;
   view([38 26]);
+  slice(g);
   if isfield(options, 'dos') && options.dos && ~isempty(signal.UserData.DOS)
     fig2=figure;
     try

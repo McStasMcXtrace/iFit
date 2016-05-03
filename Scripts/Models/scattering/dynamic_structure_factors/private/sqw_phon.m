@@ -1,5 +1,5 @@
-function signal=sqw_phon(varargin)
-% model=sqw_phon(poscar, pseudo, ..., options)  
+function signal=sqw_phon(poscar, options)
+% model=sqw_phon(poscar, options)  
 %
 %   iFunc/sqw_phon: computes phonon dispersions from Ab-Initio with QuantumEspresso.
 %   A model which computes phonon dispersions from the forces acting between
@@ -26,21 +26,6 @@ function signal=sqw_phon(varargin)
 %   The specified file name can be different than POSCAR.
 %   If you wish to specify the initial system structure with an other file format
 %     and have installed ASE, you should use sqw_phonons(file, ...)
-%
-% pseudo: file name of pseudo-potential to use. If not set, a reasonable 
-%   choice will be made from existing UPF files from Quantum Espresso, with
-%   a preference for PBE-PAW pseudo-potentials. Potentials are searched in the
-%   QE location, in PSEUDO_DIR environment variable (when set) and locally. 
-%   You can specify as many of these UPF and directories (/usr/share/espresso/pseudo).
-%   More PP/UPF at <http://www.quantum-espresso.org/pseudopotentials/>
-%
-% FORCES: a previously computed FORCES file can be given after the corresponding
-%   supercell POSCAR. In this case, the ab-initio step is not processed, and the
-%   object is built immediately.
-%
-% 'metal' or 'insulator': indicates the type of occupation for electronic states.
-%
-% 'random': indicates that the initial displacement should be chosen randomly.
 %
 % options: a structure with optional settings:
 %   options.target =path                   where to store all files and FORCES
@@ -94,12 +79,6 @@ function signal=sqw_phon(varargin)
 %   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
 %   figure; plot(s.UserData.DOS); % plot the DOS
 %
-% An MgO crystal pre-computed with potential Mg.pbe-nsp-bpaw.UPF
-%   MgO=sqw_phon([ ifitpath 'Data/POSCAR_MgO'],[ ifitpath 'Data/FORCES_MgO']);
-%   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,100,51);
-%   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
-%   figure; plot(s.UserData.DOS); % plot the DOS
-%
 % WARNING: Single intensity and line width parameters are used here.
 %   This model is only suitable to compute phonon dispersions for e.g solid-
 %   state materials.
@@ -150,7 +129,7 @@ signal = [];
 
 % ********* handle input arguments *********
 
-[poscar, options]=sqw_phon_argin(varargin{:});
+[poscar, options] = sqw_phon_argin(poscar, options);
 p = fileparts(poscar);
 if isempty(p), p=pwd; end
 
@@ -188,18 +167,18 @@ end
 % ********* compute the forces *********
 
 % check/create supercell
-if options.gui && ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': computing supercell' ]); end
+if ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': computing supercell' ]); end
 geom = sqw_phon_supercell(poscar, options); % 2x2x2 supercell
 if isempty(geom) return; end
 
 % ********* look for potentials *********
 if ~isfield(options, 'force_file')
-  if options.gui && ishandle(options.gui), waitbar(0.10, options.gui, [ mfilename ': fetching potentials' ]); end
+  if ishandle(options.gui), waitbar(0.10, options.gui, [ mfilename ': fetching potentials' ]); end
   
   options = sqw_phon_potentials(geom, options);
 
   % compute and write FORCES
-  if options.gui && ishandle(options.gui), waitbar(0.15, options.gui, [ mfilename ': compute DynMatrix PHON/QuantumEspresso (be patient)' ]); end
+  if ishandle(options.gui), waitbar(0.15, options.gui, [ mfilename ': compute DynMatrix PHON/QuantumEspresso (be patient)' ]); end
   [forces, geom] = sqw_phon_forces(geom, options);
   if isempty(forces) return; end
   
@@ -217,7 +196,7 @@ for index=1:numel(geom.symbols)
 end
 mass = num2str(mass);
 
-if options.gui && ishandle(options.gui), waitbar(0.7, options.gui, [ mfilename ': building model' ]); end
+if ishandle(options.gui), waitbar(0.7, options.gui, [ mfilename ': building model' ]); end
 
 
 % ************** BUILD THE MODEL **************
@@ -362,86 +341,16 @@ signal=iFunc(signal);
 
 % ------------------------------------------------------------------------------
 
-function [poscar, options]=sqw_phon_argin(varargin)
+function [poscar, options]=sqw_phon_argin(poscar, options)
 
-  poscar = [];
-  options.supercell  =2;
-  options.potentials ={};
-  options.kpoints=2;
-  options.disp   =[];
-  options.phon   =''; % path to PHON
-  options.command  =''; % path to QE/PWSCF
-  options.autoplot=0;
-  options.gui    =0;
   options.calculator = 'QuantumEspresso';
 
-  % read input arguments
-  for index=1:numel(varargin)
-   
-    if ischar(varargin{index}) && isempty(dir(varargin{index})) && ~isempty(find(varargin{index} == '='))
-      % first try to build a structure from the string
-      this = str2struct(varargin{index});
-      if isstruct(this)
-        varargin{index} = this;
-      end
-    end
-    if ischar(varargin{index})
-      [p,f,e] = fileparts(varargin{index});
-      % handle static options: metal,insulator, random
-      if strcmp(varargin{index},'smearing') || strcmp(varargin{index},'metal')
-        options.occupations = 'smearing';
-      elseif strcmp(varargin{index},'fixed') || strcmp(varargin{index},'insulator')
-        options.occupations = 'fixed';
-      elseif strcmp(varargin{index},'random')
-        options.disp='random';
-      elseif strcmp(varargin{index},'gui')
-        options.gui=1;
-      elseif ~isempty(dir(varargin{index})) && ~isdir(varargin{index}) ...
-          && (isempty(e) || ~strcmp(lower(e),'.upf'))
-        % found an existing file, not a pseudo potential
-        if isempty(poscar)
-          poscar = varargin{index};
-        elseif ~isfield(options,'forces') % POSCAR already identified. This new file could be a FORCES or FORCE_SET
-          options.force_file = varargin{index};
-        end
-      elseif strcmp(lower(e),'.upf') || isdir(varargin{index})
-        % found a '.upf' file or directory: pseudo-potential
-        options.potentials{end+1} = varargin{index};
-      else
-        disp([ mfilename ': WARNING: unkown option/argument: ' varargin{index} ]);
-      end
-    end
-    if isstruct(varargin{index})
-      % a structure: we copy the fields into options.
-      this = varargin{index};
-      f    = fieldnames(this);
-      for i=1:numel(f)
-        options.(f{i}) = this.(f{i});
-      end
-    end
-  end % for
-
   % random displacement
-  if strcmp(options.disp,'random')
+  if isfield(options,'disp') && strcmp(options.disp,'random')
     % the DISP initial vector is set with a random set of [-1 0 1]
     options.disp = round(randn(1,3));
     options.disp(abs(options.disp) > 3) = sign(options.disp(abs(options.disp) > 3));
     this = find(~options.disp); if numel(this) == 2, options.disp=sign(randn); end
-  end
-
-  if isempty(poscar)
-    poscar = 'POSCAR';
-    if isempty(dir(poscar))
-      poscar = fullfile(ifitpath,'Data','POSCAR_Al');
-      disp([ mfilename ': using default ' poscar ]);
-      options.occupations   = 'smearing';
-      options.potential_auto= 1;
-    end
-  end
-
-  if ~isfield(options,'target')
-    options.target = tempname; % everything will go there
-    mkdir(options.target)
   end
 
   % copy the POSCAR into the target directory
@@ -681,7 +590,7 @@ if isempty(dir(fullfile(p,'FORCES')))
     displaced.coords(index,:) = displaced.coords(index,:) ...
                               + displacements(move, 2:4); % move XYZ
     
-    if options.gui && ishandle(options.gui), waitbar(0.15+((move-1)/size(displacements,1)*.6), options.gui, [ mfilename ': moving atom ' num2str(move) '/' num2str(size(displacements,1)) ]); end
+    if ishandle(options.gui), waitbar(0.15+((move-1)/size(displacements,1)*.6), options.gui, [ mfilename ': moving atom ' num2str(move) '/' num2str(size(displacements,1)) ]); end
     disp([ mfilename ': step ' num2str(move) '/' num2str(size(displacements,1)) ...
         ' moving atom ' displaced.symbols{displaced.type(displacements(move, 1))} ...
         ' by ' mat2str(displacements(move, 2:4)) ]);
@@ -927,7 +836,7 @@ function [potentials, potentials_full] = sqw_phon_forces_pwscf_potentials(displa
       else select=1;
       end
       % if still more than one choice, pop-up list selector
-      if numel(match) > 1 && ~isempty(options.gui) && options.gui
+      if numel(match) > 1 && ishandle(options.gui)
         [select,OK] = listdlg('ListString', match, ...
             'ListSize', [400 200], ...
             'Name', [ 'Pseudo-potential for ' displaced.symbols{index} ], ...
@@ -1008,7 +917,7 @@ end
 
 function sqw_phon_error(message, options)
 
-if options.gui && ishandle(options.gui)
+if ishandle(options.gui)
   delete(options.gui);
   errordlg(message, [ 'iFit: ' mfilename ' ' options.configuration ' FAILED' ]);
 end
