@@ -1,6 +1,6 @@
 function sqw_phonons_error(message, options)
 
-if options.gui && ishandle(options.gui)
+if ~isempty(options.gui) && ~isnan(options.gui) && ishandle(options.gui)
   delete(options.gui);
   errordlg(message, [ 'iFit: ' mfilename ' ' options.configuration ' FAILED' ]);
 end

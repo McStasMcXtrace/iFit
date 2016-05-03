@@ -19,7 +19,7 @@ options.toldfe     = 0;
 options.command    = '';
 options.raw        = '';
 options.autoplot   = 0;
-options.gui        = 0;
+options.gui        = nan;
 options.htmlreport = 0;
 options.dos        = 0;
 options.email      = '';
@@ -66,7 +66,7 @@ for index=1:numel(varargin)
     elseif strcmpi(varargin{index},'qe') || strcmpi(varargin{index},'espresso') || strcmpi(varargin{index},'quantumespresso')
       options.calculator = 'quantumespresso';
     elseif strcmpi(varargin{index},'gui')
-      options.gui = 1;
+      options.gui = 'init';
     elseif strcmpi(varargin{index},'optimize') || strcmpi(varargin{index},'minimize')
       options.optimizer = 'BFGS';
     end
