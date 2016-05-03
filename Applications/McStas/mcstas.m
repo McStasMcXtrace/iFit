@@ -122,49 +122,20 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 
 % inline: mcstas_criteria
 
-  if nargin < 1
-    error([ 'syntax is: ' mfilename '(instrument, parameters, {options})' ] );
-  end
+  persistent mcstas_present
+  
+  pars=[]; fval= []; exitflag=-1; output=[]; options.instrument = '';
 
   if ~exist('iData')
     error([ mfilename ' requires iFit/iData. Get it at <ifit.mccode.org>. Install source code with addpath(genpath(''/path/to/iFit'')) or use standalone version.' ] );
   end
   
 % PARSE INPUT ARGUMENTS ========================================================
-
-  pars=[]; fval= []; exitflag=-1; output=[];
   
   if nargin > 2 && ischar(options)
     options= str2struct(options);
   end
   
-  % check if the instrument exists, else attempt to find it
-  [p,f,e] = fileparts(instrument);
-  if isempty(e)
-    instrument = [ instrument '.instr' ];
-  end
-  if ~isempty(instrument)
-    index = dir(instrument);
-  else return;
-  end
-  
-  % check for instrument in McStas/McXtrace libraries
-  search_dir = { getenv('MCSTAS'), getenv('MCXTRACE'), ...
-    '/usr/local/lib/mc*', 'C:\mc*', '/usr/share/mcstas/'};
-  if isempty(index)
-    % search the instrument recursively in all existing directories in this list
-    index = getAllFiles(search_dir, instrument);
-    if ~isempty(index)
-      disp([ mfilename ': Copying instrument ' index ' in ' pwd ] );
-      copyfile(index, instrument);
-    end
-  end
-  
-  if isempty(index)
-    error([ mfilename ': ERROR: Can not find instrument ' instrument ]);
-  end
-  
-  options.instrument     = instrument;
   % define simulation or optimization mode (if not set before)
   if ~isfield(options,'mode')
     if isfield(options, 'optimizer')  || isfield(options,'TolFun') || ...
@@ -229,6 +200,51 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   if isfield(options,'info') && options.info
     options.mode = 'info';
   end
+  
+  if isempty(mcstas_present)
+    mcstas_present = mcstas_check(options);
+    if isempty(mcstas_present)
+      error([ mfilename ': ERROR: ' options.mcrun ' McStas/McXtrace executable is not installed. Get it at www.mcstas.org' ]);
+    end
+  end
+  
+  if nargin == 0
+    pars = mcstas_present;
+    return
+  end
+  
+  if nargin < 1
+    error([ 'syntax is: ' mfilename '(instrument, parameters, {options})' ] );
+  end
+  
+  % get instrument
+  % check if the instrument exists, else attempt to find it
+  [p,f,e] = fileparts(instrument);
+  if isempty(e)
+    instrument = [ instrument '.instr' ];
+  end
+  if ~isempty(instrument)
+    index = dir(instrument);
+  else return;
+  end
+  
+  % check for instrument in McStas/McXtrace libraries
+  search_dir = { getenv('MCSTAS'), getenv('MCXTRACE'), ...
+    '/usr/local/lib/mc*', 'C:\mc*', '/usr/share/mcstas/'};
+  if isempty(index)
+    % search the instrument recursively in all existing directories in this list
+    index = getAllFiles(search_dir, instrument);
+    if ~isempty(index)
+      disp([ mfilename ': Copying instrument ' index ' in ' pwd ] );
+      copyfile(index, instrument);
+    end
+  end
+  
+  if isempty(index)
+    error([ mfilename ': ERROR: Can not find instrument ' instrument ]);
+  end
+  
+  options.instrument     = instrument;
   
   % parse parameter values for mcstas_criteria
   % syntax: mcstas(instr, 'compile mpi') -> only compile
@@ -886,3 +902,23 @@ function this = mcstas_eval(this, expr)
     error([ mfilename ': Error when evaluating monitor definition this=this' expr ';' ])
   end
 end % mcstas_eval
+
+% ------------------------------------------------------------------------------
+function present = mcstas_check(options)
+
+  present = '';
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  else precmd=''; end
+  
+  % binary external
+  if ispc, ext='.exe'; else ext=''; end
+  
+  % look for executable, global and local
+  % try in order: global(system), local, local_arch
+  [status, result] = system([ precmd options.mcrun ]);
+  if (status == 0 || status == 255) 
+    present = options.mcrun; 
+  end
+end
+  
