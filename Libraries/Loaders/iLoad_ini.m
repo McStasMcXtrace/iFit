@@ -294,6 +294,14 @@ function config = iLoad_ini
     idl_sav.name        = 'IDL SAV';
     idl_sav.method      = 'read_idl';
     idl_sav.extension   = 'sav';
+    
+    agilent_ms.name     = 'Agilent Mass Spectrometry/Chromatography LC/MS GC/MS GC/FID';
+    agilent_ms.method   = 'ImportAgilent';
+    agilent_ms.extension= {'ch','ms','d'};
+    
+    thermo_ms.name      = 'Thermo Finnigan Mass Spectrometry/Chromatography';
+    thermo_ms.method    = 'ImportThermo';
+    thermo_ms.extension = 'raw';
 
 % data formats without extension
 
@@ -316,6 +324,7 @@ function config = iLoad_ini
       labview, qd_vms, yaml, json, ...
       ESRF_edf, ILL_HBIN, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
       Analyze, CBF, STL_binary, MRC, NifTI, Igor, lv_tdms, nmr_jeol, idl_sav, ...
+      agilent_ms, thermo_ms, ...
       nmr_bruker, nmr_varian, ftir_bruker, llb_tas };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
