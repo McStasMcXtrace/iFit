@@ -2395,7 +2395,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
       rewind(file.SourceHandle);
       /* count how many valid chars in the buffer */
       for (pos=0; pos<endcharpos ; pos++)
-        if (!isprint(buffer[pos])) fieldindex++;
+        if (!isprint(buffer[pos]) && !isspace(buffer[pos])) fieldindex++;
       /* skip file if binary fraction > 10% */
       if (fieldindex > endcharpos/10) {
         if (options.verbose >= 1)
