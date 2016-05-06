@@ -25,13 +25,13 @@ function s = Sqw_check(s)
     for index=1:2
       lab = lower(label(s,index));
       if isempty(lab), lab=lower(getaxis(s, num2str(index))); end
-      if any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(strtok(lab), 'q') || any(strfind(lab, 'Angs'))
+      if any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(strtok(lab), 'q')  || strcmp(strtok(lab), 'k') || any(strfind(lab, 'angs'))
         q_present=index;
-      elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'frequency')) || strcmp(strtok(lab), 'w') || any(strfind(lab, 'meV'))
+      elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'frequency')) || strcmp(strtok(lab), 'w') || strcmp(strtok(lab), 'e') || any(strfind(lab, 'mev'))
         w_present=index;
       elseif any(strfind(lab, 'time')) || any(strfind(lab, 'sec')) || strcmp(strtok(lab), 't') || strcmp(strtok(lab), 'tof')
         t_present=index;
-      elseif any(strfind(lab, 'angle')) || any(strfind(lab, 'deg')) || strcmp(strtok(lab), 't')
+      elseif any(strfind(lab, 'angle')) || any(strfind(lab, 'deg')) || strcmp(strtok(lab), 'theta') || strcmp(strtok(lab), 'phi')
         a_present=index;
       end
     end
