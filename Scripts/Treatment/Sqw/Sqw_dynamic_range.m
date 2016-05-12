@@ -140,7 +140,7 @@ function [s, sphi] = Sqw_dynamic_range(s, Ei, angles, options)
   s(index)=0;
   
   if isempty(angles)
-    tt = sprintf(' Ei=%g meV', num2str(Ei));
+    tt = sprintf(' Ei=%g meV', Ei);
   else
     tt = sprintf(' Ei=%g meV [%g:%g deg]', Ei, min(angles), max(angles));
   end
