@@ -516,6 +516,33 @@ case {'ntrust','fminnewton'}
 case {'buscarnd','fminrand'}
 % adaptive random search -------------------------------------------------------
   [pars,fval]=buscarnd(@(pars) inline_objective(fun, pars, varargin{:}), pars, options);
+case {'markov','mcmc','gwmcmc','fminmarkov'}
+  % make sure parameters are bound
+  constraints = inline_constraints_minmax(pars, constraints);
+  % create initial distribution
+  M=numel(pars); %number of model parameters
+  Nwalkers=max(2*M, 40); %number of walkers/chains.
+  minit=randn(M,Nwalkers);
+  LB=constraints.min;
+  UB=constraints.max;
+  for index=1:M
+    minit(index,:) = LB(index) + rand(1,Nwalkers).*(UB(index)-LB(index));
+  end
+  % set nb of iterations
+  mccount = max(options.MaxFunEvals, options.MaxIter);
+  % clean options
+  if isfield(options,'StepSize')
+    op.StepSize = options.StepSize; else op.StepSize = 2; end
+  if isfield(options,'ThinChain')
+    op.ThinChain = options.ThinChain; else op.ThinChain = 10; end
+  if isfield(options,'ProgressBar')
+    op.ProgressBar = options.ProgressBar; else op.ProgressBar = true; end
+  if isfield(options,'BurnIn')
+    op.BurnIn = options.BurnIn; else op.BurnIn = 0; end
+  % launch the MCMC
+  [pars,fval]=gwmcmc(minit, @(pars) inline_objective(fun, pars, varargin{:}), ...
+    mccount, op);
+  
 otherwise
   % unknown optimizer. 
   error([ inline_localChar(optimizer) ': Unknown optimizer.' ]);
