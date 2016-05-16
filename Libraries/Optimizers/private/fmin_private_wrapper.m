@@ -539,9 +539,11 @@ case {'markov','mcmc','gwmcmc','fminmarkov'}
     op.ProgressBar = options.ProgressBar; else op.ProgressBar = true; end
   if isfield(options,'BurnIn')
     op.BurnIn = options.BurnIn; else op.BurnIn = 0; end
-  % launch the MCMC
-  [pars,fval]=gwmcmc(minit, @(pars) inline_objective(fun, pars, varargin{:}), ...
+  % launch the MCMC. The criteria is assumed as a log, negative and to be maximized
+  [pars,fval]=gwmcmc(minit, @(pars) -inline_objective(fun, pars, varargin{:}), ...
     mccount, op);
+  pars = pars(:,:);
+  fval = fval(:,:);
   
 otherwise
   % unknown optimizer. 
@@ -566,7 +568,7 @@ end
 % post optimization checks =====================================================
 
 fval = constraints.criteriaBest; 
-fval=sum(fval(:));
+fval = sum(fval(:));
 pars = constraints.parsBest;
 
 if iterations, 
@@ -625,11 +627,12 @@ if length(index) < 3
   index = 1:length(output.criteriaHistory);
 end
 try
-delta_pars = (output.parsHistory(index,:)-repmat(output.parsBest,[length(index) 1])); % get the corresponding parameter set
-weight_pars= exp(-((output.criteriaHistory(index)-min(output.criteriaHistory))/min(output.criteriaHistory)).^2 / 8); % Gaussian weighting for the parameter set
-weight_pars= repmat(weight_pars,[1 length(output.parsBest)]);
-output.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
+  delta_pars = (output.parsHistory(index,:)-repmat(output.parsBest,[length(index) 1])); % get the corresponding parameter set
+  weight_pars= exp(-((output.criteriaHistory(index)-min(output.criteriaHistory))).^2 / 8); % Gaussian weighting for the parameter set
+  weight_pars= repmat(weight_pars,[1 length(output.parsBest)]);
+  output.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
 end
+covp = [];
 if ((strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
   || (strcmp(options.Display,'notify') && isempty(strfind(message, 'Converged')))) || nargout == 4) ...
   && ((isfield(options,'Diagnostics') && strcmp(options.Diagnostics,'on')) ...
@@ -639,17 +642,18 @@ if ((strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
   if length(pars)^2*output.fevalDuration/2 > 5
     disp([ '  Estimating Hessian matrix... (' num2str(length(pars)^2*output.fevalDuration/2) ' [s] remaining, please wait)' ]);
   end
-  %try
-  [dp, covp, corp,jac,hessian]  = inline_estimate_uncertainty(fun, pars, options, varargin{:});
-  if ~isempty(covp)
-    output.parsHessianUncertainty = reshape(abs(dp), size(pars));
-    output.parsHessianCovariance  = covp;
-    output.parsHessianCorrelation = corp;
-    output.parsHessian            = hessian;
-    output.parsJacobian           = jac;
+  try
+    [dp, covp, corp,jac,hessian]  = inline_estimate_uncertainty(fun, pars, options, varargin{:});
+    if ~isempty(covp)
+      output.parsHessianUncertainty = reshape(abs(dp), size(pars));
+      output.parsHessianCovariance  = covp;
+      output.parsHessianCorrelation = corp;
+      output.parsHessian            = hessian;
+      output.parsJacobian           = jac;
+    end
   end
-  %end
-else
+end
+if isempty(covp)
   output.parsHessianUncertainty = [];
   output.parsHessianCovariance  = [];
   output.parsHessianCorrelation = [];
@@ -716,6 +720,9 @@ return  % actual end of optimization
     if sum(c) < sum(constraints.criteriaBest(:)), 
       constraints.criteriaBest=c;
       constraints.parsBest    =pars;
+    end
+    if isempty(constraints.criteriaStart)
+      constraints.criteriaStart = c;
     end
     constraints.fevalDuration   = etime(clock, t); % time required to estimate the criteria
     constraints.criteriaPrevious= c;
