@@ -119,6 +119,7 @@
       <li><span style="font-style: italic;">options.Display: </span>Level
 of
 
+
         display [ <span style="color: rgb(204, 51, 204);">off</span> |
         <span style="color: rgb(204, 51, 204);">iter</span> | <span
           style="color: rgb(204, 51, 204);">notify</span> | <span
@@ -188,9 +189,11 @@ of
     <ul>
       <li><span style="font-style: italic;">output.algorithm: </span>Algorithm
 
+
         used (char)</li>
       <li><span style="font-style: italic;">output.message: </span>Message
 which
+
 
         details the final state of the optimizer (char)<br>
       </li>
@@ -206,6 +209,7 @@ which
       <li><span style="font-style: italic;">output.parsBest: </span>best
 optimized
 
+
         parameter</li>
       <li><span style="font-style: italic;">output.criteriaBest</span>:
         best criteria value for the model</li>
@@ -217,9 +221,11 @@ optimized
         history during optimization (double vector/array)</li>
       <li><span style="font-style: italic;">output.parsHistoryUncertainty:
 
+
         </span>uncertainty on optimized parameters (half-width) obtained
         from the optimization history (vector)</li>
       <li><span style="font-style: italic;">output.parsHessianUncertainty:
+
 
         </span>uncertainty on optimized parameters (half-width) obtained
         from the Hessian matrix, which is extremely sensitive to noise.
@@ -246,10 +252,13 @@ optimized
     <a href="Fit.html#mozTocId919221">fitting</a> models onto data sets.
     The number of optimization parameters is not restricted.<br>
     <br>
-    As an example we may find the minimum of the <a
+    As an <b>example</b> we may find the minimum of the <a
       href="http://en.wikipedia.org/wiki/Rosenbrock_function">Rosenbrock
-      function</a> :<br>
+      function</a> (which is 0 at [ 1 1 ]):<br>
     <pre style="margin-left: 40px;">&gt;&gt; banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fmin</span>(banana, [0 0])<br></pre>
+    and in order to get the whole optimisation information (uncertainty,
+    ...) in '<font color="#ff0000">output</font>'<br>
+    <pre style="margin-left: 40px;">&gt;&gt; [parameters, fval, exitval, <font color="#ff0000">output</font>] = <span style="color: rgb(51, 102, 255);">fmin</span>(banana, [0 0]);</pre>
     <h4><a class="mozTocH4" name="mozTocId967127"></a>Optimizers syntax</h4>
     All of these optimizers follow the same syntax, just as the default
     Matlab <a href="matlab:fminsearch"><span style="font-style:
@@ -302,6 +311,7 @@ optimized
     <br>
     <div style="text-align: center;">{<span style="font-style: italic;">
         &#916;p</span> so that <span style="font-style: italic;">&#967;<sup>2</sup>(p)
+
         &lt; 2*min(&#967;</span><span style="font-style: italic;"><span
           style="font-style: italic;"><sup>2</sup></span>) </span>}<br>
     </div>
@@ -330,6 +340,7 @@ optimized
     <br>
     <div style="text-align: center;"><span style="font-style: italic;">&#916;p
 
+
         &#8764; </span>&#8730;[<span style="font-style: italic;"> 2 ||&#8706;</span><span
         style="font-style: italic;"><sup>2</sup></span><span
         style="font-style: italic;">&#967;</span><span style="font-style:
@@ -345,6 +356,7 @@ optimized
     and the corresponding error matrix (covariance) is stored in <span
       style="font-style: italic;">output.parsHessianCovariance </span>(its
 diagonal
+
 
     square root is the projected parameter uncertainty). This step is
     only performed when the Hessian matrix requires less than about a
@@ -364,6 +376,34 @@ diagonal
     function. All these Hessian final computations (which may take time)
     can be skipped when using <span style="font-style: italic;">options.Diagnostics</span>=<span
       style="color: rgb(204, 51, 204);">'off'</span>.<br>
+    <br>
+    It is possible to display the probability distribution of the
+    parameters when computing the histogram of the parameter history.
+    This is for instance often used after a Markov Chain Monte-Carlo
+    strategy, but most heuristic (non-deterministic) optimisers allow to
+    access this information. In the following example, after getting the
+    'output' 4-th returned argument, we plot all parameter
+    distributions:<br>
+    <ul>
+      <li><font color="#3366ff">figure</font>(<font color="#cc33cc">'Name'</font>,<font
+          color="#cc33cc">[ 'Parameter distributions ' output.optimizer
+          ]</font>);</li>
+      <li>M=<font color="#3366ff">numel</font>(output.parsBest);
+        m=floor(sqrt(M)); n=ceil(M./m);</li>
+      <li>index&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <font color="#3366ff">find</font>(output.criteriaHistory
+        &lt; min(output.criteriaHistory)*10);<i> % select a portion
+          close to the optimum</i><br>
+      </li>
+      <li><b><font color="#3366ff">for</font></b> p=1:M</li>
+      <ul>
+        <li><font color="#3366ff">subplot</font>(m,n,p); <font
+            color="#3366ff">hist</font>(output.parsHistory(index,p));</li>
+        <li><font color="#3366ff">title</font>(sprintf(<font
+            color="#cc33cc">'Parameter [%i] = %g +/- %g'</font>, p,
+          output.parsBest(p), output.parsHistoryUncertainty(p)));</li>
+      </ul>
+      <li><font color="#3366ff"><b>end</b></font></li>
+    </ul>
     <h3><a class="mozTocH4" name="mozTocId839813"></a>Recommended
       optimizers</h3>
     The process of choosing a sensible optimizer can be automated by
@@ -391,6 +431,7 @@ diagonal
           style="font-weight: bold;"></span> and the Powell method is
         also a good choice <span style="font-weight: bold;">(fminpowell).
 
+
         </span>The Levenberg-Marquardt <span style="font-weight: bold;">(fminlm)</span>
         is very effective when the criteria is a vector. The genetic
         algorithm is the slowest of all methods.<br>
@@ -398,11 +439,12 @@ diagonal
       <li><span style="font-style: italic;"></span><span style="color:
           rgb(51, 204, 0); font-style: italic;">The most efficient
           methods</span> are the Swarm<span style="font-weight: bold;">
-          (fminpso) </span>and
-        the Powell method with local Coggins line search <span
-          style="font-weight: bold;">(fmipowell)</span>. The Hooke's <span
-          style="font-weight: bold;">(fminhooke)</span> method is a good
-        alternative, but it is slower than the Powell.</li>
+          (fminpso) </span>and the Powell method with local Coggins
+        line search <span style="font-weight: bold;">(fmipowell)</span>.
+        The Hooke's <span style="font-weight: bold;">(fminhooke)</span>
+        method is a good alternative, but it is slower than the Powell.
+        We also recommend the Markov Chain Monte Carlo <b>(fminmarkov)</b>
+        which is very robust, but slow.</li>
     </ul>
     The <span style="font-style: italic;">Table 1a</span> and <span
       style="font-style: italic;">Figure 1a</span> present a selection
@@ -483,6 +525,7 @@ diagonal
         <tr>
           <td style="vertical-align: top; color: rgb(0, 0, 0);">fminimfil
 
+
             [<a href="Optimizers.html#fminimfil">3</a>]</td>
           <td style="vertical-align: top;">Unconstrained Implicit
             filtering<br>
@@ -503,6 +546,7 @@ diagonal
         <tr>
           <td style="vertical-align: top; color: rgb(0, 0, 0);">fminsimpsa
 
+
             [<a href="Optimizers.html#fminsimpsa">1</a>] </td>
           <td style="vertical-align: top;">simplex/simulated annealing</td>
           <td style="vertical-align: top;"><span style="color: rgb(51,
@@ -521,6 +565,7 @@ selection
 among
 the
 most
+
 
         successful and fast optimization methods</span><span
         style="font-style: italic; font-weight: bold;"></span><span
@@ -552,8 +597,10 @@ most
           style="font-weight: bold;"> </span>Evolution Strategy with
         Covariance Matrix Adaptation<span style="font-weight: bold;">
           (fmincmaes) </span>proves very successful, as well as the
-        Shuffled Complex Evolution <span style="font-weight: bold;">(fminsce)</span>.
-        <br>
+        Shuffled Complex Evolution <span style="font-weight: bold;">(fminsce)</span>.&nbsp;
+
+        We also recommend the Markov Chain Monte Carlo <b>(fminmarkov)</b>
+        which is very robust, but slow.<br>
       </li>
     </ul>
     The <span style="font-style: italic;">Table 1b</span> and <span
@@ -616,6 +663,7 @@ most
                 href="Optimizers.html#fminsimpsa">1</a>]</td>
             <td style="vertical-align: top; font-weight: bold;">simplex/simulated
 
+
               annealing</td>
             <td style="vertical-align: top; font-weight: bold;"><span
                 style="color: rgb(51, 204, 0);">84.8</span><br>
@@ -637,10 +685,12 @@ most
           <tr>
             <td style="vertical-align: top; color: rgb(0, 0, 0);">fmincmaes
 
+
               [<a href="Optimizers.html#fmincmaes">9</a>]</td>
             <td style="vertical-align: top; color: rgb(0, 0, 0);">Evolution
 Strategy
 with
+
 
               Covariance Matrix Adaptation</td>
             <td style="vertical-align: top; color: rgb(0, 0, 0);">71.3<br>
@@ -677,6 +727,7 @@ with
       </table>
       <div style="text-align: center;"><span style="font-style: italic;">Table
 
+
           1b: A selection among the most efficient and fast optimization
           methods</span><span style="font-style: italic; font-weight:
           bold;"></span><span style="font-style: italic;">, for </span><span
@@ -691,10 +742,9 @@ with
     We have performed extended tests of all the optimizers that are
     given in the <span style="font-style: italic;">Optimizers</span>
     sub-library. For each optimizer, we have minimized a <a
-      href="images/dim_2.png">set
-      of functions</a>, which include sharp, broad, with local minima,
-    etc... The function set has also been used when adding a Gaussian
-    noise of 10%.<br>
+      href="images/dim_2.png">set of functions</a>, which include sharp,
+    broad, with local minima, etc... The function set has also been used
+    when adding a Gaussian noise of 10%.<br>
     <ul>
       <li>Each of the 52 model functions [<a href="#Hansen2004">16</a>,<a
           href="#Suganthan2005">17</a>] to minimize has been solved with
@@ -987,6 +1037,19 @@ with
               width="108">
               <p><br>
               </p>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top"><font color="#33ff33">fminmarkov</font> [<a
+                href="#fminmarkov">23</a>]<br>
+            </td>
+            <td align="center" valign="top">Markov Chain Monte Carlo<br>
+            </td>
+            <td valign="top"><br>
+            </td>
+            <td valign="top"><br>
+            </td>
+            <td valign="top">not bench-marked, but usually very robust<br>
             </td>
           </tr>
           <tr>
@@ -1291,6 +1354,7 @@ with
         TolFun=1e-4. </i><font style="color: rgb(51, 204, 0);"
         color="#009900"><i>Best</i></font><span style="color: rgb(51,
         204, 0);"> </span><i><span style="color: rgb(51, 204, 0);">optimizers
+
           are highlighted in green</span>.</i> <span style="color:
         rgb(255, 0, 0);">Methods to avoid are in red</span>.<br>
     </p>
@@ -1331,6 +1395,7 @@ good
 success
 ratio.
 Among
+
 
     these, the particle swarm optimizer <span style="font-weight: bold;
       font-style: italic;">fminpso</span> is among the best. The
@@ -1445,6 +1510,7 @@ Among
           <li><span style="font-style: italic;">constraints.min: </span>the
 minimum
 
+
             value for each parameter.<span style="font-style: italic;">
               -Inf</span> is supported. <span style="font-style:
               italic;">NaN </span>can be used.<br>
@@ -1452,11 +1518,13 @@ minimum
           <li><span style="font-style: italic;">constraints.max: </span>the
 maximum
 
+
             value for each parameter.<span style="font-style: italic;">
               +Inf</span> is supported. <span style="font-style:
               italic;">NaN </span>can be used.</li>
           <li><span style="font-style: italic;">constraints.steps: </span>the
 maximum
+
 
             change between iterations for each parameter.<span
               style="font-style: italic;"> +Inf</span> is supported.</li>
@@ -1470,6 +1538,7 @@ maximum
         input <span style="font-style: italic;">parameters</span> and <span
           style="font-style: italic;">options</span> :<br>
         <blockquote> constraints=<span style="color: rgb(204, 51, 204);">'min=[0
+
             0 0 0]; max=[1 10 3 0.1]; eval=p(4)=0'</span>;</blockquote>
         <h4><a class="mozTocH4" name="mozTocId267246"></a>Fixed
           parameters</h4>
@@ -1508,6 +1577,7 @@ maximum
         </h4>
         Last, it is possible to restrict the change rate of parameters
         by assigning the <span style="font-style: italic;">constraints.steps
+
 
         </span>field to a vector. Each non-zero value then specifies the
         absolute change that the corresponding parameter can vary
@@ -1564,11 +1634,13 @@ maximum
       <li><span style="text-decoration: underline;">Nelder-Mead simplex</span>
         <span style="font-weight: bold;"><a name="fminsearch"></a>fminsearch(bnd)
 
+
           [fminsearch by Mathworks]</span> Jeffrey C. Lagarias, James A.
         Reeds, Margaret H. Wright,&nbsp; Paul E. Wright, "Convergence
         Properties of the Nelder-Mead Simplex&nbsp; Method in Low
         Dimensions", <span style="font-style: italic;">SIAM Journal of
           Optimization</span>, <span style="font-weight: bold;">9(1):&nbsp;
+
 
         </span>p.112-147, 1998.</li>
       <li><span style="text-decoration: underline;">Unconstrained
@@ -1585,6 +1657,7 @@ maximum
 Methods
 for
 Non-Differentiable
+
 
           Functions</span>, Springer Series in Computational
         Mathematics, <span style="font-weight: bold;">Vol. 3</span>,
@@ -1622,6 +1695,7 @@ Non-Differentiable
           style="font-weight: bold;">fminpso [PSO by Donckels] </span>Kennedy
 J.,
 
+
         Eberhart R.C. (1995): Particle swarm optimization. In: <span
           style="font-style: italic;">Proc.</span> <span
           style="font-style: italic;">IEEE Conf. on Neural Networks</span>,
@@ -1631,13 +1705,13 @@ J.,
           style="font-weight: bold;">fmincmaes [cmaes by Hansen]</span>
         Hansen, N. and S. Kern (2004). Evaluating the CMA Evolution
         Strategy on Multimodal Test Functions. <span style="font-style:
-          italic;">Eighth
-          International Conference on Parallel Problem Solving from
-          Nature PPSN VIII</span>, Proceedings, pp. 282-291, Springer. ;
-        Hansen, N. and A. Ostermeier (2001). Completely Derandomized
-        Self-Adaptation&nbsp;in Evolution Strategies. <span
-          style="font-style: italic;">Evolutionary Computation</span>, <span
-          style="font-weight: bold;">9(2), </span>pp.
+          italic;">Eighth International Conference on Parallel Problem
+          Solving from Nature PPSN VIII</span>, Proceedings, pp.
+        282-291, Springer. ; Hansen, N. and A. Ostermeier (2001).
+        Completely Derandomized Self-Adaptation&nbsp;in Evolution
+        Strategies. <span style="font-style: italic;">Evolutionary
+          Computation</span>, <span style="font-weight: bold;">9(2), </span>pp.
+
         159-195.; Hansen, N., S.D. Mueller and P. Koumoutsakos (2003).
         Reducing the Time Complexity of the Derandomized Evolution
         Strategy with Covariance Matrix Adaptation (CMA-ES). <span
@@ -1657,37 +1731,35 @@ J.,
           italic;">Proc.</span> <span style="font-style: italic;">IEEE
           Conf. on Neural Networks</span>, IV, Piscataway, NJ, pp.
         1942-1948; Shi, Y. and Eberhart, R. C. A modified particle swarm
-        optimizer. <span style="font-style: italic;">Proc.&nbsp;
-          IEEE
-          Int
-          Conf.
-          on
-          Evol Comput</span> pp. 69-73. IEEE Press, Piscataway, NJ, 1998<span
-          style="text-decoration: underline;"></span></li>
+        optimizer. <span style="font-style: italic;">Proc.&nbsp; IEEE
+          Int Conf. on Evol Comput</span> pp. 69-73. IEEE Press,
+        Piscataway, NJ, 1998<span style="text-decoration: underline;"></span></li>
       <li><span style="text-decoration: underline;">Hooke-Jeeves direct
           search</span> <a name="fminhook"></a><span
           style="font-weight: bold;">fminhooke [hooke by Kelley</span>]
         Arthur F. Kaupe Jr., <span style="font-style: italic;">Communications
 
+
           of the ACM,</span> <span style="font-weight: bold;">Vol 6</span>.
         (1963) 313; R. Hooke and T. A. Jeeves, <span style="font-style:
           italic;">Journal of the ACM</span>, <span style="font-weight:
           bold;">Vol. 8</span>, April 1961, pp. 212 ; C. T. Kelley,
-        1998, <span style="font-style: italic;">Iterative
-          Methods for Optimization, </span><span style="font-weight:
-          bold;">no. 18</span> in&nbsp; Frontiers in Applied
-        Mathematics, SIAM, Philadelphia, 1999.</li>
+        1998, <span style="font-style: italic;">Iterative Methods for
+          Optimization, </span><span style="font-weight: bold;">no. 18</span>
+        in&nbsp; Frontiers in Applied Mathematics, SIAM, Philadelphia,
+        1999.</li>
       <li><span style="text-decoration: underline;">Powell minimization</span>
         <a name="fminpowell"></a><span style="font-weight: bold;">fminpowell
 
+
           [powell by Secchi]</span> Brent, <span style="font-style:
-          italic;">Algorithms
-          for minimization without derivatives</span>, Prentice-Hall
-        (1973)<span style="text-decoration: underline;"></span></li>
+          italic;">Algorithms for minimization without derivatives</span>,
+        Prentice-Hall (1973)<span style="text-decoration: underline;"></span></li>
       <li><span style="text-decoration: underline;">Nelder-Mead simplex
           state machine</span><span style="font-weight: bold;"> <a
             name="fminsimplex"></a>fminsimplex [Simplex by Sigworth]</span>
         Nelder and Mead, <span style="font-style: italic;">Computer J</span>.,
+
 
         <span style="font-weight: bold;">7</span> (1965) 308</li>
       <li><span style="text-decoration: underline;">Genetic algorithm
@@ -1698,9 +1770,11 @@ J.,
           style="text-decoration: underline;"><a name="Hansen2004"></a>Evaluating
 the
 
+
           CMA evolution strategy on multimodal test functions</span>, <span
           style="font-style: italic;">PARALLEL PROBLEM SOLVING FROM
           NATURE - PPSN VIII</span>- <span style="font-style: italic;">LECTURE
+
 
           NOTES IN COMPUTER SCIENCE</span>, <span style="font-weight:
           bold;">3242</span> (2004) 282-291. [<a
@@ -1716,6 +1790,7 @@ the
           by joachim.vandekerckhove@psy.kuleuven.be</span>&nbsp; <a
           name="fminanneal"></a>Kirkpatrick, S., Gelatt, C.D., &amp;
         Vecchi, M.P. (1983). <span style="font-style: italic;">Optimization
+
           by Simulated Annealing</span>. Science, <span
           style="font-weight: bold;">220, </span>671-680</li>
       <li><span style="text-decoration: underline;">Broyden-Fletcher-Goldfarb-Shanno</span>
@@ -1735,6 +1810,7 @@ the
       <li><span style="text-decoration: underline;">Newton search</span>
         <a name="fminnewton"></a><span style="font-weight: bold;">fminnewton
 
+
           by C.T. Kelley</span> Kelley 1998, Iterative Methods for
         Optimization<span style="font-weight: bold;">, no. 18</span>
         in&nbsp; Frontiers in Applied Mathematics, SIAM, Philadelphia,
@@ -1744,7 +1820,11 @@ the
           style="font-weight: bold;">fminrand by A.R. Secchi 2001</span>
         A.R. Secchi and C.A. Perlingeiro, "Busca Aleatoria Adaptativa",
         in Proc. of XII Congresso Nacional de Matematica Aplicada e
-        Computacional, Sao Jose do Rio Preto, SP, pp. 49-52 (1989).<br>
+        Computacional, Sao Jose do Rio Preto, SP, pp. 49-52 (1989).</li>
+      <li><u>Markov Chain Monte Carlo</u> <a name="fminmarkov"></a><b>fminmarkov
+          by Aslak Grinsted 2015</b>. Goodman &amp; Weare (2010),
+        Ensemble Samplers With Affine Invariance, Comm. App. Math. Comp.
+        Sci., Vol. 5, No. 1, 65-80<br>
       </li>
     </ol>
     <br>
@@ -1753,14 +1833,15 @@ the
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
 
+
           - iFit/optimization methods - </span><span style="font-style:
-          italic;"> $Date$ $Revision$ </span><span
-          style="font-style: italic;"> </span>- back to <a
-          href="index.html">Main iFit Page </a><a
-          href="http://www.ill.eu/"><img title="ILL, Grenoble, France
-            &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
-            Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
-            solid ; width: 53px; height: 50px;" align="right"></a> </div>
+          italic;"> $Date$ $Revision$ </span><span style="font-style:
+          italic;"> </span>- back to <a href="index.html">Main iFit
+          Page </a><a href="http://www.ill.eu/"><img title="ILL,
+            Grenoble, France &lt;www.ill.eu&gt;"
+            src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France
+            &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px;
+            height: 50px;" align="right"></a> </div>
     </div>
   </body>
 </html>
