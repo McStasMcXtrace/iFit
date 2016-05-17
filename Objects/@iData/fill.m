@@ -44,10 +44,14 @@ end
 
 if ~isempty(index0)
   s(index0) = NaN;
-  e(index0) = NaN;
-  m(index0) = 1;
   s = inpaintn(s, n);
-  e = inpaintn(e, n);
+  if ~isscalar(e)
+    e(index0) = NaN;
+    e = inpaintn(e, n);
+  end
+  if ~isscalar(m)
+    m(index0) = 1;
+  end
 end
 
 % assemble final new object
