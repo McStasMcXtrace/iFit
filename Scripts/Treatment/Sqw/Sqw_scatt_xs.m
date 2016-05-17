@@ -26,8 +26,8 @@ function sigma = Sqw_scatt_xs(s, Ei, M)
 %
 %   When the weight M of the scattering unit is given, it is used to multiply the
 %    cross section by the estimated Debye-Waller-like factor so that it equals
-%    A/(A+1)]^2 at Ei=4eV to gradually go from the bound (thermal) to the free 
-%    cross section at 4 eV. The threshold of 4eV is used by e.g. OpenMC.
+%    A/(A+1)]^2 at Ei=1eV to gradually go from the bound (thermal) to the free 
+%    cross section at 1 eV. The threshold of 1eV is used by e.g. OpenMC.
 %     W  = 2e-3*(log(M)-log(M+1));
 %     DW = exp(W*Ei) = exp(2e-3*(log(M)-log(M+1))*Ei)
 %   Above the ethermal energy threshold, the DW factor is kept fixed. 
@@ -154,10 +154,10 @@ function sigma = Sqw_scatt_xs_single(s, Ei, M)
   sigma = trapz(q.*sq)/2/Ki^2; % integrate over q {1}
   
   % add the Debye-Waller factor computed to sweep bound to free cross section
-  % at Ei=4 eV. factor is so that exp(-WE) = [A/(A+1)]^2 at threshold=4 eV
-  % DW factor is in q^2, i.e. in alpha i.e. in E.
+  % at Ei=1 eV. Factor W is so that exp(-WE) = [A/(A+1)]^2 at threshold E=1 eV
+  % DW factor is in q^2, i.e. in alpha i.e. in E, but this is not a Debye-Waller factor !
   if M > 0
-    Ei_threshold = 4000; % 4 eV
+    Ei_threshold = 1000; % 1 eV
     W  = 2/Ei_threshold*(log(M)-log(M+1));
     Ei = min([ Ei Ei_threshold ]);
     DW = exp(W*Ei);
