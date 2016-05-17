@@ -171,7 +171,7 @@ if options.htmlreport && ~isempty(filename)
     % introduction
     fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions in a single crystal, using a DFT code (the "calculator") in the background. From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
     fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <a href="http://ifit.mccmode.org/Models.html#mozTocId990577"<b>sqw_phonon</b> Model</a>, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomistic Simulation Environment (ASE)</a>.\n');
-    fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends successfully, the lower part presents the S(hkl,w) dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic part of the dynamic structure factor S(hkl,w), for vibrational modes.</p>\n');
+    fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends successfully, the lower part presents the S(hkl,w) dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic part of the dynamic structure factor S(hkl,w), for vibrational modes in the harmonic approximation.</p>\n');
     fprintf(fid, '<p><b>Limitations:</b> These results only display the vibrational mode energies, and do not compute the actual intensity. The accuracy of the model depends on the parameters used for the computation, e.g. energy cut-off, k-points grid, smearing, ...</p>\n');
 
     % append system configuration
@@ -221,9 +221,10 @@ if options.htmlreport && ~isempty(filename)
   case 'done'
     % indicate evaluated model, and print grid used
     fprintf(fid, '<h2>Computation completed</h2>\n');
-    fprintf(fid, '<div style="text-align: center; color:#0000FF"><b>WELL DONE</b></div><br><p>The computation has performed correctly. The forces and dynamical matrix of the lattice vibrations have been determined.</p>\n<ul>');
+    fprintf(fid, '<div style="text-align: center; color:#0000FF"><b>WELL DONE</b></div><br>');
+    fprintf(fid, '<p>The computation has performed correctly. The forces and dynamical matrix of the lattice vibrations have been determined.</p>\n');
     
-    fprintf(fid, '<li><a href="%s">%s</a> is the iFunc model object, to be used within iFit.</li>\n', ...
+    fprintf(fid, '<ul><li><a href="%s">%s</a> is the iFunc model object, to be used within iFit.</li>\n', ...
       'Phonons_Model.mat', 'Phonons_Model.mat');
     toadd = { 'optimized.cif', 'optimized.pdb', 'optimized_POSCAR' };
     for index=1:numel(toadd)
@@ -232,7 +233,21 @@ if options.htmlreport && ~isempty(filename)
         toadd{index}, toadd{index});
       end
     end
-    fprintf(fid, '</ul>End Date: %s.<br>\n', datestr(now));
+    fprintf(fid, '</ul>\n');
+    fprintf(fid, 'Here are some additional information about the atom/molecule configuration: (0 may indicate failure to compute the quantity)\n');
+    fprintf(fid, '<ul>\n');
+    % display some information about the system (energy, structure, etc...)
+    toadd = fieldnames(object.UserData.atoms);
+    for index=1:numel(toadd)
+      this = object.UserData.atoms.(toadd{index});
+      if isnumeric(this)
+        fprintf(fid, '<li><b>%s</b>: %s', toadd{index}, mat2str(this));
+      elseif ischar(this)
+        fprintf(fid, '<li><b>%s</b>: %s', toadd{index}, this);
+      end
+    end
+    fprintf(fid, '</ul>');
+    fprintf(fid, 'End Date: %s.<br>\n', datestr(now));
     fprintf(fid, 'Time elapsed: %g [s]<br>\n', options.duration);
     fprintf(fid, 'Please cite:<br><pre>');
     fprintf(fid, '%s\n', data{:});
