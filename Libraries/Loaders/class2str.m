@@ -21,6 +21,7 @@ function str=class2str(this, data, options)
 %
 % Part of: Loaders utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. $Date$
+% (c) E.Farhi, ILL. License: EUPL.
 
 if nargin == 1
   data = this;
