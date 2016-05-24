@@ -8,5 +8,7 @@ function c=least_max(Signal, Error, Model)
 % A good fit corresponds with a criteria lower or equal to 1.
 %
 % <http://en.wikipedia.org/wiki/Absolute_deviation>
+% (c) E.Farhi, ILL. License: EUPL.
+
   c = max(least_absolute(Signal, Error, Model));
 end % least_max

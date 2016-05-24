@@ -243,7 +243,7 @@ if options.htmlreport && ~isempty(filename)
       if isnumeric(this)
         fprintf(fid, '<li><b>%s</b>: %s', toadd{index}, mat2str(this));
       elseif ischar(this)
-        fprintf(fid, '<li><b>%s</b>: %s', toadd{index}, this);
+        fprintf(fid, '<li><b>%s</b>: %s', toadd{index}, this');
       end
     end
     fprintf(fid, '</ul>');

@@ -118,6 +118,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 % Type <a href="matlab:doc(iData,'McStas')">doc(iData,'McStas')</a> to access the iFit/McStas Documentation.
 %
 % Version: $Date$
+% (c) E.Farhi, ILL. License: EUPL.
 % See also: fminsearch, fminpso, optimset, http://www.mcstas.org
 
 % inline: mcstas_criteria
@@ -333,7 +334,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   options.scan_size      = scan_size;
   pars                   = variable_pars;
 
-  if isempty(pars) && ~strcmp(options.mode,'info') && (~isfield(options,'compile') || options.compile==0)
+  if isempty(pars) && isempty(fixed_pars) ...
+    && ~strcmp(options.mode,'simulate') && ~strcmp(options.mode,'info') ...
+    && (~isfield(options,'compile') || options.compile==0) 
     error([ mfilename ': no parameter name/value has been specified. Use a structure or char as 2nd argument.']);
   end
   
@@ -554,6 +557,9 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   end
   if isfield(options,'seed') && ~isempty(options.seed)
     cmd = [ cmd ' --seed=' num2str(options.seed) ];
+  end
+  if isfield(options,'machines')
+    cmd = [ cmd ' --machines=' options.machines ];
   end
   dir_orig = options.dir;
   % handle single simulation and vectorial scans ===============================

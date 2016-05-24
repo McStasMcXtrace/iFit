@@ -8,6 +8,7 @@ function c=least_absolute(Signal, Error, Model)
 % A good fit corresponds with a criteria lower or equal to 1.
 %
 % <http://en.wikipedia.org/wiki/Least_absolute_deviation>
+% (c) E.Farhi, ILL. License: EUPL.
   if ~isnumeric(Signal) || ~isnumeric(Model), return; end
   if isempty(Error) || isscalar(Error) || all(Error == Error(end))
     index = find(isfinite(Model) & isfinite(Signal));

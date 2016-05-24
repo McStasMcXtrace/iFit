@@ -7,6 +7,7 @@ function c=max_corrcoef(Signal, Error, Model)
 % This criteria does not use the error bars.
 %
 % <http://en.wikipedia.org/wiki/Correlation_coefficient>
+% (c) E.Farhi, ILL. License: EUPL.
 
   index = find(isfinite(Model) & isfinite(Signal));
   c = corrcoef(Signal(index),Model(index));
