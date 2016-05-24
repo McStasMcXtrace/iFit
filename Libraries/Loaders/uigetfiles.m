@@ -16,6 +16,7 @@ function [filename, pathname] = uigetfiles(filterspec, title, varargin)
 %
 % Part of: Loaders utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. June, 2007.
+% (c) E.Farhi, ILL. License: EUPL.
 
 % calls: none
 
