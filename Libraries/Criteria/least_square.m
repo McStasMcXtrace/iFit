@@ -8,6 +8,8 @@ function c=least_square(Signal, Error, Model)
 % A good fit corresponds with a criteria lower or equal to 1.
 %
 % <http://en.wikipedia.org/wiki/Least_squares>
+% (c) E.Farhi, ILL. License: EUPL.
+
   c = least_absolute(Signal, Error, Model);
   c = c.*c;
 end % least_square

@@ -22,6 +22,7 @@ function a=mcplot(varargin)
 %
 % SEE ALSO: mcstas, mcplot, mcrun, mcdisplay
 % DOC:      Please visit http://www.mcstas.org/
+% (c) E.Farhi, ILL. License: EUPL.
 
   a = [];
   if nargin ==0

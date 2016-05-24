@@ -8,6 +8,7 @@ function c=max_likelihood(Signal, Error, Model)
 % A good fit corresponds with a criteria lower or equal to 1.
 %
 % <http://en.wikipedia.org/wiki/Maximum_likelihood>
+% (c) E.Farhi, ILL. License: EUPL.
 
   index = find(isfinite(Error) & isfinite(Model) & isfinite(Signal));
   residuals  = Signal - Model;

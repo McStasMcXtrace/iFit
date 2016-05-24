@@ -1,7 +1,9 @@
 function endf = read_endf(filename)
-% import ENDF files
+% data = read_endf(filename)
+%
+%   import ENDF files
 % 
-% cutrrently can properly import MF1 and MF7 sections. 
+% currently properly import MF1 and MF7 sections. 
 % Other sections are read, but not interpreted.
 % (c) E.Farhi, ILL. License: EUPL.
 

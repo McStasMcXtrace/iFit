@@ -91,6 +91,7 @@ function out = ResLibCal(varargin)
 %   a ResLibCal configuration with e.g. 'resolution' field, or a 4D convoluted model.
 %
 % Version: $Date$
+% (c) E.Farhi, ILL. License: EUPL.
 % See also iFunc/conv
 
 % Contributions:
