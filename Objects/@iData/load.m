@@ -161,6 +161,7 @@ function s=load_check_struct(data, loaders, filename)
 % ----------------------------------------------------------------------
 function this = load_eval_postprocess(this, postprocess)
 % evaluate the postprocess in a reduced environment, with only 'this'
+  this0 = this;
   try
     % disp([ mfilename ': Calling post-process '  postprocess ])
     if isvarname(postprocess) && exist(postprocess) == 2
@@ -170,9 +171,12 @@ function this = load_eval_postprocess(this, postprocess)
     else
       eval(postprocess);
     end
-
-    this = setalias(this, 'postprocess', postprocess);
-    this = iData_private_history(this, postprocess, this);
+    
+    if ~isa(this, 'iData'), this = this0;
+    else
+      this = setalias(this, 'postprocess', postprocess);
+      this = iData_private_history(this, postprocess, this);
+    end
   catch ME
     disp(getReport(ME));
     warning([mfilename ': Error when calling post-process ' postprocess '. file: ' this.Source ]);

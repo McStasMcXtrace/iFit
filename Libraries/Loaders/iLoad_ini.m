@@ -80,8 +80,11 @@ function config = iLoad_ini
     mcstas_scan.postprocess='opensim';
     
     mcstas_list.name       ='McCode list monitor';
-    mcstas_list.patterns   ={'Format: ','# type: array_2d','# xlabel: List of'};
-    mcstas_list.method     ='read_mccode';
+    mcstas_list.patterns   ={'Format: ','# type: array_2d','# xlabel: List of neutron events'};
+    mcstas_list.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent --catenate ' ...
+		    '--metadata=xlabel --metadata=Creator ' ...
+		    '--metadata=ylabel --metadata=xylimits --metadata=component --metadata=Param ' ];
+    mcstas_list.method     ='read_anytext';
     mcstas_list.postprocess='opensim';
     
     mcstas_2D.name       ='McCode 2D monitor';
@@ -206,7 +209,7 @@ function config = iLoad_ini
     qd_vms.patterns     = {'Quantum Design'};
     
     endf.name           = 'ENDF';
-    endf.metadata       = 'read_endf';
+    endf.method         = 'read_endf';
     endf.extension      = {'dat','tsl','endf'};
     endf.patterns        ={'EVAL-','DIST-','ENDF'};
     
