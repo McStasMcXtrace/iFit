@@ -76,46 +76,33 @@ function config = iLoad_ini
     
     mcstas_scan.name       ='McCode Scan DAT output';
     mcstas_scan.patterns   ={'# type: multiarray_1d','# variables:','# title: Scan of'};
-    mcstas_scan.options    =['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
-                         '--metadata=xlabel --metadata=ylabel --metadata=xvars --metadata=component --metadata=Param --metadata=Creator ' ];
-    mcstas_scan.method     ='read_anytext';
+    mcstas_scan.method     ='read_mccode';
     mcstas_scan.postprocess='opensim';
     
     mcstas_list.name       ='McCode list monitor';
-    mcstas_list.patterns   ={'Format: ','# type: array_2d','# xlabel: List of neutron events'};
-    mcstas_list.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent --catenate ' ...
-		    '--metadata=xlabel --metadata=Creator ' ...
-		    '--metadata=ylabel --metadata=xylimits --metadata=component --metadata=Param ' ];
-    mcstas_list.method     ='read_anytext';
+    mcstas_list.patterns   ={'Format: ','# type: array_2d','# xlabel: List of'};
+    mcstas_list.method     ='read_mccode';
     mcstas_list.postprocess='opensim';
     
     mcstas_2D.name       ='McCode 2D monitor';
     mcstas_2D.patterns   ={'Format: ','# type: array_2d'};
-    mcstas_2D.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent ' ...
-		    '--metadata=Errors --metadata=Events --metadata=xlabel --metadata=Creator ' ...
-		    '--metadata=ylabel --metadata=zlabel --metadata=xylimits --metadata=component --metadata=Param ' ];
-    mcstas_2D.method     ='read_anytext';
+    mcstas_2D.method     ='read_mccode';
     mcstas_2D.postprocess='opensim';
     
     mcstas_1D.name       ='McCode 1D monitor';
     mcstas_1D.patterns   ={'Format: ','# type: array_1d'};
-    mcstas_1D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  ' ...
-        '--metadata=xlabel --metadata=ylabel  --metadata=component --metadata=Param --metadata=Creator ' ];
-    mcstas_1D.method     ='read_anytext';
+    mcstas_1D.method     ='read_mccode';
     mcstas_1D.postprocess={'load_xyen','opensim'};
     
     mcstas_0D.name       ='McCode 0D monitor';
     mcstas_0D.patterns   ={'Format: ','# type: array_0d'};
-    mcstas_0D.options    =['--fast --binary --headers --comment=NULL --silent --metadata=variables  ' ...
-        '--metadata=xlabel --metadata=ylabel  --metadata=component --metadata=Param --metadata=Creator ' ];
-    mcstas_0D.method     ='read_anytext';
+    mcstas_0D.method     ='read_mccode';
     mcstas_0D.postprocess={'opensim'};
     
     mcstas_sim.name       ='McCode sim file';
     mcstas_sim.extension  ='sim';
     mcstas_sim.patterns   ={'begin simulation','begin instrument','begin data'};
-    mcstas_sim.options    ='--fast --binary --headers  --comment=NULL --silent ';
-    mcstas_sim.method     ='read_anytext';
+    mcstas_sim.method     ='read_mccode';
     mcstas_sim.postprocess='opensim';
     
     mcstas_sqw.name       ='McCode Sqw table';
