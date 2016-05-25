@@ -602,7 +602,7 @@ if ~isempty(options.OutputFcn) & strcmp(options.OutputFcn, 'fminplot')
     set(d, 'String','END','BackgroundColor','green' );
   end
 end
-  
+
 output.funcCount       = constraints.funcCount ;
 output.algorithm       = options.algorithm;
 output.parsHistory     = constraints.parsHistory;
@@ -614,7 +614,7 @@ output.constraints     = constraints;
 output.optimizer       = options.optimizer;
 output.duration        = etime(clock, t0);
 output.fevalDuration   = constraints.fevalDuration;
-output.parsStart       = output.parsHistory(1,:);
+output.parsStart       = constraints.parsStart;
 
 % estimate parameter uncertainty from the search trajectory
 
