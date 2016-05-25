@@ -465,7 +465,11 @@ end
 function [status, result]=system_wait(cmd, options)
 % inline function to execute command and wait for its completion (under Windows)
 % dots are displayed under Windows after every minute waiting.
-  [status, result]=system(cmd);
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  else precmd=''; end
+  
+  [status, result]=system([ precmd cmd ]);
   disp(result);
   if status ~= 0, return; end
   % need to wait for simulation to complete, except for Trace mode

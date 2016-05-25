@@ -671,8 +671,9 @@ function data = iLoad_loader_check(file, data, loader)
   elseif iscell(data) & length(data)>1
     index_out=1;
     for index=1:length(data)
+      newdata = []; 
       if ~isempty(data{index})
-        newdata(index_out) = iLoad_loader_check(file, data{index}, loader);
+        newdata = [ newdata iLoad_loader_check(file, data{index}, loader) ];
         index_out = index_out+1;
       end
     end

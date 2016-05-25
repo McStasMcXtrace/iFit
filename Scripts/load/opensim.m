@@ -18,16 +18,16 @@ end
 
 if numel(out) == 1
   if ~isempty(findstr(out,'sim file'))
-    % this is a McStas file
+    % this is a McCode file
     
     % Find filename fields in sim struct:
     filenames = findstr(out,'filename');
     if ~iscellstr(filenames), filenames = { filenames }; end
     dirname   = fileparts(out.Source);
-    
+
     a=[];
     if length(filenames(:)) > 0
-      % This is a McStas 'overview' plot
+      % This is a McCode 'overview' plot
       for j=1:length(filenames(:))
         filename = filenames{j};
         filename(~isstrprop(filename,'print')) = '';
@@ -40,9 +40,11 @@ if numel(out) == 1
       end
     else
       % This is a .sim from a scan
-      filename = 'mcstas.dat';
+      filename = 'mccode.dat';
       filename = fullfile(dirname,filename);
-      a = iData(filename);
+      if exist(filename)
+        a = iData(filename);
+      end
     end
     out = a;
     clear a;
@@ -54,7 +56,7 @@ if numel(out) == 1
     out = load_mcstas_dat(out); % private, below
   end
   
-  if isempty(findstr(out,'McStas')) && isempty(findstr(out,'McCode'))
+  if ~isempty(out) && isempty(findstr(out,'McStas')) && isempty(findstr(out,'McCode'))
     warning([ mfilename ': The loaded data set ' out.Tag ' from ' out.Source ' is not a McCode data format.' ]);
     return
   end
