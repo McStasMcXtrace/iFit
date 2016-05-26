@@ -76,6 +76,7 @@ if isscalar(index) && isnumeric(index)
 end
 if ischar(index)  
    % is this an Alias ?
+  index=index(:)';
   isalias = strcmp(index, this.Alias.Names);
   if any(isalias)
     index = find(isalias, 1);

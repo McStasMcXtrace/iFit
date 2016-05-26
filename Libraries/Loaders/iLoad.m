@@ -395,14 +395,14 @@ function [data, format] = iLoad(filename, loader, varargin)
     filename = strrep(filename, '%20',' ');
     while filename(end) == ';', filename(end)=''; end % in case there is a leading ';' in place of \n
     try
-      [data, format] = iLoad_import(filename, loader, varargin{:});
+      [data, format] = iLoad_import(filename, loader, varargin{:}); % <<<<<<<<<<
     catch ME
       fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n  %s\n', filename, ME.message);
       data=[];
     end
   elseif isempty(filename)
     config = iLoad('','load config');
-    if exist('uigetfiles') && (strcmp(config.UseSystemDialogs, 'no') || isdeployed || ~usejava('jvm'))
+    if exist('uigetfiles') && ((isfield(config, 'UseSystemDialogs') && strcmp(config.UseSystemDialogs, 'no')) || isdeployed || ~usejava('jvm'))
         [filename, pathname] = uigetfiles('.*','Select file(s) to load');
     else
       if usejava('swing')
@@ -541,9 +541,8 @@ function [data, format] = iLoad(filename, loader, varargin)
     % call the loader
     data = feval(loader.method, varg{:});
     if isempty(data), return; end
-    
+
     % special test to avoid reading binary file with read_anytext
-    
     data = iLoad_loader_check(filename, data, loader);
     
     % in case this import returns an array of struct, make it a cell array
@@ -661,28 +660,29 @@ function data = iLoad_loader_check(file, data, loader)
 
   if isempty(data), return; end
   % handle case when a single file generates a data set
+  newdata = [];
   if isstruct(data) & length(data)>1
-    for index=1:length(data)
-      data(index) = iLoad_loader_check(file, data(index), loader);
+    for index=1:numel(data)
+      newdata = [ newdata iLoad_loader_check(file, data(index), loader) ];
     end
+    data = newdata;
     return
   elseif iscellstr(data)
     fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Got a cell of strings. Ignoring\n', file, loader.name, char(loader.method));
-  elseif iscell(data) & length(data)>1
-    index_out=1;
+  elseif iscell(data) & numel(data)>1
     for index=1:length(data)
-      newdata = []; 
       if ~isempty(data{index})
-        newdata = [ newdata iLoad_loader_check(file, data{index}, loader) ];
-        index_out = index_out+1;
+        this = iLoad_loader_check(file, data{index}, loader);
+        newdata = [ newdata this ];
       end
     end
     data = newdata; % now an array of struct
     return
   elseif iscell(data) && numel(find(~cellfun('isempty', data))) == 1
+    disp 'iLoad_loader_check input cell single'
     data = data{find(~cellfun('isempty', data))};
   end
-  
+
   name='';
   if isstruct(loader),
     method = loader.method;
@@ -752,11 +752,10 @@ function data = iLoad_loader_check(file, data, loader)
     end
   end
   
+  if ~isfield(data, 'Label'), data.Label = ''; end
   if isfield(loader, 'name') data.Format = loader.name; 
   else data.Format=[ char(loader.method) ' import' ]; end
   data.Loader = loader;
-  
-  return
   
 end % Load_loader_check
 

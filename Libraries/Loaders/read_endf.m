@@ -3,7 +3,7 @@ function endf = read_endf(filename)
 %
 %   import ENDF files
 % 
-% currently properly import MF1 and MF7 sections. 
+% currently properly imports MF1 and MF7 sections. 
 % Other sections are read, but not interpreted.
 % (c) E.Farhi, ILL. License: EUPL.
 
@@ -48,6 +48,9 @@ disp([ mfilename ': Opening ' filename ]);
 content  = regexp(content, '\n+', 'split');
 sections = {};  % all found sections
 section  = [];  % current section. Starts unset.
+% global data read from MF1/MT451
+ZSYNAM   = [];
+EDATE    = [];
 
 for cline=content % each line is a cellstr
   if isempty(cline), continue; end
@@ -76,8 +79,10 @@ for cline=content % each line is a cellstr
       section0=section;
       if section.MF == 1
         section = read_endf_mf1(section0);
+        if ~isempty(section) && isfield(section,'EDATE'),  EDATE  = section(1).EDATE; end
+        if ~isempty(section) && isfield(section,'ZSYNAM'), ZSYNAM = section(1).ZSYNAM; end
       elseif section.MF == 7
-        section = read_endf_mf7(section0);
+        section = read_endf_mf7(section0, ZSYNAM, EDATE);
       end
       % treat specific sections -> FAILED. we restore raw, and display message
       if isempty(section)
@@ -137,8 +142,6 @@ function h = read_endf_mf1(MF1)
   catch ME
     disp([ mfilename ': ERROR: ' MF1.description ' invalid HEAD length (MF1/MT451)' ]);
     disp(MF1.lines(1:4)')
-    disp(lines4)
-    disp(getReport(ME))
     return  % invalid MF1 section (wrong nb of items in HEAD)
   end
   if any([d1 d2 d3 d4])
@@ -167,7 +170,7 @@ function h = read_endf_mf1(MF1)
   disp(sprintf('%s: NSUB=%3i %s', mfilename, h.NSUB, read_endf_NSUB(h.NSUB)));
 
 % ------------------------------------------------------------------------------
-function t    = read_endf_mf7(MF7)
+function t    = read_endf_mf7(MF7, ZSYNAM, EDATE)
   % read the MF7 MT2 and MT4 "TSL" sections and return its structure
   %
   % FILE 7. THERMAL NEUTRON SCATTERING LAW DATA
@@ -200,6 +203,7 @@ function t    = read_endf_mf7(MF7)
   
   t.MAT   = MF7.MAT; t.MF=MF7.MF; t.MT=MF7.MT;
   t.field = MF7.field;
+  t.ZSYNAM=ZSYNAM; t.EDATE=EDATE;
   if MF7.MT == 2 % Incoherent/Coherent Elastic Scattering
     %  ENDF: [MAT, 7, 2/ ZA, AWR, LTHR, 0, 0, 0] HEAD
     [t.ZA,t.AWR,t.LTHR,d1,d2,d3]= deal(HEAD{:});
@@ -219,7 +223,8 @@ function t    = read_endf_mf7(MF7)
       t1.NP  = t.NP(index);
       t1.S   = t.S(index,:);
       t1.INT = t.INT(index);
-      t1.description = [ t1.description ' T=' num2str(t1.T) ' K' ];
+      t1.Title = [ ZSYNAM ' T=' num2str(t1.T) ' [K] ' t1.description];
+      t1.Label = [ ZSYNAM ' T=' num2str(t1.T) ' [K] TSL elastic' ];
       t0 = [ t0 t1 ];
     end
     t=t0;
@@ -246,157 +251,193 @@ function t    = read_endf_mf7(MF7)
       t1 = t;
       t1.T   = t.T(index);
       t1.Sab = t.Sab(:,:,index);
-      t1.description = [ t1.description ' T=' num2str(t1.T) ' K' ];
+      t1.Title = [ ZSYNAM ' T=' num2str(t1.T) ' [K] ' t1.description ];
+      t1.Label = [ ZSYNAM ' T=' num2str(t1.T) ' [K] TSL inelastic' ];
+      % treat Teff
+      % t1.Teff_INT = t.Teff_INT(index);
+      t1.Teff_T   = t.Teff_T(index,:);  % should be t.T
+      if t1.T == t1.Teff_T, t1 = rmfield(t1, 'Teff_T'); end
+      t1.Teff     = t.Teff(index,:);
       t0 = [ t0 t1 ];
     end
     t=t0;
   end
   % display found item
   disp(sprintf('%s: MF=%3i   %s', mfilename, t(1).MF, t(1).description));
+  
+  % end read_endf_mf7
 
 % ------------------------------------------------------------------------------
 function [MF7,t] = read_endf_mf7_mt2(MF7, t)
-    % ENDF MF7 MT2 section (elastic)
-    if     t.LTHR == 1  % Coherent Elastic
-      t.description = [ MF7.description ' (Coherent Elastic)' ];
-      % ENDF: [MAT, 7, 2/ T0,0,LT,0,NR,NP/E/S(E,T0) ] TAB1
-      [ce, MF7.lines] = read_endf_TAB1(MF7.lines);
+  % ENDF MF7 MT2 section (elastic)
+  if     t.LTHR == 1  % Coherent Elastic
+    t.description = [ MF7.description ' (Coherent Elastic)' ];
+    % ENDF: [MAT, 7, 2/ T0,0,LT,0,NR,NP/E/S(E,T0) ] TAB1
+    [ce, MF7.lines] = read_endf_TAB1(MF7.lines);
+    if isempty(ce),  
+      disp([ mfilename ': ERROR: ' t.description ' TAB1 aborted (MF7/MT2/LTHR1)' ]);         
+      t=[]; return; 
+    end % bad format
+    if any(ce.head([ 2 4 ])), 
+      disp([ mfilename ': WARNING: ' t.description ' wrong head values in TAB1 (MF7/MT2/LTHR1)' ]);
+      disp(ce.head)
+    end % bad values TAB1/HEAD
+    t.LT = ce.head(3);  % nb of temperatures to read
+    t.T  = ce.head(1);  % T0 (K)
+    t.NP = ce.head(6);  % Number of Bragg edges given.
+    if t.LT < 0 || t.T < 0 || t.NP <= 0, 
+      t=[]; return; 
+    end % bad format
+    t.E  = ce.X(:)';    % energy axis (eV) as row
+    t.S  = ce.Y(:)';    % S(E,T0) as a row
+    t.INT= ce.INT(:);  % interpolation flag
+    
+    % ENDF: [MAT, 7, 2/ Tn,0,LI,0,NP,0/S(E,Tn) ] LIST 1:(LT+1)
+    for index=1:(t.LT+1)
+      if isempty(MF7.lines), break; end
+      [ce, MF7.lines] = read_endf_LIST(MF7.lines);
       if isempty(ce),  
-        disp([ mfilename ': ERROR: ' t.description ' TAB1 aborted (MF7/MT2/LTHR1)' ]);         
+        disp([ mfilename ': ERROR: ' t.description ' LIST aborted (MF7/MT2/LTHR1)' ]);         
         t=[]; return; 
       end % bad format
       if any(ce.head([ 2 4 ])), 
-        disp([ mfilename ': WARNING: ' t.description ' wrong head values in TAB1 (MF7/MT2/LTHR1)' ]);
+        disp([ mfilename ': WARNING: ' t.description ' wrong head values in LIST (MF7/MT2/LTHR1)' ]);
         disp(ce.head)
-      end % bad values TAB1/HEAD
-      t.LT = ce.head(3);  % nb of temperatures to read
-      t.T  = ce.head(1);  % T0 (K)
-      t.NP = ce.head(6);  % Number of Bragg edges given.
-      if t.LT < 0 || t.T < 0 || t.NP <= 0, 
-        t=[]; return; 
-      end % bad format
-      t.E  = ce.X(:)';    % energy axis (eV) as row
-      t.S  = ce.Y(:)';    % S(E,T0) as a row
-      t.INT= ce.INT(:);  % interpolation flag
-      
-      % ENDF: [MAT, 7, 2/ Tn,0,LI,0,NP,0/S(E,Tn) ] LIST 1:(LT+1)
-      for index=1:(t.LT+1)
-        if isempty(MF7.lines), break; end
-        [ce, MF7.lines] = read_endf_LIST(MF7.lines);
-        if isempty(ce),  
-          disp([ mfilename ': ERROR: ' t.description ' LIST aborted (MF7/MT2/LTHR1)' ]);         
-          t=[]; return; 
-        end % bad format
-        if any(ce.head([ 2 4 ])), 
-          disp([ mfilename ': WARNING: ' t.description ' wrong head values in LIST (MF7/MT2/LTHR1)' ]);
-          disp(ce.head)
-        end % bad values LIST
-        t.T  = [ t.T     ce.head(1) ];% Tn (K)
-        t.INT= [ t.INT ; ce.head(3) ];% LI: interpolation flags
-        t.NP = [ t.NP  ; ce.head(5) ];% NP
-        t.S  = [ t.S   ; ce.B(:)' ];  % append S(E,Tn) as rows
-      end
-      if ~all(t.NP == t.NP(1))
-        disp([ mfilename ': WARNING: NP is not constant in Section ' section.field ' ' section.description ' (MF7/MT2/LTHR1)'])
-        disp(t.NP(:)')
-      end
-      
-    elseif t.LTHR == 2  % Incoherent Elastic
-      t.description = [ MF7.description ' (Incoherent Elastic)' ];
-      % ENDF: [MAT, 7, 2/ T0,0,LT,0,NR,NP/Tint/W(T) ] TAB1
-      [ie, MF7.lines] = read_endf_TAB1(MF7.lines);
-      if isempty(ie), 
-        disp([ mfilename ': ERROR: ' t.description ' TAB1 aborted (MF7/MT2/LTHR2)' ]);
-        t=[]; return; 
-      end % bad format
-      if any(ie.head(2:4)), 
-        disp([ mfilename ': WARNING: ' t.description ' wrong head values in TAB1 (MF7/MT2/LTHR2)' ]);
-        disp(ie.head)
-      end % bad values TAB1/HEAD
-      t.SB = ie.head(1);  % bound cross section (barns)
-      t.NR = ie.head(5);
-      t.NP = ie.head(6);  % number of temperatures
-      t.T  = ie.X(:)';    % temperature (K)
-      t.W  = ie.Y(:)';    % Debye-Waller integral divided by the atomic mass (eV -1 ) 
-                          %   as a function of temperature
-      t.INT= ie.INT(:)';  % interpolation flag
+      end % bad values LIST
+      t.T  = [ t.T     ce.head(1) ];% Tn (K)
+      t.INT= [ t.INT ; ce.head(3) ];% LI: interpolation flags
+      t.NP = [ t.NP  ; ce.head(5) ];% NP
+      t.S  = [ t.S   ; ce.B(:)' ];  % append S(E,Tn) as rows
     end
+    if ~all(t.NP == t.NP(1))
+      disp([ mfilename ': WARNING: NP is not constant in Section ' section.field ' ' section.description ' (MF7/MT2/LTHR1)'])
+      disp(t.NP(:)')
+    end
+    
+  elseif t.LTHR == 2  % Incoherent Elastic
+    t.description = [ MF7.description ' (Incoherent Elastic)' ];
+    % ENDF: [MAT, 7, 2/ T0,0,LT,0,NR,NP/Tint/W(T) ] TAB1
+    [ie, MF7.lines] = read_endf_TAB1(MF7.lines);
+    if isempty(ie), 
+      disp([ mfilename ': ERROR: ' t.description ' TAB1 aborted (MF7/MT2/LTHR2)' ]);
+      t=[]; return; 
+    end % bad format
+    if any(ie.head(2:4)), 
+      disp([ mfilename ': WARNING: ' t.description ' wrong head values in TAB1 (MF7/MT2/LTHR2)' ]);
+      disp(ie.head)
+    end % bad values TAB1/HEAD
+    t.SB = ie.head(1);  % bound cross section (barns)
+    t.NR = ie.head(5);
+    t.NP = ie.head(6);  % number of temperatures
+    t.T  = ie.X(:)';    % temperature (K)
+    t.W  = ie.Y(:)';    % Debye-Waller integral divided by the atomic mass (eV -1 ) 
+                        %   as a function of temperature
+    t.INT= ie.INT(:)';  % interpolation flag
+  end
+  
+  % end read_endf_mf7_mt2
 
 % ------------------------------------------------------------------------------
 function [MF7,t] = read_endf_mf7_mt4(MF7, t)
-    % ENDF MF7 MT4 section (inelastic)
-    
-    % [MAT,7,4/ 0,0,LLN,0,NI,NS/B(N) ] LIST
-    [ii, MF7.lines] = read_endf_LIST(MF7.lines);
-    if isempty(ii), 
-      disp([ mfilename ': ERROR: ' t.description ' TAB1 aborted (MF7/MT4)' ]);
+  % ENDF MF7 MT4 section (inelastic)
+  
+  % [MAT,7,4/ 0,0,LLN,0,NI,NS/B(N) ] LIST
+  [ii, MF7.lines] = read_endf_LIST(MF7.lines);
+  if isempty(ii), 
+    disp([ mfilename ': ERROR: ' t.description ' TAB1/B aborted (MF7/MT4)' ]);
+    t=[]; return; 
+  end % bad format
+  if any(ii.head([ 1 2 4 ])), 
+    disp([ mfilename ': WARNING: ' t.description ' wrong head values in LIST/B (MF7/MT4)' ]);
+    disp(ii.head)
+  end % bad values LIST
+  t.LLN = ii.head(3); % Flag indicating the form of S(a,b) stored in the file
+                      % LLN=0, S is stored directly. LLN=1, ln S is stored.
+  t.NI  = ii.head(5); % Total number of items in the B(N) list. NI = 6(NS+1).
+  t.NS  = ii.head(6); % Number of non-principal scattering atom types.
+  t.B   = ii.B;       % List of phys. constants.
+  
+  % [MAT,7,4/ 0,0,0,0,NR,NB/BetaInt ] TAB2 (interpolation scheme)
+  [beta, MF7.lines] = read_endf_TAB2(MF7.lines);
+  if isempty(beta), 
+    disp([ mfilename ': ERROR: ' t.description ' TAB2/beta aborted (MF7/MT4)' ]);
+    t=[]; return; 
+  end % bad format
+  if any(beta.head(1:4)), 
+    disp([ mfilename ': WARNING: ' t.description ' wrong head values in TAB2/beta (MF7/MT4)' ]);
+    disp(beta.head)
+  end % bad values TAB2
+  t.NR       = beta.head(5);  % NR: Number of interpolation ranges for a particular parameter
+  t.NB       = beta.head(6);  % NB: Total number of beta values given.
+  t.beta_INT = beta.INT;      % Interpolation schemes
+  t.beta     = zeros(1,t.NB);
+  t.T        = [];
+  t.LT       = t.beta;
+  t.NP       = t.NB;
+  t.alpha    = [];
+  t.Sab      = [];  % S(a,BETAn,Tn)
+  
+  % read alpha,beta,T,Sab values
+  for ibeta = 1:t.NB
+    % [MAT,7,4/ T0,Beta0,LT,0,NR,NP/AlphaInt/S(a,BETAn,Tn) ] TAB1 Sab(T0)
+    [alpha, MF7.lines] = read_endf_TAB1(MF7.lines);
+    if isempty(alpha), 
+      disp([ mfilename ': ERROR: ' t.description ' TAB1/alpha aborted (MF7/MT4)' ]);
       t=[]; return; 
     end % bad format
-    if any(ii.head([ 1 2 4 ])), 
-      disp([ mfilename ': WARNING: ' t.description ' wrong head values in LIST (MF7/MT4)' ]);
-      disp(ii.head)
-    end % bad values LIST
-    t.LLN = ii.head(3); % Flag indicating the form of S(a,b) stored in the file
-                        % LLN=0, S is stored directly. LLN=1, ln S is stored.
-    t.NI  = ii.head(5); % Total number of items in the B(N) list. NI = 6(NS+1).
-    t.NS  = ii.head(6); % Number of non-principal scattering atom types.
-    t.B   = ii.B;       % List of phys. constants.
-    
-    % [MAT,7,4/ 0,0,0,0,NR,NB/BetaInt ] TAB2 (interpolation scheme)
-    [beta, MF7.lines] = read_endf_TAB2(MF7.lines);
-    if isempty(beta), 
-      disp([ mfilename ': ERROR: ' t.description ' TAB2 aborted (MF7/MT4)' ]);
-      t=[]; return; 
-    end % bad format
-    if any(beta.head(1:4)), 
-      disp([ mfilename ': WARNING: ' t.description ' wrong head values in TAB2 (MF7/MT4)' ]);
-      disp(beta.head)
-    end % bad values TAB2
-    t.NR       = beta.head(5);  % NR: Number of interpolation ranges for a particular parameter
-    t.NB       = beta.head(6);  % NB: Total number of beta values given.
-    t.beta_INT = beta.INT;      % Interpolation schemes
-    t.beta     = zeros(1,t.NB);
-    t.T        = [];
-    t.LT       = t.beta;
-    t.NP       = t.NB;
-    t.alpha    = [];
-    t.Sab      = [];  % S(a,BETAn,Tn)
-    
-    for ibeta = 1:t.NB
-      % [MAT,7,4/ T0,Beta0,LT,0,NR,NP/AlphaInt/S(a,BETAn,Tn) ] TAB1 Sab(T0)
-      [alpha, MF7.lines] = read_endf_TAB1(MF7.lines);
-      if isempty(alpha), 
-        disp([ mfilename ': ERROR: ' t.description ' TAB1 aborted (MF7/MT4)' ]);
+    if any(alpha.head(4)), 
+      disp([ mfilename ': WARNING: ' t.description ' wrong head values in TAB1/alpha (MF7/MT4)' ]);
+      disp(alpha.head)
+    end % bad values TAB1
+    t.T           = alpha.head(1);  % T0
+    t.beta(ibeta) = alpha.head(2);  % beta(ibeta)
+    t.LT(ibeta)   = alpha.head(3);  % LT: Temperature dependence flag
+    t.NR(ibeta)   = alpha.head(5);  % NR
+    t.NP(ibeta)   = alpha.head(6);  % NR
+    t.alpha_INT(ibeta) = alpha.INT;
+    t.alpha            = alpha.X(:)';          % should all be the same
+    t.Sab(ibeta, :, 1) = alpha.Y; 
+    % ENDF: [MAT, 7, 4/ Tn,BETAn,LT,0,NP,0/S(a,BETAn,Tn) ] LIST
+    for index=2:(t.LT+1)
+      [Sab, MF7.lines] = read_endf_LIST(MF7.lines);
+      if isempty(Sab), 
+        disp([ mfilename ': ERROR: ' t.description ' LIST/Sab aborted (MF7/MT4)' ]);
         t=[]; return; 
       end % bad format
-      if any(alpha.head(4)), 
-        disp([ mfilename ': WARNING: ' t.description ' wrong head values in TAB1 (MF7/MT4)' ]);
-        disp(alpha.head)
-      end % bad values TAB1
-      t.T           = alpha.head(1);  % T0
-      t.beta(ibeta) = alpha.head(2);  % beta(ibeta)
-      t.LT(ibeta)   = alpha.head(3);  % LT: Temperature dependence flag
-      t.NR(ibeta)   = alpha.head(5);  % NR
-      t.NP(ibeta)   = alpha.head(6);  % NR
-      t.alpha_INT(ibeta) = alpha.INT;
-      t.alpha= alpha.X(:)';          % should all be the same
-      t.Sab(ibeta, :, 1) = alpha.Y; 
-      % ENDF: [MAT, 7, 4/ Tn,BETAn,LT,0,NP,0/S(a,BETAn,Tn) ] LIST
-      for index=2:(t.LT+1)
-        [Sab, MF7.lines] = read_endf_LIST(MF7.lines);
-        if isempty(Sab), 
-          disp([ mfilename ': ERROR: ' t.description ' LIST aborted (MF7/MT4)' ]);
-          t=[]; return; 
-        end % bad format
-        if any(Sab.head([ 4 6 ])), 
-          disp([ mfilename ': WARNING: ' t.description ' wrong head values in LIST (MF7/MT4)' ]);
-          disp(Sab.head)
-        end % bad values LIST
-        t.T(index)  = Sab.head(1);% Tn (K)
-        t.Sab(ibeta, :, index) = Sab.B;  % append S(E,Tn) as rows
-      end
+      if any(Sab.head([ 4 6 ])), 
+        disp([ mfilename ': WARNING: ' t.description ' wrong head values in LIST/Sab (MF7/MT4)' ]);
+        disp(Sab.head)
+      end % bad values LIST
+      t.T(index)  = Sab.head(1);% Tn (K)
+      t.Sab(ibeta, :, index) = Sab.B;  % append S(E,Tn) as rows
     end
+  end % beta loop (NB)
+  
+  % read Teff values
+  % [MAT,7,4/ 0,0,0,0,NR,NT/Tint/Teff(T) ] TAB1
+  Teff_index=6;
+  if numel(t.B) >= 13 && t.B(13) == 0, Teff_index=[ Teff_index 13 ]; end
+  if numel(t.B) >= 17 && t.B(17) == 0, Teff_index=[ Teff_index 17 ]; end
+  t.NT = []; t.Teff_INT = []; t.Teff_T = [];
+  for index=1:numel(Teff_index)
+    if ~isempty(MF7.lines) && numel(t.B) >= index && t.B(index)
+      [Teff, MF7.lines] = read_endf_TAB1(MF7.lines);
+      if isempty(Teff), 
+        disp([ mfilename ': ERROR: ' t.description ' TAB1/Teff aborted (MF7/MT4)' ]);
+        t=[]; return; 
+      end % bad format
+      if any(Teff.head(1:4)), 
+        disp([ mfilename ': WARNING: ' t.description ' wrong head values in TAB1/Teff (MF7/MT4)' ]);
+        disp(Teff.head)
+      end % bad values TAB1
+      t.NT(index)       = Teff.head(6);
+      t.Teff_INT(index) = Teff.INT;
+      t.Teff_T(:,index) = Teff.X(:);  % should be t.T
+      t.Teff(:,index)   = Teff.Y(:);
+    end
+  end
 
+  % end read_endf_mf7_mt4
 
 
 % ------------------------------------------------------------------------------

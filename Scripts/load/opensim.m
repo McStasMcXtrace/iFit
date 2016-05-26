@@ -311,6 +311,17 @@ end
 function param=load_mcstas_param(a, keyword)
   if nargin == 1, keyword='Param:'; end
   param = [];
+  
+  par_list = findfield(a, keyword,'case');
+  if ~isempty(par_list)
+    for index=1:numel(par_list)
+      try; this=get(a,par_list{index}); catch; this=[]; end
+      if isscalar(this) && (isnumeric(this) || ischar(this))
+        name         = fliplr(strtok(fliplr(par_list{index}),sprintf('.')));
+        param.(name) = this; 
+      end
+    end
+  end
 
   par_list = findstr(a, keyword, 'case');
   if ischar(par_list), par_list=cellstr(par_list); end

@@ -213,7 +213,7 @@ for i = 1:length(S)     % can handle multiple index levels
     elseif strcmpi(fieldname, 'axes')
       fieldname = 'Axis';
     end
-    
+
     index = find(strcmpi(fieldname, f));
     if any(strcmpi(fieldname, 'alias'))
       b = getalias(b);
@@ -226,7 +226,7 @@ for i = 1:length(S)     % can handle multiple index levels
       if isnumeric(b) && any(strcmpi(fieldname, {'Date','ModificationDate'}))
         b = datestr(b);
       end
-    elseif any(strcmpi(fieldname, a.Alias.Names))
+    elseif any(strcmpi(fieldname, b.Alias.Names))
       b = iData_getAliasValue(b,fieldname);
     elseif any(strcmp(fieldname,method)) % b.method = ismethod(b, fieldname)
       if i == length(S)
