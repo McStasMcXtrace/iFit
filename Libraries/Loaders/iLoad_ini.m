@@ -211,7 +211,8 @@ function config = iLoad_ini
     endf.name           = 'ENDF';
     endf.method         = 'read_endf';
     endf.extension      = {'dat','tsl','endf'};
-    endf.patterns        ={'EVAL-','DIST-','ENDF'};
+    endf.patterns       = {'EVAL-','DIST-','ENDF'};
+    endf.postprocess    = 'openendf';
     
     yaml.name           = 'YAML';
     yaml.method         = 'read_yaml';

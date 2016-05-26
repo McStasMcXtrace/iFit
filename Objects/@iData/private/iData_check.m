@@ -73,7 +73,6 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
     fields_all = fields; dims_all=dims;
     
     % does this looks like a Signal ?
-  
     if isempty(in.Alias.Values{1})
       
       if length(dims) > 1 % when similar sizes are encoutered, get the one which is not monotonic
@@ -87,7 +86,7 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
           index=maxdim2(idx);
           x = get(in, fields{index});
           if ischar(x) || length(x) <= 1
-            % this is a char: move to end of list
+            % this is a char or scalar: move to end of list
             send_at_end = [ send_at_end idx ];
             keep_at_start(keep_at_start == idx) = [];
             continue; 
@@ -107,10 +106,11 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
         maxdim2 = maxdim([ keep_at_start send_at_end ]);
         fields(maxdim) = fields(maxdim2);
       end
-      
+
       % in case we have more than one choice, get the first one and error bars
       error_id = []; monitor_id=[];
       if length(dims) > 1 || iscell(fields)
+        select = [];
         % do we have an 'error' which has same dimension ?
         for index=find(dims(:)' == dims(1))
           if index==1, continue; end % not the signal itself
@@ -119,11 +119,13 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
             error_id = fields{index};
           elseif ~isempty(strfind(lower(fields{index}), 'monitor'))
             monitor_id = fields{index};
+          elseif isempty(select)
+            select = index;
           end
         end
-        
-        dims=dims(1);
-        fields=fields{1};
+        if isempty(select), select =1; end
+        dims=dims(select);
+        fields=fields{select};
       end
 
       % index: is the field and dimension index to assign the Signal
@@ -143,10 +145,10 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
         end
 
         % assign potential 'error' bars and 'monitor'
-        if ~isempty(error_id)
+        if ~isempty(error_id) && ~strcmp(monitor_id,'Error')
           in.Alias.Values{2} = error_id;
         end
-        if ~isempty(monitor_id)
+        if ~isempty(monitor_id) && ~strcmp(monitor_id,'Monitor')
           in.Alias.Values{3} = monitor_id;
         end
       end
