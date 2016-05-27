@@ -660,10 +660,10 @@ function data = iLoad_loader_check(file, data, loader)
 
   if isempty(data), return; end
   % handle case when a single file generates a data set
-  newdata = [];
+  newdata = {};
   if isstruct(data) & length(data)>1
     for index=1:numel(data)
-      newdata = [ newdata iLoad_loader_check(file, data(index), loader) ];
+      newdata = { newdata{:} iLoad_loader_check(file, data(index), loader) };
     end
     data = newdata;
     return
@@ -673,7 +673,7 @@ function data = iLoad_loader_check(file, data, loader)
     for index=1:length(data)
       if ~isempty(data{index})
         this = iLoad_loader_check(file, data{index}, loader);
-        newdata = [ newdata this ];
+        newdata = { newdata{:} this };
       end
     end
     data = newdata; % now an array of struct
@@ -931,7 +931,7 @@ function config = iLoad_config_load
     if ~isfield(loader,'patterns'),   loader.patterns=''; end
     if ~isfield(loader,'postprocess'),loader.postprocess=''; end
     if ~isempty(loader.method)
-      if exist(loader.method, 'file')
+      if exist(loader.method, 'file') || ~isempty(which(loader.method))
         loader.exist = 1;
       else
         loader.exist = 0;

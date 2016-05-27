@@ -129,10 +129,12 @@ clear d
 
 % check that guessed Signal is indeed what we look for
 signal = getalias(a, 'Signal');
-if ischar(signal) && ~isempty(strfind(signal, 'MetaData'))
+if ischar(signal) && (~isempty(strfind(signal, 'MetaData')) ...
+    || ~isempty(strfind(signal, 'errors')) ...
+    || ~isempty(strfind(signal, 'events')))
   % biggest field is not the list but some MetaData, search other List 
   % should be 'Data.MataData.variables' or 'Data.I'
-  for search = {'Data.I','Data.Sqw','Data.MetaData.variables'}
+  for search = {'Data.I','Data.Sqw','Data.MetaData.variables','Data.data'}
     if ~isempty(findfield(a,search,'case exact numeric')), signal = search; break; end
   end
   if isempty(signal)

@@ -3,12 +3,23 @@ function endf = read_endf(filename)
 %
 %   import ENDF files
 % 
-% currently properly imports MF1 and MF7 sections. 
-% Other sections are read, but not interpreted.
-% (c) E.Farhi, ILL. License: EUPL.
-
-% https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf
+% currently properly imports 
+% == === =============================================== ========
+% MF MT  Description                                     Complete
+% == === =============================================== ========
+% 1  451 Descriptive data and directory                  Yes
+% 7  2   Thermal elastic scattering                      Yes
+% 7  4   Thermal inelastic scattering                    Yes
+% == === =============================================== ========
+% Other sections are read, but not interpreted (stored as char).
 %
+% Import can also be done using PyNE
+% sudo apt-get install pyne
+% python -c "from pyne.endf import Evaluation; import scipy.io as sio; file='filemane'; endf=Evaluation(file); endf.read(); sio.savemat('endf.mat',{'alpha': endf.thermal_inelastic['alpha'],'beta':endf.thermal_inelastic['beta'],'Sab':endf.thermal_inelastic['scattering_law'],'B':endf.thermal_inelastic['B'],'T':endf.thermal_inelastic['temperature'],'Teff':endf.thermal_inelastic['teff'].y,'LLN':endf.thermal_inelastic['ln(S)'],'LAT':endf.thermal_inelastic['temperature_used'],'LASYM':endf.thermal_inelastic['symmetric']})"
+% matlab> endf=load('endf.mat')
+%
+% Format is defined at https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf
+% (c) E.Farhi, ILL. License: EUPL.
 
 % MAT   is at column  70     (Block)
 % MF    is at columns 71-72  (File)
@@ -234,7 +245,7 @@ function t    = read_endf_mf7(MF7, ZSYNAM, EDATE)
     [t.ZA,t.AWR,d1,t.LAT,t.LASYM,d2]= deal(HEAD{:});
     % LAT: Flag indicating which temperature has been used to compute a and b
     %  LAT=0, the actual temperature has been used.
-    %  LAT=1, the constant T 0 = 0.0253 eV has been used.
+    %  LAT=1, the constant T0 = 0.0253 eV has been used.
     % LASYM: Flag indicating whether an asymmetric S(a,b) is given
     %  LASYM=0, S is symmetric.
     %  LASYM=1, S is asymmetric
