@@ -69,9 +69,9 @@ for cline=content % each line is a cellstr
   if isempty(tline), continue; end
   % all ENDF lines should be 80 chars.
   if length(tline) < 80
-    disp([ mfilename ': invalid ENDF line ' ])
+    disp([ mfilename ': WARNING: skipping invalid ENDF line (less than 80 chars):' ])
     disp(tline)
-    endf = []; return; 
+    continue
   end
   if isempty(tline), continue; end
   tline(~isspace(tline) & ~isstrprop(tline, 'print')) = ' ';  % replace invalid chars
@@ -79,7 +79,7 @@ for cline=content % each line is a cellstr
   MF    = str2double(tline(71:72));
   MT    = str2double(tline(73:75));
   NS    = str2double(tline(76:end));
-  if any(isnan([MAT MF MT NS])), endf = []; return; end
+  if any(isnan([MAT MF MT NS])), continue; end
   if MAT < 0 || MF < 0 || MT < 0 || NS < 0, continue; end
   % detect section end
   % [MAT,MF,    0/ 0.0, 0.0, 0, 0, 0, 0] SEND
