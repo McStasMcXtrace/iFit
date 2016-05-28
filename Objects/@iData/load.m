@@ -76,13 +76,14 @@ end
 if ~iscell(files),   files   = { files }; end
 if ~iscell(loaders), loaders = { loaders }; end
 out = [];
-
+loader = [];
 for i=1:numel(files)
   filename = '';
   if isempty(files{i}), continue; end
   if length(varargin) >= 1 && ischar(varargin{1}), filename = varargin{1}; end
+  if i <= numel(loaders), loader = loaders{i}; end
   
-  this_iData = load_single_file(files{i}, loaders{i}, filename);
+  this_iData = load_single_file(files{i}, loader, filename);
   
   % transpose to make columns
   if numel(out) > 1 && size(out,2) > 1 && size(out,1) == 1, out=out'; end
