@@ -43,7 +43,7 @@ else
       setalias(out,'alpha','Data.alpha','Unit-less wavevector [h2q2/kT]');
       setalias(out,'beta', 'Data.beta', 'Unit-less energy [hw/kT]');
       setalias(out,'Temperature','Data.T', 'Temperature [K]');
-      setalias(out,'Signal_log', 'Data.LLN', 'flag [Signal is ln(S(alpha,beta))]');
+      setalias(out,'classical','Data.LASYM', 'classical/symmetric[1] or quantum/asymmetric[0]');
       setalias(out,'B', 'Data.B', 'Analytical model physical constants');
       setaxis( out, 2, 'alpha');
       setaxis( out, 1, 'beta');

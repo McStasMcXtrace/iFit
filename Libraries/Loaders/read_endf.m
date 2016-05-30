@@ -213,21 +213,6 @@ function t    = read_endf_mf7(MF7, ZSYNAM, EDATE)
     end
     
     [MF7,t] = read_endf_mf7_mt2(MF7, t);
-    disp(sprintf('%s: MF=%3i   MT=%i T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
-    
-    % we create an array of TSL, one per temperature.
-    t0 = [];
-    for index=1:numel(t.T)
-      t1     = t;
-      t1.T   = t.T(index);
-      t1.NP  = t.NP(index);
-      t1.S   = t.S(index,:);
-      t1.INT = t.INT(index);
-      t1.Title = [ ZSYNAM ' T=' num2str(t1.T) ' [K] ' t1.description];
-      t1.Label = [ ZSYNAM ' T=' num2str(t1.T) ' [K] TSL elastic' ];
-      t0 = [ t0 t1 ];
-    end
-    t=t0;
     
   elseif MF7.MT == 4 % Incoherent Inelastic Scattering
     t.description = [ MF7.description ' (Incoherent Inelastic)' ];
@@ -245,28 +230,30 @@ function t    = read_endf_mf7(MF7, ZSYNAM, EDATE)
 
     [MF7,t] = read_endf_mf7_mt4(MF7, t);
     
-    % we create an array of TSL, one per temperature.
-    t0 = [];
-    for index=1:numel(t.T)
-      t1 = t;
-      t1.T   = t.T(index);
-      t1.Sab = t.Sab(:,:,index);
-      t1.Title = [ ZSYNAM ' T=' num2str(t1.T) ' [K] ' t1.description ];
-      t1.Label = [ ZSYNAM ' T=' num2str(t1.T) ' [K] TSL inelastic' ];
-      % treat Teff
-      % t1.Teff_INT = t.Teff_INT(index);
-      t1.Teff_T   = t.Teff_T(index,:);  % should be t.T
-      if t1.T == t1.Teff_T, t1 = rmfield(t1, 'Teff_T'); end
-      t1.Teff     = t.Teff(index,:);
-      t0 = [ t0 t1 ];
-    end
-    t=t0;
   end
-  % display found item
-  disp(sprintf('%s: MF=%3i   %s', mfilename, t(1).MF, t(1).description));
+  t=read_endf_mf7_array(t);
   
   % end read_endf_mf7
 
+function t0=read_endf_mf7_array(t)
+  t0 = [];
+  disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
+  for index=1:numel(t.T)
+    t1     = t;
+    t1.T   = t.T(index);
+    t1.Title = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] ' t1.description];
+    if t1.MT == 2 % Incoherent/Coherent Elastic Scattering
+      t1.NP  = t.NP(index);
+      t1.S   = t.S(index,:);
+      t1.INT = t.INT(index);
+      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL elastic' ];
+    elseif t1.MT == 4 % Incoherent Inelastic Scattering
+      t1.Sab = t.Sab(:,:,index);
+      t1.Teff     = t.Teff(index,:);
+      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL inelastic' ];
+    end
+    t0 = [ t0 t1 ];
+  end
 % ------------------------------------------------------------------------------
 function [MF7,t] = read_endf_mf7_mt2(MF7, t)
   % ENDF MF7 MT2 section (elastic)
@@ -412,6 +399,8 @@ function [MF7,t] = read_endf_mf7_mt4(MF7, t)
       t.Sab(ibeta, :, index) = Sab.B;  % append S(E,Tn) as rows
     end
   end % beta loop (NB)
+  
+  if t.LLN, t.Sab = exp(t.Sab); end
   
   % read Teff values
   % [MAT,7,4/ 0,0,0,0,NR,NT/Tint/Teff(T) ] TAB1
