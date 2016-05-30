@@ -26,6 +26,7 @@ else
   if MF == 1 && MT == 451
     setalias(out,'Header','Data.COMMENTS', 'Header from MF1/MT451');
   elseif MF == 7        % TSL:
+    setalias(out,'weight','Data.AWR','Material mass [g/mol]');
     if MT == 2      % elastic
       if     out.Data.LTHR == 1
         setalias(out,'Signal','Data.S','S(E,T) Coherent Elastic Scattering Bragg Edges');
@@ -40,10 +41,10 @@ else
       end
     elseif MT == 4  % inelastic
       setalias(out,'Signal','Data.Sab','S(alpha,beta,T) Inelastic Scattering');
-      setalias(out,'alpha','Data.alpha','Unit-less wavevector [h2q2/kT]');
+      setalias(out,'alpha','Data.alpha','Unit-less wavevector [h2q2/MkT]');
       setalias(out,'beta', 'Data.beta', 'Unit-less energy [hw/kT]');
       setalias(out,'Temperature','Data.T', 'Temperature [K]');
-      setalias(out,'classical','Data.LASYM', 'classical/symmetric[1] or quantum/asymmetric[0]');
+      setalias(out,'classical','~this.Data.LASYM', 'classical/symmetric[1] or quantum/asymmetric[0]');
       setalias(out,'B', 'Data.B', 'Analytical model physical constants');
       setaxis( out, 2, 'alpha');
       setaxis( out, 1, 'beta');
