@@ -830,7 +830,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
       style="color: rgb(204, 51, 204);">'off'</span>.<br>
     <br>
     We also explain in the <a
-      href="file:///home/farhi/iFit/Docs/Optimizers.html#mozTocId228403">Optimizers
+      href="Optimizers.html#mozTocId228403">Optimizers
       help</a> how the parameter distributions (their variation around
     the best optimum value) can be plotted. This is well known from
     heuristic optimizers and e.g. the Markov Chain Monte-Carlo.<br>
@@ -887,21 +887,21 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
       href="http://en.wikipedia.org/wiki/Least_squares">least square
       error</a>':<br>
     <br>
-    <div style="text-align: center;">&#967;² = &#8721; (Signal-Model)².<br>
+    <div style="text-align: center;">&#967;\B2 = &#8721; (Signal-Model)\B2.<br>
       <br>
     </div>
     When the Monitor is defined (see <a
       href="iData.html#mozTocId243435">iData</a> definition), the Signal
     is normalized, so that<br>
     <br>
-    <div style="text-align: center;">&#967;² = &#8721; (Signal/Monitor-Model)².<br>
+    <div style="text-align: center;">&#967;\B2 = &#8721; (Signal/Monitor-Model)\B2.<br>
       <br>
     </div>
     When the Error on the Signal is available, the weighted criteria
     reads<br>
     <br>
-    <div style="text-align: center;">&#967;² = &#8721;
-      [(Signal/Monitor-Model)/Error]².<br>
+    <div style="text-align: center;">&#967;\B2 = &#8721;
+      [(Signal/Monitor-Model)/Error]\B2.<br>
     </div>
     <br>
     The options.criteria can be defined as the name of a criteria
@@ -922,7 +922,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
         The criteria is then normalized to the number of degrees of
         freedom by dividing it by<br>
         <br>
-        <div style="text-align: center;">&#967;² &#8592; &#967;² /(<span
+        <div style="text-align: center;">&#967;\B2 &#8592; &#967;\B2 /(<span
             style="font-style: italic;">number_of_data_points_in_the_Signal
 
 
@@ -991,7 +991,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
             <tr>
               <td valign="top">least_rfactor<br>
               </td>
-              <td align="right" valign="top">(|Signal-Model|/Error)²/(Signal/Error)²<br>
+              <td align="right" valign="top">(|Signal-Model|/Error)\B2/(Signal/Error)\B2<br>
               </td>
               <td valign="top">non-robust. <a
                   href="http://en.wikipedia.org/wiki/R-factor_%28crystallography%29">Ref</a>.<br>
@@ -1001,7 +1001,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
               <td style="vertical-align: top;">max_likelihood<br>
               </td>
               <td style="vertical-align: top; text-align: right;"
-                align="right">(|Signal-Model|/&#963;)² + 1/2 log(2&#960;&#963;)</td>
+                align="right">(|Signal-Model|/&#963;)\B2 + 1/2 log(2&#960;&#963;)</td>
               <td style="vertical-align: top;"><a
                   href="http://en.wikipedia.org/wiki/Maximum_likelihood">Ref</a>.
                 Minimize <span style="font-style: italic;">-log(L)</span><br>

@@ -1,9 +1,10 @@
 function endf = read_endf(filename)
 % data = read_endf(filename)
 %
-%   import ENDF files
+%   import ENDF files. 
+%   This reader is rather slow, but makes a full check of the ENDF file.
 % 
-% currently properly imports 
+%   Currently properly imports:
 % == === =============================================== ========
 % MF MT  Description                                     Complete
 % == === =============================================== ========
@@ -13,36 +14,17 @@ function endf = read_endf(filename)
 % == === =============================================== ========
 % Other sections are read, but not interpreted (stored as char).
 %
-% Import can also be done using PyNE
-% sudo apt-get install pyne
-% python -c "from pyne.endf import Evaluation; import scipy.io as sio; file='filemane'; endf=Evaluation(file); endf.read(); sio.savemat('endf.mat',{'alpha': endf.thermal_inelastic['alpha'],'beta':endf.thermal_inelastic['beta'],'Sab':endf.thermal_inelastic['scattering_law'],'B':endf.thermal_inelastic['B'],'T':endf.thermal_inelastic['temperature'],'Teff':endf.thermal_inelastic['teff'].y,'LLN':endf.thermal_inelastic['ln(S)'],'LAT':endf.thermal_inelastic['temperature_used'],'LASYM':endf.thermal_inelastic['symmetric']})"
-% matlab> endf=load('endf.mat')
-%
 % Format is defined at https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf
 % (c) E.Farhi, ILL. License: EUPL.
 
-% MAT   is at column  70     (Block)
-% MF    is at columns 71-72  (File)
-% MT    is at columns 73-76  (Reaction Nomenclature)
-% Line  is at columns 76-80
-
-% MT=0: pass (empty line)
-% MF=0: pass (empty line)
-
-% MT=451: Descriptive Data and Directory -> header/comment
-% read 4 lines of 6 nb:
-%           ZA,AWR,LRP,LFI,NLIB,NMOD,ELIS,STA,LIS,LISO,NFOR,AWI,EMAX,LREL,NSUB,
-%           NVER,TEMP,LDRV,NWD,NXC,
-% read 1 line as material,author, ...
-%           ZSYMAM(1-11),ALAB,EDATE,AUTH(34-66)
-% read 1 line
-%           REF(2-22),DDATE(23-32),RDATE(34-43),ENDATE(56-63)
-% read lines starting with '----' as directory structure in ENDF formalism
-% when read line with 4 nb: block info:
-%           [ MFn MTn NCn MODn ]
-
-% MF=7: Thermal neutron scattering law data
-
+% Import could also be done using PyNE, but the output arrays are stored in a 
+% way which is not easy to import back into Matlab.
+%
+% sudo apt-get install pyne
+% for MF7 MT4
+% python -c "from pyne.endf import Evaluation; import scipy.io as sio; file='filemane'; endf=Evaluation(file); endf.read(); sio.savemat('endf.mat',{'alpha': endf.thermal_inelastic['alpha'],'beta':endf.thermal_inelastic['beta'],'Sab':endf.thermal_inelastic['scattering_law'],'B':endf.thermal_inelastic['B'],'T':endf.thermal_inelastic['temperature'],'Teff':endf.thermal_inelastic['teff'].y,'LLN':endf.thermal_inelastic['ln(S)'],'LAT':endf.thermal_inelastic['temperature_used'],'LASYM':endf.thermal_inelastic['symmetric']})"
+% matlab> endf=load('endf.mat')
+%
 
 % open file and read it entirely
 endf = [];
@@ -105,9 +87,16 @@ for cline=content % each line is a cellstr
     section = [];
   end
   
+  % first inserts spaces in between 11-char fields (FORTRAN 6F11)
+  tline = [ tline(1:66) ' ' ];
+  if MF==7 % TSL
+    i11=1:11;
+    index=[ i11 67 (i11+11) 67 (i11+11*2) 67 (i11+11*3) 67 (i11+11*4) 67 67 (i11+11*5) ];
+    tline = tline(index);
+  end
   % WARNING: all numerics are given as [mant][+-][exp] instead of [mant]e[+-][exp]
   % e.g. 1.010000+2 -> 1.010000e+2
-  tline = regexprep(tline(1:66),'([0-9.]+)([+-]{1})([0-9.]+)','$1e$2$3');
+  tline = regexprep(tline,'([0-9.]+)([+-]{1})([0-9.]+)','$1e$2$3');
   % store the MAT_MF_MT section
   
   if MF && MT && MAT

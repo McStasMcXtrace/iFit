@@ -15,7 +15,7 @@ if numel(out) > 1
     out(index) = feval(mfilename, out(index));
   end
 else
-  % set egenric aliases
+  % set generic aliases
   setalias(out, 'MT','Data.MT',  'ENDF Section');
   setalias(out, 'MF','Data.MF',  'ENDF File');
   setalias(out, 'MAT','Data.MAT','ENDF Material number');
@@ -23,7 +23,9 @@ else
   setalias(out, 'EDATE','Data.EDATE','ENDF Evaluation Date');
   MT=out.Data.MT; MF=out.Data.MF;
   % assign axes: alpha, beta, Sab for MF7 MT4
-  if MF == 7        % TSL:
+  if MF == 1 && MT == 451
+    setalias(out,'Header','Data.COMMENTS', 'Header from MF1/MT451');
+  elseif MF == 7        % TSL:
     if MT == 2      % elastic
       if     out.Data.LTHR == 1
         setalias(out,'Signal','Data.S','S(E,T) Coherent Elastic Scattering Bragg Edges');
