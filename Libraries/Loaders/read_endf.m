@@ -44,6 +44,7 @@ section  = [];  % current section. Starts unset.
 % global data read from MF1/MT451
 ZSYNAM   = [];
 EDATE    = [];
+AWR      = [];
 
 for cline=content % each line is a cellstr
   if isempty(cline), continue; end
@@ -74,8 +75,9 @@ for cline=content % each line is a cellstr
         section = read_endf_mf1(section0);
         if ~isempty(section) && isfield(section,'EDATE'),  EDATE  = section(1).EDATE; end
         if ~isempty(section) && isfield(section,'ZSYNAM'), ZSYNAM = section(1).ZSYNAM; end
+        if ~isempty(section) && isfield(section,'AWR'),    AWR    = section(1).AWR; end
       elseif section.MF == 7
-        section = read_endf_mf7(section0, ZSYNAM, EDATE);
+        section = read_endf_mf7(section0, ZSYNAM, EDATE, AWR);
       end
       % treat specific sections -> FAILED. we restore raw, and display message
       if isempty(section)
@@ -170,7 +172,7 @@ function h = read_endf_mf1(MF1)
   disp(sprintf('%s: NSUB=%3i %s', mfilename, h.NSUB, read_endf_NSUB(h.NSUB)));
 
 % ------------------------------------------------------------------------------
-function t    = read_endf_mf7(MF7, ZSYNAM, EDATE)
+function t    = read_endf_mf7(MF7, ZSYNAM, EDATE, WAR)
   % read the MF7 MT2 and MT4 "TSL" sections and return its structure
   %
   % FILE 7. THERMAL NEUTRON SCATTERING LAW DATA
@@ -203,7 +205,7 @@ function t    = read_endf_mf7(MF7, ZSYNAM, EDATE)
   
   t.MAT   = MF7.MAT; t.MF=MF7.MF; t.MT=MF7.MT;
   t.field = MF7.field;
-  t.ZSYNAM=ZSYNAM; t.EDATE=EDATE;
+  t.ZSYNAM=ZSYNAM; t.EDATE=EDATE; t.AWR = AWR;
   if MF7.MT == 2 % Incoherent/Coherent Elastic Scattering
     %  ENDF: [MAT, 7, 2/ ZA, AWR, LTHR, 0, 0, 0] HEAD
     [t.ZA,t.AWR,t.LTHR,d1,d2,d3]= deal(HEAD{:});
