@@ -89,7 +89,7 @@ for cline=content % each line is a cellstr
   
   % first inserts spaces in between 11-char fields (FORTRAN 6F11)
   tline = [ tline(1:66) ' ' ];
-  if MF==7 % TSL
+  if MF~=1 % any numerical section except General Information
     i11=1:11;
     index=[ i11 67 (i11+11) 67 (i11+11*2) 67 (i11+11*3) 67 (i11+11*4) 67 67 (i11+11*5) ];
     tline = tline(index);
