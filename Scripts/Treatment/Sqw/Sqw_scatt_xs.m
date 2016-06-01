@@ -57,7 +57,7 @@ function sigma = Sqw_scatt_xs(s, Ei, M)
 %        e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %   Ei: incoming neutron energy [meV]
 %   M: molar weight of the atom/molecule in [g/mol].
-%     when given empty, it is searched 'weight' is the object.
+%     when given empty, it is searched 'weight' or 'mass' is the object.
 %     Default is set to 0, i.e. the Debye-Waller factor is not taken into account.
 % output:
 %   sigma: cross section per scattering unit (scalar or iData)
@@ -81,11 +81,13 @@ function sigma = Sqw_scatt_xs(s, Ei, M)
   if nargin < 3, M = 0; end
   
   if isempty(Ei), Ei=14; end
-  if isempty(M) && isfield(data.Data, 'weight')
-    M       = data.Data.weight;               % mass
-  end
-  if isempty(M) && ~isempty(findfield(data,'weight'))
-    M       = get(data, findfield(data,'weight'));
+  for f={'weight','mass','AWR'}
+    if isempty(M) && isfield(s.Data, f{1})
+      M       = s.Data.(f{1});               % mass
+    end
+    if isempty(M) && ~isempty(findfield(s,f{1}))
+      M       = get(s, findfield(data,f{1}));
+    end
   end
   if isempty(M), M=0;; end
 

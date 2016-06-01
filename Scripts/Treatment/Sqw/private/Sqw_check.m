@@ -63,17 +63,20 @@ function s = Sqw_check(s)
   % this is the weighting for valid data
   s(~isfinite(s)) = 0;
   
-  % check 'classical'
-  if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    if isfield(s,'classical') classical0 = s.classical;
-    else 
-      classical0 = findfield(s, 'classical');
-      if iscell(classical0), classical0=classical0{1}; end
-      classical0 = get(s, classical0);
-    end
-    if numel(classical0) > 1
-      classical0  = classical0(1);
-      s.classical = classical0;
+  % check 'classical' and 'symmetric'
+  for f={'classical', 'symmetric'}
+    if isfield(s,f{1}) || ~isempty(findfield(s, f{1}))
+      if isfield(s,f{1}) classical0 = s.(f{1});
+      else 
+        classical0 = findfield(s, f{1});
+        if iscell(classical0), classical0=classical0{1}; end
+        classical0 = get(s, classical0);
+      end
+      if numel(classical0) > 1
+        classical0  = classical0(1);
+        if strcmp(f{1},'symmetric'), classical0 = ~classical0; end
+        s.classical = classical0;
+      end
     end
   end
   
