@@ -1,6 +1,6 @@
 function Sab = Sqw_Sab(s, M, T)
 % Sab = Sqw_Sab(Sqw, M, T)
-%  Sqw_Sab: convert a 2D S(q,w) into an S(alpha,beta) suitable for e.g. MCNP.
+%  Sqw_Sab: convert a 2D S(q,w) into an S(alpha,beta) suitable for e.g. ENDF/MCNP.
 %
 %  The S(alpha,beta) is a representation of the dynamic structure factor 
 %  using unitless momentum and energy variables defined as:
@@ -11,23 +11,22 @@ function Sab = Sqw_Sab(s, M, T)
 %  
 % input:
 %   s:  Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
-%         the data set should better be 'classical' (i.e. symmetric).
 %   M:  molar weight of the atom/molecule in [g/mol].
-%     when omitted or empty, it is searched 'weight' is the object.
+%     when omitted or empty, it is searched as 'weight' or 'mass' is the object.
 %   T: when given, Temperature to use. When not given or empty, the Temperature
 %      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
 % output:
 %   Sab: S(alpha,beta) 2D data set (iData)
 %
 % conventions:
-% omega = Ei-Ef = energy lost by the neutron [meV]
+% w = omega = Ei-Ef = energy lost by the neutron [meV]
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    omega < 0, neutron gains energy, anti-Stokes
 %
 % references: M. Mattes and J. Keinert, IAEA INDC(NDS)-0470, 2005.
 %             R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994.
 %
-% Example: Sab = Sqw_gDOS(iData( fullfile(ifitpath,'Data','SQW_coh_lGe.nc')));
+% Example: Sab = iData( fullfile(ifitpath,'Data','SQW_coh_lGe.nc') );
 %          plot(log(Sab))
 
   Sab = [];
@@ -51,18 +50,13 @@ function Sab = Sqw_Sab(s, M, T)
   s = Sqw_check(s);
   if isempty(s), return; end
   
-  % test if classical
-  if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    if s.classical == 0
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical. Make it classical by applying Sqw_deBosify and/or Sqw_symmetrize first.' ]);
+  for f={'weight','mass','AWR'}
+    if isempty(M) && isfield(s.Data, f{1})
+      M       = s.Data.(f{1});               % mass
     end
-  end
-  
-  if isempty(M) && isfield(s.Data, 'weight')
-    M       = s.Data.weight;               % mass
-  end
-  if isempty(M) && ~isempty(findfield(s,'weight'))
-    M       = get(s, findfield(data,'weight'));
+    if isempty(M) && ~isempty(findfield(s,f{1}))
+      M       = get(s, findfield(data,f{1}));
+    end
   end
   if isempty(T)
     T = Sqw_getT(s);
@@ -126,6 +120,9 @@ function Sab = Sqw_Sab(s, M, T)
   Sab.Title = [ 'Sab(' s.Title ')' ];
   Sab.Temperature=T;
   Sab.weight     =M;
+  if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
+    Sab.classical  = s.classical;
+  end
   Sab.Label='Sab';
   title(Sab, 'S(\alpha,\beta)help subplot');
   ylabel(Sab,'alpha [h2q2/2MkT]');

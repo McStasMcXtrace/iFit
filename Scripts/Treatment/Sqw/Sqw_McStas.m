@@ -1,5 +1,5 @@
-function [this, parameters] = writeSqw(this, parameters)
-% [this, parameters] = writeSqw(this, parameters) : write Sqw file for McStas 
+function [this, parameters] = Sqw_McStas(this, parameters)
+% [this, parameters] = Sqw_McStas(this, parameters) : write Sqw file for McStas 
 %   from NetCDF nMoldyn output
 %
 %   Metadata may be given in the parameters input argument, and then appears in 
@@ -29,12 +29,13 @@ function [this, parameters] = writeSqw(this, parameters)
 %   parameters.Phase       Material state
 %   parameters.Scattering  scattering process
 %   parameters.Lambda      [Angs] Neutron wavelength used for the measurement
-%   parameters.Instrument neutron spectrometer used for measurement
+%   parameters.Instrument  neutron spectrometer used for measurement
 %   parameters.Comment     any additional comment/description
 %   parameters.C_s         [J/mol/K]   heat capacity
 %   parameters.Sigma       [N/m] surface tension
 %   parameters.Eta         [Pa s] viscosity
 %   parameters.L           [J/mol] latent heat
+%   parameters.classical   [0=Bose factor included, 1=symmetric/classical]
 %
 % (c) E. Farhi ILL/DS/CS 2012.
 
@@ -72,6 +73,7 @@ fields={'density [g/cm3] Material density'	'weight [g/mol] Material weight'	'T_m
     'sigma_abs [barn] Absorption neutron cross section'	'c_sound [m/s] Sound velocity'...
     'At_number Atomic number Z'};
 
+% get parameters in order, when given as a vector
 if ~isempty(parameters) && isnumeric(parameters)
   if length(parameters) == length(fields)+1
     fields{end}='multiplicity  [atoms/unit cell] number of atoms/molecules per scattering unit cell';
@@ -85,34 +87,38 @@ if ~isempty(parameters) && isnumeric(parameters)
     name = strtok(fields{index});
     parameters.(name) = p(index);
   end
-else
-  % build a parameter structure by searching field names from 'fields' in the object
-  fields{end+1} = 'Pressure [bar] Material pressure';
-  fields{end+1} = 'v_sound [m/s] Sound velocity';
-  fields{end+1} = 'Material';
-  fields{end+1} = 'Phase Material state';
-  fields{end+1} = 'Scattering process';
-  fields{end+1} = 'Lambda [Angs] Neutron wavelength used for the measurement';
-  fields{end+1} = 'Wavelength [Angs] measurement neutron wavelength';
-  fields{end+1} = 'Instrument neutron spectrometer used for measurement';
-  fields{end+1} = 'Comment';
-  fields{end+1} = 'C_s [J/mol/K]   heat capacity';
-  fields{end+1} = 'Sigma [N/m] surface tension';
-  fields{end+1} = 'Eta [Pa s] viscosity';
-  fields{end+1} = 'L [J/mol] latent heat';
-  fields{end+1} = 'classical [0=from measurement, with Bose factor included, 1=from MD, symmetric]';
-  for index=1:length(fields)
-    name = strtok(fields{index});
-    if ~isfield(parameters, name)
-      if isfield(this, name)
-        parameters.(name) = get(this, name);
-      elseif isfield(this.Data, name)
-        parameters.(name) = this.Data.(name);
-      elseif isfield(this.Data, name)
-        parameters.(name) = this.Data.(name);
-      else
-        parameters.(name) = NaN;
-      end
+end
+
+% add more parameters by searching field names from 'fields' in the object
+fields{end+1} = 'Pressure [bar] Material pressure';
+fields{end+1} = 'v_sound [m/s] Sound velocity';
+fields{end+1} = 'Material';
+fields{end+1} = 'Phase Material state';
+fields{end+1} = 'Scattering process';
+fields{end+1} = 'Lambda [Angs] Neutron wavelength used for the measurement';
+fields{end+1} = 'Wavelength [Angs] measurement neutron wavelength';
+fields{end+1} = 'Instrument neutron spectrometer used for measurement';
+fields{end+1} = 'Comment';
+fields{end+1} = 'C_s [J/mol/K]   heat capacity';
+fields{end+1} = 'Sigma [N/m] surface tension';
+fields{end+1} = 'Eta [Pa s] viscosity';
+fields{end+1} = 'L [J/mol] latent heat';
+fields{end+1} = 'classical [0=from measurement, with Bose factor included, 1=from MD, symmetric]';
+for index=1:length(fields)
+  name = strtok(fields{index});
+  if ~isfield(parameters, name)
+    if isfield(this, name)
+      parameters.(name) = get(this, name);
+    elseif isfield(this.Data, name)
+      parameters.(name) = this.Data.(name);
+    elseif isfield(this.Data, name)
+      parameters.(name) = this.Data.(name);
+    elseif ~isempty(findfield(this,name))
+      parameters.(name) = get(this, findfield(data,name));
+    elseif ~isempty(findstr(this,name))
+      parameters.(name) = get(this, findstr(data,name));
+    else
+      parameters.(name) = NaN;
     end
   end
 end
@@ -146,7 +152,7 @@ if isfield(this, 'jobinfo')
     parameters.MD_resolution = this.jobinfo.resolution;
     fields{end+1} = 'MD_resolution [meV] Energy convolution width used in the FFT (r,t)->(q,w)';
   end
-  if isfield(this.jobinfo, 'weight')
+  if isfield(this.jobinfo, 'weights')
     parameters.Scattering = this.jobinfo.weights;
   end
   if isfield(this.jobinfo, 'trajectory') && ~isfield(parameters, 'Trajectory')

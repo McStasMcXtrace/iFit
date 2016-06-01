@@ -17,7 +17,7 @@ function sigma=Sqw_moments(data, M, T, classical)
 % input:
 %   data: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %   M: molar weight of the atom/molecule in [g/mol].
-%     when omitted or empty, it is searched 'weight' is the object.
+%     when omitted or empty, it is searched 'weight' or 'mass' is the object.
 %   T: when given, Temperature to use. When not given or empty, the Temperature
 %      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
 %   classical: 0 for non symmetric S(q,w) [with Bose, from exp.], 1 for symmetric (from MD)
@@ -50,11 +50,13 @@ function sigma=Sqw_moments(data, M, T, classical)
   if isempty(classical) && (isfield(data,'classical') || ~isempty(findfield(data, 'classical')))
     classical = data.classical;
   end
-  if isempty(M) && isfield(data.Data, 'weight')
-    M       = data.Data.weight;               % mass
-  end
-  if isempty(M) && ~isempty(findfield(data,'weight'))
-    M       = get(data, findfield(data,'weight'));
+  for f={'weight','mass','AWR'}
+    if isempty(M) && isfield(s.Data, f{1})
+      M       = s.Data.(f{1});               % mass
+    end
+    if isempty(M) && ~isempty(findfield(s,f{1}))
+      M       = get(s, findfield(data,f{1}));
+    end
   end
   if isempty(T)
     T = Sqw_getT(data);

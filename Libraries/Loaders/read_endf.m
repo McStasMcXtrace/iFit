@@ -14,6 +14,27 @@ function endf = read_endf(filename)
 % == === =============================================== ========
 % Other sections are read, but not interpreted (stored as char).
 %
+% Useful tokens for neutron scattering
+% MF1:
+%   ZA    Standard material charge
+%   AWR   Standard material mass 
+%   AWI   Mass of the projectile in neutron units
+%   EMAX  Upper limit of energy range for evaluation.
+%   TEMP  Target temperature (Kelvin) for Doppler broadening.
+%
+% MF7/MT4:
+%   LAT   Flag indicating which temperature has been used to compute a and b
+%           LAT=0, the actual temperature has been used.
+%           LAT=1, the constant T0 = 0.0253 eV has been used (293 K).
+%   LASYM Flag indicating whether an asymmetric S(a,b) is given
+%           LASYM=0, S is symmetric.
+%           LASYM=1, S is asymmetric
+%   B=[sigma_free, E_elastic, A=mass/mn, E_max, ~, atom_multiplicity]
+%   sigma_bound = sigma_free*(A+1)^2/A^2
+%
+% MF7/MT2:
+%   SB    Bound cross section (barns) [incoherent elastic LTHR=2]
+%
 % Format is defined at https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf
 % (c) E.Farhi, ILL. License: EUPL.
 
@@ -45,6 +66,7 @@ section  = [];  % current section. Starts unset.
 ZSYNAM   = [];
 EDATE    = [];
 AWR      = [];
+MF1      = [];
 
 for cline=content % each line is a cellstr
   if isempty(cline), continue; end
@@ -76,8 +98,11 @@ for cline=content % each line is a cellstr
         if ~isempty(section) && isfield(section,'EDATE'),  EDATE  = section(1).EDATE; end
         if ~isempty(section) && isfield(section,'ZSYNAM'), ZSYNAM = section(1).ZSYNAM; end
         if ~isempty(section) && isfield(section,'AWR'),    AWR    = section(1).AWR; end
+        MF1 = section(1);
       elseif section.MF == 7
-        section = read_endf_mf7(section0, ZSYNAM, EDATE, AWR);
+        % treat MF7 and add MF1/MT451 data
+        section = read_endf_mf7(section0, ZSYNAM, EDATE, MF1);
+        
       end
       % treat specific sections -> FAILED. we restore raw, and display message
       if isempty(section)
@@ -163,16 +188,18 @@ function h = read_endf_mf1(MF1)
   h.MF=MF1.MF; h.MT=MF1.MT;  h.MAT=MF1.MAT;
   h.description = MF1.description;
   h.field       = MF1.field;
+  h.NSUB_string = read_endf_NSUB(h.NSUB);
+  h.NLIB_string = read_endf_NLIB(h.NLIB);
   % display found item
   disp(sprintf('%s: MF=  %3i %s', mfilename, h.MF,   h.description));
-  disp(sprintf('%s: NLIB=%3i %s', mfilename, h.NLIB, read_endf_NLIB(h.NLIB)));
+  disp(sprintf('%s: NLIB=%3i %s', mfilename, h.NLIB, h.NLIB_string));
   disp(sprintf('%s: Date     %s %s %s',     mfilename, h.EDATE, h.DDATE, h.RDATE));
   disp(sprintf('%s: Material %s MAT=%i from %s at %s, release %s',  ...
     mfilename, h.ZSYNAM, h.MAT, h.AUTH, h.ALAB, h.ENDATE));
-  disp(sprintf('%s: NSUB=%3i %s', mfilename, h.NSUB, read_endf_NSUB(h.NSUB)));
+  disp(sprintf('%s: NSUB=%3i %s', mfilename, h.NSUB,h.NSUB_string ));
 
 % ------------------------------------------------------------------------------
-function t    = read_endf_mf7(MF7, ZSYNAM, EDATE, WAR)
+function t    = read_endf_mf7(MF7, ZSYNAM, EDATE, MF1)
   % read the MF7 MT2 and MT4 "TSL" sections and return its structure
   %
   % FILE 7. THERMAL NEUTRON SCATTERING LAW DATA
@@ -205,7 +232,8 @@ function t    = read_endf_mf7(MF7, ZSYNAM, EDATE, WAR)
   
   t.MAT   = MF7.MAT; t.MF=MF7.MF; t.MT=MF7.MT;
   t.field = MF7.field;
-  t.ZSYNAM=ZSYNAM; t.EDATE=EDATE; t.AWR = AWR;
+  t.ZSYNAM=ZSYNAM; t.EDATE=EDATE;
+  if ~isempty(MF1), t.DescriptiveData = MF1; end
   if MF7.MT == 2 % Incoherent/Coherent Elastic Scattering
     %  ENDF: [MAT, 7, 2/ ZA, AWR, LTHR, 0, 0, 0] HEAD
     [t.ZA,t.AWR,t.LTHR,d1,d2,d3]= deal(HEAD{:});
@@ -279,7 +307,7 @@ function [MF7,t] = read_endf_mf7_mt2(MF7, t)
     end % bad format
     t.E  = ce.X(:)';    % energy axis (eV) as row
     t.S  = ce.Y(:)';    % S(E,T0) as a row
-    t.INT= ce.INT(:);  % interpolation flag
+    t.INT= ce.INT(:);   % interpolation flag
     
     % ENDF: [MAT, 7, 2/ Tn,0,LI,0,NP,0/S(E,Tn) ] LIST 1:(LT+1)
     for index=1:(t.LT+1)
@@ -402,6 +430,7 @@ function [MF7,t] = read_endf_mf7_mt4(MF7, t)
     end
   end % beta loop (NB)
   
+  % handle ln(S) storage and compute real Sab
   if t.LLN, t.Sab = exp(t.Sab); end
   
   % read Teff values
