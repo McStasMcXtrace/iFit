@@ -86,7 +86,7 @@ function sigma = Sqw_scatt_xs(s, Ei, M)
       M       = s.Data.(f{1});               % mass
     end
     if isempty(M) && ~isempty(findfield(s,f{1}))
-      M       = get(s, findfield(data,f{1}));
+      M       = get(s, findfield(s,f{1}));
     end
   end
   if isempty(M), M=0;; end
@@ -111,7 +111,7 @@ function sigma = Sqw_scatt_xs(s, Ei, M)
   end
   
   if isempty(Sqw_getT(s))
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seems to have a Temperature defined. You may apply s=Sqw_Bosify(s, temperature) before.' ]);
+    disp([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to have a Temperature defined. You may apply s=Sqw_Bosify(s, temperature) before.' ]);
   end
   
   w = s{1};

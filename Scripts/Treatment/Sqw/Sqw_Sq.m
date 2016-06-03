@@ -5,6 +5,7 @@ function s = Sqw_Sq(s)
 %  Its Fourier transform is the pair distribution function g(r).
 %
 %  The S(q,w) is a dynamic structure factor aka scattering function.
+%  This function is basically a call to trapz(s,1)
 %
 % input:
 %   s: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).

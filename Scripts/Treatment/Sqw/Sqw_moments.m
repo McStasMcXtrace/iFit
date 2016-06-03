@@ -16,7 +16,7 @@ function sigma=Sqw_moments(data, M, T, classical)
 %
 % input:
 %   data: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
-%   M: molar weight of the atom/molecule in [g/mol].
+%   M: molar weight of the material atom/molecule in [g/mol].
 %     when omitted or empty, it is searched 'weight' or 'mass' is the object.
 %   T: when given, Temperature to use. When not given or empty, the Temperature
 %      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
@@ -55,7 +55,7 @@ function sigma=Sqw_moments(data, M, T, classical)
       M       = s.Data.(f{1});               % mass
     end
     if isempty(M) && ~isempty(findfield(s,f{1}))
-      M       = get(s, findfield(data,f{1}));
+      M       = get(s, findfield(s,f{1}));
     end
   end
   if isempty(T)
@@ -71,7 +71,7 @@ function sigma=Sqw_moments(data, M, T, classical)
   end
   
   if isempty(T) || T<=0
-    disp([ mfilename ': ERROR: The data set ' data.Tag ' ' data.Title ' from ' data.Source ]);
+    disp([ mfilename ': ERROR: Temperature undefined: The data set ' data.Tag ' ' data.Title ' from ' data.Source ]);
     disp('    does not have any temperature defined. Use Sqw_moments(data, M, T, classical).' );
     return
   end
@@ -106,8 +106,8 @@ function sigma=Sqw_moments(data, M, T, classical)
     end
   end
   if isempty(M)
-    disp([ mfilename ': WARNING: The data set ' data.Tag ' ' data.Title ' from ' data.Source ]);
-    disp('    does not provide information about the molar weight. Use Sqw_moments(data, M).')
+    disp([ mfilename ': WARNING: Mass undefined: The data set ' data.Tag ' ' data.Title ' from ' data.Source ]);
+    disp('    does not provide information about the material molar weight. Use Sqw_moments(data, M).')
     disp('    Ignoring: The Wq frequency will be empty.');
   end
   M2      = abs(trapz(w.^2.*data)); % M2 cl = wc^2
