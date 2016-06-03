@@ -21,9 +21,13 @@ function s = Sqw_check(s)
   q_present=0;
   a_present=0;
   t_present=0;
+  alpha_present=0;
+  beta_present=0;
   if isa(s, 'iData') && ndims(s) == 2
     for index=1:2
       lab = lower(label(s,index));
+      def = getaxis(s, num2str(index));
+      if ischar(def), lab = [ def lab ]; end
       if isempty(lab), lab=lower(getaxis(s, num2str(index))); end
       if any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(strtok(lab), 'q')  || strcmp(strtok(lab), 'k') || any(strfind(lab, 'angs'))
         q_present=index;
@@ -33,6 +37,10 @@ function s = Sqw_check(s)
         t_present=index;
       elseif any(strfind(lab, 'angle')) || any(strfind(lab, 'deg')) || strcmp(strtok(lab), 'theta') || strcmp(strtok(lab), 'phi')
         a_present=index;
+      elseif any(strfind(lab, 'alpha')) || strcmp(strtok(lab), 'a')
+        beta_present=index;
+      elseif any(strfind(lab, 'beta')) || strcmp(strtok(lab), 'b')
+        alpha_present=index;
       end
     end
   end
@@ -46,6 +54,10 @@ function s = Sqw_check(s)
     % convert from S(phi,w) to S(q,w)
     s = Sqw_phi2q(s);
     s = Sqw_check(s);
+    return
+  end
+  if alpha_present && beta_present && (~w_present || ~q_present)
+    s = Sab_Sqw(s); % convert from S(alpha,beta) to S(q,w)
     return
   end
   if ~w_present || ~q_present

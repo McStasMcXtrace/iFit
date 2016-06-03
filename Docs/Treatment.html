@@ -107,6 +107,7 @@
 
 
 
+
           scattering</a> [5,6].<br>
         <br>
         The dynamic structure factor is defined from the double
@@ -126,6 +127,7 @@
         specialized <a href="Models.html">models</a>. Then you can
         compute the 2D powder average, as shown below.<br>
         <h3><a class="mozTocH3" name="mozTocId301478"></a>Loading/generating
+
 
 
 
@@ -167,6 +169,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
             finally <i>sqw_rebin</i>) ;</li>
           <li>you get a S(q,w) data set as a workspace ;</li>
           <li>export it into an HDF/NeXus file or as text (<i>write_lamp,
+
 
 
 
@@ -345,6 +348,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
                 equally</i> Sqw{1} = - Sqw{1};</li>
           </ul>
         </div>
@@ -397,6 +401,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
                 the S*(|q|,w) in both energy sides. The initial data set
                 should better be 'classical'.<br>
               </td>
@@ -425,6 +430,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
               <td valign="top">S(|q|,w) or S*(|q|,w)</td>
               <td valign="top">Check the S(q,w) data set. Possibly
                 convert from experimental data <i>S(&#966;,channel), </i><i>S(&#966;,t)
+
 
 
                   or </i><i>S(&#966;,w)</i>.</td>
@@ -476,6 +482,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
                 the dynamic structure factor to the measurable one for
                 an incoming energy Ei [meV]. The detection angular range
                 can be set as 3rd argument.<br>
@@ -494,6 +501,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                       title="Treatment_Sqw_moments"
                       src="images/Treatment_Sqw_moments.png"
                       align="right" border="0" height="60" width="80"></b></a>Compute
+
 
 
 
@@ -538,6 +546,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                         title="Treatment_Sqw_XS.png"
                         alt="Treatment_Sqw_XS.png" align="right"
                         border="0" height="60" width="80"></a></b></font>Compute
+
 
 
 
@@ -634,6 +643,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Ge_
 
 
 
+
           McStas</a>. You can also try liquid Rubidium from <a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Rb_liq_coh.sqw">here</a>
         [8] and heavy water from <a
@@ -645,6 +655,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         </ul>
         Molecular Dynamics trajectories are usually computed in the NVE
         <a href="https://en.wikipedia.org/wiki/Microcanonical_ensemble">micro-canonical
+
 
 
 
@@ -784,6 +795,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
                     is the default.</i></b></td>
             </tr>
           </tbody>
@@ -877,6 +889,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             25)</li>
           <li> <font color="#3366ff">plot</font>(log10(Sqw25));</li>
         </ul>
@@ -928,6 +941,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             Sqw25]));</li>
         </ul>
         <h5><a class="mozTocH5" name="mozTocId566610"></a> <a
@@ -952,6 +966,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             frequencies</b></h5>
         From the dynamic structure factor, one can compute the energy
         moments, which provide some of the characteristic frequencies
@@ -959,6 +974,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         scattering units (here 72.64 g/mol for Ge). <br>
         <br>
         Using the 'quantum' scattering law S(q,w), we can define <i>n</i>-th
+
 
 
 
@@ -1055,8 +1071,9 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         [9]. <br>
         <ul>
           <li>Sqw=<font color="#3366ff">iData</font>(<font
-              color="#cc33cc">'<a
-href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a>'</font>);</li>
+              color="#cc33cc">'</font><font color="#cc33cc"><font
+                color="#cc33cc"><a
+href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a></font>'</font>);</li>
         </ul>
         Then we can compute the generalised density of states with the <font
           color="#3366ff">Sqw_gDOS</font> procedure, from both the raw,
@@ -1189,6 +1206,7 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
 
 
 
+
             See also Sears, <i>Neut. News</i> <b>3</b> (1992) 26.<br>
           </li>
           <li>Price J. et al, <i>Non Cryst Sol </i><b>92</b> (1987)
@@ -1245,7 +1263,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         <ul>
           <li>Sqw=<font color="#3366ff">iData</font>(<font
               color="#cc33cc">'<a
-href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a>'</font>);</li>
+href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a>'</font>);</li>
           <li>SqwT = <font color="#3366ff">Sqw_Bosify</font>(<font
               color="#3366ff">Sqw_symmetrize</font>(Sqw), 290);</li>
           <li>Ei = <font color="#3366ff">logspace</font>(-3,3,50);%
@@ -1295,6 +1313,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
         we may compute the constant W so that the total cross section
         converges to the free cross section at e.g. Ei=1eV (used in e.g.
         <a href="https://mit-crpg.github.io/openmc/">OpenMC</a>), then
@@ -1332,6 +1351,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
           we compute<br>
           <div align="center">r<sup>2</sup> =
             (2*(1/(1+1))^2*80.2+(18/(18+1))^2*4.2)/(2*80.2+4.2) = 0.26<br>
@@ -1340,6 +1360,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
             <br>
             <div align="left">In the case of heavy water we have two D
               atoms (A=2 &#963;<sub>b</sub>=7.64) and one O atom (A=16 &#963;<sub>b</sub>=4.2),
+
 
 
 
@@ -1394,8 +1415,9 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
           deBosify</i> and <i>symmetrization</i>:<br>
         <ul>
           <li>Sqw=<font color="#3366ff">iData</font>(<font
-              color="#cc33cc">'<a
-href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">D2O_liq_290_coh.sqw</a>'</font>);</li>
+              color="#cc33cc">'</font><font color="#cc33cc"><font
+                color="#cc33cc"><a
+href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a></font>'</font>);</li>
           <li>Sab = <font color="#3366ff">Sqw_Sab</font>(<font
               color="#3366ff">Sqw_symmetrize</font>(Sqw), 20);</li>
           <li><font color="#3366ff">plot</font>(log(Sab))<br>
@@ -1438,11 +1460,13 @@ href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/2602
         the integral along momentum (axis 1) to show a spectrum.<br>
         <ul>
           <li>Sqw=<font color="#3366ff">iData</font>(<font
-              color="#cc33cc">'<a
-href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">D2O_liq_290_coh.sqw</a>'</font>);</li>
+              color="#cc33cc">'</font><font color="#cc33cc"><font
+                color="#cc33cc"><a
+href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a></font>'</font>);</li>
           <li>SqwT = <font color="#3366ff">Sqw_Bosify</font>(<font
               color="#3366ff">Sqw_symmetrize</font>(Sqw), 290);</li>
           <li>DDCS = <font color="#3366ff">Sqw_dynamic_range</font>(SqwT,
+
 
 
 
@@ -1491,10 +1515,12 @@ href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/2602
 
 
 
+
             Indicates light water rotational vibrations at 205 and 408
             meV</li>
           <li>E. Liu (RPI) &lt;<a
 href="http://homepages.rpi.edu/%7Edanony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf">http://homepages.rpi.edu/~danony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf</a>&gt;
+
 
 
 
@@ -1527,6 +1553,7 @@ href="http://www.sciencedirect.com/science/article/pii/S0306454913005987">link</
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 

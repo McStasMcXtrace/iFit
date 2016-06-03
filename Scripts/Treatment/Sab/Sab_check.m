@@ -15,16 +15,28 @@ function s = Sab_check(s)
   % check if the data set is Sqw (2D)
   alpha_present=0;
   beta_present=0;
+  q_present=0;
+  w_present=0;
   if isa(s, 'iData') && ndims(s) == 2
     for index=1:2
       lab = lower(label(s,index));
+      def = getaxis(s, num2str(index));
+      if ischar(def), lab = [ def lab ]; end
       if isempty(lab), lab=lower(getaxis(s, num2str(index))); end
       if any(strfind(lab, 'alpha')) || strcmp(strtok(lab), 'a')
         beta_present=index;
       elseif any(strfind(lab, 'beta')) || strcmp(strtok(lab), 'b')
         alpha_present=index;
+      elseif any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(strtok(lab), 'q')  || strcmp(strtok(lab), 'k') || any(strfind(lab, 'angs'))
+        q_present=index;
+      elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'frequency')) || strcmp(strtok(lab), 'w') || strcmp(strtok(lab), 'e') || any(strfind(lab, 'mev'))
+        w_present=index;
       end
     end
+  end
+  if q_present && w_present && (~alpha_present || ~beta_present)
+    s = Sqw_Sab(s);
+    return
   end
   if ~alpha_present || ~beta_present
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);

@@ -20,7 +20,7 @@ function [gDOS, g] = Sqw_gDOS(s, method, n)
 %
 % input:
 %   s: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
-%   method: 'Carpnter','Bellisent' or 'Bredov'
+%   method: 'Carpenter' (default),'Bellisent' or 'Bredov'
 %   n: number of low-angle values to integrate (integer). Default is 10 when omitted.
 %
 % output:

@@ -19,10 +19,10 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
   setalias(out, 'MT',    'Data.MT',    'ENDF Section');
   setalias(out, 'MF',    'Data.MF',    'ENDF File');
   setalias(out, 'MAT',   'Data.MAT',   'ENDF Material number');
-  setalias(out, 'Material','Data.ZSYNAM','ENDF Material description ZSYNAM');
-  setalias(out, 'EDATE', 'Data.EDATE', 'ENDF Evaluation Date');
-  setalias(out, 'charge','Data.ZA',    'ENDF material charge Z');
-  setalias(out, 'mass',  'Data.AWR',   'ENDF material mass A');
+  setalias(out, 'Material','Data.ZSYNAM','ENDF Material description (ZSYNAM)');
+  setalias(out, 'EDATE', 'Data.EDATE', 'ENDF Evaluation Date (EDATE)');
+  setalias(out, 'charge','Data.ZA',    'ENDF material charge Z (ZA)');
+  setalias(out, 'mass',  'Data.AWR',   'ENDF material mass A (AWR)');
   MT=out.Data.MT; MF=out.Data.MF;
   % assign axes: alpha, beta, Sab for MF7 MT4
   if MF == 1 && MT == 451
@@ -37,8 +37,8 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
         setalias(out,'Scattering','coherent elastic');
         setaxis( out, 1, 'Energy');
       elseif out.Data.LTHR == 2
-        setalias(out,'Signal','Data.W','Debye-Waller integral divided by the atomic mass [eV-1] )');
-        setalias(out,'Sigma', 'Data.SB','Characteristic bound cross section [barns]');
+        setalias(out,'Signal','Data.W','Debye-Waller integral divided by the atomic mass [eV-1] ) (W)');
+        setalias(out,'Sigma', 'Data.SB','Characteristic bound cross section [barns] (SB)');
         setalias(out,'Temperature','Data.T', 'Temperature [K]');
          setalias(out,'Scattering','incoherent elastic');
         setaxis( out, 1, 'Temperature');
@@ -53,7 +53,7 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
       setalias(out,'sigma_free','this.Data.B(1)','total free atom cross section [barns]');
       setalias(out,'sigma_inc','this.Data.B(1)*(this.Data.B(3)+1)^2/this.Data.B(3)^2','total bound cross section [barns]');
       setalias(out,'multiplicity','this.Data.B(6)','the number of principal scattering atoms in the material');
-      setalias(out,'B', 'Data.B', 'Analytical model physical constants');
+      setalias(out,'B', 'Data.B', 'Analytical model physical constants (B)');
       setalias(out,'Scattering','(in)coherent inelastic');
       setaxis( out, 2, 'alpha');
       setaxis( out, 1, 'beta');
