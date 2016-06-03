@@ -14,6 +14,10 @@ if numel(out) > 1
   for index=1:numel(out)
     out(index)  = feval(mfilename, out(index));
   end
+  MF  = get(out,'MF');
+  if numel(MF) == numel(out)
+    out = out(find(MF ~= 1)); % not the MF1 section, which is stored into all objects
+  end
 elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
   % set generic aliases
   setalias(out, 'MT',    'Data.MT',    'ENDF Section');
@@ -22,7 +26,8 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
   setalias(out, 'Material','Data.ZSYNAM','ENDF Material description (ZSYNAM)');
   setalias(out, 'EDATE', 'Data.EDATE', 'ENDF Evaluation Date (EDATE)');
   setalias(out, 'charge','Data.ZA',    'ENDF material charge Z (ZA)');
-  setalias(out, 'mass',  'Data.AWR',   'ENDF material mass A (AWR)');
+  setalias(out, 'mass',  'Data.AWR',   'ENDF material mass A [g/mol] (AWR)');
+  setalias(out, 'DescriptiveData', 'Data.DescriptiveData', 'ENDF DescriptiveData (MF1/MT451)');
   MT=out.Data.MT; MF=out.Data.MF;
   % assign axes: alpha, beta, Sab for MF7 MT4
   if MF == 1 && MT == 451
@@ -62,7 +67,7 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
 end
 
 if ~nargout
-  figure; subplot(out);
+  figure; subplot(log10(out));
   
   if ~isdeployed
     assignin('base','ans',out);
