@@ -164,6 +164,10 @@ if strcmp(filename, 'gui')
   end
 end
 
+if isempty(format) && ~isempty(filename) && any(~cellfun(@isempty,strfind(filterspec(:,1),strtok(filename))))
+  format = filename; filename = '';
+end
+if ~isempty(format) && format(1) == '.', format=format(2:end); end
 if strcmp(format, 'mantid')
   format = 'nxs mantid data';
 end
@@ -231,12 +235,12 @@ end
 
 % handle extensions
 [path, name, ext] = fileparts(filename);
-if isempty(ext) & ~isempty(format), 
+if isempty(ext) && ~isempty(format), 
   ext = [ '.' format ]; 
   filename = [ filename ext ];
-elseif isempty(format) & ~isempty(ext)
-  format = ext(2:end);
-elseif isempty(format) & isempty(ext) 
+elseif isempty(format) && ~isempty(ext)
+  format = ext(2:end); filename = '';
+elseif isempty(format) && isempty(ext) 
   format='mat'; filename = [ filename '.mat' ];
 end
 

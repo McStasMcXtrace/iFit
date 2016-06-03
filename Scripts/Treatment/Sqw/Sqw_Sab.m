@@ -100,19 +100,24 @@ function Sab = Sqw_Sab(s, M, T)
   % Q2 = ki2 + kf2 − 2ki kf cos (2 theta)
   % S(a,b) da db = S(q,w) dq dw
   % S(a,b)       = S(q,w) * J avec J=(dq.dw)/(dalpha.dbeta)=1/q*cte
-
+  
   for i=1:size(Z,1)   % E
-    for j=1:size(Z,2) % q
-      alpha(i,j) =  q(j).*q(j);         % alpha= q.*q
-      beta(i,j)  = -E(i);               % beta =-w
-      % Jacobian for S(q,w) -> S(a,b) is J=(dq.dw)/(dalpha.dbeta) = 1/(2*q*C^2*q2toE)
-      Z(i,j)     = Z(i,j)./q(j);
-    end
+    % Jacobian for S(q,w) -> S(a,b) is J=(dq.dw)/(dalpha.dbeta) = 1/(2*q*C^2*q2toE)
+    Z(i,:)     = Z(i,:)./q;
   end
+
+%  for i=1:size(Z,1)   % E
+%    for j=1:size(Z,2) % q
+%      alpha(i,j) =  q(j).*q(j);         % alpha= q.*q
+%      beta(i,j)  = -E(i);               % beta =-w
+%      
+%      Z(i,j)     = Z(i,j)./q(j);
+%    end
+%  end
   
   % and finally multiply by the constants
-  alpha = alpha*C*q2toE;
-  beta  = beta *C;
+  alpha = q.*q*C*q2toE;
+  beta  = -E *C;
   Z     = Z/(2*C*C*q2toE);
 
   % create new data set, and display it
@@ -128,4 +133,6 @@ function Sab = Sqw_Sab(s, M, T)
   ylabel(Sab,'alpha [h2q2/2MkT]');
   xlabel(Sab,'beta [-hw/kT]');
   Sab = transpose(Sab);
+  % transfer available information compatible with ENDF
+  
 
