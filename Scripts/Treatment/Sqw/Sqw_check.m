@@ -227,7 +227,7 @@ function s=Sqw_t2e(s)
   if all(unique(diff(t(:))) == 1)
     % use ChannelWidth
     if ~isempty(chwidth) && chwidth
-      t = t*chwidth;
+      t = t.*chwidth;
     else
       disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 is given in time channels.' ])
       disp('    This is probably NOT what you want. I will still try to use it as it is...')
@@ -305,7 +305,7 @@ function s=Sqw_t2e(s)
 function [s,lambda,distance,chwidth] = Sqw_search_lambda(s)
   % search for the wavelength in the object
   
-  lambda = []; distance = [];
+  lambda = []; distance = []; chwidth=[];
 
   % no wavelength defined: search in object
   if isempty(lambda)
