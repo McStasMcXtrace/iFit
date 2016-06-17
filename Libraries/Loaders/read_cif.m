@@ -1,5 +1,12 @@
 function data = read_cif(file)
-% cif2hkl Wrapper to read CIF files
+% read_cif Wrapper to read CIF files
+%   data = read_cif(file)
+%
+% References: 
+% CrysFML by Juan Rodriguez-Carvajal and Javier Gonzalez-Platas, ILL and ULL, Tenerife, Spain
+%   used to build a powder/Laue Rietveld model, GPL3
+%   <http://www.ill.eu/sites/fullprof/php/programs24b7.html>
+
   data = [];
   if exist('cif2hkl') == 3 || exist('cif2hkl') == 7 || exist('cif2hkl') == 2
     % use MeX in verbose and no-output-files mode ('-')

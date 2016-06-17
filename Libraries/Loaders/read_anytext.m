@@ -1,13 +1,35 @@
 function s = read_anytext(varargin)
 % import any text using 'looktxt'.
+%   data = read_anytext(filename, options...)
+%
+% The possible options are:
+%'--catenate'	 Catenates similar numerical fields (which have similar dimensions 
+%                and names. Recommended.
+%'--fast'      When numerical data blocks only use isspace(3) separators 
+%                (\n \r \f \t \v and space), the reading can be made faster with 
+%                even lower memory requirements. Recommended.
+%'--headers'   Extracts headers for each numerical field. Recommended.
+%'--wrapped'   Catenates single wrapped output lines with previous matrices 
+%                (e.g. caused by the 80 chars per line limit in old data formats 
+%                written by fortran codes). Recommended.
+%'--section=SEC' Classifies fields into sections matching word SEC. This option 
+%                can be repeated with different SEC words.
+%'--metadata=META' Extracts lines containing word META as user metadata. This 
+%                option can be repeated with different META items.
+%'--makerows=NAME'	When a numerical data block label matching NAME is found, it 
+%                is transformed into a row vector. This may be used for wrapped 
+%                files (--wrapped option). This option can be repeatedwith as 
+%                different NAME tokens.
+%'--help'      Lists all possible options.
+%'--silent'    Suppress processing messages except errors.
 %
 % the importation consists in performing the following tasks:
 % * handle arguments, looking for options (possibly with "string") and filenames
 % * launch looktxt with Matlab/binary format on temporary file
 % * import the MAT file as a structure
 %
-% read_anytext('compile') creates looktxt binary
-% read_anytext('check')   check looktxt and recompiles if needed
+% read_anytext('compile') check looktxt and recompiles if needed
+% (c) E.Farhi, ILL. License: EUPL.
 
 % we choose NOT to use the looktxt mex file due to SEGV under Matlab.
 

@@ -1,5 +1,12 @@
 function [s, header, data] = read_hbin(filename)
 % read ILL Cyclops image
+%   s = read_hbin(filename)
+%
+% The HBIN format is an extended TIFF format.
+%  <https://www.ill.eu/instruments-support/instruments-groups/instruments/cyclops/description/instrument-layout/>
+%
+% (c) E.Farhi, ILL. License: EUPL.
+% See also: read_edf, read_adsc, read_cbf, read_sif, read_mar, read_spe, read_fits, read_image
 
 s = [];
 

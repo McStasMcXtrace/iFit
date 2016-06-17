@@ -1,6 +1,13 @@
 function data = read_igor(filename)
 % Load an Igor Wave dataset (IBW).
 %   data = read_igor(filename)
+%
+% References:
+% Igor Pro file format (ibw) to matlab variable by Jakub Bialek (2013)
+%  used to read Igor pro Wave files, BSD license
+%  <http://www.mathworks.com/matlabcentral/fileexchange/42679-igor-pro-file-format-ibw-to-matlab-variable>
+%
+% See also: read_tdms, read_lvm, read_idl, read_fig
 
 data = IBWread(filename);
 

@@ -1,9 +1,11 @@
 function data = read_hdf5(filename)
-%READ_HDF5 Returns the contents of an HDF5 file as a structure
+% READ_HDF5 Returns the contents of an HDF5 file as a structure
 %   The READ_HDF5 function reads an HDF5 file and returns the contents of
 %   that file as the fields of a structure.  Groups are treated as elements
 %   of their parent structure.  If the file cannot be opened a -1 is
 %   returned.
+%
+%   data = read_hdf5(filename)
 %
 % The returned structure has:
 % data.<group>.<data>             the main branch holding the HDF4 data sets
@@ -12,6 +14,9 @@ function data = read_hdf5(filename)
 %
 %   Example
 %       data=read_hdf5('input.h5');
+%
+% (c) E.Farhi, ILL. License: EUPL.
+% See also: read_hdf4, read_nc, read_cdf
 
 persistent h5_present
 

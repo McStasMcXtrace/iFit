@@ -1,7 +1,8 @@
 function data=read_stl(file, option)
 % mstlread Wrapper to read ascii and binary STL files
-
-% private: 
+%  data=read_stl(file)
+%
+% References: 
 % [f,v,c]=rndread from cad2matdemo Don Riley Jun 2003 : read ASCII STL with color
 %   <http://www.mathworks.com/matlabcentral/fileexchange/3642-cad2matdemo-m>
 %
@@ -12,6 +13,7 @@ function data=read_stl(file, option)
 %  <http://www.mathworks.com/matlabcentral/fileexchange/29906-binary-stl-file-reader>
 %  [v, f, n, c, stltitle] = stlread('MyModel.stl');
 %
+% See also: read_obj
 
 data=[];
 if isempty(file), return; end

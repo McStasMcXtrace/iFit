@@ -1,4 +1,14 @@
 function M=read_json(J)
+% read_json Read a JSON file
+%   s = read_json(filename)
+%
+% References:
+% json4mat by Jonas Almeida, April 2010
+%  used for I/O with JSON format, BSD license
+%  <http://www.mathworks.com/matlabcentral/fileexchange/27169-json4mat>
+%
+% See also: read_yaml, read_mccode
+
   M = json2mat(J);
   if ~isstruct(M) && ~isnumeric(M)
     M = [];

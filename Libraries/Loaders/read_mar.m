@@ -1,13 +1,13 @@
-%
-% Filename: $RCSfile: marread.m,v $
-%
-% $Date: Tue Jun 9 16:10:28 2015 +0200$  $Date: Tue Jun 9 16:10:28 2015 +0200$
-% $Author$
-% $Tag: $
+% data = read_mar(filename) Read a MAR CCD image
 %
 % Description:
 % Macro for reading TIFF files written by a MAR CCD
 %
+% References:
+%   July 17th 2008, Oliver Bunk: 1st version
+%   <http://www.psi.ch/sls/csaxs/software>
+% See also: read_edf, read_adsc, read_edf, read_sif, read_cbf, read_spe, read_fits, read_hbin, read_image
+
 % Note:
 % MAR data are TIFF and can be read by forcing the type to tif. 
 % The advantage of forcing the type to mar is, that additional header 
@@ -22,10 +22,6 @@
 % - compiling cbf_uncompress.c increases speed but is not mandatory
 %
 %
-% history:
-%
-% July 17th 2008, Oliver Bunk: 1st version
-% <http://www.psi.ch/sls/csaxs/software>
 
 function [frame,vararg_remain] = read_mar(filename,varargin)
 

@@ -1,6 +1,6 @@
 function data = read_mccode(filename)
 % read_mccode: load a McCode (McStas/McXtrace) simulation result
-% data = read_mccode(filename)
+%   data = read_mccode(filename)
 %
 % This function imports a McCode simulation result
 % It returns the McStas simulation structures. 
@@ -17,6 +17,10 @@ function data = read_mccode(filename)
 % examples:
 %   read_mccode mcstas.sim
 %
+% (c) E.Farhi, ILL. License: EUPL.
+% See also: read_anytext, read_inx
+
+
 % Written by: E. Farhi
 % Date: April 16st 2010
 % Release: McStas 1.6

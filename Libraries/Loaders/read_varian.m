@@ -1,11 +1,14 @@
 function data = read_varian(file)
 % READ_VARIAN: read a Varian NMR directory
+%  data = read_varian(file)
 %
 %   the argument can be any file from the NMR data set directory
 %   which should contain a 'fid' and a 'procpar' file.
 %
 % Credits: DOSYToolbox, Copyright 2007-2008  <Mathias Nilsson>
 % <http://dosytoolbox.chemistry.manchester.ac.uk>
+%
+% See also: read_jeol, read_bruker, read_opus
 
   if ~isdir(file)
     file = fileparts(file);

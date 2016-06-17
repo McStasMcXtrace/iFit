@@ -9,6 +9,8 @@ function data = read_jeol(file)
 %
 % Credits: DOSYToolbox, Copyright 2007-2008  <Mathias Nilsson>
 % <http://dosytoolbox.chemistry.manchester.ac.uk>
+%
+% See also: read_bruker, read_varian, read_opus
 
   if ~isdir(file)
     [p,f,ext] = fileparts(file);

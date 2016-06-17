@@ -1,10 +1,14 @@
 function data = read_hdf4(filename)
-% mhdf4read Wrapper to hdfinfo/hdfread which reconstructs the HDF4 structure
+% read_hdf4 Wrapper to hdfinfo/hdfread which reconstructs the HDF4 structure
+%  data = read_hdf4(filename)
 %
 % The returned structure has:
 % data.<path>...          the main branch holding the HDF4 data sets
 % data.Attributes.<path>  the sub-structure holding all attributes with similar 
 %                           structure as the main branch
+%
+% (c) E.Farhi, ILL. License: EUPL.
+% See also: read_hdf5, read_nc, read_cdf
 
 % read file structure
 try

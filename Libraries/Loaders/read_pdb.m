@@ -1,4 +1,4 @@
-% function result = PDB_Geometry(fname)
+% result = PDB_Geometry(fname) read a PDB file
 %
 %       Compute SAXS characteristics of molecule described in file fname.
 %       Input -     fname --> valid PDB file.
@@ -24,6 +24,7 @@
 %
 %       result.Ivq = Intensity versus q for protein I(q)
 %                       q = Ivq(:,1); I = Ivq(:,2)
+% See also: read_xyz, read_poscar, read_mrc
     
 % **********************  Number of Electrons ***********************************
 % From a PDB file, we can calculate the number of electrons by adding up the amino 

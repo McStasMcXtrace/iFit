@@ -1,6 +1,10 @@
 function data = read_llb_tas( filename )
 %READ_LLB_TAS Reads an LLB/TAS Data set, Computation(model) or Scan file
 %   Opens an LLB/TAS data file and returns a data set structure
+%   data = read_llb_tas( filename )
+%
+% (c) E.Farhi, ILL. License: EUPL.
+% See also: read_anytext, read_inx
 
 % built from B. Nennion wfal/read_fich.f
 data = [];

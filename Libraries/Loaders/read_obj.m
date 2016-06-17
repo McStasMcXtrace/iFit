@@ -1,5 +1,13 @@
 function data = read_obj(filename)
 % read_obj Wrapper to read ascii OBJ
+%  data = read_obj(filename)
+%
+% References:
+% read_wobj from D.Kroon University of Twente (June 2010)
+% <http://www.mathworks.com/matlabcentral/fileexchange/27982-wavefront-obj-toolbox>
+% BSD license
+%
+% See also: read_stl
 
   [p,f,e] = fileparts(filename);
   data = [];

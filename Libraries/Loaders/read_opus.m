@@ -1,6 +1,13 @@
 function data = read_opus(filename)
-  % reads an Opus Brucker file entirely.
-  % all sections are read and we return as many cells as needed
+% reads an Opus Brucker file entirely.
+%  data = read_opus(filename)
+%
+% all sections are read and we return as many cells as needed
+% 
+% References:
+%   https://sites.google.com/site/silakovalexey/kazan-viewer/
+%   A. Silakov Kazan viewer 2009
+% See also: read_jeol, read_varian, read_bruker
   
   data = {};
   
