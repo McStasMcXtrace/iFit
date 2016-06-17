@@ -3,13 +3,18 @@ function data = read_bruker(file)
 %   the argument can be any file from the NMR data set directory
 %   which should contain 
 %      a 'acqus', 'pdata/1' directory, 'fid' or 'ser'
+% 
+% data = read_bruker(file)
+% data = read_bruker(directory)
 %
 % Credits: 
-% DOSYToolbox, Copyright 2007-2008  <Mathias Nilsson>
-% <http://dosytoolbox.chemistry.manchester.ac.uk>
+%   DOSYToolbox, Copyright 2007-2008  <Mathias Nilsson>
+%   <http://dosytoolbox.chemistry.manchester.ac.uk>
 %
-% matNMR, Jacco van Beek, 2009
-% <http://matnmr.sourceforge.net/>
+%   matNMR, Jacco van Beek, 2009
+%   <http://matnmr.sourceforge.net/>
+%
+% See also: read_jeol, read_varian, read_opus
 
   if ~isdir(file)
     file = fileparts(file);

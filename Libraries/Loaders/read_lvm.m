@@ -95,6 +95,7 @@ function data = read_lvm(filename,verbose)
 % M.A. Hopcroft
 %      < mhopeng at gmail.com >
 %
+% See also: read_tdms, read_igor, read_idl
 
 % MH Sep2013
 % v2.2  fixes for case of comma separator in multi-segment files

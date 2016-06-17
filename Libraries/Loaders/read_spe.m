@@ -1,13 +1,15 @@
-%
-% Filename: $RCSfile: speread.m,v $
-%
-% $Date$  $Date: Tue Jun 9 16:10:28 2015 +0200$
-% $Author$
-% $Tag: $
+% read_spe(filename) read a Roper/SPE x-ray CCD image
 %
 % Description:
 % Macro for reading SPE CCD data files written by WinView from 
 % Roper Scientific / PI Acton
+%
+% References:
+%   May 9th 2008, Oliver Bunk: 1st version
+%   <http://www.psi.ch/sls/csaxs/software>
+%
+% See also: read_cbf, read_edf, read_adsc, read_mar, read_sif, read_fits, read_hbin, read_image
+
 %
 % Note:
 % Call without arguments for a brief help text.
@@ -20,8 +22,7 @@
 %
 % history:
 %
-% May 9th 2008, Oliver Bunk: 1st version
-% <http://www.psi.ch/sls/csaxs/software>
+
 
 function [frame,vararg_remain] = read_spe(filename,varargin)
 

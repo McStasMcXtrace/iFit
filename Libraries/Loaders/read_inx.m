@@ -1,5 +1,3 @@
-%--------------------------------------------------------------------------
-%
 %   READ_INX (read the INX files -ILL standards)
 %
 %   Usage: s = read_inx(filename,{instrument})
@@ -16,7 +14,9 @@
 %                 s.Par        = Double real matrix of Param: Angle, Ei, etc.
 %                 s.Mat        = Double real matrix of results (3D).
 %
-%--------------------------------------------------------------------------
+% (c) J. Ollivier, ILL, EUPL 1.1
+% See also: read_endf, read_mccode, read_llb_tas, read_anytext
+
 
 % format spec:
 % line 1: Nb tot channels, -, -, -, -, nb channels actually used

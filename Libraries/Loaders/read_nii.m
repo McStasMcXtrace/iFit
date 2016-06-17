@@ -1,16 +1,17 @@
 function data = read_nii(filename)
 % read a NifTi Neuroimaging Informatics Technology Initiative volume
+%  data = read_nii(filename)
 %
 % <http://nifti.nimh.nih.gov/>
-% 
-% http://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image
-% Jimmy Shen 23 Oct 2005 (Updated 22 Jan 2014)
-% 
+%
+% references:
+%   http://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image
+%   Jimmy Shen 23 Oct 2005 (Updated 22 Jan 2014)
 % and
+%   <http://www.mathworks.com/matlabcentral/fileexchange/29344-read-medical-data-3d>
+%   by Dirk-Jan Kroon 10 Nov 2010 (Updated 23 Feb 2011)
 %
-% <http://www.mathworks.com/matlabcentral/fileexchange/29344-read-medical-data-3d>
-%  by Dirk-Jan Kroon 10 Nov 2010 (Updated 23 Feb 2011)
-%
+% See also: read_poscar, read_pdb, read_xyz, read_mrc, read_analyze
 
 data = [];
 

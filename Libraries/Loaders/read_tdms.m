@@ -1,8 +1,13 @@
 function data=read_tdms(filename)
 % read a LabView TDMS file
-% http://www.mathworks.com/matlabcentral/fileexchange/30023-tdms-reader
-% Jim Hokanson (2011) BSD
+%   data=read_tdms(filename)
 %
+% References:
+%   http://www.mathworks.com/matlabcentral/fileexchange/30023-tdms-reader
+%   Jim Hokanson (2011) BSD
+%
+% See also: read_lvm, read_igor, read_idl, read_fig
+
 %Copyright (c) 2011, Jim Hokanson
 %All rights reserved.
 %

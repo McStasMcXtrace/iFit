@@ -1,6 +1,14 @@
 function s = read_edf(filename)
 % medfread Wrapper to pmedf_read which reconstructs the EDF structure
+%  s = read_edf(filename)
+%
 % only reads the first block/image
+%
+% pmedf_read and pmedfwrite by Petr Mikulik, Masaryk University, Brno, 11.8.2010
+%  used in iLoad and iData/saveas, GPL
+%  <http://www.sci.muni.cz/~mikulik/Soft4Synchro.html>
+%
+% See also: read_edf, read_adsc, read_cbf, read_sif, read_mar, read_spe, read_fits, read_image, read_hbin
 
 s = [];
 % read the file

@@ -1,4 +1,4 @@
-% function [imag, header] = read_adsc(fname)
+% data = read_adsc(filename)
 %
 %  Read an image file written by an ADSC detector.
 %  ADSC detectors write images in the "SMV" file format which consists of a text header and uncompressed image.
@@ -27,7 +27,14 @@
 %   Furthermore, at present we assume the image consists of unsigned 16-bit integers.
 %   However, it should at least return the first Nmin=512 bytes of the file in header.
 %
+% References:
 %   GEST - August 7, 2004. Gil Toombes, get1 _ at _ cornell.edu 
+%   adsc_read by Gil Toombes, 2004
+%   used to import ADSC X-ray CCD image, no license
+%   <http://bigbro.biophys.cornell.edu/~toombes/Software/ADSC_Detectors_Using_Spec/>
+%   <http://www.adsc-xray.com/products.html>
+%
+% See also: read_cbf, read_edf, read_sif, read_mar, read_spe, read_fits, read_hbin, read_image
 
 function frame = read_adsc(fname)
 

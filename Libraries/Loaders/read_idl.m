@@ -2,6 +2,8 @@ function outargs=read_idl(varargin)
 % READ_IDL:  restores variable from an IDL save file into Matlab
 % variables.
 %
+%   s=read_idl(filename)
+%
 % Input arguments (can appear in any order, and all are optional):
 %
 %   - filename: complete path specification for the save file
@@ -25,6 +27,13 @@ function outargs=read_idl(varargin)
 % "name" is the name of the variable, and "value" is a cell array
 % containing the variable, whatever it may be.  Could be a scalar, numeric
 % array, string, struct, array of structs, nested structs, what have you.
+%
+% References:
+% restore_idl by Charles Pelizzari, 2013
+%   used in iLoad/read_idl, BSD
+%   <http://jp.mathworks.com/matlabcentral/fileexchange/43899-restore-idl>
+%
+% See also: read_tdms, read_lvm, read_igor, read_fig
 
 %
 % Variables appear in the save file with names in all uppercase, which is

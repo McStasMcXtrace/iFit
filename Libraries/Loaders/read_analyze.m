@@ -8,6 +8,7 @@ function Analyze = read_analyze(filename)
 %
 % Adapted from ReadAnalyzeHdr and ReadAnalyzeImg by Claus Svarer <csvarer@nru.dk>
 %
+% See also: read_nii, read_hdr
 
 Analyze = [];
 

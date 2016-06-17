@@ -1,7 +1,15 @@
 function [Data] = read_mrc(file)
-% read_mrc: reaf MCR/CCP4 electronic density map file
+% read_mrc: read a MCR/CCP4 electronic density map file
+%  [Data] = read_mrc(file)
 %
 % <http://en.wikipedia.org/wiki/MRC_%28file_format%29>
+%
+% References:
+% tom_mrcread from Wolfgang Baumeister (TOM Matlab toolbox), 2008
+%  used to read MRC electron density map files
+%  <http://www.biochem.mpg.de/en/rd/baumeister/tom_e/>
+%
+% See also: read_poscar, read_pdb, read_xyz, read_nii, read_analyze
 
 % first try as a legacy MRC file
 Data = tom_mrcread(file);       % inline below

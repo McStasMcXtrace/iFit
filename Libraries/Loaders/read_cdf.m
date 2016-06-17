@@ -1,5 +1,10 @@
 function s = read_cdf(filename)
 % mcdfread Wrapper to cdfread which reconstructs the CDF structure
+% s = read_cdf(filename)
+%
+% http://en.wikipedia.org/wiki/Common_Data_Format
+%
+% See also: read_nc, read_hdf4, read_hdf5
 
 % turn OFF file validation to improve performance
 cdflib.setValidate('VALIDATEFILEoff');

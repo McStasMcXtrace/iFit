@@ -1,5 +1,14 @@
 function S = read_nc(File,varargin)
-  % read a NetCDF file, using 2 methods
+% read a NetCDF file, version 1 and 2
+%   S = read_nc(File)
+%
+% references:
+% tom_mrcread from Wolfgang Baumeister (TOM Matlab toolbox), 2008
+%  used to read MRC electron density map files
+%  <http://www.biochem.mpg.de/en/rd/baumeister/tom_e/>
+% netcdfobj contribution on Matlab Central
+%
+% See also: read_hdf4, read_hdf5, read_cdf
   
   try
     % a NetCDF reader using netcdf lib (faster)
@@ -13,7 +22,7 @@ function S = read_nc(File,varargin)
 
 function obj = read_nc2(File)
 % inspired from netcdfobj contribution on Matlab Central.
-% 
+% E. Farhi ILL, EUPL.
 
   % open the file
   fid = netcdf.open(File);

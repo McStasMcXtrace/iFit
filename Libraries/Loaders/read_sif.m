@@ -1,8 +1,12 @@
-% Marcel Leutenegger © November 2006
-% Updated by  	Uli Klessinger 18 Jun 2012
+% read_sif(filename) read a SIF x-ray CCD image
 %
-% http://www.mathworks.com/matlabcentral/fileexchange/11224-andor-sif-image-reader
-% http://www.andor.com/scientific-cameras
+% References:
+%   Marcel Leutenegger © November 2006
+%   Updated by  	Uli Klessinger 18 Jun 2012
+%   http://www.mathworks.com/matlabcentral/fileexchange/11224-andor-sif-image-reader
+%   http://www.andor.com/scientific-cameras
+%
+% See also: read_cbf, read_edf, read_adsc, read_mar, read_spe, read_fits, read_hbin, read_image
 
 %  Copyright (c) 2006, Marcel Leutenegger
 %  All rights reserved.

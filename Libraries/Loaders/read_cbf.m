@@ -1,13 +1,18 @@
-%
-% Filename: $RCSfile: cbfread.m,v $
-%
-% Revision: 1.1   Date: 2008/06/10 17:05:13 
-% Author: bunk 
-% Tag: 
+% Read CBF/imgCIF x-ray file format
+%   data = read_cbf(filename)
 %
 % Description:
 % Macro for reading Crystallographic Binary File (CBF) files written by the
 % Pilatus detector control program camserver. 
+%
+% References:
+% May 9th 2008, Oliver Bunk: 1st version
+% <http://www.psi.ch/sls/csaxs/software>
+% example CBF at files at <http://www.bernstein-plus-sons.com/software/CBF/>
+% original Matlab source code from SLS/cSAXS <http://www.psi.ch/sls/csaxs/software>
+%
+% See also: read_edf, read_adsc, read_edf, read_sif, read_mar, read_spe, read_fits, read_hbin, read_image
+
 %
 % Note:
 % Compile the C-program cbf_uncompress using mex (see header of
@@ -24,13 +29,6 @@
 % - compiling cbf_uncompress.c increases speed but is not mandatory
 %
 %
-% history:
-%
-% May 9th 2008, Oliver Bunk: 1st version
-% <http://www.psi.ch/sls/csaxs/software>
-
-% example CBF at files at <http://www.bernstein-plus-sons.com/software/CBF/>
-% original Matlab source code from SLS/cSAXS <http://www.psi.ch/sls/csaxs/software>
 
 function [frame,vararg_remain] = read_cbf(filename,varargin)
 
