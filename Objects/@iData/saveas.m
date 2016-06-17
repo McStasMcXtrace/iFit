@@ -374,6 +374,8 @@ case {'fits','fit','fts'} % FITS image
   if ndims(a) == 2
     a = double(a);
     fitswrite(a, filename);
+  else
+    disp([ mfilename ': Export into ' format ' is only possible for 2D objects, not for ' num2str(ndims(a)) 'D. Use resize to change dimensionality. Ignoring.' ]) 
   end
 case 'xls'  % Excel file format
   xlswrite(filename, double(a), a.Title);
@@ -491,6 +493,9 @@ case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
       [x, xlab] = getaxis(a,2); x=double(x);
       [y, ylab] = getaxis(a,1); y=double(y);
       [z, zlab] = getaxis(a,3); z=double(z);
+    else
+      disp([ mfilename ': Export into ' format ' is only possible for 2D+ objects, not for ' num2str(ndims(a)) 'D. Ignoring.' ])
+      return
     end
     if any(strcmp(format, {'stl','stlb'}))
       mode = 'binary';

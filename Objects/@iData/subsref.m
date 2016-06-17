@@ -295,7 +295,16 @@ function val = iData_getAliasValue(this,fieldname)
 
   % searches if this is an alias (it should be)
   alias_num   = find(strcmpi(fieldname, this.Alias.Names));  % index of the Alias requested
-  if isempty(alias_num), 
+  if isempty(alias_num)
+    % search if something exists with that name: makes recursive loops and
+    % much slower -> inactivated
+    % match = findfield(this, fieldname, 'exact');
+    % if numel(match) == 1
+    %  try
+    %    val = get(this, match{1});
+    %    return
+    %  end
+    % end
     iData_private_error(mfilename, sprintf('can not find Property "%s" in object %s "%s".', fieldname, this.Tag, this.Title ));
     return; 
   end                    % not a valid alias
