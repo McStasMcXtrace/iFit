@@ -51,13 +51,8 @@ function Sab = Sqw_Sab(s, M, T)
   s = Sqw_check(s);
   if isempty(s), return; end
   
-  for f={'weight','mass','AWR'}
-    if isempty(M) && isfield(s.Data, f{1})
-      M       = s.Data.(f{1});               % mass
-    end
-    if isempty(M) && ~isempty(findfield(s,f{1}))
-      M       = get(s, findfield(s,f{1}));
-    end
+  if isempty(M) && isfield(s, 'weight')
+    M       = s.weight;               % mass
   end
   if isempty(T)
     T = Sqw_getT(s);
@@ -69,8 +64,8 @@ function Sab = Sqw_Sab(s, M, T)
     return
   end
   if isempty(T) || T<=0
-    disp([ mfilename ': ERROR: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not have any temperature defined. Use Sqw_Sab(Sqw, M, T).' ]);
-    return
+    disp([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not have any temperature defined. Using T=300K. Use Sqw_Sab(Sqw, M, T) for other setting.' ]);
+    T = 300;
   end
   
   % test if classical
@@ -125,7 +120,9 @@ function Sab = Sqw_Sab(s, M, T)
   Sab.Title = [ 'Sab(' s.Title ')' ];
   Sab.Temperature= T;
   Sab.weight     = M;
-  Sab.classical  = s.classical;
+  Sab.classical  = 1;
+  
+  
   Sab.Label='Sab';
   title(Sab, 'S(\alpha,\beta)');
   ylabel(Sab,'alpha [h2q2/2MkT]');

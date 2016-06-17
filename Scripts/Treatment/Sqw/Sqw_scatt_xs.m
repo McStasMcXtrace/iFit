@@ -75,34 +75,22 @@ function sigma = Sqw_scatt_xs(s, Ei, M)
   end
 
   % first look at the given arguments
-  if nargin < 2
-    Ei = [];
-  end
-  if nargin < 3, M = 0; end
-  
+  if nargin < 2,  Ei = []; end
+  if nargin < 3,  M = []; end
   if isempty(Ei), Ei=14; end
-  for f={'weight','mass','AWR'}
-    if isempty(M) && isfield(s.Data, f{1})
-      M       = s.Data.(f{1});               % mass
-    end
-    if isempty(M) && ~isempty(findfield(s,f{1}))
-      M       = get(s, findfield(s,f{1}));
-    end
-  end
-  if isempty(M), M=0;; end
 
   sigma = [];
 
   % handle array of objects
   if numel(s) > 1
     for index=1:numel(s)
-      sigma = [ sigma feval(mfilename, s(index), Ei) ];
+      sigma = [ sigma feval(mfilename, s(index), Ei, M) ];
       s(index) = iData;
     end
     return
   end
   
-  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
+  % get the S(q,w) on a meshgrid (and possibly rebin/interpolate), do checks
   s = meshgrid(s);
   s = Sqw_check(s);
   if isempty(s), return; end
@@ -113,6 +101,9 @@ function sigma = Sqw_scatt_xs(s, Ei, M)
   if isempty(Sqw_getT(s))
     disp([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to have a Temperature defined. You may apply s=Sqw_Bosify(s, temperature) before.' ]);
   end
+  if isempty(M) && isfield(s, 'weight')
+    M       = s.weight;               % mass
+  end
   
   w = s{1};
   
@@ -120,6 +111,7 @@ function sigma = Sqw_scatt_xs(s, Ei, M)
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to only be defined on w<0 or w>0. You should apply  and then s=Sqw_Bosify(Sqw_symmetrize(s), temperature) before.' ]);
   end
 
+  % do the total XS computation there...
   if numel(Ei) > 1
     sigma = [];
     if numel(Ei) == 2, Ei=logspace(log10(Ei(1)),log10(Ei(2)),20); end
@@ -158,7 +150,7 @@ function sigma = Sqw_scatt_xs_single(s, Ei, M)
   % add the Debye-Waller factor computed to sweep bound to free cross section
   % at Ei=1 eV. Factor W is so that exp(-WE) = [A/(A+1)]^2 at threshold E=1 eV
   % DW factor is in q^2, i.e. in alpha i.e. in E, but this is not a Debye-Waller factor !
-  if M > 0
+  if ~isempty(M) && M > 0
     Ei_threshold = 1000; % 1 eV
     W  = 2/Ei_threshold*(log(M)-log(M+1));
     Ei = min([ Ei Ei_threshold ]);

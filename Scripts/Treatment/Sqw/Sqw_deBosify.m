@@ -44,14 +44,15 @@ function s = Sqw_deBosify(s, T, type)
     return; 
   end
   
-  if nargin == 1, T = []; end
+  if nargin < 2, T = []; end
   if nargin < 3, type=''; end
+  if isempty(type), type='standard'; end
 
   % handle array of objects
   if numel(s) > 1
     sqw = [];
     for index=1:numel(s)
-      sqw = [ sqw feval(mfilename, s(index), T) ];
+      sqw = [ sqw feval(mfilename, s(index), T, type) ];
     end
     s = sqw;
     return
@@ -63,7 +64,7 @@ function s = Sqw_deBosify(s, T, type)
   if isempty(T) || T == 0
     return
   end
-
+  
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     if s.classical == 1
@@ -74,5 +75,6 @@ function s = Sqw_deBosify(s, T, type)
   % get symmetric from experimental data
   s = Sqw_Bosify(s, -T, type);
   setalias(s, 'Temperature', T);
+  setalias(s, 'QuantumCorrection',type,[ 'Quantum correction applied in ' mfilename ]);
   setalias(s, 'classical', 1);
   

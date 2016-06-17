@@ -14,6 +14,19 @@ function s = Sqw_check(s)
 %   s: Sqw data set
 %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
 
+  if nargin == 0, return; end
+  
+  % handle array of objects
+  if numel(s) > 1
+    sqw = [];
+    for index=1:numel(s)
+      sqw = [ sqw feval(mfilename, s(index)) ];
+    end
+    s(index)=iData; % free memory
+    s = sqw;
+    return
+  end
+  
   if isempty(s), return; end
   
   % check if the data set is Sqw (2D)
@@ -29,7 +42,11 @@ function s = Sqw_check(s)
       def = getaxis(s, num2str(index));
       if ischar(def), lab = [ def lab ]; end
       if isempty(lab), lab=lower(getaxis(s, num2str(index))); end
-      if any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(strtok(lab), 'q')  || strcmp(strtok(lab), 'k') || any(strfind(lab, 'angs'))
+      if any(strfind(lab, 'alpha')) || strcmp(strtok(lab), 'a')
+        alpha_present=index;
+      elseif any(strfind(lab, 'beta')) || strcmp(strtok(lab), 'b')
+        beta_present=index;
+      elseif any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(strtok(lab), 'q')  || strcmp(strtok(lab), 'k') || any(strfind(lab, 'angs'))
         q_present=index;
       elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'frequency')) || strcmp(strtok(lab), 'w') || strcmp(strtok(lab), 'e') || any(strfind(lab, 'mev'))
         w_present=index;
@@ -37,15 +54,22 @@ function s = Sqw_check(s)
         t_present=index;
       elseif any(strfind(lab, 'angle')) || any(strfind(lab, 'deg')) || strcmp(strtok(lab), 'theta') || strcmp(strtok(lab), 'phi')
         a_present=index;
-      elseif any(strfind(lab, 'alpha')) || strcmp(strtok(lab), 'a')
-        beta_present=index;
-      elseif any(strfind(lab, 'beta')) || strcmp(strtok(lab), 'b')
-        alpha_present=index;
       end
     end
   end
+
+  % conversions
+  if alpha_present && beta_present && (~w_present || ~q_present)
+    s = Sab_Sqw(s); % convert from S(alpha,beta) to S(q,w)
+    return
+  end
+  
+  % search for Sqw parameters for further conversions
+  if ~isfield(s, 'parameters')
+    s = Sqw_parameters(s, 'Sqw');
+  end
   if ~w_present && t_present
-    % convert from S(xx,t) to S(xx,w): t2e requires L2
+    % convert from S(xx,t) to S(xx,w): t2e requires L2=Distance
     s = Sqw_t2e(s);
     s = Sqw_check(s);
     return
@@ -54,10 +78,6 @@ function s = Sqw_check(s)
     % convert from S(phi,w) to S(q,w)
     s = Sqw_phi2q(s);
     s = Sqw_check(s);
-    return
-  end
-  if alpha_present && beta_present && (~w_present || ~q_present)
-    s = Sab_Sqw(s); % convert from S(alpha,beta) to S(q,w)
     return
   end
   if ~w_present || ~q_present
@@ -76,20 +96,10 @@ function s = Sqw_check(s)
   s(~isfinite(s)) = 0;
   
   % check 'classical' and 'symmetric'
-  for f={'classical', 'symmetric'}
-    if isfield(s,f{1}) || ~isempty(findfield(s, f{1}))
-      if isfield(s,f{1}) classical0 = s.(f{1});
-      else 
-        classical0 = findfield(s, f{1});
-        if iscell(classical0), classical0=classical0{1}; end
-        classical0 = get(s, classical0);
-      end
-      if numel(classical0) > 1
-        classical0  = classical0(1);
-        if strcmp(f{1},'symmetric'), classical0 = ~classical0; end
-        s.classical = classical0;
-      end
-    end
+  if isfield(s,'classical') 
+    classical0 = s.classical;
+  else
+    classical0 = [];
   end
   
   w  = s{1};
@@ -103,7 +113,7 @@ function s = Sqw_check(s)
     if w1 > w2*2
       % we assume the measurement range is at least [-2*Ei:Ei]
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
-      disp('    indicates mostly that the energy range is in the positive side.')
+      disp('    indicates that the energy range is mostly in the positive side.')
       disp('    Check that it corresponds with the neutron loss/sample gain Stokes side');
       disp('    and if not, revert energy axis with e.g. setaxis(s, 1, -s{1})');
     end
@@ -158,15 +168,6 @@ function s = Sqw_check(s)
 
     % temperature stored ?
     T0        = Sqw_getT(s);
-    if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-      classical0 = s.classical;
-      if numel(classical0) > 1
-        classical0 = classical0(1);
-        s.classical = classical0;
-      end
-    else
-      classical0 = [];
-    end
 
     % log_s_ratio should be about 0 if S(q,w) is symmetric
     classical = [];
@@ -183,7 +184,7 @@ function s = Sqw_check(s)
     % display warnings when mismatch is found
     if ~isempty(classical0) && ~isempty(classical) && classical0 ~= classical
       if   classical0, classical_str='classical/symmetric';
-      else             classical_str='experimental/Bose/quantum'; end
+      else             classical_str='experimental/Bose/quantum/asymmetric'; end
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
       disp(['    indicates a ' classical_str ' S(|q|,w) 2D object, but the analysis of the data shows it is not.' ]);
     elseif isempty(classical0) && ~isempty(classical)
@@ -203,7 +204,7 @@ function s = Sqw_check(s)
 
 % ------------------------------------------------------------------------------
 function s = Sqw_phi2q(s)
-% convert S(phi,w) to S(q,w)
+% convert S(phi,w) to S(q,w). Requires wavelength
 
   [s,lambda] = Sqw_search_lambda(s);
   if isempty(s), return; end
@@ -227,7 +228,7 @@ function s = Sqw_phi2q(s)
   
 % ------------------------------------------------------------------------------
 function s=Sqw_t2e(s)
-% convert S(xx,t) to S(xx,w). From lamp t2e and in5_t2e.
+% convert S(xx,t) to S(xx,w). From lamp t2e and in5_t2e. Requires wavelength and/or distance
 
   [s,lambda,distance,chwidth] = Sqw_search_lambda(s);
   if isempty(s), return; end
@@ -315,67 +316,27 @@ function s=Sqw_t2e(s)
   
 % ------------------------------------------------------------------------------ 
 function [s,lambda,distance,chwidth] = Sqw_search_lambda(s)
-  % search for the wavelength in the object
+  % search for the wavelength etc in the object
   
   lambda = []; distance = []; chwidth=[];
 
   % no wavelength defined: search in object
-  if isempty(lambda)
-    lambda_field=[ findfield(s, 'wavelength','numeric') ...
-                   findfield(s, 'lambda','numeric')  ];
-    if ~isempty(lambda_field), 
-      if iscell(lambda_field)
-        for index=1:numel(lambda_field)
-          if isscalar(get(s, lambda_field{index})) 
-            lambda_field=lambda_field{index};
-            break;
-          end
-        end
-      end
-      lambda = mean(get(s, lambda_field));
-      disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident wavelength=' num2str(lambda) ' [Angs] from ' lambda_field ]);
-    end
+  if isempty(lambda) && isfield(s, 'wavelength')
+    lambda = mean(s.lambda);
+    disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident wavelength=' num2str(lambda) ' [Angs]' ]);
   end
   % search incident energy
-  if isempty(lambda)
-    energy_field = [ findfield(s, 'IncidentEnergy','numeric') ...
-                     findfield(s, 'fixed_energy','numeric') ...
-                     findfield(s, 'energy','numeric') ...
-                     findfield(s, 'ei','exact numeric') ...
-                     findfield(s, 'Ei','exact numeric') ];
-    if ~isempty(energy_field)
-      if iscell(energy_field)
-        for index=1:numel(energy_field)
-          if isscalar(get(s, energy_field{index})) 
-            energy_field=energy_field{index};
-            break;
-          end
-        end
-      end
-      energy = mean(get(s, energy_field));
-      disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident energy=' num2str(energy) ' [meV] from ' energy_field ]);
-      lambda = sqrt(81.805/energy);
-      setalias(s, 'IncidentEnergy', energy, 'Incident Energy [meV]');
-    end
+  if isempty(lambda) && isfield(s, 'IncidentEnergy')
+    energy = mean(s.IncidentEnergy);
+    lambda = sqrt(81.805/energy);
+    disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident energy=' num2str(energy) ' [meV]' ]);
+    setalias(s, 'IncidentEnergy', energy, 'Incident Energy [meV]');
   end
   % search incident wavevector
-  if isempty(lambda)
-    momentum_field=[ findfield(s, 'IncidentWavevector','numeric') ...
-                     findfield(s, 'ki','exact numeric') ...
-                     findfield(s, 'Ki','exact numeric') ];
-    if ~isempty(momentum_field), 
-      if iscell(momentum_field)
-        for index=1:numel(momentum_field)
-          if isscalar(get(s, momentum_field{index})) 
-            momentum_field=momentum_field{index};
-            break;
-          end
-        end
-      end
-      momentum = mean(get(s, momentum_field));
-      lambda=2*pi/momentum;
-      disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident wavevector=' num2str(momentum) ' [Angs-1] from ' momentum_field ]);
-    end
+  if isempty(lambda) && isfield(s, 'IncidentWavevector')
+    momentum = mean(s.IncidentWavevector);
+    lambda=2*pi/momentum;
+    disp([ mfilename ': ' s.Tag ' ' s.Title ' using incident wavevector=' num2str(momentum) ' [Angs-1]' ]);
   end
   if isempty(lambda)
     disp([ mfilename ': ' s.Tag ' ' s.Title ' undefined incident neutron wavelength/energy.' ]);
@@ -387,24 +348,14 @@ function [s,lambda,distance,chwidth] = Sqw_search_lambda(s)
   end
   
   % search for a sample-to-detector distance
-  distance_field = [ findfield(s, 'distance') ];
-  if ~isempty(distance_field), 
-    if iscell(distance_field), distance_field=distance_field{1}; end
-    distance = get(s, distance_field);
-    disp([ mfilename ': ' s.Tag ' ' s.Title ' using <sample-detector distance> =' num2str(mean(distance(:))) ' [m] from ' distance_field ]);
-    if ~isfield(s, 'Distance')
-      setalias(s, 'Distance', distance, 'Sample-Detector distance [m]');
-    end
+  if isfield(s,'Distance'), 
+    distance = s.Distance;
+    disp([ mfilename ': ' s.Tag ' ' s.Title ' using <sample-detector distance> =' num2str(mean(distance(:))) ' [m]' ]);
   end
   
   % search for the Channel Width
-  chwidth_field = [ findfield(s, 'ChannelWidth') ];
-  if ~isempty(chwidth_field), 
-    if iscell(chwidth_field), chwidth_field=chwidth_field{1}; end
-    chwidth = get(s, chwidth_field);
-    disp([ mfilename ': ' s.Tag ' ' s.Title ' using <channel width> =' num2str(mean(chwidth(:))) ' [time unit] from ' chwidth_field ]);
-    if ~isfield(s, 'ChannelWidth')
-      setalias(s, 'ChannelWidth', chwidth, 'ToF Channel Width [time unit]');
-    end
+  if isfield(s, 'ChannelWidth'), 
+    chwidth = s.ChannelWidth;
+    disp([ mfilename ': ' s.Tag ' ' s.Title ' using <channel width> =' num2str(mean(chwidth(:))) ' [time unit]']);
   end
     

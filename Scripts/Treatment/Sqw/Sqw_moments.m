@@ -50,13 +50,8 @@ function sigma=Sqw_moments(data, M, T, classical)
   if isempty(classical) && (isfield(data,'classical') || ~isempty(findfield(data, 'classical')))
     classical = data.classical;
   end
-  for f={'weight','mass','AWR'}
-    if isempty(M) && isfield(s.Data, f{1})
-      M       = s.Data.(f{1});               % mass
-    end
-    if isempty(M) && ~isempty(findfield(s,f{1}))
-      M       = get(s, findfield(s,f{1}));
-    end
+  if isempty(M) && isfield(data, 'weight')
+    M       = data.weight;               % mass
   end
   if isempty(T)
     T = Sqw_getT(data);

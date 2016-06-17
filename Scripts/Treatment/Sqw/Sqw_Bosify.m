@@ -55,8 +55,7 @@ function s = Sqw_Bosify(s, T, type, options)
     disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
     return; 
   end
-  if nargin < 2, M = []; end
-  if nargin == 1, T = []; end
+  if nargin < 2, T = []; end
   if nargin < 3, type=''; end
   if nargin < 4, options=''; end
 
@@ -127,4 +126,5 @@ function s = Sqw_Bosify(s, T, type, options)
   s         = s .* Q;  % apply detailed balance with the selected correction
   
   setalias(s, 'Temperature', T);
+  setalias(s, 'QuantumCorrection',type,[ 'Quantum correction applied in ' mfilename ]);
   setalias(s, 'classical', 0);
