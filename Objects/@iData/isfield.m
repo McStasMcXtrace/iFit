@@ -2,9 +2,9 @@ function b = isfield(a, field)
 % b = isfield(s, field) : check existence of field/alias in iData objects
 %
 %   @iData/isfield function which checks if a name is already defined as a Property
-%       or Alias in the iData object.
-%     isfield(s) returns the full list of defined fields and aliases in the object.
-%     The search for field names is case insensitive.
+%       or Alias or unique definition in the iData object.
+%     isfield(s) returns the full list of defined fields and aliases in the
+%     object.
 %   isfield scope (Properties and Aliases) is more restricted than findfield and 
 %     strfind methods.
 %
@@ -50,7 +50,12 @@ if any(strcmpi(field, fields))
   b = true;
 elseif any(strcmpi(field, getalias(a)))
   b = true;
+elseif any(strcmpi(field, getaxis(a)))
+  b = true;
 elseif any(strcmpi(field, {'history','filename','axes','alias','axis'}))
   b = true;
+% too slow and recursive: inactivated
+% elseif numel(findfield(a, field,'exact')) == 1
+%  b = true;
 end
 

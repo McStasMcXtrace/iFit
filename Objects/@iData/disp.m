@@ -116,12 +116,21 @@ else
       if length(v) > 32, v = [ '...' v((end-28):end) ]; end
     else 
       label = [ label ' (' class(v) ')' ];
-      v=class2str('s',v,'no comments'); 
+      try   % use matlab 'tostring' by capturing the display
+        v=evalc('disp(v)');
+        v(~isstrprop(v,'print')) = '';
+        v=regexprep(v,'\s+',' ');
+      catch % use our own 'tostring'
+        v=class2str('s',v,'no comments'); 
+      end
       if length(v) > 32, v = [v(1:29) '...' ]; end 
     end
     if strcmp(s_in.Alias.Names{index}, 'Format') && ~isdeployed
-      if isempty(label) || strcmp(label, v), label='help about formats'; end
+      if (isempty(v) && isempty(label)) || strcmp(label, v), label='help about formats'; end
       label=[ '<a href="matlab:doc(iData,''Load'')">' label '</a>' ];
+    end
+    if strcmp(s_in.Alias.Names{index}, 'postprocess') && ~isdeployed
+      label=[ '<a href="matlab:doc ' v '">' v '</a>' ];
     end
     v = strtrim(v); v(~isstrprop(v,'print') | v=='\')=''; 
     label = strtrim(char(label)); label(~isstrprop(label,'print') | label=='\')=''; 
