@@ -1,5 +1,5 @@
 function out = openendf(filename)
-%OPENCBF Open an Evaluated Nuclear Data File, display it
+%OPENENDF Open an Evaluated Nuclear Data File, display it
 %        and set the 'ans' variable to an iData object with its content
 
 if ~isa(filename,'iData')
