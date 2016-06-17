@@ -10,7 +10,7 @@ function Sqw = Sab_Sqw(s, M, T)
 %     mu   = cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)
 %  
 % input:
-%   s:  Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%   s:  Sqw data set e.g. 2D data set with beta as 1st axis (rows), alpha as 2nd axis (columns).
 %   M:  molar weight of the atom/molecule in [g/mol].
 %     when omitted or empty, it is searched as 'weight' or 'mass' is the object.
 %   T: when given, Temperature to use. When not given or empty, the Temperature
@@ -52,13 +52,8 @@ function Sqw = Sab_Sqw(s, M, T)
   s = Sab_check(s);
   if isempty(s), return; end
   
-  for f={'weight','mass','AWR'}
-    if isempty(M) && isfield(s.Data, f{1})
-      M       = s.Data.(f{1});               % mass
-    end
-    if isempty(M) && ~isempty(findfield(s,f{1}))
-      M       = get(s, findfield(s,f{1}));
-    end
+  if isempty(M) && isfield(s, 'weight')
+    M       = s.weight;               % mass
   end
   if isempty(T)
     T = Sab_getT(s);

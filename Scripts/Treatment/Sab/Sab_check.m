@@ -7,9 +7,23 @@ function s = Sab_check(s)
 %    omega < 0, neutron gains energy, anti-Stokes
 %
 % input:
-%   s: Sqw data set
-%        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
+%   s:  Sqw data set e.g. 2D data set with beta as 1st axis (rows), alpha as 2nd axis (columns).
+%
+% See also: Sqw_Sab, Sqw_check
 
+  if nargin == 0, return; end
+  
+  % handle array of objects
+  if numel(s) > 1
+    sab = [];
+    for index=1:numel(s)
+      sab = [ sab feval(mfilename, s(index)) ];
+    end
+    s(index)=iData; % free memory
+    s = sab;
+    return
+  end
+  
   if isempty(s), return; end
   
   % check if the data set is Sqw (2D)
@@ -24,9 +38,9 @@ function s = Sab_check(s)
       if ischar(def), lab = [ def lab ]; end
       if isempty(lab), lab=lower(getaxis(s, num2str(index))); end
       if any(strfind(lab, 'alpha')) || strcmp(strtok(lab), 'a')
-        beta_present=index;
-      elseif any(strfind(lab, 'beta')) || strcmp(strtok(lab), 'b')
         alpha_present=index;
+      elseif any(strfind(lab, 'beta')) || strcmp(strtok(lab), 'b')
+        beta_present=index;
       elseif any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(strtok(lab), 'q')  || strcmp(strtok(lab), 'k') || any(strfind(lab, 'angs'))
         q_present=index;
       elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'frequency')) || strcmp(strtok(lab), 'w') || strcmp(strtok(lab), 'e') || any(strfind(lab, 'mev'))
@@ -34,9 +48,17 @@ function s = Sab_check(s)
       end
     end
   end
+  
+  % conversions
   if q_present && w_present && (~alpha_present || ~beta_present)
     s = Sqw_Sab(s);
+    s = Sab_check(s);
     return
+  end
+  
+  % search for Sab parameters
+  if ~isfield(s, 'parameters')
+    s = Sqw_parameters(s, 'Sab');
   end
   if ~alpha_present || ~beta_present
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
@@ -46,7 +68,7 @@ function s = Sab_check(s)
   end
 
   % check if we need to transpose the S(q,w)
-  if alpha_present==2 && beta_present==1
+  if alpha_present==1 && beta_present==2
     s = transpose(s);
   end
   
@@ -54,20 +76,16 @@ function s = Sab_check(s)
   s(~isfinite(s)) = 0;
   
   % check 'classical' and 'symmetric'
-  for f={'classical', 'symmetric'}
-    if isfield(s,f{1}) || ~isempty(findfield(s, f{1}))
-      if isfield(s,f{1}) classical0 = s.(f{1});
-      else 
-        classical0 = findfield(s, f{1});
-        if iscell(classical0), classical0=classical0{1}; end
-        classical0 = get(s, classical0);
-      end
-      if numel(classical0) > 1 || (~isempty(classical0) && ~isfield(s,'classical'))
-        classical0  = classical0(1);
-        s.classical = classical0;
-        break
-      end
-    end
+  if isfield(s,'classical') 
+    classical0 = s.classical;
+  else
+    classical0 = [];
+  end
+  
+  % handle ENDF keywords
+  if isfield(s,'LASYM')
+    s.classical = ~s.LASYM;
+    classical0  = s.classical;
   end
 
 % ------------------------------------------------------------------------------

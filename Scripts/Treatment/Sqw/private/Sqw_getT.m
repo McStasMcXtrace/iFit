@@ -5,6 +5,17 @@ function  T = Sqw_getT(s)
 %   s: any iData object, including S(q,w) ones.
   
   T = [];
+  
+  % handle arrays
+  if numel(s) > 1
+    for index=1:numel(s)
+      t = Sqw_getT(s(index));
+      if isempty(t), t=nan; end
+      T = [ T t ];
+    end
+    return
+  end
+  
   if isfield(s,'temperature'), T=getfield(s,'temperature'); end
   
   if isempty(T)
