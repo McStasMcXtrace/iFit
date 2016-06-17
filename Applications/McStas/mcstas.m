@@ -536,6 +536,12 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   if isfield(options,'dir') && ~isempty(options.dir)
     % clean up previous simulation result
     if isfield(options, 'overwrite') && options.overwrite
+      fh_all = fopen('all');  % close opened files matching the output directory
+      for i = 1:numel(fh_all) % before removal
+        if strcmp(options.dir, fileparts(fopen(fh_all(i))))
+          fclose(fh_all(i));
+        end
+      end        
       index = rmdir(options.dir, 's');
     end
     if ~isempty(dir(options.dir))
