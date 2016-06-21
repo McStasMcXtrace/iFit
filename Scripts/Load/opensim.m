@@ -95,24 +95,28 @@ i = [ findfield(a, 'xlabel', 'char exact') findfield(a, 'x_label', 'char exact')
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, xlab] = strtok(l, ':='); xlab=strtrim(xlab(2:end));
+  if isempty(xlab), xlab=l; end
 end
 
 i = [ findfield(a, 'ylabel', 'char exact') findfield(a, 'y_label', 'char exact') ];
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, ylab] = strtok(l, ':='); ylab=strtrim(ylab(2:end));
+  if isempty(ylab), ylab=l; end
 end
 
 i = [ findfield(a, 'zlabel', 'char exact') findfield(a, 'z_label', 'char exact') ];
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, zlab] = strtok(l, ':='); zlab=strtrim(zlab(2:end));
+  if isempty(zlab), zlab=l; end
 end
 
 i = findfield(a, 'component','char exact');
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, label] = strtok(l, ':='); label=strtrim(label(2:end));
+  if isempty(label), label=l; end
   a.Label = label;
   a.Data.Component = label;
   setalias(a, 'Component', 'Data.Component','Component name');
@@ -122,6 +126,7 @@ i = findfield(a, 'Creator','char exact'); % should have at least the iData.Creat
 if iscell(i) && length(i) > 1
   l=get(a,i{end});
   [l, creator] = strtok(l, ':='); creator=strtrim(creator(2:end));
+  if isempty(creator), creator=l; end
   a.Creator=creator; 
 end
 
