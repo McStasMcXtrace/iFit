@@ -81,8 +81,7 @@ function Sqw = Sab_Sqw(s, M, T)
   
   % we must have s.classical = 1
   if s.classical == 0
-    disp([ mfilename ': ERROR: Must be classical: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' must be classical for conversion.' ]);
-    return
+    disp([ mfilename ': WARNING: Must be classical: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' must be classical for conversion.' ]);
   end
 
   % some constants 
