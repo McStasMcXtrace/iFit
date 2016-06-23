@@ -1,4 +1,4 @@
-function f_signal = iData_interp(i_axes, i_signal, f_axes, method)
+function [f_signal, method] = iData_interp(i_axes, i_signal, f_axes, method)
 % iData_interp: private function for interpolation
 % interpolates i_signal(i_axes{}) onto f_axes{} and returns the f_signal
 %
@@ -32,6 +32,7 @@ otherwise % nD, n>1
     if length(i_axes) == 2
       if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
       f_signal = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
+      method = 'griddata with vector signal';
     else                       % method: linear or nearest
       if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end
       % i_axes and f_axes must be columns, and cell2mat append them for
@@ -41,6 +42,7 @@ otherwise % nD, n>1
         x = f_axes{index}; f_axes{index}=x(:); clear x;
       end
       f_signal = griddatan(cell2mat(i_axes), i_signal, cell2mat(f_axes), method);
+      method = 'griddatan with vector signal';
     end
   else
     % f_axes must be an ndgrid result, and monotonic
@@ -70,6 +72,20 @@ otherwise % nD, n>1
             end
         end
     end
-    f_signal = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
+    % now we can call griddata, else default to interpn
+    try
+      if length(i_axes) == 2
+        if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
+        f_signal = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
+        method = 'griddata with signal';
+      else
+        if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end
+        f_signal = griddatan(i_axes{:}, i_signal, f_axes{:}, method);
+        method = 'griddatan with signal';
+      end
+    catch
+      f_signal = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
+      method = 'interpn with signal';
+    end
   end
 end
