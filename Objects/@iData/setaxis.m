@@ -178,7 +178,7 @@ end
 if ~isempty(value)
   setalias(this, alias, value);
   % check if the axis is reverted
-  if numel(value) > 1 && rank > 0 && isnumeric(value) && isvector(value) && value(1) > value(end)
+  if isvector(this) <= 1 && numel(value) > 1 && rank > 0 && isnumeric(value) && isvector(value) && value(1) > value(end)
     this = sort(this, rank);
   end
 end
