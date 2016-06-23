@@ -310,7 +310,7 @@ end
 
 % interpolation takes place here ------------------------------------------
 
-f_signal = iData_interp(i_axes, i_signal, f_axes, method);
+[f_signal, meth] = iData_interp(i_axes, i_signal, f_axes, method);
 
 if isnumeric(i_error) && length(i_error) > 1, 
      f_error = iData_interp(i_axes, i_error,  f_axes, method); 
@@ -359,6 +359,7 @@ b.Alias.Labels(to_remove) = [];
 setalias(b,'Signal', 'Data.Signal');
 setalias(b,'Error',  'Data.Error');
 setalias(b,'Monitor','Data.Monitor');
+setalias(b,'Interpolation',meth,'Interpolation method used');
 
 % clear axes
 rmaxis (b);
