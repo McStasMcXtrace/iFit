@@ -45,7 +45,31 @@ otherwise % nD, n>1
   else
     % f_axes must be an ndgrid result, and monotonic
     if ~any(strcmp(method,{'linear','nearest','cubic','spline'})), method='linear'; end
-    for i=1:length(i_axes); v=i_axes{i};  if numel(v) == length(v), i_axes{i}=v(:); end; end
+    any_vector  = 0;
+    any_matrix  = 0;
+    for i=1:length(i_axes); 
+        v=i_axes{i}; 
+        if numel(v) == length(v), i_axes{i}=v(:); any_vector = 1; 
+        else any_matrix =1; end; 
+    end
+    % check if we have mixed axes as vector/matrices -> all go to matrices
+    % with repmat. First get the 'matrix' size, which is the one from
+    % Signal.
+    sz = size(i_signal);
+    if any_vector && any_matrix
+        for i=1:length(i_axes)
+            v=i_axes{i}; 
+            if numel(v) == length(v) % isvector
+                % orient axis
+                this_sz=ones(size(sz)); this_sz(i) = numel(v);
+                v=reshape(v, this_sz);
+                % replicate it to form a matrix
+                this_sz=sz; this_sz(i) = 1;
+                v=repmat(v, this_sz);
+                i_axes{i} = v;
+            end
+        end
+    end
     f_signal = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
   end
 end
