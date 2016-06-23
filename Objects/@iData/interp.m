@@ -20,7 +20,7 @@ function b = interp(a, varargin)
 %                    linear (default), spline, cubic, or nearest
 %     b=interp(s, ..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays
 %   Extrapolated data is set to NaN for the Signal, Error and Monitor.
-%   For Event data sets, we recommend to use the 'hist' method.which is much faster.
+%   For Event data sets, we recommend to use the 'hist' method which is much faster.
 %
 % input:  s: object or array (iData)
 %         d: single object from which interpolation axes are extracted (iData)
@@ -309,6 +309,7 @@ if ~has_changed,
 end
 
 % interpolation takes place here ------------------------------------------
+
 f_signal = iData_interp(i_axes, i_signal, f_axes, method);
 
 if isnumeric(i_error) && length(i_error) > 1, 

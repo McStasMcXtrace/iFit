@@ -6,19 +6,22 @@ function b = meshgrid(a, varargin)
 %     perpendicular/regular, the object Signal is interpolated on the new grid.
 %   meshgrid(a, 'vector' ...) forces all axes as vectors
 %   meshgrid(a, dims, ...)    specifies the size of the histogram
-%   meshgrid(a, 'fill' ...)   fills empty histogram bins when converting from an event list
+%   meshgrid(a, 'fill' ...)   fills empty histogram bins (e.g. when converting from an event list)
+%   meshgrid(a, 'method' ...) uses specified method for interpolation as one of
+%                    linear (default), spline, cubic, or nearest
 %
-%   A meshgrid histogram can be converted into an event list with the 'event' method.
+%   A meshgrid histogram can be converted back into an event list with the 'event' method.
 %
 % input:  a: object or array (iData)
 %         method: 'linear','cubic','spline','nearest'
 %                 'vector' to get only vector axes
+%                 'fill' to replace NaN's in the final data set
 % output: s: object (iData)
 % ex:     c=meshgrid(a); c=meshgrid(a, 'vector linear')
 %         c=meshgrid(a, 100, 'fill')
 %
 % Version: $Date$
-% See also iData, iData/interp, iData/hist, iData/event
+% See also iData, iData/interp, iData/hist, iData/event, iData/fill
 
 % handle input iData arrays
 if numel(a) > 1
@@ -76,6 +79,7 @@ end
 
 % create a regular grid
 [f_axes, changed] = iData_meshgrid(a, n_dims, method);
+fillme = strfind(method, 'fill');
 method            = strtrim(strrep(method, 'vector', ''));
 
 b = copyobj(a);
@@ -87,4 +91,8 @@ else
   for index=1:length(f_axes)
     b = setaxis(b, index, f_axes{index});
   end
+end
+
+if ~isempty(fillme)
+  b = fill(b);
 end
