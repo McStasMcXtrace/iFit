@@ -45,7 +45,7 @@ properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a))
 
 properties{end+1} = '[Rank]         [Value] [Description]';
 uimenu(uicm, 'Separator','on', 'Label', '[Rank]         [Value] [Description]');
-for index=0:length(getaxis(a))
+for index=0:min([ ndims(a) length(getaxis(a)) ])
   [v, l] = getaxis(a, num2str(index));
   if length(l) > 20, l = [l(1:18) '...' ]; end 
   x      = getaxis(a, index);

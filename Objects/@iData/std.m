@@ -45,7 +45,7 @@ if length(dim) > 1
   return
 end
 
-if abs(dim) > prod(ndims(a))
+if abs(dim) > ndims(a)
   dim = 1;
 end
 
