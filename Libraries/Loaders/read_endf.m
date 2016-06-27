@@ -43,9 +43,25 @@ function endf = read_endf(filename)
 %
 % sudo apt-get install pyne
 % for MF7 MT4
-% python -c "from pyne.endf import Evaluation; import scipy.io as sio; file='filemane'; endf=Evaluation(file); endf.read(); sio.savemat('endf.mat',{'alpha': endf.thermal_inelastic['alpha'],'beta':endf.thermal_inelastic['beta'],'Sab':endf.thermal_inelastic['scattering_law'],'B':endf.thermal_inelastic['B'],'T':endf.thermal_inelastic['temperature'],'Teff':endf.thermal_inelastic['teff'].y,'LLN':endf.thermal_inelastic['ln(S)'],'LAT':endf.thermal_inelastic['temperature_used'],'LASYM':endf.thermal_inelastic['symmetric']})"
-% matlab> endf=load('endf.mat')
+% python -c "from pyne.endf import Evaluation; import scipy.io as sio; file='filename'; endf=Evaluation(file); endf.read(); sio.savemat('endf_th_inel.mat',endf.thermal_inelastic)"
 %
+% for MF7 MT4 from ACE
+% lib = pyne.ace.Library('/home/farhi/Programs/MCNP/CAB-Sab/hwtr-293/hwtr-293.ace' )
+% lib.read()
+% scipy.io.savemat('ace.mat',lib.tables)
+% matlab> ace=load('ace.mat')
+%
+
+persistent status
+
+if ~exist('status') || isempty(status) || ~isstruct(status)
+  status = read_endf_pyne_present;
+end
+
+if status
+  endf = read_endf_pyne(filename);
+  if ~isempty(endf), return; end
+end
 
 % open file and read it entirely
 endf = [];
@@ -261,29 +277,31 @@ function t    = read_endf_mf7(MF7, ZSYNAM, EDATE, MF1)
     [MF7,t] = read_endf_mf7_mt4(MF7, t);
     
   end
-  t=read_endf_mf7_array(t);
+  % t=read_endf_mf7_array(t);
+  disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
   
   % end read_endf_mf7
 
-function t0=read_endf_mf7_array(t)
-  t0 = [];
-  disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
-  for index=1:numel(t.T)
-    t1     = t;
-    t1.T   = t.T(index);
-    t1.Title = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] ' t1.description];
-    if t1.MT == 2 % Incoherent/Coherent Elastic Scattering
-      t1.NP  = t.NP(index);
-      t1.S   = t.S(index,:);
-      t1.INT = t.INT(index);
-      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL elastic' ];
-    elseif t1.MT == 4 % Incoherent Inelastic Scattering
-      t1.Sab = t.Sab(:,:,index);
-      t1.Teff     = t.Teff(index,:);
-      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL inelastic' ];
-    end
-    t0 = [ t0 t1 ];
-  end
+% the split of temperatures is done in openendf 
+%  function t0=read_endf_mf7_array(t)
+%  t0 = [];
+%  disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
+%  for index=1:numel(t.T)
+%    t1     = t;
+%    t1.T   = t.T(index);
+%    t1.Title = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] ' t1.description];
+%    if t1.MT == 2 % Incoherent/Coherent Elastic Scattering
+%      t1.NP  = t.NP(index);
+%      t1.S   = t.S(index,:);
+%      t1.INT = t.INT(index);
+%      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL elastic' ];
+%    elseif t1.MT == 4 % Incoherent Inelastic Scattering
+%      t1.Sab = t.Sab(:,:,index);
+%      t1.Teff     = t.Teff(index,:);
+%      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL inelastic' ];
+%    end
+%    t0 = [ t0 t1 ];
+%  end
 % ------------------------------------------------------------------------------
 function [MF7,t] = read_endf_mf7_mt2(MF7, t)
   % ENDF MF7 MT2 section (elastic)
@@ -645,3 +663,84 @@ function d = read_endf_NSUB(index)
   case 20040 ; d='Incident-Alpha data';
   otherwise  ; d='';
   end
+  
+function status = read_endf_pyne_present
+  % read_endf_pyne_present: check for availability of PyNE
+  %
+  % returns a flag being 1 when available.
+  status = 0;
+
+  % test for PyNE in Python
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  else precmd=''; end
+  [status, result] = system([ precmd 'python -c "import pyne"' ]);
+  if status ~= 0  % not present
+    status = 0;
+  else
+    status = 1;
+  end
+  
+function endf = read_endf_pyne(filename)
+  % read ENDF using PyNE
+  
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  else precmd=''; end
+  
+  % list of python 'dict' to store in the MAT file
+  dict = 'atomic_relaxation, decay, fission, info, target, projectile, resonances, thermal_elastic, thermal_inelastic, reactions';
+  dict = strtrim(regexp(dict, ',', 'split')); % split as words
+  % create the python script to evaluate, and a lambda function to clean keys
+  tmp = tempname;
+  s = { 'from pyne.endf import Evaluation ', ...
+    'import scipy.io as sio ', ...
+    'import re', ...
+   [ 'endf=Evaluation("' filename '") ' ], ...
+    'endf.read() ', ...
+    'clean = lambda varStr: re.sub("\W|^(?=\d)","_", varStr)' };
+  % dict are saved to separate temporary MAT files
+  % each dict key is cleaned into variable name for matlab
+  for index=1:numel(dict)
+    s{end+1} = sprintf('for key in endf.%s.keys(): endf.%s[clean(key)] = endf.%s.pop(key)', ...
+      dict{index}, dict{index}, dict{index});
+   
+    s{end+1} = sprintf('try: sio.savemat("%s_%s", endf.%s)\nexcept: None', ...
+      tmp, dict{index},dict{index});
+  end
+  % save material and reaction list
+  s{end+1} = sprintf('sio.savemat("%s_others", {"reaction_list":endf.reaction_list, "material":endf.material})', tmp);
+  % write script
+  fid = fopen([ tmp '.py' ],'w');
+  fprintf(fid, '%s\n', s{:});
+  fclose(fid);
+  % now evaluate in python
+  try
+    [status, result] = system([ precmd 'python ' tmp '.py' ]);
+  catch
+    status = 127; result = 'ERROR calling Python';
+  end
+  disp(result);
+  if status ~= 0  % error occured
+    disp([ mfilename ': ERROR: could not read file ' filename ' using PyNE. Trying pure Matlab method.' ]);
+    endf = [];
+    return
+  end
+  
+  % import back data from MAT file
+  endf = load([ tmp '_others' ]);
+  for index=1:numel(dict)
+    try
+      this = load([ tmp '_' dict{index} ]);
+    catch ME
+      disp(getReport(ME))
+      this = [];
+    end
+    endf.(dict{index}) = this;
+  end
+  endf.filename = filename;
+  endf.script   = char(s);
+  
+  % delete temporary files created
+  delete([ tmp '*' ]);
+  
