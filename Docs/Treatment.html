@@ -109,6 +109,7 @@
 
 
 
+
           scattering</a> [5,6].<br>
         <br>
         The dynamic structure factor is defined from the double
@@ -128,6 +129,7 @@
         specialized <a href="Models.html">models</a>. Then you can
         compute the 2D powder average, as shown below.<br>
         <h3><a class="mozTocH3" name="mozTocId301478"></a>Loading/generating
+
 
 
 
@@ -171,6 +173,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
             finally <i>sqw_rebin</i>) ;</li>
           <li>you get a S(q,w) data set as a workspace ;</li>
           <li>export it into an HDF/NeXus file or as text (<i>write_lamp,
+
 
 
 
@@ -353,6 +356,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
                 equally</i> Sqw{1} = - Sqw{1};</li>
           </ul>
         </div>
@@ -407,6 +411,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
                 the S*(|q|,w) in both energy sides. The initial data set
                 should better be 'classical'.<br>
               </td>
@@ -435,6 +440,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
               <td valign="top">S(|q|,w) or S*(|q|,w)</td>
               <td valign="top">Check the S(q,w) data set. Possibly
                 convert from experimental data <i>S(&#966;,channel), </i><i>S(&#966;,t)
+
 
 
 
@@ -490,6 +496,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
                 the dynamic structure factor to the measurable one for
                 an incoming energy Ei [meV]. The detection angular range
                 can be set as 3rd argument.<br>
@@ -508,6 +515,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                       title="Treatment_Sqw_moments"
                       src="images/Treatment_Sqw_moments.png"
                       align="right" border="0" width="80" height="60"></b></a>Compute
+
 
 
 
@@ -554,6 +562,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                         title="Treatment_Sqw_XS.png"
                         alt="Treatment_Sqw_XS.png" align="right"
                         border="0" width="80" height="60"></a></b></font>Compute
+
 
 
 
@@ -654,6 +663,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Ge_
 
 
 
+
           McStas</a>. You can also try liquid Rubidium from <a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Rb_liq_coh.sqw">here</a>
         [8] and heavy water from <a
@@ -665,6 +675,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         </ul>
         Molecular Dynamics trajectories are usually computed in the NVE
         <a href="https://en.wikipedia.org/wiki/Microcanonical_ensemble">micro-canonical
+
 
 
 
@@ -808,6 +819,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
                     is the default.</i></b></td>
             </tr>
           </tbody>
@@ -903,6 +915,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             25)</li>
           <li> <font color="#3366ff">plot</font>(log10(Sqw25));</li>
         </ul>
@@ -956,6 +969,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             Sqw25]));</li>
         </ul>
         <h5><a class="mozTocH5" name="mozTocId566610"></a> <a
@@ -982,6 +996,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             frequencies</b></h5>
         From the dynamic structure factor, one can compute the energy
         moments, which provide some of the characteristic frequencies
@@ -989,6 +1004,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         scattering units (here 72.64 g/mol for Ge). <br>
         <br>
         Using the 'quantum' scattering law S(q,w), we can define <i>n</i>-th
+
 
 
 
@@ -1224,6 +1240,7 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
 
 
 
+
             See also Sears, <i>Neut. News</i> <b>3</b> (1992) 26.<br>
           </li>
           <li>Price J. et al, <i>Non Cryst Sol </i><b>92</b> (1987)
@@ -1238,43 +1255,21 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
           data sets</h3>
         <p>iFit can read <a
             href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
-          Thermal Scattering data sections (MF=7 MT=2 and 4).<br>
+          Thermal Scattering data sections (MF=7 MT=2 and 4), as well as
+          <a href="https://mcnp.lanl.gov/">ACE</a> files (requires <a
+            href="http://pyne.io/">PyNE</a> 0.5).<br>
         </p>
         <blockquote>
           <pre>&gt;&gt; endf = <font color="#3366ff">iData</font>('<a href="http://t2.lanl.gov/nis/data/data/ENDFB-VII-thermal/HinH2O">http://t2.lanl.gov/nis/data/data/ENDFB-VII-thermal/HinH2O</a>')<br>endf =  array [10   1] iData (methods,doc,plot,plot(log),more...) object:<br><br>Index     [Tag] [Dimension]                                     [Title] [Last command]          [Label/DisplayName]<br>    1   iD72088       [1 1]             'HinH2O.txt ENDF "Data Signal"' iD72088=load(iData,'... HinH2O.txt<br>    2   iD72089   [274 187] 'H(H2O) T=293.6 [K] Thermal ... "S(alp..."' iD72089=load(iData,'... H(H2O) T=293.6 ...<br>    3   iD72090   [274 187] 'H(H2O) T=350 [K] Thermal ne... "S(alp..."' iD72090=load(iData,'... H(H2O) T=350 [K...<br>    4   iD72091   [274 187] 'H(H2O) T=400 [K] Thermal ne... "S(alp..."' iD72091=load(iData,'... H(H2O) T=400 [K...<br>    5   iD72092   [274 187] 'H(H2O) T=450 [K] Thermal ne... "S(alp..."' iD72092=load(iData,'... H(H2O) T=450 [K...<br>    6   iD72093   [274 187] 'H(H2O) T=500 [K] Thermal ne... "S(alp..."' iD72093=load(iData,'... H(H2O) T=500 [K...<br>    7   iD72094   [274 187] 'H(H2O) T=550 [K] Thermal ne... "S(alp..."' iD72094=load(iData,'... H(H2O) T=550 [K...<br>    8   iD72095   [274 187] 'H(H2O) T=600 [K] Thermal ne... "S(alp..."' iD72095=load(iData,'... H(H2O) T=600 [K...<br>    9   iD72096   [274 187] 'H(H2O) T=650 [K] Thermal ne... "S(alp..."' iD72096=load(iData,'... H(H2O) T=650 [K...<br>   10   iD72097   [274 187] 'H(H2O) T=800 [K] Thermal ne... "S(alp..."' iD72097=load(iData,'... H(H2O) T=800 [K...<br>&gt;&gt; <font color="#3366ff">subplot</font>(log(endf(2:end)),<font color="#cc33cc">'view2 tight'</font>)<br></pre>
         </blockquote>
         The resulting data sets are S(alpha,beta) for each temperature.
         The general information section (MF1/MT451) is stored in all
-        S(alpha,beta) data sets <br>
+        S(alpha,beta) data sets.<br>
         <br>
-        In addition, we recommend to make use of <a
-          href="http://pyne.io/">PyNE</a> in order to read and treat
-        other <a
+        We recommend to make use of <a href="http://pyne.io/">PyNE</a>
+        in order to read <a
           href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
-        sections. <br>
-        For instance, you may use the following script from python to
-        read the thermal scattering law section:<br>
-        <blockquote>from pyne.endf import Evaluation<br>
-          import scipy.io as sio<br>
-          endf=Evaluation('endf_file')<br>
-          endf.read()<br>
-          sio.savemat('endf.mat',{<br>
-          &nbsp;&nbsp;&nbsp; 'alpha': endf.thermal_inelastic['alpha'],<br>
-          &nbsp;&nbsp;&nbsp; 'beta':endf.thermal_inelastic['beta'],<br>
-          &nbsp;&nbsp;&nbsp;
-          'Sab':endf.thermal_inelastic['scattering_law'],<br>
-          &nbsp;&nbsp;&nbsp; 'B':endf.thermal_inelastic['B'],<br>
-          &nbsp;&nbsp;&nbsp; 'T':endf.thermal_inelastic['temperature'],<br>
-          &nbsp;&nbsp;&nbsp; 'Teff':endf.thermal_inelastic['teff'].y,<br>
-          &nbsp;&nbsp;&nbsp; 'LLN':endf.thermal_inelastic['ln(S)'],<br>
-          &nbsp;&nbsp;&nbsp;
-          'LAT':endf.thermal_inelastic['temperature_used'],<br>
-          &nbsp;&nbsp;&nbsp;
-          'LASYM':endf.thermal_inelastic['symmetric']})<br>
-        </blockquote>
-        then from Matlab/iFit:<br>
-        <blockquote>endf=load('endf.mat')<br>
-        </blockquote>
+        and <a href="https://mcnp.lanl.gov/">ACE</a> files.<br>
         PyNE can be installed under Ubuntu with commands:<br>
         <blockquote>
           <pre>% sudo apt-add-repository 'deb http://packages.mccode.org/debian stable main'<br>% sudo apt-get update<br>% sudo apt-get install pyne</pre>
@@ -1367,6 +1362,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
 
 
 
+
         we may compute the constant W so that the total cross section
         converges to the free cross section at e.g. Ei=1eV (used in e.g.
         <a href="https://mit-crpg.github.io/openmc/">OpenMC</a>), then
@@ -1406,6 +1402,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
 
 
 
+
           we compute<br>
           <div align="center">r<sup>2</sup> =
             (2*(1/(1+1))^2*80.2+(18/(18+1))^2*4.2)/(2*80.2+4.2) = 0.26<br>
@@ -1414,6 +1411,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
             <br>
             <div align="left">In the case of heavy water we have two D
               atoms (A=2 &#963;<sub>b</sub>=7.64) and one O atom (A=16 &#963;<sub>b</sub>=4.2),
+
 
 
 
@@ -1534,6 +1532,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
 
 
 
+
             154, [5 15])</li>
           <li><font color="#3366ff">plot</font>(trapz(DDCS,2));</li>
         </ul>
@@ -1573,10 +1572,12 @@ href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/2602
 
 
 
+
             Indicates light water rotational vibrations at 205 and 408
             meV</li>
           <li>E. Liu (RPI) &lt;<a
 href="http://homepages.rpi.edu/%7Edanony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf">http://homepages.rpi.edu/~danony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf</a>&gt;
+
 
 
 
@@ -1611,6 +1612,7 @@ href="http://www.sciencedirect.com/science/article/pii/S0306454913005987">link</
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
