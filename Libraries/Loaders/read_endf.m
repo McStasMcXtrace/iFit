@@ -1,18 +1,7 @@
 function endf = read_endf(filename)
 % data = read_endf(filename)
 %
-%   import ENDF files. 
-%   This reader is rather slow, but makes a full check of the ENDF file.
-% 
-%   Currently properly imports:
-% == === =============================================== ========
-% MF MT  Description                                     Complete
-% == === =============================================== ========
-% 1  451 Descriptive data and directory                  Yes
-% 7  2   Thermal elastic scattering                      Yes
-% 7  4   Thermal inelastic scattering                    Yes
-% == === =============================================== ========
-% Other sections are read, but not interpreted (stored as char).
+%   import ENDF files, either using PyNE or slower/partial Matlab reader.
 %
 % Useful tokens for neutron scattering
 % MF1:
@@ -38,12 +27,6 @@ function endf = read_endf(filename)
 % Format is defined at https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf
 % (c) E.Farhi, ILL. License: EUPL.
 
-% Import could also be done using PyNE, but the output arrays are stored in a 
-% way which is not easy to import back into Matlab.
-%
-% sudo apt-get install pyne
-% for MF7 MT4
-% python -c "from pyne.endf import Evaluation; import scipy.io as sio; file='filename'; endf=Evaluation(file); endf.read(); sio.savemat('endf_th_inel.mat',endf.thermal_inelastic)"
 %
 % for MF7 MT4 from ACE
 % lib = pyne.ace.Library('/home/farhi/Programs/MCNP/CAB-Sab/hwtr-293/hwtr-293.ace' )
@@ -54,15 +37,17 @@ function endf = read_endf(filename)
 
 persistent status
 
+% ============================ Use PyNE ? ======================================
 if ~exist('status') || isempty(status) || ~isstruct(status)
-  status = read_endf_pyne_present;
+  status = read_endf_pyne_present;  % private function inline below
 end
 
 if status
-  endf = read_endf_pyne(filename);
+  endf = read_endf_pyne(filename);  % private function inline below
   if ~isempty(endf), return; end
 end
 
+% ============================ Use pure Matlab =================================
 % open file and read it entirely
 endf = [];
 
@@ -76,14 +61,11 @@ end
 % open file and read it line by line
 disp([ mfilename ': Opening ' filename ]);
 content  = regexp(content, '\n+', 'split');
-sections = {};  % all found sections
 section  = [];  % current section. Starts unset.
 % global data read from MF1/MT451
-ZSYNAM   = [];
-EDATE    = [];
-AWR      = [];
 MF1      = [];
 
+% read lines one by one ========================================================
 for cline=content % each line is a cellstr
   if isempty(cline), continue; end
   tline = cline{1};
@@ -102,72 +84,67 @@ for cline=content % each line is a cellstr
   NS    = str2double(tline(76:end));
   if any(isnan([MAT MF MT NS])), continue; end
   if MAT < 0 || MF < 0 || MT < 0 || NS < 0, continue; end
-  % detect section end
+  
+  % detect section end =========================================================
   % [MAT,MF,    0/ 0.0, 0.0, 0, 0, 0, 0] SEND
   if MT == 0 && NS == 99999
     % end of section found: store current section
     if ~isempty(section)
-      % treat specific sections. Others are stored as raw import data (char lines)
+      % treat specific sections. Others are stored ignored.
       section0=section;
       if section.MF == 1
-        section = read_endf_mf1(section0);
-        if ~isempty(section) && isfield(section,'EDATE'),  EDATE  = section(1).EDATE; end
-        if ~isempty(section) && isfield(section,'ZSYNAM'), ZSYNAM = section(1).ZSYNAM; end
-        if ~isempty(section) && isfield(section,'AWR'),    AWR    = section(1).AWR; end
-        MF1 = section(1);
-      elseif section.MF == 7
-        % treat MF7 and add MF1/MT451 data
-        section = read_endf_mf7(section0, ZSYNAM, EDATE, MF1);
-        
+        endf.info = read_endf_mf1(section0);
+        MF1 = endf.info;
+      elseif section.MF == 7 && section.MT == 2
+        % treat MF7 and add MF7/MT2 data
+        if ~isfield(endf, 'thermal_elastic'), endf.thermal_elastic=struct(); end
+        endf.thermal_elastic   = read_endf_mf7_mt2(section0, MF1, endf.thermal_elastic);
+      elseif section.MF == 7 && section.MT == 4
+        % treat MF7 and add MF7/MT4 data
+        endf.thermal_inelastic = read_endf_mf7_mt4(section0, MF1);
       end
-      % treat specific sections -> FAILED. we restore raw, and display message
-      if isempty(section)
-        section = section0;
-        disp([ mfilename ': Failed interpreting Section ' section.field ' ' section.description '. Storing as raw char.' ])
-      end
-      sections{end+1} = section;
     end
-    section = [];
+    section = []; % clear memory
   end
-  
-  % first inserts spaces in between 11-char fields (FORTRAN 6F11)
-  tline = [ tline(1:66) ' ' ];
-  if MF~=1 % any numerical section except General Information
-    i11=1:11;
-    index=[ i11 67 (i11+11) 67 (i11+11*2) 67 (i11+11*3) 67 (i11+11*4) 67 67 (i11+11*5) ];
-    tline = tline(index);
-  end
-  % WARNING: all numerics are given as [mant][+-][exp] instead of [mant]e[+-][exp]
-  % e.g. 1.010000+2 -> 1.010000e+2
-  tline = regexprep(tline,'([0-9.]+)([+-]{1})([0-9.]+)','$1e$2$3');
-  % store the MAT_MF_MT section
-  
-  if MF && MT && MAT
-    if isempty(section) && MT
-      section.field = sprintf('MAT%i_MF%i_MT%i', MAT, MF, MT);
-      section.description = read_endf_MF(MF);
-      if ~isempty(section.description)
-        disp([ mfilename ': File section "' section.description '" as MAT=' num2str(MAT) ' MF=' num2str(MF) ' MT=' num2str(MT) ]);
-      end
-      section.MF = MF;
-      section.MT = MT;
-      section.MAT= MAT;
-      section.lines       = { tline };
-    else
-      section.lines{end+1} = tline;
-    end
-  end
-  
-end
 
-endf = sections;
+  % read lines and store them ==================================================
+  if any(MF == [1 7]) && any(MT == [0 451 2 4]) && MAT
+    % first inserts spaces in between 11-char fields (FORTRAN 6F11)
+    tline = [ tline(1:66) ' ' ];
+    if MF~=1 % any numerical section except General Information
+      i11=1:11;
+      index=[ i11 67 (i11+11) 67 (i11+11*2) 67 (i11+11*3) 67 (i11+11*4) 67 67 (i11+11*5) ];
+      tline = tline(index);
+    end
+    % WARNING: all numerics are given as [mant][+-][exp] instead of [mant]e[+-][exp]
+    % e.g. 1.010000+2 -> 1.010000e+2
+    tline = regexprep(tline,'([0-9.]+)([+-]{1})([0-9.]+)','$1e$2$3');
+    % store the MAT_MF_MT section
+  
+    if MT
+      if isempty(section) % new section initialised
+        section.field = sprintf('MAT%i_MF%i_MT%i', MAT, MF, MT);
+        section.description = read_endf_MF(MF);
+        if ~isempty(section.description)
+          disp([ mfilename ': File section "' section.description '" as MAT=' num2str(MAT) ' MF=' num2str(MF) ' MT=' num2str(MT) ]);
+        end
+        section.MF = MF;
+        section.MT = MT;
+        section.MAT= MAT;
+        section.lines       = { tline };
+      else
+        section.lines{end+1} = tline;
+      end
+    end
+  end
+  
+end % for cline
 
 % ------------------------------------------------------------------------------
 function h = read_endf_mf1(MF1)
   % read the MF1 MT451 General Information block and return its structure
   %
   % we treat the MF1 MT=451 case: general information.
-  % the cases MF=1 MT=452,455,456, 458 (fissions) are ignored
   h = struct();
   
   if MF1.MF ~= 1,   return; end
@@ -214,30 +191,46 @@ function h = read_endf_mf1(MF1)
     mfilename, h.ZSYNAM, h.MAT, h.AUTH, h.ALAB, h.ENDATE));
   disp(sprintf('%s: NSUB=%3i %s', mfilename, h.NSUB,h.NSUB_string ));
 
-% ------------------------------------------------------------------------------
-function t    = read_endf_mf7(MF7, ZSYNAM, EDATE, MF1)
-  % read the MF7 MT2 and MT4 "TSL" sections and return its structure
-  %
-  % FILE 7. THERMAL NEUTRON SCATTERING LAW DATA
-  %  File 7 contains neutron scattering data for the thermal neutron energy range
-  %  (E<5 eV) for moderating materials. Sections are provided for elastic (MT=2) and
-  %  inelastic (MT=4) scattering. Starting with ENDF/B-VI, File 7 is complete in
-  %  itself, and Files 3 and 4 are no longer required to obtain the total scattering
-  %  cross section in the thermal energy range.
-  
-  % uses:
-  % TAB1 -> head,NBT,INT,X,Y (includes TAB2)
-  % TAB2 -> head,NBT,INT
-  % LIST -> head,B
+  % PyNE              ENDF
+  % =====================================
+  % description       COMMENT
+  % reference       
+  % format            NFOR
+  % date_distribution DDATE
+  % date_release      RDATE
+  % author            AUTH
+  % derived           LDRV
+  % sublibrary        NSUB  (NSUB_string)
+  % library           NLIB  (NLIB_string)
+  % energy_max        EMAX
+  % date              EDATE
+  % modification      NMOD
+  % laboratory        ALAB
+  % identifier        HSUB
+  % date_entry        ENDATE
 
-  t = struct();
-  
-  % we treat the MF7 MT=4 case: TSL
+% ------------------------------------------------------------------------------
+function t = read_endf_mf7_mt2(MF7, MF1, t)
+  % ENDF MF7 MT2 section (elastic)
+  %   LTHR=1  coherent
+  %   LTHR=2  incoherent
+
+  % PyNE              ENDF
+  % =====================================
+  % S.<T>               S
+  %      .x             E
+  %      .y             S
+  %      .n_pairs       NP
+  %      .interp        INT
+  % type                LTHR=1: coherent; LTHR=2: incoherent
+
+  % we treat the MF7 MT=2 case: TSL
   % the other cases are ignored
   if MF7.MF ~= 7, return; end
-  if MF7.MT ~= 2 && MF7.MT ~= 4, return; end
+  if MF7.MT ~= 2, return; end
   if numel(MF7.lines) < 2, return; end
-
+  
+  % read the header
   HEAD = num2cell(str2num([ MF7.lines{1} ]));  % HEAD line 1 into a cell to use deal
   if numel(HEAD) < 6
     disp([ mfilename ': ERROR: ' MF7.description ' invalid HEAD length (MF7/MT2 or MT4)' ]);
@@ -248,64 +241,20 @@ function t    = read_endf_mf7(MF7, ZSYNAM, EDATE, MF1)
   
   t.MAT   = MF7.MAT; t.MF=MF7.MF; t.MT=MF7.MT;
   t.field = MF7.field;
-  t.ZSYNAM=ZSYNAM; t.EDATE=EDATE;
-  if ~isempty(MF1), t.DescriptiveData = MF1; end
-  if MF7.MT == 2 % Incoherent/Coherent Elastic Scattering
-    %  ENDF: [MAT, 7, 2/ ZA, AWR, LTHR, 0, 0, 0] HEAD
-    [t.ZA,t.AWR,t.LTHR,d1,d2,d3]= deal(HEAD{:});
-    if any([d1 d2 d3])
-      disp([ mfilename ': WARNING: ' MF7.description ' wrong HEAD values (MF7/MT2)' ]);
-      disp(HEAD{:})
-    end
-    
-    [MF7,t] = read_endf_mf7_mt2(MF7, t);
-    
-  elseif MF7.MT == 4 % Incoherent Inelastic Scattering
-    t.description = [ MF7.description ' (Incoherent Inelastic)' ];
-    [t.ZA,t.AWR,d1,t.LAT,t.LASYM,d2]= deal(HEAD{:});
-    % LAT: Flag indicating which temperature has been used to compute a and b
-    %  LAT=0, the actual temperature has been used.
-    %  LAT=1, the constant T0 = 0.0253 eV has been used.
-    % LASYM: Flag indicating whether an asymmetric S(a,b) is given
-    %  LASYM=0, S is symmetric.
-    %  LASYM=1, S is asymmetric
-    if any([d1 d2])
-      disp([ mfilename ': WARNING: ' MF7.description ' wrong HEAD values (MF7/MT4)' ]);
-      disp(HEAD{:})
-    end
-
-    [MF7,t] = read_endf_mf7_mt4(MF7, t);
-    
-  end
-  % t=read_endf_mf7_array(t);
-  disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
   
-  % end read_endf_mf7
+  if ~isempty(MF1), 
+    t.ZSYNAM= MF1.ZSYNAM; t.EDATE = MF1.EDATE;
+  end
 
-% the split of temperatures is done in openendf 
-%  function t0=read_endf_mf7_array(t)
-%  t0 = [];
-%  disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
-%  for index=1:numel(t.T)
-%    t1     = t;
-%    t1.T   = t.T(index);
-%    t1.Title = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] ' t1.description];
-%    if t1.MT == 2 % Incoherent/Coherent Elastic Scattering
-%      t1.NP  = t.NP(index);
-%      t1.S   = t.S(index,:);
-%      t1.INT = t.INT(index);
-%      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL elastic' ];
-%    elseif t1.MT == 4 % Incoherent Inelastic Scattering
-%      t1.Sab = t.Sab(:,:,index);
-%      t1.Teff     = t.Teff(index,:);
-%      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL inelastic' ];
-%    end
-%    t0 = [ t0 t1 ];
-%  end
-% ------------------------------------------------------------------------------
-function [MF7,t] = read_endf_mf7_mt2(MF7, t)
+  %  ENDF: [MAT, 7, 2/ ZA, AWR, LTHR, 0, 0, 0] HEAD
+  [t.ZA,t.AWR,t.LTHR,d1,d2,d3]= deal(HEAD{:});
+  if any([d1 d2 d3])
+    disp([ mfilename ': WARNING: ' MF7.description ' wrong HEAD values (MF7/MT2)' ]);
+    disp(HEAD{:})
+  end
+  
   % ENDF MF7 MT2 section (elastic)
-  if     t.LTHR == 1  % Coherent Elastic
+  if     t.LTHR == 1  % Coherent Elastic =======================================
     t.description = [ MF7.description ' (Coherent Elastic)' ];
     % ENDF: [MAT, 7, 2/ T0,0,LT,0,NR,NP/E/S(E,T0) ] TAB1
     [ce, MF7.lines] = read_endf_TAB1(MF7.lines);
@@ -349,7 +298,7 @@ function [MF7,t] = read_endf_mf7_mt2(MF7, t)
       disp(t.NP(:)')
     end
     
-  elseif t.LTHR == 2  % Incoherent Elastic
+  elseif t.LTHR == 2  % Incoherent Elastic =====================================
     t.description = [ MF7.description ' (Incoherent Elastic)' ];
     % ENDF: [MAT, 7, 2/ T0,0,LT,0,NR,NP/Tint/W(T) ] TAB1
     [ie, MF7.lines] = read_endf_TAB1(MF7.lines);
@@ -373,8 +322,58 @@ function [MF7,t] = read_endf_mf7_mt2(MF7, t)
   % end read_endf_mf7_mt2
 
 % ------------------------------------------------------------------------------
-function [MF7,t] = read_endf_mf7_mt4(MF7, t)
+function t = read_endf_mf7_mt4(MF7, MF1)
   % ENDF MF7 MT4 section (inelastic)
+  
+  % PyNE              ENDF
+  % =====================================
+  % B                 B
+  % teff              Teff
+  % temperature       T
+  % scattering_law    Sab
+  % ln_S_             LLN
+  % beta              beta
+  % symmetric         ~LASYM
+  % temperature_used  LAT=0: actual temperature; LAT=1: 0.0253 eV (i.e. 293K)
+  % alpha             alpha
+  % num_non_principal NS
+
+  
+  t = struct();
+  % we treat the MF7 MT=4 case: TSL
+  % the other cases are ignored
+  if MF7.MF ~= 7, return; end
+  if MF7.MT ~= 4, return; end
+  if numel(MF7.lines) < 2, return; end
+  
+  % read header
+  HEAD = num2cell(str2num([ MF7.lines{1} ]));  % HEAD line 1 into a cell to use deal
+  if numel(HEAD) < 6
+    disp([ mfilename ': ERROR: ' MF7.description ' invalid HEAD length (MF7/MT2 or MT4)' ]);
+    disp(MF7.lines{1});
+    return; 
+  end % not a HEAD line
+  MF7.lines(1) = []; % remove HEAD
+  
+  t.MAT   = MF7.MAT; t.MF=MF7.MF; t.MT=MF7.MT;
+  t.field = MF7.field;
+
+  if ~isempty(MF1)
+    t.ZSYNAM=MF1.ZSYNAM; t.EDATE=MF1.EDATE;
+  end
+  
+  t.description = [ MF7.description ' (Incoherent Inelastic)' ];
+  [t.ZA,t.AWR,d1,t.LAT,t.LASYM,d2]= deal(HEAD{:});
+  % LAT: Flag indicating which temperature has been used to compute a and b
+  %  LAT=0, the actual temperature has been used.
+  %  LAT=1, the constant T0 = 0.0253 eV has been used.
+  % LASYM: Flag indicating whether an asymmetric S(a,b) is given
+  %  LASYM=0, S is symmetric.
+  %  LASYM=1, S is asymmetric
+  if any([d1 d2])
+    disp([ mfilename ': WARNING: ' MF7.description ' wrong HEAD values (MF7/MT4)' ]);
+    disp(HEAD{:})
+  end
   
   % [MAT,7,4/ 0,0,LLN,0,NI,NS/B(N) ] LIST
   [ii, MF7.lines] = read_endf_LIST(MF7.lines);
@@ -431,7 +430,7 @@ function [MF7,t] = read_endf_mf7_mt4(MF7, t)
     t.NP(ibeta)   = alpha.head(6);  % NR
     t.alpha_INT(ibeta) = alpha.INT;
     t.alpha            = alpha.X(:)';          % should all be the same
-    t.Sab(ibeta, :, 1) = alpha.Y; 
+    t.Sab(:, ibeta, 1) = alpha.Y; 
     % ENDF: [MAT, 7, 4/ Tn,BETAn,LT,0,NP,0/S(a,BETAn,Tn) ] LIST
     for index=2:(t.LT+1)
       [Sab, MF7.lines] = read_endf_LIST(MF7.lines);
@@ -444,12 +443,12 @@ function [MF7,t] = read_endf_mf7_mt4(MF7, t)
         disp(Sab.head)
       end % bad values LIST
       t.T(index)  = Sab.head(1);% Tn (K)
-      t.Sab(ibeta, :, index) = Sab.B;  % append S(E,Tn) as rows
+      t.Sab(:, ibeta, index) = Sab.B;  % append S(E,Tn)
     end
   end % beta loop (NB)
   
   % handle ln(S) storage and compute real Sab
-  if t.LLN, t.Sab = exp(t.Sab); end
+  if t.LLN, t.Sab = exp(t.Sab); t.LLN=0; end
   
   % read Teff values
   % [MAT,7,4/ 0,0,0,0,NR,NT/Tint/Teff(T) ] TAB1
@@ -663,7 +662,9 @@ function d = read_endf_NSUB(index)
   case 20040 ; d='Incident-Alpha data';
   otherwise  ; d='';
   end
-  
+
+% ------------------------------------------------------------------------------
+% PyNE reader routines
 function status = read_endf_pyne_present
   % read_endf_pyne_present: check for availability of PyNE
   %
@@ -671,20 +672,23 @@ function status = read_endf_pyne_present
   status = 0;
 
   % test for PyNE in Python
-  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
   else precmd=''; end
   [status, result] = system([ precmd 'python -c "import pyne"' ]);
   if status ~= 0  % not present
     status = 0;
+    disp([ mfilename ': warning: would make good use of PyNE.' ])
+  disp('  Get it at <http://pyne.io/>.');
+  disp('  Package exists for Debian/Mint/Ubuntu at <http://packages.mccode.org>.');
   else
     status = 1;
   end
   
 function endf = read_endf_pyne(filename)
-  % read ENDF using PyNE
+  % read ENDF file using PyNE
   
-  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
   else precmd=''; end
   
@@ -698,12 +702,16 @@ function endf = read_endf_pyne(filename)
     'import re', ...
    [ 'endf=Evaluation("' filename '") ' ], ...
     'endf.read() ', ...
-    'clean = lambda varStr: re.sub("\W|^(?=\d)","_", varStr)' };
+    'clean = lambda varStr: re.sub("^(_)","T",  re.sub("\W|^(?=\d)","_", str(varStr))  )' };
   % dict are saved to separate temporary MAT files
   % each dict key is cleaned into variable name for matlab
   for index=1:numel(dict)
-    s{end+1} = sprintf('for key in endf.%s.keys(): endf.%s[clean(key)] = endf.%s.pop(key)', ...
-      dict{index}, dict{index}, dict{index});
+    s{end+1} = sprintf([ ...
+    'for key in endf.%s.keys():\n' ...
+    '    c=clean(key); endf.%s[c] = endf.%s.pop(key);\n' ...
+    '    if type(endf.%s[c]) == dict:\n' ...
+    '        for k in endf.%s[c]: endf.%s[c][clean(k)] = endf.%s[c].pop(k)' ], ...
+      dict{index}, dict{index}, dict{index}, dict{index}, dict{index}, dict{index}, dict{index});
    
     s{end+1} = sprintf('try: sio.savemat("%s_%s", endf.%s)\nexcept: None', ...
       tmp, dict{index},dict{index});
@@ -736,10 +744,11 @@ function endf = read_endf_pyne(filename)
       disp(getReport(ME))
       this = [];
     end
-    endf.(dict{index}) = this;
+    if isstruct(this) && isempty(fieldnames(this)), this = []; end
+    if ~isempty(this), endf.(dict{index}) = this; end
   end
   endf.filename = filename;
-  endf.script   = char(s);
+  endf.pyne_script   = char(s);
   
   % delete temporary files created
   delete([ tmp '*' ]);

@@ -9,6 +9,28 @@ else
 end
 clear filename;
 
+% must check if the input object should be split into temperatures
+% the split of temperatures is done in openendf 
+%  function t0=read_endf_mf7_array(t)
+%  t0 = [];
+%  disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
+%  for index=1:numel(t.T)
+%    t1     = t;
+%    t1.T   = t.T(index);
+%    t1.Title = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] ' t1.description];
+%    if t1.MT == 2 % Incoherent/Coherent Elastic Scattering
+%      t1.NP  = t.NP(index);
+%      t1.S   = t.S(index,:);
+%      t1.INT = t.INT(index);
+%      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL elastic' ];
+%    elseif t1.MT == 4 % Incoherent Inelastic Scattering
+%      t1.Sab = t.Sab(:,:,index);
+%      t1.Teff     = t.Teff(index,:);
+%      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL inelastic' ];
+%    end
+%    t0 = [ t0 t1 ];
+%  end
+
 if numel(out) > 1
   % handle input iData arrays
   for index=1:numel(out)
