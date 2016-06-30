@@ -4,14 +4,14 @@ function endf = read_endf(filename)
 %   import ENDF files, either using PyNE or slower/partial Matlab reader.
 %
 % Useful tokens for neutron scattering
-% MF1:
+% MF1/MT451 as 'info':
 %   ZA    Standard material charge
 %   AWR   Standard material mass 
 %   AWI   Mass of the projectile in neutron units
 %   EMAX  Upper limit of energy range for evaluation.
 %   TEMP  Target temperature (Kelvin) for Doppler broadening.
 %
-% MF7/MT4:
+% MF7/MT4 as 'thermal_inelastic':
 %   LAT   Flag indicating which temperature has been used to compute a and b
 %           LAT=0, the actual temperature has been used.
 %           LAT=1, the constant T0 = 0.0253 eV has been used (293 K).
@@ -21,7 +21,7 @@ function endf = read_endf(filename)
 %   B=[sigma_free, E_elastic, A=mass/mn, E_max, ~, atom_multiplicity]
 %   sigma_bound = sigma_free*(A+1)^2/A^2
 %
-% MF7/MT2:
+% MF7/MT2 as 'thermal_elastic':
 %   SB    Bound cross section (barns) [incoherent elastic LTHR=2]
 %
 % Format is defined at https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf
@@ -194,7 +194,7 @@ function h = read_endf_mf1(MF1)
   % PyNE              ENDF
   % =====================================
   % description       COMMENT
-  % reference       
+  % reference         REF
   % format            NFOR
   % date_distribution DDATE
   % date_release      RDATE
