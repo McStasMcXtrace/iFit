@@ -72,20 +72,41 @@ otherwise % nD, n>1
             end
         end
     end
-    % now we can call griddata, else default to interpn
+    % now we can call griddata (very slow), else default to interpn
+    failed = false;
+    f_signal1 = []; 
     try
+      f_signal1 = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
+      method = 'interpn with signal';
+    catch
+      failed = false;
+    end
+    % check if we have generated many NaN's
+    if ~failed && ~isempty(f_signal1)
+      nb_i_nans  = numel(find(isnan(i_signal(:))));
+      nb_f_nans1 = numel(find(isnan(f_signal1(:))));
+      if nb_f_nans1/numel(f_signal1) > 2*nb_i_nans/numel(i_signal)
+        failed = true;  % more than twice as before
+      end
+    end
+    
+    if failed
+      % griddata is much slower than interpn
       if length(i_axes) == 2
         if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
-        f_signal = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
+        f_signal2 = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
         method = 'griddata with signal';
       else
         if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end
-        f_signal = griddatan(i_axes{:}, i_signal, f_axes{:}, method);
+        f_signal2 = griddatan(i_axes{:}, i_signal, f_axes{:}, method);
         method = 'griddatan with signal';
       end
-    catch
-      f_signal = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
-      method = 'interpn with signal';
+      nb_f_nans2 = numel(find(isnan(f_signal2(:))));
+      if ~isempty(f_signal1) && nb_f_nans1/numel(f_signal1) < nb_f_nans2/numel(f_signal2)
+        f_signal = f_signal1;
+      else
+        f_signal = f_signal2;
+      end
     end
   end
 end
