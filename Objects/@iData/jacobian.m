@@ -39,6 +39,9 @@ function [b, j] = jacobian(a, varargin)
 % Version: $Date$
 % See also iData, iData/del2, diff, iData/gradient, iData/interp, iData/setaxis, gradient
 
+% TODO: this implementation computes the determinent assuming axes are quasi-perpendicular
+% then det = product(trace) as done in the function gradient_axis.
+
 if nargin <= 1,
   b = a; j=[]; return
 end
@@ -139,7 +142,8 @@ gf = gradient_axis(f_axes);
 % now divide the gradients to form the Jacobian
 cmd=a.Command;
 b = copyobj(a);
-j = abs(genop(@rdivide, gf, gi));
+j = genop(@rdivide, gf, gi);
+j = abs(j);
 clear gi gf
 s = get(b,'Signal')./j;
 e = get(b,'Error') ./j;
@@ -194,6 +198,7 @@ function gp=gradient_axis(ax)
       v(index) = length(gs);
       gs       = reshape(gs, v);
     end
+    % gradient product for all dimensions
     if isempty(gp), gp = gs;
     else            gp = genop(@times, gp, gs);
     end
