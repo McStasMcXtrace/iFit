@@ -66,6 +66,8 @@ function s = Sab_check(s)
   if ~alpha_present || ~beta_present
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
     disp('    does not seem to be an isotropic S(alpha,beta) 2D object. Ignoring.');
+    disp(' ndims alpha  beta     q     w    ')
+    disp([ ndims(s) alpha_present beta_present q_present w_present ]);
     s = [];
     return
   end
