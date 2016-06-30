@@ -49,7 +49,7 @@ function out=iData_handle2iData(in)
         zl=''; end 
     try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch 
         tl=''; end
-    xlabel(out, xl); ylabel(out, yl); label(out, tl);
+    xlabel(out, yl); ylabel(out, xl); label(out, tl);
     out.Title = t;
     out.DisplayName = t;
     out.Label=t;
@@ -83,7 +83,7 @@ function out=iData_handle2iData(in)
     catch 
         tl=''; end
 
-    xlabel(out, xl); ylabel(out, yl); label(out, tl);
+    xlabel(out, yl); ylabel(out, xl); label(out, tl);
     if all(z == c)
       t = [ tl zl t ];
     else
