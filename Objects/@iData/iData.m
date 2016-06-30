@@ -145,12 +145,11 @@ else  % convert input argument into object
     out = iData_struct2iData(varargin{1}); % convert struct to iData
   elseif ~all(isempty(varargin{1})) && isnumeric(varargin{1}) && (numel(varargin{1}) > 1 || ~all(ishandle(varargin{1})))
     % iData(x)
-    out = iData_num2iData(varargin{1});    % convert single scalar/vector/matrix to iData
+    out = iData_num2iData(varargin{1});    % convert single scalar/vector/matrix to iData. No need for check.
     return
   elseif ishandle(varargin{1}) % convert single Handle Graphics Object
     % iData(figure handle)
     out = iData_handle2iData(varargin{1});
-    return
   elseif iscell(varargin{1})
     % iData(cell)
     out = iData_cell2iData(varargin{1});   % convert cell/cellstr to cell(iData)
