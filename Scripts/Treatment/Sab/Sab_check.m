@@ -35,15 +35,16 @@ function s = Sab_check(s)
     for index=1:2
       lab = lower(label(s,index));
       def = getaxis(s, num2str(index));
-      if ischar(def), lab = [ def lab ]; end
+      if ischar(def), lab = [ def ' ' lab ]; end
       if isempty(lab), lab=lower(getaxis(s, num2str(index))); end
-      if any(strfind(lab, 'alpha')) || strcmp(strtok(lab), 'a')
+      lab = strread(lab, '%s'); % split string into cell
+      if strcmpm(lab, {'alpha','a'}) % strcmpm = multiple strcmpi is private below
         alpha_present=index;
-      elseif any(strfind(lab, 'beta')) || strcmp(strtok(lab), 'b')
+      elseif strcmpm(lab, {'beta','b'})
         beta_present=index;
-      elseif any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(strtok(lab), 'q')  || strcmp(strtok(lab), 'k') || any(strfind(lab, 'angs'))
+      elseif strcmpm(lab, {'wavevector','momentum','q','k','angs'})
         q_present=index;
-      elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'frequency')) || strcmp(strtok(lab), 'w') || strcmp(strtok(lab), 'e') || any(strfind(lab, 'mev'))
+      elseif strcmpm(lab, {'energy','frequency','w','e','mev'})
         w_present=index;
       end
     end
@@ -89,3 +90,18 @@ function s = Sab_check(s)
   end
 
 % ------------------------------------------------------------------------------
+function flag=strcmpm(str, words)
+% multiple strcmp
+%
+% input:
+%   str:   string or cellstr of tokens
+%   words: string or cellstr of words to search
+
+  flag = false;
+  if ischar(str),   str=strread(str, '%s','delimiter',' ,; $()[]{}=|<>&"/\:"'''); end
+  if ischar(words), words = strread(words, '%s'); end;
+  for index=1:numel(words)
+    if any(strcmpi(str, words{index}))
+      flag = true; return;
+    end
+  end

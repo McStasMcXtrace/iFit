@@ -42,13 +42,7 @@ function [gDOS, g] = Sqw_gDOS(s, method, n)
 
   g = []; gDOS=[];
   if nargin == 0, return; end
-  if ischar(s)
-    s = iData(s);
-  end
-  if ~isa(s, 'iData')
-    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
-    return; 
-  end
+  if ~isa(s, 'iData'), s=iData(s); end
   
   if nargin < 2, method = 'Carpenter'; end
   if nargin < 3, n=[]; end
