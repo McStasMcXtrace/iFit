@@ -13,8 +13,12 @@ function s = Sqw_check(s)
 % input:
 %   s: Sqw data set
 %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
+%
+% Example: sqw=Sqw_check(
 
   if nargin == 0, return; end
+  
+  if ~isa(s, 'iData'), s=iData(s); end
   
   % handle array of objects
   if numel(s) > 1
@@ -40,19 +44,20 @@ function s = Sqw_check(s)
     for index=1:2
       lab = lower(label(s,index));
       def = getaxis(s, num2str(index));
-      if ischar(def), lab = [ def lab ]; end
+      if ischar(def), lab = [ def ' ' lab ]; end
       if isempty(lab), lab=lower(getaxis(s, num2str(index))); end
-      if any(strfind(lab, 'alpha')) || strcmp(strtok(lab), 'a')
+      lab = strread(lab, '%s'); % split string into cell
+      if strcmpm(lab, {'alpha','a'}) % strcmpm = multiple strcmpi is private below
         alpha_present=index;
-      elseif any(strfind(lab, 'beta')) || strcmp(strtok(lab), 'b')
+      elseif strcmpm(lab, {'beta','b'})
         beta_present=index;
-      elseif any(strfind(lab, 'wavevector')) || any(strfind(lab, 'momentum')) || strcmp(strtok(lab), 'q')  || strcmp(strtok(lab), 'k') || any(strfind(lab, 'angs'))
+      elseif strcmpm(lab, {'wavevector','momentum','q','k','angs'})
         q_present=index;
-      elseif any(strfind(lab, 'energy')) || any(strfind(lab, 'frequency')) || strcmp(strtok(lab), 'w') || strcmp(strtok(lab), 'e') || any(strfind(lab, 'mev'))
+      elseif strcmpm(lab, {'energy','frequency','w','e','mev'})
         w_present=index;
-      elseif any(strfind(lab, 'time')) || any(strfind(lab, 'sec')) || strcmp(strtok(lab), 't') || strcmp(strtok(lab), 'tof')
+      elseif strcmpm(lab, {'time','sec','t','tof'})
         t_present=index;
-      elseif any(strfind(lab, 'angle')) || any(strfind(lab, 'deg')) || strcmp(strtok(lab), 'theta') || strcmp(strtok(lab), 'phi')
+      elseif strcmpm(lab, {'angle','deg','theta','phi'})
         a_present=index;
       end
     end
@@ -83,6 +88,7 @@ function s = Sqw_check(s)
   if ~w_present || ~q_present
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
     disp('    does not seem to be an isotropic S(|q|,w) 2D object. Ignoring.');
+    [ ndims(s) alpha_present beta_present q_present w_present t_present a_present ]
     s = [];
     return
   end
@@ -358,4 +364,20 @@ function [s,lambda,distance,chwidth] = Sqw_search_lambda(s)
     chwidth = s.ChannelWidth;
     disp([ mfilename ': ' s.Tag ' ' s.Title ' using <channel width> =' num2str(mean(chwidth(:))) ' [time unit]']);
   end
-    
+
+% ------------------------------------------------------------------------------
+function flag=strcmpm(str, words)
+% multiple strcmp
+%
+% input:
+%   str:   string or cellstr of tokens
+%   words: string or cellstr of words to search
+
+  flag = false;
+  if ischar(str),   str=strread(str, '%s','delimiter',' ,; $()[]{}=|<>&"/\:"'''); end
+  if ischar(words), words = strread(words, '%s'); end;
+  for index=1:numel(words)
+    if any(strcmpi(str, words{index}))
+      flag = true; return;
+    end
+  end

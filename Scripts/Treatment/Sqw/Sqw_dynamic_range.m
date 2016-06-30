@@ -38,10 +38,7 @@ function [s, sphi] = Sqw_dynamic_range(s, Ei, angles, options)
 % See also: Sqw_Bosify, Sqw_deBosify, Sqw_symmetrize, Sqw_scatt_xs
 
   if nargin == 0, return; end
-  if ~isa(s, 'iData')
-    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
-    return; 
-  end
+  if ~isa(s, 'iData'), s=iData(s); end
 
   % first look at the given arguments
   if nargin < 2

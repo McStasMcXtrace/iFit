@@ -12,10 +12,7 @@ function  [s,parameters,fields] = Sqw_parameters(s, fields)
 parameters = [];
 
 if nargin == 0, return; end
-if ~isa(s, 'iData')
-  disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
-  return; 
-end
+if ~isa(s, 'iData'), s=iData(s); end
 if nargin < 2, fields=[]; end
 if isempty(fields) % default: search all parameters and assemble them
   [s,parameters1,fields1] = Sqw_parameters(s, 'sqw');
@@ -133,8 +130,12 @@ for index=1:length(fields)
         parameters.(p_name) = s.Data.(name);
       elseif isfield(s.Data, name)
         parameters.(p_name) = s.Data.(name);
-      elseif ~isempty(findfield(s,name,'exact'))
-        parameters.(p_name) = get(s, findfield(s,name,'exact'));
+      else
+        if  index == 1, ff = findfield(s,name,'exact');
+        else            ff = findfield(s,name,'exact cache'); end
+        if ~isempty(ff)
+          parameters.(p_name) = get(s, ff);
+        end
       end
     end % parameter alias names
   end

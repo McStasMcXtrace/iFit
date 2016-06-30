@@ -35,10 +35,7 @@ function sigma=Sqw_moments(data, M, T, classical)
 
   sigma = [];
   if nargin == 0, return; end
-  if ~isa(data, 'iData')
-    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(data) ]);
-    return; 
-  end
+  if ~isa(data, 'iData'), data=iData(data); end
   if nargin < 2, M = []; end
   if nargin < 3, classical = []; end
   if nargin < 4, T = []; end

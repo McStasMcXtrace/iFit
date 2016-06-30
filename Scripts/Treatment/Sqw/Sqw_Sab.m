@@ -32,10 +32,7 @@ function Sab = Sqw_Sab(s, M, T)
 
   Sab = [];
   if nargin == 0, return; end
-  if ~isa(s, 'iData')
-    disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(s) ]);
-    return; 
-  end
+  if ~isa(s, 'iData'), s=iData(s); end
   
   if nargin < 2, M=[]; end
   if nargin < 3, T=[]; end
