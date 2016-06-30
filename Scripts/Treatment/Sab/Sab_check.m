@@ -9,6 +9,8 @@ function s = Sab_check(s)
 % input:
 %   s:  Sqw data set e.g. 2D data set with beta as 1st axis (rows), alpha as 2nd axis (columns).
 %
+% Example: sqw=Sqw_check('SQW_coh_lGe.nc');
+%
 % See also: Sqw_Sab, Sqw_check
 
   if nargin == 0, return; end
