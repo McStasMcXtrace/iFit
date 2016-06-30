@@ -61,6 +61,7 @@ end
 % find axes that match the Signal dimensions
 % associate 'error' and 'monitor' when they exist
 % define Signal label from Attributes, when exist
+sz = size(in);
 if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
   % get numeric fields sorted in descending size order
   [fields, types, dims] = findfield(in, '', 'numeric');
@@ -155,19 +156,19 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
     end % if no Signal
    
     % look for vectors that may have the proper length as axes
-    sz = [];
-      
+
     for index=1:ndims(in)
       if length(in.Alias.Axis) < index || isempty(in.Alias.Axis{index})
-              
-        if isempty(sz), sz = size(in); end
+
         % search for a vector of length size(in, index)
         ax = find(dims_all == sz(index));   % length of dim, or length(dim)+1
         if isempty(ax), ax = find(dims_all == sz(index)+1); end
         if length(ax) > 1; ax=ax(1); end
         if ~isempty(ax) && (~ischar(in.Alias.Values{1}) || ~strcmp(fields_all{ax},in.Alias.Values{1}) )
           val = get(in, fields_all{ax});
-          if isvector(val) && issorted(val(:))
+          if ischar(val)  % this is already a link/alias
+            in = setaxis(in, index, val);
+          elseif isvector(val) && issorted(val(:))
             if length(val) == size(in, index) && min(val(:)) < max(val(:))
               % n bins
               val = fields_all{ax};
@@ -179,17 +180,18 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
             if ~isempty(val)  % the axis could be found
               in = setaxis(in, index, [ 'Axis_' num2str(index) ], val);
               % search if there is a corresponding label (in Attributes)
-              if isfield(in.Data, 'Attributes')
-                fields=fliplr(strtok(fliplr(fields_all{ax}), '.'));
-                if isfield(in.Data.Attributes, fields) && ischar(in.Data.Attributes.(fields))
-                  in.Alias.Labels{index+1} = validstr(in.Data.Attributes.(fields));
-                end
-              else
-                label(in, index, fields_all{ax});
-              end
-              disp([ 'iData: Setting Axis{' num2str(index) '} ="' fields_all{ax} '" with length ' num2str(length(val)) ' in object ' in.Tag ' "' in.Title '".' ]);
             end
           end
+          % assign a Label to the axis
+          if isfield(in.Data, 'Attributes')
+            fields=fliplr(strtok(fliplr(fields_all{ax}), '.')); % last word in alias
+            if isfield(in.Data.Attributes, fields) && ischar(in.Data.Attributes.(fields))
+              in.Alias.Labels{index+1} = validstr(in.Data.Attributes.(fields));
+            end
+          else
+            label(in, index, fields_all{ax});
+          end
+          disp([ 'iData: Setting Axis{' num2str(index) '} ="' fields_all{ax} '" with length ' num2str(sz(index)) ' in object ' in.Tag ' "' in.Title '".' ]);
           clear val
         else
           break; % all previous axes must be defined. If one misses, we end the search
@@ -205,19 +207,26 @@ else
   in = setaxis(in);
 end % if no Signal defined
 
-% check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes
-if ndims(in)==2 && ~isempty(getaxis(in, '1')) && ~isempty(getaxis(in, '2')) ...
-            && isvector(getaxis(in, 1)) && isvector(getaxis(in, 2)) ...
-            && length(getaxis(in, 1)) == size(get(in,'Signal'),2) ...
-            && length(getaxis(in, 2)) == size(get(in,'Signal'),1) ...
-            && length(getaxis(in, 1)) ~= length(getaxis(in, 2))
-  x1 = getaxis(in, '1');
-  x2 = getaxis(in, '2');
-  setaxis(in, 1, x2);
-  setaxis(in, 2, x1);
-  clear x1 x2
-  disp([ 'iData: The object has been transposed to match the axes orientation in object ' in.Tag ' "' in.Title '".' ]);
+% check the axes orientations
+% for all axes, determine when possible their preferred rank by looking at their dimension
+if ndims(in)>=2
+  for index=1:ndims(in)
+    % when axis is vector: its length should match some of the signal dimension
+    x  = getaxis(in, index);  % axis value
+    lx = numel(x);
+    % find numel(axis) == size(in):  true for vectors matching a signal rank
+    ix = find(lx == sz);
+    if ~isempty(ix) && ix ~= index
+      % axis 'index' should be going into rank 'ix': we swap axes
+      x1 = getaxis(in, num2str(index));
+      x2 = getaxis(in, num2str(ix));
+      setaxis(in, ix,    x1);
+      setaxis(in, index, x2);
+      clear x1 x2
+    end
+  end
 end
+
 
 function str=validstr(str)
   % validate a string as a single line
