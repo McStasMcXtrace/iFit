@@ -6,10 +6,16 @@ function [match, types, dims] = findfield(s, field, option)
 %   [match,type,n] = findfield(iData) returns the names of all iData fields
 %   [match,type,n] = findfield(iData, field) returns the names of all iData fields 
 %     that match 'field'
-%   The optional 'option' may contain 'exact' to search for the exact occurence, and 'case'
-%   to specifiy a case sensitive search. 
-%   The 'numeric' option will return only numerical fields.
-%   The 'char'    option will return only character fields.
+%   The optional 'option' argument can contain one or more keywords:
+%     The 'exact'   option will search for the exact occurences.
+%     The 'case'    option specifies a case sensitive search. 
+%     The 'numeric' option will return only numerical fields.
+%     The 'char'    option will return only character fields.
+%     The 'cache'   option allows to re-use a previous field search cache for  
+%                     faster consecutive searches on the same object.
+%
+%   The cache mechanism allows to do iterative searches on the same object, e.g.
+%     findfield(s,'Title') and then findfield(s,'Signal','cache numeric')
 %
 % input:  s: object or array (iData)
 %         field: field name to search, or '' (char).
@@ -25,6 +31,8 @@ function [match, types, dims] = findfield(s, field, option)
 % EF 23/09/07 iData implementation
 % private function iData_getfields
 % used in findstr and iData (find biggest field as the Signal)
+
+persistent cache
 
 if nargin == 1
   field = '';
@@ -44,39 +52,58 @@ if numel(s) > 1
   return
 end
 
-struct_s=struct(s);
-struct_s=rmfield(struct_s,'Alias');
-struct_s=rmfield(struct_s,'Command');
-struct_s=rmfield(struct_s,'Tag');
-% add the Aliases
-aliases=getalias(s);
-for index=1:numel(aliases)
-    alias=aliases{index};
-    value = get(s,alias);
-    if isa(value, 'iData') || isa(value, 'iFunc')
-      value = struct(value);
-    end
-    struct_s.(alias) = value;
+% use automatically the cache when same object and last call is recent
+if ~isempty(cache) && strcmp(cache.Tag, s.Tag) && cputime-cache.time < 1
+    option = [ option ' cache' ];
 end
 
-% find all fields in object structure
-[match, types, dims] = iData_getfields(struct_s, '');
+if isempty(cache) || isempty(strfind(option, 'cache'))
 
-% add fields from Alias content (when numeric/structure)
-for index=getalias(s)'
-  this = getalias(s,index{1}); % alias def or value
-  if isstruct(this)
-    [sf, st, sn] = iData_getfields(this, index{1});
-    match = [match(:) ; sf(:)];
-    types = [types(:) ; st(:)];
-    dims  = [dims(:) ;  sn(:)];
-    clear sf st sn
-  elseif isnumeric(this)
-    match{end+1} = index{1};
-    types{end+1} = class(this);
-    dims(end+1)  = numel(this);
+  struct_s=struct(s);
+  struct_s=rmfield(struct_s,'Alias');
+  struct_s=rmfield(struct_s,'Command');
+  struct_s=rmfield(struct_s,'Tag');
+  % add the Aliases
+  aliases=getalias(s);
+  for index=1:numel(aliases)
+      alias=aliases{index};
+      value = get(s,alias);
+      if isa(value, 'iData') || isa(value, 'iFunc')
+        value = struct(value);
+      end
+      struct_s.(alias) = value;
   end
+
+  % find all fields in object structure
+  [match, types, dims] = iData_getfields(struct_s, '');
+
+  % add fields from Alias content (when numeric/structure)
+  for index=getalias(s)'
+    this = getalias(s,index{1}); % alias def or value
+    if isstruct(this)
+      [sf, st, sn] = iData_getfields(this, index{1});
+      match = [match(:) ; sf(:)];
+      types = [types(:) ; st(:)];
+      dims  = [dims(:) ;  sn(:)];
+      clear sf st sn
+    elseif isnumeric(this)
+      match{end+1} = index{1};
+      types{end+1} = class(this);
+      dims(end+1)  = numel(this);
+    end
+  end
+  % store [match, types, dims] in cache
+  cache.match = match;
+  cache.types = types;
+  cache.dims  = dims;
+  cache.time  = cputime;
+  cache.Tag   = s.Tag;
+else % restore from cache
+  match = cache.match;
+  types = cache.types;
+  dims  = cache.dims;
 end
+
 
 % filter fields: numeric and char types
 if ~isempty(strfind(option, 'numeric')) || ~isempty(strfind(option, 'char'))
