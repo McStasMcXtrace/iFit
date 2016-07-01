@@ -156,7 +156,7 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
     end % if no Signal
    
     % look for vectors that may have the proper length as axes
-
+    sz = size(in);
     for index=1:ndims(in)
       if length(in.Alias.Axis) < index || isempty(in.Alias.Axis{index})
 
@@ -207,6 +207,7 @@ else
   in = setaxis(in);
 end % if no Signal defined
 
+sz = size(in);
 % check the axes orientations
 % for all axes, determine when possible their preferred rank by looking at their dimension
 if ndims(in)>=2
