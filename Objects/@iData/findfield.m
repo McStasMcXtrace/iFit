@@ -52,11 +52,6 @@ if numel(s) > 1
   return
 end
 
-% use automatically the cache when same object and last call is recent
-if ~isempty(cache) && strcmp(cache.Tag, s.Tag) && cputime-cache.time < 1
-    option = [ option ' cache' ];
-end
-
 if isempty(cache) || isempty(strfind(option, 'cache'))
 
   struct_s=struct(s);
@@ -99,12 +94,13 @@ if isempty(cache) || isempty(strfind(option, 'cache'))
   cache.match = match;
   cache.types = types;
   cache.dims  = dims;
-  cache.time  = cputime;
+  cache.time  = clock;
   cache.Tag   = s.Tag;
 else % restore from cache
   match = cache.match;
   types = cache.types;
   dims  = cache.dims;
+  disp cached
 end
 
 

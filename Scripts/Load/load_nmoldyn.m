@@ -113,7 +113,7 @@ function [a,alias] = load_nmoldyn_search_token(a, token)
   if any(alias)
     alias = token{find(alias,1)};   % first alias that matches 'token' items
   else
-    alias = findfield(a, token, 'exact numeric'); % search in all fields ?
+    alias = findfield(a, token, 'exact numeric cache'); % search in all fields ?
     if ~isempty(alias)
       alias=alias{1};               % first full link e.g. 'Data.<blah>' that matches signal
       a = setalias(a, token{1}, alias);  % a new alias

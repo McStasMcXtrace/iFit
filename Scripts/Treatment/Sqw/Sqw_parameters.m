@@ -140,7 +140,11 @@ for index=1:length(fields)
     if     isfield(s, name)   val0=s.(name);
     elseif isfield(s, p_name) val0=s.(p_name);
     else val0=[]; end
-    links    = findfield(s,strtok(f{f_index}),'exact');
+    if index==1 && f_index==1
+      links    = findfield(s,strtok(f{f_index}),'exact');
+    else
+      links    = findfield(s,strtok(f{f_index}),'exact cache');
+    end
     if isfield(s.Data, name)
       links = [ 'Data.' name ];
     end

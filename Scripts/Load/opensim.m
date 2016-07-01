@@ -91,28 +91,28 @@ function a=load_mcstas_dat(a)
 xlab=''; ylab=''; zlab='';
 d = a.Data;
 
-i = [ findfield(a, 'xlabel', 'char exact') findfield(a, 'x_label', 'char exact') ];
+i = [ findfield(a, 'xlabel', 'char exact') findfield(a, 'x_label', 'char exact cache') ];
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, xlab] = strtok(l, ':='); xlab=strtrim(xlab(2:end));
   if isempty(xlab), xlab=l; end
 end
 
-i = [ findfield(a, 'ylabel', 'char exact') findfield(a, 'y_label', 'char exact') ];
+i = [ findfield(a, 'ylabel', 'char exact cache') findfield(a, 'y_label', 'char exact cache') ];
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, ylab] = strtok(l, ':='); ylab=strtrim(ylab(2:end));
   if isempty(ylab), ylab=l; end
 end
 
-i = [ findfield(a, 'zlabel', 'char exact') findfield(a, 'z_label', 'char exact') ];
+i = [ findfield(a, 'zlabel', 'char exact cache') findfield(a, 'z_label', 'char exact cache') ];
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, zlab] = strtok(l, ':='); zlab=strtrim(zlab(2:end));
   if isempty(zlab), zlab=l; end
 end
 
-i = findfield(a, 'component','char exact');
+i = findfield(a, 'component','char exact cache');
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, label] = strtok(l, ':='); label=strtrim(label(2:end));
@@ -122,7 +122,7 @@ if ~isempty(i)
   setalias(a, 'Component', 'Data.Component','Component name');
 end
 
-i = findfield(a, 'Creator','char exact'); % should have at least the iData.Creator property
+i = findfield(a, 'Creator','char exact cache'); % should have at least the iData.Creator property
 if iscell(i) && length(i) > 1
   l=get(a,i{end});
   [l, creator] = strtok(l, ':='); creator=strtrim(creator(2:end));
@@ -140,10 +140,10 @@ if ischar(signal) && (~isempty(strfind(signal, 'MetaData')) ...
   % biggest field is not the list but some MetaData, search other List 
   % should be 'Data.MataData.variables' or 'Data.I'
   for search = {'Data.I','Data.Sqw','Data.MetaData.variables','Data.data'}
-    if ~isempty(findfield(a,search,'case exact numeric')), signal = search; break; end
+    if ~isempty(findfield(a,search,'case exact numeric cache')), signal = search; break; end
   end
   if isempty(signal)
-    [match, types, dims] = findfield(s, '', 'numeric');
+    [match, types, dims] = findfield(s, '', 'numeric cache');
     if length(match) > 1, signal = match{2}; end
   end
   if ~isempty(signal), setalias(a, 'Signal', signal); end
@@ -164,13 +164,13 @@ elseif ~isempty(strfind(a.Format,'1D monitor'))
   a = setalias(a, 'E', 'Error');
 elseif ~isempty(strfind(a.Format,'2D monitor'))
   % Get sizes of x- and y- axes:
-  i = findfield(a, 'variables', 'numeric exact');
+  i = findfield(a, 'variables', 'numeric exact cache');
   if iscell(i) && ~isempty(i), i = i{1}; end
   if numel(get(a, i)) >= prod(siz)    % e.g. i='Data.MetaData.variables'
     setalias(a,'Signal',i,zlab);
   end
   siz = size(getaxis(a,'Signal')');
-  i = findfield(a, 'xylimits', 'numeric exact');
+  i = findfield(a, 'xylimits', 'numeric exact cache');
   if iscell(i) && ~isempty(i), i = i{1}; end
   lims = get(a,i);
   xax = linspace(lims(1),lims(2),siz(1));
@@ -181,13 +181,13 @@ elseif ~isempty(strfind(a.Format,'2D monitor'))
   setalias(a,'x',yax,ylab);
 
   setalias(a,'I','Signal');
-  i = findfield(a, 'Errors', 'numeric exact');
+  i = findfield(a, 'Errors', 'numeric exact cache');
   if ~isempty(i)
     setalias(a,'Error',i{1});
   else setalias(a,'Error',0);
   end
   setalias(a,'E','Error');
-  i = findfield(a, 'Events', 'numeric exact');
+  i = findfield(a, 'Events', 'numeric exact cache');
   if ~isempty(i) 
     setalias(a,'N',i{1});
   end
@@ -219,7 +219,7 @@ end
 %   sum(I) sqrt(sum(I_err^2)) sum(N)
 
 
-values = get(a, findfield(a, 'values'));
+values = get(a, findfield(a, 'values','cache'));
 if ~isempty(values)
   if iscell(values) values=values{1}; end
   t_sum = sprintf(' I=%g I_err=%g N=%g', values);
@@ -266,11 +266,11 @@ if ~isempty(findfield(a0, 'xlabel'))
   xlabel = deblank(a0.Data.Attributes.MetaData.xlabel);
   xlabel(1:length('# xlabel: '))='';
 else xlabel=''; end
-if ~isempty(findfield(a0, 'ylabel')) 
+if ~isempty(findfield(a0, 'ylabel', 'cache')) 
   ylabel = deblank(a0.Data.Attributes.MetaData.ylabel);
   ylabel(1:length('# ylabel: '))='';
 else ylabel=''; end
-if ~isempty(findfield(a0, 'xvars')) 
+if ~isempty(findfield(a0, 'xvars', 'cache')) 
   xvars = deblank(a0.Data.Attributes.MetaData.xvars);
   xvars(1:length('# xvars: '))='';
 else xvars=''; end
@@ -305,7 +305,7 @@ for j=1:siz
   b = copyobj(a0);
   ylabel=cnames(2*j);
   setalias(b,'Signal', ['this.' getalias(a0,'Signal') '(:,' num2str(2*j) ')'], ylabel);
-  if ~isempty(findfield(a0, '_ERR')) 
+  if ~isempty(findfield(a0, '_ERR', 'cache')) 
     setalias(b,'Error',['this.' getalias(a0,'Signal') '(:,' num2str(1+2*j) ')']);
   end
   b.Title = [ char(ylabel) ': ' char(b.Title) ];
@@ -319,7 +319,7 @@ function param=load_mcstas_param(a, keyword)
   if nargin == 1, keyword='Param:'; end
   param = [];
   
-  par_list = findfield(a, keyword,'case');
+  par_list = findfield(a, keyword,'case cache');
   if ~isempty(par_list)
     for index=1:numel(par_list)
       try; this=get(a,par_list{index}); catch; this=[]; end

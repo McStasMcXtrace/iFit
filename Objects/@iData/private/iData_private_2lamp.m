@@ -47,9 +47,9 @@ b.Data.Attributes.file_time    = datestr(now);
 b.Data.Attributes.HISTORY      = sprintf('%s\n', a.Command{:});
 b.Data.Attributes.MIN_MAX_VALUES=[ 'w 1: Float dim=[' num2str(size(a)) '] min=' min(a) ' max=' max(a) ];
 b.Data.Attributes.OTHER=char(a);
-dummy = findfield(a,'PARAMETERS','exact numeric');
+dummy = findfield(a,'PARAMETERS','exact numeric cache');
 if isempty(dummy)
-  dummy = findfield(a,'PARAMETERS');
+  dummy = findfield(a,'PARAMETERS','cache');
   dummy = get(a,dummy);
   index = find(cellfun(@isstruct, dummy));
   if numel(index) == 1

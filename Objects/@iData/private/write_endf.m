@@ -114,7 +114,7 @@ Sab.COMMENTS={''};
 
 % ------------------------------------------------------------------------------
 
-function info = write_endf_search_info()  
+function info = search_endf_info()  
 % search for MF1/MT451 items and constructs an 'info' structure
 
   % PyNE              ENDF
@@ -135,7 +135,7 @@ function info = write_endf_search_info()
   % identifier        HSUB
   % date_entry        ENDATE
 
-function thermal_elastic = write_endf_search_thermal_elastic()
+function thermal_elastic = search_endf_thermal_elastic()
 % search for MF7/MT2 items and constructs a 'thermal_elastic' structure
 
   % ENDF MF7 MT2 section (elastic)
@@ -151,7 +151,7 @@ function thermal_elastic = write_endf_search_thermal_elastic()
   %      .interp        INT
   % type                LTHR=1: coherent; LTHR=2: incoherent
 
-function thermal_inelastic = write_endf_search_thermal_inelastic()
+function thermal_inelastic = search_endf_thermal_inelastic()
 % search for MF7/MT4 items and constructs a 'thermal_inelastic' structure
 
   % PyNE              ENDF

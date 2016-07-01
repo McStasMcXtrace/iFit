@@ -144,14 +144,14 @@ TT = [];
 if ~isempty(index_temp)
   TT = mean(DATA(:,index_temp(1)));
 else
-  index_temp=findfield(a, {'TT','TRT'}, 'case');
+  index_temp=findfield(a, {'TT','TRT'}, 'case cache');
   if ~isempty(index_temp), TT = getfield(a, index_temp); end
 end
 
 FX = []; KFIX = [];
-index_fx  =findfield(a, 'FX', 'case'); 
+index_fx  =findfield(a, 'FX', 'case cache'); 
 if ~isempty(index_fx), FX = get(a, index_fx{1}); end
-index_kfix=findfield(a, 'KFIX', 'case');
+index_kfix=findfield(a, 'KFIX', 'case cache');
 if ~isempty(index_kfix), KFIX = get(a, index_kfix{1}); end
 
 % get the monitor
