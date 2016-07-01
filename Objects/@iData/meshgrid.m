@@ -15,7 +15,7 @@ function b = meshgrid(a, varargin)
 % input:  a: object or array (iData)
 %         method: 'linear','cubic','spline','nearest'
 %                 'vector' to get only vector axes
-%                 'fill' to replace NaN's in the final data set
+%                 'fill'   to replace NaN's in the final data set
 % output: s: object (iData)
 % ex:     c=meshgrid(a); c=meshgrid(a, 'vector linear')
 %         c=meshgrid(a, 100, 'fill')
@@ -79,7 +79,7 @@ end
 
 % create a regular grid
 [f_axes, changed] = iData_meshgrid(a, n_dims, method);
-fillme = strfind(method, 'fill');
+fillme            = strfind(method, 'fill');
 method            = strtrim(strrep(method, 'vector', ''));
 
 b = copyobj(a);
