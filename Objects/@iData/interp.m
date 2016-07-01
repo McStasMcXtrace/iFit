@@ -309,7 +309,6 @@ if ~has_changed,
 end
 
 % interpolation takes place here ------------------------------------------
-
 [f_signal, meth] = iData_interp(i_axes, i_signal, f_axes, method);
 
 if isnumeric(i_error) && length(i_error) > 1, 

@@ -9,7 +9,10 @@ function [f_signal, method] = iData_interp(i_axes, i_signal, f_axes, method)
 %  method:   method used in interpolation
 %  f_signal: interpolated new signal (double array)
 
-if isempty(i_signal), f_signal=[]; return; end
+f_signal=[];
+if isempty(i_signal), 
+    return; 
+end
 if isvector(i_signal) % force axes to be vectors
   for index=1:length(i_axes)
     x=i_axes{index}; x=x(:); i_axes{index}=x;
@@ -72,14 +75,15 @@ otherwise % nD, n>1
             end
         end
     end
-    % now we can call griddata (very slow), else default to interpn
+    % now we can call interpn, else default to griddata (very slow)
     failed = false;
     f_signal1 = []; 
     try
       f_signal1 = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
-      method = 'interpn with signal';
+      method    = 'interpn with signal';
+      f_signal  = f_signal1;
     catch
-      failed = false;
+      failed = true;
     end
     % check if we have generated many NaN's
     if ~failed && ~isempty(f_signal1)
