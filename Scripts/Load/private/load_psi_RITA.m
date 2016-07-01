@@ -36,7 +36,7 @@ if isfield(a.Data.entry1,'data') && ~isempty(a.Data.entry1.data) ...
   setalias(a, 'Monitor',      'Data.entry1.control.data');
   setalias(a, 'Sample',       'Data.entry1.sample');
   t = findfield(a, {'temperature','magnetic','Qh','Qk','Ql','Qm','energy','energy_transfer', ...
-                   'a1','a2','a3','a4','a5','a6'});
+                   'a1','a2','a3','a4','a5','a6'},'cache');
   if ~isempty(t)
     for index=1:length(t)
       % we should skip any Attributes items

@@ -58,7 +58,7 @@ UD = a.UserData;
 if isfield(UD, 'atoms') && isfield(UD.atoms, 'reciprocal_cell')
   B = UD.atoms.reciprocal_cell*2*pi;
 elseif isa(a, 'iData') && ~isempty(findfield(a, 'reciprocal_cell'))
-  B = get(a, findfield(a, 'reciprocal_cell'))*2*pi;
+  B = get(a, findfield(a, 'reciprocal_cell','cache'))*2*pi;
 else
   B = eye(3); % assume cubic, a=b=c=2*pi 90 deg
 end

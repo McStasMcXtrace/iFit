@@ -217,7 +217,7 @@ if ndims(in)>=2
     lx = numel(x);
     % find numel(axis) == size(in):  true for vectors matching a signal rank
     ix = find(lx == sz);
-    if ~isempty(ix) && ix ~= index
+    if length(ix)==1 && ix ~= index
       % axis 'index' should be going into rank 'ix': we swap axes
       x1 = getaxis(in, num2str(index));
       x2 = getaxis(in, num2str(ix));

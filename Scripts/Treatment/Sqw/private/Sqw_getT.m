@@ -19,22 +19,13 @@ function  T = Sqw_getT(s)
   if isfield(s,'temperature'), T=getfield(s,'temperature'); end
   
   if isempty(T)
-    f = findfield(s,'Temperature','exact numeric');
-    if ~isempty(f), T = s.(f{1}); end
-  end
-  
-  if isempty(T)
-    f = findfield(s,'T','exact numeric');
+    f = findfield(s,{'Temperature','T'},'exact numeric');
     if ~isempty(f), T = s.(f{1}); end
   end
 
+
   if isempty(T)
-    f = findfield(s,'Temperature','numeric');
-    if ~isempty(f), T = s.(f{1}); end
-  end
-  
-  if isempty(T)
-    f = findfield(s,'T','numeric');
+    f = findfield(s,{'Temperature','T'},'numeric cache');
     if ~isempty(f), T = s.(f{1}); end
   end
   

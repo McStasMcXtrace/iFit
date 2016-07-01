@@ -21,8 +21,7 @@ if numel(a0) > 1
 end
 
 % CNBC files have a Run, Seq and Rec field
-if isempty(findfield(a0,'Run','exact')) || isempty(findfield(a0,'Seq','exact')) ...
-|| isempty(findfield(a0,'Rec','exact'))
+if isempty(findfield(a0,{'Run','Seq','Rec'},'exact'))
   warning([ mfilename ': The loaded data set ' a0.Tag ' from ' a0.Source ' is not a Chalk River data format.' ]);
   a = a0;
   return
