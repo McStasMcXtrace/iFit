@@ -92,6 +92,9 @@ if isempty(cache) || isempty(strfind(option, 'cache'))
       dims(end+1)  = numel(this);
     end
   end
+  [match, index] = unique(match);
+  types=types(index);
+  dims =dims(index);
   % store [match, types, dims] in cache
   cache.match = match;
   cache.types = types;
