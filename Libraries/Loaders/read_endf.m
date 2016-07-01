@@ -170,7 +170,7 @@ function h = read_endf_mf1(MF1)
   end
   l=MF1.lines{5}; 
   if length(l) < 66, h=[]; return; end  % ENDF line too short
-  h.ZSYNAM = strtrim(l(1:11)); h.ALAB=strtrim(l(12:22));
+  h.ZSYMAM = strtrim(l(1:11)); h.ALAB=strtrim(l(12:22));
   h.EDATE  = strtrim(l(23:32));h.AUTH=strtrim(l(34:66));
   l=MF1.lines{6};
   h.REF    = strtrim(l(1:22)); h.DDATE= strtrim(l(23:32)); 
@@ -188,7 +188,7 @@ function h = read_endf_mf1(MF1)
   disp(sprintf('%s: NLIB=%3i %s', mfilename, h.NLIB, h.NLIB_string));
   disp(sprintf('%s: Date     %s %s %s',     mfilename, h.EDATE, h.DDATE, h.RDATE));
   disp(sprintf('%s: Material %s MAT=%i from %s at %s, release %s',  ...
-    mfilename, h.ZSYNAM, h.MAT, h.AUTH, h.ALAB, h.ENDATE));
+    mfilename, h.ZSYMAM, h.MAT, h.AUTH, h.ALAB, h.ENDATE));
   disp(sprintf('%s: NSUB=%3i %s', mfilename, h.NSUB,h.NSUB_string ));
 
   % PyNE              ENDF
@@ -243,7 +243,7 @@ function t = read_endf_mf7_mt2(MF7, MF1, t)
   t.field = MF7.field;
   
   if ~isempty(MF1), 
-    t.ZSYNAM= MF1.ZSYNAM; t.EDATE = MF1.EDATE;
+    t.ZSYMAM= MF1.ZSYMAM; t.EDATE = MF1.EDATE;
   end
 
   %  ENDF: [MAT, 7, 2/ ZA, AWR, LTHR, 0, 0, 0] HEAD
@@ -359,7 +359,7 @@ function t = read_endf_mf7_mt4(MF7, MF1)
   t.field = MF7.field;
 
   if ~isempty(MF1)
-    t.ZSYNAM=MF1.ZSYNAM; t.EDATE=MF1.EDATE;
+    t.ZSYMAM=MF1.ZSYMAM; t.EDATE=MF1.EDATE;
   end
   
   t.description = [ MF7.description ' (Incoherent Inelastic)' ];
