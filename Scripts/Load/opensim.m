@@ -91,21 +91,21 @@ function a=load_mcstas_dat(a)
 xlab=''; ylab=''; zlab='';
 d = a.Data;
 
-i = [ findfield(a, 'xlabel', 'char exact') findfield(a, 'x_label', 'char exact cache') ];
+i = findfield(a, {'xlabel','x_label'}, 'char exact');
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, xlab] = strtok(l, ':='); xlab=strtrim(xlab(2:end));
   if isempty(xlab), xlab=l; end
 end
 
-i = [ findfield(a, 'ylabel', 'char exact cache') findfield(a, 'y_label', 'char exact cache') ];
+i = findfield(a, {'ylabel','y_label'}, 'char exact cache');
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, ylab] = strtok(l, ':='); ylab=strtrim(ylab(2:end));
   if isempty(ylab), ylab=l; end
 end
 
-i = [ findfield(a, 'zlabel', 'char exact cache') findfield(a, 'z_label', 'char exact cache') ];
+i = findfield(a, {'xlabel','x_label'}, 'char exact cache');
 if ~isempty(i)
   if iscell(i) l=get(a,i{1}); else l=get(a,i); end
   [l, zlab] = strtok(l, ':='); zlab=strtrim(zlab(2:end));
@@ -162,6 +162,17 @@ elseif ~isempty(strfind(a.Format,'1D monitor'))
   title(a, ylab);
   a = setalias(a, 'I', 'Signal');
   a = setalias(a, 'E', 'Error');
+  siz = numel(getaxis(a,'Signal')');
+  % set axes
+  i = findfield(a, {'xylimits','xlimits'}, 'numeric exact cache');
+  if iscell(i) && ~isempty(i), i = i{1}; end
+  lims = get(a,i);
+  if numel(lims)>= 2, 
+    xax = linspace(lims(1),lims(2),siz);
+    setalias(a,'x',xax,xlab);
+    setaxis(a,1,'x');
+  end
+  
 elseif ~isempty(strfind(a.Format,'2D monitor'))
   % Get sizes of x- and y- axes:
   i = findfield(a, 'variables', 'numeric exact cache');
@@ -170,16 +181,6 @@ elseif ~isempty(strfind(a.Format,'2D monitor'))
     setalias(a,'Signal',i,zlab);
   end
   siz = size(getaxis(a,'Signal')');
-  i = findfield(a, 'xylimits', 'numeric exact cache');
-  if iscell(i) && ~isempty(i), i = i{1}; end
-  lims = get(a,i);
-  xax = linspace(lims(1),lims(2),siz(1));
-  yax = linspace(lims(3),lims(4),siz(2));
-
-  % set axes
-  setalias(a,'y',xax,xlab);
-  setalias(a,'x',yax,ylab);
-
   setalias(a,'I','Signal');
   i = findfield(a, 'Errors', 'numeric exact cache');
   if ~isempty(i)
@@ -191,8 +192,22 @@ elseif ~isempty(strfind(a.Format,'2D monitor'))
   if ~isempty(i) 
     setalias(a,'N',i{1});
   end
-  setaxis(a,1,'x');
-  setaxis(a,2,'y');
+  
+  % set axes
+  i = findfield(a, {'xylimits','xlimits'}, 'numeric exact cache');
+  if iscell(i) && ~isempty(i), i = i{1}; end
+  lims = get(a,i);
+  if numel(lims)>= 2, 
+    xax = linspace(lims(1),lims(2),siz(1));
+    setalias(a,'y',xax,xlab);
+    setaxis(a,2,'y');
+  end
+  if numel(lims)>= 4, 
+    yax = linspace(lims(3),lims(4),siz(2));
+    setalias(a,'x',yax,ylab);
+    setaxis(a,1,'x');
+  end
+
 elseif ~isempty(strfind(a.Format,'list monitor'))
   % the Signal should contain the List
   list = getalias(a, 'Signal');
