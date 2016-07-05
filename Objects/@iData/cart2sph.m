@@ -45,7 +45,7 @@ if ischar(center) || isempty(center)
   center=zeros(1,ndims(a));
 
   parfor index=1:ndims(a)
-    [dummy, center(index)] = std(a, index);
+    [dummy, center(index)] = std(a, -index);
   end
 end
 

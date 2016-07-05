@@ -100,7 +100,6 @@ else % restore from cache
   match = cache.match;
   types = cache.types;
   dims  = cache.dims;
-  disp cached
 end
 
 
