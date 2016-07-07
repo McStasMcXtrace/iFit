@@ -1,5 +1,4 @@
-                       
-                       
+            
 Welcome to the iFit/iData package
 =================================
 
@@ -7,6 +6,9 @@ Welcome to the iFit/iData package
                               
                         E. Farhi, ILL/CS <farhi@ill.fr>
                            Version @IFIT_VERSION@ - @IFIT_DATE@
+                           
+![iFit logo](https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/iFit-logo.png)
+![ILL logo](https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/ILL-web-jpeg.jpg)
 
 Purpose
 -------
