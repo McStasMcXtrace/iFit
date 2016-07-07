@@ -6,9 +6,10 @@ Welcome to the iFit/iData package
                               
                         E. Farhi, ILL/CS <farhi@ill.fr>
                            Version @IFIT_VERSION@ - @IFIT_DATE@
-                           
-![iFit logo](https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/iFit-logo.png)
-![ILL logo](https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/ILL-web-jpeg.jpg)
+<p align="center">
+<img src="https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/iFit-logo.png"> 
+<img src="https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/ILL-web-jpeg.jpg" style="width: 50%; height: 50%">
+</p>
 
 Purpose
 -------
