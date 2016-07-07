@@ -111,7 +111,7 @@ if nargin < 6
   varargin = {};
 end
 
-if strcmp(fun,'defaults')
+if strcmp(fun,'defaults') || strcmp(fun,'identify')
   pars = feval(optimizer, 'defaults');
   return
 elseif nargin < 2

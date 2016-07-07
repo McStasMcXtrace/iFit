@@ -18,7 +18,7 @@ function y=powerlaw(varargin)
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
 
-y.Name      = [ 'power law (1D) [' mfilename ']' ];
+y.Name      = [ 'Power law (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','Exponent','Background'};
 y.Description='power law';
 y.Expression= @(p,x) real(p(1)*(x - p(2)).^p(3) + p(4));
