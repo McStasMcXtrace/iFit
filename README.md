@@ -2,12 +2,15 @@
 Welcome to the iFit/iData package
 =================================
 
-                              <ifit.mccode.org>
-                              
-                        E. Farhi, ILL/CS <farhi@ill.fr>
-                           Version @IFIT_VERSION@ - @IFIT_DATE@
 <p align="center">
-<img src="https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/iFit-logo.png"> 
+
+                          http://ifit.mccode.org
+                  E. Farhi, ILL/CS <farhi@ill.fr><br>
+                    Version @IFIT_VERSION@ - @IFIT_DATE@
+
+<br>           
+<img src="https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/iFit-logo.png">
+<br>
 <img src="https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/ILL-web-jpeg.jpg" style="width: 50%; height: 50%">
 </p>
 
