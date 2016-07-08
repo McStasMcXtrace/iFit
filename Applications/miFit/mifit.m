@@ -1,4 +1,4 @@
-function out = mifit(varargin)
+function varargout = mifit(varargin)
 
 
 % notes:
@@ -17,6 +17,7 @@ function out = mifit(varargin)
 
 % will add toolbar instead of uicontrols for fast processing
 
+    varargout = {};
     % look if the main window is opened
     fig = mifit_fig;
     if isempty(fig) || ~ishandle(fig)
@@ -30,6 +31,7 @@ function out = mifit(varargin)
         % import iData object(s) into the List
         disp([ mfilename ': Import into List:' ])
         disp(char(varargin{1}))
+        List_Data_push(varargin{1});
     end
 
     if ~isempty(varargin) 
@@ -56,6 +58,9 @@ function out = mifit(varargin)
                 List_Data_push(d);
             end
         end
+    end
+    if nargout >= 1
+        varargout{end+1} = out;
     end
     
 % -------------------------------------------------------------------------
@@ -151,7 +156,20 @@ if isempty(fig) || ~ishandle(fig)
     
     % create the AppData
     % Data Stack
-    setappdata(fig, 'Data', []);
+    Data = [];
+    
+    % Load the save configuration: Data sets and Model Parameters
+    file = fullfile(prefdir, [ mfilename '.mat' ]);
+    if ~isempty(dir(file))
+      try
+        d = load(file)
+        disp([ mfilename ': Loading previous session Data sets from ' file ]);
+        Data = d.Data;
+        clear d
+      end
+    end
+    if ~isa(Data, 'iData'), Data=[]; end
+    setappdata(fig, 'Data', Data);
     
     % close welcome image
     delete(h);
@@ -174,29 +192,29 @@ function File_New(handle)
 function File_Open(handle)
   d = iData('');
   % push that data onto the List
+  List_Data_push(d);
   
 function List_Data_push(d)
 % put a new data set at the end of the stack
   fig = mifit_fig;
-  Data = getappdata(fig, 'Data');
-  
+
   % update AppData Stack
   if numel(d) > 1, d = d(:); end
+  Data = getappdata(fig, 'Data');
   Data = [ Data ; d ];  % a columns of iData set
-  setappdata(fig, 'Data', d);
+  setappdata(fig, 'Data', Data);
   
   % update the List labels by appending the Name at the end
   hObject        = mifit_fig('List_Data_Files');
   list           = get(hObject,'String');
   index_selected = get(hObject,'Value');
   for index=1:numel(d)
-      list{end+1} = char(d);
+      list{end+1} = char(d(index));
       index_selected(end+1) = 1;
   end
   set(hObject,'String', list, 'Value', index_selected);
-  
 
-function d=List_Data_Files(hObject)
+function d=List_Data_pull(hObject)
 % get the selected Data List
   if nargin == 0 || isempty(hObject)
       hObject = mifit_fig('List_Data_Files');
@@ -204,7 +222,50 @@ function d=List_Data_Files(hObject)
   d = [];
 
   index_selected = get(hObject,'Value');
-  list = get(hObject,'String');
-  if isempty(list), return; end
   
-  item_selected = list{index_selected};
+  fig = mifit_fig;
+  d = getappdata(fig, 'Data');
+  if numel(d) > 1
+      d = d(index_selected);
+  end
+  
+function File_Save(hObject)
+% save the application configuration into preferences Directory
+% Data sets and Model parameters into a mifit.mat file
+  fig = mifit_fig;
+  Data = getappdata(fig, 'Data');
+  if isempty(Data), return; end
+  
+  file = fullfile(prefdir, [ mfilename '.mat' ]);
+  disp([ mfilename ': Saving Data sets into ' file ]);
+  builtin('save', file, 'Data');
+  
+function File_Saveas(hObject)
+% save the application configuration into specified file
+% Data sets and Model parameters into a mifit.mat file
+  fig = mifit_fig;
+  Data = getappdata(fig, 'Data');
+  if isempty(Data), return; end
+  
+  filterspec = { '*.mat','MAT-files (*.mat)'; ...
+                 '*.html','Web HTML document' };
+  [filename, pathname, filterindex] = uiputfile('Save MiFit workspaces as', [ mfilename '.mat' ]);
+  if isequal(filename,0) || isequal(pathname,0)
+    return
+  end
+  file = fullfile(pathname, filename);
+  disp([ mfilename ': Saving Data sets into ' file ]);
+  switch filterindex
+  case 1
+    builtin('save', file, 'Data');
+  case 2
+    % write an HTML report
+    File_Saveas_HTML(file); % display list of data sets, plots, models, model parameters
+  end
+  
+function File_Print(hObject)
+% print the interface. Not very nice. can we think of something better ?
+% perhaps we can generate an HTML report in Saveas HTML ?
+  fig = mifit_fig;
+  printdlg(fig);
+  % alternative: File_Saveas_HTML in tmpfile, then open that file for printing.
