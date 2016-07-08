@@ -16,6 +16,7 @@ function h = edit(a, option)
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
 % the Selection is stored in the figure UserData
+  h = [];
   if nargin < 2
     option = '';
   end
@@ -52,6 +53,15 @@ function h = edit(a, option)
     p = get(f, 'Position');
     h = uitable('Data', Signal);
     
+    
+    tooltip = sprintf([ 'Here is the Data set, without Axes definition.\n' ...
+      'Access the contextual menu with the mouse right-click:\n' ...
+      '* You can select a subset and plot it.\n' ...
+      '* You can export its content into a new iData object, or in the clipboard.']);
+    if editable
+      tooltip = [ tooltip sprintf('\n* You can modify the Table content.\n* You can paste the clipboard (matrix or file name).') ];
+    end
+    
     % UserData.Monitor = real(get(a,'Monitor'));
     
     UserData.Selection = [];
@@ -61,13 +71,14 @@ function h = edit(a, option)
     UserData.Axes      = getaxis(a, []);
     
     set(h, 'Position', [0,0,p(3),p(4)]); 
-    try
-      set(h, 'Tag',[ mfilename '_' a.Tag ]);
-      set(h, 'Units','normalized');
-      set(h, 'Position', [0,0,1,1]);
-      set(h, 'CellSelectionCallback', @iData_edit_CellSelectionCallback);
-      if editable, set(h, 'ColumnEditable', true); end
-    end
+
+    set(h, 'Tag',[ mfilename '_' a.Tag ]);
+    set(h, 'Units','normalized');
+    set(h, 'Position', [0,0,1,1]);
+    set(h, 'CellSelectionCallback', @iData_edit_CellSelectionCallback);
+    set(h, 'ToolTipString', tooltip);
+    if editable, set(h, 'ColumnEditable', true); end
+
     set(f, 'UserData', UserData);  % contains the selection indices
 
 %      'CellEditCallback', @iData_edit_CellEditCallback, , ...
@@ -103,6 +114,7 @@ function h = edit(a, option)
     uimenu(uicm, 'Separator','on','Label','Copy selection to clipboard', 'Callback', @iData_edit_copy);
     if editable
     uimenu(uicm, 'Label','Paste here from clipboard', 'Callback', @iData_edit_paste);
+    uimenu(uicm, 'Label','Resize data set', 'Callback', @iData_edit_resize);
     end
     uimenu(uicm, 'Label','Export to main workspace...', 'Callback', @iData_edit_export);
     uimenu(uicm, 'Label','Plot selection...', 'Callback', @iData_edit_display);
@@ -115,6 +127,7 @@ function h = edit(a, option)
   else
     % open the data file
     try
+      h = a.Source;
       edit(a.Source);
     end
   end
@@ -141,6 +154,8 @@ function [Selection, rows, columns, UserData] = iData_edit_getselection
     columns = Selection{2};
     Selection = Signal(Selection{:});
   end
+  if isempty(rows)   || any(rows    <= 0), rows=1; end
+  if isempty(columns)|| any(columns <= 0), columns=1; end
 
 % function called when the Table selection is plotted
 function iData_edit_display(hObject, eventdata, varargin)
@@ -277,4 +292,30 @@ function d=iData_edit_iData(h)
   end
   d.Title = [ 'edit(' UserData.Name ')' ];
   
+function iData_edit_resize(varargin)
+  % resize the Data set, padding with zeros
   
+  fig = gcbf;
+  UserData  = get(fig, 'UserData');
+  h = UserData.handle;
+  
+  % get current Data
+  Data    = get(h, 'Data');
+  sz_Data = size(Data);
+  % display Dialog
+  prompt = {'Number of rows:','Number of columns:'};
+  name   = [ mfilename ': Expand/reduce the Table' ];
+  options.Resize='on';
+  options.WindowStyle='normal';
+  defaultanswer = {num2str(sz_Data(1)), num2str(sz_Data(2)) };
+  answer=inputdlg(prompt,name,1,defaultanswer);
+  
+  if numel(answer) < 2, return; end
+  sz_nData=[ str2num(answer{1}) str2num(answer{2}) ];
+  if numel(sz_nData) ~= 2, return; end
+  
+  newData = zeros(sz_nData);
+  rows    = min([ sz_nData(1) sz_Data(1) ]);
+  columns = min([ sz_nData(2) sz_Data(2) ]);
+  newData(rows, columns) = Data(rows, columns);
+  set(h, 'Data', newData);
