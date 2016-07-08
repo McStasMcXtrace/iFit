@@ -102,7 +102,7 @@ function h = edit(a, option)
     end
     uimenu(uicm, 'Separator','on','Label','Copy selection to clipboard', 'Callback', @iData_edit_copy);
     if editable
-    uimenu(uicm, 'Label','Paste from clipboard', 'Callback', @iData_edit_paste);
+    uimenu(uicm, 'Label','Paste here from clipboard', 'Callback', @iData_edit_paste);
     end
     uimenu(uicm, 'Label','Export to main workspace...', 'Callback', @iData_edit_export);
     uimenu(uicm, 'Label','Plot selection...', 'Callback', @iData_edit_display);
@@ -207,10 +207,16 @@ function iData_edit_paste(hObject, eventdata, varargin)
   Selection = clipboard('paste');
   if isempty(Selection), return; end
   
-  % split into lines
-  Selection = regexp(Selection,'\n|\r','split');
-  Selection = Selection(~cellfun(@isempty, Selection));
-  Selection = str2num(str2mat(Selection));  % now a double array
+  if ~isempty(dir(Selection)) % a file name
+    Selection = iData(Selection);
+    Selection = getaxis(Selection, 'Signal');
+  else
+  
+    % split into lines
+    Selection = regexp(Selection,'\n|\r','split');
+    Selection = Selection(~cellfun(@isempty, Selection));
+    Selection = str2num(str2mat(Selection));  % now a double array
+  end
   
   if isempty(Selection), return; end
   
