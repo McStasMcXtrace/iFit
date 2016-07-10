@@ -49,7 +49,7 @@ function h = edit(a, option)
     
     % opens a Table with the Signal content there-in
     NL = sprintf('\n');
-    f = figure('Name', [ 'Edit ' char(a) ]); % raw Signal, no monitor weightening
+    f = figure('Name', [ 'Edit ' char(a) ], 'MenuBar','none'); % raw Signal, no monitor weightening
     p = get(f, 'Position');
     h = uitable('Data', Signal);
     
@@ -91,7 +91,7 @@ function h = edit(a, option)
     S=a.Source; T=a.Title;
     if length(T) > 23, T=[ T(1:20) '...' ]; end
     if length(S) > 23, S=[ '...' S(end-20:end) ]; end
-    uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '"' ]);
+    uimenu(uicm, 'Label', [ 'Title: "' T '"' ]);
     uimenu(uicm, 'Label', [ 'Source: <' S '>' ]);
     uimenu(uicm, 'Label', [ 'Tag: '  a.Tag  ]);
     uimenu(uicm, 'Label', [ 'User: ' a.User ]);
