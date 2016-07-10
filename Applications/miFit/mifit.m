@@ -73,7 +73,7 @@ function f=mifit_fig(tag)
   
   if ~ishandle(fig), fig=[]; end
   if isempty(fig)
-    fig = findall(0, 'Tag','MiFit');
+    fig = findall(0, 'Tag','miFit');
     if length(fig) > 1, delete(fig(2:end)); end % unique instance
     handles = [];
   end
@@ -94,7 +94,7 @@ function fig = mifit_OpeningFcn
 fig = mifit_fig;
 if isempty(fig) || ~ishandle(fig)
     % create the main figure
-    disp([ mfilename ': Welcome to MiFit !' ])
+    disp([ mfilename ': Welcome to miFit !' ])
     disp(datestr(now))
     fig = openfig(mfilename);
     
@@ -103,10 +103,12 @@ if isempty(fig) || ~ishandle(fig)
     hmodels = mifit_fig('Menu_Models');
     hoptim  = mifit_fig('Menu_Optimizers');
     if isempty(hmodels) || isempty(hoptim) ...
-            || ~isempty([ get(hmodels,'Children') ; get(hoptim,'Children') ]), return; end
+            || ~isempty([ get(hmodels,'Children') ; get(hoptim,'Children') ]), 
+      return; 
+    end
     
     % Display welcome dialog during menu build
-    h = msgbox('Welcome to MiFit !','MiFit: Starting','help');
+    h = Tools_About(fig);
     
     % get the list of Models and Optimizers
     [optimizers,functions] = fits(iFunc);
@@ -179,13 +181,14 @@ end
 % Callbacks
 % -------------------------------------------------------------------------
 
+% File menu ********************************************************************
 function File_New(handle)
 % File/New menu item
   d = iData(zeros(5)); % create an empty Data set;
   disp([ mfilename ': Editing an empty Data set. Close the window to retrieve its content' ]);
-  disp( '    as a new Data set into MiFit. Use the Contextual menu.');
+  disp( '    as a new Data set into miFit. Use the Contextual menu.');
   handle = edit(d, 'editable');
-  % set a DeletedFcn so that the content can be retrieved into MiFit when
+  % set a DeletedFcn so that the content can be retrieved into miFit when
   % closing.
   set(handle, 'DeleteFcn', @mifit);
   
@@ -213,25 +216,9 @@ function List_Data_push(d)
       index_selected(end+1) = 1;
   end
   set(hObject,'String', list, 'Value', index_selected);
-
-function d=List_Data_pull(hObject)
-% get the selected Data List
-  if nargin == 0 || isempty(hObject)
-      hObject = mifit_fig('List_Data_Files');
-  end
-  d = [];
-
-  index_selected = get(hObject,'Value');
-  
-  fig = mifit_fig;
-  d = getappdata(fig, 'Data');
-  if numel(d) > 1
-      d = d(index_selected);
-  end
   
 function File_Save(hObject)
-% save the application configuration into preferences Directory
-% Data sets and Model parameters into a mifit.mat file
+% save Data sets and Model parameters into a mifit.mat file
   fig = mifit_fig;
   Data = getappdata(fig, 'Data');
   if isempty(Data), return; end
@@ -246,10 +233,10 @@ function File_Saveas(hObject)
   fig = mifit_fig;
   Data = getappdata(fig, 'Data');
   if isempty(Data), return; end
-  
+ 
   filterspec = { '*.mat','MAT-files (*.mat)'; ...
                  '*.html','Web HTML document' };
-  [filename, pathname, filterindex] = uiputfile('Save MiFit workspaces as', [ mfilename '.mat' ]);
+  [filename, pathname, filterindex] = uiputfile('Save miFit workspaces as', [ mfilename '.mat' ]);
   if isequal(filename,0) || isequal(pathname,0)
     return
   end
@@ -269,3 +256,44 @@ function File_Print(hObject)
   fig = mifit_fig;
   printdlg(fig);
   % alternative: File_Saveas_HTML in tmpfile, then open that file for printing.
+  
+function File_Preferences(hObject)
+% open Preferences dialogue
+% set direcories to search for Models
+% set FontSize (and update all Fonts in figure)
+% save Preferences on dialogue close
+
+function File_Exit(hObject)
+% Quit and Save Data
+  File_Save;
+  
+function d=List_Data_pull(hObject)
+% get the selected Data List
+  if nargin == 0 || isempty(hObject)
+      hObject = mifit_fig('List_Data_Files');
+  end
+  d = [];
+
+  index_selected = get(hObject,'Value');
+  
+  fig = mifit_fig;
+  d = getappdata(fig, 'Data');
+  if numel(d) > 1
+      d = d(index_selected);
+  end
+  
+function h=Tools_About(fig)
+% display the About dialogue. The handle ID is in adddata(gcf, 'handle_About')
+  if nargin ==0, fig=''; end
+  icon = fullfile(ifitpath,'Docs','images','ILL-web-jpeg.jpg');
+  
+  % Display About dialog
+  t = [ sprintf('Welcome to miFit, a GUI to iFit.\n ') version(iData,2) sprintf('.\n Visit <http://ifit.mccode.org>') ];
+  if isempty(dir(icon))
+    h = msgbox(t,'miFit: About','help');
+  else
+    h = msgbox(t,'miFit: About','custom', imread(icon));
+  end
+  if ~isempty(fig)
+    setappdata(fig, 'handle_About', h);
+  end
