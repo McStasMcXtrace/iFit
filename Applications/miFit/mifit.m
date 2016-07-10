@@ -8,13 +8,6 @@ function varargout = mifit(varargin)
 % * fit model
 
 % plot: plot model/dataset/parameters ? -> preferences
-
-% set optimizer configuration -> contextual dialogue
-
-% treat data set with MView type operations
-
-% re-asign data set signal, axes, ... to aliases/new ones
-
 % will add toolbar instead of uicontrols for fast processing
 
     varargout = {};
@@ -31,17 +24,18 @@ function varargout = mifit(varargin)
         % import iData object(s) into the List
         disp([ mfilename ': Import into List:' ])
         disp(char(varargin{1}))
-        List_Data_push(varargin{1});
+        mifit_List_Data_push(varargin{1});
     end
 
-    if ~isempty(varargin) 
-        if ischar(varargin{1})          % a function/action to call ?
+    if ~isempty(varargin)
+        if ischar(varargin{1}) && isempty(dir(varargin{1})) % a function/action to call ?
             % callback with varargin{1} == 'action'
-            if strcmpi(varargin{1},'identify'), return; end
+            action = varargin{1};
+            if strcmpi(action,'identify'), return; end
             try
-              feval(varargin{:});
+              feval([ 'mifit_' action ], varargin{2:end});
             catch ME
-              disp([ mfilename ': Unknown action "' varargin{1} '"' ])
+              disp([ mfilename ': Unknown action "' action '"' ])
               rethrow(ME)
             end
         elseif ishandle(varargin{1})    % a CallBack function
@@ -55,8 +49,12 @@ function varargout = mifit(varargin)
                     d.Title = get(h, 'Tag');
                 end
                 % now push 'd' into the Stack
-                List_Data_push(d);
+                mifit_List_Data_push(d);
             end
+        else
+          d = iData(varargin{:})
+          % now push 'd' into the Stack
+          mifit_List_Data_push(d);
         end
     end
     if nargout >= 1
@@ -108,7 +106,7 @@ if isempty(fig) || ~ishandle(fig)
     end
     
     % Display welcome dialog during menu build
-    h = Tools_About(fig);
+    h = mifit_Tools_About(fig);
     
     % get the list of Models and Optimizers
     [optimizers,functions] = fits(iFunc);
@@ -156,8 +154,7 @@ if isempty(fig) || ~ishandle(fig)
         end
     end
     
-    % create the AppData
-    % Data Stack
+    % create the AppData Data Stack
     Data = [];
     
     % Load the save configuration: Data sets and Model Parameters
@@ -182,7 +179,7 @@ end
 % -------------------------------------------------------------------------
 
 % File menu ********************************************************************
-function File_New(handle)
+function mifit_File_New(handle)
 % File/New menu item
   d = iData(zeros(5)); % create an empty Data set;
   disp([ mfilename ': Editing an empty Data set. Close the window to retrieve its content' ]);
@@ -192,32 +189,12 @@ function File_New(handle)
   % closing.
   set(handle, 'DeleteFcn', @mifit);
   
-function File_Open(handle)
+function mifit_File_Open(handle)
   d = iData('');
   % push that data onto the List
-  List_Data_push(d);
+  mifit_List_Data_push(d);
   
-function List_Data_push(d)
-% put a new data set at the end of the stack
-  fig = mifit_fig;
-
-  % update AppData Stack
-  if numel(d) > 1, d = d(:); end
-  Data = getappdata(fig, 'Data');
-  Data = [ Data ; d ];  % a columns of iData set
-  setappdata(fig, 'Data', Data);
-  
-  % update the List labels by appending the Name at the end
-  hObject        = mifit_fig('List_Data_Files');
-  list           = get(hObject,'String');
-  index_selected = get(hObject,'Value');
-  for index=1:numel(d)
-      list{end+1} = char(d(index));
-      index_selected(end+1) = 1;
-  end
-  set(hObject,'String', list, 'Value', index_selected);
-  
-function File_Save(hObject)
+function mifit_File_Save(hObject)
 % save Data sets and Model parameters into a mifit.mat file
   fig = mifit_fig;
   Data = getappdata(fig, 'Data');
@@ -227,7 +204,7 @@ function File_Save(hObject)
   disp([ mfilename ': Saving Data sets into ' file ]);
   builtin('save', file, 'Data');
   
-function File_Saveas(hObject)
+function mifit_File_Saveas(hObject)
 % save the application configuration into specified file
 % Data sets and Model parameters into a mifit.mat file
   fig = mifit_fig;
@@ -247,42 +224,81 @@ function File_Saveas(hObject)
     builtin('save', file, 'Data');
   case 2
     % write an HTML report
-    File_Saveas_HTML(file); % display list of data sets, plots, models, model parameters
+    mifit_File_Saveas_HTML(file); % display list of data sets, plots, models, model parameters
   end
   
-function File_Print(hObject)
+function mifit_File_Print(hObject)
 % print the interface. Not very nice. can we think of something better ?
 % perhaps we can generate an HTML report in Saveas HTML ?
   fig = mifit_fig;
   printdlg(fig);
   % alternative: File_Saveas_HTML in tmpfile, then open that file for printing.
   
-function File_Preferences(hObject)
+function mifit_File_Preferences(hObject)
 % open Preferences dialogue
 % set direcories to search for Models
 % set FontSize (and update all Fonts in figure)
 % save Preferences on dialogue close
 
-function File_Exit(hObject)
+function mifit_File_Exit(hObject)
 % Quit and Save Data
-  File_Save;
+  mifit_File_Save;
+  disp([ mfilename ': Exiting miFit. Bye bye.' ])
+  disp(datestr(now))
   
-function d=List_Data_pull(hObject)
-% get the selected Data List
-  if nargin == 0 || isempty(hObject)
-      hObject = mifit_fig('List_Data_Files');
-  end
-  d = [];
+% Edit menu ********************************************************************
 
+function mifit_Edit_Undo(hObject)
+% set the Data stack to the previous state from History
+
+function mifit_Edit_Cut(hObject)
+% get the selected indices in the List, copy these elements to the clipboard
+% and delete the elements. Update the History (in Delete).
+  mifit_Copy(hObject);
+  mifit_Delete(hObject);
+
+function mifit_Edit_Copy(hObject)
+% get the selected indices in the List, copy these elements to the clipboard
+
+function mifit_Edit_Paste(hObject)
+% append/copy the data sets from the clipboard to the end of the list
+% clipboard can be a file name, an iData Tag/ID or the ID in the Stack
+% Update the History
+
+function mifit_Edit_Duplicate(hObject)
+% copy and paste selected. Update the history (in Paste).
+
+  mifit_Copy(hObject);
+  mifit_Paste(hObject);
+  
+function mifit_Edit_Select_All(hObject)
+% set the List selected values to all ones
+  
+  hObject = mifit_fig('List_Data_Files');
+  items   = get(hObject,'String');
   index_selected = get(hObject,'Value');
+  if numel(index_selected) == numel(items), index_selected = [];
+  else index_selected=1:numel(items); end
   
-  fig = mifit_fig;
-  d = getappdata(fig, 'Data');
-  if numel(d) > 1
-      d = d(index_selected);
-  end
+  set(hObject,'Value', index_selected);
+
+function mifit_Delete(hObject)
+% delete selected
+% Update the History
+
+% Data menu ********************************************************************
+
+% Data_Properties ?
+% re-assign data set signal, axes, ... to aliases/new ones
+% display statistics
+
+% Models and Optimizers menu ***************************************************
+
+% set optimizer configuration -> contextual dialogue
   
-function h=Tools_About(fig)
+% Tools menu *******************************************************************
+
+function h=mifit_Tools_About(fig)
 % display the About dialogue. The handle ID is in adddata(gcf, 'handle_About')
   if nargin ==0, fig=''; end
   icon = fullfile(ifitpath,'Docs','images','ILL-web-jpeg.jpg');
@@ -297,3 +313,46 @@ function h=Tools_About(fig)
   if ~isempty(fig)
     setappdata(fig, 'handle_About', h);
   end
+  
+% List Data and Stack management ***********************************************
+
+function mifit_List_Data_push(d)
+% put a new data set at the end of the stack
+  fig = mifit_fig;
+
+  % update AppData Stack
+  if numel(d) > 1, d = d(:); end
+  Data = getappdata(fig, 'Data');
+  Data = [ Data ; d ];  % a columns of iData set
+  setappdata(fig, 'Data', Data);
+  
+  % update the List labels by appending the Name at the end
+  hObject        = mifit_fig('List_Data_Files');
+  list           = get(hObject,'String');
+  index_selected = get(hObject,'Value');
+  for index=1:numel(d)
+      list{end+1} = char(d(index));
+      index_selected(end+1) = numel(list)+index;
+  end
+  set(hObject,'String', list, 'Value', index_selected);
+  
+  % Update the History with the new stack and Date
+  
+  
+function d=mifit_List_Data_pull(hObject)
+% get the selected Data List
+% return the selected objects
+  if nargin == 0 || isempty(hObject)
+      hObject = mifit_fig('List_Data_Files');
+  end
+  d = [];
+
+  index_selected = get(hObject,'Value');
+  if isempty(index_selected), return; end
+  
+  fig = mifit_fig;
+  d   = getappdata(fig, 'Data');
+  if numel(d) > 1
+      d = d(index_selected);
+  end
+  
