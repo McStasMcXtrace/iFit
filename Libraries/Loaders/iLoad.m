@@ -402,14 +402,29 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
   elseif isempty(filename)
     config = iLoad('','load config');
+    % build the list of supported data formats
+    filterspec = cell(0,2);
+    config = iLoad('','load config'); % persistent
+    for index=1:numel(config.loaders)
+      this = config.loaders{index};
+      if isfield(this, 'name') && isfield(this,'method')
+        if isfield(this, 'extension') && ~isempty(this.extension)
+          ext=this.extension;
+        else ext='*'; end
+        if ischar(ext)  ext = [ '*.' ext ]; end
+        if iscell(ext), ext = sprintf('*.%s;',ext{:}); end
+        filterspec(end+1,1:2) = { ext, [ this.name ' (' ext ')' ]};
+      end
+    end
+    if isempty(filterspec), filterspec='*.*'; end
     if exist('uigetfiles') && ((isfield(config, 'UseSystemDialogs') && strcmp(config.UseSystemDialogs, 'no')) || isdeployed || ~usejava('jvm'))
-        [filename, pathname] = uigetfiles('.*','Select file(s) to load');
+        [filename, pathname] = uigetfiles(filterspec,'Select file(s) to load');
     else
       if usejava('swing')
         setappdata(0,'UseNativeSystemDialogs',false);
-        [filename, pathname] = uigetfile('*.*', 'Select file(s) to load', 'MultiSelect', 'on');
+        [filename, pathname] = uigetfile(filterspec, 'Select file(s) to load', 'MultiSelect', 'on');
       else
-        [filename, pathname] = uigetfile('*.*', 'Select a file to load');
+        [filename, pathname] = uigetfile(filterspec, 'Select a file to load');
       end
     end
     if isempty(filename),    return; end
