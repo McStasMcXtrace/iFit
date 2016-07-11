@@ -162,8 +162,10 @@ if numel(a) > 1
   pars_out=cell(1,numel(a)) ; criteria=zeros(1,numel(a)); 
   message =pars_out; output=pars_out;
   parfor index=1:numel(a)
+    this = a(index);  % allows 'assignin' to update the array elements.
     [pars_out{index}, criteria(index), message{index}, output{index}] = ...
-      fits(model, a(index), varargin{:});
+      fits(model, this, varargin{:});
+    a(index) = this;
   end
   return
 end

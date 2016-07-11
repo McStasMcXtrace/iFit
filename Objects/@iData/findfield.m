@@ -13,6 +13,7 @@ function [match, types, dims] = findfield(s, field, option)
 %     The 'char'    option will return only character fields.
 %     The 'cache'   option allows to re-use a previous field search cache for  
 %                     faster consecutive searches on the same object.
+%     The 'first'   option returns the first match.
 %
 %   The cache mechanism allows to do iterative searches on the same object, e.g.
 %     findfield(s,'Title') and then findfield(s,'Signal','cache numeric')
@@ -169,6 +170,13 @@ if ~isempty(field)
   else
     match = match(index);
     types = types(index);
+    dims  = dims(index);
+  end
+  if strfind(option, 'first')
+    % we select the 'shortest' match
+    [m, index] = min(cellfun(@length, match));
+    match = match{index};
+    types = types{index};
     dims  = dims(index);
   end
 end

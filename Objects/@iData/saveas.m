@@ -38,6 +38,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'gif','bmp','png','tiff','jpeg' save as an image (no axes, only for 2D data sets)
 %           'hdf4' save as an HDF4 image
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D/4D)
+%           'html' save as Hypertext Markup Language document
 %           'json' save as JSON JavaScript Object Notation, ascii
 %           'mrc'  save as MRC map file (3/4D)
 %           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative (3/4D)
@@ -106,6 +107,7 @@ filterspec = { ...
       '*.hdf;*.hdf5;*.h5;*.nxs;*.n5','Hierarchical Data Format 5 (*.hdf5, *.h5, *.hdf)'; ...
       '*.hdf4;*.h4;*.nxs;*.n4', 'Hierarchical Data Format 4 image (*.hdf4)'; ...
       '*.hdr', 'Analyze volume (*.hdr+img)'; ...
+      '*.html;*.htm','Hypertext Markup Language document (*.html)'; ...
       '*.jpg;*.jpeg', 'JPEG image (*.jpg)'; ...
       '*.json', 'JSON JavaScript Object Notation (*.json)'; ...
       '*.m',   'Matlab script/function (*.m)'; ...
@@ -229,12 +231,10 @@ case 'vrml'
   format='wrl';
 case 'mantid'
   format='hdf5 mantid data';
-case 'html'
-  format='xhtml';
 end
 
 % handle extensions
-[path, name, ext] = fileparts(filename);
+[Path, name, ext] = fileparts(filename);
 if isempty(ext) && ~isempty(format), 
   ext = [ '.' format ]; 
   filename = [ filename ext ];
@@ -481,6 +481,116 @@ case {'x3d','xhtml'} % X3D/XHTML format
 %        fclose(fid);
 %    end
   end
+case 'html'
+  % create a folder with the HTML style sheet, figures, and document
+  [Path, name, ext] = fileparts(filename);
+  target = fullfile(Path, name);
+  titl = char(a);
+  titl(titl=='<')='[';
+  titl(titl=='>')=']';
+  r = report_generator('iData', target); % directory is filename without extension
+  r.open();
+  r.section(titl);
+  
+  % get Model information
+  m = []; mp = []; mv = [];
+  try
+    if isfield(a, 'Model')
+      m = get(a, 'Model');
+    elseif ~isempty(findfield(a, 'Model'))
+      m = get(a, findfield(a, 'Model', 'cache first'));
+    end
+    
+    if isfield(a, 'modelValue')
+      mv = get(a, 'modelValue');
+    elseif ~isempty(findfield(a, 'modelValue'))
+      mv = get(a, findfield(a, 'modelValue', 'cache first'));
+    end
+    
+    if isa(m, 'iFunc')
+      % get the parameter values as a struct
+      mp = cell2struct(num2cell(m.ParameterValues(:)),strtok(m.Parameters(:)));
+    end
+  end
+  
+  % build the HTML content
+  r.subsection('Data set')
+  % object description
+  if ~isempty(a.Title) || ~isempty(title(a))
+    data.Title  = strtrim([ a.Title ' ' title(a) ]); end
+  if ~isempty(a.Label) || ~isempty(a.DisplayName), 
+    data.Label  = strtrim([ a.Label ' ' a.DisplayName ]); end
+  data.Source = a.Source;
+  data.Date   = [ datestr(a.Date) ', modified ' datestr(a.ModificationDate) ];
+  desc = evalc('disp(data)');
+  r.add_text([ '<pre> ' desc ' </pre>' ]);
+  r.end_section();
+  % model description
+  if ~isempty(m)
+    r.subsection('Model')
+    r.add_text(m.Name)
+    desc = evalc('disp(mp)');
+    r.add_text([ '<pre> ' desc ' </pre>' ]);
+    r.end_section();
+  end
+  
+  % plot of the object: special case for 1D which can overlay data and model
+  f = [];
+  f = figure('Visible','off');
+  if ndims(a) == 1 && ~isempty(m) && isa(m, 'iFunc')
+    % 1D plot with model
+    h=plot(a,'bo',m,'r-','tight');
+  elseif ndims(a) == 1
+    % simple plot. Model not available.
+    h=plot(a,'bo','tight');
+  elseif ndims(a) > 1
+    if ~isempty(m) && isa(m, 'iFunc')
+      h=subplot([a m], [1 2], 'tight');
+    else
+      h=plot(a, 'tight');
+    end
+  end
+  if ishandle(f)
+    set(f, 'Name', [ 'iFit_DataSet_' a.Tag ]);
+    r.add_figure(f, char(a), 'centered');
+  end
+  close(f);
+  % export object into a number of usable formats
+  builtin('save', fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.mat' ]), 'a');
+  save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.pdf' ]), 'pdf');
+  save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.fig' ]), 'fig');
+  save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.h5' ]), 'mantid');
+  if prod(size(a)) < 1e5
+    save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.dat' ]), 'dat data');
+    save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.svg' ]), 'svg');
+  end
+  t = 'Exported to: [ ';
+  for ext={'mat','png','dat','svg','pdf','fig','h5'}
+    f = [ 'iFit_DataSet_' a.Tag '.' ext{1} ];
+    if ~isempty(dir(fullfile(target, 'img', f)))
+      t = [ t '<a href="img/' f '"> ' ext{1} ' </a>' ];
+    end
+  end
+  t = [ t ' ]' ];
+  r.add_text(t);
+  
+  % add more information about the Data set
+  r.subsection('More about the Data set...')
+  desc = evalc('disp(a,''data'',''flat'')');
+  desc(desc=='<')='[';
+  desc(desc=='>')=']';
+  r.add_text([ '<br><pre> ' desc ' </pre>' ]);
+  
+  % display a 'footer' below the object description
+  r.add_text('<hr>');
+  r.add_text([ '<b>' datestr(now) '</b> - ' version(iData) '<br>' ])
+  
+  r.add_text([ '<a href="http://ifit.mccode.org">Powered by iFit ' ...
+    '<img src="http://ifit.mccode.org/images/iFit-logo.png" width=35 height=32></a> ' ...
+    '<a href="http://www.ill.eu">(c) ILL ' ...
+    '<img title="ILL, Grenoble, France www.ill.eu" src="http://ifit.mccode.org/images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France www.ill.eu" style="width: 21px; height: 20px;"></a><hr>' ]);
+  r.end_section();
+  r.close();
 case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
   if ndims(a) == 1    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' 1D does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
     return
