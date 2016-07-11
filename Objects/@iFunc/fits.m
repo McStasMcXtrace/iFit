@@ -528,7 +528,8 @@ if ~isempty(inputname(1))
     end
 end
 
-if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
+% reshape output arguments and compute some diagnosis
+try
   pars2 = pars_out;
   [output.modelValue, model] = feval(model, pars2, a.Axes{:});    % this also changed pars_out into iFunc
   index=find(~isnan(a.Signal) & ~isnan(output.modelValue));
@@ -542,24 +543,26 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
   Rexp = sqrt((length(a.Signal(index)) - length(pars))./sum((a.Signal(index)./e).^2));
   % Goodness of fit
   GoF  = Rwp/Rexp; 
-  if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | ...
-    (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
-    fprintf(1, ' Correlation coefficient=%g (closer to 1 is better)\n',  output.corrcoef);
-    fprintf(1, ' Weighted R-factor      =%g (Rwp, smaller that 0.2 is better)\n', output.Rfactor);
-    fprintf(1, ' Experimental R-factor  =%g (Rexp)\n', Rexp);
-  end
-  if abs(output.corrcoef) < 0.6 && ~isscalar(a.Error)
-    name = inputname(2);
-    if isempty(name)
-      name = 'a';
+  if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
+    if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | ...
+      (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
+      fprintf(1, ' Correlation coefficient=%g (closer to 1 is better)\n',  output.corrcoef);
+      fprintf(1, ' Weighted R-factor      =%g (Rwp, smaller that 0.2 is better)\n', output.Rfactor);
+      fprintf(1, ' Experimental R-factor  =%g (Rexp)\n', Rexp);
     end
-    fprintf(1, ' WARNING: The fit result is BAD. You may improve it by setting %s.Error=1\n',...
-      name);
+    if abs(output.corrcoef) < 0.6 && ~isscalar(a.Error)
+      name = inputname(2);
+      if isempty(name)
+        name = 'a';
+      end
+      fprintf(1, ' WARNING: The fit result is BAD. You may improve it by setting %s.Error=1\n',...
+        name);
+    end
   end
-  
+    
   if ~isempty(is_idata)
     % make it an iData
-    b = is_idata;
+    b = is_idata; % the initial iData object
     % fit(signal/monitor) but object has already Monitor -> we compensate Monitor^2
     if not(all(a.Monitor == 1 | a.Monitor == 0)) 
       output.modelValue    = bsxfun(@times,output.modelValue, a.Monitor); 
@@ -572,6 +575,13 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
     setalias(b,'Parameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);
     setalias(b,'Model', model, model.Name);
     output.modelValue = b;
+    if nargin > 1 && ~isempty(inputname(2))
+      a = is_idata;
+      setalias(a, 'Model', model, model.Name);
+      setalias(a, 'ModelValue', output.modelValue, [ 'Value of ' model.Name ]);
+      setalias(a, 'ModelParameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);
+      assignin('caller',inputname(2),a);
+    end
   else
     if length(a.Axes) == 1
       output.modelAxes  = a.Axes{1};
@@ -580,16 +590,16 @@ if nargout > 3 || (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics
     end
   end
   output.model      = model;
-  
-  % set output/results
-  if ischar(message) | ~isfield(output, 'message')
-    output.message = message;
-  else
-    output.message = [ '(' num2str(message) ') ' output.message ];
-  end
-  output.parsNames  = model.Parameters;
-  % final plot when in OutputFcn mode
-  eval_criteria(model, [], options.criteria, a, varargin{:});
+    
+    % set output/results
+    if ischar(message) | ~isfield(output, 'message')
+      output.message = message;
+    else
+      output.message = [ '(' num2str(message) ') ' output.message ];
+    end
+    output.parsNames  = model.Parameters;
+    % final plot when in OutputFcn mode
+    eval_criteria(model, [], options.criteria, a, varargin{:});
 end
 
 if ~isempty(pars_isstruct)

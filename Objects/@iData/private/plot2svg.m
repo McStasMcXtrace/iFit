@@ -177,7 +177,7 @@ else
             end
         end
     else
-        finalname=param1;   
+        finalname=param1;
     end
 end
 % needed to see annotation axes
@@ -209,7 +209,12 @@ end
 PLOT2SVG_globals.basefilepath = pathstr;
 PLOT2SVG_globals.basefilename = name;
 PLOT2SVG_globals.figurenumber = 1;
-fid=fopen(finalname,'wt');   % Create a new text file
+[fid, mess]=fopen(finalname,'wt');   % Create a new text file
+if fid == -1
+   disp(finalname)
+   disp(mess)
+   return
+end
 fprintf(fid,'<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n');    % Insert file header
 fprintf(fid,'<svg preserveAspectRatio="xMinYMin meet" width="100%%" height="100%%" viewBox="0 0 %0.3f %0.3f" ',paperpos(3),paperpos(4));
 fprintf(fid,' version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"');

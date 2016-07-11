@@ -7,7 +7,6 @@ classdef report_generator < handle
         fid;
         output_dir;
         report_dir;
-        css_dir;
         img_dir;
     end
     
@@ -36,18 +35,11 @@ classdef report_generator < handle
             obj.initialize_directory();
         end
         
-        % stylesheet(obj, stylesheet)
-        % Set the report's stylesheet
-        %
-        function stylesheet(obj, stylesheet)
-            copyfile(stylesheet, [obj.css_dir filesep 'style.css']);
-        end
-        
         % open(obj)
         % Open the report for writing
         %
         function open(obj)
-            obj.fid = fopen([obj.report_dir filesep 'index.html'], 'w');
+            obj.fid = fopen([obj.report_dir filesep 'index.html'], 'a+');
             if ~obj.wrote_header
                 obj.write_header();
                 obj.wrote_header = 1;
@@ -67,36 +59,35 @@ classdef report_generator < handle
         % add_text(text)
         % Adds text to the current section
         function add_text(obj, text)
-            obj.print(sprintf('<div class="section_text">%s</div>\n', text));
+            obj.print(sprintf('%s<br>\n', text));
         end
         
         % new_section(sectionname)
         % Create a new section
         function section(obj, section_name)
-            obj.print('<div class="section">\n');
             obj.nest
-            obj.print(sprintf('<div class="section_title">%s</div>\n', section_name));
+            obj.print(sprintf('<h2>%s</h2>\n', section_name));
         end
         
         % new_subsection(subsectionname)
         % Create a new subsection
         function subsection(obj, subsection_name)
-            obj.print('<div class="subsection">\n');
             obj.nest
-            obj.print(sprintf('<div class="subsection_title">%s</div>\n', subsection_name));
+            obj.print(sprintf('<h3>%s</h3>\n', subsection_name));
         end
         
         % end_section()
         % close the current section or subsection
         function end_section(obj)
             obj.denest;
-            obj.print('</div>\n');
         end
         
         % add_figure(h)
         % add the figure to the report
         % 
         function add_figure(obj,fig,caption,align)
+            if nargin < 3, caption = ''; end
+            if nargin < 4, align = ''; end
             
             if isempty(get(fig,'name'))
                 fname = sprintf('fig%d.png', obj.figure_count);
@@ -105,12 +96,12 @@ classdef report_generator < handle
             end
             figurepath = [obj.img_dir filesep fname];
             saveas(fig, figurepath);
-            obj.print(sprintf('<div class="img_container %s">', align));
             obj.nest;
-            obj.print(sprintf('<img class="centered" src="img/%s">\n', fname));
-            obj.print(sprintf('<div class="caption centered">%s</div>\n', caption));
+            obj.print(sprintf('<a href=%s"><img src="img/%s" width=640></a><br>\n', fname, fname));
+            if ~isempty(caption)
+              obj.print(sprintf('Figure: %s<br>\n', caption));
+            end
             obj.denest;
-            obj.print('</div>');
             obj.figure_count = obj.figure_count + 1;
         end
 
@@ -128,20 +119,15 @@ classdef report_generator < handle
                 mkdir(obj.output_dir);
             end
             % Setup the report directory
-            obj.report_dir = [obj.output_dir filesep obj.name];
-            obj.css_dir = [obj.report_dir filesep 'css'];
+            obj.report_dir = [obj.output_dir];
             obj.img_dir = [obj.report_dir filesep 'img'];
             % Create report subfolders
             if ~exist(obj.report_dir,'dir')
                 mkdir(obj.report_dir);
             end
-            if ~exist(obj.css_dir,'dir')
-                mkdir(obj.css_dir);
-            end
             if ~exist(obj.img_dir,'dir')
                 mkdir(obj.img_dir);
             end
-            obj.stylesheet('res/css/default.css')
         end
         
         
@@ -152,9 +138,8 @@ classdef report_generator < handle
             obj.print('<html>\n');
             obj.nest;
             obj.print('<head>\n');
+            obj.print([ '<title>' obj.name '</title>' ]);
             obj.nest;
-            obj.print(sprintf('<title>%s</title>\n',obj.name));
-            obj.print('<link rel="stylesheet" type="text/css" href="css/style.css">');
             obj.denest;
             obj.print('</head>\n');
             obj.print('<body>\n');

@@ -1,4 +1,4 @@
-function disp(s_in, name)
+function disp(s_in, name, flat)
 % disp(s) : display iData object (details)
 %
 %   @iData/disp function to display iData object details
@@ -27,7 +27,7 @@ if numel(s_in) > 1
   eval([ iname ' = s_in;' ])
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
 else
-  if isdeployed || ~usejava('jvm') || ~usejava('desktop'), id='iData';
+  if isdeployed || ~usejava('jvm') || ~usejava('desktop') || nargin > 2, id='iData';
   else           id=[ '<a href="matlab:doc iData">iData</a> ' ...
                     '(<a href="matlab:methods iData">methods</a>,' ...
                     '<a href="matlab:doc(iData,''iData'')">doc</a>,' ...
@@ -45,7 +45,7 @@ else
   s=rmfield(s,'Source');
   if exist(T,'file')
     if length(T) > 70, Ts=[ T(1:60) '...' T((end-8):end) ]; else Ts=T; end
-    if isdeployed || ~usejava('jvm') || ~usejava('desktop')
+    if isdeployed || ~usejava('jvm') || ~usejava('desktop') || nargin > 2
     else
       T =[ '<a href="' T '">' Ts '</a>' ];
     end
@@ -73,7 +73,7 @@ else
     end 
     label = s_in.Alias.Labels{index};
     if length(label) > 30, label = [label(1:28) '...' ]; end 
-    if isnumeric(v) | islogical(v), 
+    if (isnumeric(v) | islogical(v)) && ~isa(v, 'iData') && ~isa(v, 'iFunc'), 
       if length(size(v)) > 2, v=v(:); end
       if numel(v) > 20, v=v(1:18); end
       v = mat2str(v,5); 
@@ -125,11 +125,11 @@ else
       end
       if length(v) > 32, v = [v(1:29) '...' ]; end 
     end
-    if strcmp(s_in.Alias.Names{index}, 'Format') && ~isdeployed
+    if strcmp(s_in.Alias.Names{index}, 'Format') && ~isdeployed && nargin < 3
       if (isempty(v) && isempty(label)) || strcmp(label, v), label='help about formats'; end
       label=[ '<a href="matlab:doc(iData,''Load'')">' label '</a>' ];
     end
-    if strcmp(s_in.Alias.Names{index}, 'postprocess') && ~isdeployed
+    if strcmp(s_in.Alias.Names{index}, 'postprocess') && ~isdeployed && nargin < 3
       label=[ '<a href="matlab:doc ' v '">' v '</a>' ];
     end
     v = strtrim(v); v(~isstrprop(v,'print') | v=='\')=''; 
