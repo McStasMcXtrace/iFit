@@ -91,7 +91,6 @@ if nargin == 2 && filename(1) == '.'
   format=filename(2:end);
   filename='';
 end
-if isempty(filename), filename = [ 'iFit_' a(1).Tag ]; end
 
 if nargin < 4, options=''; end
 if isempty(options) && any(ndims(a) >= 2), options='view2 axis tight'; end
@@ -239,10 +238,12 @@ if isempty(ext) && ~isempty(format),
   ext = [ '.' format ]; 
   filename = [ filename ext ];
 elseif isempty(format) && ~isempty(ext)
-  format = ext(2:end); filename = '';
+  format = ext(2:end);
 elseif isempty(format) && isempty(ext) 
   format='mat'; filename = [ filename '.mat' ];
 end
+
+if isempty(filename), filename = [ 'iFit_' a.Tag ]; end
 
 % handle array of objects to save iteratively
 if numel(a) > 1 && ~any(strcmp(lower(format),'mat'))
@@ -252,8 +253,8 @@ if numel(a) > 1 && ~any(strcmp(lower(format),'mat'))
   filename = cell(size(a));
   for index=1:numel(a)
     if numel(a) > 1
-      [path, name, ext] = fileparts(filename_base);
-      this_filename = [ path name '_' num2str(index,'%04d') ext ];
+      [Path, name, ext] = fileparts(filename_base);
+      this_filename = [ Path name '_' num2str(index,'%04d') ext ];
     end
     [filename{index}, format] = saveas(a(index), this_filename, format, options);
   end
@@ -482,13 +483,13 @@ case {'x3d','xhtml'} % X3D/XHTML format
 %    end
   end
 case 'html'
-  % create a folder with the HTML style sheet, figures, and document
+  % create a folder with the HTML doc, figures
   [Path, name, ext] = fileparts(filename);
   target = fullfile(Path, name);
   titl = char(a);
   titl(titl=='<')='[';
   titl(titl=='>')=']';
-  r = report_generator('iData', target); % directory is filename without extension
+  r = report_generator(char(a), target);
   r.open();
   r.section(titl);
   
@@ -554,15 +555,16 @@ case 'html'
     set(f, 'Name', [ 'iFit_DataSet_' a.Tag ]);
     r.add_figure(f, char(a), 'centered');
   end
+  saveas(f, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.fig' ]), 'fig');
   close(f);
   % export object into a number of usable formats
   builtin('save', fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.mat' ]), 'a');
-  save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.pdf' ]), 'pdf');
-  save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.fig' ]), 'fig');
+  save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.pdf' ]));
+  
   save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.h5' ]), 'mantid');
   if prod(size(a)) < 1e5
     save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.dat' ]), 'dat data');
-    save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.svg' ]), 'svg');
+    save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.svg' ]));
   end
   t = 'Exported to: [ ';
   for ext={'mat','png','dat','svg','pdf','fig','h5'}
@@ -589,8 +591,10 @@ case 'html'
     '<img src="http://ifit.mccode.org/images/iFit-logo.png" width=35 height=32></a> ' ...
     '<a href="http://www.ill.eu">(c) ILL ' ...
     '<img title="ILL, Grenoble, France www.ill.eu" src="http://ifit.mccode.org/images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France www.ill.eu" style="width: 21px; height: 20px;"></a><hr>' ]);
+  r.add_text('<p><!-- pagebreak --></p> '); % force page break in case we append new stuff
   r.end_section();
   r.close();
+  filename = fullfile(target,'index.html');
 case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
   if ndims(a) == 1    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' 1D does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
     return
