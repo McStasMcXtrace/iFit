@@ -40,7 +40,12 @@ if numel(b) > 1 && any(strcmp(S(1).type,{'()','{}'}))
   sc=size(c); % store size so that we restore it at the end
 
   if numel(c) == 1
-    c = iData(val);
+    if isempty(val)
+      c = [];
+      b(S(1).subs{:}) = [];
+    else
+      c = iData(val);
+    end
   else
     if ~isempty( S(2:end) ) % array([1 2 3]).something = something
       for j = 1:numel(c)
@@ -59,10 +64,12 @@ if numel(b) > 1 && any(strcmp(S(1).type,{'()','{}'}))
     end
   end
 
-  if prod(sc) ~= 0 && prod(sc) == prod(size(c)) && numel(c) > 1
+  if ~isempty(c) && prod(sc) ~= 0 && prod(sc) == prod(size(c)) && numel(c) > 1
     c = reshape(c, size(c));
   end
-  b(S(1).subs{:}) = c; % update the array
+  if ~isempty(c)
+    b(S(1).subs{:}) = c; % update the array
+  end
 else
   % multiple level assignment: only the last subs indexing must be assigned, the previous ones must be subsref calls
   if length(S) > 1

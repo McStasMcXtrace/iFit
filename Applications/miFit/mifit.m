@@ -12,20 +12,11 @@ function varargout = mifit(varargin)
 
     varargout = {};
     % look if the main window is opened
-    fig = mifit_fig;
+    fig = mifit_fig();
     if isempty(fig) || ~ishandle(fig)
         fig = feval([ mfilename '_OpeningFcn' ]);
     end
     out = fig;
-
-    if nargin == 1 && isa(varargin{1}, 'iFunc')
-        % import model: add it to the Models menu, if not already there
-    elseif nargin == 1 && isa(varargin{1}, 'iData')
-        % import iData object(s) into the List
-        mifit_disp([ mfilename ': Import into List:' ])
-        mifit_disp(char(varargin{1}))
-        mifit_List_Data_push(varargin{1});
-    end
 
     if ~isempty(varargin)
         if ischar(varargin{1}) && isempty(dir(varargin{1})) % a function/action to call ?
@@ -55,11 +46,19 @@ function varargout = mifit(varargin)
           else
             d = iData(h);
           end
-          mifit_List_Data_push(d);
+          if ~isempty(d)
+            mifit_disp([ mfilename ': Import into List:' ])
+            mifit_disp(char(d))
+            mifit_List_Data_push(d);
+          end
         else
-          d = iData(varargin{:})
+          d = iData(varargin{:});
           % now push 'd' into the Stack
-          mifit_List_Data_push(d);
+          if ~isempty(d)
+            mifit_disp([ mfilename ': Import into List:' ])
+            mifit_disp(char(d))
+            mifit_List_Data_push(d);
+          end
         end
     end
     if nargout >= 1
@@ -94,21 +93,16 @@ function f=mifit_fig(tag)
 function fig = mifit_OpeningFcn
 % This function creates the main window and returns its ID
 
-fig = mifit_fig;
+fig = mifit_fig();
 if isempty(fig) || ~ishandle(fig)
     % create the main figure
     mifit_disp([ mfilename ': Welcome to miFit !' ])
     mifit_disp(datestr(now))
     fig = openfig(mfilename);
     
-    % test if any of the Models/Optimizers menu is empty
-    % if not, return (no need to build them)
+    % get Models/Optimizers menu handles
     hmodels = mifit_fig('Menu_Models');
     hoptim  = mifit_fig('Menu_Optimizers');
-    if isempty(hmodels) || isempty(hoptim) ...
-            || ~isempty([ get(hmodels,'Children') ; get(hoptim,'Children') ]), 
-      return; 
-    end
     
     % Display welcome dialog during menu build
     h = mifit_Tools_About(fig);
@@ -118,14 +112,8 @@ if isempty(fig) || ~ishandle(fig)
     
     % fill Models menu
     if any(~isempty(functions)) && all(isa(functions, 'iFunc'))
-        mifit_disp([ mfilename ': Initializing Models...' ]);
+        mifit_disp([ mfilename ': Initializing Models... User Models should be in the local directory.' ]);
         separator = 1;
-        % first add the 'Add new Model': from File or ifitmakefunc
-        uimenu(hmodels, 'Label','Add new Model...');
-        uimenu(hmodels, 'Label','Plot Model...');
-        uimenu(hmodels, 'Label','View Model Parameters...', 'Separator','on');
-        uimenu(hmodels, 'Label','Plot Model Parameters...');
-        uimenu(hmodels, 'Label','Export Model Parameters...');
         for f=functions
             % each Model is an iFunc object. These should be stored in the
             % Models items 'UserData'
@@ -161,21 +149,22 @@ if isempty(fig) || ~ishandle(fig)
     
     % create the AppData Data Stack
     Data = [];
+    setappdata(fig, 'Data', Data);
+    setappdata(fig, 'History', {});
     
     % Load the save configuration: Data sets and Model Parameters
     file = fullfile(prefdir, [ mfilename '.mat' ]);
     if ~isempty(dir(file))
       try
-        d = load(file)
+        d = load(file);
         mifit_disp([ mfilename ': Loading previous session Data sets from ' file ]);
-        Data = d.Data;
-        clear d
+        if isfield(d, 'Data')
+          Data = d.Data;
+          mifit_List_Data_push(Data);
+        end
       end
     end
-    if ~isa(Data, 'iData'), Data=[]; end
-    setappdata(fig, 'Data', Data);
-    setappdata(fig, 'History', {});
-    
+
     % close welcome image
     delete(h);
 end
@@ -246,7 +235,14 @@ function mifit_File_Preferences(hObject)
 % open Preferences dialogue
 % set directories to search for Models
 % set FontSize (and update all Fonts in figure)
+% set Save on exit
 % save Preferences on dialogue close
+  fig = mifit_fig;
+  promt = {'Font size','Save Data sets on Exit'};
+  defaultanswer = { get(fig, 'FontSize'), 'yes' };
+  name  = [ mfilename ': Preferences' ];
+  options.Resize='on';
+  options.WindowStyle='normal';
   disp('TODO: mifit_File_Preferences')
 
 function mifit_File_Exit(hObject)
@@ -254,12 +250,14 @@ function mifit_File_Exit(hObject)
   mifit_File_Save;
   mifit_disp([ mfilename ': Exiting miFit. Bye bye.' ])
   mifit_disp(datestr(now))
+  delete(mifit_fig);
   
 % Edit menu ********************************************************************
 
 function mifit_Edit_Undo(hObject)
 % set the Data stack to the previous state from History
-  mifit_History_pull;
+  mifit_History_pull();
+  mifit_List_Data_UpdateStrings();
 
 function mifit_Edit_Cut(hObject)
 % get the selected indices in the List, copy these elements to the clipboard
@@ -269,6 +267,7 @@ function mifit_Edit_Cut(hObject)
 
 function mifit_Edit_Copy(hObject)
 % get the selected indices in the List, copy these elements to the clipboard
+  
 
 function mifit_Edit_Paste(hObject)
 % append/copy the data sets from the clipboard to the end of the list
@@ -294,19 +293,23 @@ function mifit_Edit_Select_All(hObject)
   else index_selected=1:numel(items); end
   set(hObject,'Value', index_selected);
 
-function mifit_Delete(hObject)
+function mifit_Edit_Delete(hObject)
 % delete selected
 % Update the History
   fig = mifit_fig;
   hObject        = mifit_fig('List_Data_Files');
   index_selected = get(hObject,'Value');
   Data = getappdata(fig, 'Data');
-  Data(index_selected) = [];
+  if numel(Data) > 1
+    Data(index_selected) = [];
+  else
+    Data = [];
+  end
   list           = get(hObject,'String');
-  list{index_selected} = [];
+  list(index_selected) = [];
   set(hObject,'Value',[]);
-  setappdata(fig, 'Data', Data);
   set(hObject,'String',list);
+  setappdata(fig, 'Data', Data);
   
   mifit_History_push;
 
@@ -368,21 +371,23 @@ function mifit_List_Data_push(d)
   % update AppData Stack
   if numel(d) > 1, d = d(:); end
   Data = getappdata(fig, 'Data');
-  Data = [ Data ; d ];  % a columns of iData set
+  Data = [ Data ; d ];  % a column of iData set
   setappdata(fig, 'Data', Data);
   
   % update the List labels by appending the Name at the end
   hObject        = mifit_fig('List_Data_Files');
   list           = get(hObject,'String');
+  list0          = numel(list);
   index_selected = get(hObject,'Value');
+  if max(index_selected) > numel(list), index_selected = []; end
   for index=1:numel(d)
+      index_selected(end+1) = list0+index;
       list{end+1} = char(d(index));
-      index_selected(end+1) = numel(list)+index;
   end
   set(hObject,'String', list, 'Value', index_selected);
   
   % Update the History with the new stack and Date
-  disp('TODO: mifit_List_Data_push: Update history')
+  mifit_History_push;
   
 function d=mifit_List_Data_pull(hObject)
 % get the selected Data List
@@ -400,6 +405,19 @@ function d=mifit_List_Data_pull(hObject)
   if numel(d) > 1
       d = d(index_selected);
   end
+  
+function mifit_List_Data_UpdateStrings
+  % update the List labels
+  fig = mifit_fig;
+  
+  Data = getappdata(fig, 'Data');
+  
+  hObject        = mifit_fig('List_Data_Files');
+  list           = {};
+  for index=1:numel(Data)
+      list{end+1} = char(Data(index));
+  end
+  set(hObject,'String', list, 'Value', []);
 
 function mifit_disp(message)
   % display message, and can log it into a File or Log window
