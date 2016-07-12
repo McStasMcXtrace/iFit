@@ -9,12 +9,14 @@ function varargout = mifit(varargin)
 
 % plot: plot model/dataset/parameters ? -> preferences
 % will add toolbar instead of uicontrols for fast processing
-
+    persistent config
+    
     varargout = {};
+    
     % look if the main window is opened
     fig = mifit_fig();
     if isempty(fig) || ~ishandle(fig)
-        fig = feval([ mfilename '_OpeningFcn' ]);
+      fig = feval([ mfilename '_OpeningFcn' ]);
     end
     out = fig;
 
@@ -26,7 +28,7 @@ function varargout = mifit(varargin)
           try
             feval([ 'mifit_' action ], varargin{2:end});
           catch ME
-            mifit_disp([ mfilename ': Unknown action "' action '"' ])
+            mifit_disp([ 'Unknown action "' action '"' ])
             rethrow(ME)
           end
         elseif ishandle(varargin{1})    % a CallBack function
@@ -47,7 +49,7 @@ function varargout = mifit(varargin)
             d = iData(h);
           end
           if ~isempty(d)
-            mifit_disp([ mfilename ': Import into List:' ])
+            mifit_disp('Importing into List:')
             mifit_disp(char(d))
             mifit_List_Data_push(d);
           end
@@ -55,7 +57,7 @@ function varargout = mifit(varargin)
           d = iData(varargin{:});
           % now push 'd' into the Stack
           if ~isempty(d)
-            mifit_disp([ mfilename ': Import into List:' ])
+            mifit_disp('Importing into List:')
             mifit_disp(char(d))
             mifit_List_Data_push(d);
           end
@@ -89,19 +91,18 @@ function f=mifit_fig(tag)
     f = handles.(tag);
   end
 
-% --- Executes just before mifit is made visible.
+% --- Executes just before mifit is made visible -------------------------------
 function fig = mifit_OpeningFcn
 % This function creates the main window and returns its ID
 
 fig = mifit_fig();
 if isempty(fig) || ~ishandle(fig)
     % create the main figure
-    mifit_disp([ mfilename ': Welcome to miFit !' ])
-    mifit_disp(datestr(now))
+    mifit_disp('Welcome to miFit !')
     fig = openfig(mfilename);
     
     % get Models/Optimizers menu handles
-    hmodels = mifit_fig('Menu_Models');
+    hmodels = mifit_fig('Menu_Model');
     hoptim  = mifit_fig('Menu_Optimizers');
     
     % Display welcome dialog during menu build
@@ -112,7 +113,7 @@ if isempty(fig) || ~ishandle(fig)
     
     % fill Models menu
     if any(~isempty(functions)) && all(isa(functions, 'iFunc'))
-        mifit_disp([ mfilename ': Initializing Models... User Models should be in the local directory.' ]);
+        mifit_disp([ 'Initializing Models... User Models should be in the local directory.' ]);
         separator = 1;
         for f=functions
             % each Model is an iFunc object. These should be stored in the
@@ -130,7 +131,7 @@ if isempty(fig) || ~ishandle(fig)
     
     % fill Optimizers menu
     if ~isempty(optimizers) && iscell(optimizers)
-        mifit_disp([ mfilename ': Initializing Optimizers...' ]);
+        mifit_disp([ 'Initializing Optimizers...' ]);
         for f=optimizers
             % each optimizer is given with its function name. We request
             % 'defaults' and display its name
@@ -148,19 +149,21 @@ if isempty(fig) || ~ishandle(fig)
     end
     
     % create the AppData Data Stack
-    Data = [];
-    setappdata(fig, 'Data', Data);
+    setappdata(fig, 'Data',    []);
     setappdata(fig, 'History', {});
     
-    % Load the save configuration: Data sets and Model Parameters
+    % load Preferences
+    mifit_Load_Preferences;
+    mifit_Apply_Preferences;
+    
+    % Load the previous Data sets and Model Parameters
     file = fullfile(prefdir, [ mfilename '.mat' ]);
     if ~isempty(dir(file))
       try
         d = load(file);
-        mifit_disp([ mfilename ': Loading previous session Data sets from ' file ]);
         if isfield(d, 'Data')
-          Data = d.Data;
-          mifit_List_Data_push(Data);
+          mifit_disp([ 'Loading Data sets from ' file ]);
+          mifit_List_Data_push(d.Data);
         end
       end
     end
@@ -168,6 +171,43 @@ if isempty(fig) || ~ishandle(fig)
     % close welcome image
     delete(h);
 end
+
+% Preferences I/O --------------------------------------------------------------
+function config = mifit_Load_Preferences
+  file = fullfile(prefdir, [ mfilename '.ini' ]);
+  content = ''; config = '';
+  if ~isempty(dir(file))
+    if 1 % try
+      content = fileread(file);
+      evalc(content);% this should make a 'config' variable
+      mifit_disp([ 'Loading Preferences from ' file ]);
+    end
+  end
+  if isempty(config)
+    % default configuration
+    config.FontSize         = 12;
+    config.Save_Data_On_Exit= 'yes';
+  end
+  setappdata(mifit_fig, 'Preferences', config);
+
+function mifit_Save_Preferences(config)
+  filename = fullfile(prefdir, [ mfilename '.ini' ]);
+  NL = sprintf('\n');
+  description = 'miFit interface to iFit';
+    str = [ '% miFit configuration script file: ' description NL ...
+          '%' NL ...
+          '% Matlab ' version ' m-file ' filename NL ...
+          '% generated automatically on ' datestr(now) ' with ifit.mccode.org ' mfilename NL...
+          class2str('config', config) ];
+  [fid, message]=fopen(filename,'w+');
+  if fid == -1
+    warning([ datestr(now) ': Error opening file ' filename ' to save ' description ' configuration.' ]);
+    filename = [];
+  else
+    fprintf(fid, '%s', str);
+    fclose(fid);
+    mifit_disp([ 'Saving Preferences into ' filename ]);
+  end
 
 % -------------------------------------------------------------------------
 % Callbacks
@@ -177,8 +217,9 @@ end
 function mifit_File_New(handle)
 % File/New menu item
   d = iData(zeros(5)); % create an empty Data set;
-  mifit_disp([ mfilename ': Editing an empty Data set. Close the window to retrieve its content' ]);
-  mifit_disp( '    as a new Data set into miFit. Use the Contextual menu.');
+  mifit_disp([ 'Editing an empty Data set. ' ...
+    'Close the window to retrieve its content as a new Data set into miFit. ' ...
+    'Use the Contextual menu for Copy/Paste/Resize.' ]);
   handle = edit(d, 'editable');
   % set a DeletedFcn so that the content can be retrieved into miFit when
   % closing.
@@ -196,7 +237,7 @@ function mifit_File_Save(hObject)
   if isempty(Data), return; end
   
   file = fullfile(prefdir, [ mfilename '.mat' ]);
-  mifit_disp([ mfilename ': Saving Data sets into ' file ]);
+  mifit_disp([ 'Saving Data sets into ' file ]);
   builtin('save', file, 'Data');
   
 function mifit_File_Saveas(hObject)
@@ -206,21 +247,14 @@ function mifit_File_Saveas(hObject)
   Data = getappdata(fig, 'Data');
   if isempty(Data), return; end
  
-  filterspec = { '*.mat','MAT-files (*.mat)'; ...
-                 '*.html','Web HTML document' };
-  [filename, pathname, filterindex] = uiputfile('Save miFit workspaces as', [ mfilename '.mat' ]);
+  filterspec = { '*.mat','MAT-files (*.mat)'};
+  [filename, pathname] = uiputfile(filterspec, 'Save miFit Data sets as', [ mfilename '.mat' ]);
   if isequal(filename,0) || isequal(pathname,0)
     return
   end
   file = fullfile(pathname, filename);
-  mifit_disp([ mfilename ': Saving Data sets into ' file ]);
-  switch filterindex
-  case 1
-    builtin('save', file, 'Data');
-  case 2
-    % write an HTML report
-    mifit_File_Saveas_HTML(file); % display list of data sets, plots, models, model parameters
-  end
+  mifit_disp([ 'Saving Data sets into ' file ]);
+  builtin('save', file, 'Data');
   
 function mifit_File_Print(hObject)
 % print the interface. Not very nice. can we think of something better ?
@@ -238,18 +272,44 @@ function mifit_File_Preferences(hObject)
 % set Save on exit
 % save Preferences on dialogue close
   fig = mifit_fig;
-  promt = {'Font size','Save Data sets on Exit'};
-  defaultanswer = { get(fig, 'FontSize'), 'yes' };
+  config = getappdata(mifit_fig, 'Preferences');
+  prompt = {'Font size [10-36]','Save Data sets on Exit [yes/no]'};
+  defaultanswer = { num2str(config.FontSize), config.Save_Data_On_Exit };
   name  = [ mfilename ': Preferences' ];
   options.Resize='on';
   options.WindowStyle='normal';
-  disp('TODO: mifit_File_Preferences')
+  answer=inputdlg(prompt,name,1,defaultanswer,options);
+  if isempty(answer), return; end
+  
+  % set new Preferences
+  answer{1} = str2double(answer{1});
+  if isfinite(answer{1}) 
+    config.FontSize=min(max(answer{1}, 10),36); end
+  if any(strcmp(answer{2}, {'yes','no'})) 
+    config.Save_Data_On_Exit = answer{2}; end
+  setappdata(mifit_fig, 'Preferences', config);
+  mifit_Apply_Preferences;
+  mifit_Save_Preferences(config);
+  
+function mifit_Apply_Preferences
+  fig = mifit_fig;
+  config = getappdata(fig, 'Preferences');
+  % change all Font Size
+  h=[ findobj(fig, 'Type','uicontrol') ; ...
+      findobj(fig, 'Type','axes') ; findobj(fig, 'Type','text') ; ...
+      findobj(fig, 'Type','uipanel') findobj(fig, 'Type','uitable') ];
+  set(h, 'FontSize', config.FontSize);
+  % for uimenu, we use tip given by Y Altman 
+  % <https://fr.mathworks.com/matlabcentral/newsreader/view_thread/148095>
+  h = findobj(fig, 'Type','uimenu');
 
 function mifit_File_Exit(hObject)
 % Quit and Save Data
-  mifit_File_Save;
-  mifit_disp([ mfilename ': Exiting miFit. Bye bye.' ])
-  mifit_disp(datestr(now))
+  config = getappdata(mifit_fig, 'Preferences');
+  if strcmp(config.Save_Data_On_Exit, 'yes')
+    mifit_File_Save;
+  end
+  mifit_disp([ 'Exiting miFit. Bye bye.' ])
   delete(mifit_fig);
   
 % Edit menu ********************************************************************
@@ -365,7 +425,8 @@ function h=mifit_Tools_About(fig)
 
 function mifit_List_Data_push(d)
 % put a new data set at the end of the stack
-  if isempty(d), return; end
+  if isempty(d),       return; end
+  if ~isa(d, 'iData'), return; end
   fig = mifit_fig;
 
   % update AppData Stack
@@ -421,5 +482,5 @@ function mifit_List_Data_UpdateStrings
 
 function mifit_disp(message)
   % display message, and can log it into a File or Log window
-  disp(message)
-  disp('TODO: mifit_disp: log into file, set in Preferences')
+  disp([ mfilename ': ' message ])
+  % disp('TODO: mifit_disp: log into file, set in Preferences')
