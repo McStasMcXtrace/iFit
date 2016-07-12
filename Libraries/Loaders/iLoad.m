@@ -403,7 +403,7 @@ function [data, format] = iLoad(filename, loader, varargin)
   elseif isempty(filename)
     config = iLoad('','load config');
     % build the list of supported data formats
-    filterspec = cell(0,2);
+    filterspec = {'*.*', 'All files (*.*)' };
     config = iLoad('','load config'); % persistent
     for index=1:numel(config.loaders)
       this = config.loaders{index};
