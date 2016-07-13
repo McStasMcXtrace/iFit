@@ -98,7 +98,7 @@ function fig = mifit_OpeningFcn
 fig = mifit_fig();
 if isempty(fig) || ~ishandle(fig)
     % create the main figure
-    mifit_disp('Welcome to miFit !')
+    mifit_disp('Welcome to miFit ! ********************************************')
     fig = openfig(mfilename);
     
     % get Models/Optimizers menu handles
@@ -167,6 +167,8 @@ if isempty(fig) || ~ishandle(fig)
         end
       end
     end
+    file = fullfile(prefdir, [ mfilename '.log' ]);
+    mifit_disp([ 'Log file is ' file ]);
 
     % close welcome image
     delete(h);
@@ -177,7 +179,7 @@ function config = mifit_Load_Preferences
   file = fullfile(prefdir, [ mfilename '.ini' ]);
   content = ''; config = '';
   if ~isempty(dir(file))
-    if 1 % try
+    try
       content = fileread(file);
       evalc(content);% this should make a 'config' variable
       mifit_disp([ 'Loading Preferences from ' file ]);
@@ -308,10 +310,43 @@ function mifit_File_Exit(hObject)
   config = getappdata(mifit_fig, 'Preferences');
   if strcmp(config.Save_Data_On_Exit, 'yes')
     mifit_File_Save;
+  else
+    file = fullfile(prefdir, [ mfilename '.mat' ]);
+    if ~isempty(dir(file)), delete(file); end
   end
   mifit_disp([ 'Exiting miFit. Bye bye.' ])
   delete(mifit_fig);
   
+function mifit_File_Reset(hObject)
+  options.Default     = 'Cancel';
+  options.Interpreter = 'tex';
+  ButtonName = questdlg({ ...
+    '{\fontsize{14}{\color{blue}Reset default configuration ?}}', ...
+    'This action will clear the Data set list and the Log file.', ...
+    'Selecting "Factory settings" also resets the Preferences in', ...
+    prefdir, ...
+    '{\bf{Reset now ?}}'}, 'miFit: Reset ?', ...
+    'Reset', 'Cancel', 'Factory settings', ...
+    options);
+  if ~strcmp(ButtonName, 'Cancel')
+    if ~strcmp(ButtonName, 'Reset') % Factory settings
+      file = fullfile(prefdir, [ mfilename '.ini' ]);
+      if ~isempty(dir(file)), delete(file); end
+      mifit_Load_Preferences();
+      mifit_Apply_Preferences();
+    end
+    mifit_Edit_Select_All([], 1);
+    mifit_Edit_Delete();
+    
+    file = fullfile(prefdir, [ mfilename '.log' ]);
+    if ~isempty(dir(file)), delete(file); end
+  end
+  
+function mifit_File_Log(hObject)
+  file = fullfile(prefdir, [ mfilename '.log' ]);
+  if ~isempty(dir(file))
+    fallback_edit(file);
+  end
 % Edit menu ********************************************************************
 
 function mifit_Edit_Undo(hObject)
@@ -322,12 +357,12 @@ function mifit_Edit_Undo(hObject)
 function mifit_Edit_Cut(hObject)
 % get the selected indices in the List, copy these elements to the clipboard
 % and delete the elements. Update the History (in Delete).
-  mifit_Copy(hObject);
-  mifit_Delete(hObject);
+  mifit_Edit_Copy(hObject);
+  mifit_Edit_Delete(hObject);
 
 function mifit_Edit_Copy(hObject)
 % get the selected indices in the List, copy these elements to the clipboard
-  
+  disp('TODO: mifit_Edit_Copy: ...')
 
 function mifit_Edit_Paste(hObject)
 % append/copy the data sets from the clipboard to the end of the list
@@ -341,16 +376,18 @@ function mifit_Edit_Paste(hObject)
 
 function mifit_Edit_Duplicate(hObject)
 % copy and paste selected. Update the history (in Paste).
-  mifit_Copy(hObject);
-  mifit_Paste(hObject);
+  d=mifit_List_Data_pull();
+  mifit_List_Data_push(copyobj(d));
   
-function mifit_Edit_Select_All(hObject)
+function mifit_Edit_Select_All(hObject, select)
 % set the List selected values to all ones
   hObject = mifit_fig('List_Data_Files');
   items   = get(hObject,'String');
   index_selected = get(hObject,'Value');
-  if numel(index_selected) == numel(items), index_selected = [];
-  else index_selected=1:numel(items); end
+  if nargin < 2, select=[]; end
+  if (numel(index_selected) == numel(items) && isempty(select)) ...
+    || (~isempty(select) && ~select), index_selected = [];
+  elseif isempty(select) || (~isempty(select) && select), index_selected=1:numel(items); end
   set(hObject,'Value', index_selected);
 
 function mifit_Edit_Delete(hObject)
@@ -481,6 +518,11 @@ function mifit_List_Data_UpdateStrings
   set(hObject,'String', list, 'Value', []);
 
 function mifit_disp(message)
-  % display message, and can log it into a File or Log window
+  % display message, and log it
+  
   disp([ mfilename ': ' message ])
-  % disp('TODO: mifit_disp: log into file, set in Preferences')
+  file = fullfile(prefdir, [ mfilename '.log' ]);
+  fid = fopen(file, 'a+');
+  if fid == -1, return; end
+  fprintf(fid, '[%s] %s\n', datestr(now), message);
+  fclose(fid);
