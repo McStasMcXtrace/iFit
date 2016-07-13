@@ -25,11 +25,16 @@ function varargout = mifit(varargin)
           % callback with varargin{1} == 'action'
           action = varargin{1};
           if strcmpi(action,'identify'), return; end
-          try
-            feval([ 'mifit_' action ], varargin{2:end});
-          catch ME
-            mifit_disp([ 'Unknown action "' action '"' ])
-            rethrow(ME)
+          if any(strcmpi(action,{'pull','data'}))
+            mifit_Edit_Select_All([], 1);
+            out = mifit_List_Data_pull;
+          else
+            try
+              feval([ 'mifit_' action ], varargin{2:end});
+            catch ME
+              mifit_disp([ 'Unknown action "' action '"' ])
+              rethrow(ME)
+            end
           end
         elseif ishandle(varargin{1})    % a CallBack function
           h = varargin{1}; d = [];
@@ -347,6 +352,7 @@ function mifit_File_Log(hObject)
   if ~isempty(dir(file))
     fallback_edit(file);
   end
+  
 % Edit menu ********************************************************************
 
 function mifit_Edit_Undo(hObject)
@@ -362,17 +368,59 @@ function mifit_Edit_Cut(hObject)
 
 function mifit_Edit_Copy(hObject)
 % get the selected indices in the List, copy these elements to the clipboard
-  disp('TODO: mifit_Edit_Copy: ...')
+% we use 'copy' from Y. Lengwiler as it is pure-Matlab, and extends the limited 
+% clipboard function.
+  d=mifit_List_Data_pull(); % get selected objects
+  if isempty(d), return; end
+  x = {};
+  for index=1:numel(d)
+    % we create a cell which contains the Signal and Axes
+    if numel(d) == 1, this = d; else this=d(index); end
+    for dim = 1:ndims(this)
+      x{end+1} = getaxis(this, dim);
+    end
+    x{end+1} = this{0};
+    % add metadata. This also marks the end of the iData object definition for paste.
+    x{end+1} = ...
+      sprintf('Title="%s";Label="%s";DisplayName="%s";xlabel="%s";ylabel="%s";title="%s";', ...
+      this.Title, this.Label, this.DisplayName, xlabel(this), ylabel(this), title(this));
+  end
+  copy(x);
 
 function mifit_Edit_Paste(hObject)
 % append/copy the data sets from the clipboard to the end of the list
 % clipboard can be a file name, an iData Tag/ID or ID in the Stack
 % for iData ID, make a copy of the objects
 % Update the History
-  disp('TODO: mifit_Edit_Paste: ...')
-  d=[];
+  d=paste();
+  if iscell(d)
+    % we look for numerical cell elements, and split after each non numerical for 
+    % new objects
+    D = []; this_datax = {}; this_meta = [];
+    for index=1:numel(d)
+      num = str2num(d{index});
+      if ~isempty(num), this_datax{end+1} = num;
+      else
+        this_meta = str2struct(d{index});
+        this = iData(this_datax{:});
+        
+        this_datax = {};
+        if isstruct(this_meta)
+          if isfield(this_meta, 'Title'),  this.Title = this_meta.Title; end
+          if isfield(this_meta, 'Label'),  this.Label = this_meta.Label; end
+          if isfield(this_meta, 'DisplayName'), this.DisplayName = this_meta.DisplayName; end
+          if isfield(this_meta, 'xlabel'), xlabel(this, this_meta.xlabel); end
+          if isfield(this_meta, 'ylabel'), ylabel(this, this_meta.ylabel); end
+          if isfield(this_meta, 'title'),  title(this,  this_meta.title); end
+        end
+        D = [ D ; this ];
+      end
+    end % for
+    d = D;
+  else
+    d = iData(d);
+  end
   mifit_List_Data_push(d);
-  mifit_History_push;
 
 function mifit_Edit_Duplicate(hObject)
 % copy and paste selected. Update the history (in Paste).
@@ -397,7 +445,7 @@ function mifit_Edit_Delete(hObject)
   hObject        = mifit_fig('List_Data_Files');
   index_selected = get(hObject,'Value');
   Data = getappdata(fig, 'Data');
-  if numel(Data) > 1
+  if numel(Data) > 1 && numel(index_selected) < numel(Data)
     Data(index_selected) = [];
   else
     Data = [];
@@ -484,7 +532,7 @@ function mifit_List_Data_push(d)
   end
   set(hObject,'String', list, 'Value', index_selected);
   
-  % Update the History with the new stack and Date
+  % Update the History with the new stack
   mifit_History_push;
   
 function d=mifit_List_Data_pull(hObject)

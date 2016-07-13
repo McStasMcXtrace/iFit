@@ -54,12 +54,18 @@ if numel(b) > 1 && any(strcmp(S(1).type,{'()','{}'}))
     elseif isa(val, 'iData') && numel(val) == numel(c)
       c = iData(val); % array([1 2 ..]) = iData_array([1 2 ..])	
     else    % single level array assigment as array([1 2 3]) = something
-      for j = 1:numel(c)
-        try
-          c(j) = iData(val);
-        catch
-          iData_private_error(mfilename, [ 'can not assign ' num2str(length(c)) ' iData array to ' num2str(length(val)) ' ' class(val) ' array for object ' inputname1 ' ' b(1).Tag ]);
-        end
+      if isempty(val)
+          % clear array elements
+          c = [];
+          b(S(1).subs{:}) = [];
+      else
+          for j = 1:numel(c)
+            try
+              c(j) = iData(val);
+            catch
+              iData_private_error(mfilename, [ 'can not assign ' num2str(length(c)) ' iData array to ' num2str(length(val)) ' ' class(val) ' array for object ' inputname1 ' ' b(1).Tag ]);
+            end
+          end
       end
     end
   end
