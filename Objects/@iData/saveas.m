@@ -24,9 +24,9 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'art'  save as ASCII art
 %           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
+%           'lamp' save as LAMP Processed Workspace, i.e. 'nxs lamp data' (HDF5)
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
 %           'mantid' save as Mantid Processed Workspace, i.e. 'nxs mantid data' (HDF5)
-%           'lamp' save as LAMP Processed Workspace, i.e. 'nxs lamp data'
 %           'mat'  save as a serialized '.mat' binary file (fast 'save', DEFAULT)
 %           'nc'   save as NetCDF
 %         as well as other lossy formats
@@ -366,7 +366,7 @@ try
     close(f);
   case {'x3d','xhtml'} % X3D/XHTML format
     filename = iData_private_saveas_x3d(a, filename);
-  case 'html'
+  case {'html','htm'}
     % create a folder with the HTML doc, figures
     filename = iData_private_saveas_html(a, filename);
   case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF

@@ -1,13 +1,11 @@
 function filename = iData_private_saveas_html(a, filename)
 
   [Path, name, ext] = fileparts(filename);
-  target = fullfile(Path, name);
+  target = Path;
   titl = char(a);
   titl(titl=='<')='[';
   titl(titl=='>')=']';
   % Open and write the HTML header
-  filename = fullfile(target,'index.html');
-  if ~isdir(target), mkdir(target); end
   if ~isdir(fullfile(target,'img')), mkdir(fullfile(target,'img')); end
   fid = fopen(filename, 'a+');
     
@@ -76,6 +74,7 @@ function filename = iData_private_saveas_html(a, filename)
     end
   end
   saveas(f, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.png' ]), 'png');
+  saveas(f, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.fig' ]), 'fig');
   fprintf(fid, '<img src="%s" align="middle"><br>\n', ...
     fullfile('img',[ 'iFit_DataSet_' a.Tag '.png' ]));
   saveas(f, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.pdf' ]), 'pdf');
