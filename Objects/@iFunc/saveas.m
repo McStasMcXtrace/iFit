@@ -23,6 +23,7 @@ function [filename,format] = saveas(a, varargin)
 %           'fig'  save as a Matlab figure
 %           'gif','bmp','png','tiff','jpeg','ps','pdf','ill','eps' save as an image
 %           'hdf4' save as an HDF4 immage
+%           'html' save as Hypertext Markup Language document
 %
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
@@ -54,6 +55,7 @@ filterspec = {...
       '*.eps', 'Encapsulated PostScrip (color, *.eps)'; ...
       '*.fig', 'Matlab figure (*.fig)'; ...
       '*.hdf4;*.h4', 'Hierarchical Data Format 4 image (*.hdf4)'; ...
+      '*.html;*.htm','Hypertext Markup Language document (*.html)'; ...
       '*.jpg', 'JPEG image (*.jpg)'; ...
       '*.json', 'JSON JavaScript Object Notation (*.json)'; ...
       '*.m',   'Matlab script/function (*.m)'; ...
@@ -147,8 +149,8 @@ case 'eps'
   format='epsc';
 case 'ps'
   format='psc';
-case 'hdf'
-  format='hdf4';
+case 'hdf4'
+  format='hdf';
 end
 
 % remove NaN values, which are usually not well supported by text based formats
@@ -226,9 +228,10 @@ case 'epsc' % color encapsulated postscript file format, with TIFF preview
   plot(a,options);
   print(f, '-depsc', '-tiff', filename);
   close(f);
-case {'png','tiff','jpeg','psc','pdf','ill','gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4'}  % bitmap and vector graphics formats (PDF, ...)
+case {'png','tiff','jpeg','psc','pdf','ill','gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf'}  % bitmap and vector graphics formats (PDF, ...)
   f=figure('visible','off');
   plot(a,options);
+  if strcmp(format,'hdf4'), format='hdf'; end
   print(f, [ '-d' format ], filename);
   close(f);
 case 'fig'  % Matlab figure format
@@ -238,6 +241,63 @@ case 'fig'  % Matlab figure format
   close(f);
 case 'json'
   mat2json(struct(a), filename );    % in private
+case {'html','htm'}
+  [Path, name, ext] = fileparts(filename);
+  target = Path;
+  titl = a.Name;
+  titl(titl=='<')='[';
+  titl(titl=='>')=']';
+  % Open and write the HTML header
+  if ~isdir(fullfile(target,'img')), mkdir(fullfile(target,'img')); end
+  fid = fopen(filename, 'a+');
+    
+  if fid == -1, filename = []; return; end
+  fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
+  fprintf(fid, '<html>\n<head>\n<title>%s</title>\n<\head>\n', ...
+      titl);
+  fprintf(fid, '<body><div style="text-align: center;">\n');
+  fprintf(fid, '<a href="http://ifit.mccode.org"><img title="ifit.mccode.org" src="http://ifit.mccode.org/images/iFit-logo.png" align="middle" height=100></a>\n');
+  fprintf(fid, '<h1>%s</h1></div>\n', titl);
+  % get the parameter values as a struct
+  fprintf(fid,'<h2>Parameters</h2>\n');
+  if ~isempty(a.ParameterValues)
+    mp = cell2struct(num2cell(a.ParameterValues(:)),strtok(a.Parameters(:)));
+    desc = evalc('disp(mp)');
+    fprintf(fid, [ '<pre> ' desc ' </pre>\n' ]);
+  else
+    mp = a.Parameters;
+    fprintf(fid,'%s<br>\n', mp{:});
+  end
+  % plot of the object: special case for 1D which can overlay data and model
+  f = figure('Visible','off', 'Name', [ 'iFit_Model_' a.Tag ]);
+  h = plot(a);
+  saveas(f, fullfile(target, 'img', [ 'iFit_Model_' a.Tag '.png' ]), 'png');
+  saveas(f, fullfile(target, 'img', [ 'iFit_Model_' a.Tag '.fig' ]), 'fig');
+  fprintf(fid, '<img src="%s" align="middle"><br>\n', ...
+    fullfile('img',[ 'iFit_Model_' a.Tag '.png' ]));
+  saveas(f, fullfile(target, 'img', [ 'iFit_Model_' a.Tag '.pdf' ]), 'pdf');
+  close(f);
+  % export object into a number of usable formats
+  builtin('save', fullfile(target, 'img', [ 'iFit_Model_' a.Tag '.mat' ]), 'a');
+  t = 'Exported to: [ ';
+  for ext={'mat','png','pdf','fig'}
+    f = [ 'iFit_Model_' a.Tag '.' ext{1} ];
+    if ~isempty(dir(fullfile(target, 'img', f)))
+      t = [ t '<a href="img/' f '">' ext{1} '</a> ' ];
+    end
+  end
+  t = [ t ' ]' ];
+  fprintf(fid, '%s\n', t);
+  % display a 'footer' below the object description
+  fprintf(fid,'<hr>\n');
+  fprintf(fid,[ '<b>' datestr(now) '</b> - ' version(iData) '<br>\n' ]);
+  
+  fprintf(fid,[ '<a href="http://ifit.mccode.org">Powered by iFit ' ...
+    '<img src="http://ifit.mccode.org/images/iFit-logo.png" width=35 height=32></a> \n' ...
+    '<a href="http://www.ill.eu">(c) ILL ' ...
+    '<img title="ILL, Grenoble, France www.ill.eu" src="http://ifit.mccode.org/images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France www.ill.eu" style="width: 21px; height: 20px;"></a><hr>\n' ]);
+  fprintf(fid,'<p><!-- pagebreak --></p>\n'); % force page break in case we append new stuff
+  fclose(fid);
 case {'yaml','yml'}
   YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
 otherwise
