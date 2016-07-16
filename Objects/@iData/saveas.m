@@ -277,111 +277,116 @@ end
 
 % ==============================================================================
 % handle specific format actions
-switch strtok(format)
-case 'm'  % single m-file Matlab output (text), with the full object description
-  filename = iData_private_saveas_m(a, filename);
-case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
-  filename = iData_private_saveas_dat(a, filename);
-case 'mat'  % single mat-file Matlab output (binary), with the full object description
-  % serialize for much faster save
-  a.Data = hlp_serialize(a.Data);
-  if ~isempty(inputname(1))
-    eval([ inputname(1) '= a;' ]);
-    save(filename, inputname(1));
-  else
-    eval([ a.Tag '= a;' ]);
-    save(filename, a.Tag);
-  end
-case {'hdf','hdf5','h5','nx','nxs','n5','nc','cdf'} % HDF5, CDF, NetCDF formats: converts fields to double and chars
-  filename = iData_private_saveas_hdfnc(a, filename, format, root); % private function
-case 'edf'  % EDF ESRF format
-  filename = medfwrite(a, filename); % in private
-case 'vtk'  % VTK volume
-  filename = iData_private_saveas_vtk(a, filename);
-case 'nii'  % NifTi volume
-  filename = iData_private_saveas_nii(a, filename);
-case 'hdr'  % Analyze volume
-  filename = iData_private_saveas_analyze(a, filename);
-case 'mrc'  % MRC map file
-  WriteMRC(getaxis(a,0),1,filename);  % in private
-case {'fits','fit','fts'} % FITS image
-  if ndims(a) == 2
-    a = double(a);
-    fitswrite(a, filename);
-  else
-    disp([ mfilename ': Export into ' format ' is only possible for 2D objects, not for ' num2str(ndims(a)) 'D. Use resize to change dimensionality. Ignoring.' ]) 
-  end
-case 'xls'  % Excel file format
-  xlswrite(filename, double(a), a.Title);
-case 'csv'  % Spreadsheet comma separated values file format
-  csvwrite(filename, double(a));
-case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','png','art'}  % bitmap images
-  if ndims(a) == 2 && (any(regexp(options, '\<hide_axes\>')))
-    b=getaxis(a,0); % Signal/Monitor
-    b=round((b-min(b(:)))/(max(b(:))-min(b(:)))*256);
-  else
-    f = getframe(a,[],options);
-    b = f.cdata;
-    if  strcmp(format(1:3),'jpe')
-        b=sum(b,3);
+try
+  switch strtok(format)
+  case 'm'  % single m-file Matlab output (text), with the full object description
+    filename = iData_private_saveas_m(a, filename);
+  case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
+    filename = iData_private_saveas_dat(a, filename);
+  case 'mat'  % single mat-file Matlab output (binary), with the full object description
+    % serialize for much faster save
+    a.Data = hlp_serialize(a.Data);
+    if ~isempty(inputname(1))
+      eval([ inputname(1) '= a;' ]);
+      save(filename, inputname(1));
+    else
+      eval([ a.Tag '= a;' ]);
+      save(filename, a.Tag);
     end
-  end
-  switch format
-  case {'png'}
-    imwrite(b, jet(256), filename, format, 'Comment',char(a),'Mode','lossless');
-  case 'tiff'
-    imwrite(b, jet(256), filename, format, 'Description',char(a));
-  case 'art'
-    textart(b, filename); % in private
+  case {'hdf','hdf5','h5','nx','nxs','n5','nc','cdf'} % HDF5, CDF, NetCDF formats: converts fields to double and chars
+    filename = iData_private_saveas_hdfnc(a, filename, format, root); % private function
+  case 'edf'  % EDF ESRF format
+    filename = medfwrite(a, filename); % in private
+  case 'vtk'  % VTK volume
+    filename = iData_private_saveas_vtk(a, filename);
+  case 'nii'  % NifTi volume
+    filename = iData_private_saveas_nii(a, filename);
+  case 'hdr'  % Analyze volume
+    filename = iData_private_saveas_analyze(a, filename);
+  case 'mrc'  % MRC map file
+    WriteMRC(getaxis(a,0),1,filename);  % in private
+  case {'fits','fit','fts'} % FITS image
+    if ndims(a) == 2
+      a = double(a);
+      fitswrite(a, filename);
+    else
+      disp([ mfilename ': Export into ' format ' is only possible for 2D objects, not for ' num2str(ndims(a)) 'D. Use resize to change dimensionality. Ignoring.' ]) 
+    end
+  case 'xls'  % Excel file format
+    xlswrite(filename, double(a), a.Title);
+  case 'csv'  % Spreadsheet comma separated values file format
+    csvwrite(filename, double(a));
+  case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','png','art'}  % bitmap images
+    if ndims(a) == 2 && (any(regexp(options, '\<hide_axes\>')))
+      b=getaxis(a,0); % Signal/Monitor
+      b=round((b-min(b(:)))/(max(b(:))-min(b(:)))*256);
+    else
+      f = getframe(a,[],options);
+      b = f.cdata;
+      if  strcmp(format(1:3),'jpe')
+          b=sum(b,3);
+      end
+    end
+    switch format
+    case {'png'}
+      imwrite(b, jet(256), filename, format, 'Comment',char(a),'Mode','lossless');
+    case 'tiff'
+      imwrite(b, jet(256), filename, format, 'Description',char(a));
+    case 'art'
+      textart(b, filename); % in private
+    otherwise
+      if strcmp(format,'hdf4'), format='hdf'; end
+      imwrite(b, jet(256), filename, format);
+    end
+  case 'epsc' % color encapsulated postscript file format, with TIFF preview
+    f=figure('visible','off');
+    plot(a,options);
+    print(f, '-depsc', '-tiff', filename);
+    close(f);
+  case {'psc','pdf','ill','jpeg'}  % other bitmap and vector graphics formats (PDF, ...)
+    f=figure('visible','off');
+    plot(a,options);
+    print(f, [ '-d' format ], filename);
+    close(f);
+  case 'fig'  % Matlab figure format
+    f=figure('visible','off');
+    plot(a,options);
+    saveas(f, filename, 'fig');
+    close(f);
+  case 'svg'  % scalable vector graphics format (private function)
+    f=figure('visible','off');
+    plot(a,options);
+    plot2svg(filename, f);
+    close(f);
+  case {'vrml','wrl'} % VRML format
+    f=figure('visible','off');
+    h = plot(a,options);
+    g = gca;
+    vrml(g,filename);
+    close(f);
+  case {'x3d','xhtml'} % X3D/XHTML format
+    filename = iData_private_saveas_x3d(a, filename);
+  case 'html'
+    % create a folder with the HTML doc, figures
+    filename = iData_private_saveas_html(a, filename);
+  case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
+    filename = iData_private_saveas_stl(a, filename);
+  case {'yaml','yml'}
+    YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
+  case 'json'
+    mat2json(struct(a), filename );    % in private
+  case {'xml'}
+    try
+        struct2xml(struct(a), filename);   % in private
+    catch
+        filename = [];
+    end
   otherwise
-    if strcmp(format,'hdf4'), format='hdf'; end
-    imwrite(b, jet(256), filename, format);
+    iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
+    filename = [];
   end
-case 'epsc' % color encapsulated postscript file format, with TIFF preview
-  f=figure('visible','off');
-  plot(a,options);
-  print(f, '-depsc', '-tiff', filename);
-  close(f);
-case {'psc','pdf','ill','jpeg'}  % other bitmap and vector graphics formats (PDF, ...)
-  f=figure('visible','off');
-  plot(a,options);
-  print(f, [ '-d' format ], filename);
-  close(f);
-case 'fig'  % Matlab figure format
-  f=figure('visible','off');
-  plot(a,options);
-  saveas(f, filename, 'fig');
-  close(f);
-case 'svg'  % scalable vector graphics format (private function)
-  f=figure('visible','off');
-  plot(a,options);
-  plot2svg(filename, f);
-  close(f);
-case {'vrml','wrl'} % VRML format
-  f=figure('visible','off');
-  h = plot(a,options);
-  g = gca;
-  vrml(g,filename);
-  close(f);
-case {'x3d','xhtml'} % X3D/XHTML format
-  filename = iData_private_saveas_x3d(a, filename);
-case 'html'
-  % create a folder with the HTML doc, figures
-  filename = iData_private_saveas_html(a, filename);
-case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
-  filename = iData_private_saveas_stl(a, filename);
-case {'yaml','yml'}
-  YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
-case 'json'
-  mat2json(struct(a), filename );    % in private
-case {'xml'}
-  try
-      struct2xml(struct(a), filename);   % in private
-  catch
-      filename = [];
-  end
-otherwise
-  iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
+catch
+  iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' failed. Ignoring.' ]);
   filename = [];
 end
 
