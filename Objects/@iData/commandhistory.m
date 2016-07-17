@@ -24,7 +24,7 @@ s = a.Command;
 if nargout == 0
   T   = a.Title; if iscell(T), T=T{1}; end
   T   = regexprep(T,'\s+',' '); % remove duplicated spaces
-  [selection, ok] = listdlg('ListString', s, 'ListSize',[400 300], ...
+  [selection, ok] = listdlg_nonmodal('ListString', s, 'ListSize',[400 300], ...
     'Name', T , ...
     'PromptString', char(a), 'OKString','Save all to file...','CancelString','OK'); 
   if ~isempty(selection)
@@ -32,7 +32,7 @@ if nargout == 0
   end
   if ok
     % save all commands to a script file
-    [filename, pathname] = uiputfile('*.m', 'Save commands to as', [ 'iFit_' a.Tag '_history' ]);
+    [filename, pathname] = uiputfile('*.m', 'Save commands to file', [ 'iFit_' a.Tag '_history' ]);
     if filename == 0, return; end % user press Cancel
     filename = fullfile(pathname, filename);
     [pathname, name, ext] = fileparts(filename); % get name without extension
