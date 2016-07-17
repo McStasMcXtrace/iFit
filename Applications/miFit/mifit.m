@@ -26,8 +26,7 @@ function varargout = mifit(varargin)
           action = varargin{1};
           if strcmpi(action,'identify'), return; end
           if any(strcmpi(action,{'pull','data'}))
-            mifit_Edit_Select_All([], 1);
-            out = mifit_List_Data_pull;
+            out = getappdata(fig, 'Data');
           else
             try
               feval([ 'mifit_' action ], varargin{2:end});
@@ -510,7 +509,7 @@ function mifit_Data_Properties(varargin)
   disp('mifit_Data_Properties: should display properties from "disp" and allow to re-assign signal, axes, define new aliases...')
   
 function mifit_Data_History(varargin)
-d = mifit_List_Data_pull;
+  d = mifit_List_Data_pull();
   for index=1:numel(d)
     if ~isempty(d(index).Source) && ~isdir(d(index).Source)
       commandhistory(d(index));
@@ -543,6 +542,12 @@ function h=mifit_Tools_About(fig)
   end
   
 % List Data and Stack management ***********************************************
+
+function mifit_List_Data_Files(varargin)
+% called when clicking on the listbox
+disp mifit_List_Data_Files
+varargin
+%  mifit_Data_Plot();
 
 function mifit_List_Data_push(d)
 % put a new data set at the end of the stack
@@ -604,7 +609,11 @@ function mifit_List_Data_UpdateStrings
 function mifit_disp(message)
   % display message, and log it
   
-  disp([ mfilename ': ' message ])
+  if size(message,1) > 1
+    disp(message);
+  else
+    disp([ mfilename ': ' message ]);
+  end
   file = fullfile(prefdir, [ mfilename '.log' ]);
   fid = fopen(file, 'a+');
   if fid == -1, return; end
