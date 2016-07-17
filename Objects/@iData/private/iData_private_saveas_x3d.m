@@ -1,4 +1,4 @@
-functions filename = iData_private_saveas_x3d(a, filename)
+function filename = iData_private_saveas_x3d(a, filename, format, options)
   titl = char(a);
   titl(titl=='<')='[';
   titl(titl=='>')=']';
