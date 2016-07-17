@@ -9,6 +9,7 @@ function result = test_McStas_DIFF
     else
       result = [ 'OK     ' mfilename ];
     end
+    delete('templateDIFF*');
   else
     result = [ 'OK     ' mfilename ' SKIPPED: McStas/McXtrace not available'];
   end
