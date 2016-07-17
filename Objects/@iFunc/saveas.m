@@ -257,7 +257,7 @@ case {'html','htm'}
       titl);
   fprintf(fid, '<body><div style="text-align: center;">\n');
   fprintf(fid, '<a href="http://ifit.mccode.org"><img title="ifit.mccode.org" src="http://ifit.mccode.org/images/iFit-logo.png" align="middle" height=100></a>\n');
-  fprintf(fid, '<h1>%s</h1></div>\n', titl);
+  fprintf(fid, '<h1>%s</h1></div>\n%s\n', titl, a.Description);
   % get the parameter values as a struct
   fprintf(fid,'<h2>Parameters</h2>\n');
   if ~isempty(a.ParameterValues)
@@ -288,6 +288,11 @@ case {'html','htm'}
   end
   t = [ t ' ]' ];
   fprintf(fid, '%s\n', t);
+  fprintf(fid,'<h2>Model Expression</h2>\n<pre>');
+  t = cellstr(a);
+  fprintf(fid, '%s\n', t{:});
+  fprintf(fid, '</pre>\n');
+  
   % display a 'footer' below the object description
   fprintf(fid,'<hr>\n');
   fprintf(fid,[ '<b>' datestr(now) '</b> - ' version(iData) '<br>\n' ]);

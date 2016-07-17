@@ -1,4 +1,4 @@
-function filename = iData_private_saveas_m(a, filename)
+function filename = iData_private_saveas_m(a, filename, name, options)
   NL = sprintf('\n');
   if ~isdeployed
     str = [ 'function this=' name NL ];

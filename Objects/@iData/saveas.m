@@ -243,7 +243,10 @@ elseif isempty(format) && isempty(ext)
   format='mat'; filename = [ filename '.mat' ];
 end
 
-if isempty(filename), filename = [ 'iFit_' a.Tag ]; end
+if isempty(filename) || isempty(name), 
+  filename = [ 'iFit_' a.Tag '.' format ]; 
+  name = filename; 
+end
 
 % handle array of objects to save iteratively
 if numel(a) > 1 && ~any(strcmp(lower(format),'mat'))
@@ -280,7 +283,7 @@ end
 try
   switch strtok(format)
   case 'm'  % single m-file Matlab output (text), with the full object description
-    filename = iData_private_saveas_m(a, filename);
+    filename = iData_private_saveas_m(a, filename, name, options);
   case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
     filename = iData_private_saveas_dat(a, filename);
   case 'mat'  % single mat-file Matlab output (binary), with the full object description
@@ -356,7 +359,11 @@ try
   case 'svg'  % scalable vector graphics format (private function)
     f=figure('visible','off');
     plot(a,options);
-    plot2svg(filename, f);
+    try
+      saveas(f, filename, 'svg');
+    catch
+      plot2svg(filename, f);
+    end
     close(f);
   case {'vrml','wrl'} % VRML format
     f=figure('visible','off');
@@ -365,12 +372,12 @@ try
     vrml(g,filename);
     close(f);
   case {'x3d','xhtml'} % X3D/XHTML format
-    filename = iData_private_saveas_x3d(a, filename);
+    filename = iData_private_saveas_x3d(a, filename, format, options);
   case {'html','htm'}
     % create a folder with the HTML doc, figures
     filename = iData_private_saveas_html(a, filename);
   case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
-    filename = iData_private_saveas_stl(a, filename);
+    filename = iData_private_saveas_stl(a, filename, format);
   case {'yaml','yml'}
     YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
   case 'json'
@@ -385,7 +392,8 @@ try
     iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
     filename = [];
   end
-catch
+catch ME
+  disp(getReport(ME))
   iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' failed. Ignoring.' ]);
   filename = [];
 end
