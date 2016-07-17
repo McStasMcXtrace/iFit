@@ -54,16 +54,12 @@ function varargout = mifit(varargin)
             d = iData(h);
           end
           if ~isempty(d)
-            mifit_disp('Importing into List:')
-            mifit_disp(char(d))
             mifit_List_Data_push(d);
           end
         else
           d = iData(varargin{:});
           % now push 'd' into the Stack
           if ~isempty(d)
-            mifit_disp('Importing into List:')
-            mifit_disp(char(d))
             mifit_List_Data_push(d);
           end
         end
@@ -219,6 +215,7 @@ function mifit_Save_Preferences(config)
 % -------------------------------------------------------------------------
 % Callbacks
 % -------------------------------------------------------------------------
+% usual callback arguments are : Callback(gcbo,eventdata)
 
 % File menu ********************************************************************
 function mifit_File_New(handle)
@@ -237,7 +234,7 @@ function mifit_File_Open(handle)
   % push that data onto the List
   mifit_List_Data_push(d);
   
-function mifit_File_Save(hObject)
+function mifit_File_Save(varargin)
 % save Data sets and Model parameters into a mifit.mat file
   fig = mifit_fig;
   Data = getappdata(fig, 'Data');
@@ -247,15 +244,15 @@ function mifit_File_Save(hObject)
   mifit_disp([ 'Saving Data sets into ' file ]);
   builtin('save', file, 'Data');
   
-function mifit_File_Saveas(hObject)
+function mifit_File_Saveas(varargin)
 % save the application configuration into specified file
 % Data sets and Model parameters into a mifit.mat file
-  fig = mifit_fig;
+  fig  = mifit_fig;
   Data = getappdata(fig, 'Data');
   if isempty(Data), return; end
  
   filterspec = { '*.mat','MAT-files (*.mat)'};
-  [filename, pathname] = uiputfile(filterspec, 'Save miFit Data sets as', [ mfilename '.mat' ]);
+  [filename, pathname] = uiputfile(filterspec, 'Save All miFit Data sets as', [ mfilename '.mat' ]);
   if isequal(filename,0) || isequal(pathname,0)
     return
   end
@@ -263,7 +260,7 @@ function mifit_File_Saveas(hObject)
   mifit_disp([ 'Saving Data sets into ' file ]);
   builtin('save', file, 'Data');
   
-function mifit_File_Print(hObject)
+function mifit_File_Print(varargin)
 % print the interface. Not very nice. can we think of something better ?
 % perhaps we can generate an HTML report in Saveas HTML ?
   fig = mifit_fig;
@@ -272,7 +269,7 @@ function mifit_File_Print(hObject)
   disp('TODO: save all Data sets as HTML with model and parameters')
   disp('then open it with web for printing');
   
-function mifit_File_Preferences(hObject)
+function mifit_File_Preferences(varargin)
 % open Preferences dialogue
 % set directories to search for Models
 % set FontSize (and update all Fonts in figure)
@@ -310,7 +307,7 @@ function mifit_Apply_Preferences
   % <https://fr.mathworks.com/matlabcentral/newsreader/view_thread/148095>
   h = findobj(fig, 'Type','uimenu');
 
-function mifit_File_Exit(hObject)
+function mifit_File_Exit(varargin)
 % Quit and Save Data
   config = getappdata(mifit_fig, 'Preferences');
   if strcmp(config.Save_Data_On_Exit, 'yes')
@@ -322,7 +319,7 @@ function mifit_File_Exit(hObject)
   mifit_disp([ 'Exiting miFit. Bye bye.' ])
   delete(mifit_fig);
   
-function mifit_File_Reset(hObject)
+function mifit_File_Reset(varargin)
   options.Default     = 'Cancel';
   options.Interpreter = 'tex';
   ButtonName = questdlg({ ...
@@ -347,26 +344,26 @@ function mifit_File_Reset(hObject)
     if ~isempty(dir(file)), delete(file); end
   end
   
-function mifit_File_Log(hObject)
+function mifit_File_Log(varargin)
   file = fullfile(prefdir, [ mfilename '.log' ]);
   if ~isempty(dir(file))
-    fallback_edit(file);
+    edit(file);
   end
   
 % Edit menu ********************************************************************
 
-function mifit_Edit_Undo(hObject)
+function mifit_Edit_Undo(varargin)
 % set the Data stack to the previous state from History
   mifit_History_pull();
   mifit_List_Data_UpdateStrings();
 
-function mifit_Edit_Cut(hObject)
+function mifit_Edit_Cut(varargin)
 % get the selected indices in the List, copy these elements to the clipboard
 % and delete the elements. Update the History (in Delete).
-  mifit_Edit_Copy(hObject);
-  mifit_Edit_Delete(hObject);
+  mifit_Edit_Copy(varargin{:});
+  mifit_Edit_Delete(varargin{:});
 
-function mifit_Edit_Copy(hObject)
+function mifit_Edit_Copy(varargin)
 % get the selected indices in the List, copy these elements to the clipboard
 % we use 'copy' from Y. Lengwiler as it is pure-Matlab, and extends the limited 
 % clipboard function.
@@ -387,7 +384,7 @@ function mifit_Edit_Copy(hObject)
   end
   copy(x);
 
-function mifit_Edit_Paste(hObject)
+function mifit_Edit_Paste(varargin)
 % append/copy the data sets from the clipboard to the end of the list
 % clipboard can be a file name, an iData Tag/ID or ID in the Stack
 % for iData ID, make a copy of the objects
@@ -422,13 +419,14 @@ function mifit_Edit_Paste(hObject)
   end
   mifit_List_Data_push(d);
 
-function mifit_Edit_Duplicate(hObject)
+function mifit_Edit_Duplicate(varargin)
 % copy and paste selected. Update the history (in Paste).
   d=mifit_List_Data_pull();
   mifit_List_Data_push(copyobj(d));
   
 function mifit_Edit_Select_All(hObject, select)
 % set the List selected values to all ones
+% the select argument can be 0 or 1 to deselect/select all
   hObject = mifit_fig('List_Data_Files');
   items   = get(hObject,'String');
   index_selected = get(hObject,'Value');
@@ -438,7 +436,7 @@ function mifit_Edit_Select_All(hObject, select)
   elseif isempty(select) || (~isempty(select) && select), index_selected=1:numel(items); end
   set(hObject,'Value', index_selected);
 
-function mifit_Edit_Delete(hObject)
+function mifit_Edit_Delete(varargin)
 % delete selected
 % Update the History
   fig = mifit_fig;
@@ -480,6 +478,44 @@ function mifit_History_push
   
 % Data menu ********************************************************************
 
+function mifit_Data_Plot(varargin)
+  d = mifit_List_Data_pull;
+  f=figure;
+  subplot(d);
+  
+function mifit_Data_Export(varargin)
+  d = mifit_List_Data_pull;
+  if ~isempty(d)
+    save(d, 'gui');
+  end
+  
+function mifit_Data_Table(varargin)
+  d = mifit_List_Data_pull;
+  for index=1:numel(d)
+    handle = edit(d(index), 'editable');
+    set(handle, 'DeleteFcn', @mifit);
+  end
+
+function mifit_Data_View(varargin)
+  d = mifit_List_Data_pull;
+  for index=1:numel(d)  
+    if ~isempty(d(index).Source) && ~isdir(d(index).Source)
+      try
+        edit(d(index).Source)
+      end
+    end
+  end
+  
+function mifit_Data_Properties(varargin)
+  disp('mifit_Data_Properties: should display properties from "disp" and allow to re-assign signal, axes, define new aliases...')
+  
+function mifit_Data_History(varargin)
+d = mifit_List_Data_pull;
+  for index=1:numel(d)
+    if ~isempty(d(index).Source) && ~isdir(d(index).Source)
+      commandhistory(d(index));
+    end
+  end
 % Data_Properties ?
 % re-assign data set signal, axes, ... to aliases/new ones
 % display statistics
@@ -534,13 +570,13 @@ function mifit_List_Data_push(d)
   
   % Update the History with the new stack
   mifit_History_push;
+  mifit_disp('Importing into List:')
+  mifit_disp(char(d))
   
-function d=mifit_List_Data_pull(hObject)
+function d=mifit_List_Data_pull(varargin)
 % get the selected Data List
 % return the selected objects
-  if nargin == 0 || isempty(hObject)
-      hObject = mifit_fig('List_Data_Files');
-  end
+  hObject = mifit_fig('List_Data_Files');
   d = [];
 
   index_selected = get(hObject,'Value');

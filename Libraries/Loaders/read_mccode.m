@@ -223,6 +223,7 @@ function data=mcplot_load(filename)
       if isempty(this_data)
         this_data = mcplot_load_mccode(filename{index});    % load single McCode monitor files
       end
+      if ~isfield(this_data, 'filename') this_data.filename = filename{index}; end
       data = { data{:} this_data };
     end
     
@@ -394,7 +395,7 @@ function data = mcplot_check_data(structure)
   % check a single structure format
   % fields
   if ~isfield(structure, 'Source')
-    if isfield(structure,'Instrument')
+    if isfield(structure,'Instrument') && ~isfield(structure, 'filename')
       structure.Source = structure.Instrument;
     else
       structure.Source = filename;
