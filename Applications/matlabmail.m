@@ -42,13 +42,13 @@ if isempty(sender)
     sender = 'ifit.sqw.phonons@gmail.com';
 end
 if isempty(psswd)
-    psswd  = char([ 84   118    76    99    65   108    48    49 ]);
+    psswd  = [];
 end
 if isempty(server)
     server = 'smtp.gmail.com';
 end
 
-if isempty(sender) || isempty(recipient), recipient=''; return; end
+if isempty(sender) || isempty(recipient) || isempty(passwd) || isempty(server), recipient=''; return; end
 
 setpref('Internet','E_mail',sender);
 setpref('Internet','SMTP_Server',server);
