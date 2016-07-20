@@ -58,7 +58,7 @@ copyfile([ m filesep 'ResLibCal' ],       target)
 copyfile([ m filesep 'sqw_phonons' ],       target)
 
 % documentation
-copyfile(fullfile(p, 'README.txt'), target)
+copyfile(fullfile(p, 'README.md'), target)
 copyfile(fullfile(p, 'COPYING'),    target)
 copyfile(fullfile(p, 'Docs'),       fullfile(target,'Docs'))
 % commented as matlabWrap with iFit is currently broken
