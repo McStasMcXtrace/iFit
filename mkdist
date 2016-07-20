@@ -60,7 +60,7 @@ rm mkdist
 # rm Loaders/looktxt.mex*
 
 # Update version and date
-for file in README.txt Objects/@iData/version.m Docs/index.html Docs/Install.html Applications/standalone/deb/control Applications/standalone/deb/debcreate
+for file in README.md Objects/@iData/version.m Docs/index.html Docs/Install.html Applications/standalone/deb/control Applications/standalone/deb/debcreate
 do
 sed 's/@IFIT_VERSION@/'$IFIT_VERSION'/'  $file     > $file.tmp
 sed 's/@IFIT_NAME@/'$IFIT_NAME'/'        $file.tmp > $file
@@ -120,7 +120,7 @@ then
       sudo cp -r $IFIT_TARNAME-$IFIT_VERSION-$ARCH/*    ${BUILDDIR}/usr/local/$IFIT_TARNAME
       sudo cp -r $IFIT_TARNAME-$IFIT_VERSION/Docs/*     ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/COPYING    ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/copyright
-      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/README.txt ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/README.md ${BUILDDIR}/usr/share/doc/$IFIT_TARNAME/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/ifit.desktop \
                                                         ${BUILDDIR}/usr/share/applications/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/ResLibCal.desktop \
