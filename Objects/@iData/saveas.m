@@ -330,16 +330,24 @@ try
           b=sum(b,3);
       end
     end
-    switch format
-    case {'png'}
-      imwrite(b, jet(256), filename, format, 'Comment',char(a),'Mode','lossless');
-    case 'tiff'
-      imwrite(b, jet(256), filename, format, 'Description',char(a));
-    case 'art'
-      textart(b, filename); % in private
-    otherwise
-      if strcmp(format,'hdf4'), format='hdf'; end
-      imwrite(b, jet(256), filename, format);
+    if strcmp(format,'hdf4'), format='hdf'; end
+    if ~isempty(b)
+      switch format
+      case {'png'}
+        imwrite(b, jet(256), filename, format, 'Comment',char(a),'Mode','lossless');
+      case 'tiff'
+        imwrite(b, jet(256), filename, format, 'Description',char(a));
+      case 'art'
+        textart(b, filename); % in private
+      otherwise
+        imwrite(b, jet(256), filename, format);
+      end
+    else
+      % rendering with getframe/imwrite failed. Fall back to saveas.
+      f = figure;
+      b = plot(a, options);
+      saveas(f, filename, format);
+      close(f);
     end
   case 'epsc' % color encapsulated postscript file format, with TIFF preview
     f=figure('visible','off');
