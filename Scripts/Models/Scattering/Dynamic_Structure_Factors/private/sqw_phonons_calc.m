@@ -182,7 +182,7 @@ case 'GPAW' % ==================================================================
   end
   
   decl = 'from gpaw import GPAW, PW, FermiDirac';
-  calc = 'calc = GPAW(usesymm=False, txt="gpaw.log"'; % because small displacement breaks symmetry
+  calc = [ 'calc = GPAW(usesymm=False, txt="' fullfile(options.target,'gpaw.log') '"' ]; % because small displacement breaks symmetry
 
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations=FermiDirac(%g)', options.occupations) ];
