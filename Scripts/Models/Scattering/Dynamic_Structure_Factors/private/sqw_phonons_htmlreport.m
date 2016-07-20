@@ -160,17 +160,17 @@ if options.htmlreport && ~isempty(filename)
     fprintf(fid, '<li><a href="#results">Results</a><ul>\n');
     fprintf(fid, '<li><a href="#model">The Phonon Model S(hkl,w)</a></li>\n');
     if isfield(options, 'dos') && options.dos 
-    fprintf(fid, '<li><a href="#dos">The phonon spectrum (vDOS)</a></li>\n');
+    fprintf(fid, '<li><a href="#dos">The Phonon spectrum (vDOS)</a></li>\n');
     end
     fprintf(fid, '<li><a href="#grid4d">The Model evaluated onto a 4D grid</a></li>\n');
     fprintf(fid, '<li><a href="#grid3d">The Model evaluated onto a 3D grid (QH~0)</a></li>\n');
-    fprintf(fid, '<li><a href="#powder">The powder average S(q,w)</a></li></ul></li>\n');
+    fprintf(fid, '<li><a href="#powder">The Powder average S(q,w)</a></li></ul></li>\n');
     fprintf(fid, '<li><a href="#zip">Download</a></li>\n');
     fprintf(fid, '</ul><hr>\n');
     
     % introduction
     fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions in a single crystal, using a DFT code (the "calculator") in the background. From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
-    fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <a href="http://ifit.mccmode.org/Models.html#mozTocId990577"<b>sqw_phonon</b> Model</a>, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomistic Simulation Environment (ASE)</a>.\n');
+    fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <a href="http://ifit.mccode.org/Models.html#mozTocId990577"<b>sqw_phonon</b> Model</a>, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomistic Simulation Environment (ASE)</a>.\n');
     fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends successfully, the lower part presents the S(hkl,w) dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic part of the dynamic structure factor S(hkl,w), for vibrational modes in the harmonic approximation.</p>\n');
     fprintf(fid, '<p><b>Limitations:</b> These results only display the vibrational mode energies, and do not compute the actual intensity. The accuracy of the model depends on the parameters used for the computation, e.g. energy cut-off, k-points grid, smearing, ...</p>\n');
 
