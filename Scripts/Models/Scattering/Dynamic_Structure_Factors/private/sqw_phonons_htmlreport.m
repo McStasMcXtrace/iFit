@@ -63,7 +63,7 @@ if ~isempty(options.email) || (options.htmlreport && ~isempty(filename))
     
     % evaluate model (low memory requirements for smaller data files)
     if isempty(data)
-      qh=linspace(0.01,1.5,30);qk=qh; ql=qh; w=linspace(0.01,100,51);
+      qh=linspace(0.01,1.5,30);qk=qh; ql=qh; w=linspace(0.01,100,101);
       data=iData(object,[],qh,qk,ql,w);
     end
     
