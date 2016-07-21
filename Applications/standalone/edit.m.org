@@ -31,7 +31,7 @@ else
   url = '';
 end
 
-if ishandle(url)
+if ishandle(url) && feature('ShowFigureWindows')
   % activate hidden edit items in the figure
   search_list= [ findall(url,'type','uimenu') ; findall(url,'type','uitoggletool') ; findall(url,'type','uitogglesplittool') ];
   search_tags= get(search_list, 'Tag');
@@ -81,16 +81,21 @@ if success == 0 % only try once per session to launch external editor in case of
     editor = getenv('EDITOR');
     if isempty(editor) || any(strcmp(editor,{'vi','vim','nano'}))
       editor = '';
-      [flag, out]=system('locate gedit');
-      if isempty(editor) && ~isempty(out), editor='gedit'; end
-      [flag, out]=system('locate nedit');
-      if isempty(editor) && ~isempty(out), editor='nedit'; end
-      [flag, out]=system('locate kate');
-      if isempty(editor) && ~isempty(out), editor='kate'; end
-      [flag, out]=system('locate xedit');
-      if isempty(editor) && ~isempty(out), editor='xedit'; end
-      [flag, out]=system('locate xemacs');
-      if isempty(editor) && ~isempty(out), editor='xemacs'; end
+      if feature('ShowFigureWindows')
+        % test editors that require X display
+        ed={'gedit','nedit','kate','xedit','xemacs'};
+        for index=ed
+          [flag, out]=system(['locate ' ed{1} ]);
+          if isempty(editor) && ~isempty(out), editor=ed{1}; break; end
+        end
+      else
+        % test editors that do not require X display
+        ed={'nano','less','more'};
+        for index=ed
+          [flag, out]=system(['locate ' ed{1} ]);
+          if isempty(editor) && ~isempty(out), editor=ed{1}; break; end
+        end
+      end
     end
     if ~isempty(editor)
       if ~isempty(url)
