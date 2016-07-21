@@ -182,14 +182,16 @@ end
 zlab = '';
 
 % possibly select Rendered prior to start plotting
-if (strfind(method,'opengl'))   % faster for large data sets
+if ~feature('ShowFigureWindows')
+  set(gcf,'Renderer','painters')
+elseif (strfind(method,'opengl'))   % faster for large data sets
 	set(gcf,'Renderer','OpenGL')
 elseif (strfind(method,'painters'))
 	set(gcf,'Renderer','painters')
 elseif (strfind(method,'zbuffer'))
 	set(gcf,'Renderer','zbuffer');
 elseif ismac
-  set(gcf,'Renderer','zbuffer'); % default for MacOS which do not support OpenGL
+  set(gcf,'Renderer','painters'); % default for MacOS which do not support OpenGL
 end
 
 % ==============================================================================

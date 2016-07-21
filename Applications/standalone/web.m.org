@@ -52,12 +52,14 @@ function h=private_help(varargin)
 %
 % example: help iData/cos; help iFunc
 
-persistent allfiles
+persistent allfiles allfiles_txt
 
 if isempty(allfiles)
   allfiles = getAllFiles(ifitpath);
   docfiles = cell(size(allfiles));
-  doccount = 0;
+  docfiles_txt = cell(size(allfiles));
+  doccount     = 0;
+  doccount_txt = 0;
   % keep only HTML and TXT files
   for index=1:numel(allfiles)
     [p,f,e] = fileparts(allfiles{index});
@@ -65,9 +67,14 @@ if isempty(allfiles)
       doccount=doccount+1;
       docfiles(doccount) = allfiles(index);
     end
+    if strcmp(lower(e),'.txt')
+      doccount_txt=doccount_txt+1;
+      docfiles_txt(doccount_txt) = allfiles(index);
+    end
   end
-  allfiles = docfiles(1:doccount); % store only HTML/TXT files
-  clear doccount;
+  allfiles     = docfiles(1:doccount); % store only HTML/TXT files
+  allfiles_txt = docfiles_txt(1:doccount_txt); % store only TXT files
+  clear docfiles docfiles_txt;
 end
 
 h = '';
@@ -83,17 +90,40 @@ else
   % attempts to guess what to display. Is there a match with words (file + last path token) ?
   [p,f,e]   = fileparts(url);
   [dummy,p] = fileparts(p); % f=filename; p=last path name.
-  
-  % build a token search count
-  tok_file = strfind(lower(allfiles),lower(f));
-  tok_path = strfind(lower(allfiles),lower(p));
-  criteria = cellfun('prodofsize',tok_file) + cellfun('prodofsize',tok_path);
-  
-  % get the best criteria (max number of occurrences)
-  [criteria, index] = max(criteria);
-  
-  % the URL to display
-  h = allfiles{index};
+  index = [];
+  % first searches for token.txt and token.html
+  if isempty(dir(url)) 
+    if ~isempty(which([ url '.html' ])) && feature('ShowFigureWindows') && usejava('jvm')
+      h = which([ url '.html' ]); % prefer HTML over TXT when Java/Display
+    elseif ~isempty(which([ url '.txt' ]))
+      h = which([ url '.txt' ]); % prefer TXT when no Java/no Display
+    elseif ~isempty(which([ url '.html' ]))
+      h = which([ url '.html' ]); % use HTML if no TXT
+    else
+      h = which(url);
+    end
+  end
+  if isempty(h)
+    if ~feature('ShowFigureWindows')
+      % search for a TXT file when no Display is available
+      tok_file = strfind(lower(allfiles_txt),lower(f));
+      tok_path = strfind(lower(allfiles_txt),lower(p));
+      criteria_txt = cellfun('prodofsize',tok_file) + cellfun('prodofsize',tok_path);
+      [criteria_txt, index] = max(criteria_txt);
+    end
+    if isempty(index)
+      % build a token search count with HTML and TXT
+      tok_file = strfind(lower(allfiles),lower(f));
+      tok_path = strfind(lower(allfiles),lower(p));
+      criteria = cellfun('prodofsize',tok_file) + cellfun('prodofsize',tok_path);
+      
+      % get the best criteria (max number of occurrences)
+      [criteria, index] = max(criteria);
+    end
+    
+    % the URL to display
+    h = allfiles{index};
+  end
   
   % display the help URL
   fallback_web(h);

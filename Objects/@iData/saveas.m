@@ -344,7 +344,7 @@ try
       end
     else
       % rendering with getframe/imwrite failed. Fall back to saveas.
-      f = figure;
+      f = figure('visible','off');
       b = plot(a, options);
       saveas(f, filename, format);
       close(f);

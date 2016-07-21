@@ -58,13 +58,17 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   end
   if strcmp(strtok(ifit_options.line, ' ('), 'help')        % 'help' command ---------
     if length(ifit_options.line) > 4  % help <cmd>
-      ifit_options.line = inline_display_helpcommand(ifit_options.line); % returns empty line
+      try
+        ifit_options.line = inline_display_helpcommand(ifit_options.line); % returns empty line
+      end
     else
       inline_display_help;            % see below (single 'help')
       ifit_options.line = 'doc(iData,''iFit''); disp('' '');';
     end
   elseif strncmp(ifit_options.line,'run ', 4) % 'run' command ------------------
-    ifit_options.line = inline_runscript(ifit_options.line);
+    try
+      ifit_options.line = inline_runscript(ifit_options.line);
+    end
   elseif strncmp(ifit_options.line,'clear ', 5)% 'clear' must retain ifit_options and this
     ifit_options.line = [ 'clearvars ' ifit_options.line(6:end) ];
   end

@@ -25,8 +25,16 @@ function fallback_web(url)
   end
   if isempty(url), url = Home; end
   
-  if isempty(dir(url)) && ~isempty(which(url))
-    url = which(url);
+  if isempty(dir(url)) 
+    if ~isempty(which([ url '.html' ])) && feature('ShowFigureWindows') && usejava('jvm')
+      url = which([ url '.html' ]); % prefer HTML over TXT when Java/Display
+    elseif ~isempty(which([ url '.txt' ]))
+      url = which([ url '.txt' ]); % prefer TXT when no Java/no Display
+    elseif ~isempty(which([ url '.html' ]))
+      url = which([ url '.html' ]); % use HTML if no TXT
+    else
+      url = which(url);
+    end
   end
   
   handles=[];
@@ -35,7 +43,7 @@ function fallback_web(url)
   ret = open_system_browser(url);
   
   % when fails, we open our own browser
-  if ret && usejava('jvm') 
+  if ret && usejava('jvm') && feature('ShowFigureWindows')
       % use Java browser
       if ~isempty(dir(url))
         url = [ 'file://' url ]; % local file
@@ -87,6 +95,7 @@ function fallback_web(url)
   end
   if ret % could not open browser
     disp(url)
+    if ~isempty(dir(url)), type(url); end
   end
   
   function ret=open_system_browser(url)
