@@ -1,23 +1,35 @@
 function filename = iData_private_saveas_html(a, filename)
+  % save an iData into an HTML document
+  % if the document already exists, the new content is appended
+  if isempty(a), filename=[]; return; end
+  if isempty(dir(filename))
+    mode = 'w+';
+  else 
+    mode = 'a+';
+  end
 
   [Path, name, ext] = fileparts(filename);
   target = Path;
   titl = char(a);
   titl(titl=='<')='[';
   titl(titl=='>')=']';
+  titl(titl=='\')='';
   % Open and write the HTML header
-  if ~isdir(fullfile(target,'img')), mkdir(fullfile(target,'img')); end
-  fid = fopen(filename, 'a+');
-    
+  fid = fopen(filename, mode);  % create or append to file
   if fid == -1, filename = []; return; end
-  fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
-  fprintf(fid, '<html>\n<head>\n<title>%s</title>\n<\head>\n', ...
-      titl);
-  fprintf(fid, '<body><div style="text-align: center;">\n');
-  fprintf(fid, '<a href="http://ifit.mccode.org"><img title="ifit.mccode.org" src="http://ifit.mccode.org/images/iFit-logo.png" align="middle" height=100></a>\n');
-  fprintf(fid, '<h1>%s</h1></div>\n', titl);
+  if ~isdir(fullfile(target,'img')), mkdir(fullfile(target,'img')); end
   
-  % get Model information
+  % The Header *****************************************************************
+  if strcmp(mode, 'w+')
+    fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
+    fprintf(fid, '<html>\n<head>\n<title>%s</title>\n<\head>\n', ...
+        titl);
+    fprintf(fid, '<body><div style="text-align: center;">\n');
+    fprintf(fid, '<a href="http://ifit.mccode.org"><img title="ifit.mccode.org" src="http://ifit.mccode.org/images/iFit-logo.png" align="middle" height=100></a></div>\n');
+  end
+  fprintf(fid, '<div style="text-align: center;"><h1>%s</h1></div>\n', titl);
+  
+  % get any Model information
   m = []; mp = []; mv = [];
   try
     if isfield(a, 'Model')
@@ -39,6 +51,8 @@ function filename = iData_private_saveas_html(a, filename)
   end
   
   % build the HTML content
+  
+  % Data set information (short) ***********************************************
   fprintf(fid,'<h2>Data set</h2>\n');
   % object description
   if ~isempty(a.Title) || ~isempty(title(a))
@@ -50,7 +64,8 @@ function filename = iData_private_saveas_html(a, filename)
   desc = evalc('disp(data)');
   fprintf(fid,[ '<pre> ' desc ' </pre>\n' ]);
 
-  % model description
+  % Model information **********************************************************
+  % model description when exists
   if ~isempty(m)
     fprintf(fid,'<h2>Model</h2>\n');
     fprintf(fid, m.Name);
@@ -58,60 +73,122 @@ function filename = iData_private_saveas_html(a, filename)
     fprintf(fid, [ '<pre> ' desc ' </pre>\n' ]);
   end
   
+  % Data set (and Model) plot **************************************************
   % plot of the object: special case for 1D which can overlay data and model
   f = figure('Visible','off', 'Name', [ 'iFit_DataSet_' a.Tag ]);
   if ndims(a) == 1 && ~isempty(m) && isa(m, 'iFunc')
     % 1D plot with model
     h=plot(a,'bo',m,'r-','tight');
   elseif ndims(a) == 1
-    % simple plot. Model not available.
+    % simple plot. Model value not available.
     h=plot(a,'bo','tight');
   elseif ndims(a) > 1
-    if ~isempty(m) && isa(m, 'iFunc')
-      h=subplot([a m], [1 2], 'tight');
+    if ~isempty(mv) && isa(mv, 'iData')
+      h=subplot([a mv], [1 2], 'tight');
     else
       h=plot(a, 'tight');
     end
   end
-  saveas(f, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.png' ]), 'png');
-  saveas(f, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.fig' ]), 'fig');
-  fprintf(fid, '<img src="%s" align="middle"><br>\n', ...
-    fullfile('img',[ 'iFit_DataSet_' a.Tag '.png' ]));
-  saveas(f, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.pdf' ]), 'pdf');
+  
+  % Export data ****************************************************************
+  
+  % create output from the figure: png pdf fig
+  basename     = fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag ]);
+  basename_img = fullfile('img', [ 'iFit_DataSet_' a.Tag ]);
+  saveas(f, basename, 'png');
+  saveas(f, basename, 'fig');
+  saveas(f, basename, 'pdf');
   close(f);
+  
   % export object into a number of usable formats
-  builtin('save', fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.mat' ]), 'a');
-
-  save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.h5' ]), 'mantid');
-  if prod(size(a)) < 1e5
-    save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.dat' ]), 'dat data');
-    save(a, fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag '.svg' ]));
+  % 1D: mat dat/data hdf5/mantid png json      xml      yaml      nc fig pdf svg
+  % 2D: mat dat/data hdf5/mantid png json      xml      yaml      nc fig pdf svg 
+  % 3D: mat dat/data hdf5/mantid png json/data xml/data yaml/data nc fig pdf vtk mrc nc   
+  % nD: mat dat/data hdf5/mantid png json/data xml/data yaml/data nc
+  export       = {'mat','dat data',' mantid', 'json','xml','yaml','nc' };
+  export_label = { ...
+  'Matlab binary file. Open with Matlab or <a href="http://ifit.mccode.org">iFit</a>.', ...
+  'Flat text file which contains axes and the data set. You will have to reshape the matrix after reading the contents. View with any text editor.', ...
+  '<a href="http://www.hdfgroup.org/">NeXus/HDF5</a> data file, to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>.', ...
+  '<a href="http://en.wikipedia.org/wiki/JSON">JavaScript Object Notation</a>, to be opened with e.g. JSONView Chrome/Firefox plugin and text editors.', ...
+  '<a href="http://www.w3.org/XML/">Extensible Markup Language</a> file, to be opened with e.g. Chrome/Firefox and text editors.', ...
+  '<a href="http://en.wikipedia.org/wiki/YAML">YAML</a> interchange format, to be viewed with e.g. text editors.', ...
+  '<a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a> binary file, to be viewed with <a href="http://meteora.ucsd.edu/~pierce/ncview_home_page.html">ncview</a> and <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.'};
+  
+  % add 'data' keyword when the object is 'big'
+  w = whos('a');
+  flag_data  = (w.bytes > 1e6);
+  
+  if ~flag_data
+    export = [ export 'svg' ];  % when not too big
+    export_label = [ export_label 'Scalable Vector Graphics image, to be viewed with Chrome/Firefox, <a href="http://inkscape.org/">Inkscape</a>, <a href="http://www.gimp.org/>GIMP.</a>, <a href="http://projects.gnome.org/evince/">Evince</a>.' ];
   end
-  t = 'Exported to: [ ';
-  for ext={'mat','png','dat','svg','pdf','fig','h5'}
-    f = [ 'iFit_DataSet_' a.Tag '.' ext{1} ];
-    if ~isempty(dir(fullfile(target, 'img', f)))
-      t = [ t '<a href="img/' f '">' ext{1} '</a> ' ];
+  if ndims(a) == 3
+    export = [ export 'vtk' 'mrc' ];
+    export_label = [ export_label ...
+      'Visual ToolKit data set to be viewed with <a href="http://www.paraview.org/">ParaView</a> and <a href="https://svn.enthought.com/enthought/wiki/MayaVi">Mayavi2</a>.', ...
+      'MRC Electron density map, to be visualized with <a href="http://www.pymol.org/">PyMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>, <a href="http://mem.ibs.fr/VEDA/">VEDA</a>.' ];
+  end
+  if ~flag_data && any(ndims(a) == [2 3])
+    export = [ export 'xhtml' ];
+    export_label = [ export_label ...
+      'Extensible Web page with embeded viewer (X3DOM), to be viewed with Chrome/Firefox.' ];
+  end
+  for index=1:numel(export)
+    f = export{index};
+    if flag_data && isempty(strfind(f, 'data'))
+      f = [ f ' data' ];
+    end
+    switch export{index}
+    case 'mat'
+      builtin('save', basename, 'a');
+    otherwise
+      save(a, basename, f);
     end
   end
-  t = [ t ' ]' ];
-  fprintf(fid, '%s\n', t);
+  export = [ export 'png' 'fig' 'pdf' ];
+  export_label = [ export_label, ...
+    'PNG image for <a href="http://www.gimp.org/">GIMP</a> or <a href="http://projects.gnome.org/evince/">Evince</a>', ...
+    'Matlab figure to be opened with Matlab or <a href="http://ifit.mccode.org">iFit</a>. Use <i>set(gcf,''visible'',''on'')</i> after loading.', ...
+    'Portable Document File to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>.' ];
   
-  % add more information about the Data set
+  % add image and links to exported files
+  if ~isempty(dir([ basename '.png' ]))
+    fprintf(fid, '<div style="text-align: center;"><a href="%s"><img src="%s" align="middle"></a><br>\n<i>Figure: %s</i><br></div>\n', ...
+      [ basename_img '.png' ], ...
+      [ basename_img '.png' ], titl);
+  end
+  
+  % display list of available formats, as well as suggested software to use
+ fprintf(fid, '<p>Exported to: <br><ul>\n');
+  for index=1:numel(export)
+    if ~isempty(dir([ basename '.' export{index} ]))
+      fprintf(fid, [ '<li><b><a href="' basename_img '.' export{index} '">' export{index} '</a></b>: ' ...
+        export_label{index} '</li>\n' ]);
+    end
+  end
+  fprintf(fid, '</ul></p>\n');
+  
+  % Data set information (details) *********************************************
   fprintf(fid,'<h2>More about the Data set...</h2\n');
   desc = evalc('disp(a,''data'',''flat'')');
   desc(desc=='<')='[';
   desc(desc=='>')=']';
   fprintf(fid,[ '<br><pre> ' desc ' </pre>\n' ]);
-  
-  % display a 'footer' below the object description
   fprintf(fid,'<hr>\n');
-  fprintf(fid,[ '<b>' datestr(now) '</b> - ' version(iData) '<br>\n' ]);
   
-  fprintf(fid,[ '<a href="http://ifit.mccode.org">Powered by iFit ' ...
-    '<img src="http://ifit.mccode.org/images/iFit-logo.png" width=35 height=32></a> \n' ...
-    '<a href="http://www.ill.eu">(c) ILL ' ...
-    '<img title="ILL, Grenoble, France www.ill.eu" src="http://ifit.mccode.org/images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France www.ill.eu" style="width: 21px; height: 20px;"></a><hr>\n' ]);
+  % The Footer *****************************************************************
+  if strcmp(mode, 'w+')
+    % display a 'footer' below the object description
+    
+    fprintf(fid,[ '<b>' datestr(now) '</b> - ' version(iData) '<br>\n' ]);
+    
+    fprintf(fid,[ '<a href="http://ifit.mccode.org">Powered by iFit ' ...
+      '<img src="http://ifit.mccode.org/images/iFit-logo.png" width=35 height=32></a> \n' ...
+      '<a href="http://www.ill.eu">(c) ILL ' ...
+      '<img title="ILL, Grenoble, France www.ill.eu" src="http://ifit.mccode.org/images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France www.ill.eu" style="width: 33px; height: 32px;"></a><hr>\n' ]);
+  end
+  
   fprintf(fid,'<p><!-- pagebreak --></p>\n'); % force page break in case we append new stuff
   fclose(fid);
 

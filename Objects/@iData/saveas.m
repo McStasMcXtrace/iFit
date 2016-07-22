@@ -248,7 +248,8 @@ if isempty(filename) || isempty(name),
   name = filename; 
 end
 
-% handle array of objects to save iteratively
+% handle array of objects to save iteratively, except for file formats that support
+% multiple entries: MAT HDF XML DAT XHTML YAML HTML 
 if numel(a) > 1 && ~any(strcmp(lower(format),'mat'))
   filename_base = filename;
   if strcmp(filename_base, 'gui'), filename_base=''; end
@@ -387,15 +388,13 @@ try
   case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
     filename = iData_private_saveas_stl(a, filename, format);
   case {'yaml','yml'}
-    YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
+    if usejava('jvm')
+      YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
+    end
   case 'json'
     mat2json(struct(a), filename );    % in private
   case {'xml'}
-    try
-        struct2xml(struct(a), filename);   % in private
-    catch
-        filename = [];
-    end
+    struct2xml(struct(a), filename);   % in private
   otherwise
     iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
     filename = [];
