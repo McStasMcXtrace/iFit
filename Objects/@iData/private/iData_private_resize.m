@@ -75,6 +75,9 @@ is01 = islogical(x);
 x = dctn(x);
 
 % Crop the DCT coefficients
+% special treatment for singleton, which lead to empty array
+issingleton = (newsiz == 1);
+newsiz(issingleton) = 3;
 for k = 1:ndims(x)
     siz(k) = min(newsiz(k),siz(k));
     x(siz(k)+1:end,:) = [];
@@ -92,7 +95,15 @@ x = idctn(x)*sqrt(prod(newsiz)/N);
 if is01, x = round(x); end
 x = cast(x,class0);
 
-
+if any(issingleton)
+    s.type='()';
+    s.subs=cell(1,ndims(x));
+    for index=1:ndims(x)
+        if issingleton(index), s.subs{index}=2; 
+        else s.subs{index}=':'; end
+    end
+    x=subsref(x, s);
+end
 
 % ------------------------------------------------------------------------------
 function B = padarray(A, padsize, padval, direction)

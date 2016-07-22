@@ -82,15 +82,15 @@ otherwise % nD, n>1
       f_signal1 = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
       method    = 'interpn with signal';
       f_signal  = f_signal1;
-    catch
+    catch ME
       failed = true;
     end
     % check if we have generated many NaN's
-    if ~failed && ~isempty(f_signal1)
+    if ~failed && ~isempty(f_signal1) && length(i_axes) <= 3
       nb_i_nans  = numel(find(isnan(i_signal(:))));
       nb_f_nans1 = numel(find(isnan(f_signal1(:))));
-      if nb_f_nans1/numel(f_signal1) > 2*nb_i_nans/numel(i_signal)
-        failed = true;  % more than twice as before
+      if nb_f_nans1/numel(f_signal1) > 2*nb_i_nans/numel(i_signal) && nb_f_nans1/numel(f_signal1) > 1e-2
+        failed = true;  % twice as many NaN's as before
       end
     end
     
@@ -100,11 +100,14 @@ otherwise % nD, n>1
         if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
         f_signal2 = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
         method = 'griddata with signal';
-      else
+      elseif length(i_axes) == 3
         if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end
-        f_signal2 = griddatan(i_axes{:}, i_signal, f_axes{:}, method);
-        method = 'griddatan with signal';
+        f_signal2 = griddata3(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
+        method = 'griddata3 with signal';
+      else
+        f_signal = []; return
       end
+      % get the interpolation which produces less NaN's
       nb_f_nans2 = numel(find(isnan(f_signal2(:))));
       if ~isempty(f_signal1) && nb_f_nans1/numel(f_signal1) < nb_f_nans2/numel(f_signal2)
         f_signal = f_signal1;

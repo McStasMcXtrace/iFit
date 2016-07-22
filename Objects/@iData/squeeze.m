@@ -55,8 +55,9 @@ if numel(a) == 1
       x = getaxis(a, index);
       if isscalar(x) || isempty(find(x ~= x(1), 1))
         % axis is constant, or scalar
-        a.Alias.Axis([index index+1])   = a.Alias.Axis([index+1 index]);
-        x = getaxis(a, index+1); a=setaxis(a, index+1,x(1));
+        xa=setaxis(a, index,x(1));  % scalar
+        a.Alias.Axis([index (index+1:length(a.Alias.Axis))])   = a.Alias.Axis([(index+1:length(a.Alias.Axis)) index]);
+        
       else
         a=setaxis(a, index,squeeze(x));
       end
