@@ -243,7 +243,7 @@ end
 
 signal = [];
 
-if nargin == 0, configuration = 'gui'; end
+if nargin == 0, configuration = ''; varargin{1} = 'emt'; end
 
 options= sqw_phonons_argin(configuration, varargin{:});
 if isempty(status.mpirun) && isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
@@ -270,7 +270,7 @@ end
 % ==============================================================================
 %                               GUI (dialog)
 % ==============================================================================
-if ~isempty(options.gui) && ~isnan(options.gui)
+if ~isempty(options.gui) && ~any(isnan(options.gui))
   % pop-up a simple dialog requesting for:
   %  * configuration
   %  * calculator
@@ -755,6 +755,8 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
     '  if ndims(x) == 4, x=squeeze(x(:,:,:,1)); y=squeeze(y(:,:,:,1)); z=squeeze(z(:,:,:,1)); t=squeeze(t(1,1,1,:)); end',...
     'try', ...
     '  cd(target);', ...
+    '  if all(cellfun(@(x)numel(x)==length(x), {x y z t})) && numel(unique(cellfun(@(x)length(x), {x y z t}))) > 1',...
+    '    [x,y,z] = ndgrid(x,y,z); sz0=[ size(x) sz0(4) ]; end', ...
     '  if all(cellfun(@isscalar,{x y z t})), HKL = [ x y z ; x y z ];', ...
     '  else HKL = [ x(:) y(:) z(:) ]; end', ...
     '  save -ascii HKL.txt HKL', ...

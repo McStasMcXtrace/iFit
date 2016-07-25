@@ -572,11 +572,12 @@ try
     b.Label = b.Title;
     b.DisplayName = b.Title;
     setalias(b,'Error', 0);
-    setalias(b,'Parameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);
+    setalias(b,'ModelParameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);
     setalias(b,'Model', model, model.Name);
     output.modelValue = b;
     if nargin > 1 && ~isempty(inputname(2))
-      a = is_idata;
+      % update the incoming iData object with results from the fit/Model
+      a = is_idata
       setalias(a, 'Model', model, model.Name);
       setalias(a, 'ModelValue', output.modelValue, [ 'Value of ' model.Name ]);
       setalias(a, 'ModelParameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);

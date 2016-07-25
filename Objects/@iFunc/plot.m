@@ -61,12 +61,10 @@ if nargin < 2,
 end
 
 if strcmp(p, 'guess'), p=[]; end
+if isempty(p), p=NaN; end % force evaluation of function
 
 % evaluate the model value, and axes
 [signal, a, ax, name] = feval(a, p, varargin{:});
-if isempty(p) && length(signal) == length([ a.Parameters ])
-  [signal, a, ax, name] = feval(a, signal, varargin{:});
-end
 
 % Parameters are stored in the updated model
 if length(inputname(1))
@@ -114,14 +112,14 @@ elseif ndims(signal) == 2
   view(3)
   set(h,'EdgeColor','None');
 elseif ndims(signal) == 3
-  if all(cellfun(@isvector, ax)), [ax{:}]=meshgrid(ax{:}); end
+  if all(cellfun(@(x)numel(x)==length(x), ax)), [ax{:}]=ndgrid(ax{:}); end
   h =patch(isosurface(ax{2}, ax{1}, ax{3}, signal, mean(signal(:))));
   set(h,'EdgeColor','None','FaceColor','green'); alpha(0.7);
   light
   view(3)
 elseif ndims(signal) == 4
   signal=squeeze(signal(:,:,1,:));
-  if all(cellfun(@isvector, ax)), [ax{:}]=meshgrid(ax{:}); end
+  if all(cellfun(@(x)numel(x)==length(x), ax)), [ax{:}]=ndgrid(ax{:}); end
   x=ax{1}; y=ax{2}; z=ax{3}; t=ax{4};
   x=squeeze(x(:,:,1,:));
   y=squeeze(y(:,:,1,:));

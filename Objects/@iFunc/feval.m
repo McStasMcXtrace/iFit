@@ -234,9 +234,9 @@ if model.Dimension && ...
       signal_in_varargin = 3;
     else % use an event style representation
       for index=1:(model.Dimension+1)
-        x1 = -10*rand-1;
-        x2 = 10*rand+1;
-        args{index} = linspace(x1, x2, 10);
+        x1 = -2*rand-1;
+        x2 = 2*rand+1;
+        args{index} = linspace(x1, x2, 20+index);
       end
       signal_in_varargin = model.Dimension+1;
       signal = args{end};
@@ -426,7 +426,8 @@ for index=1:model.Dimension
     if ~isnan(width) && ~isnan(position)
       if isempty(varargin{index}) || all(all(isnan(varargin{index})))
 		    % axis is not set: use default axis from parameter names and values given
-		    varargin{index} = linspace(position-3*width,position+3*width, 50+index);
+		    if model.Dimension > 2, sz_max = 20; else sz_max = 50; end
+		    varargin{index} = linspace(position-3*width,position+3*width, sz_max+index);
 		    % orient the axis along the right dimension to indicate this is not an event type
         d = ones(1,max(2,model.Dimension)); d(index) = numel(varargin{index});
         varargin{index} = reshape(varargin{index}, d);
