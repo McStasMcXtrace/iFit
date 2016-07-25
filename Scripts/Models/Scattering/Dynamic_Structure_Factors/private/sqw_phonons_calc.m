@@ -66,6 +66,9 @@ case 'ABINIT'
   if (options.toldfe > 0)
     calc = [ calc sprintf(', toldfe=%g', options.toldfe) ];
   end
+  if ~isfield(options, 'pps') || isempty(options.pps)
+    options.iscf=17;
+  end
   if isfield(options,'iscf')
     % iscf=7 default (NC), 17 (PAW) 
     % <http://www.abinit.org/doc/helpfiles/for-v7.0/input_variables/varbas.html#iscf>
@@ -84,9 +87,6 @@ case 'ABINIT'
     % nbdblock, npband, AUTOPARAL=1
     % calc = [ calc sprintf(', nbdblock=%i', options.mpi) ];
     calc = [ calc sprintf(', autoparal=1') ];
-  end
-  if ~isfield(options, 'pps') || isempty(options.pps)
-    options.iscf=17;
   end
   if isfield(options, 'pps') && ~isempty(options.pps)
     calc = [ calc sprintf(', pps="%s"', options.pps) ];
