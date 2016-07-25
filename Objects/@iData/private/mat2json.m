@@ -42,14 +42,22 @@ switch class(M)
         J='{';
         f=fieldnames(M);
         for i=1:length(f)
-            J=[J,'"',f{i},'":',mat2json(M.(f{i})),','];
+            try
+              J=[J,'"',f{i},'":',mat2json(M.(f{i})),','];
+            catch
+              disp([ mfilename ': Ignoring field "' f{i} '" which is not a base Matlab class.' ]);
+            end
         end
         J(end)='}';
         
     case 'cell'
         J='[';
         for i=1:length(M)
-            J=[J,mat2json(M{i}),','];
+            try
+              J=[J,mat2json(M{i}),','];
+            catch
+              disp([ mfilename ': Ignoring field "' f{i} '" which is not a base Matlab class.' ]);
+            end
         end
         J(end)=']';
     otherwise
