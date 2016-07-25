@@ -148,9 +148,10 @@ classdef YAML
         
         function result = dump_data( r )
             %DUMP_DATA convert 
+            if isempty(r), result = java.util.ArrayList(); return; end
             if ischar(r)
                 result = java.lang.String(r);
-            elseif ~isscalar(r)
+            elseif ~isscalar(r) && builtin('isnumeric', r)
                 result = java.util.ArrayList();
                 if size(r,1)==1
                     for i = 1:numel(r)
@@ -165,7 +166,7 @@ classdef YAML
                         result.add(YAML.dump_data(r(i,:)));
                     end
                 end
-            elseif isnumeric(r)
+            elseif builtin('isnumeric', r)
                 result = java.lang.Double(r);
             elseif isstruct(r)
                 result = java.util.LinkedHashMap();

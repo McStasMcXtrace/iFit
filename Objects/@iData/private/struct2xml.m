@@ -139,7 +139,7 @@ function [] = parseStruct(s,docNode,curNode,pName)
                     if (succes)
                         curNode.setAttribute(cur_attr_sc,cur_str);
                     else
-                        disp(['Warning. The text in ' pName curfield '.' cur_attr ' could not be processed.']);
+                        disp(['Warning. The structure member ' pName curfield '.' cur_attr ' could not be processed.']);
                     end
                 end
             else
@@ -152,7 +152,7 @@ function [] = parseStruct(s,docNode,curNode,pName)
             if (succes)
                 curNode.appendChild(docNode.createTextNode(txt));
             else
-                disp(['Warning. The text in ' pName curfield ' could not be processed.']);
+                disp([ mfilename ': Warning. The text in ' pName curfield ' could not be processed.']);
             end
         else
             %Sub-element
@@ -172,7 +172,11 @@ function [] = parseStruct(s,docNode,curNode,pName)
                         curElement = docNode.createElement([curfield_sc '_' num2str(c) ]);
                         curNode.appendChild(curElement);
                         [txt,succes] = val2str(s.(curfield){c});
-                        curElement.appendChild(docNode.createTextNode(txt));
+                        if succes
+                          curElement.appendChild(docNode.createTextNode(txt));
+                        else
+                          disp([ mfilename ': Warning. The data in ' pName curfield ' could not be processed.']);
+                        end
                     else
                         disp(['Warning. The cell ' pName curfield '{' num2str(c) '} could not be processed, since it is of class ' class(s.(curfield){c}) ' (only struct, char, numeric).']);
                     end
@@ -186,7 +190,7 @@ function [] = parseStruct(s,docNode,curNode,pName)
                 if (succes)
                     curElement.appendChild(docNode.createTextNode(txt));
                 else
-                    disp(['Warning. The text in ' pName curfield ' could not be processed.']);
+                    disp([ mfilename ': Warning. The text in ' pName curfield ' could not be processed.']);
                 end
             end
         end
@@ -204,7 +208,11 @@ function [str,succes] = val2str(val)
     elseif (ischar(val))
         %do nothing
     elseif (isnumeric(val))
-        val = num2str(val);
+        try
+          val = num2str(val);
+        catch
+          succes = false;
+        end
     else
         succes = false;
     end

@@ -23,16 +23,20 @@ function filename = iData_private_saveas_hdfnc(a, filename, format, root)
     end
     
     % get the field value
-    val=get(a, fields{index});
-    if strcmp(types{index}, 'hdf5.h5string'), val = char(val.Data); end
-    if isstruct(val), continue; end
-    if iscellstr(val), 
-      val=val(:);
-      val(:, 2)={ ';' }; 
-      val=val'; 
-      val=[ val{1:(end-1)} ];
+    try
+      val=get(a, fields{index});
+      if strcmp(types{index}, 'hdf5.h5string'), val = char(val.Data); end
+      if isstruct(val), continue; end
+      if iscellstr(val), 
+        val=val(:);
+        val(:, 2)={ ';' }; 
+        val=val'; 
+        val=[ val{1:(end-1)} ];
+      end
+    catch
+      val = [];
     end
-    if ~isnumeric(val) && ~ischar(val), continue; end
+    if ~builtin('isnumeric',val) && ~ischar(val), continue; end
     if isempty(val),                    continue; end % does not support empty values when writing CDF
     
     % has the field some 'Attributes' ?

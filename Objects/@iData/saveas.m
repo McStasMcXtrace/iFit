@@ -38,7 +38,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'gif','bmp','png','tiff','jpeg' save as an image (no axes, only for 2D data sets)
 %           'hdf4' save as an HDF4 image
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D/4D)
-%           'html' save as Hypertext Markup Language document
+%           'html' save as Hypertext Markup Language document, appended to any existing document.
 %           'json' save as JSON JavaScript Object Notation, ascii
 %           'mrc'  save as MRC map file (3/4D)
 %           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative (3/4D)

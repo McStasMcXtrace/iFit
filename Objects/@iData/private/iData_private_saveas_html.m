@@ -24,8 +24,7 @@ function filename = iData_private_saveas_html(a, filename)
     fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
     fprintf(fid, '<html>\n<head>\n<title>%s</title>\n<\head>\n', ...
         titl);
-    fprintf(fid, '<body><div style="text-align: center;">\n');
-    fprintf(fid, '<a href="http://ifit.mccode.org"><img title="ifit.mccode.org" src="http://ifit.mccode.org/images/iFit-logo.png" align="middle" height=100></a></div>\n');
+    fprintf(fid, '<body>\n');
   end
   fprintf(fid, '<div style="text-align: center;"><h1>%s</h1></div>\n', titl);
   
@@ -44,7 +43,15 @@ function filename = iData_private_saveas_html(a, filename)
       mv = get(a, findfield(a, 'modelValue', 'cache first'));
     end
     
-    if isa(m, 'iFunc')
+    if isfield(a, 'ModelParameters')
+      mp = get(a, 'ModelParameters');
+      if isa(m, 'iFunc') && ~isempty(m)
+        names = m.Parameters(:);
+      end
+      if numel(names) == numel(mp)
+        mp = cell2struct(num2cell(mp(:)),strtok(names(:)));
+      end
+    elseif isa(m, 'iFunc') && ~isempty(m)
       % get the parameter values as a struct
       mp = cell2struct(num2cell(m.ParameterValues(:)),strtok(m.Parameters(:)));
     end
@@ -55,6 +62,7 @@ function filename = iData_private_saveas_html(a, filename)
   % Data set information (short) ***********************************************
   fprintf(fid,'<h2>Data set</h2>\n');
   % object description
+  data = [];
   if ~isempty(a.Title) || ~isempty(title(a))
     data.Title  = strtrim([ a.Title ' ' title(a) ]); end
   if ~isempty(a.Label) || ~isempty(a.DisplayName), 
@@ -66,28 +74,51 @@ function filename = iData_private_saveas_html(a, filename)
 
   % Model information **********************************************************
   % model description when exists
-  if ~isempty(m)
-    fprintf(fid,'<h2>Model</h2>\n');
-    fprintf(fid, m.Name);
+  if ~isempty(mp)
     desc = evalc('disp(mp)');
-    fprintf(fid, [ '<pre> ' desc ' </pre>\n' ]);
+  else desc = ''; end
+  
+  if ~isempty(m)
+    fprintf(fid,'<h2>Model: %s</h2>\n', m.Name);
+    fprintf(fid, '<p>\n');
+    fprintf(fid, m.Description);
+    fprintf(fid, '</p>\n');
+    if ~isempty(mp)
+      fprintf(fid, 'Model parameters<br>\n');
+      fprintf(fid, [ '<pre> ' desc ' </pre>\n' ]);
+    end
   end
   
   % Data set (and Model) plot **************************************************
   % plot of the object: special case for 1D which can overlay data and model
   f = figure('Visible','off', 'Name', [ 'iFit_DataSet_' a.Tag ]);
-  if ndims(a) == 1 && ~isempty(m) && isa(m, 'iFunc')
+  if ndims(a) == 1 && ~isempty(mv) && isa(mv, 'iData')
     % 1D plot with model
-    h=plot(a,'bo',m,'r-','tight');
+    h=plot(a,'bo',mv,'r-','tight');
   elseif ndims(a) == 1
     % simple plot. Model value not available.
     h=plot(a,'bo','tight');
   elseif ndims(a) > 1
     if ~isempty(mv) && isa(mv, 'iData')
-      h=subplot([a mv], [1 2], 'tight');
+      if ndims(a) == 2
+        % overlay data and model
+        h1 = plot(a, 'tight view3');
+        hold on
+        h2 = contour3(mv); set(h2, 'EdgeColor','black','LineWidth',5);
+      else
+        h=subplot([a mv], [1 2], 'tight');
+      end
     else
       h=plot(a, 'tight');
     end
+  end
+  % add text with parameters onto plot
+  if ~isempty(desc)
+    if ~isempty(m)
+      desc = sprintf('%s\n%s', m.Name, desc);
+    end
+    h = text(0,0, desc, 'Unit','normalized','Interpreter','none', ...
+      'BackgroundColor',[0.9 0.9 0.9],'FontName','FixedWidth');
   end
   
   % Export data ****************************************************************
@@ -115,9 +146,9 @@ function filename = iData_private_saveas_html(a, filename)
   '<a href="http://en.wikipedia.org/wiki/YAML">YAML</a> interchange format, to be viewed with e.g. text editors.', ...
   '<a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a> binary file, to be viewed with <a href="http://meteora.ucsd.edu/~pierce/ncview_home_page.html">ncview</a> and <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.'};
   
-  % add 'data' keyword when the object is 'big'
+  % add 'data' keyword when the object memory size is larger than 10 Mb
   w = whos('a');
-  flag_data  = (w.bytes > 1e6);
+  flag_data  = (w.bytes > 10e6);
   
   if ~flag_data
     export = [ export 'svg' ];  % when not too big
@@ -154,9 +185,12 @@ function filename = iData_private_saveas_html(a, filename)
   
   % add image and links to exported files
   if ~isempty(dir([ basename '.png' ]))
-    fprintf(fid, '<div style="text-align: center;"><a href="%s"><img src="%s" align="middle"></a><br>\n<i>Figure: %s</i><br></div>\n', ...
+    fprintf(fid, '<div style="text-align: center;"><a href="%s"><img src="%s" align="middle"></a><br>\n<i>Data: %s</i><br></div>\n', ...
       [ basename_img '.png' ], ...
       [ basename_img '.png' ], titl);
+    if ~isempty(m)
+      fprintf(fid, '<div style="text-align: center;"><i>Model: %s</i><br></div>\n', m.Name);
+    end
   end
   
   % display list of available formats, as well as suggested software to use

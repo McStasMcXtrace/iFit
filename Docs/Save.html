@@ -37,6 +37,8 @@
 
 
 
+
+
       something,</span> it is desirable to save your work for future use
     and communication (print, edit, send to friends...). We thus provide
     a general interface to save the <a href="iData.html">iData</a>
@@ -66,16 +68,16 @@
     format selector dialog pops-up.The <span style="font-weight: bold;">save</span>
     method is equivalent to <span style="font-style: italic;">saveas.</span><br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[</span><span style="color: rgb(204, 51, 204);"> ifitpath '</span><span style="color: rgb(204, 51, 204);">Data/ILL_IN6.dat'</span>])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);">''</span>,<span style="color: rgb(204, 51, 204);">'pdf'</span>)               <span style="font-style: italic;">% save object as a PDF and use object ID as file name</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);">'MakeItSo'</span>,<span style="color: rgb(204, 51, 204);">'hdf5'</span>)      <span style="font-style: italic;">% save object as a HDF5 into specified filename. Extension is appended automatically</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);">'MakeItSo'</span>,<span style="color: rgb(204, 51, 204);">'hdf5'</span>)        <span style="font-style: italic;">% 'save' is equivalent to 'saveas'</span></pre>
-    We recommend the following formats for storing data sets:<br>
+    We recommend the following formats for storing data sets, our best
+    choice being <b>HTML</b>:<br>
     <ul>
       <li><span style="font-weight: bold;">text formats</span>: Matlab
-        .m and DAT<br>
+        .m and DAT. HTML includes DAT.<br>
       </li>
       <li><span style="font-weight: bold;">binary formats</span>: HDF5
-        and Matlab .mat (for re-use from Matlab)</li>
+        and Matlab .mat (for re-use from Matlab). HTML includes these.</li>
       <li><span style="font-weight: bold;">for printing</span>: PDF and
-        SVG, HTML, FIG if you want to edit the plot with Matlab<br>
-      </li>
+        SVG, HTML, FIG if you want to edit the plot with Matlab. </li>
     </ul>
     The Matlab MAT workspace format can be generated in two forms:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);">''</span>,<span style="color: rgb(204, 51, 204);">'mat'</span>)             <span style="font-style: italic;">% save object as a serialized MAT (very fast)<br></span>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span> a<span style="font-style: italic;">			% save object as normal MAT file<br></span></pre>
@@ -98,6 +100,8 @@
 
 
 
+
+
     can more generally write any Matlab variable as a character string.
     And the <span style="font-weight: bold;">str2struct</span> function
     can read a character string and search for [<span style="font-style:
@@ -106,6 +110,8 @@
     <br>
     To load back an m or mat file into memory for re-use, type the
     m-file name without extension, or <span style="font-style: italic;">load(iData,'filename.mat</span>')
+
+
 
 
 
@@ -326,6 +332,29 @@
           <td style="vertical-align: top;">Yes<br>
           </td>
         </tr>
+        <tr>
+          <td valign="top"><font color="#cc33cc"><b>'HTML'</b><br>
+              Hypertext Markup Language</font><br>
+          </td>
+          <td valign="top">text with attached files<br>
+          </td>
+          <td valign="top"><b>printable page.</b><br>
+            Data is exported into MAT PNG DAT SVG PDF FIG HDF5...<br>
+          </td>
+          <td valign="top">Hypertext Markup Language with images.
+            Generates a full report, and also indicates any attached
+            Model. The object is exported into a number of formats. Can
+            be viewed with any modern Web browser such as <a
+              href="http://www.google.com/chrome">Chrome</a> and <a
+              href="http://www.mozilla.org">Firefox</a>. Can be printed
+            in a nice way.<br>
+            The new content is <b>appended</b> to any previous
+            document. An<i> 'img</i>' folder contains exported files and
+            images.<br>
+          </td>
+          <td valign="top"><br>
+          </td>
+        </tr>
       </tbody>
     </table>
     <span style="font-weight: bold;"></span><br>
@@ -375,6 +404,8 @@
               href="iFit.html">iFit standalone</a> or <a
               href="http://www.octave.org">Octave</a>) to be installed
             prior to importation. <span style="font-style: italic;">This
+
+
 
 
 
@@ -579,6 +610,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             files can be edited/viewed with e.g <a
               href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.
             Such files can of course also be <a href="Load.html">imported
+
+
 
 
 
@@ -886,6 +919,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
+
               Imaging Resource of the Mayo Clinic</a>. For 3/4D data
             (volume).<br>
           </td>
@@ -983,26 +1018,6 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/42997-dicom-to-nifti-c
           <td valign="top"><br>
           </td>
         </tr>
-        <tr>
-          <td valign="top"><font color="#cc33cc"><b>'HTML'</b><br>
-              Hypertext Markup Language</font><br>
-          </td>
-          <td valign="top">text with attached files<br>
-          </td>
-          <td valign="top"><b>printable page.</b><br>
-            Data is exported into MAT PNG DAT SVG PDF FIG and HDF5<br>
-          </td>
-          <td valign="top">Hypertext Markup Language with images.
-            Generates a full report, and also indicates any attached
-            Model. The object is exported into a number of formats. Can
-            be viewed with any modern Web browser such as <a
-              href="http://www.google.com/chrome">Chrome</a> and <a
-              href="http://www.mozilla.org">Firefox</a>. Can be printed
-            in a nice way.<br>
-          </td>
-          <td valign="top"><br>
-          </td>
-        </tr>
       </tbody>
     </table>
     <span style="font-weight: bold;"></span><br>
@@ -1010,6 +1025,8 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/42997-dicom-to-nifti-c
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 
