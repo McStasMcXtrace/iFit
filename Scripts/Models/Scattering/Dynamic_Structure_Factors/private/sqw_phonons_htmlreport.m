@@ -375,7 +375,7 @@ if options.htmlreport && ~isempty(filename)
     fprintf(fid, 'You can download the whole content of this report (data, plots, logs, ...) from<br>\n');
     [~,short_path] = fileparts(options.target);
     fprintf(fid, '<ul><li><a href="%s">%s</a></li></ul>', fullfile('..',[ short_path '.zip' ]), [ short_path '.zip' ]);
-    fprintf(fid, 'You should then open the "index.html" file therein with a browser (Firefox, Chrome...)<br>\n');
+    fprintf(fid, 'You should then open the "sqw_phonons.html" file therein with a browser (Firefox, Chrome...)<br>\n');
     
     % close HTML document
     fprintf(fid, '<hr>Date: %s.<br>\n', datestr(now));
@@ -383,13 +383,13 @@ if options.htmlreport && ~isempty(filename)
     
     % create a simple README file
     freadme = fopen(fullfile(options.target,'README.txt'),'w');
-    fprintf(freadme, 'Open the index.html file in this directory. It contains all you need. The Phonon Model (iFunc) is in the Phonons_Model.mat file.\n');
+    fprintf(freadme, 'Open the sqw_phonons.html file in this directory. It contains all you need. The Phonon Model (iFunc) is in the Phonons_Model.mat file.\n');
     fclose(freadme);
     
     if isdeployed || ~usejava('jvm') || ~usejava('desktop')
-      disp([ 'sqw_phonons: HTML report created as ' fullfile(options.target,'index.html') ]);
+      disp([ 'sqw_phonons: HTML report created as ' fullfile(options.target,'sqw_phonons.html') ]);
     else
-      disp([ 'sqw_phonons: HTML report created as <a href="' fullfile(options.target,'index.html') '">' fullfile(options.target,'index.html') '</a>' ]);
+      disp([ 'sqw_phonons: HTML report created as <a href="' fullfile(options.target,'sqw_phonons.html') '">' fullfile(options.target,'sqw_phonons.html') '</a>' ]);
     end
   end
 
