@@ -609,7 +609,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
       configuration ], options);
     return
   end
-  sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, calc);
+  sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'init', options, calc);
   
   % call python script with calculator
   cd(target)
@@ -850,7 +850,7 @@ disp(' ');
 Phonons_Model = signal;
 builtin('save', fullfile(options.target, 'Phonons_Model.mat'), 'Phonons_Model');
 
-sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'done', options, cite, signal);
+sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'done', options, cite, signal);
 
 % handle autoplot option
 if options.autoplot
@@ -861,8 +861,8 @@ else
   f = [];
 end
 
-sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'plot', options, f, signal);
-sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'end', options, f, signal);
+sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'plot', options, f, signal);
+sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'end', options, f, signal);
 
 % ------------------------------------------------------------------------------
 function [f, signal] = sqw_phonons_plot(signal)
