@@ -1,5 +1,5 @@
 function signal=sqw_phonons(configuration, varargin)
-% model=sqw_phonons(configuration, ..., options)
+% model=sqw_phonons(configuration, calculator, ..., options)
 %
 %   iFunc/sqw_phonons: computes phonon dispersions using the ASE.
 %   A model which computes phonon dispersions from the forces acting between
@@ -17,7 +17,8 @@ function signal=sqw_phonons(configuration, varargin)
 %     Dacapo    Plane-wave ultra-soft pseudopotential code
 %     ELK       Full Potential LAPW code
 %     ABINIT    Plane-wave pseudopotential code
-%     QuantumEspresso Plane-wave pseudopotential code
+%     QuantumEspresso_ASE Plane-wave pseudopotential code (with ASE/QE-util)
+%     QuantumEspresso     Plane-wave pseudopotential code (with PHON)
 %     VASP      Plane-wave PAW code (when installed and licensed)
 %
 %   We recommend QuantumEspresso, GPAW, ABINIT and Elk.
@@ -37,7 +38,8 @@ function signal=sqw_phonons(configuration, varargin)
 %     as an iData object. Subsequent evaluations are faster.
 %
 %   Benchmarks indicate that, for phonon dispersions:
-%   * QuantumEspresso is the fastest, with excellent parallelization and accuracy.
+%   * QuantumEspresso/PHON is the fastest, with excellent parallelization and accuracy.
+%   * QuantumEspresso/ASE is excellent.
 %   * ABINIT, VASP are also fast codes.
 %   * The all-electrons Elk code is about 10 times slower than QuantumEspresso.
 %   * Using k-points=3 is both fast and ensures a reasonable accuracy in phonons
@@ -253,7 +255,8 @@ end
 
 if isempty(options.calculator)
   % select default calculator according to those installed
-  for index={'quantumespresso','abinit','vasp','gpaw','elk','jacapo','nwchem',};
+  for index={'quantumespresso','quantumespresso_ase',  ...
+      'abinit','vasp','gpaw','elk','jacapo','nwchem'};
     if ~isempty(status.(index{1})), options.calculator=index{1}; break; end
   end
 end
@@ -279,7 +282,7 @@ if ~isempty(options.gui) && ~any(isnan(options.gui))
   %  * kpoints
   % and will select autoplot, 'dos'
   calcs = 'EMT';
-  for index={'gpaw','elk','jacapo','nwchem','abinit','quantumespresso','vasp'};
+  for index={'gpaw','elk','jacapo','nwchem','abinit','quantumespresso','quantumespresso_ase','vasp'};
     if ~isempty(status.(index{1})), calcs = [ calcs ', ' upper(index{1}) ]; end
   end
   NL = sprintf('\n');
@@ -324,7 +327,9 @@ if ~isempty(options.gui) && ~any(isnan(options.gui))
   options.autoplot   = 1;
   options.dos        = 1;
   options.gui        = waitbar(0, [ mfilename ': starting' ], 'Name', [ 'iFit: ' mfilename ' ' configuration ]);
-  if strcmpi(options.calculator,'qe') options.calculator='quantumespresso'; end
+  if strcmpi(options.calculator,'qe_ase') options.calculator='quantumespresso_ase'; 
+  elseif strcmpi(options.calculator,'qe')         options.calculator='quantumespresso'; 
+  end
 end % GUI
 
 % make sure we find ther 'configuration' also from ifitpath
@@ -433,15 +438,15 @@ end
 % handle supported calculators: decl and calc
 if ishandle(options.gui), waitbar(0.05, options.gui, [ mfilename ': configuring ' options.calculator ]); end
 
-if strcmpi(options.calculator, 'QUANTUMESPRESSO') 
+if strcmpi(options.calculator, 'QUANTUMESPRESSO') && ~strcmpi(options.calculator, 'QUANTUMESPRESSO_ASE')
   read_optim = '';
   if ~isempty(options.optimizer)
     % specific case for QE. As it is not directly supported by ASE, the miniasation
     % must use an other ASE-compliant code. We try ABINIT, and GPAW.
-    if ~isempty(status.gpaw)
-      [decl, calc] = sqw_phonons_calc(options, status, 'GPAW');
-    elseif ~isempty(status.abinit)
+    if ~isempty(status.abinit)
       [decl, calc] = sqw_phonons_calc(options, status, 'ABINIT');
+    elseif ~isempty(status.gpaw)
+      [decl, calc] = sqw_phonons_calc(options, status, 'GPAW');
     else
       disp([ mfilename ': WARNING: can not perform optimization with QuantumEspresso.' ])
       disp('    This step requires to use an other DFT code. Install either ABINIT or GPAW.');
@@ -494,7 +499,7 @@ end % QE case launched in sqw_phonons_calc
 
 
 
-if ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
+if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator, 'QUANTUMESPRESSO_ASE')
 
   % init calculator
   if isunix, setenv('LD_LIBRARY_PATH',''); end
@@ -834,8 +839,10 @@ case 'ABINIT'
 cite{end+1} = ' * ABINIT: X. Gonze et al, Computer Physics Communications 180, 2582-2615 (2009).';
 case 'EMT'
 cite{end+1} = ' * EMT:    K.W. Jacobsen et al, Surf. Sci. 366, 394-402 (1996).';
-case 'QUANTUMESPRESSO'
+case {'QUANTUMESPRESSO','QE'}
 cite{end+1} = ' * PHON:   D. Alfe, Computer Physics Communications 180,2622-2633 (2009).';
+cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).';
+case {'QUANTUMESPRESSO_ASE','QE_ASE'}
 cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).';
 case 'VASP'
 cite{end+1} = ' * VASP:   G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.';

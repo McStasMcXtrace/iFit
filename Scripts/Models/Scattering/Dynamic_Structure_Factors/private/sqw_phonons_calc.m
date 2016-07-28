@@ -342,7 +342,78 @@ case 'NWCHEM' % ================================================================
   end
   calc = [ calc ')' ];
   % to add: diagonalization
+
+% ==============================================================================
+case {'QE_ASE','QUANTUMESPRESSO_ASE','ESPRESSO_ASE'}
   
+  if isempty(status.(lower(options.calculator))) && isempty(options.command)
+    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+    return
+  end
+  
+  decl = 'from qeutil import QuantumEspresso';
+  calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=False, label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; % because small displacement breaks symmetry
+
+  if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
+    calc=[ calc sprintf(', occupations="smearing", smearing="methfessel-paxton", degauss=%g', options.occupations/Ry) ];
+  elseif isscalar(options.occupations) && options.occupations < 0
+    calc = [ calc sprintf(', occupations="fixed")') ]
+  elseif ischar(options.occupations) && ~isempty(options.occupations)
+    calc = [ calc sprintf(', occupations="%s")', options.occupations) ]
+  end
+  if all(options.kpoints > 0)
+    calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
+  end
+  if ~isempty(options.xc)
+    calc = [ calc sprintf(', xc="%s"', options.xc) ];
+  end
+  if ~isempty(options.potentials)
+    calc = [ calc sprintf(', pseudo_dir="%s"', options.potentials) ];
+  end
+  if ~isempty(options.diagonalization)
+    if strncmpi(options.diagonalization, 'dav', 3) options.diagonalization='david'; 
+    else options.diagonalization='cg'; end
+    calc = [ calc sprintf(', diagonalization="%s"', options.diagonalization) ];
+    if ~isfield(options, 'mixing_beta'), options.mixing_beta = 0.7; end
+  end
+  if options.nbands > 0
+    calc = [ calc sprintf(', nbnd=%i', options.nbands) ];
+  end
+  if isfield(options, 'conv_thr') && ~isempty(options.conv_thr)
+    calc = [ calc sprintf(', conv_thr=%f', options.conv_thr) ];
+  end
+  if isfield(options, 'mixing_beta') && ~isempty(options.mixing_beta)
+    calc = [ calc sprintf(', mixing_beta=%f', options.mixing_beta) ];
+  end
+  if isfield(options, 'mixing_ndim') && ~isempty(options.mixing_ndim)
+    calc = [ calc sprintf(', mixing_ndim=%i', options.mixing_ndim) ];
+  end
+  if isfield(options, 'mixing_beta') || isfield(options, 'mixing_ndim')
+    calc = [ calc  ', mixing_mode = "plain"' ];
+  end
+  if options.nsteps>0
+    calc = [ calc sprintf(', electron_maxstep=%i', options.nsteps) ];
+  end
+  if isfield(options, 'conv_thr') && ~isempty(options.conv_thr)
+    calc = [ calc sprintf(', conv_thr=%f', options.conv_thr) ];
+  end
+  if (options.ecut > 0)
+    calc = [ calc sprintf(', ecutwfc=%g', options.ecut/Ry) ];
+  else
+    calc = [ calc ', ecutwfc=15*len(set(atoms.get_atomic_numbers()))' ];
+  end
+  if isfield(options, 'ecutrho') && ~isempty(options.ecutrho)
+    calc = [ calc sprintf(', ecutrho=%f', options.ecutrho/Ry) ];
+  end
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
+    calc = [ calc sprintf(', procs=%i', options.mpi) ];
+  end
+  if ~isempty(options.raw)
+    calc = [ calc sprintf(', %s', options.raw) ];
+  end
+  calc = [ calc ')' ];
+  
+
 % ==============================================================================
 case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   % best potentials for QE: SSSP http://materialscloud.org/sssp/
