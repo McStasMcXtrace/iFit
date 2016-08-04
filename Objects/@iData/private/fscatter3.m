@@ -63,8 +63,8 @@ end
 if ~isreal(C), C=abs(C); end
 index=find(~isfinite(C(:)));
 C(index)=0;
-mins = min(C);
-maxs = max(C);
+mins = min(C(:));
+maxs = max(C(:));
 if mins == maxs, h=[]; return; end
 minz = min(Z);
 maxz = max(Z);
@@ -80,6 +80,7 @@ col = cmap;
 
 % determine index into colormap
 ii = round(interp1([floor(mins) ceil(maxs)],[1 numclass],C));
+ish = ishold;
 hold on
 colormap(cmap);
 
@@ -106,5 +107,5 @@ for j = 1:numclass
 	  end
   end  
 end
-hold off
 
+if ~ish, hold off; end

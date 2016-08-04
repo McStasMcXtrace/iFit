@@ -49,11 +49,16 @@ function signal=sqw_spinw(varargin)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
+if ~exist('sw') && ~exist('spinw')
+  disp([ mfilename ': ERROR: requires SpinW to be installed.' ])
+  disp('  Get it at <https://www.psi.ch/spinw/spinw>.');
+  signal=[]; return
+end
 sq = sw_model('squareAF',1,0);
 options = [];
 for index=1:numel(varargin)
   this = varargin{index};
-  if isa(this, 'sw') || isa(this, 'spniw')
+  if isa(this, 'sw') || isa(this, 'spinw')
     sq = this;
   elseif isstruct(this)
     options = this;
