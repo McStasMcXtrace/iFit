@@ -20,6 +20,23 @@ if isvector(i_signal) % force axes to be vectors
   clear x
 end
 
+% now we test if interpolation is required: are axes the same ?
+i_axes2 = i_axes;
+if all(cellfun(@(c)numel(c)==length(c), i_axes)) && numel(i_signal) ~= length(i_signal)
+  [ i_axes2{:} ] = ndgrid(i_axes{:});
+end
+same_axes = true;
+for index=1:numel(i_axes)
+  x1 = i_axes2{index}; x2 = f_axes{index};
+  if numel(x1) ~= numel(x2) || any(abs(x1(:) - x2(:)) > 1e-4*x1(:))
+    same_axes = false; break
+  end
+end
+if same_axes, 
+  f_signal = i_signal; return; 
+end
+
+% interpolation is required
 switch length(i_axes)
 case 1    % 1D
   X=i_axes{1};
@@ -105,7 +122,24 @@ otherwise % nD, n>1
         f_signal2 = griddata3(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
         method = 'griddata3 with signal';
       else
-        f_signal2 = [];
+        % try with griddatan, requires to assemble new X,Y and XI
+        if numel(i_signal) ~= length(i_signal)
+          if all(cellfun(@(c)numel(c)==length(c), i_axes))
+            [ i_axes{:} ] = ndgrid(i_axes{:});
+          end
+          if all(cellfun(@(c)numel(c)==length(c), f_axes))
+            [ f_axes{:} ] = ndgrid(f_axes{:});
+          end
+        end
+        % i_axes and f_axes must be columns, and cell2mat append them for
+        % griddatan
+        sz = size(f_axes{1});
+        for index=1:length(i_axes)
+          x = i_axes{index}; i_axes{index}=x(:); 
+          x = f_axes{index}; f_axes{index}=x(:); clear x;
+        end
+        f_signal2 = griddatan(cell2mat(i_axes), i_signal, cell2mat(f_axes), method);
+        f_signal2 = reshape(f_signal2, sz);
       end
       % get the interpolation which produces less NaN's
       nb_f_nans2 = numel(find(isnan(f_signal2(:))));
