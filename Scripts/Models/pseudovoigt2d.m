@@ -29,6 +29,7 @@ function signal=pseudovoigt2d(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, lorz
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'Pseudo-Voigt-2D function with tilt angle (2D) [' mfilename ']' ];
 signal.Parameters     = {  'Amplitude' 'Centre_X' 'Center_Y' 'HalfWidth_X' 'HalfWidth_Y' 'Angle tilt in [deg]' 'Background' 'LorentzianRatio' };

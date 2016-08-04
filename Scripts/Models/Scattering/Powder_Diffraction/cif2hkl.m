@@ -15,6 +15,7 @@ function result = cif2hkl(varargin)
 %   file_out is written when mode is not '-'
 %
 % Revision: $date$
+% (c) E.Farhi, ILL. License: EUPL.
 
 % we choose NOT to use the cif2hkl mex file due to allocation errors under Matlab.
 

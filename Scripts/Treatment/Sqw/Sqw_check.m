@@ -15,6 +15,7 @@ function s = Sqw_check(s)
 %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
 %
 % Example: sqw=Sqw_check('SQW_coh_lGe.nc');
+% (c) E.Farhi, ILL. License: EUPL.
 
   if nargin == 0, return; end
   

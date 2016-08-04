@@ -12,6 +12,7 @@ function s = Sab_check(s)
 % Example: sqw=Sqw_check('SQW_coh_lGe.nc');
 %
 % See also: Sqw_Sab, Sqw_check
+% (c) E.Farhi, ILL. License: EUPL.
 
   if nargin == 0, return; end
   

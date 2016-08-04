@@ -4,6 +4,8 @@
       mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran
    get single executable
       gfortran -O2 -o cif2hkl cif2hkl.o -lm
+      
+   % (c) E.Farhi, ILL. License: EUPL.
  */
 
 

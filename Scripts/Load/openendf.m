@@ -1,6 +1,7 @@
 function out = openendf(filename)
 %OPENENDF Open an Evaluated Nuclear Data File, display it
 %        and set the 'ans' variable to an iData object with its content
+% (c) E.Farhi, ILL. License: EUPL.
 
 if ~isa(filename,'iData')
   out = iData(iLoad(filename,'ENDF'));  % no post-processing

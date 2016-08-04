@@ -17,6 +17,7 @@ function y=sine(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name           = [ 'Sine function (1D) [' mfilename ']' ];
 y.Parameters     = {'Amplitude','Phase_Shift','Period','Background'};

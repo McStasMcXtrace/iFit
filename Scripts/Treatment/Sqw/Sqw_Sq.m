@@ -13,6 +13,7 @@ function s = Sqw_Sq(s)
 % References: Fischer, Barnes and Salmon, Rev Prog Phys 69 (2006) 233
 %
 % Example: s = Sqw_Sq(s);
+% (c) E.Farhi, ILL. License: EUPL.
 
   if nargin == 0, return; end
   if ~isa(s, 'iData'), s=iData(s); end

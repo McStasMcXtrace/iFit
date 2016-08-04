@@ -39,6 +39,7 @@ function [gDOS, g] = Sqw_gDOS(s, method, n)
 %         Bredov et al., Sov. Phys. Solid State 9, 214 (1967)
 %
 % Example: Sqw=iData('SQW_coh_lGe.nc'); g = Sqw_gDOS(Sqw_Bosify(Sqw_symmetrize(Sqw))); plot(g);
+% (c) E.Farhi, ILL. License: EUPL.
 
   g = []; gDOS=[];
   if nargin == 0, return; end

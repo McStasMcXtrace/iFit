@@ -34,6 +34,7 @@ function signal=sqw_cubic_monoatomic(varargin)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_sine3d, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'Sqw_cubic 3D dispersion(HKL) for cubic monoatomic crystal [' mfilename ']' ];
 signal.Description    = 'A 3D HKL 3D dispersion(HKL) for a cubic monoatomic crystal with DHO(energy) shape. From the dynamical matrix.';

@@ -20,6 +20,7 @@ function y=allometric(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Allometric/Freundlich (1D) [' mfilename ']' ];
 y.Description='Power/Freundlich/Belehradek fitting function to describe power and asymptotic laws. Ref: Ratkowksy, David A. 1990. Handbook of Nonlinear Regression Models. Marcel Dekker, Inc. 4.3.1 ';

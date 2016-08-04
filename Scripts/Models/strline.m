@@ -18,6 +18,7 @@ function y=strline(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, quadline, plane2d
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Guess     = @(x,y) [ polyfit(x(:), y(:), 1) ];
 y.Name      = [ 'Straight-line (1D) [' mfilename ']' ];

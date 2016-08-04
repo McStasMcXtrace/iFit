@@ -42,6 +42,7 @@
 %
 % See also: Process/refresh, Process/exit
 % Process is part of iFit http://ifit.mccode.org 
+% (c) E.Farhi, ILL. License: EUPL.
 
 function pid = Process(command)
 

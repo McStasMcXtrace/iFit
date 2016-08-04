@@ -23,6 +23,7 @@ function r=sqw_powder(a, p, x,y)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
+% (c) E.Farhi, ILL. License: EUPL.
 r=[];
 if nargin == 0
   disp([ mfilename ': requires a 4D iFunc or iData object as argument. You may use sqw_phonons to generate a Model.' ]);

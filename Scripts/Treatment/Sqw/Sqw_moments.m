@@ -32,6 +32,7 @@ function sigma=Sqw_moments(data, M, T, classical)
 %   J-P.Hansen and I.R.McDonald, Theory of simple liquids Academic Press New York 2006.
 %
 % Example: moments = sqw_moments(iData(fullfile(ifitpath,'Data','SQW_coh_lGe.nc')))
+% (c) E.Farhi, ILL. License: EUPL.
 
   sigma = [];
   if nargin == 0, return; end

@@ -37,6 +37,7 @@ function s = Sqw_deBosify(s, T, type)
 % Example: s = Sqw_deBosify(s, 300);
 %
 % See also: Sqw_Bosify, Sqw_symmetrize, Sqw_dynamic_range, Sqw_scatt_xs
+% (c) E.Farhi, ILL. License: EUPL.
 
   if nargin == 0, return; end
   if ~isa(s, 'iData'), s=iData(s); end

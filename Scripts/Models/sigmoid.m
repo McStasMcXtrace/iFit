@@ -20,6 +20,7 @@ function y=sigmoid(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, doseresp
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name           = [ 'Sigmoidal curve (1D) [' mfilename ']' ];
 y.Parameters     = {'Amplitude','Center','Slope','Background'};
