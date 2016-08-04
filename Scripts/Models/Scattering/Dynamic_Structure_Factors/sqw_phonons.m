@@ -370,13 +370,23 @@ elseif ischar(configuration)
   read = configuration;
   switch strtok(configuration, ' (')
   case 'bulk'
+    % ASE 3.9 and 3.10+
     read = sprintf('from ase.lattice import bulk; atoms = %s; ', configuration);
   case 'molecule'
+    % ASE 3.9
     read = sprintf('from ase.structure import molecule; atoms = %s; ', configuration);
+    % ASE 3.10+
+    % from ase.build import molecule
   case 'nanotube'
+    % ASE 3.9
     read = sprintf('from ase.structure import nanotube; atoms = %s; ', configuration);
+    % ASE 3.10+
+    % from ase.build import nanotube
   case 'crystal'
+    % ASE 3.9
     read = sprintf('from ase.lattice.spacegroup import crystal; atoms = %s; ', configuration);
+    % ASE 3.10+
+    % from ase.spacegroup import crystal
   end
 end
 
