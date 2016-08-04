@@ -100,7 +100,7 @@ otherwise % nD, n>1
         if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
         f_signal2 = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
         method = 'griddata with signal';
-      elseif length(i_axes) == 3
+      elseif length(i_axes) == 3 && exist('griddata3')
         if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end
         f_signal2 = griddata3(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
         method = 'griddata3 with signal';
