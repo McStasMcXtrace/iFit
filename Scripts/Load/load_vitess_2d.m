@@ -7,6 +7,7 @@ function a=load_vitess_2d(a)
 %
 % Version: $Date$
 % See also: iData/load, iLoad, save, iData/saveas
+% (c) E.Farhi, ILL. License: EUPL.
 
 if ~isa(a,'iData')
   a = iData(iLoad(a,mfilename));  % no post-processing

@@ -18,6 +18,7 @@ function y=bilorz(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Bi-Lorentzian (1D) [' mfilename ']' ];
 y.Description='Bi-Lorentzian/asymmetric fitting function';

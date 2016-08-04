@@ -17,6 +17,7 @@ function y=sinedamp(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, sine, expon
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name           = [ 'Damped-Sine function (1D) [' mfilename ']' ];
 y.Parameters     = {'Amplitude','Phase_Shift','Period','Background','Decay'};

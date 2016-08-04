@@ -26,6 +26,7 @@ function signal=lorz2d(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, lorz
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'Lorenztian-2D function with tilt angle (2D) [' mfilename ']' ];
 signal.Description    = '2D Lorenztian function with tilt angle. http://en.wikipedia.org/wiki/Gaussian_function';

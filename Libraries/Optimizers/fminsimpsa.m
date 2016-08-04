@@ -68,6 +68,7 @@ function [pars,fval,exitflag,output] = fminsimpsa(varargin)
 %   Kirkpatrick, J. Stat. Phys. 34 (1984) 975.
 % Contrib:   2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be
 % Systems Biology Toolbox for MATLAB, 2005 Henning Schmidt, FCC, henning@fcc.chalmers.se [SIMPSA]
+% (c) E.Farhi, ILL. License: EUPL.
 
 % default options for optimset
 if nargin == 0 || (nargin == 1 && strcmp(varargin,'defaults'))

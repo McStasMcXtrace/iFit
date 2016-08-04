@@ -23,6 +23,7 @@ function config = iLoad_ini
 % A list of all supported formats is shown with iLoad('formats');
 %
 % See also: iLoad, save, iData/saveas
+% (c) E.Farhi, ILL. License: EUPL.
 
 % definition of formats ========================================================
 

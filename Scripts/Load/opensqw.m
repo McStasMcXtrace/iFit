@@ -1,6 +1,7 @@
 function out = opensqw(filename)
 %OPENSQW Open a McCode Sqw file (isotropic dynamic stucture factor, text file) 
 %        display it and set the 'ans' variable to an iData object with its content
+% (c) E.Farhi, ILL. License: EUPL.
 
 if ~isa(filename,'iData')
   out = iData(iLoad(filename,'SQW')); % no post-processing

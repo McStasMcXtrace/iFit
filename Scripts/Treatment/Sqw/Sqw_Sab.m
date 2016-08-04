@@ -29,6 +29,8 @@ function Sab = Sqw_Sab(s, M, T)
 % Example: Sqw = iData( fullfile(ifitpath,'Data','SQW_coh_lGe.nc') );
 %          Sab = Sqw_Sab(Sqw,72.6,300);
 %          plot(log(Sab)
+%
+% (c) E.Farhi, ILL. License: EUPL.
 
   Sab = [];
   if nargin == 0, return; end

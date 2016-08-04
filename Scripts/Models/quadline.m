@@ -16,6 +16,7 @@ function y=quadline(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, strline, quad2d
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Quadratic equation (1D) [' mfilename ']' ];
 y.Parameters={'Quadratic' 'Linear','Constant'};

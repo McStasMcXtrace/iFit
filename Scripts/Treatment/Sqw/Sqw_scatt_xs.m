@@ -66,6 +66,7 @@ function sigma = Sqw_scatt_xs(s, Ei, M)
 % Example: sigma = Sqw_scatt_xs(s, 14.6)
 %
 % See also: Sqw_Bosify, Sqw_deBosify, Sqw_symmetrize, Sqw_dynamic_range
+% (c) E.Farhi, ILL. License: EUPL.
   
   sigma = [];
   if nargin == 0, return; end

@@ -30,6 +30,8 @@ function Sqw = Sab_Sqw(s, M, T)
 %          Sab = Sqw_Sab(Sqw,72.6,300);
 %          Sqw2= Sab_Sqw(Sab);
 %          subplot(log([Sqw Sab Sqw2))
+%
+% (c) E.Farhi, ILL. License: EUPL.
 
   Sqw = [];
   if nargin == 0, return; end

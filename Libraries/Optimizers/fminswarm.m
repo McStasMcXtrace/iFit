@@ -75,6 +75,7 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 %
 % Version: $Date$
 % See also: fminsearch, optimset
+% (c) E.Farhi, ILL. License: EUPL.
 
 % this is a wrapper to fminswarmhybrid, without hybrid optimizer
 

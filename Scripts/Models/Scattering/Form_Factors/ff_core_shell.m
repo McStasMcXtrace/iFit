@@ -21,6 +21,7 @@ function y=ff_core_shell(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, ff_sphere
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Spherical/core shell P(q) (1D) [' mfilename ']' ];
 y.Description='Concentric spherical geometry, with 2 shells form factor [Guinier]';

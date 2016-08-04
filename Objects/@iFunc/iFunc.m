@@ -66,7 +66,7 @@ function a = iFunc(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/feval, iFunc/plot, iFunc/fit
-
+% (c) E.Farhi, ILL. License: EUPL.
 
 persistent id % the id number for all new objects
 

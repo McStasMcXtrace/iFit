@@ -1,5 +1,5 @@
 function varargout = mifit(varargin)
-
+% (c) E.Farhi, ILL. License: EUPL.
 
 % notes:
 % saveas: display dialogue to select what to export:

@@ -7,6 +7,8 @@ function  [s,parameters,fields] = Sqw_parameters(s, fields)
 % output:
 %   s: updated object with found parameters
 %   p: parameters as a structure, also stored into s.parameters
+%
+% (c) E.Farhi, ILL. License: EUPL.
 
 % extract a list of parameters
 parameters = [];

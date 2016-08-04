@@ -16,7 +16,9 @@ function stop = fminplot(pars, optimValues, state)
 %
 % example: 
 %   fmin(@objective, [], 'OutputFcn=fminplot')
-%   fits(a, 'gauss', [], 'OutputFcn=fminplot')
+
+%
+% (c) E.Farhi, ILL. License: EUPL.%   fits(a, 'gauss', [], 'OutputFcn=fminplot')
 
 % fields in optimValues: funcount, fval, iteration, procedure
 % state values: 'init','interrupt','iter','done'

@@ -1,6 +1,7 @@
 function out = openyaml(filename)
 %OPENYAML Open a YAML File, display it
 %        and set the 'ans' variable to an iData object with its content
+% (c) E.Farhi, ILL. License: EUPL.
 
 if ~isa(filename,'iData')
   out = iData(filename,'YAML');   % with post-processing

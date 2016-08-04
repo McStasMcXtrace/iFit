@@ -18,6 +18,7 @@ function y=tophat(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, heavisde, triangl
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Top-Hat rectangular function (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','HalfWidth','Background'};

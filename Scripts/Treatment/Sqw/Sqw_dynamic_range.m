@@ -36,6 +36,7 @@ function [s, sphi] = Sqw_dynamic_range(s, Ei, angles, options)
 % Example: Sqw_dynamic_range(s, 14.8, [-20 135])
 %
 % See also: Sqw_Bosify, Sqw_deBosify, Sqw_symmetrize, Sqw_scatt_xs
+% (c) E.Farhi, ILL. License: EUPL.
 
   if nargin == 0, return; end
   if ~isa(s, 'iData'), s=iData(s); end

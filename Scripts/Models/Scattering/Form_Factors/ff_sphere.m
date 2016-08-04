@@ -22,6 +22,7 @@ function y=ff_sphere(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, ff_core_shell
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Sphere P(q) (1D) [' mfilename ']' ];
 y.Description='Sphere form factor [Guinier]';
