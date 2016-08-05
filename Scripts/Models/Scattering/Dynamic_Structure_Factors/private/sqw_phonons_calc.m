@@ -59,11 +59,19 @@ case 'ABINIT'
   decl = 'from ase.calculators.abinit import Abinit';
   calc = 'calc = Abinit(chksymbreak=0 ';
   if options.ecut <= 0, options.ecut=340; end % no default in ABINIT (eV)
-  if (options.ecut > 0)
-    calc = [ calc sprintf(', ecut=%g, pawecutdg=%g', options.ecut, 3*options.ecut) ];
+  if options.ecut > 0
+    calc = [ calc sprintf(', ecut=%g', options.ecut/Ha) ];
+    if isfield(options,'pps') && (strcmpi(options.pps, 'paw') || strcmpi(options.pps, 'pawxml'))
+      if ~isfield(options,'pawecutdg')
+        options.pawecutdg = 3*options.ecut;
+      end
+    end
+  end
+  if isfield(options,'pawecutdg') && options.pawecutdg > 0
+    calc = [ calc sprintf(', pawecutdg=%g', options.pawecutdg/Ha) ];
   end
   if options.toldfe <= 0, options.toldfe=1e-5; end % in eV, necessary
-  if (options.toldfe > 0)
+  if options.toldfe > 0
     calc = [ calc sprintf(', toldfe=%g', options.toldfe) ];
   end
   if ~isfield(options, 'pps') || isempty(options.pps)
@@ -83,6 +91,9 @@ case 'ABINIT'
   if ~isempty(options.xc)
     calc = [ calc sprintf(', xc="%s"', options.xc) ];
   end
+  if isfield(options,'ixc')
+    calc = [ calc sprintf(', ixc=%d', options.ixc) ];
+  end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     % nbdblock, npband, AUTOPARAL=1
     % calc = [ calc sprintf(', nbdblock=%i', options.mpi) ];
@@ -90,6 +101,7 @@ case 'ABINIT'
   end
   if isfield(options, 'pps') && ~isempty(options.pps)
     calc = [ calc sprintf(', pps="%s"', options.pps) ];
+    
   end
   if options.nbands > 0
     calc = [ calc sprintf(', nband=%i', options.nbands) ];
