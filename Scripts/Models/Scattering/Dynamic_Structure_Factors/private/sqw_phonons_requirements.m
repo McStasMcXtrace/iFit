@@ -18,7 +18,7 @@ else
   disp([ mfilename ': using ASE ' result ]);
   disp('Available calculators:');
   status.emt='ase-run';
-  status.ase=sscanf(result,'%d.%d') 
+  status.ase=sscanf(result,'%d.%d');
   disp('  EMT           only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
   
   % test for mpirun
