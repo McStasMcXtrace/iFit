@@ -33,8 +33,8 @@ case 'ABINIT'
     if strcmpi(options.potentials,'NC')
       options.potentials='';
       options.iscf=7;
-    elseif any(strcmpi(options.potentials, {'fhi', 'hgh', 'hgh.sc', 'hgh.k', 'tm', 'paw'}))
-      if strcmpi(options.potentials, 'paw')
+    elseif any(strcmpi(options.potentials, {'fhi', 'hgh', 'hgh.sc', 'hgh.k', 'tm', 'paw','pawxml'}))
+      if strcmpi(options.potentials, 'paw') || strcmpi(options.potentials, 'pawxml')
         options.iscf=17; % seems best. see https://www.nsc.liu.se/~pla/blog/2014/02/21/deltacodes/
       end
       options.pps = lower(options.potentials);
@@ -60,7 +60,7 @@ case 'ABINIT'
   calc = 'calc = Abinit(chksymbreak=0 ';
   if options.ecut <= 0, options.ecut=340; end % no default in ABINIT (eV)
   if (options.ecut > 0)
-    calc = [ calc sprintf(', ecut=%g', options.ecut) ];
+    calc = [ calc sprintf(', ecut=%g, pawecutdg=%g', options.ecut, 3*options.ecut) ];
   end
   if options.toldfe <= 0, options.toldfe=1e-5; end % in eV, necessary
   if (options.toldfe > 0)
