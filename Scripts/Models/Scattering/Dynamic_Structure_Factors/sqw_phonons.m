@@ -368,25 +368,35 @@ if exist(configuration)
     configuration);
 elseif ischar(configuration)
   read = configuration;
+  % ASE has changed some of the modules hierarchy from 3.9 to 3.10+
   switch strtok(configuration, ' (')
   case 'bulk'
     % ASE 3.9 and 3.10+
     read = sprintf('from ase.lattice import bulk; atoms = %s; ', configuration);
   case 'molecule'
-    % ASE 3.9
-    read = sprintf('from ase.structure import molecule; atoms = %s; ', configuration);
-    % ASE 3.10+
-    % from ase.build import molecule
+    if status.ase <= 3.9
+      % ASE 3.9
+      read = sprintf('from ase.structure import molecule; atoms = %s; ', configuration);
+    else
+      % ASE 3.10+: from ase.build import molecule
+      read = sprintf('from ase.build import molecule; atoms = %s; ', configuration);
+    end
   case 'nanotube'
-    % ASE 3.9
-    read = sprintf('from ase.structure import nanotube; atoms = %s; ', configuration);
-    % ASE 3.10+
-    % from ase.build import nanotube
+    if status.ase <= 3.9
+      % ASE 3.9
+      read = sprintf('from ase.structure import nanotube; atoms = %s; ', configuration);
+    else
+      % ASE 3.10+: from ase.build import nanotube
+      read = sprintf('from ase.build import nanotube; atoms = %s; ', configuration);
+    end
   case 'crystal'
-    % ASE 3.9
-    read = sprintf('from ase.lattice.spacegroup import crystal; atoms = %s; ', configuration);
-    % ASE 3.10+
-    % from ase.spacegroup import crystal
+    if status.ase <= 3.9
+      % ASE 3.9
+      read = sprintf('from ase.lattice.spacegroup import crystal; atoms = %s; ', configuration);
+    else
+      % ASE 3.10+: from ase.spacegroup import crystal
+      read = sprintf('from ase.spacegroup import crystal; atoms = %s; ', configuration);
+    end
   end
 end
 
