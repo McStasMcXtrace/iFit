@@ -11,6 +11,8 @@ Ha = 27.2; Ry=13.6;
 switch upper(calc_choice)
 % ==============================================================================
 case 'ABINIT'
+  % build: ./configure --enable-mpi CC=mpicc CXX=mpicxx FC=mpif90 --enable-optim --with-dft-flavor=libxc
+  % ABINIT with pawxml requires ecut=1000 and nsteps > 30 (default)
   if isempty(status.(lower(options.calculator))) && isempty(options.command)
     sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
     return
@@ -57,8 +59,14 @@ case 'ABINIT'
   end
   % parallelisation: npbands npftt https://www.nsc.liu.se/~pla/blog/2012/04/18/abinitvasp-part2/
   decl = 'from ase.calculators.abinit import Abinit';
-  calc = 'calc = Abinit(chksymbreak=0 ';
-  if options.ecut <= 0, options.ecut=340; end % no default in ABINIT (eV)
+  calc = 'calc = Abinit(chksymbreak=0';
+  if options.ecut <= 0, 
+    if isfield(options,'pps') && (strcmpi(options.pps, 'paw') || strcmpi(options.pps, 'pawxml'))
+      options.ecut=1000; 
+    else
+      options.ecut=340;
+    end
+  end % no default in ABINIT (eV)
   if options.ecut > 0
     calc = [ calc sprintf(', ecut=%g', options.ecut/Ha) ];
     if isfield(options,'pps') && (strcmpi(options.pps, 'paw') || strcmpi(options.pps, 'pawxml'))
@@ -67,12 +75,15 @@ case 'ABINIT'
       end
     end
   end
+  if isfield(options,'pps') && strcmpi(options.pps, 'pawxml')
+    options.ixc = 1; % the XC is stored in the PAWXML (libXC)
+  end
   if isfield(options,'pawecutdg') && options.pawecutdg > 0
     calc = [ calc sprintf(', pawecutdg=%g', options.pawecutdg/Ha) ];
   end
   if options.toldfe <= 0, options.toldfe=1e-5; end % in eV, necessary
   if options.toldfe > 0
-    calc = [ calc sprintf(', toldfe=%g', options.toldfe) ];
+    calc = [ calc sprintf(', toldfe=%g', options.toldfe/Ha) ];
   end
   if ~isfield(options, 'pps') || isempty(options.pps)
     options.iscf=17;
