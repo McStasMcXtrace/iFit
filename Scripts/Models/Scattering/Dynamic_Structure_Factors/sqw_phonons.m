@@ -11,12 +11,12 @@ function signal=sqw_phonons(configuration, varargin)
 %   The phonon spectra is computed using one of the calculator supported by the
 %   Atomic Simulation Environment (ASE) <https://wiki.fysik.dtu.dk/ase>.
 %   Supported calculators are:
+%     ABINIT    Plane-wave pseudopotential code
+%     Dacapo    Plane-wave ultra-soft pseudopotential code
+%     ELK       Full Potential LAPW code
 %     EMT       Effective Medium Theory calculator (Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O)
 %     GPAW      Real-space/plane-wave/LCAO PAW code
 %     NWChem    Gaussian based electronic structure code
-%     Dacapo    Plane-wave ultra-soft pseudopotential code
-%     ELK       Full Potential LAPW code
-%     ABINIT    Plane-wave pseudopotential code
 %     QuantumEspresso_ASE Plane-wave pseudopotential code (with ASE/QE-util)
 %     QuantumEspresso     Plane-wave pseudopotential code (with PHON)
 %     VASP      Plane-wave PAW code (when installed and licensed)
@@ -120,6 +120,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.ecut=scalar                    Kinetic energy cutoff for wavefunctions. 
 %     Large value improves convergence. Estimate is 200*n_typ_atoms in [eV].
 %     Usually one runs at calculations at various ecut to investigate convergence
+%     ABINIT paw/pawxml potentials require larger ecut (1000 eV0 and nsteps (100).
 %   options.diagonalization='dav' or 'cg' or 'rmm-diis'
 %     The Davidson method is faster than the conjugate-gradient but uses more
 %     memory. The RMM-DIIS method allows parallelization.
@@ -233,6 +234,7 @@ function signal=sqw_phonons(configuration, varargin)
 % VASP    PAW 2015 GW
 % QE      SSSP Efficiency
 % ABINIT  PAW JTH           http://www.abinit.org/downloads/PAW2 req v7.6
+%                           https://www.physics.rutgers.edu/gbrv/
 
 persistent status ld_library_path
 
