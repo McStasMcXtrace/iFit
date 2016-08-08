@@ -19,7 +19,9 @@
               (neutrons, x-rays)</a></li>
           <li><a href="#mozTocId344379"> Powder structure refinement
               (Rietveld)</a></li>
-          <li><a href="#mozTocId677670">Phonon/spin-wave dispersion</a></li>
+          <li><a href="#mozTocId677670">Phonon/spin-wave dispersion
+              (simple) </a></li>
+          <li><a href="#mozTocId908192">Spin-wave model (SpinW) </a></li>
           <li><a href="#mozTocId226848">Phonon dispersion in perovskites</a></li>
           <li><a href="#mozTocId885605">Acoustic phonon dispersion in
               mono-atomic cubic crystal</a></li>
@@ -91,6 +93,8 @@
 
 
 
+
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -110,17 +114,19 @@
     <br>
     Models can be used in the following ways (for instance 'model' may
     be 'gauss'):<br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>		<span style="font-style: italic;">% display model information</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">disp(model</span>)		<span style="font-style: italic;">% idem, extensive information</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot(model</span><span style="color: rgb(204, 51, 204);"></span>)	<span style="font-style: italic;">	% plot the model with its default settings</span><span style="color: rgb(255, 0, 0); font-style: italic;"></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(p, x, y ...)	<span style="font-style: italic;">% evaluate the model with parameters p, and axes x,y,...<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>([], x, y ...)	<span style="font-style: italic;">% evaluate the model with axes x,y,... and automatic parameter guess<br></span><span style="font-style: italic;">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'guess'</span>, x, y ...)	% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);"></span>a(model, p)	<span style="font-style: italic;">	% evaluate the model onto the iData object 'a' axes with parameters p<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">fits</span>(a, model, p)	<span style="font-style: italic;">% fit the model onto the iData object</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(model, a, p)	<span style="font-style: italic;">% same as above<br></span><span style="font-style: italic;"></span><br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>		<span style="font-style: italic;">% display model information</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">disp(model</span>)		<span style="font-style: italic;">% idem, extensive information</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot(model</span><span style="color: rgb(204, 51, 204);"></span>)	<span style="font-style: italic;">	% plot the model with its default settings</span><span style="color: rgb(255, 0, 0); font-style: italic;"></span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">model</span>(p, x, y ...)	<span style="font-style: italic;">% evaluate the model with parameters p, and axes x,y,...<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>([], x, y ...)	<span style="font-style: italic;">% evaluate the model with axes x,y,... and automatic parameter guess<br></span><span style="font-style: italic;">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">model</span>(<span style="color: rgb(204, 51, 204);">'guess'</span>, x, y ...)	% idem<br>&gt;&gt; <span style="color: rgb(51, 102, 255);"></span>a(model, p)	<span style="font-style: italic;">	% evaluate the model onto the iData object 'a' axes with parameters p<br>&gt;&gt; </span><span style="color: rgb(51, 102, 255);">fits</span>(a, model, p)	<span style="font-style: italic;">% fit the model onto the iData object</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(model, a, p)	<span style="font-style: italic;">% same as above<br>&gt;&gt; <font color="#3366ff">save</font>(model, <font color="#cc33cc">'filename'</font>, <font color="#cc33cc">'mat'</font>) % save the Model as a Matlab file. orher formats are possible (YAML, m, JSON, XML...)</span><br></pre>
     To create a model, use the <a href="#mozTocId775891">ifitmakefunc</a>
     dialogue window (see below), or instantiate an <a href="iFunc.html">iFunc</a>
     object.<br>
-    <pre style="margin-left: 40px;">&gt;&gt; model = gauss;<br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">iFunc</span>(<span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>)<br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">iFunc</span>(<span style="color: rgb(204, 51, 204);">'a=p(1); b=p(2); signal=a*x+b'</span>) <br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; model = gauss;<br>&gt;&gt; model = gauss+lorz;<br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">iFunc</span>(<span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>)<br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">iFunc</span>(<span style="color: rgb(204, 51, 204);">'a=p(1); b=p(2); signal=a*x+b'</span>) <br></pre>
     You can edit their code to see how to define new models:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span> gauss <span style="font-style: italic;">% edit the function definition (from a file)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span> voigt<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span>(voig) <span style="font-style: italic;">% edit the object definition</span><br></pre>
     <pre style="margin-left: 40px;"><span style="font-style: italic;"></span></pre>
     <h3><a class="mozTocH3" name="mozTocId96090"></a><span
         style="font-weight: bold;">List of default fit models</span></h3>
     The 1D functions are <span style="font-style: italic;">signal=f(parameters,
+
+
 
 
 
@@ -247,6 +253,8 @@
 
 
 
+
+
               "x" unit)</span><br>
           </td>
         </tr>
@@ -294,6 +302,8 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Stretched_exponential_function">Exponential
+
+
 
 
 
@@ -414,6 +424,8 @@
 
 
 
+
+
               distribution function</a> <br>
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<a
@@ -429,6 +441,8 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Log-normal_distribution">Log-Normal
+
+
 
 
 
@@ -619,6 +633,8 @@
 
 
 
+
+
               Sine function</a> (exponential decay) <br>
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<a
@@ -665,6 +681,8 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rectangular_function">Top-Hat
+
+
 
 
 
@@ -822,6 +840,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
               Gaussian</a><br>
           </td>
           <td valign="top"><font color="#cc33cc">nD</font><br>
@@ -874,6 +894,21 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
               src="images/Models_sqw_sine3d.png" border="0" height="73"
               width="100" align="middle"> </td>
           <td valign="top">zone center, energy gaps, periodicity</td>
+        </tr>
+        <tr>
+          <td valign="top"><a href="#mozTocId908192"><b>sqw_spinw</b></a><br>
+          </td>
+          <td valign="top">Spin-wave dispersion in HKL using <a
+              href="https://www.psi.ch/spinw/">SpinW</a>.</td>
+          <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
+            <a
+              href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_sine3d.png"><img
+                alt="sw" title="sw"
+                src="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_spinw.png"
+                border="0" height="73" width="100" align="middle"></a> </td>
+          <td valign="top">energy broadening, Temperature, coupling
+            parameters J...<br>
+          </td>
         </tr>
         <tr>
           <td valign="top"><a href="#mozTocId226848"><b>sqw_vaks</b></a></td>
@@ -979,6 +1014,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
         = P(q).S(q)</span><br>
     </p>
     <p style="text-align: left;">where <span style="font-style:
@@ -988,6 +1025,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
     <ul>
       <li><a href="http://kur.web.psi.ch/sans1/SANSSoft/sasfit.html">SASfit</a>,
         by <a href="http://kur.web.psi.ch/sans1/SANSSoft/KJ33.html">Joachim
+
+
 
 
 
@@ -1080,6 +1119,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
             <br>
           </td>
           <td style="vertical-align: top;">structure factor of particles
@@ -1138,6 +1179,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">ff_sphere&nbsp;
+
+
 
 
 
@@ -1342,7 +1385,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     cif2hkl programme is part of the iFit distribution, and is compiled
     by calling the local fortran compiler (gfortran) on demand.<br>
     <h4><a class="mozTocH4" name="mozTocId677670"></a>Phonon/spin-wave
-      dispersion</h4>
+      dispersion (simple)<br>
+    </h4>
     <p>The <b>sqw_sine3d</b> model provides a simple way to model most
       <a href="https://en.wikipedia.org/wiki/Phonon">phonon-type</a>
       dispersions, including simple <a
@@ -1477,6 +1521,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         </i> and <i>Q_freq</i> parameters along axes.</li>
       <li>A 1D or 2D dispersion can be obtained when setting the
         frequencies (e.g. <i>QK_freq QL_freq</i>) to 0<br>
@@ -1486,6 +1532,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     <blockquote>
       <p>&nbsp; p(&nbsp;
         1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1542,9 +1590,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>E1_qk</b> energy at QK half period [meV]<br>
         &nbsp; p(&nbsp;
         3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1600,9 +1652,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>E0</b> zone-centre energy gap [meV]<br>
         &nbsp; p(&nbsp;
         5)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1658,6 +1714,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>QK0</b> QK zone-centre [rlu]<br>
         &nbsp; p(&nbsp;
         7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1686,9 +1744,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>QL0</b> QL zone-centre [rlu]<br>
         &nbsp; p(&nbsp;
         8)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1745,9 +1807,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>QK_freq</b> QK frequency [multiples of pi]<br>
         &nbsp; p(
         10)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1803,6 +1869,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>Gamma</b> Damped Harmonic Oscillator width in energy [meV]<br>
         &nbsp; p( 12)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Temperature</b>
         [K]<br>
@@ -1814,7 +1882,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
       </p>
     </blockquote>
     <p>The axes needed for the evaluation are expressed in rlu for
-      QH,QK,QL and in meV for the energy.</p>
+      QH,QK,QL and in meV for the energy.<br>
+      The Model evaluation is as usual (in 4D):</p>
+    <blockquote><b>model</b>(p, qh, qk, ql, w)&nbsp;&nbsp;&nbsp; %
+      return a matrix. p can be [] to use guessed/default parameters<br>
+      <font color="#3366ff">iData</font>(<b>model</b>, p, qh, qk, ql,
+      w)&nbsp;&nbsp;&nbsp; % return an iData.<br>
+    </blockquote>
     <p>A usage example is as follows:<a
         href="images/Models_sqw_sine3d.png"><img alt="sqw_sine3d"
           title="sqw_sine3d" src="images/Models_sqw_sine3d.png"
@@ -1840,6 +1914,134 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
       methods for plotting all provide nice looking rendering of volume
       data. See <a href="Plot.html#mozTocId734523">Plot/3D</a> page.<br>
     </p>
+    <h4><a class="mozTocH4" name="mozTocId908192"></a>Spin-wave model
+      (SpinW)<br>
+    </h4>
+    <p>The <b>sqw_spinw</b> model can embed a spin-wave model from the
+      <a href="https://www.psi.ch/spinw/">SpinW</a> to "
+      <meta http-equiv="content-type" content="text/html;
+        charset=windows-1252">
+      <i>simulate magnetic structures and excitations of given spin
+        Hamiltonian using classical Monte Carlo simulation and linear
+        spin wave theory</i>. " </p>
+    <table style="text-align: left; width: 1016px; height: 59px;"
+      border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">S(q,w)<br>
+          </td>
+          <td style="vertical-align: top; background-color: rgb(255,
+            204, 204);"><span style="font-style: italic; font-weight:
+              bold; color: rgb(51, 102, 255);">Description</span><br>
+          </td>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Dimensionality<br>
+          </td>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Parameters<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top; font-weight: bold;"><b>sqw_spinw<br>
+            </b><img alt="spinw" title="spinw"
+              src="file:///home/farhi/dev/iFit/Docs/images/spinw_logo.png"
+              height="64" width="99" align="middle"><br>
+          </td>
+          <td style="vertical-align: top;">Spin-wave dispersion in HKL
+            using <a href="https://www.psi.ch/spinw/">SpinW</a>. <br>
+          </td>
+          <td style="vertical-align: top; color: rgb(51, 204, 0);">4D
+            (HKL<i>w</i>)<br>
+            <a
+              href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_sine3d.png"><img
+                alt="sw" title="sw" src="images/Models_sqw_spinw.png"
+                border="0" height="73" width="100" align="middle"></a><br>
+          </td>
+          <td style="vertical-align: top;">energy broadening,
+            Temperature, coupling parameters J...<br>
+            Axes are in rlu.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    A SpinW object must first be created, and is then converted into an
+    iFunc object using the syntax:
+    <blockquote>s = <font color="#3366ff">sqw_spinw</font>(sw);</blockquote>
+    or<br>
+    <blockquote>s = <font color="#3366ff">iFunc</font>(sw);<br>
+    </blockquote>
+    <p>The <a href="https://www.psi.ch/spinw/">SpinW</a> toolbox allows
+      to build spin-wave models incuding spin-spin pair coupling,
+      anisotropy terms and external field contribution. The model is
+      then converted into an iFunc object, so that fitting and plotting
+      is straightforward.<br>
+    </p>
+    <p>Additional options can be used when creating the Model, with:<br>
+    </p>
+    <blockquote>
+      <p>s = <font color="#3366ff">sqw_spinw</font>(sw, <i>options</i>);<br>
+      </p>
+    </blockquote>
+    where '<i>options</i>' is a structure that can hold:<br>
+    <ul>
+      <li><i>options.component</i>: a string to specify the component to
+        use as intensity, as documented in <a
+          href="https://github.com/tsdev/spinw/blob/master/mfiles/sw_egrid.m">sw_egrid</a>
+        function. Default is <font color="#cc33cc">'Sperp'</font>.
+        Suggested is also<font color="#cc33cc"> 'Sxx+Syy+Szz'</font>.</li>
+    </ul>
+    <b>Once created</b>, the model can be evaluated and used for
+    fitting. <br>
+    The model parameters are:<br>
+    <blockquote>p(1)=&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; <b>Gamma</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      energy broadening (instrumental) [meV]<br>
+      p(2)=&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <b>Temperature</b>
+      of the material [K]<br>
+      p(3...)= &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <b>coupling
+        parameters</b> of the Hamiltonian (J)<br>
+    </blockquote>
+    The axes needed for the evaluation are expressed in rlu for QH,QK,QL
+    and in meV for the energy. The Model evaluation is as usual (in 4D):
+    <blockquote><b>model</b>(p, qh, qk, ql, w)&nbsp;&nbsp;&nbsp; %
+      return a matrix. p can be [] to use guessed/default parameters<br>
+      <font color="#3366ff">iData</font>(<b>model</b>, p, qh, qk, ql,
+      w)&nbsp;&nbsp;&nbsp; % return an iData </blockquote>
+    As an example, we plot a simple
+    <meta http-equiv="content-type" content="text/html;
+      charset=windows-1252">
+    square lattice Heisenberg antiferromagnet model:<a
+      href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_sine3d_add.png"><img
+        alt="sw" title="sw" src="images/Models_sqw_spinw.png" border="0"
+        height="143" width="200" align="right"></a>
+    <blockquote>sq = <font color="#3366ff">sw_model</font>('squareAF',2,0);&nbsp;
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; <i>% create the SW object</i><i> (using SpinW)</i><br>
+      s=<font color="#3366ff">sqw_spinw</font>(sq);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <i>%
+        create the Model</i><br>
+      qh=<font color="#3366ff">linspace</font>(0.01,1.5,50);qk=qh;
+      ql=qh'; w=<font color="#3366ff">linspace</font>(0.01,10,50);<br>
+      f=<font color="#3366ff">iData</font>(s,s.p,qh,qk,ql,w); <font
+        color="#3366ff">plot3</font>(log(f(:,:,1,:)));
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <i>% evaluate and plot</i><br>
+    </blockquote>
+    <b>References</b><br>
+    <blockquote>S. Toth and B. Lake, <i>J. Phys.: Condens. Matter</i> <b>27</b>,
+      166002 (2015).<br>
+    </blockquote>
+    <b>Requirements</b><br>
+    <blockquote>The <a href="https://www.psi.ch/spinw/spinw">SpinW</a>
+      Matlab toolbox must have been installed from e.g. &lt;<a
+        href="https://github.com/tsdev/spinw">https://github.com/tsdev/spinw</a>&gt;
+      or &lt;<a href="https://www.psi.ch/spinw/spinw">https://www.psi.ch/spinw/spinw</a>&gt;.<br>
+    </blockquote>
     <h4><a class="mozTocH4" name="mozTocId226848"></a>Phonon dispersion
       in perovskites</h4>
     <p>The <b>sqw_vaks </b>model computes the dispersion of the 5
@@ -1934,9 +2136,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       <b>At</b> transverse acoustic [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1992,9 +2198,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       <b>Aa</b> anisotropic acoustic [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2050,6 +2260,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       <b>Sa</b> soft mode&nbsp; anisotropic soft optical [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       6)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2079,9 +2291,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       <b>Vt</b> transverse acoustic-optical coupling [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2138,9 +2354,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       <b>w0</b> soft mode frequency at q=0, depends on temperature [meV]<br>
       &nbsp; p(&nbsp;
       9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2198,6 +2418,8 @@ href="http://epjb.epj.org/articles/epjb/abs/2000/12/b9618/b9618.html">
       <li> A.K. Tagantsev et al, <i>Nature Comm</i>, <b>4</b> (2013)
         2229. <a
 href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">DOI:
+
+
 
 
 
@@ -2305,6 +2527,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
       <b>C_ratio</b> C1/C2 force constant ratio first/second neighbours<a
         href="images/Models_sqw_cubic_mono.png"><img
           alt="sqw_cubic_mono" title="sqw_cubic_mono"
@@ -2342,9 +2566,13 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
       <b>E0</b> sqrt(C1/m) energy [meV]<br>
       &nbsp; p(&nbsp;
       3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2420,6 +2648,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
         2013</li>
       <li> Kittel, Solid State Physics, Wiley, New York, 7th ed. (1996),
         pp 99-103.</li>
@@ -2436,6 +2666,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
       name of a configuration file describing the material lattice and
       atom positions. This file can be in any <a
         href="https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io">ASE
+
+
 
 
 
@@ -2565,6 +2797,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
         e </i><i><sup>i(<b>k.r</b> - &#969;t</sup></i><i><sup>)</sup></i><br>
     </blockquote>
     where <b><i>r</i></b> is the position of the atom in a so-called <i>super-cell</i>,
@@ -2637,12 +2871,16 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
       &nbsp;&nbsp;&nbsp; <i>% creates a simple fcc Al model</i> and QE
       as calculator<br>
     </blockquote>
     <blockquote>s = <font color="#3366ff">sqw_phonons</font>(configuration);<br>
     </blockquote>
     <blockquote>s = <font color="#3366ff">sqw_phonons</font>(configuration,
+
+
 
 
 
@@ -2723,12 +2961,16 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
+
       <b>Gamma</b>&nbsp; Damped Harmonic Oscillator width in energy
       [meV]<br>
       &nbsp; p(&nbsp;
       3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Temperature</b>&nbsp;
+
+
 
 
 
@@ -2816,6 +3058,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html?highlight=bulk#common-bul
 
 
 
+
+
               "fcc", a=3.6, cubic=True)'</font><br>
             <div align="center"><a href="images/Models_Cubic.png"><img
                   alt="bulk" title="bulk" src="images/Models_Cubic.png"
@@ -2844,6 +3088,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bul
           </td>
           <td valign="top">Any <a
               href="https://wiki.fysik.dtu.dk/ase/ase/structure.html">molecule
+
+
 
 
 
@@ -2916,6 +3162,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html?highlight=bulk#nanotubes"
 
 
 
+
+
               0, length=4)'</font><br>
             <div align="center"><a href="images/Models_Nanotube.png"><img
                   alt="nanotube" title="nanotube"
@@ -2972,8 +3220,12 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
 
 
 
+
+
         using VASP.</li>
       <li>PhononDB &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;
+
+
 
 
 
@@ -3004,6 +3256,8 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
 
 
 
+
+
         can store any computational result from e.g. ABINIT,
         QuantumEspresso, VASP, and others.</li>
       <li>Inorganic Crystal Structure Database &lt;<a
@@ -3012,6 +3266,8 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
       </li>
     </ul>
     <h5><a class="mozTocH5" name="mozTocId912608"></a> <u><i> </i></u><u><i>General
+
+
 
 
 
@@ -3080,6 +3336,8 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
 
 
 
+
+
           3 2]'</font>.</li>
       <li><b>calculator</b>: the calculator to use, see below.</li>
       <li><b>dos</b>: indicates if the phonon density of states should
@@ -3117,8 +3375,8 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
         to be connected to the Internet. Proxy servers can <i>NOT</i>
         be passed.</li>
       <li><b>optimizer</b>: when set, performs a geometry optimization
-        before computing the forces. This option can be set to&nbsp;
-        <font color="#cc33cc"> 'BFGS'</font>, <font color="#cc33cc">'LBFGS'</font>
+        before computing the forces. This option can be set to&nbsp; <font
+          color="#cc33cc"> 'BFGS'</font>, <font color="#cc33cc">'LBFGS'</font>
         (low memory BFGS), <font color="#cc33cc">'MDMin'</font> or <font
           color="#cc33cc">'FIRE'</font>, as explained in the <a
           href="https://wiki.fysik.dtu.dk/ase/ase/optimize.html">ASE
@@ -3131,6 +3389,8 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
     and specific DFT related options<br>
     <ul>
       <li><b> occupations</b>: For metallic and insulator systems, the <i>electron
+
+
 
 
 
@@ -3241,6 +3501,8 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
 
 
 
+
+
           mode</a> as Plane-Wave, Finite Difference, or LCAO (linear
         combination of atomic orbitals). Can be <font color="#cc33cc">'pw','fd',</font>
         or <font color="#cc33cc">'lcao'</font>. Default is <font
@@ -3263,6 +3525,8 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
       displayed to request which one to choose. The PBE-PAW potentials
       are preferred and pre-selected. Pseudo-potential can be obtained
       at <a href="http://www.quantum-espresso.org/pseudopotentials/">QuantomEspresso
+
+
 
 
 
@@ -3362,6 +3626,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
                 color="#33cc00"><a href="http://materialscloud.org/">SSSP
 
 
+
+
                   library</a> pseudo</font>.</i><br>
           </td>
           <td valign="top"><b><font color="#33cc00">319</font></b><br>
@@ -3445,6 +3711,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
+
             </i><i>recommended</i><i><i> for phonon calculations</i>.</i></td>
           <td valign="top"><br>
           </td>
@@ -3455,6 +3723,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
                 border="0" height="22" width="80" align="middle"></a><a
               href="http://www.nwchem-sw.org/">&nbsp;NWChem</a></td>
           <td valign="top">Gaussian based electronic structure code. <i>Not
+
+
 
 
 
@@ -3531,7 +3801,6 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
         convergence.<br>
       </li>
     </ul>
-    <p></p>
     <p>If the SCF convergence fails, you may try: </p>
     <pre>  &gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(POSCAR,<font color="#cc33cc"> 'nsteps=200; toldfe=1e-6; occupations=0.27; ecut=1500; </font><font color="#cc33cc">'</font>);</pre>
     For insulators, you may also use a very small smearing, e.g. 0.01
@@ -3602,6 +3871,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/elk-lapw_
         <i>Computer Physics Communications</i> <b>180</b>, 2582-2615
         (2009). <a
           href="http://www.abinit.org/downloads/psp-links/pseudopotentials">Pseudo-potentials
+
+
           (JTH)</a>.Debiab packages: <a
 href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
         <a
@@ -3640,8 +3911,12 @@ href="http://www.abinit.org/downloads/psp-links/pseudopotentials"><br>
 
 
 
+
+
         (2009) [<a
 href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pdf</a>].
+
+
 
 
 
@@ -3680,11 +3955,15 @@ href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pd
 
 
 
+
+
         <br>
       </li>
       <li><a href="http://www.quantum-espresso.org/">Quantum Espresso</a>:
         P. Giannozzi, et al, <i>J.Phys.:Condens.Matter,</i> <b>21</b>,
         395502 (2009). &lt;<a href="http://www.quantum-espresso.org/">http://www.quantum-espresso.org/</a>&gt;.
+
+
 
 
 
@@ -3747,6 +4026,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
 
 
 
+
+
             and installation</b></i></u></h5>
     Most DFT codes require a multi-core computer with about 2Gb/core
     memory. Use option e.g.<font color="#cc33cc"> 'mpi=8'</font> to make
@@ -3775,6 +4056,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
     The ABINIT code requires to install an additional library of pseudo
     potentials. We recommand to get it <a
 href="http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz"><i>here
+
+
 
 
 
@@ -3953,6 +4236,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
+
         (calls fconv in correlation mode)<br>
       </li>
     </ul>
@@ -3991,6 +4276,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 

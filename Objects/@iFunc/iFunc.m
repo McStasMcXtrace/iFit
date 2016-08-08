@@ -151,6 +151,9 @@ else   % import data to create a single object
   elseif isa(this, 'iFunc') % ------------------------------------------------
     % make a copy of the initial object
     a = this;
+  elseif isa(this, 'sw') | isa(this, 'spinw') % ------------------------------------------------
+    % convert spinw object into iFunc
+    a = sqw_spinw(this);
   elseif isstruct(this) % ----------------------------------------------------
     a = iFunc;
     % identify if some of the structure fields can be directly used, and overlayed
