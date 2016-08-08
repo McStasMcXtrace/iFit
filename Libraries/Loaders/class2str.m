@@ -15,7 +15,7 @@ function str=class2str(this, data, options)
 % output variables:
 %   str: string which contains a function code to generate the data.
 %
-% example: str=class2str('this', struct('a',1,'b','a string comment','c',{});
+% example: str=class2str('this', struct('a',1,'b','a string comment','c',{'cell'}))
 %          
 % See also: mat2str, num2str, eval, sprintf
 %
@@ -54,7 +54,7 @@ NL = sprintf('\n');
 
 if ischar(data)
   str = [ this ' = ''' class2str_validstr(data) ''';' NL ];
-elseif (isa(data, 'iData') | isstruct(data)) & length(data) > 1
+elseif (isa(data, 'iData') | isa(data, 'iFunc') | isa(data, 'sw') | isa(data, 'spinw') | isstruct(data)) & length(data) > 1
   if ~nocomment, str = [ '% ' this ' (' class(data) ') array size ' mat2str(size(data)) NL ]; end
   for index=1:numel(data)
     str = [ str class2str([ this '(' num2str(index) ')' ], data(index), options) ];
@@ -76,8 +76,7 @@ elseif isa(data, 'iFunc')
   if ~nocomment, str = [ '% ' this ' (' class(data) ') size ' num2str(size(data)) NL ]; end
   str = [ str class2str(this, struct(data), options) ];
   if ~nocomment, str = [ str NL '% handling of iFunc objects -------------------------------------' NL ]; end
-  str = [ str 'if ~exist(''iFunc''), return; end' NL ];
-  str = [ str this ' = iFunc(' this ');' ];
+  str = [ str 'try; ' this ' = ' class(data) '(' this '); end' ];
   if ~nocomment, str = [ str '% end of iFunc ' this NL ]; end
 elseif isnumeric(data) | islogical(data)
   if ~nocomment, str = [ '% ' this ' numeric (' class(data) ') size ' num2str(size(data)) NL ]; end
@@ -85,7 +84,7 @@ elseif isnumeric(data) | islogical(data)
   if numel(data) > 1
     str = [ str this ' = reshape(' this ', [' num2str(size(data)) ']);' NL ];
   end
-elseif isstruct(data)
+elseif isstruct(data) && ~isempty(data)
   f = fieldnames(data);
   if ~nocomment, str = [ '% ' this ' (' class(data) ') length ' num2str(length(f)) NL ]; end
   for index=1:length(f)
@@ -124,10 +123,11 @@ elseif isa(data, 'function_handle')
   str = [ str this ' = ' func2str(data(:)) ';' NL ];
 else
   try
-    % other class
+    % other classes
     if ~nocomment, str = [ '% ' this ' (' class(data) ') size ' num2str(size(data)) NL ]; end
-    str = [ str class2str(this, struct(data)) ];
-    if ~nocomment, str = [ str '% end of object ' this NL ]; end
+    str = [ str class2str(this, struct(data), options) ];
+    str = [ str 'try; ' this ' = ' class(data) '(' this '); end' ];
+    if ~nocomment, str = [ str '% end of ' class(data) ' ' this NL ]; end
   catch
     warning([ mfilename ': can not save ' this ' ' class(data) '. Skipping.' ]);
   end

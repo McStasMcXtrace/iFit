@@ -361,7 +361,9 @@ case {'html','htm'}
   fprintf(fid,'<p><!-- pagebreak --></p>\n'); % force page break in case we append new stuff
   fclose(fid);
 case {'yaml','yml'}
-  YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
+  if usejava('jvm')
+    YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
+  end
 case {'xml'}
     struct2xml(struct(a), filename);   % in private
 otherwise

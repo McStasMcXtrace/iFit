@@ -24,8 +24,9 @@ function [filename,format] = save(a, varargin)
 %           'art'  save as ASCII art
 %           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
+%           'lamp' save as LAMP Processed Workspace, i.e. 'nxs lamp data' (HDF5)
 %           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
-%           'mantid' save as Mantid Processed Workspace, i.e. 'nxs mantid data'
+%           'mantid' save as Mantid Processed Workspace, i.e. 'nxs mantid data' (HDF5)
 %           'mat'  save as a serialized '.mat' binary file (fast 'save', DEFAULT)
 %           'nc'   save as NetCDF
 %         as well as other lossy formats
@@ -34,13 +35,15 @@ function [filename,format] = save(a, varargin)
 %           'edf'  EDF ESRF format for 1D and 2D data sets
 %           'fig'  save as a Matlab figure
 %           'fits' save as FITS binary image (only for 2D objects)
-%           'gif','bmp' save as an image (no axes, only for 2D data sets)
+%           'gif','bmp','png','tiff','jpeg' save as an image (no axes, only for 2D data sets)
 %           'hdf4' save as an HDF4 image
-%           'hdr'  save as HDR/IMG Analyze MRI volume (3/4D)
+%           'hdr'  save as HDR/IMG Analyze MRI volume (3D/4D)
+%           'html' save as Hypertext Markup Language document, appended to any existing document.
 %           'json' save as JSON JavaScript Object Notation, ascii
 %           'mrc'  save as MRC map file (3/4D)
 %           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative (3/4D)
-%           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
+%           'ps','pdf','ill','eps' save as an image (with axes)
+%           'ppm','pgm','pbm'
 %           'off'  save as Object File Format (geometry), ascii
 %           'ply'  save as PLY (geometry), ascii
 %           'stl'  save as STL stereolithography (geometry), binary
