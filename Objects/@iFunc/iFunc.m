@@ -46,6 +46,8 @@ function a = iFunc(varargin)
 %   From a script/function 
 %     The file should use 'p' as adjustable parameters, and optionally axes 'x', 'y', ...
 %
+%   From a SpinW object
+%
 % Using the object:
 %   Once the object has been created,you can evaluate it with: object(p, x, y, ...)
 %   The usual mathematical operators can be used to manipulate iFunc objects.
@@ -56,7 +58,7 @@ function a = iFunc(varargin)
 % Type <a href="matlab:doc(iFunc)">doc(iFunc)</a> to access the iFit/iFunc Documentation.
 % iFunc is part of iFit http://ifit.mccode.org 
 % 
-% input:  s: iFunc, string, structure, function handle
+% input:  s: iFunc, string, structure, function handle, spinw
 % output: b: model object (iFunc)
 % ex:     b=iFunc(@(p,x) p(1)*x+p(2)); 
 %         b=iFunc('p(1)*x+p(2)');
