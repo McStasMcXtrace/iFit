@@ -1,4 +1,4 @@
-function s = iData_private_sumtrapzproj(a,dim, op)
+function [s, sigma] = iData_private_sumtrapzproj(a,dim, op)
 % s = iData_private_sumtrapzproj(a,dim, op) : computes the sum/trapz/camproj of iData objects elements
 %
 %   @iData/iData_private_sumtrapzproj function to compute the sum/trapz/camproj of the elements of the data set
@@ -13,6 +13,7 @@ function s = iData_private_sumtrapzproj(a,dim, op)
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean, iData/camproj, iData/trapz
 
 % handle input iData arrays
+sigma = [];
 if numel(a) > 1
   s = [];
   for index=1:numel(a)
@@ -23,7 +24,8 @@ if numel(a) > 1
 end
 
 if isscalar(a)
-  s = double(a);
+  sigma= double(a.Error);
+  s    = double(a);
   return
 end
 
@@ -203,6 +205,7 @@ if all(dim > 0)
 	
 elseif dim == 0
   s = sum(s(:));
+  sigma = double(sqrt(sum(e(:).^2)));
   s = double(s);
   return  % scalar
 end
@@ -210,7 +213,10 @@ b.Command=cmd;
 b = iData_private_history(b, op, b, dim);
 s = b;
 
-if isscalar(s), s=double(s); end
+if isscalar(s), 
+  sigma = double(s.Error);
+  s=double(s); 
+end
 
 % reset warnings
 iData_private_warning('exit',mfilename);

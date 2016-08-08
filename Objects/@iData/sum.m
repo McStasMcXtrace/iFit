@@ -1,9 +1,10 @@
-function s = sum(a,dim)
+function [s,sigma] = sum(a,dim)
 % s = sum(a,dim) : computes the sum of iData objects elements
 %
 %   @iData/sum function to compute the sum of the elements of the data set
 %     sum(a,dim) accumulates along axis of rank dim. The axis is then removed.
 %       If dim=0, sum is done on all axes and the total is returned as a scalar value. 
+%         In this case, a second output argument holds the error bar.
 %       If dim='radial', the sum is done radially (R=sqrt(sum(axes^2)).
 %       sum(a,1) accumulates on first dimension (columns). 
 %       camproj accumulates on all other axes.
@@ -23,7 +24,8 @@ end
 
 if nargin < 2, dim=1; end
 if strcmp(dim, 'radial')
+  sigma = [];
   s = camproj(a, dim);
 else
-  s = iData_private_sumtrapzproj(a,dim, 'sum');
+  [s,sigma] = iData_private_sumtrapzproj(a,dim, 'sum');
 end
