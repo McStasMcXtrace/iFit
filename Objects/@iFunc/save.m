@@ -15,16 +15,20 @@ function [filename,format] = save(a, varargin)
 %                   If the filename already exists, the file is overwritten.
 %                   If given as filename='gui', a file selector pops-up
 %         format: data format to use (char), or determined from file name extension
+%           'json' save as JSON JavaScript Object Notation, ascii
 %           'm'    save as a flat Matlab .m file (a function which returns an iFunc object or structure)
-%           'mat'  save as a '.mat' binary file (same as 'save', default)
+%           'mat'  save as a '.mat' binary file (same as 'save', DEFAULT)
+%           'yaml' save as YAML format, ascii
+%           'xml'  save as XML file, ascii
 %         as well as other lossy formats
-%           'hdf4' save as an HDF4 immage
 %           'fig'  save as a Matlab figure
-%           'gif','bmp' save as an image (no axes, only for 2D data sets)
-%           'png','tiff','jpeg','ps','pdf','ill','eps' save as an image (with axes)
+%           'gif','bmp','png','tiff','jpeg','ps','pdf','ill','eps' save as an image
+%           'hdf4' save as an HDF4 immage
+%           'html' save as Hypertext Markup Language document, appended to any existing document
+%
 %           'gui' when filename extension is not specified, a format list pops-up
 %         options: specific format options, which are usually plot options
-%           default is 'view2 axis tight'
+%           default is 'view2 axis tight'.
 %
 % output: f: filename(s) used to save data (char)
 % ex:     b=save(a, 'file', 'm');

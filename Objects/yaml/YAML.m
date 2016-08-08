@@ -180,8 +180,12 @@ classdef YAML
             elseif isa(r,'DateTime')
                 result = java.util.Date(datestr(r));
             else
-                error('YAML:load_data:typeError',...
+                try
+                  result=YAML.dump_data(struct(r));
+                catch
+                  error('YAML:load_data:typeError',...
                     ['Unsupported data type: ' class(r)]);
+                end
             end
         end
         
