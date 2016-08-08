@@ -1,4 +1,4 @@
-function b = cumprod(a,dim)
+function [b,sigma] = cumprod(a,dim)
 % s = cumprod(a,dim) : computes the cumulative product of iData objects elements
 %
 %   @iData/cumprod function to compute the cumulative product of the elements of the data set
@@ -17,4 +17,4 @@ end
 
 if nargin < 2, dim=1; end
 
-b = iData_private_sumtrapzproj(a,dim, 'cumprod');
+[b,sigma] = iData_private_sumtrapzproj(a,dim, 'cumprod');

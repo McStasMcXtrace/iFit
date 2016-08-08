@@ -1,4 +1,4 @@
-function b = cumsum(a,dim)
+function [b,sigma] = cumsum(a,dim)
 % s = cumsum(a,dim) : computes the cumulative sum of iData objects elements
 %
 %   @iData/cumsum function to compute the cumulative sum of the elements of the data set
@@ -18,4 +18,4 @@ end
 
 if nargin < 2, dim=1; end
 
-b = iData_private_sumtrapzproj(a,dim, 'cumsum');
+[b,sigma] = iData_private_sumtrapzproj(a,dim, 'cumsum');
