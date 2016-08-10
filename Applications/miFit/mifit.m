@@ -9,6 +9,41 @@ function varargout = mifit(varargin)
 
 % plot: plot model/dataset/parameters ? -> preferences
 % will add toolbar instead of uicontrols for fast processing
+
+%  function config = mifit_Load_Preferences
+%  function mifit_Save_Preferences(config)
+%  function mifit_File_New(handle)
+%  function mifit_File_Open(handle)
+%  function mifit_File_Save(varargin)
+%  function mifit_File_Saveas(varargin)
+%  function mifit_File_Print(varargin)
+%  function mifit_File_Preferences(varargin)
+%  function mifit_Apply_Preferences
+%  function mifit_File_Exit(varargin)
+%  function mifit_File_Reset(varargin)
+%  function mifit_File_Log(varargin)
+%  function mifit_Edit_Undo(varargin)
+%  function mifit_Edit_Cut(varargin)
+%  function mifit_Edit_Copy(varargin)
+%  function mifit_Edit_Paste(varargin)
+%  function mifit_Edit_Duplicate(varargin)
+%  function mifit_Edit_Select_All(hObject, select)
+%  function mifit_Edit_Delete(varargin)
+%  function mifit_History_pull
+%  function mifit_History_push
+%  function mifit_Data_Plot(varargin)
+%  function mifit_Data_Export(varargin)
+%  function mifit_Data_Table(varargin)
+%  function mifit_Data_View(varargin)
+%  function mifit_Data_Properties(varargin)
+%  function mifit_Data_History(varargin)
+%  function mifit_Tools_About(fig)
+%  function mifit_List_Data_Files(varargin)
+%  function mifit_List_Data_push(d)
+%  function mifit_List_Data_pull(varargin)
+%  function mifit_List_Data_UpdateStrings
+%  function mifit_disp(message)
+
     persistent config
     
     varargout = {};
@@ -511,9 +546,7 @@ function mifit_Data_Properties(varargin)
 function mifit_Data_History(varargin)
   d = mifit_List_Data_pull();
   for index=1:numel(d)
-    if ~isempty(d(index).Source) && ~isdir(d(index).Source)
-      commandhistory(d(index));
-    end
+    commandhistory(d(index));
   end
 % Data_Properties ?
 % re-assign data set signal, axes, ... to aliases/new ones
@@ -545,8 +578,7 @@ function h=mifit_Tools_About(fig)
 
 function mifit_List_Data_Files(varargin)
 % called when clicking on the listbox
-disp mifit_List_Data_Files
-varargin
+
 %  mifit_Data_Plot();
 
 function mifit_List_Data_push(d)

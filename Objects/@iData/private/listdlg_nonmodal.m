@@ -1,4 +1,4 @@
-function [selection,value] = listdlg_nonmodal(varargin)
+function [fig] = listdlg_nonmodal(varargin)
 %LISTDLG  List selection dialog box.
 %   [SELECTION,OK] = LISTDLG('ListString',S) creates a modal dialog box
 %   which allows you to select a string or multiple strings from a list.
@@ -198,26 +198,8 @@ set([fig, ok_btn, cancel_btn, listbox], 'keypressfcn', {@doKeypress, listbox});
 movegui(fig)
 set(fig, 'visible','on'); drawnow;
 
-try
-    % Give default focus to the listbox *after* the figure is made visible
-    % uicontrol(listbox);
-    % uiwait(fig);
-catch
-    if ishghandle(fig)
-        delete(fig)
-    end
-end
 
-if isappdata(0,'ListDialogAppData__')
-    ad = getappdata(0,'ListDialogAppData__');
-    selection = ad.selection;
-    value = ad.value;
-    rmappdata(0,'ListDialogAppData__')
-else
-    % figure was deleted
-    selection = [];
-    value = 0;
-end
+
 
 %% figure, OK and Cancel KeyPressFcn
 function doKeypress(src, evd, listbox) %#ok
@@ -228,19 +210,29 @@ end
 
 %% OK callback
 function doOK(ok_btn, evd, listbox) %#ok
-if (~isappdata(0, 'ListDialogAppData__'))
-    ad.value = 1;
-    ad.selection = get(listbox,'value');
-    setappdata(0,'ListDialogAppData__',ad);
-    delete(gcbf);
+if isappdata(gcbf, 'ListDialogAppData__')
+  ad = getappdata(gcbf,'ListDialogAppData__');
 end
+ad.value = 1;
+ad.selection = get(listbox,'value');
+string = get(listbox,'string');
+ad.selectionString = string(ad.selection);
+ad.button = 'OK';
+setappdata(gcbf,'ListDialogAppData__',ad);
+close(gcbf);
 
 %% Cancel callback
 function doCancel(cancel_btn, evd, listbox) %#ok
+if isappdata(gcbf, 'ListDialogAppData__')
+  ad = getappdata(gcbf,'ListDialogAppData__');
+end
 ad.value = 0;
-ad.selection = [];
-setappdata(0,'ListDialogAppData__',ad)
-delete(gcbf);
+ad.selection = get(listbox,'value');
+string = get(listbox,'string');
+ad.selectionString = string(ad.selection);
+ad.button = 'Cancel';
+setappdata(gcbf,'ListDialogAppData__',ad)
+close(gcbf);
 
 %% SelectAll callback
 function doSelectAll(selectall_btn, evd, listbox) %#ok
