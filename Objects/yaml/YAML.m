@@ -80,7 +80,7 @@ classdef YAML
             %WRITE serialize and write yaml data to file
             S = YAML.dump( X );
             fid = fopen(filepath,'w');
-            fprintf(fid,'%s\n', '%YAML 1.1');
+            fprintf(fid,'%s\n', '#YAML 1.1');
             fprintf(fid,'# File: %s\n', filepath);
             fprintf(fid,'# Date: %s\n', datestr(now));
             fprintf(fid,'%s',S);
@@ -176,9 +176,13 @@ classdef YAML
                 end
             elseif iscell(r)
                 result = java.util.ArrayList();
-                result.add(YAML.dump_data(r{1}));
+                for index=1:numel(r)
+                  result.add(YAML.dump_data(r{index}));
+                end
             elseif isa(r,'DateTime')
                 result = java.util.Date(datestr(r));
+            elseif isa(r,'function_handle')
+                result = YAML.dump_data(func2str(r));
             else
                 try
                   result=YAML.dump_data(struct(r));
@@ -197,3 +201,7 @@ classdef YAML
     
 end
 
+% private functions
+function result = isrow(obj)
+            result = isvector(obj) && size(obj,1) == 1 && size(obj,2) > 1 && ndims(obj) == 2;
+        end

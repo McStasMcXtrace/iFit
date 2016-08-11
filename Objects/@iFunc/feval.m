@@ -278,6 +278,13 @@ if model.Dimension && ...
   end
   % specific guessed values (if any) -> p2 override p1
   if ~isempty(model.Guess) && ~all(cellfun('isempty',varargin))
+    if ischar(model.Guess)
+      % request char eval guess in sandbox
+      p2 = iFunc_feval_guess(model, varargin{:});
+      if isa(p2, 'function_handle')
+        model.Guess = p2;
+      end
+    end
     if isa(model.Guess, 'function_handle')
       n = nargin(model.Guess);                % number of required arguments
       try
@@ -290,14 +297,13 @@ if model.Dimension && ...
           p2 = feval(model.Guess, varargin{:}); % returns model vector
         end
       catch ME
+        disp([ mfilename ': Guess: ' ME.message ])
         p2 = [];
       end
       clear n
     elseif isnumeric(model.Guess)
       p2 = model.Guess;
     else
-      % request char eval guess in sandbox
-      p2 = iFunc_feval_guess(model, varargin{:});
       p  = p0;             % restore initial value
     end
     if isempty(p2)
@@ -580,11 +586,11 @@ function p = iFunc_feval_guess(this, varargin)
   m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
   m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
   try
-    p = eval(this.Guess);     % returns model vector
+    p = eval(this.Guess);     % returns model vector with output arg
   end
   if isempty(p)
     try
-      eval(this.Guess);       % returns model vector and redefines 'p'
+      eval(this.Guess);       % no output arg: returns model vector and redefines 'p'
     catch
       p = [];
     end
@@ -623,7 +629,8 @@ function p = iFunc_feval_set(this, p, varargin)
         elseif ischar(this.Constraint.set{index})
           p(index) = eval(this.Constraint.set{index});
         end
-      catch
+      catch ME
+        disp([ mfilename ': Constraints: ' ME.message ])
         warning([ 'iFunc:' mfilename ], 'Could not evaluate model.Constraint.set on p(%i):', index);
         disp(this.Constraint.set{index})
       end % try

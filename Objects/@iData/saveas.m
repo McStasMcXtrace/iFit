@@ -140,6 +140,7 @@ if strcmp(filename, 'formats')
     ext = strrep(ext,'*','');
     fprintf(1,'%10s  %s \n', ext, filterspec{index,2});
   end
+  filename = filterspec;
   return
 end
 

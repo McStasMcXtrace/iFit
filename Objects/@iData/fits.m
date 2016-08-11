@@ -138,6 +138,16 @@ end
 if nargin < 2
   model = '';
 end
+% search for a Model in the object
+if isempty(model)
+  if isfield(a, 'Model')
+    model = get(a, 'Model');
+  elseif ~isempty(findfield(a, 'Model'))
+    model = get(a, findfield(a, 'Model', 'cache first'));
+  end
+end
+
+% else default to Gaussian...
 if isempty(model)
   model = gauss;
 end
