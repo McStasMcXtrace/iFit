@@ -9,6 +9,7 @@ function [filename,format] = saveas(a, varargin)
 %   saveas(iFunc,'file','format')       sets file format explicitly
 %     To load back a model from an m-file, type its file name at the prompt.
 %     To load back a model from an mat-file, type 'load filename.mat' at the prompt.
+%     To load back a model from a YAML, JSON, XML, use iFunc('filename')
 %
 % input:  s: object or array (iFunc)
 %         filename: name of file to save to. Extension, if missing, is appended (char)
@@ -18,8 +19,8 @@ function [filename,format] = saveas(a, varargin)
 %           'json' save as JSON JavaScript Object Notation, ascii
 %           'm'    save as a flat Matlab .m file (a function which returns an iFunc object or structure)
 %           'mat'  save as a '.mat' binary file (same as 'save', DEFAULT)
-%           'yaml' save as YAML format, ascii
 %           'xml'  save as XML file, ascii
+%           'yaml' save as YAML format, ascii
 %         as well as other lossy formats
 %           'fig'  save as a Matlab figure
 %           'gif','bmp','png','tiff','jpeg','ps','pdf','ill','eps' save as an image
@@ -65,6 +66,7 @@ filterspec = {...
       '*.png', 'Portable Network Graphics image (*.png)'; ...
       '*.ps',  'PostScrip (color, *.ps)'; ...
       '*.tiff;*.tif', 'TIFF image (*.tif)'; ...
+      '*.xml','XML file (*.xml)'; ...
       '*.yaml;*.yml','YAML interchange format (*.yaml)' ...
 };
 if strcmp(filename, 'formats')
@@ -76,6 +78,7 @@ if strcmp(filename, 'formats')
     ext = strrep(ext,'*','');
     fprintf(1,'%10s  %s \n', ext, filterspec{index,2});
   end
+  filename = filterspec;
   return
 end
 

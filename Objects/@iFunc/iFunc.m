@@ -48,12 +48,15 @@ function a = iFunc(varargin)
 %
 %   From a SpinW object
 %
+%   From a file in MAT, M, YAML, JSON, XML format holding a function (iFunc/save)
+%
 % Using the object:
 %   Once the object has been created,you can evaluate it with: object(p, x, y, ...)
 %   The usual mathematical operators can be used to manipulate iFunc objects.
 %
 %   The syntax iFunc(iData object) evaluates the iFunc model using the iData
-%     object axes, and returns the model value as a numerical array.
+%     object axes, and returns the model value as a numerical array. To get the
+%     result as an iData, use syntax iData(iFunc object) [the opposite syntax].
 %
 % Type <a href="matlab:doc(iFunc)">doc(iFunc)</a> to access the iFit/iFunc Documentation.
 % iFunc is part of iFit http://ifit.mccode.org 
@@ -67,7 +70,7 @@ function a = iFunc(varargin)
 %         b.p=p; plot(b)
 %
 % Version: $Date$
-% See also iFunc, iFunc/feval, iFunc/plot, iFunc/fit
+% See also iFunc, iFunc/feval, iFunc/plot, iFunc/fit, iFunc/save
 % (c) E.Farhi, ILL. License: EUPL.
 
 persistent id % the id number for all new objects
@@ -126,7 +129,9 @@ else   % import data to create a single object
   % can be a structure, or an expression, or a function_handle
   this = varargin{1};
   
-  if ischar(this) % ----------------------------------------------------------
+  if ischar(this) && ~isempty(dir(this))  % a filename
+    a = iFunc(iLoad(this));
+  elseif ischar(this) % ----------------------------------------------------------
     % check if this is a predefined function
     isfunction = 0;
     try
@@ -289,6 +294,16 @@ function a = iFunc_private_check(a)
   end
 
   if strncmp(a.Guess, 'auto',4), a.Guess = ''; end
+  
+  % chech for function_handles stored as chars in Guess and Expression
+  m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
+  m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
+  if ischar(a.Guess)
+    if a.Guess(1) == '@', a.Guess = str2func(a.Guess); end
+  end
+  if ischar(a.Expression)
+    if a.Expression(1) == '@', a.Expression = str2func(a.Expression); end
+  end
 
   if ~isempty(expr)
     % first count the initial p(n) fields and get the used indices
@@ -378,7 +393,9 @@ function a = iFunc_private_check(a)
   replace = strcat('p(', cellstr(num2str(transpose(1:length(a.Parameters)))), ')');
   % replace Parameter names by their p(n) representation
   expr = regexprep(expr, strcat('\<"', a.Parameters, '"\>' ), replace);
-  a.Constraint.eval = regexprep(a.Constraint.eval, strcat('\<"', a.Parameters, '"\>' ), replace);
+  if ~isempty(a.Constraint.eval)
+    a.Constraint.eval = regexprep(a.Constraint.eval, strcat('\<"', a.Parameters, '"\>' ), replace);
+  end
 
   % dim:     holds model dimensionality
   % nb_pars: holds number of parameter used in expression
