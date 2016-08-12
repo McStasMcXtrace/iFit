@@ -123,7 +123,7 @@ PLOT2SVG_globals.checkUserData = true;
 if nargout==1
     varargout={0};
 end
-disp(['   Matlab/Octave to SVG converter version ' progversion ', Juerg Schwizer (converter@bluewin.ch).'])
+% disp(['   Matlab/Octave to SVG converter version ' progversion ', Juerg Schwizer (converter@bluewin.ch).'])
 matversion=version;
 if exist('OCTAVE_VERSION','builtin')
     PLOT2SVG_globals.octave = true;

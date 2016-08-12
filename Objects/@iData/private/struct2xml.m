@@ -164,6 +164,11 @@ function [] = parseStruct(s,docNode,curNode,pName)
             elseif (iscell(s.(curfield)))
                 %multiple elements
                 for c = 1:length(s.(curfield))
+                    if ~isstruct(s.(curfield){c}) && ~ischar(s.(curfield){c}) && ~builtin('isnumeric', (s.(curfield){c}))
+                      try % try no convert object into a struct
+                        s.(curfield){c} = struct(s.(curfield){c});
+                      end
+                    end
                     if (isstruct(s.(curfield){c}))
                         curElement = docNode.createElement(curfield_sc);
                         curNode.appendChild(curElement);
@@ -213,6 +218,8 @@ function [str,succes] = val2str(val)
         catch
           succes = false;
         end
+    elseif isa(val, 'function_handle')
+      val = func2str(val);
     else
         succes = false;
     end
