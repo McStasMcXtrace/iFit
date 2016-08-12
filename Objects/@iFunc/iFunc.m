@@ -33,6 +33,7 @@ function a = iFunc(varargin)
 %   From a character string
 %     the Expression should make use of x,y,z,t,u,v,w to denote axes of rank 1-7,
 %     and the model Parameters are specified using 'p(n)' vector elements.
+%       iFunc('p(1)*x+p(2)');
 %
 %   From a structure, with iFunc object fields (see above) and alias fields:
 %     x0          -> Guess
@@ -42,13 +43,16 @@ function a = iFunc(varargin)
 %
 %   From a function handle
 %     The function should have syntax model(p, x,y,...) and return the model value.
+%       iFunc(@(p,x) p(1)*x+p(2))
 %
 %   From a script/function 
 %     The file should use 'p' as adjustable parameters, and optionally axes 'x', 'y', ...
 %
 %   From a SpinW object
+%       iFunc(sw_model('squareAF',2,0))
 %
-%   From a file in MAT, M, YAML, JSON, XML format holding a function (iFunc/save)
+%   From a file in MAT, M, YAML, JSON, XML format holding a model (iFunc/save)
+%       iFunc('filename_model')
 %
 % Using the object:
 %   Once the object has been created,you can evaluate it with: object(p, x, y, ...)

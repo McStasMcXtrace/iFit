@@ -45,7 +45,7 @@ switch class(M)
             try
               J=[J,'"',f{i},'":',mat2json(M.(f{i})),','];
             catch
-              disp([ mfilename ': Ignoring field "' f{i} '" which is not a base Matlab class.' ]);
+              disp([ mfilename ': Ignoring field "' f{i} '" which is not a base Matlab class, but is ' class(M.(f{i})) ]);
             end
         end
         J(end)='}';
@@ -56,7 +56,7 @@ switch class(M)
             try
               J=[J,mat2json(M{i}),','];
             catch
-              disp([ mfilename ': Ignoring field "' f{i} '" which is not a base Matlab class.' ]);
+              disp([ mfilename ': Ignoring cell index "' num2str(i) '" which is not a base Matlab class, but is ' class(M{i}) ]);
             end
         end
         J(end)=']';
@@ -81,7 +81,11 @@ switch class(M)
                 end
             end
         else
+          try
+            J=mat2json(struct(M));  % OK for objects
+          catch
             J=['"',char(M),'"']; % otherwise it is treated as a string
+          end
         end
 end
 
