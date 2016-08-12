@@ -44,7 +44,8 @@ end
 function s=commandhistory_export(fig)
 
   ad = getappdata(fig,'ListDialogAppData__');
-  s        = ad.selectionString;
+  s = get(ad.listbox,'string');
+  if isempty(s), return; end
   a        = ad.object;
   
   % save all commands to a script file
