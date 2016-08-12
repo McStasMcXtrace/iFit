@@ -128,17 +128,20 @@ elseif isempty(format) & isempty(ext)
   format='m'; filename = [ filename '.m' ];
 end
 
-% handle array of objects to save iteratively
-if numel(a) > 1 & ~strcmp(lower(format),'mat')
+% handle array of objects to save iteratively, except for file formats that support
+% multiple entries: HTML MAT
+if numel(a) > 1 && ~strcmp(lower(format),'mat')
   if length(varargin) >= 1, filename_base = varargin{1}; 
   else filename_base = ''; end
   if strcmp(filename_base, 'gui'), filename_base=''; end
   if isempty(filename_base), filename_base='iFunc'; end
   filename = cell(size(a));
   for index=1:numel(a)
-    if numel(a) > 1
+    if numel(a) > 1 && ~strcmpi(format, 'html')
       [path, name, ext] = fileparts(filename_base);
       varargin{1} = [ path name '_' num2str(index,'%04d') ext ];
+    elseif index == 1 && ~isempty(dir(filename_base))
+      delete(filename_base);
     end
     [filename{index}, format] = saveas(a(index), varargin{:});
   end
@@ -264,7 +267,7 @@ case {'html','htm'}
   % The Header *****************************************************************
   if strcmp(mode, 'w+')
     fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
-    fprintf(fid, '<html>\n<head>\n<title>%s</title>\n<\head>\n', ...
+    fprintf(fid, '<html>\n<head>\n<title>%s</title>\n</head>\n', ...
         titl);
     fprintf(fid, '<body>\n');
   end

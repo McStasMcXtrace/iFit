@@ -250,16 +250,21 @@ if isempty(filename) || isempty(name),
 end
 
 % handle array of objects to save iteratively, except for file formats that support
-% multiple entries: MAT HDF XML DAT XHTML YAML HTML 
-if numel(a) > 1 && ~any(strcmp(lower(format),'mat'))
+% multiple entries: HTML MAT
+if numel(a) > 1
   filename_base = filename;
   if strcmp(filename_base, 'gui'), filename_base=''; end
   if isempty(filename_base),       filename_base='iFit_'; end
   filename = cell(size(a));
   for index=1:numel(a)
-    if numel(a) > 1
+    if numel(a) > 1 && ~strcmpi(format, 'html') && ~strcmpi(format, 'mat')
       [Path, name, ext] = fileparts(filename_base);
       this_filename = [ Path name '_' num2str(index,'%04d') ext ];
+    else
+      if index == 1 && ~isempty(dir(filename_base))
+        delete(filename_base);
+      end
+      this_filename = filename_base;
     end
     [filename{index}, format] = saveas(a(index), this_filename, format, options);
   end
@@ -291,13 +296,20 @@ try
   case 'mat'  % single mat-file Matlab output (binary), with the full object description
     % serialize for much faster save
     a.Data = hlp_serialize(a.Data);
+    varg = { filename };
     if ~isempty(inputname(1))
       eval([ inputname(1) '= a;' ]);
-      save(filename, inputname(1));
+      varg{2} = inputname(1);
     else
       eval([ a.Tag '= a;' ]);
-      save(filename, a.Tag);
+      varg{2} = a.Tag;
     end
+    if isempty(dir(filename))
+      disp([ mfilename ': The file ' filename ' has been serialized. You MUST import it with load(iData, ''' filename ''')' ])
+    else varg{3} = '-append';
+    end
+    save(varg{:});
+    
   case {'hdf','hdf5','h5','nx','nxs','n5','nc','cdf'} % HDF5, CDF, NetCDF formats: converts fields to double and chars
     filename = iData_private_saveas_hdfnc(a, filename, format, root); % private function
   case 'edf'  % EDF ESRF format

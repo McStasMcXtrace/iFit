@@ -22,7 +22,7 @@ function filename = iData_private_saveas_html(a, filename)
   % The Header *****************************************************************
   if strcmp(mode, 'w+')
     fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
-    fprintf(fid, '<html>\n<head>\n<title>%s</title>\n<\head>\n', ...
+    fprintf(fid, '<html>\n<head>\n<title>%s</title>\n</head>\n', ...
         titl);
     fprintf(fid, '<body>\n');
   end

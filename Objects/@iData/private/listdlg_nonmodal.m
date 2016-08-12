@@ -198,8 +198,13 @@ set([fig, ok_btn, cancel_btn, listbox], 'keypressfcn', {@doKeypress, listbox});
 movegui(fig)
 set(fig, 'visible','on'); drawnow;
 
-
-
+ad.value   = NaN;
+ad.listbox = listbox;
+ad.fig     = fig;
+ad.button  = '';
+ad.selection=[];
+ad.selectionString='';
+setappdata(fig,'ListDialogAppData__',ad);
 
 %% figure, OK and Cancel KeyPressFcn
 function doKeypress(src, evd, listbox) %#ok

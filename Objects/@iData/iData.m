@@ -9,7 +9,9 @@ function out = iData(varargin)
 %     and Axes as aliases refering to e.g. parts of the Data.
 %   The input argument 'a', is converted into an iData object. It may be:
 %     a scalar/vector/matrix
+%       iData(1:100)
 %     a string giving a file name to load. Use alternatively iData/load.
+%       iData('filename_data')
 %     a structure
 %     a cell array which elements are imported separately
 %     a iData object (updated if no output argument is specified).
