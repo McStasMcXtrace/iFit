@@ -547,7 +547,7 @@ try
     if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final') | ...
       (isfield(options,'Diagnostics') && (strcmp(options.Diagnostics, 'on') || any(options.Diagnostics == 1)))
       fprintf(1, ' Correlation coefficient=%g (closer to 1 is better)\n',  output.corrcoef);
-      fprintf(1, ' Weighted R-factor      =%g (Rwp, smaller that 0.2 is better)\n', output.Rfactor);
+      fprintf(1, ' Weighted     R-factor  =%g (Rwp, smaller that 0.2 is better)\n', output.Rfactor);
       fprintf(1, ' Experimental R-factor  =%g (Rexp)\n', Rexp);
     end
     if abs(output.corrcoef) < 0.6 && ~isscalar(a.Error)
@@ -577,7 +577,7 @@ try
     output.modelValue = b;
     if nargin > 1 && ~isempty(inputname(2))
       % update the incoming iData object with results from the fit/Model
-      a = is_idata
+      a = is_idata;
       setalias(a, 'Model', model, model.Name);
       setalias(a, 'ModelValue', output.modelValue, [ 'Value of ' model.Name ]);
       setalias(a, 'ModelParameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);
@@ -765,13 +765,19 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
       set(plot(x, best_model,'g-.','LineWidth',2),'DisplayName',[ 'Best ' n2 ]); 
     end
     hold off
-  else
-    set(surf(a.Signal),'DisplayName',n1);  hold on; 
-    set(surf(ModelValue),'DisplayName',n2); hold off
+  elseif ndims(a.Signal) == 2
+    set(surf(a.Signal),'DisplayName',n1,'Edgecolor','none');  hold on; 
+    [~,g] = contour(ModelValue); hold on;
+    set(g, 'DisplayName','', 'LineWidth',5);
+    set(g(1), 'DisplayName',n2);
     if ~same_criteria
-      set(surf(best_model),'DisplayName',[ 'Best ' n2 ]); 
+      [~,g] = contour3(best_model);
+      set(g, 'DisplayName','','EdgeColor','black','LineWidth',5); 
+      set(g(1), 'DisplayName',[ 'Best ' n2 ]); 
     end
     hold off
+  elseif ~isfinite(best_criteria) % TODO
+    disp([ mfilename ': data set dimensionality > 2. Not supported yet' ])
   end
   options.updated = clock;
   if length(p) > 20, p= p(1:20); end

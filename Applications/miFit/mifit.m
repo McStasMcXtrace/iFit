@@ -90,6 +90,11 @@ function varargout = mifit(varargin)
           if ~isempty(d)
             mifit_List_Data_push(d);
           end
+        elseif isa(varargin{1}, 'iData')
+          mifit_List_Data_push(varargin{1});
+        elseif isa(varargin{1}, 'iFunc') || isa(varargin{1}, 'sw') || isa(varargin{1}, 'spinw')
+          % TODO: would push new Model
+          % mifit_List_Data_push(varargin{1});
         else
           d = iData(varargin{:});
           % now push 'd' into the Stack
@@ -148,17 +153,17 @@ if isempty(fig) || ~ishandle(fig)
     
     % fill Models menu
     if any(~isempty(functions)) && all(isa(functions, 'iFunc'))
-        mifit_disp([ 'Initializing Models... User Models should be in the local directory.' ]);
-        separator = 1;
+        mifit_disp([ 'Initializing ' num2str(numel(functions)) ' Models... User Models loaded from: ' pwd ]);
+        separator = 'on';
         for f=functions
             % each Model is an iFunc object. These should be stored in the
-            % Models items 'UserData'
+            % Models menu items 'UserData'
+            callback = 'mifit(''Data_AssignModel'',gcbo)';
             if ~isempty(f) && ~isempty(f.Name)
-                if separator
-                  uimenu(hmodels, 'Label', f.Name, 'UserData', f, 'Separator','on');
-                  separator = 0;
-                else
-                  uimenu(hmodels, 'Label', f.Name, 'UserData', f);
+                uimenu(hmodels, 'Label', f.Name, 'UserData', f, ...
+                  'Separator', separator, 'CallBack', callback);
+                if strcmp(separator, 'on')
+                  separator = 'off';
                 end
             end
         end
@@ -166,7 +171,7 @@ if isempty(fig) || ~ishandle(fig)
     
     % fill Optimizers menu
     if ~isempty(optimizers) && iscell(optimizers)
-        mifit_disp([ 'Initializing Optimizers...' ]);
+        mifit_disp([ 'Initializing ' num2str(numel(optimizers)) ' Optimizers ...' ]);
         for f=optimizers
             % each optimizer is given with its function name. We request
             % 'defaults' and display its name
@@ -506,9 +511,11 @@ function mifit_History_push
   fig = mifit_fig;
   History = getappdata(fig, 'History');
   Data    = getappdata(fig, 'Data');
-  History{end+1} = Data;
-  if numel(History) > 10, History(1:(end-9)) = []; end
-  setappdata(fig, 'History', History);
+  if ~isempty(Data)
+    History{end+1} = Data;
+    if numel(History) > 10, History(1:(end-9)) = []; end
+    setappdata(fig, 'History', History);
+  end
   
 % Data menu ********************************************************************
 
@@ -517,7 +524,12 @@ function mifit_Data_Plot(varargin)
   f=figure;
   subplot(d);
   
-function mifit_Data_Export(varargin)
+function mifit_Data_Fit(varargin)
+  d = mifit_List_Data_pull;
+  % TODO: it is desirable to handle constraints (min/max/fix)
+  p=fits(d, '', '', 'OutputFcn=fminplot;Display=iter');  % with assigned models or gaussians
+  
+function mifit_Data_Saveas(varargin)
   d = mifit_List_Data_pull;
   if ~isempty(d)
     save(d, 'gui');
@@ -525,8 +537,11 @@ function mifit_Data_Export(varargin)
   
 function mifit_Data_Table(varargin)
   d = mifit_List_Data_pull;
+  config = getappdata(mifit_fig, 'Preferences');
+  
   for index=1:numel(d)
     handle = edit(d(index), 'editable');
+    set(handle, 'FontSize', config.FontSize);
     set(handle, 'DeleteFcn', @mifit);
   end
 
@@ -541,16 +556,35 @@ function mifit_Data_View(varargin)
   end
   
 function mifit_Data_Properties(varargin)
-  disp('mifit_Data_Properties: should display properties from "disp" and allow to re-assign signal, axes, define new aliases...')
+  disp('TODO: mifit_Data_Properties: should display properties from "disp" and allow to re-assign signal, axes, define new aliases...')
+% Data_Properties ?
+% re-assign data set signal, axes, ... to aliases/new ones
+% display statistics
   
 function mifit_Data_History(varargin)
   d = mifit_List_Data_pull();
   for index=1:numel(d)
     commandhistory(d(index));
   end
-% Data_Properties ?
-% re-assign data set signal, axes, ... to aliases/new ones
-% display statistics
+
+function mifit_Data_AssignModel(varargin)
+  model = get(varargin{1},'UserData'); % an iFunc stored into UserData of the menu item.
+  % get selected Data sets indices in List
+  index_selected = get(mifit_fig('List_Data_Files'),'Value');
+  D = getappdata(mifit_fig, 'Data');  % all data sets
+  if numel(D) == 0 || isempty(index_selected), return; end
+  mifit_History_push();
+  mifit_disp([ 'Assigning Model "' model.Name '" to ' num2str(numel(index_selected)) ' Data set(s).' ]);
+  if numel(D) > 1
+    for index=index_selected(:)'
+      D(index) = setalias(D(index), 'Model', model);
+      mifit_disp(char(D(index)));
+    end
+  else
+    D = setalias(D, 'Model', model);
+    mifit_disp(char(D));
+  end
+  setappdata(mifit_fig, 'Data', D);
 
 % Models and Optimizers menu ***************************************************
 
@@ -610,7 +644,7 @@ function mifit_List_Data_push(d)
   mifit_disp('Importing into List:')
   mifit_disp(char(d))
   
-function d=mifit_List_Data_pull(varargin)
+function [d, index_selected]=mifit_List_Data_pull(varargin)
 % get the selected Data List
 % return the selected objects
   hObject = mifit_fig('List_Data_Files');
@@ -633,8 +667,12 @@ function mifit_List_Data_UpdateStrings
   
   hObject        = mifit_fig('List_Data_Files');
   list           = {};
-  for index=1:numel(Data)
-      list{end+1} = char(Data(index));
+  if numel(Data) > 1
+    for index=1:numel(Data)
+        list{end+1} = char(Data(index));
+    end
+  else
+    list{end+1} = char(Data);
   end
   set(hObject,'String', list, 'Value', []);
 
