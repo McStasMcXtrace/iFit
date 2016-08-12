@@ -139,11 +139,11 @@ function [] = parseStruct(s,docNode,curNode,pName)
                     if (succes)
                         curNode.setAttribute(cur_attr_sc,cur_str);
                     else
-                        disp(['Warning. The structure member ' pName curfield '.' cur_attr ' could not be processed.']);
+                        disp([ mfilename ': Warning. The structure member ' pName curfield '.' cur_attr ' could not be processed.']);
                     end
                 end
             else
-                disp(['Warning. The attributes in ' pName curfield ' could not be processed.']);
+                disp([mfilename ': Warning. The attributes in ' pName curfield ' could not be processed.']);
                 disp(['The correct syntax is: ' pName curfield '.attribute_name = ''Some text''.']);
             end
         elseif (strcmp(curfield,'Text'))
@@ -164,6 +164,11 @@ function [] = parseStruct(s,docNode,curNode,pName)
             elseif (iscell(s.(curfield)))
                 %multiple elements
                 for c = 1:length(s.(curfield))
+                    if ~isstruct(s.(curfield){c}) && ~ischar(s.(curfield){c}) && ~builtin('isnumeric', (s.(curfield){c}))
+                      try % try no convert object into a struct
+                        s.(curfield){c} = struct(s.(curfield){c});
+                      end
+                    end
                     if (isstruct(s.(curfield){c}))
                         curElement = docNode.createElement(curfield_sc);
                         curNode.appendChild(curElement);
@@ -178,7 +183,7 @@ function [] = parseStruct(s,docNode,curNode,pName)
                           disp([ mfilename ': Warning. The data in ' pName curfield ' could not be processed.']);
                         end
                     else
-                        disp(['Warning. The cell ' pName curfield '{' num2str(c) '} could not be processed, since it is of class ' class(s.(curfield){c}) ' (only struct, char, numeric).']);
+                        disp([mfilename ': Warning. The cell ' pName curfield '{' num2str(c) '} could not be processed, since it is of class ' class(s.(curfield){c}) ' (only struct, char, numeric).']);
                     end
                 end
             else
@@ -213,6 +218,8 @@ function [str,succes] = val2str(val)
         catch
           succes = false;
         end
+    elseif isa(val, 'function_handle')
+      val = func2str(val);
     else
         succes = false;
     end
