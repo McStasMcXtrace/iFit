@@ -28,8 +28,14 @@ function h = edit(a, option)
 
   if numel(a) > 1
     parfor index=1:numel(a)
-      edit(a(index), option);
+      h(index) = edit(a(index), option);
     end
+    return
+  end
+  
+  if ndims(a) > 2
+    disp([ mfilename ': iData object ' a.Tag ' dimension is ' num2str(ndims(a)) ' but should be 1 or 2 to be edited. Skipping.' ]);
+    h = 0;
     return
   end
 
@@ -80,6 +86,37 @@ function h = edit(a, option)
     if editable, set(h, 'ColumnEditable', true); end
 
     set(f, 'UserData', UserData);  % contains the selection indices
+    set(f, 'NextPlot', 'new');
+    
+    % set the Axes as ColumnName and RowName
+    if ndims(a) == 1
+      % ColumnName == getaxis(a,1)
+      x = unique(getaxis(a,1));
+      if numel(x) == numel(Signal)
+        x = cellfun(@(c){num2str(c)}, num2cell(x));
+        x{1} = strtrim([ xlabel(a) ' ' x{1} ]);
+        if size(a,2) == 1
+          set(h, 'RowName', x);
+        else
+          set(h, 'ColumnName', x);
+        end
+      end
+    elseif ndims(a) == 2
+      % ColumnsName == getaxis(a,2)
+      y = unique(getaxis(a,2));
+      if numel(y) == size(a,2)
+        y=cellfun(@(c){num2str(c)}, num2cell(y));
+        y{1} = strtrim([ xlabel(a) ' ' y{1} ]);
+        set(h, 'ColumnName', y);
+      end
+      % RowName     == getaxis(a,1)
+      x = unique(getaxis(a,1));
+      if numel(x) == size(a,1)
+        x = cellfun(@(c){num2str(c)}, num2cell(x));
+        x{1} = strtrim([ ylabel(a) ' ' x{1} ]);
+        set(h, 'RowName', x);
+      end
+    end
 
 %      'CellEditCallback', @iData_edit_CellEditCallback, , ...
 %      'RearrangeableColumn','on', 'ColumnEditable', true, ...
@@ -319,3 +356,4 @@ function iData_edit_resize(varargin)
   columns = min([ sz_nData(2) sz_Data(2) ]);
   newData(rows, columns) = Data(rows, columns);
   set(h, 'Data', newData);
+
