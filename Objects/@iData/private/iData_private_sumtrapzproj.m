@@ -213,8 +213,8 @@ b.Command=cmd;
 b = iData_private_history(b, op, b, dim);
 s = b;
 
-if isscalar(s), 
-  sigma = double(s.Error);
+if isscalar(s)
+  sigma = double(get(s,'Error'));
   s=double(s); 
 end
 
