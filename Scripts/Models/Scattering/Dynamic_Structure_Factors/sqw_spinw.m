@@ -26,7 +26,8 @@ function signal=sqw_spinw(varargin)
 %         p: sqw_spinw model parameters (double)
 %             p(1)=Gamma       energy broadening [meV]
 %             p(2)=Temperature of the material [K]
-%             p(3...)= coupling parameters of the Hamiltonian
+%             p(3)=Amplitude
+%             p(4...)= coupling parameters of the Hamiltonian
 %          or p='guess'
 %         qh: axis along QH in rlu (row,double)
 %         qk: axis along QK in rlu (column,double)
@@ -80,13 +81,13 @@ signal.Description    = 'A 3D HKL spin-wave dispersion from SpinW package';
 
 signal.Parameters     = {  ...
   'Gamma energy broadening around spin-wave modes [meV]' ...
-  'Temperature [K]' };
+  'Temperature [K]' 'Amplitude' };
   
 % we add more parameters from the SpinW object.matrix.mat
 J  = sq.matrix.mat;
 iJ = size(J, 3);
 pJ = sq.matrix.label;
-signal.Parameters     = [ signal.Parameters pJ ];
+signal.Parameters  = [ signal.Parameters pJ ];
 signal.Description = [ signal.Description sprintf(' %s', sq.unit_cell.label{:}) ];
   
 signal.Dimension      = 4;         % dimensionality of input space (axes) and result
@@ -96,12 +97,12 @@ nJ = zeros(1, iJ);
 for index=1:iJ
   nJ(index) = norm(J(:,:,index));
 end
-signal.Guess          = [ .3 0 nJ ];        % default parameters
+signal.Guess          = [ .3 0 1 nJ ];        % default parameters
   
 signal.UserData.component = options.component;
 signal.UserData.ki        = options.ki;
 signal.UserData.spinw     = sq;
-label = [ '% spinw(' sprintf(' %s', sq.unit_cell.label{:}) sprintf(') p(1:%i)', iJ+2) ];
+label = [ '% spinw(' sprintf(' %s', sq.unit_cell.label{:}) sprintf(') p(1:%i)', iJ+3) ];
 
 signal.Expression     = { ...
 label, ...
@@ -113,14 +114,14 @@ label, ...
 'if all(cellfun(@isscalar,{x y z t})), HKL = [ x y z ];', ...
 'else HKL = [ x(:) y(:) z(:) ]; end', ...
 'for index=1:size(this.UserData.spinw.matrix.mat,3)', ...
-'  this.UserData.spinw.matrix.mat(:,:,index) = this.UserData.spinw.matrix.mat(:,:,index)./norm(this.UserData.spinw.matrix.mat(:,:,index)).*p(index+2);', ...
+'  this.UserData.spinw.matrix.mat(:,:,index) = this.UserData.spinw.matrix.mat(:,:,index)./norm(this.UserData.spinw.matrix.mat(:,:,index)).*p(index+3);', ...
 'end', ...
 'spec = spinwave(this.UserData.spinw, HKL'');', ...
 'spec = sw_neutron(spec);', ...
 't = unique(t);', ...
 'spec = sw_egrid(spec,''component'',this.UserData.component,''Evect'',t(:)'', ''T'', p(2));', ...
 'spec = sw_instrument(spec,''dE'',p(1),''ki'',this.UserData.ki);', ...
-'signal = reshape(spec.swConv,sz0([4 1:3])); signal=permute(signal,[2:4 1])' };
+'signal = reshape(spec.swConv,sz0([4 1:3])); signal=p(3)*permute(signal,[2:4 1])' };
 
 signal=iFunc(signal);
 
