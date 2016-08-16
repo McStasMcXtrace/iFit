@@ -302,10 +302,10 @@ function a = iFunc_private_check(a)
   % chech for function_handles stored as chars in Guess and Expression
   m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
   m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
-  if ischar(a.Guess)
+  if ischar(a.Guess) && numel(a.Guess) > 1
     if a.Guess(1) == '@', a.Guess = str2func(a.Guess); end
   end
-  if ischar(a.Expression)
+  if ischar(a.Expression) && numel(a.Expression) > 1
     if a.Expression(1) == '@', a.Expression = str2func(a.Expression); end
   end
 
