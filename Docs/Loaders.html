@@ -530,6 +530,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
             You can also read and write such files using <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">LAMP</a>.</td>
           <td valign="top"><br>
@@ -720,6 +721,7 @@ href="http://www.ill.eu/instruments-support/instruments-groups/groups/tof/softwa
 
 
 
+
             This data can also be imported/generated with <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">Lamp</a>.</td>
           <td style="vertical-align: top;"><br>
@@ -758,8 +760,22 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           <td style="vertical-align: top;">The SPE data format is
             obtained after processing ISIS RAW files with <a
               href="http://horace.isis.rl.ac.uk/">Horace</a> and <a
-              href="http://www.libisis.org/">LibISIS</a>.</td>
+              href="http://www.libisis.org/">LibISIS</a> (Homer/2d).<br>
+          </td>
           <td style="vertical-align: top;"><br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><font color="#cc33cc"><b>'sqw'</b><br>
+              ISIS SQW</font><br>
+          </td>
+          <td valign="top">binary<br>
+          </td>
+          <td valign="top">The SQW data format is obtained after
+            processing ISIS RAW files with <a
+              href="http://horace.isis.rl.ac.uk/">Horace</a> and <a
+              href="http://www.libisis.org/">LibISIS</a>.</td>
+          <td valign="top"><br>
           </td>
         </tr>
         <tr>
@@ -772,6 +788,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           </td>
           <td style="vertical-align: top;"><a
               href="http://www.princetoninstruments.com/products/software/#1">Princeton/Roper
+
 
 
 
@@ -912,6 +929,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               definition</a>. This format gathers <span
               style="font-style: italic;">CIF</span> and <span
               style="font-style: italic;">imgCIF</span> standards. These
@@ -933,6 +951,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             'hdr' file requires an ssociated 'img' file. <a
               href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Format</a>
             from the Analyze <a href="http://www.analyzedirect.com/">Biomedical
+
 
 
 
@@ -1183,6 +1202,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
               Nuclear Data File</a> with specific support for the
             thermal neutron scattering law (TSL) section (MF7, MT=2 and
             4). Can make use of <a href="http://pyne.io/">PyNE</a> when
@@ -1249,16 +1269,16 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     You can tune the way a text file is read with the syntax (each
     option is an argument in its own):<br>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iLoad</span>(<i>filename</i>, <font color="#cc33cc">'text'</font>, <font color="#cc33cc">'--catenate'</font>,<font color="#cc33cc">'--fast'</font>,<font color="#cc33cc">'--headers'</font>,<font color="#cc33cc">'--wrapped'</font>, <i>... other options</i>);<span style="color: rgb(204, 51, 204);"></span></pre>
-    where 'text' indicates that the file is not binary encoded, and any
-    following options is forwarded to the text reader. The possible
-    options are:<br>
+    where <b>'text'</b> indicates that the file is not binary encoded,
+    and any following options is forwarded to the text reader. The
+    possible options are:<br>
     <br>
     <table border="1" cellpadding="2" cellspacing="2" width="100%">
       <tbody>
         <tr>
-          <td align="center" valign="top"><i>Text import option</i><i><br>
+          <td valign="top" align="center"><i>Text import option</i><i><br>
             </i></td>
-          <td align="center" valign="top"><i>Description</i><i><br>
+          <td valign="top" align="center"><i>Description</i><i><br>
             </i></td>
         </tr>
         <tr>
@@ -1271,6 +1291,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
               </font></b></td>
           <td valign="top">When numerical data blocks only use <a
               href="file:///cgi-bin/man/man2html?3+isspace">isspace</a>(3)
+
 
 
 
@@ -1346,8 +1367,8 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     <i><b> </b></i><i><b>Binary files</b></i><br>
     Binary formats require more work. In principle, if <span
       style="font-style: italic;">iLoad</span> does not know the
-    structure of the file, there is no way to import an unknown data
-    format file. However, <span style="font-style: italic;">iLoad</span>
+    structure of the file, there is no way to import an unknown binary
+    data format file. However, <span style="font-style: italic;">iLoad</span>
     allows a rapid prototyping of new import filters by mean of a simple
     routine that should take as input a file name, and return a
     structure or numerical block. Additionally, a post-process script
@@ -1523,6 +1544,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
         from <span style="color: rgb(51, 102, 255);">prefdir</span> or
         <span style="color: rgb(51, 102, 255);">ifitpath/Loaders</span>.</li>
       <li>Create a new structure (which you may name as you wish) and
@@ -1548,6 +1570,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
