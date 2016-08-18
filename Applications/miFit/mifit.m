@@ -342,9 +342,9 @@ function mifit_Apply_Preferences
       findobj(fig, 'Type','axes') ; findobj(fig, 'Type','text') ; ...
       findobj(fig, 'Type','uipanel') findobj(fig, 'Type','uitable') ];
   set(h, 'FontSize', config.FontSize);
-  % for uimenu, we use tip given by Y Altman 
+  % for uimenu, could we use tip given by Y Altman 
   % <https://fr.mathworks.com/matlabcentral/newsreader/view_thread/148095>
-  h = findobj(fig, 'Type','uimenu');
+  % h = findobj(fig, 'Type','uimenu');
 
 function mifit_File_Exit(varargin)
 % Quit and Save Data
@@ -564,7 +564,10 @@ function mifit_Data_Properties(varargin)
 function mifit_Data_History(varargin)
   d = mifit_List_Data_pull();
   for index=1:numel(d)
-    commandhistory(d(index));
+    [c,fig]=commandhistory(d(index));
+    h=findobj(fig, 'type','uicontrol');
+    config = getappdata(mifit_fig, 'Preferences');
+    set(h,'fontsize',config.FontSize);
   end
 
 function mifit_Data_AssignModel(varargin)
@@ -604,6 +607,9 @@ function h=mifit_Tools_About(fig)
   else
     h = msgbox(t,'miFit: About','custom', imread(icon));
   end
+  g=findobj(fig, 'type','uicontrol');
+  config = getappdata(mifit_fig, 'Preferences');
+  set(g,'fontsize',config.FontSize);
   if ~isempty(fig)
     setappdata(fig, 'handle_About', h);
   end
