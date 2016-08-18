@@ -1,4 +1,4 @@
-function s = commandhistory(a, fig)
+function [s,fig] = commandhistory(a, fig)
 % commandhistory(s) : show the command history of iData object
 %
 %   @iData/commandhistory shows the list of commands that have been used to
@@ -18,15 +18,15 @@ end
 
 % handle input iData arrays
 if numel(a) > 1
-  s = cell(size(a));
+  s = cell(size(a)); fig=s;
   parfor index=1:numel(a)
-    s{index} = commandhistory(a(index));
+    [s{index},fig{index}] = commandhistory(a(index));
   end
   return
 end
 
 s = a.Command;
-if nargout == 0
+if nargout == 0 || nargout == 2
   T   = a.Title; if iscell(T), T=T{1}; end
   T   = regexprep(T,'\s+',' '); % remove duplicated spaces
   [fig] = listdlg_nonmodal('ListString', s, 'ListSize',[400 300], ...
@@ -44,6 +44,7 @@ end
 function s=commandhistory_export(fig)
 
   ad = getappdata(fig,'ListDialogAppData__');
+  if strcmpi(ad.button, 'cancel'), s=[]; return; end
   s = get(ad.listbox,'string');
   if isempty(s), return; end
   a        = ad.object;
