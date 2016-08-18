@@ -4,7 +4,7 @@ function out = opensqw(filename)
 % (c) E.Farhi, ILL. License: EUPL.
 
 if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'SQW')); % no post-processing
+  out = iData(iLoad(filename,'sqw')); % no post-processing
 else
   out = filename;
 end
@@ -17,6 +17,12 @@ if numel(out) > 1
   end
 elseif ~isempty(findstr(out,'Sqw'))
   % this is a SQW file
+  
+  % check if this is an ISIS SQW with a @sqw object
+  if isa(out.Data, 'sqw')
+    out.Data=struct(out.Data);
+    out=setaxis(out,0);
+  end
 
   % Find proper axes and Signal
   [fields, types, dims] = findfield(out, '', 'numeric');
