@@ -117,7 +117,7 @@ b.ParameterValues((length(b.ParameterValues)+1):(index-1)) = NaN;
         else                                % set constraint: 'fix', 'clear', 'set', [min max]
           if ischar(val) && any(strncmp(val, {'fix','loc'}, 3))
             b.Constraint.fixed(index) = 1; val = 'skip';
-          elseif ischar(val) && any(strncmp(val, {'cle','unl'}, 3))
+          elseif ischar(val) && any(strncmp(val, {'cle','unl','fre'}, 3))
             b.Constraint.fixed(index) = 0; val = 'skip';
           elseif ischar(val) && any(length(str2num(val)) == [1 2])
             val = str2num(val);

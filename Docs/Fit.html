@@ -66,6 +66,7 @@
         italic;">d</sup> so that <span style="font-style: italic;">distance(Signal,
 
 
+
         Model)</span> is minimal }<br>
       <div style="text-align: left;"><br>
         where <span style="font-style: italic;">distance</span> is the
@@ -74,6 +75,7 @@
         detailed <a href="#mozTocId778987">below</a>. You can refer to
         the <a
           href="http://en.wikipedia.org/wiki/Mathematical_optimization">mathematical
+
 
 
 
@@ -125,6 +127,7 @@
 
 
 
+
     the axes:<br>
     <pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>);<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, @(p,x)<span style="color: rgb(204, 51, 204);">p(1)*x+p(2)</span>); <i>% same with a function handle</i></pre>
     which will transparently create the model function, and then use it
@@ -149,6 +152,7 @@
     <br>
     <font color="#ff0000">Warning:</font>&nbsp;if you do not specify the
     optimization method to use (see <a href="#mozTocId842297">below</a>),
+
 
 
     an automatic guess is made, based on the number of parameters to fit
@@ -209,6 +213,7 @@ fit
 
 
 
+
         parameter set for the model</li>
       <li><span style="font-style: italic;">output.criteriaBest</span>:
         best criteria value for the model</li>
@@ -222,9 +227,11 @@ fit
 
 
 
+
         used (char)</li>
       <li><span style="font-style: italic;">output.message: </span>Message
 which
+
 
 
 
@@ -246,9 +253,11 @@ which
 
 
 
+
         </span>uncertainty on fit parameters (half-width) obtained from
         the optimization history (vector)</li>
       <li><span style="font-style: italic;">output.parsHessianUncertainty:
+
 
 
 
@@ -261,6 +270,7 @@ which
 
 
 
+
           coefficient</a> (closer to 1 indicates a good fit), as
         obtained from Matlab <a href="matlab:help%20corrcoeff">corrcoef</a>.<br>
       </li>
@@ -269,6 +279,7 @@ which
       </li>
       <li><span style="font-style: italic;">output.modelInfo: </span>model
 information
+
 
 
 
@@ -401,6 +412,7 @@ information
 
 
 
+
           </td>
           <td style="vertical-align: top;">Powell with Coggins line
             search<br>
@@ -418,6 +430,7 @@ information
       </tbody>
     </table>
     <div style="text-align: center;"><span style="font-style: italic;">Table
+
 
 
 
@@ -476,6 +489,7 @@ of
 
 
 
+
         display [ off | iter | notify | final ]. Default is <span
           style="color: rgb(204, 51, 204);">'off'</span></li>
       <li><span style="font-style: italic;">options.</span><span
@@ -502,6 +516,7 @@ of
 
 
 
+
         is provided in <a href="Optimizers.html"><span
             style="font-style: italic;">Optimizers</span></a>. This
         function should have the syntax <span style="font-style:
@@ -522,6 +537,7 @@ of
       <li><span style="font-style: italic;">options.criteria</span>: the
         criteria to use with syntax <span style="font-style: italic;">criteria(Signal,
 Error,
+
 
 
 
@@ -561,6 +577,7 @@ Error,
 
 
 
+
       <span style="font-style: italic;">options.OutputFcn='fminplot' </span>window
 on
 the
@@ -576,6 +593,7 @@ iteration
 and
 up
 to
+
 
 
 
@@ -624,6 +642,7 @@ maximum
 
 
 
+
         change between iterations for each parameter.<span
           style="font-style: italic;"> +Inf</span> is supported.</li>
       <li><i>constraints.eval: </i>any other expression to evaluate,
@@ -638,6 +657,7 @@ maximum
     <blockquote> constraints=<span style="color: rgb(204, 51, 204);">'min=[0
 
 
+
         0 0 0]; max=[1 10 3 0.1]; eval=p(4)=0'</span>;<br>
     </blockquote>
     As constraints apply on the iFunc model, it is possible to
@@ -649,8 +669,8 @@ maximum
     <h4><a class="mozTocH4" name="mozTocId267246"></a>Fixed parameters</h4>
     To fix some of the model parameters to their starting value, you
     just need to define <span style="font-style: italic;">constraints</span>
-    as a vector with 0 for free parameters, and 1 for fixed parameters,
-    e.g. :<br>
+    as a vector with <b>0 for free</b> parameters, and <b>1 for fixed</b>
+    parameters, e.g. :<br>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ])<br>** Minimization performed on parameters:<br>    'Amplitude'    'Centre'    'HalfWidth'    'Background'<br><br>    <span style="color: rgb(255, 0, 0);">0.5936</span>    0.9998    0.0018    0.0050<br><br>p =<br><br>    <span style="color: rgb(255, 0, 0);">0.5936</span>    1.0008   -0.0037    0.0002<br><br></pre>
     will fix the first model parameter, which is here the <span
       style="color: rgb(255, 0, 0);">Amplitude</span>. This parameter
@@ -717,6 +737,7 @@ maximum
 
 
 
+
         change between iterations for each parameter. +Inf is supported.</li>
     </ul>
     <h4><a class="mozTocH4" name="mozTocId364529"></a> Other
@@ -775,16 +796,17 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
     input argument when calling <span style="font-weight: bold;
       font-style: italic;">fits</span> or set the constraint directly on
     the model parameters with:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span><br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% to unlock value during a fit process</span>
+    <pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span><br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% or <font color="#cc33cc">'free'</font> to unlock value during a fit process</span>
 &gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'expression'</span>        <span style="font-style: italic;">% to set the parameter from an expression</span><br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br>&gt;&gt; model.Constraint = 0;     <span style="font-style: italic;">% to unlock/free all Parameters during a fit process<br></span>&gt;&gt; model.Constraint = 1;     <span style="font-style: italic;">% to lock/fix all Parameters during a fit process</span><br></pre>
     Any parameter name surrounded by double quotes, e.g. <span
-      style="font-style: italic;">"Amplitude"</span>, are replaced by
-    their corresponding <span style="font-style: italic;">p(n)</span>
-    value in an expression used for setting a parameter value
+      style="font-style: italic;">"Amplitude"</span>, is replaced by the
+    corresponding <span style="font-style: italic;">p(n)</span> value
+    in an expression used for setting a parameter value
     (cross-constraints). For instance<br>
     <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude</span><br>&gt;&gt; f.Background = [0 1e-4];	<span style="font-style: italic;">% bound its background</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'p(1)/1000'</span>;	<span style="font-style: italic;">% use an expression referring to </span>p(1)/1000<span style="font-style: italic;"> value</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'"Amplitude"/1000'</span>;	<span style="font-style: italic;">% same as above with direct naming as</span><span style="font-style: italic;"> p(1)=Amplitude</span>
 </pre>
     Alternatively, you can use the <span style="font-weight: bold;">mlock,
+
 
 
 
@@ -807,13 +829,22 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
     Some theoretical notes&nbsp; about the goodness of fit are indicated
     in the <a href="Optimizers.html#mozTocId228403">Optimizers help</a>.
     <br>
-    The uncertainty on the fit parameters can be obtained from<span
-      style="font-style: italic;"> output.parsHistoryUncertainty</span>
-    and <span style="font-style: italic;">output.parsHessianUncertainty.
-    </span><br>
     <br>
-    Additionally,
-    the <span style="font-style: italic;">output.parsHessianCorrelation</span>
+    To get the fit statistics, you need to use the syntax:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criteria,message,<i><b>output</b></i>]= <span style="color: rgb(51, 102, 255);">fits</span>(data, <span style="color: rgb(204, 51, 204);">model,<font color="#000000"> ...)</font></span></pre>
+    i.e. retrieve <i>all </i><i>output</i> arguments. Then the <i>'output'</i>
+    4-th returned argument holds lots of information.<br>
+    <br>
+    The uncertainty on the fit parameters can be obtained from<span
+      style="font-style: italic;">:<br>
+    </span>
+    <ul>
+      <li><span style="font-style: italic;">output.parsHistoryUncertainty</span>
+      </li>
+      <li><span style="font-style: italic;">output.parsHessianUncertaint
+        </span></li>
+    </ul>
+    Additionally, the <span style="font-style: italic;">output.parsHessianCorrelation</span>
     indicates the cross-correlations between parameters (off-diagonal
     values larger that 0.7 indicate cross-correlated parameters). <br>
     The Hessian statistics are explicitly computed when <span
@@ -829,8 +860,8 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
     can be skipped when using <span style="font-style: italic;">options.Diagnostics</span>=<span
       style="color: rgb(204, 51, 204);">'off'</span>.<br>
     <br>
-    We also explain in the <a
-      href="Optimizers.html#mozTocId228403">Optimizers
+    We also explain in the <a href="Optimizers.html#mozTocId228403">Optimizers
+
       help</a> how the parameter distributions (their variation around
     the best optimum value) can be plotted. This is well known from
     heuristic optimizers and e.g. the Markov Chain Monte-Carlo.<br>
@@ -887,25 +918,27 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
       href="http://en.wikipedia.org/wiki/Least_squares">least square
       error</a>':<br>
     <br>
-    <div style="text-align: center;">&#967;\B2 = &#8721; (Signal-Model)\B2.<br>
+    <div style="text-align: center;">&#967;<sup>2</sup> = &#8721; (Signal-Model)<sup>2</sup>.<br>
       <br>
     </div>
     When the Monitor is defined (see <a
       href="iData.html#mozTocId243435">iData</a> definition), the Signal
     is normalized, so that<br>
     <br>
-    <div style="text-align: center;">&#967;\B2 = &#8721; (Signal/Monitor-Model)\B2.<br>
+    <div style="text-align: center;">&#967;<sup>2</sup> = &#8721;
+      (Signal/Monitor-Model)<sup>2</sup>.<br>
       <br>
     </div>
     When the Error on the Signal is available, the weighted criteria
     reads<br>
     <br>
-    <div style="text-align: center;">&#967;\B2 = &#8721;
-      [(Signal/Monitor-Model)/Error]\B2.<br>
+    <div style="text-align: center;">&#967;<sup>2</sup> = &#8721;
+      [(Signal/Monitor-Model)/Error]<sup>2</sup>.<br>
     </div>
     <br>
     The options.criteria can be defined as the name of a criteria
     function with syntax <span style="font-style: italic;">criteria(Signal,
+
 
 
 
@@ -922,8 +955,9 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
         The criteria is then normalized to the number of degrees of
         freedom by dividing it by<br>
         <br>
-        <div style="text-align: center;">&#967;\B2 &#8592; &#967;\B2 /(<span
-            style="font-style: italic;">number_of_data_points_in_the_Signal
+        <div style="text-align: center;">&#967;<sup>2</sup> &#8592; &#967;<sup>2</sup>
+          /(<span style="font-style: italic;">number_of_data_points_in_the_Signal
+
 
 
 
@@ -991,7 +1025,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
             <tr>
               <td valign="top">least_rfactor<br>
               </td>
-              <td align="right" valign="top">(|Signal-Model|/Error)\B2/(Signal/Error)\B2<br>
+              <td valign="top" align="right">(|Signal-Model|/Error)<sup>2</sup>/(Signal/Error)<sup>2</sup>
               </td>
               <td valign="top">non-robust. <a
                   href="http://en.wikipedia.org/wiki/R-factor_%28crystallography%29">Ref</a>.<br>
@@ -1001,7 +1035,8 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
               <td style="vertical-align: top;">max_likelihood<br>
               </td>
               <td style="vertical-align: top; text-align: right;"
-                align="right">(|Signal-Model|/&#963;)\B2 + 1/2 log(2&#960;&#963;)</td>
+                align="right">(|Signal-Model|/&#963;)<sup>2</sup> + 1/2
+                log(2&#960;&#963;)</td>
               <td style="vertical-align: top;"><a
                   href="http://en.wikipedia.org/wiki/Maximum_likelihood">Ref</a>.
                 Minimize <span style="font-style: italic;">-log(L)</span><br>
@@ -1010,7 +1045,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
             <tr>
               <td valign="top">max_corrcoef<br>
               </td>
-              <td align="right" valign="top">1-corrcoef(Signal, Model)<br>
+              <td valign="top" align="right">1-corrcoef(Signal, Model)<br>
               </td>
               <td valign="top"><a
 href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Ref</a>.<br>
@@ -1057,6 +1092,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 

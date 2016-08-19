@@ -18,9 +18,12 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %     send additional arguments to the fit model(pars, axes, args...).
 %  [optimizers,functions] = fits(iFunc)
 %     returns the list of all available optimizers and fit functions.
+%  [pars,...] = fits(iData_object)
+%     searches for a Model in the data set, and then perform the fit.
 %  fits(iFunc)
 %     displays the list of all available optimizers and fit functions.
-%  You may create new fit models with the 'ifitmakefunc' tool.
+%  You may create new fit models with the 'ifitmakefunc' tool, or by arithmetic
+%     operators combining iFunc and string objects.
 %
 %  When the data is entered as a structure or iData object with a Monitor value, 
 %    the fit is performed on Signal/Monitor.
@@ -32,7 +35,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %   To set a constraint on a model parameter, define the 'constraint' input argument
 %   or set the constraint directly on the model parameters with:
 %     model.parameter='fix'     % to lock its value during a fit process
-%     model.parameter='clear'   % to unlock value during a fit process
+%     model.parameter='clear'   % or 'free' to unlock value during a fit process
 %     model.parameter=[min max] % to bound value
 %     model.parameter=[nan nan] % to remove bound constraint
 %     model.parameter=''        % to remove all constraints on 'parameter'

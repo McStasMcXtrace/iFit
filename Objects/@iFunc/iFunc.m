@@ -62,6 +62,12 @@ function a = iFunc(varargin)
 %     object axes, and returns the model value as a numerical array. To get the
 %     result as an iData, use syntax iData(iFunc object) [the opposite syntax].
 %
+%   The Model expression is               object.Expression
+%   The Model parameter names are         object.Parameters
+%   The Model parameter values (when set) object.ParameterValues or object.p
+%   A single parameter can be accessed    object.<ParameterName>
+%   
+%
 % Type <a href="matlab:doc(iFunc)">doc(iFunc)</a> to access the iFit/iFunc Documentation.
 % iFunc is part of iFit http://ifit.mccode.org 
 % 
