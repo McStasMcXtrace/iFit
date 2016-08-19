@@ -88,7 +88,7 @@ J  = sq.matrix.mat;
 iJ = size(J, 3);
 pJ = sq.matrix.label;
 signal.Parameters  = [ signal.Parameters pJ ];
-signal.Description = [ signal.Description sprintf(' %s', sq.unit_cell.label{:}) ];
+signal.Description = [ signal.Description ': ' sprintf(' %s', sq.unit_cell.label{:}) ];
   
 signal.Dimension      = 4;         % dimensionality of input space (axes) and result
 
@@ -124,5 +124,11 @@ label, ...
 'signal = reshape(spec.swConv,sz0([4 1:3])); signal=p(3)*permute(signal,[2:4 1])' };
 
 signal=iFunc(signal);
+if ~isdeployed && usejava('jvm') && usejava('desktop')
+  disp([ '<a href="matlab:doc(''' mfilename ''')">' mfilename '</a>: Model ' sprintf(' %s', sq.unit_cell.label{:}) ' built using SpinW.' ])
+else
+  disp([ mfilename ': Model ' sprintf(' %s', sq.unit_cell.label{:}) ' built using SpinW.' ])
+end
 
+disp(' * S. Toth and B. Lake, J. Phys.: Condens. Matter 27, 166002 (2015).' );
 
