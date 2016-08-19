@@ -93,6 +93,7 @@
 
 
 
+
     <br>
     The name of the parameters can be changed by accessing the <span
       style="font-weight: bold;">Parameters</span> property (this is a
@@ -105,6 +106,7 @@
     return a vector of parameter values<span style="font-style: italic;">
       'p' </span>as a function of the axes <span style="font-style:
       italic;">x,y,z...</span> and a <span style="font-style: italic;">signal.
+
 
 
 
@@ -223,15 +225,16 @@
     input argument when calling <span style="font-weight: bold;
       font-style: italic;">fits</span> (see <a href="Fit.html">Fit</a>)
     or set the constraint directly on the model parameters with:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span><br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% to unlock value during a fit process</span>
-&gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'expression'</span>        <span style="font-style: italic;">% to set the parameter from an expression</span><br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br>&gt;&gt; model.Constraint = 0;     <span style="font-style: italic;">% to unlock/free all Parameters during a fit process<br></span>&gt;&gt; model.Constraint = 1;     <span style="font-style: italic;">% to lock/fix all Parameters during a fit process</span><br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span><br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% or <font color="#cc33cc">'free'</font> to unlock value during a fit process</span>
+&gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'expression'</span>        <span style="font-style: italic;">% to set the parameter from an expression</span> which can use '<i>p(n)</i>' for other parameters<br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br>&gt;&gt; model.Constraint = 0;     <span style="font-style: italic;">% to unlock/free all Parameters during a fit process<br></span>&gt;&gt; model.Constraint = 1;     <span style="font-style: italic;">% to lock/fix all Parameters during a fit process</span><br></pre>
     Any parameter name surrounded by double quotes, e.g. <span
-      style="font-style: italic;">"Amplitude"</span>, are replaced by
-    their corresponding <span style="font-style: italic;">p(n)</span>
-    value in an expression used for setting a parameter value
+      style="font-style: italic;">"Amplitude"</span>, is replaced by the
+    corresponding <span style="font-style: italic;">p(n)</span> value
+    in an expression used for setting a parameter value
     (cross-constraints). For instance<br>
     <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude</span><br>&gt;&gt; f.Background = [0 1e-4];	<span style="font-style: italic;">% bound its background</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'p(1)/1000'</span>;	<span style="font-style: italic;">% use an expression referring to </span>p(1)=Amplitude<span style="font-style: italic;"> value</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'"Amplitude"/1000'</span>;	<span style="font-style: italic;">% same as above with direct naming of parameters using ""</span><br></pre>
     Alternatively, you can use the <span style="font-weight: bold;">mlock,
+
 
 
 
@@ -247,7 +250,7 @@
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, <span style="color: rgb(51, 102, 255);">regexp</span>(f.Parameters, <span style="color: rgb(204, 51, 204);">'Amplitude|Background'</span>})</pre>
     where we have used the '|' OR operator.<br>
     <br>
-    To list parameters which are fixed, free and bounded, use:<br>
+    To list parameters which are fixed, free and bound, use:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f)</pre>
     which return the number of parameters in each category.<br>
     <br>
@@ -362,6 +365,7 @@
 
 
 
+
     catenates the string before/after the Expression of the model. For
     instance the following example does the same as above, explicitly
     setting the new signal value, and the next one displays a text
@@ -404,10 +408,12 @@
 
 
 
+
         .... ]</span><br>
     </div>
     a structure with members <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data.Signal
+
 
 
 
@@ -423,6 +429,7 @@
     </div>
     or a cell <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data={
+
 
 
 
@@ -460,6 +467,7 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
