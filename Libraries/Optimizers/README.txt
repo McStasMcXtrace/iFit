@@ -82,4 +82,7 @@ ukfopt by Yi Cao at Cranfield University, 08 January 2008
 buscarnd by Argimiro R. Secchi (arge@enq.ufrgs.br) and Giovani Tonel(giovani.tonel@ufrgs.br) on September 2006
   used in fminrand
   modified to use standard Matlab optimization fminsearch syntax and options
+gwmcmc by Aslak Grinsted 2015 https://github.com/grinsted/gwmcmc
+  used in fminmarkov
+  modified to use standard Matlab optimization fminsearch syntax and options
  
