@@ -40,7 +40,7 @@ function filename = write_endf(Sab, filename)
 
 % should be used with an array of [S(alpha,beta) temperatures], or a single Sab(alpha,beta,T)
 
-
+error([ mfilename ': this is not yet functional. Sorry.' ]);
 
 % checks/assert: ZA,AWR,classical=~LASYM,temperature
 %if ~isfield(Sab(1),'ZA')
