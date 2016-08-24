@@ -47,18 +47,20 @@ function Answer=inputdlg(Prompt, Title, NumLines, DefAns, Resize)
 %    QUESTDLG, TEXTWRAP, UIWAIT, WARNDLG .
 
 %  Copyright 1994-2014 The MathWorks, Inc.
+%
+% THIS VERSION IS MODIFIED TO USE DefaultUicontrolFontSize
 
 %%%%%%%%%%%%%%%%%%%%
 %%% Nargin Check %%%
 %%%%%%%%%%%%%%%%%%%%
-narginchk(0,5);
-nargoutchk(0,1);
+nargchk(0,5,nargin);
+%nargoutchk(0,1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Handle Input Args %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%
 if nargin<1
-  Prompt=getString(message('MATLAB:uistring:popupdialogs:InputDlgInput'));
+  Prompt=message('MATLAB:uistring:popupdialogs:InputDlgInput');
 end
 if ~iscell(Prompt)
   Prompt={Prompt};
@@ -144,7 +146,7 @@ DefBtnWidth  = 53;
 DefBtnHeight = 23;
 
 TextInfo.Units              = 'pixels'   ;
-TextInfo.FontSize           = get(0,'FactoryUicontrolFontSize');
+TextInfo.FontSize           = get(0,'DefaultUicontrolFontSize');
 TextInfo.FontWeight         = get(InputFig,'DefaultTextFontWeight');
 TextInfo.HorizontalAlignment= 'left'     ;
 TextInfo.HandleVisibility   = 'callback' ;
@@ -172,7 +174,7 @@ TextInfo.Color              = get(0,'FactoryUicontrolForegroundColor');
 % adjust button height and width
 btnMargin=1.4;
 ExtControl=uicontrol(InputFig   ,BtnInfo     , ...
-  'String'   ,getString(message('MATLAB:uistring:popupdialogs:Cancel'))        , ...
+  'String'   ,'Cancel'        , ...
   'Visible'  ,'off'         ...
   );
 
@@ -297,7 +299,7 @@ OKHandle=uicontrol(InputFig     ,              ...
   BtnInfo      , ...
   'Position'   ,[ FigWidth-2*BtnWidth-2*DefOffset DefOffset BtnWidth BtnHeight ] , ...
   'KeyPressFcn',@doControlKeyPress , ...
-  'String'     ,getString(message('MATLAB:uistring:popupdialogs:OK'))        , ...
+  'String'     ,'OK'        , ...
   'Callback'   ,@doCallback , ...
   'Tag'        ,'OK'        , ...
   'UserData'   ,'OK'          ...
@@ -309,7 +311,7 @@ CancelHandle=uicontrol(InputFig     ,              ...
   BtnInfo      , ...
   'Position'   ,[ FigWidth-BtnWidth-DefOffset DefOffset BtnWidth BtnHeight ]           , ...
   'KeyPressFcn',@doControlKeyPress            , ...
-  'String'     ,getString(message('MATLAB:uistring:popupdialogs:Cancel'))    , ...
+  'String'     ,'Cancel'    , ...
   'Callback'   ,@doCallback , ...
   'Tag'        ,'Cancel'    , ...
   'UserData'   ,'Cancel'       ...
@@ -461,3 +463,63 @@ set(object, 'Position', new_position);
 set(object, 'String', old_string, 'Units', old_units);
 
 EditWidth = new_extent(3);
+
+function Str = message(ID,varargin)
+% message Package method for getting string from message ID.
+
+%   Copyright 1986-2008 The MathWorks, Inc.
+%   $Revision: 1.1.8.1 $ $Date: 2009/10/16 06:11:35 $
+
+
+if isdeployed
+    % When deployed do not use DAStudio.message (g426385)
+    try
+        msg = ctrlMsgUtils.getMsgFromId(ID);
+        Str = sprintf(msg,varargin{:});
+    catch
+        Str = 'Unknown String';
+        warning('Control:UnknownMsgID','Invalid Message ID')
+        % If statement is used to include path of shared/controllib on the path
+        % when deployed by including db2mag.  (g426715)
+        if false
+            junk = db2mag(5);
+        end
+    end
+else
+    % use feval to hide static call to DAStudio from the interpreter
+    [Str,StrID] = feval('DAStudio.Message', ID, varargin{:});
+
+    if ~strcmp(StrID, ID)
+        ctrlMsgUtils.warning('Controllib:messagesystem:InvalidMsgID')
+    end
+end
+    
+function figure_size = getnicedialoglocation(figure_size, figure_units)
+% adjust the specified figure position to fig nicely over GCBF
+% or into the upper 3rd of the screen
+
+%  Copyright 1999-2006 The MathWorks, Inc.
+%  $Revision: 1.1.6.3 $
+
+%%%%%% PLEASE NOTE %%%%%%%%%
+%%%%%% This file has also been copied into:
+%%%%%% matlab/toolbox/ident/idguis
+%%%%%% If this functionality is changed, please
+%%%%%% change it also in idguis.
+%%%%%% PLEASE NOTE %%%%%%%%%
+
+parentHandle = gcbf;
+propName = 'Position';
+if isempty(parentHandle)
+    parentHandle = 0;
+    propName = 'ScreenSize';
+end
+
+old_u = get(parentHandle,'Units');
+set(parentHandle,'Units',figure_units);
+container_size=get(parentHandle,propName);
+set(parentHandle,'Units',old_u);
+
+figure_size(1) = container_size(1)  + 1/2*(container_size(3) - figure_size(3));
+figure_size(2) = container_size(2)  + 2/3*(container_size(4) - figure_size(4));
+
