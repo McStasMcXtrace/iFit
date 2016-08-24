@@ -35,7 +35,5 @@ y = iFunc(y);
 
 if nargin == 1 && isnumeric(varargin{1})
   y.ParameterValues = varargin{1};
-else
-  y = y(varargin{:});
 end
 

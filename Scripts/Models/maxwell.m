@@ -1,4 +1,4 @@
-function y=Maxwell(varargin)
+function y=maxwell(varargin)
 % y = Maxwell(p, x, [y]) : Maxwellian
 %
 %   iFunc/Maxwell Maxwellian fitting function
@@ -70,7 +70,9 @@ y.Dimension =1;
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

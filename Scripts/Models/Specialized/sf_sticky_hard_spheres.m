@@ -49,7 +49,9 @@ y.Expression= { ...
 y.Guess     = @(x,signal) [ pi/sum(signal(:).*x(:))*sum(signal(:)) max(signal(:)-1) 0.15 ];
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

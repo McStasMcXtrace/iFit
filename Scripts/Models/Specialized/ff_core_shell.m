@@ -34,7 +34,9 @@ y.Dimension = 1;
 y.Guess     = @(x,signal) [ pi/std(x(:)) 1e-6 pi/std(x(:))/2 1e-6 ];
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

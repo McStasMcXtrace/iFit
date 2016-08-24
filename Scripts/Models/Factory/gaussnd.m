@@ -78,13 +78,17 @@ if nargin == 1
     end
   elseif ischar(v) && ~strcmp(v, 'identify') && exist('ResLibCal') == 2
      % may be ResLibCal or a ResLibCal configuration file
-     if any(strcmpi(v, {'ResLibCal','ResLib','ResCal'}))
+     if any(strcmpi(v, {'ResLibCal','ResLib','ResCal','tas'}))
        y = gaussnd(ResLibCal('compute'));
        return
      else % try as an argument to ResLibcal
        y = gaussnd(ResLibCal(v));
      end
-     return 
+     return
+  else
+    y = gaussnd;
+    y.Name = [ 'Gaussian (nD) [' mfilename ']' ];
+    return
   end
 else
   % use a sensible Gaussian 2D

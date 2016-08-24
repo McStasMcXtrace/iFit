@@ -248,7 +248,12 @@ end
 
 signal = [];
 
-if nargin == 0, configuration = ''; varargin{1} = 'emt'; end
+if nargin == 0, configuration = ''; varargin{1} = 'emt'; 
+elseif strcmp(configuration, 'identify')
+  signal = sqw_phonons;
+  signal.Name = [ 'Sqw Phonon DHO [' mfilename ']' ];
+  return;
+end
 
 options= sqw_phonons_argin(configuration, varargin{:});
 if isempty(status.mpirun) && isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
@@ -338,7 +343,7 @@ end % GUI
 % make sure we find ther 'configuration' also from ifitpath
 if isempty(dir(configuration)) && ~isempty(dir(fullfile(ifitpath,'Data',configuration)))
   configuration = fullfile(ifitpath,'Data',configuration);
- end
+end
 
 % ==============================================================================
 %                               BUILD MODEL

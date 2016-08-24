@@ -57,6 +57,9 @@ end
 if nargin == 1
   fun = varargin{1};
   if strcmp(fun, 'identify')
+    f = iFunc;
+    f.Name        = [ 'Model editor [' mfilename ']' ];
+    f.Description = 'Build/edit a fit function/model from a GUI';
     return
   elseif ischar(fun)
     % special case when only the expression is given
