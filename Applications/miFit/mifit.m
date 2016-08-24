@@ -145,8 +145,16 @@ if isempty(fig) || ~ishandle(fig)
     hmodels = mifit_fig('Menu_Model');
     hoptim  = mifit_fig('Menu_Optimizers');
     
+    % load Preferences
+    mifit_Load_Preferences;
+    mifit_Apply_Preferences;
+    
     % Display welcome dialog during menu build
     h = mifit_Tools_About(fig);
+    contrib = textwrap({ version(iData,2) },80);
+    for index=1:numel(contrib)
+      mifit_disp([ '  ' contrib{index} ])
+    end
     
     % get the list of Models and Optimizers
     [optimizers,functions] = fits(iFunc);
@@ -168,6 +176,17 @@ if isempty(fig) || ~ishandle(fig)
             end
         end
     end
+    
+    % TODO
+    disp([ mfilename ': mifit_OpeningFcn: TODO: need to add specific Models from Preferences' ])
+    % fill specialized Models. As some require a specific creation step, we need
+    % to supply a list of Models to import. Get them from Preferences ?
+    %
+    % These do not require a creation step (parameters can be changed afterwards)
+    % sf_hard_spheres, sf_square_well , sf_sticky_hard_spheres, ff_core_shell, ff_sphere  
+    % sqw_sine3d, sqw_vaks, sqw_cubic_monoatomic,
+    %
+    % remove: nd gaussian, ngauss/nlorz which require dialogue
     
     % fill Optimizers menu
     if ~isempty(optimizers) && iscell(optimizers)
@@ -191,10 +210,6 @@ if isempty(fig) || ~ishandle(fig)
     % create the AppData Data Stack
     setappdata(fig, 'Data',    []);
     setappdata(fig, 'History', {});
-    
-    % load Preferences
-    mifit_Load_Preferences;
-    mifit_Apply_Preferences;
     
     % Load the previous Data sets and Model Parameters
     file = fullfile(prefdir, [ mfilename '.mat' ]);
@@ -227,10 +242,11 @@ function config = mifit_Load_Preferences
   end
   if isempty(config)
     % default configuration
-    config.FontSize         = 12;
+    config.FontSize         = max(12, get(0,'defaultUicontrolFontSize'));
     config.Save_Data_On_Exit= 'yes';
   end
   setappdata(mifit_fig, 'Preferences', config);
+  set(0,'defaultUicontrolFontSize', config.FontSize);
 
 function mifit_Save_Preferences(config)
   filename = fullfile(prefdir, [ mfilename '.ini' ]);
@@ -305,7 +321,7 @@ function mifit_File_Print(varargin)
   fig = mifit_fig;
   printdlg(fig);
   % alternative: File_Saveas_HTML in tmpfile, then open that file for printing.
-  disp('TODO: save all Data sets as HTML with model and parameters')
+  disp([ mfilename ': File_Print: TODO: save all Data sets as HTML with model and parameters' ])
   disp('then open it with web for printing');
   
 function mifit_File_Preferences(varargin)
@@ -556,7 +572,8 @@ function mifit_Data_View(varargin)
   end
   
 function mifit_Data_Properties(varargin)
-  disp('TODO: mifit_Data_Properties: should display properties from "disp" and allow to re-assign signal, axes, define new aliases...')
+% TODO
+  disp([ mfilename ': Data_Properties: TODO: should display properties from "disp" and allow to re-assign signal, axes, define new aliases...' ])
 % Data_Properties ?
 % re-assign data set signal, axes, ... to aliases/new ones
 % display statistics
@@ -565,19 +582,21 @@ function mifit_Data_History(varargin)
   d = mifit_List_Data_pull();
   for index=1:numel(d)
     [c,fig]=commandhistory(d(index));
-    h=findobj(fig, 'type','uicontrol');
-    config = getappdata(mifit_fig, 'Preferences');
-    set(h,'fontsize',config.FontSize);
   end
 
 function mifit_Data_AssignModel(varargin)
   model = get(varargin{1},'UserData'); % an iFunc stored into UserData of the menu item.
+  setappdata(mifit_fig, 'CurrentModel', model);  % store current selected Model
   % get selected Data sets indices in List
   index_selected = get(mifit_fig('List_Data_Files'),'Value');
   D = getappdata(mifit_fig, 'Data');  % all data sets
-  if numel(D) == 0 || isempty(index_selected), return; end
-  mifit_History_push();
+  if numel(D) == 0 || isempty(index_selected), 
+    mifit_disp([ 'Selected Model "' model.Name '".' ]);
+    return; 
+  end
+  
   mifit_disp([ 'Assigning Model "' model.Name '" to ' num2str(numel(index_selected)) ' Data set(s).' ]);
+  mifit_History_push();
   if numel(D) > 1
     for index=index_selected(:)'
       D(index) = setalias(D(index), 'Model', model);
@@ -588,10 +607,52 @@ function mifit_Data_AssignModel(varargin)
     mifit_disp(char(D));
   end
   setappdata(mifit_fig, 'Data', D);
+  
+function mifit_Data_Math_Unary(varargin)
+  % TODO
+  disp([ mfilename ': Data_Math_Unary: TODO' ])
+  
+function mifit_Data_Math_Binary(varargin)
+  % TODO
+  disp([ mfilename ': Data_Math_Binary: TODO' ])
+  
+function mifit_Data_Math(varargin)
+  % TODO
+  disp([ mfilename ': Data_Math (others): TODO' ])
 
 % Models and Optimizers menu ***************************************************
 
-% set optimizer configuration -> contextual dialogue
+function mifit_Model_Add(varargin)
+  % TODO
+  disp([ mfilename ': Model_Add: TODO' ])
+  % * Add from file... (JSON, M, YAML, MAT)
+  % * Create from SpinW: interface for CIF, import SW, ...
+  % * Create from Phonons: call GUI (add warning for long procedure... )
+  % * Create from Rietveld/McStas with diffraction instrument: create small dialogue
+  % * 4D TAS convolution
+  % * Powder average 4D -> 2D
+  % * nd gaussian/lorz
+  % * ngauss/nlorz
+
+function mifit_Model_Edit(varargin)
+  % TODO
+  disp([ mfilename ': Model_Edit: TODO' ])
+  % create bew Models after edition
+  
+function mifit_Model_Plot(varargin)
+  % TODO
+  disp([ mfilename ': Model_Plot: TODO' ])
+  
+function mifit_Models_Plot_Parameters
+
+function mifit_Models_Export_Parameters
+
+function mifit_Models_View_Parameters
+  % get 1st selected Model from Data set or Models menu current choice
+  % Display a uitable with columns:
+  % [ Parameters | ParameterValues | constraints.fixed | constraints.min | constraints.max ]
+
+% set optimizer configuration -> contextual dialogue in Model_Parameters uitable ?
   
 % Tools menu *******************************************************************
 
@@ -607,7 +668,7 @@ function h=mifit_Tools_About(fig)
   else
     h = msgbox(t,'miFit: About','custom', imread(icon));
   end
-  g=findobj(fig, 'type','uicontrol');
+  g=findobj(h, 'type','uicontrol');
   config = getappdata(mifit_fig, 'Preferences');
   set(g,'fontsize',config.FontSize);
   if ~isempty(fig)
@@ -695,3 +756,4 @@ function mifit_disp(message)
   if fid == -1, return; end
   fprintf(fid, '[%s] %s\n', datestr(now), message);
   fclose(fid);
+  
