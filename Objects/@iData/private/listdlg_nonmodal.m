@@ -204,6 +204,8 @@ ad.fig     = fig;
 ad.button  = '';
 ad.selection=[];
 ad.selectionString='';
+ad.ok_btn  = ok_btn;
+ad.cancel_btn=cancel_btn;
 setappdata(fig,'ListDialogAppData__',ad);
 
 %% figure, OK and Cancel KeyPressFcn

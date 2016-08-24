@@ -19,7 +19,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %  [optimizers,functions] = fits(iFunc)
 %     returns the list of all available optimizers and fit functions.
 %  [pars,...] = fits(iData_object)
-%     searches for a Model in the data set, and then perform the fit.
+%     searches for a Model in the data set, and then performs the fit.
 %  fits(iFunc)
 %     displays the list of all available optimizers and fit functions.
 %  You may create new fit models with the 'ifitmakefunc' tool, or by arithmetic
@@ -138,13 +138,14 @@ if nargin == 1 && isempty(model)
     output     = {};
     pars_out   = {};
     warn       = warning('off','MATLAB:dispatcher:InexactCaseMatch');
+    d = fileparts(which('fminpso'));
     if nargout == 0
       fprintf(1, '\n%s\n', version(iData));
       
-      fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', 'iFit/Optimizers');
+      fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', [ 'iFit/Optimizers in ' d ]);
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
-    d = dir([ fileparts(which('fminpso')) ]);
+    d = dir(d);
     for index=1:length(d)
       this = d(index);
       try
@@ -159,12 +160,13 @@ if nargin == 1 && isempty(model)
         end
       end
     end % for
+    d = fileparts(which('gauss'));
     if nargout == 0
       fprintf(1, '\n');
-      fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', 'iFit/Models');
+      fprintf(1, '       FUNCTION DESCRIPTION [%s]\n', [ 'iFit/Models in ' d ]);
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
-    d = dir([ fileparts(which('gauss')) ]);
+    d = dir(d);
     criteria = []; 
     for index=1:length(d)
       this = d(index);

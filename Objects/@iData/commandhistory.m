@@ -44,7 +44,7 @@ end
 function s=commandhistory_export(fig)
 
   ad = getappdata(fig,'ListDialogAppData__');
-  if strcmpi(ad.button, 'cancel'), s=[]; return; end
+  if ~strcmpi(ad.button, 'ok'), s=[]; return; end
   s = get(ad.listbox,'string');
   if isempty(s), return; end
   a        = ad.object;
