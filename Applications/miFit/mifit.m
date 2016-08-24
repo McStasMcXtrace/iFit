@@ -1,4 +1,5 @@
 function varargout = mifit(varargin)
+% Version: $Date$
 % (c) E.Farhi, ILL. License: EUPL.
 
 % notes:
@@ -59,7 +60,7 @@ function varargout = mifit(varargin)
         if ischar(varargin{1}) && isempty(dir(varargin{1})) % a function/action to call ?
           % callback with varargin{1} == 'action'
           action = varargin{1};
-          if strcmpi(action,'identify'), return; end
+          if strcmpi(action,'identify'), varargout{1} = []; return; end
           if any(strcmpi(action,{'pull','data'}))
             out = getappdata(fig, 'Data');
           else
@@ -177,17 +178,6 @@ if isempty(fig) || ~ishandle(fig)
         end
     end
     
-    % TODO
-    disp([ mfilename ': mifit_OpeningFcn: TODO: need to add specific Models from Preferences' ])
-    % fill specialized Models. As some require a specific creation step, we need
-    % to supply a list of Models to import. Get them from Preferences ?
-    %
-    % These do not require a creation step (parameters can be changed afterwards)
-    % sf_hard_spheres, sf_square_well , sf_sticky_hard_spheres, ff_core_shell, ff_sphere  
-    % sqw_sine3d, sqw_vaks, sqw_cubic_monoatomic,
-    %
-    % remove: nd gaussian, ngauss/nlorz which require dialogue
-    
     % fill Optimizers menu
     if ~isempty(optimizers) && iscell(optimizers)
         mifit_disp([ 'Initializing ' num2str(numel(optimizers)) ' Optimizers ...' ]);
@@ -227,6 +217,7 @@ if isempty(fig) || ~ishandle(fig)
 
     % close welcome image
     delete(h);
+
 end
 
 % Preferences I/O --------------------------------------------------------------
@@ -643,11 +634,11 @@ function mifit_Model_Plot(varargin)
   % TODO
   disp([ mfilename ': Model_Plot: TODO' ])
   
-function mifit_Models_Plot_Parameters
+function mifit_Models_Plot_Parameters(varargin)
 
-function mifit_Models_Export_Parameters
+function mifit_Models_Export_Parameters(varargin)
 
-function mifit_Models_View_Parameters
+function mifit_Models_View_Parameters(varargin)
   % get 1st selected Model from Data set or Models menu current choice
   % Display a uitable with columns:
   % [ Parameters | ParameterValues | constraints.fixed | constraints.min | constraints.max ]
@@ -674,6 +665,15 @@ function h=mifit_Tools_About(fig)
   if ~isempty(fig)
     setappdata(fig, 'handle_About', h);
   end
+  
+function mifit_Tools_Help_Loaders(varargin)
+  doc(iData,'Loaders');
+  
+function mifit_Tools_Help_Models(varargin)
+  doc(iData,'Models');
+  
+function mifit_Tools_Help_Optimizers(varargin)
+  doc(iData,'Optimizers');
   
 % List Data and Stack management ***********************************************
 
