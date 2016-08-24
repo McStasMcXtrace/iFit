@@ -221,7 +221,7 @@ if model.Dimension && ...
       signal = args{2};
       signal_in_varargin = 2;
     elseif model.Dimension == 2 % we use a 2D Gaussian
-      [args{1},args{2}] = ndgrid(linspace(-5,5,50), linspace(-3,7,60));
+      [args{1},args{2}] = ndgrid(linspace(-5,5,30), linspace(-3,7,40));
       x=args{1}; y=args{2}; p2 = [ 1 mean(x(:)) mean(y(:)) std(x(:)) std(y(:)) 30 0 ];
       x0=p2(2); y0=p2(3); sx=p2(4); sy=p2(5);
       theta = p2(6)*pi/180;  % deg -> rad

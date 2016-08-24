@@ -36,12 +36,15 @@ function [fig] = listdlg_nonmodal(varargin)
 %     [s,v] = listdlg('PromptString','Select a file:',...
 %                     'SelectionMode','single',...
 %                     'ListString',str)
- %
+%
 %  See also DIALOG, ERRORDLG, HELPDLG, INPUTDLG,
 %    MSGBOX, QUESTDLG, WARNDLG.
+%
+% THIS VERSION IS MODIFIED TO USE DefaultUicontrolFontSize and be NonModal/Resizable
 
 %   Copyright 1984-2009 The MathWorks, Inc.
 %   $Revision: 1.20.4.10 $  $Date: 2009/10/24 19:19:47 $
+%
 
 %   'uh'            uicontrol button height, in pixels; default = 22.
 %   'fus'           frame/uicontrol spacing, in pixels; default = 8.
