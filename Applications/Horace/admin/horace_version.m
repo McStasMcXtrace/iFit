@@ -28,7 +28,7 @@ Matlab_SVN='$Revision:: 558  $ ($Date:: 2011-07-19 11:06:05 +0100 (Tue, 19 Jul 2
 mexMinVer     ='Not implemented                                         ';
 mexMaxVer     = [];
 date          = [];
-if get(hor_config,'use_mex')
+if 0 && get(hor_config,'use_mex')
     [mex_messages,n_erros,mexMinVer,mexMaxVer,date]=check_horace_mex('get min-max version');
     if n_erros~= 0
         set(hor_config,'use_mex',0);
