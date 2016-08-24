@@ -42,7 +42,7 @@ else
   cmd = mfilename;
 end
 
-if isempty(varargin) || strcmp(varargin{1}, 'compile') || strcmp(varargin{1}, 'check')
+if isempty(varargin) || strcmp(varargin{1}, 'compile') || strcmp(varargin{1}, 'check') || strcmp(varargin{1}, 'identify')
   result = cmd;
   return;
 end
