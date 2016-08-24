@@ -56,7 +56,9 @@ end
 % according to ASE https://wiki.fysik.dtu.dk/ase/ase/atoms.html#list-of-all-methods
 % the atoms.reciprocal_cell does not include the 2*pi. We multiply B by that.
 UD = a.UserData;
-if isfield(UD, 'atoms') && isfield(UD.atoms, 'reciprocal_cell')
+if isfield(UD, 'reciprocal_cell')
+  B = UD.reciprocal_cell*2*pi;
+elseif isfield(UD, 'atoms') && isfield(UD.atoms, 'reciprocal_cell')
   B = UD.atoms.reciprocal_cell*2*pi;
 elseif isa(a, 'iData') && ~isempty(findfield(a, 'reciprocal_cell'))
   B = get(a, findfield(a, 'reciprocal_cell','cache'))*2*pi;
