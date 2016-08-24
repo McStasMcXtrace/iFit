@@ -14,11 +14,12 @@ function r=sqw_powder(a, p, x,y)
 %  q:     wavevector values in Angs-1 (vector)
 %  w:     energy values in meV (vector)
 % output: 
-%  data:  a S(|q|,w) data set
+%  data:  a S(|q|,w) data set or 2D Model
 %
 % example:
 %  s=sqw_phonons([ ifitpath 'Data/POSCAR_Al'],'metal','EMT');
-%  pow=sqw_powder(s); plot(log(pow));
+%  pow=sqw_powder(s); % then plot [q=0:2 w=0:50]
+%  plot(log(iData(pow,[],linspace(0,2,30),linspace(0,50,51))))
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
@@ -26,7 +27,11 @@ function r=sqw_powder(a, p, x,y)
 % (c) E.Farhi, ILL. License: EUPL.
 r=[];
 if nargin == 0
-  disp([ mfilename ': requires a 4D iFunc or iData object as argument. You may use sqw_phonons to generate a Model.' ]);
+  r = sqw_powder(sqw_phonons);
+  return
+elseif ischar(a) && strcmp(a, 'identify')
+  r = sqw_powder;
+  r.Name = [ 'Sqw_powder [' mfilename ']' ];
   return
 end
 
@@ -67,30 +72,40 @@ else
 end
 
 if isa(a, 'iFunc')
-  if isempty(x), x=linspace(0.01, 4,  30); end  % default q
-  if isempty(y), y=linspace(0,    50, 51); end  % default w
-
-  if ~isvector(x), x=linspace( min(x(:)), max(x(:)), max(size(x))); end
-  if ~isvector(y), y=linspace( min(y(:)), max(y(:)), max(size(y))); end
-
-  % create a 4D hklw space grid
-  [qx,qy,qz,w]=ndgrid(x,x,x,y); % in Angs -1
-  q=sqrt(qx.*qx+qy.*qy+qz.*qz); % norm(q)
-  % compute the 'rlu' coordinates
-  q_rlu = inv(B)*[ qx(:)' ; qy(:)' ; qz(:)' ]; sz=size(qx);
-  qx=reshape(q_rlu(1,:), sz); qy=reshape(q_rlu(2,:), sz); qz=reshape(q_rlu(3,:), sz);
-  clear q_rlu
-  f=iData(a,[],qx,qy,qz,w); f=f{0};
-  clear qx qy qz
-  r=iData(q(:),w(:),f(:));
-  clear q w f
-  r=hist(r, [ceil(numel(x)*sqrt(3)) numel(y)]);
-  xlabel(r, 'Energy [meV]');
-  ylabel(r, 'Wavevector [Angs-1]');
-  title(r,  'S(|q|,w) powder');
-  r.Title = [ 'powder(' a.Name ')' ];
-  r=r';
-  r=xlim(r, [min(x) max(x)]);
+  % we should return a new iFunc Model (2D)
+  r = [];
+  r.UserData.Model4D = a;
+  r.UserData.B       = B;
+  r.Expression = { ...
+  'if isempty(x), x=linspace(0.01, 4,  30); end  % default q', ...
+  'if isempty(y), y=linspace(0,    50, 51); end  % default w', ...
+  '', ...
+  'if ~isvector(x), x=linspace( min(x(:)), max(x(:)), size(x,1)); end', ...
+  'if ~isvector(y), y=linspace( min(y(:)), max(y(:)), size(y,2)); end', ...
+  '% create a 4D hklw space grid', ...
+  '[qx,qy,qz,w]=ndgrid(x,x,x,y); % in Angs -1', ...
+  'q=sqrt(qx.*qx+qy.*qy+qz.*qz); % norm(q)', ...
+  '% compute the rlu coordinates', ...
+  'B = this.UserData.B;', ...
+  'q_rlu = inv(B)*[ qx(:)'' ; qy(:)'' ; qz(:)'' ]; sz=size(qx);', ...
+  'qx=reshape(q_rlu(1,:), sz); qy=reshape(q_rlu(2,:), sz); qz=reshape(q_rlu(3,:), sz);', ...
+  'clear q_rlu', ...
+  'f=iData(this.UserData.Model4D,p,qx,qy,qz,w); f=f{0};', ...
+  'clear qx qy qz', ...
+  'r=iData(q(:),w(:),f(:));', ...
+  'clear q w f', ...
+  'r=hist(r, [ceil(numel(x)*sqrt(3)) numel(y)]);', ...
+  'xlabel(r, ''Energy [meV]'');', ...
+  'ylabel(r, ''Wavevector [Angs-1]'');', ...
+  'title(r,  ''S(|q|,w) powder'');', ...
+  'r.Title = [ ''powder('' this.Name '')'' ];', ...
+  'r=r'';', ...
+  'r=xlim(r, [min(x) max(x)]); signal=double(r''); signal=signal(1:numel(x),1:numel(y));' };
+  r.Name = [ 'powder(' a.Name ')' ];
+  r.Description = [ 'powder(' a.Description ')' ];
+  r.Parameters = a.Parameters;
+  r.Dimension = 2;
+  r = iFunc(r);
   
 elseif isa(a, 'iData')
   qx=a{1}; qy=a{2}; qz=a{3};  w=a{4}; % in rlu

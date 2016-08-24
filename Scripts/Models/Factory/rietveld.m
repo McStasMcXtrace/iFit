@@ -92,6 +92,11 @@ if nargin == 0
   disp([ mfilename ': require input arguments to define Rietveld model. See "help rietveld".'])
   disp('  Syntax: rietveld(structure,char,numerical,vector...). ')
   return
+elseif ischar(varargin{1}) && strcmp(varargin{1},'identify')
+  y = iFunc;
+  y.Name       = [ 'Rietveld refinement [' mfilename ']' ];
+  y.Dimension  = 2; % typical but can be something else, e.g. 1-3D
+  return
 end
 
 variable_p     = [];  % will store variable parameters for both CFL and instrument

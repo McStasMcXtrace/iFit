@@ -31,6 +31,8 @@ y.Guess      = @(x,signal) abs(log(1./mean(signal(:))+1)/mean(abs(x(:))));
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end

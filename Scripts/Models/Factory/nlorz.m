@@ -25,7 +25,10 @@ else
   p = [];
 end
 
-if length(p) == 1 && p == ceil(p)
+if ischar(p)
+  y=nlorz;
+  y.Name = [ 'n Lorentzians (1D) [' mfilename ']' ];
+elseif length(p) == 1 && p == ceil(p)
   n = p;
 elseif isnumeric(p) && length(p) > 1
   n = floor(p)/3+1;

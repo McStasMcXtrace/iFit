@@ -26,7 +26,9 @@ y.Guess     = @(x,y) [ polyfit(x(:), y(:), 2) ];
 
 y = iFunc(y);
 
-if length(varargin)
+if nargin == 1 && isnumeric(varargin{1})
+  y.ParameterValues = varargin{1};
+elseif nargin > 1
   y = y(varargin{:});
 end
 

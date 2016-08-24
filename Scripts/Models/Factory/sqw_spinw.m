@@ -61,14 +61,16 @@ sq = sw_model('squareAF',2,0);
 options = [];
 for index=1:numel(varargin)
   this = varargin{index};
-  if isa(this, 'sw') || isa(this, 'spinw')
+  if isa(this, 'sw') || isa(this, 'spinw')    % a SpinW object
     sq = this;
-  elseif isstruct(this)
+  elseif ischar(this) && ~isempty(dir(this))  % a CIF file
+    sq = sw(this);
+  elseif isstruct(this)                       % some options
     options = this;
   end
 end
 
-% here we could use a more general way to enter SpinW options and default values.
+% TODO: here we could use a more general way to enter SpinW options and default values.
 if ~isfield(options, 'component')
   options.component='Sperp';
 end
