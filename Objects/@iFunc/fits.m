@@ -169,14 +169,14 @@ if nargin == 1 && isempty(model)
       fprintf(1, '-----------------------------------------------------------------\n'); 
     end
     
-    % also search in Specialized and factory directories
+    % also search in Specialized and Factory directories
     D = { d, fullfile(d,'Specialized'), fullfile(d,'Factory'), pwd };
-    
+    criteria = {}; 
+    models   = [];
+      
     for f_dir = D
     
       d = dir(f_dir{1});
-      criteria = {}; 
-      models   = [];
       for index=1:length(d)
         this = d(index);
         try
