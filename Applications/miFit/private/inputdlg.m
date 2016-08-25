@@ -22,8 +22,8 @@ function Answer=inputdlg(Prompt, Title, NumLines, DefAns, Resize)
 %
 %  ANSWER = INPUTDLG(PROMPT,NAME,NUMLINES,DEFAULTANSWER,OPTIONS) specifies
 %  additional options. If OPTIONS is the string 'on', the dialog is made
-%  resizable. If OPTIONS is a structure, the fields Resize, WindowStyle, and
-%  Interpreter are recognized. Resize can be either 'on' or
+%  resizable. If OPTIONS is a structure, the fields Resize, WindowStyle, 
+%  Interpreter and FontSize are recognized. Resize can be either 'on' or
 %  'off'. WindowStyle can be either 'normal' or 'modal'. Interpreter can be
 %  either 'none' or 'tex'. If Interpreter is 'tex', the prompt strings are
 %  rendered using LaTeX.
@@ -88,6 +88,7 @@ if nargin<5
 end
 WindowStyle='modal';
 Interpreter='none';
+FontSize=get(0,'DefaultUicontrolFontSize');
 
 Options = struct([]); %#ok
 if nargin==5 && isstruct(Resize)
@@ -96,6 +97,7 @@ if nargin==5 && isstruct(Resize)
   if isfield(Options,'Resize'),      Resize=Options.Resize;           end
   if isfield(Options,'WindowStyle'), WindowStyle=Options.WindowStyle; end
   if isfield(Options,'Interpreter'), Interpreter=Options.Interpreter; end
+  if isfield(Options,'FontSize'),    FontSize=Options.FontSize; end
 end
 
 [rw,cl]=size(NumLines);
@@ -146,7 +148,7 @@ DefBtnWidth  = 53;
 DefBtnHeight = 23;
 
 TextInfo.Units              = 'pixels'   ;
-TextInfo.FontSize           = get(0,'DefaultUicontrolFontSize');
+TextInfo.FontSize           = FontSize;
 TextInfo.FontWeight         = get(InputFig,'DefaultTextFontWeight');
 TextInfo.HorizontalAlignment= 'left'     ;
 TextInfo.HandleVisibility   = 'callback' ;

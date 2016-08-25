@@ -68,11 +68,15 @@ for index=1:numel(varargin)
   elseif ischar(this) && ~isempty(dir(this))  % a CIF file
     sq = sw(this);
     % the following auto-setting for spin-couplig usually fails. Should be improved.
+    disp([ mfilename ': defining a spin-coupling set (may be wrong)' ])
     sq.gencoupling;
     J =ones(1, ceil(numel(sq.unit_cell.label)/2));
     J(2:2:end) = -1;
-    sq = quickham(sq, rand); % from SpinW/Git on Aug 25th 2016
+    sq = quickham(sq, J); % from SpinW/Git on Aug 25th 2016
     sq.genmagstr('mode','random');
+    % optimize mag structure
+    disp([ mfilename ': optimizing the magnetic structure.' ])
+    sq.optmagstr;
   elseif isstruct(this)                       % some options
     options = this;
   elseif ischar(this) && strcmp(this, 'identify')
