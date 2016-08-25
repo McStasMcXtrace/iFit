@@ -16,24 +16,54 @@ function y=ngauss(varargin)
 % ex:     y=ngauss([1 0 1 0.5 2 0.5 0], -10:10); or plot(ngauss)
 %
 % Version: $Date$
-% See also iFunc, iFunc/fits, iFunc/plot
+% See also iFunc, iFunc/fits, iFunc/plot, nlorz
 % (c) E.Farhi, ILL. License: EUPL.
 
 if nargin > 0
   p = varargin{1};
 else
-  p = [];
+  p = 'gui';
 end
 
-if ischar(p)
-  y=ngauss;
+if ischar(p) && strcmp(p, 'identify')
+  y=ngauss('defaults');
   y.Name = [ 'n Gaussians (1D) [' mfilename ']' ];
-elseif length(p) == 1 && p == ceil(p)
-  n = p;
+elseif isnumeric(p) && length(p) == 1 && p == ceil(p)
+  n = p; p = [];
 elseif isnumeric(p) && length(p) > 1
   n = floor(p)/3+1;
-else
+elseif (ischar(p) && strcmp(p, 'defaults')) || isempty(p)
   n = 2;
+else
+  % show a Dialogue to select the number of Functions to use
+  NL = sprintf('\n');
+  prompt = { [ '{\bf Enter the Number of Gaussian functions to use}' NL ...
+    'you should enter a {\color{blue}single number},' NL ...
+    'or {\color{blue}defaults} to generate 2 Gaussians.' ], ...
+  };
+  dlg_title = 'iFit: Model: n Gaussians';
+  defAns    = {'2'};
+  num_lines = [ 1 ];
+  op.Resize      = 'on';
+  op.WindowStyle = 'normal';   
+  op.Interpreter = 'tex';
+  answer = inputdlg(prompt, dlg_title, num_lines, defAns, op);
+  if isempty(answer), 
+    return; 
+  end
+  % now interpret the result
+  answer = answer{1};
+  NumEval = str2num(answer);
+  if isempty(NumEval)
+    NumEval = answer;
+    try
+      if ~any(strcmpi(answer, {'defaults','identify'}))
+        NumEval = evalc(answer);
+      end
+    end
+  end
+  y = ngauss(NumEval);
+  return
 end
 if n == 1
   y = gauss(varargin{:});

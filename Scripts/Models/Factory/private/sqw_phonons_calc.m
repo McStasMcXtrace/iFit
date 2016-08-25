@@ -488,7 +488,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   disp([ mfilename ': calling sqw_phon(''' poscar ''') with PHON/Quantum Espresso' ]);
   options.dos = 1;
   decl = [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ];
-  sqw_phonons_htmlreport(fullfile(options.target, 'index.html'), 'init', options, decl);
+  sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'init', options, decl);
   
   signal=sqw_phon(poscar, options);
   if isempty(signal), decl=[]; return; end

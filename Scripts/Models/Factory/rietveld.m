@@ -89,6 +89,25 @@ function y = rietveld(varargin)
 y = [];
 
 if nargin == 0
+  % No argument -> GUI
+  
+  NL = sprintf('\n');
+  prompt = { [ '{\bf Material structure}' NL ...
+    'you should enter a {\color{blue}CIF}, {\color{blue}CFL (FullProf)} or {\color{blue}ShelX} file path, e.g. [ ifitpath ''Data/Na2Ca3Al2F14.cfl'' ].'  ], ...
+    [ '{\bf McStas instrument}' NL ...
+    'you should enter a {\color{blue}.instr} McStas diffractometer file path, e.g. templateDIFF.instr'  ], ...
+    [ '{\bf Additional McStas instrument parameters}' NL ...
+    'Any string specifying the {\color{blue}instrument or Mcstas} configuration, such as' NL ...
+    'Powder=reflections.laz; lambda="2.36"; monitors=BananaTheta; mpi=8' ]
+  };
+  dlg_title = 'iFit: Model: Rietveld/McStas';
+  defAns    = {'[ ifitpath ''Data/Na2Ca3Al2F14.cfl'' ]', 'templateDIFF.instr','Powder=reflections.laz; lambda="2.36"; monitors=BananaTheta; mpi=8'};
+  num_lines = [ 1 ];
+  op.Resize      = 'on';
+  op.WindowStyle = 'normal';   
+  op.Interpreter = 'tex';
+  answer = inputdlg(prompt, dlg_title, num_lines, defAns, op);
+  
   disp([ mfilename ': require input arguments to define Rietveld model. See "help rietveld".'])
   disp('  Syntax: rietveld(structure,char,numerical,vector...). ')
   return

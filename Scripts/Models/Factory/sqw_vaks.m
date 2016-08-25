@@ -142,10 +142,41 @@ signal.Expression     = { ...
 signal=iFunc(signal);
 
 if nargin == 0
-  varargin{1} = 'KTaO3';
+  varargin{1} = 'gui';
 end
 if numel(varargin) && ischar(varargin{1})
   switch lower(varargin{1})
+  case 'gui'
+    NL = sprintf('\n');
+    prompt = { [ '{\bf Enter Sqw Vaks crystal configuration}' NL ...
+      'you can enter {\color{blue}KTaO3}, {\color{blue}SrTiO3} or {\color{blue}BaTiO3},' NL ...
+      'or a {\color{blue}vector} of Vaks parameters (12 values) such as [1553 4551.6 2264.9 4828.1 8956.1 2450.7 -3087.3 6.2 0.1 10 1 0],' NL ...
+      'or {\color{blue}defaults} to generate a KTaO3 Vaks model, ' NL ...
+      'or {\color{blue}any expression} to evaluate and provide a 12 values-vector.' ]
+    };
+    dlg_title = 'iFit: Model: Sqw Vaks';
+    defAns    = {'KTaO3'};
+    num_lines = [ 1 ];
+    op.Resize      = 'on';
+    op.WindowStyle = 'normal';   
+    op.Interpreter = 'tex';
+    answer = inputdlg(prompt, dlg_title, num_lines, defAns, op);
+    if isempty(answer), 
+      return; 
+    end
+    % now interpret the result
+    answer = answer{1};
+    NumEval = str2mat(answer);
+    if isempty(NumEval)
+      NumEval = answer;
+      try
+        if ~any(strcmpi(answer, {'KTaO3','SrTiO3','BaTiO3'}))
+          NumEval = evalc(answer);
+        end
+      end
+    end
+    y = sqw_vaks(NumEval);
+    return
   case 'ktao3'
     St = 4828.100000; At = 1553.000000; Vt = 2450.700000;
 	  Sa = 8956.100000; Aa = 2264.900000; Va = -3087.300000;
