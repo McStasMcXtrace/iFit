@@ -10,6 +10,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     approxiimation.
 %   The phonon spectra is computed using one of the calculator supported by the
 %   Atomic Simulation Environment (ASE) <https://wiki.fysik.dtu.dk/ase>.
+%
 %   Supported calculators are:
 %     ABINIT    Plane-wave pseudopotential code
 %     Dacapo    Plane-wave ultra-soft pseudopotential code
@@ -95,8 +96,6 @@ function signal=sqw_phonons(configuration, varargin)
 %     and plot results.
 %   options.htmlreport=0|1                 when set, automatically generates a full
 %     report on the computation results. Also requests vDOS computation (options.dos=1).
-%   options.email=<email>                  when set, sends an email at start and end
-%     of computation.
 %   options.optimizer                      when set, performs a geometry optimization
 %     before computing the forces. This option can be set to 
 %       'BFGS' or 'LBFGS' (low memory BFGS)
@@ -139,7 +138,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
 %     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'pw'.
 %   options.iscf='NC','PAW'                Type of SCF cycles (ABINIT) 
-%   options.pps = 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw' Type of database (ABINIT)
+%   options.pps = 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw' 'pawxml' Type of database (ABINIT)
 %                 'sv','pv', ... (VASP)
 %   options.mixing_beta=scalar             mixing factor for self-consistency
 %     default=0.7. use 0.3 to improve convergence (QuantumEspresso)
@@ -248,10 +247,10 @@ end
 
 signal = [];
 
-if nargin == 0, configuration = ''; varargin{1} = 'emt'; 
+if nargin == 0, configuration = 'gui'; varargin{1} = 'emt'; 
 elseif strcmp(configuration, 'identify')
-  signal = sqw_phonons;
-  signal.Name = [ 'Sqw Phonon DHO [' mfilename ']' ];
+  signal = sqw_phonons('defaults');
+  signal.Name = [ 'Sqw_Phonon DHO [' mfilename ']' ];
   return;
 end
 
@@ -274,9 +273,13 @@ if strcmp(configuration,'gui')
   configuration=[];
 end
 
-if nargin == 0 || isempty(configuration)
+if strcmp(configuration, 'defaults')
+  options.calculator = 'emt';
+end
+if nargin == 0 || isempty(configuration) || strcmp(configuration, 'defaults')
   configuration = 'bulk("Al", "fcc", a=4.05)';
 end
+
 
 % ==============================================================================
 %                               GUI (dialog)
@@ -293,15 +296,16 @@ if ~isempty(options.gui) && ~any(isnan(options.gui))
   for index={'gpaw','elk','jacapo','nwchem','abinit','quantumespresso','quantumespresso_ase','vasp'};
     if ~isempty(status.(index{1})), calcs = [ calcs ', ' upper(index{1}) ]; end
   end
+  calcs = strrep(calcs, '_','\_');
   NL = sprintf('\n');
   prompt = { [ '{\bf Atom/molecule/system configuration}' NL 'a CIF/PDB/POSCAR/... name or e.g. bulk("Cu", "fcc", a=3.6, cubic=True),' NL  'molecule("H2O"), or nanotube(6, 0, length=4). ' NL 'Documentation at {\color{blue}http://ifit.mccode.org/Models.html}' ], ...
-  [ '{\bf Calculator}' NL 'One of ' calcs ], ...
+  [ '{\bf Calculator}' NL 'One of ' calcs NL '{\color{red}BEWARE the computation may be LONG (days)}. We recommend QuantumEspresso and ABINIT.' ], ...
   [ '{\bf Smearing}' NL 'metal, semiconductor, insulator or left empty. Use e.g. 0.3 eV for conductors, or a small value such as 0.01 to help SCF convergence. You may use "auto" with Elk. ' ], ...
-  [ '{\bf Cut-off energy for wave-functions}' NL 'Leave as 0 for the default, or specify a cut-off in eV, e.g. 500 eV for fast estimate, 1500 or 2000 eV for accurate results.' ], ...
+  [ '{\bf Cut-off energy for wave-functions}' NL 'Leave as 0 for the default, or specify a cut-off in eV, e.g. 500 eV for fast estimate, 1000 for ABINIT, 1500 or 2000 eV for accurate results.' ], ...
   [ '{\bf K-Points}' NL 'Monkhorst-Pack grid which determines the K sampling (3-vector). 4 is the minimum for accurate computations, 6 is best. Use 1 or 2 for testing only (faster).' ], ...
    [ '{\bf Supercell}' NL 'The size of the repeated model = system*supercell (3-vector). Should be larger than k-points.' ], ...
    [ '{\bf Other options}' NL 'Such as mpi, nbands, nsteps, xc (default PBE), toldfe, raw' NL 'example: "mpi=4; nsteps=100"' NL 'Documentation at {\color{blue}http://ifit.mccode.org/Models.html}' ] };
-  dlg_title = 'iFit: Model: phonons';
+  dlg_title = 'iFit: Model: Sqw phonons';
   defAns    = {configuration, options.calculator, options.occupations, num2str(options.ecut), ...
     num2str(options.kpoints), num2str(options.supercell), ''};
   num_lines = [ 1 1 1 1 1 1 1 ]';
@@ -693,7 +697,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
     signal.UserData.input = configuration;
   end
   
-  signal.Name           = [ 'Sqw_ASE_' signal.UserData.input ' Phonon/ASE/' options.calculator ' DHO [' mfilename ']' ];
+  signal.Name           = [ 'Sqw_Phonon_' signal.UserData.input ' ' options.calculator ' DHO [' mfilename ']' ];
 
   signal.Description    = [ 'S(q,w) 3D dispersion Phonon/ASE/' options.calculator ' with DHO line shape. ' configuration ];
 

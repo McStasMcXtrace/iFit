@@ -51,7 +51,7 @@ else
   pars      = '';
   guess     = '';
   constraint= '';
-end 
+end
 
 % single input argument
 if nargin == 1
@@ -60,6 +60,9 @@ if nargin == 1
     f = iFunc;
     f.Name        = [ 'Model editor [' mfilename ']' ];
     f.Description = 'Build/edit a fit function/model from a GUI';
+    return
+  elseif strcmp(fun, 'defaults')
+    f = gauss;
     return
   elseif ischar(fun)
     % special case when only the expression is given

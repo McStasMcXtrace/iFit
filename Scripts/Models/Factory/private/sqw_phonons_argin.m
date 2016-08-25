@@ -22,7 +22,6 @@ options.autoplot   = 0;
 options.gui        = nan;
 options.htmlreport = 0;
 options.dos        = 0;
-options.email      = '';
 options.optimizer  = '';
 
 % read input arguments

@@ -17,8 +17,10 @@ function y=gaussnd(varargin)
 %   where M is a square matrix [n x n] builds a 'n' Dimensional.
 %   if M is non symmetric, it is made so from (M+M')/2
 % gaussnd('ResLibCal') extracts a 4D TAS resolution function from ResLibCal
-% gaussnd
+% gaussnd('defaults')
 %   builds a 2D Gaussian
+% gaussnd
+%   shows a Dialogue to enter the Gaussian matrix, widths or other option.
 %
 % input:  p: Gaussian model matrix (double, symmetric ndims*ndims)
 %            p = [ ndims(G) * ndims(G) values ]
@@ -35,8 +37,23 @@ function y=gaussnd(varargin)
 y=[];
 
 if nargin == 1
-  v = varargin{1}; 
-  if isstruct(v) % check if this is a ResLibCal configuration
+  v = varargin{1};
+  if (ischar(v) && strcmp(v, 'defaults')) || isempty(v)
+    % defaults: use a sensible Gaussian 2D
+    theta = 30*pi/180;
+    sigma_x = 1;
+    sigma_y = 2;
+    a =  cos(theta)^2/2/sigma_x^2 + sin(theta)^2/2/sigma_y^2;
+    b = -sin(2*theta)/4/sigma_x^2 + sin(2*theta)/4/sigma_y^2 ;
+    c =  sin(theta)^2/2/sigma_x^2 + cos(theta)^2/2/sigma_y^2;
+    G = [ a b ; b c ];
+    y = gaussnd(G);
+    return;
+  elseif ischar(v) && strcmp(v, 'identify')
+    y = gaussnd('defaults');
+    y.Name = [ 'Gaussian (nD) [' mfilename ']' ];
+    return
+  elseif isstruct(v) % check if this is a ResLibCal configuration
     if isfield(v, 'resolution')
       G = v.resolution;
       if iscell(G)  % we have a vector of configurations
@@ -46,6 +63,12 @@ if nargin == 1
       else
         y = gaussnd(G);
       end
+    elseif isfield(v, 'rlu')
+      y = gaussnd(v.rlu);
+    elseif isfield(v, 'spec')
+      y = gaussnd(v.spec);
+    elseif isfield(v, 'RM')
+      y = gaussnd(v.RM);
     elseif isfield(v, 'RMS')
       y = gaussnd(v.RMS);
     end
@@ -76,7 +99,7 @@ if nargin == 1
     else
       error([ mfilename ': To define a multi-dimensional Gaussian, you should provide a single symmetric n x n matrix or n vector.'])
     end
-  elseif ischar(v) && ~strcmp(v, 'identify') && exist('ResLibCal') == 2
+  elseif ischar(v) && exist('ResLibCal') == 2
      % may be ResLibCal or a ResLibCal configuration file
      if any(strcmpi(v, {'ResLibCal','ResLib','ResCal','tas'}))
        y = gaussnd(ResLibCal('compute'));
@@ -85,25 +108,44 @@ if nargin == 1
        y = gaussnd(ResLibCal(v));
      end
      return
-  else
-    y = gaussnd;
-    y.Name = [ 'Gaussian (nD) [' mfilename ']' ];
-    return
   end
 else
-  % use a sensible Gaussian 2D
-  theta = 30*pi/180;
-  sigma_x = 1;
-  sigma_y = 2;
-  a =  cos(theta)^2/2/sigma_x^2 + sin(theta)^2/2/sigma_y^2;
-  b = -sin(2*theta)/4/sigma_x^2 + sin(2*theta)/4/sigma_y^2 ;
-  c =  sin(theta)^2/2/sigma_x^2 + cos(theta)^2/2/sigma_y^2;
-  G = [ a b ; b c ];
-  y = gaussnd(G);
-  return;
+  % no input arguments -> GUI
+  NL = sprintf('\n');
+  prompt = { [ '{\bf Enter GaussND matrix/vector/expression}' NL ...
+    'you can enter a {\color{blue}square matrix} such as [1 0 ; 0 0.5],' NL ...
+    'or a {\color{blue}vector} of orthogonal width such as [1 .5],' NL ...
+    'or {\color{blue}defaults} to generate a 2D Gaussian, ' NL ...
+    'or {\color{blue}ResLibCal} to use the 4D-neutron scattering TAS resolution matrix. ' ...
+    '{\color{red}The current/saved} TAS configuraion will be used. Please start and configure ResLibCal before.' NL ...
+    'or {\color{blue}any expression} to evaluate and provide a matrix/vector.' ], ...
+  };
+  dlg_title = 'iFit: Model: nD Gaussian';
+  defAns    = {'[ 1 0; 0 .5]'};
+  num_lines = [ 3 ];
+  op.Resize      = 'on';
+  op.WindowStyle = 'normal';   
+  op.Interpreter = 'tex';
+  answer = inputdlg(prompt, dlg_title, num_lines, defAns, op);
+  if isempty(answer), 
+    return; 
+  end
+  % now interpret the result
+  answer = answer{1};
+  NumEval = str2mat(answer);
+  if isempty(NumEval)
+    NumEval = answer;
+    try
+      if ~any(strcmpi(answer, {'ResLibCal','ResLib','ResCal','tas','defaults','identify'}))
+        NumEval = evalc(answer);
+      end
+    end
+  end
+  y = gaussnd(NumEval);
+  return
 end
 
-y.Name      = [ 'Gaussian (' num2str(y.Dimension) 'D) [' mfilename ']' ];
+y.Name      = [ 'Gaussian_nD (' num2str(y.Dimension) 'D) [' mfilename ']' ];
 y.Description='nD Gaussian model';
 
 

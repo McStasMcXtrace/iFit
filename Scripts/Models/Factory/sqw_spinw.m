@@ -9,6 +9,8 @@ function signal=sqw_spinw(varargin)
 % Model creation:
 %   To create the Model, the following syntax should be used:
 %       s = sqw_spinw(sq, options);
+%   or
+%       s = sqw_spinw('CIF_filename', options);
 %   with:
 %       sq:        a spinw object from <a href="https://www.psi.ch/spinw/spinw">SpinW</a>.
 %          when omitted, use a square lattice Heisenberg Antiferromagnet with S = 1 and J = 1
@@ -39,7 +41,7 @@ function signal=sqw_spinw(varargin)
 % Example:
 %   sq = sw_model('squareAF',2,0);  % create the SW object
 %   s=sqw_spinw(sq);                % create the Model
-%   qh=linspace(0.01,1.5,50);qk=qh; ql=qh'; w=linspace(0.01,10,50);
+%   qh=linspace(0.01,1.5,30);qk=qh; ql=qh'; w=linspace(0.01,10,50);
 %   f=iData(s,s.p,qh,qk,ql,w); plot(log(f(:,:,1,:))); % evaluate and plot
 %
 % Reference: https://en.wikipedia.org/wiki/Phonon
@@ -57,7 +59,7 @@ if ~exist('sw') && ~exist('spinw')
   disp('  Get it at <https://www.psi.ch/spinw/spinw>.');
   signal=[]; return
 end
-sq = sw_model('squareAF',2,0);
+sq = [];
 options = [];
 for index=1:numel(varargin)
   this = varargin{index};
@@ -65,9 +67,23 @@ for index=1:numel(varargin)
     sq = this;
   elseif ischar(this) && ~isempty(dir(this))  % a CIF file
     sq = sw(this);
+    % the following auto-setting for spin-couplig usually fails. Should be improved.
+    sq.gencoupling;
+    J =ones(1, ceil(numel(sq.unit_cell.label)/2));
+    J(2:2:end) = -1;
+    sq = quickham(sq, rand); % from SpinW/Git on Aug 25th 2016
+    sq.genmagstr('mode','random');
   elseif isstruct(this)                       % some options
     options = this;
+  elseif ischar(this) && strcmp(this, 'identify')
+    signal = sqw_spinw('defaults');
+    return
+  elseif ischar(this) && strcmp(this, 'defaults')
+    sq = [];
   end
+end
+if isempty(sq)
+  sq = sw_model('squareAF',2,0);
 end
 
 % TODO: here we could use a more general way to enter SpinW options and default values.
@@ -89,8 +105,10 @@ signal.Parameters     = {  ...
 J  = sq.matrix.mat;
 iJ = size(J, 3);
 pJ = sq.matrix.label;
+label = sprintf(' %s', sq.unit_cell.label{:}, pJ{:});
+
 signal.Parameters  = [ signal.Parameters pJ ];
-signal.Description = [ signal.Description ': ' sprintf(' %s', sq.unit_cell.label{:}) ];
+signal.Description = [ signal.Description ': ' label ];
   
 signal.Dimension      = 4;         % dimensionality of input space (axes) and result
 
@@ -104,10 +122,9 @@ signal.Guess          = [ .3 0 1 nJ ];        % default parameters
 signal.UserData.component = options.component;
 signal.UserData.ki        = options.ki;
 signal.UserData.spinw     = sq;
-label = [ '% spinw(' sprintf(' %s', sq.unit_cell.label{:}) sprintf(') p(1:%i)', iJ+3) ];
 
 signal.Expression     = { ...
-label, ...
+[ '% spinw(' label sprintf(') p(1:%i)', iJ+3) ], ...
 '% x=qh; y=qk; z=ql; t=w', ...
 'sz0 = size(t);', ...
 'if ndims(x) == 4, x=squeeze(x(:,:,:,1)); y=squeeze(y(:,:,:,1)); z=squeeze(z(:,:,:,1)); t=squeeze(t(1,1,1,:)); end',...
@@ -129,8 +146,71 @@ signal=iFunc(signal);
 if ~isdeployed && usejava('jvm') && usejava('desktop')
   disp([ '<a href="matlab:doc(''' mfilename ''')">' mfilename '</a>: Model ' sprintf(' %s', sq.unit_cell.label{:}) ' built using SpinW.' ])
 else
-  disp([ mfilename ': Model ' sprintf(' %s', sq.unit_cell.label{:}) ' built using SpinW.' ])
+  disp([ mfilename ': Model ' label ' built using SpinW.' ])
+end
+disp([ 'Ground state energy: ' num2str(sq.energy) ' [mev/spin]' ]);
+plot(sq)
+disp(' * S. Toth and B. Lake, J. Phys.: Condens. Matter 27, 166002 (2015).' );
+
+
+% ------------------------------------------------------------------------------
+% Extracted from from SpinW/Git on Aug 25th 2016
+
+function obj=quickham(obj,J)
+% creates magnetic Hamiltonian with a single command
+%
+% QUICKHAM(obj, J)
+%
+% The function generates the bonds from the predefined crystal structure
+% and assigns exchange values to bonds such as J(1) to first neighbor, J(2)
+% for second neighbor etc. The command will erase all previous bond,
+% anisotropy, g-tensor and matrix definitions. Even if J(idx) == 0, the
+% corresponding bond and matrix will be created.
+%
+% Input:
+%
+% obj       Spinw object.
+% J         Vector containing the Heisenberg exchange values. J(1) for
+%           first neighbor bonds, etc.
+%
+
+fid = obj.fileid;
+
+obj.fileid(0);
+
+dMax = 8;
+nMax = 0;
+nJ   = numel(J);
+
+idx = 1;
+% generate the necessary bonds and avoid infinite loop
+while nMax < nJ && idx < 12
+    obj.gencoupling('maxDistance',dMax);
+    dMax = dMax+8;
+    % maximum bond index
+    nMax = obj.coupling.idx(end);
+    idx  = idx+1;
 end
 
-disp(' * S. Toth and B. Lake, J. Phys.: Condens. Matter 27, 166002 (2015).' );
+obj.fileid(fid);
+
+if nMax < nJ
+    warning('The necessary bond length is too long (d>100 A), not all Js will be assigned!');
+    J = J(1:nMax);
+end
+
+% clear matrix definitions
+obj.matrix.mat   = zeros(3,3,0);
+obj.matrix.color = int32(zeros(3,0));
+obj.matrix.label = cell(1,0);
+
+nDigit = floor(log10(nJ))+1;
+
+for ii = 1:numel(J)
+    % assign non-zero matrices to bonds
+    matLabel = num2str(ii,num2str(nDigit,'J%%0%dd'));
+    obj.addmatrix('label',matLabel,'value',J(ii));
+    obj.addcoupling(matLabel,ii);
+end
+
 
