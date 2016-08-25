@@ -38,7 +38,11 @@ while ~isempty(uIdx)
     nReady = size(symOp1,3);
     % find all non-generated operators
     symMat = [[reshape(symOp1,9,[]) reshape(symOp,9,[])];[symTr1 symTr]]';
-    [~, uIdx] = unique(symMat,'rows','R2012a');
+    try
+        [~, uIdx] = unique(symMat,'rows','R2012a');
+    catch
+        [~, uIdx] = unique(symMat,'rows');
+    end
     uIdx = sort(uIdx)';
     uIdx = uIdx(nReady+1:end)-nReady;
     
@@ -46,7 +50,11 @@ end
 
 % remove the unity operator
 symMat = [[reshape(eye(3),9,[]) reshape(symOpG,9,[])];[[0;0;0] symTrG]]';
-[~, uIdx] = unique(symMat,'rows','R2012a');
+try
+    [~, uIdx] = unique(symMat,'rows','R2012a');
+catch
+     [~, uIdx] = unique(symMat,'rows');
+end
 uIdx = sort(uIdx)';
 uIdx = uIdx(2:end)-1;
 
@@ -55,7 +63,11 @@ symTrG = symTrG(:,uIdx);
 
 % determine isGen
 symMat = [[reshape(symOpG,9,[]) reshape(symOp,9,[])];[symTrG symTr]]';
-[~, uIdx] = unique(symMat,'rows','R2012a');
+try
+    [~, uIdx] = unique(symMat,'rows','R2012a');
+catch
+    [~, uIdx] = unique(symMat,'rows');
+end
 uIdx = sort(uIdx)';
 nGen = size(symOpG,3);
 uIdx = uIdx((nGen+1):end)-nGen;
