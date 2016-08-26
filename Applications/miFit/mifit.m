@@ -160,9 +160,6 @@ if isempty(fig) || ~ishandle(fig)
     % get the list of Models and Optimizers
     % TODO: this should only be done when started the first time. 
     % Afterwards, we should store that in fullfile(prefdir, [ mfilename '.mat' ]) as Models
-    % TODO: the default for Factory models should be to display the GUI, 
-    % except when called with identify, or 'defaults'.
-    % TODO: 'identify' == 'defaults' in Models. Check that this works OK. See feval.
     [optimizers,functions] = fits(iFunc);
     
     % fill Models menu
