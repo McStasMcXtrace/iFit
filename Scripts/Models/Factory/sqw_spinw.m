@@ -61,6 +61,11 @@ if ~exist('sw') && ~exist('spinw')
 end
 sq = [];
 options = [];
+
+if nargin == 0
+  % no args: GUI mode
+  doc(iData,'Models.html#mozTocId908192');  % doc for SpinW
+end
 for index=1:numel(varargin)
   this = varargin{index};
   if isa(this, 'sw') || isa(this, 'spinw')    % a SpinW object
@@ -72,7 +77,7 @@ for index=1:numel(varargin)
     sq.gencoupling;
     J =ones(1, ceil(numel(sq.unit_cell.label)/2));
     J(2:2:end) = -1;
-    sq = quickham(sq, J); % from SpinW/Git on Aug 25th 2016
+    sq = quickham(sq, J); % from SpinW/Git on Aug 25th 2016. Private below.
     sq.genmagstr('mode','random');
     % optimize mag structure
     disp([ mfilename ': optimizing the magnetic structure.' ])
@@ -153,7 +158,9 @@ else
   disp([ mfilename ': Model ' label ' built using SpinW.' ])
 end
 disp([ 'Ground state energy: ' num2str(sq.energy) ' [mev/spin]' ]);
-plot(sq)
+if nargin == 0
+  plot(sq); % in GUI mode
+end
 disp(' * S. Toth and B. Lake, J. Phys.: Condens. Matter 27, 166002 (2015).' );
 
 

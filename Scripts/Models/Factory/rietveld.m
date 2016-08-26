@@ -39,6 +39,7 @@ function y = rietveld(varargin)
 %       seed:   random number seed to use for each iteration (double)
 %       gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
 %       compile: 0 or 1 to force re-compilation of the instrument (boolean)
+%         this is recommended if you ran in serial, and want to use MPI afterwards.
 %       monitors:  cell string of monitor names (cellstr)
 %     Only the last monitor in the selection is used to compute the refinement criteria.
 %     Type 'help mcstas' for more information about these items.
@@ -60,7 +61,7 @@ function y = rietveld(varargin)
 %
 % * All additional structure fields are sent to the McStas instrument model.
 %
-% Exemple: refine a NaCaAlF powder structure with the templateDIFF McStas instrument
+% Example: refine a NaCaAlF powder structure with the templateDIFF McStas instrument
 %    Sample.title = 'Na2Ca3Al2F14';
 %    Sample.cell  = [10.242696  10.242696  10.242696  90.000  90.000  90.000];
 %    Sample.Spgr  = 'I 21 3';
@@ -90,7 +91,7 @@ y = [];
 
 if nargin == 0
   % No argument -> GUI
-  
+  doc(iData,'Models.html#mozTocId344379');  % doc for Rietveld
   NL = sprintf('\n');
   prompt = { [ '{\bf Material structure}' NL ...
     'you should enter a {\color{blue}CIF}, {\color{blue}CFL (FullProf)} or {\color{blue}ShelX} file path, e.g. [ ifitpath ''Data/Na2Ca3Al2F14.cfl'' ].'  ], ...
@@ -98,23 +99,45 @@ if nargin == 0
     'you should enter a {\color{blue}.instr} McStas diffractometer file path, e.g. templateDIFF.instr'  ], ...
     [ '{\bf Additional McStas instrument parameters}' NL ...
     'Any string specifying the {\color{blue}instrument or Mcstas} configuration, such as' NL ...
-    'Powder=reflections.laz; lambda="2.36"; monitors=BananaTheta; mpi=8' ]
+    '  Powder=reflections.laz; lambda="2.36"; monitors=BananaTheta;' NL ...
+    'To use MPI, you may need to force recompilation of the instrument with ' NL ...
+    '  ... ; compile=1; mpi=8;' ]
   };
   dlg_title = 'iFit: Model: Rietveld/McStas';
-  defAns    = {'[ ifitpath ''Data/Na2Ca3Al2F14.cfl'' ]', 'templateDIFF.instr','Powder=reflections.laz; lambda="2.36"; monitors=BananaTheta; mpi=8'};
+  defAns    = {'[ ifitpath ''Data/Na2Ca3Al2F14.cfl'' ]', 'templateDIFF.instr','Powder=reflections.laz; lambda="2.36"; monitors=BananaTheta; compile=1; mpi=8'};
   num_lines = [ 1 ];
   op.Resize      = 'on';
   op.WindowStyle = 'normal';   
   op.Interpreter = 'tex';
   answer = inputdlg(prompt, dlg_title, num_lines, defAns, op);
+  if isempty(answer), 
+    return; 
+  end
+  % extract sample, instrument and more parameters
+  try
+    sample = eval(answer{1});
+  catch
+    sample = answer{1};
+  end
+  try
+    instr = eval(answer{2});
+  catch
+    instr = answer{2};
+  end
+  try
+    options = eval(answer{3});
+  catch
+    options = answer{3};
+  end
+  varargin = { sample, instr, options };
   
-  disp([ mfilename ': require input arguments to define Rietveld model. See "help rietveld".'])
-  disp('  Syntax: rietveld(structure,char,numerical,vector...). ')
-  return
+elseif ischar(varargin{1}) && strcmp(varargin{1},'defaults')
+  varargin = { [ ifitpath 'Data/Na2Ca3Al2F14.cfl' ], 'templateDIFF.instr', ...
+    'Powder=reflections.laz; lambda="2.36"; monitors=BananaTheta; mpi=8' };
 elseif ischar(varargin{1}) && strcmp(varargin{1},'identify')
   y = iFunc;
   y.Name       = [ 'Rietveld refinement [' mfilename ']' ];
-  y.Dimension  = 2; % typical but can be something else, e.g. 1-3D
+  y.Dimension  = -2; % typical but can be something else, e.g. 1-3D
   return
 end
 
@@ -164,20 +187,21 @@ for index=1:length(varargin)
       continue; % jump to next argument in the list
     end
   end
-  if ischar(this)   % char (import if this is a file) -> struct
+  if ischar(this) && ~isempty(dir(this))  % char -> file -> struct OR instrument
+    % call cif2hkl
+    this = read_cif(this);
+    if ~isempty(this), CFL = this; end
+  end % ischar
+  if ischar(this)   % char -> struct
     par = str2struct(this); 
     if isstruct(par), this = par; end
   end
-  if ischar(this)                         % char -> file -> struct OR instrument
-    % call cif2hkl
-    if ~isempty(dir(this))
-      result = iLoad(this,'cif');
-      this = result.Data;
-    else
-      disp([ mfilename ': Unknown char argument ' this '. Ignoring' ])
-      continue
-    end
-  end % ischar
+  % now 'this' should not be a char anymore (has been transformed to CFL, numeric or struct)
+  if ischar(this)
+    disp([ mfilename ': Unknown char argument ' this '. Ignoring' ])
+    continue
+  end
+  
   if isnumeric(this) && length(this) >= 14                   % numeric -> struct
     % [a b c aa bb cc (Z x y z B occ spin charge) .. ], use fixed instrument parameters
     par.cell  = this(1:6); % lattice parameters
@@ -197,27 +221,12 @@ for index=1:length(varargin)
     this = par;
   end % is numeric
   if isstruct(this) % struct -> store numeric fields into variable_p, and char into constant_p
+    [CFLnew, this] = read_cif(this);
+    if isempty(CFL) && ~isempty(CFLnew), CFL = CFLnew; end
     f = fieldnames(this);
     for j=1:length(f)
-      % check if the name of the field is <atom> optionally followed by a number
-      [at,nb] = strtok(f{j}, '0123456789'); % supposed to be an atom, and nb is a 'number' or empty
-      %  handle CFL parameters
-      if any(strcmpi(f{j}, {'Spgr','Spg','Group','SpaceGroup','SubG','SpaceG','SPCGRP'}))
-        if isnumeric(this.(f{j})), this.(f{j}) = num2str(this.(f{j})); end
-        CFL.Spgr = this.(f{j});
-      elseif any(strncmpi(f{j}, {'struct','atom'},4))
-        CFL.structure = this.(f{j});
-      elseif strcmpi(f{j}, 'CFML_write')
-        CFL.CFML_write = this.(f{j});
-      elseif any(strcmpi(at, atoms)) && (isempty(nb) || ~isempty(str2num(nb))) && length(this.(f{j})) >= 3 && length(this.(f{j})) <= 7
-        % the name of the field is <atom> optionally followed by a number, and value length is 3-7
-        CFL.structure.(f{j}) = this.(f{j});
-      elseif any(strcmpi(f{j}, {'cell','lattice'}))
-        CFL.cell = this.(f{j});
-      elseif strcmpi(f{j}, 'title')
-        CFL.title = this.(f{j});
-      % handle McStas parameters
-      elseif any(strcmpi(f{j},{'ncount','dir','mpi','seed','gravitation', ...
+      %  handle other options that CIF/CFL file parameters
+      if any(strcmpi(f{j},{'ncount','dir','mpi','seed','gravitation', ...
           'compile','particle','monitors','overwrite'}))
         mcstas_options.(f{j}) = this.(f{j});
         if strcmp(f{j}, 'dir')
@@ -235,7 +244,6 @@ for index=1:length(varargin)
     disp(this);
   end
 end
-
 % check CFL structure members =============================================
 % Required: cell, Spgr, structure.<atoms>
 if ~isstruct(CFL)
@@ -420,8 +428,17 @@ if length(signal) > 1
   disp([  mfilename ': The instrument simulation ' mat2str(instrument) ' returns ' ...
     num2str(length(signal)) ' monitor files:' ]);
   disp(signal);
-  mcstas_options.monitors = get(signal,'Component');
-  mcstas_options.monitors = strtrim(mcstas_options.monitors{end});
+  % find monitors that have a 'name'
+  index_monitors = isfield(signal,'Component'); 
+  mcstas_options.monitors = get(signal(find(index_monitors)),'Component');
+  % find monitors that have position (to get the most distant
+  try
+      positions = get(signal,findfield(signal, 'position'));
+      [~,index_position] = max(cellfun(@(c)norm(c), positions));
+  catch
+      index_position = numel(mcstas_options.monitors);
+  end
+  mcstas_options.monitors = strtrim(mcstas_options.monitors{index_position});
   disp([ mfilename ': Restricting the model to use the last monitor ' mat2str(mcstas_options.monitors) ])
   Expression{end}   = [ 'mcstas_options.monitors = ' mat2str(mcstas_options.monitors) ];
   Expression{end+1} = [ 'signal = mcstas(instrument, instr_pars, mcstas_options); '];
