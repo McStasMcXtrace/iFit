@@ -292,6 +292,7 @@ if ~isempty(options.gui) && ~any(isnan(options.gui))
   %  * supercell
   %  * kpoints
   % and will select autoplot, 'dos'
+  doc(iData,'Models.html#mozTocId990577');  % doc for Phonons
   calcs = 'EMT';
   for index={'gpaw','elk','jacapo','nwchem','abinit','quantumespresso','quantumespresso_ase','vasp'};
     if ~isempty(status.(index{1})), calcs = [ calcs ', ' upper(index{1}) ]; end

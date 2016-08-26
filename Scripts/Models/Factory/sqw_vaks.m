@@ -147,6 +147,7 @@ end
 if numel(varargin) && ischar(varargin{1})
   switch lower(varargin{1})
   case 'gui'
+    doc(iData,'Models.html#mozTocId226848');  % doc for Vaks
     NL = sprintf('\n');
     prompt = { [ '{\bf Enter Sqw Vaks crystal configuration}' NL ...
       'you can enter {\color{blue}KTaO3}, {\color{blue}SrTiO3} or {\color{blue}BaTiO3},' NL ...

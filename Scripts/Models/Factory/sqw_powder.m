@@ -29,9 +29,13 @@ r=[];
 if nargin == 0
   r = sqw_powder(sqw_phonons);
   return
+elseif ischar(a) && strcmp(a, 'defaults')
+  r = sqw_powder(sqw_phonons('defaults'));
+  return
 elseif ischar(a) && strcmp(a, 'identify')
-  r = sqw_powder;
+  r = sqw_powder('defaults');
   r.Name = [ 'Sqw_powder [' mfilename ']' ];
+  r.Dimension = -r.Dimension;
   return
 end
 

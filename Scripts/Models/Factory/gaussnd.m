@@ -52,6 +52,7 @@ if nargin == 1
   elseif ischar(v) && strcmp(v, 'identify')
     y = gaussnd('defaults');
     y.Name = [ 'Gaussian (nD) [' mfilename ']' ];
+    y.Dimension = -y.Dimension; % used to indicate a variable dimensionality
     return
   elseif isstruct(v) % check if this is a ResLibCal configuration
     if isfield(v, 'resolution')
