@@ -35,12 +35,27 @@ varargout = {};
 
 if numel(this) > 1
   varg = cell(1, numel(this));
-  parfor index=1:numel(this)
-    varg{index} = get(this(index), varargin{:});
+  if numel(varargin) == 1 && numel(varargin{1}) == numel(this) && iscell(varargin{1})
+      vargin = varargin{1};
+      parfor index=1:numel(this)
+        try
+          varg{index} = get(this(index), vargin{index});
+        catch
+          varg{index} = [];
+        end
+      end
+  else
+      parfor index=1:numel(this)
+        try
+          varg{index} = get(this(index), varargin{:});
+        catch
+          varg{index} = [];
+        end
+      end
   end
 
   sz =  cellfun('prodofsize',varg);
-  if all(sz == sz(1)) && all(cellfun(@isnumeric,varg))
+  if all(sz == sz(1)) && all(cellfun(@isscalar,varg))
     varg = cell2mat(varg);
   end
 
@@ -63,6 +78,7 @@ out = {};
 for index=1:length(varargin)
   property = varargin{index}; % get PropertyName
   if isempty(property), continue; end
+  if iscellstr(property), property = char(property{1}); end
   if ~ischar(property)
     iData_private_error(mfilename, [ 'PropertyName should be char strings in object ' inputname(1) ' ' this.Tag ' "' this.Title '" and not ' class(property) ]);
   end
