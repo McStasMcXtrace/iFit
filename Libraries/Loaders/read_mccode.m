@@ -223,7 +223,7 @@ function data=mcplot_load(filename)
       if isempty(this_data)
         this_data = mcplot_load_mccode(filename{index});    % load single McCode monitor files
       end
-      if ~isfield(this_data, 'filename') this_data.filename = filename{index}; end
+      if isstruct(this_data) && ~isfield(this_data, 'filename') setfield(this_data,'filename',filename{index}); end
       data = { data{:} this_data };
     end
     
