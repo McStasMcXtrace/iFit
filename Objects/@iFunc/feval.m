@@ -100,7 +100,8 @@ if ~isempty(p) && ischar(p)
     signal=evalc('disp(model)');
     return
   elseif ~strcmp(p, 'guess')
-    disp([ mfilename ': Unknown parameter value ' p '. Using "guess" instead.'])
+    p'
+    disp([ mfilename ': Unknown parameter value. Using "guess" instead.'])
     p=[];
   end
 elseif isa(p, 'iFunc')

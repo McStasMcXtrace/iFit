@@ -23,7 +23,8 @@ if isempty(e), e='.html'; end
 page = [ f e ];
 
 url = [ ifitpath filesep 'Docs' filesep page ];
-if ~isempty(dir(url)) % page exists ?
+url_path = strtok(url, '#?');
+if ~isempty(dir(url_path)) % page exists ?
   disp(version(iData))
   disp('Opening iData documentation from ')
   if length(url) && ~isdeployed && usejava('jvm')

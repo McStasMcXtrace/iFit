@@ -202,6 +202,7 @@ if nargin == 1 && isempty(model)
       % plot all functions
       subplot(models);
     end
+    criteria = models;  % return the instantiated models
     message = 'Optimizers and fit functions list'; 
     warning(warn);
     return
