@@ -165,18 +165,34 @@ if isempty(fig) || ~ishandle(fig)
     % fill Models menu
     if any(~isempty(functions)) && all(isa(functions, 'iFunc'))
         mifit_disp([ 'Initializing ' num2str(numel(functions)) ' Models... User Models loaded from: ' pwd ]);
+        % first create the sub-menu items: 1D,2D,3D,4D,Variable,Others
+        dimensions = unique(cell2mat(get(functions,'Dimension')));
+        submenu.handles = [];
+        submenu.dims    = [];
         separator = 'on';
+        for index = dimensions(dimensions > 0)
+          submenu.dims(end+1)   = index;
+          submenu.handles(end+1) = uimenu(hmodels, 'Label', sprintf('%dD', index), 'Separator', separator);
+          if strcmp(separator, 'on'), separator = 'off'; end
+        end
+        % add Others sub-menu
+        submenu.dims(end+1)   = -1;
+        submenu.handles(end+1) = uimenu(hmodels, 'Label', 'Others');
+        % now fill the sub-menus
+        callback = 'mifit(''Data_AssignModel'',gcbo)';
         for f=functions
             % each Model is an iFunc object. These should be stored in the
             % Models menu items 'UserData'
-            callback = 'mifit(''Data_AssignModel'',gcbo)';
-            if ~isempty(f) && ~isempty(f.Name)
-                uimenu(hmodels, 'Label', f.Name, 'UserData', f, ...
-                  'Separator', separator, 'CallBack', callback);
-                if strcmp(separator, 'on')
-                  separator = 'off';
-                end
+            if isempty(f) || isempty(f.Name), continue; end
+            if f.Dimension > 0 && any(f.Dimension == submenu.dims)
+              % add entry in existing sub-menu
+              index = find(f.Dimension == submenu.dims);
+            else
+              % add entry in existing sub-menu 'Others'
+              index = numel(submenu.dims); % last sub-menu
             end
+            uimenu(submenu.handles(index), 'Label', f.Name, 'UserData', f, ...
+                  'CallBack', callback);
         end
     end
     

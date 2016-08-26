@@ -1,7 +1,7 @@
 function signal=sqw_vaks(varargin)
-% model = sqw_vaks(p, h,k,l,w, {signal}) : 3D dispersion(HKL) in perovskites ABX3 with DHO(energy)
+% model = sqw_vaks(p, h,k,l,w, {signal}) : dispersion(HKL) in perovskites ABX3 with DHO(energy)
 %
-%   iFunc/sqw_vaks: a 4D S(q,w) with a 3D HKL dispersion, and a DHO line
+%   iFunc/sqw_vaks: a 4D S(q,w) with a HKL dispersion, and a DHO line
 %      shape, based on a parameterisation by Vaks, suited for ABX3 perovskite 
 %      compounds. This parameterisation is based on a quadratic expansion of the
 %      Hamiltonian, valid for e.g. |k|<.3 rlu in a cubic 
@@ -51,8 +51,8 @@ function signal=sqw_vaks(varargin)
 %   sqw_cubic_monoatomic, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'Sqw_Vaks 3D dispersion(HKL) for perovskites ABX3 [' mfilename ']' ];
-signal.Description    = 'A 3D HKL 3D dispersion(HKL) for perovskites ABX3 with DHO(energy) shape. Parameterisation by Vaks.';
+signal.Name           = [ 'Sqw_Vaks phonon dispersion(HKL) for perovskites ABX3 [' mfilename ']' ];
+signal.Description    = 'A phonon dispersion(HKL) for perovskites ABX3 with DHO(energy) shape. Parameterisation by Vaks.';
 
 signal.Parameters     = {  ...
   'At transverse acoustic [meV2/rlu2]' ...

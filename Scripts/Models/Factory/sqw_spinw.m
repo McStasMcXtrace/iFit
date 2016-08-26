@@ -103,8 +103,8 @@ if ~isfield(options, 'ki')
   options.ki = 1e4;
 end
 
-signal.Name           = [ 'Sqw_spinw 3D spin-wave dispersion [' mfilename ']' ];
-signal.Description    = 'A 3D HKL spin-wave dispersion from SpinW package';
+signal.Name           = [ 'Sqw_spinw spin-wave dispersion(HKL) [' mfilename ']' ];
+signal.Description    = 'A HKL spin-wave dispersion from SpinW package with Gaussian energy width';
 
 signal.Parameters     = {  ...
   'Gamma energy broadening around spin-wave modes [meV]' ...

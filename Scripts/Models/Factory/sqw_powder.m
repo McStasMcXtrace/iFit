@@ -34,7 +34,7 @@ elseif ischar(a) && strcmp(a, 'defaults')
   return
 elseif ischar(a) && strcmp(a, 'identify')
   r = sqw_powder('defaults');
-  r.Name = [ 'Sqw_powder [' mfilename ']' ];
+  r.Name = [ 'Sqw_powder from 2D or 4D model [' mfilename ']' ];
   r.Dimension = -r.Dimension;
   return
 end
