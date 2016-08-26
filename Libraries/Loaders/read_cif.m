@@ -1,4 +1,4 @@
-function data = read_cif(file)
+function [data, this] = read_cif(file)
 % read_cif Wrapper to read CIF files
 %   data = read_cif(file)
 %
@@ -7,11 +7,17 @@ function data = read_cif(file)
 %   used to build a powder/Laue Rietveld model, GPL3
 %   <http://www.ill.eu/sites/fullprof/php/programs24b7.html>
 
-  data = [];
+  data = []; this = [];
   if exist('cif2hkl') == 3 || exist('cif2hkl') == 7 || exist('cif2hkl') == 2
     % use MeX in verbose and no-output-files mode ('-')
-    this = cif2hkl(file,[],[],'-',1);
-    this = str2struct(this);
+    if ischar(file) && ~isempty(dir(file))
+      this = cif2hkl(file,[],[],'-',1);
+      this = str2struct(this);
+      this.file = file;
+    else
+      this = file;
+    end
+    
     if ~isstruct(this)
       return;
     end
@@ -26,19 +32,25 @@ function data = read_cif(file)
       'Ds','Rg','Cn','Uut','Uuq','Uup','Uuh','Uuo'};
     f = fieldnames(this);
     for j=1:length(f)
+      remove_me = 0;
       % check if the name of the field is <atom> optionally followed by a number
       [at,nb] = strtok(f{j}, '0123456789'); % supposed to be an atom, and nb is a 'number' or empty
       if any(strcmpi(f{j}, {'Spgr','Spg','Group','SpaceGroup','SubG','SpaceG','SPCGRP','Symb'}))
         if isnumeric(this.(f{j})), this.(f{j}) = num2str(this.(f{j})); end
-        data.Spgr = this.(f{j});
-      elseif any(strncmpi(f{j}, {'struct','atoms'},5))
-        data.structure = this.(f{j});
+        data.Spgr = strrep(this.(f{j}),'''','"'); remove_me = 1;
+      elseif any(strncmpi(f{j}, {'struct','atom'},4))
+        data.structure.(f{j}) = this.(f{j}); remove_me = 1;
       elseif any(strcmpi(f{j}, {'cell','lattice'}))
-        data.cell = this.(f{j});
+        data.cell = this.(f{j}); remove_me = 1;
+      elseif strcmpi(f{j}, 'title')
+        data.title = strrep(this.(f{j}),'''','"'); remove_me = 1;
+      elseif strcmpi(f{j}, 'file')
+        data.file = this.(f{j}); remove_me = 1;
       elseif any(strcmp(at, atoms)) && (isempty(nb) || ~isempty(str2num(nb))) && length(this.(f{j})) >= 3 && length(this.(f{j})) <= 7
         % the name of the field is <atom> optionally followed by a number, and value length is 3-7
-        data.structure.(f{j}) = this.(f{j});
+        data.structure.(f{j}) = this.(f{j}); remove_me = 1;
       end
+      if remove_me, this = rmfield(this, f{j}); end
     end
   else
     disp('cif2hkl is missing: compile it with e.g: ')
