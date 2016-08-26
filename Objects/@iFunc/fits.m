@@ -160,43 +160,43 @@ if nargin == 1 && isempty(model)
         end
       end
     end % for
-
-    % return the list of all available fit functions/models
-    d = fileparts(which('gauss'));
-    if nargout == 0
-      fprintf(1, '\n');
-      fprintf(1, '       MODEL DESCRIPTION [%s]\n', [ 'iFit/Models in ' d ]);
-      fprintf(1, '-----------------------------------------------------------------\n'); 
-    end
-    
-    % also search in Specialized and Factory directories
-    D = { d, fullfile(d,'Specialized'), fullfile(d,'Factory'), pwd };
     criteria = {}; 
     models   = [];
-      
-    for f_dir = D
-    
-      d = dir(f_dir{1});
-      for index=1:length(d)
-        this = d(index);
-        try
-          [dummy, method, ext] = fileparts(this.name);
-          if strcmp(ext, '.m')
-            [mess, options] = evalc([ method '(''identify'')' ]);
-          else
-            options = [];
-          end
-          if isa(options, 'iFunc')
-            criteria   = [ criteria method ];
-            models     = [ models options ]; 
-            if nargout == 0
-              fprintf(1, '%15s %s\n', method, options.Name);
-            end
-          end
+    if nargout ~= 1
+        % return the list of all available fit functions/models
+        d = fileparts(which('gauss'));
+        if nargout == 0
+          fprintf(1, '\n');
+          fprintf(1, '       MODEL DESCRIPTION [%s]\n', [ 'iFit/Models in ' d ]);
+          fprintf(1, '-----------------------------------------------------------------\n'); 
         end
-      end % for index(d)
-    end % f_dir (model location)
 
+        % also search in Specialized and Factory directories
+        D = { d, fullfile(d,'Specialized'), fullfile(d,'Factory'), pwd };
+
+        for f_dir = D
+
+          d = dir(f_dir{1});
+          for index=1:length(d)
+            this = d(index);
+            try
+              [dummy, method, ext] = fileparts(this.name);
+              if strcmp(ext, '.m')
+                [mess, options] = evalc([ method '(''identify'')' ]);
+              else
+                options = [];
+              end
+              if isa(options, 'iFunc')
+                criteria   = [ criteria method ];
+                models     = [ models options ]; 
+                if nargout == 0
+                  fprintf(1, '%15s %s\n', method, options.Name);
+                end
+              end
+            end
+          end % for index(d)
+        end % f_dir (model location)
+    end
     if nargout == 0 && length(models)
       fprintf(1, '\n');
       % plot all functions

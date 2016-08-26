@@ -29,7 +29,7 @@ end
 
 y.Guess     = [];
 y.Description='Constant/User value';
-y.Expression= @(p,x) p(1);
+y.Expression= 'p(1)';
 
 y = iFunc(y);
 
