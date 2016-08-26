@@ -27,6 +27,8 @@ function r=sqw_powder(a, p, x,y)
 % (c) E.Farhi, ILL. License: EUPL.
 r=[];
 if nargin == 0
+  doc(iData,'Treatment.html#mozTocId260980');  % doc for ifitmakefunc
+  % What is the default GUI entry ? should enter an iFunc object in the dialogue...
   r = sqw_powder(sqw_phonons);
   return
 elseif ischar(a) && strcmp(a, 'defaults')

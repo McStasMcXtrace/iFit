@@ -158,9 +158,27 @@ if isempty(fig) || ~ishandle(fig)
     end
     
     % get the list of Models and Optimizers
-    % TODO: this should only be done when started the first time. 
-    % Afterwards, we should store that in fullfile(prefdir, [ mfilename '.mat' ]) as Models
-    [optimizers,functions] = fits(iFunc);
+    functions = []; optimizers = [];
+    file = fullfile(prefdir, [ mfilename '.mat' ]);
+    if ~isempty(dir(file))
+      try
+        d = load(file);
+        if isfield(d, 'Models')
+          mifit_disp([ 'Loading Model library from ' file ]);
+          functions = d.Models;
+        end
+        if isfield(d, 'Optimizers')
+          mifit_disp([ 'Loading Optimizer library from ' file ]);
+          optimizers = d.Optimizers;
+        end
+      end
+    end
+    if isempty(functions)
+      mifit_disp([ 'Building Optimizer and Model library from ' file '. Be patient (only once)...' ]);
+      [optimizers,functions] = fits(iFunc);
+    elseif isempty(optimizers)
+      optimizers = fits(iFunc);
+    end
     
     % fill Models menu
     if any(~isempty(functions)) && all(isa(functions, 'iFunc'))
@@ -218,6 +236,8 @@ if isempty(fig) || ~ishandle(fig)
     % create the AppData Data Stack
     setappdata(fig, 'Data',    []);
     setappdata(fig, 'History', {});
+    setappdata(fig, 'Models',    functions);
+    setappdata(fig, 'Optimizers',optimizers);
     
     % Load the previous Data sets and Model Parameters
     file = fullfile(prefdir, [ mfilename '.mat' ]);
@@ -302,17 +322,20 @@ function mifit_File_Save(varargin)
 % save Data sets and Model parameters into a mifit.mat file
   fig = mifit_fig;
   Data = getappdata(fig, 'Data');
-  if isempty(Data), return; end
+  Models = getappdata(fig, 'Models');
+  Optimizers = getappdata(fig, 'Optimizers');
   
   file = fullfile(prefdir, [ mfilename '.mat' ]);
-  mifit_disp([ 'Saving Data sets into ' file ]);
-  builtin('save', file, 'Data');
+  if ~isempty(Data), mifit_disp([ 'Saving Data sets into ' file ]); end
+  builtin('save', file, 'Data','Models','Optimizers');
   
 function mifit_File_Saveas(varargin)
 % save the application configuration into specified file
 % Data sets and Model parameters into a mifit.mat file
   fig  = mifit_fig;
   Data = getappdata(fig, 'Data');
+  Models = getappdata(fig, 'Models');
+  Optimizers = getappdata(fig, 'Optimizers');
   if isempty(Data), return; end
  
   filterspec = { '*.mat','MAT-files (*.mat)'};
@@ -322,7 +345,7 @@ function mifit_File_Saveas(varargin)
   end
   file = fullfile(pathname, filename);
   mifit_disp([ 'Saving Data sets into ' file ]);
-  builtin('save', file, 'Data');
+  builtin('save', file, 'Data','Models','Optimizers');
   
 function mifit_File_Print(varargin)
 % print the interface. Not very nice. can we think of something better ?
@@ -400,10 +423,14 @@ function mifit_File_Reset(varargin)
       if ~isempty(dir(file)), delete(file); end
       mifit_Load_Preferences();
       mifit_Apply_Preferences();
+      setappdata(mifit_fig, 'Models',[]);
+      setappdata(mifit_fig, 'Optimizers',[]);
+      file = fullfile(prefdir, [ mfilename '.mat' ]);
+      if ~isempty(dir(file)), delete(file); end
     end
     mifit_Edit_Select_All([], 1);
     mifit_Edit_Delete();
-    
+
     file = fullfile(prefdir, [ mfilename '.log' ]);
     if ~isempty(dir(file)), delete(file); end
   end
@@ -601,6 +628,7 @@ function mifit_Data_AssignModel(varargin)
   D = getappdata(mifit_fig, 'Data');  % all data sets
   if numel(D) == 0 || isempty(index_selected), 
     mifit_disp([ 'Selected Model "' model.Name '".' ]);
+    figure; plot(model);
     return; 
   end
   

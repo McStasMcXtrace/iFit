@@ -105,7 +105,9 @@ if isempty(signal)
   h = [];
   return
 elseif isvector(signal)
+  if isempty(ax), ax={linspace(-2,2)}; end
   if isscalar(signal), signal = signal*ones(size(ax{1})); end
+  if all(~isfinite(signal)) signal = zeros(size(signal)); end
   h = plot(ax{1}, signal);
 elseif ndims(signal) == 2
   h = surf(ax{2}, ax{1}, signal);
