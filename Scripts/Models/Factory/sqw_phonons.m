@@ -700,7 +700,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   
   signal.Name           = [ 'Sqw_Phonon_' signal.UserData.input ' ' options.calculator ' DHO [' mfilename ']' ];
 
-  signal.Description    = [ 'S(q,w) 3D dispersion Phonon/ASE/' options.calculator ' with DHO line shape. ' configuration ];
+  signal.Description    = [ 'S(q,w) dispersion(HKL) Phonon/ASE/' options.calculator ' with DHO line shape. ' configuration ];
 
   signal.Parameters     = {  ...
     'Amplitude' ...

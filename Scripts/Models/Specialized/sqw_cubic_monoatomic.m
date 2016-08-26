@@ -1,7 +1,7 @@
 function signal=sqw_cubic_monoatomic(varargin)
-% model = sqw_cubic_monoatomic(p, h,k,l,w, {signal}) : 3D dispersion(HKL) in perovskites ABX3 with DHO(energy)
+% model = sqw_cubic_monoatomic(p, h,k,l,w, {signal}) : dispersion(HKL) in perovskites ABX3 with DHO(energy)
 %
-%   iFunc/sqw_cubic_monoatomic: a 4D S(q,w) with a 3D HKL dispersion, and a DHO line
+%   iFunc/sqw_cubic_monoatomic: a 4D S(q,w) with a HKL dispersion, and a DHO line
 %      shape, for a simple monoatomic system on a cubic lattice. Only the 3 
 %      acoustic modes are computed.
 %
@@ -36,8 +36,8 @@ function signal=sqw_cubic_monoatomic(varargin)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'Sqw_cubic 3D dispersion(HKL) for cubic monoatomic crystal [' mfilename ']' ];
-signal.Description    = 'A 3D HKL 3D dispersion(HKL) for a cubic monoatomic crystal with DHO(energy) shape. From the dynamical matrix.';
+signal.Name           = [ 'Sqw_cubic dispersion(HKL) for cubic monoatomic crystal [' mfilename ']' ];
+signal.Description    = 'A phonon dispersion(HKL) for a cubic monoatomic crystal with DHO(energy) shape. From the dynamical matrix (2 neighbors).';
 
 signal.Parameters     = {  ...
   'C_ratio C1/C2 force constant ratio first/second neighbours' ...

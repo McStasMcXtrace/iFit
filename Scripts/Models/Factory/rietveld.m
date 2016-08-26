@@ -137,6 +137,7 @@ elseif ischar(varargin{1}) && strcmp(varargin{1},'defaults')
 elseif ischar(varargin{1}) && strcmp(varargin{1},'identify')
   y = iFunc;
   y.Name       = [ 'Rietveld refinement [' mfilename ']' ];
+  y.Expression = '% dummy code so that it"s not empty p(1)';
   y.Dimension  = -2; % typical but can be something else, e.g. 1-3D
   return
 end
