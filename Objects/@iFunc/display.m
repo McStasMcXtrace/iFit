@@ -62,16 +62,15 @@ else
       if isa(s.Expression, 'function_handle')
         s.Expression = func2str(s.Expression);
       end
-      s.Expression = char(s.Expression);
-      if ~strcmp(s.Description, s.Expression) && ~strcmp(s.Name, u)
+      Expression = char(s.Expression);
+      if ~strcmp(s.Description, Expression) && ~strcmp(s.Name, u)
         u = s.Description; u(~isstrprop(u,'print'))=''; u=strtrim(u); if ~isvector(u), u=u'; end
         if length(u) > 10, u = [ u(1:9) '.' ]; end % Name/Description/Expression
         t = [ t ' ' u ];
       end
       
-      
-      if ~strcmp(s.Expression, u)
-        u=cellstr(s_in); u = u(~strncmp('%', u, 1)); % remove comment lines 
+      if ~strcmp(Expression, u)
+        u=cellstr(s); u = u(~strncmp('%', u, 1)); % remove comment lines 
         u=[ u{:} ];
         u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
         if length(u) > 20, u = [ u(1:18) '...' ];  end

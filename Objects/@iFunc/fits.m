@@ -17,7 +17,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %  [pars,...] = fits(model, data, pars, options, constraints, args...)
 %     send additional arguments to the fit model(pars, axes, args...).
 %  [optimizers,functions] = fits(iFunc)
-%     returns the list of all available optimizers and fit functions.
+%     returns the list of all available optimizers and fit functions/models.
 %  [pars,...] = fits(iData_object)
 %     searches for a Model in the data set, and then performs the fit.
 %  fits(iFunc)
@@ -160,8 +160,8 @@ if nargin == 1 && isempty(model)
         end
       end
     end % for
-    criteria = {}; 
-    models   = [];
+    message  = {}; 
+    models   = []; 
     if nargout ~= 1
         % return the list of all available fit functions/models
         d = fileparts(which('gauss'));
@@ -187,7 +187,7 @@ if nargin == 1 && isempty(model)
                 options = [];
               end
               if isa(options, 'iFunc')
-                criteria   = [ criteria method ];
+                message    = [ message method ];
                 models     = [ models options ]; 
                 if nargout == 0
                   fprintf(1, '%15s %s\n', method, options.Name);
@@ -196,6 +196,12 @@ if nargin == 1 && isempty(model)
             end
           end % for index(d)
         end % f_dir (model location)
+        % sort models with their Name
+        [name,index]=sort(get(models,'Name'));
+        message  = message(index);
+        models   = models(index);
+    else
+      message  = 'Optimizers and fit functions list'; 
     end
     if nargout == 0 && length(models)
       fprintf(1, '\n');
@@ -203,7 +209,6 @@ if nargin == 1 && isempty(model)
       subplot(models);
     end
     criteria = models;  % return the instantiated models
-    message = 'Optimizers and fit functions list'; 
     warning(warn);
     return
 end
