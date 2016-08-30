@@ -185,6 +185,7 @@ if numel(varargin) && ischar(varargin{1})
 	  disp([ mfilename ': using KTaO3 parameters' ])
 	  p = [ At Al Aa St Sa Vt Va sqrt(6.2) .1 10 1 0 ];
 	  signal.ParameterValues = p;
+	  signal.Name = [ signal.Name ' KTaO3' ];
   case 'srtio3'
     St = 4*1080;  At = 1920; Vt = 2*1080; 
 	  Sa = 25*1080; Aa = 1230; Va = -4860;
@@ -192,6 +193,7 @@ if numel(varargin) && ischar(varargin{1})
 	  disp([ mfilename ': using SrTiO3 parameters' ])
 	  p = [ At Al Aa St Sa Vt Va sqrt(4.2) .1 20 1 0 ];
 	  signal.ParameterValues = p;
+	  signal.Name = [ signal.Name ' SrTiO3' ];
   case 'batio3'
     St = 2*1080;  At = 1.8*1080; Vt = 0.1*1080; 
     Sa = 22*1080; Va = 5*1080;   Aa = -2.3*1080;
@@ -199,6 +201,7 @@ if numel(varargin) && ischar(varargin{1})
     disp([ mfilename ': using BaTiO3 parameters' ])
     p = [ At Al Aa St Sa Vt Va 1 .1 600 1 0 ];
     signal.ParameterValues = p;
+    signal.Name = [ signal.Name ' BaTiO3' ];
   end
 elseif nargin > 1
   signal = signal(varargin{:});

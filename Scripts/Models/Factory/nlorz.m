@@ -59,7 +59,7 @@ else
     NumEval = answer;
     try
       if ~any(strcmpi(answer, {'defaults','identify'}))
-        NumEval = evalc(answer);
+        NumEval = eval(answer);
       end
     end
   end
