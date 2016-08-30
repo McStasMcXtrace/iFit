@@ -112,160 +112,10 @@ function varargout = mifit(varargin)
 % Main window ID and creation
 % -------------------------------------------------------------------------
 
-function f=mifit_fig(tag)
-% search for a given Tag in Application or main Figure if ommitted.
-  persistent fig handles
-  
-  if ~ishandle(fig), fig=[]; end
-  if isempty(fig)
-    fig = findall(0, 'Tag','miFit');
-    if length(fig) > 1, delete(fig(2:end)); end % unique instance
-    handles = [];
-  end
-
-  if nargin == 0
-    f=fig;
-  else
-    if ~isfield(handles, tag) || ~ishandle(handles.(tag))
-      handles.(tag) = findobj(fig, 'Tag', tag);
-    end
-    f = handles.(tag);
-  end
-
-% --- Executes just before mifit is made visible -------------------------------
-function fig = mifit_OpeningFcn
-% This function creates the main window and returns its ID
-
-fig = mifit_fig();
-if isempty(fig) || ~ishandle(fig)
-    % create the main figure
-    mifit_disp('[Init] Welcome to miFit ! ********************************************')
-    fig = openfig(mfilename);
-    
-    % get Models/Optimizers menu handles
-    hmodels = mifit_fig('Menu_Model');
-    hoptim  = mifit_fig('Menu_Optimizers');
-    
-    % load Preferences
-    mifit_Load_Preferences;
-    mifit_Apply_Preferences;
-    % create the AppData default values
-    setappdata(fig, 'Data',    []);
-    setappdata(fig, 'History', {});
-    setappdata(fig, 'Models',  {});
-    
-    % Display welcome dialog during menu build
-    h = mifit_Tools_About(fig);
-    contrib = textwrap({ version(iData,2) },80);
-    for index=1:numel(contrib)
-      mifit_disp([ '  ' contrib{index} ])
-    end
-    
-    % get the list of Models and Optimizers
-    models = [];
-    file = fullfile(prefdir, [ mfilename '.mat' ]);
-    if ~isempty(dir(file))
-      try
-        d = load(file);
-        if isfield(d, 'Models')
-          mifit_disp([ '[Init] Loading Model library from ' file ]);
-          models = d.Models;  % contains the callback and the label members
-        end
-      end
-    end
-    if isempty(models)
-      mifit_disp([ '[Init] Building Optimizer and Model library from ' file '. Be patient (only once)...' ]);
-      [optimizers,models,filenames] = fits(iFunc);
-      % build Models.callback and Models.label. We will instantiate at callback.
-      models = struct('callback',filenames,'label',get(models, 'Name'));
-    else
-      optimizers = fits(iFunc);
-    end
-    
-    % fill Models menu
-    mifit_Models_Add_Entry(models);
-    
-    % fill Optimizers menu
-    if ~isempty(optimizers) && iscell(optimizers)
-        mifit_disp([ '[Init] Initializing ' num2str(numel(optimizers)) ' Optimizers ...' ]);
-        for f=optimizers
-            % each optimizer is given with its function name. We request
-            % 'defaults' and display its name
-            
-            o=feval(f{1},'defaults');
-            if isfield(o, 'algorithm') && ~isempty(o.algorithm)
-                algorithm = o.algorithm;
-            else
-                algorithm = f{1};
-            end
-            if ~isempty(algorithm)
-              % TODO: must add callback to assign optimizer
-              uimenu(hoptim, 'Label', algorithm, 'UserData', f{1});
-            end
-        end
-    end
-    
-    % create the AppData Data Stack
-    setappdata(fig, 'Models',    models);
-    setappdata(fig, 'Optimizers',optimizers);
-    
-    % Load the previous Data sets containing Model Parameters (when a fit was performed)
-    file = fullfile(prefdir, [ mfilename '.mat' ]);
-    if ~isempty(dir(file))
-      try
-        d = load(file);
-        if isfield(d, 'Data')
-          mifit_disp([ '[Init] Loading Data sets from ' file ]);
-          mifit_List_Data_push(d.Data);
-        end
-      end
-    end
-    file = fullfile(prefdir, [ mfilename '.log' ]);
-    mifit_disp([ '[Init] Log file is ' file ]);
-
-    % close welcome image
-    delete(h);
-
-end
-
 % Preferences I/O --------------------------------------------------------------
-function config = mifit_Load_Preferences
-  file = fullfile(prefdir, [ mfilename '.ini' ]);
-  content = ''; config = '';
-  if ~isempty(dir(file))
-    try
-      content = fileread(file);
-      evalc(content);% this should make a 'config' variable
-      mifit_disp([ '[Load_Preferences] Loading Preferences from ' file ]);
-    end
-  end
-  if isempty(config)
-    % default configuration
-    config.FontSize         = max(12, get(0,'defaultUicontrolFontSize'));
-    config.Save_Data_On_Exit= 'yes';
-    config.Store_Models     = 10;  % time required for creation. Store when > 0:always, Inf=never
-  end
-  setappdata(mifit_fig, 'Preferences', config);
-  set(0,'defaultUicontrolFontSize', config.FontSize);
 
-function mifit_Save_Preferences(config)
-  filename = fullfile(prefdir, [ mfilename '.ini' ]);
-  NL = sprintf('\n');
-  description = 'miFit interface to iFit';
-    str = [ '% miFit configuration script file: ' description NL ...
-          '%' NL ...
-          '% Matlab ' version ' m-file ' filename NL ...
-          '% generated automatically on ' datestr(now) ' with ifit.mccode.org ' mfilename NL...
-          class2str('config', config) ];
-  [fid, message]=fopen(filename,'w+');
-  if fid == -1
-    warning([ datestr(now) ': Error opening file ' filename ' to save ' description ' configuration.' ]);
-    filename = [];
-  else
-    fprintf(fid, '%s', str);
-    fclose(fid);
-    mifit_disp([ '[Save_Preferences] Saving Preferences into ' filename ]);
-  end
+
+
 
 % -------------------------------------------------------------------------
 % Callbacks
@@ -302,19 +152,18 @@ function mifit_File_Saveas(varargin)
   Data       = getappdata(fig, 'Data');
   Models     = getappdata(fig, 'Models');
   Optimizers = getappdata(fig, 'Optimizers');
-  if isempty(Data), return; end
  
   if nargin == 1 && ischar(varargin{1})
     file = varargin{1};
   else
     filterspec = { '*.mat','MAT-files (*.mat)'};
-    [filename, pathname] = uiputfile(filterspec, 'Save All miFit Data sets as', [ mfilename '.mat' ]);
+    [filename, pathname] = uiputfile(filterspec, 'Save All miFit Data sets and models as', [ mfilename '.mat' ]);
     if isequal(filename,0) || isequal(pathname,0)
       return
     end
     file = fullfile(pathname, filename);
   end
-  mifit_disp([ '[File_Saveas] Saving Data sets into ' file ]);
+  mifit_disp([ '[File_Saveas] Saving Data sets/Models into ' file ]);
   builtin('save', file, 'Data','Models','Optimizers');
   
 function mifit_File_Print(varargin)
@@ -334,10 +183,10 @@ function mifit_File_Preferences(varargin)
 % save Preferences on dialogue close
   fig = mifit_fig;
   config = getappdata(mifit_fig, 'Preferences');
-  prompt = {'Font size [10-36]','Save Data sets on Exit [yes/no]','Store Models when creation time is longer than [sec, 0:always, Inf:never, default=10]'};
+  prompt = {'Font size [10-36]','Save Data sets on Exit [yes/no]','Store Models when creation time is longer than [sec, 0:always, Inf:never, default=3]'};
   if ~isfield(config, 'FontSize'),          config.FontSize=12; end
   if ~isfield(config, 'Save_Data_On_Exit'), config.Save_Data_On_Exit='yes'; end
-  if ~isfield(config, 'Store_Models'),      config.Store_Models=10; end
+  if ~isfield(config, 'Store_Models'),      config.Store_Models=3; end
   defaultanswer = { num2str(config.FontSize), config.Save_Data_On_Exit, num2str(config.Store_Models) };
   name  = [ mfilename ': Preferences' ];
   options.Resize='on';
@@ -357,23 +206,11 @@ function mifit_File_Preferences(varargin)
   setappdata(mifit_fig, 'Preferences', config);
   mifit_Apply_Preferences;
   mifit_Save_Preferences(config);
-  
-function mifit_Apply_Preferences
-  fig = mifit_fig;
-  config = getappdata(fig, 'Preferences');
-  % change all Font Size
-  h=[ findobj(fig, 'Type','uicontrol') ; ...
-      findobj(fig, 'Type','axes') ; findobj(fig, 'Type','text') ; ...
-      findobj(fig, 'Type','uipanel') findobj(fig, 'Type','uitable') ];
-  set(h, 'FontSize', config.FontSize);
-  % for uimenu, could we use tip given by Y Altman 
-  % <https://fr.mathworks.com/matlabcentral/newsreader/view_thread/148095>
-  % h = findobj(fig, 'Type','uimenu');
 
 function mifit_File_Exit(varargin)
 % Quit and Save Data
   config = getappdata(mifit_fig, 'Preferences');
-  if strcmp(config.Save_Data_On_Exit, 'yes')
+  if isfield(config, 'Save_Data_On_Exit') && strcmp(config.Save_Data_On_Exit, 'yes')
     mifit_File_Save;
   else
     file = fullfile(prefdir, [ mfilename '.mat' ]);
@@ -522,28 +359,6 @@ function mifit_Edit_Delete(varargin)
   setappdata(fig, 'Data', Data);
   
   mifit_History_push;
-
-function mifit_History_pull
-% get the last History element and deletes it
-  fig = mifit_fig;
-  History = getappdata(fig, 'History');
-  if isempty(History), return; end
-  Data         = History{end};
-  History(end) = [];
-  setappdata(fig, 'History', History);
-  setappdata(fig, 'Data',    Data);
-  
-
-function mifit_History_push
-% append current Data into the History
-  fig = mifit_fig;
-  History = getappdata(fig, 'History');
-  Data    = getappdata(fig, 'Data');
-  if ~isempty(Data)
-    History{end+1} = Data;
-    if numel(History) > 10, History(1:(end-9)) = []; end
-    setappdata(fig, 'History', History);
-  end
   
 % Data menu ********************************************************************
 
@@ -595,50 +410,6 @@ function mifit_Data_History(varargin)
   for index=1:numel(d)
     [c,fig]=commandhistory(d(index));
   end
-
-function mifit_Data_AssignModel(varargin)
-  model = get(varargin{1},'UserData'); % an iFunc or char/cellstr stored into UserData of the menu item.
-  
-  if iscellstr(model), model = char(model)'; end
-  if ischar(model)
-    try
-      % create the Model from the stored expression
-      tstart   = tic;
-      model    = eval(model);
-      telapsed = toc(tstart);
-      if telapsed > 10
-        % TODO: push Model into the Models menu (to the Deck/Library/Stack)
-      end
-    catch
-      mifit_disp([ '[Data_AssignModel] Invalid Model expression ' model '. Skipping.' ]);
-      return
-    end
-  elseif isa(model, 'iFunc')
-    model = copyobj(model); % to get a new ID
-  end
-  
-  setappdata(mifit_fig, 'CurrentModel', model);  % store current selected Model
-  % get selected Data sets indices in List
-  index_selected = get(mifit_fig('List_Data_Files'),'Value');
-  D = getappdata(mifit_fig, 'Data');  % all data sets
-  if numel(D) == 0 || isempty(index_selected), 
-    mifit_disp([ 'Selected Model "' model.Name '".' ]);
-    figure; plot(model);
-    return; 
-  end
-  
-  mifit_disp([ 'Assigning Model "' model.Name '" to ' num2str(numel(index_selected)) ' Data set(s).' ]);
-  mifit_History_push();
-  if numel(D) > 1
-    for index=index_selected(:)'
-      D(index) = setalias(D(index), 'Model', model);
-      mifit_disp(char(D(index)));
-    end
-  else
-    D = setalias(D, 'Model', model);
-    mifit_disp(char(D));
-  end
-  setappdata(mifit_fig, 'Data', D);
   
 function mifit_Data_Math_Unary(varargin)
   % TODO
@@ -658,120 +429,6 @@ function mifit_Models_Add(varargin)
   % TODO
   disp([ mfilename ': Models_Add: TODO' ])
   % * Add from file... (JSON, M, YAML, MAT)
- 
-  
-function mifit_Models_Add_Entry(model)
-  % add a new Model (iFunc or cellstr) into the Models sub-menus.
-  % the input argument should be a structure with members:
-  %   model.callback
-  %   model.label
-  % or an iFunc array
-  % or a cellstr (expressions to evaluate at callback)
-  
-  % usage:
-  % mifit_Models_Add_iFunc(gauss)         - must add a Gaussian entry in sub-menu, with callback to 'copyobj(gauss)'
-  % mifit_Models_Add_iFunc('gauss+lorz')  - must add a 'gauss+lorz' entry in sub-menu, with callback to 'gauss+lorz'
-  
-  if nargin == 0 || all(isempty(model)), return; end
-  
-  % check different type of input arguments Models
-  if ischar(model), model = cellstr(model); end
-  
-  % handle array of entries
-  if numel(model) > 1  % model is a cell or array of entries
-    for index=1:numel(model)
-      if iscell(model), mifit_Models_Add_Entry(model{index});
-      else mifit_Models_Add_Entry(model(index));
-      end
-    end
-    return
-    
-  % model is a single struct with 'callback' as an array
-  elseif isstruct(model) && isfield(model,'callback') && ~ischar(model.callback) && numel(model.callback) > 1
-    for index=1:numel(model.callback)
-      % we create a model struct with only one (callback,label) item
-      if isfield(model,'label') && iscell(model.label) && numel(model.label) == numel(model.callback), 
-        this.label=model.label{index}; 
-      else 
-        this.label=''; 
-      end
-      if iscell(model.callback), this.callback = model.callback{index};
-      else                       this.callback = model.callback(index); end
-      mifit_Models_Add_Entry(this);
-    end
-    return
-  end
-  
-  % handle single entry
-  % determine
-  %   label: a string to display for the menu entry
-  %   callback: a char/cellstr (expression) or iFunc model, stored in the menu 
-  %     item UserData for assignement when selected
-  %   dim:   dimensionality (to identify the sub-menu)
-  
-  label = ''; dim = [];
-  if all(isempty(model)), return; end
-  if iscellstr(model)
-    callback = char(model)';
-  elseif isstruct(model) && isfield(model,'callback')
-    callback = model.callback;
-    if isfield(model, 'label'), label = model.label; end
-  elseif isa(model, 'iFunc')
-    callback = model;
-    dim      = callback.Dimension;
-    label    = [ callback.Name ' [' callback.Tag ']' ];
-  elseif ischar(model)
-    callback = model;
-  else
-    mifit_disp([ '[Models_Add_Entry] Invalid Model type ' class(model) '. Must be iFunc/cell/char/struct with "callback" member. Skipping.' ]);
-  end
-  
-  if isempty(dim)  % this is a model creator (new instance) from expression
-    % we assume this is an expression and try to evaluate it as such
-    try
-      modelF    = feval(callback, 'identify');
-    catch
-      mifit_disp([ '[Models_Add_Entry] Invalid Model expression ' callback '. Skipping.' ]);
-      return
-    end
-    dim   = modelF.Dimension;
-    if isempty(label), label = [ '"' callback '" = ' modelF.Name ]; end
-  end
-
-  % determine the name of the sub-menu to use
-  if isempty(dim), dim = -1; end  % will use Others
-  if dim > 0, model_submenu_name = sprintf('%dD', dim);
-  else        model_submenu_name = 'Others'; end
-  
-  % create the sub-menu, if missing
-  hmodels = mifit_fig('Menu_Model');
-  submenu_handle = findobj(hmodels, 'Type','uimenu', 'Label', model_submenu_name);
-  if isempty(submenu_handle)
-    submenu_handle = uimenu(hmodels, 'Label', model_submenu_name);
-  end
-  
-  % check if the model entry already exists
-  children = findobj(submenu_handle, 'Label', label);
-  if isempty(children)
-    children = findobj(submenu_handle, 'UserData', callback);
-  end
-  if ~isempty(children)
-    mifit_disp([ '[Models_Add_Entry] ' label ' is already in the list of usable Models. Skipping.' ]);
-    return; 
-  end
-    
-  uimenu(submenu_handle, 'Label', label, 'UserData', callback, ...
-                'CallBack', 'mifit(''Data_AssignModel'',gcbo)');
-                
-  % store the entry in the appdata
-  % Models is a cell of entries which can be:
-  %   struct.callback
-  %   struct.callback and struct.label
-  %   iFunc
-  %   char (expression)
-  Models = getappdata(mifit_fig, 'Models');
-  Models{end+1} = struct('callback',callback, 'label',label);
-  setappdata(mifit_fig, 'Models',Models);
 
 function mifit_Models_Edit(varargin)
   % TODO
@@ -799,25 +456,6 @@ function mifit_Models_Add_Expression(varargin)
 % set optimizer configuration -> contextual dialogue in Model_Parameters uitable ?
   
 % Tools menu *******************************************************************
-
-function h=mifit_Tools_About(fig)
-% display the About dialogue. The handle ID is in adddata(gcf, 'handle_About')
-  if nargin ==0, fig=''; end
-  icon = fullfile(ifitpath,'Docs','images','ILL-web-jpeg.jpg');
-  
-  % Display About dialog
-  t = [ sprintf('Welcome to miFit, a GUI to iFit.\n ') version(iData,2) sprintf('.\n Visit <http://ifit.mccode.org>') ];
-  if isempty(dir(icon))
-    h = msgbox(t,'miFit: About','help');
-  else
-    h = msgbox(t,'miFit: About','custom', imread(icon));
-  end
-  g=findobj(h, 'type','uicontrol');
-  config = getappdata(mifit_fig, 'Preferences');
-  set(g,'fontsize',config.FontSize);
-  if ~isempty(fig)
-    setappdata(fig, 'handle_About', h);
-  end
   
 function mifit_Tools_Help_Loaders(varargin)
   doc(iData,'Loaders');
@@ -834,50 +472,6 @@ function mifit_List_Data_Files(varargin)
 % called when clicking on the listbox
 
 %  mifit_Data_Plot();
-
-function mifit_List_Data_push(d)
-% put a new data set at the end of the stack
-  if isempty(d),       return; end
-  if ~isa(d, 'iData'), return; end
-  fig = mifit_fig;
-
-  % update AppData Stack
-  if numel(d) > 1, d = d(:); end
-  Data = getappdata(fig, 'Data');
-  Data = [ Data ; d ];  % a column of iData set
-  setappdata(fig, 'Data', Data);
-  
-  % update the List labels by appending the Name at the end
-  hObject        = mifit_fig('List_Data_Files');
-  list           = get(hObject,'String');
-  list0          = numel(list);
-  index_selected = get(hObject,'Value');
-  if max(index_selected) > numel(list), index_selected = []; end
-  for index=1:numel(d)
-      index_selected(end+1) = list0+index;
-      list{end+1} = char(d(index));
-  end
-  set(hObject,'String', list, 'Value', index_selected);
-  
-  % Update the History with the new stack
-  mifit_History_push;
-  mifit_disp('Importing into List:')
-  mifit_disp(char(d))
-  
-function [d, index_selected]=mifit_List_Data_pull(varargin)
-% get the selected Data List
-% return the selected objects
-  hObject = mifit_fig('List_Data_Files');
-  d = [];
-
-  index_selected = get(hObject,'Value');
-  if isempty(index_selected), return; end
-  
-  fig = mifit_fig;
-  d   = getappdata(fig, 'Data');
-  if numel(d) > 1
-      d = d(index_selected);
-  end
   
 function mifit_List_Data_UpdateStrings
   % update the List labels
@@ -896,17 +490,5 @@ function mifit_List_Data_UpdateStrings
   end
   set(hObject,'String', list, 'Value', []);
 
-function mifit_disp(message)
-  % display message, and log it
-  
-  if size(message,1) > 1
-    disp(message);
-  else
-    disp([ mfilename ': ' message ]);
-  end
-  file = fullfile(prefdir, [ mfilename '.log' ]);
-  fid = fopen(file, 'a+');
-  if fid == -1, return; end
-  fprintf(fid, '[%s] %s\n', datestr(now), message);
-  fclose(fid);
+
   
