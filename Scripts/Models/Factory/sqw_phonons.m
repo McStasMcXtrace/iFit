@@ -250,7 +250,7 @@ signal = [];
 if nargin == 0, configuration = 'gui'; varargin{1} = 'emt'; 
 elseif strcmp(configuration, 'identify')
   signal = sqw_phonons('defaults');
-  signal.Name = [ 'Sqw_Phonon DHO [' mfilename ']' ];
+  signal.Name = [ 'Sqw_phonon DHO [' mfilename ']' ];
   return;
 end
 
