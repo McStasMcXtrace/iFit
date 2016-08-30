@@ -67,7 +67,7 @@ function varargout = mifit(varargin)
             try
               feval([ 'mifit_' action ], varargin{2:end});
             catch ME
-              mifit_disp([ 'Unknown action "' action '"' ])
+              mifit_disp([ '[mifit] Unknown action "' action '"' ])
               rethrow(ME)
             end
           end
@@ -139,7 +139,7 @@ function fig = mifit_OpeningFcn
 fig = mifit_fig();
 if isempty(fig) || ~ishandle(fig)
     % create the main figure
-    mifit_disp('Welcome to miFit ! ********************************************')
+    mifit_disp('[Init] Welcome to miFit ! ********************************************')
     fig = openfig(mfilename);
     
     % get Models/Optimizers menu handles
@@ -149,6 +149,10 @@ if isempty(fig) || ~ishandle(fig)
     % load Preferences
     mifit_Load_Preferences;
     mifit_Apply_Preferences;
+    % create the AppData default values
+    setappdata(fig, 'Data',    []);
+    setappdata(fig, 'History', {});
+    setappdata(fig, 'Models',  {});
     
     % Display welcome dialog during menu build
     h = mifit_Tools_About(fig);
@@ -158,65 +162,32 @@ if isempty(fig) || ~ishandle(fig)
     end
     
     % get the list of Models and Optimizers
-    functions = []; optimizers = [];
+    models = [];
     file = fullfile(prefdir, [ mfilename '.mat' ]);
     if ~isempty(dir(file))
       try
         d = load(file);
         if isfield(d, 'Models')
-          mifit_disp([ 'Loading Model library from ' file ]);
-          functions = d.Models;
-        end
-        if isfield(d, 'Optimizers')
-          mifit_disp([ 'Loading Optimizer library from ' file ]);
-          optimizers = d.Optimizers;
+          mifit_disp([ '[Init] Loading Model library from ' file ]);
+          models = d.Models;  % contains the callback and the label members
         end
       end
     end
-    if isempty(functions)
-      mifit_disp([ 'Building Optimizer and Model library from ' file '. Be patient (only once)...' ]);
-      [optimizers,functions] = fits(iFunc);
-    elseif isempty(optimizers)
+    if isempty(models)
+      mifit_disp([ '[Init] Building Optimizer and Model library from ' file '. Be patient (only once)...' ]);
+      [optimizers,models,filenames] = fits(iFunc);
+      % build Models.callback and Models.label. We will instantiate at callback.
+      models = struct('callback',filenames,'label',get(models, 'Name'));
+    else
       optimizers = fits(iFunc);
     end
     
     % fill Models menu
-    if any(~isempty(functions)) && all(isa(functions, 'iFunc'))
-        mifit_disp([ 'Initializing ' num2str(numel(functions)) ' Models... User Models loaded from: ' pwd ]);
-        % first create the sub-menu items: 1D,2D,3D,4D,Variable,Others
-        dimensions = unique(cell2mat(get(functions,'Dimension')));
-        submenu.handles = [];
-        submenu.dims    = [];
-        separator = 'on';
-        for index = dimensions(dimensions > 0)
-          submenu.dims(end+1)   = index;
-          submenu.handles(end+1) = uimenu(hmodels, 'Label', sprintf('%dD', index), 'Separator', separator);
-          if strcmp(separator, 'on'), separator = 'off'; end
-        end
-        % add Others sub-menu
-        submenu.dims(end+1)   = -1;
-        submenu.handles(end+1) = uimenu(hmodels, 'Label', 'Others');
-        % now fill the sub-menus
-        callback = 'mifit(''Data_AssignModel'',gcbo)';
-        for f=functions
-            % each Model is an iFunc object. These should be stored in the
-            % Models menu items 'UserData'
-            if isempty(f) || isempty(f.Name), continue; end
-            if f.Dimension > 0 && any(f.Dimension == submenu.dims)
-              % add entry in existing sub-menu
-              index = find(f.Dimension == submenu.dims);
-            else
-              % add entry in existing sub-menu 'Others'
-              index = numel(submenu.dims); % last sub-menu
-            end
-            uimenu(submenu.handles(index), 'Label', f.Name, 'UserData', f, ...
-                  'CallBack', callback);
-        end
-    end
+    mifit_Models_Add_Entry(models);
     
     % fill Optimizers menu
     if ~isempty(optimizers) && iscell(optimizers)
-        mifit_disp([ 'Initializing ' num2str(numel(optimizers)) ' Optimizers ...' ]);
+        mifit_disp([ '[Init] Initializing ' num2str(numel(optimizers)) ' Optimizers ...' ]);
         for f=optimizers
             % each optimizer is given with its function name. We request
             % 'defaults' and display its name
@@ -228,30 +199,29 @@ if isempty(fig) || ~ishandle(fig)
                 algorithm = f{1};
             end
             if ~isempty(algorithm)
-                uimenu(hoptim, 'Label', algorithm, 'UserData', f{1});
+              % TODO: must add callback to assign optimizer
+              uimenu(hoptim, 'Label', algorithm, 'UserData', f{1});
             end
         end
     end
     
     % create the AppData Data Stack
-    setappdata(fig, 'Data',    []);
-    setappdata(fig, 'History', {});
-    setappdata(fig, 'Models',    functions);
+    setappdata(fig, 'Models',    models);
     setappdata(fig, 'Optimizers',optimizers);
     
-    % Load the previous Data sets and Model Parameters
+    % Load the previous Data sets containing Model Parameters (when a fit was performed)
     file = fullfile(prefdir, [ mfilename '.mat' ]);
     if ~isempty(dir(file))
       try
         d = load(file);
         if isfield(d, 'Data')
-          mifit_disp([ 'Loading Data sets from ' file ]);
+          mifit_disp([ '[Init] Loading Data sets from ' file ]);
           mifit_List_Data_push(d.Data);
         end
       end
     end
     file = fullfile(prefdir, [ mfilename '.log' ]);
-    mifit_disp([ 'Log file is ' file ]);
+    mifit_disp([ '[Init] Log file is ' file ]);
 
     % close welcome image
     delete(h);
@@ -266,13 +236,14 @@ function config = mifit_Load_Preferences
     try
       content = fileread(file);
       evalc(content);% this should make a 'config' variable
-      mifit_disp([ 'Loading Preferences from ' file ]);
+      mifit_disp([ '[Load_Preferences] Loading Preferences from ' file ]);
     end
   end
   if isempty(config)
     % default configuration
     config.FontSize         = max(12, get(0,'defaultUicontrolFontSize'));
     config.Save_Data_On_Exit= 'yes';
+    config.Store_Models     = 10;  % time required for creation. Store when > 0:always, Inf=never
   end
   setappdata(mifit_fig, 'Preferences', config);
   set(0,'defaultUicontrolFontSize', config.FontSize);
@@ -293,7 +264,7 @@ function mifit_Save_Preferences(config)
   else
     fprintf(fid, '%s', str);
     fclose(fid);
-    mifit_disp([ 'Saving Preferences into ' filename ]);
+    mifit_disp([ '[Save_Preferences] Saving Preferences into ' filename ]);
   end
 
 % -------------------------------------------------------------------------
@@ -305,7 +276,7 @@ function mifit_Save_Preferences(config)
 function mifit_File_New(handle)
 % File/New menu item
   d = iData(zeros(5)); % create an empty Data set;
-  mifit_disp([ 'Editing an empty Data set. ' ...
+  mifit_disp([ '[File_New] Editing an empty Data set. ' ...
     'Close the window to retrieve its content as a new Data set into miFit. ' ...
     'Use the Contextual menu for Copy/Paste/Resize.' ]);
   handle = edit(d, 'editable');
@@ -320,31 +291,30 @@ function mifit_File_Open(handle)
   
 function mifit_File_Save(varargin)
 % save Data sets and Model parameters into a mifit.mat file
-  fig = mifit_fig;
-  Data = getappdata(fig, 'Data');
-  Models = getappdata(fig, 'Models');
-  Optimizers = getappdata(fig, 'Optimizers');
   
   file = fullfile(prefdir, [ mfilename '.mat' ]);
-  if ~isempty(Data), mifit_disp([ 'Saving Data sets into ' file ]); end
-  builtin('save', file, 'Data','Models','Optimizers');
+  mifit_File_Saveas(file);
   
 function mifit_File_Saveas(varargin)
 % save the application configuration into specified file
 % Data sets and Model parameters into a mifit.mat file
-  fig  = mifit_fig;
-  Data = getappdata(fig, 'Data');
-  Models = getappdata(fig, 'Models');
+  fig        = mifit_fig;
+  Data       = getappdata(fig, 'Data');
+  Models     = getappdata(fig, 'Models');
   Optimizers = getappdata(fig, 'Optimizers');
   if isempty(Data), return; end
  
-  filterspec = { '*.mat','MAT-files (*.mat)'};
-  [filename, pathname] = uiputfile(filterspec, 'Save All miFit Data sets as', [ mfilename '.mat' ]);
-  if isequal(filename,0) || isequal(pathname,0)
-    return
+  if nargin == 1 && ischar(varargin{1})
+    file = varargin{1};
+  else
+    filterspec = { '*.mat','MAT-files (*.mat)'};
+    [filename, pathname] = uiputfile(filterspec, 'Save All miFit Data sets as', [ mfilename '.mat' ]);
+    if isequal(filename,0) || isequal(pathname,0)
+      return
+    end
+    file = fullfile(pathname, filename);
   end
-  file = fullfile(pathname, filename);
-  mifit_disp([ 'Saving Data sets into ' file ]);
+  mifit_disp([ '[File_Saveas] Saving Data sets into ' file ]);
   builtin('save', file, 'Data','Models','Optimizers');
   
 function mifit_File_Print(varargin)
@@ -364,8 +334,11 @@ function mifit_File_Preferences(varargin)
 % save Preferences on dialogue close
   fig = mifit_fig;
   config = getappdata(mifit_fig, 'Preferences');
-  prompt = {'Font size [10-36]','Save Data sets on Exit [yes/no]'};
-  defaultanswer = { num2str(config.FontSize), config.Save_Data_On_Exit };
+  prompt = {'Font size [10-36]','Save Data sets on Exit [yes/no]','Store Models when creation time is longer than [sec, 0:always, Inf:never, default=10]'};
+  if ~isfield(config, 'FontSize'),          config.FontSize=12; end
+  if ~isfield(config, 'Save_Data_On_Exit'), config.Save_Data_On_Exit='yes'; end
+  if ~isfield(config, 'Store_Models'),      config.Store_Models=10; end
+  defaultanswer = { num2str(config.FontSize), config.Save_Data_On_Exit, num2str(config.Store_Models) };
   name  = [ mfilename ': Preferences' ];
   options.Resize='on';
   options.WindowStyle='normal';
@@ -378,6 +351,9 @@ function mifit_File_Preferences(varargin)
     config.FontSize=min(max(answer{1}, 10),36); end
   if any(strcmp(answer{2}, {'yes','no'})) 
     config.Save_Data_On_Exit = answer{2}; end
+  answer{3} = str2double(answer{3});
+  if isfinite(answer{3}) 
+    config.Store_Models=answer{3}; end
   setappdata(mifit_fig, 'Preferences', config);
   mifit_Apply_Preferences;
   mifit_Save_Preferences(config);
@@ -403,7 +379,7 @@ function mifit_File_Exit(varargin)
     file = fullfile(prefdir, [ mfilename '.mat' ]);
     if ~isempty(dir(file)), delete(file); end
   end
-  mifit_disp([ 'Exiting miFit. Bye bye.' ])
+  mifit_disp([ '[Exit] Exiting miFit. Bye bye.' ])
   delete(mifit_fig);
   
 function mifit_File_Reset(varargin)
@@ -411,8 +387,8 @@ function mifit_File_Reset(varargin)
   options.Interpreter = 'tex';
   ButtonName = questdlg({ ...
     '{\fontsize{14}{\color{blue}Reset default configuration ?}}', ...
-    'This action will clear the Data set list and the Log file.', ...
-    'Selecting "Factory settings" also resets the Preferences in', ...
+    'Selecting "Reset" clears the Data set list and the Log file.', ...
+    'Selecting "Factory settings" also resets the Models and Preferences in', ...
     prefdir, ...
     '{\bf{Reset now ?}}'}, 'miFit: Reset ?', ...
     'Reset', 'Cancel', 'Factory settings', ...
@@ -621,7 +597,26 @@ function mifit_Data_History(varargin)
   end
 
 function mifit_Data_AssignModel(varargin)
-  model = get(varargin{1},'UserData'); % an iFunc stored into UserData of the menu item.
+  model = get(varargin{1},'UserData'); % an iFunc or char/cellstr stored into UserData of the menu item.
+  
+  if iscellstr(model), model = char(model)'; end
+  if ischar(model)
+    try
+      % create the Model from the stored expression
+      tstart   = tic;
+      model    = eval(model);
+      telapsed = toc(tstart);
+      if telapsed > 10
+        % TODO: push Model into the Models menu (to the Deck/Library/Stack)
+      end
+    catch
+      mifit_disp([ '[Data_AssignModel] Invalid Model expression ' model '. Skipping.' ]);
+      return
+    end
+  elseif isa(model, 'iFunc')
+    model = copyobj(model); % to get a new ID
+  end
+  
   setappdata(mifit_fig, 'CurrentModel', model);  % store current selected Model
   % get selected Data sets indices in List
   index_selected = get(mifit_fig('List_Data_Files'),'Value');
@@ -659,35 +654,147 @@ function mifit_Data_Math(varargin)
 
 % Models and Optimizers menu ***************************************************
 
-function mifit_Model_Add(varargin)
+function mifit_Models_Add(varargin)
   % TODO
-  disp([ mfilename ': Model_Add: TODO' ])
+  disp([ mfilename ': Models_Add: TODO' ])
   % * Add from file... (JSON, M, YAML, MAT)
-  % * Create from SpinW: interface for CIF, import SW, ...
-  % * Create from Phonons: call GUI (add warning for long procedure... )
-  % * Create from Rietveld/McStas with diffraction instrument: create small dialogue
-  % * 4D TAS convolution
-  % * Powder average 4D -> 2D
-  % * nd gaussian/lorz
-  % * ngauss/nlorz
-
-function mifit_Model_Edit(varargin)
-  % TODO
-  disp([ mfilename ': Model_Edit: TODO' ])
-  % create bew Models after edition
+ 
   
-function mifit_Model_Plot(varargin)
+function mifit_Models_Add_Entry(model)
+  % add a new Model (iFunc or cellstr) into the Models sub-menus.
+  % the input argument should be a structure with members:
+  %   model.callback
+  %   model.label
+  % or an iFunc array
+  % or a cellstr (expressions to evaluate at callback)
+  
+  % usage:
+  % mifit_Models_Add_iFunc(gauss)         - must add a Gaussian entry in sub-menu, with callback to 'copyobj(gauss)'
+  % mifit_Models_Add_iFunc('gauss+lorz')  - must add a 'gauss+lorz' entry in sub-menu, with callback to 'gauss+lorz'
+  
+  if nargin == 0 || all(isempty(model)), return; end
+  
+  % check different type of input arguments Models
+  if ischar(model), model = cellstr(model); end
+  
+  % handle array of entries
+  if numel(model) > 1  % model is a cell or array of entries
+    for index=1:numel(model)
+      if iscell(model), mifit_Models_Add_Entry(model{index});
+      else mifit_Models_Add_Entry(model(index));
+      end
+    end
+    return
+    
+  % model is a single struct with 'callback' as an array
+  elseif isstruct(model) && isfield(model,'callback') && ~ischar(model.callback) && numel(model.callback) > 1
+    for index=1:numel(model.callback)
+      % we create a model struct with only one (callback,label) item
+      if isfield(model,'label') && iscell(model.label) && numel(model.label) == numel(model.callback), 
+        this.label=model.label{index}; 
+      else 
+        this.label=''; 
+      end
+      if iscell(model.callback), this.callback = model.callback{index};
+      else                       this.callback = model.callback(index); end
+      mifit_Models_Add_Entry(this);
+    end
+    return
+  end
+  
+  % handle single entry
+  % determine
+  %   label: a string to display for the menu entry
+  %   callback: a char/cellstr (expression) or iFunc model, stored in the menu 
+  %     item UserData for assignement when selected
+  %   dim:   dimensionality (to identify the sub-menu)
+  
+  label = ''; dim = [];
+  if all(isempty(model)), return; end
+  if iscellstr(model)
+    callback = char(model)';
+  elseif isstruct(model) && isfield(model,'callback')
+    callback = model.callback;
+    if isfield(model, 'label'), label = model.label; end
+  elseif isa(model, 'iFunc')
+    callback = model;
+    dim      = callback.Dimension;
+    label    = [ callback.Name ' [' callback.Tag ']' ];
+  elseif ischar(model)
+    callback = model;
+  else
+    mifit_disp([ '[Models_Add_Entry] Invalid Model type ' class(model) '. Must be iFunc/cell/char/struct with "callback" member. Skipping.' ]);
+  end
+  
+  if isempty(dim)  % this is a model creator (new instance) from expression
+    % we assume this is an expression and try to evaluate it as such
+    try
+      modelF    = feval(callback, 'identify');
+    catch
+      mifit_disp([ '[Models_Add_Entry] Invalid Model expression ' callback '. Skipping.' ]);
+      return
+    end
+    dim   = modelF.Dimension;
+    if isempty(label), label = [ '"' callback '" = ' modelF.Name ]; end
+  end
+
+  % determine the name of the sub-menu to use
+  if isempty(dim), dim = -1; end  % will use Others
+  if dim > 0, model_submenu_name = sprintf('%dD', dim);
+  else        model_submenu_name = 'Others'; end
+  
+  % create the sub-menu, if missing
+  hmodels = mifit_fig('Menu_Model');
+  submenu_handle = findobj(hmodels, 'Type','uimenu', 'Label', model_submenu_name);
+  if isempty(submenu_handle)
+    submenu_handle = uimenu(hmodels, 'Label', model_submenu_name);
+  end
+  
+  % check if the model entry already exists
+  children = findobj(submenu_handle, 'Label', label);
+  if isempty(children)
+    children = findobj(submenu_handle, 'UserData', callback);
+  end
+  if ~isempty(children)
+    mifit_disp([ '[Models_Add_Entry] ' label ' is already in the list of usable Models. Skipping.' ]);
+    return; 
+  end
+    
+  uimenu(submenu_handle, 'Label', label, 'UserData', callback, ...
+                'CallBack', 'mifit(''Data_AssignModel'',gcbo)');
+                
+  % store the entry in the appdata
+  % Models is a cell of entries which can be:
+  %   struct.callback
+  %   struct.callback and struct.label
+  %   iFunc
+  %   char (expression)
+  Models = getappdata(mifit_fig, 'Models');
+  Models{end+1} = struct('callback',callback, 'label',label);
+  setappdata(mifit_fig, 'Models',Models);
+
+function mifit_Models_Edit(varargin)
   % TODO
-  disp([ mfilename ': Model_Plot: TODO' ])
+  disp([ mfilename ': Models_Edit: TODO' ])
+  % create new Models after edition
+  
+function mifit_Models_Plot(varargin)
+  % TODO
+  disp([ mfilename ': Models_Plot: TODO' ])
   
 function mifit_Models_Plot_Parameters(varargin)
 
 function mifit_Models_Export_Parameters(varargin)
+  % * Export to file... (JSON, M, YAML, MAT...)
 
 function mifit_Models_View_Parameters(varargin)
   % get 1st selected Model from Data set or Models menu current choice
   % Display a uitable with columns:
   % [ Parameters | ParameterValues | constraints.fixed | constraints.min | constraints.max ]
+  
+function mifit_Models_Add_Expression(varargin)
+    % * 4D TAS convolution        -> in Models Transformation/operations
+  % * Powder average 4D -> 2D   -> in Models Transformation/operations
 
 % set optimizer configuration -> contextual dialogue in Model_Parameters uitable ?
   
