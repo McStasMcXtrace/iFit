@@ -27,13 +27,14 @@ end
 
 if ischar(p) && strcmp(p, 'identify')
   y=nlorz('defaults');
-  y.Name = [ 'n Lorentzians (1D) [' mfilename ']' ];
+  y.Name = [ 'Lorentzians_n (n*1D) [' mfilename ']' ];
+  return;
 elseif isnumeric(p) && length(p) == 1 && p == ceil(p)
   n = p; p = [];
 elseif isnumeric(p) && length(p) > 1
   n = floor(p)/3+1;
 elseif (ischar(p) && strcmp(p, 'defaults')) || isempty(p)
-  n = 2;
+  n = 2; p=[];
 else
   % show a Dialogue to select the number of Functions to use
   NL = sprintf('\n');
