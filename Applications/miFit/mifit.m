@@ -1,4 +1,11 @@
 function varargout = mifit(varargin)
+% miFit: a user interface to iFit
+%
+% data = mifit('data')  retrieves data sets from the interface
+% mifit('filename')     imports the file into a new Data set/Model
+% mifit(iData_object)   add the iData object into the interface Data stack
+% mifit(iFunc_object)   add the iFunc Model into the interface Models menu
+%
 % Version: $Date$
 % (c) E.Farhi, ILL. License: EUPL.
 
@@ -94,8 +101,7 @@ function varargout = mifit(varargin)
         elseif isa(varargin{1}, 'iData')
           mifit_List_Data_push(varargin{1});
         elseif isa(varargin{1}, 'iFunc') || isa(varargin{1}, 'sw') || isa(varargin{1}, 'spinw')
-          % TODO: would push new Model
-          % mifit_List_Data_push(varargin{1});
+          mifit_Models_Add_Entry(iFunc(varargin{1}));
         else
           d = iData(varargin{:});
           % now push 'd' into the Stack
@@ -133,6 +139,8 @@ function mifit_File_New(handle)
   % set a DeletedFcn so that the content can be retrieved into miFit when
   % closing.
   set(handle, 'DeleteFcn', @mifit);
+  config = getappdata(mifit_fig, 'Preferences');
+  set(handle, 'FontSize', config.FontSize);
   
 function mifit_File_Open(handle)
   d = iData('');  % open file selector, and import files
@@ -169,11 +177,11 @@ function mifit_File_Saveas(varargin)
 function mifit_File_Print(varargin)
 % print the interface. Not very nice. can we think of something better ?
 % perhaps we can generate an HTML report in Saveas HTML ?
-  fig = mifit_fig;
-  printdlg(fig);
-  % alternative: File_Saveas_HTML in tmpfile, then open that file for printing.
-  disp([ mfilename ': File_Print: TODO: save all Data sets as HTML with model and parameters' ])
-  disp('then open it with web for printing');
+  d=mifit_List_Data_pull(); % get selected objects
+  filename = [ tempname '.html' ];
+  mifit_disp([ '[File_Print] Exporting Data sets to HTML ' filename ' for printing...' ]);
+  save(d, filename, 'html data');
+  fallback_web(filename);
   
 function mifit_File_Preferences(varargin)
 % open Preferences dialogue
@@ -183,11 +191,13 @@ function mifit_File_Preferences(varargin)
 % save Preferences on dialogue close
   fig = mifit_fig;
   config = getappdata(mifit_fig, 'Preferences');
-  prompt = {'Font size [10-36]','Save Data sets on Exit [yes/no]','Store Models when creation time is longer than [sec, 0:always, Inf:never, default=3]'};
+  prompt = {'Font size [10-36]','Save Data sets on Exit [yes/no]','Store Models when creation time is longer than [sec, 0:always, Inf:never, default=3]','Undo levels to keep [2-50, reduce if you handle large/many data sets]'};
   if ~isfield(config, 'FontSize'),          config.FontSize=12; end
   if ~isfield(config, 'Save_Data_On_Exit'), config.Save_Data_On_Exit='yes'; end
   if ~isfield(config, 'Store_Models'),      config.Store_Models=3; end
-  defaultanswer = { num2str(config.FontSize), config.Save_Data_On_Exit, num2str(config.Store_Models) };
+  if ~isfield(config, 'History_Level'),     config.History_Level=10; end
+  defaultanswer = { num2str(config.FontSize), config.Save_Data_On_Exit, 
+    num2str(config.Store_Models), num2str(config.History_Level) };
   name  = [ mfilename ': Preferences' ];
   options.Resize='on';
   options.WindowStyle='normal';
@@ -203,6 +213,8 @@ function mifit_File_Preferences(varargin)
   answer{3} = str2double(answer{3});
   if isfinite(answer{3}) 
     config.Store_Models=answer{3}; end
+  if isfinite(answer{4}) 
+    config.History_Level=min(max(answer{4}, 2),50); end
   setappdata(mifit_fig, 'Preferences', config);
   mifit_Apply_Preferences;
   mifit_Save_Preferences(config);
@@ -365,7 +377,7 @@ function mifit_Edit_Delete(varargin)
 function mifit_Data_Plot(varargin)
   d = mifit_List_Data_pull;
   f=figure;
-  subplot(d);
+  subplot(d,'light transparent grid');
   
 function mifit_Data_Fit(varargin)
   d = mifit_List_Data_pull;

@@ -14,6 +14,7 @@ function mifit_Data_AssignModel(varargin)
           % push Model into the Models menu (to the Deck/Library/Stack)
           % all models are saved when exiting (when set in Preferences)
           mifit_Models_Add_Entry(modelF);
+          mifit_disp([ '[Data_AssignModel] Adding Models/' num2str(modelF.Dimension) ' menu item ' model ' ' modelF.Name ' [' modelF.Tag ']' ]);
         end
         model = modelF;
       end
