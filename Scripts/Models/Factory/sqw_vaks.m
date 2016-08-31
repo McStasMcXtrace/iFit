@@ -176,7 +176,7 @@ if numel(varargin) && ischar(varargin{1})
         end
       end
     end
-    y = sqw_vaks(NumEval);
+    signal = sqw_vaks(NumEval);
     return
   case 'ktao3'
     St = 4828.100000; At = 1553.000000; Vt = 2450.700000;

@@ -104,15 +104,15 @@ function fallback_web(url)
       url = url(8:end);
     end
     ret = 1;
+    if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+    elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+    else precmd=''; end
     if ispc
-      ret=system([ 'start ' url ]);
+      ret=system([ precmd 'start ' url ]);
     elseif ismac
-      ret=system([ 'open ' url ]);
+      ret=system([ precmd 'open ' url ]);
     else
-      [ret, message]=system([ 'xdg-open ' url ]);
-      if ret==0 && ~isempty(strfind(message, 'error'))
-        ret=1;
-      end
+      [ret, message]=system([ precmd 'xdg-open ' url ]);
     end
   end
 
