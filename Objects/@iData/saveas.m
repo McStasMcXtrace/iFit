@@ -166,7 +166,7 @@ if strcmp(filename, 'gui')
   end
 end
 
-if isempty(format) && ~isempty(filename) && any(~cellfun(@isempty,strfind(filterspec(:,1),strtok(filename))))
+if isempty(format) && ~isempty(filename) && any(~cellfun(@isempty,strfind(filterspec(:,1),strtok(filename, ' ;*'))))
   format = filename; filename = '';
 end
 if ~isempty(format) && format(1) == '.', format=format(2:end); end
@@ -180,32 +180,24 @@ end
 % search for option to clean the data set from NaN's and Inf's
 index=regexp(format, '\<clean\>');  % search the word
 if ~isempty(index)
-  index=index(1);
-  format(index:(index+length('clean')-1)) = '';
   a = iData_private_cleannaninf(a);
 end
 
 % convert data set as Mantid Processed Workspace when requested
 index=regexp(format, '\<mantid\>');  % search the word
 if ~isempty(index)
-  index=index(1);
-  format(index:(index+length('mantid')-1)) = '';
   a = iData_private_2mantid(a);
 end
 
 % convert data set as LAMP Processed Workspace when requested
 index=regexp(format, '\<lamp\>');  % search the word
 if ~isempty(index)
-  index=index(1);
-  format(index:(index+length('lamp')-1)) = '';
   a = iData_private_2lamp(a);
 end
 
 % search the word 'data' to only save object Data property (for HDF,CDF,NetCDF)
 index=regexp(format, '\<data\>');  % search the word
 if ~isempty(index)
-  index=index(1);
-  format(index:(index+length('data')-1)) = '';
   root   = 'Data';
 else root='';
 end
@@ -236,7 +228,7 @@ end
 % handle extensions
 [Path, name, ext] = fileparts(filename);
 if isempty(ext) && ~isempty(format), 
-  ext = [ '.' format ]; 
+  ext = [ '.' strtok(format, ' ;*') ]; 
   filename = [ filename ext ];
 elseif isempty(format) && ~isempty(ext)
   format = ext(2:end);
@@ -245,10 +237,11 @@ elseif isempty(format) && isempty(ext)
 end
 
 if isempty(filename) || isempty(name), 
-  filename = [ 'iFit_' a.Tag '.' format ]; 
+  filename = [ 'iFit_' a(1).Tag '.' strtok(format, ' ;*') ]; 
   name = filename; 
 end
 
+formatShort = strtok(format, ' ;*.');
 % handle array of objects to save iteratively, except for file formats that support
 % multiple entries: HTML MAT
 if numel(a) > 1
@@ -257,7 +250,7 @@ if numel(a) > 1
   if isempty(filename_base),       filename_base='iFit_'; end
   filename = cell(size(a));
   for index=1:numel(a)
-    if numel(a) > 1 && ~strcmpi(format, 'html') && ~strcmpi(format, 'mat')
+    if ~strcmpi(formatShort, 'html') && ~strcmpi(formatShort, 'mat')
       [Path, name, ext] = fileparts(filename_base);
       this_filename = [ Path name '_' num2str(index,'%04d') ext ];
     else
@@ -265,22 +258,24 @@ if numel(a) > 1
         delete(filename_base);
       end
       this_filename = filename_base;
+      format = [ format ' ' root ];
     end
     [filename{index}, format] = saveas(a(index), this_filename, format, options);
   end
   return
 end
 
+
 % handle some format aliases (after extension extraction from file name)
-switch format
+switch formatShort
 case 'jpg'
-  format='jpeg';
+  formatShort='jpeg';
 case 'eps'
-  format='epsc';
+  formatShort='epsc';
 case 'ps'
-  format='psc';
+  formatShort='psc';
 case 'netcdf'
-  format='nc';
+  formatShort='nc';
 end
 
 % remove NaN values, which are usually not well supported by text based formats
@@ -288,7 +283,7 @@ end
 % ==============================================================================
 % handle specific format actions
 try
-  switch strtok(format)
+  switch formatShort
   case 'm'  % single m-file Matlab output (text), with the full object description
     filename = iData_private_saveas_m(a, filename, name, options);
   case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
@@ -311,7 +306,7 @@ try
     save(varg{:});
     
   case {'hdf','hdf5','h5','nx','nxs','n5','nc','cdf'} % HDF5, CDF, NetCDF formats: converts fields to double and chars
-    filename = iData_private_saveas_hdfnc(a, filename, format, root); % private function
+    filename = iData_private_saveas_hdfnc(a, filename, formatShort, root); % private function
   case 'edf'  % EDF ESRF format
     filename = medfwrite(a, filename); % in private
   case 'vtk'  % VTK volume
@@ -340,27 +335,27 @@ try
     else
       f = getframe(a,[],options);
       b = f.cdata;
-      if  strcmp(format(1:3),'jpe')
+      if  strcmp(formatShort(1:3),'jpe')
           b=sum(b,3);
       end
     end
-    if strcmp(format,'hdf4'), format='hdf'; end
+    if strcmp(formatShort,'hdf4'), formatShort='hdf'; end
     if ~isempty(b)
-      switch format
+      switch formatShort
       case {'png'}
-        imwrite(b, jet(256), filename, format, 'Comment',char(a),'Mode','lossless');
+        imwrite(b, jet(256), filename, formatShort, 'Comment',char(a),'Mode','lossless');
       case 'tiff'
-        imwrite(b, jet(256), filename, format, 'Description',char(a));
+        imwrite(b, jet(256), filename, formatShort, 'Description',char(a));
       case 'art'
         textart(b, filename); % in private
       otherwise
-        imwrite(b, jet(256), filename, format);
+        imwrite(b, jet(256), filename, formatShort);
       end
     else
       % rendering with getframe/imwrite failed. Fall back to saveas.
       f = figure('visible','off');
       b = plot(a, options);
-      saveas(f, filename, format);
+      saveas(f, filename, formatShort);
       close(f);
     end
   case 'epsc' % color encapsulated postscript file format, with TIFF preview
@@ -371,7 +366,7 @@ try
   case {'psc','pdf','ill','jpeg'}  % other bitmap and vector graphics formats (PDF, ...)
     f=figure('visible','off');
     plot(a,options);
-    print(f, [ '-d' format ], filename);
+    print(f, [ '-d' formatShort ], filename);
     close(f);
   case 'fig'  % Matlab figure format
     f=figure('visible','off');
@@ -394,12 +389,12 @@ try
     vrml(g,filename);
     close(f);
   case {'x3d','xhtml'} % X3D/XHTML format
-    filename = iData_private_saveas_x3d(a, filename, format, options);
+    filename = iData_private_saveas_x3d(a, filename, formatShort, options);
   case {'html','htm'}
     % create a folder with the HTML doc, figures
-    filename = iData_private_saveas_html(a, filename);
+    filename = iData_private_saveas_html(a, filename, [ format ' ' root ' ' options ]);
   case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
-    filename = iData_private_saveas_stl(a, filename, format);
+    filename = iData_private_saveas_stl(a, filename, formatShort);
   case {'yaml','yml'}
     if usejava('jvm')
       YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects

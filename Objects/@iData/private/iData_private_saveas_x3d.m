@@ -13,7 +13,7 @@ function filename = iData_private_saveas_x3d(a, filename, format, options)
       h = plot(reducevolume(a));
     end
     figure2xhtml(filename, f, struct('interactive',true, ...
-      'output', format,'title',titl,'Description',desc));
+      'output', strtok(format),'title',titl,'Description',desc));
     close(f);
   else
     [x, xlab] = getaxis(a,2); x=double(x);

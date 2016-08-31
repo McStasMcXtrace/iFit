@@ -1,4 +1,4 @@
-function filename = iData_private_saveas_html(a, filename)
+function filename = iData_private_saveas_html(a, filename, format)
   % save an iData into an HTML document
   % if the document already exists, the new content is appended
   if isempty(a), filename=[]; return; end
@@ -7,6 +7,7 @@ function filename = iData_private_saveas_html(a, filename)
   else 
     mode = 'a+';
   end
+  if nargin < 3, format = ''; else format=lower(format); end
 
   [Path, name, ext] = fileparts(filename);
   target = Path;
@@ -127,8 +128,12 @@ function filename = iData_private_saveas_html(a, filename)
   basename     = fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag ]);
   basename_img = fullfile('img', [ 'iFit_DataSet_' a.Tag ]);
   saveas(f, basename, 'png');
-  saveas(f, basename, 'fig');
-  saveas(f, basename, 'pdf');
+  
+  % only export when not in 'data' mode (flat HTML with minimal content)
+  if isempty(strfind(format, 'data')) && isempty(strfind(format, 'flat'))
+    saveas(f, basename, 'fig');
+    saveas(f, basename, 'pdf');
+  end
   close(f);
   
   % export object into a number of usable formats
@@ -165,16 +170,18 @@ function filename = iData_private_saveas_html(a, filename)
     export_label = [ export_label ...
       'Extensible Web page with embeded viewer (X3DOM), to be viewed with Chrome/Firefox.' ];
   end
-  for index=1:numel(export)
-    f = export{index};
-    if flag_data && isempty(strfind(f, 'data'))
-      f = [ f ' data' ];
-    end
-    switch export{index}
-    case 'mat'
-      builtin('save', basename, 'a');
-    otherwise
-      save(a, basename, f);
+  if isempty(strfind(format, 'data')) && isempty(strfind(format, 'flat'))
+    for index=1:numel(export)
+      f = export{index};
+      if flag_data && isempty(strfind(f, 'data'))
+        f = [ f ' data' ];
+      end
+      switch export{index}
+      case 'mat'
+        builtin('save', basename, 'a');
+      otherwise
+        save(a, basename, f);
+      end
     end
   end
   export = [ export 'png' 'fig' 'pdf' ];

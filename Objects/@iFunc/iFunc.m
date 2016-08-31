@@ -140,7 +140,21 @@ else   % import data to create a single object
   this = varargin{1};
   
   if ischar(this) && ~isempty(dir(this))  % a filename
-    a = iFunc(iLoad(this));
+    [p,f,e] = fileparts(this);
+    if strcmp(lower(e), '.m')
+      try
+        run(this);
+        if isa(ans, 'iFunc'), a=ans; end
+      end
+      if isempty(a)
+        try
+          a = eval(f);
+        end
+      end
+    end
+    if isempty(a)
+      a = iFunc(iLoad(this));
+    end
   elseif ischar(this) % ----------------------------------------------------------
     % check if this is a predefined function
     isfunction = 0;
@@ -164,7 +178,13 @@ else   % import data to create a single object
       end
       a.Expression = this;
     end
-  
+  elseif iscell(this)
+    for index=1:numel(this)
+      try 
+        a = [ a iFunc(this{index}) ];
+      end
+    end
+    return
   elseif isa(this, 'iFunc') % ------------------------------------------------
     % make a copy of the initial object
     a = this;

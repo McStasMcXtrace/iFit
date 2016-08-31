@@ -115,12 +115,17 @@ if any(regexp(format, '\<gui\>'))
   format = format(3:end);
 end
 
+if isempty(format) && ~isempty(filename) && any(~cellfun(@isempty,strfind(filterspec(:,1),strtok(filename, ' ;*'))))
+  format = filename; filename = '';
+end
+
 format=lower(strtrim(format));
+formatShort = strtok(format, ' ;*.')
 
 % handle extensions
 [path, name, ext] = fileparts(filename);
 if isempty(ext) & ~isempty(format), 
-  ext = [ '.' format ]; 
+  ext = [ '.' formatShort ]; 
   filename = [ filename ext ];
 elseif isempty(format) & ~isempty(ext)
   format = ext(2:end);
@@ -128,16 +133,21 @@ elseif isempty(format) & isempty(ext)
   format='m'; filename = [ filename '.m' ];
 end
 
+if isempty(filename) || isempty(name), 
+  filename = [ 'iFit_' a.Tag '.' formatShort ]; 
+  name = filename; 
+end
+
 % handle array of objects to save iteratively, except for file formats that support
 % multiple entries: HTML MAT
-if numel(a) > 1 && ~strcmp(lower(format),'mat')
+if numel(a) > 1 && ~strcmp(lower(formatShort),'mat')
   if length(varargin) >= 1, filename_base = varargin{1}; 
   else filename_base = ''; end
   if strcmp(filename_base, 'gui'), filename_base=''; end
   if isempty(filename_base), filename_base='iFunc'; end
   filename = cell(size(a));
   for index=1:numel(a)
-    if numel(a) > 1 && ~strcmpi(format, 'html')
+    if numel(a) > 1 && ~strcmpi(formatShort, 'html')
       [path, name, ext] = fileparts(filename_base);
       varargin{1} = [ path name '_' num2str(index,'%04d') ext ];
     elseif index == 1 && ~isempty(dir(filename_base))
@@ -164,7 +174,7 @@ end
 
 % ==============================================================================
 % handle specific format actions
-switch format
+switch formatShort
 case 'm'  % single m-file Matlab output (text), with the full object description
   [dummy,e] = char(a); % get the model header
   e         = cellstr(e);
