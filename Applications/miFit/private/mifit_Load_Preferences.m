@@ -13,6 +13,7 @@ function config = mifit_Load_Preferences
     config.FontSize         = max(12, get(0,'defaultUicontrolFontSize'));
     config.Save_Data_On_Exit= 'yes';
     config.Store_Models     = 3;  % time required for creation. Store when > 0:always, Inf=never
+    config.History_Level    = 10;
   end
   setappdata(mifit_fig, 'Preferences', config);
   set(0,'defaultUicontrolFontSize', config.FontSize);
