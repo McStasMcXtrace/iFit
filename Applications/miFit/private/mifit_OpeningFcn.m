@@ -19,6 +19,8 @@ if isempty(fig) || ~ishandle(fig)
     setappdata(fig, 'Data',    []);
     setappdata(fig, 'History', {});
     setappdata(fig, 'Models',  {});
+    setappdata(fig, 'CurrentOptimizer',  []);
+    setappdata(mifit_fig, 'CurrentModel',[]);
     
     % Display welcome dialog during menu build
     h = mifit_Tools_About(fig);
@@ -28,7 +30,7 @@ if isempty(fig) || ~ishandle(fig)
     end
     
     % get the list of Models and Optimizers
-    models = [];
+    models = []; d=[];
     file = fullfile(prefdir, [ 'mifit' '.mat' ]);
     if ~isempty(dir(file))
       try
@@ -71,9 +73,14 @@ if isempty(fig) || ~ishandle(fig)
             end
             if ~isempty(algorithm)
               % TODO: must add callback to assign optimizer
-              uimenu(hoptim, 'Label', algorithm, 'UserData', f{1});
+              uimenu(hoptim, 'Label', algorithm, 'UserData', f{1}, ...
+                'Callback', 'mifit(''Optimizers_Set'',gcbo);');
             end
         end
+    end
+    % assign the saved CurrentOptimizer
+    if isfield(d, 'CurrentOptimizer')
+      mifit('Optimizers_Set',d.CurrentOptimizer); 
     end
     
     % create the AppData Data Stack

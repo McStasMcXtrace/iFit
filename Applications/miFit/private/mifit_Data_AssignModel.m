@@ -36,7 +36,7 @@ function mifit_Data_AssignModel(varargin)
     return; 
   end
   model
-  mifit_disp([ 'Assigning Model "' model.Name '" to ' num2str(numel(index_selected)) ' Data set(s).' ]);
+  mifit_disp([ 'Assigning Model "' model.Name '" to ' num2str(numel(index_selected)) ' Data set(s):' ]);
   mifit_History_push();
   if numel(D) > 1
     for index=index_selected(:)'

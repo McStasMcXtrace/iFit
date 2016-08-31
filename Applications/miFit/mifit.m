@@ -160,6 +160,7 @@ function mifit_File_Saveas(varargin)
   Data       = getappdata(fig, 'Data');
   Models     = getappdata(fig, 'Models');
   Optimizers = getappdata(fig, 'Optimizers');
+  CurrentOptimizer = getappdata(fig, 'CurrentOptimizer');
  
   if nargin == 1 && ischar(varargin{1})
     file = varargin{1};
@@ -172,7 +173,7 @@ function mifit_File_Saveas(varargin)
     file = fullfile(pathname, filename);
   end
   mifit_disp([ '[File_Saveas] Saving Data sets/Models into ' file ]);
-  builtin('save', file, 'Data','Models','Optimizers');
+  builtin('save', file, 'Data','Models','Optimizers','CurrentOptimizer');
   
 function mifit_File_Print(varargin)
 % print the interface. Not very nice. can we think of something better ?
@@ -452,18 +453,24 @@ function mifit_Models_Plot(varargin)
   disp([ mfilename ': Models_Plot: TODO' ])
   
 function mifit_Models_Plot_Parameters(varargin)
+  % TODO
+  disp([ mfilename ': Models_Plot: TODO uitable' ])
 
 function mifit_Models_Export_Parameters(varargin)
   % * Export to file... (JSON, M, YAML, MAT...)
+  disp([ mfilename ': Models_Plot: TODO' ])
 
 function mifit_Models_View_Parameters(varargin)
   % get 1st selected Model from Data set or Models menu current choice
   % Display a uitable with columns:
   % [ Parameters | ParameterValues | constraints.fixed | constraints.min | constraints.max ]
+  % TODO
+  disp([ mfilename ': Models_Plot: TODO' ])
   
 function mifit_Models_Add_Expression(varargin)
-    % * 4D TAS convolution        -> in Models Transformation/operations
+  % * 4D TAS convolution        -> in Models Transformation/operations
   % * Powder average 4D -> 2D   -> in Models Transformation/operations
+  % TODO: is this needed ?
 
 % set optimizer configuration -> contextual dialogue in Model_Parameters uitable ?
   
@@ -501,6 +508,55 @@ function mifit_List_Data_UpdateStrings
     list{end+1} = char(Data);
   end
   set(hObject,'String', list, 'Value', []);
-
-
   
+function mifit_Optimizers_Set(varargin)
+  if nargin == 0, return; end
+  % set the optimizer to use
+  if ishandle(varargin{1})
+    selected = get(varargin{1},'UserData');
+  elseif ischar(varargin{1})
+    selected = varargin{1};
+  else return
+  end
+  mifit_disp([ '[Optimizer] Setting optimizer to ' selected ]);
+
+  % we get the CurrentOptimizer, and check it. uncheck the others
+  hmodels = mifit_fig('Menu_Optimizers');
+  hoptims = get(hmodels,'Children');
+  if nargin ==0, selected = []; end
+  if isempty(selected) selected = getappdata(mifit_fig, 'CurrentOptimizer'); end
+  setappdata(mifit,'CurrentOptimizer', selected);
+  set(hoptims,'Checked','off');
+  names = get(hoptims,'UserData');
+  index=strcmp(selected, names);
+  set(hoptims(index),'Checked','on');
+  
+function mifit_Models_Load(varargin)
+  % we pop-up a file selector, read as iFunc, and store it in miFit.
+  models = load(iFunc, '');
+  if isempty(models), return; end
+  mifit_disp([ '[Models] Loading ' num2str(numel(models)) ' new models:' ]);
+  mifit_disp(display(models));
+  mifit(models);
+  
+function mifit_Models_Export(varargin)
+  % get the list of 'static' iFunc models (which have been created and stored in the Models menu)
+  [ifuncs, labels,indices] = mifit_Models_GetList();
+  % pop-up a dialogue box to select those to export, with select all button
+  [selection, ok] = listdlg('ListString', labels, 'SelectionMode', 'multiple', ...
+    'Name','miFit: Select Models to Export');
+  if isempty(selection), return; end
+  % pop-up the iFunc.save export dialogue
+  save(ifuncs(selection),'gui');
+function [ifuncs, labels,indices] = mifit_Models_GetList(varargin)
+  % get the list of iFunc models (not expressions) in the Models menu
+  models = getappdata(mifit_fig,'Models');
+  ifuncs = []; labels = {}; indices = [];
+  for index=1:numel(models)
+    this = models{index};
+    if ~isempty(this.callback) && isa(this.callback, 'iFunc')
+      ifuncs = [ ifuncs this.callback ];
+      labels{end+1} = this.label;
+      indices(end+1) = index;
+    end
+  end
