@@ -34,20 +34,21 @@ function out = load(a, filename)
        filterspec, ...
         ['Load iFunc/Model from ...']);
     if ~isempty(filename) & filename ~= 0
-    ext = filterspec{filterindex,1};
-    if iscell(ext) && ischar(ext{1}), ext=ext{1}; end
-    % check if extension was given
-    [f,p,e] = fileparts(filename);
-    if isempty(e), 
-      filename=[ filename ext(2:end) ];
-      format=ext(3:end);
+      ext = filterspec{filterindex,1};
+      if iscell(ext) && ischar(ext{1}), ext=ext{1}; end
+      % check if extension was given
+      [f,p,e] = fileparts(filename);
+      if isempty(e), 
+        filename=[ filename ext(2:end) ];
+        format=ext(3:end);
+      else
+        format=e(2:end);
+      end
+      filename = strcat(pathname, filesep, filename);
     else
-      format=e(2:end);
+      return
     end
-  else
-    return
   end
-end
 
 % import with the selected filename
   out = iFunc(filename);

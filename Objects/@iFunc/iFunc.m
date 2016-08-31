@@ -151,6 +151,14 @@ else   % import data to create a single object
           a = eval(f);
         end
       end
+    elseif strcmp(lower(e), '.mat')
+      this=load(this);
+      f=fieldnames(this);
+      for index=1:numel(f)
+        if isa(this.(f{index}), 'iFunc')
+          a = [ a this.(f{index}) ];
+        end
+      end
     end
     if isempty(a)
       a = iFunc(iLoad(this));

@@ -87,18 +87,19 @@ if strcmp(filename, 'gui')
   if numel(a) > 1, t=[ num2str(numel(a)) ' objects' ]; else t=get(a,'Name'); end
   [filename, pathname, filterindex] = uiputfile( ...
        filterspec, ...
-        ['Save ' t ' as...'], a.Tag);
+        ['Save ' t ' as...'], a(1).Tag);
   if ~isempty(filename) & filename ~= 0
-    ext = filterspec{filterindex,1};
+    ext = strtok(filterspec{filterindex,1},' *;');
     if iscellstr(ext), ext=ext{1}; end
     % check if extension was given
     [f,p,e] = fileparts(filename);
     if isempty(e), 
-      filename=[ filename ext(2:end) ];
-      format=ext(3:end);
+      filename=[ filename ext ];
+      format=ext;
     elseif isempty(format)
-      format=e(2:end);
+      format=e;
     end
+    filename = strcat(pathname, filesep, filename);
   else
     filename=[]; return
   end
@@ -120,7 +121,7 @@ if isempty(format) && ~isempty(filename) && any(~cellfun(@isempty,strfind(filter
 end
 
 format=lower(strtrim(format));
-formatShort = strtok(format, ' ;*.')
+formatShort = strtok(format, ' ;*.');
 
 % handle extensions
 [path, name, ext] = fileparts(filename);
@@ -141,33 +142,34 @@ end
 % handle array of objects to save iteratively, except for file formats that support
 % multiple entries: HTML MAT
 if numel(a) > 1 && ~strcmp(lower(formatShort),'mat')
-  if length(varargin) >= 1, filename_base = varargin{1}; 
-  else filename_base = ''; end
+  filename_base = filename;
   if strcmp(filename_base, 'gui'), filename_base=''; end
-  if isempty(filename_base), filename_base='iFunc'; end
+  if isempty(filename_base),       filename_base='iFunc_'; end
+  
   filename = cell(size(a));
   for index=1:numel(a)
+    this_filename = filename_base;
     if numel(a) > 1 && ~strcmpi(formatShort, 'html')
       [path, name, ext] = fileparts(filename_base);
-      varargin{1} = [ path name '_' num2str(index,'%04d') ext ];
+      this_filename = [ path name '_' num2str(index,'%04d') ext ];
     elseif index == 1 && ~isempty(dir(filename_base))
       delete(filename_base);
     end
-    [filename{index}, format] = saveas(a(index), varargin{:});
+    [filename{index}, format] = saveas(a(index), this_filename, format);
   end
   return
 end
 
 % handle some format aliases (after extension extraction from file name)
-switch format
+switch formatShort
 case 'jpg'
-  format='jpeg';
+  formatShort='jpeg';
 case 'eps'
-  format='epsc';
+  formatShort='epsc';
 case 'ps'
-  format='psc';
+  formatShort='psc';
 case 'hdf4'
-  format='hdf';
+  formatShort='hdf';
 end
 
 % remove NaN values, which are usually not well supported by text based formats
@@ -248,8 +250,8 @@ case 'epsc' % color encapsulated postscript file format, with TIFF preview
 case {'png','tiff','jpeg','psc','pdf','ill','gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf'}  % bitmap and vector graphics formats (PDF, ...)
   f=figure('visible','off');
   plot(a,options);
-  if strcmp(format,'hdf4'), format='hdf'; end
-  print(f, [ '-d' format ], filename);
+  if strcmp(formatShort,'hdf4'), formatShort='hdf'; end
+  print(f, [ '-d' formatShort ], filename);
   close(f);
 case 'fig'  % Matlab figure format
   f=figure('visible','off');
@@ -314,7 +316,7 @@ case {'html','htm'}
   close(f);
   
   % export object into a number of usable formats
-  export       = {'mat','dat',' hdf4', 'json','xml','yaml', 'svg'};
+  export       = {'mat','dat',' hdf4', 'json','xml','yaml'};
   export_label = { ...
   'Matlab binary file. Open with Matlab or <a href="http://ifit.mccode.org">iFit</a>.', ...
   'Flat text file which contains axes and the data set. You will have to reshape the matrix after reading the contents. View with any text editor.', ...

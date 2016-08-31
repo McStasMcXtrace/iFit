@@ -287,8 +287,8 @@ if model.Dimension && ...
       end
     end
     if isa(model.Guess, 'function_handle')
-      n = nargin(model.Guess);                % number of required arguments
       try
+        n = nargin(model.Guess);                % number of required arguments
         % moments of distributions
         m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
         m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
