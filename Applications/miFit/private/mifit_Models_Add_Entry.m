@@ -18,6 +18,7 @@ function mifit_Models_Add_Entry(model)
   
   % handle array of entries
   if numel(model) > 1  % model is a cell or array of entries
+    mifit_disp([ '[Models] Setting ' num2str(numel(model)) ' Models...' ]);
     for index=1:numel(model)
       if iscell(model), mifit_Models_Add_Entry(model{index});
       else              mifit_Models_Add_Entry(model(index));
@@ -67,10 +68,6 @@ function mifit_Models_Add_Entry(model)
   
   if isempty(dim) % this is a model creator (new instance) from expression
     % we assume this is an expression and try to evaluate it as such
-    modelF = [];
-    disp('Evaluating')
-    callback
-    model
     try
       modelF    = feval(callback, 'identify');
     catch
@@ -81,7 +78,6 @@ function mifit_Models_Add_Entry(model)
     dim   = modelF.Dimension;
     if isempty(label), label = [ '"' callback '" = ' modelF.Name ]; end
   end
-
   % determine the name of the sub-menu to use
   if isempty(dim), dim = -1; end  % will use Others
   if dim > 0, model_submenu_name = sprintf('%dD', dim);
@@ -104,7 +100,7 @@ function mifit_Models_Add_Entry(model)
     return; 
   end
     
-  uimenu(submenu_handle, 'Label', label, 'UserData', callback, ...
+  handle = uimenu(submenu_handle, 'Label', label, 'UserData', callback, ...
                 'CallBack', 'mifit(''Data_AssignModel'',gcbo)');
                 
   % store the entry in the appdata
@@ -115,5 +111,8 @@ function mifit_Models_Add_Entry(model)
   %   char (expression)
   Models = getappdata(mifit_fig, 'Models');
   if ~isa(model, 'iFunc'), model=[]; end
-  Models{end+1} = struct('callback',callback, 'label',label,'object',model);
+  Models{end+1} = struct('callback',callback, 'label',label, ...
+    'object',model, 'handle',handle, 'dimension',dim);
   setappdata(mifit_fig, 'Models',Models);
+  
+  
