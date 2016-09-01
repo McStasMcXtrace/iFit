@@ -47,7 +47,8 @@ if isempty(fig) || ~ishandle(fig)
       % build Models.callback and Models.label. We will instantiate at callback.
       modelsF = cell(1, numel(models));
       for index=1:numel(models)
-        this = struct('callback',filenames{index},'label',get(models(index), 'Name'),'object',models(index));
+        this = struct('callback',filenames{index}, ...
+          'label',get(models(index), 'Name'), 'object',models(index));
         modelsF{index}=this;
       end
       models = modelsF;
@@ -61,6 +62,7 @@ if isempty(fig) || ~ishandle(fig)
     % fill Optimizers menu
     if ~isempty(optimizers) && iscell(optimizers)
         mifit_disp([ '[Init] Initializing ' num2str(numel(optimizers)) ' Optimizers ...' ]);
+        separator = 'on';
         for f=optimizers
             % each optimizer is given with its function name. We request
             % 'defaults' and display its name
@@ -74,27 +76,24 @@ if isempty(fig) || ~ishandle(fig)
             if ~isempty(algorithm)
               % TODO: must add callback to assign optimizer
               uimenu(hoptim, 'Label', algorithm, 'UserData', f{1}, ...
-                'Callback', 'mifit(''Optimizers_Set'',gcbo);');
+                'Callback', 'mifit(''Optimizers_Set'',gcbo);', ...
+                'separator', separator);
+              separator = 'off';
             end
         end
     end
     % assign the saved CurrentOptimizer
-    if isfield(d, 'CurrentOptimizer')
-      mifit('Optimizers_Set',d.CurrentOptimizer); 
-    end
+    if ~isfield(d, 'CurrentOptimizer'), d.CurrentOptimizer = []; end
+    mifit('Optimizers_Set',d.CurrentOptimizer);
     
     % create the AppData Data Stack
     setappdata(fig, 'Optimizers',optimizers);
     
     % Load the previous Data sets containing Model Parameters (when a fit was performed)
-    file = fullfile(prefdir, [ 'mifit' '.mat' ]);
-    if ~isempty(dir(file))
-      try
-        d = load(file);
-        if isfield(d, 'Data')
-          mifit_disp([ '[Init] Loading Data sets from ' file ]);
-          mifit_List_Data_push(d.Data);
-        end
+    if ~isempty(d)
+      if isfield(d, 'Data')
+        mifit_disp([ '[Init] Loading Data sets from ' file ]);
+        mifit_List_Data_push(d.Data);
       end
     end
     file = fullfile(prefdir, [ 'mifit' '.log' ]);

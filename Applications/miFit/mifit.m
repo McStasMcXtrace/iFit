@@ -192,30 +192,22 @@ function mifit_File_Preferences(varargin)
 % save Preferences on dialogue close
   fig = mifit_fig;
   config = getappdata(mifit_fig, 'Preferences');
-  prompt = {'Font size [10-36]','Save Data sets on Exit [yes/no]','Store Models when creation time is longer than [sec, 0:always, Inf:never, default=3]','Undo levels to keep [2-50, reduce if you handle large/many data sets]'};
   if ~isfield(config, 'FontSize'),          config.FontSize=12; end
   if ~isfield(config, 'Save_Data_On_Exit'), config.Save_Data_On_Exit='yes'; end
   if ~isfield(config, 'Store_Models'),      config.Store_Models=3; end
   if ~isfield(config, 'History_Level'),     config.History_Level=10; end
-  defaultanswer = { num2str(config.FontSize), config.Save_Data_On_Exit, 
-    num2str(config.Store_Models), num2str(config.History_Level) };
-  name  = [ mfilename ': Preferences' ];
-  options.Resize='on';
-  options.WindowStyle='normal';
-  answer=inputdlg(prompt,name,1,defaultanswer,options);
-  if isempty(answer), return; end
-  
+  options.Name       = [ mfilename ': Preferences' ];
+  options.ListString = {'Font size [10-36]', ...
+    'Save Data sets on Exit [yes/no]', ...
+    'Store Models when creation time is longer than [sec, 0:always, Inf:never, default=3]', ...
+    'Undo levels to keep [2-50, reduce if you handle large/many data sets]'};
+  options.FontSize   = config.FontSize;
+  config1 = structdlg(config, options);
+  if isempty(config1), return; end
+  config = config1;
   % set new Preferences
-  answer{1} = str2double(answer{1});
-  if isfinite(answer{1}) 
-    config.FontSize=min(max(answer{1}, 10),36); end
-  if any(strcmp(answer{2}, {'yes','no'})) 
-    config.Save_Data_On_Exit = answer{2}; end
-  answer{3} = str2double(answer{3});
-  if isfinite(answer{3}) 
-    config.Store_Models=answer{3}; end
-  if isfinite(answer{4}) 
-    config.History_Level=min(max(answer{4}, 2),50); end
+  config.FontSize=min(max(config.FontSize, 10),36);
+  config.History_Level=min(max(config.History_Level, 2),50);
   setappdata(mifit_fig, 'Preferences', config);
   mifit_Apply_Preferences;
   mifit_Save_Preferences(config);
@@ -383,6 +375,7 @@ function mifit_Data_Plot(varargin)
 function mifit_Data_Fit(varargin)
   d = mifit_List_Data_pull;
   % TODO: it is desirable to handle constraints (min/max/fix)
+  % TODO: must get the CurrentOptimizer and its configuration
   p=fits(d, '', '', 'OutputFcn=fminplot;Display=iter');  % with assigned models or gaussians
   
 function mifit_Data_Saveas(varargin)
@@ -434,17 +427,63 @@ function mifit_Data_Math_Binary(varargin)
   
 function mifit_Data_Math(varargin)
   % TODO
+  % should contain e.g. conv4d and sqw_powder...
   disp([ mfilename ': Data_Math (others): TODO' ])
 
-% Models and Optimizers menu ***************************************************
+% Models menu ******************************************************************
 
-function mifit_Models_Add(varargin)
-  % TODO
-  disp([ mfilename ': Models_Add: TODO' ])
-  % * Add from file... (JSON, M, YAML, MAT)
+function [ifuncs, labels,indices,handles] = mifit_Models_GetList(varargin)
+  % get the list of iFunc models (not expressions) in the Models menu
+  % indices is the index of 'static' Models in the whole list.
+  models = getappdata(mifit_fig,'Models');
+  ifuncs = []; labels = {}; indices = []; handles = [];
+  for index=1:numel(models)
+    this = models{index};
+    if ~isempty(this.callback) && isa(this.callback, 'iFunc')
+      ifuncs = [ ifuncs this.callback ];
+      handles= [ handles this.handle ];
+      labels{end+1} = this.label;
+      indices(end+1) = index;
+    end
+  end
+
+function mifit_Models_Load(varargin)
+  % we pop-up a file selector, read as iFunc, and store it in miFit.
+  models = load(iFunc, '');
+  if isempty(models), return; end
+  mifit_disp([ '[Models] Loading ' num2str(numel(models)) ' new models:' ]);
+  mifit_disp(display(models));
+  mifit(models);
+  
+function mifit_Models_Export(varargin)
+  % get the list of 'static' iFunc models (which have been created and stored in the Models menu)
+  [ifuncs, labels,indices] = mifit_Models_GetList();
+  if isempty(indices), return; end
+  % pop-up a dialogue box to select those to export, with select all button
+  [selection, ok] = listdlg('ListString', labels, 'SelectionMode', 'multiple', ...
+    'Name','miFit: Select Models to Export', 'ListSize',[300 160]);
+  if isempty(selection), return; end
+  % pop-up the iFunc.save export dialogue
+  save(ifuncs(selection),'gui');
+  
+function mifit_Models_Remove(varargin)
+  % select 'static' iFunc models to remove from the menu
+   
+  % get the list of 'static' iFunc models (which have been created and stored in the Models menu)
+  [ifuncs, labels, indices,handles] = mifit_Models_GetList();
+  if isempty(indices), return; end
+  % pop-up a dialogue box to select those to remove, with select all button
+  [selection, ok] = listdlg('ListString', labels, 'SelectionMode', 'multiple', ...
+    'Name','miFit: Select Models to Remove', 'ListSize',[300 160]);
+  if isempty(selection), return; end
+  delete(handles(selection))
+  models = getappdata(mifit_fig,'Models');
+  models(indices(selection)) = [];
+  setappdata(mifit_fig,'Models',models);
 
 function mifit_Models_Edit(varargin)
-  % TODO
+  % TODO: should be a free input dialogue where we can enter expressions, 
+  % and insert existing objects reference
   disp([ mfilename ': Models_Edit: TODO' ])
   % create new Models after edition
   
@@ -454,18 +493,102 @@ function mifit_Models_Plot(varargin)
   
 function mifit_Models_Plot_Parameters(varargin)
   % TODO
-  disp([ mfilename ': Models_Plot: TODO uitable' ])
+  disp([ mfilename ': Models_Plot_Parameters: TODO uitable' ])
 
 function mifit_Models_Export_Parameters(varargin)
   % * Export to file... (JSON, M, YAML, MAT...)
-  disp([ mfilename ': Models_Plot: TODO' ])
+  disp([ mfilename ': Models_Export_Parameters: TODO' ])
 
 function mifit_Models_View_Parameters(varargin)
   % get 1st selected Model from Data set or Models menu current choice
   % Display a uitable with columns:
-  % [ Parameters | ParameterValues | constraints.fixed | constraints.min | constraints.max ]
+  % [ Parameters | ParameterValues | ParameterUncertainty | constraints.fixed | constraints.min | constraints.max ]
   % TODO
-  disp([ mfilename ': Models_Plot: TODO' ])
+  disp([ mfilename ': Models_View_Parameters: TODO' ])
+  
+  % get the Model to use.
+  % if a Data set selection exists, get the first data set Model, or left empty
+  model = [];
+  d=mifit_List_Data_pull(); % get selected objects
+  if ~isempty(d)
+    d=d(1);
+    if isfield(d, 'Model')
+      model = get(d, 'Model');
+    elseif ~isempty(findfield(d, 'Model'))
+      model = get(d, findfield(d, 'Model', 'cache first'));
+    end
+  end
+  % if CurrentModel exists, get it.
+  if isempty(model)
+    CurrentModel = getappdata(mifit_fig, 'CurrentModel');
+  end
+  % else get 'gauss'
+  if isempty(model)
+    model = gauss;
+  end
+  
+  % now display the figure and uitable
+  % [ Parameters | ParameterValues | ParameterUncertainty | constraints.fixed | constraints.min | constraints.max ]
+  config = getappdata(mifit_fig, 'Preferences');
+  numCol = 6;
+  options.Name       = [ 'mifit: ' model.Name ];
+  options.ListString = ''; % model.Parameters;
+  options.FontSize   = config.FontSize;
+  options.TooltipString = { model.Description, ...
+    'The Model will be updated when changing values.' };
+  options.TooltipString = textwrap(options.TooltipString,80);
+  options.TooltipString =sprintf('%s\n', options.TooltipString{:});
+  options.ColumnName = {'Parameter','Value','Uncertainty','Fixed','Min','Max'};
+  options.ColumnFormat={'char',     'numeric','numeric',  'logical','numeric','numeric'};
+  options.ColumnEditable=[false true false true true true ];
+  Data0              = model.ParameterValues;
+  
+  % build the figure
+  f = figure('Name',options.Name, 'MenuBar','none');
+  % TODO: should install a callback when Parameters are changed: update the Data 
+  % set Model Parameters and replot.
+        
+  % determine the window size to show
+  TextWidth = 12;
+  TextHeight= 30;
+  n = numel(model.Parameters);
+  % height is given by the number of fields
+  height = (n+3)*TextHeight;
+  % width is given by the length of the longest RowName
+  width = max(cellfun(@numel,model.Parameters))*TextWidth + 5*numCol*options.FontSize;
+  % compare to current window size
+  p = get(f, 'Position');
+  p(3) = width;
+  if p(4) > height, p(4) = height; end
+  set(f, 'Position',p);
+  
+  % assemble the Data
+  
+  e = cell(n, 1);   % empty
+  TF= mat2cell(false(n,1), ones(n,1),1);
+  z = mat2cell(zeros(n,1), ones(n,1),1);
+  mp = model.Parameters;
+  mpv= model.ParameterValues;
+  if isempty(mpv), mpv=z; 
+  else mpv = mat2cell(mpv, ones(n,1),1); end
+  Data = cell(n,6);
+  Data(:,1)= mp;    % Parameter names
+  Data(:,2)= mpv;   % Parameter values
+  Data(:,3)= z;     % Parameter uncertainties
+  Data(:,4)= TF;    % Parameter fixed/free
+  Data(:,5)= e;     % Parameter min
+  Data(:,6)= e;     % Parameter max
+
+  % 'RowName',       options.ListString, ...
+  t = uitable('Parent',f, ...
+    'Data',          Data, ...
+    'ColumnName',    options.ColumnName, ...
+    'ColumnEditable',options.ColumnEditable, ...
+    'ColumnFormat',  options.ColumnFormat, ...
+    'FontSize',      options.FontSize, ...
+    'RowStriping','on',...
+    'Units','normalized', 'Position', [0.05 0.2 .9 .7 ], ...
+    'ColumnWidth','auto','TooltipString',options.TooltipString);
   
 function mifit_Models_Add_Expression(varargin)
   % * 4D TAS convolution        -> in Models Transformation/operations
@@ -473,8 +596,72 @@ function mifit_Models_Add_Expression(varargin)
   % TODO: is this needed ?
 
 % set optimizer configuration -> contextual dialogue in Model_Parameters uitable ?
+
+% Optimizers menu **************************************************************
+
+function mifit_Optimizers_Configure(varargin)
+  % change optimizer configuration parameters
+  CurrentOptimizer = getappdata(mifit_fig,'CurrentOptimizer');
+  mifit_disp([ '[Optimizers_Configure] Configure "' CurrentOptimizer '"' ]);
+  options  = getappdata(mifit_fig,'CurrentOptimizerConfig');
+  config = getappdata(mifit_fig, 'Preferences');
+  o.FontSize = config.FontSize;
+  o.Name     = [ mfilename ': Optimizer "' CurrentOptimizer '" configuration' ];
+  NL = sprintf('\n');
+  o.TooltipString = [ 'Most relevant "' CurrentOptimizer '" configuration items:' NL ...
+    '* MaxFunEvals - Maximum number of function evaluations allowed [ positive integer ]' NL ...
+    '* MaxIter - Maximum number of iterations allowed [ positive scalar ]' NL ...
+    '* TolFun - Termination tolerance on the function value [ positive scalar ]' NL ...
+    '* TolX - Termination tolerance on X [ positive scalar ]' ];
+  options1 = structdlg(options, o);
+  if isempty(options1), return; end
+  % look for changes in new options...
+  fields = fieldnames(options);
+  for index=1:numel(fields)
+    if ~isequal(options1.(fields{index}), options.(fields{index}))
+      t1 = class2str(fields{index},options1.(fields{index})); t1 = strrep(t1, sprintf('\n'), '');
+      t0 = class2str(fields{index},options.(fields{index}));  t0 = strrep(t0, sprintf('\n'), '');
+      mifit_disp([ '[Optimizers_Configure] Assigned ' CurrentOptimizer ': ' ...
+        t1 ' [was ' t0 ']' ]);
+    end
+  end
+  options = options1;
+  setappdata(mifit_fig,'CurrentOptimizerConfig', options);
+  
+  
+function selected = mifit_Optimizers_Set(varargin)
+
+  % set the optimizer to use
+  selected0 = getappdata(mifit_fig, 'CurrentOptimizer');
+  selected  = selected0;
+  if nargin && ~isempty(varargin{1})
+    if ishandle(varargin{1})
+      selected = get(varargin{1},'UserData');
+    elseif ischar(varargin{1})
+      selected = varargin{1};
+    end
+  end
+  if isempty(selected), selected='fmin'; end  % default when not set
+  if ~strcmp(selected, selected0) % when we change the optimizer, we reset its Configuration
+    options = feval(selected, 'defaults');
+    setappdata(mifit_fig,'CurrentOptimizerConfig', options);
+  end
+  mifit_disp([ '[Optimizer] Setting optimizer to "' selected '"' ]);
+  setappdata(mifit_fig,'CurrentOptimizer', selected);
+
+  % we get the CurrentOptimizer, and check it. uncheck the others
+  hmodels = mifit_fig('Menu_Optimizers');
+  hoptims = get(hmodels,'Children');
+  names   = get(hoptims,'UserData');
+  index   = strcmp(selected, names);
+  set(hoptims,'Checked','off');
+  set(hoptims(index),'Checked','on');
   
 % Tools menu *******************************************************************
+
+function mifit_Tools_Help(varargin)
+  % TODO
+  disp([ mfilename ': Tools_Help: TODO' ])
   
 function mifit_Tools_Help_Loaders(varargin)
   doc(iData,'Loaders');
@@ -508,55 +695,8 @@ function mifit_List_Data_UpdateStrings
     list{end+1} = char(Data);
   end
   set(hObject,'String', list, 'Value', []);
-  
-function mifit_Optimizers_Set(varargin)
-  if nargin == 0, return; end
-  % set the optimizer to use
-  if ishandle(varargin{1})
-    selected = get(varargin{1},'UserData');
-  elseif ischar(varargin{1})
-    selected = varargin{1};
-  else return
-  end
-  mifit_disp([ '[Optimizer] Setting optimizer to ' selected ]);
 
-  % we get the CurrentOptimizer, and check it. uncheck the others
-  hmodels = mifit_fig('Menu_Optimizers');
-  hoptims = get(hmodels,'Children');
-  if nargin ==0, selected = []; end
-  if isempty(selected) selected = getappdata(mifit_fig, 'CurrentOptimizer'); end
-  setappdata(mifit,'CurrentOptimizer', selected);
-  set(hoptims,'Checked','off');
-  names = get(hoptims,'UserData');
-  index=strcmp(selected, names);
-  set(hoptims(index),'Checked','on');
+% ******************************************************************************
+
+
   
-function mifit_Models_Load(varargin)
-  % we pop-up a file selector, read as iFunc, and store it in miFit.
-  models = load(iFunc, '');
-  if isempty(models), return; end
-  mifit_disp([ '[Models] Loading ' num2str(numel(models)) ' new models:' ]);
-  mifit_disp(display(models));
-  mifit(models);
-  
-function mifit_Models_Export(varargin)
-  % get the list of 'static' iFunc models (which have been created and stored in the Models menu)
-  [ifuncs, labels,indices] = mifit_Models_GetList();
-  % pop-up a dialogue box to select those to export, with select all button
-  [selection, ok] = listdlg('ListString', labels, 'SelectionMode', 'multiple', ...
-    'Name','miFit: Select Models to Export');
-  if isempty(selection), return; end
-  % pop-up the iFunc.save export dialogue
-  save(ifuncs(selection),'gui');
-function [ifuncs, labels,indices] = mifit_Models_GetList(varargin)
-  % get the list of iFunc models (not expressions) in the Models menu
-  models = getappdata(mifit_fig,'Models');
-  ifuncs = []; labels = {}; indices = [];
-  for index=1:numel(models)
-    this = models{index};
-    if ~isempty(this.callback) && isa(this.callback, 'iFunc')
-      ifuncs = [ ifuncs this.callback ];
-      labels{end+1} = this.label;
-      indices(end+1) = index;
-    end
-  end
