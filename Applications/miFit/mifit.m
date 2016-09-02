@@ -368,7 +368,8 @@ function mifit_Edit_Delete(varargin)
 % Data menu ********************************************************************
 
 function mifit_Data_Plot(varargin)
-  d = mifit_List_Data_pull;
+  if nargin && isa(varargin{1}, 'iData'), d=varargin{1}; 
+  else d = mifit_List_Data_pull; end
   f=figure;
   subplot(d,'light transparent grid');
   
@@ -498,97 +499,6 @@ function mifit_Models_Plot_Parameters(varargin)
 function mifit_Models_Export_Parameters(varargin)
   % * Export to file... (JSON, M, YAML, MAT...)
   disp([ mfilename ': Models_Export_Parameters: TODO' ])
-
-function mifit_Models_View_Parameters(varargin)
-  % get 1st selected Model from Data set or Models menu current choice
-  % Display a uitable with columns:
-  % [ Parameters | ParameterValues | ParameterUncertainty | constraints.fixed | constraints.min | constraints.max ]
-  % TODO
-  disp([ mfilename ': Models_View_Parameters: TODO' ])
-  
-  % get the Model to use.
-  % if a Data set selection exists, get the first data set Model, or left empty
-  model = [];
-  d=mifit_List_Data_pull(); % get selected objects
-  if ~isempty(d)
-    d=d(1);
-    if isfield(d, 'Model')
-      model = get(d, 'Model');
-    elseif ~isempty(findfield(d, 'Model'))
-      model = get(d, findfield(d, 'Model', 'cache first'));
-    end
-  end
-  % if CurrentModel exists, get it.
-  if isempty(model)
-    CurrentModel = getappdata(mifit_fig, 'CurrentModel');
-  end
-  % else get 'gauss'
-  if isempty(model)
-    model = gauss;
-  end
-  
-  % now display the figure and uitable
-  % [ Parameters | ParameterValues | ParameterUncertainty | constraints.fixed | constraints.min | constraints.max ]
-  config = getappdata(mifit_fig, 'Preferences');
-  numCol = 6;
-  options.Name       = [ 'mifit: ' model.Name ];
-  options.ListString = ''; % model.Parameters;
-  options.FontSize   = config.FontSize;
-  options.TooltipString = { model.Description, ...
-    'The Model will be updated when changing values.' };
-  options.TooltipString = textwrap(options.TooltipString,80);
-  options.TooltipString =sprintf('%s\n', options.TooltipString{:});
-  options.ColumnName = {'Parameter','Value','Uncertainty','Fixed','Min','Max'};
-  options.ColumnFormat={'char',     'numeric','numeric',  'logical','numeric','numeric'};
-  options.ColumnEditable=[false true false true true true ];
-  Data0              = model.ParameterValues;
-  
-  % build the figure
-  f = figure('Name',options.Name, 'MenuBar','none');
-  % TODO: should install a callback when Parameters are changed: update the Data 
-  % set Model Parameters and replot.
-        
-  % determine the window size to show
-  TextWidth = 12;
-  TextHeight= 30;
-  n = numel(model.Parameters);
-  % height is given by the number of fields
-  height = (n+3)*TextHeight;
-  % width is given by the length of the longest RowName
-  width = max(cellfun(@numel,model.Parameters))*TextWidth + 5*numCol*options.FontSize;
-  % compare to current window size
-  p = get(f, 'Position');
-  p(3) = width;
-  if p(4) > height, p(4) = height; end
-  set(f, 'Position',p);
-  
-  % assemble the Data
-  
-  e = cell(n, 1);   % empty
-  TF= mat2cell(false(n,1), ones(n,1),1);
-  z = mat2cell(zeros(n,1), ones(n,1),1);
-  mp = model.Parameters;
-  mpv= model.ParameterValues;
-  if isempty(mpv), mpv=z; 
-  else mpv = mat2cell(mpv, ones(n,1),1); end
-  Data = cell(n,6);
-  Data(:,1)= mp;    % Parameter names
-  Data(:,2)= mpv;   % Parameter values
-  Data(:,3)= z;     % Parameter uncertainties
-  Data(:,4)= TF;    % Parameter fixed/free
-  Data(:,5)= e;     % Parameter min
-  Data(:,6)= e;     % Parameter max
-
-  % 'RowName',       options.ListString, ...
-  t = uitable('Parent',f, ...
-    'Data',          Data, ...
-    'ColumnName',    options.ColumnName, ...
-    'ColumnEditable',options.ColumnEditable, ...
-    'ColumnFormat',  options.ColumnFormat, ...
-    'FontSize',      options.FontSize, ...
-    'RowStriping','on',...
-    'Units','normalized', 'Position', [0.05 0.2 .9 .7 ], ...
-    'ColumnWidth','auto','TooltipString',options.TooltipString);
   
 function mifit_Models_Add_Expression(varargin)
   % * 4D TAS convolution        -> in Models Transformation/operations
@@ -675,9 +585,16 @@ function mifit_Tools_Help_Optimizers(varargin)
 % List Data and Stack management ***********************************************
 
 function mifit_List_Data_Files(varargin)
-% called when clicking on the listbox
+  % called when clicking on the listbox
 
-%  mifit_Data_Plot();
+  [d, index_selected] = mifit_List_Data_pull(); % get selected objects
+
+  %  mifit_Data_Plot(d);  % plot every time we change the data set selection
+  if ~isempty(d)
+    d=d(1); index_selected=index_selected(1);
+    setappdata(mifit_fig, 'CurrentDataSet', d);
+    setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
+  end
   
 function mifit_List_Data_UpdateStrings
   % update the List labels
