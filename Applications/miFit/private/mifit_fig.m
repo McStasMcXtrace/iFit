@@ -12,8 +12,13 @@ function f=mifit_fig(tag)
   if nargin == 0
     f=fig;
   else
-    if ~isfield(handles, tag) || ~ishandle(handles.(tag))
+    if ~isfield(handles, tag) || ~ishandle(handles.(tag)) 
+      handles.(tag) = []; end
+    if isempty(handles.(tag))
       handles.(tag) = findobj(fig, 'Tag', tag);
+      if isempty(handles.(tag))
+        handles.(tag) = findall(0,'Tag', tag);
+      end
     end
     f = handles.(tag);
   end
