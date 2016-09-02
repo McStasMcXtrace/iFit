@@ -560,49 +560,52 @@ try
         name);
     end
   end
+end % try
     
-  if ~isempty(is_idata)
-    % make it an iData
-    b = is_idata; % the initial iData object
-    % fit(signal/monitor) but object has already Monitor -> we compensate Monitor^2
-    if not(all(a.Monitor == 1 | a.Monitor == 0)) 
-      output.modelValue    = bsxfun(@times,output.modelValue, a.Monitor); 
-    end
-    setalias(b,'Signal', output.modelValue, model.Name);
-    b.Title = [ model.Name '(' char(b) ')' ];
-    b.Label = b.Title;
-    b.DisplayName = b.Title;
-    setalias(b,'Error', 0);
-    setalias(b,'ModelParameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);
-    setalias(b,'Model', model, model.Name);
-    output.modelValue = b;
-    if nargin > 1 && ~isempty(inputname(2))
-      % update the incoming iData object with results from the fit/Model
-      a = is_idata;
-      setalias(a, 'Model', model, model.Name);
-      setalias(a, 'ModelValue', output.modelValue, [ 'Value of ' model.Name ]);
-      setalias(a, 'ModelParameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);
-      assignin('caller',inputname(2),a);
-    end
-  else
-    if length(a.Axes) == 1
-      output.modelAxes  = a.Axes{1};
-    else
-      output.modelAxes  = a.Axes(:);
-    end
+if ~isempty(is_idata)
+  % make it an iData
+  b = is_idata; % the initial iData object
+  % fit(signal/monitor) but object has already Monitor -> we compensate Monitor^2
+  if not(all(a.Monitor == 1 | a.Monitor == 0)) 
+    output.modelValue    = bsxfun(@times,output.modelValue, a.Monitor); 
   end
-  output.model      = model;
-    
-    % set output/results
-    if ischar(message) | ~isfield(output, 'message')
-      output.message = message;
-    else
-      output.message = [ '(' num2str(message) ') ' output.message ];
-    end
-    output.parsNames  = model.Parameters;
-    % final plot when in OutputFcn mode
-    eval_criteria(model, [], options.criteria, a, varargin{:});
+  setalias(b,'Signal', output.modelValue, model.Name);
+  b.Title = [ model.Name '(' char(b) ')' ];
+  b.Label = b.Title;
+  b.DisplayName = b.Title;
+  setalias(b,'Error', 0);
+  setalias(b,'ModelParameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);
+  setalias(b,'Model', model, model.Name);
+  setalias(b,'Constraints', constraints);
+  setalias(b,'FitOptions', options);
+  setalias(b,'FitOutput',  output);
+  output.modelValue = b;
+  if nargin > 1 && ~isempty(inputname(2))
+    % update the incoming iData object with results from the fit/Model
+    a = is_idata;
+    setalias(a, 'Model', model, model.Name);
+    setalias(a, 'ModelValue', output.modelValue, [ 'Value of ' model.Name ]);
+    setalias(a, 'ModelParameters', model.ParameterValues, [ model.Name ' model parameters for ' a.Name ]);
+    assignin('caller',inputname(2),a);
+  end
+else
+  if length(a.Axes) == 1
+    output.modelAxes  = a.Axes{1};
+  else
+    output.modelAxes  = a.Axes(:);
+  end
 end
+output.model      = model;
+  
+% set output/results
+if ischar(message) | ~isfield(output, 'message')
+  output.message = message;
+else
+  output.message = [ '(' num2str(message) ') ' output.message ];
+end
+output.parsNames  = model.Parameters;
+% final plot when in OutputFcn mode (with optimisation result)
+eval_criteria(model, [], options.criteria, a, varargin{:});
 
 if ~isempty(pars_isstruct)
   % first rebuild the model parameter structure
