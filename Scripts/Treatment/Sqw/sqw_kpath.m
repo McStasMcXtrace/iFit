@@ -6,6 +6,9 @@ function S = sqw_kpath(f, qLim, W)
 %      a n x 3 matrix, each row being a HKL location.
 %    The energy range can be entered as a vector, or a [min max] pair.
 %
+% Example:
+%   S = sqw_kpath(sqw_cubic_monoatomic, '', [0 10]); plot(log10(S));
+%
 % input:
 %   f:    a 4D HKLE model S(q,w) (iFunc)
 %   path: a list of k-locations given as a cell/array of HKL locations (cell or matrix)
@@ -13,6 +16,11 @@ function S = sqw_kpath(f, qLim, W)
 %
 % output:
 %   S:    the dispersion W(HKL) computed along the path (iData)
+%
+% Version: $Date$
+% See also sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks, sqw_spinw
+%   sqw_powder, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
+% (c) E.Farhi, ILL. License: EUPL.
 
   S = [];
   if nargin == 0, return; end
