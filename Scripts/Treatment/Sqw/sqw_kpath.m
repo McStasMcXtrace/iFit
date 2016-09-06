@@ -5,6 +5,8 @@ function S = sqw_kpath(f, qLim, W)
 %    The k-path can be given as a cell containing 3-values (HKL) vectors, or
 %      a n x 3 matrix, each row being a HKL location.
 %    The energy range can be entered as a vector, or a [min max] pair.
+%    Refer to https://en.wikipedia.org/wiki/Brillouin_zone to get the standard 
+%    points in the Brillouin zone.
 %
 % Example:
 %   S = sqw_kpath(sqw_cubic_monoatomic, '', [0 10]); plot(log10(S));
@@ -38,7 +40,7 @@ function S = sqw_kpath(f, qLim, W)
   end
   
   if isempty(qLim)
-    qLim = {[0 .5 0] [0 0 0] [.5 0 .5] [.5 .5 .5] [0 0 0]};
+    qLim = {[0 0 0] [1 0 0] [1 1 0]/sqrt(2) [0 0 0] [1 1 1]/sqrt(3) };
   end
   if ~iscell(qLim) && ndims(qLim) == 2 && isnumeric(qLim)
     if size(qLim,1) == 3 && size(qLim,2) ~= 3
