@@ -180,7 +180,11 @@ function filename = iData_private_saveas_html(a, filename, format)
       case 'mat'
         builtin('save', basename, 'a');
       otherwise
-        save(a, basename, f);
+        if strcmp(export{index}, 'xhtml')
+          save(reducevolume(a), basename, f);
+        else
+          save(a, basename, f);
+        end
       end
     end
   end
@@ -209,6 +213,12 @@ function filename = iData_private_saveas_html(a, filename, format)
     end
   end
   fprintf(fid, '</ul></p>\n');
+  % special case for XHTML (displayed in a frame)
+  if ~isempty(dir([ basename '.' 'xhtml' ]))
+    fprintf(fid, [ '<iframe src="%s" align="middle" width="1024" height="1024"></iframe><br>' ...
+    '(<a href="%s" target=_blank>open in external window</a>)<br>\n' ], ...
+    [ basename_img '.xhtml' ], [ basename_img '.xhtml' ]);
+  end
   
   % Data set information (details) *********************************************
   fprintf(fid,'<h2>More about the Data set...</h2\n');

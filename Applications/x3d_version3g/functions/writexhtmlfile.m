@@ -3,7 +3,10 @@ function writexhtmlfile(folder, filename, data)
 [~,~,str]=XMLtostring(data);
 fid = fopen([folder filename '.xhtml'],'w');
 fprintf(fid,'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n');
-fprintf(fid,'%s',str{:});
+str = regexp(str, '\n+', 'split');
+for index=1:numel(str)
+  fprintf(fid,str{index});
+end
 fclose(fid);
 
 % Create the supporting X3DOM  files
