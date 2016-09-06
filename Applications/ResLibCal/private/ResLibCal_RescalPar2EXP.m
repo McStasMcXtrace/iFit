@@ -68,7 +68,7 @@ end
   end
 
   if ischar(str) && ~isempty(strfind(str, 'Title (max.60 characters)'))
-    % legacy ResTrax configuration file. Very partil set of parameters.
+    % legacy ResTrax configuration file. Very partial set of parameters.
     lines = textscan(str, '%s', 'delimiter', '\n'); % split all lines
     lines = lines{1};
     digit = '\<[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\>'; % [+-] 0-9 . 0-9 eE +- 0-9 as a word
