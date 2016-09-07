@@ -28,7 +28,7 @@ function S = sqw_kpath(f, qLim, W)
   if nargin == 0, return; end
   
   if ndims(f) ~= 4 || ~isa(f,'iFunc')
-    disp([ mfilename ': Invalid model dimension. Should be iFunc 4D. It is currently ' class(f) ' ' num2str(dim(f)) 'D' ]);
+    disp([ mfilename ': Invalid model dimension. Should be iFunc 4D. It is currently ' class(f) ' ' num2str(ndims(f)) 'D' ]);
     return
   end
   
@@ -40,7 +40,9 @@ function S = sqw_kpath(f, qLim, W)
   end
   
   if isempty(qLim)
-    qLim = {[0 0 0] [1 0 0] [1 1 0]/sqrt(2) [0 0 0] [1 1 1]/sqrt(3) };
+    % fcc: Gamma X U L G K
+    % [0 0 0] [.5 0 .5] [5/8 .25 5/8] [.5 .5 .5] [0 0 0] [3/8 3/8 3/4]
+    qLim = {[0 0 0] [.5 0 .5] [5/8 .25 5/8] [.5 .5 .5] [0 0 0] [3/8 3/8 3/4]};
   end
   if ~iscell(qLim) && ndims(qLim) == 2 && isnumeric(qLim)
     if size(qLim,1) == 3 && size(qLim,2) ~= 3
