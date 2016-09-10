@@ -81,6 +81,9 @@ for index=1:numel(varargin)
     end
   end
 end
+if isfield(options, 'optimize')
+  options.optimizer=options.optimize;
+end
 if isfield(options,'dir') && ~isfield(options,'target')
   options.target = options.dir;
 end

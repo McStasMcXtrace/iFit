@@ -182,7 +182,7 @@ else
   % VASP_PP_PATH=/usr/share/vasp/pseudo
   
 end
-disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
+% disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
 
 %  lj (lenard-jones)
 %  morse
