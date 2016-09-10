@@ -1,5 +1,19 @@
 function sqw_phonons_htmlreport(filename, step, options, data, object)
-
+% write an HTML report on a sqw_phonons computation
+%
+% sections:
+% * calculator and system informations (from configuration, exported files, options)
+% * optimisation status
+% * on-going calculation status (when possible, e.g. QE/PHON will write ETA)
+% * status at end of forces: success/failure, properties
+% * success:
+%     estimate max spectrum energy with coarse grid.        write Emax to report
+%     compute kpath using the spacegroup -> path            export kpath iData
+%     evaluate model on finer grid with [0 Emax]            export 4D dat
+%                                                           export 3D H=0 iData
+%     compute powder spectrum                               export powder iData
+%     compute vDOS                                          export vDOS iData
+%     model                                                 export YAML/MAT/JSON
 
 % set global stuff and compute for the HTML report
 

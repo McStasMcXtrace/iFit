@@ -445,22 +445,8 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
     return
   end
   
-  poscar = fullfile(options.target,'POSCAR_ASE');
-  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
-  else precmd=''; end
-  try
-    [st, result] = system([ precmd 'python -c ''' read '''' ]);
-  catch
-    st = 127;
-  end
-  if st ~= 0
-    disp(read)
-    disp(result)
-    sqw_phonons_error([ mfilename ': failed converting input to POSCAR ' ...
-      poscar ], options);
-    return
-  end
+  poscar = fullfile(options.target, 'configuration_VASP');  % this is a POSCAR file
+  
 % QE specific options:
 %   options.mixing_ndim=scalar             number of iterations used in mixing
 %     default=8. If you are tight with memory, you may reduce it to 4. A larger
@@ -486,18 +472,19 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   options.mpirun = status.mpirun;
 
   disp([ mfilename ': calling sqw_phon(''' poscar ''') with PHON/Quantum Espresso' ]);
+  disp([ '  ' options.configuration ]); 
   options.dos = 1;
   decl = [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ];
-  sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'init', options, decl);
+  % sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'init', options, decl);
   
   signal=sqw_phon(poscar, options);
   if isempty(signal), decl=[]; return; end
   
   % get 'atoms' back from python
-  if ~isempty(fullfile(options.target, 'atoms.mat'))
-    signal.UserData.atoms = load(fullfile(options.target, 'atoms.mat'));
+  if ~isempty(dir(fullfile(options.target, 'properties.mat')))
+    signal.UserData.properties = load(fullfile(options.target, 'properties.mat'));
   else
-    signal.UserData.atoms = [];
+    signal.UserData.properties = [];
   end
   signal.UserData.calc = 'quantumespresso';
   signal.UserData.configuration = fileread(poscar);
