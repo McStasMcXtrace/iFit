@@ -107,3 +107,7 @@ function S = sqw_kpath(f, qLim, W)
   
   xlabel(S,xlab);
   ylabel(S,'Energy');
+  
+  if ~isempty(inputname(1))
+    assignin('caller',inputname(1),f); % update in original object
+  end
