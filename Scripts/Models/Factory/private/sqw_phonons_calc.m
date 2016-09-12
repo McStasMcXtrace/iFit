@@ -61,11 +61,7 @@ case 'ABINIT'
   decl = 'from ase.calculators.abinit import Abinit';
   calc = 'calc = Abinit(chksymbreak=0';
   if options.ecut <= 0, 
-    if isfield(options,'pps') && (strcmpi(options.pps, 'paw') || strcmpi(options.pps, 'pawxml'))
-      options.ecut=1000; 
-    else
-      options.ecut=340;
-    end
+    options.ecut=1000; 
   end % no default in ABINIT (eV)
   if options.ecut > 0
     calc = [ calc sprintf(', ecut=%g', options.ecut/Ha) ];
@@ -517,7 +513,7 @@ case 'VASP'
   % ibrion
   % ismear: -5 Blochl -4-tet -1-fermi 0-gaus >0 MP
   % setups: pv, sv 
-  if options.ecut <= 0, options.ecut=340; end % no default in ABINIT (eV)
+  if options.ecut <= 0, options.ecut=340; end % no default in VASP (eV)
   if (options.ecut > 0)
     calc = [ calc sprintf(', encut=%g', options.ecut) ];
   end
