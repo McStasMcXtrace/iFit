@@ -69,7 +69,7 @@ end
 UD = a.UserData;
 if isfield(UD, 'reciprocal_cell')
   B = UD.reciprocal_cell*2*pi;
-elseif isfield(UD, 'atoms') && isfield(UD.atoms, 'reciprocal_cell')
+elseif isfield(UD, 'properties') && isfield(UD.atoms, 'reciprocal_cell')
   B = UD.atoms.reciprocal_cell*2*pi;
 elseif isa(a, 'iData') && ~isempty(findfield(a, 'reciprocal_cell'))
   B = get(a, findfield(a, 'reciprocal_cell','cache'))*2*pi;
