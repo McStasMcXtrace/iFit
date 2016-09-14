@@ -6,7 +6,7 @@ if isempty(fig) || ~ishandle(fig)
     % create the main figure
     mifit_disp('[Init] Welcome to miFit ! ********************************************')
     fig = openfig('mifit');
-    set(fig, 'HandleVisibility','callback','NumberTitle','off');
+    set(fig, 'HandleVisibility','callback','NumberTitle','off','NextPlot','new');
     
     % get Models/Optimizers menu handles
     hmodels = mifit_fig('Menu_Model');

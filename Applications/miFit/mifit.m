@@ -475,7 +475,7 @@ function mifit_Models_Remove(varargin)
   if isempty(indices), return; end
   % pop-up a dialogue box to select those to remove, with select all button
   [selection, ok] = listdlg('ListString', labels, 'SelectionMode', 'multiple', ...
-    'Name','miFit: Select Models to Remove', 'ListSize',[300 160]);
+    'Name','miFit: Select Models to Remove', 'ListSize',[400 160]);
   if isempty(selection), return; end
   delete(handles(selection))
   models = getappdata(mifit_fig,'Models');
