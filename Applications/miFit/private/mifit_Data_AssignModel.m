@@ -1,4 +1,6 @@
 function mifit_Data_AssignModel(varargin)
+  % this function is called when the user selects a Model from the Models menu.
+  
   model = get(varargin{1},'UserData'); % an iFunc or char/cellstr stored into UserData of the menu item.
   
   if iscellstr(model), model = char(model)'; end
@@ -35,7 +37,6 @@ function mifit_Data_AssignModel(varargin)
     figure; plot(model);
     return; 
   end
-  model
   mifit_disp([ 'Assigning Model "' model.Name '" to ' num2str(numel(index_selected)) ' Data set(s):' ]);
   mifit_History_push();
   if numel(D) > 1

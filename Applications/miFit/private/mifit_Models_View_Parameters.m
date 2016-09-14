@@ -83,6 +83,7 @@ function mifit_Models_View_Parameters(varargin)
       'ColumnFormat',  options.ColumnFormat, ...
       'FontSize',      config.FontSize, ...
       'RowStriping','on',...
+      'CellEditCallback', @mifit_Models_View_Parameters_Edit, ...
       'Units','normalized', 'Position', [0 0 1 1]);
     % and trigger other updates (create all)
     resize                = 1;
@@ -159,7 +160,7 @@ function mifit_Models_View_Parameters(varargin)
     
     dat.min = mat2cell(model.constraint.min,   ones(n,1),1);
     dat.max = mat2cell(model.constraint.max,   ones(n,1),1);
-    dat.fix = mat2cell(model.constraint.fixed, ones(n,1),1);
+    dat.fix = mat2cell(logical(model.constraint.fixed), ones(n,1),1);
     
     % change all NaN (might appear strange for dummy user) into empty
     for index=1:n
