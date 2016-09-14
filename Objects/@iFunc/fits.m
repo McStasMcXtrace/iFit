@@ -605,7 +605,7 @@ else
 end
 output.parsNames  = model.Parameters;
 % final plot when in OutputFcn mode (with optimisation result)
-eval_criteria(model, [], options.criteria, a, varargin{:});
+% eval_criteria(model, [], options.criteria, a, varargin{:});
 
 if ~isempty(pars_isstruct)
   % first rebuild the model parameter structure

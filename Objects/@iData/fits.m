@@ -187,7 +187,7 @@ end
 if nargin > 1 && ~isempty(inputname(2))  
   assignin('caller',inputname(2),model); % update in original object
 end
-if nargin > 1 && ~isempty(inputname(1))  
+if ~isempty(inputname(1))  
   assignin('caller',inputname(1),a); % update in original object
 end
 
