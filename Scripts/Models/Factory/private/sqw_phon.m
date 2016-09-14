@@ -317,7 +317,6 @@ signal.Expression     = { ...
   'catch; disp(fileread(''phon.log'')); ', ...
   '  disp([ ''model '' this.Name '' '' this.Tag '' could not run PHON from '' target ]); return', ...
   'end', ...
-  'delete(''FREQ'')', ...
   'delete(''FREQ.cm'');', ...
   'delete(''INPHON'')', ...
   '% get the DOS if the grid is 3D', ...
@@ -617,7 +616,9 @@ if isempty(dir(fullfile(p,'FORCES')))
     geom.type = [ geom.type ones(1,geom.atomcount(j)) ];
   end
   
-
+  options.status = '';
+  sqw_phonons_htmlreport_status(fid, options);
+  
   t0 = clock;           % a vector used to compute elapsed/remaining seconds
   
   % now for each displacement line, we move the atom in geom.coords
@@ -664,7 +665,10 @@ if isempty(dir(fullfile(p,'FORCES')))
       minutes   = floor((remaining-hours*3600)/60);
       seconds   = floor(remaining-hours*3600-minutes*60);
       enddate   = addtodate(now, ceil(remaining), 'second');
-      disp([ mfilename ': ETA ' sprintf('%i:%i:%i', hours, minutes, seconds) ', ending on ' datestr(enddate) ]);
+      
+      options.status = [ 'ETA ' sprintf('%i:%i:%i', hours, minutes, seconds) ', ending on ' datestr(enddate) ];
+      disp([ mfilename ': ' options.status ]);
+      sqw_phonons_htmlreport('', 'status', options);
     end
 
   end %for index
@@ -681,6 +685,8 @@ if isempty(dir(fullfile(p,'FORCES')))
     this = cellstr(num2str(forces{index}));
     fprintf(fid, '    %s\n', this{:});
   end
+  options.status = 'DONE';
+  sqw_phonons_htmlreport_status(fid, options);
   
 else
   disp([ mfilename ': re-using ' fullfile(p,'FORCES') ]);

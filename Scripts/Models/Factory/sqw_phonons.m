@@ -448,7 +448,7 @@ options.script_create_atoms = sprintf([ ...
   'write("' fullfile(target, 'configuration.html') '", atoms, "html")\n' ...
   'write("' fullfile(target, 'configuration.etsf') '", atoms, "etsf")\n' ...
   'write("' fullfile(target, 'configuration_SHELX.res') '", atoms, "res")\n' ...
-  'write("' fullfile(target, 'configuration_VASP') '", atoms, "vasp")\n' ... 
+  'write("' fullfile(target, 'configuration_POSCAR') '", atoms, "vasp")\n' ... 
   'import scipy.io as sio\n' ...
   'print "Exporting structure properties...\\n"\n' ...
   'properties = {\n' ...
@@ -509,7 +509,7 @@ if isempty(dir(fullfile(target, 'atoms.pkl')))  % FATAL
   return
 end
 
-% sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'init', options, calc);
+sqw_phonons_htmlreport('', 'create_atoms', options);
 
 % ==============================================================================
 %                               BUILD MODEL (get calculator)
@@ -535,9 +535,12 @@ else
   sav = '';
 end
 
-if ~isempty(options.optimizer) && ...
-  (~strcmpi(options.calculator, 'QUANTUMESPRESSO') || ...
-    strcmpi(options.calculator, 'QUANTUMESPRESSO_ASE'))
+if ~isempty(options.optimizer) && strcmpi(options.calculator, 'QUANTUMESPRESSO') ...
+  && ~strcmpi(options.calculator, 'QUANTUMESPRESSO_ASE')
+  options.optimizer = [];
+end
+
+if ~isempty(options.optimizer)
   switch lower(options.optimizer)
   case 'lbfgs'  % fast, low on memory
     options.optimizer='LBFGS';
@@ -574,6 +577,7 @@ if ~isempty(options.optimizer) && ...
     '  pickle.dump(atoms, fid)\n' ...
     '  fid.close()\n' ...
     '  from ase.io import write\n' ...
+    '  write("' fullfile(target, 'optimized.png') '", atoms)\n' ...
     '  write("' fullfile(target, 'optimized.cif') '", atoms, "cif")\n' ...
     '  write("' fullfile(target, 'optimized.pdb') '", atoms, "pdb")\n' ...
     '  write("' fullfile(target, 'optimized_POSCAR') '", atoms, "vasp")\n' ...
@@ -600,7 +604,7 @@ if ~isempty(options.optimizer) && ...
     if isempty(dir(fullfile(target, 'atoms.pkl'))) || st ~= 0
       disp([ mfilename ': WARNING: failed optimize material structure in ' target ' (sqw_phonons_optimize.py). Ignoring.' ]);
     else
-      % sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'optimize', options, calc);
+      sqw_phonons_htmlreport('', 'optimize', options);
     end
 
   end
@@ -738,7 +742,9 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   
   % call python script with calculator
   disp([ mfilename ': computing Hellmann-Feynman forces and creating Phonon/ASE model.' ]);
-
+  options.status = 'Starting computation. Script is <a href="sqw_phonons_forces.py">sqw_phonons_forces.py</a>';
+  sqw_phonons_htmlreport('', 'status', options);
+  
   result = '';
   try
     if strcmpi(options.calculator, 'GPAW') && isfield(options,'mpi') ...
@@ -762,6 +768,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
     sqw_phonons_error([ mfilename ': ' options.calculator ' failed. Temporary files and Log are in ' target ], options)
     return
   end
+  
   if ~isempty(dir(configuration))
     [dummy, signal.UserData.input]= fileparts(configuration);
   else
@@ -902,27 +909,6 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   signal = iFunc(signal);
 end % other calculators than QE
 
-signal.UserData.duration = etime(clock, t);
-options.duration = signal.UserData.duration;
-
-% when model is successfully built, display citations
-disp(' ');
-if ~isdeployed && usejava('jvm') && usejava('desktop')
-  disp([ '<a href="matlab:doc(''' mfilename ''')">' mfilename '</a>: Model ' configuration ' built using ' options.calculator ])
-else
-  disp([ mfilename ': Model ' configuration ' built using ' options.calculator ' [' datestr(now) ']' ])
-end
-if isdeployed || ~usejava('jvm') || ~usejava('desktop')
-  disp([ '  in ' options.target ]);
-else
-  disp([ '  in <a href="' options.target '">' options.target '</a>' ]);
-end
-
-
-if isfield(options, 'dos') && options.dos && ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
-  disp('INFO: The vibrational density of states (vDOS) will be computed at first model evaluation.');
-end
-disp([ 'Time elapsed=' num2str(signal.UserData.duration) ' [s]. Please cite:' ])
 cite = { ' * Atomic Simulation Environment', ...
   '           S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002.', ...
   ' * iFit:   E. Farhi et al, J. Neut. Res., 17 (2013) 5.' };
@@ -947,6 +933,31 @@ cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 
 case 'VASP'
 cite{end+1} = ' * VASP:   G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.';
 end
+
+signal.UserData.duration = etime(clock, t);
+options.duration = signal.UserData.duration;
+options.cite     = cite;
+signal.UserData.options   = options;
+
+% when model is successfully built, display citations
+disp(' ');
+if ~isdeployed && usejava('jvm') && usejava('desktop')
+  disp([ '<a href="matlab:doc(''' mfilename ''')">' mfilename '</a>: Model ' configuration ' built using ' options.calculator ])
+else
+  disp([ mfilename ': Model ' configuration ' built using ' options.calculator ' [' datestr(now) ']' ])
+end
+if isdeployed || ~usejava('jvm') || ~usejava('desktop')
+  disp([ '  in ' options.target ]);
+else
+  disp([ '  in <a href="' options.target '">' options.target '</a>' ]);
+end
+
+
+if isfield(options, 'dos') && options.dos && ~strcmpi(options.calculator, 'QUANTUMESPRESSO')
+  disp('INFO: The vibrational density of states (vDOS) will be computed at first model evaluation.');
+end
+disp([ 'Time elapsed=' num2str(signal.UserData.duration) ' [s]. Please cite:' ])
+
 fprintf(1, '%s\n', cite{:});
 disp('You can now evaluate the model using e.g.:')
 disp('    qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);');
@@ -954,10 +965,13 @@ disp('    f=iData(s,[],qh,qk,ql,w); plot3(log(f(1,:, :,:)));');
 disp(' ');
 
 % save the Model as a Matlab object
-Phonons_Model = signal;
-builtin('save', fullfile(options.target, 'Phonons_Model.mat'), 'Phonons_Model');
+Phonon_Model = signal;
+builtin('save', fullfile(options.target, 'Phonon_Model.mat'), 'Phonon_Model');
 
-% sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'done', options, cite, signal);
+options.status = 'DONE';
+sqw_phonons_htmlreport('', 'status', options);
+
+sqw_phonons_htmlreport('', 'results', options);
 
 % handle autoplot option
 if options.autoplot
@@ -967,8 +981,7 @@ else
   f = [];
 end
 
-%sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'plot', options, f, signal);
-%sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'end', options, f, signal);
+sqw_phonons_htmlreport('', 'download', options);
 
 % ------------------------------------------------------------------------------
 function [f, signal] = sqw_phonons_plot(signal)
