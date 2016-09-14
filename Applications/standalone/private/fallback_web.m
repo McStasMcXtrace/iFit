@@ -52,7 +52,7 @@ function fallback_web(url)
       if strncmp(root, 'file://',7)
         root = fileparts(url(8:end));
       end
-      handles(1) = figure('menubar','none', 'Name', url);
+      handles(1) = figure('menubar','none', 'Name', url,'NextPlot','new');
       % button bar [ Back URL History Home ]
       % Back button
       handles(2) = uicontrol('style','pushbutton','Units','Normalized', ...
