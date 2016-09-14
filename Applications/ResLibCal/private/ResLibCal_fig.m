@@ -15,6 +15,8 @@ function f=ResLibCal_fig(tag)
     if length(fig) > 1, delete(fig(2:end)); end
     handles = [];
   end
+  
+  if isempty(handles), handles.fig = fig; end
 
   if nargin == 0
     f=fig;

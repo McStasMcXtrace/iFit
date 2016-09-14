@@ -418,7 +418,8 @@ while ~isempty(varargin)
       fig = ResLibCal_fig;
       if isempty(fig) || ~ishandle(fig)
         disp([ 'Welcome to ' ResLibCal_version ]);
-        openfig('ResLibCal'); % open the main ResLibCal figure.
+        fig = openfig('ResLibCal'); % open the main ResLibCal figure.
+        set(fig, 'NextPlot','new'); % protect from plotting on top
         if strcmp(action, 'create') % default: ignore config file
           filename = fullfile(prefdir, 'ResLibCal.ini');
           out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
@@ -637,7 +638,8 @@ function out = ResLibCal_ViewResolution(out, dim)
   if isempty(h)
     if dim~=1, name=sprintf('(%iD)', dim); else name='Matrix'; end
     h = figure('Name',[ 'ResLibCal: View Resolution ' name ], ...
-               'Tag', [ 'ResLibCal_View' num2str(dim)], 'ToolBar','figure');
+               'Tag', [ 'ResLibCal_View' num2str(dim)], 'ToolBar','figure', ...
+               'NextPlot','new');
     p = get(h, 'Position'); p(3:4) = [ 640 480 ]; set(h, 'Position',p);
   else
     figure(h);
