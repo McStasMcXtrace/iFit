@@ -18,7 +18,7 @@ function mifit_Models_Add_Entry(model)
   
   % handle array of entries
   if numel(model) > 1  % model is a cell or array of entries
-    mifit_disp([ '[Models] Setting ' num2str(numel(model)) ' Models...' ]);
+    mifit_disp([ '[Init] Initializing ' num2str(numel(model)) ' Models...' ]);
     for index=1:numel(model)
       if iscell(model), mifit_Models_Add_Entry(model{index});
       else              mifit_Models_Add_Entry(model(index));
@@ -60,9 +60,11 @@ function mifit_Models_Add_Entry(model)
   end
 
   if isa(callback,'iFunc') && ~isempty(callback)
+    % when model is an iFunc (not an expression to evaluate), we make use of HTML menu items rendering
+    % see: http://undocumentedmatlab.com/blog/customizing-menu-items-part-1
     if isempty(dim), dim = callback.Dimension; end
     if isempty(label)
-      label    = [ callback.Name ' [' callback.Tag ']' ];
+      label    = [ '<html><b><font color="blue">' callback.Name '</font> [' callback.Tag ']</b></html>' ];
     end
   end
   
@@ -74,9 +76,9 @@ function mifit_Models_Add_Entry(model)
       mifit_disp([ '[Models_Add_Entry] Invalid Model expression ' callback '. Skipping.' ]);
       return
     end
-    if isempty(modelF), return; end
+    if isempty(modelF) || ~isa(modelF, 'iFunc'), return; end
     dim   = modelF.Dimension;
-    if isempty(label), label = [ '"' callback '" = ' modelF.Name ]; end
+    if isempty(label), label = [ '<html><b><font color="green">"' callback '"</font> = ' modelF.Name '</b></html>' ]; end
   end
   % determine the name of the sub-menu to use
   if isempty(dim), dim = -1; end  % will use Others
@@ -111,7 +113,7 @@ function mifit_Models_Add_Entry(model)
   %   char (expression)
   Models = getappdata(mifit_fig, 'Models');
   if ~isa(model, 'iFunc'), model=[]; end
-  Models{end+1} = struct('callback',callback, 'label',label, ...
+  Models{end+1} = struct('callback',callback, 'label', label, ...
     'object',model, 'handle',handle, 'dimension',dim);
   setappdata(mifit_fig, 'Models',Models);
   
