@@ -1,16 +1,25 @@
 function filename = iData_private_saveas_x3d(a, filename, format, options)
+  % export as a X3D/XHTML file
+  % option can contain: axes (display axes), auto to rescale axes in range [0,1]
+  % for aspect ratio 1.
   titl = char(a);
   titl(titl=='<')='[';
   titl(titl=='>')=']';
   desc = evalc('disp(a)');
   desc(desc=='<')='[';
   desc(desc=='>')=']';
+  a = reducevolume(a);
+  x1=min(a); x2=max(a);
   if ndims(a) <= 2
     f=figure('visible','off');
+    if ~isempty(strfind(options, 'auto')) || ~isempty(strfind(options, 'tight'))
+      setaxis(a,1,linspace(x1,x2,size(a,1)));
+      setaxis(a,2,linspace(x1,x2,size(a,2)));
+    end
     if ischar(options)
-      h = plot(reducevolume(a),options); % make sure file is not too big
+      h = plot(a,options); % make sure file is not too big
     else
-      h = plot(reducevolume(a));
+      h = plot(a);
     end
     figure2xhtml(filename, f, struct('interactive',true, ...
       'output', strtok(format),'title',titl,'Description',desc));
@@ -24,10 +33,10 @@ function filename = iData_private_saveas_x3d(a, filename, format, options)
     if ischar(options), 
       iso = str2double(strtok(options));
       if strfind(options, 'axes'), ax=1; end
-      if strfind(options, 'auto')
-        x=linspace(0,1,size(a,1));
-        y=linspace(0,1,size(a,2));
-        z=linspace(0,1,size(a,3));
+      if ~isempty(strfind(options, 'auto')) || ~isempty(strfind(options, 'tight'))
+        y=linspace(x1,x2,size(a,1));
+        x=linspace(x1,x2,size(a,2));
+        z=linspace(x1,x2,size(a,3));
       end
     end
     if (isempty(iso) || ~isfinite(iso))  
@@ -38,7 +47,9 @@ function filename = iData_private_saveas_x3d(a, filename, format, options)
       end
     end
     fv=isosurface(x,y,z,c,iso);
-    x3mesh(fv.faces, fv.vertices, 'name', filename, 'subheading', desc, 'rotation', 0, 'axes', ax);
+    x3mesh(fv.faces, fv.vertices, ...
+      'format', strtok(format), ...
+      'name', filename, 'subheading', desc, 'rotation', 0, 'axes', ax);
     % Create the supporting X3DOM  files
 %    folder = fileparts(filename);
 %    load(fullfile(fileparts(which('figure2xhtml')), 'functions', 'x3dom.mat'))
