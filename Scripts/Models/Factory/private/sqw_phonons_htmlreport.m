@@ -45,6 +45,7 @@ case 'status'
 case 'results'
   %
   Phonon_Model = sqw_phonons_htmlreport_model(fid, options);
+  if isempty(Phonon_Model), return; end
   [maxFreq, Phonon_Model]= sqw_phonons_htmlreport_max_spectrum(fid, options, Phonon_Model);
   [grid4D, Phonon_Model] = sqw_phonons_htmlreport_eval_4D(fid, options, Phonon_Model, maxFreq);
 
@@ -118,7 +119,6 @@ function sqw_phonons_htmlreport_create_atoms(fid, options)
   
 % ==============================================================================
 function sqw_phonons_htmlreport_toc(fid, options)
-  disp([ mfilename ': generating HTML report: TOC' ]);
   % table of contents
   fprintf(fid, '<hr>Table of contents:<br><ul>\n');
   fprintf(fid, '<li><a href="#atom">Crystallographic information</a></li>\n');
@@ -143,33 +143,32 @@ function sqw_phonons_htmlreport_table(fid, options, name)
 % write a Table which displays available exported 'configuration' files
   
   if isempty(name), name = 'configuration'; end
-  disp([ mfilename ': generating HTML report: table ' name ]);
   % append links to configuration files and images
   flag_table = 0;
   for index={ ...
     '.html You can rotate the object (left mouse button), zoom (right mouse button), and pan (middle mouse button)', ...
   '.png', ...
   '.cif Crystallographic Information File (<a href="https://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>) which you can view with <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/"VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://rasmol.org/">RasMol</a>, ...', ...
-  '.pdb Protein Data Bank (<a href="http://www.rcsb.org/pdb/">PDB</a>) which you can view with <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/"VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://rasmol.org/">RasMol</a>, ...', ...
   '.etsf <a href="http://www.etsf.eu/fileformats">European Theoretical Spectroscopy Facility</a> file format for DFT codes', ...
-  '_SHELX.res <a href="http://shelx.uni-ac.gwdg.de/SHELX/">ShelX</a> file format', ...
+  '.pdb Protein Data Bank (<a href="http://www.rcsb.org/pdb/">PDB</a>) which you can view with <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/"VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://rasmol.org/">RasMol</a>, ...', ...
   '_POSCAR POSCAR geometry file for <a href="https://www.vasp.at/">VASP</a>', ...
+  '_SHELX.res <a href="http://shelx.uni-ac.gwdg.de/SHELX/">ShelX</a> file format', ...
   '.eps Encapsulated postscript', ...
   '.pov Scene for <a href="http://www.povray.org/">Pov-Ray</a>', ...
-  '.x3d Scene for <a href="http://castle-engine.sourceforge.net/view3dscene.php">view3dscene</a>, <a href="http://www.instantreality.org/">InstantPlayer</a>, <a href="http://freewrl.sourceforge.net/">FreeWRL</a>' ...
-  '.xml XML file' ...
-  '.json JavaScript Object Notation (interchange format)' ...
+  '.x3d Geometry Scene for <a href="http://castle-engine.sourceforge.net/view3dscene.php">view3dscene</a>, <a href="http://www.instantreality.org/">InstantPlayer</a>, <a href="http://freewrl.sourceforge.net/">FreeWRL</a>' ...
+  '.json <a href="http://en.wikipedia.org/wiki/JSON">JavaScript Object Notation</a>, to be opened with e.g. JSONView Chrome/Firefox plugin and text editors.' ...
+  '.xml <a href="http://www.w3.org/XML/">Extensible Markup Language</a> file, to be opened with e.g. Chrome/Firefox and text editors.' ...
+  '.yaml <a href="http://en.wikipedia.org/wiki/YAML">YAML</a> interchange format, to be viewed with e.g. text editors.' ...
  [ '.mat Matlab binary file. Load the Model/Data set under <a href="http://ifit.mccode.org">Matlab/iFit</a> with (this also works with the <a href="http://ifit.mccode.org/Install.html">standalone version of iFit</a> which does <b>not</b> require any Matlab license and installs on most systems): load(''<a href="' name '.mat">' name '.mat</a>'') <i></i></li></ul>' ] ...
-  '.yaml YAML indented data exchange' ...
   '.m Matlab script/function' ...
-  '.dat Flat text file. You may have to reshape the data set.' ...
+  '.dat Flat text file. You may have to reshape the data set. View with any text editor (gedit).' ...
   '.h5 a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>' ...
   '.fig a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>. Use </i>figure(gcf)</i> after loading' ...
   '.pdf an Adobe PDF, to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>' ...
-  '.svg a Scalable Vector Graphics figure, to be viewed with a browser, <a href="http://inkscape.org/">InkScape</a> or <a href="http://www.gimp.org/">GIMP</a>' ...
-  '.vtk Visualization Toolkit (VTK) file which can be viewed with <a href="http://www.paraview.org/">ParaView</a>, <a href="http://code.enthought.com/projects/mayavi/">Mayavi2</a>, <a href="https://wci.llnl.gov/simulation/computer-codes/visit/executables">VisIt</a> and <a href="https://www.slicer.org/">Slicer4</a>' ...
-  '.mrc electron density map format (MRC) which can be viewed with PyMol, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>' ...
-  '.xhtml You can rotate the object (left mouse button), zoom (right mouse button), and pan (middle mouse button).', ...
+  '.svg a <a href="https://fr.wikipedia.org/wiki/Scalable_Vector_Graphics">Scalable Vector Graphics</a> image, to be viewed with Chrome/Firefox, <a href="http://inkscape.org/">Inkscape</a>, <a href="http://www.gimp.org/>GIMP.</a>, <a href="http://projects.gnome.org/evince/">Evince</a>' ...
+  '.vtk Visualization Toolkit (VTK) file which can be viewed with <a href="http://www.paraview.org/">ParaView</a>, <a href="http://code.enthought.com/projects/mayavi/">Mayavi2</a>, <a href="https://wci.llnl.gov/simulation/computer-codes/visit/executables">VisIt</a>, <a href="https://www.slicer.org/">Slicer4</a>' ...
+  '.mrc MRC Electron density map, to be visualized with <a href="http://www.pymol.org/">PyMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>, <a href="http://mem.ibs.fr/VEDA/">VEDA</a>' ...
+  '.xhtml Extensible Web page. You can rotate the object (left mouse button), zoom (right mouse button), and pan (middle mouse button).', ...
     }
     
     [index1, index2] = strtok([ name index{1} ]);
@@ -251,7 +250,6 @@ function [logo, link, op] = sqw_phonons_htmlreport_init(options)
 % ==============================================================================
 function sqw_phonons_htmlreport_optimize(fid, options)
   % display result of the optimization
-  disp([ mfilename ': generating HTML report: optimize ' ]);
   fprintf(fid, '<h2><a name="optimized"></a>Optimized atom/molecule configuration</h2>\n');
   fprintf(fid, '<p>In this section, we present the results of the optimization procedure, of the initial structure. The lattice parameters are kept constant.</p>\n');
   fprintf(fid, '<br>\n');
@@ -273,14 +271,12 @@ function sqw_phonons_htmlreport_status(fid, options)
 
 % ==============================================================================
 function sqw_phonons_htmlreport_error(fid, options, message)
-  disp([ mfilename ': generating HTML report: error: ' message ]);
   % display error message
   fprintf(fid, '<hr><h2>ERROR: %s FAILED</h2>\n', options.configuration);
   fprintf(fid, '<p>%s</p>\n', message);
 
 % ==============================================================================
 function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
-  disp([ mfilename ': generating HTML report: model ' ]);
   % check if the Model has been created and export it.
   name = 'Phonon_Model';
   Phonon_Model = [];
@@ -319,11 +315,11 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
   save(Phonon_Model, fullfile(options.target,name), 'm');
   sqw_phonons_htmlreport_table(fid, options, 'Phonon_Model');
   
-  fprintf(fid, 'Here is some additional information about the atom/molecule physical properties\n');
+  fprintf(fid, '<p>Here is some additional information about the atom/molecule physical properties\n');
   % display some information about the system (energy, structure, etc...)
   if isfield(Phonon_Model.UserData, 'properties')
     toadd = fieldnames(Phonon_Model.UserData.properties);
-    fprintf(fid, '<div style="text-align: center;"><table style="text-align: left; width: 50%%;" border="1" cellpadding="2" cellspacing="2">\n');
+    fprintf(fid, '<table style="text-align: left; width: 50%%;" border="1" cellpadding="2" cellspacing="2">\n');
     for index=1:numel(toadd)
       this = Phonon_Model.UserData.properties.(toadd{index});
       if isnumeric(this)
@@ -332,19 +328,18 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
         fprintf(fid, '  <tr><td><b>%s</b></td><td>%s</td></tr>\n', toadd{index}, this');
       end
     end
-    fprintf(fid, '</table></div><br>\n');
+    fprintf(fid, '</table></p>\n');
   end
-  fprintf(fid, 'End Date: %s.<br>\n', datestr(now));
-  fprintf(fid, 'Time elapsed: %g [s]<br>\n', options.duration);
+  fprintf(fid, '<p>End Date: %s.<br>\n', datestr(now));
+  fprintf(fid, 'Time elapsed: %g [s]</p>\n', options.duration);
   if isfield(options, 'cite')
-    fprintf(fid, '<b>Please cite:</b><br><pre>');
+    fprintf(fid, '<p><b>Please cite:</b><br><pre>');
     fprintf(fid, '%s\n', options.cite{:});
-    fprintf(fid, '</pre>\n');
+    fprintf(fid, '</pre></p>\n');
   end
   
 % ==============================================================================
 function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
-  disp([ mfilename ': generating HTML report: DOS ' ]);
   % display the vDOS. Model must have been evaluated once to compute DOS
   if isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
     Phonon_DOS = object.UserData.DOS;
@@ -375,7 +370,6 @@ function [maxFreq, object] = sqw_phonons_htmlreport_max_spectrum(fid, options, o
  
 % ==============================================================================
 function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFreq)
-  disp([ mfilename ': generating HTML report: Kpath ' ]);
   % generate dispersion along principal axes
   Phonon_kpath = log10(sqw_kpath(object, [], [0.01 maxFreq]));
   if ~isempty(Phonon_kpath)
@@ -388,12 +382,12 @@ function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFr
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.pdf'), 'pdf', 'view2 tight');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.fig'));
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.h5'), 'mantid');
+    save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.x3d'), 'x3d','tight auto');
     sqw_phonons_htmlreport_table(fid, options, 'Phonon_kpath');
   end
 
 % ==============================================================================
 function [Phonon_HKLE, object] = sqw_phonons_htmlreport_eval_4D(fid, options, object, maxFreq)
-  disp([ mfilename ': generating HTML report: eval 4D ' ]);
   % generate dispersion in 4D
   qh=linspace(0.01,1.5,30);qk=qh; ql=qh; w=linspace(0.01,maxFreq,101);
   Phonon_HKLE=iData(object,[],qh,qk,ql,w);
@@ -416,7 +410,6 @@ function [Phonon_HKLE, object] = sqw_phonons_htmlreport_eval_4D(fid, options, ob
 
 % ==============================================================================
 function sqw_phonons_htmlreport_eval_3D(fid, options, object)
-  disp([ mfilename ': generating HTML report: eval 3D ' ]);
   % the S(0kl,w)
   x=object{1};
     
@@ -446,11 +439,9 @@ function sqw_phonons_htmlreport_eval_3D(fid, options, object)
   end
   saveas(Phonon_0KLE, fullfile(options.target, 'Phonon_0KLE.h5'), 'mantid');
   
-  % modify aspect ratio to fit in a cube for X3D
-  Phonon_0KLE{1}=linspace(0,1,size(Phonon_0KLE,1));
-  Phonon_0KLE{2}=linspace(0,1,size(Phonon_0KLE,2));
-  Phonon_0KLE{3}=linspace(0,1,size(Phonon_0KLE,3));
-  saveas(Phonon_0KLE, fullfile(options.target, 'Phonon_0KLE.xhtml'), 'xhtml');
+  % modify aspect ratio to fit in a cube for X3D/XHTML
+  saveas(Phonon_0KLE, fullfile(options.target, 'Phonon_0KLE.xhtml'), 'xhtml','axes auto');
+  saveas(Phonon_0KLE, fullfile(options.target, 'Phonon_0KLE.x3d'), 'x3d','axes auto');
   
   sqw_phonons_htmlreport_table(fid, options, 'Phonon_0KLE');
   
@@ -458,7 +449,6 @@ function sqw_phonons_htmlreport_eval_3D(fid, options, object)
 
 % ==============================================================================
 function Phonon_powder = sqw_phonons_htmlreport_eval_powder(fid, options, object, maxFreq)
-  disp([ mfilename ': generating HTML report: powder ' ]);
   % the S(hklw) radial average
   Phonon_powder = sqw_powder(object, [], [], [0 maxFreq]); 
   log_Phonon_powder=log(Phonon_powder);
@@ -472,12 +462,12 @@ function Phonon_powder = sqw_phonons_htmlreport_eval_powder(fid, options, object
   saveas(Phonon_powder, fullfile(options.target, 'Phonon_powder.dat'), 'dat data');
   saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.pdf'), 'pdf', 'tight view2');
   saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.svg'), 'svg', 'view2 tight');
+  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.x3d'), 'x3d', 'tight auto');
   saveas(Phonon_powder, fullfile(options.target, 'Phonon_powder.h5'), 'mantid');
   
   sqw_phonons_htmlreport_table(fid, options, 'Phonon_powder');
 
 function sqw_phonons_htmlreport_download(fid, options)
-  disp([ mfilename ': generating HTML report: download ' ]);
   fprintf(fid, '<h2><a name="zip">Download</h2>\n');
   fprintf(fid, 'You can download the whole content of this report (data, plots, logs, ...) from<br>\n');
   [~,short_path] = fileparts(options.target);
@@ -490,7 +480,7 @@ function sqw_phonons_htmlreport_download(fid, options)
   
   % create a simple README file
   freadme = fopen(fullfile(options.target,'README.txt'),'w');
-  fprintf(freadme, 'Open the sqw_phonons.html file in this directory. It contains all you need. The Phonon Model (iFunc) is in the Phonons_Model.mat file.\n');
+  fprintf(freadme, 'Open the sqw_phonons.html file in this directory. It contains all you need. The Phonon Model (iFunc) is stored in the Phonon_Model.mat Matlab binary file.\n');
   fclose(freadme);
   
   % create ZIP of document
