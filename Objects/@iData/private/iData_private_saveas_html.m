@@ -157,18 +157,19 @@ function filename = iData_private_saveas_html(a, filename, format)
   
   if ~flag_data
     export = [ export 'svg' ];  % when not too big
-    export_label = [ export_label 'Scalable Vector Graphics image, to be viewed with Chrome/Firefox, <a href="http://inkscape.org/">Inkscape</a>, <a href="http://www.gimp.org/>GIMP.</a>, <a href="http://projects.gnome.org/evince/">Evince</a>.' ];
+    export_label = [ export_label '<a href="https://fr.wikipedia.org/wiki/Scalable_Vector_Graphics">Scalable Vector Graphics</a> image, to be viewed with Chrome/Firefox, <a href="http://inkscape.org/">Inkscape</a>, <a href="http://www.gimp.org/>GIMP.</a>, <a href="http://projects.gnome.org/evince/">Evince</a>.' ];
   end
   if ndims(a) == 3
     export = [ export 'vtk' 'mrc' ];
     export_label = [ export_label ...
-      'Visual ToolKit data set to be viewed with <a href="http://www.paraview.org/">ParaView</a> and <a href="https://svn.enthought.com/enthought/wiki/MayaVi">Mayavi2</a>.', ...
+      'Visualization Toolkit (VTK) file which can be viewed with <a href="http://www.paraview.org/">ParaView</a>, <a href="http://code.enthought.com/projects/mayavi/">Mayavi2</a>, <a href="https://wci.llnl.gov/simulation/computer-codes/visit/executables">VisIt</a>, <a href="https://www.slicer.org/">Slicer4</a>.', ...
       'MRC Electron density map, to be visualized with <a href="http://www.pymol.org/">PyMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>, <a href="http://mem.ibs.fr/VEDA/">VEDA</a>.' ];
   end
   if ~flag_data && any(ndims(a) == [2 3])
-    export = [ export 'xhtml' ];
+    export = [ export 'xhtml' 'x3d' ];
     export_label = [ export_label ...
-      'Extensible Web page with embeded viewer (X3DOM), to be viewed with Chrome/Firefox.' ];
+      'Extensible Web page with embeded viewer (X3DOM), to be viewed with Chrome/Firefox.', ...
+      'X3D Geometry Scene for <a href="http://castle-engine.sourceforge.net/view3dscene.php">view3dscene</a>, <a href="http://www.instantreality.org/">InstantPlayer</a>, <a href="http://freewrl.sourceforge.net/">FreeWRL</a>' ];
   end
   if isempty(strfind(format, 'data')) && isempty(strfind(format, 'flat'))
     for index=1:numel(export)
@@ -180,11 +181,7 @@ function filename = iData_private_saveas_html(a, filename, format)
       case 'mat'
         builtin('save', basename, 'a');
       otherwise
-        if strcmp(export{index}, 'xhtml')
-          save(reducevolume(a), basename, f);
-        else
-          save(a, basename, f);
-        end
+        save(a, basename, f);
       end
     end
   end
