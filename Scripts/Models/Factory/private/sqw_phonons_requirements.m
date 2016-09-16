@@ -19,7 +19,7 @@ else
   disp('Available calculators:');
   status.emt='ase-run';
   status.ase=sscanf(result,'%d.%d');
-  disp('  EMT           only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
+  disp('  EMT             only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
   
   % test for mpirun
   status.mpirun = '';
@@ -37,7 +37,7 @@ else
   [st, result] = system([ precmd 'python -c "from gpaw import GPAW"' ]);
   if st == 0
     status.gpaw='gpaw-python';
-    disp([ '  GPAW (http://wiki.fysik.dtu.dk/gpaw) as "' status.gpaw '"' ]);
+    disp([ '  GPAW            (http://wiki.fysik.dtu.dk/gpaw) as "' status.gpaw '"' ]);
   else
     status.gpaw='';
   end
@@ -59,7 +59,7 @@ else
     delete([ f '.db' ])
   end
   if ~isempty(status.nwchem)
-    disp(['  NWChem (http://www.nwchem-sw.org/) as "' status.nwchem '"' ]);
+    disp(['  NWChem          (http://www.nwchem-sw.org/) as "' status.nwchem '"' ]);
   end
   
   % test for Jacapo
@@ -85,9 +85,9 @@ else
   end
   if ~isempty(status.jacapo)
     if ~isempty(status.jacapo_mpi)
-      disp([ '  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '" and "' status.jacapo_mpi '"' ]);
+      disp([ '  Dacapo          (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '" and "' status.jacapo_mpi '"' ]);
     else
-      disp([ '  Dacapo (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '"' ]);
+      disp([ '  Dacapo          (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '"' ]);
     end
   end
   
@@ -106,7 +106,7 @@ else
     end
   end
   if ~isempty(status.elk)
-    disp([ '  Elk (http://elk.sourceforge.net) as "' status.elk '"' ]);
+    disp([ '  Elk             (http://elk.sourceforge.net) as "' status.elk '"' ]);
   end
   
   % test for ABINIT
@@ -124,7 +124,7 @@ else
     end
   end
   if ~isempty(status.abinit)
-    disp([ '  ABINIT (http://www.abinit.org/) as "' status.abinit '"' ]);
+    disp([ '  ABINIT          (http://www.abinit.org/) as "' status.abinit '"' ]);
   end
   
   % test for QuantumEspresso
@@ -144,7 +144,7 @@ else
   [st, result] = system([ precmd 'python -c "from qeutil import QuantumEspresso"' ]);
   if st == 0
     status.quantumespresso_ase='qeutil';
-    disp([ '  QEutil (https://jochym.github.io/qe-doc/) as "' status.quantumespresso_ase '"' ]);
+    disp([ '  QEutil          (https://jochym.github.io/qe-doc/) as "' status.quantumespresso_ase '"' ]);
   else
     status.quantumespresso_ase='';
   end
@@ -175,7 +175,7 @@ else
     status.vasp = '';
   end
   if ~isempty(status.vasp)
-    disp([ '  VASP (http://www.vasp.at/) as "' status.vasp '"' ]);
+    disp([ '  VASP            (http://www.vasp.at/) as "' status.vasp '"' ]);
   end
   % must set:
   % VASP_COMMAND=vasp

@@ -441,7 +441,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
     return
   end
   
-  poscar = fullfile(options.target, 'configuration_VASP');  % this is a POSCAR file
+  poscar = fullfile(options.target, 'configuration_POSCAR');  % this is a POSCAR file
   
 % QE specific options:
 %   options.mixing_ndim=scalar             number of iterations used in mixing
@@ -467,8 +467,6 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   if isscalar(options.occupations), options.occupations=options.occupations/Ry; end
   options.mpirun = status.mpirun;
 
-  disp([ mfilename ': calling sqw_phon(''' poscar ''') with PHON/Quantum Espresso' ]);
-  disp([ '  ' options.configuration ]); 
   options.dos = 1;
   decl = [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ];
   % sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'init', options, decl);

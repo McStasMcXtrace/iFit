@@ -44,12 +44,18 @@ case 'status'
   sqw_phonons_htmlreport_status(fid, options);
 case 'results'
   %
+  if isdeployed || ~usejava('jvm') || ~usejava('desktop')
+    disp([ 'sqw_phonons: generating HTML report in ' options.report ]);
+  else
+    disp([ 'sqw_phonons: generating HTML report in <a href="' options.report '">' options.report '</a>' ]);
+  end
   Phonon_Model = sqw_phonons_htmlreport_model(fid, options);
   if isempty(Phonon_Model), return; end
   [maxFreq, Phonon_Model]= sqw_phonons_htmlreport_max_spectrum(fid, options, Phonon_Model);
-  [grid4D, Phonon_Model] = sqw_phonons_htmlreport_eval_4D(fid, options, Phonon_Model, maxFreq);
-
+  [grid4D,  Phonon_Model]= sqw_phonons_htmlreport_eval_4D(fid, options, Phonon_Model, maxFreq);
+  try
                  sqw_phonons_htmlreport_kpath(fid, options, Phonon_Model, maxFreq);
+  end
                  sqw_phonons_htmlreport_dos(fid, options, Phonon_Model);
                  sqw_phonons_htmlreport_eval_3D(fid, options, grid4D);
   sqw_phonons_htmlreport_eval_powder(fid, options, grid4D, maxFreq);
@@ -68,7 +74,6 @@ function sqw_phonons_htmlreport_create_atoms(fid, options)
   
   % get icons, and clean up 'options' for display
   [logo, link, op] = sqw_phonons_htmlreport_init(options);
-  disp([ mfilename ': generating HTML report in ' options.report ]);
   
   % open the report HTML page and write header, title, date, ...
   fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
@@ -176,8 +181,13 @@ function sqw_phonons_htmlreport_table(fid, options, name)
       % the file exists
       if strcmp(index1, [ name '.png' ])
         fprintf(fid, '<div style="text-align:center"><a href="%s"><img src="%s" align="middle" title="%s"></a></div><br>\n', index1, index1, index1);
-      elseif strcmp(index1, [ name '.html' ]) || strcmp(index1, [ name '.xhtml' ])
-        fprintf(fid, '<div style="text-align:center"><iframe src="%s" align="middle" width="700" height="850"></iframe><br>%s (<a href="%s" target=_blank>open in external window</a>)<br></div><br>\n', index1, index2, index1);
+      elseif strcmp(index1, [ name '.html' ])
+        fprintf(fid, '<div style="text-align:center"><iframe src="%s" align="middle" width="480" height="480"></iframe><br>%s<br>(<a href="%s" target=_blank>open in external window</a>)<br></div><br>\n', index1, index2, index1);
+      elseif strcmp(index1, [ name '.xhtml' ])
+        fprintf(fid, [ '<div style="text-align:center"><iframe src="%s" align="middle" width="700" height="850"></iframe><br>\n' ...
+        '%s<br>(<a href="%s" target=_blank>open in external window</a>)<br>\n' ...
+        'The <font color="blue">blue</font> axis is the Energy (meV), the <font color="red">red</font> axis is QK (rlu), the <font color="green">green</font> axis is QL (rlu).<br>\n' ...
+        'You can rotate the model (left mouse button), zoom (right mouse button), and pan (middle mouse button).<br>\n' ], index1, index2, index1);
       else
         if flag_table == 0
           flag_table = 1;
@@ -344,7 +354,8 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
   if isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
     Phonon_DOS = object.UserData.DOS;
     fprintf(fid, '<h3><a name="dos"></a>The vibrational density of states (vDOS)</h3>\n');
-    fprintf(fid, 'The phonon spectrum is shown below:<br>\n');
+    fprintf(fid, '<p>The vibrational density of states is defined as the velocity auto-correlation function (VACF) of the particles.\n');
+    fprintf(fid, 'The phonon spectrum is shown below:</p><br>\n');
     builtin('save', fullfile(options.target, 'Phonon_DOS.mat'), 'Phonon_DOS');
     save(Phonon_DOS, fullfile(options.target, 'Phonon_DOS.png'), 'png', 'tight');
     save(Phonon_DOS, fullfile(options.target, 'Phonon_DOS.dat'), 'dat data');
@@ -359,14 +370,15 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
 % ==============================================================================
 function [maxFreq, object] = sqw_phonons_htmlreport_max_spectrum(fid, options, object)
   % compute the max energy of phonons, used for further evaluations
-  qh=linspace(0.01,1.5,10);qk=qh; ql=qh; w=linspace(0.01,100,10);
+  qh=linspace(0.01,1.5,10);qk=qh; ql=qh; w=linspace(0.01,100,11);
   data=iData(object,[],qh,qk,ql,w);
   % search for a maxFreq item in the model.UserData
   if isfield(object.UserData, 'maxFreq')
-    maxFreq = object.UserData.maxFreq*1.2;
+    maxFreq = object.UserData.maxFreq;
   else
     maxFreq = max(w);
   end
+  maxFreq = max(maxFreq(:));  % in case the max energies are given per mode
  
 % ==============================================================================
 function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFreq)
@@ -389,7 +401,8 @@ function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFr
 % ==============================================================================
 function [Phonon_HKLE, object] = sqw_phonons_htmlreport_eval_4D(fid, options, object, maxFreq)
   % generate dispersion in 4D
-  qh=linspace(0.01,1.5,30);qk=qh; ql=qh; w=linspace(0.01,maxFreq,101);
+  maxFreq
+  qh=linspace(0.01,1.5,30);qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.1,101);
   Phonon_HKLE=iData(object,[],qh,qk,ql,w);
 
   % these are the biggest files
@@ -444,8 +457,6 @@ function sqw_phonons_htmlreport_eval_3D(fid, options, object)
   saveas(Phonon_0KLE, fullfile(options.target, 'Phonon_0KLE.x3d'), 'x3d','axes auto');
   
   sqw_phonons_htmlreport_table(fid, options, 'Phonon_0KLE');
-  
-  fprintf(fid, 'In the 3D rendering, the blue axis is the Energy (meV), the red axis is QK (rlu), the green axis is QL (rlu).<br>\nYou can rotate the model (left mouse button), zoom (right mouse button), and pan (middle mouse button).<br>\n');
 
 % ==============================================================================
 function Phonon_powder = sqw_phonons_htmlreport_eval_powder(fid, options, object, maxFreq)
@@ -487,9 +498,9 @@ function sqw_phonons_htmlreport_download(fid, options)
   zip(options.target, options.target);
   
   if isdeployed || ~usejava('jvm') || ~usejava('desktop')
-      disp([ 'sqw_phonons: HTML report created as ' options.report ]);
-    else
-      disp([ 'sqw_phonons: HTML report created as <a href="' options.report '">' options.report '</a>' ]);
-    end
+    disp([ 'sqw_phonons: HTML report created as ' options.report ]);
+  else
+    disp([ 'sqw_phonons: HTML report created as <a href="' options.report '">' options.report '</a>' ]);
+  end
 
 
