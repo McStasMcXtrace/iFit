@@ -155,6 +155,9 @@ function signal=sqw_phonons(configuration, varargin)
 % regular qx,qy,qz grids (in rlu along reciprocal axes). The model evaluations
 % does not require to recompute the forces, and is very fast. To generate a
 % powder 2D S(q,w) you may use: sqw_powder(model)
+%
+% The syntax sqw_phonons(model,'html') allows to re-create the HTML report about
+% the 4D phonon model.
 %     
 % Example (model creation and evaluation):
 %   s=sqw_phonons('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal','dos');
@@ -266,6 +269,36 @@ elseif strcmp(configuration, 'identify')
 end
 
 options= sqw_phonons_argin(configuration, varargin{:});
+% check if we re-use an existing iFunc Model
+if isa(configuration, 'iFunc') && configuration.Dimension == 4
+  signal = configuration;
+  if ~options.htmlreport, return; end
+
+  if isfield(configuration.UserData,'options')
+    options = configuration.UserData.options;
+  end
+  options.htmlreport = 1;
+  options.dos        = 1;
+  % cope with other phonon models
+  if ~isfield(options, 'configuration')
+    options.configuration = signal.Description;
+  end
+  if ~isfield(options, 'calculator')
+    options.calculator = signal.Name;
+  end
+  if ~isfield(options, 'duration')
+    options.duration = 0;
+  end
+  if isempty(dir(fullfile(options.target, [ 'Phonon_Model.mat' ])))
+    Phonon_Model = signal;
+    builtin('save', fullfile(options.target, 'Phonon_Model.mat'), 'Phonon_Model');
+  end
+  sqw_phonons_htmlreport('', 'create_atoms', options);
+  sqw_phonons_htmlreport('', 'results', options);
+  sqw_phonons_htmlreport('', 'download', options);
+  return
+end
+
 if isempty(status.mpirun) && isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
   options.mpi=1;
   disp([ mfilename ': MPI parallelization is not available. Install e.g. OpenMPI first' ]);

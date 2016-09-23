@@ -374,7 +374,7 @@ function [maxFreq, object] = sqw_phonons_htmlreport_max_spectrum(fid, options, o
   data=iData(object,[],qh,qk,ql',w);
   % search for a maxFreq item in the model.UserData
   if isfield(object.UserData, 'maxFreq')
-    maxFreq = object.UserData.maxFreq;
+    maxFreq = object.UserData.maxFreq*1.2;
   else
     maxFreq = max(w);
   end
