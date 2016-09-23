@@ -159,7 +159,7 @@ function signal=sqw_phonons(configuration, varargin)
 % Example (model creation and evaluation):
 %   s=sqw_phonons('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal','dos');
 %   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
-%   f=iData(s,[],qh,qk,ql,w); scatter3(log(f(1,:, :,:)),'filled');
+%   f=iData(s,[],qh,qk,ql',w); scatter3(log(f(1,:, :,:)),'filled');
 %   figure; plot(s.UserData.DOS); % plot the DOS, as indicated during model creation
 %
 %   s=sqw_phonons('bulk("Si", "diamond", a=5.4, cubic=True)','semiconductor');
@@ -218,6 +218,9 @@ function signal=sqw_phonons(configuration, varargin)
 %         w:  axis along energy in meV (double)
 %    signal: when values are given, a guess of the parameters is performed (double)
 % output: signal: model value
+%
+% When all axes are vectors of same orientation, the HKL locations is assumed to be a q-path.
+% When axes are not all vectors, not same length, not orientation, a 3D HKL cube is used.
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks
@@ -954,7 +957,7 @@ disp([ 'Time elapsed=' num2str(signal.UserData.duration) ' [s]. Please cite:' ])
 fprintf(1, '%s\n', cite{:});
 disp('You can now evaluate the model using e.g.:')
 disp('    qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);');
-disp('    f=iData(s,[],qh,qk,ql,w); plot3(log(f(1,:, :,:)));');
+disp('    f=iData(s,[],qh,qk,ql'',w); plot3(log(f(1,:, :,:)));');
 disp(' ');
 
 % save the Model as a Matlab object
@@ -983,7 +986,7 @@ function [f, signal] = sqw_phonons_plot(signal)
   options = signal.UserData.options;
   disp([ mfilename ': Model ' options.configuration ' plotting phonons.' ])
   qh=linspace(0.01,1.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
-  f=iData(signal,[],qh,qk,ql,w);
+  f=iData(signal,[],qh,qk,ql',w);
   g=log(f(1,:, :,:)); 
   
   fig1=figure; 
