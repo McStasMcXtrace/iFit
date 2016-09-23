@@ -252,7 +252,7 @@ function [logo, link, op] = sqw_phonons_htmlreport_init(options)
   for f=fieldnames(op)'
     if isempty(op.(f{1})) ...
       || (isscalar(op.(f{1})) && (op.(f{1}) == 0 || ~isfinite(op.(f{1})))) ...
-      || strcmp(f{1}, 'script')
+      || strncmp(f{1}, 'script',6)
       op = rmfield(op, f{1});
     end
   end
@@ -261,7 +261,7 @@ function [logo, link, op] = sqw_phonons_htmlreport_init(options)
 function sqw_phonons_htmlreport_optimize(fid, options)
   % display result of the optimization
   fprintf(fid, '<h2><a name="optimized"></a>Optimized atom/molecule configuration</h2>\n');
-  fprintf(fid, '<p>In this section, we present the results of the optimization procedure, of the initial structure. The lattice parameters are kept constant.</p>\n');
+  fprintf(fid, '<p>In this section, we present the results of the optimization procedure, of the initial structure. The lattice parameters are kept constant. The optimized structure is used further for the force estimate.</p>\n');
   fprintf(fid, '<br>\n');
   sqw_phonons_htmlreport_table(fid, options, 'optimized');
   
@@ -401,7 +401,6 @@ function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFr
 % ==============================================================================
 function [Phonon_HKLE, object] = sqw_phonons_htmlreport_eval_4D(fid, options, object, maxFreq)
   % generate dispersion in 4D
-  maxFreq
   qh=linspace(0.01,1.5,30);qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.1,101);
   Phonon_HKLE=iData(object,[],qh,qk,ql,w);
 
