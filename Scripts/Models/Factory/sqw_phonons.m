@@ -212,7 +212,7 @@ function signal=sqw_phonons(configuration, varargin)
 %             p(1)=Amplitude
 %             p(2)=Gamma   dispersion DHO half-width in energy [meV]
 %             p(3)=Background (constant)
-%             p(4)=Temperature of the material [K]
+%             p(4)=Temperature of the material [K]. When 0, the intensity is not computed.
 %             p(5)=Debye-Waller mean squared displacement <u^2> used in exp(-1/6 u2Q2) [Angs^2]
 %          or p='guess'
 %         qh: axis along QH in rlu (row,double)
@@ -289,10 +289,9 @@ if isa(configuration, 'iFunc') && configuration.Dimension == 4
   if ~isfield(options, 'duration')
     options.duration = 0;
   end
-  if isempty(dir(fullfile(options.target, [ 'Phonon_Model.mat' ])))
-    Phonon_Model = signal;
-    builtin('save', fullfile(options.target, 'Phonon_Model.mat'), 'Phonon_Model');
-  end
+  Phonon_Model = signal;
+  builtin('save', fullfile(options.target, 'Phonon_Model.mat'), 'Phonon_Model');
+
   sqw_phonons_htmlreport('', 'create_atoms', options);
   sqw_phonons_htmlreport('', 'results', options);
   sqw_phonons_htmlreport('', 'download', options);

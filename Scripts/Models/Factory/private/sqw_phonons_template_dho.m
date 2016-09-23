@@ -40,6 +40,7 @@ for index=1:size(FREQ,2)  % loop on modes
   end
   % we assume Gamma(w) = Gamma w/w0
   % W0 is the renormalized phonon frequency W0^2 = w0^2+Gamma^2
+  if ~Gamma, Gamma=1e-4; end
   Gamma2 = Gamma^2+imag(w0).^2; % imaginary frequency goes in the damping
   w0     = real(w0);
   W02    = w0.^2+Gamma2;
@@ -67,7 +68,9 @@ for index=1:size(FREQ,2)  % loop on modes
 end % for mode index
 
 % Amplitude is exp(-2W)/2M
-signal = signal*Amplitude + Bkg;
+if Amplitude
+  signal = signal*Amplitude + Bkg;
+end
 if ~isempty(resize_me) && prod(resize_me) == numel(signal)
   signal = reshape(signal, resize_me); % initial 4D cube dimension = [ size(x) numel(t) ]
 end
