@@ -371,7 +371,7 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
 function [maxFreq, object] = sqw_phonons_htmlreport_max_spectrum(fid, options, object)
   % compute the max energy of phonons, used for further evaluations
   qh=linspace(0.01,1.5,10);qk=qh; ql=qh; w=linspace(0.01,100,11);
-  data=iData(object,[],qh,qk,ql,w);
+  data=iData(object,[],qh,qk,ql',w);
   % search for a maxFreq item in the model.UserData
   if isfield(object.UserData, 'maxFreq')
     maxFreq = object.UserData.maxFreq;
@@ -402,7 +402,7 @@ function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFr
 function [Phonon_HKLE, object] = sqw_phonons_htmlreport_eval_4D(fid, options, object, maxFreq)
   % generate dispersion in 4D
   qh=linspace(0.01,1.5,30);qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.1,101);
-  Phonon_HKLE=iData(object,[],qh,qk,ql,w);
+  Phonon_HKLE=iData(object,[],qh,qk,ql',w);
 
   % these are the biggest files
   fprintf(fid, '<h3><a name="grid4d"></a>The dispersion in 4D S(hkl,w)</h3>\n');
