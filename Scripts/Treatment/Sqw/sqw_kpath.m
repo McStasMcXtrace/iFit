@@ -34,8 +34,18 @@ function S = sqw_kpath(f, qLim, W)
   
   if nargin < 2, qLim = []; end
   if nargin < 3, W=[]; end
-  if isempty(W), W=[0.01, 100]; end
-  if numel(W) == 2
+  if isempty(W)
+    % make a quick evaluation in order to get the maxFreq
+    qh=linspace(0.01,1.5,10);qk=qh; ql=qh; w=linspace(0.01,100,11);
+    [S,f] = feval(f, f.p, qh,qk,ql',w);
+    % search for maxFreq if exists
+    if isfield(f.UserData, 'maxFreq')
+      W = max(f.UserData.maxFreq);
+    else W=100; end
+  end
+  if numel(W) == 1
+    W = linspace(0.01,W, 100);
+  elseif numel(W) == 2
     W = linspace(min(W),max(W), 100);
   end
   
@@ -70,7 +80,7 @@ function S = sqw_kpath(f, qLim, W)
   L = qOut(3,:);
   % assemble all HKLw points
   h=[]; k=[]; l=[]; w=[]; index=1;
-  for i=1:numel(H)
+  for i=1:numel(H)  % this loop takes time
     for j=1:numel(W)
       h(index) = H(i);
       k(index) = K(i);
@@ -80,7 +90,7 @@ function S = sqw_kpath(f, qLim, W)
     end
   end
   % now we evaluate the model
-  S = feval(f, [], h,k,l,w);
+  [S, f, ax, name] = feval(f, [], h,k,l,W);
   
   % retain only HKL locations (get rid of optional n)
   if isscalar(qLim{end}), 
@@ -96,10 +106,11 @@ function S = sqw_kpath(f, qLim, W)
   end
   
   % now we generate a 2D iData
-  S = reshape(S, [ numel(W) numel(H) ]);
+  % S = reshape(S, [  numel(ax{1}) numel(W) ]);
+
   
   % create an iData
-  x = linspace(0, numel(qLim)-1, numel(H));
+  x = linspace(0, numel(qLim)-1, numel(ax{1}));
   S = iData(W,x,S);
   % set title, labels, ...
   title(S, 'Model value along path');
