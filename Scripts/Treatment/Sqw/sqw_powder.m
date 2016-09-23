@@ -36,7 +36,7 @@ elseif ischar(a) && strcmp(a, 'defaults')
   return
 elseif ischar(a) && strcmp(a, 'identify')
   r = sqw_powder('defaults');
-  r.Name = [ 'Sqw_powder from 2D or 4D model [' mfilename ']' ];
+  r.Name = [ 'Sqw_powder from 4D model [' mfilename ']' ];
   r.Dimension = -r.Dimension;
   return
 end
@@ -65,16 +65,17 @@ end
 % [B] == rlu2cartesian = R2B (from ResLibCal_RM2RMS)
 %
 % according to ASE https://wiki.fysik.dtu.dk/ase/ase/atoms.html#list-of-all-methods
-% the atoms.reciprocal_cell does not include the 2*pi. We multiply B by that.
+% the atoms.reciprocal_cell does not include the 2*pi. 
+% We have stored B*2pi in the ASE 'sqw_phonons_check' script.
 UD = a.UserData;
 if isfield(UD, 'reciprocal_cell')
-  B = UD.reciprocal_cell*2*pi;
-elseif isfield(UD, 'properties') && isfield(UD.atoms, 'reciprocal_cell')
-  B = UD.atoms.reciprocal_cell*2*pi;
+  B = UD.reciprocal_cell;
+elseif isfield(UD, 'properties') && isfield(UD.properties, 'reciprocal_cell')
+  B = UD.properties.reciprocal_cell;
 elseif isa(a, 'iData') && ~isempty(findfield(a, 'reciprocal_cell'))
-  B = get(a, findfield(a, 'reciprocal_cell','cache'))*2*pi;
+  B = get(a, findfield(a, 'reciprocal_cell','cache'));
 else
-  B = eye(3); % assume cubic, a=b=c=2*pi 90 deg
+  B = eye(3); % assume cubic, a=b=c=2*pi, 90 deg, then a*=2pi/a=1...
 end
 
 if isa(a, 'iFunc')
