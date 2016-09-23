@@ -53,7 +53,7 @@ for index=1:size(FREQ,2)  % loop on modes
   else n=0; end
   
   % phonon form factor (intensity) |Q.e|^2
-  if ~isempty(POLAR)
+  if ~isempty(POLAR) && ~isempty(T) && T > 0
     ZQ = abs(sum(Q.*squeeze(POLAR(:,index,:)),2)).^2; % one-phonon structure factor in a Bravais lattice
   else ZQ = 1; end
   % Debye-Waller form factor exp(-2Wq) ~ exp(-1/6 u2.Q2)

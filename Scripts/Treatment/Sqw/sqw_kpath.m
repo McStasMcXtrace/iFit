@@ -40,7 +40,7 @@ function S = sqw_kpath(f, qLim, W)
     [S,f] = feval(f, f.p, qh,qk,ql',w);
     % search for maxFreq if exists
     if isfield(f.UserData, 'maxFreq')
-      W = max(f.UserData.maxFreq);
+      W = max(f.UserData.maxFreq)*1.2;
     else W=100; end
   end
   if numel(W) == 1
