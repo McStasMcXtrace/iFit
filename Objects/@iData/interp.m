@@ -122,7 +122,7 @@ cmd=b.Command;
 clear varargin a
 
 % check for method to be valid
-if isempty(any(strcmp(method, {'linear','cubic','spline','nearest','v4'})))
+if ~any(strcmp(method, {'linear','cubic','spline','nearest','v4'}))
   iData_private_warning(mfilename,['Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest, v4. Defaulting to linear.']);
   method = 'linear';
 end

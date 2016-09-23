@@ -254,10 +254,19 @@ if model.Dimension && ...
   
   % event:  all vectors, including signal (if any), same length
   % regrid: all vectors, not same length, signal is not a vector
-  axes_numel = cellfun(@numel, varargin(1:model.Dimension));
-  if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension))) ...
-    && ~isvector(varargin{model.Dimension+1}) ...
-    && any(axes_numel ~= axes_numel(1))
+  
+  % check for vectors: 0 or 1 for each axis
+  check_vector = cellfun(@isvector, varargin(1:model.Dimension));
+  % check number of elements: would be equal for 3D grids (xyz) or 4D (xyzt)
+  check_numel  = cellfun(@numel, varargin(1:model.Dimension));
+  % check orientation (axis rank) for vectors. 0 for non vectors
+  check_orient = zeros(1,model.Dimension);
+  index        = find(check_vector);
+  check_orient(index) = cellfun(@(c)find(size(c)==numel(c)), varargin(index));
+  
+  % all vectors, not same orientation and not same length: ndgrid
+  if all(check_vector) && any(check_orient ~= check_orient(1)) ...
+    && ~all(check_numel  == check_numel(1) | check_numel == 1)
     [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
   end
   % automatic guessed parameter values -> signal
@@ -403,7 +412,7 @@ end
 % default return value...
 signal          = [];
 parameter_names = lower(model.Parameters);
-AxisOrientation = ''; ParallelAxes=1;
+
 % check axes and define missing ones
 for index=1:model.Dimension
   % check for default axes to represent the model when parameters are given
@@ -443,40 +452,57 @@ for index=1:model.Dimension
       end
     end
   end % for index in parameter names
-  if isempty(varargin{index})
+  if isempty(varargin{index}) % when can not get axis, we use -5:5
     varargin{index} = linspace(-5,5,50+index);
     % orient the axis along the right dimension to indicate this is not an event type
     d = ones(1,max(2,model.Dimension)); d(index) = numel(varargin{index});
     varargin{index} = reshape(varargin{index}, d);
   end
-  % check if axes are vectors of same length and orientation (event type model)
-  if ~isscalar(varargin{index}) && isempty(AxisOrientation)
-    AxisOrientation=size(varargin{index});
-  elseif ~isscalar(varargin{index}) ...
-          && (length(AxisOrientation) ~= length(size(varargin{index})) ...
-          || any(AxisOrientation ~= size(varargin{index}))), ParallelAxes=0;
-  end
+  
 end % for index in model dim
 
 % convert axes to nD arrays for operations to take place
 % check the axes and possibly use ndgrid to allow nD operations in the
 % Expression/Constraint. Only for non event style axes.
-if model.Dimension > 1 && all(cellfun(@isvector, varargin(1:model.Dimension))) && ~ParallelAxes
-  [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
-elseif model.Dimension > 1 && ParallelAxes
-  % make sure all axes will be 'event' style, ie vectors same orientation
-  sz = [];
-  % first get the size of the event/cloud (first non scalar axis)
-  for index=1:model.Dimension
-    if ~isscalar(varargin{index}), sz = size(varargin{index}); break; end
-  end
-  if ~isempty(sz)
-    % then convert all scalar stuff into same length vectors (constant)
+
+% check for vectors: 0 or 1 for each axis
+check_vector = cellfun(@isvector, varargin(1:model.Dimension));
+% check number of elements: would be equal for 3D grids (xyz) or 4D (xyzt)
+check_numel  = cellfun(@numel, varargin(1:model.Dimension));
+% check orientation (axis rank) for vectors. 0 for non vectors
+check_orient = zeros(1,model.Dimension);
+index        = find(check_vector);
+check_orient(index) = cellfun(@(c)find(size(c)==numel(c)), varargin(index));
+
+if model.Dimension > 1 && all(check_vector) ...
+  && all(check_numel  == check_numel(1) | check_numel == 1) ...
+  && all(check_orient == check_orient(1))
+  % event nD: all axes as vectors, same length, same orientation
+  is_event = true;
+else
+  % map nD:   any other choice
+  is_event = false;
+end
+
+if model.Dimension > 1
+  if ~is_event && all(check_vector) && any(check_orient ~= check_orient(1))
+    % when axes are all vectors, but not same orientation, we create a grid
+    [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
+  elseif is_event
+    % make sure all axes will be 'event' style, ie vectors same orientation
+    sz = [];
+    % first get the size of the event/cloud (first non scalar axis)
     for index=1:model.Dimension
-      if isscalar(varargin{index})
-        varargin{index} = varargin{index}*ones(sz);
-      else
-        varargin{index} = reshape(varargin{index}, sz);
+      if ~isscalar(varargin{index}), sz = size(varargin{index}); break; end
+    end
+    if ~isempty(sz)
+      % then convert all scalar stuff into same length vectors (constant)
+      for index=1:model.Dimension
+        if isscalar(varargin{index})
+          varargin{index} = varargin{index}*ones(sz);
+        else
+          varargin{index} = reshape(varargin{index}, sz);
+        end
       end
     end
   end
@@ -532,13 +558,6 @@ if this.Dimension
   eval([ '[' iFunc_ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
 end
 
-if nargout > 1
-  iFunc_ax = varargin(1:this.Dimension);
-else
-  iFunc_ax = [];
-end
-clear index
-
 % remove axes from varargin -> leaves additional optional arguments to the function
 varargin(1:this.Dimension) = []; 
 
@@ -546,13 +565,13 @@ varargin(1:this.Dimension) = [];
 % in the evaluation:
 % * x,y,z,...        hold  the axes
 % * p                holds the numerical values of the parameters (row)
-% * struct_p         holds the parameters as a structure (inactivated for now)
+% * struct_p         holds the parameters as a structure
 % * this.Parameters holds the names of these parameters
 % 
 
 p       = reshape(this.ParameterValues,1,numel(this.ParameterValues));
 % if we wish to have parameters usable as a structure
-%struct_p= cell2struct(num2cell(p),this.Parameters,2);
+struct_p= cell2struct(num2cell(p),strtok(this.Parameters),2);
 
 try
   this.Eval = cellstr(this.Eval);
@@ -565,7 +584,14 @@ catch
   lasterr
   save iFunc_feval_error
   error([ 'iFunc:' mfilename ], [ 'Failed model evaluation. Saved state in ' fullfile(pwd,'iFunc_feval_error') ]);
-end 
+end
+
+% copy the actual axes, in case they have been changed during evaluation
+if nargout > 1
+  iFunc_ax = eval([ '{' iFunc_ax(1:(2*this.Dimension)) '}' ]);
+else
+  iFunc_ax = [];
+end
 
 % ==============================================================================
 function p = iFunc_feval_guess(this, varargin)

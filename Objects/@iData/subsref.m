@@ -139,9 +139,9 @@ for i = 1:length(S)     % can handle multiple index levels
             b = setaxis(b, index, ax, squeeze(x(s.subs{1})));
           elseif numel(s.subs) == 1 && index > 1 && max(s.subs{1}) <= numel(x)
             b = setaxis(b, index, ax, squeeze(x(s.subs{1})));
-          elseif max(s.subs{index}) <= numel(x) % vector type axes
+          elseif index <= numel(s.subs) && max(s.subs{index}) <= numel(x) % vector type axes
             b = setaxis(b, index, ax, squeeze(x(s.subs{index})));
-          else
+          elseif index <= numel(s.subs)
             iData_private_warning(mfilename,[ 'The Axis ' num2str(size(index)) ' [' ...
     num2str(size(x)) ' can not be resized as a [' num2str(size(s.subs{index})) ...
     '] vector in iData object ' b.Tag ' "' b.Title '".\n\tTo use the default Error=sqrt(Signal) assign s.Error=[].' ]);
@@ -151,7 +151,7 @@ for i = 1:length(S)     % can handle multiple index levels
       % check if the sub indices supress an axis: move it further
       for index=1:(sz-1)
         if index <= length(b.Alias.Axis)
-          if numel(s.subs{index}) == 1 && isnumeric(s.subs{index}) 
+          if index <= numel(s.subs) && numel(s.subs{index}) == 1 && isnumeric(s.subs{index}) 
             b.Alias.Axis([index index+1])   = b.Alias.Axis([index+1 index]); 
           end
         end
