@@ -5,6 +5,10 @@ function y=bose(varargin)
 %     n(x) = 1 ./ (exp(x/p(1)) - 1);
 %     y = n(x)+1 for x > 0
 %     y = n(x)   for x < 0
+%
+% The Bose factor has the sign of x.
+%   (n+1) converges to 0 for x -> -Inf, and to 1 for x-> +Inf. It diverges at x=0.
+%   n(x)+n(-x) = -1
 %         
 % When 'x' is an energy in meV, the parameter p should be T/11.6045
 %
@@ -25,7 +29,9 @@ function y=bose(varargin)
 y.Name       = [ 'Bose (1D) [' mfilename ']' ];
 y.Description='Bose-Einstein distribution fitting function. Ref: http://en.wikipedia.org/wiki/Bose%E2%80%93Einstein_statistics';
 y.Parameters = {'Tau h/2pi/kT'};
-y.Expression = @(p,x) 1 ./ (exp(abs(x)/p(1)) - 1) + (x>0);
+% the Bose factor is negative for w<0, positive for w>0
+% (n+1) converges to 0 for w -> -Inf, and to 1 for w-> +Inf. It diverges at w=0
+y.Expression = @(p,x) 1 ./ (exp(x/p(1)) - 1);
 y.Dimension  = 1;   
 y.Guess      = @(x,signal) abs(log(1./mean(signal(:))+1)/mean(abs(x(:))));
 

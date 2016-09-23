@@ -27,7 +27,7 @@ Description: @IFIT_NAME@ generic data analysis and fitting to models
  You can not define new Matlab functions in this stand-alone release, but can define
  new iFunc objects to hold your function body.
  .
- Main functionalities are: [ iData Load Plot Math Fit Save Optimization iFunc Models ]
+ Main functionalities are: [ iData Load Plot Math Fit Save Optimization iFunc Models Treatment ]
  .
  To use this software, you need to install the Matlab Compiler Runtime in /opt/MATLAB, 
  so that you should have a directory /opt/MATLAB/MATLAB_Compiler_Runtime/v713/. 
