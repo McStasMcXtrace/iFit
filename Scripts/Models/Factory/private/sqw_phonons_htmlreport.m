@@ -371,7 +371,7 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
 function [maxFreq, object] = sqw_phonons_htmlreport_max_spectrum(fid, options, object)
   % compute the max energy of phonons, used for further evaluations
   qh=linspace(0.01,1.5,10);qk=qh; ql=qh; w=linspace(0.01,100,11);
-  data=iData(object,[],qh,qk,ql',w);
+  data=iData(object,object.p,qh,qk,ql',w);
   % search for a maxFreq item in the model.UserData
   if isfield(object.UserData, 'maxFreq')
     maxFreq = object.UserData.maxFreq*1.2;
@@ -402,7 +402,7 @@ function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFr
 function [Phonon_HKLE, object] = sqw_phonons_htmlreport_eval_4D(fid, options, object, maxFreq)
   % generate dispersion in 4D
   qh=linspace(0.01,1.5,30);qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.1,101);
-  Phonon_HKLE=iData(object,[],qh,qk,ql',w);
+  Phonon_HKLE=iData(object,object.p,qh,qk,ql',w);
 
   % these are the biggest files
   fprintf(fid, '<h3><a name="grid4d"></a>The dispersion in 4D S(hkl,w)</h3>\n');
@@ -410,7 +410,9 @@ function [Phonon_HKLE, object] = sqw_phonons_htmlreport_eval_4D(fid, options, ob
   fprintf(fid, '<ul><li>qh=[%g:%g] with %i values (QH in rlu)</li>\n', ylim(Phonon_HKLE), size(Phonon_HKLE,1)); % axis1
   fprintf(fid, '<li>qk=[%g:%g] with %i values (QK in rlu)</li>\n', xlim(Phonon_HKLE), size(Phonon_HKLE,2));     % axis2
   fprintf(fid, '<li>ql=[%g:%g] with %i values (QL in rlu)</li>\n', zlim(Phonon_HKLE), size(Phonon_HKLE,3));
-  fprintf(fid, '<li>w=[%g:%g] with %i values (energy in meV)</li></ul>\n', clim(Phonon_HKLE), size(Phonon_HKLE,4));
+  fprintf(fid, '<li>w=[%g:%g] with %i values (energy in meV)</li></ul></p>\n', clim(Phonon_HKLE), size(Phonon_HKLE,4));
+  fprintf(fid, '<p>The model parameters used for this evaluation are:<br>\n');
+  fprintf(fid, '<pre>%s</pre><br></p>\n', class2str(' ', Phonon_HKLE.Parameters));
   
   fprintf(fid, 'Load the HKLE Data set under <a href="http://ifit.mccode.org">Matlab/iFit</a> with:<br>\n');
   fprintf(fid, '<ul><li>load(''<a href="%s">%s</a>'') <i>%% loads the 4D Phonon_HKLE iData object</i></li></ul><br>\n', 'Phonon_HKLE.mat', 'Phonon_HKLE.mat');
