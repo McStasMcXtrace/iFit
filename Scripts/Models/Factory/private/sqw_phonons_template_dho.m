@@ -4,6 +4,7 @@ function [signal, this] = sqw_phonons_template_dho(HKL, t, FREQ, POLAR, is_event
 %   when resize_me is specified [size], the signal is reshaped to it
 %   when u2>0 is specified, the Debye-Waller intensity exp(-u2 Q2) form factor is computed
 % Reference: B. Fak, B. Dorner / Physica B 234-236 (1997) 1107-1108
+%            H. Schober, J Neut. Res. 17 (2014) 109
 
 % size of 'w' is [ numel(x) numel(t) ]. the energy for which we evaluate the model
 if is_event, w = t(:);
@@ -28,46 +29,101 @@ end
 q_cart = B*HKL';
 qx=q_cart(1,:); qy=q_cart(2,:); qz=q_cart(3,:);
 Q=[ qx(:) qy(:) qz(:) ];  % in Angs-1
-clear q_cart qx qy qz
+clear q_cart qx qy qz HKL
+
+% check if we have everything needed for the intensity estimate: b_coh, positions
+b_coh = []; positions = [];
+if isfield(UD, 'positions')
+  positions = UD.properties;
+elseif isfield(UD, 'properties') && isfield(UD.properties, 'positions')
+  positions = UD.properties.positions;
+end
+
+if isfield(UD, 'b_coh')
+  b_coh = UD.b_coh;
+elseif isfield(UD, 'properties') && isfield(UD.properties, 'b_coh')
+  b_coh = UD.properties.b_coh;
+end
+
+if isempty(b_coh)
+  if isfield(UD, 'sigma_coh')
+    b_coh = UD.b_coh;
+  elseif isfield(UD, 'properties') && isfield(UD.properties, 'sigma_coh')
+    b_coh = sqrt(abs(UD.properties.sigma_coh)*100/4/pi); % in [fm]
+    b_coh = b_coh .* sign(UD.properties.sigma_coh);
+  end
+end
+
+if isempty(b_coh) && ~isempty(positions)
+  disp([ 'WARNING: Unspecified coherent neutron scattering length specification for the material ' ...
+    UD.properties.chemical_formula '. Using b_coh=1 [fm] for all atoms (sigma_coh=0.126 barns). ' ...
+    'Specify model.UserData.properties.b_coh as a vector.' ]);
+  b_coh = ones(1, size(positions,1));
+end
+
+if isscalar(b_coh) && size(positions,1) > 1
+  disp([ 'WARNING: The material ' UD.properties.chemical_formula ...
+    ' has ' num2str(size(positions,1)) ...
+    ' atoms in the cell, but only one coherent neutron scattering length is defined. ' ...
+    'Using the same value for all (may be wrong). ' ...
+    'Specify model.UserData.properties.b_coh as a vector.' ]);
+  b_coh = b_coh * ones(1, size(positions,1));
+end
+
+if ~isempty(b_coh) && ~isempty(positions) && numel(b_coh) ~= size(positions,1)
+  disp([ 'WARNING: Inconsistent coherent neutron scattering length specification: has ' ...
+    num2str(numel(b_coh)) ' but the material ' UD.properties.chemical_formula ' has ' ...
+    num2str(size(positions,1)) ' atoms in the cell. Will not compute phonon intensities. ' ...
+    'Specify model.UserData.properties.b_coh as a vector.' ]);
+    b_coh = [];
+end
+
+% the Bose factor is negative for w<0, positive for w>0
+% (n+1) converges to 0 for w -> -Inf, and to 1 for w-> +Inf. It diverges at w=0
+if ~isempty(T) && T > 0, 
+  n         = 1./(exp(w/T)-1);
+  n(w == 0) = 0;  % avoid divergence
+else n=0; end
+
+if Gamma<=0, Gamma=1e-4; end
 
 for index=1:size(FREQ,2)  % loop on modes
   % % size of 'w0' is [ numel(x) numel(t) ]. the energy of the modes (columns) at given x=q (rows)
-  if is_event
-    % event 4D: [ x y z t ]   as vectors, same length, same orientation
-    w0= FREQ(:,index);
-  else  % all other cases (use matrices instead of vectors)         
-    w0= FREQ(:,index) * ones(1,nt); 
-  end
   % we assume Gamma(w) = Gamma w/w0
   % W0 is the renormalized phonon frequency W0^2 = w0^2+Gamma^2
-  if ~Gamma, Gamma=1e-4; end
-  Gamma2 = Gamma^2+imag(w0).^2; % imaginary frequency goes in the damping
-  w0     = real(w0);
-  W02    = w0.^2+Gamma2;
-  clear w0
-  
-  % the Bose factor is negative for w<0, positive for w>0
-  % (n+1) converges to 0 for w -> -Inf, and to 1 for w-> +Inf. It diverges at w=0
-  if ~isempty(T) && T > 0, 
-    n         = 1./(exp(w/T)-1);
-    n(w == 0) = 0;  % avoid divergence
-  else n=0; end
+  Gamma2 = Gamma^2+imag(FREQ(:,index)).^2; % imaginary frequency goes in the damping
+  W02    = real(FREQ(:,index)).^2+Gamma2;
   
   % phonon form factor (intensity) |Q.e|^2
-  if ~isempty(POLAR) && ~isempty(T) && T > 0
-    ZQ = abs(sum(Q.*squeeze(POLAR(:,index,:)),2)).^2; % one-phonon structure factor in a Bravais lattice
-  else ZQ = 1; end
-  % Debye-Waller form factor exp(-2Wq) ~ exp(-1/6 u2.Q2)
-  if ~isempty(u2) && u2 > 0
-    ZQ = ZQ.*exp(-u2/6*sum(Q.^2,2));
+  % POLAR is a set of [xyz] vectors for each atom in the cell POLAR(HKL,mode,atom,xyz)
+  % polarisation vectors already contain the 1/mass factor: ASE/phonons.py:band_structure
+  % ZQ=|F(Q)|^2=|sum_atom[ bcoh(atom). exp(-WQ) .* (Q.*POLAR(HKL,index,atom,:)) .* exp(-i*Q.*pos(atom)) ]|^2
+  ZQ = 1;
+  if ~isempty(POLAR) && ~isempty(T) && T > 0 && ~isempty(b_coh) && ~isempty(positions)
+    ZQ = 0;
+    for atom=1:size(positions,1)
+      % one-phonon structure/form factor in a Bravais lattice
+      nw0       = 1./(exp(FREQ(:,index)/T)-1);
+      nw0(FREQ(:,index) == 0) = 0;
+      DW = abs(sum(Q.*squeeze(POLAR(:,index,atom,:)),2)).^2./FREQ(:,index).*(2*nw0+1)/2; % DW function, Schober (9.103)
+      clear nw0
+      DW = exp(-DW);  % Debye-Waller factor
+      % one phonon form factor: H. Schober, (9.203)
+      ZQ = ZQ + b_coh(atom) .* DW .* sum(Q.*squeeze(POLAR(:,index,atom,:)),2) .* exp(-i*Q*positions(atom,:)');
+    end
+    clear DW
+    ZQ = abs(ZQ).^2;
   end
-  if ~is_event && ~isscalar(ZQ), ZQ = ZQ*ones(1,nt); end
+  if ~is_event
+    if ~isscalar(ZQ), ZQ = ZQ*ones(1,nt); end
+    W02    = W02   *ones(1,nt);
+    Gamma2 = Gamma2*ones(1,nt);
+  end
   % sum-up all contributions to signal
-  dho = (n+1).*ZQ*4.*w.*sqrt(Gamma2)/pi ./ ((w.^2-W02).^2 + 4*w.^2.*Gamma2);
-  signal = signal+dho;
+  signal = signal+ (n+1).*ZQ*4.*w.*sqrt(Gamma2)/pi ./ ((w.^2-W02).^2 + 4*w.^2.*Gamma2);
 end % for mode index
 
-% Amplitude is exp(-2W)/2M
+% Amplitude
 if Amplitude
   signal = signal*Amplitude + Bkg;
 end

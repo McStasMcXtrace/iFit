@@ -6,8 +6,8 @@ function signal=sqw_phonons(configuration, varargin)
 %     between atoms. The input argument is any configuration file describing the
 %     material, e.g. CIF, PDB, POSCAR, ... supported by ASE.
 %   This models can compute the coherent inelastic phonons dispersions for
-%     any crystalline (powder or single crystal) material, in the harmonic 
-%     approxiimation.
+%     any crystalline (powder or single crystal) material, in the harmonic and
+%     adiabatic approxiimation.
 %   The phonon spectra is computed using one of the calculator supported by the
 %   Atomic Simulation Environment (ASE) <https://wiki.fysik.dtu.dk/ase>.
 %
@@ -33,11 +33,6 @@ function signal=sqw_phonons(configuration, varargin)
 %   be installed separately, and optionally specific pseudo-potentials. 
 %     See https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html
 %
-%   When performing a model evaluation, the DOS is also computed and stored
-%     when the options 'dos' is specified during the creation. The DOS is only 
-%     computed during the first evaluation, and is stored in model.UserData.DOS 
-%     as an iData object. Subsequent evaluations are faster.
-%
 %   Benchmarks indicate that, for phonon dispersions:
 %   * QuantumEspresso/PHON is the fastest, with excellent parallelization and accuracy.
 %   * QuantumEspresso/ASE is excellent.
@@ -47,6 +42,11 @@ function signal=sqw_phonons(configuration, varargin)
 %   * Phonon dispersions are not too sensitive on the energy cut-off. 340 eV is good.
 %   * Elk and ABINIT can not handle large supercells without recompiling.
 %   * NWChem and Elk are not sensitive to the energy cut-off.
+%
+% The model must first be created (which triggers e.g. a DFT computation), and 
+% once created, it can be evaluated in the whole HKLE reciprocal space.
+%
+% MODEL CREATION ===============================================================
 %
 % The arguments for the model creation should be:
 %
@@ -151,11 +151,6 @@ function signal=sqw_phonons(configuration, varargin)
 % output (model creation):
 %   model: iFunc 4D model S(qh,qk,ql,w) with parameters p.
 %
-% Once the model has been created, its use requires that axes are given on
-% regular qx,qy,qz grids (in rlu along reciprocal axes). The model evaluations
-% does not require to recompute the forces, and is very fast. To generate a
-% powder 2D S(q,w) you may use: sqw_powder(model)
-%
 % The syntax sqw_phonons(model,'html') allows to re-create the HTML report about
 % the 4D phonon model.
 %     
@@ -174,12 +169,11 @@ function signal=sqw_phonons(configuration, varargin)
 %   <https://www.materialsproject.org/>
 %   <http://nomad-repository.eu/cms/>
 %
-% WARNING: Single intensity and line width parameters are used here.
+% WARNING: 
 %   This model is suitable to compute phonon dispersions for e.g solid-
 %   state materials.
 %   The Atomic Simulation Environment must be installed.
 %   The temporary directories (UserData.dir) are not removed.
-%   The intensity is currently not computed, only the dispersions.
 %
 % References: https://en.wikipedia.org/wiki/Phonon
 %
@@ -207,6 +201,31 @@ function signal=sqw_phonons(configuration, varargin)
 % VASP G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.
 %   <https://www.vasp.at/> Requires a license.
 %
+% MODEL EVALUATION (once created) ==============================================
+%
+% Once the model has been created, its use requires that axes are given on
+%   regular qx,qy,qz grids (in rlu along reciprocal axes). The model evaluations
+%   does not require to recompute the forces, and is very fast. 
+% When all axes are vectors of same orientation, the HKL locations is assumed to be a q-path.
+% When axes are not all vectors, not same length, nor orientation, a 3D HKL cube is used.
+% To generate a powder 2D S(q,w) you may use: sqw_powder(model)
+% To generate the dispersion curves along principal crystallographic directions,
+%   use: sqw_kpath(model)
+%
+% When performing a model evaluation, the DOS (phonon density of states) is also 
+%   computed and stored when the options 'dos' is specified during the creation. 
+%   The DOS is only computed during the first evaluation, and is stored in 
+%   model.UserData.DOS as an iData object. Subsequent evaluations are faster.
+%
+% In order to properly evaluate the neutron scattering intensity, it is required
+% to set the coherent neutron scattering length (b_coh in [fm]) as a vector in the 
+%   model.UserData.properties.b_coh = [vector / number of atoms in the cell]
+% or alternatively the scattering cross section in [barn]
+%   model.UserData.properties.sigma_coh = [vector / number of atoms in the cell]
+% where negative values set b_coh < 0 (e.g. Hydrogen).
+% This assignement should be done after creating the model, before performing
+% further HKL evaluations. Default is to use b_coh=1 [fm].
+%
 % Once the model has been created:
 % input:  p: sqw_phonons model parameters (double)
 %             p(1)=Amplitude
@@ -221,9 +240,6 @@ function signal=sqw_phonons(configuration, varargin)
 %         w:  axis along energy in meV (double)
 %    signal: when values are given, a guess of the parameters is performed (double)
 % output: signal: model value
-%
-% When all axes are vectors of same orientation, the HKL locations is assumed to be a q-path.
-% When axes are not all vectors, not same length, not orientation, a 3D HKL cube is used.
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks
@@ -820,7 +836,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
     'Gamma Damped Harmonic Oscillator width in energy [meV]' ...
     'Background' ...
     'Temperature used to compute the Bose factor n(w) [K]' ...
-    'Debye_Waller mean squared displacement <u^2> used to compute exp(-1/6 u^2.Q^2) [Angs^2]' ...
+    'Debye_Waller mean square displacement <u^2> used to compute exp(-1/6 u^2.Q^2) [Angs^2]' ...
      };
     
   signal.Dimension      = 4;         % dimensionality of input space (axes) and result
@@ -893,7 +909,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
     '  fprintf(fid, ''# read HKL locations\n'');', ...
     '  fprintf(fid, ''HKL = numpy.loadtxt("HKL.txt")\n'');', ...
     '  fprintf(fid, ''# compute the spectrum and eigenvectors (polarisation)\n'');', ...
-    '  fprintf(fid, ''omega_kn, polar_kn = ph.band_structure(HKL, modes=True)\n'');', ...
+    '  fprintf(fid, ''omega_kn, polar_kn = ph.band_structure(HKL, modes=True,verbose=False)\n'');', ...
     '  fprintf(fid, ''omega_kn *= 1000\n'');', ...
     '  fprintf(fid, ''# save the result in FREQ\n'');', ...
     '  fprintf(fid, ''sio.savemat("FREQ.mat", { "FREQ": omega_kn, "POLAR":polar_kn, "HKL":HKL })\n'');', ...
@@ -915,6 +931,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   [ '  [status,result] = system([ ''' precmd 'python '' fullfile(target, ''sqw_phonons_eval.py'') ]);' ], ...
     '  if numel(result) > 1e3, disp(result(1:800)); disp(''...''); disp(result((end-180):end)); ', ...
     '  else disp(result); end', ...
+    '  clear result', ...
     '  % import FREQ', ...
     '  FREQ=load(fullfile(target,''FREQ.mat'')); % in meV', ...
     '  POLAR=FREQ.POLAR; FREQ=FREQ.FREQ;', ...

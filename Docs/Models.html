@@ -101,6 +101,8 @@
 
 
 
+
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -131,6 +133,8 @@
     <h3><a class="mozTocH3" name="mozTocId96090"></a><span
         style="font-weight: bold;">List of default fit models</span></h3>
     The 1D functions are <span style="font-style: italic;">signal=f(parameters,
+
+
 
 
 
@@ -273,6 +277,8 @@
 
 
 
+
+
               "x" unit)</span><br>
           </td>
         </tr>
@@ -320,6 +326,8 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Stretched_exponential_function">Exponential
+
+
 
 
 
@@ -456,6 +464,8 @@
 
 
 
+
+
               distribution function</a> <br>
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<a
@@ -471,6 +481,8 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Log-normal_distribution">Log-Normal
+
+
 
 
 
@@ -677,6 +689,8 @@
 
 
 
+
+
               Sine function</a> (exponential decay) <br>
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<a
@@ -723,6 +737,8 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rectangular_function">Top-Hat
+
+
 
 
 
@@ -862,6 +878,8 @@
           </td>
           <td valign="top"><a
 href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_function">n-dimensional
+
+
 
 
 
@@ -1076,6 +1094,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
         = P(q).S(q)</span><br>
     </p>
     <p style="text-align: left;">where <span style="font-style:
@@ -1119,9 +1139,20 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
+
           Kohlbrecher</a> and <a
           href="mailto:ingo%28at%29cs.tu-berlin.de">Ingo Bressler</a>
         PSI (2006-2011)</li>
+      <li>
+        <meta http-equiv="content-type" content="text/html;
+          charset=windows-1252">
+        <meta http-equiv="content-type" content="text/html;
+          charset=windows-1252">
+        Ingo Breßler, Joachim Kohlbrecher and Andreas F. Thünemann,<i> </i><i>Journal
+
+          of Applied Crystallography</i>, 2015, <b>48</b> (5),
+        1587-1598</li>
     </ul>
     <table style="text-align: left; width: 1016px; height: 13px;"
       border="1" cellpadding="2" cellspacing="2">
@@ -1159,6 +1190,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">sf_square_well
+
+
 
 
 
@@ -1251,6 +1284,8 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">ff_sphere&nbsp;
+
+
 
 
 
@@ -1388,6 +1423,8 @@ href="http://www.iucr.org/resources/commissions/crystallographic-computing/newsl
     variable with fields<span style="font-style: italic;"> 'Spgr' </span>and
 
 
+
+
     <span style="font-style: italic;">'cell'</span>, followed with atoms
     (giving xyz Biso occupancy spin charge, where only xyz are
     mandatory, others are optional):<br>
@@ -1461,6 +1498,8 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
           href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
 
 
+
+
         using VASP. Can export structures as CIF.<br>
       </li>
       <li>Inorganic Crystal Structure Database &lt;<a
@@ -1498,16 +1537,17 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     <h4><a class="mozTocH4" name="mozTocId677670"></a>Phonon/spin-wave
       dispersion (simple)<br>
     </h4>
-    <p>The <b>sqw_sine3d</b> model provides a simple way to model most
-      <a href="https://en.wikipedia.org/wiki/Phonon">phonon-type</a>
+    <p>The <b>sqw_sine3d</b> model provides a simple way to model <a
+        href="https://en.wikipedia.org/wiki/Phonon">phonon-type</a>
       dispersions, including simple <a
         href="https://en.wikipedia.org/wiki/Spin_wave">spin-waves</a>,
-      acoustic and optical modes, incommensurate dispersions. For more
-      advanced spin-wave models, use the sqw_spinwave Model (below).<br>
+      acoustic and optical modes, incommensurate dispersions.<br>
     </p>
     <p><i><u>Limitation</u></i><i>:</i> this model only handles simple
       sine dispersions, and can not treat mode exchange (interferences).
-    </p>
+      For more advanced spin-wave models, use the <a
+        href="file:///home/farhi/dev/iFit/Docs/Models.html#mozTocId908192">sqw_spinwave</a>
+      Model (below).</p>
     <table style="text-align: left; width: 1016px; height: 59px;"
       border="1" cellpadding="2" cellspacing="2">
       <tbody>
@@ -1640,6 +1680,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         </i> and <i>Q_freq</i> parameters along axes.</li>
       <li>A 1D or 2D dispersion can be obtained when setting the
         frequencies (e.g. <i>QK_freq QL_freq</i>) to 0<br>
@@ -1649,6 +1691,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     <blockquote>
       <p>&nbsp; p(&nbsp;
         1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1721,9 +1765,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>E1_qk</b> energy at QK half period [meV]<br>
         &nbsp; p(&nbsp;
         3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1795,9 +1843,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>E0</b> zone-centre energy gap [meV]<br>
         &nbsp; p(&nbsp;
         5)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1869,6 +1921,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>QK0</b> QK zone-centre [rlu]<br>
         &nbsp; p(&nbsp;
         7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1905,9 +1959,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>QL0</b> QL zone-centre [rlu]<br>
         &nbsp; p(&nbsp;
         8)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -1980,6 +2038,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>QK_freq</b> QK frequency [multiples of pi]<br>
         &nbsp; p(
         10)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2017,9 +2077,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
         <b>QL_freq</b> QL frequency [multiples of pi]<br>
         &nbsp; p(
         11)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2209,6 +2273,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       energy broadening (instrumental) [meV]<br>
       p(2)=&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <b>Temperature</b>
       of the material [K]<br>
@@ -2216,8 +2282,27 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
       p(4...)= &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <b>coupling
         parameters</b> of the Hamiltonian (J)<br>
     </blockquote>
-    The axes needed for the evaluation are expressed in rlu for QH,QK,QL
-    and in meV for the energy. The Model evaluation is as usual (in 4D):
+    The axes needed for the evaluation are expressed in <i>rlu</i> for
+    QH,QK,QL and in meV for the energy [1 meV = 241.8 GHz = 11.604 K =
+    0.0965 kJ/mol]. The model can be evaluated by giving axes and model
+    parameters (see examples below). <br>
+    <ul>
+      <li>When all axes are given as vectors of same orientation <i>and</i>
+        same length, the HKLE set is assumed to be list of 'events'.</li>
+      <li>When the H K L axes are vectors of same length/orientation,
+        the HKL locations is assumed to be a q-path in the BZ, but the E
+        (energy) axis can be of different length/orientation to compute
+        the Model along (q,E) path, resulting in a 2D object. Typically,
+        the <b>sqw_kpath</b> function does this, to provide the phonon
+        dispersion curve along principal directions.</li>
+      <li>When the H K L E axes are given as mixed orientations/length,
+        as vectors or matrices, the Model evaluation is done on a HKLE
+        cube, which is well suited to visualize the whole dispersion
+        surfaces. <b>In the example below</b>, <i>ql</i> has a
+        different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
+        which triggers a 4D HKLE cube evaluation.</li>
+    </ul>
+    The Model evaluation is as usual (in 4D):
     <blockquote><b>model</b>(p, qh, qk, ql, w)&nbsp;&nbsp;&nbsp; %
       return a matrix. p can be [] to use guessed/default parameters<br>
       <font color="#3366ff">iData</font>(<b>model</b>, p, qh, qk, ql,
@@ -2236,6 +2321,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
       &nbsp;&nbsp;&nbsp; <i>% create the SW object</i><i> (using SpinW)</i><br>
       s=<font color="#3366ff">sqw_spinw</font>(sq);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2245,11 +2332,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
       &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <i>%
         create the Model</i><br>
-      qh=<font color="#3366ff">linspace</font>(0.01,1.5,50);qk=qh;
-      ql=qh'; w=<font color="#3366ff">linspace</font>(0.01,10,50);<br>
+      qh=<font color="#3366ff">linspace</font>(0.01,1.5,50);qk=qh; ql=<i><b>qh'</b></i>;
+      w=<font color="#3366ff">linspace</font>(0.01,10,50);<br>
       f=<font color="#3366ff">iData</font>(s,s.p,qh,qk,ql,w); <font
         color="#3366ff">plot3</font>(log(f(:,:,1,:)));
       &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <i>% evaluate and plot</i><br>
@@ -2269,7 +2358,11 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       or &lt;<a href="https://www.psi.ch/spinw/spinw">https://www.psi.ch/spinw/spinw</a>&gt;.
+
+
 
 
 
@@ -2381,9 +2474,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       <b>At</b> transverse acoustic [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2455,9 +2552,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       <b>Aa</b> anisotropic acoustic [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2529,6 +2630,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       <b>Sa</b> soft mode&nbsp; anisotropic soft optical [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       6)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2566,9 +2669,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       <b>Vt</b> transverse acoustic-optical coupling [meV2/rlu2]<br>
       &nbsp; p(&nbsp;
       7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2641,9 +2748,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
+
       <b>w0</b> soft mode frequency at q=0, depends on temperature [meV]<br>
       &nbsp; p(&nbsp;
       9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2686,9 +2797,26 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
       &nbsp; p(
       12)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
     </blockquote>
-    The axes needed for the evaluation are expressed in rlu for QH,QK,QL
-    and in meV for the energy.<br>
-    <br>
+    The axes needed for the evaluation are expressed in <i>rlu</i> for
+    QH,QK,QL and in meV for the energy [1 meV = 241.8 GHz = 11.604 K =
+    0.0965 kJ/mol]. The model can be evaluated by giving axes and model
+    parameters (see examples below). <br>
+    <ul>
+      <li>When all axes are given as vectors of same orientation <i>and</i>
+        same length, the HKLE set is assumed to be list of 'events'.</li>
+      <li>When the H K L axes are vectors of same length/orientation,
+        the HKL locations is assumed to be a q-path in the BZ, but the E
+        (energy) axis can be of different length/orientation to compute
+        the Model along (q,E) path, resulting in a 2D object. Typically,
+        the <b>sqw_kpath</b> function does this, to provide the phonon
+        dispersion curve along principal directions.</li>
+      <li>When the H K L E axes are given as mixed orientations/length,
+        as vectors or matrices, the Model evaluation is done on a HKLE
+        cube, which is well suited to visualize the whole dispersion
+        surfaces. <b>In the example below</b>, <i>ql</i> has a
+        different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
+        which triggers a 4D HKLE cube evaluation.</li>
+    </ul>
     The <b>plot (surf), plot3, scatter3</b>, and <b>slice</b> methods
     for plotting all provide nice looking rendering of volume data. See
     <a href="Plot.html#mozTocId734523">Plot/3D</a> page.<br>
@@ -2699,7 +2827,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     A usage example is:<a href="images/Models_sqw_vaks.png"><img
         alt="sqw_vaks" title="sqw_vaks" src="images/Models_sqw_vaks.png"
         align="right" border="0" width="200" height="151"></a><br>
-    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_vaks</font>(<font color="#cc33cc">'KTaO3'</font>); 		<i>% create model, with KTaO3 parameters</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,10,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)),'filled');	<i>% plot</i> ql(1)=0 plane<br></pre>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_vaks</font>(<font color="#cc33cc">'KTaO3'</font>); 		<i>% create model, with KTaO3 parameters</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,.5,50);qk=qh; ql=<i><b>qh'</b></i>; w=<font color="#3366ff">linspace</font>(0.01,10,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)),'filled');	<i>% plot</i> ql(1)=0 plane<br></pre>
     <i><br>
     </i><i> </i><i><b>References:</b></i><br>
     <ul>
@@ -2709,6 +2837,8 @@ href="http://epjb.epj.org/articles/epjb/abs/2000/12/b9618/b9618.html">
       <li> A.K. Tagantsev et al, <i>Nature Comm</i>, <b>4</b> (2013)
         2229. <a
 href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">DOI:
+
+
 
 
 
@@ -2832,6 +2962,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
       <b>C_ratio</b> C1/C2 force constant ratio first/second neighbours<a
         href="images/Models_sqw_cubic_mono.png"><img
           alt="sqw_cubic_mono" title="sqw_cubic_mono"
@@ -2839,6 +2971,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
           border="0" width="200" height="152"></a><br>
       &nbsp; p(&nbsp;
       2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
 
 
 
@@ -2915,6 +3049,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
       <b>Gamma</b> Dampled Harmonic Oscillator width in energy [meV]<br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Temperature</b>
@@ -2925,10 +3061,27 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
       6)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
     </blockquote>
     The axes needed for the evaluation are expressed in <i>rlu</i> for
-    QH,QK,QL and in meV for the energy.<br>
-    <br>
+    QH,QK,QL and in meV for the energy [1 meV = 241.8 GHz = 11.604 K =
+    0.0965 kJ/mol]. The model can be evaluated by giving axes and model
+    parameters (see examples below). <br>
+    <ul>
+      <li>When all axes are given as vectors of same orientation <i>and</i>
+        same length, the HKLE set is assumed to be list of 'events'.</li>
+      <li>When the H K L axes are vectors of same length/orientation,
+        the HKL locations is assumed to be a q-path in the BZ, but the E
+        (energy) axis can be of different length/orientation to compute
+        the Model along (q,E) path, resulting in a 2D object. Typically,
+        the <b>sqw_kpath</b> function does this, to provide the phonon
+        dispersion curve along principal directions.</li>
+      <li>When the H K L E axes are given as mixed orientations/length,
+        as vectors or matrices, the Model evaluation is done on a HKLE
+        cube, which is well suited to visualize the whole dispersion
+        surfaces. <b>In the example below</b>, <i>ql</i> has a
+        different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
+        which triggers a 4D HKLE cube evaluation.</li>
+    </ul>
     A usage example is:<br>
-    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_cubic_monoatomic</font>([ 3 3 ]); 	<i>% create model, with C1/C2=3 E0=3</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,10,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">plot3</font>(log(f(:,:,1,:)));	<i>	% plot </i><i>ql(1)=0 plane</i><br></pre>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_cubic_monoatomic</font>([ 3 3 ]); 	<i>% create model, with C1/C2=3 E0=3</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,.5,50);qk=qh; ql=<i><b>qh'</b></i>; w=<font color="#3366ff">linspace</font>(0.01,10,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">plot3</font>(log(f(:,:,1,:)));	<i>	% plot </i><i>ql(1)=0 plane</i><br></pre>
     The <b>plot (surf), plot3, scatter3</b>, and <b>slice</b> methods
     for plotting all provide nice looking rendering of volume data. See
     <a href="Plot.html#mozTocId734523">Plot/3D</a> page.<br>
@@ -2937,6 +3090,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
     <ul>
       <li>E. Meisterhofer &lt;<a
           href="http://lampx.tugraz.at/%7Ehadley/ss1/phonons/scdos/sc.pdf">http://lampx.tugraz.at/~hadley/ss1/phonons/scdos/sc.pdf</a>&gt;
+
+
 
 
 
@@ -2987,6 +3142,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
       name of a configuration file describing the material lattice and
       atom positions. This file can be in any <a
         href="https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io">ASE
+
+
 
 
 
@@ -3132,6 +3289,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
+
         e </i><i><sup>i(<b>k.r</b> - &#969;t</sup></i><i><sup>)</sup></i><br>
     </blockquote>
     where <b><i>r</i></b> is the position of the atom in a so-called <i>super-cell</i>,
@@ -3162,36 +3321,54 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
     ASE and/or PHON.<br>
     <br>
     In addition, once the phonon spectrum is known, we can compute the
-    coherent vibrational density of states <i>g(w)</i> as, for each
-    energy w, the number of phonon modes lying within a frequency [w-dw
-    : w+dw] for all wavevectors. The density of states is normalised:<br>
-    <div align="center">&#8747;g(w) dw = 1<br>
+    coherent vibrational density of states <i>g(</i><i><i>&#969;</i>)</i>
+    as, for each energy <i>&#969;</i>, the number of phonon modes lying
+    within a frequency [<i>&#969;</i>-d<i>&#969;</i> : <i>&#969;</i>+d<i>&#969;</i>] for
+    all wavevectors. The density of states is normalised:<br>
+    <div align="center">&#8747;g(<i>&#969;</i>) d<i>&#969;</i> = 1<br>
       <div align="left"><br>
-        The intensity of the vibrational modes is evaluated as (in a
-        Bravais lattice, with a damped harmonic oscillator line shape)<br>
+        The neutron scattering intensity of the vibrational modes is
+        evaluated as (with a damped harmonic oscillator line shape)<br>
         <br>
-        <div align="center">I(Q,<i>&#969;</i>) ~ <i>Amplitude * e </i><i><sup>-1/6
-              u2.Q2</sup></i><i> &#8721; |</i><i><b>Q.e</b></i><i>|</i><i><sup>2</sup></i><i>
-            DHO(</i><i>&#969;</i><i><sub>0</sub></i><i>,&#915;)</i><i> [n(</i><i>&#969;)+1]</i></div>
+        <div align="center">I(Q,<i>&#969;</i>) ~ <i>Amplitude *&nbsp;</i><i><sup></sup></i><i>
+            &#8721; </i><i>|F(Q)|</i><i><sup><i>2</i></sup> </i><i>DHO(</i><i>&#969;</i><i><sub>0</sub></i><i>,&#915;)</i><i>
+            [n(</i><i>&#969;)+1] / </i><i>&#969;<sub>0<br>
+            </sub>|F(Q)|</i><i><sup><i>2</i></sup> = </i><i>| &#8721; </i><i>b<sub>coh</sub>
+            e </i><i><sup>-W(Q)</sup></i><i>|</i><i><b>Q.e</b></i><i>|</i><i><sup>2</sup></i><i>
+            e<sup>-i<b>Q.r </b></sup>|<sup>2</sup><b><br>
+            </b></i></div>
         <br>
-        where <i><b>e</b></i> is the polarisation vector and &#969;<sub>0</sub>
-        is the mode normal frequency. The DHO line shape will be
-        centered around the energy &#937;<sup>2</sup> = &#969;<sup>2</sup> + &#915;<sup>2</sup>
-        and &#915; is the mode damping, which holds the imaginary part of the
-        phonon frequency (when becoming unstable). The DHO contains a 1/<i>&#969;</i><i><sub>0</sub></i>
-        term which explains that acoustic phonons are generally more
-        intense that others. Also, the e<sup>-Q2</sup>|Q|<sup>2</sup>
-        factor indicates that at low and large Q, the phonon modes are
-        not intense (due to the Debye-Waller attenuation and linear Q
-        dependency). The <i>Amplitude</i> parameter is in principle :<br>
+        where <i><b>e</b></i> is the phonon mode polarisation vector
+        (multiplied by &#8730;mass), &#969;<sub>0</sub> is the mode normal
+        frequency, <i>b</i><i><sub>coh</sub></i> is the coherent
+        neutron scattering length, <i>W(Q)</i> is the Debye-Waller
+        function, and <i>n(</i><i>&#969;</i><i>)</i> is the Bose factor
+        (population). The DHO line shape will be centered around the
+        energy &#937;<sup>2</sup> = &#969;<sup>2</sup> + &#915;<sup>2</sup> and &#915; is
+        the mode damping, which holds the imaginary part of the phonon
+        frequency (when becoming unstable/negative).<br>
         <br>
-        <div align="center"><i>Amplitude</i> ~ <i>&#963;/4&#960; k</i><i><sub>f</sub></i><i>/k</i><i><sub>i</sub></i><i><sub>
-            </sub></i>/ 2M<br>
+        The Debye-Waller function is estimated as:<br>
+        <br>
+        <div align="center"><i>W(Q) = </i><i>&#8721; </i><i>|</i><i><b>Q.e</b></i><i>|<sup>2</sup>
+            [2n(</i><i>&#969;<sub>0</sub>)+1]</i> <i>/</i> 4&#969;<sub>0</sub><br>
+          <br>
+        </div>
+        The form factor evolves roughly as e<sup>-1/2 &lt;u²&gt;Q</sup><sup>²</sup>|Q|<sup>2</sup>
+        which&nbsp; indicates that at low and large Q, the phonon modes
+        are not intense. In the first Brillouin zone (e.g. HKL &lt;
+        0.5), the transverse modes are not measurable with neutrons as |<b>Q.e</b>|
+        is null when the transverse polarisation vector <b>e</b> is
+        perpendicular to Q. The <i>Amplitude</i> parameter includes the
+        incoming neutron flux <i>I</i><i><sub>0</sub></i>, detector
+        efficiency, etc...<br>
+        <br>
+        <div align="center"><i>Amplitude</i> ~ <i>I</i><i><sub>0</sub></i><i>
+            k</i><i><sub>f</sub></i><i>/k</i><i><sub>i</sub></i><i><sub>
+            </sub></i><br>
           <div align="left"><br>
-            where &#963; is the bound coherent cross section, <i>k</i><i><sub>f</sub></i>
-            and <i>k</i><i><sub>i</sub></i> are the final and incident
-            neutron wavevectors, and M is the mass of the vibrating
-            atom.<br>
+            where <i>k</i><i><sub>f</sub></i> and <i>k</i><i><sub>i</sub></i>
+            are the final and incident neutron wavevectors.<br>
           </div>
           <i> </i></div>
       </div>
@@ -3215,6 +3392,8 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
     <blockquote>s = <font color="#3366ff">sqw_phonons</font>(configuration);<br>
     </blockquote>
     <blockquote>s = <font color="#3366ff">sqw_phonons</font>(configuration,
+
+
 
 
 
@@ -3311,6 +3490,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
+
       <b>Gamma</b>&nbsp; Damped Harmonic Oscillator width in energy
       [meV]<br>
       &nbsp; p(&nbsp;
@@ -3351,16 +3532,18 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
+
       [K]<br>
       &nbsp; p(&nbsp;
       5)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Debye_Waller</b>
-      [Angs^2]<br>
+      [Angs^2] mean square displacement &lt;u2&gt; in the Gaussian
+      approximation<br>
     </blockquote>
     The axes needed for the evaluation are expressed in <i>rlu</i> for
     QH,QK,QL and in meV for the energy [1 meV = 241.8 GHz = 11.604 K =
     0.0965 kJ/mol]. The model can be evaluated by giving axes and model
     parameters (see examples below). <br>
-    <br>
     <ul>
       <li>When all axes are given as vectors of same orientation <i>and</i>
         same length, the HKLE set is assumed to be list of 'events'.</li>
@@ -3441,6 +3624,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html?highlight=bulk#common-bul
 
 
 
+
+
               "fcc", a=3.6, cubic=True)'</font><br>
             <div align="center"><a href="images/Models_Cubic.png"><img
                   alt="bulk" title="bulk" src="images/Models_Cubic.png"
@@ -3469,6 +3654,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html#bulk-crystal-section">bul
           </td>
           <td valign="top">Any <a
               href="https://wiki.fysik.dtu.dk/ase/ase/structure.html">molecule
+
+
 
 
 
@@ -3557,6 +3744,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/structure.html?highlight=bulk#nanotubes"
 
 
 
+
+
               0, length=4)'</font><br>
             <div align="center"><a href="images/Models_Nanotube.png"><img
                   alt="nanotube" title="nanotube"
@@ -3621,8 +3810,12 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
 
 
 
+
+
         using VASP.</li>
       <li>PhononDB &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;
+
+
 
 
 
@@ -3669,6 +3862,8 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
 
 
 
+
+
         can store any computational result from e.g. ABINIT,
         QuantumEspresso, VASP, and others.</li>
       <li>Inorganic Crystal Structure Database &lt;<a
@@ -3677,6 +3872,8 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
       </li>
     </ul>
     <h5><a class="mozTocH5" name="mozTocId912608"></a> <u><i> </i></u><u><i>General
+
+
 
 
 
@@ -3761,6 +3958,8 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
 
 
 
+
+
           3 2]'</font>.</li>
       <li><b>calculator</b>: the calculator to use, see below.</li>
       <li><b>dos</b>: indicates if the phonon density of states should
@@ -3808,6 +4007,8 @@ href="https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html">here</
     and specific DFT related options<br>
     <ul>
       <li><b> occupations</b>: For metallic and insulator systems, the <i>electron
+
+
 
 
 
@@ -3934,6 +4135,8 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
 
 
 
+
+
           mode</a> as Plane-Wave, Finite Difference, or LCAO (linear
         combination of atomic orbitals). Can be <font color="#cc33cc">'pw','fd',</font>
         or <font color="#cc33cc">'lcao'</font>. Default is <font
@@ -3956,6 +4159,8 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
       displayed to request which one to choose. The PBE-PAW potentials
       are preferred and pre-selected. Pseudo-potential can be obtained
       at <a href="http://www.quantum-espresso.org/pseudopotentials/">QuantomEspresso
+
+
 
 
 
@@ -4066,6 +4271,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
             <a href="http://www.quantum-espresso.org/">Quantum Espresso</a>.
             <i><font color="#33cc00">Our best choice with the </font></i><i><font
                 color="#33cc00"><a href="http://materialscloud.org/">SSSP
+
+
 
 
 
@@ -4227,6 +4434,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
+
             </i><i>recommended</i><i><i> for phonon calculations</i>.</i></td>
           <td valign="top"><br>
           </td>
@@ -4239,6 +4448,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
                 align="middle" border="0" width="80" height="22"></a><a
               href="http://www.nwchem-sw.org/">&nbsp;NWChem</a></td>
           <td valign="top">Gaussian based electronic structure code. <i>Not
+
+
 
 
 
@@ -4403,6 +4614,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/elk-lapw_
 
 
 
+
+
           (JTH)</a>.Debiab packages: <a
 href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
         <a
@@ -4415,6 +4628,8 @@ href="http://www.abinit.org/downloads/psp-links/pseudopotentials"><br>
     <ul>
       <li><a href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a>: D.
         Alfe, <i>Computer Physics Communications</i> <b>180</b>,2622-2633
+
+
 
 
 
@@ -4469,7 +4684,11 @@ href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pd
 
 
 
+
+
         &lt;<a href="http://chianti.geol.ucl.ac.uk/%7Edario">http://chianti.geol.ucl.ac.uk/~dario</a>&gt;.
+
+
 
 
 
@@ -4544,6 +4763,8 @@ href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pd
 
 
 
+
+
         <a href="http://www.quantum-espresso.org/pseudopotentials/">Pseudo-potentials</a>.
         We also recommend the <a href="http://materialscloud.org/">SSSP
           library</a> for which we provide the <a
@@ -4551,10 +4772,15 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
         Debian package.</li>
       <li><a href="https://www.vasp.at/">VASP</a>: G. Kresse and J.
         Hafner. <i>Phys. Rev. B</i>, <b>47</b>:558, 1993. &lt;<a
-          href="https://www.vasp.at/">https://www.vasp.at/</a>&gt;<br>
+          href="https://www.vasp.at/">https://www.vasp.at/</a>&gt;</li>
+      <li>Phonon intensity estimate: H. Schober, <i>J Neut. Res.</i> <b>17</b>
+        (2014) 109. <a href="http://dx.doi.org/10.3233/JNR-140016">DOI
+          10.3233/JNR-140016</a><br>
       </li>
     </ul>
     <h5><a class="mozTocH5" name="mozTocId183326"></a> <u><i><b>Requirements
+
+
 
 
 
@@ -4616,6 +4842,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
     The ABINIT code requires to install an additional library of pseudo
     potentials. We recommand to get it <a
 href="http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz"><i>here
+
+
 
 
 
@@ -4810,6 +5038,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
+
         (calls fconv in correlation mode)<br>
       </li>
     </ul>
@@ -4848,6 +5078,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 
