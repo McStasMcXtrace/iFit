@@ -11,6 +11,7 @@ function y=sf_hard_spheres(varargin)
 %     Ref: J. K. Percus and G. J. Yevick., Phys. Rev., 110(1):1–13, 1958.
 %          A. Vrij., J. Chem. Phys., 71(8):3267–3270, 1979.
 %          Extracted from sasfit/sasfit_sq/sasfit_sq_HardSphere.c
+%     I. Bressler, et al, Journal of Applied Crystallography, 2015, 48 (5), 1587-1598
 %
 % input:  p: hard sphere model parameters (double)
 %            p = [ R=Hard_Sphere_Radius rho=Volume_Fraction ]

@@ -10,6 +10,7 @@ function y=sf_square_well(varargin)
 %
 %     Ref: Sharma, R. V.; Sharma, K. C. Physica, 89A, 213. (1977).
 %          Extracted from sasfit/sasfit_sq/sasfit_sq_SquareWell2.c
+%     I. Bressler, et al, Journal of Applied Crystallography, 2015, 48 (5), 1587-1598
 %
 % input:  p: square well potential model parameters (double)
 %            p = [ R=Hard_Sphere_Radius rho=Volume_Fraction epsilon=Well_Depth_K Delta=WellWidth T=Temperature_K]

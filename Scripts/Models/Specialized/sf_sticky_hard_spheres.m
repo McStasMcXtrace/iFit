@@ -11,6 +11,7 @@ function y=sf_sticky_hard_spheres(varargin)
 %
 %     See: S.V.G. Menon, C. Manobar, and K. Srinivasa Rao. J. Chem. Phys., 95 (1991) 9186
 %          Extracted from sasfit/sasfit_sq/sasfit_sq_StickyHardSphere.c
+%     I. Bressler, et al, Journal of Applied Crystallography, 2015, 48 (5), 1587-1598
 %
 % input:  p: sticky hard sphere model parameters (double)
 %            p = [ R=hard_sphere_radius rho=Volume_Fraction tau=stickiness ]
