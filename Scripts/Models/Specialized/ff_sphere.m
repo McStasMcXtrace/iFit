@@ -11,6 +11,7 @@ function y=ff_sphere(varargin)
 %     Ref: Guinier, A. and G. Fournet, "Small-Angle Scattering of X-Rays", 
 %            John Wiley and Sons, New York, (1955).
 %          Extracted from sasfit/sasfit_ff/sasfit_ff_sphere.c
+%     I. Bressler, et al, Journal of Applied Crystallography, 2015, 48 (5), 1587-1598
 %
 % input:  p: sphere model parameters (double)
 %            p = [ R=Sphere_Radius eta=SLD particle/matrix ]

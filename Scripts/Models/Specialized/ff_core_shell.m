@@ -10,6 +10,7 @@ function y=ff_core_shell(varargin)
 %     Ref: Guinier, A. and G. Fournet, "Small-Angle Scattering of X-Rays", 
 %            John Wiley and Sons, New York, (1955).
 %          Extracted from sasfit/sasfit_ff/sasfit_ff_spherical_shell.c
+%     I. Bressler, et al, Journal of Applied Crystallography, 2015, 48 (5), 1587-1598
 %
 % input:  p: sphere model parameters (double)
 %            p = [ R1=Shell_Radius R2=core_radius eta1=SLD shell/matrix eta2=SLD core/shell ]
