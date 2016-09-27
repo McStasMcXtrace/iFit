@@ -84,3 +84,14 @@ function [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin)
     end
   end
   zlabel(zlab);
+
+  % add manual ticks when specified
+  if isfield(a, 'XTickLabel')
+    xtick = get(a,'XTickLabel');
+    if ischar(xtick) && isvector(xtick)
+      xtick = textscan(xtick, '%s','delimiter', ' ');
+      xtick = xtick{1};
+    end
+    set(gca, 'XTickLabel', xtick);
+  end
+  
