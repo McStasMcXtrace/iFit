@@ -77,7 +77,7 @@ function signal=sqw_phonons(configuration, varargin)
 % General options
 %   options.target =path                   Where to store all files and FORCES
 %     a temporary directory is created when not specified.
-%   options.supercell=scalar or [nx ny nz] supercell size. Default is 3.
+%   options.supercell=scalar or [nx ny nz] supercell size. Default is 0 (auto mode).
 %   options.calculator=string              EMT,GPAW,Elk,NWChem,Dacapo,ABINIT,Quantum
 %     We recommend ABINIT,QE and Elk. Default set from installed software.
 %   options.dos=1                          Option to compute the vibrational
@@ -102,7 +102,7 @@ function signal=sqw_phonons(configuration, varargin)
 %       'MDMin' or 'FIRE'
 %
 % DFT specific options
-%   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid, default 3.
+%   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid. Default is 0 (auto mode).
 %   options.xc=string                      Type of Exchange-Correlation functional to use
 %     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'   for GPAW
 %     'PZ', 'PBE','revPBE','RPBE','PW91','VWN'     for Dacapo/Jacapo
@@ -569,6 +569,25 @@ if isempty(dir(fullfile(target, 'atoms.pkl')))  % FATAL
 end
 
 sqw_phonons_htmlreport('', 'create_atoms', options);
+
+% determine optimal kpoints and supercell if left in auto mode
+if ~isempty(fullfile(target, 'properties.mat'))
+  properties = load(fullfile(target, 'properties.mat'));
+  % get the nb of atoms in the model
+  nb_at = numel(properties.atomic_numbers);
+  % auto mesh should be 1000/nb_at = k^3*supercell^3 (6750/nb_at for high accuracy)
+  supercell = floor((1000/nb_at)^(1/6));
+  if any(options.supercell <= 0), 
+    options.supercell=[ supercell supercell supercell ];
+    disp([ '  auto: supercell=' num2str(supercell) ])
+  end
+  kpoints   = ceil((1000/nb_at./prod(options.supercell))^(1/3));
+  if any(options.kpoints <= 0)
+    options.kpoints = [ kpoints kpoints kpoints ];
+    disp([ '  auto: kpoints=  ' num2str(kpoints) ])
+  end
+  
+end
 
 % ==============================================================================
 %                               BUILD MODEL (get calculator)
