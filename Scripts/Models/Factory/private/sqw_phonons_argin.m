@@ -4,9 +4,9 @@ function options=sqw_phonons_argin(varargin)
 % returns an 'options' structure.
 
 % defaults
-options.supercell  = 3;
+options.supercell  = 0; % automatic
 options.calculator = '';
-options.kpoints    = 3;
+options.kpoints    = 0; % automatic
 options.xc         = 'PBE';
 options.mode       = 'pw';            % GPAW
 options.potentials = '';
