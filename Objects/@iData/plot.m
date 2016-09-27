@@ -13,6 +13,8 @@ function h=plot(a, varargin)
 %   uses a semi-transparent volume rendering, whereas the default plot uses
 %   an iso-surface on the median signal.
 %
+%   When a XtickLabel alias/property exists in the object, the Xtick labels are set.
+%
 %   As mentioned in the iData axis definition (see iData/setaxis), the 'X' axis
 %     refers to the 2nd dimension (along columns), whereas the 'Y' axis refers to
 %     the first dimension (along rows).

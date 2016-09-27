@@ -105,3 +105,13 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
       end
     end
   end
+  
+  % add manual ticks when specified
+  if isfield(a, 'XTickLabel')
+    xtick = get(a,'XTickLabel');
+    if ischar(xtick) && isvector(xtick)
+      xtick = textscan(xtick, '%s','delimiter', ' ');
+      xtick = xtick{1};
+    end
+    set(gca, 'XTickLabel', xtick);
+  end
