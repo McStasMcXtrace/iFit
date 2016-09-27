@@ -42,7 +42,7 @@ end
 clear ax
 HKL      = [ x(:) y(:) z(:) ];      % a clean array (Nx3) of HKL coordinates
 diff_HKL = diff(HKL,1,1);           % difference along rows
-index = find(sum(diff_HKL,2) == 0);
+index = find(sum(diff_HKL.^2,2) == 0);
 HKL(index, :) = [];  % remove consecutive duplicates at same HKL
 x(index)= []; y(index)= []; z(index) = [];
 t        = unique(t);

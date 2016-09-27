@@ -57,7 +57,7 @@ end
 if isempty(b_coh) && ~isempty(positions)
   disp([ 'WARNING: Unspecified coherent neutron scattering length specification for the material ' ...
     UD.properties.chemical_formula '. Using b_coh=1 [fm] for all atoms (sigma_coh=0.126 barns). ' ...
-    'Specify model.UserData.properties.b_coh as a vector.' ]);
+    'Specify model.UserData.properties.b_coh as a vector with ' num2str(size(positions,1)) ' value(s).' ]);
   b_coh = ones(1, size(positions,1));
 end
 
@@ -78,6 +78,11 @@ if ~isempty(b_coh) && ~isempty(positions) && numel(b_coh) ~= size(positions,1)
     b_coh = [];
 end
 
+if ~isempty(b_coh)
+  this.UserData.properties.b_coh     = b_coh;
+  this.UserData.properties.sigma_coh = 4*pi.*b_coh.*b_coh/100;
+end
+
 % the Bose factor is negative for w<0, positive for w>0
 % (n+1) converges to 0 for w -> -Inf, and to 1 for w-> +Inf. It diverges at w=0
 if ~isempty(T) && T > 0, 
@@ -92,24 +97,30 @@ for index=1:size(FREQ,2)  % loop on modes
   % we assume Gamma(w) = Gamma w/w0
   % W0 is the renormalized phonon frequency W0^2 = w0^2+Gamma^2
   Gamma2 = Gamma^2+imag(FREQ(:,index)).^2; % imaginary frequency goes in the damping
-  W02    = real(FREQ(:,index)).^2+Gamma2;
+  W02    = Gamma2 +real(FREQ(:,index)).^2;
   
   % phonon form factor (intensity) |Q.e|^2
   % POLAR is a set of [xyz] vectors for each atom in the cell POLAR(HKL,mode,atom,xyz)
   % polarisation vectors already contain the 1/mass factor: ASE/phonons.py:band_structure
   % ZQ=|F(Q)|^2=|sum_atom[ bcoh(atom). exp(-WQ) .* (Q.*POLAR(HKL,index,atom,:)) .* exp(-i*Q.*pos(atom)) ]|^2
   ZQ = 1;
-  if ~isempty(POLAR) && ~isempty(T) && T > 0 && ~isempty(b_coh) && ~isempty(positions)
+  if ~isempty(POLAR) && ~isempty(positions)
     ZQ = 0;
     for atom=1:size(positions,1)
       % one-phonon structure/form factor in a Bravais lattice
-      nw0       = 1./(exp(FREQ(:,index)/T)-1);
-      nw0(FREQ(:,index) == 0) = 0;
+      if ~isempty(T) && T > 0
+        nw0       = 1./(exp(FREQ(:,index)/T)-1);
+        nw0(FREQ(:,index) == 0) = 0;
+      else nw0=0; end
       DW = abs(sum(Q.*squeeze(POLAR(:,index,atom,:)),2)).^2./FREQ(:,index).*(2*nw0+1)/2; % DW function, Schober (9.103)
       clear nw0
       DW = exp(-DW);  % Debye-Waller factor
       % one phonon form factor: H. Schober, (9.203)
-      ZQ = ZQ + b_coh(atom) .* DW .* sum(Q.*squeeze(POLAR(:,index,atom,:)),2) .* exp(-i*Q*positions(atom,:)');
+      if ~isempty(b_coh) && all(b_coh)
+        ZQ = ZQ + b_coh(atom) .* DW .* sum(Q.*squeeze(POLAR(:,index,atom,:)),2) .* exp(-i*Q*positions(atom,:)');
+      else  % when no b_coh, we only show DW*exp(-iQr)
+        ZQ = ZQ + DW .* exp(-i*Q*positions(atom,:)');
+      end
     end
     clear DW
     ZQ = abs(ZQ).^2;
