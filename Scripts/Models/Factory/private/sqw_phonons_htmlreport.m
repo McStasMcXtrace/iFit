@@ -1,4 +1,4 @@
-function filename = sqw_phonons_htmlreport(filename, step, options)
+function filename = sqw_phonons_htmlreport(filename, step, options, data)
 % write an HTML report on a sqw_phonons computation
 %
 % sections:
