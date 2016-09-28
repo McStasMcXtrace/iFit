@@ -1,6 +1,14 @@
 function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
+% sqw_phonons_get_forces: perform the force estimate using calculator
+%   requires atoms.pkl, supercell and calculator, creates the phonon.pkl
 
   target = options.target;
+  
+  % determine if the phonon.pkl exists. If so, nothing else to do
+  if ~isempty(dir(fullfile(target, 'phonon.pkl')))
+    disp([ mfilename ': re-using ' fullfile(target, 'phonon.pkl') ]);
+    return
+  end
   
   if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 

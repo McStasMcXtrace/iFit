@@ -327,10 +327,6 @@ if ~isempty(dir(configuration)) % a file/directory
       signal = load(fullfile(configuration,'Phonon_Model.mat'));
     end
   end
-  if isempty(signal) && isdir(configuration)
-    % try to import from PHON/PhonoPy directory
-    signal = sqw_phon2ase(configuration);
-  end
   
   if isa(signal, 'iFunc') && ndims(signal) == 4
     return
@@ -423,29 +419,6 @@ end
 
 sqw_phonons_htmlreport('', 'create_atoms', options);
 
-% determine optimal kpoints and supercell if left in auto mode
-if ~isempty(fullfile(target, 'properties.mat'))
-  properties = load(fullfile(target, 'properties.mat'));
-  % get the nb of atoms in the model
-  nb_at = numel(properties.atomic_numbers);
-  % auto mesh should be 1000/nb_at = k^3*supercell^3 (6750/nb_at for high accuracy)
-  if all(options.kpoints > 0)
-    supercell = floor((1000/nb_at./prod(options.kpoints))^(1/3));
-  else
-    supercell = floor((1000/nb_at)^(1/6));
-  end
-  if any(options.supercell <= 0)
-    options.supercell=[ supercell supercell supercell ];
-    disp([ '  auto: supercell=' num2str(supercell) ])
-  end
-  kpoints   = ceil((1000/nb_at./prod(options.supercell))^(1/3));
-  if any(options.kpoints <= 0)
-    options.kpoints = [ kpoints kpoints kpoints ];
-    disp([ '  auto: kpoints=  ' num2str(kpoints) ])
-  end
-  
-end
-
 % ==============================================================================
 %                               BUILD MODEL (get calculator)
 % ==============================================================================
@@ -475,6 +448,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   [options, sav] = sqw_phonons_get_forces(options, decl, calc);
   if isempty(options), return; end
 
+  % create the iFunc object
   % then read the pickle file to store it into the model
   try
     signal.UserData.phonons = fileread(fullfile(target, 'phonon.pkl')); % binary

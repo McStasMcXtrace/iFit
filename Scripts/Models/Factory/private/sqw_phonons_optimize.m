@@ -1,4 +1,6 @@
 function [options, sav] = sqw_phonons_optimize(decl, calc, options)
+% sqw_phonons_optimize: perform the optimization step with ASE
+%   requires valid 'atoms.pkl' and calculator
 
 target = options.target;
 % init calculator
