@@ -1,10 +1,53 @@
 function [options, result, read] = sqw_phonons_check(configuration, options, status)
+% sqw_phonons_check: read the initial material structure
+%   requires: nothing except file/directory with material 'POSCAR' or other
 
 target = options.target;
+
+% determine if the atoms.pkl exists. If so, nothing else to do
+if ~isempty(dir(fullfile(target, 'atoms.pkl')))
+  disp([ mfilename ': re-using ' fullfile(target, 'atoms.pkl') ]);
+  return
+end
 
 if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
 else           precmd = ''; end
+
+if isdir(configuration)
+  % search for 'known' configurations in the directory from PHON/PhonoPy
+  files = search_files(target, { 'POSCAR*','SPOSCAR' });
+  flag_get_supercell = true;
+  supercell = [];
+  if ~isempty(files)
+    files = files.name;
+    if strncmp(files, 'POSCAR',6)
+      configuration = fullfile(target, files);
+    elseif strncmp(files, 'SPOSCAR',7)
+      configuration = fullfile(target, files);
+      supercell     = [ 1 1 1 ];
+      flag_get_supercell = false;
+    end
+  end
+else flag_get_supercell=false;
+end
+
+if flag_get_supercell
+  files = search_files(target, ...
+    { 'phonon.yaml','INPHON','quasiharmonic_phonon.yaml','band.yaml'});
+  if ~isempty(files)
+    files = iLoad(fullfile(target, files));
+  end
+  if isfield(files.Data, 'NDIM')
+    supercell = files.Data.NDIM;
+  elseif isfield(files.Data, 'supercell_matrix')
+    supercell = trace(files.Data.supercell_matrix);
+  end
+  if ~isempty(supercell), options.supercell = supercell; 
+  elseif any(options.supercell == 0)
+    disp([ mfilename ': ERROR: unspecified supercell for previous computation.' ]); 
+  end
+end
 
 % handle input configuration: read
 if exist(configuration)
@@ -135,3 +178,38 @@ if isempty(dir(fullfile(target, 'atoms.pkl')))  % FATAL
   result = 'ERROR python';
   return
 end
+
+% determine optimal kpoints and supercell if left in auto mode
+if ~isempty(fullfile(target, 'properties.mat')) && ...
+    (any(options.supercell <= 0) || any(options.kpoints <= 0))
+  properties = load(fullfile(target, 'properties.mat'));
+  % get the nb of atoms in the model
+  nb_at = numel(properties.atomic_numbers);
+  % auto mesh should be 1000/nb_at = k^3*supercell^3 (6750/nb_at for high accuracy)
+  if all(options.kpoints > 0)
+    supercell = floor((1000/nb_at./prod(options.kpoints))^(1/3));
+  else
+    supercell = floor((1000/nb_at)^(1/6));
+  end
+  if any(options.supercell <= 0)
+    options.supercell=[ supercell supercell supercell ];
+    disp([ '  auto: supercell=' num2str(supercell) ])
+  end
+  kpoints   = ceil((1000/nb_at./prod(options.supercell))^(1/3));
+  if any(options.kpoints <= 0)
+    options.kpoints = [ kpoints kpoints kpoints ];
+    disp([ '  auto: kpoints=  ' num2str(kpoints) ])
+  end
+end
+
+% ==============================================================================
+function files = search_files(target, list)
+  % search for a file in the list
+  files = '';
+  for tosearch = list
+    files = dir(fullfile(target, tosearch{1}));
+    if isempty(files), continue; end
+    files = files(~[files.isdir ]); % skip sub-directories
+    if isempty(files), continue; end
+    files = files(1); break
+  end
