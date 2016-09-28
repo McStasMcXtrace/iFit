@@ -268,7 +268,7 @@ function compiled = read_anytext_compile_binary(compile)
   else precmd=''; end
   
   if ispc, ext='.exe'; else ext=''; end
-  this_path = fileparts(which(mfilename));
+  this_path = fullfile(fileparts(which(mfilename)),'private');
   
   % test if we still have a looktxt MeX: remove it as it will probably give SEGV
   % check if it exists and is valid
@@ -281,7 +281,7 @@ function compiled = read_anytext_compile_binary(compile)
   for try_target={ ...
           fullfile(this_path, [ 'looktxt_' computer('arch') ext ]), ...
           fullfile(this_path, [ 'looktxt' ext ]), ...
-          [ 'looktxt' ext ]}
+          [ 'looktxt' ext ], 'looktxt'}
       
     [status, result] = system([ try_target{1} ' --help' ]); % run from Matlab
 
