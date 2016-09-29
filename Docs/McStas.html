@@ -60,6 +60,8 @@
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
 
 
+
+
         Live DVD</a> ready-to-run system with <span style="font-style:
         italic;">McStas</span> pre-installed, and then put on top <a
         href="http://www.mathworks.com">Matlab</a> (requires a valid
@@ -109,6 +111,8 @@ to
 store
 
 
+
+
           results. When not defined, a temporary location is created,
           and removed after the simulation (string).<span style="color:
             rgb(255, 0, 0); font-weight: bold;"></span><br>
@@ -122,11 +126,18 @@ of
 processors
 
 
+
+
           to use with MPI (integer. The simulation should be re-compiled
-          accordingly with <span style="font-style: italic;">options.compile='yes'</span>
-        </li>
+          accordingly with <span style="font-style: italic;">options.compile='yes'</span></li>
+        <li><b>options.machines</b>: a file name containing the list of
+          machines/nodes to use with MPI<span style="font-style:
+            italic;"><br>
+          </span></li>
         <li><span style="font-weight: bold;">options.seed</span>:&nbsp;&nbsp;
 random
+
+
 
 
           number seed to use for each iteration (double)</li>
@@ -137,6 +148,8 @@ random
 should
 
 
+
+
           be <span style="color: rgb(204, 51, 204);">'simulate'<span
               style="color: rgb(0, 0, 0);">. This is automatically set
               when no 'optimization' configuration parameter is set. </span><br>
@@ -145,6 +158,8 @@ should
           or 1 to force re-compilation of the instrument (boolean)</li>
         <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
 cell
+
+
 
 
           string of monitor file names, or empty for all (cellstr)</li>
@@ -260,6 +275,8 @@ cell
       <span style="font-style: italic; font-weight: bold;">plot</span>&nbsp;
 
 
+
+
       or <span style="font-weight: bold; font-style: italic;">plot3</span>.
       <br>
       <br>
@@ -269,6 +286,8 @@ of
 the
 number
 of
+
+
 
 
       iterations required to scan large dimensionality spaces. In
@@ -303,11 +322,15 @@ of
 
 
 
+
+
           <span style="color: rgb(204, 51, 204);">'minimize'</span> or<span
             style="color: rgb(204, 51, 204);"> 'maximize'</span>, which
           is the default (string)</li>
         <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
 cell
+
+
 
 
           string of monitor file names, or empty for all (cellstr). This
@@ -321,6 +344,8 @@ cell
         </li>
         <li><span style="font-weight: bold;">options.mode</span>:&nbsp;&nbsp;
 should
+
+
 
 
           be <span style="color: rgb(204, 51, 204);">'optimize'</span>.
@@ -350,6 +375,8 @@ should
 
 
 
+
+
           </span>% plots the criteria and parameters evolution during
           the optimization. <span style="font-style: italic;
             font-weight: bold;">This is the default</span>. Set to <span
@@ -369,12 +396,16 @@ should
     In addition, similarly with other iFit <a href="Optimizers.html">optimization
 
 
+
+
       methods</a>, the optimizer final status and optional returned
     information can be obtained with e.g. <br>
     <pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'mode','optimize','optimizer','fminimfil'</span>));</pre>
     where <span style="font-style: italic;">output</span> stores most
     of the optimization process data, including uncertainty on the best
     parameter values, <span style="font-style: italic;">output.parsHistoryUncertainty
+
+
 
     </span>and<span style="font-style: italic;"> </span><span
       style="font-style: italic;">output.parsHessianUncertainty</span>.<br>
@@ -417,10 +448,14 @@ should
     To abort the optimization, just <span style="font-weight: bold;">close
 
 
+
+
       the optimization plot</span> window. The actual end occurs after a
     few more iterations.<br>
     <br>
     <span style="color: rgb(255, 0, 0); font-weight: bold;">Warning: </span>as
+
+
 
 
     <a href="http://www.mcstas.org">McStas</a> uses a Monte-Carlo
@@ -476,6 +511,8 @@ should
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
           - iFit/McStas - </span><span style="font-style: italic;">

@@ -79,6 +79,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %             directory to be overwritten (boolean)
 %           options.ncount: number of neutron events per iteration, e.g. 1e5 (double)
 %           options.mpi:    number of processors/cores to use with MPI on localhost (integer) 
+%           options.machines: filename containing the list of machines/nodes to use (string)
 %           options.seed:   random number seed to use for each iteration (double)
 %           options.gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
 %           options.compile: 0 or 1 to force re-compilation of the instrument (boolean)
@@ -568,7 +569,7 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
   if isfield(options,'seed') && ~isempty(options.seed)
     cmd = [ cmd ' --seed=' num2str(options.seed) ];
   end
-  if isfield(options,'machines')
+  if isfield(options,'machines') && ~any(strcmpi(options.mode,{'display','trace','info','help'}))
     cmd = [ cmd ' --machines=' options.machines ];
   end
   dir_orig = options.dir;
