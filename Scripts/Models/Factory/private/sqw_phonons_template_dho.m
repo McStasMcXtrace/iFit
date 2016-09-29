@@ -1,8 +1,7 @@
-function [signal, this] = sqw_phonons_template_dho(HKL, t, FREQ, POLAR, is_event, resize_me, Amplitude, Gamma, Bkg, T, u2)
+function [signal, this] = sqw_phonons_template_dho(HKL, t, FREQ, POLAR, is_event, resize_me, Amplitude, Gamma, Bkg, T)
 % sqw_phonon_template_dho: code to build signal from DHO's at each mode FREQ, for all HKL locations
 %   when POLAR is not empty, the phonon intensity (Q.e)^2 form factor is computed
 %   when resize_me is specified [size], the signal is reshaped to it
-%   when u2>0 is specified, the Debye-Waller intensity exp(-u2 Q2) form factor is computed
 % Reference: B. Fak, B. Dorner / Physica B 234-236 (1997) 1107-1108
 %            H. Schober, J Neut. Res. 17 (2014) 109
 

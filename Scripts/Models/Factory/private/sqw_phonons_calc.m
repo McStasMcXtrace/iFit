@@ -22,7 +22,7 @@ case 'ABINIT'
   end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
-    options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+    options.command = [ options.mpirun ' ' options.command ]; 
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -149,7 +149,7 @@ case 'ELK' % ===================================================================
   end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
-    options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+    options.command = [ options.mpirun ' ' options.command ]; 
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -259,7 +259,7 @@ case 'JACAPO' % ================================================================
   end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.jacapo_mpi; end
-    options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+    options.command = [ options.mpirun ' ' options.command ]; 
   end
   if ~isempty(options.command)
     setenv('DACAPOEXE_SERIAL', options.command); % DACAPOEXE_PARALLEL
@@ -309,7 +309,7 @@ case 'NWCHEM' % ================================================================
   end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
-    options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+    options.command = [ options.mpirun ' ' options.command ]; 
   end
   if ~isempty(options.command)
     cmd = options.command;
@@ -465,7 +465,6 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
     options.ecutwfc=options.ecut/Ry; end % in Ry
   if options.nsteps, options.electron_maxstep=options.nsteps; end
   if isscalar(options.occupations), options.occupations=options.occupations/Ry; end
-  options.mpirun = status.mpirun;
 
   options.dos = 1;
   decl = [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ];
@@ -491,7 +490,7 @@ case 'VASP'
   end
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
-    options.command = [ status.mpirun ' -np ' num2str(options.mpi) ' ' options.command ]; 
+    options.command = [ options.mpirun ' ' options.command ]; 
   end
   if isempty(options.command), options.command=status.(lower(options.calculator)); end
   if ~isempty(options.command)
