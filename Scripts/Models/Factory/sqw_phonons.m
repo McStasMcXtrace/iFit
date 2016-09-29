@@ -92,6 +92,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     QuantumEspresso: path to potentials, e.g. /usr/share/espresso/pseudo
 %   options.command='exe'                  Path to calculator executable.
 %   options.mpi=scalar                     use multi-cpu, requires e.g. OpenMPI to be installed.
+%   options.machinefile=filename           file containing the list of MPI machines to use
 %   options.autoplot=0|1                   when set, automatically evaluates the Model
 %     and plot results.
 %   options.htmlreport=0|1                 when set, automatically generates a full
@@ -345,7 +346,7 @@ end
 
 if isempty(status.mpirun) && isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
   options.mpi=1;
-  disp([ mfilename ': MPI parallelization is not available. Install e.g. OpenMPI first' ]);
+  disp([ mfilename ': MPI parallelization is not available. Install e.g. OpenMPI first. Using mpi=1 (serial).' ]);
 end
 
 if isempty(options.calculator)
@@ -422,6 +423,13 @@ sqw_phonons_htmlreport('', 'create_atoms', options);
 % ==============================================================================
 %                               BUILD MODEL (get calculator)
 % ==============================================================================
+
+if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
+  options.mpirun = [ status.mpirun ' -np ' num2str(options.mpi) ];
+  if isfield(options, 'machinefile')
+    options.mpirun = [ options.mpirun ' -machinefile ' options.machinefile ];
+  end
+end
 
 % get the calculator
 % for QE, this triggers computation with sqw_phon()
