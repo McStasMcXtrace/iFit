@@ -19,8 +19,12 @@ if isempty(fig) || ~ishandle(fig)
     setappdata(fig, 'Data',    []);
     setappdata(fig, 'History', {});
     setappdata(fig, 'Models',  {});
-    setappdata(fig, 'CurrentOptimizer',  []);
-    setappdata(mifit_fig, 'CurrentModel',[]);
+    setappdata(fig, 'CurrentOptimizer',   []);
+    setappdata(fig, 'CurrentModel',       []);
+    setappdata(fig, 'CurrentModelHandle', []);
+    setappdata(fig, 'CurrentDataSet',     []);
+    setappdata(fig, 'CurrentDataSetIndex',[]);
+    setappdata(fig, 'CurrentDataSetHandle',[]);
     
     % Display welcome dialog during menu build
     h = mifit_Tools_About(fig);

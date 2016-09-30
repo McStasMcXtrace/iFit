@@ -7,8 +7,7 @@ function [d, index_selected]=mifit_List_Data_pull(varargin)
   index_selected = get(hObject,'Value');
   if isempty(index_selected), return; end
   
-  fig = mifit_fig;
-  d   = getappdata(fig, 'Data');
+  d   = getappdata(mifit_fig, 'Data');
   if numel(d) > 1
       d = d(index_selected);
   end
