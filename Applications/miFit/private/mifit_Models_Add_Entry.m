@@ -1,4 +1,4 @@
-function mifit_Models_Add_Entry(model)
+function handle = mifit_Models_Add_Entry(model)
   % add a new Model (iFunc or cellstr) into the Models sub-menus.
   % the input argument should be a structure with members:
   %   model.callback
@@ -6,11 +6,13 @@ function mifit_Models_Add_Entry(model)
   %   model.object
   % or an iFunc array
   % or a cellstr (expressions to evaluate at callback)
+  %
+  % return the new uimenu handle
   
   % usage:
-  % mifit_Models_Add_iFunc(gauss)         - must add a Gaussian entry in sub-menu, with callback to 'copyobj(gauss)'
+  % mifit_Models_Add_iFunc(gauss)         - must add a Gaussian entry in sub-menu, with callback to 'gauss'
   % mifit_Models_Add_iFunc('gauss+lorz')  - must add a 'gauss+lorz' entry in sub-menu, with callback to 'gauss+lorz'
-  
+  handle = [];
   if nargin == 0 || all(isempty(model)), return; end
   
   % check different type of input arguments Models

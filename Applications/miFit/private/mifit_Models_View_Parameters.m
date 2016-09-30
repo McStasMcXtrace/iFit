@@ -14,11 +14,11 @@ function mifit_Models_View_Parameters(varargin)
   
   % get the Currently selected Data set
   if isappdata(mifit_fig, 'CurrentDataSet')
-    d              = setappdata(mifit_fig, 'CurrentDataSet', d);
-    index_selected = setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
+    d              = getappdata(mifit_fig, 'CurrentDataSet');
+    index_selected = getappdata(mifit_fig, 'CurrentDataSetIndex');
   else
     [d, index_selected] = mifit_List_Data_pull(); % get selected objects
-    if ~isempty(d)
+    if ~isempty(d) && ~isempty(index_selected)
       d=d(1); index_selected=index_selected(1);
     end
   end
@@ -40,12 +40,15 @@ function mifit_Models_View_Parameters(varargin)
       modelValue = get(d, findfield(d, 'ModelValue', 'cache first'));
     end
   end
-  % if CurrentModel exists, get it.
+  % if no model from Data but CurrentModel exists, get it.
   if isempty(model)
     model = getappdata(mifit_fig, 'CurrentModel');
+  elseif isa(model, 'iFunc')
+    setappdata(mifit_fig, 'CurrentModel', model);
   end
   % else return (the User has to select a Data set or Model to view parameters)
-  if isempty(model)
+  if isempty(model) || ~isa(model, 'iFunc')
+    setappdata(mifit_fig, 'CurrentModel', []);
     return
   end
   
@@ -54,7 +57,7 @@ function mifit_Models_View_Parameters(varargin)
   
   % window creation ------------------------------------------------------------
   % determine if the figure has to be created, or just updated
-  % if strcmp(d.Tag, '
+
   % build the figure
   f = mifit_fig('mifit_View_Parameters');
   if isempty(f)
@@ -146,8 +149,9 @@ function mifit_Models_View_Parameters(varargin)
     dat.pars = model.Parameters;
     
     dat.vals = model.ParameterValues;
-    if isempty(dat.vals), dat.vals = cell(n, 1); 
-    else                  dat.vals = mat2cell(dat.vals(:), ones(n,1),1); end
+    if numel(dat.vals) == n
+      dat.vals = mat2cell(dat.vals(:), ones(n,1),1);
+    else dat.vals = cell(n, 1); end
     
     if ~isempty(modelValue) && isfield(modelValue.FitOutput)
       dat.sig = modelValue.FitOutput.parsHistoryUncertainty;
@@ -164,8 +168,9 @@ function mifit_Models_View_Parameters(varargin)
     
     % change all NaN (might appear strange for dummy user) into empty
     for index=1:n
-      if isnan(dat.min{index}), dat.min{index}=''; end
-      if isnan(dat.max{index}), dat.max{index}=''; end
+      if isnan(dat.min{index}),  dat.min{index}=[]; end
+      if isnan(dat.max{index}),  dat.max{index}=[]; end
+      if isnan(dat.vals{index}), dat.vals{index}=[]; end
     end
     % transfer it to the cell for uitable
     Data = cell(n,6);

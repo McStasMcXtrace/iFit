@@ -588,12 +588,51 @@ function mifit_List_Data_Files(varargin)
   % called when clicking on the listbox
 
   [d, index_selected] = mifit_List_Data_pull(); % get selected objects
+  
+  if isempty(index_selected)
+    setappdata(mifit_fig, 'CurrentDataSet', []);
+    setappdata(mifit_fig, 'CurrentDataSetIndex', []);
+    % TODO: should we close the Models_View_Parameters window ? or clear it ? or display 'no model' ?
+  end
 
   %  mifit_Data_Plot(d);  % plot every time we change the data set selection
-  if ~isempty(d)
-    d=d(1); index_selected=index_selected(1);
-    setappdata(mifit_fig, 'CurrentDataSet', d);
-    setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
+  
+  % when a CurrentModel exists (previously selected from Models menu)
+  % we assign that one to Data sets which have no Model defined
+  if ~isempty(getappdata(mifit_fig, 'CurrentModel'))
+    model = getappdata(mifit_fig, 'CurrentModel');
+    D     = getappdata(mifit_fig, 'Data');  % all data sets
+    model_assignments = 0;
+    for index=index_selected(:)'
+      if numel(D) > 1, this_d = D(index); else this_d = D; end
+      previous_model = [];
+      % get the Model stored in the Dataset (after fit)
+      if isfield(this_d, 'Model')
+        previous_model = get(this_d, 'Model');
+      elseif ~isempty(findfield(this_d, 'Model'))
+        previous_model = get(this_d, findfield(this_d, 'Model', 'cache first'));
+      end
+      if isempty(previous_model)  % store the CurrentModel in the Dataset
+        this_d = setalias(this_d, 'Model', model);
+        model_assignments = model_assignments+1;
+      end
+      if numel(D) > 1, D(index) = this_d; else D = this_d; end
+    end
+    if model_assignments
+      setappdata(mifit_fig, 'Data', D);
+      mifit_disp([ 'Assigning Model "' model.Name '" to ' num2str(model_assignments) ' Data set(s).' ]);
+    end
+  end
+  
+  % store the first selected Model so that its Model Parameters can be updated
+  % in mifit_Models_View_Parameters
+  d=d(1); index_selected=index_selected(1);
+  setappdata(mifit_fig, 'CurrentDataSet', d);
+  setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
+  
+  if ~isempty(mifit_fig('mifit_View_Parameters'))
+    % trigger an update of the Parameter window when already opened
+    mifit_Models_View_Parameters();
   end
   
 function mifit_List_Data_UpdateStrings
