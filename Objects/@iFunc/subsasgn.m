@@ -109,9 +109,9 @@ else
         end
       elseif any(strcmp(fieldname, strtok(b.Parameters))) % b.<parameter name> = <value>
         index=find(strcmp(fieldname, strtok(b.Parameters)));
-        if isnumeric(val) && isscalar(val)  % set constraint: scalar
+        if isnumeric(val) && isscalar(val)  % set parameter value: scalar
           if index > length(b.ParameterValues)
-b.ParameterValues((length(b.ParameterValues)+1):(index-1)) = NaN;
+            b.ParameterValues((length(b.ParameterValues)+1):(index-1)) = NaN;
           end
           b.ParameterValues(index)  = val;
         else                                % set constraint: 'fix', 'clear', 'set', [min max]
