@@ -14,7 +14,7 @@ nt = numel(t);
 
 % test for unstable modes
 wrong_w = numel(find(FREQ(:) < 0 | ~isreal(FREQ(:)) | ~isfinite(FREQ(:))));
-if wrong_w, disp([ 'WARNING: found ' num2str(wrong_w) ' negative/imaginary phonon frequencies (' num2str(wrong_w*100/numel(FREQ)) '% of total)' ]); end
+if wrong_w, disp([ 'WARNING: found ' num2str(wrong_w) ' negative/imaginary phonon frequencies (' num2str(wrong_w*100/numel(FREQ)) '% of total) in ' this.Name ]); end
 
 % we compute the Q vector in [Angs-1]. Search for the B=rlu2cartesian matrix
 UD = this.UserData; B=[];
@@ -56,7 +56,7 @@ end
 if isempty(b_coh) && ~isempty(positions)
   disp([ 'WARNING: Unspecified coherent neutron scattering length specification for the material ' ...
     UD.properties.chemical_formula '. Using b_coh=1 [fm] for all atoms (sigma_coh=0.126 barns). ' ...
-    'Specify model.UserData.properties.b_coh as a vector with ' num2str(size(positions,1)) ' value(s).' ]);
+    'Specify model.UserData.properties.b_coh as a vector with ' num2str(size(positions,1)) ' value(s) in ' this.Name ]);
   b_coh = ones(1, size(positions,1));
 end
 
@@ -65,7 +65,7 @@ if isscalar(b_coh) && size(positions,1) > 1
     ' has ' num2str(size(positions,1)) ...
     ' atoms in the cell, but only one coherent neutron scattering length is defined. ' ...
     'Using the same value for all (may be wrong). ' ...
-    'Specify model.UserData.properties.b_coh as a vector.' ]);
+    'Specify model.UserData.properties.b_coh as a vector in ' this.Name ]);
   b_coh = b_coh * ones(1, size(positions,1));
 end
 
@@ -73,7 +73,7 @@ if ~isempty(b_coh) && ~isempty(positions) && numel(b_coh) ~= size(positions,1)
   disp([ 'WARNING: Inconsistent coherent neutron scattering length specification: has ' ...
     num2str(numel(b_coh)) ' but the material ' UD.properties.chemical_formula ' has ' ...
     num2str(size(positions,1)) ' atoms in the cell. Will not compute phonon intensities. ' ...
-    'Specify model.UserData.properties.b_coh as a vector.' ]);
+    'Specify model.UserData.properties.b_coh as a vector in ' this.Name ]);
     b_coh = [];
 end
 

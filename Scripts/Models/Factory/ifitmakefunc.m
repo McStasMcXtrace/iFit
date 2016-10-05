@@ -59,7 +59,7 @@ if nargin == 1
   if strcmp(fun, 'identify')
     f = iFunc;
     f.Name        = [ 'Model editor [' mfilename ']' ];
-    f.Expression  = '% dummy code so that it"s not empty p(1)';
+    f.Expression  = '[]; % dummy code so that it"s not empty p(1)';
     f.Description = 'Build/edit a fit function/model from a GUI';
     return
   elseif strcmp(fun, 'defaults')
